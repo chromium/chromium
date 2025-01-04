@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "projector_soda_installation_controller.h"
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/locale_update_controller.h"
@@ -75,7 +76,7 @@ class ProjectorSodaInstallationControllerTest : public ChromeAshTestBase {
     scoped_feature_list_.InitWithFeatures(
         {features::kOnDeviceSpeechRecognition},
         {features::kInternalServerSideSpeechRecognition,
-         features::kForceEnableServerSideSpeechRecognitionForDev});
+         features::kForceEnableServerSideSpeechRecognition});
   }
   ProjectorSodaInstallationControllerTest(
       const ProjectorSodaInstallationControllerTest&) = delete;

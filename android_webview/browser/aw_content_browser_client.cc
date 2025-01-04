@@ -339,7 +339,7 @@ void AwContentBrowserClient::RenderProcessWillLaunch(
   // per-view access checks, and access is granted by default (see
   // AwSettings.mAllowContentUrlAccess).
   content::ChildProcessSecurityPolicy::GetInstance()->GrantRequestScheme(
-      host->GetID(), url::kContentScheme);
+      host->GetDeprecatedID(), url::kContentScheme);
 }
 
 bool AwContentBrowserClient::IsExplicitNavigation(
@@ -699,7 +699,8 @@ AwContentBrowserClient::CreateURLLoaderThrottles(
       /* hash_realtime_service */ nullptr,
       /* hash_realtime_selection */
       hash_real_time_selection,
-      /* async_check_tracker */ async_check_tracker));
+      /* async_check_tracker */ async_check_tracker,
+      /*referring_app_info=*/std::nullopt));
 
   if (request.destination == network::mojom::RequestDestination::kDocument) {
     const bool is_load_url =
@@ -747,7 +748,7 @@ AwContentBrowserClient::CreateURLLoaderThrottlesForKeepAlive(
       /* hash_realtime_service */ nullptr,
       /* hash_realtime_selection */
       hash_real_time_selection,
-      /* async_check_tracker */ nullptr));
+      /* async_check_tracker */ nullptr, /*referring_app_info=*/std::nullopt));
 
   return result;
 }

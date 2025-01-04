@@ -162,13 +162,9 @@ class TrackingProtectionBubbleViewBrowserTest
         net::EmbeddedTestServer::TYPE_HTTPS);
     // Enable FPP to display UB UX with ACT features
     feature_list_.InitWithFeatures(
-        {privacy_sandbox::kFingerprintingProtectionUserBypass}, {});
-  }
-
-  ContentSetting GetTrackingProtectionSetting() {
-    return host_content_settings_map()->GetContentSetting(
-        GURL(), third_party_cookie_page_url(),
-        ContentSettingsType::TRACKING_PROTECTION);
+        {privacy_sandbox::kActUserBypassUx,
+         privacy_sandbox::kFingerprintingProtectionUx},
+        {});
   }
 
  private:
@@ -178,12 +174,20 @@ class TrackingProtectionBubbleViewBrowserTest
 
 IN_PROC_BROWSER_TEST_F(TrackingProtectionBubbleViewBrowserTest,
                        ToggleCreatesTrackingProtectionException) {
+  // Set FPP pref to display UB UX with ACT feature
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kFingerprintingProtectionEnabled, true);
+  auto* tracking_protection_settings =
+      TrackingProtectionSettingsFactory::GetForProfile(browser()->profile());
   ShowBubble();
-  EXPECT_EQ(GetTrackingProtectionSetting(), CONTENT_SETTING_BLOCK);
+  EXPECT_FALSE(tracking_protection_settings->HasTrackingProtectionException(
+      third_party_cookie_page_url()));
   SimulateTogglePress(false);
-  EXPECT_EQ(GetTrackingProtectionSetting(), CONTENT_SETTING_ALLOW);
+  EXPECT_TRUE(tracking_protection_settings->HasTrackingProtectionException(
+      third_party_cookie_page_url()));
   SimulateTogglePress(true);
-  EXPECT_EQ(GetTrackingProtectionSetting(), CONTENT_SETTING_BLOCK);
+  EXPECT_FALSE(tracking_protection_settings->HasTrackingProtectionException(
+      third_party_cookie_page_url()));
 }
 
 IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewBrowserTest,

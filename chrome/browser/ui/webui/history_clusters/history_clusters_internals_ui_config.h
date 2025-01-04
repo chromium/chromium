@@ -5,17 +5,17 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_HISTORY_CLUSTERS_HISTORY_CLUSTERS_INTERNALS_UI_CONFIG_H_
 #define CHROME_BROWSER_UI_WEBUI_HISTORY_CLUSTERS_HISTORY_CLUSTERS_INTERNALS_UI_CONFIG_H_
 
-#include "content/public/browser/webui_config.h"
+#include "content/public/browser/internal_webui_config.h"
 #include "content/public/common/url_constants.h"
 
 namespace history_clusters_internals {
 
-class HistoryClustersInternalsUIConfig : public content::WebUIConfig {
+class HistoryClustersInternalsUIConfig : public content::InternalWebUIConfig {
  public:
   HistoryClustersInternalsUIConfig();
   ~HistoryClustersInternalsUIConfig() override;
 
-  // content::WebUIConfig:
+  // content::InternalWebUIConfig:
   std::unique_ptr<content::WebUIController> CreateWebUIController(
       content::WebUI* web_ui,
       const GURL& url) override;

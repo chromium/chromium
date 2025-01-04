@@ -18,6 +18,7 @@
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_execution/safety_checker.h"
 #include "components/optimization_guide/core/model_execution/substitution.h"
+#include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
@@ -46,6 +47,8 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   class OnDeviceModelClient {
    public:
     virtual ~OnDeviceModelClient() = 0;
+    // Create another client for the same model.
+    virtual std::unique_ptr<OnDeviceModelClient> Clone() const = 0;
     // Called to check whether this client is still usable.
     virtual bool ShouldUse() = 0;
     // Called to retrieve connection the managed model.
@@ -57,6 +60,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
 
   struct OnDeviceOptions final {
     OnDeviceOptions();
+    OnDeviceOptions(const OnDeviceOptions&);
     OnDeviceOptions(OnDeviceOptions&&);
     ~OnDeviceOptions();
 
@@ -65,6 +69,9 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     scoped_refptr<const OnDeviceModelFeatureAdapter> adapter;
     std::unique_ptr<SafetyChecker> safety_checker;
     TokenLimits token_limits;
+
+    base::WeakPtr<OptimizationGuideLogger> logger;
+    base::WeakPtr<ModelQualityLogsUploaderService> log_uploader;
 
     // Returns true if the on-device model may be used.
     bool ShouldUse() const;
@@ -135,9 +142,6 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   SessionImpl(ModelBasedCapabilityKey feature,
               std::optional<OnDeviceOptions> on_device_opts,
               ExecuteRemoteFn execute_remote_fn,
-              base::WeakPtr<OptimizationGuideLogger> optimization_guide_logger,
-              base::WeakPtr<ModelQualityLogsUploaderService>
-                  model_quality_uploader_service,
               const std::optional<SessionConfigParams>& config_params);
   ~SessionImpl() override;
 
@@ -165,25 +169,14 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   // on_device_model::mojom::StreamingResponder:
   void OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) override;
   void OnComplete(on_device_model::mojom::ResponseSummaryPtr summary) override;
+  // Called when the StreamingResponder remote is disconnected.
+  void OnResponderDisconnect();
 
   // Returns true if the on-device model should be used.
   bool ShouldUseOnDeviceModel() const;
 
  private:
   class ContextProcessor;
-
-  // Type of response.
-  enum class ResponseType {
-    // This is a partial response. That is, one of `kComplete` or
-    // `kCompleteUnsafeOutput` will follow.
-    kPartial,
-
-    // The response completed successfully.
-    kComplete,
-
-    // The response completed, but the output is considered unsafe.
-    kCompleteUnsafeOutput,
-  };
 
   // Used to log the result of ExecuteModel.
   class ExecuteModelHistogramLogger {
@@ -207,7 +200,8 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     // Returns true if ExecuteModel() was called and the complete response
     // has not been received.
     bool did_execute_and_waiting_for_on_complete() const {
-      return start != base::TimeTicks() && !model_response_complete;
+      return start != base::TimeTicks() &&
+             response_completeness == ResponseCompleteness::kPartial;
     }
 
     // Returns the mutable on-device model service response for logging.
@@ -253,10 +247,6 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
       ~SafeRawOutput();
       // How much of 'current_response' was checked.
       size_t length = 0;
-      // The execution logs for the check (if any).
-      google::protobuf::RepeatedPtrField<
-          proto::InternalOnDeviceModelExecutionInfo>
-          logs;
     };
     // The longest response that has passed the raw output text safety check.
     SafeRawOutput latest_safe_raw_output;
@@ -265,7 +255,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     size_t latest_response_pos = 0;
 
     // Whether the model response is complete.
-    bool model_response_complete = false;
+    ResponseCompleteness response_completeness = ResponseCompleteness::kPartial;
 
     // Factory for weak pointers related to this session that are invalidated
     // with the request state.
@@ -278,6 +268,9 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   // Gets the active session or restarts a session if the session is reset.
   on_device_model::mojom::Session& GetOrCreateSession();
 
+  // Called when on-device session disconnects.
+  void OnSessionDisconnect();
+
   // Cancels any pending response and resets response state.
   void CancelPendingResponse(
       ExecuteModelResult result,
@@ -285,15 +278,12 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
           OptimizationGuideModelExecutionError::ModelExecutionError::
               kCancelled);
 
-  // Called when the connection to the service is dropped.
-  void OnDisconnect();
-
   // Calls SendResponse(kComplete) if we've received the full response and have
   // finished checking raw output safety for it.
   void MaybeSendCompleteResponse();
 
   // Sends `current_response_` to the client.
-  void SendResponse(ResponseType response_type);
+  void SendResponse(ResponseCompleteness completeness);
 
   void DestroyOnDeviceStateAndFallbackToRemote(ExecuteModelResult result);
 
@@ -313,10 +303,11 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
 
   // Evaluates raw output safety.
   // Will invoke SendResponse if evaluations are successful.
-  void RunRawOutputSafetyCheck(bool is_complete);
+  void RunRawOutputSafetyCheck(ResponseCompleteness completeness);
 
   // Called when output safety check completes.
   void OnRawOutputSafetyResult(size_t raw_output_size,
+                               ResponseCompleteness completeness,
                                SafetyChecker::Result safety_result);
 
   // Callback invoked when the text safety remote fallback response comes back.
@@ -329,11 +320,11 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
 
   // Called when a response has finished parsing.
   void OnParsedResponse(
-      bool is_complete,
+      ResponseCompleteness completeness,
       base::expected<proto::Any, ResponseParsingError> output);
 
   // Called when response safety check completes.
-  void OnResponseSafetyResult(bool is_complete,
+  void OnResponseSafetyResult(ResponseCompleteness completeness,
                               proto::Any output,
                               SafetyChecker::Result safety_result);
 
@@ -367,15 +358,6 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
 
   // Has a value when using the on device model.
   std::optional<OnDeviceState> on_device_state_;
-
-  // Logger is owned by the Optimization Guide Keyed Service.
-  base::WeakPtr<OptimizationGuideLogger> optimization_guide_logger_;
-
-  // Owned by OptimizationGuideKeyedService and outlives `this`. This is to be
-  // passed through the ModelQualityLogEntry to invoke upload during log
-  // destruction.
-  base::WeakPtr<ModelQualityLogsUploaderService>
-      model_quality_uploader_service_;
 
   // Params used to control output sampling for the on device model.
   const SamplingParams sampling_params_;

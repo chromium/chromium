@@ -38,6 +38,7 @@ Status LaunchChrome(network::mojom::URLLoaderFactory* factory,
                     const Capabilities& capabilities,
                     std::vector<std::unique_ptr<DevToolsEventListener>>
                         devtools_event_listeners,
+                    base::RepeatingClosure on_socket_message,
                     bool w3c_compliant,
                     std::unique_ptr<Chrome>& chrome);
 

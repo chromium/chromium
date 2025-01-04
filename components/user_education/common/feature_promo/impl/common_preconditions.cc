@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/strings/stringprintf.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/user_education/common/feature_promo/feature_promo_lifecycle.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
@@ -16,6 +17,7 @@
 
 namespace user_education {
 
+DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kFeatureEnabledPrecondition);
 DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
     kFeatureEngagementTrackerInitializedPrecondition);
 DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
@@ -23,6 +25,17 @@ DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
 DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kAnchorElementPrecondition);
 DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kLifecyclePrecondition);
 DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kSessionPolicyPrecondition);
+
+FeatureEnabledPrecondition::FeatureEnabledPrecondition(
+    const base::Feature& feature)
+    : CachingFeaturePromoPrecondition(
+          kFeatureEnabledPrecondition,
+          "Feature Enabled",
+          base::FeatureList::IsEnabled(feature)
+              ? FeaturePromoResult::Success()
+              : FeaturePromoResult::kFeatureDisabled) {}
+
+FeatureEnabledPrecondition::~FeatureEnabledPrecondition() = default;
 
 FeatureEngagementTrackerInitializedPrecondition::
     FeatureEngagementTrackerInitializedPrecondition(
@@ -69,7 +82,8 @@ MeetsFeatureEngagementCriteriaPrecondition::
     ~MeetsFeatureEngagementCriteriaPrecondition() = default;
 
 FeaturePromoResult
-MeetsFeatureEngagementCriteriaPrecondition::CheckPrecondition() const {
+MeetsFeatureEngagementCriteriaPrecondition::CheckPrecondition(
+    ComputedData& data) const {
   // Note: if we don't have access to `ListEvents()` this is a no-op.
 #if !BUILDFLAG(IS_ANDROID)
   for (const auto& [config, count] : tracker_->ListEvents(*feature_)) {
@@ -97,9 +111,10 @@ AnchorElementPrecondition::AnchorElementPrecondition(
 
 AnchorElementPrecondition::~AnchorElementPrecondition() = default;
 
-FeaturePromoResult AnchorElementPrecondition::CheckPrecondition() const {
+FeaturePromoResult AnchorElementPrecondition::CheckPrecondition(
+    ComputedData& data) const {
   auto* const element = provider_->GetAnchorElement(default_context_);
-  GetCachedData(kAnchorElement) = element;
+  GetCachedDataForComputation(data, kAnchorElement) = element;
   return element != nullptr ? FeaturePromoResult::Success()
                             : FeaturePromoResult::kBlockedByUi;
 }
@@ -113,15 +128,16 @@ LifecyclePrecondition::LifecyclePrecondition(
     bool for_demo)
     : FeaturePromoPreconditionBase(kLifecyclePrecondition, "Lifecycle Check"),
       for_demo_(for_demo) {
-  InitCache(kLifecycle);
-  GetCachedData(kLifecycle) = std::move(lifecycle);
+  CHECK(lifecycle);
+  InitCachedData(kLifecycle, std::move(lifecycle));
 }
 
 LifecyclePrecondition::~LifecyclePrecondition() = default;
 
-FeaturePromoResult LifecyclePrecondition::CheckPrecondition() const {
-  return for_demo_ ? FeaturePromoResult::Success()
-                   : GetCachedData(kLifecycle)->CanShow();
+FeaturePromoResult LifecyclePrecondition::CheckPrecondition(
+    ComputedData& data) const {
+  auto* const lifecycle = GetCachedDataForComputation(data, kLifecycle).get();
+  return for_demo_ ? FeaturePromoResult::Success() : lifecycle->CanShow();
 }
 
 SessionPolicyPrecondition::SessionPolicyPrecondition(
@@ -138,7 +154,8 @@ SessionPolicyPrecondition::SessionPolicyPrecondition(
 SessionPolicyPrecondition::~SessionPolicyPrecondition() = default;
 
 // FeaturePromoPrecondition:
-FeaturePromoResult SessionPolicyPrecondition::CheckPrecondition() const {
+FeaturePromoResult SessionPolicyPrecondition::CheckPrecondition(
+    ComputedData& data) const {
   return session_policy_->CanShowPromo(priority_info_,
                                        get_current_promo_info_callback_.Run());
 }

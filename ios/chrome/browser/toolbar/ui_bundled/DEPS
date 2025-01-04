@@ -1,4 +1,6 @@
 include_rules = [
+  "+components/collaboration/public",
+  "+ios/chrome/browser/collaboration/model/messaging",
   "+ios/chrome/browser/contextual_panel/model",
   "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
   "+ios/chrome/browser/first_run/model/first_run.h",
@@ -23,7 +25,7 @@ include_rules = [
   "+ios/chrome/browser/share_kit/model",
   "+ios/chrome/browser/sharing/ui_bundled",
   "+ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h",
-  "+ios/chrome/browser/ui/fullscreen",
+  "+ios/chrome/browser/fullscreen/ui_bundled",
   "+ios/chrome/browser/lens/ui_bundled",
   "+ios/chrome/browser/ui/popup_menu/public",
   "+ios/chrome/browser/url_loading/model",

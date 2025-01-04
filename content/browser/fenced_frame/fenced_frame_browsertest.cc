@@ -1537,15 +1537,11 @@ class FencedFrameWithSiteIsolationDisabledBrowserTest
     std::vector<base::test::FeatureRef> disabled_features;
 
     if (std::get<0>(GetParam())) {
-      enabled_features.push_back(
-          features::kProcessSharingWithDefaultSiteInstances);
       disabled_features.push_back(
           features::kProcessSharingWithStrictSiteInstances);
     } else {
       enabled_features.push_back(
           features::kProcessSharingWithStrictSiteInstances);
-      disabled_features.push_back(
-          features::kProcessSharingWithDefaultSiteInstances);
     }
 
     if (std::get<1>(GetParam())) {

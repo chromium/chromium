@@ -69,8 +69,8 @@ public class BookmarkModel extends BookmarkBridge {
         return BookmarkBridge.getForProfile(profile);
     }
 
-    BookmarkModel(long nativeBookmarkBridge) {
-        super(nativeBookmarkBridge);
+    BookmarkModel(long nativeBookmarkBridge, Profile profile) {
+        super(nativeBookmarkBridge, profile);
     }
 
     /**

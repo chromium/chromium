@@ -388,12 +388,18 @@ MakeCredentialRequestHandler::MakeCredentialRequestHandler(
   }
 #endif
 
-  InitDiscoveries(
-      fido_discovery_factory, std::move(additional_discoveries),
+  auto available_transports =
       base::STLSetIntersection<base::flat_set<FidoTransportProtocol>>(
-          supported_transports, allowed_transports),
-      request.authenticator_attachment !=
-          AuthenticatorAttachment::kCrossPlatform);
+          supported_transports, allowed_transports);
+  bool consider_enclave = request.authenticator_attachment !=
+                          AuthenticatorAttachment::kCrossPlatform;
+  if (options_.is_passkey_upgrade_request) {
+    consider_enclave = true;
+    available_transports = {};
+  }
+
+  InitDiscoveries(fido_discovery_factory, std::move(additional_discoveries),
+                  std::move(available_transports), consider_enclave);
   std::string json_string;
   if (!options_.json ||
       !base::JSONWriter::WriteWithOptions(

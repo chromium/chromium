@@ -51,10 +51,6 @@ BASE_FEATURE(kUserVisibleDebug,
              "JourneysUserVisibleDebug",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPersistContextAnnotationsInHistoryDb,
-             "JourneysPersistContextAnnotationsInHistoryDb",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kHistoryClustersInternalsPage,
              "HistoryClustersInternalsPage",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -71,21 +67,8 @@ BASE_FEATURE(kHistoryClustersVisitDeduping,
              "HistoryClustersVisitDeduping",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kJourneysPersistCachesToPrefs,
-             "JourneysPersistCachesToPrefs",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kHistoryClustersNavigationContextClustering,
              "HistoryClustersNavigationContextClustering",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Killswitch only.
-BASE_FEATURE(kJourneysNamedNewTabGroups,
-             "JourneysNamedNewTabGroups",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kJourneysZeroStateFiltering,
-             "JourneysZeroStateFiltering",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace internal

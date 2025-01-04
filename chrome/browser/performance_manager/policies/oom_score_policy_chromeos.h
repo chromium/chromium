@@ -22,8 +22,7 @@ namespace performance_manager::policies {
 // would be assigned lower oom score adj. See the following web page for more
 // explanation on Linux oom score adj(adjust).
 // [1]: https://man7.org/linux/man-pages/man1/choom.1.html
-class OomScorePolicyChromeOS : public GraphOwned,
-                               public PageNode::ObserverDefaultImpl {
+class OomScorePolicyChromeOS : public GraphOwned, public PageNodeObserver {
  public:
   OomScorePolicyChromeOS();
   ~OomScorePolicyChromeOS() override;
@@ -34,7 +33,7 @@ class OomScorePolicyChromeOS : public GraphOwned,
   void OnPassedToGraph(Graph* graph) override;
   void OnTakenFromGraph(Graph* graph) override;
 
-  // PageNode::ObserverDefaultImpl:
+  // PageNodeObserver:
   void OnPageNodeAdded(const PageNode* page_node) override;
   void OnBeforePageNodeRemoved(const PageNode* page_node) override;
   void OnIsFocusedChanged(const PageNode* page_node) override;

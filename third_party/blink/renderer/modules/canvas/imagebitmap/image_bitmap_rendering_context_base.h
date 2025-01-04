@@ -41,6 +41,12 @@ class MODULES_EXPORT ImageBitmapRenderingContextBase
   scoped_refptr<StaticBitmapImage> GetImage(FlushReason) final;
 
   void SetUV(const gfx::PointF& left_top, const gfx::PointF& right_bottom);
+
+  SkAlphaType GetAlphaType() const override { return kPremul_SkAlphaType; }
+  SkColorType GetSkColorType() const override { return kN32_SkColorType; }
+  sk_sp<SkColorSpace> GetSkColorSpace() const override {
+    return SkColorSpace::MakeSRGB();
+  }
   bool IsComposited() const final { return true; }
   bool PushFrame() override;
 

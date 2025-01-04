@@ -42,7 +42,7 @@ public class MutableFlagWithSafeDefaultUnitTest {
                 FEATURE_MAP.mutableFlagWithSafeDefault(FEATURE_B, true);
 
         // Values from ChromeFeatureList should be used from now on.
-        FeatureList.setTestFeatures(A_ON_B_OFF);
+        FeatureList.setTestValues(A_ON_B_OFF);
 
         // Verify that {@link MutableFlagWithSafeDefault} returns native values.
         BaseFlagTestRule.assertIsEnabledMatches(A_ON_B_OFF, featureA, featureB);
@@ -70,7 +70,7 @@ public class MutableFlagWithSafeDefaultUnitTest {
         BaseFlagTestRule.assertIsEnabledMatches(A_OFF_B_ON, featureA, featureB);
 
         // Values from ChromeFeatureList should be used from now on.
-        FeatureList.setTestFeatures(A_ON_B_OFF);
+        FeatureList.setTestValues(A_ON_B_OFF);
 
         // Verify that {@link MutableFlagWithSafeDefault} returns native values.
         BaseFlagTestRule.assertIsEnabledMatches(A_ON_B_OFF, featureA, featureB);

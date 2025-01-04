@@ -138,6 +138,12 @@
  */
 #define SK_PDF_USE_HARFBUZZ_SUBSET
 
+/*  This controls how much space should be pre-allocated in an SkCanvas object
+    to store the SkMatrix and clip via calls to SkCanvas::save() (and balanced
+    with SkCanvas::restore()).
+*/
+#define SK_CANVAS_SAVE_RESTORE_PREALLOC_COUNT 16
+
 // Handle exporting using base/component_export.h
 #define SK_API COMPONENT_EXPORT(SKIA)
 

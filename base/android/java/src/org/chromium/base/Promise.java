@@ -8,6 +8,9 @@ import android.os.Handler;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.LinkedList;
@@ -15,11 +18,13 @@ import java.util.List;
 import java.util.function.Function;
 
 /**
- * A Promise class to be used as a placeholder for a result that will be provided asynchronously.
- * It must only be accessed from a single thread.
+ * A Promise class to be used as a placeholder for a result that will be provided asynchronously. It
+ * must only be accessed from a single thread.
+ *
  * @param <T> The type the Promise will be fulfilled with.
  */
-public class Promise<T> {
+@NullMarked
+public class Promise<T extends @Nullable Object> {
     // TODO(peconn): Implement rejection handlers that can recover from rejection.
 
     @IntDef({PromiseState.UNFULFILLED, PromiseState.FULFILLED, PromiseState.REJECTED})
@@ -32,10 +37,10 @@ public class Promise<T> {
 
     @PromiseState private int mState = PromiseState.UNFULFILLED;
 
-    private T mResult;
+    private @Nullable T mResult;
     private final List<Callback<T>> mFulfillCallbacks = new LinkedList<>();
 
-    private Exception mRejectReason;
+    private @Nullable Exception mRejectReason;
     private final List<Callback<Exception>> mRejectCallbacks = new LinkedList<>();
 
     private final Thread mThread = Thread.currentThread();
@@ -55,7 +60,7 @@ public class Promise<T> {
      * to a subsequent Promise.
      */
     public static class UnhandledRejectionException extends RuntimeException {
-        public UnhandledRejectionException(String message, Throwable cause) {
+        public UnhandledRejectionException(String message, @Nullable Throwable cause) {
             super(message, cause);
         }
     }
@@ -139,7 +144,7 @@ public class Promise<T> {
      * Queues a {@link Function} to be run when the Promise is fulfilled. When this Promise is
      * fulfilled, the function will be run and its result will be place in the returned Promise.
      */
-    public <RT> Promise<RT> then(final Function<T, RT> function) {
+    public <RT extends @Nullable Object> Promise<RT> then(Function<T, RT> function) {
         checkThread();
 
         // Create a new Promise to store the result of the function.
@@ -169,7 +174,7 @@ public class Promise<T> {
      * Promise is fulfilled, the AsyncFunction will be run. When the result of the AsyncFunction is
      * available, it will be placed in the returned Promise.
      */
-    public <RT> Promise<RT> then(final AsyncFunction<T, RT> function) {
+    public <RT extends @Nullable Object> Promise<RT> then(AsyncFunction<T, RT> function) {
         checkThread();
 
         // Create a new Promise to be returned.
@@ -214,7 +219,7 @@ public class Promise<T> {
      * Fulfills the Promise with the result and passes it to any {@link Callback}s previously queued
      * on the next iteration of the message loop.
      */
-    public void fulfill(final T result) {
+    public void fulfill(T result) {
         checkThread();
         assert mState == PromiseState.UNFULFILLED;
 
@@ -235,7 +240,7 @@ public class Promise<T> {
      * important to make it explicit when a Promise may be rejected, so that users of that Promise
      * know to provide rejection handling.
      */
-    public void reject(final Exception reason) {
+    public void reject(final @Nullable Exception reason) {
         checkThread();
         assert mState == PromiseState.UNFULFILLED;
 
@@ -276,8 +281,11 @@ public class Promise<T> {
      *
      * @return The promised result.
      */
+    @SuppressWarnings("NullAway")
     public T getResult() {
         assert isFulfilled();
+        // SuppressWarnings necessary since mResult is @Nullable, but we cannot check that it's
+        // non-null because T might be @Nullable.
         return mResult;
     }
 
@@ -300,7 +308,8 @@ public class Promise<T> {
     }
 
     // We use a different template parameter here so this can be used for both T and Throwables.
-    private <S> void postCallbackToLooper(final Callback<S> callback, final S result) {
+    private <S extends @Nullable Object> void postCallbackToLooper(
+            final Callback<@Nullable S> callback, @Nullable S result) {
         // Post the callbacks to the Thread looper so we don't get a long chain of callbacks
         // holding up the thread.
         mHandler.post(callback.bind(result));

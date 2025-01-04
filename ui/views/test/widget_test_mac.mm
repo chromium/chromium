@@ -59,11 +59,13 @@ bool WidgetTest::IsWindowStackedAbove(Widget* above, Widget* below) {
   NSWindow* second = below->GetNativeWindow().GetNativeNSWindow();
 
   for (NSWindow* window in NSApp.orderedWindows) {
-    if (window == second)
+    if (window == second) {
       return !first;
+    }
 
-    if (window == first)
+    if (window == first) {
       first = nil;
+    }
   }
   return false;
 }
@@ -100,8 +102,9 @@ bool WidgetTest::WidgetHasInProcessShadow(Widget* widget) {
 Widget::Widgets WidgetTest::GetAllWidgets() {
   Widget::Widgets all_widgets;
   for (NSWindow* window : [NSApp windows]) {
-    if (Widget* widget = Widget::GetWidgetForNativeWindow(window))
+    if (Widget* widget = Widget::GetWidgetForNativeWindow(window)) {
       all_widgets.insert(widget);
+    }
   }
   return all_widgets;
 }

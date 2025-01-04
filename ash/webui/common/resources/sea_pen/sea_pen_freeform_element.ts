@@ -12,6 +12,7 @@ import 'chrome://resources/ash/common/personalization/personalization_shared_ico
 import 'chrome://resources/ash/common/personalization/wallpaper.css.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 
 import {FreeformTab, SeaPenSamplePrompt} from './constants.js';
 import {MantaStatusCode, SeaPenQuery} from './sea_pen.mojom-webui.js';
@@ -20,6 +21,15 @@ import {logSamplePromptShuffleClicked, logSeaPenFreeformTabClicked} from './sea_
 import {WithSeaPenStore} from './sea_pen_store.js';
 import {SEA_PEN_SAMPLES} from './sea_pen_untranslated_constants.js';
 import {isArrayEqual, shuffle} from './sea_pen_utils.js';
+
+export interface SeaPenFreeformElement {
+  $: {
+    samplePromptsTab: HTMLElement,
+    resultsTab: HTMLElement,
+    tabContainer: HTMLElement,
+    tabKeys: IronA11yKeysElement,
+  }
+}
 
 export class SeaPenFreeformElement extends WithSeaPenStore {
   static get is() {
@@ -67,6 +77,7 @@ export class SeaPenFreeformElement extends WithSeaPenStore {
         state => state.thumbnailResponseStatusCode);
     this.updateFromStore();
     this.shuffleSamplePrompts_();
+    this.$.tabKeys.target = this.$.tabContainer;
   }
 
   /** Invoked on tab selected. */
@@ -85,6 +96,22 @@ export class SeaPenFreeformElement extends WithSeaPenStore {
     logSeaPenFreeformTabClicked(this.freeformTab_);
   }
 
+  /** Handle keyboard navigation. */
+  private onTabKeysPressed_(e: CustomEvent) {
+    const focusedElement = this.shadowRoot!.activeElement;
+    // Remove focus state of focused tab.
+    focusedElement?.removeAttribute('tabindex');
+
+    const nextTab = this.getOtherTab_(focusedElement)
+    if (nextTab) {
+      // Add focus state for next tab.
+      nextTab.setAttribute('tabindex', '0');
+      nextTab.focus();
+    }
+
+    e.detail.keyboardEvent.preventDefault();
+  }
+
   private onSeaPenQueryChanged_(query: SeaPenQuery|null) {
     // Update selected tab to Results tab once a freeform query search starts.
     // Otherwise, stay in Sample Prompts tab.
@@ -99,10 +126,10 @@ export class SeaPenFreeformElement extends WithSeaPenStore {
     }
   }
 
-  private isTabContainerEnabled_(
+  private isTabContainerHidden_(
       query: SeaPenQuery,
       thumbnailResponseStatusCode: MantaStatusCode|null): boolean {
-    return !!query?.textQuery || !!thumbnailResponseStatusCode;
+    return !query?.textQuery && !thumbnailResponseStatusCode;
   }
 
   private isSamplePromptsTabSelected_(tab: FreeformTab): boolean {
@@ -111,6 +138,24 @@ export class SeaPenFreeformElement extends WithSeaPenStore {
 
   private isResultsTabSelected_(tab: FreeformTab): boolean {
     return tab === FreeformTab.RESULTS;
+  }
+
+  private getSamplePromptsTabIndex_(tab: FreeformTab): string {
+    return this.isSamplePromptsTabSelected_(tab) ? '0' : '-1'
+  }
+
+  private getResultsTabIndex_(tab: FreeformTab): string {
+    return this.isResultsTabSelected_(tab) ? '0' : '-1'
+  }
+
+  private getOtherTab_(element: Element|null): HTMLElement|null {
+    if (element === this.$.resultsTab) {
+      return this.$.samplePromptsTab;
+    }
+    if (element === this.$.samplePromptsTab) {
+      return this.$.resultsTab;
+    }
+    return null;
   }
 
   private onShuffleClicked_(): void {

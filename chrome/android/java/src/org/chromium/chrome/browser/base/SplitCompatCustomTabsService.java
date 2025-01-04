@@ -10,6 +10,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.OptIn;
+import androidx.browser.auth.AuthTabSessionToken;
+import androidx.browser.auth.ExperimentalAuthTab;
 import androidx.browser.customtabs.CustomTabsService;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.EngagementSignalsCallback;
@@ -24,6 +28,7 @@ import java.util.List;
  * CustomTabsService base class which will call through to the given {@link Impl}. This class must
  * be present in the base module, while the Impl can be in the chrome module.
  */
+@OptIn(markerClass = ExperimentalAuthTab.class)
 public class SplitCompatCustomTabsService extends CustomTabsService {
     private String mServiceClassName;
     private Impl mImpl;
@@ -158,6 +163,23 @@ public class SplitCompatCustomTabsService extends CustomTabsService {
         return mImpl.setEngagementSignalsCallback(sessionToken, callback, extras);
     }
 
+    @Override
+    @androidx.browser.customtabs.ExperimentalEphemeralBrowsing
+    protected boolean isEphemeralBrowsingSupported(Bundle extras) {
+        return mImpl.isEphemeralBrowsingSupported(extras);
+    }
+
+    @Override
+    protected boolean cleanUpSession(@NonNull AuthTabSessionToken sessionToken) {
+        mImpl.cleanUpSession(sessionToken);
+        return super.cleanUpSession(sessionToken);
+    }
+
+    @Override
+    protected boolean newAuthTabSession(@NonNull AuthTabSessionToken sessionToken) {
+        return mImpl.newAuthTabSession(sessionToken);
+    }
+
     /**
      * Holds the implementation of service logic. Will be called by {@link
      * SplitCompatCustomTabsService}.
@@ -223,5 +245,11 @@ public class SplitCompatCustomTabsService extends CustomTabsService {
                 CustomTabsSessionToken sessionToken,
                 EngagementSignalsCallback callback,
                 Bundle extras);
+
+        protected abstract boolean isEphemeralBrowsingSupported(Bundle extras);
+
+        protected abstract void cleanUpSession(@NonNull AuthTabSessionToken sessionToken);
+
+        protected abstract boolean newAuthTabSession(@NonNull AuthTabSessionToken sessionToken);
     }
 }

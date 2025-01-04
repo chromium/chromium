@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/thumbnails/background_thumbnail_video_capturer.h"
 
 #include <stdint.h>
+
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
@@ -28,24 +29,27 @@ BackgroundThumbnailVideoCapturer::BackgroundThumbnailVideoCapturer(
 }
 
 BackgroundThumbnailVideoCapturer::~BackgroundThumbnailVideoCapturer() {
-  if (video_capturer_)
+  if (video_capturer_) {
     Stop();
+  }
 }
 
 void BackgroundThumbnailVideoCapturer::Start(
     const ThumbnailCaptureInfo& capture_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (video_capturer_)
+  if (video_capturer_) {
     return;
+  }
 
   content::RenderWidgetHostView* const source_view =
       contents_->GetPrimaryMainFrame()
           ->GetRenderViewHost()
           ->GetWidget()
           ->GetView();
-  if (!source_view)
+  if (!source_view) {
     return;
+  }
 
   capture_info_ = capture_info;
 
@@ -76,8 +80,9 @@ void BackgroundThumbnailVideoCapturer::Start(
 void BackgroundThumbnailVideoCapturer::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!video_capturer_)
+  if (!video_capturer_) {
     return;
+  }
 
   video_capturer_->Stop();
   video_capturer_.reset();

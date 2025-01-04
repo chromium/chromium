@@ -15,7 +15,6 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "crypto/aes_ctr.h"
-#include "crypto/symmetric_key.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/subsample_entry.h"
@@ -62,16 +61,15 @@ void CopyExtraSettings(const DecoderBuffer& input, DecoderBuffer* output) {
   output->set_timestamp(input.timestamp());
   output->set_duration(input.duration());
   output->set_is_key_frame(input.is_key_frame());
-  if (input.has_side_data()) {
+  if (input.side_data()) {
     output->set_side_data(input.side_data()->Clone());
   }
 }
 
 }  // namespace
 
-scoped_refptr<DecoderBuffer> DecryptCencBuffer(
-    const DecoderBuffer& input,
-    const crypto::SymmetricKey& wrapped_key) {
+scoped_refptr<DecoderBuffer> DecryptCencBuffer(const DecoderBuffer& input,
+                                               base::span<const uint8_t> key) {
   base::span<const uint8_t> sample = input;
   DCHECK(!sample.empty()) << "No data to decrypt.";
 
@@ -79,16 +77,15 @@ scoped_refptr<DecoderBuffer> DecryptCencBuffer(
   DCHECK(decrypt_config) << "No need to call Decrypt() on unencrypted buffer.";
   DCHECK_EQ(EncryptionScheme::kCenc, decrypt_config->encryption_scheme());
 
+  if (key.size() != kRequiredKeyBytes) {
+    DVLOG(1) << "Supplied key is the wrong size for CENC";
+    return nullptr;
+  }
+
   auto iv = base::as_byte_span(decrypt_config->iv())
                 .to_fixed_extent<crypto::aes_ctr::kCounterSize>();
   if (!iv) {
     DVLOG(1) << "Supplied IV is the wrong size for CENC";
-    return nullptr;
-  }
-
-  const auto key = base::as_byte_span(wrapped_key.key());
-  if (key.size() != kRequiredKeyBytes) {
-    DVLOG(1) << "Supplied key is the wrong size for CENC";
     return nullptr;
   }
 

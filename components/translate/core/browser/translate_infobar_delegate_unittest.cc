@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/test/task_environment.h"
-#include "build/chromeos_buildflags.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "components/language/core/browser/accept_languages_service.h"
@@ -105,7 +104,7 @@ class TranslateInfoBarDelegateTest : public ::testing::Test {
     language::LanguagePrefs::RegisterProfilePrefs(pref_service_->registry());
     pref_service_->SetString(testing::accept_languages_prefs, std::string());
     pref_service_->SetString(language::prefs::kAcceptLanguages, std::string());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     pref_service_->SetString(language::prefs::kPreferredLanguages,
                              std::string());
 #endif
@@ -290,7 +289,7 @@ TEST_F(TranslateInfoBarDelegateTest, IsTranslatableLanguage) {
   base::Value::List& update_list = update.Get();
   update_list.Append(kSourceLanguage);
   pref_service_->SetString(language::prefs::kAcceptLanguages, kSourceLanguage);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   pref_service_->SetString(language::prefs::kPreferredLanguages,
                            kSourceLanguage);
 #endif

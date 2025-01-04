@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_constants.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_sharing/password_sharing_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_sharing/password_sharing_metrics.h"
@@ -13,7 +14,6 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_container_view.h"
@@ -244,12 +244,23 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
 
 #pragma mark - UITextViewDelegate
 
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (BOOL)textView:(UITextView*)textView
     shouldInteractWithURL:(NSURL*)URL
                   inRange:(NSRange)characterRange
               interaction:(UITextItemInteraction)interaction {
   [self.delegate changePasswordLinkWasTapped];
   return NO;
+}
+#endif
+
+- (UIAction*)textView:(UITextView*)textView
+    primaryActionForTextItem:(UITextItem*)textItem
+               defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
+  __weak __typeof(self) weakSelf = self;
+  return [UIAction actionWithHandler:^(UIAction* action) {
+    [weakSelf.delegate changePasswordLinkWasTapped];
+  }];
 }
 
 #pragma mark - Private

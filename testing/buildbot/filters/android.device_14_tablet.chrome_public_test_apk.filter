@@ -1,32 +1,5 @@
-# crbug.com/350394860
--org.chromium.chrome.browser.customtabs.CustomTabActivityIncognitoTest.ensureAddCustomTopMenuItemHasNoEffect
--org.chromium.chrome.browser.customtabs.CustomTabActivityIncognitoTest.ensureAddRemoteViewsHasNoEffect
--org.chromium.chrome.browser.customtabs.CustomTabActivityRenderTest.testCctToolbarWithCustomCloseButtonAndMaxTopActionItems__HTTP
--org.chromium.chrome.browser.customtabs.CustomTabActivityRenderTest.testCctToolbarWithCustomCloseButtonAndMaxTopActionItems__HTTPS
--org.chromium.chrome.browser.customtabs.CustomTabActivityRenderTest.testCctToolbarWithDefaultCloseButtonAndMaxTopActionItems__HTTP
--org.chromium.chrome.browser.customtabs.CustomTabActivityRenderTest.testCctToolbarWithDefaultCloseButtonAndMaxTopActionItems__HTTPS
--org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testActionButtonBadRatio
--org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testBottomBar
--org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testRecordRetainableSession_WithoutWarmupAndSession
--org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testRemoteViews
--org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testLaunchPartialCustomTabActivity_startActivityForResult
--org.chromium.chrome.browser.customtabs.CustomTabPrivacySandboxDialogTest.adsNoticeCct_AppIDNullShowDialog
-
-# crbug.com/350395970
--org.chromium.chrome.browser.TabsOpenedFromExternalAppTest.testNewTabForUnknownApp
--org.chromium.chrome.browser.TabsOpenedFromExternalAppTest.testNewTabWithNewTabExtra
--org.chromium.chrome.browser.TabsOpenedFromExternalAppTest.testNoNewTabForSameApp
--org.chromium.chrome.browser.TabsOpenedFromExternalAppTest.testNoNewTabForSameAppOnStart
-
 # crbug.com/355057773
 -org.chromium.chrome.browser.keyboard_accessory.PasswordGenerationIntegrationTest.*
-
-# crbug.com/355058571
--org.chromium.chrome.browser.ntp.RecentlyClosedBridgeTest.testOpenRecentlyClosedTab_FromGroupClosure_InCurrentTab
--org.chromium.chrome.browser.ntp.RecentlyClosedBridgeTest.testOpenRecentlyClosedTab_InCurrentTab
-
-# crbug.com/351025215
--org.chromium.chrome.browser.share.share_sheet.ShareSheetTest.nothingFromDefaultRankingAvailable
 
 # crbug.com/350393662
 -org.chromium.chrome.browser.searchwidget.SearchActivityTest.*
@@ -71,7 +44,6 @@
 
 # crbug.com/376527109
 -org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsDialogCoordinatorTest.testIphMessageResizedOnTablet
--org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testSelectionEditorPosition
 -org.chromium.chrome.browser.tasks.tab_management.TabListContainerViewBinderTest.testSetInitialScrollIndex_Grid
 
 # crbug.com/376528174
@@ -107,3 +79,5 @@
 -org.chromium.chrome.browser.contextualsearch.ContextualSearchInstrumentationTest.testResolveGesture
 -org.chromium.chrome.browser.contextualsearch.ContextualSearchSystemTest.testAppMenuSuppressedWhenMaximized
 
+# crbug.com/385183438
+-org.chromium.chrome.browser.privacy_guide.PrivacyGuideFragmentTest.testHistorySyncCard_backButtonInitialSyncStateIsSet

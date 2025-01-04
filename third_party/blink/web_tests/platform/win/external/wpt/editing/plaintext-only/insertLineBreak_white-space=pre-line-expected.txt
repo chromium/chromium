@@ -1,0 +1,39 @@
+This is a testharness.js-based test.
+Found 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] execCommand("insertLineBreak") when <p style="white-space:normal">A[]B</p>
+  assert_equals: expected "<p style=\\"white-space:normal\\">A<br>B</p>" but got "<p style=\\"white-space:normal\\">A\\nB</p>"
+[FAIL] execCommand("insertLineBreak") when <ul><li>AB[]</li></ul>
+  assert_equals: expected "<ul><li>AB\\n<br></li></ul>" but got "<ul><li>AB\\n\\n</li></ul>"
+[FAIL] execCommand("insertLineBreak") when <dl><dt>AB[]</dt></dl>
+  assert_equals: expected "<dl><dt>AB\\n<br></dt></dl>" but got "<dl><dt>AB\\n\\n</dt></dl>"
+[FAIL] execCommand("insertLineBreak") when <dl><dd>AB[]</dd></dl>
+  assert_equals: expected "<dl><dd>AB\\n<br></dd></dl>" but got "<dl><dd>AB\\n\\n</dd></dl>"
+[FAIL] execCommand("insertLineBreak") when <table><tbody><tr><td>AB[]</td></tr></tbody></table>
+  assert_equals: expected "<table><tbody><tr><td>AB\\n<br></td></tr></tbody></table>" but got "<table><tbody><tr><td>AB\\n\\n</td></tr></tbody></table>"
+[FAIL] execCommand("insertLineBreak") when <h1>AB[]</h1>
+  assert_equals: expected "<h1>AB\\n<br></h1>" but got "<h1>AB\\n\\n</h1>"
+[FAIL] Pressing Enter when <p style="white-space:normal">A[]B</p> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<p style=\\"white-space:normal\\">A<br>B</p>" but got "<p style=\\"white-space:normal\\">A\\nB</p>"
+[FAIL] Pressing Shift+Enter when <p style="white-space:normal">A[]B</p> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<p style=\\"white-space:normal\\">A<br>B</p>" but got "<p style=\\"white-space:normal\\">A\\nB</p>"
+[FAIL] Pressing Enter when <ul><li>AB[]</li></ul> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<ul><li>AB\\n<br></li></ul>" but got "<ul><li>AB\\n\\n</li></ul>"
+[FAIL] Pressing Shift+Enter when <ul><li>AB[]</li></ul> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<ul><li>AB\\n<br></li></ul>" but got "<ul><li>AB\\n\\n</li></ul>"
+[FAIL] Pressing Enter when <dl><dt>AB[]</dt></dl> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<dl><dt>AB\\n<br></dt></dl>" but got "<dl><dt>AB\\n\\n</dt></dl>"
+[FAIL] Pressing Shift+Enter when <dl><dt>AB[]</dt></dl> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<dl><dt>AB\\n<br></dt></dl>" but got "<dl><dt>AB\\n\\n</dt></dl>"
+[FAIL] Pressing Enter when <dl><dd>AB[]</dd></dl> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<dl><dd>AB\\n<br></dd></dl>" but got "<dl><dd>AB\\n\\n</dd></dl>"
+[FAIL] Pressing Shift+Enter when <dl><dd>AB[]</dd></dl> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<dl><dd>AB\\n<br></dd></dl>" but got "<dl><dd>AB\\n\\n</dd></dl>"
+[FAIL] Pressing Enter when <table><tbody><tr><td>AB[]</td></tr></tbody></table> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<table><tbody><tr><td>AB\\n<br></td></tr></tbody></table>" but got "<table><tbody><tr><td>AB\\n\\n</td></tr></tbody></table>"
+[FAIL] Pressing Shift+Enter when <table><tbody><tr><td>AB[]</td></tr></tbody></table> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<table><tbody><tr><td>AB\\n<br></td></tr></tbody></table>" but got "<table><tbody><tr><td>AB\\n\\n</td></tr></tbody></table>"
+[FAIL] Pressing Enter when <h1>AB[]</h1> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<h1>AB\\n<br></h1>" but got "<h1>AB\\n\\n</h1>"
+[FAIL] Pressing Shift+Enter when <h1>AB[]</h1> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<h1>AB\\n<br></h1>" but got "<h1>AB\\n\\n</h1>"
+Harness: the test ran to completion.

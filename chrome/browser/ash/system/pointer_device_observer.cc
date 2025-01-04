@@ -91,8 +91,7 @@ void PointerDeviceObserver::OnPointingStickExists(bool exists) {
     observer.PointingStickExists(exists);
 }
 
-PointerDeviceObserver::Observer::~Observer() {
-}
+PointerDeviceObserver::Observer::~Observer() = default;
 
 }  // namespace system
 }  // namespace ash

@@ -9,19 +9,26 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.widget.Button;
 
 import androidx.annotation.IntDef;
 
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.components.browser_ui.util.DimensionCompat;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.ui.LayoutInflaterUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.SimpleModalDialogController;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -88,6 +95,7 @@ public class PermissionDialogController
     private PropertyModel mOverlayDetectedDialogModel;
     private PermissionDialogDelegate mDialogDelegate;
     private ModalDialogManager mModalDialogManager;
+    private ModalDialogManagerObserver mModalDialogManagerObserver;
 
     // As the PermissionRequestManager handles queueing for a tab and only shows prompts for active
     // tabs, we typically only have one request. This class only handles multiple requests at once
@@ -246,8 +254,66 @@ public class PermissionDialogController
                         customView,
                         () -> showFilteredTouchEventDialog(context));
 
+        mModalDialogManagerObserver =
+                new ModalDialogManagerObserver() {
+                    @Override
+                    public void onDialogShown(View dialogView) {
+                        // If the negative button is shown, it will be the last button.
+                        ViewGroup buttonGroup = dialogView.findViewById(R.id.button_group);
+                        if (buttonGroup == null || buttonGroup.getChildCount() == 0) {
+                            return;
+                        }
+                        View lastView = buttonGroup.getChildAt(buttonGroup.getChildCount() - 1);
+                        assert lastView instanceof Button;
+                        Button lastButton = (Button) lastView;
+                        if (lastButton.getVisibility() == View.GONE
+                                || lastButton.getText()
+                                        != mDialogDelegate.getNegativeButtonText()) {
+                            return;
+                        }
+
+                        // When `showDialog` is called and triggered this callback, the button
+                        // visibility is VISIBLE but the button might not been laid out yet. If that
+                        // is the case, we try again after the next layout.
+                        if (lastButton.isLaidOut()) {
+                            recordOutOfScreenNegativeButton(lastButton);
+                            return;
+                        }
+                        lastButton
+                                .getViewTreeObserver()
+                                .addOnGlobalLayoutListener(
+                                        new ViewTreeObserver.OnGlobalLayoutListener() {
+                                            @Override
+                                            public void onGlobalLayout() {
+                                                if (!lastButton.isLaidOut()) {
+                                                    return;
+                                                }
+                                                lastButton
+                                                        .getViewTreeObserver()
+                                                        .removeOnGlobalLayoutListener(this);
+                                                recordOutOfScreenNegativeButton(lastButton);
+                                            }
+                                        });
+                    }
+                };
+        mModalDialogManager.addObserver(mModalDialogManagerObserver);
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);
         mState = State.PROMPT_OPEN;
+    }
+
+    /** Record histogram if a button is rendered out of screen. */
+    private void recordOutOfScreenNegativeButton(Button button) {
+        int[] loc = new int[2];
+        button.getLocationOnScreen(loc);
+        int x = loc[0];
+        int y = loc[1];
+        DimensionCompat dimension =
+                DimensionCompat.create(ContextUtils.activityFromContext(button.getContext()), null);
+
+        boolean outOfScreen =
+                x < 0 || y < 0 || x > dimension.getWindowWidth() || y > dimension.getWindowHeight();
+        RecordHistogram.recordBooleanHistogram(
+                "Permissions.OneTimePermission.Android.NegativeButtonOutOfScreen", outOfScreen);
     }
 
     /**
@@ -346,6 +412,10 @@ public class PermissionDialogController
         // When the dialog is dismissed, the delegate's native pointers are
         // freed, and the next queued dialog (if any) is displayed.
         mDialogModel = null;
+        if (mModalDialogManagerObserver != null) {
+            mModalDialogManager.removeObserver(mModalDialogManagerObserver);
+            mModalDialogManagerObserver = null;
+        }
         mCustomViewModel = null;
         mCustomViewModelChangeProcessor.destroy();
         if (mDialogDelegate == null) {

@@ -10,8 +10,8 @@
 #include <string>
 #include <vector>
 
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/vector_icon_types.h"
 

@@ -16,6 +16,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.R;
 
 /**
@@ -24,6 +25,7 @@ import org.chromium.ui.R;
  *
  */
 @JNINamespace("gfx")
+@NullMarked
 public class ViewConfigurationHelper {
 
     // Fallback constants when resource lookup fails, see

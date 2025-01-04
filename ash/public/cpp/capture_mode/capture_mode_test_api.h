@@ -90,7 +90,7 @@ class ASH_EXPORT CaptureModeTestApi {
   // Sets a callback that will be triggered once the image is captured and
   // encoded as JPEG bytes.
   using OnImageCapturedForSearchCallback =
-      base::RepeatingCallback<void(PerformCaptureType capture_type)>;
+      base::OnceCallback<void(PerformCaptureType capture_type)>;
   void SetOnImageCapturedForSearchCallback(
       OnImageCapturedForSearchCallback callback);
 

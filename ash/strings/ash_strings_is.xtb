@@ -361,6 +361,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2295777434187870477">Kveikt er á hljóðnemanum, ef hnappurinn er valinn verður slökkt á hljóðinntaki.</translation>
 <translation id="2302092602801625023">Þessum reikningi er stjórnað með Family Link</translation>
 <translation id="2303600792989757991">Víxla gluggayfirliti</translation>
+<translation id="2304702218354340897">Ertu viss um að þú viljir slökkva á andlitsstýringu?</translation>
 <translation id="2305738328104302723">Google-verkefnalisti: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: nýlegar skjáupptökur, niðurhal og festar skrár</translation>
 <translation id="2318576281648121272">Í dag <ph name="TODAY_DATE" /></translation>
@@ -387,6 +388,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2370971919968699910">Þetta gæti haft í för með sér gagnakostnað.
 <ph name="DEVICECOUNT" /> tæki tengd.</translation>
 <translation id="2386292613071805067">Velja allt á síðu</translation>
+<translation id="2389423187722941333">Velja/afvelja Gemini</translation>
 <translation id="2392659840443812875">Enginn tiltækur heitur reitur. Gakktu úr skugga um að tækið sé nálægt og að kveikt sé á Bluetooth.</translation>
 <translation id="2397416548179033562">Sýna valmynd Chrome</translation>
 <translation id="240006516586367791">Efnisstýringar</translation>
@@ -394,6 +396,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2402411679569069051">Notaðu fingrafar eða taktu símann þinn úr lás til að taka Chromebook úr lás</translation>
 <translation id="240545663114741956">Ýttu tvisvar á <ph name="ACCELERATOR" /> til að skrá þig út.</translation>
 <translation id="2405664212338326887">Ekki tengt</translation>
+<translation id="2406710117564540804">Kveikja/slökkva á „Ónáðið ekki“</translation>
 <translation id="2408955596600435184">Sláðu inn PIN-númerið þitt</translation>
 <translation id="2412593942846481727">Uppfærsla í boði</translation>
 <translation id="2416438829169535743">Loka yfirliti?</translation>
@@ -899,6 +902,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="4119928251231465047">Of margar tilraunir með PIN-númer</translation>
 <translation id="412298498316631026">gluggi</translation>
 <translation id="4123259114412175274">Til að taka Chromebook úr lás skaltu ganga úr skugga um að kveikt sé á Bluetooth í símanum</translation>
+<translation id="4123868835475902435">Þetta voru grunnatriðin! Frekari upplýsingar og aðstoð er að finna í innbyggða forritinu okkar „Kanna“. Þar finnurðu ábendingar til að hefjast handa, sértilboð og nýjustu <ph name="PRODUCT_NAME" />-eiginleikana.</translation>
 <translation id="4125970834901680537">Ekki hægt að streyma forritum í spjaldtölvustillingu. Reyndu aftur í fartölvustillingu.</translation>
 <translation id="4131973331381812765">Hitastig: <ph name="TEMPERATURE" />°C – núverandi hraði: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="4136724716305260864">Kveikt til sólarupprásar</translation>
@@ -1019,7 +1023,6 @@ Eitt tæki er tengt.</translation>
 <translation id="4481530544597605423">Aftengd tæki</translation>
 <translation id="4485506555414638855">Hafna að setja upp skoðun nýlegra mynda, efnis, tilkynninga og forrita í símanum</translation>
 <translation id="4491109536499578614">Mynd</translation>
-<translation id="4493452241184130939">Þetta voru grunnatriðin! Frekari upplýsingar og aðstoð er að finna í innbyggða forritinu okkar „Kanna“. Þar finnurðu ábendingar til að hefjast handa, forrit sem mælt er með, sértilboð og nýjustu <ph name="PRODUCT_NAME" />-eiginleikana.</translation>
 <translation id="450584155212756404">Forritararás</translation>
 <translation id="4513946894732546136">Ábendingar</translation>
 <translation id="4518404433291145981">Taktu símann þinn fyrst úr lás áður en þú tekur Chromebook úr lás</translation>
@@ -1082,7 +1085,6 @@ Eitt tæki er tengt.</translation>
 <translation id="4708065238214351979">Gera lyklaborðið bjartara</translation>
 <translation id="4708185346211948049"><ph name="DAY_OF_WEEK" /> í næstu viku</translation>
 <translation id="4717575069099566988">USB-C-snúran styður ekki USB4. Afköst tækisins kunna að vera takmörkuð.</translation>
-<translation id="4724328513667182700">6 ráð til að hefjast handa með <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">OFT NOTUÐ</translation>
 <translation id="4731797938093519117">Foreldraaðgangur</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (vinstri)</translation>
@@ -1309,7 +1311,6 @@ Engin tæki eru tengd.</translation>
 <translation id="5409208741270395213">Merkja verkefni sem lokið</translation>
 <translation id="5413656666631274079">Stillingasíða</translation>
 <translation id="5414198321558177633">Endurnýjar prófílalista. Þetta gæti tekið nokkrar mínútur.</translation>
-<translation id="5417965108047245734">Horfðu á stutta kynningu til að læra á grunnatriði <ph name="PRODUCT_NAME" /></translation>
 <translation id="5426063383988017631">Stillingavalmynd lokað</translation>
 <translation id="5428899915242071344">Byrja að velja</translation>
 <translation id="5429993543155113935">Huliðsgluggar eru ekki studdir eins og er</translation>
@@ -1647,6 +1648,7 @@ Engin tæki eru tengd.</translation>
 <translation id="6539852571005954999">Niðurhal skannar <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Sendir út til <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emoji, GIF og fleira</translation>
+<translation id="6543942526104794893">Ertu viss um að þú viljir slökkva á svipbrigðum?</translation>
 <translation id="6545382064335350438">Enn tókst ekki að staðfesta PIN-númer. Reyndu aftur.</translation>
 <translation id="6555373427270923730">Sláðu veffang inn á veffangastikunni og ýttu svo á <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2313,6 +2315,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8855885154700222542">Lykill fyrir allan skjáinn</translation>
 <translation id="8858369206579825206">Persónuverndarstillingar</translation>
 <translation id="8860366331836346216">Bæta við eSIM</translation>
+<translation id="8869149849311827122">Ertu viss um að þú viljir slökkva á músarbendilsstjórnun?</translation>
 <translation id="8870509716567206129">Forritið styður ekki að skjánum sé skipt.</translation>
 <translation id="8873203135446552888">Staðfestu að þú viljir slökkva á innbyggða snertifletinum</translation>
 <translation id="8874184842967597500">Ekki tengt</translation>

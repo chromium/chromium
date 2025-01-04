@@ -16,7 +16,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/types/fixed_array.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/common/zygote/zygote_commands_linux.h"
 #include "content/common/zygote/zygote_communication_linux.h"
 #include "content/common/zygote/zygote_handle_impl_linux.h"

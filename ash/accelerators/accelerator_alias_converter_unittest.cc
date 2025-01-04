@@ -499,7 +499,7 @@ TEST_F(AcceleratorAliasConverterTest, SplitModifierKeyboardCapsLockAlias) {
   std::vector<ui::Accelerator> accelerator_aliases =
       accelerator_alias_converter_.CreateAcceleratorAlias(capslock_accelerator);
   EXPECT_EQ(1u, accelerator_aliases.size());
-  EXPECT_EQ(ui::Accelerator(ui::VKEY_RIGHT_ALT, ui::EF_FUNCTION_DOWN),
+  EXPECT_EQ(ui::Accelerator(ui::VKEY_QUICK_INSERT, ui::EF_FUNCTION_DOWN),
             accelerator_aliases[0]);
   const ui::Accelerator capslock_accelerator_2{ui::VKEY_LWIN, ui::EF_ALT_DOWN};
   std::vector<ui::Accelerator> new_accelerator_aliases =
@@ -560,7 +560,7 @@ TEST_F(AcceleratorAliasConverterTest, CheckCapsLockAlias) {
   EXPECT_EQ(0u, accelerator_aliases.size());
 }
 
-TEST_F(AcceleratorAliasConverterTest, CheckRightAltInList) {
+TEST_F(AcceleratorAliasConverterTest, CheckQuickInsertInList) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kModifierSplit);
 
@@ -573,16 +573,17 @@ TEST_F(AcceleratorAliasConverterTest, CheckRightAltInList) {
   fake_keyboard.sys_path = base::FilePath("path");
   fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, kKbdTopRowLayout1Tag);
 
-  const ui::Accelerator right_alt_accelerator{ui::VKEY_RIGHT_ALT, ui::EF_NONE};
+  const ui::Accelerator quick_insert_accelerator{ui::VKEY_QUICK_INSERT,
+                                                 ui::EF_NONE};
 
   AcceleratorAliasConverter accelerator_alias_converter;
 
-  EXPECT_EQ(std::vector<ui::Accelerator>{right_alt_accelerator},
+  EXPECT_EQ(std::vector<ui::Accelerator>{quick_insert_accelerator},
             accelerator_alias_converter.CreateAcceleratorAlias(
-                right_alt_accelerator));
+                quick_insert_accelerator));
 }
 
-TEST_F(AcceleratorAliasConverterTest, CheckRightAltNotInList) {
+TEST_F(AcceleratorAliasConverterTest, CheckQuickInsertNotInList) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kModifierSplit);
 
@@ -594,12 +595,13 @@ TEST_F(AcceleratorAliasConverterTest, CheckRightAltNotInList) {
   fake_keyboard.sys_path = base::FilePath("path");
   fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, kKbdTopRowLayout1Tag);
 
-  const ui::Accelerator right_alt_accelerator{ui::VKEY_RIGHT_ALT, ui::EF_NONE};
+  const ui::Accelerator quick_insert_accelerator{ui::VKEY_QUICK_INSERT,
+                                                 ui::EF_NONE};
 
   AcceleratorAliasConverter accelerator_alias_converter;
-  EXPECT_TRUE(
-      accelerator_alias_converter.CreateAcceleratorAlias(right_alt_accelerator)
-          .empty());
+  EXPECT_TRUE(accelerator_alias_converter
+                  .CreateAcceleratorAlias(quick_insert_accelerator)
+                  .empty());
 }
 
 TEST_F(AcceleratorAliasConverterTest, MetaFKeyRewritesSuppressed) {

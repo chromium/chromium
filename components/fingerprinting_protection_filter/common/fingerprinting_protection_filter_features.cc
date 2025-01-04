@@ -42,6 +42,19 @@ bool IsFingerprintingProtectionConsoleLoggingEnabled() {
          kEnableConsoleLoggingNonIncognito.Get();
 }
 
+bool IsFingerprintingProtectionRefreshHeuristicExceptionEnabled(
+    bool is_incognito) {
+  return GetFingerprintingProtectionRefreshHeuristicThreshold(is_incognito) > 0;
+}
+
+int GetFingerprintingProtectionRefreshHeuristicThreshold(bool is_incognito) {
+  if (is_incognito) {
+    return kRefreshHeuristicExceptionThresholdIncognito.Get();
+  }
+
+  return kRefreshHeuristicExceptionThresholdNonIncognito.Get();
+}
+
 constexpr base::FeatureParam<subresource_filter::mojom::ActivationLevel>::Option
     kActivationLevelOptions[] = {
         {subresource_filter::mojom::ActivationLevel::kDisabled, "disabled"},
@@ -63,6 +76,14 @@ const base::FeatureParam<bool> kEnableConsoleLoggingNonIncognito{
 const base::FeatureParam<bool> kEnableConsoleLoggingIncognito{
     &kEnableFingerprintingProtectionFilterInIncognito,
     kEnableConsoleLoggingParam, false};
+
+const base::FeatureParam<int> kRefreshHeuristicExceptionThresholdNonIncognito{
+    &kEnableFingerprintingProtectionFilter,
+    kRefreshHeuristicExceptionThresholdParam, 0};
+
+const base::FeatureParam<int> kRefreshHeuristicExceptionThresholdIncognito{
+    &kEnableFingerprintingProtectionFilterInIncognito,
+    kRefreshHeuristicExceptionThresholdParam, 0};
 
 const base::FeatureParam<double> kPerformanceMeasurementRateNonIncognito{
     &kEnableFingerprintingProtectionFilter, kPerformanceMeasurementRateParam,

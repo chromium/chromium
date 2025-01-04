@@ -25,7 +25,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
-import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
@@ -100,25 +99,6 @@ public class AccountsReloadingTest {
         Assert.assertEquals(Collections.emptySet(), mObserver.mAccountsUpdated);
 
         SigninTestUtil.signin(account1);
-
-        CriteriaHelper.pollUiThread(
-                () -> mObserver.mCallCount == 2,
-                "Refresh token should only be updated when user signs in. "
-                        + "Adding account when user is signed out shouldn't trigger refresh "
-                        + "token update.");
-        Assert.assertEquals(
-                new HashSet<>(Arrays.asList(account1, account2)), mObserver.mAccountsUpdated);
-    }
-
-    @Test
-    @MediumTest
-    public void testRefreshTokenUpdateWhenDefaultAccountSignsinWithSync() {
-        final CoreAccountInfo account1 = mSigninTestRule.addAccount(TEST_EMAIL1);
-        final CoreAccountInfo account2 = mSigninTestRule.addAccount(TEST_EMAIL2);
-        CriteriaHelper.pollUiThread(() -> mObserver.mCallCount == 0);
-        Assert.assertEquals(Collections.emptySet(), mObserver.mAccountsUpdated);
-        SigninTestUtil.signinAndEnableSync(
-                account1, SyncTestUtil.getSyncServiceForLastUsedProfile());
 
         CriteriaHelper.pollUiThread(
                 () -> mObserver.mCallCount == 2,

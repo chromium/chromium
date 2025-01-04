@@ -12,7 +12,6 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -297,7 +296,8 @@ bool Transaction::IsTransactionBlockingOtherClients(
   CHECK_EQ(state_, STARTED);
   std::set<PartitionedLockHolder*> blocked_requests =
       bucket_context_->lock_manager().GetBlockedRequests(lock_ids());
-  return std::ranges::any_of(
+  base::TimeTicks start = base::TimeTicks::Now();
+  const bool is_blocking_others = std::ranges::any_of(
       blocked_requests, [&](PartitionedLockHolder* blocked_lock_holder) {
         auto* lock_request_data = static_cast<LockRequestData*>(
             blocked_lock_holder->GetUserData(LockRequestData::kKey));
@@ -316,6 +316,15 @@ bool Transaction::IsTransactionBlockingOtherClients(
         }
         return lock_request_data->client_token != connection_->client_token();
       });
+  base::TimeDelta duration = base::TimeTicks::Now() - start;
+  if (duration > base::Milliseconds(2)) {
+    base::UmaHistogramTimes("IndexedDB.CalculateBlockingStatusLongTimes",
+                            duration);
+    base::UmaHistogramCounts100000(
+        "IndexedDB.CalculateBlockingStatusRequestQueueSize",
+        bucket_context_->lock_manager().RequestsWaitingForMetrics());
+  }
+  return is_blocking_others;
 }
 
 void Transaction::Start() {
@@ -649,53 +658,41 @@ Status Transaction::CommitPhaseTwo() {
   if (!used_) {
     committed = true;
   } else {
-    const base::TimeDelta active_time =
-        base::Time::Now() - diagnostics_.start_time;
-
     s = backing_store_transaction_->CommitPhaseTwo();
 
     // This measurement includes the time it takes to commit to the backing
-    // store (i.e. LevelDB), not just the blobs. It should replace the
-    // `active_time` measurement.
-    const base::TimeDelta active_time2 =
+    // store (i.e. LevelDB), not just the blobs.
+    const base::TimeDelta active_time =
         base::Time::Now() - diagnostics_.start_time;
 
     switch (mode_) {
       case blink::mojom::IDBTransactionMode::ReadOnly:
-        DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
-            "WebCore.IndexedDB.Transaction.ReadOnly.TimeActive", active_time);
         base::UmaHistogramMediumTimes(
-            "WebCore.IndexedDB.Transaction.ReadOnly.TimeActive2", active_time2);
+            "WebCore.IndexedDB.Transaction.ReadOnly.TimeActive2", active_time);
         if (scheduling_priority_at_last_state_change == 0) {
           base::UmaHistogramMediumTimes(
               "WebCore.IndexedDB.Transaction.ReadOnly.TimeActive2.Foreground",
-              active_time2);
+              active_time);
         }
         break;
       case blink::mojom::IDBTransactionMode::ReadWrite:
-        DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
-            "WebCore.IndexedDB.Transaction.ReadWrite.TimeActive", active_time);
         base::UmaHistogramMediumTimes(
-            "WebCore.IndexedDB.Transaction.ReadWrite.TimeActive2",
-            active_time2);
+            "WebCore.IndexedDB.Transaction.ReadWrite.TimeActive2", active_time);
         if (scheduling_priority_at_last_state_change == 0) {
           base::UmaHistogramMediumTimes(
               "WebCore.IndexedDB.Transaction.ReadWrite.TimeActive2.Foreground",
-              active_time2);
+              active_time);
         }
         break;
       case blink::mojom::IDBTransactionMode::VersionChange:
-        DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
-            "WebCore.IndexedDB.Transaction.VersionChange.TimeActive",
-            active_time);
         base::UmaHistogramMediumTimes(
             "WebCore.IndexedDB.Transaction.VersionChange.TimeActive2",
-            active_time2);
+            active_time);
         if (scheduling_priority_at_last_state_change == 0) {
           base::UmaHistogramMediumTimes(
               "WebCore.IndexedDB.Transaction.VersionChange.TimeActive2."
               "Foreground",
-              active_time2);
+              active_time);
         }
         break;
       default:

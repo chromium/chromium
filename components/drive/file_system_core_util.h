@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "components/drive/drive_export.h"
 #include "components/drive/file_errors.h"
 #include "url/gurl.h"
 
@@ -16,40 +17,42 @@ namespace drive {
 namespace util {
 
 // "drive" diretory's local ID is fixed to this value.
-const char kDriveGrandRootLocalId[] = "<drive>";
+inline constexpr char kDriveGrandRootLocalId[] = "<drive>";
 
 // "drive/other" diretory's local ID is fixed to this value.
-const char kDriveOtherDirLocalId[] = "<other>";
+inline constexpr char kDriveOtherDirLocalId[] = "<other>";
 
 // "drive/team_drives" diretory's local ID is fixed to this value.
-const char kDriveTeamDrivesDirLocalId[] = "<team_drives>";
+inline constexpr char kDriveTeamDrivesDirLocalId[] = "<team_drives>";
 
 // "drive/Computers" directory's local ID is fixed to this value.
-constexpr char kDriveComputersDirLocalId[] = "<computers>";
+inline constexpr char kDriveComputersDirLocalId[] = "<computers>";
 
 // "drive/trash" diretory's local ID is fixed to this value.
-const char kDriveTrashDirLocalId[] = "<trash>";
+inline constexpr char kDriveTrashDirLocalId[] = "<trash>";
 
 // The directory names used for the Google Drive file system tree. These names
 // are used in URLs for the file manager, hence user-visible.
-const char kDriveGrandRootDirName[] = "drive";
-const char kDriveMyDriveRootDirName[] = "root";
-const char kDriveOtherDirName[] = "other";
-const char kDriveTeamDrivesDirName[] = "team_drives";
-constexpr char kDriveComputersDirName[] = "Computers";
-const char kDriveTrashDirName[] = "trash";
+inline constexpr char kDriveGrandRootDirName[] = "drive";
+inline constexpr char kDriveMyDriveRootDirName[] = "root";
+inline constexpr char kDriveOtherDirName[] = "other";
+inline constexpr char kDriveTeamDrivesDirName[] = "team_drives";
+inline constexpr char kDriveComputersDirName[] = "Computers";
+inline constexpr char kDriveTrashDirName[] = "trash";
 
 // The team_drive_id value that signifies the users default corpus.
-constexpr char kTeamDriveIdDefaultCorpus[] = "";
+inline constexpr char kTeamDriveIdDefaultCorpus[] = "";
 
 // Returns the path of the top root of the pseudo tree.
+COMPONENTS_DRIVE_EXPORT
 const base::FilePath& GetDriveGrandRootPath();
 
 // Converts a numerical changestamp value to a start page token.
+COMPONENTS_DRIVE_EXPORT
 std::string ConvertChangestampToStartPageToken(int64_t changestamp);
 
 // Helper to destroy objects which needs Destroy() to be called on destruction.
-struct DestroyHelper {
+struct COMPONENTS_DRIVE_EXPORT DestroyHelper {
   template <typename T>
   void operator()(T* object) const {
     if (object)
@@ -58,9 +61,11 @@ struct DestroyHelper {
 };
 
 // Reads URL from a GDoc file.
+COMPONENTS_DRIVE_EXPORT
 GURL ReadUrlFromGDocFile(const base::FilePath& file_path);
 
 // Reads resource ID from a GDoc file.
+COMPONENTS_DRIVE_EXPORT
 std::string ReadResourceIdFromGDocFile(const base::FilePath& file_path);
 
 }  // namespace util

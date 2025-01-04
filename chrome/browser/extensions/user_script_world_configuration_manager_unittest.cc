@@ -88,9 +88,13 @@ TEST_F(UserScriptWorldConfigurationManagerTest,
   // Register two different configurations for user script worlds, one for the
   // default world and another for "world 1".
   configuration_manager()->SetUserScriptWorldInfo(
-      *extension, std::nullopt, "script-src: self", /*enable_messaging=*/false);
+      *extension, mojom::UserScriptWorldInfo::New(extension->id(), std::nullopt,
+                                                  "script-src: self",
+                                                  /*enable_messaging=*/false));
   configuration_manager()->SetUserScriptWorldInfo(
-      *extension, "world 1", "script-src: none", /*enable_messaging=*/false);
+      *extension, mojom::UserScriptWorldInfo::New(extension->id(), "world 1",
+                                                  "script-src: none",
+                                                  /*enable_messaging=*/false));
   EXPECT_EQ(
       2u,
       configuration_manager()->GetAllUserScriptWorlds(extension->id()).size());
@@ -119,15 +123,21 @@ TEST_F(UserScriptWorldConfigurationManagerTest, ClearingConfigurations) {
 
   // Set configurations for a specified world and the default world for each
   // extension.
-  configuration_manager()->SetUserScriptWorldInfo(*extension1, default_world,
-                                                  csp1, kEnableMessaging);
-  configuration_manager()->SetUserScriptWorldInfo(*extension1, other_world,
-                                                  csp2, kEnableMessaging);
+  configuration_manager()->SetUserScriptWorldInfo(
+      *extension1,
+      mojom::UserScriptWorldInfo::New(extension1->id(), default_world, csp1,
+                                      kEnableMessaging));
+  configuration_manager()->SetUserScriptWorldInfo(
+      *extension1, mojom::UserScriptWorldInfo::New(
+                       extension1->id(), other_world, csp2, kEnableMessaging));
 
-  configuration_manager()->SetUserScriptWorldInfo(*extension2, default_world,
-                                                  csp1, kEnableMessaging);
-  configuration_manager()->SetUserScriptWorldInfo(*extension2, other_world,
-                                                  csp2, kEnableMessaging);
+  configuration_manager()->SetUserScriptWorldInfo(
+      *extension2,
+      mojom::UserScriptWorldInfo::New(extension2->id(), default_world, csp1,
+                                      kEnableMessaging));
+  configuration_manager()->SetUserScriptWorldInfo(
+      *extension2, mojom::UserScriptWorldInfo::New(
+                       extension2->id(), other_world, csp2, kEnableMessaging));
 
   // Verify initial state. Each extension should have those two worlds
   // configured.

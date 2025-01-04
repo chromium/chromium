@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/ntp/model/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/tips_notifications/model/utils.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/content_suggestions/new_tab_page_app_interface.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/constants.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
@@ -52,6 +53,7 @@ id<GREYMatcher> OptInScreenMatcher() {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kIOSTipsNotifications);
   config.features_enabled.push_back(kContentPushNotifications);
+  config.features_disabled.push_back(set_up_list::kSetUpListInFirstRun);
   return config;
 }
 
@@ -135,7 +137,7 @@ id<GREYMatcher> OptInScreenMatcher() {
 }
 
 // Tests that Content Notificaion item is not shown without user eligibility
-// fulfilled and feature flag enalbed.
+// fulfilled and feature flag enabled.
 - (void)testContentNotificationItemNotShow {
   [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGreyUI waitForAppToIdle];

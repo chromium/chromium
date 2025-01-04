@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.signin;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -29,7 +28,6 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -51,15 +49,15 @@ public class SyncConsentActivityLauncherImplTest {
     @Before
     public void setUp() {
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
-        ProfileManager.setLastUsedProfileForTesting(mProfile);
-        when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
+        when(IdentityServicesProvider.get().getSigninManager(mProfile))
+                .thenReturn(mSigninManagerMock);
     }
 
     @Test
     public void testLaunchActivityIfAllowedWhenSigninIsAllowed() {
         when(mSigninManagerMock.isSyncOptInAllowed()).thenReturn(true);
         Assert.assertTrue(
-                SyncConsentActivityLauncherImpl.get()
+                SyncConsentActivityLauncherImpl.getForProfile(mProfile)
                         .launchActivityIfAllowed(mContextMock, SigninAccessPoint.SETTINGS));
         verify(mContextMock).startActivity(notNull());
     }
@@ -70,7 +68,7 @@ public class SyncConsentActivityLauncherImplTest {
         when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(false);
         Object toastBeforeCall = ShadowToast.getLatestToast();
         Assert.assertFalse(
-                SyncConsentActivityLauncherImpl.get()
+                SyncConsentActivityLauncherImpl.getForProfile(mProfile)
                         .launchActivityIfAllowed(mContext, SigninAccessPoint.SETTINGS));
         Object toastAfterCall = ShadowToast.getLatestToast();
         Assert.assertEquals(
@@ -87,7 +85,7 @@ public class SyncConsentActivityLauncherImplTest {
         when(mSigninManagerMock.isSyncOptInAllowed()).thenReturn(false);
         when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(true);
         Assert.assertFalse(
-                SyncConsentActivityLauncherImpl.get()
+                SyncConsentActivityLauncherImpl.getForProfile(mProfile)
                         .launchActivityIfAllowed(
                                 mContext, SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO));
         Assert.assertTrue(

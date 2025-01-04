@@ -56,15 +56,18 @@ class ScopedCoMem {
   }
 
   void Reset(T* ptr) {
-    if (mem_ptr_)
+    if (mem_ptr_) {
       CoTaskMemFree(mem_ptr_);
+    }
     mem_ptr_ = ptr;
   }
 
   T* get() const { return mem_ptr_; }
 
  private:
-  // RAW_PTR_EXCLUSION: #addr-of, #union
+  // RAW_PTR_EXCLUSION: This memory is handled by the OS instead
+  // of PartitionAlloc, so there's no point rewriting it to a
+  // raw_ptr
   RAW_PTR_EXCLUSION T* mem_ptr_;
 };
 

@@ -6,7 +6,10 @@
 
 #include <memory>
 
+#include "ash/frame_sink/frame_sink_holder.h"
+#include "ash/frame_sink/test/frame_sink_host_test_base.h"
 #include "ash/frame_sink/test/test_begin_frame_source.h"
+#include "ash/frame_sink/test/test_frame_factory.h"
 #include "ash/frame_sink/test/test_layer_tree_frame_sink.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
@@ -31,81 +34,66 @@ class TestFrameSinkHost : public FrameSinkHost {
       bool auto_refresh,
       const gfx::Size& last_submitted_frame_size,
       float last_submitted_frame_dsf) override {
-    return std::make_unique<viz::CompositorFrame>();
+    return frame_factory_.CreateCompositorFrame(
+        begin_frame_ack, resource_manager, auto_refresh,
+        last_submitted_frame_size, last_submitted_frame_dsf);
   }
 
-  void OnFirstFrameRequested() override { ++on_first_frame_requested_counter_; }
+  TestFrameFactory& frame_factory() { return frame_factory_; }
 
   int on_first_frame_requested_counter() const {
     return on_first_frame_requested_counter_;
   }
 
+  void OnFirstFrameRequested() override { ++on_first_frame_requested_counter_; }
+
  private:
+  TestFrameFactory frame_factory_;
   int on_first_frame_requested_counter_ = 0;
 };
 
-class FrameSinkHostTest : public AshTestBase {
- public:
-  FrameSinkHostTest() = default;
-  FrameSinkHostTest(const FrameSinkHostTest&) = delete;
-  FrameSinkHostTest& operator=(const FrameSinkHostTest&) = delete;
-
-  // AshTestBase:
-  void SetUp() override {
-    AshTestBase::SetUp();
-
-    auto* root_window = ash_test_helper()->GetHost()->window();
-    gfx::Rect screen_bounds = root_window->GetBoundsInScreen();
-
-    widget_ =
-        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                         nullptr, kShellWindowId_OverlayContainer);
-    widget_->SetBounds(screen_bounds);
-    host_window_ = widget_->GetNativeWindow();
-
-    auto layer_tree_frame_sink = std::make_unique<TestLayerTreeFrameSink>();
-    layer_tree_frame_sink_ = layer_tree_frame_sink.get();
-
-    frame_sink_host_ = std::make_unique<TestFrameSinkHost>();
-    frame_sink_host_->InitForTesting(host_window_,
-                                     std::move(layer_tree_frame_sink));
-
-    begin_frame_source_ = std::make_unique<TestBeginFrameSource>();
-    layer_tree_frame_sink_->client()->SetBeginFrameSource(
-        begin_frame_source_.get());
-  }
-
-  void TearDown() override {
-    widget_.reset();
-    AshTestBase::TearDown();
-  }
-
-  void OnBeginFrame() {
-    // Request a frame from FrameSinkHost.
-    begin_frame_source_->GetBeginFrameObserver()->OnBeginFrame(
-        CreateValidBeginFrameArgsForTesting());
-  }
-
- protected:
-  std::unique_ptr<views::Widget> widget_;
-  raw_ptr<aura::Window, DanglingUntriaged> host_window_;
-  std::unique_ptr<TestFrameSinkHost> frame_sink_host_;
-  raw_ptr<TestLayerTreeFrameSink, DanglingUntriaged> layer_tree_frame_sink_;
-  std::unique_ptr<TestBeginFrameSource> begin_frame_source_;
-};
+using FrameSinkHostTest = FrameSinkHostTestBase<TestFrameSinkHost>;
 
 TEST_F(FrameSinkHostTest, OnFirstFrameRequestedShouldOnlyBeCalledOnce) {
-  EXPECT_EQ(frame_sink_host_->on_first_frame_requested_counter(), 0);
+  EXPECT_EQ(frame_sink_host()->on_first_frame_requested_counter(), 0);
 
   // Request the first frame.
   OnBeginFrame();
   // `FrameSinkHost::OnFirstFrameRequested` should be called.
-  EXPECT_EQ(frame_sink_host_->on_first_frame_requested_counter(), 1);
+  EXPECT_EQ(frame_sink_host()->on_first_frame_requested_counter(), 1);
 
   // Request the second frame.
   OnBeginFrame();
   // `FrameSinkHost::OnFirstFrameRequested` should not be called again.
-  EXPECT_EQ(frame_sink_host_->on_first_frame_requested_counter(), 1);
+  EXPECT_EQ(frame_sink_host()->on_first_frame_requested_counter(), 1);
+}
+
+TEST_F(FrameSinkHostTest, OnFrameSinkLost) {
+  frame_sink_host()->frame_factory().SetFrameMetaData(
+      /*frame_size=*/host_window()->bounds().size(), /*dsf=*/1.0f);
+  EXPECT_EQ(frame_sinks_created_count(), 1);
+
+  OnBeginFrame();
+  EXPECT_EQ(frame_sink_host()->on_first_frame_requested_counter(), 1);
+  EXPECT_EQ(layer_tree_frame_sink()->num_of_frames_received(), 0);
+
+  frame_sink_host()->UpdateSurface(host_window()->bounds(),
+                                   host_window()->bounds(),
+                                   /*synchronous_draw=*/true);
+  EXPECT_EQ(layer_tree_frame_sink()->num_of_frames_received(), 1);
+
+  frame_sink_host()
+      ->frame_sink_holder_for_testing()
+      ->DidLoseLayerTreeFrameSink();
+
+  // After losing a frame sink, a new frame sink is created and a new frame is
+  // submitted to update the surface.
+  EXPECT_EQ(frame_sinks_created_count(), 2);
+
+  // We need to wait for first frame request before frame sink can submit a new
+  // frame.
+  OnBeginFrame();
+  EXPECT_EQ(layer_tree_frame_sink()->num_of_frames_received(), 1);
 }
 
 }  // namespace

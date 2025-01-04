@@ -19,8 +19,9 @@ class ThumbnailTracker::ContentsData : public content::WebContentsObserver {
   ContentsData(ThumbnailTracker* parent, content::WebContents* contents)
       : content::WebContentsObserver(contents), parent_(parent) {
     thumbnail_ = parent_->thumbnail_getter_.Run(contents);
-    if (!thumbnail_)
+    if (!thumbnail_) {
       return;
+    }
 
     subscription_ = thumbnail_->Subscribe();
     subscription_->SetCompressedImageCallback(base::BindRepeating(
@@ -31,8 +32,9 @@ class ThumbnailTracker::ContentsData : public content::WebContentsObserver {
   ContentsData& operator=(const ContentsData&) = delete;
 
   void RequestThumbnail() {
-    if (thumbnail_)
+    if (thumbnail_) {
       thumbnail_->RequestCompressedThumbnailData();
+    }
   }
 
   // content::WebContents:

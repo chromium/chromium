@@ -1,0 +1,14 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ui.mojom;
+
+// The color mode used for window styling. This affects window border color
+// on macOS.
+enum ColorMode {
+  // Uses light colors.
+  kLight,
+  // Uses dark colors.
+  kDark,
+};

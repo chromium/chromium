@@ -12,7 +12,7 @@ import androidx.annotation.ColorInt;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.ui.listmenu.ListMenuButtonDelegate;
+import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -103,8 +103,8 @@ public class MessageBannerProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> SECONDARY_ICON_CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
-    public static final WritableObjectPropertyKey<ListMenuButtonDelegate>
-            SECONDARY_MENU_BUTTON_DELEGATE = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<ListMenuDelegate> SECONDARY_MENU_BUTTON_DELEGATE =
+            new WritableObjectPropertyKey<>();
     public static final WritableIntPropertyKey SECONDARY_MENU_MAX_SIZE =
             new WritableIntPropertyKey();
     // Unit: milliseconds.

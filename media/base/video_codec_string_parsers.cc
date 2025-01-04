@@ -35,6 +35,12 @@ bool IsDolbyVisionHEVCCodecId(std::string_view codec_id) {
 
 namespace media {
 
+// TODO(crbug.com/40232176): Remove after rollout.
+// Allow parsing HEVC range extension codec string.
+BASE_FEATURE(kHEVCRextCodecStringParsing,
+             "HEVCRextCodecStringParsing",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 std::optional<VideoType> ParseNewStyleVp9CodecID(std::string_view codec_id) {
   // Initialize optional fields to their defaults.
   VideoType result = {
@@ -681,6 +687,13 @@ std::optional<VideoType> ParseHEVCCodecId(std::string_view codec_id) {
              << "codec id " << codec_id;
     return std::nullopt;
   }
+
+  // ISO/IEC 14496-15, section E.3:
+  // Each of the 6 bytes of the constraint flags from SPS profile-tier-level
+  // syntax, starting from the byte containing the
+  // general_progressive_source_flag, each encoded as a hex number, and the
+  // encoding of each byte is separated by a period; trailing bytes that are
+  // zero may be omitted.
   for (size_t i = 4; i < elem.size(); ++i) {
     unsigned constr_byte = 0;
     if (!base::HexStringToUInt(elem[i], &constr_byte) || constr_byte > 0xFF) {
@@ -690,11 +703,75 @@ std::optional<VideoType> ParseHEVCCodecId(std::string_view codec_id) {
     constraint_flags[i - 4] = constr_byte;
   }
 
+  std::optional<uint8_t> bit_depth;
+  std::optional<VideoChromaSampling> subsampling;
+
+  // HEVC spec 7.3.3:
+  // For range extension, low 4-bits of constraint_flags[0] contain the max
+  // bit constraint flags for 12b/10b/8b, followed by yuv422 chroma sampling
+  // constraint flag; constraint_flags[1] contains yuv420 chroma sampling, and
+  // monochrome constraint flags, which we use to determine the bit depth and
+  // chroma subsampling formats.
+  if (base::FeatureList::IsEnabled(kHEVCRextCodecStringParsing) &&
+      out_profile == HEVCPROFILE_REXT) {
+    uint8_t max_bits_flag = (constraint_flags[0] >> 1) & 0b111;
+    bool max_422_flag = constraint_flags[0] & 0b1;
+    bool max_420_flag = constraint_flags[1] >> 7;
+    bool max_monochrome_flag = (constraint_flags[1] >> 6) & 0b1;
+
+    // Spec Table A.2
+    switch (max_bits_flag) {
+      case 0b000:
+        bit_depth = 16;
+        break;
+      case 0b100:
+        bit_depth = 12;
+        break;
+      case 0b110:
+        bit_depth = 10;
+        break;
+      case 0b111:
+        bit_depth = 8;
+        break;
+      default:
+        DVLOG(4) << __func__ << "Invalid max_bits_flag=" << max_bits_flag;
+        return std::nullopt;
+    }
+
+    if (max_monochrome_flag && (!max_422_flag || !max_420_flag)) {
+      DVLOG(4) << __func__ << "When max_monochrome_flag is set, both "
+               << "max_422_flag and max_420_flag should be set.";
+      return std::nullopt;
+    }
+    if (max_420_flag && !max_422_flag) {
+      DVLOG(4) << __func__ << "When max_420_flag is set, max_422_flag must "
+               << "be set.";
+      return std::nullopt;
+    }
+
+    if (max_monochrome_flag) {
+      subsampling = VideoChromaSampling::k400;
+    } else if (max_420_flag) {
+      subsampling = VideoChromaSampling::k420;
+    } else if (max_422_flag) {
+      subsampling = VideoChromaSampling::k422;
+    } else {
+      subsampling = VideoChromaSampling::k444;
+    }
+  }
+
+  // We only configure bit depth and chroma subsampling for range extension, as
+  // it is only for range extension that we further check platform support on
+  // specific bit depth and chroma subsampling formats for decode/encode; and we
+  // don't support general_profile_idc > 4 with hardware encoders/decoders.
   VideoType result = {
       .codec = VideoCodec::kHEVC,
       .profile = out_profile,
       .level = general_level_idc,
+      .subsampling = subsampling,
+      .bit_depth = bit_depth,
   };
+
   return result;
 }
 // The specification for VVC codec id strings can be found in ISO/IEC 14496-15

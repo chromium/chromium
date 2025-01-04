@@ -35,6 +35,11 @@ constexpr char kNotAConstructorError[] =
     "The shared storage method object constructor cannot be called as a "
     "function";
 
+constexpr char kSharedStorageSetMethodName[] = "SharedStorageSetMethod";
+constexpr char kSharedStorageAppendMethodName[] = "SharedStorageAppendMethod";
+constexpr char kSharedStorageDeleteMethodName[] = "SharedStorageDeleteMethod";
+constexpr char kSharedStorageClearMethodName[] = "SharedStorageClearMethod";
+
 network::mojom::SharedStorageModifierMethodWithOptionsPtr
 CreateMojomSetMethodFromParameters(
     AuctionV8Helper* v8_helper,
@@ -353,16 +358,24 @@ void SharedStorageBindings::AttachToContext(v8::Local<v8::Context> context) {
 
   // These modifier methods are part of the Web Locks integration launch.
   if (base::FeatureList::IsEnabled(blink::features::kSharedStorageWebLocks)) {
+    v8::Local<v8::FunctionTemplate> base_modifier_method_template =
+        v8::FunctionTemplate::New(v8_helper_->isolate());
+    base_modifier_method_template->SetClassName(
+        v8_helper_->CreateStringFromLiteral("SharedStorageModifierMethod"));
+
     v8::Local<v8::FunctionTemplate> set_method_ctor_template =
         v8::FunctionTemplate::New(v8_helper_->isolate(),
                                   &SharedStorageBindings::SetMethodConstructor,
                                   v8_this);
     set_method_ctor_template->InstanceTemplate()->SetInternalFieldCount(1);
+    set_method_ctor_template->Inherit(base_modifier_method_template);
+    set_method_ctor_template->SetClassName(
+        v8_helper_->CreateStringFromLiteral(kSharedStorageSetMethodName));
     v8::Local<v8::Function> set_method_ctor =
         set_method_ctor_template->GetFunction(context).ToLocalChecked();
     context->Global()
         ->Set(context,
-              v8_helper_->CreateStringFromLiteral("SharedStorageSetMethod"),
+              v8_helper_->CreateStringFromLiteral(kSharedStorageSetMethodName),
               set_method_ctor)
         .Check();
 
@@ -371,12 +384,16 @@ void SharedStorageBindings::AttachToContext(v8::Local<v8::Context> context) {
             v8_helper_->isolate(),
             &SharedStorageBindings::AppendMethodConstructor, v8_this);
     append_method_ctor_template->InstanceTemplate()->SetInternalFieldCount(1);
+    append_method_ctor_template->Inherit(base_modifier_method_template);
+    append_method_ctor_template->SetClassName(
+        v8_helper_->CreateStringFromLiteral(kSharedStorageAppendMethodName));
     v8::Local<v8::Function> append_method_ctor =
         append_method_ctor_template->GetFunction(context).ToLocalChecked();
     context->Global()
-        ->Set(context,
-              v8_helper_->CreateStringFromLiteral("SharedStorageAppendMethod"),
-              append_method_ctor)
+        ->Set(
+            context,
+            v8_helper_->CreateStringFromLiteral(kSharedStorageAppendMethodName),
+            append_method_ctor)
         .Check();
 
     v8::Local<v8::FunctionTemplate> delete_method_ctor_template =
@@ -384,12 +401,16 @@ void SharedStorageBindings::AttachToContext(v8::Local<v8::Context> context) {
             v8_helper_->isolate(),
             &SharedStorageBindings::DeleteMethodConstructor, v8_this);
     delete_method_ctor_template->InstanceTemplate()->SetInternalFieldCount(1);
+    delete_method_ctor_template->Inherit(base_modifier_method_template);
+    delete_method_ctor_template->SetClassName(
+        v8_helper_->CreateStringFromLiteral(kSharedStorageDeleteMethodName));
     v8::Local<v8::Function> delete_method_ctor =
         delete_method_ctor_template->GetFunction(context).ToLocalChecked();
     context->Global()
-        ->Set(context,
-              v8_helper_->CreateStringFromLiteral("SharedStorageDeleteMethod"),
-              delete_method_ctor)
+        ->Set(
+            context,
+            v8_helper_->CreateStringFromLiteral(kSharedStorageDeleteMethodName),
+            delete_method_ctor)
         .Check();
 
     v8::Local<v8::FunctionTemplate> clear_method_ctor_template =
@@ -397,12 +418,16 @@ void SharedStorageBindings::AttachToContext(v8::Local<v8::Context> context) {
             v8_helper_->isolate(),
             &SharedStorageBindings::ClearMethodConstructor, v8_this);
     clear_method_ctor_template->InstanceTemplate()->SetInternalFieldCount(1);
+    clear_method_ctor_template->Inherit(base_modifier_method_template);
+    clear_method_ctor_template->SetClassName(
+        v8_helper_->CreateStringFromLiteral(kSharedStorageClearMethodName));
     v8::Local<v8::Function> clear_method_ctor =
         clear_method_ctor_template->GetFunction(context).ToLocalChecked();
     context->Global()
-        ->Set(context,
-              v8_helper_->CreateStringFromLiteral("SharedStorageClearMethod"),
-              clear_method_ctor)
+        ->Set(
+            context,
+            v8_helper_->CreateStringFromLiteral(kSharedStorageClearMethodName),
+            clear_method_ctor)
         .Check();
   }
 }
@@ -502,7 +527,7 @@ void SharedStorageBindings::SetMethodConstructor(
   network::mojom::SharedStorageModifierMethodWithOptionsPtr mojom_method =
       CreateMojomSetMethodFromParameters(
           v8_helper, args, bindings->shared_storage_permissions_policy_allowed_,
-          /*function_name=*/"SharedStorageSetMethod");
+          /*function_name=*/kSharedStorageSetMethodName);
   if (!mojom_method) {
     return;
   }
@@ -529,7 +554,7 @@ void SharedStorageBindings::AppendMethodConstructor(
   network::mojom::SharedStorageModifierMethodWithOptionsPtr mojom_method =
       CreateMojomAppendMethodFromParameters(
           v8_helper, args, bindings->shared_storage_permissions_policy_allowed_,
-          /*function_name=*/"SharedStorageAppendMethod");
+          /*function_name=*/kSharedStorageAppendMethodName);
   if (!mojom_method) {
     return;
   }
@@ -556,7 +581,7 @@ void SharedStorageBindings::DeleteMethodConstructor(
   network::mojom::SharedStorageModifierMethodWithOptionsPtr mojom_method =
       CreateMojomDeleteMethodFromParameters(
           v8_helper, args, bindings->shared_storage_permissions_policy_allowed_,
-          /*function_name=*/"SharedStorageDeleteMethod");
+          /*function_name=*/kSharedStorageDeleteMethodName);
   if (!mojom_method) {
     return;
   }
@@ -583,7 +608,7 @@ void SharedStorageBindings::ClearMethodConstructor(
   network::mojom::SharedStorageModifierMethodWithOptionsPtr mojom_method =
       CreateMojomClearMethodFromParameters(
           v8_helper, args, bindings->shared_storage_permissions_policy_allowed_,
-          /*function_name=*/"SharedStorageClearMethod");
+          /*function_name=*/kSharedStorageClearMethodName);
   if (!mojom_method) {
     return;
   }

@@ -27,6 +27,7 @@
 #include "components/feedback/redaction_tool/redaction_tool.h"
 #include "components/feedback/system_logs/system_logs_fetcher.h"
 #include "components/feedback/system_logs/system_logs_source.h"
+#include "components/variations/net/variations_command_line.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/feedback_private/feedback_private_delegate.h"
@@ -40,7 +41,6 @@
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_manager.h"
-#include "components/variations/net/variations_command_line.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/api/feedback_private/proto/hpke.pb.h"
 #include "net/http/http_status_code.h"
@@ -53,6 +53,11 @@
 #include "third_party/cros_system_api/dbus/debugd/dbus-constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "base/base64.h"
+#include "base/feature_list.h"
+#endif
+
 namespace extensions {
 
 using system_logs::SysLogsFetcherCallback;
@@ -60,6 +65,10 @@ using system_logs::SystemLogsFetcher;
 using system_logs::SystemLogsResponse;
 
 namespace {
+
+#if !BUILDFLAG(IS_CHROMEOS)
+constexpr char kVariationsStateAttachmentName[] = "variations_state.bin";
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 // The paths are relative to "/var/log/" by default, which can be overwritten
@@ -114,6 +123,23 @@ std::string_view GetAttachmentName(debugd::FeedbackBinaryLogType log_type) {
       return "wifi_firmware_dumps.tar.zst";
     case debugd::BLUETOOTH_FIRMWARE_DUMP:
       return "bluetooth_firmware_dumps.tar.zst";
+  }
+}
+#endif
+
+#if !BUILDFLAG(IS_CHROMEOS)
+void IncludeVariations(scoped_refptr<feedback::FeedbackData> feedback_data) {
+  std::vector<uint8_t> ciphertext;
+  auto status =
+      variations::VariationsCommandLine::GetForCurrentProcess().EncryptToString(
+          &ciphertext);
+  base::UmaHistogramEnumeration("Variations.VariationsStateEncryptionStatus",
+                                status);
+  // Variations is at best effort.
+  if (status == variations::VariationsStateEncryptionStatus::kSuccess) {
+    // This is a binary file.
+    feedback_data->AddFile(kVariationsStateAttachmentName,
+                           std::string(ciphertext.begin(), ciphertext.end()));
   }
 }
 #endif
@@ -272,6 +298,12 @@ void FeedbackService::OnSystemInformationFetched(
         feedback_data->AddLog(std::move(itr.first), std::move(itr.second));
     }
   }
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(variations::kFeedbackIncludeVariations)) {
+    IncludeVariations(feedback_data);
+  }
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
   FetchExtraLogs(params, feedback_data);
 #else
@@ -381,7 +413,7 @@ void FeedbackService::OnAllLogsFetched(
                           base::TimeTicks::Now() - params.form_submit_time);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void FeedbackService::EncryptVariations(
     scoped_refptr<feedback::FeedbackData> feedback_data,
     base::RepeatingClosure barrier_closure) {
@@ -630,6 +662,6 @@ void FeedbackService::VariationsFinished(
   std::move(barrier_closure).Run();
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions

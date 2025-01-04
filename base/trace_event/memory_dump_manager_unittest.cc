@@ -124,8 +124,9 @@ class MockMemoryDumpProvider : public MemoryDumpProvider {
             }));
   }
   ~MockMemoryDumpProvider() override {
-    if (enable_mock_destructor)
+    if (enable_mock_destructor) {
       Destructor();
+    }
   }
 
   bool enable_mock_destructor;
@@ -807,8 +808,8 @@ TEST_F(MemoryDumpManagerTest, UnregisterAndDeleteDumpProviderSoonDuringDump) {
   RegisterDumpProvider(mdp.get(), nullptr, kDefaultOptions);
 
   base::PlatformThreadRef thread_ref;
-  auto self_unregister_from_another_thread = [&mdp, &thread_ref](
-      const MemoryDumpArgs&, ProcessMemoryDump*) -> bool {
+  auto self_unregister_from_another_thread =
+      [&mdp, &thread_ref](const MemoryDumpArgs&, ProcessMemoryDump*) -> bool {
     thread_ref = PlatformThread::CurrentRef();
     TestIOThread thread_for_unregistration(TestIOThread::kAutoStart);
     PostTaskAndWait(

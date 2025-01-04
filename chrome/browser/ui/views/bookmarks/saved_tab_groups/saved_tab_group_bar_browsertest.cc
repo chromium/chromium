@@ -44,7 +44,7 @@ class SavedTabGroupBarBrowserTest : public InProcessBrowserTest,
     if (GetParam()) {
       features_.InitWithFeatures(
           {tab_groups::kTabGroupSyncServiceDesktopMigration,
-           tab_groups::kTabGroupsSaveUIUpdate, tab_groups::kTabGroupsSaveV2},
+           tab_groups::kTabGroupsSaveV2},
           {});
     } else {
       features_.InitWithFeatures(

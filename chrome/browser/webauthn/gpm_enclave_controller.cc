@@ -54,6 +54,7 @@
 #include "chrome/browser/webauthn/gpm_user_verification_policy.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/browser/webauthn/proto/enclave_local_state.pb.h"
+#include "chrome/browser/webauthn/webauthn_metrics_util.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/prefs/pref_service.h"
@@ -77,6 +78,7 @@
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_types.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -261,7 +263,7 @@ EnclaveUserVerificationMethod PickEnclaveUserVerificationMethod(
   }
 
   if (!GpmWillDoUserVerification(uv, platform_has_biometrics)) {
-    return EnclaveUserVerificationMethod::kNone;
+    return EnclaveUserVerificationMethod::kUserPresenceOnly;
   }
 
   switch (uv_key_state) {
@@ -588,7 +590,7 @@ void GPMEnclaveController::OnAccountStateTimeOut() {
 }
 
 void GPMEnclaveController::OnAccountStateDownloaded(
-    std::string gaia_id,
+    GaiaId gaia_id,
     std::unique_ptr<trusted_vault::TrustedVaultConnection> unused,
     trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
         result) {
@@ -863,7 +865,7 @@ void GPMEnclaveController::OnEnclaveAccountSetUpComplete() {
   switch (*uv_method_) {
     case EnclaveUserVerificationMethod::kUVKeyWithSystemUI:
     case EnclaveUserVerificationMethod::kDeferredUVKeyWithSystemUI:
-    case EnclaveUserVerificationMethod::kNone:
+    case EnclaveUserVerificationMethod::kUserPresenceOnly:
     case EnclaveUserVerificationMethod::kImplicit:
       model_->DisableUiOrShowLoadingDialog();
       StartTransaction();
@@ -882,6 +884,9 @@ void GPMEnclaveController::OnEnclaveAccountSetUpComplete() {
     case EnclaveUserVerificationMethod::kPIN:
       PromptForPin();
       break;
+
+    case EnclaveUserVerificationMethod::kNoUserVerificationAndNoUserPresence:
+      NOTREACHED();  // Only valid for passkey upgrade requests.
   }
 }
 
@@ -892,13 +897,28 @@ void GPMEnclaveController::SetAccountStateReady() {
 }
 
 void GPMEnclaveController::OnGPMSelected() {
+  // Reset after each GPM selection to ensure correct metric emission.
+  model_->in_onboarding_flow = false;
+
   if (model_->is_off_the_record && !off_the_record_confirmed_) {
     model_->SetStep(Step::kGPMConfirmOffTheRecordCreate);
     return;
   }
 
+  if (account_state_ != AccountState::kLoading &&
+      account_state_ != AccountState::kChecking) {
+    // `kLoading` and `kChecking` will call `OnGPMSelected` again,
+    // therefore we don't emit in these states.
+    RecordGPMMakeCredentialEvent(
+        webauthn::metrics::GPMMakeCredentialEvents::kStarted);
+  }
+
   switch (account_state_) {
     case AccountState::kEmpty:
+      // Set to true to indicate that the user has entered the GPM onboarding
+      // flow. This enables emission of onboarding-specific metrics.
+      model_->in_onboarding_flow = true;
+      RecordOnboardingEvent(webauthn::metrics::OnboardingEvents::kStarted);
       model_->SetStep(Step::kGPMCreatePasskey);
       break;
 
@@ -913,7 +933,7 @@ void GPMEnclaveController::OnGPMSelected() {
       switch (*uv_method_) {
         case EnclaveUserVerificationMethod::kUVKeyWithSystemUI:
         case EnclaveUserVerificationMethod::kDeferredUVKeyWithSystemUI:
-        case EnclaveUserVerificationMethod::kNone:
+        case EnclaveUserVerificationMethod::kUserPresenceOnly:
         case EnclaveUserVerificationMethod::kImplicit:
         case EnclaveUserVerificationMethod::kPIN:
           model_->SetStep(Step::kGPMCreatePasskey);
@@ -926,6 +946,10 @@ void GPMEnclaveController::OnGPMSelected() {
         case EnclaveUserVerificationMethod::kUnsatisfiable:
           model_->SetStep(Step::kGPMError);
           break;
+
+        case EnclaveUserVerificationMethod::
+            kNoUserVerificationAndNoUserPresence:
+          NOTREACHED();  // Only valid for passkey upgrade requests.
       }
       break;
 
@@ -954,6 +978,15 @@ void GPMEnclaveController::OnGPMSelected() {
 void GPMEnclaveController::OnGPMPasskeySelected(
     std::vector<uint8_t> credential_id) {
   selected_cred_id_ = std::move(credential_id);
+
+  if (account_state_ != AccountState::kLoading &&
+      account_state_ != AccountState::kChecking) {
+    // `kLoading` and `kChecking` will call `OnGPMPasskeySelected` again,
+    // therefore we don't emit in these states.
+    RecordGPMGetAssertionEvent(
+        webauthn::metrics::GPMGetAssertionEvents::kStarted);
+  }
+
   switch (account_state_) {
     case AccountState::kReady:
       uv_method_ = PickEnclaveUserVerificationMethod(
@@ -966,7 +999,7 @@ void GPMEnclaveController::OnGPMPasskeySelected(
       switch (*uv_method_) {
         case EnclaveUserVerificationMethod::kUVKeyWithSystemUI:
         case EnclaveUserVerificationMethod::kDeferredUVKeyWithSystemUI:
-        case EnclaveUserVerificationMethod::kNone:
+        case EnclaveUserVerificationMethod::kUserPresenceOnly:
         case EnclaveUserVerificationMethod::kImplicit:
           if (model_->step() != Step::kPasskeyAutofill) {
             // The autofill UI shows its own loading indicator.
@@ -986,6 +1019,10 @@ void GPMEnclaveController::OnGPMPasskeySelected(
         case EnclaveUserVerificationMethod::kUnsatisfiable:
           model_->SetStep(Step::kGPMError);
           break;
+
+        case EnclaveUserVerificationMethod::
+            kNoUserVerificationAndNoUserPresence:
+          NOTREACHED();  // Only valid for passkey upgrade requests.
       }
       break;
 
@@ -1097,7 +1134,7 @@ void GPMEnclaveController::OnGPMCreatePasskey() {
     switch (*uv_method_) {
       case EnclaveUserVerificationMethod::kUVKeyWithSystemUI:
       case EnclaveUserVerificationMethod::kDeferredUVKeyWithSystemUI:
-      case EnclaveUserVerificationMethod::kNone:
+      case EnclaveUserVerificationMethod::kUserPresenceOnly:
       case EnclaveUserVerificationMethod::kImplicit:
         model_->DisableUiOrShowLoadingDialog();
         StartTransaction();
@@ -1111,6 +1148,7 @@ void GPMEnclaveController::OnGPMCreatePasskey() {
         model_->SetStep(Step::kGPMTouchID);
         break;
 
+      case EnclaveUserVerificationMethod::kNoUserVerificationAndNoUserPresence:
       case EnclaveUserVerificationMethod::kUnsatisfiable:
         NOTREACHED();
     }

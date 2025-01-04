@@ -488,6 +488,7 @@
             "pool": "chrome.tests",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "model_validation_tests_light",
@@ -514,6 +515,7 @@
             "pool": "chrome.tests",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "model_validation_tests_light",
@@ -540,6 +542,7 @@
             "pool": "chrome.tests",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "model_validation_tests_light",
@@ -565,6 +568,7 @@
             "pool": "chrome.tests",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ondevice_stability_tests_light",
@@ -590,6 +594,7 @@
             "pool": "chrome.tests",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ondevice_stability_tests_light",
@@ -615,6 +620,7 @@
             "pool": "chrome.tests",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ondevice_stability_tests_light",
@@ -926,38 +932,7 @@
     ]
   },
   "optimization_guide-android-arm64": {
-    "gtest_tests": [
-      {
-        "args": [
-          "--gtest_filter=*OptimizationGuide*:*PageEntities*:*EntityAnnotator*",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
-        ],
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
-            "optimization_guide_components_unittests"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "name": "optimization_guide_components_unittests",
-        "swarming": {
-          "dimensions": {
-            "cpu": null,
-            "device_os": "R",
-            "device_os_type": "userdebug",
-            "device_type": "flame",
-            "os": "Android",
-            "pool": "chrome.tests"
-          },
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "components_unittests",
-        "test_id_prefix": "ninja://components:components_unittests/"
-      }
-    ]
+    "gtest_tests": []
   },
   "optimization_guide-chromeos": {
     "gtest_tests": [
@@ -979,25 +954,6 @@
         },
         "test": "browser_tests",
         "test_id_prefix": "ninja://chrome/test:browser_tests/"
-      },
-      {
-        "args": [
-          "--gtest_filter=*OptimizationGuide*:*PageEntities*:*EntityAnnotator*"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "optimization_guide_components_unittests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Ubuntu-22.04",
-            "pool": "chrome.tests"
-          },
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "components_unittests",
-        "test_id_prefix": "ninja://components:components_unittests/"
       }
     ]
   },
@@ -1224,27 +1180,6 @@
       },
       {
         "args": [
-          "--gtest_filter=*OptimizationGuide*:*PageEntities*:*EntityAnnotator*",
-          "--use-xvfb"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "optimization_guide_components_unittests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "gce": "1",
-            "os": "Ubuntu-22.04",
-            "pool": "chrome.tests.intelligence"
-          },
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "components_unittests",
-        "test_id_prefix": "ninja://components:components_unittests/"
-      },
-      {
-        "args": [
           "--ui-test-action-timeout=30000",
           "-use-xvfb"
         ],
@@ -1394,6 +1329,30 @@
         "test": "ondevice_stability_tests_light",
         "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_stability_tests_light/",
         "variant_id": "NVIDIA GeForce GTX 1660"
+      },
+      {
+        "args": [
+          "--no-xvfb"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "opt_target_coverage_test",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "gce": "1",
+            "os": "Ubuntu-22.04",
+            "pool": "chrome.tests.intelligence"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "opt_target_coverage_test",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:opt_target_coverage_test/"
       }
     ]
   },
@@ -1437,25 +1396,6 @@
         },
         "test": "browser_tests",
         "test_id_prefix": "ninja://chrome/test:browser_tests/"
-      },
-      {
-        "args": [
-          "--gtest_filter=*OptimizationGuide*:*PageEntities*:*EntityAnnotator*"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "optimization_guide_components_unittests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-14",
-            "pool": "chrome.tests"
-          },
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "components_unittests",
-        "test_id_prefix": "ninja://components:components_unittests/"
       },
       {
         "args": [
@@ -1666,25 +1606,6 @@
       },
       {
         "args": [
-          "--gtest_filter=*OptimizationGuide*:*PageEntities*:*EntityAnnotator*"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "optimization_guide_components_unittests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-14",
-            "pool": "chrome.tests"
-          },
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "components_unittests",
-        "test_id_prefix": "ninja://components:components_unittests/"
-      },
-      {
-        "args": [
           "--ui-test-action-timeout=30000"
         ],
         "merge": {
@@ -1867,6 +1788,7 @@
             "pool": "chrome.tests",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chrome_ml_unittests",
@@ -1887,30 +1809,11 @@
             "pool": "chrome.tests",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
         "test_id_prefix": "ninja://chrome/test:browser_tests/"
-      },
-      {
-        "args": [
-          "--gtest_filter=*OptimizationGuide*:*PageEntities*:*EntityAnnotator*"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "optimization_guide_components_unittests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Windows-11",
-            "pool": "chrome.tests",
-            "screen_scaling_percent": "100"
-          },
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "components_unittests",
-        "test_id_prefix": "ninja://components:components_unittests/"
       },
       {
         "args": [
@@ -1927,6 +1830,7 @@
             "pool": "chrome.tests",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "optimization_guide_gpu_unittests",
@@ -1944,6 +1848,7 @@
             "pool": "chrome.tests",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "optimization_guide_unittests",
@@ -1974,6 +1879,7 @@
             "pool": "chrome.tests",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "model_validation_tests",
@@ -1998,6 +1904,7 @@
             "pool": "chrome.tests",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "model_validation_tests_light",
@@ -2025,6 +1932,7 @@
             "pool": "chrome.tests",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ondevice_stability_tests",
@@ -2046,6 +1954,7 @@
             "pool": "chrome.tests",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ondevice_stability_tests_light",
@@ -2093,25 +2002,6 @@
         },
         "test": "browser_tests",
         "test_id_prefix": "ninja://chrome/test:browser_tests/"
-      },
-      {
-        "args": [
-          "--gtest_filter=*OptimizationGuide*:*PageEntities*:*EntityAnnotator*"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "optimization_guide_components_unittests",
-        "swarming": {
-          "dimensions": {
-            "gce": "1",
-            "os": "Windows-10-19045",
-            "pool": "chrome.tests.intelligence"
-          },
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "components_unittests",
-        "test_id_prefix": "ninja://components:components_unittests/"
       },
       {
         "args": [
@@ -2381,25 +2271,6 @@
         },
         "test": "browser_tests",
         "test_id_prefix": "ninja://chrome/test:browser_tests/"
-      },
-      {
-        "args": [
-          "--gtest_filter=*OptimizationGuide*:*PageEntities*:*EntityAnnotator*"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "optimization_guide_components_unittests",
-        "swarming": {
-          "dimensions": {
-            "gce": "1",
-            "os": "Windows-10-19045",
-            "pool": "chrome.tests.intelligence"
-          },
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "components_unittests",
-        "test_id_prefix": "ninja://components:components_unittests/"
       },
       {
         "args": [

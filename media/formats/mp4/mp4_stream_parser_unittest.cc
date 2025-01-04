@@ -321,7 +321,7 @@ TEST_F(MP4StreamParserTest, Flush) {
   scoped_refptr<DecoderBuffer> buffer =
       ReadTestDataFile("bear-1280x720-av_frag.mp4");
   EXPECT_TRUE(
-      AppendAllDataThenParseInPieces(buffer->AsSpan().first(65536u), 512));
+      AppendAllDataThenParseInPieces(buffer->AsSpan().first<65536>(), 512));
   parser_->Flush();
   EXPECT_TRUE(AppendAllDataThenParseInPieces(buffer->AsSpan(), 512));
 }

@@ -138,8 +138,7 @@ SettingsOverridesAPI::SettingsOverridesAPI(content::BrowserContext* context)
   extension_registry_observation_.Observe(ExtensionRegistry::Get(profile_));
 }
 
-SettingsOverridesAPI::~SettingsOverridesAPI() {
-}
+SettingsOverridesAPI::~SettingsOverridesAPI() = default;
 
 BrowserContextKeyedAPIFactory<SettingsOverridesAPI>*
 SettingsOverridesAPI::GetFactoryInstance() {
@@ -256,7 +255,7 @@ void SettingsOverridesAPI::RegisterSearchProvider(
       *settings->search_engine, install_parameter);
   auto turl = std::make_unique<TemplateURL>(
       *data, TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION, extension->id(),
-      prefs->GetLastUpdateTime(extension->id()),
+      GetLastUpdateTime(prefs, extension->id()),
       settings->search_engine->is_default);
 
   url_service_->Add(std::move(turl));

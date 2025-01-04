@@ -51,6 +51,8 @@
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/palette/palette_tray.h"
 #include "ash/system/power/power_button_controller.h"
+#include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
+#include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/calendar_model.h"
@@ -117,6 +119,7 @@
 #include "ui/display/screen.h"
 #include "ui/display/util/display_util.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/message_center/message_center.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_animations.h"
@@ -145,6 +148,9 @@ constexpr char kAssistantErrorToastId[] = "assistant_error";
 // Toast ID for the notification center tray "No notifications" toast.
 constexpr char kNotificationCenterTrayNoNotificationsToastId[] =
     "notification_center_tray_toast_ids.no_notifications";
+// Toast IDs for the Toggle Camera Allowed shortcut.
+constexpr char kToggleCameraToastId[] = "toggle_camera_toast";
+constexpr char kCameraForceDisabledToastId[] = "camera_force_disabled_toast";
 
 // These values are written to logs.  New enum values can be added, but existing
 // enums must never be renumbered or deleted and reused.
@@ -1385,7 +1391,9 @@ void ToggleAssistant() {
       // No need to show toast.
       return;
     case AssistantAllowedState::DISALLOWED_BY_NEW_ENTRY_POINT:
-      // No need to show toast.
+      // Showing new entry point instead.
+      AssistantUiController::Get()->ShowUi(
+          assistant::AssistantEntryPoint::kHotkey);
       return;
     case AssistantAllowedState::ALLOWED:
       // Nothing need to do if allowed.
@@ -1435,6 +1443,54 @@ void ToggleCalendar() {
       calendar_metrics::CalendarEventSource::kKeyboard);
 }
 
+void ToggleCameraAllowed() {
+  if (!features::IsToggleCameraShortcutEnabled()) {
+    return;
+  }
+
+  auto* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  if (!pref_service) {
+    return;
+  }
+
+  PrivacyHubController* privacy_hub_controller =
+      Shell::Get()->privacy_hub_controller();
+  if (!privacy_hub_controller) {
+    return;
+  }
+
+  CameraPrivacySwitchController* camera_privacy_switch_controller =
+      privacy_hub_controller->camera_controller();
+  if (!camera_privacy_switch_controller) {
+    return;
+  }
+
+  // Camera access may be force-disabled in cases where an admin is using Remote
+  // Desktop to control a user's device. This shortcut should respect that
+  // setting and should not enable the camera in such situations.
+  if (camera_privacy_switch_controller->IsCameraAccessForceDisabled()) {
+    ShowToast(kCameraForceDisabledToastId,
+              ToastCatalogName::kCameraForceDisabled,
+              l10n_util::GetStringUTF16(IDS_ASH_CAMERA_ACCESS_DISABLED));
+    return;
+  }
+
+  // Toggle the value of the pref.
+  const bool wasCameraPreviouslyAllowed =
+      pref_service->GetBoolean(prefs::kUserCameraAllowed);
+  const bool isCameraNowAllowed = !wasCameraPreviouslyAllowed;
+  pref_service->SetBoolean(prefs::kUserCameraAllowed, isCameraNowAllowed);
+
+  if (isCameraNowAllowed) {
+    ShowToast(kToggleCameraToastId, ToastCatalogName::kCameraNowAllowed,
+              l10n_util::GetStringUTF16(IDS_ASH_CAMERA_NOW_ALLOWED));
+  } else {
+    ShowToast(kToggleCameraToastId, ToastCatalogName::kCameraNowAllowed,
+              l10n_util::GetStringUTF16(IDS_ASH_CAMERA_NOW_DISALLOWED));
+  }
+}
+
 void ToggleCapsLock() {
   ImeControllerImpl* ime_controller = Shell::Get()->ime_controller();
   ime_controller->SetCapsLockEnabled(!ime_controller->IsCapsLockEnabled());
@@ -1444,6 +1500,14 @@ void ToggleClipboardHistory(bool is_plain_text_paste) {
   DCHECK(Shell::Get()->clipboard_history_controller());
   Shell::Get()->clipboard_history_controller()->ToggleMenuShownByAccelerator(
       is_plain_text_paste);
+}
+
+void ToggleDoNotDisturb() {
+  message_center::MessageCenter* message_center =
+      message_center::MessageCenter::Get();
+  CHECK(message_center);
+  const bool is_quiet_mode = message_center->IsQuietMode();
+  message_center->SetQuietMode(!is_quiet_mode);
 }
 
 void ToggleQuickInsert(base::TimeTicks accelerator_timestamp) {

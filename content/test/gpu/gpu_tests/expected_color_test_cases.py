@@ -190,7 +190,7 @@ def MapsTestCases() -> List[ExpectedColorTestCase]:
               'Pixel 4': 1.1025,
               'Pixel 6': 1.10375,
               # Samsung A13.
-              'SM-A135M': 1.1025,
+              'SM-A137F': 1.1025,
               # Samsung A23.
               'SM-A235M': 1.1025,
               # Samsung S23.

@@ -41,11 +41,11 @@ inline constexpr char kDlcLoadStatusHistogram[] =
 
 // Ensures that |value_| is within the range {min_, max_}. If it isn't, this
 // will print a nice error message.
-#define EXPECT_WITHIN_RANGE(min_, value_, max_)                \
-  ({                                                           \
-    EXPECT_TRUE(min_ <= value_ && value_ <= max_)              \
-        << "Expected " << value_ << " to be within the range " \
-        << "{" << min_ << ", " << max_ << "}.";                \
+#define EXPECT_WITHIN_RANGE(min_, value_, max_)                               \
+  ({                                                                          \
+    EXPECT_TRUE(min_ <= value_ && value_ <= max_)                             \
+        << "Expected " << value_ << " to be within the range " << "{" << min_ \
+        << ", " << max_ << "}.";                                              \
   })
 
 }  // namespace
@@ -83,8 +83,9 @@ class DISABLED_AssistantBrowserTest : public MixinBasedInProcessBrowserTest,
   AssistantTestMixin* tester() { return &tester_; }
 
   void ShowAssistantUi() {
-    if (!tester()->IsVisible())
+    if (!tester()->IsVisible()) {
       tester()->PressAssistantKey();
+    }
 
     // Make sure that the app list bubble finished showing.
     AppListTestApi().WaitForBubbleWindow(
@@ -92,8 +93,9 @@ class DISABLED_AssistantBrowserTest : public MixinBasedInProcessBrowserTest,
   }
 
   void CloseAssistantUi() {
-    if (tester()->IsVisible())
+    if (tester()->IsVisible()) {
       tester()->PressAssistantKey();
+    }
   }
 
   void InitializeBrightness() {

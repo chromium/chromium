@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h"
 
 #include <cstddef>
@@ -120,8 +115,7 @@ class AcceleratorLayoutMetadataTest : public testing::Test {
 // exception list kAshAcceleratorsWithoutLayout.
 TEST_F(AcceleratorLayoutMetadataTest,
        AshAcceleratorsNotInAllowedListShouldHaveLayouts) {
-  for (size_t i = 0; i < ash::kAcceleratorDataLength; ++i) {
-    const ash::AcceleratorData& accel_data = ash::kAcceleratorData[i];
+  for (const ash::AcceleratorData& accel_data : ash::kAcceleratorData) {
     if (ShouldNotHaveLayouts(accel_data.action)) {
       EXPECT_FALSE(HasLayouts(accel_data.action))
           << ToActionName(accel_data.action)
@@ -151,22 +145,18 @@ TEST_F(AcceleratorLayoutMetadataTest,
 //    output.
 TEST_F(AcceleratorLayoutMetadataTest, ModifyAcceleratorShouldUpdateLayout) {
   std::vector<ash::AcceleratorData> ash_accelerators;
-  for (size_t i = 0; i < ash::kAcceleratorDataLength; ++i) {
-    ash_accelerators.emplace_back(ash::kAcceleratorData[i]);
+  for (const ash::AcceleratorData& data : ash::kAcceleratorData) {
+    ash_accelerators.emplace_back(data);
   }
-  for (size_t i = 0; i < ash::kDisableWithNewMappingAcceleratorDataLength;
-       ++i) {
-    ash_accelerators.emplace_back(
-        ash::kDisableWithNewMappingAcceleratorData[i]);
+  for (const ash::AcceleratorData& data :
+       ash::kDisableWithNewMappingAcceleratorData) {
+    ash_accelerators.emplace_back(data);
   }
 
   if (::features::IsImprovedKeyboardShortcutsEnabled()) {
-    for (size_t i = 0;
-         i <
-         ash::kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorDataLength;
-         ++i) {
-      ash_accelerators.emplace_back(
-          ash::kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorData[i]);
+    for (const AcceleratorData& data :
+         ash::kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorData) {
+      ash_accelerators.emplace_back(data);
     }
   }
 

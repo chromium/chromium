@@ -162,6 +162,7 @@ using UseSmallSingleSlotSpans = partition_alloc::internal::base::
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
 void ConfigurePartitions(
     EnableBrp enable_brp,
+    size_t brp_extra_extras_size,
     EnableMemoryTagging enable_memory_tagging,
     partition_alloc::TagViolationReportingMode memory_tagging_reporting_mode,
     BucketDistribution distribution,

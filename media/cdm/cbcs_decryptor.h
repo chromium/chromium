@@ -5,12 +5,9 @@
 #ifndef MEDIA_CDM_CBCS_DECRYPTOR_H_
 #define MEDIA_CDM_CBCS_DECRYPTOR_H_
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/base/media_export.h"
-
-namespace crypto {
-class SymmetricKey;
-}
 
 namespace media {
 class DecoderBuffer;
@@ -48,7 +45,7 @@ class DecoderBuffer;
 // |input|->DecryptConfig. The key size must be 128 bits.
 MEDIA_EXPORT scoped_refptr<DecoderBuffer> DecryptCbcsBuffer(
     const DecoderBuffer& input,
-    const crypto::SymmetricKey& key);
+    base::span<const uint8_t> key);
 
 }  // namespace media
 

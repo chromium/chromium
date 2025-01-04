@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/boca/session_api/session_parser.h"
 
+#include "ash/constants/ash_features.h"
+#include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "google_apis/common/base_requests.h"
 
@@ -87,6 +89,23 @@ namespace ash::boca {
   return ::boca::StudentGroup::CLASSROOM;
 }
 
+::boca::ViewScreenConfig::ViewScreenState ViewScreenStateJsonToProto(
+    const std::string& type) {
+  if (type == "REQUESTED") {
+    return ::boca::ViewScreenConfig::REQUESTED;
+  }
+  if (type == "AVAILABLE") {
+    return ::boca::ViewScreenConfig::AVAILABLE;
+  }
+  if (type == "ACTIVE") {
+    return ::boca::ViewScreenConfig::ACTIVE;
+  }
+  if (type == "INACTIVE") {
+    return ::boca::ViewScreenConfig::INACTIVE;
+  }
+  return ::boca::ViewScreenConfig::UNKNOWN;
+}
+
 void ParseTeacherProtoFromJson(base::Value::Dict* session_dict,
                                ::boca::Session* session) {
   if (session_dict->FindDict(kTeacher)) {
@@ -144,6 +163,10 @@ void ParseRosterProtoFromJson(base::Value::Dict* session_dict,
         } else {
           // By default set to classroom for backward compatibility.
           student_groups->set_group_source(::boca::StudentGroup::CLASSROOM);
+        }
+        if (auto* ptr =
+                students_dict.GetIfDict()->FindString(kStudentGroupId)) {
+          student_groups->set_student_group_id(*ptr);
         }
         if (auto* items = students_dict.GetIfDict()->FindList(kStudents)) {
           for (auto& item : *items) {
@@ -243,44 +266,83 @@ void ParseSessionConfigProtoFromJson(base::Value::Dict* session_dict,
   (*student_groups)[kMainStudentGroupName] = std::move(session_config);
 }
 
-void ParseStudentStatusProtoFromJson(
-    base::Value::Dict* session_dict,
-    ::boca::Session* session) {  // Student status.
+void ParseStudentStatusProtoFromJson(base::Value::Dict* session_dict,
+                                     ::boca::Session* session,
+                                     bool is_producer) {  // Student status.
   auto* student_status_dict = session_dict->FindDict(kStudentStatus);
   if (!student_status_dict) {
     return;
   }
-  // Roster feature is disabled, always fetch the first item.
-  if (session->roster().student_groups().size() > 0) {
-    for (auto group : session->roster().student_groups()) {
-      for (auto id : group.students()) {
-        if (auto* ptr = student_status_dict->FindDict(id.gaia_id())) {
-          auto* student_statuses = session->mutable_student_statuses();
-          ::boca::StudentStatus student_status;
-          // Set the student state
-          if (auto* state_ptr = ptr->FindString(kStudentStatusState)) {
-            student_status.set_state(StudentStatusJsonToProto(*state_ptr));
+  if (is_producer) {
+    // Roster feature is disabled, always fetch the first item.
+    if (session->roster().student_groups().size() > 0) {
+      for (auto group : session->roster().student_groups()) {
+        for (auto id : group.students()) {
+          if (auto* ptr = student_status_dict->FindDict(id.gaia_id())) {
+            auto* student_statuses = session->mutable_student_statuses();
+            ::boca::StudentStatus student_status;
+            ParseIndividualStudentStatusFromJson(&student_status, ptr);
+            (*student_statuses)[id.gaia_id()] = std::move(student_status);
           }
-          // Parse and set the devices
-          if (auto* devices_ptr = ptr->FindDict(kDevices)) {
-            for (auto device_iter : *devices_ptr) {
-              if (auto* device_dict = device_iter.second.GetIfDict()) {
-                auto& device_entry =
-                    (*student_status.mutable_devices())[device_iter.first];
-                // Parse and set ActiveTab from StudentDeviceActivity
-                if (auto* activity = device_dict->FindDict(kActivity)) {
-                  if (auto* active_tab_ptr = activity->FindDict(kActiveTab)) {
-                    device_entry.mutable_activity()
-                        ->mutable_active_tab()
-                        ->set_title(active_tab_ptr->FindString(kTitle)
-                                        ? *active_tab_ptr->FindString(kTitle)
-                                        : "");
-                  }
-                }
+        }
+      }
+    }
+  } else {
+    // The roster entry is empty for students. For students the only student
+    // status returned to them from the server is their own student status.
+    if (student_status_dict->begin() != student_status_dict->end()) {
+      auto status = student_status_dict->begin();
+      if (auto* ptr = student_status_dict->FindDict(status->first)) {
+        auto* student_statuses = session->mutable_student_statuses();
+        ::boca::StudentStatus student_status;
+        ParseIndividualStudentStatusFromJson(&student_status, ptr);
+        (*student_statuses)[status->first] = std::move(student_status);
+      }
+    }
+  }
+}
+
+void ParseIndividualStudentStatusFromJson(
+    ::boca::StudentStatus* student_status,
+    base::Value::Dict* student_status_dict) {
+  // Set the student state
+  if (auto* state_ptr = student_status_dict->FindString(kStudentStatusState)) {
+    student_status->set_state(StudentStatusJsonToProto(*state_ptr));
+  }
+  // Parse and set the devices
+  if (auto* devices_ptr = student_status_dict->FindDict(kDevices)) {
+    for (auto device_iter : *devices_ptr) {
+      if (auto* device_dict = device_iter.second.GetIfDict()) {
+        auto& device_entry =
+            (*student_status->mutable_devices())[device_iter.first];
+        // Parse and set ActiveTab from StudentDeviceActivity
+        if (auto* activity = device_dict->FindDict(kActivity)) {
+          if (auto* active_tab_ptr = activity->FindDict(kActiveTab)) {
+            device_entry.mutable_activity()->mutable_active_tab()->set_title(
+                active_tab_ptr->FindString(kTitle)
+                    ? *active_tab_ptr->FindString(kTitle)
+                    : "");
+          }
+        }
+        if (::ash::features::IsBocaSpotlightEnabled()) {
+          if (auto* view_screen_config_dict =
+                  device_dict->FindDict(kViewScreenConfig)) {
+            auto& view_screen_config =
+                *device_entry.mutable_view_screen_config();
+            if (auto* view_screen_state =
+                    view_screen_config_dict->FindString(kViewScreenState)) {
+              view_screen_config.set_view_screen_state(
+                  ViewScreenStateJsonToProto(*view_screen_state));
+            }
+            if (auto* connection_param = view_screen_config_dict->FindDict(
+                    kSpotlightConnectionParam)) {
+              if (auto* connection_code =
+                      connection_param->FindString(kSpotlightConnectionCode)) {
+                view_screen_config.mutable_connection_param()
+                    ->set_connection_code(*connection_code);
               }
             }
           }
-          (*student_statuses)[id.gaia_id()] = std::move(student_status);
         }
       }
     }
@@ -346,7 +408,7 @@ std::unique_ptr<::boca::Session> GetSessionProtoFromJson(std::string json,
 
   ParseSessionConfigProtoFromJson(session_dict, session.get(), is_producer);
 
-  ParseStudentStatusProtoFromJson(session_dict, session.get());
+  ParseStudentStatusProtoFromJson(session_dict, session.get(), is_producer);
 
   return session;
 }

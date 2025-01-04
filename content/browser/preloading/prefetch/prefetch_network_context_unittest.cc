@@ -102,16 +102,16 @@ TEST_F(PrefetchNetworkContextTest, CreateIsolatedURLLoaderFactory) {
   NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                     kReferringUrl);
 
-  EXPECT_CALL(
-      *test_content_browser_client(),
-      WillCreateURLLoaderFactory(
-          testing::NotNull(), main_rfh(), main_rfh()->GetProcess()->GetID(),
-          ContentBrowserClient::URLLoaderFactoryType::kPrefetch,
-          IsSameOriginWith(kReferringUrl), IsEmptyIsolationInfo(),
-          testing::Eq(std::nullopt),
-          ukm::SourceIdObj::FromInt64(main_rfh()->GetPageUkmSourceId()),
-          testing::_, testing::NotNull(), testing::NotNull(), testing::IsNull(),
-          testing::IsNull(), testing::IsNull()));
+  EXPECT_CALL(*test_content_browser_client(),
+              WillCreateURLLoaderFactory(
+                  testing::NotNull(), main_rfh(),
+                  main_rfh()->GetProcess()->GetDeprecatedID(),
+                  ContentBrowserClient::URLLoaderFactoryType::kPrefetch,
+                  IsSameOriginWith(kReferringUrl), IsEmptyIsolationInfo(),
+                  testing::Eq(std::nullopt),
+                  ukm::SourceIdObj::FromInt64(main_rfh()->GetPageUkmSourceId()),
+                  testing::_, testing::NotNull(), testing::NotNull(),
+                  testing::IsNull(), testing::IsNull(), testing::IsNull()));
 
   std::unique_ptr<PrefetchNetworkContext> prefetch_network_context =
       std::make_unique<PrefetchNetworkContext>(
@@ -130,16 +130,16 @@ TEST_F(PrefetchNetworkContextTest,
   NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                     kReferringUrl);
 
-  EXPECT_CALL(
-      *test_content_browser_client(),
-      WillCreateURLLoaderFactory(
-          testing::NotNull(), main_rfh(), main_rfh()->GetProcess()->GetID(),
-          ContentBrowserClient::URLLoaderFactoryType::kPrefetch,
-          IsSameOriginWith(kReferringUrl), IsEmptyIsolationInfo(),
-          testing::Eq(std::nullopt),
-          ukm::SourceIdObj::FromInt64(main_rfh()->GetPageUkmSourceId()),
-          testing::_, testing::NotNull(), testing::NotNull(), testing::IsNull(),
-          testing::IsNull(), testing::IsNull()));
+  EXPECT_CALL(*test_content_browser_client(),
+              WillCreateURLLoaderFactory(
+                  testing::NotNull(), main_rfh(),
+                  main_rfh()->GetProcess()->GetDeprecatedID(),
+                  ContentBrowserClient::URLLoaderFactoryType::kPrefetch,
+                  IsSameOriginWith(kReferringUrl), IsEmptyIsolationInfo(),
+                  testing::Eq(std::nullopt),
+                  ukm::SourceIdObj::FromInt64(main_rfh()->GetPageUkmSourceId()),
+                  testing::_, testing::NotNull(), testing::NotNull(),
+                  testing::IsNull(), testing::IsNull(), testing::IsNull()));
 
   std::unique_ptr<PrefetchNetworkContext> prefetch_network_context =
       std::make_unique<PrefetchNetworkContext>(

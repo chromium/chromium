@@ -171,31 +171,13 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
               dialog_insets.top(), 0,
               dialog_insets.bottom() - hover_button_vertical_spacing, 0)))
       .AddChildren(
-          // Header.
-          views::Builder<views::FlexLayoutView>()
-              .SetProperty(views::kMarginsKey,
-                           gfx::Insets::VH(0, dialog_insets.left()))
-              .AddChildren(
-                  // Title.
-                  views::Builder<views::Label>()
-                      .SetText(
-                          l10n_util::GetStringUTF16(IDS_EXTENSIONS_MENU_TITLE))
-                      .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                      .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
-                      .SetTextStyle(views::style::STYLE_HEADLINE_4)
-                      .SetEnabledColorId(kColorExtensionsMenuText)
-                      .SetProperty(views::kFlexBehaviorKey,
-                                   stretch_specification),
-                  // Close button.
-                  views::Builder<views::Button>(
-                      views::BubbleFrameView::CreateCloseButton(
-                          base::BindRepeating(
-                              &ExtensionsMenuHandler::CloseBubble,
-                              base::Unretained(menu_handler_))))),
+          CreateHeaderBuilder(
+              /*margins=*/gfx::Insets::VH(0, dialog_insets.left()),
+              stretch_specification),
           CreateSiteSettingsBuilder(
               /*margins=*/gfx::Insets::VH(control_vertical_spacing,
                                           dialog_insets.left()),
-              stretch_specification, menu_handler),
+              stretch_specification),
           // Contents.
           views::Builder<views::ScrollView>()
               .ClipHeightTo(0, kMaxExtensionButtonsHeightDp)
@@ -276,31 +258,9 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                                   gfx::Insets::TLBR(control_vertical_spacing, 0,
                                                     0, 0)))),
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-          // Webstore button.
-          views::Builder<HoverButton>(std::make_unique<HoverButton>(
-              base::BindRepeating(&chrome::ShowWebStore, browser_,
-                                  extension_urls::kExtensionsMenuUtmSource),
-              ui::ImageModel::FromVectorIcon(
-                  vector_icons::kGoogleChromeWebstoreIcon),
-              l10n_util::GetStringUTF16(
-                  IDS_EXTENSIONS_MENU_MAIN_PAGE_DISCOVER_EXTENSIONS))),
+          CreateWebstoreButtonBuilder(),
 #endif
-          // Manage extensions button.
-          views::Builder<HoverButton>(
-              std::make_unique<HoverButton>(
-                  base::BindRepeating(
-                      [](Browser* browser) {
-                        base::RecordAction(base::UserMetricsAction(
-                            "Extensions.Menu."
-                            "ExtensionsSettingsOpened"));
-                        chrome::ShowExtensions(browser);
-                      },
-                      browser_),
-                  ui::ImageModel::FromVectorIcon(
-                      vector_icons::kSettingsChromeRefreshIcon),
-                  l10n_util::GetStringUTF16(IDS_MANAGE_EXTENSIONS)))
-              .SetProperty(views::kElementIdentifierKey,
-                           kExtensionsMenuManageExtensionsElementId))
+          CreateManageButtonBuilder())
       .BuildChildren();
 
   // By default, the button's accessible description is set to the button's
@@ -538,10 +498,31 @@ views::View* ExtensionsMenuMainPageView::GetExtensionRequestEntry(
 }
 
 views::Builder<views::FlexLayoutView>
+ExtensionsMenuMainPageView::CreateHeaderBuilder(
+    gfx::Insets margins,
+    views::FlexSpecification stretch_specification) {
+  return views::Builder<views::FlexLayoutView>()
+      .SetProperty(views::kMarginsKey, margins)
+      .AddChildren(
+          // Title.
+          views::Builder<views::Label>()
+              .SetText(l10n_util::GetStringUTF16(IDS_EXTENSIONS_MENU_TITLE))
+              .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+              .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
+              .SetTextStyle(views::style::STYLE_HEADLINE_4)
+              .SetEnabledColorId(kColorExtensionsMenuText)
+              .SetProperty(views::kFlexBehaviorKey, stretch_specification),
+          // Close button.
+          views::Builder<views::Button>(
+              views::BubbleFrameView::CreateCloseButton(
+                  base::BindRepeating(&ExtensionsMenuHandler::CloseBubble,
+                                      base::Unretained(menu_handler_)))));
+}
+
+views::Builder<views::FlexLayoutView>
 ExtensionsMenuMainPageView::CreateSiteSettingsBuilder(
     gfx::Insets margins,
-    views::FlexSpecification stretch_specification,
-    ExtensionsMenuHandler* menu_handler) {
+    views::FlexSpecification stretch_specification) {
   views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
   int tooltip_bubble_width = layout_provider->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
@@ -576,8 +557,38 @@ ExtensionsMenuMainPageView::CreateSiteSettingsBuilder(
                   site_settings_toggle_,
                   base::BindRepeating(
                       &ExtensionsMenuHandler::OnSiteSettingsToggleButtonPressed,
-                      base::Unretained(menu_handler)))));
+                      base::Unretained(menu_handler_)))));
 }
 
-BEGIN_METADATA(ExtensionsMenuMainPageView)
-END_METADATA
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+views::Builder<HoverButton>
+ExtensionsMenuMainPageView::CreateWebstoreButtonBuilder() {
+  return views::Builder<HoverButton>(std::make_unique<HoverButton>(
+      base::BindRepeating(&chrome::ShowWebStore, browser_,
+                          extension_urls::kExtensionsMenuUtmSource),
+      ui::ImageModel::FromVectorIcon(vector_icons::kGoogleChromeWebstoreIcon),
+      l10n_util::GetStringUTF16(
+          IDS_EXTENSIONS_MENU_MAIN_PAGE_DISCOVER_EXTENSIONS)));
+}
+#endif
+
+views::Builder<HoverButton>
+ExtensionsMenuMainPageView::CreateManageButtonBuilder() {
+  return views::Builder<HoverButton>(
+             std::make_unique<HoverButton>(
+                 base::BindRepeating(
+                     [](Browser* browser) {
+                       base::RecordAction(
+                           base::UserMetricsAction("Extensions.Menu."
+                                                   "ExtensionsSettingsOpened"));
+                       chrome::ShowExtensions(browser);
+                     },
+                     browser_),
+                 ui::ImageModel::FromVectorIcon(
+                     vector_icons::kSettingsChromeRefreshIcon),
+                 l10n_util::GetStringUTF16(IDS_MANAGE_EXTENSIONS)))
+      .SetProperty(views::kElementIdentifierKey,
+                   kExtensionsMenuManageExtensionsElementId);
+}
+
+BEGIN_METADATA(ExtensionsMenuMainPageView) END_METADATA

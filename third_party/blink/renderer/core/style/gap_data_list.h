@@ -12,7 +12,7 @@ namespace blink {
 // These are used to store gap decorations values in the order they are
 // specified. These values can be an auto repeater, an integer repeater, or a
 // single value. The value could be a color, style or width. See:
-// https://kbabbitt.github.io/css-gap-decorations/#color-style-width
+// https://drafts.csswg.org/css-gaps-1/#color-style-width
 template <typename T>
 class CORE_EXPORT GapDataList {
   DISALLOW_NEW();

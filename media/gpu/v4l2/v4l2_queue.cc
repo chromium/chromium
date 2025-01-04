@@ -1372,7 +1372,7 @@ std::optional<V4L2WritableBufferRef> V4L2Queue::GetFreeBuffer(
 }
 
 std::optional<V4L2WritableBufferRef> V4L2Queue::GetFreeBufferForFrame(
-    const gfx::GenericSharedMemoryId& id) {
+    const base::UnguessableToken& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // No buffers allocated at the moment?
@@ -1385,7 +1385,7 @@ std::optional<V4L2WritableBufferRef> V4L2Queue::GetFreeBufferForFrame(
     return std::nullopt;
   }
 
-  if (!id.is_valid()) {
+  if (id.is_empty()) {
     DVLOGF(1) << "Provided identifier was not valid";
     return std::nullopt;
   }

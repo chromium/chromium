@@ -306,10 +306,18 @@ bool FileSystemURL::operator==(const FileSystemURL& that) const {
 }
 
 std::weak_ordering FileSystemURL::operator<=>(const FileSystemURL& that) const {
-  return std::tie(storage_key_, type_, path_, filesystem_id_, is_valid_,
-                  bucket_) <=> std::tie(that.storage_key_, that.type_,
-                                        that.path_, that.filesystem_id_,
-                                        that.is_valid_, that.bucket_);
+  if (is_null_ && that.is_null_) {
+    return std::weak_ordering::equivalent;
+  }
+
+  if (!AreSameStorageKey(*this, that)) {
+    return storage_key_ < that.storage_key_ ? std::weak_ordering::less
+                                            : std::weak_ordering::greater;
+  }
+
+  return std::tie(type_, path_, filesystem_id_, is_valid_, bucket_) <=>
+         std::tie(that.type_, that.path_, that.filesystem_id_, that.is_valid_,
+                  that.bucket_);
 }
 
 bool FileSystemURL::Comparator::operator()(const FileSystemURL& lhs,

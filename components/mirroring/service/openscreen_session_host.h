@@ -176,8 +176,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
       uint32_t shared_memory_count);
 
   // Callback by Audio/VideoSender to indicate encoder status change.
-  void OnEncoderStatusChange(const media::cast::FrameSenderConfig& config,
-                             media::cast::OperationalStatus status);
+  void OnAudioEncoderStatus(const media::cast::FrameSenderConfig& config,
+                            media::cast::OperationalStatus status);
+  void OnVideoEncoderStatus(const media::cast::FrameSenderConfig& config,
+                            media::cast::OperationalStatus status);
 
   // Callback by media::cast::VideoSender to report resource utilization.
   void ProcessFeedback(const media::VideoCaptureFeedback& feedback);
@@ -201,6 +203,18 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   // Playabck sessions. It terminates the streaming session if remoting is not
   // started when it's called.
   void OnRemotingStartTimeout();
+
+  // Manage audio capture. Note the media::AudioInputDevice class does not
+  // support pausing and resuming.
+  void StartCapturingAudio();
+  void StopCapturingAudio();
+
+  // Manage video capture. Note that while pause and resume are supported,
+  // stopping video capture is accomplished by destroying the
+  // `video_capture_client_` instance.
+  void StartCapturingVideo();
+  void PauseCapturingVideo();
+  void ResumeCapturingVideo();
 
   // Called to provide Open Screen with access to this host's network proxy.
   network::mojom::NetworkContext* GetNetworkContext();
@@ -279,6 +293,14 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
 
   // Connects to the video capture host and launches the video capture device.
   std::unique_ptr<VideoCaptureClient> video_capture_client_;
+
+  // True if the video encoder has been initialized. This means that any further
+  // calls to change encoder status to true are reinitializations, for which
+  // capture should be resumed.
+  bool has_video_encoder_been_initialized_ = false;
+
+  // True if video capture has been paused.
+  bool is_video_capture_paused_ = false;
 
   // Manages the clock and thread proxies for the audio sender, video sender,
   // and media remoter.

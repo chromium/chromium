@@ -8,15 +8,12 @@ import static org.junit.Assert.assertEquals;
 
 import android.app.Activity;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.util.List;
@@ -25,17 +22,10 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 public class AdaptiveToolbarFeaturesTest {
     private Activity mActivity;
-    private TestValues mTestValues = new TestValues();
 
     @Before
     public void setUp() {
         mActivity = Robolectric.setupActivity(Activity.class);
-        FeatureList.setTestValues(mTestValues);
-    }
-
-    @After
-    public void tearDown() {
-        FeatureList.setTestValues(null);
     }
 
     @Test

@@ -34,8 +34,9 @@ class BrowserFinderChromeOSTest : public BrowserWithTestWindowTest {
       delete;
 
   ash::MultiUserWindowManager* GetMultiUserWindowManager() {
-    if (!MultiUserWindowManagerHelper::GetInstance())
+    if (!MultiUserWindowManagerHelper::GetInstance()) {
       MultiUserWindowManagerHelper::CreateInstanceForTest(test_account_id1_);
+    }
     return MultiUserWindowManagerHelper::GetWindowManager();
   }
 
@@ -57,7 +58,9 @@ class BrowserFinderChromeOSTest : public BrowserWithTestWindowTest {
   }
 
   // BrowserWithTestWindow:
-  std::string GetDefaultProfileName() override { return kTestAccount1; }
+  std::optional<std::string> GetDefaultProfileName() override {
+    return kTestAccount1;
+  }
 
   TestingProfile* CreateProfile(const std::string& profile_name) override {
     auto* profile = BrowserWithTestWindowTest::CreateProfile(profile_name);

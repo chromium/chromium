@@ -132,8 +132,7 @@ const char kHostFrameKey[] = "host_frame";
                           inFrame:(web::WebFrame*)frame {
   DCHECK_EQ(_webState, webState);
   GURL pageURL = webState->GetLastCommittedURL();
-  if (pageURL.DeprecatedGetOriginAsURL() !=
-      frame->GetSecurityOriginDeprecated()) {
+  if (!frame->GetSecurityOrigin().IsSameOriginWith(pageURL)) {
     // Passwords is only supported on main frame and iframes with the same
     // origin.
     return;
@@ -154,10 +153,9 @@ const char kHostFrameKey[] = "host_frame";
   autofill::FieldDataManager* fieldDataManager =
       autofill::FieldDataManagerFactoryIOS::FromWebFrame(frame);
 
-  std::optional<std::vector<FormData>> formsData =
-      autofill::ExtractFormsData(JSONString, false, std::u16string(), pageURL,
-                                 frame->GetSecurityOriginDeprecated(),
-                                 *fieldDataManager, frame->GetFrameId());
+  std::optional<std::vector<FormData>> formsData = autofill::ExtractFormsData(
+      JSONString, false, std::u16string(), pageURL, frame->GetSecurityOrigin(),
+      *fieldDataManager, frame->GetFrameId());
   if (!formsData) {
     return;
   }
@@ -343,6 +341,8 @@ const char kHostFrameKey[] = "host_frame";
     return;
   }
 
+  url::Origin frame_origin = frame->GetSecurityOrigin();
+
   const scoped_refptr<autofill::FieldDataManager> fieldDataManager =
       autofill::FieldDataManagerFactoryIOS::GetRetainable(frame);
 
@@ -350,8 +350,9 @@ const char kHostFrameKey[] = "host_frame";
   password_manager::PasswordManagerJavaScriptFeature::GetInstance()
       ->ExtractForm(
           frame, formIdentifier, base::BindOnce(^(NSString* jsonString) {
-            if (std::optional<FormData> formData = JsonStringToFormData(
-                    jsonString, *pageURL, *fieldDataManager, frame_id)) {
+            if (std::optional<FormData> formData =
+                    JsonStringToFormData(jsonString, *pageURL, frame_origin,
+                                         *fieldDataManager, frame_id)) {
               completionHandler(YES, *formData);
               return;
             }
@@ -410,10 +411,9 @@ const char kHostFrameKey[] = "host_frame";
   autofill::FieldDataManager* fieldDataManager =
       autofill::FieldDataManagerFactoryIOS::FromWebFrame(frame);
 
-  if (std::optional<FormData> form =
-          autofill::ExtractFormData(dict, false, std::u16string(), *pageURL,
-                                    pageURL->DeprecatedGetOriginAsURL(),
-                                    *fieldDataManager, *host_frame)) {
+  if (std::optional<FormData> form = autofill::ExtractFormData(
+          dict, false, std::u16string(), *pageURL,
+          url::Origin::Create(*pageURL), *fieldDataManager, *host_frame)) {
     [self.delegate formHelper:self didSubmitForm:*form inFrame:frame];
 
     return HandleSubmittedFormStatus::kHandled;

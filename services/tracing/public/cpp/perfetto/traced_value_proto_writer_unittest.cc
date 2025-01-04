@@ -13,6 +13,8 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
+#include "base/trace_event/perfetto_proto_appender.h"
 #include "base/trace_event/traced_value.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/include/perfetto/protozero/scattered_heap_buffer.h"
@@ -107,7 +109,7 @@ bool IsValue(const NestedValue* proto_value, const char* value) {
 
 NestedValue GetProtoFromTracedValue(TracedValue* traced_value) {
   protozero::HeapBuffered<perfetto::protos::pbzero::DebugAnnotation> proto;
-  PerfettoProtoAppender proto_appender(proto.get());
+  base::trace_event::PerfettoProtoAppender proto_appender(proto.get());
   EXPECT_TRUE(traced_value->AppendToProto(&proto_appender));
 
   DebugAnnotation full_proto;

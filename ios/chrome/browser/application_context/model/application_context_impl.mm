@@ -253,6 +253,8 @@ void ApplicationContextImpl::StartTearDown() {
   application_breadcrumbs_logger_.reset();
 
   ios_chrome_io_thread_->NetworkTearDown();
+
+  additional_features_controller_->ShutDown();
 }
 
 void ApplicationContextImpl::PostDestroyThreads() {
@@ -675,7 +677,7 @@ void ApplicationContextImpl::OnAppEnterState(AppState app_state) {
 
         case AppState::kBackgroundFromActive:
           if (history::HistoryService* history_service =
-                  ios::HistoryServiceFactory::GetForProfileIfExists(
+                  ios::HistoryServiceFactory::GetForProfile(
                       profile, ServiceAccessType::EXPLICIT_ACCESS)) {
             history_service->HandleBackgrounding();
           }

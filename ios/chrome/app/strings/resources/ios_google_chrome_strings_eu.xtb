@@ -3,7 +3,7 @@
 <translationbundle lang="eu">
 <translation id="1066101356081285416">Chrome-k jarraipen-zenbakiak hautemango ditu bisitatzen dituzun webguneetan, eta paketeei buruzko informazio eguneratua erakutsiko dizu Fitxa berria orrian. Paketearen jarraipen-zenbakia eta webgunearen izena Google-ri bidaliko zaizkio eginbide hau eskaintzeko eta Google-ren erosketa-eginbideak denentzat hobetzeko. Hori aldatzeko, joan <ph name="BEGIN_LINK" />paketeen jarraipenaren ezarpenetara<ph name="END_LINK" />.</translation>
 <translation id="1086486568852410168">Bilatu Google Lens bidez</translation>
-<translation id="1143896152279775643"><ph name="EMAIL" /> kontuaren pasahitza Google-ren Pasahitz-kudeatzailea zerbitzuan gordeko da.</translation>
+<translation id="1143896152279775643"><ph name="EMAIL" /> kontuko pasahitza Google-ren Pasahitz-kudeatzailea zerbitzuan gordeko da.</translation>
 <translation id="1146503048444965320">Ireki fitxa berri bat Chrome-n</translation>
 <translation id="1166460004393506534">Ezabatu Chrome-ko arakatze-datuak</translation>
 <translation id="1179527450541388808">Sartu Chrome-n bizkorrago iPad-eko orri nagusiko zintaren bidez.</translation>
@@ -221,6 +221,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 Chrome-ren erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikusteko, joan <ph name="BEGIN_LINK" />Google-ren zerbitzuak<ph name="END_LINK" /> atalera.</translation>
 <translation id="6922332667202044570">Ezabatu Chrome-ko arakatze-datuak.</translation>
 <translation id="6924922227983877439">Ireki estekak Chrome-n modu lehenetsian</translation>
+<translation id="6931601805528922498">Saioa hasiz gero, zure kontua Chrome-n gehitzen da laneko kontuetarako arakatzeko.</translation>
 <translation id="6975725306479268850">Aukeratu Chrome betetze automatikorako</translation>
 <translation id="7056826488869329999">Chrome-ren segurtasun-egiaztapena irekitzen eta exekutatzen du.</translation>
 <translation id="7061455974939528301">Eduki sakatuta Chrome-ren ikonoa eta sakatu "Editatu orri nagusia"</translation>

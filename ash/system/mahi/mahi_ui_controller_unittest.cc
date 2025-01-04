@@ -11,6 +11,7 @@
 
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/session/session_controller_impl.h"
+#include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/mahi_panel_view.h"
@@ -55,27 +56,6 @@ class MockView : public views::View {
  public:
   MOCK_METHOD(void, VisibilityChanged, (views::View*, bool), (override));
 };
-
-// Utilities -------------------------------------------------------------------
-
-void ChangeLockState(bool locked) {
-  SessionInfo info;
-  info.state = locked ? session_manager::SessionState::LOCKED
-                      : session_manager::SessionState::ACTIVE;
-  Shell::Get()->session_controller()->SetSessionInfo(info);
-}
-
-void UpdateSession(uint32_t session_id, const std::string& email) {
-  UserSession session;
-  session.session_id = session_id;
-  session.user_info.type = user_manager::UserType::kRegular;
-  session.user_info.account_id = AccountId::FromUserEmail(email);
-  session.user_info.display_name = email;
-  session.user_info.display_email = email;
-  session.user_info.is_new_profile = false;
-
-  SessionController::Get()->UpdateUserSession(session);
-}
 
 }  // namespace
 
@@ -581,10 +561,10 @@ class MahiUiControllerWithSessionTest : public AshTestBase {
   }
 
   void TearDown() override {
+    AshTestBase::TearDown();
     delegate_.reset();
     ui_controller_.reset();
     scoped_setter_.reset();
-    AshTestBase::TearDown();
   }
 
   NiceMock<MockView> delegate_view_;
@@ -612,14 +592,14 @@ TEST_F(MahiUiControllerWithSessionTest, TimesPanelOpenedPerSessionMetric) {
   histogram_tester.ExpectBucketCount(
       mahi_constants::kTimesMahiPanelOpenedPerSessionHistogramName,
       /*sample=*/kTimesPanelWillOpen, /*expected_count=*/0);
-  ChangeLockState(/*locked=*/true);
+  GetSessionControllerClient()->LockScreen();
   histogram_tester.ExpectBucketCount(
       mahi_constants::kTimesMahiPanelOpenedPerSessionHistogramName,
       /*sample=*/kTimesPanelWillOpen, /*expected_count=*/1);
 
   // Test that the metric does not get recorded if the panel was never opened.
-  ChangeLockState(/*locked=*/false);
-  ChangeLockState(/*locked=*/true);
+  GetSessionControllerClient()->UnlockScreen();
+  GetSessionControllerClient()->LockScreen();
   histogram_tester.ExpectBucketCount(
       mahi_constants::kTimesMahiPanelOpenedPerSessionHistogramName,
       /*sample=*/0, /*expected_count=*/0);
@@ -694,24 +674,35 @@ TEST_F(MahiUiControllerWithSessionTest, PanelCloseOnSessionStateChanged) {
   }
 }
 
-TEST_F(MahiUiControllerWithSessionTest, PanelCloseOnActiveUserChanged) {
+class MahiUiControllerWithNoSessionTest
+    : public MahiUiControllerWithSessionTest {
+ public:
+  MahiUiControllerWithNoSessionTest() { set_start_session(false); }
+
+  MahiUiControllerWithNoSessionTest(const MahiUiControllerWithNoSessionTest&) =
+      delete;
+  MahiUiControllerWithNoSessionTest& operator=(
+      const MahiUiControllerWithNoSessionTest&) = delete;
+
+  ~MahiUiControllerWithNoSessionTest() override = default;
+};
+
+TEST_F(MahiUiControllerWithNoSessionTest, PanelCloseOnActiveUserChanged) {
   // Set up two users, user1 is the active user.
-  UpdateSession(1u, "user1@test.com");
-  UpdateSession(2u, "user2@test.com");
-  std::vector<uint32_t> order = {1u, 2u};
-  SessionController::Get()->SetUserSessionOrder(order);
-  base::test::RunUntil(
-      [&] { return Shell::Get()->session_controller()->IsUserPrimary(); });
+  AccountId account_id1 = AccountId::FromUserEmail("user1@test.com");
+  SimulateUserLogin(account_id1);
+  AccountId account_id2 = AccountId::FromUserEmail("user2@test.com");
+  SimulateUserLogin(account_id2);
+  SwitchActiveUser(account_id1);
+  ASSERT_TRUE(Shell::Get()->session_controller()->IsUserPrimary());
 
   ui_controller()->OpenMahiPanel(GetPrimaryDisplay().id(), gfx::Rect(),
                                  /*elucidation_in_use=*/false);
   EXPECT_TRUE(ui_controller()->IsMahiPanelOpen());
 
   // Make user2 the active user, the panel should be closed.
-  order = {2u, 1u};
-  SessionController::Get()->SetUserSessionOrder(order);
-  base::test::RunUntil(
-      [&] { return !Shell::Get()->session_controller()->IsUserPrimary(); });
+  SwitchActiveUser(account_id2);
+  ASSERT_FALSE(Shell::Get()->session_controller()->IsUserPrimary());
   EXPECT_FALSE(ui_controller()->IsMahiPanelOpen());
 }
 

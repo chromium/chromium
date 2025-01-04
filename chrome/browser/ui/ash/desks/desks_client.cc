@@ -93,8 +93,9 @@ std::set<int> GetWindowIDSetFromTemplate(
       desk_template->desk_restore_data();
 
   for (const auto& app : desk_restore_data->app_id_to_launch_list()) {
-    for (const auto& window : app.second)
+    for (const auto& window : app.second) {
       window_ids.insert(window.first);
+    }
   }
 
   return window_ids;
@@ -291,8 +292,9 @@ DesksClient* DesksClient::Get() {
 void DesksClient::OnActiveUserSessionChanged(const AccountId& account_id) {
   Profile* profile =
       ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
-  if (profile == active_profile_ || !IsSupportedProfile(profile))
+  if (profile == active_profile_ || !IsSupportedProfile(profile)) {
     return;
+  }
 
   active_profile_ = profile;
   DCHECK(active_profile_);
@@ -476,8 +478,9 @@ DesksClient::GetAllDesks() {
     return base::unexpected(DeskActionError::kUnknownError);
   }
   std::vector<const ash::Desk*> desks;
-  for (const auto& desk : desks_controller_->desks())
+  for (const auto& desk : desks_controller_->desks()) {
     desks.push_back(desk.get());
+  }
   return std::move(desks);
 }
 
@@ -491,10 +494,12 @@ void DesksClient::LaunchAppsFromTemplate(
 
   app_restore::RestoreData* restore_data =
       desk_template->mutable_desk_restore_data();
-  if (!restore_data)
+  if (!restore_data) {
     return;
-  if (restore_data->app_id_to_launch_list().empty())
+  }
+  if (restore_data->app_id_to_launch_list().empty()) {
     return;
+  }
 
   // Make window IDs of the template unique. This is a requirement for launching
   // templates concurrently since the contained window IDs are used as lookup
@@ -554,37 +559,43 @@ void DesksClient::SetPolicyPreconfiguredTemplate(
     std::unique_ptr<std::string> data) {
   Profile* profile =
       ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
-  if (!data || !IsSupportedProfile(profile))
+  if (!data || !IsSupportedProfile(profile)) {
     return;
+  }
 
   std::string& in_map_data = preconfigured_desk_templates_json_[account_id];
-  if (in_map_data == *data)
+  if (in_map_data == *data) {
     return;
+  }
 
   in_map_data = *data;
 
-  if (profile && profile == active_profile_)
+  if (profile && profile == active_profile_) {
     GetDeskModel()->SetPolicyDeskTemplates(*data);
+  }
 }
 
 void DesksClient::RemovePolicyPreconfiguredTemplate(
     const AccountId& account_id) {
   Profile* profile =
       ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
-  if (!IsSupportedProfile(profile))
+  if (!IsSupportedProfile(profile)) {
     return;
+  }
 
   DCHECK(profile);
 
   preconfigured_desk_templates_json_.erase(account_id);
 
-  if (profile == active_profile_)
+  if (profile == active_profile_) {
     GetDeskModel()->RemovePolicyDeskTemplates();
+  }
 }
 
 void DesksClient::NotifyMovedSingleInstanceApp(int32_t window_id) {
-  for (auto& id_to_tracker : template_ids_to_launch_performance_trackers_)
+  for (auto& id_to_tracker : template_ids_to_launch_performance_trackers_) {
     id_to_tracker.second->OnMovedSingleInstanceApp(window_id);
+  }
 }
 
 std::optional<DesksClient::DeskActionError>
@@ -723,9 +734,10 @@ void DesksClient::OnCaptureActiveDeskAndSaveTemplate(
 
     // If this is the only desk, we have to create a new desk before we can
     // remove the current one.
-    if (!desks_controller_->CanRemoveDesks())
+    if (!desks_controller_->CanRemoveDesks()) {
       desks_controller_->NewDesk(
           ash::DesksCreationRemovalSource::kEnsureDefaultDesk);
+    }
 
     // Remove the current desk, this will be done without animation.
     desks_controller_->RemoveDesk(
@@ -799,8 +811,9 @@ void DesksClient::RemoveLaunchPerformanceTracker(
 aura::Window* DesksClient::GetWindowByBrowserSessionId(
     SessionID browser_session_id) {
   for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->session_id() == browser_session_id)
+    if (browser->session_id() == browser_session_id) {
       return browser->window()->GetNativeWindow();
+    }
   }
   return nullptr;
 }

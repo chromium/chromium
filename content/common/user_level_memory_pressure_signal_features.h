@@ -15,8 +15,6 @@
 namespace content::features {
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kUserLevelMemoryPressureSignalOn3GbDevices);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kUserLevelMemoryPressureSignalOn4GbDevices);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kUserLevelMemoryPressureSignalOn6GbDevices);
 
 // Helper functions for UserLevelMemoryPressureSignal features.
 CONTENT_EXPORT bool IsUserLevelMemoryPressureSignalEnabledOn3GbDevices();

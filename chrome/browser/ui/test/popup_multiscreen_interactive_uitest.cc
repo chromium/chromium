@@ -63,16 +63,14 @@ class MAYBE_PopupMultiScreenTest : public PopupTestBase,
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(NavigateToURL(web_contents,
-                embedded_test_server()->GetURL("/simple.html")));
+                              embedded_test_server()->GetURL("/simple.html")));
     EXPECT_TRUE(WaitForRenderFrameReady(web_contents->GetPrimaryMainFrame()));
     if (ShouldTestWindowManagement()) {
       SetUpWindowManagement(browser());
     }
   }
 
-  void TearDownOnMainThread() override {
-    virtual_display_util_.reset();
-  }
+  void TearDownOnMainThread() override { virtual_display_util_.reset(); }
 
  protected:
   bool ShouldTestWindowManagement() { return GetParam(); }
@@ -190,7 +188,8 @@ IN_PROC_BROWSER_TEST_P(MAYBE_PopupMultiScreenTest,
             target_display.work_area().y());
         {
           SCOPED_TRACE(
-              testing::Message() << "\n"
+              testing::Message()
+              << "\n"
               << "script: " << open_script << " " << move_script << "\n"
               << "opener: " << browser()->window()->GetBounds().ToString()
               << " popup: " << popup->window()->GetBounds().ToString());

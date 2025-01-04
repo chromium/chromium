@@ -212,7 +212,7 @@ class SubresourceExternalFileURLLoaderFactoryTest
     : public ExternalFileURLLoaderFactoryTest {
  protected:
   int render_process_host_id() override {
-    return render_process_host()->GetID();
+    return render_process_host()->GetDeprecatedID();
   }
 };
 

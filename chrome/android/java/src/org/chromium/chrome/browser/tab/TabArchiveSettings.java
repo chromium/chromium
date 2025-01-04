@@ -144,6 +144,20 @@ public class TabArchiveSettings {
         mPrefsManager.writeBoolean(ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_ENABLED, enabled);
     }
 
+    /** Returns whether archiving of duplicate tabs is enabled. */
+    public boolean isArchiveDuplicateTabsEnabled() {
+        return getArchiveEnabled()
+                && mPrefsManager.readBoolean(
+                        ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVE_DUPLICATE_TABS_ENABLED,
+                        ChromeFeatureList.sAndroidTabDeclutterArchiveDuplicateTabs.isEnabled());
+    }
+
+    /** Sets whether archiving duplicate tabs is enabled in settings. */
+    public void setArchiveDuplicateTabsEnabled(boolean enabled) {
+        mPrefsManager.writeBoolean(
+                ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVE_DUPLICATE_TABS_ENABLED, enabled);
+    }
+
     /**
      * Returns the time delta used to determine if an archived tab is eligible for auto deletion.
      */

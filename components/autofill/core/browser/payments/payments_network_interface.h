@@ -226,6 +226,12 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
                               std::u16string context_token,
                               std::unique_ptr<base::Value::Dict>)> callback);
 
+  // Get the BNPL VCN details.
+  virtual void GetBnplPaymentInstrumentForFetchingVcn(
+      GetBnplPaymentInstrumentForFetchingVcnRequestDetails request_details,
+      base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
+                              const BnplFetchVcnResponseDetails&)> callback);
+
  private:
   friend class PaymentsNetworkInterfaceTest;
 };

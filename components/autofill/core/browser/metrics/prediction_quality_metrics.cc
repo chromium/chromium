@@ -11,11 +11,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
-#include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/label_source_util.h"
 
@@ -135,7 +135,7 @@ int GetFieldTypeGroupPredictionQualityMetric(FieldType field_type,
       group = GROUP_IBAN;
       break;
 
-    case FieldTypeGroup::kPredictionImprovements:
+    case FieldTypeGroup::kAutofillAi:
       group = GROUP_PREDICTION_IMPROVEMENTS;
       break;
 
@@ -292,6 +292,8 @@ int GetFieldTypeGroupPredictionQualityMetric(FieldType field_type,
         case SINGLE_USERNAME:
         case NOT_USERNAME:
         case ONE_TIME_CODE:
+        case NAME_LAST_PREFIX:
+        case NAME_LAST_CORE:
         case NAME_LAST_FIRST:
         case NAME_LAST_CONJUNCTION:
         case NAME_LAST_SECOND:

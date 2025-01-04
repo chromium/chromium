@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/css/counter_style_map.h"
 #include "third_party/blink/renderer/core/css/css_axis_value.h"
 #include "third_party/blink/renderer/core/css/css_basic_shape_values.h"
@@ -51,6 +52,7 @@
 #include "third_party/blink/renderer/core/css/css_scoped_keyword_value.h"
 #include "third_party/blink/renderer/core/css/css_scroll_value.h"
 #include "third_party/blink/renderer/core/css/css_shadow_value.h"
+#include "third_party/blink/renderer/core/css/css_shape_value.h"
 #include "third_party/blink/renderer/core/css/css_string_value.h"
 #include "third_party/blink/renderer/core/css/css_timing_function_value.h"
 #include "third_party/blink/renderer/core/css/css_unset_value.h"
@@ -2745,6 +2747,18 @@ static CSSValue* ConsumeDeprecatedRadialGradient(
              : nullptr;
 }
 
+static void MaybeLogUnsupportedGradientInterpolationSpaceWarning(
+    const CSSParserContext& context,
+    Color::ColorSpace color_space) {
+  if (const auto* document = context.GetDocument()) {
+    document->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kRecommendation,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        Color::ColorSpaceToString(color_space) +
+            " is not yet supported as a gradient interpolation space."));
+  }
+}
+
 static CSSValue* ConsumeRadialGradient(CSSParserTokenStream& stream,
                                        const CSSParserContext& context,
                                        cssvalue::CSSGradientRepeat repeating) {
@@ -2854,6 +2868,11 @@ static CSSValue* ConsumeRadialGradient(CSSParserTokenStream& stream,
           vertical_size, repeating, cssvalue::kCSSRadialGradient);
 
   if (has_color_space) {
+    if (Color::IsUndefinedColorSpaceForGradientInterpolation(color_space)) {
+      MaybeLogUnsupportedGradientInterpolationSpaceWarning(context,
+                                                           color_space);
+      return nullptr;
+    }
     result->SetColorInterpolationSpace(color_space, hue_interpolation_method);
     context.Count(WebFeature::kCSSColorGradientColorSpace);
   }
@@ -2922,6 +2941,11 @@ static CSSValue* ConsumeLinearGradient(
           end_x, end_y, nullptr, nullptr, angle, repeating, gradient_type);
 
   if (has_color_space) {
+    if (Color::IsUndefinedColorSpaceForGradientInterpolation(color_space)) {
+      MaybeLogUnsupportedGradientInterpolationSpaceWarning(context,
+                                                           color_space);
+      return nullptr;
+    }
     result->SetColorInterpolationSpace(color_space, hue_interpolation_method);
     context.Count(WebFeature::kCSSColorGradientColorSpace);
   }
@@ -2974,6 +2998,11 @@ static CSSValue* ConsumeConicGradient(CSSParserTokenStream& stream,
       center_x, center_y, from_angle, repeating);
 
   if (has_color_space) {
+    if (Color::IsUndefinedColorSpaceForGradientInterpolation(color_space)) {
+      MaybeLogUnsupportedGradientInterpolationSpaceWarning(context,
+                                                           color_space);
+      return nullptr;
+    }
     result->SetColorInterpolationSpace(color_space, hue_interpolation_method);
     context.Count(WebFeature::kCSSColorGradientColorSpace);
   }
@@ -4988,7 +5017,12 @@ CSSValue* ConsumeGapDecorationPropertyValue(
     case CSSGapDecorationPropertyType::kWidth:
       return ConsumeLineWidth(stream, context,
                               css_parsing_utils::UnitlessQuirk::kForbid);
-      // TODO(crbug.com/357648037): Add kStyle when implemented.
+    case CSSGapDecorationPropertyType::kStyle: {
+      if (CSSParserFastPaths::IsBorderStyleValue(stream.Peek().Id())) {
+        return ConsumeIdent(stream);
+      }
+      return nullptr;
+    }
   }
 }
 
@@ -6664,6 +6698,112 @@ CSSValue* ConsumePathFunction(CSSParserTokenStream& stream,
   return value;
 }
 
+// https://drafts.csswg.org/css-shapes-2/#typedef-shape-coordinate-pair
+// <coordinate-pair> = <length-percentage>{2}
+CSSValuePair* ConsumeCoordinatePair(CSSParserTokenStream& args,
+                                    const CSSParserContext& context) {
+  CSSValue* x = ConsumeLengthOrPercent(args, context,
+                                       CSSPrimitiveValue::ValueRange::kAll);
+  if (!x) {
+    return nullptr;
+  }
+  args.ConsumeWhitespace();
+  if (CSSValue* y = ConsumeLengthOrPercent(
+          args, context, CSSPrimitiveValue::ValueRange::kAll)) {
+    return MakeGarbageCollected<CSSValuePair>(
+        x, y, CSSValuePair::IdenticalValuesPolicy::kKeepIdenticalValues);
+  } else {
+    return nullptr;
+  }
+}
+
+// https://drafts.csswg.org/css-shapes-2/#funcdef-shape
+cssvalue::CSSShapeValue* ConsumeBasicShapeShape(
+    CSSParserTokenStream& args,
+    const CSSParserContext& context) {
+  using cssvalue::CSSShapeCommand;
+  using cssvalue::CSSShapeValue;
+
+  CHECK(RuntimeEnabledFeatures::CSSShapeFunctionEnabled());
+
+  // shape() = shape( <'fill-rule'>? ...
+  WindRule wind_rule = RULE_NONZERO;
+  if (args.Peek().Id() == CSSValueID::kEvenodd) {
+    wind_rule = RULE_EVENODD;
+    args.ConsumeIncludingWhitespace();
+  } else if (args.Peek().Id() == CSSValueID::kNonzero) {
+    args.ConsumeIncludingWhitespace();
+  }
+
+  // ... from <coordinate-pair> ... , though this is about to change to
+  // <<position>>: https://github.com/w3c/csswg-drafts/issues/11358
+  if (args.Peek().Id() != CSSValueID::kFrom) {
+    return nullptr;
+  }
+
+  args.ConsumeIncludingWhitespace();
+
+  CSSValuePair* origin =
+      ConsumePosition(args, context, UnitlessQuirk::kForbid, std::nullopt);
+  if (!origin) {
+    return nullptr;
+  }
+
+  if (!ConsumeCommaIncludingWhitespace(args)) {
+    return nullptr;
+  }
+
+  // <shape-command>#
+  HeapVector<Member<const CSSShapeCommand>> commands;
+  while (!args.AtEnd()) {
+    // https://drafts.csswg.org/css-shapes-2/#typedef-shape-line-command
+    // <line-command> = line <command-end-point>
+    if (args.Peek().Id() != CSSValueID::kLine) {
+      return nullptr;
+    }
+
+    args.ConsumeIncludingWhitespace();
+    /// https://drafts.csswg.org/css-shapes-2/#typedef-shape-command-end-point
+    // <command-end-point> = [ to <position> | by <coordinate-pair> ]
+    switch (args.ConsumeIncludingWhitespace().Id()) {
+      case CSSValueID::kTo: {
+        if (CSSValuePair* end_point = ConsumePosition(
+                args, context, UnitlessQuirk::kForbid, std::nullopt)) {
+          commands.push_back(MakeGarbageCollected<CSSShapeCommand>(
+              CSSShapeCommand::Type::kLine,
+              CSSShapeCommand::PointOrigin::kReferenceBox, end_point));
+        } else {
+          return nullptr;
+        }
+        break;
+      }
+      case CSSValueID::kBy: {
+        if (CSSValuePair* end_point = ConsumeCoordinatePair(args, context)) {
+          commands.push_back(MakeGarbageCollected<CSSShapeCommand>(
+              CSSShapeCommand::Type::kLine,
+              CSSShapeCommand::PointOrigin::kPreviousCommand, end_point));
+        } else {
+          return nullptr;
+        }
+        break;
+      }
+      default:
+        return nullptr;
+    }
+
+    if (!args.AtEnd() && !ConsumeCommaIncludingWhitespace(args)) {
+      return nullptr;
+    }
+  }
+
+  if (commands.empty()) {
+    return nullptr;
+  }
+
+  return MakeGarbageCollected<CSSShapeValue>(wind_rule, origin,
+                                             std::move(commands));
+}
+
 CSSValue* ConsumeRay(CSSParserTokenStream& stream,
                      const CSSParserContext& context) {
   if (stream.Peek().FunctionId() != CSSValueID::kRay) {
@@ -6797,7 +6937,8 @@ CSSValue* ConsumeOffsetPath(CSSParserTokenStream& stream,
 
   CSSValue* offset_path = ConsumeRay(stream, context);
   if (!offset_path) {
-    offset_path = ConsumeBasicShape(stream, context, AllowPathValue::kForbid);
+    offset_path = ConsumeBasicShape(stream, context, AllowPathValue::kForbid,
+                                    AllowShapeValue::kForbid);
   }
   if (!offset_path) {
     offset_path = ConsumeUrl(stream, context);
@@ -6963,6 +7104,7 @@ bool ConsumeRadii(std::array<CSSValue*, 4>& horizontal_radii,
 CSSValue* ConsumeBasicShape(CSSParserTokenStream& stream,
                             const CSSParserContext& context,
                             AllowPathValue allow_path,
+                            AllowShapeValue allow_shape,
                             AllowBasicShapeRectValue allow_rect,
                             AllowBasicShapeXYWHValue allow_xywh) {
   CSSValue* shape = nullptr;
@@ -6984,6 +7126,10 @@ CSSValue* ConsumeBasicShape(CSSParserTokenStream& stream,
     } else if (id == CSSValueID::kPath &&
                allow_path == AllowPathValue::kAllow) {
       shape = ConsumeBasicShapePath(stream);
+    } else if (id == CSSValueID::kShape &&
+               allow_shape == AllowShapeValue::kAllow &&
+               RuntimeEnabledFeatures::CSSShapeFunctionEnabled()) {
+      shape = ConsumeBasicShapeShape(stream, context);
     } else if (id == CSSValueID::kRect &&
                allow_rect == AllowBasicShapeRectValue::kAllow) {
       shape = ConsumeBasicShapeRect(stream, context);

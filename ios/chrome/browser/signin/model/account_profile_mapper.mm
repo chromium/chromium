@@ -145,6 +145,8 @@ class AccountProfileMapper::Assigner : public SystemIdentityManagerObserver {
   std::optional<std::string> FindProfileNameForGaiaID(
       std::string_view gaia_id) const;
 
+  std::string GetPersonalProfileName();
+
   void MakePersonalProfileManagedWithGaiaID(std::string_view gaia_id);
 
   // SystemIdentityManagerObserver implementation.
@@ -159,10 +161,6 @@ class AccountProfileMapper::Assigner : public SystemIdentityManagerObserver {
   // Returns the ProfileAttributesStorageIOS if available - it can be null in
   // tests where no ProfileManager exists.
   ProfileAttributesStorageIOS* GetProfileAttributesStorage();
-
-  // Returns the name of the personal profile, queried from the
-  // ProfileAttributesStorageIOS.
-  std::string GetPersonalProfileName();
 
   // Callback for SystemIdentityManager::IterateOverIdentities(). Checks the
   // mapping of `identity` to a profile, and attaches (or re-attaches) it as
@@ -279,18 +277,19 @@ void AccountProfileMapper::Assigner::MakePersonalProfileManagedWithGaiaID(
   }
   // Delete the old managed profile (if it exists).
   if (abandoned_managed_profile_name) {
-    // The old managed profile should still be "new", i.e. not actually created
-    // on disk, so that no actual user data gets deleted here.
-    CHECK(storage
-              ->GetAttributesForProfileWithName(*abandoned_managed_profile_name)
-              .IsNewProfile());
+    // The old managed profile must not have been initialized, so that no actual
+    // user data gets deleted here.
+    CHECK(
+        !storage
+             ->GetAttributesForProfileWithName(*abandoned_managed_profile_name)
+             .IsFullyInitialized());
     // Also, the old managed profile mustn't be loaded, since it's going to be
     // deleted and there's no good way to unload it.
     CHECK(
         !profile_manager_->GetProfileWithName(*abandoned_managed_profile_name));
 
-    // Since the profile doesn't exist on disk, just removing the entry in the
-    // attributes storage is sufficient.
+    // TODO(crbug.com/331783685): Call the proper profile deletion API once it
+    // exists, see crbug.com/380903168.
     storage->RemoveProfile(*abandoned_managed_profile_name);
   }
 
@@ -581,9 +580,20 @@ void AccountProfileMapper::IterateOverAllIdentitiesOnDevice(
       callback));
 }
 
+std::string AccountProfileMapper::GetPersonalProfileName() {
+  return assigner_->GetPersonalProfileName();
+}
+
 void AccountProfileMapper::MakePersonalProfileManagedWithGaiaID(
-    std::string_view gaia_id) {
+    std::string_view gaia_id,
+    base::OnceClosure done_callback) {
   assigner_->MakePersonalProfileManagedWithGaiaID(gaia_id);
+  // Note: The profile conversion itself is synchronous, but updating the
+  // assigned accounts in IdentityManager is an async task (see
+  // `AuthenticationService::OnIdentityListChanged()`). So wait for that to
+  // happen before notifying the caller.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(done_callback));
 }
 
 void AccountProfileMapper::IdentitiesOnDeviceChanged() {

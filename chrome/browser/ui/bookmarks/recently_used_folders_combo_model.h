@@ -15,7 +15,7 @@
 namespace bookmarks {
 class BookmarkModel;
 class BookmarkNode;
-}
+}  // namespace bookmarks
 
 // Model for the combobox showing the list of folders to choose from. The
 // list always contains the Bookmarks Bar, Other Bookmarks and the parent
@@ -37,6 +37,7 @@ class RecentlyUsedFoldersComboModel : public ui::ComboboxModel,
   size_t GetItemCount() const override;
   std::u16string GetItemAt(size_t index) const override;
   bool IsItemSeparatorAt(size_t index) const override;
+  bool IsItemTitleAt(size_t index) const override;
   std::optional<size_t> GetDefaultIndex() const override;
 
   // Overridden from bookmarks::BookmarkModelObserver:

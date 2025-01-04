@@ -12,6 +12,7 @@
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/oauth2_mint_token_flow.h"
+#include "net/cookies/cookie_access_result.h"
 
 namespace extensions {
 
@@ -19,6 +20,7 @@ class GaiaRemoteConsentFlow : public WebAuthFlow::Delegate {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  // LINT.IfChange(GaiaRemoteConsentFlowResult)
   enum Failure {
     NONE = 0,
     WINDOW_CLOSED = 1,
@@ -30,8 +32,10 @@ class GaiaRemoteConsentFlow : public WebAuthFlow::Delegate {
     // Deprecated:
     // USER_NAVIGATED_AWAY = 6,
     CANNOT_CREATE_WINDOW = 7,
-    kMaxValue = CANNOT_CREATE_WINDOW
+    SET_RESOLUTION_COOKIES_FAILED = 8,
+    kMaxValue = SET_RESOLUTION_COOKIES_FAILED
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:GaiaRemoteConsentFlowResult)
 
   class Delegate {
    public:
@@ -42,7 +46,7 @@ class GaiaRemoteConsentFlow : public WebAuthFlow::Delegate {
     // screen.
     virtual void OnGaiaRemoteConsentFlowApproved(
         const std::string& consent_result,
-        const std::string& gaia_id) = 0;
+        const GaiaId& gaia_id) = 0;
   };
 
   GaiaRemoteConsentFlow(Delegate* delegate,
@@ -72,6 +76,8 @@ class GaiaRemoteConsentFlow : public WebAuthFlow::Delegate {
   WebAuthFlow* GetWebAuthFlowForTesting() const;
 
  private:
+  void OnResolutionDataCookiesSet(
+      const std::vector<net::CookieAccessResult>& cookie_set_result);
   void GaiaRemoteConsentFlowFailed(Failure failure);
 
   void DetachWebAuthFlow();

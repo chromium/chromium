@@ -419,7 +419,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
       {
         section: Section.kPersonalization,
         path: `/${routesMojom.PERSONALIZATION_SECTION_PATH}`,
-        icon: 'os-settings:personalization',
+        icon: 'os-settings:personalization-menu',
         label: this.i18n('personalizationPageTitle'),
         sublabel: this.i18n('personalizationMenuItemDescription'),
       },
@@ -442,7 +442,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
       {
         section: Section.kAccessibility,
         path: `/${routesMojom.ACCESSIBILITY_SECTION_PATH}`,
-        icon: 'os-settings:accessibility-revamp',
+        icon: 'os-settings:accessibility',
         label: this.i18n('a11yPageTitle'),
         sublabel: this.i18n('a11yMenuItemDescription'),
       },

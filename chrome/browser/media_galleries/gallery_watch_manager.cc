@@ -189,8 +189,7 @@ GalleryWatchManager::NotificationInfo::NotificationInfo()
 GalleryWatchManager::NotificationInfo::NotificationInfo(
     const NotificationInfo& other) = default;
 
-GalleryWatchManager::NotificationInfo::~NotificationInfo() {
-}
+GalleryWatchManager::NotificationInfo::~NotificationInfo() = default;
 
 GalleryWatchManager::GalleryWatchManager()
     : storage_monitor_observed_(false),

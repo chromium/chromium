@@ -28,7 +28,6 @@ import org.chromium.components.sync.LocalDataDescription;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.TransportState;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.HashMap;
@@ -40,7 +39,7 @@ class BookmarkBatchUploadCardMediator
             new DefaultLifecycleObserver() {
                 @Override
                 public void onResume(LifecycleOwner lifecycleOwner) {
-                    hideBatchUploadCardAndUpdate();
+                    immediatelyHideBatchUploadCardAndUpdateItsVisibility();
                 }
 
                 @Override
@@ -65,8 +64,7 @@ class BookmarkBatchUploadCardMediator
      * @param activity The {@link Activity} associated with the card.
      * @param lifecycleOwner {@link LifecycleOwner} that can be used to listen for activity
      *     destruction.
-     * @param modalDialogManagerHolder {@link ModalDialogManagerHolder} that can be used to display
-     *     the dialog.
+     * @param modalDialogManager {@link ModalDialogManager} that can be used to display the dialog.
      * @param profile {@link Profile} that is associated with the card.
      * @param model {@link PropertyModel} that is associated with the card.
      * @param snackbarManager {@link SnackbarManager} used to display snackbars.
@@ -75,7 +73,7 @@ class BookmarkBatchUploadCardMediator
     public BookmarkBatchUploadCardMediator(
             Activity activity,
             LifecycleOwner lifecycleOwner,
-            ModalDialogManagerHolder modalDialogManagerHolder,
+            ModalDialogManager modalDialogManager,
             Profile profile,
             PropertyModel model,
             SnackbarManager snackbarManager,
@@ -93,7 +91,7 @@ class BookmarkBatchUploadCardMediator
         mReauthenticatorBridge =
                 ReauthenticatorBridge.create(
                         activity, mProfile, DeviceAuthSource.BOOKMARK_BATCH_UPLOAD);
-        mDialogManager = modalDialogManagerHolder.getModalDialogManager();
+        mDialogManager = modalDialogManager;
 
         lifecycleOwner.getLifecycle().addObserver(mLifeCycleObserver);
 
@@ -114,10 +112,12 @@ class BookmarkBatchUploadCardMediator
         return mShouldBeVisible;
     }
 
-    /** Hides the batch upload card and updates the batch upload card view. */
-    public void hideBatchUploadCardAndUpdate() {
-        // Temporarily hide, it will become visible again once getLocalDataDescriptions() completes,
-        // which is triggered from updateBatchUploadCard().
+    /**
+     * To ensure a smooth user experience, the batch upload card is immediately hidden before any
+     * asynchronous updates occur. This prevents a potential delay in hiding the card if the updated
+     * visibility state is set to 'off', which could lead to an inconsistent UI.
+     */
+    public void immediatelyHideBatchUploadCardAndUpdateItsVisibility() {
         mShouldBeVisible = false;
         mBatchUploadCardChangeAction.run();
         updateBatchUploadCard();
@@ -162,7 +162,7 @@ class BookmarkBatchUploadCardMediator
                                 Snackbar.TYPE_ACTION,
                                 Snackbar.UMA_BOOKMARK_BATCH_UPLOAD)
                         .setSingleLine(false));
-        hideBatchUploadCardAndUpdate();
+        immediatelyHideBatchUploadCardAndUpdateItsVisibility();
     }
 
     private void updateBatchUploadCard() {

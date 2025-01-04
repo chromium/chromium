@@ -104,8 +104,9 @@ class ChromeOSTermsTest : public testing::Test {
   // the |locale| string to the created file.
   bool CreateTermsForLocale(const std::string& locale) {
     base::FilePath dir = arc_tos_dir_.Append(base::ToLowerASCII(locale));
-    if (!base::CreateDirectory(dir))
+    if (!base::CreateDirectory(dir)) {
       return false;
+    }
 
     return base::WriteFile(dir.AppendASCII("terms.html"), locale);
   }
@@ -114,8 +115,9 @@ class ChromeOSTermsTest : public testing::Test {
   // Writes the |locale| string to the created file.
   bool CreatePrivacyPolicyForLocale(const std::string& locale) {
     base::FilePath dir = arc_tos_dir_.Append(base::ToLowerASCII(locale));
-    if (!base::CreateDirectory(dir))
+    if (!base::CreateDirectory(dir)) {
       return false;
+    }
 
     return base::WriteFile(dir.AppendASCII("privacy_policy.pdf"), locale);
   }

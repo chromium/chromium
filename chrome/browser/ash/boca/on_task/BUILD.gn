@@ -31,6 +31,7 @@ static_library("on_task") {
     "//ash/constants",
     "//ash/public/cpp",
     "//ash/webui/boca_ui",
+    "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
     "//chrome/browser/apps/app_service",
 

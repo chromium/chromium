@@ -4,6 +4,7 @@
 
 #include <windows.h>
 
+#include <optional>
 #include <string>
 
 #include "base/at_exit.h"
@@ -47,7 +48,10 @@ HRESULT ExecuteTest(const base::CommandLine& cmd_line) {
     hr = EncryptAppBoundString(ProtectionLevel::PROTECTION_PATH_VALIDATION,
                                input_data, output_data, last_error);
   } else if (cmd_line.HasSwitch(switches::kAppBoundTestModeDecrypt)) {
-    hr = DecryptAppBoundString(input_data, output_data, last_error);
+    std::optional<std::string> maybe_new_ciphertext;
+    hr = DecryptAppBoundString(input_data, output_data,
+                               ProtectionLevel::PROTECTION_PATH_VALIDATION,
+                               maybe_new_ciphertext, last_error);
     if (SUCCEEDED(hr)) {
       CHECK_EQ(output_data.compare(0, kTestHeader.length(), kTestHeader), 0);
       output_data.erase(0, kTestHeader.length());

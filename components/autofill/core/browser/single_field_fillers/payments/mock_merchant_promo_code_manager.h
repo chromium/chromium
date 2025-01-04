@@ -1,0 +1,36 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_SINGLE_FIELD_FILLERS_PAYMENTS_MOCK_MERCHANT_PROMO_CODE_MANAGER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_SINGLE_FIELD_FILLERS_PAYMENTS_MOCK_MERCHANT_PROMO_CODE_MANAGER_H_
+
+#include "base/memory/weak_ptr.h"
+#include "components/autofill/core/browser/single_field_fillers/payments/merchant_promo_code_manager.h"
+#include "testing/gmock/include/gmock/gmock.h"
+
+namespace autofill {
+
+class MockMerchantPromoCodeManager : public MerchantPromoCodeManager {
+ public:
+  explicit MockMerchantPromoCodeManager(
+      PaymentsDataManager* payments_data_manager);
+  ~MockMerchantPromoCodeManager() override;
+
+  MOCK_METHOD(bool,
+              OnGetSingleFieldSuggestions,
+              (const FormStructure& form_structure,
+               const FormFieldData& field,
+               const AutofillField& autofill_field,
+               const AutofillClient& client,
+               SingleFieldFillRouter::OnSuggestionsReturnedCallback& callback),
+              (override));
+  MOCK_METHOD(void,
+              OnSingleFieldSuggestionSelected,
+              (const Suggestion& suggestion),
+              (override));
+};
+
+}  // namespace autofill
+
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_SINGLE_FIELD_FILLERS_PAYMENTS_MOCK_MERCHANT_PROMO_CODE_MANAGER_H_

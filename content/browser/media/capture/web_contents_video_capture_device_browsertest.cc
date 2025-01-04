@@ -13,7 +13,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/test/pixel_test_utils.h"
 #include "content/browser/media/capture/content_capture_device_browsertest_base.h"
 #include "content/browser/media/capture/fake_video_capture_stack.h"
@@ -27,7 +26,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/shell/browser/shell.h"
-#include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
@@ -53,10 +51,7 @@ class WebContentsVideoCaptureDeviceBrowserTest
     : public ContentCaptureDeviceBrowserTestBase,
       public FrameTestUtil {
  public:
-  WebContentsVideoCaptureDeviceBrowserTest() {
-    // TODO(https://crbug.com/1324757): tests should work with HiDPI enabled.
-    scoped_feature_list_.InitAndDisableFeature(media::kWebContentsCaptureHiDpi);
-  }
+  WebContentsVideoCaptureDeviceBrowserTest() = default;
 
   WebContentsVideoCaptureDeviceBrowserTest(
       const WebContentsVideoCaptureDeviceBrowserTest&) = delete;
@@ -250,8 +245,9 @@ class WebContentsVideoCaptureDeviceBrowserTest
 
   std::unique_ptr<FrameSinkVideoCaptureDevice> CreateDevice() final {
     auto* const main_frame = shell()->web_contents()->GetPrimaryMainFrame();
-    const GlobalRenderFrameHostId id(main_frame->GetProcess()->GetID(),
-                                     main_frame->GetRoutingID());
+    const GlobalRenderFrameHostId id(
+        main_frame->GetProcess()->GetDeprecatedID(),
+        main_frame->GetRoutingID());
     return std::make_unique<WebContentsVideoCaptureDevice>(id);
   }
 
@@ -279,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
   auto* const main_frame = shell()->web_contents()->GetPrimaryMainFrame();
   const auto capture_params = SnapshotCaptureParams();
 
-  const GlobalRenderFrameHostId id(main_frame->GetProcess()->GetID(),
+  const GlobalRenderFrameHostId id(main_frame->GetProcess()->GetDeprecatedID(),
                                    main_frame->GetRoutingID());
   // Delete the WebContents instance and the Shell. This makes the
   // render_frame_id invalid.
@@ -604,7 +600,7 @@ class WebContentsVideoCaptureDeviceBrowserTestP
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(
     All,
     WebContentsVideoCaptureDeviceBrowserTestP,
@@ -659,7 +655,7 @@ INSTANTIATE_TEST_SUITE_P(
 // TODO(crbug/329654821): Also flaky for ChromeOS ASAN LSAN and debug.
 #if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     (BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)) ||                \
-    (BUILDFLAG(IS_CHROMEOS_ASH) && !defined(NDEBUG))
+    (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG))
 #define MAYBE_CapturesContentChanges DISABLED_CapturesContentChanges
 #else
 #define MAYBE_CapturesContentChanges CapturesContentChanges

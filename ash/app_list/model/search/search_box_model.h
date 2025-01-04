@@ -26,6 +26,11 @@ class APP_LIST_MODEL_EXPORT SearchBoxModel {
   void SetShowAssistantButton(bool show);
   bool show_assistant_button() const { return show_assistant_button_; }
 
+  void SetShowAssistantNewEntryPointButton(bool show);
+  bool show_assistant_new_entry_point_button() const {
+    return show_assistant_new_entry_point_button_;
+  }
+
   void SetShowSunfishButton(bool show);
   bool show_sunfish_button() const { return show_sunfish_button_; }
 
@@ -41,6 +46,7 @@ class APP_LIST_MODEL_EXPORT SearchBoxModel {
  private:
   bool search_engine_is_google_ = false;
   bool show_assistant_button_ = false;
+  bool show_assistant_new_entry_point_button_ = false;
   bool show_sunfish_button_ = false;
 
   // `would_trigger_iph_` indicates whether we should START showing an IPH or

@@ -361,6 +361,7 @@
 <translation id="2295777434187870477">Мікрофон увімкнено. Його можна вимкнути за допомогою перемикача.</translation>
 <translation id="2302092602801625023">Цим обліковим записом керують через Family Link</translation>
 <translation id="2303600792989757991">Увімкнення чи вимкнення вікна перегляду</translation>
+<translation id="2304702218354340897">Вимкнути керування мімікою?</translation>
 <translation id="2305738328104302723">Список завдань Google: "<ph name="GLANCEABLES_TASKS_LIST_NAME" />"</translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: нещодавні записи екрана, завантаження та закріплені файли</translation>
 <translation id="2318576281648121272">Сьогодні <ph name="TODAY_DATE" /></translation>
@@ -387,6 +388,7 @@
 <translation id="2370971919968699910">За передавання даних може стягуватися плата.
 Підключено пристроїв: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2386292613071805067">Вибрати все на сторінці</translation>
+<translation id="2389423187722941333">Увімкнути або вимкнути Gemini</translation>
 <translation id="2392659840443812875">Немає точок доступу. Переконайтеся, що ваш пристрій поблизу, а Bluetooth увімкнено.</translation>
 <translation id="2397416548179033562">Показати меню Chrome</translation>
 <translation id="240006516586367791">Елементи керування медіа</translation>
@@ -394,6 +396,7 @@
 <translation id="2402411679569069051">Щоб розблокувати Chromebook, скористайтеся відбитком пальця або розблокуйте телефон</translation>
 <translation id="240545663114741956">Щоб вийти з облікового запису, двічі натисніть комбінацію клавіш <ph name="ACCELERATOR" />.</translation>
 <translation id="2405664212338326887">Не підключено</translation>
+<translation id="2406710117564540804">Увімкнути або вимкнути режим "Не турбувати"</translation>
 <translation id="2408955596600435184">Введіть PIN-код</translation>
 <translation id="2412593942846481727">Доступне оновлення</translation>
 <translation id="2416438829169535743">Вийти?</translation>
@@ -899,6 +902,7 @@
 <translation id="4119928251231465047">Забагато спроб ввести PIN-код</translation>
 <translation id="412298498316631026">вікна</translation>
 <translation id="4123259114412175274">Щоб розблокувати Chromebook, переконайтеся, що на телефоні ввімкнено Bluetooth</translation>
+<translation id="4123868835475902435">Ви ознайомилися з основною інформацією. У вбудованому додатку Можливості можна знайти поради щодо початку роботи, спеціальні пропозиції, а також дізнатися більше про найновіші функції <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4125970834901680537">Не можна транслювати додатки в режимі планшета. Повторіть спробу в режимі ноутбука.</translation>
 <translation id="4131973331381812765">Температура: <ph name="TEMPERATURE" /> °C – поточна швидкість: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> ГГц</translation>
 <translation id="4136724716305260864">Увімкнено до сходу сонця</translation>
@@ -1019,7 +1023,6 @@
 <translation id="4481530544597605423">Відключені пристрої</translation>
 <translation id="4485506555414638855">Відхилити налаштування перегляду нещодавніх фотографій, медіафайлів, сповіщень і додатків на телефоні</translation>
 <translation id="4491109536499578614">Зображення</translation>
-<translation id="4493452241184130939">Ви ознайомилися з основною інформацією. У вбудованому додатку Можливості можна знайти поради щодо початку роботи, рекомендовані додатки, спеціальні пропозиції, а також дізнатися більше про найновіші функції <ph name="PRODUCT_NAME" />.</translation>
 <translation id="450584155212756404">Версія для розробників</translation>
 <translation id="4513946894732546136">Відгуки</translation>
 <translation id="4518404433291145981">Щоб розблокувати Chromebook, спершу розблокуйте телефон.</translation>
@@ -1082,7 +1085,6 @@
 <translation id="4708065238214351979">Збільшити яскравість клавіатури</translation>
 <translation id="4708185346211948049"><ph name="DAY_OF_WEEK" /> наступного тижня</translation>
 <translation id="4717575069099566988">Ваш кабель USB-C не підтримує USB4. Продуктивність пристрою може бути обмежено.</translation>
-<translation id="4724328513667182700"><ph name="PRODUCT_NAME" />: 6 порад для початку роботи</translation>
 <translation id="4730374152663651037">ЧАСТО ВИКОРИСТОВУЮТЬСЯ</translation>
 <translation id="4731797938093519117">Батьківський доступ</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Лівий)</translation>
@@ -1309,7 +1311,6 @@
 <translation id="5409208741270395213">Позначити завдання як виконане</translation>
 <translation id="5413656666631274079">Сторінка налаштувань</translation>
 <translation id="5414198321558177633">Триває оновлення списку профілів. Це може зайняти кілька хвилин.</translation>
-<translation id="5417965108047245734">Ознайомтеся з коротким оглядом, щоб легко опанувати <ph name="PRODUCT_NAME" /></translation>
 <translation id="5426063383988017631">Меню налаштувань закрито</translation>
 <translation id="5428899915242071344">Почати вибір</translation>
 <translation id="5429993543155113935">Вікна в режимі анонімного перегляду наразі не підтримуються</translation>
@@ -1647,6 +1648,7 @@
 <translation id="6539852571005954999">Сканування завантаженого файлу "<ph name="FILENAME" />"</translation>
 <translation id="6542521951477560771">Трансляція на пристрій "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="6542891623636520977">Смайли, зображення GIF тощо</translation>
+<translation id="6543942526104794893">Вимкнути мімічні жести?</translation>
 <translation id="6545382064335350438">PIN-код усе ще не вдається підтвердити. Повторіть спробу.</translation>
 <translation id="6555373427270923730">Введіть веб-адресу в адресному рядку й натисніть <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2313,6 +2315,7 @@
 <translation id="8855885154700222542">Клавіша повноекранного режиму</translation>
 <translation id="8858369206579825206">Налаштування конфіденційності</translation>
 <translation id="8860366331836346216">Додати eSIM-карту</translation>
+<translation id="8869149849311827122">Вимкнути керування курсором миші?</translation>
 <translation id="8870509716567206129">Додаток не підтримує розділення екрана.</translation>
 <translation id="8873203135446552888">Підтвердьте, що хочете вимкнути вбудовану сенсорну панель</translation>
 <translation id="8874184842967597500">Не під’єднано</translation>

@@ -604,7 +604,13 @@ class CONTENT_EXPORT BackingStore {
   // Delete LevelDB files; used to handle corruptions.
   static Status DestroyDatabase(const base::FilePath file_path);
 
- protected:
+ private:
+  FRIEND_TEST_ALL_PREFIXES(BackingStoreTestWithExternalObjects,
+                           ActiveBlobJournal);
+  FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, CompactionTaskTiming);
+  FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, TombstoneSweeperTiming);
+
+  friend class AutoDidCommitTransaction;
   friend class BucketContext;
 
   void set_bucket_context(BucketContext* bucket_context) {
@@ -630,12 +636,12 @@ class CONTENT_EXPORT BackingStore {
       std::vector<blink::IndexedDBDatabaseMetadata>* output);
 
   // Remove the referenced file on disk.
-  virtual bool RemoveBlobFile(int64_t database_id, int64_t key) const;
+  bool RemoveBlobFile(int64_t database_id, int64_t key) const;
 
   // Schedule a call to CleanRecoveryJournalIgnoreReturn() via
   // an owned timer. If this object is destroyed, the timer
   // will automatically be cancelled.
-  virtual void StartJournalCleaningTimer();
+  void StartJournalCleaningTimer();
 
   // Attempt to clean the recovery journal. This will remove
   // any referenced files and delete the journal entry. If any
@@ -646,14 +652,6 @@ class CONTENT_EXPORT BackingStore {
   // Get tasks to be run after a BackingStore no longer has any connections.
   std::list<std::unique_ptr<BackingStorePreCloseTaskQueue::PreCloseTask>>
   GetPreCloseTasks();
-
- private:
-  FRIEND_TEST_ALL_PREFIXES(BackingStoreTestWithExternalObjects,
-                           ActiveBlobJournal);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, CompactionTaskTiming);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, TombstoneSweeperTiming);
-
-  friend class AutoDidCommitTransaction;
 
   Status MigrateToV4(LevelDBWriteBatch* write_batch);
   Status MigrateToV5(LevelDBWriteBatch* write_batch);

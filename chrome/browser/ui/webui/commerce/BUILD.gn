@@ -6,6 +6,7 @@ assert(!is_android)
 
 source_set("commerce") {
   sources = [
+    "price_insights_handler.h",
     "price_tracking_handler.h",
     "product_specifications_disclosure_dialog.h",
     "product_specifications_ui.h",
@@ -31,6 +32,7 @@ source_set("commerce") {
 
 source_set("impl") {
   sources = [
+    "price_insights_handler.cc",
     "price_tracking_handler.cc",
     "product_specifications_disclosure_dialog.cc",
     "product_specifications_ui.cc",
@@ -54,7 +56,6 @@ source_set("impl") {
     "//chrome/browser/resources/side_panel/shared:resources_grit",
     "//chrome/browser/ui/bookmarks",
     "//chrome/browser/ui/webui",
-    "//chrome/browser/ui/webui:webui_util",
     "//components/bookmarks/browser",
     "//components/commerce/core:feature_list",
     "//components/commerce/core:metrics",
@@ -62,5 +63,6 @@ source_set("impl") {
     "//components/commerce/core:utils",
     "//components/power_bookmarks/core",
     "//components/web_modal",
+    "//ui/webui",
   ]
 }

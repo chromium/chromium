@@ -10,6 +10,7 @@
 #include <queue>
 #include <vector>
 
+#include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -199,6 +200,7 @@ class CC_EXPORT CompositorFrameReportingController {
 
   bool is_compositor_thread_driving_smoothness_ = false;
   bool is_main_thread_driving_smoothness_ = false;
+  bool is_raster_thread_driving_smoothness_ = false;
   // Sorted history of smooththread. Element i indicating the smooththread
   // from timestamp of element i-1 until timestamp of element i.
   std::map<base::TimeTicks, CompositorFrameReporter::SmoothThread>

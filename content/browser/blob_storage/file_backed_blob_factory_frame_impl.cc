@@ -19,7 +19,7 @@ FileBackedBlobFactoryFrameImpl::FileBackedBlobFactoryFrameImpl(
         receiver)
     : DocumentUserData<FileBackedBlobFactoryFrameImpl>(rfh),
       content::FileBackedBlobFactoryBase(
-          render_frame_host().GetProcess()->GetID()),
+          render_frame_host().GetProcess()->GetDeprecatedID()),
       receiver_(this, std::move(receiver)) {
   blob_storage_context_ = base::WrapRefCounted(ChromeBlobStorageContext::GetFor(
       render_frame_host().GetBrowserContext()));

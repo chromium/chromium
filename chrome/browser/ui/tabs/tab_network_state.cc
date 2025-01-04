@@ -13,12 +13,14 @@ TabNetworkState TabNetworkStateForWebContents(content::WebContents* contents) {
   if (!contents->ShouldShowLoadingUI()) {
     content::NavigationEntry* entry =
         contents->GetController().GetLastCommittedEntry();
-    if (entry && (entry->GetPageType() == content::PAGE_TYPE_ERROR))
+    if (entry && (entry->GetPageType() == content::PAGE_TYPE_ERROR)) {
       return TabNetworkState::kError;
+    }
     return TabNetworkState::kNone;
   }
 
-  if (contents->IsWaitingForResponse())
+  if (contents->IsWaitingForResponse()) {
     return TabNetworkState::kWaiting;
+  }
   return TabNetworkState::kLoading;
 }

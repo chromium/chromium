@@ -32,6 +32,7 @@ source_set("ui_bundled") {
     ":coordinators",
     ":ui",
     "//base",
+    "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/main/model",
@@ -47,7 +48,6 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/overlays/ui_bundled/infobar_modal/translate",
     "//ios/chrome/browser/overlays/ui_bundled/web_content_area/alerts",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
-    "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/common/ui/util",
   ]
 }
@@ -131,6 +131,7 @@ source_set("unit_tests") {
     ":util",
     "//base/test:test_support",
     "//build:branding_buildflags",
+    "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/infobars/ui_bundled/presentation",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/test_modality",
@@ -141,7 +142,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/common/ui/util",
     "//ios/chrome/test:test_support",
     "//ios/web/common",

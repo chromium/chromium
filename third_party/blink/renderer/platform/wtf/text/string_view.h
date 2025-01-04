@@ -141,17 +141,18 @@ class WTF_EXPORT StringView {
   inline StringView(const AtomicString& string LIFETIME_BOUND);
 
   // From a literal string or LChar buffer:
-  StringView(const LChar* chars, unsigned length)
-      : impl_(StringImpl::empty_), bytes_(chars), length_(length) {}
   explicit StringView(base::span<const LChar> chars)
       : impl_(StringImpl::empty_),
         bytes_(chars.data()),
         length_(base::checked_cast<wtf_size_t>(chars.size())) {}
+  // NOLINTNEXTLINE(google-explicit-constructor)
   StringView(const LChar* chars)
-      : StringView(chars,
-                   chars ? base::checked_cast<unsigned>(
-                               strlen(reinterpret_cast<const char*>(chars)))
-                         : 0) {}
+      : impl_(StringImpl::empty_),
+        bytes_(chars),
+        length_(chars ? base::checked_cast<unsigned>(
+                            strlen(reinterpret_cast<const char*>(chars)))
+                      : 0) {}
+  // NOLINTNEXTLINE(google-explicit-constructor)
   StringView(const char* chars)
       : StringView(reinterpret_cast<const LChar*>(chars)) {}
 
@@ -161,6 +162,13 @@ class WTF_EXPORT StringView {
         bytes_(chars.data()),
         length_(base::checked_cast<wtf_size_t>(chars.size())) {}
   StringView(const UChar* chars);
+
+  // StringView(const T*, unsigned) are deleted explicitly because `const T*` is
+  // converted to a StringView implicitly and StringView(const StringView&,
+  // unsigned offset) would be used unexpectedly.
+  StringView(const LChar*, unsigned) = delete;
+  StringView(const char*, unsigned) = delete;
+  StringView(const UChar*, unsigned) = delete;
 
 #if DCHECK_IS_ON()
   ~StringView();

@@ -15,6 +15,8 @@
 #include "base/values.h"
 #include "components/guest_view/browser/guest_view_event.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/guest_view/web_view/web_view_constants.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
@@ -252,6 +254,27 @@ void WebViewPermissionHelper::OnMediaPermissionResponse(
         blink::mojom::StreamDevicesSet(),
         blink::mojom::MediaStreamRequestResult::INVALID_STATE,
         std::unique_ptr<content::MediaStreamUI>());
+    return;
+  }
+
+  content::RenderFrameHost* embedder_rfh = web_view_guest()->embedder_rfh();
+  const url::Origin& embedder_origin = embedder_rfh->GetLastCommittedOrigin();
+  if (web_view_permission_helper_delegate_
+          ->ForwardEmbeddedMediaPermissionChecksAsEmbedder(embedder_origin)) {
+    content::MediaStreamRequest embedder_request = request;
+    content::GlobalRenderFrameHostId embedder_rfh_id =
+        embedder_rfh->GetGlobalId();
+    embedder_request.render_process_id = embedder_rfh_id.child_id;
+    embedder_request.render_frame_id = embedder_rfh_id.frame_routing_id;
+    embedder_request.url_origin = embedder_origin;
+    embedder_request.security_origin = embedder_origin.GetURL();
+
+    web_view_guest()
+        ->embedder_web_contents()
+        ->GetDelegate()
+        ->RequestMediaAccessPermission(
+            web_view_guest()->embedder_web_contents(), embedder_request,
+            std::move(callback));
     return;
   }
 

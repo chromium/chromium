@@ -60,6 +60,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Renderer.ContentProduction.DelayFromUnhide" units="ms"
+    expires_after="2025-10-31">
+  <owner>mustaq@chromium.org</owner>
+  <owner>blink-interactions-team@google.com</owner>
+  <summary>
+    Records the timespan between the renderer host becoming visible (unhidden)
+    for the first time and the host receiving the first metadata signal
+    indicating content push from the renderer.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.ContentProduction.SignalReceived" enum="Boolean"
+    expires_after="2025-10-31">
+  <owner>mustaq@chromium.org</owner>
+  <owner>blink-interactions-team@google.com</owner>
+  <summary>
+    Records whether the renderer host has received the first metadata indicating
+    content push from the renderer at a correct time (i.e. after the host became
+    visible for the first time).
+  </summary>
+</histogram>
+
 <histogram
     name="Renderer.Core.Timing.Performance.SwapsPerPerformanceEntryInsertion"
     units="swaps" expires_after="2025-05-04">
@@ -390,7 +412,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.PaintPreview.Capture.MainFrameSuccess"
-    enum="BooleanSuccess" expires_after="2025-03-02">
+    enum="BooleanSuccess" expires_after="2025-06-08">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>chrome-fdt@google.com</owner>
@@ -435,7 +457,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Preload.UnusedResource2{Trigger}" enum="ResourceType"
-    expires_after="2025-04-06">
+    expires_after="2025-06-08">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -453,7 +475,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Preload.UnusedResourceCount" units="count"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -464,7 +486,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.ProcessLifetime3{RendererHostedContentType}"
-    units="ms" expires_after="2025-04-06">
+    units="ms" expires_after="2025-06-08">
   <owner>fdoray@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -478,7 +500,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Renderer.ReduceSubresourceResponseIPC.DidNotifyBrowser"
     enum="Boolean" expires_after="2025-03-09">
   <owner>amanvr@chromium.org</owner>
-  <owner>carlscab@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
   <summary>
     The histogram is being used to track the number of messages
@@ -490,7 +511,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.RenderThreadImpl.Init" units="ms"
-    expires_after="2025-03-30">
+    expires_after="2025-06-08">
   <owner>jam@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <summary>
@@ -500,7 +521,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Unresponsive.Reason{WidgetVisibility}"
-    enum="RendererIsUnresponsiveReason" expires_after="2025-04-06">
+    enum="RendererIsUnresponsiveReason" expires_after="2025-06-08">
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -526,7 +547,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Renderer.Unresponsive.{UIElementVisible}.RenderProcessHostPriority"
-    enum="RenderProcessHostPriority" expires_after="2025-04-06">
+    enum="RenderProcessHostPriority" expires_after="2025-06-08">
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -566,21 +587,6 @@ chromium-metrics-reviews@google.com.
     <variant name="NormalContinuation"/>
     <variant name="VeryHigh"/>
   </token>
-</histogram>
-
-<histogram name="RendererScheduler.RendererMainThreadLoad5" units="%"
-    expires_after="2025-04-06">
-  <owner>altimin@chromium.org</owner>
-  <summary>
-    Renderer main thread load (percentage of time spent in tasks), reported in
-    one second chunks.
-
-    See http://bit.ly/chromium-renderer-main-thread-load-metric for details.
-
-    This metric is emitted when the renderer main thread task is completed or
-    renderer is backgrounded or foregrounded, at most once per second per
-    renderer amortized.
-  </summary>
 </histogram>
 
 <histogram name="RendererSyncIPC.ElapsedTime" units="ms" expires_after="M85">

@@ -24,8 +24,9 @@ WebauthnDialogModel::~WebauthnDialogModel() = default;
 void WebauthnDialogModel::SetDialogState(WebauthnDialogState state) {
   state_ = state;
   SetIllustrationsFromState();
-  for (WebauthnDialogModelObserver& observer : observers_)
+  for (WebauthnDialogModelObserver& observer : observers_) {
     observer.OnDialogStateChanged();
+  }
 }
 
 void WebauthnDialogModel::AddObserver(WebauthnDialogModelObserver* observer) {

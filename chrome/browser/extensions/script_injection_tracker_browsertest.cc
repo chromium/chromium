@@ -23,6 +23,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/guest_view/browser/guest_view_base.h"
+#include "components/guest_view/browser/guest_view_manager_delegate.h"
+#include "components/guest_view/browser/test_guest_view_manager.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -34,6 +37,7 @@
 #include "content/public/test/commit_message_delayer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/process_manager.h"
@@ -1940,6 +1944,15 @@ class ScriptInjectionTrackerAppBrowserTest : public PlatformAppBrowserTest {
     content::SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
   }
+
+  guest_view::TestGuestViewManager* GetGuestViewManager() {
+    return factory_.GetOrCreateTestGuestViewManager(
+        browser()->profile(),
+        ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate());
+  }
+
+ private:
+  guest_view::TestGuestViewManagerFactory factory_;
 };
 
 // Tests that ScriptInjectionTracker detects content scripts injected via
@@ -2128,11 +2141,12 @@ IN_PROC_BROWSER_TEST_F(ScriptInjectionTrackerAppBrowserTest,
     )";
     GURL guest_url1(embedded_test_server()->GetURL("foo.com", "/title1.html"));
 
-    content::WebContentsAddedObserver guest_contents_observer;
-    ASSERT_TRUE(ExecJs(
+    content::ExecuteScriptAsync(
         app_contents,
-        content::JsReplace(kWebViewInjectionScriptTemplate, guest_url1)));
-    guest_contents = guest_contents_observer.GetWebContents();
+        content::JsReplace(kWebViewInjectionScriptTemplate, guest_url1));
+    auto* guest = GetGuestViewManager()->WaitForSingleGuestViewCreated();
+    GetGuestViewManager()->WaitUntilAttached(guest);
+    guest_contents = guest->web_contents();
 
     // Wait until the "document_end" timepoint is reached.  (Since this is done
     // before the `addContentScripts` call below, it means that no content
@@ -2142,7 +2156,7 @@ IN_PROC_BROWSER_TEST_F(ScriptInjectionTrackerAppBrowserTest,
 
   // Verify that ScriptInjectionTracker correctly shows that no content scripts
   // got injected just yet.
-  content::RenderProcessHost* guest_process =
+  raw_ptr<content::RenderProcessHost> guest_process =
       guest_contents->GetPrimaryMainFrame()->GetProcess();
   EXPECT_FALSE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
       *guest_process, app->id()));

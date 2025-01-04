@@ -15,21 +15,29 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
+#include "chrome/common/buildflags.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/glic_keyed_service.h"
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
+#endif
+
 std::vector<TabAlertState> GetTabAlertStatesForContents(
     content::WebContents* contents) {
   std::vector<TabAlertState> states;
-  if (!contents)
+  if (!contents) {
     return states;
+  }
 
   scoped_refptr<MediaStreamCaptureIndicator> indicator =
-      MediaCaptureDevicesDispatcher::GetInstance()->
-          GetMediaStreamCaptureIndicator();
+      MediaCaptureDevicesDispatcher::GetInstance()
+          ->GetMediaStreamCaptureIndicator();
   if (indicator.get()) {
     // Currently we only show the icon and tooltip of the highest-priority
     // alert on a tab.
@@ -39,8 +47,9 @@ std::vector<TabAlertState> GetTabAlertStatesForContents(
         indicator->IsCapturingDisplay(contents)) {
       states.push_back(TabAlertState::DESKTOP_CAPTURING);
     }
-    if (indicator->IsBeingMirrored(contents))
+    if (indicator->IsBeingMirrored(contents)) {
       states.push_back(TabAlertState::TAB_CAPTURING);
+    }
 
     if (indicator->IsCapturingAudio(contents) &&
         indicator->IsCapturingVideo(contents)) {
@@ -77,27 +86,41 @@ std::vector<TabAlertState> GetTabAlertStatesForContents(
     states.push_back(TabAlertState::SERIAL_CONNECTED);
   }
 
+#if BUILDFLAG(ENABLE_GLIC)
+  if (GlicEnabling::IsEnabledForProfile(
+          Profile::FromBrowserContext(contents->GetBrowserContext())) &&
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+          contents->GetBrowserContext())
+              ->GetFocusedTab() == contents) {
+    states.push_back(TabAlertState::GLIC_ACCESSING);
+  }
+#endif
+
   // Check if VR content is being presented in a headset.
   // NOTE: This icon must take priority over the audio alert ones
   // because most VR content has audio and its usage is implied by the VR
   // icon.
-  if (vr::VrTabHelper::IsContentDisplayedInHeadset(contents))
+  if (vr::VrTabHelper::IsContentDisplayedInHeadset(contents)) {
     states.push_back(TabAlertState::VR_PRESENTING_IN_HEADSET);
+  }
 
   if (contents->HasPictureInPictureVideo() ||
-      contents->HasPictureInPictureDocument())
+      contents->HasPictureInPictureDocument()) {
     states.push_back(TabAlertState::PIP_PLAYING);
+  }
 
   // Only tabs have a RecentlyAudibleHelper, but this function is abused for
   // some non-tab WebContents. In that case fall back to using the realtime
   // notion of audibility.
   bool audible = contents->IsCurrentlyAudible();
   auto* audible_helper = RecentlyAudibleHelper::FromWebContents(contents);
-  if (audible_helper)
+  if (audible_helper) {
     audible = audible_helper->WasRecentlyAudible();
+  }
   if (audible) {
-    if (contents->IsAudioMuted())
+    if (contents->IsAudioMuted()) {
       states.push_back(TabAlertState::AUDIO_MUTING);
+    }
     states.push_back(TabAlertState::AUDIO_PLAYING);
   }
 
@@ -188,8 +211,9 @@ bool IsSiteMuted(const TabStripModel& tab_strip, const int index) {
   content::WebContents* web_contents = tab_strip.GetWebContentsAt(index);
 
   // Prevent crashes with null WebContents (https://crbug.com/797647).
-  if (!web_contents)
+  if (!web_contents) {
     return false;
+  }
 
   GURL url = web_contents->GetLastCommittedURL();
 
@@ -212,8 +236,9 @@ bool IsSiteMuted(const TabStripModel& tab_strip, const int index) {
 bool AreAllSitesMuted(const TabStripModel& tab_strip,
                       const std::vector<int>& indices) {
   for (int tab_index : indices) {
-    if (!IsSiteMuted(tab_strip, tab_index))
+    if (!IsSiteMuted(tab_strip, tab_index)) {
       return false;
+    }
   }
   return true;
 }

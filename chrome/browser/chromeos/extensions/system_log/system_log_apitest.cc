@@ -35,10 +35,16 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
+#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
+#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/components/kiosk/kiosk_test_utils.h"
+#include "components/user_manager/scoped_user_manager.h"
 #else  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/startup/browser_init_params.h"
 #endif
@@ -105,6 +111,9 @@ class SystemLogSigninScreenApitest
     : public MixinBasedExtensionApiTest,
       public ::testing::WithParamInterface<bool> {
  public:
+  SystemLogSigninScreenApitest()
+      : log_level_(system_logging_enabled() ? "DEBUG" : "EVENT") {}
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(ash::switches::kOobeSkipPostLogin);
     command_line->AppendSwitchASCII(switches::kAllowlistedExtensionID,
@@ -119,11 +128,13 @@ class SystemLogSigninScreenApitest
         GetOriginalSigninProfile(), &device_state_mixin_);
   }
 
-  void SetSystemLogPolicy(bool system_logging_enabled) {
+  bool system_logging_enabled() const { return GetParam(); }
+
+  void SetSystemLogPolicy() {
     device_state_mixin_.RequestDevicePolicyUpdate()
         ->policy_payload()
         ->mutable_deviceextensionssystemlogenabled()
-        ->set_value(system_logging_enabled);
+        ->set_value(system_logging_enabled());
   }
 
   void ForceInstallExtension() {
@@ -142,6 +153,8 @@ class SystemLogSigninScreenApitest
         ->GetOriginalProfile();
   }
 
+  const std::string log_level_;
+
  private:
   ash::DeviceStateMixin device_state_mixin_{
       &mixin_host_,
@@ -153,142 +166,26 @@ class SystemLogSigninScreenApitest
 // Logs EVENT or DEBUG extension logs depending on the
 // DeviceExtensionsSystemLogEnabled policy.
 IN_PROC_BROWSER_TEST_P(SystemLogSigninScreenApitest, AddLogFromSignInScreen) {
-  const bool system_logging_enabled = GetParam();
-  SetSystemLogPolicy(system_logging_enabled);
+  SetSystemLogPolicy();
 
   SetCustomArg(kSystemLogAvailableTestName);
   ResultCatcher catcher;
 
   ForceInstallExtension();
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
-
-  const std::string log_level = system_logging_enabled ? "DEBUG" : "EVENT";
-  VerifyDeviceEventLogLevel(log_level, /*on_signin_screen=*/true);
+  VerifyDeviceEventLogLevel(log_level_, /*on_signin_screen=*/true);
 
   // Logs are forwarded to the feedback report if they are added to the device
   // event log with an EVENT log level. Otherwise the logs will be added to the
   // feedback report via the system log file.
   EXPECT_EQ(AreLogsForwardedToFeedbackReport(/*on_signin_screen=*/true),
-            !system_logging_enabled);
+            !system_logging_enabled());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SystemLogSigninScreenApitest,
                          /*system_logging_enabled=*/testing::Bool());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-// Verifies the systemLog API logs in user sessions.
-class SystemLogUserSessionApitest : public MixinBasedExtensionApiTest,
-                                    public ::testing::WithParamInterface<bool> {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    MixinBasedExtensionApiTest::SetUpCommandLine(command_line);
-
-    command_line->AppendSwitchASCII(switches::kAllowlistedExtensionID,
-                                    kExtensionId);
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    MixinBasedExtensionApiTest::SetUpInProcessBrowserTestFixture();
-
-    mock_policy_provider_.SetDefaultReturns(
-        /*is_initialization_complete_return=*/true,
-        /*is_first_policy_load_complete_return=*/true);
-    mock_policy_provider_.SetAutoRefresh();
-    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
-        &mock_policy_provider_);
-  }
-
-  void SetUpOnMainThread() override {
-    extension_force_install_mixin_.InitWithMockPolicyProvider(
-        profile(), &mock_policy_provider_);
-
-    MixinBasedExtensionApiTest::SetUpOnMainThread();
-  }
-
-  void SetSystemLogPolicy(bool system_logging_enabled) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    policy::PolicyMap policy_map =
-        mock_policy_provider_.policies()
-            .Get(policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME,
-                                         /*component_id=*/std::string()))
-            .Clone();
-    policy_map.Set(policy::key::kDeviceExtensionsSystemLogEnabled,
-                   policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
-                   policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
-    mock_policy_provider_.UpdateChromePolicy(policy_map);
-#else  // BUILDFLAG(IS_CHROMEOS_LACROS)
-    auto params = chromeos::BrowserInitParams::GetForTests()->Clone();
-    params->session_type = crosapi::mojom::SessionType::kRegularSession;
-    params->device_settings = crosapi::mojom::DeviceSettings::New();
-    params->device_settings->device_extensions_system_log_enabled =
-        system_logging_enabled
-            ? crosapi::mojom::DeviceSettings::OptionalBool::kTrue
-            : crosapi::mojom::DeviceSettings::OptionalBool::kFalse;
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
-#endif
-  }
-
-  void ForceInstallExtension() {
-    base::FilePath test_dir_path =
-        base::PathService::CheckedGet(chrome::DIR_TEST_DATA);
-
-    EXPECT_TRUE(extension_force_install_mixin_.ForceInstallFromSourceDir(
-        test_dir_path.AppendASCII(kApiExtensionRelativePath),
-        test_dir_path.AppendASCII(kExtensionPemRelativePath),
-        ExtensionForceInstallMixin::WaitMode::kLoad));
-  }
-
- private:
-  ExtensionForceInstallMixin extension_force_install_mixin_{&mixin_host_};
-  testing::NiceMock<policy::MockConfigurationPolicyProvider>
-      mock_policy_provider_;
-};
-
-// Logs EVENT extension logs irrespective of the
-// DeviceExtensionsSystemLogEnabled policy.
-IN_PROC_BROWSER_TEST_P(SystemLogUserSessionApitest, AddLogFromUserSession) {
-  const bool system_logging_enabled = GetParam();
-  SetSystemLogPolicy(system_logging_enabled);
-
-  SetCustomArg(kSystemLogAvailableTestName);
-  ResultCatcher catcher;
-
-  ForceInstallExtension();
-  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
-
-  // Logs are always added to the device event log buffer with the EVENT level.
-  VerifyDeviceEventLogLevel("EVENT");
-
-  // Logs are always forwarded to the feedback report via the device event log
-  // buffer.
-  EXPECT_TRUE(AreLogsForwardedToFeedbackReport());
-}
-
-IN_PROC_BROWSER_TEST_P(SystemLogUserSessionApitest,
-                       DeniesNonPolicyInstalledExtensions) {
-  const bool system_logging_enabled = GetParam();
-  SetSystemLogPolicy(system_logging_enabled);
-
-  SetCustomArg(kSystemLogUndefinedTestName);
-  ResultCatcher catcher;
-
-  // Add user installed extension.
-  extensions::ChromeTestExtensionLoader loader(profile());
-  base::FilePath extension_path =
-      base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
-          .AppendASCII(kApiExtensionRelativePath);
-  loader.set_location(extensions::mojom::ManifestLocation::kInternal);
-  loader.set_pack_extension(true);
-  loader.set_ignore_manifest_warnings(true);
-  loader.LoadExtension(extension_path);
-
-  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
-}
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         SystemLogUserSessionApitest,
-                         /*system_logging_enabled=*/testing::Bool());
 
 // Verifies the systemLog API logs in managed guest sessions.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -302,6 +199,9 @@ class SystemLogManagedGuestSessionApitest
 #endif
 
  public:
+  SystemLogManagedGuestSessionApitest()
+      : log_level_(system_logging_enabled() ? "DEBUG" : "EVENT") {}
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     DevicePolicyCrosBrowserTest::SetUpCommandLine(command_line);
@@ -316,8 +216,8 @@ class SystemLogManagedGuestSessionApitest
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  void SetSystemLogPolicy(bool system_logging_enabled) {
-    SetDevicePolicies(system_logging_enabled);
+  void SetSystemLogPolicy() {
+    SetDevicePolicies();
     ash::test::WaitForPrimaryUserSessionStart();
     Profile* profile = GetActiveUserProfile();
 
@@ -328,7 +228,7 @@ class SystemLogManagedGuestSessionApitest
         kManagedAccountId, policy::dm_protocol::kChromePublicAccountPolicyType);
   }
 
-  void SetDevicePolicies(bool system_logging_enabled) {
+  void SetDevicePolicies() {
     enterprise_management::ChromeDeviceSettingsProto& proto(
         device_policy()->payload());
     // Set Managed Guest Session policy.
@@ -344,7 +244,7 @@ class SystemLogManagedGuestSessionApitest
 
     // Set System Log policy.
     proto.mutable_deviceextensionssystemlogenabled()->set_value(
-        system_logging_enabled);
+        system_logging_enabled());
     RefreshDevicePolicy();
     policy_test_server_mixin_.UpdateDevicePolicy(proto);
   }
@@ -386,17 +286,19 @@ class SystemLogManagedGuestSessionApitest
     MixinBasedExtensionApiTest::SetUpOnMainThread();
   }
 
-  void SetSystemLogPolicy(bool system_logging_enabled) {
+  void SetSystemLogPolicy() {
     auto params = chromeos::BrowserInitParams::GetForTests()->Clone();
     params->session_type = crosapi::mojom::SessionType::kPublicSession;
     params->device_settings = crosapi::mojom::DeviceSettings::New();
     params->device_settings->device_extensions_system_log_enabled =
-        system_logging_enabled
+        system_logging_enabled()
             ? crosapi::mojom::DeviceSettings::OptionalBool::kTrue
             : crosapi::mojom::DeviceSettings::OptionalBool::kFalse;
     chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
   }
 #endif
+
+  bool system_logging_enabled() const { return GetParam(); }
 
   void ForceInstallExtension() {
     base::FilePath test_dir_path =
@@ -412,6 +314,8 @@ class SystemLogManagedGuestSessionApitest
     config_.Set("customArg", base::Value(custom_arg));
     extensions::TestGetConfigFunction::set_test_config_state(&config_);
   }
+
+  const std::string log_level_;
 
  protected:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -429,25 +333,166 @@ class SystemLogManagedGuestSessionApitest
 // DeviceExtensionsSystemLogEnabled policy.
 IN_PROC_BROWSER_TEST_P(SystemLogManagedGuestSessionApitest,
                        AddLogFromManagedGuestSession) {
-  const bool system_logging_enabled = GetParam();
-  SetSystemLogPolicy(system_logging_enabled);
+  SetSystemLogPolicy();
 
   SetTestCustomArg(kSystemLogAvailableTestName);
   ResultCatcher catcher;
 
   ForceInstallExtension();
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
-
-  const std::string log_level = system_logging_enabled ? "DEBUG" : "EVENT";
-  VerifyDeviceEventLogLevel(log_level);
+  VerifyDeviceEventLogLevel(log_level_);
 
   // Logs are forwarded to the feedback report if they are added to the device
   // event log with an EVENT log level. Otherwise the logs will be added to the
   // feedback report via the system log file.
-  EXPECT_EQ(AreLogsForwardedToFeedbackReport(), !system_logging_enabled);
+  EXPECT_EQ(AreLogsForwardedToFeedbackReport(), !system_logging_enabled());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SystemLogManagedGuestSessionApitest,
                          /*system_logging_enabled=*/testing::Bool());
+
+// Verifies the systemLog API logs in regular user sessions.
+class SystemLogUserSessionApitest : public MixinBasedExtensionApiTest,
+                                    public ::testing::WithParamInterface<bool> {
+ public:
+  SystemLogUserSessionApitest()
+      : log_level_(system_logging_enabled() ? "DEBUG" : "EVENT") {}
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    MixinBasedExtensionApiTest::SetUpCommandLine(command_line);
+
+    command_line->AppendSwitchASCII(switches::kAllowlistedExtensionID,
+                                    kExtensionId);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    MixinBasedExtensionApiTest::SetUpInProcessBrowserTestFixture();
+
+    mock_policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    mock_policy_provider_.SetAutoRefresh();
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &mock_policy_provider_);
+  }
+
+  void SetUpOnMainThread() override {
+    extension_force_install_mixin_.InitWithMockPolicyProvider(
+        profile(), &mock_policy_provider_);
+
+    MixinBasedExtensionApiTest::SetUpOnMainThread();
+  }
+
+  bool system_logging_enabled() const { return GetParam(); }
+
+  void SetSystemLogPolicy() {
+    scoped_testing_cros_settings_.device_settings()->SetBoolean(
+        ash::kDeviceExtensionsSystemLogEnabled, system_logging_enabled());
+  }
+
+  void ForceInstallExtension() {
+    base::FilePath test_dir_path =
+        base::PathService::CheckedGet(chrome::DIR_TEST_DATA);
+
+    EXPECT_TRUE(extension_force_install_mixin_.ForceInstallFromSourceDir(
+        test_dir_path.AppendASCII(kApiExtensionRelativePath),
+        test_dir_path.AppendASCII(kExtensionPemRelativePath),
+        ExtensionForceInstallMixin::WaitMode::kLoad));
+  }
+
+  const std::string log_level_;
+
+ protected:
+  ExtensionForceInstallMixin extension_force_install_mixin_{&mixin_host_};
+  testing::NiceMock<policy::MockConfigurationPolicyProvider>
+      mock_policy_provider_;
+  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
+};
+
+// Logs EVENT extension logs irrespective of the
+// DeviceExtensionsSystemLogEnabled policy.
+IN_PROC_BROWSER_TEST_P(SystemLogUserSessionApitest, AddLogFromUserSession) {
+  SetSystemLogPolicy();
+
+  SetCustomArg(kSystemLogAvailableTestName);
+  ResultCatcher catcher;
+
+  ForceInstallExtension();
+  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+
+  // Logs are always added to the device event log buffer with the EVENT level.
+  VerifyDeviceEventLogLevel("EVENT");
+
+  // Logs are always forwarded to the feedback report via the device event log
+  // buffer.
+  EXPECT_TRUE(AreLogsForwardedToFeedbackReport());
+}
+
+IN_PROC_BROWSER_TEST_P(SystemLogUserSessionApitest,
+                       DeniesNonPolicyInstalledExtensions) {
+  SetSystemLogPolicy();
+
+  SetCustomArg(kSystemLogUndefinedTestName);
+  ResultCatcher catcher;
+
+  // Add user installed extension.
+  extensions::ChromeTestExtensionLoader loader(profile());
+  base::FilePath extension_path =
+      base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
+          .AppendASCII(kApiExtensionRelativePath);
+  loader.set_location(extensions::mojom::ManifestLocation::kInternal);
+  loader.set_pack_extension(true);
+  loader.set_ignore_manifest_warnings(true);
+  loader.LoadExtension(extension_path);
+
+  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SystemLogUserSessionApitest,
+                         /*system_logging_enabled=*/testing::Bool());
+
+// Verifies the systemLog API logs in Kiosk sessions.
+class SystemLogKioskSessionApitest : public SystemLogUserSessionApitest {
+ public:
+  void SetUpOnMainThread() override {
+    user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+    chromeos::SetUpFakeKioskSession();
+
+    SystemLogUserSessionApitest::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    user_manager_.Reset();
+    SystemLogUserSessionApitest::TearDownOnMainThread();
+  }
+
+ private:
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      user_manager_;
+};
+
+// Logs EVENT or DEBUG extension logs depending on the
+// DeviceExtensionsSystemLogEnabled policy.
+IN_PROC_BROWSER_TEST_P(SystemLogKioskSessionApitest, AddLogFromKioskSession) {
+  SetSystemLogPolicy();
+
+  SetCustomArg(kSystemLogAvailableTestName);
+  ResultCatcher catcher;
+
+  ForceInstallExtension();
+  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+  VerifyDeviceEventLogLevel(log_level_);
+
+  // Logs are forwarded to the feedback report if they are added to the device
+  // event log with an EVENT log level. Otherwise the logs will be added to the
+  // feedback report via the system log file.
+  EXPECT_EQ(AreLogsForwardedToFeedbackReport(), !system_logging_enabled());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SystemLogKioskSessionApitest,
+                         /*system_logging_enabled=*/testing::Bool());
+
 }  // namespace extensions

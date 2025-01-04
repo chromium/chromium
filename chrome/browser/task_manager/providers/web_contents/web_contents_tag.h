@@ -54,7 +54,7 @@ class WebContentsTag : public base::SupportsUserData::Data {
 
  private:
   // The user data key.
-  static void* kTagKey;
+  static const void* kTagKey;
 
   // The owning WebContents.
   raw_ptr<content::WebContents> web_contents_;

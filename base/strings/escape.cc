@@ -187,10 +187,12 @@ const char kUrlUnescape[128] = {
 bool UnescapeUnsignedByteAtIndex(std::string_view escaped_text,
                                  size_t index,
                                  unsigned char* value) {
-  if ((index + 2) >= escaped_text.size())
+  if ((index + 2) >= escaped_text.size()) {
     return false;
-  if (escaped_text[index] != '%')
+  }
+  if (escaped_text[index] != '%') {
     return false;
+  }
   char most_sig_digit(escaped_text[index + 1]);
   char least_sig_digit(escaped_text[index + 2]);
   if (IsHexDigit(most_sig_digit) && IsHexDigit(least_sig_digit)) {
@@ -213,8 +215,9 @@ bool UnescapeUTF8CharacterAtIndex(std::string_view escaped_text,
   DCHECK(unescaped_out->empty());
 
   unsigned char bytes[CBU8_MAX_LENGTH];
-  if (!UnescapeUnsignedByteAtIndex(escaped_text, index, &bytes[0]))
+  if (!UnescapeUnsignedByteAtIndex(escaped_text, index, &bytes[0])) {
     return false;
+  }
 
   size_t num_bytes = 1;
 
@@ -388,11 +391,13 @@ std::string UnescapeURLWithAdjustmentsImpl(
     std::string_view escaped_text,
     UnescapeRule::Type rules,
     OffsetAdjuster::Adjustments* adjustments) {
-  if (adjustments)
+  if (adjustments) {
     adjustments->clear();
+  }
   // Do not unescape anything, return the |escaped_text| text.
-  if (rules == UnescapeRule::NONE)
+  if (rules == UnescapeRule::NONE) {
     return std::string(escaped_text);
+  }
 
   // The output of the unescaping is always smaller than the input, so we can
   // reserve the input size to make sure we have enough buffer and don't have
@@ -416,8 +421,9 @@ std::string UnescapeURLWithAdjustmentsImpl(
       unsigned char non_utf8_byte;
       if (UnescapeUnsignedByteAtIndex(escaped_text, i, &non_utf8_byte)) {
         result.push_back(static_cast<char>(non_utf8_byte));
-        if (adjustments)
+        if (adjustments) {
           adjustments->push_back(OffsetAdjuster::Adjustment(i, 3, 1));
+        }
         i += 3;
         continue;
       }
@@ -542,8 +548,9 @@ std::string UnescapeBinaryURLComponent(std::string_view escaped_text,
   // unescape, so we can take the fast path.
   if (escaped_text.find('%') == std::string_view::npos) {
     std::string unescaped_text(escaped_text);
-    if (rules & UnescapeRule::REPLACE_PLUS_WITH_SPACE)
+    if (rules & UnescapeRule::REPLACE_PLUS_WITH_SPACE) {
       std::replace(unescaped_text.begin(), unescaped_text.end(), '+', ' ');
+    }
     return unescaped_text;
   }
 
@@ -597,8 +604,9 @@ bool UnescapeBinaryURLComponentSafe(std::string_view escaped_text,
     illegal_encoded_bytes.insert('/');
     illegal_encoded_bytes.insert('\\');
   }
-  if (ContainsEncodedBytes(escaped_text, illegal_encoded_bytes))
+  if (ContainsEncodedBytes(escaped_text, illegal_encoded_bytes)) {
     return false;
+  }
 
   *unescaped_text = UnescapeBinaryURLComponent(escaped_text);
   return true;
@@ -611,8 +619,9 @@ bool ContainsEncodedBytes(std::string_view escaped_text,
     // UnescapeUnsignedByteAtIndex does bounds checking, so this is always safe
     // to call.
     if (UnescapeUnsignedByteAtIndex(escaped_text, i, &byte)) {
-      if (bytes.find(byte) != bytes.end())
+      if (bytes.find(byte) != bytes.end()) {
         return true;
+      }
 
       i += 3;
       continue;
@@ -634,8 +643,9 @@ std::u16string UnescapeForHTML(std::u16string_view input) {
   };
   constexpr size_t kEscapeToCharsCount = std::size(kEscapeToChars);
 
-  if (input.find(u"&") == std::string::npos)
+  if (input.find(u"&") == std::string::npos) {
     return std::u16string(input);
+  }
 
   std::u16string ampersand_chars[kEscapeToCharsCount];
   std::u16string text(input);

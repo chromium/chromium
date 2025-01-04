@@ -108,6 +108,10 @@ class NET_EXPORT CookieInclusionStatus {
     EXCLUDE_THIRD_PARTY_PHASEOUT = 25,
     // Cookie contains no content or only whitespace.
     EXCLUDE_NO_COOKIE_CONTENT = 26,
+    // Cookie aliases that of another with a different source_port or
+    // source_scheme. I.e.: Two or more cookies share the same name but have
+    // different ports/schemes..
+    EXCLUDE_ALIASING = 27,
 
     // This should be kept last.
     NUM_EXCLUSION_REASONS

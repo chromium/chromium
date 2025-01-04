@@ -46,6 +46,12 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kOneGroupPerRenderer);
 // CPU c-group (via cgroup.procs).
 BASE_EXPORT BASE_DECLARE_FEATURE(kSetThreadBgForBgProcess);
 
+// FlattenCpuCgroups feature uses /sys/fs/cgroup/cpu/chrome_renderers and
+// /sys/fs/cgroup/cpu/chrome_renderers_background cpu cgroups for renderer
+// processes instead of nested cpu cgroups. Nested cpu cgroups has an overhead
+// on task scheduling.
+BASE_EXPORT BASE_DECLARE_FEATURE(kFlattenCpuCgroups);
+
 class ProcessPriorityDelegate;
 #endif
 

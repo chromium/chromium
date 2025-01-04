@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
-#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -46,8 +45,6 @@ class PostRestoreSignInProviderTest : public PlatformTest {
  public:
   explicit PostRestoreSignInProviderTest() {
     TestProfileIOS::Builder builder;
-    builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              SyncServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetFactoryWithDelegate(

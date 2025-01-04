@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -82,7 +83,7 @@ public class WebFeedBridge {
         @CalledByNative("WebFeedMetadata")
         public WebFeedMetadata(
                 byte[] id,
-                String title,
+                @JniType("std::string") String title,
                 GURL visitUrl,
                 @WebFeedSubscriptionStatus int subscriptionStatus,
                 @WebFeedAvailabilityStatus int availabilityStatus,
@@ -211,7 +212,10 @@ public class WebFeedBridge {
     /** Container for results from an QueryWebFeed request. */
     public static class QueryResult {
         @CalledByNative("QueryResult")
-        public QueryResult(String webFeedId, String title, String url) {
+        public QueryResult(
+                @JniType("std::string") String webFeedId,
+                @JniType("std::string") String title,
+                @JniType("std::string") String url) {
             this.webFeedId = webFeedId;
             this.title = title;
             this.url = url;
@@ -352,9 +356,9 @@ public class WebFeedBridge {
 
         void incrementFollowedFromWebPageMenuCount();
 
-        void queryWebFeed(String url, Callback<QueryResult> callback);
+        void queryWebFeed(@JniType("std::string") String url, Callback<QueryResult> callback);
 
-        void queryWebFeedId(String id, Callback<QueryResult> callback);
+        void queryWebFeedId(@JniType("std::string") String id, Callback<QueryResult> callback);
 
         boolean isCormorantEnabledForLocale();
 

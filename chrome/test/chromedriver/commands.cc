@@ -13,6 +13,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -246,14 +247,6 @@ void ExecuteQuitAll(const Command& quit_command,
 
 namespace {
 
-void TerminateSessionThreadOnCommandThread(
-    SessionThreadMap* session_thread_map,
-    SessionConnectionMap* session_connection_map,
-    const std::string& session_id) {
-  session_thread_map->erase(session_id);
-  session_connection_map->erase(session_id);
-}
-
 void ExecuteSessionCommandOnSessionThread(
     const char* command_name,
     const std::string& session_id,
@@ -262,8 +255,7 @@ void ExecuteSessionCommandOnSessionThread(
     bool return_ok_without_session,
     const base::Value::Dict& params,
     scoped_refptr<base::SingleThreadTaskRunner> cmd_task_runner,
-    const CommandCallback& callback_on_cmd,
-    const base::RepeatingClosure& terminate_on_cmd) {
+    const CommandCallback& callback_on_cmd) {
   Session* session = GetThreadLocalSession();
 
   if (!session) {
@@ -386,17 +378,13 @@ void ExecuteSessionCommandOnSessionThread(
                                 session->id, session->w3c_compliant));
 
   if (session->quit) {
-    session->CloseAllConnections();
-    SetThreadLocalSession(std::unique_ptr<Session>());
-    delete session;
-    cmd_task_runner->PostTask(FROM_HERE, terminate_on_cmd);
+    Session::Terminate();
   }
 }
 
 }  // namespace
 
 void ExecuteSessionCommand(SessionThreadMap* session_thread_map,
-                           SessionConnectionMap* session_connection_map,
                            const char* command_name,
                            const SessionCommand& command,
                            bool w3c_standard_command,
@@ -409,18 +397,16 @@ void ExecuteSessionCommand(SessionThreadMap* session_thread_map,
     Status status(return_ok_without_session ? kOk : kInvalidSessionId);
     callback.Run(status, std::unique_ptr<base::Value>(), session_id,
                  kW3CDefault);
-  } else {
-    iter->second->thread()->task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &ExecuteSessionCommandOnSessionThread, command_name, session_id,
-            command, w3c_standard_command, return_ok_without_session,
-            params.Clone(), base::SingleThreadTaskRunner::GetCurrentDefault(),
-            callback,
-            base::BindRepeating(&TerminateSessionThreadOnCommandThread,
-                                session_thread_map, session_connection_map,
-                                session_id)));
+    return;
   }
+
+  iter->second->thread()->task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ExecuteSessionCommandOnSessionThread, command_name,
+                     session_id, command, w3c_standard_command,
+                     return_ok_without_session, params.Clone(),
+                     base::SingleThreadTaskRunner::GetCurrentDefault(),
+                     callback));
 }
 
 namespace internal {

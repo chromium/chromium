@@ -8,8 +8,10 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
+#include "chrome/browser/nearby_sharing/certificates/constants.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_manager.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_manager_impl.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_decrypted_public_certificate.h"
@@ -89,7 +91,11 @@ class FakeNearbyShareCertificateManager : public NearbyShareCertificateManager {
   using NearbyShareCertificateManager::NotifyPrivateCertificatesChanged;
   using NearbyShareCertificateManager::NotifyPublicCertificatesDownloaded;
 
-  void set_next_salt(const std::vector<uint8_t>& salt) { next_salt_ = salt; }
+  void set_next_salt(
+      base::span<const uint8_t, kNearbyShareNumBytesMetadataEncryptionKeySalt>
+          salt) {
+    base::span(next_salt_).copy_from(salt);
+  }
 
   size_t num_get_private_certificates_as_public_certificates_calls() {
     return num_get_private_certificates_as_public_certificates_calls_;
@@ -117,7 +123,7 @@ class FakeNearbyShareCertificateManager : public NearbyShareCertificateManager {
   size_t num_download_public_certificates_calls_ = 0;
   std::vector<GetDecryptedPublicCertificateCall>
       get_decrypted_public_certificate_calls_;
-  std::vector<uint8_t> next_salt_;
+  std::array<uint8_t, kNearbyShareNumBytesMetadataEncryptionKeySalt> next_salt_;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_CERTIFICATES_FAKE_NEARBY_SHARE_CERTIFICATE_MANAGER_H_

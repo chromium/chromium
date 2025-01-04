@@ -113,6 +113,7 @@ class CheckPseudoHasCacheScopeContextTest : public PageTestBase {
     const CSSSelector* argument_selector = selector->SelectorList()->First();
 
     CheckPseudoHasArgumentContext argument_context(argument_selector,
+                                                   /*scope=*/nullptr,
                                                    match_in_shadow_tree);
     CheckPseudoHasCacheScope::Context cache_scope_context(document,
                                                           argument_context);

@@ -50,6 +50,7 @@ import urllib.parse
 
 import resource
 from os.path import expanduser
+import pprint
 
 
 # The connected components in the graph. This is useful to split the rewrite
@@ -106,42 +107,17 @@ class Node:
         return hash((self.replacement, self.include_directive))
 
     # Static method to get a node from a replacement key.
-    def from_key(replacement: str):
-        return Node.key_to_node.get(replacement)
-
-    # This is not parsable by from_string but is for debugging.
-    def to_debug_string(self) -> str:
-        # include_directory already includes explanatory text.
-        result = "{"
-        result += ("is_buffer:{},replacement:{},{},size_info_available:{}"
-                   "is_deref_node:{},is_data_change:{},neighbors:").format(
-                       self.is_buffer, self.replacement,
-                       self.include_directive, self.size_info_available,
-                       self.is_deref_node, self.is_data_change)
-        neighbors = "{"
-        for node in self.neighbors:
-            if len(neighbors) > 1:
-                neighbors += ", "
-            neighbors += node.to_debug_string()
-        neighbors += "}"
-        # We started result with a '{' thus we end it to wrap everything up
-        # nicely.
-        return result + neighbors + "}"
-
+    @classmethod
+    def from_key(cls: type, replacement: str):
+        return cls.key_to_node.get(replacement)
 
     # Static method to create a node from its string representation. This
     # deduplicate nodes by storing them in a dictionary.
-    def from_string(txt: str):
+    @classmethod
+    def from_string(cls: type, txt: str):
         # Skipping the first and last character that correspond to the curly
         # braces denoting the start and end of a serialized node.
         x = txt[1:-1].split('\\,')
-
-        # Value are escaped to avoid conflicts with the separator. Unescape
-        # them.
-        x = [urllib.parse.unquote(y) for y in x]
-
-        # `./apply-edits.py` expects `\n` to be escaped.
-        x = [y.replace('\n', '\0') for y in x]
 
         # Expect exactly 6 elements that correspond to the following node
         # attributes:
@@ -153,6 +129,13 @@ class Node:
         # - is_data_change
         assert len(x) == 6, txt
 
+        # Value are escaped to avoid conflicts with the separator. Unescape
+        # them.
+        x = [urllib.parse.unquote(y) for y in x]
+
+        # `./apply-edits.py` expects `\n` to be escaped.
+        x = [y.replace('\n', '\0') for y in x]
+
         node = Node(*x)
 
         # Deduplicate nodes, as they might appear multiple times in the input.
@@ -161,29 +144,27 @@ class Node:
 
         return Node.key_to_node[node.replacement]
 
+    def __repr__(self) -> str:
+        result = [
+            f"Node {hash(self)} {{",
+            f"  is_buffer: {self.is_buffer}",
+            f"  replacement: {self.replacement}",
+            f"  include_directive: {self.include_directive}",
+            f"  size_info_available: {self.size_info_available}",
+            f"  neighbors_directed: {pprint.pformat([hash(n) for n in self.neighbors_directed], indent=4)}",
+            "}",
+        ]
+        return "\n".join(result)
+
     # This is not parsable by from_string but is useful for debugging the graph
     # of nodes.
     def to_debug_string(self) -> str:
-        # include_directory already includes explanatory text so we don't have a
-        # string before its value.
-        result = "is_buffer:{},replacement:{},{},size_info_available:{}".format(
-            self.is_buffer, self.replacement, self.include_directive,
-            self.size_info_available)
-        result += "is_deref_node:{},is_data_change:{},".format(
-            self.is_deref_node, self.is_data_change)
-        # Recursively get neighbors_directed.
-        result += "neighbors:"
-        neighbors_directed = "{"
-        for node in self.neighbors_directed:
-            if len(neighbors_directed) > 1:
-                neighbors_directed += ", "
-            neighbors_directed += node.to_debug_string()
-        neighbors_directed += "}"
-        return result + neighbors_directed
+        return repr(self)
 
     # Static method to get all nodes.
-    def all():
-        return Node.key_to_node.values()
+    @classmethod
+    def all(cls: type):
+        return cls.key_to_node.values()
 
 
 def DFS(node: Node):
@@ -259,9 +240,12 @@ def main():
         line = line.rstrip('\n\r')
         nodes = line.split('@')
 
-        # If there's only one node, it's a buffer node.
+        # Single nodes are buffer nodes; mark them as such.
         if len(nodes) == 1:
-            Node.from_string(nodes[0]).is_buffer = '1'
+            # `from_string()` has the side effect of making the node
+            # available in class member `Node.key_to_node`.
+            buffer_node = Node.from_string(nodes[0])
+            buffer_node.is_buffer = '1'
             continue
 
         # Else, parse the edge between two nodes:

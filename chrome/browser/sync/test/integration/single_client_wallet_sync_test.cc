@@ -20,17 +20,17 @@
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chrome/browser/sync/test/integration/wallet_helper.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
-#include "components/autofill/core/browser/autofill_data_util.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager_observer.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/data_model/payments_metadata.h"
+#include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager_observer.h"
-#include "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/prefs/pref_service.h"
@@ -316,7 +316,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletWithImprovedSigninUISyncTest,
   }
 
   ASSERT_NE(nullptr, pdm);
-  std::vector<CreditCard*> cards =
+  std::vector<const CreditCard*> cards =
       pdm->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1uL, cards.size());
 
@@ -404,7 +404,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWalletWithImprovedSigninUISyncTest,
 
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
-  std::vector<CreditCard*> cards =
+  std::vector<const CreditCard*> cards =
       pdm->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1uL, cards.size());
 
@@ -588,7 +588,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
   // Make sure the data is in the DB.
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
-  std::vector<CreditCard*> cards =
+  std::vector<const CreditCard*> cards =
       pdm->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1uL, cards.size());
   EXPECT_EQ(u"0001", cards[0]->LastFourDigits());
@@ -639,7 +639,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, EmptyUpdatesAreIgnored) {
   // Make sure the card is in the DB.
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
-  std::vector<CreditCard*> cards =
+  std::vector<const CreditCard*> cards =
       pdm->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1uL, cards.size());
   EXPECT_EQ(u"0001", cards[0]->LastFourDigits());
@@ -695,7 +695,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, SameUpdatesAreIgnored) {
 
   // Record use of to get non-default metadata values.
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
-  std::vector<CreditCard*> cards =
+  std::vector<const CreditCard*> cards =
       pdm->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1uL, cards.size());
   pdm->payments_data_manager().RecordUseOfCard(*cards[0]);
@@ -737,7 +737,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ChangedEntityGetsUpdated) {
 
   // Record use of to get non-default metadata values.
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
-  std::vector<CreditCard*> cards =
+  std::vector<const CreditCard*> cards =
       pdm->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1uL, cards.size());
   pdm->payments_data_manager().RecordUseOfCard(*cards[0]);
@@ -865,7 +865,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
   WaitForNumberOfCards(1, pdm);
 
   // Make sure the card was added correctly.
-  std::vector<CreditCard*> cards =
+  std::vector<const CreditCard*> cards =
       pdm->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1uL, cards.size());
   EXPECT_EQ("a123", cards[0]->server_id());
@@ -929,7 +929,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
   WaitForNumberOfCards(1, pdm);
 
   // Make sure the card was added correctly.
-  std::vector<CreditCard*> cards =
+  std::vector<const CreditCard*> cards =
       pdm->payments_data_manager().GetCreditCards();
   EXPECT_EQ(1uL, cards.size());
   EXPECT_EQ("a123", cards[0]->server_id());
@@ -983,7 +983,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
   WaitForNumberOfCards(1, pdm);
 
   // Make sure the card was added correctly.
-  std::vector<CreditCard*> cards =
+  std::vector<const CreditCard*> cards =
       pdm->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1uL, cards.size());
   EXPECT_EQ(kDefaultCardID, cards[0]->server_id());
@@ -1024,7 +1024,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
   WaitForNumberOfCards(1, pdm);
 
   // Make sure the card was added correctly.
-  std::vector<CreditCard*> cards =
+  std::vector<const CreditCard*> cards =
       pdm->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1uL, cards.size());
   EXPECT_EQ(kDefaultCardID, cards[0]->server_id());

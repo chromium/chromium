@@ -15,7 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
-#include "components/autofill/core/browser/password_form_classification.h"
+#include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"

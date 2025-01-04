@@ -12,5 +12,12 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/media/webrtc",
   "+chrome/browser/profiles",
+  "+chrome/browser/ui/ash/new_window",
   "+chrome/test",
 ]
+
+specific_include_rules = {
+  "ash_web_view_impl_browsertest.cc": [
+    "+chrome/browser/ui/browser.h"
+  ]
+}

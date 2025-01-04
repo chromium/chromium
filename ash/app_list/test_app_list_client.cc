@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "ui/menus/simple_menu_model.h"
 
 namespace ash {
@@ -152,6 +153,11 @@ void TestAppListClient::RecordAppsDefaultVisibility(
 
 bool TestAppListClient::HasReordered() {
   return false;
+}
+
+void TestAppListClient::GetAssistantNewEntryPointEligibility(
+    GetAssistantNewEntryPointEligibilityCallback callback) {
+  std::move(callback).Run(ash::assistant::features::IsNewEntryPointEnabled());
 }
 
 }  // namespace ash

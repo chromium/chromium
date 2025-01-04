@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">Gert var hlé á niðurhali</translation>
 <translation id="1396327438254055134">Leyfa vefsvæði að nota V8 optimizer.</translation>
 <translation id="1415402041810619267">Stytt vefslóð</translation>
+<translation id="1415855080660575082">Leyfðu Chrome að deila nýlegum flipum með tækinu þínu svo að þú getir séð þá á forritalista og í leitarniðurstöðum tækisins. Þú getur kveikt eða slökkt á þessu í stillingum Chrome.</translation>
 <translation id="1448064542941920355">Minnka aðdrátt</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> vefsvæði}one{<ph name="SITE_COUNT" /> vefsvæði}other{<ph name="SITE_COUNT" /> vefsvæðum}}</translation>
 <translation id="1500473259453106018">Fela spjaldið „Verðlækkun á flipum“</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">Þú leyfðir þessu vefsvæði að nota fótspor þriðju aðila tímabundið. Þetta þýðir minni vernd við vefskoðun en líklegra er að eiginleikar vefsvæðisins virki sem skyldi. <ph name="BEGIN_LINK" />Senda ábendingu<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Eiginleikar sumra vefsvæða virka e.t.v. ekki í huliðsstillingu</translation>
 <translation id="2442870161001914531">Biðja alltaf um tölvuútgáfu vefsvæða</translation>
+<translation id="2445311670906052406">Chrome deilir nú nýlegum flipum með tækinu þínu. Þú getur séð þá á forritalista og í leitarniðurstöðum tækisins. Þú getur slökkt á þessu hvenær sem er í stillingum Chrome.</translation>
 <translation id="2469312991797799607">Þessi aðgerð eyðir öllum gögnum og fótsporum fyrir <ph name="ORIGIN" /> og öll undirvefsvæði þess</translation>
 <translation id="2482878487686419369">Tilkynningar</translation>
 <translation id="2485422356828889247">Fjarlægja</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">Vefsvæði geta nú birt innskráningartilkynningar frá auðkenningarþjónustum.</translation>
 <translation id="2787357173144933081">Forræsing veffangastiku</translation>
 <translation id="2790501146643349491">Þegar kveikt er á þessu geta vefsvæði sem nýlega var lokað lokið við að senda og taka á móti gögnum. Þegar slökkt er á þessu geta vefsvæði sem nýlega var lokað ekki lokið við að senda og taka á móti gögnum.</translation>
+<translation id="2814830417943086299">Chrome sýnir núna nýlega flipa á forritalista og í leitarniðurstöðum tækisins. Þú getur slökkt á þessu hvenær sem er í stillingum Chrome.</translation>
 <translation id="2822354292072154809">Viltu örugglega endurstilla allar heimildir vefsvæða fyrir „<ph name="CHOSEN_OBJECT_NAME" />“?</translation>
 <translation id="2850913818900871965">Biðja um símaútgáfu</translation>
 <translation id="2870560284913253234">Vefsvæði</translation>
@@ -124,7 +127,6 @@
 <translation id="2903493209154104877">Heimilisföng</translation>
 <translation id="2910701580606108292">Spyrja áður en vefsvæðum er veitt heimild til að spila varið efni</translation>
 <translation id="2918484639460781603">Opna stillingar</translation>
-<translation id="2927133898344569563">Hafðu greiðan aðgang að flipatillögum á forritalista og í leitarniðurstöðum tækisins. Þú getur kveikt eða slökkt á þessu hvenær sem er í stillingum Chrome.</translation>
 <translation id="2932883381142163287">Tilkynna misnotkun</translation>
 <translation id="2939338015096024043">Þegar kveikt er á þessu geta vefsvæði beðið um að rekja stöðu myndavélarinnar og kynnt sér umhverfi þitt. Þegar slökkt er á þessu geta vefsvæði hvorki rakið stöðu myndavélarinnar né kynnt sér umhverfi þitt.</translation>
 <translation id="2968755619301702150">Vottorðaskoðari</translation>
@@ -336,7 +338,6 @@
 <translation id="5968921426641056619">Sláðu inn vefslóð</translation>
 <translation id="5975083100439434680">Minnka aðdrátt</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
-<translation id="6015145568571136419">Nú ertu með greiðan aðgang að flipatillögum á forritalista og í leitarniðurstöðum tækisins. Þú getur slökkt á þessu hvenær sem er í stillingum Chrome.</translation>
 <translation id="6015775454662021376">Stjórnaðu aðgangi þessa vefsvæðis að tækinu þínu</translation>
 <translation id="6040143037577758943">Loka</translation>
 <translation id="6042308850641462728">Meira</translation>
@@ -559,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{„<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ og <ph name="NUM_MORE" /> í viðbót}one{„<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ og <ph name="NUM_MORE" /> í viðbót}other{„<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ og <ph name="NUM_MORE" /> í viðbót}}</translation>
 <translation id="913657688200966289">Kveiktu á heimildum fyrir <ph name="APP_NAME" /> í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Aðdráttur er nú <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="9156722768168878035">Láta Chrome sýna nýlega flipa á forritalista og í leitarniðurstöðum tækisins. Þú getur slökkt á þessu hvenær sem er í stillingum Chrome.</translation>
 <translation id="9162462602695099906">Þessi síða er hættuleg</translation>
 <translation id="947156494302904893">Vefsvæði geta staðfest að þú sért manneskja en ekki botti</translation>
 <translation id="959682366969460160">Skipulag</translation>

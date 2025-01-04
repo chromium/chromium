@@ -16,6 +16,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.DoNotInline;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -33,10 +35,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * A Chromium version of android.os.AsyncTask.
  *
- * The API is quite close to Android's Oreo version, but with a number of things removed.
+ * <p>The API is quite close to Android's Oreo version, but with a number of things removed.
+ *
  * @param <Result> Return type of the background task.
  */
-public abstract class AsyncTask<Result> {
+@NullMarked
+public abstract class AsyncTask<Result extends @Nullable Object> {
     private static final String TAG = "AsyncTask";
 
     private static final String GET_STATUS_UMA_HISTOGRAM =
@@ -139,14 +143,14 @@ public abstract class AsyncTask<Result> {
         mFuture = new NamedFutureTask(mWorker);
     }
 
-    private void postResultIfNotInvoked(Result result) {
+    private void postResultIfNotInvoked(@Nullable Result result) {
         final boolean wasTaskInvoked = mTaskInvoked.get();
         if (!wasTaskInvoked) {
             postResult(result);
         }
     }
 
-    private void postResult(Result result) {
+    private void postResult(@Nullable Result result) {
         // We check if this task is of a type which does not require post-execution.
         if (this instanceof BackgroundOnlyAsyncTask) {
             mStatus = Status.FINISHED;
@@ -202,16 +206,15 @@ public abstract class AsyncTask<Result> {
     protected void onPreExecute() {}
 
     /**
-     * <p>Runs on the UI thread after {@link #doInBackground}. The
-     * specified result is the value returned by {@link #doInBackground}.</p>
+     * Runs on the UI thread after {@link #doInBackground}. The specified result is the value
+     * returned by {@link #doInBackground}.
      *
-     * <p>This method won't be invoked if the task was cancelled.</p>
+     * <p>This method won't be invoked if the task was cancelled.
      *
-     * <p> Must be overridden by subclasses. If a subclass doesn't need
-     * post-execution, is should extend BackgroundOnlyAsyncTask instead.
+     * <p>Must be overridden by subclasses. If a subclass doesn't need post-execution, is should
+     * extend BackgroundOnlyAsyncTask instead.
      *
      * @param result The result of the operation computed by {@link #doInBackground}.
-     *
      * @see #onPreExecute
      * @see #doInBackground
      * @see #onCancelled(Object)
@@ -221,22 +224,19 @@ public abstract class AsyncTask<Result> {
     protected abstract void onPostExecute(Result result);
 
     /**
-     * <p>Runs on the UI thread after {@link #cancel(boolean)} is invoked and
-     * {@link #doInBackground()} has finished.</p>
+     * Runs on the UI thread after {@link #cancel(boolean)} is invoked and {@link #doInBackground()}
+     * has finished.
      *
-     * <p>The default implementation simply invokes {@link #onCancelled()} and
-     * ignores the result. If you write your own implementation, do not call
-     * <code>super.onCancelled(result)</code>.</p>
+     * <p>The default implementation simply invokes {@link #onCancelled()} and ignores the result.
+     * If you write your own implementation, do not call <code>super.onCancelled(result)</code>.
      *
-     * @param result The result, if any, computed in
-     *               {@link #doInBackground()}, can be null
-     *
+     * @param result The result, if any, computed in {@link #doInBackground()}, can be null
      * @see #cancel(boolean)
      * @see #isCancelled()
      */
     @SuppressWarnings({"UnusedParameters"})
     @MainThread
-    protected void onCancelled(Result result) {
+    protected void onCancelled(@Nullable Result result) {
         onCancelled();
     }
 
@@ -459,7 +459,8 @@ public abstract class AsyncTask<Result> {
         return this;
     }
 
-    private void finish(Result result) {
+    @SuppressWarnings("NullAway") // onPostExecute is non-null when <Result> is non-null.
+    private void finish(@Nullable Result result) {
         if (isCancelled()) {
             onCancelled(result);
         } else {

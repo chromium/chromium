@@ -18,7 +18,6 @@ class Window;
 namespace views {
 class ImageView;
 class Label;
-class View;
 }  // namespace views
 
 namespace ash {
@@ -58,6 +57,9 @@ class ASH_EXPORT WindowMiniViewHeaderView : public views::BoxLayoutView {
   void ResetRoundedCorners();
 
  private:
+  // views::View:
+  void OnThemeChanged() override;
+
   // The parent view of `this`, which is guaranteed not null during the lifetime
   // of `this`.
   raw_ptr<WindowMiniView> window_mini_view_;
@@ -69,6 +71,9 @@ class ASH_EXPORT WindowMiniViewHeaderView : public views::BoxLayoutView {
   // Views for the icon and title. Owned by the views hierarchy.
   raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<views::ImageView> icon_view_ = nullptr;
+
+  // Separator between the header and the overview window.
+  raw_ptr<views::View> separator_ = nullptr;
 
   // The current rounded corner parameters for this view's background. May be
   // `nullopt` if a background is not set yet.

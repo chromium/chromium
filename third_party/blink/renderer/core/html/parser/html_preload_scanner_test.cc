@@ -1378,21 +1378,6 @@ TEST_F(HTMLPreloadScannerTest, testLinkRelPreload) {
     Test(test_case);
 }
 
-TEST_F(HTMLPreloadScannerTest, testNoDataUrls) {
-  PreloadScannerTestCase test_cases[] = {
-      {"http://example.test",
-       "<link rel=preload href='data:text/html,<p>data</data>'>", nullptr,
-       "http://example.test/", ResourceType::kRaw, 0},
-      {"http://example.test", "<img src='data:text/html,<p>data</data>'>",
-       nullptr, "http://example.test/", ResourceType::kImage, 0},
-      {"data:text/html,<a>anchor</a>", "<img src='#anchor'>", nullptr,
-       "http://example.test/", ResourceType::kImage, 0},
-  };
-
-  for (const auto& test_case : test_cases)
-    Test(test_case);
-}
-
 // The preload scanner should follow the same policy that the ScriptLoader does
 // with regard to the type and language attribute.
 TEST_F(HTMLPreloadScannerTest, testScriptTypeAndLanguage) {
@@ -1808,6 +1793,58 @@ TEST_F(HTMLPreloadScannerTest, testSharedStorageWritable) {
              network::mojom::ReferrerPolicy::kDefault,
              /*use_secure_document_url=*/test_case.use_secure_document_url);
     Test(test_case);
+  }
+}
+
+class HTMLPreloadScannerDataUrlsTest
+    : public HTMLPreloadScannerTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  HTMLPreloadScannerDataUrlsTest() = default;
+
+ protected:
+  bool IsPreloadLinkRelDataUrlsEnabled() { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(HTMLPreloadScannerDataUrlsTest,
+                         HTMLPreloadScannerDataUrlsTest,
+                         testing::Bool());
+
+TEST_P(HTMLPreloadScannerDataUrlsTest, testDataUrls) {
+  ScopedPreloadLinkRelDataUrlsForTest preload_link_rel_data_urls(
+      IsPreloadLinkRelDataUrlsEnabled());
+  PreloadScannerTestCase test_cases[] = {
+      {"http://example.test",
+       "<link rel=preload href='data:text/html,<p>data</data>'>", nullptr,
+       "http://example.test/", ResourceType::kRaw, 0},
+      {"http://example.test",
+       "<link rel=preload as=style "
+       "href='data:text/css;charset=UTF-8,*%7Bcolor%3Ablue%3B%7D'>",
+       IsPreloadLinkRelDataUrlsEnabled()
+           ? "data:text/css;charset=UTF-8,*%7Bcolor%3Ablue%3B%7D"
+           : nullptr,
+       "http://example.test/", ResourceType::kCSSStyleSheet, 0},
+      {"http://example.test", "<img src='data:text/html,<p>data</data>'>",
+       nullptr, "http://example.test/", ResourceType::kImage, 0},
+      {"data:text/html,<a>anchor</a>", "<img src='#anchor'>", nullptr,
+       "http://example.test/", ResourceType::kImage, 0},
+      {"http://example.test",
+       "<link rel=preload as=image "
+       "href='data:image/"
+       "png;base64,"
+       "iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFElEQVQYlWNk+M/"
+       "wn4GBgYGJAQoAHhgCAh6X4CYAAAAASUVORK5CYII='>",
+       IsPreloadLinkRelDataUrlsEnabled()
+           ? "data:image/"
+             "png;base64,"
+             "iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFElEQVQYlWNk+M/"
+             "wn4GBgYGJAQoAHhgCAh6X4CYAAAAASUVORK5CYII="
+           : nullptr,
+       "http://example.test/", ResourceType::kImage, 0},
+  };
+
+  for (const auto& test_case : test_cases) {
+    HTMLPreloadScannerTest::Test(test_case);
   }
 }
 

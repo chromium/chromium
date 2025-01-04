@@ -148,10 +148,12 @@ void WaitForEmpyOmnibox() {
 // button and asserts it doesn't commit the omnibox contents if the input is
 // canceled.
 - (void)testToolbarOmniboxHideKeyboard {
-#if TARGET_IPHONE_SIMULATOR
-  EARL_GREY_TEST_SKIPPED(@"The keyboard is not considered 'dismissed' on "
-                         @"simulator when tapping on 'hide keyboard'.");
-#endif
+  // TODO(crbug.com/41272886): Enable the test for iPad when typing bug is
+  // fixed.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Disabled for iPad due to a simulator bug.");
+  }
+
   // Tablet only (handset keyboard does not have "hide keyboard" button).
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test not support on iPhone");

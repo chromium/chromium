@@ -249,8 +249,7 @@ FontSettingsAPI::FontSettingsAPI(content::BrowserContext* context)
     : font_settings_event_router_(
           new FontSettingsEventRouter(Profile::FromBrowserContext(context))) {}
 
-FontSettingsAPI::~FontSettingsAPI() {
-}
+FontSettingsAPI::~FontSettingsAPI() = default;
 
 static base::LazyInstance<BrowserContextKeyedAPIFactory<FontSettingsAPI>>::
     DestructorAtExit g_font_settings_api_factory = LAZY_INSTANCE_INITIALIZER;

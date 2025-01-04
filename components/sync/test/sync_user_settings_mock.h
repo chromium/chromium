@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -22,12 +21,12 @@ class SyncUserSettingsMock : public SyncUserSettings {
   SyncUserSettingsMock();
   ~SyncUserSettingsMock() override;
   MOCK_METHOD(bool, IsInitialSyncFeatureSetupComplete, (), (const override));
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   MOCK_METHOD(void,
               SetInitialSyncFeatureSetupComplete,
               (SyncFirstSetupCompleteSource),
               (override));
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   MOCK_METHOD(bool, IsSyncEverythingEnabled, (), (const override));
   MOCK_METHOD(UserSelectableTypeSet, GetSelectedTypes, (), (const override));
   MOCK_METHOD(bool,
@@ -62,7 +61,7 @@ class SyncUserSettingsMock : public SyncUserSettings {
               (),
               (const override));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   MOCK_METHOD(bool, IsSyncFeatureDisabledViaDashboard, (), (const override));
   MOCK_METHOD(bool, IsSyncAllOsTypesEnabled, (), (const override));
   MOCK_METHOD(UserSelectableOsTypeSet,
@@ -81,10 +80,6 @@ class SyncUserSettingsMock : public SyncUserSettings {
               GetRegisteredSelectableOsTypes,
               (),
               (const override));
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  MOCK_METHOD(void, SetAppsSyncEnabledByOs, (bool), (override));
 #endif
 
   MOCK_METHOD(bool, IsCustomPassphraseAllowed, (), (const override));

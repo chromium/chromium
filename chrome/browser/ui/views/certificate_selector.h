@@ -23,7 +23,7 @@ namespace views {
 class LabelButton;
 class TableView;
 class View;
-}
+}  // namespace views
 
 namespace ui {
 class TableModel;

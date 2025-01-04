@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 
@@ -24,6 +25,7 @@ import android.util.Rational;
 import android.view.View;
 
 import androidx.annotation.RequiresApi;
+import androidx.lifecycle.Lifecycle;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -38,6 +40,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.UnguessableToken;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -73,6 +76,9 @@ public class PictureInPictureActivityTest {
     private static final long NATIVE_OVERLAY = 100L;
     private static final long PIP_TIMEOUT_MILLISECONDS = 10000L;
 
+    // Token that the native side will convert to `NATIVE_OVERLAY`
+    private final UnguessableToken mNativeWindowToken = UnguessableToken.createForTesting();
+
     @Mock private PictureInPictureActivity.Natives mNativeMock;
 
     private Tab mTab;
@@ -105,6 +111,8 @@ public class PictureInPictureActivityTest {
         mTab = mActivityTestRule.getActivity().getActivityTab();
         PictureInPictureActivityJni.setInstanceForTesting(mNativeMock);
         mOriginalHelper = PictureInPictureActivity.setLaunchIntoPipHelper(mLaunchIntoPipHelper);
+        when(mNativeMock.onActivityStart(eq(mNativeWindowToken), any(), any()))
+                .thenReturn(NATIVE_OVERLAY);
     }
 
     @After
@@ -267,7 +275,50 @@ public class PictureInPictureActivityTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "b/353357051")
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    public void testMediaActionsForTrackControl() throws Throwable {
+        PictureInPictureActivity activity = startPictureInPictureActivity();
+        PictureInPictureActivity.MediaActionButtonsManager manager =
+                activity.mMediaActionsButtonsManager;
+
+        activity.updateVisibleActions(new int[] {MediaSessionAction.NEXT_TRACK});
+        manager.mNextTrack.getActionIntent().send();
+        verify(mNativeMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
+                .nextTrack(eq(NATIVE_OVERLAY));
+
+        activity.updateVisibleActions(new int[] {MediaSessionAction.PREVIOUS_TRACK});
+        manager.mPreviousTrack.getActionIntent().send();
+        verify(mNativeMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
+                .previousTrack(eq(NATIVE_OVERLAY));
+
+        testExitOn(activity, () -> activity.close());
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    public void testMediaActionsForSlideControl() throws Throwable {
+        PictureInPictureActivity activity = startPictureInPictureActivity();
+        PictureInPictureActivity.MediaActionButtonsManager manager =
+                activity.mMediaActionsButtonsManager;
+
+        activity.updateVisibleActions(new int[] {MediaSessionAction.NEXT_SLIDE});
+        manager.mNextSlide.getActionIntent().send();
+        verify(mNativeMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
+                .nextSlide(eq(NATIVE_OVERLAY));
+
+        activity.updateVisibleActions(new int[] {MediaSessionAction.PREVIOUS_SLIDE});
+        manager.mPreviousSlide.getActionIntent().send();
+        verify(mNativeMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
+                .previousSlide(eq(NATIVE_OVERLAY));
+
+        testExitOn(activity, () -> activity.close());
+    }
+
+    @Test
+    @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testActionsInSync() throws Throwable {
@@ -280,29 +331,36 @@ public class PictureInPictureActivityTest {
         activity.setCameraState(true);
 
         manager.mMicrophone.getAction().getActionIntent().send();
-        manager.mCamera.getAction().getActionIntent().send();
-        manager.mPause.getActionIntent().send();
-
-        verify(mNativeMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
-                .togglePlayPause(eq(NATIVE_OVERLAY), eq(false));
         verify(mNativeMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .toggleMicrophone(eq(NATIVE_OVERLAY), eq(false));
+
+        manager.mCamera.getAction().getActionIntent().send();
         verify(mNativeMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .toggleCamera(eq(NATIVE_OVERLAY), eq(false));
+
+        manager.mPause.getActionIntent().send();
+        verify(mNativeMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
+                .togglePlayPause(eq(NATIVE_OVERLAY), eq(false));
 
         activity.setPlaybackState(PlaybackState.PAUSED);
         activity.setMicrophoneMuted(true);
         activity.setCameraState(false);
-        manager.mPlay.getActionIntent().send();
-        manager.mMicrophone.getAction().getActionIntent().send();
-        manager.mCamera.getAction().getActionIntent().send();
 
+        manager.mPlay.getActionIntent().send();
         verify(mNativeMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .togglePlayPause(eq(NATIVE_OVERLAY), eq(true));
+
+        manager.mMicrophone.getAction().getActionIntent().send();
         verify(mNativeMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .toggleMicrophone(eq(NATIVE_OVERLAY), eq(true));
+
+        manager.mCamera.getAction().getActionIntent().send();
         verify(mNativeMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .toggleCamera(eq(NATIVE_OVERLAY), eq(true));
+
+        manager.mHangUp.getActionIntent().send();
+        verify(mNativeMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
+                .hangUp(eq(NATIVE_OVERLAY));
 
         testExitOn(activity, () -> activity.close());
     }
@@ -315,6 +373,30 @@ public class PictureInPictureActivityTest {
         PictureInPictureActivity activity = startPictureInPictureActivity();
         testExitOn(activity, () -> mTab.setClosing(/* closing= */ true));
         verify(mNativeMock, times(1)).destroy(NATIVE_OVERLAY);
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    public void testPipWindowExitsIfTokenDoesNotExist() throws Throwable {
+        // If the window token doesn't produce a native window, then the activity should exit.
+        when(mNativeMock.onActivityStart(eq(mNativeWindowToken), any(), any())).thenReturn(0L);
+        PictureInPictureActivity activity = launchPictureInPictureActivity();
+
+        // The activity should be destroyed, because its native window is gone.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            activity.getLifecycle().getCurrentState(),
+                            Matchers.is(Lifecycle.State.DESTROYED));
+                },
+                PIP_TIMEOUT_MILLISECONDS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+
+        verify(mNativeMock, times(1)).onActivityStart(eq(mNativeWindowToken), eq(activity), any());
+        // Nothing should be destroyed, because there was no native window.
+        verify(mNativeMock, times(0)).destroy(anyInt());
     }
 
     private WebContents getWebContents() {
@@ -333,29 +415,13 @@ public class PictureInPictureActivityTest {
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
+    // Launch a pip activity and wait for it to successfully start.
     private PictureInPictureActivity startPictureInPictureActivity() throws Exception {
-        PictureInPictureActivity activity =
-                ActivityTestUtils.waitForActivity(
-                        InstrumentationRegistry.getInstrumentation(),
-                        PictureInPictureActivity.class,
-                        new Callable<Void>() {
-                            @Override
-                            public Void call() throws TimeoutException {
-                                ThreadUtils.runOnUiThreadBlocking(
-                                        () ->
-                                                PictureInPictureActivity.createActivity(
-                                                        NATIVE_OVERLAY,
-                                                        mTab,
-                                                        mSourceRectHint.left,
-                                                        mSourceRectHint.top,
-                                                        mSourceRectHint.width(),
-                                                        mSourceRectHint.height()));
-                                return null;
-                            }
-                        });
+        PictureInPictureActivity activity = launchPictureInPictureActivity();
+        ActivityTestUtils.waitForFirstLayout(activity);
 
         verify(mNativeMock, timeout(500).times(1))
-                .onActivityStart(eq(NATIVE_OVERLAY), eq(activity), any());
+                .onActivityStart(eq(mNativeWindowToken), eq(activity), any());
 
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -368,6 +434,32 @@ public class PictureInPictureActivityTest {
         Criteria.checkThat(
                 ratio,
                 Matchers.is(new Rational(mSourceRectHint.width(), mSourceRectHint.height())));
+
+        return activity;
+    }
+
+    // Launch a pip activity, but don't wait for it to finish starting.
+    private PictureInPictureActivity launchPictureInPictureActivity() throws Exception {
+        PictureInPictureActivity activity =
+                ActivityTestUtils.launchActivityWithTimeout(
+                        InstrumentationRegistry.getInstrumentation(),
+                        PictureInPictureActivity.class,
+                        new Callable<Void>() {
+                            @Override
+                            public Void call() throws TimeoutException {
+                                ThreadUtils.runOnUiThreadBlocking(
+                                        () ->
+                                                PictureInPictureActivity.createActivity(
+                                                        mNativeWindowToken,
+                                                        mTab,
+                                                        mSourceRectHint.left,
+                                                        mSourceRectHint.top,
+                                                        mSourceRectHint.width(),
+                                                        mSourceRectHint.height()));
+                                return null;
+                            }
+                        },
+                        PIP_TIMEOUT_MILLISECONDS);
 
         return activity;
     }

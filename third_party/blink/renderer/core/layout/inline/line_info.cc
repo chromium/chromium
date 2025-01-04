@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/inline/line_info.h"
 
 #include "base/containers/adapters.h"
@@ -589,8 +584,9 @@ void LineInfo::RemoveParallelFlowBreakToken(unsigned item_index) {
                           return a->StartItemIndex() < b->StartItemIndex();
                         }));
 #endif  //  EXPENSIVE_DCHECKS_ARE_ON()
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
   for (auto iter = parallel_flow_break_tokens_.begin();
-       iter != parallel_flow_break_tokens_.end(); ++iter) {
+       iter != parallel_flow_break_tokens_.end(); UNSAFE_TODO(++iter)) {
     const InlineBreakToken* break_token = *iter;
     DCHECK(break_token->IsInParallelBlockFlow());
     if (break_token->StartItemIndex() >= item_index) {

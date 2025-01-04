@@ -361,6 +361,7 @@
 <translation id="2295777434187870477">המיקרופון פועל. החלפת המצב תשתיק אותו.</translation>
 <translation id="2302092602801625023">‏החשבון הזה מנוהל באמצעות Family Link</translation>
 <translation id="2303600792989757991">החלפת סקירת חלון</translation>
+<translation id="2304702218354340897">בחרת להשבית את התכונה "שליטה באמצעות תנועות פנים". להמשיך?</translation>
 <translation id="2305738328104302723">‏רשימת המשימות של Google: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: צילומי מסך אחרונים, הורדות וקבצים מוצמדים</translation>
 <translation id="2318576281648121272">היום <ph name="TODAY_DATE" /></translation>
@@ -387,6 +388,7 @@
 <translation id="2370971919968699910">עשויים לחול חיובים על שימוש בחבילת הגלישה.
 ‫<ph name="DEVICECOUNT" /> מכשירים מחוברים.</translation>
 <translation id="2386292613071805067">בחירת כל תוכן הדף</translation>
+<translation id="2389423187722941333">‏הפעלה או השבתה של Gemini</translation>
 <translation id="2392659840443812875">‏אין נקודה לשיתוף אינטרנט (Hotspot). צריך לוודא שהמכשיר נמצא בקרבת מקום ושה-Bluetooth מופעל.</translation>
 <translation id="2397416548179033562">‏הצגת תפריט Chrome</translation>
 <translation id="240006516586367791">פקדי מדיה</translation>
@@ -394,6 +396,7 @@
 <translation id="2402411679569069051">‏כדי לבטל את נעילת ה-Chromebook, עליך להשתמש בטביעת האצבע או לבטל את נעילת הטלפון שלך</translation>
 <translation id="240545663114741956">כדי לצאת, מקישים פעמיים על <ph name="ACCELERATOR" />.</translation>
 <translation id="2405664212338326887">לא מחובר</translation>
+<translation id="2406710117564540804">הפעלה או השבתה של מצב "נא לא להפריע"</translation>
 <translation id="2408955596600435184">יש להזין את קוד האימות</translation>
 <translation id="2412593942846481727">יש עדכון זמין</translation>
 <translation id="2416438829169535743">לצאת מהתצוגה?</translation>
@@ -899,6 +902,7 @@
 <translation id="4119928251231465047">היו יותר מדי ניסיונות להזנת קוד האימות</translation>
 <translation id="412298498316631026">חלון</translation>
 <translation id="4123259114412175274">‏כדי לבטל את הנעילה של ה-Chromebook, צריך לוודא שה-Bluetooth בטלפון מופעל</translation>
+<translation id="4123868835475902435">‏אלה הדברים הבסיסיים שחשוב לדעת. כדאי להמשיך לעיין ב"מה חדש ב-Chromebook" – האפליקציה המובנית שלנו לקבלת טיפים ועזרה. ריכזנו שם טיפים לתחילת הדרך, הטבות מיוחדות וגם את התכונות החדשות של <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4125970834901680537">לא ניתן לשדר אפליקציות במצב טאבלט. צריך לנסות שוב במצב מחשב נייד.</translation>
 <translation id="4131973331381812765">‏הטמפרטורה: <ph name="TEMPERATURE" />°C – המהירות הנוכחית: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="4136724716305260864">התכונה פעילה עד הזריחה</translation>
@@ -1019,7 +1023,6 @@
 <translation id="4481530544597605423">מכשירים לא מותאמים</translation>
 <translation id="4485506555414638855">ביטול ההגדרה של הצגת התמונות, המדיה, ההתראות והאפליקציות שבטלפון מהזמן האחרון</translation>
 <translation id="4491109536499578614">תמונה</translation>
-<translation id="4493452241184130939">‏אלה הדברים הבסיסיים שחשוב לדעת. כדאי להמשיך לעיין ב'מה חדש ב-Chromebook' – האפליקציה המובנית שלנו לקבלת טיפים ועזרה. ריכזנו שם טיפים לתחילת הדרך, אפליקציות מומלצות, הטבות מיוחדות וגם את התכונות החדשות של <ph name="PRODUCT_NAME" />.</translation>
 <translation id="450584155212756404">Dev Channel</translation>
 <translation id="4513946894732546136">משוב</translation>
 <translation id="4518404433291145981">‏כדי לבטל את נעילת ה-Chromebook, קודם צריך לבטל את הנעילה של הטלפון</translation>
@@ -1082,7 +1085,6 @@
 <translation id="4708065238214351979">הגברת התאורה של המקלדת</translation>
 <translation id="4708185346211948049">יום <ph name="DAY_OF_WEEK" /> בשבוע הבא</translation>
 <translation id="4717575069099566988">‏כבל ה-USB-C שחיברת לא תומך ב-USB4. יכול להיות שביצועי המכשיר יוגבלו.</translation>
-<translation id="4724328513667182700">‫6 טיפים כדי להתחיל לעבוד עם <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">בשימוש לעתים קרובות</translation>
 <translation id="4731797938093519117">גישת הורים</translation>
 <translation id="4733161265940833579">%<ph name="BATTERY_PERCENTAGE" /> (שמאל)</translation>
@@ -1309,7 +1311,6 @@
 <translation id="5409208741270395213">סימון כמשימה שבוצעה</translation>
 <translation id="5413656666631274079">דף ההגדרות</translation>
 <translation id="5414198321558177633">מתבצע רענון של רשימת הפרופילים. הפעולה עשויה להימשך מספר דקות.</translation>
-<translation id="5417965108047245734">סיור מהיר שמסביר איך להתמצא ב-<ph name="PRODUCT_NAME" />.</translation>
 <translation id="5426063383988017631">תפריט ההגדרות נסגר</translation>
 <translation id="5428899915242071344">אני רוצה להתחיל לבחור</translation>
 <translation id="5429993543155113935">בשלב זה, אין תמיכה בחלונות פרטיים</translation>
@@ -1647,6 +1648,7 @@
 <translation id="6539852571005954999">מתבצעת סריקה של קובץ ההורדה <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">ההעברה אל <ph name="RECEIVER_NAME" /> מתבצעת</translation>
 <translation id="6542891623636520977">‏סמלי אמוג'י, קובצי GIF ועוד</translation>
+<translation id="6543942526104794893">בחרת להשבית את האפשרות "תנועות פנים". להמשיך?</translation>
 <translation id="6545382064335350438">לא הצלחנו לאמת את קוד האימות שלך. אפשר לנסות שוב.</translation>
 <translation id="6555373427270923730">הקלדת כתובת אינטרנט בסרגל הכתובות והקשה על <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2315,6 +2317,7 @@
 <translation id="8855885154700222542">מקש מסך מלא</translation>
 <translation id="8858369206579825206">אמצעי בקרה על פרטיות</translation>
 <translation id="8860366331836346216">‏הוספת eSIM</translation>
+<translation id="8869149849311827122">בחרת להשבית את האפשרות "שליטה עם סמן העכבר". להמשיך?</translation>
 <translation id="8870509716567206129">האפליקציה אינה תומכת במסך מפוצל.</translation>
 <translation id="8873203135446552888">להשבית את לוח המגע המובנה?</translation>
 <translation id="8874184842967597500">לא מחובר</translation>

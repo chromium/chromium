@@ -12,7 +12,11 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
+
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -37,6 +41,7 @@ import javax.annotation.concurrent.GuardedBy;
  * final String| class member. Otherwise NoDynamicStringsInTraceEventCheck error will be thrown.
  */
 @JNINamespace("base::android")
+@NullUnmarked // Cannot accurately model due to enable() / disable()
 public class EarlyTraceEvent {
     /** Single trace event. */
     @VisibleForTesting
@@ -135,11 +140,11 @@ public class EarlyTraceEvent {
     // Not final because in many configurations these objects are not used.
     @GuardedBy("sLock")
     @VisibleForTesting
-    static List<Event> sEvents;
+    static @Nullable List<Event> sEvents;
 
     @GuardedBy("sLock")
     @VisibleForTesting
-    static List<AsyncEvent> sAsyncEvents;
+    static @Nullable List<AsyncEvent> sAsyncEvents;
 
     @GuardedBy("sLock")
     @VisibleForTesting
@@ -416,17 +421,32 @@ public class EarlyTraceEvent {
 
     @NativeMethods
     interface Natives {
-        void recordEarlyBeginEvent(String name, long timeNanos, int threadId, long threadMillis);
+        void recordEarlyBeginEvent(
+                @JniType("std::string") String name,
+                long timeNanos,
+                int threadId,
+                long threadMillis);
 
-        void recordEarlyEndEvent(String name, long timeNanos, int threadId, long threadMillis);
+        void recordEarlyEndEvent(
+                @JniType("std::string") String name,
+                long timeNanos,
+                int threadId,
+                long threadMillis);
 
         void recordEarlyToplevelBeginEvent(
-                String name, long timeNanos, int threadId, long threadMillis);
+                @JniType("std::string") String name,
+                long timeNanos,
+                int threadId,
+                long threadMillis);
 
         void recordEarlyToplevelEndEvent(
-                String name, long timeNanos, int threadId, long threadMillis);
+                @JniType("std::string") String name,
+                long timeNanos,
+                int threadId,
+                long threadMillis);
 
-        void recordEarlyAsyncBeginEvent(String name, long id, long timeNanos);
+        void recordEarlyAsyncBeginEvent(
+                @JniType("std::string") String name, long id, long timeNanos);
 
         void recordEarlyAsyncEndEvent(long id, long timeNanos);
     }

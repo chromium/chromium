@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/app_list/search/local_image_search/sql_database.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
+#include "sql/database.h"
 #include "sql/statement.h"
 
 namespace app_list {
@@ -39,8 +40,7 @@ constexpr double kDefaultScore = 0.7;
 constexpr double kRelevanceWeight = 0.9;
 constexpr int kVersionNumber = 6;
 
-constexpr char kSqlDatabaseUmaTag[] =
-    "Apps.AppList.AnnotationStorage.SqlDatabase.Status";
+constexpr char kSqlDatabaseUmaTag[] = "AnnotationStorage";
 
 // These values persist to logs. Entries should not be renumbered and numeric
 // values should never be reused.
@@ -121,7 +121,7 @@ AnnotationStorage::AnnotationStorage(
     : annotation_worker_(std::move(annotation_worker)),
       sql_database_(
           std::make_unique<SqlDatabase>(path_to_db,
-                                        kSqlDatabaseUmaTag,
+                                        sql::Database::Tag(kSqlDatabaseUmaTag),
                                         current_version_number,
                                         base::BindRepeating(CreateNewSchema),
                                         base::BindRepeating(MigrateSchema))) {

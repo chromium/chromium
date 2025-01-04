@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 @class FormSuggestion;

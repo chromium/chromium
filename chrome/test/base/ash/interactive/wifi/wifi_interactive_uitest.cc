@@ -26,6 +26,7 @@
 #include "ui/base/interaction/state_observer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/polling_view_observer.h"
@@ -45,6 +46,10 @@ class WifiInteractiveUiTest : public InteractiveAshTest {
 
   using NetworkNameObserver =
       views::test::PollingViewObserver<bool, views::View>;
+
+  using ToggleAccessibilityCheckedStateObserver =
+      views::test::PollingViewObserver<ax::mojom::CheckedState,
+                                       views::ToggleButton>;
 
   // InteractiveAshTest:
   void SetUpOnMainThread() override {
@@ -137,6 +142,20 @@ class WifiInteractiveUiTest : public InteractiveAshTest {
         base::Milliseconds(50)));
   }
 
+  auto PollToggleAccessibilityCheckedState(
+      const ui::test::StateIdentifier<ToggleAccessibilityCheckedStateObserver>&
+          polling_identifier) {
+    return Steps(PollView(
+        polling_identifier, kNetworkDetailedViewWifiToggleElementId,
+        [&](const views::ToggleButton* toggle_button)
+            -> ax::mojom::CheckedState {
+          ui::AXNodeData data;
+          toggle_button->GetViewAccessibility().GetAccessibleNodeData(&data);
+          return data.GetCheckedState();
+        },
+        base::Milliseconds(500)));
+  }
+
  private:
   const ShillServiceInfo wifi_service_info_{/*id=*/0, shill::kTypeWifi};
 };
@@ -217,6 +236,8 @@ IN_PROC_BROWSER_TEST_F(WifiInteractiveUiTest,
                                       kWifiPoweredState);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ToggleObserver, kToggleButtonState);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(NetworkNameObserver, kNetworkInListState);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ToggleAccessibilityCheckedStateObserver,
+                                      kToggleAccessibilityCheckedState);
 
   ConfigureWifi(/*connected=*/true);
 
@@ -233,6 +254,7 @@ IN_PROC_BROWSER_TEST_F(WifiInteractiveUiTest,
                        kNetworkDetailedViewWifiToggleElementId,
                        &views::ToggleButton::GetIsOn),
       PollNetworkInList(WifiServiceName(), kNetworkInListState),
+      PollToggleAccessibilityCheckedState(kToggleAccessibilityCheckedState),
 
       Log("Opening the Quick Settings bubble and navigating to the network "
           "page"),
@@ -244,6 +266,8 @@ IN_PROC_BROWSER_TEST_F(WifiInteractiveUiTest,
 
       WaitForShow(kNetworkDetailedViewWifiToggleElementId),
       VerifyWifiState(/*enabled=*/true, kWifiPoweredState, kToggleButtonState),
+      WaitForState(kToggleAccessibilityCheckedState,
+                   ax::mojom::CheckedState::kTrue),
 
       Log("Verify the WiFi service in the network list"),
 
@@ -257,6 +281,8 @@ IN_PROC_BROWSER_TEST_F(WifiInteractiveUiTest,
       Log("Wait for WiFi to have the expected disabled state"),
 
       VerifyWifiState(/*enabled=*/false, kWifiPoweredState, kToggleButtonState),
+      WaitForState(kToggleAccessibilityCheckedState,
+                   ax::mojom::CheckedState::kFalse),
 
       Log("Re-enable WiFi"),
 
@@ -266,6 +292,8 @@ IN_PROC_BROWSER_TEST_F(WifiInteractiveUiTest,
       Log("Wait for WiFi to have the expected enabled state"),
 
       VerifyWifiState(/*enabled=*/true, kWifiPoweredState, kToggleButtonState),
+      WaitForState(kToggleAccessibilityCheckedState,
+                   ax::mojom::CheckedState::kTrue),
 
       Log("Verify the WiFi service in the network list"),
 

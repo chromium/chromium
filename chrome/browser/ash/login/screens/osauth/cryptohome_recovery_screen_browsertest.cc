@@ -34,6 +34,7 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -156,8 +157,9 @@ class CryptohomeRecoveryScreenTest : public CryptohomeRecoveryScreenTestBase {
  public:
   CryptohomeRecoveryScreenTest()
       : CryptohomeRecoveryScreenTestBase(LoginManagerMixin::TestUserInfo{
-            AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
-                                           FakeGaiaMixin::kFakeUserGaiaId),
+            AccountId::FromUserEmailGaiaId(
+                FakeGaiaMixin::kFakeUserEmail,
+                GaiaId(FakeGaiaMixin::kFakeUserGaiaId)),
             test::UserAuthConfig::Create({ash::AshAuthFactor::kGaiaPassword,
                                           ash::AshAuthFactor::kRecovery})
                 .RequireReauth()}) {}
@@ -174,8 +176,9 @@ class CryptohomeRecoveryScreenNoRecoveryTest
  public:
   CryptohomeRecoveryScreenNoRecoveryTest()
       : CryptohomeRecoveryScreenTestBase(LoginManagerMixin::TestUserInfo{
-            AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
-                                           FakeGaiaMixin::kFakeUserGaiaId),
+            AccountId::FromUserEmailGaiaId(
+                FakeGaiaMixin::kFakeUserEmail,
+                GaiaId(FakeGaiaMixin::kFakeUserGaiaId)),
             test::UserAuthConfig::Create(test::kDefaultAuthSetup)
                 .RequireReauth()}) {}
   ~CryptohomeRecoveryScreenNoRecoveryTest() override = default;
@@ -298,8 +301,9 @@ class CryptohomeRecoveryScreenChildTest
  public:
   CryptohomeRecoveryScreenChildTest()
       : CryptohomeRecoveryScreenTestBase(LoginManagerMixin::TestUserInfo{
-            AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
-                                           FakeGaiaMixin::kFakeUserGaiaId),
+            AccountId::FromUserEmailGaiaId(
+                FakeGaiaMixin::kFakeUserEmail,
+                GaiaId(FakeGaiaMixin::kFakeUserGaiaId)),
             test::UserAuthConfig::Create({ash::AshAuthFactor::kGaiaPassword,
                                           ash::AshAuthFactor::kRecovery})
                 .RequireReauth(),
@@ -317,8 +321,9 @@ class CryptohomeRecoveryScreenChildNoRecoveryTest
  public:
   CryptohomeRecoveryScreenChildNoRecoveryTest()
       : CryptohomeRecoveryScreenTestBase(LoginManagerMixin::TestUserInfo{
-            AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
-                                           FakeGaiaMixin::kFakeUserGaiaId),
+            AccountId::FromUserEmailGaiaId(
+                FakeGaiaMixin::kFakeUserEmail,
+                GaiaId(FakeGaiaMixin::kFakeUserGaiaId)),
             test::UserAuthConfig::Create(test::kDefaultAuthSetup)
                 .RequireReauth(),
             user_manager::UserType::kChild}) {}

@@ -44,7 +44,7 @@ constexpr int kUserDemographicsMaxAgeInYears = 85;
 // provided by the sync server. This is a read-only syncable priority pref on
 // all platforms except ChromeOS Ash, where it is a syncable OS-level priority
 // pref.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 inline constexpr char kSyncDemographicsPrefName[] = "sync.demographics";
 #else
 inline constexpr char kSyncOsDemographicsPrefName[] = "sync.os_demographics";

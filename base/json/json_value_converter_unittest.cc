@@ -51,13 +51,16 @@ struct SimpleMessage {
 
   static bool GetValueString(const base::Value* value, std::string* result) {
     const Value::Dict* dict = value->GetIfDict();
-    if (!dict)
+    if (!dict) {
       return false;
+    }
     const std::string* str = dict->FindString("val");
-    if (!str)
+    if (!str) {
       return false;
-    if (result)
+    }
+    if (result) {
       *result = *str;
+    }
     return true;
   }
 

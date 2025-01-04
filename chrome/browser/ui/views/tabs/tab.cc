@@ -709,11 +709,6 @@ void Tab::OnGestureEvent(ui::GestureEvent* event) {
   event->SetHandled();
 }
 
-std::u16string Tab::GetTooltipText(const gfx::Point& p) const {
-  // Tab hover cards replace tooltips for tabs.
-  return GetCachedTooltipText();
-}
-
 // This function updates the accessible name for the tab whenever any of the
 // parameters that influence the accessible name change. It ultimately calls
 // BrowserView::GetAccessibleTabLabel to get the updated accessible name.

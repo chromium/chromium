@@ -43,6 +43,7 @@ class GroupDataModel : public CollaborationGroupSyncBridge::Observer {
     virtual void OnGroupUpdated(const GroupId& group_id,
                                 const base::Time& event_time) = 0;
     virtual void OnGroupDeleted(const GroupId& group_id,
+                                const std::optional<GroupData>& group_data,
                                 const base::Time& event_time) = 0;
 
     virtual void OnMemberAdded(const GroupId& group_id,
@@ -101,10 +102,14 @@ class GroupDataModel : public CollaborationGroupSyncBridge::Observer {
   // `collaboration_group_sync_bridge_`.
   void ProcessGroupChanges(bool is_initial_load);
 
+  void DoPeriodicPollingAndScheduleNext();
+  void ScheduleNextPeriodicPolling();
+
   // Asynchronously fetches data from the SDK.
   void FetchGroupsFromSDK(const std::vector<GroupId>& added_or_updated_groups);
   void OnGroupsFetchedFromSDK(
       const std::map<GroupId, VersionToken>& requested_groups_and_versions,
+      const base::Time& requested_at_timestamp,
       const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&
           read_groups_result);
 
@@ -133,6 +138,8 @@ class GroupDataModel : public CollaborationGroupSyncBridge::Observer {
   // Used only for tests to notify that GroupDataStore has been loaded (either
   // successfully or unsuccessfully).
   base::OnceClosure db_loaded_callback_;
+
+  base::OneShotTimer next_periodic_polling_timer_;
 
   base::ObserverList<Observer> observers_;
 

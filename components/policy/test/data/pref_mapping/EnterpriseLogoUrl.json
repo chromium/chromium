@@ -9,18 +9,13 @@
       {
         "policies": {},
         "prefs": {
-          "enterprise_logo.url": {
+          "enterprise_logo.url.for_browser": {
+            "location": "local_state",
             "default_value": ""
-          }
-        }
-      },
-      {
-        "policies": {
-          "EnterpriseLogoUrl": "http://www.example.com"
-        },
-        "prefs": {
-          "enterprise_logo.url": {
-            "value": "http://www.example.com"
+          },
+          "enterprise_logo.url.for_profile": {
+            "location": "user_profile",
+            "default_value": ""
           }
         }
       },
@@ -29,7 +24,12 @@
           "EnterpriseLogoUrl": "not_a_url"
         },
         "prefs": {
-          "enterprise_logo.url": {
+          "enterprise_logo.url.for_browser": {
+            "location": "local_state",
+            "default_value": ""
+          },
+          "enterprise_logo.url.for_profile": {
+            "location": "user_profile",
             "default_value": ""
           }
         }
@@ -45,7 +45,7 @@
           }
         },
         "prefs": {
-          "enterprise_logo.url": {
+          "enterprise_logo.url.for_browser": {
             "location": "local_state",
             "value": "http://www.example.com"
           },
@@ -66,10 +66,6 @@
           }
         },
         "prefs": {
-          "enterprise_logo.url": {
-            "location": "user_profile",
-            "value": "http://www.example.com"
-          },
           "enterprise_logo.url.for_profile": {
             "location": "user_profile",
             "value": "http://www.example.com"

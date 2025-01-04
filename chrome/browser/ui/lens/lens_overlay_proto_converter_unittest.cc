@@ -387,8 +387,8 @@ class LensOverlayProtoConverterTest : public testing::Test {
     geometry->mutable_bounding_box()->set_coordinate_type(box.coordinate_type);
   }
 
-  void CreateServerGeometryWithPolygon(
-      BoundingBoxStruct box, lens::Geometry* geometry) {
+  void CreateServerGeometryWithPolygon(BoundingBoxStruct box,
+                                       lens::Geometry* geometry) {
     CreateServerGeometry(box, geometry);
     auto* polygon = geometry->add_segmentation_polygon();
     auto* vertex = polygon->add_vertex();
@@ -398,9 +398,8 @@ class LensOverlayProtoConverterTest : public testing::Test {
     polygon->set_coordinate_type(lens::NORMALIZED);
   }
 
-  void VerifyGeometriesAreEqual(
-      lens::Geometry server_geometry,
-      lens::mojom::GeometryPtr mojo_geometry) {
+  void VerifyGeometriesAreEqual(lens::Geometry server_geometry,
+                                lens::mojom::GeometryPtr mojo_geometry) {
     EXPECT_EQ(gfx::PointF(server_geometry.bounding_box().center_x(),
                           server_geometry.bounding_box().center_y()),
               mojo_geometry->bounding_box->box.origin());
@@ -413,9 +412,9 @@ class LensOverlayProtoConverterTest : public testing::Test {
         static_cast<int>(server_geometry.bounding_box().coordinate_type()),
         static_cast<int>(mojo_geometry->bounding_box->coordinate_type));
 
-    EXPECT_EQ(static_cast<size_t>(
-                  server_geometry.segmentation_polygon().size()),
-              mojo_geometry->segmentation_polygon.size());
+    EXPECT_EQ(
+        static_cast<size_t>(server_geometry.segmentation_polygon().size()),
+        mojo_geometry->segmentation_polygon.size());
     for (int i = 0; i < server_geometry.segmentation_polygon().size(); i++) {
       lens::Polygon server_polygon =
           server_geometry.segmentation_polygon().at(i);
@@ -447,7 +446,7 @@ class LensOverlayProtoConverterTest : public testing::Test {
       lens::mojom::OverlayObjectPtr mojo_object = mojo_objects.at(i)->Clone();
       EXPECT_EQ(server_object.id(), mojo_object->id);
       VerifyGeometriesAreEqual(server_object.geometry(),
-                                        std::move(mojo_object->geometry));
+                               std::move(mojo_object->geometry));
     }
   }
 };

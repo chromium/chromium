@@ -3,14 +3,12 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/cronet/config.gni")
 import("//ios/build/config.gni")
 import("//testing/test.gni")
 import("//url/features.gni")
 
 buildflag_header("ios_net_buildflags") {
   header = "ios_net_buildflags.h"
-  flags = [ "CRONET_BUILD=$is_cronet_build" ]
 }
 
 group("all_tests") {

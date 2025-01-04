@@ -27,18 +27,18 @@ std::string TimeoutMessage(const RepeatingCallback<std::string()>& get_log,
                            const Location& timeout_enabled_from_here) {
   std::string message = "RunLoop::Run() timed out. Timeout set at ";
   message += timeout_enabled_from_here.ToString() + ".";
-  if (get_log)
+  if (get_log) {
     StrAppend(&message, {"\n", get_log.Run()});
+  }
   return message;
 }
 
 void StandardTimeoutCallback(const Location& timeout_enabled_from_here,
                              RepeatingCallback<std::string()> on_timeout_log,
                              const Location& run_from_here) {
-  const std::string message =
-      TimeoutMessage(on_timeout_log, timeout_enabled_from_here);
-  logging::LogMessage(run_from_here.file_name(), run_from_here.line_number(),
-                      message.data());
+  logging::CheckNoreturnError::Check(
+      TimeoutMessage(on_timeout_log, timeout_enabled_from_here).data(),
+      run_from_here);
 }
 
 void TimeoutCallbackWithGtestFailure(

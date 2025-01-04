@@ -370,7 +370,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.NotificationInteraction"
-    enum="PhoneHubNotificationInteraction" expires_after="2025-03-25">
+    enum="PhoneHubNotificationInteraction" expires_after="2025-06-22">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -482,7 +482,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.QuickActionClicked" enum="PhoneHubQuickAction"
-    expires_after="2025-03-25">
+    expires_after="2025-06-22">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>Event logged after the user clicks on a quick action.</summary>
@@ -531,7 +531,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.ScreenOn{BubbleEvent}" enum="PhoneHubScreen"
-    expires_after="2025-03-25">
+    expires_after="2025-06-08">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>

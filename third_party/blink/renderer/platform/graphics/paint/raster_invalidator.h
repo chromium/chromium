@@ -131,8 +131,6 @@ class PLATFORM_EXPORT RasterInvalidator
                              DisplayItemClientId client_id,
                              PaintInvalidationReason reason,
                              ClientIsOldOrNew old_or_new) {
-    if (rect.IsEmpty())
-      return;
     callback_.InvalidateRect(rect);
     if (tracking_)
       TrackRasterInvalidation(rect, client_id, reason, old_or_new);

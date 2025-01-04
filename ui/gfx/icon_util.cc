@@ -17,6 +17,7 @@
 #include "base/files/important_file_writer.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/scoped_generic.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/resource_util.h"
@@ -207,21 +208,19 @@ base::win::ScopedHICON IconUtil::CreateHICONFromSkBitmap(
       PixelsHaveAlpha(static_cast<const uint32_t*>(bitmap.getPixels()),
                       bitmap.width() * bitmap.height());
 
-  std::unique_ptr<uint8_t[]> mask_bits;
+  base::HeapArray<uint8_t> mask_bits;
   if (!bitmap_has_alpha_channel) {
     // Bytes per line with paddings to make it word alignment.
     size_t bytes_per_line = (bitmap.width() + 0xF) / 16 * 2;
     size_t mask_bits_size = bytes_per_line * bitmap.height();
 
-    mask_bits = std::make_unique<uint8_t[]>(mask_bits_size);
-    DCHECK(mask_bits.get());
-
-    // Make all pixels transparent.
-    memset(mask_bits.get(), 0xFF, mask_bits_size);
+    mask_bits = base::HeapArray<uint8_t>::Uninit(mask_bits_size);
+    // Make all pixels transparent:
+    base::ranges::fill(mask_bits.as_span(), 0xFF);
   }
 
   base::win::ScopedBitmap mono_bitmap(
-      ::CreateBitmap(bitmap.width(), bitmap.height(), 1, 1, mask_bits.get()));
+      ::CreateBitmap(bitmap.width(), bitmap.height(), 1, 1, mask_bits.data()));
   DCHECK(mono_bitmap.is_valid());
 
   ICONINFO icon_info;

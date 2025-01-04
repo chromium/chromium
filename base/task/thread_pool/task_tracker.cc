@@ -108,16 +108,18 @@ auto EmitThreadPoolTraceEventMetadata(perfetto::EventContext& ctx,
   const uint8_t* scheduler_category_enabled =
       TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("scheduler");
 
-  if (!*scheduler_category_enabled)
+  if (!*scheduler_category_enabled) {
     return;
+  }
   auto* task = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
                    ->set_thread_pool_task();
   task->set_task_priority(TaskPriorityToProto(traits.priority()));
   task->set_execution_mode(ExecutionModeToProto(task_source->execution_mode()));
   task->set_shutdown_behavior(
       ShutdownBehaviorToProto(traits.shutdown_behavior()));
-  if (token.IsValid())
+  if (token.IsValid()) {
     task->set_sequence_token(token.ToInternalValue());
+  }
 #endif  //  BUILDFLAG(ENABLE_BASE_TRACING)
 }
 
@@ -146,28 +148,25 @@ class TaskTracker::State {
   // Sets a flag indicating that shutdown has started. Returns true if there are
   // items blocking shutdown. Can only be called once.
   bool StartShutdown() {
-    const auto new_value =
-        subtle::NoBarrier_AtomicIncrement(&bits_, kShutdownHasStartedMask);
-
-    // Check that the "shutdown has started" bit isn't zero. This would happen
-    // if it was incremented twice.
-    DCHECK(new_value & kShutdownHasStartedMask);
+    const uint32_t old_value =
+        bits_.fetch_or(kShutdownHasStartedMask, std::memory_order_relaxed);
+    DCHECK((old_value & kShutdownHasStartedMask) == 0);
 
     const auto num_items_blocking_shutdown =
-        new_value >> kNumItemsBlockingShutdownBitOffset;
+        old_value >> kNumItemsBlockingShutdownBitOffset;
     return num_items_blocking_shutdown != 0;
   }
 
   // Returns true if shutdown has started.
   bool HasShutdownStarted() const {
-    return subtle::NoBarrier_Load(&bits_) & kShutdownHasStartedMask;
+    return bits_.load(std::memory_order_relaxed) & kShutdownHasStartedMask;
   }
 
   // Returns true if there are items blocking shutdown.
   bool AreItemsBlockingShutdown() const {
     const auto num_items_blocking_shutdown =
-        subtle::NoBarrier_Load(&bits_) >> kNumItemsBlockingShutdownBitOffset;
-    DCHECK_GE(num_items_blocking_shutdown, 0);
+        bits_.load(std::memory_order_relaxed) >>
+        kNumItemsBlockingShutdownBitOffset;
     return num_items_blocking_shutdown != 0;
   }
 
@@ -177,33 +176,34 @@ class TaskTracker::State {
 #if DCHECK_IS_ON()
     // Verify that no overflow will occur.
     const auto num_items_blocking_shutdown =
-        subtle::NoBarrier_Load(&bits_) >> kNumItemsBlockingShutdownBitOffset;
+        bits_.load(std::memory_order_relaxed) >>
+        kNumItemsBlockingShutdownBitOffset;
     DCHECK_LT(num_items_blocking_shutdown,
-              std::numeric_limits<subtle::Atomic32>::max() -
+              std::numeric_limits<uint32_t>::max() -
                   kNumItemsBlockingShutdownIncrement);
 #endif
 
-    const auto new_bits = subtle::NoBarrier_AtomicIncrement(
-        &bits_, kNumItemsBlockingShutdownIncrement);
-    return new_bits & kShutdownHasStartedMask;
+    const uint32_t old_bits = bits_.fetch_add(
+        kNumItemsBlockingShutdownIncrement, std::memory_order_relaxed);
+    return old_bits & kShutdownHasStartedMask;
   }
 
   // Decrements the number of items blocking shutdown. Returns true if shutdown
   // has started and the number of tasks blocking shutdown becomes zero.
   bool DecrementNumItemsBlockingShutdown() {
-    const auto new_bits = subtle::NoBarrier_AtomicIncrement(
-        &bits_, -kNumItemsBlockingShutdownIncrement);
-    const bool shutdown_has_started = new_bits & kShutdownHasStartedMask;
-    const auto num_items_blocking_shutdown =
-        new_bits >> kNumItemsBlockingShutdownBitOffset;
-    DCHECK_GE(num_items_blocking_shutdown, 0);
-    return shutdown_has_started && num_items_blocking_shutdown == 0;
+    const uint32_t old_bits = bits_.fetch_sub(
+        kNumItemsBlockingShutdownIncrement, std::memory_order_relaxed);
+    const bool shutdown_has_started = old_bits & kShutdownHasStartedMask;
+    const auto old_num_items_blocking_shutdown =
+        old_bits >> kNumItemsBlockingShutdownBitOffset;
+    DCHECK_GT(old_num_items_blocking_shutdown, 0u);
+    return shutdown_has_started && old_num_items_blocking_shutdown == 1;
   }
 
  private:
-  static constexpr subtle::Atomic32 kShutdownHasStartedMask = 1;
-  static constexpr subtle::Atomic32 kNumItemsBlockingShutdownBitOffset = 1;
-  static constexpr subtle::Atomic32 kNumItemsBlockingShutdownIncrement =
+  static constexpr uint32_t kShutdownHasStartedMask = 1;
+  static constexpr uint32_t kNumItemsBlockingShutdownBitOffset = 1;
+  static constexpr uint32_t kNumItemsBlockingShutdownIncrement =
       1 << kNumItemsBlockingShutdownBitOffset;
 
   // The LSB indicates whether shutdown has started. The other bits count the
@@ -211,13 +211,13 @@ class TaskTracker::State {
   // No barriers are required to read/write |bits_| as this class is only used
   // as an atomic state checker, it doesn't provide sequential consistency
   // guarantees w.r.t. external state. Sequencing of the TaskTracker::State
-  // operations themselves is guaranteed by the AtomicIncrement RMW (read-
+  // operations themselves is guaranteed by the fetch_add() RMW (read-
   // modify-write) semantics however. For example, if two threads are racing to
   // call IncrementNumItemsBlockingShutdown() and StartShutdown() respectively,
   // either the first thread will win and the StartShutdown() call will see the
   // blocking task or the second thread will win and
   // IncrementNumItemsBlockingShutdown() will know that shutdown has started.
-  subtle::Atomic32 bits_ = 0;
+  std::atomic<uint32_t> bits_ = 0;
 };
 
 TaskTracker::TaskTracker()
@@ -353,8 +353,9 @@ bool TaskTracker::WillPostTaskNow(const Task& task,
   // SKIP_ON_SHUTDOWN. i.e. it cannot BLOCK_SHUTDOWN, TaskTracker will not wait
   // for a delayed task in a BLOCK_SHUTDOWN TaskSource and will also skip
   // delayed tasks that happen to become ripe during shutdown.
-  if (!task.delayed_run_time.is_null() && state_->HasShutdownStarted())
+  if (!task.delayed_run_time.is_null() && state_->HasShutdownStarted()) {
     return false;
+  }
 
   if (has_log_best_effort_tasks_switch_ &&
       priority == TaskPriority::BEST_EFFORT) {
@@ -369,8 +370,9 @@ RegisteredTaskSource TaskTracker::RegisterTaskSource(
   DCHECK(task_source);
 
   TaskShutdownBehavior shutdown_behavior = task_source->shutdown_behavior();
-  if (!BeforeQueueTaskSource(shutdown_behavior))
+  if (!BeforeQueueTaskSource(shutdown_behavior)) {
     return nullptr;
+  }
 
   num_incomplete_task_sources_.fetch_add(1, std::memory_order_relaxed);
   return RegisteredTaskSource(std::move(task_source), this);
@@ -379,8 +381,9 @@ RegisteredTaskSource TaskTracker::RegisterTaskSource(
 bool TaskTracker::CanRunPriority(TaskPriority priority) const {
   auto can_run_policy = can_run_policy_.load();
 
-  if (can_run_policy == CanRunPolicy::kAll)
+  if (can_run_policy == CanRunPolicy::kAll) {
     return true;
+  }
 
   if (can_run_policy == CanRunPolicy::kForegroundOnly &&
       priority >= TaskPriority::USER_VISIBLE) {
@@ -408,19 +411,22 @@ RegisteredTaskSource TaskTracker::RunAndPopNextTask(
 
   if (task) {
     // Skip delayed tasks if shutdown started.
-    if (!task->delayed_run_time.is_null() && state_->HasShutdownStarted())
+    if (!task->delayed_run_time.is_null() && state_->HasShutdownStarted()) {
       task->task = base::DoNothingWithBoundArgs(std::move(task->task));
+    }
 
     // Run the |task| (whether it's a worker task or the Clear() closure).
     RunTask(std::move(task.value()), task_source.get(), traits);
   }
-  if (should_run_tasks)
+  if (should_run_tasks) {
     AfterRunTask(task_source->shutdown_behavior());
+  }
 
   const bool task_source_must_be_queued = task_source.DidProcessTask();
   // |task_source| should be reenqueued iff requested by DidProcessTask().
-  if (task_source_must_be_queued)
+  if (task_source_must_be_queued) {
     return task_source;
+  }
   return nullptr;
 }
 
@@ -470,10 +476,12 @@ void TaskTracker::RunTask(Task task,
     disallow_singleton.emplace();
     fizzle_block_shutdown_tasks.emplace();
   }
-  if (!traits.may_block())
+  if (!traits.may_block()) {
     disallow_blocking.emplace();
-  if (!traits.with_base_sync_primitives())
+  }
+  if (!traits.with_base_sync_primitives()) {
     disallow_sync_primitives.emplace();
+  }
 
   {
     DCHECK(environment.token.IsValid());
@@ -485,8 +493,9 @@ void TaskTracker::RunTask(Task task,
 
     // Local storage map used if none is provided by |environment|.
     std::optional<SequenceLocalStorageMap> local_storage_map;
-    if (!environment.sequence_local_storage)
+    if (!environment.sequence_local_storage) {
       local_storage_map.emplace();
+    }
 
     ScopedSetSequenceLocalStorageMapForCurrentThread
         scoped_set_sequence_local_storage_map_for_current_thread(
@@ -615,8 +624,9 @@ scoped_refptr<TaskSource> TaskTracker::UnregisterTaskSource(
 void TaskTracker::DecrementNumItemsBlockingShutdown() {
   const bool shutdown_started_and_no_items_block_shutdown =
       state_->DecrementNumItemsBlockingShutdown();
-  if (!shutdown_started_and_no_items_block_shutdown)
+  if (!shutdown_started_and_no_items_block_shutdown) {
     return;
+  }
 
   CheckedAutoLock auto_lock(shutdown_lock_);
   DCHECK(shutdown_event_);
@@ -642,8 +652,9 @@ void TaskTracker::InvokeFlushCallbacksForTesting() {
     CheckedAutoLock auto_lock(flush_lock_);
     flush_callbacks = std::move(flush_callbacks_for_testing_);
   }
-  for (auto& flush_callback : flush_callbacks)
+  for (auto& flush_callback : flush_callbacks) {
     std::move(flush_callback).Run();
+  }
 }
 
 NOINLINE void TaskTracker::RunContinueOnShutdown(Task& task,

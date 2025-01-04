@@ -75,6 +75,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/http/http_status_code.h"
 
 namespace ash {
@@ -161,7 +162,7 @@ class EnrollmentEmbeddedPolicyServerBase : public OobeBaseTest {
   login::OnlineSigninArtifacts GetFakeSinginArtifactsForEnterpriseUser1() {
     login::OnlineSigninArtifacts signin_artifacts;
     signin_artifacts.email = FakeGaiaMixin::kEnterpriseUser1;
-    signin_artifacts.gaia_id = FakeGaiaMixin::kEnterpriseUser1GaiaId;
+    signin_artifacts.gaia_id = GaiaId(FakeGaiaMixin::kEnterpriseUser1GaiaId);
     signin_artifacts.password = FakeGaiaMixin::kFakeUserPassword;
     signin_artifacts.using_saml = false;
 
@@ -1061,7 +1062,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentRecoveryTest, DifferentDomain) {
 
   login::OnlineSigninArtifacts signin_artifacts;
   signin_artifacts.email = FakeGaiaMixin::kFakeUserEmail;
-  signin_artifacts.gaia_id = FakeGaiaMixin::kFakeUserGaiaId;
+  signin_artifacts.gaia_id = GaiaId(FakeGaiaMixin::kFakeUserGaiaId);
   signin_artifacts.password = FakeGaiaMixin::kFakeUserPassword;
   signin_artifacts.using_saml = false;
 

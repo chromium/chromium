@@ -22,8 +22,7 @@ namespace task_manager {
 
 ChildProcessTaskProvider::ChildProcessTaskProvider() = default;
 
-ChildProcessTaskProvider::~ChildProcessTaskProvider() {
-}
+ChildProcessTaskProvider::~ChildProcessTaskProvider() = default;
 
 Task* ChildProcessTaskProvider::GetTaskOfUrlRequest(int child_id,
                                                     int route_id) {

@@ -57,26 +57,26 @@ net::IPEndPoint PublicEndpoint() {
 net::TransportInfo DirectTransport(const net::IPEndPoint& endpoint) {
   return net::TransportInfo(
       net::TransportType::kDirect, endpoint, kNoAcceptChFrame,
-      /*cert_is_issued_by_known_root=*/false, net::kProtoUnknown);
+      /*cert_is_issued_by_known_root=*/false, net::NextProto::kProtoUnknown);
 }
 
 net::TransportInfo ProxiedTransport(const net::IPEndPoint& endpoint) {
   return net::TransportInfo(
       net::TransportType::kProxied, endpoint, kNoAcceptChFrame,
-      /*cert_is_issued_by_known_root=*/false, net::kProtoUnknown);
+      /*cert_is_issued_by_known_root=*/false, net::NextProto::kProtoUnknown);
 }
 
 net::TransportInfo CachedTransport(const net::IPEndPoint& endpoint) {
   return net::TransportInfo(
       net::TransportType::kCached, endpoint, kNoAcceptChFrame,
-      /*cert_is_issued_by_known_root=*/false, net::kProtoUnknown);
+      /*cert_is_issued_by_known_root=*/false, net::NextProto::kProtoUnknown);
 }
 
 net::TransportInfo MakeTransport(net::TransportType type,
                                  const net::IPEndPoint& endpoint) {
   return net::TransportInfo(type, endpoint, kNoAcceptChFrame,
                             /*cert_is_issued_by_known_root=*/false,
-                            net::kProtoUnknown);
+                            net::NextProto::kProtoUnknown);
 }
 
 TEST(PrivateNetworkAccessCheckerTest, ClientSecurityStateNull) {

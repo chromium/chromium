@@ -64,26 +64,26 @@ public class CachedFeatureFlagsSafeModeUnitTest {
     @Mock private FeatureMap mFeatureMap;
     private CachedFlag mCrashyFeature;
     private CachedFlag mOkFeature;
-    private BooleanCachedFieldTrialParameter mBoolParam;
-    private IntCachedFieldTrialParameter mIntParam;
-    private DoubleCachedFieldTrialParameter mDoubleParam;
-    private StringCachedFieldTrialParameter mStringParam;
+    private BooleanCachedFeatureParam mBoolParam;
+    private IntCachedFeatureParam mIntParam;
+    private DoubleCachedFeatureParam mDoubleParam;
+    private StringCachedFeatureParam mStringParam;
 
     @Before
     public void setUp() {
         mCrashyFeature = new CachedFlag(mFeatureMap, CRASHY_FEATURE, CRASHY_FEATURE_DEFAULT);
         mOkFeature = new CachedFlag(mFeatureMap, OK_FEATURE, OK_FEATURE_DEFAULT);
         mBoolParam =
-                new BooleanCachedFieldTrialParameter(
+                new BooleanCachedFeatureParam(
                         mFeatureMap, OK_FEATURE, BOOL_PARAM_NAME, BOOL_PARAM_DEFAULT);
         mIntParam =
-                new IntCachedFieldTrialParameter(
+                new IntCachedFeatureParam(
                         mFeatureMap, OK_FEATURE, INT_PARAM_NAME, INT_PARAM_DEFAULT);
         mDoubleParam =
-                new DoubleCachedFieldTrialParameter(
+                new DoubleCachedFeatureParam(
                         mFeatureMap, OK_FEATURE, DOUBLE_PARAM_NAME, DOUBLE_PARAM_DEFAULT);
         mStringParam =
-                new StringCachedFieldTrialParameter(
+                new StringCachedFeatureParam(
                         mFeatureMap, OK_FEATURE, STRING_PARAM_NAME, STRING_PARAM_DEFAULT);
 
         CachedFlagsSafeMode.getInstance().enableForTesting();
@@ -463,7 +463,7 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         when(mFeatureMap.getFieldTrialParamByFeature(OK_FEATURE, STRING_PARAM_NAME))
                 .thenReturn(STRING_PARAM_NATIVE_1);
         CachedFlagUtils.cacheNativeFlags(List.of(Arrays.asList(mCrashyFeature, mOkFeature)));
-        CachedFlagUtils.cacheFieldTrialParameters(
+        CachedFlagUtils.cacheFeatureParams(
                 Arrays.asList(mBoolParam, mIntParam, mDoubleParam, mStringParam));
 
         clearMemory();
@@ -695,7 +695,7 @@ public class CachedFeatureFlagsSafeModeUnitTest {
                 .thenReturn(stringParamValue);
 
         CachedFlagUtils.cacheNativeFlags(List.of(Arrays.asList(mCrashyFeature, mOkFeature)));
-        CachedFlagUtils.cacheFieldTrialParameters(
+        CachedFlagUtils.cacheFeatureParams(
                 Arrays.asList(mBoolParam, mIntParam, mDoubleParam, mStringParam));
 
         CachedFlagsSafeMode.getInstance().onEndCheckpoint();

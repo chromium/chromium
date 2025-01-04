@@ -72,8 +72,9 @@ content::WebContents* LocationBarModelAndroid::GetActiveWebContents() const {
 
 bool LocationBarModelAndroid::IsNewTabPage() const {
   GURL url;
-  if (!GetURL(&url))
+  if (!GetURL(&url)) {
     return false;
+  }
 
   // Android Chrome has its own Instant NTP page implementation.
   if (url.SchemeIs(chrome::kChromeNativeScheme) &&

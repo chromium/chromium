@@ -845,6 +845,7 @@
 <translation id="6385591741672306837">열</translation>
 <translation id="6387719785439924554">aside</translation>
 <translation id="6393014464788431702">모든 이벤트 필터 사용 중지</translation>
+<translation id="6406989068857078334">마우스 속도가 감소했습니다. 다시 <ph name="GESTURE" /> 동작을 수행하여 클릭하세요.</translation>
 <translation id="6411569524720229058">가을</translation>
 <translation id="6417265370957905582">Google 어시스턴트</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{콜론}other{콜론 #개}}</translation>
@@ -1098,6 +1099,7 @@
 <translation id="8205922869661890178">개발자 로그 페이지 열기</translation>
 <translation id="8212109599554677485">디스플레이 스타일을 나란히로 변경</translation>
 <translation id="8215202828671303819">다중 선택</translation>
+<translation id="822316432305106615">정밀 클릭 시작</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, 불투명도 <ph name="OPACITY_PERCENTAGE" />%.</translation>
 <translation id="8261506727792406068">삭제</translation>
 <translation id="826825447994856889">소개</translation>

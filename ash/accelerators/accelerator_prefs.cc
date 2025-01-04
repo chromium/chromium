@@ -101,9 +101,7 @@ bool AcceleratorPrefs::IsCustomizationAllowed() {
   if (IsUserEnterpriseManaged() && IsCustomizationPolicySet()) {
     return IsCustomizationAllowedByPolicy();
   }
-
-  // If user is not managed or the policy is unset, check the flag.
-  return ::features::IsShortcutCustomizationEnabled();
+  return true;
 }
 
 }  // namespace ash

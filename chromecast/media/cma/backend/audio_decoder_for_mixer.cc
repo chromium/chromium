@@ -571,7 +571,7 @@ void AudioDecoderForMixer::WritePcm(scoped_refptr<DecoderBufferBase> buffer) {
                                 buffer->timestamp());
 }
 
-void AudioDecoderForMixer::FillNextBuffer(void* buffer,
+void AudioDecoderForMixer::FillNextBuffer(base::span<uint8_t> buffer,
                                           int frames,
                                           int64_t delay_timestamp,
                                           int64_t delay) {

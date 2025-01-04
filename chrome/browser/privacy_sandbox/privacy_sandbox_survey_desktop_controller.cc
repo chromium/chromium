@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/common/channel_info.h"
 #include "components/privacy_sandbox/privacy_sandbox_survey_service.h"
 
 namespace privacy_sandbox {
@@ -22,6 +23,9 @@ PrivacySandboxSurveyDesktopController::
 
 void PrivacySandboxSurveyDesktopController::MaybeShowSentimentSurvey(
     Profile* profile) {
+  if (!has_seen_ntp_) {
+    return;
+  }
   if (!survey_service_->ShouldShowSentimentSurvey()) {
     survey_service_->RecordSentimentSurveyStatus(
         PrivacySandboxSurveyService::PrivacySandboxSentimentSurveyStatus::
@@ -48,7 +52,12 @@ void PrivacySandboxSurveyDesktopController::MaybeShowSentimentSurvey(
           &PrivacySandboxSurveyDesktopController::OnSentimentSurveyFailure,
           weak_ptr_factory_.GetWeakPtr()),
       /*product_specific_bits_data=*/survey_service_->GetSentimentSurveyPsb(),
-      /*product_specific_string_data=*/{});
+      /*product_specific_string_data=*/
+      survey_service_->GetSentimentSurveyPsd(chrome::GetChannel()));
+}
+
+void PrivacySandboxSurveyDesktopController::OnNewTabPageSeen() {
+  has_seen_ntp_ = true;
 }
 
 void PrivacySandboxSurveyDesktopController::OnSentimentSurveyShown(

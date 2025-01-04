@@ -59,7 +59,8 @@ class MockSharingFCMSender : public SharingFCMSender {
             /*gcm_driver=*/nullptr,
             device_info_tracker,
             local_device_info_provider,
-            /*sync_service=*/nullptr) {}
+            /*sync_service=*/nullptr,
+            /*start_sync_flare=*/base::DoNothing()) {}
   MockSharingFCMSender(const MockSharingFCMSender&) = delete;
   MockSharingFCMSender& operator=(const MockSharingFCMSender&) = delete;
   ~MockSharingFCMSender() override = default;

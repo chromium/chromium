@@ -155,7 +155,7 @@ const base::FeatureParam<std::string> kScrollEventDispatchMode(
     "mode",
     kScrollEventDispatchModeDispatchScrollEventsImmediately);
 
-BASE_FEATURE(kVizLayers, "VizLayers", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTreesInViz, "TreesInViz", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSendExplicitDecodeRequestsImmediately,
              "SendExplicitDecodeRequestsImmediately",
@@ -190,6 +190,14 @@ BASE_FEATURE(kPreventDuplicateImageDecodes,
 
 BASE_FEATURE(kInitImageDecodeLastUseTime,
              "InitImageDecodeLastUseTime",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDynamicSafeAreaInsetsSupportedByCC,
+             "DynamicSafeAreaInsetsSupportedByCC",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kThrottleMainFrameTo60Hz,
+             "ThrottleMainFrameTo60Hz",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

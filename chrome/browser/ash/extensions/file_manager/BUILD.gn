@@ -76,6 +76,7 @@ static_library("file_manager") {
   deps = [
     "//ash",
     "//ash/components/arc",
+    "//ash/components/arc/intent_helper",
     "//ash/components/arc/mojom",
     "//ash/constants",
     "//ash/webui/settings/public/constants",
@@ -133,7 +134,6 @@ static_library("file_manager") {
     "//chromeos/dbus/dlp",
     "//chromeos/dbus/power",
     "//components/account_id",
-    "//components/arc",
     "//components/drive",
     "//components/drive:drive_chromeos",
     "//components/enterprise/data_controls/core/browser",
@@ -149,6 +149,7 @@ static_library("file_manager") {
     "//google_apis/drive",
     "//mojo/public/cpp/bindings",
     "//net",
+    "//skia",
     "//storage/browser",
     "//storage/common",
     "//third_party/nearby:presence_types",

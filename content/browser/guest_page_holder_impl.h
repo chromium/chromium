@@ -27,6 +27,8 @@ class GuestPageHolderImpl : public GuestPageHolder,
                             public NavigationControllerDelegate {
  public:
   GuestPageHolderImpl(WebContentsImpl& owner_web_contents,
+                      const std::string& frame_name,
+                      RenderFrameHostImpl* opener,
                       scoped_refptr<SiteInstance> site_instance,
                       base::WeakPtr<GuestPageHolder::Delegate> delegate);
   ~GuestPageHolderImpl() override;
@@ -43,6 +45,7 @@ class GuestPageHolderImpl : public GuestPageHolder,
   RenderFrameHost* GetGuestMainFrame() override;
   bool IsAudioMuted() override;
   void SetAudioMuted(bool mute) override;
+  RenderFrameHost* GetOpener() override;
 
   // FrameTree::Delegate implementation.
   void LoadingStateChanged(LoadingState new_state) override;
@@ -74,6 +77,12 @@ class GuestPageHolderImpl : public GuestPageHolder,
   void SetAudioMutedFromWebContents(bool web_contents_muted);
 
   const blink::RendererPreferences& GetRendererPrefs();
+
+  FrameTree* CreateNewWindow(WindowOpenDisposition disposition,
+                             const GURL& url,
+                             const std::string& main_frame_name,
+                             scoped_refptr<SiteInstance> site_instance,
+                             RenderFrameHostImpl* opener);
 
   // If the `render_frame_host` is within a guest, returns the guest's
   // associated GuestPageHolder. Will return null if `render_frame_host`

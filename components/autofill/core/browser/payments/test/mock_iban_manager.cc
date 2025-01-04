@@ -6,8 +6,8 @@
 
 namespace autofill {
 
-MockIbanManager::MockIbanManager(PersonalDataManager* personal_data_manager)
-    : IbanManager(personal_data_manager) {}
+MockIbanManager::MockIbanManager(PaymentsDataManager* payments_data_manager)
+    : IbanManager(payments_data_manager) {}
 
 MockIbanManager::~MockIbanManager() = default;
 

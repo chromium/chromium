@@ -19,8 +19,11 @@ The Rust toolchain is enabled for and supports all platforms and development
 environments that are supported by the Chromium project. The first milestone
 to include full production-ready support was M119.
 
-Rust is approved by Chrome ATLs for production use in
-[certain third-party scenarios](../docs/adding_to_third_party.md#Rust).
+Rust can be used anywhere in the Chromium repository (not just `//third_party`)
+subject to [current interop capabilities][interop-rust-doc], however it is
+currently subject to a internal approval and FYI process. Googlers can view
+go/chrome-rust for details. New usages of Rust are documented at
+[`rust-fyi@chromium.org`](https://groups.google.com/a/chromium.org/g/rust-fyi).
 
 For questions or help, reach out to `rust-dev@chromium.org` or `#rust` on the
 [Chromium Slack](https://www.chromium.org/developers/slack/).
@@ -334,3 +337,5 @@ but you can still add dependencies manually to your `Cargo.toml`:
 [dependencies]
 log = "0.4"
 ```
+
+[interop-rust-doc]: https://docs.google.com/document/d/1kvgaVMB_isELyDQ4nbMJYWrqrmL3UZI4tDxnyxy9RTE/edit?tab=t.0#heading=h.fpqr6hf3c3j0

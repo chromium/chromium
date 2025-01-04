@@ -169,6 +169,14 @@ BASE_FEATURE(kSegmentationPlatformURLVisitResumptionRanker,
              "SegmentationPlatformURLVisitResumptionRanker",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSegmentationPlatformEphemeralBottomRank,
+             "SegmentationPlatformEphemeralBottomRank",
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 const char kEphemeralCardRankerForceShowCardParam[] =
     "EphemeralCardRankerForceShowCardParam";
 const char kEphemeralCardRankerForceHideCardParam[] =
@@ -234,6 +242,9 @@ constexpr base::FeatureParam<int> kMaxDefaultBrowserCardImpressions{
     /*default_value=*/3};
 constexpr base::FeatureParam<int> kMaxTabGroupCardImpressions{
     &kEducationalTipModule, "max_tab_group_card_impressions",
+    /*default_value=*/10};
+constexpr base::FeatureParam<int> kMaxTabGroupSyncCardImpressions{
+    &kEducationalTipModule, "max_tab_group_sync_card_impressions",
     /*default_value=*/10};
 
 }  // namespace segmentation_platform::features

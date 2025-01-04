@@ -900,18 +900,34 @@ void StyleAdjuster::AdjustEffectiveTouchAction(
     element_touch_action &= ~TouchAction::kInternalPanXScrolls;
   }
 
-  // TODO(crbug.com/1346169): Full style invalidation is needed when this
+  const bool is_writable = IsEditableElement(element, builder) &&
+                           !IsPasswordFieldWithUnrevealedPassword(element);
+  // TODO(crbug.com/40232387): Full style invalidation is needed when this
   // feature status changes at runtime as it affects the computed style.
   if (RuntimeEnabledFeatures::StylusHandwritingEnabled() &&
       (element_touch_action & TouchAction::kPan) == TouchAction::kPan &&
-      IsEditableElement(element, builder) &&
-      !IsPasswordFieldWithUnrevealedPassword(element)) {
+      is_writable) {
     element_touch_action &= ~TouchAction::kInternalNotWritable;
   }
 
+  const TouchAction effective_touch_action =
+      (element_touch_action & inherited_action) | enforced_by_policy;
   // Apply the adjusted parent effective touch actions.
-  builder.SetEffectiveTouchAction((element_touch_action & inherited_action) |
-                                  enforced_by_policy);
+  builder.SetEffectiveTouchAction(effective_touch_action);
+
+  // crbug.com/378027646 : This use counter counts how many pages would lose
+  // handwriting capabilities on platforms that support it if the handwriting
+  // keyword were implemented on this CSS attribute. Please see the linked bug
+  // for more information.
+  const bool would_lose_handwriting =
+      is_writable && effective_touch_action != TouchAction::kNone &&
+      (effective_touch_action & TouchAction::kInternalHandwriting) !=
+          TouchAction::kInternalHandwriting;
+  if (would_lose_handwriting) {
+    UseCounter::Count(
+        element->GetDocument(),
+        WebFeature::kNonNoneTouchActionWouldLoseEditableHandwriting);
+  }
 
   // Propagate touch action to child frames.
   if (auto* frame_owner = DynamicTo<HTMLFrameOwnerElement>(element)) {

@@ -8,10 +8,7 @@
 import os
 import sys
 
-if sys.version_info.major == 2:
-  from ConfigParser import ConfigParser
-else:
-  from configparser import ConfigParser
+from configparser import ConfigParser
 
 OPTIONS_SECTION_LIBFUZZER = 'libfuzzer'
 

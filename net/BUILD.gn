@@ -167,6 +167,8 @@ component("net") {
     "base/completion_repeating_callback.h",
     "base/connection_endpoint_metadata.cc",
     "base/connection_endpoint_metadata.h",
+    "base/connection_migration_information.cc",
+    "base/connection_migration_information.h",
     "base/data_url.cc",
     "base/data_url.h",
     "base/datagram_buffer.cc",
@@ -938,6 +940,8 @@ component("net") {
     "socket/stream_attempt.h",
     "socket/stream_socket.cc",
     "socket/stream_socket.h",
+    "socket/stream_socket_close_reason.cc",
+    "socket/stream_socket_close_reason.h",
     "socket/stream_socket_handle.cc",
     "socket/stream_socket_handle.h",
     "socket/tcp_client_socket.cc",
@@ -3401,6 +3405,7 @@ target(_test_target_type, "net_unittests") {
     ]
     deps += [
       ":device_bound_sessions_storage_proto",
+      "//components/unexportable_keys:test_support",
       "//components/unexportable_keys:unexportable_keys",
     ]
   }
@@ -3665,14 +3670,35 @@ fuzzer_test("net_cert_ct_decode_signed_certificate_timestamp_fuzzer") {
   ]
 }
 
+proto_library("canonical_cookie_proto") {
+  proto_in_dir = "//"
+  sources = [ "cookies/canonical_cookie.proto" ]
+  deps = [ "//testing/libfuzzer/proto:url_proto" ]
+}
+
+source_set("canonical_cookie_proto_converter") {
+  sources = [
+    "cookies/canonical_cookie_proto_converter.cc",
+    "cookies/canonical_cookie_proto_converter.h",
+  ]
+  deps = [
+    ":canonical_cookie_proto",
+    "//base",
+    "//net",
+    "//testing/libfuzzer/proto:url_proto",
+    "//testing/libfuzzer/proto:url_proto_converter",
+  ]
+}
+
 fuzzer_test("net_canonical_cookie_fuzzer") {
   sources = [ "cookies/canonical_cookie_fuzzer.cc" ]
   deps = [
+    ":canonical_cookie_proto",
+    ":canonical_cookie_proto_converter",
     ":net_fuzzer_test_support",
     "//net",
+    "//third_party/libprotobuf-mutator",
   ]
-  dict = "data/fuzzer_dictionaries/net_cookies_fuzzer.dict"
-  seed_corpus = "data/fuzzer_data/cookies/"
 }
 
 fuzzer_test("net_cookie_partition_key_fuzzer") {

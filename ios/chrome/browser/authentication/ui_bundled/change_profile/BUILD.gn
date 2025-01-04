@@ -1,0 +1,26 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("change_profile") {
+  sources = [
+    "change_profile_continuation.h",
+    "change_profile_observer.h",
+    "change_profile_observer.mm",
+    "change_profile_signout_continuation.h",
+    "change_profile_signout_continuation.mm",
+  ]
+
+  deps = [
+    "//ios/chrome/app:change_profile_commands",
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+  ]
+}

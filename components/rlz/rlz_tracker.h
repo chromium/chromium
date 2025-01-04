@@ -15,7 +15,6 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "rlz/lib/rlz_lib.h"
 
 namespace base {
@@ -94,7 +93,7 @@ class RLZTracker {
   // Invoked during shutdown to clean up any state created by RLZTracker.
   static void CleanupRlz();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Clears all product state. Should be called when turning RLZ off. On other
   // platforms, this is done by product uninstaller.
   static void ClearRlzState();
@@ -204,7 +203,7 @@ class RLZTracker {
                                  const std::u16string& lang,
                                  const std::u16string& referral);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Implementation called from ClearRlzState static method.
   void ClearRlzStateImpl();
 

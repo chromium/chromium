@@ -25,16 +25,6 @@ BASE_FEATURE(kPrerender2AllowActivationInBackground,
              "Prerender2AllowActivationInBackground",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Prerender2 Embedders trigger based on rules decided by the browser. Prevent
-// the browser from triggering on the hosts listed.
-// Blocked hosts are expected to be passed as a comma separated string.
-// e.g. example1.test,example2.test
-BASE_FEATURE(kPrerender2EmbedderBlockedHosts,
-             "Prerender2EmbedderBlockedHosts",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<std::string> kPrerender2EmbedderBlockedHostsParam{
-    &kPrerender2EmbedderBlockedHosts, "embedder_blocked_hosts", ""};
-
 // Enables fallback from prerender to prefetch for Speculation Rules.
 // See https://crbug.com/342089123 for more details.
 BASE_FEATURE(kPrerender2FallbackPrefetchSpecRules,

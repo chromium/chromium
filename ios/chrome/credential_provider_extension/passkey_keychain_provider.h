@@ -131,7 +131,7 @@ class PasskeyKeychainProvider {
 
  private:
   // Folsom service.
-  GCRSSOFolsomService* gcr_sso_folsom_service_;
+  [[maybe_unused]] GCRSSOFolsomService* gcr_sso_folsom_service_;
 };
 
 #endif  // IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_PASSKEY_KEYCHAIN_PROVIDER_H_

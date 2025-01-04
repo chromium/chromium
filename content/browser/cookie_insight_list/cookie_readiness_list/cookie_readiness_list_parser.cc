@@ -13,7 +13,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/values.h"
-#include "content/browser/cookie_insight_list/cookie_insight_list.h"
+#include "content/public/browser/cookie_insight_list_data.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
 
@@ -27,8 +27,8 @@ constexpr std::string_view kTableEntryUrlFieldName = "tableEntryUrl";
 // Creates a map of cookie domains to DomainInfo.
 //
 // Returns an empty map if any entry is misconfigured.
-base::flat_map<std::string, CookieInsightList::DomainInfo>
-GenerateReadinessListMap(std::string_view json_content) {
+base::flat_map<std::string, DomainInfo> GenerateReadinessListMap(
+    std::string_view json_content) {
   std::optional<base::Value> json =
       base::JSONReader::Read(json_content, base::JSON_ALLOW_TRAILING_COMMAS);
   if (!json.has_value()) {
@@ -51,8 +51,7 @@ GenerateReadinessListMap(std::string_view json_content) {
   }
 
   std::set<std::string> added_domains;
-  std::vector<std::pair<std::string, CookieInsightList::DomainInfo>>
-      domain_map_entries;
+  std::vector<std::pair<std::string, DomainInfo>> domain_map_entries;
   for (const auto& entry : *entry_list) {
     const base::Value::Dict* entry_dict = entry.GetIfDict();
     if (!entry_dict) {
@@ -71,7 +70,7 @@ GenerateReadinessListMap(std::string_view json_content) {
       return {};
     }
 
-    CookieInsightList::DomainInfo info;
+    DomainInfo info;
     info.entry_url = *entry_url;
 
     for (const auto& domain : *domain_list) {
@@ -93,8 +92,7 @@ GenerateReadinessListMap(std::string_view json_content) {
       domain_map_entries.emplace_back(*domain_string, info);
     }
   }
-  return base::flat_map<std::string, CookieInsightList::DomainInfo>(
-      domain_map_entries);
+  return base::flat_map<std::string, DomainInfo>(domain_map_entries);
 }
 }  // namespace
 

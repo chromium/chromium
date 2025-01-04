@@ -200,11 +200,9 @@ int SanitizeWordsToRemove(const std::set<std::string>& existing,
 
 }  // namespace
 
-SpellcheckCustomDictionary::Change::Change() {
-}
+SpellcheckCustomDictionary::Change::Change() = default;
 
-SpellcheckCustomDictionary::Change::~Change() {
-}
+SpellcheckCustomDictionary::Change::~Change() = default;
 
 void SpellcheckCustomDictionary::Change::AddWord(const std::string& word) {
   to_add_.insert(word);
@@ -241,8 +239,7 @@ SpellcheckCustomDictionary::SpellcheckCustomDictionary(
           dictionary_directory_name.Append(chrome::kCustomDictionaryFileName)),
       is_loaded_(false) {}
 
-SpellcheckCustomDictionary::~SpellcheckCustomDictionary() {
-}
+SpellcheckCustomDictionary::~SpellcheckCustomDictionary() = default;
 
 const std::set<std::string>& SpellcheckCustomDictionary::GetWords() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

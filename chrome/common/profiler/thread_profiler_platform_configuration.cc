@@ -69,15 +69,20 @@ DefaultPlatformConfiguration::GetEnableRates(
   }
 #endif
 
-  CHECK(*release_channel == version_info::Channel::CANARY ||
-        *release_channel == version_info::Channel::DEV ||
-        *release_channel == version_info::Channel::BETA);
+  CHECK_NE(*release_channel, version_info::Channel::UNKNOWN);
 
-  if (*release_channel == version_info::Channel::BETA) {
-    // TODO(crbug.com/1497983): Ramp up enable rate on Non-Android platforms.
-    return RelativePopulations{90.0, 0.0, 10.0};
+  switch (*release_channel) {
+    case version_info::Channel::BETA: {
+      // TODO(crbug.com/1497983): Ramp up enable rate on Non-Android platforms.
+      return RelativePopulations{90.0, 0.0, 10.0};
+    }
+    case version_info::Channel::STABLE: {
+      static constexpr double experiment_rate = 0.006;
+      return RelativePopulations{100.0 - experiment_rate, 0.0, experiment_rate};
+    }
+    default:
+      return RelativePopulations{0.0, 80.0, 20.0};
   }
-  return RelativePopulations{0.0, 80.0, 20.0};
 }
 
 double DefaultPlatformConfiguration::GetChildProcessPerExecutionEnableFraction(
@@ -137,11 +142,8 @@ bool DefaultPlatformConfiguration::IsSupportedForChannel(
   }
 #endif
 
-  // Canary, dev, and beta are the only channels currently supported in release
-  // builds.
-  return *release_channel == version_info::Channel::CANARY ||
-         *release_channel == version_info::Channel::DEV ||
-         *release_channel == version_info::Channel::BETA;
+  // All channels are supported in release builds.
+  return *release_channel != version_info::Channel::UNKNOWN;
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -166,6 +168,9 @@ class AndroidPlatformConfiguration : public DefaultPlatformConfiguration {
   bool IsEnabledForThread(
       sampling_profiler::ProfilerProcessType process,
       sampling_profiler::ProfilerThreadType thread,
+      std::optional<version_info::Channel> release_channel) const override;
+
+  bool IsSupportedForChannel(
       std::optional<version_info::Channel> release_channel) const override;
 
  private:
@@ -301,6 +306,25 @@ bool AndroidPlatformConfiguration::IsEnabledForThread(
     }
     case version_info::Channel::CANARY:
       return true;
+    default:
+      return false;
+  }
+}
+
+bool AndroidPlatformConfiguration::IsSupportedForChannel(
+    std::optional<version_info::Channel> release_channel) const {
+  // The profiler is always supported for local builds and the CQ.
+  if (!release_channel) {
+    return true;
+  }
+
+  // Canary, dev, and beta channels are supported in release builds.
+  switch (*release_channel) {
+    case version_info::Channel::CANARY:
+    case version_info::Channel::DEV:
+    case version_info::Channel::BETA:
+      return true;
+
     default:
       return false;
   }

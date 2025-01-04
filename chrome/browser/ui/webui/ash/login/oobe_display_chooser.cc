@@ -50,8 +50,9 @@ void OobeDisplayChooser::TryToPlaceUiOnTouchDisplay() {
 
   // Don't (potentially) queue a second task to run MoveToTouchDisplay if one
   // already is queued.
-  if (weak_ptr_factory_.HasWeakPtrs())
+  if (weak_ptr_factory_.HasWeakPtrs()) {
     return;
+  }
 
   display::Display primary_display =
       display::Screen::GetScreen()->GetPrimaryDisplay();

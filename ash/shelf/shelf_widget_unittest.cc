@@ -401,7 +401,7 @@ TEST_F(ShelfWidgetTest, ShelfInitiallySizedAfterLogin) {
   ASSERT_TRUE(shelf_widget2);
 
   // Simulate login.
-  CreateUserSessions(1);
+  SimulateUserLogin(kDefaultUserEmail);
 
   const int total_width1 =
       screen_util::GetDisplayBoundsWithShelf(shelf_widget1->GetNativeWindow())
@@ -967,7 +967,7 @@ class ShelfWidgetAfterLoginTest : public AshTestBase {
                  ShelfVisibilityState expected_shelf_visibility_state,
                  ShelfAutoHideState expected_shelf_auto_hide_state) {
     // Simulate login.
-    CreateUserSessions(1);
+    SimulateUserLogin(kDefaultUserEmail);
 
     // Simulate shelf settings being applied from profile prefs.
     Shelf* shelf = GetPrimaryShelf();
@@ -1001,7 +1001,7 @@ TEST_F(ShelfWidgetAfterLoginTest, InitialValues) {
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
 
   // Simulate login.
-  CreateUserSessions(1);
+  SimulateUserLogin(kDefaultUserEmail);
 
   // Ensure settings are correct after login.
   EXPECT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());

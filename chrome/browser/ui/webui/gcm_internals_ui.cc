@@ -93,7 +93,7 @@ void GcmInternalsUIMessageHandler::RequestAllInfo(
 
   Profile* profile = Profile::FromWebUI(web_ui());
   gcm::GCMProfileService* profile_service =
-    gcm::GCMProfileServiceFactory::GetForProfile(profile);
+      gcm::GCMProfileServiceFactory::GetForProfile(profile);
 
   if (!profile_service || !profile_service->driver()) {
     ReturnResults(profile, nullptr, nullptr);

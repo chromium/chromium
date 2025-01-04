@@ -196,10 +196,10 @@ void BidirectionalStream::OnHeadersReceived(
   }
   const char* protocol = "unknown";
   switch (bidi_stream_->GetProtocol()) {
-    case net::kProtoHTTP2:
+    case net::NextProto::kProtoHTTP2:
       protocol = "h2";
       break;
-    case net::kProtoQUIC:
+    case net::NextProto::kProtoQUIC:
       protocol = "quic/1+spdy/3";
       break;
     default:

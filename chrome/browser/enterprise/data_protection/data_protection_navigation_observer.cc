@@ -147,13 +147,14 @@ void DoLookup(safe_browsing::RealTimeUrlLookupServiceBase* lookup_service,
   DCHECK(web_contents);
   DCHECK(!callback.is_null());
   DCHECK(IsEnterpriseLookupEnabled(web_contents->GetBrowserContext()));
-
+  // The referring_app_info parameter to StartLookup is Android-specific.
   lookup_service->StartLookup(
       url,
       base::BindOnce(&OnRealTimeLookupComplete, std::move(callback),
                      identifier),
       base::SequencedTaskRunner::GetCurrentDefault(),
-      sessions::SessionTabHelper::IdForTab(web_contents));
+      sessions::SessionTabHelper::IdForTab(web_contents),
+      /*referring_app_info=*/std::nullopt);
 }
 
 bool IsScreenshotProtectionEnabled() {
@@ -220,7 +221,7 @@ void DataProtectionNavigationObserver::CreateForNavigationIfNeeded(
 }
 
 // static
-void DataProtectionNavigationObserver::GetDataProtectionSettings(
+void DataProtectionNavigationObserver::ApplyDataProtectionSettings(
     Profile* profile,
     content::WebContents* web_contents,
     Callback callback) {

@@ -29,7 +29,6 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_handler.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_string_map.h"
 #include "chrome/browser/ui/webui/theme_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/side_panel_customize_chrome_resources.h"
@@ -45,6 +44,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 
 namespace {
 
@@ -101,6 +101,7 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"categoriesHeader", IDS_NTP_CUSTOMIZE_THEMES_HEADER},
       {"shortcutsHeader", IDS_NTP_CUSTOMIZE_MENU_SHORTCUTS_LABEL},
       {"toolbarHeader", IDS_NTP_CUSTOMIZE_MENU_TOOLBAR_LABEL},
+      {"extensionsHeader", IDS_NTP_CUSTOMIZE_MENU_EXTENSIONS_LABEL},
       // Appearance strings.
       {"changeTheme", IDS_NTP_CUSTOMIZE_CHROME_CHANGE_THEME_LABEL},
       {"chromeWebStore", IDS_EXTENSION_WEB_STORE_TITLE},

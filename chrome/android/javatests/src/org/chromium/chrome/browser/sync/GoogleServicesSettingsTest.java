@@ -161,7 +161,7 @@ public class GoogleServicesSettingsTest {
     public void testPriceTrackingAnnotations() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
+                    PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(true);
                     PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
                 });
 
@@ -194,7 +194,7 @@ public class GoogleServicesSettingsTest {
     public void testPriceTrackingAnnotations_FeatureDisabled() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
+                    PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(true);
                     PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
                 });
 
@@ -215,7 +215,7 @@ public class GoogleServicesSettingsTest {
     public void testPriceTrackingAnnotations_NotSignedIn() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
+                    PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(true);
                     PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(false);
                 });
 

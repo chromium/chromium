@@ -400,8 +400,8 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     if (base::FeatureList::IsEnabled(
             privacy_sandbox::kTrackingProtectionContentSettingFor3pcb)) {
       has_site_level_exception |=
-          tracking_protection_settings_->GetTrackingProtectionSetting(
-              current_url) == CONTENT_SETTING_ALLOW;
+          tracking_protection_settings_->HasTrackingProtectionException(
+              current_url);
     }
 
     // Partitioned access is displayed when all of these conditions are met:

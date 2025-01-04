@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/webui/nearby_share/shared_resources.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/nearby_share_dialog_resources.h"
@@ -41,6 +40,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 
 namespace nearby_share {
 
@@ -57,8 +57,9 @@ enum class CloseReason {
 
 bool NearbyShareDialogUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  if (browser_context->IsOffTheRecord())
+  if (browser_context->IsOffTheRecord()) {
     return false;
+  }
   return NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
       browser_context);
 }
@@ -191,8 +192,9 @@ void NearbyShareDialogUI::WebContentsCreated(
 }
 
 void NearbyShareDialogUI::HandleClose(const base::Value::List& args) {
-  if (!sharesheet_controller_)
+  if (!sharesheet_controller_) {
     return;
+  }
 
   CHECK_EQ(1u, args.size());
   CHECK_GE(args[0].GetInt(), 0);

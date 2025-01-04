@@ -155,4 +155,114 @@ TEST_F(ImageButtonFactoryWidgetTest, AccessibleName) {
             untoggled_text);
 }
 
+TEST_F(ImageButtonFactoryWidgetTest, ToggleImageButtonTooltiptext) {
+  const std::u16string untoggled_text(u"untoggled_text");
+  const std::u16string toggled_tooltip_text(u"toggled_tooltip_text");
+  const std::u16string toggled_tooltip_empty_text(u"");
+
+  std::unique_ptr<ToggleImageButton> toggle_image_button =
+      CreateVectorToggleImageButton(Button::PressedCallback());
+
+  toggle_image_button->SetTooltipText(untoggled_text);
+  toggle_image_button->SetToggledTooltipText(toggled_tooltip_text);
+  EXPECT_EQ(toggle_image_button->GetTooltipText(gfx::Point()), untoggled_text);
+
+  toggle_image_button->SetToggled(true);
+  EXPECT_EQ(toggle_image_button->GetTooltipText(gfx::Point()),
+            toggled_tooltip_text);
+
+  toggle_image_button->SetToggled(false);
+  EXPECT_EQ(toggle_image_button->GetTooltipText(gfx::Point()), untoggled_text);
+
+  toggle_image_button->SetToggled(true);
+  EXPECT_EQ(toggle_image_button->GetTooltipText(gfx::Point()),
+            toggled_tooltip_text);
+
+  toggle_image_button->SetToggledTooltipText(toggled_tooltip_empty_text);
+  EXPECT_EQ(toggle_image_button->GetTooltipText(gfx::Point()), untoggled_text);
+
+  toggle_image_button->SetToggledTooltipText(u"New Tooltip Text");
+  EXPECT_EQ(toggle_image_button->GetTooltipText(gfx::Point()),
+            u"New Tooltip Text");
+}
+
+TEST_F(ImageButtonFactoryWidgetTest,
+       ToggleImageButtonTooltiptextAccessibility) {
+  const std::u16string untoggled_text(u"untoggled_text");
+  const std::u16string toggled_tooltip_text(u"toggled_tooltip_text");
+  const std::u16string toggled_tooltip_empty_text(u"");
+
+  std::unique_ptr<ToggleImageButton> toggle_image_button =
+      CreateVectorToggleImageButton(Button::PressedCallback());
+
+  toggle_image_button->SetTooltipText(untoggled_text);
+  toggle_image_button->SetToggledTooltipText(toggled_tooltip_text);
+
+  ui::AXNodeData node_data;
+  toggle_image_button->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            toggle_image_button->GetTooltipText(gfx::Point()));
+  EXPECT_NE(
+      node_data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+      toggle_image_button->GetTooltipText(gfx::Point()));
+
+  toggle_image_button->SetToggled(true);
+  EXPECT_EQ(toggle_image_button->GetTooltipText(gfx::Point()),
+            toggled_tooltip_text);
+
+  node_data = ui::AXNodeData();
+  toggle_image_button->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            toggle_image_button->GetTooltipText(gfx::Point()));
+  EXPECT_NE(
+      node_data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+      toggle_image_button->GetTooltipText(gfx::Point()));
+
+  toggle_image_button->SetToggled(false);
+  EXPECT_EQ(toggle_image_button->GetTooltipText(gfx::Point()), untoggled_text);
+
+  node_data = ui::AXNodeData();
+  toggle_image_button->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            toggle_image_button->GetTooltipText(gfx::Point()));
+  EXPECT_NE(
+      node_data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+      toggle_image_button->GetTooltipText(gfx::Point()));
+
+  toggle_image_button->SetToggled(true);
+  EXPECT_EQ(toggle_image_button->GetTooltipText(gfx::Point()),
+            toggled_tooltip_text);
+
+  node_data = ui::AXNodeData();
+  toggle_image_button->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            toggle_image_button->GetTooltipText(gfx::Point()));
+  EXPECT_NE(
+      node_data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+      toggle_image_button->GetTooltipText(gfx::Point()));
+
+  toggle_image_button->SetToggledTooltipText(toggled_tooltip_empty_text);
+  EXPECT_EQ(toggle_image_button->GetTooltipText(gfx::Point()), untoggled_text);
+
+  node_data = ui::AXNodeData();
+  toggle_image_button->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_NE(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            toggle_image_button->GetTooltipText(gfx::Point()));
+  EXPECT_EQ(
+      node_data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+      toggle_image_button->GetTooltipText(gfx::Point()));
+
+  toggle_image_button->SetToggledTooltipText(u"New Tooltip Text");
+  EXPECT_EQ(toggle_image_button->GetTooltipText(gfx::Point()),
+            u"New Tooltip Text");
+
+  node_data = ui::AXNodeData();
+  toggle_image_button->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            toggle_image_button->GetTooltipText(gfx::Point()));
+  EXPECT_NE(
+      node_data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+      toggle_image_button->GetTooltipText(gfx::Point()));
+}
+
 }  // namespace views

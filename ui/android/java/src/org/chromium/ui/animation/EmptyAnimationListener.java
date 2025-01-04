@@ -7,7 +7,10 @@ package org.chromium.ui.animation;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Simple no-op default interface that allows subclasses to only implement methods as needed. */
+@NullMarked
 public interface EmptyAnimationListener extends AnimationListener {
     @Override
     default void onAnimationStart(Animation animation) {}

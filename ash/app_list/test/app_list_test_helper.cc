@@ -65,6 +65,7 @@ AppListTestHelper::AppListTestHelper() {
   // Disable app list nudge as default.
   DisableAppListNudge(true);
   AppListNudgeController::SetPrivacyNoticeAcceptedForTest(true);
+  AppListControllerImpl::SetSunfishNudgeDisabledForTest(true);
 }
 
 AppListTestHelper::~AppListTestHelper() {

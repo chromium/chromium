@@ -24,6 +24,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.device.geolocation.MockLocationProvider;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /**
  * Test suite for Geo-Location functionality.
@@ -62,6 +63,7 @@ public class GeolocationTest {
     @Test
     @MediumTest
     @Feature({"Location", "Main"})
+    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/41486136
     public void testGeolocationPlumbingAllowedDialog() throws Exception {
         runTest("initiate_getCurrentPosition()", 1, true, true);
     }

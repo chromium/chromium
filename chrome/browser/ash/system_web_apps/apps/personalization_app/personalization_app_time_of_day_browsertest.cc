@@ -114,7 +114,7 @@ class PersonalizationAppTimeOfDayBrowserTest
  public:
   PersonalizationAppTimeOfDayBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        personalization_app::GetTimeOfDayEnabledFeatures(), {});
+        personalization_app::GetTimeOfDayFeatures(), {});
     base::Time start_time = StartTime();
     clock_.SetNow(start_time);
     tick_clock_.SetNowTicks(base::TimeTicks() + (start_time - base::Time()));

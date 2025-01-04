@@ -9,10 +9,16 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
+#include "third_party/blink/renderer/core/css/style_rule.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
+
+using css_test_helpers::ParseRule;
+using css_test_helpers::ParseSelectorList;
 
 namespace {
 
@@ -306,7 +312,7 @@ TEST(CSSSelector, ExplicitScopeSpecificity) {
             selector[0].Specificity());
 }
 
-TEST(CSSSelector, CheckSelectorTextExpandingPseudoParent) {
+TEST(CSSSelector, SelectorTextExpandingPseudoReferences_Parent) {
   test::TaskEnvironment task_environment;
 
   css_test_helpers::TestStyleSheet sheet;
@@ -324,21 +330,23 @@ TEST(CSSSelector, CheckSelectorTextExpandingPseudoParent) {
   ASSERT_EQ(1u, rules.size());
   selector = &rules[0].Selector();
   EXPECT_EQ("& .b", selector->SelectorText());
-  EXPECT_EQ(":is(.a) .b", selector->SelectorTextExpandingPseudoParent());
+  EXPECT_EQ(":is(.a) .b",
+            selector->SelectorTextExpandingPseudoReferences(/*scope_id=*/0));
 
   rules = rule_set.ClassRules(AtomicString("c"));
   ASSERT_EQ(3u, rules.size());
   selector = &rules[0].Selector();
   EXPECT_EQ("& .c", selector->SelectorText());
   EXPECT_EQ(":is(:is(.a) .b) .c",
-            selector->SelectorTextExpandingPseudoParent());
+            selector->SelectorTextExpandingPseudoReferences(/*scope_id=*/0));
   selector = &rules[1].Selector();
   EXPECT_EQ("&.c", selector->SelectorText());
-  EXPECT_EQ(":is(:is(.a) .b).c", selector->SelectorTextExpandingPseudoParent());
+  EXPECT_EQ(":is(:is(.a) .b).c",
+            selector->SelectorTextExpandingPseudoReferences(/*scope_id=*/0));
   selector = &rules[2].Selector();
   EXPECT_EQ(".c:has(&)", selector->SelectorText());
   EXPECT_EQ(".c:has(:is(:is(.a) .b))",
-            selector->SelectorTextExpandingPseudoParent());
+            selector->SelectorTextExpandingPseudoReferences(/*scope_id=*/0));
 
   rules = rule_set.ClassRules(AtomicString("e"));
   ASSERT_EQ(1u, rules.size());
@@ -350,7 +358,54 @@ TEST(CSSSelector, CheckSelectorTextExpandingPseudoParent) {
   selector = &rules[0].Selector();
   EXPECT_EQ(".f:has(> &)", selector->SelectorText());
   EXPECT_EQ(".f:has(> :is(.d .e))",
-            selector->SelectorTextExpandingPseudoParent());
+            selector->SelectorTextExpandingPseudoReferences(/*scope_id=*/0));
+}
+
+TEST(CSSSelector, SelectorTextExpandingPseudoReferences_Scope) {
+  test::TaskEnvironment task_environment;
+
+  auto expanded_selector_text = [](String s) {
+    return css_test_helpers::ParseSelectorList(s)
+        ->First()
+        ->SelectorTextExpandingPseudoReferences(/*scope_id=*/42);
+  };
+
+  EXPECT_EQ(".a .b :has(.c)", expanded_selector_text(".a .b :has(.c)"));
+
+  EXPECT_EQ(":-internal-scope-42", expanded_selector_text(":scope"));
+  EXPECT_EQ(".a:-internal-scope-42", expanded_selector_text(".a:scope"));
+  EXPECT_EQ(".a :-internal-scope-42", expanded_selector_text(".a :scope"));
+  EXPECT_EQ(":-internal-scope-42.a", expanded_selector_text(":scope.a"));
+  EXPECT_EQ(":is(.a, :-internal-scope-42)",
+            expanded_selector_text(":is(.a, :scope)"));
+  EXPECT_EQ(":not(.a, :-internal-scope-42)",
+            expanded_selector_text(":not(.a, :scope)"));
+  EXPECT_EQ(
+      ":not(.a, :-internal-scope-42)"
+      ":where(:-internal-scope-42, :-internal-scope-42):-internal-scope-42",
+      expanded_selector_text(":not(.a, :scope):where(:scope, :scope):scope"));
+  EXPECT_EQ(":has(.b:not(:-internal-scope-42 .a *))",
+            expanded_selector_text(":has(.b:not(:scope .a *))"));
+}
+
+TEST(CSSSelector, SelectorTextExpandingPseudoReferences_ImplicitScope) {
+  test::TaskEnvironment task_environment;
+
+  css_test_helpers::TestStyleSheet sheet;
+  sheet.AddCSSRules(R"CSS(
+    @scope (.a) {
+      /* There's an implicit (non-serialized) ':scope' (plus descendant
+         combinator) prepended to the selector below. */
+      .b {}
+    }
+  )CSS");
+  RuleSet& rule_set = sheet.GetRuleSet();
+  base::span<const RuleData> rules = rule_set.ClassRules(AtomicString("b"));
+  ASSERT_EQ(1u, rules.size());
+  const CSSSelector* selector = &rules[0].Selector();
+  EXPECT_EQ(".b", selector->SelectorText());
+  EXPECT_EQ(":-internal-scope-99 .b",
+            selector->SelectorTextExpandingPseudoReferences(/*scope_id=*/99));
 }
 
 TEST(CSSSelector, CheckHasArgumentMatchInShadowTreeFlag) {
@@ -435,6 +490,83 @@ TEST(CSSSelector, CheckHasArgumentMatchInShadowTreeFlag) {
   selector = selector->NextSimpleSelector();
   EXPECT_EQ(selector->GetPseudoType(), CSSSelector::kPseudoHas);
   EXPECT_TRUE(selector->HasArgumentMatchInShadowTree());
+}
+
+TEST(CSSSelector, RenestAmpersand) {
+  test::TaskEnvironment task_environment;
+  ScopedNullExecutionContext scoped_execution_context;
+  Document* document =
+      Document::CreateForTest(scoped_execution_context.GetExecutionContext());
+
+  StyleRule* a = To<StyleRule>(ParseRule(*document, ".a {}"));
+  StyleRule* b = To<StyleRule>(ParseRule(*document, ".b {}"));
+
+  CSSSelectorList* list = ParseSelectorList("&", CSSNestingType::kNesting,
+                                            /*parent_rule_for_nesting=*/a);
+  ASSERT_TRUE(list && list->IsValid());
+  EXPECT_EQ(a, list->First()->ParentRule());
+
+  EXPECT_EQ(std::nullopt, list->First()->Renest(a));  // No-op.
+
+  std::optional<CSSSelector> renested = list->First()->Renest(b);
+  ASSERT_TRUE(renested.has_value());
+  EXPECT_EQ(b, renested->ParentRule());
+}
+
+TEST(CSSSelector, RenestList) {
+  test::TaskEnvironment task_environment;
+  ScopedNullExecutionContext scoped_execution_context;
+  Document* document =
+      Document::CreateForTest(scoped_execution_context.GetExecutionContext());
+
+  StyleRule* a = To<StyleRule>(ParseRule(*document, ".a {}"));
+  StyleRule* b = To<StyleRule>(ParseRule(*document, ".b {}"));
+
+  CSSSelectorList* old_list = ParseSelectorList(
+      "&:is(&, .d)", CSSNestingType::kNesting, /*parent_rule_for_nesting=*/a);
+  ASSERT_TRUE(old_list && old_list->IsValid());
+
+  EXPECT_EQ(old_list, old_list->Renest(a));  // No-op.
+
+  CSSSelectorList* new_list = old_list->Renest(b);
+  EXPECT_NE(old_list, new_list);
+
+  EXPECT_EQ(
+      ":is(.a):is(:is(.a), .d)",
+      old_list->First()->SelectorTextExpandingPseudoReferences(/*scope_id=*/0));
+  EXPECT_EQ(
+      ":is(.b):is(:is(.b), .d)",
+      new_list->First()->SelectorTextExpandingPseudoReferences(/*scope_id=*/0));
+}
+
+TEST(CSSSelector, RenestNoNesting) {
+  test::TaskEnvironment task_environment;
+  ScopedNullExecutionContext scoped_execution_context;
+  Document* document =
+      Document::CreateForTest(scoped_execution_context.GetExecutionContext());
+
+  StyleRule* a = To<StyleRule>(ParseRule(*document, ".a {}"));
+  CSSSelectorList* list = ParseSelectorList(".a:is(.b, .c):not(.c)");
+  ASSERT_TRUE(list && list->IsValid());
+  EXPECT_EQ(list, list->Renest(a));
+}
+
+TEST(CSSSelector, RenestScope) {
+  test::TaskEnvironment task_environment;
+  ScopedNullExecutionContext scoped_execution_context;
+  Document* document =
+      Document::CreateForTest(scoped_execution_context.GetExecutionContext());
+
+  StyleRule* a = To<StyleRule>(ParseRule(*document, ".a {}"));
+  StyleRule* b = To<StyleRule>(ParseRule(*document, ".b {}"));
+  CSSSelectorList* list =
+      ParseSelectorList(":scope:is(:scope)", CSSNestingType::kScope,
+                        /*parent_rule_for_nesting=*/a);
+  ASSERT_TRUE(list && list->IsValid());
+  EXPECT_EQ(list, list->Renest(a));
+  // There is no '&' selector in `list`: no need to re-nest even when
+  // the parent rule changed:
+  EXPECT_EQ(list, list->Renest(b));
 }
 
 }  // namespace blink

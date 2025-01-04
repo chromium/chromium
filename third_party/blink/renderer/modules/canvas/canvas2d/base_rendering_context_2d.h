@@ -113,8 +113,8 @@ class OffscreenCanvas;
 class Path;
 class Path2D;
 class ScriptState;
-class SimpleFontData;
 class TextCluster;
+class TextClusterOptions;
 class TextMetrics;
 class V8GPUTextureFormat;
 class V8UnionCanvasFilterOrString;
@@ -485,6 +485,10 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   // The x and y parameters are added to the values from the TextCluster to
   // position the cluster.
   void fillTextCluster(const TextCluster* text_cluster, double x, double y);
+  void fillTextCluster(const TextCluster* text_cluster,
+                       double x,
+                       double y,
+                       const TextClusterOptions* cluster_options);
 
   void Trace(Visitor*) const override;
 
@@ -644,7 +648,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
 
   virtual void FinalizeFrame(FlushReason) {}
 
-  float GetFontBaseline(const SimpleFontData&) const;
   virtual void DispatchContextLostEvent(TimerBase*);
   virtual void DispatchContextRestoredEvent(TimerBase*);
   virtual void TryRestoreContextEvent(TimerBase*) {}
@@ -712,8 +715,12 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
                         double x,
                         double y,
                         CanvasRenderingContext2DState::PaintType paint_type,
+                        TextAlign align,
+                        TextBaseline baseline,
+                        unsigned run_start,
+                        unsigned run_end,
                         double* max_width = nullptr,
-                        const TextCluster* text_cluster = nullptr);
+                        const Font* cluster_font = nullptr);
 
   // Returns the color from a string. This may return a cached value as well
   // as updating the cache (if possible).

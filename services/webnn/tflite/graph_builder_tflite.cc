@@ -4,8 +4,11 @@
 
 #include "services/webnn/tflite/graph_builder_tflite.h"
 
-#include <cstddef>
-#include <cstdint>
+#include <stddef.h>
+#include <stdint.h>
+
+#include <concepts>
+#include <iterator>
 #include <numeric>
 #include <vector>
 
@@ -35,6 +38,8 @@ namespace {
 // compatible. If that ever changes, we must ensure that version is the first
 // entry in the new tflite root so that we can see that version is not 1.
 #define TFLITE_SCHEMA_VERSION (3)
+
+constexpr size_t kWeightsAlignment = 8;
 
 // Maps a DataType to a `::tflite::TensorType`. Other `TensorTypeMap` overloads
 // may be declared below as needed.
@@ -332,10 +337,12 @@ GetCoordinatesNDFromIndex(size_t flat_index,
 GraphBuilderTflite::Result::Result(
     flatbuffers::DetachedBuffer buffer,
     base::flat_map<std::string, int> input_name_to_index,
-    base::flat_map<std::string, int> output_name_to_index)
+    base::flat_map<std::string, int> output_name_to_index,
+    std::vector<uint8_t> buffer_data)
     : buffer(std::move(buffer)),
       input_name_to_index(std::move(input_name_to_index)),
-      output_name_to_index(std::move(output_name_to_index)) {}
+      output_name_to_index(std::move(output_name_to_index)),
+      buffer_data(std::move(buffer_data)) {}
 
 GraphBuilderTflite::Result::Result(Result&&) = default;
 
@@ -430,7 +437,7 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*max_input=*/kFloat16To32AndInt32To64,
        /*min_input=*/kFloat16To32AndInt32To64,
        /*pow_input=*/kFloat16To32AndInt32,
-       /*equal_input=*/kFloat16To32AndInt32To64AndUint8,
+       /*equal_input=*/kFloat16To32AndInt32To64,
        /*greater_input=*/kFloat16To32AndInt32To64,
        /*greater_or_equal_input=*/kFloat16To32AndInt32To64,
        /*lesser_input=*/kFloat16To32AndInt32To64,
@@ -541,6 +548,9 @@ GraphBuilderTflite::GraphBuilderTflite(
   // TFLite requires the first entry in FlatBuffer to be an empty buffer.
   buffers_.push_back(
       ::tflite::CreateBuffer(builder_, builder_.CreateVector({})));
+  // TFLite requires that offsets into the weights file are greater than 1 and
+  // we need anything we add to be aligned.
+  std::fill_n(std::back_inserter(buffer_data_), kWeightsAlignment, 0);
 }
 
 GraphBuilderTflite::~GraphBuilderTflite() = default;
@@ -1026,13 +1036,20 @@ auto GraphBuilderTflite::FinishAndTakeResult(
   is_created_model_ = true;
 
   return {builder_.Release(), std::move(input_name_to_index),
-          std::move(output_name_to_index)};
+          std::move(output_name_to_index), std::move(buffer_data_)};
 }
 
 uint32_t GraphBuilderTflite::SerializeBuffer(base::span<const uint8_t> buffer) {
-  const auto buffer_data = builder_.CreateVector(buffer.data(), buffer.size());
+  size_t offset = base::bits::AlignUp(buffer_data_.size(), kWeightsAlignment);
+  CHECK_GT(offset, 1u);
+  size_t padding = offset - buffer_data_.size();
+  std::fill_n(std::back_inserter(buffer_data_), padding, 0);
+  CHECK_EQ(buffer_data_.size() % kWeightsAlignment, 0u);
+
+  base::ranges::copy(buffer, std::back_inserter(buffer_data_));
   const auto buffer_index = base::checked_cast<uint32_t>(buffers_.size());
-  buffers_.emplace_back(::tflite::CreateBuffer(builder_, buffer_data));
+  buffers_.emplace_back(
+      ::tflite::CreateBuffer(builder_, /*data=*/0, offset, buffer.size()));
   // The index of buffer is referenced by tensors.
   return buffer_index;
 }
@@ -1042,10 +1059,15 @@ template <typename DataType>
 int32_t GraphBuilderTflite::SerializeTensorWithBuffer(
     base::span<const DataType> buffer,
     base::span<const int32_t> dimensions) {
-  const auto buffer_index = base::checked_cast<uint32_t>(buffers_.size());
-  const auto buffer_data =
-      builder_.CreateVector<uint8_t>(base::as_byte_span(buffer));
-  buffers_.emplace_back(::tflite::CreateBuffer(builder_, buffer_data));
+  base::span<const uint8_t> buffer_span;
+  if constexpr (std::floating_point<DataType>) {
+    // Floating point types do not have unique object representations, but
+    // this code appears to be using a byte span to type-erase, which is fine.
+    buffer_span = base::as_byte_span(base::allow_nonunique_obj, buffer);
+  } else {
+    buffer_span = base::as_byte_span(buffer);
+  }
+  const uint32_t buffer_index = SerializeBuffer(buffer_span);
 
   // Create `tflite::Tensor` with the dimensions and the index of buffer.
   const int32_t tensor_index = base::checked_cast<int32_t>(tensors_.size());
@@ -1812,6 +1834,15 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
       // TODO(crbug.com/328733319): Support other tensor data types.
       CHECK(context_properties_.data_type_limits.conv2d_input.Has(
           input_data_type));
+
+      // TFLite internally performs a truncating cast. See crbug.com/384999508.
+      if (!base::IsValueInRangeForNumericType<int16_t>(
+              conv2d.dilations->height) ||
+          !base::IsValueInRangeForNumericType<int16_t>(
+              conv2d.dilations->width)) {
+        return base::unexpected(
+            "Dilation width and height must fit within the int16 range");
+      }
       break;
     case mojom::Conv2d::Kind::kTransposed:
       // TODO(crbug.com/328733319): Support other tensor data types.
@@ -1825,6 +1856,13 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
             "convTranspose2d doesn't support dilations and groups.");
       }
       break;
+  }
+
+  // TFLite internally performs a truncating cast. See crbug.com/384999508
+  if (!base::IsValueInRangeForNumericType<int16_t>(conv2d.strides->height) ||
+      !base::IsValueInRangeForNumericType<int16_t>(conv2d.strides->width)) {
+    return base::unexpected(
+        "Stride width and height must fit within the int16 range");
   }
 
   // Get tflite padding mode with the size2d of input, filter, dilation.

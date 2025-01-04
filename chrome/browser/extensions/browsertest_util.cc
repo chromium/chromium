@@ -105,14 +105,11 @@ bool DidChangeTitle(content::WebContents& web_contents,
   return false;
 }
 
-BlockedActionWaiter::BlockedActionWaiter(ExtensionActionRunner* runner)
-    : runner_(runner) {
-  runner_->set_observer_for_testing(this);  // IN-TEST
+BlockedActionWaiter::BlockedActionWaiter(ExtensionActionRunner* runner) {
+  action_runner_observation_.Observe(runner);
 }
 
-BlockedActionWaiter::~BlockedActionWaiter() {
-  runner_->set_observer_for_testing(nullptr);  // IN-TEST
-}
+BlockedActionWaiter::~BlockedActionWaiter() = default;
 
 void BlockedActionWaiter::Wait() {
   run_loop_.Run();

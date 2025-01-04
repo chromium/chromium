@@ -14,6 +14,7 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.NonNull;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
@@ -122,7 +123,8 @@ public class WebApkDataProvider {
     }
 
     @CalledByNative
-    public static String[] getOfflinePageInfo(int[] fields, String url, WebContents webContents) {
+    public static String[] getOfflinePageInfo(
+            int[] fields, @JniType("std::string") String url, WebContents webContents) {
         OfflineData offlineData = null;
         TwaOfflineDataProvider twaProvider =
                 TwaOfflineDataProvider.from(TabUtils.fromWebContents(webContents));

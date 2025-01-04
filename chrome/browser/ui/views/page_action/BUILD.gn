@@ -15,6 +15,7 @@ source_set("page_action") {
   ]
 
   sources = [
+    "page_action_constants.h",
     "page_action_container_view.cc",
     "page_action_controller.cc",
     "page_action_model.cc",
@@ -23,12 +24,12 @@ source_set("page_action") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/actions:actions_headers",
     "//ui/actions:actions_headers",
     "//ui/base/metadata",
-    "//ui/gfx",
     "//ui/views",
   ]
 
-  deps = []
+  deps = [ "//ui/gfx" ]
 }

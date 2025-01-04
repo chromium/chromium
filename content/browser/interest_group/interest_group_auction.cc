@@ -108,14 +108,6 @@
 
 namespace content {
 
-// The BiddingAndAuctionEncryptionMediaType feature controls the format we use
-// for the request to the Bidding and Auction Service. When enabled we add an
-// extra byte to the request and use the new media types instead of the
-// defaults from libquiche.
-CONTENT_EXPORT BASE_FEATURE(kBiddingAndAuctionEncryptionMediaType,
-                            "BiddingAndAuctionEncryptionMediaType",
-                            base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace {
 
 constexpr base::TimeDelta kMaxPerBuyerTimeout = base::Milliseconds(500);
@@ -200,7 +192,7 @@ std::vector<auction_worklet::mojom::KAnonKeyPtr> KAnonKeysToMojom(
 // Finds InterestGroup::Ad in `ads` that matches `ad_descriptor`, if any.
 // Returns nullptr if `ad_descriptor` is invalid.
 const blink::InterestGroup::Ad* FindMatchingAd(
-    const std::vector<blink::InterestGroup::Ad>& ads,
+    const std::optional<std::vector<blink::InterestGroup::Ad>>& ads,
     const base::flat_set<std::string>& kanon_keys,
     const blink::InterestGroup& interest_group,
     auction_worklet::mojom::BidRole bid_role,
@@ -208,6 +200,9 @@ const blink::InterestGroup::Ad* FindMatchingAd(
         selected_buyer_and_seller_reporting_id,
     bool is_component_ad,
     const blink::AdDescriptor& ad_descriptor) {
+  if (!ads.has_value()) {
+    return nullptr;
+  }
   // TODO(mmenke): Validate render URLs on load and make this a DCHECK just
   // before the return instead, since then `ads` will necessarily only contain
   // valid URLs at that point.
@@ -220,7 +215,7 @@ const blink::InterestGroup::Ad* FindMatchingAd(
   }
 
   const blink::InterestGroup::Ad* maybe_matching_ad = nullptr;
-  for (const auto& ad : ads) {
+  for (const auto& ad : *ads) {
     if (ad.render_url() != ad_descriptor.url) {
       continue;
     }
@@ -1293,6 +1288,7 @@ InterestGroupAuction::Bid::Bid(
     blink::AdDescriptor ad_descriptor,
     std::vector<blink::AdDescriptor> ad_component_descriptors,
     std::optional<uint16_t> modeling_signals,
+    std::optional<std::string> aggregate_win_signals,
     base::TimeDelta bid_duration,
     std::optional<uint32_t> bidding_signals_data_version,
     const blink::InterestGroup::Ad* bid_ad,
@@ -1307,6 +1303,7 @@ InterestGroupAuction::Bid::Bid(
       ad_descriptor(std::move(ad_descriptor)),
       ad_component_descriptors(std::move(ad_component_descriptors)),
       modeling_signals(modeling_signals),
+      aggregate_win_signals(std::move(aggregate_win_signals)),
       bid_duration(bid_duration),
       bidding_signals_data_version(bidding_signals_data_version),
       selected_buyer_and_seller_reporting_id(
@@ -1518,6 +1515,7 @@ class InterestGroupAuction::BuyerHelper
     DCHECK(!bid_states_.empty());
     DCHECK_EQ(0, num_outstanding_bids_);
     num_outstanding_bids_ = bid_states_.size();
+    num_outstanding_begin_generate_bid_calls_ = num_outstanding_bids_;
     num_outstanding_bidding_signals_received_calls_ = num_outstanding_bids_;
     start_generating_bids_time_ = base::TimeTicks::Now();
 
@@ -1913,6 +1911,8 @@ class InterestGroupAuction::BuyerHelper
           server_filtered_pagg_requests_reserved,
       std::map<std::string, PrivateAggregationRequests>
           server_filtered_pagg_requests_non_reserved,
+      auction_worklet::mojom::PrivateAggregationRequestPtr
+          non_kanon_private_aggregation_request,
       std::map<BiddingAndAuctionResponse::DebugReportKey, std::optional<GURL>>
           component_win_debugging_only_reports,
       std::map<url::Origin, std::vector<GURL>>
@@ -1951,7 +1951,7 @@ class InterestGroupAuction::BuyerHelper
 
     // 1. Ads must be in the interest group (at specified k-anon level)
     const blink::InterestGroup::Ad* matching_ad = FindMatchingAd(
-        *interest_group.ads, bid_state->kanon_keys, interest_group, bid_role,
+        interest_group.ads, bid_state->kanon_keys, interest_group, bid_role,
         selected_buyer_and_seller_reporting_id,
         /*is_component_ad=*/false, ad_descriptor);
     if (!matching_ad) {
@@ -1992,8 +1992,8 @@ class InterestGroupAuction::BuyerHelper
       if (interest_group.ad_components.has_value()) {
         // selected_buyer_and_seller_reporting_id is ignored in ad components
         matching_ad_component = FindMatchingAd(
-            *interest_group.ad_components, bid_state->kanon_keys,
-            interest_group, bid_role,
+            interest_group.ad_components, bid_state->kanon_keys, interest_group,
+            bid_role,
             /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
             /*is_component_ad=*/true, ad_component_descriptor);
       }
@@ -2013,6 +2013,10 @@ class InterestGroupAuction::BuyerHelper
         std::move(server_filtered_pagg_requests_reserved);
     bid_state->server_filtered_pagg_requests_non_reserved =
         std::move(server_filtered_pagg_requests_non_reserved);
+    if (non_kanon_private_aggregation_request) {
+      bid_state->non_kanon_private_aggregation_requests.emplace_back(
+          std::move(non_kanon_private_aggregation_request));
+    }
 
     // 4. forDebuggingOnly reports.
     for (auto& [debug_key, maybeReportUrl] :
@@ -2041,6 +2045,7 @@ class InterestGroupAuction::BuyerHelper
         /*ad_cost=*/std::nullopt, std::move(ad_descriptor),
         std::move(ad_component_descriptors),
         /*modeling_signals=*/std::nullopt,
+        /*aggregate_win_signals=*/std::nullopt,
         /*bid_duration=*/base::Seconds(0),
         /*bidding_signals_data_version=*/std::nullopt, matching_ad,
         selected_buyer_and_seller_reporting_id, bid_state, auction_);
@@ -2120,6 +2125,20 @@ class InterestGroupAuction::BuyerHelper
                              std::make_move_iterator(errors.begin()),
                              std::make_move_iterator(errors.end()));
 
+    // If BeginGenerateBid() has yet to be called for the worklet, act as if it
+    // has been.
+    if (!bid_state->begin_generate_bid_called) {
+      // Cancel the KVv2 bidding signals request if there is one. It's not
+      // strictly necessary, and will be done later, when closing all the pipes
+      // for the bidder, anyways. However, in the unlikely case a fatal error
+      // occurs early enough, this potentially reduces the amount of data to be
+      // sent/requested when fetching bidding signals, and may even prevent
+      // bidding signals from being requested entirely.
+      bid_state->bidding_signals_handle.reset();
+
+      OnBeginGenerateBidCalled(bid_state);
+    }
+
     // If waiting on bidding signals, the bidder needs to be removed in the same
     // way as if it had a new negative priority value, so reuse that logic. The
     // bidder needs to be removed, and the remaining bidders potentially need to
@@ -2150,6 +2169,27 @@ class InterestGroupAuction::BuyerHelper
         /*real_time_contributions=*/{},
         /*reject_reason=*/auction_worklet::mojom::RejectReason::kNotAvailable,
         /*errors=*/{});
+  }
+
+  void OnBeginGenerateBidCalled(BidState* bid_state) {
+    DCHECK(!bid_state->begin_generate_bid_called);
+    bid_state->begin_generate_bid_called = true;
+
+    DCHECK_GT(num_outstanding_begin_generate_bid_calls_, 0);
+    --num_outstanding_begin_generate_bid_calls_;
+    if (num_outstanding_begin_generate_bid_calls_ > 0) {
+      return;
+    }
+
+    // Start pending KVv2 signals fetches for any requests that have them.
+    for (auto& other_bid_state : bid_states_) {
+      // `num_outstanding_begin_generate_bid_calls_` should be true for all
+      // bidders, since `num_outstanding_begin_generate_bid_calls_` should is 0.
+      DCHECK(other_bid_state->begin_generate_bid_called);
+      if (other_bid_state->bidding_signals_handle) {
+        other_bid_state->bidding_signals_handle->StartFetch();
+      }
+    }
   }
 
   base::flat_set<std::string> ComputeKAnon(
@@ -2230,6 +2270,8 @@ class InterestGroupAuction::BuyerHelper
       bid_state->worklet_handle->GetBidderWorklet()
           ->SendPendingSignalsRequests();
     }
+
+    OnBeginGenerateBidCalled(bid_state);
 
     FinishGenerateBidIfReady(bid_state);
   }
@@ -2787,7 +2829,7 @@ class InterestGroupAuction::BuyerHelper
     const blink::InterestGroup& interest_group =
         bid_state.bidder->interest_group;
     const blink::InterestGroup::Ad* matching_ad = FindMatchingAd(
-        *interest_group.ads, bid_state.kanon_keys, interest_group,
+        interest_group.ads, bid_state.kanon_keys, interest_group,
         mojo_bid->bid_role, mojo_bid->selected_buyer_and_seller_reporting_id,
         /*is_component_ad=*/false, mojo_bid->ad_descriptor);
     if (!matching_ad) {
@@ -2824,7 +2866,7 @@ class InterestGroupAuction::BuyerHelper
       for (const blink::AdDescriptor& ad_component_descriptor :
            *mojo_bid->ad_component_descriptors) {
         const blink::InterestGroup::Ad* matching_ad_component = FindMatchingAd(
-            *interest_group.ad_components, bid_state.kanon_keys, interest_group,
+            interest_group.ad_components, bid_state.kanon_keys, interest_group,
             mojo_bid->bid_role,
             /*selected_buyer_and_seller_reporting_id=*/std::nullopt,
             /*is_component_ad=*/true, ad_component_descriptor);
@@ -2869,7 +2911,8 @@ class InterestGroupAuction::BuyerHelper
         mojo_bid->bid_role, std::move(mojo_bid->ad), mojo_bid->bid,
         std::move(mojo_bid->bid_currency), mojo_bid->ad_cost,
         std::move(ad_descriptor), std::move(ad_component_descriptors),
-        std::move(mojo_bid->modeling_signals), mojo_bid->bid_duration,
+        std::move(mojo_bid->modeling_signals),
+        std::move(mojo_bid->aggregate_win_signals), mojo_bid->bid_duration,
         bidding_signals_data_version, matching_ad,
         std::move(mojo_bid->selected_buyer_and_seller_reporting_id), &bid_state,
         auction_);
@@ -2922,6 +2965,7 @@ class InterestGroupAuction::BuyerHelper
   base::OneShotTimer cumulative_buyer_timeout_timer_;
 
   int num_outstanding_bidding_signals_received_calls_ = 0;
+  int num_outstanding_begin_generate_bid_calls_ = 0;
   int num_outstanding_bids_ = 0;
 
   // How many IGs had their execution cancelled by cumulative timeout.
@@ -3387,9 +3431,7 @@ bool InterestGroupAuction::HandleServerResponseImpl(
           std::string(reinterpret_cast<char*>(response.data()),
                       response.size()),
           request_context->context,
-          base::FeatureList::IsEnabled(kBiddingAndAuctionEncryptionMediaType)
-              ? kBiddingAndAuctionEncryptionResponseMediaType
-              : quiche::ObliviousHttpHeaderKeyConfig::kOhttpResponseLabel);
+          kBiddingAndAuctionEncryptionResponseMediaType);
   if (!maybe_response.ok()) {
     // We couldn't decrypt the response.
     saved_response_.emplace();
@@ -3488,6 +3530,7 @@ InterestGroupAuction::CreateReporter(
       bidder_bid->bid_state->additional_bid_buyer.has_value();
   winning_bid_info.ad_cost = bidder_bid->ad_cost;
   winning_bid_info.modeling_signals = bidder_bid->modeling_signals;
+  winning_bid_info.aggregate_win_signals = bidder_bid->aggregate_win_signals;
   winning_bid_info.bid_duration = winner->bid->bid_duration;
   winning_bid_info.bidding_signals_data_version =
       winner->bid->bidding_signals_data_version;
@@ -3704,10 +3747,14 @@ void InterestGroupAuction::NotifyConfigPromisesResolved() {
 
   DecodeAdditionalBidsIfReady();
 
+  // Either order of the next two functions is probably fine, but it's better to
+  // call ScoreQueuedBidsIfReady() first, since OnScoringDependencyDone() can
+  // advance state, and start sending pending scoring signals fetches, and
+  // ScoreQueuedBidsIfReady() may enqueue such fetches.
+  ScoreQueuedBidsIfReady();
+
   // Config resolution is done.
   OnScoringDependencyDone();
-
-  ScoreQueuedBidsIfReady();
 }
 
 void InterestGroupAuction::NotifyComponentConfigPromisesResolved(uint32_t pos) {
@@ -4834,6 +4881,8 @@ void InterestGroupAuction::OnInterestGroupRead(
   // BuyerHelper may filter out additional interest groups on construction.
   if (buyer_helper->has_potential_bidder()) {
     buyer_helpers_.emplace_back(std::move(buyer_helper));
+    interest_group_manager_->UpdateCachedOriginsIfEnabled(
+        interest_groups[0]->interest_group.owner);
   } else {
     // `buyer_helper` has a raw pointer to `this`, so if it's not added to
     // buyer_helpers_, delete it now to avoid a dangling pointer, since
@@ -4999,6 +5048,7 @@ void InterestGroupAuction::RequestSellerWorklet() {
       devtools_auction_id_, *config_->decision_logic_url,
       config_->trusted_scoring_signals_url, config_->seller_experiment_group_id,
       config_->non_shared_params.trusted_scoring_signals_coordinator,
+      config_->send_creative_scanning_metadata,
       base::BindOnce(&InterestGroupAuction::OnSellerProcessAssigned,
                      base::Unretained(this)),
       base::BindOnce(&InterestGroupAuction::OnSellerWorkletReceived,
@@ -5071,12 +5121,25 @@ void InterestGroupAuction::ScoreQueuedBidsIfReady() {
   // request for all the trusted seller signals (if some still are pending,
   // OnScoringDependencyDone() will take care of it).
   if (num_scoring_dependencies_ == 0) {
-    seller_worklet_handle_->GetSellerWorklet()->SendPendingSignalsRequests();
+    StartPendingScoringSignalsRequests();
   }
 
-  // No more unscored bids should be added, once the seller worklet has been
-  // received.
+  // No more unscored bids should be added to this list, once the seller worklet
+  // has been received, since any new bids will be sent directly to the seller
+  // worklet instead.
   DCHECK(unscored_bids_.empty());
+}
+
+void InterestGroupAuction::StartPendingScoringSignalsRequests() {
+  DCHECK(ReadyToScoreBids());
+  DCHECK_EQ(num_scoring_dependencies_, 0);
+  auto contexts = score_ad_receivers_.GetAllContexts();
+  for (const auto& context : contexts) {
+    if (context.second->cache_handle) {
+      context.second->cache_handle->StartFetch();
+    }
+  }
+  seller_worklet_handle_->GetSellerWorklet()->SendPendingSignalsRequests();
 }
 
 void InterestGroupAuction::HandleUpdateIfOlderThan(
@@ -5369,8 +5432,8 @@ InterestGroupAuction::CreateBidFromComponentAuctionWinner(
                                            : component_bid->bid_currency,
       component_bid->ad_cost, component_bid->ad_descriptor,
       component_bid->ad_component_descriptors, component_bid->modeling_signals,
-      component_bid->bid_duration, component_bid->bidding_signals_data_version,
-      component_bid->bid_ad,
+      component_bid->aggregate_win_signals, component_bid->bid_duration,
+      component_bid->bidding_signals_data_version, component_bid->bid_ad,
       component_bid->selected_buyer_and_seller_reporting_id,
       component_bid->bid_state, component_bid->auction);
 }
@@ -5382,7 +5445,7 @@ void InterestGroupAuction::OnScoringDependencyDone() {
   // If we issued the final set of bids to a seller worklet, tell it to send
   // any pending scoring signals request to complete the auction more quickly.
   if (num_scoring_dependencies_ == 0 && ReadyToScoreBids()) {
-    seller_worklet_handle_->GetSellerWorklet()->SendPendingSignalsRequests();
+    StartPendingScoringSignalsRequests();
   }
 
   // If all scoring dependencies are done, this means additional bid decoding
@@ -6564,6 +6627,7 @@ InterestGroupAuction::CreatePrimaryBidFromServerResponse(
       std::move(saved_response_->component_win_pagg_requests),
       std::move(saved_response_->server_filtered_pagg_requests_reserved),
       std::move(saved_response_->server_filtered_pagg_requests_non_reserved),
+      /*non_kanon_private_aggregation_request=*/{},
       std::move(saved_response_->component_win_debugging_only_reports),
       std::move(saved_response_->server_filtered_debugging_only_reports));
 }
@@ -6601,8 +6665,14 @@ InterestGroupAuction::CreateGhostBidFromServerResponse() {
       /*ad_descriptor=*/
       blink::AdDescriptor(
           saved_response_->k_anon_ghost_winner->ghost_winner->ad_render_url),
-      /*ad_component_descriptors=*/std::move(ghost_ad_components), {}, {}, {},
-      {}, {});
+      /*ad_component_descriptors=*/std::move(ghost_ad_components),
+      /*component_win_pagg_requests=*/{},
+      /*server_filtered_pagg_requests_reserved=*/{},
+      /*server_filtered_pagg_requests_non_reserved=*/{},
+      std::move(saved_response_->k_anon_ghost_winner
+                    ->non_kanon_private_aggregation_request),
+      /*component_win_debugging_only_reports=*/{},
+      /*server_filtered_debugging_only_reports=*/{});
 }
 
 void InterestGroupAuction::OnDirectFromSellerSignalHeaderAdSlotResolved(
@@ -6623,8 +6693,13 @@ void InterestGroupAuction::OnDirectFromSellerSignalHeaderAdSlotResolved(
     for (const auto& buyer_helper : buyer_helpers_) {
       buyer_helper->NotifyConfigDependencyResolved();
     }
-    OnScoringDependencyDone();
+
+    // Either order of the next two functions is probably fine, but it's better
+    // to call ScoreQueuedBidsIfReady() first, since OnScoringDependencyDone()
+    // can advance state, and start sending pending scoring signals fetches, and
+    // ScoreQueuedBidsIfReady() may enqueue such fetches.
     ScoreQueuedBidsIfReady();
+    OnScoringDependencyDone();
   }
 }
 

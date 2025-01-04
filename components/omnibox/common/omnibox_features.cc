@@ -109,17 +109,6 @@ BASE_FEATURE(kLocalHistoryZeroSuggestBeyondNTP,
              "LocalHistoryZeroSuggestBeyondNTP",
              DISABLED);
 
-// If enabled, SearchProvider uses `normalized_term` instead of `term` from the
-// `keyword_search_terms` table. `normalized_term` is the original search term
-// in lower case with extra whitespace characters collapsed. To ensure
-// suggestions from SearchProvider continue to get deduped with those from
-// ShortcutsProvider, AutocompleteMatch::GURLToStrippedGURL uses the normalized
-// term to build the destination URLs so they are identical despite case
-// mismatches in the terms.
-BASE_FEATURE(kNormalizeSearchSuggestions,
-             "NormalizeSearchSuggestions",
-             DISABLED);
-
 // If enabled, zero prefix suggestions will be stored using an in-memory caching
 // service, instead of using the existing prefs-based cache.
 BASE_FEATURE(kZeroSuggestInMemoryCaching,
@@ -176,6 +165,27 @@ BASE_FEATURE(kStoreTitleInContentsAndUrlInDescription,
 BASE_FEATURE(kDocumentProvider,
              "OmniboxDocumentProvider",
              enable_if(!IS_ANDROID && !IS_IOS));
+
+// If enabled, the authentication requirement for Drive suggestions is based on
+// whether the primary account is available, i.e., the user is signed into
+// Chrome, rarther than checking if any signed in account is available in the
+// cookie jar.
+BASE_FEATURE(kDocumentProviderPrimaryAccountRequirement,
+             "OmniboxDocumentProviderPrimaryAccountRequirement",
+             DISABLED);
+
+// If enabled, the primary account must be subject to enterprise policies in
+// order to receive Drive suggestions.
+BASE_FEATURE(kDocumentProviderEnterpriseEligibility,
+             "OmniboxDocumentProviderEnterpriseEligibility",
+             DISABLED);
+
+// If enabled, the enterprise eligibility requirement for Drive suggestions
+// is considered met even when the account capability is unknown. Has no effect
+// if kDocumentProviderEnterpriseEligibility is disabled.
+BASE_FEATURE(kDocumentProviderEnterpriseEligibilityWhenUnknown,
+             "OmniboxDocumentProviderEnterpriseEligibilityWhenUnknown",
+             DISABLED);
 
 // If enabled, the requirement to be in an active Sync state is removed and
 // Drive suggestions are available to all clients who meet the other
@@ -378,6 +388,10 @@ BASE_FEATURE(kAndroidHubSearch,
              "AndroidHubSearch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, delay focusTab to prioritize navigation
+// (https://crbug.com/374852568).
+BASE_FEATURE(kPostDelayedTaskFocusTab, "PostDelayedTaskFocusTab", ENABLED);
+
 namespace android {
 static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
@@ -386,7 +400,7 @@ static jlong JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
            &kOmniboxTouchDownTriggerForPrefetch, &kOmniboxAsyncViewInflation,
            &kRichAutocompletion, &kUseFusedLocationProvider,
            &kOmniboxElegantTextHeight, &kRetainOmniboxOnFocus,
-           &kJumpStartOmnibox, &kAndroidHubSearch}});
+           &kJumpStartOmnibox, &kAndroidHubSearch, &kPostDelayedTaskFocusTab}});
 
   return reinterpret_cast<jlong>(kFeatureMap.get());
 }

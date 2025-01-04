@@ -120,7 +120,7 @@ NSString* GetPrimaryButtonTitle(PasskeyWelcomeScreenPurpose purpose) {
                       delegate:(id<PasskeyWelcomeScreenViewControllerDelegate>)
                                    delegate
            primaryButtonAction:(ProceduralBlock)primaryButtonAction {
-  self = [super init];
+  self = [super initWithTaskRunner:nullptr];
   if (self) {
     _purpose = purpose;
     _navigationItemTitleView = navigationItemTitleView;

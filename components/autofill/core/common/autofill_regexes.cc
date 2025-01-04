@@ -79,7 +79,7 @@ const icu::RegexPattern* AutofillRegexCache::GetRegexPattern(
           cache_.emplace(std::u16string(regex), CompileRegex(regex));
       DCHECK(success);
     }
-    CHECK(it != cache_.end(), base::NotFatalUntil::M130);
+    CHECK(it != cache_.end());
     DCHECK(it->second.get());
     return it->second.get();
   };

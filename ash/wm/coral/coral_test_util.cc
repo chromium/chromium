@@ -59,8 +59,10 @@ coral::mojom::GroupPtr CreateDefaultTestGroup() {
                          "Coral Group");
 }
 
-void OverrideTestResponse(std::vector<coral::mojom::GroupPtr> test_groups) {
+void OverrideTestResponse(std::vector<coral::mojom::GroupPtr> test_groups,
+                          CoralSource source) {
   auto test_response = std::make_unique<CoralResponse>();
+  test_response->set_source(source);
   test_response->set_groups(std::move(test_groups));
   BirchCoralProvider::Get()->OverrideCoralResponseForTest(
       std::move(test_response));
@@ -86,11 +88,19 @@ CoralChipButton* GetFirstCoralButton() {
   // Creating `OverviewGridTestApi` will crash if we aren't in overview mode.
   const std::vector<raw_ptr<BirchChipButtonBase>>& birch_chips =
       OverviewGridTestApi(Shell::GetPrimaryRootWindow()).GetBirchChips();
-  CHECK_EQ(1u, birch_chips.size());
+  CHECK_GE(birch_chips.size(), 1u);
 
   auto* coral_button = views::AsViewClass<CoralChipButton>(birch_chips[0]);
   CHECK(!!coral_button);
   return coral_button;
+}
+
+size_t GetCoralButtonNum() {
+  return base::ranges::count_if(
+      OverviewGridTestApi(Shell::GetPrimaryRootWindow()).GetBirchChips(),
+      [](auto& chip) {
+        return chip->GetItem()->GetType() == BirchItemType::kCoral;
+      });
 }
 
 }  // namespace ash

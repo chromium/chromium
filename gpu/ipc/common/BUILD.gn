@@ -340,6 +340,7 @@ mojom("interfaces") {
     "memory_stats.mojom",
     "shared_image_capabilities.mojom",
     "shared_image_metadata.mojom",
+    "shared_image_pool_id.mojom",
     "sync_token.mojom",
     "vulkan_ycbcr_info.mojom",
   ]
@@ -536,6 +537,17 @@ mojom("interfaces") {
         },
       ]
       traits_headers = [ "shared_image_metadata_mojom_traits.h" ]
+      traits_public_deps = [ ":mojom_traits" ]
+    },
+    {
+      types = [
+        {
+          mojom = "gpu.mojom.SharedImagePoolId"
+          cpp = "::gpu::SharedImagePoolId"
+        },
+      ]
+      traits_sources = [ "shared_image_pool_id_mojom_traits.cc" ]
+      traits_headers = [ "shared_image_pool_id_mojom_traits.h" ]
       traits_public_deps = [ ":mojom_traits" ]
     },
     {
@@ -793,7 +805,7 @@ mojom("vulkan_interface") {
 
 mojom("test_interfaces") {
   testonly = true
-  sources = [ "traits_test_service.mojom" ]
+  sources = [ "traits_test_service.test-mojom" ]
 
   public_deps = [
     ":gpu_preferences_interface",

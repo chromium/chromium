@@ -20,7 +20,7 @@ class Checkbox;
 class LabelButton;
 class MenuRunner;
 class Widget;
-}
+}  // namespace views
 
 class MediaGalleryCheckboxView;
 
@@ -69,10 +69,9 @@ class MediaGalleriesDialogViews : public MediaGalleriesDialog,
 
   // Adds a checkbox or updates an existing checkbox. Returns true if a new one
   // was added.
-  bool AddOrUpdateGallery(
-      const MediaGalleriesDialogController::Entry& gallery,
-      views::View* container,
-      int trailing_vertical_space);
+  bool AddOrUpdateGallery(const MediaGalleriesDialogController::Entry& gallery,
+                          views::View* container,
+                          int trailing_vertical_space);
 
   void ShowContextMenu(const gfx::Point& point,
                        ui::mojom::MenuSourceType source_type,

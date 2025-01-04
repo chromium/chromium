@@ -6,11 +6,13 @@
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_PAGE_DISCARDING_HELPER_H_
 
 #include <optional>
+#include <string_view>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/mechanisms/page_discarder.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
@@ -128,6 +130,10 @@ class PageDiscardingHelper
   PageDiscardingHelper(const PageDiscardingHelper& other) = delete;
   PageDiscardingHelper& operator=(const PageDiscardingHelper&) = delete;
 
+  base::WeakPtr<PageDiscardingHelper> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
   // Selects a tab to discard and posts to the UI thread to discard it. This
   // will try to discard a tab until there's been a successful discard or until
   // there's no more discard candidate.
@@ -177,6 +183,15 @@ class PageDiscardingHelper
   static void AddDiscardAttemptMarkerForTesting(PageNode* page_node);
   static void RemovesDiscardAttemptMarkerForTesting(PageNode* page_node);
 
+  // Sets an additional callback that should be invoked whenever the
+  // SetNoDiscardPatternsForProfile() or ClearNoDiscardPatternsForProfile()
+  // methosd is called, with the method's `browser_context_id` argument.
+  void SetOptOutPolicyChangedCallback(
+      base::RepeatingCallback<void(std::string_view)> callback);
+
+  bool IsPageOptedOutOfDiscarding(const std::string& browser_context_id,
+                                  const GURL& url) const;
+
  protected:
   void OnPassedToGraph(Graph* graph) override;
   void OnTakenFromGraph(Graph* graph) override;
@@ -187,9 +202,6 @@ class PageDiscardingHelper
       const PageNode* page_node) const;
 
  private:
-  bool IsPageOptedOutOfDiscarding(const std::string& browser_context_id,
-                                  const GURL& url) const;
-
   // NodeDataDescriber implementation:
   base::Value::Dict DescribePageNodeData(const PageNode* node) const override;
 
@@ -210,9 +222,12 @@ class PageDiscardingHelper
   std::unique_ptr<mechanism::PageDiscarder> page_discarder_;
 
   std::map<std::string, std::unique_ptr<url_matcher::URLMatcher>>
-      profiles_no_discard_patterns_;
+      profiles_no_discard_patterns_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   memory_pressure::UnnecessaryDiscardMonitor unnecessary_discard_monitor_;
+
+  base::RepeatingCallback<void(std::string_view)>
+      opt_out_policy_changed_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

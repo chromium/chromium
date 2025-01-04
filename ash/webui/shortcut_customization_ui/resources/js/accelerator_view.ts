@@ -463,8 +463,8 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
         this.makeA11yAnnouncement(this.statusMessage);
         return;
       }
-      case AcceleratorConfigResult.kBlockRightAlt: {
-        this.statusMessage = this.i18n('blockRightAltKey');
+      case AcceleratorConfigResult.kBlockQuickInsert: {
+        this.statusMessage = this.i18n('blockQuickInsertKey');
         this.hasError = true;
         this.makeA11yAnnouncement(this.statusMessage);
         return;

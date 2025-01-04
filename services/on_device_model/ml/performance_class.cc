@@ -18,30 +18,30 @@ constexpr uint64_t kBytesPerMb = 1024 * 1024;
 
 // The threshold for GPU RAM below which the device is considered VeryLow.
 const base::FeatureParam<int> kLowRAMThreshold{
-    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
+    &optimization_guide::features::kOnDeviceModelPerformanceParams,
     "on_device_low_ram_threshold_mb", 3000};
 // RAM threshold necessary to be considered High or better.
 const base::FeatureParam<int> kHighRAMThreshold{
-    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
+    &optimization_guide::features::kOnDeviceModelPerformanceParams,
     "on_device_high_ram_threshold_mb", 5500};
 
 // Output threshold to be considered Low or better.
 const base::FeatureParam<int> kLowOutputThreshold{
-    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
+    &optimization_guide::features::kOnDeviceModelPerformanceParams,
     "on_device_low_output_threshold", 5};
 
 // Input speed min thresholds or each device class.
 const base::FeatureParam<int> kLowThreshold{
-    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
+    &optimization_guide::features::kOnDeviceModelPerformanceParams,
     "on_device_low_threshold", 50};
 const base::FeatureParam<int> kMediumThreshold{
-    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
+    &optimization_guide::features::kOnDeviceModelPerformanceParams,
     "on_device_medium_threshold", 75};
 const base::FeatureParam<int> kHighThreshold{
-    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
+    &optimization_guide::features::kOnDeviceModelPerformanceParams,
     "on_device_high_threshold", 150};
 const base::FeatureParam<int> kVeryHighThreshold{
-    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
+    &optimization_guide::features::kOnDeviceModelPerformanceParams,
     "on_device_very_high_threshold", 500};
 
 // These values are persisted to logs. Entries should not be renumbered and

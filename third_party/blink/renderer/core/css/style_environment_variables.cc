@@ -252,6 +252,10 @@ void StyleEnvironmentVariables::DetachFromParent() {
   parent_ = nullptr;
 }
 
+String StyleEnvironmentVariables::FormatFloatPx(float value) {
+  return String::Format("%gpx", value);
+}
+
 String StyleEnvironmentVariables::FormatPx(int value) {
   return String::Format("%dpx", value);
 }

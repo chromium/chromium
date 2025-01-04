@@ -140,6 +140,12 @@ constexpr PrefsForManagedContentSettingsMapEntry
         {prefs::kManagedDirectSocketsPrivateNetworkAccessBlockedForUrls,
          ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS,
          CONTENT_SETTING_BLOCK},
+#if BUILDFLAG(IS_CHROMEOS)
+        {prefs::kManagedSmartCardConnectAllowedForUrls,
+         ContentSettingsType::SMART_CARD_GUARD, CONTENT_SETTING_ALLOW},
+        {prefs::kManagedSmartCardConnectBlockedForUrls,
+         ContentSettingsType::SMART_CARD_GUARD, CONTENT_SETTING_BLOCK},
+#endif
 };
 
 constexpr const char* kManagedPrefs[] = {
@@ -192,6 +198,10 @@ constexpr const char* kManagedPrefs[] = {
     prefs::kManagedDirectSocketsBlockedForUrls,
     prefs::kManagedDirectSocketsPrivateNetworkAccessAllowedForUrls,
     prefs::kManagedDirectSocketsPrivateNetworkAccessBlockedForUrls,
+#if BUILDFLAG(IS_CHROMEOS)
+    prefs::kManagedSmartCardConnectAllowedForUrls,
+    prefs::kManagedSmartCardConnectBlockedForUrls,
+#endif
 };
 
 // The following preferences are only used to indicate if a default content
@@ -435,6 +445,17 @@ void PolicyProvider::GetContentSettingsFromPreferences() {
                 << original_pattern_str;
         continue;
       }
+
+#if BUILDFLAG(IS_CHROMEOS)
+      if (entry.content_type == ContentSettingsType::SMART_CARD_GUARD &&
+          entry.setting == CONTENT_SETTING_ALLOW &&
+          !pattern_pair.first.MatchesSingleOrigin()) {
+        VLOG(1) << "Smart card reader access cannot be allowed by wildcard, "
+                   "skipping pattern "
+                << original_pattern_str;
+        continue;
+      }
+#endif
 
       DCHECK_NE(entry.content_type,
                 ContentSettingsType::AUTO_SELECT_CERTIFICATE);

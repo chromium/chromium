@@ -80,6 +80,7 @@
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/frame/viewport_data.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
@@ -204,6 +205,28 @@ const Vector<AtomicString> ConvertFontFamilyToVector(const CSSValue* value) {
     families[i] = family_value->Value();
   }
   return families;
+}
+
+bool DocumentHasComplexSafeAreaConstraint(Document& document) {
+  Node* root = document.documentElement();
+  Node* current = root;
+  while (current) {
+    if (auto* element = DynamicTo<Element>(current)) {
+      if (const ComputedStyle* style =
+              ComputedStyle::NullifyEnsured(element->GetComputedStyle())) {
+        if (style->ReferencesSafeAreaInsetBottom() &&
+            !style->IsBottomRelativeToSafeAreaInset()) {
+          return true;
+        }
+      } else {
+        current =
+            LayoutTreeBuilderTraversal::NextSkippingChildren(*element, root);
+        continue;
+      }
+    }
+    current = LayoutTreeBuilderTraversal::Next(*current, root);
+  }
+  return false;
 }
 
 }  // namespace
@@ -823,6 +846,10 @@ void StyleEngine::UpdateCounters(const Element& element,
   }
 }
 
+void StyleEngine::SetNeedsToUpdateComplexSafeAreaConstraints() {
+  needs_to_update_complex_safe_area_constraints_ = true;
+}
+
 void StyleEngine::ShadowRootInsertedToDocument(ShadowRoot& shadow_root) {
   DCHECK(shadow_root.isConnected());
   if (GetDocument().IsDetached() || !shadow_root.HasAdoptedStyleSheets()) {
@@ -886,6 +913,13 @@ RuleSet* StyleEngine::RuleSetForSheet(CSSStyleSheet& sheet) {
     return nullptr;
   }
   return &sheet.Contents()->EnsureRuleSet(*media_query_evaluator_);
+}
+
+RuleSet* StyleEngine::CreateUnconnectedRuleSet(CSSStyleSheet& sheet) {
+  if (!sheet.MatchesMediaQueries(EnsureMediaQueryEvaluator())) {
+    return nullptr;
+  }
+  return sheet.Contents()->CreateUnconnectedRuleSet(*media_query_evaluator_);
 }
 
 RuleSet* StyleEngine::RuleSetScope::RuleSetForSheet(StyleEngine& engine,
@@ -2392,7 +2426,10 @@ void StyleEngine::ApplyRuleSetInvalidationForTreeScope(
                                        changed_rule_flags,
                                        /*is_shadow_host=*/true);
     selector_filter.PushParent(host);
-    if (host.GetStyleChangeType() == kSubtreeStyleChange) {
+    if (host.GetStyleChangeType() == kSubtreeStyleChange ||
+        !host.GetComputedStyle()) {
+      // Skip traversal of the shadow tree if the host is marked for subtree
+      // recalc, or if the host is not rendered.
       return;
     }
     for (auto rule_set : rule_sets) {
@@ -3145,6 +3182,18 @@ void StyleEngine::InvalidateEnvDependentStylesIfNeeded() {
   });
 }
 
+bool StyleEngine::HasComplexSafaAreaConstraints() {
+  DCHECK(RuntimeEnabledFeatures::UpdateComplexSafaAreaConstraintsEnabled());
+  if (needs_to_update_complex_safe_area_constraints_) {
+    has_complex_safe_area_constraints_ =
+        DocumentHasComplexSafeAreaConstraint(GetDocument());
+    if (!has_complex_safe_area_constraints_) {
+      needs_to_update_complex_safe_area_constraints_ = false;
+    }
+  }
+  return has_complex_safe_area_constraints_;
+}
+
 void StyleEngine::NodeWillBeRemoved(Node& node) {
   if (auto* element = DynamicTo<Element>(node)) {
     if (const ComputedStyle* style = element->GetComputedStyle();
@@ -3576,8 +3625,16 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
   const ComputedStyle& style = container.GetLayoutObject()->StyleRef();
   DCHECK(style.IsContainerForSizeContainerQueries());
   WritingMode writing_mode = style.GetWritingMode();
-  PhysicalSize physical_size = AdjustForAbsoluteZoom::AdjustPhysicalSize(
-      ToPhysicalSize(logical_size, writing_mode), style);
+  PhysicalSize physical_size = ToPhysicalSize(logical_size, writing_mode);
+  // Clamping kIndefiniteSize to 0 is correct because the container is
+  // size-contained, and therefore an auto size will be as if it had no children
+  // (i.e. 0).
+  DCHECK(
+      (physical_size.width >= 0 || physical_size.width == kIndefiniteSize) &&
+      (physical_size.height >= 0 || physical_size.height == kIndefiniteSize));
+  physical_size.ClampNegativeToZero();
+  physical_size =
+      AdjustForAbsoluteZoom::AdjustPhysicalSize(physical_size, style);
   PhysicalAxes physical_axes = ToPhysicalAxes(contained_axes, writing_mode);
 
   StyleRecalcChange change;
@@ -3707,7 +3764,8 @@ void StyleEngine::RecalcStyle(StyleRecalcChange change,
   Element& root_element = style_recalc_root_.RootElement();
   Element* parent = FlatTreeTraversal::ParentElement(root_element);
 
-  SelectorFilterRootScope filter_scope(parent);
+  SelectorFilterParentScope filter_scope(
+      parent, SelectorFilterParentScope::ScopeType::kRoot);
   root_element.RecalcStyle(change, style_recalc_context);
 
   for (ContainerNode* ancestor = root_element.GetStyleRecalcParent(); ancestor;
@@ -3731,8 +3789,10 @@ void StyleEngine::RecalcPositionTryStyleForPseudoElement(
   SkipStyleRecalcScope skip_scope(*this);
   CheckPseudoHasCacheScope check_pseudo_has_cache_scope(
       &GetDocument(), /*within-selector_checking=*/false);
-  SelectorFilterRootScope filter_scope(FlatTreeTraversal::ParentElement(
-      *pseudo_element.UltimateOriginatingElement()));
+  SelectorFilterParentScope filter_scope(
+      FlatTreeTraversal::ParentElement(
+          *pseudo_element.UltimateOriginatingElement()),
+      SelectorFilterParentScope::ScopeType::kRoot);
   pseudo_element.RecalcStyle(style_recalc_change, style_recalc_context);
 }
 
@@ -3740,7 +3800,8 @@ void StyleEngine::RecalcTransitionPseudoStyle() {
   // TODO(khushalsagar) : This forces a style recalc and layout tree rebuild
   // for the pseudo element tree each time we do a style recalc phase. See if
   // we can optimize this to only when the pseudo element tree is dirtied.
-  SelectorFilterRootScope filter_scope(nullptr);
+  SelectorFilterParentScope filter_scope(
+      nullptr, SelectorFilterParentScope::ScopeType::kRoot);
   document_->documentElement()->RecalcTransitionPseudoTreeStyle(
       view_transition_names_);
 }
@@ -3797,7 +3858,8 @@ void StyleEngine::RebuildLayoutTree(Element* size_container) {
 
     // We need a root scope here in case we recalc style for ::first-letter
     // elements as part of UpdateFirstLetterPseudoElement.
-    SelectorFilterRootScope filter_scope(nullptr);
+    SelectorFilterParentScope filter_scope(
+        nullptr, SelectorFilterParentScope::ScopeType::kRoot);
 
     Element& root_element = layout_tree_rebuild_root_.RootElement();
     {

@@ -45,6 +45,7 @@
 #include "components/user_manager/user_manager.h"
 #include "crypto/sha2.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -345,7 +346,7 @@ void InlineLoginHandlerImpl::OnGetAccountsToCompleteLogin(
     const CompleteLoginParams& params,
     const std::vector<::account_manager::Account>& accounts) {
   bool is_new_account = !base::Contains(
-      accounts, params.gaia_id,
+      accounts, params.gaia_id.ToString(),
       [](const account_manager::Account& account) { return account.key.id(); });
 
   std::unique_ptr<SigninHelper::ArcHelper> arc_helper =
@@ -471,14 +472,17 @@ void InlineLoginHandlerImpl::FinishGetAccountsNotAvailableInArc(
   auto* identity_manager =
       IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()));
   for (const auto& account : accounts) {
-    if (account.key.account_type() != account_manager::AccountType::kGaia)
+    if (account.key.account_type() != account_manager::AccountType::kGaia) {
       continue;
+    }
 
     if (!arc_accounts.contains(account)) {
       AccountInfo maybe_account_info =
-          identity_manager->FindExtendedAccountInfoByGaiaId(account.key.id());
-      if (maybe_account_info.IsEmpty())
+          identity_manager->FindExtendedAccountInfoByGaiaId(
+              GaiaId(account.key.id()));
+      if (maybe_account_info.IsEmpty()) {
         continue;
+      }
 
       result.Append(GaiaAccountToValue(account, maybe_account_info));
     }

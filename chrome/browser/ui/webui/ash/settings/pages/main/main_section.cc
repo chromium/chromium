@@ -28,7 +28,6 @@
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/policy_indicator_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/settings/browser_lifetime_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -43,6 +42,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/webui/webui_util.h"
 
 namespace ash::settings {
 
@@ -183,11 +183,7 @@ void MainSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("isOSSettings", true);
 
   // Add app-wide feature flags
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-  html_source->AddBoolean("isRevampWayfindingEnabled", kIsRevampEnabled);
-  html_source->AddString("chromeRefresh2023Attribute",
-                         kIsRevampEnabled ? "chrome-refresh-2023" : "");
+  html_source->AddString("chromeRefresh2023Attribute", "chrome-refresh-2023");
 
   auto* user = BrowserContextHelper::Get()->GetUserByBrowserContext(profile());
   html_source->AddBoolean("isGuest", IsGuestModeActive(user));

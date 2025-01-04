@@ -218,7 +218,9 @@ bool ShareThisTabDialogView::Accept() {
         content::DesktopMediaID::TYPE_WEB_CONTENTS,
         content::DesktopMediaID::kNullId,
         content::WebContentsMediaCaptureId(
-            web_contents_->GetPrimaryMainFrame()->GetProcess()->GetID(),
+            web_contents_->GetPrimaryMainFrame()
+                ->GetProcess()
+                ->GetDeprecatedID(),
             web_contents_->GetPrimaryMainFrame()->GetRoutingID()));
     desktop_media_id.audio_share =
         audio_toggle_button_ && audio_toggle_button_->GetIsOn();

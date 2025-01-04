@@ -21,7 +21,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -33,6 +32,7 @@
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/native_theme/native_theme.h"
 
 namespace content {
 
@@ -190,9 +190,8 @@ BrowserAccessibilityStateImpl* BrowserAccessibilityStateImpl::GetInstance() {
   return g_instance;
 }
 
-// On Android, Mac, Lacros, and Windows there are platform-specific subclasses.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC) && \
-    !BUILDFLAG(IS_CHROMEOS_LACROS)
+// On Android, Mac, and Windows there are platform-specific subclasses.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
 // static
 std::unique_ptr<BrowserAccessibilityStateImpl>
 BrowserAccessibilityStateImpl::Create() {
@@ -399,6 +398,14 @@ void BrowserAccessibilityStateImpl::UpdateHistogramsOnUIThread() {
   UMA_HISTOGRAM_BOOLEAN(
       "Accessibility.ManuallyEnabled",
       !GetAccessibilityMode().is_mode_off() && !allow_ax_mode_changes_);
+
+#if BUILDFLAG(IS_WIN)
+  base::UmaHistogramEnumeration(
+      "Accessibility.WinHighContrastTheme",
+      ui::NativeTheme::GetInstanceForNativeUi()
+          ->GetPlatformHighContrastColorScheme(),
+      ui::NativeTheme::PlatformHighContrastColorScheme::kMaxValue);
+#endif
 
   ui_thread_done_ = true;
   if (other_thread_done_ && background_thread_done_callback_) {

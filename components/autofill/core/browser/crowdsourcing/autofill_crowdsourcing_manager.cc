@@ -28,8 +28,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_protobufs.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -368,25 +368,6 @@ LogBuffer& operator<<(LogBuffer& out, const AutofillUploadContents& upload) {
   if (upload.has_has_form_tag())
     out << Tr{} << "has_form_tag:" << upload.has_form_tag();
 
-  for (const auto& single_username_data : upload.single_username_data()) {
-    LogBuffer single_username_data_buffer(LogBuffer::IsActive(true));
-    single_username_data_buffer << Tag{"span"} << "[";
-    single_username_data_buffer
-        << Tr{} << "username_form_signature:"
-        << single_username_data.username_form_signature();
-    single_username_data_buffer
-        << Tr{} << "username_field_signature:"
-        << single_username_data.username_field_signature();
-    single_username_data_buffer
-        << Tr{}
-        << "value_type:" << static_cast<int>(single_username_data.value_type());
-    single_username_data_buffer
-        << Tr{} << "prompt_edit:"
-        << static_cast<int>(single_username_data.prompt_edit());
-    out << Tr{} << "single_username_data"
-        << std::move(single_username_data_buffer);
-  }
-
   out << Tr{} << "form_signature:" << upload.form_signature();
   for (const auto& field : upload.field_data()) {
     out << Tr{} << Attrib{"style", "font-weight: bold"}
@@ -678,20 +659,16 @@ AutofillCrowdsourcingManager::QueryResponse::operator=(QueryResponse&&) =
 
 AutofillCrowdsourcingManager::QueryResponse::~QueryResponse() = default;
 
-AutofillCrowdsourcingManager::AutofillCrowdsourcingManager(AutofillClient* client,
-                                                 version_info::Channel channel,
-                                                 LogManager* log_manager)
-    : AutofillCrowdsourcingManager(client,
-                              GetAPIKeyForUrl(channel),
-                              log_manager) {}
+AutofillCrowdsourcingManager::AutofillCrowdsourcingManager(
+    AutofillClient* client,
+    version_info::Channel channel)
+    : AutofillCrowdsourcingManager(client, GetAPIKeyForUrl(channel)) {}
 
 AutofillCrowdsourcingManager::AutofillCrowdsourcingManager(
     AutofillClient* client,
-    std::string api_key,
-    LogManager* log_manager)
+    std::string api_key)
     : client_(client),
       api_key_(std::move(api_key)),
-      log_manager_(log_manager),
       autofill_server_url_(GetAutofillServerURL()),
       throttle_reset_period_(GetThrottleResetPeriod()),
       max_form_cache_size_(kAutofillCrowdsourcingManagerMaxFormCacheSize),
@@ -750,8 +727,9 @@ bool AutofillCrowdsourcingManager::StartQueryRequest(
 
   std::string query_data;
   if (CheckCacheForQueryRequest(queried_form_signatures, &query_data)) {
-    LOG_AF(log_manager_) << LoggingScope::kAutofillServer
-                         << LogMessage::kCachedAutofillQuery << Br{} << query;
+    LOG_AF(client_->GetCurrentLogManager())
+        << LoggingScope::kAutofillServer << LogMessage::kCachedAutofillQuery
+        << Br{} << query;
     if (scoped_callback_runner) {
       std::move(scoped_callback_runner)
           .Release()
@@ -761,9 +739,9 @@ bool AutofillCrowdsourcingManager::StartQueryRequest(
     return true;
   }
 
-  LOG_AF(log_manager_) << LoggingScope::kAutofillServer
-                       << LogMessage::kSendAutofillQuery << Br{}
-                       << "Signatures: " << query;
+  LOG_AF(client_->GetCurrentLogManager())
+      << LoggingScope::kAutofillServer << LogMessage::kSendAutofillQuery << Br{}
+      << "Signatures: " << query;
   return StartRequest(FormRequestData{
       .callback = std::move(scoped_callback_runner),
       .form_signatures = std::move(queried_form_signatures),
@@ -817,7 +795,8 @@ bool AutofillCrowdsourcingManager::StartUploadRequest(
 
   // For debugging purposes, even throttled uploads are logged. If no log
   // manager is active, the function can exit early for throttled uploads.
-  const bool needs_logging = log_manager_ && log_manager_->IsLoggingActive();
+  LogManager* log_manager = client_->GetCurrentLogManager();
+  const bool needs_logging = log_manager && log_manager->IsLoggingActive();
   if (!needs_logging && !allow_upload)
     return false;
 
@@ -828,10 +807,10 @@ bool AutofillCrowdsourcingManager::StartUploadRequest(
       return false;
     }
 
-    LOG_AF(log_manager_) << LoggingScope::kAutofillServer
-                         << LogMessage::kSendAutofillUpload << Br{}
-                         << "Allow upload?: " << allow_upload << Br{}
-                         << "Data: " << Br{} << upload;
+    LOG_AF(log_manager) << LoggingScope::kAutofillServer
+                        << LogMessage::kSendAutofillUpload << Br{}
+                        << "Allow upload?: " << allow_upload << Br{}
+                        << "Data: " << Br{} << upload;
 
     if (!allow_upload)
       return false;

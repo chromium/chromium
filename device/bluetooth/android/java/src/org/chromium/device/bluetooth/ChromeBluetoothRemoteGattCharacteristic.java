@@ -4,11 +4,14 @@
 
 package org.chromium.device.bluetooth;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.device.bluetooth.wrapper.BluetoothGattCharacteristicWrapper;
 import org.chromium.device.bluetooth.wrapper.BluetoothGattDescriptorWrapper;
 
@@ -22,6 +25,7 @@ import java.util.List;
  * device::BluetoothRemoteGattCharacteristicAndroid.
  */
 @JNINamespace("device")
+@NullMarked
 final class ChromeBluetoothRemoteGattCharacteristic {
     private static final String TAG = "Bluetooth";
 
@@ -132,7 +136,7 @@ final class ChromeBluetoothRemoteGattCharacteristic {
     // Implements BluetoothRemoteGattCharacteristicAndroid::ReadRemoteCharacteristic.
     @CalledByNative
     private boolean readRemoteCharacteristic() {
-        if (!mChromeDevice.mBluetoothGatt.readCharacteristic(mCharacteristic)) {
+        if (!assumeNonNull(mChromeDevice.mBluetoothGatt).readCharacteristic(mCharacteristic)) {
             Log.i(TAG, "readRemoteCharacteristic readCharacteristic failed.");
             return false;
         }
@@ -149,7 +153,7 @@ final class ChromeBluetoothRemoteGattCharacteristic {
         if (writeType != 0) {
             mCharacteristic.setWriteType(writeType);
         }
-        if (!mChromeDevice.mBluetoothGatt.writeCharacteristic(mCharacteristic)) {
+        if (!assumeNonNull(mChromeDevice.mBluetoothGatt).writeCharacteristic(mCharacteristic)) {
             Log.i(TAG, "writeRemoteCharacteristic writeCharacteristic failed.");
             return false;
         }
@@ -159,7 +163,8 @@ final class ChromeBluetoothRemoteGattCharacteristic {
     // Enable or disable the notifications for this characteristic.
     @CalledByNative
     private boolean setCharacteristicNotification(boolean enabled) {
-        return mChromeDevice.mBluetoothGatt.setCharacteristicNotification(mCharacteristic, enabled);
+        return assumeNonNull(mChromeDevice.mBluetoothGatt)
+                .setCharacteristicNotification(mCharacteristic, enabled);
     }
 
     // Creates objects for all descriptors. Designed only to be called by

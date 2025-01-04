@@ -155,7 +155,7 @@ SearchPrefetchURLLoaderInterceptor::MaybeProxyRequestHandler(
   if (web_request_api) {
     web_request_api->MaybeProxyURLLoaderFactory(
         browser_context, render_frame_host,
-        render_frame_host->GetProcess()->GetID(),
+        render_frame_host->GetProcess()->GetDeprecatedID(),
         content::ContentBrowserClient::URLLoaderFactoryType::kNavigation,
         navigation_id_, ukm::kInvalidSourceIdObj, factory_builder,
         /*header_client=*/nullptr, navigation_response_task_runner_,

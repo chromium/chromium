@@ -18,7 +18,10 @@ DesktopMediaPaneView::DesktopMediaPaneView(
     DesktopMediaList::Type type,
     std::unique_ptr<views::View> content_view,
     std::unique_ptr<ShareAudioView> share_audio_view)
-    : type_(type) {
+#if BUILDFLAG(IS_MAC)
+    : type_(type)
+#endif
+{
   layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(0)));
 

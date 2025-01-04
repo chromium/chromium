@@ -65,6 +65,10 @@ export class ModuleElement extends I18nMixinLit
       },
 
       showInfoDialog_: {type: Boolean},
+
+      useIsKnownToSync_: {
+        type: Boolean,
+      },
     };
   }
 
@@ -73,15 +77,16 @@ export class ModuleElement extends I18nMixinLit
   protected shouldShowDeviceIcon_: boolean =
     loadTimeData.getBoolean('mostRelevantTabResumptionDeviceIconEnabled');
   protected showInfoDialog_: boolean = false;
+  protected useIsKnownToSync_:
+    boolean =
+        loadTimeData.getBoolean('mostRelevantTabResumptionUseIsKnownToSync');
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
     if (changedProperties.has('urlVisits') && this.urlVisits.length === 0) {
       const urlVisit = changedProperties.get('urlVisits')![0];
       this.fire('dismiss-module-instance', {
-        message: loadTimeData.getStringF(
-            'dismissModuleToastMessage',
-            loadTimeData.getString('modulesTabResumptionSentence')),
+        message: loadTimeData.getString('modulesTabResumptionSingleDismiss'),
         restoreCallback: () => {
           MostRelevantTabResumptionProxyImpl.getInstance()
               .handler.restoreURLVisit(urlVisit);
@@ -134,9 +139,7 @@ export class ModuleElement extends I18nMixinLit
     MostRelevantTabResumptionProxyImpl.getInstance().handler.dismissModule(
         this.urlVisits);
     this.fire('dismiss-module-instance', {
-      message: loadTimeData.getStringF(
-          'dismissModuleToastMessage',
-          loadTimeData.getString('modulesTabResumptionSentence')),
+      message: loadTimeData.getString('modulesTabResumptionMultiDismiss'),
       restoreCallback: () => MostRelevantTabResumptionProxyImpl.getInstance()
                                  .handler.restoreModule(this.urlVisits),
     });
@@ -160,12 +163,10 @@ export class ModuleElement extends I18nMixinLit
         this.urlVisits[index]);
 
     this.urlVisits =
-        [...this.urlVisits.slice(0, index), ...this.urlVisits.slice(index + 1)];
+      [...this.urlVisits.slice(0, index), ...this.urlVisits.slice(index + 1)];
     if (this.urlVisits.length > 0) {
       this.fire('dismiss-module-element', {
-        message: loadTimeData.getStringF(
-            'dismissModuleToastMessage',
-            loadTimeData.getString('modulesTabResumptionSentence')),
+        message: loadTimeData.getString('modulesTabResumptionSingleDismiss'),
         restoreCallback: () => {
           chrome.metricsPrivate.recordSmallCount(
               'NewTabPage.TabResumption.VisitRestoreIndex', index);

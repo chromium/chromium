@@ -672,7 +672,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
     const settingsSearchResult = this.searchResult as SettingsSearchResult;
     switch (settingsSearchResult.icon) {
       case SearchResultIcon.kA11y:
-        return 'os-settings:accessibility-revamp';
+        return 'os-settings:accessibility';
       case SearchResultIcon.kAndroid:
         return 'os-settings:android';
       case SearchResultIcon.kAppsParentalControls:
@@ -738,7 +738,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kGoogleDrive:
         return 'os-settings:google-drive';
       case SearchResultIcon.kGooglePlay:
-        return 'os-settings:google-play-revamp';
+        return 'os-settings:google-play';
       case SearchResultIcon.kGraduation:
         return 'os-settings:graduation';
       case SearchResultIcon.kHearing:
@@ -756,11 +756,11 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kKeyboard:
         return 'os-settings:device-keyboard';
       case SearchResultIcon.kLanguage:
-        return 'os-settings:language-revamp';
+        return 'os-settings:language';
       case SearchResultIcon.kLaptop:
         return 'os-settings:laptop-chromebook';
       case SearchResultIcon.kLock:
-        return 'os-settings:lock-revamp';
+        return 'os-settings:lock';
       case SearchResultIcon.kMagicBoost:
         return 'os-settings:magic-boost';
       case SearchResultIcon.kMicrophone:
@@ -805,7 +805,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kReset:
         return 'os-settings:startup';
       case SearchResultIcon.kRestore:
-        return 'os-settings:restore-revamp';
+        return 'os-settings:restore';
       case SearchResultIcon.kScanner:
         return 'os-settings:device-scan';
       case SearchResultIcon.kSearch:
@@ -821,7 +821,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kStylus:
         return 'os-settings:device-stylus';
       case SearchResultIcon.kSync:
-        return 'os-settings:sync-revamp';
+        return 'os-settings:sync';
       case SearchResultIcon.kSystemPreferences:
         return 'os-settings:system-preferences';
       case SearchResultIcon.kTextToSpeech:

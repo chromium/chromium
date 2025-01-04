@@ -42,7 +42,7 @@ IOSPasswordManagerDriver::IOSPasswordManagerDriver(
 
   // Cache these values early, so that it can be accessed after frame deletion.
   is_in_main_frame_ = web_frame->IsMainFrame();
-  security_origin_ = web_frame->GetSecurityOriginDeprecated();
+  security_origin_ = web_frame->GetSecurityOrigin();
 }
 
 IOSPasswordManagerDriver::~IOSPasswordManagerDriver() = default;

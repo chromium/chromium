@@ -1,0 +1,7 @@
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS
+
+adamta@google.com
+joemerramos@chromium.org
+nicolasmacbeth@google.com
+sebsg@chromium.org

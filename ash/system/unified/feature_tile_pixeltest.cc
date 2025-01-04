@@ -14,7 +14,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/insets.h"
@@ -62,9 +61,7 @@ FeatureTile* CreateQSFeatureTileBase(views::Widget* widget,
 // Pixel tests for the quick settings feature tile view.
 class FeatureTilePixelTest : public AshTestBase {
  public:
-  FeatureTilePixelTest() {
-    feature_list_.InitAndEnableFeature(chromeos::features::kJelly);
-  }
+  FeatureTilePixelTest() = default;
 
   void SetUp() override {
     AshTestBase::SetUp();
@@ -100,7 +97,6 @@ class FeatureTilePixelTest : public AshTestBase {
     return pixel_test::InitParams();
   }
 
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::Widget> widget_;
 };
 

@@ -845,6 +845,7 @@
 <translation id="6385591741672306837">багана</translation>
 <translation id="6387719785439924554">гадна</translation>
 <translation id="6393014464788431702">Үйл явдлын бүх шүүлтийг идэвхгүй болгох</translation>
+<translation id="6406989068857078334">Хулганын хурдыг багасгасан, товшихын тулд дахин <ph name="GESTURE" /></translation>
 <translation id="6411569524720229058">Намар</translation>
 <translation id="6417265370957905582">Google туслах</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{ тодорхойлох цэг}other{ # тодорхойлох цэг}}</translation>
@@ -1099,6 +1100,7 @@
 <translation id="8205922869661890178">Хөгжүүлэгчийн логийн хуудсыг нээх</translation>
 <translation id="8212109599554677485">Дэлгэцийн загварыг зэрэгцсэн болгож өөрчлөх</translation>
 <translation id="8215202828671303819">Олныг сонгох</translation>
+<translation id="822316432305106615">Нарийвчлалтай товшилтыг эхлүүлэх</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, үл нэвтрүүлдэг чанар <ph name="OPACITY_PERCENTAGE" />%.</translation>
 <translation id="8261506727792406068">Устгах</translation>
 <translation id="826825447994856889">Оршил</translation>

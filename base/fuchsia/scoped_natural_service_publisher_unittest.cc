@@ -60,10 +60,9 @@ TEST_F(ScopedNaturalServicePublisherTest, PseudoDir) {
   auto pseudodir_endpoints = fidl::CreateEndpoints<fuchsia_io::Directory>();
   ASSERT_TRUE(pseudodir_endpoints.is_ok())
       << pseudodir_endpoints.status_string();
-  directory.Serve(
-      fuchsia_io::wire::kPermReadable | fuchsia_io::wire::kPermWritable,
-      fidl::ServerEnd<fuchsia_io::Directory>(
-          pseudodir_endpoints->server.TakeChannel()));
+  directory.Serve(fuchsia_io::wire::kPermReadable,
+                  fidl::ServerEnd<fuchsia_io::Directory>(
+                      pseudodir_endpoints->server.TakeChannel()));
 
   fidl::Client<base_testfidl::TestInterface> client_a;
 

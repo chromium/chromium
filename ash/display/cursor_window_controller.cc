@@ -159,7 +159,7 @@ class CursorWindowDelegate : public aura::WindowDelegate {
 
   // aura::WindowDelegate overrides:
   gfx::Size GetMinimumSize() const override { return size_; }
-  gfx::Size GetMaximumSize() const override { return size_; }
+  std::optional<gfx::Size> GetMaximumSize() const override { return size_; }
   void OnBoundsChanged(const gfx::Rect& old_bounds,
                        const gfx::Rect& new_bounds) override {}
   gfx::NativeCursor GetCursor(const gfx::Point& point) override {
@@ -656,8 +656,8 @@ void CursorWindowController::UpdateCursorWindow() {
   // Reusing the window does not work when the display is disconnected.
   // Just creates a new one instead. crbug.com/384218.
   cursor_window_ = std::make_unique<aura::Window>(delegate_.get());
-  cursor_window_->SetTransparent(true);
   cursor_window_->Init(ui::LAYER_TEXTURED);
+  cursor_window_->SetTransparent(true);
   cursor_window_->SetEventTargetingPolicy(aura::EventTargetingPolicy::kNone);
   cursor_window_->set_owned_by_parent(false);
   delegate_->SetCursorWindow(cursor_window_.get());

@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sql/test/test_helpers.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <limits>
 #include <memory>
 #include <optional>
@@ -28,7 +24,6 @@
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
-#include "sql/database.h"
 #include "sql/statement.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/sqlite/sqlite3.h"
@@ -67,7 +62,7 @@ std::optional<int> GetRootPage(sql::Database& db, std::string_view tree_name) {
   // See http://www.sqlite.org/fileformat2.html#database_header
   constexpr size_t kHeaderSize = 100;
   constexpr int64_t kHeaderOffset = 0;
-  uint8_t header[kHeaderSize];
+  std::array<uint8_t, kHeaderSize> header;
   base::File file(db_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!file.IsValid())
     return false;
@@ -162,7 +157,7 @@ bool CorruptSizeInHeader(const base::FilePath& db_path) {
     // This function doesn't reliably work if connections to the DB are still
     // open. The database is opened in excusive mode. Open will fail if any
     // other connection exists on the database.
-    sql::Database db({.wal_mode = true});
+    sql::Database db({.wal_mode = true}, kTestTag);
     if (!db.Open(db_path))
       return false;
     int wal_log_size = 0;
@@ -201,7 +196,7 @@ bool CorruptSizeInHeader(const base::FilePath& db_path) {
 
 bool CorruptSizeInHeaderWithLock(const base::FilePath& db_path) {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   if (!db.Open(db_path))
     return false;
 
@@ -219,7 +214,7 @@ bool CorruptIndexRootPage(const base::FilePath& db_path,
   if (!page_size.has_value())
     return false;
 
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   if (!db.Open(db_path))
     return false;
 
@@ -290,7 +285,7 @@ bool CreateDatabaseFromSQL(const base::FilePath& db_path,
   if (!base::ReadFileToString(sql_path, &sql))
     return false;
 
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   if (!db.Open(db_path))
     return false;
 

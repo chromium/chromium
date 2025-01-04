@@ -90,32 +90,26 @@ public class SharedImageTilesCoordinator {
     public void destroy() {}
 
     /**
-     * Update the collaborationId for a SharedImageTiles component.
+     * Fetch new images given a collaboration ID. Should be called again if the members change.
      *
      * @param collaborationId The new collaborationId or null to reset.
      */
-    public void updateCollaborationId(@Nullable String collaborationId) {
-        updateCollaborationId(collaborationId, CallbackUtils.emptyCallback());
+    public void fetchImagesForCollaborationId(@Nullable String collaborationId) {
+        fetchImagesForCollaborationId(collaborationId, CallbackUtils.emptyCallback());
     }
 
     /**
-     * Update the collaborationId for a SharedImageTiles component with a finished callback.
+     * Fetch new images given a collaboration ID with a finished callback. Should be called again if
+     * the members change.
      *
      * @param collaborationId The new collaborationId or null to reset.
      * @param finishedCallback The callback to notify about the SharedImageTiles update status.
      */
-    public void updateCollaborationId(
+    public void fetchImagesForCollaborationId(
             @Nullable String collaborationId, Callback<Boolean> finishedCallback) {
-        mCollaborationId = collaborationId;
-        if (mCollaborationId == null) {
-            updateMembersCount(0);
-            return;
-        }
+        if (!updateCollaborationIdValid(collaborationId)) return;
 
-        if (mTracker != null) {
-            mTracker.reset();
-            mTracker = null;
-        }
+        resetTracker();
 
         // Fetch group information from DataSharingService.
         // TODO(crbug.com/381138936): Migrate to cached readGroup.
@@ -130,27 +124,23 @@ public class SharedImageTilesCoordinator {
                     }
 
                     assert result.groupData != null;
-                    List<GroupMember> validMembers = new ArrayList<>();
-                    for (GroupMember member : result.groupData.members) {
-                        if (member.email != null && !member.email.isEmpty()) {
-                            validMembers.add(member);
-                        }
-                    }
-                    updateMembersCount(validMembers.size());
-
-                    int sizeInDp =
-                            (mType == SharedImageTilesType.SMALL)
-                                    ? R.dimen.small_shared_image_tiles_icon_height
-                                    : R.dimen.shared_image_tiles_icon_height;
-                    mTracker =
-                            new UpdateTracker(
-                                    mContext,
-                                    validMembers,
-                                    getAllIconViews(),
-                                    getAvatarSizeInPixels(sizeInDp),
-                                    mDataSharingService.getUiDelegate(),
-                                    finishedCallback);
+                    onGroupMembersChangedInternal(result.groupData.members, finishedCallback);
                 });
+    }
+
+    /**
+     * Updates the group using a list of already read {@link GroupMember} entities.
+     *
+     * @param collaborationId The collaboration ID for the group the members belong to.
+     * @param members The list of group members.
+     */
+    public void onGroupMembersChanged(
+            @Nullable String collaborationId, @Nullable List<GroupMember> members) {
+        if (!updateCollaborationIdValid(collaborationId)) return;
+
+        resetTracker();
+
+        onGroupMembersChangedInternal(members, CallbackUtils.emptyCallback());
     }
 
     /**
@@ -185,6 +175,51 @@ public class SharedImageTilesCoordinator {
         mModel.set(SharedImageTilesProperties.REMAINING_TILES, 0);
         mModel.set(SharedImageTilesProperties.ICON_TILES, 0);
         initializeSharedImageTiles();
+    }
+
+    private void resetTracker() {
+        if (mTracker == null) return;
+
+        mTracker.reset();
+        mTracker = null;
+    }
+
+    private boolean updateCollaborationIdValid(@Nullable String collaborationId) {
+        mCollaborationId = collaborationId;
+        if (mCollaborationId == null) {
+            updateMembersCount(0);
+            return false;
+        }
+        return true;
+    }
+
+    private void onGroupMembersChangedInternal(
+            @Nullable List<GroupMember> members, Callback<Boolean> finishedCallback) {
+        List<GroupMember> validMembers = new ArrayList<>();
+        if (members != null) {
+            for (GroupMember member : members) {
+                if (member.email != null && !member.email.isEmpty()) {
+                    validMembers.add(member);
+                }
+            }
+        }
+        int count = validMembers.size();
+        updateMembersCount(count);
+
+        if (count == 0) return;
+
+        int sizeInDp =
+                (mType == SharedImageTilesType.SMALL)
+                        ? R.dimen.small_shared_image_tiles_icon_height
+                        : R.dimen.shared_image_tiles_icon_height;
+        mTracker =
+                new UpdateTracker(
+                        mContext,
+                        validMembers,
+                        getAllIconViews(),
+                        getAvatarSizeInPixels(sizeInDp),
+                        mDataSharingService.getUiDelegate(),
+                        finishedCallback);
     }
 
     private static class UpdateTracker {
@@ -249,6 +284,9 @@ public class SharedImageTilesCoordinator {
     /** Populate the shared_image_tiles container with the specific icons. */
     private void initializeSharedImageTiles() {
         if (mAvailableMemberCount == 0) {
+            mIconTilesCount = 0;
+            mModel.set(SharedImageTilesProperties.ICON_TILES, 0);
+            mModel.set(SharedImageTilesProperties.REMAINING_TILES, 0);
             return;
         }
 

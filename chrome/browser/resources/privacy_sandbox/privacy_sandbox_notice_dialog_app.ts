@@ -11,8 +11,7 @@ import './shared_style.css.js';
 import './privacy_sandbox_dialog_learn_more.js';
 import './privacy_sandbox_privacy_policy_dialog.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PrivacySandboxDialogBrowserProxy, PrivacySandboxPromptAction} from './privacy_sandbox_dialog_browser_proxy.js';
 import {PrivacySandboxDialogMixin} from './privacy_sandbox_dialog_mixin.js';
@@ -54,31 +53,23 @@ export class PrivacySandboxNoticeDialogAppElement extends
         type: Boolean,
         value: false,
       },
-
-      /**
-       * If true, the Ads API UX Enhancement should be shown.
-       */
-      shouldShowV2_: {
-        type: Boolean,
-        value: () => {
-          return loadTimeData.getBoolean(
-              'isPrivacySandboxAdsApiUxEnhancementsEnabled');
-        },
-      },
     };
   }
 
   private isPrivacyPolicyLinkEnabled_: boolean;
   private hideNoticePage_: boolean;
-  private shouldShowV2_: boolean;
 
-  override ready() {
-    super.ready();
+  override connectedCallback() {
+    super.connectedCallback();
 
-    this.resizeAndShowNativeDialog().then(() => {
-      this.updateScrollableContents();
-      this.promptActionOccurred(PrivacySandboxPromptAction.NOTICE_SHOWN);
-      this.maybeShowMoreButton();
+    // Schedules a callback to run after the current render cycle is completed,
+    // elements should be fully rendered at this point.
+    afterNextRender(this, async () => {
+      this.resizeAndShowNativeDialog().then(() => {
+        this.updateScrollableContents();
+        this.promptActionOccurred(PrivacySandboxPromptAction.NOTICE_SHOWN);
+        this.maybeShowMoreButton();
+      });
     });
   }
 

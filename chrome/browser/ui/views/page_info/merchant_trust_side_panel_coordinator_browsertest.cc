@@ -34,8 +34,8 @@ using testing::Return;
 
 namespace {
 const char kMerchantReviewsUrl[] = "reviews.test";
-const char kUrlWithMerchantTrustData[] = "merchant.test";
-const char kUrlWithoutMerchantTrustData[] = "no-merchant.test";
+const char kUrlWithMerchantTrustData[] = "a.test";
+const char kUrlWithoutMerchantTrustData[] = "b.test";
 
 page_info::MerchantData CreateValidMerchantData() {
   page_info::MerchantData merchant_data;
@@ -49,8 +49,7 @@ page_info::MerchantData CreateValidMerchantData() {
 
 class MockMerchantTrustService : public page_info::MerchantTrustService {
  public:
- MockMerchantTrustService()
-      : MerchantTrustService(nullptr, false, nullptr) {}
+  MockMerchantTrustService() : MerchantTrustService(nullptr, false, nullptr) {}
   MOCK_METHOD(void,
               GetMerchantTrustInfo,
               (const GURL&, page_info::MerchantDataCallback),
@@ -129,7 +128,8 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
   EXPECT_CALL(*service(), GetMerchantTrustInfo(_, _))
       .WillRepeatedly(
           Invoke([](const GURL& url, page_info::MerchantDataCallback callback) {
-            std::move(callback).Run(url, std::nullopt);
+            std::move(callback).Run(
+                url, std::make_optional(CreateValidMerchantData()));
           }));
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), kGURLWithMerchantTrustData));
@@ -152,14 +152,15 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
             SidePanelEntry::Id::kMerchantTrust);
 
   // Navigate to a different URL with no merchant trust data.
+  EXPECT_CALL(*service(), GetMerchantTrustInfo(_, _))
+      .WillRepeatedly(
+          Invoke([](const GURL& url, page_info::MerchantDataCallback callback) {
+            std::move(callback).Run(url, std::nullopt);
+          }));
   GURL kGURLWithoutMerchantTrustData = CreateUrl(kUrlWithoutMerchantTrustData);
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), kGURLWithoutMerchantTrustData));
-  // The side panel will not be closed immediately because the animation is in
-  // progress.
-  ASSERT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
-
-  // Side panel should eventually close.
+  // Side panel should eventually close, after the animation.
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return !side_panel_coordinator()->IsSidePanelShowing(); }));
 }
@@ -193,8 +194,104 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
             kMerchantReviewsGURL);
 }
 
-// TODO(crbug.com/378671877): Add tests for same tab, replace history
-// navigations.
+IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
+                       ShowSameTabNavSameDocumentReplaceState) {
+  GURL kGURLWithMerchantTrustData = CreateUrl(kUrlWithMerchantTrustData);
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), kGURLWithMerchantTrustData));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
+
+  // Test showing a side panel.
+  GURL kMerchantReviewsGURL = CreateUrl(kMerchantReviewsUrl);
+  ShowMerchantTrustSidePanel(web_contents(), kMerchantReviewsGURL);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kMerchantTrust);
+
+  // Replace state with new path.
+  GURL kUrlMerchantTrustWithPath2 =
+      kGURLWithMerchantTrustData.Resolve("/title2.html");
+  ASSERT_TRUE(content::ExecJs(web_contents(),
+                              "history.replaceState({},'','title2.html')"));
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+
+  // Check that side panel remains open on replace state.
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kMerchantTrust);
+
+  // Check that the MerchantTrust url remains the same.
+  EXPECT_TRUE(side_panel_coordinator()->GetCurrentSidePanelEntryForTesting());
+  EXPECT_EQ(side_panel_coordinator()
+                ->GetCurrentSidePanelEntryForTesting()
+                ->GetOpenInNewTabURL(),
+            kMerchantReviewsGURL);
+}
+
+IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
+                       ShowSameTabNavSameDocumentReplaceStateRef) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), CreateUrl(kUrlWithMerchantTrustData)));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
+
+  // Test showing a side panel.
+  GURL kMerchantReviewsGURL = CreateUrl(kMerchantReviewsUrl);
+  ShowMerchantTrustSidePanel(web_contents(), kMerchantReviewsGURL);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kMerchantTrust);
+
+  // Replace state with anchor.
+  ASSERT_TRUE(
+      content::ExecJs(web_contents(), "history.replaceState({},'','#ref')"));
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+
+  // Check that side panel remains open on replace state.
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kMerchantTrust);
+
+  // Check that the AboutThisSite url remains the same.
+  EXPECT_TRUE(side_panel_coordinator()->GetCurrentSidePanelEntryForTesting());
+  EXPECT_EQ(side_panel_coordinator()
+                ->GetCurrentSidePanelEntryForTesting()
+                ->GetOpenInNewTabURL(),
+            kMerchantReviewsGURL);
+}
+
+IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
+                       ShowSameTabNavSameDocumentPushState) {
+  GURL kGURLWithMerchantTrustData = CreateUrl(kUrlWithMerchantTrustData);
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), kGURLWithMerchantTrustData));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
+
+  // Test showing a side panel.
+  ShowMerchantTrustSidePanel(web_contents(), kGURLWithMerchantTrustData);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kMerchantTrust);
+
+  // Push state with new path.
+  GURL kUrlMerchantTrustWithPath2 =
+      kGURLWithMerchantTrustData.Resolve("/title2.html");
+  ASSERT_TRUE(content::ExecJs(web_contents(),
+                              "history.pushState({},'','title2.html')"));
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+
+  // Check that side panel remains open on push state.
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kMerchantTrust);
+
+  // Check that the MerchantTrust url isn't changed.
+
+  EXPECT_TRUE(side_panel_coordinator()->GetCurrentSidePanelEntryForTesting());
+  EXPECT_EQ(side_panel_coordinator()
+                ->GetCurrentSidePanelEntryForTesting()
+                ->GetOpenInNewTabURL(),
+            kGURLWithMerchantTrustData);
+}
 
 IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
                        RemainsClosedOnNonMerchantSameTabNav) {

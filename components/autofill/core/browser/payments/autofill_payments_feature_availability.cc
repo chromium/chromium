@@ -4,9 +4,10 @@
 
 #include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
 
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 
 namespace autofill {
@@ -20,12 +21,12 @@ bool ShouldShowCardMetadata(const CreditCard& card) {
          base::FeatureList::IsEnabled(features::kAutofillEnableCardArtImage);
 }
 
-bool DidDisplayBenefitForCard(
-    const CreditCard& card,
-    const AutofillClient& autofill_client,
-    const PaymentsDataManager& payments_data_manager) {
-  return payments_data_manager.IsCardEligibleForBenefits(card) &&
-         !payments_data_manager
+bool DidDisplayBenefitForCard(const CreditCard& card,
+                              const AutofillClient& autofill_client) {
+  const PaymentsDataManager& pay_dm =
+      autofill_client.GetPersonalDataManager().payments_data_manager();
+  return pay_dm.IsCardEligibleForBenefits(card) &&
+         !pay_dm
               .GetApplicableBenefitDescriptionForCardAndOrigin(
                   card,
                   autofill_client.GetLastCommittedPrimaryMainFrameOrigin(),

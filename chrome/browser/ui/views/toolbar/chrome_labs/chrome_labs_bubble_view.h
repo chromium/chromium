@@ -20,7 +20,7 @@ struct LabInfo;
 namespace views {
 class Button;
 class FlexLayoutView;
-}
+}  // namespace views
 
 // TODO(elainechien): Use composition instead of inheritance.
 class ChromeLabsBubbleView : public views::BubbleDialogDelegateView {

@@ -35,7 +35,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
@@ -76,9 +75,7 @@ import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * These tests render screenshots of various accessory sheets and compare them to a gold standard.
@@ -116,10 +113,6 @@ public class AccessorySheetRenderTest {
     @Mock private PersonalDataManager mPersonalDataManager;
 
     public AccessorySheetRenderTest(boolean nightModeEnabled, boolean useRtlLayout) {
-        Map<String, Boolean> featureMap = new HashMap<>();
-        featureMap.put(ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES, false);
-        FeatureList.setTestFeatures(featureMap);
-
         setRtlForTesting(useRtlLayout);
         NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);

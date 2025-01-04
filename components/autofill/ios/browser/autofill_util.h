@@ -15,6 +15,10 @@
 
 class GURL;
 
+namespace url {
+class Origin;
+}
+
 namespace web {
 class WebFramesManager;
 class WebState;
@@ -53,7 +57,7 @@ std::optional<std::vector<FormData>> ExtractFormsData(
     bool filtered,
     const std::u16string& form_name,
     const GURL& main_frame_url,
-    const GURL& frame_origin,
+    const url::Origin& frame_origin,
     const FieldDataManager& field_data_manager,
     const std::string& frame_id,
     LocalFrameToken host_frame = LocalFrameToken());
@@ -71,7 +75,7 @@ std::optional<FormData> ExtractFormData(
     bool filtered,
     const std::u16string& form_name,
     const GURL& main_frame_url,
-    const GURL& form_frame_origin,
+    const url::Origin& form_frame_origin,
     const FieldDataManager& field_data_manager,
     const std::string& frame_id,
     LocalFrameToken host_frame = LocalFrameToken());

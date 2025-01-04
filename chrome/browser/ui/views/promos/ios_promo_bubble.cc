@@ -236,7 +236,7 @@ std::unique_ptr<views::View> IOSPromoBubble::CreateFooter(
   // can't result in input-too-long error or other errors).
   CHECK(qr_image.has_value());
 
-  image_view->SetImage(qr_image.value());
+  image_view->SetImage(ui::ImageModel::FromImageSkia(qr_image.value()));
 
   return built_footer_view;
 }

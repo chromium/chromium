@@ -43,6 +43,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/common/extension_builder.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -123,7 +124,7 @@ class DemoSessionTest : public testing::Test {
   // Creates a dummy demo user with a testing profile and logs in.
   TestingProfile* LoginDemoUser() {
     const AccountId account_id(
-        AccountId::FromUserEmailGaiaId("demo@test.com", "demo_user"));
+        AccountId::FromUserEmailGaiaId("demo@test.com", GaiaId("demo_user")));
     fake_user_manager_->AddPublicAccountUser(account_id);
 
     auto prefs =

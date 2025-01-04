@@ -70,7 +70,8 @@ UrlRealTimeMechanism::UrlRealTimeMechanism(
     scoped_refptr<UrlCheckerDelegate> url_checker_delegate,
     const base::RepeatingCallback<content::WebContents*()>& web_contents_getter,
     SessionID tab_id,
-    std::unique_ptr<SafeBrowsingLookupMechanism> hash_realtime_lookup_mechanism)
+    std::unique_ptr<SafeBrowsingLookupMechanism> hash_realtime_lookup_mechanism,
+    std::optional<internal::ReferringAppInfo> referring_app_info)
     : SafeBrowsingLookupMechanism(url, threat_types, database_manager),
       can_check_db_(can_check_db),
       can_check_high_confidence_allowlist_(can_check_high_confidence_allowlist),
@@ -81,7 +82,8 @@ UrlRealTimeMechanism::UrlRealTimeMechanism(
       web_contents_getter_(web_contents_getter),
       tab_id_(tab_id),
       hash_realtime_lookup_mechanism_(
-          std::move(hash_realtime_lookup_mechanism)) {}
+          std::move(hash_realtime_lookup_mechanism)),
+      referring_app_info_(referring_app_info) {}
 
 UrlRealTimeMechanism::~UrlRealTimeMechanism() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -156,7 +158,7 @@ void UrlRealTimeMechanism::OnCheckUrlForHighConfidenceAllowlist(
         FROM_HERE,
         base::BindOnce(&UrlRealTimeMechanism::MaybeSendSampleRequest,
                        weak_factory_.GetWeakPtr(), url_,
-                       url_lookup_service_on_ui_, tab_id_,
+                       url_lookup_service_on_ui_, tab_id_, referring_app_info_,
                        base::SequencedTaskRunner::GetCurrentDefault()));
     // If the URL matches the high-confidence allowlist, still do the hash based
     // checks.
@@ -169,7 +171,7 @@ void UrlRealTimeMechanism::OnCheckUrlForHighConfidenceAllowlist(
         FROM_HERE,
         base::BindOnce(&UrlRealTimeMechanism::StartLookupOnUIThread,
                        weak_factory_.GetWeakPtr(), url_,
-                       url_lookup_service_on_ui_, tab_id_,
+                       url_lookup_service_on_ui_, tab_id_, referring_app_info_,
                        base::SequencedTaskRunner::GetCurrentDefault()));
   }
 }
@@ -180,6 +182,7 @@ void UrlRealTimeMechanism::StartLookupOnUIThread(
     const GURL& url,
     base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
     SessionID tab_id,
+    std::optional<internal::ReferringAppInfo> referring_app_info,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner) {
   bool is_lookup_service_found = !!url_lookup_service_on_ui;
   base::UmaHistogramBoolean("SafeBrowsing.RT.IsLookupServiceFound",
@@ -197,7 +200,8 @@ void UrlRealTimeMechanism::StartLookupOnUIThread(
       base::BindOnce(&UrlRealTimeMechanism::OnLookupResponse, weak_ptr_on_io);
 
   url_lookup_service_on_ui->StartLookup(url, std::move(response_callback),
-                                        std::move(io_task_runner), tab_id);
+                                        std::move(io_task_runner), tab_id,
+                                        std::move(referring_app_info));
 }
 
 void UrlRealTimeMechanism::MaybeSendSampleRequest(
@@ -205,6 +209,7 @@ void UrlRealTimeMechanism::MaybeSendSampleRequest(
     const GURL& url,
     base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
     SessionID tab_id,
+    std::optional<internal::ReferringAppInfo> referring_app_info,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner) {
   bool can_send_protego_sampled_ping =
       url_lookup_service_on_ui &&
@@ -216,8 +221,8 @@ void UrlRealTimeMechanism::MaybeSendSampleRequest(
   bool is_lookup_service_available =
       !url_lookup_service_on_ui->IsInBackoffMode();
   if (is_lookup_service_available) {
-    url_lookup_service_on_ui->SendSampledRequest(url, std::move(io_task_runner),
-                                                 tab_id);
+    url_lookup_service_on_ui->SendSampledRequest(
+        url, std::move(io_task_runner), tab_id, std::move(referring_app_info));
   }
 }
 

@@ -50,8 +50,7 @@ public class AwSupervisedUserUrlClassifier {
 
         synchronized (sInstanceLock) {
             if (!sInitialized) {
-                if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_DETECTION)
-                        || AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK)) {
+                if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK)) {
                     AwSupervisedUserUrlClassifierDelegate delegate =
                             PlatformServiceBridge.getInstance().getUrlClassifierDelegate();
                     if (delegate != null) {

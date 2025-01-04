@@ -6,6 +6,7 @@
 #define UI_VIEWS_CONTROLS_MENU_MENU_RUNNER_IMPL_COCOA_H_
 
 #include <stdint.h>
+
 #include <string>
 
 #include "base/functional/callback.h"

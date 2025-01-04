@@ -50,8 +50,9 @@ class TestLayoutManagerBase : public LayoutManagerBase {
   // LayoutManagerBase:
   ProposedLayout CalculateProposedLayout(
       const SizeBounds& size_bounds) const override {
-    if (forced_layout_)
+    if (forced_layout_) {
       return *forced_layout_;
+    }
 
     ProposedLayout layout;
     layout.host_size.set_width(std::clamp<SizeBound>(size_bounds.width(),
@@ -97,8 +98,9 @@ class MockLayoutManagerBase : public LayoutManagerBase {
     ProposedLayout layout;
     layout.host_size = {kChildViewPadding, kChildViewPadding};
     for (views::View* it : host_view()->children()) {
-      if (!IsChildIncludedInLayout(it))
+      if (!IsChildIncludedInLayout(it)) {
         continue;
+      }
       const gfx::Size preferred_size = it->GetPreferredSize({});
       bool visible = false;
       gfx::Rect bounds;

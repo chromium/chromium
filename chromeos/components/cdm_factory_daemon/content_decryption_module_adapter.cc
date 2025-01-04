@@ -356,7 +356,7 @@ void ContentDecryptionModuleAdapter::Decrypt(
         std::vector<uint8_t>(encrypted->data(),
                              encrypted->data() + encrypted->size()),
         nullptr, true,
-        encrypted->has_side_data() ? encrypted->side_data()->secure_handle : 0,
+        encrypted->side_data() ? encrypted->side_data()->secure_handle : 0,
         base::BindOnce(&ContentDecryptionModuleAdapter::OnDecrypt,
                        base::Unretained(this), stream_type, encrypted,
                        std::move(decrypt_cb)));
@@ -380,7 +380,7 @@ void ContentDecryptionModuleAdapter::Decrypt(
       std::vector<uint8_t>(encrypted->data(),
                            encrypted->data() + encrypted->size()),
       decrypt_config->Clone(), stream_type == Decryptor::kVideo,
-      encrypted->has_side_data() ? encrypted->side_data()->secure_handle : 0,
+      encrypted->side_data() ? encrypted->side_data()->secure_handle : 0,
       base::BindOnce(&ContentDecryptionModuleAdapter::OnDecrypt,
                      base::Unretained(this), stream_type, encrypted,
                      std::move(decrypt_cb)));
@@ -524,7 +524,7 @@ void ContentDecryptionModuleAdapter::OnDecrypt(
 
   // If we decrypted to secure memory, then just send the original buffer back
   // because the result is stored in the secure world.
-  if (encrypted->has_side_data() && encrypted->side_data()->secure_handle) {
+  if (encrypted->side_data() && encrypted->side_data()->secure_handle) {
     std::move(decrypt_cb).Run(media::Decryptor::kSuccess, std::move(encrypted));
     return;
   }
@@ -535,7 +535,7 @@ void ContentDecryptionModuleAdapter::OnDecrypt(
   decrypted->set_timestamp(encrypted->timestamp());
   decrypted->set_duration(encrypted->duration());
   decrypted->set_is_key_frame(encrypted->is_key_frame());
-  if (encrypted->has_side_data()) {
+  if (encrypted->side_data()) {
     decrypted->set_side_data(encrypted->side_data()->Clone());
   }
 

@@ -13,7 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions_internal_overloads.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -80,9 +80,11 @@ void EventObserverBase::TriggerLogUpload(
     base::OnceCallback<void(EventBasedUploadStatus)> on_upload_triggered,
     base::TimeDelta upload_wait_period) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsUploadWaitPeriodFinished(upload_wait_period)) {
+  if (!on_log_upload_triggered_.is_null() ||
+      !IsUploadWaitPeriodFinished(upload_wait_period)) {
     LOG(WARNING) << "Event based log upload is dropped because upload "
-                    "wait period isn't finished for event type: "
+                    "wait period isn't finished or already ongoing upload "
+                    "exists for event type: "
                  << GetEventName();
     EmitMetrics(EventBasedUploadStatus::kDeclined);
     std::move(on_upload_triggered).Run(EventBasedUploadStatus::kDeclined);

@@ -1,4 +1,4 @@
-import {MojoWebTestHelperReceiver} from '/gen/content/test/data/mojo_web_test_helper_test.mojom.m.js';
+import {MojoWebTestHelperReceiver} from '/gen/content/test/data/mojo_web_test_helper.test-mojom.m.js';
 
 export const kTestReply = "hehe got ya";
 

@@ -96,9 +96,4 @@ void IOSWebViewPaymentsAutofillClient::OpenPromoCodeOfferDetailsURL(
       /*is_renderer_initiated=*/false));
 }
 
-void IOSWebViewPaymentsAutofillClient::set_bridge(
-    id<CWVAutofillClientIOSBridge> bridge) {
-  bridge_ = bridge;
-}
-
 }  // namespace autofill::payments

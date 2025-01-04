@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] In dialog mode the first focusable element should get focus.
+Harness: the test ran to completion.
+

@@ -22,6 +22,50 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="InstallCommand">
+<!-- These values must be kept in sync with the web_app::InstallCommand enum. -->
+
+  <variant name="" summary="an aggregation across all install commands"/>
+  <variant name=".FetchManifestAndInstall"
+      summary="an install triggered by the user via omnibox icon, 3-dot menu
+               in Chrome, or the beforeinstallprompt API (from an install
+               button on the site's page)"/>
+  <variant name=".InstallAppFromVerifiedManifest"
+      summary="an install via a custom WebAppInstallInfo object, which is
+               usually a backup install, but can occur for other reasons."/>
+  <variant name=".InstallFromInfo"
+      summary="an install via a custom WebAppInstallInfo object, which is
+               usually a backup install, but can occur for other reasons."/>
+  <variant name=".InstallIsolatedWebApp"
+      summary="an isolated web app install."/>
+  <variant name=".NavigateAndTriggerInstallDialog"
+      summary="an install triggered by the user via the ChromeOS help app
+               navigating the user to a page and displaying the install
+               dialog."/>
+  <variant name=".WebAppInstallFromUrl"
+      summary="an install triggered by the user via the web app install
+               javascript API, usually as a result of a user click"/>
+</variants>
+
+<variants name="WebAppType">
+<!-- These values must be kept in sync with the web_app::WebAppType enum. -->
+
+  <variant name=""
+      summary="an aggregation across Diy apps (apps for sites without a
+               manifest / not installable), Crafted apps (apps that are
+               installable / have a valid manifest), and packaged isolated
+               web apps"/>
+  <variant name=".Crafted"
+      summary="apps that are installable / have a valid manifest"/>
+  <variant name=".Diy"
+      summary="apps manually created for sites that didn't have a manifest /
+               weren't installable"/>
+  <variant name=".Isolated" summary="isolated web apps"/>
+  <variant name=".Unknown"
+      summary="an unknown app type, which means not enough information was
+               fetched to know if this was 'Crafted' or 'Diy'."/>
+</variants>
+
 <histogram name="AppBanners.BeforeInstallEvent"
     enum="AppBannersBeforeInstallEvent" expires_after="2025-05-11">
   <owner>dominickn@chromium.org</owner>
@@ -38,7 +82,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AppBanners.DismissEvent" enum="AppBannersDismissEvent"
-    expires_after="2025-01-05">
+    expires_after="2026-01-05">
   <owner>pjmclachlan@google.com</owner>
   <owner>pcovell@google.com</owner>
   <summary>
@@ -98,20 +142,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Launch.BrowserTab.CreateShortcutApp.WebAppDisplayMode"
-    enum="WebAppDisplayMode" expires_after="2025-04-28">
-  <owner>dmurph@chromium.org</owner>
+<histogram name="Launch.BrowserTab.DiyApp.WebAppDisplayMode"
+    enum="WebAppDisplayMode" expires_after="2025-12-10">
+  <owner>dibyapal@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
     Records the display mode (as defined in the Web App Manifest spec) at the
-    launch of a web app that was created using &quot;Create Shortcut...&quot; on
-    desktop. This is only recorded if the launch was to a browwer tab context,
-    not a standalone window.
+    launch of a web app that was created using &quot;Install Page as App&quot;
+    flow inside the three dot menu on desktop. This is only recorded if the
+    launch was to a browser tab context, not a standalone window. Note: This
+    display mode value is not necessarily used when launching the app.
   </summary>
 </histogram>
 
 <histogram name="Launch.BrowserTab.WebAppDisplayMode" enum="WebAppDisplayMode"
-    expires_after="2025-04-28">
+    expires_after="2025-06-29">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -200,15 +245,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Launch.Window.CreateShortcutApp.WebAppDisplayMode"
-    enum="WebAppDisplayMode" expires_after="2024-04-28">
-  <owner>dmurph@chromium.org</owner>
+<histogram name="Launch.Window.DiyApp.WebAppDisplayMode"
+    enum="WebAppDisplayMode" expires_after="2025-04-28">
+  <owner>dibyapal@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
     Records the display mode (as defined in the Web App Manifest spec) at the
-    launch of a shortcut created using &quot;Add to Homescreen&quot; on mobile,
-    or a &quot;Create Shortcut...&quot; on desktop. This is only recorded if the
-    launch was to a windowed context, not a browser tab.
+    launch of a PWA created using the &quot;Install Page as App&quot; option
+    from the three dot menu on desktop. This is only recorded if the launch was
+    to a windowed context, not a browser tab. Note: This display mode value is
+    not necessarily used when launching the app.
   </summary>
 </histogram>
 
@@ -643,7 +689,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.FileHandlersUnregistration.Result"
-    enum="BooleanSuccess" expires_after="2025-04-28">
+    enum="BooleanSuccess" expires_after="2025-06-29">
   <owner>dibyapal@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -1001,6 +1047,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.InstallCommand{InstallCommand}{WebAppType}.ResultCode"
+    enum="WebAppInstallResultCode" expires_after="never">
+<!-- expires-never: The PWA team looks at this metric to determine what exactly happens for user installs. -->
+
+  <owner>dmurph@chromium.org</owner>
+  <owner>pwa-team@chromium.org</owner>
+  <summary>
+    Records the WebAppInstallResult code for {InstallCommand}. This is
+    specifically for {WebAppType}.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.InstallCommand{InstallCommand}{WebAppType}.Surface"
+    enum="WebappInstallSource" expires_after="never">
+<!-- expires-never: The PWA team looks at this metric to determine where user installs come from. -->
+
+  <owner>dmurph@chromium.org</owner>
+  <owner>pwa-team@chromium.org</owner>
+  <summary>
+    Records the source/surface that initiated {InstallCommand}. This is
+    specifically for {WebAppType}.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.InstallConfirmation.CloseReason"
     enum="WidgetClosedReason" expires_after="2025-05-11">
   <owner>dmurph@chromium.org</owner>
@@ -1077,7 +1147,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Webapp.InstallResult" enum="WebAppInstallResultCode"
     expires_after="2025-05-18">
-<!-- Name completed by histogram_suffixes name="WebAppType" -->
+<!-- Name completed by histogram_suffixes name="WebappType" -->
 
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
@@ -1336,7 +1406,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.LaunchContainer" enum="AppLaunchContainer"
-    expires_after="2025-01-05">
+    expires_after="2026-01-05">
   <owner>phillis@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -1379,6 +1449,18 @@ chromium-metrics-reviews@google.com.
     controls is enabled. The control events (like next) are only fired if the
     request comes from system media controls (and the OS) not when the media is
     directly interacted.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Migrations.ShortcutAppsToDiy" units="count"
+    expires_after="2025-12-19">
+  <owner>msiem@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the number of installed shortcuts that have been migrated to DIY
+    apps. This is recorded on the initialization of the Profile object when the
+    web application system starts, which can happen either at chrome startup or
+    when the user switches profiles.
   </summary>
 </histogram>
 
@@ -1879,8 +1961,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.SystemApps.FreshInstallDuration" units="ms"
-    expires_after="2025-01-05">
-  <owner>mbujak@google.com</owner>
+    expires_after="2026-01-05">
+  <owner>renkens@google.com</owner>
   <owner>cros-web-apps-team@google.com</owner>
   <summary>
     Records the time taken to perform a fresh install of all system web apps. It
@@ -1893,7 +1975,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Webapp.SystemApps.IconsAreHealthyInSession"
     enum="BooleanSuccess" expires_after="2025-12-08">
-  <owner>brettw@chromium.org</owner>
+  <owner>renkens@google.com</owner>
   <owner>cros-web-apps-team@google.com</owner>
   <summary>
     Records whether system web app icons are healthy for each user session that
@@ -1904,7 +1986,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Webapp.SystemApps.IconsFixedOnReinstall" enum="BooleanSuccess"
     expires_after="2025-12-08">
-  <owner>brettw@chromium.org</owner>
+  <owner>renkens@google.com</owner>
   <owner>cros-web-apps-team@google.com</owner>
   <summary>
     Records whether a reinstall fixes previously broken system web app icons.
@@ -1984,7 +2066,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.WebAppUrlLoaderPrepareForLoadResult"
-    enum="WebAppUrlLoaderResult" expires_after="2025-04-20">
+    enum="WebAppUrlLoaderResult" expires_after="2025-06-22">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>Records the result of WebAppUrlLoader::PrepareForLoad().</summary>

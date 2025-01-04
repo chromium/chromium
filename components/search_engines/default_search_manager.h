@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/search_engines/reconciling_template_url_data_holder.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
@@ -79,7 +78,7 @@ class DefaultSearchManager
 
   static const char kUsageCount[];
   static const char kAlternateURLs[];
-  static const char kCreatedByPolicy[];
+  static const char kPolicyOrigin[];
   static const char kDisabledByPolicy[];
   static const char kCreatedFromPlayAPI[];
   static const char kFeaturedByPolicy[];
@@ -113,12 +112,7 @@ class DefaultSearchManager
   DefaultSearchManager(
       PrefService* pref_service,
       search_engines::SearchEngineChoiceService* search_engine_choice_service,
-      const ObserverCallback& change_observer
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      ,
-      bool for_lacros_main_profile
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  );
+      const ObserverCallback& change_observer);
 
   DefaultSearchManager(const DefaultSearchManager&) = delete;
   DefaultSearchManager& operator=(const DefaultSearchManager&) = delete;
@@ -226,11 +220,6 @@ class DefaultSearchManager
 
   // True if the default search is currently recommended by policy.
   bool default_search_recommended_by_policy_ = false;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // True if this instance is used for the Lacros primary profile.
-  bool for_lacros_main_profile_ = false;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 #endif  // COMPONENTS_SEARCH_ENGINES_DEFAULT_SEARCH_MANAGER_H_

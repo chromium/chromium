@@ -42,7 +42,7 @@ class ScheduledMetricsManagerTest : public testing::Test {
 
   void SetUp() override {
     test_features_.InitWithFeatures({kSubscriptionsApi, kShoppingList}, {});
-    RegisterCommercePrefs(pref_service_->registry());
+    MockAccountChecker::RegisterCommercePrefs(pref_service_->registry());
     SetShoppingListEnterprisePolicyPref(pref_service_.get(), true);
     account_checker_->SetPrefs(pref_service_.get());
     shopping_service_->SetAccountChecker(account_checker_.get());

@@ -23,15 +23,10 @@ struct Action {
   };
 
   Action(Type in_type, int in_fd1, int in_fd2 = -1)
-      : type(in_type),
-        fd1(in_fd1),
-        fd2(in_fd2) {
-  }
+      : type(in_type), fd1(in_fd1), fd2(in_fd2) {}
 
   bool operator==(const Action& other) const {
-    return other.type == type &&
-           other.fd1 == fd1 &&
-           other.fd2 == fd2;
+    return other.type == type && other.fd1 == fd1 && other.fd2 == fd2;
   }
 
   Type type;
@@ -41,9 +36,7 @@ struct Action {
 
 class InjectionTracer : public InjectionDelegate {
  public:
-  InjectionTracer()
-      : next_duplicate_(kDuplicateBase) {
-  }
+  InjectionTracer() : next_duplicate_(kDuplicateBase) {}
 
   bool Duplicate(int* result, int fd) override {
     *result = next_duplicate_++;

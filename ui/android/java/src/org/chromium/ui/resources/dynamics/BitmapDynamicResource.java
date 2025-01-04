@@ -9,13 +9,16 @@ import android.graphics.Rect;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.resources.Resource;
 import org.chromium.ui.resources.ResourceFactory;
 
 /** A basic implementation of {@link DynamicResource} to handle updatable bitmaps. */
+@NullMarked
 public class BitmapDynamicResource implements DynamicResource {
     private final int mResId;
-    private Bitmap mBitmap;
+    private @Nullable Bitmap mBitmap;
     private final Rect mSize = new Rect();
 
     private final ObserverList<Callback<Resource>> mOnResourceReadyObservers = new ObserverList<>();

@@ -15,13 +15,10 @@
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 
-static ScopedJavaLocalRef<jobject>
-JNI_IdentityServicesProvider_GetIdentityManager(JNIEnv* env, Profile* profile) {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  // Ensuring that the pointer is not null here produces unactionable stack
-  // traces, so just let the Java side handle possible issues with null.
-  return identity_manager ? identity_manager->GetJavaObject() : nullptr;
+static signin::IdentityManager* JNI_IdentityServicesProvider_GetIdentityManager(
+    JNIEnv* env,
+    Profile* profile) {
+  return IdentityManagerFactory::GetForProfile(profile);
 }
 
 static ScopedJavaLocalRef<jobject>

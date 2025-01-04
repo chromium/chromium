@@ -24,6 +24,7 @@
 #include "build/build_config.h"
 #include "content/common/buildflags.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/child_process_id.h"
 #include "content/public/browser/web_exposed_isolation_level.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
@@ -132,7 +133,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   ADVANCED_MEMORY_SAFETY_CHECKS();
 
  public:
-  using iterator = base::IDMap<RenderProcessHost*>::iterator;
+  using iterator = base::IDMap<RenderProcessHost*, ChildProcessId>::iterator;
 
   // Crash reporting mode for ShutdownForBadMessage.
   enum class CrashReportMode {
@@ -266,9 +267,14 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // If |ignore_workers| is false and this renderer has any workers, then this
   // function does nothing. Otherwise, the function will ignore checking for
   // worker references.
+  // If |ignore_keep_alive| is false and this renderer has any keep-alive ref
+  // counts, then this function does nothing. Otherwise, the function will
+  // ignore checking for keep-alive references. This can be removed once
+  // keep-alive migration has landed (see crbug.com/40236167).
   virtual bool FastShutdownIfPossible(size_t page_count = 0,
                                       bool skip_unload_handlers = false,
-                                      bool ignore_workers = false) = 0;
+                                      bool ignore_workers = false,
+                                      bool ignore_keep_alive = false) = 0;
 
   // Returns true if fast shutdown was started for the renderer.
   virtual bool FastShutdownStarted() = 0;
@@ -307,7 +313,11 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // plugins, etc.
   //
   // This will never return ChildProcessHost::kInvalidUniqueID.
-  virtual int GetID() const = 0;
+  virtual ChildProcessId GetID() const = 0;
+
+  // TODO(crbug.com/379869738): Deprecated, please use the ChildProcessId
+  // version above.
+  virtual int GetDeprecatedID() const = 0;
 
   // Returns a SafeRef to `this`. It should only be used in non-owning cases,
   // where the caller is not expected to outlive `this`.
@@ -735,7 +745,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual void DumpProfilingData(base::OnceClosure callback) {}
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Reinitializes the child process's logging with the given settings. This
   // is needed on Chrome OS, which switches to a log file in the user's home
   // directory once they log in.
@@ -783,6 +793,10 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
 
   // Returns the RenderProcessHost given its ID.  Returns nullptr if the ID does
   // not correspond to a live RenderProcessHost.
+  static RenderProcessHost* FromID(ChildProcessId render_process_id);
+
+  // TODO(crbug.com/379869738): Deprecated, please use the ChildProcessId
+  // version above.
   static RenderProcessHost* FromID(int render_process_id);
 
   // Returns the RenderProcessHost given its renderer's service instance ID,
@@ -820,7 +834,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // IOThreadHostImpl::BindHostReceiver() will pass through |callback| first if
   // non-null. |callback| is only called from the IO thread.
   using BindHostReceiverInterceptor =
-      base::RepeatingCallback<void(int render_process_id,
+      base::RepeatingCallback<void(ChildProcessId render_process_id,
                                    mojo::GenericPendingReceiver* receiver)>;
   static void InterceptBindHostReceiverForTesting(
       BindHostReceiverInterceptor callback);

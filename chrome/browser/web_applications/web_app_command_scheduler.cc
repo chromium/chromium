@@ -42,6 +42,7 @@
 #include "chrome/browser/web_applications/commands/os_integration_synchronize_command.h"
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/commands/set_user_display_mode_command.h"
+#include "chrome/browser/web_applications/commands/uninstall_all_user_installed_web_apps_command.h"
 #include "chrome/browser/web_applications/commands/update_file_handler_command.h"
 #include "chrome/browser/web_applications/commands/update_protocol_handler_approval_command.h"
 #include "chrome/browser/web_applications/commands/web_app_icon_diagnostic_command.h"
@@ -249,10 +250,13 @@ void WebAppCommandScheduler::ScheduleNavigateAndTriggerInstallDialog(
     bool is_renderer_initiated,
     NavigateAndTriggerInstallDialogCommandCallback callback,
     const base::Location& location) {
+  // TODO(issuetracker.google.com/283034487): Pass the source in to this
+  // function.
   provider_->command_manager().ScheduleCommand(
       std::make_unique<NavigateAndTriggerInstallDialogCommand>(
-          install_url, origin, is_renderer_initiated, std::move(callback),
-          provider_->ui_manager().GetWeakPtr(),
+          install_url, origin, is_renderer_initiated,
+          /*source=*/webapps::WebappInstallSource::CHROMEOS_HELP_APP,
+          std::move(callback), provider_->ui_manager().GetWeakPtr(),
           std::make_unique<webapps::WebAppUrlLoader>(),
           std::make_unique<WebAppDataRetriever>(), &*profile_),
       location);
@@ -446,7 +450,7 @@ void WebAppCommandScheduler::RemoveAllManagementTypesAndUninstall(
 
 void WebAppCommandScheduler::UninstallAllUserInstalledWebApps(
     webapps::WebappUninstallSource uninstall_source,
-    UninstallAllUserInstalledWebAppsCommand::Callback callback,
+    UninstallAllUserInstalledWebAppsCallback callback,
     const base::Location& location) {
   provider_->command_manager().ScheduleCommand(
       std::make_unique<UninstallAllUserInstalledWebAppsCommand>(

@@ -188,8 +188,9 @@ void DecodeJsonStringAndNormalize(const std::string& json_string,
 void SetQuickDimPreference(bool enabled) {
   PrefService* prefs =
       Shell::Get()->session_controller()->GetActivePrefService();
-  if (!prefs)
+  if (!prefs) {
     return;
+  }
 
   prefs->SetBoolean(prefs::kPowerQuickDimEnabled, enabled);
 }
@@ -197,8 +198,9 @@ void SetQuickDimPreference(bool enabled) {
 void SetAdaptiveChargingPreference(bool enabled) {
   PrefService* prefs =
       Shell::Get()->session_controller()->GetActivePrefService();
-  if (!prefs)
+  if (!prefs) {
     return;
+  }
 
   prefs->SetBoolean(prefs::kPowerAdaptiveChargingEnabled, enabled);
 }
@@ -253,13 +255,12 @@ class PowerPrefsTest : public NoSessionAshTestBase {
     auto pref_value_store = std::make_unique<PrefValueStore>(
         managed_pref_store_.get() /* managed_prefs */,
         nullptr /* supervised_user_prefs */, nullptr /* extension_prefs */,
-        nullptr /* standalone_browser_prefs */,
         nullptr /* command_line_prefs */, user_pref_store_.get(),
         nullptr /* recommended_prefs */, pref_registry_->defaults().get(),
         pref_notifier.get());
     local_state_ = std::make_unique<PrefService>(
         std::move(pref_notifier), std::move(pref_value_store), user_pref_store_,
-        nullptr, pref_registry_, base::DoNothing(), false);
+        pref_registry_, base::DoNothing(), false);
 
     PowerPrefs::RegisterLocalStatePrefs(pref_registry_.get());
 
@@ -653,39 +654,57 @@ TEST_F(PowerPrefsTest, QuickDimMetrics) {
             user_disable_buckets);
 }
 
-TEST_F(PowerPrefsTest, SetAdaptiveChargingParams) {
-  // kPowerAdaptiveChargingEnabled is true by default.
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetActivePrefService();
-  EXPECT_TRUE(prefs->GetBoolean(prefs::kPowerAdaptiveChargingEnabled));
-
-  // But adaptive charging should be disabled initially because of no hardware
-  // support.
+TEST_F(PowerPrefsTest, AdaptiveCharging_NoHardwareSupport_Disabled) {
+  // Adaptive charging should be disabled initially, even with the preference
+  // enabled, because there is no hardware support.
   EXPECT_FALSE(power_manager_client()->policy().adaptive_charging_enabled());
+}
 
-  // Sets adaptive charging hardware support.
+TEST_F(PowerPrefsTest, AdaptiveCharging_HardwareSupported_EnabledByPref) {
+  // Enable adaptive charging hardware support.
   power_manager::PowerSupplyProperties power_props;
   power_props.set_adaptive_charging_supported(true);
   power_manager_client()->UpdatePowerProperties(power_props);
 
-  // With hardware support exists, the adaptive charging feature is controlled
-  // by prefs settings.
-  SetAdaptiveChargingPreference(false);
-  EXPECT_FALSE(power_manager_client()->policy().adaptive_charging_enabled());
+  // Adaptive charging should be enabled/disabled according to the preference.
   SetAdaptiveChargingPreference(true);
   EXPECT_TRUE(power_manager_client()->policy().adaptive_charging_enabled());
 
-  // Once power properties proto showed hardware adaptive_charging_supported, we
-  // never reset it false because the hardware feature should not change.
-  // So although we force power_manager_client to update the power properties
-  // here, hardware support keeps true.
-  power_props.set_adaptive_charging_supported(false);
+  SetAdaptiveChargingPreference(false);
+  EXPECT_FALSE(power_manager_client()->policy().adaptive_charging_enabled());
+}
+
+TEST_F(PowerPrefsTest, ChargeLimit_EnabledByPrefWhenAdaptiveChargingDisabled) {
+  // Enable the hardware support needed for both adaptive charging and
+  // charge limit. They share the same underlying hardware.
+  power_manager::PowerSupplyProperties power_props;
+  power_props.set_adaptive_charging_supported(true);
   power_manager_client()->UpdatePowerProperties(power_props);
 
-  // The adaptive charging feature is controlled by prefs settings as above.
+  // Charge limit should be enabled/disabled according to the preference
+  // when adaptive charging is disabled, as these features are mutually
+  // exclusive.
   SetAdaptiveChargingPreference(false);
   EXPECT_FALSE(power_manager_client()->policy().adaptive_charging_enabled());
+
+  managed_pref_store_->SetBoolean(prefs::kPowerChargeLimitEnabled, true);
+  EXPECT_TRUE(power_manager_client()->policy().charge_limit_enabled());
+
+  managed_pref_store_->SetBoolean(prefs::kPowerChargeLimitEnabled, false);
+  EXPECT_FALSE(power_manager_client()->policy().charge_limit_enabled());
+}
+
+TEST_F(PowerPrefsTest, ChargeLimit_DisabledWhenAdaptiveChargingEnabled) {
+  // Enable adaptive charging hardware support.
+  power_manager::PowerSupplyProperties power_props;
+  power_props.set_adaptive_charging_supported(true);
+  power_manager_client()->UpdatePowerProperties(power_props);
+
+  // When adaptive charging is enabled, charge limit should be disabled.
+  // This ensures that the two features do not conflict.
   SetAdaptiveChargingPreference(true);
+  managed_pref_store_->SetBoolean(prefs::kPowerChargeLimitEnabled, true);
   EXPECT_TRUE(power_manager_client()->policy().adaptive_charging_enabled());
+  EXPECT_FALSE(power_manager_client()->policy().charge_limit_enabled());
 }
 }  // namespace ash

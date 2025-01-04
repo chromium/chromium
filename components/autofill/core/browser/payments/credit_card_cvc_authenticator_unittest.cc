@@ -26,22 +26,22 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autocomplete_history_manager.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_quality/validation.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_authentication_requester.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
-#include "components/autofill/core/browser/test_autofill_driver.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
-#include "components/autofill/core/browser/validation.h"
+#include "components/autofill/core/browser/single_field_fillers/autocomplete/autocomplete_history_manager.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -80,18 +80,18 @@ class CreditCardCvcAuthenticatorTest : public testing::Test {
 
   void SetUp() override {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
-    personal_data_manager_.SetPrefService(autofill_client_.GetPrefs());
+    personal_data_manager().SetPrefService(autofill_client_.GetPrefs());
 
     requester_ = std::make_unique<TestAuthenticationRequester>();
     autofill_driver_ = std::make_unique<testing::NiceMock<TestAutofillDriver>>(
         &autofill_client_);
 
     autofill_client_.GetPaymentsAutofillClient()
-        ->set_test_payments_network_interface(
+        ->set_payments_network_interface(
             std::make_unique<payments::TestPaymentsNetworkInterface>(
                 autofill_client_.GetURLLoaderFactory(),
                 autofill_client_.GetIdentityManager(),
-                &personal_data_manager_));
+                &personal_data_manager()));
     cvc_authenticator_ =
         std::make_unique<CreditCardCvcAuthenticator>(&autofill_client_);
   }
@@ -101,8 +101,8 @@ class CreditCardCvcAuthenticatorTest : public testing::Test {
     // PersonalDataManager to be around when it gets destroyed.
     autofill_driver_.reset();
 
-    personal_data_manager_.SetPrefService(nullptr);
-    personal_data_manager_.test_payments_data_manager().ClearCreditCards();
+    personal_data_manager().SetPrefService(nullptr);
+    personal_data_manager().test_payments_data_manager().ClearCreditCards();
   }
 
   CreditCard CreateServerCard(std::string guid, std::string number) {
@@ -114,8 +114,8 @@ class CreditCardCvcAuthenticatorTest : public testing::Test {
     masked_server_card.set_record_type(
         CreditCard::RecordType::kMaskedServerCard);
 
-    personal_data_manager_.test_payments_data_manager().ClearCreditCards();
-    personal_data_manager_.test_payments_data_manager().AddServerCreditCard(
+    personal_data_manager().test_payments_data_manager().ClearCreditCards();
+    personal_data_manager().test_payments_data_manager().AddServerCreditCard(
         masked_server_card);
 
     return masked_server_card;
@@ -148,11 +148,14 @@ class CreditCardCvcAuthenticatorTest : public testing::Test {
   }
 
  protected:
+  TestPersonalDataManager& personal_data_manager() {
+    return autofill_client_.GetPersonalDataManager();
+  }
+
   std::unique_ptr<TestAuthenticationRequester> requester_;
   base::test::TaskEnvironment task_environment_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
-  TestPersonalDataManager personal_data_manager_;
   TestAutofillClient autofill_client_;
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -163,8 +166,7 @@ TEST_F(CreditCardCvcAuthenticatorTest, AuthenticateServerCardSuccess) {
   base::HistogramTester histogram_tester;
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
-  cvc_authenticator_->Authenticate(card, requester_->GetWeakPtr(),
-                                   &personal_data_manager_);
+  cvc_authenticator_->Authenticate(card, requester_->GetWeakPtr());
 
   OnDidGetRealPan(payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
                   kTestNumber);
@@ -185,7 +187,6 @@ TEST_F(CreditCardCvcAuthenticatorTest,
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
   cvc_authenticator_->Authenticate(card, requester_->GetWeakPtr(),
-                                   &personal_data_manager_,
                                    "test_context_token");
 
   OnDidGetRealPan(payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
@@ -211,9 +212,9 @@ TEST_F(CreditCardCvcAuthenticatorTest, AuthenticateVirtualCardSuccess) {
       test::GetCardUnmaskChallengeOptions(
           {CardUnmaskChallengeOptionType::kCvc})[0];
 
-  cvc_authenticator_->Authenticate(
-      card, requester_->GetWeakPtr(), &personal_data_manager_,
-      "test_vcn_context_token", cvc_challenge_option);
+  cvc_authenticator_->Authenticate(card, requester_->GetWeakPtr(),
+                                   "test_vcn_context_token",
+                                   cvc_challenge_option);
 
   payments::FullCardRequest* full_card_request = GetFullCardRequest();
   ASSERT_TRUE(full_card_request->GetShouldUnmaskCardForTesting());
@@ -250,9 +251,9 @@ TEST_F(CreditCardCvcAuthenticatorTest, AuthenticateVirtualCard_InvalidURL) {
       test::GetCardUnmaskChallengeOptions(
           {CardUnmaskChallengeOptionType::kCvc})[0];
 
-  cvc_authenticator_->Authenticate(
-      card, requester_->GetWeakPtr(), &personal_data_manager_,
-      "test_vcn_context_token", cvc_challenge_option);
+  cvc_authenticator_->Authenticate(card, requester_->GetWeakPtr(),
+                                   "test_vcn_context_token",
+                                   cvc_challenge_option);
 
   ASSERT_FALSE(GetFullCardRequest()->GetShouldUnmaskCardForTesting());
   EXPECT_FALSE(*requester_->did_succeed());
@@ -270,8 +271,7 @@ TEST_F(CreditCardCvcAuthenticatorTest, AuthenticateNetworkError) {
   base::HistogramTester histogram_tester;
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
-  cvc_authenticator_->Authenticate(card, requester_->GetWeakPtr(),
-                                   &personal_data_manager_);
+  cvc_authenticator_->Authenticate(card, requester_->GetWeakPtr());
 
   OnDidGetRealPan(
       payments::PaymentsAutofillClient::PaymentsRpcResult::kNetworkError,
@@ -290,8 +290,7 @@ TEST_F(CreditCardCvcAuthenticatorTest, AuthenticatePermanentFailure) {
   base::HistogramTester histogram_tester;
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
-  cvc_authenticator_->Authenticate(card, requester_->GetWeakPtr(),
-                                   &personal_data_manager_);
+  cvc_authenticator_->Authenticate(card, requester_->GetWeakPtr());
 
   OnDidGetRealPan(
       payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
@@ -310,8 +309,7 @@ TEST_F(CreditCardCvcAuthenticatorTest, AuthenticateTryAgainFailure) {
   base::HistogramTester histogram_tester;
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
-  cvc_authenticator_->Authenticate(card, requester_->GetWeakPtr(),
-                                   &personal_data_manager_);
+  cvc_authenticator_->Authenticate(card, requester_->GetWeakPtr());
 
   OnDidGetRealPan(
       payments::PaymentsAutofillClient::PaymentsRpcResult::kTryAgainFailure,
@@ -339,8 +337,7 @@ TEST_F(CreditCardCvcAuthenticatorTest, AuthenticatePromptClosed) {
   base::HistogramTester histogram_tester;
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
-  cvc_authenticator_->Authenticate(card, requester_->GetWeakPtr(),
-                                   &personal_data_manager_);
+  cvc_authenticator_->Authenticate(card, requester_->GetWeakPtr());
 
   cvc_authenticator_->OnFullCardRequestFailed(
       card.record_type(), payments::FullCardRequest::PROMPT_CLOSED);
@@ -362,8 +359,7 @@ TEST_F(CreditCardCvcAuthenticatorTest, VirtualCardAuthenticatePromptClosed) {
       GURL("https://vcncvcretrievaltest.com/"));
 
   cvc_authenticator_->Authenticate(
-      card, requester_->GetWeakPtr(), &personal_data_manager_,
-      "test_vcn_context_token",
+      card, requester_->GetWeakPtr(), "test_vcn_context_token",
       test::GetCardUnmaskChallengeOptions(
           {CardUnmaskChallengeOptionType::kCvc})[0]);
   cvc_authenticator_->OnFullCardRequestFailed(

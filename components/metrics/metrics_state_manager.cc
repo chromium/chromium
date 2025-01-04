@@ -242,15 +242,13 @@ MetricsStateManager::MetricsStateManager(
     EntropyParams entropy_params,
     StartupVisibility startup_visibility,
     StoreClientInfoCallback store_client_info,
-    LoadClientInfoCallback retrieve_client_info,
-    std::string_view external_client_id)
+    LoadClientInfoCallback retrieve_client_info)
     : local_state_(local_state),
       enabled_state_provider_(enabled_state_provider),
       entropy_params_(entropy_params),
       store_client_info_(std::move(store_client_info)),
       load_client_info_(std::move(retrieve_client_info)),
       clean_exit_beacon_(backup_registry_key, user_data_dir, local_state),
-      external_client_id_(external_client_id),
       entropy_state_(local_state),
       entropy_source_returned_(ENTROPY_SOURCE_NONE),
       metrics_ids_were_reset_(false),
@@ -301,16 +299,8 @@ MetricsStateManager::MetricsStateManager(
   // `initial_client_id_` will only be set in the following cases:
   // 1. UMA is enabled
   // 2. there is a provisional client id (due to this being a first run)
-  // 3. there is an externally provided client ID (e.g. in Lacros, from Ash)
   if (!client_id_.empty()) {
     initial_client_id_ = client_id_;
-  } else if (!external_client_id_.empty()) {
-    // Typically, `client_id_` should have been set to the external client ID in
-    // the call to ForceClientIdCreation() above. However, that call is gated,
-    // and may not always happen, for example if this is a first run and the
-    // consent state is not yet known (although we know it is soon going to be
-    // set to true, since an external client ID was provided).
-    initial_client_id_ = external_client_id_;
   } else {
     // Note that there is possibly no provisional client ID.
     initial_client_id_ =
@@ -429,16 +419,9 @@ void MetricsStateManager::ForceClientIdCreation() {
   // kMetricsRecordingOnly is used by Chromedriver tests.
   DCHECK(enabled_state_provider_->IsConsentGiven() ||
          IsMetricsReportingForceEnabled() || IsMetricsRecordingOnlyEnabled());
-  if (!external_client_id_.empty()) {
-    client_id_ = external_client_id_;
-    base::UmaHistogramEnumeration("UMA.ClientIdSource",
-                                  ClientIdSource::kClientIdFromExternal);
-    local_state_->SetString(prefs::kMetricsClientID, client_id_);
-    return;
-  }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::string previous_client_id = client_id_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   {
     std::string client_id_from_prefs = ReadClientId(local_state_);
     // If client id in prefs matches the cached copy, return early.
@@ -517,10 +500,6 @@ void MetricsStateManager::ForceClientIdCreation() {
   BackUpCurrentClientInfo();
 }
 
-void MetricsStateManager::SetExternalClientId(const std::string& id) {
-  external_client_id_ = id;
-}
-
 void MetricsStateManager::CheckForClonedInstall() {
   cloned_install_detector_.CheckForClonedInstall(local_state_);
 }
@@ -561,8 +540,7 @@ std::unique_ptr<MetricsStateManager> MetricsStateManager::Create(
     StartupVisibility startup_visibility,
     EntropyParams entropy_params,
     StoreClientInfoCallback store_client_info,
-    LoadClientInfoCallback retrieve_client_info,
-    std::string_view external_client_id) {
+    LoadClientInfoCallback retrieve_client_info) {
   std::unique_ptr<MetricsStateManager> result;
   // Note: |instance_exists_| is updated in the constructor and destructor.
   if (!instance_exists_) {
@@ -573,8 +551,7 @@ std::unique_ptr<MetricsStateManager> MetricsStateManager::Create(
                                     : std::move(store_client_info),
         retrieve_client_info.is_null()
             ? base::BindRepeating(&NoOpLoadClientInfoBackup)
-            : std::move(retrieve_client_info),
-        external_client_id));
+            : std::move(retrieve_client_info)));
   }
   return result;
 }

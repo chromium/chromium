@@ -61,8 +61,7 @@
            plusAddressService:plusAddressService
                           URL:URL
                isOffTheRecord:profile->IsOffTheRecord()
-      // TODO(crbug.com/355132717): Pass the correct value.
-      isAddressManualFallback:NO];
+      isAddressManualFallback:self.isAddressManualFallback];
 
   // Fetch all plus addresses before setting the consumer.
   [_plusAddressMediator fetchAllPlusAddresses];
@@ -127,7 +126,7 @@
   NOTREACHED();
 }
 
-- (void)openAllPlusAddressList {
+- (void)openAllPlusAddressList:(BOOL)isAddressManualFallback {
   NOTREACHED();
 }
 

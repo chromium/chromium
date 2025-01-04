@@ -1582,7 +1582,7 @@ void HTMLMediaElement::StartPlayerLoad() {
 
   GetMediaPlayerHostRemote().OnMediaPlayerAdded(
       std::move(media_player_remote), AddMediaPlayerObserverAndPassReceiver(),
-      web_media_player_->GetDelegateId());
+      web_media_player_->GetPlayerId());
 
   if (GetLayoutObject())
     GetLayoutObject()->SetShouldDoFullPaintInvalidation();

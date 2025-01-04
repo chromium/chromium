@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/webui/ash/settings/search/search_concept.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/search_engines_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
@@ -42,6 +41,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/webui/webui_util.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
@@ -51,7 +51,6 @@ namespace ash::settings {
 
 namespace mojom {
 using ::chromeos::settings::mojom::kAssistantSubpagePath;
-using ::chromeos::settings::mojom::kSearchAndAssistantSectionPath;
 using ::chromeos::settings::mojom::kSearchSubpagePath;
 using ::chromeos::settings::mojom::kSystemPreferencesSectionPath;
 using ::chromeos::settings::mojom::Section;
@@ -90,11 +89,8 @@ bool IsMagicBoostNoticeBannerVisible(Profile* profile) {
 }
 
 bool IsLobsterSettingsToggleVisible(Profile* profile) {
-  LobsterService* lobster_service =
-      ash::features::IsLobsterEnabled()
-          ? LobsterServiceProvider::GetForProfile(profile)
-          : nullptr;
-  return lobster_service != nullptr && lobster_service->UserHasAccess();
+  return ash::features::IsLobsterEnabled() &&
+         LobsterServiceProvider::GetForProfile(profile) != nullptr;
 }
 
 base::span<const SearchConcept> GetSearchPageSearchConcepts() {
@@ -589,6 +585,10 @@ void SearchSection::OnSettingsEnabled(bool enabled) {
 }
 
 void SearchSection::OnEligibilityChanged(bool eligible) {
+  UpdateQuickAnswersSearchTags();
+}
+
+void SearchSection::OnFeatureTypeChanged() {
   UpdateQuickAnswersSearchTags();
 }
 

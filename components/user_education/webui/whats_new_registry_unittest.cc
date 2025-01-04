@@ -9,7 +9,6 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/user_education/common/user_education_features.h"
 #include "components/user_education/webui/mock_whats_new_storage_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -77,8 +76,7 @@ class WhatsNewRegistryTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
     feature_list_.InitWithFeatures(
-        {features::kWhatsNewVersion2, kTestModuleEnabled, kTestEditionEnabled1,
-         kTestEditionEnabled2},
+        {kTestModuleEnabled, kTestEditionEnabled1, kTestEditionEnabled2},
         {kTestModuleDisabled});
   }
 

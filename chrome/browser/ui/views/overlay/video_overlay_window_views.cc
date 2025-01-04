@@ -272,8 +272,9 @@ class OverlayWindowFrameView : public views::NonClientFrameView {
   }
   int NonClientHitTest(const gfx::Point& point) override {
     // Outside of the window bounds, do nothing.
-    if (!bounds().Contains(point))
+    if (!bounds().Contains(point)) {
       return HTNOWHERE;
+    }
 
     constexpr int kResizeAreaCornerSize = 16;
     int window_component = GetHTComponentForFrame(
@@ -291,8 +292,9 @@ class OverlayWindowFrameView : public views::NonClientFrameView {
     // If the resize handle is clicked on, we want to force the hit test to
     // force a resize drag.
     if (window->AreControlsVisible() &&
-        window->GetResizeHandleControlsBounds().Contains(point))
+        window->GetResizeHandleControlsBounds().Contains(point)) {
       return window->GetResizeHTComponent();
+    }
 #endif
 
     // Allows for dragging and resizing the window.
@@ -481,8 +483,9 @@ gfx::Rect VideoOverlayWindowViews::CalculateAndUpdateWindowBounds() {
   const gfx::Rect bounds = GetBounds();
 
   gfx::Size window_size = bounds.size();
-  if (!has_been_shown_)
+  if (!has_been_shown_) {
     window_size = gfx::Size(work_area.width() / 5, work_area.height() / 5);
+  }
 
   // Even though we define the minimum and maximum sizes for our views::Widget,
   // it's possible for the current size to be outside of those bounds
@@ -674,8 +677,9 @@ void VideoOverlayWindowViews::OnMouseEvent(ui::MouseEvent* event) {
           !GetWindowBackgroundView()->bounds().Contains(event->location()) &&
           progress_view_drag_state_ ==
               global_media_controls::DragState::kDragEnded;
-      if (should_update_control_visibility)
+      if (should_update_control_visibility) {
         UpdateControlsVisibility(false);
+      }
       break;
     }
 
@@ -815,8 +819,9 @@ gfx::Rect VideoOverlayWindowViews::GetWorkAreaForWindow() const {
 void VideoOverlayWindowViews::UpdateMaxSize(const gfx::Rect& work_area) {
   // An empty |work_area| is not valid, but it is sometimes reported as a
   // transient value.
-  if (work_area.IsEmpty())
+  if (work_area.IsEmpty()) {
     return;
+  }
 
   auto new_max_size =
       gfx::Size(work_area.width() * 0.8, work_area.height() * 0.8);
@@ -829,13 +834,15 @@ void VideoOverlayWindowViews::UpdateMaxSize(const gfx::Rect& work_area) {
   // size actually changes. Running it unconditionally means also running it
   // when DPI <-> pixel computations introduce off-by-1 errors, which leads to
   // incorrect window sizing/positioning.
-  if (new_max_size == max_size_)
+  if (new_max_size == max_size_) {
     return;
+  }
 
   max_size_ = new_max_size;
 
-  if (!native_widget())
+  if (!native_widget()) {
     return;
+  }
 
   // native_widget() is required for OnSizeConstraintsChanged.
   OnSizeConstraintsChanged();
@@ -861,8 +868,9 @@ bool VideoOverlayWindowViews::ControlsHitTestContainsPoint(
     return overlay_view_->WantsEvent(point_in_screen);
   }
 
-  if (!AreControlsVisible())
+  if (!AreControlsVisible()) {
     return false;
+  }
   if (GetBackToTabControlsBounds().Contains(point) ||
       GetSkipAdControlsBounds().Contains(point) ||
       GetCloseControlsBounds().Contains(point) ||
@@ -1349,8 +1357,9 @@ void VideoOverlayWindowViews::OnRootViewReady() {
   GetRootView()->layer()->SetMasksToBounds(true);
 
   views::View* const contents_view = GetContentsView();
-  for (std::unique_ptr<views::View>& child : view_holder_)
+  for (std::unique_ptr<views::View>& child : view_holder_) {
     contents_view->AddChildView(std::move(child));
+  }
   view_holder_.clear();
 
   // Don't show the controls until the mouse hovers over the window.
@@ -1361,13 +1370,15 @@ void VideoOverlayWindowViews::UpdateLayerBoundsWithLetterboxing(
     gfx::Size window_size) {
   // This is the case when the window is initially created or the video surface
   // id has not been embedded.
-  if (!native_widget() || GetBounds().IsEmpty() || GetNaturalSize().IsEmpty())
+  if (!native_widget() || GetBounds().IsEmpty() || GetNaturalSize().IsEmpty()) {
     return;
+  }
 
   gfx::Rect letterbox_region = media::ComputeLetterboxRegion(
       gfx::Rect(gfx::Point(0, 0), window_size), GetNaturalSize());
-  if (letterbox_region.IsEmpty())
+  if (letterbox_region.IsEmpty()) {
     return;
+  }
 
   // To avoid black stripes in the window when integer window dimensions don't
   // correspond to the video aspect ratio exactly (e.g. 854x480 for 16:9
@@ -1377,14 +1388,16 @@ void VideoOverlayWindowViews::UpdateLayerBoundsWithLetterboxing(
   if (aspect_ratio > 1 && window_size.height() == letterbox_region.height()) {
     const int height_from_width =
         base::ClampRound(window_size.width() / aspect_ratio);
-    if (height_from_width == window_size.height())
+    if (height_from_width == window_size.height()) {
       letterbox_region.set_width(window_size.width());
+    }
   } else if (aspect_ratio <= 1 &&
              window_size.width() == letterbox_region.width()) {
     const int width_from_height =
         base::ClampRound(window_size.height() * aspect_ratio);
-    if (width_from_height == window_size.width())
+    if (width_from_height == window_size.width()) {
       letterbox_region.set_height(window_size.height());
+    }
   }
 
   const gfx::Rect video_bounds(
@@ -1399,8 +1412,9 @@ void VideoOverlayWindowViews::UpdateLayerBoundsWithLetterboxing(
   window_background_view_->SetBoundsRect(
       gfx::Rect(gfx::Point(0, 0), GetBounds().size()));
   video_view_->SetBoundsRect(video_bounds);
-  if (video_view_->layer()->has_external_content())
+  if (video_view_->layer()->has_external_content()) {
     video_view_->layer()->SetSurfaceSize(video_bounds.size());
+  }
 
   if (IsOverlayViewShown()) {
     overlay_view_->SetBoundsRect(gfx::Rect(GetBounds().size()));
@@ -1573,26 +1587,34 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
   // #7 Toggle camera
   // #8 Hang up
   std::vector<views::ImageButton*> visible_controls_views;
-  if (show_previous_track_button_)
+  if (show_previous_track_button_) {
     visible_controls_views.push_back(previous_track_controls_view_);
-  if (show_previous_slide_button_)
+  }
+  if (show_previous_slide_button_) {
     visible_controls_views.push_back(previous_slide_controls_view_);
+  }
   if (show_play_pause_button_) {
     visible_controls_views.push_back(play_pause_controls_view_);
   }
-  if (show_next_track_button_)
+  if (show_next_track_button_) {
     visible_controls_views.push_back(next_track_controls_view_);
-  if (show_next_slide_button_)
+  }
+  if (show_next_slide_button_) {
     visible_controls_views.push_back(next_slide_controls_view_);
-  if (show_toggle_microphone_button_)
+  }
+  if (show_toggle_microphone_button_) {
     visible_controls_views.push_back(toggle_microphone_button_);
-  if (show_toggle_camera_button_)
+  }
+  if (show_toggle_camera_button_) {
     visible_controls_views.push_back(toggle_camera_button_);
-  if (show_hang_up_button_)
+  }
+  if (show_hang_up_button_) {
     visible_controls_views.push_back(hang_up_button_);
+  }
 
-  if (visible_controls_views.size() > 4)
+  if (visible_controls_views.size() > 4) {
     visible_controls_views.resize(4);
+  }
 
   int mid_window_x = GetBounds().size().width() / 2;
   int primary_control_y = GetBounds().size().height() -
@@ -1791,16 +1813,18 @@ void VideoOverlayWindowViews::SetPlaybackState(PlaybackState playback_state) {
 }
 
 void VideoOverlayWindowViews::SetPlayPauseButtonVisibility(bool is_visible) {
-  if (show_play_pause_button_ == is_visible)
+  if (show_play_pause_button_ == is_visible) {
     return;
+  }
 
   show_play_pause_button_ = is_visible;
   UpdateControlsBounds();
 }
 
 void VideoOverlayWindowViews::SetSkipAdButtonVisibility(bool is_visible) {
-  if (show_skip_ad_button_ == is_visible)
+  if (show_skip_ad_button_ == is_visible) {
     return;
+  }
 
   show_skip_ad_button_ = is_visible;
   UpdateControlsBounds();
@@ -1808,24 +1832,27 @@ void VideoOverlayWindowViews::SetSkipAdButtonVisibility(bool is_visible) {
 
 void VideoOverlayWindowViews::SetPreviousSlideButtonVisibility(
     bool is_visible) {
-  if (show_previous_slide_button_ == is_visible)
+  if (show_previous_slide_button_ == is_visible) {
     return;
+  }
 
   show_previous_slide_button_ = is_visible;
   UpdateControlsBounds();
 }
 
 void VideoOverlayWindowViews::SetNextSlideButtonVisibility(bool is_visible) {
-  if (show_next_slide_button_ == is_visible)
+  if (show_next_slide_button_ == is_visible) {
     return;
+  }
 
   show_next_slide_button_ = is_visible;
   UpdateControlsBounds();
 }
 
 void VideoOverlayWindowViews::SetNextTrackButtonVisibility(bool is_visible) {
-  if (show_next_track_button_ == is_visible)
+  if (show_next_track_button_ == is_visible) {
     return;
+  }
 
   show_next_track_button_ = is_visible;
   UpdateControlsBounds();
@@ -1833,8 +1860,9 @@ void VideoOverlayWindowViews::SetNextTrackButtonVisibility(bool is_visible) {
 
 void VideoOverlayWindowViews::SetPreviousTrackButtonVisibility(
     bool is_visible) {
-  if (show_previous_track_button_ == is_visible)
+  if (show_previous_track_button_ == is_visible) {
     return;
+  }
 
   show_previous_track_button_ = is_visible;
   UpdateControlsBounds();
@@ -1856,24 +1884,27 @@ void VideoOverlayWindowViews::SetCameraState(bool turned_on) {
 
 void VideoOverlayWindowViews::SetToggleMicrophoneButtonVisibility(
     bool is_visible) {
-  if (show_toggle_microphone_button_ == is_visible)
+  if (show_toggle_microphone_button_ == is_visible) {
     return;
+  }
 
   show_toggle_microphone_button_ = is_visible;
   UpdateControlsBounds();
 }
 
 void VideoOverlayWindowViews::SetToggleCameraButtonVisibility(bool is_visible) {
-  if (show_toggle_camera_button_ == is_visible)
+  if (show_toggle_camera_button_ == is_visible) {
     return;
+  }
 
   show_toggle_camera_button_ = is_visible;
   UpdateControlsBounds();
 }
 
 void VideoOverlayWindowViews::SetHangUpButtonVisibility(bool is_visible) {
-  if (show_hang_up_button_ == is_visible)
+  if (show_hang_up_button_ == is_visible) {
     return;
+  }
 
   show_hang_up_button_ = is_visible;
   UpdateControlsBounds();
@@ -1961,8 +1992,9 @@ void VideoOverlayWindowViews::OnNativeWidgetRemovingFromCompositor() {
 }
 
 void VideoOverlayWindowViews::OnGestureEvent(ui::GestureEvent* event) {
-  if (OnGestureEventHandledOrIgnored(event))
+  if (OnGestureEventHandledOrIgnored(event)) {
     return;
+  }
 
   if (GetBackToTabControlsBounds().Contains(event->location())) {
     controller_->CloseAndFocusInitiator();
@@ -2244,8 +2276,9 @@ ui::Layer* VideoOverlayWindowViews::video_layer_for_testing() const {
 }
 
 const viz::FrameSinkId* VideoOverlayWindowViews::GetCurrentFrameSinkId() const {
-  if (auto* surface = video_view_->layer()->GetSurfaceId())
+  if (auto* surface = video_view_->layer()->GetSurfaceId()) {
     return &surface->frame_sink_id();
+  }
 
   return nullptr;
 }

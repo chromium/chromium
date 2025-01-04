@@ -84,12 +84,12 @@ class DataProtectionNavigationObserver
       Callback callback);
 
   // Checks the `web_contents` url for enabled data protection settings. Note
-  // that `callback` is always invoked but it be called synchronously or
+  // that `callback` is always invoked but may be called synchronously or
   // asynchronously depending on whether the state is cached in
   // RealTimeUrlLookupService or not.
-  static void GetDataProtectionSettings(Profile* profile,
-                                        content::WebContents* web_contents,
-                                        Callback callback);
+  static void ApplyDataProtectionSettings(Profile* profile,
+                                          content::WebContents* web_contents,
+                                          Callback callback);
 
   // public for testing
   DataProtectionNavigationObserver(

@@ -23,7 +23,7 @@ namespace blink {
 class StubWidgetBaseClient : public WidgetBaseClient {
  public:
   void OnCommitRequested() override {}
-  void BeginMainFrame(base::TimeTicks) override {}
+  void BeginMainFrame(const viz::BeginFrameArgs& args) override {}
   void UpdateLifecycle(WebLifecycleUpdate, DocumentUpdateReason) override {}
   std::unique_ptr<cc::LayerTreeFrameSink> AllocateNewLayerTreeFrameSink()
       override {

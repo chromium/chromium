@@ -213,9 +213,6 @@ class HistoryClustersService : public base::SupportsUserData,
   // Serializes and writes the "all keywords" cache to prefs.
   void WriteAllCacheToPrefs();
 
-  // Whether keyword caches should persisted via the pref service.
-  const bool persist_caches_to_prefs_;
-
   // True if Journeys is enabled based on feature flag and locale checks.
   // But critically, this does NOT check the pref or policy value to see if
   // either the user or Enterprise has disabled Journeys.

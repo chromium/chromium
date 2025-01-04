@@ -8,7 +8,6 @@
 #include <ostream>
 
 #include "base/notreached.h"
-#include "build/chromeos_buildflags.h"
 #include "components/sync/base/data_type.h"
 
 namespace syncer {
@@ -222,6 +221,22 @@ DataTypeSet UserSelectableTypeToAllDataTypes(UserSelectableType type) {
 
 DataType UserSelectableTypeToCanonicalDataType(UserSelectableType type) {
   return GetUserSelectableTypeInfo(type).canonical_data_type;
+}
+
+std::optional<UserSelectableType> GetUserSelectableTypeFromDataType(
+    DataType data_type) {
+  std::optional<UserSelectableType> selectable_type;
+
+  for (const auto type : UserSelectableTypeSet::All()) {
+    if (GetUserSelectableTypeInfo(type).data_type_group.Has(data_type)) {
+      CHECK(!selectable_type.has_value())
+          << "Data type " << DataTypeToDebugString(data_type)
+          << " corresponds to multiple user selectable types.";
+      selectable_type = type;
+    }
+  }
+
+  return selectable_type;
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

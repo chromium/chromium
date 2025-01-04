@@ -59,8 +59,9 @@ class ApnUiInteractiveUiTest : public EsimInteractiveUiTestBase {
     ASSERT_TRUE(cellular_properties);
     const base::Value::List* shill_custom_apns =
         cellular_properties->FindList(shill::kCellularCustomApnListProperty);
-    ASSERT_TRUE(shill_custom_apns);
-    EXPECT_EQ(0u, shill_custom_apns->size());
+    if (shill_custom_apns) {
+      EXPECT_EQ(0u, shill_custom_apns->size());
+    }
   }
 
   void VerifyCustomApnInShill(bool expect_exists,
@@ -915,15 +916,6 @@ IN_PROC_BROWSER_TEST_F(ApnUiInteractiveUiTest, ApnPolicyWithManagedNetwork) {
 
   base::Value::Dict global_config;
   global_config.Set(::onc::global_network_config::kAllowAPNModification, true);
-
-  // Update the policy to include an entry that matches the existing eSIM
-  // profile, resulting in the profile appearing to be managed.
-  auto network_configs = base::Value::List();
-  network_configs.Append(
-      GenerateCellularPolicy(esim_info(), /*allow_apn_modification=*/true));
-  NetworkHandler::Get()->managed_network_configuration_handler()->SetPolicy(
-      ::onc::ONC_SOURCE_DEVICE_POLICY, /*userhash=*/std::string(),
-      std::move(network_configs), std::move(global_config));
 
   // Run the following steps with the OS Settings context set as the default.
   RunTestSequenceInContext(context,

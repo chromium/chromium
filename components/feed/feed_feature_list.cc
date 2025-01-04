@@ -24,20 +24,6 @@ BASE_FEATURE(kInterestFeedV2,
              "InterestFeedV2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kInterestFeedV2Hearts,
-             "InterestFeedV2Hearts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kInterestFeedV2Scrolling,
-             "InterestFeedV2Scrolling",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-#if BUILDFLAG(IS_IOS)
-BASE_FEATURE(kInterestFeedNoticeCardAutoDismiss,
-             "InterestFeedNoticeCardAutoDismiss",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 BASE_FEATURE(kDiscoFeedEndpoint,
              "DiscoFeedEndpoint",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -74,10 +60,6 @@ BASE_FEATURE(kPersonalizeFeedUnsignedUsers,
 signin::ConsentLevel GetConsentLevelNeededForPersonalizedFeed() {
   return signin::ConsentLevel::kSignin;
 }
-
-BASE_FEATURE(kInfoCardAcknowledgementTracking,
-             "InfoCardAcknowledgementTracking",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFeedNoViewCache,
              "FeedNoViewCache",

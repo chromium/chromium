@@ -158,8 +158,8 @@ SmartLockNotificationController::NotificationDelegate::NotificationDelegate(
     : notification_id_(notification_id),
       notification_controller_(notification_controller) {}
 
-SmartLockNotificationController::NotificationDelegate::~NotificationDelegate() {
-}
+SmartLockNotificationController::NotificationDelegate::~NotificationDelegate() =
+    default;
 
 void SmartLockNotificationController::NotificationDelegate::Click(
     const std::optional<int>& button_index,

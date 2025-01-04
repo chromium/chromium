@@ -177,6 +177,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   mojom::RedirectMode redirect_mode = mojom::RedirectMode::kFollow;
   // Exposed as Request.integrity in Service Workers
   std::string fetch_integrity;
+  // Used to populate `Accept-Signatures`
+  // https://www.rfc-editor.org/rfc/rfc9421.html#name-the-accept-signature-field
+  std::vector<std::string> expected_signatures;
   mojom::RequestDestination destination = mojom::RequestDestination::kEmpty;
   mojom::RequestDestination original_destination =
       mojom::RequestDestination::kEmpty;
@@ -227,6 +230,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
       mojom::AttributionReportingEligibility::kUnset;
   bool shared_dictionary_writer_enabled = false;
   std::optional<base::UnguessableToken> attribution_reporting_src_token;
+  std::optional<base::UnguessableToken> keepalive_token;
   bool is_ad_tagged = false;
   std::optional<base::UnguessableToken> prefetch_token;
   net::SocketTag socket_tag;

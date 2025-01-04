@@ -209,7 +209,7 @@ void ScreenAIService::LoadLibrary(const base::FilePath& library_path) {
   VLOG(2) << "Screen AI library version: " << version_major << "."
           << version_minor;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   library_->SetLogger();
 #endif
 

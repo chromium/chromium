@@ -322,7 +322,8 @@ void RealTimeUrlLookupServiceBase::MayBeCacheRealTimeUrlVerdict(
 void RealTimeUrlLookupServiceBase::SendSampledRequest(
     const GURL& url,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-    SessionID tab_id) {
+    SessionID tab_id,
+    std::optional<internal::ReferringAppInfo> referring_app_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(url.is_valid());
 
@@ -330,14 +331,16 @@ void RealTimeUrlLookupServiceBase::SendSampledRequest(
                    /* access_token_string */ std::string(),
                    /* response_callback */ base::NullCallback(),
                    std::move(callback_task_runner),
-                   /* is_sampled_report */ true, tab_id);
+                   /* is_sampled_report */ true, tab_id,
+                   std::move(referring_app_info));
 }
 
 void RealTimeUrlLookupServiceBase::StartLookup(
     const GURL& url,
     RTLookupResponseCallback response_callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-    SessionID tab_id) {
+    SessionID tab_id,
+    std::optional<internal::ReferringAppInfo> referring_app_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(url.is_valid());
 
@@ -364,13 +367,14 @@ void RealTimeUrlLookupServiceBase::StartLookup(
 
   if (CanPerformFullURLLookupWithToken()) {
     GetAccessToken(url, std::move(response_callback),
-                   std::move(callback_task_runner), tab_id);
+                   std::move(callback_task_runner), tab_id,
+                   std::move(referring_app_info));
   } else {
-    MaybeSendRequest(url,
-                     /* access_token_string */ std::string(),
-                     std::move(response_callback),
-                     std::move(callback_task_runner),
-                     /* is_sampled_report */ false, tab_id);
+    MaybeSendRequest(
+        url,
+        /* access_token_string */ std::string(), std::move(response_callback),
+        std::move(callback_task_runner),
+        /* is_sampled_report */ false, tab_id, std::move(referring_app_info));
   }
 }
 
@@ -380,7 +384,8 @@ void RealTimeUrlLookupServiceBase::MaybeSendRequest(
     RTLookupResponseCallback response_callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     bool is_sampled_report,
-    SessionID tab_id) {
+    SessionID tab_id,
+    std::optional<internal::ReferringAppInfo> referring_app_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   GURL sanitized_url = SanitizeURL(url);
@@ -399,8 +404,8 @@ void RealTimeUrlLookupServiceBase::MaybeSendRequest(
     return;
   }
 
-  std::unique_ptr<RTLookupRequest> request =
-      FillRequestProto(sanitized_url, is_sampled_report, tab_id);
+  std::unique_ptr<RTLookupRequest> request = FillRequestProto(
+      sanitized_url, is_sampled_report, tab_id, std::move(referring_app_info));
   RecordRequestPopulationWithAndWithoutSuffix(
       "SafeBrowsing.RT.Request.UserPopulation", GetMetricSuffix(),
       request->population().user_population());
@@ -589,7 +594,8 @@ RealTimeUrlLookupServiceBase::GetResourceRequest() {
 std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
     const GURL& url,
     bool is_sampled_report,
-    SessionID tab_id) {
+    SessionID tab_id,
+    std::optional<internal::ReferringAppInfo> referring_app_info) {
   auto request = std::make_unique<RTLookupRequest>();
   request->set_url(url.spec());
   request->set_lookup_type(RTLookupRequest::NAVIGATION);
@@ -598,6 +604,15 @@ std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
   request->set_report_type(is_sampled_report ? RTLookupRequest::SAMPLED_REPORT
                                              : RTLookupRequest::FULL_REPORT);
   request->set_frame_type(RTLookupRequest::MAIN_FRAME);
+  if (referring_app_info) {
+    safe_browsing::ReferringAppInfo referring_app_info_proto;
+    referring_app_info_proto.set_referring_app_name(
+        referring_app_info.value().referring_app_name);
+    referring_app_info_proto.set_referring_app_source(
+        referring_app_info.value().referring_app_source);
+    *request->mutable_referring_app_info() =
+        std::move(referring_app_info_proto);
+  }
   std::optional<std::string> dm_token_string = GetDMTokenString();
   if (dm_token_string.has_value()) {
     request->set_dm_token(dm_token_string.value());

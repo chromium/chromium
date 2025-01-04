@@ -18,12 +18,6 @@ class MockOptimizationGuideModelExecutor
   MockOptimizationGuideModelExecutor();
   ~MockOptimizationGuideModelExecutor() override;
 
-  MOCK_METHOD(bool,
-              CanCreateOnDeviceSession,
-              (ModelBasedCapabilityKey feature,
-               OnDeviceModelEligibilityReason* debug_reason),
-              (override));
-
   MOCK_METHOD(std::unique_ptr<Session>,
               StartSession,
               (ModelBasedCapabilityKey feature,

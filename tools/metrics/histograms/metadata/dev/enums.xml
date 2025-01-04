@@ -1105,6 +1105,16 @@ Called by update_protocol_commands_enum.py.-->
   <int value="83" label="CookieIssue::WarnThirdPartyPhaseout::SetCookie"/>
   <int value="84" label="CookieIssue::ExcludeThirdPartyPhaseout::ReadCookie"/>
   <int value="85" label="CookieIssue::ExcludeThirdPartyPhaseout::SetCookie"/>
+  <int value="86"
+      label="SelectElementAccessibilityIssue::DisallowedSelectChild"/>
+  <int value="87"
+      label="SelectElementAccessibilityIssue::DisallowedOptGroupChild"/>
+  <int value="88"
+      label="SelectElementAccessibilityIssue::NonPhrasingContentOptionChild"/>
+  <int value="89"
+      label="SelectElementAccessibilityIssue::InteractiveContentOptionChild"/>
+  <int value="90"
+      label="SelectElementAccessibilityIssue::InteractiveContentLegendChild"/>
 </enum>
 
 <enum name="DevToolsIssuesPanelIssueExpanded">

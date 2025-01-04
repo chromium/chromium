@@ -272,8 +272,12 @@ void WideToRaw(const std::wstring &Src,std::vector<byte> &Dest)
     Dest.push_back((byte)C);
     Dest.push_back((byte)(C>>8));
   }
-  Dest.push_back(0); // 2 bytes of trailing UTF-16 zero.
-  Dest.push_back(0);
+  // In STL version of this function we do not add the trailing zero.
+  // Otherwise we would need to remove it when restoring std::wstring
+  // from raw data.
+
+  // Dest.push_back(0); // 2 bytes of trailing UTF-16 zero.
+  // Dest.push_back(0);
 }
 
 

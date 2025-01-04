@@ -97,6 +97,7 @@ public abstract class ClearBrowsingDataFragment extends ChromeBaseSettingsFragme
         private final ClearBrowsingDataCheckBoxPreference mCheckbox;
         private BrowsingDataCounterBridge mCounter;
         private boolean mShouldAnnounceCounterResult;
+        private @TimePeriod int mSelectedTimePeriod;
 
         public Item(
                 Context context,
@@ -104,11 +105,13 @@ public abstract class ClearBrowsingDataFragment extends ChromeBaseSettingsFragme
                 @DialogOption int option,
                 ClearBrowsingDataCheckBoxPreference checkbox,
                 boolean selected,
-                boolean enabled) {
+                boolean enabled,
+                @TimePeriod int selectedTimePeriod) {
             super();
             mParent = parent;
             mOption = option;
             mCheckbox = checkbox;
+            mSelectedTimePeriod = selectedTimePeriod;
             if (option == DialogOption.CLEAR_TABS && !enabled) {
                 mCheckbox.setSummary(R.string.clear_tabs_disabled_summary);
             } else {
@@ -116,6 +119,7 @@ public abstract class ClearBrowsingDataFragment extends ChromeBaseSettingsFragme
                         new BrowsingDataCounterBridge(
                                 parent.getProfile(),
                                 this,
+                                selectedTimePeriod,
                                 ClearBrowsingDataFragment.getDataType(mOption),
                                 mParent.getClearBrowsingDataTabType());
             }
@@ -149,17 +153,16 @@ public abstract class ClearBrowsingDataFragment extends ChromeBaseSettingsFragme
             return mCheckbox.isChecked();
         }
 
+        public boolean isEnabled() {
+            return mCheckbox.isEnabled();
+        }
+
         @Override
         public boolean onPreferenceClick(Preference preference) {
             assert mCheckbox == preference;
 
             mParent.updateButtonState();
             mShouldAnnounceCounterResult = true;
-            BrowsingDataBridge.getForProfile(mParent.getProfile())
-                    .setBrowsingDataDeletionPreference(
-                            ClearBrowsingDataFragment.getDataType(mOption),
-                            mParent.getClearBrowsingDataTabType(),
-                            mCheckbox.isChecked());
             return true;
         }
 
@@ -178,6 +181,16 @@ public abstract class ClearBrowsingDataFragment extends ChromeBaseSettingsFragme
          */
         public void setShouldAnnounceCounterResult(boolean value) {
             mShouldAnnounceCounterResult = value;
+        }
+
+        public void setSelectedTimePeriod(@TimePeriod int selectedTimePeriod) {
+            if (mSelectedTimePeriod == selectedTimePeriod) {
+                return;
+            }
+            mSelectedTimePeriod = selectedTimePeriod;
+            if (mCounter != null) {
+                mCounter.setSelectedTimePeriod(mSelectedTimePeriod);
+            }
         }
     }
 
@@ -424,6 +437,9 @@ public abstract class ClearBrowsingDataFragment extends ChromeBaseSettingsFragme
             BrowsingDataBridge.getForProfile(getProfile())
                     .clearBrowsingData(this, dataTypesArray, mLastSelectedTimePeriod);
         }
+
+        // Update prefs with the values displayed in the UI.
+        updateProfilePrefs();
     }
 
     private void dismissProgressDialog() {
@@ -431,6 +447,26 @@ public abstract class ClearBrowsingDataFragment extends ChromeBaseSettingsFragme
             mProgressDialog.dismiss();
         }
         mProgressDialog = null;
+    }
+
+    /** Updates the preferences with the option values of the latest deletion. */
+    private void updateProfilePrefs() {
+        for (Item item : mItems) {
+            // Don't save the selection of items that are disabled, e.g. by policy, into their
+            // preference.
+            if (!item.isEnabled()) {
+                continue;
+            }
+            BrowsingDataBridge.getForProfile(getProfile())
+                    .setBrowsingDataDeletionPreference(
+                            ClearBrowsingDataFragment.getDataType(item.getOption()),
+                            getClearBrowsingDataTabType(),
+                            item.isSelected());
+        }
+
+        BrowsingDataBridge.getForProfile(getProfile())
+                .setBrowsingDataDeletionTimePeriod(
+                        getClearBrowsingDataTabType(), mLastSelectedTimePeriod);
     }
 
     /** Returns the list of supported {@link DialogOption}. */
@@ -531,16 +567,14 @@ public abstract class ClearBrowsingDataFragment extends ChromeBaseSettingsFragme
     @Override
     public boolean onPreferenceChange(Preference preference, Object value) {
         if (preference.getKey().equals(PREF_TIME_RANGE)) {
+            mLastSelectedTimePeriod = ((TimePeriodSpinnerOption) value).getTimePeriod();
+
             // Inform the items that a recalculation is going to happen as a result of the time
             // period change.
             for (Item item : mItems) {
                 item.setShouldAnnounceCounterResult(false);
+                item.setSelectedTimePeriod(mLastSelectedTimePeriod);
             }
-
-            BrowsingDataBridge.getForProfile(getProfile())
-                    .setBrowsingDataDeletionTimePeriod(
-                            getClearBrowsingDataTabType(),
-                            ((TimePeriodSpinnerOption) value).getTimePeriod());
             return true;
         }
         return false;
@@ -595,6 +629,34 @@ public abstract class ClearBrowsingDataFragment extends ChromeBaseSettingsFragme
         mItems = new Item[options.size()];
 
         BrowsingDataBridge browsingDataBridge = BrowsingDataBridge.getForProfile(getProfile());
+
+        // Not all checkboxes defined in the layout are necessarily handled by this class
+        // or a particular subclass. Hide those that are not.
+        Set<Integer> unboundOptions = getAllOptions();
+        unboundOptions.removeAll(options);
+        for (@DialogOption Integer option : unboundOptions) {
+            getPreferenceScreen().removePreference(findPreference(getPreferenceKey(option)));
+        }
+
+        // The time range selection spinner.
+        SpinnerPreference spinner = (SpinnerPreference) findPreference(PREF_TIME_RANGE);
+        TimePeriodSpinnerOption[] spinnerOptions = getTimePeriodSpinnerOptions(getActivity());
+        @TimePeriod
+        int selectedTimePeriod =
+                browsingDataBridge.getBrowsingDataDeletionTimePeriod(getClearBrowsingDataTabType());
+        int spinnerOptionIndex = getSpinnerIndex(selectedTimePeriod, spinnerOptions);
+        // If there is no previously-selected value, use last hour as the default.
+        if (spinnerOptionIndex == -1) {
+            spinnerOptionIndex = getSpinnerIndex(TimePeriod.LAST_HOUR, spinnerOptions);
+        }
+        assert spinnerOptionIndex != -1;
+        spinner.setOptions(spinnerOptions, spinnerOptionIndex);
+        spinner.setOnPreferenceChangeListener(this);
+
+        Object spinnerSelection =
+                ((SpinnerPreference) findPreference(PREF_TIME_RANGE)).getSelectedOption();
+        mLastSelectedTimePeriod = ((TimePeriodSpinnerOption) spinnerSelection).getTimePeriod();
+
         for (int i = 0; i < options.size(); i++) {
             @DialogOption int option = options.get(i);
             boolean enabled = true;
@@ -629,31 +691,9 @@ public abstract class ClearBrowsingDataFragment extends ChromeBaseSettingsFragme
                             (ClearBrowsingDataCheckBoxPreference)
                                     findPreference(getPreferenceKey(option)),
                             enabled && isOptionSelectedByDefault(option),
-                            enabled);
+                            enabled,
+                            mLastSelectedTimePeriod);
         }
-
-        // Not all checkboxes defined in the layout are necessarily handled by this class
-        // or a particular subclass. Hide those that are not.
-        Set<Integer> unboundOptions = getAllOptions();
-        unboundOptions.removeAll(options);
-        for (@DialogOption Integer option : unboundOptions) {
-            getPreferenceScreen().removePreference(findPreference(getPreferenceKey(option)));
-        }
-
-        // The time range selection spinner.
-        SpinnerPreference spinner = (SpinnerPreference) findPreference(PREF_TIME_RANGE);
-        TimePeriodSpinnerOption[] spinnerOptions = getTimePeriodSpinnerOptions(getActivity());
-        @TimePeriod
-        int selectedTimePeriod =
-                browsingDataBridge.getBrowsingDataDeletionTimePeriod(getClearBrowsingDataTabType());
-        int spinnerOptionIndex = getSpinnerIndex(selectedTimePeriod, spinnerOptions);
-        // If there is no previously-selected value, use last hour as the default.
-        if (spinnerOptionIndex == -1) {
-            spinnerOptionIndex = getSpinnerIndex(TimePeriod.LAST_HOUR, spinnerOptions);
-        }
-        assert spinnerOptionIndex != -1;
-        spinner.setOptions(spinnerOptions, spinnerOptionIndex);
-        spinner.setOnPreferenceChangeListener(this);
 
         // Text for sign-out option.
         updateSignOutOfChromeText();

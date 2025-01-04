@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">የሚወርደው ላፍታ ቆሟል</translation>
 <translation id="1396327438254055134">ጣቢያ V8 አትቢን እንዲጠቀም ይፍቀዱ።</translation>
 <translation id="1415402041810619267">ዩአርኤል እንዲያጥር ተደርጓል</translation>
+<translation id="1415855080660575082">በመሣሪያዎ የመተግበሪያ ዝርዝር እና የፍለጋ ውጤቶች ውስጥ እንዲመለከቷቸው Chrome የእርስዎን የቅርብ ጊዜ ትሮች ከመሣሪያዎ ጋር እንዲያጋራ ይፍቀዱ። በChrome ቅንብሮች ውስጥ ይህን ማብራት ወይም ማጥፋት ይችላሉ።</translation>
 <translation id="1448064542941920355">ማጉላትን ቀንስ</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> ጣቢያ}one{<ph name="SITE_COUNT" /> ጣቢያዎች}other{<ph name="SITE_COUNT" /> ጣቢያዎች}}</translation>
 <translation id="1500473259453106018">በትሮች ካርድ ላይ የዋጋ ቅነሳዎችን ደብቅ</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">ይህ ጣቢያ የሦስተኛ ወገን ኩኪዎች እንዲጠቀም በጊዜያዊነት ፈቅደዋል፣ ይህም ያነሰ የአሰሳ ጥበቃ ማለት ነው ነገር ግን የጣቢያ ባህሪያት እንደሚጠበቀው የመሥራት ዕድላቸው ከፍተኛ ነው። <ph name="BEGIN_LINK" />ግብረመልስ ይላኩ<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">በአንዳንድ ጣቢያዎች ላይ ያሉ ባህሪያት ማንነትን በማያሳውቅ ሁነታ ውስጥ ላይሰሩ ይችላሉ</translation>
 <translation id="2442870161001914531">ሁልጊዜ የዴስክቶፕ ጣቢያን ጠይቅ</translation>
+<translation id="2445311670906052406">Chrome አሁን የቅርብ ጊዜ ትሮችዎን ከመሣሪያዎ ጋር ያጋራል። በመሣሪያዎ መተግበሪያ ዝርዝር እና የፍለጋ ውጤቶች ውስጥ ይመለከቷቸዋል። ይህን በማንኛውም ጊዜ በChrome ቅንብሮች ውስጥ ማጥፋት ይችላሉ።</translation>
 <translation id="2469312991797799607">ይህ እርምጃ ለ<ph name="ORIGIN" /> እና በሥሩ ለሚገኙ ሁሉም ጣቢያዎች ሁሉንም ውሂብ እና ኩኪዎች ይሰርዛል</translation>
 <translation id="2482878487686419369">ማስታወቂያዎች</translation>
 <translation id="2485422356828889247">አራግፍ</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">ጣቢያዎች ከማንነት አገልግሎቶች የመግቢያ ጥያቄዎችን ማሳየት ይችላሉ።</translation>
 <translation id="2787357173144933081">በፍጥነት ማስጀመሪያ ኦምኒቦክስ</translation>
 <translation id="2790501146643349491">ሲበራ፣ በቅርቡ የተዘጉ ጣቢያዎች ውሂብ መላክ እና መቀበልን ማጠናቀቅ ይችላሉ። ሲጠፋ፣ በቅርቡ የተዘጉ ጣቢያዎች ውሂብ መላክን ወይም መቀበልን ማጠናቀቅ አይችሉም።</translation>
+<translation id="2814830417943086299">Chrome አሁን የቅርብ ጊዜ ትሮችዎን በመሣሪያዎ መተግበሪያ ዝርዝር እና የፍለጋ ውጤቶች ውስጥ ያሳያል። ይህን በማንኛውም ጊዜ በChrome ቅንብሮች ውስጥ ማጥፋት ይችላሉ።</translation>
 <translation id="2822354292072154809">እርግጠኛ ነዎት ሁሉንም የ<ph name="CHOSEN_OBJECT_NAME" /> ጣቢያ ፈቃዶችን ዳግም ማስጀመር ይፈልጋሉ?</translation>
 <translation id="2850913818900871965">የሞባይል ዕይታ ይጠይቁ</translation>
 <translation id="2870560284913253234">ጣቢያ</translation>
@@ -335,7 +338,6 @@
 <translation id="5968921426641056619">የድር አድራሻን ያስገቡ</translation>
 <translation id="5975083100439434680">አሳንስ</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" />፣ <ph name="WARNING_MESSAGE" /></translation>
-<translation id="6015145568571136419">አሁን በፍጥነት የተጠቆሙ ትሮችዎን ከእርስዎ መሣሪያ የመተግበሪያ ዝርዝር እና ከመሣሪያ የፍለጋ ውጤቶች ላይ መድረስ ይችላሉ። ይህን በማንኛውም ጊዜ በChrome ቅንብሮች ውስጥ ያጥፉ።</translation>
 <translation id="6015775454662021376">ይህ ጣቢያ የሚኖረው የመሣሪያዎን መዳረሻ ይቆጣጠሩ</translation>
 <translation id="6040143037577758943">ዝጋ</translation>
 <translation id="6042308850641462728">ተጨማሪ</translation>
@@ -558,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ እና <ph name="NUM_MORE" /> ተጨማሪ}one{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ እና <ph name="NUM_MORE" /> ተጨማሪ}other{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ እና <ph name="NUM_MORE" /> ተጨማሪ}}</translation>
 <translation id="913657688200966289">ለ <ph name="APP_NAME" /> በ <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ፈቃዶችን ያብሩ።</translation>
 <translation id="9138217887606523162">የአሁን ማጉላት <ph name="ZOOM_LEVEL" /> %% ነው</translation>
+<translation id="9156722768168878035">Chrome የቅርብ ጊዜ ትሮችን በመሣሪያዎ መተግበሪያ ዝርዝር እና የፍለጋ ውጤቶች ውስጥ እንዲያሳይ ይፍቀዱለት። ይህን በማንኛውም ጊዜ በChrome ቅንብሮች ውስጥ ማጥፋት ይችላሉ።</translation>
 <translation id="9162462602695099906">ይህ ገፅ አደገኛ ነው</translation>
 <translation id="947156494302904893">የሚጎበኟቸው ጣቢያዎች እርስዎ ቦት ሳይሆኑ እውነተኛ ሰው እንደሆኑ ማረጋገጥ ይችላሉ</translation>
 <translation id="959682366969460160">ይደራጁ</translation>

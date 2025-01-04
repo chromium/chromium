@@ -17,10 +17,10 @@
 #include "chrome/browser/ui/autofill/autofill_popup_hide_helper.h"
 #include "chrome/browser/ui/autofill/next_idle_barrier.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/popup_interaction.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/autofill/core/common/aliases.h"
 #include "content/public/browser/render_widget_host.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -65,9 +65,8 @@ class ExpandablePopupParentControllerImpl {
 // This class is a controller for an AutofillPopupView. It implements
 // AutofillPopupController to allow calls from AutofillPopupView. The
 // other, public functions are available to its instantiator.
-class AutofillPopupControllerImpl
-    : public AutofillPopupController,
-      public ExpandablePopupParentControllerImpl {
+class AutofillPopupControllerImpl : public AutofillPopupController,
+                                    public ExpandablePopupParentControllerImpl {
  public:
   AutofillPopupControllerImpl(const AutofillPopupControllerImpl&) = delete;
   AutofillPopupControllerImpl& operator=(const AutofillPopupControllerImpl&) =

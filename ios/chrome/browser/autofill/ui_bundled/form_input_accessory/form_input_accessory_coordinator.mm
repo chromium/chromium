@@ -18,8 +18,8 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/payments/payments_service_url.h"
-#import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
@@ -684,7 +684,7 @@ bool CanReloadInputViews() {
   tabHelper->ShowPlusAddressesBottomSheet(std::move(callback));
 }
 
-- (void)openAllPlusAddressesPicker {
+- (void)openAllPlusAddressesPicker:(BOOL)isAddressManualFallback {
   [self reset];
 
   [self stopManualFillAllPlusAddressCoordinator];
@@ -694,6 +694,7 @@ bool CanReloadInputViews() {
                          browser:self.browser
                 injectionHandler:self.injectionHandler];
   _allPlusAddressCoordinator.manualFillAllPlusAddressCoordinatorDelegate = self;
+  _allPlusAddressCoordinator.isAddressManualFallback = isAddressManualFallback;
   [_allPlusAddressCoordinator start];
 }
 

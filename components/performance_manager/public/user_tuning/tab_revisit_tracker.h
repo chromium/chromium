@@ -21,7 +21,7 @@ namespace performance_manager {
 // about these states.
 class TabRevisitTracker : public TabPageObserver,
                           public PageLiveStateObserverDefaultImpl,
-                          public PageNode::ObserverDefaultImpl,
+                          public PageNodeObserver,
                           public GraphOwnedAndRegistered<TabRevisitTracker> {
  public:
   static constexpr char kTimeToRevisitHistogramName[] =
@@ -86,7 +86,7 @@ class TabRevisitTracker : public TabPageObserver,
   // PageLiveStateObserverDefaultImpl:
   void OnIsActiveTabChanged(const PageNode* page_node) override;
 
-  // PageNode::ObserverDefaultImpl:
+  // PageNodeObserver:
   void OnUkmSourceIdChanged(const PageNode* page_node) override;
 
   std::map<const TabPageDecorator::TabHandle*, StateBundle> tab_states_;

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {getSingleTab} from '/_test_resources/test_util/tabs_util.js';
+
 const CSS_GREEN = 'body { background-color: green !important }';
 const GREEN = 'rgb(0, 128, 0)';
 const CSS_RED = 'body { background-color: red !important }';
@@ -15,12 +17,6 @@ const YELLOW = 'rgb(255, 255, 0)';
 function getBodyColor() {
   const hostname = (new URL(location.href)).hostname;
   return hostname + ' ' + getComputedStyle(document.body).backgroundColor;
-}
-
-async function getSingleTab(query) {
-  const tabs = await chrome.tabs.query(query);
-  chrome.test.assertEq(1, tabs.length);
-  return tabs[0];
 }
 
 async function getBodyColorsForTab(tabId) {

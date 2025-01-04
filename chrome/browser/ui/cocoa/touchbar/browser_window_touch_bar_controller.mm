@@ -52,8 +52,9 @@
 
 - (NSTouchBar*)makeTouchBar {
   NSTouchBar* touchBar = [_webTextfieldTouchBar makeTouchBar];
-  if (touchBar)
+  if (touchBar) {
     return touchBar;
+  }
 
   return [_defaultTouchBar makeTouchBar];
 }

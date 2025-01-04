@@ -59,8 +59,7 @@ public class PlayerCoordinator implements Player {
                         .build();
         // This Context can be used to inflate views from the split.
         Context contextForInflation =
-                BundleUtils.createContextForInflation(
-                        delegate.getActivity(), "read_aloud_playback");
+                BundleUtils.createContextForInflation(delegate.getActivity(), "google3");
         mMiniPlayer =
                 new MiniPlayerCoordinator(
                         delegate.getActivity(),

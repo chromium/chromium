@@ -139,8 +139,9 @@ base::FilePath HoldingSpaceBrowserTestBase::CreateFile(
 }
 
 void HoldingSpaceBrowserTestBase::RequestAndAwaitLockScreen() {
-  if (session_manager::SessionManager::Get()->IsScreenLocked())
+  if (session_manager::SessionManager::Get()->IsScreenLocked()) {
     return;
+  }
 
   SessionManagerClient::Get()->RequestLockScreen();
   SessionStateWaiter(session_manager::SessionState::LOCKED).Wait();

@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/webui/ash/in_session_password_change/password_change_dialogs.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/password_change_handler.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/urgent_password_expiry_notification_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/gaia_auth_host_resources_map.h"
@@ -38,6 +37,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/webui/webui_util.h"
 
 namespace ash {
 

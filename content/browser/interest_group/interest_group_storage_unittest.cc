@@ -136,6 +136,11 @@ class InterestGroupStorageTest : public testing::Test {
   // in that version will be added. By default, all fields for the current
   // version are added.
   //
+  // For best coverage, changes within the fields that don't require any
+  // active database migration (e.g. adding an optional field to a proto) should
+  // still get their own version number with `version_changed_ig_fields`
+  // set to true.
+  //
   // If non-null, *version_changed_ig_fields will be set indicating if
   // `version_number` changed any new interest group fields when compared to
   // `version_number` - 1, if it exists. (Some versions merely changed the
@@ -196,6 +201,10 @@ class InterestGroupStorageTest : public testing::Test {
     // instance.
 
     switch (version_number) {
+      case 31:
+        result.ads.value()[0].creative_scanning_metadata = "scan 1";
+        result.ad_components.value()[1].creative_scanning_metadata = "scan 2";
+        ABSL_FALLTHROUGH_INTENDED;
       case 30:
         // Compressed AdsProto, but introduced no new fields.
         ABSL_FALLTHROUGH_INTENDED;
@@ -401,7 +410,7 @@ TEST_F(InterestGroupStorageTest, DatabaseInitialized_CreateDatabase) {
   EXPECT_TRUE(base::PathExists(db_path()));
 
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     EXPECT_TRUE(raw_db.Open(db_path()));
 
     // [interest_groups], [join_history], [bid_history], [win_history],
@@ -416,7 +425,7 @@ TEST_F(InterestGroupStorageTest, DatabaseRazesOldVersion) {
 
   // Create an empty database with old schema version (version=1).
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     EXPECT_TRUE(raw_db.Open(db_path()));
 
     sql::MetaTable meta_table;
@@ -438,7 +447,7 @@ TEST_F(InterestGroupStorageTest, DatabaseRazesOldVersion) {
   }
 
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     EXPECT_TRUE(raw_db.Open(db_path()));
 
     // [interest_groups], [join_history], [bid_history], [win_history],
@@ -453,7 +462,7 @@ TEST_F(InterestGroupStorageTest, DatabaseRazesNewVersion) {
 
   // Create an empty database with a newer schema version (version=1000000).
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     EXPECT_TRUE(raw_db.Open(db_path()));
 
     sql::MetaTable meta_table;
@@ -475,7 +484,7 @@ TEST_F(InterestGroupStorageTest, DatabaseRazesNewVersion) {
   }
 
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     EXPECT_TRUE(raw_db.Open(db_path()));
 
     // [interest_groups], [join_history], [bid_history], [win_history],
@@ -901,6 +910,95 @@ TEST_F(InterestGroupStorageTest,
     EXPECT_EQ(interest_groups[0].next_update_after,
               base::Time::Now() +
                   InterestGroupStorage::kUpdateSucceededBackoffPeriod);
+  }
+}
+
+TEST_F(InterestGroupStorageTest, ValidateInterestGroupOnUpdate) {
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  url::Origin test_origin =
+      url::Origin::Create(GURL("https://owner.example.com"));
+  GURL ad1_url = GURL("https://owner.example.com/ad1");
+
+  InterestGroup g = NewInterestGroup(test_origin, "name");
+  blink::InterestGroupKey group_key(g.owner, g.name);
+
+  // To cause IsValid and IsValidForJoinAndUpdate to return false, we use the
+  // hard limit and soft limit, respectively, on the number of
+  // selectableBuyerAndSellerReportingIds. We have two here, so we'll use a
+  // limit of one to cause this ad to make its enclosing interest group invalid.
+  InterestGroup::Ad ad1(
+      ad1_url, "metadata1",
+      /*size_group=*/std::nullopt,
+      /*buyer_reporting_id=*/"brid1",
+      /*buyer_and_seller_reporting_id=*/"shrid1",
+      /*selectable_buyer_and_seller_reporting_ids=*/
+      std::vector<std::string>{"selectable_id1", "selectable_id2"});
+
+  InterestGroup::Ad ad2(ad1_url, "metadata1",
+                        /*size_group=*/std::nullopt,
+                        /*buyer_reporting_id=*/"brid1",
+                        /*buyer_and_seller_reporting_id=*/"shrid1",
+                        /*selectable_buyer_and_seller_reporting_ids=*/
+                        std::vector<std::string>{"selectable_id1"});
+
+  g.ads = {ad1};
+
+  // Join a new interest group.
+  {
+    EXPECT_TRUE(
+        storage->JoinInterestGroup(g, test_origin.GetURL()).has_value());
+  }
+
+  InterestGroupUpdate update;
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        blink::features::kFledgeLimitSelectableBuyerAndSellerReportingIds,
+        {{"SelectableBuyerAndSellerReportingIdsSoftLimit", "1"},
+         {"SelectableBuyerAndSellerReportingIdsHardLimit", "1"}});
+
+    // The interest group in the database is invalid because it has an ad
+    // whose number of selectableBuyerAndSellerReportingIds exceeds the hard
+    // limit. This update makes it valid.
+    update.ads = {ad2};
+    EXPECT_TRUE(storage->UpdateInterestGroup(group_key, update).has_value());
+
+    // Trying to put back the ad with too many
+    // selectableBuyerAndSellerReportingIds fails.
+    update.ads = {ad1};
+    EXPECT_FALSE(storage->UpdateInterestGroup(group_key, update).has_value());
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        blink::features::kFledgeLimitSelectableBuyerAndSellerReportingIds,
+        {{"SelectableBuyerAndSellerReportingIdsSoftLimit", "2"},
+         {"SelectableBuyerAndSellerReportingIdsHardLimit", "2"}});
+    // With the limit relaxed, this update passes this time.
+    update.ads = {ad1};
+    EXPECT_TRUE(storage->UpdateInterestGroup(group_key, update).has_value());
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        blink::features::kFledgeLimitSelectableBuyerAndSellerReportingIds,
+        {{"SelectableBuyerAndSellerReportingIdsSoftLimit", "1"},
+         {"SelectableBuyerAndSellerReportingIdsHardLimit", "2"}});
+
+    // The interest group in the database is valid because it's still within
+    // the hard limit. This update works because it's still within the soft
+    // limit.
+    update.ads = {ad2};
+    EXPECT_TRUE(storage->UpdateInterestGroup(group_key, update).has_value());
+
+    // But this update back to the ad with too many
+    // selectableBuyerAndSellerReportingIds fails because it exceeds the soft
+    // limit.
+    update.ads = {ad1};
+    EXPECT_FALSE(storage->UpdateInterestGroup(group_key, update).has_value());
   }
 }
 
@@ -2989,7 +3087,7 @@ TEST_F(InterestGroupStorageTest, MultiVersionUpgradeTest) {
       const blink::InterestGroup& actual = interest_groups[0].interest_group;
       // Don't compare `expiry` as it changes every test run.
       expected.expiry = actual.expiry;
-      IgExpectEqualsForTesting(expected, actual);
+      IgExpectEqualsForTesting(actual, expected);
     }
 
     // Make sure the database still works if we open it again.
@@ -3002,7 +3100,7 @@ TEST_F(InterestGroupStorageTest, MultiVersionUpgradeTest) {
       const blink::InterestGroup& actual = interest_groups[0].interest_group;
       // Don't compare `expiry` as it changes every test run.
       expected.expiry = actual.expiry;
-      IgExpectEqualsForTesting(expected, actual);
+      IgExpectEqualsForTesting(actual, expected);
 
       bool version_changed_ig_fields;
       blink::InterestGroup next_version_expected =
@@ -3011,7 +3109,7 @@ TEST_F(InterestGroupStorageTest, MultiVersionUpgradeTest) {
         // Make sure IgExpect[Not]EqualsForTesting() gets updated to compare the
         // newly introduced field(s).
         next_version_expected.expiry = actual.expiry;
-        IgExpectNotEqualsForTesting(next_version_expected, actual);
+        IgExpectNotEqualsForTesting(actual, next_version_expected);
       }
     }
 

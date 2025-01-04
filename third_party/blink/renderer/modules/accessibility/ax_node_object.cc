@@ -2099,21 +2099,30 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
     return RoleFromLayoutObjectOrNode();
   }
 
-  if (GetNode()->IsPseudoElement() && GetCSSAltText(GetElement())) {
-    const ComputedStyle* style = GetElement()->GetComputedStyle();
-    ContentData* content_data = style->GetContentData();
-    // We just check the first item of the content list to determine the
-    // appropriate role, should only ever be image or text.
-    // TODO(accessibility) Is it possible to use CSS alt text on an HTML tag
-    // with strong semantics? If so, why are we overriding the role here?
-    // We only need to ensure the accessible name gets the CSS alt text.
-    // Note: by doing this, we are often hiding child pseudo element content
-    // because IsRelevantPseudoElementDescendant() returns false when an
-    // ancestor has CSS alt text.
-    if (content_data->IsImage())
-      return ax::mojom::blink::Role::kImage;
+  if (GetNode()->IsPseudoElement()) {
+    // This is for carousel scroll buttons (left/right/up/down) which are meant
+    // to look and act like buttons, but are generated as ::scroll-button(...)
+    // pseudos.
+    if (GetNode()->IsScrollButtonPseudoElement()) {
+      return ax::mojom::blink::Role::kButton;
+    }
 
-    return ax::mojom::blink::Role::kStaticText;
+    if (GetCSSAltText(GetElement())) {
+      const ComputedStyle* style = GetElement()->GetComputedStyle();
+      ContentData* content_data = style->GetContentData();
+      // We just check the first item of the content list to determine the
+      // appropriate role, should only ever be image or text.
+      // TODO(accessibility) Is it possible to use CSS alt text on an HTML tag
+      // with strong semantics? If so, why are we overriding the role here?
+      // We only need to ensure the accessible name gets the CSS alt text.
+      // Note: by doing this, we are often hiding child pseudo element content
+      // because IsRelevantPseudoElementDescendant() returns false when an
+      // ancestor has CSS alt text.
+      if (content_data->IsImage()) {
+        return ax::mojom::blink::Role::kImage;
+      }
+      return ax::mojom::blink::Role::kStaticText;
+    }
   }
 
   if (GetNode()->IsTextNode())
@@ -2233,6 +2242,9 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
 
   if (ParentObjectIfPresent() && ParentObjectIfPresent()->RoleValue() ==
                                      ax::mojom::blink::Role::kComboBoxSelect) {
+    // Only the UA popover element should get the MenuListPopup role.
+    CHECK(!RuntimeEnabledFeatures::CustomizableSelectEnabled() ||
+          HTMLSelectElement::IsPopoverForAppearanceBase(GetNode()));
     return ax::mojom::blink::Role::kMenuListPopup;
   }
 
@@ -5759,9 +5771,10 @@ void AXNodeObject::AddNodeChildren() {
 void AXNodeObject::AddMenuListChildren() {
   auto* select = To<HTMLSelectElement>(GetNode());
 
-  if (select->IsAppearanceBasePicker()) {
-    // In appearance: base-select (customizable select), the children of the
-    // combobox is the displayed data list.
+  if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+    CHECK(select->UsesMenuList());
+    // When CustomizableSelect is enabled, there will always be one
+    // MenuListPopup child which is the UA popover element.
     AddNodeChild(select->PopoverForAppearanceBase());
     return;
   }
@@ -5772,9 +5785,8 @@ void AXNodeObject::AddMenuListChildren() {
 void AXNodeObject::AddMenuListPopupChildren() {
   auto* select = To<HTMLSelectElement>(ParentObject()->GetNode());
 
-  if (select->IsAppearanceBasePicker()) {
-    // In appearance: base-select (customizable select), the children of the
-    // popup are all of the natural dom children of the <select>.
+  // With CustomizableSelect, MenuListPopups can have more interesting children.
+  if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
     for (Node* child = NodeTraversal::FirstChild(*select); child;
          child = NodeTraversal::NextSibling(*child)) {
       if (child == select->SlottedButton()) {
@@ -5788,8 +5800,6 @@ void AXNodeObject::AddMenuListPopupChildren() {
     return;
   }
 
-  // In appearance: auto/none, the children of the popup are the flat tree
-  // children of the slot associated with the popup.
   AddNodeChildren();
 }
 
@@ -5838,9 +5848,18 @@ void AXNodeObject::AddChildrenImpl() {
     AddValidationMessageChild();
   CHECK_ATTACHED();
 
-  if (RoleValue() == ax::mojom::blink::Role::kComboBoxSelect) {
+  auto* select = DynamicTo<HTMLSelectElement>(GetNode());
+  if (RuntimeEnabledFeatures::CustomizableSelectEnabled() && select &&
+      select->UsesMenuList() && !select->IsMultiple()) {
+    // When CustomizableSelect is enabled, then we need to enforce our custom AX
+    // tree structure for select elements even if the author changed the select
+    // element's role by setting the role attribute.
     AddMenuListChildren();
   } else if (RoleValue() == ax::mojom::blink::Role::kMenuListPopup) {
+    if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+      // Only the UA popover element should have the MenuListPopup mapping.
+      CHECK(HTMLSelectElement::IsPopoverForAppearanceBase(GetNode()));
+    }
     AddMenuListPopupChildren();
   } else if (HasValidHTMLTableStructureAndLayout()) {
     AddTableChildren();
@@ -6090,8 +6109,14 @@ bool AXNodeObject::CanHaveChildren() const {
   // and improving stability in Blink.
   bool result = !GetElement() || AXObject::CanHaveChildren(*GetElement());
   switch (native_role_) {
-    case ax::mojom::blink::Role::kCheckBox:
     case ax::mojom::blink::Role::kListBoxOption:
+      if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+        // When CustomizableSelect is enabled, then options are allowed to have
+        // children as per the new content model.
+        break;
+      }
+      [[fallthrough]];
+    case ax::mojom::blink::Role::kCheckBox:
     case ax::mojom::blink::Role::kMenuItem:
     case ax::mojom::blink::Role::kMenuItemCheckBox:
     case ax::mojom::blink::Role::kMenuItemRadio:

@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/commands/command_metrics.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
@@ -100,6 +101,8 @@ void WebInstallFromUrlCommand::Abort(webapps::InstallResultCode code) {
   webapps::InstallableMetrics::TrackInstallResult(/*result=*/false,
                                                   kInstallSource);
   MeasureUserInstalledAppHistogram(code);
+  RecordInstallMetrics(InstallCommand::kWebAppInstallFromUrl,
+                       WebAppType::kCraftedApp, code, kInstallSource);
   CompleteAndSelfDestruct(CommandResult::kFailure, GURL(), code);
 }
 
@@ -261,6 +264,8 @@ void WebInstallFromUrlCommand::OnAppInstalled(const webapps::AppId& app_id,
   webapps::InstallableMetrics::TrackInstallResult(webapps::IsSuccess(code),
                                                   kInstallSource);
   MeasureUserInstalledAppHistogram(code);
+  RecordInstallMetrics(InstallCommand::kWebAppInstallFromUrl,
+                       WebAppType::kCraftedApp, code, kInstallSource);
 
   LaunchApp();
 }

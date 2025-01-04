@@ -34,8 +34,9 @@ ThreadControllerImpl::ThreadControllerImpl(
                                     ? funneled_sequence_manager->GetTaskRunner()
                                     : nullptr),
       work_deduplicator_(associated_thread_) {
-  if (task_runner_ || funneled_sequence_manager_)
+  if (task_runner_ || funneled_sequence_manager_) {
     work_deduplicator_.BindToCurrentThread();
+  }
   immediate_do_work_closure_ =
       BindRepeating(&ThreadControllerImpl::DoWork, weak_factory_.GetWeakPtr(),
                     WorkType::kImmediate);
@@ -108,8 +109,9 @@ void ThreadControllerImpl::SetNextDelayedDoWork(LazyNow* lazy_now,
     return;
   }
 
-  if (main_sequence_only().next_delayed_do_work == wake_up->time)
+  if (main_sequence_only().next_delayed_do_work == wake_up->time) {
     return;
+  }
 
   base::TimeDelta delay =
       std::max(TimeDelta(), wake_up->time - lazy_now->Now());
@@ -133,8 +135,9 @@ void ThreadControllerImpl::SetDefaultTaskRunner(
 #if DCHECK_IS_ON()
   default_task_runner_set_ = true;
 #endif
-  if (!funneled_sequence_manager_)
+  if (!funneled_sequence_manager_) {
     return;
+  }
   funneled_sequence_manager_->SetTaskRunner(task_runner);
 }
 
@@ -144,8 +147,9 @@ ThreadControllerImpl::GetDefaultTaskRunner() {
 }
 
 void ThreadControllerImpl::RestoreDefaultTaskRunner() {
-  if (!funneled_sequence_manager_)
+  if (!funneled_sequence_manager_) {
     return;
+  }
   funneled_sequence_manager_->SetTaskRunner(message_loop_task_runner_);
 }
 
@@ -206,13 +210,15 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
       task_annotator_.RunTask(
           "ThreadControllerImpl::RunTask", selected_task->task,
           [&selected_task, &source](perfetto::EventContext& ctx) {
-            if (selected_task->task_execution_trace_logger)
+            if (selected_task->task_execution_trace_logger) {
               selected_task->task_execution_trace_logger.Run(
                   ctx, selected_task->task);
+            }
             source->MaybeEmitTaskDetails(ctx, *selected_task);
           });
-      if (!weak_ptr)
+      if (!weak_ptr) {
         return;
+      }
 
       // This processes microtasks, hence all scoped operations above must end
       // after it.
@@ -242,8 +248,9 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
     // to disable this batching optimization while nested.
     // Implementing MessagePump::Delegate ourselves will help to resolve this
     // issue.
-    if (run_level_tracker_.num_run_levels() > 1)
+    if (run_level_tracker_.num_run_levels() > 1) {
       break;
+    }
   }
 
   work_deduplicator_.WillCheckForMoreWork();
@@ -285,8 +292,9 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
 
   TimeTicks next_wake_up_time = next_wake_up->time;
   // Already requested next delay?
-  if (next_wake_up_time == main_sequence_only().next_delayed_do_work)
+  if (next_wake_up_time == main_sequence_only().next_delayed_do_work) {
     return;
+  }
 
   // Schedule a callback after |delay_till_next_task| and cancel any previous
   // callback.
@@ -323,13 +331,15 @@ void ThreadControllerImpl::OnBeginNestedRunLoop() {
   work_deduplicator_.OnWorkRequested();  // Set the pending DoWork flag.
   task_runner_->PostTask(FROM_HERE, immediate_do_work_closure_);
 
-  if (nesting_observer_)
+  if (nesting_observer_) {
     nesting_observer_->OnBeginNestedRunLoop();
+  }
 }
 
 void ThreadControllerImpl::OnExitNestedRunLoop() {
-  if (nesting_observer_)
+  if (nesting_observer_) {
     nesting_observer_->OnExitNestedRunLoop();
+  }
   run_level_tracker_.OnRunLoopEnded();
 }
 

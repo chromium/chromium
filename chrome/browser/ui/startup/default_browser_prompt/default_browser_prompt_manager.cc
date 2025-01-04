@@ -27,7 +27,7 @@
 namespace {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 bool ShouldShowPrompts() {
-  PrefService *local_state = g_browser_process->local_state();
+  PrefService* local_state = g_browser_process->local_state();
 
   const int declined_count =
       local_state->GetInteger(prefs::kDefaultBrowserDeclinedCount);
@@ -55,17 +55,17 @@ bool ShouldShowPrompts() {
   return (base::Time::Now() - last_declined_time) > reprompt_duration;
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-} // namespace
+}  // namespace
 
 // static
-DefaultBrowserPromptManager *DefaultBrowserPromptManager::GetInstance() {
+DefaultBrowserPromptManager* DefaultBrowserPromptManager::GetInstance() {
   return base::Singleton<DefaultBrowserPromptManager>::get();
 }
 
-void DefaultBrowserPromptManager::AddObserver(Observer *observer) {
+void DefaultBrowserPromptManager::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
-void DefaultBrowserPromptManager::RemoveObserver(Observer *observer) {
+void DefaultBrowserPromptManager::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
@@ -113,7 +113,8 @@ DefaultBrowserPromptManager::DefaultBrowserPromptManager() = default;
 DefaultBrowserPromptManager::~DefaultBrowserPromptManager() = default;
 
 void DefaultBrowserPromptManager::CreateInfoBarForWebContents(
-    content::WebContents *web_contents, Profile *profile) {
+    content::WebContents* web_contents,
+    Profile* profile) {
   // Ensure that an infobar hasn't already been created.
   CHECK(!infobars_.contains(web_contents));
 
@@ -129,9 +130,9 @@ void DefaultBrowserPromptManager::CreateInfoBarForWebContents(
 
   infobars_[web_contents] = infobar;
 
-  static_cast<ConfirmInfoBarDelegate *>(infobar->delegate())->AddObserver(this);
+  static_cast<ConfirmInfoBarDelegate*>(infobar->delegate())->AddObserver(this);
 
-  auto *infobar_manager =
+  auto* infobar_manager =
       infobars::ContentInfoBarManager::FromWebContents(web_contents);
   infobar_manager->AddObserver(this);
 }
@@ -139,7 +140,7 @@ void DefaultBrowserPromptManager::CreateInfoBarForWebContents(
 void DefaultBrowserPromptManager::CloseAllInfoBars() {
   browser_tab_strip_tracker_.reset();
 
-  for (const auto &infobars_entry : infobars_) {
+  for (const auto& infobars_entry : infobars_) {
     infobars_entry.second->owner()->RemoveObserver(this);
     infobars_entry.second->RemoveSelf();
   }
@@ -153,7 +154,7 @@ void DefaultBrowserPromptManager::SetShowAppMenuPromptVisibility(bool show) {
   }
 
   if (show) {
-    PrefService *local_state = g_browser_process->local_state();
+    PrefService* local_state = g_browser_process->local_state();
     base::TimeDelta app_menu_remaining_duration;
     if (local_state->FindPreference(prefs::kDefaultBrowserFirstShownTime)
             ->IsDefaultValue()) {
@@ -190,7 +191,7 @@ void DefaultBrowserPromptManager::SetShowAppMenuPromptVisibility(bool show) {
   }
 
   show_app_menu_prompt_ = show;
-  for (auto &obs : observers_) {
+  for (auto& obs : observers_) {
     obs.OnShowAppMenuPromptChanged();
   }
 }
@@ -199,17 +200,18 @@ void DefaultBrowserPromptManager::SetAppMenuItemVisibility(bool show) {
   show_app_menu_item_ = show;
 }
 
-bool DefaultBrowserPromptManager::ShouldTrackBrowser(Browser *browser) {
+bool DefaultBrowserPromptManager::ShouldTrackBrowser(Browser* browser) {
   return browser->is_type_normal() &&
          !browser->profile()->IsIncognitoProfile() &&
          !browser->profile()->IsGuestSession();
 }
 
 void DefaultBrowserPromptManager::OnTabStripModelChanged(
-    TabStripModel *tab_strip_model, const TabStripModelChange &change,
-    const TabStripSelectionChange &selection) {
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
   if (change.type() == TabStripModelChange::kInserted) {
-    for (const auto &contents : change.GetInsert()->contents) {
+    for (const auto& contents : change.GetInsert()->contents) {
       if (!base::Contains(infobars_, contents.contents)) {
         CreateInfoBarForWebContents(contents.contents,
                                     tab_strip_model->profile());
@@ -218,7 +220,7 @@ void DefaultBrowserPromptManager::OnTabStripModelChanged(
   }
 }
 
-void DefaultBrowserPromptManager::OnInfoBarRemoved(infobars::InfoBar *infobar,
+void DefaultBrowserPromptManager::OnInfoBarRemoved(infobars::InfoBar* infobar,
                                                    bool animate) {
   auto infobars_entry = base::ranges::find(
       infobars_, infobar, &decltype(infobars_)::value_type::second);
@@ -228,7 +230,7 @@ void DefaultBrowserPromptManager::OnInfoBarRemoved(infobars::InfoBar *infobar,
 
   infobar->owner()->RemoveObserver(this);
   infobars_.erase(infobars_entry);
-  static_cast<ConfirmInfoBarDelegate *>(infobar->delegate())
+  static_cast<ConfirmInfoBarDelegate*>(infobar->delegate())
       ->RemoveObserver(this);
 
   if (user_initiated_info_bar_close_pending_.has_value()) {

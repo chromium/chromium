@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 
+#include <string>
+
 #include "base/json/json_reader.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -12,6 +14,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -24,6 +27,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace {
 
@@ -106,8 +110,9 @@ ToolbarActionView* ExtensionsToolbarContainerUnitTest::GetPinnedExtensionView(
       base::ranges::find(actions, extension_id, [](ToolbarActionView* action) {
         return action->view_controller()->GetId();
       });
-  if (it == actions.end())
+  if (it == actions.end()) {
     return nullptr;
+  }
   return *it;
 }
 
@@ -680,6 +685,89 @@ TEST_F(ExtensionsToolbarContainerUnitTest, RequestAccessButton_Extensions) {
   RemoveHostAccessRequest(*extension_C,
                           browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_FALSE(IsRequestAccessButtonVisible());
+}
+
+TEST_F(ExtensionsToolbarContainerUnitTest, RequestAccessButton_TooltipText) {
+  auto extension_A = InstallExtensionWithHostPermissions(
+      "Extension A", {"*://www.example.com/*"});
+  auto extension_B =
+      InstallExtensionWithHostPermissions("Extension B", {"<all_urls>"});
+  WithholdHostPermissions(extension_A.get());
+  WithholdHostPermissions(extension_B.get());
+
+  // Navigate to a site and verify request access button is not visible, since
+  // no extension has added a request.
+  NavigateAndCommit(GURL("http://www.example.com"));
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_FALSE(IsRequestAccessButtonVisible());
+
+  // Add site access requests for both extensions and verify they are visible
+  // on the request access button.
+  AddHostAccessRequest(*extension_A, web_contents);
+  AddHostAccessRequest(*extension_B, web_contents);
+  EXPECT_TRUE(IsRequestAccessButtonVisible());
+  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
+              testing::ElementsAre(extension_A->id(), extension_B->id()));
+
+  std::u16string current_site = GetCurrentHost(web_contents);
+  std::u16string expected_tooltip =
+      l10n_util::GetStringFUTF16(
+          IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_TOOLTIP_MULTIPLE_EXTENSIONS,
+          current_site) +
+      u"\n" + u"Extension A\n" + u"Extension B";
+
+  EXPECT_EQ(request_access_button()->GetTooltipText(gfx::Point()),
+            expected_tooltip);
+  RemoveHostAccessRequest(*extension_B,
+                          browser()->tab_strip_model()->GetActiveWebContents());
+  expected_tooltip =
+      l10n_util::GetStringFUTF16(
+          IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_TOOLTIP_MULTIPLE_EXTENSIONS,
+          current_site) +
+      u"\n" + u"Extension A";
+  EXPECT_EQ(request_access_button()->GetTooltipText(gfx::Point()),
+            expected_tooltip);
+}
+
+TEST_F(ExtensionsToolbarContainerUnitTest,
+       RequestAccessButton_TooltipTextAccessibility) {
+  auto extension_A = InstallExtensionWithHostPermissions(
+      "Extension A", {"*://www.example.com/*"});
+  auto extension_B =
+      InstallExtensionWithHostPermissions("Extension B", {"<all_urls>"});
+  WithholdHostPermissions(extension_A.get());
+  WithholdHostPermissions(extension_B.get());
+
+  // Navigate to a site and verify request access button is not visible, since
+  // no extension has added a request.
+  NavigateAndCommit(GURL("http://www.example.com"));
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_FALSE(IsRequestAccessButtonVisible());
+
+  // Add site access requests for both extensions and verify they are visible
+  // on the request access button.
+  AddHostAccessRequest(*extension_A, web_contents);
+  AddHostAccessRequest(*extension_B, web_contents);
+  EXPECT_TRUE(IsRequestAccessButtonVisible());
+  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
+              testing::ElementsAre(extension_A->id(), extension_B->id()));
+
+  ui::AXNodeData data;
+  request_access_button()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            request_access_button()->GetTooltipText(gfx::Point()));
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            request_access_button()->GetTooltipText(gfx::Point()));
+
+  RemoveHostAccessRequest(*extension_B,
+                          browser()->tab_strip_model()->GetActiveWebContents());
+
+  data = ui::AXNodeData();
+  request_access_button()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            request_access_button()->GetTooltipText(gfx::Point()));
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            request_access_button()->GetTooltipText(gfx::Point()));
 }
 
 // Tests that an extension appears in the request access button iff it has a

@@ -35,7 +35,7 @@ namespace gfx {
 class Insets;
 class Rect;
 class Size;
-}
+}  // namespace gfx
 
 namespace ui {
 
@@ -109,9 +109,9 @@ class NATIVE_THEME_EXPORT NativeTheme {
   enum State {
     // IDs defined as specific values for use in arrays.
     kDisabled = 0,
-    kHovered  = 1,
-    kNormal   = 2,
-    kPressed  = 3,
+    kHovered = 1,
+    kNormal = 2,
+    kPressed = 3,
     kNumStates = kPressed + 1,
   };
 
@@ -146,6 +146,10 @@ class NATIVE_THEME_EXPORT NativeTheme {
     kMaxValue = kCustom,
   };
 
+  // IMPORTANT!
+  // This enum is reported in metrics. Do not reorder; add additional values at
+  // the end.
+  //
   // This represents the OS-level high contrast theme. kNone unless the default
   // system color scheme is kPlatformHighContrast.
   enum class PlatformHighContrastColorScheme {
@@ -396,16 +400,26 @@ class NATIVE_THEME_EXPORT NativeTheme {
                                        float height) const;
 
   // Paint the part to the canvas.
-  virtual void Paint(
-      cc::PaintCanvas* canvas,
-      const ui::ColorProvider* color_provider,
-      Part part,
-      State state,
-      const gfx::Rect& rect,
-      const ExtraParams& extra,
-      ColorScheme color_scheme = ColorScheme::kDefault,
-      bool in_forced_colors = false,
-      const std::optional<SkColor>& accent_color = std::nullopt) const = 0;
+  virtual void Paint(cc::PaintCanvas* canvas,
+                     const ui::ColorProvider* color_provider,
+                     Part part,
+                     State state,
+                     const gfx::Rect& rect,
+                     const ExtraParams& extra,
+                     ColorScheme color_scheme,
+                     bool in_forced_colors,
+                     const std::optional<SkColor>& accent_color) const = 0;
+  void Paint(cc::PaintCanvas* canvas,
+             const ui::ColorProvider* color_provider,
+             Part part,
+             State state,
+             const gfx::Rect& rect,
+             const ExtraParams& extra,
+             ColorScheme color_scheme = ColorScheme::kDefault,
+             bool in_forced_colors = false) const {
+    Paint(canvas, color_provider, part, state, rect, extra, color_scheme,
+          in_forced_colors, std::nullopt);
+  }
 
   // Returns whether the theme uses a nine-patch resource for the given part.
   // If true, calling code should always paint into a canvas the size of which

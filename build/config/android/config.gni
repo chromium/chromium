@@ -92,9 +92,6 @@ if (is_android) {
     } else {
       android_static_analysis = "on"
     }
-
-    # Enables teamfooding of new experimental build_server changes.
-    experimental_build_server = false
   }
 
   # Our build system no longer supports legacy multidex.

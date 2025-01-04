@@ -234,12 +234,13 @@ if [ "$BRANDING" = "google_chrome" ]; then
 else
   source "${OUTPUTDIR}/installer/common/chromium-browser.info"
 fi
-eval $(sed -e "s/^\([^=]\+\)=\(.*\)$/export \1='\2'/" \
+eval $(sed -e "s/^\([^=]\+\)=\(.*\)$/\1='\2'/" \
   "${OUTPUTDIR}/installer/theme/BRANDING")
 
 REPOCONFIG="https://dl.google.com/linux/${PACKAGE#google-}/rpm/stable"
+REPOCONFIGREGEX=
 verify_channel
-export USR_BIN_SYMLINK_NAME="${PACKAGE}-${CHANNEL}"
+USR_BIN_SYMLINK_NAME="${PACKAGE}-${CHANNEL}"
 
 stage_install_rpm
 do_package

@@ -21,17 +21,18 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_data_util.h"
-#include "components/autofill/core/browser/autofill_experiments.h"
-#include "components/autofill/core/browser/autofill_optimization_guide.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_benefit.h"
 #include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/integrators/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
@@ -39,10 +40,9 @@
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/browser/studies/autofill_experiments.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -97,7 +97,7 @@ Suggestion CreateUndoOrClearFormSuggestion() {
 
 // Returns the card-linked offers map with credit card guid as the key and the
 // pointer to the linked AutofillOfferData as the value.
-std::map<std::string, AutofillOfferData*> GetCardLinkedOffers(
+std::map<std::string, const AutofillOfferData*> GetCardLinkedOffers(
     const AutofillClient& autofill_client) {
   if (const AutofillOfferManager* offer_manager =
           autofill_client.GetPaymentsAutofillClient()
@@ -570,9 +570,8 @@ void SetCardArtURL(Suggestion& suggestion,
     if constexpr (BUILDFLAG(IS_ANDROID)) {
       suggestion.custom_icon = Suggestion::CustomIconUrl(card_art_url);
     } else {
-      gfx::Image* image =
-          payments_data.GetCachedCardArtImageForUrl(card_art_url);
-      if (image) {
+      if (const gfx::Image* const image =
+              payments_data.GetCachedCardArtImageForUrl(card_art_url)) {
         suggestion.custom_icon = *image;
       }
     }
@@ -740,7 +739,7 @@ std::vector<CreditCard> GetOrderedCardsToSuggest(
           .GetCreditCardsToSuggest(use_legacy_algorithm);
   // If a card has available card linked offers on the last committed url, rank
   // it to the top.
-  if (std::map<std::string, AutofillOfferData*> card_linked_offers_map =
+  if (std::map<std::string, const AutofillOfferData*> card_linked_offers_map =
           GetCardLinkedOffers(client);
       !card_linked_offers_map.empty()) {
     base::ranges::stable_sort(
@@ -951,7 +950,7 @@ std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
           features::kAutofillEnablePaymentsFieldSwapping) &&
       trigger_field.is_autofilled();
 
-  std::map<std::string, AutofillOfferData*> card_linked_offers_map =
+  std::map<std::string, const AutofillOfferData*> card_linked_offers_map =
       GetCardLinkedOffers(client);
   summary.with_offer = !card_linked_offers_map.empty();
   bool suppress_disused_cards =
@@ -1020,6 +1019,11 @@ std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
   }
   summary.with_cvc = !std::ranges::all_of(
       cards_to_suggest, &std::u16string::empty, &CreditCard::cvc);
+  summary.with_card_info_retrieval_enrolled =
+      std::ranges::any_of(cards_to_suggest, [](const CreditCard& card) {
+        return card.card_info_retrieval_enrollment_state() ==
+               CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled;
+      });
   if (suggestions.empty()) {
     return suggestions;
   }

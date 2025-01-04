@@ -1,5 +1,6 @@
 To regenerate the key/certificate pair for the signed-exchanges in this
-directory, run `generate-test-certs.sh`.
+directory, run `generate-test-certs.sh`. Please make sure openssl is in
+the path.
 
 The signed exchange files in this directory are generated using
 `generate-test-sxgs.sh`. it requires command-line tools in the

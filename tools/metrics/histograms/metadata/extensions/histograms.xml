@@ -195,7 +195,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="ExtensionBlacklist.BlockCRX" enum="ExtensionLocation"
-    expires_after="2025-04-27">
+    expires_after="2025-06-29">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -245,7 +245,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ActiveScriptController.DeniedExtensions"
-    units="Extension Count" expires_after="2025-04-13">
+    units="Extension Count" expires_after="2025-06-15">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -374,7 +374,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.CommandLineWith{DeveloperModeState}{ExtensionState}"
-    units="count" expires_after="2025-03-30">
+    units="count" expires_after="2025-06-08">
   <owner>richche@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -434,7 +434,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.ContentSettings.PrimaryPatternMatchesExtensionOrigin"
-    enum="ContentType" expires_after="2025-02-28">
+    enum="ContentType" expires_after="2025-06-22">
   <owner>estark@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -569,7 +569,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.ContentVerification.DidHashMismatchOnFetchCompleteMV2"
-    enum="Boolean" expires_after="2025-04-06">
+    enum="Boolean" expires_after="2025-06-08">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -639,7 +639,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.ContentVerification.VerifyFailedOnFileMV2{VerifiedFileType}"
-    enum="ContentVerifyJobResult" expires_after="2025-04-06">
+    enum="ContentVerifyJobResult" expires_after="2025-06-08">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -669,7 +669,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.ContentVerification.VerifyFailedOnFileMV3{VerifiedFileType}"
-    enum="ContentVerifyJobResult" expires_after="2025-04-06">
+    enum="ContentVerifyJobResult" expires_after="2025-06-08">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -683,7 +683,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ContentVerification.VerifyFailedOnFileTypeMV2"
-    enum="VerifiedFileType" expires_after="2025-04-06">
+    enum="VerifiedFileType" expires_after="2025-06-08">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -693,7 +693,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ContentVerification.VerifyFailedOnFileTypeMV3"
-    enum="VerifiedFileType" expires_after="2025-04-06">
+    enum="VerifiedFileType" expires_after="2025-06-08">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -715,7 +715,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ContentVerification.VerifyJobResultMV2"
-    enum="ContentVerifyJobResult" expires_after="2025-04-06">
+    enum="ContentVerifyJobResult" expires_after="2025-06-08">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -726,7 +726,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ContentVerification.VerifyJobResultMV3"
-    enum="ContentVerifyJobResult" expires_after="2025-04-06">
+    enum="ContentVerifyJobResult" expires_after="2025-06-08">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -761,7 +761,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.CookieAPIPartitionKeyWellFormatted"
-    enum="BooleanEnabled" expires_after="2025-04-18">
+    enum="BooleanEnabled" expires_after="2025-06-22">
   <owner>arichiv@google.com</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -1215,7 +1215,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.RequestHeaderChanged"
-    enum="WebRequest.RequestHeader" expires_after="2024-12-22">
+    enum="WebRequest.RequestHeader" expires_after="2025-12-01">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
@@ -1227,7 +1227,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.RequestHeaderRemoved"
-    enum="WebRequest.RequestHeader" expires_after="2024-12-12">
+    enum="WebRequest.RequestHeader" expires_after="2025-12-01">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
@@ -1239,7 +1239,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.ResponseHeaderAdded"
-    enum="WebRequest.ResponseHeader" expires_after="2024-12-22">
+    enum="WebRequest.ResponseHeader" expires_after="2025-12-01">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
@@ -1251,7 +1251,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.ResponseHeaderChanged"
-    enum="WebRequest.ResponseHeader" expires_after="2024-12-22">
+    enum="WebRequest.ResponseHeader" expires_after="2025-12-01">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
@@ -1263,7 +1263,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.ResponseHeaderRemoved"
-    enum="WebRequest.ResponseHeader" expires_after="2024-12-22">
+    enum="WebRequest.ResponseHeader" expires_after="2025-12-01">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
@@ -1305,7 +1305,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.RulesetReindexSuccessful"
-    enum="BooleanSuccess" expires_after="2025-04-28">
+    enum="BooleanSuccess" expires_after="2025-06-29">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -1346,7 +1346,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.DeveloperModeEnabled" enum="Boolean"
-    expires_after="2025-04-27">
+    expires_after="2025-06-29">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -1887,7 +1887,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Events.ServiceWorkerDispatchFailed.Event"
-    enum="ExtensionEvents" expires_after="2025-04-13">
+    enum="ExtensionEvents" expires_after="2025-06-22">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -1898,7 +1898,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.Events.ServiceWorkerDispatchFailed.StartExternalRequestOk"
-    enum="Boolean" expires_after="2025-04-13">
+    enum="Boolean" expires_after="2025-06-22">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -1913,7 +1913,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.Events.ServiceWorkerDispatchFailed.StartExternalRequestResult"
-    enum="ServiceWorkerExternalRequestResult" expires_after="2025-04-13">
+    enum="ServiceWorkerExternalRequestResult" expires_after="2025-06-22">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -2066,7 +2066,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ExternalItemState2" enum="ExternalItemState"
-    expires_after="2025-01-01">
+    expires_after="2025-12-01">
   <owner>anunoy@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -2664,7 +2664,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Functions.ExtractJSCallStackElapsedTime"
-    units="microseconds" expires_after="2025-04-06">
+    units="microseconds" expires_after="2025-06-08">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3779,7 +3779,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.LoadTheme2" units="units"
-    expires_after="2025-03-30">
+    expires_after="2025-06-08">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -3884,7 +3884,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ManifestVersion2Count.{ManifestLocation}"
-    units="number of extensions" expires_after="2025-04-20">
+    units="number of extensions" expires_after="2025-06-22">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -3910,7 +3910,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ManifestVersionByLocation.{ManifestLocation}"
-    units="manifest version" expires_after="2025-04-20">
+    units="manifest version" expires_after="2025-06-22">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -3953,8 +3953,8 @@ This is emitted for two scenarios when a worker may be unregistered:
     It is permuted by channel type (message type). {ChannelType}.
   </summary>
   <token key="DispatchTarget">
-    <variant name="ForFrame" summary="frame"/>
-    <variant name="ForWorker" summary="worker"/>
+    <variant name=".ForFrame" summary="frame"/>
+    <variant name=".ForWorker" summary="worker"/>
   </token>
   <token key="ChannelType" variants="ChannelType"/>
 </histogram>
@@ -4142,7 +4142,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.NewTabPageOverrides2" units="units"
-    expires_after="2024-09-15">
+    expires_after="2025-12-01">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>
   <summary>
@@ -4216,7 +4216,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.NonWebStoreNewTabPageOverrides2" units="units"
-    expires_after="2025-01-01">
+    expires_after="2025-12-01">
   <owner>anunoy@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4408,19 +4408,6 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram name="Extensions.ProcessManagerStartupHostsTime2" units="ms"
-    expires_after="2025-01-05">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The time taken to start up persistent background pages for extensions in
-    ExtensionProcessManager when the extension system notifies that it is ready.
-    This version of the histogram does not include cases where the background
-    page startup is deferred, which would have been logged as ~0ms startup in
-    Extensions.ProcessManagerStartupHostsTime.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.RuntimeHostPermissions.ExtensionHasWithheldHosts"
     enum="BooleanHasWithheldHosts" expires_after="2023-07-07">
   <owner>rdevlin.cronin@chromium.org</owner>
@@ -4543,7 +4530,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.SearchEngineOverrides2" units="units"
-    expires_after="2025-04-20">
+    expires_after="2025-06-22">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>
   <summary>
@@ -4637,7 +4624,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.ServiceWorkerBackground.ProcessManagerFinishedExternalRequestResultWithSuccessfulStart"
-    enum="ServiceWorkerExternalRequestResult" expires_after="2024-10-06">
+    enum="ServiceWorkerExternalRequestResult" expires_after="2025-12-01">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4651,7 +4638,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.ServiceWorkerBackground.ProcessManagerFinishedExternalRequestResultWithUnsuccessfulStart"
-    enum="ServiceWorkerExternalRequestResult" expires_after="2024-10-06">
+    enum="ServiceWorkerExternalRequestResult" expires_after="2025-12-01">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4679,7 +4666,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ServiceWorkerBackground.Registration_FailStatus"
-    enum="ServiceWorkerStatusCode" expires_after="2025-04-20">
+    enum="ServiceWorkerStatusCode" expires_after="2025-06-22">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4845,7 +4832,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ServiceWorkerBackground.WorkerCountAfterAdd"
-    units="registered workers" expires_after="2025-04-13">
+    units="registered workers" expires_after="2025-06-22">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4856,7 +4843,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ServiceWorkerBackground.WorkerCountAfterRemove"
-    units="registered workers" expires_after="2025-04-13">
+    units="registered workers" expires_after="2025-06-22">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4868,7 +4855,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.ServiceWorkerBackground.WorkerRegistrationRetryAttemptsResult"
-    enum="Boolean" expires_after="2025-04-13">
+    enum="Boolean" expires_after="2025-06-22">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4885,7 +4872,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ServiceWorkerBackground.WorkerRegistrationState"
-    enum="Boolean" expires_after="2025-05-25">
+    enum="Boolean" expires_after="2025-06-29">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4915,7 +4902,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus{UnregistrationType}"
-    enum="ServiceWorkerStatusCode" expires_after="2025-03-25">
+    enum="ServiceWorkerStatusCode" expires_after="2025-06-08">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4944,7 +4931,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.ServiceWorkerBackground.WorkerUnregistrationState{UnregistrationType}"
-    enum="Boolean" expires_after="2025-03-30">
+    enum="Boolean" expires_after="2025-06-08">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4969,7 +4956,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.ServiceWorkerRenderer.ExtensionLoadStatusInWorkerScriptEvaluation"
-    enum="ExtensionLoadStatusOnScriptEval" expires_after="2025-04-20">
+    enum="ExtensionLoadStatusOnScriptEval" expires_after="2025-06-22">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -5095,7 +5082,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton"
-    units="Extension Count" expires_after="2025-01-15">
+    units="Extension Count" expires_after="2025-05-11">
   <owner>emiliapaz@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -5165,7 +5152,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.WAR.XOriginWebAccessible.{ManifestVersion}"
-    enum="Boolean" expires_after="2025-04-01">
+    enum="Boolean" expires_after="2025-06-22">
   <owner>solomonkinard@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -5194,7 +5181,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.WebRequest.BeforeRequestDeclarativeNetRequestEvaluationTimeInMicroseconds"
-    units="microseconds" expires_after="2025-04-27">
+    units="microseconds" expires_after="2025-06-29">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -5263,6 +5250,16 @@ This is emitted for two scenarios when a worker may be unregistered:
     Whether and how keepalive requests are blocked. There is a similar histgoram
     Net.KeepaliveRequest.BlockStatus. See there for the difference between the
     two histograms.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.WebRequest.ProxyDecision"
+    enum="WebRequest.ProxyDecision" expires_after="2025-03-01">
+  <owner>toyoshima@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the decision of whether to proxy the request for the WebRequest API.
+    This is recorded whenever a URLLoaderFactory is created for renderers.
   </summary>
 </histogram>
 

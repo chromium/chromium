@@ -10,11 +10,11 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -171,8 +171,13 @@ TEST(NameInfoTest, FinalizeAfterImportWithAlternativeName) {
 
   test::VerifyFormGroupValues(name, expectation);
 
+  // Both "あおい" and "アオイ" are semantically equal.
   FieldTypeSet matching_types;
   name.GetMatchingTypesWithProfileSources(u"あおい", "JP", &matching_types,
+                                          nullptr);
+  EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_GIVEN_NAME}));
+
+  name.GetMatchingTypesWithProfileSources(u"アオイ", "JP", &matching_types,
                                           nullptr);
   EXPECT_EQ(matching_types, FieldTypeSet({ALTERNATIVE_GIVEN_NAME}));
 }

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/extensions/crx_installer.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -546,7 +542,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTestWithExperimentalApis,
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, AllowOffStore) {
-  const bool kTestData[] = {false, true};
+  const auto kTestData = std::to_array<bool>({false, true});
 
   for (size_t i = 0; i < std::size(kTestData); ++i) {
     std::unique_ptr<MockPromptProxy> mock_prompt =

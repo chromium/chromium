@@ -24,7 +24,7 @@ namespace {
 const base::Feature* const kFeaturesExposedToJava[] = {
     &blink::features::kCursorAnchorInfoMojoPipe,
     &blink::features::kDevicePosture,
-    &blink::features::kStylusPointerAdjustment,
+    &blink::features::kSecurePaymentConfirmationBrowserBoundKeys,
     &blink::features::kStylusRichGestures,
     &blink::features::kViewportSegments,
     &input::features::kInputOnViz,
@@ -35,19 +35,15 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kAccessibilityUnifiedSnapshots,
     &features::kAccessibilityManageBroadcastReceiverOnBackground,
     &features::kAndroidOpenPdfInline,
-    &features::kChangeUnfocusedPriority,
     &features::kFedCm,
     &features::kHidePastePopupOnGSB,
-    &features::kOptimizeImmHideCalls,
     &features::kProcessSharingWithStrictSiteInstances,
     &features::kReduceGpuPriorityOnBackground,
     &features::kContinueGestureOnLosingFocus,
-    &features::kSelectionMenuItemModification,
     &features::kSmartZoom,
     &features::kTouchDragAndContextMenu,
     &features::kWebBluetoothNewPermissionsBackend,
     &features::kWebIdentityDigitalCredentials,
-    &features::kWebNfc,
     &features::kDIPSTtl,
 };
 

@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/containers/enum_set.h"
-#include "build/chromeos_buildflags.h"
 #include "components/sync/base/data_type.h"
 
 namespace syncer {
@@ -51,6 +50,11 @@ std::string UserSelectableTypeSetToString(UserSelectableTypeSet types);
 DataTypeSet UserSelectableTypeToAllDataTypes(UserSelectableType type);
 
 DataType UserSelectableTypeToCanonicalDataType(UserSelectableType type);
+
+// Do not use this function for data types which have multiple corresponding
+// user selectable types.
+std::optional<UserSelectableType> GetUserSelectableTypeFromDataType(
+    DataType data_type);
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Chrome OS provides a separate UI with sync controls for OS data types. Note

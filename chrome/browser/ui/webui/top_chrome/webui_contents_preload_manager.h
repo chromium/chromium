@@ -80,6 +80,9 @@ class WebUIContentsPreloadManager : public ProfileObserver,
   std::optional<base::TimeTicks> GetRequestTime(
       content::WebContents* web_contents);
 
+  // Returns true if the given `web_contents` was preloaded.
+  bool WasPreloaded(content::WebContents* web_contents) const;
+
   content::WebContents* preloaded_web_contents() {
     return preloaded_web_contents_.get();
   }

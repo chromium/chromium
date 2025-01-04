@@ -18,6 +18,7 @@ message AdProtos {
     repeated string selectable_buyer_and_seller_reporting_ids = 8;
     optional string ad_render_id = 6;
     repeated string allowed_reporting_origins = 7;
+    optional string creative_scanning_metadata = 9;
   }
   repeated AdProto ads = 1;
 }

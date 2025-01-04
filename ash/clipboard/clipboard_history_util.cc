@@ -20,7 +20,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "cc/paint/paint_flags.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "chromeos/ui/base/file_icon_util.h"
 #include "ui/base/clipboard/clipboard_data.h"
@@ -278,12 +277,9 @@ ui::ImageModel GetIconForFileClipboardItem(const ClipboardHistoryItem& item) {
 
 ui::ImageModel GetHtmlPreviewPlaceholder() {
   static base::NoDestructor<ui::ImageModel> model(
-      chromeos::features::IsClipboardHistoryRefreshEnabled()
-          ? ui::ImageModel::FromVectorIcon(
-                kUnrenderedHtmlPlaceholderIcon, cros_tokens::kCrosSysOutline,
-                ClipboardHistoryViews::kBitmapItemPlaceholderIconSize)
-          : ui::ImageModel::FromImageSkia(gfx::CanvasImageSource::MakeImageSkia<
-                                          UnrenderedHtmlPlaceholderImage>()));
+      ui::ImageModel::FromVectorIcon(
+          kUnrenderedHtmlPlaceholderIcon, cros_tokens::kCrosSysOutline,
+          ClipboardHistoryViews::kBitmapItemPlaceholderIconSize));
   return *model;
 }
 
@@ -295,11 +291,8 @@ crosapi::mojom::ClipboardHistoryItemDescriptor ItemToDescriptor(
 
 int GetPreferredItemViewWidth() {
   const auto& menu_config = views::MenuConfig::instance();
-  return chromeos::features::IsClipboardHistoryRefreshEnabled()
-             ? std::clamp(kPreferredMenuWidth,
-                          menu_config.touchable_menu_min_width,
-                          menu_config.touchable_menu_max_width)
-             : menu_config.touchable_menu_min_width;
+  return std::clamp(kPreferredMenuWidth, menu_config.touchable_menu_min_width,
+                    menu_config.touchable_menu_max_width);
 }
 
 }  // namespace ash::clipboard_history_util

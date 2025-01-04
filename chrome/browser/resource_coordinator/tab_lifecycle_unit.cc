@@ -432,15 +432,6 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::CanDiscard(
   return decision_details->IsPositive();
 }
 
-ukm::SourceId TabLifecycleUnitSource::TabLifecycleUnit::GetUkmSourceId() const {
-  resource_coordinator::ResourceCoordinatorTabHelper* observer =
-      resource_coordinator::ResourceCoordinatorTabHelper::FromWebContents(
-          web_contents());
-  if (!observer)
-    return ukm::kInvalidSourceId;
-  return observer->ukm_source_id();
-}
-
 bool TabLifecycleUnitSource::TabLifecycleUnit::IsAutoDiscardable() const {
   return auto_discardable_;
 }
@@ -588,15 +579,6 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::Discard(
     MEMORY_LOG(ERROR) << "Skipped discarding unit " << GetID()
                       << " because a transition from " << GetState()
                       << "to discarded is not allowed.";
-    return false;
-  }
-
-  // Can't discard a tab displayed in a picture-in-picture window. We check this
-  // here instead of in `CanDiscard` as not all calls to `Discard` check
-  // `CanDiscard` and discarding a picture-in-picture WebContents leaves the
-  // window in a bad state.
-  Browser* browser = chrome::FindBrowserWithTab(web_contents());
-  if (browser && browser->is_type_picture_in_picture()) {
     return false;
   }
 

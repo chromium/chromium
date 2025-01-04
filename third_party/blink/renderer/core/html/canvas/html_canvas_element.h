@@ -325,6 +325,8 @@ class CORE_EXPORT HTMLCanvasElement final
 
   bool IsPlaceholder() const override { return IsOffscreenCanvasRegistered(); }
 
+  bool CanStartSelection() const override;
+
   bool ShouldDisableAccelerationBecauseOfReadback() const;
 
  protected:
@@ -413,7 +415,11 @@ class CORE_EXPORT HTMLCanvasElement final
 
   // Canvas2DLayerBridge is used when canvas has 2d rendering context
   std::unique_ptr<Canvas2DLayerBridge> canvas2d_bridge_;
-  void ReplaceExisting2dLayerBridge(
+
+  // If the ResourceProvider currently exists, replaces it with a
+  // CanvasResourceProvider that was newly created for usage with a 2D context
+  // (or with `new_provider_for_testing` if non-null).
+  void ReplaceExistingResourceProviderFor2DContext(
       std::unique_ptr<CanvasResourceProvider> new_provider_for_testing =
           nullptr);
 

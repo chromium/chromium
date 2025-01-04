@@ -190,8 +190,9 @@ void ToolbarButton::UpdateColorsAndInsets() {
   } else {
     SetBackground(nullptr);
     const auto* cp = GetColorProvider();
-    if (cp)
+    if (cp) {
       label()->SetBackgroundColor(cp->GetColor(kColorToolbar));
+    }
   }
 
   // Apply new border with target insets.
@@ -218,8 +219,9 @@ void ToolbarButton::UpdateColorsAndInsets() {
 
 SkColor ToolbarButton::GetForegroundColor(ButtonState state) const {
   const auto* color_provider = GetColorProvider();
-  if (has_in_product_help_promo_)
+  if (has_in_product_help_promo_) {
     return color_provider->GetColor(kColorToolbarFeaturePromoHighlight);
+  }
   switch (state) {
     case ButtonState::STATE_HOVERED:
       return color_provider->GetColor(kColorToolbarButtonIconHovered);
@@ -285,8 +287,9 @@ void ToolbarButton::SetVectorIcon(const gfx::VectorIcon& icon) {
 void ToolbarButton::SetVectorIcons(const gfx::VectorIcon& icon,
                                    const gfx::VectorIcon& touch_icon) {
   vector_icons_.emplace(VectorIcons{icon, touch_icon});
-  if (GetThemeProvider())
+  if (GetThemeProvider()) {
     UpdateIcon();
+  }
 }
 
 void ToolbarButton::UpdateIcon() {
@@ -326,24 +329,27 @@ void ToolbarButton::SetLabelSideSpacing(int spacing) {
 }
 
 void ToolbarButton::SetLayoutInsetDelta(const gfx::Insets& inset_delta) {
-  if (layout_inset_delta_ == inset_delta)
+  if (layout_inset_delta_ == inset_delta) {
     return;
+  }
   layout_inset_delta_ = inset_delta;
   UpdateColorsAndInsets();
 }
 
 void ToolbarButton::SetLeadingMargin(int margin) {
   gfx::Insets* const internal_padding = GetProperty(views::kInternalPaddingKey);
-  if (internal_padding->left() == margin)
+  if (internal_padding->left() == margin) {
     return;
+  }
   internal_padding->set_left(margin);
   UpdateColorsAndInsets();
 }
 
 void ToolbarButton::SetTrailingMargin(int margin) {
   gfx::Insets* const internal_padding = GetProperty(views::kInternalPaddingKey);
-  if (internal_padding->right() == margin)
+  if (internal_padding->right() == margin) {
     return;
+  }
   internal_padding->set_right(margin);
   UpdateColorsAndInsets();
 }
@@ -361,8 +367,9 @@ std::optional<gfx::Insets> ToolbarButton::GetLayoutInsets() const {
 }
 
 void ToolbarButton::SetLayoutInsets(const std::optional<gfx::Insets>& insets) {
-  if (layout_insets_ == insets)
+  if (layout_insets_ == insets) {
     return;
+  }
   layout_insets_ = insets;
   UpdateColorsAndInsets();
 }
@@ -383,8 +390,9 @@ const gfx::Size ToolbarButton::GetTargetSize() const {
 }
 
 void ToolbarButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  if (size() != previous_bounds.size())
+  if (size() != previous_bounds.size()) {
     UpdateColorsAndInsets();
+  }
   LabelButton::OnBoundsChanged(previous_bounds);
 }
 
@@ -453,8 +461,9 @@ void ToolbarButton::OnMouseReleased(const ui::MouseEvent& event) {
     LabelButton::OnMouseReleased(event);
   }
 
-  if (IsTriggerableEvent(event))
+  if (IsTriggerableEvent(event)) {
     show_menu_factory_.InvalidateWeakPtrs();
+  }
 }
 
 void ToolbarButton::OnMouseCaptureLost() {}
@@ -463,8 +472,10 @@ void ToolbarButton::OnMouseExited(const ui::MouseEvent& event) {
   // Starting a drag results in a MouseExited, we need to ignore it.
   // A right click release triggers an exit event. We want to
   // remain in a PUSHED state until the drop down menu closes.
-  if (GetState() != STATE_DISABLED && !InDrag() && GetState() != STATE_PRESSED)
+  if (GetState() != STATE_DISABLED && !InDrag() &&
+      GetState() != STATE_PRESSED) {
     SetState(STATE_NORMAL);
+  }
 }
 
 void ToolbarButton::OnGestureEvent(ui::GestureEvent* event) {
@@ -477,16 +488,13 @@ void ToolbarButton::OnGestureEvent(ui::GestureEvent* event) {
   LabelButton::OnGestureEvent(event);
 }
 
-std::u16string ToolbarButton::GetTooltipText(const gfx::Point& p) const {
-  return GetCachedTooltipText();
-}
-
 void ToolbarButton::ShowContextMenuForViewImpl(
     View* source,
     const gfx::Point& point,
     ui::mojom::MenuSourceType source_type) {
-  if (!GetEnabled())
+  if (!GetEnabled()) {
     return;
+  }
 
   show_menu_factory_.InvalidateWeakPtrs();
   ShowDropDownMenu(source_type);
@@ -531,8 +539,9 @@ bool ToolbarButton::ShouldShowInkdropAfterIphInteraction() {
 }
 
 void ToolbarButton::ShowDropDownMenu(ui::mojom::MenuSourceType source_type) {
-  if (!ShouldShowMenu())
+  if (!ShouldShowMenu()) {
     return;
+  }
 
   gfx::Rect menu_anchor_bounds = GetAnchorBoundsInScreen();
 
@@ -552,8 +561,9 @@ void ToolbarButton::ShowDropDownMenu(ui::mojom::MenuSourceType source_type) {
       screen->GetDisplayNearestPoint(screen->GetCursorScreenPoint());
   int left_bound = display.bounds().x();
 #endif
-  if (menu_anchor_bounds.x() < left_bound)
+  if (menu_anchor_bounds.x() < left_bound) {
     menu_anchor_bounds.set_x(left_bound);
+  }
 
   // Make the button look depressed while the menu is open.
   SetState(STATE_PRESSED);
@@ -564,11 +574,13 @@ void ToolbarButton::ShowDropDownMenu(ui::mojom::MenuSourceType source_type) {
 
   // Exit if the model is null. Although ToolbarButton::ShouldShowMenu()
   // performs the same check, its overrides may not.
-  if (!model_)
+  if (!model_) {
     return;
+  }
 
-  if (tab_strip_model_ && !tab_strip_model_->GetActiveWebContents())
+  if (tab_strip_model_ && !tab_strip_model_->GetActiveWebContents()) {
     return;
+  }
 
   // Create and run menu.
   menu_model_adapter_ = std::make_unique<views::MenuModelAdapter>(
@@ -643,8 +655,9 @@ void ToolbarButton::HighlightColorAnimation::Hide() {
 
 std::optional<SkColor> ToolbarButton::HighlightColorAnimation::GetTextColor()
     const {
-  if (!IsShown() || !parent_->GetColorProvider())
+  if (!IsShown() || !parent_->GetColorProvider()) {
     return std::nullopt;
+  }
 
   // Use the overridden value supplied by the button.
   const std::optional<SkColor> text_color_overridden =
@@ -686,8 +699,9 @@ std::optional<SkColor> ToolbarButton::HighlightColorAnimation::GetBorderColor()
 std::optional<SkColor>
 ToolbarButton::HighlightColorAnimation::GetBackgroundColor() const {
   const auto* const color_provider = parent_->GetColorProvider();
-  if (!IsShown() || !color_provider)
+  if (!IsShown() || !color_provider) {
     return std::nullopt;
+  }
   SkColor bg_color =
       color_provider->GetColor(kColorToolbarButtonBackgroundHighlightedDefault);
   if (highlight_color_.has_value()) {
@@ -703,8 +717,9 @@ ToolbarButton::HighlightColorAnimation::GetBackgroundColor() const {
 
 std::optional<SkColor>
 ToolbarButton::HighlightColorAnimation::GetInkDropBaseColor() const {
-  if (!highlight_color_)
+  if (!highlight_color_) {
     return std::nullopt;
+  }
   return *highlight_color_;
 }
 
@@ -712,8 +727,9 @@ void ToolbarButton::HighlightColorAnimation::AnimationEnded(
     const gfx::Animation* animation) {
   // Only reset the color after the animation slides _back_ and not when it
   // finishes sliding fully _open_.
-  if (highlight_color_animation_.GetCurrentValue() == 0.0f)
+  if (highlight_color_animation_.GetCurrentValue() == 0.0f) {
     ClearHighlightColor();
+  }
 }
 
 void ToolbarButton::HighlightColorAnimation::AnimationProgressed(

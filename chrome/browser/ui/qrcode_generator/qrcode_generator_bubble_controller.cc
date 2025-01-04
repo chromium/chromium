@@ -37,8 +37,9 @@ QRCodeGeneratorBubbleController::~QRCodeGeneratorBubbleController() {
 
 // static
 bool QRCodeGeneratorBubbleController::IsGeneratorAvailable(const GURL& url) {
-  if (!url.SchemeIsHTTPOrHTTPS())
+  if (!url.SchemeIsHTTPOrHTTPS()) {
     return false;
+  }
 
   // Check policy.
   if (!IsQRCodeGeneratorEnabledByPolicy()) {
@@ -60,8 +61,9 @@ QRCodeGeneratorBubbleController* QRCodeGeneratorBubbleController::Get(
 void QRCodeGeneratorBubbleController::ShowBubble(const GURL& url,
                                                  bool show_back_button) {
   // Ignore subsequent calls to open the dialog if it already is open.
-  if (bubble_shown_)
+  if (bubble_shown_) {
     return;
+  }
 
   // Check policy.
   if (!IsQRCodeGeneratorEnabledByPolicy()) {
@@ -69,8 +71,9 @@ void QRCodeGeneratorBubbleController::ShowBubble(const GURL& url,
   }
 
   Browser* browser = chrome::FindBrowserWithTab(&GetWebContents());
-  if (!browser || !browser->window())
+  if (!browser || !browser->window()) {
     return;
+  }
 
   bubble_shown_ = true;
   qrcode_generator_bubble_ = browser->window()->ShowQRCodeGeneratorBubble(

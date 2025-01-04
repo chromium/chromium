@@ -16,9 +16,9 @@
 #include "chrome/browser/ui/webui/commerce/product_specifications_ui_handler_delegate.h"
 #include "chrome/browser/ui/webui/commerce/shopping_ui_handler_delegate.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
+#include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/theme_source.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/commerce_product_specifications_resources.h"
 #include "chrome/grit/commerce_product_specifications_resources_map.h"
@@ -38,6 +38,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 
 namespace commerce {
 
@@ -111,10 +112,12 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       {"seeAll", IDS_COMPARE_SEE_ALL},
       {"suggestedTabs", IDS_COMPARE_SUGGESTIONS_SECTION},
       {"tableFullMessage", IDS_COMPARE_TABLE_FULL_MESSAGE},
+      {"tableListItemTitle", IDS_COMPARE_TABLE_LIST_ITEM_TITLE},
       {"tableMenuA11yLabel", IDS_COMPARE_TABLE_MENU_A11Y_LABEL},
       {"tableNameInputA11yLabel", IDS_COMPARE_TITLE_INPUT_A11Y_LABEL},
       {"thumbsDown", IDS_THUMBS_DOWN},
       {"thumbsUp", IDS_THUMBS_UP},
+      {"yourComparisonTables", IDS_COMPARE_YOUR_COMPARISON_TABLES},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -123,6 +126,10 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
   source->AddString("compareLearnMoreUrl", kChromeUICompareLearnMoreUrl);
   source->AddInteger("maxNameLength", kMaxNameLength);
   source->AddInteger("maxTableSize", kMaxTableSize);
+
+  source->AddBoolean(
+      "comparisonTableListEnabled",
+      base::FeatureList::IsEnabled(commerce::kCompareManagementInterface));
 
   std::string email;
   signin::IdentityManager* identity_manager =
@@ -133,6 +140,10 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
     email = account_info.email;
   }
   source->AddString("userEmail", email);
+
+  auto plural_string_handler = std::make_unique<PluralStringHandler>();
+  plural_string_handler->AddLocalizedString("numItems", IDS_COMPARE_NUM_ITEMS);
+  web_ui->AddMessageHandler(std::move(plural_string_handler));
 }
 
 void ProductSpecificationsUI::BindInterface(
@@ -173,8 +184,7 @@ void ProductSpecificationsUI::CreateShoppingServiceHandler(
       std::make_unique<commerce::ShoppingServiceHandler>(
           std::move(receiver), bookmark_model, shopping_service,
           profile->GetPrefs(), tracker,
-          std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr,
-                                                                profile),
+          std::make_unique<commerce::ShoppingUiHandlerDelegate>(profile),
           optimization_guide_keyed_service
               ? optimization_guide_keyed_service
                     ->GetModelQualityLogsUploaderService()

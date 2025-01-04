@@ -1200,7 +1200,7 @@ export class RenameCommand extends FilesCommand {
  */
 export class FilesSettingsCommand extends FilesCommand {
   execute(_event: CommandEvent, _fileManager: CommandHandlerDeps) {
-    chrome.fileManagerPrivate.openSettingsSubpage('files');
+    chrome.fileManagerPrivate.openSettingsSubpage('systemPreferences');
   }
 
   override canExecute(

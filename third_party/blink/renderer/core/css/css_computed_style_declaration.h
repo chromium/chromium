@@ -121,6 +121,7 @@ class CORE_EXPORT CSSComputedStyleDeclaration final
                    const String& priority,
                    ExceptionState&) override;
   String removeProperty(const String& property_name, ExceptionState&) override;
+  void QuietlyRemoveProperty(const String& property_name) override;
   String CssFloat() const;
   void SetCSSFloat(const String&, ExceptionState&);
   String cssText() const override;

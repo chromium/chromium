@@ -45,7 +45,6 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) RtpStreamClient {
   // The VEA is necessary for hardware encoding.
   virtual void CreateVideoEncodeAccelerator(
       media::cast::ReceiveVideoEncodeAcceleratorCallback callback) = 0;
-
 };
 
 // Receives video frames and submits the data to media::cast::VideoSender. It

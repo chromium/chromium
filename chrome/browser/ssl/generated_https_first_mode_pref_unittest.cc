@@ -189,7 +189,7 @@ TEST_F(GeneratedHttpsFirstModePrefTest, UpdatePreference) {
                 std::make_unique<base::Value>(
                     static_cast<int>(HttpsFirstModeSetting::kEnabledBalanced))
                     .get()),
-            settings_private::SetPrefResult::PREF_TYPE_UNSUPPORTED);
+            settings_private::SetPrefResult::PREF_TYPE_MISMATCH);
 
   // With Balanced Mode feature disabled, check that setting the underlying
   // Balanced pref to `true` does not change the generated pref from kDisabled.

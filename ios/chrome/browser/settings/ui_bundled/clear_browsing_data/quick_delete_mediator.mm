@@ -270,6 +270,10 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
 #pragma mark - QuickDeleteMutator
 
 - (void)timeRangeSelected:(browsing_data::TimePeriod)timeRange {
+  if (_deletionTriggered) {
+    return;
+  }
+
   if (_selectedTimeRange == timeRange) {
     return;
   }
@@ -283,8 +287,13 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
     // This could occur due to race condition with multiple windows and
     // simultaneous taps. See crbug.com/368310663.
   }
+
   browsing_data::RecordDeleteBrowsingDataAction(
       browsing_data::DeleteBrowsingDataAction::kClearBrowsingDataDialog);
+
+  // This time range metric is not recorded in BrowsingDataRemoverImpl since the
+  // deletion is trigger with timestamps.
+  browsing_data::RecordDeletionForPeriod(_selectedTimeRange);
 
   // TODO(crbug.com/365776279): Monitor if deletion can be double triggered.
   DUMP_WILL_BE_CHECK(!_deletionTriggered);
@@ -397,9 +406,6 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
   } else {
     _browsingDataRemover->RemoveInRange(beginTime, endTime, removeMask,
                                         std::move(delayedCompletion), params);
-    // This metric is not recorded in BrowsingDataRemoverImpl since the deletion
-    // is trigger with timestamps.
-    browsing_data::RecordDeletionForPeriod(_selectedTimeRange);
   }
 
   RecordCookieOrCacheDeletedFromDialogHistogram(removeMask);
@@ -506,6 +512,10 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
+  if (_deletionTriggered) {
+    return;
+  }
+
   if (preferenceName == browsing_data::prefs::kDeleteTimePeriod) {
     _selectedTimeRange = static_cast<browsing_data::TimePeriod>(
         _prefs->GetInteger(browsing_data::prefs::kDeleteTimePeriod));
@@ -576,6 +586,10 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
 // Restarting the counters results on the browsing data summary being updated in
 // the ViewController.
 - (void)restartCounters {
+  if (_deletionTriggered) {
+    return;
+  }
+
   _browsingHistorySummary = nil;
   _tabsSummary = nil;
   _passwordsSummary = nil;

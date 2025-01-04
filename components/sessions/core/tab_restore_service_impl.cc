@@ -253,7 +253,7 @@ bool DeserializeWindowType(int type_int,
     case sessions::SessionWindow::TYPE_APP:
     case sessions::SessionWindow::TYPE_DEVTOOLS:
     case sessions::SessionWindow::TYPE_APP_POPUP:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     case sessions::SessionWindow::TYPE_CUSTOM_TAB:
 #endif
       *type = static_cast<sessions::SessionWindow::WindowType>(type_int);

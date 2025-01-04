@@ -4,12 +4,12 @@
 
 #include "base/fuchsia/startup_context.h"
 
-#include <tuple>
-#include <utility>
-
 #include <fuchsia/io/cpp/fidl.h>
 #include <lib/sys/cpp/outgoing_directory.h>
 #include <lib/sys/cpp/service_directory.h>
+
+#include <tuple>
+#include <utility>
 
 #include "base/check.h"
 #include "base/check_op.h"

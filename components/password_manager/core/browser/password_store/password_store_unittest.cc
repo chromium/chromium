@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -249,7 +250,7 @@ std::optional<PasswordHashData> GetPasswordFromPref(const std::string& username,
 TEST_F(PasswordStoreTest, UpdateLoginPrimaryKeyFields) {
   base::HistogramTester histogram_tester;
   /* clang-format off */
-  static const PasswordFormData kTestCredentials[] = {
+  static const auto kTestCredentials = std::to_array<PasswordFormData>({
       // The old credential.
       {PasswordForm::Scheme::kHtml,
        kTestWebRealm1,
@@ -263,7 +264,7 @@ TEST_F(PasswordStoreTest, UpdateLoginPrimaryKeyFields) {
        kTestWebOrigin2,
        "", u"", u"username_element_2",  u"password_element_2",
        u"username_value_2",
-       u"", kTestLastUsageTime, 1}};
+       u"", kTestLastUsageTime, 1}});
   /* clang-format on */
 
   scoped_refptr<PasswordStore> store = CreatePasswordStore();

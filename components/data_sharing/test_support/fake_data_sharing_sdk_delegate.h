@@ -9,6 +9,7 @@
 
 #include "components/data_sharing/public/data_sharing_sdk_delegate.h"
 #include "components/data_sharing/public/group_data.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace data_sharing {
 
@@ -29,8 +30,8 @@ class FakeDataSharingSDKDelegate : public DataSharingSDKDelegate {
 
   GroupId AddGroupAndReturnId(const std::string& display_name);
 
-  void AddMember(const GroupId& group_id, const std::string& member_gaia_id);
-  void RemoveMember(const GroupId& group_id, const std::string& member_gaia_id);
+  void AddMember(const GroupId& group_id, const GaiaId& member_gaia_id);
+  void RemoveMember(const GroupId& group_id, const GaiaId& member_gaia_id);
 
   void AddAccount(const std::string& email, const GaiaId& gaia_id);
 
@@ -72,9 +73,9 @@ class FakeDataSharingSDKDelegate : public DataSharingSDKDelegate {
 
  private:
   std::map<GroupId, data_sharing_pb::GroupData> groups_;
-  std::map<std::string, std::string> email_to_gaia_id_;
+  std::map<std::string, GaiaId> email_to_gaia_id_;
   int next_group_id_ = 0;
-  std::string user_gaia_id_;
+  GaiaId user_gaia_id_;
 };
 
 }  // namespace data_sharing

@@ -22,6 +22,12 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="WebAudioCallbackAggregationDuration">
+  <variant name=".Intervals"
+      summary="Streams ran for more than 1 interval (1000 callbacks)"/>
+  <variant name=".Short" summary="Streams ran for less than 1000 callbacks"/>
+</variants>
+
 <variants name="WebAudioLatencyTag">
   <variant name="" summary="All latencies combined"/>
   <variant name=".LatencyBalanced"/>
@@ -196,6 +202,22 @@ chromium-metrics-reviews@google.com.
     the PushPUllFIFO in AudioDestination. Measured and reported at every render
     callback.
   </summary>
+  <token key="LatencyTag" variants="WebAudioLatencyTag"/>
+</histogram>
+
+<histogram
+    name="WebAudio.AudioDestination.FIFOUnderrunCount{Duration}{LatencyTag}"
+    units="underruns" expires_after="2025-06-01">
+  <owner>mjwilson@chromium.org</owner>
+  <owner>hongchan@chromium.org</owner>
+  <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
+  <summary>
+    The number of times the PushPullFIFO in AudioDestination experienced an
+    underrun. The &quot;Intervals&quot; duration indicates that the metric is
+    measured and logged every 1000 audio render callbacks. For
+    &quot;Short&quot;, it is logged at the end of the audio stream.
+  </summary>
+  <token key="Duration" variants="WebAudioCallbackAggregationDuration"/>
   <token key="LatencyTag" variants="WebAudioLatencyTag"/>
 </histogram>
 

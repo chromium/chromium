@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/multiprocess_test.h"
+#include "base/win/ntsecapi_shim.h"
 #include "chrome/credential_provider/gaiacp/gaia_credential_provider_filter.h"
 #include "chrome/credential_provider/gaiacp/scoped_lsa_policy.h"
 #include "chrome/credential_provider/test/test_credential.h"

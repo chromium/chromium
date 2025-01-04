@@ -62,6 +62,10 @@ export {SettingsIdleLoadElement} from './controls/settings_idle_load.js';
 export {DefaultBrowserBrowserProxy, DefaultBrowserBrowserProxyImpl, DefaultBrowserInfo} from './default_browser_page/default_browser_browser_proxy.js';
 export {SettingsDefaultBrowserPageElement} from './default_browser_page/default_browser_page.js';
 // </if>
+// <if expr="enable_glic">
+export {SettingsGlicDataPageElement, SettingsGlicDataPageFeaturePrefName} from './glic_page/glic_data_page.js';
+export {SettingsGlicPageElement, SettingsGlicPageFeaturePrefName} from './glic_page/glic_page.js';
+// </if>
 export {HatsBrowserProxy, HatsBrowserProxyImpl, SafeBrowsingSetting, SecurityPageInteraction, TrustSafetyInteraction} from './hats_browser_proxy.js';
 export {loadTimeData} from './i18n_setup.js';
 export {AiPageCompareInteractions, AiPageComposeInteractions, AiPageHistorySearchInteractions, AiPageInteractions, AiPageTabOrganizationInteractions, CardBenefitsUserAction, CvcDeletionUserAction, DeleteBrowsingDataAction, MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached, SafeBrowsingInteractions, SafetyCheckNotificationsModuleInteractions, SafetyCheckUnusedSitePermissionsModuleInteractions, SafetyHubCardState, SafetyHubEntryPoint, SafetyHubModuleType, SafetyHubSurfaces} from './metrics_browser_proxy.js';

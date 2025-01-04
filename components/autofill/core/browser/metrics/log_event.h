@@ -7,10 +7,10 @@
 
 #include "base/time/time.h"
 #include "base/types/id_type.h"
-#include "components/autofill/core/browser/autofill_ablation_study.h"
 #include "components/autofill/core/browser/filling/form_filler.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
+#include "components/autofill/core/browser/studies/autofill_ablation_study.h"
 #include "components/autofill/core/common/is_required.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -42,6 +42,7 @@ enum class FillDataType : uint8_t {
   kSingleFieldFillerAutocomplete = 3,
   kSingleFieldFillerIban = 4,
   kSingleFieldFillerPromoCode = 5,
+  kAutofillAi = 6,
 };
 
 // AreCollapsible(..., ...) are a set of functions that checks whether two

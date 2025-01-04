@@ -17,7 +17,6 @@
 #include "base/strings/cstring_view.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/pepper/content_browser_pepper_host_factory.h"
 #include "content/browser/renderer_host/pepper/pepper_socket_utils.h"
 #include "content/public/browser/browser_context.h"
@@ -387,7 +386,6 @@ int32_t PepperTCPSocketMessageFilter::OnMsgConnect(
     return PP_ERROR_FAILED;
 
   // Intentionally using a HostPortPair because scheme isn't specified.
-  // TODO(mmenke): Pass in correct NetworkAnonymizationKey.
   network_context->ResolveHost(
       network::mojom::HostResolverHost::NewHostPortPair(
           net::HostPortPair(host, port)),

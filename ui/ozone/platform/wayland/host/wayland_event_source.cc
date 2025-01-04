@@ -271,8 +271,10 @@ uint32_t WaylandEventSource::OnKeyboardKeyEvent(
   event.set_source_device_id(device_id);
 
   auto* focus = window_manager_->GetCurrentKeyboardFocusedWindow();
-  if (!focus)
+  if (!focus) {
+    VLOG(1) << "Failed to dispatch key event. No focus surface.";
     return POST_DISPATCH_STOP_PROPAGATION;
+  }
 
   Event::DispatcherApi(&event).set_target(focus);
 
@@ -304,12 +306,27 @@ uint32_t WaylandEventSource::OnKeyboardKeyEvent(
   return DispatchEvent(&event);
 }
 
-void WaylandEventSource::OnSynthesizedKeyPressEvent(DomCode dom_code,
+void WaylandEventSource::OnSynthesizedKeyPressEvent(WaylandWindow* window,
+                                                    DomCode dom_code,
                                                     base::TimeTicks timestamp) {
+  base::WeakPtr<WaylandWindow> prev_focused_window;
+  if (window) {
+    if (auto* prev = window_manager_->GetCurrentKeyboardFocusedWindow()) {
+      prev_focused_window = prev->AsWeakPtr();
+    }
+    window_manager_->SetKeyboardFocusedWindow(window);
+  }
+
   std::ignore =
       OnKeyboardKeyEvent(EventType::kKeyPressed, dom_code, /*repeat=*/false,
                          /*serial=*/std::nullopt, timestamp,
                          /*device_id=*/0, WaylandKeyboard::KeyEventKind::kKey);
+
+  // The previously focused window may get destroyed as a side-effect of the
+  // above dispatched event, thus only restore focus here if it's still alive.
+  if (prev_focused_window) {
+    window_manager_->SetKeyboardFocusedWindow(prev_focused_window.get());
+  }
 }
 
 void WaylandEventSource::OnPointerFocusChanged(

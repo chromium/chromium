@@ -2142,11 +2142,10 @@ crbug.com/1430215 [ Mac ] external/wpt/dom/events/scrolling/overscroll-deltas.ht
 
 ######## End Unload Deprecation
 
-# View transitions sub-directory tests under different configs
-# These run as virtual/view-transition-on-navigation/
+# View transitions cross document tests naturally exercise mpa serialization.
 crbug.com/40241779 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/navigation/* [ Skip ]
+# View transitions cross document tests don't need to test wide gamut, since that's covered by same doc tests.
 crbug.com/40241779 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/navigation/* [ Skip ]
-crbug.com/40241779 virtual/threaded/external/wpt/css/css-view-transitions/navigation/* [ Skip ]
 
 # This test requests a screenshot capture inside the updateDOMCallback assuming
 # this will end the test. The ViewTransition API suppresses rendering while this
@@ -2232,3 +2231,8 @@ crbug.com/342191615 [ iOS17-simulator ] inspector-protocol/bluetooth/* [ Skip ]
 # These html5lib parser tests always time out.
 html5lib/generated/run-foreign-fragment-data.html [ Skip ]
 html5lib/generated/run-foreign-fragment-write.html [ Skip ]
+
+# View Transition tests are slow due to the fact that they create a compositor and wait for Viz screencaps.
+[ Debug ] external/wpt/css/css-view-transitions/* [ Skip ]
+[ Debug ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/* [ Skip ]
+[ Debug ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/* [ Skip ]

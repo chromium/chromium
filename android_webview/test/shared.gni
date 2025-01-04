@@ -82,6 +82,7 @@ template("base_webview_instrumentation_test_apk") {
       "//android_webview/test:base_webview_instrumentation_test_java",
       "//base:base_java",
       "//base:base_java_test_support",
+      "//third_party/android_deps:com_googlecode_java_diff_utils_diffutils_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/junit",

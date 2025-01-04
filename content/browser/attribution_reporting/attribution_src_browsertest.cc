@@ -1530,8 +1530,13 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcCrossAppWebEnabledBrowserTest,
 
 namespace {
 
-constexpr char kNumDataHostsRegisteredOnClientBounce5sMetricName[] =
-    "Conversions.NumDataHostsRegisteredOnClientBounce.5s";
+constexpr char
+    kNumDataHostsRegisteredOnClientBounceUserActivation5sMetricName[] =
+        "Conversions.NumDataHostsRegisteredOnClientBounce.UserActivation.5s";
+
+constexpr char
+    kNumDataHostsRegisteredOnClientBounceUserInteraction5sMetricName[] =
+        "Conversions.NumDataHostsRegisteredOnClientBounce.UserInteraction.5s";
 
 }  // namespace
 
@@ -1562,7 +1567,9 @@ IN_PROC_BROWSER_TEST_P(
                                                           redirected_url));
 
   histograms.ExpectBucketCount(
-      kNumDataHostsRegisteredOnClientBounce5sMetricName, 1, 1);
+      kNumDataHostsRegisteredOnClientBounceUserActivation5sMetricName, 1, 1);
+  histograms.ExpectBucketCount(
+      kNumDataHostsRegisteredOnClientBounceUserInteraction5sMetricName, 1, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -1591,8 +1598,10 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(NavigateToURLFromRendererWithoutUserGesture(web_contents(),
                                                           redirected_url));
 
-  histograms.ExpectTotalCount(kNumDataHostsRegisteredOnClientBounce5sMetricName,
-                              0);
+  histograms.ExpectTotalCount(
+      kNumDataHostsRegisteredOnClientBounceUserActivation5sMetricName, 0);
+  histograms.ExpectTotalCount(
+      kNumDataHostsRegisteredOnClientBounceUserInteraction5sMetricName, 0);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -1620,8 +1629,10 @@ IN_PROC_BROWSER_TEST_P(
   GURL redirected_url(https_server()->GetURL("a.test", "/title2.html"));
   EXPECT_TRUE(NavigateToURLFromRenderer(web_contents(), redirected_url));
 
-  histograms.ExpectTotalCount(kNumDataHostsRegisteredOnClientBounce5sMetricName,
-                              0);
+  histograms.ExpectTotalCount(
+      kNumDataHostsRegisteredOnClientBounceUserActivation5sMetricName, 0);
+  histograms.ExpectTotalCount(
+      kNumDataHostsRegisteredOnClientBounceUserInteraction5sMetricName, 0);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -1649,8 +1660,10 @@ IN_PROC_BROWSER_TEST_P(
   GURL redirected_url(https_server()->GetURL("a.test", "/title2.html"));
   EXPECT_TRUE(NavigateToURL(web_contents(), redirected_url));
 
-  histograms.ExpectTotalCount(kNumDataHostsRegisteredOnClientBounce5sMetricName,
-                              0);
+  histograms.ExpectTotalCount(
+      kNumDataHostsRegisteredOnClientBounceUserActivation5sMetricName, 0);
+  histograms.ExpectTotalCount(
+      kNumDataHostsRegisteredOnClientBounceUserInteraction5sMetricName, 0);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -1685,12 +1698,58 @@ IN_PROC_BROWSER_TEST_P(
                                                           redirected_url));
 
   histograms.ExpectTotalCount(
-      "Conversions.NumDataHostsRegisteredOnClientBounce.1s", 0);
+      "Conversions.NumDataHostsRegisteredOnClientBounce.UserActivation.1s", 0);
+  histograms.ExpectTotalCount(
+      "Conversions.NumDataHostsRegisteredOnClientBounce.UserInteraction.1s", 0);
+
   // Not timed out yet for 5s and 10s.
   histograms.ExpectBucketCount(
-      kNumDataHostsRegisteredOnClientBounce5sMetricName, 1, 1);
+      kNumDataHostsRegisteredOnClientBounceUserActivation5sMetricName, 1, 1);
   histograms.ExpectBucketCount(
-      "Conversions.NumDataHostsRegisteredOnClientBounce.10s", 1, 1);
+      "Conversions.NumDataHostsRegisteredOnClientBounce.UserActivation.10s", 1,
+      1);
+
+  histograms.ExpectBucketCount(
+      kNumDataHostsRegisteredOnClientBounceUserInteraction5sMetricName, 1, 1);
+  histograms.ExpectBucketCount(
+      "Conversions.NumDataHostsRegisteredOnClientBounce.UserInteraction.10s", 1,
+      1);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    AttributionSrcBrowserTest,
+    ScrollAndNavigatedWithoutUserGesture_ClientBounceMetricRecorded) {
+  base::HistogramTester histograms;
+
+  GURL page_url =
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  GURL register_url =
+      https_server()->GetURL("c.test", "/register_source_headers.html");
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_attribution_manager(), HandleSource)
+      .Times(1)
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+
+  ExecuteScriptAsyncWithoutUserGesture(
+      web_contents(), JsReplace("createAttributionSrcImg($1);", register_url));
+
+  run_loop.Run();
+
+  SimulateGestureScrollSequence(web_contents(), gfx::Point(100, 100),
+                                gfx::Vector2dF(0, 15));
+
+  GURL redirected_url(https_server()->GetURL("a.test", "/title2.html"));
+  EXPECT_TRUE(NavigateToURLFromRendererWithoutUserGesture(web_contents(),
+                                                          redirected_url));
+
+  // Scroll is considered as an user interaction, but not user activation.
+  histograms.ExpectBucketCount(
+      kNumDataHostsRegisteredOnClientBounceUserActivation5sMetricName, 1, 1);
+  histograms.ExpectTotalCount(
+      kNumDataHostsRegisteredOnClientBounceUserInteraction5sMetricName, 0);
 }
 
 }  // namespace content

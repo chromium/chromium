@@ -226,8 +226,9 @@ void UpdateAuthParams(base::Value::Dict& params) {
   cros_settings->GetBoolean(kAccountsPrefAllowNewUser, &allow_new_user);
 
   // nosignup flow if new users are not allowed.
-  if (!allow_new_user)
+  if (!allow_new_user) {
     params.Set("flow", "nosignup");
+  }
 }
 
 // TODO(crbug.com/40239091)
@@ -335,8 +336,9 @@ GaiaScreenHandler::GaiaScreenHandler(
 }
 
 GaiaScreenHandler::~GaiaScreenHandler() {
-  if (is_security_token_pin_enabled_)
+  if (is_security_token_pin_enabled_) {
     GetLoginScreenPinDialogManager()->RemovePinDialogHost(this);
+  }
   HttpAuthDialog::RemoveObserver(this);
 }
 
@@ -422,8 +424,9 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   params.Set("screenMode", screen_mode_);
 
   const std::string app_locale = g_browser_process->GetApplicationLocale();
-  if (!app_locale.empty())
+  if (!app_locale.empty()) {
     params.Set("hl", app_locale);
+  }
 
   const std::string enterprise_enrollment_domain(
       GetEnterpriseEnrollmentDomain());
@@ -446,7 +449,7 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
       user_manager::UserManager::Get()->GetOwnerAccountId();
   params.Set("hasDeviceOwner", owner_account_id.is_valid());
   if (owner_account_id.is_valid() &&
-      !::features::IsParentAccessCodeForOnlineLoginEnabled()) {
+      !::features::IsParentAccessCodeForReauthEnabled()) {
     // Some Autotest policy tests appear to wipe the user list in Local State
     // but preserve a policy file referencing an owner: https://crbug.com/850139
     const user_manager::User* owner_user =
@@ -461,8 +464,9 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   params.Set("chromeType", GetChromeType());
   params.Set("clientId", gaia_urls.oauth2_chrome_client_id());
   params.Set("clientVersion", version_info::GetVersionNumber());
-  if (!platform_version->empty())
+  if (!platform_version->empty()) {
     params.Set("platformVersion", *platform_version);
+  }
   // Extended stable channel is not supported on Chrome OS Ash.
   params.Set("releaseChannel",
              chrome::GetChannelName(chrome::WithExtendedStable(false)));
@@ -512,8 +516,9 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
 
   // We only send `chromeos_board` Gaia URL parameter if user has opted into
   // sending device statistics.
-  if (*collect_stats_consent)
+  if (*collect_stats_consent) {
     params.Set("lsbReleaseBoard", base::SysInfo::GetLsbReleaseBoard());
+  }
 
   params.Set("webviewPartitionName", partition_name);
   signin_partition_name_ = partition_name;
@@ -545,7 +550,7 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   bool is_reauth = !context.email.empty();
   if (is_reauth) {
     const AccountId account_id = login::GetAccountId(
-        context.email, context.gaia_id, AccountType::GOOGLE);
+        context.email, context.gaia_id.ToString(), AccountType::GOOGLE);
     auto* user = user_manager::UserManager::Get()->FindUser(account_id);
     DCHECK(user);
     bool is_child_account = user && user->IsChild();
@@ -764,7 +769,7 @@ void GaiaScreenHandler::HandleCompleteAuthenticationEvent(
 
   // Prepare the data delivered by Gaia
   ash::login::OnlineSigninArtifacts signin_artifacts;
-  signin_artifacts.gaia_id = gaia_id;
+  signin_artifacts.gaia_id = GaiaId(gaia_id);
   signin_artifacts.email = email;
   signin_artifacts.using_saml = using_saml;
 
@@ -785,7 +790,8 @@ void GaiaScreenHandler::HandleCompleteAuthenticationEvent(
         SamlPasswordAttributes::FromJs(password_attributes);
   }
   signin_artifacts.sync_trusted_vault_keys =
-      GetSyncTrustedVaultKeysForUserContext(sync_trusted_vault_keys, gaia_id);
+      GetSyncTrustedVaultKeysForUserContext(sync_trusted_vault_keys,
+                                            GaiaId(gaia_id));
 
   // Special case when client certificates are used (SmartCard flow)
   if (using_saml && ClientCertificatesWereUsed()) {
@@ -901,7 +907,8 @@ void GaiaScreenHandler::CompleteAuthentication(
   }
 
   const AccountId account_id = login::GetAccountId(
-      signin_artifacts.email, signin_artifacts.gaia_id, AccountType::GOOGLE);
+      signin_artifacts.email, signin_artifacts.gaia_id.ToString(),
+      AccountType::GOOGLE);
   // Execute delayed allowlist check that is based on user type. If Gaia done
   // times out and doesn't provide us with services list try to use a saved
   // UserType.
@@ -1016,11 +1023,13 @@ void GaiaScreenHandler::HandleGaiaUIReady() {
   frame_state_ = FRAME_STATE_LOADED;
 
   const NetworkStateInformer::State state = network_state_informer_->state();
-  if (state == NetworkStateInformer::ONLINE)
+  if (state == NetworkStateInformer::ONLINE) {
     UpdateState(NetworkError::ERROR_REASON_UPDATE);
+  }
 
-  if (test_expects_complete_login_)
+  if (test_expects_complete_login_) {
     SubmitLoginFormForTest();
+  }
 
   if (LoginDisplayHost::default_host()) {
     LoginDisplayHost::default_host()->OnGaiaScreenReady();
@@ -1079,8 +1088,9 @@ void GaiaScreenHandler::HandleSecurityTokenPinEntered(
 
 void GaiaScreenHandler::HandleOnFatalError(int error_code,
                                            const base::Value::Dict& params) {
-  if (!LoginDisplayHost::default_host())
+  if (!LoginDisplayHost::default_host()) {
     return;
+  }
   LoginDisplayHost::default_host()
       ->GetWizardController()
       ->ShowSignInFatalErrorScreen(
@@ -1234,8 +1244,9 @@ void GaiaScreenHandler::Show() {
   enable_ash_httpauth_ = HttpAuthDialog::Enable();
 
   base::Value::Dict data;
-  if (LoginDisplayHost::default_host())
+  if (LoginDisplayHost::default_host()) {
     data.Set("hasUserPods", LoginDisplayHost::default_host()->HasUserPods());
+  }
   ShowInWebUI(std::move(data));
   elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
   hidden_ = false;
@@ -1443,7 +1454,7 @@ void GaiaScreenHandler::LoadAuthenticator(bool force) {
     // `known_user`.
     if (const std::string* gaia_id =
             known_user.FindGaiaID(AccountId::FromUserEmail(context.email))) {
-      context.gaia_id = *gaia_id;
+      context.gaia_id = GaiaId(*gaia_id);
     }
 
     // TODO(http://b/314902371): This may be dangerous.

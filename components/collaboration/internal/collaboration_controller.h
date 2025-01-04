@@ -13,6 +13,7 @@
 #include "components/collaboration/public/collaboration_controller_delegate.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/group_data.h"
+#include "components/saved_tab_groups/public/types.h"
 
 namespace syncer {
 class SyncService;
@@ -54,6 +55,12 @@ class CollaborationController {
     // Delegate is promoting the local tab group.
     kOpeningLocalTabGroup,
 
+    // Delegate is showing the share sheet.
+    kShowingShareScreen,
+
+    // Delegate is showing the manage people screen.
+    kShowingManageScreen,
+
     // The flow is cancelled.
     kCancel,
 
@@ -61,16 +68,47 @@ class CollaborationController {
     kError,
   };
 
-  enum class Flow {
-    kJoin,
-    kShare,
+  class Flow {
+   public:
+    enum class Type {
+      kJoin,
+      kShareOrManage,
+    };
+
+    // Join flow constructor.
+    Flow(Type type, const data_sharing::GroupToken& token);
+
+    // Share flow constructor.
+    Flow(Type type, const tab_groups::EitherGroupID& either_id);
+
+    ~Flow();
+
+    Flow(const Flow&);
+
+    const Type type;
+
+    const data_sharing::GroupToken& join_token() const {
+      DCHECK_EQ(type, Type::kJoin);
+      return join_token_;
+    }
+
+    const tab_groups::EitherGroupID& either_id() const {
+      DCHECK_EQ(type, Type::kShareOrManage);
+      return either_id_;
+    }
+
+   private:
+    // ID for join flow.
+    const data_sharing::GroupToken join_token_;
+
+    // ID for share flow.
+    const tab_groups::EitherGroupID either_id_;
   };
 
   using FinishCallback = base::OnceCallback<void()>;
 
   explicit CollaborationController(
       const Flow& flow,
-      const data_sharing::GroupToken& token,
       CollaborationService* collaboration_service,
       data_sharing::DataSharingService* data_sharing_service,
       tab_groups::TabGroupSyncService* tab_group_sync_service,
@@ -92,7 +130,6 @@ class CollaborationController {
     return tab_group_sync_service_.get();
   }
   syncer::SyncService* sync_service() { return sync_service_.get(); }
-  const data_sharing::GroupToken& token() { return token_; }
   CollaborationService* collaboration_service() {
     return collaboration_service_.get();
   }
@@ -117,7 +154,7 @@ class CollaborationController {
   StateId GetStateForTesting();
 
  private:
-  static constexpr std::array<std::pair<StateId, StateId>, 18>
+  static constexpr std::array<std::pair<StateId, StateId>, 22>
       kValidTransitions = {{
           // kPending transitions to:
           //
@@ -148,12 +185,18 @@ class CollaborationController {
           //   but tab group not found in sync.
           //   kOpeningLocalTabGroup: When user is in current people group, and
           //   tab group found in sync.
+          //   kShowingShareScreen: In share flow, when the tab group is not
+          //   shared.
+          //   kShowingManageScreen: In share flow, when the tab group is a
+          //   shared tab group.
           //   kError: An error occurred while checking requirements. This could
           //   be due to version mismatch.
           {StateId::kCheckingFlowRequirements, StateId::kAddingUserToGroup},
           {StateId::kCheckingFlowRequirements,
            StateId::kWaitingForSyncAndDataSharingGroup},
           {StateId::kCheckingFlowRequirements, StateId::kOpeningLocalTabGroup},
+          {StateId::kCheckingFlowRequirements, StateId::kShowingShareScreen},
+          {StateId::kCheckingFlowRequirements, StateId::kShowingManageScreen},
           {StateId::kCheckingFlowRequirements, StateId::kError},
 
           // kAddingUserToGroup transition to:
@@ -186,6 +229,16 @@ class CollaborationController {
           //   to clean up.
           {StateId::kOpeningLocalTabGroup, StateId::kError},
           {StateId::kOpeningLocalTabGroup, StateId::kCancel},
+
+          // kShowingShareScreen transition to:
+          //
+          //   kError: An error occurred while showing the share screen.
+          {StateId::kShowingShareScreen, StateId::kError},
+
+          // kShowingManageScreen transition to:
+          //
+          //   kError: An error occurred while showing the manage people screen.
+          {StateId::kShowingManageScreen, StateId::kError},
       }};
 
   bool IsValidStateTransition(StateId from, StateId to);
@@ -194,7 +247,6 @@ class CollaborationController {
   std::unique_ptr<ControllerState> current_state_;
 
   const Flow flow_;
-  const data_sharing::GroupToken token_;
   const raw_ptr<CollaborationService> collaboration_service_;
   const raw_ptr<data_sharing::DataSharingService> data_sharing_service_;
   const raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_;

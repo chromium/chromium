@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 
 #include <memory>
+
 #include "build/build_config.h"
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -367,13 +368,14 @@ TEST(ImageDecoderTest, hasSufficientDataToSniffMimeTypeAvif) {
       'm', 'd', 'a', 't'       // unsigned int(32) type = boxtype;
   };
 
-  scoped_refptr<SharedBuffer> buffer = SharedBuffer::Create<size_t>(kData, 8);
+  scoped_refptr<SharedBuffer> buffer =
+      SharedBuffer::Create(base::span(kData).first(8u));
   EXPECT_FALSE(ImageDecoder::HasSufficientDataToSniffMimeType(*buffer));
   EXPECT_EQ(ImageDecoder::SniffMimeType(buffer), String());
-  buffer->Append<size_t>(kData + 8, 8);
+  buffer->Append(base::span(kData).subspan(8u, 8u));
   EXPECT_FALSE(ImageDecoder::HasSufficientDataToSniffMimeType(*buffer));
   EXPECT_EQ(ImageDecoder::SniffMimeType(buffer), String());
-  buffer->Append<size_t>(kData + 16, sizeof(kData) - 16);
+  buffer->Append(base::span(kData).subspan(16u));
   EXPECT_TRUE(ImageDecoder::HasSufficientDataToSniffMimeType(*buffer));
   EXPECT_EQ(ImageDecoder::SniffMimeType(buffer), "image/avif");
 }

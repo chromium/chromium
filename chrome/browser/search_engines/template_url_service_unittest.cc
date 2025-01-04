@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/search_engines/template_url_service.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
@@ -141,36 +137,6 @@ std::unique_ptr<TemplateURLData> CreateTestSearchEngine() {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-// Creates a `TemplateURLData` corresponding to a enterprise search engine set
-// by policy, with some fake data generated from `keyword` and the
-// `featured_by_policy` field set according to the corresponding parameter.
-std::unique_ptr<TemplateURLData> CreateEnterpriseSearchEntry(
-    const std::string& keyword,
-    bool featured_by_policy) {
-  auto data = std::make_unique<TemplateURLData>();
-  data->SetShortName(base::UTF8ToUTF16(keyword + "name"));
-  data->SetKeyword(base::UTF8ToUTF16(keyword));
-  data->SetURL(std::string("https://") + keyword + ".com/q={searchTerms}");
-  data->created_by_policy = TemplateURLData::CreatedByPolicy::kSiteSearch;
-  data->enforced_by_policy = false;
-  data->featured_by_policy = featured_by_policy;
-  data->is_active = TemplateURLData::ActiveStatus::kTrue;
-  data->favicon_url =
-      GURL(std::string("https://") + keyword + ".com/favicon.ico");
-  data->safe_for_autoreplace = false;
-  data->date_created = base::Time();
-  data->last_modified = base::Time();
-  return data;
-}
-
-// Creates a `TemplateURLData` corresponding to a enterprise search engine set
-// by policy, with some fake data generated from `keyword` and
-// `featured_by_policy` set as false.
-std::unique_ptr<TemplateURLData> CreateEnterpriseSearchEntry(
-    const std::string& keyword) {
-  return CreateEnterpriseSearchEntry(keyword, /*featured_by_policy=*/false);
-}
-
 // Creates a `TemplateURLData` with some fake data generated from `keyword`
 // and with the `safe_for_autoreplace` field set according to the
 // corresponding parameter.
@@ -603,31 +569,32 @@ TEST_P(TemplateURLServiceTest, AddOmniboxExtensionKeyword) {
                      std::string(), std::string(), true);
   AddKeywordWithDate("nonreplaceable", "keyword2", "http://test2",
                      std::string(), std::string(), std::string(), false);
-  model()->RegisterOmniboxKeyword("test3", "extension", "keyword3",
-                                  "http://test3",
-                                  Time::FromSecondsSinceUnixEpoch(1));
+  model()->RegisterExtensionControlledTURL(
+      "test3", "extension", "keyword3", "http://test3",
+      Time::FromSecondsSinceUnixEpoch(1), false);
   TemplateURL* original3 = model()->GetTemplateURLForKeyword(u"keyword3");
   ASSERT_TRUE(original3);
 
   // Extension keywords should override replaceable keywords.
-  model()->RegisterOmniboxKeyword("id1", "test", "keyword1", "http://test4",
-                                  Time());
+  model()->RegisterExtensionControlledTURL("id1", "test", "keyword1",
+                                           "http://test4", Time(), false);
   TemplateURL* extension1 = model()->FindTemplateURLForExtension(
       "id1", TemplateURL::OMNIBOX_API_EXTENSION);
   EXPECT_TRUE(extension1);
   EXPECT_EQ(extension1, model()->GetTemplateURLForKeyword(u"keyword1"));
 
   // They should also override non-replaceable keywords.
-  model()->RegisterOmniboxKeyword("id2", "test", "keyword2", "http://test5",
-                                  Time());
+  model()->RegisterExtensionControlledTURL("id2", "test", "keyword2",
+                                           "http://test5", Time(), false);
   TemplateURL* extension2 = model()->FindTemplateURLForExtension(
       "id2", TemplateURL::OMNIBOX_API_EXTENSION);
   ASSERT_TRUE(extension2);
   EXPECT_EQ(extension2, model()->GetTemplateURLForKeyword(u"keyword2"));
 
   // They should override extension keywords added earlier.
-  model()->RegisterOmniboxKeyword("id3", "test", "keyword3", "http://test6",
-                                  Time::FromSecondsSinceUnixEpoch(4));
+  model()->RegisterExtensionControlledTURL(
+      "id3", "test", "keyword3", "http://test6",
+      Time::FromSecondsSinceUnixEpoch(4), false);
   TemplateURL* extension3 = model()->FindTemplateURLForExtension(
       "id3", TemplateURL::OMNIBOX_API_EXTENSION);
   ASSERT_TRUE(extension3);
@@ -640,8 +607,8 @@ TEST_P(TemplateURLServiceTest, AddSameKeywordWithOmniboxExtensionPresent) {
   // Similar to the AddSameKeyword test, but with an extension keyword masking a
   // replaceable TemplateURL.  We should still do correct conflict resolution
   // between the non-template URLs.
-  model()->RegisterOmniboxKeyword("test2", "extension", "keyword",
-                                  "http://test2", Time());
+  model()->RegisterExtensionControlledTURL("test2", "extension", "keyword",
+                                           "http://test2", Time(), false);
   TemplateURL* extension = model()->GetTemplateURLForKeyword(u"keyword");
   ASSERT_TRUE(extension);
   // Adding a keyword that matches the extension.
@@ -679,8 +646,8 @@ TEST_P(TemplateURLServiceTest, NotPersistOmniboxExtensionKeyword) {
   test_util()->VerifyLoad();
 
   // Register an omnibox keyword.
-  model()->RegisterOmniboxKeyword("test", "extension", "keyword",
-                                  "chrome-extension://test", Time());
+  model()->RegisterExtensionControlledTURL(
+      "test", "extension", "keyword", "chrome-extension://test", Time(), false);
   ASSERT_TRUE(model()->GetTemplateURLForKeyword(u"keyword"));
 
   // Reload the data.
@@ -883,6 +850,50 @@ TEST_P(TemplateURLServiceTest, Reset) {
   ASSERT_TRUE(read_url);
   AssertEquals(*cloned_url, *read_url);
   AssertTimesEqual(now, read_url->last_modified());
+}
+
+TEST_P(TemplateURLServiceTest, AddAndRemoveExtensionIdWithUnscopedMode) {
+  test_util()->VerifyLoad();
+
+  // Register an extension with unscoped mode allowed.
+  model()->AddToUnscopedModeExtensionIds("id");
+  EXPECT_TRUE(model()->GetUnscopedModeExtensionIds().contains("id"));
+
+  // Remove the registered extension.
+  model()->RemoveFromUnscopedModeExtensionIdsIfPresent("id");
+  EXPECT_FALSE(model()->GetUnscopedModeExtensionIds().contains("id"));
+}
+
+TEST_P(TemplateURLServiceTest, ExtensionWithUnscopedModeRegisteredCorrectly) {
+  test_util()->VerifyLoad();
+
+  // Register an extension with unscoped mode allowed.
+  model()->RegisterExtensionControlledTURL("id", "extension", "keyword",
+                                           "http://test", Time(), true);
+  const TemplateURL* extension_with_permission =
+      model()->GetTemplateURLForKeyword(u"keyword");
+  EXPECT_TRUE(extension_with_permission);
+  EXPECT_EQ(extension_with_permission,
+            model()->GetTemplateURLForKeyword(u"keyword"));
+  EXPECT_TRUE(model()->GetUnscopedModeExtensionIds().contains("id"));
+
+  // Remove the registered extension.
+  model()->RemoveExtensionControlledTURL("id",
+                                         TemplateURL::OMNIBOX_API_EXTENSION);
+  const TemplateURL* removed_extension =
+      model()->GetTemplateURLForKeyword(u"keyword");
+  EXPECT_FALSE(removed_extension);
+  EXPECT_FALSE(model()->GetUnscopedModeExtensionIds().contains("id"));
+
+  // Register an extension again without allowing unscoped mode.
+  model()->RegisterExtensionControlledTURL("id", "extension", "keyword",
+                                           "http://test", Time(), false);
+  const TemplateURL* extension_without_permission =
+      model()->GetTemplateURLForKeyword(u"keyword");
+  EXPECT_TRUE(extension_without_permission);
+  EXPECT_EQ(extension_without_permission,
+            model()->GetTemplateURLForKeyword(u"keyword"));
+  EXPECT_FALSE(model()->GetUnscopedModeExtensionIds().contains("id"));
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1182,8 +1193,8 @@ TEST_P(TemplateURLServiceTest, RepairPrepopulatedSearchEngines) {
   EXPECT_FALSE(model()->GetTemplateURLForKeyword(u"bing.com"));
 
   // Register an extension with bing keyword.
-  model()->RegisterOmniboxKeyword("abcdefg", "extension_name", "bing.com",
-                                  "http://abcdefg", Time());
+  model()->RegisterExtensionControlledTURL(
+      "abcdefg", "extension_name", "bing.com", "http://abcdefg", Time(), false);
   EXPECT_TRUE(model()->GetTemplateURLForKeyword(u"bing.com"));
 
   // Remove yahoo. It will be restored later, but for now verify we removed it.
@@ -1388,8 +1399,8 @@ TEST_P(TemplateURLServiceTest, RepairStarterPackEngines) {
   EXPECT_FALSE(model()->GetTemplateURLForKeyword(u"@history"));
 
   // Register an extension with @history keyword.
-  model()->RegisterOmniboxKeyword("abcdefg", "extension_name", "@history",
-                                  "http://abcdefg", Time());
+  model()->RegisterExtensionControlledTURL(
+      "abcdefg", "extension_name", "@history", "http://abcdefg", Time(), false);
   EXPECT_TRUE(model()->GetTemplateURLForKeyword(u"@history"));
 
   // Now perform the actual repair that should restore @history.
@@ -1464,7 +1475,8 @@ TEST_P(TemplateURLServiceTest, UpdateKeywordSearchTermsForURL) {
   struct TestData {
     const std::string url;
     const std::u16string term;
-  } data[] = {
+  };
+  auto data = std::to_array<TestData>({
       {"http://foo/", std::u16string()},
       {"http://foo/foo?q=xx", std::u16string()},
       {"http://x/bar?q=xx", std::u16string()},
@@ -1476,7 +1488,7 @@ TEST_P(TemplateURLServiceTest, UpdateKeywordSearchTermsForURL) {
       {"http://x/foo?q=b#query=xx", u"xx"},
       {"http://x/foo?q=b#q=xx", u"b"},
       {"http://x/foo?query=b#q=xx", std::u16string()},
-  };
+  });
 
   test_util()->ChangeModelToLoadState();
   AddKeywordWithDate("name", "x", "http://x/foo?q={searchTerms}",
@@ -1493,11 +1505,12 @@ TEST_P(TemplateURLServiceTest, UpdateKeywordSearchTermsForURL) {
 TEST_P(TemplateURLServiceTest, DontUpdateKeywordSearchForNonReplaceable) {
   struct TestData {
     const std::string url;
-  } data[] = {
+  };
+  auto data = std::to_array<TestData>({
       {"http://foo/"},
       {"http://x/bar?q=xx"},
       {"http://x/foo?y=xx"},
-  };
+  });
 
   test_util()->ChangeModelToLoadState();
   AddKeywordWithDate("name", "x", "http://x/foo", "http://sugg1", std::string(),
@@ -2095,9 +2108,9 @@ TEST_P(TemplateURLServiceTest, KeywordConflictNonReplaceableEngines) {
   // Use |install_time| value less than in AddExtensionSearchEngine call above
   // to check that omnibox api keyword is ranked higher even if installed
   // earlier.
-  model()->RegisterOmniboxKeyword("omnibox_api_extension_id", "extension_name",
-                                  "common_keyword", "http://test3",
-                                  Time::FromSecondsSinceUnixEpoch(1));
+  model()->RegisterExtensionControlledTURL(
+      "omnibox_api_extension_id", "extension_name", "common_keyword",
+      "http://test3", Time::FromSecondsSinceUnixEpoch(1), false);
   TemplateURL* omnibox_api = model()->FindTemplateURLForExtension(
       "omnibox_api_extension_id", TemplateURL::OMNIBOX_API_EXTENSION);
 
@@ -2605,7 +2618,95 @@ TEST_P(TemplateURLServiceTest, EmitTemplateURLActiveOnStartupHistogram) {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-TEST_P(TemplateURLServiceTest, EnterpriseSearchPolicyBeforeLoading) {
+
+struct EnterpriseSearchTestParam {
+  bool choice_enabled;
+  TemplateURLData::PolicyOrigin policy_origin;
+};
+
+static std::string EnterpriseSearchTestParamToTestSuffix(
+    const ::testing::TestParamInfo<EnterpriseSearchTestParam>& info) {
+  // Note: ensures this only runs for site search and search aggregator
+  // policies.
+  CHECK(info.param.policy_origin ==
+            TemplateURLData::PolicyOrigin::kSiteSearch ||
+        info.param.policy_origin ==
+            TemplateURLData::PolicyOrigin::kSearchAggregator);
+  return base::StringPrintf(
+      "%s_%s",
+      info.param.choice_enabled ? "SearchEngineChoiceEnabled"
+                                : "SearchEngineChoiceDisabled",
+      info.param.policy_origin == TemplateURLData::PolicyOrigin::kSiteSearch
+          ? "SiteSearch"
+          : "SearchAggregator");
+}
+
+class TemplateURLServiceEnterpriseSearchTest
+    : public TemplateURLServiceTestBase,
+      public testing::WithParamInterface<EnterpriseSearchTestParam> {
+ public:
+  TemplateURLServiceEnterpriseSearchTest()
+      : TemplateURLServiceTestBase(GetParam().choice_enabled),
+        policy_origin_(GetParam().policy_origin) {
+    EXPECT_EQ(
+        IsSearchEngineChoiceEnabled(),
+        base::FeatureList::IsEnabled(switches::kSearchEngineChoiceTrigger));
+  }
+
+ protected:
+  // Creates a `TemplateURLData` corresponding to a enterprise search engine set
+  // by policy, with some fake data generated from `keyword` and the
+  // `featured_by_policy` field set according to the corresponding parameter.
+  std::unique_ptr<TemplateURLData> CreateEnterpriseSearchEntry(
+      const std::string& keyword,
+      bool featured_by_policy) {
+    auto data = std::make_unique<TemplateURLData>();
+    data->SetShortName(base::UTF8ToUTF16(keyword + "name"));
+    data->SetKeyword(base::UTF8ToUTF16(keyword));
+    data->SetURL(std::string("https://") + keyword + ".com/q={searchTerms}");
+    data->policy_origin = policy_origin_;
+    data->enforced_by_policy = false;
+    data->featured_by_policy = featured_by_policy;
+    data->is_active = TemplateURLData::ActiveStatus::kTrue;
+    data->favicon_url =
+        GURL(std::string("https://") + keyword + ".com/favicon.ico");
+    data->safe_for_autoreplace = false;
+    data->date_created = base::Time();
+    data->last_modified = base::Time();
+    return data;
+  }
+
+  // Creates a `TemplateURLData` corresponding to a enterprise search engine set
+  // by policy, with some fake data generated from `keyword` and
+  // `featured_by_policy` set as false.
+  std::unique_ptr<TemplateURLData> CreateEnterpriseSearchEntry(
+      const std::string& keyword) {
+    return CreateEnterpriseSearchEntry(keyword, /*featured_by_policy=*/false);
+  }
+
+  TemplateURLData::PolicyOrigin policy_origin_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    TemplateURLServiceEnterpriseSearchTest,
+    ::testing::Values(
+        EnterpriseSearchTestParam{
+            .choice_enabled = false,
+            .policy_origin = TemplateURLData::PolicyOrigin::kSiteSearch},
+        EnterpriseSearchTestParam{
+            .choice_enabled = false,
+            .policy_origin = TemplateURLData::PolicyOrigin::kSearchAggregator},
+        EnterpriseSearchTestParam{
+            .choice_enabled = true,
+            .policy_origin = TemplateURLData::PolicyOrigin::kSiteSearch},
+        EnterpriseSearchTestParam{
+            .choice_enabled = true,
+            .policy_origin = TemplateURLData::PolicyOrigin::kSearchAggregator}),
+    &EnterpriseSearchTestParamToTestSuffix);
+
+TEST_P(TemplateURLServiceEnterpriseSearchTest,
+       EnterpriseSearchPolicyBeforeLoading) {
   constexpr char kKeyword1[] = "enterprise_search_1";
   constexpr char kKeyword2[] = "enterprise_search_2";
 
@@ -2654,7 +2755,8 @@ TEST_P(TemplateURLServiceTest, EnterpriseSearchPolicyBeforeLoading) {
   }
 }
 
-TEST_P(TemplateURLServiceTest, EnterpriseSearchPolicyAfterLoading) {
+TEST_P(TemplateURLServiceEnterpriseSearchTest,
+       EnterpriseSearchPolicyAfterLoading) {
   constexpr char kKeyword1[] = "enterprise_search_1";
   constexpr char kKeyword2[] = "enterprise_search_2";
 
@@ -2680,7 +2782,7 @@ TEST_P(TemplateURLServiceTest, EnterpriseSearchPolicyAfterLoading) {
   }
 }
 
-TEST_P(TemplateURLServiceTest, EnterpriseSearchPolicyUpdates) {
+TEST_P(TemplateURLServiceEnterpriseSearchTest, EnterpriseSearchPolicyUpdates) {
   constexpr char kKeyword1[] = "enterprise_search_1";
   constexpr char kKeyword2[] = "enterprise_search_2";
   constexpr char kKeyword3[] = "enterprise_search_3";
@@ -2754,7 +2856,7 @@ TEST_P(TemplateURLServiceTest, EnterpriseSearchPolicyUpdates) {
   EXPECT_FALSE(model()->GetTemplateURLForKeyword(kKeyword4U16));
 }
 
-TEST_P(TemplateURLServiceTest,
+TEST_P(TemplateURLServiceEnterpriseSearchTest,
        NonFeaturedEnterpriseSearchPolicyConflictWithExistingEngines) {
   constexpr char kKeyword1[] = "enterprise_search_1";
   constexpr char kKeyword2[] = "enterprise_search_2";
@@ -2823,7 +2925,7 @@ TEST_P(TemplateURLServiceTest,
   }
 }
 
-TEST_P(TemplateURLServiceTest,
+TEST_P(TemplateURLServiceEnterpriseSearchTest,
        FeaturedEnterpriseSearchPolicyConflictWithExistingEngines) {
   constexpr char kKeyword1[] = "enterprise_search_1";
   constexpr char kKeywordWithAt1[] = "@enterprise_search_1";
@@ -2906,7 +3008,7 @@ TEST_P(TemplateURLServiceTest,
   }
 }
 
-TEST_P(TemplateURLServiceTest,
+TEST_P(TemplateURLServiceEnterpriseSearchTest,
        NonFeaturedEnterpriseSearchPolicyConflictWithDSP) {
   base::HistogramTester histogram_tester;
 
@@ -2952,7 +3054,7 @@ TEST_P(TemplateURLServiceTest,
   AssertEquals(dse, model()->GetTemplateURLForKeyword(dse->keyword()));
 }
 
-TEST_P(TemplateURLServiceTest,
+TEST_P(TemplateURLServiceEnterpriseSearchTest,
        NonFeaturedEnterpriseSearchPolicyConflictWithUserDefinedDSP) {
   constexpr char kKeyword[] = "keyword";
   constexpr char16_t kKeywordU16[] = u"keyword";
@@ -3002,7 +3104,7 @@ TEST_P(TemplateURLServiceTest,
   AssertEquals(user_dse, model()->GetTemplateURLForKeyword(kKeywordU16));
 }
 
-TEST_P(TemplateURLServiceTest,
+TEST_P(TemplateURLServiceEnterpriseSearchTest,
        NonFeaturedEnterpriseSearchPolicyConflictWithDSPSetByExtension) {
   constexpr char kKeyword[] = "keyword";
   constexpr char16_t kKeywordU16[] = u"keyword";
@@ -3049,7 +3151,7 @@ TEST_P(TemplateURLServiceTest,
   AssertEquals(extension_dse, model()->GetTemplateURLForKeyword(kKeywordU16));
 }
 
-TEST_P(TemplateURLServiceTest,
+TEST_P(TemplateURLServiceEnterpriseSearchTest,
        FeaturedEnterpriseSearchPolicyConflictWithUserDefinedDSP) {
   constexpr char kKeyword[] = "@keyword";
   constexpr char16_t kKeywordU16[] = u"@keyword";
@@ -3101,7 +3203,7 @@ TEST_P(TemplateURLServiceTest,
   AssertEquals(user_dse, model()->GetTemplateURLForKeyword(kKeywordU16));
 }
 
-TEST_P(TemplateURLServiceTest,
+TEST_P(TemplateURLServiceEnterpriseSearchTest,
        FeaturedEnterpriseSearchPolicyConflictWithDSPSetByExtension) {
   constexpr char kKeyword[] = "@keyword";
   constexpr char16_t kKeywordU16[] = u"@keyword";
@@ -3150,7 +3252,7 @@ TEST_P(TemplateURLServiceTest,
   AssertEquals(extension_dse, model()->GetTemplateURLForKeyword(kKeywordU16));
 }
 
-TEST_P(TemplateURLServiceTest,
+TEST_P(TemplateURLServiceEnterpriseSearchTest,
        FeaturedEnterpriseSearchPolicyConflictWithStarterPack) {
   constexpr char kBookmarksKeyword[] = "@bookmarks";
   constexpr char16_t kBookmarksKeywordU16[] = u"@bookmarks";
@@ -3199,6 +3301,44 @@ TEST_P(TemplateURLServiceTest,
                model()->GetTemplateURLForKeyword(kBookmarksKeywordU16));
 }
 
+TEST_P(TemplateURLServiceEnterpriseSearchTest, SearchEngineRemoval) {
+  constexpr char kKeyword[] = "enterprise_search";
+  constexpr char kKeywordWithAt[] = "@enterprise_search";
+  constexpr char16_t kKeywordU16[] = u"enterprise_search";
+  constexpr char16_t kKeywordWithAtU16[] = u"@enterprise_search";
+
+  // Reset the model to ensure an `EnterpriseSearchManager` instance is
+  // created.
+  test_util()->ResetModel(/*verify_load=*/true);
+
+  // Set a managed preference that establishes enterprise search providers.
+  EnterpriseSearchManager::OwnedTemplateURLDataVector
+      initial_enterprise_search_engines;
+  initial_enterprise_search_engines.push_back(
+      CreateEnterpriseSearchEntry(kKeyword));
+  initial_enterprise_search_engines.push_back(
+      CreateEnterpriseSearchEntry(kKeywordWithAt));
+
+  SetManagedSearchSettingsPreference(initial_enterprise_search_engines,
+                                     test_util()->profile());
+
+  // Ensure managed enterprise search engines can be accessed.
+  for (auto& engine : initial_enterprise_search_engines) {
+    const TemplateURL* actual_turl =
+        model()->GetTemplateURLForKeyword(engine->keyword());
+    ASSERT_TRUE(actual_turl);
+    ExpectSimilar(engine.get(), &actual_turl->data());
+  }
+
+  // Update the policy deleting all engines.
+  SetManagedSearchSettingsPreference(
+      EnterpriseSearchManager::OwnedTemplateURLDataVector(),
+      test_util()->profile());
+
+  // Ensure the deleted enterprise search engine can no longer be accessed.
+  EXPECT_FALSE(model()->GetTemplateURLForKeyword(kKeywordU16));
+  EXPECT_FALSE(model()->GetTemplateURLForKeyword(kKeywordWithAtU16));
+}
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 

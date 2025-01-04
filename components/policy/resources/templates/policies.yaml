@@ -1317,6 +1317,14 @@ policies:
   1316: PasswordManagerPasskeysEnabled
   1317: FilePickerChooseFromDriveSettings
   1318: LiveTranslateEnabled
+  1319: DevicePowerBatteryChargingOptimization
+  1320: SmartCardConnectAllowedForUrls
+  1321: SmartCardConnectBlockedForUrls
+  1322: DeviceFlexArcPreloadEnabled
+  1323: AllowedInputMethodsForceEnabled
+  1324: WebRtcIPHandlingUrl
+  1325: GenAIPhotoEditingSettings
+
 
 atomic_groups:
   1: Homepage
@@ -1373,4 +1381,5 @@ atomic_groups:
   52: DirectSocketsSettings
   53: SkyVaultSettings
   54: BrowserEventReporting
-  55: DirectSocketsPrivateNetworkAccessSettings
+  55: SmartCardConnectSettings
+  56: WebRtc

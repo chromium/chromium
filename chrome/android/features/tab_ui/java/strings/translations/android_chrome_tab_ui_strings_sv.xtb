@@ -77,7 +77,6 @@ Om du raderar den förlorar alla omedelbart åtkomst till flikgruppen <ph name="
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> flik har ändrats, <ph name="ANY_CLOSED" /> har stängts}other{<ph name="MANY_CHANGED" /> flikar har ändrats, <ph name="ANY_CLOSED" /> har stängts}}</translation>
 <translation id="4371591986692297148">Inaktiv</translation>
 <translation id="4460014764210899310">Ta bort gruppering</translation>
-<translation id="4590027107044272416">Du kan nu öppna en ny flik här</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Vill du stänga 1 inaktiv flik?}other{Vill du stänga <ph name="TAB_COUNT_MANY" /> inaktiv flik?}}</translation>
 <translation id="4686942373615810936">Skapades just nu</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Stäng efter 1 dag}other{Stäng efter <ph name="DAY_COUNT_MANY" /> dagar}}</translation>
@@ -98,7 +97,9 @@ Om du raderar den förlorar alla omedelbart åtkomst till flikgruppen <ph name="
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> flik har lagts till}other{<ph name="MANY_ADDED" /> flikar har lagts till}}</translation>
 <translation id="5161254044473106830">Titel krävs</translation>
 <translation id="5339733443032484186">Din senaste flik</translation>
+<translation id="5380159289133845234">Arkivera flikdubbletter</translation>
 <translation id="5400836586163650660">Grå</translation>
+<translation id="5446043142172831860">Ta bort fliken och lämna gruppen</translation>
 <translation id="5490235265819901748">Flikgruppen har utökats</translation>
 <translation id="5494920125229734069">Markera alla</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Stäng flikgruppen med <ph name="TABS_COUNT_ONE" /> flik, färgen <ph name="COLOR_NAME" />.}other{Stäng flikgruppen med <ph name="TABS_COUNT_MANY" /> flikar, färgen <ph name="COLOR_NAME" />.}}</translation>
@@ -117,6 +118,7 @@ Om du lämnar gruppen förlorar du omedelbart åtkomsten till flikgruppen <ph na
 <translation id="6051432659151380973">Dina flikgrupper sparas automatiskt</translation>
 <translation id="6054741997831917303">Priset på den här varan minskade nyligen från <ph name="PREVIOUS_PRICE" /> till <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Du förlorar omedelbart åtkomst till flikgruppen <ph name="GROUP_NAME" /></translation>
+<translation id="6109251075362363230">Alla flikdubbletter arkiveras nu också, med undantag för den senast använda kopian.</translation>
 <translation id="6193448654517602979">Välj flikar</translation>
 <translation id="6228793724645064692">(butikens betyg)</translation>
 <translation id="6271513594716432922">Stänga alla inaktiva flikar</translation>

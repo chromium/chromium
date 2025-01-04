@@ -137,6 +137,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   }
   bool IsPaletteMixValue() const { return class_type_ == kPaletteMixClass; }
   bool IsPathValue() const { return class_type_ == kPathClass; }
+  bool IsShapeValue() const { return class_type_ == kShapeClass; }
   bool IsQuadValue() const { return class_type_ == kQuadClass; }
   bool IsRayValue() const { return class_type_ == kRayClass; }
   bool IsRadialGradientValue() const {
@@ -323,6 +324,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kGridTemplateAreasClass,
     kPaletteMixClass,
     kPathClass,
+    kShapeClass,
     kRayClass,
     kUnparsedDeclarationClass,
     kPendingSubstitutionValueClass,

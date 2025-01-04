@@ -16,14 +16,9 @@
 namespace component_updater {
 
 class ComponentUpdaterTimerTest : public testing::Test {
- public:
-  ComponentUpdaterTimerTest()
-      : task_environment_(
-            base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {}
-  ~ComponentUpdaterTimerTest() override = default;
-
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
 };
 
 TEST_F(ComponentUpdaterTimerTest, Start) {

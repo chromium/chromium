@@ -14,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/scoped_native_library.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "services/screen_ai/proto/chrome_screen_ai.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -36,7 +35,7 @@ class ScreenAILibraryWrapper {
       void (*get_file_content)(const char* relative_file_path,
                                uint32_t buffer_size,
                                char* buffer)) = 0;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   virtual void SetLogger() = 0;
 #endif
 

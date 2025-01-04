@@ -169,6 +169,9 @@ struct PartitionOptions {
   EnableToggle backup_ref_ptr = kDisabled;
   AllowToggle use_configurable_pool = kDisallowed;
 
+  // TODO(https://crbug.com/371135823): Remove after the investigation.
+  size_t backup_ref_ptr_extra_extras_size = 0;
+
   EnableToggle scheduler_loop_quarantine = kDisabled;
   size_t scheduler_loop_quarantine_branch_capacity_in_bytes = 0;
 

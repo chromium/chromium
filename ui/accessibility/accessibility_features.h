@@ -96,10 +96,9 @@ AX_BASE_EXPORT bool IsAccessibilityLanguageDetectionEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kEnableAccessibilityRestrictiveIA2AXModes);
 AX_BASE_EXPORT bool IsAccessibilityRestrictiveIA2AXModesEnabled();
 
-// Serialize accessibility information from the Views tree and
-// deserialize it into an AXTree in the browser process.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kEnableAccessibilityTreeForViews);
-AX_BASE_EXPORT bool IsAccessibilityTreeForViewsEnabled();
+// Extension manifest v3 migration for network speech synthesis.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kExtensionManifestV3NetworkSpeechSynthesis);
+AX_BASE_EXPORT bool IsExtensionManifestV3NetworkSpeechSynthesisEnabled();
 
 // Support aria element reflection. For example:
 //     element.ariaActiveDescendantElement = child;
@@ -195,20 +194,6 @@ AX_BASE_EXPORT bool IsAccessibilitySlowKeysEnabled();
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_ANDROID)
-// Disable max node and timeout limits on the
-// AXTreeSnapshotter's Snapshot method, and track related histograms.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilitySnapshotStressTests);
-AX_BASE_EXPORT bool IsAccessibilitySnapshotStressTestsEnabled();
-// Controls the maximum amount of nodes in a given snapshot. We set an
-// arbitrarily high value as the default to simulate there being no max nodes
-// limit.
-AX_BASE_EXPORT const base::FeatureParam<int>
-    kAccessibilitySnapshotStressTestsMaxNodes{
-        &kAccessibilitySnapshotStressTests,
-        "AccessibilitySnapshotStressTestsMaxNodes", 100000};
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if !BUILDFLAG(IS_ANDROID)
 // Use the experimental Accessibility Service.
 // TODO(katydek): Provide a more descriptive name here.
@@ -285,12 +270,18 @@ AX_BASE_EXPORT bool IsScreenAITestModeEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kMacAccessibilityAPIMigration);
 AX_BASE_EXPORT bool IsMacAccessibilityAPIMigrationEnabled();
 
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kMacAccessibilityOptimizeChildrenChanged);
+AX_BASE_EXPORT bool IsMacAccessibilityOptimizeChildrenChangedEnabled();
+
 // Set NSAccessibilityRemoteUIElement's RemoteUIApp to YES to fix
 // some accessibility bugs in PWA Mac. (Note: When enabling
 // NSAccessibilityRemoteUIElement's RemoteUIApp previously, chromium would hang.
 // See: https://crbug.com/1491329).
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityRemoteUIApp);
 AX_BASE_EXPORT bool IsAccessibilityRemoteUIAppEnabled();
+
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kBlockRootWindowAccessibleNameChangeEvent);
+AX_BASE_EXPORT bool IsBlockRootWindowAccessibleNameChangeEventEnabled();
 #endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace features

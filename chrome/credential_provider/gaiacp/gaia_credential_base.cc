@@ -30,6 +30,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/win/current_module.h"
+#include "base/win/ntsecapi_shim.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_handle.h"
@@ -1373,21 +1374,8 @@ HRESULT CGaiaCredentialBase::GetFieldState(
       hr = S_OK;
       break;
     case FID_PROVIDER_LOGO:
-      *pcpfs = ::IsWindows8OrGreater() ? CPFS_HIDDEN : CPFS_DISPLAY_IN_BOTH;
-      *pcpfis = CPFIS_NONE;
-      hr = S_OK;
-      break;
     case FID_PROVIDER_LABEL:
-      *pcpfs = ::IsWindows8OrGreater() ? CPFS_HIDDEN
-                                       : CPFS_DISPLAY_IN_DESELECTED_TILE;
-      *pcpfis = CPFIS_NONE;
-      hr = S_OK;
-      break;
     case FID_CURRENT_PASSWORD_FIELD:
-      *pcpfs = CPFS_HIDDEN;
-      *pcpfis = CPFIS_NONE;
-      hr = S_OK;
-      break;
     case FID_FORGOT_PASSWORD_LINK:
       *pcpfs = CPFS_HIDDEN;
       *pcpfis = CPFIS_NONE;

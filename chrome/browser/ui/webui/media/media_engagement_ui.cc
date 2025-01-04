@@ -115,8 +115,9 @@ class MediaEngagementScoreDetailsProviderImpl
     std::vector<component_updater::ComponentInfo> info = cus->GetComponents();
 
     for (const auto& component : info) {
-      if (component.id == kPreloadComponentID)
+      if (component.id == kPreloadComponentID) {
         return component.version.GetString();
+      }
     }
 
     return std::string();

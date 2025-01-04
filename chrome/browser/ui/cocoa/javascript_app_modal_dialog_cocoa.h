@@ -19,7 +19,7 @@ class PopunderPreventer;
 namespace javascript_dialogs {
 class AppModalDialogController;
 class AppModalDialogView;
-}
+}  // namespace javascript_dialogs
 
 namespace remote_cocoa {
 class AlertBridge;

@@ -19,29 +19,53 @@ This is a testharness.js-based test.
   assert_equals: expected "180deg " but got "- 180deg "
 [FAIL] Web Animations: property <rotate> from [100deg] to [calc(sign(20rem - 20px) * 180deg)] at (2) should be [260deg]
   assert_equals: expected "260deg " but got "- 460deg "
-[FAIL] CSS Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem from 20px to 100px) * 180deg)] at (-1) should be [20deg]
-  assert_equals: expected "20deg " but got "- 155deg "
-[FAIL] CSS Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem from 20px to 100px) * 180deg)] at (0) should be [100deg]
-  assert_equals: expected "100deg " but got "- 100deg "
-[FAIL] CSS Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem from 20px to 100px) * 180deg)] at (0.125) should be [110deg]
-  assert_equals: expected "110deg " but got "- 93.13deg "
-[FAIL] CSS Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem from 20px to 100px) * 180deg)] at (0.875) should be [170deg]
-  assert_equals: expected "170deg " but got "- 51.88deg "
-[FAIL] CSS Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem from 20px to 100px) * 180deg)] at (1) should be [180deg]
-  assert_equals: expected "180deg " but got "- 45deg "
-[FAIL] CSS Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem from 20px to 100px) * 180deg)] at (2) should be [260deg]
-  assert_equals: expected "260deg " but got "10deg "
-[FAIL] Web Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem from 20px to 100px) * 180deg)] at (-1) should be [20deg]
-  assert_equals: expected "20deg " but got "- 155deg "
-[FAIL] Web Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem from 20px to 100px) * 180deg)] at (0) should be [100deg]
-  assert_equals: expected "100deg " but got "- 100deg "
-[FAIL] Web Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem from 20px to 100px) * 180deg)] at (0.125) should be [110deg]
-  assert_equals: expected "110deg " but got "- 93.13deg "
-[FAIL] Web Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem from 20px to 100px) * 180deg)] at (0.875) should be [170deg]
-  assert_equals: expected "170deg " but got "- 51.88deg "
-[FAIL] Web Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem from 20px to 100px) * 180deg)] at (1) should be [180deg]
-  assert_equals: expected "180deg " but got "- 45deg "
-[FAIL] Web Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem from 20px to 100px) * 180deg)] at (2) should be [260deg]
-  assert_equals: expected "260deg " but got "10deg "
+[FAIL] CSS Transitions: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem, 20px, 100px) * 180deg)] at (-1) should be [20deg]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem, 20px, 100px) * 180deg)] at (0) should be [100deg]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem, 20px, 100px) * 180deg)] at (0.125) should be [110deg]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem, 20px, 100px) * 180deg)] at (0.875) should be [170deg]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem, 20px, 100px) * 180deg)] at (1) should be [180deg]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem, 20px, 100px) * 180deg)] at (2) should be [260deg]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem, 20px, 100px) * 180deg)] at (-1) should be [20deg]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem, 20px, 100px) * 180deg)] at (0) should be [100deg]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem, 20px, 100px) * 180deg)] at (0.125) should be [110deg]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem, 20px, 100px) * 180deg)] at (0.875) should be [170deg]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem, 20px, 100px) * 180deg)] at (1) should be [180deg]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem, 20px, 100px) * 180deg)] at (2) should be [260deg]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem, 20px, 100px) * 180deg)] at (-1) should be [20deg]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem, 20px, 100px) * 180deg)] at (0) should be [100deg]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem, 20px, 100px) * 180deg)] at (0.125) should be [110deg]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem, 20px, 100px) * 180deg)] at (0.875) should be [170deg]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem, 20px, 100px) * 180deg)] at (1) should be [180deg]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem, 20px, 100px) * 180deg)] at (2) should be [260deg]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem, 20px, 100px) * 180deg)] at (-1) should be [20deg]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem, 20px, 100px) * 180deg)] at (0) should be [100deg]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem, 20px, 100px) * 180deg)] at (0.125) should be [110deg]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem, 20px, 100px) * 180deg)] at (0.875) should be [170deg]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem, 20px, 100px) * 180deg)] at (1) should be [180deg]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <rotate> from [calc(sign(20rem - 20px) * 100deg)] to [calc(progress(10rem, 20px, 100px) * 180deg)] at (2) should be [260deg]
+  assert_true: 'to' value should be supported expected true got false
 Harness: the test ran to completion.
 

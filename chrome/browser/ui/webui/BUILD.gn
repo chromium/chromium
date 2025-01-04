@@ -4,8 +4,8 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//chromeos/dbus/config/use_real_dbus_clients.gni")
-import("//components/metrics/generate_allowlist_from_histograms_file.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//tools/metrics/generate_allowlist_from_histograms_file.gni")
 
 generate_allowlist_from_histograms_file("webui_url_hashes") {
   namespace = "webui_metrics"
@@ -48,10 +48,14 @@ source_set("configs") {
     deps += [
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/views/side_panel",
+      "//chrome/browser/ui/webui/signin",
     ]
 
     if (!is_chromeos) {
-      deps += [ "//chrome/browser/ui/webui/whats_new" ]
+      deps += [
+        "//chrome/browser/ui/webui/signin:profile",
+        "//chrome/browser/ui/webui/whats_new",
+      ]
     }
   }
 
@@ -59,38 +63,6 @@ source_set("configs") {
     deps += [
       "//chrome/browser/ui/webui/ash/config",
       "//chromeos/constants",
-    ]
-  }
-}
-
-source_set("webui_util") {
-  sources = [
-    "webui_util.cc",
-    "webui_util.h",
-  ]
-
-  public_deps = [
-    "//base",
-    "//ui/base",
-  ]
-
-  deps = [
-    "//build:chromeos_buildflags",
-    "//content/public/browser",
-    "//content/public/common",
-    "//services/network/public/mojom",
-    "//ui/resources",
-  ]
-
-  if (!is_android) {
-    sources += [
-      "webui_embedding_context.cc",
-      "webui_embedding_context.h",
-    ]
-
-    deps += [
-      "//chrome/browser/ui/browser_window:browser_window",
-      "//chrome/browser/ui/tabs:tabs_public",
     ]
   }
 }
@@ -115,5 +87,19 @@ source_set("webui") {
   }
   if (!is_android) {
     deps += [ "//ui/web_dialogs" ]
+  }
+}
+
+if (!is_android) {
+  source_set("webui_util") {
+    sources = [
+      "webui_embedding_context.cc",
+      "webui_embedding_context.h",
+    ]
+
+    deps = [
+      "//chrome/browser/ui/browser_window:browser_window",
+      "//chrome/browser/ui/tabs:tabs_public",
+    ]
   }
 }

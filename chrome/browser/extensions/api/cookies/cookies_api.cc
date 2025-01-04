@@ -366,11 +366,9 @@ void CookiesGetFunction::NotifyExtensionTelemetry() {
 #endif
 }
 
-CookiesGetAllFunction::CookiesGetAllFunction() {
-}
+CookiesGetAllFunction::CookiesGetAllFunction() = default;
 
-CookiesGetAllFunction::~CookiesGetAllFunction() {
-}
+CookiesGetAllFunction::~CookiesGetAllFunction() = default;
 
 ExtensionFunction::ResponseAction CookiesGetAllFunction::Run() {
   parsed_args_ = api::cookies::GetAll::Params::Create(args());
@@ -483,8 +481,7 @@ void CookiesGetAllFunction::NotifyExtensionTelemetry() {
 CookiesSetFunction::CookiesSetFunction()
     : state_(NO_RESPONSE), success_(false) {}
 
-CookiesSetFunction::~CookiesSetFunction() {
-}
+CookiesSetFunction::~CookiesSetFunction() = default;
 
 ExtensionFunction::ResponseAction CookiesSetFunction::Run() {
   parsed_args_ = api::cookies::Set::Params::Create(args());
@@ -660,11 +657,9 @@ void CookiesSetFunction::GetCookieListCallback(
   Respond(value ? std::move(*value) : NoArguments());
 }
 
-CookiesRemoveFunction::CookiesRemoveFunction() {
-}
+CookiesRemoveFunction::CookiesRemoveFunction() = default;
 
-CookiesRemoveFunction::~CookiesRemoveFunction() {
-}
+CookiesRemoveFunction::~CookiesRemoveFunction() = default;
 
 ExtensionFunction::ResponseAction CookiesRemoveFunction::Run() {
   parsed_args_ = api::cookies::Remove::Params::Create(args());

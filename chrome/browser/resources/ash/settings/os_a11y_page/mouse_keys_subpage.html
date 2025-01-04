@@ -1,0 +1,71 @@
+<style include="settings-shared">
+  :host {
+    --cr-section-indent-width: 60px;
+  }
+
+  .background {
+    background-color: var(--page-backdrop-bg-color);
+  }
+
+  settings-toggle-button {
+    padding-inline-end: var(--cr-section-padding);
+    padding-inline-start: var(--cr-section-padding);
+  }
+</style>
+
+<div class="background">
+  <settings-card>
+    <settings-toggle-button
+        id="mouseKeysToggle"
+        label="[[toggleLabel_]]"
+        pref="{{prefs.settings.a11y.mouse_keys.enabled}}"
+        deep-link-focus-id$="[[Setting.kMouseKeysEnabled]]">
+    </settings-toggle-button>
+  </settings-card>
+  <settings-card>
+    <div class="settings-box start-padding">
+      <div class="flex start settings-box-text settings-box-hr"
+          id="mouseKeysAcceleration"
+          aria-hidden="true">
+        $i18n{mouseKeysAcceleration}
+      </div>
+      <settings-slider show-markers
+          pref="{{prefs.settings.a11y.mouse_keys.acceleration}}"
+          ticks="[[mouseKeysAccelerationTicks_()]]"
+          label-aria="$i18n{mouseKeysAcceleration}"
+          label-min="$i18n{mouseKeysAccelerationMinLabel}"
+          label-max="$i18n{mouseKeysAccelerationMaxLabel}">
+      </settings-slider>
+    </div>
+    <div class="settings-box">
+      <div class="start settings-box-text" id="mouseKeysMaxSpeed"
+          aria-hidden="true">
+        $i18n{mouseKeysMaxSpeed}
+      </div>
+      <settings-slider show-markers
+          pref="{{prefs.settings.a11y.mouse_keys.max_speed}}"
+          ticks="[[mouseKeysMaxSpeedTicks_()]]"
+          label-aria="$i18n{mouseKeysMaxSpeed}"
+          label-min="$i18n{mouseKeysMaxSpeedMinLabel}"
+          label-max="$i18n{mouseKeysMaxSpeedMaxLabel}">
+      </settings-slider>
+    </div>
+  </settings-card>
+  <settings-card>
+    <settings-toggle-button id="mouseKeysUsePrimaryKeys"
+        class="settings-box hr"
+        pref="{{prefs.settings.a11y.mouse_keys.use_primary_keys}}"
+        label="$i18n{mouseKeysUsePrimaryKeys}">
+    </settings-toggle-button>
+    <div class="settings-box"
+      hidden$="[[!prefs.settings.a11y.mouse_keys.use_primary_keys.value]]">
+      <div class="start settings-box-text" aria-hidden="true">
+        $i18n{mouseKeysDominantHand}
+      </div>
+      <settings-dropdown-menu id="mouseKeysDominantHand"
+          label="$i18n{mouseKeysDominantHand}"
+          pref="{{prefs.settings.a11y.mouse_keys.dominant_hand}}"
+          menu-options="[[mouseKeysDominantHandOptions_]]">
+      </settings-dropdown-menu>
+  </settings-card>
+</div>

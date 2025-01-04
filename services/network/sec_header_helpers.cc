@@ -9,7 +9,7 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
-#include "base/metrics/histogram_functions_internal_overloads.h"
+#include "base/metrics/histogram_functions.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/cookie_util.h"
 #include "net/http/http_request_headers.h"

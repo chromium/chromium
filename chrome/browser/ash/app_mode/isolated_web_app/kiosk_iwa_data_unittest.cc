@@ -94,6 +94,8 @@ TEST_F(KioskIwaDataTest, CreateSuccess) {
       chrome::kIsolatedAppScheme, kTestWebBundleId, 0);
   const auto kExpectedWebAppId =
       web_app::GenerateAppId("", kExpectedOrigin.GetURL());
+  const auto kExpectedDefaultName =
+      GURL(kTestUpdateUrl).GetWithoutFilename().spec();
 
   auto iwa_data = KioskIwaData::Create(GetTestUserId(), kTestWebBundleId,
                                        GURL(kTestUpdateUrl), delegate_);
@@ -102,6 +104,7 @@ TEST_F(KioskIwaDataTest, CreateSuccess) {
   EXPECT_EQ(iwa_data->app_id(), kExpectedWebAppId);
   EXPECT_EQ(iwa_data->web_bundle_id().id(), kTestWebBundleId);
   EXPECT_EQ(iwa_data->update_manifest_url().spec(), kTestUpdateUrl);
+  EXPECT_EQ(iwa_data->name(), kExpectedDefaultName);
 }
 
 }  // namespace ash

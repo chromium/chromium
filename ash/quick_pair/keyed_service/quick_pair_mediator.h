@@ -160,23 +160,28 @@ class Mediator final
   scoped_refptr<Device> device_currently_showing_notification_;
 
   // The discovery notification block-list, where
-  // std::pair<std::string, Protocol> represents the block-list key of the
-  // device’s model ID and the pairing protocol corresponding (either initial
-  // or subsequent), and the value is
+  // std::pair<std::string, Protocol> represents the block-list key in the form
+  // of:
+  // - model ID, Protocol::kFastPairInitial
+  // - model ID, Protocol::kFastPairRetroactive
+  // - base64 account key, Protocol::kFastPairSubsequent
+  // We use account key for subsequent pair to allow for stricter ban times.
+  // The user can enter pairing mode on the device to avoid hitting the
+  // subsequent pair block list. The value is
   // std::pair<DiscoveryNotificationDismissalState, std::optional<base::Time>
   // representing the current state of the device and the timestamp of when it
   // is set to expire. It is optional because `kLongBan` does not have an expire
-  // timeout. This block-list bans a device model (by model ID), which means
-  // that if a user has two of the same device, or two devices are pairing in
-  // the same range, both will be blocked for discovery notifications. This is a
-  // rare edge case that we consider in order to align with Android by banning
-  // by model id. We don’t expect many users to have two of the same device, or
-  // two of the same device pairing in the same range at the same time, and
-  // users can pair via Bluetooth settings if needed. We cannot use the BLE
-  // address as a unique identifier for a device because it rotates, and when
-  // Fast Pair shows the discovery notifications, it does not yet have the
-  // classic mac address to unique identify a device (this is given as part of
-  // the FastPairHandshake).
+  // timeout. This block-list bans a device model (by model ID) for Initial
+  // Pair, which means that if a user has two of the same device, or two devices
+  // are pairing in the same range, both will be blocked for discovery
+  // notifications. This is a rare edge case that we consider in order to align
+  // with Android by banning by model id. We don’t expect many users to have two
+  // of the same device, or two of the same device pairing in the same range at
+  // the same time, and users can pair via Bluetooth settings if needed. We
+  // cannot use the BLE address as a unique identifier for a device because it
+  // rotates, and when Fast Pair shows the discovery notifications, it does not
+  // yet have the classic mac address to unique identify a device (this is given
+  // as part of the FastPairHandshake).
   base::flat_map<
       std::pair<std::string, Protocol>,
       std::pair<DiscoveryNotificationDismissalState, std::optional<base::Time>>>

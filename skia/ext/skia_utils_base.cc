@@ -160,4 +160,11 @@ std::string SkcmsMatrix3x3ToString(const skcms_Matrix3x3& m) {
       m.vals[1][2], m.vals[2][0], m.vals[2][1], m.vals[2][2]);
 }
 
+base::span<const uint8_t> as_byte_span(const SkData& sk_data LIFETIME_BOUND) {
+  // SAFETY: `data` is not null.  `bytes` and `size` come from the same
+  // container.  (`base::as_bytes_span` doesn't work because `data` accessor
+  // returns `void*`.)
+  return UNSAFE_BUFFERS(base::span(sk_data.bytes(), sk_data.size()));
+}
+
 }  // namespace skia

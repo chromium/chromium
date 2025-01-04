@@ -46,6 +46,8 @@ constexpr std::pair<int, std::u16string>
                        u"☑"),
 };
 
+constexpr const char* kYouTubeMusicUrl = "music.youtube.com";
+
 }  // namespace
 
 SelectedPlaylist::SelectedPlaylist() = default;
@@ -143,10 +145,10 @@ std::string GetSourceTitleForMediaControls(const SelectedPlaylist& playlist) {
     return "";
   }
 
-  return l10n_util::GetStringUTF8(
-      playlist.type == SoundType::kYouTubeMusic
-          ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_YOUTUBE_MUSIC_BUTTON
-          : IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_SOUNDSCAPE_BUTTON);
+  return playlist.type == SoundType::kYouTubeMusic
+             ? kYouTubeMusicUrl
+             : l10n_util::GetStringUTF8(
+                   IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_SOUNDSCAPE_BUTTON);
 }
 
 std::u16string GetCongratulatoryText(const size_t index) {

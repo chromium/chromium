@@ -17,8 +17,9 @@ ContentsLayoutManager::~ContentsLayoutManager() = default;
 
 void ContentsLayoutManager::SetContentsResizingStrategy(
     const DevToolsContentsResizingStrategy& strategy) {
-  if (strategy_.Equals(strategy))
+  if (strategy_.Equals(strategy)) {
     return;
+  }
 
   strategy_.CopyFrom(strategy);
   InvalidateHost(true);
@@ -39,8 +40,8 @@ views::ProposedLayout ContentsLayoutManager::CalculateProposedLayout(
   gfx::Rect new_devtools_bounds;
   gfx::Rect new_contents_bounds;
 
-  ApplyDevToolsContentsResizingStrategy(strategy_, container_size,
-      &new_devtools_bounds, &new_contents_bounds);
+  ApplyDevToolsContentsResizingStrategy(
+      strategy_, container_size, &new_devtools_bounds, &new_contents_bounds);
 
   // DevTools cares about the specific position, so we have to compensate RTL
   // layout here.

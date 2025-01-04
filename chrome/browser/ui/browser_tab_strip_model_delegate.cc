@@ -88,8 +88,9 @@ Browser* BrowserTabStripModelDelegate::CreateNewStripWithTabs(
 
     // Enforce that there is an active tab in the strip at all times by forcing
     // the first web contents to be marked as active.
-    if (i == 0)
+    if (i == 0) {
       item.add_types |= AddTabTypes::ADD_ACTIVE;
+    }
 
     content::WebContents* const raw_web_contents =
         item.tab.get()->GetContents();
@@ -157,15 +158,17 @@ void BrowserTabStripModelDelegate::MoveTabsToNewWindow(
 void BrowserTabStripModelDelegate::MoveGroupToNewWindow(
     const tab_groups::TabGroupId& group) {
   TabGroupModel* group_model = browser_->tab_strip_model()->group_model();
-  if (!group_model)
+  if (!group_model) {
     return;
+  }
 
   gfx::Range range = group_model->GetTabGroup(group)->ListTabs();
 
   std::vector<int> indices;
   indices.reserve(range.length());
-  for (auto i = range.start(); i < range.end(); ++i)
+  for (auto i = range.start(); i < range.end(); ++i) {
     indices.push_back(i);
+  }
 
   // chrome:: to disambiguate the free function from
   // BrowserTabStripModelDelegate::MoveTabsToNewWindow().
@@ -174,8 +177,9 @@ void BrowserTabStripModelDelegate::MoveGroupToNewWindow(
 
 std::optional<SessionID> BrowserTabStripModelDelegate::CreateHistoricalTab(
     content::WebContents* contents) {
-  if (!BrowserSupportsHistoricalEntries())
+  if (!BrowserSupportsHistoricalEntries()) {
     return std::nullopt;
+  }
 
   sessions::TabRestoreService* service =
       TabRestoreServiceFactory::GetForProfile(browser_->profile());
@@ -191,8 +195,9 @@ std::optional<SessionID> BrowserTabStripModelDelegate::CreateHistoricalTab(
 
 void BrowserTabStripModelDelegate::CreateHistoricalGroup(
     const tab_groups::TabGroupId& group) {
-  if (!BrowserSupportsHistoricalEntries())
+  if (!BrowserSupportsHistoricalEntries()) {
     return;
+  }
 
   sessions::TabRestoreService* service =
       TabRestoreServiceFactory::GetForProfile(browser_->profile());
@@ -256,8 +261,9 @@ void BrowserTabStripModelDelegate::GroupCloseStopped(
     const tab_groups::TabGroupId& group) {
   sessions::TabRestoreService* service =
       TabRestoreServiceFactory::GetForProfile(browser_->profile());
-  if (service)
+  if (service) {
     service->GroupCloseStopped(group);
+  }
 }
 
 bool BrowserTabStripModelDelegate::RunUnloadListenerBeforeClosing(
@@ -277,8 +283,9 @@ bool BrowserTabStripModelDelegate::ShouldDisplayFavicon(
       security_interstitial_tab_helper = security_interstitials::
           SecurityInterstitialTabHelper::FromWebContents(contents);
   if (security_interstitial_tab_helper &&
-      security_interstitial_tab_helper->IsDisplayingInterstitial())
+      security_interstitial_tab_helper->IsDisplayingInterstitial()) {
     return false;
+  }
 
   return browser_->ShouldDisplayFavicon(contents);
 }
@@ -291,8 +298,9 @@ void BrowserTabStripModelDelegate::AddToReadLater(
     content::WebContents* web_contents) {
   ReadingListModel* model =
       ReadingListModelFactory::GetForBrowserContext(browser_->profile());
-  if (!model || !model->loaded())
+  if (!model || !model->loaded()) {
     return;
+  }
 
   chrome::MoveTabToReadLater(browser_, web_contents);
 }

@@ -13,6 +13,7 @@ include_rules = [
   "+components/file_access",
   "+components/filename_generation",
   "+components/grit",
+  "+components/language_detection/content/common",
   "+components/power_monitor",
   "+components/services/font",
   "+components/services/font_data",

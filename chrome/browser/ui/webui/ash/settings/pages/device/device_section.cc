@@ -29,7 +29,6 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/device/inputs_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/printing/printing_section.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -48,6 +47,7 @@
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/ash/keyboard_layout_util.h"
 #include "ui/events/devices/device_data_manager.h"
+#include "ui/webui/webui_util.h"
 
 namespace ash::settings {
 
@@ -758,13 +758,13 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
       {"splitModifierKeyboardSendInvertedFunctionKeysDescription",
        IDS_SETTINGS_KEYBOARD_SEND_INVERTED_FUNCTION_KEYS_DESCRIPTION},
       {"keyboardShowInputSettings",
-       IDS_OS_SETTINGS_REVAMP_KEYBOARD_SHOW_INPUT_SETTINGS},
+       IDS_OS_SETTINGS_KEYBOARD_SHOW_INPUT_SETTINGS},
       {"keyboardShowA11yKeyboardSettings",
        IDS_OS_SETTINGS_KEYBOARD_SHOW_A11Y_KEYBOARD_SETTINGS},
       // TODO(crbug.com/1097328): Remove this string, as it is unused.
       {"keyboardShowLanguageAndInput",
        IDS_SETTINGS_KEYBOARD_SHOW_LANGUAGE_AND_INPUT},
-      {"keyboardTitle", IDS_OS_SETTINGS_REVAMP_KEYBOARD_AND_INPUTS_TITLE},
+      {"keyboardTitle", IDS_OS_SETTINGS_KEYBOARD_AND_INPUTS_TITLE},
       {"keyRepeatDelay", IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_DELAY},
       {"keyRepeatDelayLong", IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_DELAY_LONG},
       {"keyRepeatDelayShort", IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_DELAY_SHORT},
@@ -819,7 +819,7 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(keyboard_strings);
 
-  html_source->AddLocalizedString("perDeviceKeyboardKeyRightAlt",
+  html_source->AddLocalizedString("perDeviceKeyboardKeyQuickInsert",
                                   IDS_KEYBOARD_QUICK_INSERT_LABEL);
 
   html_source->AddBoolean("enableModifierSplit",
@@ -1087,10 +1087,9 @@ DeviceSection::~DeviceSection() {
 void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   webui::LocalizedString kDeviceStrings[] = {
       {"devicePageTitle", IDS_SETTINGS_DEVICE_TITLE},
-      {"touchpadScrollLabel",
-       IDS_OS_SETTINGS_REVAMP_TOUCHPAD_REVERSE_SCROLL_LABEL},
+      {"touchpadScrollLabel", IDS_OS_SETTINGS_TOUCHPAD_REVERSE_SCROLL_LABEL},
       {"touchpadScrollDescription",
-       IDS_OS_SETTINGS_REVAMP_TOUCHPAD_REVERSE_SCROLL_DESCRIPTION},
+       IDS_OS_SETTINGS_TOUCHPAD_REVERSE_SCROLL_DESCRIPTION},
       {"deviceMenuItemDescriptionKeyboard",
        IDS_OS_SETTINGS_DEVICE_MENU_ITEM_DESCRIPTION_KEYBOARD},
       {"deviceMenuItemDescriptionMouse",
@@ -1227,8 +1226,7 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
         mojom::Setting::kTouchpadSimulateRightClick, mojom::Subpage::kPointers);
   }
 
-  const int kKeyboardTitleStringID =
-      IDS_OS_SETTINGS_REVAMP_KEYBOARD_AND_INPUTS_TITLE;
+  const int kKeyboardTitleStringID = IDS_OS_SETTINGS_KEYBOARD_AND_INPUTS_TITLE;
   if (base::FeatureList::IsEnabled(ash::features::kInputDeviceSettingsSplit)) {
     // Per-device Keyboard.
     generator->RegisterTopLevelSubpage(kKeyboardTitleStringID,
@@ -1336,7 +1334,7 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
 
   // Display.
   generator->RegisterTopLevelSubpage(
-      IDS_OS_SETTINGS_REVAMP_DISPLAY_TITLE, mojom::Subpage::kDisplay,
+      IDS_OS_SETTINGS_DISPLAY_TITLE, mojom::Subpage::kDisplay,
       mojom::SearchResultIcon::kDisplay,
       mojom::SearchResultDefaultRank::kMedium, mojom::kDisplaySubpagePath);
   static constexpr mojom::Setting kDisplaySettings[] = {
@@ -1610,9 +1608,9 @@ void DeviceSection::AddDevicePointersStrings(
       {"touchpadTitle", IDS_SETTINGS_TOUCHPAD_TITLE},
       {"mouseAndTouchpadTitle", IDS_SETTINGS_MOUSE_AND_TOUCHPAD_TITLE},
       {"touchpadTapToClickEnabledLabel",
-       IDS_OS_SETTINGS_REVAMP_TOUCHPAD_TAP_TO_CLICK_LABEL},
+       IDS_OS_SETTINGS_TOUCHPAD_TAP_TO_CLICK_LABEL},
       {"touchpadTapToClickDescription",
-       IDS_OS_SETTINGS_REVAMP_TOUCHPAD_TAP_TO_CLICK_DESCRIPTION},
+       IDS_OS_SETTINGS_TOUCHPAD_TAP_TO_CLICK_DESCRIPTION},
       {"touchpadSpeed", IDS_SETTINGS_TOUCHPAD_SPEED_LABEL},
       {"pointerSlow", IDS_SETTINGS_POINTER_SPEED_SLOW_LABEL},
       {"pointerFast", IDS_SETTINGS_POINTER_SPEED_FAST_LABEL},
@@ -1628,14 +1626,12 @@ void DeviceSection::AddDevicePointersStrings(
       {"primaryMouseButtonLeft", IDS_SETTINGS_PRIMARY_MOUSE_BUTTON_LEFT_LABEL},
       {"primaryMouseButtonRight",
        IDS_SETTINGS_PRIMARY_MOUSE_BUTTON_RIGHT_LABEL},
-      {"mouseReverseScrollLabel",
-       IDS_OS_SETTINGS_REVAMP_MOUSE_REVERSE_SCROLL_LABEL},
+      {"mouseReverseScrollLabel", IDS_OS_SETTINGS_MOUSE_REVERSE_SCROLL_LABEL},
       {"mouseReverseScrollDescription",
-       IDS_OS_SETTINGS_REVAMP_MOUSE_REVERSE_SCROLL_DESCRIPTION},
-      {"mouseAccelerationLabel",
-       IDS_OS_SETTINGS_REVAMP_MOUSE_ACCELERATION_LABEL},
+       IDS_OS_SETTINGS_MOUSE_REVERSE_SCROLL_DESCRIPTION},
+      {"mouseAccelerationLabel", IDS_OS_SETTINGS_MOUSE_ACCELERATION_LABEL},
       {"mouseAccelerationDescription",
-       IDS_OS_SETTINGS_REVAMP_MOUSE_ACCELERATION_DESCRIPTION},
+       IDS_OS_SETTINGS_MOUSE_ACCELERATION_DESCRIPTION},
       {"cursorAccelerationLabel", IDS_SETTINGS_CURSOR_ACCELERATION_LABEL},
       {"mouseScrollAccelerationLabel",
        IDS_SETTINGS_MOUSE_SCROLL_ACCELERATION_LABEL},
@@ -1644,9 +1640,9 @@ void DeviceSection::AddDevicePointersStrings(
       {"pointingStickAccelerationLabel",
        IDS_SETTINGS_POINTING_STICK_ACCELERATION_LABEL},
       {"touchpadAccelerationLabel",
-       IDS_OS_SETTINGS_REVAMP_TOUCHPAD_ACCELERATION_LABEL},
+       IDS_OS_SETTINGS_TOUCHPAD_ACCELERATION_LABEL},
       {"touchpadAccelerationDescription",
-       IDS_OS_SETTINGS_REVAMP_TOUCHPAD_ACCELERATION_DESCRIPTION},
+       IDS_OS_SETTINGS_TOUCHPAD_ACCELERATION_DESCRIPTION},
       {"touchpadHapticClickSensitivityLabel",
        IDS_SETTINGS_TOUCHPAD_HAPTIC_CLICK_SENSITIVITY_LABEL},
       {"touchpadHapticFeedbackTitle",
@@ -1811,13 +1807,12 @@ void DeviceSection::AddDeviceDisplayStrings(
       {"displayOverscanInstructions",
        IDS_SETTINGS_DISPLAY_OVERSCAN_INSTRUCTIONS},
       {"displayOverscanPageText", IDS_SETTINGS_DISPLAY_OVERSCAN_TEXT},
-      {"displayOverscanPageTitle",
-       IDS_OS_SETTINGS_REVAMP_DISPLAY_BOUNDARIES_TITLE},
+      {"displayOverscanPageTitle", IDS_OS_SETTINGS_DISPLAY_BOUNDARIES_TITLE},
       {"displayOverscanPosition", IDS_SETTINGS_DISPLAY_OVERSCAN_POSITION},
       {"displayOverscanResize", IDS_SETTINGS_DISPLAY_OVERSCAN_RESIZE},
       {"displayOverscanReset", IDS_SETTINGS_DISPLAY_OVERSCAN_RESET},
       {"displayOverscanSubtitle",
-       IDS_OS_SETTINGS_REVAMP_DISPLAY_BOUNDARIES_DESCRIPTION},
+       IDS_OS_SETTINGS_DISPLAY_BOUNDARIES_DESCRIPTION},
       {"displayPositionDown", IDS_SETTINGS_DISPLAY_LAYOUT_DONW_A11Y_LABEL},
       {"displayPositionDownAndLeft",
        IDS_SETTINGS_DISPLAY_LAYOUT_DONW_AND_LEFT_A11Y_LABEL},
@@ -1835,9 +1830,8 @@ void DeviceSection::AddDeviceDisplayStrings(
       {"displayRefreshRateMenuItem",
        IDS_SETTINGS_DISPLAY_REFRESH_RATE_MENU_ITEM},
       {"displayRefreshRateSublabel",
-       IDS_OS_SETTINGS_REVAMP_DISPLAY_REFRESH_RATE_DESCRIPTION},
-      {"displayRefreshRateTitle",
-       IDS_OS_SETTINGS_REVAMP_DISPLAY_REFRESH_RATE_TITLE},
+       IDS_OS_SETTINGS_DISPLAY_REFRESH_RATE_DESCRIPTION},
+      {"displayRefreshRateTitle", IDS_OS_SETTINGS_DISPLAY_REFRESH_RATE_TITLE},
       {"displayResolutionInterlacedMenuItem",
        IDS_SETTINGS_DISPLAY_RESOLUTION_INTERLACED_MENU_ITEM},
       {"displayResolutionMenuItem", IDS_SETTINGS_DISPLAY_RESOLUTION_MENU_ITEM},
@@ -1856,7 +1850,7 @@ void DeviceSection::AddDeviceDisplayStrings(
        IDS_SETTINGS_DISPLAY_SHINY_PERFORMANCE_LABEL},
       {"displaySizeSliderMaxLabel", IDS_SETTINGS_DISPLAY_ZOOM_SLIDER_MAXIMUM},
       {"displaySizeSliderMinLabel", IDS_SETTINGS_DISPLAY_ZOOM_SLIDER_MINIMUM},
-      {"displayTitle", IDS_OS_SETTINGS_REVAMP_DISPLAY_TITLE},
+      {"displayTitle", IDS_OS_SETTINGS_DISPLAY_TITLE},
       {"displayTouchCalibrationText",
        IDS_SETTINGS_DISPLAY_TOUCH_CALIBRATION_TEXT},
       {"displayTouchCalibrationTitle",
@@ -1872,9 +1866,8 @@ void DeviceSection::AddDeviceDisplayStrings(
        IDS_SETTINGS_DISPLAY_ZOOM_LOGICAL_RESOLUTION_TEXT},
       {"displayZoomNativeLogicalResolutionNativeText",
        IDS_SETTINGS_DISPLAY_ZOOM_LOGICAL_RESOLUTION_NATIVE_TEXT},
-      {"displayZoomLabel", IDS_OS_SETTINGS_REVAMP_DISPLAY_ZOOM_LABEL},
-      {"displayZoomDescription",
-       IDS_OS_SETTINGS_REVAMP_DISPLAY_ZOOM_DESCRIPTION},
+      {"displayZoomLabel", IDS_OS_SETTINGS_DISPLAY_ZOOM_LABEL},
+      {"displayZoomDescription", IDS_OS_SETTINGS_DISPLAY_ZOOM_DESCRIPTION},
       {"displayZoomValue", IDS_SETTINGS_DISPLAY_ZOOM_VALUE},
   };
   html_source->AddLocalizedStrings(kDisplayStrings);

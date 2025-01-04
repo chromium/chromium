@@ -36,7 +36,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Auth.ScanResult" enum="FingerprintScanResult"
-    expires_after="2025-03-30">
+    expires_after="2025-06-08">
   <owner>emaamari@google.com</owner>
   <owner>tomhughes@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
@@ -61,7 +61,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Enroll.ScanResult" enum="FingerprintScanResult"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>emaamari@google.com</owner>
   <owner>tomhughes@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
@@ -279,7 +279,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.AuthSuccessful" enum="BooleanSuccess"
-    expires_after="2025-03-30">
+    expires_after="2025-06-08">
   <owner>emaamari@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -293,7 +293,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.EnrolledFingerCount" units="count"
-    expires_after="2025-03-30">
+    expires_after="2025-06-08">
   <owner>tomhughes@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
@@ -310,7 +310,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.Match.PositiveMatchSecretCorrect"
-    enum="BooleanCorrect" expires_after="2025-03-30">
+    enum="BooleanCorrect" expires_after="2025-06-08">
   <owner>hesling@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
@@ -397,7 +397,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.Result" enum="FingerprintUnlockResult"
-    expires_after="2025-03-30">
+    expires_after="2025-06-08">
   <owner>emaamari@google.com</owner>
   <owner>tomhughes@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
@@ -409,7 +409,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.{Outcome}.Duration.{Interval}" units="ms"
-    expires_after="2025-03-30">
+    expires_after="2025-06-08">
   <owner>dawidn@google.com</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
@@ -429,7 +429,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.UnlockEnabled" enum="BooleanEnabled"
-    expires_after="2025-03-30">
+    expires_after="2025-06-08">
   <owner>tomhughes@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
@@ -448,7 +448,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Updater.Reason" enum="FingerprintUpdaterReason"
-    expires_after="2025-03-30">
+    expires_after="2025-06-08">
   <owner>tomhughes@chromium.org</owner>
   <owner>hesling@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
@@ -458,7 +458,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.Updater.Status" enum="FingerprintUpdaterStatus"
-    expires_after="2025-03-30">
+    expires_after="2025-06-08">
   <owner>tomhughes@chromium.org</owner>
   <owner>hesling@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
@@ -478,6 +478,18 @@ chromium-metrics-reviews@google.com.
     <variant name="NoUpdate" summary="not necessary"/>
     <variant name="Update" summary="necessary"/>
   </token>
+</histogram>
+
+<histogram name="Fingerprint.UploadTemplate.Success"
+    enum="UploadTemplateResStatus" expires_after="2025-12-09">
+  <owner>fsammoura@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Reports the result of uploading a fingerprint template to the Fingerprint
+    Microcontroller (FPMCU). Returns an EC result code with the following
+    possible values: -1: Command failure; 0: Success; 1 to 20: Specific error
+    codes (see EC result code documentation for details).
+  </summary>
 </histogram>
 
 <histogram name="Fingerprint.{ContextFunction}" enum="FingerprintSensorMode"

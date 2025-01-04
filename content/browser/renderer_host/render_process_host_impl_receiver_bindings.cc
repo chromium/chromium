@@ -59,8 +59,8 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "content/browser/sandbox_support_mac_impl.h"
-#include "content/common/sandbox_support_mac.mojom.h"
+#include "content/browser/sandbox_support_impl.h"
+#include "content/common/sandbox_support.mojom.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -121,7 +121,7 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
             std::make_unique<RenderMessageFilter>(rph_id, helper.get()),
             std::move(receiver));
       },
-      GetID(), widget_helper_));
+      GetDeprecatedID(), widget_helper_));
 
   AddUIThreadInterface(
       registry.get(),
@@ -220,7 +220,7 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
 #endif
 
   file_system_manager_impl_.reset(new FileSystemManagerImpl(
-      GetID(), storage_partition_impl_->GetFileSystemContext(),
+      GetDeprecatedID(), storage_partition_impl_->GetFileSystemContext(),
       ChromeBlobStorageContext::GetFor(GetBrowserContext())));
 
   AddUIThreadInterface(
@@ -260,15 +260,15 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
   associated_registry->AddInterface<mojom::RendererHost>(base::BindRepeating(
       &RenderProcessHostImpl::CreateRendererHost, base::Unretained(this)));
 
-  registry->AddInterface(
-      base::BindRepeating(&BlobRegistryWrapper::Bind,
-                          storage_partition_impl_->GetBlobRegistry(), GetID()));
+  registry->AddInterface(base::BindRepeating(
+      &BlobRegistryWrapper::Bind, storage_partition_impl_->GetBlobRegistry(),
+      GetDeprecatedID()));
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   // Initialization can happen more than once (in the case of a child process
   // crash), but we don't want to lose the plugin registry in this case.
   if (!plugin_registry_) {
-    plugin_registry_ = std::make_unique<PluginRegistryImpl>(GetID());
+    plugin_registry_ = std::make_unique<PluginRegistryImpl>(GetDeprecatedID());
   }
   AddUIThreadInterface(
       registry.get(),
@@ -380,8 +380,8 @@ void RenderProcessHostImpl::IOThreadHostImpl::BindHostReceiver(
 #endif
 
 #if BUILDFLAG(IS_MAC)
-  if (auto r = receiver.As<mojom::SandboxSupportMac>()) {
-    static base::NoDestructor<SandboxSupportMacImpl> sandbox_support;
+  if (auto r = receiver.As<mojom::SandboxSupport>()) {
+    static base::NoDestructor<SandboxSupportImpl> sandbox_support;
     sandbox_support->BindReceiver(std::move(r));
     return;
   }

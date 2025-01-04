@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Donker thema uitzetten</translation>
 <translation id="1807246157184219062">Licht</translation>
 <translation id="1808803439260407870">Klassieke kunst</translation>
+<translation id="181434555916624618">Resultaten met mensen worden op dit moment niet getoond. Probeer een andere prompt.</translation>
 <translation id="1815850098929213707">De geselecteerde toets is <ph name="KEYS" />. Tik op de knop om het bedieningselement te bewerken.</translation>
 <translation id="1823120442877418684">Personages</translation>
 <translation id="1827738518074806965">Kunstgalerie</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">Apparaat heeft nog <ph name="BATTERY_PERCENTAGE" />% batterijlading in het rechteroordopje.</translation>
 <translation id="3340978935015468852">instellingen</translation>
 <translation id="3347558044552027859">modern</translation>
+<translation id="3353477144743332882">Model voor het maken van overzichten en namen downloaden</translation>
 <translation id="3359218928534347896">microfoon aan- of uitzetten</translation>
 <translation id="3360306038446926262">Vensters</translation>
 <translation id="3361618936611118375">sushi</translation>
@@ -689,6 +691,7 @@
 <translation id="4354430579665871434">toets</translation>
 <translation id="4356100841225547054">Volume uitzetten</translation>
 <translation id="4361257691546579041">APN is van het type standaard.</translation>
+<translation id="4368101969572512692">Suggesties shufflen</translation>
 <translation id="437294888293595148">Alle snelkoppelingen resetten</translation>
 <translation id="437477383107495720">konijntjes</translation>
 <translation id="4376423484621194274">Je beheerder staat <ph name="APP_NAME" /> sluiten niet toe</translation>
@@ -768,6 +771,7 @@
 <translation id="4731797938093519117">Toegang door ouders</translation>
 <translation id="473775607612524610">Updaten</translation>
 <translation id="4744944742468440486">Informatie met betrekking tot je selectie</translation>
+<translation id="4750394297954878236">Suggesties</translation>
 <translation id="4771607256327216405">toetsenbord helderder maken</translation>
 <translation id="4771923071974529837">morgen</translation>
 <translation id="4773299976671772492">Beëindigd</translation>
@@ -853,6 +857,7 @@
 <translation id="5121677070210013200">Kan transcriptiemodel niet downloaden. Probeer het nogmaals of start je Chromebook opnieuw op.</translation>
 <translation id="5130848777448318809">pony's</translation>
 <translation id="5137451382116112100">Volledig</translation>
+<translation id="5139813694804168398">Niet storen</translation>
 <translation id="5140788690559353412">Als je de toegang tot je schoolaccount kwijtraakt, heb je ook geen toegang meer tot de bijbehorende e-mail en Google Drive-bestanden, zoals Gmail, Documenten en Presentaties.</translation>
 <translation id="5142961317498132443">Verificatie</translation>
 <translation id="5144311987923128508">De knop Bevestigen staat nu uit</translation>
@@ -897,6 +902,7 @@
 <translation id="5302048478445481009">Taal</translation>
 <translation id="5303837385540978511">Exclusieve <ph name="PRODUCT_NAME" />-achtergrond</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="530883153651464140"><ph name="DEVICE_NAME" /> updaten naar versie <ph name="VERSION" /></translation>
 <translation id="5315873049536339193">Identiteit</translation>
 <translation id="5317780077021120954">Opslaan</translation>
 <translation id="5318310531701770497">Kan geen namen maken. Probeer een langer transcript.</translation>
@@ -973,7 +979,6 @@
 <translation id="5703716265115423771">volume omlaag</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> van <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Knop Bewerken voor <ph name="SHORTCUT_DESCRIPTION" />.</translation>
-<translation id="5733298426544876109"><ph name="DEVICE_NAME" /> updaten</translation>
 <translation id="5736820754189340309">Datagebruik is gereset</translation>
 <translation id="574392208103952083">Gemiddeld</translation>
 <translation id="5744175046705638478"><ph name="QUERY" /> vertalen</translation>
@@ -998,6 +1003,7 @@
 <translation id="5859969039821714932">Sneltoets niet beschikbaar. Druk op een nieuwe sneltoets zonder <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Uit</translation>
 <translation id="5860491529813859533">Aanzetten</translation>
+<translation id="5875913454160982848">Transcriptiemodel downloaden</translation>
 <translation id="5876385649737594562">Aanzetten om opties te selecteren</translation>
 <translation id="5877503382465267833"><ph name="RECORDING_NAME" /> onderbreken</translation>
 <translation id="588258955323874662">Volledig scherm</translation>
@@ -1037,7 +1043,6 @@
 <translation id="6040143037577758943">Sluiten</translation>
 <translation id="6040852767465482106">Anonieme identiteit</translation>
 <translation id="604124094241169006">Automatisch</translation>
-<translation id="6042308850641462728">Meer</translation>
 <translation id="6048107060512778456">Mislukt - Papierstoring</translation>
 <translation id="6050189528197190982">Grijstinten</translation>
 <translation id="6054711098834486579">expressionistisch</translation>
@@ -1293,6 +1298,7 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="7134436342991564651">{0,plural, =1{Naamserver}other{Naamservers}}</translation>
 <translation id="7135814714616751706">Sneltoetsen zoeken</translation>
 <translation id="7138614237884624401">Vereenvoudigde tekst</translation>
+<translation id="7138668887584231801">Niet genoeg woorden om samen te vatten</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Verbinden</translation>
 <translation id="7144878232160441200">Opnieuw proberen</translation>
@@ -1588,6 +1594,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="8503836310948963452">Nog een paar minuten...</translation>
 <translation id="8505011850330200833">Het Gemini-model heeft 2 GB opslag nodig om transcripten te verwerken en samenvattingen te maken</translation>
 <translation id="8508640263392900755">APN-gegevens</translation>
+<translation id="8509574872955173831">Meer informatie over het maken van overzichten en namen</translation>
 <translation id="8522687886059337719">Je hebt nu toegang tot nieuwe <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />achtergronden<ph name="END_LINK_WALLPAPER_SUBPAGE" /> en <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />screensavers<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">theehuis</translation>
@@ -1724,7 +1731,6 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="9133772297793293778">Druk op 1-4 functietoetsen en 1 andere toets op je toetsenbord. Druk op Alt + Esc om de bewerkingsmodus te sluiten.</translation>
 <translation id="9137526406337347448">Google-services</translation>
 <translation id="9138630967333032450">Shift links</translation>
-<translation id="9147928237330776930">Te weinig woorden om samen te vatten</translation>
 <translation id="9149391708638971077">Geheugentest uitvoeren</translation>
 <translation id="9159524746324788320">hamburgers</translation>
 <translation id="9161276708550942948">spatie</translation>

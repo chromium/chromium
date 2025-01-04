@@ -6,15 +6,6 @@
 
 namespace mirroring {
 namespace features {
-
-// The mirroring sender has the ability to letterbox video frames to match the
-// aspect ratio of the reciever's display.  However, receivers can handle
-// variable aspect ratio video so this is not needed any more.
-// TODO(crbug.com/1363512):  Remove support for sender side letterboxing.
-BASE_FEATURE(kCastDisableLetterboxing,
-             "CastDisableLetterboxing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // The mirroring service previously used a model name filter before even
 // attempting to query the receiver for media remoting support. This
 // flag disables this behavior and queries all devices for remoting support.

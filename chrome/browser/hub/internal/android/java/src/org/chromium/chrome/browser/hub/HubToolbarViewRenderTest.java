@@ -55,7 +55,7 @@ public class HubToolbarViewRenderTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_HUB)
-                    .setRevision(8)
+                    .setRevision(9)
                     .build();
 
     @Mock private TabSwitcherDrawable.Observer mTabSwitcherDrawableObserver;
@@ -139,7 +139,10 @@ public class HubToolbarViewRenderTest {
                     mPropertyModel.set(HubToolbarProperties.ACTION_BUTTON_DATA, enabledButtonData);
                     mPropertyModel.set(HubToolbarProperties.MENU_BUTTON_VISIBLE, true);
                     mPropertyModel.set(HubToolbarProperties.SHOW_ACTION_BUTTON_TEXT, true);
-                    mPropertyModel.set(HubToolbarProperties.COLOR_SCHEME, HubColorScheme.INCOGNITO);
+                    mPropertyModel.set(
+                            HubToolbarProperties.COLOR_SCHEME,
+                            new HubColorSchemeUpdate(
+                                    HubColorScheme.INCOGNITO, HubColorScheme.INCOGNITO));
                 });
         mRenderTestRule.render(mToolbar, "actionButtonIncognito");
 
@@ -174,9 +177,12 @@ public class HubToolbarViewRenderTest {
         mRenderTestRule.render(mToolbar, "paneSwitcherSelectedIndex");
 
         ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        mPropertyModel.set(
-                                HubToolbarProperties.COLOR_SCHEME, HubColorScheme.INCOGNITO));
+                () -> {
+                    mPropertyModel.set(
+                            HubToolbarProperties.COLOR_SCHEME,
+                            new HubColorSchemeUpdate(
+                                    HubColorScheme.INCOGNITO, HubColorScheme.INCOGNITO));
+                });
         mRenderTestRule.render(mToolbar, "paneSwitcherIncognito");
     }
 
@@ -261,7 +267,10 @@ public class HubToolbarViewRenderTest {
                     mPropertyModel.set(HubToolbarProperties.PANE_SWITCHER_INDEX, 1);
                     mPropertyModel.set(
                             HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA, paneSwitcherButtonData);
-                    mPropertyModel.set(HubToolbarProperties.COLOR_SCHEME, HubColorScheme.INCOGNITO);
+                    mPropertyModel.set(
+                            HubToolbarProperties.COLOR_SCHEME,
+                            new HubColorSchemeUpdate(
+                                    HubColorScheme.INCOGNITO, HubColorScheme.INCOGNITO));
                 });
         mRenderTestRule.render(mToolbar, "onIncognitoTabSwitcherDrawableNotificationOn");
 

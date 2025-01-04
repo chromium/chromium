@@ -9,14 +9,12 @@ source_set("model") {
   ]
   deps = [
     "//base",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/page_image_service",
     "//ios/chrome/browser/autocomplete/model",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/search_engines/model",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/sync/model",
   ]
 }

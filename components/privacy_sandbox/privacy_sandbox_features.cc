@@ -123,16 +123,16 @@ BASE_FEATURE(kRelatedWebsiteSetsDevUI,
              "RelatedWebsiteSetsDevUI",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kFingerprintingProtectionUx,
-             "FingerprintingProtectionUx",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAddLimit3pcsSetting,
              "AddLimit3pcsSetting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAlwaysBlock3pcsIncognito,
              "AlwaysBlock3pcsIncognito",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kFingerprintingProtectionUx,
+             "FingerprintingProtectionUx",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFingerprintingProtectionUserBypass,
@@ -143,10 +143,6 @@ BASE_FEATURE(kIpProtectionV1,
              "IpProtectionV1",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIpProtectionDogfoodDefaultOn,
-             "IpProtectionDogfoodDefaultOn",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kIpProtectionUx,
              "IpProtectionUx",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -155,8 +151,8 @@ BASE_FEATURE(kIpProtectionUserBypass,
              "IpProtectionUserBypass",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrivacySandboxRelatedWebsiteSetsUi,
-             "PrivacySandboxRelatedWebsiteSetsUi",
+BASE_FEATURE(kActUserBypassUx,
+             "ActUserBypassUx",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTrackingProtectionContentSettingInSettings,
@@ -169,6 +165,10 @@ BASE_FEATURE(kTrackingProtectionContentSettingUbControl,
 
 BASE_FEATURE(kTrackingProtectionContentSettingFor3pcb,
              "TrackingProtectionContentSettingFor3pcb",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPrivacySandboxRelatedWebsiteSetsUi,
+             "PrivacySandboxRelatedWebsiteSetsUi",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
@@ -238,6 +238,7 @@ BASE_FEATURE(kPrivacySandboxSentimentSurvey,
 const base::FeatureParam<std::string> kPrivacySandboxSentimentSurveyTriggerId{
     &kPrivacySandboxSentimentSurvey, "sentiment-survey-trigger-id", ""};
 
+#if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kPrivacySandboxCctAdsNoticeSurvey,
              "PrivacySandboxCctAdsNoticeSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -270,6 +271,10 @@ const base::FeatureParam<double>
     kPrivacySandboxCctAdsNoticeSurveyDeclineConsentTriggerRate{
         &kPrivacySandboxCctAdsNoticeSurvey, "decline-trigger-rate", 0.0};
 
+const base::FeatureParam<std::string> kPrivacySandboxCctAdsNoticeSurveyAppId{
+    &kPrivacySandboxCctAdsNoticeSurvey, "app-id", ""};
+
+#endif  // BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kPrivacySandboxAdsApiUxEnhancements,
              "PrivacySandboxAdsApiUxEnhancements",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -278,4 +283,7 @@ BASE_FEATURE(kPrivacySandboxAllowPromptForBlocked3PCookies,
              "PrivacySandboxAllowPromptForBlocked3PCookies",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrivacySandboxEqualizedPromptButtons,
+             "PrivacySandboxEqualizedPromptButtons",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace privacy_sandbox

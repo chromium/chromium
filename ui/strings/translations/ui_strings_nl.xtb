@@ -218,7 +218,7 @@
 <translation id="8841375032071747811">Knop Terug</translation>
 <translation id="8867568208303837180">Verzenden...</translation>
 <translation id="8876215549894133151">Indeling:</translation>
-<translation id="8901569739625249689"><ph name="QUANTITY" />  KB</translation>
+<translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
 <translation id="8927924178504495502">{HOURS,plural, =1{1 uur geleden}other{# uur geleden}}</translation>
 <translation id="8996630695507351249">Zorg dat <ph name="TARGET_DEVICE_NAME" /> is verbonden met internet.</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 sec.}other{# sec.}}</translation>

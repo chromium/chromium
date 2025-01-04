@@ -18,7 +18,6 @@ static_library("browser") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//components/crash/core/common",
     "//components/discardable_memory/service",
     "//components/enterprise/buildflags",

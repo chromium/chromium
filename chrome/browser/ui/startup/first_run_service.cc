@@ -53,14 +53,6 @@ bool IsFirstRunEligibleProfile(Profile* profile) {
 }
 
 bool IsFirstRunEligibleProcess() {
-  // On Lacros we want to run the FRE beyond the strict first run as defined by
-  // `IsChromeFirstRun()` for a few reasons:
-  // - Migrated profiles will have their first run sentinel imported from the
-  //   ash data dir, but we need to run the FRE in silent mode to re-enable sync
-  //   on the Lacros primary profile.
-  // - If the user exits the FRE without advancing beyond the first step, we
-  //   need to show the FRE again next time they open Chrome, this is definitely
-  //   not the "first run" anymore.
   if (!first_run::IsChromeFirstRun()) {
     return false;
   }
@@ -92,8 +84,6 @@ PolicyEffect ComputeDevicePolicyEffect(Profile& profile) {
     // Corresponding policy: SyncDisabled=true
     return PolicyEffect::kDisabled;
   }
-
-  // The BrowserSignin policy is not supported on Lacros
 
   if (signin_util::IsForceSigninEnabled()) {
     // Corresponding policy: BrowserSignin=2
@@ -218,9 +208,7 @@ void FirstRunService::OnFirstRunHasExited(
       should_mark_fre_finished = false;
       break;
     case ProfilePicker::FirstRunExitStatus::kQuitAtEnd:
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
       proceed = true;
-#endif
       should_mark_fre_finished = true;
       break;
     case ProfilePicker::FirstRunExitStatus::kAbandonedFlow:
@@ -270,16 +258,14 @@ void FirstRunService::FinishProfileSetUp(std::u16string profile_name) {
                           /*is_default_name=*/false);
 }
 
-void FirstRunService::OpenFirstRunIfNeeded(EntryPoint entry_point,
-                                           ResumeTaskCallback callback) {
+void FirstRunService::OpenFirstRunIfNeeded(ResumeTaskCallback callback) {
   OnFirstRunHasExited(ProfilePicker::FirstRunExitStatus::kAbortTask);
   resume_task_callback_ = std::move(callback);
-  TryMarkFirstRunAlreadyFinished(
-      base::BindOnce(&FirstRunService::OpenFirstRunInternal,
-                     weak_ptr_factory_.GetWeakPtr(), entry_point));
+  TryMarkFirstRunAlreadyFinished(base::BindOnce(
+      &FirstRunService::OpenFirstRunInternal, weak_ptr_factory_.GetWeakPtr()));
 }
 
-void FirstRunService::OpenFirstRunInternal(EntryPoint entry_point) {
+void FirstRunService::OpenFirstRunInternal() {
   if (IsFirstRunMarkedFinishedInPrefs()) {
     // Opening the First Run is not needed. For example it might have been
     // marked finished silently, or is suppressed by policy.
@@ -289,9 +275,6 @@ void FirstRunService::OpenFirstRunInternal(EntryPoint entry_point) {
     std::move(resume_task_callback_).Run(/*proceed=*/true);
     return;
   }
-
-  base::UmaHistogramEnumeration("ProfilePicker.FirstRun.EntryPoint",
-                                entry_point);
 
   // Note: we call `Show()` even if the FRE might be already open and rely on
   // the ProfilePicker to decide what it wants to do with `callback`.

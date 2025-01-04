@@ -26,7 +26,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     name="ChromeOS.Settings.Accessibility.AccessibilityMagnifierFollowsSts"
     enum="BooleanToggled" expires_after="2025-09-23">
   <owner>lkupo@chromium.org</owner>
-  <owner>chromium-accessibility@chromium.org</owner>
+  <owner>chromeos-a11y-eng@google.com</owner>
   <summary>
     Records when a user changes the magnifier follows the word being read by
     select-to-speak setting on the Accessibility page.
@@ -84,7 +84,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
  of color choices. -->
 
   <owner>katie@chromium.org</owner>
-  <owner>chromium-accessibility@chromium.org</owner>
+  <owner>chromeos-a11y-eng@google.com</owner>
   <summary>
     Records when a user picks any colored cursor (toggled on) vs the black
     cursor (toggled off) on the Accessibility page.
@@ -95,7 +95,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     name="ChromeOS.Settings.Accessibility.FullscreenMagnifierFocusFollowing"
     enum="BooleanToggled" expires_after="2025-09-23">
   <owner>katie@chromium.org</owner>
-  <owner>chromium-accessibility@chromium.org</owner>
+  <owner>chromeos-a11y-eng@google.com</owner>
   <summary>
     Records when a user changes the kFullscreenMagnifierFocusFollowing setting
     on the Accessibility page.
@@ -106,7 +106,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     name="ChromeOS.Settings.Accessibility.FullscreenMagnifierMouseFollowingMode"
     enum="MagnifierMouseFollowingMode" expires_after="2025-09-23">
   <owner>katie@chromium.org</owner>
-  <owner>chromium-accessibility@chromium.org</owner>
+  <owner>chromeos-a11y-eng@google.com</owner>
   <summary>
     Recorded when a user changes the value of the
     kFullscreenMagnifierMouseFollowingMode setting on the Accessibility page.
@@ -117,7 +117,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="ChromeOS.Settings.Accessibility.MagnifierFollowsChromeVox"
     enum="BooleanToggled" expires_after="2025-09-23">
   <owner>aldietz@google.com</owner>
-  <owner>chromium-accessibility@chromium.org</owner>
+  <owner>chromeos-a11y-eng@google.com</owner>
   <summary>
     Recorded when a user changes the value of the kMagnifierFollowsChromeVox
     setting on the Accessibility page.
@@ -127,7 +127,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="ChromeOS.Settings.Accessibility.{SettingType}.Enabled"
     enum="BooleanToggled" expires_after="2025-09-23">
   <owner>katie@chromium.org</owner>
-  <owner>chromium-accessibility@chromium.org</owner>
+  <owner>chromeos-a11y-eng@google.com</owner>
   <summary>
     Records when a user changes the setting on the Accessibility page for the
     feature: {SettingType}
@@ -163,7 +163,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Apps.DoNotDisturbOnOff"
-    enum="BooleanToggled" expires_after="2025-03-30">
+    enum="BooleanToggled" expires_after="2025-06-08">
   <owner>hsuregan@chromium.org</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <summary>
@@ -295,7 +295,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Display" enum="DisplaySettingsType"
-    expires_after="2025-05-25">
+    expires_after="2025-06-29">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -416,7 +416,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Display.{DisplayType}.Orientation"
-    enum="DisplaySettingsOrientationOption" expires_after="2025-03-23">
+    enum="DisplaySettingsOrientationOption" expires_after="2025-06-08">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -431,7 +431,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.Settings.Display.{DisplayType}.UserOverrideDisplayDefaultSettings"
-    enum="DisplayDefaultSettingsMeasurement" expires_after="2025-03-31">
+    enum="DisplayDefaultSettingsMeasurement" expires_after="2025-06-08">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -581,7 +581,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.LoadCompletedTime" units="ms"
-    expires_after="2025-04-08">
+    expires_after="2025-06-22">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -603,7 +603,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.MagicBoost.Enabled" enum="BooleanToggled"
-    expires_after="2025-03-31">
+    expires_after="2025-06-08">
   <owner>alanlxl@google.com</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -613,7 +613,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.MagicBoost.HelpMeReadEnabled"
-    enum="BooleanToggled" expires_after="2025-03-31">
+    enum="BooleanToggled" expires_after="2025-06-08">
   <owner>alanlxl@google.com</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -674,7 +674,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ChromeOS.Settings.NumNavigationsUntilChange"
-    units="navigations" expires_after="2025-04-13">
+    units="navigations" expires_after="2025-06-22">
 <!-- Name completed by histogram_suffixes name="OsSettingsChangeType" -->
 
   <owner>wesokuhara@google.com</owner>
@@ -706,7 +706,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2.{Time}"
-    units="Unique Setting(s) Changed" expires_after="2025-03-30">
+    units="Unique Setting(s) Changed" expires_after="2025-06-08">
   <owner>moteva@google.com</owner>
   <owner>wesokuhara@google.com</owner>
   <owner>cros-settings@google.com</owner>
@@ -729,7 +729,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.NumUniqueSettingsChanged.PerSession"
-    units="UniqueChanges" expires_after="2025-04-13">
+    units="UniqueChanges" expires_after="2025-06-22">
   <owner>moteva@google.com</owner>
   <owner>wesokuhara@google.com</owner>
   <owner>cros-settings@google.com</owner>
@@ -740,7 +740,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.OverscrollHistoryNavigation.Enabled"
-    enum="BooleanEnabled" expires_after="2025-04-20">
+    enum="BooleanEnabled" expires_after="2025-06-22">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -831,7 +831,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SearchRequests"
-    enum="OsSettingSearchRequestTypes" expires_after="2025-03-30">
+    enum="OsSettingSearchRequestTypes" expires_after="2025-06-08">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -919,7 +919,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SnapWindowSuggestions" enum="BooleanToggled"
-    expires_after="2025-04-20">
+    expires_after="2025-06-22">
   <owner>sophiewen@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
@@ -951,7 +951,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.TimeUntilInteractive" units="ms"
-    expires_after="2025-02-06">
+    expires_after="2025-12-23">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -985,7 +985,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Wifi.Hidden" enum="BooleanToggled"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>jonmann@chromium.org</owner>
   <owner>khorimoto@chromium.org</owner>
   <owner>tnagel@chromium.org</owner>
@@ -998,7 +998,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.WindowOpenDuration" units="ms"
-    expires_after="2025-03-30">
+    expires_after="2025-06-08">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>

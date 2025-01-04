@@ -202,7 +202,7 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   void TrackAdded(const WebString& track_id) override;
   void TrackRemoved(const WebString& track_id) override;
   void ActiveStateChanged(bool is_active) override;
-  int GetDelegateId() override;
+  int GetPlayerId() override { return player_id_; }
   std::optional<viz::SurfaceId> GetSurfaceId() override;
 
   base::WeakPtr<WebMediaPlayer> AsWeakPtr() override;
@@ -293,7 +293,9 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   raw_ptr<WebMediaPlayerDelegate> delegate_;
   int delegate_id_;
 
-  // Inner class used for transfering frames on compositor thread to
+  const int player_id_;
+
+  // Inner class used for transferring frames on compositor thread to
   // |compositor_|.
   class FrameDeliverer;
   std::unique_ptr<FrameDeliverer> frame_deliverer_;

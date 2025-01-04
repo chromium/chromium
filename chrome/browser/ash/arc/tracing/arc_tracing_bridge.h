@@ -18,7 +18,6 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "services/tracing/public/cpp/base_agent.h"
 
 namespace content {
 class BrowserContext;
@@ -69,24 +68,6 @@ class ArcTracingBridge : public KeyedService,
   static void EnsureFactoryBuilt();
 
  private:
-  // TODO(crbug.com/41386726): Remove once we have replaced the legacy tracing
-  // service with perfetto.
-  class ArcTracingAgent : public ::tracing::BaseAgent {
-   public:
-    explicit ArcTracingAgent(ArcTracingBridge* bridge);
-
-    ArcTracingAgent(const ArcTracingAgent&) = delete;
-    ArcTracingAgent& operator=(const ArcTracingAgent&) = delete;
-
-    ~ArcTracingAgent() override;
-
-   private:
-    // tracing::BaseAgent.
-    void GetCategories(std::set<std::string>* category_set) override;
-
-    const raw_ptr<ArcTracingBridge> bridge_;
-  };
-
   struct Category;
 
   // Callback for QueryAvailableCategories.
@@ -101,8 +82,6 @@ class ArcTracingBridge : public KeyedService,
   // List of available categories.
   base::Lock categories_lock_;
   std::vector<Category> categories_ GUARDED_BY(categories_lock_);
-
-  ArcTracingAgent agent_;
 
   State state_ = State::kDisabled;
 

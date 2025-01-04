@@ -18,8 +18,7 @@ ResourceRequestIncident::ResourceRequestIncident(
   payload()->set_allocated_resource_request(script_request_incident.release());
 }
 
-ResourceRequestIncident::~ResourceRequestIncident() {
-}
+ResourceRequestIncident::~ResourceRequestIncident() = default;
 
 IncidentType ResourceRequestIncident::GetType() const {
   return IncidentType::RESOURCE_REQUEST;

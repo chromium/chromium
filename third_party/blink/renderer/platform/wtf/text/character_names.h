@@ -104,6 +104,7 @@ const UChar kGreekUpperTheta = 0x03F4;
 const UChar kHebrewPunctuationGereshCharacter = 0x05F3;
 const UChar kHebrewPunctuationGershayimCharacter = 0x05F4;
 const UChar kHellschreiberPauseSymbol = 0x2BFF;
+const UChar kHiraganaLetterACharacter = 0x3042;
 const UChar kHiraganaLetterSmallACharacter = 0x3041;
 const UChar kHoleGreekUpperTheta = 0x03A2;
 const UChar kHorizontalEllipsisCharacter = 0x2026;

@@ -403,7 +403,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.EchoCanceller.DelayChanges"
-    enum="WebRTCEventFrequency" expires_after="2025-04-13">
+    enum="WebRTCEventFrequency" expires_after="2025-06-22">
   <owner>peah@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -615,7 +615,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.ExpandRatePercent" units="%"
-    expires_after="2025-04-27">
+    expires_after="2025-06-29">
   <owner>hlundin@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
@@ -1006,7 +1006,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.DataChannelCounters" enum="DataChannelCounters"
-    expires_after="2025-03-30">
+    expires_after="2025-06-08">
   <owner>orphis@chromium.org</owner>
   <owner>toprice@chromium.org</owner>
   <summary>
@@ -1283,7 +1283,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.DtlsFingerprintLegacySha1"
-    enum="Boolean" expires_after="2025-04-06">
+    enum="Boolean" expires_after="2025-06-08">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <owner>phancke@meta.com</owner>
@@ -2320,6 +2320,40 @@ chromium-metrics-reviews@google.com.
     duration is measured at decoder output as the time difference between this
     and the previous frame delivery events. Recorded when a stream is removed.
   </summary>
+</histogram>
+
+<histogram name="WebRTC.Video.HwCapabilities.Decode.{Codec}" enum="Boolean"
+    expires_after="2025-06-30">
+  <owner>kron@chromium.org</owner>
+  <owner>video-performance-team@google.com</owner>
+  <summary>
+    The histogram reports if there's hardware decoding support. Capabilities are
+    reported once per tab when the first RTCPeerConnection object is created,
+    using a custom RTCVideoDecoderFactory that may report even codec profiles
+    that are not yet enabled as supported.
+  </summary>
+  <token key="Codec">
+    <variant name="AV1" summary=""/>
+    <variant name="H265" summary=""/>
+    <variant name="VP9" summary=""/>
+  </token>
+</histogram>
+
+<histogram name="WebRTC.Video.HwCapabilities.Encode.{Codec}"
+    enum="EncodeScalabilityMode" expires_after="2025-06-30">
+  <owner>kron@chromium.org</owner>
+  <owner>video-performance-team@google.com</owner>
+  <summary>
+    The histogram reports the highest L1Tx scalability mode with hardware
+    encoding support. Capabilities are reported once per tab when the first
+    RTCPeerConnection object is created, using a custom RTCVideoEncoderFactory
+    that may report even codec profiles that are not yet enabled as supported.
+  </summary>
+  <token key="Codec">
+    <variant name="AV1" summary=""/>
+    <variant name="H265" summary=""/>
+    <variant name="VP9" summary=""/>
+  </token>
 </histogram>
 
 <histogram name="WebRTC.Video.InputFramesPerSecond" units="fps"

@@ -399,6 +399,9 @@ TEST(SignedInStatesTest, SignedInStates) {
   EXPECT_EQ(SignedInState::kSignedOut,
             signin_util::GetSignedInState(identity_manager));
 
+  // In incognito mode, there would be no identity manager.
+  EXPECT_EQ(SignedInState::kSignedOut, signin_util::GetSignedInState(nullptr));
+
   // `kExplicitBrowserSigninUIOnDesktop` enabled
   {
     base::test::ScopedFeatureList scoped_feature_list{

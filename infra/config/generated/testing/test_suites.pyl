@@ -762,6 +762,7 @@
 
     'clang_tot_gtests': {
       'base_unittests': {},
+      'highway_tests': {},
     },
 
     'client_v8_chromium_gtests': {
@@ -2565,15 +2566,18 @@
       },
     },
 
-    'optimization_guide_android_gtests': {
-      'optimization_guide_components_unittests': {
-        'test_common': {
-          'args': [
-            '--gtest_filter=*OptimizationGuide*:*PageEntities*:*EntityAnnotator*',
-          ],
-        },
-        'test': 'components_unittests',
+    'opt_target_coverage_test_suite': {
+      'opt_target_coverage_test': {
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+        'linux_args': [
+          '--no-xvfb',
+        ],
       },
+    },
+
+    'optimization_guide_android_gtests': {
     },
 
     'optimization_guide_cros_gtests': {
@@ -2584,14 +2588,6 @@
           ],
         },
         'test': 'browser_tests',
-      },
-      'optimization_guide_components_unittests': {
-        'test_common': {
-          'args': [
-            '--gtest_filter=*OptimizationGuide*:*PageEntities*:*EntityAnnotator*',
-          ],
-        },
-        'test': 'components_unittests',
       },
     },
 
@@ -2628,17 +2624,6 @@
           ],
         },
         'test': 'browser_tests',
-        'linux_args': [
-          '--use-xvfb',
-        ],
-      },
-      'optimization_guide_components_unittests': {
-        'test_common': {
-          'args': [
-            '--gtest_filter=*OptimizationGuide*:*PageEntities*:*EntityAnnotator*',
-          ],
-        },
-        'test': 'components_unittests',
         'linux_args': [
           '--use-xvfb',
         ],
@@ -3395,6 +3380,11 @@
       'ondevice_stability_tests_suite': {
         'variants': [
           'NVIDIA_GEFORCE_GTX_1660',
+        ],
+      },
+      'opt_target_coverage_test_suite': {
+        'mixins': [
+          'gce',
         ],
       },
     },

@@ -845,6 +845,7 @@
 <translation id="6385591741672306837">列</translation>
 <translation id="6387719785439924554">边栏内容标记</translation>
 <translation id="6393014464788431702">停用所有事件过滤条件</translation>
+<translation id="6406989068857078334">鼠标速度已降低，再次<ph name="GESTURE" />即可执行点击操作</translation>
 <translation id="6411569524720229058">秋季</translation>
 <translation id="6417265370957905582">Google 助理</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{1个冒号}other{#个冒号}}</translation>
@@ -1099,6 +1100,7 @@
 <translation id="8205922869661890178">打开开发者日志页面</translation>
 <translation id="8212109599554677485">将显示样式更改为并排</translation>
 <translation id="8215202828671303819">多选</translation>
+<translation id="822316432305106615">开始精准点击</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />，不透明度为 <ph name="OPACITY_PERCENTAGE" />%。</translation>
 <translation id="8261506727792406068">删除</translation>
 <translation id="826825447994856889">简介</translation>

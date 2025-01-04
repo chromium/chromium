@@ -220,7 +220,6 @@ source_set("common") {
     "//base",
     "//base/allocator:buildflags",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//build/util:chromium_git_revision",
     "//components/discardable_memory/common",
     "//components/input",
@@ -374,7 +373,7 @@ source_set("common") {
     deps += [ "//ppapi/proxy:ipc_sources" ]
   }
 
-  if (!is_chromeos_ash) {
+  if (!is_chromeos) {
     sources -= [ "cursors/webcursor_ash.cc" ]
   }
 
@@ -674,7 +673,7 @@ mojom("mojo_bindings") {
   if (is_mac) {
     sources += [
       "render_widget_host_ns_view.mojom",
-      "sandbox_support_mac.mojom",
+      "sandbox_support.mojom",
       "web_contents_ns_view_bridge.mojom",
     ]
     public_deps += [

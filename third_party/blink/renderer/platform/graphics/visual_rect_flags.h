@@ -7,7 +7,7 @@
 
 namespace blink {
 
-enum VisualRectFlags {
+enum VisualRectFlags : unsigned int {
   // The following flags are used in both
   // LayoutObject::MapToVisualRectInAncestorSpace() and
   // GeometryMapper::LocalToAncestorVisualRect().
@@ -28,6 +28,15 @@ enum VisualRectFlags {
   // apply the main frame root scroller's overflow clip.
   kDontApplyMainFrameOverflowClip = 1 << 3,
   kIgnoreLocalClipPath = 1 << 4,
+
+  // If the local root frame has a remote frame parent, apply the transformation
+  // from the local root frame to the viewport, i.e., (0, 0) maps to the origin
+  // of the window rendering the remote main Document.
+  //
+  // NOTE: This is guaranteed to provide a correct value only if the iframe is
+  // onscreen. This is because we don't sync scroll updates from the main
+  // frame's root scroller. See kSkipUnnecessaryRemoteFrameGeometryPropagation.
+  kVisualRectApplyRemoteViewportTransform = 1 << 5,
 };
 
 }  // namespace blink

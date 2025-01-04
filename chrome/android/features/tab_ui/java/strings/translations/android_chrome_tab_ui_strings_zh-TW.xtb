@@ -77,7 +77,6 @@
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{已變更 <ph name="ONE_CHANGED" /> 個分頁、關閉 <ph name="ANY_CLOSED" /> 個分頁}other{已變更 <ph name="MANY_CHANGED" /> 個分頁、關閉 <ph name="ANY_CLOSED" /> 個分頁}}</translation>
 <translation id="4371591986692297148">未啟用</translation>
 <translation id="4460014764210899310">取消分組</translation>
-<translation id="4590027107044272416">現在點選這個按鈕可開啟新分頁</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{要關閉 1 個閒置分頁嗎？}other{要關閉 <ph name="TAB_COUNT_MANY" /> 個閒置分頁嗎？}}</translation>
 <translation id="4686942373615810936">剛剛建立</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{1 天後關閉}other{<ph name="DAY_COUNT_MANY" /> 天後關閉}}</translation>
@@ -98,7 +97,9 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{已新增 <ph name="ONE_ADDED" /> 個分頁}other{已新增 <ph name="MANY_ADDED" /> 個分頁}}</translation>
 <translation id="5161254044473106830">請輸入標題</translation>
 <translation id="5339733443032484186">最後一個分頁</translation>
+<translation id="5380159289133845234">封存重複分頁</translation>
 <translation id="5400836586163650660">灰</translation>
+<translation id="5446043142172831860">移除分頁並退出群組</translation>
 <translation id="5490235265819901748">已展開分頁群組</translation>
 <translation id="5494920125229734069">全選</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{關閉含有 <ph name="TABS_COUNT_ONE" /> 個分頁的分頁群組，顏色為<ph name="COLOR_NAME" />。}other{關閉含有 <ph name="TABS_COUNT_MANY" /> 個分頁的分頁群組，顏色為<ph name="COLOR_NAME" />。}}</translation>
@@ -117,6 +118,7 @@
 <translation id="6051432659151380973">系統會自動儲存分頁群組</translation>
 <translation id="6054741997831917303">這個商品的價格最近從 <ph name="PREVIOUS_PRICE" />降為 <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">你的「<ph name="GROUP_NAME" />」分頁群組存取權會立即遭到撤銷</translation>
+<translation id="6109251075362363230">現在也會封存所有重複的分頁 (最近使用的重複分頁除外)。</translation>
 <translation id="6193448654517602979">選取分頁</translation>
 <translation id="6228793724645064692">(商店評分)</translation>
 <translation id="6271513594716432922">關閉所有閒置分頁</translation>

@@ -213,6 +213,8 @@ TEST_F(SSLErrorClassificationTest, TestPrivateURL) {
 TEST_F(SSLErrorClassificationTest, GetClockState) {
   // This test aims to obtain all possible return values of
   // |GetClockState|.
+  field_trial_test()->SetFeatureParams(
+      true, 0.0, network_time::NetworkTimeTracker::FETCHES_ON_DEMAND_ONLY);
   TestingPrefServiceSimple pref_service;
   network_time::NetworkTimeTracker::RegisterPrefs(pref_service.registry());
   network_time::NetworkTimeTracker network_time_tracker(

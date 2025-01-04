@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "storage/browser/file_system/sandbox_origin_database.h"
 
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <functional>
 #include <limits>
 #include <memory>
@@ -207,10 +203,13 @@ TEST(SandboxOriginDatabaseTest, DatabaseRecoveryTest) {
   EXPECT_FALSE(base::PathExists(kFSDir));
   EXPECT_TRUE(base::CreateDirectory(kFSDir));
 
-  const std::string kOrigins[] = {
-      "foo.example.com",  "bar.example.com",  "baz.example.com",
-      "hoge.example.com", "fuga.example.com",
-  };
+  const auto kOrigins = std::to_array<std::string>({
+      "foo.example.com",
+      "bar.example.com",
+      "baz.example.com",
+      "hoge.example.com",
+      "fuga.example.com",
+  });
 
   auto database = std::make_unique<SandboxOriginDatabase>(kFSDir, nullptr);
   for (size_t i = 0; i < std::size(kOrigins); ++i) {

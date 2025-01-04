@@ -88,6 +88,12 @@ def add_common_args(parser):
   parser.add_argument('--reuse-task',
                       type=str,
                       help='Ruse the cas digest of the provided swarming task')
+  parser.add_argument(
+      '--no-siso',
+      action='store_true',
+      help='Disables the use of siso ("use_siso" GN arg) in the compile, as '
+      "well as the use of siso when isolating tests. Will use the builder's "
+      'settings if not specified.')
 
 
 def add_compile_args(parser):
@@ -95,11 +101,6 @@ def add_compile_args(parser):
       '--no-rbe',
       action='store_true',
       help='Disables the use of rbe ("use_remoteexec" GN arg) in the compile. '
-      "Will use the builder's settings if not specified.")
-  parser.add_argument(
-      '--no-siso',
-      action='store_true',
-      help='Disables the use of siso ("use_siso" GN arg) in the compile. '
       "Will use the builder's settings if not specified.")
   parser.add_argument(
       '--no-coverage-instrumentation',
@@ -240,6 +241,8 @@ def main():
       additional_test_args=None if skip_test else args.additional_test_args,
       reuse_task=args.reuse_task,
       skip_coverage=not skip_compile and args.no_coverage_instrumentation,
+      no_rbe=not skip_compile and args.no_rbe,
+      no_siso=args.no_siso,
   )
   exit_code, error_msg = recipe_runner.run_recipe(
       filter_stdout=args.verbosity < 2)

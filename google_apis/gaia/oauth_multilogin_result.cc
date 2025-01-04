@@ -124,8 +124,11 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(
       json_value.Find("token_binding_directed_response") != nullptr;
   if (are_cookies_encrypted && cookie_decryptor.is_null()) {
     VLOG(1) << "The response unexpectedly contains encrypted cookies";
-    RecordMultiloginResponseEncryptionError(
-        TokenBindingResponseEncryptionError::kResponseUnexpectedlyEncrypted);
+    for ([[maybe_unused]] const auto& unused : *cookie_list) {
+      // Record the histogram once per cookie for parity with other buckets.
+      RecordMultiloginResponseEncryptionError(
+          TokenBindingResponseEncryptionError::kResponseUnexpectedlyEncrypted);
+    }
     status_ = OAuthMultiloginResponseStatus::kUnknownStatus;
     return;
   }
@@ -150,7 +153,13 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(
         RecordMultiloginResponseEncryptionError(
             TokenBindingResponseEncryptionError::kDecryptionFailed);
         continue;
+      } else {
+        RecordMultiloginResponseEncryptionError(
+            TokenBindingResponseEncryptionError::kSuccessfullyDecrypted);
       }
+    } else {
+      RecordMultiloginResponseEncryptionError(
+          TokenBindingResponseEncryptionError::kSuccessNoEncryption);
     }
 
     base::Time now = base::Time::Now();

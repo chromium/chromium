@@ -12,13 +12,13 @@
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/browser/ui/views/payments/validating_textfield.h"
-#include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/test_region_data_loader.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/country_combobox_model.h"
 #include "components/autofill/core/browser/ui/region_combobox_model.h"
 #include "components/payments/content/payment_request_spec.h"
@@ -109,10 +109,12 @@ class DISABLED_PaymentRequestShippingAddressEditorTest
     ValidatingTextfield* textfield =
         static_cast<ValidatingTextfield*>(dialog_view()->GetViewByID(
             EditorViewController::GetInputFieldViewId(type)));
-    if (!textfield)
+    if (!textfield) {
       return false;
-    if (textfield_text)
+    }
+    if (textfield_text) {
       *textfield_text = textfield->GetText();
+    }
     return true;
   }
 
@@ -157,8 +159,9 @@ class DISABLED_PaymentRequestShippingAddressEditorTest
       if (!accept_empty_phone_number) {
         EXPECT_EQ(u"+1 575-555-5555", textfield_text);
       } else if (textfield_text.empty()) {
-        if (unset_types)
+        if (unset_types) {
           unset_types->insert(autofill::PHONE_HOME_WHOLE_NUMBER);
+        }
       }
     } else if (unset_types) {
       unset_types->insert(autofill::PHONE_HOME_WHOLE_NUMBER);
@@ -190,8 +193,9 @@ class DISABLED_PaymentRequestShippingAddressEditorTest
             country_combobox->GetModel());
     size_t i = 0;
     for (; i < country_model->GetItemCount(); i++) {
-      if (country_model->GetItemAt(i) == country_name)
+      if (country_model->GetItemAt(i) == country_name) {
         break;
+      }
     }
     country_combobox->SetSelectedRow(i);
     country_combobox->OnBlur();
@@ -311,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   OpenShippingAddressEditorScreen();
   // Complete the async fetch of region data.
   std::vector<std::pair<std::string, std::string>> regions;
-  regions.push_back(std::make_pair(kAnyStateCode, kAnyState));
+  regions.emplace_back(kAnyStateCode, kAnyState);
   test_region_data_loader_.SendAsynchronousData(regions);
 
   SetCommonFields();
@@ -362,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   test_region_data_loader_.set_synchronous_callback(false);
   OpenShippingAddressEditorScreen();
   std::vector<std::pair<std::string, std::string>> regions1;
-  regions1.push_back(std::make_pair("1a", "region1a"));
+  regions1.emplace_back("1a", "region1a");
   test_region_data_loader_.SendAsynchronousData(regions1);
 
   SetCommonFields();
@@ -380,8 +384,8 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
 
   bool use_regions1 = true;
   std::vector<std::pair<std::string, std::string>> regions2;
-  regions2.push_back(std::make_pair("2a", "region2a"));
-  regions2.push_back(std::make_pair("2b", "region2b"));
+  regions2.emplace_back("2a", "region2a");
+  regions2.emplace_back("2b", "region2b");
   std::set<autofill::FieldType> unset_types;
   for (size_t country_index = 10; country_index < num_countries;
        country_index += num_countries / 10) {
@@ -569,7 +573,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   OpenShippingAddressSectionScreen();
 
   ResetEventWaiter(DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED);
-  ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
+  ClickOnChildInListViewAndWait(/*child_index=*/0, /*total_num_children=*/1,
                                 DialogViewID::SHIPPING_ADDRESS_SHEET_LIST_VIEW);
 
   EXPECT_EQ(kNameFull, GetEditorTextfieldValue(autofill::NAME_FULL));
@@ -668,7 +672,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   test_region_data_loader_.set_synchronous_callback(true);
   OpenShippingAddressSectionScreen();
   ResetEventWaiter(DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED);
-  ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
+  ClickOnChildInListViewAndWait(/*child_index=*/0, /*total_num_children=*/1,
                                 DialogViewID::SHIPPING_ADDRESS_SHEET_LIST_VIEW);
 
   views::Textfield* textfield =
@@ -693,8 +697,8 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   SetRegionDataLoader(&test_region_data_loader_);
   test_region_data_loader_.set_synchronous_callback(true);
   std::vector<std::pair<std::string, std::string>> regions1;
-  regions1.push_back(std::make_pair("AL", "Alabama"));
-  regions1.push_back(std::make_pair("CA", "California"));
+  regions1.emplace_back("AL", "Alabama");
+  regions1.emplace_back("CA", "California");
   test_region_data_loader_.SetRegionData(regions1);
   OpenShippingAddressEditorScreen();
 
@@ -757,8 +761,8 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   SetRegionDataLoader(&test_region_data_loader_);
   test_region_data_loader_.set_synchronous_callback(true);
   std::vector<std::pair<std::string, std::string>> regions;
-  regions.push_back(std::make_pair("AK", "Alaska"));
-  regions.push_back(std::make_pair("CA", "California"));
+  regions.emplace_back("AK", "Alaska");
+  regions.emplace_back("CA", "California");
   test_region_data_loader_.SetRegionData(regions);
   OpenShippingAddressSectionScreen();
 
@@ -903,11 +907,11 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
             static_cast<views::Label*>(error_label)->GetText());
 
   ResetEventWaiter(DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED);
-  ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
+  ClickOnChildInListViewAndWait(/*child_index=*/0, /*total_num_children=*/1,
                                 DialogViewID::SHIPPING_ADDRESS_SHEET_LIST_VIEW);
   std::vector<std::pair<std::string, std::string>> regions1;
-  regions1.push_back(std::make_pair("AL", "Alabama"));
-  regions1.push_back(std::make_pair("CA", "California"));
+  regions1.emplace_back("AL", "Alabama");
+  regions1.emplace_back("CA", "California");
   test_region_data_loader_.SendAsynchronousData(regions1);
   // Expect that the country is set correctly.
   EXPECT_EQ(u"United States", GetComboboxValue(autofill::ADDRESS_HOME_COUNTRY));
@@ -973,11 +977,11 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
             static_cast<views::Label*>(error_label)->GetText());
 
   ResetEventWaiter(DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED);
-  ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
+  ClickOnChildInListViewAndWait(/*child_index=*/0, /*total_num_children=*/1,
                                 DialogViewID::SHIPPING_ADDRESS_SHEET_LIST_VIEW);
   std::vector<std::pair<std::string, std::string>> regions1;
-  regions1.push_back(std::make_pair("AL", "Alabama"));
-  regions1.push_back(std::make_pair("CA", "California"));
+  regions1.emplace_back("AL", "Alabama");
+  regions1.emplace_back("CA", "California");
   test_region_data_loader_.SendAsynchronousData(regions1);
 
   // Expect that the default country was selected.
@@ -1020,11 +1024,11 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
             static_cast<views::Label*>(error_label)->GetText());
 
   ResetEventWaiter(DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED);
-  ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
+  ClickOnChildInListViewAndWait(/*child_index=*/0, /*total_num_children=*/1,
                                 DialogViewID::SHIPPING_ADDRESS_SHEET_LIST_VIEW);
   std::vector<std::pair<std::string, std::string>> regions1;
-  regions1.push_back(std::make_pair("AL", "Alabama"));
-  regions1.push_back(std::make_pair("CA", "California"));
+  regions1.emplace_back("AL", "Alabama");
+  regions1.emplace_back("CA", "California");
   test_region_data_loader_.SendAsynchronousData(regions1);
 
   // Expect that the default country was selected.
@@ -1057,8 +1061,8 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
 
   test_region_data_loader_.set_synchronous_callback(true);
   std::vector<std::pair<std::string, std::string>> regions;
-  regions.push_back(std::make_pair("AL", "Alabama"));
-  regions.push_back(std::make_pair("CA", "California"));
+  regions.emplace_back("AL", "Alabama");
+  regions.emplace_back("CA", "California");
   test_region_data_loader_.SetRegionData(regions);
   OpenShippingAddressSectionScreen();
 
@@ -1072,7 +1076,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
             static_cast<views::Label*>(error_label)->GetText());
 
   ResetEventWaiter(DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED);
-  ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
+  ClickOnChildInListViewAndWait(/*child_index=*/0, /*total_num_children=*/1,
                                 DialogViewID::SHIPPING_ADDRESS_SHEET_LIST_VIEW);
 
   // Expect that the default country was selected.
@@ -1116,13 +1120,13 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
             static_cast<views::Label*>(error_label)->GetText());
 
   ResetEventWaiter(DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED);
-  ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
+  ClickOnChildInListViewAndWait(/*child_index=*/0, /*total_num_children=*/1,
                                 DialogViewID::SHIPPING_ADDRESS_SHEET_LIST_VIEW);
 
   // Send the region data.
   std::vector<std::pair<std::string, std::string>> regions;
-  regions.push_back(std::make_pair("AL", "Alabama"));
-  regions.push_back(std::make_pair("CA", "California"));
+  regions.emplace_back("AL", "Alabama");
+  regions.emplace_back("CA", "California");
   test_region_data_loader_.SendAsynchronousData(regions);
 
   // Expect that the default country was selected.
@@ -1153,13 +1157,13 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
 
   test_region_data_loader_.set_synchronous_callback(true);
   std::vector<std::pair<std::string, std::string>> regions;
-  regions.push_back(std::make_pair("AL", "Alabama"));
-  regions.push_back(std::make_pair("CA", "California"));
+  regions.emplace_back("AL", "Alabama");
+  regions.emplace_back("CA", "California");
   test_region_data_loader_.SetRegionData(regions);
   OpenShippingAddressSectionScreen();
 
   ResetEventWaiter(DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED);
-  ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
+  ClickOnChildInListViewAndWait(/*child_index=*/0, /*total_num_children=*/1,
                                 DialogViewID::SHIPPING_ADDRESS_SHEET_LIST_VIEW);
 
   // Expect that the state was selected.
@@ -1182,13 +1186,13 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
 
   test_region_data_loader_.set_synchronous_callback(true);
   std::vector<std::pair<std::string, std::string>> regions;
-  regions.push_back(std::make_pair("AL", "Alabama"));
-  regions.push_back(std::make_pair("CA", "California"));
+  regions.emplace_back("AL", "Alabama");
+  regions.emplace_back("CA", "California");
   test_region_data_loader_.SetRegionData(regions);
   OpenShippingAddressSectionScreen();
 
   ResetEventWaiter(DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED);
-  ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
+  ClickOnChildInListViewAndWait(/*child_index=*/0, /*total_num_children=*/1,
                                 DialogViewID::SHIPPING_ADDRESS_SHEET_LIST_VIEW);
 
   // Expect that the state was selected.
@@ -1208,7 +1212,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   OpenShippingAddressSectionScreen();
 
   ResetEventWaiter(DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED);
-  ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
+  ClickOnChildInListViewAndWait(/*child_index=*/0, /*total_num_children=*/1,
                                 DialogViewID::SHIPPING_ADDRESS_SHEET_LIST_VIEW);
 
   ClickOnBackArrow();
@@ -1373,7 +1377,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN,
                                DialogEvent::SPEC_DONE_UPDATING,
                                DialogEvent::SHIPPING_ADDRESS_EDITOR_OPENED});
-  ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
+  ClickOnChildInListViewAndWait(/*child_index=*/0, /*total_num_children=*/1,
                                 DialogViewID::SHIPPING_ADDRESS_SHEET_LIST_VIEW);
   ASSERT_TRUE(WaitForObservedEvent());
 

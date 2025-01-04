@@ -60,6 +60,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/webview/webview.h"
@@ -975,7 +976,7 @@ ClearHostClosure ProfilePickerView::GetClearClosure() {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // static
-void ProfilePicker::NotifyAccountSelected(const std::string& gaia_id) {
+void ProfilePicker::NotifyAccountSelected(const GaiaId& gaia_id) {
   if (!g_profile_picker_view) {
     return;
   }

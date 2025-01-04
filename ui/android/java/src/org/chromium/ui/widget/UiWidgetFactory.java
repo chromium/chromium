@@ -9,12 +9,16 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.widget.PopupWindow;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * The factory that creates UI widgets. Instead of direct creation of Android popups
  * we should ask this factory to create the object for us.
  */
+@NullMarked
 public class UiWidgetFactory {
-    private static UiWidgetFactory sFactory;
+    private static @Nullable UiWidgetFactory sFactory;
 
     protected UiWidgetFactory() {}
 

@@ -10,6 +10,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <string_view>
 #include <utility>
@@ -227,7 +228,7 @@ TEST_F(MultilingualSpellCheckTest, MultilingualSpellCheckParagraph) {
 // Ensure that suggestions are handled properly for multiple languages.
 TEST_F(MultilingualSpellCheckTest, MultilingualSpellCheckSuggestions) {
   ReinitializeSpellCheck("en-US,es-ES");
-  static const struct {
+  struct TestCases {
     // A string of text for checking.
     const wchar_t* input;
     // The position and the length of the first invalid word.
@@ -236,13 +237,14 @@ TEST_F(MultilingualSpellCheckTest, MultilingualSpellCheckSuggestions) {
     // A comma separated string of suggested words that should occur, in their
     // expected order.
     const wchar_t* expected_suggestions;
-  } kTestCases[] = {
+  };
+  static const auto kTestCases = std::to_array<TestCases>({
       {L"rocket", 0, 0},
       {L"destruyan", 0, 0},
       {L"rocet", 0, 5, L"rocket,roce,crochet,troce,rocen"},
       {L"jum", 0, 3, L"hum,jun,ju,um,juma"},
       {L"asdne", 0, 5, L"sadness,desasne"},
-  };
+  });
 
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
     blink::WebVector<blink::WebString> suggestions;

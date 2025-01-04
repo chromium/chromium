@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Çaktivizo temën e errët</translation>
 <translation id="1807246157184219062">I lehtë</translation>
 <translation id="1808803439260407870">Art klasik</translation>
+<translation id="181434555916624618">Për momentin, rezultatet me personat nuk do të shfaqen. Provo një kërkesë tjetër.</translation>
 <translation id="1815850098929213707">Tasti i zgjedhur është <ph name="KEYS" />. Trokit te butoni për të modifikuar kontrollin</translation>
 <translation id="1823120442877418684">Personazhe</translation>
 <translation id="1827738518074806965">Galeri arti</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">Pajisja ka <ph name="BATTERY_PERCENTAGE" />% bateri në kufjen e djathtë.</translation>
 <translation id="3340978935015468852">cilësimet</translation>
 <translation id="3347558044552027859">modern</translation>
+<translation id="3353477144743332882">Shkarko modelin e krijimit të përmbledhjeve dhe emrave</translation>
 <translation id="3359218928534347896">aktivizo/çaktivizo audion e mikrofonit</translation>
 <translation id="3360306038446926262">Dritaret</translation>
 <translation id="3361618936611118375">sushi</translation>
@@ -689,6 +691,7 @@
 <translation id="4354430579665871434">tast</translation>
 <translation id="4356100841225547054">Çaktivizo volumin</translation>
 <translation id="4361257691546579041">APN-ja është e llojit të parazgjedhur.</translation>
+<translation id="4368101969572512692">Përziej sugjerimet</translation>
 <translation id="437294888293595148">Rivendos të gjitha shkurtoret</translation>
 <translation id="437477383107495720">lepuj</translation>
 <translation id="4376423484621194274">Administratori yt nuk e lejon mbylljen e <ph name="APP_NAME" /></translation>
@@ -768,6 +771,7 @@
 <translation id="4731797938093519117">Qasja e prindit</translation>
 <translation id="473775607612524610">Përditësoje</translation>
 <translation id="4744944742468440486">Informacion në lidhje me zgjedhjen tënde</translation>
+<translation id="4750394297954878236">Sugjerime</translation>
 <translation id="4771607256327216405">ndriço tastierën</translation>
 <translation id="4771923071974529837">nesër</translation>
 <translation id="4773299976671772492">Ndaloi</translation>
@@ -853,6 +857,7 @@
 <translation id="5121677070210013200">Modeli i transkriptimit nuk mund të shkarkohet. Provo përsëri ose rinis pajisjen tënde Chromebook.</translation>
 <translation id="5130848777448318809">kalushë</translation>
 <translation id="5137451382116112100">I plotë</translation>
+<translation id="5139813694804168398">mos shqetëso</translation>
 <translation id="5140788690559353412">Kur humb qasjen te llogaria jote e shkollës, nuk do të kesh më qasje tek email-i i lidhur dhe te skedarët e "Diskut të Google", si p.sh. Gmail, "Dokumentet", "Diapozitivat" etj.</translation>
 <translation id="5142961317498132443">Vërtetimi</translation>
 <translation id="5144311987923128508">Butoni "Konfirmo" është çaktivizuar tani</translation>
@@ -897,6 +902,7 @@
 <translation id="5302048478445481009">Gjuha</translation>
 <translation id="5303837385540978511">Imazhi ekskluziv i sfondit për <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="530883153651464140">Përditëso <ph name="DEVICE_NAME" /> në versionin <ph name="VERSION" /></translation>
 <translation id="5315873049536339193">Identiteti</translation>
 <translation id="5317780077021120954">Ruaj</translation>
 <translation id="5318310531701770497">Nuk mund të krijohen emra. Provo një transkript më të gjatë.</translation>
@@ -973,7 +979,6 @@
 <translation id="5703716265115423771">ul volumin</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> nga <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Butoni i modifikimit për <ph name="SHORTCUT_DESCRIPTION" />.</translation>
-<translation id="5733298426544876109">Përditëso <ph name="DEVICE_NAME" /></translation>
 <translation id="5736820754189340309">Përdorimi i të dhënave është rivendosur</translation>
 <translation id="574392208103952083">Mesatar</translation>
 <translation id="5744175046705638478">Përkthe "<ph name="QUERY" />"</translation>
@@ -998,6 +1003,7 @@
 <translation id="5859969039821714932">Shkurtorja nuk ofrohet. Shtyp një shkurtore të re pa tastin <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Çaktivizuar</translation>
 <translation id="5860491529813859533">Aktivizo</translation>
+<translation id="5875913454160982848">Shkarko modelin e transkriptimit</translation>
 <translation id="5876385649737594562">Aktivizoje për të zgjedhur opsionet</translation>
 <translation id="5877503382465267833">Vendose në pauzë "<ph name="RECORDING_NAME" />"</translation>
 <translation id="588258955323874662">Ekrani i plotë</translation>
@@ -1037,7 +1043,6 @@
 <translation id="6040143037577758943">Mbyll</translation>
 <translation id="6040852767465482106">Identiteti anonim</translation>
 <translation id="604124094241169006">Automatike</translation>
-<translation id="6042308850641462728">Më shumë</translation>
 <translation id="6048107060512778456">Dështoi - Bllokim letre</translation>
 <translation id="6050189528197190982">Shkalla gri</translation>
 <translation id="6054711098834486579">ekspresionist</translation>
@@ -1293,6 +1298,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Serveri i emrave}other{Serverët e emrave}}</translation>
 <translation id="7135814714616751706">Shkurtoret e kërkimit</translation>
 <translation id="7138614237884624401">Teksti i thjeshtuar</translation>
+<translation id="7138668887584231801">Nuk ka fjalë të mjaftueshme për përmbledhjen</translation>
 <translation id="7141470099673912333">Transferimi i përmbajtjes</translation>
 <translation id="7143207342074048698">Po lidhet</translation>
 <translation id="7144878232160441200">Provo sërish</translation>
@@ -1588,6 +1594,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="8503836310948963452">Edhe vetëm pak minuta...</translation>
 <translation id="8505011850330200833">Modeli i Gemini kërkon 2 GB hapësirë ruajtëse për të përpunuar transkriptet dhe për të krijuar përmbledhje</translation>
 <translation id="8508640263392900755">Detajet e APN-së</translation>
+<translation id="8509574872955173831">Mëso më shumë rreth krijimit të përmbledhjeve dhe emrave</translation>
 <translation id="8522687886059337719">Tani ke qasje tek <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />imazhet e reja të sfondit<ph name="END_LINK_WALLPAPER_SUBPAGE" /> dhe te <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />mbrojtësit e rinj të ekranit<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">çajtore</translation>
@@ -1724,7 +1731,6 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="9133772297793293778">Shtyp modifikuesit 1-4 dhe 1 tast tjetër në tastierën tënde. Për të dalë nga modaliteti i modifikimit, shtyp Alt + Esc.</translation>
 <translation id="9137526406337347448">Shërbimet e Google</translation>
 <translation id="9138630967333032450">Tasti i majtë "Shift"</translation>
-<translation id="9147928237330776930">Shumë pak fjalë për t'i përmbledhur</translation>
 <translation id="9149391708638971077">Ekzekuto testin e memories</translation>
 <translation id="9159524746324788320">hamburgerë</translation>
 <translation id="9161276708550942948">hapësirë</translation>

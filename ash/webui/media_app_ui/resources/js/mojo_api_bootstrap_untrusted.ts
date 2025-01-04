@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {MahiUntrustedPageCallbackRouter, MahiUntrustedServiceRemote, OcrUntrustedPageCallbackRouter, OcrUntrustedServiceRemote, UntrustedServiceFactory} from './media_app_ui_untrusted.mojom-webui.js';
+import {MahiUntrustedPageCallbackRouter, MahiUntrustedServiceRemote, MantisUntrustedPageCallbackRouter, OcrUntrustedPageCallbackRouter, OcrUntrustedServiceRemote, UntrustedServiceFactory} from './media_app_ui_untrusted.mojom-webui.js';
 
 // Used to make calls on the remote OcrUntrustedService interface. Singleton
 // that client modules can use directly.
@@ -50,12 +50,17 @@ export function connectToMahiUntrustedService(fileName?: string) {
   return mahiUntrustedService;
 }
 
+// Use this to subscribe Mantis events or requests e.g.
+// `mantisCallbackRouter.eventOrRequest.addListener(handleEvent)`.
+export const mantisCallbackRouter = new MantisUntrustedPageCallbackRouter();
+
 export async function isMantisAvailable() {
   const {result} = await factoryRemote.isMantisAvailable();
   return result;
 }
 
 export async function connectToMantisUntrustedService() {
-  const {result} = await factoryRemote.createMantisUntrustedService();
+  const {result} = await factoryRemote.createMantisUntrustedService(
+      mantisCallbackRouter.$.bindNewPipeAndPassRemote());
   return result;
 }

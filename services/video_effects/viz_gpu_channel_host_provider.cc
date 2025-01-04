@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "content/public/common/gpu_stream_constants.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
@@ -20,6 +21,7 @@
 #include "gpu/ipc/common/surface_handle.h"
 #include "services/video_effects/video_effects_service_impl.h"
 #include "services/viz/public/cpp/gpu/command_buffer_metrics.h"
+#include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "services/viz/public/cpp/gpu/gpu.h"
 #include "url/gurl.h"
 
@@ -47,9 +49,8 @@ scoped_refptr<viz::ContextProviderCommandBuffer> CreateAndBindContextProvider(
   scoped_refptr<viz::ContextProviderCommandBuffer> context_provider =
       base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
           std::move(gpu_channel_host), content::kGpuStreamIdDefault,
-          gpu::SchedulingPriority::kNormal, gpu::kNullSurfaceHandle,
-          GURL("chrome://gpu/VideoEffects"), true /* automatic flushes */,
-          false /* support locking */,
+          gpu::SchedulingPriority::kNormal, GURL("chrome://gpu/VideoEffects"),
+          true /* automatic flushes */, false /* support locking */,
           context_type == gpu::CONTEXT_TYPE_WEBGPU
               ? gpu::SharedMemoryLimits::ForWebGPUContext()
               : gpu::SharedMemoryLimits::ForOOPRasterContext(),
@@ -76,8 +77,6 @@ VizGpuChannelHostProvider::VizGpuChannelHostProvider(
     : viz_gpu_(std::move(viz_gpu)) {
   CHECK(viz_gpu_);
 }
-
-VizGpuChannelHostProvider::~VizGpuChannelHostProvider() = default;
 
 scoped_refptr<viz::ContextProviderCommandBuffer>
 VizGpuChannelHostProvider::GetWebGpuContextProvider() {
@@ -108,6 +107,8 @@ VizGpuChannelHostProvider::GetSharedImageInterface() {
       GetGpuChannelHost()->CreateClientSharedImageInterface();
   return shared_image_interface_;
 }
+
+VizGpuChannelHostProvider::~VizGpuChannelHostProvider() = default;
 
 scoped_refptr<gpu::GpuChannelHost>
 VizGpuChannelHostProvider::GetGpuChannelHost() {

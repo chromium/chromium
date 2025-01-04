@@ -117,8 +117,10 @@ void DeviceCloudPolicyStoreAsh::Store(const em::PolicyFetchResponse& policy) {
       CloudPolicyValidatorBase::TIMESTAMP_VALIDATED,
       CloudPolicyValidatorBase::DM_TOKEN_REQUIRED,
       CloudPolicyValidatorBase::DEVICE_ID_REQUIRED);
-  validator->RunValidation();
-  OnPolicyToStoreValidated(validator.get());
+  DeviceCloudPolicyValidator::StartValidation(
+      std::move(validator),
+      base::BindOnce(&DeviceCloudPolicyStoreAsh::OnPolicyToStoreValidated,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void DeviceCloudPolicyStoreAsh::Load() {
@@ -148,8 +150,10 @@ void DeviceCloudPolicyStoreAsh::InstallInitialPolicy(
   validator->ValidateInitialKey(install_attributes_->GetDomain());
   validator->ValidateDeviceId(install_attributes_->GetDeviceId(),
                               CloudPolicyValidatorBase::DEVICE_ID_REQUIRED);
-  validator->RunValidation();
-  OnPolicyToStoreValidated(validator.get());
+  DeviceCloudPolicyValidator::StartValidation(
+      std::move(validator),
+      base::BindOnce(&DeviceCloudPolicyStoreAsh::OnPolicyToStoreValidated,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void DeviceCloudPolicyStoreAsh::DeviceSettingsUpdated() {

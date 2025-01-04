@@ -15,7 +15,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/crosapi/browser_manager_observer.h"
 #include "chrome/browser/ash/policy/off_hours/device_off_hours_controller.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -42,8 +41,7 @@ class SessionControllerClientImpl
       public user_manager::UserManager::Observer,
       public session_manager::SessionManagerObserver,
       public SupervisedUserServiceObserver,
-      public policy::off_hours::DeviceOffHoursController::Observer,
-      public crosapi::BrowserManagerObserver {
+      public policy::off_hours::DeviceOffHoursController::Observer {
  public:
   SessionControllerClientImpl();
 
@@ -162,9 +160,6 @@ class SessionControllerClientImpl
 
   // Called when application is terminating
   void OnAppTerminating();
-
-  // crosapi::BrowserManagerObserver:
-  void OnStateChanged() override;
 
   // SessionController instance in ash.
   raw_ptr<ash::SessionController> session_controller_ = nullptr;

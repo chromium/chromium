@@ -16,11 +16,11 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {NavigationPredictor} from './omnibox.mojom-webui.js';
 import {getTemplate} from './searchbox.html.js';
+import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerInterface} from './searchbox.mojom-webui.js';
+import {SideType} from './searchbox.mojom-webui.js';
 import {SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
 import type {SearchboxDropdownElement} from './searchbox_dropdown.js';
 import type {SearchboxIconElement} from './searchbox_icon.js';
-import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerInterface} from './searchbox.mojom-webui.js';
-import {SideType} from './searchbox.mojom-webui.js';
 import {decodeString16, mojoString16} from './utils.js';
 
 interface Input {
@@ -112,6 +112,12 @@ export class SearchboxElement extends SearchboxElementBase {
         reflectToAttribute: true,
       },
 
+      /** The aria description to include on the input element. */
+      searchboxAriaDescription: {
+        type: String,
+        value: '',
+      },
+
       /** Whether the Google Lens icon should be visible in the searchbox. */
       searchboxLensSearchEnabled: {
         type: Boolean,
@@ -183,9 +189,10 @@ export class SearchboxElement extends SearchboxElementBase {
         value: false,
       },
 
-      placeholderText_: {
+      placeholderText: {
         type: String,
-        computed: `computePlaceholderText_(showThumbnail)`,
+        reflectToAttribute: true,
+        notify: true,
       },
 
       /** Searchbox default icon (i.e., Google G icon or the search loupe). */
@@ -269,7 +276,7 @@ export class SearchboxElement extends SearchboxElementBase {
   private lastInput_: Input;
   private lastQueriedInput_: string|null;
   private pastedInInput_: boolean;
-  private placeholderText_: string;
+  private placeholderText: string;
   private searchboxIcon_: string;
   private searchboxVoiceSearchEnabled_: boolean;
   private searchboxLensSearchEnabled_: boolean;
@@ -329,7 +336,7 @@ export class SearchboxElement extends SearchboxElementBase {
   }
 
   isInputEmpty(): boolean {
-    return !!this.$.input.value.trim();
+    return !this.$.input.value.trim();
   }
 
   //============================================================================
@@ -502,7 +509,7 @@ export class SearchboxElement extends SearchboxElementBase {
       if (loadTimeData.getBoolean('reportMetrics')) {
         const metricsReporter = MetricsReporterImpl.getInstance();
         if (!metricsReporter.hasLocalMark('CharTyped')) {
-            metricsReporter.mark('CharTyped');
+          metricsReporter.mark('CharTyped');
         }
       }
 
@@ -802,6 +809,9 @@ export class SearchboxElement extends SearchboxElementBase {
   }
 
   private computePlaceholderText_(): string {
+    if (this.placeholderText) {
+      return this.placeholderText;
+    }
     return this.showThumbnail ? this.i18n('searchBoxHintMultimodal') :
                                 this.i18n('searchBoxHint');
   }

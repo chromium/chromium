@@ -9,11 +9,11 @@
 
 #include "base/profiler/native_unwinder_android.h"
 
-#include <sys/mman.h>
-
 #include <inttypes.h>
 #include <stdio.h>  // For printf address.
 #include <string.h>
+#include <sys/mman.h>
+
 #include <algorithm>
 #include <iterator>
 #include <vector>
@@ -168,8 +168,9 @@ TEST(NativeUnwinderAndroidTest, PlainFunction) {
       }));
 
   // Check that all the modules are valid.
-  for (const auto& frame : sample)
+  for (const auto& frame : sample) {
     EXPECT_NE(nullptr, frame.module);
+  }
 
   // The stack should contain a full unwind.
   ExpectStackContains(sample, {scenario.GetWaitForSampleAddressRange(),
@@ -207,8 +208,9 @@ TEST(NativeUnwinderAndroidTest, Alloca) {
       }));
 
   // Check that all the modules are valid.
-  for (const auto& frame : sample)
+  for (const auto& frame : sample) {
     EXPECT_NE(nullptr, frame.module);
+  }
 
   // The stack should contain a full unwind.
   ExpectStackContains(sample, {scenario.GetWaitForSampleAddressRange(),
@@ -404,8 +406,9 @@ TEST(NativeUnwinderAndroidTest, DISABLED_JavaFunction) {
       }));
 
   // Check that all the modules are valid.
-  for (const auto& frame : sample)
+  for (const auto& frame : sample) {
     EXPECT_NE(nullptr, frame.module);
+  }
 
   // The stack should contain a full unwind.
   ExpectStackContains(sample, {scenario.GetWaitForSampleAddressRange(),

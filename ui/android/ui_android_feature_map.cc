@@ -27,6 +27,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &ui::kSelectFileOpenDocument,
     &ui::kCheckIntentCallerPermission,
     &ui::kDisablePhotoPickerForVideoCapture,
+    &ui::kUsingCorrectWorkArea,
 };
 
 // static

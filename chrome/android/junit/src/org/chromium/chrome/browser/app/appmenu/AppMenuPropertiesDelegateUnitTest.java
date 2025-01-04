@@ -50,8 +50,6 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -173,7 +171,6 @@ public class AppMenuPropertiesDelegateUnitTest {
     private ObservableSupplierImpl<ReadAloudController> mReadAloudControllerSupplier =
             new ObservableSupplierImpl<>();
 
-    private final TestValues mTestValues = new TestValues();
     private AppMenuPropertiesDelegateImpl mAppMenuPropertiesDelegate;
     private MenuUiState mMenuUiState;
     private ShadowPackageManager mShadowPackageManager;
@@ -263,12 +260,10 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     private void setupFeatureDefaults() {
         setShoppingListEligible(false);
-        FeatureList.setTestValues(mTestValues);
     }
 
     private void setShoppingListEligible(boolean enabled) {
         doReturn(enabled).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
-        FeatureList.setTestValues(mTestValues);
     }
 
     @Test

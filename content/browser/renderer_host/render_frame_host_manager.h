@@ -567,8 +567,13 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // Tells the |render_frame_host|'s renderer that its RenderFrame is being
   // swapped for a frame in another process, and that it should create a
   // `blink::RemoteFrame` to replace it using the |proxy| RenderFrameProxyHost.
-  void SwapOuterDelegateFrame(RenderFrameHostImpl* render_frame_host,
-                              RenderFrameProxyHost* proxy);
+  // The `blink::RemoteFrame` will use |devtools_frame_token| as its
+  // devtools_frame_token (which will match the value used by the embedded
+  // frame tree's main frame).
+  void SwapOuterDelegateFrame(
+      RenderFrameHostImpl* render_frame_host,
+      RenderFrameProxyHost* proxy,
+      const base::UnguessableToken& devtools_frame_token);
 
   // Sets the child RenderWidgetHostView for this frame, which must be part of
   // an inner FrameTree.

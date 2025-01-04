@@ -5,10 +5,9 @@
 #ifndef CHROME_BROWSER_UI_FAST_CHECKOUT_FAST_CHECKOUT_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_UI_FAST_CHECKOUT_FAST_CHECKOUT_CONTROLLER_IMPL_H_
 
-#include "chrome/browser/ui/fast_checkout/fast_checkout_controller.h"
-
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/fast_checkout/fast_checkout_controller.h"
 #include "chrome/browser/ui/fast_checkout/fast_checkout_view.h"
 #include "ui/gfx/native_widget_types.h"
 

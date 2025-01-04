@@ -77,7 +77,6 @@ Si lo borras, todos los usuarios perderán de inmediato el acceso al grupo de pe
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{Pestañas modificadas: <ph name="ONE_CHANGED" />; pestañas cerradas: <ph name="ANY_CLOSED" />}other{Pestañas modificadas: <ph name="MANY_CHANGED" />; pestañas cerradas: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="4371591986692297148">Inactivo</translation>
 <translation id="4460014764210899310">Desagrupar</translation>
-<translation id="4590027107044272416">Puedes abrir una pestaña nueva aquí</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{¿Quieres cerrar 1 pestaña inactiva?}other{¿Quieres cerrar <ph name="TAB_COUNT_MANY" /> pestañas inactivas?}}</translation>
 <translation id="4686942373615810936">Se creó recién</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Cerrar después de 1 día}other{Cerrar después de <ph name="DAY_COUNT_MANY" /> días}}</translation>
@@ -98,7 +97,9 @@ Si lo borras, todos los usuarios perderán de inmediato el acceso al grupo de pe
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{Se agregó <ph name="ONE_ADDED" /> pestaña}other{Se agregaron <ph name="MANY_ADDED" /> pestañas}}</translation>
 <translation id="5161254044473106830">Se requiere un título</translation>
 <translation id="5339733443032484186">Tu pestaña más reciente</translation>
+<translation id="5380159289133845234">Archivar pestañas duplicadas</translation>
 <translation id="5400836586163650660">Gris</translation>
+<translation id="5446043142172831860">Quitar pestaña y abandonar grupo</translation>
 <translation id="5490235265819901748">Se expandió el grupo de pestañas</translation>
 <translation id="5494920125229734069">Seleccionar todo</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Cerrar el grupo de pestañas con <ph name="TABS_COUNT_ONE" /> pestaña, en color <ph name="COLOR_NAME" />.}other{Cerrar el grupo de pestañas con <ph name="TABS_COUNT_MANY" /> pestañas, en color <ph name="COLOR_NAME" />.}}</translation>
@@ -117,6 +118,7 @@ Si abandonas el grupo, perderás de inmediato el acceso al grupo de pestañas "<
 <translation id="6051432659151380973">Tus grupos de pestañas se guardan automáticamente</translation>
 <translation id="6054741997831917303">El precio de este artículo recientemente bajó de <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Perderás de inmediato el acceso al grupo de pestañas <ph name="GROUP_NAME" /></translation>
+<translation id="6109251075362363230">Ahora también se archivarán todas las pestañas duplicadas, excepto la copia más reciente.</translation>
 <translation id="6193448654517602979">Seleccionar pestañas</translation>
 <translation id="6228793724645064692">(calificación de la tienda)</translation>
 <translation id="6271513594716432922">Cerrar todas las pestañas inactivas</translation>

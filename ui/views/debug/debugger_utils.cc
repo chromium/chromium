@@ -6,7 +6,10 @@
 
 #include <inttypes.h>
 
+#include <string>
+
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 
@@ -49,8 +52,9 @@ void AddAttributeString(AttributeStrings& attributes,
 void AddPtrAttributeString(AttributeStrings& attributes,
                            const std::string& name,
                            const std::optional<intptr_t>& value) {
-  if (!value)
+  if (!value) {
     return;
+  }
 
   attributes.push_back(name + "=\"" + PtrToString(value.value()) + "\"");
 }
@@ -82,50 +86,50 @@ std::string GetPaddedLine(int current_depth, bool attribute_line = false) {
   return std::string(padding, ' ');
 }
 
-void PrintViewHierarchyImpl(std::ostream* out,
-                            ViewDebugWrapper* view,
-                            int current_depth,
-                            bool verbose,
-                            int target_depth,
-                            size_t column_limit) {
-  std::string line = GetPaddedLine(current_depth);
-
-  line += "<" + view->GetViewClassName();
+std::string PrintViewHierarchyImpl(ViewDebugWrapper* view,
+                                   bool verbose,
+                                   int current_depth) {
+  std::string output;
+  std::string line = base::StrCat(
+      {GetPaddedLine(current_depth), "<", view->GetViewClassName()});
 
   for (const std::string& attribute_string :
        GetAttributeStrings(view, verbose)) {
-    if (line.size() + attribute_string.size() + 1 > column_limit) {
+    static constexpr size_t kColumnLimit = 240;
+    if (line.size() + attribute_string.size() + 1 > kColumnLimit) {
       // If adding the attribute string would cause the line to exceed the
       // column limit, send the line to `out` and start a new line. The new line
       // should fit at least one attribute string even if it means exceeding the
       // column limit.
-      *out << line << "\n";
+      output += line;
+      output += "\n";
       line = GetPaddedLine(current_depth, true) + attribute_string;
     } else {
       // Keep attribute strings on the existing line if it fits within the
       // column limit.
-      line += " " + attribute_string;
+      line += " ";
+      line += attribute_string;
     }
   }
 
   // Print children only if they exist and we are not yet at our target tree
   // depth.
-  if (!view->GetChildren().empty() &&
-      (target_depth == -1 || current_depth < target_depth)) {
-    *out << line << ">\n";
+  output += line;
+  if (!view->GetChildren().empty()) {
+    output += ">\n";
 
     for (ViewDebugWrapper* child : view->GetChildren()) {
-      PrintViewHierarchyImpl(out, child, current_depth + 1, verbose,
-                             target_depth, column_limit);
+      output += PrintViewHierarchyImpl(child, verbose, current_depth + 1);
     }
 
-    line = GetPaddedLine(current_depth);
-    *out << line << "</" << view->GetViewClassName() << ">\n";
+    output += base::StrCat(
+        {GetPaddedLine(current_depth), "</", view->GetViewClassName(), ">\n"});
   } else {
     // If no children are to be printed use a self closing tag to terminate the
     // View element.
-    *out << line << " />\n";
+    output += " />\n";
   }
+  return output;
 }
 
 }  // namespace
@@ -134,12 +138,8 @@ std::optional<intptr_t> ViewDebugWrapper::GetAddress() {
   return std::nullopt;
 }
 
-void PrintViewHierarchy(std::ostream* out,
-                        ViewDebugWrapper* view,
-                        bool verbose,
-                        int depth,
-                        size_t column_limit) {
-  PrintViewHierarchyImpl(out, view, 0, verbose, depth, column_limit);
+std::string PrintViewHierarchy(ViewDebugWrapper* view, bool verbose) {
+  return PrintViewHierarchyImpl(view, verbose, 0);
 }
 
 }  // namespace views::debug

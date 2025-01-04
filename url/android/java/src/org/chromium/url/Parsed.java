@@ -4,12 +4,19 @@
 
 package org.chromium.url;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
+
 /** A java wrapper for Parsed, GURL's internal parsed URI representation. */
 @JNINamespace("url")
+@NullMarked
 /* package */ class Parsed {
     /* package */ final int mSchemeBegin;
     /* package */ final int mSchemeLength;
@@ -27,7 +34,7 @@ import org.jni_zero.NativeMethods;
     /* package */ final int mQueryLength;
     /* package */ final int mRefBegin;
     /* package */ final int mRefLength;
-    private final Parsed mInnerUrl;
+    private final @Nullable Parsed mInnerUrl;
     private final boolean mPotentiallyDanglingMarkup;
 
     /* package */ static Parsed createEmpty() {
@@ -53,7 +60,7 @@ import org.jni_zero.NativeMethods;
             int refBegin,
             int refLength,
             boolean potentiallyDanglingMarkup,
-            Parsed innerUrl) {
+            @Nullable Parsed innerUrl) {
         mSchemeBegin = schemeBegin;
         mSchemeLength = schemeLength;
         mUsernameBegin = usernameBegin;
@@ -74,7 +81,8 @@ import org.jni_zero.NativeMethods;
         mInnerUrl = innerUrl;
     }
 
-    /* package */ void initNative(long nativePtr) {
+    /* package */ @NullUnmarked
+    void initNative(long nativePtr) {
         Parsed target = this;
         Parsed innerParsed = mInnerUrl;
         // Use a loop to avoid two copies of the long parameter list.
@@ -105,7 +113,7 @@ import org.jni_zero.NativeMethods;
             if (isInner || innerParsed == null) {
                 break;
             }
-            target = mInnerUrl;
+            target = assumeNonNull(mInnerUrl);
         }
     }
 

@@ -80,7 +80,17 @@ class TestPageActionIconView : public PageActionIconView {
 
   views::BubbleDialogDelegate* GetBubble() const override { return nullptr; }
 
+  bool IsBubbleShowing() const override {
+    return is_bubble_showing_override_ ? true
+                                       : PageActionIconView::IsBubbleShowing();
+  }
+
   bool IsLabelVisible() const { return label()->GetVisible(); }
+
+  void SetIsBubbleShowingOverride(bool is_bubble_showing_override) {
+    is_bubble_showing_override_ = is_bubble_showing_override;
+    Update();
+  }
 
  protected:
   // PageActionIconView:
@@ -89,6 +99,9 @@ class TestPageActionIconView : public PageActionIconView {
     return gfx::kNoneIcon;
   }
   void UpdateImpl() override {}
+
+ private:
+  bool is_bubble_showing_override_ = false;
 };
 
 class TestPageActionIconViewWithIconImage : public TestPageActionIconView {
@@ -159,6 +172,58 @@ TEST_F(PageActionIconViewTest, ShouldResetSlideAnimationWhenHideIcons) {
   EXPECT_FALSE(view()->is_animating_label());
   EXPECT_FALSE(view()->ShouldShowLabel());
   EXPECT_FALSE(view()->IsLabelVisible());
+}
+
+TEST_F(PageActionIconViewTest, TooltipText) {
+  view()->AnimateIn(std::nullopt);
+  EXPECT_FALSE(view()->IsBubbleShowing());
+  EXPECT_EQ(view()->GetTooltipText(gfx::Point()),
+            view()->GetTextForTooltipAndAccessibleName());
+  EXPECT_EQ(view()->GetTooltipText(gfx::Point()), u"TestTooltip");
+
+  view()->GetViewAccessibility().SetName(u"NewTooltip");
+
+  EXPECT_FALSE(view()->IsBubbleShowing());
+  EXPECT_EQ(view()->GetTooltipText(gfx::Point()),
+            view()->GetTextForTooltipAndAccessibleName());
+  EXPECT_EQ(view()->GetTooltipText(gfx::Point()), u"NewTooltip");
+
+  view()->SetIsBubbleShowingOverride(true);
+
+  EXPECT_TRUE(view()->IsBubbleShowing());
+  EXPECT_EQ(view()->GetTooltipText(gfx::Point()), u"");
+}
+
+TEST_F(PageActionIconViewTest, TooltipTextAccessibility) {
+  view()->AnimateIn(std::nullopt);
+
+  ui::AXNodeData data;
+  EXPECT_FALSE(view()->IsBubbleShowing());
+  view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            view()->GetTooltipText());
+  EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            view()->GetTooltipText());
+
+  view()->GetViewAccessibility().SetName(u"NewTooltip");
+
+  data = ui::AXNodeData();
+  EXPECT_FALSE(view()->IsBubbleShowing());
+  view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            view()->GetTooltipText());
+  EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            view()->GetTooltipText());
+
+  view()->SetIsBubbleShowingOverride(true);
+
+  data = ui::AXNodeData();
+  EXPECT_TRUE(view()->IsBubbleShowing());
+  view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            view()->GetTooltipText());
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            view()->GetTooltipText());
 }
 
 TEST_F(PageActionIconViewTest, ShouldNotResetSlideAnimationWhenShowIcons) {

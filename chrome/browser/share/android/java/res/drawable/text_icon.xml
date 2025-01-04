@@ -10,7 +10,7 @@ found in the LICENSE file.
     android:viewportHeight="24"
     android:viewportWidth="24">
     <path
-        android:fillColor="@color/modern_grey_800"
+        android:fillColor="@color/baseline_neutral_20"
         android:pathData="M14.75,18.4286L1,18.4286L1,21L14.75,21L14.75,18.4286ZM23,8.1429L1,8.1429L1,10.7143L23,10.7143L23,8.1429ZM1,15.8571L23,15.8571L23,13.2857L1,13.2857L1,15.8571ZM1,3L1,5.5714L23,5.5714L23,3L1,3Z"
         android:strokeWidth="1" />
 </vector>

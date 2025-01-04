@@ -39,7 +39,7 @@ const char kForceSearchEngineChoiceScreen[] =
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 BASE_FEATURE(kSearchEngineChoiceGuestExperience,
              "SearchEngineChoiceGuestExperience",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the search engine choice screen. Feature parameters below can
 // affect the actual triggering logic.

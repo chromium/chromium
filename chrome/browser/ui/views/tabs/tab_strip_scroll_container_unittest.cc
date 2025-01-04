@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/tabs/tab_strip_scroll_container.h"
+
 #include <cstddef>
 #include <memory>
+
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "fake_base_tab_strip_controller.h"

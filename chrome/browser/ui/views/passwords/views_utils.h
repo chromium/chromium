@@ -39,7 +39,8 @@ std::unique_ptr<views::StyledLabel> CreateGooglePasswordManagerLabel(
     int link_message_id,
     const std::u16string& email,
     base::RepeatingClosure open_link_closure,
-    int context = CONTEXT_DIALOG_BODY_TEXT_SMALL);
+    int context = CONTEXT_DIALOG_BODY_TEXT_SMALL,
+    int style = views::style::STYLE_SECONDARY);
 
 // Similar to method above but the Password Manager text isn't clickable.
 std::unique_ptr<views::Label> CreateGooglePasswordManagerLabel(
@@ -57,7 +58,8 @@ std::unique_ptr<views::StyledLabel> CreateGooglePasswordManagerLabel(
     int text_message_id,
     int link_message_id,
     base::RepeatingClosure open_link_closure,
-    int context = CONTEXT_DIALOG_BODY_TEXT_SMALL);
+    int context = CONTEXT_DIALOG_BODY_TEXT_SMALL,
+    int style = views::style::STYLE_SECONDARY);
 
 // Returns label diaplying the username and password. It handles edge cases like
 // empty username and federated credentials.

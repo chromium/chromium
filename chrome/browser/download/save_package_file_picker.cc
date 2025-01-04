@@ -73,7 +73,8 @@ void AddSingleFileFileTypeInfo(
           FILE_PATH_LITERAL("mhtml")});
 }
 
-// Chrome OS doesn't support HTML-Complete. crbug.com/154823
+// Chrome OS intentionally does not support "Webpage, Complete" type.
+// See https://crbug.com/40951429
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Adds "Webpage, Complete" type to FileTypeInfo.
 void AddCompleteFileTypeInfo(
@@ -120,7 +121,7 @@ bool SavePackageFilePicker::ShouldSaveAsOnlyHTML(
   return !profile->IsChild() || !IsErrorPage(web_contents);
 }
 
-bool SavePackageFilePicker::ShouldSaveAsMHTML() const {
+bool SavePackageFilePicker::ShouldSaveAsMHTMLByDefault() const {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kSavePageAsMHTML))
@@ -137,7 +138,7 @@ SavePackageFilePicker::SavePackageFilePicker(
     DownloadPrefs* download_prefs,
     content::SavePackagePathPickedCallback callback)
     : render_process_id_(
-          web_contents->GetPrimaryMainFrame()->GetProcess()->GetID()),
+          web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID()),
       can_save_as_complete_(can_save_as_complete),
       download_prefs_(download_prefs),
       callback_(std::move(callback)) {
@@ -154,7 +155,8 @@ SavePackageFilePicker::SavePackageFilePicker(
     save_types_.push_back(content::SAVE_PAGE_TYPE_UNKNOWN);
 
     base::FilePath::StringType extra_extension;
-    if (!ShouldSaveAsMHTML() && !suggested_path_copy.FinalExtension().empty() &&
+    if (!ShouldSaveAsMHTMLByDefault() &&
+        !suggested_path_copy.FinalExtension().empty() &&
         !suggested_path_copy.MatchesExtension(FILE_PATH_LITERAL(".htm")) &&
         !suggested_path_copy.MatchesExtension(FILE_PATH_LITERAL(".html"))) {
       extra_extension = suggested_path_copy.FinalExtension().substr(1);
@@ -175,10 +177,10 @@ SavePackageFilePicker::SavePackageFilePicker(
 
     file_type_info.include_all_files = false;
 
-    content::SavePageType preferred_save_type =
-        static_cast<content::SavePageType>(download_prefs_->save_file_type());
-    if (ShouldSaveAsMHTML())
-      preferred_save_type = content::SAVE_PAGE_TYPE_AS_MHTML;
+    const content::SavePageType preferred_save_type =
+        ShouldSaveAsMHTMLByDefault() ? content::SAVE_PAGE_TYPE_AS_MHTML
+                                     : static_cast<content::SavePageType>(
+                                           download_prefs_->save_file_type());
 
     // Select the item saved in the pref.
     for (size_t i = 0; i < save_types_.size(); ++i) {
@@ -189,8 +191,9 @@ SavePackageFilePicker::SavePackageFilePicker(
     }
 
     // If the item saved in the pref was not found, use the last item.
-    if (!file_type_index)
+    if (!file_type_index) {
       file_type_index = save_types_.size() - 1;
+    }
   } else {
     // The contents can not be saved as complete-HTML, so do not show the file
     // filters.

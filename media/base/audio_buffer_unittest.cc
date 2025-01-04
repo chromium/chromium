@@ -387,15 +387,17 @@ TEST(AudioBufferTest, ReadBitstream) {
 
   EXPECT_TRUE(bus->is_bitstream_format());
   EXPECT_EQ(frames, bus->GetBitstreamFrames());
-  EXPECT_EQ(data_size, bus->GetBitstreamDataSize());
-  VerifyBitstreamAudioBus(bus.get(), data_size, 1, 1);
+  EXPECT_EQ(data_size, bus->bitstream_data().size());
+  VerifyBitstreamAudioBus(bus.get(), 1, 1);
 }
 
 TEST(AudioBufferTest, ReadBitstreamIECDts) {
   const ChannelLayout channel_layout = CHANNEL_LAYOUT_MONO;
   const int channels = ChannelLayoutToChannelCount(channel_layout);
   const int frames = 512;
-  const size_t data_size = frames * 2 * 2;
+  const size_t data_size = frames / 2;
+  // DTS audio can allocate more than the `data_size` it's given.
+  const size_t expected_size = frames * channels * sizeof(float);
   const base::TimeDelta start_time;
 
   scoped_refptr<AudioBuffer> buffer = MakeBitstreamAudioBuffer(
@@ -408,8 +410,8 @@ TEST(AudioBufferTest, ReadBitstreamIECDts) {
 
   EXPECT_TRUE(bus->is_bitstream_format());
   EXPECT_EQ(frames, bus->GetBitstreamFrames());
-  EXPECT_EQ(data_size, bus->GetBitstreamDataSize());
-  VerifyBitstreamAudioBus(bus.get(), data_size, 1, 1);
+  EXPECT_EQ(expected_size, bus->bitstream_data().size());
+  VerifyBitstreamIECDtsAudioBus(bus.get(), data_size, 1, 1);
 }
 
 TEST(AudioBufferTest, ReadU8) {

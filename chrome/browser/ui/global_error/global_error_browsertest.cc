@@ -93,8 +93,9 @@ class GlobalErrorWaiter : public GlobalErrorObserver {
 
   // GlobalErrorObserver
   void OnGlobalErrorsChanged() override {
-    if (service_->GetFirstGlobalErrorWithBubbleView())
+    if (service_->GetFirstGlobalErrorWithBubbleView()) {
       run_loop_.Quit();
+    }
   }
 
   void Wait() { run_loop_.Run(); }

@@ -16,7 +16,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/atomicops.h"
 #include "base/base_export.h"
 #include "base/check.h"
 #include "base/functional/bind.h"

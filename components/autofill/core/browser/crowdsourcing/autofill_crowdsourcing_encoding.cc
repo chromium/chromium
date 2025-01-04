@@ -15,16 +15,17 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/crowdsourcing/randomized_encoder.h"
 #include "components/autofill/core/browser/crowdsourcing/server_prediction_overrides.h"
+#include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure_rationalizer.h"
 #include "components/autofill/core/browser/form_structure_sectioning_util.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
-#include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
@@ -183,7 +184,7 @@ void EncodeRandomizedValue(const RandomizedEncoder& encoder,
   output->set_encoded_bits(
       encoder.Encode(form_signature, field_signature, data_type, data_value));
   if (include_checksum) {
-    DCHECK(data_type == RandomizedEncoder::FORM_URL);
+    DCHECK(data_type == RandomizedEncoder::kFormUrl);
     output->set_checksum(StrToHash32Bit(data_value));
   }
 }
@@ -208,12 +209,12 @@ void PopulateRandomizedFormMetadata(const RandomizedEncoder& encoder,
       kNullFieldSignature;  // Not relevant for form level metadata.
   if (!form.id_attribute().empty()) {
     EncodeRandomizedValue(encoder, form_signature, kNullFieldSignature,
-                          RandomizedEncoder::FORM_ID, form.id_attribute(),
+                          RandomizedEncoder::kFormId, form.id_attribute(),
                           /*include_checksum=*/false, metadata->mutable_id());
   }
   if (!form.name_attribute().empty()) {
     EncodeRandomizedValue(encoder, form_signature, kNullFieldSignature,
-                          RandomizedEncoder::FORM_NAME, form.name_attribute(),
+                          RandomizedEncoder::kFormName, form.name_attribute(),
                           /*include_checksum=*/false, metadata->mutable_name());
   }
 
@@ -221,7 +222,7 @@ void PopulateRandomizedFormMetadata(const RandomizedEncoder& encoder,
     auto* button_title = metadata->add_button_title();
     DCHECK(!title.empty());
     EncodeRandomizedValue(encoder, form_signature, kNullFieldSignature,
-                          RandomizedEncoder::FORM_BUTTON_TITLES, title,
+                          RandomizedEncoder::kFormButtonTitles, title,
                           /*include_checksum=*/false,
                           button_title->mutable_title());
     button_title->set_type(static_cast<ButtonTitleType>(title_type));
@@ -229,7 +230,7 @@ void PopulateRandomizedFormMetadata(const RandomizedEncoder& encoder,
   auto full_source_url = form.full_source_url().spec();
   if (encoder.AnonymousUrlCollectionIsEnabled() && !full_source_url.empty()) {
     EncodeRandomizedValue(encoder, form_signature, kNullFieldSignature,
-                          RandomizedEncoder::FORM_URL, full_source_url,
+                          RandomizedEncoder::kFormUrl, full_source_url,
                           /*include_checksum=*/true, metadata->mutable_url());
   }
 }
@@ -243,52 +244,52 @@ void PopulateRandomizedFieldMetadata(
   const FieldSignature field_signature = field.GetFieldSignature();
   if (!field.id_attribute().empty()) {
     EncodeRandomizedValue(encoder, form_signature, field_signature,
-                          RandomizedEncoder::FIELD_ID, field.id_attribute(),
+                          RandomizedEncoder::kFieldId, field.id_attribute(),
                           /*include_checksum=*/false, metadata->mutable_id());
   }
   if (!field.name_attribute().empty()) {
     EncodeRandomizedValue(encoder, form_signature, field_signature,
-                          RandomizedEncoder::FIELD_NAME, field.name_attribute(),
+                          RandomizedEncoder::kFieldName, field.name_attribute(),
                           /*include_checksum=*/false, metadata->mutable_name());
   }
   EncodeRandomizedValue(encoder, form_signature, field_signature,
-                        RandomizedEncoder::FIELD_CONTROL_TYPE,
+                        RandomizedEncoder::kFieldControlType,
                         FormControlTypeToString(field.form_control_type()),
                         /*include_checksum=*/false, metadata->mutable_type());
   if (!field.label().empty()) {
     EncodeRandomizedValue(encoder, form_signature, field_signature,
-                          RandomizedEncoder::FIELD_LABEL, field.label(),
+                          RandomizedEncoder::kFieldLabel, field.label(),
                           /*include_checksum=*/false,
                           metadata->mutable_label());
   }
   if (!field.aria_label().empty()) {
     EncodeRandomizedValue(
         encoder, form_signature, field_signature,
-        RandomizedEncoder::FIELD_ARIA_LABEL, field.aria_label(),
+        RandomizedEncoder::kFieldAriaLabel, field.aria_label(),
         /*include_checksum=*/false, metadata->mutable_aria_label());
   }
   if (!field.aria_description().empty()) {
     EncodeRandomizedValue(encoder, form_signature, field_signature,
-                          RandomizedEncoder::FIELD_ARIA_DESCRIPTION,
+                          RandomizedEncoder::kFieldAriaDescription,
                           field.aria_description(), /*include_checksum=*/false,
                           metadata->mutable_aria_description());
   }
   if (!field.css_classes().empty()) {
     EncodeRandomizedValue(
         encoder, form_signature, field_signature,
-        RandomizedEncoder::FIELD_CSS_CLASS, field.css_classes(),
+        RandomizedEncoder::kFieldCssClasses, field.css_classes(),
         /*include_checksum=*/false, metadata->mutable_css_class());
   }
   if (!field.placeholder().empty()) {
     EncodeRandomizedValue(encoder, form_signature, field_signature,
-                          RandomizedEncoder::FIELD_PLACEHOLDER,
+                          RandomizedEncoder::kFieldPlaceholder,
                           field.placeholder(), /*include_checksum=*/false,
                           metadata->mutable_placeholder());
   }
   if (!field.autocomplete_attribute().empty()) {
     EncodeRandomizedValue(
         encoder, form_signature, field_signature,
-        RandomizedEncoder::FIELD_AUTOCOMPLETE, field.autocomplete_attribute(),
+        RandomizedEncoder::kFieldAutocomplete, field.autocomplete_attribute(),
         /*include_checksum=*/false, metadata->mutable_autocomplete());
   }
 }
@@ -604,11 +605,6 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
   if (!form.current_page_language()->empty() &&
       form.randomized_encoder().has_value()) {
     upload.set_language(form.current_page_language().value());
-  }
-  for (const auto& form_data : form.single_username_data()) {
-    AutofillUploadContents::SingleUsernameData* single_username_data =
-        upload.add_single_username_data();
-    single_username_data->CopyFrom(form_data);
   }
 
   if (form.form_associations().last_address_form_submitted) {

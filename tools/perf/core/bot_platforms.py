@@ -508,6 +508,12 @@ _LINUX_EXECUTABLE_CONFIGS = frozenset([
     _tint_benchmark(),
     _tracing_perftests(5),
 ])
+_LINUX_R350_BENCHMARK_CONFIGS = PerfSuite(
+    _LINUX_BENCHMARK_CONFIGS_WITH_MINORMS_PREDICTABLE).Remove([
+        'rendering.desktop',
+        'rendering.desktop.notracing',
+        'system_health.common_desktop',
+    ])
 _MAC_INTEL_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'v8.runtime_stats.top_25',
     'rendering.desktop',
@@ -724,7 +730,7 @@ LINUX_REL = PerfPlatform(
     'linux', executables=_LINUX_EXECUTABLE_CONFIGS)
 LINUX_R350 = PerfPlatform('linux-r350-perf',
                           'Ubuntu-22.04, 16 core',
-                          _LINUX_BENCHMARK_CONFIGS_WITH_MINORMS_PREDICTABLE,
+                          _LINUX_R350_BENCHMARK_CONFIGS,
                           30,
                           'linux',
                           executables=_LINUX_EXECUTABLE_CONFIGS,

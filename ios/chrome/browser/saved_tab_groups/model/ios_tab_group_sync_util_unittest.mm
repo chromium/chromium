@@ -533,7 +533,7 @@ TEST_F(TabGroupSyncUtilTest, IsTabGroupSharedWithNonShared) {
 }
 
 // Tests the `GetTabGroupCollabID` method with a shared group.
-TEST_F(TabGroupSyncUtilTest, GetTabGroupCollabIDwithShared) {
+TEST_F(TabGroupSyncUtilTest, GetTabGroupCollabIDWithShared) {
   TabGroupId tab_group_id = TabGroupId::GenerateNew();
   WebStateList* web_state_list = browser_->GetWebStateList();
   const TabGroup* local_group =
@@ -543,16 +543,17 @@ TEST_F(TabGroupSyncUtilTest, GetTabGroupCollabIDwithShared) {
                             /*urls=*/{}, /*position=*/std::nullopt);
   saved_group.SetCollaborationId(CollaborationId("collaboration"));
 
-  EXPECT_CALL(*mock_service_, GetGroup(tab_group_id))
+  tab_groups::EitherGroupID either_id = tab_group_id;
+  EXPECT_CALL(*mock_service_, GetGroup(either_id))
       .WillOnce(testing::Return(saved_group));
 
-  EXPECT_NSEQ(GetTabGroupCollabID(local_group, mock_service_),
-              @"collaboration");
-  EXPECT_NSEQ(GetTabGroupCollabID(local_group, nullptr), nil);
+  EXPECT_EQ(GetTabGroupCollabID(local_group, mock_service_).value(),
+            "collaboration");
+  EXPECT_EQ(GetTabGroupCollabID(local_group, nullptr).value(), "");
 }
 
 // Tests the `GetTabGroupCollabID` method with a non shared group.
-TEST_F(TabGroupSyncUtilTest, GetTabGroupCollabIDwithNonShared) {
+TEST_F(TabGroupSyncUtilTest, GetTabGroupCollabIDWithNonShared) {
   TabGroupId tab_group_id = TabGroupId::GenerateNew();
   WebStateList* web_state_list = browser_->GetWebStateList();
   const TabGroup* local_group =
@@ -561,12 +562,13 @@ TEST_F(TabGroupSyncUtilTest, GetTabGroupCollabIDwithNonShared) {
   SavedTabGroup saved_group(u"title", tab_groups::TabGroupColorId::kGrey,
                             /*urls=*/{}, /*position=*/std::nullopt);
 
-  EXPECT_CALL(*mock_service_, GetGroup(tab_group_id))
+  tab_groups::EitherGroupID either_id = tab_group_id;
+  EXPECT_CALL(*mock_service_, GetGroup(either_id))
       .WillOnce(testing::Return(saved_group));
 
-  EXPECT_NSNE(GetTabGroupCollabID(local_group, mock_service_),
-              @"collaboration");
-  EXPECT_NSEQ(GetTabGroupCollabID(local_group, nullptr), nil);
+  EXPECT_NE(GetTabGroupCollabID(local_group, mock_service_).value(),
+            "collaboration");
+  EXPECT_EQ(GetTabGroupCollabID(local_group, nullptr).value(), "");
 }
 
 }  // namespace utils

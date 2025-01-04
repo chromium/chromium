@@ -59,6 +59,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -112,15 +113,15 @@ std::string RepeatToSize(std::string_view repeat,
 }
 
 AccountId GetTestAccountId() {
-  return AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId);
+  return AccountId::FromUserEmailGaiaId(kFakeTestEmail, GaiaId(kTestGaiaId));
 }
 
 AccountId GetTestAccountId2() {
-  return AccountId::FromUserEmailGaiaId(kFakeTestEmail2, kTestGaiaId2);
+  return AccountId::FromUserEmailGaiaId(kFakeTestEmail2, GaiaId(kTestGaiaId2));
 }
 
 AccountId GetGooglerAccountId() {
-  return AccountId::FromUserEmailGaiaId(kGooglerEmail, kGooglerGaiaId);
+  return AccountId::FromUserEmailGaiaId(kGooglerEmail, GaiaId(kGooglerGaiaId));
 }
 
 AccountId GetDemoModeAccountId() {
@@ -929,6 +930,27 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
   sea_pen_provider_remote()->HandleSeaPenIntroductionDialogClosed();
 
   sea_pen_provider_remote()->ShouldShowSeaPenIntroductionDialog(
+      should_show_dialog_future.GetCallback());
+  // Expects to return false after the dialog is closed.
+  EXPECT_FALSE(should_show_dialog_future.Take());
+}
+
+TEST_F(PersonalizationAppSeaPenProviderImplTest,
+       ShouldShowSeaPenFreeformIntroductionDialog) {
+  SetUpProfileForTesting(kFakeTestEmail, GetTestAccountId());
+  test_wallpaper_controller()->ClearCounts();
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({features::kSeaPen}, {});
+
+  base::test::TestFuture<bool> should_show_dialog_future;
+  sea_pen_provider_remote()->ShouldShowSeaPenFreeformIntroductionDialog(
+      should_show_dialog_future.GetCallback());
+  // Expects to return true before the dialog is closed.
+  EXPECT_TRUE(should_show_dialog_future.Take());
+
+  sea_pen_provider_remote()->HandleSeaPenFreeformIntroductionDialogClosed();
+
+  sea_pen_provider_remote()->ShouldShowSeaPenFreeformIntroductionDialog(
       should_show_dialog_future.GetCallback());
   // Expects to return false after the dialog is closed.
   EXPECT_FALSE(should_show_dialog_future.Take());

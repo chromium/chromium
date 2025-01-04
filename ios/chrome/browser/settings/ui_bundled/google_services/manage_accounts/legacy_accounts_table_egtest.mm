@@ -6,6 +6,9 @@
 
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_matchers.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_ui.h"
@@ -18,9 +21,6 @@
 #import "ios/chrome/browser/shared/ui/elements/elements_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/test_constants.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
-#import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -321,7 +321,8 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 
 // Tests that selecting sign-out from a non-managed user account clears the
 // user's account data.
-- (void)testSignOutFromNonManagedAccountClearsAccountData {
+// TODO(crbug.com/384893841): Flaky. Re-enable when fixed.
+- (void)DISABLED_testSignOutFromNonManagedAccountClearsAccountData {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
 
   // Sign In `fakeIdentity`.

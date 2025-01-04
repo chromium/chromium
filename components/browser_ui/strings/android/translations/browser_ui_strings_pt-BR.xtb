@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">Download pausado</translation>
 <translation id="1396327438254055134">Permitir que o site use o otimizador V8.</translation>
 <translation id="1415402041810619267">URL truncado</translation>
+<translation id="1415855080660575082">Permita que o Chrome compartilhe suas guias recentes com o dispositivo para que elas apareçam na lista de apps e nos resultados da pesquisa do aparelho. É possível ativar ou desativar essa opção nas configurações do Chrome.</translation>
 <translation id="1448064542941920355">Diminuir zoom</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}one{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> sites}}</translation>
 <translation id="1500473259453106018">Ocultar nas guias o card de redução no preço</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">Você permitiu temporariamente que este site use cookies de terceiros, o que diminui a proteção da navegação, mas dá aos recursos do site mais chances de funcionar conforme o esperado. <ph name="BEGIN_LINK" />Enviar feedback<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Os recursos de alguns sites podem não funcionar no modo de navegação anônima</translation>
 <translation id="2442870161001914531">Sempre ver a versão para computador</translation>
+<translation id="2445311670906052406">Agora, o Chrome compartilha as guias recentes com o dispositivo. Você vai encontrá-las na lista de apps e nos resultados da pesquisa do seu aparelho. É possível desativar essa opção a qualquer momento nas configurações do Chrome.</translation>
 <translation id="2469312991797799607">Essa ação vai excluir todos os dados e cookies de <ph name="ORIGIN" /> e de todos os sites relacionados</translation>
 <translation id="2482878487686419369">Notificações</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">Sites podem exibir solicitações de login de serviços de identificação.</translation>
 <translation id="2787357173144933081">Iniciar com a omnibox</translation>
 <translation id="2790501146643349491">Quando essa configuração está ativada, os sites fechados recentemente podem terminar de enviar e receber dados. Quando está desativada, os sites fechados recentemente não conseguem terminar de enviar ou receber dados.</translation>
+<translation id="2814830417943086299">Agora, o Chrome mostra suas guias recentes na lista de apps e nos resultados da pesquisa do dispositivo. É possível desativar essa opção a qualquer momento nas configurações do Chrome.</translation>
 <translation id="2822354292072154809">Tem certeza de que quer redefinir todas as permissões de site para <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Solicitar a versão para dispositivos móveis</translation>
 <translation id="2870560284913253234">Site</translation>
@@ -335,7 +338,6 @@
 <translation id="5968921426641056619">Digite o endereço da Web</translation>
 <translation id="5975083100439434680">Diminuir zoom</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
-<translation id="6015145568571136419">Agora você pode acessar rapidamente as guias sugeridas na lista de apps e nos resultados da pesquisa do dispositivo. Você pode desativar esta opção a qualquer momento nas configurações do Chrome.</translation>
 <translation id="6015775454662021376">Controle o acesso deste site ao seu dispositivo</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6042308850641462728">Mais</translation>
@@ -379,7 +381,7 @@
 <translation id="6554732001434021288">Última visita: <ph name="NUM_DAYS" /> dias atrás</translation>
 <translation id="656065428026159829">Ver mais</translation>
 <translation id="6561560012278703671">Usar mensagens mais silenciosas (bloqueia notificações que interrompem você)</translation>
-<translation id="6593061639179217415">Para computador</translation>
+<translation id="6593061639179217415">Versão para computador</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Cookies permitidos para <ph name="RWS_MEMBERS_COUNT" /> site de <ph name="RWS_OWNER" />}one{Cookies permitidos para <ph name="RWS_MEMBERS_COUNT" /> site de <ph name="RWS_OWNER" />}other{Cookies permitidos para <ph name="RWS_MEMBERS_COUNT" /> sites de <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Conteúdo protegido</translation>
@@ -558,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Ative as permissões para o app <ph name="APP_NAME" /> nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">O zoom atual está em <ph name="ZOOM_LEVEL" />%%</translation>
+<translation id="9156722768168878035">Permita que o Chrome mostre suas guias recentes na lista de apps e nos resultados da pesquisa do dispositivo. É possível desativar essa opção a qualquer momento nas configurações do Chrome.</translation>
 <translation id="9162462602695099906">Esta página é perigosa</translation>
 <translation id="947156494302904893">Os sites que você visita podem verificar que você é uma pessoa real, e não um bot</translation>
 <translation id="959682366969460160">Organize-se</translation>

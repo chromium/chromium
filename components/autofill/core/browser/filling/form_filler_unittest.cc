@@ -18,24 +18,24 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/autofill_form_test_utils.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
-#include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_driver.h"
-#include "components/autofill/core/browser/test_browser_autofill_manager.h"
+#include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -141,7 +141,7 @@ class FormFillerTest : public testing::Test {
     task_environment_.FastForwardBy(year2020 - AutofillClock::Now());
 
     autofill_client_.GetPaymentsAutofillClient()
-        ->set_test_payments_network_interface(
+        ->set_payments_network_interface(
             std::make_unique<payments::TestPaymentsNetworkInterface>(
                 autofill_client_.GetURLLoaderFactory(),
                 autofill_client_.GetIdentityManager(),
@@ -177,14 +177,13 @@ class FormFillerTest : public testing::Test {
     return browser_autofill_manager_->GetAutofillField(form, field);
   }
 
-  // Lets `BrowserAutofillManager` fill `form` with `profile_or_credit_card` and
+  // Lets `BrowserAutofillManager` fill `form` with `filling_payload` and
   // returns `form` as it would be extracted from the renderer afterwards, i.e.,
   // with the autofilled `FormFieldData::value`s.
   FormData FillAutofillFormData(
       FormData form,
       const FormFieldData& trigger_field,
-      absl::variant<const AutofillProfile*, const CreditCard*>
-          profile_or_credit_card,
+      FillingPayload filling_payload,
       AutofillTriggerSource trigger_source = AutofillTriggerSource::kPopup) {
     std::vector<FormFieldData> filled_fields;
     std::vector<FieldGlobalId> global_ids;
@@ -198,10 +197,9 @@ class FormFillerTest : public testing::Test {
         .WillOnce(
             DoAll(SaveArgElementsTo<2>(&filled_fields), Return(global_ids)));
     form_filler().FillOrPreviewForm(
-        mojom::ActionPersistence::kFill, form, profile_or_credit_card,
-        GetFormStructure(form), GetAutofillField(form, trigger_field),
-        trigger_source,
-        /*is_refill=*/false);
+        mojom::ActionPersistence::kFill, form, filling_payload,
+        *GetFormStructure(form), *GetAutofillField(form, trigger_field),
+        /*ignorable_skip_reasons=*/{}, trigger_source);
     // Copy the filled data into the form.
     for (FormFieldData& field : test_api(form).fields()) {
       if (auto it = base::ranges::find(filled_fields, field.global_id(),
@@ -223,8 +221,8 @@ class FormFillerTest : public testing::Test {
                          Return(std::vector<FieldGlobalId>{}))));
     form_filler().FillOrPreviewForm(
         mojom::ActionPersistence::kPreview, form, &virtual_card,
-        GetFormStructure(form), GetAutofillField(form, field),
-        AutofillTriggerSource::kPopup, /*is_refill=*/false);
+        *GetFormStructure(form), *GetAutofillField(form, field),
+        /*ignorable_skip_reasons=*/{}, AutofillTriggerSource::kPopup);
     return filled_fields;
   }
 
@@ -294,11 +292,10 @@ TEST_F(FormFillerTest, DoNotFillIfFormChanged) {
 
   EXPECT_CALL(autofill_driver_, ApplyFormAction).Times(0);
   AutofillProfile profile = test::GetFullProfile();
-  form_filler().FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
-                                  &profile, GetFormStructure(form),
-                                  GetAutofillField(form, form.fields().front()),
-                                  AutofillTriggerSource::kPopup,
-                                  /*is_refill=*/false);
+  form_filler().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, &profile, *GetFormStructure(form),
+      *GetAutofillField(form, form.fields().front()),
+      /*ignorable_skip_reasons=*/{}, AutofillTriggerSource::kPopup);
 }
 
 TEST_F(FormFillerTest, SkipFillIfFieldIsMeaningfullyPreFilled) {
@@ -400,11 +397,10 @@ TEST_F(FormFillerTest, UndoSavesFormFillingData) {
       .WillRepeatedly(Return(safe_fields));
 
   AutofillProfile profile = test::GetFullProfile();
-  form_filler().FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
-                                  &profile, GetFormStructure(form),
-                                  GetAutofillField(form, form.fields().front()),
-                                  AutofillTriggerSource::kPopup,
-                                  /*is_refill=*/false);
+  form_filler().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, &profile, *GetFormStructure(form),
+      *GetAutofillField(form, form.fields().front()),
+      /*ignorable_skip_reasons=*/{}, AutofillTriggerSource::kPopup);
   // Undo early returns if it has no filling history for the trigger field,
   // which is initially empty, therefore calling the driver is proof that data
   // was successfully stored.
@@ -1642,7 +1638,7 @@ TEST_F(FormFillerTest, PreFilledCCFieldInAddressFormDoesNotCauseCrash) {
   // Expect that this test doesn't cause a crash.
 }
 
-TEST_F(FormFillerTest, FillOrPreviewFormWithPredictionImprovements) {
+TEST_F(FormFillerTest, FillOrPreviewFormWithAutofillAi) {
   test::FormDescription form_description = {
       .fields = {{.role = NAME_FIRST, .heuristic_type = NAME_FIRST},
                  {.role = NAME_LAST, .heuristic_type = NAME_LAST},
@@ -1665,10 +1661,10 @@ TEST_F(FormFillerTest, FillOrPreviewFormWithPredictionImprovements) {
   EXPECT_CALL(autofill_driver_, ApplyFormAction)
       .WillOnce(DoAll(SaveArgElementsTo<2>(&filled_fields),
                       Return(std::vector<FieldGlobalId>())));
-  browser_autofill_manager_->FillOrPreviewFormWithPredictionImprovements(
-      mojom::ActionPersistence::kFill,
-      /*ignorable_skip_reasons=*/{}, form, form.fields().front(),
-      values_to_fill);
+  form_filler().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, values_to_fill,
+      *GetFormStructure(form), *GetAutofillField(form, form.fields().front()),
+      /*ignorable_skip_reasons=*/{}, AutofillTriggerSource::kAutofillAi);
   ASSERT_EQ(filled_fields.size(), 2u);
   EXPECT_EQ(filled_fields[0].value(), u"Doe");
   EXPECT_EQ(filled_fields[1].value(), u"100 John Doe Rd");

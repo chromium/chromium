@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Tungi mavzuni faolsizlantirish</translation>
 <translation id="1807246157184219062">Yorqin</translation>
 <translation id="1808803439260407870">Klassik sanʼat</translation>
+<translation id="181434555916624618">Hozircha odamlarga aloqador natijalar chiqarilmaydi. Boshqa soʻrov yuboring.</translation>
 <translation id="1815850098929213707">Tugma tanlandi: <ph name="KEYS" />. Boshqaruvni tahrirlash uchun tugmani bosing</translation>
 <translation id="1823120442877418684">Qahramonlar</translation>
 <translation id="1827738518074806965">Fotogalereya</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">Qurilmaning oʻng quloqlik batareyasi quvvati: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3340978935015468852">sozlamalar</translation>
 <translation id="3347558044552027859">zamonaviy</translation>
+<translation id="3353477144743332882">Xulosa va nom yaratish modelini yuklab olish</translation>
 <translation id="3359218928534347896">mikrofonni ovozsiz qilish</translation>
 <translation id="3360306038446926262">Oynalar</translation>
 <translation id="3361618936611118375">sushi</translation>
@@ -689,6 +691,7 @@
 <translation id="4354430579665871434">tugma</translation>
 <translation id="4356100841225547054">Tovushni oʻchirish</translation>
 <translation id="4361257691546579041">APN standart tur.</translation>
+<translation id="4368101969572512692">Tavsiyalarni aralashtirish</translation>
 <translation id="437294888293595148">Barcha yorliqlarni tiklash</translation>
 <translation id="437477383107495720">quyonlar</translation>
 <translation id="4376423484621194274">Administrator <ph name="APP_NAME" />ni yopishga ruxsat bermaydi</translation>
@@ -768,6 +771,7 @@
 <translation id="4731797938093519117">Ota-ona kirishi</translation>
 <translation id="473775607612524610">Yangilash</translation>
 <translation id="4744944742468440486">Tanlovga aloqador axborot</translation>
+<translation id="4750394297954878236">Takliflar</translation>
 <translation id="4771607256327216405">klaviatura yorqinligi</translation>
 <translation id="4771923071974529837">ertaga</translation>
 <translation id="4773299976671772492">To‘xtatildi</translation>
@@ -853,6 +857,7 @@
 <translation id="5121677070210013200">Transkripsiya modeli yuklab olinmadi. Qayta urining yoki Chromebookni qayta ishga tushiring.</translation>
 <translation id="5130848777448318809">ponilar</translation>
 <translation id="5137451382116112100">Toʻliq</translation>
+<translation id="5139813694804168398">bezovta qilinmasin</translation>
 <translation id="5140788690559353412">Maktab hisobingizga ruxsatingiz yopilsa, unga aloqador email hamda Google Drive omboridagi Gmail xatlari, Docs hujjatlari, Slides taqdimotlari va boshqa fayllarga ruxsat ham yopiladi.</translation>
 <translation id="5142961317498132443">Autentifikatsiya</translation>
 <translation id="5144311987923128508">Tasdiqlash tugmasi faolsizlantirildi</translation>
@@ -897,6 +902,7 @@
 <translation id="5302048478445481009">Til</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> ekskluziv fon rasmi</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="530883153651464140"><ph name="DEVICE_NAME" /> qurilmasini <ph name="VERSION" /> versiyagacha yangilash</translation>
 <translation id="5315873049536339193">Alohida belgilari</translation>
 <translation id="5317780077021120954">Saqlash</translation>
 <translation id="5318310531701770497">Nomlar yaratilmadi. Uzunroq transkripsiya tanlang.</translation>
@@ -973,7 +979,6 @@
 <translation id="5703716265115423771">ovozni pasaytirish</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> / <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> tugmasini tahrirlash.</translation>
-<translation id="5733298426544876109"><ph name="DEVICE_NAME" /> ilovasini yangilang</translation>
 <translation id="5736820754189340309">Trafik sarfi tozalandi</translation>
 <translation id="574392208103952083">O‘rtacha</translation>
 <translation id="5744175046705638478">"<ph name="QUERY" />" tarjimasi</translation>
@@ -998,6 +1003,7 @@
 <translation id="5859969039821714932">Tezkor tugma ishlamayapti. <ph name="KEY" />siz yangi buyruq tugmasini bosing.</translation>
 <translation id="5860033963881614850">O‘chiq</translation>
 <translation id="5860491529813859533">Yoqish</translation>
+<translation id="5875913454160982848">Transkripsiya modelini yuklab olish</translation>
 <translation id="5876385649737594562">Variantlarni tanlash uchun yoqing</translation>
 <translation id="5877503382465267833">Pauza: <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Butun ekran</translation>
@@ -1037,7 +1043,6 @@
 <translation id="6040143037577758943">Yopish</translation>
 <translation id="6040852767465482106">Anonim:</translation>
 <translation id="604124094241169006">Avtomatik</translation>
-<translation id="6042308850641462728">Yana</translation>
 <translation id="6048107060512778456">Bajarilmadi - Qogʻoz tiqilib qoldi</translation>
 <translation id="6050189528197190982">Kulrang tuslari</translation>
 <translation id="6054711098834486579">ekspressionizm</translation>
@@ -1293,6 +1298,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Nom serveri}other{Nom serverlari}}</translation>
 <translation id="7135814714616751706">Tezkor tugmalar qidiruvi</translation>
 <translation id="7138614237884624401">Soddalashgan matn</translation>
+<translation id="7138668887584231801">Xulosalash uchun soʻzlar yetarli emas</translation>
 <translation id="7141470099673912333">Kontent uzatish</translation>
 <translation id="7143207342074048698">Ulanmoqda</translation>
 <translation id="7144878232160441200">Qayta urinish</translation>
@@ -1588,6 +1594,7 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="8503836310948963452">Yana bir necha daqiqa kuting…</translation>
 <translation id="8505011850330200833">Gemini modeli transkripsiya tuzish va xulosa yaratish uchun xotiradan 2GB joy oladi</translation>
 <translation id="8508640263392900755">APN tafsiloti</translation>
+<translation id="8509574872955173831">Xulosa va nom yaratish haqida batafsil</translation>
 <translation id="8522687886059337719">Endi yangi <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fon rasmlari<ph name="END_LINK_WALLPAPER_SUBPAGE" /> va <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ekran lavhasini<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> ishlatish mumkin</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">choyxona</translation>
@@ -1724,7 +1731,6 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="9133772297793293778">Klaviaturada 1-4 ta modifikator va yana 1 ta boshqa tugmani bosing. Tahrirlash rejimidan chiqish u chun Alt + Esc tugmalarini bosing.</translation>
 <translation id="9137526406337347448">Google xizmatlari</translation>
 <translation id="9138630967333032450">Chap shift</translation>
-<translation id="9147928237330776930">Juda kam soʻzlar belgilangan</translation>
 <translation id="9149391708638971077">Xotirani tekshirish</translation>
 <translation id="9159524746324788320">gamburgerlar</translation>
 <translation id="9161276708550942948">probel</translation>

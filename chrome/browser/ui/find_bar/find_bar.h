@@ -23,7 +23,7 @@ class FindNotificationDetails;
 namespace gfx {
 class Point;
 class Range;
-}
+}  // namespace gfx
 
 #if BUILDFLAG(IS_MAC)
 namespace views {
@@ -33,12 +33,11 @@ class Widget;
 
 class FindBar {
  public:
-  virtual ~FindBar() { }
+  virtual ~FindBar() {}
 
   // Accessor and setter for the FindBarController.
   virtual FindBarController* GetFindBarController() const = 0;
-  virtual void SetFindBarController(
-      FindBarController* find_bar_controller) = 0;
+  virtual void SetFindBarController(FindBarController* find_bar_controller) = 0;
 
   // Shows the find bar. Any previous search string will again be visible.
   // If |animate| is true, we try to slide the find bar in.
@@ -107,7 +106,7 @@ class FindBar {
 
 class FindBarTesting {
  public:
-  virtual ~FindBarTesting() { }
+  virtual ~FindBarTesting() {}
 
   // Computes the location of the find bar and whether it is fully visible in
   // its parent window. The return value indicates if the window is visible at

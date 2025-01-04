@@ -7,8 +7,8 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
-#include "components/autofill/core/browser/filling_product.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_button_action.h"
 #include "components/autofill/core/common/aliases.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"

@@ -131,13 +131,6 @@ void CastWebContentsImpl::RemoveRenderProcessHostObserver() {
 
 CastWebContentsImpl::CastWebContentsImpl(content::WebContents* web_contents,
                                          mojom::CastWebViewParamsPtr params)
-    : CastWebContentsImpl(web_contents,
-                          std::move(params),
-                          nullptr /* parent */) {}
-
-CastWebContentsImpl::CastWebContentsImpl(content::WebContents* web_contents,
-                                         mojom::CastWebViewParamsPtr params,
-                                         CastWebContents* parent)
     : web_contents_(web_contents),
       params_(std::move(params)),
       page_state_(PageState::IDLE),
@@ -148,7 +141,6 @@ CastWebContentsImpl::CastWebContentsImpl(content::WebContents* web_contents,
                          ? std::make_unique<CastMediaBlocker>(web_contents_)
                          : nullptr),
       main_process_host_(nullptr),
-      parent_cast_web_contents_(parent),
       tab_id_(params_->is_root_window ? 0 : next_tab_id++),
       id_(next_id++),
       main_frame_loaded_(false),
@@ -931,7 +923,7 @@ void CastWebContentsImpl::InnerWebContentsCreated(
   params->enabled_for_dev = params_->enabled_for_dev;
   params->background_color = params_->background_color;
   auto result = inner_contents_.insert(std::unique_ptr<CastWebContentsImpl>(
-      new CastWebContentsImpl(inner_web_contents, std::move(params), this)));
+      new CastWebContentsImpl(inner_web_contents, std::move(params))));
 
   // Notifies remote observers.
   for (auto& observer : observers_) {

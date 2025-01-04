@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/supports_user_data.h"
 #include "components/language_detection/content/common/language_detection.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -19,8 +20,11 @@ class LanguageDetectionModelProvider;
 
 // Content implementation of LanguageDetectionDriver.
 class ContentLanguageDetectionDriver
-    : public mojom::ContentLanguageDetectionDriver {
+    : public mojom::ContentLanguageDetectionDriver,
+      public base::SupportsUserData::Data {
  public:
+  // `language_detection_model_provider` is not owned by and must outlive
+  // `this`.
   explicit ContentLanguageDetectionDriver(
       LanguageDetectionModelProvider* language_detection_model_provider);
 
@@ -39,6 +43,9 @@ class ContentLanguageDetectionDriver
   void GetLanguageDetectionModel(
       GetLanguageDetectionModelCallback callback) override;
 
+  void GetLanguageDetectionModelStatus(
+      GetLanguageDetectionModelStatusCallback callback) override;
+
  protected:
   // Notifies `this` that the translate model service is available for model
   // requests or is invalidating existing requests specified by `is_available`.
@@ -55,8 +62,7 @@ class ContentLanguageDetectionDriver
   mojo::ReceiverSet<language_detection::mojom::ContentLanguageDetectionDriver>
       receivers_;
 
-  // Provides access to the model file needed for language detection. Not owned
-  // but guaranteed to outlive `this`.
+  // Provides access to the model file needed for language detection.
   const raw_ptr<LanguageDetectionModelProvider>
       language_detection_model_provider_;
 

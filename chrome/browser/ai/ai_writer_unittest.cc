@@ -82,6 +82,7 @@ void CheckComposeRequestContext(
   EXPECT_THAT(request->page_metadata().trimmed_page_inner_text(),
               expected_context_string);
 }
+
 void CheckComposeRequestUserInput(
     const google::protobuf::MessageLite& request_metadata,
     const std::string& expected_user_input) {
@@ -110,7 +111,10 @@ TEST_F(AIWriterTest, CreateWriterNoService) {
   mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
   ai_manager->CreateWriter(
       mock_create_writer_client.BindNewPipeAndPassRemote(),
-      blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
+      blink::mojom::AIWriterCreateOptions::New(
+          kSharedContextString, blink::mojom::AIWriterTone::kNeutral,
+          blink::mojom::AIWriterFormat::kPlainText,
+          blink::mojom::AIWriterLength::kMedium));
   run_loop.Run();
 }
 
@@ -122,14 +126,11 @@ TEST_F(AIWriterTest, CreateWriterModelNotEligible) {
               const std::optional<optimization_guide::SessionConfigParams>&
                   config_params) { return nullptr; }));
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              CanCreateOnDeviceSession(_, _))
+              GetOnDeviceModelEligibility(_))
       .WillOnce(testing::Invoke(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
-              raw_ptr<optimization_guide::OnDeviceModelEligibilityReason>
-                  debug_reason) {
-            *debug_reason = optimization_guide::OnDeviceModelEligibilityReason::
+          [&](optimization_guide::ModelBasedCapabilityKey feature) {
+            return optimization_guide::OnDeviceModelEligibilityReason::
                 kModelNotEligible;
-            return false;
           }));
 
   MockCreateWriterClient mock_create_writer_client;
@@ -144,7 +145,10 @@ TEST_F(AIWriterTest, CreateWriterModelNotEligible) {
   mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
   ai_manager->CreateWriter(
       mock_create_writer_client.BindNewPipeAndPassRemote(),
-      blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
+      blink::mojom::AIWriterCreateOptions::New(
+          kSharedContextString, blink::mojom::AIWriterTone::kNeutral,
+          blink::mojom::AIWriterFormat::kPlainText,
+          blink::mojom::AIWriterLength::kMedium));
   run_loop.Run();
 }
 
@@ -169,15 +173,12 @@ TEST_F(AIWriterTest, CreateWriterRetryAfterConfigNotAvailableForFeature) {
           }));
 
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              CanCreateOnDeviceSession(_, _))
+              GetOnDeviceModelEligibility(_))
       .WillOnce(testing::Invoke(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
-              raw_ptr<optimization_guide::OnDeviceModelEligibilityReason>
-                  debug_reason) {
-            // Setting kConfigNotAvailableForFeature should trigger retry.
-            *debug_reason = optimization_guide::OnDeviceModelEligibilityReason::
+          [&](optimization_guide::ModelBasedCapabilityKey feature) {
+            // Returning kConfigNotAvailableForFeature should trigger retry.
+            return optimization_guide::OnDeviceModelEligibilityReason::
                 kConfigNotAvailableForFeature;
-            return false;
           }));
 
   optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
@@ -206,7 +207,10 @@ TEST_F(AIWriterTest, CreateWriterRetryAfterConfigNotAvailableForFeature) {
   mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
   ai_manager->CreateWriter(
       mock_create_writer_client.BindNewPipeAndPassRemote(),
-      blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
+      blink::mojom::AIWriterCreateOptions::New(
+          kSharedContextString, blink::mojom::AIWriterTone::kNeutral,
+          blink::mojom::AIWriterFormat::kPlainText,
+          blink::mojom::AIWriterLength::kMedium));
 
   run_loop_for_add_observer.Run();
   CHECK(availability_observer);
@@ -235,15 +239,12 @@ TEST_F(AIWriterTest, CreateWriterAbortAfterConfigNotAvailableForFeature) {
                   config_params) { return nullptr; }));
 
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              CanCreateOnDeviceSession(_, _))
+              GetOnDeviceModelEligibility(_))
       .WillOnce(testing::Invoke(
-          [&](optimization_guide::ModelBasedCapabilityKey feature,
-              raw_ptr<optimization_guide::OnDeviceModelEligibilityReason>
-                  debug_reason) {
-            // Setting kConfigNotAvailableForFeature should trigger retry.
-            *debug_reason = optimization_guide::OnDeviceModelEligibilityReason::
+          [&](optimization_guide::ModelBasedCapabilityKey feature) {
+            // Returning kConfigNotAvailableForFeature should trigger retry.
+            return optimization_guide::OnDeviceModelEligibilityReason::
                 kConfigNotAvailableForFeature;
-            return false;
           }));
 
   optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
@@ -271,7 +272,10 @@ TEST_F(AIWriterTest, CreateWriterAbortAfterConfigNotAvailableForFeature) {
   mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
   ai_manager->CreateWriter(
       mock_create_writer_client->BindNewPipeAndPassRemote(),
-      blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
+      blink::mojom::AIWriterCreateOptions::New(
+          kSharedContextString, blink::mojom::AIWriterTone::kNeutral,
+          blink::mojom::AIWriterFormat::kPlainText,
+          blink::mojom::AIWriterLength::kMedium));
 
   run_loop_for_add_observer.Run();
   CHECK(availability_observer);
@@ -330,7 +334,10 @@ TEST_F(AIWriterTest, SimpleWrite) {
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateWriter(
         mock_create_writer_client.BindNewPipeAndPassRemote(),
-        blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
+        blink::mojom::AIWriterCreateOptions::New(
+            kSharedContextString, blink::mojom::AIWriterTone::kNeutral,
+            blink::mojom::AIWriterFormat::kPlainText,
+            blink::mojom::AIWriterLength::kMedium));
     run_loop.Run();
   }
   AITestUtils::MockModelStreamingResponder mock_responder;
@@ -401,7 +408,10 @@ TEST_F(AIWriterTest, WriteError) {
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateWriter(
         mock_create_writer_client.BindNewPipeAndPassRemote(),
-        blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
+        blink::mojom::AIWriterCreateOptions::New(
+            kSharedContextString, blink::mojom::AIWriterTone::kNeutral,
+            blink::mojom::AIWriterFormat::kPlainText,
+            blink::mojom::AIWriterLength::kMedium));
     run_loop.Run();
   }
   AITestUtils::MockModelStreamingResponder mock_responder;
@@ -470,7 +480,10 @@ TEST_F(AIWriterTest, WriteMultipleResponse) {
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateWriter(
         mock_create_writer_client.BindNewPipeAndPassRemote(),
-        blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
+        blink::mojom::AIWriterCreateOptions::New(
+            kSharedContextString, blink::mojom::AIWriterTone::kNeutral,
+            blink::mojom::AIWriterFormat::kPlainText,
+            blink::mojom::AIWriterLength::kMedium));
     run_loop.Run();
   }
   AITestUtils::MockModelStreamingResponder mock_responder;
@@ -554,7 +567,10 @@ TEST_F(AIWriterTest, MultipleWrite) {
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateWriter(
         mock_create_writer_client.BindNewPipeAndPassRemote(),
-        blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
+        blink::mojom::AIWriterCreateOptions::New(
+            kSharedContextString, blink::mojom::AIWriterTone::kNeutral,
+            blink::mojom::AIWriterFormat::kPlainText,
+            blink::mojom::AIWriterLength::kMedium));
     run_loop.Run();
   }
   {
@@ -645,7 +661,10 @@ TEST_F(AIWriterTest, ResponderDisconnected) {
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateWriter(
         mock_create_writer_client.BindNewPipeAndPassRemote(),
-        blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
+        blink::mojom::AIWriterCreateOptions::New(
+            kSharedContextString, blink::mojom::AIWriterTone::kNeutral,
+            blink::mojom::AIWriterFormat::kPlainText,
+            blink::mojom::AIWriterLength::kMedium));
     run_loop.Run();
   }
   std::unique_ptr<AITestUtils::MockModelStreamingResponder> mock_responder =
@@ -714,7 +733,10 @@ TEST_F(AIWriterTest, WriterDisconnected) {
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateWriter(
         mock_create_writer_client.BindNewPipeAndPassRemote(),
-        blink::mojom::AIWriterCreateOptions::New(kSharedContextString));
+        blink::mojom::AIWriterCreateOptions::New(
+            kSharedContextString, blink::mojom::AIWriterTone::kNeutral,
+            blink::mojom::AIWriterFormat::kPlainText,
+            blink::mojom::AIWriterLength::kMedium));
     run_loop.Run();
   }
 

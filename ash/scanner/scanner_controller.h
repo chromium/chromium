@@ -54,6 +54,9 @@ class ASH_EXPORT ScannerController : public SessionObserver {
   // scanner session.
   void OnSessionUIClosed();
 
+  // Executes the action described by `scanner_action`.
+  void ExecuteAction(const ScannerActionViewModel& scanner_action);
+
   bool HasActiveSessionForTesting() const;
 
   ScannerDelegate* delegate_for_testing() { return delegate_.get(); }

@@ -66,6 +66,7 @@ class SessionAuthzAuthenticator : public Authenticator {
   State state() const override;
   bool started() const override;
   RejectionReason rejection_reason() const override;
+  RejectionDetails rejection_details() const override;
   void ProcessMessage(const jingle_xmpp::XmlElement* message,
                       base::OnceClosure resume_callback) override;
   std::unique_ptr<jingle_xmpp::XmlElement> GetNextMessage() override;
@@ -142,6 +143,8 @@ class SessionAuthzAuthenticator : public Authenticator {
   // SessionAuthz. If |session_authz_state_| is NOT `ERROR`, the actual
   // rejection reason is delegated to `underlying_->rejection_reason()`.
   RejectionReason session_authz_rejection_reason_;
+
+  RejectionDetails rejection_details_;
 
   std::string session_id_;
   std::string host_token_;

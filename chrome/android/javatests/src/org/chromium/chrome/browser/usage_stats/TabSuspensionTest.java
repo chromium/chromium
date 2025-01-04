@@ -392,8 +392,8 @@ public class TabSuspensionTest {
 
     @Test
     @MediumTest
-    // TODO(crbug.com/339003346): Failing on tablets, fix and re-enable.
     @Restriction(DeviceFormFactor.PHONE)
+    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/339003346
     public void testSuspendNullCurrentTab() {
         mActivityTestRule.loadUrl(mStartingUrl);
         ChromeTabUtils.closeAllTabs(InstrumentationRegistry.getInstrumentation(), mActivity);

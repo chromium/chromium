@@ -115,7 +115,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.GpuRasterizationEnabled" enum="BooleanEnabled"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -126,7 +126,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true"
     name="Renderer4.ImageDecodeTaskDurationUs{ImageOrTaskType}.{DecodeType}"
-    units="microseconds" expires_after="2025-04-13">
+    units="microseconds" expires_after="2025-06-15">
   <owner>cblume@chromium.org</owner>
   <owner>vmpstr@chromium.org</owner>
   <owner>sashamcintosh@chromium.org</owner>
@@ -254,7 +254,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.ScrollingThread" enum="ScrollingThreadStatus"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
 <!-- Name completed by histogram_suffixes name="ScrollSourceDevice" -->
 
   <owner>bokan@chromium.org</owner>

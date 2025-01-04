@@ -41,10 +41,10 @@ void TestBrowserChildProcess::SimulateLaunch(base::Process process) {
   // Simulate a successful process launch with a copy of ChildProcessData that
   // has an existing process attached. ChildProcessData is move-only, but
   // GetData() returns a const ref, so must copy each field individually.
-  content::ChildProcessData data(host_->GetData().process_type);
+  content::ChildProcessData data(host_->GetData().process_type,
+                                 host_->GetData().GetChildProcessId());
   data.name = host_->GetData().name;
   data.metrics_name = host_->GetData().metrics_name;
-  data.id = host_->GetData().id;
   data.sandbox_type = host_->GetData().sandbox_type;
   data.SetProcess(std::move(process));
   PerformanceManagerRegistryImpl::GetInstance()

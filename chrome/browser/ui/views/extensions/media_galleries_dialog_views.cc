@@ -111,8 +111,9 @@ MediaGalleriesDialogViews::MediaGalleriesDialogViews(
 }
 
 MediaGalleriesDialogViews::~MediaGalleriesDialogViews() {
-  if (!ControllerHasWebContents())
+  if (!ControllerHasWebContents()) {
     delete contents_;
+  }
 }
 
 void MediaGalleriesDialogViews::AcceptDialogForTesting() {
@@ -199,8 +200,9 @@ void MediaGalleriesDialogViews::UpdateGalleries() {
   InitChildViews();
   contents_->DeprecatedLayoutImmediately();
 
-  if (ControllerHasWebContents())
+  if (ControllerHasWebContents()) {
     DialogModelChanged();
+  }
 }
 
 bool MediaGalleriesDialogViews::AddOrUpdateGallery(
@@ -287,8 +289,9 @@ bool MediaGalleriesDialogViews::ControllerHasWebContents() const {
 void MediaGalleriesDialogViews::ButtonPressed(base::RepeatingClosure closure) {
   confirm_available_ = true;
 
-  if (ControllerHasWebContents())
+  if (ControllerHasWebContents()) {
     DialogModelChanged();
+  }
 
   closure.Run();
 }

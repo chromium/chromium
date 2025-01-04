@@ -108,6 +108,14 @@ class TestTabGroupSyncService implements TabGroupSyncService {
     public void updateLocalTabId(LocalTabGroupId localGroupId, String syncTabId, int localTabId) {}
 
     @Override
+    public void setLocalObservationMode(boolean observeLocalChanges) {}
+
+    @Override
+    public boolean isObservingLocalChanges() {
+        return true;
+    }
+
+    @Override
     public boolean isRemoteDevice(String syncCacheGuid) {
         boolean isLocal =
                 TextUtils.isEmpty(syncCacheGuid)

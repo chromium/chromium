@@ -38,8 +38,9 @@ void UpdatePropertiesForArc(std::optional<int> task_id,
   out_properties_container.SetProperty(
       chromeos::kShouldHaveHighlightBorderOverlay, true);
 
-  if (task_id.has_value())
+  if (task_id.has_value()) {
     out_properties_container.SetProperty(app_restore::kWindowIdKey, *task_id);
+  }
 
   int32_t restore_window_id = 0;
   if (task_id.has_value()) {

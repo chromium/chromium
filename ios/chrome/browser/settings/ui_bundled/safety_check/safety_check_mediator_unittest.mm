@@ -34,6 +34,8 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/password_check_observer_bridge.h"
+#import "ios/chrome/browser/safety_check_notifications/utils/constants.h"
+#import "ios/chrome/browser/safety_check_notifications/utils/test_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_check_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_consumer.h"
@@ -73,17 +75,6 @@ namespace {
 using l10n_util::GetNSString;
 using password_manager::InsecureType;
 using password_manager::TestPasswordStore;
-
-typedef NS_ENUM(NSInteger, SafetyCheckItemType) {
-  // CheckTypes section.
-  UpdateItemType = kItemTypeEnumZero,
-  PasswordItemType,
-  SafeBrowsingItemType,
-  HeaderItem,
-  // CheckStart section.
-  CheckStartItemType,
-  TimestampFooterItem,
-};
 
 // The size of trailing symbol icons.
 NSInteger kTrailingSymbolImagePointSize = 22;
@@ -862,4 +853,46 @@ TEST_F(SafetyCheckMediatorTest, NotificationsOptInButtonPromptsTurnOn) {
       mediator_.notificationsOptInItem.text,
       GetNSString(
           IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_TURN_ON_NOTIFICATIONS_ELLIPSIS));
+}
+
+// Tests that the histogram is correctly fired for opting in to notifications.
+TEST_F(SafetyCheckMediatorTest, NotificationsHistogramFiresForOptIn) {
+  feature_list_.InitWithFeatures({kSafetyCheckNotifications}, {});
+
+  UpdateSafetyCheckNotificationsPermission(NO);
+
+  TableViewItem* opt_in_item =
+      [[TableViewItem alloc] initWithType:NotificationsOptInItemType];
+
+  base::HistogramTester histogram_tester;
+
+  [mediator_ didSelectItem:opt_in_item];
+
+  // Verify the histogram fired for opting in.
+  histogram_tester.ExpectUniqueSample(
+      "IOS.Notifications.SafetyCheck.NotificationsOptInSource",
+      static_cast<int>(
+          SafetyCheckNotificationsOptInSource::kSafetyCheckPageOptIn),
+      1);
+}
+
+// Tests that the histogram is correctly fired for opting out of notifications.
+TEST_F(SafetyCheckMediatorTest, NotificationsHistogramFiresForOptOut) {
+  feature_list_.InitWithFeatures({kSafetyCheckNotifications}, {});
+
+  UpdateSafetyCheckNotificationsPermission(YES);
+
+  TableViewItem* opt_in_item =
+      [[TableViewItem alloc] initWithType:NotificationsOptInItemType];
+
+  base::HistogramTester histogram_tester;
+
+  [mediator_ didSelectItem:opt_in_item];
+
+  // Verify the histogram fired for opting out.
+  histogram_tester.ExpectUniqueSample(
+      "IOS.Notifications.SafetyCheck.NotificationsOptInSource",
+      static_cast<int>(
+          SafetyCheckNotificationsOptInSource::kSafetyCheckPageOptOut),
+      1);
 }

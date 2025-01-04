@@ -112,8 +112,9 @@ long WINAPI StackDumpExceptionFilter(EXCEPTION_POINTERS* info) {
   std::cerr << "\n";
 
   debug::StackTrace(info).Print();
-  if (g_previous_filter)
+  if (g_previous_filter) {
     return g_previous_filter(info);
+  }
   return EXCEPTION_CONTINUE_SEARCH;
 }
 
@@ -132,12 +133,14 @@ constexpr size_t kSymInitializeRetryCount = 3;
 // See crbug.com/1339753
 bool SymInitializeWrapper(HANDLE handle, BOOL invade_process) {
   for (size_t i = 0; i < kSymInitializeRetryCount; ++i) {
-    if (SymInitialize(handle, nullptr, invade_process))
+    if (SymInitialize(handle, nullptr, invade_process)) {
       return true;
+    }
 
     g_init_error = GetLastError();
-    if (g_init_error != g_status_info_length_mismatch)
+    if (g_init_error != g_status_info_length_mismatch) {
       return false;
+    }
   }
   DLOG(ERROR) << "SymInitialize failed repeatedly.";
   return false;
@@ -145,13 +148,15 @@ bool SymInitializeWrapper(HANDLE handle, BOOL invade_process) {
 
 bool SymInitializeCurrentProc() {
   const HANDLE current_process = GetCurrentProcess();
-  if (SymInitializeWrapper(current_process, TRUE))
+  if (SymInitializeWrapper(current_process, TRUE)) {
     return true;
+  }
 
   // g_init_error is updated by SymInitializeWrapper.
   // No need to do "g_init_error = GetLastError()" here.
-  if (g_init_error != ERROR_INVALID_PARAMETER)
+  if (g_init_error != ERROR_INVALID_PARAMETER) {
     return false;
+  }
 
   // SymInitialize() can fail with ERROR_INVALID_PARAMETER when something has
   // already called SymInitialize() in this process. For example, when absl
@@ -159,8 +164,9 @@ bool SymInitializeCurrentProc() {
   // almost immediately after startup. In such a case, try to reinit to see if
   // that succeeds.
   SymCleanup(current_process);
-  if (SymInitializeWrapper(current_process, TRUE))
+  if (SymInitializeWrapper(current_process, TRUE)) {
     return true;
+  }
 
   return false;
 }
@@ -175,9 +181,7 @@ bool InitializeSymbols() {
   g_initialized_symbols = true;
   // Defer symbol load until they're needed, use undecorated names, and get line
   // numbers.
-  SymSetOptions(SYMOPT_DEFERRED_LOADS |
-                SYMOPT_UNDNAME |
-                SYMOPT_LOAD_LINES);
+  SymSetOptions(SYMOPT_DEFERRED_LOADS | SYMOPT_UNDNAME | SYMOPT_LOAD_LINES);
   if (!SymInitializeCurrentProc()) {
     // When it fails, we should not call debugbreak since it kills the current
     // process (prevents future tests from running or kills the browser
@@ -234,8 +238,7 @@ class SymbolContext {
   static SymbolContext* GetInstance() {
     // We use a leaky singleton because code may call this during process
     // termination.
-    return
-      Singleton<SymbolContext, LeakySingletonTraits<SymbolContext> >::get();
+    return Singleton<SymbolContext, LeakySingletonTraits<SymbolContext>>::get();
   }
 
   SymbolContext(const SymbolContext&) = delete;
@@ -261,11 +264,9 @@ class SymbolContext {
 
       // Code adapted from MSDN example:
       // http://msdn.microsoft.com/en-us/library/ms680578(VS.85).aspx
-      ULONG64 buffer[
-        (sizeof(SYMBOL_INFO) +
-          kMaxNameLength * sizeof(wchar_t) +
-          sizeof(ULONG64) - 1) /
-        sizeof(ULONG64)];
+      ULONG64 buffer[(sizeof(SYMBOL_INFO) + kMaxNameLength * sizeof(wchar_t) +
+                      sizeof(ULONG64) - 1) /
+                     sizeof(ULONG64)];
       memset(buffer, 0, sizeof(buffer));
 
       // Initialize symbol information retrieval structures.
@@ -273,8 +274,8 @@ class SymbolContext {
       PSYMBOL_INFO symbol = reinterpret_cast<PSYMBOL_INFO>(&buffer[0]);
       symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
       symbol->MaxNameLen = kMaxNameLength - 1;
-      BOOL has_symbol = SymFromAddr(GetCurrentProcess(), frame,
-                                    &sym_displacement, symbol);
+      BOOL has_symbol =
+          SymFromAddr(GetCurrentProcess(), frame, &sym_displacement, symbol);
 
       // Attempt to retrieve line number information.
       DWORD line_displacement = 0;
@@ -302,9 +303,7 @@ class SymbolContext {
  private:
   friend struct DefaultSingletonTraits<SymbolContext>;
 
-  SymbolContext() {
-    InitializeSymbols();
-  }
+  SymbolContext() { InitializeSymbols(); }
 
   Lock lock_;
 };

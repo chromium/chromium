@@ -86,7 +86,7 @@
                                      : -kBottomMagicStackPadding)]
   ]];
 
-  if (_mostVisitedTileConfig) {
+  if (_mostVisitedTileConfig.mostVisitedItems.count > 0) {
     CHECK(!_mostVisitedTileConfig.inMagicStack);
     [self createAndInsertMostVisitedModule];
   }

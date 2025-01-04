@@ -48,8 +48,9 @@ class SharesheetBubbleViewBrowserTest : public InProcessBrowserTest {
  public:
   void ShowUi() {
     views::Widget::Widgets old_widgets;
-    for (aura::Window* root_window : Shell::GetAllRootWindows())
+    for (aura::Window* root_window : Shell::GetAllRootWindows()) {
       views::Widget::GetAllChildWidgets(root_window, &old_widgets);
+    }
 
     ::sharesheet::SharesheetService* const sharesheet_service =
         ::sharesheet::SharesheetServiceFactory::GetForProfile(
@@ -63,8 +64,9 @@ class SharesheetBubbleViewBrowserTest : public InProcessBrowserTest {
         base::DoNothing());
 
     views::Widget::Widgets new_widgets;
-    for (aura::Window* root_window : Shell::GetAllRootWindows())
+    for (aura::Window* root_window : Shell::GetAllRootWindows()) {
       views::Widget::GetAllChildWidgets(root_window, &new_widgets);
+    }
 
     views::Widget::Widgets added_widgets;
     std::set_difference(new_widgets.begin(), new_widgets.end(),

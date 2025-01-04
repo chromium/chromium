@@ -60,6 +60,7 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/app_window/native_app_window.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -206,7 +207,7 @@ class LoginLogoutReporterBrowserTest
 
   const LoginManagerMixin::TestUserInfo test_user_{
       AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
-                                     FakeGaiaMixin::kFakeUserGaiaId)};
+                                     GaiaId(FakeGaiaMixin::kFakeUserGaiaId))};
 
   LoginManagerMixin login_manager_{&mixin_host_, {test_user_}};
 

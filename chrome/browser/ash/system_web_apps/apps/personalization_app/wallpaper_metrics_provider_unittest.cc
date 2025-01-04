@@ -21,6 +21,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "components/account_id/account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -31,7 +32,8 @@
 namespace {
 
 constexpr char kUser[] = "user1@test.com";
-const AccountId kAccountId = AccountId::FromUserEmailGaiaId(kUser, kUser);
+const AccountId kAccountId =
+    AccountId::FromUserEmailGaiaId(kUser, GaiaId(kUser));
 
 ash::personalization_app::mojom::SeaPenQueryPtr MakeTemplateQuery() {
   return ash::personalization_app::mojom::SeaPenQuery::NewTemplateQuery(

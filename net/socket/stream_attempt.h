@@ -17,6 +17,7 @@
 #include "net/base/net_export.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
+#include "net/socket/stream_socket_close_reason.h"
 
 namespace net {
 
@@ -91,6 +92,8 @@ class NET_EXPORT_PRIVATE StreamAttempt {
     return connect_timing_;
   }
 
+  void SetCancelReason(StreamSocketCloseReason cancel_reason);
+
  protected:
   virtual int StartInternal() = 0;
 
@@ -125,6 +128,8 @@ class NET_EXPORT_PRIVATE StreamAttempt {
   std::unique_ptr<StreamSocket> stream_socket_;
 
   LoadTimingInfo::ConnectTiming connect_timing_;
+
+  std::optional<StreamSocketCloseReason> cancel_reason_;
 };
 
 }  // namespace net

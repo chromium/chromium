@@ -30,6 +30,7 @@
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -88,6 +89,8 @@ OverviewItemView::OverviewItemView(
   // Focusable so we can add accelerators to this view.
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
 
+  close_button_->SetPaintToLayer();
+  close_button_->layer()->SetFillsBoundsOpaquely(false);
   views::InkDrop::Get(close_button_)
       ->SetMode(views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
   close_button_->GetViewAccessibility().SetName(
@@ -113,25 +116,15 @@ OverviewItemView::OverviewItemView(
 OverviewItemView::~OverviewItemView() = default;
 
 void OverviewItemView::SetCloseButtonVisible(bool visible) {
-  if (!close_button_->layer()) {
-    close_button_->SetPaintToLayer();
-    close_button_->layer()->SetFillsBoundsOpaquely(false);
-  }
-
+  CHECK(close_button_->layer());
   AnimateLayerOpacity(close_button_->layer(), visible);
   close_button_->SetEnabled(visible);
 }
 
 void OverviewItemView::HideCloseInstantlyAndThenShowItSlowly() {
   CHECK(close_button_);
-
-  if (!close_button_->layer()) {
-    close_button_->SetPaintToLayer();
-    close_button_->layer()->SetFillsBoundsOpaquely(false);
-  }
-
   ui::Layer* layer = close_button_->layer();
-
+  CHECK(layer);
   views::AnimationBuilder()
       .SetPreemptionStrategy(ui::LayerAnimator::REPLACE_QUEUED_ANIMATIONS)
       .Once()

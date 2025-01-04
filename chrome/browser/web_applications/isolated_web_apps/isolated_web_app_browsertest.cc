@@ -615,6 +615,29 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, UseCounters) {
                                      blink::mojom::WebFeature::kPageVisits, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
+                       PermissionsPolicyCannotBeExpanded) {
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder())
+          .AddResource("/", "Test IWA",
+                       {{"Content-Type", "text/html"},
+                        {"Permissions-Policy", "direct-sockets=(self)"}})
+          .BuildBundle();
+
+  app->TrustSigningKey();
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info, app->Install(profile()));
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  std::string openSocketJs = R"(
+    (async function() {
+      const socket = new TCPSocket("localhost", 0);
+      await socket.opened;
+    })();
+  )";
+  EXPECT_THAT(EvalJs(app_frame, openSocketJs).error,
+              HasSubstr("Permissions-Policy: direct-sockets are disabled."));
+}
+
 class IsolatedWebAppApiAccessBrowserTest : public IsolatedWebAppBrowserTest {
  protected:
   IsolatedWebAppUrlInfo InstallAppWithSocketPermission() {

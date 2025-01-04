@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">Спампоўка прыпынена</translation>
 <translation id="1396327438254055134">Дазволіць сайту выкарыстоўваць аптымізатар V8.</translation>
 <translation id="1415402041810619267">URL-адрас абрэзаны</translation>
+<translation id="1415855080660575082">Дазвольце Chrome абагульваць апошнія ўкладкі з вашай прыладай, каб яны з’яўляліся ў спісе праграм прылады і ў выніках пошуку. Гэту функцыю можна ўключыць ці выключыць у наладах Chrome.</translation>
 <translation id="1448064542941920355">Паменшыць маштаб</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> сайт}one{<ph name="SITE_COUNT" /> сайт}few{<ph name="SITE_COUNT" /> сайты}many{<ph name="SITE_COUNT" /> сайтаў}other{<ph name="SITE_COUNT" /> сайта}}</translation>
 <translation id="1500473259453106018">Схаваць картку "Зніжэнне цэн на ўкладках"</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">Вы часова дазволілі гэтаму сайту выкарыстоўваць староннія файлы cookie. Гэта знізіць вашу абароненасць падчас прагляду вэб-старонак, але функцыі сайта з большай імавернасцю будуць працаваць правільна. <ph name="BEGIN_LINK" />Адправіць водгук<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">На некаторых сайтах у рэжыме інкогніта можа не працаваць частка функцый</translation>
 <translation id="2442870161001914531">Заўсёды запытваць версію сайта для настольнага камп’ютара</translation>
+<translation id="2445311670906052406">Цяпер Chrome абагульвае апошнія ўкладкі з вашай прыладай. Вы будзеце бачыць іх у спісе праграм прылады і ў выніках пошуку. Гэту функцыю можна ў любы момант выключыць у наладах Chrome.</translation>
 <translation id="2469312991797799607">Будуць выдалены ўсе даныя і файлы cookie дамена <ph name="ORIGIN" /> і сайтаў, якія да яго належаць.</translation>
 <translation id="2482878487686419369">Апавяшчэнні</translation>
 <translation id="2485422356828889247">Выдаліць</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">Сайты могуць паказваць запыты на ўваход ад сэрвісаў ідэнтыфікацыі.</translation>
 <translation id="2787357173144933081">Імгненны запуск з амнібоксам</translation>
 <translation id="2790501146643349491">Калі гэты параметр уключаны, нядаўна закрытыя сайты могуць завяршаць адпраўку і атрыманне даных. Калі параметр выключаны, нядаўна закрытыя сайты не могуць завяршаць вышэйназваныя дзеянні.</translation>
+<translation id="2814830417943086299">Цяпер Chrome паказвае апошнія ўкладкі ў спісе праграм прылады і ў выніках пошуку. Гэту функцыю можна ў любы момант выключыць у наладах Chrome.</translation>
 <translation id="2822354292072154809">Сапраўды скінуць усе дазволы сайта для <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Запытваць версію для мабільных прылад</translation>
 <translation id="2870560284913253234">Сайт</translation>
@@ -335,7 +338,6 @@
 <translation id="5968921426641056619">Увядзіце вэб-адрас</translation>
 <translation id="5975083100439434680">Паменшыць</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
-<translation id="6015145568571136419">Цяпер вы можаце хутка адкрываць прапанаваныя ўкладкі са спіса праграм прылады і ў выніках пошуку на прыладзе. Гэту функцыю можна ў любы час адключыць у наладах Chrome.</translation>
 <translation id="6015775454662021376">Кіруйце доступам гэтага сайта да вашай прылады</translation>
 <translation id="6040143037577758943">Закрыць</translation>
 <translation id="6042308850641462728">Яшчэ</translation>
@@ -558,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Уключыце для праграмы "<ph name="APP_NAME" />" дазволы ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Бягучы маштаб: <ph name="ZOOM_LEVEL" />%%</translation>
+<translation id="9156722768168878035">Дазвольце Chrome паказваць апошнія ўкладкі ў спісе праграм прылады і ў выніках пошуку. Гэту функцыю можна ў любы момант выключыць у наладах Chrome.</translation>
 <translation id="9162462602695099906">Гэта старонка небяспечная</translation>
 <translation id="947156494302904893">Наведаныя вамі сайты могуць правяраць, ці вы не бот</translation>
 <translation id="959682366969460160">Навядзіце парадак</translation>

@@ -25,22 +25,12 @@ ASH_EXPORT bool IsDisplayableChannel(version_info::Channel channel);
 ASH_EXPORT int GetChannelNameStringResourceID(version_info::Channel channel,
                                               bool append_channel);
 
-// Returns the foreground UI color for release track `channel`. If `channel` is
-// one of the displayable values then the expected `SkColor` is returned, a
-// value of SkColorSetRGB(0x00, 0x00, 0x00) otherwise.
-ASH_EXPORT SkColor GetFgColor(version_info::Channel channel);
-
-// For Jelly: returns the foreground `ui::ColorId` for release track `channel`.
+// Returns the foreground `ui::ColorId` for release track `channel`.
 // If `channel` is one of the displayable values then the expected `ColorId` is
 // returned, a value of `ui::ColorId()` otherwise.
 ASH_EXPORT ui::ColorId GetFgColorJelly(version_info::Channel channel);
 
-// Returns the background UI color for release track `channel`. If `channel` is
-// one of the displayable values then the expected `SkColor` is returned, a
-// value of SkColorSetRGB(0x00, 0x00, 0x00) otherwise.
-ASH_EXPORT SkColor GetBgColor(version_info::Channel channel);
-
-// For Jelly returns the background `ui::ColorId` for release track `channel`.
+// Returns the background `ui::ColorId` for release track `channel`.
 // If `channel` is one of the displayable values then the expected `ColorId` is
 // returned, a value of `ui::ColorId()` otherwise.
 ASH_EXPORT ui::ColorId GetBgColorJelly(version_info::Channel channel);

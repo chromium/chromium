@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/login/app_mode/test/test_app_data_load_waiter.h"
+
 #include <memory>
 #include <string>
 
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
-#include "chrome/browser/ash/login/app_mode/test/test_app_data_load_waiter.h"
 
 namespace ash {
 
@@ -79,14 +80,16 @@ void TestAppDataLoadWaiter::OnKioskExtensionLoadedInCache(
     return;
   }
 
-  std::string cached_version;
-  base::FilePath file_path;
-  if (!manager_->GetCachedCrx(app_id_, &file_path, &cached_version)) {
+  auto info = manager_->GetCachedCrx(app_id_);
+  if (!info.has_value()) {
     return;
   }
+
+  auto& [_, cached_version] = info.value();
   if (version_ != cached_version) {
     return;
   }
+
   loaded_ = true;
   quit_ = true;
   if (runner_.get()) {

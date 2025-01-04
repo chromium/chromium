@@ -1,0 +1,39 @@
+// Copyright (c) 2024 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package gaia;
+
+option optimize_for = LITE_RUNTIME;
+
+// The state of a Gaia account.
+//
+// This is a projection of the type returned by Gaia's /ListAccounts, which only
+// has the fields that Chrome will use.
+message Account {
+  // The display email for the account.
+  optional string display_email = 3;
+
+  // If the session for this account is still 'valid' (not expired,
+  // the account is not disabled, etc.). Only present for person accounts when
+  // called with cookies as credentials.
+  optional bool valid_session = 9;
+
+  // Obfuscated Gaia ID.
+  optional string obfuscated_id = 10;
+
+  // Whether this account is only in the cookie and is actually signed out.
+  optional bool signed_out = 14;
+
+  // Whether this account is verified.
+  optional bool is_verified = 15;
+
+  // Internal Fields.
+  reserved 1, 2, 4, 5, 6, 7, 8, 11, 12, 13;
+}
+
+message ListAccountsResponse {
+  repeated Account account = 1;
+}

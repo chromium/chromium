@@ -9,6 +9,7 @@
 
 #include "mojo/core/core_ipcz.h"
 
+#include <array>
 #include <cstring>
 #include <string_view>
 
@@ -742,12 +743,12 @@ TEST_F(CoreIpczTest, DataPipeTwoPhase) {
 
 constexpr std::string_view kAttachmentName = "interesting pipe name";
 
-constexpr std::string_view kTestMessages[] = {
+constexpr auto kTestMessages = std::to_array<std::string_view>({
     "hello hello",
     "i don't know why you say goodbye",
     "actually nvm i do",
     "lol bye",
-};
+});
 
 DEFINE_TEST_CLIENT_TEST_WITH_PIPE(InvitationSingleAttachmentClient,
                                   CoreIpczTestClient,
@@ -840,7 +841,7 @@ TEST_F(CoreIpczTest, InvitationMultipleAttachments) {
         EXPECT_EQ(MOJO_RESULT_OK,
                   mojo().CreateInvitation(nullptr, &invitation));
 
-        MojoHandle pipes[std::size(kTestMessages)];
+        std::array<MojoHandle, std::size(kTestMessages)> pipes;
         for (uint32_t i = 0; i < std::size(pipes); ++i) {
           EXPECT_EQ(MOJO_RESULT_OK,
                     mojo().AttachMessagePipeToInvitation(

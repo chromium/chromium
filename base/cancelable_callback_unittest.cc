@@ -25,8 +25,12 @@ class TestRefCounted : public RefCountedThreadSafe<TestRefCounted> {
   ~TestRefCounted() = default;
 };
 
-void Increment(int* count) { (*count)++; }
-void IncrementBy(int* count, int n) { (*count) += n; }
+void Increment(int* count) {
+  (*count)++;
+}
+void IncrementBy(int* count, int n) {
+  (*count) += n;
+}
 void RefCountedParam(const scoped_refptr<TestRefCounted>& ref_counted) {}
 
 void OnMoveOnlyReceived(int* value, std::unique_ptr<int> result) {

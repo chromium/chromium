@@ -6,8 +6,11 @@
 
 #include <set>
 #include <utility>
+#include <vector>
 
 #include "ash/constants/ash_switches.h"
+#include "ash/metrics/login_unlock_throughput_recorder.h"
+#include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -23,6 +26,7 @@
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/reboot_notifications_scheduler.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/exit_type_service.h"
@@ -53,6 +57,39 @@ constexpr char kSessionRestoreExitResultPrefix[] =
 constexpr char kSessionRestoreWindowCountPrefix[] =
     "Apps.SessionRestoreWindowCount";
 constexpr char kFullRestoreTabCountPrefix[] = "Apps.FullRestoreTabCount";
+
+// Collects window id and app id of normal browser windows.
+std::vector<LoginUnlockThroughputRecorder::RestoreWindowID>
+CollectRestoreIDsForNormalBrowserWindows(
+    ::app_restore::RestoreData* restore_data) {
+  if (!restore_data || restore_data->app_id_to_launch_list().empty()) {
+    return {};
+  }
+
+  std::vector<LoginUnlockThroughputRecorder::RestoreWindowID> app_restore_ids;
+  for (const auto& [app_id, launch_list] :
+       restore_data->app_id_to_launch_list()) {
+    const bool is_browser = app_id == app_constants::kChromeAppId;
+    // We are only interested in Ash browsers.
+    if (!is_browser) {
+      continue;
+    }
+
+    for (const auto& [window_id, app_restore_data] : launch_list) {
+      if (app_id == app_constants::kChromeAppId) {
+        // Ignore app type browsers.
+        const bool app_type_browser =
+            app_restore_data->browser_extra_info.app_type_browser.value_or(
+                false);
+        if (app_type_browser) {
+          continue;
+        }
+      }
+      app_restore_ids.emplace_back(window_id, app_id);
+    }
+  }
+  return app_restore_ids;
+}
 
 }  // namespace
 
@@ -210,6 +247,10 @@ void FullRestoreAppLaunchHandler::OnGetRestoreData(
         is_full_restore_shown);
   }
 
+  // Must be called after `FullRestoreService::Init` so that `should_restore_`
+  // flag is updated when needed.
+  MaybeNotifyFullRestoreDataLoaded(ShouldRestore());
+
   policy::RebootNotificationsScheduler* reboot_notifications_scheduler =
       policy::RebootNotificationsScheduler::Get();
   if (reboot_notifications_scheduler) {
@@ -218,23 +259,40 @@ void FullRestoreAppLaunchHandler::OnGetRestoreData(
   }
 }
 
+void FullRestoreAppLaunchHandler::MaybeNotifyFullRestoreDataLoaded(
+    bool restore_automatically) {
+  // `Shell` might not exist in tests.
+  if (!Shell::HasInstance()) {
+    return;
+  }
+
+  // The notification is only needed for the primary user sign-in.
+  if (!ProfileHelper::IsPrimaryProfile(profile())) {
+    return;
+  }
+
+  Shell::Get()
+      ->login_unlock_throughput_recorder()
+      ->FullSessionRestoreDataLoaded(
+          CollectRestoreIDsForNormalBrowserWindows(restore_data()),
+          restore_automatically);
+}
+
 void FullRestoreAppLaunchHandler::MaybePostRestore() {
   MaybeStartSaveTimer();
 
-  // If the restore flag `should_restore_` is not true, or reading the restore
-  // data hasn't finished, don't restore.
-  if (!should_restore_ || !restore_data())
+  if (!ShouldRestore()) {
     return;
+  }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&FullRestoreAppLaunchHandler::MaybeRestore,
+      FROM_HERE, base::BindOnce(&FullRestoreAppLaunchHandler::Restore,
                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
-void FullRestoreAppLaunchHandler::MaybeRestore() {
-  if (floating_workspace_util::ShouldHandleRestartRestore()) {
-    return;
-  }
+void FullRestoreAppLaunchHandler::Restore() {
+  CHECK(ShouldRestore());
+
   ::full_restore::FullRestoreReadHandler::GetInstance()->SetStartTimeForProfile(
       profile()->GetPath());
   ::full_restore::FullRestoreReadHandler::GetInstance()->SetCheckRestoreData(
@@ -481,6 +539,15 @@ void FullRestoreAppLaunchHandler::MaybeStartSaveTimer() {
 bool FullRestoreAppLaunchHandler::IsLastSessionExitTypeCrashed() {
   return ExitTypeService::GetLastSessionExitType(profile()) ==
          ExitType::kCrashed;
+}
+
+bool FullRestoreAppLaunchHandler::ShouldRestore() const {
+  // Returns true only when
+  //   - `should_restore_` is true (restore should be performed)
+  //   - restore data is loaded (there is something to restore)
+  //   - floating workspace should not handle the restore.
+  return should_restore_ && restore_data() &&
+         !floating_workspace_util::ShouldHandleRestartRestore();
 }
 
 ScopedLaunchBrowserForTesting::ScopedLaunchBrowserForTesting() {

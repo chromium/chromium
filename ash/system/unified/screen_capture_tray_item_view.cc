@@ -62,11 +62,6 @@ views::View* ScreenCaptureTrayItemView::GetTooltipHandlerForPoint(
   return HitTestPoint(point) ? this : nullptr;
 }
 
-std::u16string ScreenCaptureTrayItemView::GetTooltipText(
-    const gfx::Point& point) const {
-  return GetCachedTooltipText();
-}
-
 void ScreenCaptureTrayItemView::UpdateLabelOrImageViewColor(bool active) {
   TrayItemView::UpdateLabelOrImageViewColor(active);
 

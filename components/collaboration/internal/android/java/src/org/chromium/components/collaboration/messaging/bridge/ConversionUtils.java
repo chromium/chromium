@@ -124,19 +124,17 @@ class ConversionUtils {
     private static ActivityLogItem createActivityLogItemAndMaybeAddToList(
             @Nullable ArrayList<ActivityLogItem> list,
             @CollaborationEvent int collaborationEvent,
-            String userDisplayName,
-            boolean userIsSelf,
-            String description,
-            long timeDeltaMs,
+            String titleText,
+            String descriptionText,
+            String timeDeltaText,
             boolean showFavicon,
             @RecentActivityAction int action,
             MessageAttribution activityMetadata) {
         ActivityLogItem activityLogItem = new ActivityLogItem();
         activityLogItem.collaborationEvent = collaborationEvent;
-        activityLogItem.userDisplayName = userDisplayName;
-        activityLogItem.userIsSelf = userIsSelf;
-        activityLogItem.description = description;
-        activityLogItem.timeDeltaMs = timeDeltaMs;
+        activityLogItem.titleText = titleText;
+        activityLogItem.descriptionText = descriptionText;
+        activityLogItem.timeDeltaText = timeDeltaText;
         activityLogItem.showFavicon = showFavicon;
         activityLogItem.action = action;
         activityLogItem.activityMetadata = activityMetadata;

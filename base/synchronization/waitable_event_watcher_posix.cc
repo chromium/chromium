@@ -70,8 +70,9 @@ class AsyncWaiter : public WaitableEvent::Waiter {
 
   bool Fire(WaitableEvent* event) override {
     // Post the callback if we haven't been cancelled.
-    if (!flag_->value())
+    if (!flag_->value()) {
       task_runner_->PostTask(FROM_HERE, std::move(callback_));
+    }
 
     // We are removed from the wait-list by the WaitableEvent itself. It only
     // remains to delete ourselves.
@@ -115,8 +116,9 @@ WaitableEventWatcher::~WaitableEventWatcher() {
   // The destructor may be called from a different sequence than StartWatching()
   // when there is no active watch. To avoid triggering a DCHECK in
   // StopWatching(), do not call it when there is no active watch.
-  if (cancel_flag_ && !cancel_flag_->value())
+  if (cancel_flag_ && !cancel_flag_->value()) {
     StopWatching();
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -132,8 +134,9 @@ bool WaitableEventWatcher::StartWatching(
   // A user may call StartWatching from within the callback function. In this
   // case, we won't know that we have finished watching, expect that the Flag
   // will have been set in AsyncCallbackHelper().
-  if (cancel_flag_.get() && cancel_flag_->value())
+  if (cancel_flag_.get() && cancel_flag_->value()) {
     cancel_flag_ = nullptr;
+  }
 
   DCHECK(!cancel_flag_) << "StartWatching called while still watching";
 
@@ -149,8 +152,9 @@ bool WaitableEventWatcher::StartWatching(
   AutoLock locked(kernel->lock_);
 
   if (kernel->signaled_) {
-    if (!kernel->manual_reset_)
+    if (!kernel->manual_reset_) {
       kernel->signaled_ = false;
+    }
 
     // No hairpinning - we can't call the delegate directly here. We have to
     // post a task to |task_runner| as usual.
@@ -169,8 +173,9 @@ bool WaitableEventWatcher::StartWatching(
 void WaitableEventWatcher::StopWatching() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!cancel_flag_.get())  // if not currently watching...
+  if (!cancel_flag_.get()) {  // if not currently watching...
     return;
+  }
 
   if (cancel_flag_->value()) {
     // In this case, the event has fired, but we haven't figured that out yet.

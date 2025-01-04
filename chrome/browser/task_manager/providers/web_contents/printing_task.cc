@@ -23,8 +23,7 @@ PrintingTask::PrintingTask(content::WebContents* web_contents)
           RendererTask::GetFaviconFromWebContents(web_contents),
           web_contents) {}
 
-PrintingTask::~PrintingTask() {
-}
+PrintingTask::~PrintingTask() = default;
 
 void PrintingTask::UpdateTitle() {
   set_title(PrefixPrintTitle(GetTitleFromWebContents(web_contents())));

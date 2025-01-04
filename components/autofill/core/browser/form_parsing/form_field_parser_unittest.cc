@@ -381,4 +381,53 @@ TEST_F(FormFieldParserTest, ParseStandaloneEmailSimilarToAddressName) {
   TestClassificationExpectations();
 }
 
+// Tests that:
+// - High quality label matches are prioritized over low quality label matches.
+// - Names matches are considered equally important as high quality label
+//   matches and ties are broken by parser level scores.
+TEST_F(FormFieldParserTest, LabelPrioritization) {
+  base::test::ScopedFeatureList feature{
+      features::kAutofillBetterLocalHeuristicPlaceholderSupport};
+
+  // - High quality name-type label.
+  // - Low quality address-type placeholder.
+  //   => High quality name-type wins.
+  AddFormFieldData(FormControlType::kInputText, /*name=*/"",
+                   /*label=*/"Full name", /*placeholder=*/"Street address",
+                   /*max_length=*/0, NAME_FULL);
+  fields_.back()->set_label_source(FormFieldData::LabelSource::kForId);
+
+  // - Low quality name-type label.
+  // - High quality address-type placeholder.
+  //   => Placeholder wins.
+  // (The expected type is address line 2, as the address parser qualifies the
+  //  first field as address line 1 internally, but this is overruled by the
+  //  higher priority name type. In practice rationalisation would fix the type)
+  AddFormFieldData(FormControlType::kInputText, /*name=*/"",
+                   /*label=*/"Full name", /*placeholder=*/"Street address",
+                   /*max_length=*/0, ADDRESS_HOME_LINE2);
+  fields_.back()->set_label_source(FormFieldData::LabelSource::kDivTable);
+
+  // - High quality name-type label.
+  // - Low quality address-type placeholder.
+  // - Email-type name.
+  //   => Name wins because `kBaseEmailParserScore` > `kBaseNameParserScore`.
+  AddFormFieldData(FormControlType::kInputText, /*name=*/"email",
+                   /*label=*/"Full name", /*placeholder=*/"Street address",
+                   /*max_length=*/0, EMAIL_ADDRESS);
+  fields_.back()->set_label_source(FormFieldData::LabelSource::kForId);
+
+  // - Low quality name-type label.
+  // - High quality address-type placeholder.
+  // - Email-type name.
+  //   => Name wins because `kBaseEmailParserScore` > `kBaseAddressParserScore`.
+  AddFormFieldData(FormControlType::kInputText, /*name=*/"email",
+                   /*label=*/"Full name", /*placeholder=*/"Street address",
+                   /*max_length=*/0, EMAIL_ADDRESS);
+  fields_.back()->set_label_source(FormFieldData::LabelSource::kDivTable);
+
+  EXPECT_EQ(4, ParseFormFields());
+  TestClassificationExpectations();
+}
+
 }  // namespace autofill

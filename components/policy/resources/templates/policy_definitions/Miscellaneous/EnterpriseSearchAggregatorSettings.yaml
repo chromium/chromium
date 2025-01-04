@@ -14,9 +14,9 @@ desc: |-
 
   The <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD">icon_url</ph> field specifies the URL to an image that will be used on the search suggestions. A default icon will be used when this field is not set. It's recommended to use a favicon (example <ph name="ICON_URL_EXAMPLE">https://www.google.com/favicon.ico</ph>).
 
-  On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, this policy is only available on instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain, joined to <ph name="MS_AAD_NAME">Microsoft® Azure® Active Directory®</ph> or enrolled in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph>.
+  On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, this policy is only available on instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain, joined to <ph name="MS_AAD_NAME">Microsoft® Azure® Active Directory®</ph> or enrolled in <ph name="CHROME_ENTERPRISE_CORE_NAME">Chrome Enterprise Core</ph>.
 
-  On <ph name="MAC_OS_NAME">macOS</ph>, this policy is only available on instances that are managed via MDM, joined to a domain via MCX or enrolled in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph>.
+  On <ph name="MAC_OS_NAME">macOS</ph>, this policy is only available on instances that are managed via MDM, joined to a domain via MCX or enrolled in <ph name="CHROME_ENTERPRISE_CORE_NAME">Chrome Enterprise Core</ph>.
 
 example_value:
   name: My Search Aggregator

@@ -45,7 +45,13 @@ class ProfileAttributesIOS {
   const std::string& GetProfileName() const;
 
   // Gets information related to the profile.
+  // IsNewProfile() is true if the profile has been registered with
+  // ProfileAttributesStorageIOS, but has never been loaded.
   bool IsNewProfile() const;
+  // IsFullyInitialized() is true if the profile has been loaded at least once,
+  // and all first-time setup steps have been completed (e.g. for work profiles,
+  // this includes signing in the corresponding managed account).
+  bool IsFullyInitialized() const;
   const std::string& GetGaiaId() const;
   const std::string& GetUserName() const;
   bool HasAuthenticationError() const;
@@ -53,15 +59,18 @@ class ProfileAttributesIOS {
   base::Time GetLastActiveTime() const;
   bool IsAuthenticated() const;
   SessionIds GetDiscardedSessions() const;
+  const base::Value::Dict* GetNotificationPermissions() const;
 
   // Sets information related to the profile.
   void ClearIsNewProfile();
+  void SetFullyInitialized();
   void SetAuthenticationInfo(std::string_view gaia_id,
                              std::string_view user_name);
   void SetHasAuthenticationError(bool value);
   void SetAttachedGaiaIds(const GaiaIdSet& gaia_ids);
   void SetLastActiveTime(base::Time time);
   void SetDiscardedSessions(const SessionIds& session_ids);
+  void SetNotificationPermissions(base::Value::Dict permissions);
 
   // Returns the storage.
   base::Value::Dict GetStorage() &&;

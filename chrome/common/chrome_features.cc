@@ -17,20 +17,12 @@ namespace features {
 
 // All features in alphabetical order.
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// If enabled device status collector will add the type of session (Affiliated
-// User, Kiosks, Managed Guest Sessions) to the device status report.
-BASE_FEATURE(kActivityReportingSessionType,
-             "ActivityReportingSessionType",
+#if BUILDFLAG(IS_ANDROID)
+// Kill switch for disconnecting file select dialog when tab is deactivated.
+BASE_FEATURE(kAndroidDisconnectFileChooserOnTabDeactivateKillSwitch,
+             "AndroidDisconnectFileChooserOnTabDeactivateKillSwitch",
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Enables or disables logging for adaptive screen brightness on Chrome OS.
-BASE_FEATURE(kAdaptiveScreenBrightnessLogging,
-             "AdaptiveScreenBrightnessLogging",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 BASE_FEATURE(kAppPreloadService,
@@ -283,17 +275,6 @@ BASE_FEATURE(kShortcutsNotAppsRevealDesktop,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-// Enables notification permission revocation for origins that may send
-// disruptive notifications.
-BASE_FEATURE(kDisruptiveNotificationPermissionRevocation,
-             "DisruptiveNotificationPermissionRevocation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enable WebUSB on extension service workers.
-BASE_FEATURE(kEnableWebUsbOnExtensionServiceWorker,
-             "EnableWebUsbOnExtensionServiceWorker",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 BASE_FEATURE(kFileTransferEnterpriseConnector,
              "FileTransferEnterpriseConnector",
@@ -320,6 +301,9 @@ BASE_FEATURE(kGeoLanguage, "GeoLanguage", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether the Glic feature is enabled.
 BASE_FEATURE(kGlic, "Glic", base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<bool> kGlicStatusIconOpenMenuWithSecondaryClick{
+    &kGlic, "open-status-icon-menu-with-secondary-click", true};
 
 BASE_FEATURE(kGlicURLConfig,
              "GlicURLConfig",
@@ -364,7 +348,7 @@ BASE_FEATURE(kPrivacyGuideForceAvailable,
 // settings.
 BASE_FEATURE(kLinkedServicesSetting,
              "LinkedServicesSetting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_ANDROID)
 // Enables or disables the Happiness Tracking System demo mode for Desktop
@@ -425,6 +409,10 @@ const base::FeatureParam<base::TimeDelta>
 BASE_FEATURE(kHappinessTrackingSurveysForDesktopSettings,
              "HappinessTrackingSurveysForDesktopSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<base::TimeDelta>
+    kHappinessTrackingSurveysForDesktopSettingsTime{
+        &kHappinessTrackingSurveysForDesktopSettings, "settings-time",
+        base::Seconds(20)};
 
 // Enables or disables the Happiness Tracking System for Desktop Chrome
 // Privacy Settings.
@@ -603,9 +591,15 @@ BASE_FEATURE(kHappinessTrackingOffice,
 
 // Enables HTTPS-First Mode in a balanced configuration that doesn't warn on
 // HTTP when HTTPS can't be reasonably expected.
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kHttpsFirstBalancedMode,
+             "HttpsFirstBalancedMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
 BASE_FEATURE(kHttpsFirstBalancedMode,
              "HttpsFirstBalancedMode",
              base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 // Automatically enables HTTPS-First Mode in a balanced configuration when
 // possible.
@@ -677,16 +671,7 @@ BASE_FEATURE(kImmersiveFullscreenTabs,
 BASE_FEATURE(kImmersiveFullscreenPWAs,
              "ImmersiveFullscreenPWAs",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Slide tabs out of the way during the reveal of the close, minimize and
-// maximize (traffic lights) buttons. kImmersiveFullscreenTabs must be enabled
-// for this feature to have an effect.
-// If remote_cocoa::features::kFullscreenAlwaysShowTrafficLights is enabled,
-// this feature has no effect.
-BASE_FEATURE(kFullscreenAnimateTabs,
-             "FullscreenAnimateTabs",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables scraping of password-expiry information during SAML login flow, which
@@ -715,12 +700,15 @@ BASE_FEATURE(kInternalOnlyUisPref,
              "InternalOnlyUisPref",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_CHROMEOS)
 // Enables automatic updates of Isolated Web Apps.
 BASE_FEATURE(kIsolatedWebAppAutomaticUpdates,
              "IsolatedWebAppAutomaticUpdates",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
+#if BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_CHROMEOS)
+);
 
 // Enables Isolated Web App Developer Mode, which allows developers to
 // install untrusted Isolated Web Apps.
@@ -819,13 +807,6 @@ BASE_FEATURE(kListWebAppsSwitch,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_MAC)
-// Enable screen capture system permission check on Mac 10.15+.
-BASE_FEATURE(kMacSystemScreenCapturePermissionCheck,
-             "MacSystemScreenCapturePermissionCheck",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Whether to show the Hidden toggle in Settings, allowing users to toggle
 // whether to treat a WiFi network as having a hidden ssid.
@@ -898,24 +879,12 @@ BASE_FEATURE(kOverridePrefetchOnSingleton,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Enables or disables the page content opt-in and setting.
-BASE_FEATURE(kPageContentOptIn,
-             "PageContentOptIn",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Enables usage of Parent Access Code in the login flow for reauth and add
-// user. Requires |kParentAccessCode| to be enabled.
-BASE_FEATURE(kParentAccessCodeForOnlineLogin,
-             "ParentAccessCodeForOnlineLogin",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
-// Keep a client-side log of when websites access permission-gated capabilities
-// to allow the user to audit usage.
-BASE_FEATURE(kPermissionAuditing,
-             "PermissionAuditing",
+// Skips requesting the Parent Access Code for reauth.
+BASE_FEATURE(kSkipParentAccessCodeForReauth,
+             "SkipParentAccessCodeForReauth",
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enable support for "Plugin VMs" on Chrome OS.
@@ -932,6 +901,12 @@ BASE_FEATURE(kPrerenderFallbackToPreconnect,
 // preview.
 BASE_FEATURE(kPrintPreviewCrosPrimary,
              "PrintPreviewCrosPrimary",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, use managed per-printer print job options set via
+// DevicePrinters/PrinterBulkConfiguration policy in print preview.
+BASE_FEATURE(kUseManagedPrintJobOptionsInPrintPreview,
+             "UseManagedPrintJobOptionsInPrintPreview",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
@@ -1032,6 +1007,11 @@ BASE_FEATURE(kSafetyHubWeakAndReusedPasswords,
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
+// Enables Safety Hub services on start up feature.
+BASE_FEATURE(kSafetyHubServicesOnStartUp,
+             "SafetyHubServicesOnStartUp",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables the Trust Safety Sentiment Survey for Safety Hub.
 BASE_FEATURE(kSafetyHubTrustSafetySentimentSurvey,
              "TrustSafetySentimentSurveyForSafetyHub",
@@ -1544,8 +1524,8 @@ BASE_FEATURE(kWriteBasicSystemProfileToPersistentHistogramsFile,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-bool IsParentAccessCodeForOnlineLoginEnabled() {
-  return base::FeatureList::IsEnabled(kParentAccessCodeForOnlineLogin);
+bool IsParentAccessCodeForReauthEnabled() {
+  return !base::FeatureList::IsEnabled(kSkipParentAccessCodeForReauth);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

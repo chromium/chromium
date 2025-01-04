@@ -136,7 +136,7 @@ bool ProcessMap::CanProcessHostContextType(
     const Extension* extension,
     const content::RenderProcessHost& process,
     mojom::ContextType context_type) {
-  const int process_id = process.GetID();
+  const int process_id = process.GetDeprecatedID();
   switch (context_type) {
     case mojom::ContextType::kUnspecified:
       // We never consider unspecified contexts valid. Even though they would be

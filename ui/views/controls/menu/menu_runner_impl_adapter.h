@@ -44,12 +44,11 @@ class VIEWS_EXPORT MenuRunnerImplAdapter : public MenuRunnerImplInterface {
       MenuButtonController* button_controller,
       const gfx::Rect& bounds,
       MenuAnchorPosition anchor,
-      ui::mojom::MenuSourceType source_type = ui::mojom::MenuSourceType::kNone,
-      int32_t run_types = MenuRunner::NO_FLAGS,
-      gfx::NativeView native_view_for_gestures = {},
-      std::optional<gfx::RoundedCornersF> corners = std::nullopt,
-      std::optional<std::string> show_menu_host_duration_histogram =
-          std::nullopt) override;
+      ui::mojom::MenuSourceType source_type,
+      int32_t run_types,
+      gfx::NativeView native_view_for_gestures,
+      std::optional<gfx::RoundedCornersF> corners,
+      std::optional<std::string> show_menu_host_duration_histogram) override;
   void Cancel() override;
   base::TimeTicks GetClosingEventTime() const override;
 

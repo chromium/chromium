@@ -217,7 +217,9 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ToolbarOverflow) {
 class ReadAnythingReadAloudMochaTest : public ReadAnythingMochaBrowserTest {
  protected:
   ReadAnythingReadAloudMochaTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kReadAnythingReadAloud);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kReadAnythingReadAloud},
+        {features::kReadAnythingReadAloudPhraseHighlighting});
   }
 
  private:
@@ -269,8 +271,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest,
                    "mocha.run()");
 }
 
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest, DISABLED_Speech) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest, Speech) {
   RunSidePanelTest("side_panel/read_anything/speech_test.js", "mocha.run()");
 }
 

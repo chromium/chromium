@@ -8,14 +8,12 @@ import type {HealthdApiCpuExecutionTimeUserHz, HealthdApiCpuResult} from '../uti
 
 // The CPU usage info since last snapshot.
 export interface CpuUsage {
-  // The usage in percentage.
-  usagePercentage: number;
-  // The amount of time the CPU is running in user space.
-  userTime: number;
-  // The amount of time the CPU is running in kernel space.
-  systemTime: number;
-  // The amount of time the CPU is not used.
-  idleTime: number;
+  // The percentage of time the CPU is running in user space.
+  userPercentage: number;
+  // The percentage of time the CPU is running in kernel space.
+  systemPercentage: number;
+  // The percentage of time the CPU is not used.
+  idlePercentage: number;
 }
 
 /**
@@ -82,10 +80,9 @@ export class CpuUsageHelper {
       return null
     }
     return {
-      usagePercentage: (user + system) / total * 100,
-      userTime: user,
-      systemTime: system,
-      idleTime: idle,
+      userPercentage: user / total * 100,
+      systemPercentage: system / total * 100,
+      idlePercentage: idle / total * 100,
     };
   }
 

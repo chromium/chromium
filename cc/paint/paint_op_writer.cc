@@ -125,6 +125,11 @@ size_t PaintOpWriter::SerializedSize(const SkHighContrastConfig& config) {
          SerializedSize(config.fInvertStyle) + SerializedSize(config.fContrast);
 }
 
+// static:
+size_t PaintOpWriter::SerializedSize(const SkString& sk_string) {
+  return SerializedSizeOfBytes(sk_string.size());
+}
+
 // static
 size_t PaintOpWriter::SerializedSize(const ColorFilter* filter) {
   if (!filter) {
@@ -491,6 +496,14 @@ void PaintOpWriter::Write(const gfx::HDRMetadata& hdr_metadata) {
   WriteData(base::as_byte_span(bytes));
 }
 
+void PaintOpWriter::Write(const SkString& sk_string) {
+  static_assert(std::is_same_v<unsigned char, uint8_t>);
+  size_t num_bytes = sk_string.size();
+  WriteSize(num_bytes);
+  WriteData(base::span<const uint8_t>(
+      reinterpret_cast<const uint8_t*>(sk_string.data()), num_bytes));
+}
+
 void PaintOpWriter::Write(const SkGainmapInfo& gainmap_info) {
   Write(gainmap_info.fGainmapRatioMin);
   Write(gainmap_info.fGainmapRatioMax);
@@ -669,6 +682,8 @@ void PaintOpWriter::Write(const PaintShader* shader,
   Write(shader->positions_);
   // Explicitly don't write the cached_shader_ because that can be regenerated
   // using other fields.
+
+  Write(shader->sksl_command_);
 }
 
 void PaintOpWriter::Write(SkYUVColorSpace yuv_color_space) {

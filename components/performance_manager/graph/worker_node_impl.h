@@ -89,9 +89,11 @@ class WorkerNodeImpl
  private:
   friend class WorkerNodeImplDescriber;
 
-  void OnJoiningGraph() override;
-  void OnUninitializing() override;
-  void RemoveNodeAttachedData() override;
+  // NodeBase:
+  void OnInitializingProperties() override;
+  void OnInitializingEdges() override;
+  void OnUninitializingEdges() override;
+  void CleanUpNodeState() override;
 
   // Rest of WorkerNode implementation. These are private so that users of the
   // impl use the private getters rather than the public interface.

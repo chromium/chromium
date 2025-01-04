@@ -109,7 +109,7 @@ class CONTENT_EXPORT FileSystemAccessObservationGroup
   using OnUsageChangeCallback = FilePathWatcher::UsageChangeCallback;
 
   explicit FileSystemAccessObservationGroup(
-      scoped_refptr<FileSystemAccessObserverQuotaManager> quota_manager,
+      FileSystemAccessObserverQuotaManager::Handle quota_manager_handle,
       FileSystemAccessWatcherManager& watcher_manager,
       blink::StorageKey storage_key,
       FileSystemAccessWatchScope scope,
@@ -131,7 +131,7 @@ class CONTENT_EXPORT FileSystemAccessObservationGroup
       OnUsageChangeCallback on_usage_change_callback);
 
   FileSystemAccessObserverQuotaManager* GetQuotaManagerForTesting() {
-    return quota_manager_.get();
+    return quota_manager_handle_.GetQuotaManagerForTesting();  // IN-TEST
   }
 
  private:
@@ -167,7 +167,7 @@ class CONTENT_EXPORT FileSystemAccessObservationGroup
   OnUsageChangeCallback on_usage_change_callback_;
 
   // The quota manager for our storage key.
-  scoped_refptr<FileSystemAccessObserverQuotaManager> quota_manager_;
+  FileSystemAccessObserverQuotaManager::Handle quota_manager_handle_;
 
   // The `FileSystemAccessWatcherManager` that we're observing. Safe because
   // `watcher_manager_` owns this.

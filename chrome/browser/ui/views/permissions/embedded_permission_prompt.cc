@@ -263,8 +263,8 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
           delegate()->Requests(),
           permissions::ElementAnchoredBubbleVariant::OS_PROMPT);
       current_variant_first_display_time_ = base::Time::Now();
-// This view has no buttons, so the OS level prompt should be triggered at the
-// same time as the |EmbeddedPermissionPromptShowSystemPromptView|.
+      // This view has no buttons, so the OS level prompt should be triggered at
+      // the same time as the |EmbeddedPermissionPromptShowSystemPromptView|.
       PromptForOsPermission();
       break;
     case Variant::kOsSystemSettings:
@@ -485,9 +485,9 @@ void EmbeddedPermissionPrompt::StopAllowing() {
 void EmbeddedPermissionPrompt::ShowSystemSettings() {
   const auto& requests = delegate()->Requests();
   CHECK_GT(requests.size(), 0U);
-// TODO(crbug.com/40275129) Chrome always shows the first permission in a group,
-// as it is not possible to open multiple System Setting pages. Figure out a
-// better way to handle this scenario.
+  // TODO(crbug.com/40275129) Chrome always shows the first permission in a
+  // group, as it is not possible to open multiple System Setting pages. Figure
+  // out a better way to handle this scenario.
   RecordOsMetrics(permissions::OsScreenAction::SYSTEM_SETTINGS);
   RecordPermissionActionUKM(
       permissions::ElementAnchoredBubbleAction::kSystemSettings);

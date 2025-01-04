@@ -24,15 +24,20 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/address_data_manager_test_api.h"
-#include "components/autofill/core/browser/autofill_experiments.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/crowdsourcing/test_votes_uploader.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager_test_api.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
 #include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
@@ -45,15 +50,10 @@
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/test_virtual_card_enrollment_manager.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_credit_card_save_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_driver.h"
-#include "components/autofill/core/browser/test_browser_autofill_manager.h"
-#include "components/autofill/core/browser/test_payments_data_manager.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/studies/autofill_experiments.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -285,14 +285,14 @@ class CreditCardSaveManagerTest : public testing::Test {
     personal_data().SetSyncServiceForTest(&sync_service_);
     autofill_driver_ = std::make_unique<TestAutofillDriver>(&autofill_client_);
     autofill_client_.GetPaymentsAutofillClient()
-        ->set_test_payments_network_interface(
+        ->set_payments_network_interface(
             std::make_unique<payments::TestPaymentsNetworkInterface>(
                 autofill_client_.GetURLLoaderFactory(),
                 autofill_client_.GetIdentityManager(), &personal_data()));
     payments_client().set_virtual_card_enrollment_manager(
         std::make_unique<MockVirtualCardEnrollmentManager>(
-            &autofill_client_.GetPersonalDataManager(),
-            &payments_network_interface(), &autofill_client_));
+            &payments_data_manager(), &payments_network_interface(),
+            &autofill_client_));
     payments_client().SetLocalSaveCallbackOfferDecision(
         SaveCardOfferUserDecision::kAccepted);
     payments_client().SetCloudSaveCallbackOfferDecision(
@@ -502,8 +502,8 @@ class CreditCardSaveManagerTest : public testing::Test {
         *autofill_client_.GetPaymentsAutofillClient());
   }
   payments::TestPaymentsNetworkInterface& payments_network_interface() {
-    return *autofill_client_.GetPaymentsAutofillClient()
-                ->GetPaymentsNetworkInterface();
+    return static_cast<payments::TestPaymentsNetworkInterface&>(
+        *payments_client().GetPaymentsNetworkInterface());
   }
   TestStrikeDatabase& strike_database() {
     return *autofill_client_.GetStrikeDatabase();

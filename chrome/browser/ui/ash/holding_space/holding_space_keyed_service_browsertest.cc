@@ -93,8 +93,9 @@ base::FilePath CreateTextFile(const base::FilePath& root_path,
           "%s.txt", base::UnguessableToken::Create().ToString().c_str())));
 
   base::ScopedAllowBlockingForTesting allow_blocking;
-  if (!base::CreateDirectory(path.DirName()))
+  if (!base::CreateDirectory(path.DirName())) {
     return base::FilePath();
+  }
   if (!base::WriteFile(path, /*data=*/std::string())) {
     return base::FilePath();
   }
@@ -144,8 +145,9 @@ void WaitForItemInitialization(
       [&predicate](const auto& item) { return predicate.Run(item.get()); });
 
   DCHECK(item_it != model->items().end());
-  if (item_it->get()->IsInitialized())
+  if (item_it->get()->IsInitialized()) {
     return;
+  }
 
   testing::NiceMock<MockHoldingSpaceModelObserver> mock;
   base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
@@ -155,8 +157,9 @@ void WaitForItemInitialization(
   base::RunLoop run_loop;
   ON_CALL(mock, OnHoldingSpaceItemInitialized)
       .WillByDefault([&](const HoldingSpaceItem* item) {
-        if (item == item_it->get())
+        if (item == item_it->get()) {
           run_loop.Quit();
+        }
       });
   ON_CALL(mock, OnHoldingSpaceItemsRemoved)
       .WillByDefault([&](const std::vector<const HoldingSpaceItem*>& items) {
@@ -240,8 +243,9 @@ class HoldingSpaceKeyedServiceBrowserTest : public InProcessBrowserTest {
   // InProcessBrowserTest:
   bool SetUpUserDataDirectory() override {
     base::FilePath user_data_dir;
-    if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir))
+    if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
       return false;
+    }
 
     // Mount test volumes under user data dir to ensure it gets persisted after
     // PRE test runs.

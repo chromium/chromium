@@ -4,17 +4,10 @@
 
 import("//build/buildflag_header.gni")
 import("//third_party/flatbuffers/flatbuffer.gni")
+import("//third_party/mediapipe/features.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//third_party/tflite/features.gni")
 import("//third_party/tflite/tflite_target.gni")
-
-declare_args() {
-  mediapipe_build_with_gpu_support = false
-  if (is_win || is_linux || is_mac) {
-    # To be set to true after integration with VideoEffectsService.
-    mediapipe_build_with_gpu_support = false
-  }
-}
 
 # Generate a buildflag header for compile-time checking of MediaPipe GPU support.
 buildflag_header("buildflags") {
@@ -113,6 +106,11 @@ proto_library("mediapipe_proto") {
   cc_generator_options = "lite=true:"
   deps = [ ":any_lite_proto_impl" ]
   sources = [
+    "src/mediapipe/calculators/audio/mfcc_mel_calculators.proto",
+    "src/mediapipe/calculators/audio/rational_factor_resample_calculator.proto",
+    "src/mediapipe/calculators/audio/spectrogram_calculator.proto",
+    "src/mediapipe/calculators/audio/stabilized_log_calculator.proto",
+    "src/mediapipe/calculators/audio/time_series_framer_calculator.proto",
     "src/mediapipe/calculators/core/flow_limiter_calculator.proto",
     "src/mediapipe/calculators/core/split_vector_calculator.proto",
     "src/mediapipe/calculators/internal/callback_packet_calculator.proto",

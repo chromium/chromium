@@ -29,8 +29,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::ElementsAre;
+using testing::Invoke;
 
 namespace base::sequence_manager::internal {
 
@@ -43,8 +43,9 @@ class ThreadControllerForTest : public ThreadControllerWithMessagePumpImpl {
       : ThreadControllerWithMessagePumpImpl(std::move(pump), settings) {}
 
   ~ThreadControllerForTest() override {
-    if (trace_observer_)
+    if (trace_observer_) {
       RunLevelTracker::SetTraceObserverForTesting(nullptr);
+    }
   }
 
   using ThreadControllerWithMessagePumpImpl::BeforeWait;
@@ -131,10 +132,12 @@ class FakeSequencedTaskSource : public SequencedTaskSource {
 
   std::optional<SelectedTask> SelectNextTask(LazyNow& lazy_now,
                                              SelectTaskOption option) override {
-    if (tasks_.empty())
+    if (tasks_.empty()) {
       return std::nullopt;
-    if (tasks_.front().delayed_run_time > clock_->NowTicks())
+    }
+    if (tasks_.front().delayed_run_time > clock_->NowTicks()) {
       return std::nullopt;
+    }
     if (option == SequencedTaskSource::SelectTaskOption::kSkipDelayedTask &&
         !tasks_.front().delayed_run_time.is_null()) {
       return std::nullopt;
@@ -154,16 +157,19 @@ class FakeSequencedTaskSource : public SequencedTaskSource {
 
   std::optional<WakeUp> GetPendingWakeUp(LazyNow* lazy_now,
                                          SelectTaskOption option) override {
-    if (tasks_.empty())
+    if (tasks_.empty()) {
       return std::nullopt;
+    }
     if (option == SequencedTaskSource::SelectTaskOption::kSkipDelayedTask &&
         !tasks_.front().delayed_run_time.is_null()) {
       return std::nullopt;
     }
-    if (tasks_.front().delayed_run_time.is_null())
+    if (tasks_.front().delayed_run_time.is_null()) {
       return WakeUp{};
-    if (lazy_now->Now() > tasks_.front().delayed_run_time)
+    }
+    if (lazy_now->Now() > tasks_.front().delayed_run_time) {
       return WakeUp{};
+    }
     return WakeUp{tasks_.front().delayed_run_time};
   }
 
@@ -577,8 +583,9 @@ TEST_F(ThreadControllerWithMessagePumpTest, QuitInterruptsBatch) {
   RunLoop run_loop;
   for (int i = 0; i < kBatchSize; i++) {
     task_source_.AddTask(FROM_HERE, BindLambdaForTesting([&] {
-                           if (!task_count++)
+                           if (!task_count++) {
                              run_loop.Quit();
+                           }
                          }),
                          TimeTicks());
   }
@@ -598,7 +605,7 @@ TEST_F(ThreadControllerWithMessagePumpTest, PrioritizeYieldingToNative) {
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
         clock_.Advance(Seconds(5));
-        MockCallback<OnceClosure> tasks[5];
+        std::array<MockCallback<OnceClosure>, 5> tasks;
 
         // A: Post 5 application tasks, 4 immediate 1 delayed.
         // B: Run one of them (enter active)
@@ -1000,8 +1007,9 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         std::array<MockCallback<OnceClosure>, 5> tasks;
         // Post 5 tasks, run them, go idle. Expected to only exit
         // "ThreadController active" state at the end.
-        for (auto& t : tasks)
+        for (auto& t : tasks) {
           task_source_.AddTask(FROM_HERE, t.Get());
+        }
         for (size_t i = 0; i < std::size(tasks); ++i) {
           const TimeTicks expected_delayed_run_time =
               i < std::size(tasks) - 1 ? TimeTicks() : TimeTicks::Max();
@@ -1168,7 +1176,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
               OnThreadControllerActiveBegin);
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
-        MockCallback<OnceClosure> tasks[5];
+        std::array<MockCallback<OnceClosure>, 5> tasks;
 
         // A: Post 2 tasks
         // B: Run one of them (enter active)
@@ -1317,7 +1325,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
               OnThreadControllerActiveBegin);
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
-        MockCallback<OnceClosure> tasks[2];
+        std::array<MockCallback<OnceClosure>, 2> tasks;
         size_t run_level_depth = delegate->RunDepth();
 
         // A: Post 2 application tasks
@@ -1435,7 +1443,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
               OnThreadControllerActiveBegin);
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
-        MockCallback<OnceClosure> tasks[2];
+        std::array<MockCallback<OnceClosure>, 2> tasks;
 
         // A: Post 2 application tasks
         // B: Run one of them (enter active)
@@ -1519,7 +1527,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
               OnThreadControllerActiveBegin);
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
-        MockCallback<OnceClosure> tasks[2];
+        std::array<MockCallback<OnceClosure>, 2> tasks;
         size_t run_level_depth = delegate->RunDepth();
 
         // A: Post 2 application tasks
@@ -1612,7 +1620,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
               OnThreadControllerActiveBegin);
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
-        MockCallback<OnceClosure> tasks[2];
+        std::array<MockCallback<OnceClosure>, 2> tasks;
         size_t run_level_depth = delegate->RunDepth();
 
         // A: Post 1 application task
@@ -1821,7 +1829,7 @@ TEST_F(ThreadControllerWithMessagePumpTest,
               OnThreadControllerActiveBegin);
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate* delegate) {
-        MockCallback<OnceClosure> tasks[2];
+        std::array<MockCallback<OnceClosure>, 2> tasks;
 
         // A: Post 2 application tasks
         // B: Run the first task

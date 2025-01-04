@@ -1,7 +1,8 @@
-<!-- This is an autogen file. Run support/generate_object_view_box_tests.py to update -->
 <!DOCTYPE html>
+<html class="reftest-wait">
 <title>Image opaqueness with CSS object-view-box and object-position (ref)</title>
 <link rel="author" href="mailto:szager@chromium.org">
+<script src="/common/reftest-wait.js"></script>
 
 <body>
 <style>
@@ -77,5 +78,6 @@ decoder.decode().then(() => {
   for (let i = 0; i < images.length; i++) {
     images[i].src = url;
   }
+  takeScreenshot();
 });
 </script>

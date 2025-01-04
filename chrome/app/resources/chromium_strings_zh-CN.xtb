@@ -17,7 +17,6 @@
 <translation id="1185134272377778587">关于 Chromium</translation>
 <translation id="1188705220418984327">若要共享窗口，请在“系统偏好设置”中为 Chromium 启用屏幕录制功能。</translation>
 <translation id="1203500561924088507">感谢您完成安装。您必须重启浏览器才能使用 <ph name="BUNDLE_NAME" />。</translation>
-<translation id="1235768345431527125">您可以登录以获取您的数据，或者选择不使用账号登录而直接使用 Chromium</translation>
 <translation id="1262876892872089030">当此标签页处于闲置状态时，系统会释放一些内存，以让 Chromium 保持快速运行。您可以选择始终不让此网站处于闲置状态。</translation>
 <translation id="1265577313130862557">由于该文件具有危险性，Chromium 阻止了这次下载</translation>
 <translation id="126567311906253476">使用 <ph name="USER_EMAIL" /> 登录 Gmail 或 YouTube 等 Google 服务时，您可以使用同一账号自动登录 Chromium</translation>
@@ -57,6 +56,7 @@
 <translation id="1779356040007214683">为了提高 Chromium 的安全性，系统停用了一些未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />中、可能是在您不知情的情况下添加的扩展程序。</translation>
 <translation id="1808667845054772817">重新安装Chromium</translation>
 <translation id="1820835682567584003">Chromium 正在尝试<ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1838374766361614909">清除搜索字词</translation>
 <translation id="18552579716432081">若要仅删除此设备中的浏览数据而保留 Google 账号中的浏览数据，请<ph name="BEGIN_LINK" />从 Chromium 中退出账号<ph name="END_LINK" />。</translation>
 <translation id="185970820835152459">您可以管理您已登录的 Google 账号。您可通过登录自己的 Google 账号使用 Chromium 浏览器、Play 商店、Gmail 等产品。如果您想添加他人（比如某个家庭成员）的账号，请改为将这个新人添加到您的 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">使用图片搜索功能进行搜索</translation>
@@ -66,6 +66,7 @@
 <translation id="1896836275755235458">Chromium 会通过限制后台活动和视觉效果（例如流畅滚动和视频帧速率）来节省电池电量。<ph name="BEGIN_LINK" />详细了解节能模式<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium 更新程序服务</translation>
 <translation id="1911763535808217981">关闭此功能后，您无需登录 Chromium 即可登录 Gmail 等 Google 网站</translation>
+<translation id="1916451563296275579">从 Chromium 中移除此应用数据</translation>
 <translation id="1929939181775079593">Chromium 未响应。要立即重新启动吗？</translation>
 <translation id="1933341829955786215">贵组织 (<ph name="MANAGER" />) 要求您登录 Chromium</translation>
 <translation id="193439633299369377">需要重新启动 Chromium 操作系统以应用更新。</translation>
@@ -92,6 +93,7 @@
 <translation id="2199210295479376551">从 Chromium 中移除账号</translation>
 <translation id="2210682093923538346">危险网站。Chromium 移除了通知权限。</translation>
 <translation id="2236949375853147973">我的活动记录</translation>
+<translation id="2238130810669087193">如需将您的地址等信息同步到您的所有设备上，请登录 Chromium。登录后，该地址将保存到您的 Google 账号。</translation>
 <translation id="2240214816234246077">您近期未访问过该网站。Chromium 移除了<ph name="PERMISSION_1" />和<ph name="PERMISSION_2" />权限</translation>
 <translation id="2241627712206172106">如果您与亲朋好友共用计算机，他们将能够使用单独的账号进行浏览，并可随心所欲地设置Chromium。</translation>
 <translation id="2313870531055795960">将网址与存储在 Chromium 中的不安全网站列表进行比对。如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chromium 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能。</translation>
@@ -109,6 +111,7 @@
 <translation id="2483889755041906834">在 Chromium 中</translation>
 <translation id="2485422356828889247">卸载</translation>
 <translation id="2513154137948333830">需要重新启动：<ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2522009821193247726">如需继续操作，您需要使用 <ph name="EMAIL" /> 登录 Chromium。这样才能确保符合您组织的政策。</translation>
 <translation id="2542968102051442371">选择要使用图片搜索功能搜索的文字</translation>
 <translation id="2554739539410784893">Chromium 正在尝试替换现有密码。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="2560420686485554789">Chromium 需要获得存储空间使用权限，才能下载文件</translation>
@@ -118,6 +121,7 @@
 <translation id="2583187216237139145">在使用此工作资料（例如创建书签、历史记录、密码和其他设置）时生成的任何 Chromium 数据都可由工作资料管理员移除。<ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">继续使用 Chromium</translation>
 <translation id="259935314519650377">未能缓存所下载的安装程序。错误：<ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
+<translation id="2635452620547538388">请验证您的身份，以便将 Chromium 数据保存在您的账号 <ph name="ACCOUNT_EMAIL" /> 中并使用这些数据</translation>
 <translation id="264613044588233783">提高 Chromium 运行速度，让使用 JavaScript 的功能按预期运行（建议）</translation>
 <translation id="2648074677641340862">安装过程中出现操作系统错误。请重新下载 Chromium。</translation>
 <translation id="2661879430930417727">如果您是与亲朋好友共用一部设备，他们将能够使用单独的账号进行浏览，并可随心所欲地设置 Chromium</translation>
@@ -203,7 +207,6 @@
 <translation id="3802055581630249637">Chromium 会预加载您可能访问的网页，以便提高这些网页在您访问时的加载速度</translation>
 <translation id="3830894615770080216">Chromium 操作系统</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
-<translation id="386822487697155367">获取有关 Chromium 操作系统的帮助</translation>
 <translation id="3871664619793219264">从 <ph name="ACCOUNT_EMAIL" /> 获取您的 Chromium 浏览器信息</translation>
 <translation id="3885770153807205175">语言选择器</translation>
 <translation id="388648406173476553">自定义和控制 Chromium。出了点需要您注意的状况 - 点击即可查看详情。</translation>
@@ -251,7 +254,6 @@
 <translation id="4438870983368648614"><ph name="MANAGER" />负责管理 Chromium</translation>
 <translation id="444069871276811466">添加 Chromium 个人资料</translation>
 <translation id="4447409407328223819">关于 Chrome for Testing</translation>
-<translation id="4470974262661801543">如要将 Chromium 数据保存在 Google 账号中并使用这些数据，请输入口令</translation>
 <translation id="4493028449971051158">启动错误：请以管理员身份运行安装程序。</translation>
 <translation id="4501471624619070934">由于在此国家/地区的访问权限遭到限制，安装失败。</translation>
 <translation id="4510853178268397146">此扩展程序尚未发布隐私权规范，例如如何收集和使用数据。Chromium 建议您移除它。</translation>
@@ -403,6 +405,7 @@
 <translation id="6455857529632101747">欢迎使用 Chromium 个人资料</translation>
 <translation id="6466344609055215035">从 Chromium 中移除账号</translation>
 <translation id="6475912303565314141">它还能够控制Chromium启动后显示的页面。</translation>
+<translation id="648062525172759633">这些页面供 Chromium 开发者使用，可能不会积极维护或测试。如需启用这些页面，请前往 <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />，点击启用调试页面的按钮，然后再次前往此页面。</translation>
 <translation id="648319183876919572">“增强型安全浏览”功能有助于保护您免受危险的网站及下载内容的侵害</translation>
 <translation id="6510925080656968729">卸载 Chromium</translation>
 <translation id="651535675648445253">在 Chromium 中打开快捷方式</translation>
@@ -446,6 +449,7 @@
 <translation id="6980074797973263542">贵组织可以查看和管理浏览数据，例如您的书签、历史记录和密码，但无法查看 Chromium 个人资料中的浏览数据。</translation>
 <translation id="6985329841647292029">Chromium 操作系统条款</translation>
 <translation id="6990124437352146030">Chromium 需要获得相应权限，才能允许此网站使用您的麦克风</translation>
+<translation id="7003299027384820442">请输入您的口令，以便将 Chromium 数据保存在您的账号 <ph name="ACCOUNT_EMAIL" /> 中并使用这些数据</translation>
 <translation id="7011190694940573312">安装失败，因为此版本的操作系统不受支持。</translation>
 <translation id="7024536598735240744">解压缩时出错：<ph name="UNPACK_ERROR" />。</translation>
 <translation id="7025789849649390912">已停止安装。</translation>
@@ -511,6 +515,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />您可以如何管理自己的数据<ph name="END_BOLD" />：为了保护您的隐私，如果您的兴趣保留时间超过 4 周，系统便会自动将其删除。随着您继续浏览，某项兴趣可能会再次出现在列表中。您也可以移除不希望纳入 Chromium 考虑范围的兴趣。</translation>
 <translation id="7888981273428720788">将 Chromium 设为默认浏览器</translation>
 <translation id="7934340546140346950">Chromium 会尽可能将不安全的连接自动升级为 HTTPS</translation>
+<translation id="7935734571048689933">Chromium 处于受管理状态</translation>
 <translation id="7937630085815544518">您之前登录 Chromium 时使用的账号为 <ph name="USER_EMAIL_ADDRESS" />，请使用同一账号再次登录。</translation>
 <translation id="7975919845073681630">这是 Chromium 的并行安装，您无法将此浏览器设为默认浏览器。</translation>
 <translation id="7997934263947464652">来源不明的扩展程序、应用和主题可能会危害您的设备。Chromium 建议只从 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />安装这些内容</translation>
@@ -540,6 +545,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8330519371938183845">登录即可在您的所有设备上同步并个性化设置 Chromium</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> 之前使用的是 Chromium</translation>
 <translation id="8357820681460164151">如需在您的所有设备上访问自己的 Chromium 浏览器信息，请登录您的账号，然后开启同步功能</translation>
+<translation id="8359544530202147897">请更新 Chromium，以便继续使用 Google 账号 <ph name="ACCOUNT_EMAIL" /> 中的 Chromium 数据</translation>
 <translation id="8360718212975266891">若要接收后续 Chromium 更新，您需使用 Windows 10 或更高版本。此计算机目前使用的是 Windows 8。</translation>
 <translation id="8362914115861174987">目标语言</translation>
 <translation id="8370517070665726704">版权所有 <ph name="YEAR" /> Google LLC. 保留所有权利。</translation>

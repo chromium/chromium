@@ -69,6 +69,9 @@ class TabListModel : public ui::TableModel,
       DesktopMediaListController* controller,
       base::RepeatingCallback<void(size_t)> preview_updated_callback);
 
+  TabListModel(const TabListModel&) = delete;
+  TabListModel operator=(const TabListModel&) = delete;
+
   // ui::TableModel:
   size_t RowCount() override;
   std::u16string GetText(size_t row, int column) override;
@@ -85,9 +88,6 @@ class TabListModel : public ui::TableModel,
   void OnDelegatedSourceListSelection() override;
 
  private:
-  TabListModel(const TabListModel&) = delete;
-  TabListModel operator=(const TabListModel&) = delete;
-
   raw_ptr<DesktopMediaListController, DanglingUntriaged> controller_;
   raw_ptr<ui::TableModelObserver> observer_ = nullptr;
   base::RepeatingCallback<void(size_t)> preview_updated_callback_;
@@ -166,13 +166,13 @@ class TabListViewObserver : public views::TableViewObserver {
   TabListViewObserver(DesktopMediaListController* controller,
                       base::RepeatingClosure selection_changed_callback);
 
+  TabListViewObserver(const TabListViewObserver&) = delete;
+  TabListViewObserver operator=(const TabListViewObserver&) = delete;
+
   void OnSelectionChanged() override;
   void OnKeyDown(ui::KeyboardCode virtual_keycode) override;
 
  private:
-  TabListViewObserver(const TabListViewObserver&) = delete;
-  TabListViewObserver operator=(const TabListViewObserver&) = delete;
-
   const raw_ptr<DesktopMediaListController, DanglingUntriaged> controller_;
   base::RepeatingClosure selection_changed_callback_;
 };
@@ -193,8 +193,9 @@ void TabListViewObserver::OnSelectionChanged() {
 
 void TabListViewObserver::OnKeyDown(ui::KeyboardCode virtual_keycode) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (virtual_keycode == ui::VKEY_RETURN)
+  if (virtual_keycode == ui::VKEY_RETURN) {
     controller_->AcceptSource();
+  }
 }
 
 std::unique_ptr<views::ScrollView> CreateScrollViewWithTable(
@@ -351,8 +352,9 @@ void DesktopMediaTabList::OnThemeChanged() {
 std::optional<content::DesktopMediaID> DesktopMediaTabList::GetSelection() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::optional<size_t> row = table_->GetFirstSelectedRow();
-  if (!row.has_value())
+  if (!row.has_value()) {
     return std::nullopt;
+  }
   return controller_->GetSource(row.value()).id;
 }
 

@@ -77,7 +77,6 @@
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{Променети картички: <ph name="ONE_CHANGED" />, затворени: <ph name="ANY_CLOSED" />}one{Променети картички: <ph name="MANY_CHANGED" />, затворени: <ph name="ANY_CLOSED" />}other{Променети картички: <ph name="MANY_CHANGED" />, затворени: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="4371591986692297148">Неактивно</translation>
 <translation id="4460014764210899310">Одгрупирајте</translation>
-<translation id="4590027107044272416">Отсега може да отворите нова картичка тука</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Да се затвори 1 неактивна картичка?}one{Да се затворат <ph name="TAB_COUNT_MANY" /> неактивна картичка?}other{Да се затворат <ph name="TAB_COUNT_MANY" /> неактивни картички?}}</translation>
 <translation id="4686942373615810936">Создадено пред малку</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Затвори по 1 ден}one{Затвори по <ph name="DAY_COUNT_MANY" /> ден}other{Затвори по <ph name="DAY_COUNT_MANY" /> дена}}</translation>
@@ -98,7 +97,9 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{Додадени картички: <ph name="ONE_ADDED" />}one{Додадени картички: <ph name="MANY_ADDED" />}other{Додадени картички: <ph name="MANY_ADDED" />}}</translation>
 <translation id="5161254044473106830">Потребен е наслов</translation>
 <translation id="5339733443032484186">Вашата последна картичка</translation>
+<translation id="5380159289133845234">Архивирање на дупликат картичките</translation>
 <translation id="5400836586163650660">Сива</translation>
+<translation id="5446043142172831860">Отстранете ја картичката и напуштете ја групата</translation>
 <translation id="5490235265819901748">Групата картички се прошири</translation>
 <translation id="5494920125229734069">Избери сè</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Затвори ја групата картички со <ph name="TABS_COUNT_ONE" /> картичка, во <ph name="COLOR_NAME" /> боја.}one{Затвори ја групата картички со <ph name="TABS_COUNT_MANY" /> картичка, во <ph name="COLOR_NAME" /> боја.}other{Затвори ја групата картички со <ph name="TABS_COUNT_MANY" /> картички, во <ph name="COLOR_NAME" /> боја.}}</translation>
@@ -117,6 +118,7 @@
 <translation id="6051432659151380973">Вашите групи картички се зачувуваат автоматски</translation>
 <translation id="6054741997831917303">Цената за производов е спуштена од <ph name="PREVIOUS_PRICE" /> на <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Веднаш ќе го изгубите пристапот до групата картички <ph name="GROUP_NAME" /></translation>
+<translation id="6109251075362363230">Отсега ќе се архивираат сите дупликат картички, со исклучок на последната копија што се користела.</translation>
 <translation id="6193448654517602979">Изберете картички</translation>
 <translation id="6228793724645064692">(оцена за продавницата)</translation>
 <translation id="6271513594716432922">Затвори ги сите неактивни картички</translation>

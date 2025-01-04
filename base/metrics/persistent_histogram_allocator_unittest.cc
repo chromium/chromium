@@ -9,6 +9,7 @@
 
 #include "base/metrics/persistent_histogram_allocator.h"
 
+#include "base/containers/heap_array.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -216,8 +217,9 @@ TEST_F(PersistentHistogramAllocatorTest, CreateSpareFile) {
   for (size_t pos = 0; pos < temp_size; pos += sizeof(buffer)) {
     ASSERT_EQ(static_cast<int>(sizeof(buffer)),
               file.ReadAtCurrentPos(buffer, sizeof(buffer)));
-    for (size_t i = 0; i < sizeof(buffer); ++i)
+    for (size_t i = 0; i < sizeof(buffer); ++i) {
       EXPECT_EQ(0, buffer[i]);
+    }
   }
 }
 
@@ -288,8 +290,9 @@ TEST_F(PersistentHistogramAllocatorTest, StatisticsRecorderMerge) {
   std::unique_ptr<HistogramBase> recovered;
   while (true) {
     recovered = histogram_iter1.GetNext();
-    if (!recovered)
+    if (!recovered) {
       break;
+    }
 
     recovery1.MergeHistogramDeltaToStatisticsRecorder(recovered.get());
     HistogramBase* found =
@@ -339,8 +342,9 @@ TEST_F(PersistentHistogramAllocatorTest, StatisticsRecorderMerge) {
   PersistentHistogramAllocator::Iterator histogram_iter2(&recovery2);
   while (true) {
     recovered = histogram_iter2.GetNext();
-    if (!recovered)
+    if (!recovered) {
       break;
+    }
     recovery2.MergeHistogramDeltaToStatisticsRecorder(recovered.get());
   }
   EXPECT_EQ(global_sr_initial_histogram_count + 2,
@@ -668,14 +672,13 @@ TEST_F(PersistentHistogramAllocatorTest, MovePersistentFile) {
   // Open and read the file in order to verify that |kHistogramName| was written
   // to it even after being moved.
   base::File file(new_temp_file, base::File::FLAG_OPEN | base::File::FLAG_READ);
-  std::unique_ptr<char[]> data = std::make_unique<char[]>(temp_size);
-  EXPECT_EQ(file.Read(/*offset=*/0, data.get(), temp_size),
-            static_cast<int>(temp_size));
+  base::HeapArray<char> data = base::HeapArray<char>::Uninit(temp_size);
+  EXPECT_TRUE(file.ReadAndCheck(/*offset=*/0, as_writable_byte_span(data)));
 
   // Create an allocator and iterator using the file's data.
   PersistentHistogramAllocator new_file_allocator(
       std::make_unique<PersistentMemoryAllocator>(
-          data.get(), temp_size, 0, 0, "",
+          data.data(), temp_size, 0, 0, "",
           PersistentMemoryAllocator::kReadWrite));
   PersistentHistogramAllocator::Iterator it(&new_file_allocator);
 

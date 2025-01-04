@@ -8,12 +8,14 @@ import android.content.res.Resources;
 
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonStyles;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Set of shared helper functions for using {@link ModalDialogManager}. */
+@NullMarked
 public final class ModalDialogUtils {
     /** Do not allow instantiation for utils class. */
     private ModalDialogUtils() {}

@@ -202,11 +202,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
             loadTimeData.getBoolean('isPrivacySandboxRestrictedNoticeEnabled'),
       },
 
-      privateStateTokensEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('privateStateTokensEnabled'),
-      },
-
       autoPictureInPictureEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('autoPictureInPictureEnabled'),

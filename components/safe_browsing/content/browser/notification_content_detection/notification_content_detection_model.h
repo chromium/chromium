@@ -38,6 +38,8 @@ namespace safe_browsing {
 class NotificationContentDetectionModel
     : public optimization_guide::BertModelHandler {
  public:
+  // The callback for displaying a persistent notification.
+  using ModelVerdictCallback = base::OnceCallback<void(bool is_suspicious)>;
   NotificationContentDetectionModel(
       optimization_guide::OptimizationGuideModelProvider* model_provider,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
@@ -50,13 +52,15 @@ class NotificationContentDetectionModel
   // values are used for logging UKMs.
   virtual void Execute(blink::PlatformNotificationData& notification_data,
                        const GURL& origin,
-                       bool did_match_allowlist);
+                       bool did_match_allowlist,
+                       ModelVerdictCallback model_verdict_callback);
 
  private:
   // Log UMA metrics, given the `output` result of model inference.
   void PostprocessCategories(
       const GURL& origin,
       bool did_match_allowlist,
+      ModelVerdictCallback model_verdict_callback,
       const std::optional<std::vector<tflite::task::core::Category>>& output);
 
   // Used for logging UKM data. Since the `NotificationContentDetectionModel`

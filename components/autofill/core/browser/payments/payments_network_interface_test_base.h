@@ -10,9 +10,9 @@
 #include <vector>
 
 #include "base/test/task_environment.h"
+#include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface_base.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "components/variations/scoped_variations_ids_provider.h"

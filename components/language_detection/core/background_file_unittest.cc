@@ -56,7 +56,7 @@ class BackgroundFileTest : public ::testing::Test {
 
   // `DCHECK`s that we are currently on the main sequence.
   void DcheckOnMainSequence() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_.sequence_checker);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   }
 
   // `DCHECK`s that we are currently on the background sequence.
@@ -94,7 +94,7 @@ class BackgroundFileTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::SYSTEM_TIME};
 
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
-  SequenceCheckerWrapper main_sequence_checker_;
+  SEQUENCE_CHECKER(main_sequence_checker_);
   std::unique_ptr<SequenceCheckerWrapper> background_sequence_checker_;
 
   // There should be no blocking on the main thread during any of these tests

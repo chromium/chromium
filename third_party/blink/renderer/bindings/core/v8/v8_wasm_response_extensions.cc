@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/bindings/core/v8/v8_wasm_response_extensions.h"
 
 #include "base/debug/dump_without_crashing.h"
@@ -132,9 +127,11 @@ class WasmCodeCachingCallback {
         kWasmModuleTag, kWireBytesDigestSize + base::checked_cast<wtf_size_t>(
                                                    serialized_module.size));
     serialized_data.AppendSpan(base::span(wire_bytes_digest));
-    serialized_data.AppendSpan(base::span(
+    // SAFETY: v8::CompiledWasmModule::Serialize ensures the
+    // serialized_module.buffer size is equal to serialized_module.size.
+    serialized_data.AppendSpan(UNSAFE_BUFFERS(base::span(
         reinterpret_cast<const uint8_t*>(serialized_module.buffer.get()),
-        serialized_module.size));
+        serialized_module.size)));
 
     // Make sure the data could be copied.
     if (serialized_data.size() < serialized_module.size)

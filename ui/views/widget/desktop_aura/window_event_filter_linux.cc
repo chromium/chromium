@@ -126,11 +126,13 @@ void WindowEventFilterLinux::OnClickedCaption(ui::MouseEvent* event,
     case ui::LinuxUi::WindowFrameAction::kMenu:
       views::Widget* widget =
           views::Widget::GetWidgetForNativeView(content_window);
-      if (!widget)
+      if (!widget) {
         break;
+      }
       views::View* view = widget->GetContentsView();
-      if (!view || !view->context_menu_controller())
+      if (!view || !view->context_menu_controller()) {
         break;
+      }
       // Controller requires locations to be in DIP, while |this| receives the
       // location in px.
       gfx::PointF location = desktop_window_tree_host_->GetRootTransform()
@@ -148,8 +150,9 @@ void WindowEventFilterLinux::OnClickedCaption(ui::MouseEvent* event,
 void WindowEventFilterLinux::OnClickedMaximizeButton(ui::MouseEvent* event) {
   auto* content_window = desktop_window_tree_host_->GetContentWindow();
   views::Widget* widget = views::Widget::GetWidgetForNativeView(content_window);
-  if (!widget)
+  if (!widget) {
     return;
+  }
 
   gfx::Rect display_work_area = display::Screen::GetScreen()
                                     ->GetDisplayNearestWindow(content_window)
@@ -174,10 +177,11 @@ void WindowEventFilterLinux::MaybeToggleMaximizedState(aura::Window* window) {
     return;
   }
 
-  if (desktop_window_tree_host_->IsMaximized())
+  if (desktop_window_tree_host_->IsMaximized()) {
     desktop_window_tree_host_->Restore();
-  else
+  } else {
     desktop_window_tree_host_->Maximize();
+  }
 }
 
 void WindowEventFilterLinux::LowerWindow() {
@@ -189,14 +193,17 @@ void WindowEventFilterLinux::LowerWindow() {
 void WindowEventFilterLinux::MaybeDispatchHostWindowDragMovement(
     int hittest,
     ui::LocatedEvent* event) {
-  if (!event->IsMouseEvent() && !event->IsGestureEvent())
+  if (!event->IsMouseEvent() && !event->IsGestureEvent()) {
     return;
+  }
 
-  if (event->IsMouseEvent() && !event->AsMouseEvent()->IsLeftMouseButton())
+  if (event->IsMouseEvent() && !event->AsMouseEvent()->IsLeftMouseButton()) {
     return;
+  }
 
-  if (!handler_ || !ui::CanPerformDragOrResize(hittest))
+  if (!handler_ || !ui::CanPerformDragOrResize(hittest)) {
     return;
+  }
 
   // Some platforms (eg X11) may require last pointer location not in the
   // local surface coordinates, but rather in the screen coordinates for
@@ -211,8 +218,9 @@ void WindowEventFilterLinux::MaybeDispatchHostWindowDragMovement(
   // it'd prevent the Gesture{Provider,Detector} machirery to get triggered,
   // breaking gestures including tapping, double tapping, show press and
   // long press.
-  if (event->IsMouseEvent())
+  if (event->IsMouseEvent()) {
     event->StopPropagation();
+  }
 }
 
 void WindowEventFilterLinux::OnGestureEvent(ui::GestureEvent* event) {

@@ -332,7 +332,7 @@ TEST_F(ShelfWindowWatcherSessionStartTest, PreExistingWindow) {
   EXPECT_EQ(0, model->item_count());
 
   // Start the test user session; ShelfWindowWatcher will find the open window.
-  CreateUserSessions(1);
+  SimulateUserLogin(kDefaultUserEmail);
   EXPECT_EQ(1, model->item_count());
 }
 

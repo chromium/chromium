@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <type_traits>
+
 #include "net/base/net_export.h"
 
 namespace disk_cache {
@@ -55,7 +57,12 @@ struct NET_EXPORT_PRIVATE SimpleFileHeader {
   uint32_t version;
   uint32_t key_length;
   uint32_t key_hash;
+
+  // Avoid implicit padding so `std::has_unique_object_representations_v<>` will
+  // hold.
+  uint32_t unused_padding = 0;
 };
+static_assert(std::has_unique_object_representations_v<SimpleFileHeader>);
 
 struct NET_EXPORT_PRIVATE SimpleFileEOF {
   enum Flags {

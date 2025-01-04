@@ -29,12 +29,9 @@ namespace {
 
 void OnURLFilteringDone(
     base::WeakPtr<web::WebState> weak_web_state,
-    GURL request_url,
     web::WebStatePolicyDecider::RequestInfo request_info,
     web::WebStatePolicyDecider::PolicyDecisionCallback policy_decision_callback,
-    supervised_user::FilteringBehavior filtering_behavior,
-    supervised_user::FilteringBehaviorReason reason,
-    bool uncertain) {
+    supervised_user::SupervisedUserURLFilter::Result result) {
   // Allow navigation by default.
   PolicyDecision decision = PolicyDecision::Allow();
   web::WebState* web_state = weak_web_state.get();
@@ -42,20 +39,15 @@ void OnURLFilteringDone(
   if (!web_state) {
     // Cancel the request if the corresponding `web_state` is destroyed.
     decision = PolicyDecision::Cancel();
-  } else if (filtering_behavior == supervised_user::FilteringBehavior::kBlock) {
+  } else if (result.IsBlocked()) {
     SupervisedUserErrorContainer* container =
         SupervisedUserErrorContainer::FromWebState(web_state);
     CHECK(container);
     container->SetSupervisedUserErrorInfo(
         std::make_unique<SupervisedUserErrorContainer::SupervisedUserErrorInfo>(
-            request_url, request_info.target_frame_is_main, reason));
+            result.url, request_info.target_frame_is_main, result.reason));
     decision = CreateSupervisedUserInterstitialErrorDecision();
   }
-
-  supervised_user::SupervisedUserURLFilter::RecordFilterResultEvent(
-      filtering_behavior, reason, /*is_filtering_behavior_known=*/!uncertain,
-      request_info.transition_type);
-
   std::move(policy_decision_callback).Run(decision);
 }
 
@@ -90,15 +82,13 @@ void SupervisedUserURLFilterTabHelper::ShouldAllowRequest(
 
   // Set up the callback taking filtering results, and perform URL filtering.
   GURL request_url = net::GURLWithNSURL(request.URL);
-  supervised_user::SupervisedUserURLFilter::FilteringBehaviorCallback
-      filtering_behavior_callback =
-          base::BindOnce(&OnURLFilteringDone, web_state()->GetWeakPtr(),
-                         request_url, request_info, std::move(callback));
-
-  supervised_user_service->GetURLFilter()
-      ->GetFilteringBehaviorForURLWithAsyncChecks(
-          request_url, std::move(filtering_behavior_callback),
-          /*skip_manual_parent_filter=*/false);
+  supervised_user_service->GetURLFilter()->GetFilteringBehaviorWithAsyncChecks(
+      request_url,
+      base::BindOnce(&OnURLFilteringDone, web_state()->GetWeakPtr(),
+                     request_info, std::move(callback)),
+      /*skip_manual_parent_filter=*/false,
+      supervised_user::FilteringContext::kNavigationThrottle,
+      request_info.transition_type);
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(SupervisedUserURLFilterTabHelper)

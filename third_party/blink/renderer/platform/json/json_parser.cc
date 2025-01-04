@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 
 #include "base/memory/raw_ptr.h"
@@ -82,18 +77,19 @@ enum Token {
   kObjectPairSeparator,
 };
 
-template <typename CharType>
+template <typename CharType, size_t N>
 Error ParseConstToken(Cursor* cursor,
                       base::span<const CharType> data,
-                      const char* token) {
-  const size_t token_start = cursor->pos;
-  while (cursor->pos < data.size() && *token != '\0' &&
-         data[cursor->pos++] == *token++) {
-  }
-  if (*token != '\0') {
-    cursor->pos = token_start;
+                      const char (&token)[N]) {
+  constexpr size_t kTokenLength = N - 1;
+  if (data.size() - cursor->pos < kTokenLength) {
     return Error::kSyntaxError;
   }
+  auto span_to_match = data.subspan(cursor->pos).template first<kTokenLength>();
+  if (span_to_match != base::span(token).template first<kTokenLength>()) {
+    return Error::kSyntaxError;
+  }
+  cursor->pos += kTokenLength;
   return Error::kNoError;
 }
 

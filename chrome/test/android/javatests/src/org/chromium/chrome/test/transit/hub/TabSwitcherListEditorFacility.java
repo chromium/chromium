@@ -5,7 +5,6 @@
 package org.chromium.chrome.test.transit.hub;
 
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -35,10 +34,7 @@ import java.util.List;
 public class TabSwitcherListEditorFacility extends Facility<TabSwitcherStation> {
     public static final ViewSpec TAB_LIST_EDITOR_LAYOUT = viewSpec(withId(R.id.selectable_list));
     public static final ViewSpec TAB_LIST_EDITOR_RECYCLER_VIEW =
-            viewSpec(
-                    allOf(
-                            isDescendantOfA(withId(R.id.selectable_list)),
-                            withId(R.id.tab_list_recycler_view)));
+            TAB_LIST_EDITOR_LAYOUT.descendant(withId(R.id.tab_list_recycler_view));
 
     private final List<Integer> mTabIdsSelected;
     private final List<List<Integer>> mTabGroupsSelected;

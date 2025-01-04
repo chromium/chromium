@@ -23,7 +23,7 @@ ash::TabClusterUIItem::Info GenerateTabItemInfo(
   info.source = web_contents->GetVisibleURL().possibly_invalid_spec();
   info.browser_window =
       chrome::FindBrowserWithTab(web_contents)->window()->GetNativeWindow();
-  info.is_loading = web_contents->IsLoading();
+  info.is_loading = web_contents->ShouldShowLoadingUI();
   return info;
 }
 
@@ -103,7 +103,7 @@ void TabClusterUIClient::TabChangedAt(content::WebContents* contents,
   // If there is only loading progress change, we only update item when the
   // state changes between loading and loaded.
   if (change_type == TabChangeType::kLoadingOnly &&
-      item->current_info().is_loading == contents->IsLoading()) {
+      item->current_info().is_loading == contents->ShouldShowLoadingUI()) {
     return;
   }
   item->Init(GenerateTabItemInfo(contents));

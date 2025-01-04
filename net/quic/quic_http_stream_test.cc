@@ -1169,7 +1169,7 @@ TEST_P(QuicHttpStreamTest, GetAlternativeService) {
 
   AlternativeService alternative_service;
   EXPECT_TRUE(stream_->GetAlternativeService(&alternative_service));
-  EXPECT_EQ(AlternativeService(kProtoQUIC, "www.example.org", 443),
+  EXPECT_EQ(AlternativeService(NextProto::kProtoQUIC, "www.example.org", 443),
             alternative_service);
 
   session_->connection()->CloseConnection(
@@ -1177,7 +1177,7 @@ TEST_P(QuicHttpStreamTest, GetAlternativeService) {
 
   AlternativeService alternative_service2;
   EXPECT_TRUE(stream_->GetAlternativeService(&alternative_service2));
-  EXPECT_EQ(AlternativeService(kProtoQUIC, "www.example.org", 443),
+  EXPECT_EQ(AlternativeService(NextProto::kProtoQUIC, "www.example.org", 443),
             alternative_service2);
 }
 
@@ -2146,6 +2146,26 @@ TEST_P(QuicHttpStreamTest, GetAcceptChViaAlps) {
       "Net.QuicSession.AcceptChFrameReceivedViaAlps", 1);
   histogram_tester.ExpectBucketCount("Net.QuicSession.AcceptChForOrigin", 1, 1);
   histogram_tester.ExpectTotalCount("Net.QuicSession.AcceptChForOrigin", 1);
+}
+
+TEST_P(QuicHttpStreamTest, GetQuicConnectionDetails) {
+  Initialize();
+  auto migration_info = ConnectionMigrationInformation(
+      ConnectionMigrationInformation::NetworkEventCount(
+          /*default_network_change=*/0, /*network_disconnected=*/0,
+          /*network_connected=*/0, /*path_degrading=*/0));
+
+  auto quic_connection_details = stream_->GetQuicConnectionDetails();
+  EXPECT_TRUE(quic_connection_details.has_value());
+  EXPECT_EQ(quic_connection_details->connection_migration_info, migration_info);
+
+  session_->OnNetworkConnected(kDefaultNetworkForTests);
+  migration_info.event_count.network_connected_num++;
+
+  // Check if the information is updated
+  quic_connection_details = stream_->GetQuicConnectionDetails();
+  EXPECT_TRUE(quic_connection_details.has_value());
+  EXPECT_EQ(quic_connection_details->connection_migration_info, migration_info);
 }
 
 }  // namespace net::test

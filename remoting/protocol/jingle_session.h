@@ -6,8 +6,10 @@
 #define REMOTING_PROTOCOL_JINGLE_SESSION_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -31,6 +33,9 @@ class Transport;
 // JingleSessionManager.
 class JingleSession : public Session {
  public:
+  // The Close() override hides all the Close() overloads in the base class, so
+  // they need to be unhidden with a using statement.
+  using Session::Close;
   JingleSession(const JingleSession&) = delete;
   JingleSession& operator=(const JingleSession&) = delete;
 
@@ -43,7 +48,9 @@ class JingleSession : public Session {
   const SessionConfig& config() override;
   const Authenticator& authenticator() const override;
   void SetTransport(Transport* transport) override;
-  void Close(protocol::ErrorCode error) override;
+  void Close(protocol::ErrorCode error,
+             std::string_view error_details,
+             const base::Location& error_location) override;
   void AddPlugin(SessionPlugin* plugin) override;
 
  private:
@@ -106,8 +113,11 @@ class JingleSession : public Session {
                    ReplyCallback reply_callback);
   void OnAuthenticatorStateChangeAfterAccepted();
 
-  // Called from OnAccept() to initialize session config.
-  bool InitializeConfigFromDescription(const ContentDescription* description);
+  // Called from OnAccept() to initialize session config. If initialization
+  // fails, |error_details| will be updated.
+  bool InitializeConfigFromDescription(const ContentDescription* description,
+                                       std::string& error_details,
+                                       base::Location& error_location);
 
   // Called after the initial incoming authenticator message is processed.
   void ContinueAcceptIncomingConnection();

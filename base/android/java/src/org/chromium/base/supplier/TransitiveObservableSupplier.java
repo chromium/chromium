@@ -4,10 +4,9 @@
 
 package org.chromium.base.supplier;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.function.Function;
 
@@ -24,18 +23,18 @@ import java.util.function.Function;
  * @param <P> The parent object that's holding a reference to the target.
  * @param <T> The target type that the client wants to observe.
  */
-public class TransitiveObservableSupplier<P, T> implements ObservableSupplier<T> {
+@NullMarked
+public class TransitiveObservableSupplier<P extends @Nullable Object, T extends @Nullable Object>
+        implements ObservableSupplier<T> {
     // Used to hold observers and current state. However the current value is only valid when there
     // are observers, otherwise is may be stale.
-    private final @NonNull ObservableSupplierImpl<T> mDelegateSupplier =
+    private final ObservableSupplierImpl<@Nullable T> mDelegateSupplier =
             new ObservableSupplierImpl<>();
 
-    private final @NonNull Callback<P> mOnParentSupplierChangeCallback =
-            this::onParentSupplierChange;
-    private final @NonNull Callback<T> mOnTargetSupplierChangeCallback =
-            this::onTargetSupplierChange;
-    private final @NonNull ObservableSupplier<P> mParentSupplier;
-    private final @NonNull Function<P, ObservableSupplier<T>> mUnwrapFunction;
+    private final Callback<P> mOnParentSupplierChangeCallback = this::onParentSupplierChange;
+    private final Callback<T> mOnTargetSupplierChangeCallback = this::onTargetSupplierChange;
+    private final ObservableSupplier<P> mParentSupplier;
+    private final Function<P, ObservableSupplier<T>> mUnwrapFunction;
 
     // When this is set, then mOnTargetSupplierChangeCallback is an observer of the object
     // referenced by mCurrentTargetSupplier. When this value is changed, the observer must be
@@ -50,7 +49,7 @@ public class TransitiveObservableSupplier<P, T> implements ObservableSupplier<T>
     }
 
     @Override
-    public T addObserver(Callback<T> obs) {
+    public @Nullable T addObserver(Callback<T> obs) {
         if (!mDelegateSupplier.hasObservers()) {
             onParentSupplierChange(mParentSupplier.addObserver(mOnParentSupplierChangeCallback));
         }

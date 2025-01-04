@@ -10,9 +10,9 @@ import android.webkit.GeolocationPermissions;
 import android.webkit.ServiceWorkerController;
 import android.webkit.WebStorage;
 
-import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 
 import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwPrefetchCallback;
@@ -89,9 +89,12 @@ public class Profile {
         return mServiceWorkerController;
     }
 
-    @AnyThread
+    @UiThread
     public void prefetchUrl(
-            String url, @Nullable PrefetchParams params, PrefetchOperationCallback resultCallback) {
+            String url,
+            @Nullable PrefetchParams params,
+            Executor callbackExecutor,
+            PrefetchOperationCallback resultCallback) {
         try (TraceEvent event = TraceEvent.scoped("WebView.Profile.Prefetch.PRE_START")) {
             if (url == null) {
                 throw new IllegalArgumentException("URL cannot be null for prefetch.");
@@ -141,18 +144,18 @@ public class Profile {
                             resultCallback.onError(new PrefetchException(e));
                         }
                     };
-            Executor callingThreadExecutor = Runnable::run;
-            ThreadUtils.runOnUiThread(
-                    () ->
-                            mBrowserContext.startPrefetchRequest(
-                                    url, awPrefetchParameters, awCallback, callingThreadExecutor));
+
+            mBrowserContext.startPrefetchRequest(
+                    url, awPrefetchParameters, awCallback, callbackExecutor);
         }
     }
 
+    @UiThread
     public void clearPrefetch(String url, PrefetchOperationCallback resultCallback) {
         // TODO(334016945): do the actual implementation
     }
 
+    @UiThread
     public void cancelPrefetch(String url) {
         // TODO(334016945): do the actual implementation
     }

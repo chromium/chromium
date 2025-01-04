@@ -61,6 +61,11 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_policy_util.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
+#endif
+
 namespace web_app {
 
 IsolatedWebAppUpdateOptions::IsolatedWebAppUpdateOptions(
@@ -141,13 +146,15 @@ class IsolatedWebAppUpdateManager::LocalDevModeUpdateDiscoverer {
   base::WeakPtrFactory<LocalDevModeUpdateDiscoverer> weak_factory_{this};
 };
 
-base::flat_map<web_package::SignedWebBundleId, IsolatedWebAppUpdateOptions>
-GetForceInstalledBundleIdToIsolatedWebAppsUpdateOptionsMap(Profile* profile) {
-  base::flat_map<web_package::SignedWebBundleId, IsolatedWebAppUpdateOptions>
-      id_to_update_options_map;
+namespace {
 
-// TODO(crbug.com/40274058): Enable automatic updates on other platforms.
-#if BUILDFLAG(IS_CHROMEOS)
+using IwaBundleIdToUpdateOptionsMap =
+    base::flat_map<web_package::SignedWebBundleId, IsolatedWebAppUpdateOptions>;
+
+IwaBundleIdToUpdateOptionsMap GetForceInstalledPolicyIsolatedWebApps(
+    Profile* profile) {
+  IwaBundleIdToUpdateOptionsMap result;
+
   const base::Value::List& iwa_force_install_list =
       profile->GetPrefs()->GetList(prefs::kIsolatedWebAppInstallForceList);
   for (const base::Value& policy_entry : iwa_force_install_list) {
@@ -160,15 +167,42 @@ GetForceInstalledBundleIdToIsolatedWebAppsUpdateOptionsMap(Profile* profile) {
       continue;
     }
 
-    id_to_update_options_map.emplace(
-        options->web_bundle_id(),
-        IsolatedWebAppUpdateOptions(
-            options->update_manifest_url(), options->update_channel(),
-            options->allow_downgrades(), options->pinned_version()));
+    result.emplace(options->web_bundle_id(),
+                   IsolatedWebAppUpdateOptions(options->update_manifest_url(),
+                                               options->update_channel(),
+                                               options->allow_downgrades(),
+                                               options->pinned_version()));
   }
+  return result;
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+IwaBundleIdToUpdateOptionsMap GetKioskPolicyIsolatedWebApps() {
+  IwaBundleIdToUpdateOptionsMap result;
+  std::optional<ash::KioskIwaPolicyData> kiosk_iwa_policy_data =
+      ash::GetCurrentKioskIwaPolicyData();
+  if (kiosk_iwa_policy_data) {
+    result.emplace(
+        kiosk_iwa_policy_data->web_bundle_id,
+        IsolatedWebAppUpdateOptions(kiosk_iwa_policy_data->update_manifest_url,
+                                    UpdateChannel::default_channel(),
+                                    /*allow_downgrades=*/false,
+                                    /*pinned_version=*/std::nullopt));
+  }
+  return result;
+}
 #endif
 
-  return id_to_update_options_map;
+IwaBundleIdToUpdateOptionsMap GetBundleIdToIsolatedWebAppsUpdateOptionsMap(
+    Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // DeviceLocalAccounts policy defines an IWA used in kiosk mode.
+  // IsolatedWebAppInstallForceList is used in other session types.
+  if (chromeos::IsKioskSession()) {
+    return GetKioskPolicyIsolatedWebApps();
+  }
+#endif
+  return GetForceInstalledPolicyIsolatedWebApps(profile);
 }
 
 bool ShouldProceedWithVersionChange(
@@ -199,6 +233,8 @@ bool ShouldProceedWithVersionChange(
   return false;
 }
 
+}  // namespace
+
 IsolatedWebAppUpdateManager::IsolatedWebAppUpdateManager(
     Profile& profile,
     base::TimeDelta update_discovery_frequency)
@@ -212,16 +248,10 @@ IsolatedWebAppUpdateManager::IsolatedWebAppUpdateManager(
           // here just in case - we also wouldn't want to automatically update
           // IWAs in incognito windows.
           !profile.IsOffTheRecord() &&
-#if BUILDFLAG(IS_CHROMEOS)
           base::FeatureList::IsEnabled(
-              features::kIsolatedWebAppAutomaticUpdates)
-#else
-          false
-#endif
-              ),
+              features::kIsolatedWebAppAutomaticUpdates)),
       update_discovery_frequency_(std::move(update_discovery_frequency)),
-      task_queue_{*this} {
-}
+      task_queue_{*this} {}
 
 IsolatedWebAppUpdateManager::~IsolatedWebAppUpdateManager() = default;
 
@@ -396,10 +426,8 @@ bool IsolatedWebAppUpdateManager::MaybeDiscoverUpdatesForApp(
                    GetIsolatedWebAppById(provider_->registrar_unsafe(), app_id),
                    [](const std::string&) { return false; });
 
-  base::flat_map<web_package::SignedWebBundleId, IsolatedWebAppUpdateOptions>
-      id_to_update_options_map =
-          GetForceInstalledBundleIdToIsolatedWebAppsUpdateOptionsMap(
-              &*profile_);
+  IwaBundleIdToUpdateOptionsMap id_to_update_options_map =
+      GetBundleIdToIsolatedWebAppsUpdateOptionsMap(&*profile_);
 
   bool queued_update_discovery_task =
       MaybeQueueUpdateDiscoveryTask(iwa, id_to_update_options_map);
@@ -500,10 +528,8 @@ size_t IsolatedWebAppUpdateManager::QueueUpdateDiscoveryTasks() {
   // new tasks so that it doesn't grow forever.
   task_queue_.ClearUpdateDiscoveryLog();
 
-  base::flat_map<web_package::SignedWebBundleId, IsolatedWebAppUpdateOptions>
-      id_to_update_manifest_map =
-          GetForceInstalledBundleIdToIsolatedWebAppsUpdateOptionsMap(
-              &*profile_);
+  IwaBundleIdToUpdateOptionsMap id_to_update_manifest_map =
+      GetBundleIdToIsolatedWebAppsUpdateOptionsMap(&*profile_);
 
   size_t num_new_tasks = 0;
   for (const WebApp& web_app : provider_->registrar_unsafe().GetApps()) {
@@ -515,7 +541,6 @@ size_t IsolatedWebAppUpdateManager::QueueUpdateDiscoveryTasks() {
   task_queue_.MaybeStartNextTask();
 
   MaybeScheduleUpdateDiscoveryCheck();
-
   return num_new_tasks;
 }
 
@@ -526,7 +551,7 @@ bool IsolatedWebAppUpdateManager::MaybeQueueUpdateDiscoveryTask(
         id_to_update_options_map) {
   // TODO(crbug.com/40274186): In the future, we also need to automatically
   // update IWAs not installed via policy.
-  if (!web_app.IsIwaPolicyInstalledApp()) {
+  if (!web_app.IsIwaPolicyInstalledApp() && !web_app.IsKioskInstalledApp()) {
     return false;
   }
 

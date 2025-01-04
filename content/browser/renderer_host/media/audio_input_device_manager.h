@@ -22,7 +22,6 @@
 #include "base/threading/thread.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/media/media_stream_provider.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"

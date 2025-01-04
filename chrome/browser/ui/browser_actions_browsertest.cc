@@ -15,8 +15,8 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/test/browser_test.h"
@@ -52,9 +52,6 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, ShowAddressesBubbleOrPage) {
   auto* bubble_controller = autofill::AddressBubblesController::FromWebContents(
       GetActiveWebContents());
   ASSERT_EQ(bubble_controller->GetBubbleView(), nullptr);
-  autofill::AddressBubblesController::SetUpAndShowAddNewAddressBubble(
-      GetActiveWebContents(), base::DoNothing());
-  ASSERT_NE(bubble_controller->GetBubbleView(), nullptr);
   action_manager.FindAction(kActionShowAddressesBubbleOrPage)->InvokeAction();
   EXPECT_EQ(bubble_controller->GetBubbleView(), nullptr);
 

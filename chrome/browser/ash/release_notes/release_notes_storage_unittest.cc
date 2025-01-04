@@ -22,6 +22,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -49,7 +50,8 @@ class ReleaseNotesStorageTest : public testing::Test,
     if (is_guest_) {
       builder.SetGuestSession();
     } else {
-      AccountId account_id_ = AccountId::FromUserEmailGaiaId(email_, "12345");
+      AccountId account_id_ =
+          AccountId::FromUserEmailGaiaId(email_, GaiaId("12345"));
       user_manager_->AddUser(account_id_);
       builder.SetProfileName(email_);
 

@@ -12,6 +12,7 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -40,16 +41,20 @@ class ExistingUserControllerBaseTest : public ::testing::Test {
   FakeChromeUserManager* GetFakeUserManager();
 
   const AccountId saml_login_account1_id_ =
-      AccountId::FromUserEmailGaiaId(kFirstSAMLUserEmail, kFirstSAMLUserId);
+      AccountId::FromUserEmailGaiaId(kFirstSAMLUserEmail,
+                                     GaiaId(kFirstSAMLUserId));
 
   const AccountId saml_login_account2_id_ =
-      AccountId::FromUserEmailGaiaId(kSecondSAMLUserEmail, kSecondSAMLUserId);
+      AccountId::FromUserEmailGaiaId(kSecondSAMLUserEmail,
+                                     GaiaId(kSecondSAMLUserId));
 
   const AccountId gaia_login_account1_id_ =
-      AccountId::FromUserEmailGaiaId(kFirstGaiaUserEmail, kFirstGaiaUserId);
+      AccountId::FromUserEmailGaiaId(kFirstGaiaUserEmail,
+                                     GaiaId(kFirstGaiaUserId));
 
   const AccountId gaia_login_account2_id_ =
-      AccountId::FromUserEmailGaiaId(kSecondGaiaUserEmail, kSecondGaiaUserId);
+      AccountId::FromUserEmailGaiaId(kSecondGaiaUserEmail,
+                                     GaiaId(kSecondGaiaUserId));
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

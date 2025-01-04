@@ -1113,6 +1113,7 @@ chromium-metrics-reviews@google.com.
   <int value="25" label="MEDIA_CODEC_UNKNOWN_CRYPTO_EXCEPTION"/>
   <int value="26" label="MEDIA_CODEC_UNKNOWN_MEDIADRM_EXCEPTION"/>
   <int value="27" label="MEDIA_CODEC_UNKNOWN_CODEC_EXCEPTION"/>
+  <int value="28" label="MEDIA_CODEC_LINEAR_BLOCK_EXCEPTION"/>
 </enum>
 
 <enum name="MediaContainers">
@@ -1476,14 +1477,6 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Default Handler"/>
   <int value="1" label="Registered Manual"/>
   <int value="2" label="Registered Automatic"/>
-</enum>
-
-<enum name="MediaSessionSuspendedSource">
-  <int value="0" label="System Transient"/>
-  <int value="1" label="System Permanent"/>
-  <int value="2" label="UI"/>
-  <int value="3" label="CONTENT"/>
-  <int value="4" label="System Transient Duck"/>
 </enum>
 
 <enum name="MediaSinkType">

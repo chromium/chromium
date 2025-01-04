@@ -223,8 +223,9 @@ std::optional<Sid> Sid::FromSddlString(const std::wstring& sddl_sid) {
 
 std::optional<Sid> Sid::FromPSID(PSID sid) {
   DCHECK(sid);
-  if (!sid || !::IsValidSid(sid))
+  if (!sid || !::IsValidSid(sid)) {
     return std::nullopt;
+  }
   return Sid(sid, ::GetLengthSid(sid));
 }
 
@@ -246,8 +247,9 @@ std::optional<std::vector<Sid>> Sid::FromSddlStringVector(
   converted_sids.reserve(sddl_sids.size());
   for (const std::wstring& sddl_sid : sddl_sids) {
     std::optional<Sid> sid = FromSddlString(sddl_sid);
-    if (!sid)
+    if (!sid) {
       return std::nullopt;
+    }
     converted_sids.push_back(std::move(*sid));
   }
   return converted_sids;
@@ -290,8 +292,9 @@ PSID Sid::GetPSID() const {
 
 std::optional<std::wstring> Sid::ToSddlString() const {
   LPWSTR sid = nullptr;
-  if (!::ConvertSidToStringSid(GetPSID(), &sid))
+  if (!::ConvertSidToStringSid(GetPSID(), &sid)) {
     return std::nullopt;
+  }
   auto sid_ptr = TakeLocalAlloc(sid);
   return sid_ptr.get();
 }

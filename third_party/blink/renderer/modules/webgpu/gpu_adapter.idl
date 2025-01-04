@@ -13,6 +13,7 @@
     [SameObject] readonly attribute GPUAdapterInfo info;
     readonly attribute boolean isFallbackAdapter;
     [RuntimeEnabled=WebGPUExperimentalFeatures] readonly attribute boolean isCompatibilityMode;
+    [RuntimeEnabled=WebGPUExperimentalFeatures] readonly attribute DOMString featureLevel;
 
     [CallWith=ScriptState] Promise<GPUDevice> requestDevice(optional GPUDeviceDescriptor descriptor = {});
 };

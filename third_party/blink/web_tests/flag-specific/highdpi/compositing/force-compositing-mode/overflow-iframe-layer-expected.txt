@@ -14,22 +14,22 @@
     },
     {
       "name": "HorizontalScrollbar",
-      "position": [0, 203],
-      "bounds": [203, 22],
+      "position": [0, 202],
+      "bounds": [202, 23],
       "contentsOpaque": true,
       "transform": 1
     },
     {
       "name": "VerticalScrollbar",
-      "position": [203, 0],
-      "bounds": [22, 203],
+      "position": [202, 0],
+      "bounds": [23, 202],
       "contentsOpaque": true,
       "transform": 1
     },
     {
       "name": "Scroll corner of LayoutView #document",
-      "position": [203, 203],
-      "bounds": [22, 22],
+      "position": [202, 202],
+      "bounds": [23, 23],
       "contentsOpaque": true,
       "transform": 1
     }

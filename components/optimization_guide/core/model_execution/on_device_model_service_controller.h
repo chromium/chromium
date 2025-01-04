@@ -95,10 +95,6 @@ class OnDeviceModelServiceController
       scoped_refptr<OnDeviceModelServiceController> controller,
       base::OnceCallback<void(OnDeviceModelPerformanceClass)> callback);
 
-  bool IsConnectedForTesting() {
-    return base_model_remote_.is_bound() || service_client_.is_bound();
-  }
-
   // Sets the language detection model to be used by the ODM service when text
   // safety evaluation is restricted to a specific set of languages.
   void SetLanguageDetectionModel(
@@ -132,6 +128,9 @@ class OnDeviceModelServiceController
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  OnDeviceModelAdaptationMetadata* GetFeatureMetadata(
+      ModelBasedCapabilityKey feature);
+
  protected:
   virtual ~OnDeviceModelServiceController();
 
@@ -144,7 +143,7 @@ class OnDeviceModelServiceController
   }
 
  private:
-  class OnDeviceModelClient : public SessionImpl::OnDeviceModelClient {
+  class OnDeviceModelClient final : public SessionImpl::OnDeviceModelClient {
    public:
     OnDeviceModelClient(
         ModelBasedCapabilityKey feature,
@@ -153,6 +152,7 @@ class OnDeviceModelServiceController
         base::optional_ref<const on_device_model::AdaptationAssetPaths>
             adaptation_assets);
     ~OnDeviceModelClient() override;
+    std::unique_ptr<SessionImpl::OnDeviceModelClient> Clone() const override;
     bool ShouldUse() override;
     mojo::Remote<on_device_model::mojom::OnDeviceModel>& GetModelRemote()
         override;
@@ -202,9 +202,6 @@ class OnDeviceModelServiceController
   // Called when `base_model_remote_` is idle.
   void OnBaseModelRemoteIdle();
 
-  OnDeviceModelAdaptationMetadata* GetFeatureMetadata(
-      ModelBasedCapabilityKey feature);
-
   // Begins the on-device model validation flow.
   void StartValidation();
 
@@ -212,6 +209,9 @@ class OnDeviceModelServiceController
   void FinishValidation(OnDeviceModelValidationResult result);
 
   on_device_model::ModelAssetPaths PopulateModelPaths();
+
+  // Called to update model availability for all features.
+  void NotifyModelAvailabilityChanges();
 
   // Called to update the model availability changes for `feature`.
   void NotifyModelAvailabilityChange(ModelBasedCapabilityKey feature);
@@ -239,9 +239,6 @@ class OnDeviceModelServiceController
   // model adaptation, but they have not been loaded yet.
   base::flat_map<ModelBasedCapabilityKey, OnDeviceModelAdaptationMetadata>
       model_adaptation_metadata_;
-
-  // Whether a session has been started for the most recently updated model.
-  bool has_started_session_ = false;
 
   std::unique_ptr<OnDeviceModelValidator> model_validator_;
 

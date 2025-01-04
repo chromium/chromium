@@ -53,7 +53,8 @@ void ContextMenuHelper::ShowContextMenu(
   Java_ContextMenuHelper_showContextMenu(
       env, java_obj_,
       context_menu::BuildJavaContextMenuParams(
-          context_menu_params_, render_frame_host.GetProcess()->GetID(),
+          context_menu_params_,
+          render_frame_host.GetProcess()->GetDeprecatedID(),
           render_frame_host.GetFrameToken().value()),
       render_frame_host.GetJavaRenderFrameHost(), view->GetContainerView(),
       view->content_offset() * view->GetDipScale());

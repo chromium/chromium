@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_QUERY_CONTROLLER_H_
 
 #include <optional>
+#include <string>
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
@@ -64,6 +64,8 @@ using LensOverlayThumbnailCreatedCallback =
 // Callback type alias for the OAuth headers created.
 using OAuthHeadersCreatedCallback =
     base::OnceCallback<void(std::vector<std::string>)>;
+using UploadProgressCallback =
+    base::RepeatingCallback<void(uint64_t position, uint64_t total)>;
 
 // Manages queries on behalf of a Lens overlay.
 class LensOverlayQueryController {
@@ -106,11 +108,22 @@ class LensOverlayQueryController {
   // ending translate mode.
   virtual void SendEndTranslateModeQuery();
 
+  // Resets the page content data to avoid using stale data in the request flow.
+  // Caller should call this before changing the page content data this class
+  // points to, to avoid dangling pointers.
+  virtual void ResetPageContentData();
+
   // Sends a request to the server to update the page content.
   virtual void SendPageContentUpdateRequest(
       base::span<const uint8_t> new_content_bytes,
       lens::MimeType new_content_type,
       GURL new_page_url);
+
+  // Sends a request to the server with a portion of the page content.
+  // `partial_content` should be a subset of the full page content. This request
+  // is used to give the server an early signal of the page content.
+  virtual void SendPartialPageContentRequest(
+      base::span<const std::u16string> partial_content);
 
   // Sends a region search interaction. Expected to be called multiple times. If
   // region_bytes are included, those will be sent to Lens instead of cropping
@@ -156,12 +169,6 @@ class LensOverlayQueryController {
   // Testing method to reset the cluster info state.
   void ResetRequestClusterInfoStateForTesting();
 
-  // Sets the query controller to a valid post-full image response state,
-  // including setting fake cluster info, for testing.
-  // TODO(crbug.com/376737029): Remove this method after mocking out network
-  // requests in the browser tests.
-  void SetStateToReceivedFullImageResponseForTesting();
-
  protected:
   // Returns the EndpointFetcher to use with the given params. Protected to
   // allow overriding in tests to mock server responses.
@@ -171,7 +178,8 @@ class LensOverlayQueryController {
       const std::string& http_method,
       const base::TimeDelta& timeout,
       const std::vector<std::string>& request_headers,
-      const std::vector<std::string>& cors_exempt_headers);
+      const std::vector<std::string>& cors_exempt_headers,
+      const UploadProgressCallback upload_progress_callback);
 
   // Sends a latency Gen204 ping if enabled, calculating the latency duration
   // from the start time ticks and base::TimeTicks::Now().
@@ -333,6 +341,22 @@ class LensOverlayQueryController {
   // Handles the endpoint fetch response for the page content request.
   void PageContentResponseHandler(std::unique_ptr<EndpointResponse> response);
 
+  // Handles the prgress of the page content upload request.
+  void PageContentUploadProgressHandler(uint64_t position, uint64_t total);
+
+  // Creates a full image request with the partial page content bytes and sends
+  // it to the server.
+  void PrepareAndFetchPartialPageContentRequest();
+
+  // Performs the partial page content request. This is a send and forget
+  // request, so we are not expecting to use the response.
+  void PerformPartialPageContentRequest(lens::LensOverlayServerRequest request,
+                                        std::vector<std::string> headers);
+
+  // Handles the endpoint fetch response for the partial page content request.
+  void PartialPageContentResponseHandler(
+      std::unique_ptr<EndpointResponse> response);
+
   // Sends the interaction data, triggering async image cropping and fetching
   // the request.
   void SendInteraction(
@@ -424,7 +448,9 @@ class LensOverlayQueryController {
       const base::TimeDelta& timeout,
       base::OnceCallback<void(std::unique_ptr<EndpointFetcher>)>
           fetcher_created_callback,
-      EndpointFetcherCallback response_received_callback);
+      EndpointFetcherCallback response_received_callback,
+      const UploadProgressCallback upload_progress_callback =
+          base::NullCallback());
 
   // Creates a client context proto to be attached to a server request.
   lens::LensOverlayClientContext CreateClientContext();
@@ -468,9 +494,19 @@ class LensOverlayQueryController {
   void OnPageContentEndpointFetcherCreated(
       std::unique_ptr<EndpointFetcher> endpoint_fetcher);
 
+  // Callback for when the partial page content endpoint fetcher is created.
+  void OnPartialPageContentEndpointFetcherCreated(
+      std::unique_ptr<EndpointFetcher> endpoint_fetcher);
+
   // Callback for when the interaction endpoint fetcher is created.
   void OnInteractionEndpointFetcherCreated(
       std::unique_ptr<EndpointFetcher> endpoint_fetcher);
+
+  // Returns whether or not the contextual search query should be held until
+  // the full page content upload is finished. This is only true if the page
+  // content upload is in progress and the partial page content upload will not
+  // yield detailed enough results.
+  bool ShouldHoldContextualSearchQuery();
 
   // The request id generator.
   std::unique_ptr<lens::LensOverlayRequestIdGenerator> request_id_generator_;
@@ -512,6 +548,9 @@ class LensOverlayQueryController {
   // The time the page contents request was started.
   base::TimeTicks page_contents_request_start_time_;
 
+  // The time the partial page contents request was started.
+  base::TimeTicks partial_page_contents_request_start_time_;
+
   // The current state.
   QueryControllerState query_controller_state_ = QueryControllerState::kOff;
 
@@ -543,6 +582,11 @@ class LensOverlayQueryController {
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       page_content_access_token_fetcher_;
 
+  // The access token fetcher used for getting OAuth for partial page content
+  // requests.
+  std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
+      partial_page_content_access_token_fetcher_;
+
   // The access token fetcher used for getting OAuth for interaction requests.
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       interaction_access_token_fetcher_;
@@ -563,6 +607,9 @@ class LensOverlayQueryController {
 
   // The endpoint fetcher used for the page content request.
   std::unique_ptr<EndpointFetcher> page_content_endpoint_fetcher_;
+
+  // The endpoint fetcher used for the partial page content request.
+  std::unique_ptr<EndpointFetcher> partial_page_content_endpoint_fetcher_;
 
   // The endpoint fetcher used for the interaction request. Only the last
   // endpoint fetcher is kept; additional fetch requests will discard
@@ -596,16 +643,26 @@ class LensOverlayQueryController {
   // The bytes of the content the user is viewing. Owned by
   // LensOverlayController. Will be empty if no bytes to the underlying page
   // could be provided.
-  // TODO(367764863) Rewrite to base::raw_span.
-  RAW_PTR_EXCLUSION base::span<const uint8_t> underlying_content_bytes_;
+  base::raw_span<const uint8_t> underlying_content_bytes_;
 
   // The mime type of underlying_content_bytes. Will be kNone if
   // underlying_content_bytes_ is empty.
   lens::MimeType underlying_content_type_;
 
+  // A span of text that represents a part of the content held in underlying
+  // content bytes.
+  base::raw_span<const std::u16string> partial_content_;
+
   // Whether or not the parent interaction query has been sent. This should
   // always be the first interaction in a query flow.
   bool parent_query_sent_ = false;
+
+  // Whether or not a page content upload request is in progress.
+  bool page_content_request_in_progress_ = false;
+
+  // Callback for a pending contextual query that is waiting for the page
+  // content request to finish uploading.
+  base::OnceClosure pending_contextual_query_callback_;
 
   // Whether or not a page contents request has been sent.
   bool page_contents_request_sent_ = false;

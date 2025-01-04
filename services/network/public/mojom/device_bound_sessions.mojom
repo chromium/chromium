@@ -4,7 +4,9 @@
 
 module network.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
 import "sandbox/policy/mojom/context.mojom";
+import "services/network/public/mojom/clear_data_filter.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
 import "url/mojom/url.mojom";
 
@@ -26,6 +28,15 @@ interface DeviceBoundSessionManager {
 
   // Delete a session by key.
   DeleteSession(DeviceBoundSessionKey session);
+
+  // Delete all sessions matching the filter logic. Conditions are AND'ed
+  // together and providing no arguments at all will delete all sessions.
+  // - If present, sessions must be created after `created_after_time`.
+  // - If present, sessions must be created before `created_before_time`.
+  // - If present, sessions must match `filter` (see clear_data_filter.mojom).
+  DeleteAllSessions(mojo_base.mojom.Time? created_after_time,
+                    mojo_base.mojom.Time? created_before_time,
+                    ClearDataFilter? filter) => ();
 };
 
 // Observer that is notified on use of a device bound session.

@@ -10,7 +10,7 @@
 namespace views {
 class Button;
 class FocusManager;
-}
+}  // namespace views
 
 // The views-specific methods necessary for a ToolbarActionViewDelegate.
 class ToolbarActionViewDelegateViews : public ToolbarActionViewDelegate {

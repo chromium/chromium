@@ -348,7 +348,7 @@ class AudioStreamBrokerFactory final
   std::unique_ptr<content::AudioStreamBroker> CreateAudioOutputStreamBroker(
       int render_process_id,
       int render_frame_id,
-      content::GlobalRenderFrameHostId main_frame_id,
+      const content::GlobalRenderFrameHostToken& main_frame_token,
       int stream_id,
       const std::string& output_device_id,
       const media::AudioParameters& params,
@@ -364,7 +364,7 @@ class AudioStreamBrokerFactory final
           GetEffectFlagsForRenderUsage(output_usage_.value()));
     }
     return base_factory_->CreateAudioOutputStreamBroker(
-        render_process_id, render_frame_id, main_frame_id, stream_id,
+        render_process_id, render_frame_id, main_frame_token, stream_id,
         output_device_id, params_with_effects, group_id, std::move(deleter),
         std::move(client));
   }

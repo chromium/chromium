@@ -331,12 +331,8 @@ void NearbyConnectionBrokerImpl::OnEndpointDiscovered(
                                                   /*wifi_lan=*/false,
                                                   /*wifi_direct=*/false),
                              /*remote_bluetooth_mac_address=*/std::nullopt,
-                             features::IsNearbyKeepAliveFixEnabled()
-                                 ? std::make_optional(kKeepAliveInterval)
-                                 : std::nullopt,
-                             features::IsNearbyKeepAliveFixEnabled()
-                                 ? std::make_optional(kKeepAliveTimeout)
-                                 : std::nullopt),
+                             std::make_optional(kKeepAliveInterval),
+                             std::make_optional(kKeepAliveTimeout)),
       connection_lifecycle_listener_receiver_.BindNewPipeAndPassRemote(),
       base::BindOnce(&NearbyConnectionBrokerImpl::OnRequestConnectionResult,
                      weak_ptr_factory_.GetWeakPtr()));

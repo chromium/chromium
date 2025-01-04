@@ -36,10 +36,10 @@
 #include "mojo/public/cpp/bindings/tests/remote_unittest.test-mojom.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "mojo/public/cpp/system/wait.h"
-#include "mojo/public/interfaces/bindings/tests/math_calculator.mojom.h"
-#include "mojo/public/interfaces/bindings/tests/sample_interfaces.mojom.h"
-#include "mojo/public/interfaces/bindings/tests/sample_service.mojom.h"
-#include "mojo/public/interfaces/bindings/tests/scoping.mojom.h"
+#include "mojo/public/interfaces/bindings/tests/math_calculator.test-mojom.h"
+#include "mojo/public/interfaces/bindings/tests/sample_interfaces.test-mojom.h"
+#include "mojo/public/interfaces/bindings/tests/sample_service.test-mojom.h"
+#include "mojo/public/interfaces/bindings/tests/scoping.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo {

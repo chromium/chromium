@@ -453,15 +453,25 @@ class SyncService : public KeyedService {
   virtual void TriggerLocalDataMigration(DataTypeSet types) = 0;
 
   // Requests sync service to move the local data, that matches with their
-  // `syncer::LocalDataItemModel::DataId`, to account for all data
-  // types and data items in `items` and for data items. This is an asynchronous
-  // method which moves the local data for all `types` to the account store
-  // locally. Upload to the server will happen as part of the regular commit
-  // process, and is NOT part of this method. Note: Only data types that are
-  // enabled and support this functionality are triggered for upload.
-  virtual void TriggerLocalDataMigration(
-      std::map<syncer::DataType,
-               std::vector<syncer::LocalDataItemModel::DataId>> items) = 0;
+  // `LocalDataItemModel::DataId`, to account for all data types and data items
+  // in `items` and for data items. This is an asynchronous method which moves
+  // the local data for all `types` to the account store locally. Upload to the
+  // server will happen as part of the regular commit process, and is NOT part
+  // of this method. Note: Only data types that are enabled and support this
+  // functionality are triggered for upload.
+  virtual void TriggerLocalDataMigrationForItems(
+      std::map<DataType, std::vector<LocalDataItemModel::DataId>> items) = 0;
+
+  // Requests sync service to first enable account storage for the `data_type`
+  // and then asynchronously move the specified local data `items` to account.
+  // This means that a user selection is mutated - if they had opted out of
+  // account storage for the `data_type` before, this would now opt them in. In
+  // order to use this function, the user must be signed in and sync-the-feature
+  // must be off. Upload to the server will happen as part of the regular commit
+  // process, and is NOT part of this method.
+  virtual void SelectTypeAndMigrateLocalDataItemsWhenActive(
+      DataType data_type,
+      std::vector<LocalDataItemModel::DataId> items) = 0;
 
   // Returns current download status for the given `type`. The caller can use
   // SyncServiceObserver::OnStateChanged() to track status changes. Must be

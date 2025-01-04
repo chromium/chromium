@@ -16,8 +16,9 @@ ProfileIndicatorIcon::ProfileIndicatorIcon() {
 ProfileIndicatorIcon::~ProfileIndicatorIcon() = default;
 
 void ProfileIndicatorIcon::OnPaint(gfx::Canvas* canvas) {
-  if (base_icon_.IsEmpty())
+  if (base_icon_.IsEmpty()) {
     return;
+  }
 
   if (old_height_ != height() || modified_icon_.isNull()) {
     old_height_ = height();

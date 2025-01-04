@@ -1717,6 +1717,17 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
       base::FeatureList::IsEnabled(net::features::kEnableSchemeBoundCookies));
   response_dict.Set("devToolsEnableOriginBoundCookies",
                     std::move(origin_bound_cookies_dict));
+
+  if (base::FeatureList::IsEnabled(
+          ::features::kDevToolsAnimationStylesInStylesTab)) {
+    base::Value::Dict devtools_animation_styles_in_styles_tab_dict;
+    devtools_animation_styles_in_styles_tab_dict.Set(
+        "enabled", base::FeatureList::IsEnabled(
+                       ::features::kDevToolsAnimationStylesInStylesTab));
+    response_dict.Set("devToolsAnimationStylesInStylesTab",
+                      std::move(devtools_animation_styles_in_styles_tab_dict));
+  }
+
   base::Value response = base::Value(std::move(response_dict));
   std::move(callback).Run(&response);
 }
@@ -2124,7 +2135,7 @@ void DevToolsUIBindings::AddDevToolsExtensionsToClient() {
     // process. Grant the devtools process the ability to request URLs from the
     // extension.
     content::ChildProcessSecurityPolicy::GetInstance()->GrantRequestOrigin(
-        web_contents_->GetPrimaryMainFrame()->GetProcess()->GetID(),
+        web_contents_->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
         url::Origin::Create(extension->url()));
 
     base::Value::List runtime_allowed_hosts;

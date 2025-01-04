@@ -96,3 +96,8 @@ DirectSocketsSettings:
   - DefaultDirectSocketsPrivateNetworkAccessSetting
   - DirectSocketsPrivateNetworkAccessAllowedForUrls
   - DirectSocketsPrivateNetworkAccessBlockedForUrls
+SmartCardConnectSettings:
+  caption: Smart Card Connect settings
+  policies:
+  - SmartCardConnectAllowedForUrls
+  - SmartCardConnectBlockedForUrls

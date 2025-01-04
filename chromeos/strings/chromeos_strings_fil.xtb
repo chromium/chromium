@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">I-disable ang madilim na tema</translation>
 <translation id="1807246157184219062">Maliwanag</translation>
 <translation id="1808803439260407870">Klasikong sining</translation>
+<translation id="181434555916624618">Sa ngayon, hindi ipapakita ang mga resultang may mga tao. Sumubok ng ibang prompt.</translation>
 <translation id="1815850098929213707"><ph name="KEYS" /> ang piniling key. I-tap ang button para i-edit ang kontrol</translation>
 <translation id="1823120442877418684">Mga Character</translation>
 <translation id="1827738518074806965">Art gallery</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">May <ph name="BATTERY_PERCENTAGE" />% baterya ang kanang bud ng device.</translation>
 <translation id="3340978935015468852">mga setting</translation>
 <translation id="3347558044552027859">moderno</translation>
+<translation id="3353477144743332882">I-download ang modelo ng paggawa ng buod at pangalan</translation>
 <translation id="3359218928534347896">i-toggle ang pagkaka-mute ng mikropono</translation>
 <translation id="3360306038446926262">Mga Window</translation>
 <translation id="3361618936611118375">sushi</translation>
@@ -689,6 +691,7 @@
 <translation id="4354430579665871434">key</translation>
 <translation id="4356100841225547054">I-off ang volume</translation>
 <translation id="4361257691546579041">Default ang uri ng APN.</translation>
+<translation id="4368101969572512692">I-shuffle ang mga suhestyon</translation>
 <translation id="437294888293595148">I-reset ang lahat ng shortcut</translation>
 <translation id="437477383107495720">mga kuneho</translation>
 <translation id="4376423484621194274">Hindi pinapayagan ng iyong administrator na isara ang <ph name="APP_NAME" /></translation>
@@ -768,6 +771,7 @@
 <translation id="4731797938093519117">Pangunahing access</translation>
 <translation id="473775607612524610">I-update</translation>
 <translation id="4744944742468440486">Impormasyong nauugnay sa iyong pinili</translation>
+<translation id="4750394297954878236">Mga Suhestyon</translation>
 <translation id="4771607256327216405">pagliliwanag ng keyboard</translation>
 <translation id="4771923071974529837">bukas</translation>
 <translation id="4773299976671772492">Inihinto</translation>
@@ -853,6 +857,7 @@
 <translation id="5121677070210013200">Hindi ma-download ang modelo ng transcription. Subukan ulit o i-restart ang iyong Chromebook.</translation>
 <translation id="5130848777448318809">mga pony</translation>
 <translation id="5137451382116112100">Buo</translation>
+<translation id="5139813694804168398">huwag istorbohin</translation>
 <translation id="5140788690559353412">Kapag nawalan ka ng access sa iyong pampaaralang account, mawawalan ka na ng access sa nauugnay na email at mga file sa Google Drive gaya ng Gmail, Docs, Slides, at higit pa.</translation>
 <translation id="5142961317498132443">Pag-authenticate</translation>
 <translation id="5144311987923128508">Naka-disable na ang button sa pagkumpirma</translation>
@@ -897,6 +902,7 @@
 <translation id="5302048478445481009">Wika</translation>
 <translation id="5303837385540978511">Wallpaper na eksklusibo sa <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="530883153651464140">I-update ang <ph name="DEVICE_NAME" /> sa bersyon <ph name="VERSION" /></translation>
 <translation id="5315873049536339193">Pagkatao</translation>
 <translation id="5317780077021120954">I-save</translation>
 <translation id="5318310531701770497">Hindi makagawa ng mga pangalan. Sumubok ng mas mahabang transcript.</translation>
@@ -973,7 +979,6 @@
 <translation id="5703716265115423771">hinaan ang volume</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> sa <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">I-edit ang button para sa <ph name="SHORTCUT_DESCRIPTION" />.</translation>
-<translation id="5733298426544876109">I-update ang <ph name="DEVICE_NAME" /></translation>
 <translation id="5736820754189340309">Na-reset ang paggamit ng data</translation>
 <translation id="574392208103952083">Katamtaman</translation>
 <translation id="5744175046705638478">Isalin ang "<ph name="QUERY" />"</translation>
@@ -998,6 +1003,7 @@
 <translation id="5859969039821714932">Hindi available ang shortcut. Pumindot ng bagong shortcut nang walang <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Naka-off</translation>
 <translation id="5860491529813859533">I-on</translation>
+<translation id="5875913454160982848">I-download ang modelo ng transcription</translation>
 <translation id="5876385649737594562">I-on para pumili ng mga opsyon</translation>
 <translation id="5877503382465267833">I-pause ang <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Fullscreen</translation>
@@ -1037,7 +1043,6 @@
 <translation id="6040143037577758943">Isara</translation>
 <translation id="6040852767465482106">Anonymous na Pagkakakilanlan</translation>
 <translation id="604124094241169006">Awtomatiko</translation>
-<translation id="6042308850641462728">Marami pang iba</translation>
 <translation id="6048107060512778456">Hindi na-print - Naipit ang papel</translation>
 <translation id="6050189528197190982">Grayscale</translation>
 <translation id="6054711098834486579">expressionist</translation>
@@ -1293,6 +1298,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Name server}one{Mga name server}other{Mga name server}}</translation>
 <translation id="7135814714616751706">Maghanap ng mga shortcut</translation>
 <translation id="7138614237884624401">Pinasimpleng text</translation>
+<translation id="7138668887584231801">Hindi sapat ang mga salita para ibuod</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Kumokonekta</translation>
 <translation id="7144878232160441200">Subukang muli</translation>
@@ -1588,6 +1594,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="8503836310948963452">Ilang minuto na lang...</translation>
 <translation id="8505011850330200833">Nagre-require ang modelo ng Gemini ng 2GB na storage para magproseso ng mga transcript at gumawa ng mga buod</translation>
 <translation id="8508640263392900755">Mga detalye ng APN</translation>
+<translation id="8509574872955173831">Matuto pa tungkol sa paggawa ng buod at pangalan</translation>
 <translation id="8522687886059337719">Mayroon ka na ngayong access sa mga bagong <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />wallpaper<ph name="END_LINK_WALLPAPER_SUBPAGE" /> at <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />screen saver<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">tea house</translation>
@@ -1724,7 +1731,6 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="9133772297793293778">Pumindot ng 1-4 na modifier at 1 pang key sa iyong keyboard. Para umalis sa editing mode, pindutin ang alt + esc.</translation>
 <translation id="9137526406337347448">Mga Serbisyo ng Google</translation>
 <translation id="9138630967333032450">Kaliwang shift</translation>
-<translation id="9147928237330776930">Masyadong kaunting salita para ibuod</translation>
 <translation id="9149391708638971077">Patakbuhin ang pagsusuri sa Memory</translation>
 <translation id="9159524746324788320">mga hamburger</translation>
 <translation id="9161276708550942948">space</translation>

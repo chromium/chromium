@@ -100,6 +100,7 @@
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/hdr_metadata.h"
+#include "ui/gfx/swap_result.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/viz/service/display/overlay_processor_surface_control.h"
@@ -1243,20 +1244,36 @@ void SkiaRenderer::SwapBuffersComplete(
     overlay_processor_->OnSwapBuffersComplete(params.swap_response.result);
   }
 
+  // SWAP_SKIPPED is the only case where presentation is skipped. Even if
+  // presentation wasn't successful for some other results the GPU thread
+  // still ran presentation logic.
+  bool did_present =
+      params.swap_response.result != gfx::SwapResult::SWAP_SKIPPED;
   if (buffer_queue_) {
     if (params.swap_response.result ==
         gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS) {
       buffer_queue_->RecreateBuffers();
     }
-    buffer_queue_->SwapBuffersComplete();
+
+    buffer_queue_->SwapBuffersComplete(did_present);
   }
 
 #if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
     BUILDFLAG(USE_V4L2_CODEC)
   if (protected_buffer_queue_) {
-    protected_buffer_queue_->SwapBuffersComplete();
+    protected_buffer_queue_->SwapBuffersComplete(did_present);
   }
 #endif
+
+  if (!did_present) {
+    CHECK(release_fence.is_null());
+    // Current pending overlays aren't going to be presented so unlock them
+    // immediately. `committed_overlay_locks_` remains unchanged.
+    DisplayResourceProvider::ScopedBatchReturnResources returner(
+        resource_provider_.get(), /*allow_access_to_gpu_thread=*/true);
+    pending_overlay_locks_.pop_front();
+    return;
+  }
 
   if (!release_fence.is_null()) {
     // Set release fences to return overlay resources for last frame.

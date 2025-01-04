@@ -20,7 +20,6 @@ class PrefService;
 
 namespace commerce {
 
-BASE_DECLARE_FEATURE(kCommerceAllowChipExpansion);
 BASE_DECLARE_FEATURE(kCommerceAllowLocalImages);
 BASE_DECLARE_FEATURE(kCommerceAllowOnDemandBookmarkUpdates);
 BASE_DECLARE_FEATURE(kCommerceAllowOnDemandBookmarkBatchUpdates);
@@ -46,17 +45,15 @@ extern const char kPriceInsightsUseCacheParam[];
 extern const base::FeatureParam<bool> kPriceInsightsUseCache;
 extern const char kProductSpecsMigrateToMultiSpecificsParam[];
 extern const base::FeatureParam<bool> kProductSpecsMigrateToMultiSpecifics;
-BASE_DECLARE_FEATURE(kPriceTrackingIconColors);
 BASE_DECLARE_FEATURE(kPriceTrackingPromo);
 
 BASE_DECLARE_FEATURE(kProductSpecifications);
 BASE_DECLARE_FEATURE(kProductSpecificationsClearMetadataOnNewlySupportedFields);
 BASE_DECLARE_FEATURE(kProductSpecificationsMultiSpecifics);
-BASE_DECLARE_FEATURE(kProductSpecificationsSyncTitle);
 BASE_DECLARE_FEATURE(kCompareConfirmationToast);
 BASE_DECLARE_FEATURE(kProductSpecificationsCache);
+BASE_DECLARE_FEATURE(kCompareManagementInterface);
 
-BASE_DECLARE_FEATURE(kShoppingIconColorVariant);
 BASE_DECLARE_FEATURE(kShoppingList);
 BASE_DECLARE_FEATURE(kShoppingListRegionLaunched);
 BASE_DECLARE_FEATURE(kPriceTrackingSubscriptionServiceLocaleKey);
@@ -104,14 +101,8 @@ extern const char kRetailCouponsWithCodeParam[];
 // Feature flag for Discount user consent v2.
 BASE_DECLARE_FEATURE(kDiscountConsentV2);
 
-// Feature flag for exposing commerce hint on Android.
-BASE_DECLARE_FEATURE(kCommerceHintAndroid);
-
 // Feature flag for Code-based RBD.
 BASE_DECLARE_FEATURE(kCodeBasedRBD);
-
-// Feature flag for DOM-based heuristics for ChromeCart.
-BASE_DECLARE_FEATURE(kChromeCartDomBasedHeuristics);
 
 // Feature flag for parcel tracking.
 BASE_DECLARE_FEATURE(kParcelTracking);
@@ -148,11 +139,7 @@ constexpr base::FeatureParam<base::TimeDelta> kCouponDisplayInterval{
 // The heuristics of cart pages are from top 100 US shopping domains.
 // https://colab.corp.google.com/drive/1fTGE_SQw_8OG4ubzQvWcBuyHEhlQ-pwQ?usp=sharing
 constexpr base::FeatureParam<std::string> kCartPattern{
-#if !BUILDFLAG(IS_ANDROID)
   &ntp_features::kNtpChromeCartModule,
-#else
-  &kCommerceHintAndroid,
-#endif
       "cart-pattern",
       // clang-format off
     "(^https?://cart\\.)"
@@ -174,22 +161,14 @@ constexpr base::FeatureParam<std::string> kCartPattern{
 };
 
 constexpr base::FeatureParam<std::string> kCartPatternMapping{
-#if !BUILDFLAG(IS_ANDROID)
   &ntp_features::kNtpChromeCartModule,
-#else
-  &kCommerceHintAndroid,
-#endif
       "cart-pattern-mapping",
       // Empty JSON string.
       ""
 };
 
 constexpr base::FeatureParam<std::string> kCheckoutPattern{
-#if !BUILDFLAG(IS_ANDROID)
   &ntp_features::kNtpChromeCartModule,
-#else
-  &kCommerceHintAndroid,
-#endif
       "checkout-pattern",
       // clang-format off
     "/("
@@ -208,154 +187,11 @@ constexpr base::FeatureParam<std::string> kCheckoutPattern{
 };
 
 constexpr base::FeatureParam<std::string> kCheckoutPatternMapping{
-#if !BUILDFLAG(IS_ANDROID)
   &ntp_features::kNtpChromeCartModule,
-#else
-  &kCommerceHintAndroid,
-#endif
       "checkout-pattern-mapping",
       // Empty JSON string.
       ""
 };
-
-// The following are Feature parameters for DOM-based heuristics for ChromeCart.
-constexpr base::FeatureParam<std::string> kAddToCartButtonTextPattern{
-    &kChromeCartDomBasedHeuristics, "add-to-cart-text-pattern",
-    "(add(ed|ing)?( \\w+)* (to (shopping )?(cart|bag|basket))|(for "
-    "shipping))|(^add$)|(buy now)"};
-
-constexpr base::FeatureParam<std::string> kAddToCartButtonTagPattern{
-    &kChromeCartDomBasedHeuristics, "add-to-cart-tag-pattern",
-    "BUTTON, INPUT, A, SPAN"};
-
-constexpr base::FeatureParam<int> kAddToCartButtonWidthLimit{
-    &kChromeCartDomBasedHeuristics, "add-to-cart-button-width", 700};
-
-constexpr base::FeatureParam<int> kAddToCartButtonHeightLimit{
-    &kChromeCartDomBasedHeuristics, "add-to-cart-button-height", 100};
-
-constexpr base::FeatureParam<base::TimeDelta> kAddToCartButtonActiveTime{
-    &kChromeCartDomBasedHeuristics, "add-to-cart-button-active-time",
-    base::Seconds(5)};
-
-constexpr base::FeatureParam<bool> kAddToCartProductImage{
-    &kChromeCartDomBasedHeuristics, "add-to-cart-product-image", true};
-
-constexpr base::FeatureParam<std::string> kSkipHeuristicsDomainPattern{
-    &kChromeCartDomBasedHeuristics, "skip-heuristics-domain-pattern",
-    // This regex does not match anything.
-    "\\b\\B"};
-
-constexpr base::FeatureParam<base::TimeDelta> kHeuristicsExecutionGapTime{
-    &kChromeCartDomBasedHeuristics, "heuristics-execution-gap-time",
-    base::Seconds(1)};
-
-// The following are Feature params for Discount user consent v2.
-// This indicates the Discount Consent v2 variation on the NTP Cart module.
-enum class DiscountConsentNtpVariation {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  kDefault = 0,
-  kStringChange = 1,
-  kInline = 2,
-  kDialog = 3,
-  kNativeDialog = 4,
-  kMaxValue = kNativeDialog
-};
-
-// Param indicates the ConsentV2 variation. See DiscountConsentNtpVariation
-// enum.
-extern const char kNtpChromeCartModuleDiscountConsentNtpVariationParam[];
-extern const base::FeatureParam<int>
-    kNtpChromeCartModuleDiscountConsentNtpVariation;
-// The time interval, after the last dismissal, before reshowing the consent.
-extern const char kNtpChromeCartModuleDiscountConsentReshowTimeParam[];
-extern const base::FeatureParam<base::TimeDelta>
-    kNtpChromeCartModuleDiscountConsentReshowTime;
-// The max number of dismisses allowed.
-extern const char kNtpChromeCartModuleDiscountConsentMaxDismissalCountParam[];
-extern const base::FeatureParam<int>
-    kNtpChromeCartModuleDiscountConsentMaxDismissalCount;
-
-// String change variation params. This string is replacing the content string
-// of the v1 consent.
-extern const char kNtpChromeCartModuleDiscountConsentStringChangeContentParam[];
-extern const base::FeatureParam<std::string>
-    kNtpChromeCartModuleDiscountConsentStringChangeContent;
-
-// DiscountConsentNtpVariation::kInline and DiscountConsentNtpVariation::kDialog
-// params. This indicate whether the 'x' button should show.
-extern const char
-    kNtpChromeCartModuleDiscountConsentInlineShowCloseButtonParam[];
-extern const base::FeatureParam<bool>
-    kNtpChromeCartModuleDiscountConsentInlineShowCloseButton;
-
-// The following are discount consent step 1 params.
-// This indicates whether the content in step 1 is a static string that does not
-// contain any merchant names.
-extern const char
-    kNtpChromeCartModuleDiscountConsentNtpStepOneUseStaticContentParam[];
-extern const base::FeatureParam<bool>
-    kNtpChromeCartModuleDiscountConsentNtpStepOneUseStaticContent;
-// This the content string use in step 1 if
-// kNtpChromeCartModuleDiscountConsentNtpStepOneUseStaticContent.Get() is true.
-extern const char
-    kNtpChromeCartModuleDiscountConsentNtpStepOneStaticContentParam[];
-extern const base::FeatureParam<std::string>
-    kNtpChromeCartModuleDiscountConsentNtpStepOneStaticContent;
-// This is a string template that takes in one merchant name, and it's used when
-// there is only 1 Chrome Cart.
-extern const char
-    kNtpChromeCartModuleDiscountConsentNtpStepOneContentOneCartParam[];
-extern const base::FeatureParam<std::string>
-    kNtpChromeCartModuleDiscountConsentNtpStepOneContentOneCart;
-// This is a string template that takes in two merchant names, and it's used
-// when there are only 2 Chrome Carts.
-extern const char
-    kNtpChromeCartModuleDiscountConsentNtpStepOneContentTwoCartsParam[];
-extern const base::FeatureParam<std::string>
-    kNtpChromeCartModuleDiscountConsentNtpStepOneContentTwoCarts;
-// This is a string template that takes in two merchant names, and it's used
-// when there are 3 or more Chrome Carts.
-extern const char
-    kNtpChromeCartModuleDiscountConsentNtpStepOneContentThreeCartsParam[];
-extern const base::FeatureParam<std::string>
-    kNtpChromeCartModuleDiscountConsentNtpStepOneContentThreeCarts;
-
-// The following are discount consent step 2 params.
-// This is the content string used in step 2. This is the actual consent string.
-extern const char kNtpChromeCartModuleDiscountConsentNtpStepTwoContentParam[];
-extern const base::FeatureParam<std::string>
-    kNtpChromeCartModuleDiscountConsentNtpStepTwoContent;
-// This is used to indicate whether the backgound-color of step 2 should change.
-extern const char
-    kNtpChromeCartModuleDiscountConsentInlineStepTwoDifferentColorParam[];
-extern const base::FeatureParam<bool>
-    kNtpChromeCartModuleDiscountConsentInlineStepTwoDifferentColor;
-// This is the content title use in the dialog consent.
-extern const char
-    kNtpChromeCartModuleDiscountConsentNtpDialogContentTitleParam[];
-extern const base::FeatureParam<std::string>
-    kNtpChromeCartModuleDiscountConsentNtpDialogContentTitle;
-// Feature params for showing the contextual discount consent on the cart and
-// checkout page.
-extern const char kContextualConsentShowOnCartAndCheckoutPageParam[];
-extern const base::FeatureParam<bool>
-    kContextualConsentShowOnCartAndCheckoutPage;
-// Feature params for showing the contextual discount consent on the search
-// result page.
-extern const char kContextualConsentShowOnSRPParam[];
-extern const base::FeatureParam<bool> kContextualConsentShowOnSRP;
-
-// Feature params for enabling the cart heuristics improvement on Android.
-extern const char kCommerceHintAndroidHeuristicsImprovementParam[];
-
-// Feature params for code-based Rule-based Discount (RBD).
-extern const char kCodeBasedRuleDiscountParam[];
-extern const base::FeatureParam<bool> kCodeBasedRuleDiscount;
-extern const char kCodeBasedRuleDiscountCouponDeletionTimeParam[];
-extern const base::FeatureParam<base::TimeDelta>
-    kCodeBasedRuleDiscountCouponDeletionTime;
 
 // Feature params for product specifications.
 extern const char kProductSpecificationsSetValidForClusteringTimeParam[];

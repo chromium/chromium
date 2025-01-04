@@ -95,6 +95,10 @@ enum LayoutConstant {
   // The size of the trailing icons used inside the LocationBar.
   LOCATION_BAR_TRAILING_ICON_SIZE,
 
+  // Additional space beyond TAB_STRIP_PADDING between the tab strip and the
+  // new tab button.
+  NEW_TAB_BUTTON_LEADING_MARGIN,
+
   // The size of icons used in PageInfo bubbles.
   PAGE_INFO_ICON_SIZE,
 

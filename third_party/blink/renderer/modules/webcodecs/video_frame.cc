@@ -57,7 +57,6 @@
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_init_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_rect_util.h"
 #include "third_party/blink/renderer/platform/geometry/geometry_hash_traits.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
@@ -820,7 +819,6 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
       return nullptr;
 
     auto* sbi = static_cast<StaticBitmapImage*>(image.get());
-    gpu::MailboxHolder mailbox_holder = sbi->GetMailboxHolder();
 
     // The sync token needs to be updated when |frame| is released, but
     // AcceleratedStaticBitmapImage::UpdateSyncToken() is not thread-safe.
@@ -835,7 +833,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     auto client_shared_image = sbi->GetSharedImage();
     CHECK(client_shared_image);
     frame = media::VideoFrame::WrapSharedImage(
-        format, std::move(client_shared_image), mailbox_holder.sync_token,
+        format, std::move(client_shared_image), sbi->GetSyncToken(),
         std::move(release_cb), coded_size, parsed_init.visible_rect,
         parsed_init.display_size, timestamp);
 

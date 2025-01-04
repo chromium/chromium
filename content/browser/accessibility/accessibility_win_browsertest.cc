@@ -60,6 +60,7 @@
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/browser_accessibility_manager_win.h"
 #include "ui/accessibility/platform/browser_accessibility_win.h"
+#include "ui/accessibility/platform/iaccessible2/scoped_co_mem_array.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_win.h"
 #include "ui/accessibility/platform/uia_registrar_win.h"
 #include "ui/aura/window.h"
@@ -2679,6 +2680,102 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestSetCaretOffset) {
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
+                       TestCaretOffsetInEmbeddedObject) {
+  LoadInitialAccessibilityTreeFromHtml(
+      R"HTML(<!DOCTYPE html>
+      <div role="textbox" contenteditable autofocus><p>abcde fghij</p></div>
+      <script>
+        const textbox = document.querySelector('div[role="textbox"]');
+        const range = document.createRange();
+        const text = textbox.firstElementChild.firstChild;
+        // Select the first word.
+        getSelection().setBaseAndExtent(text, 0, text, 5);
+      </script>)HTML",
+      ui::kAXModeComplete);
+
+  // Retrieve the IAccessible interface for the web page.
+  Microsoft::WRL::ComPtr<IAccessible> document(GetRendererAccessible());
+  std::vector<base::win::ScopedVariant> document_children =
+      GetAllAccessibleChildren(document.Get());
+  ASSERT_EQ(1u, document_children.size());
+
+  // Check that first child of document is an editable text object
+  Microsoft::WRL::ComPtr<IAccessible2> contenteditable;
+  ASSERT_HRESULT_SUCCEEDED(QueryIAccessible2(
+      GetAccessibleFromVariant(document.Get(), document_children[0].AsInput())
+          .Get(),
+      &contenteditable));
+  LONG contenteditable_role = 0;
+  ASSERT_HRESULT_SUCCEEDED(contenteditable->role(&contenteditable_role));
+  ASSERT_EQ(ROLE_SYSTEM_TEXT, contenteditable_role);
+  base::win::ScopedVariant state;
+  base::win::ScopedVariant childid_self(CHILDID_SELF);
+  HRESULT hr = contenteditable->get_accState(childid_self, state.Receive());
+  EXPECT_EQ(S_OK, hr);
+  ASSERT_EQ(VT_I4, state.type());
+  LONG obj_state = V_I4(state.ptr());
+  EXPECT_TRUE((obj_state & STATE_SYSTEM_READONLY) == 0);
+
+  // Check that first child of editable text object is paragraph.
+  std::vector<base::win::ScopedVariant> contenteditable_children =
+      GetAllAccessibleChildren(contenteditable.Get());
+  ASSERT_EQ(1u, contenteditable_children.size());
+  Microsoft::WRL::ComPtr<IAccessible2> paragraph;
+  ASSERT_HRESULT_SUCCEEDED(QueryIAccessible2(
+      GetAccessibleFromVariant(contenteditable.Get(),
+                               contenteditable_children[0].AsInput())
+          .Get(),
+      &paragraph));
+  LONG paragraph_role = 0;
+  ASSERT_HRESULT_SUCCEEDED(paragraph->role(&paragraph_role));
+  ASSERT_EQ(IA2_ROLE_PARAGRAPH, paragraph_role);
+
+  // Check that the text is as expected.
+  Microsoft::WRL::ComPtr<IAccessibleText> contenteditable_text;
+  ASSERT_HRESULT_SUCCEEDED(contenteditable.As(&contenteditable_text));
+  LONG n_characters;
+  ASSERT_HRESULT_SUCCEEDED(
+      contenteditable_text->get_nCharacters(&n_characters));
+  ASSERT_EQ(1, n_characters);
+  const std::u16string embedded_character(
+      1, ui::AXPlatformNodeBase::kEmbeddedCharacter);
+  CheckTextAtOffset(contenteditable_text, 0, IA2_TEXT_BOUNDARY_CHAR, 0, 1,
+                    base::UTF16ToWide(embedded_character));
+
+  // Check that the caret offset of accessible text is the offset of the
+  // embedded object character for the paragraph.
+  LONG caret_offset = 0;
+  hr = contenteditable_text->get_caretOffset(&caret_offset);
+  EXPECT_EQ(S_OK, hr);
+  EXPECT_EQ(0L, caret_offset);
+
+  LONG nSelections;
+  hr = contenteditable_text->get_nSelections(&nSelections);
+  EXPECT_EQ(S_OK, hr);
+  EXPECT_EQ(1L, nSelections);
+
+  // Check that the selection on the contenteditable starts before the
+  // embedded object character and ends after it, indicating that there is
+  // a selection inside.
+  LONG start_offset, end_offset;
+  hr = contenteditable_text->get_selection(0, &start_offset, &end_offset);
+  EXPECT_EQ(S_OK, hr);
+  EXPECT_EQ(0L, start_offset);
+  EXPECT_EQ(1L, end_offset);
+
+  // The selection inside the paragraph isn't special, it spans the characters.
+  Microsoft::WRL::ComPtr<IAccessibleText> paragraph_text;
+  ASSERT_HRESULT_SUCCEEDED(paragraph.As(&paragraph_text));
+  hr = paragraph_text->get_nSelections(&nSelections);
+  EXPECT_EQ(S_OK, hr);
+  EXPECT_EQ(1L, nSelections);
+  hr = paragraph_text->get_selection(0, &start_offset, &end_offset);
+  EXPECT_EQ(S_OK, hr);
+  EXPECT_EQ(0L, start_offset);
+  EXPECT_EQ(5L, end_offset);
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
                        TestMultiLineSetCaretOffset) {
   Microsoft::WRL::ComPtr<IAccessibleText> textarea_text;
   SetUpTextareaField(&textarea_text);
@@ -3524,6 +3621,160 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   ranges[0].active->Release();
   CoTaskMemFree(ranges);
   ranges = nullptr;
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
+                       TestIAccessibleTextSelectionContainerWithLinks) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(<!DOCTYPE html>
+      <p>abc<a href="#">def</a>ghi<a href="#">jkl</a>mno</p>
+      )HTML");
+
+  Microsoft::WRL::ComPtr<IAccessible> document(GetRendererAccessible());
+  std::vector<base::win::ScopedVariant> document_children =
+      GetAllAccessibleChildren(document.Get());
+  ASSERT_EQ(1u, document_children.size());
+
+  // Check that first child of document is an editable text object
+  Microsoft::WRL::ComPtr<IAccessible2> paragraph;
+  ASSERT_HRESULT_SUCCEEDED(QueryIAccessible2(
+      GetAccessibleFromVariant(document.Get(), document_children[0].AsInput())
+          .Get(),
+      &paragraph));
+  LONG paragraph_role = 0;
+  ASSERT_HRESULT_SUCCEEDED(paragraph->role(&paragraph_role));
+  ASSERT_EQ(IA2_ROLE_PARAGRAPH, paragraph_role);
+
+  Microsoft::WRL::ComPtr<IAccessibleText> paragraph_text;
+  ASSERT_HRESULT_SUCCEEDED(paragraph.As(&paragraph_text));
+  LONG n_characters;
+  ASSERT_HRESULT_SUCCEEDED(paragraph_text->get_nCharacters(&n_characters));
+  ASSERT_EQ(11, n_characters);
+
+  std::vector<base::win::ScopedVariant> paragraph_children =
+      GetAllAccessibleChildren(paragraph.Get());
+  ASSERT_EQ(5u, paragraph_children.size());
+
+  Microsoft::WRL::ComPtr<IAccessible2> abc;
+  ASSERT_HRESULT_SUCCEEDED(QueryIAccessible2(
+      GetAccessibleFromVariant(paragraph.Get(), paragraph_children[0].AsInput())
+          .Get(),
+      &abc));
+  LONG abc_role = 0;
+  ASSERT_HRESULT_SUCCEEDED(abc->role(&abc_role));
+  ASSERT_EQ(ROLE_SYSTEM_STATICTEXT, abc_role)
+      << "Wrong role, was: " << IAccessible2RoleToString(abc_role);
+
+  Microsoft::WRL::ComPtr<IAccessibleText> abc_text;
+  ASSERT_HRESULT_SUCCEEDED(abc.As(&abc_text));
+  ASSERT_HRESULT_SUCCEEDED(abc_text->get_nCharacters(&n_characters));
+  ASSERT_EQ(3, n_characters);
+
+  Microsoft::WRL::ComPtr<IAccessibleTextSelectionContainer> selection_container;
+  ASSERT_HRESULT_SUCCEEDED(document.As(&selection_container));
+
+  ui::ScopedCoMemArray<IA2TextSelection> received_selections;
+  ASSERT_HRESULT_FAILED(selection_container->get_selections(
+      received_selections.Receive(), received_selections.ReceiveSize()));
+  ASSERT_EQ(0, received_selections.size());
+
+  // Test setting the selection to "a".
+  std::vector<IA2TextSelection> requested_selections;
+  IA2TextSelection requested_selection_range = {paragraph_text.Get(), 0,
+                                                paragraph_text.Get(), 1, false};
+  requested_selections.push_back(requested_selection_range);
+
+  AccessibilityNotificationWaiter waiter(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ax::mojom::Event::kDocumentSelectionChanged);
+  ASSERT_HRESULT_SUCCEEDED(
+      selection_container->setSelections(1, &requested_selections[0]));
+  ASSERT_TRUE(waiter.WaitForNotification());
+
+  ASSERT_HRESULT_SUCCEEDED(selection_container->get_selections(
+      received_selections.Receive(), received_selections.ReceiveSize()));
+  ASSERT_EQ(1, received_selections.size());
+
+  EXPECT_EQ(abc_text.Get(), received_selections[0].startObj);
+  EXPECT_EQ(received_selections[0].startOffset, 0);
+  EXPECT_EQ(abc_text.Get(), received_selections[0].endObj);
+  ASSERT_EQ(received_selections[0].endOffset, 1);
+  ASSERT_EQ(received_selections[0].startIsActive, false);
+
+  // Get the first link.
+  Microsoft::WRL::ComPtr<IAccessible2> first_link;
+  ASSERT_HRESULT_SUCCEEDED(QueryIAccessible2(
+      GetAccessibleFromVariant(paragraph.Get(), paragraph_children[1].AsInput())
+          .Get(),
+      &first_link));
+  LONG first_link_role = 0;
+  ASSERT_HRESULT_SUCCEEDED(first_link->role(&first_link_role));
+  ASSERT_EQ(ROLE_SYSTEM_LINK, first_link_role)
+      << "Wrong role, was: " << IAccessible2RoleToString(first_link_role);
+
+  Microsoft::WRL::ComPtr<IAccessibleText> first_link_text;
+  ASSERT_HRESULT_SUCCEEDED(first_link.As(&first_link_text));
+  ASSERT_HRESULT_SUCCEEDED(first_link_text->get_nCharacters(&n_characters));
+  ASSERT_EQ(3, n_characters);
+
+  // Get the first link's text, "def".
+  std::vector<base::win::ScopedVariant> first_link_children =
+      GetAllAccessibleChildren(first_link.Get());
+  ASSERT_EQ(1u, first_link_children.size());
+
+  Microsoft::WRL::ComPtr<IAccessible2> def;
+  ASSERT_HRESULT_SUCCEEDED(
+      QueryIAccessible2(GetAccessibleFromVariant(
+                            first_link.Get(), first_link_children[0].AsInput())
+                            .Get(),
+                        &def));
+  LONG def_role = 0;
+  ASSERT_HRESULT_SUCCEEDED(def->role(&def_role));
+  ASSERT_EQ(ROLE_SYSTEM_STATICTEXT, def_role)
+      << "Wrong role, was: " << IAccessible2RoleToString(def_role);
+
+  Microsoft::WRL::ComPtr<IAccessibleText> def_text;
+  ASSERT_HRESULT_SUCCEEDED(def.As(&def_text));
+  ASSERT_HRESULT_SUCCEEDED(def_text->get_nCharacters(&n_characters));
+  ASSERT_EQ(3, n_characters);
+
+  Microsoft::WRL::ComPtr<IAccessible2> ghi;
+  ASSERT_HRESULT_SUCCEEDED(QueryIAccessible2(
+      GetAccessibleFromVariant(paragraph.Get(), paragraph_children[2].AsInput())
+          .Get(),
+      &ghi));
+  LONG ghi_role = 0;
+  ASSERT_HRESULT_SUCCEEDED(ghi->role(&ghi_role));
+  ASSERT_EQ(ROLE_SYSTEM_STATICTEXT, ghi_role)
+      << "Wrong role, was: " << IAccessible2RoleToString(ghi_role);
+
+  Microsoft::WRL::ComPtr<IAccessibleText> ghi_text;
+  ASSERT_HRESULT_SUCCEEDED(ghi.As(&ghi_text));
+  ASSERT_HRESULT_SUCCEEDED(ghi_text->get_nCharacters(&n_characters));
+  ASSERT_EQ(3, n_characters);
+
+  // Select the first link by selecting its embedded object character.
+  received_selections = ui::ScopedCoMemArray<IA2TextSelection>();
+  requested_selections.clear();
+  requested_selection_range = {paragraph_text.Get(), 3, paragraph_text.Get(), 4,
+                               false};
+  requested_selections.push_back(requested_selection_range);
+
+  AccessibilityNotificationWaiter waiter_2(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ax::mojom::Event::kDocumentSelectionChanged);
+  ASSERT_HRESULT_SUCCEEDED(
+      selection_container->setSelections(1, &requested_selections[0]));
+  ASSERT_TRUE(waiter_2.WaitForNotification());
+
+  ASSERT_HRESULT_SUCCEEDED(selection_container->get_selections(
+      received_selections.Receive(), received_selections.ReceiveSize()));
+  ASSERT_EQ(1, received_selections.size());
+
+  EXPECT_EQ(received_selections[0].startOffset, 0);
+  EXPECT_EQ(def_text.Get(), received_selections[0].startObj);
+  ASSERT_EQ(received_selections[0].endOffset, 0);
+  EXPECT_EQ(ghi_text.Get(), received_selections[0].endObj);
+  ASSERT_EQ(received_selections[0].startIsActive, false);
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,

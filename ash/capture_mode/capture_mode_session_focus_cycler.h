@@ -318,8 +318,12 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
   const std::vector<FocusGroup> groups_for_window_;
 
   // Focusable groups for the game capture session that always has `kWindow`
-  // capture source selected. And the selected window is not changeable.
+  // capture source selected and the selected window is not changeable.
   const std::vector<FocusGroup> groups_for_game_capture_;
+
+  // Focusable groups for the sunfish session that always has `kRegion` capture
+  // source selected.
+  const std::vector<FocusGroup> groups_for_sunfish_;
 
   // Highlightable windows of the focus group `kCaptureWindow`. Windows opened
   // after the session starts will not be included.

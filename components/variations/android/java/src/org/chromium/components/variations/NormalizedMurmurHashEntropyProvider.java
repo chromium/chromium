@@ -6,6 +6,8 @@ package org.chromium.components.variations;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * NormalizedMurmurHashEntropyProvider is an entropy provider suitable for low entropy sources
  * (below 16 bits). Java version is a re-implementation of NormalizedMurmurHashEntropyProvider
@@ -13,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
  * hashing, so each trial must have a randomization seed. The implementation in this class should be
  * kept consistent with the C++ implementation in entropy_provider.h and variations_murmur_hash.h.
  */
+@NullMarked
 public final class NormalizedMurmurHashEntropyProvider {
     private final int mEntropyValue;
     private final int mEntropyRange;

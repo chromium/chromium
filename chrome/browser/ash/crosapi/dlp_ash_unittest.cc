@@ -17,6 +17,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
@@ -214,7 +215,7 @@ class DlpAshBlockUITest
     scoped_profile_ = std::make_unique<TestingProfile>();
     profile_ = scoped_profile_.get();
     AccountId account_id =
-        AccountId::FromUserEmailGaiaId("test@example.com", "12345");
+        AccountId::FromUserEmailGaiaId("test@example.com", GaiaId("12345"));
     profile_->SetIsNewProfile(true);
     user_manager::User* user =
         user_manager->AddUserWithAffiliationAndTypeAndProfile(

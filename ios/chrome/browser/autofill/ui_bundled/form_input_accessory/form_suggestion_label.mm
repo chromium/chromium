@@ -6,12 +6,13 @@
 
 #import <QuartzCore/QuartzCore.h>
 #import <stddef.h>
+
 #import <cmath>
 
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/autofill/core/browser/autofill_data_util.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/password_manager/ios/shared_password_controller.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_constants.h"

@@ -32,8 +32,21 @@ struct ProfileDetail: AppEntity {
   }
 
   static func allProfiles() -> [ProfileDetail] {
-    // TODO: Take list of profiles from NSUserDefaults.
-    return []
+    guard let sharedDefaults: UserDefaults = AppGroupHelper.groupUserDefaults()
+    else { return [] }
+    guard
+      let profiles = sharedDefaults.object(forKey: "ios.registered_accounts_on_device")
+        as? [String: [String: String]]
+    else { return [] }
+
+    var profilesDetail: [ProfileDetail] = []
+
+    for innerDict in profiles.values {
+      if let value = innerDict["email"] {
+        profilesDetail.append(ProfileDetail(id: value))
+      }
+    }
+    return profilesDetail
   }
 }
 

@@ -11,6 +11,7 @@
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/process_manager_factory.h"
 
 using content::BrowserContext;
 
@@ -33,6 +34,7 @@ EventRouterFactory::EventRouterFactory()
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(ExtensionRegistryFactory::GetInstance());
   DependsOn(ExtensionPrefsFactory::GetInstance());
+  DependsOn(ProcessManagerFactory::GetInstance());
 }
 
 EventRouterFactory::~EventRouterFactory() {

@@ -1367,6 +1367,7 @@ TEST_F(BookmarkModelTest, MoveWithUuidCollision) {
   // original UUID.
   EXPECT_EQ(folder2->uuid(), kInitialUuid);
 
+  // Verify that the UUID index was updated correctly.
   EXPECT_EQ(nullptr,
             model_->GetNodeByUuid(
                 kInitialUuid, NodeTypeForUuidLookup::kLocalOrSyncableNodes));
@@ -1374,6 +1375,62 @@ TEST_F(BookmarkModelTest, MoveWithUuidCollision) {
                          kInitialUuid, NodeTypeForUuidLookup::kAccountNodes));
   EXPECT_EQ(folder1,
             model_->GetNodeByUuid(folder1->uuid(),
+                                  NodeTypeForUuidLookup::kAccountNodes));
+}
+
+TEST_F(BookmarkModelTest, MoveWithUuidCollisionInDescendant) {
+  model_->CreateAccountPermanentFolders();
+  const BookmarkNode* bookmark_bar_node = model_->bookmark_bar_node();
+  const BookmarkNode* account_bookmark_bar_node =
+      model_->account_bookmark_bar_node();
+
+  ASSERT_NE(nullptr, account_bookmark_bar_node);
+
+  const BookmarkNode* folder1 =
+      model_->AddFolder(bookmark_bar_node, 0, u"local folder");
+  const base::Uuid kFolder1Uuid = folder1->uuid();
+
+  // Create two more folders with the same UUID. One is local (nested under
+  // `folder1`) and the other one is an account bookmark, so using the same UUID
+  // is allowed.
+  const BookmarkNode* folder2 = model_->AddFolder(folder1, 0, u"local folder");
+  const base::Uuid kInitialUuid = folder2->uuid();
+  const BookmarkNode* folder3 =
+      model_->AddFolder(account_bookmark_bar_node, 0, u"account folder",
+                        /*meta_info=*/nullptr,
+                        /*creation_time=*/std::nullopt, kInitialUuid);
+
+  ClearCounts();
+
+  // Move `folder1`, which also includes the nested `folder2`, to account
+  // storage.
+  model_->Move(folder1, account_bookmark_bar_node, 0);
+
+  // Should update the hierarchy.
+  AssertObserverCount(0, 1, 0, 0, 0, 0, 0, 0, 0);
+  observer_details_.ExpectEquals(bookmark_bar_node, account_bookmark_bar_node,
+                                 0, 0, false);
+  EXPECT_EQ(bookmark_bar_node->children().size(), 0u);
+  EXPECT_EQ(account_bookmark_bar_node->children().size(), 2u);
+
+  // The UUID should have changed for `folder2`, but not for `folder1`.
+  EXPECT_EQ(folder1->uuid(), kFolder1Uuid);
+  EXPECT_NE(folder2->uuid(), kInitialUuid);
+
+  // The other folder involved in the collision should continue having the
+  // original UUID.
+  EXPECT_EQ(folder3->uuid(), kInitialUuid);
+
+  // Verify that the UUID index was updated correctly.
+  EXPECT_EQ(nullptr,
+            model_->GetNodeByUuid(
+                kInitialUuid, NodeTypeForUuidLookup::kLocalOrSyncableNodes));
+  EXPECT_EQ(folder3, model_->GetNodeByUuid(
+                         kInitialUuid, NodeTypeForUuidLookup::kAccountNodes));
+  EXPECT_EQ(folder1, model_->GetNodeByUuid(
+                         kFolder1Uuid, NodeTypeForUuidLookup::kAccountNodes));
+  EXPECT_EQ(folder2,
+            model_->GetNodeByUuid(folder2->uuid(),
                                   NodeTypeForUuidLookup::kAccountNodes));
 }
 
@@ -1483,17 +1540,16 @@ TEST_F(BookmarkModelTest, MostRecentlyModifiedFolders) {
 
   // Make sure folder is in the most recently modified.
   std::vector<const BookmarkNode*> most_recent_folders =
-      GetMostRecentlyModifiedUserFolders(model_.get(), 1);
-  ASSERT_EQ(1U, most_recent_folders.size());
-  ASSERT_EQ(folder, most_recent_folders[0]);
+      GetMostRecentlyModifiedUserFolders(model_.get());
+  ASSERT_FALSE(most_recent_folders.empty());
+  EXPECT_EQ(folder, most_recent_folders[0]);
 
   // Nuke the folder and do another fetch, making sure folder isn't in the
   // returned list.
   model_->Remove(folder->parent()->children().front().get(),
                  bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
-  most_recent_folders = GetMostRecentlyModifiedUserFolders(model_.get(), 1);
-  ASSERT_EQ(1U, most_recent_folders.size());
-  ASSERT_NE(most_recent_folders[0], folder);
+  most_recent_folders = GetMostRecentlyModifiedUserFolders(model_.get());
+  EXPECT_FALSE(base::Contains(most_recent_folders, folder));
 }
 
 // Make sure MostRecentlyAddedEntries stays in sync.

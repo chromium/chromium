@@ -11,7 +11,10 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
@@ -48,6 +51,9 @@ public abstract class SigninPromoDelegate {
     /** Returns the description string for the promo. */
     abstract String getDescription();
 
+    /** Returns the access point name to be recorded in promo histograms. */
+    abstract @SigninPreferencesManager.SigninPromoAccessPointId String getAccessPointName();
+
     /**
      * Returns the {@link SigninAndHistorySyncActivityLauncher.AccessPoint} that will be used for
      * sign-in for the promo.
@@ -61,9 +67,25 @@ public abstract class SigninPromoDelegate {
     abstract void onDismissButtonClicked();
 
     /**
-     * Whether the promo can be shown. Subclasses should implement their particular show logic here.
+     * Whether the promo can be shown.
+     *
+     * <p>If a condition affecting the promo's content changes, refreshPromoState should be called
+     * before calling this method.
      */
-    abstract boolean canShowPromo(@Nullable CoreAccountInfo visibleAccount);
+    abstract boolean canShowPromo();
+
+    /**
+     * Refresh the promo state including its content and visibility. This method is invoked by
+     * SigninPromoMediator whenever observed state affecting promo content/visibility is updated
+     * (e.g. the primary account, sync data types...).
+     *
+     * @param visibleAccount The account currently shown in the promo.
+     * @return Whether the promo state has changed during the refresh. If it returns true, {@link
+     *     SigninPromoCoordinator} will refresh the promo visibility and the whole promo content
+     *     (e.g. title, description, buttons...) for a visible promo, by updating the promo's model
+     *     with new values retrieved from the delegate.
+     */
+    abstract boolean refreshPromoState(@Nullable CoreAccountInfo visibleAccount);
 
     boolean shouldHideSecondaryButton() {
         return false;
@@ -96,18 +118,17 @@ public abstract class SigninPromoDelegate {
     }
 
     void onPrimaryButtonClicked() {
+        BottomSheetSigninAndHistorySyncConfig config =
+                new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                mBottomSheetStrings,
+                                NoAccountSigninMode.BOTTOM_SHEET,
+                                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                getHistoryOptInMode())
+                        .build();
         @Nullable
         Intent intent =
                 mLauncher.createBottomSheetSigninIntentOrShowError(
-                        mContext,
-                        mProfile,
-                        mBottomSheetStrings,
-                        BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                        BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                                .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                        getHistoryOptInMode(),
-                        getAccessPoint(),
-                        /* selectedCoreAccountId= */ null);
+                        mContext, mProfile, config, getAccessPoint());
         if (intent != null) {
             mContext.startActivity(intent);
         }
@@ -115,18 +136,18 @@ public abstract class SigninPromoDelegate {
 
     void onSecondaryButtonClicked() {
         assert !shouldHideSecondaryButton();
+
+        BottomSheetSigninAndHistorySyncConfig config =
+                new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                mBottomSheetStrings,
+                                NoAccountSigninMode.BOTTOM_SHEET,
+                                WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET,
+                                getHistoryOptInMode())
+                        .build();
         @Nullable
         Intent intent =
                 mLauncher.createBottomSheetSigninIntentOrShowError(
-                        mContext,
-                        mProfile,
-                        mBottomSheetStrings,
-                        BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                        BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                                .CHOOSE_ACCOUNT_BOTTOM_SHEET,
-                        getHistoryOptInMode(),
-                        getAccessPoint(),
-                        /* selectedCoreAccountId= */ null);
+                        mContext, mProfile, config, getAccessPoint());
         if (intent != null) {
             mContext.startActivity(intent);
         }

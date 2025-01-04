@@ -26,6 +26,8 @@
 #include "remoting/host/desktop_session_agent.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
 #include "base/win/windows_version.h"
 #endif  // BUILDFLAG(IS_WIN)
 

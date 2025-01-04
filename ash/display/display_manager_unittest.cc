@@ -127,6 +127,14 @@ class DisplayManagerObserverValidator : public display::DisplayObserver,
     if (!changed_metrics_.try_emplace(display.id(), changed_metrics).second) {
       changed_metrics_[display.id()] |= changed_metrics;
     }
+    // A new display may be re-configured during the configuration by shell.
+    auto iter = std::find_if(added_displays_.begin(), added_displays_.end(),
+                             [display](const display::Display& d) {
+                               return d.id() == display.id();
+                             });
+    if (iter != added_displays_.end()) {
+      *iter = display;
+    }
   }
 
   // display::DisplayManager::Observer:
@@ -3751,15 +3759,23 @@ TEST_F(DisplayManagerTest, ForcedMirrorModeExited) {
   EXPECT_FALSE(display_manager()->IsInSoftwareMirrorMode());
 }
 
-TEST_F(DisplayManagerTest, DisplayPrefsAndKioskMode) {
+namespace {
+
+class NoSessionDisplayManagerTest : public DisplayManagerTest {
+ public:
+  NoSessionDisplayManagerTest() { set_start_session(false); }
+  NoSessionDisplayManagerTest(const NoSessionDisplayManagerTest&) = delete;
+  NoSessionDisplayManagerTest& operator=(const NoSessionDisplayManagerTest&) =
+      delete;
+  ~NoSessionDisplayManagerTest() override = default;
+};
+
+}  // namespace
+
+TEST_F(NoSessionDisplayManagerTest, DisplayPrefsAndKioskMode) {
   // Login in as kiosk app.
-  UserSession session;
-  session.session_id = 1u;
-  session.user_info.type = user_manager::UserType::kKioskApp;
-  session.user_info.account_id = AccountId::FromUserEmail("user1@test.com");
-  session.user_info.display_name = "User 1";
-  session.user_info.display_email = "user1@test.com";
-  Shell::Get()->session_controller()->UpdateUserSession(std::move(session));
+  SimulateKioskMode(user_manager::UserType::kKioskApp);
+
   EXPECT_EQ(LoginStatus::KIOSK_APP,
             Shell::Get()->session_controller()->login_status());
   UpdateDisplay("400x300,800x700");

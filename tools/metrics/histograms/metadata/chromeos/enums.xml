@@ -190,6 +190,8 @@ chromium-metrics-reviews@google.com.
   <int value="136" label="ToggleMouseKeys"/>
   <int value="137" label="ResizePipWindow"/>
   <int value="138" label="ToggleGeminiApp"/>
+  <int value="139" label="ToggleDoNotDisturb"/>
+  <int value="140" label="ToggleCameraAllowed"/>
   <int value="9000" label="DebugClearUseKMeansPref"/>
   <int value="9001" label="DebugKeyboardBacklightToggle"/>
   <int value="9002" label="DebugMicrophoneMuteToggle"/>
@@ -1229,6 +1231,7 @@ chromium-metrics-reviews@google.com.
   <int value="22" label="Dictation"/>
   <int value="23" label="PrivacyScreenToggle"/>
   <int value="24" label="Accessibility"/>
+  <int value="25" label="DoNotDisturb"/>
 </enum>
 
 <enum name="KeyboardTopRowLayoutWithExtraSublayout">

@@ -774,6 +774,31 @@ These builders are run on some percentage of builds. Their results are ignored
 by CQ. These are often used to test new configurations before they are added
 as required builders.
 
+### chrome
+* [optimization_guide-linux](https://ci.chromium.org/p/chrome/builders/try/optimization_guide-linux) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""optimization_guide-linux""))
+  * Experiment percentage: 100.0
+
+  Location filters:
+  * [`//chrome/browser/ai/.+`](https://cs.chromium.org/chromium/src/chrome/browser/ai/)
+  * [`//components/optimization_guide/.+`](https://cs.chromium.org/chromium/src/components/optimization_guide/)
+  * [`//services/on_device_model/.+`](https://cs.chromium.org/chromium/src/services/on_device_model/)
+
+* [optimization_guide-mac-arm64](https://ci.chromium.org/p/chrome/builders/try/optimization_guide-mac-arm64) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""optimization_guide-mac-arm64""))
+  * Experiment percentage: 100.0
+
+  Location filters:
+  * [`//chrome/browser/ai/.+`](https://cs.chromium.org/chromium/src/chrome/browser/ai/)
+  * [`//components/optimization_guide/.+`](https://cs.chromium.org/chromium/src/components/optimization_guide/)
+  * [`//services/on_device_model/.+`](https://cs.chromium.org/chromium/src/services/on_device_model/)
+
+* [optimization_guide-win64](https://ci.chromium.org/p/chrome/builders/try/optimization_guide-win64) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""optimization_guide-win64""))
+  * Experiment percentage: 100.0
+
+  Location filters:
+  * [`//chrome/browser/ai/.+`](https://cs.chromium.org/chromium/src/chrome/browser/ai/)
+  * [`//components/optimization_guide/.+`](https://cs.chromium.org/chromium/src/components/optimization_guide/)
+  * [`//services/on_device_model/.+`](https://cs.chromium.org/chromium/src/services/on_device_model/)
+
 ### chromium
 * [chromeos-js-coverage-rel](https://ci.chromium.org/p/chromium/builders/try/chromeos-js-coverage-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""chromeos-js-coverage-rel""))
   * Experiment percentage: 50.0

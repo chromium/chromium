@@ -141,6 +141,8 @@ message ViewScreenConfig {
     AVAILABLE = 2;
 
     ACTIVE = 3;
+
+    INACTIVE = 4;
   }
 
   ViewScreenState view_screen_state = 1;
@@ -154,6 +156,12 @@ message ConnectionParameter {
 
 message DeviceInfo {
   string device_id = 1;
+
+  FeatureSupport feature_support = 2;
+}
+
+message FeatureSupport {
+  bool view_screen = 1;
 }
 
 message StudentDeviceActivity {

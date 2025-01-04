@@ -48,8 +48,9 @@ int CountryCharsToCountryIDWithUpdate(char c1, char c2) {
 
   // SPECIAL CASE: Timor-Leste changed from 'TP' to 'TL' in 2002. Windows XP
   // predates this; we therefore map this value.
-  if (c1 == 'T' && c2 == 'P')
+  if (c1 == 'T' && c2 == 'P') {
     c2 = 'L';
+  }
 
   return CountryCharsToCountryID(c1, c2);
 }
@@ -122,8 +123,9 @@ int CountryStringToCountryID(const std::string& country) {
 }
 
 int GetCountryIDFromPrefs(PrefService* prefs) {
-  if (!prefs)
+  if (!prefs) {
     return GetCurrentCountryID();
+  }
 
   // Cache first run Country ID value in prefs, and use it afterwards.  This
   // ensures that just because the user moves around, we won't automatically
@@ -162,8 +164,9 @@ int GetCurrentCountryID() {
   base::apple::ScopedCFTypeRef<CFLocaleRef> locale(CFLocaleCopyCurrent());
   CFStringRef country =
       (CFStringRef)CFLocaleGetValue(locale.get(), kCFLocaleCountryCode);
-  if (!country)
+  if (!country) {
     return kCountryIDUnknown;
+  }
 
   UniChar isobuf[2];
   CFRange char_range = CFRangeMake(0, 2);
@@ -183,8 +186,9 @@ int GetCurrentCountryID() {
 
 int GetCurrentCountryID() {
   const char* locale = setlocale(LC_MESSAGES, nullptr);
-  if (!locale)
+  if (!locale) {
     return kCountryIDUnknown;
+  }
 
   // The format of a locale name is:
   // language[_territory][.codeset][@modifier], where territory is an ISO 3166
@@ -193,8 +197,9 @@ int GetCurrentCountryID() {
   // First remove the language portion.
   std::string locale_str(locale);
   size_t territory_delim = locale_str.find('_');
-  if (territory_delim == std::string::npos)
+  if (territory_delim == std::string::npos) {
     return kCountryIDUnknown;
+  }
   locale_str.erase(0, territory_delim + 1);
 
   // Next remove any codeset/modifier portion and uppercase.
@@ -208,8 +213,9 @@ std::string CountryIDToCountryString(int country_id) {
   // We only use the lowest 16 bits to build two ASCII characters. If there is
   // more than that, the ID is invalid. The check for positive integers also
   // handles the |kCountryIDUnknown| case.
-  if ((country_id & 0xFFFF) != country_id || country_id < 0)
+  if ((country_id & 0xFFFF) != country_id || country_id < 0) {
     return kCountryCodeUnknown;
+  }
 
   // Decode the country code string from the provided integer. The first two
   // bytes of the country ID represent two ASCII chars.

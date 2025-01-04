@@ -25,7 +25,6 @@ namespace {
 constexpr char kEntryPointQueryParameter[] = "ep";
 constexpr char kChromeRegionSearchMenuItem[] = "crs";
 constexpr char kChromeSearchWithGoogleLensContextMenuItem[] = "ccm";
-constexpr char kChromeTranslateImageWithGoogleLensContextMenuItem[] = "ctrcm";
 constexpr char kChromeVideoFrameSearchContextMenuItem[] = "cvfs";
 constexpr char kChromeLensOverlayLocationBar[] = "crmntob";
 
@@ -55,8 +54,6 @@ std::string GetEntryPointQueryString(lens::EntryPoint entry_point) {
       return kChromeRegionSearchMenuItem;
     case lens::CHROME_SEARCH_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM:
       return kChromeSearchWithGoogleLensContextMenuItem;
-    case lens::CHROME_TRANSLATE_IMAGE_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM:
-      return kChromeTranslateImageWithGoogleLensContextMenuItem;
     case lens::CHROME_VIDEO_FRAME_SEARCH_CONTEXT_MENU_ITEM:
       return kChromeVideoFrameSearchContextMenuItem;
     case lens::CHROME_LENS_OVERLAY_LOCATION_BAR:

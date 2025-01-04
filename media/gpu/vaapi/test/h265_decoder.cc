@@ -10,6 +10,7 @@
 #include "media/gpu/vaapi/test/h265_decoder.h"
 
 #include <algorithm>
+#include <array>
 
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -562,8 +563,8 @@ bool H265Decoder::BuildRefPicLists(const H265SPS* sps,
   ref_pic_set_st_curr_after_.resize(kMaxDpbSize);
   ref_pic_set_st_curr_before_.clear();
   ref_pic_set_st_curr_before_.resize(kMaxDpbSize);
-  scoped_refptr<H265Picture> ref_pic_set_lt_foll[kMaxDpbSize];
-  scoped_refptr<H265Picture> ref_pic_set_st_foll[kMaxDpbSize];
+  std::array<scoped_refptr<H265Picture>, kMaxDpbSize> ref_pic_set_lt_foll;
+  std::array<scoped_refptr<H265Picture>, kMaxDpbSize> ref_pic_set_st_foll;
 
   // Mark everything in the DPB as unused for reference now. When we determine
   // the pics in the ref list, then we will mark them appropriately.
@@ -642,7 +643,7 @@ bool H265Decoder::BuildRefPicLists(const H265SPS* sps,
     int num_rps_curr_temp_list0 =
         std::max(slice_hdr->num_ref_idx_l0_active_minus1 + 1,
                  slice_hdr->num_pic_total_curr);
-    scoped_refptr<H265Picture> ref_pic_list_temp0[kMaxDpbSize];
+    std::array<scoped_refptr<H265Picture>, kMaxDpbSize> ref_pic_list_temp0;
 
     // Equation 8-8.
     int r_idx = 0;
@@ -677,7 +678,7 @@ bool H265Decoder::BuildRefPicLists(const H265SPS* sps,
       int num_rps_curr_temp_list1 =
           std::max(slice_hdr->num_ref_idx_l1_active_minus1 + 1,
                    slice_hdr->num_pic_total_curr);
-      scoped_refptr<H265Picture> ref_pic_list_temp1[kMaxDpbSize];
+      std::array<scoped_refptr<H265Picture>, kMaxDpbSize> ref_pic_list_temp1;
 
       // Equation 8-10.
       r_idx = 0;

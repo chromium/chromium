@@ -4,27 +4,29 @@
 
 package org.chromium.ui;
 
-import android.view.View;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
-import androidx.annotation.Nullable;
+import android.view.View;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * A provider that encapsulates a {@link View} that is in the view hierarchy to be inflated by
  * an {@link AsyncViewStub}.
  * @param <T> type of the {@link View} that this provider encapsulates.
  */
+@NullMarked
 public class AsyncViewProvider<T extends View> implements Callback<View>, ViewProvider<T> {
     private int mResId;
     // Exactly one of mView and mViewStub is non-null at any point.
-    private T mView;
-    private AsyncViewStub mViewStub;
+    private @Nullable T mView;
+    private @Nullable AsyncViewStub mViewStub;
     private boolean mDestroyed;
 
     private AsyncViewProvider(AsyncViewStub viewStub, int resId) {
-        assert viewStub != null;
         mResId = resId;
         mViewStub = viewStub;
     }
@@ -45,8 +47,9 @@ public class AsyncViewProvider<T extends View> implements Callback<View>, ViewPr
      */
     public static <E extends View> AsyncViewProvider<E> of(AsyncViewStub viewStub, int resId) {
         ThreadUtils.assertOnUiThread();
-        if (viewStub.getInflatedView() != null) {
-            return new AsyncViewProvider<>(viewStub.getInflatedView().findViewById(resId));
+        View inflatedView = viewStub.getInflatedView();
+        if (inflatedView != null) {
+            return new AsyncViewProvider<>(inflatedView.findViewById(resId));
         }
         AsyncViewProvider<E> provider = new AsyncViewProvider<>(viewStub, resId);
         viewStub.addOnInflateListener(provider);
@@ -85,8 +88,7 @@ public class AsyncViewProvider<T extends View> implements Callback<View>, ViewPr
      * @return the {@link View} encapsulated by this provider or null (if the view has not been
      * inflated yet).
      */
-    @Nullable
-    public T get() {
+    public @Nullable T get() {
         return mView;
     }
 
@@ -101,12 +103,12 @@ public class AsyncViewProvider<T extends View> implements Callback<View>, ViewPr
         if (mView != null) {
             return new AsyncViewProvider<>(mView.findViewById(resId));
         }
-        return of(mViewStub, resId);
+        return of(assumeNonNull(mViewStub), resId);
     }
 
     @Override
     public void inflate() {
-        mViewStub.inflate();
+        assumeNonNull(mViewStub).inflate();
     }
 
     @Override
@@ -117,22 +119,16 @@ public class AsyncViewProvider<T extends View> implements Callback<View>, ViewPr
             // fire right now if view already inflated.
             callback.onResult(mView);
         } else {
-            mViewStub.addOnInflateListener(
-                    (View view) -> {
-                        if (mDestroyed) return;
-                        // listeners are called in order so mView should be set correctly at this
-                        // point.
-                        callback.onResult(mView);
-                    });
+            assumeNonNull(mViewStub)
+                    .addOnInflateListener(
+                            (View view) -> {
+                                if (mDestroyed) return;
+                                // listeners are called in order so mView should be set correctly at
+                                // this
+                                // point.
+                                callback.onResult(assumeNonNull(mView));
+                            });
         }
-    }
-
-    /**
-     * Destroy the provider making sure that all queued up after inflate callbacks are no longer
-     * called.
-     */
-    public void destroy() {
-        destroy(null);
     }
 
     /**
@@ -148,7 +144,7 @@ public class AsyncViewProvider<T extends View> implements Callback<View>, ViewPr
         if (mViewStub != null) {
             mViewStub.addOnInflateListener(
                     (View view) -> {
-                        destroyCallback.onResult(mView);
+                        destroyCallback.onResult(assumeNonNull(mView));
                     });
             mViewStub = null;
         }

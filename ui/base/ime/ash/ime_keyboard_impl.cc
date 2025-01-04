@@ -44,6 +44,18 @@ bool ImeKeyboardImpl::GetAutoRepeatEnabled() {
   return input_controller_->IsAutoRepeatEnabled();
 }
 
+void ImeKeyboardImpl::SetSlowKeysEnabled(bool enabled) {
+  input_controller_->SetSlowKeysEnabled(enabled);
+}
+
+bool ImeKeyboardImpl::IsSlowKeysEnabled() const {
+  return input_controller_->IsSlowKeysEnabled();
+}
+
+void ImeKeyboardImpl::SetSlowKeysDelay(base::TimeDelta delay) {
+  input_controller_->SetSlowKeysDelay(delay);
+}
+
 void ImeKeyboardImpl::SetCapsLockEnabled(bool enable_caps_lock) {
   // Inform ImeKeyboard of caps lock state.
   ImeKeyboard::SetCapsLockEnabled(enable_caps_lock);

@@ -55,19 +55,12 @@ UNSAFE_BUFFER_USAGE void* ReadRelPtr(int32_t* relptr) {
 std::string BundleUtils::ResolveLibraryPath(const std::string& library_name,
                                             const std::string& split_name) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> java_path = Java_BundleUtils_getNativeLibraryPath(
-      env, ConvertUTF8ToJavaString(env, library_name),
-      ConvertUTF8ToJavaString(env, split_name));
-  // TODO(crbug.com/40656179): Remove this tolerance.
-  if (!java_path) {
-    return std::string();
-  }
-  return ConvertJavaStringToUTF8(env, java_path);
+  return Java_BundleUtils_getNativeLibraryPath(env, library_name, split_name);
 }
 
 // static
 bool BundleUtils::IsBundle() {
-  return Java_BundleUtils_isBundleForNative(AttachCurrentThread());
+  return Java_BundleUtils_isBundle(AttachCurrentThread());
 }
 
 // static

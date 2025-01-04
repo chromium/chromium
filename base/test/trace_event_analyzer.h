@@ -118,9 +118,10 @@ struct TraceEvent {
     ProcessThreadID() : process_id(0), thread_id(0) {}
     ProcessThreadID(int process_id, int thread_id)
         : process_id(process_id), thread_id(thread_id) {}
-    bool operator< (const ProcessThreadID& rhs) const {
-      if (process_id != rhs.process_id)
+    bool operator<(const ProcessThreadID& rhs) const {
+      if (process_id != rhs.process_id) {
         return process_id < rhs.process_id;
+      }
       return thread_id < rhs.thread_id;
     }
     int process_id;
@@ -133,7 +134,7 @@ struct TraceEvent {
 
   [[nodiscard]] bool SetFromJSON(const base::Value* event_value);
 
-  bool operator< (const TraceEvent& rhs) const {
+  bool operator<(const TraceEvent& rhs) const {
     return timestamp < rhs.timestamp;
   }
 
@@ -491,9 +492,9 @@ class Query {
   // Boolean operators:
   Query operator==(const Query& rhs) const;
   Query operator!=(const Query& rhs) const;
-  Query operator< (const Query& rhs) const;
+  Query operator<(const Query& rhs) const;
   Query operator<=(const Query& rhs) const;
-  Query operator> (const Query& rhs) const;
+  Query operator>(const Query& rhs) const;
   Query operator>=(const Query& rhs) const;
   Query operator&&(const Query& rhs) const;
   Query operator||(const Query& rhs) const;
@@ -625,8 +626,7 @@ class Query {
   bool GetAsString(const TraceEvent& event, std::string* str) const;
 
   // Evaluate this Query as an arithmetic operator on left_ and right_.
-  bool EvaluateArithmeticOperator(const TraceEvent& event,
-                                  double* num) const;
+  bool EvaluateArithmeticOperator(const TraceEvent& event, double* num) const;
 
   // For QUERY_EVENT_MEMBER Query: attempt to get the double value of the Query.
   bool GetMemberValueAsDouble(const TraceEvent& event, double* num) const;

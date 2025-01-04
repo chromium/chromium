@@ -173,10 +173,6 @@ BASE_DECLARE_FEATURE(kFingerprintingProtectionUserBypass);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kIpProtectionV1);
 
-// Enables IP Protection by default. For use in dogfood only.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kIpProtectionDogfoodDefaultOn);
-
 // Enables showing IP Protection toggle on the settings page.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kIpProtectionUx);
@@ -185,9 +181,9 @@ BASE_DECLARE_FEATURE(kIpProtectionUx);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kIpProtectionUserBypass);
 
-// Enables showing new RWS UI.
+// Enables displaying ACT features in User Bypass.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kPrivacySandboxRelatedWebsiteSetsUi);
+BASE_DECLARE_FEATURE(kActUserBypassUx);
 
 // Enables TP settings page to display TRACKING_PROTECTION content settings.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
@@ -200,6 +196,10 @@ BASE_DECLARE_FEATURE(kTrackingProtectionContentSettingUbControl);
 // Enables TRACKING_PROTECTION content settings to control 3pcb.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kTrackingProtectionContentSettingFor3pcb);
+
+// Enables showing new RWS UI.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kPrivacySandboxRelatedWebsiteSetsUi);
 
 // Privacy UX features end
 
@@ -267,6 +267,7 @@ COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 extern const base::FeatureParam<std::string>
     kPrivacySandboxSentimentSurveyTriggerId;
 
+#if BUILDFLAG(IS_ANDROID)
 // Enables the Ads notice survey on CCT.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxCctAdsNoticeSurvey);
@@ -291,15 +292,21 @@ COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 extern const base::FeatureParam<std::string>
     kPrivacySandboxCctAdsNoticeSurveyAcknowledgedRowTriggerId;
 
-// Used to set the probability rate for the `AcceptedEea` survey.
+// Used to set the probability rate for the `Accepted EEA` survey.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 extern const base::FeatureParam<double>
     kPrivacySandboxCctAdsNoticeSurveyAcceptedConsentTriggerRate;
 
-// Used to set the probability rate for the `DeclinedEea` survey.
+// Used to set the probability rate for the `Declined EEA` survey.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 extern const base::FeatureParam<double>
     kPrivacySandboxCctAdsNoticeSurveyDeclineConsentTriggerRate;
+
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+extern const base::FeatureParam<std::string>
+    kPrivacySandboxCctAdsNoticeSurveyAppId;
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // If true, displays the Ads APIs UX Enancements.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
@@ -309,6 +316,10 @@ BASE_DECLARE_FEATURE(kPrivacySandboxAdsApiUxEnhancements);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxAllowPromptForBlocked3PCookies);
 
+// If true, the Privacy Sandbox prompt will show dismissal buttons with
+// equalized styling.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kPrivacySandboxEqualizedPromptButtons);
 }  // namespace privacy_sandbox
 
 #endif  // COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_FEATURES_H_

@@ -4,9 +4,10 @@
 
 module blink.mojom;
 
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/origin.mojom";
-import "third_party/blink/public/mojom/tokens/tokens.mojom";
+import "url/mojom/url.mojom";
 
 // This is a mojom representation of the corresponding AnnotatedPageContent
 // proto.
@@ -20,16 +21,36 @@ import "third_party/blink/public/mojom/tokens/tokens.mojom";
 enum AIPageContentAttributeType {
   kRoot,
   kIframe,
+  kContainer,
 
   // Text chunks.
+  kText,
+  kAnchor,
   kParagraph,
   kHeading,
 
+  // Image chunks.
+  kImage,
+
   // Structured chunks.
+  kForm,
+  kTable,
+  kTableRow,
+  kTableCell,
   kOrderedList,
   kUnorderedList,
-  kForm,
-  kFigure,
+  kListItem,
+};
+
+enum AIPageContentAnnotatedRole {
+  kHeader,
+  kNav,
+  kSearch,
+  kMain,
+  kArticle,
+  kSection,
+  kAside,
+  kFooter,
 };
 
 struct AIPageContentGeometry {
@@ -38,6 +59,16 @@ struct AIPageContentGeometry {
 
   // Subset of this node visible on the page. Empty if offscreen.
   gfx.mojom.Rect visible_bounding_box;
+
+  // Whether the content node is fixed or sticky position. This may suggest
+  // that the node is a header, footer, or sidebar.
+  bool is_fixed_or_sticky_position;
+
+  // Whether the content node can scroll in the x direction.
+  bool scrolls_overflow_x;
+
+  // Whether the content node can scroll in the y direction.
+  bool scrolls_overflow_y;
 };
 
 enum AIPageContentTextSize {
@@ -55,12 +86,29 @@ struct AIPageContentTextStyle {
 
 struct AIPageContentTextInfo {
   string text_content;
-  gfx.mojom.Rect text_bounding_box;
   AIPageContentTextStyle text_style;
 };
 
+enum AIPageContentAnchorRel {
+  kRelationUnknown,
+  kRelationNoReferrer,
+  kRelationNoOpener,
+  kRelationOpener,
+  kRelationPrivacyPolicy,
+  kRelationTermsOfService,
+};
+
+struct AIPageContentAnchorData {
+  url.mojom.Url url;
+
+  // The relationship between the linked URL and the current document.
+  array<AIPageContentAnchorRel> rel;
+
+  // TODO(crbug.com/382119737): Consider adding fields for target, MIME type,
+  // and whether the link is a download.
+};
+
 struct AIPageContentImageInfo {
-  gfx.mojom.Rect image_bounding_box;
   string? image_caption;
 
   // Provides the origin for this image if there is a resource currently being
@@ -79,6 +127,25 @@ struct AIPageContentIframeData {
   bool likely_ad_frame;
 };
 
+struct AIPageContentTableData {
+  // The name of the table, coming from the caption.
+  string? table_name;
+};
+
+enum AIPageContentTableRowType {
+  kHeader,
+  kBody,
+  kFooter,
+};
+
+struct AIPageContentTableRowData {
+  AIPageContentTableRowType row_type;
+};
+
+struct AIPageContentFormData {
+  // TODO(crbug.com/381879263): Add fields for form data.
+};
+
 struct AIPageContentAttributes {
   // The IDs of the DOM nodes whose content is represented by this ContentNode.
   array<int32> dom_node_ids;
@@ -92,16 +159,28 @@ struct AIPageContentAttributes {
   // Geometry of the common_ancestor_dom_node_id.
   AIPageContentGeometry? geometry;
 
-  // Text chunks in this node.
-  array<AIPageContentTextInfo> text_info;
+  // Only set if attribute_type is kText.
+  AIPageContentTextInfo? text_info;
 
-  // Images in this node.
-  array<AIPageContentImageInfo> image_info;
+  // Only set if attribute_type is kImage.
+  AIPageContentImageInfo? image_info;
 
-  // This should only be set if AIPageContentAttributeType is kIframe.
+  // Only set if attribute_type is kAnchor.
+  AIPageContentAnchorData? anchor_data;
+
+  // Only set if attribute_type is kForm.
+  AIPageContentFormData? form_data;
+
+  // Only set if attribute_type is kTable.
+  AIPageContentTableData? table_data;
+
+  // Only set if attribute_type is kIframe.
   AIPageContentIframeData? iframe_data;
 
-  // TODO(crbug.com/380493777): Add FormData if attribute_type is FORM.
+  // Only set if attribute_type is kTableRow.
+  AIPageContentTableRowData? table_row_data;
+
+  array<AIPageContentAnnotatedRole> annotated_roles;
 };
 
 // A semantic chunk of information on a page. It can represent text, structured

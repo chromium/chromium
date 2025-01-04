@@ -276,9 +276,9 @@ class LinkedHashSet {
 
   struct TypeConstraints {
     constexpr TypeConstraints() {
-      static_assert(!IsStackAllocatedType<Value>);
+      static_assert(!IsStackAllocatedTypeV<Value>);
       static_assert(Allocator::kIsGarbageCollected ||
-                        !IsPointerToGarbageCollectedType<Value>::value,
+                        !IsPointerToGarbageCollectedType<Value>,
                     "Cannot put raw pointers to garbage-collected classes into "
                     "an off-heap LinkedHashSet. Use "
                     "HeapLinkedHashSet<Member<T>> instead.");

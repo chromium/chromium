@@ -318,7 +318,7 @@ class KeyboardPrefHandlerTest : public AshTestBase {
     keyboard->device_key = device_key;
     keyboard->meta_key = ui::mojom::MetaKey::kLauncherRefresh;
     keyboard->modifier_keys = {ui::mojom::ModifierKey::kFunction,
-                               ui::mojom::ModifierKey::kRightAlt};
+                               ui::mojom::ModifierKey::kQuickInsert};
 
     pref_handler_->UpdateDefaultSplitModifierKeyboardSettings(
         pref_service_.get(),

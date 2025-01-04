@@ -468,7 +468,7 @@
       field_template: "primitive",
       include_paths: ["third_party/blink/renderer/platform/graphics/touch_action.h"],
       type_name: "TouchAction",
-      field_size: 8,
+      field_size: 9,
       default_value: "TouchAction::kAuto",
       field_group: "*",
     },
@@ -477,8 +477,8 @@
       field_group: "*",
       field_size: 5,
       field_template: "primitive",
-      default_value: "kNoControlPart",
-      type_name: "ControlPart",
+      default_value: "AppearanceValue::kNone",
+      type_name: "AppearanceValue",
     },
     {
       name: "TextEmphasisCustomMark",
@@ -1350,7 +1350,18 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
-      invalidate: ["paint"]
+      invalidate: ["layout"]
+    },
+    // Returns true if any property references the value of
+    // env(safe-area-inset-bottom). This is used by the Browser
+    // to decide if dynamic safe area insets should be used in the UX.
+    {
+      name: "ReferencesSafeAreaInsetBottom",
+      inherited: false,
+      field_template: "primitive",
+      type_name: "bool",
+      field_group: "*",
+      default_value: "false"
     }
   ],
 }

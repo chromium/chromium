@@ -99,6 +99,10 @@ class ASH_EXPORT AppListControllerImpl
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+  // Set the value of global variable `g_sunfish_nudge_disabled_for_test` to
+  // disable showing the nudge.
+  static void SetSunfishNudgeDisabledForTest(bool is_disabled);
+
   AppListPresenterImpl* fullscreen_presenter() {
     return fullscreen_presenter_.get();
   }
@@ -432,6 +436,10 @@ class ASH_EXPORT AppListControllerImpl
 
   // Gets the container which should contain the fullscreen launcher.
   int GetFullscreenLauncherContainerId() const;
+
+  // Called when eligibility of Assistant new entry point is read. The read is
+  // done as an async operation.
+  void OnAssistantNewEntryPointEligibilityReady(bool eligible);
 
   // Whether the home launcher is
   // * being shown (either through an animation or a drag)

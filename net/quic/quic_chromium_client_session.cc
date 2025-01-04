@@ -24,6 +24,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/no_destructor.h"
+#include "base/numerics/checked_math.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -414,7 +415,9 @@ QuicChromiumClientSession::Handle::Handle(
       net_log_(session_->net_log()),
       was_handshake_confirmed_(session->OneRttKeysAvailable()),
       server_id_(session_->server_id()),
-      quic_version_(session->connection()->version()) {
+      quic_version_(session->connection()->version()),
+      initial_migration_information_(session->migration_info()),
+      last_migration_information_(session->migration_info()) {
   DCHECK(session_);
   session_->AddHandle(this);
 }
@@ -438,7 +441,8 @@ void QuicChromiumClientSession::Handle::OnSessionClosed(
     bool quic_connection_migration_attempted,
     bool quic_connection_migration_successful,
     LoadTimingInfo::ConnectTiming connect_timing,
-    bool was_ever_used) {
+    bool was_ever_used,
+    const ConnectionMigrationInformation& migration_info) {
   session_ = nullptr;
   port_migration_detected_ = port_migration_detected;
   quic_connection_migration_attempted_ = quic_connection_migration_attempted;
@@ -449,6 +453,7 @@ void QuicChromiumClientSession::Handle::OnSessionClosed(
   quic_version_ = quic_version;
   connect_timing_ = connect_timing;
   was_ever_used_ = was_ever_used;
+  last_migration_information_ = migration_info;
 }
 
 bool QuicChromiumClientSession::Handle::IsConnected() const {
@@ -1237,11 +1242,11 @@ void QuicChromiumClientSession::OnOriginFrame(const quic::OriginFrame& frame) {
 
 void QuicChromiumClientSession::AddHandle(Handle* handle) {
   if (going_away_) {
-    handle->OnSessionClosed(connection()->version(), ERR_UNEXPECTED, error(),
-                            source_, port_migration_detected_,
-                            quic_connection_migration_attempted_,
-                            quic_connection_migration_successful_,
-                            GetConnectTiming(), WasConnectionEverUsed());
+    handle->OnSessionClosed(
+        connection()->version(), ERR_UNEXPECTED, error(), source_,
+        port_migration_detected_, quic_connection_migration_attempted_,
+        quic_connection_migration_successful_, GetConnectTiming(),
+        WasConnectionEverUsed(), migration_info_);
     return;
   }
 
@@ -2549,6 +2554,9 @@ void QuicChromiumClientSession::OnProbeFailed(
 
 void QuicChromiumClientSession::OnNetworkConnected(
     handles::NetworkHandle network) {
+  migration_info_.event_count.network_connected_num =
+      base::CheckAdd(migration_info_.event_count.network_connected_num, 1)
+          .ValueOrDefault(std::numeric_limits<uint32_t>::max());
   if (connection()->IsPathDegrading()) {
     base::TimeDelta duration =
         tick_clock_->NowTicks() - most_recent_path_degrading_timestamp_;
@@ -2597,6 +2605,9 @@ void QuicChromiumClientSession::OnNetworkConnected(
 
 void QuicChromiumClientSession::OnNetworkDisconnectedV2(
     handles::NetworkHandle disconnected_network) {
+  migration_info_.event_count.network_disconnected_num =
+      base::CheckAdd(migration_info_.event_count.network_disconnected_num, 1)
+          .ValueOrDefault(std::numeric_limits<uint32_t>::max());
   LogMetricsOnNetworkDisconnected();
   net_log_.AddEventWithInt64Params(
       NetLogEventType::QUIC_SESSION_NETWORK_DISCONNECTED,
@@ -2665,6 +2676,10 @@ void QuicChromiumClientSession::OnNetworkDisconnectedV2(
 
 void QuicChromiumClientSession::OnNetworkMadeDefault(
     handles::NetworkHandle new_network) {
+  migration_info_.event_count.default_network_changed_num++;
+  migration_info_.event_count.default_network_changed_num =
+      base::CheckAdd(migration_info_.event_count.default_network_changed_num, 1)
+          .ValueOrDefault(std::numeric_limits<uint32_t>::max());
   LogMetricsOnNetworkMadeDefault();
   net_log_.AddEventWithInt64Params(
       NetLogEventType::QUIC_SESSION_NETWORK_MADE_DEFAULT, "new_default_network",
@@ -2815,6 +2830,9 @@ void QuicChromiumClientSession::OnWriteUnblocked() {
 }
 
 void QuicChromiumClientSession::OnPathDegrading() {
+  migration_info_.event_count.path_degrading_num =
+      base::CheckAdd(migration_info_.event_count.path_degrading_num, 1)
+          .ValueOrDefault(std::numeric_limits<uint32_t>::max());
   if (most_recent_path_degrading_timestamp_ == base::TimeTicks()) {
     most_recent_path_degrading_timestamp_ = tick_clock_->NowTicks();
   }
@@ -2955,11 +2973,11 @@ void QuicChromiumClientSession::CloseAllHandles(int net_error) {
   while (!handles_.empty()) {
     Handle* handle = *handles_.begin();
     handles_.erase(handle);
-    handle->OnSessionClosed(connection()->version(), net_error, error(),
-                            source_, port_migration_detected_,
-                            quic_connection_migration_attempted_,
-                            quic_connection_migration_successful_,
-                            GetConnectTiming(), WasConnectionEverUsed());
+    handle->OnSessionClosed(
+        connection()->version(), net_error, error(), source_,
+        port_migration_detected_, quic_connection_migration_attempted_,
+        quic_connection_migration_successful_, GetConnectTiming(),
+        WasConnectionEverUsed(), migration_info_);
   }
 }
 
@@ -4008,6 +4026,14 @@ QuicChromiumClientSession::Handle::GetGuaranteedLargestMessagePayload() const {
     return 0;
   }
   return session_->GetGuaranteedLargestMessagePayload();
+}
+
+const ConnectionMigrationInformation
+QuicChromiumClientSession::Handle::GetConnectionMigrationInfoSinceInit() const {
+  if (!session_) {
+    return last_migration_information_ - initial_migration_information_;
+  }
+  return session_->migration_info() - initial_migration_information_;
 }
 
 #if BUILDFLAG(ENABLE_WEBSOCKETS)

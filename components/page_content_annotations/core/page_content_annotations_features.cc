@@ -115,10 +115,6 @@ BASE_FEATURE(kPageVisibilityPageContentAnnotations,
              "PageVisibilityPageContentAnnotations",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPageVisibilityBatchAnnotations,
-             "PageVisibilityBatchAnnotations",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPageContentAnnotationsValidation,
              "PageContentAnnotationsValidation",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -204,10 +200,6 @@ double NoiseProbabilityForRAPPORMetrics() {
   return std::max(0.0, std::min(1.0, GetFieldTrialParamByFeatureAsDouble(
                                          kPageContentAnnotations,
                                          "noise_prob_for_rappor_metrics", .5)));
-}
-
-bool PageVisibilityBatchAnnotationsEnabled() {
-  return base::FeatureList::IsEnabled(kPageVisibilityBatchAnnotations);
 }
 
 size_t AnnotateVisitBatchSize() {

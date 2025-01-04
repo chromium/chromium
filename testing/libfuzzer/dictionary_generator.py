@@ -10,7 +10,10 @@ Works better for text formats or protocols. For binary ones may be useless.
 """
 
 import argparse
-import HTMLParser
+# This is a Python 2-only import despite the file using a Python 3 shebang. This
+# implies that this file has been unused for years and has not been properly
+# converted to Python 3.
+import HTMLParser  # pylint: disable=import-error
 import logging
 import os
 import re

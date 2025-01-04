@@ -25,6 +25,7 @@
 #include "ash/app_list/views/search_result_base_view.h"
 #include "ash/ash_element_identifiers.h"
 #include "ash/assistant/ui/main_stage/launcher_search_iph_view.h"
+#include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
@@ -45,6 +46,7 @@
 #include "ash/user_education/user_education_util.h"
 #include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
@@ -55,6 +57,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
@@ -575,6 +578,17 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
   assistant_button->SetTooltipText(assistant_button_label);
   SetShowAssistantButton(search_box_model->show_assistant_button());
 
+  views::ImageButton* assistant_new_entry_point_button =
+      CreateAssistantNewEntryPointButton(base::BindRepeating(
+          &SearchBoxView::AssistantNewEntryPointButtonPressed,
+          base::Unretained(this)));
+  assistant_new_entry_point_button->SetFlipCanvasOnPaintForRTLUI(false);
+  // TODO(crbug.com/380089265): update tooltip text and set a11y name.
+  assistant_new_entry_point_button->SetTooltipText(
+      u"Assistant New Entry Point");
+  SetShowAssistantNewEntryPointButton(
+      search_box_model->show_assistant_new_entry_point_button());
+
   GetViewAccessibility().SetRole(ax::mojom::Role::kTextField);
   UpdateAccessibleValue();
 }
@@ -811,11 +825,15 @@ void SearchBoxView::OnThemeChanged() {
     sunfish_button()->SetImageModel(
         views::ImageButton::STATE_NORMAL,
         ui::ImageModel::FromVectorIcon(
-            IsSunfishFeatureEnabledWithFeatureKey() ? kLensColorIcon
-                                                    : kScannerIcon,
+            features::IsSunfishFeatureEnabled() ? kLensColorIcon : kScannerIcon,
             button_icon_color, GetSearchBoxIconSize()));
   }
   assistant_button()->SetImageModel(
+      views::ImageButton::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(
+          chromeos::kAssistantIcon, button_icon_color, GetSearchBoxIconSize()));
+  // TODO(crbug.com/380089265): set Assistant new entry point icon.
+  assistant_new_entry_point_button()->SetImageModel(
       views::ImageButton::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(
           chromeos::kAssistantIcon, button_icon_color, GetSearchBoxIconSize()));
@@ -1243,11 +1261,23 @@ void SearchBoxView::AssistantButtonPressed() {
   SetSearchBoxActive(true, /*event_type=*/ui::EventType::kUnknown);
 }
 
+void SearchBoxView::AssistantNewEntryPointButtonPressed() {
+  assistant::AssistantBrowserDelegate* delegate =
+      assistant::AssistantBrowserDelegate::Get();
+  CHECK(delegate);
+  delegate->OpenNewEntryPoint();
+}
+
 void SearchBoxView::SunfishButtonPressed() {
   if (is_app_list_bubble_) {
     // Only hide the launcher bubble in clamshell mode.
     view_delegate_->DismissAppList();
   }
+
+  // If the user presses the button, there is no need to show the nudge anymore,
+  // so set the pref to its limit.
+  SetSunfishLauncherNudgeShownCount(capture_mode::kSunfishNudgeMaxShownCount);
+
   CaptureModeController::Get()->StartSunfishSession();
 }
 
@@ -1702,6 +1732,14 @@ void SearchBoxView::ShowAssistantChanged() {
                              ->search_model()
                              ->search_box()
                              ->show_assistant_button());
+}
+
+void SearchBoxView::ShowAssistantNewEntryPointChanged() {
+  SetShowAssistantNewEntryPointButton(
+      AppListModelProvider::Get()
+          ->search_model()
+          ->search_box()
+          ->show_assistant_new_entry_point_button());
 }
 
 void SearchBoxView::ShowSunfishChanged() {

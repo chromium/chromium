@@ -10,7 +10,6 @@
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user_type.h"
 
 namespace ash {
@@ -19,8 +18,7 @@ namespace ash {
 class QuickSettingsFooterPixelTest : public AshTestBase {
  public:
   QuickSettingsFooterPixelTest() {
-    feature_list_.InitWithFeatures({chromeos::features::kJelly},
-                                   {features::kAdaptiveCharging});
+    feature_list_.InitAndDisableFeature(features::kAdaptiveCharging);
   }
 
   // AshTestBase:

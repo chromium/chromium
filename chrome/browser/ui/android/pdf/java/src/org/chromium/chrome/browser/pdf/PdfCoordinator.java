@@ -265,6 +265,7 @@ public class PdfCoordinator {
         }
         mActivity.grantUriPermission(
                 GSAUtils.GSA_PACKAGE_NAME, mUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        PdfUtils.recordIsWorkProfile(isWorkProfile);
         return structuredData;
     }
 

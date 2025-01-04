@@ -145,7 +145,7 @@ class UnifiedAutoplayBrowserTest : public InProcessBrowserTest {
     open_url_params.initiator_origin =
         active_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
     open_url_params.source_render_process_id =
-        active_contents->GetPrimaryMainFrame()->GetProcess()->GetID();
+        active_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID();
     open_url_params.source_render_frame_id =
         active_contents->GetPrimaryMainFrame()->GetRoutingID();
     open_url_params.user_gesture = user_gesture;

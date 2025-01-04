@@ -100,6 +100,84 @@ const CGFloat kFaviconImageContainerTrailingMargin = -4.62;
   return mask;
 }
 
+- (void)populateFaviconImageContainerAndView:(UIImage*)faviconImage {
+  if (_faviconImageView) {
+    _faviconImageView.image = faviconImage;
+    return;
+  }
+
+  _faviconImageContainer = [[UIView alloc] init];
+  _faviconImageContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  _faviconImageContainer.layer.borderWidth = 0;
+  _faviconImageContainer.backgroundColor =
+      [UIColor colorNamed:kBackgroundColor];
+  _faviconImageContainer.layer.cornerRadius =
+      kFaviconImageContainerCornerRadius;
+  _faviconImageContainer.layer.masksToBounds = YES;
+  // Apply bottom right radius mask
+  _faviconImageContainer.layer.mask =
+      [self faviconMaskWithRadius:kFaviconImageContainerTrailingCornerRadius
+                 imageHeightWidth:kFaviconImageContainerHeightWidth];
+
+  _faviconImageView = [[UIImageView alloc] init];
+  _faviconImageView.image = faviconImage;
+  _faviconImageView.contentMode = UIViewContentModeScaleAspectFill;
+  _faviconImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  _faviconImageView.layer.borderWidth = 0;
+  _faviconImageView.layer.cornerRadius = kFaviconImageViewCornerRadius;
+  _faviconImageView.layer.masksToBounds = YES;
+  _faviconImageView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  // Apply bottom right radius mask
+  _faviconImageView.layer.mask =
+      [self faviconMaskWithRadius:kFaviconImageViewTrailingCornerRadius
+                 imageHeightWidth:kFaviconImageViewHeightWidth];
+}
+
+- (void)addFaviconToProductImage {
+  [_productImage addSubview:_faviconImageContainer];
+  [_faviconImageContainer addSubview:_faviconImageView];
+}
+
+- (void)addConstraintsForProductImage {
+  [NSLayoutConstraint activateConstraints:@[
+    [_productImage.heightAnchor
+        constraintEqualToConstant:kProductImageWidthHeight],
+    [_productImage.widthAnchor
+        constraintEqualToAnchor:_productImage.heightAnchor],
+    [_productImageView.heightAnchor
+        constraintEqualToConstant:kProductImageWidthHeight],
+    [_productImageView.widthAnchor
+        constraintEqualToAnchor:_productImageView.heightAnchor],
+    [_gradientOverlay.heightAnchor
+        constraintEqualToConstant:kProductImageWidthHeight],
+    [_gradientOverlay.widthAnchor
+        constraintEqualToAnchor:_gradientOverlay.heightAnchor],
+  ]];
+}
+
+- (void)addConstraintsForFavicon {
+  [NSLayoutConstraint activateConstraints:@[
+    [_faviconImageContainer.heightAnchor
+        constraintEqualToConstant:kFaviconImageContainerHeightWidth],
+    [_faviconImageContainer.widthAnchor
+        constraintEqualToAnchor:_faviconImageContainer.heightAnchor],
+    [_faviconImageContainer.trailingAnchor
+        constraintEqualToAnchor:_productImage.trailingAnchor
+                       constant:kFaviconImageContainerTrailingMargin],
+    [_faviconImageContainer.bottomAnchor
+        constraintEqualToAnchor:_productImage.bottomAnchor
+                       constant:kFaviconImageContainerTrailingMargin],
+    [_faviconImageView.heightAnchor
+        constraintEqualToConstant:kFaviconImageViewHeightWidth],
+    [_faviconImageView.widthAnchor
+        constraintEqualToAnchor:_faviconImageView.heightAnchor],
+    [_faviconImageView.centerXAnchor
+        constraintEqualToAnchor:_faviconImageContainer.centerXAnchor],
+    [_faviconImageView.centerYAnchor
+        constraintEqualToAnchor:_faviconImageContainer.centerYAnchor],
+  ]];
+}
+
 - (void)configureView:(PriceTrackingPromoItem*)config {
   if (!config) {
     return;
@@ -163,79 +241,19 @@ const CGFloat kFaviconImageContainerTrailingMargin = -4.62;
     _gradientOverlay.layer.zPosition = 1;
 
     if (config.faviconImage) {
-      _faviconImageContainer = [[UIView alloc] init];
-      _faviconImageContainer.translatesAutoresizingMaskIntoConstraints = NO;
-      _faviconImageContainer.layer.borderWidth = 0;
-      _faviconImageContainer.backgroundColor =
-          [UIColor colorNamed:kBackgroundColor];
-      _faviconImageContainer.layer.cornerRadius =
-          kFaviconImageContainerCornerRadius;
-      _faviconImageContainer.layer.masksToBounds = YES;
-      // Apply bottom right radius mask
-      _faviconImageContainer.layer.mask =
-          [self faviconMaskWithRadius:kFaviconImageContainerTrailingCornerRadius
-                     imageHeightWidth:kFaviconImageContainerHeightWidth];
-
-      _faviconImageView = [[UIImageView alloc] init];
-      _faviconImageView.image = config.faviconImage;
-      _faviconImageView.contentMode = UIViewContentModeScaleAspectFill;
-      _faviconImageView.translatesAutoresizingMaskIntoConstraints = NO;
-      _faviconImageView.layer.borderWidth = 0;
-      _faviconImageView.layer.cornerRadius = kFaviconImageViewCornerRadius;
-      _faviconImageView.layer.masksToBounds = YES;
-      _faviconImageView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-      // Apply bottom right radius mask
-      _faviconImageView.layer.mask =
-          [self faviconMaskWithRadius:kFaviconImageViewTrailingCornerRadius
-                     imageHeightWidth:kFaviconImageViewHeightWidth];
+      [self populateFaviconImageContainerAndView:config.faviconImage];
     }
 
     [_productImage addSubview:_productImageView];
     [_productImageView addSubview:_gradientOverlay];
     if (_faviconImageContainer) {
-      [_productImage addSubview:_faviconImageContainer];
-      [_faviconImageContainer addSubview:_faviconImageView];
+      [self addFaviconToProductImage];
     }
 
-    NSMutableArray* constraints = [[NSMutableArray alloc] init];
-    [constraints addObjectsFromArray:@[
-      [_productImage.heightAnchor
-          constraintEqualToConstant:kProductImageWidthHeight],
-      [_productImage.widthAnchor
-          constraintEqualToAnchor:_productImage.heightAnchor],
-      [_productImageView.heightAnchor
-          constraintEqualToConstant:kProductImageWidthHeight],
-      [_productImageView.widthAnchor
-          constraintEqualToAnchor:_productImageView.heightAnchor],
-      [_gradientOverlay.heightAnchor
-          constraintEqualToConstant:kProductImageWidthHeight],
-      [_gradientOverlay.widthAnchor
-          constraintEqualToAnchor:_gradientOverlay.heightAnchor],
-    ]];
+    [self addConstraintsForProductImage];
     if (_faviconImageContainer) {
-      [constraints addObjectsFromArray:@[
-        [_faviconImageContainer.heightAnchor
-            constraintEqualToConstant:kFaviconImageContainerHeightWidth],
-        [_faviconImageContainer.widthAnchor
-            constraintEqualToAnchor:_faviconImageContainer.heightAnchor],
-        [_faviconImageContainer.trailingAnchor
-            constraintEqualToAnchor:_productImage.trailingAnchor
-                           constant:kFaviconImageContainerTrailingMargin],
-        [_faviconImageContainer.bottomAnchor
-            constraintEqualToAnchor:_productImage.bottomAnchor
-                           constant:kFaviconImageContainerTrailingMargin],
-        [_faviconImageView.heightAnchor
-            constraintEqualToConstant:kFaviconImageViewHeightWidth],
-        [_faviconImageView.widthAnchor
-            constraintEqualToAnchor:_faviconImageView.heightAnchor],
-        [_faviconImageView.centerXAnchor
-            constraintEqualToAnchor:_faviconImageContainer.centerXAnchor],
-        [_faviconImageView.centerYAnchor
-            constraintEqualToAnchor:_faviconImageContainer.centerYAnchor],
-      ]];
+      [self addConstraintsForFavicon];
     }
-
-    [NSLayoutConstraint activateConstraints:constraints];
 
   } else {
     _fallbackProductImageView = [[UIImageView alloc] init];
@@ -336,6 +354,14 @@ const CGFloat kFaviconImageContainerTrailingMargin = -4.62;
 - (void)hideDescriptionOnTraitChange {
   _descriptionLabel.hidden = self.traitCollection.preferredContentSizeCategory >
                              UIContentSizeCategoryExtraExtraLarge;
+}
+
+#pragma mark - PriceTrackingPromoFaviconConsumer
+- (void)priceTrackingPromoFaviconCompleted:(UIImage*)faviconImage {
+  [self populateFaviconImageContainerAndView:faviconImage];
+  [self addFaviconToProductImage];
+  [self addConstraintsForProductImage];
+  [self addConstraintsForFavicon];
 }
 
 #pragma mark - Testing category methods

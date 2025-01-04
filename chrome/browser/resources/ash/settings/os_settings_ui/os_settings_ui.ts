@@ -289,9 +289,6 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     // Clicks need to be captured because unlike focus/blur to the settings
     // window, a click's propagation can be stopped by child elements.
     window.addEventListener('click', recordClick, /*capture=*/ true);
-
-    // TODO(crbug.com/370836442) Remove this when all revamp styles are default.
-    document.body.classList.add('revamp-wayfinding-enabled');
   }
 
   override disconnectedCallback(): void {

@@ -98,8 +98,6 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
-import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -111,7 +109,6 @@ import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -418,7 +415,7 @@ public class ToolbarManager
         @Override
         public int handleBackPress() {
             mIsInProgress = false;
-            if (mIsGestureMode) {
+            if (mIsGestureMode && mBackGestureInProgress) {
                 BackPressMetrics.recordNavStatusDuringGesture(
                         mStartNavDuringOngoingGesture, mActivity.getWindow());
                 BackPressMetrics.recordPredictiveGestureNav(
@@ -433,6 +430,7 @@ public class ToolbarManager
                 res = ToolbarManager.this.handleBackPress();
             }
             mBackGestureInProgress = false;
+            mIsGestureMode = false;
             mHandler = null;
             return res;
         }
@@ -445,15 +443,17 @@ public class ToolbarManager
         @Override
         public void handleOnBackCancelled() {
             mIsInProgress = false;
-            if (mIsGestureMode) {
+            if (mIsGestureMode && mBackGestureInProgress) {
                 BackPressMetrics.recordNavStatusDuringGesture(
                         mStartNavDuringOngoingGesture, mActivity.getWindow());
                 BackPressMetrics.recordPredictiveGestureNav(
                         mHandler != null, PredictiveGestureNavPhase.CANCELLED);
             }
+            if (mHandler != null) {
+                mHandler.onBackCancelled(mIsGestureMode);
+            }
             mBackGestureInProgress = false;
-            if (mHandler == null) return;
-            mHandler.onBackCancelled(mIsGestureMode);
+            mIsGestureMode = false;
             mHandler = null;
         }
 
@@ -1738,6 +1738,9 @@ public class ToolbarManager
      * @param bookmarkClickHandler The {@link OnClickListener} for the bookmark button.
      * @param customTabsBackClickHandler The {@link OnClickListener} for the custom tabs back
      *     button.
+     * @param archivedTabCountSupplier Supplies the number of archived tabs.
+     * @param tabModelNotificationDotSupplier Supplies whether the tab switcher button should show a
+     *     notification dot.
      */
     public void initializeWithNative(
             @NonNull LayoutManagerImpl layoutManager,
@@ -1745,7 +1748,8 @@ public class ToolbarManager
             Runnable openGridTabSwitcherHandler,
             OnClickListener bookmarkClickHandler,
             OnClickListener customTabsBackClickHandler,
-            @Nullable ObservableSupplier<Integer> archivedTabCountSupplier) {
+            @Nullable ObservableSupplier<Integer> archivedTabCountSupplier,
+            ObservableSupplier<Boolean> tabModelNotificationDotSupplier) {
         TraceEvent.begin("ToolbarManager.initializeWithNative");
         assert !mInitializedWithNative;
         assert mTabModelSelectorSupplier.get() != null;
@@ -1769,6 +1773,7 @@ public class ToolbarManager
                     tabSwitcherLongClickListener,
                     mTabModelSelectorSupplier.get().getCurrentModelTabCountSupplier(),
                     archivedTabCountSupplier,
+                    tabModelNotificationDotSupplier,
                     () -> TabArchiveSettings.setIphShownThisSession(true),
                     () -> TabArchiveSettings.setIphShownThisSession(false));
         }
@@ -2476,35 +2481,6 @@ public class ToolbarManager
         checkIfNtpLoaded();
     }
 
-    /**
-     * Checks to to see if there are any unseen price drops, and if so attempts to show the price
-     * drop IPH. An unseen price drop occurs when there is a tab with a price drop that has not been
-     * viewed in the tab switcher grid.
-     */
-    private void maybeShowPriceDropIph() {
-        if (mTabModelSelector == null) return;
-        Profile profile = mTabModelSelector.getCurrentModel().getProfile();
-        if (profile.isOffTheRecord()) return;
-
-        if (!PriceTrackingUtilities.isTrackPricesOnTabsEnabled(profile)
-                || !PriceTrackingFeatures.isPriceDropIphEnabled(profile)) {
-            return;
-        }
-        TabModel tabModel = mTabModelSelector.getCurrentModel();
-        for (int i = 0; i < tabModel.getCount(); i++) {
-            ShoppingPersistedTabData.from(
-                    tabModel.getTabAt(i),
-                    (shoppingPersistedTabData) -> {
-                        if (shoppingPersistedTabData != null
-                                && shoppingPersistedTabData.getPriceDrop() != null
-                                && !shoppingPersistedTabData.getIsCurrentPriceDropSeen()) {
-                            mIphController.showPriceDropIph(
-                                    mControlContainer.findViewById(R.id.tab_switcher_button));
-                        }
-                    });
-        }
-    }
-
     private void maybeShowBottomToolbarIph() {
         if (!ToolbarPositionController.isToolbarPositionCustomizationEnabled(
                 mActivity, mIsCustomTab)) {
@@ -2520,7 +2496,6 @@ public class ToolbarManager
         if (ntp != null) {
             ntp.setOmniboxStub(mLocationBar.getOmniboxStub());
             mLocationBarModel.notifyNtpStartedLoading();
-            maybeShowPriceDropIph();
             mIsNtpShowingSupplier.set(true);
         } else {
             maybeShowBottomToolbarIph();

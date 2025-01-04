@@ -58,7 +58,8 @@ void ArcPlaystoreShortcutShelfItemController::ItemSelected(
     // case this instance of ArcPlaystoreShortcutShelfItemController may be
     // deleted. If Play Store does not exist at this moment, then let
     // |playstore_launcher_| wait until it appears.
-    if (!playstore_launcher->app_launched())
+    if (!playstore_launcher->app_launched()) {
       playstore_launcher_ = std::move(playstore_launcher);
+    }
   }
 }

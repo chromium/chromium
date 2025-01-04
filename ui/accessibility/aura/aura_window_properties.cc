@@ -12,7 +12,7 @@ DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(AX_EXPORT, ax::mojom::Role)
 
 namespace ui {
 
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kChildAXTreeID, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kChildAXTreeID)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(ax::mojom::Role,
                              kAXRoleOverride,

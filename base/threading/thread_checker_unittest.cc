@@ -196,8 +196,9 @@ TEST(ThreadCheckerTest, DetachFromThreadWithSequenceToken) {
 class ThreadCheckerOwner {
  public:
   explicit ThreadCheckerOwner(bool detach_from_thread) {
-    if (detach_from_thread)
+    if (detach_from_thread) {
       checker_.DetachFromThread();
+    }
   }
 
   ThreadCheckerOwner(const ThreadCheckerOwner&) = delete;

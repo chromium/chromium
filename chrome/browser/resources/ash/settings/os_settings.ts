@@ -282,7 +282,6 @@ export {OsSettingsHatsBrowserProxy, OsSettingsHatsBrowserProxyImpl} from './os_s
 export {OsSettingsUiElement} from './os_settings_ui/os_settings_ui.js';
 export {SettingsToolbarElement as ToolbarElement} from './os_settings_ui/toolbar.js';
 export {ParentalControlsBrowserProxy, ParentalControlsBrowserProxyImpl} from './parental_controls_page/parental_controls_browser_proxy.js';
-export {SettingsParentalControlsPageElement} from './parental_controls_page/parental_controls_page.js';
 export {ParentalControlsSettingsCardElement} from './parental_controls_page/parental_controls_settings_card.js';
 export {PersonalizationHubBrowserProxy, PersonalizationHubBrowserProxyImpl} from './personalization_page/personalization_hub_browser_proxy.js';
 export {SettingsPersonalizationPageElement} from './personalization_page/personalization_page.js';

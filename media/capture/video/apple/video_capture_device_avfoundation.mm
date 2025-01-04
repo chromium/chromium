@@ -8,28 +8,28 @@
 #endif
 
 #import "media/capture/video/apple/video_capture_device_avfoundation.h"
-#include <optional>
-#include "base/feature_list.h"
-#include "base/time/time.h"
 
 #import <AVFoundation/AVFoundation.h>
 #import <CoreMedia/CoreMedia.h>
 #import <CoreVideo/CoreVideo.h>
 #include <stddef.h>
 #include <stdint.h>
+
 #include <optional>
 #include <sstream>
 
 #include "base/apple/foundation_util.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #import "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "components/crash/core/common/crash_key.h"
 #include "media/base/mac/color_space_util_mac.h"
 #include "media/base/timestamp_constants.h"
@@ -251,6 +251,10 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 
   // When enabled, converts captured frames to NV12.
   std::unique_ptr<media::SampleBufferTransformer> _sampleBufferTransformer;
+
+  // Cache the color space after transform. The cache is used to avoid log spam
+  // in case the color space cannot be correclty determined from the buffer.
+  std::optional<gfx::ColorSpace> _colorSpaceAfterTransform;
 
   AVCapturePhotoOutput* __strong _photoOutput;
 
@@ -1144,9 +1148,23 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     // TODO(hbos): Investigate how to successfully parse and/or configure the
     // color space correctly. The implications of this hack is not fully
     // understood.
+    if (!_colorSpaceAfterTransform) {
+      // Avoid log spam in case there's a problem determining the color space by
+      // only calling GetImageBufferColorSpace() once.
+      _colorSpaceAfterTransform =
+          media::GetImageBufferColorSpace(final_pixel_buffer.get());
+      base::UmaHistogramBoolean(
+          "Media.VideoCapture.Mac.ValidColorSpaceAfterTransform",
+          _colorSpaceAfterTransform->IsValid());
+
+      if (!_colorSpaceAfterTransform->IsValid()) {
+        _colorSpaceAfterTransform = kColorSpaceRec709Apple;
+      }
+    }
+
     [self processPixelBufferNV12IOSurface:final_pixel_buffer.get()
                             captureFormat:captureFormat
-                               colorSpace:kColorSpaceRec709Apple
+                               colorSpace:*_colorSpaceAfterTransform
                                 timestamp:timestamp
                        capture_begin_time:capture_begin_time];
     return;

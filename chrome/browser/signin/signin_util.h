@@ -20,6 +20,7 @@
 #include "components/signin/public/identity_manager/tribool.h"
 #include "net/cookies/canonical_cookie.h"
 
+class GaiaId;
 class Profile;
 
 namespace signin {
@@ -155,7 +156,7 @@ void RecordEnterpriseProfileCreationUserChoice(bool enforced_by_policy,
 PrimaryAccountError SetPrimaryAccountWithInvalidToken(
     Profile* profile,
     const std::string& user_email,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     bool is_under_advanced_protection,
     signin_metrics::AccessPoint access_point,
     signin_metrics::SourceForRefreshTokenOperation source);

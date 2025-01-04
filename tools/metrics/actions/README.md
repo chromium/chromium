@@ -12,6 +12,12 @@ happen in what order. If you don't care about the order, you should be using
 Often, you want both user actions and histogram logging in your code. They
 enable different analyses. They're complementary.
 
+## Permitted Metrics
+
+Google has policies restricting what data can be collected and for what purpose.
+Googlers, see go/uma-privacy#principles to verify your desired user action
+adheres to those policies.
+
 ## Coding (emitting to user actions)
 
 Generally you should call `base::RecordAction()`, which is defined in

@@ -14,7 +14,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_type.h"
@@ -107,10 +106,6 @@ class DefaultSearchManagerTest : public testing::Test {
     return std::make_unique<DefaultSearchManager>(
         pref_service(), search_engine_choice_service(),
         DefaultSearchManager::ObserverCallback()
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-            ,
-        /*for_lacros_main_profile=*/false
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     );
   }
 

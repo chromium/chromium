@@ -16,9 +16,8 @@ const base::TimeDelta kReLuanchDemoAppIdleDuration = base::Seconds(90);
 
 }  // namespace
 
-DemoModeIdleHandler::DemoModeIdleHandler(
-    LaunchDemoAppCallback launch_demo_app_callback)
-    : launch_demo_app_callback_(launch_demo_app_callback) {
+DemoModeIdleHandler::DemoModeIdleHandler(DemoModeWindowCloser* window_closer)
+    : window_closer_(window_closer) {
   user_activity_observer_.Observe(ui::UserActivityDetector::Get());
 }
 
@@ -48,11 +47,10 @@ void DemoModeIdleHandler::OnIdle() {
   idle_detector_.reset();
   is_user_active_ = false;
 
-  // TODO(crbug.com/379946574):Close all windows. Maybe clean up
-  // cookies/bookmark etc.
+  window_closer_->StartClosingApps();
 
-  // Launch Demo mode app to start attract loop again.
-  launch_demo_app_callback_.Run();
+  // TODO(crbug.com/382360715): Restore ChromeOS setting if changed by user e.g.
+  // wallpaper, locale.
 }
 
 }  // namespace ash

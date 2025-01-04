@@ -54,8 +54,7 @@ void RemoveSharedStorageWriteHeader(net::URLRequest& request) {
   request.response_headers()->RemoveHeader(kSharedStorageWriteHeader);
 }
 
-mojom::SharedStorageModifierMethodWithOptionsPtr
-MakeSharedStorageModifierMethodWithOptions(
+const net::structured_headers::Item* ParseIntoSharedStorageHeaderItem(
     const net::structured_headers::ParameterizedMember& parameterized_member) {
   if (parameterized_member.member_is_inner_list ||
       parameterized_member.member.size() != 1) {
@@ -69,6 +68,36 @@ MakeSharedStorageModifierMethodWithOptions(
     return nullptr;
   }
 
+  return &item;
+}
+
+std::optional<std::string> ParseWithLockParam(
+    const net::structured_headers::Parameters& params) {
+  for (const auto& [param_key, param_item] : params) {
+    if (!IsStringLike(param_item)) {
+      // Not a valid parameter item type for 'with_lock' option.
+      continue;
+    }
+
+    std::optional<SharedStorageHeaderParamType> param_type =
+        StringToSharedStorageHeaderParamType(param_key);
+    if (!param_type.has_value()) {
+      // Did not find a valid parameter key.
+      continue;
+    }
+
+    if (param_type.value() == SharedStorageHeaderParamType::kWithLock) {
+      return param_item.GetString();
+    }
+  }
+
+  return std::nullopt;
+}
+
+mojom::SharedStorageModifierMethodWithOptionsPtr
+MakeSharedStorageModifierMethodWithOptions(
+    const net::structured_headers::Item& item,
+    const net::structured_headers::Parameters& params) {
   std::optional<SharedStorageModifierMethodType> method_type =
       StringToSharedStorageModifierMethodType(item.GetString());
   if (!method_type.has_value()) {
@@ -81,7 +110,7 @@ MakeSharedStorageModifierMethodWithOptions(
   bool ignore_if_present = false;
   std::optional<std::string> with_lock;
 
-  for (const auto& [param_key, param_item] : parameterized_member.params) {
+  for (const auto& [param_key, param_item] : params) {
     if (!IsStringLike(param_item) && !param_item.is_boolean()) {
       // Not a valid parameter item type for "Shared-Storage-Write" header.
       continue;
@@ -266,11 +295,26 @@ bool SharedStorageRequestHelper::ProcessResponse(net::URLRequest& request,
       methods_with_options;
   methods_with_options.reserve(list.value().size());
 
+  std::optional<std::string> with_lock;
+
   for (const auto& member : list.value()) {
+    const net::structured_headers::Item* item =
+        ParseIntoSharedStorageHeaderItem(member);
+    if (!item) {
+      parse_results.push_back(false);
+      continue;
+    }
+
     auto method_with_options =
-        MakeSharedStorageModifierMethodWithOptions(member);
+        MakeSharedStorageModifierMethodWithOptions(*item, member.params);
     if (method_with_options) {
       methods_with_options.push_back(std::move(method_with_options));
+      parse_results.push_back(true);
+    } else if (IsHeaderItemBatchOptions(item->GetString())) {
+      // The batch "options" item may appear multiple times in the list, and
+      // should override any previously parsed value. Currently, the only
+      // relevant parameter is "with_lock".
+      with_lock = ParseWithLockParam(member.params);
       parse_results.push_back(true);
     } else {
       parse_results.push_back(false);
@@ -279,6 +323,7 @@ bool SharedStorageRequestHelper::ProcessResponse(net::URLRequest& request,
 
   observer_->OnSharedStorageHeaderReceived(
       url::Origin::Create(request.url()), std::move(methods_with_options),
+      with_lock,
       base::BindOnce(&SharedStorageRequestHelper::OnMethodsQueued,
                      weak_ptr_factory_.GetWeakPtr(), std::move(done)));
   return true;

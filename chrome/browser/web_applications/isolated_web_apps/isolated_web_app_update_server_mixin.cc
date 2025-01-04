@@ -27,16 +27,14 @@ std::unique_ptr<net::test_server::HttpResponse> HttpNotFound() {
 
 IsolatedWebAppUpdateServerMixin::IsolatedWebAppUpdateServerMixin(
     InProcessBrowserTestMixinHost* mixin_host)
-    : InProcessBrowserTestMixin(mixin_host) {}
-
-IsolatedWebAppUpdateServerMixin::~IsolatedWebAppUpdateServerMixin() = default;
-
-void IsolatedWebAppUpdateServerMixin::SetUpOnMainThread() {
+    : InProcessBrowserTestMixin(mixin_host) {
   iwa_server_.RegisterRequestHandler(base::BindRepeating(
       &IsolatedWebAppUpdateServerMixin::HandleRequest, base::Unretained(this)));
   EXPECT_TRUE(iwa_server_.Start());
   storage_.SetBaseUrl(iwa_server_.base_url());
 }
+
+IsolatedWebAppUpdateServerMixin::~IsolatedWebAppUpdateServerMixin() = default;
 
 GURL IsolatedWebAppUpdateServerMixin::GetUpdateManifestUrl(
     const web_package::SignedWebBundleId& web_bundle_id) const {

@@ -28,7 +28,6 @@ import android.widget.ImageView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.core.widget.ImageViewCompat;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
@@ -58,6 +57,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.CustomTabLocationBar;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
@@ -419,10 +419,10 @@ public class TrustedCdnPublisherUrlTest {
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(targetContext, testUrl);
         intent.putExtra(
                 CustomTabsIntent.EXTRA_TITLE_VISIBILITY_STATE, CustomTabsIntent.SHOW_PAGE_TITLE);
-        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        var sessionHolder = SessionHolder.getSessionHolderFromIntent(intent);
         CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
-        connection.newSession(token);
-        connection.overridePackageNameForSessionForTesting(token, clientPackage);
+        connection.newSession(sessionHolder.getSessionAsCustomTab());
+        connection.overridePackageNameForSessionForTesting(sessionHolder, clientPackage);
         connection.setTrustedPublisherUrlPackageForTest("com.example.test");
 
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);

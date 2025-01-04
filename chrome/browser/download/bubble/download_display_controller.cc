@@ -214,18 +214,6 @@ void DownloadDisplayController::HideBubble() {
   }
 }
 
-bool DownloadDisplayController::OpenMostSpecificDialog(
-    const offline_items_collection::ContentId& content_id) {
-  // This method is currently used only for Lacros download notifications.
-  // This is called when a notification is clicked, and shows the download
-  // bubble in the Lacros browser window. In Lacros browser fullscreen (always
-  // immersive), the immersive fullscreen toolbar is shown (handled by display_)
-  // so no special case is needed here. In Lacros tab fullscreen (not
-  // immersive), the notification is not visible and can't be clicked, so we
-  // don't need to check display_->IsFullscreenWithParentViewHidden() here.
-  return display_->OpenMostSpecificDialog(content_id);
-}
-
 void DownloadDisplayController::ListenToFullScreenChanges() {
   observation_.Observe(
       browser_->exclusive_access_manager()->fullscreen_controller());

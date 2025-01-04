@@ -90,7 +90,7 @@ enum {
   kAccessibilityAutoclickMovementThreshold = 100032,
   kAccessibilityAutoclickRevertToLeftClick = 100033,
   kAccessibilityAutoclickStabilizePosition = 100034,
-  kAccessibilityCursorColor = 100035,
+  // kAccessibilityCursorColor = 100035, // (no longer synced)
   kAccessibilityEnhancedNetworkVoicesInSelectToSpeakAllowed = 100036,
   kAccessibilityFloatingMenuPosition = 100037,
   // kAccessibilityGreyscaleAmount = 100038,  // deprecated
@@ -604,10 +604,6 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
     {ash::prefs::kAccessibilityColorVisionCorrectionType,
      {syncable_prefs_ids::kAccessibilityColorVisionCorrectionType,
       syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
-      sync_preferences::MergeBehavior::kNone}},
-    {ash::prefs::kAccessibilityCursorColor,
-     {syncable_prefs_ids::kAccessibilityCursorColor, syncer::OS_PREFERENCES,
-      sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {ash::prefs::kAccessibilityEnhancedNetworkVoicesInSelectToSpeakAllowed,
      {syncable_prefs_ids::

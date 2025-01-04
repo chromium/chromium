@@ -2,14 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("logging") {
+component("logging") {
+  defines = [ "IS_COMPONENTS_CROSS_DEVICE_LOGGING_IMPL" ]
+
   sources = [
     "log_buffer.cc",
     "log_buffer.h",
     "logging.cc",
     "logging.h",
   ]
-  deps = [ "//base" ]
+
+  public_deps = [ "//base" ]
 }
 
 source_set("unit_tests") {

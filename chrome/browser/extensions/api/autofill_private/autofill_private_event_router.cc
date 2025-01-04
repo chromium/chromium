@@ -19,7 +19,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/extensions/api/autofill_private.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/sync/service/sync_service.h"
 #include "content/public/browser/browser_context.h"
 

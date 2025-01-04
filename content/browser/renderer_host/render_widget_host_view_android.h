@@ -403,6 +403,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
 
   // InputTransferHandlerAndroidClient implementation.
   gpu::SurfaceHandle GetRootSurfaceHandle() override;
+  void SendStateOnTouchTransfer(const ui::MotionEvent& event) override;
 
   // Methods called from Java
   bool IsReady(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
@@ -450,6 +451,10 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
 
   void PassImeRenderWidgetHost(
       mojo::PendingRemote<blink::mojom::ImeRenderWidgetHost> pending_remote);
+
+  InputTransferHandlerAndroid* GetInputTransferHandlerForTesting() {
+    return input_transfer_handler_.get();
+  }
 
  protected:
   ~RenderWidgetHostViewAndroid() override;

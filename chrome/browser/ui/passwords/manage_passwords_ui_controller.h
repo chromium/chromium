@@ -233,7 +233,6 @@ class ManagePasswordsUIController
  protected:
   explicit ManagePasswordsUIController(content::WebContents* web_contents);
 
-
   // Called when a PasswordForm is autofilled, when a new PasswordForm is
   // submitted, or when a navigation occurs to update the visibility of the
   // manage passwords icon and bubble.
@@ -268,6 +267,8 @@ class ManagePasswordsUIController
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
+
+  PasswordChangeDelegate* GetPasswordChangeDelegate() const override;
 
  private:
   friend class content::WebContentsUserData<ManagePasswordsUIController>;
@@ -355,6 +356,9 @@ class ManagePasswordsUIController
   // Returns true if the password that is about to be changed was previously
   // phished.
   bool IsPendingPasswordPhished() const;
+
+  // Returns true if password changing is currently running.
+  bool IsPasswordChangeOngoing() const;
 
   // Timeout in seconds for the manual fallback for saving.
   static int save_fallback_timeout_in_seconds_;

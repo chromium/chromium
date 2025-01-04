@@ -89,6 +89,17 @@ constexpr char kResponseWithEncryptedCookiesFormat[] =
               "priority":"HIGH",
               "maxAge":63070000,
               "sameSite":"Lax"
+            },
+            {
+              "name":"APISID",
+              "value":"%s",
+              "host":"google.com",
+              "path":"/",
+              "isSecure":false,
+              "isHttpOnly":true,
+              "priority":"HIGH",
+              "maxAge":63070000,
+              "sameSite":"Lax"
             }
           ]
         }
@@ -899,7 +910,7 @@ TEST(OAuthMultiloginResultTest,
 TEST(OAuthMultiloginResultTest, ParseEncryptedCookies) {
   base::HistogramTester histogram_tester;
   std::string response = base::StringPrintf(kResponseWithEncryptedCookiesFormat,
-                                            "vAlUe1", "vAlUe2");
+                                            "vAlUe1", "vAlUe2", "vAlUe3");
   auto decryptor = [](std::string_view encrypted_cookie) {
     return base::StrCat({encrypted_cookie, ".decrypted"});
   };
@@ -910,8 +921,12 @@ TEST(OAuthMultiloginResultTest, ParseEncryptedCookies) {
   EXPECT_THAT(
       result.cookies(),
       ElementsAre(Property(&CanonicalCookie::Value, "vAlUe1.decrypted"),
-                  Property(&CanonicalCookie::Value, "vAlUe2.decrypted")));
-  histogram_tester.ExpectTotalCount(kEncryptionErrorHistogram, 0);
+                  Property(&CanonicalCookie::Value, "vAlUe2.decrypted"),
+                  Property(&CanonicalCookie::Value, "vAlUe3.decrypted")));
+  histogram_tester.ExpectUniqueSample(
+      kEncryptionErrorHistogram,
+      TokenBindingResponseEncryptionError::kSuccessfullyDecrypted,
+      /*expected_bucket_count=*/3);
 }
 
 // Decryptor is ignored if cookies in the response are not encrypted.
@@ -945,10 +960,14 @@ TEST(OAuthMultiloginResultTest, ParseCookiesIgnoresDecryptor) {
           ]
         }
       )";
+  base::HistogramTester histogram_tester;
   std::string response = base::StringPrintf(
       kResponseWithNonEncryptedCookiesFormat, "vAlUe1", "vAlUe2");
   auto decryptor = [](std::string_view encrypted_cookie) {
-    return base::StrCat({encrypted_cookie, ".decrypted"});
+    ADD_FAILURE()
+        << "Decryptor was called unexpectedly for cookie with value \""
+        << encrypted_cookie << "\"";
+    return std::string();
   };
 
   OAuthMultiloginResult result(response, net::HTTP_OK,
@@ -957,13 +976,17 @@ TEST(OAuthMultiloginResultTest, ParseCookiesIgnoresDecryptor) {
   EXPECT_THAT(result.cookies(),
               ElementsAre(Property(&CanonicalCookie::Value, "vAlUe1"),
                           Property(&CanonicalCookie::Value, "vAlUe2")));
+  histogram_tester.ExpectUniqueSample(
+      kEncryptionErrorHistogram,
+      TokenBindingResponseEncryptionError::kSuccessNoEncryption,
+      /*expected_bucket_count=*/2);
 }
 
 // Result is set to failure if cookies are encrypted but a decryptor is not set.
 TEST(OAuthMultiloginResultTest, ParseEncryptedCookiesFailsWithoutDecryptor) {
   base::HistogramTester histogram_tester;
   std::string response = base::StringPrintf(kResponseWithEncryptedCookiesFormat,
-                                            "vAlUe1", "vAlUe2");
+                                            "vAlUe1", "vAlUe2", "vAlUe3");
 
   OAuthMultiloginResult result(response, net::HTTP_OK, base::NullCallback());
 
@@ -972,16 +995,16 @@ TEST(OAuthMultiloginResultTest, ParseEncryptedCookiesFailsWithoutDecryptor) {
   histogram_tester.ExpectUniqueSample(
       kEncryptionErrorHistogram,
       TokenBindingResponseEncryptionError::kResponseUnexpectedlyEncrypted,
-      /*expected_bucket_count=*/1);
+      /*expected_bucket_count=*/3);
 }
 
 // Cookies that failed to decrypt are omitted from the result.
 TEST(OAuthMultiloginResultTest, ParseEncryptedCookiesDecryptionFails) {
   base::HistogramTester histogram_tester;
   std::string response = base::StringPrintf(kResponseWithEncryptedCookiesFormat,
-                                            "vAlUe1", "vAlUe2");
+                                            "vAlUe1", "vAlUe2", "vAlUe3");
   auto decryptor = [](std::string_view encrypted_cookie) {
-    return encrypted_cookie == "vAlUe1"
+    return encrypted_cookie != "vAlUe2"
                ? std::string()
                : base::StrCat({encrypted_cookie, ".decrypted"});
   };
@@ -991,8 +1014,12 @@ TEST(OAuthMultiloginResultTest, ParseEncryptedCookiesDecryptionFails) {
 
   EXPECT_THAT(result.cookies(), ElementsAre(Property(&CanonicalCookie::Value,
                                                      "vAlUe2.decrypted")));
-  histogram_tester.ExpectUniqueSample(
-      kEncryptionErrorHistogram,
-      TokenBindingResponseEncryptionError::kDecryptionFailed,
-      /*expected_bucket_count=*/1);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kEncryptionErrorHistogram),
+      ElementsAre(
+          base::Bucket(TokenBindingResponseEncryptionError::kDecryptionFailed,
+                       /*count=*/2),
+          base::Bucket(
+              TokenBindingResponseEncryptionError::kSuccessfullyDecrypted,
+              /*count=*/1)));
 }

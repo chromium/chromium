@@ -63,8 +63,7 @@ uint32_t GetHashedCohortName() {
 
 GoogleUpdateMetricsProviderWin::GoogleUpdateMetricsProviderWin() = default;
 
-GoogleUpdateMetricsProviderWin::~GoogleUpdateMetricsProviderWin() {
-}
+GoogleUpdateMetricsProviderWin::~GoogleUpdateMetricsProviderWin() = default;
 
 void GoogleUpdateMetricsProviderWin::AsyncInit(
     base::OnceClosure done_callback) {
@@ -124,8 +123,8 @@ GoogleUpdateMetricsProviderWin::GoogleUpdateMetrics::GoogleUpdateMetrics()
     : is_system_install(false) {
 }
 
-GoogleUpdateMetricsProviderWin::GoogleUpdateMetrics::~GoogleUpdateMetrics() {
-}
+GoogleUpdateMetricsProviderWin::GoogleUpdateMetrics::~GoogleUpdateMetrics() =
+    default;
 
 // static
 GoogleUpdateMetricsProviderWin::GoogleUpdateMetrics

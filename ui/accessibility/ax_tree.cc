@@ -1098,7 +1098,7 @@ const std::set<AXTreeID> AXTree::GetAllChildTreeIds() const {
 }
 
 bool AXTree::Unserialize(const AXTreeUpdate& update) {
-#if AX_FAIL_FAST_BUILD()
+#if AX_FAIL_FAST_BUILD() && !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
   for (const auto& new_data : update.nodes)
     CHECK(new_data.id != kInvalidAXNodeID)
         << "AXTreeUpdate contains invalid node: " << update.ToString();
@@ -2900,8 +2900,10 @@ void AXTree::RecordError(const AXTreeUpdateState& update_state,
 
   std::ostringstream verbose_error;
   verbose_error << new_error << "\n** Pending tree update **\n"
-                << update_state.pending_tree_update->ToString(
-                       /*verbose*/ false)
+                << update_state.pending_tree_update
+                       ->ToString(
+                           /*verbose*/ false)
+                       .substr(0, 1000)
                 << "** Root **\n"
                 << root() << "\n** AXTreeData **\n"
                 << data_.ToString() + "\n** AXTree **\n"

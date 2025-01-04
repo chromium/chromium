@@ -165,6 +165,8 @@ AuctionConfig CreateFullAuctionConfig() {
   auction_config.aggregation_coordinator_origin =
       url::Origin::Create(GURL("https://example.com"));
 
+  auction_config.send_creative_scanning_metadata = true;
+
   return auction_config;
 }
 

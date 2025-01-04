@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/webui/whats_new/whats_new_storage_service_impl.h"
 #include "chrome/common/chrome_version.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
-#include "components/user_education/common/user_education_features.h"
 #include "components/user_education/webui/whats_new_registry.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -74,8 +73,7 @@ class WhatsNewFetcherBrowserTest : public InteractiveBrowserTest {
     InteractiveBrowserTest::SetUp();
   }
   virtual void InitFeatures() {
-    feature_list_.InitWithFeatures({user_education::features::kWhatsNewVersion2,
-                                    kTestModuleEnabled, kTestModule2Enabled},
+    feature_list_.InitWithFeatures({kTestModuleEnabled, kTestModule2Enabled},
                                    {kTestModuleDisabled});
   }
   ~WhatsNewFetcherBrowserTest() override {

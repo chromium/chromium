@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/test/scoped_views_test_helper.h"
-
 #include <Cocoa/Cocoa.h>
 
+#include "ui/views/test/scoped_views_test_helper.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {

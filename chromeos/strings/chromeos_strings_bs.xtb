@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Onemogući tamnu temu</translation>
 <translation id="1807246157184219062">Svijetli</translation>
 <translation id="1808803439260407870">Klasična umjetnost</translation>
+<translation id="181434555916624618">Zasad se ne prikazuju rezultati s osobama. Pokušajte s drugim upitom.</translation>
 <translation id="1815850098929213707">Odabrana tipka je <ph name="KEYS" />. Uređivanje kontrole dodirom dugmeta</translation>
 <translation id="1823120442877418684">Likovi</translation>
 <translation id="1827738518074806965">Umjetnička galerija</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije desne slušalice.</translation>
 <translation id="3340978935015468852">postavke</translation>
 <translation id="3347558044552027859">moderno</translation>
+<translation id="3353477144743332882">Preuzimanje sažetka i modela kreiranja naziva</translation>
 <translation id="3359218928534347896">uključivanje/isključivanje zvuka mikrofona</translation>
 <translation id="3360306038446926262">Prozori</translation>
 <translation id="3361618936611118375">Suši</translation>
@@ -689,6 +691,7 @@
 <translation id="4354430579665871434">tipka</translation>
 <translation id="4356100841225547054">Isključite zvuk</translation>
 <translation id="4361257691546579041">APN je zadana vrsta.</translation>
+<translation id="4368101969572512692">Nasumični odabir prijedloga</translation>
 <translation id="437294888293595148">Poništi sve prečice</translation>
 <translation id="437477383107495720">Zečevi</translation>
 <translation id="4376423484621194274">Administrator ne dozvoljava zatvaranje aplikacije <ph name="APP_NAME" /></translation>
@@ -768,6 +771,7 @@
 <translation id="4731797938093519117">Pristup roditelja</translation>
 <translation id="473775607612524610">Ažuriraj</translation>
 <translation id="4744944742468440486">Informacije u vezi s vašim odabirom</translation>
+<translation id="4750394297954878236">Prijedlozi</translation>
 <translation id="4771607256327216405">posvjetljenje tastature</translation>
 <translation id="4771923071974529837">sutra</translation>
 <translation id="4773299976671772492">Zaustavljeno</translation>
@@ -853,6 +857,7 @@
 <translation id="5121677070210013200">Nije moguće preuzeti model transkripcije. Pokušajte ponovo ili ponovo pokrenite Chromebook.</translation>
 <translation id="5130848777448318809">Poniji</translation>
 <translation id="5137451382116112100">Cijeli ekran</translation>
+<translation id="5139813694804168398">ne ometaj</translation>
 <translation id="5140788690559353412">Kada izgubite pristup školskom računu, više nećete imati pristup povezanim fajlovima e-pošte i Google Diska kao što su Gmail, dokumenti, prezentacije i drugi.</translation>
 <translation id="5142961317498132443">Autentifikacija</translation>
 <translation id="5144311987923128508">Dugme za potvrdu je sada onemogućeno</translation>
@@ -897,6 +902,7 @@
 <translation id="5302048478445481009">Jezik</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> ekskluzivna pozadinska slika</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="530883153651464140">Ažuriranje uređaja <ph name="DEVICE_NAME" /> na verziju <ph name="VERSION" /></translation>
 <translation id="5315873049536339193">Identitet</translation>
 <translation id="5317780077021120954">Sačuvaj</translation>
 <translation id="5318310531701770497">Nije moguće kreirati imena. Pokušajte s dužim transkriptom.</translation>
@@ -973,7 +979,6 @@
 <translation id="5703716265115423771">dugme za stišavanje zvuka</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> od <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Uredite dugme za prečicu <ph name="SHORTCUT_DESCRIPTION" />.</translation>
-<translation id="5733298426544876109">Ažuriranje aplikacije <ph name="DEVICE_NAME" /></translation>
 <translation id="5736820754189340309">Prijenos podataka je poništen</translation>
 <translation id="574392208103952083">Srednje</translation>
 <translation id="5744175046705638478">Prevedite "<ph name="QUERY" />"</translation>
@@ -998,6 +1003,7 @@
 <translation id="5859969039821714932">Prečica nije dostupna. Pritisnite novu prečicu bez tipke <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Isklj.</translation>
 <translation id="5860491529813859533">Uključi</translation>
+<translation id="5875913454160982848">Preuzimanje modela transkripcije</translation>
 <translation id="5876385649737594562">Uključite da odaberete opcije</translation>
 <translation id="5877503382465267833">Pauziranje snimka <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Cijeli ekran</translation>
@@ -1037,7 +1043,6 @@
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6040852767465482106">Anonimni identitet</translation>
 <translation id="604124094241169006">Automatski</translation>
-<translation id="6042308850641462728">Više</translation>
 <translation id="6048107060512778456">Nije uspjelo – papir je zaglavljen</translation>
 <translation id="6050189528197190982">Nijanse sive</translation>
 <translation id="6054711098834486579">ekspresionizam</translation>
@@ -1067,7 +1072,7 @@
 <translation id="6137767437444130246">Korisnički certifikat</translation>
 <translation id="6146993107019042706">Unesite novu lozinku da završite</translation>
 <translation id="6147514244879357420">PNG</translation>
-<translation id="6149015141270619212">Nije moguće povezati se s internetom</translation>
+<translation id="6149015141270619212">Nije se moguće povezati s internetom</translation>
 <translation id="6156030503438652198">kestenjasto-ružičasta</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1293,6 +1298,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Postavite naziv servera}one{Postavite naziv servera}few{Postavite naziv servera}other{Postavite naziv servera}}</translation>
 <translation id="7135814714616751706">Pretražite prečice</translation>
 <translation id="7138614237884624401">Pojednostavljeni tekst</translation>
+<translation id="7138668887584231801">Nema dovoljno riječi za sažimanje</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Povezivanje</translation>
 <translation id="7144878232160441200">Pokušajte ponovo.</translation>
@@ -1588,6 +1594,7 @@ Preuzmite model transkripcija (do 100 MB) da dobijete ove transkripcije.</trans
 <translation id="8503836310948963452">Još samo nekoliko minuta...</translation>
 <translation id="8505011850330200833">Geminijev model zahtijeva 2 GB pohrane za obradu transkripata i kreiranje sažetaka</translation>
 <translation id="8508640263392900755">Detalji APN-a</translation>
+<translation id="8509574872955173831">Više informacija o sažetku i kreiranju naziva</translation>
 <translation id="8522687886059337719">Sada imate pristup novim <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />pozadinskim slikama<ph name="END_LINK_WALLPAPER_SUBPAGE" /> i <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />čuvaru ekrana<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">čajdžinica</translation>
@@ -1724,7 +1731,6 @@ Preuzmite model transkripcija (do 100 MB) da dobijete ove transkripcije.</trans
 <translation id="9133772297793293778">Pritisnite modifikatore od 1 do 4 i još jednu tipku na tastaturi. Da napustite način rada za uređivanje, pritisnite Alt i Esc.</translation>
 <translation id="9137526406337347448">Googleove usluge</translation>
 <translation id="9138630967333032450">Lijeva tipka Shift</translation>
-<translation id="9147928237330776930">Premalo je riječi za sažimanje</translation>
 <translation id="9149391708638971077">Pokreni test memorije</translation>
 <translation id="9159524746324788320">Hamburgeri</translation>
 <translation id="9161276708550942948">razmak</translation>

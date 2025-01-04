@@ -236,20 +236,20 @@ class V8FeatureVisitor : public base::FeatureVisitor {
     // prefix, so we expect all feature names to start with "V8Flag_". Strip
     // this prefix off to get the corresponding V8 flag name.
     DCHECK(feature_name_view.starts_with(kV8FlagFeaturePrefix));
-    std::string_view flag_name =
-        feature_name_view.substr(kV8FlagFeaturePrefix.size());
+    std::string flag_name(
+        feature_name_view.substr(kV8FlagFeaturePrefix.size()));
 
     switch (override_state) {
       case base::FeatureList::OverrideState::OVERRIDE_USE_DEFAULT:
         return;
 
       case base::FeatureList::OverrideState::OVERRIDE_DISABLE_FEATURE:
-        SetV8FlagsFormatted("--no-%s", flag_name);
+        SetV8FlagsFormatted("--no-%s", flag_name.c_str());
         // Do not set parameters for disabled features.
         break;
 
       case base::FeatureList::OverrideState::OVERRIDE_ENABLE_FEATURE:
-        SetV8FlagsFormatted("--%s", flag_name);
+        SetV8FlagsFormatted("--%s", flag_name.c_str());
         for (const auto& [param_name, param_value] : params) {
           SetV8FlagsFormatted("--%s=%s", param_name.c_str(),
                               param_value.c_str());

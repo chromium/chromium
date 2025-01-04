@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/test/video_encoder/video_encoder_client.h"
 
 #include <algorithm>
+#include <array>
 #include <numeric>
 #include <string>
 #include <utility>
@@ -133,11 +129,11 @@ uint32_t VideoEncoderStats::LayerBitrate(size_t spatial_idx,
   // when the number of temporal layers is three, the ratio of framerate of
   // layers are 1/4, 1/4 and 1/2 for the first, second and third layer,
   // respectively.
-  constexpr size_t kFramerateDenom[][3] = {
+  constexpr auto kFramerateDenom = std::to_array<std::array<size_t, 3>>({
       {1, 0, 0},
       {2, 2, 0},
       {4, 4, 2},
-  };
+  });
 
   const double layer_framerate =
       static_cast<double>(framerate) /

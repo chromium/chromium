@@ -17,7 +17,6 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -39,11 +38,6 @@ class PrefRegistrySimple;
 namespace signin {
 class AccountReconcilorDelegate;
 enum class SetAccountsInCookieResult;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-class ConsistencyCookieManager;
-class ConsistencyCookieManagerTest;
-#endif
 }  // namespace signin
 
 class SigninClient;
@@ -170,12 +164,6 @@ class AccountReconcilor
   // `GoogleServiceAuthError::State::NONE`.
   GoogleServiceAuthError GetReconcileError() const;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Gets the ConsistencyCookieManager, which updates the
-  // "CHROME_ID_CONSISTENCY_STATE" cookie.
-  signin::ConsistencyCookieManager* GetConsistencyCookieManager();
-#endif
-
  protected:
   void OnSetAccountsInCookieCompleted(
       const std::vector<CoreAccountId>& accounts_to_send,
@@ -188,10 +176,6 @@ class AccountReconcilor
   friend class AccountReconcilorThrottlerTest;
   friend class BaseAccountReconcilorTestTable;
   friend class DiceBrowserTest;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  friend class signin::ConsistencyCookieManagerTest;
-#endif
 
 #if BUILDFLAG(ENABLE_MIRROR)
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorTest,
@@ -316,10 +300,10 @@ class AccountReconcilor
                            TableRowTestMultilogin);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorTest, ReconcileAfterShutdown);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorTest, UnlockAfterShutdown);
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorTest,
                            OnAccountsInCookieUpdatedLogoutInProgress);
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorThrottlerTest, RefillOneRequest);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorThrottlerTest, RefillFiveRequests);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorThrottlerTest,
@@ -530,8 +514,8 @@ class AccountReconcilor
   bool reconcile_is_noop_ = true;
 
   // Used during reconcile action.
-  bool set_accounts_in_progress_ = false;     // Progress of SetAccounts calls.
-  bool log_out_in_progress_ = false;          // Progress of LogOut calls.
+  bool set_accounts_in_progress_ = false;  // Progress of SetAccounts calls.
+  bool log_out_in_progress_ = false;       // Progress of LogOut calls.
   bool chrome_accounts_changed_ = false;
 
   // Used for the Lock.
@@ -566,10 +550,6 @@ class AccountReconcilor
 
   // Set to true when Shutdown() is called.
   bool was_shut_down_ = false;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<signin::ConsistencyCookieManager> consistency_cookie_manager_;
-#endif
 
   base::WeakPtrFactory<AccountReconcilor> weak_factory_{this};
 };

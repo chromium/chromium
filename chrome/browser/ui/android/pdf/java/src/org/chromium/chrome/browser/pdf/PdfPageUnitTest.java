@@ -27,6 +27,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.supplier.DestroyableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.chrome.browser.util.ChromeFileProvider;
@@ -84,7 +85,11 @@ public class PdfPageUnitTest {
     }
 
     @Test
-    public void testCreatePdfPage_WithContentUri() {
+    public void testCreatePdfPage_WithContentUri() throws Exception {
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord("Android.Pdf.AssistContent.IsWorkProfile", true)
+                        .build();
         String encodedUrl = PdfUtils.encodePdfPageUrl(CONTENT_URL);
         PdfPage pdfPage =
                 new PdfPage(
@@ -110,7 +115,24 @@ public class PdfPageUnitTest {
         Assert.assertTrue(
                 "Pdf should be loaded when the view is attached to window.",
                 pdfPage.mPdfCoordinator.getIsPdfLoadedForTesting());
+        String jsonString = pdfPage.requestAssistContent(/*isWorkProfile*/ true);
+        Assert.assertNotNull(
+                "Assist content should be generated when the pdf is ready to load", jsonString);
+        JSONObject jsonObject = new JSONObject(jsonString);
+        JSONObject metadata = (JSONObject) jsonObject.get("file_metadata");
+        Assert.assertEquals(
+                "File uri should match.",
+                pdfPage.mPdfCoordinator.getUriForTesting().toString(),
+                metadata.get("file_uri"));
+        Assert.assertEquals(
+                "File name should match.", pdfPage.getTitle(), metadata.get("file_name"));
+        Assert.assertEquals(
+                "Mime type should match.", MimeTypeUtils.PDF_MIME_TYPE, metadata.get("mime_type"));
+        Assert.assertEquals("Work profile should match.", true, metadata.get("is_work_profile"));
+        histogramExpectation.assertExpected();
+
         contentView.removeView(view);
+        pdfPage.destroy();
     }
 
     @Test
@@ -146,6 +168,10 @@ public class PdfPageUnitTest {
 
     @Test
     public void testCreatePdfPage_WithPdfLink() throws Exception {
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord("Android.Pdf.AssistContent.IsWorkProfile", false)
+                        .build();
         PdfPage pdfPage =
                 new PdfPage(
                         mMockNativePageHost,
@@ -194,6 +220,7 @@ public class PdfPageUnitTest {
         Assert.assertEquals(
                 "Mime type should match.", MimeTypeUtils.PDF_MIME_TYPE, metadata.get("mime_type"));
         Assert.assertEquals("Work profile should match.", false, metadata.get("is_work_profile"));
+        histogramExpectation.assertExpected();
 
         contentView.removeView(view);
         pdfPage.destroy();

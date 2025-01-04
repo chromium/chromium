@@ -18,17 +18,6 @@ namespace content {
 
 class CONTENT_EXPORT MediaSessionUmaHelper {
  public:
-  // This is used for UMA histogram (Media.Session.Suspended). New values should
-  // be appended only and must be added before |Count|.
-  enum class MediaSessionSuspendedSource {
-    kSystemTransient = 0,
-    kSystemPermanent = 1,
-    kUI = 2,
-    kCONTENT = 3,
-    kSystemTransientDuck = 4,
-    kMaxValue = kSystemTransientDuck,
-  };
-
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class EnterPictureInPictureType {
@@ -49,8 +38,6 @@ class CONTENT_EXPORT MediaSessionUmaHelper {
 
   MediaSessionUmaHelper();
   ~MediaSessionUmaHelper();
-
-  void RecordSessionSuspended(MediaSessionSuspendedSource source) const;
 
   void RecordEnterPictureInPicture(EnterPictureInPictureType type) const;
 

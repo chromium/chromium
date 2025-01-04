@@ -231,8 +231,7 @@ class FirstRunInteractiveUiTestBase
                         base::OnceCallback<void(bool)>()) {
     ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
 
-    fre_service()->OpenFirstRunIfNeeded(FirstRunService::EntryPoint::kOther,
-                                        std::move(first_run_exited_callback));
+    fre_service()->OpenFirstRunIfNeeded(std::move(first_run_exited_callback));
 
     WaitForPickerWidgetCreated();
     view()->SetProperty(views::kElementIdentifierKey, kProfilePickerViewId);
@@ -320,6 +319,7 @@ class FirstRunInteractiveUiTestBase
         // chrome/test/data/webui/intro/sign_in_promo_test.ts
         PressJsButton(kWebContentsId, button));
   }
+
  private:
   ChromeSigninClientWithURLLoaderHelper url_loader_factory_helper_;
 };
@@ -382,19 +382,13 @@ class FirstRunParameterizedInteractiveUiTest
     FirstRunInteractiveUiTestBase::SetUp();
   }
 
-  void SetUpInProcessBrowserTestFixture() override {
-    FirstRunInteractiveUiTestBase::SetUpInProcessBrowserTestFixture();
-    if (WithPrivacySandboxEnabled()) {
-      PrivacySandboxService::SetPromptDisabledForTests(false);
-    }
-  }
-
   void SetUpOnMainThread() override {
     FirstRunInteractiveUiTestBase::SetUpOnMainThread();
 
     if (WithPrivacySandboxEnabled()) {
       host_resolver()->AddRule("*", "127.0.0.1");
       embedded_test_server()->StartAcceptingConnections();
+      PrivacySandboxService::SetPromptDisabledForTests(false);
     }
 
     SearchEngineChoiceDialogService::SetDialogDisabledForTests(
@@ -615,8 +609,9 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
     GTEST_SKIP() << "Sync not possible until buttons stop loading";
   }
 
-  auto iph_delay = AvatarToolbarButton::SetScopedIPHMinDelayAfterCreationForTesting(
-      base::Seconds(0));
+  auto iph_delay =
+      AvatarToolbarButton::SetScopedIPHMinDelayAfterCreationForTesting(
+          base::Seconds(0));
   base::test::TestFuture<bool> proceed_future;
 
   ASSERT_TRUE(IsProfileNameDefault());
@@ -696,7 +691,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
   if (WithPrivacySandboxEnabled()) {
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(chrome::kChromeUINewTabPageURL),
-        WindowOpenDisposition::CURRENT_TAB,
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
     // Test that the Privacy Sandbox prompt gets displayed in the browser after
     // the user makes a Search Engine Choice in the FRE.
@@ -761,15 +756,17 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, DeclineSync) {
   // TODO(crbug.com/366082752): Re-enable this test
   should_skip_test = true;
 #endif  // WIN && ARCH_CPU_64_BITS
-  if (should_skip_test)
+  if (should_skip_test) {
     GTEST_SKIP() << "Test is flaky on win64";
+  }
 
   if (SyncButtonsFeatureConfig() ==
       SyncButtonsFeatureConfig::kButtonsStillLoading) {
     GTEST_SKIP() << "Decline is not possible until buttons stop loading";
   }
-  auto iph_delay = AvatarToolbarButton::SetScopedIPHMinDelayAfterCreationForTesting(
-      base::Seconds(0));
+  auto iph_delay =
+      AvatarToolbarButton::SetScopedIPHMinDelayAfterCreationForTesting(
+          base::Seconds(0));
   base::test::TestFuture<bool> proceed_future;
 
   ASSERT_TRUE(IsProfileNameDefault());

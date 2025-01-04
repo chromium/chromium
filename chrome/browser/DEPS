@@ -49,8 +49,6 @@ include_rules = [
   "+components/app_constants/constants.h",
   "+components/app_launch_prefetch",
   "+components/app_restore",
-  # TODO(b/129295708): Remove after move is complete.
-  "+components/arc",
   "+components/assist_ranker",
   "+components/autofill/android",
   "+components/autofill/content/browser",
@@ -472,12 +470,14 @@ include_rules = [
   "+services/media_session/public",
   "+services/metrics/metrics_mojo_service.h",
   "+services/metrics/public",
+  "+services/metrics",
   "+services/network/network_service.h",
   "+services/network/public",
   "+services/network/test",
   "+services/network/url_request_context_owner.h",
   "+services/network/url_request_context_builder_mojo.h",
   "+services/on_device_model/public",
+  "+services/passage_embeddings/public/mojom",
   "+services/preferences/public/cpp",
   "+services/preferences/public/mojom",
   "+services/proxy_resolver",  # Android runs the packaged proxy resolver

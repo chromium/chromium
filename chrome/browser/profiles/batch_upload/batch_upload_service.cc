@@ -158,7 +158,7 @@ void BatchUploadService::OnBatchUploadDialogResult(
     return;
   }
 
-  sync_service_->TriggerLocalDataMigration(item_ids_to_move);
+  sync_service_->TriggerLocalDataMigrationForItems(item_ids_to_move);
 
   // `browser` may be null in tests.
   if (browser) {

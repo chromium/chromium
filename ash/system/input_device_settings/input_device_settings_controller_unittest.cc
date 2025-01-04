@@ -11,7 +11,9 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/events/event_rewriter_controller_impl.h"
+#include "ash/login/login_screen_controller.h"
 #include "ash/public/cpp/ash_prefs.h"
+#include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/peripherals_app_delegate.h"
 #include "ash/public/cpp/test/test_image_downloader.h"
 #include "ash/public/mojom/input_device_settings.mojom-shared.h"
@@ -51,6 +53,7 @@
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "device/udev_linux/fake_udev_loader.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -229,11 +232,11 @@ constexpr char kUserEmail1[] = "example1@abc.com";
 constexpr char kUserEmail2[] = "joy@abc.com";
 constexpr char kUserEmail3[] = "joy1@abc.com";
 const AccountId kAccountId1 =
-    AccountId::FromUserEmailGaiaId(kUserEmail1, kUserEmail1);
+    AccountId::FromUserEmailGaiaId(kUserEmail1, GaiaId(kUserEmail1));
 const AccountId kAccountId2 =
-    AccountId::FromUserEmailGaiaId(kUserEmail2, kUserEmail2);
+    AccountId::FromUserEmailGaiaId(kUserEmail2, GaiaId(kUserEmail2));
 const AccountId kAccountId3 =
-    AccountId::FromUserEmailGaiaId(kUserEmail3, kUserEmail3);
+    AccountId::FromUserEmailGaiaId(kUserEmail3, GaiaId(kUserEmail3));
 
 constexpr char kKbdTopRowPropertyName[] = "CROS_KEYBOARD_TOP_ROW_LAYOUT";
 constexpr char kKbdTopRowLayoutUnspecified[] = "";
@@ -2079,6 +2082,35 @@ TEST_F(InputDeviceSettingsControllerTest,
                     ->num_force_initialize_with_default_settings_calls());
 }
 
+// This tests specifically when a device is already setup and the primary user
+// is added at a later time. This is often seen with ENT use cases.
+TEST_F(InputDeviceSettingsControllerTest,
+       KeyboardInternalDefaultsUpdatedDuringPrimaryUserRegistration) {
+  Shell::Get()
+      ->login_screen_controller()
+      ->data_dispatcher()
+      ->NotifyOobeDialogState(OobeDialogState::ONBOARDING);
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
+
+  fake_device_manager_->AddFakeKeyboard(kSampleKeyboardInternal,
+                                        kKbdTopRowLayout2Tag);
+  const auto* keyboard = controller_->GetKeyboard(kSampleKeyboardInternal.id);
+  ASSERT_TRUE(keyboard);
+  ASSERT_EQ(kDefaultTopRowAreFKeys, keyboard->settings->top_row_are_fkeys);
+
+  PrefService* active_pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  base::Value::Dict updated_defaults;
+  updated_defaults.Set(prefs::kKeyboardSettingTopRowAreFKeys,
+                       !kDefaultTopRowAreFKeys);
+  active_pref_service->SetDict(prefs::kKeyboardDefaultChromeOSSettings,
+                               std::move(updated_defaults));
+
+  ASSERT_EQ(1u, keyboard_pref_handler_
+                    ->num_force_initialize_with_default_settings_calls());
+}
+
 TEST_F(InputDeviceSettingsControllerTest,
        KeyboardExternalDefaultsUpdatedDuringOobe) {
   GetSessionControllerClient()->SetSessionState(
@@ -2222,7 +2254,7 @@ TEST_F(InputDeviceSettingsControllerNoSignInTest, ModifierKeyRefresh) {
             ui::mojom::ModifierKey::kControl, ui::mojom::ModifierKey::kMeta,
             ui::mojom::ModifierKey::kEscape, ui::mojom::ModifierKey::kAlt,
             ui::mojom::ModifierKey::kFunction,
-            ui::mojom::ModifierKey::kRightAlt}),
+            ui::mojom::ModifierKey::kQuickInsert}),
         keyboard->modifier_keys);
   }
 }

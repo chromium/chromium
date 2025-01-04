@@ -29,7 +29,6 @@ class PaymentHandlerResponse;
 class PaymentRequestDetailsUpdate;
 class PaymentRequestRespondWithObserver;
 class ScriptState;
-class ScriptValue;
 class ServiceWorkerWindowClient;
 
 class MODULES_EXPORT PaymentRequestEvent final : public ExtendableEvent {
@@ -64,10 +63,10 @@ class MODULES_EXPORT PaymentRequestEvent final : public ExtendableEvent {
   const String& paymentRequestOrigin() const;
   const String& paymentRequestId() const;
   const HeapVector<Member<PaymentMethodData>>& methodData() const;
-  const ScriptValue total(ScriptState*) const;
+  const ScriptObject total(ScriptState*) const;
   const HeapVector<Member<PaymentDetailsModifier>>& modifiers() const;
   const String& instrumentKey() const;
-  const ScriptValue paymentOptions(ScriptState*) const;
+  const ScriptObject paymentOptions(ScriptState*) const;
   std::optional<HeapVector<Member<PaymentShippingOption>>> shippingOptions()
       const;
 
@@ -77,7 +76,7 @@ class MODULES_EXPORT PaymentRequestEvent final : public ExtendableEvent {
   ScriptPromise<IDLNullable<PaymentRequestDetailsUpdate>> changePaymentMethod(
       ScriptState*,
       const String& method_name,
-      const ScriptValue& method_details,
+      const ScriptObject& method_details,
       ExceptionState& exception_state);
   ScriptPromise<IDLNullable<PaymentRequestDetailsUpdate>>
   changeShippingAddress(ScriptState*, AddressInit*, ExceptionState&);

@@ -13,9 +13,9 @@
 #define FILE_TRACING_PREFIX "File"
 
 #define SCOPED_FILE_TRACE_WITH_SIZE(name, size) \
-    FileTracing::ScopedTrace scoped_file_trace; \
-    if (FileTracing::IsCategoryEnabled()) \
-      scoped_file_trace.Initialize(FILE_TRACING_PREFIX "::" name, this, size)
+  FileTracing::ScopedTrace scoped_file_trace;   \
+  if (FileTracing::IsCategoryEnabled())         \
+  scoped_file_trace.Initialize(FILE_TRACING_PREFIX "::" name, this, size)
 
 #define SCOPED_FILE_TRACE(name) SCOPED_FILE_TRACE_WITH_SIZE(name, 0)
 

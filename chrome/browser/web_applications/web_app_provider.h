@@ -82,11 +82,14 @@ class WebAppRunOnOsLoginManager;
 class WebAppProvider : public KeyedService {
  public:
   // Deprecated: Use GetForWebApps instead.
+  // TODO(https://crbug.com/384063076): Stop returning the WebAppProvider for
+  // profiles where `AreWebAppsEnabled` returns `false`.
   static WebAppProvider* GetDeprecated(Profile* profile);
 
-  // On Windows, Mac and Linux, always returns a WebAppProvider.
-  // On Chrome OS: In Ash, returns nullptr if Lacros Web App (WebAppsCrosapi) is
-  // enabled and it is not the Shimless RMA app profile.
+  // This always returns a WebAppProvider, even if this is in an incognito
+  // profile (it gets the one from the parent).
+  // TODO(https://crbug.com/384063076): Stop returning the WebAppProvider for
+  // profiles where `AreWebAppsEnabled` returns `false`.
   static WebAppProvider* GetForWebApps(Profile* profile);
 
   // Returns the WebAppProvider for the current process. In particular:
@@ -98,12 +101,19 @@ class WebAppProvider : public KeyedService {
   // provides a guarantee they are being called from the correct process. Only
   // use this if the calling code is shared between Ash and Lacros and expects
   // the PWA WebAppProvider in Lacros and the SWA WebAppProvider in Ash.
+  // TODO(https://crbug.com/384063076): Stop returning the WebAppProvider for
+  // profiles where `AreWebAppsEnabled` returns `false`.
   static WebAppProvider* GetForLocalAppsUnchecked(Profile* profile);
 
   // Return the WebAppProvider for tests, regardless of whether this is running
   // in Lacros/Ash. Blocks if the web app registry is not yet ready.
+  // TODO(https://crbug.com/384063076): Stop returning the WebAppProvider for
+  // profiles where `AreWebAppsEnabled` returns `false`.
   static WebAppProvider* GetForTest(Profile* profile);
 
+  // TODO(https://crbug.com/384063076): Stop returning the WebAppProvider for
+  // profiles where `AreWebAppsEnabled` returns `false` for the web content's
+  // browser.
   static WebAppProvider* GetForWebContents(content::WebContents* web_contents);
 
   using OsIntegrationManagerFactory =

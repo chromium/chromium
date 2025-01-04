@@ -37,13 +37,15 @@ const security_interstitials::SecurityInterstitialPage::TypeID
 ManagedProfileRequiredPage::ManagedProfileRequiredPage(
     content::WebContents* web_contents,
     const GURL& request_url,
+    const std::u16string& email,
     std::unique_ptr<
         security_interstitials::SecurityInterstitialControllerClient>
         controller_client)
     : security_interstitials::SecurityInterstitialPage(
           web_contents,
           request_url,
-          std::move(controller_client)) {
+          std::move(controller_client)),
+      email_(email) {
   controller()->metrics_helper()->RecordUserDecision(MetricsHelper::SHOW);
   controller()->metrics_helper()->RecordUserInteraction(
       MetricsHelper::TOTAL_VISITS);
@@ -64,9 +66,10 @@ void ManagedProfileRequiredPage::PopulateInterstitialStrings(
   load_time_data.Set(
       "tabTitle",
       l10n_util::GetStringUTF16(IDS_MANAGED_PROFILE_INTERSTITIAL_TAB_TITLE));
-  load_time_data.Set("primaryParagraph",
-                     l10n_util::GetStringUTF16(
-                         IDS_MANAGED_PROFILE_INTERSTITIAL_PRIMARY_PARAGRAPH));
+  load_time_data.Set(
+      "primaryParagraph",
+      l10n_util::GetStringFUTF16(
+          IDS_MANAGED_PROFILE_INTERSTITIAL_PRIMARY_PARAGRAPH, email_));
 
   load_time_data.Set("heading", l10n_util::GetStringUTF16(
                                     IDS_MANAGED_PROFILE_INTERSTITIAL_HEADING));

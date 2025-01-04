@@ -26,7 +26,7 @@ Here are some UMA metrics that measure start-up (UMA's UI has descriptions):
 * `Startup.Android.Cold.TimeToFirstVisibleContent2`
 * `Startup.Android.Cold.TimeToFirstNavigationCommit2.Tabbed`
 * `Browser.PaintPreview.TabbedPlayer.TimeToFirstBitmap`
-* `Startup.Android.Cold.TimeToFirstContentfulPaint.Tabbed`
+* `Startup.Android.Cold.TimeToFirstContentfulPaint3.Tabbed`
 
 This one can be useful for measuring dex optimization changes:
 

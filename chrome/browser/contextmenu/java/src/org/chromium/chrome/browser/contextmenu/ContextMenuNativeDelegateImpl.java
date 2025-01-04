@@ -10,6 +10,7 @@ import android.net.Uri;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -139,7 +140,7 @@ class ContextMenuNativeDelegateImpl implements ContextMenuNativeDelegate {
 
     @CalledByNative
     private static ImageCallbackResult createImageCallbackResult(
-            byte[] imageData, String extension) {
+            byte[] imageData, @JniType("std::string") String extension) {
         return new ImageCallbackResult(imageData, extension);
     }
 

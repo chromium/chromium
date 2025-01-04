@@ -15,7 +15,6 @@
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync_preferences/pref_model_associator_client.h"

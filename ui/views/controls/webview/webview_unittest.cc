@@ -54,8 +54,9 @@ class WebViewTestWebContentsObserver : public content::WebContentsObserver {
       const WebViewTestWebContentsObserver&) = delete;
 
   ~WebViewTestWebContentsObserver() override {
-    if (web_contents_)
+    if (web_contents_) {
       content::WebContentsObserver::Observe(nullptr);
+    }
   }
 
   void WebContentsDestroyed() override {
@@ -165,6 +166,10 @@ class WebViewUnitTest : public views::test::WidgetTest {
   }
 
   void SetUp() override {
+    // Set the test content browser client to avoid pulling in needless
+    // dependencies from content.
+    SetBrowserClientForTesting(&test_browser_client_);
+
     rvh_enabler_ = std::make_unique<content::RenderViewHostTestEnabler>();
 
     views::WebView::WebContentsCreator creator = base::BindRepeating(
@@ -174,9 +179,6 @@ class WebViewUnitTest : public views::test::WidgetTest {
             creator);
     browser_context_ = std::make_unique<content::TestBrowserContext>();
     WidgetTest::SetUp();
-    // Set the test content browser client to avoid pulling in needless
-    // dependencies from content.
-    SetBrowserClientForTesting(&test_browser_client_);
 
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kDisableBackgroundingOccludedWindowsForTesting);

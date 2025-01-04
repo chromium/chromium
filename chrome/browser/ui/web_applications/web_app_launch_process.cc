@@ -46,12 +46,14 @@ namespace {
 std::optional<GURL> GetProtocolHandlingTranslatedUrl(
     OsIntegrationManager& os_integration_manager,
     const apps::AppLaunchParams& params) {
-  if (!params.protocol_handler_launch_url.has_value())
+  if (!params.protocol_handler_launch_url.has_value()) {
     return std::nullopt;
+  }
 
   GURL protocol_url(params.protocol_handler_launch_url.value());
-  if (!protocol_url.is_valid())
+  if (!protocol_url.is_valid()) {
     return std::nullopt;
+  }
 
   std::optional<GURL> translated_url =
       os_integration_manager.TranslateProtocolUrl(params.app_id, protocol_url);
@@ -265,8 +267,9 @@ LaunchHandler WebAppLaunchProcess::GetLaunchHandler() const {
 
 LaunchHandler::ClientMode WebAppLaunchProcess::GetLaunchClientMode() const {
   LaunchHandler launch_handler = GetLaunchHandler();
-  if (launch_handler.client_mode == LaunchHandler::ClientMode::kAuto)
+  if (launch_handler.client_mode == LaunchHandler::ClientMode::kAuto) {
     return LaunchHandler::ClientMode::kNavigateNew;
+  }
   return launch_handler.client_mode;
 }
 

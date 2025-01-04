@@ -10,7 +10,6 @@
 #import "base/functional/bind.h"
 #import "base/no_destructor.h"
 #import "base/time/default_clock.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/reading_list/core/dual_reading_list_model.h"
 #import "components/reading_list/core/reading_list_model_impl.h"
 #import "components/reading_list/core/reading_list_model_storage_impl.h"
@@ -18,7 +17,6 @@
 #import "components/sync/base/storage_type.h"
 #import "components/sync/model/data_type_store_service.h"
 #import "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
@@ -42,16 +40,17 @@ GetWipeModelUponSyncDisabledBehaviorForSyncableModel() {
 
 // static
 ReadingListModel* ReadingListModelFactory::GetForProfile(ProfileIOS* profile) {
-  return static_cast<ReadingListModel*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<ReadingListModel>(
+      profile, /*create=*/true);
 }
 
 // static
 reading_list::DualReadingListModel*
 ReadingListModelFactory::GetAsDualReadingListModelForProfile(
     ProfileIOS* profile) {
-  return static_cast<reading_list::DualReadingListModel*>(
-      GetForProfile(profile));
+  return GetInstance()
+      ->GetServiceForProfileAs<reading_list::DualReadingListModel>(
+          profile, /*create=*/true);
 }
 
 // static
@@ -61,9 +60,8 @@ ReadingListModelFactory* ReadingListModelFactory::GetInstance() {
 }
 
 ReadingListModelFactory::ReadingListModelFactory()
-    : BrowserStateKeyedServiceFactory(
-          "ReadingListModel",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("ReadingListModel",
+                                    ProfileSelection::kRedirectedInIncognito) {
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
 
@@ -97,9 +95,4 @@ std::unique_ptr<KeyedService> ReadingListModelFactory::BuildServiceInstanceFor(
       /*local_or_syncable_model=*/std::move(
           reading_list_model_for_local_storage),
       /*account_model=*/std::move(reading_list_model_for_account_storage));
-}
-
-web::BrowserState* ReadingListModelFactory::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  return GetBrowserStateRedirectedInIncognito(context);
 }

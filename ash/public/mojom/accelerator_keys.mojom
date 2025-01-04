@@ -186,8 +186,10 @@ enum VKey {
   kPA1 = 0xFD,
   kOemClear = 0xFE,
   kFunction = 0xFF,
-  kRightAlt = 0x100,
+  kQuickInsert = 0x100,
   kAccessibility = 0x101,
+  kDoNotDisturb = 0x102,
+  kCameraAccessToggle = 0x103,
   kUnknown = 0,
 
   // POSIX specific VKEYs. Note that as of Windows SDK 7.1, 0x97-9F, 0xD8-DA,

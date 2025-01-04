@@ -15,14 +15,12 @@ export interface ShoppingServiceBrowserProxy {
   getProductInfoForCurrentUrl(): Promise<{productInfo: ProductInfo}>;
   getPriceInsightsInfoForCurrentUrl():
       Promise<{priceInsightsInfo: PriceInsightsInfo}>;
-  showInsightsSidePanelUi(): void;
   getUrlInfosForProductTabs(): Promise<{urlInfos: UrlInfo[]}>;
   getUrlInfosForRecentlyViewedTabs(): Promise<{urlInfos: UrlInfo[]}>;
   isShoppingListEligible(): Promise<{eligible: boolean}>;
   getPriceTrackingStatusForCurrentUrl(): Promise<{tracked: boolean}>;
   openUrlInNewTab(url: Url): void;
   switchToOrOpenTab(url: Url): void;
-  showFeedbackForPriceInsights(): void;
   getPriceInsightsInfoForUrl(url: Url):
       Promise<{priceInsightsInfo: PriceInsightsInfo}>;
   getProductInfoForUrl(url: Url): Promise<{productInfo: ProductInfo}>;
@@ -84,10 +82,6 @@ export class ShoppingServiceBrowserProxyImpl implements
     return this.handler.getUrlInfosForRecentlyViewedTabs();
   }
 
-  showInsightsSidePanelUi() {
-    this.handler.showInsightsSidePanelUI();
-  }
-
   isShoppingListEligible() {
     return this.handler.isShoppingListEligible();
   }
@@ -102,10 +96,6 @@ export class ShoppingServiceBrowserProxyImpl implements
 
   switchToOrOpenTab(url: Url) {
     this.handler.switchToOrOpenTab(url);
-  }
-
-  showFeedbackForPriceInsights() {
-    this.handler.showFeedbackForPriceInsights();
   }
 
   getAllProductSpecificationsSets() {

@@ -38,6 +38,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -92,7 +93,7 @@ class ExtendedUpdatesControllerTest : public AshTestBase {
     // Enable arc for test profile.
     // Log in user to ensure ARC PlayStore can be enabled.
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
-        profile_->GetProfileUserName(), kGaiaId));
+        profile_->GetProfileUserName(), GaiaId(kGaiaId)));
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
     arc::SetArcAvailableCommandLineForTesting(

@@ -71,7 +71,7 @@ void CloseDatabaseSync(
 constexpr base::TimeDelta SqlStoreBase::kClosingDelay;
 
 SqlStoreBase::SqlStoreBase(
-    const std::string& histogram_tag,
+    sql::Database::Tag histogram_tag,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     const base::FilePath& file_path)
     : background_task_runner_(background_task_runner),

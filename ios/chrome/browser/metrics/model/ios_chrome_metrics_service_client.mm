@@ -375,10 +375,6 @@ void IOSChromeMetricsServiceClient::RegisterUKMProviders() {
   ukm_service_->RegisterMetricsProvider(
       std::make_unique<variations::FieldTrialsProvider>(
           synthetic_trial_registry_.get(), kUKMFieldTrialSuffix));
-
-  metrics_service_->RegisterMetricsProvider(
-      std::make_unique<IOSChromeDefaultBrowserMetricsProvider>(
-          metrics::MetricsLogUploader::MetricServiceType::UKM));
 }
 
 void IOSChromeMetricsServiceClient::CollectFinalHistograms() {

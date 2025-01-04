@@ -180,6 +180,11 @@
             "type": "boolean",
             "description": "If true, uses rewriters for the mouse event; only allowed if used from FaceGaze. Otherwise indicates that rewriters should be skipped.",
             "optional": true
+          },
+          "forceNotSynthetic": {
+            "type": "boolean",
+            "description": "If true, forces mouse event to appear as a real mouse event; only allowed if used from FaceGaze. Otherwise indicates that this mouse event should be marked as synthetic.",
+            "optional": true
           }
         }
       },
@@ -807,17 +812,6 @@
         ]
       },
       {
-        "name": "clipboardCopyInActiveLacrosGoogleDoc",
-        "type": "function",
-        "description": "Called by the Select-to-Speak extension to request a clipboard copy in the active Lacros Google Docs tab for the copy-paste fallback.",
-        "parameters": [ {
-            "name": "url",
-            "type": "string",
-            "description": "URL of the Google Docs tab."
-          }
-        ]
-      },
-      {
         "name": "handleScrollableBoundsForPointFound",
         "type": "function",
         "description": "Called by the Accessibility Common extension when onScrollableBoundsForPointRequested has found a scrolling container. |rect| will be the bounds of the nearest scrollable ancestor of the node at the point requested using onScrollableBoundsForPointRequested.",
@@ -1080,23 +1074,6 @@
               "items": { "$ref": "ScreenRect" },
               "name": "rects",
               "description": "Array of rects represeting the display bounds in screen coordinates for all displays."
-            }
-          ]
-        }
-      },
-      {
-        "name": "isLacrosPrimary",
-        "type": "function",
-        "description": "Gets whether new browser windows and tabs should be in Lacros browser.",
-        "parameters": [],
-        "returns_async": {
-          "name": "callback",
-          "description": "A callback that is run when the result is returned.",
-          "parameters": [
-            {
-              "type": "boolean",
-              "name": "useLacros",
-              "description": "True if new browser windows and tabs should be in Lacros."
             }
           ]
         }

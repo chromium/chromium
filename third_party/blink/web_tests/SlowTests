@@ -182,6 +182,7 @@ crbug.com/1412923 [ Win ] http/tests/inspector-protocol/network/load-network-res
 crbug.com/1412923 [ Win ] http/tests/inspector-protocol/network/load-network-resource-different-frame.js [ Slow ]
 crbug.com/1412923 [ Win ] http/tests/inspector-protocol/runtime/eval-await-navigation-paused-message-order.js [ Slow ]
 crbug.com/1417314 [ Win ] http/tests/inspector-protocol/network/is-same-site.js [ Slow ]
+crbug.com/40273105 http/tests/inspector-protocol/fenced-frame/stopLoading-fenced-frame.https.js [ Slow ]
 
 crbug.com/510337 cssom/cssvalue-comparison.html [ Slow ]
 
@@ -1452,7 +1453,6 @@ crbug.com/356963272 external/wpt/webrtc/RTCDataChannel-send-close.html [ Slow ]
 crbug.com/369600187 external/wpt/css/css-anchor-position/anchor-size-parse-valid.html [ Slow ]
 
 # Flaky timeouts - assuming the tests are slow.
-crbug.com/369200429 fast/events/touch/gesture/gesture-tap-hover-clear.html [ Slow ]
 crbug.com/374035637 [ Debug Mac14 ] fast/css-grid-layout/grid-auto-repeat-huge-grid-004.html [ Slow ]
 crbug.com/374035637 [ Debug Mac14 ] fast/css-grid-layout/grid-auto-repeat-huge-grid-010.html [ Slow ]
 crbug.com/374035637 [ Debug Mac14 ] fast/css-grid-layout/grid-auto-repeat-huge-grid-016.html [ Slow ]

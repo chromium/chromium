@@ -51,8 +51,6 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
-#include "chrome/browser/dips/dips_service_impl.h"
-#include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/domain_reliability/service_factory.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service_factory.h"
@@ -98,15 +96,15 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/strike_databases/strike_database.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -199,6 +197,7 @@
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/features.h"
@@ -237,6 +236,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/get_controlled_frame_partition_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -683,44 +683,6 @@ class ClearDomainReliabilityTester {
   unsigned clear_count_ = 0;
   network::mojom::NetworkContext::DomainReliabilityClearMode last_clear_mode_;
   base::RepeatingCallback<bool(const GURL&)> last_filter_;
-};
-
-class RemoveDIPSEventsTester {
- public:
-  explicit RemoveDIPSEventsTester(Profile* profile) {
-    storage_ = DIPSServiceImpl::Get(profile)->storage();
-  }
-
-  void WriteEventTimes(GURL url,
-                       std::optional<base::Time> storage_time,
-                       std::optional<base::Time> interaction_time) {
-    if (storage_time.has_value()) {
-      storage_->AsyncCall(&DIPSStorage::RecordStorage)
-          .WithArgs(url, storage_time.value(), DIPSCookieMode::kBlock3PC);
-    }
-    if (interaction_time.has_value()) {
-      storage_->AsyncCall(&DIPSStorage::RecordInteraction)
-          .WithArgs(url, interaction_time.value(), DIPSCookieMode::kBlock3PC);
-    }
-    storage_->FlushPostedTasksForTesting();
-  }
-
-  std::optional<StateValue> ReadStateValue(GURL url) {
-    std::optional<StateValue> value;
-
-    storage_->AsyncCall(&DIPSStorage::Read)
-        .WithArgs(url)
-        .Then(base::BindLambdaForTesting([&](const DIPSState& state) {
-          value = state.was_loaded() ? std::make_optional(state.ToStateValue())
-                                     : std::nullopt;
-        }));
-    storage_->FlushPostedTasksForTesting();
-
-    return value;
-  }
-
- private:
-  raw_ptr<base::SequenceBound<DIPSStorage>> storage_;
 };
 
 class RemoveSecurePaymentConfirmationCredentialsTester {
@@ -1768,9 +1730,13 @@ class IsolatedWebAppChromeBrowsingDataRemoverDelegateTest
   content::BrowsingDataRemover::DataType DATA_TYPE_SITE_DATA =
       constants::DATA_TYPE_SITE_DATA;
 
-  web_app::IsolatedWebAppUrlInfo InstallIsolatedWebApp(const GURL& iwa_url) {
-    web_app::AddDummyIsolatedAppToRegistry(GetProfile(), iwa_url, "IWA Name");
-    return web_app::IsolatedWebAppUrlInfo::Create(iwa_url).value();
+  web_app::IsolatedWebAppUrlInfo InstallIsolatedWebApp() {
+    const std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> bundle =
+        web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder())
+            .BuildBundle();
+    bundle->FakeInstallPageState(GetProfile());
+    bundle->TrustSigningKey();
+    return bundle->InstallChecked(GetProfile());
   }
 
   content::StoragePartitionConfig CreateControlledFrameStoragePartition(
@@ -1819,6 +1785,9 @@ class IsolatedWebAppChromeBrowsingDataRemoverDelegateTest
         base::DoNothing());
     return removal_tasks;
   }
+
+ private:
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 bool operator==(
     const IsolatedWebAppChromeBrowsingDataRemoverDelegateTest::RemovalInfo& a,
@@ -1828,19 +1797,13 @@ bool operator==(
 }
 
 TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest, ClearData) {
-  const GURL iwa_url1(
-      "isolated-app://"
-      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
-  web_app::IsolatedWebAppUrlInfo iwa_url_info1 =
-      InstallIsolatedWebApp(iwa_url1);
+  web_app::IsolatedWebAppUrlInfo iwa_url_info1 = InstallIsolatedWebApp();
   content::StoragePartitionConfig controlled_frame_partition1 =
       CreateControlledFrameStoragePartition(iwa_url_info1, "controlled_frame");
 
-  const GURL iwa_url2(
-      "isolated-app://"
-      "abcdefztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
-  web_app::IsolatedWebAppUrlInfo iwa_url_info2 =
-      InstallIsolatedWebApp(iwa_url2);
+  web_app::IsolatedWebAppUrlInfo iwa_url_info2 = InstallIsolatedWebApp();
+
+  EXPECT_NE(iwa_url_info1.app_id(), iwa_url_info2.app_id());
 
   std::vector<RemovalInfo> removal_tasks =
       ClearDataAndWait(base::Time(), base::Time::Max(), DATA_TYPE_SITE_DATA,
@@ -1861,10 +1824,7 @@ TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest, ClearData) {
 
 TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest,
        ForwardClearDataParameterToControlledFrame) {
-  const GURL iwa_url(
-      "isolated-app://"
-      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
-  web_app::IsolatedWebAppUrlInfo iwa_url_info = InstallIsolatedWebApp(iwa_url);
+  web_app::IsolatedWebAppUrlInfo iwa_url_info = InstallIsolatedWebApp();
   content::StoragePartitionConfig controlled_frame_partition =
       CreateControlledFrameStoragePartition(iwa_url_info, "controlled_frame");
 
@@ -1884,17 +1844,10 @@ TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest,
 
 TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest,
        FilterOriginRespected) {
-  const GURL iwa_url1(
-      "isolated-app://"
-      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
-  web_app::IsolatedWebAppUrlInfo iwa_url_info1 =
-      InstallIsolatedWebApp(iwa_url1);
+  web_app::IsolatedWebAppUrlInfo iwa_url_info1 = InstallIsolatedWebApp();
+  web_app::IsolatedWebAppUrlInfo iwa_url_info2 = InstallIsolatedWebApp();
 
-  const GURL iwa_url2(
-      "isolated-app://"
-      "abcdefztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
-  web_app::IsolatedWebAppUrlInfo iwa_url_info2 =
-      InstallIsolatedWebApp(iwa_url2);
+  EXPECT_NE(iwa_url_info1.app_id(), iwa_url_info2.app_id());
 
   auto filter_builder = BrowsingDataFilterBuilder::Create(
       BrowsingDataFilterBuilder::Mode::kDelete);
@@ -1912,10 +1865,7 @@ TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest,
 }
 
 TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest, AppCookiesDeleted) {
-  const GURL iwa_url(
-      "isolated-app://"
-      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
-  web_app::IsolatedWebAppUrlInfo iwa_url_info = InstallIsolatedWebApp(iwa_url);
+  web_app::IsolatedWebAppUrlInfo iwa_url_info = InstallIsolatedWebApp();
 
   auto filter_builder = BrowsingDataFilterBuilder::Create(
       BrowsingDataFilterBuilder::Mode::kDelete);
@@ -1934,10 +1884,7 @@ TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest, AppCookiesDeleted) {
 
 TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest,
        TimeRangeSpecified) {
-  const GURL iwa_url(
-      "isolated-app://"
-      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
-  web_app::IsolatedWebAppUrlInfo iwa_url_info = InstallIsolatedWebApp(iwa_url);
+  web_app::IsolatedWebAppUrlInfo iwa_url_info = InstallIsolatedWebApp();
   content::StoragePartitionConfig controlled_frame_partition =
       CreateControlledFrameStoragePartition(iwa_url_info, "controlled_frame");
 
@@ -3601,137 +3548,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveTopicSettings) {
   EXPECT_TRUE(privacy_sandbox_settings->IsTopicAllowed(topic_two));
 }
 
-TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveDIPSEventsForLastHour) {
-  RemoveDIPSEventsTester tester(GetProfile());
-  GURL url1("https://example1.com");
-  GURL url2("https://example2.com");
-  base::Time two_hours_ago = base::Time::Now() - base::Hours(2);
-
-  tester.WriteEventTimes(url1, /*storage_time=*/base::Time::Now(),
-                         /*interaction_time=*/std::nullopt);
-  tester.WriteEventTimes(url2, /*storage_time=*/std::nullopt,
-                         /*interaction_time=*/two_hours_ago);
-
-  {
-    std::optional<StateValue> state_val1 = tester.ReadStateValue(url1);
-    std::optional<StateValue> state_val2 = tester.ReadStateValue(url2);
-
-    ASSERT_TRUE(state_val1.has_value());
-    EXPECT_TRUE(state_val1->site_storage_times.has_value());
-    ASSERT_TRUE(state_val2.has_value());
-    EXPECT_TRUE(state_val2->user_interaction_times.has_value());
-  }
-
-  uint64_t remove_mask = constants::DATA_TYPE_HISTORY |
-                         content::BrowsingDataRemover::DATA_TYPE_COOKIES;
-
-  BlockUntilBrowsingDataRemoved(AnHourAgo(), base::Time::Max(), remove_mask,
-                                false);
-
-  {
-    std::optional<StateValue> state_val1 = tester.ReadStateValue(url1);
-    std::optional<StateValue> state_val2 = tester.ReadStateValue(url2);
-
-    EXPECT_FALSE(state_val1.has_value());
-    ASSERT_TRUE(state_val2.has_value());
-    EXPECT_TRUE(state_val2->user_interaction_times.has_value());
-  }
-
-  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(), remove_mask,
-                                false);
-
-  {
-    std::optional<StateValue> state_val1 = tester.ReadStateValue(url1);
-    std::optional<StateValue> state_val2 = tester.ReadStateValue(url2);
-
-    EXPECT_FALSE(state_val1.has_value());
-    EXPECT_FALSE(state_val2.has_value());
-  }
-}
-
-TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveDIPSEventsByType) {
-  RemoveDIPSEventsTester tester(GetProfile());
-  GURL url1("https://example1.com");
-  GURL url2("https://example2.com");
-  GURL url3("https://example3.com");
-  base::Time two_hours_ago = base::Time::Now() - base::Hours(2);
-
-  tester.WriteEventTimes(url1, /*storage_time=*/base::Time::Now(),
-                         /*interaction_time=*/std::nullopt);
-  tester.WriteEventTimes(url2, /*storage_time=*/std::nullopt,
-                         /*interaction_time=*/base::Time::Now());
-  tester.WriteEventTimes(url3, /*storage_time=*/base::Time::Now(),
-                         /*interaction_time=*/two_hours_ago);
-
-  {
-    std::optional<StateValue> state_val1 = tester.ReadStateValue(url1);
-    std::optional<StateValue> state_val2 = tester.ReadStateValue(url2);
-    std::optional<StateValue> state_val3 = tester.ReadStateValue(url3);
-
-    ASSERT_TRUE(state_val1.has_value());
-    EXPECT_TRUE(state_val1->site_storage_times.has_value());
-
-    ASSERT_TRUE(state_val2.has_value());
-    EXPECT_TRUE(state_val2->user_interaction_times.has_value());
-
-    ASSERT_TRUE(state_val3.has_value());
-    EXPECT_TRUE(state_val3->site_storage_times.has_value());
-    EXPECT_TRUE(state_val3->user_interaction_times.has_value());
-  }
-
-  // Remove interaction events from DIPS Storage.
-  BlockUntilBrowsingDataRemoved(AnHourAgo(), base::Time::Max(),
-                                constants::DATA_TYPE_HISTORY, false);
-
-  // Verify the interaction event for url2 has been removed.
-  {
-    std::optional<StateValue> state_val1 = tester.ReadStateValue(url1);
-    std::optional<StateValue> state_val2 = tester.ReadStateValue(url2);
-    std::optional<StateValue> state_val3 = tester.ReadStateValue(url3);
-
-    ASSERT_TRUE(state_val1.has_value());
-    EXPECT_TRUE(state_val1->site_storage_times.has_value());
-
-    EXPECT_FALSE(state_val2.has_value());
-
-    ASSERT_TRUE(state_val3.has_value());
-    EXPECT_TRUE(state_val3->site_storage_times.has_value());
-    EXPECT_TRUE(state_val3->user_interaction_times.has_value());
-  }
-
-  // Remove storage events from DIPS Storage.
-  BlockUntilBrowsingDataRemoved(AnHourAgo(), base::Time::Max(),
-                                content::BrowsingDataRemover::DATA_TYPE_COOKIES,
-                                false);
-
-  // Verify the storage events for url1 and url3 have been removed.
-  {
-    std::optional<StateValue> state_val1 = tester.ReadStateValue(url1);
-    std::optional<StateValue> state_val2 = tester.ReadStateValue(url2);
-    std::optional<StateValue> state_val3 = tester.ReadStateValue(url3);
-
-    EXPECT_FALSE(state_val1.has_value());
-
-    EXPECT_FALSE(state_val2.has_value());
-
-    ASSERT_TRUE(state_val3.has_value());
-    EXPECT_FALSE(state_val3->site_storage_times.has_value());
-    EXPECT_TRUE(state_val3->user_interaction_times.has_value());
-  }
-}
-
-class ChromeBrowsingDataRemoverDelegateBlockPromptsTest
-    : public ChromeBrowsingDataRemoverDelegateTest {
- public:
-  ChromeBrowsingDataRemoverDelegateBlockPromptsTest() {
-    // This needs to be done before SetUp, to avoid tsan flakes due to tasks
-    // running on other threads checking if a feature is enabled.
-    feature_list_.InitWithFeatures(
-        {permissions::features::kBlockPromptsIfDismissedOften}, {});
-  }
-};
-
-TEST_F(ChromeBrowsingDataRemoverDelegateBlockPromptsTest,
+TEST_F(ChromeBrowsingDataRemoverDelegateTest,
        ClearPermissionPromptCounts) {
   RemovePermissionPromptCountsTest tester(GetProfile());
 
@@ -4594,9 +4411,7 @@ TEST_F(
 class ChromeBrowsingDataRemoverDelegateOriginTrialsTest
     : public ChromeBrowsingDataRemoverDelegateTest {
  public:
-  ChromeBrowsingDataRemoverDelegateOriginTrialsTest() {
-    feature_list_.InitAndEnableFeature(features::kPersistentOriginTrials);
-  }
+  ChromeBrowsingDataRemoverDelegateOriginTrialsTest() = default;
 
  protected:
   blink::ScopedTestOriginTrialPolicy origin_trial_policy_;

@@ -38,7 +38,7 @@ void LogStatusUma(const std::string& name, Status status) {
 
 SqlDatabase::SqlDatabase(
     const base::FilePath& path_to_db,
-    const std::string& histogram_tag,
+    sql::Database::Tag histogram_tag,
     int current_version_number,
     base::RepeatingCallback<int(SqlDatabase* db)> create_table_schema,
     base::RepeatingCallback<int(SqlDatabase* db, int current_version_number)>

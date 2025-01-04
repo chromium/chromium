@@ -16,7 +16,7 @@
 namespace gfx {
 class Size;
 class Rect;
-}
+}  // namespace gfx
 
 // Delegate interface to control layout decisions without having to depend on
 // Browser{,Frame,View}.

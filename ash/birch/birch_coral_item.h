@@ -21,6 +21,16 @@ class BirchChipButtonBase;
 
 class ASH_EXPORT BirchCoralItem : public BirchItem {
  public:
+  // The actions that perform to a coral group. These values are persisted to
+  // logs. Entries should not be renumbered and numeric values should never be
+  // reused.
+  enum class ActionType {
+    kRestore,
+    kLaunchToNewDesk,
+    kSaveAsDeskTemplate,
+    kMaxValue = kSaveAsDeskTemplate,
+  };
+
   BirchCoralItem(const std::u16string& coral_title,
                  const std::u16string& coral_text,
                  CoralSource source,

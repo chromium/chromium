@@ -164,6 +164,13 @@ std::unique_ptr<LayerContext> LayerTreeFrameSink::CreateLayerContext(
   return nullptr;
 }
 
+void LayerTreeFrameSink::CrashGpuProcessForTesting() {
+  if (shared_image_interface_) {
+    shared_image_interface_->gpu_channel()
+        ->CrashGpuProcessForTesting();  // IN-TEST
+  }
+}
+
 void LayerTreeFrameSink::OnContextLost() {
   DCHECK(client_);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

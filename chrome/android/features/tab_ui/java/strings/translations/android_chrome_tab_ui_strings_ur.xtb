@@ -77,7 +77,6 @@
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> ٹیب تبدیل ہو گیا، <ph name="ANY_CLOSED" /> بند ہو گیا}other{<ph name="MANY_CHANGED" /> ٹیبز تبدیل ہو گئے، <ph name="ANY_CLOSED" /> بند ہو گئے}}</translation>
 <translation id="4371591986692297148">غیر فعال ہے</translation>
 <translation id="4460014764210899310">گروپ ختم کریں</translation>
-<translation id="4590027107044272416">آپ اب یہاں ایک نیا ٹیب کھول سکتے ہیں</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{‫1 غیر فعال ٹیب بند کریں؟}other{<ph name="TAB_COUNT_MANY" /> غیر فعال ٹیبز بند کریں؟}}</translation>
 <translation id="4686942373615810936">ابھی ابھی تخلیق کیا گیا</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{1 دن کے بعد بند کریں}other{<ph name="DAY_COUNT_MANY" /> دن کے بعد بند کریں}}</translation>
@@ -98,7 +97,9 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ٹیب شامل کیا گیا}other{<ph name="MANY_ADDED" /> ٹیبز شامل کیے گئے}}</translation>
 <translation id="5161254044473106830">عنوان درکار ہے</translation>
 <translation id="5339733443032484186">آپ کا آخری ٹیب</translation>
+<translation id="5380159289133845234">ڈپلیکیٹ ٹیبز کو آرکائیو کریں</translation>
 <translation id="5400836586163650660">خاکستری</translation>
+<translation id="5446043142172831860">ٹیب کو ہٹائیں اور گروپ سے نکلیں</translation>
 <translation id="5490235265819901748">ٹیب گروپ پھیلا دیا گیا</translation>
 <translation id="5494920125229734069">سبھی کو منتخب کریں</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب، <ph name="COLOR_NAME" /> رنگ کے ساتھ ٹیب گروپ کو بند کریں}other{<ph name="TABS_COUNT_MANY" /> ٹیبز، <ph name="COLOR_NAME" /> رنگ کے ساتھ ٹیب گروپ کو بند کریں}}</translation>
@@ -117,6 +118,7 @@
 <translation id="6051432659151380973">آپ کے ٹیب گروپس خودکار طور پر محفوظ ہو جاتے ہیں</translation>
 <translation id="6054741997831917303">اس آئٹم کی قیمت حال ہی میں کم ہو کر <ph name="PREVIOUS_PRICE" /> سے <ph name="NEW_PRICE" /> ہوئی ہے</translation>
 <translation id="6082313992897617440">آپ فوری طور پر <ph name="GROUP_NAME" /> ٹیب گروپ تک رسائی سے محروم ہو جائیں گے</translation>
+<translation id="6109251075362363230">حال ہی میں سب سے زیادہ مستعمل کاپی کے استثناء کے ساتھ تمام ڈپلیکیٹ ٹیبز کو بھی آرکائیو کیا جائے گا۔</translation>
 <translation id="6193448654517602979">ٹیبز منتخب کریں</translation>
 <translation id="6228793724645064692">(اسٹور کی درجہ بندی)</translation>
 <translation id="6271513594716432922">تمام غیر فعال ٹیبز بند کریں</translation>

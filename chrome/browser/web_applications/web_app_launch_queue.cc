@@ -62,7 +62,9 @@ class EntriesBuilder {
                      url::Origin::Create(launch_url)),
                  launch_url,
                  content::GlobalRenderFrameHostId(
-                     web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+                     web_contents->GetPrimaryMainFrame()
+                         ->GetProcess()
+                         ->GetDeprecatedID(),
                      web_contents->GetPrimaryMainFrame()->GetRoutingID())) {
     entries_.reserve(expected_number_of_entries);
   }

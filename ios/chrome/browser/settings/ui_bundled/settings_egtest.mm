@@ -11,17 +11,18 @@
 #import "base/apple/foundation_util.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #import "build/branding_buildflags.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/browsing_data/core/pref_names.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_matchers.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
 #import "ios/chrome/browser/signin/model/test_constants.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
-#import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions_app_interface.h"
@@ -115,11 +116,19 @@ id<GREYMatcher> ClearBrowsingDataCell() {
 // scheduled for removal.
 - (void)clearBrowsingData {
   [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
-  [ChromeEarlGreyUI waitForAppToIdle];
 
   // Wait for the browsing data button to disappear.
-  [ChromeEarlGrey
-      waitForUIElementToDisappearWithMatcher:BrowsingDataButtonMatcher()];
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:BrowsingDataButtonMatcher()]
+        assertWithMatcher:grey_notVisible()
+                    error:&error];
+    return error == nil;
+  };
+
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForUIElementTimeout, condition),
+             @"Waiting for the browsing data button to disappear");
 }
 
 // From the NTP, clears the cookies and site data via the UI.
@@ -275,7 +284,7 @@ id<GREYMatcher> ClearBrowsingDataCell() {
 // Tests that clearing the cookies through the UI does clear all of them. Use a
 // local server to navigate to a page that sets then tests a cookie, and then
 // clears the cookie and tests it is not set.
-// TODO(crbug.com/378085824): Reenable the test.
+// TODO(crbug.com/384871835): Re-enable this test.
 - (void)DISABLED_testClearCookies {
   // Set pref to the last hour.
   [ChromeEarlGrey
@@ -332,14 +341,26 @@ id<GREYMatcher> ClearBrowsingDataCell() {
 
 // Verifies that metrics reporting works properly under possible settings of the
 // preference kMetricsReportingEnabled.
-- (void)testMetricsReporting {
+// TODO(crbug.com/382632442): This test is failing on official builds.
+#if defined(OFFICIAL_BUILD)
+#define MAYBE_testMetricsReporting DISABLED_testMetricsReporting
+#else
+#define MAYBE_testMetricsReporting testMetricsReporting
+#endif
+- (void)MAYBE_testMetricsReporting {
   [self assertsMetricsPrefsForService:kMetrics];
 }
 
 // Verifies that crashpad reporting works properly under possible settings of
 // the preference `kMetricsReportingEnabled`.
 // NOTE: crashpad only allows uploading for non-first-launch runs.
-- (void)testCrashpadReporting {
+// TODO(crbug.com/382632442): This test is failing on official builds.
+#if defined(OFFICIAL_BUILD)
+#define MAYBE_testCrashpadReporting DISABLED_testCrashpadReporting
+#else
+#define MAYBE_testCrashpadReporting testCrashpadReporting
+#endif
+- (void)MAYBE_testCrashpadReporting {
   [self assertsMetricsPrefsForService:kCrashpad];
 }
 

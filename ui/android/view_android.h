@@ -169,7 +169,6 @@ class UI_ANDROID_EXPORT ViewAndroid {
 
   gfx::Size GetPhysicalBackingSize() const;
   gfx::Size GetSize() const;
-  gfx::Rect bounds() const { return bounds_; }
 
   void OnSizeChanged(int width, int height);
   // |deadline_override| if not nullopt will be used as the cc::DeadlinePolicy

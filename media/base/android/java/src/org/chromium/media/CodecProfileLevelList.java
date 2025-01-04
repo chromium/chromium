@@ -9,10 +9,13 @@ import android.media.MediaCodecInfo.CodecProfileLevel;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.ArrayList;
 import java.util.List;
 
 @JNINamespace("media")
+@NullMarked
 class CodecProfileLevelList {
     private static final String TAG = "CodecProfileLevelList";
 

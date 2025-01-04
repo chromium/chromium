@@ -33,9 +33,9 @@
 
 namespace {
 
-// TODO(tluk): Similar bespoke checks are used throughout the codebase, this
-// approach is taken from BookmarkTabHelper. This should be factored out as a
-// common util and other callsites converted to use this.
+// TODO(crbug.com/382494946): Similar bespoke checks are used throughout the
+// codebase, this approach is taken from BookmarkTabHelper. This should be
+// factored out as a common util and other callsites converted to use this.
 bool IsNewTabPage(content::WebContents* const web_contents) {
   // Use the committed entry (or the visible entry, if the committed entry is
   // the initial NavigationEntry) so the bookmarks bar disappears at the same

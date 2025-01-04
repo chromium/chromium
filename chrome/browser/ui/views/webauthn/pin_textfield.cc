@@ -45,7 +45,7 @@ std::unique_ptr<gfx::RenderText> CreatePinDigitRenderText(
 }  // namespace
 
 PinTextfield::PinTextfield(int pin_digits_amount)
-    : views::Textfield(), pin_digits_count_(pin_digits_amount) {
+    : pin_digits_count_(pin_digits_amount) {
   CHECK_GE(pin_digits_count_, 0);
 
   SetCursorEnabled(false);

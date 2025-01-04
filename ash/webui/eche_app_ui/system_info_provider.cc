@@ -85,7 +85,7 @@ void SystemInfoProvider::GetSystemInfo(
   json_dictionary.Set(kJsonBoardNameKey, system_info_->GetBoardName());
   json_dictionary.Set(kJsonTabletModeKey,
                       display::Screen::GetScreen()->InTabletMode());
-  json_dictionary.Set(kJsonGaiaIdKey, system_info_->GetGaiaId());
+  json_dictionary.Set(kJsonGaiaIdKey, system_info_->GetGaiaId().ToString());
   json_dictionary.Set(kJsonDeviceTypeKey, system_info_->GetDeviceType());
   json_dictionary.Set(kJsonOsVersionKey, system_info_->GetOsVersion());
   json_dictionary.Set(kJsonChannelKey, system_info_->GetChannel());

@@ -44,6 +44,8 @@
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
+#include "third_party/blink/public/mojom/ai/ai_rewriter.mojom.h"
+#include "third_party/blink/public/mojom/ai/ai_writer.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
@@ -349,16 +351,55 @@ void AIManager::CreateSummarizer(
                      std::move(client));
 }
 
+blink::mojom::AIModelInfoPtr AIManager::GetLanguageModelInfo() {
+  auto model_info = blink::mojom::AIModelInfo::New(
+      optimization_guide::features::GetOnDeviceModelDefaultTopK(),
+      GetLanguageModelMaxTopK(),
+      optimization_guide::features::GetOnDeviceModelDefaultTemperature());
+
+  auto sampling_params_config =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context_))
+          ->GetSamplingParamsConfig(
+              optimization_guide::ModelBasedCapabilityKey::kPromptApi);
+  if (!sampling_params_config.has_value()) {
+    return model_info;
+  }
+  if (sampling_params_config->default_top_k.has_value()) {
+    model_info->default_top_k = sampling_params_config->default_top_k.value();
+  }
+  if (sampling_params_config->default_temperature.has_value()) {
+    model_info->default_temperature =
+        sampling_params_config->default_temperature.value();
+  }
+  return model_info;
+}
+
+optimization_guide::SamplingParams
+AIManager::GetLanguageModelDefaultSamplingParams() {
+  auto model_info = GetLanguageModelInfo();
+  return optimization_guide::SamplingParams{model_info->default_top_k,
+                                            model_info->default_temperature};
+}
+
+// This is the method to get the info for AILanguageModel.
+// TODO(crbug.com/367771112): rename the mojom method to make this clear.
 void AIManager::GetModelInfo(GetModelInfoCallback callback) {
-  auto default_sampling_params = GetLanguageModelDefaultSamplingParams();
-  std::move(callback).Run(blink::mojom::AIModelInfo::New(
-      default_sampling_params.top_k, GetLanguageModelMaxTopK(),
-      default_sampling_params.temperature));
+  std::move(callback).Run(GetLanguageModelInfo());
+}
+
+void AIManager::CanCreateWriter(blink::mojom::AIWriterCreateOptionsPtr options,
+                                CanCreateWriterCallback callback) {
+  // TODO(crbug.com/382596381): Check Options.
+  // TODO(crbug.com/382325795): Use kWritingAssistanceApi instead of kCompose.
+  CanCreateSession(optimization_guide::ModelBasedCapabilityKey::kCompose,
+                   std::move(callback));
 }
 
 void AIManager::CreateWriter(
     mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client,
     blink::mojom::AIWriterCreateOptionsPtr options) {
+  // TODO(crbug.com/382325795): Use kWritingAssistanceApi instead of kCompose.
   CreateContextBoundObjectTask<AIWriter, blink::mojom::AIWriter,
                                blink::mojom::AIManagerCreateWriterClient,
                                blink::mojom::AIWriterCreateOptionsPtr>::
@@ -366,6 +407,15 @@ void AIManager::CreateWriter(
                      optimization_guide::ModelBasedCapabilityKey::kCompose,
                      context_bound_object_set_, std::move(options),
                      std::move(client));
+}
+
+void AIManager::CanCreateRewriter(
+    blink::mojom::AIRewriterCreateOptionsPtr options,
+    CanCreateRewriterCallback callback) {
+  // TODO(crbug.com/382615217): Check Options.
+  // TODO(crbug.com/382325795): Use kWritingAssistanceApi instead of kCompose.
+  CanCreateSession(optimization_guide::ModelBasedCapabilityKey::kCompose,
+                   std::move(callback));
 }
 
 void AIManager::CreateRewriter(
@@ -382,6 +432,7 @@ void AIManager::CreateRewriter(
     client_remote->OnResult(mojo::PendingRemote<blink::mojom::AIRewriter>());
     return;
   }
+  // TODO(crbug.com/382325795): Use kWritingAssistanceApi instead of kCompose.
   CreateContextBoundObjectTask<AIRewriter, blink::mojom::AIRewriter,
                                blink::mojom::AIManagerCreateRewriterClient,
                                blink::mojom::AIRewriterCreateOptionsPtr>::
@@ -421,15 +472,13 @@ void AIManager::CanCreateSession(
   }
 
   // If the `OptimizationGuideKeyedService` cannot create new session, return
-  // false.
-  optimization_guide::OnDeviceModelEligibilityReason
-      on_device_model_eligibility_reason;
-  if (!service->CanCreateOnDeviceSession(capability,
-                                         &on_device_model_eligibility_reason)) {
+  // the reason.
+  auto eligibility = service->GetOnDeviceModelEligibility(capability);
+  if (eligibility !=
+      optimization_guide::OnDeviceModelEligibilityReason::kSuccess) {
     std::move(callback).Run(
-        /*result=*/
         ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
-            on_device_model_eligibility_reason));
+            eligibility));
     return;
   }
 
@@ -482,38 +531,6 @@ void AIManager::OnModelPathValidationComplete(const std::string& model_path,
         "Unable to create a session because the model path ('%s') is invalid.",
         model_path.c_str());
   }
-}
-
-optimization_guide::SamplingParams
-AIManager::GetLanguageModelDefaultSamplingParams() {
-  if (default_language_model_sampling_params_.has_value()) {
-    return default_language_model_sampling_params_.value();
-  }
-
-  // Create a `kPromptApi` session without specifying the config params. The
-  // session should be created using the default value from the model execution
-  // config.
-  // TODO(crbug.com/372349624): implement a way to fetch the default params
-  // without creating a dummy session.
-  OptimizationGuideKeyedService* service =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context_));
-  using optimization_guide::SessionConfigParams;
-  SessionConfigParams config_params = SessionConfigParams{
-      .execution_mode = SessionConfigParams::ExecutionMode::kOnDeviceOnly,
-      .logging_mode = SessionConfigParams::LoggingMode::kAlwaysDisable,
-  };
-  auto session = service->StartSession(
-      optimization_guide::ModelBasedCapabilityKey::kPromptApi, config_params);
-
-  if (session) {
-    default_language_model_sampling_params_ = session->GetSamplingParams();
-    return default_language_model_sampling_params_.value();
-  }
-  return optimization_guide::SamplingParams{
-      uint32_t(optimization_guide::features::GetOnDeviceModelMaxTopK()),
-      float(
-          optimization_guide::features::GetOnDeviceModelDefaultTemperature())};
 }
 
 uint32_t AIManager::GetLanguageModelMaxTopK() {

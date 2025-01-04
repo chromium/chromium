@@ -332,15 +332,17 @@ CORE_EXPORT float ToRestrictedFloat(v8::Isolate*,
                                     ExceptionState&);
 
 inline std::optional<base::Time> ToCoreNullableDate(
-    v8::Isolate* isolate,
-    v8::Local<v8::Value> object,
+    const ScriptObject& script_object,
     ExceptionState& exception_state) {
   // https://html.spec.whatwg.org/C/#common-input-element-apis:dom-input-valueasdate-2
   //   ... otherwise if the new value is null or a Date object representing the
   //   NaN time value, then set the value of the element to the empty string;
   // We'd like to return same values for |null| and an invalid Date object.
-  if (object->IsNull())
+  if (script_object.IsNull()) {
     return std::nullopt;
+  }
+
+  v8::Local<v8::Object> object = script_object.V8Object();
   if (!object->IsDate()) {
     exception_state.ThrowTypeError("The provided value is not a Date.");
     return std::nullopt;
@@ -349,6 +351,18 @@ inline std::optional<base::Time> ToCoreNullableDate(
   if (!std::isfinite(time_value))
     return std::nullopt;
   return base::Time::FromMillisecondsSinceUnixEpoch(time_value);
+}
+
+inline ScriptObject ToV8FromDate(ScriptState* script_state,
+                                 const std::optional<base::Time>& date) {
+  if (!date) {
+    return ScriptObject::CreateNull(script_state->GetIsolate());
+  }
+  return ScriptObject(
+      script_state->GetIsolate(),
+      v8::Date::New(script_state->GetContext(),
+                    date->InMillisecondsFSinceUnixEpochIgnoringNull())
+          .ToLocalChecked());
 }
 
 // USVString conversion helper.

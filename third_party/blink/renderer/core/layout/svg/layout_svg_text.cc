@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_inline.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
@@ -245,6 +246,9 @@ SVGLayoutResult LayoutSVGText::UpdateSVGLayout(
   BlockNode(this).Layout(builder.ToConstraintSpace());
 
   needs_update_bounding_box_ = true;
+  if (RuntimeEnabledFeatures::SvgTspanBboxCacheEnabled()) {
+    InvalidateDescendantObjectBoundingBoxes();
+  }
 
   const gfx::RectF boundaries = ObjectBoundingBox();
   const bool bounds_changed = old_boundaries != boundaries;
@@ -404,6 +408,16 @@ void LayoutSVGText::SetNeedsTextMetricsUpdate() {
 bool LayoutSVGText::NeedsTextMetricsUpdate() const {
   NOT_DESTROYED();
   return needs_text_metrics_update_;
+}
+
+void LayoutSVGText::InvalidateDescendantObjectBoundingBoxes() {
+  NOT_DESTROYED();
+  for (LayoutObject* object = NextInPreOrder(this); object;
+       object = object->NextInPreOrder(this)) {
+    if (auto* svg_inline = DynamicTo<LayoutSVGInline>(object)) {
+      svg_inline->InvalidateObjectBoundingBox();
+    }
+  }
 }
 
 LayoutSVGText* LayoutSVGText::LocateLayoutSVGTextAncestor(LayoutObject* start) {

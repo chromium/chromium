@@ -31,6 +31,7 @@ using CompositingReasons = uint64_t;
   V(ActiveFilterAnimation)                                                     \
   V(ActiveBackdropFilterAnimation)                                             \
   V(AffectedByOuterViewportBoundsDelta)                                        \
+  V(AffectedBySafeAreaBottom)                                                  \
   V(FixedPosition)                                                             \
   V(UndoOverscroll)                                                            \
   V(StickyPosition)                                                            \
@@ -127,7 +128,7 @@ class PLATFORM_EXPORT CompositingReason {
         kWillChangeTransform | kWillChangeScale | kWillChangeRotate,
     kDirectReasonsForPaintOffsetTranslationProperty =
         kFixedPosition | kAffectedByOuterViewportBoundsDelta | kUndoOverscroll |
-        kVideo | kCanvas | kPlugin | kIFrame,
+        kVideo | kCanvas | kPlugin | kIFrame | kAffectedBySafeAreaBottom,
     // TODO(dbaron): kWillChangeOther probably shouldn't be in this list.
     // TODO(vmpstr): kViewTransitionElement is needed to make sure that the
     // capture escapes clips when view transition has a descendant that

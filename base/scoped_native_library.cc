@@ -28,8 +28,9 @@ ScopedNativeLibrary::ScopedNativeLibrary(ScopedNativeLibrary&& scoped_library)
     : BaseClass(scoped_library.release()), error_() {}
 
 void* ScopedNativeLibrary::GetFunctionPointer(const char* function_name) const {
-  if (!is_valid())
+  if (!is_valid()) {
     return nullptr;
+  }
   return GetFunctionPointerFromNativeLibrary(get(), function_name);
 }
 

@@ -14,6 +14,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/events/event_rewriter_controller_impl.h"
 #include "ash/events/peripheral_customization_event_rewriter.h"
+#include "ash/login/login_screen_controller.h"
 #include "ash/public/cpp/accelerators_util.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
@@ -68,6 +69,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/ash/keyboard_capability.h"
+#include "ui/events/ash/top_row_action_keys.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/keyboard_device.h"
 #include "ui/events/devices/touchpad_device.h"
@@ -133,6 +135,8 @@ constexpr mojom::TopRowActionKey ConvertTopRowActionKey(
       return mojom::TopRowActionKey::kDictation;
     case ui::TopRowActionKey::kAccessibility:
       return mojom::TopRowActionKey::kAccessibility;
+    case ui::TopRowActionKey::kDoNotDisturb:
+      return mojom::TopRowActionKey::kDoNotDisturb;
     case ui::TopRowActionKey::kUnknown:
     case ui::TopRowActionKey::kNone:
       return mojom::TopRowActionKey::kNone;
@@ -771,6 +775,7 @@ void InputDeviceSettingsControllerImpl::Init() {
   Shell::Get()->session_controller()->AddObserver(this);
   CHECK(input_method::InputMethodManager::Get());
   input_method::InputMethodManager::Get()->AddObserver(this);
+  Shell::Get()->login_screen_controller()->data_dispatcher()->AddObserver(this);
 
   if (features::IsWelcomeExperienceEnabled()) {
     message_center::MessageCenter::Get()->AddObserver(this);
@@ -917,6 +922,8 @@ void InputDeviceSettingsControllerImpl::InitializeOnBluetoothReady(
 
 InputDeviceSettingsControllerImpl::~InputDeviceSettingsControllerImpl() {
   Shell::Get()->session_controller()->RemoveObserver(this);
+  Shell::Get()->login_screen_controller()->data_dispatcher()->RemoveObserver(
+      this);
   if (features::IsWelcomeExperienceEnabled()) {
     message_center::MessageCenter::Get()->RemoveObserver(this);
   }

@@ -6,12 +6,17 @@
 
 #include <memory>
 
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/views/chrome_views_test_base.h"
+#include "components/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/actions/actions.h"
 #include "ui/views/actions/action_view_controller.h"
 
@@ -30,29 +35,42 @@ class MockIconLabelViewDelegate : public IconLabelBubbleView::Delegate {
               (const, override));
 };
 
-class PageActionViewTest : public ::testing::Test {
+class PageActionViewTest : public ChromeViewsTestBase {
  public:
   PageActionViewTest() = default;
 
   void SetUp() override {
+    ChromeViewsTestBase::SetUp();
+    // Use any arbitrary vector icon.
+    auto image = ui::ImageModel::FromVectorIcon(vector_icons::kBackArrowIcon,
+                                                ui::kColorSysPrimary,
+                                                /*icon_size=*/16);
     action_item_ = actions::ActionManager::Get().AddAction(
-        actions::ActionItem::Builder().SetActionId(0).Build());
+        actions::ActionItem::Builder().SetActionId(0).SetImage(image).Build());
     page_action_view_ = std::make_unique<PageActionView>(
         action_item_, &icon_label_view_delegate_);
     action_view_controller_ = std::make_unique<views::ActionViewController>();
     action_view_controller_->CreateActionViewRelationship(
         page_action_view_.get(), action_item_->GetAsWeakPtr());
+
+    profile_ = std::make_unique<TestingProfile>();
+    pinned_actions_model_ =
+        std::make_unique<PinnedToolbarActionsModel>(profile_.get());
   }
 
   void TearDown() override {
+    ChromeViewsTestBase::TearDown();
     action_view_controller_.reset();
     page_action_view_.reset();
     action_item_ = nullptr;
     actions::ActionManager::Get().ResetActions();
+    pinned_actions_model_.reset();
+    profile_.reset();
   }
 
   std::unique_ptr<PageActionController> NewPageActionController() const {
-    auto controller = std::make_unique<PageActionController>();
+    auto controller =
+        std::make_unique<PageActionController>(pinned_actions_model_.get());
     controller->Initialize({action_item_->GetActionId().value()});
     return controller;
   }
@@ -71,6 +89,9 @@ class PageActionViewTest : public ::testing::Test {
   raw_ptr<actions::ActionItem> action_item_;
 
   MockIconLabelViewDelegate icon_label_view_delegate_;
+
+  std::unique_ptr<PinnedToolbarActionsModel> pinned_actions_model_;
+  std::unique_ptr<TestingProfile> profile_;
 
   // Must exist in order to create PageActionView during the test.
   views::LayoutProvider layout_provider_;
@@ -176,6 +197,44 @@ TEST_F(PageActionViewTest, NoActiveController) {
 
   view->OnNewActiveController(nullptr);
   EXPECT_FALSE(view->GetVisible());
+}
+
+// Test that OnThemeChanged updates the icon image correctly.
+TEST_F(PageActionViewTest, OnThemeChangedUpdatesIconImage) {
+  // Simulate OnThemeChanged.
+  page_action_view()->OnThemeChanged();
+
+  // Verify that UpdateIconImage is invoked and sets a valid image model.
+  gfx::ImageSkia image_model =
+      page_action_view()->GetImage(views::Button::STATE_NORMAL);
+  ASSERT_FALSE(image_model.isNull());
+}
+
+// Test that UpdateBorder adjusts the insets based on label visibility.
+TEST_F(PageActionViewTest, UpdateBorderAdjustsInsets) {
+  // Test case: Label visibility is true.
+  page_action_view()->SetShouldShowLabelForTesting(true);
+  gfx::Insets initial_insets = page_action_view()->GetInsets();
+
+  // Simulate UpdateBorder when label is visible.
+  page_action_view()->UpdateBorder();
+  gfx::Insets updated_insets_true = page_action_view()->GetInsets();
+
+  // Verify that insets are updated when the label is visible.
+  EXPECT_NE(initial_insets, updated_insets_true);
+
+  // Test case: Label visibility is false.
+  page_action_view()->SetShouldShowLabelForTesting(false);
+
+  // Simulate UpdateBorder when label is not visible.
+  page_action_view()->UpdateBorder();
+  gfx::Insets updated_insets_false = page_action_view()->GetInsets();
+
+  // Verify that insets remain unchanged when the label is not visible.
+  EXPECT_EQ(initial_insets, updated_insets_false);
+
+  // Verify that true and false cases result in different insets.
+  EXPECT_NE(updated_insets_true, updated_insets_false);
 }
 
 }  // namespace

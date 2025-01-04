@@ -4,6 +4,8 @@
 
 package org.chromium.base;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Marker interface to be implemented by classes which makes them attachable to a host class that
  * holds {@link UnownedUserDataHost} entries.
@@ -19,6 +21,7 @@ package org.chromium.base;
  * @see UnownedUserDataHost for more details on ownership and typical usage.
  * @see UnownedUserDataKey for information about the type of key that is required.
  */
+@NullMarked
 public interface UnownedUserData {
     /**
      * Invoked whenever the particular UnownedUserData has been removed from a particular host. If

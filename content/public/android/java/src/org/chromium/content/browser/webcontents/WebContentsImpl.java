@@ -1232,6 +1232,12 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
                         mNativeWebContentsAndroid, oldOffsetTagsInfo, offsetTagsInfo);
     }
 
+    @Override
+    public void disconnectFileSelectListenerIfAny() {
+        if (mNativeWebContentsAndroid == 0) return;
+        WebContentsImplJni.get().disconnectFileSelectListenerIfAny(mNativeWebContentsAndroid);
+    }
+
     private void checkNotDestroyed() {
         if (mNativeWebContentsAndroid != 0) return;
         throw new IllegalStateException(
@@ -1449,6 +1455,8 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
                 long nativeWebContentsAndroid,
                 BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
                 BrowserControlsOffsetTagsInfo offsetTagsInfo);
+
+        void disconnectFileSelectListenerIfAny(long nativeWebContentsAndroid);
 
         void captureContentAsBitmapForTesting(
                 long nativeWebContentsAndroid, Callback<Bitmap> callback);

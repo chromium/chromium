@@ -100,11 +100,11 @@ SafetyHubMenuNotificationService::SafetyHubMenuNotificationService(
 #if !BUILDFLAG(IS_ANDROID)
   pref_dict_key_map_.emplace(safety_hub::SafetyHubModuleType::EXTENSIONS,
                              "extensions");
-  SetInfoElement(safety_hub::SafetyHubModuleType::EXTENSIONS,
-                 MenuNotificationPriority::LOW, base::Days(10),
-                 base::BindRepeating(&SafetyHubExtensionsResult::GetResult,
-                                     profile, true),
-                 stored_notifications);
+  SetInfoElement(
+      safety_hub::SafetyHubModuleType::EXTENSIONS,
+      MenuNotificationPriority::LOW, base::Days(10),
+      base::BindRepeating(&SafetyHubExtensionsResult::GetResult, profile, true),
+      stored_notifications);
 
   // PasswordStatusCheckService might be null for some profiles and testing. Add
   // the info item only if the service is available.

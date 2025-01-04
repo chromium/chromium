@@ -7,10 +7,13 @@ package org.chromium.components.variations;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.HashMap;
 
 /** Wrapper for variations. */
 @JNINamespace("variations::android")
+@NullMarked
 public final class VariationsAssociatedData {
 
     private VariationsAssociatedData() {}

@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -39,8 +38,6 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace extensions {
 
@@ -91,9 +88,7 @@ class ExtensionMessagePort::FrameTracker : public content::WebContentsObserver,
 
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override {
-    if (base::FeatureList::IsEnabled(
-            features::kDisconnectExtensionMessagePortWhenPageEntersBFCache) &&
-        navigation_handle->HasCommitted()) {
+    if (navigation_handle->HasCommitted()) {
       // Close the channel and force all the ports from the channel to be
       // closed when the old RFH is going to be stored in BFCache. They will
       // not be able to receive any message sent through the port.
@@ -503,7 +498,7 @@ void ExtensionMessagePort::DispatchOnConnect(
         &ExtensionMessagePort::Prune, base::Unretained(this), port_context,
         open_channel_dispatch_for_frame_tracking_id));
     AddReceiver(message_port_host.InitWithNewEndpointAndPassReceiver(),
-                frame->GetProcess()->GetID(), port_context);
+                frame->GetProcess()->GetDeprecatedID(), port_context);
 
     pending_contexts_to_respond_.insert(port_context);
 
@@ -887,30 +882,14 @@ bool ExtensionMessagePort::ShouldSkipFrameForBFCache(
   // TODO (crbug.com/1382623): currently we only make use of the base URL,
   // it's also possible to get the full URL from extension ID so it could
   // provide more useful context.
-  if (render_frame_host &&
-      render_frame_host->IsInLifecycleState(
-          content::RenderFrameHost::LifecycleState::kInBackForwardCache)) {
-    // The ExtensionMessagePort should be disconnected when the page enters
-    // BFCache if `kDisconnectExtensionMessagePortWhenPageEntersBFCache` is
-    // enabled, so no message will be sent to the BFCached target. There could
-    // be some messages that were created before the ExtensionMessagePort is
-    // disconnected, and they should be discarded.
-    // TODO(crbug.com/40283601): clean up the flag.
-    if (!base::FeatureList::IsEnabled(
-            features::kDisconnectExtensionMessagePortWhenPageEntersBFCache)) {
-      content::BackForwardCache::DisableForRenderFrameHost(
-          render_frame_host,
-          back_forward_cache::DisabledReason(
-              back_forward_cache::DisabledReasonId::
-                  kExtensionSentMessageToCachedFrame,
-              /*context=*/extension_id_),
-          ukm::UkmRecorder::GetSourceIdForExtensionUrl(
-              base::PassKey<ExtensionMessagePort>(),
-              Extension::GetBaseURLFromExtensionId(extension_id_)));
-    }
-    return true;
-  }
-  return false;
+
+  // The ExtensionMessagePort should be disconnected when the page enters
+  // BFCache, so no message will be sent to the BFCached target. There could
+  // be some messages that were created before the ExtensionMessagePort is
+  // disconnected, and they should be discarded.
+  return render_frame_host &&
+         render_frame_host->IsInLifecycleState(
+             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 }
 
 }  // namespace extensions

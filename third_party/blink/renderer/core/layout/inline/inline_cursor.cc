@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 
 #include "base/containers/adapters.h"
@@ -270,9 +265,10 @@ InlineCursor InlineCursor::CursorForDescendants() const {
     if (descendants_count > 1) {
       DCHECK(root_box_fragment_);
       DCHECK(fragment_items_);
-      return InlineCursor(
-          *root_box_fragment_, *fragment_items_,
-          ItemsSpan(&*(current_.item_iter_ + 1), descendants_count - 1));
+      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+      return InlineCursor(*root_box_fragment_, *fragment_items_,
+                          UNSAFE_TODO(ItemsSpan(&*(current_.item_iter_ + 1),
+                                                descendants_count - 1)));
     }
     return InlineCursor();
   }

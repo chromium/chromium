@@ -34,7 +34,6 @@
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/support_tool/support_tool_ui_utils.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -54,6 +53,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/selected_file_info.h"
+#include "ui/webui/webui_util.h"
 #include "url/gurl.h"
 
 bool SupportToolUIConfig::IsWebUIEnabled(
@@ -413,7 +413,7 @@ void SupportToolMessageHandler::HandleStartDataExport(
       /*file_types=*/&file_types,
       /*file_type_index=*/0,
       /*default_extension=*/base::FilePath::StringType(), owning_window,
-      /*params=*/nullptr);
+      /*caller=*/nullptr);
 }
 
 void SupportToolMessageHandler::FileSelected(const ui::SelectedFileInfo& file,

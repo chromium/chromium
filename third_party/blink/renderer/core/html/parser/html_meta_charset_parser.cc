@@ -88,10 +88,9 @@ bool HTMLMetaCharsetParser::CheckForMetaCharset(base::span<const char> data) {
   while (HTMLToken* token = tokenizer_->NextToken(input_)) {
     bool end = token->GetType() == HTMLToken::kEndTag;
     if (end || token->GetType() == HTMLToken::kStartTag) {
-      const html_names::HTMLTag tag =
-          token->GetName().IsEmpty()
-              ? html_names::HTMLTag::kUnknown
-              : lookupHTMLTag(token->GetName().data(), token->GetName().size());
+      const html_names::HTMLTag tag = token->GetName().IsEmpty()
+                                          ? html_names::HTMLTag::kUnknown
+                                          : LookupHtmlTag(token->GetName());
       if (!end && tag != html_names::HTMLTag::kUnknown) {
         tokenizer_->UpdateStateFor(tag);
         if (tag == html_names::HTMLTag::kMeta && ProcessMeta(*token)) {

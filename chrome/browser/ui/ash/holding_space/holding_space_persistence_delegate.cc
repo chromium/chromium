@@ -65,21 +65,24 @@ void HoldingSpacePersistenceDelegate::Init() {
 
 void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemsAdded(
     const std::vector<const HoldingSpaceItem*>& items) {
-  if (is_restoring_persistence())
+  if (is_restoring_persistence()) {
     return;
+  }
 
   // Write the new finalized `items` to persistent storage.
   ScopedListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
   for (const HoldingSpaceItem* item : items) {
-    if (item->progress().IsComplete())
+    if (item->progress().IsComplete()) {
       update->Append(item->Serialize());
+    }
   }
 }
 
 void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemsRemoved(
     const std::vector<const HoldingSpaceItem*>& items) {
-  if (is_restoring_persistence())
+  if (is_restoring_persistence()) {
     return;
+  }
 
   // Remove the `items` from persistent storage.
   ScopedListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
@@ -93,12 +96,14 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemsRemoved(
 void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemUpdated(
     const HoldingSpaceItem* item,
     const HoldingSpaceItemUpdatedFields& updated_fields) {
-  if (is_restoring_persistence())
+  if (is_restoring_persistence()) {
     return;
+  }
 
   // Only finalized items are persisted.
-  if (!item->progress().IsComplete())
+  if (!item->progress().IsComplete()) {
     return;
+  }
 
   // Attempt to find the finalized `item` in persistent storage.
   ScopedListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
@@ -122,8 +127,9 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemUpdated(
       list.Insert(item_it, base::Value(item->Serialize()));
       return;
     }
-    if (candidate_item->progress().IsComplete())
+    if (candidate_item->progress().IsComplete()) {
       ++item_it;
+    }
   }
 
   // The finalized `item` should exist in the model and be handled above.

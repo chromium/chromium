@@ -845,6 +845,7 @@
 <translation id="6385591741672306837">ಕಾಲಮ್</translation>
 <translation id="6387719785439924554">ಪಕ್ಕದಲ್ಲಿ</translation>
 <translation id="6393014464788431702">ಎಲ್ಲಾ ಈವೆಂಟ್ ಫಿಲ್ಟರ್‌ಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
+<translation id="6406989068857078334">ಮೌಸ್ ನಿಧಾನಗೊಳಿಸುತ್ತದೆ, ಕ್ಲಿಕ್ ಮಾಡಲು ಮತ್ತೊಮ್ಮೆ <ph name="GESTURE" /> ಮಾಡಿ</translation>
 <translation id="6411569524720229058">ಶರತ್ಕಾಲ</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{ವಿವರಣೆ ಚಿಹ್ನೆ}one{# ವಿವರಣೆ ಚಿಹ್ನೆಗಳು}other{# ವಿವರಣೆ ಚಿಹ್ನೆಗಳು}}</translation>
@@ -1098,6 +1099,7 @@
 <translation id="8205922869661890178">ಡೆವಲಪರ್ ಲಾಗ್ ಪುಟವನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="8212109599554677485">ಡಿಸ್‌ಪ್ಲೇ ಶೈಲಿಯನ್ನು ಅಕ್ಕ ಪಕ್ಕಕ್ಕೆ ಬದಲಾಯಿಸಿ</translation>
 <translation id="8215202828671303819">ಬಹು ಆಯ್ಕೆ</translation>
+<translation id="822316432305106615">ನಿಖರವಾದ ಕ್ಲಿಕ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />% ಅಪಾರದರ್ಶಕತೆ.</translation>
 <translation id="8261506727792406068">ಅಳಿಸಿ</translation>
 <translation id="826825447994856889">ಪರಿಚಯ</translation>

@@ -203,7 +203,7 @@ class Deque {
     constexpr TypeConstraints() {
       static_assert((InlineCapacity == 0) || !Allocator::kIsGarbageCollected,
                     "InlineCapacity not supported with garbage collection.");
-      static_assert(!IsStackAllocatedType<T>);
+      static_assert(!IsStackAllocatedTypeV<T>);
       static_assert(!std::is_polymorphic<T>::value ||
                         !VectorTraits<T>::kCanInitializeWithMemset,
                     "Cannot initialize with memset if there is a vtable");
@@ -212,8 +212,7 @@ class Deque {
                     "Cannot put DISALLOW_NEW objects that "
                     "have trace methods into an off-heap Deque");
       static_assert(
-          Allocator::kIsGarbageCollected ||
-              !IsPointerToGarbageCollectedType<T>::value,
+          Allocator::kIsGarbageCollected || !IsPointerToGarbageCollectedType<T>,
           "Cannot put raw pointers to garbage-collected classes into a "
           "Deque. Use HeapDeque<Member<T>> instead.");
     }

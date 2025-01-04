@@ -17,7 +17,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "components/metrics/call_stacks/call_stack_profile_metrics_provider.h"
 #include "third_party/cros_system_api/proto/stack_sampled_metrics_status/stack_sampled_metrics_status.pb.h"
 
@@ -26,11 +25,7 @@ namespace metrics {
 namespace {
 // The path to write to. Deliberately not using base::GetTempDir() here;
 // the tast test needs to known the complete, exact path.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-constexpr char kDefaultFilePath[] = "/tmp/stack-sampling-data-lacros";
-#else
 constexpr char kDefaultFilePath[] = "/tmp/stack-sampling-data";
-#endif
 
 // Time between writes. This is very short because we are only using this as
 // part of an integration test and the test doesn't want to have a large

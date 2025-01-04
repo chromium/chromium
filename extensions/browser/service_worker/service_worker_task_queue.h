@@ -290,7 +290,10 @@ class ServiceWorkerTaskQueue
   void OnDestruct(content::ServiceWorkerContext* context) override;
 
   // content::ServiceWorkerContextObserverSynchronous:
-
+  // Listens to worker stopping and removes tracking of worker state if found.
+  void OnStopping(
+      int64_t version_id,
+      const content::ServiceWorkerRunningInfo& worker_info) override;
   // Listens to worker stops and removes tracking of this worker if found.
   void OnStopped(int64_t version_id,
                  const content::ServiceWorkerRunningInfo& worker_info) override;
@@ -385,6 +388,12 @@ class ServiceWorkerTaskQueue
   // KeyedService:
   void Shutdown() override;
 
+  // Untracks the service worker from any state that believe the worker in ready
+  // to receive extension events.
+  void UntrackServiceWorkerState(
+      int64_t version_id,
+      const content::ServiceWorkerRunningInfo& worker_info);
+
   void RegisterServiceWorker(RegistrationReason reason,
                              const SequencedContextId& context_id,
                              const Extension& extension);
@@ -423,7 +432,7 @@ class ServiceWorkerTaskQueue
                               int thread_id);
   void DidStartWorkerFail(const SequencedContextId& context_id,
                           base::Time start_time,
-                          blink::ServiceWorkerStatusCode status_code);
+                          content::StatusCodeResponse status);
 
   bool IsStartWorkerFailureUnexpected(
       blink::ServiceWorkerStatusCode status_code);

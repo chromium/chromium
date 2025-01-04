@@ -1435,26 +1435,6 @@
       "features": [
         "skia_graphite"
       ]
-    },
-    {
-      "id": 182,
-      "cr_bugs": [332731568],
-      "description": "Accelerated video decoding fails with SkiaGraphite on win10+nvidia",
-      "os": {
-        "type": "win",
-        "version": {
-          "op": "<",
-          "value": "10.0.22621"
-        }
-      },
-      "vendor_id": "0x10de",
-      "driver_version": {
-        "op": "<",
-        "value": "31.0.15.3623"
-      },
-      "features": [
-        "skia_graphite"
-      ]
     }
   ]
 }

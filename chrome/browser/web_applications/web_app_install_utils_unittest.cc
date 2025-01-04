@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 
@@ -1500,18 +1496,19 @@ TEST_P(FileHandlersFromManifestTest, PopulateFileHandlerIcons) {
   // The metadata we expect to be saved after icons are finished downloading and
   // processing. Note that the icon sizes saved to `apps::FileHandler::icons`
   // match downloaded sizes, not those specified in the manifest.
-  struct {
+  struct Expectations {
     GURL expected_url;
     apps::IconInfo::SquareSizePx expected_size;
     apps::IconInfo::Purpose expected_purpose;
-  } expectations[] = {
+  };
+  auto expectations = std::to_array<Expectations>({
       {first_image_url, 17, apps::IconInfo::Purpose::kAny},
       {first_image_url, 29, apps::IconInfo::Purpose::kAny},
       {second_image_url, 79, apps::IconInfo::Purpose::kAny},
       {second_image_url, 134, apps::IconInfo::Purpose::kAny},
       {second_image_url, 79, apps::IconInfo::Purpose::kMaskable},
       {second_image_url, 134, apps::IconInfo::Purpose::kMaskable},
-  };
+  });
 
   const size_t num_expectations =
       sizeof(expectations) / sizeof(expectations[0]);
@@ -1635,17 +1632,19 @@ TEST_P(FileHandlersFromManifestTest, PopulateFileHandlingAndHomeTabIcons) {
   // The metadata we expect to be saved after icons are finished downloading and
   // processing. Note that the icon sizes saved to `apps::FileHandler::icons`
   // match downloaded sizes, not those specified in the manifest.
-  struct {
+  struct Expectations {
     GURL expected_url;
     apps::IconInfo::SquareSizePx expected_size;
     apps::IconInfo::Purpose expected_purpose;
-  } expectations[] = {
+  };
+  auto expectations = std::to_array<Expectations>({
       {kFileHandlerIconUrl2, 17, apps::IconInfo::Purpose::kAny},
       {kFileHandlerIconUrl2, 29, apps::IconInfo::Purpose::kAny},
       {kFileHandlerIconUrl1, 79, apps::IconInfo::Purpose::kAny},
       {kFileHandlerIconUrl1, 134, apps::IconInfo::Purpose::kAny},
       {kFileHandlerIconUrl1, 79, apps::IconInfo::Purpose::kMaskable},
-      {kFileHandlerIconUrl1, 134, apps::IconInfo::Purpose::kMaskable}};
+      {kFileHandlerIconUrl1, 134, apps::IconInfo::Purpose::kMaskable},
+  });
 
   const size_t num_expectations =
       sizeof(expectations) / sizeof(expectations[0]);

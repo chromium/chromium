@@ -16,6 +16,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include <array>
 #include <cstring>
 #include <optional>
 
@@ -1234,9 +1235,9 @@ TEST(AnnotatorTest, ProcessorFails) {
       test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
       std::make_unique<TestAnnotatorClient>());
 
-  TestImageProcessor processor[3];
-  std::optional<mojom::AnnotateImageError> error[3];
-  std::vector<mojom::Annotation> annotations[3];
+  std::array<TestImageProcessor, 3> processor;
+  std::array<std::optional<mojom::AnnotateImageError>, 3> error;
+  std::array<std::vector<mojom::Annotation>, 3> annotations;
 
   for (int i = 0; i < 3; ++i) {
     annotator.AnnotateImage(
@@ -1315,9 +1316,9 @@ TEST(AnnotatorTest, ProcessorFailedPreviously) {
       test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
       std::make_unique<TestAnnotatorClient>());
 
-  TestImageProcessor processor[2];
-  std::optional<mojom::AnnotateImageError> error[2];
-  std::vector<mojom::Annotation> annotations[2];
+  std::array<TestImageProcessor, 2> processor;
+  std::array<std::optional<mojom::AnnotateImageError>, 2> error;
+  std::array<std::vector<mojom::Annotation>, 2> annotations;
 
   // Processor 1 makes a request for annotation of a given image.
   annotator.AnnotateImage(
@@ -1385,9 +1386,9 @@ TEST(AnnotatorTest, ProcessorDies) {
       test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
       std::make_unique<TestAnnotatorClient>());
 
-  TestImageProcessor processor[3];
-  std::optional<mojom::AnnotateImageError> error[3];
-  std::vector<mojom::Annotation> annotations[3];
+  std::array<TestImageProcessor, 3> processor;
+  std::array<std::optional<mojom::AnnotateImageError>, 3> error;
+  std::array<std::vector<mojom::Annotation>, 3> annotations;
 
   for (int i = 0; i < 3; ++i) {
     annotator.AnnotateImage(
@@ -1461,9 +1462,9 @@ TEST(AnnotatorTest, ConcurrentSameBatch) {
       test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
       std::make_unique<TestAnnotatorClient>());
 
-  TestImageProcessor processor[3];
-  std::optional<mojom::AnnotateImageError> error[3];
-  std::vector<mojom::Annotation> annotations[3];
+  std::array<TestImageProcessor, 3> processor;
+  std::array<std::optional<mojom::AnnotateImageError>, 3> error;
+  std::array<std::vector<mojom::Annotation>, 3> annotations;
 
   // Request OCR for images 1, 2 and 3.
   annotator.AnnotateImage(
@@ -1549,9 +1550,9 @@ TEST(AnnotatorTest, ConcurrentSeparateBatches) {
       test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
       std::make_unique<TestAnnotatorClient>());
 
-  TestImageProcessor processor[2];
-  std::optional<mojom::AnnotateImageError> error[2];
-  std::vector<mojom::Annotation> annotations[2];
+  std::array<TestImageProcessor, 2> processor;
+  std::array<std::optional<mojom::AnnotateImageError>, 2> error;
+  std::array<std::vector<mojom::Annotation>, 2> annotations;
 
   // Request OCR for image 1.
   annotator.AnnotateImage(
@@ -1694,9 +1695,9 @@ TEST(AnnotatorTest, DuplicateWork) {
       test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
       std::make_unique<TestAnnotatorClient>());
 
-  TestImageProcessor processor[4];
-  std::optional<mojom::AnnotateImageError> error[4];
-  std::vector<mojom::Annotation> annotations[4];
+  std::array<TestImageProcessor, 4> processor;
+  std::array<std::optional<mojom::AnnotateImageError>, 4> error;
+  std::array<std::vector<mojom::Annotation>, 4> annotations;
 
   // First request annotation of the image with processor 1.
   annotator.AnnotateImage(
@@ -1803,9 +1804,9 @@ TEST(AnnotatorTest, DescPolicy) {
       test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
       std::make_unique<TestAnnotatorClient>());
 
-  TestImageProcessor processor[3];
-  std::optional<mojom::AnnotateImageError> error[3];
-  std::vector<mojom::Annotation> annotations[3];
+  std::array<TestImageProcessor, 3> processor;
+  std::array<std::optional<mojom::AnnotateImageError>, 3> error;
+  std::array<std::vector<mojom::Annotation>, 3> annotations;
 
   // Request annotation for images 1, 2 and 3.
   annotator.AnnotateImage(
@@ -2009,9 +2010,9 @@ TEST(AnnotatorTest, DescLanguage) {
       std::make_unique<TestAnnotatorClient>());
   annotator.server_languages_ = {"en", "it", "fr"};
 
-  TestImageProcessor processor[3];
-  std::optional<mojom::AnnotateImageError> error[3];
-  std::vector<mojom::Annotation> annotations[3];
+  std::array<TestImageProcessor, 3> processor;
+  std::array<std::optional<mojom::AnnotateImageError>, 3> error;
+  std::array<std::vector<mojom::Annotation>, 3> annotations;
 
   // Request annotation for one image in two languages, and one other image in
   // one language.

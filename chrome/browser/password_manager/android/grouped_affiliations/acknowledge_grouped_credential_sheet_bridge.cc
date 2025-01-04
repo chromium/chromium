@@ -13,6 +13,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/functional/callback_forward.h"
+#include "base/metrics/histogram_functions.h"
 #include "ui/android/window_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -98,5 +99,11 @@ void AcknowledgeGroupedCredentialSheetBridge::Show(
 
 void AcknowledgeGroupedCredentialSheetBridge::OnDismissed(JNIEnv* env,
                                                           int dismiss_reason) {
-  std::move(closure_callback_).Run(static_cast<DismissReason>(dismiss_reason));
+  DismissReason dismiss_reason_enum =
+      static_cast<DismissReason>(dismiss_reason);
+  base::UmaHistogramEnumeration(
+      "PasswordManager.AcknowledgeGroupedAffiliationsWarning."
+      "ConfirmationResult",
+      dismiss_reason_enum);
+  std::move(closure_callback_).Run(dismiss_reason_enum);
 }

@@ -79,7 +79,6 @@ if (enable_nacl) {
 
     deps = [
       "//base",
-      "//build:chromeos_buildflags",
       "//url",
       "//url/ipc:url_ipc",
     ]

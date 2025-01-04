@@ -77,7 +77,6 @@ Jeśli ją usuniesz, wszyscy natychmiast utracą dostęp do grupy kart „<ph na
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{Zmieniono <ph name="ONE_CHANGED" /> kartę, zamknięto <ph name="ANY_CLOSED" />}few{Zmieniono <ph name="MANY_CHANGED" /> karty, zamknięto <ph name="ANY_CLOSED" />}many{Zmieniono <ph name="MANY_CHANGED" /> kart, zamknięto <ph name="ANY_CLOSED" />}other{Zmieniono <ph name="MANY_CHANGED" /> karty, zamknięto <ph name="ANY_CLOSED" />}}</translation>
 <translation id="4371591986692297148">Nieaktywna</translation>
 <translation id="4460014764210899310">Rozgrupuj</translation>
-<translation id="4590027107044272416">Tutaj możesz otworzyć nową kartę</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Zamknąć 1 nieaktywną kartę?}few{Zamknąć <ph name="TAB_COUNT_MANY" /> nieaktywne karty?}many{Zamknąć <ph name="TAB_COUNT_MANY" /> nieaktywnych kart?}other{Zamknąć <ph name="TAB_COUNT_MANY" /> nieaktywnej karty?}}</translation>
 <translation id="4686942373615810936">Utworzono przed chwilą</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Zamknij po 1 dniu}few{Zamknij po <ph name="DAY_COUNT_MANY" /> dniach}many{Zamknij po <ph name="DAY_COUNT_MANY" /> dniach}other{Zamknij po <ph name="DAY_COUNT_MANY" /> dnia}}</translation>
@@ -98,7 +97,9 @@ Jeśli ją usuniesz, wszyscy natychmiast utracą dostęp do grupy kart „<ph na
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{Dodano <ph name="ONE_ADDED" /> kartę}few{Dodano <ph name="MANY_ADDED" /> karty}many{Dodano <ph name="MANY_ADDED" /> kart}other{Dodano <ph name="MANY_ADDED" /> karty}}</translation>
 <translation id="5161254044473106830">Tytuł jest wymagany</translation>
 <translation id="5339733443032484186">Ostatnia karta</translation>
+<translation id="5380159289133845234">Zarchiwizuj zduplikowane karty</translation>
 <translation id="5400836586163650660">Szary</translation>
+<translation id="5446043142172831860">Usuń kartę i opuść grupę</translation>
 <translation id="5490235265819901748">Grupa kart została rozwinięta</translation>
 <translation id="5494920125229734069">Wybierz wszystko</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Zamknij grupę kart z <ph name="TABS_COUNT_ONE" /> kartą, kolor <ph name="COLOR_NAME" />.}few{Zamknij grupę kart z <ph name="TABS_COUNT_MANY" /> kartami, kolor <ph name="COLOR_NAME" />.}many{Zamknij grupę kart z <ph name="TABS_COUNT_MANY" /> kartami, kolor <ph name="COLOR_NAME" />.}other{Zamknij grupę kart z <ph name="TABS_COUNT_MANY" /> karty, kolor <ph name="COLOR_NAME" />.}}</translation>
@@ -117,6 +118,7 @@ Jeśli opuścisz grupę, natychmiast utracisz dostęp do grupy kart „<ph name=
 <translation id="6051432659151380973">Twoje grupy kart są automatycznie zapisywane</translation>
 <translation id="6054741997831917303">Ostatnio cena tego elementu spadła z <ph name="PREVIOUS_PRICE" /> do <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Natychmiast utracisz dostęp do grupy kart <ph name="GROUP_NAME" /></translation>
+<translation id="6109251075362363230">Wszystkie zduplikowane karty będą teraz również archiwizowane, z wyjątkiem ostatnio używanej kopii.</translation>
 <translation id="6193448654517602979">Wybierz karty</translation>
 <translation id="6228793724645064692">(ocena sklepu)</translation>
 <translation id="6271513594716432922">Zamknij wszystkie nieaktywne karty</translation>

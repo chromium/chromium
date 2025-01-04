@@ -187,7 +187,7 @@ void TreeViewTest::SetUp() {
              const ui::AXPlatformNodeDelegate* delegate,
              const ax::mojom::Event event_type) {
             DCHECK(accessibility_events);
-            accessibility_events->push_back({delegate, event_type});
+            accessibility_events->emplace_back(delegate, event_type);
           },
           &accessibility_events_);
   tree()->GetViewAccessibility().set_accessibility_events_callback(
@@ -217,8 +217,9 @@ std::string TreeViewTest::TreeViewContentsAsString() {
 
 std::string TreeViewTest::TreeViewAccessibilityContentsAsString() const {
   AXVirtualView* ax_view = GetRootAccessibilityView();
-  if (!ax_view)
+  if (!ax_view) {
     return "Empty";
+  }
   return AccessibilityViewAsString(*ax_view);
 }
 
@@ -256,8 +257,9 @@ std::string TreeViewTest::GetSelectedAccessibilityViewName() const {
       parent_view = parent_view->virtual_parent_view();
     }
 
-    if (!parent_view)
+    if (!parent_view) {
       break;
+    }
   }
 
   return {};
@@ -332,8 +334,9 @@ const AXVirtualView* TreeViewTest::GetAccessibilityViewByName(
       parent_view = parent_view->virtual_parent_view();
     }
 
-    if (!parent_view)
+    if (!parent_view) {
       break;
+    }
   }
 
   return nullptr;
@@ -358,12 +361,14 @@ size_t TreeViewTest::GetRowCount() {
 
 TestNode* TreeViewTest::GetNodeByTitleImpl(TestNode* node,
                                            const std::u16string& title) {
-  if (node->GetTitle() == title)
+  if (node->GetTitle() == title) {
     return node;
+  }
   for (auto& child : node->children()) {
     TestNode* matching_node = GetNodeByTitleImpl(child.get(), title);
-    if (matching_node)
+    if (matching_node) {
       return matching_node;
+    }
   }
   return nullptr;
 }

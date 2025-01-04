@@ -498,8 +498,9 @@ void NTPUserDataLogger::RecordDoodleImpression(base::TimeDelta time,
 }
 
 void NTPUserDataLogger::RecordAction(const char* action) {
-  if (!action || !DefaultSearchProviderIsGoogle())
+  if (!action || !DefaultSearchProviderIsGoogle()) {
     return;
+  }
 
   base::RecordAction(base::UserMetricsAction(action));
 }

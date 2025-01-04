@@ -24,6 +24,7 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/callback_utils.h"
+#include "chrome/browser/web_applications/commands/command_metrics.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/error/uma_logging.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
@@ -168,6 +169,7 @@ void InstallIsolatedWebAppCommand::CheckNotInstalledAlready(
   if (GetIsolatedWebAppById(lock_->registrar(), url_info_.app_id())
           .has_value()) {
     ReportFailure(InstallIwaError::kAppIsNotInstallable,
+                  webapps::InstallResultCode::kNotInstallable,
                   "App is already installed");
   } else {
     std::move(next_step_callback).Run();
@@ -188,7 +190,8 @@ void InstallIsolatedWebAppCommand::OnCopiedToProfileDirectory(
     base::expected<IsolatedWebAppStorageLocation, std::string> new_location) {
   ASSIGN_OR_RETURN(destination_storage_location_, new_location,
                    &InstallIsolatedWebAppCommand::ReportFailure, this,
-                   InstallIwaError::kCantCopyToProfileDirectory);
+                   InstallIwaError::kCantCopyToProfileDirectory,
+                   webapps::InstallResultCode::kWriteDataFailed);
   destination_source_ = IwaSourceWithMode::FromStorageLocation(
       profile().GetPath(), *destination_storage_location_);
   // Make sure that `install_source_`, which is now outdated, can no longer be
@@ -217,7 +220,8 @@ void InstallIsolatedWebAppCommand::OnTrustAndSignaturesChecked(
   ASSIGN_OR_RETURN(
       std::optional<web_package::SignedWebBundleIntegrityBlock> integrity_block,
       std::move(trust_check_result), [&](const std::string& error) {
-        ReportFailure(InstallIwaError::kTrustCheckFailed, error);
+        ReportFailure(InstallIwaError::kTrustCheckFailed,
+                      webapps::InstallResultCode::kNotInstallable, error);
       });
   if (integrity_block) {
     integrity_block_data_ =
@@ -248,19 +252,28 @@ void InstallIsolatedWebAppCommand::FinalizeInstall(
   ASSIGN_OR_RETURN(
       WebAppInstallInfo install_info, std::move(result),
       [&](const auto& failure) {
-        auto iwa_error = [&] {
-          switch (failure.error) {
-            case PrepareInstallInfoJob::Error::kAppIsNotInstallable:
-              return InstallIwaError::kAppIsNotInstallable;
-            case PrepareInstallInfoJob::Error::kCantLoadInstallUrl:
-              return InstallIwaError::kCantLoadInstallUrl;
-            case PrepareInstallInfoJob::Error::kCantRetrieveIcons:
-              return InstallIwaError::kCantRetrieveIcons;
-            case PrepareInstallInfoJob::Error::kCantValidateManifest:
-              return InstallIwaError::kCantValidateManifest;
-          }
-        }();
-        ReportFailure(iwa_error, failure.message);
+        InstallIwaError iwa_error;
+        webapps::InstallResultCode web_app_error;
+        switch (failure.error) {
+          case PrepareInstallInfoJob::Error::kAppIsNotInstallable:
+            iwa_error = InstallIwaError::kAppIsNotInstallable;
+            web_app_error = webapps::InstallResultCode::kNotInstallable;
+            break;
+          case PrepareInstallInfoJob::Error::kCantLoadInstallUrl:
+            iwa_error = InstallIwaError::kCantLoadInstallUrl;
+            web_app_error = webapps::InstallResultCode::kInstallURLLoadFailed;
+            break;
+          case PrepareInstallInfoJob::Error::kCantRetrieveIcons:
+            iwa_error = InstallIwaError::kCantRetrieveIcons;
+            web_app_error = webapps::InstallResultCode::kIconDownloadingFailed;
+            break;
+          case PrepareInstallInfoJob::Error::kCantValidateManifest:
+            iwa_error = InstallIwaError::kCantValidateManifest;
+            web_app_error =
+                webapps::InstallResultCode::kNotValidManifestForWebApp;
+            break;
+        }
+        ReportFailure(iwa_error, web_app_error, failure.message);
       });
 
   GetMutableDebugValue().Set("actual_version",
@@ -287,18 +300,22 @@ void InstallIsolatedWebAppCommand::OnFinalizeInstall(
     ReportSuccess(attempted_version);
   } else {
     ReportFailure(
-        InstallIwaError::kCantInstall,
+        InstallIwaError::kCantInstall, install_result_code,
         "Error during finalization: " + base::ToString(install_result_code));
   }
 }
 
-void InstallIsolatedWebAppCommand::ReportFailure(InstallIwaError error,
-                                                 std::string_view message) {
+void InstallIsolatedWebAppCommand::ReportFailure(
+    InstallIwaError error,
+    webapps::InstallResultCode web_app_failure_code,
+    std::string_view message) {
   GetMutableDebugValue().Set("result", base::StrCat({"error: ", message}));
 
   web_app::UmaLogExpectedStatus<InstallIwaError>("WebApp.Isolated.Install",
                                                  base::unexpected(error));
-
+  RecordInstallMetrics(InstallCommand::kInstallIsolatedWebApp,
+                       WebAppType::kIsolatedWebApp, web_app_failure_code,
+                       install_surface_);
   CompleteAndSelfDestruct(CommandResult::kFailure,
                           base::unexpected(InstallIsolatedWebAppCommandError{
                               .message = std::string(message)}));
@@ -307,6 +324,10 @@ void InstallIsolatedWebAppCommand::ReportFailure(InstallIwaError error,
 void InstallIsolatedWebAppCommand::ReportSuccess(
     const base::Version& installed_version) {
   GetMutableDebugValue().Set("result", "success");
+  RecordInstallMetrics(
+      InstallCommand::kInstallIsolatedWebApp, WebAppType::kIsolatedWebApp,
+      webapps::InstallResultCode::kSuccessNewInstall, install_surface_);
+
   // Reset `destination_storage_location_` to prevent cleanup in the destructor.
   IsolatedWebAppStorageLocation location =
       std::exchange(destination_storage_location_, std::nullopt).value();

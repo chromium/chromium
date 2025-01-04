@@ -6,6 +6,7 @@
 #define UI_VIEWS_INTERACTION_INTERACTION_TEST_UTIL_VIEWS_H_
 
 #include <string>
+
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_test_util.h"
 
@@ -17,7 +18,7 @@ namespace views {
 class Button;
 class View;
 class Widget;
-}
+}  // namespace views
 
 namespace views::test {
 

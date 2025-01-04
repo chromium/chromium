@@ -35,7 +35,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureList.TestValues;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -331,9 +331,7 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                                         .CCT_IS_OFF_THE_RECORD)
                         .build();
         FeatureList.setDisableNativeForTesting(true);
-        TestValues testValues = new TestValues();
-        testValues.addFeatureFlagOverride(SigninFeatures.CCT_SIGN_IN_PROMPT, true);
-        FeatureList.setTestValues(testValues);
+        FeatureOverrides.enable(SigninFeatures.CCT_SIGN_IN_PROMPT);
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         CustomTabsConnection.setInstanceForTesting(connection);
         when(connection.isAppForAccountMismatchNotification(any())).thenReturn(true);

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabbed_mode;
 
+import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
@@ -40,15 +42,17 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarCoordinator;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
+import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.data_sharing.DataSharingNotificationManager;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupsDelegate;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
-import org.chromium.chrome.browser.data_sharing.DataSharingTabSwitcherDelegate;
 import org.chromium.chrome.browser.data_sharing.InstantMessageDelegateFactory;
 import org.chromium.chrome.browser.data_sharing.InstantMessageDelegateImpl;
 import org.chromium.chrome.browser.desktop_site.DesktopSiteSettingsIphController;
@@ -169,6 +173,7 @@ import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.url.GURL;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
@@ -434,13 +439,13 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mSystemBarColorHelperSupplier = systemBarColorHelperSupplier;
         mManualFillingComponentSupplier = manualFillingComponentSupplier;
 
-        DataSharingTabSwitcherDelegate dataSharingTabSwitcherDelegate =
-                (int tabId) -> mTabSwitcherSupplier.get().requestOpenTabGroupDialog(tabId);
+        DataSharingTabGroupsDelegate dataSharingTabGroupsDelegate =
+                createDataSharingTabGroupsDelegate();
 
         mDataSharingTabManager =
                 new DataSharingTabManager(
                         mTabModelSelectorSupplier,
-                        dataSharingTabSwitcherDelegate,
+                        dataSharingTabGroupsDelegate,
                         this::getBottomSheetController,
                         mShareDelegateSupplier,
                         mWindowAndroid,
@@ -1106,7 +1111,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         // 0.
         // TODO(crbug.com/40943442): Remove the reference to toolbar_height_no_shadow.
         final int toolbarHeight =
-                mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
+                browserControlsSizer.getControlsPosition() == ControlsPosition.TOP
+                        ? mActivity
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
+                        : 0;
         final int tabStripHeight = mToolbarManager.getTabStripHeightSupplier().get();
         final int bookmarkBarHeight =
                 mBookmarkBarCoordinator != null
@@ -1263,21 +1272,24 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     private void initCollaborationDelegatesOnProfile(Profile profile) {
+        // We must use the original non-OTR profile here.
+        Profile originalProfile = profile.getOriginalProfile();
+
         CollaborationService collaborationService =
-                CollaborationServiceFactory.getForProfile(profile);
+                CollaborationServiceFactory.getForProfile(originalProfile);
         @NonNull ServiceStatus serviceStatus = collaborationService.getServiceStatus();
         if (!serviceStatus.isAllowedToJoin()) return;
 
         mDataSharingTabManager.initWithProfile(
-                profile,
-                DataSharingServiceFactory.getForProfile(profile),
-                MessagingBackendServiceFactory.getForProfile(profile));
+                originalProfile,
+                DataSharingServiceFactory.getForProfile(originalProfile),
+                MessagingBackendServiceFactory.getForProfile(originalProfile));
 
         TabModelUtils.onInitializedTabModelSelector(mTabModelSelectorSupplier)
                 .runSyncOrOnAvailable(
                         selector -> {
                             mInstantMessageDelegateImpl =
-                                    InstantMessageDelegateFactory.getForProfile(profile);
+                                    InstantMessageDelegateFactory.getForProfile(originalProfile);
                             TabGroupModelFilter tabGroupModelFilter =
                                     selector.getTabGroupModelFilterProvider()
                                             .getTabGroupModelFilter(/* incognito= */ false);
@@ -1289,6 +1301,28 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                     dataSharingNotificationManager,
                                     mDataSharingTabManager);
                         });
+    }
+
+    private DataSharingTabGroupsDelegate createDataSharingTabGroupsDelegate() {
+        return new DataSharingTabGroupsDelegate() {
+
+            @Override
+            public void openTabGroupWithTabId(int tabId) {
+                mTabSwitcherSupplier.get().requestOpenTabGroupDialog(tabId);
+            }
+
+            @Override
+            public void openLearnMoreSharedTabGroupsPage(Context context, GURL gurl) {
+                CustomTabActivity.showInfoPage(context, gurl.getSpec());
+            }
+
+            @Override
+            public void getPreviewBitmap(
+                    String collaborationId, int size, Callback<Bitmap> callback) {
+                // TODO(https://crbug.com/386833405): implement this.
+                callback.onResult(null);
+            }
+        };
     }
 
     @Override

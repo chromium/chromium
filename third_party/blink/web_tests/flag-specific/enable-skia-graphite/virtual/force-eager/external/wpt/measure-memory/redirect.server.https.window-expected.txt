@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] performance.measureUserAgentSpecificMemory does not leak server redirected URL.
+  promise_test: Unhandled rejection with value: object "SecurityError: Failed to execute 'measureUserAgentSpecificMemory' on 'Performance': performance.measureUserAgentSpecificMemory is not available."
+Harness: the test ran to completion.

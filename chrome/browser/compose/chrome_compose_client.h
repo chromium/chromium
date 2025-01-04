@@ -17,7 +17,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/common/compose/compose.mojom.h"
 #include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
-#include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/core/browser/compose_client.h"
 #include "components/compose/core/browser/compose_dialog_controller.h"

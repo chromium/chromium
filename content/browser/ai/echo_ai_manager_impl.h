@@ -43,22 +43,22 @@ class EchoAIManagerImpl : public blink::mojom::AIManager {
 
   // `blink::mojom::AIManager` implementation.
   void CanCreateLanguageModel(CanCreateLanguageModelCallback callback) override;
-
   void CreateLanguageModel(
       mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
           client,
       blink::mojom::AILanguageModelCreateOptionsPtr options) override;
-
   void CanCreateSummarizer(CanCreateSummarizerCallback callback) override;
-
   void CreateSummarizer(
       mojo::PendingRemote<blink::mojom::AIManagerCreateSummarizerClient> client,
       blink::mojom::AISummarizerCreateOptionsPtr options) override;
-
   void GetModelInfo(GetModelInfoCallback callback) override;
+  void CanCreateWriter(blink::mojom::AIWriterCreateOptionsPtr options,
+                       CanCreateWriterCallback callback) override;
   void CreateWriter(
       mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client,
       blink::mojom::AIWriterCreateOptionsPtr options) override;
+  void CanCreateRewriter(blink::mojom::AIRewriterCreateOptionsPtr options,
+                         CanCreateRewriterCallback callback) override;
   void CreateRewriter(
       mojo::PendingRemote<blink::mojom::AIManagerCreateRewriterClient> client,
       blink::mojom::AIRewriterCreateOptionsPtr options) override;
@@ -69,9 +69,13 @@ class EchoAIManagerImpl : public blink::mojom::AIManager {
   void ReturnAILanguageModelCreationResult(
       mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
           client_remote);
-  void DoMockDownloadingAndReturn(
-      mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
+  void ReturnAISummarizerCreationResult(
+      mojo::Remote<blink::mojom::AIManagerCreateSummarizerClient>
           client_remote);
+
+  void DoMockDownloadingAndReturn(base::OnceClosure callback);
+
+  bool summarizer_downloaded_ = false;
 
   mojo::RemoteSet<blink::mojom::ModelDownloadProgressObserver>
       download_progress_observers_;

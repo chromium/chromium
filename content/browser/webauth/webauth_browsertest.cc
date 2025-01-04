@@ -1868,7 +1868,11 @@ IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBackForwardCacheBrowserTest,
                        WebAuthDisablesBackForwardCache) {
   // Initialisation of the test should disable bfcache.
   EXPECT_TRUE(tester_.IsDisabledForFrameWithReason(
-      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      shell()
+          ->web_contents()
+          ->GetPrimaryMainFrame()
+          ->GetProcess()
+          ->GetDeprecatedID(),
       shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
       BackForwardCacheDisable::DisabledReason(
           BackForwardCacheDisable::DisabledReasonId::kWebAuthenticationAPI)));

@@ -24,7 +24,6 @@ AccountId AccountIdFromAccountInfo(const CoreAccountInfo& account_info) {
     return EmptyAccountId();
 
   return AccountId::FromUserEmailGaiaId(
-      gaia::CanonicalizeEmail(account_info.email),
-      account_info.gaia.ToString());
+      gaia::CanonicalizeEmail(account_info.email), account_info.gaia);
 #endif
 }

@@ -44,4 +44,10 @@ PrivacySandboxSurveyService::GetSentimentSurveyPsb() {
        identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)}};
 }
 
+std::map<std::string, std::string>
+PrivacySandboxSurveyService::GetSentimentSurveyPsd(
+    version_info::Channel channel) {
+  return {{"Channel", std::string(version_info::GetChannelString(channel))}};
+}
+
 }  // namespace privacy_sandbox

@@ -202,6 +202,8 @@ export class TabSearchItemElement extends TabSearchItemBase {
         return 'audio-playing';
       case TabAlertState.kAudioMuting:
         return 'audio-muting';
+      case TabAlertState.kGlicAccessing:
+        return 'glic-accessing';
       default:
         return '';
     }

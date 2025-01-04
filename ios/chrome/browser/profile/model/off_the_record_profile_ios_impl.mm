@@ -47,6 +47,7 @@ OffTheRecordProfileIOSImpl::OffTheRecordProfileIOSImpl(
 }
 
 OffTheRecordProfileIOSImpl::~OffTheRecordProfileIOSImpl() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BrowserStateDependencyManager::GetInstance()->DestroyBrowserStateServices(
       this);
   if (pref_proxy_config_tracker_) {
@@ -64,47 +65,57 @@ OffTheRecordProfileIOSImpl::~OffTheRecordProfileIOSImpl() {
 }
 
 ProfileIOS* OffTheRecordProfileIOSImpl::GetOriginalProfile() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return original_profile_;
 }
 
 bool OffTheRecordProfileIOSImpl::HasOffTheRecordProfile() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return true;
 }
 
 ProfileIOS* OffTheRecordProfileIOSImpl::GetOffTheRecordProfile() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return this;
 }
 
 void OffTheRecordProfileIOSImpl::DestroyOffTheRecordProfile() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NOTREACHED();
 }
 
 ProfilePolicyConnector* OffTheRecordProfileIOSImpl::GetPolicyConnector() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Forward the call to the original (non-OTR) profile.
   return GetOriginalProfile()->GetPolicyConnector();
 }
 
 policy::UserCloudPolicyManager*
 OffTheRecordProfileIOSImpl::GetUserCloudPolicyManager() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Forward the call to the original (non-OTR) profile.
   return GetOriginalProfile()->GetUserCloudPolicyManager();
 }
 
 sync_preferences::PrefServiceSyncable*
 OffTheRecordProfileIOSImpl::GetSyncablePrefs() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return prefs_.get();
 }
 
 const sync_preferences::PrefServiceSyncable*
 OffTheRecordProfileIOSImpl::GetSyncablePrefs() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return prefs_.get();
 }
 
 bool OffTheRecordProfileIOSImpl::IsOffTheRecord() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return true;
 }
 
 PrefProxyConfigTracker* OffTheRecordProfileIOSImpl::GetProxyConfigTracker() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!pref_proxy_config_tracker_) {
     pref_proxy_config_tracker_ =
         ProxyServiceFactory::CreatePrefProxyConfigTrackerOfProfile(
@@ -114,21 +125,25 @@ PrefProxyConfigTracker* OffTheRecordProfileIOSImpl::GetProxyConfigTracker() {
 }
 
 ProfileIOSIOData* OffTheRecordProfileIOSImpl::GetIOData() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return io_data_->io_data();
 }
 
 net::URLRequestContextGetter* OffTheRecordProfileIOSImpl::CreateRequestContext(
     ProtocolHandlerMap* protocol_handlers) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return io_data_->CreateMainRequestContextGetter(protocol_handlers).get();
 }
 
 base::WeakPtr<ProfileIOS> OffTheRecordProfileIOSImpl::AsWeakPtr() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return weak_ptr_factory_.GetWeakPtr();
 }
 
 void OffTheRecordProfileIOSImpl::ClearNetworkingHistorySince(
     base::Time time,
     base::OnceClosure completion) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Nothing to do here, our transport security state is read-only.
   // Still, fire the callback to indicate we have finished, otherwise the
   // BrowsingDataRemover will never be destroyed and the dialog will never be

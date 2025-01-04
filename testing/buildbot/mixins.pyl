@@ -271,8 +271,8 @@
     'swarming': {
       'dimensions': {
         'os': 'Android',
-        'device_type': 'a13',
-        'device_os': 'S',
+        'device_type': 'a13ve',
+        'device_os': 'TP1A.220624.014',
         'device_os_type': 'user',
         'pool': 'chromium.tests.gpu',
       },
@@ -678,6 +678,7 @@
         'cpu': 'arm64',
         'os': 'Windows-11',
       },
+      'expiration': 7200,
     },
   },
   'win10': {
@@ -765,8 +766,8 @@
     'swarming': {
       'dimensions': {
         'display_attached': '1',
-        'gpu': '10de:2184-27.21.14.5638',
-        'os': 'Windows-10-18363',
+        'gpu': '10de:2184-31.0.15.4601',
+        'os': 'Windows-10-19045',
         'pool': 'chromium.tests.gpu',
       },
     },

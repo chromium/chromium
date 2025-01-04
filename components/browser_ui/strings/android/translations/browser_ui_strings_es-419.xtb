@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">Descarga detenida</translation>
 <translation id="1396327438254055134">Permite que el sitio use el optimizador V8.</translation>
 <translation id="1415402041810619267">URL acortada</translation>
+<translation id="1415855080660575082">Permite que Chrome comparta tus pestañas recientes con tu dispositivo para verlas en los resultados de la búsqueda y en la lista de apps del dispositivo. Puedes activar o desactivar esta opción en la configuración de Chrome.</translation>
 <translation id="1448064542941920355">Reducir zoom</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sitio}other{<ph name="SITE_COUNT" /> sitios}}</translation>
 <translation id="1500473259453106018">Ocultar la tarjeta Reducciones de precio en pestañas</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">Permitiste temporalmente que este sitio use cookies de terceros, lo que significa menos protección de navegación, pero es más probable que las funciones del sitio puedan usarse como se espera. <ph name="BEGIN_LINK" />Enviar comentarios<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Es posible que las funciones de algunos sitios no funcionen en el modo Incógnito</translation>
 <translation id="2442870161001914531">Solicitar siempre el sitio para computadoras</translation>
+<translation id="2445311670906052406">Chrome ahora comparte tus pestañas recientes con tu dispositivo. Las verás en la lista de apps y en los resultados de la búsqueda de tu dispositivo. Puedes desactivar esta opción en cualquier momento en la configuración de Chrome.</translation>
 <translation id="2469312991797799607">Esta acción borrará todos los datos y cookies de <ph name="ORIGIN" /> y de todos sus sitios secundarios</translation>
 <translation id="2482878487686419369">Notificaciones</translation>
 <translation id="2485422356828889247">Desinstalación</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">Los sitios pueden mostrarte mensajes de acceso de servicios de identidad.</translation>
 <translation id="2787357173144933081">Inicia el cuadro multifunción</translation>
 <translation id="2790501146643349491">Cuando esta opción está activada, los sitios cerrados recientemente pueden terminar de enviar y recibir datos. Cuando está desactivada, los sitios cerrados recientemente no pueden terminar de enviar ni recibir datos.</translation>
+<translation id="2814830417943086299">Ahora, Chrome muestra tus pestañas recientes en la lista de apps y en los resultados de la búsqueda de tu dispositivo. Puedes desactivar esta opción en cualquier momento en la configuración de Chrome.</translation>
 <translation id="2822354292072154809">¿Confirmas que quieres restablecer todos los permisos de sitios para <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Solicitar la vista para dispositivos móviles</translation>
 <translation id="2870560284913253234">Sitio</translation>
@@ -226,7 +229,7 @@
 <translation id="443552056913301231">Esta acción borrará todos los datos locales, incluidas las cookies, y restablecerá todos los permisos de <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Silenciar un sitio específico.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}other{# cookies}}</translation>
-<translation id="4478158430052450698">Facilitar la personalización del zoom para diferentes sitios</translation>
+<translation id="4478158430052450698">Facilita la personalización del zoom para diferentes sitios</translation>
 <translation id="4479647676395637221">Preguntar primero antes de permitir que los sitios usen tu cámara (recomendado)</translation>
 <translation id="4505788138578415521">URL expandida</translation>
 <translation id="4534723447064627427">Para permitir que <ph name="APP_NAME" /> acceda a tu micrófono, actívalo también en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
@@ -306,8 +309,8 @@
 <translation id="560980142378233747">Esto significa que las funciones de los sitios deberían poder usarse como se espera, pero es posible que tengas menos protección de navegación. <ph name="BEGIN_LINK" />Enviar comentarios<ph name="END_LINK" /></translation>
 <translation id="5632485077360054581">Cómo hacerlo</translation>
 <translation id="5649053991847567735">Descargas automáticas</translation>
-<translation id="5668404140385795438">Anular la solicitud de inhabilitación del zoom de un sitio web</translation>
-<translation id="5677928146339483299">Bloqueadas</translation>
+<translation id="5668404140385795438">Anula la solicitud de un sitio web para inhabilitar los acercamientos</translation>
+<translation id="5677928146339483299">Bloqueados</translation>
 <translation id="5689516760719285838">Ubicación</translation>
 <translation id="5690795753582697420">La cámara está desactivada en la configuración de Android</translation>
 <translation id="5691080386278724773"><ph name="SITE" /> puede usar tu información mientras navegas</translation>
@@ -335,7 +338,6 @@
 <translation id="5968921426641056619">Ingresa una dirección web</translation>
 <translation id="5975083100439434680">Alejar</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
-<translation id="6015145568571136419">Ahora puedes acceder rápidamente a las pestañas sugeridas desde la lista de apps de tu dispositivo y en los resultados de la búsqueda del dispositivo. Puedes desactivar esta opción en cualquier momento en la configuración de Chrome.</translation>
 <translation id="6015775454662021376">Controla el acceso de este sitio a tu dispositivo</translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6042308850641462728">Más</translation>
@@ -500,7 +502,7 @@
 <translation id="83792324527827022">Un sitio está utilizando la cámara y el micrófono</translation>
 <translation id="8380167699614421159">Este sitio muestra anuncios intrusivos o engañosos</translation>
 <translation id="8394832520002899662">Presiona para volver al sitio</translation>
-<translation id="8409345997656833551">Notificarme cada vez que se pueda mostrar la vista simplificada de un artículo</translation>
+<translation id="8409345997656833551">Recibe una notificación cada vez que se pueda mostrar la vista simplificada de un artículo</translation>
 <translation id="8423565414844018592">Se estableció el escalamiento de texto al <ph name="TEXT_SCALING" /></translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8441146129660941386">Buscar más atrás</translation>
@@ -558,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más}}</translation>
 <translation id="913657688200966289">Activa los permisos para <ph name="APP_NAME" /> en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">El zoom actual es del <ph name="ZOOM_LEVEL" />%%</translation>
+<translation id="9156722768168878035">Permite que Chrome muestre tus pestañas recientes en la lista de apps y los resultados de la búsqueda de tu dispositivo. Puedes desactivar esta opción en cualquier momento en la configuración de Chrome.</translation>
 <translation id="9162462602695099906">Esta página es peligrosa</translation>
 <translation id="947156494302904893">Los sitios que visitas pueden verificar que eres una persona real y no un bot</translation>
 <translation id="959682366969460160">Organízate</translation>

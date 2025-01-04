@@ -122,9 +122,9 @@ sync_pb::SharedTabGroupDataSpecifics SharedTabGroupToSpecifics(
   sync_pb::SharedTabGroup* pb_group = pb_specifics.mutable_tab_group();
   pb_group->set_color(TabGroupColorToSyncColor(group.color()));
   pb_group->set_title(base::UTF16ToUTF8(group.title()));
-  if (group.originating_saved_tab_group_guid().has_value()) {
+  if (group.originating_tab_group_guid().has_value()) {
     pb_group->set_originating_tab_group_guid(
-        group.originating_saved_tab_group_guid().value().AsLowercaseString());
+        group.originating_tab_group_guid().value().AsLowercaseString());
   }
   return pb_specifics;
 }
@@ -140,9 +140,9 @@ SavedTabGroup SpecificsToSharedTabGroup(
       SyncColorToTabGroupColor(specifics.tab_group().color());
   std::u16string title = base::UTF8ToUTF16(specifics.tab_group().title());
   base::Uuid guid = base::Uuid::ParseLowercase(specifics.guid());
-  base::Uuid originating_saved_tab_group_guid;
+  base::Uuid originating_tab_group_guid;
   if (specifics.tab_group().has_originating_tab_group_guid()) {
-    originating_saved_tab_group_guid = base::Uuid::ParseLowercase(
+    originating_tab_group_guid = base::Uuid::ParseLowercase(
         specifics.tab_group().originating_tab_group_guid());
   }
 
@@ -162,9 +162,8 @@ SavedTabGroup SpecificsToSharedTabGroup(
       CollaborationId(collaboration_metadata.collaboration_id()));
   group.SetCreatedByAttribution(collaboration_metadata.created_by());
   group.SetUpdatedByAttribution(collaboration_metadata.last_updated_by());
-  if (originating_saved_tab_group_guid.is_valid()) {
-    group.SetOriginatingSavedTabGroupGuid(
-        std::move(originating_saved_tab_group_guid));
+  if (originating_tab_group_guid.is_valid()) {
+    group.SetOriginatingTabGroupGuid(std::move(originating_tab_group_guid));
   }
 
   // Set the remote update time explicitly because the setters above could have
@@ -238,7 +237,7 @@ void AddEntryToBatch(syncer::MutableDataBatch* batch,
                      sync_pb::SharedTabGroupDataSpecifics specifics,
                      const CollaborationId& collaboration_id,
                      base::Time creation_time,
-                     std::string_view changed_by) {
+                     const GaiaId& changed_by) {
   std::unique_ptr<syncer::EntityData> entity_data =
       CreateEntityData(std::move(specifics),
                        syncer::CollaborationMetadata::ForLocalChange(
@@ -358,15 +357,21 @@ std::vector<sync_pb::SharedTabGroupDataSpecifics> LoadStoredEntries(
           stats::SharedTabGroupDataLoadFromDiskResult::kMissingCollaborationId);
       continue;
     }
-    groups.emplace_back(SpecificsToSharedTabGroup(
+    SavedTabGroup group = SpecificsToSharedTabGroup(
         specifics, collaboration_metadata,
-        ExtractCreationTimeFromMetadata(sync_metadata, storage_key)));
+        ExtractCreationTimeFromMetadata(sync_metadata, storage_key));
     // Load remaining local-only fields.
     if (AreLocalIdsPersisted() &&
         proto.local_group_data().has_local_group_id()) {
-      groups.back().SetLocalGroupId(
+      group.SetLocalGroupId(
           LocalTabGroupIDFromString(proto.local_group_data().local_group_id()));
     }
+    if (proto.local_group_data().has_is_transitioning_to_saved()) {
+      group.SetIsTransitioningToSaved(
+          proto.local_group_data().is_transitioning_to_saved());
+    }
+    groups.emplace_back(std::move(group));
+
     // There should not be duplicate group GUIDs because they are used as
     // storage keys.
     group_guid_to_next_tab_position.emplace(specifics.guid(), 0);
@@ -443,6 +448,8 @@ proto::LocalSharedTabGroupData GroupToLocalOnlyData(
     local_group_data.set_local_group_id(
         LocalTabGroupIDToString(group.local_group_id().value()));
   }
+  local_group_data.set_is_transitioning_to_saved(
+      group.is_transitioning_to_saved());
   return local_group_data;
 }
 

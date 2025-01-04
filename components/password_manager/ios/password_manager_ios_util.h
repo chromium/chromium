@@ -9,7 +9,8 @@
 
 #import <optional>
 
-#include "url/gurl.h"
+#import "url/gurl.h"
+#import "url/origin.h"
 
 namespace web {
 class WebState;
@@ -30,17 +31,14 @@ bool WebStateContentIsSecureHtml(const web::WebState* web_state);
 std::optional<autofill::FormData> JsonStringToFormData(
     NSString* json_string,
     const GURL& page_url,
+    const url::Origin& frame_origin,
     const autofill::FieldDataManager& field_data_manager,
     const std::string& frame_id);
-
-// Whether the |origin| matches the last committed URl in the |web_state|.
-bool OriginMatchesLastCommittedURLOrigin(web::WebState* web_state,
-                                         const GURL& origin);
 
 // Returns whether an iframe is cross-origin.
 bool IsCrossOriginIframe(web::WebState* web_state,
                          bool frame_is_main_frame,
-                         const GURL& frame_security_origin);
+                         const url::Origin& frame_security_origin);
 
 }  // namespace password_manager
 

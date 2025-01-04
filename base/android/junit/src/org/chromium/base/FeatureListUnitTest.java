@@ -147,7 +147,7 @@ public class FeatureListUnitTest {
         FeatureList.setTestValues(testValues);
 
         Assert.assertEquals(false, FeatureList.getTestValueForFeatureStrict(FEATURE_A));
-        Assert.assertNull(FeatureList.getTestValueForFeatureStrict(FEATURE_B));
+        Assert.assertEquals(true, FeatureList.getTestValueForFeatureStrict(FEATURE_B));
     }
 
     @Test

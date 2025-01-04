@@ -89,7 +89,6 @@ class Tab : public gfx::AnimationDelegate,
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
-  std::u16string GetTooltipText(const gfx::Point& p) const override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   void PaintChildren(const views::PaintInfo& info) override;

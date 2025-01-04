@@ -16,6 +16,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
@@ -36,6 +38,7 @@ import java.security.cert.CertificateException;
  * keys will be created in StrongBox on the device secure element.
  */
 @JNINamespace("payments")
+@NullMarked
 public final class BrowserBoundKeyStore {
 
     /** The logging tag for this class. */
@@ -59,7 +62,7 @@ public final class BrowserBoundKeyStore {
      * @return The BrowserBoundKey object or null when the key pair could not be created.
      */
     @CalledByNative
-    public BrowserBoundKey getOrCreateBrowserBoundKeyForCredentialId(
+    public @Nullable BrowserBoundKey getOrCreateBrowserBoundKeyForCredentialId(
             @JniType("std::vector<uint8_t>") byte[] identifier) {
         // TODO(crbug.com/377278827): Generate a random alias and store the association in a table,
         // so that browser bound public keys can be included in clientDataJson on passkey creation
@@ -73,7 +76,7 @@ public final class BrowserBoundKeyStore {
         return browserBoundKey;
     }
 
-    private BrowserBoundKey getBrowserBoundKey(String keyStoreAlias) {
+    private @Nullable BrowserBoundKey getBrowserBoundKey(String keyStoreAlias) {
         try {
             KeyStore keyStore = KeyStore.getInstance(ANDROID_KEY_STORE);
             keyStore.load(null);
@@ -101,7 +104,7 @@ public final class BrowserBoundKeyStore {
         }
     }
 
-    private BrowserBoundKey createBrowserBoundKey(String keyStoreAlias) {
+    private @Nullable BrowserBoundKey createBrowserBoundKey(String keyStoreAlias) {
         KeyPairGenerator generator = getAndroidKeyPairGenerator();
         if (generator == null) {
             return null;
@@ -136,7 +139,7 @@ public final class BrowserBoundKeyStore {
         }
     }
 
-    private static KeyPairGenerator getAndroidKeyPairGenerator() {
+    private static @Nullable KeyPairGenerator getAndroidKeyPairGenerator() {
         try {
             return KeyPairGenerator.getInstance(KeyProperties.KEY_ALGORITHM_EC, ANDROID_KEY_STORE);
         } catch (NoSuchAlgorithmException | NoSuchProviderException e) {

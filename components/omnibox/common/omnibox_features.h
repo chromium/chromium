@@ -13,7 +13,6 @@ namespace omnibox {
 // Please do not add more features to this "big blob" list.
 // Instead, use the categorized and alphabetized lists below this "big blob".
 // You can create a new category if none of the existing ones fit.
-BASE_DECLARE_FEATURE(kExperimentalKeywordMode);
 BASE_DECLARE_FEATURE(kImageSearchSuggestionThumbnail);
 BASE_DECLARE_FEATURE(kOmniboxRemoveSuggestionsFromClipboard);
 
@@ -42,7 +41,6 @@ BASE_DECLARE_FEATURE(kAdjustLocalHistoryZeroSuggestRelevanceScore);
 BASE_DECLARE_FEATURE(kClobberTriggersContextualWebZeroSuggest);
 BASE_DECLARE_FEATURE(kClobberTriggersSRPZeroSuggest);
 BASE_DECLARE_FEATURE(kLocalHistoryZeroSuggestBeyondNTP);
-BASE_DECLARE_FEATURE(kNormalizeSearchSuggestions);
 BASE_DECLARE_FEATURE(kZeroSuggestInMemoryCaching);
 BASE_DECLARE_FEATURE(kZeroSuggestPrefetchDebouncing);
 BASE_DECLARE_FEATURE(kZeroSuggestPrefetching);
@@ -64,6 +62,9 @@ BASE_DECLARE_FEATURE(kStoreTitleInContentsAndUrlInDescription);
 
 // Document provider and domain suggestions
 BASE_DECLARE_FEATURE(kDocumentProvider);
+BASE_DECLARE_FEATURE(kDocumentProviderPrimaryAccountRequirement);
+BASE_DECLARE_FEATURE(kDocumentProviderEnterpriseEligibility);
+BASE_DECLARE_FEATURE(kDocumentProviderEnterpriseEligibilityWhenUnknown);
 BASE_DECLARE_FEATURE(kDocumentProviderNoSyncRequirement);
 BASE_DECLARE_FEATURE(kDomainSuggestions);
 
@@ -132,6 +133,8 @@ BASE_DECLARE_FEATURE(kRetainOmniboxOnFocus);
 BASE_DECLARE_FEATURE(kJumpStartOmnibox);
 BASE_DECLARE_FEATURE(kSuppressIntermediateACUpdatesOnLowEndDevices);
 BASE_DECLARE_FEATURE(kAndroidHubSearch);
+// Delay focusTab to prioritize navigation (https://crbug.com/374852568).
+BASE_DECLARE_FEATURE(kPostDelayedTaskFocusTab);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // `ShortcutsProvider` features.

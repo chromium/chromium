@@ -36,6 +36,8 @@ class GLES2Interface;
 
 class ClientSharedImageInterface;
 class GpuChannelSharedImageInterface;
+class InterfaceBase;
+class RasterScopedAccess;
 class SharedImageTexture;
 class TestSharedImageInterface;
 
@@ -50,40 +52,43 @@ class GPU_EXPORT ClientSharedImage
   // plane.
   class GPU_EXPORT ScopedMapping {
    public:
-    ~ScopedMapping();
+    virtual ~ScopedMapping() = default;
 
-    base::span<uint8_t> GetMemoryForPlane(const uint32_t plane_index);
+    virtual base::span<uint8_t> GetMemoryForPlane(
+        const uint32_t plane_index) = 0;
 
     SkPixmap GetSkPixmapForPlane(const uint32_t plane_index,
                                  SkImageInfo sk_image_info);
 
     // Returns plane stride.
-    size_t Stride(const uint32_t plane_index);
+    virtual size_t Stride(const uint32_t plane_index) = 0;
 
     // Returns the size of the buffer.
-    gfx::Size Size();
+    virtual gfx::Size Size() = 0;
 
     // Returns BufferFormat.
-    gfx::BufferFormat Format();
+    virtual gfx::BufferFormat Format() = 0;
 
     // Returns whether the underlying resource is shared memory.
-    bool IsSharedMemory();
+    virtual bool IsSharedMemory() = 0;
 
     // Dumps information about the memory backing this instance to |pmd|.
     // The memory usage is attributed to |buffer_dump_guid|.
     // |tracing_process_id| uniquely identifies the process owning the memory.
     // |importance| is relevant only for the cases of co-ownership, the memory
     // gets attributed to the owner with the highest importance.
-    void OnMemoryDump(
+    virtual void OnMemoryDump(
         base::trace_event::ProcessMemoryDump* pmd,
         const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
         uint64_t tracing_process_id,
-        int importance);
+        int importance) = 0;
 
    private:
     friend class ClientSharedImage;
 
-    ScopedMapping();
+    static std::unique_ptr<ScopedMapping> Create(
+        SharedImageMetadata metadata_,
+        base::WritableSharedMemoryMapping* mapping);
     static std::unique_ptr<ScopedMapping> Create(
         gfx::GpuMemoryBuffer* gpu_memory_buffer,
         bool is_already_mapped);
@@ -94,17 +99,6 @@ class GPU_EXPORT ClientSharedImage
         gfx::GpuMemoryBuffer* gpu_memory_buffer,
         base::OnceCallback<void(std::unique_ptr<ScopedMapping>)> result_cb,
         bool success);
-
-    bool Init(gfx::GpuMemoryBuffer* gpu_memory_buffer, bool is_already_mapped);
-
-    // ScopedMapping is essentially a wrapper around GpuMemoryBuffer for now for
-    // simplicity and will be removed later.
-    // TODO(crbug.com/40279377): Refactor/Rename GpuMemoryBuffer and its
-    // implementations  as the end goal after all clients using GMB are
-    // converted to use the ScopedMapping and notion of GpuMemoryBuffer is being
-    // removed.
-    // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of MotionMark).
-    RAW_PTR_EXCLUSION gfx::GpuMemoryBuffer* buffer_ = nullptr;
   };
 
   // `sii_holder` must not be null.
@@ -113,6 +107,13 @@ class GPU_EXPORT ClientSharedImage
                     const SyncToken& sync_token,
                     scoped_refptr<SharedImageInterfaceHolder> sii_holder,
                     gfx::GpuMemoryBufferType gmb_type);
+
+  // `sii_holder` must not be null.
+  ClientSharedImage(const Mailbox& mailbox,
+                    const SharedImageMetadata& metadata,
+                    const SyncToken& sync_token,
+                    scoped_refptr<SharedImageInterfaceHolder> sii_holder,
+                    base::WritableSharedMemoryMapping mapping);
 
   // `sii_holder` must not be null. |shared_memory_pool| can be null and is only
   // used on windows platform.
@@ -233,6 +234,14 @@ class GPU_EXPORT ClientSharedImage
   std::unique_ptr<SharedImageTexture> CreateGLTexture(
       gles2::GLES2Interface* gl);
 
+  // Creates a RasterScopedAccess object from the current SharedImage for the
+  // provided raster interface.
+  std::unique_ptr<RasterScopedAccess> BeginRasterAccess(
+      InterfaceBase* raster_interface,
+      ClientSharedImage* shared_image,
+      const SyncToken& sync_token,
+      bool readonly);
+
  private:
   friend class base::RefCountedThreadSafe<ClientSharedImage>;
   friend class SharedImageTexture;
@@ -283,6 +292,7 @@ class GPU_EXPORT ClientSharedImage
   // `sii_holder` must not be null.
   friend class ClientSharedImageInterface;
   friend class GpuChannelSharedImageInterface;
+  friend class RasterScopedAccess;
   friend class TestSharedImageInterface;
   friend class media::VideoFrame;
   ClientSharedImage(const Mailbox& mailbox,
@@ -335,6 +345,7 @@ class GPU_EXPORT ClientSharedImage
   // Helper to hold the instance of GpuMemoryBufferManager.
   std::unique_ptr<HelperGpuMemoryBufferManager> gpu_memory_buffer_manager_;
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
+  base::WritableSharedMemoryMapping shared_memory_mapping_;
   std::optional<gfx::BufferUsage> buffer_usage_;
   scoped_refptr<SharedImageInterfaceHolder> sii_holder_;
 
@@ -422,6 +433,30 @@ class GPU_EXPORT SharedImageTexture {
   const raw_ptr<gpu::ClientSharedImage> shared_image_;
   unsigned int id_ = 0;
   bool has_active_access_ = false;
+};
+
+class RasterScopedAccess {
+ public:
+  RasterScopedAccess(const RasterScopedAccess&) = delete;
+  RasterScopedAccess& operator=(const RasterScopedAccess&) = delete;
+  RasterScopedAccess(RasterScopedAccess&&) = delete;
+  RasterScopedAccess& operator=(RasterScopedAccess&&) = delete;
+
+  ~RasterScopedAccess() = default;
+
+  static SyncToken EndAccess(
+      std::unique_ptr<RasterScopedAccess> scoped_shared_image);
+
+ private:
+  friend class ClientSharedImage;
+  RasterScopedAccess(InterfaceBase* raster_interface,
+                     ClientSharedImage* shared_image,
+                     const SyncToken& sync_token,
+                     bool readonly);
+
+  const raw_ptr<InterfaceBase> raster_interface_;
+  const raw_ptr<ClientSharedImage> shared_image_;
+  bool readonly_;
 };
 
 }  // namespace gpu

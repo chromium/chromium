@@ -176,7 +176,9 @@ interface URLLoaderNetworkServiceObserver {
   // the network service for security and privacy; this method then notifies
   // the browser process or other observer implementers that the raw headers
   // have been parsed into an array of
-  // `SharedStorageModifierMethodWithOptions`s.
+  // `SharedStorageModifierMethodWithOptions`s and an optional `with_lock`
+  // option.
+  // https://github.com/WICG/shared-storage#from-response-headers
   //
   // The order of the methods as listed in the header(s) is preserved, so that
   // the browser process (the main implementer of this API) can guarantee that
@@ -193,7 +195,8 @@ interface URLLoaderNetworkServiceObserver {
   // triggered by response headers and Shared Storage calls from the same
   // renderer process where this request originated.
   OnSharedStorageHeaderReceived(url.mojom.Origin request_origin,
-                 array<SharedStorageModifierMethodWithOptions> methods_with_options) => ();
+                 array<SharedStorageModifierMethodWithOptions> methods_with_options,
+                 string? with_lock) => ();
 
   // Used by the NetworkService to create a copy of this observer.
   // (e.g. when creating an observer for URLLoader from URLLoaderFactory's

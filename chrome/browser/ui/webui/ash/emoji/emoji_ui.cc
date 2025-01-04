@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/webui/ash/emoji/seal_utils.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/emoji_picker_resources.h"
 #include "chrome/grit/emoji_picker_resources_map.h"
@@ -31,9 +30,9 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
-#include "ui/resources/grit/webui_resources.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 
 namespace {
 constexpr gfx::Size kExtensionWindowSize(420, 480);

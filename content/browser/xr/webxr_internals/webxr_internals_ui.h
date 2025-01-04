@@ -6,19 +6,20 @@
 #define CONTENT_BROWSER_XR_WEBXR_INTERNALS_WEBXR_INTERNALS_UI_H_
 
 #include "content/browser/xr/webxr_internals/mojom/webxr_internals.mojom.h"
+#include "content/public/browser/internal_webui_config.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
-#include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 
 namespace content {
 
 class WebXrInternalsUI;
 
-class WebXrInternalsUIConfig : public DefaultWebUIConfig<WebXrInternalsUI> {
+class WebXrInternalsUIConfig
+    : public DefaultInternalWebUIConfig<WebXrInternalsUI> {
  public:
   WebXrInternalsUIConfig()
-      : DefaultWebUIConfig(kChromeUIScheme, kChromeUIWebXrInternalsHost) {}
+      : DefaultInternalWebUIConfig(kChromeUIWebXrInternalsHost) {}
   bool IsWebUIEnabled(BrowserContext* browser_context) override;
 };
 

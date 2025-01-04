@@ -19,6 +19,7 @@
 #include "chromeos/ash/components/login/auth/stub_authenticator_builder.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_type.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
@@ -40,13 +41,14 @@ const AccountId AccountIdForType(LoggedInUserMixin::LogInType type) {
   switch (type) {
     case LoggedInUserMixin::LogInType::kChild:
     case LoggedInUserMixin::LogInType::kConsumer:
-      return AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
-                                            FakeGaiaMixin::kFakeUserGaiaId);
+      return AccountId::FromUserEmailGaiaId(
+          FakeGaiaMixin::kFakeUserEmail,
+          GaiaId(FakeGaiaMixin::kFakeUserGaiaId));
     case LoggedInUserMixin::LogInType::kConsumerCustomDomain:
     case LoggedInUserMixin::LogInType::kManaged:
       return AccountId::FromUserEmailGaiaId(
           FakeGaiaMixin::kEnterpriseUser1,
-          FakeGaiaMixin::kEnterpriseUser1GaiaId);
+          GaiaId(FakeGaiaMixin::kEnterpriseUser1GaiaId));
   }
 }
 
@@ -145,8 +147,9 @@ void LoggedInUserMixin::LogInUser(
   }
   if (!include_initial_user_) {
     if (user_.user_type == user_manager::UserType::kChild) {
-      CHECK(user_.account_id.GetUserEmail() == FakeGaiaMixin::kFakeUserEmail);
-      CHECK(user_.account_id.GetGaiaId() == FakeGaiaMixin::kFakeUserGaiaId);
+      CHECK_EQ(user_.account_id.GetUserEmail(), FakeGaiaMixin::kFakeUserEmail);
+      CHECK_EQ(user_.account_id.GetGaiaId(),
+               GaiaId(FakeGaiaMixin::kFakeUserGaiaId));
       login_manager_.LoginAsNewChildUser();
     } else {
       login_manager_.LoginAsNewRegularUser(user_context);

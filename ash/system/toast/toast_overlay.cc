@@ -39,7 +39,7 @@
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
-#include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/event_monitor.h"
@@ -72,6 +72,20 @@ void AdjustWorkAreaBoundsForHotseatState(gfx::Rect& bounds,
   }
   if (hotseat_widget->state() == HotseatState::kShownHomeLauncher)
     bounds.set_height(hotseat_widget->GetTargetBounds().y() - bounds.y());
+}
+
+// Gets the `SystemToastView::ButtonType` corresponding to the provided
+// `ToastData::ButtonType`.
+SystemToastView::ButtonType GetToastViewButtonType(
+    ToastData::ButtonType button_type) {
+  switch (button_type) {
+    case ToastData::ButtonType::kNone:
+      return SystemToastView::ButtonType::kNone;
+    case ToastData::ButtonType::kTextButton:
+      return SystemToastView::ButtonType::kTextButton;
+    case ToastData::ButtonType::kIconButton:
+      return SystemToastView::ButtonType::kIconButton;
+  }
 }
 
 }  // namespace
@@ -150,14 +164,14 @@ ToastOverlay::ToastOverlay(Delegate* delegate,
                            aura::Window* root_window)
     : delegate_(delegate),
       text_(toast_data.text),
-      dismiss_text_(toast_data.dismiss_text),
       overlay_widget_(new views::Widget),
       display_observer_(std::make_unique<ToastDisplayObserver>(this)),
       root_window_(root_window),
-      dismiss_callback_(std::move(toast_data.dismiss_callback)) {
-  // The provided callback is stored in the overlay's `dismiss_callback_`.
+      button_callback_(std::move(toast_data.button_callback)) {
+  // The provided callback is stored in the overlay's `button_callback_`.
   overlay_view_ = std::make_unique<SystemToastView>(
-      toast_data.text, toast_data.dismiss_text, /*dismiss_callback=*/
+      toast_data.text, GetToastViewButtonType(toast_data.button_type),
+      toast_data.button_text, toast_data.button_icon, /*button_callback=*/
       base::BindRepeating(
           &ToastOverlay::OnButtonClicked,
           // Unretained is safe because `this` owns `overlay_view_`.
@@ -254,14 +268,17 @@ const std::u16string ToastOverlay::GetText() const {
   return text_;
 }
 
-bool ToastOverlay::RequestFocusOnActiveToastDismissButton() {
-  overlay_view_->dismiss_button()->RequestFocus();
-  return overlay_view_->dismiss_button()->HasFocus();
+bool ToastOverlay::RequestFocusOnActiveToastButton() {
+  if (views::Button* button = overlay_view_->button()) {
+    button->RequestFocus();
+    return button->HasFocus();
+  }
+  return false;
 }
 
-bool ToastOverlay::IsDismissButtonFocused() const {
-  if (auto* dismiss_button = overlay_view_->dismiss_button()) {
-    return dismiss_button->HasFocus();
+bool ToastOverlay::IsButtonFocused() const {
+  if (auto* button = overlay_view_->button()) {
+    return button->HasFocus();
   }
   return false;
 }
@@ -354,8 +371,8 @@ int ToastOverlay::CalculateSliderBubbleOffset() {
 }
 
 void ToastOverlay::OnButtonClicked() {
-  if (dismiss_callback_) {
-    dismiss_callback_.Run();
+  if (button_callback_) {
+    button_callback_.Run();
   }
   Show(/*visible=*/false);
 }
@@ -398,8 +415,8 @@ views::Widget* ToastOverlay::widget_for_testing() {
   return overlay_widget_.get();
 }
 
-views::LabelButton* ToastOverlay::dismiss_button_for_testing() {
-  return overlay_view_->dismiss_button();
+views::Button* ToastOverlay::button_for_testing() {
+  return overlay_view_->button();
 }
 
 }  // namespace ash

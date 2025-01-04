@@ -207,6 +207,7 @@ chromium-metrics-reviews@google.com.
   <summary>Records the total duration it takes to launch a kiosk app.</summary>
   <token key="KioskType">
     <variant name="ChromeApp"/>
+    <variant name="IsolatedWebApp"/>
     <variant name="Web"/>
   </token>
 </histogram>

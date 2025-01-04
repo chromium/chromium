@@ -49,6 +49,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ash {
@@ -86,7 +87,7 @@ class PasswordChangeTestBase : public LoginManagerTest {
 
  protected:
   const AccountId test_account_id_ =
-      AccountId::FromUserEmailGaiaId(kUserEmail, kGaiaID);
+      AccountId::FromUserEmailGaiaId(kUserEmail, GaiaId(kGaiaID));
   const LoginManagerMixin::TestUserInfo test_user_info_{
       test_account_id_,
       test::UserAuthConfig::Create(test::kDefaultAuthSetup).RequireReauth()};

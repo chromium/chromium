@@ -98,6 +98,13 @@ public class EdgeToEdgeControllerImpl
      */
     private boolean mIsPageOptedIntoEdgeToEdge;
 
+    /**
+     * Whether the page should constrain the safe area, which requires the page to be retained
+     * within the safe area region. This essentially opts the page out of edge-to-edge, regardless
+     * of other flags and values (e.g. |mIsPageOptedIntoEdgeToEdge|)
+     */
+    private boolean mHasSafeAreaConstraint;
+
     private InsetObserver mInsetObserver;
     private @NonNull Insets mSystemInsets;
     private Insets mAppliedContentViewPadding;
@@ -369,6 +376,9 @@ public class EdgeToEdgeControllerImpl
         boolean changedDrawToEdge = shouldDrawToEdge != mIsDrawingToEdge;
         mIsPageOptedIntoEdgeToEdge = pageOptedIntoEdgeToEdge;
         mIsDrawingToEdge = shouldDrawToEdge;
+        // Refresh the mHasSafeAreaConstraint to ensure the boolean stays fresh (e.g. when
+        // #drawToEdge is called due to tab switching)
+        mHasSafeAreaConstraint = EdgeToEdgeUtils.hasSafeAreaConstraintForTab(mCurrentTab);
 
         if (changedPageOptedIn) {
             Log.v(
@@ -390,6 +400,7 @@ public class EdgeToEdgeControllerImpl
             for (var observer : mEdgeChangeObservers) {
                 observer.onToEdgeChange(
                         mSystemInsets.bottom, isDrawingToEdge(), isPageOptedIntoEdgeToEdge());
+                observer.onSafeAreaConstraintChanged(mHasSafeAreaConstraint);
             }
         }
     }

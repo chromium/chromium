@@ -12,6 +12,7 @@ import android.util.SparseArray;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +23,7 @@ import java.util.Map;
  * AndroidPermissionDelegate that implements much of the logic around requesting permissions.
  * Subclasses need to implement only the basic permissions checking and requesting methods.
  */
+@NullMarked
 public abstract class AndroidPermissionDelegateWithRequester implements AndroidPermissionDelegate {
     private Handler mHandler;
     private SparseArray<PermissionRequestInfo> mOutstandingPermissionRequests;

@@ -361,6 +361,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2295777434187870477">Mikrofons ir ieslēgts. Pārslēdzot iestatījumu, tiks izslēgta ievade.</translation>
 <translation id="2302092602801625023">Šo kontu pārvalda lietotne Family Link.</translation>
 <translation id="2303600792989757991">Pārslēgt loga kopsavilkumu</translation>
+<translation id="2304702218354340897">Vai tiešām vēlaties izslēgt sejas kontroli?</translation>
 <translation id="2305738328104302723">Google uzdevumu saraksts: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: nesen izveidoti ekrānuzņēmumi, lejupielādes un piespraustie faili</translation>
 <translation id="2318576281648121272">Šodien, <ph name="TODAY_DATE" /></translation>
@@ -387,6 +388,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2370971919968699910">Tādējādi var rasties izmaksas par datu lietojumu.
 Pievienoto ierīču skaits: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2386292613071805067">Atlasīt visu saturu lapā</translation>
+<translation id="2389423187722941333">Pārslēgt Gemini</translation>
 <translation id="2392659840443812875">Nav pieejams neviens tīklājs. Jūsu ierīcei ir jāatrodas tuvumā, un tajā ir jābūt ieslēgtam Bluetooth savienojumam.</translation>
 <translation id="2397416548179033562">Rādīt Chrome izvēlni</translation>
 <translation id="240006516586367791">Multivides vadīklas</translation>
@@ -394,6 +396,7 @@ Pievienoto ierīču skaits: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2402411679569069051">Lai atbloķētu Chromebook datoru, izmantojiet pirksta nospiedumu vai atbloķējiet tālruni.</translation>
 <translation id="240545663114741956">Lai izrakstītos, divreiz nospiediet īsinājumtaustiņu <ph name="ACCELERATOR" />.</translation>
 <translation id="2405664212338326887">Nav savienojuma</translation>
+<translation id="2406710117564540804">Ieslēgt/izslēgt režīmu “Netraucēt”</translation>
 <translation id="2408955596600435184">Ievadiet PIN kodu</translation>
 <translation id="2412593942846481727">Ir pieejams atjauninājums</translation>
 <translation id="2416438829169535743">Vai iziet no skata?</translation>
@@ -899,6 +902,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="4119928251231465047">Pārāk daudz PIN ievadīšanas mēģinājumu.</translation>
 <translation id="412298498316631026">logs</translation>
 <translation id="4123259114412175274">Lai atbloķētu Chromebook datoru, pārliecinieties, ka tālrunī ir ieslēgts Bluetooth savienojums.</translation>
+<translation id="4123868835475902435">Tā bija pamatinformācija. Turpiniet darbu mūsu iebūvētajā lietotnē Izpēte, lai saņemtu padomus un palīdzību. Jūs atradīsiet padomus par darba sākšanu, īpašos piedāvājumus un jaunākās funkcijas, ko nodrošina <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4125970834901680537">Lietotņu saturu nevar straumēt planšetdatora režīmā. Mēģiniet vēlreiz klēpjdatora režīmā.</translation>
 <translation id="4131973331381812765">Temperatūra: <ph name="TEMPERATURE" /> °C; pašreizējais ātrums: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="4136724716305260864">Ieslēgts līdz saullēktam</translation>
@@ -1019,7 +1023,6 @@ Pievienota viena ierīce.</translation>
 <translation id="4481530544597605423">Pārī nesavienotās ierīces</translation>
 <translation id="4485506555414638855">Nerādīt iespēju iestatīt tālruņa jaunāko fotoattēlu, multivides satura, paziņojumu un lietotņu skatīšanu</translation>
 <translation id="4491109536499578614">Attēls</translation>
-<translation id="4493452241184130939">Tā bija pamatinformācija. Turpiniet darbu mūsu iebūvētajā lietotnē Izpēte, lai saņemtu padomus un palīdzību. Jūs atradīsiet padomus par darba sākšanu, ieteiktās lietotnes, īpašos piedāvājumus un jaunākās funkcijas, ko nodrošina <ph name="PRODUCT_NAME" />.</translation>
 <translation id="450584155212756404">Izstrādātāju versija</translation>
 <translation id="4513946894732546136">Atsauksmes</translation>
 <translation id="4518404433291145981">Lai atbloķētu Chromebook datoru, vispirms atbloķējiet tālruni.</translation>
@@ -1082,7 +1085,6 @@ Pievienota viena ierīce.</translation>
 <translation id="4708065238214351979">Palielināt tastatūras spilgtumu</translation>
 <translation id="4708185346211948049"><ph name="DAY_OF_WEEK" /> nākamajā nedēļā</translation>
 <translation id="4717575069099566988">Jūsu USB-C vads neatbalsta USB4. Ierīces veiktspēja var būt ierobežota.</translation>
-<translation id="4724328513667182700"><ph name="PRODUCT_NAME" /> — 6 padomi par darba sākšanu</translation>
 <translation id="4730374152663651037">BIEŽI IZMANTOTĀS</translation>
 <translation id="4731797938093519117">Vecāku piekļuve</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (kreisā)</translation>
@@ -1309,7 +1311,6 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="5409208741270395213">Atzīmēt uzdevumu kā pabeigtu</translation>
 <translation id="5413656666631274079">Lapa Iestatījumi</translation>
 <translation id="5414198321558177633">Notiek profilu saraksta atsvaidzināšana. Tas var ilgt dažas minūtes.</translation>
-<translation id="5417965108047245734">Skatiet īsu ceļvedi par darba sākšanu savā ierīcē (<ph name="PRODUCT_NAME" />).</translation>
 <translation id="5426063383988017631">Iestatījumu izvēlne aizvērta</translation>
 <translation id="5428899915242071344">Sākt atlasīšanu</translation>
 <translation id="5429993543155113935">Inkognito režīma logi pašlaik netiek atbalstīti.</translation>
@@ -1647,6 +1648,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="6539852571005954999">Notiek lejupielādes faila “<ph name="FILENAME" />” pārbaude</translation>
 <translation id="6542521951477560771">Notiek apraide uz ierīci <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emocijzīmes, GIF attēli u. c.</translation>
+<translation id="6543942526104794893">Vai tiešām vēlaties izslēgt sejas žestus?</translation>
 <translation id="6545382064335350438">Joprojām nevarēja verificēt jūsu PIN. Mēģiniet vēlreiz.</translation>
 <translation id="6555373427270923730">Ierakstiet tīmekļa adresi adreses joslā un pēc tam nospiediet <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2313,6 +2315,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8855885154700222542">Pilnekrāna taustiņš</translation>
 <translation id="8858369206579825206">Konfidencialitātes vadīklas</translation>
 <translation id="8860366331836346216">Pievienot eSIM</translation>
+<translation id="8869149849311827122">Vai tiešām vēlaties izslēgt kursora vadību ar peli?</translation>
 <translation id="8870509716567206129">Lietotnē netiek atbalstīta ekrāna sadalīšana.</translation>
 <translation id="8873203135446552888">Apstipriniet, ka vēlaties atspējot iebūvēto skārienpaliktni</translation>
 <translation id="8874184842967597500">Savienojums nav izveidots</translation>

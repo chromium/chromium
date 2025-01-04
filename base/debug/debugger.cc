@@ -27,8 +27,9 @@ bool WaitForDebugger(int wait_seconds, bool silent) {
 #endif
   for (int i = 0; i < wait_seconds * 10; ++i) {
     if (BeingDebugged()) {
-      if (!silent)
+      if (!silent) {
         BreakDebugger();
+      }
       return true;
     }
     PlatformThread::Sleep(Milliseconds(100));

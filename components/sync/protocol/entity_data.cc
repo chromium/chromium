@@ -51,8 +51,9 @@ base::Value::Dict EntityData::ToDictionaryValue() const {
                CrossUserSharingPublicKeyToValue(recipient_public_key));
   if (collaboration_metadata.has_value()) {
     value.Set("COLLABORATION_ID", collaboration_metadata->collaboration_id());
-    value.Set("CREATED_BY", collaboration_metadata->created_by());
-    value.Set("LAST_UPDATED_BY", collaboration_metadata->last_updated_by());
+    value.Set("CREATED_BY", collaboration_metadata->created_by().ToString());
+    value.Set("LAST_UPDATED_BY",
+              collaboration_metadata->last_updated_by().ToString());
   }
   return value;
 }

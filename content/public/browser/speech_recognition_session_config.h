@@ -14,6 +14,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/speech_recognition_session_context.h"
 #include "content/public/browser/speech_recognition_session_preamble.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_grammar.mojom.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/origin.h"
@@ -30,6 +31,7 @@ struct CONTENT_EXPORT SpeechRecognitionSessionConfig {
 
   std::string language;
   std::vector<media::mojom::SpeechRecognitionGrammar> grammars;
+  std::optional<media::SpeechRecognitionRecognitionContext> recognition_context;
   url::Origin origin;
   bool filter_profanities;
   bool continuous;

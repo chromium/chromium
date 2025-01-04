@@ -6,9 +6,13 @@ source_set("coordinator") {
   sources = [
     "youtube_incognito_coordinator.h",
     "youtube_incognito_coordinator.mm",
+    "youtube_incognito_coordinator_delegate.h",
   ]
   deps = [
+    "//ios/chrome/app/application_delegate:tab_opening",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/url_loading/model:url_loading_params_header",
     "//ios/chrome/browser/youtube_incognito/ui:ui",
   ]
 }

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_color_params.h"
 
 #include "build/build_config.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
+#include "third_party/blink/renderer/core/html/canvas/predefined_color_space.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 
 namespace blink {
 
@@ -100,7 +96,7 @@ ImageDataStorageFormat SerializedImageDataSettings::GetStorageFormat() const {
 
 ImageDataSettings* SerializedImageDataSettings::GetImageDataSettings() const {
   ImageDataSettings* settings = ImageDataSettings::Create();
-  settings->setColorSpace(PredefinedColorSpaceName(GetColorSpace()));
+  settings->setColorSpace(PredefinedColorSpaceToV8(GetColorSpace()));
   settings->setStorageFormat(ImageDataStorageFormatName(GetStorageFormat()));
   return settings;
 }
@@ -136,9 +132,12 @@ SerializedImageBitmapSettings::SerializedImageBitmapSettings(
   sk_color_space_[4] = trfn.d;
   sk_color_space_[5] = trfn.e;
   sk_color_space_[6] = trfn.f;
-  for (uint32_t i = 0; i < 3; ++i)
-    for (uint32_t j = 0; j < 3; ++j)
-      sk_color_space_[7 + 3 * i + j] = to_xyz.vals[i][j];
+  for (uint32_t i = 0; i < 3; ++i) {
+    for (uint32_t j = 0; j < 3; ++j) {
+      // SAFETY: skcms_Matrix3x3 always creates 3x3 array.
+      sk_color_space_[7 + 3 * i + j] = UNSAFE_BUFFERS(to_xyz.vals[i][j]);
+    }
+  }
 
   switch (info.colorType()) {
     default:
@@ -230,9 +229,13 @@ SkImageInfo SerializedImageBitmapSettings::GetSkImageInfo(
     trfn.d = static_cast<float>(sk_color_space_[4]);
     trfn.e = static_cast<float>(sk_color_space_[5]);
     trfn.f = static_cast<float>(sk_color_space_[6]);
-    for (uint32_t i = 0; i < 3; ++i)
-      for (uint32_t j = 0; j < 3; ++j)
-        to_xyz.vals[i][j] = static_cast<float>(sk_color_space_[7 + 3 * i + j]);
+    for (uint32_t i = 0; i < 3; ++i) {
+      for (uint32_t j = 0; j < 3; ++j) {
+        // SAFETY: skcms_Matrix3x3 always creates 3x3 array.
+        UNSAFE_BUFFERS(to_xyz.vals[i][j]) =
+            static_cast<float>(sk_color_space_[7 + 3 * i + j]);
+      }
+    }
     sk_color_space = SkColorSpace::MakeRGB(trfn, to_xyz);
   }
 

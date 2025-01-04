@@ -5,8 +5,8 @@
 #include "components/autofill/core/browser/metrics/payments/cvc_storage_metrics.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 
 namespace autofill::autofill_metrics {

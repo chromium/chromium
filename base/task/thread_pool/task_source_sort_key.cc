@@ -24,12 +24,14 @@ bool TaskSourceSortKey::operator<(const TaskSourceSortKey& other) const {
   // posted sooner than |other|'s.
 
   // A lower priority is considered less important.
-  if (priority_ != other.priority_)
+  if (priority_ != other.priority_) {
     return priority_ < other.priority_;
+  }
 
   // A greater worker count is considered less important.
-  if (worker_count_ != other.worker_count_)
+  if (worker_count_ != other.worker_count_) {
     return worker_count_ > other.worker_count_;
+  }
 
   // Lastly, a greater ready time is considered less important.
   return ready_time_ > other.ready_time_;

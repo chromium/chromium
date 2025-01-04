@@ -248,7 +248,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.HomedirEncryptionType" enum="HomedirEncryptionType"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>dspaid@chromium.org</owner>
   <summary>
     The encryption type used for a user's cryptohome directory. This is logged
@@ -304,7 +304,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.MaskedDownloadsItems" units="items"
-    expires_after="2025-04-27">
+    expires_after="2025-06-29">
   <owner>benreich@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -525,7 +525,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToPerformEphemeralMount" units="ms"
-    expires_after="2025-04-01">
+    expires_after="2025-06-08">
   <owner>sarthakkukreti@chromium.org</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>

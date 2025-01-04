@@ -14,7 +14,6 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -226,7 +225,7 @@ using ComponentCloudPolicyBuilder =
     TypedPolicyBuilder<enterprise_management::ExternalPolicyData>;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 using ComponentActiveDirectoryPolicyBuilder = StringPolicyBuilder;
 #endif
 

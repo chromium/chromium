@@ -70,6 +70,24 @@ class PrivacySandboxService : public KeyedService {
   };
   // LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivacySandboxPrimaryAccountUserGroups)
 
+  // Suppression reason for a generic prompt.
+  // LINT.IfChange(FakeNoticePromptSuppressionReason)
+  enum class FakeNoticePromptSuppressionReason {
+    kNone = 0,
+    // Prompt suppressed due to third party cookies being blocked.
+    k3PC_Blocked = 1 << 0,
+    // Prompt suppressed due to account capability.
+    kCapabilityFalse = 1 << 1,
+    // Prompt suppressed due to managed devices have the third party cookie
+    // policy set.
+    kManagedDevice = 1 << 2,
+    // Prompt suppressed due to the notice being shown before, tracked by a fake
+    // pref.
+    kNoticeShownBefore = 1 << 3,
+    kMaxValue = kNoticeShownBefore,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivacySandboxPromptSuppressionReason)
+
   // An exhaustive list of actions related to showing & interacting with the
   // prompt. Includes actions which do not impact consent / notice state.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
@@ -95,6 +113,8 @@ class PrivacySandboxService : public KeyedService {
     // has made the decision (accepted or declined the consent).
     kConsentClosedNoDecision = 10,
 
+    // TODO(crbug.com/386240885): Clean up old learn more, as it is not used for
+    // any of the Privacy Sandbox Dialogs anymore.
     // Interaction with notice bubble: click on the link to open interests
     // settings.
     kNoticeLearnMore = 11,
@@ -117,13 +137,17 @@ class PrivacySandboxService : public KeyedService {
     // Privacy policy interactions
     kPrivacyPolicyLinkClicked = 21,
 
-    kMaxValue = kPrivacyPolicyLinkClicked,
+    // Interactions with M1 Notice EEA Prompt. This is in relation to Ads API UX
+    // Enhancement splitting the more info into two different sections.
+    kNoticeSiteSuggestedAdsMoreInfoOpened = 22,
+    kNoticeSiteSuggestedAdsMoreInfoClosed = 23,
+    kNoticeAdsMeasurementMoreInfoOpened = 24,
+    kNoticeAdsMeasurementMoreInfoClosed = 25,
+
+    kMaxValue = kNoticeAdsMeasurementMoreInfoClosed,
   };
 
   // Contains the possible states of the Notice Queue.
-  // Must be kept in sync with NoticeQueueState in
-  // tools/metrics/histograms/enums.xml
-  // LINT.IfChange(NoticeQueueState)
   enum class NoticeQueueState {
     // Queued on browser startup.
     kQueueOnStartup = 0,
@@ -137,7 +161,6 @@ class PrivacySandboxService : public KeyedService {
     kReleaseOnShown = 4,
     kMaxValue = kReleaseOnShown,
   };
-  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:NoticeQueueState)
 
   // If during the trials a previous consent decision was made, or the notice
   // was already acknowledged, and the privacy sandbox is disabled,
@@ -168,30 +191,56 @@ class PrivacySandboxService : public KeyedService {
     kMaxValue = kNoticeShownToGuardian,
   };
 
+  // Contains the possible states of the prompt start up states for m1.
+  // LINT.IfChange(SettingsPrivacySandboxPromptStartupState)
+  enum class PromptStartupState {
+    kEEAConsentPromptWaiting = 0,
+    kEEANoticePromptWaiting = 1,
+    kROWNoticePromptWaiting = 2,
+    kEEAFlowCompletedWithTopicsAccepted = 3,
+    kEEAFlowCompletedWithTopicsDeclined = 4,
+    kROWNoticeFlowCompleted = 5,
+    kPromptNotShownDueToPrivacySandboxRestricted = 6,
+    kPromptNotShownDueTo3PCBlocked = 7,
+    kPromptNotShownDueToTrialConsentDeclined = 8,
+    kPromptNotShownDueToTrialsDisabledAfterNoticeShown = 9,
+    kPromptNotShownDueToManagedState = 10,
+    kRestrictedNoticeNotShownDueToNoticeShownToGuardian = 11,
+    kRestrictedNoticePromptWaiting = 12,
+    kRestrictedNoticeFlowCompleted = 13,
+    kRestrictedNoticeNotShownDueToFullNoticeAcknowledged = 14,
+    kWaitingForGraduationRestrictedNoticeFlowNotCompleted = 15,
+    kWaitingForGraduationRestrictedNoticeFlowCompleted = 16,
+    kMaxValue = kWaitingForGraduationRestrictedNoticeFlowCompleted,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/settings/enums.xml:SettingsPrivacySandboxPromptStartupState)
+
   // Returns whether |url| is suitable to display the Privacy Sandbox prompt
-  // over. Only about:blank and certain chrome:// URLs are considered suitable.
+  // over. Only about:blank and certain chrome:// URLs are considered
+  // suitable.
   static bool IsUrlSuitableForPrompt(const GURL& url);
 
   // Disables the display of the Privacy Sandbox prompt for testing. When
-  // |disabled| is true, GetRequiredPromptType() will only ever return that no
-  // prompt is required.
-  // NOTE: This is set to true in InProcessBrowserTest::SetUp, disabling the
-  // prompt for those tests. If you set this outside of that context, you should
-  // ensure it is reset at the end of your test.
+  // |disabled| is true, GetRequiredPromptType() will only ever return that
+  // no prompt is required. NOTE: This is set to true in
+  // InProcessBrowserTest::SetUp, disabling the prompt for those tests. If
+  // you set this outside of that context, you should ensure it is reset at
+  // the end of your test.
   static void SetPromptDisabledForTests(bool disabled);
 
   // Returns the prompt type that should be shown to the user. This consults
-  // previous consent / notice information stored in preferences, the current
-  // state of the Privacy Sandbox settings, and the current location of the
-  // user, to determine the appropriate type. This is expected to be called by
-  // UI code locations determining whether a prompt should be shown on startup.
+  // previous consent / notice information stored in preferences, the
+  // current state of the Privacy Sandbox settings, and the current location
+  // of the user, to determine the appropriate type. This is expected to be
+  // called by UI code locations determining whether a prompt should be
+  // shown on startup.
   virtual PromptType GetRequiredPromptType(SurfaceType surface_type) = 0;
 
   // Informs the service that |action| occurred with the prompt. This allows
   // the service to record this information in preferences such that future
   // calls to GetRequiredPromptType() are correct. This is expected to be
-  // called appropriately by all locations showing the prompt. Metrics shared
-  // between platforms will also be recorded.
+  // called appropriately by all locations showing the prompt. Metrics
+  // shared between platforms will also be recorded.
   virtual void PromptActionOccurred(PromptAction action,
                                     SurfaceType surface_type) = 0;
 
@@ -330,6 +379,10 @@ class PrivacySandboxService : public KeyedService {
   // Determines whether the Topics API step should be shown in the Privacy
   // Guide.
   virtual bool PrivacySandboxPrivacyGuideShouldShowAdTopicsCard() = 0;
+
+  // Determines whether the China domain should be used for the Privacy Policy
+  // page.
+  virtual bool ShouldUsePrivacyPolicyChinaDomain() = 0;
 
   // Inform the service that the user changed the Topics toggle in settings,
   // so that the current topics consent information can be updated.

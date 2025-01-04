@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/digital_credentials/digital_identity_multi_step_dialog.h"
 #include "chrome/browser/ui/views/digital_credentials/digital_identity_safety_interstitial_controller_desktop.h"
 #include "chrome/grit/generated_resources.h"
@@ -44,6 +46,12 @@ void DigitalIdentityBluetoothManualDialogController::UpdateDialog(
   ok_button_params->SetLabel(ok_button_text);
   ok_button_params->SetEnabled(is_ok_button_enabled);
 
+  auto illustration = std::make_unique<ThemeTrackingNonAccessibleImageView>(
+      ui::ImageModel::FromVectorIcon(kPasskeyErrorBluetoothIcon),
+      ui::ImageModel::FromVectorIcon(kPasskeyErrorBluetoothDarkIcon),
+      base::BindRepeating(&DigitalIdentityMultiStepDialog::GetBackgroundColor,
+                          base::Unretained(dialog_)));
+
   dialog_->TryShow(
       ok_button_params,
       base::BindOnce(&DigitalIdentityBluetoothManualDialogController::OnAccept,
@@ -52,7 +60,8 @@ void DigitalIdentityBluetoothManualDialogController::UpdateDialog(
       base::BindOnce(&DigitalIdentityBluetoothManualDialogController::OnCancel,
                      weak_factory_.GetWeakPtr()),
       dialog_title, dialog_body,
-      /*custom_body_field=*/nullptr);
+      DigitalIdentityMultiStepDialog::ConfigureHeaderIllustration(
+          std::move(illustration)));
 }
 
 void DigitalIdentityBluetoothManualDialogController::OnAccept() {

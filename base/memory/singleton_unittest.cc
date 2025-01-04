@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/singleton.h"
+
 #include <stdint.h>
 
 #include "base/at_exit.h"
 #include "base/memory/aligned_memory.h"
-#include "base/memory/singleton.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -27,9 +28,7 @@ class AlignedData {
 
 class IntSingleton {
  public:
-  static IntSingleton* GetInstance() {
-    return Singleton<IntSingleton>::get();
-  }
+  static IntSingleton* GetInstance() { return Singleton<IntSingleton>::get(); }
 
   int value_;
 };
@@ -64,8 +63,9 @@ int* SingletonInt5() {
 template <typename Type>
 struct CallbackTrait : public DefaultSingletonTraits<Type> {
   static void Delete(Type* instance) {
-    if (instance->callback_)
+    if (instance->callback_) {
       (instance->callback_)();
+    }
     DefaultSingletonTraits<Type>::Delete(instance);
   }
 };
@@ -78,9 +78,9 @@ class CallbackSingleton {
 
 class CallbackSingletonWithNoLeakTrait : public CallbackSingleton {
  public:
-  struct Trait : public CallbackTrait<CallbackSingletonWithNoLeakTrait> { };
+  struct Trait : public CallbackTrait<CallbackSingletonWithNoLeakTrait> {};
 
-  CallbackSingletonWithNoLeakTrait() : CallbackSingleton() { }
+  CallbackSingletonWithNoLeakTrait() : CallbackSingleton() {}
 
   static CallbackSingletonWithNoLeakTrait* GetInstance() {
     return Singleton<CallbackSingletonWithNoLeakTrait, Trait>::get();
@@ -93,7 +93,7 @@ class CallbackSingletonWithLeakTrait : public CallbackSingleton {
     static const bool kRegisterAtExit = false;
   };
 
-  CallbackSingletonWithLeakTrait() : CallbackSingleton() { }
+  CallbackSingletonWithLeakTrait() : CallbackSingleton() {}
 
   static CallbackSingletonWithLeakTrait* GetInstance() {
     return Singleton<CallbackSingletonWithLeakTrait, Trait>::get();
@@ -104,7 +104,7 @@ class CallbackSingletonWithStaticTrait : public CallbackSingleton {
  public:
   struct Trait;
 
-  CallbackSingletonWithStaticTrait() : CallbackSingleton() { }
+  CallbackSingletonWithStaticTrait() : CallbackSingleton() {}
 
   static CallbackSingletonWithStaticTrait* GetInstance() {
     return Singleton<CallbackSingletonWithStaticTrait, Trait>::get();
@@ -114,8 +114,9 @@ class CallbackSingletonWithStaticTrait : public CallbackSingleton {
 struct CallbackSingletonWithStaticTrait::Trait
     : public StaticMemorySingletonTraits<CallbackSingletonWithStaticTrait> {
   static void Delete(CallbackSingletonWithStaticTrait* instance) {
-    if (instance->callback_)
+    if (instance->callback_) {
       (instance->callback_)();
+    }
     StaticMemorySingletonTraits<CallbackSingletonWithStaticTrait>::Delete(
         instance);
   }
@@ -133,7 +134,6 @@ class AlignedTestSingleton {
 
   Type type_;
 };
-
 
 void SingletonNoLeak(CallbackFunc CallOnQuit) {
   CallbackSingletonWithNoLeakTrait::GetInstance()->callback_ = CallOnQuit;
@@ -195,17 +195,11 @@ class SingletonTest : public testing::Test {
     static_called_ = false;
   }
 
-  static void CallbackNoLeak() {
-    non_leak_called_ = true;
-  }
+  static void CallbackNoLeak() { non_leak_called_ = true; }
 
-  static void CallbackLeak() {
-    leaky_called_ = true;
-  }
+  static void CallbackLeak() { leaky_called_ = true; }
 
-  static void CallbackStatic() {
-    static_called_ = true;
-  }
+  static void CallbackStatic() { static_called_ = true; }
 
  private:
   static bool non_leak_called_;
@@ -225,9 +219,7 @@ TEST_F(SingletonTest, Basic) {
 
   {
     ShadowingAtExitManager sem;
-    {
-      singleton_int = SingletonInt();
-    }
+    { singleton_int = SingletonInt(); }
     // Ensure POD type initialization.
     EXPECT_EQ(*singleton_int, 0);
     *singleton_int = 1;
@@ -235,9 +227,7 @@ TEST_F(SingletonTest, Basic) {
     EXPECT_EQ(singleton_int, SingletonInt());
     EXPECT_EQ(*singleton_int, 1);
 
-    {
-      singleton_int_5 = SingletonInt5();
-    }
+    { singleton_int_5 = SingletonInt5(); }
     // Is default initialized to 5.
     EXPECT_EQ(*singleton_int_5, 5);
 

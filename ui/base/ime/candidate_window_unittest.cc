@@ -3,15 +3,11 @@
 // found in the LICENSE file.
 // TODO(nona): Add more tests.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/base/ime/candidate_window.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string>
 
@@ -24,22 +20,21 @@ namespace ui {
 namespace {
 
 const size_t kSampleCandidateSize = 3;
-const char* kSampleCandidate[] = {
-  "Sample Candidate 1",
-  "Sample Candidate 2",
-  "Sample Candidate 3",
-};
-const char* kSampleDescriptionTitle[] = {
-  "Sample Description Title 1",
-  "Sample Description Title 2",
-  "Sample Description Title 3",
-};
-const char* kSampleDescriptionBody[] = {
-  "Sample Description Body 1",
-  "Sample Description Body 2",
-  "Sample Description Body 3",
-};
-
+auto kSampleCandidate = std::to_array<const char*>({
+    "Sample Candidate 1",
+    "Sample Candidate 2",
+    "Sample Candidate 3",
+});
+auto kSampleDescriptionTitle = std::to_array<const char*>({
+    "Sample Description Title 1",
+    "Sample Description Title 2",
+    "Sample Description Title 3",
+});
+auto kSampleDescriptionBody = std::to_array<const char*>({
+    "Sample Description Body 1",
+    "Sample Description Body 2",
+    "Sample Description Body 3",
+});
 }
 
 TEST(CandidateWindow, IsEqualTest) {

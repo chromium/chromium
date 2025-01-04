@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">Завантаження призупинено</translation>
 <translation id="1396327438254055134">Дозволити сайту використовувати оптимізатор V8.</translation>
 <translation id="1415402041810619267">URL-адресу скорочено</translation>
+<translation id="1415855080660575082">Дозвольте Chrome надсилати на ваш пристрій інформацію про останні вкладки, щоб ви могли переглядати їх у списку додатків і результатах пошуку. Цю функцію можна будь-коли ввімкнути або вимкнути в налаштуваннях Chrome.</translation>
 <translation id="1448064542941920355">Зменшити масштаб</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> сайт}one{<ph name="SITE_COUNT" /> сайт}few{<ph name="SITE_COUNT" /> сайти}many{<ph name="SITE_COUNT" /> сайтів}other{<ph name="SITE_COUNT" /> сайту}}</translation>
 <translation id="1500473259453106018">Сховати картку "Зниження цін на вкладках"</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">Ви тимчасово дозволили цьому сайту використовувати сторонні файли cookie. Це зменшить рівень захисту під час перегляду, але функції сайту з більшою імовірністю працюватимуть належним чином. <ph name="BEGIN_LINK" />Надіслати відгук<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Функції на деяких сайтах можуть не працювати в режимі анонімного перегляду</translation>
 <translation id="2442870161001914531">Завжди запитувати версію сайту для комп’ютера</translation>
+<translation id="2445311670906052406">Тепер Chrome надсилає на ваш пристрій інформацію про останні вкладки. Ви побачите їх у списку додатків і результатах пошуку на пристрої. Цю функцію можна будь-коли вимкнути в налаштуваннях Chrome.</translation>
 <translation id="2469312991797799607">У результаті буде видалено всі дані й файли cookie для сайту <ph name="ORIGIN" /> і всіх сайтів його групи</translation>
 <translation id="2482878487686419369">Сповіщення</translation>
 <translation id="2485422356828889247">Видалити</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">Сайти можуть показувати підказки щодо входу від сервісів ідентифікації</translation>
 <translation id="2787357173144933081">Швидкий запуск універсального вікна пошуку</translation>
 <translation id="2790501146643349491">Якщо цей параметр увімкнено, нещодавно закриті сайти можуть завершувати надсилання й отримання даних. Якщо його вимкнено, нещодавно закриті сайти не можуть завершувати надсилання або отримання даних.</translation>
+<translation id="2814830417943086299">Тепер у Chrome нещодавно відкриті вкладки можуть відображатися в списку додатків і результатів пошуку на пристрої. Цю функцію можна будь-коли вимкнути в налаштуваннях Chrome.</translation>
 <translation id="2822354292072154809">Скинути всі дозволи сайту <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Запит на мобільну версію</translation>
 <translation id="2870560284913253234">Сайт</translation>
@@ -335,7 +338,6 @@
 <translation id="5968921426641056619">Введіть веб-адресу</translation>
 <translation id="5975083100439434680">Зменшити масштаб</translation>
 <translation id="5976059395673079613">"<ph name="PERMISSION" />" – <ph name="WARNING_MESSAGE" /></translation>
-<translation id="6015145568571136419">Тепер ви можете швидко відкривати пропоновані вкладки зі списку додатків і результатів пошуку на пристрої. Цю функцію можна будь-коли вимкнути в налаштуваннях Chrome.</translation>
 <translation id="6015775454662021376">Керуйте доступом цього сайту до вашого пристрою</translation>
 <translation id="6040143037577758943">Закрити</translation>
 <translation id="6042308850641462728">Більше</translation>
@@ -558,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{"<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}one{"<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}few{"<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}many{"<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}other{"<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Увімкніть дозволи для додатка <ph name="APP_NAME" /> у <ph name="BEGIN_LINK" />налаштуваннях Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Поточний масштаб: <ph name="ZOOM_LEVEL" />%%</translation>
+<translation id="9156722768168878035">Дозвольте Chrome показувати нещодавно відкриті вкладки в списку додатків і результатах пошуку на пристрої. Цю функцію можна будь-коли вимкнути в налаштуваннях Chrome.</translation>
 <translation id="9162462602695099906">Ця сторінка небезпечна</translation>
 <translation id="947156494302904893">Відвідувані вами сайти можуть перевіряти, що ви реальна людина, а не бот</translation>
 <translation id="959682366969460160">Упорядковуйте свої дані</translation>

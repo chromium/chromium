@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -13,7 +14,9 @@ import android.view.ViewGroup;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemAnimator;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
@@ -29,8 +32,10 @@ import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.signin.signin_promo.BookmarkSigninPromoDelegate;
@@ -104,6 +109,7 @@ public class BookmarkManagerCoordinator
 
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
             new ObservableSupplierImpl<>();
+    private final Context mContext;
     private final ViewGroup mMainView;
     private final SelectableListLayout<BookmarkId> mSelectableListLayout;
     private final RecyclerView mRecyclerView;
@@ -130,6 +136,7 @@ public class BookmarkManagerCoordinator
      * @param snackbarManager The {@link SnackbarManager} used to display snackbars.
      * @param profile The profile which the manager is running in.
      * @param bookmarkUiPrefs Manages prefs for bookmarks ui.
+     * @param bookmarkOpenedCallback Callback that's run when a bookamrk is opened.
      */
     public BookmarkManagerCoordinator(
             Context context,
@@ -137,7 +144,9 @@ public class BookmarkManagerCoordinator
             boolean isDialogUi,
             SnackbarManager snackbarManager,
             Profile profile,
-            BookmarkUiPrefs bookmarkUiPrefs) {
+            BookmarkUiPrefs bookmarkUiPrefs,
+            @Nullable Runnable bookmarkOpenedCallback) {
+        mContext = context;
         mProfile = profile;
         mImageFetcher =
                 ImageFetcherFactory.createImageFetcher(
@@ -148,7 +157,9 @@ public class BookmarkManagerCoordinator
 
         mMainView = (ViewGroup) LayoutInflater.from(context).inflate(R.layout.bookmark_main, null);
         mBookmarkModel = BookmarkModel.getForProfile(profile);
-        mBookmarkOpener = new BookmarkOpener(mBookmarkModel, context, openBookmarkComponentName);
+        mBookmarkOpener =
+                new BookmarkOpener(
+                        mBookmarkModel, context, openBookmarkComponentName, bookmarkOpenedCallback);
         ShoppingService service = ShoppingServiceFactory.getForProfile(profile);
         if (CommerceFeatureUtils.isShoppingListEligible(service)) {
             service.scheduleSavedProductUpdate();
@@ -221,7 +232,9 @@ public class BookmarkManagerCoordinator
                 onScrollListener -> mRecyclerView.addOnScrollListener(onScrollListener);
         mMediator =
                 new BookmarkManagerMediator(
-                        context,
+                        (Activity) context,
+                        (LifecycleOwner) context,
+                        mModalDialogManager,
                         mBookmarkModel,
                         mBookmarkOpener,
                         mSelectableListLayout,
@@ -256,7 +269,8 @@ public class BookmarkManagerCoordinator
                                     context,
                                     mProfile,
                                     SigninAndHistorySyncActivityLauncherImpl.get(),
-                                    mMediator::onPromoVisibilityChange));
+                                    mMediator::onPromoVisibilityChange,
+                                    this::openSettings));
             dragReorderableRecyclerViewAdapter.registerType(
                     ViewType.PERSONALIZED_SIGNIN_PROMO,
                     mSigninPromoCoordinator::buildPromoView,
@@ -512,5 +526,13 @@ public class BookmarkManagerCoordinator
 
     public BookmarkUiPrefs getBookmarkUiPrefsForTesting() {
         return mBookmarkUiPrefs;
+    }
+
+    private void openSettings() {
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(
+                        mContext,
+                        ManageSyncSettings.class,
+                        ManageSyncSettings.createArguments(false));
     }
 }

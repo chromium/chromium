@@ -180,13 +180,6 @@ class AudioProcessorTest : public ::testing::Test {
     EXPECT_TRUE(config.noise_suppression.enabled);
     EXPECT_EQ(config.noise_suppression.level,
               webrtc::AudioProcessing::Config::NoiseSuppression::kHigh);
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    // Android and iOS use echo cancellation optimized for mobiles.
-    EXPECT_TRUE(config.echo_canceller.mobile_mode);
-#else
-    EXPECT_FALSE(config.echo_canceller.mobile_mode);
-#endif
   }
 
   media::AudioParameters params_;

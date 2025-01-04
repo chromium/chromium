@@ -15,9 +15,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
+#include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/base/request_priority.h"
 #include "net/http/http_request_headers.h"
@@ -190,11 +192,14 @@ AuctionDownloader::AuctionDownloader(
     MimeType mime_type,
     std::optional<std::string> post_body,
     std::optional<std::string> content_type,
+    bool is_trusted_bidding_signals_kvv1_download,
     ResponseStartedCallback response_started_callback,
     AuctionDownloaderCallback auction_downloader_callback,
     std::unique_ptr<NetworkEventsDelegate> network_events_delegate)
     : source_url_(source_url),
       mime_type_(mime_type),
+      is_trusted_bidding_signals_kvv1_download_(
+          is_trusted_bidding_signals_kvv1_download),
       request_id_(base::UnguessableToken::Create().ToString()),
       response_started_callback_(std::move(response_started_callback)),
       auction_downloader_callback_(std::move(auction_downloader_callback)),
@@ -247,10 +252,11 @@ AuctionDownloader::AuctionDownloader(
   simple_url_loader_->SetOnRedirectCallback(base::BindRepeating(
       &AuctionDownloader::OnRedirect, base::Unretained(this)));
 
-  simple_url_loader_->SetOnResponseStartedCallback(base::BindRepeating(
-      &AuctionDownloader::OnResponseStarted, base::Unretained(this)));
+  simple_url_loader_->SetOnResponseStartedCallback(
+      base::BindRepeating(&AuctionDownloader::OnResponseStarted,
+                          base::Unretained(this), base::Time::Now()));
 
-  simple_url_loader_->SetTimeoutDuration(base::Seconds(30));
+  simple_url_loader_->SetTimeoutDuration(kRequestTimeout);
 
   // TODO(mmenke): Consider limiting the size of response bodies.
   if (download_mode == DownloadMode::kActualDownload) {
@@ -354,7 +360,46 @@ void AuctionDownloader::OnRedirect(
                                  source_url_.spec().c_str()));
 }
 
+// static
+std::optional<std::string> AuctionDownloader::CheckResponseAllowed(
+    const GURL& url,
+    const network::mojom::URLResponseHead& response_head,
+    network::URLLoaderCompletionStatus& status_out) {
+  if (response_head.headers &&
+      response_head.headers->response_code() / 100 != 2) {
+    status_out =
+        network::URLLoaderCompletionStatus(net::ERR_HTTP_RESPONSE_CODE_FAILURE);
+    return base::StringPrintf("Failed to load %s HTTP status = %d %s.",
+                              url.spec().c_str(),
+                              response_head.headers->response_code(),
+                              response_head.headers->GetStatusText().c_str());
+  }
+
+  bool allow_fledge_header_found = false;
+  if (response_head.headers) {
+    for (const std::string_view header :
+         {"Ad-Auction-Allowed", "X-Allow-FLEDGE"}) {
+      std::optional<std::string> allow_fledge =
+          response_head.headers->GetNormalizedHeader(header);
+      if (allow_fledge &&
+          base::EqualsCaseInsensitiveASCII(*allow_fledge, "true")) {
+        allow_fledge_header_found = true;
+        break;
+      }
+    }
+  }
+  if (!allow_fledge_header_found) {
+    status_out = network::URLLoaderCompletionStatus(net::ERR_ABORTED);
+    return base::StringPrintf(
+        "Rejecting load of %s due to lack of Ad-Auction-Allowed: true "
+        "(or the deprecated X-Allow-FLEDGE: true).",
+        url.spec().c_str());
+  }
+  return std::nullopt;
+}
+
 void AuctionDownloader::OnResponseStarted(
+    base::Time request_time,
     const GURL& final_url,
     const network::mojom::URLResponseHead& response_head) {
   if (network_events_delegate_ != nullptr) {
@@ -418,35 +463,21 @@ void AuctionDownloader::OnResponseStarted(
         }
       });
 
-  if (response_head.headers &&
-      response_head.headers->response_code() / 100 != 2) {
-    int status = response_head.headers->response_code();
-    FailRequest(
-        network::URLLoaderCompletionStatus(net::ERR_HTTP_RESPONSE_CODE_FAILURE),
-        base::StringPrintf("Failed to load %s HTTP status = %d %s.",
-                           source_url_.spec().c_str(), status,
-                           response_head.headers->GetStatusText().c_str()));
+  network::URLLoaderCompletionStatus status;
+  std::optional<std::string> error =
+      CheckResponseAllowed(source_url_, response_head, status);
+  if (error) {
+    FailRequest(status, *error);
     return;
   }
 
-  std::optional<std::string> allow_fledge;
-  std::optional<std::string> auction_allowed;
-  if (response_head.headers) {
-    allow_fledge = response_head.headers->GetNormalizedHeader("X-Allow-FLEDGE");
-    auction_allowed =
-        response_head.headers->GetNormalizedHeader("Ad-Auction-Allowed");
-  }
-  if ((!allow_fledge ||
-       !base::EqualsCaseInsensitiveASCII(*allow_fledge, "true")) &&
-      (!auction_allowed ||
-       !base::EqualsCaseInsensitiveASCII(*auction_allowed, "true"))) {
-    FailRequest(
-        network::URLLoaderCompletionStatus(net::ERR_ABORTED),
-        base::StringPrintf(
-            "Rejecting load of %s due to lack of Ad-Auction-Allowed: true "
-            "(or the deprecated X-Allow-FLEDGE: true).",
-            source_url_.spec().c_str()));
-    return;
+  // Record the cached response's age if there was an entry in the cache.
+  if (is_trusted_bidding_signals_kvv1_download_ &&
+      response_head.was_fetched_via_cache &&
+      response_head.original_response_time < request_time) {
+    base::UmaHistogramTimes(
+        "Ads.InterestGroup.Auction.HttpCachedTrustedBiddingSignalsAge2",
+        request_time - response_head.original_response_time);
   }
 
   if (response_started_callback_) {

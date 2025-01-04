@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 static_library("trusted_vault") {
   sources = [
     "trusted_vault_client.h",
@@ -145,21 +143,5 @@ static_library("test_support") {
       "//net:test_support",
       "//url",
     ]
-  }
-
-  if (is_chromeos_lacros) {
-    sources += [
-      "test/fake_crosapi_trusted_vault_backend.cc",
-      "test/fake_crosapi_trusted_vault_backend.h",
-      "test/fake_crosapi_trusted_vault_backend_service.cc",
-      "test/fake_crosapi_trusted_vault_backend_service.h",
-    ]
-
-    public_deps += [
-      "//chromeos/crosapi/mojom",
-      "//mojo/public/cpp/bindings",
-    ]
-
-    deps += [ "//components/account_manager_core" ]
   }
 }

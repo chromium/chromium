@@ -25,13 +25,15 @@ bool MenuHostRootView::OnMouseDragged(const ui::MouseEvent& event) {
 }
 
 void MenuHostRootView::OnMouseReleased(const ui::MouseEvent& event) {
-  if (GetMenuControllerForInputEvents())
+  if (GetMenuControllerForInputEvents()) {
     GetMenuControllerForInputEvents()->OnMouseReleased(submenu_, event);
+  }
 }
 
 void MenuHostRootView::OnMouseMoved(const ui::MouseEvent& event) {
-  if (GetMenuControllerForInputEvents())
+  if (GetMenuControllerForInputEvents()) {
     GetMenuControllerForInputEvents()->OnMouseMoved(submenu_, event);
+  }
 }
 
 bool MenuHostRootView::OnMouseWheel(const ui::MouseWheelEvent& event) {
@@ -48,8 +50,9 @@ View* MenuHostRootView::GetTooltipHandlerForPoint(const gfx::Point& point) {
 
 void MenuHostRootView::ViewHierarchyChanged(
     const ViewHierarchyChangedDetails& details) {
-  if (GetMenuControllerForInputEvents())
+  if (GetMenuControllerForInputEvents()) {
     GetMenuControllerForInputEvents()->ViewHierarchyChanged(submenu_, details);
+  }
   RootView::ViewHierarchyChanged(details);
 }
 
@@ -81,8 +84,9 @@ void MenuHostRootView::OnEventProcessingFinished(ui::Event* event) {
   // TODO(tdanderson): Investigate whether this should be moved into a
   //                   post-target handler installed on |this| instead
   //                   (invoked only if event->target() == this).
-  if (event->IsGestureEvent() && !event->handled() && GetMenuController())
+  if (event->IsGestureEvent() && !event->handled() && GetMenuController()) {
     GetMenuController()->OnGestureEvent(submenu_, event->AsGestureEvent());
+  }
 }
 
 MenuController* MenuHostRootView::GetMenuController() {

@@ -20,6 +20,7 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/overloaded.h"
+#include "base/notimplemented.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/app_mode/test/fake_origin_test_server_mixin.h"
@@ -37,6 +38,7 @@
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/device_local_account_type.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -78,6 +80,9 @@ std::string_view GetAccountId(const KioskMixin::Option& option) {
           [](const KioskMixin::CwsChromeAppOption& option) {
             return std::string_view(option.account_id);
           },
+          [](const KioskMixin::IsolatedWebAppOption& option) {
+            return std::string_view(option.account_id);
+          },
       },
       option);
 }
@@ -92,6 +97,7 @@ GURL GetWebAppUrl(const KioskMixin::Option& option) {
           },
           [](const KioskMixin::WebAppOption& option) { return option.url; },
           [](const KioskMixin::CwsChromeAppOption& option) { return GURL(); },
+          [](const KioskMixin::IsolatedWebAppOption& option) { return GURL(); },
       },
       option);
 }
@@ -109,6 +115,9 @@ std::string_view GetChromeAppId(const KioskMixin::Option& option) {
           },
           [](const KioskMixin::CwsChromeAppOption& option) {
             return std::string_view(option.app_id);
+          },
+          [](const KioskMixin::IsolatedWebAppOption& option) {
+            return std::string_view();
           },
       },
       option);
@@ -171,6 +180,20 @@ void ConfigureWebApp(ScopedDevicePolicyUpdate& update,
   account->set_account_id(std::string(account_id));
   account->set_type(DeviceLocalAccountInfoProto::ACCOUNT_TYPE_WEB_KIOSK_APP);
   account->mutable_web_kiosk_app()->set_url(url.spec());
+}
+
+// Configures a Kiosk isolated web app in device policies.
+void ConfigureIsolatedWebApp(ScopedDevicePolicyUpdate& update,
+                             const KioskMixin::IsolatedWebAppOption& option) {
+  DeviceLocalAccountInfoProto* account =
+      update.policy_payload()->mutable_device_local_accounts()->add_account();
+
+  account->set_account_id(std::string(option.account_id));
+  account->set_type(DeviceLocalAccountInfoProto::ACCOUNT_TYPE_KIOSK_IWA);
+  account->mutable_isolated_kiosk_app()->set_web_bundle_id(
+      option.web_bundle_id.id());
+  account->mutable_isolated_kiosk_app()->set_update_manifest_url(
+      option.update_manifest_url.spec());
 }
 
 // Configures the Kiosk account given by `account_id` as the auto launch
@@ -237,6 +260,9 @@ void KioskMixin::Configure(ScopedDevicePolicyUpdate& scoped_update,
               ConfigureCwsChromeApp(scoped_update, option.app_id,
                                     option.account_id);
             },
+            [&scoped_update](const IsolatedWebAppOption& option) {
+              ConfigureIsolatedWebApp(scoped_update, option);
+            },
         },
         option);
   }
@@ -254,6 +280,7 @@ bool KioskMixin::LaunchManually(const KioskApp& app) {
       return LoginScreenTestApi::LaunchApp(app.id().account_id);
     case KioskAppType::kIsolatedWebApp:
       // TODO(crbug.com/379633748): Support IWA in KioskMixin.
+      NOTIMPLEMENTED();
       return false;
   }
 }
@@ -276,6 +303,8 @@ std::optional<KioskApp> KioskMixin::GetAppByAccountId(
       account_id, policy::DeviceLocalAccountType::kKioskApp);
   auto web_app_account_id = CreateDeviceLocalAccountId(
       account_id, policy::DeviceLocalAccountType::kWebKioskApp);
+  auto iwa_account_id = CreateDeviceLocalAccountId(
+      account_id, policy::DeviceLocalAccountType::kKioskIsolatedWebApp);
   for (const auto& app : KioskController::Get().GetApps()) {
     switch (app.id().type) {
       case KioskAppType::kChromeApp:
@@ -289,7 +318,9 @@ std::optional<KioskApp> KioskMixin::GetAppByAccountId(
         }
         break;
       case KioskAppType::kIsolatedWebApp:
-        // TODO(crbug.com/379633748): Support IWA in KioskMixin.
+        if (app.id().account_id == iwa_account_id) {
+          return app;
+        }
         break;
     }
   }
@@ -385,6 +416,24 @@ KioskMixin::CwsChromeAppOption& KioskMixin::CwsChromeAppOption::operator=(
 KioskMixin::CwsChromeAppOption& KioskMixin::CwsChromeAppOption::operator=(
     KioskMixin::CwsChromeAppOption&&) = default;
 KioskMixin::CwsChromeAppOption::~CwsChromeAppOption() = default;
+
+KioskMixin::IsolatedWebAppOption::IsolatedWebAppOption(
+    std::string_view account_id,
+    const web_package::SignedWebBundleId& web_bundle_id,
+    GURL update_manifest_url)
+    : account_id(std::string(account_id)),
+      web_bundle_id(web_bundle_id),
+      update_manifest_url(std::move(update_manifest_url)) {}
+
+KioskMixin::IsolatedWebAppOption::IsolatedWebAppOption(
+    const KioskMixin::IsolatedWebAppOption&) = default;
+KioskMixin::IsolatedWebAppOption::IsolatedWebAppOption(
+    KioskMixin::IsolatedWebAppOption&&) = default;
+KioskMixin::IsolatedWebAppOption& KioskMixin::IsolatedWebAppOption::operator=(
+    const KioskMixin::IsolatedWebAppOption&) = default;
+KioskMixin::IsolatedWebAppOption& KioskMixin::IsolatedWebAppOption::operator=(
+    KioskMixin::IsolatedWebAppOption&&) = default;
+KioskMixin::IsolatedWebAppOption::~IsolatedWebAppOption() = default;
 
 KioskMixin::Config::Config(
     std::optional<std::string> name,

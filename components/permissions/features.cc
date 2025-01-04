@@ -16,31 +16,6 @@ BASE_FEATURE(kBackForwardCacheUnblockPermissionRequest,
              "BackForwardCacheUnblockPermissionRequest",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables whether permission prompts are automatically blocked
-// after the user has explicitly dismissed them too many times.
-BASE_FEATURE(kBlockPromptsIfDismissedOften,
-             "BlockPromptsIfDismissedOften",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables or disables whether permission prompts are automatically blocked
-// after the user has ignored them too many times.
-BASE_FEATURE(kBlockPromptsIfIgnoredOften,
-             "BlockPromptsIfIgnoredOften",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Once the user has auto re-authenticated, automatically block subsequent auto
-// re-authn prompts within the next 10 minutes.
-BASE_FEATURE(kBlockRepeatedAutoReauthnPrompts,
-             "BlockRepeatedAutoReauthnPrompts",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Once the user declines a notification permission prompt in a WebContents,
-// automatically dismiss subsequent prompts in the same WebContents, from any
-// origin, until the next user-initiated navigation.
-BASE_FEATURE(kBlockRepeatedNotificationPermissionPrompts,
-             "BlockRepeatedNotificationPermissionPrompts",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kOneTimePermission,
              "OneTimePermission",
              base::FEATURE_ENABLED_BY_DEFAULT);

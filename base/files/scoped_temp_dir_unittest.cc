@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/files/scoped_temp_dir.h"
+
 #include <string>
 
 #include "base/files/file.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -131,7 +132,7 @@ TEST(ScopedTempDir, LockedTempDir) {
             File::FLAG_CREATE_ALWAYS | File::FLAG_WRITE);
   EXPECT_TRUE(file.IsValid());
   EXPECT_EQ(File::FILE_OK, file.error_details());
-  EXPECT_FALSE(dir.Delete());  // We should not be able to delete.
+  EXPECT_FALSE(dir.Delete());           // We should not be able to delete.
   EXPECT_FALSE(dir.GetPath().empty());  // We should still have a valid path.
   file.Close();
   // Now, we should be able to delete.

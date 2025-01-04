@@ -42,8 +42,9 @@ BookmarkMenuController::BookmarkMenuController(Browser* browser,
   menu_delegate_->SetActiveMenu(node, start_child_index);
 
   int run_type = 0;
-  if (for_drop)
+  if (for_drop) {
     run_type |= views::MenuRunner::FOR_DROP;
+  }
   menu_runner_ = std::make_unique<views::MenuRunner>(
       base::WrapUnique<MenuItemView>(menu_delegate_->menu()), run_type);
 }
@@ -94,7 +95,8 @@ void BookmarkMenuController::ExecuteCommand(int id, int mouse_event_flags) {
 }
 
 bool BookmarkMenuController::ShouldExecuteCommandWithoutClosingMenu(
-      int id, const ui::Event& e) {
+    int id,
+    const ui::Event& e) {
   return menu_delegate_->ShouldExecuteCommandWithoutClosingMenu(id, e);
 }
 
@@ -126,8 +128,9 @@ views::View::DropCallback BookmarkMenuController::GetDropCallback(
     DropPosition position,
     const ui::DropTargetEvent& event) {
   auto drop_cb = menu_delegate_->GetDropCallback(menu, position, event);
-  if (for_drop_)
+  if (for_drop_) {
     delete this;
+  }
   return drop_cb;
 }
 
@@ -162,15 +165,17 @@ views::MenuItemView* BookmarkMenuController::GetSiblingMenu(
     views::MenuAnchorPosition* anchor,
     bool* has_mnemonics,
     views::MenuButton** button) {
-  if (!bookmark_bar_ || for_drop_)
+  if (!bookmark_bar_ || for_drop_) {
     return nullptr;
+  }
   gfx::Point bookmark_bar_loc(screen_point);
   views::View::ConvertPointFromScreen(bookmark_bar_, &bookmark_bar_loc);
   size_t start_index;
   const BookmarkNode* node = bookmark_bar_->GetNodeForButtonAtModelIndex(
       bookmark_bar_loc, &start_index);
-  if (!node || !node->is_folder())
+  if (!node || !node->is_folder()) {
     return nullptr;
+  }
 
   menu_delegate_->SetActiveMenu(node, start_index);
   *button = bookmark_bar_->GetMenuButtonForNode(node);
@@ -188,19 +193,22 @@ void BookmarkMenuController::WillShowMenu(MenuItemView* menu) {
 }
 
 void BookmarkMenuController::BookmarkModelChanged() {
-  if (!menu_delegate_->is_mutating_model())
+  if (!menu_delegate_->is_mutating_model()) {
     menu()->Cancel();
+  }
 }
 
 bool BookmarkMenuController::ShouldTryPositioningBesideAnchor() const {
-  // The bookmark menu appears from the bookmark bar, which has a set of buttons positioned next to
-  // each other; if the bookmark menu appears beside its anchor button, it will likely overlay the
-  // adjacent bookmark button, which prevents easy scrubbing through the bookmark bar's menus.
+  // The bookmark menu appears from the bookmark bar, which has a set of buttons
+  // positioned next to each other; if the bookmark menu appears beside its
+  // anchor button, it will likely overlay the adjacent bookmark button, which
+  // prevents easy scrubbing through the bookmark bar's menus.
   return false;
 }
 
 BookmarkMenuController::~BookmarkMenuController() {
   menu_delegate_->GetBookmarkModel()->RemoveObserver(this);
-  if (observer_)
+  if (observer_) {
     observer_->BookmarkMenuControllerDeleted(this);
+  }
 }

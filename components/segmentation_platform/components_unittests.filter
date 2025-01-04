@@ -52,6 +52,7 @@
 *PowerUserModelTest.*
 *PrefsMigratorTest.*
 *PriceTrackingNotificationPromoTest.*
+*RankFetcherHelperTest.*
 *RequestDispatcherTest.*
 *RequestHandlerTest.*
 *ResultMigrationUtilsTest.*
@@ -85,6 +86,7 @@
 *StatsTest.*
 *SyncDeviceInfoObserverTest.*
 *TabGroupPromoTest.*
+*TabGroupSyncPromoTest.*
 *TabRankDispatcherTest.*
 *TabResumptionRankerTest.*
 *TabSessionSourceTest.*

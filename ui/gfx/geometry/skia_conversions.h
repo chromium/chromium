@@ -48,10 +48,6 @@ SkMatrix AxisTransform2dToSkMatrix(const AxisTransform2d& transform);
 COMPONENT_EXPORT(GEOMETRY_SKIA)
 SkM44 TransformToSkM44(const Transform& tranform);
 COMPONENT_EXPORT(GEOMETRY_SKIA) Transform SkM44ToTransform(const SkM44& matrix);
-// TODO(crbug.com/40237414): Remove this function in favor of the other form.
-COMPONENT_EXPORT(GEOMETRY_SKIA)
-void TransformToFlattenedSkMatrix(const gfx::Transform& transform,
-                                  SkMatrix* flattened);
 COMPONENT_EXPORT(GEOMETRY_SKIA)
 SkMatrix TransformToFlattenedSkMatrix(const Transform& transform);
 COMPONENT_EXPORT(GEOMETRY_SKIA)

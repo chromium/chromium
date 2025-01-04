@@ -4,6 +4,7 @@
 
 package org.chromium.mojo.bindings;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.mojo.bindings.Interface.Manager;
 import org.chromium.mojo.bindings.Interface.Proxy;
 import org.chromium.mojo.bindings.interfacecontrol.InterfaceControlMessagesConstants;
@@ -20,6 +21,7 @@ import org.chromium.mojo.system.Core;
  * Helper class to handle interface control messages. See
  * mojo/public/interfaces/bindings/interface_control_messages.mojom.
  */
+@NullMarked
 public class InterfaceControlMessagesHelper {
     /**
      * Callback interface for the async response to {@link
@@ -81,6 +83,7 @@ public class InterfaceControlMessagesHelper {
     }
 
     /** Handles a received run message. */
+    @SuppressWarnings("NullAway") // Thinks response.output is @NonNull.
     public static <I extends Interface, P extends Proxy> boolean handleRun(
             Core core, Manager<I, P> manager, ServiceMessage message, MessageReceiver responder) {
         Message payload = message.getPayload();

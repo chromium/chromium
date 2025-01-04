@@ -60,7 +60,8 @@ bool User::TypeIsKiosk(UserType type) {
 }
 
 User::User(const AccountId& account_id, UserType type)
-    : account_id_(account_id), type_(type), user_image_(new UserImage()) {
+    : account_id_(account_id), type_(type) {
+  // Set up display email.
   switch (type_) {
     case user_manager::UserType::kRegular:
     case user_manager::UserType::kChild:
@@ -73,6 +74,24 @@ User::User(const AccountId& account_id, UserType type)
     case user_manager::UserType::kPublicAccount:
       // Public accounts nor guest account do not have a real email address,
       // so they do not set |display_email_|.
+      break;
+  }
+
+  // Set up default user image.
+  switch (type_) {
+    case user_manager::UserType::kRegular:
+    case user_manager::UserType::kChild:
+    case user_manager::UserType::kPublicAccount:
+      user_image_ = std::make_unique<UserImage>();
+      break;
+    case user_manager::UserType::kKioskApp:
+    case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kKioskIWA:
+    case user_manager::UserType::kGuest:
+      user_image_ = UserImage::CreateStub();
+      image_index_ = UserImage::Type::kInvalid;
+      image_is_stub_ = true;
+      image_is_loading_ = false;
       break;
   }
 }

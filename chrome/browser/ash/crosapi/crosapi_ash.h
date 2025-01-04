@@ -80,8 +80,6 @@ class EchoPrivateAsh;
 class EmbeddedAccessibilityHelperClientAsh;
 class EmojiPickerAsh;
 class ExtensionInfoPrivateAsh;
-class EyeDropperAsh;
-class FieldTrialServiceAsh;
 class FileChangeServiceBridgeAsh;
 class FileSystemAccessCloudIdentifierProviderAsh;
 class FileSystemProviderServiceAsh;
@@ -102,7 +100,6 @@ class LoginScreenStorageAsh;
 class LoginStateAsh;
 class MediaAppAsh;
 class MediaUIAsh;
-class MetricsAsh;
 class MultiCaptureServiceAsh;
 class NativeThemeServiceAsh;
 class NetworkingAttributesAsh;
@@ -114,7 +111,6 @@ class ParentAccessAsh;
 class PaymentAppInstanceAsh;
 class PolicyServiceAsh;
 class PowerAsh;
-class PrefsAsh;
 class NonclosableAppToastServiceAsh;
 #if BUILDFLAG(USE_CUPS)
 class PrintingMetricsAsh;
@@ -124,13 +120,11 @@ class ResourceManagerAsh;
 class ScreenAIDownloaderAsh;
 class ScreenManagerAsh;
 class SearchProviderAsh;
-class SharesheetAsh;
 class StructuredMetricsServiceAsh;
 class SuggestionServiceAsh;
 class TaskManagerAsh;
 class TimeZoneServiceAsh;
 class VpnServiceAsh;
-class WallpaperAsh;
 class WebAppServiceAsh;
 class WebKioskServiceAsh;
 class VirtualKeyboardAsh;
@@ -224,10 +218,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::EmojiPicker> receiver) override;
   void BindExtensionInfoPrivate(
       mojo::PendingReceiver<mojom::ExtensionInfoPrivate> receiver) override;
-  void BindEyeDropper(
-      mojo::PendingReceiver<mojom::EyeDropper> receiver) override;
-  void BindFieldTrialService(
-      mojo::PendingReceiver<mojom::FieldTrialService> receiver) override;
   void BindFileChangeServiceBridge(
       mojo::PendingReceiver<mojom::FileChangeServiceBridge> receiver) override;
   void BindFileSystemAccessCloudIdentifierProvider(
@@ -289,7 +279,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindMediaSessionController(
       mojo::PendingReceiver<media_session::mojom::MediaControllerManager>
           receiver) override;
-  void BindMetrics(mojo::PendingReceiver<mojom::Metrics> receiver) override;
   void BindMultiCaptureService(
       mojo::PendingReceiver<mojom::MultiCaptureService> receiver) override;
   void BindNativeThemeService(
@@ -316,7 +305,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindPolicyService(
       mojo::PendingReceiver<mojom::PolicyService> receiver) override;
   void BindPower(mojo::PendingReceiver<mojom::Power> receiver) override;
-  void BindPrefs(mojo::PendingReceiver<mojom::Prefs> receiver) override;
   void BindPrintPreviewCrosDelegate(
       mojo::PendingReceiver<mojom::PrintPreviewCrosDelegate> receiver) override;
   void BindNonclosableAppToastService(
@@ -342,8 +330,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindSensorHalClient(
       mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> remote)
       override;
-  void BindSharesheet(
-      mojo::PendingReceiver<mojom::Sharesheet> receiver) override;
   void BindSmartReaderClient(
       mojo::PendingRemote<mojom::SmartReaderClient> remote) override;
   void BindStableVideoDecoderFactory(
@@ -390,8 +376,6 @@ class CrosapiAsh : public mojom::Crosapi {
       override;
   void BindVpnService(
       mojo::PendingReceiver<mojom::VpnService> receiver) override;
-  void BindWallpaper(
-      mojo::PendingReceiver<crosapi::mojom::Wallpaper> receiver) override;
   void BindWebAppService(
       mojo::PendingReceiver<mojom::WebAppService> receiver) override;
   void BindWebKioskService(
@@ -550,8 +534,6 @@ class CrosapiAsh : public mojom::Crosapi {
     return search_provider_ash_.get();
   }
 
-  SharesheetAsh* sharesheet_ash() { return sharesheet_ash_.get(); }
-
   ash::SmartReaderManagerAsh* smart_reader_manager_ash() {
     return smart_reader_manager_ash_.get();
   }
@@ -565,8 +547,6 @@ class CrosapiAsh : public mojom::Crosapi {
   }
 
   TaskManagerAsh* task_manager_ash() { return task_manager_ash_.get(); }
-
-  WallpaperAsh* wallpaper_ash() { return wallpaper_ash_.get(); }
 
   WebAppServiceAsh* web_app_service_ash() { return web_app_service_ash_.get(); }
 
@@ -618,8 +598,6 @@ class CrosapiAsh : public mojom::Crosapi {
       embedded_accessibility_helper_client_ash_;
   std::unique_ptr<EmojiPickerAsh> emoji_picker_ash_;
   std::unique_ptr<ExtensionInfoPrivateAsh> extension_info_private_ash_;
-  std::unique_ptr<EyeDropperAsh> eye_dropper_ash_;
-  std::unique_ptr<FieldTrialServiceAsh> field_trial_service_ash_;
   std::unique_ptr<FileChangeServiceBridgeAsh> file_change_service_bridge_ash_;
   std::unique_ptr<FileSystemAccessCloudIdentifierProviderAsh>
       file_system_access_cloud_identifier_provider_ash_;
@@ -643,7 +621,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<ash::MagicBoostControllerAsh> magic_boost_controller_ash_;
   std::unique_ptr<MediaAppAsh> media_app_ash_;
   std::unique_ptr<MediaUIAsh> media_ui_ash_;
-  std::unique_ptr<MetricsAsh> metrics_ash_;
   std::unique_ptr<MultiCaptureServiceAsh> multi_capture_service_ash_;
   std::unique_ptr<NativeThemeServiceAsh> native_theme_service_ash_;
   std::unique_ptr<NetworkingAttributesAsh> networking_attributes_ash_;
@@ -656,7 +633,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<PaymentAppInstanceAsh> payment_app_instance_ash_;
   std::unique_ptr<PolicyServiceAsh> policy_service_ash_;
   std::unique_ptr<PowerAsh> power_ash_;
-  std::unique_ptr<PrefsAsh> prefs_ash_;
   std::unique_ptr<NonclosableAppToastServiceAsh>
       nonclosable_app_toast_service_ash_;
 #if BUILDFLAG(USE_CUPS)
@@ -675,7 +651,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<ScreenAIDownloaderAsh> screen_ai_downloader_ash_;
   std::unique_ptr<ScreenManagerAsh> screen_manager_ash_;
   std::unique_ptr<SearchProviderAsh> search_provider_ash_;
-  std::unique_ptr<SharesheetAsh> sharesheet_ash_;
   std::unique_ptr<ash::SmartReaderManagerAsh> smart_reader_manager_ash_;
   std::unique_ptr<StructuredMetricsServiceAsh> structured_metrics_service_ash_;
   std::unique_ptr<SuggestionServiceAsh> suggestion_service_ash_;
@@ -685,7 +660,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<VirtualKeyboardAsh> virtual_keyboard_ash_;
   std::unique_ptr<VolumeManagerAsh> volume_manager_ash_;
   std::unique_ptr<VpnServiceAsh> vpn_service_ash_;
-  std::unique_ptr<WallpaperAsh> wallpaper_ash_;
   std::unique_ptr<WebAppServiceAsh> web_app_service_ash_;
   std::unique_ptr<WebKioskServiceAsh> web_kiosk_service_ash_;
 

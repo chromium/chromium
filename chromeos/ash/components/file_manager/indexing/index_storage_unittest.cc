@@ -13,6 +13,7 @@
 #include "chromeos/ash/components/file_manager/indexing/ram_storage.h"
 #include "chromeos/ash/components/file_manager/indexing/sql_storage.h"
 #include "chromeos/ash/components/file_manager/indexing/term.h"
+#include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,7 +47,8 @@ class IndexStorageTest : public testing::TestWithParam<StorageType> {
     if (GetParam() == StorageType::RAM) {
       storage_ = std::make_unique<RamStorage>();
     } else {
-      storage_ = std::make_unique<SqlStorage>(db_file_path(), "test_uma_tag");
+      storage_ =
+          std::make_unique<SqlStorage>(db_file_path(), sql::test::kTestTag);
     }
     foo_url_ =
         GURL("filesystem:file://file-manager/external/Downloads-u123/foo.txt");
@@ -313,7 +315,8 @@ TEST_P(IndexStorageTest, CatastrophicError) {
     return;
   }
   base::FilePath db_path = temp_dir_.GetPath().Append("CatastrophicError.db");
-  auto db_under_test = std::make_unique<SqlStorage>(db_path, "test_uma_tag");
+  auto db_under_test =
+      std::make_unique<SqlStorage>(db_path, sql::test::kTestTag);
 
   // Initialize the database and store token "foo" in it. Check that we can
   // retrieve.

@@ -52,6 +52,7 @@ class MockPasswordGenerationPopupController
 
   // PasswordGenerationPopupController:
   MOCK_METHOD(void, PasswordAccepted, (), (override));
+  MOCK_METHOD(void, PasswordRejected, (), (override));
   MOCK_METHOD(void, SetSelected, (), (override));
   MOCK_METHOD(void, SelectionCleared, (), (override));
   MOCK_METHOD(std::u16string, GetPrimaryAccountEmail, (), (override));

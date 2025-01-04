@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/bind.h"
-#include "components/user_education/common/feature_promo/feature_promo_result.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "chrome/browser/ui/views/profiles/profile_menu_view.h"
 
 #include <stddef.h>
+
+#include <array>
 
 #include "base/callback_list.h"
 #include "base/command_line.h"
@@ -21,6 +18,7 @@
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -56,7 +54,6 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
-#include "chrome/browser/ui/views/profiles/profile_menu_view.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_view_base.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h"
@@ -93,6 +90,7 @@
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/fake_server_network_resources.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
@@ -113,6 +111,7 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/widget/any_widget_observer.h"
 
 namespace {
 
@@ -237,7 +236,8 @@ class ProfileMenuViewExtensionsTest
  public:
   ProfileMenuViewExtensionsTest()
       : InteractiveFeaturePromoTestT(UseDefaultTrackerAllowingPromos(
-            {feature_engagement::kIPHProfileSwitchFeature})) {}
+            {feature_engagement::kIPHProfileSwitchFeature,
+             feature_engagement::kIPHSupervisedUserProfileSigninFeature})) {}
 
   // InteractiveFeaturePromoTestT:
   void SetUpOnMainThread() override {
@@ -365,12 +365,32 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
 }
 
 // Opening the profile menu dismisses any existing IPH.
-// Regression test for https://crbug.com/1205901
-IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, CloseIPH) {
+// Regression test for crbug.com/1205901 (Profile Switch IPH)
+// and for crbug.com/378449081 (Supervised User IPH).
+class ProfileMenuViewExtensionsIphDismissTest
+    : public ProfileMenuViewExtensionsTest,
+      public testing::WithParamInterface<base::test::FeatureRef> {
+ public:
+  const base::Feature& GetIphFeature() { return *GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ProfileMenuViewExtensionsIphDismissTest,
+    testing::Values(
+        base::test::FeatureRef(feature_engagement::kIPHProfileSwitchFeature),
+        base::test::FeatureRef(
+            feature_engagement::kIPHSupervisedUserProfileSigninFeature)),
+    [](const auto& info) {
+      return info.param == feature_engagement::kIPHProfileSwitchFeature
+                 ? "_ProfileSwitch"
+                 : "_SupervisedUser";
+    });
+
+IN_PROC_BROWSER_TEST_P(ProfileMenuViewExtensionsIphDismissTest, CloseIPH) {
   // Display the IPH.
   base::RunLoop run_loop;
-  user_education::FeaturePromoParams params(
-      feature_engagement::kIPHProfileSwitchFeature);
+  user_education::FeaturePromoParams params(GetIphFeature());
   params.show_promo_result_callback = base::BindLambdaForTesting(
       [&run_loop](user_education::FeaturePromoResult result) {
         ASSERT_TRUE(result);
@@ -378,15 +398,13 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, CloseIPH) {
       });
   browser()->window()->MaybeShowFeaturePromo(std::move(params));
   run_loop.Run();
-  EXPECT_TRUE(browser()->window()->IsFeaturePromoActive(
-      feature_engagement::kIPHProfileSwitchFeature));
+  EXPECT_TRUE(browser()->window()->IsFeaturePromoActive(GetIphFeature()));
 
   // Open the menu.
   ASSERT_NO_FATAL_FAILURE(OpenProfileMenu());
 
   // Check the IPH is no longer showing.
-  EXPECT_FALSE(browser()->window()->IsFeaturePromoActive(
-      feature_engagement::kIPHProfileSwitchFeature));
+  EXPECT_FALSE(browser()->window()->IsFeaturePromoActive(GetIphFeature()));
 }
 
 // Test that sets up a primary account (without sync) and simulates a click on
@@ -400,10 +418,31 @@ class ProfileMenuViewSignoutTest : public ProfileMenuViewTestBase,
 
   bool Signout() {
     OpenProfileMenu();
-    if (HasFatalFailure())
+    if (HasFatalFailure()) {
       return false;
+    }
+
+    std::unique_ptr<views::NamedWidgetShownWaiter> widget_waiter;
+    if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
+      widget_waiter = std::make_unique<views::NamedWidgetShownWaiter>(
+          views::test::AnyWidgetTestPasskey{},
+          "ChromeSignoutConfirmationChoicePrompt");
+    }
+
     static_cast<ProfileMenuView*>(profile_menu_view())
         ->OnSignoutButtonClicked();
+
+    if (widget_waiter.get()) {
+      views::Widget* confirmation_prompt = widget_waiter->WaitIfNeededAndGet();
+      views::DialogDelegate* dialog_delegate =
+          confirmation_prompt->widget_delegate()->AsDialogDelegate();
+      if (!dialog_delegate) {
+        return false;
+      }
+      // Click "Sign Out Anyway".
+      dialog_delegate->AcceptDialog();
+    }
+
     return true;
   }
 
@@ -631,8 +670,9 @@ class ProfileMenuViewSyncErrorButtonTest : public ProfileMenuViewTestBase,
 
   bool Reauth() {
     OpenProfileMenu();
-    if (HasFatalFailure())
+    if (HasFatalFailure()) {
       return false;
+    }
     // This test does not check that the reauth button is displayed in the menu,
     // but this is tested in ProfileMenuClickTest.
     base::HistogramTester histogram_tester;
@@ -822,8 +862,9 @@ class ProfileMenuClickTest : public SyncTest,
       size_t index) = 0;
 
   SyncServiceImplHarness* sync_harness() {
-    if (sync_harness_)
+    if (sync_harness_) {
       return sync_harness_.get();
+    }
 
     sync_service()->OverrideNetworkForTest(
         fake_server::CreateFakeServerHttpPostProviderFactory(
@@ -851,9 +892,10 @@ class ProfileMenuClickTest : public SyncTest,
   }
 
   void AdvanceFocus(int count) {
-    for (int i = 0; i < count; i++)
+    for (int i = 0; i < count; i++) {
       profile_menu_view()->GetFocusManager()->AdvanceFocus(
           /*reverse=*/false);
+    }
   }
 
   views::View* GetFocusedItem() {
@@ -956,43 +998,44 @@ class ProfileMenuClickTest : public SyncTest,
 // List of actionable items in the correct order as they appear in the menu with
 // Uno disabled. If a new button is added to the menu, it should also be added
 // to this list.
-constexpr ProfileMenuViewBase::ActionableItem
-    kActionableItems_SingleProfileWithCustomName_UnoDisabled[] = {
-        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
-        ProfileMenuViewBase::ActionableItem::kPasswordsButton,
-        ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
-        ProfileMenuViewBase::ActionableItem::kAddressesButton,
-        ProfileMenuViewBase::ActionableItem::kSigninButton,
-        ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
-        ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
-        ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
-        // The first button is added again to finish the cycle and test that
-        // there are no other buttons at the end.
-        ProfileMenuViewBase::ActionableItem::kEditProfileButton};
+constexpr std::array kActionableItems_SingleProfileWithCustomName_UnoDisabled =
+    {ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+     ProfileMenuViewBase::ActionableItem::kPasswordsButton,
+     ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
+     ProfileMenuViewBase::ActionableItem::kAddressesButton,
+     ProfileMenuViewBase::ActionableItem::kSigninButton,
+     ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+     ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+     ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+     // The first button is added again to finish the cycle and test that
+     // there are no other buttons at the end.
+     ProfileMenuViewBase::ActionableItem::kEditProfileButton};
 
 PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_SingleProfileWithCustomName_UnoDisabled,
     ProfileMenuClickTest_SingleProfileWithCustomName_UnoDisabled,
     /*enabled_features=*/{},
-    /*disabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop}) {
+    /*disabled_features=*/
+    std::vector<base::test::FeatureRef>(
+        {switches::kExplicitBrowserSigninUIOnDesktop,
+         switches::kImprovedSigninUIOnDesktop})) {
   profiles::UpdateProfileName(browser()->profile(), u"Custom name");
   RunTest();
 }
 
 // List of actionable items in the correct order as they appear in the menu. If
 // a new button is added to the menu, it should also be added to this list.
-constexpr ProfileMenuViewBase::ActionableItem
-    kActionableItems_SingleProfileWithCustomName[] = {
-        ProfileMenuViewBase::ActionableItem::kSigninButton,
-        ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
-        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
-        ProfileMenuViewBase::ActionableItem::kExitProfileButton,
-        ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
-        ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
-        ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
-        // The first button is added again to finish the cycle and test that
-        // there are no other buttons at the end.
-        ProfileMenuViewBase::ActionableItem::kSigninButton};
+constexpr std::array kActionableItems_SingleProfileWithCustomName = {
+    ProfileMenuViewBase::ActionableItem::kSigninButton,
+    ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+    ProfileMenuViewBase::ActionableItem::kExitProfileButton,
+    ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+    ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+    ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+    // The first button is added again to finish the cycle and test that
+    // there are no other buttons at the end.
+    ProfileMenuViewBase::ActionableItem::kSigninButton};
 
 PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_SingleProfileWithCustomName,
@@ -1008,26 +1051,25 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
 // List of actionable items in the correct order as they appear in the menu with
 // Uno enabled. If a new button is added to the menu, it should also be added
 // to this list.
-constexpr ProfileMenuViewBase::ActionableItem
-    kActionableItems_SingleProfileWithCustomName_UnoEnabled[] = {
-        ProfileMenuViewBase::ActionableItem::kPasswordsButton,
-        ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
-        ProfileMenuViewBase::ActionableItem::kAddressesButton,
-        ProfileMenuViewBase::ActionableItem::kSigninButton,
-        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
-        ProfileMenuViewBase::ActionableItem::kExitProfileButton,
-        ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
-        ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
-        ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
-        // The first button is added again to finish the cycle and test that
-        // there are no other buttons at the end.
-        ProfileMenuViewBase::ActionableItem::kPasswordsButton};
+constexpr std::array kActionableItems_SingleProfileWithCustomName_UnoEnabled = {
+    ProfileMenuViewBase::ActionableItem::kPasswordsButton,
+    ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
+    ProfileMenuViewBase::ActionableItem::kAddressesButton,
+    ProfileMenuViewBase::ActionableItem::kSigninButton,
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+    ProfileMenuViewBase::ActionableItem::kExitProfileButton,
+    ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+    ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+    ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+    // The first button is added again to finish the cycle and test that
+    // there are no other buttons at the end.
+    ProfileMenuViewBase::ActionableItem::kPasswordsButton};
 
 PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_SingleProfileWithCustomName_UnoEnabled,
     ProfileMenuClickTest_SingleProfileWithCustomName_UnoEnabled,
     /*enabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop},
-    /*disabled_features=*/{}) {
+    /*disabled_features=*/{switches::kImprovedSigninUIOnDesktop}) {
   profiles::UpdateProfileName(browser()->profile(), u"Custom name");
   RunTest();
 }
@@ -1035,22 +1077,21 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
 // List of actionable items in the correct order as they appear in the menu with
 // Uno disabled. If a new button is added to the menu, it should also be added
 // to this list.
-constexpr ProfileMenuViewBase::ActionableItem
-    kActionableItems_MultipleProfiles_UnoDisabled[] = {
-        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
-        ProfileMenuViewBase::ActionableItem::kPasswordsButton,
-        ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
-        ProfileMenuViewBase::ActionableItem::kAddressesButton,
-        ProfileMenuViewBase::ActionableItem::kSigninButton,
-        ProfileMenuViewBase::ActionableItem::kExitProfileButton,
-        ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
-        ProfileMenuViewBase::ActionableItem::kOtherProfileButton,
-        ProfileMenuViewBase::ActionableItem::kOtherProfileButton,
-        ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
-        ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
-        // The first button is added again to finish the cycle and test that
-        // there are no other buttons at the end.
-        ProfileMenuViewBase::ActionableItem::kEditProfileButton};
+constexpr std::array kActionableItems_MultipleProfiles_UnoDisabled = {
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+    ProfileMenuViewBase::ActionableItem::kPasswordsButton,
+    ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
+    ProfileMenuViewBase::ActionableItem::kAddressesButton,
+    ProfileMenuViewBase::ActionableItem::kSigninButton,
+    ProfileMenuViewBase::ActionableItem::kExitProfileButton,
+    ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+    ProfileMenuViewBase::ActionableItem::kOtherProfileButton,
+    ProfileMenuViewBase::ActionableItem::kOtherProfileButton,
+    ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+    ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+    // The first button is added again to finish the cycle and test that
+    // there are no other buttons at the end.
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton};
 
 PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_MultipleProfiles_UnoDisabled,
@@ -1069,28 +1110,27 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
 // List of actionable items in the correct order as they appear in the menu with
 // Uno enabled. If a new button is added to the menu, it should also be added
 // to this list.
-constexpr ProfileMenuViewBase::ActionableItem
-    kActionableItems_MultipleProfiles_UnoEnabled[] = {
-        ProfileMenuViewBase::ActionableItem::kPasswordsButton,
-        ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
-        ProfileMenuViewBase::ActionableItem::kAddressesButton,
-        ProfileMenuViewBase::ActionableItem::kSigninButton,
-        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
-        ProfileMenuViewBase::ActionableItem::kExitProfileButton,
-        ProfileMenuViewBase::ActionableItem::kOtherProfileButton,
-        ProfileMenuViewBase::ActionableItem::kOtherProfileButton,
-        ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
-        ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
-        ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
-        // The first button is added again to finish the cycle and test that
-        // there are no other buttons at the end.
-        ProfileMenuViewBase::ActionableItem::kPasswordsButton};
+constexpr std::array kActionableItems_MultipleProfiles_UnoEnabled = {
+    ProfileMenuViewBase::ActionableItem::kPasswordsButton,
+    ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
+    ProfileMenuViewBase::ActionableItem::kAddressesButton,
+    ProfileMenuViewBase::ActionableItem::kSigninButton,
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+    ProfileMenuViewBase::ActionableItem::kExitProfileButton,
+    ProfileMenuViewBase::ActionableItem::kOtherProfileButton,
+    ProfileMenuViewBase::ActionableItem::kOtherProfileButton,
+    ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+    ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+    ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+    // The first button is added again to finish the cycle and test that
+    // there are no other buttons at the end.
+    ProfileMenuViewBase::ActionableItem::kPasswordsButton};
 
 PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_MultipleProfiles_UnoEnabled,
     ProfileMenuClickTest_MultipleProfiles_UnoEnabled,
     /*enabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop},
-    /*disabled_features=*/{}) {
+    /*disabled_features=*/{switches::kImprovedSigninUIOnDesktop}) {
   // Add two additional profiles.
   CreateAdditionalProfile();
   CreateAdditionalProfile();
@@ -1102,20 +1142,19 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
 
 // List of actionable items in the correct order as they appear in the menu. If
 // a new button is added to the menu, it should also be added to this list.
-constexpr ProfileMenuViewBase::ActionableItem
-    kActionableItems_MultipleProfiles[] = {
-        ProfileMenuViewBase::ActionableItem::kSigninButton,
-        ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
-        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
-        ProfileMenuViewBase::ActionableItem::kExitProfileButton,
-        ProfileMenuViewBase::ActionableItem::kOtherProfileButton,
-        ProfileMenuViewBase::ActionableItem::kOtherProfileButton,
-        ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
-        ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
-        ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
-        // The first button is added again to finish the cycle and test that
-        // there are no other buttons at the end.
-        ProfileMenuViewBase::ActionableItem::kSigninButton};
+constexpr std::array kActionableItems_MultipleProfiles = {
+    ProfileMenuViewBase::ActionableItem::kSigninButton,
+    ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+    ProfileMenuViewBase::ActionableItem::kExitProfileButton,
+    ProfileMenuViewBase::ActionableItem::kOtherProfileButton,
+    ProfileMenuViewBase::ActionableItem::kOtherProfileButton,
+    ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+    ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+    ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+    // The first button is added again to finish the cycle and test that
+    // there are no other buttons at the end.
+    ProfileMenuViewBase::ActionableItem::kSigninButton};
 
 PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_MultipleProfiles,
@@ -1136,20 +1175,19 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
 // List of actionable items in the correct order as they appear in the menu with
 // Uno disabled. If a new button is added to the menu, it should also be added
 // to this list.
-constexpr ProfileMenuViewBase::ActionableItem
-    kActionableItems_SyncEnabled_UnoDisabled[] = {
-        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
-        ProfileMenuViewBase::ActionableItem::kPasswordsButton,
-        ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
-        ProfileMenuViewBase::ActionableItem::kAddressesButton,
-        ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
-        ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
-        ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
-        ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
-        ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
-        // The first button is added again to finish the cycle and test that
-        // there are no other buttons at the end.
-        ProfileMenuViewBase::ActionableItem::kEditProfileButton};
+constexpr std::array kActionableItems_SyncEnabled_UnoDisabled = {
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+    ProfileMenuViewBase::ActionableItem::kPasswordsButton,
+    ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
+    ProfileMenuViewBase::ActionableItem::kAddressesButton,
+    ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
+    ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
+    ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+    ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+    ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+    // The first button is added again to finish the cycle and test that
+    // there are no other buttons at the end.
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton};
 
 PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_SyncEnabled_UnoDisabled,
@@ -1163,21 +1201,20 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
 // List of actionable items in the correct order as they appear in the menu with
 // Uno enabled. If a new button is added to the menu, it should also be added to
 // this list.
-constexpr ProfileMenuViewBase::ActionableItem
-    kActionableItems_SyncEnabled_UnoEnabled[] = {
-        ProfileMenuViewBase::ActionableItem::kPasswordsButton,
-        ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
-        ProfileMenuViewBase::ActionableItem::kAddressesButton,
-        ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
-        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
-        ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
-        ProfileMenuViewBase::ActionableItem::kExitProfileButton,
-        ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
-        ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
-        ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
-        // The first button is added again to finish the cycle and test that
-        // there are no other buttons at the end.
-        ProfileMenuViewBase::ActionableItem::kPasswordsButton};
+constexpr std::array kActionableItems_SyncEnabled_UnoEnabled = {
+    ProfileMenuViewBase::ActionableItem::kPasswordsButton,
+    ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
+    ProfileMenuViewBase::ActionableItem::kAddressesButton,
+    ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+    ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
+    ProfileMenuViewBase::ActionableItem::kExitProfileButton,
+    ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+    ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+    ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+    // The first button is added again to finish the cycle and test that
+    // there are no other buttons at the end.
+    ProfileMenuViewBase::ActionableItem::kPasswordsButton};
 
 // TODO(crbug.com/341975308): re-enable test.
 #if BUILDFLAG(IS_WIN)
@@ -1191,14 +1228,14 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_SyncEnabled_UnoEnabled,
     MAYBE_ProfileMenuClickTest_SyncEnabled_UnoEnabled,
     /*enabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop},
-    /*disabled_features=*/{}) {
+    /*disabled_features=*/{switches::kImprovedSigninUIOnDesktop}) {
   EnableSync();
   RunTest();
 }
 
 // List of actionable items in the correct order as they appear in the menu. If
 // a new button is added to the menu, it should also be added to this list.
-constexpr ProfileMenuViewBase::ActionableItem kActionableItems_SyncEnabled[] = {
+constexpr std::array kActionableItems_SyncEnabled = {
     ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
     ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
     ProfileMenuViewBase::ActionableItem::kEditProfileButton,
@@ -1232,20 +1269,19 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
 // List of actionable items in the correct order as they appear in the menu with
 // Uno disabled. If a new button is added to the menu, it should also be added
 // to this list.
-constexpr ProfileMenuViewBase::ActionableItem
-    kActionableItems_SyncError_UnoDisabled[] = {
-        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
-        ProfileMenuViewBase::ActionableItem::kPasswordsButton,
-        ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
-        ProfileMenuViewBase::ActionableItem::kAddressesButton,
-        ProfileMenuViewBase::ActionableItem::kSyncErrorButton,
-        ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
-        ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
-        ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
-        ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
-        // The first button is added again to finish the cycle and test that
-        // there are no other buttons at the end.
-        ProfileMenuViewBase::ActionableItem::kEditProfileButton};
+constexpr std::array kActionableItems_SyncError_UnoDisabled = {
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+    ProfileMenuViewBase::ActionableItem::kPasswordsButton,
+    ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
+    ProfileMenuViewBase::ActionableItem::kAddressesButton,
+    ProfileMenuViewBase::ActionableItem::kSyncErrorButton,
+    ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
+    ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+    ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+    ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+    // The first button is added again to finish the cycle and test that
+    // there are no other buttons at the end.
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton};
 
 PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_SyncError_UnoDisabled,
@@ -1265,27 +1301,26 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
 // List of actionable items in the correct order as they appear in the menu with
 // Uno enabled. If a new button is added to the menu, it should also be added
 // to this list.
-constexpr ProfileMenuViewBase::ActionableItem
-    kActionableItems_SyncError_UnoEnabled[] = {
-        ProfileMenuViewBase::ActionableItem::kPasswordsButton,
-        ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
-        ProfileMenuViewBase::ActionableItem::kAddressesButton,
-        ProfileMenuViewBase::ActionableItem::kSyncErrorButton,
-        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
-        ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
-        ProfileMenuViewBase::ActionableItem::kExitProfileButton,
-        ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
-        ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
-        ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
-        // The first button is added again to finish the cycle and test that
-        // there are no other buttons at the end.
-        ProfileMenuViewBase::ActionableItem::kPasswordsButton};
+constexpr std::array kActionableItems_SyncError_UnoEnabled = {
+    ProfileMenuViewBase::ActionableItem::kPasswordsButton,
+    ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
+    ProfileMenuViewBase::ActionableItem::kAddressesButton,
+    ProfileMenuViewBase::ActionableItem::kSyncErrorButton,
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+    ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
+    ProfileMenuViewBase::ActionableItem::kExitProfileButton,
+    ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+    ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+    ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+    // The first button is added again to finish the cycle and test that
+    // there are no other buttons at the end.
+    ProfileMenuViewBase::ActionableItem::kPasswordsButton};
 
 PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_SyncError_UnoEnabled,
     ProfileMenuClickTest_SyncError_UnoEnabled,
     /*enabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop},
-    /*disabled_features=*/{}) {
+    /*disabled_features=*/{switches::kImprovedSigninUIOnDesktop}) {
   ASSERT_TRUE(
       sync_harness()->SignInPrimaryAccount(signin::ConsentLevel::kSync));
   // Check that the setup was successful.
@@ -1299,7 +1334,7 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
 // List of actionable items in the correct order as they appear in the menu with
 // Sync error. If a new button is added to the menu, it should also be added to
 // this list.
-constexpr ProfileMenuViewBase::ActionableItem kActionableItems_SyncError[] = {
+constexpr std::array kActionableItems_SyncError = {
     ProfileMenuViewBase::ActionableItem::kSyncErrorButton,
     ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
     ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
@@ -1333,19 +1368,18 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
 // List of actionable items in the correct order as they appear in the menu with
 // Uno disabled. If a new button is added to the menu, it should also be added
 // to this list.
-constexpr ProfileMenuViewBase::ActionableItem
-    kActionableItems_SyncPaused_UnoDisabled[] = {
-        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
-        ProfileMenuViewBase::ActionableItem::kPasswordsButton,
-        ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
-        ProfileMenuViewBase::ActionableItem::kAddressesButton,
-        ProfileMenuViewBase::ActionableItem::kSyncErrorButton,
-        ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
-        ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
-        ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
-        // The first button is added again to finish the cycle and test that
-        // there are no other buttons at the end.
-        ProfileMenuViewBase::ActionableItem::kEditProfileButton};
+constexpr std::array kActionableItems_SyncPaused_UnoDisabled = {
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+    ProfileMenuViewBase::ActionableItem::kPasswordsButton,
+    ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
+    ProfileMenuViewBase::ActionableItem::kAddressesButton,
+    ProfileMenuViewBase::ActionableItem::kSyncErrorButton,
+    ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+    ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+    ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+    // The first button is added again to finish the cycle and test that
+    // there are no other buttons at the end.
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton};
 
 // TODO(crbug.com/40822972): flaky on Windows and Mac
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -1374,20 +1408,19 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
 // List of actionable items in the correct order as they appear in the menu with
 // Uno enabled. If a new button is added to the menu, it should also be added
 // to this list.
-constexpr ProfileMenuViewBase::ActionableItem
-    kActionableItems_SyncPaused_UnoEnabled[] = {
-        ProfileMenuViewBase::ActionableItem::kPasswordsButton,
-        ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
-        ProfileMenuViewBase::ActionableItem::kAddressesButton,
-        ProfileMenuViewBase::ActionableItem::kSyncErrorButton,
-        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
-        ProfileMenuViewBase::ActionableItem::kExitProfileButton,
-        ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
-        ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
-        ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
-        // The first button is added again to finish the cycle and test that
-        // there are no other buttons at the end.
-        ProfileMenuViewBase::ActionableItem::kPasswordsButton};
+constexpr std::array kActionableItems_SyncPaused_UnoEnabled = {
+    ProfileMenuViewBase::ActionableItem::kPasswordsButton,
+    ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
+    ProfileMenuViewBase::ActionableItem::kAddressesButton,
+    ProfileMenuViewBase::ActionableItem::kSyncErrorButton,
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+    ProfileMenuViewBase::ActionableItem::kExitProfileButton,
+    ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+    ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+    ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+    // The first button is added again to finish the cycle and test that
+    // there are no other buttons at the end.
+    ProfileMenuViewBase::ActionableItem::kPasswordsButton};
 
 // TODO(crbug.com/40822972): flaky on Windows and Mac
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -1401,7 +1434,7 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_SyncPaused_UnoEnabled,
     MAYBE_ProfileMenuClickTest_SyncPaused_UnoEnabled,
     /*enabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop},
-    /*disabled_features=*/{}) {
+    /*disabled_features=*/{switches::kImprovedSigninUIOnDesktop}) {
   EnableSync();
   sync_harness()->EnterSyncPausedStateForPrimaryAccount();
   // Check that the setup was successful.
@@ -1416,7 +1449,7 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
 // List of actionable items in the correct order as they appear in the menu in
 // Sync paused. If a new button is added to the menu, it should also be added to
 // this list.
-constexpr ProfileMenuViewBase::ActionableItem kActionableItems_SyncPaused[] = {
+constexpr std::array kActionableItems_SyncPaused = {
     ProfileMenuViewBase::ActionableItem::kSyncErrorButton,
     ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
     ProfileMenuViewBase::ActionableItem::kEditProfileButton,
@@ -1457,18 +1490,17 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
 // List of actionable items in the correct order as they appear in the menu with
 // Uno disabled. If a new button is added to the menu, it should also be added
 // to this list.
-constexpr ProfileMenuViewBase::ActionableItem
-    kActionableItems_SigninDisallowed_UnoDisabled[] = {
-        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
-        ProfileMenuViewBase::ActionableItem::kPasswordsButton,
-        ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
-        ProfileMenuViewBase::ActionableItem::kAddressesButton,
-        ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
-        ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
-        ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
-        // The first button is added again to finish the cycle and test that
-        // there are no other buttons at the end.
-        ProfileMenuViewBase::ActionableItem::kEditProfileButton};
+constexpr std::array kActionableItems_SigninDisallowed_UnoDisabled = {
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+    ProfileMenuViewBase::ActionableItem::kPasswordsButton,
+    ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
+    ProfileMenuViewBase::ActionableItem::kAddressesButton,
+    ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+    ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+    ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+    // The first button is added again to finish the cycle and test that
+    // there are no other buttons at the end.
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton};
 
 PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_SigninDisallowed_UnoDisabled,
@@ -1491,25 +1523,24 @@ IN_PROC_BROWSER_TEST_P(ProfileMenuClickTest_SigninDisallowed_UnoDisabled,
 // List of actionable items in the correct order as they appear in the menu with
 // Uno enabled. If a new button is added to the menu, it should also be added
 // to this list.
-constexpr ProfileMenuViewBase::ActionableItem
-    kActionableItems_SigninDisallowed_UnoEnabled[] = {
-        ProfileMenuViewBase::ActionableItem::kPasswordsButton,
-        ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
-        ProfileMenuViewBase::ActionableItem::kAddressesButton,
-        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
-        ProfileMenuViewBase::ActionableItem::kExitProfileButton,
-        ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
-        ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
-        ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
-        // The first button is added again to finish the cycle and test that
-        // there are no other buttons at the end.
-        ProfileMenuViewBase::ActionableItem::kPasswordsButton};
+constexpr std::array kActionableItems_SigninDisallowed_UnoEnabled = {
+    ProfileMenuViewBase::ActionableItem::kPasswordsButton,
+    ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
+    ProfileMenuViewBase::ActionableItem::kAddressesButton,
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+    ProfileMenuViewBase::ActionableItem::kExitProfileButton,
+    ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+    ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+    ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+    // The first button is added again to finish the cycle and test that
+    // there are no other buttons at the end.
+    ProfileMenuViewBase::ActionableItem::kPasswordsButton};
 
 PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_SigninDisallowed_UnoEnabled,
     ProfileMenuClickTest_SigninDisallowed_UnoEnabled,
     /*enabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop},
-    /*disabled_features=*/{}) {
+    /*disabled_features=*/{switches::kImprovedSigninUIOnDesktop}) {
   // Check that the setup was successful.
   ASSERT_FALSE(
       browser()->profile()->GetPrefs()->GetBoolean(prefs::kSigninAllowed));
@@ -1526,18 +1557,17 @@ IN_PROC_BROWSER_TEST_P(ProfileMenuClickTest_SigninDisallowed_UnoEnabled,
 // List of actionable items in the correct order as they appear in the menu with
 // signin disallowed. If a new button is added to the menu, it should also be
 // added to this list.
-constexpr ProfileMenuViewBase::ActionableItem
-    kActionableItems_SigninDisallowed[] = {
-        ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
-        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
-        ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
-        ProfileMenuViewBase::ActionableItem::kExitProfileButton,
-        ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
-        ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
-        ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
-        // The first button is added again to finish the cycle and test that
-        // there are no other buttons at the end.
-        ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton};
+constexpr std::array kActionableItems_SigninDisallowed = {
+    ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+    ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
+    ProfileMenuViewBase::ActionableItem::kExitProfileButton,
+    ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+    ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+    ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+    // The first button is added again to finish the cycle and test that
+    // there are no other buttons at the end.
+    ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton};
 
 PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_SigninDisallowed,
@@ -1562,8 +1592,8 @@ IN_PROC_BROWSER_TEST_P(ProfileMenuClickTest_SigninDisallowed,
 // List of actionable items in the correct order as they appear in the menu with
 // Uno disabled. If a new button is added to the menu, it should also be added
 // to this list.
-constexpr ProfileMenuViewBase::ActionableItem
-    kActionableItems_WithUnconsentedPrimaryAccount_UnoDisabled[] = {
+constexpr std::array
+    kActionableItems_WithUnconsentedPrimaryAccount_UnoDisabled = {
         ProfileMenuViewBase::ActionableItem::kEditProfileButton,
         ProfileMenuViewBase::ActionableItem::kPasswordsButton,
         ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
@@ -1598,29 +1628,28 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
 // List of actionable items in the correct order as they appear in the menu with
 // Uno enabled. If a new button is added to the menu, it should also be added
 // to this list.
-constexpr ProfileMenuViewBase::ActionableItem
-    kActionableItems_WithUnconsentedPrimaryAccount_UnoEnabled[] = {
-        ProfileMenuViewBase::ActionableItem::kPasswordsButton,
-        ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
-        ProfileMenuViewBase::ActionableItem::kAddressesButton,
-        ProfileMenuViewBase::ActionableItem::kSigninAccountButton,
-        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
-        ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
-        ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
-        ProfileMenuViewBase::ActionableItem::kExitProfileButton,
-        ProfileMenuViewBase::ActionableItem::kSignoutButton,
-        ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
-        ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
-        ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
-        // The first button is added again to finish the cycle and test that
-        // there are no other buttons at the end.
-        ProfileMenuViewBase::ActionableItem::kPasswordsButton};
+constexpr std::array kActionableItems_WithUnconsentedPrimaryAccount_UnoEnabled =
+    {ProfileMenuViewBase::ActionableItem::kPasswordsButton,
+     ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
+     ProfileMenuViewBase::ActionableItem::kAddressesButton,
+     ProfileMenuViewBase::ActionableItem::kSigninAccountButton,
+     ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+     ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
+     ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
+     ProfileMenuViewBase::ActionableItem::kExitProfileButton,
+     ProfileMenuViewBase::ActionableItem::kSignoutButton,
+     ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+     ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+     ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+     // The first button is added again to finish the cycle and test that
+     // there are no other buttons at the end.
+     ProfileMenuViewBase::ActionableItem::kPasswordsButton};
 
 PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_WithUnconsentedPrimaryAccount_UnoEnabled,
     ProfileMenuClickTest_WithUnconsentedPrimaryAccount_UnoEnabled,
     /*enabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop},
-    /*disabled_features=*/{}) {
+    /*disabled_features=*/{switches::kImprovedSigninUIOnDesktop}) {
   secondary_account_helper::SignInUnconsentedAccount(
       GetProfile(), &test_url_loader_factory_, "user@example.com");
   UnconsentedPrimaryAccountChecker(identity_manager()).Wait();
@@ -1635,21 +1664,20 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
 
 // List of actionable items in the correct order as they appear in the menu. If
 // a new button is added to the menu, it should also be added to this list.
-constexpr ProfileMenuViewBase::ActionableItem
-    kActionableItems_WithUnconsentedPrimaryAccount[] = {
-        ProfileMenuViewBase::ActionableItem::kSigninAccountButton,
-        ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
-        ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
-        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
-        ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
-        ProfileMenuViewBase::ActionableItem::kExitProfileButton,
-        ProfileMenuViewBase::ActionableItem::kSignoutButton,
-        ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
-        ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
-        ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
-        // The first button is added again to finish the cycle and test that
-        // there are no other buttons at the end.
-        ProfileMenuViewBase::ActionableItem::kSigninAccountButton};
+constexpr std::array kActionableItems_WithUnconsentedPrimaryAccount = {
+    ProfileMenuViewBase::ActionableItem::kSigninAccountButton,
+    ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
+    ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+    ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
+    ProfileMenuViewBase::ActionableItem::kExitProfileButton,
+    ProfileMenuViewBase::ActionableItem::kSignoutButton,
+    ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+    ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+    ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+    // The first button is added again to finish the cycle and test that
+    // there are no other buttons at the end.
+    ProfileMenuViewBase::ActionableItem::kSigninAccountButton};
 
 PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_WithUnconsentedPrimaryAccount,
@@ -1673,23 +1701,22 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
 // List of actionable items in the correct order as they appear in the menu with
 // Uno enabled in signin pending state. If a new button is added to the menu,
 // it should also be added to this list.
-constexpr ProfileMenuViewBase::ActionableItem
-    kActionableItems_WithPendingAccount_UnoEnabled[] = {
-        ProfileMenuViewBase::ActionableItem::kPasswordsButton,
-        ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
-        ProfileMenuViewBase::ActionableItem::kAddressesButton,
-        ProfileMenuViewBase::ActionableItem::kSigninReauthButton,
-        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
-        ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
-        ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
-        ProfileMenuViewBase::ActionableItem::kExitProfileButton,
-        ProfileMenuViewBase::ActionableItem::kSignoutButton,
-        ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
-        ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
-        ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
-        // The first button is added again to finish the cycle and test that
-        // there are no other buttons at the end.
-        ProfileMenuViewBase::ActionableItem::kPasswordsButton};
+constexpr std::array kActionableItems_WithPendingAccount_UnoEnabled = {
+    ProfileMenuViewBase::ActionableItem::kPasswordsButton,
+    ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
+    ProfileMenuViewBase::ActionableItem::kAddressesButton,
+    ProfileMenuViewBase::ActionableItem::kSigninReauthButton,
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+    ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
+    ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
+    ProfileMenuViewBase::ActionableItem::kExitProfileButton,
+    ProfileMenuViewBase::ActionableItem::kSignoutButton,
+    ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+    ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+    ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+    // The first button is added again to finish the cycle and test that
+    // there are no other buttons at the end.
+    ProfileMenuViewBase::ActionableItem::kPasswordsButton};
 
 // TODO(crbug.com/40822972): flaky on Windows and Mac
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -1703,7 +1730,7 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_WithPendingAccount_UnoEnabled,
     MAYBE_ProfileMenuClickTest_WithPendingAccount_UnoEnabled,
     /*enabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop},
-    /*disabled_features=*/{}) {
+    /*disabled_features=*/{switches::kImprovedSigninUIOnDesktop}) {
   AccountInfo account_info = signin::MakePrimaryAccountAvailable(
       identity_manager(), "user@example.com", signin::ConsentLevel::kSignin);
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
@@ -1729,20 +1756,19 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
 // List of actionable items in the correct order as they appear in the menu in
 // signin pending state. If a new button is added to the menu, it should also be
 // added to this list.
-constexpr ProfileMenuViewBase::ActionableItem
-    kActionableItems_WithPendingAccount[] = {
-        ProfileMenuViewBase::ActionableItem::kSigninReauthButton,
-        ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
-        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
-        ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
-        ProfileMenuViewBase::ActionableItem::kExitProfileButton,
-        ProfileMenuViewBase::ActionableItem::kSignoutButton,
-        ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
-        ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
-        ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
-        // The first button is added again to finish the cycle and test that
-        // there are no other buttons at the end.
-        ProfileMenuViewBase::ActionableItem::kSigninReauthButton};
+constexpr std::array kActionableItems_WithPendingAccount = {
+    ProfileMenuViewBase::ActionableItem::kSigninReauthButton,
+    ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+    ProfileMenuViewBase::ActionableItem::kSyncSettingsButton,
+    ProfileMenuViewBase::ActionableItem::kExitProfileButton,
+    ProfileMenuViewBase::ActionableItem::kSignoutButton,
+    ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+    ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+    ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+    // The first button is added again to finish the cycle and test that
+    // there are no other buttons at the end.
+    ProfileMenuViewBase::ActionableItem::kSigninReauthButton};
 
 // TODO(crbug.com/40822972): flaky on Windows and Mac
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -1781,8 +1807,8 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
   RunTest();
 }
 
-constexpr ProfileMenuViewBase::ActionableItem
-    kActionableItems_GuestProfileButtonAvailable_SignedInNotSupervised[] = {
+constexpr std::array
+    kActionableItems_GuestProfileButtonAvailable_SignedInNotSupervised = {
         ProfileMenuViewBase::ActionableItem::kEditProfileButton,
         ProfileMenuViewBase::ActionableItem::kPasswordsButton,
         ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
@@ -1817,8 +1843,8 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
   RunTest();
 }
 
-constexpr ProfileMenuViewBase::ActionableItem
-    kActionableItems_GuestProfileButtonNotAvailable_SignedInSupervised[] = {
+constexpr std::array
+    kActionableItems_GuestProfileButtonNotAvailable_SignedInSupervised = {
         ProfileMenuViewBase::ActionableItem::kEditProfileButton,
         ProfileMenuViewBase::ActionableItem::kPasswordsButton,
         ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
@@ -1855,12 +1881,11 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
 
 // List of actionable items in the correct order as they appear in the menu.
 // If a new button is added to the menu, it should also be added to this list.
-constexpr ProfileMenuViewBase::ActionableItem
-    kActionableItems_IncognitoProfile[] = {
-        ProfileMenuViewBase::ActionableItem::kExitProfileButton,
-        // The first button is added again to finish the cycle and test that
-        // there are no other buttons at the end.
-        ProfileMenuViewBase::ActionableItem::kExitProfileButton};
+constexpr std::array kActionableItems_IncognitoProfile = {
+    ProfileMenuViewBase::ActionableItem::kExitProfileButton,
+    // The first button is added again to finish the cycle and test that
+    // there are no other buttons at the end.
+    ProfileMenuViewBase::ActionableItem::kExitProfileButton};
 
 PROFILE_MENU_CLICK_TEST(kActionableItems_IncognitoProfile,
                         ProfileMenuClickTest_IncognitoProfile) {
@@ -1871,22 +1896,22 @@ PROFILE_MENU_CLICK_TEST(kActionableItems_IncognitoProfile,
 
 // List of actionable items in the correct order as they appear in the menu.
 // If a new button is added to the menu, it should also be added to this list.
-constexpr ProfileMenuViewBase::ActionableItem kActionableItems_GuestProfile[] =
-    {ProfileMenuViewBase::ActionableItem::kExitProfileButton,
-     // The first button is added again to finish the cycle and test that
-     // there are no other buttons at the end.
-     // Note that the test does not rely on the specific order of running test
-     // instances, but considers the relative order of the actionable items in
-     // this array. So for the last item, it does N+1 steps through the menu (N
-     // being the number of items in the menu) and checks if the last item in
-     // this array triggers the same action as the first one.
-     ProfileMenuViewBase::ActionableItem::kExitProfileButton};
+constexpr std::array kActionableItems_GuestProfile = {
+    ProfileMenuViewBase::ActionableItem::kExitProfileButton,
+    // The first button is added again to finish the cycle and test that
+    // there are no other buttons at the end.
+    // Note that the test does not rely on the specific order of running test
+    // instances, but considers the relative order of the actionable items in
+    // this array. So for the last item, it does N+1 steps through the menu (N
+    // being the number of items in the menu) and checks if the last item in
+    // this array triggers the same action as the first one.
+    ProfileMenuViewBase::ActionableItem::kExitProfileButton};
 
 PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_GuestProfile,
     ProfileMenuClickTest_GuestProfile_UnoEnabled,
     /*enabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop},
-    /*disabled_features=*/{}) {
+    /*disabled_features=*/{switches::kImprovedSigninUIOnDesktop}) {
   SetTargetBrowser(CreateGuestBrowser());
 
   RunTest();
@@ -1939,9 +1964,8 @@ class ProfileMenuClickTestWebApp : public ProfileMenuClickTest {
 
 // List of actionable items in the correct order as they appear in the menu.
 // If a new button is added to the menu, it should also be added to this list.
-constexpr ProfileMenuViewBase::ActionableItem
-    kActionableItems_PasswordManagerWebApp[] = {
-        ProfileMenuViewBase::ActionableItem::kOtherProfileButton};
+constexpr std::array kActionableItems_PasswordManagerWebApp = {
+    ProfileMenuViewBase::ActionableItem::kOtherProfileButton};
 
 PROFILE_MENU_CLICK_TEST_F(ProfileMenuClickTestWebApp,
                           kActionableItems_PasswordManagerWebApp,
@@ -1963,8 +1987,8 @@ PROFILE_MENU_CLICK_TEST_F(ProfileMenuClickTestWebApp,
 // If a new button is added to the menu, it should also be added to this list.
 // Unfortunately by how Click Tests work we can't verify how many other profile
 // buttons are present, so this test merely verifies that at least one exists.
-constexpr ProfileMenuViewBase::ActionableItem kActionableItems_RegularWebApp[] =
-    {ProfileMenuViewBase::ActionableItem::kOtherProfileButton};
+constexpr std::array kActionableItems_RegularWebApp = {
+    ProfileMenuViewBase::ActionableItem::kOtherProfileButton};
 PROFILE_MENU_CLICK_TEST_F(ProfileMenuClickTestWebApp,
                           kActionableItems_RegularWebApp,
                           ProfileMenuClickTest_RegularWebApp) {

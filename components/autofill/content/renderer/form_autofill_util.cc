@@ -1078,8 +1078,11 @@ std::optional<InferredLabel> InferLabelForElement(
   if (auto r = InferLabelFromPrevious(element)) {
     return r;
   }
-  if (auto r = InferLabelFromPlaceholder(element)) {
-    return r;
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillBetterLocalHeuristicPlaceholderSupport)) {
+    if (auto r = InferLabelFromPlaceholder(element)) {
+      return r;
+    }
   }
   if (auto r = InferLabelFromOverlayingSuccessor(element)) {
     return r;
@@ -2154,10 +2157,10 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
     }
   }
 
-  base::UmaHistogramCounts100(!form_element
-                                  ? "Autofill.ExtractFormUnowned.FieldCount"
-                                  : "Autofill.ExtractFormOwned.FieldCount",
-                              fields.size());
+  base::UmaHistogramCounts1000(!form_element
+                                   ? "Autofill.ExtractFormUnowned.FieldCount2"
+                                   : "Autofill.ExtractFormOwned.FieldCount2",
+                               fields.size());
   FormData form;
   if (!form_element) {
     DCHECK(form.renderer_id().is_null());
@@ -2503,7 +2506,7 @@ FindFormAndFieldForFormControlElement(
   SCOPED_CRASH_KEYS_FOR_FORM(owng, owning_form);
 #undef FORM_CRASH_KEYS
   // clang-format on
-  NOTREACHED(base::NotFatalUntil::M134);
+  NOTREACHED(base::NotFatalUntil::M137);
   return std::nullopt;
 }
 

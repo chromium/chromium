@@ -20,7 +20,7 @@ export interface SettingsRoutes {
   AI_TAB_ORGANIZATION: Route;
   APPEARANCE: Route;
   AUTOFILL: Route;
-  AUTOFILL_PREDICTION_IMPROVEMENTS: Route;
+  AUTOFILL_AI: Route;
   BASIC: Route;
   CAPTIONS: Route;
   CERTIFICATES: Route;
@@ -32,13 +32,13 @@ export interface SettingsRoutes {
   DOWNLOADS: Route;
   EDIT_DICTIONARY: Route;
   FONTS: Route;
+  GLIC: Route;
   HISTORY_SEARCH: Route;
   INCOMPATIBLE_APPLICATIONS: Route;
   LANGUAGES: Route;
   MANAGE_PROFILE: Route;
   OFFER_WRITING_HELP: Route;
   ON_STARTUP: Route;
-  PAGE_CONTENT: Route;
   PASSKEYS: Route;
   PAYMENTS: Route;
   PEOPLE: Route;

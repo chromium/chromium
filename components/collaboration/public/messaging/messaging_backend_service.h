@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation_traits.h"
 #include "base/supports_user_data.h"
 #include "components/collaboration/public/messaging/activity_log.h"
 #include "components/collaboration/public/messaging/message.h"
@@ -20,10 +21,11 @@ class MessagingBackendService : public KeyedService,
                                 public base::SupportsUserData {
  public:
   class PersistentMessageObserver : public base::CheckedObserver {
+   public:
     // Invoked once when the service is initialized. This is invoked only once
-    // and is immediately invoked if the service was initialized before the
-    // observer was added. The initialization state can also be inspected using
-    // IsInitialized().
+    // and is immediately invoked (re-entrant) if the service was initialized
+    // before the observer was added. You can invoke `IsInitialized()` if you
+    // want to know the state and whether this is going to happen or not.
     virtual void OnMessagingBackendServiceInitialized() = 0;
 
     // Invoked when the frontend needs to display a specific persistent message.
@@ -88,5 +90,26 @@ class MessagingBackendService : public KeyedService,
 };
 
 }  // namespace collaboration::messaging
+
+namespace base {
+template <>
+struct ScopedObservationTraits<
+    collaboration::messaging::MessagingBackendService,
+    collaboration::messaging::MessagingBackendService::
+        PersistentMessageObserver> {
+  static void AddObserver(
+      collaboration::messaging::MessagingBackendService* source,
+      collaboration::messaging::MessagingBackendService::
+          PersistentMessageObserver* observer) {
+    source->AddPersistentMessageObserver(observer);
+  }
+  static void RemoveObserver(
+      collaboration::messaging::MessagingBackendService* source,
+      collaboration::messaging::MessagingBackendService::
+          PersistentMessageObserver* observer) {
+    source->RemovePersistentMessageObserver(observer);
+  }
+};
+}  // namespace base
 
 #endif  // COMPONENTS_COLLABORATION_PUBLIC_MESSAGING_MESSAGING_BACKEND_SERVICE_H_

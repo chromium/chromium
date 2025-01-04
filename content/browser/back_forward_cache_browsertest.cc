@@ -27,7 +27,6 @@
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/back_forward_cache_can_store_document_result.h"
@@ -411,20 +410,20 @@ RenderFrameHostImpl* BackForwardCacheBrowserTest::NavigateToPageWithImage(
 
 void BackForwardCacheBrowserTest::AcquireKeyboardLock(
     RenderFrameHostImpl* rfh) {
-  EXPECT_TRUE(ExecJs(rfh, R"(
+  EXPECT_EQ(42, EvalJs(rfh, R"(
         new Promise(resolve => {
           navigator.keyboard.lock();
-          resolve();
+          resolve(42);
         });
       )"));
 }
 
 void BackForwardCacheBrowserTest::ReleaseKeyboardLock(
     RenderFrameHostImpl* rfh) {
-  EXPECT_TRUE(ExecJs(rfh, R"(
+  EXPECT_EQ(42, EvalJs(rfh, R"(
         new Promise(resolve => {
           navigator.keyboard.unlock();
-          resolve();
+          resolve(42);
         });
       )"));
 }
@@ -894,8 +893,9 @@ IN_PROC_BROWSER_TEST_F(HighCacheSizeBackForwardCacheBrowserTest,
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
-        root->navigator().BeforeUnloadCompleted(root, true /* proceed */,
-                                                base::TimeTicks::Now());
+        root->navigator().BeforeUnloadCompleted(
+            root, /*proceed=*/true, base::TimeTicks::Now(),
+            /*for_legacy=*/false, /*showed_dialog=*/false);
       }));
 
   // 7) Evict entry B. This will post a task (task #3) to restart the navigation
@@ -1152,19 +1152,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheUnloadBrowserTest,
   // trigger unload handlers and be destroyed directly.
 }
 
-// TODO(crbug.com/330798156): Flaky on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_DoesNotFireDidFirstVisuallyNonEmptyPaintForSameDocumentNavigation \
-  DISABLED_DoesNotFireDidFirstVisuallyNonEmptyPaintForSameDocumentNavigation
-#else
-#define MAYBE_DoesNotFireDidFirstVisuallyNonEmptyPaintForSameDocumentNavigation \
-  DoesNotFireDidFirstVisuallyNonEmptyPaintForSameDocumentNavigation
-#endif
 // Do a same document navigation and make sure we do not fire the
 // DidFirstVisuallyNonEmptyPaint again
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTest,
-    MAYBE_DoesNotFireDidFirstVisuallyNonEmptyPaintForSameDocumentNavigation) {
+    DoesNotFireDidFirstVisuallyNonEmptyPaintForSameDocumentNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a_1(embedded_test_server()->GetURL(
       "a.com", "/accessibility/html/a-name.html"));
@@ -1184,7 +1176,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Make sure we fire DidFirstVisuallyNonEmptyPaint when restoring from bf-cache.
 // TODO(crbug.com/327195951): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_FiresDidFirstVisuallyNonEmptyPaintWhenRestoredFromCache \
   DISABLED_FiresDidFirstVisuallyNonEmptyPaintWhenRestoredFromCache
 #else
@@ -1218,8 +1210,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(web_contents()->CompletedFirstVisuallyNonEmptyPaint());
   EXPECT_TRUE(observer.did_fire());
 }
-// TODO(crbug.com/330798156): Flaky on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_SetsThemeColorWhenRestoredFromCache \
   DISABLED_SetsThemeColorWhenRestoredFromCache
 #else
@@ -1317,7 +1308,6 @@ class BackForwardCacheBrowserTestForLowMemoryDevices
         {{features::kBackForwardCacheMemoryControls,
           {{"memory_threshold_for_back_forward_cache_in_mb",
             memory_threshold}}},
-         {features::kBackForwardCache_NoMemoryLimit_Trial, {}},
          {blink::features::kLoadingTasksUnfreezable, {}}},
         {});
   }
@@ -1326,8 +1316,7 @@ class BackForwardCacheBrowserTestForLowMemoryDevices
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Ensure that the BackForwardCache trial is not activated and the
-// BackForwardCache_NoMemoryLimit_Trial trial got activated as expected on
+// Ensure that the BackForwardCache trial is not activated as expected on
 // low-memory devices.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestForLowMemoryDevices,
                        DisableBFCacheForLowEndDevices) {
@@ -1335,27 +1324,17 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestForLowMemoryDevices,
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
 
-  // Ensure that the BackForwardCache trial starts inactive, and the
-  // BackForwardCache_NoMemoryLimit_Trial trial starts active.
+  // Ensure that the BackForwardCache trial starts inactive.
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive(
       base::FeatureList::GetFieldTrial(features::kBackForwardCache)
-          ->trial_name()));
-  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(
-      base::FeatureList::GetFieldTrial(
-          features::kBackForwardCache_NoMemoryLimit_Trial)
           ->trial_name()));
 
   EXPECT_FALSE(IsBackForwardCacheEnabled());
 
   // Ensure that we do not activate the BackForwardCache trial when querying
-  // bfcache status, and the BackForwardCache_NoMemoryLimit_Trial trial stays
-  // active.
+  // bfcache status.
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive(
       base::FeatureList::GetFieldTrial(features::kBackForwardCache)
-          ->trial_name()));
-  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(
-      base::FeatureList::GetFieldTrial(
-          features::kBackForwardCache_NoMemoryLimit_Trial)
           ->trial_name()));
 
   // 1) Navigate to A.
@@ -1383,14 +1362,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestForLowMemoryDevices,
       },
       {}, {}, {}, {}, FROM_HERE);
 
-  // Ensure that the BackForwardCache trial still hasn't been activated, and the
-  // BackForwardCache_NoMemoryLimit_Trial trial stays active.
+  // Ensure that the BackForwardCache trial still hasn't been activated.
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive(
       base::FeatureList::GetFieldTrial(features::kBackForwardCache)
-          ->trial_name()));
-  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(
-      base::FeatureList::GetFieldTrial(
-          features::kBackForwardCache_NoMemoryLimit_Trial)
           ->trial_name()));
 }
 
@@ -1479,7 +1453,6 @@ class BackForwardCacheBrowserTestForHighMemoryDevices
         {{features::kBackForwardCacheMemoryControls,
           {{"memory_threshold_for_back_forward_cache_in_mb",
             memory_threshold}}},
-         {features::kBackForwardCache_NoMemoryLimit_Trial, {}},
          {blink::features::kLoadingTasksUnfreezable, {}}},
         {});
   }
@@ -1488,35 +1461,23 @@ class BackForwardCacheBrowserTestForHighMemoryDevices
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Ensure that the BackForwardCache_NoMemoryLimit_Trial and the
-// BackForwardCache trials got activated as expected on high-memory devices
-// when the BackForwardCache feature is enabled.
+// Ensure that the BackForwardCache trial got activated as expected on
+// high-memory devices when the BackForwardCache feature is enabled.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestForHighMemoryDevices,
                        EnableBFCacheForHighMemoryDevices) {
-  // Ensure that the BackForwardCache and the
-  // BackForwardCache_NoMemoryLimit_Trial trials start active
-  // on high-memory devices when the BackForwardCache feature is enabled,
-  // because IsBackForwardCacheEnabled() got queried already before the test
-  // starts.
+  // Ensure that the BackForwardCache trial starts active on high-memory devices
+  // when the BackForwardCache feature is enabled, because
+  // IsBackForwardCacheEnabled() got queried already before the test starts.
   EXPECT_TRUE(base::FieldTrialList::IsTrialActive(
       base::FeatureList::GetFieldTrial(features::kBackForwardCache)
-          ->trial_name()));
-  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(
-      base::FeatureList::GetFieldTrial(
-          features::kBackForwardCache_NoMemoryLimit_Trial)
           ->trial_name()));
 
   EXPECT_TRUE(IsBackForwardCacheEnabled());
 
-  // Ensure that the BackForwardCache and the
-  // BackForwardCache_NoMemoryLimit_Trial trial stays active after
-  // querying IsBackForwardCacheEnabled().
+  // Ensure that the BackForwardCache trial stays active after querying
+  // IsBackForwardCacheEnabled().
   EXPECT_TRUE(base::FieldTrialList::IsTrialActive(
       base::FeatureList::GetFieldTrial(features::kBackForwardCache)
-          ->trial_name()));
-  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(
-      base::FeatureList::GetFieldTrial(
-          features::kBackForwardCache_NoMemoryLimit_Trial)
           ->trial_name()));
 
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -1534,14 +1495,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestForHighMemoryDevices,
   // greater than the memory threshold.
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
-  // Ensure that the BackForwardCache and the
-  // BackForwardCache_NoMemoryLimit_Trial trial stays active.
+  // Ensure that the BackForwardCache trial stays active.
   EXPECT_TRUE(base::FieldTrialList::IsTrialActive(
       base::FeatureList::GetFieldTrial(features::kBackForwardCache)
-          ->trial_name()));
-  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(
-      base::FeatureList::GetFieldTrial(
-          features::kBackForwardCache_NoMemoryLimit_Trial)
           ->trial_name()));
 }
 
@@ -1622,7 +1578,6 @@ class BackForwardCacheBrowserTestForHighMemoryDevicesWithBFCacheDisabled
         {{features::kBackForwardCacheMemoryControls,
           {{"memory_threshold_for_back_forward_cache_in_mb",
             memory_threshold}}},
-         {features::kBackForwardCache_NoMemoryLimit_Trial, {}},
          {blink::features::kLoadingTasksUnfreezable, {}}},
         /*disabled_features=*/
         {features::kBackForwardCache});
@@ -1632,28 +1587,12 @@ class BackForwardCacheBrowserTestForHighMemoryDevicesWithBFCacheDisabled
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Ensure that the BackForwardCache_NoMemoryLimit_Trial does not get activated
-// on high-memory devices that have the BackForwardCache feature disabled.
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTestForHighMemoryDevicesWithBFCacheDisabled,
     HighMemoryDevicesWithBFacheDisabled) {
-  // Ensure that BackForwardCache_NoMemoryLimit_Trial trials starts inactive
-  // on high-memory devices that have the BackForwardCache feature disabled.
-  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(
-      base::FeatureList::GetFieldTrial(
-          features::kBackForwardCache_NoMemoryLimit_Trial)
-          ->trial_name()));
-
   // Ensure that IsBackForwardCacheEnabled() returns false, because the
   // BackForwardCache feature is disabled.
   EXPECT_FALSE(IsBackForwardCacheEnabled());
-
-  // Ensure that the BackForwardCache_NoMemoryLimit_Trial trial stays inactive
-  // after querying IsBackForwardCacheEnabled().
-  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(
-      base::FeatureList::GetFieldTrial(
-          features::kBackForwardCache_NoMemoryLimit_Trial)
-          ->trial_name()));
 
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -1679,12 +1618,6 @@ IN_PROC_BROWSER_TEST_F(
           BackForwardCacheMetrics::NotRestoredReason::kBackForwardCacheDisabled,
       },
       {}, {}, {}, {}, FROM_HERE);
-
-  // Ensure that the BackForwardCache_NoMemoryLimit_Trial trial stays inactive.
-  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(
-      base::FeatureList::GetFieldTrial(
-          features::kBackForwardCache_NoMemoryLimit_Trial)
-          ->trial_name()));
 }
 
 // Start an inifite dialogs in JS, yielding after each. The first dialog should
@@ -1806,8 +1739,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 // Tests that pagehide handlers of the old RFH are run for bfcached pages even
 // if the page is already hidden (and visibilitychange won't run).
 // Disabled on Linux and Win because of flakiness, see crbug.com/40165901.
-// TODO(crbug.com/40118868): Revisit once build flag switch of lacros-chrome is
-// complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_PagehideRunsWhenPageIsHidden DISABLED_PagehideRunsWhenPageIsHidden
 #else
@@ -3110,9 +3041,7 @@ namespace {
 enum class SubframeNavigationType { WithoutURLLoader, WithURLLoader };
 }
 
-// Test for pages which has subframe(s) with ongoing navigation(s). In these
-// tests, we should enable kEnableBackForwardCacheForOngoingSubframeNavigation
-// flag.
+// Test for pages which has subframe(s) with ongoing navigation(s).
 class BackForwardCacheWithSubframeNavigationBrowserTest
     : public BackForwardCacheBrowserTest {
  protected:
@@ -3122,9 +3051,6 @@ class BackForwardCacheWithSubframeNavigationBrowserTest
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    EnableFeatureAndSetParams(
-        features::kEnableBackForwardCacheForOngoingSubframeNavigation, "",
-        "true");
     EnableFeatureAndSetParams(features::kBackForwardCache, "cache_size",
                               base::NumberToString(2));
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);

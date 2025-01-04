@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//components/optimization_guide/features.gni")
@@ -237,8 +236,6 @@ static_library("browser") {
     "omnibox_edit_model.h",
     "omnibox_event_global_tracker.cc",
     "omnibox_event_global_tracker.h",
-    "omnibox_feature_configs.cc",
-    "omnibox_feature_configs.h",
     "omnibox_field_trial.cc",
     "omnibox_field_trial.h",
     "omnibox_log.cc",
@@ -300,6 +297,10 @@ static_library("browser") {
     "tailored_word_break_iterator.h",
     "titled_url_match_utils.cc",
     "titled_url_match_utils.h",
+    "unscoped_extension_provider.cc",
+    "unscoped_extension_provider.h",
+    "unscoped_extension_provider_delegate.cc",
+    "unscoped_extension_provider_delegate.h",
     "url_index_private_data.cc",
     "url_index_private_data.h",
     "url_prefix.cc",
@@ -418,7 +419,10 @@ static_library("browser") {
   }
 
   if (enable_extensions) {
-    deps += [ "//extensions/common:common_constants" ]
+    deps += [
+      "//extensions/common:common_constants",
+      "//extensions/common:extension_features",
+    ]
     sources += [
       "omnibox_input_watcher.cc",
       "omnibox_input_watcher.h",
@@ -475,7 +479,6 @@ static_library("location_bar") {
   ]
   deps = [
     ":buildflags",
-    "//build:chromeos_buildflags",
     "//components/dom_distiller/core:core",
     "//components/lens/proto/server:proto",
     "//components/safe_browsing/core/common:common",
@@ -489,7 +492,7 @@ static_library("location_bar") {
     "//ui/gfx",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//chromeos/constants" ]
   }
 
@@ -839,6 +842,7 @@ source_set("unit_tests") {
     "suggestion_group_unittest.cc",
     "tailored_word_break_iterator_unittest.cc",
     "titled_url_match_utils_unittest.cc",
+    "unscoped_extension_provider_unittest.cc",
     "url_prefix_unittest.cc",
     "url_scoring_signals_annotator_unittest.cc",
     "voice_suggest_provider_unittest.cc",
@@ -884,6 +888,7 @@ source_set("unit_tests") {
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/os_crypt/async/browser",
     "//components/prefs:test_support",
     "//components/query_parser:query_parser",
     "//components/safe_browsing/core/common:common",

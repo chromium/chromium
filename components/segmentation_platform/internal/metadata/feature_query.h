@@ -23,6 +23,12 @@ inline constexpr std::array<float, 1> kZeroDefaultValue{0};
       MetadataWriter::UMAFeature::FromValueHistogram(      \
           uma_name, days, proto::Aggregation::COUNT))
 
+#define DEFINE_UMA_FEATURE_ENUM_COUNT(var_name, uma_name, enum_id, enum_size, \
+                                      days)                                   \
+  FeatureQuery var_name = FeatureQuery::FromUMAFeature(                       \
+      MetadataWriter::UMAFeature::FromEnumHistogram(uma_name, days, enum_id,  \
+                                                    enum_size))
+
 #define DEFINE_UMA_FEATURE_SUM(var_name, uma_name, days)             \
   FeatureQuery var_name = FeatureQuery::FromUMAFeature(              \
       MetadataWriter::UMAFeature::FromValueHistogram(uma_name, days, \

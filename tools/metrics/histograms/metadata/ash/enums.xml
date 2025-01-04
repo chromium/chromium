@@ -323,6 +323,13 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="11" label="Coral"/>
 </enum>
 
+<enum name="BocaPollingResult">
+  <int value="0" label="No Update"/>
+  <int value="1" label="Polling causes session to start"/>
+  <int value="2" label="Polling causes session to end"/>
+  <int value="3" label="Polling causes in-session update"/>
+</enum>
+
 <enum name="BooleanMuted">
   <int value="0" label="Muted"/>
   <int value="1" label="Unmuted"/>
@@ -544,6 +551,12 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
       label="Disabled because the related app is disabled by policy"/>
   <int value="3"
       label="Disabled because the related URLs are blocked by policy"/>
+</enum>
+
+<enum name="CoralActionType">
+  <int value="0" label="Restore"/>
+  <int value="1" label="LaunchToNewDesk"/>
+  <int value="2" label="SaveAsDeskTemplate"/>
 </enum>
 
 <enum name="CriticalNotificationOutcome">
@@ -1426,6 +1439,7 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="9" label="kRestrictedCountry"/>
   <int value="10" label="kNoIdentityManager"/>
   <int value="11" label="kPerUserQuotaExceeded"/>
+  <int value="12" label="kImageHasPerson"/>
 </enum>
 
 <enum name="ModifyGlanceablesTaskResult">
@@ -2377,6 +2391,11 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="56" label="Copy Image To Clipboard Action"/>
   <int value="57" label="Capture Mode Text Copied"/>
   <int value="58" label="Coral Saved Groups Limit Max"/>
+  <int value="59" label="Scanner Action Success"/>
+  <int value="60" label="Scanner Action Failure"/>
+  <int value="61" label="Apps Can Access Camera"/>
+  <int value="62" label="Apps Can't Access Camera"/>
+  <int value="63" label="Can't Turn On Camera Access Remotely"/>
 </enum>
 
 <enum name="TogglePickerAction">

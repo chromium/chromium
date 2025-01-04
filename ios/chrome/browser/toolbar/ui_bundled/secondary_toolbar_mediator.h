@@ -9,6 +9,9 @@
 
 #import "ios/chrome/browser/toolbar/ui_bundled/secondary_toolbar_keyboard_state_provider.h"
 
+namespace collaboration::messaging {
+class MessagingBackendService;
+}  // namespace collaboration::messaging
 @protocol SecondaryToolbarConsumer;
 class WebStateList;
 
@@ -17,7 +20,10 @@ class WebStateList;
     : NSObject <SecondaryToolbarKeyboardStateProvider>
 
 /// Creates an instance of the mediator.
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList;
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                    messagingService:
+                        (collaboration::messaging::MessagingBackendService*)
+                            messagingService;
 
 // The consumer for this mediator.
 @property(nonatomic, weak) id<SecondaryToolbarConsumer> consumer;

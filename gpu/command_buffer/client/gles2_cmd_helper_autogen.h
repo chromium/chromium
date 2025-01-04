@@ -2651,13 +2651,6 @@ void MemoryBarrierByRegion(GLbitfield barriers) {
   }
 }
 
-void SwapBuffers(GLuint64 swap_id, GLbitfield flags) {
-  gles2::cmds::SwapBuffers* c = GetCmdSpace<gles2::cmds::SwapBuffers>();
-  if (c) {
-    c->Init(swap_id, flags);
-  }
-}
-
 void GetMaxValueInBufferCHROMIUM(GLuint buffer_id,
                                  GLsizei count,
                                  GLenum type,
@@ -2708,20 +2701,6 @@ void FlushMappedBufferRange(GLenum target, GLintptr offset, GLsizeiptr size) {
       GetCmdSpace<gles2::cmds::FlushMappedBufferRange>();
   if (c) {
     c->Init(target, offset, size);
-  }
-}
-
-void ResizeCHROMIUM(GLint width,
-                    GLint height,
-                    GLfloat scale_factor,
-                    GLboolean alpha,
-                    GLuint shm_id,
-                    GLuint shm_offset,
-                    GLsizei color_space_size) {
-  gles2::cmds::ResizeCHROMIUM* c = GetCmdSpace<gles2::cmds::ResizeCHROMIUM>();
-  if (c) {
-    c->Init(width, height, scale_factor, alpha, shm_id, shm_offset,
-            color_space_size);
   }
 }
 

@@ -172,10 +172,9 @@ class TabAndroid : public TabAndroidDataProvider,
       const base::android::JavaParamRef<jobject>& jweb_contents,
       jint width,
       jint height);
-  void SetActiveNavigationEntryTitleForUrl(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& jurl,
-      const base::android::JavaParamRef<jstring>& jtitle);
+  void SetActiveNavigationEntryTitleForUrl(JNIEnv* env,
+                                           std::string& jurl,
+                                           std::u16string& jtitle);
 
   void LoadOriginalImage(JNIEnv* env);
   void OnShow(JNIEnv* env);

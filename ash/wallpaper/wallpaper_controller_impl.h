@@ -573,8 +573,6 @@ class ASH_EXPORT WallpaperControllerImpl
                                       SetWallpaperCallback callback,
                                       const base::FilePath& file_path);
 
-  void OnSeaPenFilesMigrated(const AccountId& account_id, bool success);
-
   // Saves |image| to disk if the user's data is not ephemeral, or if it is a
   // policy wallpaper for public accounts. Shows the wallpaper immediately if
   // |show_wallpaper| is true, otherwise only sets the wallpaper info and

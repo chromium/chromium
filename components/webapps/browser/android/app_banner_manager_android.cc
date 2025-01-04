@@ -19,7 +19,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected.h"
-#include "components/site_engagement/content/site_engagement_service.h"
 #include "components/version_info/android/channel_getter.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
@@ -243,8 +242,7 @@ AppBannerManagerAndroid::ParamsToPerformInstallableWebAppCheck() {
   params.installable_criteria =
       InstallableCriteria::kImplicitManifestFieldsHTML;
   params.fetch_screenshots = true;
-  params.prefer_maskable_icon =
-      WebappsIconUtils::DoesAndroidSupportMaskableIcons();
+  params.prefer_maskable_icon = true;
   params.fetch_favicon = true;
   return params;
 }
@@ -735,12 +733,6 @@ void JNI_AppBannerManager_SetDaysAfterDismissAndIgnoreToTrigger(
 // static
 void JNI_AppBannerManager_SetTimeDeltaForTesting(JNIEnv* env, jint days) {
   AppBannerManager::SetTimeDeltaForTesting(days);
-}
-
-// static
-void JNI_AppBannerManager_SetTotalEngagementToTrigger(JNIEnv* env,
-                                                      jdouble engagement) {
-  AppBannerSettingsHelper::SetTotalEngagementToTrigger(engagement);
 }
 
 // static

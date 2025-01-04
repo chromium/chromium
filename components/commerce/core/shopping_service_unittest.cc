@@ -8,8 +8,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "components/commerce/core/shopping_service.h"
-
+#include <array>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -27,6 +26,7 @@
 #include "components/commerce/core/mock_tab_restore_service.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/proto/shopping_page_types.pb.h"
+#include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/shopping_service_test_base.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/history/core/browser/history_types.h"
@@ -308,7 +308,7 @@ TEST_P(ShoppingServiceTest, TestProductInfoResponse_MultipleOnDemandRequests) {
   GetCache().AddRef(GURL(kProductUrl));
 
   base::RunLoop run_loop_after_cache;
-  ProductInfo info[2];
+  std::array<ProductInfo, 2> info;
   shopping_service_->GetProductInfoForUrl(
       GURL(kProductUrl), base::BindOnce(
                              [](ProductInfo* result, const GURL& url,
@@ -1402,7 +1402,7 @@ TEST_P(ShoppingServiceTest, TestShoppingListEligible_SyncState) {
 
   ASSERT_TRUE(IsShoppingListEligible(&checker));
 
-  checker.SetSyncingBookmarks(false);
+  checker.SetAllSyncTypesEnabled(false);
 
   ASSERT_FALSE(IsShoppingListEligible(&checker));
 }
@@ -1914,7 +1914,7 @@ TEST_P(ShoppingServiceTest,
 
 TEST_P(ShoppingServiceTest, TestIsShoppingPage) {
   opt_guide_->SetDefaultShoppingPage(false);
-  base::RunLoop run_loop[3];
+  std::array<base::RunLoop, 3> run_loop;
   OptimizationMetadata meta;
   ShoppingPageTypes data;
 
@@ -2171,7 +2171,7 @@ TEST_P(ShoppingServiceTest, TestProductSpecificationsCache) {
       std::move(specs));
   SetProductSpecificationsServerProxy(base::WrapUnique(mock_server_proxy));
 
-  base::RunLoop run_loop[2];
+  std::array<base::RunLoop, 2> run_loop;
 
   shopping_service_->GetProductSpecificationsForUrls(
       {url}, base::BindOnce([](std::vector<uint64_t> cluster_ids,

@@ -207,8 +207,7 @@ void TextControlElement::UpdatePlaceholderVisibility() {
   bool place_holder_was_visible = IsPlaceholderVisible();
   HTMLElement* placeholder = PlaceholderElement();
   if (!placeholder) {
-    if (RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled() &&
-        !InnerEditorElement()) {
+    if (!InnerEditorElement()) {
       // The place holder visibility needs to be updated as it may be used by
       // CSS selectors.
       SetPlaceholderVisibility(PlaceholderShouldBeVisible());

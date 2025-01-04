@@ -100,8 +100,9 @@ class IncrementThread : public SimpleThread {
   // SimpleThread:
   void Run() override {
     start_event_->Wait();
-    for (uint64_t i = 0; i < kNumIterations; ++i)
+    for (uint64_t i = 0; i < kNumIterations; ++i) {
       counter_->Increment();
+    }
     std::move(done_closure_).Run();
   }
 
@@ -138,8 +139,9 @@ void RunIncrementPerfTest(const std::string& story_name, int num_threads) {
       kMetricOperationThroughput,
       kNumIterations / (end_time - start_time).InMillisecondsF());
 
-  for (auto& thread : threads)
+  for (auto& thread : threads) {
     thread->Join();
+  }
 }
 
 }  // namespace

@@ -361,6 +361,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2295777434187870477">Mikrofon aktif, mengalihkan tombol akan membisukan masukan.</translation>
 <translation id="2302092602801625023">Akun ini dikelola oleh Family Link</translation>
 <translation id="2303600792989757991">Beralih ringkasan jendela</translation>
+<translation id="2304702218354340897">Yakin ingin menonaktifkan fitur kontrol dengan wajah?</translation>
 <translation id="2305738328104302723">Daftar tugas Google: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: screenshot, download, dan file tersemat yang terbaru</translation>
 <translation id="2318576281648121272">Hari ini <ph name="TODAY_DATE" /></translation>
@@ -387,6 +388,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2370971919968699910">Anda mungkin akan dikenai biaya data.
 <ph name="DEVICECOUNT" /> perangkat terhubung.</translation>
 <translation id="2386292613071805067">Pilih semuanya di halaman</translation>
+<translation id="2389423187722941333">Aktifkan/nonaktifkan Gemini</translation>
 <translation id="2392659840443812875">Tidak ada hotspot yang tersedia. Pastikan perangkat berada di sekitar dan Bluetooth diaktifkan.</translation>
 <translation id="2397416548179033562">Tampilkan Menu Chrome</translation>
 <translation id="240006516586367791">Kontrol media</translation>
@@ -394,6 +396,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2402411679569069051">Untuk membuka kunci Chromebook, gunakan sidik jari atau buka kunci ponsel</translation>
 <translation id="240545663114741956">Tekan <ph name="ACCELERATOR" /> dua kali untuk logout.</translation>
 <translation id="2405664212338326887">Tidak terhubung</translation>
+<translation id="2406710117564540804">Aktifkan/nonaktifkan mode Jangan Ganggu</translation>
 <translation id="2408955596600435184">Masukkan PIN</translation>
 <translation id="2412593942846481727">Update tersedia</translation>
 <translation id="2416438829169535743">Keluar dari tampilan?</translation>
@@ -899,6 +902,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="4119928251231465047">Terlalu banyak percobaan memasukkan PIN</translation>
 <translation id="412298498316631026">jendela</translation>
 <translation id="4123259114412175274">Untuk membuka kunci Chromebook, pastikan Bluetooth ponsel Anda aktif</translation>
+<translation id="4123868835475902435">Itulah dasar-dasarnya. Lanjutkan di Jelajahi, aplikasi bawaan kami untuk mendapatkan tips dan bantuan. Anda akan menemukan tips untuk memulai, penawaran spesial, dan fitur <ph name="PRODUCT_NAME" /> terbaru.</translation>
 <translation id="4125970834901680537">Mode tablet tidak mendukung streaming aplikasi. Coba lagi dengan mode laptop.</translation>
 <translation id="4131973331381812765">Suhu: <ph name="TEMPERATURE" />°C - Kecepatan saat ini: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="4136724716305260864">Aktif sampai matahari terbit</translation>
@@ -1019,7 +1023,6 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4481530544597605423">Perangkat tidak terhubung</translation>
 <translation id="4485506555414638855">Tutup penyiapan untuk melihat foto, media, notifikasi, dan aplikasi terbaru ponsel Anda</translation>
 <translation id="4491109536499578614">Gambar</translation>
-<translation id="4493452241184130939">Itulah dasar-dasarnya. Lanjutkan di Jelajahi, aplikasi bawaan kami untuk mendapatkan tips dan bantuan. Anda akan menemukan tips untuk memulai, aplikasi yang direkomendasikan, penawaran spesial, dan fitur <ph name="PRODUCT_NAME" /> terbaru.</translation>
 <translation id="450584155212756404">Saluran Dev</translation>
 <translation id="4513946894732546136">Masukan</translation>
 <translation id="4518404433291145981">Untuk membuka kunci Chromebook, buka kunci ponsel terlebih dahulu</translation>
@@ -1082,7 +1085,6 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4708065238214351979">Cerahkan lampu latar keyboard</translation>
 <translation id="4708185346211948049"><ph name="DAY_OF_WEEK" /> minggu berikutnya</translation>
 <translation id="4717575069099566988">Kabel USB-C Anda tidak mendukung USB4. Performa perangkat mungkin dibatasi.</translation>
-<translation id="4724328513667182700">6 tips untuk mulai menggunakan <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">SERING DIGUNAKAN</translation>
 <translation id="4731797938093519117">Akses orang tua</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Kiri)</translation>
@@ -1309,7 +1311,6 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="5409208741270395213">Tandai tugas sebagai selesai</translation>
 <translation id="5413656666631274079">Halaman setelan</translation>
 <translation id="5414198321558177633">Memperbarui daftar profil. Proses ini mungkin perlu waktu beberapa menit.</translation>
-<translation id="5417965108047245734">Ikuti tur singkat untuk mempelajari cara mengoperasikan <ph name="PRODUCT_NAME" /> Anda</translation>
 <translation id="5426063383988017631">Menu setelan ditutup</translation>
 <translation id="5428899915242071344">Mulai memilih</translation>
 <translation id="5429993543155113935">Jendela Samaran saat ini tidak didukung</translation>
@@ -1647,6 +1648,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="6539852571005954999">Download <ph name="FILENAME" /> yang sedang dipindai</translation>
 <translation id="6542521951477560771">Transmisikan ke <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emoji, GIF, dan lainnya</translation>
+<translation id="6543942526104794893">Yakin ingin menonaktifkan gestur wajah?</translation>
 <translation id="6545382064335350438">PIN Anda masih tidak dapat diverifikasi. Coba lagi.</translation>
 <translation id="6555373427270923730">Ketik alamat web di kolom URL, lalu tekan <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2313,6 +2315,7 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="8855885154700222542">Tombol layar penuh</translation>
 <translation id="8858369206579825206">Kontrol privasi</translation>
 <translation id="8860366331836346216">Tambahkan eSIM</translation>
+<translation id="8869149849311827122">Yakin ingin menonaktifkan kontrol kursor mouse?</translation>
 <translation id="8870509716567206129">Aplikasi tidak mendukung layar terpisah.</translation>
 <translation id="8873203135446552888">Konfirmasi bahwa Anda ingin menonaktifkan touchpad bawaan</translation>
 <translation id="8874184842967597500">Tak terhubung</translation>

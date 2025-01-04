@@ -47,6 +47,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -250,9 +251,9 @@ class DisplayPasswordButtonTest : public LoginManagerTest {
 
  protected:
   const LoginManagerMixin::TestUserInfo not_managed_user_{
-      AccountId::FromUserEmailGaiaId("user@gmail.com", "1111")};
+      AccountId::FromUserEmailGaiaId("user@gmail.com", GaiaId("1111"))};
   const LoginManagerMixin::TestUserInfo managed_user_{
-      AccountId::FromUserEmailGaiaId("user@example.com", "22222")};
+      AccountId::FromUserEmailGaiaId("user@example.com", GaiaId("22222"))};
   UserPolicyMixin user_policy_mixin_{&mixin_host_, managed_user_.account_id};
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
 };
@@ -377,9 +378,9 @@ class UserManagementDisclosureTest : public LoginManagerTest {
 
  protected:
   const LoginManagerMixin::TestUserInfo not_managed_user{
-      AccountId::FromUserEmailGaiaId("user@gmail.com", "1111")};
+      AccountId::FromUserEmailGaiaId("user@gmail.com", GaiaId("1111"))};
   const LoginManagerMixin::TestUserInfo managed_user{
-      AccountId::FromUserEmailGaiaId("user@example.com", "11111")};
+      AccountId::FromUserEmailGaiaId("user@example.com", GaiaId("11111"))};
   UserPolicyMixin managed_user_policy_mixin_{&mixin_host_,
                                              managed_user.account_id};
   LoginManagerMixin login_manager_mixin_{&mixin_host_};

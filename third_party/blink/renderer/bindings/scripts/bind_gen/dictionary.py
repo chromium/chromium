@@ -389,8 +389,6 @@ def make_accessor_functions(cg_context):
 
     def make_check_assigned_value(member):
         idl_type = member.idl_type.unwrap(typedef=True)
-        if idl_type.is_object:
-            return F("DCHECK({}.IsObject());", member.value_var)
         if (member.type_info.is_gc_type and not idl_type.is_nullable):
             return F("DCHECK({});", member.value_var)
         return None

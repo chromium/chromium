@@ -28,14 +28,17 @@ class BrowserManagementService : public ManagementService, public KeyedService {
  public:
   explicit BrowserManagementService(Profile* profile);
   ~BrowserManagementService() override;
-  ui::ImageModel* GetManagementIcon() override;
+
+  // Returns the management icon used to indicate profile level management.
+  ui::ImageModel* GetManagementIconForProfile() override;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
  private:
-  void UpdateManagementIcon(Profile* profile);
-  void SetManagementIcon(const gfx::Image& management_icon);
+  // Updates the management icon used to indicate profile level management.
+  void UpdateManagementIconForProfile(Profile* profile);
+  void SetManagementIconForProfile(const gfx::Image& management_icon);
 
   PrefChangeRegistrar pref_change_registrar_;
-  ui::ImageModel management_icon_;
+  ui::ImageModel management_icon_for_profile_;
   base::WeakPtrFactory<BrowserManagementService> weak_ptr_factory_{this};
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 };

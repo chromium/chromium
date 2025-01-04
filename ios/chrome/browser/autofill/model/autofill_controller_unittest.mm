@@ -17,16 +17,16 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/types/id_type.h"
 #import "base/uuid.h"
-#import "components/autofill/core/browser/address_data_manager.h"
-#import "components/autofill/core/browser/address_data_manager_test_api.h"
-#import "components/autofill/core/browser/browser_autofill_manager.h"
+#import "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#import "components/autofill/core/browser/data_manager/addresses/address_data_manager_test_api.h"
+#import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager_test_utils.h"
 #import "components/autofill/core/browser/form_structure.h"
+#import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#import "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #import "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
 #import "components/autofill/core/browser/metrics/autofill_metrics.h"
-#import "components/autofill/core/browser/payments_data_manager.h"
-#import "components/autofill/core/browser/personal_data_manager.h"
-#import "components/autofill/core/browser/personal_data_manager_test_utils.h"
-#import "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #import "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #import "components/autofill/core/common/autofill_clock.h"
 #import "components/autofill/core/common/autofill_features.h"
@@ -40,6 +40,7 @@
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
+#import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/autofill/ios/browser/test_autofill_manager_injector.h"
 #import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/infobars/core/confirm_infobar_delegate.h"
@@ -387,16 +388,14 @@ void AutofillControllerTest::SetUp() {
   InfoBarManagerImpl::CreateForWebState(web_state());
   infobars::InfoBarManager* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state());
-  autofill_client_ = std::make_unique<ChromeAutofillClientIOS>(
-      profile_.get(), web_state(), infobar_manager, autofill_agent_);
+  autofill_client_ =
+      std::make_unique<WithFakedFromWebState<ChromeAutofillClientIOS>>(
+          profile_.get(), web_state(), infobar_manager, autofill_agent_);
 
   autofill_client_->GetPersonalDataManager()
       .address_data_manager()
       .get_alternative_state_name_map_updater_for_testing()
       ->set_local_state_for_testing(local_state());
-
-  autofill::AutofillDriverIOSFactory::CreateForWebState(
-      web_state(), autofill_client_.get(), autofill_agent_);
 
   autofill_manager_injector_ =
       std::make_unique<TestAutofillManagerInjector<TestAutofillManager>>(
@@ -954,7 +953,7 @@ TEST_F(AutofillControllerTest, CreditCardImport) {
   confirm_infobar->Accept();
   std::move(waiter).Wait();
 
-  const std::vector<CreditCard*>& credit_cards =
+  const std::vector<const CreditCard*>& credit_cards =
       personal_data_manager->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, credit_cards.size());
   const CreditCard& credit_card = *credit_cards[0];
@@ -1021,7 +1020,7 @@ TEST_F(AutofillControllerTest, CreditCardImportAfterFormRemoval) {
   confirm_infobar->Accept();
   std::move(waiter).Wait();
 
-  const std::vector<CreditCard*>& credit_cards =
+  const std::vector<const CreditCard*>& credit_cards =
       personal_data_manager->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, credit_cards.size());
   const CreditCard& credit_card = *credit_cards[0];
@@ -1115,7 +1114,7 @@ TEST_F(AutofillControllerTest,
   confirm_infobar->Accept();
   std::move(waiter).Wait();
 
-  const std::vector<CreditCard*>& credit_cards =
+  const std::vector<const CreditCard*>& credit_cards =
       personal_data_manager->payments_data_manager().GetCreditCards();
   ASSERT_EQ(1U, credit_cards.size());
   const CreditCard& credit_card = *credit_cards[0];

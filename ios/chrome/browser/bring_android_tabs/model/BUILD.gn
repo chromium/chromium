@@ -12,7 +12,6 @@ source_set("model") {
   deps = [
     ":metrics",
     "//base",
-    "//components/keyed_service/core",
     "//components/pref_registry",
     "//components/prefs",
     "//components/segmentation_platform/embedder/default_model",

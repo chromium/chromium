@@ -19,7 +19,9 @@ import org.chromium.base.Log;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /** ContentProvider for incognito PDF file by taking a file path and returning a content URI. */
@@ -280,7 +282,11 @@ public class PdfContentProvider extends ContentProvider {
 
     static void cleanUpForTesting() {
         synchronized (LOCK) {
-            sPdfUriMap.clear();
+            List<Uri> uris = new ArrayList<>(sPdfUriMap.keySet());
+            for (Uri uri : uris) {
+                removeContentUri(uri.toString());
+            }
+            assert sPdfUriMap.isEmpty();
         }
     }
 }

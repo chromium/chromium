@@ -7,18 +7,20 @@ package org.chromium.media;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
-/**
- * Set of PhotoCapabilities read from the different VideoCapture Devices.
- **/
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
+/** Set of PhotoCapabilities read from the different VideoCapture Devices. */
 @JNINamespace("media")
+@NullMarked
 class PhotoCapabilities {
-    public boolean mBoolCapability[]; // boolean values, indexed by PhotoCapabilityBool
-    public double mDoubleCapability[]; // double values, indexed by PhotoCapabilityDouble
-    public int mIntCapability[]; // int values, indexed by PhotoCapabilityInt
-    public int mFillLightModeArray[]; // list of AndroidFillLightMode values
-    public int mMeteringMode[]; // AndroidMeteringMode values, indexed
+    public boolean[] mBoolCapability; // boolean values, indexed by PhotoCapabilityBool
+    public double[] mDoubleCapability; // double values, indexed by PhotoCapabilityDouble
+    public int[] mIntCapability; // int values, indexed by PhotoCapabilityInt
+    public int @Nullable [] mFillLightModeArray; // list of AndroidFillLightMode values
+    public int[] mMeteringMode; // AndroidMeteringMode values, indexed
     // by MeteringModeType
-    public int mMeteringModeArray[][]; // lists of AndroidMeteringMode values,
+    public int[] @Nullable [] mMeteringModeArray; // lists of AndroidMeteringMode values,
 
     // indexed by MeteringModeType
 
@@ -26,9 +28,9 @@ class PhotoCapabilities {
             boolean[] boolCapability,
             double[] doubleCapability,
             int[] intCapability,
-            int[] fillLightModeArray,
+            int @Nullable [] fillLightModeArray,
             int[] meteringMode,
-            int[][] meteringModeArray) {
+            int[] @Nullable [] meteringModeArray) {
         if (boolCapability.length != PhotoCapabilityBool.NUM_ENTRIES
                 || doubleCapability.length != PhotoCapabilityDouble.NUM_ENTRIES
                 || intCapability.length != PhotoCapabilityInt.NUM_ENTRIES
@@ -119,12 +121,12 @@ class PhotoCapabilities {
     }
 
     public static class Builder {
-        public boolean mBoolCapability[] = new boolean[PhotoCapabilityBool.NUM_ENTRIES];
-        public double mDoubleCapability[] = new double[PhotoCapabilityDouble.NUM_ENTRIES];
-        public int mIntCapability[] = new int[PhotoCapabilityInt.NUM_ENTRIES];
-        public int mFillLightModeArray[];
-        public int mMeteringMode[] = new int[MeteringModeType.NUM_ENTRIES];
-        public int mMeteringModeArray[][] = new int[MeteringModeType.NUM_ENTRIES][];
+        public boolean[] mBoolCapability = new boolean[PhotoCapabilityBool.NUM_ENTRIES];
+        public double[] mDoubleCapability = new double[PhotoCapabilityDouble.NUM_ENTRIES];
+        public int[] mIntCapability = new int[PhotoCapabilityInt.NUM_ENTRIES];
+        public int @Nullable [] mFillLightModeArray;
+        public int[] mMeteringMode = new int[MeteringModeType.NUM_ENTRIES];
+        public int[] @Nullable [] mMeteringModeArray = new int[MeteringModeType.NUM_ENTRIES][];
 
         public Builder() {}
 

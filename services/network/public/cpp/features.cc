@@ -10,7 +10,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "net/base/mime_sniffer.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -140,14 +139,6 @@ BASE_FEATURE(kMaskedDomainList,
              "MaskedDomainList",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When set, only resources in the MDL that are part of the experiment group
-// will be loaded into the proxy's allow list.
-BASE_FEATURE_PARAM(int,
-                   kMaskedDomainListExperimentGroup,
-                   &kMaskedDomainList,
-                   /*name=*/"MaskedDomainListExperimentGroup",
-                   /*default_value=*/0);
-
 // Used to build the MDL component's installer attributes and possibly control
 // which release version is retrieved.
 // Altering this value via Finch does not have any effect for WebView.
@@ -177,48 +168,6 @@ BASE_FEATURE(kOpaqueResponseBlockingErrorsForAllFetches,
 BASE_FEATURE(kAttributionReportingCrossAppWeb,
              "AttributionReportingCrossAppWeb",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables preprocessing requests with the Private State Tokens API Fetch flags
-// set, and handling their responses, according to the protocol.
-// (See https://github.com/WICG/trust-token-api.)
-BASE_FEATURE(kPrivateStateTokens,
-             "PrivateStateTokens",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Secondary flag used by the FLEDGE ads experiment in the interim before
-// PSTs are fully rolled out to stable.
-BASE_FEATURE(kFledgePst, "TrustTokens", base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Determines which Trust Tokens operations require the TrustTokens origin trial
-// active in order to be used. This is runtime-configurable so that the Trust
-// Tokens operations of issuance, redemption, and signing are compatible with
-// both standard origin trials and third-party origin trials:
-//
-// - For standard origin trials, set kOnlyIssuanceRequiresOriginTrial. In Blink,
-// all of the interface will be enabled (so long as the base::Feature is!), and
-// issuance operations will check at runtime if the origin trial is enabled,
-// returning an error if it is not.
-// - For third-party origin trials, set kAllOperationsRequireOriginTrial. In
-// Blink, the interface will be enabled exactly when the origin trial is present
-// in the executing context (so long as the base::Feature is present).
-//
-// For testing, set kOriginTrialNotRequired. With this option, although all
-// operations will still only be available if the base::Feature is enabled, none
-// will additionally require that the origin trial be active.
-const base::FeatureParam<TrustTokenOriginTrialSpec>::Option
-    kTrustTokenOriginTrialParamOptions[] = {
-        {TrustTokenOriginTrialSpec::kOriginTrialNotRequired,
-         "origin-trial-not-required"},
-        {TrustTokenOriginTrialSpec::kAllOperationsRequireOriginTrial,
-         "all-operations-require-origin-trial"},
-        {TrustTokenOriginTrialSpec::kOnlyIssuanceRequiresOriginTrial,
-         "only-issuance-requires-origin-trial"}};
-BASE_FEATURE_ENUM_PARAM(TrustTokenOriginTrialSpec,
-                        kTrustTokenOperationsRequiringOriginTrial,
-                        &kFledgePst,
-                        "TrustTokenOperationsRequiringOriginTrial",
-                        TrustTokenOriginTrialSpec::kOriginTrialNotRequired,
-                        &kTrustTokenOriginTrialParamOptions);
 
 // Enable support for ACCEPT_CH H2/3 frame as part of Client Hint Reliability.
 // See:

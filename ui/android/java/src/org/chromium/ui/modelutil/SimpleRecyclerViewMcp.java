@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 package org.chromium.ui.modelutil;
 
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * A model change processor (MCP), i.e. an implementation of {@link RecyclerViewAdapter.Delegate},
@@ -13,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
  * @param <T> The type of items in the list.
  * @param <VH> The view holder type that shows items.
  */
+@NullMarked
 public class SimpleRecyclerViewMcp<T, VH> extends SimpleRecyclerViewMcpBase<T, VH, Void> {
     /**
      * View binding interface.

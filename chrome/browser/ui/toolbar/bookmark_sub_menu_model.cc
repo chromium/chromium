@@ -10,10 +10,13 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/commerce/compare_sub_menu_model.h"
 #include "chrome/browser/ui/toolbar/reading_list_sub_menu_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/prefs/pref_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "ui/base/ui_base_features.h"
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BookmarkSubMenuModel,
@@ -22,6 +25,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BookmarkSubMenuModel,
                                       kShowBookmarkSidePanelItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BookmarkSubMenuModel,
                                       kReadingListMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BookmarkSubMenuModel, kCompareMenuItem);
 
 // For views and cocoa, we have complex delegate systems to handle
 // injecting the bookmarks to the bookmark submenu. This is done to support
@@ -51,11 +55,11 @@ void BookmarkSubMenuModel::Build(Browser* browser) {
   SetElementIdentifierAt(GetIndexOfCommandId(IDC_SHOW_BOOKMARK_BAR).value(),
                          kShowBookmarkBarMenuItem);
 
-    AddItemWithStringId(IDC_SHOW_BOOKMARK_SIDE_PANEL,
-                        IDS_SHOW_BOOKMARK_SIDE_PANEL);
-    SetElementIdentifierAt(
-        GetIndexOfCommandId(IDC_SHOW_BOOKMARK_SIDE_PANEL).value(),
-        kShowBookmarkSidePanelItem);
+  AddItemWithStringId(IDC_SHOW_BOOKMARK_SIDE_PANEL,
+                      IDS_SHOW_BOOKMARK_SIDE_PANEL);
+  SetElementIdentifierAt(
+      GetIndexOfCommandId(IDC_SHOW_BOOKMARK_SIDE_PANEL).value(),
+      kShowBookmarkSidePanelItem);
 
   AddItemWithStringId(IDC_SHOW_BOOKMARK_MANAGER, IDS_BOOKMARK_MANAGER);
 
@@ -63,29 +67,42 @@ void BookmarkSubMenuModel::Build(Browser* browser) {
   AddItemWithStringId(IDC_IMPORT_SETTINGS, IDS_IMPORT_SETTINGS_MENU_LABEL);
 #endif
 
+  AddSeparator(ui::NORMAL_SEPARATOR);
+
+  reading_list_sub_menu_model_ =
+      std::make_unique<ReadingListSubMenuModel>(delegate());
+  AddSubMenuWithStringIdAndIcon(
+      IDC_READING_LIST_MENU, IDS_READING_LIST_MENU,
+      reading_list_sub_menu_model_.get(),
+      ui::ImageModel::FromVectorIcon(kReadingListIcon));
+  SetElementIdentifierAt(GetIndexOfCommandId(IDC_READING_LIST_MENU).value(),
+                         kReadingListMenuItem);
+
+  if (base::FeatureList::IsEnabled(commerce::kProductSpecifications) &&
+      base::FeatureList::IsEnabled(commerce::kCompareManagementInterface)) {
     AddSeparator(ui::NORMAL_SEPARATOR);
 
-    reading_list_sub_menu_model_ =
-        std::make_unique<ReadingListSubMenuModel>(delegate());
+    compare_sub_menu_model_ =
+        std::make_unique<commerce::CompareSubMenuModel>(delegate());
     AddSubMenuWithStringIdAndIcon(
-        IDC_READING_LIST_MENU, IDS_READING_LIST_MENU,
-        reading_list_sub_menu_model_.get(),
-        ui::ImageModel::FromVectorIcon(kReadingListIcon));
-    SetElementIdentifierAt(GetIndexOfCommandId(IDC_READING_LIST_MENU).value(),
-                           kReadingListMenuItem);
+        IDC_COMPARE_MENU, IDS_COMPARE_MENU_LABEL, compare_sub_menu_model_.get(),
+        ui::ImageModel::FromVectorIcon(kCompareIcon, ui::kColorMenuIcon, 16));
+    SetElementIdentifierAt(GetIndexOfCommandId(IDC_COMPARE_MENU).value(),
+                           kCompareMenuItem);
+  }
 
-    auto set_icon = [this](int command_id, const gfx::VectorIcon& vector_icon) {
-      auto index = GetIndexOfCommandId(command_id);
-      if (index) {
-        SetIcon(index.value(), ui::ImageModel::FromVectorIcon(
-                                   vector_icon, ui::kColorMenuIcon, 16));
-      }
-    };
+  auto set_icon = [this](int command_id, const gfx::VectorIcon& vector_icon) {
+    auto index = GetIndexOfCommandId(command_id);
+    if (index) {
+      SetIcon(index.value(), ui::ImageModel::FromVectorIcon(
+                                 vector_icon, ui::kColorMenuIcon, 16));
+    }
+  };
 
-    set_icon(IDC_BOOKMARK_THIS_TAB, kBookmarksListsMenuIcon);
-    set_icon(IDC_BOOKMARK_ALL_TABS, kBookmarkAllTabsChromeRefreshIcon);
-    set_icon(IDC_SHOW_BOOKMARK_BAR, kToolbarChromeRefreshIcon);
-    set_icon(IDC_SHOW_BOOKMARK_MANAGER, kBookmarksManagerIcon);
-    set_icon(IDC_SHOW_BOOKMARK_SIDE_PANEL, kBookmarksSidePanelRefreshIcon);
-    set_icon(IDC_IMPORT_SETTINGS, kMenuBookChromeRefreshIcon);
+  set_icon(IDC_BOOKMARK_THIS_TAB, kBookmarksListsMenuIcon);
+  set_icon(IDC_BOOKMARK_ALL_TABS, kBookmarkAllTabsChromeRefreshIcon);
+  set_icon(IDC_SHOW_BOOKMARK_BAR, kToolbarChromeRefreshIcon);
+  set_icon(IDC_SHOW_BOOKMARK_MANAGER, kBookmarksManagerIcon);
+  set_icon(IDC_SHOW_BOOKMARK_SIDE_PANEL, kBookmarksSidePanelRefreshIcon);
+  set_icon(IDC_IMPORT_SETTINGS, kMenuBookChromeRefreshIcon);
 }

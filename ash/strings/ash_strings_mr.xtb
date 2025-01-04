@@ -361,6 +361,7 @@
 <translation id="2295777434187870477">माइक सुरू आहे, टॉगल केल्याने इनपुट म्यूट होईल.</translation>
 <translation id="2302092602801625023">हे खाते Family Link द्वारे व्यवस्थापित केले जाते</translation>
 <translation id="2303600792989757991">विंडो विहंगावलोकन टॉगल करा</translation>
+<translation id="2304702218354340897">तुम्हाला चेहरा नियंत्रण नक्की बंद करायचे आहे का?</translation>
 <translation id="2305738328104302723">Google टास्क सूची: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: अलीकडील स्क्रीन कॅप्चर, डाउनलोड आणि पिन केलेल्या फाइल</translation>
 <translation id="2318576281648121272">आज <ph name="TODAY_DATE" /></translation>
@@ -387,6 +388,7 @@
 <translation id="2370971919968699910">यासाठी डेटा शुल्क लागू शकते.
 <ph name="DEVICECOUNT" /> डिव्हाइस कनेक्ट केली आहेत.</translation>
 <translation id="2386292613071805067">पेजवरील प्रत्येक गोष्ट निवडा</translation>
+<translation id="2389423187722941333">Gemini टॉगल करा</translation>
 <translation id="2392659840443812875">कोणताही हॉटस्पॉट उपलब्ध नाही. तुमचे डिव्हाइस जवळपास असल्याची आणि ब्लूटूथ सुरू असल्याची खात्री करा.</translation>
 <translation id="2397416548179033562">Chrome मेनू दर्शवा</translation>
 <translation id="240006516586367791">मीडिया नियंत्रणे</translation>
@@ -394,6 +396,7 @@
 <translation id="2402411679569069051">तुमचे Chromebook अनलॉक करण्यासाठी, तुमचे फिंगरप्रिंट वापरा किंवा तुमचा फोन अनलॉक करा</translation>
 <translation id="240545663114741956">साइन आउट करण्यासाठी दोनदा <ph name="ACCELERATOR" /> प्रेस करा.</translation>
 <translation id="2405664212338326887">कनेक्ट केलेले नाही</translation>
+<translation id="2406710117564540804">व्यत्यय आणू नका सुरू/बंद करा</translation>
 <translation id="2408955596600435184">तुमचा पिन प्रविष्‍ट करा</translation>
 <translation id="2412593942846481727">अपडेट उपलब्ध आहे</translation>
 <translation id="2416438829169535743">दृश्यामधून बाहेर पडायचे आहे का?</translation>
@@ -899,6 +902,7 @@
 <translation id="4119928251231465047">पिन पडताळणीचे खूप जास्त प्रयत्न</translation>
 <translation id="412298498316631026">विंडो</translation>
 <translation id="4123259114412175274">तुमचे Chromebook अनलॉक करण्यासाठी, तुमच्या फोनचे ब्लूटूथ सुरू असल्याची खात्री करा</translation>
+<translation id="4123868835475902435">ही मूलभूत माहिती होती! टिपा आणि मदतीसाठी Explore या आमच्या बिल्ट-इन ॲपमध्ये पुढे सुरू ठेवा. तुम्हाला सुरुवात करण्यासाठी टिपा, खास ऑफर आणि नवीनतम <ph name="PRODUCT_NAME" /> वैशिष्ट्ये मिळतील.</translation>
 <translation id="4125970834901680537">टॅबलेट मोडमध्ये ॲप्स स्ट्रीम करू शकत नाही. लॅपटॉप मोडमध्ये पुन्हा प्रयत्न करा.</translation>
 <translation id="4131973331381812765">तापमान: <ph name="TEMPERATURE" />°C - सध्याचा वेग: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="4136724716305260864">सूर्योदयापर्यंत सुरू</translation>
@@ -1019,7 +1023,6 @@
 <translation id="4481530544597605423">जोडणी वेगळी केलेली डिव्हाइस</translation>
 <translation id="4485506555414638855">तुमच्या फोनमधील अलीकडील फोटो, मीडिया, सूचना आणि ॲप्स पाहण्याचे सेट करणे डिसमिस करा</translation>
 <translation id="4491109536499578614">इमेज</translation>
-<translation id="4493452241184130939">ही मूलभूत माहिती होती! टिपा आणि मदतीसाठी Explore या आमच्या बिल्ट-इन ॲपमध्ये पुढे सुरू ठेवा. तुम्हाला सुरुवात करण्यासाठी टिपा, शिफारस केलेली ॲप्स, खास ऑफर आणि नवीनतम <ph name="PRODUCT_NAME" /> वैशिष्ट्ये मिळतील.</translation>
 <translation id="450584155212756404">Dev चॅनल</translation>
 <translation id="4513946894732546136">फीडबॅक</translation>
 <translation id="4518404433291145981">तुमचे Chromebook अनलॉक करण्यासाठी, आधी तुमचा फोन अनलॉक करा</translation>
@@ -1082,7 +1085,6 @@
 <translation id="4708065238214351979">कीबोर्ड आणखी ब्राइट करा</translation>
 <translation id="4708185346211948049">पुढील आठवड्यामधील <ph name="DAY_OF_WEEK" /></translation>
 <translation id="4717575069099566988">तुमची USB-C केबल ही USB4 ला सपोर्ट करत नाही. डिव्हाइसचा परफॉर्मन्स मर्यादित असू शकतो.</translation>
-<translation id="4724328513667182700"><ph name="PRODUCT_NAME" /> वर सुरुवात करण्यासाठी ६ टिपा</translation>
 <translation id="4730374152663651037">वारंवार वापरलेले</translation>
 <translation id="4731797938093519117">पालक अ‍ॅक्सेस</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (शिल्लक)</translation>
@@ -1309,7 +1311,6 @@
 <translation id="5409208741270395213">टास्क पूर्ण झाली म्हणून मार्क करा</translation>
 <translation id="5413656666631274079">सेटिंग्ज पेज</translation>
 <translation id="5414198321558177633">प्रोफाइल सूची रिफ्रेश करत आहे. याला काही मिनिटे लागू शकतात.</translation>
-<translation id="5417965108047245734">तुमचे <ph name="PRODUCT_NAME" /> कसे वापरावे हे जाणून घेण्यासाठी झटपट टूर घ्या</translation>
 <translation id="5426063383988017631">सेटिंग्ज मेनू बंद केला आहे</translation>
 <translation id="5428899915242071344">निवडणे सुरू करा</translation>
 <translation id="5429993543155113935">गुप्त विंडोना सध्या सपोर्ट नाही</translation>
@@ -1647,6 +1648,7 @@
 <translation id="6539852571005954999"><ph name="FILENAME" /> डाउनलोड स्कॅन करत आहे</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> वर कास्ट करत आहे</translation>
 <translation id="6542891623636520977">इमोजी, GIFs आणि आणखी बरेच काही</translation>
+<translation id="6543942526104794893">तुम्हाला नक्की फेशियल जेश्चर बंद करायची आहेत का?</translation>
 <translation id="6545382064335350438">अजूनही तुमच्या पिनची पडताळणी करता आली नाही. पुन्हा प्रयत्न करा.</translation>
 <translation id="6555373427270923730">ॲड्रेस बारमध्ये वेब अ‍ॅड्रेस टाइप करा आणि त्यानंतर <ph name="MODIFIER" /><ph name="KEY" /> प्रेस करा</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2313,6 +2315,7 @@
 <translation id="8855885154700222542">क्षेत्रे की</translation>
 <translation id="8858369206579825206">गोपनीयता नियंत्रणे</translation>
 <translation id="8860366331836346216">eSIM जोडा</translation>
+<translation id="8869149849311827122">तुम्हाला नक्की माउस कर्सर नियंत्रण बंद करायचे आहे का?</translation>
 <translation id="8870509716567206129">अ‍ॅप विभाजित-स्क्रीनला सपोर्ट करत नाही.</translation>
 <translation id="8873203135446552888">तुम्हाला बिल्ट-इन टचपॅड बंद करायचे असल्याचे कन्फर्म करा</translation>
 <translation id="8874184842967597500">कनेक्ट नाही</translation>

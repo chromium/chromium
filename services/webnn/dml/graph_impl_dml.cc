@@ -530,8 +530,8 @@ uint64_t BuildConstantOperandForFloatValue(
   base::HeapArray<uint8_t> buffer;
   switch (data_type) {
     case OperandDataType::kFloat32:
-      buffer =
-          base::HeapArray<uint8_t>::CopiedFrom(base::byte_span_from_ref(value));
+      buffer = base::HeapArray<uint8_t>::CopiedFrom(
+          base::byte_span_from_ref(base::allow_nonunique_obj, value));
       break;
     case OperandDataType::kFloat16: {
       uint16_t fp16_value = fp16_ieee_from_fp32_value(value);

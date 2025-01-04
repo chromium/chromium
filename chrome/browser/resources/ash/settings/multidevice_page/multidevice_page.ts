@@ -29,6 +29,8 @@ import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
+import type {InSessionAuthInterface, RequestTokenReply} from 'chrome://resources/mojo/chromeos/components/in_session_auth/mojom/in_session_auth.mojom-webui.js';
+import {InSessionAuth, Reason} from 'chrome://resources/mojo/chromeos/components/in_session_auth/mojom/in_session_auth.mojom-webui.js';
 import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertExhaustive, assertExists} from '../assert_extras.js';
@@ -99,8 +101,18 @@ export class SettingsMultidevicePageElement extends
 
       /**
        * Authentication token provided by password-prompt-dialog.
+       * This is only used if `isAuthPanelInSessionEnabled_` is set to false.
        */
       authToken_: {
+        type: Object,
+      },
+
+      /**
+       * The variable that stores the authentication token we receive
+       * from AuthPanel or ActiveSessionAuth.
+       * This is only used if `isAuthPanelInSessionEnabled_` is set to true.
+       */
+      authTokenReply_: {
         type: Object,
       },
 
@@ -116,6 +128,10 @@ export class SettingsMultidevicePageElement extends
         value: null,
       },
 
+      /**
+       * Triggers dialog UI that is only used if `isAuthPanelInSessionEnabled_`
+       * is set to false.
+       */
       showPasswordPromptDialog_: {
         type: Boolean,
         value: false,
@@ -203,11 +219,29 @@ export class SettingsMultidevicePageElement extends
         type: Boolean,
         value: false,
       },
+
+      /**
+       * True if auth panel will be used for authentication instead of
+       * password prompt dialog.
+       */
+      isAuthPanelInSessionEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isAuthPanelEnabled');
+        },
+        readOnly: true,
+      },
+
+      fakeInSessionAuthForTesting_: {
+        type: Object,
+        value: null,
+      },
     };
   }
 
   isSettingsRetreived: boolean;
   private authToken_: TokenInfo|undefined;
+  private authTokenReply_: RequestTokenReply|undefined|null;
   private browserProxy_: MultiDeviceBrowserProxy;
   private featureToBeEnabledOnceAuthenticated_: MultiDeviceFeature|null;
   private isChromeosScreenLockEnabled_: boolean;
@@ -220,6 +254,9 @@ export class SettingsMultidevicePageElement extends
   private showPasswordPromptDialog_: boolean;
   private shouldShowForgetDeviceDialog_: boolean;
   private showPhonePermissionSetupDialog_: boolean;
+  private isAuthPanelInSessionEnabled_: boolean;
+  private fakeInSessionAuthForTesting_: InSessionAuthInterface;
+
 
   constructor() {
     super();
@@ -395,8 +432,32 @@ export class SettingsMultidevicePageElement extends
     }
   }
 
-  private openPasswordPromptDialog_(): void {
-    this.showPasswordPromptDialog_ = true;
+  /**
+   * Triggers the flow for getting a fresh auth token required to enable
+   * security-sensitive features. The password prompt dialog is opened when
+   * isAuthPanelInSessionEnabled is false. If isAuthPanelInSessionEnabled is
+   * true, the standardized InSessionAuth web UI is evoked.
+   */
+  private async requestUserAuth_(): Promise<void> {
+    if (!this.isAuthPanelInSessionEnabled_) {
+      this.showPasswordPromptDialog_ = true;
+      return;
+    }
+
+    const inSessionAuth =
+        this.fakeInSessionAuthForTesting_ ?? InSessionAuth.getRemote();
+    const tokenInfo: {reply: RequestTokenReply|null} =
+        await inSessionAuth.requestToken(
+            Reason.kAccessAuthenticationSettings,
+            loadTimeData.getString('authPrompt'));
+
+    if (!tokenInfo.reply) {
+      Router.getInstance().navigateToPreviousRoute();
+      return;
+    }
+
+    this.authTokenReply_ = tokenInfo.reply;
+    this.enableFeatureOnceAuthenticated(this.authTokenReply_?.token);
   }
 
   private onDialogClose_(event: Event): void {
@@ -404,28 +465,28 @@ export class SettingsMultidevicePageElement extends
     if (event.composedPath().some(
             element =>
                 (element as HTMLElement).id === 'multidevicePasswordPrompt')) {
-      this.onPasswordPromptDialogClose_();
+      this.enableFeatureOnceAuthenticated(this.authToken_?.token);
     }
   }
 
-  private onPasswordPromptDialogClose_(): void {
+  private enableFeatureOnceAuthenticated(token: string|undefined): void {
     // The password prompt should only be shown when there is a feature waiting
     // to be enabled.
     assert(this.featureToBeEnabledOnceAuthenticated_ !== null);
 
-    // If |this.authToken_| is set when the dialog has been closed, this means
+    // If token is set, this means
     // that the user entered the correct password into the dialog. Thus, send
     // all pending features to be enabled.
-    if (this.authToken_) {
+    if (token) {
       this.browserProxy_.setFeatureEnabledState(
-          this.featureToBeEnabledOnceAuthenticated_, true /* enabled */,
-          this.authToken_.token);
+          this.featureToBeEnabledOnceAuthenticated_, true /* enabled */, token);
       recordSettingChange(Setting.kMultiDeviceOnOff);
 
-      // Reset |this.authToken_| now that it has been used. This ensures that
-      // users cannot keep an old auth token and reuse it on an subsequent
-      // request.
+      // Reset |this.authToken_| and |this.authTokenReply_| now that it has been
+      // used. This ensures that users cannot keep an old auth token and reuse
+      // it on a subsequent request.
       this.authToken_ = undefined;
+      this.authTokenReply_ = undefined;
     }
 
     // Either the feature was enabled above or the user canceled the request by
@@ -448,12 +509,12 @@ export class SettingsMultidevicePageElement extends
     const feature = event.detail.feature;
     const enabled = event.detail.enabled;
 
-    // If the feature required authentication to be enabled, open the password
-    // prompt dialog. This is required every time the user enables a security-
+    // If the feature required authentication to be enabled, request user
+    // authentication. This is required every time the user enables a security-
     // sensitive feature (i.e., use of stale auth tokens is not acceptable).
     if (enabled && this.isAuthenticationRequiredToEnable_(feature)) {
       this.featureToBeEnabledOnceAuthenticated_ = feature;
-      this.openPasswordPromptDialog_();
+      this.requestUserAuth_();
       return;
     }
 

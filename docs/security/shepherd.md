@@ -382,10 +382,9 @@ pass it along to / include someone who can direct it more precisely.
   CC drhsqlite@ for upstream issues.
 * **Fullscreen bugs** the Open Screen team is taking ownership of Full Screen
   issues, including security bugs. Please assign Full Screen security issues to
-  takumif@chromium.org and cc: atadres@chromium.org, muyaoxu@google.com, and
-  mfoltz@chromium.org. They are also working on holistic solutions to improving
-  the security of fullscreen, so please remember to look for potential
-  duplicates of ongoing work.
+  muyaoxu@ and cc: liberato@ and mfoltz@. The team is also currently working on
+  holistic changes to improve Full Screen security, so please remember to keep
+  a look out for potential duplicates of planned or ongoing work.
 * **BoringSSL** the BoringSSL project has moved into the Chromium tracker.
   BoringSSL is a library, so security bugs that do not impact Chrome may still
   be meaningful (e.g. server-side bugs). BoringSSL security issues should be
@@ -444,10 +443,10 @@ pass it along to / include someone who can direct it more precisely.
      platforms, we do also want to provide those teams visibility. If deemed
      necessary they can create a bug in their tracker, that should be tracked as
      a child bug to the original report we received in the Chromium tracker.
-   * For Mesa driver bugs, please cc: robclark@ and msturner@ for visibility for
+   * For Mesa driver bugs, please cc: robdclark@ and msturner@ for visibility for
      ChromeOS.
    * For Mali driver bugs, please cc: aygupta@, bcreasey@, asdl-kfc@ from
-     Android, mjstokes@ and layog@ from Pixel GPU, and robclark@ and msturner@
+     Android, mjstokes@ and layog@ from Pixel GPU, and robdclark@ and msturner@
      from ChromeOS GPU.
 
 ### Shift handoff

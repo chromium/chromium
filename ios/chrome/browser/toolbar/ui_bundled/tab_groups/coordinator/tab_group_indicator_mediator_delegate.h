@@ -34,6 +34,10 @@ enum class TabGroupActionType;
 // active.
 - (void)showIPHForSharedTabGroupForegrounded;
 
+// Shows the "share" or "manage" screen for the `tabGroup`. The choice is
+// automatically made based on whether the group is already shared or not.
+- (void)shareOrManageTabGroup:(const TabGroup*)tabGroup;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_BUNDLED_TAB_GROUPS_COORDINATOR_TAB_GROUP_INDICATOR_MEDIATOR_DELEGATE_H_

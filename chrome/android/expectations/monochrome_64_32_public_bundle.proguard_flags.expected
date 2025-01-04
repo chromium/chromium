@@ -190,6 +190,13 @@
   public <init>();
 }
 
+# Keep all enum values and valueOf methods. See
+# http://proguard.sourceforge.net/index.html#manual/examples.html
+# for the reason for this. Also, see http://crbug.com/248037.
+-keepclassmembers enum !cr_allowunused,** {
+    public static **[] values();
+}
+
 # This is to workaround crbug.com/1204690 - an old GMS app version crashes when
 # ObjectWrapper contains > 1 fields, and this prevents R8 from inserting a
 # synthetic field.
@@ -484,10 +491,25 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
--keep class ** implements androidx.appsearch.app.DocumentClassFactory { *; }
--keep class ** implements androidx.appsearch.app.AppSearchDocumentClassMap { *; }
+# Keep DocumentClassFactory classes only when DocumentClassFactoryRegistry is used. Since
+# DocumentClassFactoryRegistry loads these classes by name, also do not obfuscate names.
+-if class androidx.appsearch.app.DocumentClassFactoryRegistry {}
+-keep,allowoptimization class ** implements androidx.appsearch.app.DocumentClassFactory {}
 
--keep @androidx.appsearch.annotation.Document class *
+-if class androidx.appsearch.app.DocumentClassFactoryRegistry {}
+-keepnames,allowoptimization @androidx.appsearch.annotation.Document class ** {}
+
+# Keep AppSearchDocumentClassMap name for ServiceLoader
+-keepnames,allowoptimization class androidx.appsearch.app.AppSearchDocumentClassMap {}
+
+# If AppSearchDocumentClassMap#getGlobalMap() is used, keep any implementing subclasses since
+# AppSearchDocumentClassMap#getMap() is used to populate the global map.
+-if class androidx.appsearch.app.AppSearchDocumentClassMap {
+  public static java.util.Map getGlobalMap();
+}
+-keep,allowoptimization class ** implements androidx.appsearch.app.AppSearchDocumentClassMap {
+  public java.util.Map getMap();
+}
 
 # File: obj/third_party/androidx/androidx_biometric_biometric_java/proguard.txt
 # Copyright (C) 2020 The Android Open Source Project

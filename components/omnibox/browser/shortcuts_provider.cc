@@ -37,10 +37,10 @@
 #include "components/omnibox/browser/autocomplete_scoring_signals_annotator.h"
 #include "components/omnibox/browser/history_cluster_provider.h"
 #include "components/omnibox/browser/history_url_provider.h"
-#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/url_prefix.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
@@ -293,8 +293,7 @@ void ShortcutsProvider::DoAutocomplete(const AutocompleteInput& input,
     const GURL stripped_destination_url(AutocompleteMatch::GURLToStrippedGURL(
         shortcut.match_core.destination_url, input, template_url_service,
         shortcut.match_core.keyword,
-        /*keep_search_intent_params=*/false, /*normalize_search_terms=*/
-        base::FeatureList::IsEnabled(omnibox::kNormalizeSearchSuggestions)));
+        /*keep_search_intent_params=*/false));
     shortcuts_by_url[stripped_destination_url].push_back(&shortcut);
   }
 

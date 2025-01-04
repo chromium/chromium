@@ -499,8 +499,8 @@ experimental domain Audits
   type AffectedRequest extends object
     properties
       # The unique request id.
-      Network.RequestId requestId
-      optional string url
+      optional Network.RequestId requestId
+      string url
 
   # Information about the frame affected by an inspector issue.
   type AffectedFrame extends object
@@ -984,6 +984,22 @@ experimental domain Audits
       string failureMessage
       optional Network.RequestId requestId
 
+  type SelectElementAccessibilityIssueReason extends string
+    enum
+      DisallowedSelectChild
+      DisallowedOptGroupChild
+      NonPhrasingContentOptionChild
+      InteractiveContentOptionChild
+      InteractiveContentLegendChild
+
+  # This isue warns about errors in the select element content model.
+  type SelectElementAccessibilityIssueDetails extends object
+    properties
+      DOM.BackendNodeId nodeId
+      SelectElementAccessibilityIssueReason selectElementAccessibilityIssueReason
+      boolean hasDisallowedAttributes
+
+
   type StyleSheetLoadingIssueReason extends string
     enum
       LateImportRule
@@ -1044,6 +1060,7 @@ experimental domain Audits
       FederatedAuthUserInfoRequestIssue
       PropertyRuleIssue
       SharedDictionaryIssue
+      SelectElementAccessibilityIssue
 
   # This struct holds a list of optional fields with additional information
   # specific to the kind of issue. When adding a new issue code, please also
@@ -1071,6 +1088,7 @@ experimental domain Audits
       optional PropertyRuleIssueDetails propertyRuleIssueDetails
       optional FederatedAuthUserInfoRequestIssueDetails federatedAuthUserInfoRequestIssueDetails
       optional SharedDictionaryIssueDetails sharedDictionaryIssueDetails
+      optional SelectElementAccessibilityIssueDetails selectElementAccessibilityIssueDetails
 
   # A unique id for a DevTools inspector issue. Allows other entities (e.g.
   # exceptions, CDP message, console messages, etc.) to reference an issue.
@@ -1701,6 +1719,14 @@ experimental domain CSS
       # Matches of CSS rules applicable to the pseudo style.
       array of RuleMatch matches
 
+  # CSS style coming from animations with the name of the animation.
+  type CSSAnimationStyle extends object
+    properties
+      # The name of the animation.
+      optional string name
+      # The style coming from the animation.
+      CSSStyle style
+
   # Inherited CSS rule collection from ancestor node.
   type InheritedStyleEntry extends object
     properties
@@ -1708,6 +1734,14 @@ experimental domain CSS
       optional CSSStyle inlineStyle
       # Matches of CSS rules matching the ancestor node in the style inheritance chain.
       array of RuleMatch matchedCSSRules
+
+  # Inherited CSS style collection for animated styles from ancestor node.
+  type InheritedAnimatedStyleEntry extends object
+    properties
+      # Styles coming from the animations of the ancestor, if any, in the style inheritance chain.
+      optional array of CSSAnimationStyle animationStyles
+      # The style coming from the transitions of the ancestor, if any, in the style inheritance chain.
+      optional CSSStyle transitionsStyle
 
   # Inherited pseudo element matches from pseudos of an ancestor node.
   type InheritedPseudoElementMatches extends object
@@ -2239,6 +2273,14 @@ experimental domain CSS
       # Element pseudo classes to force when computing the element's style.
       array of string forcedPseudoClasses
 
+  # Ensures that the given node is in its starting-style state.
+  command forceStartingStyle
+    parameters
+      # The element id for which to force the starting-style state.
+      DOM.NodeId nodeId
+      # Boolean indicating if this is on or off.
+      boolean forced
+
   command getBackgroundColors
     parameters
       # Id of the node to get background colors for.
@@ -2295,6 +2337,20 @@ experimental domain CSS
       optional CSSStyle inlineStyle
       # Attribute-defined element style (e.g. resulting from "width=20 height=100%").
       optional CSSStyle attributesStyle
+
+  # Returns the styles coming from animations & transitions
+  # including the animation & transition styles coming from inheritance chain.
+  experimental command getAnimatedStylesForNode
+    parameters
+      DOM.NodeId nodeId
+    returns
+      # Styles coming from animations.
+      optional array of CSSAnimationStyle animationStyles
+      # Style coming from transitions.
+      optional CSSStyle transitionsStyle
+      # Inherited style entries for animationsStyle and transitionsStyle from
+      # the inheritance chain of the element.
+      optional array of InheritedAnimatedStyleEntry inherited
 
   # Returns requested styles for a DOM node identified by `nodeId`.
   command getMatchedStylesForNode
@@ -7583,6 +7639,19 @@ domain Network
     returns
       LoadNetworkResourcePageResult resource
 
+  # Sets Controls for third-party cookie access
+  # Page reload is required before the new cookie bahavior will be observed
+  experimental command setCookieControls
+    parameters
+      # Whether 3pc restriction is enabled.
+      boolean enableThirdPartyCookieRestriction
+
+      # Whether 3pc grace period exception should be enabled; false by default.
+      boolean disableThirdPartyCookieMetadata
+
+      # Whether 3pc heuristics exceptions should be enabled; false by default.
+      boolean disableThirdPartyCookieHeuristics
+
 # This domain provides various functionality related to drawing atop the inspected page.
 experimental domain Overlay
   depends on DOM
@@ -11220,6 +11289,10 @@ domain Target
     parameters
       # The initial URL the page will be navigated to. An empty string indicates about:blank.
       string url
+      # Frame left origin in DIP (headless chrome only).
+      experimental optional integer left
+      # Frame top origin in DIP (headless chrome only).
+      experimental optional integer top
       # Frame width in DIP (headless chrome only).
       optional integer width
       # Frame height in DIP (headless chrome only).

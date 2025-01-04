@@ -83,6 +83,7 @@ class SystemTrayClientImpl;
 class TabClusterUIClient;
 class TabletModePageBehavior;
 class VpnListForwarder;
+class WallpaperAsh;
 class WallpaperControllerClientImpl;
 
 namespace internal {
@@ -125,6 +126,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   class UserProfileLoadedObserver;
 
   std::unique_ptr<UserProfileLoadedObserver> user_profile_loaded_observer_;
+  std::unique_ptr<WallpaperAsh> wallpaper_ash_;
 
   // Initialized in PreProfileInit in all configs before Shell init:
   std::unique_ptr<NetworkConnectDelegate> network_connect_delegate_;

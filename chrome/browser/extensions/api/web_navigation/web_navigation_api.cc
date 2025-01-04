@@ -356,7 +356,7 @@ void WebNavigationTabObserver::DidOpenRequestedURL(
   bool new_contents_is_present_in_tabstrip = ExtensionTabUtil::GetTabStripModel(
       new_contents, &ignored_tab_strip_model, &ignored_tab_index);
   router->RecordNewWebContents(
-      web_contents(), source_render_frame_host->GetProcess()->GetID(),
+      web_contents(), source_render_frame_host->GetProcess()->GetDeprecatedID(),
       source_render_frame_host->GetRoutingID(), url, new_contents,
       !new_contents_is_present_in_tabstrip);
 }
@@ -628,7 +628,8 @@ ExtensionFunction::ResponseAction WebNavigationGetAllFramesFunction::Run() {
                 ExtensionApiFrameIdMap::GetFrameType(render_frame_host);
             frame.document_lifecycle =
                 ExtensionApiFrameIdMap::GetDocumentLifecycle(render_frame_host);
-            frame.process_id = render_frame_host->GetProcess()->GetID();
+            frame.process_id =
+                render_frame_host->GetProcess()->GetDeprecatedID();
             frame.error_occurred = navigation_state->GetErrorOccurredInFrame();
             result_list.push_back(std::move(frame));
             return content::RenderFrameHost::FrameIterationAction::kContinue;

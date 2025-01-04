@@ -76,7 +76,6 @@ COMPONENT_EXPORT(AX_PLATFORM)
 // Return the method name for the given attribute. For testing only.
 - (NSString*)methodNameForAttribute:(NSString*)attribute;
 
-- (NSString*)valueForRange:(NSRange)range;
 - (NSRect)frameForRange:(NSRange)range;
 
 // Find the index of the given row among the descendants of this object

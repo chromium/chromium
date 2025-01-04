@@ -2090,4 +2090,6 @@ message ChromeDeviceSettingsProto {
   optional BooleanPolicyProto DevicePostQuantumKeyAgreementEnabled = 1276;
   optional StringPolicyProto DeviceRestrictionSchedule = 1290;
   optional BooleanPolicyProto DeviceNativeClientForceAllowed = 1314;
+  optional IntegerPolicyProto DevicePowerBatteryChargingOptimization = 1319;
+  optional BooleanPolicyProto DeviceFlexArcPreloadEnabled = 1320;
 }

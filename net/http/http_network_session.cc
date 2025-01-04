@@ -33,6 +33,7 @@
 #include "net/socket/client_socket_pool_manager_impl.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/ssl_client_socket.h"
+#include "net/socket/stream_socket_close_reason.h"
 #include "net/spdy/spdy_session.h"
 #include "net/spdy/spdy_session_pool.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_random.h"
@@ -213,14 +214,14 @@ HttpNetworkSession::HttpNetworkSession(const HttpNetworkSessionParams& params,
           !params.ignore_ip_address_changes);
 
   if (params_.enable_http2) {
-    next_protos_.push_back(kProtoHTTP2);
+    next_protos_.push_back(NextProto::kProtoHTTP2);
     if (base::FeatureList::IsEnabled(features::kAlpsForHttp2)) {
       // Enable ALPS for HTTP/2 with empty data.
-      application_settings_[kProtoHTTP2] = {};
+      application_settings_[NextProto::kProtoHTTP2] = {};
     }
   }
 
-  next_protos_.push_back(kProtoHTTP11);
+  next_protos_.push_back(NextProto::kProtoHTTP11);
 
   http_server_properties_->SetMaxServerConfigsStoredInProperties(
       context.quic_context->params()->max_server_configs_stored_in_properties);
@@ -361,7 +362,7 @@ void HttpNetworkSession::CloseAllConnections(int net_error,
       net_error, net_log_reason_utf8);
   if (http_stream_pool_) {
     http_stream_pool_->FlushWithError(
-        net_error, HttpStreamPool::StreamCloseReason::kCloseAllConnections,
+        net_error, StreamSocketCloseReason::kCloseAllConnections,
         net_log_reason_utf8);
   }
   spdy_session_pool_.CloseCurrentSessions(static_cast<Error>(net_error));

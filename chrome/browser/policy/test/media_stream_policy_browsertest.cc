@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
+#include <array>
 #include <memory>
 
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -66,7 +62,7 @@ class MediaStreamDevicesControllerBrowserTest
     EXPECT_EQ(request_url_,
               web_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
     int render_process_id =
-        web_contents->GetPrimaryMainFrame()->GetProcess()->GetID();
+        web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID();
     int render_frame_id = web_contents->GetPrimaryMainFrame()->GetRoutingID();
     return content::MediaStreamRequest(
         render_process_id, render_frame_id, 0,
@@ -205,13 +201,13 @@ IN_PROC_BROWSER_TEST_P(MediaStreamDevicesControllerBrowserTest,
       "Fake Audio Device");
   audio_devices.push_back(fake_audio_device);
 
-  const char* allow_pattern[] = {
+  auto allow_pattern = std::to_array<const char*>({
       request_pattern_.c_str(),
       // This will set an allow-all policy allowlist.  Since we do not allow
       // setting an allow-all entry in the allowlist, this entry should be
       // ignored and therefore the request should be denied.
       nullptr,
-  };
+  });
 
   for (size_t i = 0; i < std::size(allow_pattern); ++i) {
     PolicyMap policies;
@@ -269,13 +265,13 @@ IN_PROC_BROWSER_TEST_P(MediaStreamDevicesControllerBrowserTest,
       "Fake Video Device");
   video_devices.push_back(fake_video_device);
 
-  const char* allow_pattern[] = {
+  auto allow_pattern = std::to_array<const char*>({
       request_pattern_.c_str(),
       // This will set an allow-all policy allowlist.  Since we do not allow
       // setting an allow-all entry in the allowlist, this entry should be
       // ignored and therefore the request should be denied.
       nullptr,
-  };
+  });
 
   for (size_t i = 0; i < std::size(allow_pattern); ++i) {
     PolicyMap policies;

@@ -118,6 +118,10 @@ class COMPONENT_EXPORT(LANGUAGE_DETECTION) LanguageDetectionModel {
   // to determine the language of the page.
   bool IsAvailable() const;
 
+  // Returns the size of the loaded model in bytes. If the model is not yet
+  // available, the method will return 0.
+  int64_t GetModelSize() const;
+
   void AddOnModelLoadedCallback(ModelLoadedCallback callback);
 
   std::string GetModelVersion() const;
@@ -139,18 +143,25 @@ class COMPONENT_EXPORT(LANGUAGE_DETECTION) LanguageDetectionModel {
   static constexpr size_t kScanWindowSize = 128;
 
  private:
-  void NotifyModelLoaded();
-
-  // Execute the model on the provided |sampled_str| and return the top language
-  // and the models score/confidence in that prediction.
-  Prediction DetectTopLanguage(std::u16string_view sampled_str) const;
-
   // An owned NLClassifier.
   using OwnedNLClassifier =
       std::unique_ptr<tflite::task::text::nlclassifier::NLClassifier>;
+  using ModelAndSize = std::pair<OwnedNLClassifier, int64_t>;
+
+  // Loads model from |model_file| using |num_threads|. This can be called on
+  // any thread.
+  static std::optional<LanguageDetectionModel::ModelAndSize> LoadModelFromFile(
+      base::File model_file,
+      int num_threads);
+
+  void NotifyModelLoaded();
+
+  // Execute the model on the provided |sampled_str| and return the top
+  // language and the models score/confidence in that prediction.
+  Prediction DetectTopLanguage(std::u16string_view sampled_str) const;
 
   // Updates the model if the not unset.
-  void SetModel(std::optional<OwnedNLClassifier> optional_model);
+  void SetModel(std::optional<ModelAndSize> model_and_size);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -167,6 +178,10 @@ class COMPONENT_EXPORT(LANGUAGE_DETECTION) LanguageDetectionModel {
 
   // Records whether a file has been updated to the model.
   bool loaded_ = false;
+
+  // Records the size of the model file loaded. The value is only valid when
+  // loaded_ is True.
+  int64_t model_file_size_ = 0;
 
   // Used to load the data on a background sequence (see UpdateWithFileAsync).
   base::WeakPtrFactory<LanguageDetectionModel> weak_factory_{this};

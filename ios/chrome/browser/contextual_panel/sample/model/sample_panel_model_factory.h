@@ -6,20 +6,16 @@
 #define IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_SAMPLE_MODEL_SAMPLE_PANEL_MODEL_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
-class ProfileIOS;
 class SamplePanelModel;
 
 // Singleton that owns all SamplePanelModels and associates them with
 // profiles.
-class SamplePanelModelFactory : public BrowserStateKeyedServiceFactory {
+class SamplePanelModelFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static SamplePanelModel* GetForProfile(ProfileIOS* profile);
   static SamplePanelModelFactory* GetInstance();
-
-  SamplePanelModelFactory(const SamplePanelModelFactory&) = delete;
-  SamplePanelModelFactory& operator=(const SamplePanelModelFactory&) = delete;
 
  private:
   friend class base::NoDestructor<SamplePanelModelFactory>;

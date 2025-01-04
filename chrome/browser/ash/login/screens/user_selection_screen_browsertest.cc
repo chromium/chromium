@@ -36,6 +36,7 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash {
 namespace {
@@ -217,13 +218,13 @@ class UserSelectionScreenBlockOfflineTest : public LoginManagerTest,
   }
 
   const LoginManagerMixin::TestUserInfo test_user_over_the_limit_{
-      AccountId::FromUserEmailGaiaId(kUser1Email, kGaia1ID),
+      AccountId::FromUserEmailGaiaId(kUser1Email, GaiaId(kGaia1ID)),
       test::UserAuthConfig::Create(test::kDefaultAuthSetup).RequireReauth()};
   const LoginManagerMixin::TestUserInfo test_user_under_the_limit_{
-      AccountId::FromUserEmailGaiaId(kUser2Email, kGaia2ID),
+      AccountId::FromUserEmailGaiaId(kUser2Email, GaiaId(kGaia2ID)),
       test::UserAuthConfig::Create(test::kDefaultAuthSetup).RequireReauth()};
   const LoginManagerMixin::TestUserInfo test_user_limit_not_set_{
-      AccountId::FromUserEmailGaiaId(kUser3Email, kGaia3ID),
+      AccountId::FromUserEmailGaiaId(kUser3Email, GaiaId(kGaia3ID)),
       test::UserAuthConfig::Create(test::kDefaultAuthSetup).RequireReauth()};
   LoginManagerMixin login_mixin_{
       &mixin_host_,
@@ -282,8 +283,10 @@ class DarkLightEnabledTest : public LoginManagerTest {
   }
 
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
-  const AccountId user1{AccountId::FromUserEmailGaiaId(kUser1Email, kGaia1ID)};
-  const AccountId user2{AccountId::FromUserEmailGaiaId(kUser2Email, kGaia2ID)};
+  const AccountId user1{
+      AccountId::FromUserEmailGaiaId(kUser1Email, GaiaId(kGaia1ID))};
+  const AccountId user2{
+      AccountId::FromUserEmailGaiaId(kUser2Email, GaiaId(kGaia2ID))};
 };
 
 // OOBE + login of the first user.

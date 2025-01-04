@@ -15,6 +15,7 @@
 static_assert(BUILDFLAG(ENABLE_PDF_INK2), "ENABLE_PDF_INK2 not set to true");
 
 namespace gfx {
+class Size;
 class Vector2dF;
 }  // namespace gfx
 
@@ -96,6 +97,17 @@ gfx::PointF EventPositionToCanonicalPosition(const gfx::PointF& event_position,
 //
 ink::AffineTransform GetInkRenderTransform(
     const gfx::Vector2dF& viewport_origin_offset,
+    PageOrientation orientation,
+    const gfx::Rect& page_content_rect,
+    float scale_factor);
+
+// Returns the transform used when rendering a thumbnail on a canvas of
+// `canvas_size`, given the other parameters. Compared to
+// GetInkRenderTransform(), the transformation is simpler because there is no
+// origin offset, and the thumbnail canvas is never rotated. Note that the
+// thumbnail content may be rotated.
+ink::AffineTransform GetInkThumbnailTransform(
+    const gfx::Size& canvas_size,
     PageOrientation orientation,
     const gfx::Rect& page_content_rect,
     float scale_factor);

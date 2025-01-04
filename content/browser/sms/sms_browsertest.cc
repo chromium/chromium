@@ -1224,7 +1224,8 @@ class MockSmsPrerenderingWebContentsDelegate : public WebContentsDelegate {
                     base::OnceCallback<void()> on_confirm,
                     base::OnceCallback<void()> on_cancel));
   PreloadingEligibility IsPrerender2Supported(
-      WebContents& web_contents) override {
+      WebContents& web_contents,
+      PreloadingTriggerType trigger_type) override {
     return PreloadingEligibility::kEligible;
   }
 };

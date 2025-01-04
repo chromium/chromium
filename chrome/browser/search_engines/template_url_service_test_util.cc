@@ -105,7 +105,7 @@ std::unique_ptr<TemplateURL> CreateTestTemplateURL(
     const std::string& guid,
     base::Time last_modified,
     bool safe_for_autoreplace,
-    TemplateURLData::CreatedByPolicy created_by_policy,
+    TemplateURLData::PolicyOrigin policy_origin,
     int prepopulate_id) {
   DCHECK(!base::StartsWith(guid, "key"))
       << "Don't use test GUIDs with the form \"key1\". Use \"guid1\" instead "
@@ -119,7 +119,7 @@ std::unique_ptr<TemplateURL> CreateTestTemplateURL(
   data.safe_for_autoreplace = safe_for_autoreplace;
   data.date_created = base::Time::FromTimeT(100);
   data.last_modified = last_modified;
-  data.created_by_policy = created_by_policy;
+  data.policy_origin = policy_origin;
   data.prepopulate_id = prepopulate_id;
   if (!guid.empty()) {
     data.sync_guid = guid;
@@ -254,8 +254,8 @@ TemplateURL* TemplateURLServiceTestUtil::AddExtensionControlledTURL(
     std::unique_ptr<TemplateURL> extension_turl) {
   TemplateURL* result = model()->Add(std::move(extension_turl));
   DCHECK(result);
-  DCHECK(result->GetExtensionInfoForTesting());
-  if (result->GetExtensionInfoForTesting()->wants_to_be_default_engine) {
+  DCHECK(result->GetExtensionInfo());
+  if (result->GetExtensionInfo()->wants_to_be_default_engine) {
     SetExtensionDefaultSearchInPrefs(profile()->GetTestingPrefService(),
                                      result->data());
   }
@@ -267,8 +267,8 @@ void TemplateURLServiceTestUtil::RemoveExtensionControlledTURL(
   TemplateURL* turl = model()->FindTemplateURLForExtension(
       extension_id, TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION);
   ASSERT_TRUE(turl);
-  ASSERT_TRUE(turl->GetExtensionInfoForTesting());
-  if (turl->GetExtensionInfoForTesting()->wants_to_be_default_engine) {
+  ASSERT_TRUE(turl->GetExtensionInfo());
+  if (turl->GetExtensionInfo()->wants_to_be_default_engine) {
     RemoveExtensionDefaultSearchFromPrefs(profile()->GetTestingPrefService());
   }
   model()->RemoveExtensionControlledTURL(

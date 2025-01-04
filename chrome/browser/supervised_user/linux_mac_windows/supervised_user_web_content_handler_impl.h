@@ -18,6 +18,8 @@ namespace supervised_user {
 class UrlFormatter;
 }  // namespace supervised_user
 
+class ParentAccessView;
+
 // Windows / Mac / Linux implementation of web content handler, which
 // forces unsupported methods to fail.
 class SupervisedUserWebContentHandlerImpl
@@ -39,6 +41,7 @@ class SupervisedUserWebContentHandlerImpl
                             ApprovalRequestInitiatedCallback callback) override;
 
  private:
+  base::WeakPtr<ParentAccessView> weak_parent_access_view_;
   base::WeakPtrFactory<SupervisedUserWebContentHandlerImpl> weak_ptr_factory_{
       this};
 };

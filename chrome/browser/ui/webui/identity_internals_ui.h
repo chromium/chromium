@@ -17,8 +17,7 @@ class IdentityInternalsUIConfig
 };
 
 // The WebUI for chrome://identity-internals
-class IdentityInternalsUI
-    : public content::WebUIController {
+class IdentityInternalsUI : public content::WebUIController {
  public:
   explicit IdentityInternalsUI(content::WebUI* web_ui);
 

@@ -66,8 +66,8 @@ found in the LICENSE file.
     <color name="incognito_icon_filled_bg_color">@color/incognito_icon_filled_bg_color_light</color>
 
     <!-- IncognitoHistoryPlaceholderView  colors -->
-    <color name="incognito_history_placeholder_stroke_color">@color/modern_grey_600</color>
-    <color name="incognito_history_placeholder_bottom_circle_color">@color/modern_grey_900</color>
+    <color name="incognito_history_placeholder_stroke_color">@color/baseline_neutral_40</color>
+    <color name="incognito_history_placeholder_bottom_circle_color">@color/baseline_neutral_10</color>
 
     <!-- Colors of adaptive toolbar -->
     <color name="adaptive_toolbar_preference_header_background">@color/adaptive_toolbar_preference_header_background_dark</color>

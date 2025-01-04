@@ -6,11 +6,13 @@ package org.chromium.base;
 
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileReader;
@@ -26,12 +28,13 @@ import java.util.concurrent.atomic.AtomicReference;
  * Instead, they're "simulated" by reading a file at a specific location early during startup.
  * Applications each define their own files, e.g., ContentShellApplication.COMMAND_LINE_FILE.
  */
+@NullMarked
 public abstract class CommandLine {
     // Public abstract interface, implemented in derived classes.
     // All these methods reflect their native-side counterparts.
     /**
-     *  Returns true if this command line contains the given switch.
-     *  (Switch names ARE case-sensitive).
+     * Returns true if this command line contains the given switch. (Switch names ARE
+     * case-sensitive).
      */
     public abstract boolean hasSwitch(String switchString);
 
@@ -100,7 +103,8 @@ public abstract class CommandLine {
         return sCommandLine.get() instanceof NativeCommandLine;
     }
 
-    private static final AtomicReference<CommandLine> sCommandLine = new AtomicReference<>();
+    private static final AtomicReference<@Nullable CommandLine> sCommandLine =
+            new AtomicReference<>();
 
     /**
      * @return true if the command line has already been initialized.
@@ -122,7 +126,7 @@ public abstract class CommandLine {
      *
      * @param args command line flags in 'argv' format: args[0] is the program name.
      */
-    public static void init(@Nullable String[] args) {
+    public static void init(String @Nullable [] args) {
         assert !(sCommandLine.get() instanceof NativeCommandLine);
         sCommandLine.set(new JavaCommandLine(args));
     }
@@ -232,7 +236,7 @@ public abstract class CommandLine {
      * @param fileName the file to read in.
      * @return Array of chars read from the file, or null if the file cannot be read.
      */
-    private static char[] readFileAsUtf8(String fileName) {
+    private static char @Nullable [] readFileAsUtf8(String fileName) {
         File f = new File(fileName);
         try (FileReader reader = new FileReader(f)) {
             char[] buffer = new char[(int) f.length()];
@@ -254,7 +258,7 @@ public abstract class CommandLine {
         // The arguments begin at index 1, since index 0 contains the executable name.
         private int mArgsBegin = 1;
 
-        JavaCommandLine(@Nullable String[] args) {
+        JavaCommandLine(String @Nullable [] args) {
             if (args == null || args.length == 0 || args[0] == null) {
                 mArgs.add("");
             } else {

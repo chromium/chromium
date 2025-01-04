@@ -1,7 +1,7 @@
 Name: Gradle Wrapper
 Short Name: gradlew
 URL: https://gradle.org/
-Version: 8.5
+Version: 8.10
 License: Apache Version 2.0
 Security Critical: no
 Shipped: no
@@ -22,10 +22,18 @@ located.
 
 To upgrade:
 https://docs.gradle.org/current/userguide/gradle_wrapper.html#sec:upgrading_wrapper
-- Run: `./gradlew --version` to check the current version.
-- Run: `./gradlew wrapper --gradle-version <version>` to update to a newer version.
-  - You can find the latest version here: https://gradle.org/releases/
-- Run: `./gradlew --version` again to actually download the new version.
+https://docs.gradle.org/current/userguide/compatibility.html
+
+./gradlew init
+./gradlew --version
+./gradlew wrapper --gradle-version <version>
+./gradlew --version
+git clean -df
+
+Test it via:
+build/android/gradle/generate_gradle.py --output-directory out/Debug
+* And by running "3pp-linux-amd64-packager" trybot on the change
+
 
 Local Modifications:
 No modifications.

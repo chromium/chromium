@@ -1217,9 +1217,6 @@ class PixelTestPages():
         # All bots are connected with a power source, however, we want to to
         # test with the code path that's enabled with battery power.
         cba.DISABLE_DIRECT_COMPOSITION_VP_SCALING,
-        # This feature ensures that addSwapCompletionEventListener in
-        # gpu_benchmarking only sends completion event on a succdessful commit.
-        '--enable-features=ReportFCPOnlyOnSuccessfulCommit',
     ]
     browser_args_NV12 = browser_args + [
         '--direct-composition-video-swap-chain-format=nv12'

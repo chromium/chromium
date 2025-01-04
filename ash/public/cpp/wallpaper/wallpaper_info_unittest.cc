@@ -12,13 +12,15 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 namespace {
 
 constexpr char kUser1[] = "user1@test.com";
-const AccountId kAccountId1 = AccountId::FromUserEmailGaiaId(kUser1, kUser1);
+const AccountId kAccountId1 =
+    AccountId::FromUserEmailGaiaId(kUser1, GaiaId(kUser1));
 
 const uint64_t kAssetId = 1;
 const uint64_t kUnitId = 1;

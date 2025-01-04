@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 package org.chromium.webapk.lib.common.splash;
+import org.chromium.build.annotations.NullMarked;
 
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Icon;
-import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -20,6 +20,7 @@ import android.widget.TextView;
  * Contains utility methods for drawing splash screen. The methods are applicable for both home
  * screen shortcuts and WebAPKs.
  */
+@NullMarked
 public class SplashLayout {
     public static int getDefaultBackgroundColor(Context appContext) {
         return getColorCompatibility(appContext.getResources(), R.color.webapp_default_bg);
@@ -75,8 +76,7 @@ public class SplashLayout {
         ImageView splashIconView = (ImageView) layout.findViewById(R.id.webapp_splash_screen_icon);
         if (splashIconView == null) return;
 
-        // Adaptive icons should only be present on Android O.
-        if (isIconAdaptive && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (isIconAdaptive) {
             splashIconView.setImageIcon(Icon.createWithAdaptiveBitmap(icon));
         } else {
             splashIconView.setImageBitmap(icon);

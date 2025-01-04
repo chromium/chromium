@@ -163,10 +163,11 @@ ShelfSpinnerController::ShelfSpinnerController(ChromeShelfController* owner)
     : owner_(owner) {
   owner->shelf_model()->AddObserver(this);
   if (user_manager::UserManager::IsInitialized()) {
-    if (auto* active_user = user_manager::UserManager::Get()->GetActiveUser())
+    if (auto* active_user = user_manager::UserManager::Get()->GetActiveUser()) {
       current_account_id_ = active_user->GetAccountId();
-    else
+    } else {
       LOG(ERROR) << "Failed to get active user, UserManager returned null";
+    }
   } else {
     LOG(ERROR) << "Failed to get active user, UserManager is not initialized";
   }
@@ -180,8 +181,9 @@ void ShelfSpinnerController::MaybeApplySpinningEffect(const std::string& app_id,
                                                       gfx::ImageSkia* image) {
   DCHECK(image);
   auto it = app_controller_map_.find(app_id);
-  if (it == app_controller_map_.end())
+  if (it == app_controller_map_.end()) {
     return;
+  }
 
   *image = gfx::ImageSkia(std::make_unique<SpinningEffectSource>(
                               it->second, *image, owner_->IsAppPinned(app_id)),
@@ -189,8 +191,9 @@ void ShelfSpinnerController::MaybeApplySpinningEffect(const std::string& app_id,
 }
 
 void ShelfSpinnerController::HideSpinner(const std::string& app_id) {
-  if (!RemoveSpinnerFromControllerMap(app_id))
+  if (!RemoveSpinnerFromControllerMap(app_id)) {
     return;
+  }
 
   const ash::ShelfID shelf_id(app_id);
 
@@ -211,8 +214,9 @@ void ShelfSpinnerController::HideSpinner(const std::string& app_id) {
 }
 
 void ShelfSpinnerController::CloseSpinner(const std::string& app_id) {
-  if (!RemoveSpinnerFromControllerMap(app_id))
+  if (!RemoveSpinnerFromControllerMap(app_id)) {
     return;
+  }
 
   owner_->ReplaceWithAppShortcutOrRemove(ash::ShelfID(app_id));
   UpdateShelfItemIcon(app_id);
@@ -221,8 +225,9 @@ void ShelfSpinnerController::CloseSpinner(const std::string& app_id) {
 bool ShelfSpinnerController::RemoveSpinnerFromControllerMap(
     const std::string& app_id) {
   AppControllerMap::const_iterator it = app_controller_map_.find(app_id);
-  if (it == app_controller_map_.end())
+  if (it == app_controller_map_.end()) {
     return false;
+  }
 
   const ash::ShelfID shelf_id(app_id);
   DCHECK_EQ(it->second.controller(),
@@ -243,8 +248,9 @@ void ShelfSpinnerController::CloseCrostiniSpinners() {
       app_ids_to_close.push_back(app_id_controller_pair.first);
     }
   }
-  for (const auto& app_id : app_ids_to_close)
+  for (const auto& app_id : app_ids_to_close) {
     CloseSpinner(app_id);
+  }
 }
 
 bool ShelfSpinnerController::HasApp(const std::string& app_id) const {
@@ -255,8 +261,9 @@ bool ShelfSpinnerController::HasApp(const std::string& app_id) const {
 base::TimeDelta ShelfSpinnerController::GetActiveTime(
     const std::string& app_id) const {
   AppControllerMap::const_iterator it = app_controller_map_.find(app_id);
-  if (it == app_controller_map_.end())
+  if (it == app_controller_map_.end()) {
     return base::TimeDelta();
+  }
 
   return base::Time::Now() - it->second.creation_time();
 }
@@ -286,8 +293,9 @@ void ShelfSpinnerController::ActiveUserChanged(const AccountId& account_id) {
       std::pair<std::string, std::unique_ptr<ShelfSpinnerItemController>>>
       to_show;
 
-  for (const auto& app_id : app_controller_map_)
+  for (const auto& app_id : app_controller_map_) {
     to_hide.push_back(app_id.first);
+  }
   for (auto it = hidden_app_controller_map_.lower_bound(account_id);
        it != hidden_app_controller_map_.upper_bound(account_id); it++) {
     to_show.push_back(std::move(it->second));
@@ -297,8 +305,9 @@ void ShelfSpinnerController::ActiveUserChanged(const AccountId& account_id) {
       hidden_app_controller_map_.lower_bound(account_id),
       hidden_app_controller_map_.upper_bound(account_id));
 
-  for (const auto& app_id : to_hide)
+  for (const auto& app_id : to_hide) {
     HideSpinner(app_id);
+  }
 
   for (auto& app_id_delegate_pair : to_show) {
     AddSpinnerToShelf(app_id_delegate_pair.first,
@@ -313,19 +322,22 @@ void ShelfSpinnerController::UpdateShelfItemIcon(const std::string& app_id) {
 }
 
 void ShelfSpinnerController::UpdateApps() {
-  if (app_controller_map_.empty())
+  if (app_controller_map_.empty()) {
     return;
+  }
 
   RegisterNextUpdate();
   std::vector<std::string> app_ids_to_close;
   for (const auto& pair : app_controller_map_) {
     UpdateShelfItemIcon(pair.first);
-    if (pair.second.IsFinished())
+    if (pair.second.IsFinished()) {
       app_ids_to_close.emplace_back(pair.first);
+    }
   }
   for (const auto& app_id : app_ids_to_close) {
-    if (RemoveSpinnerFromControllerMap(app_id))
+    if (RemoveSpinnerFromControllerMap(app_id)) {
       UpdateShelfItemIcon(app_id);
+    }
   }
 }
 
@@ -344,8 +356,9 @@ void ShelfSpinnerController::AddSpinnerToShelf(
 
   // We should only apply the spinner controller only over non-active items.
   const ash::ShelfItem* item = owner_->GetItem(shelf_id);
-  if (item && item->status != ash::STATUS_CLOSED)
+  if (item && item->status != ash::STATUS_CLOSED) {
     return;
+  }
 
   controller->SetHost(weak_ptr_factory_.GetWeakPtr());
   ShelfSpinnerItemController* item_controller = controller.get();
@@ -358,8 +371,9 @@ void ShelfSpinnerController::AddSpinnerToShelf(
     owner_->SetItemStatus(shelf_id, ash::STATUS_RUNNING);
   }
 
-  if (app_controller_map_.empty())
+  if (app_controller_map_.empty()) {
     RegisterNextUpdate();
+  }
 
   app_controller_map_.emplace(app_id, ShelfSpinnerData(item_controller));
 }

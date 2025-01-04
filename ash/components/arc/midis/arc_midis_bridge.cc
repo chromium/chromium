@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/singleton.h"
 #include "chromeos/ash/components/dbus/arc/arc_midis_client.h"
+#include "mojo/core/configuration.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
@@ -91,6 +92,9 @@ void ArcMidisBridge::Connect(
   mojo::PlatformChannel channel;
   mojo::ScopedMessagePipeHandle server_pipe =
       invitation.AttachMessagePipe("arc-midis-pipe");
+  if (!mojo::core::GetConfiguration().is_broker_process) {
+    invitation.set_extra_flags(MOJO_SEND_INVITATION_FLAG_SHARE_BROKER);
+  }
   mojo::OutgoingInvitation::Send(std::move(invitation),
                                  base::kNullProcessHandle,
                                  channel.TakeLocalEndpoint());

@@ -120,8 +120,9 @@ void ThreadController::EnableMessagePumpTimeKeeperMetrics(
     const char* thread_name,
     bool wall_time_based_metrics_enabled_for_testing) {
   // MessagePump runs too fast, a low-res clock would result in noisy metrics.
-  if (!base::TimeTicks::IsHighResolution())
+  if (!base::TimeTicks::IsHighResolution()) {
     return;
+  }
 
   run_level_tracker_.EnableTimeKeeperMetrics(
       thread_name, wall_time_based_metrics_enabled_for_testing);
@@ -172,8 +173,9 @@ void ThreadController::RunLevelTracker::OnRunLoopStarted(State initial_state,
   run_levels_.emplace(initial_state, is_nested, time_keeper_, lazy_now);
 
   // In unit tests, RunLoop::Run() acts as the initial wake-up.
-  if (!is_nested && initial_state != kIdle)
+  if (!is_nested && initial_state != kIdle) {
     time_keeper_.RecordWakeUp(lazy_now);
+  }
 }
 
 void ThreadController::RunLevelTracker::OnRunLoopEnded() {
@@ -199,8 +201,9 @@ void ThreadController::RunLevelTracker::OnWorkStarted(LazyNow& lazy_now) {
   // (like we would inside an application task which is at least guaranteed to
   // itself notify us when it ends). Some ThreadControllerWithMessagePumpTest
   // also drive ThreadController outside a RunLoop and hit this.
-  if (run_levels_.empty())
+  if (run_levels_.empty()) {
     return;
+  }
 
   // Already running a work item? => #work-in-work-implies-nested
   if (run_levels_.top().state() == kRunningWorkItem) {
@@ -225,8 +228,9 @@ void ThreadController::RunLevelTracker::OnApplicationTaskSelected(
   // As-in OnWorkStarted. Early native loops can result in
   // ThreadController::DoWork because the lack of a top-level RunLoop means
   // `task_execution_allowed` wasn't consumed.
-  if (run_levels_.empty())
+  if (run_levels_.empty()) {
     return;
+  }
 
   // OnWorkStarted() is expected to precede OnApplicationTaskSelected().
   DCHECK_EQ(run_levels_.top().state(), kRunningWorkItem);
@@ -237,8 +241,9 @@ void ThreadController::RunLevelTracker::OnApplicationTaskSelected(
 void ThreadController::RunLevelTracker::OnWorkEnded(LazyNow& lazy_now,
                                                     int run_level_depth) {
   DCHECK_CALLED_ON_VALID_THREAD(outer_->associated_thread_->thread_checker);
-  if (run_levels_.empty())
+  if (run_levels_.empty()) {
     return;
+  }
 
   // #done-work-at-lower-runlevel-implies-done-nested
   if (run_level_depth != static_cast<int>(num_run_levels())) {
@@ -257,8 +262,9 @@ void ThreadController::RunLevelTracker::OnWorkEnded(LazyNow& lazy_now,
 
 void ThreadController::RunLevelTracker::OnIdle(LazyNow& lazy_now) {
   DCHECK_CALLED_ON_VALID_THREAD(outer_->associated_thread_->thread_checker);
-  if (run_levels_.empty())
+  if (run_levels_.empty()) {
     return;
+  }
 
   DCHECK_NE(run_levels_.top().state(), kRunningWorkItem);
   time_keeper_.RecordEndOfPhase(kIdleWork, lazy_now);
@@ -478,8 +484,9 @@ void ThreadController::RunLevelTracker::RunLevel::UpdateState(
   const bool is_active = new_state != kIdle;
 
   state_ = new_state;
-  if (was_active == is_active)
+  if (was_active == is_active) {
     return;
+  }
 
   // Change of state.
   if (is_active) {
@@ -509,10 +516,11 @@ void ThreadController::RunLevelTracker::RunLevel::UpdateState(
   }
 
   if (trace_observer_for_testing_) {
-    if (is_active)
+    if (is_active) {
       trace_observer_for_testing_->OnThreadControllerActiveBegin();
-    else
+    } else {
       trace_observer_for_testing_->OnThreadControllerActiveEnd();
+    }
   }
 }
 
@@ -522,8 +530,9 @@ ThreadController::RunLevelTracker::TimeKeeper::TimeKeeper(
 
 void ThreadController::RunLevelTracker::TimeKeeper::RecordWakeUp(
     LazyNow& lazy_now) {
-  if (!ShouldRecordNow(ShouldRecordReqs::kOnWakeUp))
+  if (!ShouldRecordNow(ShouldRecordReqs::kOnWakeUp)) {
     return;
+  }
 
   // Phase::kScheduled will be accounted against `last_wakeup_` in
   // OnTaskSelected, if there's an application task in this work cycle.
@@ -547,8 +556,9 @@ void ThreadController::RunLevelTracker::TimeKeeper::RecordWakeUp(
 void ThreadController::RunLevelTracker::TimeKeeper::OnApplicationTaskSelected(
     TimeTicks queue_time,
     LazyNow& lazy_now) {
-  if (!ShouldRecordNow())
+  if (!ShouldRecordNow()) {
     return;
+  }
 
   if (!last_wakeup_.is_null()) {
     // `queue_time` can be null on threads that did not
@@ -681,8 +691,9 @@ void ThreadController::RunLevelTracker::TimeKeeper::RecordTimeInPhase(
 
   const auto delta = phase_end - phase_begin;
   DCHECK(!delta.is_negative()) << delta;
-  if (delta >= kSkippedDelta)
+  if (delta >= kSkippedDelta) {
     return;
+  }
 
   deltas_[phase] += delta;
   if (deltas_[phase] >= kReportInterval) {
@@ -691,11 +702,13 @@ void ThreadController::RunLevelTracker::TimeKeeper::RecordTimeInPhase(
     deltas_[phase] -= Milliseconds(count);
   }
 
-  if (phase == kIdleWork)
+  if (phase == kIdleWork) {
     last_sleep_ = phase_end;
+  }
 
-  if (outer_->trace_observer_for_testing_)
+  if (outer_->trace_observer_for_testing_) {
     outer_->trace_observer_for_testing_->OnPhaseRecorded(phase);
+  }
 }
 
 // static

@@ -23,7 +23,6 @@
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/performance/performance_timeline_constants.h"
-#include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
 #include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
@@ -227,7 +226,6 @@ class CONTENT_EXPORT RenderFrameObserver
       base::TimeTicks max_event_queued_main_thread,
       base::TimeTicks max_event_commit_finish,
       base::TimeTicks max_event_end,
-      blink::UserInteractionType interaction_type,
       uint64_t interaction_offset) {}
 
   // Notification when the First Scroll Delay becomes available.

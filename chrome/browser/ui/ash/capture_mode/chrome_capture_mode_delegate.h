@@ -131,10 +131,11 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   }
 
  private:
-  void HandleStartQueryResponse(
-      std::vector<lens::mojom::OverlayObjectPtr> objects,
-      lens::mojom::TextPtr text,
-      bool is_error);
+  // TODO(b/362363034): See if we can remove these. May be needed for text
+  // detection.
+  void HandleStartQueryResponse(std::vector<lens::OverlayObject> objects,
+                                lens::Text text,
+                                bool is_error);
   void HandleInteractionURLResponse(
       lens::proto::LensOverlayUrlResponse response);
   void HandleSuggestInputsResponse(

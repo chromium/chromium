@@ -451,21 +451,8 @@ void LayerTreeHost::WaitForCommitCompletion(bool for_protected_sequence) const {
   DCHECK(IsMainThread());
   if (commit_completion_event_) {
     TRACE_EVENT0("cc", "LayerTreeHost::WaitForCommitCompletion");
-    base::ElapsedTimer timer;
     commit_completion_event_->Wait();
     commit_completion_event_ = nullptr;
-    if (for_protected_sequence) {
-      waited_for_protected_sequence_ = true;
-      auto elapsed = timer.Elapsed();
-      base::UmaHistogramMicrosecondsTimes(
-          "Compositing.MainThreadBlockedDuringCommitTime", elapsed);
-      if (in_apply_compositor_changes_) {
-        base::UmaHistogramMicrosecondsTimes(
-            "Compositing.MainThreadBlockedDuringCommitTime."
-            "ApplyCompositorChanges",
-            elapsed);
-      }
-    }
   }
 }
 
@@ -507,11 +494,6 @@ void LayerTreeHost::CommitComplete(int source_frame_number,
     client_->DidCompletePageScaleAnimation(source_frame_number);
     did_complete_scale_animation_ = false;
   }
-  if (compositor_mode_ == CompositorMode::THREADED) {
-    UMA_HISTOGRAM_BOOLEAN("Compositing.DidMainThreadBlockDuringCommit",
-                          waited_for_protected_sequence_);
-  }
-  waited_for_protected_sequence_ = false;
 }
 
 void LayerTreeHost::NotifyImageDecodeFinished(int request_id,
@@ -1142,9 +1124,6 @@ void LayerTreeHost::ApplyCompositorChanges(CompositorCommitData* commit_data) {
   DCHECK(IsMainThread());
   DCHECK(commit_data);
   TRACE_EVENT0("cc", "LayerTreeHost::ApplyCompositorChanges");
-
-  DCHECK(!in_apply_compositor_changes_);
-  base::AutoReset<bool> in_apply_changes(&in_apply_compositor_changes_, true);
 
   using perfetto::protos::pbzero::TrackEvent;
 
@@ -2011,7 +1990,7 @@ bool LayerTreeHost::RunsOnCurrentThread() const {
   return !task_runner_provider_ || task_runner_provider_->IsMainThread();
 }
 
-void LayerTreeHost::QueueImageDecode(const PaintImage& image,
+void LayerTreeHost::QueueImageDecode(const DrawImage& image,
                                      base::OnceCallback<void(bool)> callback) {
   TRACE_EVENT0("cc", "LayerTreeHost::QueueImageDecode");
   int next_id = s_image_decode_sequence_number.GetNext();
@@ -2020,7 +1999,7 @@ void LayerTreeHost::QueueImageDecode(const PaintImage& image,
     proxy()->QueueImageDecode(next_id, image);
   } else {
     pending_commit_state()->queued_image_decodes.emplace_back(
-        next_id, std::make_unique<PaintImage>(image));
+        next_id, std::make_unique<DrawImage>(image));
   }
   pending_image_decodes_.emplace(next_id, std::move(callback));
   SetNeedsCommit();
@@ -2137,6 +2116,12 @@ void LayerTreeHost::DropActiveScrollDeltaNextCommit(ElementId scroll_element) {
   pending_commit_state()->scrollers_clobbering_active_value.insert(
       scroll_element);
   SetNeedsCommit();
+}
+
+void LayerTreeHost::CrashGpuProcessForTesting() {
+  if (current_layer_tree_frame_sink_) {
+    current_layer_tree_frame_sink_->CrashGpuProcessForTesting();  // IN-TEST
+  }
 }
 
 }  // namespace cc

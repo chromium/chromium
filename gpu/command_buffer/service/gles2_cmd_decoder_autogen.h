@@ -4789,27 +4789,6 @@ error::Error GLES2DecoderImpl::HandleMemoryBarrierByRegion(
   return error::kUnknownCommand;
 }
 
-error::Error GLES2DecoderImpl::HandleSwapBuffers(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile gles2::cmds::SwapBuffers& c =
-      *static_cast<const volatile gles2::cmds::SwapBuffers*>(cmd_data);
-  GLuint64 swap_id = c.swap_id();
-  GLbitfield flags = static_cast<GLbitfield>(c.flags);
-  if (!validators_->swap_buffers_flags.IsValid(flags)) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glSwapBuffers",
-                       "flags GL_INVALID_VALUE");
-    return error::kNoError;
-  }
-  if (c.trace_id) {
-    TRACE_EVENT_WITH_FLOW0(TRACE_DISABLED_BY_DEFAULT("gpu_cmd_queue"),
-                           "CommandBufferQueue", c.trace_id,
-                           TRACE_EVENT_FLAG_FLOW_IN);
-  }
-  DoSwapBuffers(swap_id, flags);
-  return error::kNoError;
-}
-
 error::Error GLES2DecoderImpl::HandleGetMaxValueInBufferCHROMIUM(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {

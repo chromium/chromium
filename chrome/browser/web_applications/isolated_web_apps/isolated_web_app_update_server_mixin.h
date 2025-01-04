@@ -31,9 +31,6 @@ class IsolatedWebAppUpdateServerMixin : public InProcessBrowserTestMixin {
       InProcessBrowserTestMixinHost* mixin_host);
   ~IsolatedWebAppUpdateServerMixin() override;
 
-  // Sets up `iwa_server_`.
-  void SetUpOnMainThread() override;
-
   // The returned URL has the following structure:
   //   * /<web_bundle_id>/update_manifest.json
   GURL GetUpdateManifestUrl(

@@ -143,6 +143,8 @@ extern const BASE_EXPORT base::FeatureParam<BackupRefPtrEnabledProcesses>
     kBackupRefPtrEnabledProcessesParam;
 extern const BASE_EXPORT base::FeatureParam<BackupRefPtrMode>
     kBackupRefPtrModeParam;
+extern const BASE_EXPORT base::FeatureParam<int>
+    kBackupRefPtrExtraExtrasSizeParam;
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocMemoryTagging);
 extern const BASE_EXPORT base::FeatureParam<MemtagMode> kMemtagModeParam;
 extern const BASE_EXPORT base::FeatureParam<RetagMode> kRetagModeParam;

@@ -7,6 +7,7 @@
 
 #include "base/notreached.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_2d_color_params.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_factory.h"
@@ -61,8 +62,14 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   void ClearRect(double x, double y, double width, double height) override {
     BaseRenderingContext2D::clearRect(x, y, width, height);
   }
-  SkColorInfo CanvasRenderingContextSkColorInfo() const override {
-    return color_params_.GetSkColorInfo();
+  SkAlphaType GetAlphaType() const override {
+    return color_params_.GetAlphaType();
+  }
+  SkColorType GetSkColorType() const override {
+    return color_params_.GetSkColorType();
+  }
+  sk_sp<SkColorSpace> GetSkColorSpace() const override {
+    return color_params_.GetSkColorSpace();
   }
   scoped_refptr<StaticBitmapImage> GetImage(FlushReason) final;
   void Reset() override;
@@ -176,7 +183,7 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
 
   bool is_valid_size_ = false;
 
-  CanvasColorParams color_params_;
+  Canvas2DColorParams color_params_;
 };
 
 }  // namespace blink

@@ -28,6 +28,7 @@ const char kNetworkStateCaptivePortal[] = "behind captive portal";
 const char kNetworkStateConnecting[] = "connecting";
 const char kNetworkStateProxyAuthRequired[] = "proxy auth required";
 const char kNetworkStateUnknown[] = "unknown";
+const char kProxyDirectMode[] = "direct";
 
 NetworkStateInformer::State GetStateForNetwork(const NetworkState* network) {
   if (!network) {
@@ -60,13 +61,16 @@ NetworkStateInformer::~NetworkStateInformer() = default;
 
 void NetworkStateInformer::Init() {
   UpdateState(NetworkHandler::Get()->network_state_handler()->DefaultNetwork());
+  UpdateProxyConfig(
+      NetworkHandler::Get()->network_state_handler()->DefaultNetwork());
   network_state_handler_observer_.Observe(
       NetworkHandler::Get()->network_state_handler());
 }
 
 void NetworkStateInformer::AddObserver(NetworkStateInformerObserver* observer) {
-  if (!observers_.HasObserver(observer))
+  if (!observers_.HasObserver(observer)) {
     observers_.AddObserver(observer);
+  }
 }
 
 void NetworkStateInformer::RemoveObserver(
@@ -116,8 +120,9 @@ std::string NetworkStateInformer::GetNetworkName(
   const NetworkState* network =
       NetworkHandler::Get()->network_state_handler()->GetNetworkState(
           service_path);
-  if (!network)
+  if (!network) {
     return std::string();
+  }
   return network->name();
 }
 
@@ -132,19 +137,22 @@ bool NetworkStateInformer::IsProxyError(State state,
 bool NetworkStateInformer::UpdateState(const NetworkState* network) {
   State new_state = GetStateForNetwork(network);
   std::string new_network_path;
-  if (network)
+  if (network) {
     new_network_path = network->path();
+  }
 
-  if (new_state == state_ && new_network_path == network_path_)
+  if (new_state == state_ && new_network_path == network_path_) {
     return false;
+  }
 
   state_ = new_state;
   network_path_ = new_network_path;
   proxy_config_.reset();
 
   if (state_ == ONLINE) {
-    for (NetworkStateInformerObserver& observer : observers_)
+    for (NetworkStateInformerObserver& observer : observers_) {
       observer.OnNetworkReady();
+    }
   }
 
   return true;
@@ -159,6 +167,18 @@ bool NetworkStateInformer::UpdateProxyConfig(const NetworkState* network) {
     return false;
   }
 
+  if (!proxy_config_.has_value()) {
+    const std::string* mode = network->proxy_config()->FindString("mode");
+    // If the current proxy_config_ is not set and the new network's proxy mode
+    // is "direct", update proxy_config_ without notifying observers. This is
+    // because {} and {direct} are semantically the same, and we don't want to
+    // trigger unnecessary updates.
+    if (mode && *mode == kProxyDirectMode) {
+      proxy_config_ = network->proxy_config()->Clone();
+      return false;
+    }
+  }
+
   if (network->proxy_config()) {
     proxy_config_ = network->proxy_config()->Clone();
   } else {
@@ -170,18 +190,20 @@ bool NetworkStateInformer::UpdateProxyConfig(const NetworkState* network) {
 void NetworkStateInformer::UpdateStateAndNotify(const NetworkState* network) {
   bool state_changed = UpdateState(network);
   bool proxy_config_changed = UpdateProxyConfig(network);
-  if (state_changed)
+  if (state_changed) {
     SendStateToObservers(NetworkError::ERROR_REASON_NETWORK_STATE_CHANGED);
-  else if (proxy_config_changed)
+  } else if (proxy_config_changed) {
     SendStateToObservers(NetworkError::ERROR_REASON_PROXY_CONFIG_CHANGED);
-  else
+  } else {
     SendStateToObservers(NetworkError::ERROR_REASON_UPDATE);
+  }
 }
 
 void NetworkStateInformer::SendStateToObservers(
     NetworkError::ErrorReason reason) {
-  for (NetworkStateInformerObserver& observer : observers_)
+  for (NetworkStateInformerObserver& observer : observers_) {
     observer.UpdateState(reason);
+  }
 }
 
 }  // namespace ash

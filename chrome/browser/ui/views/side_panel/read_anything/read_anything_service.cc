@@ -64,6 +64,10 @@ void ReadAnythingService::OnReadAnythingSidePanelEntryShown() {
 #if !BUILDFLAG(IS_CHROMEOS)
   if (features::IsReadAnythingReadAloudEnabled()) {
     InstallTtsDownloadExtension();
+  } else {
+    // If the extension was previously installed but now the Read Aloud flag
+    // is disabled, we should uninstall the extension.
+    RemoveTtsDownloadExtension();
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
   if (!features::IsReadAnythingDocsIntegrationEnabled()) {
@@ -166,4 +170,17 @@ void ReadAnythingService::InstallTtsDownloadExtension() {
                           base::FilePath(FILE_PATH_LITERAL("tts_engine")));
   }
 #endif  // BUILDFLAG(!IS_CHROMEOS)
+}
+
+void ReadAnythingService::RemoveTtsDownloadExtension() {
+#if !BUILDFLAG(IS_CHROMEOS)
+  extensions::ExtensionService* service =
+      extensions::ExtensionSystem::Get(profile_)->extension_service();
+  if (!service) {
+    // In tests, the service might not be created.
+    CHECK_IS_TEST();
+    return;
+  }
+  service->component_loader()->Remove(extension_misc::kTTSEngineExtensionId);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }

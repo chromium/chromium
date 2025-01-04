@@ -13,7 +13,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/sequence_bound.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/device/geolocation/geolocation_provider.h"
@@ -54,7 +53,7 @@
 #include "services/device/public/mojom/pressure_manager.mojom.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "services/device/media_transfer_protocol/mtp_device_manager.h"
 #endif
 
@@ -199,7 +198,7 @@ class DeviceService : public mojom::DeviceService {
       mojo::PendingReceiver<mojom::HidManager> receiver) override;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void BindMtpManager(
       mojo::PendingReceiver<mojom::MtpManager> receiver) override;
 #endif
@@ -275,7 +274,7 @@ class DeviceService : public mojom::DeviceService {
   base::SequenceBound<SerialPortManagerImpl> serial_port_manager_;
 #endif  // defined(IS_SERIAL_ENABLED_PLATFORM)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<MtpDeviceManager> mtp_device_manager_;
 #endif
 };

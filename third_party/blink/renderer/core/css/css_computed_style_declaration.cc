@@ -537,6 +537,11 @@ String CSSComputedStyleDeclaration::removeProperty(
   return String();
 }
 
+void CSSComputedStyleDeclaration::QuietlyRemoveProperty(
+    const String& property_name) {
+  NOTREACHED();
+}
+
 const CSSValue* CSSComputedStyleDeclaration::GetPropertyCSSValueInternal(
     CSSPropertyID property_id) {
   return GetPropertyCSSValue(property_id);

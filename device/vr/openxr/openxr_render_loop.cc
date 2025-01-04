@@ -846,14 +846,8 @@ void OpenXrRenderLoop::OnWebXrTokenSignaled(
     return;
   }
 
-  // TODO(crbug.com/40917174): Unify OpenXr Rendering paths.
-#if BUILDFLAG(IS_WIN)
-  SubmitFrameWithTextureHandle(frame_index, mojo::PlatformHandle(),
-                               gpu::SyncToken());
-#elif BUILDFLAG(IS_ANDROID)
   MarkFrameSubmitted(frame_index);
   MaybeCompositeAndSubmit();
-#endif
 
   // Calling SubmitFrameWithTextureHandle can cause openxr_ and
   // context_provider_ to become nullptr if we decide to stop the runtime.

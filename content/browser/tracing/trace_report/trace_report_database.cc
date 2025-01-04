@@ -385,7 +385,8 @@ bool TraceReportDatabase::DeleteUploadedTraceContentOlderThan(
 
   sql::Statement delete_reports_older_than(
       database_.GetCachedStatement(SQL_FROM_HERE, R"sql(
-        DELETE FROM local_traces
+        UPDATE local_traces
+        SET trace_content = null
         WHERE state=? AND upload_time < ?)sql"));
 
   delete_reports_older_than.BindInt(

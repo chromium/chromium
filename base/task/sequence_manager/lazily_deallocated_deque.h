@@ -182,20 +182,23 @@ class LazilyDeallocatedDeque {
   }
 
   void MaybeShrinkQueue() {
-    if (!tail_)
+    if (!tail_) {
       return;
+    }
 
     DCHECK_GE(max_size_, size_);
 
     // Rate limit how often we shrink the queue because it's somewhat expensive.
     TimeTicks current_time = now_source();
-    if (current_time < next_resize_time_)
+    if (current_time < next_resize_time_) {
       return;
+    }
 
     // Due to the way the Ring works we need 1 more slot than is used.
     size_t new_capacity = max_size_ + 1;
-    if (new_capacity < kMinimumRingSize)
+    if (new_capacity < kMinimumRingSize) {
       new_capacity = kMinimumRingSize;
+    }
 
     // Reset |max_size_| so that unless usage has spiked up we will consider
     // reclaiming it next time.
@@ -203,8 +206,9 @@ class LazilyDeallocatedDeque {
 
     // Only realloc if the current capacity is sufficiently greater than the
     // observed maximum size for the previous period.
-    if (new_capacity + kReclaimThreshold >= capacity())
+    if (new_capacity + kReclaimThreshold >= capacity()) {
       return;
+    }
 
     SetCapacity(new_capacity);
     next_resize_time_ = current_time + Seconds(kMinimumShrinkIntervalInSeconds);
@@ -298,8 +302,9 @@ class LazilyDeallocatedDeque {
     }
 
     size_t CircularDecrement(size_t index) const {
-      if (index == 0)
+      if (index == 0) {
         return capacity() - 1;
+      }
       return index - 1;
     }
 

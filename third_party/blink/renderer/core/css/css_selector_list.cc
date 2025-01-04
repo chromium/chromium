@@ -115,13 +115,25 @@ unsigned CSSSelectorList::MaximumSpecificity() const {
   return specificity;
 }
 
-void CSSSelectorList::Reparent(CSSSelector* selector_list,
-                               StyleRule* new_parent) {
-  DCHECK(selector_list);
-  CSSSelector* current = selector_list;
-  do {
-    current->Reparent(new_parent);
-  } while (!(current++)->IsLastInSelectorList());
+bool CSSSelectorList::Renest(const CSSSelector* selector_list,
+                             StyleRule* new_parent,
+                             HeapVector<CSSSelector>& result) {
+  bool renested_any = false;
+  for (const CSSSelector* current = selector_list; current;
+       current = current->IsLastInSelectorList() ? nullptr : ++current) {
+    std::optional<CSSSelector> renested = current->Renest(new_parent);
+    renested_any |= renested.has_value();
+    result.push_back(renested.value_or(*current));
+  }
+  return renested_any;
+}
+
+CSSSelectorList* CSSSelectorList::Renest(StyleRule* new_parent) {
+  HeapVector<CSSSelector> selectors;
+  if (IsValid() && Renest(First(), new_parent, selectors)) {
+    return AdoptSelectorVector(selectors);
+  }
+  return this;
 }
 
 String CSSSelectorList::SelectorsText(const CSSSelector* first) {

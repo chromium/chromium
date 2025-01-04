@@ -19,7 +19,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/metrics/persistent_system_profile.h"
 
 namespace {
@@ -250,9 +249,7 @@ void InstantiatePersistentHistograms(const base::FilePath& metrics_dir,
     }
   }
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   // Linux kernel 4.4.0.* shows a huge number of SIGBUS crashes with persistent
   // histograms enabled using a mapped file.  Change this to use local memory.
   // https://bugs.chromium.org/p/chromium/issues/detail?id=753741

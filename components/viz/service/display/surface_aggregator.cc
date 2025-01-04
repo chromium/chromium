@@ -1866,6 +1866,9 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
             .aggregation()
             .prevent_merge = true;
       }
+#else
+      // Ignore -Wunused-private-field warning.
+      (void)prevent_merging_surfaces_to_root_pass_;
 #endif
     } else if (auto* render_pass_quad =
                    quad->DynamicCast<CompositorRenderPassDrawQuad>()) {

@@ -62,7 +62,7 @@ public class FakeBookmarkModel extends BookmarkModel {
     private FakeBookmarkModel() {
         // The native bookmark bridge pointer will be ignored because the JNI is mocked by
         // BookmarkBridgeNatives.
-        super(/* nativeBookmarkBridge= */ 1);
+        super(/* nativeBookmarkBridge= */ 1, Mockito.mock(Profile.class));
         BookmarkBridgeJni.setInstanceForTesting(new BookmarkBridgeNatives());
         setupTopLevelFolders();
         bookmarkModelLoaded();

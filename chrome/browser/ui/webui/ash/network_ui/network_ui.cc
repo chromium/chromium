@@ -32,7 +32,6 @@
 #include "chrome/browser/ui/webui/ash/internet/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/ash/network_ui/network_logs_message_handler.h"
 #include "chrome/browser/ui/webui/ash/network_ui/onc_import_message_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -66,6 +65,7 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/network/network_element_localized_strings_provider.h"
+#include "ui/webui/webui_util.h"
 
 namespace ash {
 
@@ -101,8 +101,9 @@ bool GetServicePathFromGuid(const std::string& guid,
   const NetworkState* network =
       NetworkHandler::Get()->network_state_handler()->GetNetworkStateFromGuid(
           guid);
-  if (!network)
+  if (!network) {
     return false;
+  }
   *service_path = network->path();
   return true;
 }
@@ -110,12 +111,14 @@ bool GetServicePathFromGuid(const std::string& guid,
 void SetDeviceProperties(base::Value::Dict* dictionary) {
   DCHECK(dictionary);
   const std::string* device = dictionary->FindString(shill::kDeviceProperty);
-  if (!device)
+  if (!device) {
     return;
+  }
   const DeviceState* device_state =
       NetworkHandler::Get()->network_state_handler()->GetDeviceState(*device);
-  if (!device_state)
+  if (!device_state) {
     return;
+  }
 
   base::Value::Dict device_dictionary = device_state->properties().Clone();
   if (!device_state->ip_configs().empty()) {
@@ -126,8 +129,9 @@ void SetDeviceProperties(base::Value::Dict* dictionary) {
     }
     device_dictionary.Set(shill::kIPConfigsProperty, std::move(ip_configs));
   }
-  if (!device_dictionary.empty())
+  if (!device_dictionary.empty()) {
     dictionary->Set(shill::kDeviceProperty, std::move(device_dictionary));
+  }
 }
 
 bool IsGuestModeActive() {
@@ -152,8 +156,9 @@ std::optional<dbus::ObjectPath> GetEuiccResetPath() {
   const ManagedNetworkConfigurationHandler*
       managed_network_configuration_handler =
           NetworkHandler::Get()->managed_network_configuration_handler();
-  if (!managed_network_configuration_handler)
+  if (!managed_network_configuration_handler) {
     return std::nullopt;
+  }
   if (managed_network_configuration_handler
           ->AllowOnlyPolicyCellularNetworks()) {
     NET_LOG(ERROR)
@@ -162,8 +167,9 @@ std::optional<dbus::ObjectPath> GetEuiccResetPath() {
   }
   NetworkStateHandler* network_state_handler =
       NetworkHandler::Get()->network_state_handler();
-  if (!network_state_handler)
+  if (!network_state_handler) {
     return std::nullopt;
+  }
   NetworkStateHandler::NetworkStateList state_list;
   network_state_handler->GetNetworkListByType(NetworkTypePattern::Cellular(),
                                               /*configured_only=*/false,
@@ -416,8 +422,9 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   void ResetESimCache(const base::Value::List& arg_list) {
     CellularESimProfileHandler* handler =
         NetworkHandler::Get()->cellular_esim_profile_handler();
-    if (!handler)
+    if (!handler) {
       return;
+    }
 
     CellularESimProfileHandlerImpl* handler_impl =
         static_cast<CellularESimProfileHandlerImpl*>(handler);
@@ -427,8 +434,9 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   void DisableActiveESimProfile(const base::Value::List& arg_list) {
     CellularESimProfileHandler* handler =
         NetworkHandler::Get()->cellular_esim_profile_handler();
-    if (!handler)
+    if (!handler) {
       return;
+    }
 
     CellularESimProfileHandlerImpl* handler_impl =
         static_cast<CellularESimProfileHandlerImpl*>(handler);
@@ -437,13 +445,15 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
 
   void ResetEuicc(const base::Value::List& arg_list) {
     std::optional<dbus::ObjectPath> euicc_path = GetEuiccResetPath();
-    if (!euicc_path)
+    if (!euicc_path) {
       return;
+    }
 
     CellularESimUninstallHandler* handler =
         NetworkHandler::Get()->cellular_esim_uninstall_handler();
-    if (!handler)
+    if (!handler) {
       return;
+    }
     NET_LOG(EVENT) << "Executing reset EUICC on " << euicc_path->value();
     handler->ResetEuiccMemory(
         *euicc_path, base::BindOnce(&NetworkConfigMessageHandler::OnEuiccReset,

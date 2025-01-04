@@ -156,11 +156,15 @@ class CORE_EXPORT CSSSelector {
   ~CSSSelector();
 
   String SelectorText() const;
-  // Like `SelectorText`, but replaces any '&' selectors
-  // with ':is(<parent rule selector list>)'. This is needed
-  // by the :has() cache, because it uses the serialization of
-  // the selector as a key.
-  String SelectorTextExpandingPseudoParent() const;
+  // Like `SelectorText`, but replaces any "pseudo-references" with an expansion
+  // which makes the result useful as a key in the :has() cache.
+  // A "pseudo-reference" is either a '&' selector (which is replaced with
+  // :is(<parent rule selector list>)), or a :scope selector (which is replaced
+  // with :-internal-scope-<scope_id>).
+  //
+  // Note that this means that the returned text is not necessarily a valid
+  // selector.
+  String SelectorTextExpandingPseudoReferences(uintptr_t scope_id) const;
   String SimpleSelectorTextForDebug() const;
 
   CSSSelector& operator=(const CSSSelector&) = delete;
@@ -420,11 +424,28 @@ class CORE_EXPORT CSSSelector {
                                      const Document* document);
   static PseudoId GetPseudoId(PseudoType);
 
-  // Replaces the parent pointer held by kPseudoParent selectors found
-  // within this simple selector (including inner selector lists).
+  // Re-nesting
+  // ==========
   //
-  // See also StyleRule::Reparent().
-  void Reparent(StyleRule* new_parent);
+  // During parsing, the parent pseudo-class ('&') gains a reference
+  // to its parent StyleRule (if any), see `parent_rule_for_nesting`
+  // passed to CSSSelectorParser. This is problematic for certain CSSOM
+  // mutations, e.g. selectorText="..." on an outer style rule, since
+  // any '&' selectors held within that outer style rule now need
+  // to be point to the modified selector/rule.
+  //
+  // Since the selector list of a StyleRule is effectively an inline part
+  // of the StyleRule itself (see AdditionalBytesForSelectors), and because
+  // RuleSet invalidation requires both the old and new rule to exist
+  // in a usable state at the same time (see RuleSetDiff), we handle such
+  // mutations by effectively making a copy of the nested rule and its selector
+  // list, except that any '&' selectors are updated to the point to the new
+  // outer rule.
+  //
+  // If this simple selector contains any parent pseudo-classes ('&'),
+  // returns a copy with any parent rule references updated to `new_parent`.
+  // Returns std::nullopt when no references needed an update.
+  std::optional<CSSSelector> Renest(StyleRule* new_parent) const;
 
   // Selectors are kept in an array by CSSSelectorList. The next component of
   // the selector is the next item in the array.
@@ -668,26 +689,33 @@ class CORE_EXPORT CSSSelector {
   unsigned SpecificityForOneSelector() const;
   unsigned SpecificityForPage() const;
 
-  template <bool expand_pseudo_parent>
-  bool SerializeSimpleSelector(WTF::StringBuilder& builder) const;
+  template <bool expand_pseudo_references>
+  bool SerializeSimpleSelector(WTF::StringBuilder& builder,
+                               uintptr_t scope_id) const;
 
-  template <bool expand_pseudo_parent>
-  const CSSSelector* SerializeCompound(WTF::StringBuilder&) const;
+  template <bool expand_pseudo_references>
+  const CSSSelector* SerializeCompound(WTF::StringBuilder&,
+                                       uintptr_t scope_id) const;
 
-  template <bool expand_pseudo_parent>
+  template <bool expand_pseudo_references>
   static void SerializeSelectorList(const CSSSelectorList* selector_list,
-                                    WTF::StringBuilder& builder);
+                                    WTF::StringBuilder& builder,
+                                    uintptr_t scope_id);
 
-  template <bool expand_pseudo_parent>
-  String SelectorTextInternal() const;
+  template <bool expand_pseudo_references>
+  String SelectorTextInternal(uintptr_t scope_id) const;
 
   struct RareData : public GarbageCollected<RareData> {
     explicit RareData(const AtomicString& value);
+    // Does not deep copy `selector_list_`.
+    RareData(const RareData&);
     ~RareData();
 
     bool MatchNth(unsigned count);
     int NthAValue() const { return bits_.nth_.a_; }
     int NthBValue() const { return bits_.nth_.b_; }
+    // See CSSSelector::Renest.
+    RareData* Renest(StyleRule* new_parent);
 
     AtomicString matching_value_;
     AtomicString serializing_value_;

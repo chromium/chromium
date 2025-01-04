@@ -60,6 +60,15 @@ std::vector<TranscriptBuilder::Result> TranscriptBuilder::GetTranscripts(
     return results;
   }
 
+  // If transcript length decreased and it is final, it is possible that the
+  // removed part belongs to the next transcript, so discard the message and
+  // rely on the upcoming message's `previous_transcript` for update.
+  if (message->current_transcript->is_final &&
+      message->current_transcript->transcript_id == transcript_id_ &&
+      message->current_transcript->text.length() < text_.length()) {
+    return {};
+  }
+
   if (!message->previous_transcript.is_null() && !is_final_ &&
       message->previous_transcript->transcript_id == transcript_id_) {
     results = MaybeMergeTranscript(std::move(message->previous_transcript),

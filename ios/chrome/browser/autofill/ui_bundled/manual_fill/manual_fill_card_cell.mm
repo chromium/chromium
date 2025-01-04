@@ -12,7 +12,7 @@
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
 #import "components/autofill/core/browser/payments/payments_service_url.h"
-#import "components/autofill/core/browser/ui/suggestion.h"
+#import "components/autofill/core/browser/suggestions/suggestion.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/grit/components_scaled_resources.h"
@@ -799,6 +799,7 @@ CGFloat GPayIconTopAnchorOffset() {
   }
 }
 
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (BOOL)textView:(UITextView*)textView
     shouldInteractWithURL:(NSURL*)URL
                   inRange:(NSRange)characterRange
@@ -812,6 +813,25 @@ CGFloat GPayIconTopAnchorOffset() {
         withTitle:[textView.text substringWithRange:characterRange]];
   }
   return NO;
+}
+#endif
+
+- (UIAction*)textView:(UITextView*)textView
+    primaryActionForTextItem:(UITextItem*)textItem
+               defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
+  if (textView != self.virtualCardInstructionTextView) {
+    return defaultAction;
+  }
+
+  GURL URL = autofill::payments::GetVirtualCardEnrollmentSupportUrl();
+  NSString* text = textView.text;
+  NSRange range = textItem.range;
+  __weak __typeof(self) weakSelf = self;
+  return [UIAction actionWithHandler:^(UIAction* action) {
+    // The learn more link was clicked.
+    [weakSelf.navigationDelegate openURL:[[CrURL alloc] initWithGURL:URL]
+                               withTitle:[text substringWithRange:range]];
+  }];
 }
 
 // Creates and configures the GPay icon image view.

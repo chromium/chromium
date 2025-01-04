@@ -96,6 +96,7 @@ public class BrowsingDataTest {
                             new BrowsingDataCounterBridge(
                                     ProfileManager.getLastUsedRegularProfile(),
                                     callback,
+                                    TimePeriod.LAST_HOUR,
                                     BrowsingDataType.SITE_DATA,
                                     ClearBrowsingDataTab.ADVANCED);
                 });

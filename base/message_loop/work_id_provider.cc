@@ -15,8 +15,9 @@ namespace base {
 // static
 WorkIdProvider* WorkIdProvider::GetForCurrentThread() {
   static NoDestructor<ThreadLocalOwnedPointer<WorkIdProvider>> instance;
-  if (!instance->Get())
+  if (!instance->Get()) {
     instance->Set(WrapUnique(new WorkIdProvider));
+  }
   return instance->Get();
 }
 
@@ -44,8 +45,9 @@ void WorkIdProvider::IncrementWorkId() {
 
   unsigned int next_id = work_id_.load(std::memory_order_relaxed) + 1;
   // Reserve 0 to mean no work items have been executed.
-  if (next_id == 0)
+  if (next_id == 0) {
     ++next_id;
+  }
   // Release order ensures this state is visible to other threads prior to the
   // following task/event execution.
   work_id_.store(next_id, std::memory_order_release);

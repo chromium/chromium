@@ -198,7 +198,7 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
     /** Implements {@link AccountPickerDelegate}. */
     @Override
     public boolean canHandleAddAccount() {
-        return SigninUtils.shouldShowNewSigninFlow();
+        return true;
     }
 
     /** Implements {@link AccountPickerDelegate}. */

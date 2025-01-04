@@ -6,6 +6,7 @@
 
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/public/execution_context/execution_context.h"
+#include "components/performance_manager/test_support/graph/mock_frame_node_observer.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "components/performance_manager/test_support/voting.h"
@@ -20,23 +21,6 @@ namespace {
 using testing::_;
 
 static const char kReason[] = "test reason";
-
-class LenientMockFrameNodeObserver : public FrameNode::ObserverDefaultImpl {
- public:
-  LenientMockFrameNodeObserver() = default;
-  LenientMockFrameNodeObserver(const LenientMockFrameNodeObserver&) = delete;
-  LenientMockFrameNodeObserver& operator=(const LenientMockFrameNodeObserver&) =
-      delete;
-  ~LenientMockFrameNodeObserver() override = default;
-
-  MOCK_METHOD(void,
-              OnPriorityAndReasonChanged,
-              (const FrameNode*, const PriorityAndReason&),
-              (override));
-};
-
-using MockFrameNodeObserver =
-    ::testing::StrictMock<LenientMockFrameNodeObserver>;
 
 using RootVoteObserverTest = GraphTestHarness;
 

@@ -331,7 +331,9 @@ class NewTabPageHandlerTest : public testing::Test {
         &mock_logo_service_, &test_sync_service_,
         &mock_segmentation_platform_service_, web_contents_,
         std::move(mock_feature_promo_helper_ptr_), base::Time::Now(),
-        &module_id_details, mock_customize_chrome_tab_helper_.get());
+        &module_id_details);
+    handler_->SetCustomizeChromeSidePanelControllerForTesting(
+        mock_customize_chrome_tab_helper_.get());
     mock_page_.FlushForTesting();
     EXPECT_EQ(handler_.get(), theme_service_observer_);
     EXPECT_EQ(handler_.get(), ntp_custom_background_service_observer_);

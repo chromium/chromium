@@ -235,7 +235,7 @@ class ProfileOAuth2TokenServiceDelegate {
 #if BUILDFLAG(IS_ANDROID)
   // Triggers platform specific implementation to reload accounts from system.
   virtual void SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
-      const std::vector<CoreAccountInfo>& core_account_infos,
+      const std::vector<AccountInfo>& accounts,
       const std::optional<CoreAccountId>& primary_account_id) {}
 
   // Returns a reference to the corresponding Java object.

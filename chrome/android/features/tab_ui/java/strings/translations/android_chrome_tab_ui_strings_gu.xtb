@@ -77,7 +77,6 @@
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> ટૅબ બદલ્યું, <ph name="ANY_CLOSED" /> બંધ કર્યા}one{<ph name="MANY_CHANGED" /> ટૅબ બદલ્યું, <ph name="ANY_CLOSED" /> બંધ કર્યા}other{<ph name="MANY_CHANGED" /> ટૅબ બદલ્યા, <ph name="ANY_CLOSED" /> બંધ કર્યા}}</translation>
 <translation id="4371591986692297148">નિષ્ક્રિય</translation>
 <translation id="4460014764210899310">અલગ થયેલું ગ્રૂપ</translation>
-<translation id="4590027107044272416">તમે હવે અહીં કોઈ નવું ટૅબ ખોલી શકો છો</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{1 નિષ્ક્રિય ટૅબ બંધ કરીએ?}one{<ph name="TAB_COUNT_MANY" /> નિષ્ક્રિય ટૅબ બંધ કરીએ?}other{<ph name="TAB_COUNT_MANY" /> નિષ્ક્રિય ટૅબ બંધ કરીએ?}}</translation>
 <translation id="4686942373615810936">હમણાં જ બનાવ્યું</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{1 દિવસ પછી બંધ કરો}one{<ph name="DAY_COUNT_MANY" /> દિવસ પછી બંધ કરો}other{<ph name="DAY_COUNT_MANY" /> દિવસ પછી બંધ કરો}}</translation>
@@ -98,7 +97,9 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ટૅબ ઉમેર્યું}one{<ph name="MANY_ADDED" /> ટૅબ ઉમેર્યું}other{<ph name="MANY_ADDED" /> ટૅબ ઉમેર્યા}}</translation>
 <translation id="5161254044473106830">શીર્ષક જરૂરી</translation>
 <translation id="5339733443032484186">તમારું છેલ્લું ટૅબ</translation>
+<translation id="5380159289133845234">ડુપ્લિકેટ ટૅબ આર્કાઇવ કરો</translation>
 <translation id="5400836586163650660">ગ્રે</translation>
+<translation id="5446043142172831860">ટૅબ કાઢી નાખો અને ગ્રૂપ છોડી દો</translation>
 <translation id="5490235265819901748">ટૅબ ગ્રૂપ મોટું કરો</translation>
 <translation id="5494920125229734069">બધા પસંદ કરો</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> રંગનું <ph name="TABS_COUNT_ONE" /> ટૅબ ધરાવતા ટૅબના ગ્રૂપને બંધ કરો.}one{<ph name="COLOR_NAME" /> રંગનું <ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબના ગ્રૂપને બંધ કરો.}other{<ph name="COLOR_NAME" /> રંગના <ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબના ગ્રૂપને બંધ કરો.}}</translation>
@@ -117,6 +118,7 @@
 <translation id="6051432659151380973">તમારા ટૅબના ગ્રૂપ ઑટોમૅટિક રીતે સાચવવામાં આવશે</translation>
 <translation id="6054741997831917303">આ આઇટમની કિંમત તાજેતરમાં <ph name="PREVIOUS_PRICE" />થી ઘટીને <ph name="NEW_PRICE" /> થઈ ગઈ છે</translation>
 <translation id="6082313992897617440">તમે તાત્કાલિક <ph name="GROUP_NAME" /> ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશો</translation>
+<translation id="6109251075362363230">તાજેતરમાં ઉપયોગમાં લેવાયેલી કૉપિના અપવાદ સાથે તમામ ડુપ્લિકેટ ટૅબ પણ હવે આર્કાઇવ કરવામાં આવશે.</translation>
 <translation id="6193448654517602979">ટૅબ પસંદ કરો</translation>
 <translation id="6228793724645064692">(સ્ટોરનું રેટિંગ)</translation>
 <translation id="6271513594716432922">તમામ નિષ્ક્રિય ટૅબ બંધ કરો</translation>

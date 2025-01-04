@@ -15,8 +15,9 @@ namespace base {
 
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  if (size < 2)
+  if (size < 2) {
     return 0;
+  }
 
   // SAFETY: LibFuzzer provides a valid data/size pair.
   auto data_span = UNSAFE_BUFFERS(base::span(data, size));

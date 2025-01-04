@@ -48,7 +48,10 @@ class AutocompleteResult {
   // may be different for zero suggest and non zero suggest. Does not take into
   // account the boost conditionally provided by the
   // omnibox::kDynamicMaxAutocomplete feature.
-  static size_t GetMaxMatches(bool is_zero_suggest = false);
+  static size_t GetMaxMatches(
+      bool is_zero_suggest = false,
+      AutocompleteInput::FeaturedKeywordMode featured_keyword_mode =
+          AutocompleteInput::FeaturedKeywordMode::kFalse);
   // Defaults to GetMaxMatches if omnibox::kDynamicMaxAutocomplete is disabled;
   // otherwise returns the boosted dynamic limit.
   static size_t GetDynamicMaxMatches();
@@ -221,6 +224,7 @@ class AutocompleteResult {
   // and relevancies.
   static size_t CalculateNumMatches(
       bool is_zero_suggest,
+      AutocompleteInput::FeaturedKeywordMode featured_keyword_mode,
       const ACMatches& matches,
       const CompareWithDemoteByType<AutocompleteMatch>& comparing_object);
   // Determines how many matches to keep depending on how many URLs would be
@@ -248,6 +252,18 @@ class AutocompleteResult {
 
   void set_num_zero_prefix_suggestions_shown_in_session(size_t number) {
     session_.num_zero_prefix_suggestions_shown_ = number;
+  }
+
+  const std::vector<int64_t>& gws_event_id_hashes_in_session() const {
+    return session_.gws_event_id_hashes_;
+  }
+
+  void add_gws_event_id_hash_in_session(int64_t gws_event_id_hash) {
+    session_.gws_event_id_hashes_.push_back(gws_event_id_hash);
+  }
+
+  void clear_gws_event_id_hashes_in_session() {
+    session_.gws_event_id_hashes_.clear();
   }
 
   // Clears this result set - i.e., `matches_` and `suggestion_groups_map_`.
@@ -369,6 +385,9 @@ class AutocompleteResult {
 #endif
 
   struct SessionData {
+    SessionData();
+    ~SessionData();
+
     void Reset();
 
     // Whether zero-prefix suggestions could have been shown in the session.
@@ -376,6 +395,9 @@ class AutocompleteResult {
 
     // The number of zero-prefix suggestions shown in the session.
     size_t num_zero_prefix_suggestions_shown_ = 0u;
+
+    // List of GWS event ID hashes accumulated during the course of the session.
+    std::vector<int64_t> gws_event_id_hashes_;
   };
 
   // Swaps this result set - i.e., `matches_` and `suggestion_groups_map_` -
@@ -416,8 +438,8 @@ class AutocompleteResult {
   void MergeMatchesByProvider(ACMatches* old_matches,
                               const ACMatches& new_matches);
 
-  // Returns a tuple encompassing all attributes relevant to determining whether a match should
-  // be deduplicated with another match.
+  // Returns a tuple encompassing all attributes relevant to determining whether
+  // a match should be deduplicated with another match.
   static MatchDedupComparator GetMatchComparisonFields(
       const AutocompleteMatch& match);
 

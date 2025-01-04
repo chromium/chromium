@@ -14,6 +14,7 @@
 #include "base/task/task_traits.h"
 #include "base/time/time.h"
 #include "ui/accelerated_widget_mac/accelerated_widget_mac.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
 #include "ui/accessibility/platform/ax_private_webkit_constants_mac.h"
@@ -513,6 +514,22 @@ void BrowserAccessibilityManagerMac::OnAtomicUpdateFinished(
     if (!text_edit.IsEmpty())
       text_edits_[[obj owner]->GetId()] = text_edit;
   }
+}
+
+void BrowserAccessibilityManagerMac::OnNodeDataChanged(
+    AXTree* tree,
+    const AXNodeData& old_node_data,
+    const AXNodeData& new_node_data) {
+  BrowserAccessibilityMac* node =
+      static_cast<BrowserAccessibilityMac*>(GetFromID(new_node_data.id));
+  CHECK(node);
+  if (!features::IsMacAccessibilityOptimizeChildrenChangedEnabled() ||
+      (old_node_data.child_ids == new_node_data.child_ids &&
+       !node->node()->GetExtraMacNodes())) {
+    return;
+  }
+
+  [node->GetNativeWrapper() childrenChanged];
 }
 
 NSDictionary* BrowserAccessibilityManagerMac::

@@ -35,6 +35,7 @@ struct PersistentNotificationMetadata : public NotificationCommon::Metadata {
   static const PersistentNotificationMetadata* From(const Metadata* metadata);
 
   GURL service_worker_scope;
+  bool is_suspicious = false;
 };
 
 // Metadata for NON_PERSISTENT notifications.

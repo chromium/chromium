@@ -123,5 +123,13 @@ void ChosenObjectView::UpdateIconImage(bool is_deleted) const {
       PageInfoViewFactory::GetChosenObjectIcon(*info_, is_deleted));
 }
 
+const std::u16string& ChosenObjectView::GetObjectNameForTesting() const {
+  return row_view_->GetTitleForTesting();  // IN-TEST
+}
+
+views::ImageButton* ChosenObjectView::GetDeleteButtonForTesting() const {
+  return delete_button_;
+}
+
 BEGIN_METADATA(ChosenObjectView)
 END_METADATA

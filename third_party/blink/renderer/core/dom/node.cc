@@ -436,28 +436,29 @@ Node* Node::PseudoAwarePreviousSibling() const {
       [[fallthrough]];
     case kPseudoIdCheckMark:
       if (Node* previous =
-              parent->GetPseudoElement(kPseudoIdScrollRightButton)) {
+              parent->GetPseudoElement(kPseudoIdScrollButtonInlineEnd)) {
         return previous;
       }
       [[fallthrough]];
-    case kPseudoIdScrollRightButton:
+    case kPseudoIdScrollButtonInlineEnd:
       if (Node* previous =
-              parent->GetPseudoElement(kPseudoIdScrollLeftButton)) {
+              parent->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
         return previous;
       }
       [[fallthrough]];
-    case kPseudoIdScrollLeftButton:
+    case kPseudoIdScrollButtonBlockEnd:
       if (Node* previous =
-              parent->GetPseudoElement(kPseudoIdScrollDownButton)) {
+              parent->GetPseudoElement(kPseudoIdScrollButtonInlineStart)) {
         return previous;
       }
       [[fallthrough]];
-    case kPseudoIdScrollDownButton:
-      if (Node* previous = parent->GetPseudoElement(kPseudoIdScrollUpButton)) {
+    case kPseudoIdScrollButtonInlineStart:
+      if (Node* previous =
+              parent->GetPseudoElement(kPseudoIdScrollButtonBlockStart)) {
         return previous;
       }
       [[fallthrough]];
-    case kPseudoIdScrollUpButton:
+    case kPseudoIdScrollButtonBlockStart:
       if (Node* previous = parent->GetPseudoElement(kPseudoIdScrollMarker)) {
         return previous;
       }
@@ -553,26 +554,30 @@ Node* Node::PseudoAwareNextSibling() const {
       }
       [[fallthrough]];
     case kPseudoIdScrollMarker:
-      if (Node* next = parent->GetPseudoElement(kPseudoIdScrollUpButton)) {
+      if (Node* next =
+              parent->GetPseudoElement(kPseudoIdScrollButtonBlockStart)) {
         return next;
       }
       [[fallthrough]];
-    case kPseudoIdScrollUpButton:
-      if (Node* next = parent->GetPseudoElement(kPseudoIdScrollDownButton)) {
+    case kPseudoIdScrollButtonBlockStart:
+      if (Node* next =
+              parent->GetPseudoElement(kPseudoIdScrollButtonInlineStart)) {
         return next;
       }
       [[fallthrough]];
-    case kPseudoIdScrollDownButton:
-      if (Node* next = parent->GetPseudoElement(kPseudoIdScrollLeftButton)) {
+    case kPseudoIdScrollButtonInlineStart:
+      if (Node* next =
+              parent->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
         return next;
       }
       [[fallthrough]];
-    case kPseudoIdScrollLeftButton:
-      if (Node* next = parent->GetPseudoElement(kPseudoIdScrollRightButton)) {
+    case kPseudoIdScrollButtonBlockEnd:
+      if (Node* next =
+              parent->GetPseudoElement(kPseudoIdScrollButtonInlineEnd)) {
         return next;
       }
       [[fallthrough]];
-    case kPseudoIdScrollRightButton:
+    case kPseudoIdScrollButtonInlineEnd:
       if (Node* next = parent->GetPseudoElement(kPseudoIdCheckMark)) {
         return next;
       }
@@ -680,20 +685,20 @@ Node* Node::PseudoAwareFirstChild() const {
             current_element->GetPseudoElement(kPseudoIdScrollMarker)) {
       return first;
     }
-    if (Node* first =
-            current_element->GetPseudoElement(kPseudoIdScrollUpButton)) {
+    if (Node* first = current_element->GetPseudoElement(
+            kPseudoIdScrollButtonBlockStart)) {
+      return first;
+    }
+    if (Node* first = current_element->GetPseudoElement(
+            kPseudoIdScrollButtonInlineStart)) {
       return first;
     }
     if (Node* first =
-            current_element->GetPseudoElement(kPseudoIdScrollDownButton)) {
+            current_element->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
       return first;
     }
     if (Node* first =
-            current_element->GetPseudoElement(kPseudoIdScrollLeftButton)) {
-      return first;
-    }
-    if (Node* first =
-            current_element->GetPseudoElement(kPseudoIdScrollRightButton)) {
+            current_element->GetPseudoElement(kPseudoIdScrollButtonInlineEnd)) {
       return first;
     }
     if (Node* first = current_element->GetPseudoElement(kPseudoIdCheckMark)) {
@@ -769,19 +774,19 @@ Node* Node::PseudoAwareLastChild() const {
       return last;
     }
     if (Node* last =
-            current_element->GetPseudoElement(kPseudoIdScrollRightButton)) {
+            current_element->GetPseudoElement(kPseudoIdScrollButtonInlineEnd)) {
       return last;
     }
     if (Node* last =
-            current_element->GetPseudoElement(kPseudoIdScrollLeftButton)) {
+            current_element->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
       return last;
     }
-    if (Node* last =
-            current_element->GetPseudoElement(kPseudoIdScrollDownButton)) {
+    if (Node* last = current_element->GetPseudoElement(
+            kPseudoIdScrollButtonInlineStart)) {
       return last;
     }
-    if (Node* last =
-            current_element->GetPseudoElement(kPseudoIdScrollUpButton)) {
+    if (Node* last = current_element->GetPseudoElement(
+            kPseudoIdScrollButtonBlockStart)) {
       return last;
     }
     if (Node* last = current_element->GetPseudoElement(kPseudoIdScrollMarker)) {
@@ -836,9 +841,9 @@ Node* Node::insertBefore(Node* new_child, Node* ref_child) {
   return insertBefore(new_child, ref_child, ASSERT_NO_EXCEPTION);
 }
 
-Node* Node::moveBefore(Node* new_child,
-                       Node* ref_child,
-                       ExceptionState& exception_state) {
+void Node::moveBefore(Node* new_child,
+                      Node* ref_child,
+                      ExceptionState& exception_state) {
   DCHECK(new_child);
 
   // Only perform a state-preserving atomic move if the new parent and the child
@@ -855,15 +860,13 @@ Node* Node::moveBefore(Node* new_child,
       isConnected() == new_child->isConnected() &&
       // "If parent’s shadow-including root is not the same as node’s
       // shadow-including root, then..."
-      GetDocument() == new_child->GetDocument() &&
+      ShadowIncludingRoot() == new_child->ShadowIncludingRoot() &&
       // "If node is not an Element or a CharacterData node, then ..."
-      (new_child->IsElementNode() || new_child->IsCharacterDataNode()) &&
-      // "If parent is not an Element or DocumentFragment node, then throw a
-      // "HierarchyRequestError" DOMException."
-      (IsElementNode() || IsDocumentFragment());
-  // These two conditions below are caught by `EnsurePreInsertionValidity()`
+      (new_child->IsElementNode() || new_child->IsCharacterDataNode());
+  // These three conditions below are caught by `EnsurePreInsertionValidity()`
   // that gets invoked in `insertBefore()`:
   //
+  // "If parent is not a Document, DocumentFragment, or Element node, then...
   // "If node is a host-including inclusive ancestor of parent, then...
   // "If child is non-null and its parent is not parent, then..."
 
@@ -873,7 +876,7 @@ Node* Node::moveBefore(Node* new_child,
         DOMExceptionCode::kHierarchyRequestError,
         "State-preserving atomic move cannot be performed on nodes "
         "participating in an invalid hierarchy.");
-    return nullptr;
+    return;
   }
 
   // No script can run synchronously during the move. That means it is
@@ -887,14 +890,9 @@ Node* Node::moveBefore(Node* new_child,
 
   ContainerNode* old_parent = new_child->parentNode();
 
-  Node* return_node = insertBefore(new_child, ref_child, exception_state);
+  insertBefore(new_child, ref_child, exception_state);
   GetDocument().SetStatePreservingAtomicMoveInProgress(false);
   new_child->MovedFrom(*old_parent);
-
-  // We don't need to conditionally return `nullptr` if `exception_state` had an
-  // exception. `insertBefore()` already handles this for us, so we can just
-  // unconditionally return its value.
-  return return_node;
 }
 
 Node* Node::replaceChild(Node* new_child,

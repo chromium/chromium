@@ -95,11 +95,6 @@ void OverrideWithFinch(Config& config) {
       kInterestFeedV2, "load_more_trigger_lookahead",
       config.load_more_trigger_lookahead);
 
-  config.load_more_trigger_scroll_distance_dp =
-      base::GetFieldTrialParamByFeatureAsInt(
-          kInterestFeedV2Scrolling, "load_more_trigger_scroll_distance_dp",
-          config.load_more_trigger_scroll_distance_dp);
-
   config.upload_actions_on_enter_background =
       base::GetFieldTrialParamByFeatureAsBool(
           kInterestFeedV2, "upload_actions_on_enter_background",

@@ -32,6 +32,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/message_center/message_center.h"
@@ -146,7 +147,7 @@ class VmCameraMicManagerTest : public testing::Test {
 
     // Make the profile the primary one.
     fake_user_manager_->AddUser(AccountId::FromUserEmailGaiaId(
-        testing_profile_.GetProfileUserName(), "id"));
+        testing_profile_.GetProfileUserName(), GaiaId("id")));
 
     // Inject a fake notification display service.
     fake_display_service_ = static_cast<FakeNotificationDisplayService*>(

@@ -156,7 +156,7 @@ void FederatedServiceControllerImpl::OnLoginStatusChanged(
     federated::ServiceConnection::GetInstance()->BindReceiver(
         federated_service_.BindNewPipeAndPassReceiver());
 
-    if (features::IsFederatedServiceScheduleTasksEnabled()) {
+    if (features::IsFederatedServiceEnabled()) {
       federated_service_->StartSchedulingWithConfig(
           PrepareClientScheduleConfigs());
     }

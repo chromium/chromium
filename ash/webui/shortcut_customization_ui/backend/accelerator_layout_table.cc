@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h"
+
 #include <string>
 
+#include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/cpp/accelerators_util.h"
+#include "ash/public/mojom/accelerator_info.mojom-shared.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check_op.h"
@@ -556,6 +559,22 @@ const AcceleratorLayoutMap& GetAcceleratorLayoutMap() {
         AcceleratorLayoutDetails(
             AcceleratorAction::kStartAssistant,
             IDS_ASH_ACCELERATOR_DESCRIPTION_START_ASSISTANT,
+            mojom::AcceleratorCategory::kGeneral,
+            mojom::AcceleratorSubcategory::kGeneralControls,
+            /*locked=*/false, mojom::AcceleratorLayoutStyle::kDefault,
+            mojom::AcceleratorSource::kAsh)},
+       {AcceleratorAction::kToggleDoNotDisturb,
+        AcceleratorLayoutDetails(
+            AcceleratorAction::kToggleDoNotDisturb,
+            IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_DO_NOT_DISTURB,
+            mojom::AcceleratorCategory::kGeneral,
+            mojom::AcceleratorSubcategory::kGeneralControls, /*locked=*/false,
+            mojom::AcceleratorLayoutStyle::kDefault,
+            mojom::AcceleratorSource::kAsh)},
+       {AcceleratorAction::kToggleCameraAllowed,
+        AcceleratorLayoutDetails(
+            AcceleratorAction::kToggleCameraAllowed,
+            IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_CAMERA_ENABLED,
             mojom::AcceleratorCategory::kGeneral,
             mojom::AcceleratorSubcategory::kGeneralControls,
             /*locked=*/false, mojom::AcceleratorLayoutStyle::kDefault,

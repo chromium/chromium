@@ -94,9 +94,10 @@ void TouchSelectionMenuViews::ShowMenu(const gfx::Rect& anchor_rect,
   // passing down the cumulative width occupied by the handles within
   // |anchor_rect| plus the handle image height instead of |handle_image_size|.
   // Perhaps we should also allow for some minimum padding.
-  if (menu_width > anchor_rect.width() - handle_image_size.width())
+  if (menu_width > anchor_rect.width() - handle_image_size.width()) {
     adjusted_anchor_rect.Inset(
         gfx::Insets::TLBR(0, 0, -handle_image_size.height(), 0));
+  }
   adjusted_anchor_rect.Outset(kMenuAnchorRectPadding);
   SetAnchorRect(adjusted_anchor_rect);
 
@@ -129,12 +130,14 @@ bool TouchSelectionMenuViews::IsMenuAvailable(
 }
 
 void TouchSelectionMenuViews::CloseMenu() {
-  if (owner_)
+  if (owner_) {
     DisconnectOwner();
+  }
   // Closing the widget will self-destroy this object.
   Widget* widget = GetWidget();
-  if (widget && !widget->IsClosed())
+  if (widget && !widget->IsClosed()) {
     widget->Close();
+  }
 }
 
 TouchSelectionMenuViews::~TouchSelectionMenuViews() = default;
@@ -199,8 +202,9 @@ void TouchSelectionMenuViews::DisconnectOwner() {
 void TouchSelectionMenuViews::WindowClosing() {
   DCHECK(!owner_ || owner_->menu_ == this);
   BubbleDialogDelegateView::WindowClosing();
-  if (owner_)
+  if (owner_) {
     DisconnectOwner();
+  }
 }
 
 void TouchSelectionMenuViews::ButtonPressed(int command,

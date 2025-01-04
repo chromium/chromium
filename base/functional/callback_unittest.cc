@@ -705,8 +705,9 @@ TEST_F(CallbackTest, MaybeValidInvalidateWeakPtrsOnOtherSequence) {
             // Check that MaybeValid() _eventually_ returns false.
             const TimeDelta timeout = TestTimeouts::tiny_timeout();
             const TimeTicks begin = TimeTicks::Now();
-            while (cb.MaybeValid() && (TimeTicks::Now() - begin) < timeout)
+            while (cb.MaybeValid() && (TimeTicks::Now() - begin) < timeout) {
               PlatformThread::YieldCurrentThread();
+            }
             EXPECT_FALSE(cb.MaybeValid());
           },
           cb));

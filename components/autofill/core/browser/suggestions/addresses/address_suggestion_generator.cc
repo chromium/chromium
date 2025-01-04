@@ -21,24 +21,24 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_data_util.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
+#include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/addresses/field_filling_address_util.h"
 #include "components/autofill/core/browser/form_parsing/address_field_parser.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -126,6 +126,7 @@ std::u16string GetProfileSuggestionMainText(const AutofillProfile& profile,
   return profile.GetInfo(trigger_field_type, app_locale);
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Returns the minimum number of fields that should be returned by
 // `AutofillProfile::CreateInferredLabels()`, based on the type of the
 // triggering field.
@@ -138,6 +139,7 @@ int GetNumberOfMinimalFieldsToShow(FieldType trigger_field_type) {
     return 1;
   }
 }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Returns for each profile in `profiles` a differentiating label string to be
 // used as a secondary text in the corresponding suggestion bubble.
@@ -155,20 +157,20 @@ std::vector<std::u16string> GetProfileSuggestionLabels(
                          -> raw_ptr<const AutofillProfile, VectorExperimental> {
                        return &profile;
                      });
-  if (base::FeatureList::IsEnabled(features::kAutofillImprovedLabels) &&
-      !features::kAutofillImprovedLabelsParamOnlyWithMainTextChangesParam
-           .Get()) {
-    AutofillProfile::CreateInferredLabels(
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (base::FeatureList::IsEnabled(features::kAutofillImprovedLabels)) {
+    differentiating_labels = AutofillProfile::CreateInferredLabels(
         profile_ptrs, /*suggested_fields=*/std::nullopt, trigger_field_type,
         {trigger_field_type},
         GetNumberOfMinimalFieldsToShow(trigger_field_type), app_locale,
-        &differentiating_labels,
         /*use_improved_labels_order=*/true);
-  } else {
-    AutofillProfile::CreateInferredLabels(
+  } else
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  {
+    differentiating_labels = AutofillProfile::CreateInferredLabels(
         profile_ptrs, field_types, /*triggering_field_type=*/std::nullopt,
         {trigger_field_type},
-        /*minimal_fields_shown=*/1, app_locale, &differentiating_labels);
+        /*minimal_fields_shown=*/1, app_locale);
   }
   return differentiating_labels;
 }
@@ -603,7 +605,6 @@ std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
   if (profiles.empty()) {
     return {};
   }
-  const AutofillProfile& profile = *profiles[0];
 
   // The minimum number of characters a user needs to type to maybe see a
   // suggestion.
@@ -620,70 +621,105 @@ std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
   // This defines the maximum number of characters typed until suggestions are
   // no longer displayed.
   static constexpr size_t kMaxNumberCharactersToMatch = 10;
+  // Defines the required number of characters that need to be missing between
+  // the typed data and the profile data. This makes sure the value
+  // offered by the feature is higher, by for example not displaying a
+  // suggestion to fill "Tomas" when the user typed "Tom", since at this point
+  // users are more likely to simply finish typing.
+  static constexpr size_t kMinMissingCharactersNumber = 3;
   // Field types we are interested in showing suggestions for.
   // TODO(crbug.com/381994105): Add a finch parameter to easily experiment with
   // adding and removing field types.
-  static constexpr FieldTypeSet kTypes = {NAME_FIRST,
-                                          NAME_FULL,
-                                          NAME_LAST,
-                                          COMPANY_NAME,
-                                          ADDRESS_HOME_LINE1,
-                                          ADDRESS_HOME_STREET_ADDRESS,
-                                          ADDRESS_HOME_CITY,
-                                          ADDRESS_HOME_STATE,
-                                          ADDRESS_HOME_COUNTRY,
-                                          ADDRESS_HOME_STREET_NAME,
-                                          EMAIL_ADDRESS,
-                                          PHONE_HOME_WHOLE_NUMBER,
-                                          PHONE_HOME_CITY_AND_NUMBER,
-                                          ADDRESS_HOME_ZIP};
+  static constexpr FieldTypeSet kTypes = {
+      NAME_FIRST,
+      NAME_FULL,
+      NAME_LAST,
+      NAME_LAST_SECOND,
+      COMPANY_NAME,
+      ADDRESS_HOME_LINE1,
+      ADDRESS_HOME_LINE2,
+      ADDRESS_HOME_LINE3,
+      ADDRESS_HOME_STREET_ADDRESS,
+      ADDRESS_HOME_CITY,
+      ADDRESS_HOME_STATE,
+      ADDRESS_HOME_COUNTRY,
+      ADDRESS_HOME_STREET_NAME,
+      EMAIL_ADDRESS,
+      PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX,
+      PHONE_HOME_CITY_AND_NUMBER,
+      PHONE_HOME_WHOLE_NUMBER,
+      ADDRESS_HOME_ZIP};
   static constexpr FieldTypeSet kNumberTypes = {
-      PHONE_HOME_CITY_AND_NUMBER, PHONE_HOME_WHOLE_NUMBER, ADDRESS_HOME_ZIP};
+      PHONE_HOME_CITY_AND_NUMBER, PHONE_HOME_WHOLE_NUMBER, ADDRESS_HOME_ZIP,
+      PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX};
 
   std::vector<Suggestion> suggestions;
   std::set<std::u16string> suggestions_text;
-  for (FieldType type : kTypes) {
-    const size_t effective_num_characters_to_match =
-        kNumberTypes.contains(type) ? kMinNumberCharactersToMatchForNumberTypes
-                                    : kMinNumberCharactersToMatch;
-
-    const std::u16string normalized_field_contents =
-        NormalizeForComparisonForType(field_contents, type);
-    if (normalized_field_contents.size() < effective_num_characters_to_match) {
-      // Sometimes normalizing the string makes it shorter because of trimming
-      // spaces.
-      continue;
+  // The number of profiles that data will be derived from when generating
+  // suggestions.
+  static constexpr size_t kMaxNumberProfilesToUse = 3;
+  size_t profiles_used_count = 0;
+  for (const AutofillProfile* profile : profiles) {
+    if (profiles_used_count == kMaxNumberProfilesToUse) {
+      break;
     }
+    profiles_used_count++;
 
-    if (normalized_field_contents.size() > kMaxNumberCharactersToMatch) {
-      continue;
+    for (FieldType type : kTypes) {
+      const size_t effective_num_characters_to_match =
+          kNumberTypes.contains(type)
+              ? kMinNumberCharactersToMatchForNumberTypes
+              : kMinNumberCharactersToMatch;
+
+      const std::u16string normalized_field_contents =
+          NormalizeForComparisonForType(field_contents, type);
+      if (normalized_field_contents.size() <
+          effective_num_characters_to_match) {
+        // Sometimes normalizing the string makes it shorter because of trimming
+        // spaces.
+        continue;
+      }
+
+      if (normalized_field_contents.size() > kMaxNumberCharactersToMatch) {
+        continue;
+      }
+
+      std::u16string suggestion_text =
+          profile->GetInfo(type, address_data_manager.app_locale());
+      const std::u16string profile_data =
+          NormalizeForComparisonForType(suggestion_text, type);
+
+      if (profile_data.empty()) {
+        continue;
+      }
+
+      if (!IsValidAddressSuggestionForFieldContents(
+              profile_data, normalized_field_contents, type)) {
+        continue;
+      }
+
+      if (profile_data.size() - normalized_field_contents.size() <
+          kMinMissingCharactersNumber) {
+        continue;
+      }
+
+      // Do not allow duplicated suggestions, for example if
+      // `ADDRESS_HOME_LINE1` and
+      // `ADDRESS_HOME_STREET_ADDRESS` hold the same data.
+      if (!suggestions_text.contains(suggestion_text)) {
+        suggestions.emplace_back(suggestion_text,
+                                 SuggestionType::kAddressEntryOnTyping);
+        suggestions.back().field_by_field_filling_type_used = type;
+        suggestions.back().payload = Suggestion::AutofillProfilePayload(
+            Suggestion::Guid(profile->guid()));
+        suggestions_text.insert(suggestion_text);
+      }
     }
-
-    std::u16string suggestion_text =
-        profile.GetInfo(type, address_data_manager.app_locale());
-    const std::u16string profile_data =
-        NormalizeForComparisonForType(suggestion_text, type);
-
-    if (profile_data.empty()) {
-      continue;
-    }
-
-    if (!IsValidAddressSuggestionForFieldContents(
-            profile_data, normalized_field_contents, type)) {
-      continue;
-    }
-
-    // Do not allow duplicated suggestions, for example if
-    // `ADDRESS_HOME_LINE1` and
-    // `ADDRESS_HOME_STREET_ADDRESS` hold the same data.
-    if (!suggestions_text.contains(suggestion_text)) {
-      suggestions.emplace_back(suggestion_text,
-                               SuggestionType::kAddressEntryOnTyping);
-      suggestions.back().field_by_field_filling_type_used = type;
-      suggestions.back().payload =
-          Suggestion::AutofillProfilePayload(Suggestion::Guid(profile.guid()));
-      suggestions_text.insert(suggestion_text);
-    }
+  }
+  if (suggestions.size() > 0) {
+    // TODO(crbug.com/381994105): Consider adding undo.
+    base::ranges::move(GetAddressFooterSuggestions(/*is_autofilled=*/false),
+                       std::back_inserter(suggestions));
   }
   return suggestions;
 }

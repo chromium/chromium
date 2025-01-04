@@ -17,16 +17,13 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/input_event_activation_protector.h"
 
-using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
-using IdentityRequestAccountPtr =
-    scoped_refptr<content::IdentityRequestAccount>;
-using TokenError = content::IdentityCredentialTokenError;
-
-class AccountSelectionViewBase;
-
 namespace tabs {
 class TabInterface;
 }  // namespace tabs
+
+namespace webid {
+
+class AccountSelectionViewBase;
 
 // Provides an implementation of the AccountSelectionView interface on desktop,
 // which creates the AccountSelectionBubbleView dialog to display the FedCM
@@ -370,33 +367,52 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // This enum describes the outcome of the loading dialog and is used for
   // histograms. Do not remove or modify existing values, but you may add new
   // values at the end. This enum should be kept in sync with
+  // LoadingDialogResult in
+  // chrome/browser/ui/android/webid/AccountSelectionMediator.java as well as
   // FedCmLoadingDialogResult in tools/metrics/histograms/enums.xml.
   enum class LoadingDialogResult {
     kProceed,
     kCancel,
     kProceedThroughPopup,
     kDestroy,
+    // Android-specific
+    kSwipe,
+    // Android-specific
+    kBackPress,
+    // Android-specific
+    kTapScrim,
 
-    kMaxValue = kDestroy
+    kMaxValue = kTapScrim
   };
 
   // This enum describes the outcome of the disclosure dialog and is used for
   // histograms. Do not remove or modify existing values, but you may add new
   // values at the end. This enum should be kept in sync with
+  // DisclosureDialogResult in
+  // chrome/browser/ui/android/webid/AccountSelectionMediator.java as well as
   // FedCmDisclosureDialogResult in tools/metrics/histograms/enums.xml.
   enum class DisclosureDialogResult {
     kContinue,
     kCancel,
     kBack,
     kDestroy,
+    // Android-specific
+    kSwipe,
+    // Android-specific
+    kBackPress,
+    // Android-specific
+    kTapScrim,
 
-    kMaxValue = kDestroy
+    kMaxValue = kTapScrim
   };
 
   // Called when the tab's WebContents is discarded.
   void WillDiscardContents(tabs::TabInterface* tab,
                            content::WebContents* old_contents,
                            content::WebContents* new_contents);
+
+  // Called when the tab's modalUI is shown or hidden.
+  void ModalUIChanged(tabs::TabInterface* tab);
 
   // Returns false if `this` got deleted. In that case, the caller must early
   // return.
@@ -455,6 +471,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // always updates the dialog position if the dialog should be visible. If the
   // dialog should be visible, and it is not, this method makes the dialog
   // visible and focuses the dialog.
+  // All control flows that want to show the dialog must go through this method.
+  // This ensures the complex logic to determine visibility is centralized.
   void UpdateDialogVisibilityAndPosition();
 
   // Called when any of the Show*() methods is called.
@@ -562,6 +580,11 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // showing.
   std::optional<content::WebContents::ScopedIgnoreInputEvents>
       scoped_ignore_input_events_;
+  // Allows the tab to receive mouse events even when the window is inactive
+  // (because the bubble window is active). This is if and only if the bubble
+  // widget is showing.
+  std::unique_ptr<tabs::ScopedAcceptMouseEventsWhileWindowInactive>
+      tab_accept_mouse_events_;
 
   // Widget that owns the view.
   std::unique_ptr<views::Widget> dialog_widget_;
@@ -574,5 +597,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   base::WeakPtrFactory<FedCmAccountSelectionView> weak_ptr_factory_{this};
 };
+
+}  // namespace webid
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBID_FEDCM_ACCOUNT_SELECTION_VIEW_DESKTOP_H_

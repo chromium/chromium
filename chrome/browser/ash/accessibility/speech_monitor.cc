@@ -209,11 +209,6 @@ void SpeechMonitor::FinalizeVoiceOrdering(
 
 void SpeechMonitor::RefreshVoices() {}
 
-content::ExternalPlatformDelegate*
-SpeechMonitor::GetExternalPlatformDelegate() {
-  return nullptr;
-}
-
 double SpeechMonitor::CalculateUtteranceDelayMS() {
   std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
   std::chrono::duration<double> time_span =

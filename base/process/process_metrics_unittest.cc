@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/process/process_metrics.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <sstream>
 #include <string>
@@ -895,7 +891,7 @@ TEST(ProcessMetricsTest, DISABLED_GetNumberOfThreads) {
   ASSERT_GT(initial_threads, 0);
   const int kNumAdditionalThreads = 10;
   {
-    std::unique_ptr<Thread> my_threads[kNumAdditionalThreads];
+    std::array<std::unique_ptr<Thread>, kNumAdditionalThreads> my_threads;
     for (int i = 0; i < kNumAdditionalThreads; ++i) {
       my_threads[i] = std::make_unique<Thread>("GetNumberOfThreadsTest");
       my_threads[i]->Start();

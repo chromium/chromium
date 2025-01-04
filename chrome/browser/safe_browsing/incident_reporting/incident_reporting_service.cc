@@ -218,8 +218,7 @@ IncidentReportingService::Receiver::Receiver(
     : service_(service),
       thread_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
-IncidentReportingService::Receiver::~Receiver() {
-}
+IncidentReportingService::Receiver::~Receiver() = default;
 
 void IncidentReportingService::Receiver::AddIncidentForProfile(
     Profile* profile,
@@ -301,8 +300,7 @@ IncidentReportingService::UploadContext::UploadContext(
     std::unique_ptr<ClientIncidentReport> report)
     : report(std::move(report)) {}
 
-IncidentReportingService::UploadContext::~UploadContext() {
-}
+IncidentReportingService::UploadContext::~UploadContext() = default;
 
 // static
 bool IncidentReportingService::IsEnabledForProfile(Profile* profile) {

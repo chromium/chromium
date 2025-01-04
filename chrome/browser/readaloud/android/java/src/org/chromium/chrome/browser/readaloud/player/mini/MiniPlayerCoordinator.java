@@ -95,6 +95,10 @@ public class MiniPlayerCoordinator {
         }
         mPlayerCoordinator = playerCoordinator;
         mUserEducationHelper = userEducationHelper;
+
+        // TODO(crbug.com/383544537) These should be CompositorModelChangeProcessors. The miniplayer
+        // currently relies on other objects to request a new frame. If no new frame is requested,
+        // changes to these models won't be reflected on the screen.
         PropertyModelChangeProcessor.create(
                 sharedModel, mLayout, MiniPlayerViewBinder::bindPlayerProperties);
         PropertyModelChangeProcessor.create(

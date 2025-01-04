@@ -14,7 +14,6 @@
 #include <atlcomcli.h>
 #include <atlconv.h>
 #include <lm.h>
-#include <ntsecapi.h>
 #include <ntstatus.h>
 #include <process.h>
 #include <sddl.h>
@@ -29,6 +28,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
+#include "base/win/ntsecapi_shim.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
 #include "chrome/credential_provider/common/gcp_strings.h"

@@ -155,7 +155,7 @@ scoped_refptr<media::StreamParserBuffer> MakeAudioStreamParserBuffer(
       kWebCodecsAudioTrackId);
 
   // Currently, we do not populate any side_data in these converters.
-  DCHECK(!stream_parser_buffer->has_side_data());
+  DCHECK(!stream_parser_buffer->side_data());
 
   stream_parser_buffer->set_timestamp(audio_chunk.buffer()->timestamp());
   // TODO(crbug.com/1144908): Get EncodedAudioChunk to have an optional duration
@@ -180,7 +180,7 @@ scoped_refptr<media::StreamParserBuffer> MakeVideoStreamParserBuffer(
       kWebCodecsVideoTrackId);
 
   // Currently, we do not populate any side_data in these converters.
-  DCHECK(!stream_parser_buffer->has_side_data());
+  DCHECK(!stream_parser_buffer->side_data());
 
   stream_parser_buffer->set_timestamp(video_chunk.buffer()->timestamp());
   // TODO(crbug.com/1144908): Get EncodedVideoChunk to have an optional decode

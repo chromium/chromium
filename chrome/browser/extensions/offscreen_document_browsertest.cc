@@ -137,7 +137,8 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest,
   {
     mojom::ContextType context_type =
         ProcessMap::Get(profile())->GetMostLikelyContextType(
-            extension, contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+            extension,
+            contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
             &offscreen_url);
     // TODO(crbug.com/40849649): The following check should be:
     //   EXPECT_EQ(mojom::ContextType::kOffscreenExtension, context_type);

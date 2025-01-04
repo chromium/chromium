@@ -37,9 +37,9 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/input/native_web_keyboard_event.h"
@@ -1994,7 +1994,7 @@ TEST_F(PopupViewViewsTest, SearchBar_PressedKeysPassedToController) {
   generator().PressAndReleaseKey(ui::VKEY_DOWN);
 }
 
-TEST_F(PopupViewViewsTest, PredictionImprovementsLoadingOnShowA11yFocus) {
+TEST_F(PopupViewViewsTest, AutofillAiLoadingOnShowA11yFocus) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
   CreateAndShowView({SuggestionType::kAutofillAiLoadingState});
 
@@ -2007,8 +2007,7 @@ TEST_F(PopupViewViewsTest, PredictionImprovementsLoadingOnShowA11yFocus) {
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kFocus, *row_view));
 }
 
-TEST_F(PopupViewViewsTest,
-       PredictionImprovementsLoadingOnSuggestionsChangedA11yFocus) {
+TEST_F(PopupViewViewsTest, AutofillAiLoadingOnSuggestionsChangedA11yFocus) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
   CreateAndShowView({SuggestionType::kFillAutofillAi});
   UpdateSuggestions({SuggestionType::kAutofillAiLoadingState});
@@ -2022,7 +2021,7 @@ TEST_F(PopupViewViewsTest,
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kFocus, *row_view));
 }
 
-TEST_F(PopupViewViewsTest, PredictionImprovementsSuggestionsLoadedAnnounced) {
+TEST_F(PopupViewViewsTest, AutofillAiSuggestionsLoadedAnnounced) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
   CreateAndShowView({SuggestionType::kAutofillAiLoadingState});
   MockFunction<PopupViewViewsTestApi::A11yAnnouncer::RunType> a11y_announcer;

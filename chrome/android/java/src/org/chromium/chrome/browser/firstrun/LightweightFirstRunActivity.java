@@ -267,7 +267,7 @@ public class LightweightFirstRunActivity extends FirstRunActivityBase
 
     private void exitLightweightFirstRun() {
         finish();
-        sendFirstRunCompletePendingIntent();
+        sendFirstRunCompleteIntent();
     }
 
     private void acceptTermsOfService() {

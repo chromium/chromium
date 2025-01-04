@@ -6,6 +6,7 @@
 #define NET_DEVICE_BOUND_SESSIONS_TEST_SUPPORT_H_
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -23,6 +24,10 @@ GetRS256SpkiAndJwkForTesting();
 // sessions.
 EmbeddedTestServer::HandleRequestCallback GetTestRequestHandler(
     const GURL& base_url);
+
+// Verify the signature of a JWT using the ES256 JWK stored in the "key" claim
+// in its payload.
+bool VerifyEs256Jwt(std::string_view jwt);
 
 }  // namespace net::device_bound_sessions
 

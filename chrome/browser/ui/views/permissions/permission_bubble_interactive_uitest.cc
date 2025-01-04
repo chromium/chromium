@@ -37,8 +37,7 @@ enum ChipFeatureConfig {
 
 class PermissionBubbleInteractiveUITest : public InProcessBrowserTest {
  public:
-  PermissionBubbleInteractiveUITest() {
-  }
+  PermissionBubbleInteractiveUITest() = default;
 
   PermissionBubbleInteractiveUITest(const PermissionBubbleInteractiveUITest&) =
       delete;

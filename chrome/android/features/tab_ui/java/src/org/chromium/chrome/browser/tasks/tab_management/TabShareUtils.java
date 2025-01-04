@@ -23,6 +23,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
+import java.util.List;
 import java.util.Objects;
 
 /** Static utilities for interacting with shared tab groups. */
@@ -91,6 +92,33 @@ public class TabShareUtils {
             } else {
                 return GroupSharedState.HAS_OTHER_USERS;
             }
+        }
+    }
+
+    /**
+     * @param outcome The result of a group read.
+     * @return The members of the group or null.
+     */
+    public static @Nullable List<GroupMember> getGroupMembers(
+            @Nullable GroupDataOrFailureOutcome outcome) {
+        if (outcome == null || outcome.actionFailure != PeopleGroupActionFailure.UNKNOWN) {
+            return null;
+        } else {
+            return getGroupMembers(outcome.groupData);
+        }
+    }
+
+    /**
+     * @param groupData The shared group data.
+     * @return The members of the group or null
+     */
+    public static @Nullable List<GroupMember> getGroupMembers(@Nullable GroupData groupData) {
+        if (groupData == null) {
+            return null;
+        } else {
+            @Nullable List<GroupMember> members = groupData.members;
+            if (members == null) return null;
+            return members.isEmpty() ? null : members;
         }
     }
 

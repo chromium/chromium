@@ -25,8 +25,9 @@ CastSessionTracker::~CastSessionTracker() {
 
 // static
 CastSessionTracker* CastSessionTracker::GetInstance() {
-  if (instance_for_test_)
+  if (instance_for_test_) {
     return instance_for_test_;
+  }
 
   static CastSessionTracker* instance = new CastSessionTracker(
       DualMediaSinkService::GetInstance()->GetCastMediaSinkServiceImpl(),
@@ -90,8 +91,9 @@ void CastSessionTracker::HandleReceiverStatusMessage(
   const MediaSink::Id& sink_id = sink.sink().id();
   if (!session) {
     if (sessions_by_sink_id_.erase(sink_id)) {
-      for (auto& observer : observers_)
+      for (auto& observer : observers_) {
         observer.OnSessionRemoved(sink);
+      }
     }
     return;
   }
@@ -103,8 +105,9 @@ void CastSessionTracker::HandleReceiverStatusMessage(
     it->second->UpdateSession(std::move(session));
   }
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnSessionAddedOrUpdated(sink, *it->second);
+  }
 }
 
 void CastSessionTracker::HandleMediaStatusMessage(
@@ -144,8 +147,9 @@ void CastSessionTracker::HandleMediaStatusMessage(
     media_dict.Set("sessionId", session_id);
     std::optional<int> supported_media_commands =
         media_dict.FindInt("supportedMediaCommands");
-    if (!supported_media_commands.has_value())
+    if (!supported_media_commands.has_value()) {
       continue;
+    }
 
     media_dict.Set(
         "supportedMediaCommands",
@@ -161,8 +165,9 @@ void CastSessionTracker::HandleMediaStatusMessage(
       cast_channel::GetRequestIdFromResponse(updated_message);
 
   // Notify observers of media update.
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnMediaStatusUpdated(sink, updated_message, request_id);
+  }
 }
 
 void CastSessionTracker::CopySavedMediaFieldsToMediaList(
@@ -173,34 +178,39 @@ void CastSessionTracker::CopySavedMediaFieldsToMediaList(
   // to the corresponding objects in |media_list|.
   const base::Value::List* session_media_value_list =
       session->value().FindList("media");
-  if (!session_media_value_list)
+  if (!session_media_value_list) {
     return;
+  }
 
   for (auto& media : media_list) {
     base::Value::Dict& media_dict = media.GetDict();
     std::optional<int> media_session_id = media_dict.FindInt("mediaSessionId");
-    if (!media_session_id.has_value() || media_dict.Find("media"))
+    if (!media_session_id.has_value() || media_dict.Find("media")) {
       continue;
+    }
 
     auto session_media_it = base::ranges::find(
         *session_media_value_list, media_session_id,
         [](const base::Value& session_media) {
           return session_media.GetDict().FindInt("mediaSessionId");
         });
-    if (session_media_it == session_media_value_list->end())
+    if (session_media_it == session_media_value_list->end()) {
       continue;
+    }
     const base::Value* session_media =
         session_media_it->GetDict().Find("media");
-    if (session_media)
+    if (session_media) {
       media_dict.Set("media", session_media->Clone());
+    }
   }
 }
 
 const MediaSinkInternal* CastSessionTracker::GetSinkByChannelId(
     int channel_id) const {
   for (const auto& sink : media_sink_service_->GetSinks()) {
-    if (sink.second.cast_data().cast_channel_id == channel_id)
+    if (sink.second.cast_data().cast_channel_id == channel_id) {
       return &sink.second;
+    }
   }
   return nullptr;
 }
@@ -213,8 +223,9 @@ void CastSessionTracker::OnSinkAddedOrUpdated(const MediaSinkInternal& sink) {
 void CastSessionTracker::OnSinkRemoved(const MediaSinkInternal& sink) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (sessions_by_sink_id_.erase(sink.sink().id())) {
-    for (auto& observer : observers_)
+    for (auto& observer : observers_) {
       observer.OnSessionRemoved(sink);
+    }
   }
 }
 

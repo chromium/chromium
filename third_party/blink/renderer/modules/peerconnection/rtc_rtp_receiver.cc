@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_receiver.h"
 
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"

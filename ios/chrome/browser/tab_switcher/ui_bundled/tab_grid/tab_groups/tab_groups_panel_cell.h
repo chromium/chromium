@@ -24,6 +24,11 @@
 
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 
+// Configures the `facePileViewController` with its `parentViewController`. The
+// parent must be non-nil if the face pile is non nil.
+- (void)setFacePileViewController:(UIViewController*)facePileViewController
+             parentViewController:(UIViewController*)parentViewController;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_TAB_GROUPS_TAB_GROUPS_PANEL_CELL_H_

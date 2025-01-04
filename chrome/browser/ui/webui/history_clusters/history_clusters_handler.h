@@ -118,7 +118,7 @@ class HistoryClustersHandler : public mojom::PageHandler,
                   HideVisitsCallback callback) override;
   void OpenVisitUrlsInTabGroup(
       std::vector<mojom::URLVisitPtr> visits,
-      const std::optional<std::string>& tab_group_name = std::nullopt) override;
+      const std::optional<std::string>& tab_group_name) override;
   void RecordVisitAction(mojom::VisitAction visit_action,
                          uint32_t visit_index,
                          mojom::VisitType visit_type) override;

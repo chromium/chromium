@@ -8,6 +8,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,6 +25,7 @@ import java.util.Map;
  * to get the pointer to the base::android::FeatureMap. The derived class will provide Java code
  * access to the list of base::Features passed to the base::android::FeatureMap.
  */
+@NullMarked
 @JNINamespace("base::android")
 public abstract class FeatureMap {
     private long mNativeMapPtr;
@@ -41,8 +44,9 @@ public abstract class FeatureMap {
      * to be marked as active.
      *
      * <p>Should be called only after native is loaded. If {@link FeatureList#isInitialized()}
-     * returns true, this method is safe to call. In tests, this will return any values set through
-     * {@link FeatureList#setTestFeatures(Map)}, even before native is loaded.
+     * returns true, this method is safe to call. In tests, this will return any values set
+     * through @Enable/@DisableFeatures annotations or {@link
+     * FeatureList#setTestValues(FeatureList.TestValues)}, even before native is loaded.
      *
      * @param featureName The name of the feature to query.
      * @return Whether the feature is enabled or not.

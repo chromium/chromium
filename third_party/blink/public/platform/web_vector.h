@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/377326291): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_VECTOR_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_VECTOR_H_
 
@@ -99,9 +94,6 @@ class WebVector {
 
   // Create a vector with |size| default-constructed elements.
   explicit WebVector(uint32_t size) : data_(size) {}
-
-  template <typename U>
-  WebVector(const U* values, size_t size) : data_(values, values + size) {}
 
   WebVector(const WebVector<T>& other) : data_(other.data_) {}
 

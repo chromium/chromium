@@ -20,7 +20,6 @@
 #include "chrome/browser/browser_process_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/version/version_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -41,6 +40,7 @@
 #include "content/public/common/user_agent.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/webui/webui_util.h"
 #include "v8/include/v8-version-string.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -269,8 +269,9 @@ void VersionUI::AddVersionDetailStrings(content::WebUIDataSource* html_source) {
   std::string command_line;
   typedef std::vector<std::string> ArgvList;
   const ArgvList& argv = base::CommandLine::ForCurrentProcess()->argv();
-  for (auto iter = argv.begin(); iter != argv.end(); iter++)
-    command_line += " " + *iter;
+  for (const auto& iter : argv) {
+    command_line += " " + iter;
+  }
   // TODO(viettrungluu): |command_line| could really have any encoding, whereas
   // below we assumes it's UTF-8.
   html_source->AddString(version_ui::kCommandLine, command_line);

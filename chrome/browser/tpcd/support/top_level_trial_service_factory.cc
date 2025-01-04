@@ -30,8 +30,7 @@ TopLevelTrialService* TopLevelTrialServiceFactory::GetForProfile(
 // static
 ProfileSelections TopLevelTrialServiceFactory::CreateProfileSelections() {
   if (!base::FeatureList::IsEnabled(
-          net::features::kTopLevelTpcdTrialSettings) ||
-      !base::FeatureList::IsEnabled(features::kPersistentOriginTrials)) {
+          net::features::kTopLevelTpcdTrialSettings)) {
     return ProfileSelections::BuildNoProfilesSelected();
   }
 

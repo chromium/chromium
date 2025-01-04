@@ -816,21 +816,21 @@ gn_args.config(
 )
 
 gn_args.config(
-    name = "lacros",
-    args = {
-        "target_os": "chromeos",
-        "chromeos_is_browser_only": True,
-    },
-)
-
-gn_args.config(
-    name = "lacros_on_linux",
-    args = {
-        "chromeos_is_browser_only": True,
-    },
+    name = "chromeos_on_linux",
     configs = [
         "chromeos",
     ],
+)
+
+# Do not use this for non-FYI builders.
+gn_args.config(
+    name = "libcxx_modules",
+    args = {
+        # TODO: crbug.com/351909443 - remove once performance of plugins is
+        # improved.
+        "clang_use_chrome_plugins": False,
+        "use_libcxx_modules": True,
+    },
 )
 
 gn_args.config(
@@ -1414,6 +1414,13 @@ gn_args.config(
     configs = [
         "x64",
     ],
+)
+
+gn_args.config(
+    name = "v8_sandbox_testing",
+    args = {
+        "v8_enable_memory_corruption_api": True,
+    },
 )
 
 gn_args.config(

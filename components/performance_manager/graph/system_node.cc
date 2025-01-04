@@ -14,7 +14,4 @@ SystemNode::~SystemNode() = default;
 SystemNodeObserver::SystemNodeObserver() = default;
 SystemNodeObserver::~SystemNodeObserver() = default;
 
-SystemNode::ObserverDefaultImpl::ObserverDefaultImpl() = default;
-SystemNode::ObserverDefaultImpl::~ObserverDefaultImpl() = default;
-
 }  // namespace performance_manager

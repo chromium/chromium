@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'chrome://settings/settings.js';
+import 'chrome://settings/settings.js';
 
 import {FeatureOptInState, SettingsAiPageFeaturePrefName as PrefName, UserAnnotationsManagerProxyImpl} from 'chrome://settings/lazy_load.js';
 import type {CrLinkRowElement, SettingsAiPageElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {AiPageInteractions, CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, resetRouterForTesting, Router, routes, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
+import {AiPageInteractions, CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-
-import {assertEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {TestUserAnnotationsManagerProxyImpl} from './test_user_annotations_manager_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+import {TestUserAnnotationsManagerProxyImpl} from './test_user_annotations_manager_proxy.js';
 
 suite('ExperimentalAdvancedPage', function() {
   let metricsBrowserProxy: TestMetricsBrowserProxy;
@@ -73,7 +72,7 @@ suite('ExperimentalAdvancedPage', function() {
   test('FeaturesVisibilityWithRefreshEnabled', async () => {
     // Case 1, a subset of the controls should be visible.
     loadTimeData.overrideValues({
-      autofillPredictionImprovementsEnabled: true,
+      autofillAiEnabled: true,
       showHistorySearchControl: false,
       showCompareControl: true,
       showComposeControl: true,
@@ -123,7 +122,7 @@ suite('ExperimentalAdvancedPage', function() {
 
     // Case 2, a different subset of the controls should be visible.
     loadTimeData.overrideValues({
-      autofillPredictionImprovementsEnabled: false,
+      autofillAiEnabled: false,
       showHistorySearchControl: true,
       showCompareControl: false,
       showComposeControl: false,
@@ -279,26 +278,72 @@ suite('ExperimentalAdvancedPage', function() {
         routes.AI_TAB_ORGANIZATION, Router.getInstance().getCurrentRoute());
   });
 
-  test('AutofillAiRow', async () => {
+  test('autofillAiRowVisible', async () => {
+    // The AutofillAI row should be visible if autofillAiEnabled is true.
     loadTimeData.overrideValues({
-      autofillPredictionImprovementsEnabled: true,
+      autofillAiEnabled: true,
+      showAiSettingsForTesting: false,
     });
     resetRouterForTesting();
+
     await createPage();
 
     const autofillAiRow =
         page.shadowRoot!.querySelector<HTMLElement>('#autofillAiRowV2');
     assertTrue(!!autofillAiRow);
     assertTrue(isVisible(autofillAiRow));
+  });
 
+  test('autofillAiRowVisibleForTesting', async () => {
+    // The AutofillAI row should be visible if showAiSettingsForTesting is true.
+    loadTimeData.overrideValues({
+      autofillAiEnabled: false,
+      showAiSettingsForTesting: true,
+    });
+    resetRouterForTesting();
+
+    await createPage();
+
+    const autofillAiRow =
+        page.shadowRoot!.querySelector<HTMLElement>('#autofillAiRowV2');
+    assertTrue(!!autofillAiRow);
+    assertTrue(isVisible(autofillAiRow));
+  });
+
+  test('autofillAiRowNotVisible', async () => {
+    // The AutofillAI row should not be visible if autofillAiEnabled and
+    // showAiSettingsForTesting are false.
+    loadTimeData.overrideValues({
+      autofillAiEnabled: false,
+      showAiSettingsForTesting: false,
+    });
+    resetRouterForTesting();
+
+    await createPage();
+
+    const autofillAiRow =
+        page.shadowRoot!.querySelector<HTMLElement>('#autofillAiRowV2');
+    assertTrue(!!autofillAiRow);
+    assertFalse(isVisible(autofillAiRow));
+  });
+
+  test('autofillAiRowClick', async () => {
+    loadTimeData.overrideValues({
+      autofillAiEnabled: true,
+    });
+    resetRouterForTesting();
+
+    await createPage();
+
+    const autofillAiRow =
+        page.shadowRoot!.querySelector<HTMLElement>('#autofillAiRowV2');
+    assertTrue(!!autofillAiRow);
     autofillAiRow.click();
+
     await verifyFeatureInteractionMetrics(
         AiPageInteractions.AUTOFILL_AI_CLICK,
         'Settings.AiPage.AutofillAIEntryPointClick');
-
-    assertEquals(
-        routes.AUTOFILL_PREDICTION_IMPROVEMENTS,
-        Router.getInstance().getCurrentRoute());
+    assertEquals(routes.AUTOFILL_AI, Router.getInstance().getCurrentRoute());
   });
 
   test('WallpaperSearchRow', async () => {
@@ -373,7 +418,7 @@ suite('ExperimentalAdvancedPageRefreshDisabled', () => {
   test('AutofillAIVisibility', async () => {
     // Hide Autofill AI row.
     loadTimeData.overrideValues({
-      autofillPredictionImprovementsEnabled: false,
+      autofillAiEnabled: false,
     });
     await createPage();
 
@@ -383,7 +428,7 @@ suite('ExperimentalAdvancedPageRefreshDisabled', () => {
 
     // Show Autofill AI search row.
     loadTimeData.overrideValues({
-      autofillPredictionImprovementsEnabled: true,
+      autofillAiEnabled: true,
     });
     await createPage();
 

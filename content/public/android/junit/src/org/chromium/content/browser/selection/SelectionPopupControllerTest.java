@@ -49,7 +49,6 @@ import org.robolectric.shadows.ShadowLog;
 import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content.browser.GestureListenerManagerImpl;
@@ -66,7 +65,6 @@ import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 import org.chromium.content_public.browser.test.util.TestSelectionDropdownMenuDelegate;
-import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.mojom.MenuSourceType;
@@ -99,7 +97,6 @@ public class SelectionPopupControllerTest {
     private PopupController mPopupController;
     private GestureListenerManagerImpl mGestureStateListenerManager;
     private RenderFrameHost mRenderFrameHost;
-    private FeatureList.TestValues mTestValues;
 
     private static final String MOUNTAIN_FULL = "585 Franklin Street, Mountain View, CA 94041";
     private static final String MOUNTAIN = "Mountain";
@@ -175,10 +172,7 @@ public class SelectionPopupControllerTest {
         mPopupController = Mockito.mock(PopupController.class);
         mGestureStateListenerManager = Mockito.mock(GestureListenerManagerImpl.class);
 
-        mTestValues = new FeatureList.TestValues();
         setDropdownMenuFeatureEnabled(false);
-        mTestValues.addFeatureFlagOverride(ContentFeatures.SELECTION_MENU_ITEM_MODIFICATION, true);
-        FeatureList.setTestValues(mTestValues);
 
         SelectionPopupControllerImpl.setDisableMagnifierForTesting(true);
 

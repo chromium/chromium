@@ -184,7 +184,6 @@ class EventLoggerDelegate : public EventTelemetryLogger::Delegate {
       : uploader_(base::SequenceBound<EventUploader>(
             base::SequencedTaskRunner::GetCurrentDefault(),
             url_loader_factory)) {}
-  ~EventLoggerDelegate() override = default;
 
   // Overrides of EventLogger:Delegate.
   // This is a long-live app and doesn't actually store the next allowed time

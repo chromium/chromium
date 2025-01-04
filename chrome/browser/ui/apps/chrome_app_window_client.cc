@@ -70,10 +70,11 @@ void ChromeAppWindowClient::OpenDevToolsWindow(
 
   DevToolsWindow* devtools_window =
       DevToolsWindow::FindDevToolsWindow(agent.get());
-  if (devtools_window)
+  if (devtools_window) {
     devtools_window->SetLoadCompletedCallback(std::move(callback));
-  else
+  } else {
     std::move(callback).Run();
+  }
 }
 
 bool ChromeAppWindowClient::IsCurrentChannelOlderThanDev() {

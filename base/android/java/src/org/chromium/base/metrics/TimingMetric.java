@@ -5,9 +5,9 @@
 package org.chromium.base.metrics;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 
 import org.chromium.base.TimeUtils;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -17,6 +17,7 @@ import java.lang.annotation.RetentionPolicy;
  * block. Measures time elapsed between instantiation and the call to close using supplied time
  * source.
  */
+@NullMarked
 public class TimingMetric implements AutoCloseable {
     @IntDef({TimerType.SHORT_UPTIME, TimerType.MEDIUM_UPTIME, TimerType.SHORT_THREAD_TIME})
     @Retention(RetentionPolicy.SOURCE)
@@ -36,7 +37,7 @@ public class TimingMetric implements AutoCloseable {
      *
      * @param metricName The name of the histogram to record.
      */
-    public static TimingMetric shortUptime(@NonNull String metricName) {
+    public static TimingMetric shortUptime(String metricName) {
         TimingMetric ret = new TimingMetric(metricName, TimerType.SHORT_UPTIME);
         ret.mStartTime = TimeUtils.uptimeMillis();
         return ret;
@@ -48,7 +49,7 @@ public class TimingMetric implements AutoCloseable {
      *
      * @param metricName The name of the histogram to record.
      */
-    public static TimingMetric mediumUptime(@NonNull String metricName) {
+    public static TimingMetric mediumUptime(String metricName) {
         TimingMetric ret = new TimingMetric(metricName, TimerType.MEDIUM_UPTIME);
         ret.mStartTime = TimeUtils.uptimeMillis();
         return ret;
@@ -60,7 +61,7 @@ public class TimingMetric implements AutoCloseable {
      *
      * @param metricName The name of the histogram to record.
      */
-    public static TimingMetric shortThreadTime(@NonNull String metricName) {
+    public static TimingMetric shortThreadTime(String metricName) {
         TimingMetric ret = new TimingMetric(metricName, TimerType.SHORT_THREAD_TIME);
         ret.mStartTime = TimeUtils.currentThreadTimeMillis();
         return ret;

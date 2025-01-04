@@ -349,15 +349,13 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                 addFirstCardPref.setButtonText(
                         getResources()
                                 .getString(R.string.autofill_create_first_credit_card_button_text));
-                // CardWithButtonPreference calls the click listener for button clicks.
-                addFirstCardPref.setOnPreferenceClickListener(
-                        preference -> {
+                addFirstCardPref.setOnButtonClick(
+                        () -> {
                             Intent intent =
                                     SettingsNavigationFactory.createSettingsNavigation()
                                             .createSettingsIntent(
                                                     getActivity(), AutofillLocalCardEditor.class);
                             startActivity(intent);
-                            return true;
                         });
                 getPreferenceScreen().addPreference(addFirstCardPref);
             } else {

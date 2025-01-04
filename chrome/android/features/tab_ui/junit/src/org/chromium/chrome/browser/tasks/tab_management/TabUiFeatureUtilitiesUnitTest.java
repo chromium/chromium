@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 
 /** Unit Tests for {@link TabUiFeatureUtilities}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING_ENABLE_OEM)
 public class TabUiFeatureUtilitiesUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

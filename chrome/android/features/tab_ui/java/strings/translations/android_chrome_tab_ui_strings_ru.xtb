@@ -77,7 +77,6 @@
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{Вкладок изменено: <ph name="ONE_CHANGED" />, закрыто: <ph name="ANY_CLOSED" />.}one{Вкладок изменено: <ph name="MANY_CHANGED" />, закрыто: <ph name="ANY_CLOSED" />.}few{Вкладок изменено: <ph name="MANY_CHANGED" />, закрыто: <ph name="ANY_CLOSED" />.}many{Вкладок изменено: <ph name="MANY_CHANGED" />, закрыто: <ph name="ANY_CLOSED" />.}other{Вкладок изменено: <ph name="MANY_CHANGED" />, закрыто: <ph name="ANY_CLOSED" />.}}</translation>
 <translation id="4371591986692297148">неактивно</translation>
 <translation id="4460014764210899310">Разгруппировать</translation>
-<translation id="4590027107044272416">Открыть новую вкладку теперь можно этой кнопкой</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Закрыть 1 неактивную вкладку?}one{Закрыть <ph name="TAB_COUNT_MANY" /> неактивную вкладку?}few{Закрыть <ph name="TAB_COUNT_MANY" /> неактивные вкладки?}many{Закрыть <ph name="TAB_COUNT_MANY" /> неактивных вкладок?}other{Закрыть <ph name="TAB_COUNT_MANY" /> неактивной вкладки?}}</translation>
 <translation id="4686942373615810936">Создано только что</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Закрывать через 1 день}one{Закрывать через <ph name="DAY_COUNT_MANY" /> день}few{Закрывать через <ph name="DAY_COUNT_MANY" /> дня}many{Закрывать через <ph name="DAY_COUNT_MANY" /> дней}other{Закрывать через <ph name="DAY_COUNT_MANY" /> дня}}</translation>
@@ -98,7 +97,9 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{Добавлена <ph name="ONE_ADDED" /> вкладка.}one{Добавлена <ph name="MANY_ADDED" /> вкладка.}few{Добавлены <ph name="MANY_ADDED" /> вкладки.}many{Добавлено <ph name="MANY_ADDED" /> вкладок.}other{Добавлено <ph name="MANY_ADDED" /> вкладки.}}</translation>
 <translation id="5161254044473106830">Введите название</translation>
 <translation id="5339733443032484186">Ваша последняя вкладка</translation>
+<translation id="5380159289133845234">Архивировать одинаковые вкладки</translation>
 <translation id="5400836586163650660">Серый</translation>
+<translation id="5446043142172831860">Удалить вкладку и покинуть группу</translation>
 <translation id="5490235265819901748">Группа вкладок развернута</translation>
 <translation id="5494920125229734069">Выделить все</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Закрыть группу вкладок, которой присвоен <ph name="COLOR_NAME" /> цвет. В ней <ph name="TABS_COUNT_ONE" /> вкладка.}one{Закрыть группу вкладок, которой присвоен <ph name="COLOR_NAME" /> цвет. В ней <ph name="TABS_COUNT_MANY" /> вкладка.}few{Закрыть группу вкладок, которой присвоен <ph name="COLOR_NAME" /> цвет. В ней <ph name="TABS_COUNT_MANY" /> вкладки.}many{Закрыть группу вкладок, которой присвоен <ph name="COLOR_NAME" /> цвет. В ней <ph name="TABS_COUNT_MANY" /> вкладок.}other{Закрыть группу вкладок, которой присвоен <ph name="COLOR_NAME" /> цвет. В ней <ph name="TABS_COUNT_MANY" /> вкладки.}}</translation>
@@ -117,6 +118,7 @@
 <translation id="6051432659151380973">Группы вкладок сохраняются автоматически.</translation>
 <translation id="6054741997831917303">Цена на этот товар недавно снизилась с <ph name="PREVIOUS_PRICE" /> до <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Вы сразу потеряете доступ к группе вкладок "<ph name="GROUP_NAME" />".</translation>
+<translation id="6109251075362363230">Все одинаковые вкладки также будут добавляться в архив, за исключением недавно открытой</translation>
 <translation id="6193448654517602979">Выбрать вкладки</translation>
 <translation id="6228793724645064692">(оценка магазина)</translation>
 <translation id="6271513594716432922">Закрыть все неактивные вкладки</translation>

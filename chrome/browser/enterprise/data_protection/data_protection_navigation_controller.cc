@@ -49,7 +49,7 @@ DataProtectionNavigationController::DataProtectionNavigationController(
     return;
   }
   Observe(tab_interface->GetContents());
-  tab_subscriptions_.push_back(tab_interface_->RegisterDidEnterForeground(
+  tab_subscriptions_.push_back(tab_interface_->RegisterDidActivate(
       base::BindRepeating(&DataProtectionNavigationController::TabForegrounded,
                           weak_ptr_factory_.GetWeakPtr())));
   tab_subscriptions_.push_back(
@@ -59,7 +59,7 @@ DataProtectionNavigationController::DataProtectionNavigationController(
 
   // Fetch the protection settings for the current page.
   enterprise_data_protection::DataProtectionNavigationObserver::
-      GetDataProtectionSettings(
+      ApplyDataProtectionSettings(
           Profile::FromBrowserContext(
               tab_interface_->GetContents()->GetBrowserContext()),
           tab_interface_->GetContents(),
@@ -83,7 +83,7 @@ void DataProtectionNavigationController::TabForegrounded(
   content::WebContents* contents = tab->GetContents();
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
   enterprise_data_protection::DataProtectionNavigationObserver::
-      GetDataProtectionSettings(
+      ApplyDataProtectionSettings(
           profile, contents,
           base::BindOnce(
               &DataProtectionNavigationController::ApplyDataProtectionSettings,
@@ -116,7 +116,7 @@ void DataProtectionNavigationController::
   }
 
   // If the tab is in the background, do nothing.
-  if (!tab_interface_->IsInForeground()) {
+  if (!tab_interface_->IsActivated()) {
     return;
   }
 
@@ -179,7 +179,7 @@ void DataProtectionNavigationController::ApplyDataProtectionSettings(
   }
 
   // If the tab is in the background, do nothing.
-  if (!tab_interface_->IsInForeground()) {
+  if (!tab_interface_->IsActivated()) {
     return;
   }
 
@@ -226,7 +226,7 @@ void DataProtectionNavigationController::
   // Note that steps #5 and #6 are racy but the final outcome is correct
   // regardless of the order in which they execute.
 
-  if (!tab_interface_->IsInForeground()) {
+  if (!tab_interface_->IsActivated()) {
     return;
   }
 

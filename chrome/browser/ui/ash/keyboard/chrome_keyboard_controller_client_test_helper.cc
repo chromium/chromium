@@ -36,13 +36,15 @@ class ChromeKeyboardControllerClientTestHelper::FakeKeyboardController
   bool IsKeyboardEnabled() override { return enabled_; }
   void SetEnableFlag(keyboard::KeyboardEnableFlag flag) override {
     keyboard_enable_flags_.insert(flag);
-    for (auto& observer : observers_)
+    for (auto& observer : observers_) {
       observer.OnKeyboardEnableFlagsChanged(keyboard_enable_flags_);
+    }
   }
   void ClearEnableFlag(keyboard::KeyboardEnableFlag flag) override {
     keyboard_enable_flags_.erase(flag);
-    for (auto& observer : observers_)
+    for (auto& observer : observers_) {
       observer.OnKeyboardEnableFlagsChanged(keyboard_enable_flags_);
+    }
   }
   const std::set<keyboard::KeyboardEnableFlag>& GetEnableFlags() override {
     return keyboard_enable_flags_;

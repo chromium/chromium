@@ -215,8 +215,6 @@ std::string GetPictureUrl(content::WebUI& web_ui,
 
 std::string GetLacrosIntroWelcomeTitle(const AccountInfo& account_info) {
   const bool has_given_name = !account_info.given_name.empty();
-  base::UmaHistogramBoolean("Profile.LacrosFre.WelcomeHasGivenName",
-                            has_given_name);
   return has_given_name ? l10n_util::GetStringFUTF8(
                               IDS_PRIMARY_PROFILE_FIRST_RUN_TITLE,
                               base::UTF8ToUTF16(account_info.given_name))

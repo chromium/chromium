@@ -17,7 +17,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -318,7 +317,7 @@ void DelegatedFrameHost::EmbedSurface(
 
   if (!primary_surface_id ||
       primary_surface_id->local_surface_id() != local_surface_id_) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
     // On Windows and Linux, we would like to produce new content as soon as
     // possible or the OS will create an additional black gutter. Until we can
     // block resize on surface synchronization on these platforms, we will not
@@ -465,7 +464,7 @@ void DelegatedFrameHost::DidCopyStaleContent(
 
 // TODO(crbug.com/1227661): Revert https://crrev.com/c/3222541 to re-enable this
 // CHECK on CrOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   CHECK_NE(frame_eviction_state_, FrameEvictionState::kNotStarted);
 #endif
   SetFrameEvictionStateAndNotifyObservers(FrameEvictionState::kNotStarted);
@@ -485,7 +484,7 @@ void DelegatedFrameHost::DidCopyStaleContent(
     client_->DelegatedFrameHostGetLayer()->Add(stale_content_layer_.get());
 
 // TODO(crbug.com/40812011): This DCHECK occasionally gets hit on Chrome OS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   CHECK(!stale_content_layer_->has_external_content());
 #endif
   stale_content_layer_->SetVisible(true);
@@ -676,7 +675,7 @@ void DelegatedFrameHost::SetIsFrameSinkIdOwner(bool is_owner) {
 
 // static
 bool DelegatedFrameHost::ShouldIncludeUiCompositorForEviction() {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN)
   if (!base::FeatureList::IsEnabled(
           features::kApplyNativeOcclusionToCompositor)) {
     return false;

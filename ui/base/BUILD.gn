@@ -117,6 +117,10 @@ component("base") {
   sources = [
     "accelerators/accelerator.cc",
     "accelerators/accelerator.h",
+    "accelerators/command.cc",
+    "accelerators/command.h",
+    "class_properties.cc",
+    "class_properties.h",
     "class_property.cc",
     "class_property.h",
     "default_style.h",
@@ -419,8 +423,8 @@ component("base") {
 
     if (is_chromeos) {
       sources += [
-        "accelerators/ash/right_alt_event_property.cc",
-        "accelerators/ash/right_alt_event_property.h",
+        "accelerators/ash/quick_insert_event_property.cc",
+        "accelerators/ash/quick_insert_event_property.h",
       ]
     }
 
@@ -503,8 +507,8 @@ component("base") {
     "//ui/base/dragdrop/mojom",
     "//ui/display",
     "//ui/display/util:gpu_info_util",
-    "//ui/resources:webui_resources_grd",
     "//ui/strings",
+    "//ui/webui/resources:resources_grit",
     "//url",
   ]
 
@@ -1293,6 +1297,16 @@ test("ui_base_unittests") {
 
   if (is_linux) {
     sources += [ "linux/xdg_shortcut_unittest.cc" ]
+  }
+
+  if (is_linux && use_dbus) {
+    sources += [ "accelerators/global_accelerator_listener/global_accelerator_listener_linux_unittest.cc" ]
+    deps += [
+      "//components/dbus",
+      "//content/test:test_support",
+      "//dbus:test_support",
+      "//ui/base/accelerators/global_accelerator_listener",
+    ]
   }
 }
 

@@ -115,8 +115,9 @@ ChromeWebContentsViewDelegateViewsMac::BuildMenu(
 void ChromeWebContentsViewDelegateViewsMac::ShowMenu(
     std::unique_ptr<RenderViewContextMenuBase> menu) {
   context_menu_ = std::move(menu);
-  if (!context_menu_.get())
+  if (!context_menu_.get()) {
     return;
+  }
 
   // The renderer may send the "show context menu" message multiple times, one
   // for each right click mouse event it receives. Normally, this doesn't happen
@@ -125,8 +126,9 @@ void ChromeWebContentsViewDelegateViewsMac::ShowMenu(
   // the second mouse event arrives. In this case, |ShowContextMenu()| will
   // get called multiple times - if so, don't create another context menu.
   // TODO(asvitkine): Fix the renderer so that it doesn't do this.
-  if (web_contents_->IsShowingContextMenu())
+  if (web_contents_->IsShowingContextMenu()) {
     return;
+  }
 
   context_menu_->Show();
 }

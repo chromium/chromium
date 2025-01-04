@@ -561,7 +561,6 @@ class CodeCacheSizeChecker {
   const GURL url_;
   const GURL origin_;
   const size_t expected_size_;
-  size_t actual_size_ = 0;
   base::OnceClosure done_callback_;
 };
 

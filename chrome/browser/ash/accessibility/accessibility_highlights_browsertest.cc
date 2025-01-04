@@ -3,14 +3,15 @@
 // found in the LICENSE file.
 
 #include <memory>
-#include "build/build_config.h"
 
 #include "ash/accessibility/ui/accessibility_cursor_ring_layer.h"
 #include "ash/accessibility/ui/accessibility_focus_ring_controller_impl.h"
 #include "ash/accessibility/ui/accessibility_focus_ring_layer.h"
 #include "ash/accessibility/ui/accessibility_highlight_layer.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/accelerators.h"
 #include "ash/shell.h"
+#include "build/build_config.h"
 #include "chrome/browser/ash/accessibility/accessibility_feature_browsertest.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
@@ -26,6 +27,7 @@
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "ui/compositor/layer.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -270,6 +272,65 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHighlightsBrowserTest, FocusHighlight) {
   }
 
   prefs->SetBoolean(prefs::kAccessibilityFocusHighlightEnabled, false);
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityHighlightsBrowserTest,
+                       FocusHighlightNative) {
+  AccessibilityFocusRingControllerImpl* controller =
+      Shell::Get()->accessibility_focus_ring_controller();
+  PrefService* prefs = GetProfile()->GetPrefs();
+  prefs->SetBoolean(prefs::kAccessibilityFocusHighlightEnabled, true);
+
+  // Wait for omnibox, at this point the browser window has loaded.
+  utils_->GetBoundsForNodeInRootByClassName("OmniboxViewViews");
+  // Jump to the omnibox. Focus ring will also jump there.
+  generator_->PressAndReleaseKeyAndModifierKeys(ui::KeyboardCode::VKEY_L,
+                                                ui::EF_CONTROL_DOWN);
+  WaitForFocusRingsChanged();
+  const AccessibilityFocusRingGroup* highlights =
+      controller->GetFocusRingGroupForTesting("HighlightController");
+  ASSERT_TRUE(highlights);
+  auto& focus_rings = highlights->focus_layers_for_testing();
+  EXPECT_EQ(focus_rings.size(), 1u);
+  gfx::Rect omnibox_focus_bounds =
+      focus_rings.at(0)->layer()->GetTargetBounds();
+
+  // Open quick settings.
+  AcceleratorController::Get()->PerformActionIfEnabled(
+      AcceleratorAction::kToggleSystemTrayBubble, {});
+
+  // Wait for quick settings to be open, then focus the first button.
+  utils_->SetFocusOnNode("Show Bluetooth settings. Bluetooth is on.", "button");
+  generator_->PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB);
+
+  // The accessibility highlight should draw there (note: it draws immediately
+  // because it's in the same process).
+  gfx::Rect bounds = utils_->GetNodeBoundsInRoot(
+      "Show Bluetooth settings. Bluetooth is on.", "button");
+
+  // Focus has moved from the omnibox.
+  gfx::Rect focus_bounds = focus_rings.at(0)->layer()->GetTargetBounds();
+  EXPECT_NE(omnibox_focus_bounds, focus_bounds);
+  EXPECT_NE(omnibox_focus_bounds.CenterPoint().x(),
+            focus_bounds.CenterPoint().x());
+  EXPECT_FALSE(std::abs(omnibox_focus_bounds.CenterPoint().y() -
+                        focus_bounds.CenterPoint().y()) < 100);
+
+  // Focus has landed on the button (with some buffer).
+  EXPECT_EQ(bounds.CenterPoint().x(), focus_bounds.CenterPoint().x());
+  EXPECT_TRUE(std::abs(bounds.CenterPoint().y() -
+                       focus_bounds.CenterPoint().y()) < 100);
+
+  // Close quick settings, focus should be gone from that area.
+  AcceleratorController::Get()->PerformActionIfEnabled(
+      AcceleratorAction::kToggleSystemTrayBubble, {});
+
+  // Check the focus rings are now different again.
+  gfx::Rect final_bounds = focus_rings.at(0)->layer()->GetTargetBounds();
+  EXPECT_NE(final_bounds, focus_bounds);
+  EXPECT_NE(final_bounds.CenterPoint().x(), focus_bounds.CenterPoint().x());
+  EXPECT_FALSE(std::abs(final_bounds.CenterPoint().y() -
+                        focus_bounds.CenterPoint().y()) < 100);
 }
 
 }  // namespace ash

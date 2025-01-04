@@ -87,24 +87,27 @@ export class ReadAnythingLogger {
                   this.metrics.recordHighlightOff();
   }
 
-  // <if expr="chromeos_ash">
   private logVoiceTypeUsedForReading_(voice: SpeechSynthesisVoice|undefined) {
     if (!voice) {
       return;
     }
 
-    let voiceType: ReadAnythingVoiceType|undefined;
+    let voiceType: ReadAnythingVoiceType;
     if (isNatural(voice)) {
       voiceType = ReadAnythingVoiceType.NATURAL;
     } else if (isEspeak(voice)) {
       voiceType = ReadAnythingVoiceType.ESPEAK;
     } else {
+      // <if expr="chromeos_ash">
       voiceType = ReadAnythingVoiceType.CHROMEOS;
+      // </if>
+      // <if expr="not chromeos_ash">
+      voiceType = ReadAnythingVoiceType.SYSTEM;
+      // </if>
     }
 
     this.metrics.recordVoiceType(voiceType);
   }
-  // </if>
 
   private logLanguageUsedForReading_(lang: string|undefined) {
     if (!lang) {
@@ -137,9 +140,7 @@ export class ReadAnythingLogger {
 
   logSpeechPlaySession(
       startTime: number, voice: SpeechSynthesisVoice|undefined) {
-    // <if expr="chromeos_ash">
     this.logVoiceTypeUsedForReading_(voice);
-    // </if>
     this.logLanguageUsedForReading_(voice?.lang);
     this.metrics.recordSpeechPlaybackLength(Date.now() - startTime);
   }

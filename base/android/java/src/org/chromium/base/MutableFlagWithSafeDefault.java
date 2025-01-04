@@ -4,6 +4,9 @@
 
 package org.chromium.base;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * Flags of this type are un-cached flags that may be called before native,
  * but not primarily. They have good default values to use before native is loaded,
@@ -13,9 +16,10 @@ package org.chromium.base;
  * or
  * if (!FeatureList.isInitialized() || SomeFeatureMap.isEnabled(featureName)).
  */
+@NullMarked
 public class MutableFlagWithSafeDefault extends Flag {
     private final boolean mDefaultValue;
-    private Boolean mInMemoryCachedValue;
+    private @Nullable Boolean mInMemoryCachedValue;
 
     public MutableFlagWithSafeDefault(
             FeatureMap featureMap, String featureName, boolean defaultValue) {

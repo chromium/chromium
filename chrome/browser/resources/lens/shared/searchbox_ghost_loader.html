@@ -14,7 +14,7 @@
   content: '';
   position: relative;
   height: 1px;
-  background-color: #DADCE0;
+  background-color: var(--color-searchbox-dropdown-divider);
   top: 0;
   width: calc(var(--cr-searchbox-min-width) - 24px);
   display: block;
@@ -24,11 +24,15 @@
 .status-container {
   display: none;
   align-items: center;
-  color: var(--color-searchbox-results-foreground);
+  color: var(--color-searchbox-placeholder);
   height: 48px;
-  padding-inline-start: 18px;
+  padding-inline-start: 12px;
   padding-inline-end: 14px;
   padding-top: 4px;
+}
+
+#loadingState.status-container {
+  padding-inline-start: 16px;
 }
 
 .loader-text {
@@ -38,6 +42,10 @@
   font-weight: var(--cr-searchbox-match-font-weight);
   font-size: 14px;
   width: 234px;
+}
+
+#loadingState.loader-text {
+  padding-inline-start: 36px;
 }
 
 #hint-text1 {
@@ -81,7 +89,17 @@
 }
 
 #errorState {
-  height: 64px;
+  height: 48px;
+}
+
+#errorIconContainer {
+  background-color: var(--color-searchbox-results-icon-container-background);
+  border-radius: 40px;
+  height: 28px;
+  width: 28px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 #errorIcon {
@@ -90,9 +108,23 @@
   mask-position: center;
   mask-repeat: no-repeat;
   mask-image: url('/lens/shared/info.svg');
-  background-color: var(--color-searchbox-search-icon-background);
+  mask-size: 20px;
+  background-color: var(--color-searchbox-results-icon);
+}
+
+/* Set styles for high contrast mode in Windows. */
+@media (forced-colors: active) {
+  .spinner {
+    --cr-spinner-color: ButtonText;
+  }
+
+  #errorIcon {
+    /* Set the icon color to hcm (high contrast mode) value. */
+    background-color: ButtonText;
+  }
 }
 </style>
+<!-- LINT.IfChange(GhostLoaderText) -->
 <div id="content">
   <template is="dom-if" if="[[showContextualSearchboxLoadingState]]">
     <div id="loadingState" class="status-container">
@@ -105,14 +137,19 @@
       </span>
     </div>
     <div id="errorState" class="status-container">
-      <div id="errorIcon"></div>
+      <div id="errorIconContainer">
+        <div id="errorIcon"></div>
+      </div>
       <span class="loader-text">$i18n{searchboxGhostLoaderErrorText}</span>
     </div>
   </template>
   <template is="dom-if" if="[[!showContextualSearchboxLoadingState]]">
     <div id="hintState" class="status-container">
-      <div id="errorIcon"></div>
+      <div id="errorIconContainer">
+        <div id="errorIcon"></div>
+      </div>
       <span class="loader-text">$i18n{searchboxGhostLoaderNoSuggestText}</span>
     </div>
   </template>
 </div>
+<!-- LINT.ThenChange(//chrome/browser/resources/lens/shared/searchbox_ghost_loader.ts:GhostLoaderText) -->

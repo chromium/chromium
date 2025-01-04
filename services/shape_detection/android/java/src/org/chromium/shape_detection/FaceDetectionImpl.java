@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.shape_detection;
+import org.chromium.build.annotations.NullMarked;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -24,6 +25,7 @@ import org.chromium.shape_detection.mojom.Landmark;
  * Android implementation of the FaceDetection service defined in
  * services/shape_detection/public/mojom/facedetection.mojom
  */
+@NullMarked
 public class FaceDetectionImpl implements FaceDetection {
     private static final String TAG = "FaceDetectionImpl";
     private static final int MAX_FACES = 32;

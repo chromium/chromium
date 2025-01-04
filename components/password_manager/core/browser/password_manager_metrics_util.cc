@@ -9,7 +9,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"

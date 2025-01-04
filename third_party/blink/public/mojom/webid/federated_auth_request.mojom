@@ -74,15 +74,24 @@ struct IdentityProviderConfig {
   // Explicitly references a specific provider by a Config URL.
   url.mojom.Url config_url;
 
-  // Indirectly references providers that have been registered in the past
-  // rather than directly.
-  bool use_registered_config_urls;
+  // Whether this config comes from the IDP registration API.
+  bool from_idp_registration_api;
 
   // When using registered IDPs, this contains the type of IDP requested.
   string? type;
 
   // Can be an empty string to be omitted in the request sent to the provider.
   string client_id;
+};
+
+// The format of the token that the relying party is requesting.
+// The browser currently only supports SD-JWTs and opaque tokens,
+// typically a OIDC JWT or SAML response.
+// We expect to add support for different token formats that may have
+// different privacy properties (such as BBS) as well as different
+// ergonomic properties (e.g. ISO MDocs).
+enum Format {
+  kSdJwt,
 };
 
 // The request parameters for a navigator.credentials.get() FedCM call.
@@ -110,6 +119,12 @@ struct IdentityProviderRequestOptions {
   // the user's permission has been gathered.
   // null if not provided by the JS caller.
   string? params_json;
+
+  // Optionally, the format of the token that the RP is requesting.
+  // When undefined, the token is expected to have an opaque format for
+  // the browser (typically an OAuth access token, id token or a SAML
+  // response).
+  Format? format;
 };
 
 // The information passed in an IdentityProvider.disconnect() call.

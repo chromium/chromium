@@ -64,7 +64,9 @@ CurrentTabDesktopMediaList::CurrentTabDesktopMediaList(
       media_id_(content::DesktopMediaID::TYPE_WEB_CONTENTS,
                 content::DesktopMediaID::kNullId,
                 content::WebContentsMediaCaptureId(
-                    web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+                    web_contents->GetPrimaryMainFrame()
+                        ->GetProcess()
+                        ->GetDeprecatedID(),
                     web_contents->GetPrimaryMainFrame()->GetRoutingID())),
       thumbnail_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})) {

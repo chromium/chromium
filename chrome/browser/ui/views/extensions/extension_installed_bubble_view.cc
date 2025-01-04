@@ -70,8 +70,9 @@ views::View* AnchorViewForBrowser(const ExtensionInstalledBubbleModel* model,
     ExtensionsToolbarContainer* const container =
         browser_view->toolbar_button_provider()
             ->GetExtensionsToolbarContainer();
-    if (container)
+    if (container) {
       reference_view = container->GetViewForId(model->extension_id());
+    }
   } else if (model->anchor_to_omnibox()) {
     reference_view = browser_view->GetLocationBarView()->location_icon_view();
   }
@@ -201,8 +202,9 @@ void ExtensionInstalledBubbleView::Init() {
       views::BoxLayout::CrossAxisAlignment::kStart);
   SetLayoutManager(std::move(layout));
 
-  if (model_->show_how_to_use())
+  if (model_->show_how_to_use()) {
     AddChildView(CreateLabel(model_->GetHowToUseText()));
+  }
 
   if (model_->show_key_binding()) {
     auto* manage_shortcut = AddChildView(std::make_unique<views::Link>(

@@ -2,6 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("field_trial") {
   sources = [
     "ios_first_run_field_trials.cc",
@@ -37,6 +45,9 @@ source_set("ui_bundled") {
     "//components/signin/public/identity_manager",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/ui_bundled/history_sync",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:interruptible_chrome_coordinator",
     "//ios/chrome/browser/docking_promo/coordinator",
     "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/first_run/ui_bundled/default_browser",
@@ -61,7 +72,6 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/shared/ui/elements:elements_internal",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:terms_util",
-    "//ios/chrome/browser/ui/authentication/history_sync",
     "//ios/public/provider/chrome/browser/signin:choice_api",
     "//ui/base",
     "//ui/gfx",
@@ -160,6 +170,10 @@ source_set("eg2_tests") {
     "//components/sync/service",
     "//components/unified_consent",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/ui_bundled:authentication_constants",
+    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/authentication/ui_bundled/views:views_constants",
     "//ios/chrome/browser/bookmarks/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/policy/model:eg_test_support+eg2",
@@ -174,10 +188,6 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/signin/model:capabilities_types",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/signin/model:test_constants",
-    "//ios/chrome/browser/ui/authentication:authentication_constants",
-    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
-    "//ios/chrome/browser/ui/authentication/signin:constants",
-    "//ios/chrome/browser/ui/authentication/views:views_constants",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/promo_style:constants",

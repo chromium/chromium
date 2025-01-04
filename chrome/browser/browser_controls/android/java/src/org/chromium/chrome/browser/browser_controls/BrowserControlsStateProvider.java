@@ -157,6 +157,13 @@ public interface BrowserControlsStateProvider {
     boolean shouldAnimateBrowserControlsHeightChanges();
 
     /**
+     * @return Whether or not the browser should update it's property models with new offsets when
+     *     the controls' constraints change. This only needs to be done sometimes when BCIV is
+     *     enabled, to avoid seeing controls jumping/flickering.
+     */
+    boolean shouldUpdateOffsetsWhenConstraintsChange();
+
+    /**
      * @return The offset of the controls from the bottom of the screen.
      */
     int getBottomControlOffset();

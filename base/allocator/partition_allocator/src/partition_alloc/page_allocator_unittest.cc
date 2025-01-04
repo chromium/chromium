@@ -265,8 +265,9 @@ TEST(PartitionAllocPageAllocatorTest,
       reinterpret_cast<BTITestFunction>(buffer + invalid_offset);
   EXPECT_EQ(bti_enabled_fn(15), 18);
   // Next, attempt to call the function without the entrypoint.
-  EXPECT_EXIT({ bti_invalid_fn(15); }, testing::KilledBySignal(SIGILL),
-              "");  // Should crash with SIGILL.
+  EXPECT_EXIT(
+      { bti_invalid_fn(15); }, testing::KilledBySignal(SIGILL),
+      "");  // Should crash with SIGILL.
   FreePages(buffer, PageAllocationGranularity());
 #else
   PA_NOTREACHED();

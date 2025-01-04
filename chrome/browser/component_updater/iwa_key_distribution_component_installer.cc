@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -38,6 +39,7 @@ constexpr std::array<uint8_t, 32> kIwaKeyDistributionPublicKeySHA256 = {
     0x46, 0xfc, 0xc9, 0x36, 0x50, 0xcf, 0x38, 0xfa, 0xf9, 0xab};
 
 constexpr std::string_view kPreloadedKey = "is_preloaded";
+constexpr std::string_view kIwaKdcExpCohortAttribute = "_iwa_kdc_exp_cohort";
 
 void OnDemandUpdateCompleted(update_client::Error err) {
   VLOG(1) << "On-demand update for the "
@@ -136,7 +138,15 @@ std::string IwaKeyDistributionComponentInstallerPolicy::GetName() const {
 
 update_client::InstallerAttributes
 IwaKeyDistributionComponentInstallerPolicy::GetInstallerAttributes() const {
-  return update_client::InstallerAttributes();
+  update_client::InstallerAttributes attributes;
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kIwaKeyDistributionComponentExpCohort)) {
+    attributes.emplace(
+        kIwaKdcExpCohortAttribute,
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            kIwaKeyDistributionComponentExpCohort));
+  }
+  return attributes;
 }
 
 void RegisterIwaKeyDistributionComponent(ComponentUpdateService* cus) {

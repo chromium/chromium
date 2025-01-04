@@ -71,6 +71,16 @@ public class KeyboardShortcuts {
         KeyboardShortcutsSemanticMeaning.ZOOM_IN,
         KeyboardShortcutsSemanticMeaning.ZOOM_OUT,
         KeyboardShortcutsSemanticMeaning.ZOOM_RESET,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FOCUS_SEARCH,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_RELOAD_BYPASSING_CACHE,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_SHOW_DOWNLOADS,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_TOGGLE_CARET_BROWSING,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_MOVE_TO_SPECIFIC_TAB_VIA_NUMPAD,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_MOVE_TO_LAST_TAB_VIA_NUMPAD,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_HELP,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_CLEAR_BROWSING_DATA,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_CLOSE_WINDOW,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_HOME,
         KeyboardShortcutsSemanticMeaning.MAX_VALUE
     })
     public @interface KeyboardShortcutsSemanticMeaning {
@@ -111,8 +121,20 @@ public class KeyboardShortcuts {
         int ZOOM_OUT = 23;
         int ZOOM_RESET = 24;
 
+        // Controls available in Desktop and other platforms but not implemented by Clank.
+        int NOT_IMPLEMENTED_FOCUS_SEARCH = 25;
+        int NOT_IMPLEMENTED_RELOAD_BYPASSING_CACHE = 26;
+        int NOT_IMPLEMENTED_SHOW_DOWNLOADS = 27;
+        int NOT_IMPLEMENTED_TOGGLE_CARET_BROWSING = 28;
+        int NOT_IMPLEMENTED_MOVE_TO_SPECIFIC_TAB_VIA_NUMPAD = 29;
+        int NOT_IMPLEMENTED_MOVE_TO_LAST_TAB_VIA_NUMPAD = 30;
+        int NOT_IMPLEMENTED_HELP = 31;
+        int NOT_IMPLEMENTED_CLEAR_BROWSING_DATA = 32;
+        int NOT_IMPLEMENTED_CLOSE_WINDOW = 33;
+        int NOT_IMPLEMENTED_HOME = 34;
+
         // Be sure to also update enums.xml when updating these values.
-        int MAX_VALUE = 25;
+        int MAX_VALUE = 35;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:KeyboardShortcutsSemanticMeaning)
@@ -220,6 +242,52 @@ public class KeyboardShortcuts {
                 return KeyboardShortcutsSemanticMeaning.ZOOM_OUT;
             case CTRL | KeyEvent.KEYCODE_0:
                 return KeyboardShortcutsSemanticMeaning.ZOOM_RESET;
+
+                // These are not implemented by Clank, but correspond to keyboard shortcuts that
+                // exist on Desktop or other platforms.
+            case CTRL | KeyEvent.KEYCODE_E:
+            case CTRL | KeyEvent.KEYCODE_K:
+                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FOCUS_SEARCH;
+            case CTRL | KeyEvent.KEYCODE_F5:
+            case CTRL | KeyEvent.KEYCODE_REFRESH:
+            case SHIFT | KeyEvent.KEYCODE_REFRESH:
+                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_RELOAD_BYPASSING_CACHE;
+            case CTRL | KeyEvent.KEYCODE_J:
+                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_SHOW_DOWNLOADS;
+            case CTRL | KeyEvent.KEYCODE_F7:
+            case KeyEvent.KEYCODE_F7:
+                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_TOGGLE_CARET_BROWSING;
+            case CTRL | KeyEvent.KEYCODE_NUMPAD_1:
+            case CTRL | KeyEvent.KEYCODE_NUMPAD_2:
+            case CTRL | KeyEvent.KEYCODE_NUMPAD_3:
+            case CTRL | KeyEvent.KEYCODE_NUMPAD_4:
+            case CTRL | KeyEvent.KEYCODE_NUMPAD_5:
+            case CTRL | KeyEvent.KEYCODE_NUMPAD_6:
+            case CTRL | KeyEvent.KEYCODE_NUMPAD_7:
+            case CTRL | KeyEvent.KEYCODE_NUMPAD_8:
+            case ALT | KeyEvent.KEYCODE_NUMPAD_1:
+            case ALT | KeyEvent.KEYCODE_NUMPAD_2:
+            case ALT | KeyEvent.KEYCODE_NUMPAD_3:
+            case ALT | KeyEvent.KEYCODE_NUMPAD_4:
+            case ALT | KeyEvent.KEYCODE_NUMPAD_5:
+            case ALT | KeyEvent.KEYCODE_NUMPAD_6:
+            case ALT | KeyEvent.KEYCODE_NUMPAD_7:
+            case ALT | KeyEvent.KEYCODE_NUMPAD_8:
+                return KeyboardShortcutsSemanticMeaning
+                        .NOT_IMPLEMENTED_MOVE_TO_SPECIFIC_TAB_VIA_NUMPAD;
+            case CTRL | KeyEvent.KEYCODE_NUMPAD_9:
+            case ALT | KeyEvent.KEYCODE_NUMPAD_9:
+                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_MOVE_TO_LAST_TAB_VIA_NUMPAD;
+            case KeyEvent.KEYCODE_F1:
+                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_HELP;
+            case CTRL | SHIFT | KeyEvent.KEYCODE_DEL:
+                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_CLEAR_BROWSING_DATA;
+            case CTRL | SHIFT | KeyEvent.KEYCODE_W:
+            case ALT | KeyEvent.KEYCODE_F4:
+                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_CLOSE_WINDOW;
+            case ALT | KeyEvent.KEYCODE_HOME:
+            case KeyEvent.KEYCODE_HOME:
+                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_HOME;
         }
 
         return KeyboardShortcutsSemanticMeaning.UNKNOWN;

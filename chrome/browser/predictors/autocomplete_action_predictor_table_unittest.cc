@@ -73,8 +73,8 @@ class AutocompleteActionPredictorTableReopenTest
 AutocompleteActionPredictorTableTest::AutocompleteActionPredictorTableTest() =
     default;
 
-AutocompleteActionPredictorTableTest::~AutocompleteActionPredictorTableTest() {
-}
+AutocompleteActionPredictorTableTest::~AutocompleteActionPredictorTableTest() =
+    default;
 
 void AutocompleteActionPredictorTableTest::SetUp() {
   db_ = std::make_unique<PredictorDatabase>(

@@ -15,6 +15,7 @@ export function handleEscapeSearchbox(
   // searchbox.
   if (e.detail.emptyInput) {
     searchbox.blur();
+    e.detail.event.preventDefault();
   } else {
     // If searchbox input is not empty, the searchbox will still have focus,
     // but the ghost loader should not show since zero suggest is not queried.
@@ -29,13 +30,6 @@ export function onSearchboxKeydown(
   // query zero suggest again and the ghost loader should not be suppressed.
   if (!searchbox.isInputEmpty()) {
     element.suppressGhostLoader = false;
-  }
-}
-
-export function onEscapeKeyPressed(
-    element: LensSidePanelAppElement|LensOverlayAppElement, e: Event) {
-  // Prevents the overlay from closing after the searchbox is blurred.
-  if (!element.isSearchboxFocused) {
-    e.preventDefault();
+    element.showErrorState = false;
   }
 }

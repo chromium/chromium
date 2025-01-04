@@ -10,17 +10,17 @@ assert(is_chromeos_ash)
 build_webui("build") {
   grd_prefix = "ash_boca_ui"
   static_files = [
-    "index.html",
     "icon_256.png",
+    "index.html",
   ]
 
   # Files not holding a CustomElement element definition, or the CustomElement
   # does not have a corresponding HTML template.
   non_web_component_files = [
+    "app/boca_app.ts",
     "app/client_delegate.ts",
     "app/mojo_api_bootstrap.ts",
     "app/receiver.ts",
-    "app/boca_app.ts",
     "app/sandboxed_load_time_data.ts",
   ]
 

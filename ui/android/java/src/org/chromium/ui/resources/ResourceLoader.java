@@ -4,7 +4,11 @@
 
 package org.chromium.ui.resources;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** A class responsible for loading {@link Resource}s for the {@link ResourceManager}. */
+@NullMarked
 public abstract class ResourceLoader {
     /**
      * A callback that specifies when a {@link Resource} has been loaded and can be exposed to the
@@ -19,7 +23,8 @@ public abstract class ResourceLoader {
          * @param resource The {@link Resource} of the resource, or {@code null} if one could
          *                 not be loaded.
          */
-        void onResourceLoaded(@AndroidResourceType int resType, int resId, Resource resource);
+        void onResourceLoaded(
+                @AndroidResourceType int resType, int resId, @Nullable Resource resource);
 
         /**
          * Called when a resource is unregistered (unneeded). This should only be called for
@@ -73,7 +78,7 @@ public abstract class ResourceLoader {
      * @param resId    The id of the {@link Resource} that loaded or failed.
      * @param resource The {@link Resource}, or {@code null} if the load failed.
      */
-    protected void notifyLoadFinished(int resId, Resource resource) {
+    protected void notifyLoadFinished(int resId, @Nullable Resource resource) {
         if (mCallback != null) mCallback.onResourceLoaded(getResourceType(), resId, resource);
     }
 

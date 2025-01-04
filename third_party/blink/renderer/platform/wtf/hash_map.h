@@ -238,14 +238,14 @@ class HashMap {
 
   struct TypeConstraints {
     constexpr TypeConstraints() {
-      static_assert(!IsStackAllocatedType<KeyArg>);
-      static_assert(!IsStackAllocatedType<MappedArg>);
+      static_assert(!IsStackAllocatedTypeV<KeyArg>);
+      static_assert(!IsStackAllocatedTypeV<MappedArg>);
       static_assert(Allocator::kIsGarbageCollected ||
-                        !IsPointerToGarbageCollectedType<KeyArg>::value,
+                        !IsPointerToGarbageCollectedType<KeyArg>,
                     "Cannot put raw pointers to garbage-collected classes into "
                     "an off-heap HashMap.  Use HeapHashMap<> instead.");
       static_assert(Allocator::kIsGarbageCollected ||
-                        !IsPointerToGarbageCollectedType<MappedArg>::value,
+                        !IsPointerToGarbageCollectedType<MappedArg>,
                     "Cannot put raw pointers to garbage-collected classes into "
                     "an off-heap HashMap.  Use HeapHashMap<> instead.");
     }

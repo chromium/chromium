@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.download;
 
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.text.TextUtils;
@@ -24,20 +26,18 @@ public class MediaStoreHelper {
     private MediaStoreHelper() {}
 
     /**
-     * Adds an image file on external SD card to media store to show in the Android gallery app.
-     * The images on primary storage will automatically scanned by media store. On external SD card,
-     * usually .nomedia file will block the media store scan request.
-     * The media store will decode, compress the image and maintain a copy on disk.
-     * Does nothing if the file is not an image or the file is not on external SD card.
+     * Adds an image file on external SD card to media store to show in the Android gallery app. The
+     * images on primary storage will automatically scanned by media store. On external SD card,
+     * usually .nomedia file will block the media store scan request. The media store will decode,
+     * compress the image and maintain a copy on disk. Does nothing if the file is not an image or
+     * the file is not on external SD card.
+     *
      * @param filePath The file path of the image file.
      * @param mimeType The mime type of the image file.
      */
     public static void addImageToGalleryOnSDCard(String filePath, String mimeType) {
         // TODO(xingliu): Support Android Q when we have available device with SD card slot.
-        if (TextUtils.isEmpty(filePath)
-                || mimeType == null
-                || !mimeType.startsWith("image/")
-                || Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (TextUtils.isEmpty(filePath) || mimeType == null || !mimeType.startsWith("image/")) {
             return;
         }
 
@@ -50,7 +50,7 @@ public class MediaStoreHelper {
                                                 == DirectoryOption.DownloadLocationDirectoryType
                                                         .ADDITIONAL
                                         && filePath.contains(dir.location)) {
-                                    addImageOnBlockingThread(filePath);
+                                    addImageOnBlockingThread(filePath, mimeType);
                                     return;
                                 }
                             }
@@ -59,21 +59,38 @@ public class MediaStoreHelper {
 
     /**
      * Adds the image to media store on a blocking thread.
+     *
      * @param filePath The file path of the image file.
+     * @param mimeType The MIME type of the image file.
      */
-    private static void addImageOnBlockingThread(@NonNull String filePath) {
+    private static void addImageOnBlockingThread(@NonNull String filePath, String mimeType) {
         new AsyncTask<Void>() {
             @Override
             protected Void doInBackground() {
                 try {
-                    // The media store will decode the image to bitmap, compress, and maintain a
-                    // copy on disk.
-                    File file = new File(filePath);
-                    MediaStore.Images.Media.insertImage(
-                            ContextUtils.getApplicationContext().getContentResolver(),
-                            filePath,
-                            file.getName(),
-                            null);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        MediaScannerConnection.scanFile(
+                                ContextUtils.getApplicationContext(),
+                                new String[] {filePath},
+                                new String[] {mimeType},
+                                new MediaScannerConnection.OnScanCompletedListener() {
+                                    @Override
+                                    public void onScanCompleted(final String path, final Uri uri) {
+                                        if (uri == null) {
+                                            Log.v(TAG, "Media scan failed");
+                                        }
+                                    }
+                                });
+                    } else {
+                        // The media store will decode the image to bitmap, compress, and maintain a
+                        // copy on disk.
+                        File file = new File(filePath);
+                        MediaStore.Images.Media.insertImage(
+                                ContextUtils.getApplicationContext().getContentResolver(),
+                                filePath,
+                                file.getName(),
+                                null);
+                    }
                 } catch (FileNotFoundException e) {
                     Log.e(TAG, "Cannot find image file to add to gallery.", e);
                 }

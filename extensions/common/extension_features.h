@@ -53,6 +53,10 @@ BASE_DECLARE_FEATURE(kApiRuntimeActionData);
 // the permissions API.
 BASE_DECLARE_FEATURE(kApiPermissionsHostAccessRequests);
 
+// Controls the availability of executing user scripts programmatically using
+// the userScripts API.
+BASE_DECLARE_FEATURE(kApiUserScriptsExecute);
+
 // Controls the availability of specifying different world IDs in the
 // userScripts API.
 BASE_DECLARE_FEATURE(kApiUserScriptsMultipleWorlds);
@@ -159,9 +163,6 @@ BASE_DECLARE_FEATURE(kForceWebRequestProxyForTest);
 // Launches Native Host executables directly on Windows rather than using a
 // cmd.exe process as a proxy.
 BASE_DECLARE_FEATURE(kLaunchWindowsNativeHostsDirectly);
-
-// Controls whether extensions can use the new favicon fetching in Manifest V3.
-BASE_DECLARE_FEATURE(kNewExtensionFaviconHandling);
 
 // Controls whether omnibox extensions can use the new capability to intercept
 // input without needing keyword mode.

@@ -33,6 +33,7 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
         sourcePassage: 'Google description',
         lastUrlVisitTimestamp: 1000,
         answerData: null,
+        isUrlKnownToSync: false,
       },
       {
         title: 'Youtube',
@@ -43,6 +44,7 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
         sourcePassage: 'Youtube description',
         lastUrlVisitTimestamp: 2000,
         answerData: null,
+        isUrlKnownToSync: false,
       },
     ];
 
@@ -319,6 +321,7 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
         sourcePassage: 'Answer description',
         lastUrlVisitTimestamp: 2000,
         answerData: {answerTextDirectives: []},
+        isUrlKnownToSync: false,
       };
       element.searchResultChangedForTesting({
         query: 'some query',
@@ -831,6 +834,7 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
         sourcePassage: 'Answer description',
         lastUrlVisitTimestamp: 2000,
         answerData: {answerTextDirectives: []},
+        isUrlKnownToSync: false,
       };
 
       element.searchResultChangedForTesting({
@@ -875,6 +879,7 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
           sourcePassage: 'Answer description',
           lastUrlVisitTimestamp: 2000,
           answerData: {answerTextDirectives: directives},
+          isUrlKnownToSync: false,
         };
 
         element.searchResultChangedForTesting({
@@ -911,7 +916,7 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
       }
 
       const favicons = element.shadowRoot!.querySelectorAll<HTMLElement>(
-          '.result-item .favicon');
+          '.result-url-and-favicon  .favicon');
       assertEquals(2, favicons.length);
       assertEquals(
           getFaviconForPageURL(mockResults[0]!.url.url, true),

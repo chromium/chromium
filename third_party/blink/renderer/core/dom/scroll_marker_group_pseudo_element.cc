@@ -74,7 +74,8 @@ ScrollMarkerGroupPseudoElement::ScrollMarkerGroupPseudoElement(
     Element* originating_element,
     PseudoId pseudo_id)
     : PseudoElement(originating_element, pseudo_id),
-      ScrollSnapshotClient(originating_element->GetDocument().GetFrame()) {}
+      ScrollSnapshotClient(originating_element->GetDocument().GetFrame()) {
+}
 
 void ScrollMarkerGroupPseudoElement::Trace(Visitor* v) const {
   v->Trace(selected_marker_);
@@ -89,7 +90,7 @@ void ScrollMarkerGroupPseudoElement::AddToFocusGroup(
 }
 
 ScrollMarkerPseudoElement* ScrollMarkerGroupPseudoElement::FindNextScrollMarker(
-    const Element& current) {
+    const Element* current) {
   if (wtf_size_t index = focus_group_.Find(current); index != kNotFound) {
     return focus_group_[std::min(index + 1, focus_group_.size() - 1)];
   }
@@ -98,7 +99,7 @@ ScrollMarkerPseudoElement* ScrollMarkerGroupPseudoElement::FindNextScrollMarker(
 
 ScrollMarkerPseudoElement*
 ScrollMarkerGroupPseudoElement::FindPreviousScrollMarker(
-    const Element& current) {
+    const Element* current) {
   if (wtf_size_t index = focus_group_.Find(current); index != kNotFound) {
     return focus_group_[index == 0 ? 0u : index - 1];
   }
@@ -122,25 +123,16 @@ void ScrollMarkerGroupPseudoElement::RemoveFromFocusGroup(
   }
 }
 
-void ScrollMarkerGroupPseudoElement::ActivateNextScrollMarker(bool focus) {
-  ActivateScrollMarker(&ScrollMarkerGroupPseudoElement::FindNextScrollMarker,
-                       focus);
+void ScrollMarkerGroupPseudoElement::ActivateNextScrollMarker() {
+  ActivateScrollMarker(FindNextScrollMarker(Selected()));
 }
 
-void ScrollMarkerGroupPseudoElement::ActivatePrevScrollMarker(bool focus) {
-  ActivateScrollMarker(
-      &ScrollMarkerGroupPseudoElement::FindPreviousScrollMarker, focus);
+void ScrollMarkerGroupPseudoElement::ActivatePrevScrollMarker() {
+  ActivateScrollMarker(FindPreviousScrollMarker(Selected()));
 }
 
 void ScrollMarkerGroupPseudoElement::ActivateScrollMarker(
-    ScrollMarkerPseudoElement* (ScrollMarkerGroupPseudoElement::*
-                                    find_scroll_marker_func)(const Element&),
-    bool focus) {
-  if (!selected_marker_) {
-    return;
-  }
-  ScrollMarkerPseudoElement* scroll_marker =
-      (this->*find_scroll_marker_func)(*Selected());
+    ScrollMarkerPseudoElement* scroll_marker) {
   if (!scroll_marker || scroll_marker == selected_marker_) {
     return;
   }
@@ -150,12 +142,10 @@ void ScrollMarkerGroupPseudoElement::ActivateScrollMarker(
       scroll_into_view_util::CreateScrollIntoViewParams(
           *scroll_marker->parentElement()->GetComputedStyle());
   scroll_marker->ScrollIntoViewNoVisualUpdate(std::move(params));
-  if (focus) {
-    GetDocument().SetFocusedElement(scroll_marker,
-                                    FocusParams(SelectionBehaviorOnFocus::kNone,
-                                                mojom::blink::FocusType::kNone,
-                                                /*capabilities=*/nullptr));
-  }
+  GetDocument().SetFocusedElement(scroll_marker,
+                                  FocusParams(SelectionBehaviorOnFocus::kNone,
+                                              mojom::blink::FocusType::kNone,
+                                              /*capabilities=*/nullptr));
   SetSelected(*scroll_marker);
 }
 
@@ -166,6 +156,15 @@ bool ScrollMarkerGroupPseudoElement::SetSelected(
   }
   if (selected_marker_) {
     selected_marker_->SetSelected(false);
+    // When updating the active marker the following is meant to ensure that if
+    // the previously active marker was focused we update the focus to the new
+    // active marker.
+    if (selected_marker_->IsFocused()) {
+      GetDocument().SetFocusedElement(
+          &scroll_marker, FocusParams(SelectionBehaviorOnFocus::kNone,
+                                      mojom::blink::FocusType::kNone,
+                                      /*capabilities=*/nullptr));
+    }
   }
   scroll_marker.SetSelected(true);
   selected_marker_ = scroll_marker;
@@ -238,6 +237,11 @@ bool ScrollMarkerGroupPseudoElement::UpdateSelectedScrollMarker(
   if (!scroller || !scroller->IsScrollContainer()) {
     return false;
   }
+
+  if (selected_marker_is_pinned_) {
+    return false;
+  }
+
   ScrollableArea* scrollable_area = scroller->GetScrollableArea();
   CHECK(scrollable_area);
 

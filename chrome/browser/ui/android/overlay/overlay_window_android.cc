@@ -6,7 +6,9 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
+#include "base/android/unguessable_token_android.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "cc/slim/surface_layer.h"
 #include "chrome/android/chrome_jni_headers/PictureInPictureActivity_jni.h"
 #include "chrome/browser/android/tab_android.h"
@@ -15,6 +17,16 @@
 #include "content/public/browser/video_picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android_compositor.h"
+
+using WindowMap = base::flat_map<base::UnguessableToken, OverlayWindowAndroid*>;
+
+namespace {
+WindowMap& GetWindowMap() {
+  static base::NoDestructor<WindowMap> instance;
+  return *instance;
+}
+
+}  // namespace
 
 // static
 std::unique_ptr<content::VideoOverlayWindow>
@@ -31,6 +43,7 @@ OverlayWindowAndroid::OverlayWindowAndroid(
       bounds_(gfx::Rect(0, 0)),
       update_action_timer_(std::make_unique<base::OneShotTimer>()),
       controller_(controller) {
+  GetWindowMap().emplace(token_, this);
   surface_layer_->SetIsDrawable(true);
   surface_layer_->SetStretchContentToFillBounds(true);
   surface_layer_->SetBackgroundColor(SkColors::kBlack);
@@ -84,20 +97,42 @@ OverlayWindowAndroid::OverlayWindowAndroid(
   }
 
   JNIEnv* env = base::android::AttachCurrentThread();
+  auto j_token = base::android::UnguessableTokenAndroid::Create(env, token_);
   Java_PictureInPictureActivity_createActivity(
-      env, reinterpret_cast<intptr_t>(this),
-      TabAndroid::FromWebContents(web_contents)->GetJavaObject(),
+      env, j_token, TabAndroid::FromWebContents(web_contents)->GetJavaObject(),
       source_bounds.x(), source_bounds.y(), source_bounds.width(),
       source_bounds.height());
 }
 
 OverlayWindowAndroid::~OverlayWindowAndroid() {
+  // Any future use of our token will fail.
+  GetWindowMap().erase(token_);
+  if (java_ref_.is_uninitialized()) {
+    return;
+  }
+  // Notify the java side that the native side is gone.
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_PictureInPictureActivity_onWindowDestroyed(
-      env, reinterpret_cast<intptr_t>(this));
+  Java_PictureInPictureActivity_onWindowDestroyed(env, java_ref_.get(env));
 }
 
-void OverlayWindowAndroid::OnActivityStart(
+static jlong JNI_PictureInPictureActivity_OnActivityStart(
+    JNIEnv* env,
+    const jni_zero::JavaParamRef<jobject>& j_token,
+    const jni_zero::JavaParamRef<jobject>& self,
+    const jni_zero::JavaParamRef<jobject>& window) {
+  auto token = base::android::UnguessableTokenAndroid::FromJavaUnguessableToken(
+      env, j_token);
+  auto iter = GetWindowMap().find(token);
+  if (iter == GetWindowMap().end()) {
+    return 0;
+  }
+  OverlayWindowAndroid* thiz = iter->second;
+  thiz->Initialize(env, self, window);
+
+  return reinterpret_cast<jlong>(thiz);
+}
+
+void OverlayWindowAndroid::Initialize(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jobject>& jwindow_android) {
@@ -112,11 +147,13 @@ void OverlayWindowAndroid::OnActivityStart(
   Java_PictureInPictureActivity_setCameraState(env, java_ref_.get(env),
                                                camera_on_);
 
-  if (!update_action_timer_->IsRunning())
+  if (!update_action_timer_->IsRunning()) {
     MaybeNotifyVisibleActionsChanged();
+  }
 
-  if (video_size_.IsEmpty())
+  if (video_size_.IsEmpty()) {
     return;
+  }
 
   Java_PictureInPictureActivity_updateVideoSize(
       env, java_ref_.get(env), video_size_.width(), video_size_.height());
@@ -137,6 +174,8 @@ void OverlayWindowAndroid::OnActivityStopped() {
 }
 
 void OverlayWindowAndroid::Destroy(JNIEnv* env) {
+  // Note that the java side also clears its native ptr when calling us, so it's
+  // okay that we don't notify it in the dtor.
   java_ref_.reset();
 
   // Stop the timer for completeness, though resetting `java_ref_` will make it
@@ -158,8 +197,9 @@ void OverlayWindowAndroid::Destroy(JNIEnv* env) {
 
 void OverlayWindowAndroid::TogglePlayPause(JNIEnv* env, bool toggleOn) {
   DCHECK(!controller_->IsPlayerActive());
-  if (toggleOn == (playback_state_ == PlaybackState::kPaused))
+  if (toggleOn == (playback_state_ == PlaybackState::kPaused)) {
     controller_->TogglePlayPause();
+  }
 }
 
 void OverlayWindowAndroid::NextTrack(JNIEnv* env) {
@@ -179,13 +219,15 @@ void OverlayWindowAndroid::PreviousSlide(JNIEnv* env) {
 }
 
 void OverlayWindowAndroid::ToggleMicrophone(JNIEnv* env, bool toggleOn) {
-  if (microphone_muted_ == toggleOn)
+  if (microphone_muted_ == toggleOn) {
     controller_->ToggleMicrophone();
+  }
 }
 
 void OverlayWindowAndroid::ToggleCamera(JNIEnv* env, bool toggleOn) {
-  if (!camera_on_ == toggleOn)
+  if (!camera_on_ == toggleOn) {
     controller_->ToggleCamera();
+  }
 }
 
 void OverlayWindowAndroid::HangUp(JNIEnv* env) {
@@ -205,8 +247,9 @@ void OverlayWindowAndroid::OnViewSizeChanged(JNIEnv* env,
                                              jint width,
                                              jint height) {
   gfx::Size content_size(width, height);
-  if (bounds_.size() == content_size)
+  if (bounds_.size() == content_size) {
     return;
+  }
 
   bounds_.set_size(content_size);
   surface_layer_->SetBounds(content_size);
@@ -230,8 +273,9 @@ void OverlayWindowAndroid::Hide() {
 }
 
 void OverlayWindowAndroid::CloseInternal() {
-  if (java_ref_.is_uninitialized())
+  if (java_ref_.is_uninitialized()) {
     return;
+  }
 
   DCHECK(window_android_);
   window_android_->RemoveObserver(this);
@@ -271,12 +315,14 @@ void OverlayWindowAndroid::UpdateNaturalSize(const gfx::Size& natural_size) {
 }
 
 void OverlayWindowAndroid::SetPlaybackState(PlaybackState playback_state) {
-  if (playback_state_ == playback_state)
+  if (playback_state_ == playback_state) {
     return;
+  }
 
   playback_state_ = playback_state;
-  if (java_ref_.is_uninitialized())
+  if (java_ref_.is_uninitialized()) {
     return;
+  }
 
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PictureInPictureActivity_setPlaybackState(env, java_ref_.get(env),
@@ -284,12 +330,14 @@ void OverlayWindowAndroid::SetPlaybackState(PlaybackState playback_state) {
 }
 
 void OverlayWindowAndroid::SetMicrophoneMuted(bool muted) {
-  if (microphone_muted_ == muted)
+  if (microphone_muted_ == muted) {
     return;
+  }
 
   microphone_muted_ = muted;
-  if (java_ref_.is_uninitialized())
+  if (java_ref_.is_uninitialized()) {
     return;
+  }
 
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PictureInPictureActivity_setMicrophoneMuted(env, java_ref_.get(env),
@@ -297,12 +345,14 @@ void OverlayWindowAndroid::SetMicrophoneMuted(bool muted) {
 }
 
 void OverlayWindowAndroid::SetCameraState(bool turned_on) {
-  if (camera_on_ == turned_on)
+  if (camera_on_ == turned_on) {
     return;
+  }
 
   camera_on_ = turned_on;
-  if (java_ref_.is_uninitialized())
+  if (java_ref_.is_uninitialized()) {
     return;
+  }
 
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PictureInPictureActivity_setCameraState(env, java_ref_.get(env),
@@ -369,8 +419,9 @@ void OverlayWindowAndroid::SetSurfaceId(const viz::SurfaceId& surface_id) {
 }
 
 void OverlayWindowAndroid::MaybeNotifyVisibleActionsChanged() {
-  if (java_ref_.is_uninitialized())
+  if (java_ref_.is_uninitialized()) {
     return;
+  }
 
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PictureInPictureActivity_updateVisibleActions(
@@ -389,10 +440,11 @@ void OverlayWindowAndroid::MaybeUpdateVisibleAction(
     return;
   }
 
-  if (is_visible)
+  if (is_visible) {
     visible_actions_.insert(action_code);
-  else
+  } else {
     visible_actions_.erase(action_code);
+  }
 
   if (!update_action_timer_->IsRunning()) {
     update_action_timer_->Start(

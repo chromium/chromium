@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/channel_mixing_matrix.h"
 
 #include <stddef.h>
+
+#include <array>
 
 #include "base/strings/stringprintf.h"
 #include "media/base/channel_mixer.h"
@@ -272,12 +269,15 @@ TEST(ChannelMixingMatrixTest, 5Point1To1Point1) {
 }
 
 TEST(ChannelMixingMatrixTest, DiscreteToDiscrete) {
-  const struct {
+  struct TestCase {
     int input_channels;
     int output_channels;
-  } test_case[] = {
-    {2, 2}, {2, 5}, {5, 2},
   };
+  const auto test_case = std::to_array<TestCase>({
+      {2, 2},
+      {2, 5},
+      {5, 2},
+  });
 
   for (size_t n = 0; n < std::size(test_case); n++) {
     int input_channels = test_case[n].input_channels;

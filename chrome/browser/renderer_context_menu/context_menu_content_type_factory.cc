@@ -60,11 +60,9 @@ class NullContextMenuContentType : public ContextMenuContentType {
 
 }  // namespace
 
-ContextMenuContentTypeFactory::ContextMenuContentTypeFactory() {
-}
+ContextMenuContentTypeFactory::ContextMenuContentTypeFactory() = default;
 
-ContextMenuContentTypeFactory::~ContextMenuContentTypeFactory() {
-}
+ContextMenuContentTypeFactory::~ContextMenuContentTypeFactory() = default;
 
 // static.
 std::unique_ptr<ContextMenuContentType> ContextMenuContentTypeFactory::Create(

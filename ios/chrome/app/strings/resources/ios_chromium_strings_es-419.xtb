@@ -151,6 +151,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="4790638144988730920">Sigue usando los datos de Chromium en tu Cuenta de Google.</translation>
 <translation id="4828317641996116749">Chromium no pudo verificar todas las contraseñas. Vuelve a intentarlo más tarde.</translation>
 <translation id="4856138222358683580">Acciones de Chromium</translation>
+<translation id="4863800915967098115">Si accedes, se agregará tu cuenta a Chromium para la navegación relacionada con el trabajo.</translation>
 <translation id="4904452304169763785">Alertas sobre cualquier problema de privacidad o seguridad que Chromium detecte.</translation>
 <translation id="4962295957157529683">Completa las tareas que tenías en curso en otra ventana abierta de Chromium.</translation>
 <translation id="4985291216379576555">Sin conexión, Chromium no puede buscar actualizaciones.</translation>
@@ -261,7 +262,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="7763454117143368771">Usa Chromium como tu navegador predeterminado para protegerte de sitios peligrosos y mantener tus contraseñas seguras</translation>
 <translation id="7784950022329154821">Bloquear las pestañas de incógnito cuando cierras Chrome</translation>
 <translation id="78025249032851484">Chromium está desactualizado.</translation>
-<translation id="7859018312476869945">Cuando escribes en la barra de direcciones o en el cuadro de búsqueda, Chromium envía lo que escribes a tu motor de búsqueda predeterminado para obtener mejores sugerencias. Esta función está desactivada en el modo Incógnito.</translation>
+<translation id="7859018312476869945">Cuando escribes en la barra de direcciones o en el cuadro de búsqueda, Chromium envía lo que escribes a tu motor de búsqueda predeterminado para obtener mejores sugerencias. Esta función está desactivada en el modo Incógnito</translation>
 <translation id="7859432380288435856">Chrome detectará los números de seguimiento del paquete en los sitios que visites y te mostrará actualizaciones de tus paquetes en la página Nueva pestaña. Tus datos se compartirán con Google para proporcionar esta función y mejorar Shopping para todo el mundo.</translation>
 <translation id="7890287942691234100">Usar el escáner de Chromium</translation>
 <translation id="7905064834449738336">Cuando usas una contraseña, Chromium te advierte si se publicó en línea. Si lo haces, se encriptan tus contraseñas y nombres de usuario para que nadie, ni siquiera Google, pueda leer esta información.</translation>
@@ -314,7 +315,7 @@ Tus datos se encriptaron con tu frase de contraseña el <ph name="TIME" />. Ingr
 <translation id="9031260906956926157">Aún no se guardaron algunos de tus datos de Chromium en tu Cuenta de Google.
 Espera unos minutos antes de salir. Si sales ahora, se borrarán estos datos.</translation>
 <translation id="9050790730841755540">Usa Chromium cada vez que presiones vínculos en otras apps.</translation>
-<translation id="9059693977935746710">No es necesario que recuerdes esta contraseña. Se guardará en el Administrador de contraseñas de <ph name="EMAIL" />.</translation>
+<translation id="9059693977935746710">No es necesario que recuerdes esta contraseña. Se guardará en el Administrador de contraseñas de <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium no actualizado</translation>
 <translation id="9152995302810511799">Sugerencia de Chromium: Obtén la seguridad más sólida de Chromium</translation>
 <translation id="921174536258924340">Chromium no pudo revisar todas las contraseñas. Vuelve a intentarlo mañana o <ph name="BEGIN_LINK" />revisa las contraseñas guardadas en tu Cuenta de Google.<ph name="END_LINK" /></translation>

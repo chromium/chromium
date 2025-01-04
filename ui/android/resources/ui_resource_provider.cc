@@ -4,12 +4,21 @@
 
 #include "ui/android/resources/ui_resource_provider.h"
 
+#include "base/feature_list.h"
+#include "base/threading/platform_thread.h"
 #include "third_party/android_opengl/etc1/etc1.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkMallocPixelRef.h"
 #include "third_party/skia/include/core/SkPixelRef.h"
 
 namespace ui {
+
+// Used at callsites, to lower thread priority to background while compression
+// is happening.
+BASE_FEATURE(kCompressBitmapAtBackgroundPriority,
+             "CompressBitmapAtBackgroundPriority",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 
 unsigned int NextPowerOfTwo(int a) {
@@ -83,6 +92,27 @@ sk_sp<SkPixelRef> UIResourceProvider::CompressBitmap(SkBitmap raw_data,
   }
 
   return nullptr;
+}
+
+sk_sp<SkPixelRef> UIResourceProvider::CompressBitmapAtBackgroundPriority(
+    SkBitmap raw_data,
+    bool supports_etc_npot) {
+  // ETC1 compression (which happens below) is very expensive, taking 200-300ms
+  // of a big core on high-end 2024 devices. As the thread priority is kept at
+  // 120 (default) for thread pool threads, this is potentially competing with
+  // more important threads, which either share the same priority, or are close
+  // to it in importance.
+  //
+  // Temporarily lower the thread priority, to avoid competing with those. Note
+  // that this does *not* restrict the thread to little cores only, as this is
+  // directly going to the setpriority() system call, not through Android APIs
+  // (which do not lower the thread priority either, as of Android 15 at least).
+  base::ThreadType thread_type = base::PlatformThread::GetCurrentThreadType();
+  base::PlatformThread::SetCurrentThreadType(base::ThreadType::kBackground);
+  auto result = CompressBitmap(raw_data, supports_etc_npot);
+  base::PlatformThread::SetCurrentThreadType(thread_type);
+
+  return result;
 }
 
 }  // namespace ui

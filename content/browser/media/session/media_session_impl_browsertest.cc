@@ -21,7 +21,6 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/media/session/audio_focus_delegate.h"
 #include "content/browser/media/session/mock_media_session_player_observer.h"
 #include "content/browser/media/session/mock_media_session_service_impl.h"
@@ -2114,135 +2113,6 @@ IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
-                       UMA_Suspended_SystemTransient) {
-  auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>(
-      media::MediaContentType::kPersistent);
-  base::HistogramTester tester;
-
-  StartNewPlayer(player_observer.get());
-  ResolveAudioFocusSuccess();
-  SystemSuspend(true);
-
-  std::unique_ptr<base::HistogramSamples> samples(
-      tester.GetHistogramSamplesSinceCreation("Media.Session.Suspended"));
-  EXPECT_EQ(1, samples->TotalCount());
-  EXPECT_EQ(1, samples->GetCount(0));  // System Transient
-  EXPECT_EQ(0, samples->GetCount(1));  // System Permanent
-  EXPECT_EQ(0, samples->GetCount(2));  // UI
-}
-
-IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
-                       UMA_Suspended_SystemPermantent) {
-  auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>(
-      media::MediaContentType::kPersistent);
-  base::HistogramTester tester;
-
-  StartNewPlayer(player_observer.get());
-  ResolveAudioFocusSuccess();
-  SystemSuspend(false);
-
-  std::unique_ptr<base::HistogramSamples> samples(
-      tester.GetHistogramSamplesSinceCreation("Media.Session.Suspended"));
-  EXPECT_EQ(1, samples->TotalCount());
-  EXPECT_EQ(0, samples->GetCount(0));  // System Transient
-  EXPECT_EQ(1, samples->GetCount(1));  // System Permanent
-  EXPECT_EQ(0, samples->GetCount(2));  // UI
-}
-
-IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest, UMA_Suspended_UI) {
-  auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>(
-      media::MediaContentType::kPersistent);
-
-  base::HistogramTester tester;
-
-  StartNewPlayer(player_observer.get());
-  ResolveAudioFocusSuccess();
-  UISuspend();
-
-  std::unique_ptr<base::HistogramSamples> samples(
-      tester.GetHistogramSamplesSinceCreation("Media.Session.Suspended"));
-  EXPECT_EQ(1, samples->TotalCount());
-  EXPECT_EQ(0, samples->GetCount(0));  // System Transient
-  EXPECT_EQ(0, samples->GetCount(1));  // System Permanent
-  EXPECT_EQ(1, samples->GetCount(2));  // UI
-}
-
-IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
-                       UMA_Suspended_Multiple) {
-  auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>(
-      media::MediaContentType::kPersistent);
-  base::HistogramTester tester;
-
-  StartNewPlayer(player_observer.get());
-  ResolveAudioFocusSuccess();
-
-  UISuspend();
-  UIResume();
-  ResolveAudioFocusSuccess();
-
-  SystemSuspend(true);
-  SystemResume();
-
-  UISuspend();
-  UIResume();
-  ResolveAudioFocusSuccess();
-
-  SystemSuspend(false);
-
-  std::unique_ptr<base::HistogramSamples> samples(
-      tester.GetHistogramSamplesSinceCreation("Media.Session.Suspended"));
-  EXPECT_EQ(4, samples->TotalCount());
-  EXPECT_EQ(1, samples->GetCount(0));  // System Transient
-  EXPECT_EQ(1, samples->GetCount(1));  // System Permanent
-  EXPECT_EQ(2, samples->GetCount(2));  // UI
-}
-
-IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
-                       UMA_Suspended_Crossing) {
-  auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>(
-      media::MediaContentType::kPersistent);
-  base::HistogramTester tester;
-
-  StartNewPlayer(player_observer.get());
-  ResolveAudioFocusSuccess();
-
-  UISuspend();
-  SystemSuspend(true);
-  SystemSuspend(false);
-  UIResume();
-  ResolveAudioFocusSuccess();
-
-  SystemSuspend(true);
-  SystemSuspend(true);
-  SystemSuspend(false);
-  SystemResume();
-
-  std::unique_ptr<base::HistogramSamples> samples(
-      tester.GetHistogramSamplesSinceCreation("Media.Session.Suspended"));
-  EXPECT_EQ(2, samples->TotalCount());
-  EXPECT_EQ(1, samples->GetCount(0));  // System Transient
-  EXPECT_EQ(0, samples->GetCount(1));  // System Permanent
-  EXPECT_EQ(1, samples->GetCount(2));  // UI
-}
-
-IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest, UMA_Suspended_Stop) {
-  auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>(
-      media::MediaContentType::kPersistent);
-  base::HistogramTester tester;
-
-  StartNewPlayer(player_observer.get());
-  ResolveAudioFocusSuccess();
-  media_session_->Stop(MediaSession::SuspendType::kUI);
-
-  std::unique_ptr<base::HistogramSamples> samples(
-      tester.GetHistogramSamplesSinceCreation("Media.Session.Suspended"));
-  EXPECT_EQ(1, samples->TotalCount());
-  EXPECT_EQ(0, samples->GetCount(0));  // System Transient
-  EXPECT_EQ(0, samples->GetCount(1));  // System Permanent
-  EXPECT_EQ(1, samples->GetCount(2));  // UI
-}
-
-IN_PROC_BROWSER_TEST_P(MediaSessionImplParamBrowserTest,
                        UMA_ActiveTime_NoActivation) {
   base::HistogramTester tester;
 
@@ -2687,15 +2557,51 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest, Async_Unducking_Success) {
   auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>(
       media::MediaContentType::kPersistent);
 
+  // Start a player and duck it.
   StartNewPlayer(player_observer.get());
   EXPECT_TRUE(IsActive());
   EXPECT_TRUE(player_observer->IsPlaying(0));
-
+  ResolveAudioFocusSuccess();
   SystemStartDucking();
   EXPECT_TRUE(IsDucking());
 
+  // Pause and then play the player. This should re-request audio focus. Before
+  // audio focus is granted, this should still be ducked.
+  UISuspend();
+  UIResume();
+  EXPECT_TRUE(IsDucking());
+
+  // Once audio focus is gained, it should no longer be ducked.
   ResolveAudioFocusSuccess();
   EXPECT_FALSE(IsDucking());
+}
+
+IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
+                       Async_Unducking_Success_Reduck) {
+  auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>(
+      media::MediaContentType::kPersistent);
+
+  // Start a player and duck it.
+  StartNewPlayer(player_observer.get());
+  EXPECT_TRUE(IsActive());
+  EXPECT_TRUE(player_observer->IsPlaying(0));
+  ResolveAudioFocusSuccess();
+  SystemStartDucking();
+  EXPECT_TRUE(IsDucking());
+
+  // Pause and then play the player. This should re-request audio focus. Before
+  // audio focus is granted, this should still be ducked.
+  UISuspend();
+  UIResume();
+  EXPECT_TRUE(IsDucking());
+
+  // Re-enforce ducking.
+  SystemStartDucking();
+
+  // Once audio focus is gained, it should still be ducked since it was ducked
+  // after the request started.
+  ResolveAudioFocusSuccess();
+  EXPECT_TRUE(IsDucking());
 }
 
 IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest, Async_Unducking_Suspended) {
@@ -3041,7 +2947,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 // TODO(crbug.com/40097218): Re-enable this test.
 #define MAYBE_PositionStateRouteWithOnePlayer \
   DISABLED_PositionStateRouteWithOnePlayer

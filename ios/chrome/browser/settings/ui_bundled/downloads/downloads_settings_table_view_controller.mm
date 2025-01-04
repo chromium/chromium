@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "ios/chrome/browser/authentication/ui_bundled/views/identity_button_control.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_table_view_controller_action_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_table_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/identity_button_cell.h"
@@ -17,7 +18,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 

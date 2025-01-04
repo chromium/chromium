@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
+#include "chrome/browser/ash/app_mode/test/fake_cws_chrome_apps.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/ash/app_mode/test/network_state_mixin.h"
@@ -41,6 +42,7 @@ using kiosk::test::AutoLaunchKioskApp;
 using kiosk::test::CloseAppWindow;
 using kiosk::test::CurrentProfile;
 using kiosk::test::IsAppInstalled;
+using kiosk::test::OfflineEnabledChromeAppV1;
 using kiosk::test::TheKioskApp;
 
 namespace {
@@ -171,12 +173,15 @@ class OfflineKioskTest
 
   static std::vector<KioskMixin::Config> Configs() {
     // TODO(crbug.com/379633748): Add IWA.
-    return {KioskMixin::Config{/*name=*/"WebApp",
-                               /*auto_launch_account_id=*/{},
-                               {KioskMixin::SimpleWebAppOption()}},
-            KioskMixin::Config{/*name=*/"ChromeApp",
-                               /*auto_launch_account_id=*/{},
-                               {KioskMixin::SimpleChromeAppOption()}}};
+    return {
+        KioskMixin::Config{/*name=*/"WebApp",
+                           /*auto_launch_account_id=*/{},
+                           {KioskMixin::SimpleWebAppOption()}},
+        KioskMixin::Config{/*name=*/"ChromeApp",
+                           /*auto_launch_account_id=*/{},
+                           // The Chrome app needs to be offline enabled because
+                           // some tests will launch it while offline.
+                           {OfflineEnabledChromeAppV1()}}};
   }
 
   NetworkStateMixin network_state_{&mixin_host_};
@@ -192,6 +197,19 @@ IN_PROC_BROWSER_TEST_P(OfflineKioskTest, OfflineLaunchWorksOnceItComesOnline) {
   network_state_.SimulateOnline();
   ASSERT_TRUE(kiosk_.WaitSessionLaunched());
   ASSERT_TRUE((IsAppInstalled(CurrentProfile(), TheKioskApp())));
+}
+
+IN_PROC_BROWSER_TEST_P(OfflineKioskTest, PRE_LaunchesInstalledAppOffline) {
+  network_state_.SimulateOnline();
+  ASSERT_TRUE(kiosk_.LaunchManually(TheKioskApp()));
+  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
+  ASSERT_TRUE((IsAppInstalled(CurrentProfile(), TheKioskApp())));
+}
+
+IN_PROC_BROWSER_TEST_P(OfflineKioskTest, LaunchesInstalledAppOffline) {
+  network_state_.SimulateOffline();
+  ASSERT_TRUE(kiosk_.LaunchManually(TheKioskApp()));
+  ASSERT_TRUE(kiosk_.WaitSessionLaunched());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

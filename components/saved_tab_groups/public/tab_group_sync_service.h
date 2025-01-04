@@ -198,13 +198,32 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   virtual void MakeTabGroupShared(const LocalTabGroupID& local_group_id,
                                   std::string_view collaboration_id) = 0;
 
+  // Mutator methods for shared tab groups.
+  // Starts the process of converting a shared tab group to saved tab group. Due
+  // to network, Chrome will need to wait for server confirmation before the
+  // conversion completes successfully. The tab group must be shared when
+  // calling this. `on_complete_callback` will be called on completion.
+  virtual void AboutToUnShareTabGroup(
+      const LocalTabGroupID& local_group_id,
+      base::OnceClosure on_complete_callback) = 0;
+
+  // Called when server confirms that the shared tab group has become private
+  // or when unshare fails due to some errors.
+  virtual void OnTabGroupUnShareComplete(const LocalTabGroupID& local_group_id,
+                                         bool success) = 0;
+
   // Accessor methods.
   virtual std::vector<SavedTabGroup> GetAllGroups() const = 0;
   virtual std::optional<SavedTabGroup> GetGroup(
       const base::Uuid& guid) const = 0;
   virtual std::optional<SavedTabGroup> GetGroup(
       const LocalTabGroupID& local_id) const = 0;
+  virtual std::optional<SavedTabGroup> GetGroup(
+      const EitherGroupID& either_id) const = 0;
   virtual std::vector<LocalTabGroupID> GetDeletedGroupIds() const = 0;
+  virtual std::optional<std::u16string>
+  GetTitleForPreviouslyExistingSharedTabGroup(
+      const CollaborationId& collaboration_id) const = 0;
 
   // Method invoked from UI to open a remote tab group in the local tab model.
   virtual void OpenTabGroup(const base::Uuid& sync_group_id,

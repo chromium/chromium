@@ -92,8 +92,7 @@ ChromeAppSorting::ChromeAppSorting(content::BrowserContext* browser_context)
   MigrateAppIndex(extensions);
 }
 
-ChromeAppSorting::~ChromeAppSorting() {
-}
+ChromeAppSorting::~ChromeAppSorting() = default;
 
 void ChromeAppSorting::CreateOrdinalsIfNecessary(size_t minimum_size) {
   // Create StringOrdinal values as required to ensure |ntp_ordinal_map_| has at

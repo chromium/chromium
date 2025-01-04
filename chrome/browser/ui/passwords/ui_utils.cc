@@ -28,7 +28,9 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -190,9 +192,8 @@ std::u16string GetDisplayPassword(const password_manager::PasswordForm& form) {
 bool IsSyncingAutosignSetting(Profile* profile) {
   const syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
-  return (
-      sync_service &&
-      sync_service->GetActiveDataTypes().Has(syncer::PRIORITY_PREFERENCES));
+  return (sync_service &&
+          sync_service->GetActiveDataTypes().Has(syncer::PRIORITY_PREFERENCES));
 }
 
 std::string GetGooglePasswordManagerSubPageURLStr() {
@@ -245,4 +246,28 @@ const gfx::VectorIcon& GooglePasswordManagerVectorIcon() {
 #else
   return kKeyIcon;
 #endif
+}
+
+std::optional<AccountInfo> GetAccountInfoForPasswordMessages(
+    syncer::SyncService* sync_service,
+    signin::IdentityManager* identity_manager) {
+  if (!password_manager::sync_util::HasChosenToSyncPasswords(sync_service)) {
+    return std::nullopt;
+  }
+  CoreAccountId account_id =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  return identity_manager->FindExtendedAccountInfoByAccountId(account_id);
+}
+
+std::string GetDisplayableAccountName(
+    syncer::SyncService* sync_service,
+    signin::IdentityManager* identity_manager) {
+  std::optional<AccountInfo> account_info =
+      GetAccountInfoForPasswordMessages(sync_service, identity_manager);
+  if (!account_info.has_value()) {
+    return "";
+  }
+  return account_info->CanHaveEmailAddressDisplayed()
+             ? account_info.value().email
+             : account_info.value().full_name;
 }

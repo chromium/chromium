@@ -38,17 +38,13 @@ void ScrollMarkerPseudoElement::DefaultEventHandler(Event& event) {
   if (should_intercept) {
     if (scroll_marker_group_) {
       if (is_right_or_down_arrow_key) {
-        scroll_marker_group_->ActivateNextScrollMarker(/*focus=*/true);
+        scroll_marker_group_->ActivateNextScrollMarker();
       } else if (is_left_or_up_arrow_key) {
-        scroll_marker_group_->ActivatePrevScrollMarker(/*focus=*/true);
+        scroll_marker_group_->ActivatePrevScrollMarker();
       } else if (is_click || is_enter_or_space) {
         // parentElement is ::column for column scroll marker and
         // ultimate originating element for regular scroll marker.
-        mojom::blink::ScrollIntoViewParamsPtr params =
-            scroll_into_view_util::CreateScrollIntoViewParams(
-                *parentElement()->GetComputedStyle());
-        ScrollIntoViewNoVisualUpdate(std::move(params));
-        scroll_marker_group_->SetSelected(*this);
+        scroll_marker_group_->ActivateScrollMarker(this);
       }
     }
     event.SetDefaultHandled();

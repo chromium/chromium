@@ -738,3 +738,12 @@ absl_test("char_formatting_test") {
     ":strings",
   ]
 }
+
+absl_test("str_cat_test") {
+  sources = [ "str_cat_test.cc" ]
+  deps = [
+    ":str_format",
+    ":strings",
+    "//third_party/abseil-cpp/absl/base:config",
+  ]
+}

@@ -22,6 +22,8 @@
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/hash/hash.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/types/fixed_array.h"
 #include "content/browser/accessibility/accessibility_tree_snapshot_combiner.h"
 #include "content/browser/accessibility/browser_accessibility_android.h"
@@ -53,18 +55,88 @@ namespace content {
 
 namespace {
 
+// This map contains key value pairs of a string to a tree search predicate. The
+// set of keys represents the ways in which an AT can navigate a page by HTML
+// element (by next or previous navigation). A Java-side AT sends a key with a
+// next/previous action request, and this map is used to map the string to the
+// correct predicate.
 using SearchKeyToPredicateMap =
     std::unordered_map<std::u16string, ui::AccessibilityMatchPredicate>;
-base::LazyInstance<SearchKeyToPredicateMap>::Leaky
-    g_search_key_to_predicate_map = LAZY_INSTANCE_INITIALIZER;
-base::LazyInstance<std::u16string>::Leaky g_all_search_keys =
-    LAZY_INSTANCE_INITIALIZER;
 
 static const char kHtmlTypeRow[] = "ROW";
 static const char kHtmlTypeColumn[] = "COLUMN";
 static const char kHtmlTypeRowBounds[] = "ROW_BOUNDS";
 static const char kHtmlTypeColumnBounds[] = "COLUMN_BOUNDS";
 static const char kHtmlTypeTableBounds[] = "TABLE_BOUNDS";
+
+// IMPORTANT!
+// These values are written to logs. Do not renumber or delete
+// existing items; add new entries to the end of the list.
+//
+// LINT.IfChange
+enum class AccessibilityPredicateType {
+  // Used for a string we do not support/recognize.
+  kUnknown = 0,
+
+  // Used for an empty string, which is default and maps to
+  // "IsInterestingOnAndroid".
+  kDefault = 1,
+
+  // Currently supported navigation types.
+  kArticle = 2,
+  kBlockQuote = 3,
+  kButton = 4,
+  kCheckbox = 5,
+  kCombobox = 6,
+  kControl = 7,
+  kFocusable = 8,
+  kFrame = 9,
+  kGraphic = 10,
+  kH1 = 11,
+  kH2 = 12,
+  kH3 = 13,
+  kH4 = 14,
+  kH5 = 15,
+  kH6 = 16,
+  kHeading = 17,
+  kHeadingSame = 18,
+  kLandmark = 19,
+  kLink = 20,
+  kList = 21,
+  kListItem = 22,
+  kLive = 23,
+  kMain = 24,
+  kMedia = 25,
+  kParagraph = 26,
+  kRadio = 27,
+  kRadioGroup = 28,
+  kSection = 29,
+  kTable = 30,
+  kTextfield = 31,
+  kTextBold = 32,
+  kTextItalic = 33,
+  kTextUnderline = 34,
+  kTree = 35,
+  kUnvisitedLink = 36,
+  kVisitedLink = 37,
+  kRow = 38,
+  kColumn = 39,
+  kRowBounds = 40,
+  kColumnBounds = 41,
+  kTableBounds = 42,
+
+  // Max value, must always be equal to the largest entry logged, remember to
+  // increment.
+  kMaxValue = 42
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:AccessibilityPredicateType)
+
+// This map contains key value pairs of a string to an internal enum identifying
+// a tree search predicate. A Java-side AT sends a key with a next/previous
+// action request, and this map is used to map the string to an enum so we can
+// log a histogram.
+using PredicateToEnumMap =
+    std::unordered_map<std::u16string, AccessibilityPredicateType>;
 
 bool AllInterestingNodesPredicate(ui::BrowserAccessibility* start,
                                   ui::BrowserAccessibility* node) {
@@ -78,82 +150,153 @@ bool AccessibilityNoOpPredicate(ui::BrowserAccessibility* start,
   return true;
 }
 
-void AddToPredicateMap(const char* search_key_ascii,
-                       ui::AccessibilityMatchPredicate predicate) {
-  std::u16string search_key_utf16 = base::ASCIIToUTF16(search_key_ascii);
-  g_search_key_to_predicate_map.Get()[search_key_utf16] = predicate;
-  if (!g_all_search_keys.Get().empty()) {
-    g_all_search_keys.Get() += u",";
+// Getter function for the search key to predicate map and all keys string.
+std::tuple<SearchKeyToPredicateMap&, std::u16string&, PredicateToEnumMap&>
+GetSearchKeyData() {
+  // These are special unofficial strings sent from TalkBack/BrailleBack
+  // to jump to certain categories of web elements.
+  static base::NoDestructor<SearchKeyToPredicateMap>
+      search_key_to_predicate_map;
+  static base::NoDestructor<std::u16string> all_search_keys;
+  static base::NoDestructor<PredicateToEnumMap> predicate_to_enum_map;
+  static bool initialized = false;
+
+  if (!initialized) {
+    initialized = true;
+    auto add_to_map = [&](const std::u16string& key,
+                          ui::AccessibilityMatchPredicate predicate,
+                          AccessibilityPredicateType type) {
+      (*search_key_to_predicate_map)[key] = predicate;
+      (*predicate_to_enum_map)[key] = type;
+
+      // Build the all_search_keys string.
+      if (!all_search_keys->empty()) {
+        *all_search_keys += u",";
+      }
+      *all_search_keys += key;
+    };
+
+    add_to_map(u"ARTICLE", ui::AccessibilityArticlePredicate,
+               AccessibilityPredicateType::kArticle);
+    add_to_map(u"BLOCKQUOTE", ui::AccessibilityBlockquotePredicate,
+               AccessibilityPredicateType::kBlockQuote);
+    add_to_map(u"BUTTON", ui::AccessibilityButtonPredicate,
+               AccessibilityPredicateType::kButton);
+    add_to_map(u"CHECKBOX", ui::AccessibilityCheckboxPredicate,
+               AccessibilityPredicateType::kCheckbox);
+    add_to_map(u"COMBOBOX", ui::AccessibilityComboboxPredicate,
+               AccessibilityPredicateType::kCombobox);
+    add_to_map(u"CONTROL", ui::AccessibilityControlPredicate,
+               AccessibilityPredicateType::kControl);
+    add_to_map(u"FOCUSABLE", ui::AccessibilityFocusablePredicate,
+               AccessibilityPredicateType::kFocusable);
+    add_to_map(u"FRAME", ui::AccessibilityFramePredicate,
+               AccessibilityPredicateType::kFrame);
+    add_to_map(u"GRAPHIC", ui::AccessibilityGraphicPredicate,
+               AccessibilityPredicateType::kGraphic);
+    add_to_map(u"H1", ui::AccessibilityH1Predicate,
+               AccessibilityPredicateType::kH1);
+    add_to_map(u"H2", ui::AccessibilityH2Predicate,
+               AccessibilityPredicateType::kH2);
+    add_to_map(u"H3", ui::AccessibilityH3Predicate,
+               AccessibilityPredicateType::kH3);
+    add_to_map(u"H4", ui::AccessibilityH4Predicate,
+               AccessibilityPredicateType::kH4);
+    add_to_map(u"H5", ui::AccessibilityH5Predicate,
+               AccessibilityPredicateType::kH5);
+    add_to_map(u"H6", ui::AccessibilityH6Predicate,
+               AccessibilityPredicateType::kH6);
+    add_to_map(u"HEADING", ui::AccessibilityHeadingPredicate,
+               AccessibilityPredicateType::kHeading);
+    add_to_map(u"HEADING_SAME", ui::AccessibilityHeadingSameLevelPredicate,
+               AccessibilityPredicateType::kHeadingSame);
+    add_to_map(u"LANDMARK", ui::AccessibilityLandmarkPredicate,
+               AccessibilityPredicateType::kLandmark);
+    add_to_map(u"LINK", ui::AccessibilityLinkPredicate,
+               AccessibilityPredicateType::kLink);
+    add_to_map(u"LIST", ui::AccessibilityListPredicate,
+               AccessibilityPredicateType::kList);
+    add_to_map(u"LIST_ITEM", ui::AccessibilityListItemPredicate,
+               AccessibilityPredicateType::kListItem);
+    add_to_map(u"LIVE", ui::AccessibilityLiveRegionPredicate,
+               AccessibilityPredicateType::kLive);
+    add_to_map(u"MAIN", ui::AccessibilityMainPredicate,
+               AccessibilityPredicateType::kMain);
+    add_to_map(u"MEDIA", ui::AccessibilityMediaPredicate,
+               AccessibilityPredicateType::kMedia);
+    add_to_map(u"PARAGRAPH", ui::AccessibilityParagraphPredicate,
+               AccessibilityPredicateType::kParagraph);
+    add_to_map(u"RADIO", ui::AccessibilityRadioButtonPredicate,
+               AccessibilityPredicateType::kRadio);
+    add_to_map(u"RADIO_GROUP", ui::AccessibilityRadioGroupPredicate,
+               AccessibilityPredicateType::kRadioGroup);
+    add_to_map(u"SECTION", ui::AccessibilitySectionPredicate,
+               AccessibilityPredicateType::kSection);
+    add_to_map(u"TABLE", ui::AccessibilityTablePredicate,
+               AccessibilityPredicateType::kTable);
+    add_to_map(u"TEXT_FIELD", ui::AccessibilityTextfieldPredicate,
+               AccessibilityPredicateType::kTextfield);
+    add_to_map(u"TEXT_BOLD", ui::AccessibilityTextStyleBoldPredicate,
+               AccessibilityPredicateType::kTextBold);
+    add_to_map(u"TEXT_ITALIC", ui::AccessibilityTextStyleItalicPredicate,
+               AccessibilityPredicateType::kTextItalic);
+    add_to_map(u"TEXT_UNDER", ui::AccessibilityTextStyleUnderlinePredicate,
+               AccessibilityPredicateType::kTextUnderline);
+    add_to_map(u"TREE", ui::AccessibilityTreePredicate,
+               AccessibilityPredicateType::kTree);
+    add_to_map(u"UNVISITED_LINK", ui::AccessibilityUnvisitedLinkPredicate,
+               AccessibilityPredicateType::kUnvisitedLink);
+    add_to_map(u"VISITED_LINK", ui::AccessibilityVisitedLinkPredicate,
+               AccessibilityPredicateType::kVisitedLink);
+
+    // These are surfaced simply to document the html types, but do not do a
+    // tree/predicate search.
+    add_to_map(u"ROW", AccessibilityNoOpPredicate,
+               AccessibilityPredicateType::kRow);
+    add_to_map(u"ROW", AccessibilityNoOpPredicate,
+               AccessibilityPredicateType::kRow);
+    add_to_map(u"COLUMN", AccessibilityNoOpPredicate,
+               AccessibilityPredicateType::kColumn);
+    add_to_map(u"ROW_BOUNDS", AccessibilityNoOpPredicate,
+               AccessibilityPredicateType::kRowBounds);
+    add_to_map(u"COLUMN_BOUNDS", AccessibilityNoOpPredicate,
+               AccessibilityPredicateType::kColumnBounds);
+    add_to_map(u"TABLE_BOUNDS", AccessibilityNoOpPredicate,
+               AccessibilityPredicateType::kTableBounds);
+
+    // These do not have search predicates and are for metrics tracking.
+    (*predicate_to_enum_map)[u"UNKNOWN"] = AccessibilityPredicateType::kUnknown;
+    (*predicate_to_enum_map)[u"DEFAULT"] = AccessibilityPredicateType::kDefault;
   }
-  g_all_search_keys.Get() += search_key_utf16;
-}
-
-// These are special unofficial strings sent from TalkBack/BrailleBack
-// to jump to certain categories of web elements.
-void InitSearchKeyToPredicateMapIfNeeded() {
-  if (!g_search_key_to_predicate_map.Get().empty()) {
-    return;
-  }
-
-  AddToPredicateMap("ARTICLE", ui::AccessibilityArticlePredicate);
-  AddToPredicateMap("BLOCKQUOTE", ui::AccessibilityBlockquotePredicate);
-  AddToPredicateMap("BUTTON", ui::AccessibilityButtonPredicate);
-  AddToPredicateMap("CHECKBOX", ui::AccessibilityCheckboxPredicate);
-  AddToPredicateMap("COMBOBOX", ui::AccessibilityComboboxPredicate);
-  AddToPredicateMap("CONTROL", ui::AccessibilityControlPredicate);
-  AddToPredicateMap("FOCUSABLE", ui::AccessibilityFocusablePredicate);
-  AddToPredicateMap("FRAME", ui::AccessibilityFramePredicate);
-  AddToPredicateMap("GRAPHIC", ui::AccessibilityGraphicPredicate);
-  AddToPredicateMap("H1", ui::AccessibilityH1Predicate);
-  AddToPredicateMap("H2", ui::AccessibilityH2Predicate);
-  AddToPredicateMap("H3", ui::AccessibilityH3Predicate);
-  AddToPredicateMap("H4", ui::AccessibilityH4Predicate);
-  AddToPredicateMap("H5", ui::AccessibilityH5Predicate);
-  AddToPredicateMap("H6", ui::AccessibilityH6Predicate);
-  AddToPredicateMap("HEADING", ui::AccessibilityHeadingPredicate);
-  AddToPredicateMap("HEADING_SAME", ui::AccessibilityHeadingSameLevelPredicate);
-  AddToPredicateMap("LANDMARK", ui::AccessibilityLandmarkPredicate);
-  AddToPredicateMap("LINK", ui::AccessibilityLinkPredicate);
-  AddToPredicateMap("LIST", ui::AccessibilityListPredicate);
-  AddToPredicateMap("LIST_ITEM", ui::AccessibilityListItemPredicate);
-  AddToPredicateMap("LIVE", ui::AccessibilityLiveRegionPredicate);
-  AddToPredicateMap("MAIN", ui::AccessibilityMainPredicate);
-  AddToPredicateMap("MEDIA", ui::AccessibilityMediaPredicate);
-  AddToPredicateMap("PARAGRAPH", ui::AccessibilityParagraphPredicate);
-  AddToPredicateMap("RADIO", ui::AccessibilityRadioButtonPredicate);
-  AddToPredicateMap("RADIO_GROUP", ui::AccessibilityRadioGroupPredicate);
-  AddToPredicateMap("SECTION", ui::AccessibilitySectionPredicate);
-  AddToPredicateMap("TABLE", ui::AccessibilityTablePredicate);
-  AddToPredicateMap("TEXT_FIELD", ui::AccessibilityTextfieldPredicate);
-  AddToPredicateMap("TEXT_BOLD", ui::AccessibilityTextStyleBoldPredicate);
-  AddToPredicateMap("TEXT_ITALIC", ui::AccessibilityTextStyleItalicPredicate);
-  AddToPredicateMap("TEXT_UNDERLINE",
-                    ui::AccessibilityTextStyleUnderlinePredicate);
-  AddToPredicateMap("TREE", ui::AccessibilityTreePredicate);
-  AddToPredicateMap("UNVISITED_LINK", ui::AccessibilityUnvisitedLinkPredicate);
-  AddToPredicateMap("VISITED_LINK", ui::AccessibilityVisitedLinkPredicate);
-
-  // These are surfaced simply to document the html types, but do not do a
-  // tree/predicate search.
-  AddToPredicateMap(kHtmlTypeRow, AccessibilityNoOpPredicate);
-  AddToPredicateMap(kHtmlTypeColumn, AccessibilityNoOpPredicate);
-  AddToPredicateMap(kHtmlTypeRowBounds, AccessibilityNoOpPredicate);
-  AddToPredicateMap(kHtmlTypeColumnBounds, AccessibilityNoOpPredicate);
-  AddToPredicateMap(kHtmlTypeTableBounds, AccessibilityNoOpPredicate);
-  AddToPredicateMap(kHtmlTypeTableBounds, AccessibilityNoOpPredicate);
+  return std::make_tuple(std::ref(*search_key_to_predicate_map),
+                         std::ref(*all_search_keys),
+                         std::ref(*predicate_to_enum_map));
 }
 
 ui::AccessibilityMatchPredicate PredicateForSearchKey(
-    const std::u16string& element_type) {
-  InitSearchKeyToPredicateMapIfNeeded();
-  const auto& iter = g_search_key_to_predicate_map.Get().find(element_type);
-  if (iter != g_search_key_to_predicate_map.Get().end()) {
+    std::u16string& element_type) {
+  const auto& [search_map, all_keys, enum_map] = GetSearchKeyData();
+  const auto& iter = search_map.find(element_type);
+  if (iter != search_map.end()) {
     return iter->second;
+  } else {
+    element_type = u"UNKNOWN";
   }
 
   // If we don't recognize the selector, return any element that a
   // screen reader should navigate to.
   return AllInterestingNodesPredicate;
+}
+
+AccessibilityPredicateType EnumForPredicate(
+    const std::u16string& element_type) {
+  const auto& [search_map, all_keys, enum_map] = GetSearchKeyData();
+  const auto& it = enum_map.find(element_type);
+  if (it != enum_map.end()) {
+    return it->second;
+  } else {
+    NOTREACHED();
+  }
 }
 
 // The element in the document for which we may be displaying an autofill popup.
@@ -776,8 +919,8 @@ WebContentsAccessibilityAndroid::GenerateAccessibilityNodeInfoString(
 
 base::android::ScopedJavaLocalRef<jstring>
 WebContentsAccessibilityAndroid::GetSupportedHtmlElementTypes(JNIEnv* env) {
-  InitSearchKeyToPredicateMapIfNeeded();
-  return GetCanonicalJNIString(env, g_all_search_keys.Get()).AsLocalRef(env);
+  const auto& [search_map, all_keys, enum_map] = GetSearchKeyData();
+  return GetCanonicalJNIString(env, all_keys).AsLocalRef(env);
 }
 
 jint WebContentsAccessibilityAndroid::GetRootId(JNIEnv* env) {
@@ -1261,7 +1404,10 @@ jint WebContentsAccessibilityAndroid::FindElementType(
     const JavaParamRef<jstring>& element_type_str,
     jboolean forwards,
     jboolean can_wrap_to_last_element,
-    jboolean use_default_predicate) {
+    jboolean use_default_predicate,
+    jboolean is_talkback_enabled,
+    jboolean is_only_talkback_enabled) {
+  base::ElapsedTimer timer;
   BrowserAccessibilityAndroid* start_node = GetAXFromUniqueID(start_id);
   if (!start_node) {
     return ui::kInvalidAXNodeID;
@@ -1280,10 +1426,12 @@ jint WebContentsAccessibilityAndroid::FindElementType(
 
   // If |element_type_str| was empty, we can skip to the default predicate.
   ui::AccessibilityMatchPredicate predicate;
+  std::u16string element_type;
   if (use_default_predicate) {
     predicate = AllInterestingNodesPredicate;
+    element_type = u"DEFAULT";
   } else {
-    const auto element_type =
+    element_type =
         base::android::ConvertJavaStringToUTF16(env, element_type_str);
     if (std::optional<int> ret =
             MaybeFindRowColumn(start_node, element_type, forwards);
@@ -1295,6 +1443,24 @@ jint WebContentsAccessibilityAndroid::FindElementType(
     }
 
     predicate = PredicateForSearchKey(element_type);
+  }
+
+  // Record the type of element that was used for navigation, splitting by
+  // whether or not TalkBack was running to see how frequently other apps use
+  // this functionality.
+  if (is_only_talkback_enabled) {
+    base::UmaHistogramEnumeration(
+        "Accessibility.Android.FindElementType.Usage.OnlyTalkBackRunning",
+        EnumForPredicate(element_type));
+  } else if (is_talkback_enabled) {
+    base::UmaHistogramEnumeration(
+        "Accessibility.Android.FindElementType.Usage."
+        "TalkBackRunningWithOtherAT",
+        EnumForPredicate(element_type));
+  } else {
+    base::UmaHistogramEnumeration(
+        "Accessibility.Android.FindElementType.Usage.NotTalkBackAT",
+        EnumForPredicate(element_type));
   }
 
   ui::OneShotAccessibilityTreeSearch tree_search(root);
@@ -1330,6 +1496,12 @@ jint WebContentsAccessibilityAndroid::FindElementType(
     return proxy_android_node->GetUniqueId();
   }
 
+  // TODO(mschillaci): The current max is set to 1000 microseconda, check scale
+  // after initial data.
+  base::UmaHistogramCustomMicrosecondsTimes(
+      "Accessibility.Android.Performance.OneShotTreeSearch",
+      base::Microseconds(timer.Elapsed().InMicrosecondsF()),
+      base::Microseconds(1), base::Microseconds(1000), 80);
   return element_id;
 }
 

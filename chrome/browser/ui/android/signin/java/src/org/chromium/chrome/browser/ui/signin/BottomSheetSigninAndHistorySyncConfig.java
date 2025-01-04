@@ -7,20 +7,55 @@ package org.chromium.chrome.browser.ui.signin;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.signin.base.CoreAccountId;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.Objects;
 
 /**
  * Class containing configurations for the bottom sheet based sign-in view and the history sync
  * opt-in view.
  */
 public final class BottomSheetSigninAndHistorySyncConfig implements Parcelable {
+
+    /** The sign-in step that should be shown to the user when there's no account on the device. */
+    @IntDef({
+        NoAccountSigninMode.BOTTOM_SHEET,
+        NoAccountSigninMode.ADD_ACCOUNT,
+        NoAccountSigninMode.NO_SIGNIN
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface NoAccountSigninMode {
+        /** Show the 0-account version of the sign-in bottom sheet. */
+        int BOTTOM_SHEET = 0;
+
+        /** Bring the user to GMS Core to add an account, then sign-in with the new account. */
+        int ADD_ACCOUNT = 1;
+
+        /** No sign-in should be done, the entry point should not be visible to the user. */
+        int NO_SIGNIN = 2;
+    }
+
+    /** The sign-in step that should be shown to the user when there's 1+ accounts on the device. */
+    @IntDef({
+        WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+        WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface WithAccountSigninMode {
+        /** Show the "collapsed" sign-in bottom sheet containing the default account. */
+        int DEFAULT_ACCOUNT_BOTTOM_SHEET = 0;
+
+        /** Show the "expanded" sign-in bottom sheet containing the accounts list. */
+        int CHOOSE_ACCOUNT_BOTTOM_SHEET = 1;
+    }
 
     public final @NonNull AccountPickerBottomSheetStrings bottomSheetStrings;
     public final @NoAccountSigninMode int noAccountSigninMode;
@@ -103,6 +138,31 @@ public final class BottomSheetSigninAndHistorySyncConfig implements Parcelable {
 
     private static @Nullable CoreAccountId getCoreAccountId(@Nullable String id) {
         return id == null ? null : new CoreAccountId(id);
+    }
+
+    @Override
+    public boolean equals(@Nullable Object object) {
+        if (!(object instanceof BottomSheetSigninAndHistorySyncConfig)) {
+            return false;
+        }
+
+        BottomSheetSigninAndHistorySyncConfig other =
+                (BottomSheetSigninAndHistorySyncConfig) object;
+        return bottomSheetStrings.equals(other.bottomSheetStrings)
+                && noAccountSigninMode == other.noAccountSigninMode
+                && withAccountSigninMode == other.withAccountSigninMode
+                && historyOptInMode == other.historyOptInMode
+                && Objects.equals(selectedCoreAccountId, other.selectedCoreAccountId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+                bottomSheetStrings,
+                noAccountSigninMode,
+                withAccountSigninMode,
+                historyOptInMode,
+                selectedCoreAccountId);
     }
 
     /** Implements {@link Parcelable} */

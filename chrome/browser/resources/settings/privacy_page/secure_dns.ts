@@ -20,11 +20,6 @@ import 'chrome://resources/cr_elements/md_select.css.js';
 import '/shared/settings/prefs/prefs.js';
 import '../controls/settings_toggle_button.js';
 import './secure_dns_input.js';
-// <if expr="chromeos_ash">
-import './secure_dns_dialog.js';
-import '../privacy_icons.html.js';
-
-// </if>
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {PrivacyPageBrowserProxy, ResolverOption, SecureDnsSetting} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
@@ -35,7 +30,6 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 
 import {getTemplate} from './secure_dns.html.js';
@@ -122,21 +116,6 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
        * String to display in the custom text field.
        */
       secureDnsInputValue_: String,
-
-      // <if expr="chromeos_ash">
-      showDisableDnsDialog_: {
-        type: Boolean,
-        value: false,
-      },
-
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isRevampWayfindingEnabled');
-        },
-        readOnly: true,
-      },
-      // </if>
     };
   }
 
@@ -148,10 +127,6 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
   private secureDnsInputValue_: string;
   private browserProxy_: PrivacyPageBrowserProxy =
       PrivacyPageBrowserProxyImpl.getInstance();
-  // <if expr="chromeos_ash">
-  private showDisableDnsDialog_: boolean;
-  private isRevampWayfindingEnabled_: boolean;
-  // </if>
 
   override connectedCallback() {
     super.connectedCallback();
@@ -171,12 +146,6 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
           'secure-dns-setting-changed',
           (setting: SecureDnsSetting) =>
               this.onSecureDnsPrefsChanged_(setting));
-
-      // <if expr="chromeos_ash">
-      this.addEventListener(
-          'dns-settings-invalid-custom-to-off-mode',
-          () => this.onSecureDnsPrefChangedToFalse_());
-      // </if>
     });
   }
 
@@ -201,13 +170,6 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
     this.updateManagementView_(setting);
   }
 
-  // <if expr="chromeos_ash">
-  private onSecureDnsPrefChangedToFalse_() {
-    this.set('secureDnsToggle_.value', false);
-    this.showSecureDnsOptions_ = false;
-  }
-  // </if>
-
   /**
    * Updates the underlying secure DNS mode pref based on the new toggle
    * selection (and the underlying select menu if the toggle has just been
@@ -231,17 +193,6 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
       this.updateDnsPrefs_(SecureDnsMode.SECURE);
     }
   }
-
-  // <if expr="chromeos_ash">
-  /**
-   * Only gets called when the user wants to turn on the toggle from ChromeOS
-   * Settings.
-   */
-  private turnOnDnsToggle_() {
-    this.set('secureDnsToggle_.value', true);
-    this.onToggleChanged_();
-  }
-  //</if>
 
   /**
    * Helper method for updating the underlying secure DNS prefs based on the
@@ -326,19 +277,7 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
     // hashed with a salt and hex encoded), then the message will contain the
     // template URI for display in which the identifiers are shown in plain
     // text.
-    let secureDescription = loadTimeData.getString('secureDnsDescription');
-    // <if expr="chromeos_ash">
-    if (this.isRevampWayfindingEnabled_) {
-      secureDescription =
-          loadTimeData.getString('secureDnsOsSettingsDescription');
-    }
-
-    if (setting.dohWithIdentifiersActive) {
-      secureDescription = loadTimeData.substituteString(
-          loadTimeData.getString('secureDnsWithIdentifiersDescription'),
-          setting.configForDisplay);
-    }
-    // </if>
+    const secureDescription = loadTimeData.getString('secureDnsDescription');
 
     if (this.getPref('dns_over_https.mode').enforcement ===
         chrome.settingsPrivate.Enforcement.ENFORCED) {
@@ -463,36 +402,6 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
     }
     return undefined;
   }
-
-  // <if expr="chromeos_ash">
-  private onDnsToggleClick_(): void {
-    const secureDnsToggle =
-        this.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#secureDnsToggle');
-    assert(secureDnsToggle);
-    if (secureDnsToggle.checked) {
-      // Always allow turning on the toggle.
-      this.turnOnDnsToggle_();
-      return;
-    }
-
-    // Do not update the underlying pref value to false. Instead if the user is
-    // attempting to turn off the toggle, present the warning dialog.
-    this.showDisableDnsDialog_ = true;
-    return;
-  }
-
-  private onDisableDnsDialogClosed_(): void {
-    // Sync the toggle's value to its pref value.
-    const secureDnsToggle =
-        this.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#secureDnsToggle');
-    assert(secureDnsToggle);
-    secureDnsToggle.resetToPrefValue();
-
-    this.showDisableDnsDialog_ = false;
-  }
-  // </if>
 }
 
 declare global {

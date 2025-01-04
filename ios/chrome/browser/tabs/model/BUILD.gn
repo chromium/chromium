@@ -166,7 +166,6 @@ source_set("synced_tabs") {
     ":model",
     "//base",
     "//components/history/core/browser",
-    "//components/keyed_service/core",
     "//components/sessions",
     "//components/sessions:session_id",
     "//components/sync/base:features",

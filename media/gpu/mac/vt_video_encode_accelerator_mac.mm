@@ -329,6 +329,23 @@ VideoEncoderInfo GetVideoEncoderInfo(
   info.implementation_name = "VideoToolbox";
   info.is_hardware_accelerated = IsHardwareEncoder(compression_session);
 
+  // TODO(crbug.com/382015342): Query bitrate limits, and report them through
+  // VideoEncoderInfo's |resolution_bitrate_limits|.
+  const VideoCodec codec = VideoCodecProfileToVideoCodec(config.output_profile);
+  gfx::Size resolution = GetMaxResolution(codec);
+  info.resolution_rate_limits.emplace_back(
+      resolution, /*min_start_bitrate_bps=*/0,
+      /*min_bitrate_bps=*/0, /*max_bitrate_bps=*/0, kMaxFrameRateNumerator,
+      kMaxFrameRateDenominator);
+  if (resolution.width() != resolution.height()) {
+    resolution.Transpose();
+    info.resolution_rate_limits.emplace_back(
+        resolution,
+        /*min_start_bitrate_bps=*/0, /*min_bitrate_bps=*/0,
+        /*max_bitrate_bps=*/0, kMaxFrameRateNumerator,
+        kMaxFrameRateDenominator);
+  }
+
   std::optional<int> max_frame_delay_property;
   base::apple::ScopedCFTypeRef<CFNumberRef> max_frame_delay_count;
   if (VTSessionCopyProperty(

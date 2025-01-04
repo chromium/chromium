@@ -26,6 +26,7 @@
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_priority.h"
 
 namespace WTF {
@@ -85,6 +86,11 @@ class CORE_EXPORT ImageResourceObserver : public GarbageCollectedMixin {
   // this method is not allowed to add or remove ImageResource observers.
   virtual ResourcePriority ComputeResourcePriority() const {
     return ResourcePriority();
+  }
+  virtual bool CanBeSpeculativelyDecoded() const { return true; }
+  virtual gfx::Size GetSpeculativeDecodeSize() const { return gfx::Size(); }
+  virtual InterpolationQuality GetSpeculativeDecodeQuality() const {
+    return kInterpolationNone;
   }
 
   // Name for debugging, e.g. shown in memory-infra.

@@ -30,7 +30,7 @@
   #ifdef __va_copy
     #define va_copy(dest, src) __va_copy(dest, src)
   #else
-    #define va_copy(dest, src) memcpy(dest, src, sizeof(va_list))
+    #define va_copy(dest, src) memcpy(&(dest), &(src), sizeof(va_list))
   #endif
 #endif
 

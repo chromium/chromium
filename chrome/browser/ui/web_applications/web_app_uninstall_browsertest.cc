@@ -161,8 +161,9 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest, TwoUninstallCalls) {
   provider->scheduler().RemoveUserUninstallableManagements(
       app_id, webapps::WebappUninstallSource::kAppMenu,
       base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
-        if (quit_run_loop)
+        if (quit_run_loop) {
           run_loop.Quit();
+        }
         quit_run_loop = true;
       }));
 
@@ -172,8 +173,9 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest, TwoUninstallCalls) {
   provider->scheduler().RemoveUserUninstallableManagements(
       app_id, webapps::WebappUninstallSource::kAppMenu,
       base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
-        if (quit_run_loop)
+        if (quit_run_loop) {
           run_loop.Quit();
+        }
         quit_run_loop = true;
       }));
 

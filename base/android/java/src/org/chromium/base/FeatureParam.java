@@ -6,11 +6,10 @@ package org.chromium.base;
 
 import android.util.Pair;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.CheckDiscard;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +21,7 @@ import javax.annotation.concurrent.NotThreadSafe;
  *
  * @param <T> The boxed type of data behind held.
  */
+@NullMarked
 @NotThreadSafe
 public abstract class FeatureParam<T> {
     @CheckDiscard("Only needed to reset tests. Production code shouldn't use.")
@@ -33,13 +33,10 @@ public abstract class FeatureParam<T> {
     protected final T mDefaultValue;
 
     // Null means this is not cached, and the feature map should be read from.
-    @Nullable protected T mInMemoryCachedValue;
+    protected @Nullable T mInMemoryCachedValue;
 
     public FeatureParam(
-            @NonNull FeatureMap featureMap,
-            @NonNull String featureName,
-            @NonNull String paramName,
-            @NonNull T defaultValue) {
+            FeatureMap featureMap, String featureName, String paramName, T defaultValue) {
         assert defaultValue != null;
         mFeatureMap = featureMap;
         mFeatureName = featureName;

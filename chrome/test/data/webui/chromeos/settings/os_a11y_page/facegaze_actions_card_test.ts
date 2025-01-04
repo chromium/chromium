@@ -149,8 +149,8 @@ suite('<facegaze-actions-card>', () => {
 
   test('actions enabled button syncs to pref', async () => {
     await initPage();
-    assertTrue(faceGazeActionsCard.prefs.settings.a11y.face_gaze.actions_enabled
-                   .value);
+    assertTrue(faceGazeActionsCard.prefs.settings.a11y.face_gaze
+                   .actions_enabled_sentinel.value);
 
     const button = faceGazeActionsCard.shadowRoot!
                        .querySelector<SettingsToggleButtonElement>(
@@ -164,7 +164,7 @@ suite('<facegaze-actions-card>', () => {
 
     assertFalse(button.checked);
     assertFalse(faceGazeActionsCard.prefs.settings.a11y.face_gaze
-                    .actions_enabled.value);
+                    .actions_enabled_sentinel.value);
   });
 
   test('actions disables controls if feature is disabled', async () => {
@@ -572,6 +572,27 @@ suite('<facegaze-actions-card>', () => {
     const commandPairs = faceGazeActionsCard.get('commandPairs_');
     assertEquals(2, commandPairs.length);
   });
+
+  test(
+      'actions does not change UI when gesture threshold chip is clicked',
+      async () => {
+        await initPage();
+
+        const commandPair = new FaceGazeCommandPair(
+            MacroName.MOUSE_CLICK_LEFT, FacialGesture.EYES_BLINK);
+        await openAddDialogAndFireCommandPairAddedEvent(commandPair);
+        assertTrue(isGestureToMacroPrefSet(commandPair));
+        const actionRow = assertActionSettingsRow(commandPair);
+
+        const gestureChip = actionRow.querySelector('cros-chip');
+        assertTrue(!!gestureChip);
+        await openDialogAndFireCommandPairAddedEvent(gestureChip, commandPair);
+        assertTrue(isGestureToMacroPrefSet(commandPair));
+        assertActionSettingsRow(commandPair);
+
+        const commandPairs = faceGazeActionsCard.get('commandPairs_');
+        assertEquals(1, commandPairs.length);
+      });
 
   test('actions update prefs based on removed command pair', async () => {
     await initPage();

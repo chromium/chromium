@@ -132,7 +132,11 @@ class BuildConfigGenerator extends DefaultTask {
       'androidx_localbroadcastmanager_localbroadcastmanager',
       'androidx_media3_media3',
       'androidx_multidex_multidex',
+      'androidx_pdf_pdf',
       'androidx_privacysandbox_ads_ads_adservices',
+      'androidx_slice_slice_builders_java',
+      'androidx_slice_slice_core_java',
+      'androidx_slice_slice_view_java',
       'androidx_test',
     ]
 
@@ -226,7 +230,7 @@ class BuildConfigGenerator extends DefaultTask {
                     licenseStrings.add('MIT')
                     break
                 case 'GNU General Public License, version 2, with the Classpath Exception':
-                    licenseStrings.add('GPL v2 with the classpath exception')
+                    licenseStrings.add('GPL-2.0-with-classpath-exception')
                     break
                 default:
                     licenseStrings.add(license.name)

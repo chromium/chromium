@@ -588,7 +588,7 @@ base::OnceClosure CastContentBrowserClient::SelectClientCertificate(
       base::BindOnce(
           &CastContentBrowserClient::SelectClientCertificateOnIOThread,
           base::Unretained(this), requesting_url, session_id,
-          web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
           web_contents->GetPrimaryMainFrame()->GetRoutingID(),
           base::SequencedTaskRunner::GetCurrentDefault(),
           base::BindOnce(

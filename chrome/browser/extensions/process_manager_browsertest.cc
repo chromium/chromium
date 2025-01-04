@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "extensions/browser/process_manager.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -56,7 +54,6 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/browsertest_util.h"
-#include "extensions/browser/process_manager.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -753,7 +750,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, ExtensionProcessReuse) {
     EXPECT_EQ(extension->url(),
               extension_host->host_contents()->GetSiteInstance()->GetSiteURL());
 
-    processes.insert(extension_host->render_process_host()->GetID());
+    processes.insert(extension_host->render_process_host()->GetDeprecatedID());
   }
 
   EXPECT_EQ(kNumExtensions, installed_extensions.size());
@@ -834,23 +831,23 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   // to the process of the extension iframe.
   content::ChildProcessSecurityPolicy* policy =
       content::ChildProcessSecurityPolicy::GetInstance();
-  EXPECT_TRUE(policy->CanRequestURL(extension_frame->GetProcess()->GetID(),
+  EXPECT_TRUE(policy->CanRequestURL(
+      extension_frame->GetProcess()->GetDeprecatedID(), extension_blob_url));
+  EXPECT_TRUE(policy->CanRequestURL(main_frame->GetProcess()->GetDeprecatedID(),
                                     extension_blob_url));
-  EXPECT_TRUE(policy->CanRequestURL(main_frame->GetProcess()->GetID(),
-                                    extension_blob_url));
-  EXPECT_TRUE(policy->CanRequestURL(extension_frame->GetProcess()->GetID(),
+  EXPECT_TRUE(policy->CanRequestURL(
+      extension_frame->GetProcess()->GetDeprecatedID(), extension_url));
+  EXPECT_TRUE(policy->CanRequestURL(main_frame->GetProcess()->GetDeprecatedID(),
                                     extension_url));
-  EXPECT_TRUE(
-      policy->CanRequestURL(main_frame->GetProcess()->GetID(), extension_url));
 
   EXPECT_TRUE(content::CanCommitURLForTesting(
-      extension_frame->GetProcess()->GetID(), extension_blob_url));
+      extension_frame->GetProcess()->GetDeprecatedID(), extension_blob_url));
   EXPECT_FALSE(content::CanCommitURLForTesting(
-      main_frame->GetProcess()->GetID(), extension_blob_url));
+      main_frame->GetProcess()->GetDeprecatedID(), extension_blob_url));
   EXPECT_TRUE(content::CanCommitURLForTesting(
-      extension_frame->GetProcess()->GetID(), extension_url));
+      extension_frame->GetProcess()->GetDeprecatedID(), extension_url));
   EXPECT_FALSE(content::CanCommitURLForTesting(
-      main_frame->GetProcess()->GetID(), extension_url));
+      main_frame->GetProcess()->GetDeprecatedID(), extension_url));
 
   // Open a new about:blank popup from main frame.  This should stay in the web
   // process.
@@ -1183,14 +1180,15 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   content::ChildProcessSecurityPolicy* policy =
       content::ChildProcessSecurityPolicy::GetInstance();
   EXPECT_FALSE(policy->CanRequestURL(
-      web_tab->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      web_tab->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
       app_origin.GetURL()));
   EXPECT_TRUE(policy->CanRequestURL(
-      guest_render_frame_host->GetProcess()->GetID(), app_origin.GetURL()));
+      guest_render_frame_host->GetProcess()->GetDeprecatedID(),
+      app_origin.GetURL()));
 
   // Try navigating the web tab to each nested URL with the app's origin.  This
   // should be blocked.
-  GURL nested_urls[] = {blob_url, filesystem_url};
+  auto nested_urls = std::to_array<GURL>({blob_url, filesystem_url});
   for (size_t i = 0; i < std::size(nested_urls); i++) {
     content::TestNavigationObserver observer(web_tab);
     EXPECT_TRUE(
@@ -1307,7 +1305,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
 
   // Attempt opening the nested urls using window.open(url, '', 'noopener').
   // This should not be allowed.
-  GURL nested_urls[] = {blob_url, filesystem_url};
+  auto nested_urls = std::to_array<GURL>({blob_url, filesystem_url});
   for (size_t i = 0; i < std::size(nested_urls); i++) {
     content::WebContents* new_popup =
         OpenPopupNoOpener(tab->GetPrimaryMainFrame(), nested_urls[i]);

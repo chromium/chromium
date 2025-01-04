@@ -9,7 +9,6 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/test/pixel_test_utils.h"
 #include "components/viz/common/features.h"
 #include "content/browser/media/capture/content_capture_device_browsertest_base.h"
@@ -338,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTestWin,
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Disabled (https://crbug.com/1096946)
 // On ChromeOS, another window may occlude a window that is being captured.
 // Make sure the visibility is set to visible during capture if it's occluded.
@@ -362,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(AuraWindowVideoCaptureDeviceBrowserTest,
   window.reset();
   StopAndDeAllocate();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class AuraWindowVideoCaptureDeviceBrowserTestP
     : public AuraWindowVideoCaptureDeviceBrowserTest,
@@ -376,7 +375,7 @@ class AuraWindowVideoCaptureDeviceBrowserTestP
   }
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 INSTANTIATE_TEST_SUITE_P(
     All,
     AuraWindowVideoCaptureDeviceBrowserTestP,
@@ -393,7 +392,7 @@ INSTANTIATE_TEST_SUITE_P(
                                      true /* software compositing */),
                      testing::Values(false /* variable aspect ratio */,
                                      true /* fixed aspect ratio */)));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Disabled (https://crbug.com/1096946)
 // Tests that the device successfully captures a series of content changes,

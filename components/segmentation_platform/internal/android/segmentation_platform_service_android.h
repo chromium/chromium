@@ -44,6 +44,10 @@ class SegmentationPlatformServiceAndroid : public base::SupportsUserData::Data {
       const JavaParamRef<jobject>& jcaller,
       const JavaParamRef<jstring>& j_segmentation_key);
 
+  void GetInputKeysForModel(JNIEnv* env,
+                            const JavaParamRef<jstring>& j_segmentation_key,
+                            const JavaParamRef<jobject>& j_callback);
+
   ScopedJavaLocalRef<jobject> GetJavaObject();
 
  private:

@@ -375,29 +375,6 @@ suite('SyncAccountControl', function() {
       firstSetupInProgress: false,
       signedInState: SignedInState.SYNCING,
       signedInUsername: 'bar@bar.com',
-      hasError: true,
-      hasUnrecoverableError: false,
-      statusAction: StatusAction.REAUTHENTICATE,
-      disabled: false,
-    };
-    assertTrue(
-        testElement.shadowRoot!
-            .querySelector<HTMLElement>(
-                '#sync-icon-container')!.classList.contains('sync-paused'));
-    assertTrue(!!testElement.shadowRoot!.querySelector(
-        '[icon=\'settings:sync-disabled\']'));
-    displayedText =
-        userInfo.querySelector<HTMLElement>('div:not([hidden])')!.textContent!;
-    assertFalse(displayedText.includes('barName'));
-    assertFalse(displayedText.includes('fooName'));
-    assertTrue(displayedText.includes('Sync is paused'));
-    // The sync error button is shown to resolve the error.
-    assertTrue(isChildVisible(testElement, '#sync-error-button'));
-
-    testElement.syncStatus = {
-      firstSetupInProgress: false,
-      signedInState: SignedInState.SYNCING,
-      signedInUsername: 'bar@bar.com',
       statusAction: StatusAction.NO_ACTION,
       hasError: false,
       hasUnrecoverableError: false,
@@ -463,6 +440,76 @@ suite('SyncAccountControl', function() {
     assertTrue(isChildVisible(testElement, '#sync-error-button'));
     assertTrue(isChildVisible(testElement, '#turn-off'));
   });
+
+  test(
+      'user in sync paused state, kImprovedSettingsUIOnDesktop enabled',
+      function() {
+        loadTimeData.overrideValues(
+            {isImprovedSettingsUIOnDesktopEnabled: true});
+
+        testElement.syncStatus = {
+          firstSetupInProgress: false,
+          signedInState: SignedInState.SYNCING,
+          signedInUsername: 'bar@bar.com',
+          hasError: true,
+          hasUnrecoverableError: false,
+          statusAction: StatusAction.REAUTHENTICATE,
+          disabled: false,
+        };
+
+        const userInfo = testElement.shadowRoot!.querySelector('#user-info')!;
+        const displayedText =
+            userInfo.querySelector<HTMLElement>(
+                        'div:not([hidden])')!.textContent!;
+
+        assertTrue(
+            testElement.shadowRoot!
+                .querySelector<HTMLElement>(
+                    '#sync-icon-container')!.classList.contains('sync-paused'));
+        assertTrue(!!testElement.shadowRoot!.querySelector(
+            '[icon=\'settings:sync-disabled\']'));
+        assertFalse(displayedText.includes('barName'));
+        assertFalse(displayedText.includes('fooName'));
+        assertTrue(displayedText.includes('Sync is paused'));
+        // The sync error button is shown to resolve the error.
+        assertTrue(isChildVisible(testElement, '#sync-error-button'));
+      });
+
+  test(
+      'user in sync paused state, kImprovedSettingsUIOnDesktop disabled',
+      function() {
+        loadTimeData.overrideValues(
+            {isImprovedSettingsUIOnDesktopEnabled: false});
+
+        testElement.syncStatus = {
+          firstSetupInProgress: false,
+          signedInState: SignedInState.SYNCING,
+          signedInUsername: 'bar@bar.com',
+          hasError: true,
+          hasUnrecoverableError: false,
+          statusAction: StatusAction.REAUTHENTICATE,
+          disabled: false,
+        };
+
+        const userInfo = testElement.shadowRoot!.querySelector('#user-info')!;
+        const displayedText =
+            userInfo.querySelector<HTMLElement>(
+                        'div:not([hidden])')!.textContent!;
+
+        assertTrue(
+            testElement.shadowRoot!
+                .querySelector<HTMLElement>(
+                    '#sync-icon-container')!.classList.contains('sync-paused'));
+        assertTrue(!!testElement.shadowRoot!.querySelector(
+            '[icon=\'settings:sync-disabled\']'));
+        assertFalse(displayedText.includes('barName'));
+        assertFalse(displayedText.includes('fooName'));
+        assertTrue(displayedText.includes('Sync is paused'));
+        // The sync error button is shown to resolve the error.
+        assertTrue(isChildVisible(testElement, '#sync-error-button'));
+      });
+
+
 
   test('signed in, setup in progress', function() {
     testElement.syncStatus = {
@@ -647,6 +694,8 @@ suite('SyncAccountControl', function() {
   });
 
   test('webOnlySignedIn effects', function() {
+    loadTimeData.overrideValues({isImprovedSettingsUIOnDesktopEnabled: false});
+
     const signedInAccount: StoredAccount = {
       fullName: 'fooName',
       givenName: 'foo',
@@ -673,4 +722,24 @@ suite('SyncAccountControl', function() {
 
     assertFalse(isChildVisible(testElement, '#avatar-row'));
   });
+
+  test(
+      'signed out with account awareness, kImprovedSettingsUIOnDesktop enabled',
+      function() {
+        loadTimeData.overrideValues(
+            {isImprovedSettingsUIOnDesktopEnabled: true});
+
+        testElement.syncStatus = {
+          firstSetupInProgress: false,
+          signedInState: SignedInState.WEB_ONLY_SIGNED_IN,
+          signedInUsername: 'bar@bar.com',
+          hasError: false,
+          hasUnrecoverableError: false,
+          statusAction: StatusAction.REAUTHENTICATE,
+          disabled: false,
+        };
+
+        assertTrue(isChildVisible(testElement, '#dropdown-arrow'));
+        assertTrue(isChildVisible(testElement, '#account-aware'));
+      });
 });

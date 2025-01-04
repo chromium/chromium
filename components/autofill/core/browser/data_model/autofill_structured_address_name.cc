@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "base/i18n/case_conversion.h"
+#include "base/i18n/char_iterator.h"
+#include "base/i18n/unicodestring.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -19,12 +21,15 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "third_party/icu/source/common/unicode/ustring.h"
+#include "third_party/icu/source/i18n/unicode/translit.h"
 
 namespace autofill {
 
 std::u16string ReduceToInitials(const std::u16string& value) {
-  if (value.empty())
+  if (value.empty()) {
     return std::u16string();
+  }
 
   std::vector<std::u16string> middle_name_tokens =
       base::SplitString(value, base::ASCIIToUTF16(kNameSeparators),
@@ -125,8 +130,9 @@ NameFull::NameFull(const NameFull& other) : NameFull() {
 
 void NameFull::MigrateLegacyStructure() {
   // Only if the name was imported from a legacy structure, the component has no
-  if (GetVerificationStatus() != VerificationStatus::kNoStatus)
+  if (GetVerificationStatus() != VerificationStatus::kNoStatus) {
     return;
+  }
 
   // If the value of the component is set, use this value as a basis to migrate
   // the name.
@@ -154,9 +160,10 @@ void NameFull::MigrateLegacyStructure() {
   // Otherwise, at least one of the subcomponents should be set.
   // Set its verification status to observed.
   for (AddressComponent* subcomponent : Subcomponents()) {
-    if (!subcomponent->GetValue().empty())
+    if (!subcomponent->GetValue().empty()) {
       subcomponent->SetValue(subcomponent->GetValue(),
                              VerificationStatus::kObserved);
+    }
   }
 
   // If no subcomponent is set, the name is empty. In any case, the name was
@@ -225,10 +232,26 @@ AlternativeGivenName::AlternativeGivenName()
 
 AlternativeGivenName::~AlternativeGivenName() = default;
 
+std::u16string AlternativeGivenName::GetValueForComparison(
+    const std::u16string& value,
+    const AddressComponent& other) const {
+  return TransliterateAlternativeName(
+      AddressComponent::GetValueForComparison(GetValue(), other),
+      TransliterationId::kKatakanaToHiragana);
+}
+
 AlternativeFamilyName::AlternativeFamilyName()
     : AddressComponent(ALTERNATIVE_FAMILY_NAME, {}, MergeMode::kDefault) {}
 
 AlternativeFamilyName::~AlternativeFamilyName() = default;
+
+std::u16string AlternativeFamilyName::GetValueForComparison(
+    const std::u16string& value,
+    const AddressComponent& other) const {
+  return TransliterateAlternativeName(
+      AddressComponent::GetValueForComparison(GetValue(), other),
+      TransliterationId::kKatakanaToHiragana);
+}
 
 AlternativeFullName::AlternativeFullName()
     : AddressComponent(ALTERNATIVE_FULL_NAME, {}, MergeMode::kDefault) {
@@ -240,6 +263,8 @@ AlternativeFullName::AlternativeFullName(const AlternativeFullName& other)
     : AlternativeFullName() {
   CopyFrom(other);
 }
+
+AlternativeFullName::~AlternativeFullName() = default;
 
 std::vector<const re2::RE2*>
 AlternativeFullName::GetParseRegularExpressionsByRelevance() const {
@@ -268,6 +293,12 @@ std::u16string AlternativeFullName::GetFormatString() const {
                                       info);
 }
 
-AlternativeFullName::~AlternativeFullName() = default;
+std::u16string AlternativeFullName::GetValueForComparison(
+    const std::u16string& value,
+    const AddressComponent& other) const {
+  return TransliterateAlternativeName(
+      AddressComponent::GetValueForComparison(GetValue(), other),
+      TransliterationId::kKatakanaToHiragana);
+}
 
 }  // namespace autofill

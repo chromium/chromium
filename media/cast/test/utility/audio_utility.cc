@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/cast/test/utility/audio_utility.h"
+
 #include <cmath>
 #include <numbers>
 #include <vector>
@@ -9,7 +11,6 @@
 #include "base/check_op.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
-#include "media/cast/test/utility/audio_utility.h"
 
 namespace media {
 namespace cast {
@@ -38,7 +39,6 @@ std::unique_ptr<AudioBus> TestAudioBusFactory::NextAudioBus(
   bus->Scale(volume_);
   return bus;
 }
-
 
 }  // namespace cast
 }  // namespace media

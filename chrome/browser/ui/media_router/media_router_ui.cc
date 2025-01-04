@@ -64,8 +64,9 @@ bool IssueMatches(const Issue& issue, const UIMediaSink& ui_sink) {
 
 void MaybeReportCastingSource(MediaCastMode cast_mode,
                               const RouteRequestResult& result) {
-  if (result.result_code() == mojom::RouteRequestResultCode::OK)
+  if (result.result_code() == mojom::RouteRequestResultCode::OK) {
     base::UmaHistogramSparse("MediaRouter.Source.CastingSource", cast_mode);
+  }
 }
 
 const CastModeSet CreateMediaCastModeSet(const MediaCastMode& cast_mode) {
@@ -92,8 +93,9 @@ MediaRouterUI::MediaRouterUI(
 
 MediaRouterUI::~MediaRouterUI() {
   StopObservingMirroringMediaControllerHosts();
-  if (media_route_starter_)
+  if (media_route_starter_) {
     DetachFromMediaRouteStarter();
+  }
   for (CastDialogController::Observer& observer : observers_) {
     observer.OnControllerDestroying();
   }
@@ -265,8 +267,9 @@ bool MediaRouterUI::CreateRoute(const MediaSink::Id& sink_id,
   // StartCasting(), but it causes Chrome to crash when the desktop picker
   // dialog is shown, so for now we just don't call it in that case.  Move it
   // back once the problem is resolved.
-  if (cast_mode != MediaCastMode::DESKTOP_MIRROR)
+  if (cast_mode != MediaCastMode::DESKTOP_MIRROR) {
     UpdateSinks();
+  }
 
   return true;
 }
@@ -281,8 +284,9 @@ void MediaRouterUI::TerminateRoute(const MediaRoute::Id& route_id) {
 }
 
 std::vector<MediaSinkWithCastModes> MediaRouterUI::GetEnabledSinks() const {
-  if (!display_observer_)
+  if (!display_observer_) {
     return sinks_;
+  }
 
   // Filter out the wired display sink for the display that the dialog is on.
   // This is not the best place to do this because MRUI should not perform a
@@ -333,7 +337,7 @@ void MediaRouterUI::RemoveIssue(const Issue::Id& issue_id) {
 void MediaRouterUI::LogMediaSinkStatus() {
   std::vector<std::string> sink_ids;
   for (const auto& sink : GetEnabledSinks()) {
-    sink_ids.push_back(std::string(log_util::TruncateId(sink.sink.id())));
+    sink_ids.emplace_back(log_util::TruncateId(sink.sink.id()));
   }
 
   logger_->LogInfo(
@@ -417,25 +421,31 @@ void MediaRouterUI::OnFreezeInfoChanged() {
 }
 
 void MediaRouterUI::UpdateSinks() {
-  if (base::FeatureList::IsEnabled(kShowCastPermissionRejectedError) &&
-      issue_.has_value() && issue_->is_permission_rejected_issue()) {
-    // Clean up the discovered sinks if the permission is rejected.
-    model_.set_media_sinks({});
-    model_.set_is_permission_rejected(true);
-  } else {
-    std::vector<UIMediaSink> media_sinks;
-    for (const MediaSinkWithCastModes& sink : GetEnabledSinks()) {
-      auto route_it = base::ranges::find(routes(), sink.sink.id(),
-                                         &MediaRoute::media_sink_id);
-      const MediaRoute* route =
-          route_it == routes().end() ? nullptr : &*route_it;
-      media_sinks.push_back(ConvertToUISink(sink, route, issue_));
-    }
-    model_.set_media_sinks(std::move(media_sinks));
+  bool permission_rejected =
+      base::FeatureList::IsEnabled(kShowCastPermissionRejectedError) &&
+      issue_.has_value() && issue_->is_permission_rejected_issue();
+  // Speculative fix for crbug.com/374131711. Clear `issue_` when new sinks are
+  // discovered.
+  if (permission_rejected && !GetEnabledSinks().empty()) {
+    auto id = issue_->id();
+    issue_.reset();
+    ClearIssue(id);
+    permission_rejected = false;
   }
 
-  for (CastDialogController::Observer& observer : observers_)
+  std::vector<UIMediaSink> media_sinks;
+  for (const MediaSinkWithCastModes& sink : GetEnabledSinks()) {
+    auto route_it = base::ranges::find(routes(), sink.sink.id(),
+                                       &MediaRoute::media_sink_id);
+    const MediaRoute* route = route_it == routes().end() ? nullptr : &*route_it;
+    media_sinks.push_back(ConvertToUISink(sink, route, issue_));
+  }
+  model_.set_media_sinks(std::move(media_sinks));
+  model_.set_is_permission_rejected(permission_rejected);
+
+  for (CastDialogController::Observer& observer : observers_) {
     observer.OnModelUpdated(model_);
+  }
 }
 
 void MediaRouterUI::SendIssueForRouteTimeout(
@@ -601,8 +611,10 @@ void MediaRouterUI::OnRouteResponseReceived(
     const std::u16string& presentation_request_source_name,
     const RouteRequestResult& result) {
   // If we receive a new route that we aren't expecting, do nothing.
-  if (!current_route_request_ || route_request_id != current_route_request_->id)
+  if (!current_route_request_ ||
+      route_request_id != current_route_request_->id) {
     return;
+  }
 
   const MediaRoute* route = result.route();
   if (!route) {
@@ -643,8 +655,9 @@ void MediaRouterUI::UpdateModelHeader(const std::u16string& source_name) {
           : l10n_util::GetStringFUTF16(IDS_MEDIA_ROUTER_PRESENTATION_CAST_MODE,
                                        source_name);
   model_.set_dialog_header(header_text);
-  for (CastDialogController::Observer& observer : observers_)
+  for (CastDialogController::Observer& observer : observers_) {
     observer.OnModelUpdated(model_);
+  }
 }
 
 UIMediaSink MediaRouterUI::ConvertToUISink(const MediaSinkWithCastModes& sink,
@@ -681,8 +694,9 @@ UIMediaSink MediaRouterUI::ConvertToUISink(const MediaSinkWithCastModes& sink,
                         ? UIMediaSinkState::CONNECTING
                         : UIMediaSinkState::AVAILABLE;
   }
-  if (issue && IssueMatches(*issue, ui_sink))
+  if (issue && IssueMatches(*issue, ui_sink)) {
     ui_sink.issue = issue;
+  }
   return ui_sink;
 }
 

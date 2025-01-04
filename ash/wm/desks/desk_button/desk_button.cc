@@ -362,7 +362,8 @@ std::u16string DeskButton::GetDeskNameLabelText(const Desk* active_desk) const {
       return std::u16string();
     }
     if (active_desk->is_name_set_by_user()) {
-      return iter.Advance() ? iter.GetString() : std::u16string();
+      return iter.Advance() ? std::u16string(iter.GetString())
+                            : std::u16string();
     }
     return u"#" + base::NumberToString16(active_desk_index + 1);
   }

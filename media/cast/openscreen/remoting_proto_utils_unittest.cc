@@ -84,7 +84,7 @@ TEST_F(ProtoUtilsTest, PassValidDecoderBuffer) {
   ASSERT_TRUE(output_buffer->is_key_frame());
   ASSERT_EQ(output_buffer->timestamp(), pts);
   EXPECT_EQ(base::span(*output_buffer), base::span(buffer));
-  ASSERT_TRUE(output_buffer->has_side_data());
+  ASSERT_TRUE(output_buffer->side_data());
   EXPECT_EQ(output_buffer->side_data()->alpha_data.as_span(),
             base::span(side_buffer));
 }

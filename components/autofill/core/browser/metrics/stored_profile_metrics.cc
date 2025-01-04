@@ -10,6 +10,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 
@@ -97,6 +98,18 @@ void LogLocalProfileSupersetMetrics(
                              [&](const AutofillProfile* local_profile) {
                                return is_account_superset(local_profile);
                              }));
+}
+
+void LogStoredProfileCountWithAlternativeName(
+    base::span<const AutofillProfile* const> profiles) {
+  size_t count =
+      std::ranges::count_if(profiles, [](const AutofillProfile* profile) {
+        return profile->GetAddressCountryCode() == AddressCountryCode("JP") &&
+               profile->HasInfo(ALTERNATIVE_FULL_NAME);
+      });
+
+  base::UmaHistogramCounts100("Autofill.StoredProfileCount.WithAlternativeName",
+                              count);
 }
 
 }  // namespace autofill::autofill_metrics

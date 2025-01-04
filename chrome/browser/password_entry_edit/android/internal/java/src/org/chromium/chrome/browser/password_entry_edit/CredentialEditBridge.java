@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.password_entry_edit.CredentialEditCoordinator.CredentialActionDelegate;
@@ -71,10 +72,10 @@ class CredentialEditBridge implements UiDismissalHandler, CredentialActionDelega
 
     @CalledByNative
     void setCredential(
-            String displayUrlOrAppName,
-            String username,
-            String password,
-            String displayFederationOrigin,
+            @JniType("std::u16string") String displayUrlOrAppName,
+            @JniType("std::u16string") String username,
+            @JniType("std::u16string") String password,
+            @JniType("std::u16string") String displayFederationOrigin,
             boolean isInsecureCredential) {
         mCoordinator.setCredential(
                 displayUrlOrAppName,
@@ -124,7 +125,10 @@ class CredentialEditBridge implements UiDismissalHandler, CredentialActionDelega
 
         void getExistingUsernames(long nativeCredentialEditBridge);
 
-        void saveChanges(long nativeCredentialEditBridge, String username, String password);
+        void saveChanges(
+                long nativeCredentialEditBridge,
+                @JniType("std::u16string") String username,
+                @JniType("std::u16string") String password);
 
         void deleteCredential(long nativeCredentialEditBridge);
 

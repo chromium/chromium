@@ -18,6 +18,7 @@
 #import "components/sync/service/sync_user_settings.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/bulk_upload/bulk_upload_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/bulk_upload/bulk_upload_coordinator_delegate.h"
@@ -57,7 +58,6 @@
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/ui/authentication/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -255,6 +255,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 #pragma mark - Private
 
 - (void)stopManageAccountsCoordinator {
+  _manageAccountsCoordinator.delegate = nil;
   [_manageAccountsCoordinator stop];
   _manageAccountsCoordinator = nil;
 }
@@ -470,7 +471,9 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 }
 
 - (void)showAccountsPage {
-  CHECK(!_manageAccountsCoordinator, base::NotFatalUntil::M133);
+  // Stopping the manage accounts coordinator if it’s already opened. See
+  // crbug.com/383373460
+  [self stopManageAccountsCoordinator];
   _manageAccountsCoordinator = [[ManageAccountsCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser

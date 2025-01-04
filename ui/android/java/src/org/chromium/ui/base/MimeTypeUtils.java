@@ -8,15 +8,17 @@ import android.os.Build;
 import android.webkit.MimeTypeMap;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Utility methods for determining and working with mime types. */
+@NullMarked
 public class MimeTypeUtils {
     /** The MIME type for a plain text objects dragged from Chrome. */
     public static final String CHROME_MIMETYPE_TEXT = "chrome/text";

@@ -24,15 +24,15 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
 #include "components/autofill/core/browser/data_model/payments_metadata.h"
+#include "components/autofill/core/browser/data_quality/autofill_data_util.h"
+#include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/constants.h"
-#include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -291,7 +291,7 @@ int CreditCard::IconResourceId(Suggestion::Icon icon) {
     case Suggestion::Icon::kCardGeneric:
       return get_icon(IDR_AUTOFILL_METADATA_CC_GENERIC,
                       IDR_AUTOFILL_CC_GENERIC);
-    case Suggestion::Icon::kAutofillPredictionImprovements:
+    case Suggestion::Icon::kAutofillAi:
 
     case Suggestion::Icon::kAccount:
     case Suggestion::Icon::kClear:

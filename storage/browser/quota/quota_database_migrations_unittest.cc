@@ -68,7 +68,7 @@ class QuotaDatabaseMigrationsTest : public testing::Test {
     if (contents.empty())
       return false;
 
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     if (!base::CreateDirectory(db_path.DirName()) || !db.Open(db_path) ||
         !db.Execute(contents)) {
       return false;
@@ -89,7 +89,7 @@ class QuotaDatabaseMigrationsTest : public testing::Test {
     base::FilePath current_version_path =
         temp_directory_.GetPath().AppendASCII("current_version.db");
     EXPECT_TRUE(LoadDatabase("version_10.sql", current_version_path));
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     EXPECT_TRUE(db.Open(current_version_path));
     return db.GetSchema();
   }
@@ -120,7 +120,7 @@ TEST_F(QuotaDatabaseMigrationsTest, UpgradeSchemaFromV7) {
   ASSERT_TRUE(LoadDatabase("version_7.sql", DbPath()));
 
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(DbPath()));
 
     ASSERT_TRUE(sql::MetaTable::DoesTableExist(&db));
@@ -153,7 +153,7 @@ TEST_F(QuotaDatabaseMigrationsTest, UpgradeSchemaFromV7) {
 
   // Verify upgraded schema.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(DbPath()));
 
     ASSERT_TRUE(sql::MetaTable::DoesTableExist(&db));
@@ -194,7 +194,7 @@ TEST_F(QuotaDatabaseMigrationsTest, UpgradeSchemaFromV8) {
   ASSERT_TRUE(LoadDatabase("version_8.sql", DbPath()));
 
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(DbPath()));
 
     ASSERT_TRUE(sql::MetaTable::DoesTableExist(&db));
@@ -230,7 +230,7 @@ TEST_F(QuotaDatabaseMigrationsTest, UpgradeSchemaFromV8) {
 
   // Verify upgraded schema.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(DbPath()));
 
     ASSERT_TRUE(sql::MetaTable::DoesTableExist(&db));
@@ -272,7 +272,7 @@ TEST_F(QuotaDatabaseMigrationsTest, UpgradeSchemaFromV9) {
   ASSERT_TRUE(LoadDatabase("version_9.sql", DbPath()));
 
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(DbPath()));
 
     ASSERT_TRUE(sql::MetaTable::DoesTableExist(&db));
@@ -308,7 +308,7 @@ TEST_F(QuotaDatabaseMigrationsTest, UpgradeSchemaFromV9) {
 
   // Verify upgraded schema.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(DbPath()));
 
     ASSERT_TRUE(sql::MetaTable::DoesTableExist(&db));

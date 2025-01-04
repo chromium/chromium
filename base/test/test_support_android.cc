@@ -24,10 +24,7 @@ uint32_t g_non_delayed_enter_count;
 
 struct RunState {
   RunState(base::MessagePump::Delegate* delegate, int run_depth)
-      : delegate(delegate),
-        run_depth(run_depth),
-        should_quit(false) {
-  }
+      : delegate(delegate), run_depth(run_depth), should_quit(false) {}
 
   raw_ptr<base::MessagePump::Delegate> delegate;
 
@@ -110,8 +107,9 @@ class MessagePumpAndroidStub : public base::MessagePumpAndroid {
         // OnNonDelayedLooperCallback, respectively. This uses Android's Looper
         // implementation, which is based off of epoll.
         ALooper_pollOnce(-1, nullptr, nullptr, nullptr);
-        if (ShouldQuit())
+        if (ShouldQuit()) {
           break;
+        }
       }
     }
 
@@ -129,21 +127,25 @@ class MessagePumpAndroidStub : public base::MessagePumpAndroid {
     for (;;) {
       if (!more_work_is_plausible) {
         Waitable::GetInstance()->Block();
-        if (g_state->should_quit)
+        if (g_state->should_quit) {
           break;
+        }
       }
 
       Delegate::NextWorkInfo next_work_info = g_state->delegate->DoWork();
       more_work_is_plausible = next_work_info.is_immediate();
-      if (g_state->should_quit)
+      if (g_state->should_quit) {
         break;
+      }
 
-      if (more_work_is_plausible)
+      if (more_work_is_plausible) {
         continue;
+      }
 
       g_state->delegate->DoIdleWork();
-      if (g_state->should_quit)
+      if (g_state->should_quit) {
         break;
+      }
 
       more_work_is_plausible |= !next_work_info.delayed_run_time.is_max();
     }
@@ -231,8 +233,9 @@ void InitAndroidTestPaths(const FilePath& test_data_dir) {
 void InitAndroidTestMessageLoop() {
   // NOTE something else such as a JNI call may have already overridden the UI
   // factory.
-  if (!MessagePump::IsMessagePumpForUIFactoryOveridden())
+  if (!MessagePump::IsMessagePumpForUIFactoryOveridden()) {
     MessagePump::OverrideMessagePumpForUIFactory(&CreateMessagePumpAndroidStub);
+  }
 }
 
 uint32_t GetAndroidNonDelayedWorkEnterCount() {

@@ -302,6 +302,7 @@ source_set("unittests") {
     "gamepad_event_converter_evdev_unittest.cc",
     "input_controller_evdev_unittest.cc",
     "input_injector_evdev_unittest.cc",
+    "keyboard_evdev_unittest.cc",
     "libgestures_glue/haptic_touchpad_handler.cc",
     "libgestures_glue/haptic_touchpad_handler.h",
     "libgestures_glue/haptic_touchpad_handler_unittest.cc",

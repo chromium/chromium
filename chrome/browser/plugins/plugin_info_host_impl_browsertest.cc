@@ -90,7 +90,7 @@ class PluginInfoHostImplTest : public InProcessBrowserTest {
                                        ->GetActiveWebContents()
                                        ->GetPrimaryMainFrame()
                                        ->GetProcess()
-                                       ->GetID();
+                                       ->GetDeprecatedID();
 
     plugin_info_host_impl_ = std::make_unique<PluginInfoHostImpl>(
         active_render_process_id, browser()->profile());

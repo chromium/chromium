@@ -17,7 +17,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/image_fetcher/core/fake_image_decoder.h"
 #include "components/image_fetcher/core/image_data_fetcher.h"
 #include "components/prefs/pref_service.h"
@@ -50,7 +49,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #endif
 
@@ -85,7 +84,7 @@ const AccountKey kAccountKeyIncomplete = {"incomplete"};
 const AccountKey kAccountKeyFooBar = {"foobar"};
 const AccountKey kAccountKeyFooDotBar = {"foo.bar"};
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_IOS)
 const AccountKey kAccountKeyAdvancedProtection = {"advanced_protection"};
 #endif
 
@@ -189,8 +188,9 @@ std::string Str(const std::vector<TrackingEvent>& events) {
   std::string str = "[";
   bool needs_comma = false;
   for (const TrackingEvent& event : events) {
-    if (needs_comma)
+    if (needs_comma) {
       str += ",\n ";
+    }
     needs_comma = true;
     str += event.ToString();
   }
@@ -283,8 +283,9 @@ class AccountTrackerServiceTest : public testing::Test {
   testing::AssertionResult CheckAccountTrackerEvents(
       const std::vector<TrackingEvent>& events) {
     std::string maybe_newline;
-    if ((events.size() + account_tracker_events_.size()) > 2)
+    if ((events.size() + account_tracker_events_.size()) > 2) {
       maybe_newline = "\n";
+    }
 
     testing::AssertionResult result(
         (account_tracker_events_ == events)
@@ -387,7 +388,7 @@ class AccountTrackerServiceTest : public testing::Test {
     DCHECK(!account_tracker_);
     DCHECK(!account_fetcher_);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     pref_service_.SetInteger(prefs::kAccountIdMigrationState,
                              AccountTrackerService::MIGRATION_NOT_STARTED);
 #endif
@@ -983,7 +984,7 @@ TEST_F(AccountTrackerServiceTest, Persistence) {
                                        true);
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   account_tracker()->SetIsAdvancedProtectionAccount(
       AccountKeyToAccountId(kAccountKeyBeta), true);
 #endif
@@ -997,7 +998,7 @@ TEST_F(AccountTrackerServiceTest, Persistence) {
   CheckAccountDetails(kAccountKeyBeta, infos[0]);
   CheckAccountCapabilities(kAccountKeyBeta, infos[0]);
   EXPECT_EQ(signin::Tribool::kTrue, infos[0].is_child_account);
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   EXPECT_TRUE(infos[0].is_under_advanced_protection);
 #else
   EXPECT_FALSE(infos[0].is_under_advanced_protection);
@@ -1215,7 +1216,7 @@ TEST_F(AccountTrackerServiceTest, TimerRefresh) {
   EXPECT_FALSE(account_fetcher()->AreAllAccountCapabilitiesFetched());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(AccountTrackerServiceTest, MigrateAccountIdToGaiaId) {
   const std::string email_alpha = AccountKeyToEmail(kAccountKeyAlpha);
   const std::string gaia_alpha = AccountKeyToGaiaId(kAccountKeyAlpha);
@@ -1368,7 +1369,7 @@ TEST_F(AccountTrackerServiceTest, GaiaIdMigrationCrashInTheMiddle) {
   accounts = account_tracker()->GetAccounts();
   EXPECT_EQ(2u, accounts.size());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(AccountTrackerServiceTest, ChildAccountBasic) {
   SimulateTokenAvailable(kAccountKeyChild);
@@ -1618,7 +1619,7 @@ TEST_F(AccountTrackerServiceTest, RemoveAccountBeforeCapabilitiesFetched) {
   EXPECT_TRUE(account_fetcher()->AreAllAccountCapabilitiesFetched());
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_IOS)
 TEST_F(AccountTrackerServiceTest, AdvancedProtectionAccountBasic) {
   SimulateTokenAvailable(kAccountKeyAdvancedProtection);
   IssueAccessToken(kAccountKeyAdvancedProtection);
@@ -1647,7 +1648,7 @@ TEST_F(AccountTrackerServiceTest, CountOfLoadedAccounts_NoAccount) {
 }
 
 TEST_F(AccountTrackerServiceTest, CountOfLoadedAccounts_TwoAccounts) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   prefs()->SetInteger(prefs::kAccountIdMigrationState,
                       AccountTrackerService::MIGRATION_DONE);
 #endif
@@ -1677,7 +1678,7 @@ TEST_F(AccountTrackerServiceTest, CountOfLoadedAccounts_TwoAccounts) {
       testing::ElementsAre(base::Bucket(2, 1)));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(AccountTrackerServiceTest, Migrate_CountOfLoadedAccounts_TwoAccounts) {
   const std::string email_alpha = AccountKeyToEmail(kAccountKeyAlpha);
   const std::string gaia_alpha = AccountKeyToGaiaId(kAccountKeyAlpha);

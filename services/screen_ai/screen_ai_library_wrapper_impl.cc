@@ -12,7 +12,7 @@ namespace screen_ai {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void HandleLibraryLogging(int severity, const char* message) {
   switch (severity) {
     case logging::LOGGING_VERBOSE:
@@ -66,7 +66,7 @@ bool ScreenAILibraryWrapperImpl::Load(const base::FilePath& library_path) {
   }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!LoadFunction(set_logger_, "SetLogger")) {
     return false;
   }
@@ -99,7 +99,7 @@ bool ScreenAILibraryWrapperImpl::Load(const base::FilePath& library_path) {
   return true;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 NO_SANITIZE("cfi-icall")
 void ScreenAILibraryWrapperImpl::ScreenAILibraryWrapperImpl::SetLogger() {
   CHECK(set_logger_);

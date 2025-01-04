@@ -110,7 +110,7 @@ TEST_F(LiveCaptionControllerTest, RegisterProfilePrefsCorrect) {
             speech::kUsEnglishLocale);
 
   // Babel Orca flags are only registered on ash.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_FALSE(testing_pref_service_.GetBoolean(
       prefs::kLiveCaptionUserMicrophoneEnabled));
   EXPECT_EQ(testing_pref_service_.GetString(

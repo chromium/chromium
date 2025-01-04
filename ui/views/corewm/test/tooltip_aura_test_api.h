@@ -14,7 +14,7 @@ class Point;
 class Rect;
 class RenderText;
 class Size;
-}
+}  // namespace gfx
 
 namespace ui {
 struct AXNodeData;

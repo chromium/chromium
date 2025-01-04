@@ -5,7 +5,6 @@
 #include "components/language/core/browser/language_prefs_test_util.h"
 
 #include "base/strings/string_util.h"
-#include "build/chromeos_buildflags.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -31,13 +30,13 @@ void LanguagePrefTester::ExpectPref(
 void LanguagePrefTester::ExpectAcceptLanguagePrefs(
     const std::string& expected_prefs,
     const std::string& expected_prefs_chromeos) const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ExpectPref(language::prefs::kPreferredLanguages, expected_prefs,
              expected_prefs_chromeos);
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // BUILDFLAG(IS_CHROMEOS)
   ExpectPref(language::prefs::kAcceptLanguages, expected_prefs,
              expected_prefs_chromeos);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 // Similar to function above: this one expects both ChromeOS and other
@@ -64,7 +63,7 @@ void LanguagePrefTester::ExpectSelectedLanguagePrefs(
 void LanguagePrefTester::SetLanguagePrefs(
     const std::vector<std::string>& languages) {
   std::string languages_str = base::JoinString(languages, ",");
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   prefs_->SetString(language::prefs::kPreferredLanguages, languages_str);
 #endif
   prefs_->SetString(language::prefs::kSelectedLanguages, languages_str);

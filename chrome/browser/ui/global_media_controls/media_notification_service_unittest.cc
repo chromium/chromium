@@ -66,9 +66,7 @@ using testing::Expectation;
 using testing::NiceMock;
 using testing::Return;
 
-namespace {
-
-}  // namespace
+namespace {}  // namespace
 
 class MediaNotificationServiceTest : public ChromeRenderViewHostTestHarness {
  public:

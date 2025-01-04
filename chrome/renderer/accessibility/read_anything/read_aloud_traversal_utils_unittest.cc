@@ -226,7 +226,7 @@ TEST_F(ReadAnythingReadAloudTraversalUtilsTest,
   EXPECT_THAT(empty_sentence.phrase_boundaries, IsEmpty());
 
   // CalculatePhrases should do nothing with an empty sentence.
-  empty_sentence.CalculatePhrases();
+  empty_sentence.CalculatePlaceholderPhrases();
 
   EXPECT_THAT(empty_sentence.phrase_boundaries, IsEmpty());
 }
@@ -242,7 +242,7 @@ TEST_F(
   // Before calculating phrases, phrase_boundaries is empty.
   EXPECT_THAT(normal_sentence.phrase_boundaries, IsEmpty());
 
-  normal_sentence.CalculatePhrases();
+  normal_sentence.CalculatePlaceholderPhrases();
   // Boundaries at "I" of Ice and 'c' of cake.
   EXPECT_THAT(normal_sentence.phrase_boundaries, ElementsAre(0, 16, 24));
 
@@ -251,28 +251,28 @@ TEST_F(
   // Ice-cream candy and cake
   // 012345678901234567890123
   sentence_with_hyphen.AddText(101, 12, 36, u"Ice-cream candy and cake");
-  sentence_with_hyphen.CalculatePhrases();
+  sentence_with_hyphen.CalculatePlaceholderPhrases();
   // Boundaries at "I" of Ice-cream and 'a' of and
   EXPECT_THAT(sentence_with_hyphen.phrase_boundaries, ElementsAre(0, 16, 24));
 
   // Length is a multiple of three.
   a11y::ReadAloudCurrentGranularity sixword_sentence;
   sixword_sentence.AddText(101, 41, 65, u"He is going to the mall.");
-  sixword_sentence.CalculatePhrases();
+  sixword_sentence.CalculatePlaceholderPhrases();
   // Boundary every 3 words.
   EXPECT_THAT(sixword_sentence.phrase_boundaries, ElementsAre(0, 12, 24));
 
   // Short sentences.
   a11y::ReadAloudCurrentGranularity short_sentence;
   short_sentence.AddText(101, 12, 27, u"Ice-cream candy");
-  short_sentence.CalculatePhrases();
+  short_sentence.CalculatePlaceholderPhrases();
   // Boundary only at "I" of Ice-cream
   EXPECT_THAT(short_sentence.phrase_boundaries, ElementsAre(0, 15));
 
   // Very short sentences.
   a11y::ReadAloudCurrentGranularity oneword_sentence;
   oneword_sentence.AddText(101, 12, 15, u"Yes");
-  oneword_sentence.CalculatePhrases();
+  oneword_sentence.CalculatePlaceholderPhrases();
   EXPECT_THAT(oneword_sentence.phrase_boundaries, ElementsAre(0, 3));
 }
 

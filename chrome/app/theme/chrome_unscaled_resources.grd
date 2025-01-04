@@ -101,8 +101,6 @@
       <if expr="chromeos_ash">
         <include name="IDR_CHROME_APP_ICON_32" file="${branding_path_component}/chromeos/chrome_app_icon_32.png" type="BINDATA" />
         <include name="IDR_CHROME_APP_ICON_192" file="${branding_path_component}/chromeos/chrome_app_icon_192.png" type="BINDATA" />
-        <include name="IDR_DEBUG_CHROME_APP_ICON_32" file="${branding_path_component}/chromeos/debug_chrome_app_icon_32.png" type="BINDATA" />
-        <include name="IDR_DEBUG_CHROME_APP_ICON_192" file="${branding_path_component}/chromeos/debug_chrome_app_icon_192.png" type="BINDATA" />
         <include name="IDR_WEBSTORE_APP_ICON_16" file="${branding_path_component}/chromeos/webstore_app_icon_16.png" type="BINDATA" />
         <include name="IDR_WEBSTORE_APP_ICON_128" file="${branding_path_component}/chromeos/webstore_app_icon_128.png" type="BINDATA" />
       </if>

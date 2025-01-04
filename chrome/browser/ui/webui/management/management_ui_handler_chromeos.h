@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_MANAGEMENT_MANAGEMENT_UI_HANDLER_CHROMEOS_H_
 #define CHROME_BROWSER_UI_WEBUI_MANAGEMENT_MANAGEMENT_UI_HANDLER_CHROMEOS_H_
 
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -17,17 +16,12 @@ class StatusCollector;
 class SystemLogUploader;
 }  // namespace policy
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace ash {
 class SecureDnsManager;
 }
-#endif
 
-class ManagementUIHandlerChromeOS :
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    public BitmapFetcherDelegate,
-#endif
-    public ManagementUIHandler {
+class ManagementUIHandlerChromeOS : public BitmapFetcherDelegate,
+                                    public ManagementUIHandler {
  public:
   explicit ManagementUIHandlerChromeOS(Profile* profile);
   ManagementUIHandlerChromeOS(const ManagementUIHandlerChromeOS&) = delete;
@@ -38,7 +32,6 @@ class ManagementUIHandlerChromeOS :
   // ManagementUIHandler
   void RegisterMessages() override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Returns the list of device reporting items for a given profile.
   static base::Value::List GetDeviceReportingInfo(
       const policy::DeviceCloudPolicyManagerAsh* manager,
@@ -51,12 +44,10 @@ class ManagementUIHandlerChromeOS :
       const policy::StatusCollector* collector,
       const policy::SystemLogUploader* uploader,
       Profile* profile);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   void SetDeviceManagedForTesting(bool managed) { device_managed_ = managed; }
 
  protected:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   virtual const policy::DeviceCloudPolicyManagerAsh*
   GetDeviceCloudPolicyManager() const;
   // Virtual for testing
@@ -79,7 +70,6 @@ class ManagementUIHandlerChromeOS :
   std::u16string GetFilesUploadToCloudInfo(Profile* profile);
 
   virtual const ash::SecureDnsManager* GetSecureDnsManager() const;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   base::Value::Dict GetContextualManagedData(Profile* profile) override;
 
@@ -89,19 +79,12 @@ class ManagementUIHandlerChromeOS :
   bool UpdateDeviceManagedState();
 
  private:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   void AsyncUpdateLogo();
 
   // BitmapFetcherDelegate
   void OnFetchComplete(const GURL& url, const SkBitmap* bitmap) override;
 
   void NotifyPluginVmDataCollectionUpdated();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void OnGotDeviceReportSources(base::Value::List report_sources,
-                                bool plugin_vm_data_collection_enabled);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   void GetManagementStatus(Profile* profile, base::Value::Dict* status) const;
 
@@ -114,16 +97,9 @@ class ManagementUIHandlerChromeOS :
       bool is_allowed);
   bool device_managed_ = false;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   GURL logo_url_;
   std::string fetched_image_;
   std::unique_ptr<BitmapFetcher> icon_fetcher_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  base::Value::List report_sources_;
-  bool plugin_vm_data_collection_enabled_ = false;
-#endif
 
   base::WeakPtrFactory<ManagementUIHandlerChromeOS> weak_factory_{this};
 };

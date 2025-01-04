@@ -52,34 +52,91 @@ namespace {
 using State = LensOverlayController::State;
 using LensOverlayInvocationSource = lens::LensOverlayInvocationSource;
 
+constexpr char kResultsSearchBaseUrl[] = "https://www.google.com/search";
+
 constexpr char kDivWordClass[] = "word";
 constexpr char kDivObjectClass[] = "object";
+constexpr char kDivTranslatedLineClass[] = "translated-line";
+
+constexpr char kTranslateEnableButtonID[] = "translateEnableButton";
 
 // Helper script to verify that the overlay WebUI has rendered divs with the CSS
 // class provided.
-constexpr char kFindDivWithClassScript[] = R"(
-      function findDivWithClass(parentElement) {
-        if (parentElement.querySelector('div.' + $1)) {
+constexpr char kFindAndClickDivWithClassScript[] = R"(
+      function findAndClickDivWithClass(parentElement) {
+        const div = parentElement.querySelector('div.' + $1);
+        if (div) {
+            const rect = div.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            div.dispatchEvent(new PointerEvent('pointerdown', {
+              pointerId: 1,
+              button: 0,
+              clientX: centerX,
+              clientY: centerY,
+              isPrimary: true,
+              bubbles: true,
+              composed: true
+            }));
+            div.dispatchEvent(new PointerEvent('pointerup', {
+              pointerId: 1,
+              button: 0,
+              clientX: centerX,
+              clientY: centerY,
+              isPrimary: true,
+              bubbles: true,
+              composed: true
+            }));
             return true;
         }
         for (const child of parentElement.children) {
-            if (findDivWithClass(child) ||
-                (child.shadowRoot && findDivWithClass(child.shadowRoot))) {
+            if (findAndClickDivWithClass(child) ||
+                (child.shadowRoot &&
+                    findAndClickDivWithClass(child.shadowRoot))) {
                 return true;
             }
         }
         return false;
       }
-      findDivWithClass(document.body);
+      findAndClickDivWithClass(document.body);
+)";
+
+// Helper script to fetch an element with a certain ID and click on it.
+constexpr char kFindAndClickElementWithIDScript[] = R"(
+  function findAndClickElementWithID(root, id) {
+    const nodesToVisit = [root];
+    while (nodesToVisit.length > 0) {
+      const currentNode = nodesToVisit.shift();
+      if (currentNode instanceof ShadowRoot) {
+        const element = currentNode.getElementById(id);
+        if (element) {
+          element.click();
+          return true;
+        }
+      }
+      // Add all children (including those in shadowRoots) to the queue.
+      for (const child of currentNode.children) {
+        nodesToVisit.push(child);
+        if (child.shadowRoot) {
+          nodesToVisit.push(child.shadowRoot);
+        }
+      }
+    }
+    return false;
+  }
+  findAndClickElementWithID(document, $1);
 )";
 
 const char kNpsUrl[] = "https://www.nps.gov/articles/route-66-overview.htm";
 const char kNpsObjectUrl[] =
     "https://www.nps.gov/common/commonspot/templates/images/graphics/404/"
     "04.jpg";
+const char kNpsTranslateUrl[] =
+    "https://www.nps.gov/subjects/historicpreservationfund/en-espanol.htm";
 }  // namespace
 
-// Live tests for Companion.
+// Live tests for Lens Overlay.
 // These tests can be run with:
 // browser_tests --gtest_filter=LensOverlayLiveTest.* --run-live-tests
 class LensOverlayLiveTest : public signin::test::LiveTest {
@@ -195,6 +252,41 @@ class LensOverlayLiveTest : public signin::test::LiveTest {
     }));
   }
 
+  // Verifies the side panel opened and loaded a search URL in its iframe.
+  void VerifySidePanelLoaded() {
+    auto* controller = browser()
+                           ->tab_strip_model()
+                           ->GetActiveTab()
+                           ->GetTabFeatures()
+                           ->lens_overlay_controller();
+
+    // Expect the Lens Overlay results panel to open.
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return controller->state() == State::kOverlayAndResults; }));
+    auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
+    ASSERT_TRUE(coordinator->IsSidePanelShowing());
+    ASSERT_EQ(coordinator->GetCurrentEntryId(),
+              SidePanelEntry::Id::kLensOverlayResults);
+
+    // Wait for the panel to finish loading.
+    EXPECT_TRUE(content::WaitForLoadStop(
+        controller->GetSidePanelWebContentsForTesting()));
+
+    // The results frame should be the only child frame of the side panel web
+    // contents.
+    content::RenderFrameHost* results_frame = content::ChildFrameAt(
+        controller->GetSidePanelWebContentsForTesting()->GetPrimaryMainFrame(),
+        0);
+    EXPECT_TRUE(results_frame);
+    EXPECT_TRUE(content::WaitForRenderFrameReady(results_frame));
+
+    // Check the result frame URL matches a valid results URL.
+    EXPECT_THAT(results_frame->GetLastCommittedURL().spec(),
+                testing::MatchesRegex(
+                    std::string(kResultsSearchBaseUrl) +
+                    ".*source=chrome.cr.menu.*&gsc=2&hl=.*&biw=\\d+&bih=\\d+"));
+  }
+
   virtual void SetUpFeatureList() {
     feature_list_.InitAndEnableFeatureWithParameters(
         lens::features::kLensOverlay,
@@ -207,7 +299,7 @@ class LensOverlayLiveTest : public signin::test::LiveTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, OverlayHasText_SignedInAndSynced) {
+IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickText_SignedInAndSynced) {
   std::optional<signin::TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("INTELLIGENCE_ACCOUNT");
   // Sign in and sync to opted in test account.
@@ -241,12 +333,17 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, OverlayHasText_SignedInAndSynced) {
 
   // Verify that the page returns text that is selectable on the overlay.
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return EvalJs(content::JsReplace(kFindDivWithClassScript, kDivWordClass))
+    return EvalJs(content::JsReplace(kFindAndClickDivWithClassScript,
+                                     kDivWordClass))
         .ExtractBool();
   }));
+
+  // After finding and clicking the div, make sure the side panel opens and
+  // loaded a result.
+  VerifySidePanelLoaded();
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, OverlayHasText_SignedInNotSynced) {
+IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickText_SignedInNotSynced) {
   std::optional<signin::TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("INTELLIGENCE_ACCOUNT");
   // Sign in but do not sync to opted in test account.
@@ -280,12 +377,17 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, OverlayHasText_SignedInNotSynced) {
 
   // Verify that the page returns text that is selectable on the overlay.
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return EvalJs(content::JsReplace(kFindDivWithClassScript, kDivWordClass))
+    return EvalJs(content::JsReplace(kFindAndClickDivWithClassScript,
+                                     kDivWordClass))
         .ExtractBool();
   }));
+
+  // After finding and clicking the div, make sure the side panel opens and
+  // loaded a result.
+  VerifySidePanelLoaded();
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, OverlayHasText_SignedOut) {
+IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickText_SignedOut) {
   // Navigate to a website and wait for paint before starting controller.
   WaitForPaint(kNpsUrl);
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
@@ -312,13 +414,17 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, OverlayHasText_SignedOut) {
 
   // Verify that the page returns text that is selectable on the overlay.
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return EvalJs(content::JsReplace(kFindDivWithClassScript, kDivWordClass))
+    return EvalJs(content::JsReplace(kFindAndClickDivWithClassScript,
+                                     kDivWordClass))
         .ExtractBool();
   }));
+
+  // After finding and clicking the div, make sure the side panel opens and
+  // loaded a result.
+  VerifySidePanelLoaded();
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest,
-                       OverlayHasObject_SignedInAndSynced) {
+IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickObject_SignedInAndSynced) {
   std::optional<signin::TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("INTELLIGENCE_ACCOUNT");
   // Sign in and sync to opted in test account.
@@ -352,13 +458,17 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest,
 
   // Verify that the page returns objects that is selectable on the overlay.
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return EvalJs(content::JsReplace(kFindDivWithClassScript, kDivObjectClass))
+    return EvalJs(content::JsReplace(kFindAndClickDivWithClassScript,
+                                     kDivObjectClass))
         .ExtractBool();
   }));
+
+  // After finding and clicking the div, make sure the side panel opens and
+  // loaded a result.
+  VerifySidePanelLoaded();
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest,
-                       OverlayHasObject_SignedInNotSynced) {
+IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickObject_SignedInNotSynced) {
   std::optional<signin::TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("INTELLIGENCE_ACCOUNT");
   // Sign in but do not sync to opted in test account.
@@ -392,12 +502,17 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest,
 
   // Verify that the page returns objects that is selectable on the overlay.
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return EvalJs(content::JsReplace(kFindDivWithClassScript, kDivObjectClass))
+    return EvalJs(content::JsReplace(kFindAndClickDivWithClassScript,
+                                     kDivObjectClass))
         .ExtractBool();
   }));
+
+  // After finding and clicking the div, make sure the side panel opens and
+  // loaded a result.
+  VerifySidePanelLoaded();
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, OverlayHasObject_SignedOut) {
+IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickObject_SignedOut) {
   // Navigate to a website and wait for paint before starting controller.
   WaitForPaint(kNpsObjectUrl);
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
@@ -424,9 +539,167 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, OverlayHasObject_SignedOut) {
 
   // Verify that the page returns objects that is selectable on the overlay.
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return EvalJs(content::JsReplace(kFindDivWithClassScript, kDivObjectClass))
+    return EvalJs(content::JsReplace(kFindAndClickDivWithClassScript,
+                                     kDivObjectClass))
         .ExtractBool();
   }));
+
+  // After finding and clicking the div, make sure the side panel opens and
+  // loaded a result.
+  VerifySidePanelLoaded();
+}
+
+// Live tests for LensOverlayTranslateButton.
+class LensOverlayTranslateLiveTest : public LensOverlayLiveTest {
+ public:
+  void ClickTranslateButtonAndThenText() {
+    // Find and click the translate enable button when it appears on the
+    // overlay.
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return EvalJs(content::JsReplace(kFindAndClickElementWithIDScript,
+                                       kTranslateEnableButtonID))
+          .ExtractBool();
+    }));
+
+    // The translated lines render and need some time in order
+    // for the overlay to compute their bounding boxes for highlighted lines.
+    // For this reason, keep clicking on the line until the side panel actually
+    // opens.
+    auto* controller = browser()
+                           ->tab_strip_model()
+                           ->GetActiveTab()
+                           ->GetTabFeatures()
+                           ->lens_overlay_controller();
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      EvalJs(content::JsReplace(kFindAndClickDivWithClassScript,
+                                kDivTranslatedLineClass));
+      return controller->state() == State::kOverlayAndResults;
+    }));
+  }
+
+  void SetUpFeatureList() override {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{lens::features::kLensOverlay,
+          {{"enable-shimmer", "false"}, {"use-blur", "false"}}},
+         {features::kLensOverlayTranslateButton, {}}},
+        {});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(LensOverlayTranslateLiveTest,
+                       TranslateScreen_SignedInAndSynced) {
+  std::optional<signin::TestAccountSigninCredentials> test_account =
+      GetTestAccounts()->GetAccount("INTELLIGENCE_ACCOUNT");
+  // Sign in and sync to opted in test account.
+  CHECK(test_account.has_value());
+  sign_in_functions.TurnOnSync(*test_account, 0);
+  EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
+
+  // Navigate to a website and wait for paint before starting controller.
+  WaitForPaint(kNpsTranslateUrl);
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->GetTabFeatures()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  // Confirm that the WebUI has reported that it is ready. This means the local
+  // DOM should be initialized on our WebUI.
+  WaitForHistogram("Lens.Overlay.TimeToWebUIReady");
+
+  // Check if the translate button exits and then click on a translated line.
+  ClickTranslateButtonAndThenText();
+
+  // After finding and clicking the div, make sure the side panel opens and
+  // loaded a result.
+  VerifySidePanelLoaded();
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayTranslateLiveTest,
+                       TranslateScreen_SignedInNotSynced) {
+  std::optional<signin::TestAccountSigninCredentials> test_account =
+      GetTestAccounts()->GetAccount("INTELLIGENCE_ACCOUNT");
+  // Sign in but do not sync to opted in test account.
+  CHECK(test_account.has_value());
+  sign_in_functions.SignInFromWeb(*test_account, 0);
+  EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
+
+  // Navigate to a website and wait for paint before starting controller.
+  WaitForPaint(kNpsTranslateUrl);
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->GetTabFeatures()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  // Confirm that the WebUI has reported that it is ready. This means the local
+  // DOM should be initialized on our WebUI.
+  WaitForHistogram("Lens.Overlay.TimeToWebUIReady");
+
+  // Check if the translate button exits and then click on a translated line.
+  ClickTranslateButtonAndThenText();
+
+  // After finding and clicking the div, make sure the side panel opens and
+  // loaded a result.
+  VerifySidePanelLoaded();
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayTranslateLiveTest,
+                       TranslateScreen_SignedOut) {
+  // Navigate to a website and wait for paint before starting controller.
+  WaitForPaint(kNpsTranslateUrl);
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->GetTabFeatures()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  // Confirm that the WebUI has reported that i1t is ready. This means the local
+  // DOM should be initialized on our WebUI.
+  WaitForHistogram("Lens.Overlay.TimeToWebUIReady");
+
+  // Check if the translate button exits and then click on a translated line.
+  ClickTranslateButtonAndThenText();
+
+  // After finding and clicking the div, make sure the side panel opens and
+  // loaded a result.
+  VerifySidePanelLoaded();
 }
 
 }  // namespace lens

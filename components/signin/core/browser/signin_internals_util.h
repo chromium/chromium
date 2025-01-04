@@ -11,7 +11,6 @@
 #include <memory>
 #include <string>
 
-
 namespace signin_internals_util {
 
 enum UntimedSigninStatusField { ACCOUNT_ID, GAIA_ID, USERNAME };
@@ -29,6 +28,6 @@ enum TimedSigninStatusField {
 std::string SigninStatusFieldToString(UntimedSigninStatusField field);
 std::string SigninStatusFieldToString(TimedSigninStatusField field);
 
-} // namespace signin_internals_util
+}  // namespace signin_internals_util
 
 #endif  // COMPONENTS_SIGNIN_CORE_BROWSER_SIGNIN_INTERNALS_UTIL_H_

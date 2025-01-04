@@ -31,8 +31,9 @@ bool ItemIsPinnedSuggestion(
     const HoldingSpaceItem* item,
     std::map<HoldingSpaceItem::Type, std::vector<base::FilePath>>&
         suggestions_by_type) {
-  if (item->type() != HoldingSpaceItem::Type::kPinnedFile)
+  if (item->type() != HoldingSpaceItem::Type::kPinnedFile) {
     return false;
+  }
 
   for (const auto& [_, suggested_file_paths] : suggestions_by_type) {
     if (base::Contains(suggested_file_paths, item->file().file_path)) {
@@ -127,8 +128,9 @@ void HoldingSpaceSuggestionsDelegate::MaybeFetchSuggestions(
     FileSuggestionType type) {
   // A data query on `type` has been sent so it is unnecessary to send a request
   // again. Return early.
-  if (base::Contains(pending_fetches_, type))
+  if (base::Contains(pending_fetches_, type)) {
     return;
+  }
 
   // Mark that the query for suggestions of `type` has been sent.
   pending_fetches_.insert(type);
@@ -143,8 +145,9 @@ void HoldingSpaceSuggestionsDelegate::MaybeFetchSuggestions(
 
 void HoldingSpaceSuggestionsDelegate::MaybeScheduleUpdateSuggestionsInModel() {
   // Return early if the task of updating model suggestions has been scheduled.
-  if (suggestion_update_timer_.IsRunning())
+  if (suggestion_update_timer_.IsRunning()) {
     return;
+  }
 
   suggestion_update_timer_.Start(
       FROM_HERE, /*delay=*/base::TimeDelta(),
@@ -159,8 +162,9 @@ void HoldingSpaceSuggestionsDelegate::OnSuggestionsFetched(
   size_t deleted_size = pending_fetches_.erase(type);
   DCHECK_EQ(1u, deleted_size);
 
-  if (!suggestions)
+  if (!suggestions) {
     return;
+  }
 
   // Extract file paths from `suggestions`.
   std::vector<base::FilePath> updated_suggestions(suggestions->size());

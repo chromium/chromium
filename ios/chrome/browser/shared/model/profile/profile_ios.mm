@@ -14,7 +14,6 @@
 #import "components/variations/net/variations_http_headers.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/components/webui/web_ui_url_constants.h"
-#import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/webui/web_ui_ios.h"
 #import "ios/web/webui/url_data_manager_ios_backend.h"
@@ -52,7 +51,9 @@ ProfileIOS* ProfileIOS::FromBrowserState(web::BrowserState* browser_state) {
   // be true in production and during tests as the only BrowserState that
   // should be used in ios/chrome inherits from ProfileIOS.
   DCHECK(browser_state->GetUserData(kBrowserStateIsProfileIOS));
-  return static_cast<ProfileIOS*>(browser_state);
+  ProfileIOS* profile = static_cast<ProfileIOS*>(browser_state);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(profile->sequence_checker_);
+  return profile;
 }
 
 // static
@@ -61,22 +62,27 @@ ProfileIOS* ProfileIOS::FromWebUIIOS(web::WebUIIOS* web_ui) {
 }
 
 const std::string& ProfileIOS::GetProfileName() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return profile_name_;
 }
 
 scoped_refptr<base::SequencedTaskRunner> ProfileIOS::GetIOTaskRunner() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return io_task_runner_;
 }
 
 PrefService* ProfileIOS::GetPrefs() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetSyncablePrefs();
 }
 
 const PrefService* ProfileIOS::GetPrefs() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetSyncablePrefs();
 }
 
 base::FilePath ProfileIOS::GetOffTheRecordStatePath() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (IsOffTheRecord()) {
     return state_path_;
   }
@@ -85,11 +91,12 @@ base::FilePath ProfileIOS::GetOffTheRecordStatePath() const {
 }
 
 base::FilePath ProfileIOS::GetStatePath() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return state_path_;
 }
 
 net::URLRequestContextGetter* ProfileIOS::GetRequestContext() {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!request_context_getter_) {
     ProtocolHandlerMap protocol_handlers;
     protocol_handlers[kChromeUIScheme] =
@@ -102,5 +109,6 @@ net::URLRequestContextGetter* ProfileIOS::GetRequestContext() {
 
 void ProfileIOS::UpdateCorsExemptHeader(
     network::mojom::NetworkContextParams* params) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   variations::UpdateCorsExemptHeaderForVariations(params);
 }

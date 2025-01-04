@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
@@ -24,11 +25,6 @@
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
-
-namespace {
-
-const char kQueueHistogram[] = "PrivacySandbox.NoticeQueue";
-}  // namespace
 
 // This file is meant to test the general code path that causes notices to show.
 // Specifically triggering of the notice queue.
@@ -85,7 +81,7 @@ class PrivacySandboxQueueTestNotice : public PrivacySandboxQueueTestHelper {
 // Navigate to a invalid then valid webpage. Ensure handle is held throughout.
 IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNotice, NoPrompt) {
   // Set flags correctly
-  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   SetUpPrivacySandboxService();
   auto* privacy_sandbox_service =
       PrivacySandboxServiceFactory::GetForProfile(browser()->profile());
@@ -111,17 +107,15 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNotice, NoPrompt) {
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   ASSERT_TRUE(privacy_sandbox_service->IsHoldingHandle());
-  histogram_tester.ExpectBucketCount(
-      kQueueHistogram,
-      static_cast<int>(
-          PrivacySandboxService::NoticeQueueState::kQueueOnStartup),
-      1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "NoticeQueue.PrivacySandboxNotice.QueueOnStartup"),
+            1);
 }
 
 // Navigate to a valid webpage (settings page) and click a notice. One window.
 IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNotice, PromptShows) {
   // Set flags correctly.
-  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   SetUpPrivacySandboxService();
   auto* privacy_sandbox_service =
       PrivacySandboxServiceFactory::GetForProfile(browser()->profile());
@@ -150,22 +144,18 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNotice, PromptShows) {
 
   // After click, should release handle.
   ASSERT_FALSE(privacy_sandbox_service->IsHoldingHandle());
-  histogram_tester.ExpectBucketCount(
-      kQueueHistogram,
-      static_cast<int>(
-          PrivacySandboxService::NoticeQueueState::kQueueOnStartup),
-      1);
-  histogram_tester.ExpectBucketCount(
-      kQueueHistogram,
-      static_cast<int>(
-          PrivacySandboxService::NoticeQueueState::kReleaseOnShown),
-      1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "NoticeQueue.PrivacySandboxNotice.QueueOnStartup"),
+            1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "NoticeQueue.PrivacySandboxNotice.ReleaseOnShown"),
+            1);
 }
 
 // Navigate to a valid webpage (settings page) and click a notice. Two windows.
 IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNotice,
                        PromptShowsMultipleWindows) {
-  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   // Set flags correctly.
   SetUpPrivacySandboxService();
   auto* privacy_sandbox_service =
@@ -203,21 +193,17 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNotice,
 
   // After click, should release handle.
   ASSERT_FALSE(privacy_sandbox_service->IsHoldingHandle());
-  histogram_tester.ExpectBucketCount(
-      kQueueHistogram,
-      static_cast<int>(
-          PrivacySandboxService::NoticeQueueState::kQueueOnStartup),
-      1);
-  histogram_tester.ExpectBucketCount(
-      kQueueHistogram,
-      static_cast<int>(
-          PrivacySandboxService::NoticeQueueState::kReleaseOnShown),
-      1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "NoticeQueue.PrivacySandboxNotice.QueueOnStartup"),
+            1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "NoticeQueue.PrivacySandboxNotice.ReleaseOnShown"),
+            1);
 }
 
 // Browser startup assumes we don't need a notice. Then we need a notice.
 IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNotice, DontNeedThenNeed) {
-  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   // Set flags incorrectly so we don't need a prompt.
   SetUpPrivacySandboxService();
   auto* privacy_sandbox_service =
@@ -245,16 +231,14 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNotice, DontNeedThenNeed) {
 
   // After second nav, should have been queued and holding handle.
   ASSERT_TRUE(privacy_sandbox_service->IsHoldingHandle());
-  histogram_tester.ExpectBucketCount(
-      kQueueHistogram,
-      static_cast<int>(
-          PrivacySandboxService::NoticeQueueState::kQueueOnThOrNav),
-      1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "NoticeQueue.PrivacySandboxNotice.QueueOnThOrNav"),
+            1);
 }
 
 // Browser startup assumes we need a notice. Then we realize we don't need it.
 IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNotice, NeedThenDontNeed) {
-  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   // Set flags correctly.
   SetUpPrivacySandboxService();
   auto* privacy_sandbox_service =
@@ -281,16 +265,12 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNotice, NeedThenDontNeed) {
   // After second nav do not hold handle.
   ASSERT_FALSE(privacy_sandbox_service->IsNoticeQueued());
   ASSERT_FALSE(privacy_sandbox_service->IsHoldingHandle());
-  histogram_tester.ExpectBucketCount(
-      kQueueHistogram,
-      static_cast<int>(
-          PrivacySandboxService::NoticeQueueState::kQueueOnStartup),
-      1);
-  histogram_tester.ExpectBucketCount(
-      kQueueHistogram,
-      static_cast<int>(
-          PrivacySandboxService::NoticeQueueState::kReleaseOnThOrNav),
-      1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "NoticeQueue.PrivacySandboxNotice.QueueOnStartup"),
+            1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "NoticeQueue.PrivacySandboxNotice.ReleaseOnThOrNav"),
+            1);
 }
 
 class PrivacySandboxQueueTestNoticeWithSearchEngine
@@ -313,7 +293,7 @@ class PrivacySandboxQueueTestNoticeWithSearchEngine
 // Navigate to a page where the DMA notice should show and ensure suppression.
 IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNoticeWithSearchEngine,
                        PromptSuppressed) {
-  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   // Set flags correctly.
   SetUpPrivacySandboxServiceAndDMA();
   auto* privacy_sandbox_service =
@@ -336,13 +316,10 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxQueueTestNoticeWithSearchEngine,
   // After second nav do not queue or hold the handle. Suppress should be true.
   ASSERT_FALSE(privacy_sandbox_service->IsNoticeQueued());
   ASSERT_FALSE(privacy_sandbox_service->IsHoldingHandle());
-  histogram_tester.ExpectBucketCount(
-      kQueueHistogram,
-      static_cast<int>(
-          PrivacySandboxService::NoticeQueueState::kQueueOnStartup),
-      1);
-  histogram_tester.ExpectBucketCount(
-      kQueueHistogram,
-      static_cast<int>(PrivacySandboxService::NoticeQueueState::kReleaseOnDMA),
-      1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "NoticeQueue.PrivacySandboxNotice.QueueOnStartup"),
+            1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "NoticeQueue.PrivacySandboxNotice.ReleaseOnDMA"),
+            1);
 }

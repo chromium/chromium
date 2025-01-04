@@ -1,0 +1,70 @@
+<style include="healthd-internals-shared cr-shared-style">
+  #infoPageRoot {
+    background-color: var(--cr-menu-background-color);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    height: 100%;
+    width: 100%;
+    overflow-y: scroll;
+  }
+
+  .infopage-panel {
+    flex-grow: 1;
+    padding: 40px;
+  }
+
+  .infopage-panel h1 {
+    padding-inline-start: 0px;
+  }
+
+ .infopage-panel .title {
+    color: var(--cros-ref-neutral60);
+    font-size: 16px;
+    margin-top: 18px;
+  }
+
+  .infopage-panel .content {
+    color: var(--cr-primary-text-color);
+    font-size: 24px;
+  }
+</style>
+<div id="infoPageRoot">
+  <div class="infopage-panel">
+    <h1>CPU</h1>
+    <div class="title">Number of Cores</div>
+    <div class="content">[[infoNumOfCpu]]</div>
+    <div class="title">Usage</div>
+    <div class="content">[[infoCpuUsage]]</div>
+    <div class="title">Kernel Time</div>
+    <div class="content">[[infoCpuKernel]]</div>
+    <div class="title">User Time</div>
+    <div class="content">[[infoCpuUser]]</div>
+    <div class="title">Idle Time</div>
+    <div class="content">[[infoCpuIdle]]</div>
+  </div>
+  <div class="infopage-panel">
+    <h1>Memory</h1>
+    <div class="title">Total Memory</div>
+    <div class="content">[[infoMemoryTotal]]</div>
+    <div class="title">Used Memory</div>
+    <div class="content">[[infoMemoryUsed]]</div>
+    <div class="title">Total Swap</div>
+    <div class="content">[[infoMemorySwapTotal]]</div>
+    <div class="title">Used Swap</div>
+    <div class="content">[[infoMemorySwapUsed]]</div>
+  </div>
+  <div class="infopage-panel">
+    <h1>Zram</h1>
+    <div class="title">Total Used Memory</div>
+    <div class="content">[[infoZramTotal]]</div>
+    <div class="title">Original Memory Size</div>
+    <div class="content">[[infoZramOrig]]</div>
+    <div class="title">Compressed Memory Size</div>
+    <div class="content">[[infoZramCompr]]</div>
+    <div class="title">Compression Ratio</div>
+    <div class="content">[[infoZramComprRatio]]</div>
+    <div class="title">Space Reduction</div>
+    <div class="content">[[infoZramSpaceRedu]]</div>
+  </div>
+</div>

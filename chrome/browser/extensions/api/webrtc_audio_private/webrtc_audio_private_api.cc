@@ -50,8 +50,7 @@ WebrtcAudioPrivateEventService::WebrtcAudioPrivateEventService(
     system_monitor->AddDevicesChangedObserver(this);
 }
 
-WebrtcAudioPrivateEventService::~WebrtcAudioPrivateEventService() {
-}
+WebrtcAudioPrivateEventService::~WebrtcAudioPrivateEventService() = default;
 
 void WebrtcAudioPrivateEventService::Shutdown() {
   // In unit tests, the SystemMonitor may not be created.

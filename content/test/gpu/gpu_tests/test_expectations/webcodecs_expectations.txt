@@ -9,7 +9,7 @@
 #         win win8 win10 win11 ]
 # Devices
 # tags: [ android-nexus-5x android-pixel-2 android-pixel-4
-#             android-pixel-6 android-shield-android-tv android-sm-a135m
+#             android-pixel-6 android-shield-android-tv android-sm-a137f
 #             android-sm-a235m android-sm-s911u1
 #         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
 #             chromeos-board-octopus chromeos-board-volteer
@@ -25,7 +25,6 @@
 #         release release-x64
 #         fuchsia-chrome
 #         web-engine-shell
-#         lacros-chrome
 #         cros-chrome ]
 # GPU
 # tags: [ amd amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821 amd-0x7340
@@ -136,30 +135,17 @@ crbug.com/1470336 [ android-oreo android-nexus-5x ] WebCodecs_EncodingRateContro
 crbug.com/1474916 [ android-nexus-5x ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-hardware [ Failure ]
 
 
-crbug.com/1466102 [ nvidia-0x2184 nvidia_lt_31.0.15.4601 win ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_* [ Failure ]
-crbug.com/1517101 [ win amd-0x7340 ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_* [ Failure ]
+crbug.com/1466102 [ nvidia-0x2184 nvidia_lt_31.0.15.4601 release-x64 target-cpu-64 win ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_* [ Failure ]
 
-crbug.com/337665165 [ angle-d3d11 graphite-disabled nvidia-0x2184 nvidia_lt_31.0.15.4601 passthrough release win ] WebCodecs_ContentHint_avc1.42001E_text [ Failure ]
-crbug.com/337665165 [ angle-d3d11 graphite-disabled nvidia-0x2184 nvidia_lt_31.0.15.4601 passthrough release-x64 target-cpu-64 win ] WebCodecs_ContentHint_avc1.42001E_motion [ Failure ]
-crbug.com/337665165 [ angle-d3d11 graphite-disabled nvidia-0x2184 nvidia_lt_31.0.15.4601 passthrough release win ] WebCodecs_ContentHint_hvc1.1.6.L123.00_text [ Failure ]
-crbug.com/337665165 [ angle-d3d11 graphite-disabled nvidia-0x2184 nvidia_lt_31.0.15.4601 passthrough release win ] WebCodecs_ContentHint_hvc1.1.6.L123.00_motion [ Failure ]
-crbug.com/337665165 [ angle-d3d11 graphite-disabled nvidia-0x2184 nvidia_lt_31.0.15.4601 passthrough release win ] WebCodecs_ContentHint_hvc1.1.6.L123.00_detail [ Failure ]
 
-crbug.com/356565288 [ win nvidia-0x2783 ] WebCodecs_EncodeColorSpace_av01.0.04M.08_prefer-hardware [ Failure ]
-crbug.com/356565288 [ win nvidia-0x2783 ] WebCodecs_SVC_av01.0.04M.08_prefer-hardware_layers_2 [ Failure ]
-crbug.com/356565288 [ win nvidia-0x2783 ] WebCodecs_SVC_av01.0.04M.08_prefer-hardware_layers_3 [ Failure ]
 
 # Known issues with hvc1 variants with hvc1 + camera + prefers-software to reproduce
-crbug.com/371802469 [ amd-0x7340 angle-opengl asan graphite-disabled sonoma ] WebCodecs_EncodeDecode_camera_hvc1.1.6.L123.00_prefer-software [ Failure ]
 crbug.com/371802469 [ angle-opengl bigsur graphite-disabled no-asan nvidia-0xfe9 ] WebCodecs_EncodeDecode_camera_hvc1.1.6.L123.00_prefer-software [ Failure ]
 crbug.com/371802469 [ mac intel ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-software [ Failure ]
 crbug.com/371802469 [ mac intel ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_camera [ Failure ]
 # Same with prefer-hardware
 crbug.com/371802469 [ mac intel ] WebCodecs_EncodeDecode_camera_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
 crbug.com/371802469 [ mac intel ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
-crbug.com/379673339 [ win amd-0x7340 angle-d3d11 ] WebCodecs_Encode_offscreen_avc1.42001E_prefer-hardware [ Failure ]
-crbug.com/379673339 [ win amd-0x7340 angle-d3d11 ] WebCodecs_Encode_offscreen_avc1.64001E_prefer-hardware [ Failure ]
-crbug.com/379673339 [ win amd-0x7340 angle-d3d11 ] WebCodecs_Encode_offscreen_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

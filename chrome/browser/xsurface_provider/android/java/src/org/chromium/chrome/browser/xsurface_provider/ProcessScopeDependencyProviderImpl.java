@@ -28,7 +28,7 @@ import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
 // remove all dependencies on Feed library.
 public class ProcessScopeDependencyProviderImpl extends FeedProcessScopeDependencyProvider {
 
-    private static final String XSURFACE_SPLIT_NAME = "feedv2";
+    private static final String XSURFACE_SPLIT_NAME = "google3";
 
     private final Context mContext;
     private final @Nullable LibraryResolver mLibraryResolver;

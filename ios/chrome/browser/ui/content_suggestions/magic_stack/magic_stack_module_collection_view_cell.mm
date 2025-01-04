@@ -234,9 +234,11 @@ const float kCornerRadius = 24;
            identifier:nil
               handler:^(UIAction* action) {
                 if (optedIn) {
-                  [weakSelf.delegate disableNotifications:weakSelf.type];
+                  [weakSelf.delegate disableNotifications:weakSelf.type
+                                           viaContextMenu:YES];
                 } else {
-                  [weakSelf.delegate enableNotifications:weakSelf.type];
+                  [weakSelf.delegate enableNotifications:weakSelf.type
+                                          viaContextMenu:YES];
                 }
               }];
 }

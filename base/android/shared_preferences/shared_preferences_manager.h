@@ -5,9 +5,8 @@
 #ifndef BASE_ANDROID_SHARED_PREFERENCES_SHARED_PREFERENCES_MANAGER_H_
 #define BASE_ANDROID_SHARED_PREFERENCES_SHARED_PREFERENCES_MANAGER_H_
 
-#include "base/base_export.h"
-
 #include "base/android/jni_android.h"
+#include "base/base_export.h"
 
 namespace base::android {
 

@@ -111,8 +111,9 @@ MouseWatcher::MouseWatcher(std::unique_ptr<MouseWatcherHost> host,
 MouseWatcher::~MouseWatcher() = default;
 
 void MouseWatcher::Start(gfx::NativeWindow window) {
-  if (!is_observing())
+  if (!is_observing()) {
     observer_ = std::make_unique<Observer>(this, window);
+  }
 }
 
 void MouseWatcher::Stop() {

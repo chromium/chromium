@@ -198,7 +198,8 @@ void InstallUpdaterAndApp(UpdaterScope scope,
                           bool verify_app_logo_loaded,
                           bool expect_success,
                           bool wait_for_the_installer,
-                          const base::Value::List& additional_switches);
+                          const base::Value::List& additional_switches,
+                          const base::FilePath& updater_path);
 
 // Expects that the updater is installed on the system and the specified
 // version is active.
@@ -285,7 +286,8 @@ std::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope);
 void SetupFakeUpdaterLowerVersion(UpdaterScope scope);
 
 // Gets the real updater lower version paths/versions.
-std::vector<TestUpdaterVersion> GetRealUpdaterLowerVersions();
+std::vector<TestUpdaterVersion> GetRealUpdaterLowerVersions(
+    const std::string& arch_suffix = {});
 
 // Gets the real updater current and lower version paths/versions.
 std::vector<TestUpdaterVersion> GetRealUpdaterVersions();
@@ -416,7 +418,8 @@ void ExpectUpdateSequence(
     const base::Version& to_version,
     bool do_fault_injection,
     bool skip_download,
-    const base::Version& updater_version = base::Version(kUpdaterVersion));
+    const base::Version& updater_version = base::Version(kUpdaterVersion),
+    const std::string& event_regex = ".*");
 
 void ExpectUpdateSequenceBadHash(UpdaterScope scope,
                                  ScopedServer* test_server,
@@ -435,7 +438,8 @@ void ExpectInstallSequence(UpdaterScope scope,
                            const base::Version& to_version,
                            bool do_fault_injection,
                            bool skip_download,
-                           const base::Version& updater_version);
+                           const base::Version& updater_version,
+                           const std::string& event_regex);
 
 void ExpectEnterpriseCompanionAppOTAInstallSequence(ScopedServer* test_server);
 

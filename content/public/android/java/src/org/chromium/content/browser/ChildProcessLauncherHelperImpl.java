@@ -87,9 +87,6 @@ public final class ChildProcessLauncherHelperImpl {
     // A warmed-up connection to a sandboxed service.
     private static SpareChildConnection sSpareSandboxedConnection;
 
-    // A warmed-up connection to a privileged service (network service).
-    private static SpareChildConnection sSparePrivilegedConntection;
-
     // Allocator used for sandboxed services.
     private static ChildConnectionAllocator sSandboxedChildConnectionAllocator;
     private static ChildProcessRanking sSandboxedChildConnectionRanking;
@@ -148,6 +145,8 @@ public final class ChildProcessLauncherHelperImpl {
     // from different threads.
     private static volatile Bundle sZygoteBundle;
 
+    private static boolean sIgnoreMainFrameVisibilityForImportance;
+
     private final ChildProcessLauncher.Delegate mLauncherDelegate =
             new ChildProcessLauncher.Delegate() {
                 @Override
@@ -156,7 +155,7 @@ public final class ChildProcessLauncherHelperImpl {
                         ChildProcessConnection.ServiceCallback serviceCallback) {
                     if (!mCanUseWarmUpConnection) return null;
                     SpareChildConnection spareConnection =
-                            mSandboxed ? sSpareSandboxedConnection : sSparePrivilegedConntection;
+                            mSandboxed ? sSpareSandboxedConnection : null;
                     if (spareConnection == null) return null;
                     return spareConnection.getConnection(connectionAllocator, serviceCallback);
                 }
@@ -418,31 +417,24 @@ public final class ChildProcessLauncherHelperImpl {
     /**
      * @see {@link ChildProcessLauncherHelper#warmUp(Context)}.
      */
-    public static void warmUpOnAnyThread(final Context context, boolean sandboxed) {
+    public static void warmUpOnAnyThread(final Context context) {
         LauncherThread.post(
                 new Runnable() {
                     @Override
                     public void run() {
-                        warmUpOnLauncherThread(context, sandboxed);
+                        warmUpOnLauncherThread(context);
                     }
                 });
     }
 
-    private static void warmUpOnLauncherThread(Context context, boolean sandboxed) {
-        SpareChildConnection spareConnection =
-                sandboxed ? sSpareSandboxedConnection : sSparePrivilegedConntection;
-        if (spareConnection != null && !spareConnection.isEmpty()) {
+    private static void warmUpOnLauncherThread(Context context) {
+        if (sSpareSandboxedConnection != null && !sSpareSandboxedConnection.isEmpty()) {
             return;
         }
 
         Bundle serviceBundle = populateServiceBundle(new Bundle());
-        ChildConnectionAllocator allocator = getConnectionAllocator(context, sandboxed);
-        if (sandboxed) {
-            sSpareSandboxedConnection = new SpareChildConnection(context, allocator, serviceBundle);
-        } else {
-            sSparePrivilegedConntection =
-                    new SpareChildConnection(context, allocator, serviceBundle);
-        }
+        ChildConnectionAllocator allocator = getConnectionAllocator(context, /* sandboxed= */ true);
+        sSpareSandboxedConnection = new SpareChildConnection(context, allocator, serviceBundle);
     }
 
     /**
@@ -542,6 +534,10 @@ public final class ChildProcessLauncherHelperImpl {
 
     public static void setSkipDelayForReducePriorityOnBackgroundForTesting() {
         sSkipDelayForReducePriorityOnBackgroundForTesting = true;
+    }
+
+    public static void setIgnoreMainFrameVisibilityForImportance() {
+        sIgnoreMainFrameVisibilityForImportance = true;
     }
 
     @VisibleForTesting
@@ -778,8 +774,11 @@ public final class ChildProcessLauncherHelperImpl {
             boostForPendingViews = false;
         }
 
+        boolean shouldUseMainFrameVisibility = !sIgnoreMainFrameVisibilityForImportance;
+        boolean isVisibleMainFrame = visible && frameDepth == 0;
         @ChildProcessImportance int newEffectiveImportance;
-        if ((visible && frameDepth == 0)
+
+        if ((shouldUseMainFrameVisibility && isVisibleMainFrame)
                 || importance == ChildProcessImportance.IMPORTANT
                 || hasMediaStream) {
             newEffectiveImportance = ChildProcessImportance.IMPORTANT;
@@ -986,10 +985,8 @@ public final class ChildProcessLauncherHelperImpl {
         return mLauncher.getConnectionAllocator();
     }
 
-    public static ChildProcessConnection getWarmUpConnectionForTesting(boolean sandboxed) {
-        SpareChildConnection connection =
-                sandboxed ? sSpareSandboxedConnection : sSparePrivilegedConntection;
-        return connection == null ? null : connection.getConnection();
+    public static ChildProcessConnection getWarmUpConnectionForTesting() {
+        return sSpareSandboxedConnection == null ? null : sSpareSandboxedConnection.getConnection();
     }
 
     @NativeMethods

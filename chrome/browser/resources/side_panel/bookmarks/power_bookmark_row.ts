@@ -9,6 +9,9 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 
+import type {PriceTrackingBrowserProxy} from '//resources/cr_components/commerce/price_tracking_browser_proxy.js';
+import {PriceTrackingBrowserProxyImpl} from '//resources/cr_components/commerce/price_tracking_browser_proxy.js';
+import type {BookmarkProductInfo} from '//resources/cr_components/commerce/shared.mojom-webui.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
@@ -60,6 +63,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
       },
       renamingId: {type: String},
       imageUrls: {type: Object},
+      isPriceTracked: {type: Boolean},
       searchQuery: {type: String},
       shoppingCollectionFolderId: {type: String},
       rowAriaDescription: {type: String},
@@ -87,15 +91,42 @@ export class PowerBookmarkRowElement extends CrLitElement {
   toggleExpand: boolean = false;
   imageUrls: {[key: string]: string} = {};
   updatedElementIds: string[] = [];
+  isPriceTracked: boolean = false;
 
   listItemSize: CrUrlListItemSize = CrUrlListItemSize.COMPACT;
   bookmarksService: PowerBookmarksService;
+  private priceTrackingProxy_: PriceTrackingBrowserProxy =
+      PriceTrackingBrowserProxyImpl.getInstance();
+  private shoppingListenerIds_: number[] = [];
 
   override connectedCallback() {
     super.connectedCallback();
     this.onInputDisplayChange_();
     this.addEventListener('keydown', this.onKeydown_);
     this.addEventListener('focus', this.onFocus_);
+    this.isPriceTracked = this.isPriceTracked_(this.bookmark);
+
+    const callbackRouter = this.priceTrackingProxy_.getCallbackRouter();
+    this.shoppingListenerIds_.push(
+        callbackRouter.priceTrackedForBookmark.addListener(
+            (product: BookmarkProductInfo) =>
+                this.handleBookmarkSubscriptionChange_(product, true)),
+        callbackRouter.priceUntrackedForBookmark.addListener(
+            (product: BookmarkProductInfo) =>
+                this.handleBookmarkSubscriptionChange_(product, false)),
+    );
+  }
+
+  override disconnectedCallback() {
+    this.shoppingListenerIds_.forEach(
+        id => this.priceTrackingProxy_.getCallbackRouter().removeListener(id));
+  }
+
+  private handleBookmarkSubscriptionChange_(
+      product: BookmarkProductInfo, subscribed: boolean): void {
+    if (product.bookmarkId.toString() === this.bookmark.id) {
+      this.isPriceTracked = subscribed;
+    }
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -360,7 +391,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
     this.dispatchEvent(this.createInputChangeEvent_(null));
   }
 
-  protected isPriceTracked_(bookmark: chrome.bookmarks.BookmarkTreeNode):
+  private isPriceTracked_(bookmark: chrome.bookmarks.BookmarkTreeNode):
       boolean {
     return !!this.bookmarksService?.getPriceTrackedInfo(bookmark);
   }

@@ -155,6 +155,24 @@
       <message name="IDS_IOS_AI_PROTOTYPING_SERVER_SIDE_SUBMIT" translateable="false" desc="Server side submit button text for AI prototyping menu [Length: unlimited].">
         Server Side Submit
       </message>
+      <message name="IDS_IOS_AI_PROTOTYPING_TAB_ORGANIZATION_GROUP_TABS_BUTTON" translateable="false" desc="The label for the button that executes the Tab Organization query [Length: unlimited].">
+        Group tabs
+      </message>
+      <message name="IDS_IOS_AI_PROTOTYPING_TAB_ORGANIZATION_GROUPING_STRATEGY_DOMAIN" translateable="false" desc="Label for the Domain Based grouping strategy of Tab Organization [Length: unlimited].">
+        Domain based
+      </message>
+      <message name="IDS_IOS_AI_PROTOTYPING_TAB_ORGANIZATION_GROUPING_STRATEGY_LABEL" translateable="false" desc="Label for the grouping strategy section of Tab Organization [Length: unlimited].">
+        Grouping strategy
+      </message>
+      <message name="IDS_IOS_AI_PROTOTYPING_TAB_ORGANIZATION_GROUPING_STRATEGY_TASK" translateable="false" desc="Label for the Task Based grouping strategy of Tab Organization [Length: unlimited].">
+        Task based
+      </message>
+      <message name="IDS_IOS_AI_PROTOTYPING_TAB_ORGANIZATION_GROUPING_STRATEGY_TOPIC" translateable="false" desc="Label for the Topic Based grouping strategy of Tab Organization [Length: unlimited].">
+        Topic based
+      </message>
+      <message name="IDS_IOS_AI_PROTOTYPING_TAB_ORGANIZATION_HEADER" translateable="false" desc="Header for AI prototyping menu's tab organization page [Length: unlimited].">
+        Tab Organization
+      </message>
       <message name="IDS_IOS_ACCNAME_CLEAR_TEXT" desc="The accessibility label for the clear text button in the location bar [Length: unlimited].">
         Clear text
       </message>
@@ -1297,7 +1315,7 @@ See your search engine’s instructions for deleting your search history, if app
         Delete and sign out
       </message>
       <message name="IDS_IOS_DATA_NOT_UPLOADED_SWITCH_DIALOG_BUTTON" desc="Button of a dialog that is shown when the user starts to switch accounts; the user chooses to sync some or all data types, but some data hasn't been saved in their Google Account yet (for example, if there was an error). This string follows the heading 'Some data isn't saved yet' or the heading ‘Unsaved account data will be deleted’; the user can choose to tap on the buttons 'Cancel' or 'Delete and Switch'. If the user chooses to continue to switch accounts, then any of their data (such as bookmarks, passwords, history, settings, and more) that isn't saved in their account will be deleted. The tone should be helpful and instructive. [iOS only]">
-        Delete and Switch
+                Switch and Delete
       </message>
       <message name="IDS_IOS_DATA_NOT_UPLOADED_DIALOG_TITLE" desc="Title of a dialog that is shown when the user starts to sign out; the user chooses to sync some or all data types, but some data hasn't been saved in their Google Account yet (for example, if there was an error). This string precedes the body text 'Some of your Chrome data hasn't been saved to your Google Account yet. Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.', and the user can choose to tap on the buttons 'Cancel' or 'Delete and Sign Out'. If the user chooses to continue to sign out, then any of their data (such as bookmarks, passwords, history, settings, and more) that isn't saved in their account will be deleted. The tone should be helpful and instructive. [iOS only]">
         Some data isn't saved yet
@@ -1346,6 +1364,9 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_DELETE_ACTION_TITLE" desc="Title of the action used to delete a selected item. Item types include, for example, a Bookmark or an History Entry. [iOS only]">
         Delete
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_DELETE_ALL_SAVED_CREDENTIALS" desc="Button that user can press to delete all saved credentials. [iOS only]">
+        Delete all data
       </message>
       <message name="IDS_IOS_DELETE_BROWSING_DATA_BOTTOM_SHEET_FOOTER" desc="Footer message in the delete browsing data bottom sheet which informs the user they can seperately delete their search history and/or other forms of activity at the 2 links provided.">
         <ph name="BEGIN_LINK">BEGIN_LINK</ph>Search history<ph name="END_LINK">END_LINK</ph> and <ph name="BEGIN_LINK">BEGIN_LINK</ph>other forms of activity<ph name="END_LINK">END_LINK</ph> may be saved in your Google Account.
@@ -1668,6 +1689,12 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DOWNLOAD_MOBILECONFIG_FILE_WARNING_TITLE" desc="Title of the alert displaying a warning message before downloading a .mobileconfig file.[iOS only]">
           Configuration profile available
       </message>
+      <message name="IDS_IOS_DOWNLOAD_RESTRICTION_SNACKBAR_TEXT" desc="The snackbar message to inform users that the download is blocked. [iOS only]">
+          Saving files is blocked by your organization
+      </message>
+      <message name="IDS_IOS_DOWNLOAD_RESTRICTION_SNACKBAR_BUTTON_TEXT" desc="The text of the snackbar button to dismiss the snackbar. [iOS only]">
+          GOT IT
+      </message>
       <message name="IDS_IOS_DRIVE_FILE_PICKER_ALERT_THIS_FILE_COUND_NOT_BE_OPENED" desc="Title for an alert which is presented when a file selected by the user cannot be opened in the Drive file picker. [iOS only]">
           <ph name="FILENAME">$1<ex>image.jpeg</ex></ph> couldn't be opened
       </message>
@@ -1831,8 +1858,23 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_YES" desc="Message displayed on the managed profile creation screen in a table view item telling the user that they will be keeping their existing browsing data separate from the managed profile they will create.">
        Yes
       </message>
+      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_SEPARATE_TITLE" desc="Message displayed on the managed profile creation screen in a table view item telling the user that they will bring their existing browsing data separate in the managed profile they will create.">
+       Yes, keep it separate
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_SEPARATE_SUBTITLE" desc="Message displayed on the managed profile creation screen in a table view item telling the user that they will bring their existing browsing data separate in the managed profile they will create.">
+       Your existing browsing data will be available upon signing out of <ph name="USER_EMAIL">$1</ph>. It won’t be saved in this account.
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_MERGE_BROWSING_DATA_TITLE" desc="Message displayed on the managed profile creation screen in a table view item telling the user that they will be keeping their existing browsing data separate from the managed profile they will create.">
+       No, move it into your work space
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_MERGE_BROWSING_DATA_SUBTITLE" desc="Message displayed on the managed profile creation screen in a table view item telling the user that they will be keeping their existing browsing data separate from the managed profile they will create.">
+       Existing browsing data will be linked to <ph name="USER_EMAIL">$1</ph>. This data may be viewable by your organization.
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_SEPARATE_PAGE_SUBTITLE" desc="Message displayed on a screen where the user is asked what they want to do with their existing browsing data.">
+      Choose what to do with the existing browsing data on this device, like passwords, history, and more.
+      </message>
       <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_MANAGEMENT_DISCLAIMER" desc="Message displayed in the secondary button on a screen where the user is asked to create a work profile.">
-       The account <ph name="USER_EMAIL">$1</ph> is managed by <ph name="HOSTED_DOMAIN">$2</ph>, which can view some information.
+       The account <ph name="USER_EMAIL">$1</ph> is managed by <ph name="HOSTED_DOMAIN">$2</ph>, which can view some information. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
       </message>
       <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_CANCEL" meaning="Button label to avoid using a managed profile" desc="Message displayed in the secondary button on a screen where the user is asked to create a work profile.">
        Cancel
@@ -1842,6 +1884,24 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_TITLE" desc="Message displayed in the secondary button on a screen where the user is asked to create a work profile.">
        A separate space for work
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_LEARN_MORE_TITLE" desc="Title of the screen where the user learns more about their managed account.">
+        Managed Account
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_LEARN_MORE_BROWSER_INFORMATION_TITLE" desc="Title of a section of the learn more screen about how the administrator manages the browser and can access browser information.">
+        Browser Information
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_LEARN_MORE_BROWSER_INFORMATION_SUBTITLE" desc="Message of a section of the learn more screen about how the administrator manages the browser and can access browser information.">
+        Your organization may need to see and manage browsing data tied to your managed account, such as your browsing history and passwords.
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_LEARN_MORE_DEVICE_INFORMATION_TITLE" desc="Title of a section of the learn more screen about how the administrator manages the browser and can access device information.">
+        Device Information
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_LEARN_MORE_DEVICE_INFORMATION_SUBTITLE" desc="Message of a section of the learn more screen about how the administrator manages the browser and can access device information.">
+        To make sure this device can be used safely, your organization may need to see information about its operating system, browser, settings and what software is installed on the device.
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_PROFILE_CREATION_LEARN_MORE_HEADER" desc="Header of the learn more screen telling the user that their account is managed by an organization that can view some information.">
+       The account <ph name="USER_EMAIL">$1</ph> is managed by <ph name="HOSTED_DOMAIN">$2</ph>, which can view some information, including
       </message>
       <message name="IDS_IOS_ENTERPRISE_RESTRICTED_ACCOUNTS_TO_PATTERNS_MESSAGE" desc="Text displayed in the popover to inform the user that the browser is managed by Enterprise policies. (Restrict Accounts To Patterns) [iOS only]">
           Your organization allows you to sign in only with certain accounts. Accounts that aren't allowed are hidden.
@@ -1998,6 +2058,9 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_FIRST_RUN_SIGNIN_DONT_SIGN_IN" desc="Button on the very first screen of Chrome to continue without signing into Chrome. [iOS only]">
         Don’t sign in
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_SIGNIN_STAY_SIGNED_OUT" desc="Button on the sign in screen of the FRE to stay signed out on Chrome. [iOS only]">
+        Stay signed out
       </message>
       <message name="IDS_IOS_FIRST_RUN_SIGNIN_SIGN_IN_ACTION" desc="Button on the very first screen of Chrome for users to sign in when there is no Google Account on the device. [iOS only]">
         Sign in…
@@ -2332,12 +2395,12 @@ See your search engine’s instructions for deleting your search history, if app
         Go to Settings
       </message>
       <message name="IDS_IOS_INACTIVE_TABS_USER_EDU_SUBTITLE" desc="Subtitle of the user education panel explaining Inactive Tabs.">
-        {COUNT, plural,
-          =1 {Open tabs not used for one day or more get moved to Inactive tabs so you can easily focus on the tabs you use the most. You can change this anytime in settings.}
-          other {Open tabs not used for {COUNT} days or more get moved to Inactive tabs so you can easily focus on the tabs you use the most. You can change this anytime in settings.}}
+        This helps you stay organized. You can change this in settings anytime.
       </message>
       <message name="IDS_IOS_INACTIVE_TABS_USER_EDU_TITLE" desc="Title of the user education panel explaining inactive tabs.">
-        Inactive tabs help you stay focused
+        {COUNT, plural,
+          =1 {Tabs you don't use get moved here after {COUNT} day}
+          other {Tabs you don't use get moved here after {COUNT} days}}
       </message>
       <message name="IDS_IOS_INCOGNITO_INTERSTITIAL_LEARN_MORE_HINT" desc="Accessibility hint for the 'Learn more' button in the incognito NTP [iOS only]">
         Learn more about Incognito mode
@@ -3734,6 +3797,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION_SET_UP" desc="Section title in settings &gt; password, allowing user to opt-in. [iOS Only]">
         Set up…
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_CREDENTIAL_DELETION_TEXT" desc="Section title in password settings, explaining to the user what data will be deleted. [iOS Only]">
+        Passwords, passkeys, and other data will be permanently deleted from Google Password Manager
       </message>
       <message name="IDS_IOS_PASSWORD_SETTINGS_PASSWORD_PLACEHOLDER_TEXT" desc="Placeholder text for the password field when adding a new credential manually via settings [Length: 10em]">
         password
@@ -5179,6 +5245,15 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SET_UP_LIST_TRY_BUTTON_TEXT" desc="Button text next to a Set Up List item suggesting to the user to try the action.">
         Try
       </message>
+      <message name="IDS_IOS_SHARED_GROUP_ERROR_GOT_IT" desc="Title of the button to close the error message, letting the user notify Chrome of their understanding of the error message.">
+        Got it
+      </message>
+      <message name="IDS_IOS_SHARED_GROUP_ERROR_MESSAGE" desc="Title for a generic alert when an error happened.">
+        There was an error. Try again.
+      </message>
+      <message name="IDS_IOS_SHARED_GROUP_ERROR_TITLE" desc="Title for a generic alert when an error happened.">
+        Something went wrong
+      </message>
       <message name="IDS_IOS_SHARED_GROUP_SHARE_GROUP" desc="The Voice Over label for the button allowing the user to share a group.">
         Share group
       </message>
@@ -5410,11 +5485,14 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SIGNOUT_CLEARS_DATA_DIALOG_MESSAGE_WITH_MANAGED_ACCOUNT" desc="Text to inform the managed user about why their their device data is being cleared on signout. [iOS only]">
           To protect your organization's security, unsaved data will be deleted from this device. This could include passwords, history, and more.
       </message>
-            <message name="IDS_IOS_SIGNOUT_CLOSES_TABS_AND_CLEARS_DATA_DIALOG_MESSAGE_WITH_MANAGED_ACCOUNT" desc="Text to inform the managed user about why their their device data is being cleared on signout. [iOS only]">
-          To protect your organization's security, tabs will be closed and unsaved account data will be deleted from this device. This could include passwords, history, and more.
+      <message name="IDS_IOS_SIGNOUT_CLOSES_TABS_AND_CLEARS_DATA_DIALOG_MESSAGE_WITH_MANAGED_ACCOUNT" desc="Text to inform the managed user about why their their device data is being cleared on signout. [iOS only]">
+      Tabs will be closed, and data deleted could include passwords, browsing history, cookies, and more.
       </message>
       <message name="IDS_IOS_SIGNOUT_CLEARS_DATA_DIALOG_TITLE_WITH_MANAGED_ACCOUNT" desc="The signout dialog title. This is the new dialog that is used when the user have a managed account (other than gmail account) [iOS only].">
-        Unsaved account data will be deleted
+        Sign out? Unsaved account data will be deleted.
+      </message>
+      <message name="IDS_IOS_SWITCH_CLEARS_DATA_DIALOG_TITLE_WITH_MANAGED_ACCOUNT" desc="The switch dialog title. This is the new dialog that is used when the user have a managed account (other than gmail account) [iOS only].">
+        Switch accounts? Unsaved account data will be deleted.
       </message>
       <message name="IDS_IOS_SIGNOUT_DIALOG_CLEAR_DATA_BUTTON" desc="This button signs the user out and delete all the data from the user device. The data remain in their Google account. Related to IDS_IOS_SIGNOUT_DIALOG_TITLE [iOS only].">
         Clear data
@@ -5433,6 +5511,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON" desc="This button signs the user out. Related to IDS_IOS_SIGNOUT_DIALOG_TITLE [iOS only].">
         Sign out
+      </message>
+      <message name="IDS_IOS_SIGNOUT_AND_DELETE_DIALOG_SIGN_OUT_BUTTON" desc="This button signs the user out. Related to IDS_IOS_SIGNOUT_DIALOG_TITLE [iOS only].">
+        Sign Out and Delete
       </message>
       <message name="IDS_IOS_SIGN_IN_AGAIN" desc="Title displayed when there is an authentication failure in sign-in and the user needs to attempt to sign in again. [Length: 20em] [iOS only]">
         Sign in again
@@ -5840,6 +5921,12 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TAB_GRID_UNDO_CLOSE_ALL_BUTTON" desc="Title of the button in the tab grid UI that revert the close all action recently taken by the user. [iOS only]">
         Undo
       </message>
+      <message name="IDS_IOS_TAB_GROUP_ACTIVITY_LABEL_USER_ADDED_TEXT" desc="Text in the label that indicates a user added a tab in a shared tab group.">
+        Added
+      </message>
+      <message name="IDS_IOS_TAB_GROUP_ACTIVITY_LABEL_USER_CHANGED_TEXT" desc="Text in the label that indicates a user changed a tab in a shared tab group.">
+        Changed
+      </message>
       <message name="IDS_IOS_TAB_GROUP_ACTIVITY_SUMMARY_ACTIVITY_BUTTON" desc="Title of the button in the activity summary in a shared tab group.">
         Activity
       </message>
@@ -5887,6 +5974,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_TAB_GROUP_INDICATOR_ACCESSIBILITY_TITLE" desc="Accessibility label for the tab group indicator view. This is spoken by VoiceOver.">
         Tab group, <ph name="GROUP_TITLE">$1<ex>Group name</ex></ph>, Menu.
+      </message>
+      <message name="IDS_IOS_TAB_GROUP_NEW_ACTIVITY_LABEL_TEXT" desc="Text in the new activity label on a shared tab group cell in the tab grid.">
+        New activity
       </message>
       <message name="IDS_IOS_TAB_GROUP_RECENT_ACTIVITY_SHEET_TITLE" desc="Title of a half sheet for recent activity logs in a shared tab group.">
         Recent activity
@@ -5951,6 +6041,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_TAB_SWITCHER_CLOSE_TAB" desc="The accessibility label for the closing of a selected tab. [iOS only]">
         Close tab.
+      </message>
+      <message name="IDS_IOS_TAB_SWITCHER_CLOSE_GROUP" desc="The accessibility label for the closing of a selected tab group. [iOS only]">
+        Close group.
       </message>
       <message name="IDS_IOS_TAB_SWITCHER_CREATE_NEW_INCOGNITO_TAB" desc="The accessibility label for the button that creates new Incognito tabs. [iOS only]">
         Create new Incognito tab.
@@ -6710,6 +6803,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_DOCKING_EDIT_HOME_SCREEN_LOTTIE_INSTRUCTION" desc="Title of the instruction shown in the Docking Promo Lottie, which describes the Edit Home Screen text when the user long presses on the Chrome app.">
         Edit Home Screen
       </message>
+      <message name="IDS_IOS_DOCKING_PROMO_NO_THANKS_BUTTON_TITLE" desc="Title of the button that dismisses the Docking Promo.">
+        No Thanks
+      </message>
       <message name="IDS_IOS_DOCKING_PROMO_PRIMARY_BUTTON_TITLE" desc="Title of the primary button in the Docking Promo, which confirms the promo has been seen by the user.">
         Got it
       </message>
@@ -6787,6 +6883,15 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_COLLAPSED_PRIMARY_TOOLBAR_BUTTON" desc="The accessibility label for the collapsed toolbar button in primary toolbar. [iOS only].">
         Collapsed primary toolbar button
+      </message>
+      <message name="IDS_IOS_KEYBOARD_GO_TO_INCOGNITO_TAB_GRID" desc="The title of the keyboard shortcut to go to the incognito tab grid from the tab grid menu." meaning="Used as a command title in the iPad command menu.">
+        Incognito tab grid
+      </message>
+      <message name="IDS_IOS_KEYBOARD_GO_TO_REGULAR_TAB_GRID" desc="The title of the keyboard shortcut to go to the regular tab grid from the tab grid menu." meaning="Used as a command title in the iPad command menu.">
+        Regular tab grid
+      </message>
+      <message name="IDS_IOS_KEYBOARD_GO_TO_REMOTE_TAB_GRID" desc="The title of the keyboard shortcut to go to the remote tab grid from the tab grid menu." meaning="Used as a command title in the iPad command menu.">
+        Remote tab grid
       </message>
     </messages>
   </release>

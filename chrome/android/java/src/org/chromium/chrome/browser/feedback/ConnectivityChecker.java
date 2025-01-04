@@ -216,11 +216,11 @@ public final class ConnectivityChecker {
     interface Natives {
         void checkConnectivity(
                 @JniType("Profile*") Profile profile,
-                String url,
+                @JniType("std::string") String url,
                 long timeoutMs,
                 ConnectivityCheckerCallback callback,
                 int annotationHashCode);
 
-        boolean isUrlValid(String url);
+        boolean isUrlValid(@JniType("std::string") String url);
     }
 }

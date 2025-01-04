@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
-#include "chrome/browser/profiles/profile.h"
 
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 
@@ -60,8 +60,9 @@ void RecordBookmarkFolderLaunch(BookmarkLaunchLocation location) {
 }
 
 void RecordBookmarkFolderOpen(BookmarkLaunchLocation location) {
-  if (IsBookmarkBarLocation(location))
+  if (IsBookmarkBarLocation(location)) {
     base::RecordAction(base::UserMetricsAction("ClickedBookmarkBarFolder"));
+  }
 }
 
 void RecordBookmarkAppsPageOpen(BookmarkLaunchLocation location) {

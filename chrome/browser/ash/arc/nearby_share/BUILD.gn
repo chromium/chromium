@@ -24,6 +24,7 @@ static_library("nearby_share") {
 
   deps = [
     "//ash/components/arc",
+    "//ash/components/arc/intent_helper",
     "//ash/components/arc/mojom",
     "//ash/public/cpp",
     "//ash/webui/settings/public/constants",
@@ -38,7 +39,6 @@ static_library("nearby_share") {
     "//chrome/browser/webshare:storage",
     "//chrome/common",
     "//chromeos/components/sharesheet:constants",
-    "//components/arc",
     "//components/keyed_service/core",
     "//content/public/browser",
     "//net",

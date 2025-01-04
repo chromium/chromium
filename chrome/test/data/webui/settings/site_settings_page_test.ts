@@ -104,15 +104,6 @@ suite('SiteSettingsPage', function() {
         defaultSettingLabel(ContentSetting.IMPORTANT_CONTENT, 'a', 'b', 'c'));
   });
 
-  test('AntiAbuseLinkRowHidden', async function() {
-    loadTimeData.overrideValues({
-      privateStateTokensEnabled: false,
-    });
-    setupPage();
-    assertFalse(isChildVisible(
-        page.$.advancedContentList, `#${ContentSettingsTypes.ANTI_ABUSE}`));
-  });
-
   test('CookiesLinkRowSublabel', async function() {
     // This test verifies the pre-3PCD label.
     loadTimeData.overrideValues({

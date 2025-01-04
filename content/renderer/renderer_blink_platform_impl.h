@@ -32,6 +32,7 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
+#include "third_party/blink/public/mojom/peerconnection/webrtc_ip_handling_policy.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom-shared.h"
 
 namespace blink {
@@ -162,11 +163,12 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   bool IsWebRtcEncryptionEnabled() override;
   media::MediaPermission* GetWebRTCMediaPermission(
       blink::WebLocalFrame* web_frame) override;
-  void GetWebRTCRendererPreferences(blink::WebLocalFrame* web_frame,
-                                    blink::WebString* ip_handling_policy,
-                                    uint16_t* udp_min_port,
-                                    uint16_t* udp_max_port,
-                                    bool* allow_mdns_obfuscation) override;
+  void GetWebRTCRendererPreferences(
+      blink::WebLocalFrame* web_frame,
+      blink::mojom::WebRtcIpHandlingPolicy* ip_handling_policy,
+      uint16_t* udp_min_port,
+      uint16_t* udp_max_port,
+      bool* allow_mdns_obfuscation) override;
   bool IsWebRtcHWEncodingEnabled() override;
   bool IsWebRtcHWDecodingEnabled() override;
   bool AllowsLoopbackInPeerConnection() override;

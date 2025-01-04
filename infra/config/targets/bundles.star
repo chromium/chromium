@@ -140,7 +140,7 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "android_14_device_fyi_gtests",
+    name = "android_14_device_ci_only_gtests",
     targets = [
         "system_webview_shell_instrumentation_tests",
         targets.bundle(
@@ -151,6 +151,9 @@ targets.bundle(
             ],
         ),
         "webview_ui_instrumentation_tests",
+    ],
+    mixins = [
+        "ci_only",
     ],
 )
 
@@ -221,7 +224,7 @@ targets.bundle(
                 "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
             ],
         ),
-        "webview_trichrome_64_cts_tests_no_field_trial_suite",
+        "android_ci_only_fieldtrial_webview_tests",
     ],
 )
 
@@ -374,19 +377,16 @@ targets.bundle(
             swarming = targets.swarming(
                 shards = 2,
             ),
-            experiment_percentage = 100,
         ),
         "android_browsertests": targets.mixin(
             swarming = targets.swarming(
                 shards = 5,
             ),
-            experiment_percentage = 100,
         ),
         "unit_tests": targets.mixin(
             swarming = targets.swarming(
                 shards = 2,
             ),
-            experiment_percentage = 100,
         ),
     },
 )
@@ -4782,6 +4782,9 @@ targets.bundle(
     targets = [
         targets.bundle(
             targets = "ios_common_tests",
+            mixins = [
+                "mac_14_vm_optional",
+            ],
             variants = [
                 "SIM_IPHONE_14_PLUS_17_5",
                 "SIM_IPHONE_14_PLUS_18_1",
@@ -4815,6 +4818,9 @@ targets.bundle(
         ),
         targets.bundle(
             targets = "ios_screen_size_dependent_tests",
+            mixins = [
+                "mac_14_vm_optional",
+            ],
             variants = [
                 "SIM_IPAD_PRO_6TH_GEN_17_5",
                 "SIM_IPAD_PRO_7TH_GEN_18_1",
@@ -4865,6 +4871,9 @@ targets.bundle(
         ),
         targets.bundle(
             targets = "ios_screen_size_dependent_tests",
+            mixins = [
+                "mac_14_vm_optional",
+            ],
             variants = [
                 "SIM_IPAD_AIR_5TH_GEN_16_4",
                 "SIM_IPAD_AIR_5TH_GEN_17_5",
@@ -5951,6 +5960,12 @@ targets.bundle(
     ],
     per_test_modifications = {
         "updater_tests_system": [
+            targets.mixin(
+                swarming = targets.swarming(
+                    shards = 2,
+                    hard_timeout_sec = 7200,
+                ),
+            ),
             "integrity_high",
             "updater-win-uac-pool",
         ],
@@ -6354,16 +6369,12 @@ targets.bundle(
                 "WIN10_NVIDIA_GTX_1660_STABLE",
             ],
         ),
-        # TODO(b/297347572): Re-enable these tests once the driver version
-        # is sufficiently new. Win/NVIDIA currently doesn't support Graphite
-        # on certain drivers due to this blocklist entry.
-        # https://source.chromium.org/chromium/chromium/src/+/e9c0af7850eb012c12073d5de77bfe079609016c:gpu/config/software_rendering_list.json;l=1433-1452
-        # targets.bundle(
-        #     targets = "gpu_passthrough_graphite_telemetry_tests",
-        #     variants = [
-        #         "WIN10_NVIDIA_GTX_1660_STABLE",
-        #     ],
-        # ),
+        targets.bundle(
+            targets = "gpu_passthrough_graphite_telemetry_tests",
+            variants = [
+                "WIN10_NVIDIA_GTX_1660_STABLE",
+            ],
+        ),
         targets.bundle(
             targets = "gpu_webcodecs_telemetry_test",
             variants = [

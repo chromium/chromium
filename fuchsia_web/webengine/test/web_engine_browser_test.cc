@@ -65,9 +65,8 @@ sys::ServiceDirectory& WebEngineBrowserTest::published_services() {
     base::ComponentContextForProcess()
         ->outgoing()
         ->GetOrCreateDirectory("svc")
-        ->Serve(
-            fuchsia_io::wire::kPermReadable | fuchsia_io::wire::kPermWritable,
-            fidl::ServerEnd<fuchsia_io::Directory>(std::move(svc_request)));
+        ->Serve(fuchsia_io::wire::kPermReadable,
+                fidl::ServerEnd<fuchsia_io::Directory>(std::move(svc_request)));
   }
   return *published_services_;
 }

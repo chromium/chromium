@@ -386,6 +386,18 @@ bool IsConstrainedH264(const webrtc::SdpVideoFormat& format) {
 RTCVideoEncoderFactory::RTCVideoEncoderFactory(
     media::GpuVideoAcceleratorFactories* gpu_factories,
     scoped_refptr<media::MojoVideoEncoderMetricsProviderFactory>
+        encoder_metrics_provider_factory,
+    bool override_disabled_profiles)
+    : RTCVideoEncoderFactory(gpu_factories,
+                             std::move(encoder_metrics_provider_factory)) {
+  if (override_disabled_profiles) {
+    disabled_profiles_.clear();
+  }
+}
+
+RTCVideoEncoderFactory::RTCVideoEncoderFactory(
+    media::GpuVideoAcceleratorFactories* gpu_factories,
+    scoped_refptr<media::MojoVideoEncoderMetricsProviderFactory>
         encoder_metrics_provider_factory)
     : gpu_factories_(gpu_factories),
       encoder_metrics_provider_factory_(

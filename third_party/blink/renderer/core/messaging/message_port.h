@@ -53,7 +53,9 @@ struct BlinkTransferableMessage;
 class ExceptionState;
 class ExecutionContext;
 class PostMessageOptions;
+class ScriptObject;
 class ScriptState;
+class ScriptValue;
 
 class CORE_EXPORT MessagePort : public EventTarget,
                                 public mojo::MessageReceiver,
@@ -69,7 +71,7 @@ class CORE_EXPORT MessagePort : public EventTarget,
 
   void postMessage(ScriptState*,
                    const ScriptValue& message,
-                   HeapVector<ScriptValue> transfer,
+                   HeapVector<ScriptObject> transfer,
                    ExceptionState&);
   void postMessage(ScriptState*,
                    const ScriptValue& message,

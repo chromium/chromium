@@ -464,7 +464,8 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
       host_->MaybeShowPhishingWarning(
           /*is_from_cache=*/true, ClientSideDetectionType::TRIGGER_MODELS,
           did_match_high_confidence_allowlist_, url_, is_phishing,
-          /*response_code=*/std::nullopt);
+          /*response_code=*/std::nullopt,
+          /*IntelligentScanVerdict=*/std::nullopt);
       DontClassifyForPhishing(
           PreClassificationCheckResult::NO_CLASSIFY_RESULT_FROM_CACHE);
     }
@@ -888,6 +889,11 @@ void ClientSideDetectionHost::PhishingDetectionDone(
   }
 }
 
+// To keep the flow consistent, we want to append additional information to the
+// ClientPhishingRequest message based on feature availability in the following
+// order: image embedding, on-device model output, then token fetch. If one
+// feature is not available, we will move on to the next in the order until we
+// ultimately send the request.
 void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
     std::unique_ptr<ClientPhishingRequest> verdict,
     std::optional<bool> did_match_high_confidence_allowlist) {
@@ -1035,19 +1041,12 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
                          weak_factory_.GetWeakPtr(), std::move(verdict),
                          did_match_high_confidence_allowlist));
     }
-  } else {
-    if (CanGetAccessToken()) {
-      token_fetcher_->Start(
-          base::BindOnce(&ClientSideDetectionHost::OnGotAccessToken,
-                         weak_factory_.GetWeakPtr(), std::move(verdict),
-                         did_match_high_confidence_allowlist));
-      return;
-    }
 
-    std::string empty_access_token;
-    SendRequest(std::move(verdict), empty_access_token,
-                did_match_high_confidence_allowlist);
+    return;
   }
+
+  MaybeInquireOnDeviceForScamDetection(std::move(verdict),
+                                       did_match_high_confidence_allowlist);
 }
 
 void ClientSideDetectionHost::PhishingImageEmbeddingDone(
@@ -1070,6 +1069,61 @@ void ClientSideDetectionHost::PhishingImageEmbeddingDone(
     }
   }
 
+  MaybeInquireOnDeviceForScamDetection(std::move(verdict),
+                                       did_match_high_confidence_allowlist);
+}
+
+void ClientSideDetectionHost::MaybeInquireOnDeviceForScamDetection(
+    std::unique_ptr<ClientPhishingRequest> verdict,
+    std::optional<bool> did_match_high_confidence_allowlist) {
+  if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&
+      base::FeatureList::IsEnabled(
+          kClientSideDetectionBrandAndIntentForScamDetection) &&
+      verdict->client_side_detection_type() ==
+          ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED) {
+    delegate_->GetInnerText(
+        base::BindOnce(&ClientSideDetectionHost::OnInnerTextComplete,
+                       weak_factory_.GetWeakPtr(), std::move(verdict),
+                       did_match_high_confidence_allowlist));
+    return;
+  }
+
+  MaybeGetAccessToken(std::move(verdict), did_match_high_confidence_allowlist);
+}
+
+void ClientSideDetectionHost::OnInnerTextComplete(
+    std::unique_ptr<ClientPhishingRequest> verdict,
+    std::optional<bool> did_match_high_confidence_allowlist,
+    std::string inner_text) {
+  csd_service_->InquireOnDeviceModel(
+      verdict.get(), inner_text,
+      base::BindOnce(&ClientSideDetectionHost::OnInquireOnDeviceModelDone,
+                     weak_factory_.GetWeakPtr(), std::move(verdict),
+                     did_match_high_confidence_allowlist));
+}
+
+void ClientSideDetectionHost::OnInquireOnDeviceModelDone(
+    std::unique_ptr<ClientPhishingRequest> verdict,
+    std::optional<bool> did_match_high_confidence_allowlist,
+    std::optional<optimization_guide::proto::ScamDetectionResponse> response) {
+  base::UmaHistogramBoolean(
+      "SBClientPhishing.OnDeviceModelHasSuccessfulResponse",
+      response.has_value());
+
+  if (response.has_value()) {
+    IntelligentScanInfo intelligent_scan_info;
+    intelligent_scan_info.set_brand(response->brand());
+    intelligent_scan_info.set_intent(response->intent());
+    *verdict->mutable_intelligent_scan_info() =
+        std::move(intelligent_scan_info);
+  }
+
+  MaybeGetAccessToken(std::move(verdict), did_match_high_confidence_allowlist);
+}
+
+void ClientSideDetectionHost::MaybeGetAccessToken(
+    std::unique_ptr<ClientPhishingRequest> verdict,
+    std::optional<bool> did_match_high_confidence_allowlist) {
   if (CanGetAccessToken()) {
     token_fetcher_->Start(base::BindOnce(
         &ClientSideDetectionHost::OnGotAccessToken, weak_factory_.GetWeakPtr(),
@@ -1088,7 +1142,8 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(
     std::optional<bool> did_match_high_confidence_allowlist,
     GURL phishing_url,
     bool is_phishing,
-    std::optional<net::HttpStatusCode> response_code) {
+    std::optional<net::HttpStatusCode> response_code,
+    std::optional<IntelligentScanVerdict> intelligent_scan_verdict) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   std::string request_type_name = GetRequestTypeName(request_type);
@@ -1111,7 +1166,27 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(
         ->set_network_result(response_code.value());
   }
 
-  if (is_phishing) {
+  if (base::FeatureList::IsEnabled(
+          kClientSideDetectionBrandAndIntentForScamDetection) &&
+      IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&
+      intelligent_scan_verdict.has_value()) {
+    base::UmaHistogramExactLinear("SBClientPhishing.IntelligentScanVerdict",
+                                  intelligent_scan_verdict.value(),
+                                  IntelligentScanVerdict_MAX + 1);
+  }
+
+  bool should_show_warning =
+      base::FeatureList::IsEnabled(kClientSideDetectionShowScamVerdictWarning)
+          ? (is_phishing ||
+             (intelligent_scan_verdict.has_value() &&
+              intelligent_scan_verdict !=
+                  IntelligentScanVerdict::
+                      INTELLIGENT_SCAN_VERDICT_UNSPECIFIED &&
+              intelligent_scan_verdict !=
+                  IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE))
+          : is_phishing;
+
+  if (should_show_warning) {
     if (!is_from_cache && did_match_high_confidence_allowlist.has_value()) {
       base::UmaHistogramBoolean(
           "SBClientPhishing.HighConfidenceAllowlistMatchOnServerVerdictPhishy",

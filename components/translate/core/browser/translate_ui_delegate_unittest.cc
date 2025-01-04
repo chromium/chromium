@@ -9,7 +9,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/infobars/core/infobar.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_prefs.h"
@@ -60,7 +59,7 @@ class TranslateUIDelegateTest : public ::testing::Test {
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     language::LanguagePrefs::RegisterProfilePrefs(pref_service_->registry());
     pref_service_->SetString(language::prefs::kAcceptLanguages, std::string());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     pref_service_->SetString(language::prefs::kPreferredLanguages,
                              std::string());
 #endif

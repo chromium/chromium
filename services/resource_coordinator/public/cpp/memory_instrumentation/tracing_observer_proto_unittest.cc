@@ -20,7 +20,6 @@
 #include "base/trace_event/traced_value.h"
 #include "base/tracing/trace_time.h"
 #include "build/build_config.h"
-#include "services/tracing/public/cpp/perfetto/perfetto_producer.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/perfetto/producer_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,7 +45,7 @@ class TracingObserverProtoTest : public testing::Test {
         false);
     memory_instrumentation::TracingObserverProto::GetInstance()
         ->ResetForTesting();
-    PerfettoTracedProcess::GetTaskRunner()->ResetTaskRunnerForTesting(
+    tracing::PerfettoTracedProcess::DataSourceBase::ResetTaskRunnerForTesting(
         base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
@@ -174,7 +173,7 @@ TEST_F(TracingObserverProtoTest,
 // TODO(crbug.com/376596183): Re-enable this test.
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_AddOsDumpToTraceIfEnabled_When_TraceLog_Disabled \
-  AddOsDumpToTraceIfEnabled_When_TraceLog_Disabled
+  DISABLED_AddOsDumpToTraceIfEnabled_When_TraceLog_Disabled
 #else
 #define MAYBE_AddOsDumpToTraceIfEnabled_When_TraceLog_Disabled \
   AddOsDumpToTraceIfEnabled_When_TraceLog_Disabled

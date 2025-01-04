@@ -26,7 +26,7 @@ bool FieldHasExclusiveAutofillType(const AutofillField& field) {
     case FieldTypeGroup::kAddress:
     case FieldTypeGroup::kPhone:
     case FieldTypeGroup::kUnfillable:
-    case FieldTypeGroup::kPredictionImprovements:
+    case FieldTypeGroup::kAutofillAi:
       return false;
     case FieldTypeGroup::kCreditCard:
     case FieldTypeGroup::kPasswordField:
@@ -71,7 +71,7 @@ bool IsFieldEligibleForFilling(const AutofillField& form_field) {
 
 void SetFieldFillingEligibility(autofill::FormStructure& form) {
   for (auto& form_field : form) {
-    form_field->set_field_is_eligible_for_prediction_improvements(
+    form_field->set_field_is_eligible_for_autofill_ai(
         IsFieldEligibleForFilling(*form_field));
   }
 }

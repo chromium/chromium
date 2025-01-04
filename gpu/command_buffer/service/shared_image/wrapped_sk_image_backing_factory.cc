@@ -244,8 +244,7 @@ bool WrappedSkImageBackingFactory::IsSupported(
   if (context_state_->gr_context()) {
     // Check that skia-ganesh can create the required backend textures.
     for (int plane = 0; plane < format.NumberOfPlanes(); ++plane) {
-      SkColorType color_type =
-          viz::ToClosestSkColorType(/*gpu_compositing=*/true, format, plane);
+      SkColorType color_type = viz::ToClosestSkColorType(format, plane);
       // For ALPHA8 skia will pick format depending on context version and
       // extensions available and we'll have to match that format when we record
       // DDLs. To avoid matching logic here, fallback to other backings (e.g

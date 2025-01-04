@@ -9,12 +9,12 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/wallet_helper.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager_observer.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager_observer.h"
-#include "components/autofill/core/browser/personal_data_manager_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/service/sync_service.h"
@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest,
   // Make sure the data is in the DB.
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
-  std::vector<AutofillOfferData*> offers =
+  std::vector<const AutofillOfferData*> offers =
       pdm->payments_data_manager().GetAutofillOffers();
   ASSERT_EQ(1uL, offers.size());
   EXPECT_EQ(999, offers[0]->GetOfferId());
@@ -170,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, EmptyUpdatesAreIgnored) {
   // Make sure the card is in the DB.
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
-  std::vector<AutofillOfferData*> offers =
+  std::vector<const AutofillOfferData*> offers =
       pdm->payments_data_manager().GetAutofillOffers();
   ASSERT_EQ(1uL, offers.size());
   EXPECT_EQ(999, offers[0]->GetOfferId());
@@ -212,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ChangedEntityGetsUpdated) {
   // Make sure the card is in the DB.
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
-  std::vector<AutofillOfferData*> offers =
+  std::vector<const AutofillOfferData*> offers =
       pdm->payments_data_manager().GetAutofillOffers();
   ASSERT_EQ(1uL, offers.size());
   EXPECT_EQ(999, offers[0]->GetOfferId());

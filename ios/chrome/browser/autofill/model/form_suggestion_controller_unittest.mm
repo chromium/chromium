@@ -11,7 +11,7 @@
 #import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
-#import "components/autofill/core/browser/filling_product.h"
+#import "components/autofill/core/browser/filling/filling_product.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"

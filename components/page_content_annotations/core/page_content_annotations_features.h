@@ -16,8 +16,6 @@ BASE_DECLARE_FEATURE(kPageContentAnnotations);
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 BASE_DECLARE_FEATURE(kPageVisibilityPageContentAnnotations);
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
-BASE_DECLARE_FEATURE(kPageVisibilityBatchAnnotations);
-COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 BASE_DECLARE_FEATURE(kPageContentAnnotationsValidation);
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 BASE_DECLARE_FEATURE(kRemotePageMetadata);
@@ -65,10 +63,6 @@ int NumBitsForRAPPORMetrics();
 // Must be between 0 and 1.
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 double NoiseProbabilityForRAPPORMetrics();
-
-// Returns if Page Visibility Batch Annotations are enabled.
-COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
-bool PageVisibilityBatchAnnotationsEnabled();
 
 // The number of visits batch before running the page content annotation
 // models. A size of 1 is equivalent to annotating one page load at time

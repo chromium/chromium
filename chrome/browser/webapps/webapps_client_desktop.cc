@@ -6,7 +6,6 @@
 
 #include "base/auto_reset.h"
 #include "base/check_is_test.h"
-#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
@@ -23,45 +22,18 @@
 #include "chrome/common/url_constants.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/security_state/content/security_state_tab_helper.h"
+#include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "url/origin.h"
 
 namespace webapps {
 
-// static
-void WebappsClientDesktop::CreateSingleton() {
-  static base::NoDestructor<WebappsClientDesktop> instance;
-  instance.get();
-}
-
-WebappInstallSource WebappsClientDesktop::GetInstallSource(
-    content::WebContents* web_contents,
-    InstallTrigger trigger) {
-  switch (trigger) {
-    case InstallTrigger::AMBIENT_BADGE:
-      return WebappInstallSource::AMBIENT_BADGE_BROWSER_TAB;
-    case InstallTrigger::API:
-      return WebappInstallSource::API_BROWSER_TAB;
-    case InstallTrigger::AUTOMATIC_PROMPT:
-      return WebappInstallSource::AUTOMATIC_PROMPT_BROWSER_TAB;
-    case InstallTrigger::MENU:
-      return WebappInstallSource::MENU_BROWSER_TAB;
-    case InstallTrigger::CREATE_SHORTCUT:
-      return WebappInstallSource::MENU_CREATE_SHORTCUT;
-  }
-}
-
-AppBannerManager* WebappsClientDesktop::GetAppBannerManager(
-    content::WebContents* web_contents) {
-  CHECK(web_contents);
-  return AppBannerManagerDesktop::FromWebContents(web_contents);
-}
-
-bool WebappsClientDesktop::DoesNewWebAppConflictWithExistingInstallation(
+namespace {
+bool CheckNewWebAppConflictsWithExistingInstallation(
     content::BrowserContext* browser_context,
     const GURL& start_url,
-    const ManifestId& manifest_id) const {
+    const ManifestId& manifest_id) {
   CHECK(browser_context);
 
   // We prompt the user to re-install if the site wants to be in a
@@ -114,6 +86,46 @@ bool WebappsClientDesktop::DoesNewWebAppConflictWithExistingInstallation(
   // Otherwise there is no app installed here, or there is a DIY app that
   // controls this URL but that's fine.
   return false;
+}
+}  // namespace
+
+// static
+void WebappsClientDesktop::CreateSingleton() {
+  static base::NoDestructor<WebappsClientDesktop> instance;
+  instance.get();
+}
+
+WebappInstallSource WebappsClientDesktop::GetInstallSource(
+    content::WebContents* web_contents,
+    InstallTrigger trigger) {
+  switch (trigger) {
+    case InstallTrigger::AMBIENT_BADGE:
+      return WebappInstallSource::AMBIENT_BADGE_BROWSER_TAB;
+    case InstallTrigger::API:
+      return WebappInstallSource::API_BROWSER_TAB;
+    case InstallTrigger::AUTOMATIC_PROMPT:
+      return WebappInstallSource::AUTOMATIC_PROMPT_BROWSER_TAB;
+    case InstallTrigger::MENU:
+      return WebappInstallSource::MENU_BROWSER_TAB;
+    case InstallTrigger::CREATE_SHORTCUT:
+      return WebappInstallSource::MENU_CREATE_SHORTCUT;
+  }
+}
+
+AppBannerManager* WebappsClientDesktop::GetAppBannerManager(
+    content::WebContents* web_contents) {
+  CHECK(web_contents);
+  return AppBannerManagerDesktop::FromWebContents(web_contents);
+}
+
+void WebappsClientDesktop::DoesNewWebAppConflictWithExistingInstallation(
+    content::BrowserContext* browser_context,
+    const GURL& start_url,
+    const ManifestId& manifest_id,
+    WebAppInstallationConflictCallback callback) const {
+  std::move(callback).Run(
+      /* does_conflict= */ CheckNewWebAppConflictsWithExistingInstallation(
+          browser_context, start_url, manifest_id));
 }
 
 bool WebappsClientDesktop::IsInAppBrowsingContext(

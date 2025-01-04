@@ -216,7 +216,7 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
   // Returns whether pointerId is active or not
   bool IsPointerEventActive(PointerId);
 
-  void SetPointerCapture(PointerId, Element*, bool explicit_capture = false);
+  void SetPointerCapture(PointerId, Element*);
   void ReleasePointerCapture(PointerId, Element*);
   void ReleaseMousePointerCapture();
   bool HasPointerCapture(PointerId, const Element*) const;

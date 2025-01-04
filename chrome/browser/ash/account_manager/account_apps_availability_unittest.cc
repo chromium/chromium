@@ -24,6 +24,7 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager_impl.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,8 +45,8 @@ constexpr char kSecondaryAccount2Email[] = "secondaryAccount2@gmail.com";
 
 account_manager::Account CreateAccount(const std::string& email,
                                        const GaiaId& gaia_id) {
-  account_manager::AccountKey key(gaia_id,
-                                  ::account_manager::AccountType::kGaia);
+  account_manager::AccountKey key =
+      account_manager::AccountKey::FromGaiaId(gaia_id);
   return {key, email};
 }
 

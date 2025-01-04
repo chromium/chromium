@@ -170,9 +170,9 @@ class HashSet {
 
   struct TypeConstraints {
     constexpr TypeConstraints() {
-      static_assert(!IsStackAllocatedType<ValueArg>);
+      static_assert(!IsStackAllocatedTypeV<ValueArg>);
       static_assert(Allocator::kIsGarbageCollected ||
-                        !IsPointerToGarbageCollectedType<ValueArg>::value,
+                        !IsPointerToGarbageCollectedType<ValueArg>,
                     "Cannot put raw pointers to garbage-collected classes into "
                     "an off-heap HashSet. Use HeapHashSet<Member<T>> instead.");
     }
@@ -376,6 +376,25 @@ inline auto HashSet<T, U, V>::Take(ValuePeekInType value) -> ValueType {
 template <typename T, typename U, typename V>
 inline auto HashSet<T, U, V>::TakeAny() -> ValueType {
   return Take(begin());
+}
+
+template <typename Value,
+          typename Traits,
+          typename Allocator,
+          typename VectorType>
+inline void CopyToVector(const HashSet<Value, Traits, Allocator>& collection,
+                         VectorType& vector) {
+  {
+    // Disallow GC across resize allocation, see crbug.com/568173
+    typename VectorType::GCForbiddenScope scope;
+    vector.resize(collection.size());
+  }
+
+  auto it = collection.begin();
+  auto end = collection.end();
+  for (unsigned i = 0; it != end; ++it, ++i) {
+    vector[i] = (*it);
+  }
 }
 
 }  // namespace WTF

@@ -23,6 +23,9 @@ namespace net {
 class ServerCertificateDatabase {
  public:
   struct CertInformation {
+    // Initializes a CertInformation object with the `der_cert` and calculates
+    // the `sha256hash_hex` from the supplied cert.
+    explicit CertInformation(base::span<const uint8_t> cert);
     CertInformation();
     ~CertInformation();
     CertInformation(CertInformation&&);

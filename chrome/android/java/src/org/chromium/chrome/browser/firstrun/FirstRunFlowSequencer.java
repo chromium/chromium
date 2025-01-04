@@ -22,6 +22,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
+import org.chromium.chrome.browser.customtabs.AuthTabIntentDataProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
@@ -252,15 +254,38 @@ public abstract class FirstRunFlowSequencer {
     }
 
     /**
-     * Tries to launch the First Run Experience.  If the Activity was launched with the wrong Intent
-     * flags, we first relaunch it to make sure it runs in its own task, then trigger First Run.
-     *
-     * @param caller               Activity instance that is checking if first run is necessary.
-     * @param fromIntent           Intent used to launch the caller.
-     * @param preferLightweightFre Whether to prefer the Lightweight First Run Experience.
-     * @return Whether startup must be blocked (e.g. via Activity#finish or dropping the Intent).
+     * @see {@link launch(Context, Intent, boolean, boolean)}
+     */
+    public static boolean launch(Context caller, Intent fromIntent) {
+        boolean preferLightweightFre = false;
+        if (!checkIfFirstRunIsNecessary(preferLightweightFre, fromIntent)) return false;
+
+        boolean isAuthTab = AuthTabIntentDataProvider.isAuthTabIntent(fromIntent);
+        boolean isCustomTab = LaunchIntentDispatcher.isCustomTabIntent(fromIntent);
+        boolean cctFreInSameTask = ChromeFeatureList.sCctFreInSameTask.isEnabled();
+        boolean inSameTask = isAuthTab || (cctFreInSameTask && isCustomTab);
+        return launch(caller, fromIntent, preferLightweightFre, inSameTask);
+    }
+
+    /**
+     * @see {@link launch(Context, Intent, boolean, boolean)}
      */
     public static boolean launch(Context caller, Intent fromIntent, boolean preferLightweightFre) {
+        return launch(caller, fromIntent, preferLightweightFre, /* inSameTask= */ false);
+    }
+
+    /**
+     * Tries to launch the First Run Experience. If the Activity was launched with the wrong Intent
+     * flags, we first relaunch it to make sure it runs in its own task, then trigger First Run.
+     *
+     * @param caller Activity instance that is checking if first run is necessary.
+     * @param fromIntent Intent used to launch the caller.
+     * @param preferLightweightFre Whether to prefer the Lightweight First Run Experience.
+     * @param inSameTask Whether or not FRE will be launched in the same task as its caller.
+     * @return Whether startup must be blocked (e.g. via Activity#finish or dropping the Intent).
+     */
+    public static boolean launch(
+            Context caller, Intent fromIntent, boolean preferLightweightFre, boolean inSameTask) {
         // Check if the user needs to go through First Run at all.
         if (!checkIfFirstRunIsNecessary(preferLightweightFre, fromIntent)) return false;
 
@@ -280,9 +305,24 @@ public abstract class FirstRunFlowSequencer {
         // Launch the async restriction checking as soon as we know we'll be running FRE.
         FirstRunAppRestrictionInfo.startInitializationHint();
 
+        if (inSameTask) {
+            FreIntentCreator intentCreator = new FreIntentCreator();
+            Intent freIntent =
+                    intentCreator.create(
+                            caller,
+                            fromIntent,
+                            preferLightweightFre,
+                            /* usePendingIntent= */ false);
+            freIntent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
+            IntentUtils.safeStartActivity(caller, freIntent);
+            return true;
+        }
+
         if ((fromIntent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK) != 0) {
             FreIntentCreator intentCreator = new FreIntentCreator();
-            Intent freIntent = intentCreator.create(caller, fromIntent, preferLightweightFre);
+            Intent freIntent =
+                    intentCreator.create(
+                            caller, fromIntent, preferLightweightFre, /* usePendingIntent= */ true);
 
             // Although the FRE tries to run in the same task now, this is still needed for
             // non-activity entry points like the search widget to launch at all. This flag does not

@@ -513,12 +513,33 @@ void CertBuilder::SetCaIssuersUrl(const GURL& url) {
 void CertBuilder::SetCaIssuersAndOCSPUrls(
     const std::vector<GURL>& ca_issuers_urls,
     const std::vector<GURL>& ocsp_urls) {
-  std::vector<std::pair<bssl::der::Input, GURL>> entries;
-  for (const auto& url : ca_issuers_urls)
-    entries.emplace_back(bssl::der::Input(bssl::kAdCaIssuersOid), url);
-  for (const auto& url : ocsp_urls)
-    entries.emplace_back(bssl::der::Input(bssl::kAdOcspOid), url);
+  std::vector<std::pair<bssl::der::Input, std::string_view>> entries;
+  for (const auto& url : ca_issuers_urls) {
+    entries.emplace_back(bssl::der::Input(bssl::kAdCaIssuersOid),
+                         url.possibly_invalid_spec());
+  }
+  for (const auto& url : ocsp_urls) {
+    entries.emplace_back(bssl::der::Input(bssl::kAdOcspOid),
+                         url.possibly_invalid_spec());
+  }
+  SetCaIssuersAndOCSPUrls(entries);
+}
 
+void CertBuilder::SetCaIssuersAndOCSPUrls(
+    const std::vector<std::string>& ca_issuers_urls,
+    const std::vector<std::string>& ocsp_urls) {
+  std::vector<std::pair<bssl::der::Input, std::string_view>> entries;
+  for (const auto& url : ca_issuers_urls) {
+    entries.emplace_back(bssl::der::Input(bssl::kAdCaIssuersOid), url);
+  }
+  for (const auto& url : ocsp_urls) {
+    entries.emplace_back(bssl::der::Input(bssl::kAdOcspOid), url);
+  }
+  SetCaIssuersAndOCSPUrls(entries);
+}
+
+void CertBuilder::SetCaIssuersAndOCSPUrls(
+    const std::vector<std::pair<bssl::der::Input, std::string_view>>& entries) {
   if (entries.empty()) {
     EraseExtension(bssl::der::Input(bssl::kAuthorityInfoAccessOid));
     return;
@@ -545,7 +566,7 @@ void CertBuilder::SetCaIssuersAndOCSPUrls(
     ASSERT_TRUE(CBBAddBytes(&access_method, entry.first.AsStringView()));
     ASSERT_TRUE(CBB_add_asn1(&access_description, &access_location,
                              CBS_ASN1_CONTEXT_SPECIFIC | 6));
-    ASSERT_TRUE(CBBAddBytes(&access_location, entry.second.spec()));
+    ASSERT_TRUE(CBBAddBytes(&access_location, entry.second));
     ASSERT_TRUE(CBB_flush(&aia));
   }
 
@@ -557,7 +578,20 @@ void CertBuilder::SetCrlDistributionPointUrl(const GURL& url) {
   SetCrlDistributionPointUrls({url});
 }
 
+void CertBuilder::SetCrlDistributionPointUrl(const std::string_view& url) {
+  SetCrlDistributionPointUrls(std::vector<std::string>{std::string(url)});
+}
+
 void CertBuilder::SetCrlDistributionPointUrls(const std::vector<GURL>& urls) {
+  std::vector<std::string> string_urls;
+  for (const auto& url : urls) {
+    string_urls.push_back(url.possibly_invalid_spec());
+  }
+  SetCrlDistributionPointUrls(string_urls);
+}
+
+void CertBuilder::SetCrlDistributionPointUrls(
+    const std::vector<std::string>& urls) {
   bssl::ScopedCBB cbb;
   ASSERT_TRUE(CBB_init(cbb.get(), 64));
   CBB dps, dp, dp_name, dp_fullname;
@@ -587,7 +621,7 @@ void CertBuilder::SetCrlDistributionPointUrls(const std::vector<GURL>& urls) {
     CBB dp_url;
     ASSERT_TRUE(
         CBB_add_asn1(&dp_fullname, &dp_url, CBS_ASN1_CONTEXT_SPECIFIC | 6));
-    ASSERT_TRUE(CBBAddBytes(&dp_url, url.spec()));
+    ASSERT_TRUE(CBBAddBytes(&dp_url, url));
     ASSERT_TRUE(CBB_flush(&dp_fullname));
   }
 

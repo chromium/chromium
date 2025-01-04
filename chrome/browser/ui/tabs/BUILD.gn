@@ -4,6 +4,8 @@
 
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
+import("//chrome/common/features.gni")
+
 # This is the public interface for tabs in a desktop browser. Most features in
 # //chrome/browser depend on this interface, and thus to prevent circular
 # dependencies this interface should not depend on anything else in //chrome.
@@ -288,6 +290,8 @@ if (!is_android) {
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
     sources = [
+      "disconnect_file_chooser_on_background_controller.cc",
+      "disconnect_file_chooser_on_background_controller.h",
       "features.cc",
       "hover_tab_selector.cc",
       "pinned_tab_codec.cc",
@@ -348,7 +352,15 @@ if (!is_android) {
       "//components/sessions",
       "//components/sync_sessions",
       "//components/tab_groups",
+      "//ui/webui",
     ]
+
+    if (enable_glic) {
+      deps += [
+        "//chrome/browser/glic",
+        "//chrome/browser/glic:enabling",
+      ]
+    }
   }
 
   # This is a separate component to avoid possible circular deps.

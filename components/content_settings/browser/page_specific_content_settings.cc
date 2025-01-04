@@ -15,7 +15,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/browsing_data/content/cookie_helper.h"
 #include "components/content_settings/common/content_settings_agent.mojom.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
@@ -1291,8 +1290,6 @@ void PageSpecificContentSettings::OnMediaStreamPermissionSet(
     MaybeUpdateLocationBar();
   }
 
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kImprovedSemanticsActivityIndicators)) {
     // Camera and/or Mic is blocked, start a blocked indicator's dismiss timer.
     if (microphone_camera_state_.Has(kMicrophoneBlocked)) {
       StartBlockedIndicatorTimer(ContentSettingsType::MEDIASTREAM_MIC);
@@ -1300,7 +1297,6 @@ void PageSpecificContentSettings::OnMediaStreamPermissionSet(
     if (microphone_camera_state_.Has(kCameraBlocked)) {
       StartBlockedIndicatorTimer(ContentSettingsType::MEDIASTREAM_CAMERA);
     }
-  }
 }
 
 void PageSpecificContentSettings::AddPermissionUsageObserver(

@@ -550,3 +550,29 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerDuplicateTabsTest,
   EXPECT_EQ(processed_duplicates.count(duplicate_url_2), 1ul);
   EXPECT_EQ(processed_duplicates[duplicate_url_2].size(), 2ul);
 }
+
+IN_PROC_BROWSER_TEST_F(TabDeclutterControllerDuplicateTabsTest,
+                       TestDeclutterTabs) {
+  // Add 12 tabs that are 2 days old (not stale) and 4 tabs that are 8 days old
+  // (stale).
+  AddTabsWithLastActiveTime(12, 2);
+  AddTabsWithLastActiveTime(4, 8);
+
+  // Add 2 duplicate tab clusters.
+  GURL duplicate_url_1(embedded_test_server()->GetURL("/links.html"));
+  GURL duplicate_url_2(embedded_test_server()->GetURL("/title1.html"));
+
+  AddDuplicateTabs(3, duplicate_url_1, 1);
+  AddDuplicateTabs(2, duplicate_url_2, 1);
+
+  std::vector<tabs::TabInterface*> stale_tabs =
+      tab_declutter_controller()->GetStaleTabs();
+
+  int initial_tab_count = browser()->tab_strip_model()->GetTabCount();
+  int stale_tab_count = stale_tabs.size();
+  tab_declutter_controller()->DeclutterTabs(stale_tabs, {duplicate_url_1});
+
+  // Verify that the number of tabs has decreased by the number of stale tabs.
+  int remaining_tab_count = browser()->tab_strip_model()->GetTabCount();
+  EXPECT_EQ(remaining_tab_count, initial_tab_count - (stale_tab_count + 2));
+}

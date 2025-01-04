@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -70,6 +66,15 @@ using testing::StrictMock;
 
 namespace cc {
 namespace {
+
+DrawImage DrawImageForDecoding(const PaintImage& paint_image,
+                               const TargetColorParams& color_params) {
+  return DrawImage(paint_image,
+                   /*use_dark_mode=*/false,
+                   SkIRect::MakeWH(paint_image.width(), paint_image.height()),
+                   PaintFlags::FilterQuality::kNone, SkM44(),
+                   PaintImage::kDefaultFrameIndex, color_params);
+}
 
 // A version of simple task runner that lets the user control if all tasks
 // posted should run synchronously.
@@ -1393,7 +1398,7 @@ TEST_F(TileManagerTilePriorityQueueTest,
     EXPECT_TRUE(queue);
 
     // There are 3 bins in TilePriority.
-    bool have_tiles[3] = {};
+    std::array<bool, 3> have_tiles = {};
 
     // On the third iteration, we should get no tiles since everything was
     // marked as ready to draw.
@@ -1497,7 +1502,7 @@ TEST_F(TileManagerTilePriorityQueueTest,
   soon_rect.Inset(-soon_border_outset);
 
   // There are 3 bins in TilePriority.
-  bool have_tiles[3] = {};
+  std::array<bool, 3> have_tiles = {};
   PrioritizedTile last_tile;
   int eventually_bin_order_correct_count = 0;
   int eventually_bin_order_incorrect_count = 0;
@@ -2099,7 +2104,8 @@ class PixelInspectTileManagerTest : public TileManagerTest {
 
 TEST_F(PixelInspectTileManagerTest, LowResHasNoImage) {
   gfx::Size size(10, 12);
-  TileResolution resolutions[] = {HIGH_RESOLUTION, LOW_RESOLUTION};
+  auto resolutions =
+      std::to_array<TileResolution>({HIGH_RESOLUTION, LOW_RESOLUTION});
   host_impl()->CreatePendingTree();
 
   for (size_t i = 0; i < std::size(resolutions); ++i) {
@@ -3865,9 +3871,9 @@ TEST_F(DecodedImageTrackerTileManagerTest, DecodedImageTrackerDropsLocksOnUse) {
 
   // Add the images to our decoded_image_tracker.
   host_impl()->tile_manager()->decoded_image_tracker().QueueImageDecode(
-      image1, TargetColorParams(), base::DoNothing());
+      DrawImageForDecoding(image1, TargetColorParams()), base::DoNothing());
   host_impl()->tile_manager()->decoded_image_tracker().QueueImageDecode(
-      image2, TargetColorParams(), base::DoNothing());
+      DrawImageForDecoding(image2, TargetColorParams()), base::DoNothing());
   EXPECT_EQ(0u, host_impl()
                     ->tile_manager()
                     ->decoded_image_tracker()
@@ -3949,7 +3955,8 @@ class HdrImageTileManagerTest : public CheckerImagingTileManagerTest {
     TargetColorParams target_color_params;
     target_color_params.color_space = output_cs;
     host_impl()->tile_manager()->decoded_image_tracker().QueueImageDecode(
-        hdr_image, target_color_params, base::DoNothing());
+        DrawImageForDecoding(hdr_image, target_color_params),
+        base::DoNothing());
     FlushDecodeTasks();
 
     // Add images to a fake recording source.

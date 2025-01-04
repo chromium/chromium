@@ -18,7 +18,7 @@ namespace optimization_guide::proto {
 class AXTreeUpdate;
 class FormsPredictionsRequest;
 class FormsPredictionsResponse;
-}
+}  // namespace optimization_guide::proto
 
 namespace autofill_ai {
 

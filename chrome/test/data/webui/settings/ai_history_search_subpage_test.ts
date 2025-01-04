@@ -137,7 +137,8 @@ suite('HistorySearchSubpage', function() {
     assertFalse(checkVisibility('#linkoutTextWithAnswers'));
     assertTrue(checkVisibility('#whenOnPageContentText'));
     assertFalse(checkVisibility('#whenOnPageContentTextWithAnswers'));
-    assertFalse(checkVisibility('#whenOnLogStartItem'));
+    assertFalse(checkVisibility('#whenOnRecallInfoWithAnswers'));
+    assertTrue(checkVisibility('#whenOnLogStartItem'));
     assertTrue(checkVisibility('#considerDataEncryptedText'));
     assertFalse(checkVisibility('#considerDataEncryptedTextWithAnswers'));
     assertFalse(checkVisibility('#considerOutDatedItem'));
@@ -148,6 +149,7 @@ suite('HistorySearchSubpage', function() {
     assertTrue(checkVisibility('#linkoutTextWithAnswers'));
     assertFalse(checkVisibility('#whenOnPageContentText'));
     assertTrue(checkVisibility('#whenOnPageContentTextWithAnswers'));
+    assertTrue(checkVisibility('#whenOnRecallInfoWithAnswers'));
     assertTrue(checkVisibility('#whenOnLogStartItem'));
     assertFalse(checkVisibility('#considerDataEncryptedText'));
     assertTrue(checkVisibility('#considerDataEncryptedTextWithAnswers'));

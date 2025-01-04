@@ -185,14 +185,23 @@ void BirchBarController::OnItemHiddenByUser(BirchItem* item) {
     return;
   }
 
+  auto iter = base::ranges::find_if(items_, base::MatchesUniquePtr(item));
+  if (iter == items_.end()) {
+    return;
+  }
+
   RemoveItemChips(item);
+
+  // Move the removing item out of the `items_` such that item-removed observers
+  // could know the item is being removed to avoid duplicated removing.
+  auto removing_item = std::move(*iter);
+  items_.erase(iter);
 
   // Erase the item from model and controller.
   Shell::Get()->birch_model()->RemoveItem(item);
   if (item->GetType() == BirchItemType::kLostMedia) {
     OnLostMediaItemRemoved();
   }
-  std::erase_if(items_, base::MatchesUniquePtr(item));
 }
 
 void BirchBarController::SetShowBirchSuggestions(bool show) {
@@ -358,7 +367,8 @@ void BirchBarController::OnCoralEntityRemoved(const base::Token& group_id,
   }
 }
 
-void BirchBarController::OnCoralGroupTitleUpdated(const base::Token& group_id) {
+void BirchBarController::OnCoralGroupTitleUpdated(const base::Token& group_id,
+                                                  const std::string& title) {
   for (auto& bar_view : bar_views_) {
     for (const auto& chip : bar_view->chips()) {
       auto* coral_chip = views::AsViewClass<CoralChipButton>(chip);
@@ -366,9 +376,14 @@ void BirchBarController::OnCoralGroupTitleUpdated(const base::Token& group_id) {
         continue;
       }
 
-      if (static_cast<const BirchCoralItem*>(coral_chip->GetItem())
-              ->group_id() == group_id) {
-        coral_chip->UpdateTitle();
+      auto* coral_item = static_cast<BirchCoralItem*>(coral_chip->GetItem());
+      // If `title` is empty, keep the existing placeholder title. We still want
+      // to update the chip to remove the loading animation.
+      if (coral_item->group_id() == group_id) {
+        if (!title.empty()) {
+          coral_item->set_title(base::UTF8ToUTF16(title));
+        }
+        coral_chip->UpdateTitle(base::UTF16ToUTF8(coral_item->title()));
       }
     }
   }
@@ -421,10 +436,8 @@ void BirchBarController::OnItemsFetchedFromModel() {
                     [](const std::unique_ptr<ash::BirchItem>& item) {
                       return item->GetType() == BirchItemType::kCoral;
                     });
-  base::UmaHistogramCustomCounts("Ash.Birch.Coral.ClusterCount",
-                                 num_coral_items,
-                                 /*min=*/0, /*exclusive_max=*/3,
-                                 /*buckets=*/3);
+  base::UmaHistogramExactLinear("Ash.Birch.Coral.ClusterCount", num_coral_items,
+                                /*exclusive_max=*/3);
 
   RecordTimeOfDayRankingHistogram(items);
 

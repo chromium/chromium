@@ -277,6 +277,26 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
   bool HasExtraHeadersListenerForTesting();
 
  private:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(ProxyDecision)
+  enum class ProxyDecision {
+    // Proxy will not be used.
+    kWillNotProxy = 0,
+    // Proxy will be used for Extensions installed with webRequest API uses.
+    kWillProxyForExtension = 1,
+    // Proxy will be used for WebUI to use the webRequestInternal API.
+    kWillProxyForWebUI = 2,
+    // Proxy will be used for the <webview> permitted to use webRequest API.
+    kWillProxyForEmbedderWebView = 3,
+    // Proxy will be used for the telemetry service.
+    kWillProxyForTelemetry = 4,
+
+    kMaxValue = kWillProxyForTelemetry,
+  };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/extensions/enums.xml:WebRequestProxyDecision)
+
   friend class BrowserContextKeyedAPIFactory<WebRequestAPI>;
 
   // BrowserContextKeyedAPI support:
@@ -314,6 +334,21 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
   void RemoveLazyListener(content::BrowserContext* browser_context,
                           const ExtensionId& extension_id,
                           const std::string& sub_event_name);
+
+  // Internal implemntation of MaybeProxyURLLoaderFactory that returns a
+  // detailed reason, ProxyDecision, to tell why the proxy is used.
+  ProxyDecision MaybeProxyURLLoaderFactoryInternal(
+      content::BrowserContext* browser_context,
+      content::RenderFrameHost* frame,
+      int render_process_id,
+      content::ContentBrowserClient::URLLoaderFactoryType type,
+      std::optional<int64_t> navigation_id,
+      ukm::SourceIdObj ukm_source_id,
+      network::URLLoaderFactoryBuilder& factory_builder,
+      mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
+          header_client,
+      scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner,
+      const url::Origin& request_initiator = url::Origin());
 
   // A count of active extensions for this BrowserContext that use web request
   // permissions.

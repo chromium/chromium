@@ -107,8 +107,8 @@ class CC_PAINT_EXPORT PaintOpReader {
   void Read(SkHighContrastConfig* config);
   void Read(gfx::HDRMetadata* hdr_metadata);
   void Read(SkGradientShader::Interpolation* interpolation);
-
   void Read(scoped_refptr<SkottieWrapper>* skottie);
+  void Read(SkString* sk_string);
 
   void Read(SkClipOp* op) { ReadEnum<SkClipOp, SkClipOp::kMax_EnumValue>(op); }
   void Read(PaintCanvas::AnnotationType* type) {
@@ -192,7 +192,7 @@ class CC_PAINT_EXPORT PaintOpReader {
     kInsufficientRemainingBytes_ExtractReadableMemory = 4,
     kInsufficientRemainingBytes_Read_PaintRecord = 5,
     kInsufficientRemainingBytes_Read_PaintShader_ColorBytes = 6,
-    kInsufficientRemainingBytes_Read_PaintShader_ColorSize = 7,  // Obsolete
+    kInsufficientRemainingBytes_Read_PaintShader_ColorSize = 7,
     kInsufficientRemainingBytes_Read_PaintShader_Positions = 8,
     kInsufficientRemainingBytes_Read_SkData = 9,
     kInsufficientRemainingBytes_Read_SkPath = 10,

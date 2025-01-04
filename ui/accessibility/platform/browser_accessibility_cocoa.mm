@@ -19,6 +19,7 @@
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -593,7 +594,14 @@ bool ui::IsNSRange(id value) {
 
 // Returns an array of BrowserAccessibilityCocoa objects, representing the
 // accessibility children of this object.
-- (NSArray*)AXChildren {
+- (NSArray*)accessibilityChildren {
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "Accessibility.Performance.BrowserAccessibilityCocoa::"
+      "childrenChanged");
+  base::UmaHistogramBoolean("Accessibility.Performance."
+                            "BrowserAccessibilityCocoa::needsToUpdateChildren",
+                            _needsToUpdateChildren);
+
   if (![self instanceActive])
     return nil;
   if (_needsToUpdateChildren) {
@@ -927,42 +935,33 @@ bool ui::IsNSRange(id value) {
   return base::SysUTF8ToNSString(node->GetLanguage());
 }
 
-// private
-- (void)addLinkedUIElementsFromAttribute:(ax::mojom::IntListAttribute)attribute
-                                   addTo:(NSMutableArray*)outArray {
-  const std::vector<int32_t>& attributeValues =
-      _owner->GetIntListAttribute(attribute);
-  for (size_t i = 0; i < attributeValues.size(); ++i) {
-    BrowserAccessibility* element =
-        _owner->manager()->GetFromID(attributeValues[i]);
-    if (element)
-      [outArray addObject:element->GetNativeViewAccessible()];
-  }
-}
-
-// private
+// LINT.IfChange(accessibilityLinkedUIElements)
 - (NSArray*)linkedUIElements {
-  NSMutableArray* ret = [[NSMutableArray alloc] init];
-  [self
-      addLinkedUIElementsFromAttribute:ax::mojom::IntListAttribute::kControlsIds
-                                 addTo:ret];
-  [self addLinkedUIElementsFromAttribute:ax::mojom::IntListAttribute::kFlowtoIds
-                                   addTo:ret];
+  NSMutableArray* elements = [[NSMutableArray alloc] init];
+  [elements
+      addObjectsFromArray:[self uiElementsForAttribute:
+                                    ax::mojom::IntListAttribute::kControlsIds]];
+  [elements
+      addObjectsFromArray:[self uiElementsForAttribute:
+                                    ax::mojom::IntListAttribute::kFlowtoIds]];
 
   int target_id;
   if (_owner->GetIntAttribute(ax::mojom::IntAttribute::kInPageLinkTargetId,
                               &target_id)) {
     BrowserAccessibility* target =
         _owner->manager()->GetFromID(static_cast<int32_t>(target_id));
-    if (target)
-      [ret addObject:target->GetNativeViewAccessible()];
+    if (target) {
+      [elements addObject:target->GetNativeViewAccessible()];
+    }
   }
 
-  [self addLinkedUIElementsFromAttribute:ax::mojom::IntListAttribute::
-                                             kRadioGroupIds
-                                   addTo:ret];
-  return ret;
+  [elements
+      addObjectsFromArray:[self
+                              uiElementsForAttribute:
+                                  ax::mojom::IntListAttribute::kRadioGroupIds]];
+  return elements;
 }
+// LINT.ThenChange(ui/accessibility/platform/browser_accessibility_cocoa.mm:accessibilityLinkedUIElements)
 
 - (NSNumber*)maxValue {
   if (![self instanceActive])
@@ -1506,8 +1505,12 @@ bool ui::IsNSRange(id value) {
   DCHECK(_owner->node()->IsDataValid());
 
   if (ui::IsNameExposedInAXValueForRole([self internalRole])) {
-    std::u16string name =
-        _owner->GetString16Attribute(ax::mojom::StringAttribute::kName);
+    std::u16string name = _owner->GetTextContentUTF16();
+    // Leaf node with aria-label will have empty text content.
+    // e.g. <div role="option" aria-label="label">content</div>
+    // So we use its computed name for AXValue.
+    if (name.empty())
+      name = _owner->GetNameAsString16();
     if (!IsSelectedStateRelevant(_owner)) {
       return base::SysUTF16ToNSString(name);
     }
@@ -1520,6 +1523,7 @@ bool ui::IsNSRange(id value) {
         is_selected ? IDS_AX_OBJECT_SELECTED : IDS_AX_OBJECT_NOT_SELECTED;
     std::u16string name_with_selection = base::ReplaceStringPlaceholders(
         _owner->GetLocalizedString(msg_id), {name}, nullptr);
+
     return base::SysUTF16ToNSString(name_with_selection);
   }
 
@@ -1696,18 +1700,6 @@ bool ui::IsNSRange(id value) {
   return [gAttributeToMethodNameMap objectForKey:attribute];
 }
 
-- (NSString*)valueForRange:(NSRange)range {
-  if (![self instanceActive])
-    return nil;
-
-  std::u16string textContent = _owner->GetTextContentUTF16();
-  if (NSMaxRange(range) > textContent.length())
-    return nil;
-
-  return base::SysUTF16ToNSString(
-      textContent.substr(range.location, range.length));
-}
-
 - (NSRect)frameForRange:(NSRange)range {
   if (!_owner->IsText() && !_owner->IsAtomicTextField())
     return CGRectNull;
@@ -1743,9 +1735,18 @@ bool ui::IsNSRange(id value) {
   return [super accessibilityAttributeValue:attribute];
 }
 
-- (id)AXStringForRange:(id)parameter {
-  DCHECK([parameter isKindOfClass:[NSValue class]]);
-  return [self valueForRange:[(NSValue*)parameter rangeValue]];
+- (NSString*)accessibilityStringForRange:(NSRange)range {
+  if (![self instanceActive]) {
+    return nil;
+  }
+
+  std::u16string textContent = _owner->GetTextContentUTF16();
+  if (NSMaxRange(range) > textContent.length()) {
+    return nil;
+  }
+
+  return base::SysUTF16ToNSString(
+      textContent.substr(range.location, range.length));
 }
 
 - (id)AXLineForIndex:(id)parameter {
@@ -1800,9 +1801,11 @@ bool ui::IsNSRange(id value) {
   if (![self instanceActive])
     return nil;
 
-  if ([attribute isEqualToString:
-                     NSAccessibilityStringForRangeParameterizedAttribute]) {
-    return [self AXStringForRange:parameter];
+  if ([[self class] isAttributeAvailableThroughNewAccessibilityAPI:attribute]) {
+    // TODO(crbug.com/376723178): We should be able to add a NOTREACHED()
+    // here, but at the moment, test infrastructure still directly calls this
+    // api endpoint.
+    return nil;
   }
 
   if ([attribute
@@ -1815,6 +1818,7 @@ bool ui::IsNSRange(id value) {
     return [self AXRangeForLine:parameter];
   }
 
+  // LINT.IfChange(accessibilityCellForColumn)
   if ([attribute
           isEqualToString:
               NSAccessibilityCellForColumnAndRowParameterizedAttribute]) {
@@ -1836,6 +1840,7 @@ bool ui::IsNSRange(id value) {
     if (cell)
       return cell->GetNativeViewAccessible();
   }
+  // LINT.ThenChange(ui/accessibility/platform/ax_platform_node_cocoa.mm:accessibilityCellForColumn)
 
   if ([attribute
           isEqualToString:
@@ -2334,16 +2339,12 @@ bool ui::IsNSRange(id value) {
 
 // Returns an array of parameterized attributes names that this object will
 // respond to.
-- (NSArray*)accessibilityParameterizedAttributeNames {
-  TRACE_EVENT1(
-      "accessibility",
-      "BrowserAccessibilityCocoa::accessibilityParameterizedAttributeNames",
-      "role=", ui::ToString([self internalRole]));
+- (NSArray*)internalAccessibilityParameterizedAttributeNames {
   if (![self instanceActive])
     return nil;
 
   // General attributes.
-  NSMutableArray* ret = [@[
+  NSMutableArray* attributeNames = [@[
     NSAccessibilityUIElementForTextMarkerParameterizedAttribute,
     NSAccessibilityTextMarkerRangeForUIElementParameterizedAttribute,
     NSAccessibilityLineForTextMarkerParameterizedAttribute,
@@ -2384,14 +2385,14 @@ bool ui::IsNSRange(id value) {
 
   if ([[self role] isEqualToString:NSAccessibilityTableRole] ||
       [[self role] isEqualToString:NSAccessibilityGridRole]) {
-    [ret addObject:NSAccessibilityCellForColumnAndRowParameterizedAttribute];
+    [attributeNames
+        addObject:NSAccessibilityCellForColumnAndRowParameterizedAttribute];
   }
 
   if (_owner->HasState(ax::mojom::State::kEditable)) {
-    [ret addObjectsFromArray:@[
+    [attributeNames addObjectsFromArray:@[
       NSAccessibilityLineForIndexParameterizedAttribute,
       NSAccessibilityRangeForLineParameterizedAttribute,
-      NSAccessibilityStringForRangeParameterizedAttribute,
       NSAccessibilityRangeForPositionParameterizedAttribute,
       NSAccessibilityRangeForIndexParameterizedAttribute,
       NSAccessibilityBoundsForRangeParameterizedAttribute,
@@ -2401,28 +2402,28 @@ bool ui::IsNSRange(id value) {
   }
 
   if ([self internalRole] == ax::mojom::Role::kStaticText)
-    [ret addObject:NSAccessibilityBoundsForRangeParameterizedAttribute];
+    [attributeNames
+        addObject:NSAccessibilityBoundsForRangeParameterizedAttribute];
 
   if (ui::IsPlatformDocument(_owner->GetRole())) {
-    [ret addObjectsFromArray:@[
+    [attributeNames addObjectsFromArray:@[
       NSAccessibilityTextMarkerIsValidParameterizedAttribute,
       NSAccessibilityIndexForTextMarkerParameterizedAttribute,
       NSAccessibilityTextMarkerForIndexParameterizedAttribute
     ]];
   }
 
-  NSArray* super_ret = [super accessibilityParameterizedAttributeNames];
-  [ret addObjectsFromArray:super_ret];
-  return ret;
+  NSArray* superclassAttributeNames =
+      [super internalAccessibilityParameterizedAttributeNames];
+  [attributeNames addObjectsFromArray:superclassAttributeNames];
+  return attributeNames;
 }
 
 // Returns an array of action names that this object will respond to.
-- (NSArray*)accessibilityActionNames {
-  TRACE_EVENT1("accessibility",
-               "BrowserAccessibilityCocoa::accessibilityActionNames",
-               "role=", ui::ToString([self internalRole]));
-  if (![self instanceActive])
-    return nil;
+- (NSMutableArray*)internalAccessibilityActionNames {
+  if (![self instanceActive]) {
+    return [NSMutableArray array];
+  }
 
   NSMutableArray* actions = [NSMutableArray
       arrayWithObjects:NSAccessibilityShowMenuAction,
@@ -2695,6 +2696,7 @@ bool ui::IsNSRange(id value) {
   BrowserAccessibility* actionTarget = [self actionTarget];
   BrowserAccessibilityManager* manager = actionTarget->manager();
   if ([action isEqualToString:NSAccessibilityPressAction]) {
+    // LINT.IfChange(NSAccessibilityPressAction)
     ui::AXNode* node = actionTarget->node();
     if (!node || !actionTarget->HasDefaultAction()) {
       return;
@@ -2724,6 +2726,7 @@ bool ui::IsNSRange(id value) {
       data.SetCheckedState(newCheckedState);
     }
     node->SetData(data);  // Set the data back in the node.
+    // LINT.ThenChange(accessibilityPerformPress)
   } else if ([action isEqualToString:NSAccessibilityShowMenuAction]) {
     manager->ShowContextMenu(*actionTarget);
   } else if ([action isEqualToString:NSAccessibilityScrollToVisibleAction]) {
@@ -2733,6 +2736,46 @@ bool ui::IsNSRange(id value) {
   } else if ([action isEqualToString:NSAccessibilityDecrementAction]) {
     manager->Decrement(*actionTarget);
   }
+}
+
+// LINT.IfChange(accessibilityPerformPress)
+- (BOOL)accessibilityPerformPress {
+  if (![self instanceActive]) {
+    return NO;
+  }
+
+  BrowserAccessibility* actionTarget = [self actionTarget];
+  ui::AXNode* node = actionTarget->node();
+  if (!node || !actionTarget->HasDefaultAction()) {
+    return NO;
+  }
+
+  BrowserAccessibilityManager* manager = actionTarget->manager();
+  manager->DoDefaultAction(*actionTarget);
+  if (actionTarget->GetData().GetRestriction() !=
+          ax::mojom::Restriction::kNone ||
+      ![self isCheckable]) {
+    return NO;
+  }
+
+  // Hack: preemptively set the checked state to what it should become,
+  // otherwise VoiceOver will very likely report the old, incorrect state to
+  // the user as it requests the value too quickly.
+  AXNodeData data(node->TakeData());  // Temporarily take data.
+  if (data.role == ax::mojom::Role::kRadioButton) {
+    data.SetCheckedState(ax::mojom::CheckedState::kTrue);
+  } else if (data.role == ax::mojom::Role::kCheckBox ||
+             data.role == ax::mojom::Role::kSwitch ||
+             data.role == ax::mojom::Role::kToggleButton) {
+    ax::mojom::CheckedState checkedState = data.GetCheckedState();
+    ax::mojom::CheckedState newCheckedState =
+        checkedState == ax::mojom::CheckedState::kFalse
+            ? ax::mojom::CheckedState::kTrue
+            : ax::mojom::CheckedState::kFalse;
+    data.SetCheckedState(newCheckedState);
+  }
+  node->SetData(data);  // Set the data back in the node.
+  return YES;
 }
 
 // Returns the description of the given action.
@@ -2746,6 +2789,7 @@ bool ui::IsNSRange(id value) {
 
   return NSAccessibilityActionDescription(action);
 }
+// LINT.ThenChange(NSAccessibilityPressAction)
 
 // Sets an override value for a specific accessibility attribute.
 // This class does not support this.

@@ -26,10 +26,10 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/chromeos/devicetype_utils.h"
-#include "ui/resources/grit/webui_resources.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom-forward.h"
+#include "ui/webui/resources/grit/webui_resources.h"
 
 namespace ash {
 
@@ -133,7 +133,9 @@ void FirmwareUpdateAppUI::BindInterface(
 
 void FirmwareUpdateAppUI::BindInterface(
     mojo::PendingReceiver<firmware_update::mojom::SystemUtils> receiver) {
-  FirmwareUpdateManager::Get()->BindInterface(std::move(receiver));
+  if (FirmwareUpdateManager::IsInitialized()) {
+    FirmwareUpdateManager::Get()->BindInterface(std::move(receiver));
+  }
 }
 
 void FirmwareUpdateAppUI::BindInterface(

@@ -130,6 +130,8 @@ export class ExtensionsMv2DeprecationPanelElement extends
     const subtitle = await PluralStringProxyImpl.getInstance().getPluralString(
         subtitleVar, this.extensions.length);
     this.subtitleString_ = subtitle.replace('$1', subtitleLink);
+    this.subtitleString_ =
+        this.subtitleString_.replace('$2', this.i18n('opensInNewTab'));
   }
 
   /**
@@ -247,7 +249,8 @@ export class ExtensionsMv2DeprecationPanelElement extends
    * representation instead of the string since the string holds a link.
    */
   protected getSubtitleString_(): TrustedHTML {
-    return sanitizeInnerHtml(this.subtitleString_);
+    return sanitizeInnerHtml(
+        this.subtitleString_, {attrs: ['aria-description']});
   }
 
   /**

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_GRAPH_NODE_INLINE_DATA_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_GRAPH_NODE_INLINE_DATA_H_
 
+#include <tuple>
 #include <utility>
 
 #include "base/types/pass_key.h"

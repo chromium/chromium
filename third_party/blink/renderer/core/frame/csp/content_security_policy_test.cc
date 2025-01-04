@@ -1063,7 +1063,7 @@ TEST_F(ContentSecurityPolicyTest, TrustedTypeEnforce) {
   csp->AddPolicies(ParseContentSecurityPolicies(
       "trusted-types one\ntwo\rthree", ContentSecurityPolicyType::kEnforce,
       ContentSecurityPolicySource::kHTTP, *secure_origin));
-  EXPECT_FALSE(csp->IsRequireTrustedTypes());
+  EXPECT_FALSE(csp->TrustedTypesRequired());
   EXPECT_TRUE(csp->AllowTrustedTypeAssignmentFailure("blabla"));
 }
 
@@ -1072,7 +1072,7 @@ TEST_F(ContentSecurityPolicyTest, TrustedTypeReport) {
   csp->AddPolicies(ParseContentSecurityPolicies(
       "trusted-types one\ntwo\rthree", ContentSecurityPolicyType::kReport,
       ContentSecurityPolicySource::kHTTP, *secure_origin));
-  EXPECT_FALSE(csp->IsRequireTrustedTypes());
+  EXPECT_FALSE(csp->TrustedTypesRequired());
   EXPECT_TRUE(csp->AllowTrustedTypeAssignmentFailure("blabla"));
 }
 
@@ -1084,7 +1084,7 @@ TEST_F(ContentSecurityPolicyTest, TrustedTypeReportAndEnforce) {
   csp->AddPolicies(ParseContentSecurityPolicies(
       "trusted-types two", ContentSecurityPolicyType::kEnforce,
       ContentSecurityPolicySource::kHTTP, *secure_origin));
-  EXPECT_FALSE(csp->IsRequireTrustedTypes());
+  EXPECT_FALSE(csp->TrustedTypesRequired());
   EXPECT_TRUE(csp->AllowTrustedTypeAssignmentFailure("blabla"));
 }
 
@@ -1096,7 +1096,7 @@ TEST_F(ContentSecurityPolicyTest, TrustedTypeReportAndNonTTEnforce) {
   csp->AddPolicies(ParseContentSecurityPolicies(
       "script-src none", ContentSecurityPolicyType::kEnforce,
       ContentSecurityPolicySource::kHTTP, *secure_origin));
-  EXPECT_FALSE(csp->IsRequireTrustedTypes());
+  EXPECT_FALSE(csp->TrustedTypesRequired());
   EXPECT_TRUE(csp->AllowTrustedTypeAssignmentFailure("blabla"));
 }
 
@@ -1106,12 +1106,12 @@ TEST_F(ContentSecurityPolicyTest, RequireTrustedTypeForEnforce) {
   csp->AddPolicies(ParseContentSecurityPolicies(
       "require-trusted-types-for ''", ContentSecurityPolicyType::kEnforce,
       ContentSecurityPolicySource::kHTTP, *secure_origin));
-  EXPECT_FALSE(csp->IsRequireTrustedTypes());
+  EXPECT_FALSE(csp->TrustedTypesRequired());
 
   csp->AddPolicies(ParseContentSecurityPolicies(
       "require-trusted-types-for 'script'", ContentSecurityPolicyType::kEnforce,
       ContentSecurityPolicySource::kHTTP, *secure_origin));
-  EXPECT_TRUE(csp->IsRequireTrustedTypes());
+  EXPECT_TRUE(csp->TrustedTypesRequired());
 }
 
 TEST_F(ContentSecurityPolicyTest, RequireTrustedTypeForReport) {
@@ -1120,7 +1120,7 @@ TEST_F(ContentSecurityPolicyTest, RequireTrustedTypeForReport) {
   csp->AddPolicies(ParseContentSecurityPolicies(
       "require-trusted-types-for 'script'", ContentSecurityPolicyType::kReport,
       ContentSecurityPolicySource::kHTTP, *secure_origin));
-  EXPECT_TRUE(csp->IsRequireTrustedTypes());
+  EXPECT_TRUE(csp->TrustedTypesRequired());
 }
 
 TEST_F(ContentSecurityPolicyTest, DefaultPolicy) {

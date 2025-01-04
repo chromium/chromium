@@ -5,7 +5,6 @@
 #include <memory>
 #include <string>
 
-#include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "components/dom_distiller/content/browser/distiller_javascript_utils.h"

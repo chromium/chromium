@@ -4,7 +4,6 @@
 
 #include "components/signin/internal/identity_manager/accounts_mutator_impl.h"
 
-#include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/primary_account_manager.h"
@@ -50,7 +49,7 @@ CoreAccountId AccountsMutatorImpl::AddOrUpdateAccount(
     const std::vector<uint8_t>& wrapped_binding_key
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 ) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   NOTREACHED();
 #else
   CoreAccountId account_id =
@@ -93,7 +92,7 @@ void AccountsMutatorImpl::UpdateAccountInfo(
 void AccountsMutatorImpl::RemoveAccount(
     const CoreAccountId& account_id,
     signin_metrics::SourceForRefreshTokenOperation source) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   NOTREACHED();
 #else
   token_service_->RevokeCredentials(account_id, source);
@@ -102,7 +101,7 @@ void AccountsMutatorImpl::RemoveAccount(
 
 void AccountsMutatorImpl::RemoveAllAccounts(
     signin_metrics::SourceForRefreshTokenOperation source) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   NOTREACHED();
 #else
   token_service_->RevokeAllCredentials(source);
@@ -111,7 +110,7 @@ void AccountsMutatorImpl::RemoveAllAccounts(
 
 void AccountsMutatorImpl::InvalidateRefreshTokenForPrimaryAccount(
     signin_metrics::SourceForRefreshTokenOperation source) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   NOTREACHED();
 #else
   DCHECK(primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSignin));
@@ -153,7 +152,7 @@ void AccountsMutatorImpl::MoveAccount(AccountsMutator* target,
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 CoreAccountId AccountsMutatorImpl::SeedAccountInfo(const GaiaId& gaia_id,
                                                    const std::string& email) {
   return account_tracker_service_->SeedAccountInfo(gaia_id, email);

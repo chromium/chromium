@@ -19,7 +19,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_util.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -96,16 +95,9 @@ auto GetViewById(int id, MatcherType m) {
 
 // Base class for `ClipboardHistoryMenuModelAdapter` tests whose only required
 // parameterization is whether the clipboard history refresh is enabled.
-class ClipboardHistoryMenuModelAdapterRefreshTest
-    : public AshTestBase,
-      public WithParamInterface</*enable_refresh=*/bool> {
+class ClipboardHistoryMenuModelAdapterRefreshTest : public AshTestBase {
  public:
-  ClipboardHistoryMenuModelAdapterRefreshTest() {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{chromeos::features::kClipboardHistoryRefresh,
-          IsClipboardHistoryRefreshEnabled()},
-         {chromeos::features::kJelly, IsClipboardHistoryRefreshEnabled()}});
-  }
+  ClipboardHistoryMenuModelAdapterRefreshTest() = default;
 
   // AshTestBase:
   void SetUp() override {
@@ -123,18 +115,11 @@ class ClipboardHistoryMenuModelAdapterRefreshTest
     EXPECT_TRUE(operation_confirmed_future_.Take());
   }
 
-  bool IsClipboardHistoryRefreshEnabled() const { return GetParam(); }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TestFuture<bool> operation_confirmed_future_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ClipboardHistoryMenuModelAdapterRefreshTest,
-                         /*enable_refresh=*/Bool());
-
-TEST_P(ClipboardHistoryMenuModelAdapterRefreshTest, FirstItemShowsCtrlVLabel) {
+TEST_F(ClipboardHistoryMenuModelAdapterRefreshTest, FirstItemShowsCtrlVLabel) {
   // Write items to clipboard history so that the menu can show.
   WriteTextToClipboardAndConfirm(u"A");
   WriteTextToClipboardAndConfirm(u"B");
@@ -159,43 +144,41 @@ TEST_P(ClipboardHistoryMenuModelAdapterRefreshTest, FirstItemShowsCtrlVLabel) {
 
   // Get handles to three clipboard history items' Ctrl+V labels, noting that
   // the items' indices will be offset by 1 if the menu has a header.
-  const size_t offset = IsClipboardHistoryRefreshEnabled() ? 1u : 0u;
+  const size_t offset = 1u;
   const auto* const ctrl_v_label1 =
       adapter->GetMenuItemViewAtForTest(0u + offset)
           ->GetViewByID(clipboard_history_util::kCtrlVLabelID);
-  ASSERT_EQ(!!ctrl_v_label1, IsClipboardHistoryRefreshEnabled());
+  ASSERT_TRUE(ctrl_v_label1);
   const auto* const ctrl_v_label2 =
       adapter->GetMenuItemViewAtForTest(1u + offset)
           ->GetViewByID(clipboard_history_util::kCtrlVLabelID);
-  ASSERT_EQ(!!ctrl_v_label2, IsClipboardHistoryRefreshEnabled());
+  ASSERT_TRUE(ctrl_v_label2);
   const auto* const ctrl_v_label3 =
       adapter->GetMenuItemViewAtForTest(2u + offset)
           ->GetViewByID(clipboard_history_util::kCtrlVLabelID);
-  ASSERT_EQ(!!ctrl_v_label3, IsClipboardHistoryRefreshEnabled());
+  ASSERT_TRUE(ctrl_v_label3);
 
   // If the labels do exist, test that only the first item's label is visible.
-  if (IsClipboardHistoryRefreshEnabled()) {
-    // Initially, the first item's label should be visible.
-    EXPECT_TRUE(ctrl_v_label1->GetVisible());
-    EXPECT_FALSE(ctrl_v_label2->GetVisible());
-    EXPECT_FALSE(ctrl_v_label3->GetVisible());
+  // Initially, the first item's label should be visible.
+  EXPECT_TRUE(ctrl_v_label1->GetVisible());
+  EXPECT_FALSE(ctrl_v_label2->GetVisible());
+  EXPECT_FALSE(ctrl_v_label3->GetVisible());
 
-    // Remove the first item. Now the second item's label should be visible.
-    adapter->RemoveMenuItemWithCommandId(
-        clipboard_history_util::kFirstItemCommandId);
-    FlushMessageLoop();
-    EXPECT_TRUE(ctrl_v_label2->GetVisible());
-    EXPECT_FALSE(ctrl_v_label3->GetVisible());
+  // Remove the first item. Now the second item's label should be visible.
+  adapter->RemoveMenuItemWithCommandId(
+      clipboard_history_util::kFirstItemCommandId);
+  FlushMessageLoop();
+  EXPECT_TRUE(ctrl_v_label2->GetVisible());
+  EXPECT_FALSE(ctrl_v_label3->GetVisible());
 
-    // Remove the second item. Now the third item's label should be visible.
-    adapter->RemoveMenuItemWithCommandId(
-        clipboard_history_util::kFirstItemCommandId + 1);
-    FlushMessageLoop();
-    EXPECT_TRUE(ctrl_v_label3->GetVisible());
-  }
+  // Remove the second item. Now the third item's label should be visible.
+  adapter->RemoveMenuItemWithCommandId(
+      clipboard_history_util::kFirstItemCommandId + 1);
+  FlushMessageLoop();
+  EXPECT_TRUE(ctrl_v_label3->GetVisible());
 }
 
-TEST_P(ClipboardHistoryMenuModelAdapterRefreshTest,
+TEST_F(ClipboardHistoryMenuModelAdapterRefreshTest,
        TextItemHasExpectedDisplayTextLabel) {
   // Write items to clipboard history so that the menu can show.
   WriteTextToClipboardAndConfirm(u"A");
@@ -216,7 +199,7 @@ TEST_P(ClipboardHistoryMenuModelAdapterRefreshTest,
       Property(&ClipboardHistoryMenuModelAdapter::GetMenuItemsCount, Eq(2u)));
 
   // Verify expected display text labels.
-  const size_t offset = IsClipboardHistoryRefreshEnabled() ? 1u : 0u;
+  const size_t offset = 1u;
   for (size_t i = 0u; i < 2u; ++i) {
     const views::Label* display_text_label = views::AsViewClass<views::Label>(
         adapter->GetMenuItemViewAtForTest(i + offset)
@@ -225,12 +208,10 @@ TEST_P(ClipboardHistoryMenuModelAdapterRefreshTest,
     gfx::ElideBehavior elide_behavior = gfx::ELIDE_TAIL;
     size_t max_lines = 1u;
 
-    if (IsClipboardHistoryRefreshEnabled()) {
-      if (chromeos::clipboard_history::IsUrl(display_text_label->GetText())) {
-        elide_behavior = gfx::ELIDE_MIDDLE;
-      } else {
-        max_lines = ClipboardHistoryViews::kTextItemMaxLines;
-      }
+    if (chromeos::clipboard_history::IsUrl(display_text_label->GetText())) {
+      elide_behavior = gfx::ELIDE_MIDDLE;
+    } else {
+      max_lines = ClipboardHistoryViews::kTextItemMaxLines;
     }
 
     EXPECT_THAT(
@@ -245,20 +226,16 @@ TEST_P(ClipboardHistoryMenuModelAdapterRefreshTest,
 // presence of a menu header, a menu footer, both, or neither.
 class ClipboardHistoryMenuModelAdapterMenuItemTest
     : public AshTestBase,
-      public WithParamInterface<
-          std::tuple<ClipboardHistoryControllerShowSource,
-                     /*time_since_menu_shown=*/std::optional<base::TimeDelta>,
-                     /*time_since_nudge_shown=*/std::optional<base::TimeDelta>,
-                     /*enable_refresh=*/bool>> {
+      public WithParamInterface<std::tuple<
+          ClipboardHistoryControllerShowSource,
+          /*time_since_menu_shown=*/std::optional<base::TimeDelta>,
+          /*time_since_nudge_shown=*/std::optional<base::TimeDelta>>> {
  public:
   ClipboardHistoryMenuModelAdapterMenuItemTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitWithFeatureStates(
         {{features::kClipboardHistoryLongpress,
-          IsClipboardHistoryLongpressEnabled()},
-         {chromeos::features::kClipboardHistoryRefresh,
-          IsClipboardHistoryRefreshEnabled()},
-         {chromeos::features::kJelly, IsClipboardHistoryRefreshEnabled()}});
+          IsClipboardHistoryLongpressEnabled()}});
   }
 
   // AshTestBase:
@@ -308,10 +285,6 @@ class ClipboardHistoryMenuModelAdapterMenuItemTest
            ClipboardHistoryControllerShowSource::kControlVLongpress;
   }
 
-  bool IsClipboardHistoryRefreshEnabled() const {
-    return std::get<3>(GetParam());
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -326,8 +299,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                                  /*time_since_nudge_shown=*/
                                  Values(std::make_optional(base::Seconds(61)),
                                         std::make_optional(base::Seconds(60)),
-                                        std::nullopt),
-                                 /*enable_refresh=*/Bool()));
+                                        std::nullopt)));
 
 TEST_P(ClipboardHistoryMenuModelAdapterMenuItemTest,
        HeaderAndFooterConditionallyPresent) {
@@ -348,11 +320,10 @@ TEST_P(ClipboardHistoryMenuModelAdapterMenuItemTest,
   const auto time_since_nudge_shown =
       GetTimeSinceNudgeShown().value_or(base::TimeDelta::Max());
 
-  const bool has_header = IsClipboardHistoryRefreshEnabled();
+  const bool has_header = true;
   const bool has_footer = IsClipboardHistoryLongpressEnabled() ||
-                          (IsClipboardHistoryRefreshEnabled() &&
-                           ((time_since_menu_shown >= base::Days(60)) ||
-                            (time_since_nudge_shown <= base::Seconds(60))));
+                          ((time_since_menu_shown >= base::Days(60)) ||
+                           (time_since_nudge_shown <= base::Seconds(60)));
 
   // Verify the number of items in the menu model.
   size_t expected_menu_item_count = controller->history()->GetItems().size();
@@ -387,25 +358,21 @@ TEST_P(ClipboardHistoryMenuModelAdapterMenuItemTest,
   // Verify that footer content is of the expected version.
   const int footer_index = model->GetItemCount() - 1u;
   const auto* const footer = adapter->GetMenuItemViewAtForTest(footer_index);
-  EXPECT_THAT(
-      footer->GetViewByID(clipboard_history_util::kFooterContentViewID),
-      Conditional(IsClipboardHistoryRefreshEnabled(), IsNull(), NotNull()));
+  EXPECT_FALSE(
+      footer->GetViewByID(clipboard_history_util::kFooterContentViewID));
   EXPECT_THAT(
       footer->GetViewByID(clipboard_history_util::kFooterContentV2ViewID),
-      Conditional(
-          IsClipboardHistoryRefreshEnabled(),
-          GetViewById<views::StyledLabel>(
-              clipboard_history_util::kFooterContentV2LabelID,
-              Property(
-                  &views::StyledLabel::GetText,
-                  Conditional(
-                      IsClipboardHistoryLongpressEnabled(),
-                      l10n_util::GetStringUTF16(
-                          IDS_ASH_CLIPBOARD_HISTORY_CONTROL_V_LONGPRESS_FOOTER),
-                      l10n_util::GetStringFUTF16(
-                          IDS_ASH_CLIPBOARD_HISTORY_FOOTER,
-                          clipboard_history_util::GetShortcutKeyName())))),
-          IsNull()));
+      GetViewById<views::StyledLabel>(
+          clipboard_history_util::kFooterContentV2LabelID,
+          Property(
+              &views::StyledLabel::GetText,
+              Conditional(
+                  IsClipboardHistoryLongpressEnabled(),
+                  l10n_util::GetStringUTF16(
+                      IDS_ASH_CLIPBOARD_HISTORY_CONTROL_V_LONGPRESS_FOOTER),
+                  l10n_util::GetStringFUTF16(
+                      IDS_ASH_CLIPBOARD_HISTORY_FOOTER,
+                      clipboard_history_util::GetShortcutKeyName())))));
 }
 
 }  // namespace ash

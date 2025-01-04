@@ -32,6 +32,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -90,6 +91,7 @@
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/url_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -120,7 +122,7 @@ using webauthn_pb::EnclaveLocalState;
 // Holds the arguments to `StoreKeys` so that they can be processed when the
 // state machine is ready for them.
 struct EnclaveManager::StoreKeysArgs {
-  std::string gaia_id;
+  GaiaId gaia_id;
   std::vector<std::vector<uint8_t>> keys;
   int last_key_version;
 };
@@ -401,7 +403,7 @@ cbor::Value BuildUnregisterMessage(const std::string& device_id) {
 
 EnclaveLocalState::User* StateForUser(EnclaveLocalState* local_state,
                                       const CoreAccountInfo& account) {
-  auto it = local_state->mutable_users()->find(account.gaia);
+  auto it = local_state->mutable_users()->find(account.gaia.ToString());
   if (it == local_state->mutable_users()->end()) {
     return nullptr;
   }
@@ -411,7 +413,7 @@ EnclaveLocalState::User* StateForUser(EnclaveLocalState* local_state,
 EnclaveLocalState::User* CreateStateForUser(EnclaveLocalState* local_state,
                                             const CoreAccountInfo& account) {
   auto pair = local_state->mutable_users()->insert(
-      {account.gaia, EnclaveLocalState::User()});
+      {account.gaia.ToString(), EnclaveLocalState::User()});
   CHECK(pair.second);
   return &(pair.first->second);
 }
@@ -663,20 +665,20 @@ std::unique_ptr<EnclaveLocalState> ParseStateFile(
   return ret;
 }
 
-base::flat_set<std::string> GetGaiaIDs(
+base::flat_set<GaiaId> GetGaiaIDs(
     const std::vector<gaia::ListedAccount>& listed_accounts) {
-  base::flat_set<std::string> result;
+  base::flat_set<GaiaId> result;
   for (const gaia::ListedAccount& listed_account : listed_accounts) {
     result.insert(listed_account.gaia_id);
   }
   return result;
 }
 
-base::flat_set<std::string> GetGaiaIDs(
+base::flat_set<GaiaId> GetGaiaIDs(
     const google::protobuf::Map<std::string, EnclaveLocalState::User>& users) {
-  base::flat_set<std::string> result;
+  base::flat_set<GaiaId> result;
   for (const auto& it : users) {
-    result.insert(it.first);
+    result.insert(GaiaId(it.first));
   }
   return result;
 }
@@ -1003,9 +1005,9 @@ std::vector<uint8_t> EncryptWrappedPIN(
       0x3a, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x3a, 0x47, 0x50, 0x4d,
       0x20, 0x50, 0x49, 0x4e, 0x20, 0x64, 0x61, 0x74, 0x61, 0x20, 0x77,
       0x72, 0x61, 0x70, 0x70, 0x69, 0x6e, 0x67, 0x20, 0x6b, 0x65, 0x79};
-  const std::vector<uint8_t> derived_key = crypto::HkdfSha256(
+  const std::array<uint8_t, 32> derived_key = crypto::HkdfSha256<32>(
       security_domain_secret, /*salt=*/base::span<const uint8_t>(),
-      kKeyPurposePinDataKey, 32);
+      kKeyPurposePinDataKey);
   crypto::Aead aead(crypto::Aead::AeadAlgorithm::AES_256_GCM);
   aead.Init(derived_key);
   uint8_t nonce[12];
@@ -2607,6 +2609,15 @@ EnclaveManager::EnclaveManager(
               trusted_vault_access_token_fetcher_frontend_->GetWeakPtr()))),
       identity_observer_(
           std::make_unique<IdentityObserver>(identity_manager_, this)) {
+  // Automatically load the enclave state shortly after startup so that any
+  // renewals will be considered without the user having to do something to
+  // trigger a WebAuthn operation.
+  load_timer_.Start(
+      FROM_HERE, base::Minutes(4),
+      base::BindOnce(&EnclaveManager::Load, weak_ptr_factory_.GetWeakPtr(),
+                     base::DoNothing()));
+  // Also consider renewing the PIN every day, for users who keep Chrome open
+  // for long periods.
   renewal_timer_.Start(FROM_HERE, base::Hours(24),
                        base::BindRepeating(&EnclaveManager::ConsiderPinRenewal,
                                            weak_ptr_factory_.GetWeakPtr()));
@@ -3315,7 +3326,7 @@ void EnclaveManager::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void EnclaveManager::StoreKeys(const std::string& gaia_id,
+void EnclaveManager::StoreKeys(const GaiaId& gaia_id,
                                std::vector<std::vector<uint8_t>> keys,
                                int last_key_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -3607,15 +3618,15 @@ void EnclaveManager::HandleIdentityChange(bool is_post_load) {
   if (in_jar.AreAccountsFresh()) {
     // If the user has signed out of any non-primary accounts, erase their
     // enclave state.
-    const base::flat_set<std::string> gaia_ids_in_cookie_jar =
-        base::STLSetUnion<base::flat_set<std::string>>(
+    const base::flat_set<GaiaId> gaia_ids_in_cookie_jar =
+        base::STLSetUnion<base::flat_set<GaiaId>>(
             GetGaiaIDs(in_jar.GetPotentiallyInvalidSignedInAccounts()),
             GetGaiaIDs(in_jar.GetSignedOutAccounts()));
-    const base::flat_set<std::string> gaia_ids_in_state =
+    const base::flat_set<GaiaId> gaia_ids_in_state =
         GetGaiaIDs(local_state_->users());
-    base::flat_set<std::string> to_remove =
-        base::STLSetDifference<base::flat_set<std::string>>(
-            gaia_ids_in_state, gaia_ids_in_cookie_jar);
+    base::flat_set<GaiaId> to_remove =
+        base::STLSetDifference<base::flat_set<GaiaId>>(gaia_ids_in_state,
+                                                       gaia_ids_in_cookie_jar);
     if (primary_account_info_) {
       to_remove.erase(primary_account_info_->gaia);
     }
@@ -3624,7 +3635,7 @@ void EnclaveManager::HandleIdentityChange(bool is_post_load) {
     // stopped and thus cannot overwrite these changes.
     CHECK(need_to_stop);
     for (const auto& gaia_id : to_remove) {
-      CHECK(local_state_->mutable_users()->erase(gaia_id));
+      CHECK(local_state_->mutable_users()->erase(gaia_id.ToString()));
     }
     WriteState(local_state_.get());
   }
@@ -3758,7 +3769,8 @@ void EnclaveManager::ClearRegistration() {
   }
 
   user_ = nullptr;  // Prevent dangling raw_ptr error on next line.
-  CHECK(local_state_->mutable_users()->erase(primary_account_info_->gaia));
+  CHECK(local_state_->mutable_users()->erase(
+      primary_account_info_->gaia.ToString()));
   user_ = CreateStateForUser(local_state_.get(), *primary_account_info_);
   WriteState(local_state_.get());
 
@@ -3779,12 +3791,37 @@ void EnclaveManager::SetSecret(int32_t key_version,
   secret_ = std::vector<uint8_t>(secret.begin(), secret.end());
 }
 
+// A list of PIN-renewal events that are reported to UMA. Do not renumber
+// as the values are persisted.
+enum class PinRenewalEvent {
+  kConsidered = 0,
+  kNothingToRenew = 1,
+  kConcurrentRenewal = 2,
+  kNotYetTime = 3,
+  kStarted = 4,
+  kSuccess = 5,
+  kFailure = 6,
+
+  kMaxValue = kFailure,
+};
+
+static const char kPinRenewalHistogram[] = "WebAuthentication.PinRenewalEvent";
+
 void EnclaveManager::ConsiderPinRenewal() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::UmaHistogramEnumeration(kPinRenewalHistogram,
+                                PinRenewalEvent::kConsidered);
 
   renewal_checks_++;
-  if (!user_ || !user_->registered() || !user_->has_wrapped_pin() ||
-      is_renewing_) {
+  if (!user_ || !user_->registered() || !user_->has_wrapped_pin()) {
+    base::UmaHistogramEnumeration(kPinRenewalHistogram,
+                                  PinRenewalEvent::kNothingToRenew);
+    return;
+  }
+
+  if (is_renewing_) {
+    base::UmaHistogramEnumeration(kPinRenewalHistogram,
+                                  PinRenewalEvent::kConcurrentRenewal);
     return;
   }
 
@@ -3795,12 +3832,21 @@ void EnclaveManager::ConsiderPinRenewal() {
     FIDO_LOG(EVENT) << "Renewing GPM PIN based on time since last renewal";
     renewal_attempts_++;
     is_renewing_ = true;
+    base::UmaHistogramEnumeration(kPinRenewalHistogram,
+                                  PinRenewalEvent::kStarted);
     RenewPIN(base::BindOnce(&EnclaveManager::OnRenewalComplete,
                             weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    base::UmaHistogramEnumeration(kPinRenewalHistogram,
+                                  PinRenewalEvent::kNotYetTime);
   }
 }
 
 void EnclaveManager::OnRenewalComplete(bool success) {
+  base::UmaHistogramEnumeration(
+      kPinRenewalHistogram,
+      success ? PinRenewalEvent::kSuccess : PinRenewalEvent::kFailure);
+
   is_renewing_ = false;
 }
 

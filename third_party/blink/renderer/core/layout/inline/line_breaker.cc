@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/inline/line_breaker.h"
 
 #include "base/containers/adapters.h"
@@ -282,9 +277,10 @@ LayoutUnit ComputeFloatAncestorInlineEndSize(
     const HeapVector<InlineItem>& items,
     wtf_size_t item_index) {
   LayoutUnit inline_end_size;
-  for (const InlineItem *cur = items.data() + item_index,
-                        *end = items.data() + items.size();
-       cur != end; ++cur) {
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+  for (const InlineItem *cur = UNSAFE_TODO(items.data() + item_index),
+                        *end = UNSAFE_TODO(items.data() + items.size());
+       cur != end; UNSAFE_TODO(++cur)) {
     const InlineItem& item = *cur;
 
     if (item.Type() == InlineItem::kCloseTag) {
@@ -1226,17 +1222,20 @@ unsigned LineBreaker::IgnorableBidiControlLength(const InlineItem& item) const {
   for (wtf_size_t i =
            base::checked_cast<wtf_size_t>(std::distance(items, &item)) + 1;
        i < end_item_index_; ++i) {
-    if (items[i].Length() == 0u) {
+    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+    const InlineItem& item_i = UNSAFE_TODO(items[i]);
+    if (item_i.Length() == 0u) {
       continue;
     }
-    if (items[i].Type() != InlineItem::kOpenRubyColumn &&
-        items[i].Type() != InlineItem::kCloseRubyColumn) {
-      return items[i].StartOffset() - item.EndOffset();
+    if (item_i.Type() != InlineItem::kOpenRubyColumn &&
+        item_i.Type() != InlineItem::kCloseRubyColumn) {
+      return item_i.StartOffset() - item.EndOffset();
     }
   }
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
   return (end_item_index_ >= Items().size()
               ? Text().length()
-              : items[end_item_index_].StartOffset()) -
+              : UNSAFE_TODO(items[end_item_index_]).StartOffset()) -
          item.EndOffset();
 }
 

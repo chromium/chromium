@@ -20,7 +20,7 @@ message Resource {
   optional bool exclude_default_group = 4;
 
   // Non-zero IDs of experiment groups that include this Resource.
-  repeated int64 experiment_group_ids = 5;
+  repeated int64 experiment_group_ids = 5 [deprecated = true];
 }
 
 // Contains ownership information about resources that are used in a 3rd party

@@ -191,8 +191,9 @@ class BrowserAddedWaiter : public BrowserListObserver {
   ~BrowserAddedWaiter() override { BrowserList::RemoveObserver(this); }
 
   Browser* Wait() {
-    if (BrowserList::GetInstance()->size() == total_count_)
+    if (BrowserList::GetInstance()->size() == total_count_) {
       return BrowserList::GetInstance()->GetLastActive();
+    }
     run_loop_.Run();
     EXPECT_TRUE(browser_);
     return browser_;
@@ -201,8 +202,9 @@ class BrowserAddedWaiter : public BrowserListObserver {
  private:
   // BrowserListObserver implementation.
   void OnBrowserAdded(Browser* browser) override {
-    if (BrowserList::GetInstance()->size() != total_count_)
+    if (BrowserList::GetInstance()->size() != total_count_) {
       return;
+    }
     browser_ = browser;
     run_loop_.Quit();
   }
@@ -267,10 +269,12 @@ class PageNonEmptyPaintObserver : public content::WebContentsObserver {
   void Wait() {
     // Check if the right page has already been painted or loaded.
     if (web_contents()->GetLastCommittedURL() == url_) {
-      if (web_contents()->CompletedFirstVisuallyNonEmptyPaint())
+      if (web_contents()->CompletedFirstVisuallyNonEmptyPaint()) {
         DidFirstVisuallyNonEmptyPaint();
-      if (!web_contents()->IsLoading())
+      }
+      if (!web_contents()->IsLoading()) {
         DidStopLoading();
+      }
     }
 
     run_loop_.Run();
@@ -280,8 +284,9 @@ class PageNonEmptyPaintObserver : public content::WebContentsObserver {
   // WebContentsObserver:
   void DidFirstVisuallyNonEmptyPaint() override {
     // Making sure that the same event does not trigger the barrier twice.
-    if (did_paint_)
+    if (did_paint_) {
       return;
+    }
 
     did_paint_ = true;
     barrier_closure_.Run();
@@ -291,8 +296,9 @@ class PageNonEmptyPaintObserver : public content::WebContentsObserver {
     ASSERT_EQ(web_contents()->GetLastCommittedURL(), url_);
 
     // Making sure that the same event does not trigger the barrier twice.
-    if (did_load_)
+    if (did_load_) {
       return;
+    }
 
     // It shouldn't technically be necessary to wait for load stop here, we do
     // this to be consistent with the other tests relying on `WaitForLoadStop()`
@@ -2228,7 +2234,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedProfilePickerHideGuestModeTest,
 
   AccountInfo child_account_info =
       FinishDiceSignIn(child_profile, "child@gmail.com", "child",
-                       kNoHostedDomainFound, /*is_supervised=*/true);
+                       kNoHostedDomainFound, /*is_supervised_profile=*/true);
   ASSERT_TRUE(child_profile);
 
   OpenProfilePicker();
@@ -2858,8 +2864,9 @@ class ProfilePickerCreationFlowEphemeralProfileBrowserTest
     for (const auto* entry : profile_manager()
                                  ->GetProfileAttributesStorage()
                                  .GetAllProfilesAttributes()) {
-      if (entry->GetLocalProfileName() == name)
+      if (entry->GetLocalProfileName() == name) {
         return true;
+      }
     }
     return false;
   }

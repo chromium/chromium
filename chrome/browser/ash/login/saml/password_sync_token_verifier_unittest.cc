@@ -26,6 +26,7 @@
 #include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -56,7 +57,7 @@ class PasswordSyncTokenVerifierTest : public testing::Test {
   bool PasswordSyncTokenFetcherIsAllocated();
 
   const AccountId saml_login_account_id_ =
-      AccountId::FromUserEmailGaiaId(kSAMLUserEmail1, kSAMLUserId1);
+      AccountId::FromUserEmailGaiaId(kSAMLUserEmail1, GaiaId(kSAMLUserId1));
 
   content::BrowserTaskEnvironment test_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,

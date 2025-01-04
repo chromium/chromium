@@ -16,10 +16,12 @@
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/search/search.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
+#import "ios/chrome/browser/ntp/model/features.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
@@ -47,7 +49,6 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/tips_notifications/model/utils.h"
-#import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
@@ -437,11 +438,10 @@ bool TipsNotificationClient::ShouldSendSetUpListContinuation() {
     return false;
   }
 
-  // The Set Up List only shows for 14 days after FirstRun, so this
-  // notification should only be requested 14 days minus the trigger interval
-  // after FirstRun.
+  // This notification should only be requested during the duration of the Set
+  // Up List minus the trigger interval after FirstRun.
   if (!IsFirstRunRecent(
-          base::Days(14) -
+          set_up_list::SetUpListDurationPastFirstRun() -
           TipsNotificationTriggerDelta(CanSendReactivation(), user_type_))) {
     return false;
   }
@@ -591,7 +591,7 @@ void TipsNotificationClient::ShowSetUpListContinuation(Browser* browser) {
 void TipsNotificationClient::ShowDocking(Browser* browser) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   [HandlerForProtocol(browser->GetCommandDispatcher(), DockingPromoCommands)
-      showDockingPromo:YES];
+      showDockingPromoWithTrigger:DockingPromoTrigger::kTipsModule];
 }
 
 void TipsNotificationClient::ShowOmniboxPosition(Browser* browser) {

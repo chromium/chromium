@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManagerThumbnailProvider;
+import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
@@ -106,7 +107,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             @Nullable GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
             @Nullable AnimationSourceViewProvider animationSourceViewProvider,
             ScrimCoordinator scrimCoordinator,
-            TabGroupTitleEditor tabGroupTitleEditor,
             @Nullable ActionConfirmationManager actionConfirmationManager,
             @NonNull ModalDialogManager modalDialogManager,
             @Nullable DesktopWindowStateManager desktopWindowStateManager) {
@@ -270,7 +270,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             // This is always created post-native so calling these immediately is safe.
             // TODO(crbug.com/40894893): Consider inlining these behaviors in their respective
             // constructors if possible.
-            mMediator.initWithNative(this::getTabListEditorController, tabGroupTitleEditor);
+            mMediator.initWithNative(this::getTabListEditorController);
             mTabListCoordinator.initWithNative(originalProfile);
 
             CollaborationService collaborationService =
@@ -358,7 +358,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                     }
                 };
 
-        List<Integer> colors = ColorPickerUtils.getTabGroupColorIdList();
+        List<Integer> colors = TabGroupColorUtils.getTabGroupColorIdList();
         mColorPickerCoordinator =
                 new ColorPickerCoordinator(
                         mActivity,

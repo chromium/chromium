@@ -52,6 +52,15 @@ namespace ash::kiosk::test {
 // Returns true if the Kiosk `app` is installed in the given `profile`.
 [[nodiscard]] bool IsAppInstalled(Profile& profile, const KioskApp& app);
 
+// Returns the version string of the Chrome `app` installed in the given
+// `profile`. CHECKs when the app is not installed.
+[[nodiscard]] std::string InstalledChromeAppVersion(Profile& profile,
+                                                    const KioskApp& app);
+
+// Returns the version string of the Chrome `app` in the device local account
+// external cache. CHECKs when the app is not cached.
+[[nodiscard]] std::string CachedChromeAppVersion(const KioskApp& app);
+
 // Returns the current profile. Makes sense to be called after Kiosk launch.
 [[nodiscard]] Profile& CurrentProfile();
 

@@ -233,8 +233,9 @@ void ProfileMenuView::BuildMenu() {
 
 gfx::ImageSkia ProfileMenuView::GetSyncIcon() const {
   Profile* profile = browser()->profile();
-  if (profile->IsOffTheRecord() || profile->IsGuestSession())
+  if (profile->IsOffTheRecord() || profile->IsGuestSession()) {
     return gfx::ImageSkia();
+  }
 
   bool is_sync_feature_enabled =
       IdentityManagerFactory::GetForProfile(profile)->HasPrimaryAccount(
@@ -254,8 +255,8 @@ gfx::ImageSkia ProfileMenuView::GetSyncIcon() const {
   }
 
   ui::ColorId color_id = error == AvatarSyncErrorType::kSyncPaused
-                                       ? kColorProfileMenuSyncPausedIcon
-                                       : kColorProfileMenuSyncErrorIcon;
+                             ? kColorProfileMenuSyncPausedIcon
+                             : kColorProfileMenuSyncErrorIcon;
   return ColoredImageForMenu(kSyncDisabledChromeRefreshIcon, color_id);
 }
 
@@ -276,8 +277,9 @@ std::u16string ProfileMenuView::GetAccessibleWindowTitle() const {
 
 void ProfileMenuView::OnManageGoogleAccountButtonClicked() {
   RecordClick(ActionableItem::kManageGoogleAccountButton);
-  if (!perform_menu_actions())
+  if (!perform_menu_actions()) {
     return;
+  }
 
   Profile* profile = browser()->profile();
   signin::IdentityManager* identity_manager =
@@ -291,52 +293,59 @@ void ProfileMenuView::OnManageGoogleAccountButtonClicked() {
 
 void ProfileMenuView::OnPasswordsButtonClicked() {
   RecordClick(ActionableItem::kPasswordsButton);
-  if (!perform_menu_actions())
+  if (!perform_menu_actions()) {
     return;
+  }
   NavigateToManagePasswordsPage(
       browser(), password_manager::ManagePasswordsReferrer::kProfileChooser);
 }
 
 void ProfileMenuView::OnCreditCardsButtonClicked() {
   RecordClick(ActionableItem::kCreditCardsButton);
-  if (!perform_menu_actions())
+  if (!perform_menu_actions()) {
     return;
+  }
   chrome::ShowSettingsSubPage(browser(), chrome::kPaymentsSubPage);
 }
 
 void ProfileMenuView::OnAddressesButtonClicked() {
   RecordClick(ActionableItem::kAddressesButton);
-  if (!perform_menu_actions())
+  if (!perform_menu_actions()) {
     return;
+  }
   chrome::ShowSettingsSubPage(browser(), chrome::kAddressesSubPage);
 }
 
 void ProfileMenuView::OnGuestProfileButtonClicked() {
   RecordClick(ActionableItem::kGuestProfileButton);
-  if (!perform_menu_actions())
+  if (!perform_menu_actions()) {
     return;
+  }
   DCHECK(profiles::IsGuestModeEnabled(*browser()->profile()));
   profiles::SwitchToGuestProfile();
 }
 
 void ProfileMenuView::OnExitProfileButtonClicked() {
   RecordClick(ActionableItem::kExitProfileButton);
-  if (!perform_menu_actions())
+  if (!perform_menu_actions()) {
     return;
+  }
   profiles::CloseProfileWindows(browser()->profile());
 }
 
 void ProfileMenuView::OnSyncSettingsButtonClicked() {
   RecordClick(ActionableItem::kSyncSettingsButton);
-  if (!perform_menu_actions())
+  if (!perform_menu_actions()) {
     return;
+  }
   chrome::ShowSettingsSubPage(browser(), chrome::kSyncSetupSubPage);
 }
 
 void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
   RecordClick(ActionableItem::kSyncErrorButton);
-  if (!perform_menu_actions())
+  if (!perform_menu_actions()) {
     return;
+  }
 
   // The logic below must be consistent with GetSyncInfoForAvatarErrorType().
   switch (error) {
@@ -404,8 +413,9 @@ void ProfileMenuView::OnSigninButtonClicked(
     signin_metrics::AccessPoint access_point) {
   RecordClick(button_type);
 
-  if (!perform_menu_actions())
+  if (!perform_menu_actions()) {
     return;
+  }
   GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
 
   if (button_type == ActionableItem::kSigninReauthButton) {
@@ -429,8 +439,9 @@ void ProfileMenuView::OnSignoutButtonClicked() {
          "in the UI.";
 
   RecordClick(ActionableItem::kSignoutButton);
-  if (!perform_menu_actions())
+  if (!perform_menu_actions()) {
     return;
+  }
   GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
   browser()->signin_view_controller()->SignoutOrReauthWithPrompt(
       signin_metrics::AccessPoint::
@@ -443,8 +454,9 @@ void ProfileMenuView::OnSignoutButtonClicked() {
 void ProfileMenuView::OnOtherProfileSelected(
     const base::FilePath& profile_path) {
   RecordClick(ActionableItem::kOtherProfileButton);
-  if (!perform_menu_actions())
+  if (!perform_menu_actions()) {
     return;
+  }
 
   if (!web_app::AppBrowserController::IsWebApp(browser())) {
     GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
@@ -482,31 +494,35 @@ void ProfileMenuView::OnOtherProfileSelected(
 
 void ProfileMenuView::OnAddNewProfileButtonClicked() {
   RecordClick(ActionableItem::kAddNewProfileButton);
-  if (!perform_menu_actions())
+  if (!perform_menu_actions()) {
     return;
+  }
   ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
       ProfilePicker::EntryPoint::kProfileMenuAddNewProfile));
 }
 
 void ProfileMenuView::OnManageProfilesButtonClicked() {
   RecordClick(ActionableItem::kManageProfilesButton);
-  if (!perform_menu_actions())
+  if (!perform_menu_actions()) {
     return;
+  }
   ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
       ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
 }
 
 void ProfileMenuView::OnEditProfileButtonClicked() {
   RecordClick(ActionableItem::kEditProfileButton);
-  if (!perform_menu_actions())
+  if (!perform_menu_actions()) {
     return;
+  }
   chrome::ShowSettingsSubPage(browser(), chrome::kManageProfileSubPage);
 }
 
 void ProfileMenuView::OnCookiesClearedOnExitLinkClicked() {
   RecordClick(ActionableItem::kCookiesClearedOnExitLink);
-  if (!perform_menu_actions())
+  if (!perform_menu_actions()) {
     return;
+  }
   chrome::ShowSettingsSubPage(browser(), chrome::kContentSettingsSubPage +
                                              std::string("/") +
                                              chrome::kCookieSettingsSubPage);
@@ -573,7 +589,7 @@ void ProfileMenuView::BuildIdentity() {
                                            base::UTF8ToUTF16(*account_manager))
               : std::u16string();
       if (auto* icon = policy::ManagementServiceFactory::GetForProfile(profile)
-                           ->GetManagementIcon()) {
+                           ->GetManagementIconForProfile()) {
         badge_image_model = *icon;
       } else {
         gfx::ImageSkia sized_icon = gfx::CreateVectorIcon(gfx::IconDescription(
@@ -641,8 +657,8 @@ void ProfileMenuView::BuildGuestIdentity() {
 
   SetProfileIdentityInfo(
       /*profile_name=*/std::u16string(),
-      /*background_color=*/SK_ColorTRANSPARENT,
-      /*edit_button=*/std::nullopt, profiles::GetGuestAvatar(),
+      /*profile_background_color=*/SK_ColorTRANSPARENT,
+      /*edit_button_params=*/std::nullopt, profiles::GetGuestAvatar(),
       ui::ImageModel(), menu_title_, menu_subtitle_, management_label,
       &kGuestMenuArtIcon);
 
@@ -682,8 +698,9 @@ void ProfileMenuView::BuildSyncInfo() {
   CHECK(!switches::IsImprovedSigninUIOnDesktopEnabled());
 
   Profile* profile = browser()->profile();
-  if (!profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed))
+  if (!profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed)) {
     return;
+  }
 
   if (!SyncServiceFactory::IsSyncAllowed(profile)) {
     return;
@@ -698,9 +715,12 @@ void ProfileMenuView::BuildSyncInfo() {
   const std::optional<AvatarSyncErrorType> error =
       GetAvatarSyncErrorType(profile);
   if (error) {
+    std::u16string error_description = GetAvatarSyncErrorDescription(
+        *error, is_sync_feature_enabled,
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+            .email);
     BuildSyncInfoWithCallToAction(
-        GetAvatarSyncErrorDescription(*error, is_sync_feature_enabled),
-        GetSyncErrorButtonText(*error),
+        std::move(error_description), GetSyncErrorButtonText(*error),
         base::BindRepeating(&ProfileMenuView::OnSyncErrorButtonClicked,
                             base::Unretained(this), *error),
         /*show_sync_badge=*/is_sync_feature_enabled);
@@ -832,14 +852,35 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
                                 /*use_high_res_file=*/true, icon_params)
           : primary_extended_account_info.account_image);
 
-  // Sync error.
+  if (enterprise_util::CanShowEnterpriseBadgingForMenu(profile)) {
+    params.header_string =
+        l10n_util::GetStringUTF16(IDS_PROFILE_MENU_BROWSER_MANAGED_HEADER);
+    ui::ImageModel* custom_management_image =
+        policy::ManagementServiceFactory::GetForProfile(profile)
+            ->GetManagementIconForProfile();
+    params.header_image =
+        custom_management_image
+            ? *custom_management_image
+            : ui::ImageModel::FromVectorIcon(
+                  vector_icons::kBusinessChromeRefreshIcon, ui::kColorIcon);
+  }
+
+  if (web_app::AppBrowserController::IsWebApp(browser())) {
+    if (!primary_account_info.email.empty()) {
+      params.subtitle = base::UTF8ToUTF16(primary_account_info.email);
+    }
+    return params;
+  }
+
+  // Sync error, including "paused".
   if (error.has_value()) {
-    params.subtitle =
-        GetAvatarSyncErrorDescription(*error, is_sync_feature_enabled);
+    params.subtitle = GetAvatarSyncErrorDescription(
+        *error, is_sync_feature_enabled, primary_account_info.email);
     params.button_text = GetSyncErrorButtonText(error.value());
     params.button_action =
         base::BindRepeating(&ProfileMenuView::OnSyncErrorButtonClicked,
                             base::Unretained(this), error.value());
+    params.has_dotted_ring = true;
     return params;
   }
 
@@ -908,6 +949,7 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
           l10n_util::GetStringUTF16(IDS_SIGNIN_PAUSED_USER_MENU_VERIFY_MESSAGE);
       params.button_text =
           l10n_util::GetStringUTF16(IDS_PROFILES_VERIFY_ACCOUNT_BUTTON);
+      params.has_dotted_ring = true;
       break;
     case signin_util::SignedInState::kSyncPaused:
       // Sync paused is covered by the sync errors path.

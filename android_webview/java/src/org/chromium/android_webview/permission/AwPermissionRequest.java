@@ -8,6 +8,7 @@ import android.net.Uri;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.CleanupReference;
@@ -46,7 +47,7 @@ public class AwPermissionRequest {
 
     @CalledByNative
     private static AwPermissionRequest create(
-            long nativeAwPermissionRequest, String url, long resources) {
+            long nativeAwPermissionRequest, @JniType("std::string") String url, long resources) {
         if (nativeAwPermissionRequest == 0) return null;
         Uri origin = Uri.parse(url);
         return new AwPermissionRequest(nativeAwPermissionRequest, origin, resources);

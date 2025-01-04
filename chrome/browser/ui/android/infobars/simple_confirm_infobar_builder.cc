@@ -85,8 +85,7 @@ SimpleConfirmInfoBarDelegate::SimpleConfirmInfoBarDelegate(
   java_listener_.Reset(j_listener);
 }
 
-SimpleConfirmInfoBarDelegate::~SimpleConfirmInfoBarDelegate() {
-}
+SimpleConfirmInfoBarDelegate::~SimpleConfirmInfoBarDelegate() = default;
 
 infobars::InfoBarDelegate::InfoBarIdentifier
 SimpleConfirmInfoBarDelegate::GetIdentifier() const {
@@ -124,7 +123,7 @@ std::u16string SimpleConfirmInfoBarDelegate::GetMessageText() const {
 
 int SimpleConfirmInfoBarDelegate::GetButtons() const {
   return (primary_str_.empty() ? 0 : BUTTON_OK) |
-      (secondary_str_.empty() ? 0 : BUTTON_CANCEL);
+         (secondary_str_.empty() ? 0 : BUTTON_CANCEL);
 }
 
 std::u16string SimpleConfirmInfoBarDelegate::GetButtonLabel(

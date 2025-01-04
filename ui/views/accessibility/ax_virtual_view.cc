@@ -72,15 +72,17 @@ AXVirtualView::~AXVirtualView() {
   }
 
 #if defined(USE_AURA)
-  if (ax_aura_obj_cache_)
+  if (ax_aura_obj_cache_) {
     ax_aura_obj_cache_->Remove(this);
+  }
 #endif
 }
 
 void AXVirtualView::AddChildView(std::unique_ptr<AXVirtualView> view) {
   DCHECK(view);
-  if (view->virtual_parent_view_ == this)
+  if (view->virtual_parent_view_ == this) {
     return;  // Already a child of this virtual view.
+  }
   AddChildViewAt(std::move(view), children_.size());
 }
 
@@ -110,12 +112,14 @@ void AXVirtualView::ReorderChildView(AXVirtualView* view, size_t index) {
   index = std::min(index, children_.size() - 1);
 
   DCHECK_EQ(view->virtual_parent_view_, this);
-  if (children_[index].get() == view)
+  if (children_[index].get() == view) {
     return;
+  }
 
   auto cur_index = GetIndexOf(view);
-  if (!cur_index.has_value())
+  if (!cur_index.has_value()) {
     return;
+  }
 
   std::unique_ptr<AXVirtualView> child =
       std::move(children_[cur_index.value()]);
@@ -129,8 +133,9 @@ void AXVirtualView::ReorderChildView(AXVirtualView* view, size_t index) {
 }
 
 std::unique_ptr<AXVirtualView> AXVirtualView::RemoveFromParentView() {
-  if (parent_view_)
+  if (parent_view_) {
     return parent_view_->RemoveVirtualChildView(this);
+  }
 
   // This virtual view hasn't been added to a parent view yet.
   CHECK(virtual_parent_view_)
@@ -142,8 +147,9 @@ std::unique_ptr<AXVirtualView> AXVirtualView::RemoveChildView(
     AXVirtualView* view) {
   DCHECK(view);
   auto cur_index = GetIndexOf(view);
-  if (!cur_index.has_value())
+  if (!cur_index.has_value()) {
     return {};
+  }
 
   bool focus_changed = false;
   if (GetOwnerView()) {
@@ -163,8 +169,9 @@ std::unique_ptr<AXVirtualView> AXVirtualView::RemoveChildView(
   child->populate_data_callback_.Reset();
 
   if (GetOwnerView()) {
-    if (focus_changed)
+    if (focus_changed) {
       GetOwnerView()->GetViewAccessibility().OverrideFocus(nullptr);
+    }
     GetOwnerView()->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
                                              true);
   }
@@ -173,15 +180,17 @@ std::unique_ptr<AXVirtualView> AXVirtualView::RemoveChildView(
 }
 
 void AXVirtualView::RemoveAllChildViews() {
-  while (!children_.empty())
+  while (!children_.empty()) {
     RemoveChildView(children_.back().get());
+  }
 }
 
 bool AXVirtualView::Contains(const AXVirtualView* view) const {
   DCHECK(view);
   for (const AXVirtualView* v = view; v; v = v->virtual_parent_view_) {
-    if (v == this)
+    if (v == this) {
       return true;
+    }
   }
   return false;
 }
@@ -216,8 +225,9 @@ void AXVirtualView::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
   if (GetOwnerView()) {
     const ViewAccessibility::AccessibilityEventsCallback& events_callback =
         GetOwnerView()->GetViewAccessibility().accessibility_events_callback();
-    if (events_callback)
+    if (events_callback) {
       events_callback.Run(this, event_type);
+    }
   }
 
   // This is used on platforms that have a native accessibility API.
@@ -250,17 +260,21 @@ const ui::AXNodeData& AXVirtualView::GetData() const {
 
   node_data.id = GetUniqueId();
 
-  if (!GetOwnerView() || !GetOwnerView()->GetEnabled())
+  if (!GetOwnerView() || !GetOwnerView()->GetEnabled()) {
     node_data.SetRestriction(ax::mojom::Restriction::kDisabled);
+  }
 
-  if (!GetOwnerView() || !GetOwnerView()->IsDrawn())
+  if (!GetOwnerView() || !GetOwnerView()->IsDrawn()) {
     node_data.AddState(ax::mojom::State::kInvisible);
+  }
 
-  if (GetOwnerView() && GetOwnerView()->context_menu_controller())
+  if (GetOwnerView() && GetOwnerView()->context_menu_controller()) {
     node_data.AddAction(ax::mojom::Action::kShowContextMenu);
+  }
 
-  if (populate_data_callback_ && GetOwnerView())
+  if (populate_data_callback_ && GetOwnerView()) {
     populate_data_callback_.Run(&node_data);
+  }
 
   if (pruned_) {
     node_data.AddState(ax::mojom::State::kIgnored);
@@ -296,12 +310,14 @@ gfx::NativeViewAccessible AXVirtualView::ChildAtIndex(size_t index) const {
   for (const std::unique_ptr<AXVirtualView>& child : children_) {
     if (child->IsIgnored()) {
       size_t child_count = child->GetChildCount();
-      if (index < child_count)
+      if (index < child_count) {
         return child->ChildAtIndex(index);
+      }
       index -= child_count;
     } else {
-      if (index == 0)
+      if (index == 0) {
         return child->GetNativeObject();
+      }
       --index;
     }
   }
@@ -321,14 +337,16 @@ gfx::NativeViewAccessible AXVirtualView::GetNativeViewAccessible() {
 
 gfx::NativeViewAccessible AXVirtualView::GetParent() const {
   if (parent_view_) {
-    if (!parent_view_->GetIsIgnored())
+    if (!parent_view_->GetIsIgnored()) {
       return parent_view_->GetNativeObject();
+    }
     return GetDelegate()->GetParent();
   }
 
   if (virtual_parent_view_) {
-    if (virtual_parent_view_->IsIgnored())
+    if (virtual_parent_view_->IsIgnored()) {
       return virtual_parent_view_->GetParent();
+    }
     return virtual_parent_view_->GetNativeObject();
   }
 
@@ -344,8 +362,9 @@ gfx::Rect AXVirtualView::GetBoundsRect(
   // TODO(nektar): Implement bounds that are relative to the parent.
   gfx::Rect bounds = gfx::ToEnclosingRect(GetData().relative_bounds.bounds);
   View* owner_view = GetOwnerView();
-  if (owner_view && owner_view->GetWidget())
+  if (owner_view && owner_view->GetWidget()) {
     View::ConvertRectToScreen(owner_view, &bounds);
+  }
   switch (coordinate_system) {
     case ui::AXCoordinateSystem::kScreenDIPs:
       return bounds;
@@ -353,8 +372,9 @@ gfx::Rect AXVirtualView::GetBoundsRect(
       float scale_factor = 1.0;
       if (owner_view && owner_view->GetWidget()) {
         gfx::NativeView native_view = owner_view->GetWidget()->GetNativeView();
-        if (native_view)
+        if (native_view) {
           scale_factor = ui::GetScaleFactorForNativeView(native_view);
+        }
       }
       return gfx::ScaleToEnclosingRect(bounds, scale_factor);
     }
@@ -368,8 +388,9 @@ gfx::Rect AXVirtualView::GetBoundsRect(
 gfx::NativeViewAccessible AXVirtualView::HitTestSync(
     int screen_physical_pixel_x,
     int screen_physical_pixel_y) const {
-  if (GetData().IsInvisible())
+  if (GetData().IsInvisible()) {
     return nullptr;
+  }
 
   // Check if the point is within any of the virtual children of this view.
   // AXVirtualView's HitTestSync is a recursive function that will return the
@@ -379,8 +400,9 @@ gfx::NativeViewAccessible AXVirtualView::HitTestSync(
        base::Reversed(children_)) {
     gfx::NativeViewAccessible result =
         child->HitTestSync(screen_physical_pixel_x, screen_physical_pixel_y);
-    if (result)
+    if (result) {
       return result;
+    }
   }
 
   // If it's not inside any of our virtual children, and it's inside the bounds
@@ -421,10 +443,12 @@ ui::AXPlatformNode* AXVirtualView::GetFromNodeID(int32_t id) {
 
 bool AXVirtualView::AccessibilityPerformAction(const ui::AXActionData& data) {
   bool result = false;
-  if (custom_data_.HasAction(data.action))
+  if (custom_data_.HasAction(data.action)) {
     result = HandleAccessibleAction(data);
-  if (!result && GetOwnerView())
+  }
+  if (!result && GetOwnerView()) {
     return HandleAccessibleActionInOwnerView(data);
+  }
   return result;
 }
 
@@ -446,8 +470,9 @@ ui::AXPlatformNodeId AXVirtualView::GetUniqueId() const {
 // events to be routed correctly.
 gfx::AcceleratedWidget AXVirtualView::GetTargetForNativeAccessibilityEvent() {
 #if BUILDFLAG(IS_WIN)
-  if (GetOwnerView())
+  if (GetOwnerView()) {
     return HWNDForView(GetOwnerView());
+  }
 #endif
   return gfx::kNullAcceleratedWidget;
 }
@@ -467,8 +492,9 @@ std::optional<int32_t> AXVirtualView::GetCellId(int row_index,
 
 bool AXVirtualView::HandleAccessibleAction(
     const ui::AXActionData& action_data) {
-  if (!GetOwnerView())
+  if (!GetOwnerView()) {
     return false;
+  }
 
   switch (action_data.action) {
     case ax::mojom::Action::kShowContextMenu: {
@@ -502,19 +528,22 @@ bool AXVirtualView::HandleAccessibleActionInOwnerView(
 
 void AXVirtualView::set_cache(AXAuraObjCache* cache) {
 #if defined(USE_AURA)
-  if (ax_aura_obj_cache_ && cache)
+  if (ax_aura_obj_cache_ && cache) {
     ax_aura_obj_cache_->Remove(this);
+  }
 #endif
 
   ax_aura_obj_cache_ = cache;
 }
 
 View* AXVirtualView::GetOwnerView() const {
-  if (parent_view_)
+  if (parent_view_) {
     return parent_view_->view();
+  }
 
-  if (virtual_parent_view_)
+  if (virtual_parent_view_) {
     return virtual_parent_view_->GetOwnerView();
+  }
 
   // This virtual view hasn't been added to a parent view yet.
   return nullptr;

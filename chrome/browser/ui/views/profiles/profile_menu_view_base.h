@@ -106,8 +106,15 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
     IdentitySectionParams(IdentitySectionParams&&);
     IdentitySectionParams& operator=(IdentitySectionParams&&);
 
-    // Must not be empty.
+    // Optional header displayed at the top (e.g. for management notice).
+    // `header_string` and `header_image` must both be non-empty for the header
+    // to be shown.
+    std::u16string header_string;
+    ui::ImageModel header_image;
+
+    // `profile_image` must not be empty. It does not need to be circular.
     ui::ImageModel profile_image;
+    bool has_dotted_ring = false;
 
     // Must not be empty.
     std::u16string title;
@@ -138,8 +145,7 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   // Size of the small identity image shown inside the signin button.
   static constexpr int kIdentityImageSizeForButton = 22;
 
-  ProfileMenuViewBase(views::Button* anchor_button,
-                      Browser* browser);
+  ProfileMenuViewBase(views::Button* anchor_button, Browser* browser);
   ~ProfileMenuViewBase() override;
 
   ProfileMenuViewBase(const ProfileMenuViewBase&) = delete;
@@ -152,6 +158,7 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   virtual gfx::ImageSkia GetSyncIcon() const;
 
   // If |profile_name| is empty, no heading will be displayed.
+  // `management_badge` and `image_model` do not need to be circular.
   void SetProfileIdentityInfo(
       const std::u16string& profile_name,
       SkColor profile_background_color,

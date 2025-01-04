@@ -47,7 +47,6 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/app_constants/constants.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/services/app_service/public/cpp/app_instance_waiter.h"
@@ -204,8 +203,9 @@ class AppServiceAppWindowBrowserTest
             states.insert(update.State());
           }
         });
-    if (states.size() == 1)
+    if (states.size() == 1) {
       return *states.begin();
+    }
     return apps::InstanceState::kUnknown;
   }
 
@@ -413,12 +413,12 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowBorealisBrowserTest,
             app_service_proxy_->InstanceRegistry().GetInstances(app_id).size());
   ASSERT_NE(-1, shelf_model()->ItemIndexByAppID(app_id));
 
-  // Now that the app is published, it will have a name based on the window title
-  EXPECT_EQ(
-      "foo",
-      base::UTF16ToUTF8(shelf_model()
-                            ->items()[shelf_model()->ItemIndexByAppID(app_id)]
-                            .title));
+  // Now that the app is published, it will have a name based on the window
+  // title
+  EXPECT_EQ("foo", base::UTF16ToUTF8(
+                       shelf_model()
+                           ->items()[shelf_model()->ItemIndexByAppID(app_id)]
+                           .title));
 
   widget->CloseNow();
   EXPECT_TRUE(
@@ -647,8 +647,9 @@ class AppServiceAppWindowArcAppBrowserTest
   }
 
   void StopInstance() {
-    if (app_instance_)
+    if (app_instance_) {
       arc_brige_service()->app()->CloseInstance(app_instance_.get());
+    }
     arc_session_manager()->Shutdown();
   }
 

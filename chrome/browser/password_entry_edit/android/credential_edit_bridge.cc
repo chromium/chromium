@@ -68,12 +68,8 @@ CredentialEditBridge::~CredentialEditBridge() {
 
 void CredentialEditBridge::GetCredential(JNIEnv* env) {
   Java_CredentialEditBridge_setCredential(
-      env, java_bridge_,
-      base::android::ConvertUTF16ToJavaString(env, GetDisplayURLOrAppName()),
-      base::android::ConvertUTF16ToJavaString(env, credential_.username),
-      base::android::ConvertUTF16ToJavaString(env, credential_.password),
-      base::android::ConvertUTF16ToJavaString(env,
-                                              GetDisplayFederationOrigin()),
+      env, java_bridge_, GetDisplayURLOrAppName(), credential_.username,
+      credential_.password, GetDisplayFederationOrigin(),
       is_insecure_credential_.value());
 }
 
@@ -83,15 +79,12 @@ void CredentialEditBridge::GetExistingUsernames(JNIEnv* env) {
       base::android::ToJavaArrayOfStrings(env, existing_usernames_));
 }
 
-void CredentialEditBridge::SaveChanges(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& username,
-    const base::android::JavaParamRef<jstring>& password) {
+void CredentialEditBridge::SaveChanges(JNIEnv* env,
+                                       std::u16string& username,
+                                       std::u16string& password) {
   password_manager::CredentialUIEntry updated_credential = credential_;
-  updated_credential.username =
-      base::android::ConvertJavaStringToUTF16(username);
-  updated_credential.password =
-      base::android::ConvertJavaStringToUTF16(password);
+  updated_credential.username = username;
+  updated_credential.password = password;
   saved_passwords_presenter_->EditSavedCredentials(credential_,
                                                    updated_credential);
 }

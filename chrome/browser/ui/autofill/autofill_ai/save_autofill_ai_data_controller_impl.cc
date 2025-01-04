@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "components/autofill/core/browser/autofill_ai_delegate.h"
+#include "components/autofill/core/browser/integrators/autofill_ai_delegate.h"
 #include "content/public/browser/navigation_handle.h"
 
 namespace autofill_ai {

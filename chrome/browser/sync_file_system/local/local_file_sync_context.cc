@@ -577,8 +577,7 @@ void LocalFileSyncContext::OnWriteEnabled(const FileSystemURL& url) {
   // Nothing to do for now.
 }
 
-LocalFileSyncContext::~LocalFileSyncContext() {
-}
+LocalFileSyncContext::~LocalFileSyncContext() = default;
 
 void LocalFileSyncContext::ScheduleNotifyChangesUpdatedOnIOThread(
     base::OnceClosure callback) {

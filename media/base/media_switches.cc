@@ -1006,12 +1006,6 @@ const base::FeatureParam<bool>
     kHardwareSecureDecryptionFallbackOnHardwareContextReset{
         &kHardwareSecureDecryptionFallback, "on_hardware_context_reset", true};
 
-// If active, enable HiDPI mode that increases the display scale factor
-// while capturing a low-resolution tab.
-BASE_FEATURE(kWebContentsCaptureHiDpi,
-             "WebContentsCaptureHiDPI",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables handling of hardware media keys for controlling media.
 BASE_FEATURE(kHardwareMediaKeyHandling,
              "HardwareMediaKeyHandling",
@@ -1033,11 +1027,6 @@ BASE_FEATURE(kResolutionBasedDecoderPriority,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
-
-// Enables low-delay video rendering in media pipeline on "live" stream.
-BASE_FEATURE(kLowDelayVideoRenderingOnLiveStream,
-             "low-delay-video-rendering-on-live-stream",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Allows the AutoPictureInPictureTabHelper to automatically enter
 // picture-in-picture for websites with video playback (instead of only websites

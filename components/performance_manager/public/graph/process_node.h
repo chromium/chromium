@@ -24,7 +24,6 @@ namespace performance_manager {
 
 class FrameNode;
 class WorkerNode;
-class ProcessNodeObserver;
 class RenderProcessHostProxy;
 class BrowserChildProcessHostProxy;
 
@@ -46,9 +45,6 @@ class ProcessNode : public TypedNode<ProcessNode> {
   using NodeSet = base::flat_set<const Node*>;
   template <class ReturnType>
   using NodeSetView = NodeSetView<NodeSet, ReturnType>;
-
-  using Observer = ProcessNodeObserver;
-  class ObserverDefaultImpl;
 
   // The type of content a renderer can host.
   enum class ContentType : uint32_t {
@@ -137,8 +133,9 @@ class ProcessNode : public TypedNode<ProcessNode> {
   // only be non-zero on Linux, ChromeOS, and Android.
   virtual uint64_t GetPrivateSwapKb() const = 0;
 
-  // Returns the render process id (equivalent to RenderProcessHost::GetID()),
-  // or ChildProcessHost::kInvalidUniqueID if this is not a renderer.
+  // Returns the render process id (equivalent to
+  // RenderProcessHost::GetDeprecatedID()), or
+  // ChildProcessHost::kInvalidUniqueID if this is not a renderer.
   virtual RenderProcessHostId GetRenderProcessHostId() const = 0;
 
   // Returns a proxy to the RenderProcessHost associated with this node. The
@@ -160,8 +157,7 @@ class ProcessNode : public TypedNode<ProcessNode> {
   virtual ContentTypes GetHostedContentTypes() const = 0;
 };
 
-// Pure virtual observer interface. Derive from this if you want to be forced to
-// implement the entire interface.
+// Observer interface for process node
 class ProcessNodeObserver : public base::CheckedObserver {
  public:
   ProcessNodeObserver();
@@ -173,55 +169,60 @@ class ProcessNodeObserver : public base::CheckedObserver {
 
   // Node lifetime notifications.
 
-  // Called when a |process_node| is added to the graph. Observers must not make
-  // any property changes or cause re-entrant notifications during the scope of
-  // this call.
-  virtual void OnProcessNodeAdded(const ProcessNode* process_node) = 0;
+  // Called before a `process_node` is added to the graph. OnPageNodeAdded() is
+  // better for most purposes, but this can be useful if an observer needs to
+  // check the state of the graph without including `process_node`, or to set
+  // initial properties on the node that should be visible to other observers in
+  // OnProcessNodeAdded().
+  //
+  // Observers may make property changes during the scope of this call, as long
+  // as they don't cause notifications to be sent and don't modify pointers
+  // to/from other nodes, since the node is still isolated from the graph. To
+  // change a property that causes notifications, post a task (which will run
+  // after OnProcessNodeAdded().
+  //
+  // Note that observers are notified in an arbitrary order, so property changes
+  // made here may or may not be visible to other observers in
+  // OnBeforeProcessNodeAdded().
+  virtual void OnBeforeProcessNodeAdded(const ProcessNode* process_node) {}
 
-  // The process associated with |process_node| has been started or has exited.
+  // Called after a `process_node` is added to the graph. Observers may *not*
+  // make property changes during the scope of this call. To change a property,
+  // post a task which will run after all observers.
+  virtual void OnProcessNodeAdded(const ProcessNode* process_node) {}
+
+  // The process associated with `process_node` has been started or has exited.
   // This implies some or all of the process, process_id, launch time and/or
   // exit status properties have changed.
-  virtual void OnProcessLifetimeChange(const ProcessNode* process_node) = 0;
+  virtual void OnProcessLifetimeChange(const ProcessNode* process_node) {}
 
-  // Called before a |process_node| is removed from the graph. Observers must
-  // not make any property changes or cause re-entrant notifications during the
-  // scope of this call.
-  virtual void OnBeforeProcessNodeRemoved(const ProcessNode* process_node) = 0;
+  // Called before a `process_node` is removed from the graph. Observers may
+  // *not* make property changes during the scope of this call. The node will be
+  // deleted before any task posted from this scope runs.
+  virtual void OnBeforeProcessNodeRemoved(const ProcessNode* process_node) {}
+
+  // Called after a `process_node` is removed from the graph.
+  // OnBeforeProcessNodeRemoved() is better for most purposes, but this can be
+  // useful if an observer needs to check the state of the graph without
+  // including `process_node`.
+  //
+  // Observers may *not* make property changes during the scope of this call.
+  // The node will be deleted before any task posted from this scope runs.
+  virtual void OnProcessNodeRemoved(const ProcessNode* process_node) {}
 
   // Notifications of property changes.
+
   // Invoked when the |main_thread_task_load_is_low| property changes.
-  virtual void OnMainThreadTaskLoadIsLow(const ProcessNode* process_node) = 0;
+  virtual void OnMainThreadTaskLoadIsLow(const ProcessNode* process_node) {}
 
   // Invoked when the process priority changes.
   virtual void OnPriorityChanged(const ProcessNode* process_node,
-                                 base::TaskPriority previous_value) = 0;
+                                 base::TaskPriority previous_value) {}
 
   // Events with no property changes.
 
   // Fired when all frames in a process have transitioned to being frozen.
-  virtual void OnAllFramesInProcessFrozen(const ProcessNode* process_node) = 0;
-};
-
-// Default implementation of observer that provides dummy versions of each
-// function. Derive from this if you only need to implement a few of the
-// functions.
-class ProcessNode::ObserverDefaultImpl : public ProcessNodeObserver {
- public:
-  ObserverDefaultImpl();
-
-  ObserverDefaultImpl(const ObserverDefaultImpl&) = delete;
-  ObserverDefaultImpl& operator=(const ObserverDefaultImpl&) = delete;
-
-  ~ObserverDefaultImpl() override;
-
-  // ProcessNodeObserver implementation:
-  void OnProcessNodeAdded(const ProcessNode* process_node) override {}
-  void OnProcessLifetimeChange(const ProcessNode* process_node) override {}
-  void OnBeforeProcessNodeRemoved(const ProcessNode* process_node) override {}
-  void OnMainThreadTaskLoadIsLow(const ProcessNode* process_node) override {}
-  void OnPriorityChanged(const ProcessNode* process_node,
-                         base::TaskPriority previous_value) override {}
-  void OnAllFramesInProcessFrozen(const ProcessNode* process_node) override {}
+  virtual void OnAllFramesInProcessFrozen(const ProcessNode* process_node) {}
 };
 
 }  // namespace performance_manager

@@ -14,6 +14,7 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/numerics/safe_conversions.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -208,17 +209,21 @@ void AudioBufferConverter::ConvertIfPossible() {
     // will crash on unaligned data.
     const int frames_this_iteration = std::min(
         static_cast<int>(SincResampler::kDefaultRequestSize), frames_remaining);
-    const int offset_into_buffer =
+    const size_t offset_into_buffer =
         output_buffer->frame_count() - frames_remaining;
 
     // Wrap the portion of the AudioBuffer in an AudioBus so the AudioConverter
     // can fill it.
     output_bus->set_frames(frames_this_iteration);
     for (int ch = 0; ch < output_buffer->channel_count(); ++ch) {
+      AudioBus::Channel output_channel = base::span(
+          reinterpret_cast<float*>(output_buffer->channel_data()[ch]),
+          base::checked_cast<size_t>(output_buffer->frame_count()));
+
       output_bus->SetChannelData(
-          ch,
-          reinterpret_cast<float*>(output_buffer->channel_data()[ch]) +
-              offset_into_buffer);
+          ch, output_channel.subspan(
+                  offset_into_buffer,
+                  base::checked_cast<size_t>(frames_this_iteration)));
     }
 
     // Do the actual conversion.

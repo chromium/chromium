@@ -34,13 +34,15 @@ void DrawFallbackIconLetter(gfx::Canvas* canvas,
                             SkColor monogram_color,
                             int size,
                             int offset) {
-  if (monogram.empty())
+  if (monogram.empty()) {
     return;
+  }
 
   const double kDefaultFontSizeRatio = 0.5;
   int font_size = static_cast<int>(size * kDefaultFontSizeRatio);
-  if (font_size <= 0)
+  if (font_size <= 0) {
     return;
+  }
 
   gfx::Font::Weight font_weight = gfx::Font::Weight::NORMAL;
 

@@ -413,12 +413,10 @@ class PLATFORM_EXPORT GraphicsContext {
                          const gfx::PointF&,
                          const AutoDarkMode& auto_dark_mode);
 
-  void DrawBidiText(
-      const Font&,
-      const TextRunPaintInfo&,
-      const gfx::PointF&,
-      const AutoDarkMode& auto_dark_mode,
-      Font::CustomFontNotReadyAction = Font::kDoNotPaintIfFontNotReady);
+  void DrawBidiText(const Font&,
+                    const TextRunPaintInfo&,
+                    const gfx::PointF&,
+                    const AutoDarkMode& auto_dark_mode);
 
   // BeginLayer()/EndLayer() behave like Save()/Restore() for CTM and clip
   // states. Apply opacity, blend mode, filter when the layer is composited on

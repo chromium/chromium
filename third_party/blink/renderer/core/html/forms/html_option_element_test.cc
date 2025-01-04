@@ -34,7 +34,7 @@ class HTMLOptionElementTest : public PageTestBase {
 
   VectorOf<HTMLOptionElement> OptionListToVector(HTMLSelectElement* select) {
     VectorOf<HTMLOptionElement> options;
-    for (HTMLOptionElement* option : select->GetOptionList()) {
+    for (auto& option : select->GetOptionList()) {
       options.push_back(option);
     }
     return options;

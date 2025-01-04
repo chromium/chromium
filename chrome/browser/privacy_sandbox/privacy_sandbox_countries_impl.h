@@ -13,7 +13,7 @@ class PrivacySandboxCountriesImpl : public PrivacySandboxCountries {
 
   bool IsRestOfWorldCountry() override;
 
-  bool IsChina() override;
+  bool IsLatestCountryChina() override;
 };
 
 #endif  // CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_COUNTRIES_IMPL_H_

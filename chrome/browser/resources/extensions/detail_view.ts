@@ -303,6 +303,10 @@ export class ExtensionsDetailViewElement extends
     this.reloadItem().catch((loadError) => this.fire('load-error', loadError));
   }
 
+  protected onUploadClick_() {
+    this.delegate.uploadItemToAccount(this.data.id);
+  }
+
   protected onRemoveClick_() {
     if (this.showSafetyCheck_) {
       chrome.metricsPrivate.recordUserAction('SafetyCheck.DetailRemoveClicked');
@@ -583,6 +587,15 @@ export class ExtensionsDetailViewElement extends
     return !this.showSafetyCheck_ && !!this.data.blocklistText;
   }
 
+  /**
+   * Shows only one text if both unsupported developer extension and safety
+   * check texts are present. Safety check text takes precedence.
+   */
+  protected shouldShowUnsupportedDeveloperExtensionText_(): boolean {
+    return !this.showSafetyCheck_ &&
+        this.data.disableReasons.unsupportedDeveloperExtension;
+  }
+
   protected showRepairButton_(): boolean {
     return getEnableControl(this.data) === EnableControl.REPAIR;
   }
@@ -669,7 +682,7 @@ export class ExtensionsDetailViewElement extends
   /**
    * Returns the HTML representation of the Manifest V2 deprecation message
    * subtitle string. We need the HTML representation instead of the string
-   * since the string holds a link.
+   * since the string holds substitutions.
    */
   protected getMv2DeprecationMessageSubtitle_(): TrustedHTML {
     switch (this.mv2ExperimentStage_) {
@@ -677,8 +690,11 @@ export class ExtensionsDetailViewElement extends
         return window.trustedTypes!.emptyHTML;
       case Mv2ExperimentStage.WARNING:
         return this.i18nAdvanced('mv2DeprecationMessageWarningSubtitle', {
-          substitutions:
-              ['https://chromewebstore.google.com/category/extensions'],
+          substitutions: [
+            'https://chromewebstore.google.com/category/extensions',
+            this.i18n('opensInNewTab'),
+          ],
+          attrs: ['aria-description'],
         });
       case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
       case Mv2ExperimentStage.UNSUPPORTED:
@@ -686,7 +702,9 @@ export class ExtensionsDetailViewElement extends
           substitutions: [
             'https://support.google.com/chrome_webstore' +
                 '?p=unsupported_extensions',
+            this.i18n('opensInNewTab'),
           ],
+          attrs: ['aria-description'],
         });
       default:
         assertNotReached();

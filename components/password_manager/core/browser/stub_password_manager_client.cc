@@ -121,7 +121,7 @@ const CredentialsFilter* StubPasswordManagerClient::GetStoreResultFilter()
   return &credentials_filter_;
 }
 
-autofill::LogManager* StubPasswordManagerClient::GetLogManager() {
+autofill::LogManager* StubPasswordManagerClient::GetCurrentLogManager() {
   return &log_manager_;
 }
 

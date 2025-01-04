@@ -4,6 +4,8 @@
 
 #include "components/performance_manager/freezing/cannot_freeze_reason.h"
 
+#include "base/notreached.h"
+
 namespace performance_manager {
 
 const char* CannotFreezeReasonToString(CannotFreezeReason reason) {
@@ -16,10 +18,14 @@ const char* CannotFreezeReasonToString(CannotFreezeReason reason) {
       return "audible";
     case CannotFreezeReason::kRecentlyAudible:
       return "recently audible";
+    case CannotFreezeReason::kFreezingOriginTrialOptOut:
+      return "freezing origin trial opt-out";
     case CannotFreezeReason::kHoldingWebLock:
       return "holding Web Lock";
     case CannotFreezeReason::kHoldingIndexedDBLock:
       return "holding IndexedDB lock";
+    case CannotFreezeReason::kHoldingBlockingIndexedDBLock:
+      return "holding blocking indexedDB lock";
     case CannotFreezeReason::kConnectedToUsbDevice:
       return "connected to USB device";
     case CannotFreezeReason::kConnectedToBluetoothDevice:
@@ -42,7 +48,12 @@ const char* CannotFreezeReasonToString(CannotFreezeReason reason) {
       return "has an active WebRTC connection";
     case CannotFreezeReason::kLoading:
       return "loading";
+    case CannotFreezeReason::kNotificationPermission:
+      return "has notification permission";
+    case CannotFreezeReason::kOptedOut:
+      return "opted out";
   }
+  NOTREACHED();
 }
 
 }  // namespace performance_manager

@@ -13,11 +13,21 @@
 #include "media/mojo/services/mojo_cdm_file_io.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/metrics/public/cpp/mojo_ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace media {
 
 MojoCdmHelper::MojoCdmHelper(mojom::FrameInterfaceFactory* frame_interfaces)
-    : frame_interfaces_(frame_interfaces) {}
+    : frame_interfaces_(frame_interfaces) {
+  // Retrieve the Ukm recording objects in the constructor of MojoCdmHelper
+  // because the connection to the renderer frame host might be disconnected at
+  // any time and we record the Ukm in the destructor of CdmAdapter, so we
+  // should store the objects as early as possible.
+  RetrieveUkmRecordingObjects();
+}
 
 MojoCdmHelper::~MojoCdmHelper() = default;
 
@@ -125,6 +135,46 @@ void MojoCdmHelper::ReportFileReadSize(int file_size_bytes) {
     file_read_cb_.Run(file_size_bytes);
 }
 
+void MojoCdmHelper::RecordUkm(const CdmMetricsData& cdm_metrics_data) {
+  if (ukm_source_id_ == ukm::kInvalidSourceId) {
+    DLOG(ERROR) << "Invalid UKM source ID";
+    return;
+  }
+
+  auto ukm_builder = ukm::builders::Media_EME_CdmMetrics(ukm_source_id_);
+
+  if (cdm_metrics_data.license_sdk_version.has_value()) {
+    ukm_builder.SetLicenseSdkVersion(
+        cdm_metrics_data.license_sdk_version.value());
+  }
+
+  ukm_builder.SetNumberOfUpdateCalls(cdm_metrics_data.number_of_update_calls);
+
+  ukm_builder.SetNumberOfOnMessageEvents(
+      cdm_metrics_data.number_of_on_message_events);
+
+  if (cdm_metrics_data.certificate_serial_number.has_value()) {
+    ukm_builder.SetCertificateSerialNumber(
+        cdm_metrics_data.certificate_serial_number.value());
+  }
+
+  if (cdm_metrics_data.decoder_bypass_block_count.has_value()) {
+    ukm_builder.SetDecoderBypassBlockCount(
+        cdm_metrics_data.decoder_bypass_block_count.value());
+  }
+
+  ukm_builder.Record(ukm_recorder_.get());
+}
+
+void MojoCdmHelper::RetrieveUkmRecordingObjects() {
+  ConnectToUkmRecorderFactory();
+
+  ukm_recorder_ = ukm::MojoUkmRecorder::Create(*ukm_recorder_factory_);
+
+  // TODO(crbug.com/382073085): Find a better way of updating the Ukm Source ID.
+  frame_interfaces_->GetPageUkmSourceId(&ukm_source_id_);
+}
+
 void MojoCdmHelper::ConnectToOutputProtection() {
   if (!output_protection_) {
     DVLOG(2) << "Connect to mojom::OutputProtection";
@@ -140,6 +190,16 @@ void MojoCdmHelper::ConnectToCdmDocumentService() {
     DVLOG(2) << "Connect to mojom::CdmDocumentService";
     frame_interfaces_->BindEmbedderReceiver(
         cdm_document_service_.BindNewPipeAndPassReceiver());
+    // No reset_on_disconnect() since MediaInterfaceProxy should be destroyed
+    // when document is destroyed, which will destroy MojoCdmHelper as well.
+  }
+}
+
+void MojoCdmHelper::ConnectToUkmRecorderFactory() {
+  if (!ukm_recorder_factory_) {
+    DVLOG(2) << "Connect to ukm::mojom::UkmRecorderFactory";
+    frame_interfaces_->BindEmbedderReceiver(
+        ukm_recorder_factory_.BindNewPipeAndPassReceiver());
     // No reset_on_disconnect() since MediaInterfaceProxy should be destroyed
     // when document is destroyed, which will destroy MojoCdmHelper as well.
   }

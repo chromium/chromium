@@ -540,7 +540,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   Member<RuntimeFeatureStateOverrideContext>
       runtime_feature_state_override_context_;
 
-  bool require_safe_types_ = false;
+  bool require_trusted_types_ = false;
 };
 
 }  // namespace blink

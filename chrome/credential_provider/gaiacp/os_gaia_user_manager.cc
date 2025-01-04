@@ -6,16 +6,12 @@
 
 #include <windows.h>
 
-#include <lm.h>  // Needed for PNTSTATUS
+#include <atlcomcli.h>
+#include <lm.h>
 #include <ntstatus.h>
-#include <winternl.h>
+#include <sddl.h>
 
-#define _NTDEF_  // Prevent redefition errors, must come after <winternl.h>
-#include <ntsecapi.h>  // For POLICY_ALL_ACCESS types
-
-#include <atlcomcli.h>  // For CComBSTR
-#include <sddl.h>       // For ConvertSidToStringSid()
-
+#include "base/win/ntsecapi_shim.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/gaia_resources.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"

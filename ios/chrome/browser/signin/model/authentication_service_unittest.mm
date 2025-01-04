@@ -12,6 +12,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/test/bind.h"
 #import "base/test/gtest_util.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -141,6 +142,13 @@ class AuthenticationServiceTestBase : public PlatformTest {
         factory.CreateSyncable(registry.get());
     RegisterProfilePrefs(registry.get());
     return prefs;
+  }
+
+  void FlushTaskRunner() {
+    base::RunLoop loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, loop.QuitClosure());
+    loop.Run();
   }
 
   void VerifyLastSigninTimestamp() {
@@ -500,7 +508,7 @@ TEST_P(AuthenticationServiceTest, MDMErrorsClearedOnForeground) {
 TEST_P(AuthenticationServiceTest, MDMErrorsClearedOnSignout) {
   authentication_service()->SignIn(
       identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
+  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
   VerifyLastSigninTimestamp();
 
   SetCachedMDMInfo(identity(0), CreateRefreshAccessTokenError(identity(0)));
@@ -508,7 +516,7 @@ TEST_P(AuthenticationServiceTest, MDMErrorsClearedOnSignout) {
       signin_metrics::ProfileSignout::kAbortSignin,
       /*force_clear_browsing_data=*/false, nil);
   EXPECT_FALSE(HasCachedMDMInfo(identity(0)));
-  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 0UL);
+  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
   EXPECT_EQ(ClearBrowsingDataCount(), 0);
 }
 
@@ -518,7 +526,7 @@ TEST_P(AuthenticationServiceTest,
        MDMErrorsClearedOnSignoutAndClearBrowsingData) {
   authentication_service()->SignIn(
       identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
+  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
   VerifyLastSigninTimestamp();
 
   SetCachedMDMInfo(identity(0), CreateRefreshAccessTokenError(identity(0)));
@@ -526,7 +534,7 @@ TEST_P(AuthenticationServiceTest,
       signin_metrics::ProfileSignout::kAbortSignin,
       /*force_clear_browsing_data=*/true, nil);
   EXPECT_FALSE(HasCachedMDMInfo(identity(0)));
-  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 0UL);
+  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
   EXPECT_EQ(ClearBrowsingDataCount(), 1);
 }
 
@@ -540,6 +548,10 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
   FakeSystemIdentity* fake_system_identity =
       [FakeSystemIdentity fakeManagedIdentity];
   fake_system_identity_manager()->AddIdentity(fake_system_identity);
+  ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
+  // IdentityManager is updated via a posted task; wait for that to happen.
+  FlushTaskRunner();
+  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
 
   authentication_service()->SignIn(
       identity(2), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
@@ -553,7 +565,7 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
       signin_metrics::ProfileSignout::kAbortSignin,
       /*force_clear_browsing_data=*/false, nil);
   EXPECT_FALSE(HasCachedMDMInfo(identity(2)));
-  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 0UL);
+  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   EXPECT_EQ(ClearBrowsingDataCount(), 0);
 }
 
@@ -566,11 +578,15 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
   FakeSystemIdentity* fake_system_identity =
       [FakeSystemIdentity fakeManagedIdentity];
   fake_system_identity_manager()->AddIdentity(fake_system_identity);
+  ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
+  // IdentityManager is updated via a posted task; wait for that to happen.
+  FlushTaskRunner();
+  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
 
   authentication_service()->SignIn(
       identity(2), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
-  EXPECT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
+  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
+  ASSERT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
       signin::ConsentLevel::kSignin));
   VerifyLastSigninTimestamp();
 
@@ -582,7 +598,7 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
       signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
       /*force_clear_browsing_data=*/false, nil);
   EXPECT_FALSE(HasCachedMDMInfo(identity(2)));
-  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 0UL);
+  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   EXPECT_EQ(ClearBrowsingDataFromSigninCount(), 1);
 }
 
@@ -601,6 +617,10 @@ TEST_F(
   FakeSystemIdentity* fake_system_identity =
       [FakeSystemIdentity fakeManagedIdentity];
   fake_system_identity_manager()->AddIdentity(fake_system_identity);
+  ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
+  // IdentityManager is updated via a posted task; wait for that to happen.
+  FlushTaskRunner();
+  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
 
   authentication_service()->SignIn(
       identity(2), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
@@ -615,7 +635,7 @@ TEST_F(
       signin_metrics::ProfileSignout::kAbortSignin,
       /*force_clear_browsing_data=*/false, nil);
   ASSERT_FALSE(HasCachedMDMInfo(identity(2)));
-  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 0UL);
+  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   EXPECT_EQ(ClearBrowsingDataCount(), 0);
   EXPECT_EQ(ClearBrowsingDataFromSigninCount(), 0);
   [userDefaults removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
@@ -633,6 +653,10 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
   FakeSystemIdentity* fake_system_identity =
       [FakeSystemIdentity fakeManagedIdentity];
   fake_system_identity_manager()->AddIdentity(fake_system_identity);
+  ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
+  // IdentityManager is updated via a posted task; wait for that to happen.
+  FlushTaskRunner();
+  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
 
   authentication_service()->SignIn(
       identity(2), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
@@ -660,7 +684,7 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
       signin_metrics::ProfileSignout::kAbortSignin,
       /*force_clear_browsing_data=*/false, nil);
   ASSERT_FALSE(HasCachedMDMInfo(identity(2)));
-  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 0UL);
+  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   EXPECT_EQ(ClearBrowsingDataCount(), 1);
   EXPECT_EQ(ClearBrowsingDataFromSigninCount(), 0);
 }
@@ -671,7 +695,7 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
 TEST_P(AuthenticationServiceTest, MDMErrorsDontSeedEmptyAccountIds) {
   authentication_service()->SignIn(
       identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
+  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
   VerifyLastSigninTimestamp();
 
   SetCachedMDMInfo(identity(0), CreateRefreshAccessTokenError(identity(0)));
@@ -705,6 +729,10 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
   FakeSystemIdentity* fake_system_identity =
       [FakeSystemIdentity fakeManagedIdentity];
   fake_system_identity_manager()->AddIdentity(fake_system_identity);
+  ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
+  // IdentityManager is updated via a posted task; wait for that to happen.
+  FlushTaskRunner();
+  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
 
   authentication_service()->SignIn(
       identity(2), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
@@ -720,7 +748,7 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
       signin_metrics::ProfileSignout::kAbortSignin,
       /*force_clear_browsing_data=*/false, nil);
   EXPECT_FALSE(HasCachedMDMInfo(identity(2)));
-  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 0UL);
+  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   EXPECT_EQ(ClearBrowsingDataCount(), 1);
 }
 
@@ -734,6 +762,10 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
   FakeSystemIdentity* fake_system_identity =
       [FakeSystemIdentity fakeManagedIdentity];
   fake_system_identity_manager()->AddIdentity(fake_system_identity);
+  ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
+  // IdentityManager is updated via a posted task; wait for that to happen.
+  FlushTaskRunner();
+  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
 
   authentication_service()->SignIn(
       identity(2), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
@@ -748,7 +780,7 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
       signin_metrics::ProfileSignout::kAbortSignin,
       /*force_clear_browsing_data=*/true, nil);
   EXPECT_FALSE(HasCachedMDMInfo(identity(2)));
-  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 0UL);
+  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   EXPECT_EQ(ClearBrowsingDataCount(), 1);
 }
 

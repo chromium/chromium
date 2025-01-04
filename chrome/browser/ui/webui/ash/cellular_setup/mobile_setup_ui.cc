@@ -140,8 +140,9 @@ constexpr char kMdn[] = "MDN";
 base::Value GetCellularNetworkInfoValue(const NetworkState* network,
                                         const DeviceState* device) {
   base::Value::Dict info;
-  if (!device || !network)
+  if (!device || !network) {
     return base::Value(std::move(info));
+  }
 
   DCHECK_EQ(network->device_path(), device->path());
 
@@ -349,8 +350,9 @@ void MobileSetupHandler::OnActivationStateChanged(
     MobileActivator::PlanActivationState state,
     MobileActivator::ActivationError error) {
   DCHECK_EQ(TYPE_ACTIVATION, type_);
-  if (!web_ui())
+  if (!web_ui()) {
     return;
+  }
 
   NetworkStateHandler* network_state_handler =
       NetworkHandler::Get()->network_state_handler();
@@ -376,8 +378,9 @@ void MobileSetupHandler::OnJavascriptDisallowed() {
 }
 
 void MobileSetupHandler::Reset() {
-  if (!active_)
+  if (!active_) {
     return;
+  }
   active_ = false;
 
   if (type_ == TYPE_ACTIVATION) {
@@ -397,12 +400,14 @@ void MobileSetupHandler::RegisterMessages() {
 
 void MobileSetupHandler::HandleGetDeviceInfo(const base::Value::List& args) {
   DCHECK_NE(TYPE_ACTIVATION, type_);
-  if (!web_ui())
+  if (!web_ui()) {
     return;
+  }
 
   std::string path = web_ui()->GetWebContents()->GetURL().path();
-  if (path.empty())
+  if (path.empty()) {
     return;
+  }
 
   active_ = true;
   AllowJavascript();
@@ -445,12 +450,14 @@ void MobileSetupHandler::HandleGetDeviceInfo(const base::Value::List& args) {
 
 void MobileSetupHandler::DefaultNetworkChanged(
     const NetworkState* default_network) {
-  if (!web_ui())
+  if (!web_ui()) {
     return;
+  }
 
   std::string path = web_ui()->GetWebContents()->GetURL().path().substr(1);
-  if (path.empty())
+  if (path.empty()) {
     return;
+  }
 
   const NetworkState* network =
       NetworkHandler::Get()->network_state_handler()->GetNetworkState(path);
@@ -465,12 +472,14 @@ void MobileSetupHandler::DefaultNetworkChanged(
 
 void MobileSetupHandler::NetworkConnectionStateChanged(
     const NetworkState* network) {
-  if (!web_ui())
+  if (!web_ui()) {
     return;
+  }
 
   std::string path = web_ui()->GetWebContents()->GetURL().path().substr(1);
-  if (path.empty() || path != network->path())
+  if (path.empty() || path != network->path()) {
     return;
+  }
 
   UpdatePortalReachability(network, false /* do not force notification */);
 }

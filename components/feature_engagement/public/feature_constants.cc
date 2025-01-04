@@ -81,6 +81,9 @@ BASE_FEATURE(kIPHExtensionsRequestAccessButtonFeature,
 BASE_FEATURE(kIPHFocusHelpBubbleScreenReaderPromoFeature,
              "IPH_FocusHelpBubbleScreenReaderPromo",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHGlicPromoFeature,
+             "IPH_GlicPromo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHGMCCastStartStopFeature,
              "IPH_GMCCastStartStop",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -392,9 +395,6 @@ BASE_FEATURE(kIPHPageZoomFeature,
 BASE_FEATURE(kIPHPreviewsOmniboxUIFeature,
              "IPH_PreviewsOmniboxUI",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHPriceDropNTPFeature,
-             "IPH_PriceDropNTP",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHShoppingListMenuItemFeature,
              "IPH_ShoppingListMenuItem",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -421,9 +421,6 @@ BASE_FEATURE(kIPHTabSwitcherButtonFeature,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHTabSwitcherButtonSwitchIncognitoFeature,
              "IPH_TabSwitcherButtonSwitchIncognito",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHTabSwitcherFloatingActionButtonFeature,
-             "IPH_TabSwitcherFloatingActionButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHTranslateMenuButtonFeature,
              "IPH_TranslateMenuButton",
@@ -662,9 +659,6 @@ BASE_FEATURE(kIPHAutofillDisabledVirtualCardSuggestionFeature,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHAutofillExternalAccountProfileSuggestionFeature,
              "IPH_AutofillExternalAccountProfileSuggestion",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHAutofillManualFallbackFeature,
-             "IPH_AutofillManualFallback",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHAutofillPredictionImprovementsFeature,
              "IPH_AutofillPredictionImprovements",

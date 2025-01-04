@@ -11,7 +11,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace performance_manager::features {
 
@@ -187,6 +186,10 @@ BASE_FEATURE(kFreezingOnBatterySaver,
 
 BASE_FEATURE(kFreezingOnBatterySaverForTesting,
              "FreezingOnBatterySaverForTesting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kFreezingFollowsDiscardOptOut,
+             "FreezingFollowsDiscardOptOut",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kResourceAttributionIncludeOrigins,

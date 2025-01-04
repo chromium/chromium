@@ -26,19 +26,6 @@ inline constexpr char kEnableRssLinkReader[] = "enable-rss-link-reader";
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kInterestFeedV2);
 
-COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
-BASE_DECLARE_FEATURE(kInterestFeedV2Hearts);
-
-COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
-BASE_DECLARE_FEATURE(kInterestFeedV2Scrolling);
-
-// Feature that allows the client to automatically dismiss the notice card based
-// on the clicks and views on the notice card.
-#if BUILDFLAG(IS_IOS)
-COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
-BASE_DECLARE_FEATURE(kInterestFeedNoticeCardAutoDismiss);
-#endif
-
 // Use the new DiscoFeed endpoint.
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kDiscoFeedEndpoint);
@@ -84,10 +71,6 @@ BASE_DECLARE_FEATURE(kPersonalizeFeedUnsignedUsers);
 // Returns the consent level needed to request a personalized feed.
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 signin::ConsentLevel GetConsentLevelNeededForPersonalizedFeed();
-
-// Feature that enables tracking the acknowledgement state for the info cards.
-COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
-BASE_DECLARE_FEATURE(kInfoCardAcknowledgementTracking);
 
 // When enabled, no view cache is used.
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)

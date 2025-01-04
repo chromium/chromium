@@ -39,6 +39,7 @@
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/metrics/cpu_metrics_provider.h"
 #include "components/metrics/drive_metrics_provider.h"
+#include "components/metrics/dwa/dwa_service.h"
 #include "components/metrics/entropy_state_provider.h"
 #include "components/metrics/file_metrics_provider.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -207,6 +208,7 @@ void AndroidMetricsServiceClient::RegisterPrefs(PrefRegistrySimple* registry) {
   metrics::FileMetricsProvider::RegisterPrefs(registry);
   metrics::StabilityMetricsHelper::RegisterPrefs(registry);
   ukm::UkmService::RegisterPrefs(registry);
+  metrics::dwa::DwaService::RegisterPrefs(registry);
 }
 
 void AndroidMetricsServiceClient::Initialize(PrefService* pref_service) {
@@ -288,6 +290,7 @@ void AndroidMetricsServiceClient::MaybeStartMetrics() {
     }
 
     CreateUkmService();
+    CreateDwaService();
   } else {
     // Even though reporting is not enabled, CreateFileMetricsProvider() is
     // called. This ensures on disk state is removed.
@@ -413,6 +416,31 @@ void AndroidMetricsServiceClient::UpdateUkmService() {
     ukm_service_->DisableRecording();
     ukm_service_->DisableReporting();
   }
+}
+
+void AndroidMetricsServiceClient::UpdateDwaService() {
+  if (!dwa_service_) {
+    return;
+  }
+  // DWA is tied to UKM consent.
+  bool consent_or_flag = IsConsentGiven() || IsMetricsReportingForceEnabled();
+  bool allowed = IsDwaAllowedForAllProfiles();
+  bool is_incognito = IsOffTheRecordSessionActive();
+
+  if (consent_or_flag && allowed && !is_incognito) {
+    metrics::dwa::DwaRecorder::Get()->EnableRecording();
+    dwa_service_->EnableReporting();
+  } else {
+    metrics::dwa::DwaRecorder::Get()->DisableRecording();
+    metrics::dwa::DwaRecorder::Get()->Purge();
+    dwa_service_->DisableReporting();
+  }
+}
+
+void AndroidMetricsServiceClient::CreateDwaService() {
+  dwa_service_ =
+        std::make_unique<metrics::dwa::DwaService>(this, pref_service_);
+  UpdateDwaService();
 }
 
 bool AndroidMetricsServiceClient::IsConsentDetermined() const {
@@ -564,6 +592,10 @@ base::TimeDelta AndroidMetricsServiceClient::GetStandardUploadInterval() {
 }
 
 bool AndroidMetricsServiceClient::IsUkmAllowedForAllProfiles() {
+  return false;
+}
+
+bool AndroidMetricsServiceClient::IsDwaAllowedForAllProfiles() {
   return false;
 }
 

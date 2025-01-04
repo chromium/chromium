@@ -19,8 +19,8 @@
 #include "chrome/browser/ui/views/autofill/popup/mock_selection_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/password_favicon_loader.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/user_education/common/new_badge/new_badge_controller.h"
 #include "components/user_education/common/user_education_features.h"
@@ -53,9 +53,9 @@ Suggestion CreateSuggestionWithChildren(const std::u16string& main_text,
   return suggestion;
 }
 
-Suggestion CreatePredictionImprovementsFeedback() {
+Suggestion CreateAutofillAiFeedback() {
   Suggestion suggestion(SuggestionType::kAutofillAiFeedback);
-  suggestion.icon = Suggestion::Icon::kAutofillPredictionImprovements;
+  suggestion.icon = Suggestion::Icon::kAutofillAi;
   suggestion.highlight_on_select = false;
   suggestion.voice_over = u"Required feedback screen reader text.";
   return suggestion;
@@ -85,10 +85,10 @@ const Suggestion kSuggestions[] = {
                "label",
                Suggestion::Icon::kGlobe,
                SuggestionType::kSeePromoCodeDetails),
-    CreatePredictionImprovementsFeedback(),
+    CreateAutofillAiFeedback(),
     Suggestion("Autofill_with_AI",
                "",
-               Suggestion::Icon::kAutofillPredictionImprovements,
+               Suggestion::Icon::kAutofillAi,
                SuggestionType::kRetrieveAutofillAi),
 };
 const Suggestion kExpandableSuggestions[] = {CreateSuggestionWithChildren(

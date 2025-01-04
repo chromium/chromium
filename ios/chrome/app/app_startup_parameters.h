@@ -14,7 +14,9 @@ enum class ApplicationModeForTabOpening {
   NORMAL,
   INCOGNITO,
   CURRENT,
-  UNDETERMINED
+  UNDETERMINED,
+  // An incognito mode setted by app switcher.
+  APP_SWITCHER_INCOGNITO,
 };
 
 enum TabOpeningPostOpeningAction {
@@ -114,6 +116,13 @@ class GURL;
 
 - (instancetype)initWithExternalURL:(const GURL&)externalURL
                         completeURL:(const GURL&)completeURL
+                    applicationMode:(ApplicationModeForTabOpening)mode
+               forceApplicationMode:(BOOL)forceApplicationMode
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithExternalURL:(const GURL&)externalURL
+                        completeURL:(const GURL&)completeURL
+                        sourceAppID:(NSString*)sourceAppID
                     applicationMode:(ApplicationModeForTabOpening)mode
                forceApplicationMode:(BOOL)forceApplicationMode
     NS_DESIGNATED_INITIALIZER;

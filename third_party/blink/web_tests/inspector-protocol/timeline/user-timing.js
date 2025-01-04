@@ -76,6 +76,14 @@
       e.args.startTime = roundForFlakes(e.args.startTime - zeroHighRes);
     }
 
+    if (e.args.data?.callTime) {
+      e.args.data.callTime = 0;
+    }
+
+    if (e.args.callTime) {
+      e.args.callTime = 0;
+    }
+
     const line = [
       e.ph.padEnd(2),
       e['name'].padEnd(20),

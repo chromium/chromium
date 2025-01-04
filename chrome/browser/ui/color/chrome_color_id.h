@@ -317,7 +317,6 @@
   E_CPONLY(kColorOmniboxAnswerIconGM3Background) \
   E_CPONLY(kColorOmniboxAnswerIconGM3Foreground) \
   E_CPONLY(kColorOmniboxBubbleOutline) \
-  E_CPONLY(kColorOmniboxBubbleOutlineExperimentalKeywordMode) \
   E_CPONLY(kColorOmniboxChipInUseActivityIndicatorBackground) \
   E_CPONLY(kColorOmniboxChipInUseActivityIndicatorForeground) \
   E_CPONLY(kColorOmniboxChipBackground) \
@@ -425,6 +424,7 @@
   /* Product Specifications colors */ \
   E_CPONLY(kColorProductSpecificationsButtonBackground) \
   E_CPONLY(kColorProductSpecificationsCitationBackground) \
+  E_CPONLY(kColorProductSpecificationsComparisonTableListBackground) \
   E_CPONLY(kColorProductSpecificationsDetailChipBackground) \
   E_CPONLY(kColorProductSpecificationsDisclosureBackground) \
   E_CPONLY(kColorProductSpecificationsDisclosureForeground) \
@@ -588,9 +588,6 @@
   /* Share-this-tab dialog colors. */ \
   E_CPONLY(kColorShareThisTabAudioToggleBackground) \
   E_CPONLY(kColorShareThisTabSourceViewBorder) \
-  /* Experimentation */ \
-  E_CPONLY(kColorShoppingPageActionIconBackgroundVariant) \
-  E_CPONLY(kColorShoppingPageActionIconForegroundVariant) \
   /* Side panel colors. */ \
   E_CPONLY(kColorSidePanelBackground) \
   E_CPONLY(kColorSidePanelBadgeBackground) \
@@ -781,12 +778,17 @@
   E_CPONLY(kColorTabSearchImageWindowFrame) \
   E_CPONLY(kColorTabSearchMediaIcon) \
   E_CPONLY(kColorTabSearchMediaRecordingIcon) \
+  E_CPONLY(kColorTabSearchMediaGlicActiveIcon) \
   E_CPONLY(kColorTabSearchPrimaryForeground) \
   E_CPONLY(kColorTabSearchSecondaryForeground) \
   E_CPONLY(kColorTabSearchSelected) \
   E_CPONLY(kColorTabSearchScrollbarThumb) \
   /* Task Manager colors. */ \
   E_CPONLY(kColorTaskManagerBackground) \
+  E_CPONLY(kColorTaskManagerSearchBarBackground) \
+  E_CPONLY(kColorTaskManagerSearchBarHoverOn) \
+  E_CPONLY(kColorTaskManagerSearchBarTransparent) \
+  E_CPONLY(kColorTaskManagerSearchBarPlaceholderText) \
   /* Thumbnail tab colors. */ \
   E_CPONLY(kColorThumbnailTabBackground) \
   E_CPONLY(kColorThumbnailTabForeground) \

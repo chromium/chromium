@@ -44,8 +44,8 @@ UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kRequireLeadingInTextViewWithLeading);
 // file.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kSelectFileOpenDocument);
 
-// TODO(b/328601354): Cleanup flag after investigating nothing is broken after
-// changing the default behavior for EventForwarder observers.
+// TODO(crbug.com/328601354): Cleanup flag after investigating nothing is broken
+// after changing the default behavior for EventForwarder observers.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(
     kSendTouchMovesToEventForwarderObservers);
 
@@ -55,6 +55,12 @@ UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kCheckIntentCallerPermission);
 
 // Whether photo picker should be disabled for video capture.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kDisablePhotoPickerForVideoCapture);
+
+// Feature controlling how to compute work area on Android.
+// TODO(crbug.com/372385871): Cleanup flag after investigating nothing is broken
+// after changing the default behavior for
+// availWidth/availHeight/availTop/availLeft.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kUsingCorrectWorkArea);
 }  // namespace ui
 
 #endif  // UI_ANDROID_UI_ANDROID_FEATURES_H_

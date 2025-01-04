@@ -147,7 +147,7 @@ scoped_refptr<EncodedFormData> DataPipeFormData() {
   WebHTTPBody body;
   body.Initialize();
   // Add data.
-  body.AppendData(WebData("foo", 3));
+  body.AppendData(WebData(base::byte_span_from_cstring("foo")));
 
   // Add data pipe.
   mojo::PendingRemote<network::mojom::blink::DataPipeGetter>
@@ -168,7 +168,7 @@ scoped_refptr<EncodedFormData> DataPipeFormData() {
   body.AppendDataPipe(std::move(data_pipe_getter_remote2));
 
   // Add some more data.
-  body.AppendData(WebData("bar baz", 7));
+  body.AppendData(WebData(base::byte_span_from_cstring("bar baz")));
 
   body.SetUniqueBoundary();
   return body;

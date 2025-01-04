@@ -6,7 +6,138 @@
 
 See https://www.chromium.org/developers/how-tos/depottools/presubmit-scripts/
 for more details about the presubmit API built into depot_tools.
+
+When adding/modify an accessibility test, the following rules apply:
+
+1.  If [name].html file exists, then at least one [name]-expected*.txt file must also exist,
+    and vice-versa.
+
+    This is not enforced for the /html/frame/ and /aria/frames/ directories, which
+    contain .html files referenced by other .html files and don't have their own expectations.
+
+    Note: This is not enforced for the /mac/ and /win/ directories (see TODOs).
+    Note: This looks for files within a CL, not in the repo, which may cause false positives (see TODOs).
+    See: CheckAccessibilityHtmlExpectationsPair
+
+2.  Every txt file must be suffixed with one of the following:
+        [name]-expected-android.txt
+        [name]-expected-android-assist-data.txt
+        [name]-expected-android-external.txt
+        [name]-expected-auralinux.txt
+        [name]-expected-auralinux-2.txt
+        [name]-expected-auralinux-xenial.txt
+        [name]-expected-blink.txt
+        [name]-expected-blink-cros.txt
+        [name]-expected-fuchsia.txt
+        [name]-expected-mac.txt
+        [name]-expected-mac-before-11.txt
+        [name]-expected-uia-win.txt
+        [name]-expected-win.txt
+    See: CheckAccessibilityTestExpectationFilenames
+
+    This does not apply in the /mac/ or /win/ sub-directories, which
+    must follow the format: [name]-expected.txt
+    See: CheckAccessibilityTestExpectationFilenamesMacWin
+
+3.  If an [name].svg and [name].html both exist, they exist in the same directory
+    See: CheckAccessibilityHtmlSvgPair
+
+4a. For any [name].html file, "[name].html" must exist in a .cc test file following
+    the given pairings:
+
+       Directory   |  Test file
+       -----------------------
+       /accname/   |  dump_accessibility_node_browsertest.cc
+       /event/     |  dump_accessibility_events_browsertest.cc
+       /mac/       |  dump_accessibility_scripts_browsertest.cc
+       /win/ia2/   |  dump_accessibility_scripts_browsertest.cc
+       *All Others |  dump_accessibility_tree_browsertest.cc
+
+    This is not enforced for the /html/frame/ and /aria/frames/ directories, which
+    contain .html files referenced by other .html files and are not tested directly.
+    See: CheckAccessibilityHtmlFileTest
+
+4b. When a .txt file with an Android expectation file (i.e. matching the pattern
+    "*-expected-android*") is also present, then the [name].html file must also
+    appear in one of the Android test files following the given pairings:
+
+       Directory   |  Test file
+       -----------------------
+       /event/     |  WebContentsAccessibilityEventsTest.java
+       /accname/   |  WebContentsAccessibilityTreeTest.java
+       /aria/      |  WebContentsAccessibilityTreeTest.java
+       /css/       |  WebContentsAccessibilityTreeTest.java
+       /html/      |  WebContentsAccessibilityTreeTest.java
+
+    For the tree tests, this rule is not enforced if the [name].html contents contains
+    any of the following elements which lead to flakes on Android:
+        <script>, <video>, <noscript>
+    See: CheckAccessibilityHtmlFileTest
+
+5.  If a [name].html file exists in /html/frame/ or /aria/frames/, then there is no
+    file [name]-expected-*.txt file in that directory.
+
+    Note: This should probably be enforced for all .txt files (see TODOs).
+    Note: This looks for files within a CL, not in the repo, which may cause false negatives (see TODOs).
+    Note: These frame directories should have consistent names, and/or be in a shared directory.
+    See: CheckFrameHtmlFilesDontHaveExpectations
+
+6.  If an .html file is being added to the /event/ directory in a CL, then there must also
+    be a change to the WebContentsAccessibilityEventsTest.java file in that CL.
+
+    Note: This rule should probably apply to both additions and deletions (see TODOs).
+    See: CheckAccessibilityEventsTestsAreIncludedForAndroid
+
+7.  If a CL contains any change to a -expected-blink.txt file, and adds an -expected-*.txt file for any
+    of the following platforms:
+
+        -mac, -win, -uia-win, -auralinux
+
+    in any of the following directories:
+        /accname/, /aria/, /css/, /event/, /html/
+
+    then there must also be a change to the WebContentsAccessibilityTreeTest.java file in that CL.
+
+    Note: There is a lot wrong with this test (see TODOs).
+    See: CheckAccessibilityTreeTestsAreIncludedForAndroid
 """
+
+# TODO(accessibility): Expand on Test #1 - A similar rule should apply for /mac/ and /win/.
+# TODO(accessibility): Expand on Test #1 - This test needs to search the current directory for
+#                      the files, not just the CL, to prevent false positives.
+# TODO(accessibility): Expand on Test #3 - If a [name].svg file exists, it should be referenced
+#                      in an html file somewhere, and/or [name].html should also exist.
+# TODO(accessibility): Expand on Test #4a - If an [name].html file exists in one of the /frame(s)/
+#                      directories, then it is referenced by an .html file in the parent directory.
+# TODO(accessibility): Expand on Test #4b - If a [name].html file exists in any of the relevant
+#                      Android directories with an element that causes flakes, then that file is not
+#                      referenced in the Android test files.
+# TODO(accessibility): Expand on Test #5 - Enforce this rule for all .txt files in general.
+# TODO(accessibility): Expand on Test #5 - This test needs to search the current directory for
+#                      the files, not just the CL, to prevent false negatives.
+# TODO(accessibility): Fix Test #6 - This should apply to additions and deletions, but for deletions
+#                      we only need to check that [name].html is not referenced in the java file.
+# TODO(accessibility): Fix Test #6 - [Maybe] Should this only apply if blink and one other platform
+#                      expectation files are present in the directory?
+# TODO(accessibility): Fix Test #7 - This test should not be applying to the /event/ directory.
+# TODO(accessibility): Fix Test #7 - This test should be restricted to [name]-expected-blink.txt
+#                      expectation files that have a matching [name]-expected-*.txt file.
+# TODO(accessibility): Fix Test #7 - This test needs to consider the flake restrictions that are
+#                      included as part of Test #4b.
+# TODO(accessibility): Fix Test #7 - This test needs to consider that when adding a new platform
+#                      expectation, the Android test may already exist/reference [name].html.
+# TODO(accessibility): Fix Test #7 - This test should apply if we are adding a new platform
+#                      and the -expected-blink.txt file already existed (and vice-versa).
+# TODO(accessibility): Fix Test #7 - This should apply to additions and deletions, but for deletions
+#                      we only need to check that [name].html is not referenced in the java file.
+# TODO(accessibility): Fix Test #7 - [Maybe] This test should consider modifications as well, as long
+#                      as the other expectation file requirements are met.
+# TODO(accessibility): Fix Test #7 - [Maybe] This test should consider matching against more platforms.
+#
+# TODO(accessibility): Create rules (and sub-directory) for crash tests, or add expectations for them.
+# TODO(accessibility): Create rules (and sub-directory) for android-only tests, or add expectations for them.
+# TODO(accessibility): Combine the /frame(s)/ directories, and/or give them consistent naming.
+# TODO(accessibility): Investigate and determine rules for remaining folders (e.g. /mathml/, /form-controls/)
 
 import os
 
@@ -189,6 +320,8 @@ def CheckAccessibilityTestExpectationFilenames(input_api, output_api):
     problems = []
 
     for f in input_api.AffectedFiles(file_filter=FileFilter):
+      if f.Action() == 'D':
+          continue
       if not any(f.LocalPath().endswith(suffix) for suffix in valid_suffixes):
         problems.append(f.LocalPath())
 
@@ -207,6 +340,37 @@ def CheckAccessibilityTestExpectationFilenames(input_api, output_api):
                 "\n  [name]-expected-uia-win.txt"
                 "\n  [name]-expected-win.txt"
                 "\nInvalid filenames:\n",
+                problems,
+            )
+        ]
+    return []
+
+def CheckAccessibilityTestExpectationFilenamesMacWin(input_api, output_api):
+    """Checks that commits that include any text file use the correct
+    naming convention for expectation files to prevent shadow failures."""
+
+    def FileFilter(affected_file):
+        return input_api.FilterSourceFile(
+            affected_file,
+            files_to_check=[r"content/test/data/accessibility/(mac|win)/.+\.txt"],
+        )
+
+    valid_suffixes = [
+        "-expected.txt",
+    ]
+    problems = []
+
+    for f in input_api.AffectedFiles(file_filter=FileFilter):
+      if f.Action() == 'D':
+          continue
+      if not any(f.LocalPath().endswith(suffix) for suffix in valid_suffixes):
+        problems.append(f.LocalPath())
+
+    if problems:
+        return [
+            output_api.PresubmitPromptWarning(
+                "Accessibility platform expectation filenames in the /mac/ or /win/"
+                "\nsub-directories should follow the pattern: [name]-expected.txt\n",
                 problems,
             )
         ]
@@ -249,7 +413,7 @@ def CheckAccessibilityHtmlSvgPair(input_api, output_api):
         return [
             output_api.PresubmitPromptWarning(
                 ".html and .svg files with the same base name should"
-                " located in the same directory.\n"
+                " be located in the same directory.\n"
                 "Problematic pairs:\n",
                 problems,
             )

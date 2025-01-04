@@ -107,6 +107,10 @@ class FakeCertificateManagerPage
     std::move(callback).Run(ask_for_confirmation_result_);
   }
 
+  void TriggerReload(
+      const std::vector<certificate_manager_v2::mojom::CertificateSource>&
+          sources) override {}
+
   void set_mocked_import_password(std::optional<std::string> password) {
     password_ = std::move(password);
   }

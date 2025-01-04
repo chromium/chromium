@@ -102,7 +102,7 @@ RelatedAppRowView::RelatedAppRowView(
   auto* app_icon_image =
       AddChildView(std::make_unique<NonAccessibleImageView>());
   app_icon_image->SetImage(
-      ui::ImageModel::FromImageSkia(icon_manager.GetFaviconImageSkia(app_id)));
+      ui::ImageModel::FromImageSkia(icon_manager.GetFaviconImageSkia(app_id_)));
 
   auto* app_name_label = AddChildView(std::make_unique<views::Label>(
       base::UTF8ToUTF16(registrar.GetAppShortName(app_id_))));

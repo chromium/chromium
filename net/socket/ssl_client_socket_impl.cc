@@ -1126,7 +1126,8 @@ ssl_verify_result_t SSLClientSocketImpl::HandleVerifyResult() {
     int ct_result = CheckCTRequirements();
     TransportSecurityState::PKPStatus pin_validity =
         context_->transport_security_state()->CheckPublicKeyPins(
-            host_and_port_, server_cert_verify_result_.is_issued_by_known_root,
+            host_and_port_.host(),
+            server_cert_verify_result_.is_issued_by_known_root,
             server_cert_verify_result_.public_key_hashes);
     switch (pin_validity) {
       case TransportSecurityState::PKPStatus::VIOLATED:
@@ -1174,7 +1175,8 @@ ssl_verify_result_t SSLClientSocketImpl::HandleVerifyResult() {
 int SSLClientSocketImpl::CheckCTRequirements() {
   TransportSecurityState::CTRequirementsStatus ct_requirement_status =
       context_->transport_security_state()->CheckCTRequirements(
-          host_and_port_, server_cert_verify_result_.is_issued_by_known_root,
+          host_and_port_.host(),
+          server_cert_verify_result_.is_issued_by_known_root,
           server_cert_verify_result_.public_key_hashes,
           server_cert_verify_result_.verified_cert.get(),
           server_cert_verify_result_.policy_compliance);
@@ -1574,8 +1576,9 @@ SSLClientSessionCache::Key SSLClientSocketImpl::GetSessionCacheKey(
 }
 
 bool SSLClientSocketImpl::IsRenegotiationAllowed() const {
-  if (negotiated_protocol_ == kProtoUnknown)
+  if (negotiated_protocol_ == NextProto::kProtoUnknown) {
     return ssl_config_.renego_allowed_default;
+  }
 
   for (NextProto allowed : ssl_config_.renego_allowed_for_protos) {
     if (negotiated_protocol_ == allowed)
@@ -1704,8 +1707,8 @@ void SSLClientSocketImpl::LogConnectEndEvent(int rv) {
 }
 
 void SSLClientSocketImpl::RecordNegotiatedProtocol() const {
-  UMA_HISTOGRAM_ENUMERATION("Net.SSLNegotiatedAlpnProtocol",
-                            negotiated_protocol_, kProtoLast + 1);
+  base::UmaHistogramEnumeration("Net.SSLNegotiatedAlpnProtocol",
+                                negotiated_protocol_);
 }
 
 int SSLClientSocketImpl::MapLastOpenSSLError(

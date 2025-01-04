@@ -51,8 +51,7 @@ public class SnackbarFacility<HostStationT extends Station<?>> extends Facility<
         }
 
         if (mExpectedButtonText != null) {
-            ViewSpec messageSpec =
-                    viewSpec(withText(mExpectedButtonText), SNACKBAR_BUTTON.getViewMatcher());
+            ViewSpec messageSpec = SNACKBAR_BUTTON.and(withText(mExpectedButtonText));
             elements.declareView(messageSpec);
         } else {
             elements.declareView(SNACKBAR_BUTTON);

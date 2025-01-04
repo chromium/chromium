@@ -218,8 +218,9 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
                             ColorScheme color_scheme,
                             bool in_forced_colors,
                             const std::optional<SkColor>& accent_color) const {
-  if (rect.IsEmpty())
+  if (rect.IsEmpty()) {
     return;
+  }
 
   canvas->save();
   canvas->clipRect(gfx::RectToSkRect(rect));
@@ -285,10 +286,11 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
     case kScrollbarUpArrow:
     case kScrollbarLeftArrow:
     case kScrollbarRightArrow:
-      if (scrollbar_button_length_ > 0)
+      if (scrollbar_button_length_ > 0) {
         PaintArrowButton(canvas, color_provider, rect, part, state,
                          color_scheme, in_forced_colors,
                          absl::get<ScrollbarArrowExtraParams>(extra));
+      }
       break;
     case kScrollbarHorizontalThumb:
     case kScrollbarVerticalThumb:
@@ -557,10 +559,11 @@ void NativeThemeBase::PaintScrollbarThumb(
   flags.setColor(SaturateAndBrighten(thumb, 0, 0.02f));
 
   SkIRect skrect;
-  if (vertical)
+  if (vertical) {
     skrect.setLTRB(rect.x(), rect.y(), midx + 1, rect.y() + rect.height());
-  else
+  } else {
     skrect.setLTRB(rect.x(), rect.y(), rect.x() + rect.width(), midy + 1);
+  }
 
   canvas->drawIRect(skrect, flags);
 
@@ -1014,10 +1017,11 @@ void NativeThemeBase::PaintSliderTrack(
   float border_width = AdjustBorderWidthByZoom(kBorderWidth, slider.zoom);
   // Shrink the track by 1 pixel so the thumb can completely cover the track
   // on both ends.
-  if (slider.vertical)
+  if (slider.vertical) {
     track_rect.inset(0, 1);
-  else
+  } else {
     track_rect.inset(1, 0);
+  }
   float border_radius =
       GetBorderRadiusForPart(kSliderTrack, rect.width(), rect.height());
   canvas->drawRoundRect(track_rect, border_radius, border_radius, flags);
@@ -1046,8 +1050,9 @@ void NativeThemeBase::PaintSliderTrack(
   SkColor border_color =
       ControlsBorderColorForState(state, color_scheme, color_provider);
   if (!UserHasContrastPreference() && state != kDisabled &&
-      color_scheme != ColorScheme::kDark)
+      color_scheme != ColorScheme::kDark) {
     border_color = SkColorSetA(border_color, 0x80);
+  }
   flags.setColor(border_color);
   track_rect.inset(border_width / 2, border_width / 2);
   canvas->drawRoundRect(track_rect, border_radius, border_radius, flags);
@@ -1093,15 +1098,17 @@ void NativeThemeBase::PaintInnerSpinButton(
     const InnerSpinButtonExtraParams& spin_button,
     ColorScheme color_scheme,
     bool in_forced_colors) const {
-  if (spin_button.read_only)
+  if (spin_button.read_only) {
     state = kDisabled;
+  }
 
   State north_state = state;
   State south_state = state;
-  if (spin_button.spin_up)
+  if (spin_button.spin_up) {
     south_state = south_state != kDisabled ? kNormal : kDisabled;
-  else
+  } else {
     north_state = north_state != kDisabled ? kNormal : kDisabled;
+  }
 
   gfx::Rect half = rect;
   ScrollbarArrowExtraParams arrow = ScrollbarArrowExtraParams();
@@ -1167,11 +1174,13 @@ void NativeThemeBase::PaintProgressBar(
   // If adjusted thickness is not zero, make sure it is equal or larger than
   // kMinimumProgressInlineValue.
   if (slider.vertical) {
-    if (adjusted_height > 0)
+    if (adjusted_height > 0) {
       adjusted_height = std::max(kMinimumProgressInlineValue, adjusted_height);
+    }
   } else {
-    if (adjusted_width > 0)
+    if (adjusted_width > 0) {
       adjusted_width = std::max(kMinimumProgressInlineValue, adjusted_width);
+    }
   }
   gfx::Rect original_value_rect(progress_bar.value_rect_x,
                                 progress_bar.value_rect_y, adjusted_width,
@@ -1194,8 +1203,9 @@ void NativeThemeBase::PaintProgressBar(
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setStrokeWidth(border_width);
   SkColor border_color = GetControlColor(kBorder, color_scheme, color_provider);
-  if (!UserHasContrastPreference() && color_scheme != ColorScheme::kDark)
+  if (!UserHasContrastPreference() && color_scheme != ColorScheme::kDark) {
     border_color = SkColorSetA(border_color, 0x80);
+  }
   flags.setColor(border_color);
   track_rect.inset(border_width / 2, border_width / 2);
   canvas->drawRoundRect(track_rect, border_radius, border_radius, flags);
@@ -1233,8 +1243,9 @@ SkColor NativeThemeBase::GetArrowColor(
     State state,
     ColorScheme color_scheme,
     const ColorProvider* color_provider) const {
-  if (state != kDisabled)
+  if (state != kDisabled) {
     return GetColor(kArrowDisabledColor, color_scheme);
+  }
 
   SkScalar track_hsv[3];
   SkColorToHSV(GetColor(kTrackColor, color_scheme), track_hsv);
@@ -1308,8 +1319,9 @@ SkColor NativeThemeBase::OutlineColor(SkScalar* hsv1, SkScalar* hsv2) const {
   SkScalar min_diff = std::clamp((hsv1[1] + hsv2[1]) * 1.2f, 0.28f, 0.5f);
   SkScalar diff = std::clamp(fabsf(hsv1[2] - hsv2[2]) / 2, min_diff, 0.5f);
 
-  if (hsv1[2] + hsv2[2] > 1.0)
+  if (hsv1[2] + hsv2[2] > 1.0) {
     diff = -diff;
+  }
 
   return SaturateAndBrighten(hsv2, -0.2f, diff);
 }
@@ -1433,11 +1445,13 @@ SkColor NativeThemeBase::GetControlColor(
     ControlColorId color_id,
     ColorScheme color_scheme,
     const ColorProvider* color_provider) const {
-  if (IsColorPipelineSupportedForControlColorId(color_provider, color_id))
+  if (IsColorPipelineSupportedForControlColorId(color_provider, color_id)) {
     return GetControlColorFromColorProvider(color_id, color_provider);
+  }
 
-  if (color_scheme == ColorScheme::kDark)
+  if (color_scheme == ColorScheme::kDark) {
     return GetDarkModeControlColor(color_id);
+  }
 
   switch (color_id) {
     case kBorder:

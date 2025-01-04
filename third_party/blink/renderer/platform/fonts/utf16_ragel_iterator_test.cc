@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/fonts/utf16_ragel_iterator.h"
+
+#include <array>
 
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,7 +33,7 @@ TEST(UTF16RagelIteratorTest, CharacterClasses) {
   icu::UnicodeString class_examples_unicode_string =
       icu::UnicodeString::fromUTF32(class_examples_codepoints,
                                     std::size(class_examples_codepoints));
-  const EmojiSegmentationCategory categories[] = {
+  const auto categories = std::to_array<EmojiSegmentationCategory>({
       EmojiSegmentationCategory::COMBINING_ENCLOSING_KEYCAP,
       EmojiSegmentationCategory::COMBINING_ENCLOSING_CIRCLE_BACKSLASH,
       EmojiSegmentationCategory::ZWJ,
@@ -50,7 +47,8 @@ TEST(UTF16RagelIteratorTest, CharacterClasses) {
       EmojiSegmentationCategory::REGIONAL_INDICATOR,
       EmojiSegmentationCategory::KEYCAP_BASE,
       EmojiSegmentationCategory::EMOJI_EMOJI_PRESENTATION,
-      EmojiSegmentationCategory::EMOJI_TEXT_PRESENTATION};
+      EmojiSegmentationCategory::EMOJI_TEXT_PRESENTATION,
+  });
   UTF16RagelIterator ragel_iterator(
       WTF::unicode::ToSpan(class_examples_unicode_string));
   for (const EmojiSegmentationCategory& category : categories) {

@@ -75,6 +75,15 @@ BASE_FEATURE(kBatteryStatusManagerBroadcastReceiverInBackground,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+// Modifies the internal allowlist behavior that enables privileged extensions
+// to bypass the HID blocklist when accessing FIDO devices. When enabled,
+// privileged extensions can access non-FIDO interfaces on known security keys.
+BASE_FEATURE(kSecurityKeyHidInterfacesAreFido,
+             "SecurityKeyHidInterfacesAreFido",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 const base::FeatureParam<device::mojom::LocationProviderManagerMode>::Option
     location_provider_manager_mode_options[] = {
         {device::mojom::LocationProviderManagerMode::kNetworkOnly,
@@ -83,6 +92,8 @@ const base::FeatureParam<device::mojom::LocationProviderManagerMode>::Option
          "PlatformOnly"},
         {device::mojom::LocationProviderManagerMode::kHybridPlatform,
          "HybridPlatform"},
+        {device::mojom::LocationProviderManagerMode::kHybridPlatform2,
+         "HybridPlatform2"},
 };
 
 const base::FeatureParam<device::mojom::LocationProviderManagerMode>

@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/barrier_callback.h"
@@ -18,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller_impl.h"
@@ -38,7 +40,9 @@
 #include "url/origin.h"
 
 namespace {
-const char kGoogleSessionTerminationHeader[] = "Sec-Session-Google-Termination";
+constexpr std::string_view kGoogleSessionTerminationHeader =
+    "Sec-Session-Google-Termination";
+constexpr std::string_view kGoogleSessionTerminationSessionIdKey = "session_id";
 
 // Determines the precedence order of
 // `chrome::mojom::ResumeBlockedRequestsTrigger` when recording metrics.
@@ -210,15 +214,26 @@ void BoundSessionCookieRefreshServiceImpl::MaybeTerminateSession(
     return;
   }
 
-  std::optional<std::string> session_id =
+  std::optional<std::string> termination_header_value =
       headers->GetNormalizedHeader(kGoogleSessionTerminationHeader);
-  if (!session_id) {
+  if (!termination_header_value) {
+    return;
+  }
+
+  base::StringPairs items;
+  base::SplitStringIntoKeyValuePairs(*termination_header_value, '=', ';',
+                                     &items);
+  auto session_id_it = base::ranges::find_if(items, [](const auto& kv_pair) {
+    return base::EqualsCaseInsensitiveASCII(
+        kv_pair.first, kGoogleSessionTerminationSessionIdKey);
+  });
+  if (session_id_it == items.end()) {
     return;
   }
 
   BoundSessionKey key = {
       .site = net::SchemefulSite(response_url).GetURL(),
-      .session_id = *session_id,
+      .session_id = session_id_it->second,
   };
   auto it = cookie_controllers_.find(key);
   if (it != cookie_controllers_.end()) {

@@ -69,8 +69,6 @@ class InterestGroupManagerImpl;
 class PrivateAggregationManager;
 struct SignedAdditionalBidSignature;
 
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kBiddingAndAuctionEncryptionMediaType);
-
 inline constexpr std::string_view kBiddingAndAuctionEncryptionRequestMediaType =
     "message/auction request";
 inline constexpr std::string_view
@@ -244,6 +242,14 @@ class CONTENT_EXPORT InterestGroupAuction
     mojo::AssociatedRemote<auction_worklet::mojom::GenerateBidFinalizer>
         bid_finalizer;
 
+    // Set to true when BeginGenerateBid() has been called on the BidderWorklet,
+    // or when the BidderWorklet has failed to load. Once it's true for all
+    // BidStates, `bidding_signals_handle->StartFetch()` is invoked on all of
+    // the bidder's BidStates. This is done to only send fetches over the
+    // network once all of a bidder's requests have been passed to the
+    // TrustedSignalsCacheImpl, to maximize request batching.
+    bool begin_generate_bid_called = false;
+
     // True when OnBiddingSignalsReceived() has been invoked. Needed to
     // correctly handle the case the bidder worklet pipe is closed before
     // OnBiddingSignalsReceived() is invoked.
@@ -363,6 +369,7 @@ class CONTENT_EXPORT InterestGroupAuction
         blink::AdDescriptor ad_descriptor,
         std::vector<blink::AdDescriptor> ad_component_descriptors,
         std::optional<uint16_t> modeling_signals,
+        std::optional<std::string> aggregate_win_signals,
         base::TimeDelta bid_duration,
         std::optional<uint32_t> bidding_signals_data_version,
         const blink::InterestGroup::Ad* bid_ad,
@@ -405,6 +412,7 @@ class CONTENT_EXPORT InterestGroupAuction
     const blink::AdDescriptor ad_descriptor;
     const std::vector<blink::AdDescriptor> ad_component_descriptors;
     const std::optional<uint16_t> modeling_signals;
+    const std::optional<std::string> aggregate_win_signals;
     const base::TimeDelta bid_duration;
     const std::optional<uint32_t> bidding_signals_data_version;
 
@@ -981,6 +989,13 @@ class CONTENT_EXPORT InterestGroupAuction
   // Score bids if both the seller worklet and config with all promises resolved
   // are ready.
   void ScoreQueuedBidsIfReady();
+
+  // Starts any pending trusted scoring signals requests. Expected only to be
+  // called once all bids have been generated. This is used to skip the delay
+  // between queuing scoring signals requests and sending them once all bids
+  // have been generated. Works for both browser-side KVv2 signals fetches, and
+  // signals fetches managed by the seller worklet process.
+  void StartPendingScoringSignalsRequests();
 
   void HandleUpdateIfOlderThan(
       const url::Origin& owner,

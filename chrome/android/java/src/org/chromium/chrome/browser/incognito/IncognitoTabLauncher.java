@@ -14,7 +14,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -24,6 +23,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -74,8 +74,7 @@ public class IncognitoTabLauncher extends Activity {
          * process. We extract the package name from the SESSION_TOKEN and store the value in new
          * intent.
          */
-        CustomTabsSessionToken sessionToken =
-                CustomTabsSessionToken.getSessionTokenFromIntent(getIntent());
+        var sessionToken = SessionHolder.getSessionHolderFromIntent(getIntent());
         String sendersPackageName =
                 CustomTabsConnection.getInstance().getClientPackageNameForSession(sessionToken);
 
@@ -105,9 +104,7 @@ public class IncognitoTabLauncher extends Activity {
     /** Returns whether the omnibox should be focused after launching the incognito tab. */
     public static boolean shouldFocusOmnibox(Intent intent) {
         assert didCreateIntent(intent);
-        return isVerifiedFirstPartyIntent(intent)
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.FOCUS_OMNIBOX_IN_INCOGNITO_TAB_INTENTS);
+        return isVerifiedFirstPartyIntent(intent);
     }
 
     /** Returns if the intent is from a verified first party app. */

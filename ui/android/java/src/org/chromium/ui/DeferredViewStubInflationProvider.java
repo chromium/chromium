@@ -9,12 +9,14 @@ import android.view.ViewStub;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Promise;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * View provider that inflates a ViewStub. This does not support inflation on a background thread,
  * therefore {@link AsyncViewProvider} should be preferred.
  * @param <T> The view type.
  */
+@NullMarked
 public class DeferredViewStubInflationProvider<T extends View> implements ViewProvider<T> {
     private final ViewStub mViewStub;
     private Promise<T> mViewPromise = new Promise<>();

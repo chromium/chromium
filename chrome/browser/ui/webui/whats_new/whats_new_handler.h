@@ -77,7 +77,7 @@ class WhatsNewHandler : public whats_new::mojom::PageHandler {
   base::Time navigation_start_time_;
 
   // Reference to the WhatsNewRegistry global singleton. This is
-  // required to outlive the WhatsNewHanlder instance.
+  // required to outlive the WhatsNewHandler instance.
   const raw_ref<const whats_new::WhatsNewRegistry> whats_new_registry_;
 
   // These are located at the end of the list of member variables to ensure the

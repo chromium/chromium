@@ -10,12 +10,10 @@ import static org.chromium.components.browser_ui.site_settings.WebsitePreference
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
-import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
@@ -40,6 +38,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.Toast;
 
@@ -100,12 +99,8 @@ public class TrackingProtectionSettings extends PrivacySandboxBaseFragment
                         new SpanApplier.SpanInfo(
                                 "<link>",
                                 "</link>",
-                                new ClickableSpan() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        onLearnMoreClicked();
-                                    }
-                                })));
+                                new ChromeClickableSpan(
+                                        getContext(), (view) -> onLearnMoreClicked()))));
 
         ChromeSwitchPreference blockAll3pCookiesSwitch =
                 (ChromeSwitchPreference) findPreference(PREF_BLOCK_ALL_TOGGLE);
@@ -136,7 +131,6 @@ public class TrackingProtectionSettings extends PrivacySandboxBaseFragment
                         return true;
                     });
             ipProtectionLearnMore.setVisible(true);
-            // TODO(b/330745124): Update the learn more action.
             ipProtectionLearnMore.setSummary(
                     SpanApplier.applySpans(
                             getResources()
@@ -145,12 +139,8 @@ public class TrackingProtectionSettings extends PrivacySandboxBaseFragment
                             new SpanApplier.SpanInfo(
                                     "<link>",
                                     "</link>",
-                                    new ClickableSpan() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            onLearnMoreClicked();
-                                        }
-                                    })));
+                                    new ChromeClickableSpan(
+                                            getContext(), (view) -> onLearnMoreClicked()))));
         }
 
         // Fingerprinting protection switch.
@@ -164,7 +154,6 @@ public class TrackingProtectionSettings extends PrivacySandboxBaseFragment
                         return true;
                     });
             fingerprintingProtectionLearnMore.setVisible(true);
-            // TODO(b/330745124): Update the learn more action.
             fingerprintingProtectionLearnMore.setSummary(
                     SpanApplier.applySpans(
                             getResources()
@@ -174,12 +163,8 @@ public class TrackingProtectionSettings extends PrivacySandboxBaseFragment
                             new SpanApplier.SpanInfo(
                                     "<link>",
                                     "</link>",
-                                    new ClickableSpan() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            onLearnMoreClicked();
-                                        }
-                                    })));
+                                    new ChromeClickableSpan(
+                                            getContext(), (view) -> onLearnMoreClicked()))));
         }
         mAllowListExpanded = true;
         mAllowedSiteCount = 0;

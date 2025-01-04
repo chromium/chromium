@@ -4,6 +4,7 @@
 
 package org.chromium.device.nfc;
 
+
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
@@ -18,10 +19,14 @@ import android.os.Process;
 import android.os.Vibrator;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.device.mojom.NdefError;
 import org.chromium.device.mojom.NdefErrorType;
 import org.chromium.device.mojom.NdefMessage;
@@ -41,6 +46,7 @@ import java.util.List;
 /**
  * Android implementation of the NFC mojo service defined in services/device/public/mojom/nfc.mojom.
  */
+@NullMarked
 public class NfcImpl implements Nfc {
     private static final String TAG = "NfcImpl";
     private static final long MIN_TIME_BETWEEN_VIBRATIONS_MS = 1000;
@@ -50,19 +56,19 @@ public class NfcImpl implements Nfc {
 
     private final NfcDelegate mDelegate;
 
-    private Router mRouter;
+    private @Nullable Router mRouter;
 
     /** Used to get instance of NFC adapter, @see android.nfc.NfcManager */
-    private final NfcManager mNfcManager;
+    private final @Nullable NfcManager mNfcManager;
 
     /** NFC adapter. @see android.nfc.NfcAdapter */
-    private final NfcAdapter mNfcAdapter;
+    private final @Nullable NfcAdapter mNfcAdapter;
 
     /**
      * Activity that is in foreground and is used to enable / disable NFC reader mode operations.
      * Can be updated when activity associated with web page is changed. @see #setActivity
      */
-    private Activity mActivity;
+    private @Nullable Activity mActivity;
 
     /** Flag that indicates whether NFC permission is granted. */
     private final boolean mHasPermission;
@@ -74,33 +80,33 @@ public class NfcImpl implements Nfc {
     private boolean mOperationsSuspended;
 
     /** Implementation of android.nfc.NfcAdapter.ReaderCallback. @see ReaderCallbackHandler */
-    private ReaderCallbackHandler mReaderCallbackHandler;
+    private @Nullable ReaderCallbackHandler mReaderCallbackHandler;
 
     /**
      * Object that contains data that was passed to method
      * #push(NdefMessage message, NdefWriteOptions options, Push_Response callback)
      * @see PendingPushOperation
      */
-    private PendingPushOperation mPendingPushOperation;
+    private @Nullable PendingPushOperation mPendingPushOperation;
 
     /**
      * Object that contains the callback that was passed to method
      * #makeReadOnly(MakeReadOnly_Response callback)
      * @see PendingMakeReadOnlyOperation
      */
-    private PendingMakeReadOnlyOperation mPendingMakeReadOnlyOperation;
+    private @Nullable PendingMakeReadOnlyOperation mPendingMakeReadOnlyOperation;
 
     /**
      * Utility that provides I/O operations for a Tag. Created on demand when Tag is found.
      * @see NfcTagHandler
      */
-    private NfcTagHandler mTagHandler;
+    private @Nullable NfcTagHandler mTagHandler;
 
     /**
      * Client interface used to deliver NdefMessages for registered watch operations.
      * @see #watch
      */
-    private NfcClient mClient;
+    private @Nullable NfcClient mClient;
 
     private final List<Integer> mWatchIds = new ArrayList<Integer>();
 
@@ -374,7 +380,7 @@ public class NfcImpl implements Nfc {
          * @param error should be null when operation is completed successfully, otherwise,
          * error object with corresponding NdefErrorType should be provided.
          */
-        public void complete(NdefError error) {
+        public void complete(@Nullable NdefError error) {
             if (mPushResponseCallback != null) mPushResponseCallback.call(error);
         }
     }
@@ -393,7 +399,7 @@ public class NfcImpl implements Nfc {
          * @param error should be null when operation is completed successfully, otherwise,
          * error object with corresponding NdefErrorType should be provided.
          */
-        public void complete(NdefError error) {
+        public void complete(@Nullable NdefError error) {
             if (mMakeReadOnlyResponseCallback != null) mMakeReadOnlyResponseCallback.call(error);
         }
     }
@@ -413,7 +419,7 @@ public class NfcImpl implements Nfc {
      * Checks if NFC functionality can be used by the mojo service. If permission to use NFC is
      * granted and hardware is enabled, returns null.
      */
-    private NdefError checkIfReady() {
+    private @Nullable NdefError checkIfReady() {
         if (!mHasPermission || mActivity == null) {
             return createError(NdefErrorType.NOT_ALLOWED, "The operation is not allowed.");
         } else if (mNfcManager == null || mNfcAdapter == null) {
@@ -506,13 +512,13 @@ public class NfcImpl implements Nfc {
      * Handles completion of pending push operation, completes push operation.
      * On error, invalidates #mTagHandler.
      */
-    private void pendingPushOperationCompleted(NdefError error) {
+    private void pendingPushOperationCompleted(@Nullable NdefError error) {
         completePendingPushOperation(error);
         if (error != null) mTagHandler = null;
     }
 
     /** Completes pending push operation and disables reader mode if needed. */
-    private void completePendingPushOperation(NdefError error) {
+    private void completePendingPushOperation(@Nullable NdefError error) {
         if (mPendingPushOperation == null) return;
 
         mPendingPushOperation.complete(error);
@@ -572,13 +578,13 @@ public class NfcImpl implements Nfc {
      * Handles completion of pending make read-only operation, completes make read-only operation.
      * On error, invalidates #mTagHandler.
      */
-    private void pendingMakeReadOnlyOperationCompleted(NdefError error) {
+    private void pendingMakeReadOnlyOperationCompleted(@Nullable NdefError error) {
         completePendingMakeReadOnlyOperation(error);
         if (error != null) mTagHandler = null;
     }
 
     /** Completes pending make read-only operation and disables reader mode if needed. */
-    private void completePendingMakeReadOnlyOperation(NdefError error) {
+    private void completePendingMakeReadOnlyOperation(@Nullable NdefError error) {
         if (mPendingMakeReadOnlyOperation == null) return;
 
         mPendingMakeReadOnlyOperation.complete(error);
@@ -680,17 +686,18 @@ public class NfcImpl implements Nfc {
     /**
      * Notify all active watchers that an error happened when trying to read the tag coming nearby.
      */
+    @RequiresNonNull({"mClient"})
     private void notifyErrorToAllWatchers(NdefError error) {
-        if (mWatchIds.size() != 0) mClient.onError(error);
+        if (mWatchIds.size() != 0) {
+            mClient.onError(error);
+        }
     }
 
     /** Iterates through active watchers and delivers NdefMessage to the client. */
+    @RequiresNonNull({"mClient", "mTagHandler"})
     private void notifyWatchers(NdefMessage message) {
         if (mWatchIds.size() != 0) {
-            int[] ids = new int[mWatchIds.size()];
-            for (int i = 0; i < mWatchIds.size(); ++i) {
-                ids[i] = mWatchIds.get(i).intValue();
-            }
+            int[] ids = CollectionUtil.integerCollectionToIntArray(mWatchIds);
             mClient.onWatch(ids, mTagHandler.serialNumber(), message);
         }
     }
@@ -707,12 +714,13 @@ public class NfcImpl implements Nfc {
     }
 
     /** Processes pending operation when NFC tag is in proximity. */
-    protected void processPendingOperations(NfcTagHandler tagHandler) {
+    protected void processPendingOperations(@Nullable NfcTagHandler tagHandler) {
         mTagHandler = tagHandler;
 
         // This tag is not supported.
         if (mTagHandler == null) {
             Log.w(TAG, "This tag is not supported.");
+            assert mClient != null;
             notifyErrorToAllWatchers(
                     createError(NdefErrorType.NOT_SUPPORTED, "This tag is not supported."));
             pendingPushOperationCompleted(

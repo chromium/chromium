@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/check_deref.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -24,7 +23,6 @@
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/common/buildflags.h"
 #include "components/history/core/browser/top_sites.h"
-#include "components/image_fetcher/core/features.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "components/ntp_tiles/icon_cacher_impl.h"
 #include "components/ntp_tiles/metrics.h"
@@ -51,10 +49,7 @@ ChromeMostVisitedSitesFactory::NewForProfile(Profile* profile) {
 
   std::unique_ptr<data_decoder::DataDecoder> data_decoder;
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          image_fetcher::features::kBatchImageDecoding)) {
-    data_decoder = std::make_unique<data_decoder::DataDecoder>();
-  }
+  data_decoder = std::make_unique<data_decoder::DataDecoder>();
 #endif
 
   bool is_default_chrome_app_migrated;

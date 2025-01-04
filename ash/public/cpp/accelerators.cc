@@ -9,6 +9,7 @@
 #include "base/no_destructor.h"
 #include "media/base/media_switches.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ash {
 
@@ -59,6 +60,7 @@ bool AcceleratorController::IsSystemKey(ui::KeyboardCode key_code) {
     case ui::VKEY_F13:  // Lock button on some chromebooks emits F13.
     case ui::VKEY_PRIVACY_SCREEN_TOGGLE:
     case ui::VKEY_SETTINGS:
+    case ui::VKEY_DO_NOT_DISTURB:
       return true;
     case ui::VKEY_MEDIA_NEXT_TRACK:
     case ui::VKEY_MEDIA_PAUSE:

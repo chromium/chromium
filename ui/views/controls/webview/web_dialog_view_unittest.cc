@@ -69,11 +69,11 @@ class WebDialogViewUnitTest : public views::test::WidgetTest {
   void SetUp() override {
     views::test::WidgetTest::SetUp();
 
-    browser_context_ = std::make_unique<content::TestBrowserContext>();
-
     // Set the test content browser client to avoid pulling in needless
     // dependencies from content.
     SetBrowserClientForTesting(&test_browser_client_);
+
+    browser_context_ = std::make_unique<content::TestBrowserContext>();
 
     web_dialog_delegate_ =
         std::make_unique<TestWebDialogViewWebDialogDelegate>();
@@ -132,8 +132,9 @@ class WebDialogViewUnitTest : public views::test::WidgetTest {
     ASSERT_TRUE(web_dialog_view_->GetFocusManager() != nullptr);
     ASSERT_TRUE(widget_ != nullptr);
     ui::KeyEvent event_copy = event;
-    if (web_dialog_view_->GetFocusManager()->OnKeyEvent(event_copy))
+    if (web_dialog_view_->GetFocusManager()->OnKeyEvent(event_copy)) {
       widget_->OnKeyEvent(&event_copy);
+    }
   }
 
  private:

@@ -16,10 +16,8 @@
 #include "chrome/android/chrome_jni_headers/PlayServicesVersionInfo_jni.h"
 
 std::string AndroidAboutAppInfo::GetGmsInfo() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  const base::android::ScopedJavaLocalRef<jstring> info =
-      Java_PlayServicesVersionInfo_getGmsInfo(env);
-  return base::android::ConvertJavaStringToUTF8(env, info);
+  return Java_PlayServicesVersionInfo_getGmsInfo(
+      base::android::AttachCurrentThread());
 }
 
 std::string AndroidAboutAppInfo::GetOsInfo() {

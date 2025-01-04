@@ -354,15 +354,15 @@ class OOFCandidateStyleIterator {
 const Element* GetPositionAnchorElement(
     const BlockNode& node,
     const ComputedStyle& style,
-    const LogicalAnchorQuery* anchor_query) {
+    const PhysicalAnchorQuery* anchor_query) {
   if (!anchor_query) {
     return nullptr;
   }
   if (const ScopedCSSName* specifier = style.PositionAnchor()) {
-    if (const LogicalAnchorReference* reference =
-            anchor_query->AnchorReference(*node.GetLayoutBox(), specifier);
-        reference && reference->layout_object) {
-      return DynamicTo<Element>(reference->layout_object->GetNode());
+    if (const PhysicalAnchorReference* reference =
+            anchor_query->AnchorReference(*node.GetLayoutBox(), specifier)) {
+      DCHECK(!reference->element || reference->GetLayoutObject());
+      return reference->element;
     }
     return nullptr;
   }
@@ -375,7 +375,7 @@ const Element* GetPositionAnchorElement(
 const LayoutObject* GetPositionAnchorObject(
     const BlockNode& node,
     const ComputedStyle& style,
-    const LogicalAnchorQuery* anchor_query) {
+    const PhysicalAnchorQuery* anchor_query) {
   if (const Element* element =
           GetPositionAnchorElement(node, style, anchor_query)) {
     return element->GetLayoutObject();
@@ -385,7 +385,7 @@ const LayoutObject* GetPositionAnchorObject(
 
 PhysicalOffset GetAnchorOffset(const BlockNode& node,
                                const ComputedStyle& style,
-                               const LogicalAnchorQuery* anchor_query) {
+                               const PhysicalAnchorQuery* anchor_query) {
   if (const LayoutObject* anchor_object =
           GetPositionAnchorObject(node, style, anchor_query)) {
     if (const AnchorPositionScrollData* data =
@@ -406,7 +406,7 @@ PhysicalOffset GetAnchorOffset(const BlockNode& node,
 void UpdatePositionVisibilityAfterLayout(
     const OutOfFlowLayoutPart::OffsetInfo& offset_info,
     const BlockNode& node,
-    const LogicalAnchorQuery* anchor_query) {
+    const PhysicalAnchorQuery* anchor_query) {
   if (!anchor_query) {
     return;
   }
@@ -1462,8 +1462,9 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
       }
     }
   }
-  LogicalAnchorQueryMap stitched_anchor_queries(
+  StitchedAnchorQueries stitched_anchor_queries(
       *builder_for_anchor_query->Node().GetLayoutBox(),
+      builder_for_anchor_query->SizeForAnchorQueries(),
       builder_for_anchor_query->Children(),
       builder_for_anchor_query->GetWritingDirection());
 
@@ -1721,7 +1722,7 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
 AnchorEvaluatorImpl OutOfFlowLayoutPart::CreateAnchorEvaluator(
     const ContainingBlockInfo& container_info,
     const BlockNode& candidate,
-    const LogicalAnchorQueryMap* anchor_queries) const {
+    const StitchedAnchorQueries* anchor_queries) const {
   const LayoutObject* implicit_anchor = nullptr;
   const LayoutBox& candidate_layout_box = *candidate.GetLayoutBox();
   if (const Element* element =
@@ -1732,13 +1733,13 @@ AnchorEvaluatorImpl OutOfFlowLayoutPart::CreateAnchorEvaluator(
     }
   }
 
-  LogicalSize container_content_size = container_info.rect.size;
   PhysicalSize container_physical_content_size = ToPhysicalSize(
-      container_content_size, GetConstraintSpace().GetWritingMode());
-  WritingDirectionMode self_writing_direction =
-      candidate.Style().GetWritingDirection();
+      container_info.rect.size, GetConstraintSpace().GetWritingMode());
   const WritingModeConverter container_converter(
-      container_info.writing_direction, container_physical_content_size);
+      container_info.writing_direction,
+      container_builder_->SizeForAnchorQueries());
+  PhysicalOffset offset_to_padding_box =
+      container_converter.ToPhysical(container_info.rect).offset;
   if (anchor_queries) {
     // When the containing block is block-fragmented, the |container_builder_|
     // is the fragmentainer, not the containing block, and the coordinate system
@@ -1747,17 +1748,15 @@ AnchorEvaluatorImpl OutOfFlowLayoutPart::CreateAnchorEvaluator(
     CHECK(css_containing_block);
     return AnchorEvaluatorImpl(
         candidate_layout_box, *anchor_queries, implicit_anchor,
-        *css_containing_block, container_converter, self_writing_direction,
-        container_converter.ToPhysical(container_info.rect).offset,
-        container_physical_content_size);
+        *css_containing_block, container_info.writing_direction,
+        offset_to_padding_box, container_physical_content_size);
   }
-  if (const LogicalAnchorQuery* anchor_query =
+  if (const PhysicalAnchorQuery* anchor_query =
           container_builder_->AnchorQuery()) {
     // Otherwise the |container_builder_| is the containing block.
     return AnchorEvaluatorImpl(
         candidate_layout_box, *anchor_query, implicit_anchor,
-        container_converter, self_writing_direction,
-        container_converter.ToPhysical(container_info.rect).offset,
+        container_info.writing_direction, offset_to_padding_box,
         container_physical_content_size);
   }
   return AnchorEvaluatorImpl();
@@ -1923,16 +1922,12 @@ const LayoutResult* OutOfFlowLayoutPart::LayoutOOFNode(
 namespace {
 
 // The spec says:
-//
-// "
-// Implementations may choose to impose an implementation-defined limit on the
+// "Implementations may choose to impose an implementation-defined limit on the
 // length of position fallbacks lists, to limit the amount of excess layout work
-// that may be required. This limit must be at least five.
-// "
-//
-// We use 6 here because the first attempt is without anything from the
-// position fallbacks list applied.
-constexpr unsigned kMaxTryAttempts = 6;
+// that may be required. This limit must be at least five."
+// The "+1" is because the first attempt is without anything from the position
+// fallbacks list applied.
+constexpr unsigned kMaxTryAttempts = 5 + 1;
 
 // When considering multiple candidate styles (i.e. position-try-fallbacks),
 // we keep track of each successful placement as a NonOverflowingCandidate.
@@ -2015,7 +2010,7 @@ void SortNonOverflowingCandidates(
 
 OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     const NodeInfo& node_info,
-    const LogicalAnchorQueryMap* anchor_queries) {
+    const StitchedAnchorQueries* anchor_queries) {
   // See non_overflowing_scroll_range.h for documentation.
   HeapVector<NonOverflowingScrollRange> non_overflowing_scroll_ranges;
 

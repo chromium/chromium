@@ -19,8 +19,8 @@ main {
   align-items: center;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  padding-inline: var(--tangible-sync-style-banner-width);
+  margin-inline: auto;
+  max-width: 500px;
   position: relative;
 }
 

@@ -1347,7 +1347,7 @@ int ProcessMemoryMetricsEmitter::GetNumberOfExtensions(base::ProcessId pid) {
   }
 
   const extensions::Extension* extension =
-      process_map->GetEnabledExtensionByProcessID(rph->GetID());
+      process_map->GetEnabledExtensionByProcessID(rph->GetDeprecatedID());
   // Only include this extension if it's not a hosted app.
   return (extension && !extension->is_hosted_app()) ? 1 : 0;
 #else

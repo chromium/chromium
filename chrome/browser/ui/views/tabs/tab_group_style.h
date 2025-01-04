@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_STYLE_H_
 
 #include <string>
+
 #include "base/memory/raw_ptr.h"
 #include "tab_group_header.h"
 #include "ui/gfx/geometry/rect.h"

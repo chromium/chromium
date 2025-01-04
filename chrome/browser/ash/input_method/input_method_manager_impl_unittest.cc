@@ -1712,24 +1712,7 @@ TEST_F(InputMethodManagerImplTest, TestAddRemoveArcInputMethods) {
   EXPECT_TRUE(result.empty());
 }
 
-// TODO(crbug.com/1179893): Remove once the feature is enabled permanently.
-class InputMethodManagerImplPositionalTest : public InputMethodManagerImplTest {
- public:
-  InputMethodManagerImplPositionalTest() = default;
-  ~InputMethodManagerImplPositionalTest() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kImprovedKeyboardShortcuts);
-
-    InputMethodManagerImplTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(InputMethodManagerImplPositionalTest, ValidatePositionalShortcutLayout) {
+TEST_F(InputMethodManagerImplTest, ValidatePositionalShortcutLayout) {
   // Initialize with one positional (US) and one non-positional (US-dvorak)
   // layout.
   std::string us_id = ImeIdFromEngineId("xkb:us::eng");

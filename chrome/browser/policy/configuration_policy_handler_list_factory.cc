@@ -43,6 +43,7 @@
 #include "chrome/browser/policy/file_selection_dialogs_policy_handler.h"
 #include "chrome/browser/policy/homepage_location_policy_handler.h"
 #include "chrome/browser/policy/javascript_policy_handler.h"
+#include "chrome/browser/policy/power_battery_charging_optimization_policy_handler.h"
 #include "chrome/browser/policy/webhid_device_policy_handler.h"
 #include "chrome/browser/policy/webusb_allow_devices_for_urls_policy_handler.h"
 #include "chrome/browser/prefetch/pref_names.h"
@@ -201,8 +202,6 @@
 #include "chrome/browser/ash/policy/handlers/configuration_policy_handler_ash.h"
 #include "chrome/browser/ash/policy/handlers/contextual_google_integrations_policies_handler.h"
 #include "chrome/browser/ash/policy/handlers/help_me_read_policy_handler.h"
-#include "chrome/browser/ash/policy/handlers/lacros_availability_policy_handler.h"
-#include "chrome/browser/ash/policy/handlers/lacros_selection_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/multi_screen_capture_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/screen_capture_location_policy_handler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_prefs.h"
@@ -800,6 +799,14 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kSitePerProcess,
     prefs::kSitePerProcess,
     base::Value::Type::BOOLEAN },
+#if BUILDFLAG(IS_CHROMEOS)
+  { key::kSmartCardConnectAllowedForUrls,
+    prefs::kManagedSmartCardConnectAllowedForUrls,
+    base::Value::Type::LIST },
+  { key::kSmartCardConnectBlockedForUrls,
+    prefs::kManagedSmartCardConnectBlockedForUrls,
+    base::Value::Type::LIST },
+#endif
 #if BUILDFLAG(ENABLE_SPELLCHECK)
   { key::kSpellCheckServiceEnabled,
     spellcheck::prefs::kSpellCheckUseSpellingService,
@@ -847,6 +854,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kWebRtcIPHandling,
     prefs::kWebRTCIPHandlingPolicy,
     base::Value::Type::STRING },
+  { key::kWebRtcIPHandlingUrl,
+    prefs::kWebRTCIPHandlingUrl,
+    base::Value::Type::LIST },
   { key::kWebRtcLocalIpsAllowedUrls,
     prefs::kWebRtcLocalIpsAllowedUrls,
     base::Value::Type::LIST },
@@ -1386,6 +1396,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kAllowedInputMethods,
     prefs::kLanguageAllowedInputMethods,
     base::Value::Type::LIST },
+  { key::kAllowedInputMethodsForceEnabled,
+    prefs::kLanguageAllowedInputMethodsForceEnabled,
+    base::Value::Type::BOOLEAN },
   { key::kArcAppInstallEventLoggingEnabled,
     prefs::kArcAppInstallEventLoggingEnabled,
     base::Value::Type::BOOLEAN },
@@ -1641,9 +1654,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kFloatingWorkspaceV2Enabled,
     ash::prefs::kFloatingWorkspaceV2Enabled,
     base::Value::Type::BOOLEAN },
-  { key::kDevicePowerAdaptiveChargingEnabled,
-    ash::prefs::kPowerAdaptiveChargingEnabled,
-    base::Value::Type::BOOLEAN },
   { key::kCalendarIntegrationEnabled,
     ash::prefs::kCalendarIntegrationEnabled,
     base::Value::Type::BOOLEAN },
@@ -1773,6 +1783,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kArcOpenLinksInBrowserByDefault,
     arc::prefs::kArcOpenLinksInBrowserByDefault,
     base::Value::Type::BOOLEAN },
+  { key::kGenAIPhotoEditingSettings,
+    ash::prefs::kGenAIPhotoEditingSettings,
+    base::Value::Type::INTEGER},
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)
@@ -2727,7 +2740,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       false));
 
   handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
-      key::kEnterpriseCustomLabel, prefs::kEnterpriseCustomLabel,
+      key::kEnterpriseCustomLabel, prefs::kEnterpriseCustomLabelForBrowser,
       base::Value::Type::STRING));
   handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyHandler>(
       std::make_unique<SimplePolicyHandler>(
@@ -2735,7 +2748,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           base::Value::Type::STRING)));
 
   handlers->AddHandler(std::make_unique<URLPolicyHandler>(
-      key::kEnterpriseLogoUrl, prefs::kEnterpriseLogoUrl));
+      key::kEnterpriseLogoUrl, prefs::kEnterpriseLogoUrlForBrowser));
   handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyHandler>(
       std::make_unique<URLPolicyHandler>(key::kEnterpriseLogoUrl,
                                          prefs::kEnterpriseLogoUrlForProfile)));
@@ -3046,8 +3059,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
   handlers->AddHandler(std::make_unique<BooleanDisablingPolicyHandler>(
       key::kNearbyShareAllowed, prefs::kNearbySharingEnabledPrefName));
-  handlers->AddHandler(std::make_unique<LacrosAvailabilityPolicyHandler>());
-  handlers->AddHandler(std::make_unique<LacrosSelectionPolicyHandler>());
   handlers->AddHandler(std::make_unique<BooleanDisablingPolicyHandler>(
       key::kFastPairEnabled, ash::prefs::kFastPairEnabled));
   handlers->AddHandler(std::make_unique<arc::ArcPolicyHandler>());
@@ -3256,9 +3267,20 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
                                        ash::prefs::kGenAIVcBackgroundSettings);
   gen_ai_default_policies.emplace_back(key::kHelpMeReadSettings,
                                        ash::prefs::kHmrManagedSettings);
+  gen_ai_default_policies.emplace_back(key::kGenAIPhotoEditingSettings,
+                                       ash::prefs::kGenAIPhotoEditingSettings);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   handlers->AddHandler(std::make_unique<GenAiDefaultSettingsPolicyHandler>(
       std::move(gen_ai_default_policies)));
+
+#if BUILDFLAG(IS_CHROMEOS)
+  handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
+      std::make_unique<SimplePolicyHandler>(
+          key::kDevicePowerAdaptiveChargingEnabled,
+          ash::prefs::kPowerAdaptiveChargingEnabled,
+          base::Value::Type::BOOLEAN),
+      std::make_unique<PowerBatteryChargingOptimizationPolicyHandler>()));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return handlers;
 }

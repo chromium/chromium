@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/vr/android/arcore/arcore_impl.h"
 
 #include <optional>
@@ -132,10 +127,14 @@ void CopyArCoreImage(const ArSession* session,
   int32_t src_buffer_length = 0;
   ArImage_getPlaneData(session, image, plane_index, &src_buffer,
                        &src_buffer_length);
+  // SAFETY: A successful ArImage_getPlaneData call sets src_buffer to a valid
+  // address of length `src_buffer_length`. While this buffer is unowned, it is
+  // guaranteed to stay valid until the ArImage (`image`), is released, which is
+  // not done in this function, so the span stays valid for this whole scope.
   // size_t can hold more positive numbers than int32_t so as long as the length
   // is greater than 0 (which it should be) the static_cast is safe.
-  base::span<const uint8_t> src_span(
-      src_buffer, base::checked_cast<size_t>(src_buffer_length));
+  UNSAFE_BUFFERS(base::span<const uint8_t> src_span(
+      src_buffer, base::checked_cast<size_t>(src_buffer_length)));
 
   // Fast path: Source and destination have the same layout
   const auto src_row_stride_s = base::checked_cast<size_t>(src_row_stride);
@@ -213,7 +212,7 @@ device::mojom::XRLightProbePtr GetLightProbe(
 
   ArLightEstimate_getEnvironmentalHdrAmbientSphericalHarmonics(
       arcore_session, arcore_light_estimate,
-      light_probe->spherical_harmonics->coefficients.data()->components);
+      light_probe->spherical_harmonics->coefficients.data()->components.data());
 
   float main_light_direction[3] = {};
   ArLightEstimate_getEnvironmentalHdrMainLightDirection(
@@ -224,7 +223,7 @@ device::mojom::XRLightProbePtr GetLightProbe(
 
   ArLightEstimate_getEnvironmentalHdrMainLightIntensity(
       arcore_session, arcore_light_estimate,
-      light_probe->main_light_intensity.components);
+      light_probe->main_light_intensity.components.data());
 
   return light_probe;
 }
@@ -237,7 +236,7 @@ device::mojom::XRReflectionProbePtr GetReflectionProbe(
       arcore_session, arcore_light_estimate, arcore_cube_map);
 
   auto cube_map = device::mojom::XRCubeMap::New();
-  std::vector<device::RgbaTupleF16>* const cube_map_faces[] = {
+  std::array<std::vector<device::RgbaTupleF16>*, 6> const cube_map_faces = {
       &cube_map->positive_x, &cube_map->negative_x, &cube_map->positive_y,
       &cube_map->negative_y, &cube_map->positive_z, &cube_map->negative_z};
 
@@ -250,8 +249,9 @@ device::mojom::XRReflectionProbePtr GetReflectionProbe(
                 "`device::mojom::XRCubeMap::kNumComponentsPerPixel` is "
                 "expected to be 4 (RGBA)`, as that's the format ArCore uses.");
 
-  for (size_t i = 0; i < std::size(arcore_cube_map); ++i) {
-    auto* arcore_cube_map_face = arcore_cube_map[i];
+  auto arcore_cube_map_span = base::span(arcore_cube_map);
+  for (size_t i = 0; i < arcore_cube_map_span.size(); ++i) {
+    auto* arcore_cube_map_face = arcore_cube_map_span[i];
     if (!arcore_cube_map_face) {
       DVLOG(1) << "`ArLightEstimate_acquireEnvironmentalHdrCubemap` failed to "
                   "return all faces";

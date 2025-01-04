@@ -19,16 +19,18 @@
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
-#import "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #import "components/autofill/core/browser/crowdsourcing/votes_uploader.h"
 #import "components/autofill/core/browser/form_import/addresses/autofill_save_update_address_profile_delegate_ios.h"
 #import "components/autofill/core/browser/form_import/form_data_importer.h"
+#import "components/autofill/core/browser/integrators/autofill_plus_address_delegate.h"
 #import "components/autofill/core/browser/logging/log_manager.h"
+#import "components/autofill/core/browser/logging/log_router.h"
 #import "components/autofill/core/browser/payments/payments_network_interface.h"
-#import "components/autofill/core/browser/single_field_fill_router.h"
-#import "components/autofill/core/browser/ui/suggestion_type.h"
+#import "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
+#import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
+#import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/infobars/core/infobar.h"
@@ -80,28 +82,24 @@
 namespace autofill {
 
 ChromeAutofillClientIOS::ChromeAutofillClientIOS(
+    FromWebStateImpl from_web_state_impl,
     ProfileIOS* profile,
     web::WebState* web_state,
     infobars::InfoBarManager* infobar_manager,
-    id<AutofillClientIOSBridge> bridge)
-    : pref_service_(profile->GetPrefs()),
+    id<AutofillClientIOSBridge, AutofillDriverIOSBridge> bridge)
+    : AutofillClientIOS(from_web_state_impl, web_state, bridge),
+      pref_service_(profile->GetPrefs()),
       sync_service_(SyncServiceFactory::GetForProfile(profile)),
       personal_data_manager_(PersonalDataManagerFactory::GetForProfile(
           profile->GetOriginalProfile())),
       autocomplete_history_manager_(
           AutocompleteHistoryManagerFactory::GetForProfile(profile)),
       profile_(profile),
-      web_state_(web_state),
       bridge_(bridge),
       identity_manager_(
           IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile())),
       infobar_manager_(infobar_manager),
-      // TODO(crbug.com/40612524): Replace the closure with a callback to the
-      // renderer that indicates if log messages should be sent from the
-      // renderer.
-      log_manager_(
-          LogManager::Create(AutofillLogRouterFactory::GetForProfile(profile),
-                             base::RepeatingClosure())),
+      log_router_(AutofillLogRouterFactory::GetForProfile(profile_)),
       ablation_study_(GetApplicationContext()->GetLocalState()) {}
 
 ChromeAutofillClientIOS::~ChromeAutofillClientIOS() {
@@ -126,41 +124,27 @@ version_info::Channel ChromeAutofillClientIOS::GetChannel() const {
 }
 
 bool ChromeAutofillClientIOS::IsOffTheRecord() const {
-  return web_state_->GetBrowserState()->IsOffTheRecord();
+  return web_state()->GetBrowserState()->IsOffTheRecord();
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
 ChromeAutofillClientIOS::GetURLLoaderFactory() {
   return base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-      web_state_->GetBrowserState()->GetURLLoaderFactory());
-}
-
-AutofillDriverFactory& ChromeAutofillClientIOS::GetAutofillDriverFactory() {
-  return CHECK_DEREF(AutofillDriverIOSFactory::FromWebState(web_state_));
+      web_state()->GetBrowserState()->GetURLLoaderFactory());
 }
 
 AutofillCrowdsourcingManager&
 ChromeAutofillClientIOS::GetCrowdsourcingManager() {
   if (!crowdsourcing_manager_) {
     // Lazy initialization to avoid virtual function calls in the constructor.
-    crowdsourcing_manager_ = std::make_unique<AutofillCrowdsourcingManager>(
-        this, GetChannel(), GetLogManager());
+    crowdsourcing_manager_ =
+        std::make_unique<AutofillCrowdsourcingManager>(this, GetChannel());
   }
   return *crowdsourcing_manager_;
 }
 
 VotesUploader& ChromeAutofillClientIOS::GetVotesUploader() {
-  if (!votes_uploader_) {
-    // We need to do lazy evaluation because AutofillDriverIOSFactory is created
-    // only after ChromeAutofillClientIOS. This is OK because only
-    // BrowserAutofillManager, which is owned by AutofillClientIOS and thus
-    // instantiated after AutofillDriverIOSFactory, calls GetVotesUploader().
-    //
-    // TODO(crbug.com/355907668): Make AutofillDriverIOSFactory owned by
-    // ChromeAutofillClientIOS and initialize  `votes_uploader_` non-lazily.
-    votes_uploader_ = std::make_unique<VotesUploader>(this);
-  }
-  return *votes_uploader_;
+  return votes_uploader_;
 }
 
 PersonalDataManager& ChromeAutofillClientIOS::GetPersonalDataManager() {
@@ -239,7 +223,7 @@ AddressNormalizer* ChromeAutofillClientIOS::GetAddressNormalizer() {
 
 const GURL& ChromeAutofillClientIOS::GetLastCommittedPrimaryMainFrameURL()
     const {
-  return web_state_->GetLastCommittedURL();
+  return web_state()->GetLastCommittedURL();
 }
 
 url::Origin ChromeAutofillClientIOS::GetLastCommittedPrimaryMainFrameOrigin()
@@ -249,13 +233,13 @@ url::Origin ChromeAutofillClientIOS::GetLastCommittedPrimaryMainFrameOrigin()
 
 security_state::SecurityLevel
 ChromeAutofillClientIOS::GetSecurityLevelForUmaHistograms() {
-  return security_state::GetSecurityLevelForWebState(web_state_);
+  return security_state::GetSecurityLevelForWebState(web_state());
 }
 
 const translate::LanguageState* ChromeAutofillClientIOS::GetLanguageState() {
   // TODO(crbug.com/41430413): iOS vs other platforms extracts language from
   // the top level frame vs whatever frame directly holds the form.
-  auto* translate_client = ChromeIOSTranslateClient::FromWebState(web_state_);
+  auto* translate_client = ChromeIOSTranslateClient::FromWebState(web_state());
   if (translate_client) {
     auto* translate_manager = translate_client->GetTranslateManager();
     if (translate_manager)
@@ -265,7 +249,7 @@ const translate::LanguageState* ChromeAutofillClientIOS::GetLanguageState() {
 }
 
 translate::TranslateDriver* ChromeAutofillClientIOS::GetTranslateDriver() {
-  auto* translate_client = ChromeIOSTranslateClient::FromWebState(web_state_);
+  auto* translate_client = ChromeIOSTranslateClient::FromWebState(web_state());
   if (translate_client) {
     return translate_client->GetTranslateDriver();
   }
@@ -353,7 +337,7 @@ void ChromeAutofillClientIOS::OfferPlusAddressCreation(
     bool is_manual_fallback,
     PlusAddressCallback callback) {
   AutofillBottomSheetTabHelper* bottomSheetTabHelper =
-      AutofillBottomSheetTabHelper::FromWebState(web_state_);
+      AutofillBottomSheetTabHelper::FromWebState(web_state());
   bottomSheetTabHelper->ShowPlusAddressesBottomSheet(std::move(callback));
 }
 
@@ -396,7 +380,7 @@ void ChromeAutofillClientIOS::DidFillForm(AutofillTriggerSource trigger_source,
                                           bool is_refill) {}
 
 bool ChromeAutofillClientIOS::IsContextSecure() const {
-  return IsContextSecureForWebState(web_state_);
+  return IsContextSecureForWebState(web_state());
 }
 
 FormInteractionsFlowId
@@ -406,7 +390,13 @@ ChromeAutofillClientIOS::GetCurrentFormInteractionsFlowId() {
   return {};
 }
 
-LogManager* ChromeAutofillClientIOS::GetLogManager() const {
+LogManager* ChromeAutofillClientIOS::GetCurrentLogManager() {
+  if (!log_manager_ && log_router_ && log_router_->HasReceivers()) {
+    // TODO(crbug.com/40612524): Replace the closure with a callback to the
+    // renderer that indicates if log messages should be sent from the
+    // renderer.
+    log_manager_ = LogManager::Create(log_router_, base::RepeatingClosure());
+  }
   return log_manager_.get();
 }
 
@@ -466,7 +456,9 @@ PasswordFormClassification ChromeAutofillClientIOS::ClassifyAsPasswordForm(
   // iframes is enabled.
   const auto GetRendererForm = [&]() -> std::optional<FormData> {
     const AutofillDriverRouter& router =
-        AutofillDriverIOSFactory::FromWebState(web_state_)->router();
+        static_cast<AutofillClientIOS&>(manager.client())
+            .GetAutofillDriverFactory()
+            .router();
 
     std::vector<FormData> renderer_forms = router.GetRendererForms(form_data);
 

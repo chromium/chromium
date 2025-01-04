@@ -712,6 +712,7 @@ if (is_android) {
                    "android/java/src/org/chromium/device/bluetooth/wrapper/BluetoothLeScannerWrapper.java",
                    "android/java/src/org/chromium/device/bluetooth/wrapper/ScanCallbackWrapper.java",
                    "android/java/src/org/chromium/device/bluetooth/wrapper/ScanResultWrapper.java",
+                   "android/java/src/org/chromium/device/bluetooth/wrapper/ScanResultWrapperImpl.java",
                    "android/java/src/org/chromium/device/bluetooth/wrapper/ThreadUtilsWrapper.java",
                  ]
 

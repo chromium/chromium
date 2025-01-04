@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/startup/credential_provider_signin_info_fetcher_win.h"
+
 #include <memory>
 #include <utility>
 #include <vector>
-
-#include "chrome/browser/ui/startup/credential_provider_signin_info_fetcher_win.h"
 
 #include "base/logging.h"
 #include "base/strings/string_split.h"

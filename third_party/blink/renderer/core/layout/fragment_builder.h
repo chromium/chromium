@@ -102,6 +102,9 @@ class CORE_EXPORT FragmentBuilder {
 
   bool HasBlockSize() const { return size_.block_size != kIndefiniteSize; }
 
+  // Return true when the final size of the fragment has been calculated.
+  bool HasFinalSize() const { return has_final_size_; }
+
   void SetIsHiddenForPaint(bool value) { is_hidden_for_paint_ = value; }
   void SetIsOpaque() { is_opaque_ = true; }
 
@@ -184,7 +187,7 @@ class CORE_EXPORT FragmentBuilder {
   void PropagateChildAnchors(const PhysicalFragment& child,
                              const LogicalOffset& child_offset);
 
-  const LogicalAnchorQuery* AnchorQuery() const { return anchor_query_; }
+  const PhysicalAnchorQuery* AnchorQuery() const { return anchor_query_; }
 
   // Builder has non-trivial OOF-positioned methods.
   // They are intended to be used by a layout algorithm like this:
@@ -492,6 +495,10 @@ class CORE_EXPORT FragmentBuilder {
     return tallest_unbreakable_block_size_ >= LayoutUnit();
   }
 
+  // To be called once, after the final size has been set (i.e. in-flow layout
+  // is done), and before generating the fragment.
+  void Finalize();
+
   const LayoutResult* Abort(LayoutResult::EStatus);
 
 #if DCHECK_IS_ON()
@@ -517,7 +524,7 @@ class CORE_EXPORT FragmentBuilder {
 
   HeapVector<Member<LayoutBoxModelObject>>& EnsureStickyDescendants();
   HeapVector<Member<Element>>& EnsureSnapAreas();
-  LogicalAnchorQuery& EnsureAnchorQuery();
+  PhysicalAnchorQuery& EnsureAnchorQuery();
 
   void PropagateFromLayoutResultAndFragment(
       const LayoutResult&,
@@ -526,7 +533,7 @@ class CORE_EXPORT FragmentBuilder {
       const OofInlineContainer<LogicalOffset>* = nullptr);
 
   void PropagateFromLayoutResult(const LayoutResult&);
-  void PropagateScrollStartTarget(const PhysicalFragment& child);
+  void PropagateScrollInitialTarget(const PhysicalFragment& child);
 
   void PropagateFromFragment(
       const PhysicalFragment& child,
@@ -546,7 +553,10 @@ class CORE_EXPORT FragmentBuilder {
       const OofInlineContainer<LogicalOffset>* current_inline_container =
           nullptr) const;
 
-  void UpdateScrollStartTarget(const LayoutObject* new_target);
+  void UpdateScrollInitialTarget(const LayoutObject* new_target);
+
+  // Propagate data that was held back until the final size was known.
+  void PropagateSizeDependentData();
 
   LayoutInputNode node_;
   const ConstraintSpace& space_;
@@ -565,17 +575,20 @@ class CORE_EXPORT FragmentBuilder {
 
   HeapVector<Member<LayoutBoxModelObject>>* sticky_descendants_ = nullptr;
   HeapVector<Member<Element>>* snap_areas_ = nullptr;
-  // [1] https://drafts.csswg.org/css-scroll-snap-2/#scroll-start-target
+  // [1] https://drafts.csswg.org/css-scroll-snap-2/#scroll-initial-target
   const LayoutObject* scroll_start_target_ = nullptr;
-  LogicalAnchorQuery* anchor_query_ = nullptr;
+  PhysicalAnchorQuery* anchor_query_ = nullptr;
   LayoutUnit bfc_line_offset_;
   std::optional<LayoutUnit> bfc_block_offset_;
   MarginStrut end_margin_strut_;
   ExclusionSpace exclusion_space_;
   std::optional<int> lines_until_clamp_;
 
-
   ChildrenVector children_;
+
+  // Children where we need to know the container size before some propagation
+  // operation can take place.
+  HeapVector<LogicalFragmentLink> children_with_size_dependent_propagation_;
 
   FragmentItemsBuilder* items_builder_ = nullptr;
 
@@ -635,11 +648,13 @@ class CORE_EXPORT FragmentBuilder {
   bool has_out_of_flow_fragment_child_ = false;
   bool has_out_of_flow_in_fragmentainer_subtree_ = false;
   bool is_block_end_trimmable_line_ = false;
+  bool has_final_size_ = false;
 
   bool oof_candidates_may_have_anchor_queries_ = false;
   bool oof_fragmentainer_descendants_may_have_anchor_queries_ = false;
 #if DCHECK_IS_ON()
   bool is_may_have_descendant_above_block_start_explicitly_set_ = false;
+  bool is_finalized_ = false;
 #endif
 
   friend class InlineLayoutStateStack;

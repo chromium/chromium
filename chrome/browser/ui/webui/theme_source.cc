@@ -249,12 +249,12 @@ void ThemeSource::SendThemeImage(
   std::optional<std::vector<uint8_t>> result =
       gfx::PNGCodec::EncodeBGRASkBitmap(rep.GetBitmap(),
                                         /*discard_transparency=*/false);
-  if (!result) {
+  if (result) {
+    std::move(callback).Run(
+        base::MakeRefCounted<base::RefCountedBytes>(std::move(result.value())));
+  } else {
     std::move(callback).Run(base::MakeRefCounted<base::RefCountedBytes>());
   }
-
-  std::move(callback).Run(
-      base::MakeRefCounted<base::RefCountedBytes>(std::move(result.value())));
 }
 
 void ThemeSource::SendColorsCss(
@@ -290,37 +290,36 @@ void ThemeSource::SendColorsCss(
                                          base::SPLIT_WANT_ALL);
 
   using ColorIdCSSCallback = base::RepeatingCallback<std::string(ui::ColorId)>;
-  auto generate_color_mapping = [&color_id_sets, &color_provider,
-                                 &generate_rgb_vars](
-                                    std::string set_name, ui::ColorId start,
-                                    ui::ColorId end,
-                                    ColorIdCSSCallback color_css_name) {
-    // Only return these mappings if specified in the query parameter.
-    auto it = base::ranges::find(color_id_sets, set_name);
-    if (it == color_id_sets.end()) {
-      return std::string();
-    }
-    color_id_sets.erase(it);
-    std::string css_string;
-    for (ui::ColorId id = start; id < end; ++id) {
-      const SkColor color = color_provider.GetColor(id);
-      std::string css_id_to_color_mapping =
-          base::StringPrintf("%s:%s;", color_css_name.Run(id).c_str(),
-                             ui::ConvertSkColorToCSSColor(color).c_str());
-      base::StrAppend(&css_string, {css_id_to_color_mapping});
-      if (generate_rgb_vars) {
-        // Also generate a r,g,b string for each color so apps can construct
-        // colors with their own opacities in css.
-        const std::string css_rgb_color_str =
-            color_utils::SkColorToRgbString(color);
-        const std::string css_id_to_rgb_color_mapping =
-            base::StringPrintf("%s-rgb:%s;", color_css_name.Run(id).c_str(),
-                               css_rgb_color_str.c_str());
-        base::StrAppend(&css_string, {css_id_to_rgb_color_mapping});
-      }
-    }
-    return css_string;
-  };
+  auto generate_color_mapping =
+      [&color_id_sets, &color_provider, &generate_rgb_vars](
+          std::string set_name, ui::ColorId start, ui::ColorId end,
+          ColorIdCSSCallback color_css_name) {
+        // Only return these mappings if specified in the query parameter.
+        auto it = base::ranges::find(color_id_sets, set_name);
+        if (it == color_id_sets.end()) {
+          return std::string();
+        }
+        color_id_sets.erase(it);
+        std::string css_string;
+        for (ui::ColorId id = start; id < end; ++id) {
+          const SkColor color = color_provider.GetColor(id);
+          std::string css_id_to_color_mapping =
+              base::StringPrintf("%s:%s;", color_css_name.Run(id).c_str(),
+                                 ui::ConvertSkColorToCSSColor(color).c_str());
+          base::StrAppend(&css_string, {css_id_to_color_mapping});
+          if (generate_rgb_vars) {
+            // Also generate a r,g,b string for each color so apps can construct
+            // colors with their own opacities in css.
+            const std::string css_rgb_color_str =
+                color_utils::SkColorToRgbString(color);
+            const std::string css_id_to_rgb_color_mapping =
+                base::StringPrintf("%s-rgb:%s;", color_css_name.Run(id).c_str(),
+                                   css_rgb_color_str.c_str());
+            base::StrAppend(&css_string, {css_id_to_rgb_color_mapping});
+          }
+        }
+        return css_string;
+      };
 
   // Convenience lambda for wrapping
   // |ConvertColorProviderColorIdToCSSColorId|.

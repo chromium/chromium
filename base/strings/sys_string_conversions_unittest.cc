@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/sys_string_conversions.h"
+
 #include <stddef.h>
 
 #include <string>
 
-#include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_locale.h"
 #include "build/build_config.h"
@@ -169,7 +170,6 @@ static const wchar_t* const kConvertRoundtripCases[] = {
     L"\x11d40\x11d41\x11d42\x11d43\x11d44",
 #endif
 };
-
 
 TEST(SysStrings, SysNativeMBAndWide) {
 #if !defined(SYSTEM_NATIVE_UTF8)

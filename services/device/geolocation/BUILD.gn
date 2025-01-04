@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 
 if (is_android) {
@@ -103,7 +101,7 @@ source_set("geolocation") {
   }
 
   # Platform-specific WifiDataProvider implementations.
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "wifi_data_provider_chromeos.cc",
       "wifi_data_provider_chromeos.h",
@@ -115,15 +113,6 @@ source_set("geolocation") {
       "wifi_data_provider_linux.h",
     ]
     deps += [ "//dbus" ]
-  } else if (is_chromeos_lacros) {
-    sources += [
-      "wifi_data_provider_lacros.cc",
-      "wifi_data_provider_lacros.h",
-    ]
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-    ]
   } else if (is_mac) {
     frameworks += [
       "CoreWLAN.framework",
@@ -206,7 +195,7 @@ source_set("test_support") {
     "//testing/gtest",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//chromeos/ash/components/dbus/shill" ]
   }
 }

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.webapk.lib.client;
+import org.chromium.build.annotations.NullMarked;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -16,18 +17,20 @@ import android.util.Log;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.webapk.lib.common.identity_service.IIdentityService;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Provides APIs for browsers to communicate with WebAPK Identity services. Each WebAPK has its own
  * "WebAPK Identity service".
  */
+@NullMarked
 public class WebApkIdentityServiceClient {
     /**
      * Used to notify the consumer after checking whether the caller browser backs the WebAPK.
      * |browserPackageName| is the package name of the browser which backs the WebAPK.
      */
     public interface CheckBrowserBacksWebApkCallback {
-        void onChecked(boolean doesBrowserBackWebApk, String browserPackageName);
+        void onChecked(boolean doesBrowserBackWebApk, @Nullable String browserPackageName);
     }
 
     /**
@@ -47,7 +50,7 @@ public class WebApkIdentityServiceClient {
     public static final String ACTION_WEBAPK_IDENTITY_SERVICE = "org.webapk.IDENTITY_SERVICE_API";
     private static final String TAG = "WebApkIdentityService";
 
-    private static WebApkIdentityServiceClient sInstance;
+    private static @Nullable WebApkIdentityServiceClient sInstance;
 
     /** Manages connections between the browser application and WebAPK Identity services. */
     private WebApkServiceConnectionManager mConnectionManager;
@@ -79,7 +82,7 @@ public class WebApkIdentityServiceClient {
         WebApkServiceConnectionManager.ConnectionCallback connectionCallback =
                 new WebApkServiceConnectionManager.ConnectionCallback() {
                     @Override
-                    public void onConnected(IBinder service) {
+                    public void onConnected(@Nullable IBinder service) {
                         String browserPackageName = browserContext.getPackageName();
                         if (service == null) {
                             onGotWebApkRuntimeHost(
@@ -115,7 +118,7 @@ public class WebApkIdentityServiceClient {
      */
     private static void onGotWebApkRuntimeHost(
             String browserPackageName,
-            String webApkBackingBrowserPackageName,
+            @Nullable String webApkBackingBrowserPackageName,
             CheckBrowserBacksWebApkCallback callback) {
         callback.onChecked(
                 TextUtils.equals(webApkBackingBrowserPackageName, browserPackageName),
@@ -127,7 +130,7 @@ public class WebApkIdentityServiceClient {
      * WebApkIdentityServiceClient#SHELL_APK_VERSION_SUPPORTING_SWITCH_RUNTIME_HOST} for more
      * details.
      */
-    private static String maybeExtractRuntimeHostFromMetaData(
+    private static @Nullable String maybeExtractRuntimeHostFromMetaData(
             Context context, String webApkPackageName) {
         Bundle metadata = readMetaData(context, webApkPackageName);
         if (metadata == null
@@ -142,7 +145,7 @@ public class WebApkIdentityServiceClient {
     }
 
     /** Returns the <meta-data> in the Android Manifest of the given package name. */
-    private static Bundle readMetaData(Context context, String packageName) {
+    private static @Nullable Bundle readMetaData(Context context, String packageName) {
         ApplicationInfo ai = null;
         try {
             ai =

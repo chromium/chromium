@@ -27,7 +27,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/frame_navigation_entry.h"
@@ -16354,8 +16353,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        UtilizationOfSpareRenderProcessHost) {
   GURL first_url = embedded_test_server()->GetURL("a.com", "/title1.html");
   GURL second_url = embedded_test_server()->GetURL("b.com", "/title2.html");
-  std::vector<int> prev_spare_ids;
-  std::vector<int> curr_spare_ids;
+  std::vector<ChildProcessId> prev_spare_ids;
+  std::vector<ChildProcessId> curr_spare_ids;
   RenderProcessHost* prev_host = nullptr;
   RenderProcessHost* curr_host = nullptr;
 
@@ -16374,6 +16373,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   curr_spare_ids = spare_manager.GetSpareIds();
   curr_host = shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
   EXPECT_FALSE(base::Contains(curr_spare_ids, curr_host->GetID()));
+
   // No process swap when navigating away from the initial blank page.
   EXPECT_EQ(prev_host, curr_host);
   // We should always keep a spare RenderProcessHost around in site-per-process
@@ -17701,8 +17701,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_NE(success_site_instance, error_site_instance);
   EXPECT_TRUE(
       success_site_instance->IsRelatedSiteInstance(error_site_instance.get()));
-  EXPECT_NE(success_site_instance->GetProcess()->GetID(),
-            error_site_instance->GetProcess()->GetID());
+  EXPECT_NE(success_site_instance->GetProcess()->GetDeprecatedID(),
+            error_site_instance->GetProcess()->GetDeprecatedID());
   EXPECT_EQ(GURL(kUnreachableWebDataURL), error_site_instance->GetSiteURL());
 
   EXPECT_TRUE(

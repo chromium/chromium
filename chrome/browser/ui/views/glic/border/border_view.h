@@ -29,9 +29,9 @@ class BorderView : public views::View,
 
  public:
   // Helper function to find the `BorderView` for `web_contents`. Returns null
-  // if there isn't a browser / browser view for `web_contents`.
+  // if there isn't a browser view for `web_contents`.
   static BorderView* FindBorderForWebContents(
-      content::WebContents* web_contents);
+      const content::WebContents* web_contents);
 
   static void CancelAllAnimationsForProfile(Profile* profile);
 
@@ -46,6 +46,9 @@ class BorderView : public views::View,
   // `views::ViewObserver`:
   void OnChildViewAdded(views::View* observed_view,
                         views::View* child) override;
+  void OnChildViewReordered(views::View* observed_view,
+                            views::View* child) override;
+  void OnViewBoundsChanged(views::View* observed_view) override;
 
   // `ui::CompositorAnimationObserver`:
   void OnAnimationStep(base::TimeTicks timestamp) override;
@@ -54,6 +57,19 @@ class BorderView : public views::View,
   void StartAnimation();
 
   void CancelAnimation();
+
+ private:
+  // Reorder `this` to make sure `this` is the topmost child of `parent()`.
+  void MakeTopMostChild(views::View* observed_view, views::View* child);
+
+  // Tracks if we are during a `MakeTopMostChild()`. Used to prevent infinite
+  // re-entrance to `MakeTopMostChild()`,
+  //
+  // TODO(crbug.com/384923815): Revisit this when we know how to make the border
+  // coexist with the TabSharing border.
+  bool reorder_in_progress_ = false;
+
+  bool animation_ongoing_ = false;
 };
 
 }  // namespace glic

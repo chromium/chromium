@@ -9,7 +9,6 @@
 #import "components/collaboration/internal/collaboration_service_impl.h"
 #import "components/collaboration/internal/empty_collaboration_service.h"
 #import "components/data_sharing/public/features.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"

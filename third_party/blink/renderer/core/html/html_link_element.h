@@ -165,6 +165,12 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
 
   AtomicString ParseSameDocumentIdFromHref(const String& href);
 
+  // Trigger payment link handling if below conditions are met:
+  // 1. `rel` is "payment".
+  // 2. `href` is not empty.
+  // 3. the link element is already attached to the document.
+  void MaybeHandlePaymentLink();
+
   Member<LinkResource> link_;
   Member<LinkLoader> link_loader_;
 

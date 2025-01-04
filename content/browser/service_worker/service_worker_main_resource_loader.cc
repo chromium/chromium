@@ -450,7 +450,7 @@ bool ServiceWorkerMainResourceLoader::MaybeStartAutoPreload(
   // improve the coverage.
   if (base::GetFieldTrialParamByFeatureAsBool(
           features::kServiceWorkerAutoPreload, "has_web_request_api_proxy",
-          /*default_value=*/false) &&
+          /*default_value=*/true) &&
       (GetContentClient()->browser()->HasWebRequestAPIProxy(
           context->browser_context()))) {
     return false;

@@ -56,18 +56,14 @@
     attribute EventHandler onrejectionhandled;
     attribute EventHandler onunhandledrejection;
 
-    // Secure Contexts
-    // https://w3c.github.io/webappsec-secure-contexts/#dom-windoworworkerglobalscope-issecurecontext
-    [ImplementedAs=isSecureContextForBindings] readonly attribute boolean isSecureContext;
-
     // WindowOrWorkerGlobalScope mixin
     // https://html.spec.whatwg.org/C/#windoworworkerglobalscope-mixin
     [Replaceable] readonly attribute DOMString origin;
-    void queueMicrotask(VoidFunction callback);
 
     // TrustedTypes API: http://github.com/w3c/trusted-types
     readonly attribute TrustedTypePolicyFactory trustedTypes;
 };
 
+WorkerGlobalScope includes UniversalGlobalScope;
 WorkerGlobalScope includes WindowOrWorkerGlobalScope;
 WorkerGlobalScope includes FontFaceSource;

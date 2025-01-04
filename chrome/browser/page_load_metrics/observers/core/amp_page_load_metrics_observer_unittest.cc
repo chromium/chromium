@@ -26,7 +26,6 @@
 using content::NavigationSimulator;
 using page_load_metrics::mojom::UserInteractionLatencies;
 using page_load_metrics::mojom::UserInteractionLatency;
-using page_load_metrics::mojom::UserInteractionType;
 
 class AMPPageLoadMetricsObserverTest
     : public page_load_metrics::PageLoadMetricsObserverTestHarness,
@@ -527,14 +526,11 @@ TEST_P(AMPPageLoadMetricsObserverTest,
       input_timing.max_event_durations->get_user_interaction_latencies();
   base::TimeTicks current_time = base::TimeTicks::Now();
   max_event_durations.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(50), UserInteractionType::kKeyboard, 0,
-      current_time + base::Milliseconds(1000)));
+      base::Milliseconds(50), 0, current_time + base::Milliseconds(1000)));
   max_event_durations.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(100), UserInteractionType::kTapOrClick, 1,
-      current_time + base::Milliseconds(2000)));
+      base::Milliseconds(100), 1, current_time + base::Milliseconds(2000)));
   max_event_durations.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(150), UserInteractionType::kDrag, 2,
-      current_time + base::Milliseconds(3000)));
+      base::Milliseconds(150), 2, current_time + base::Milliseconds(3000)));
 
   tester()->SimulateInputTimingUpdate(input_timing, subframe);
 
@@ -596,14 +592,11 @@ TEST_P(AMPPageLoadMetricsObserverTest,
   auto& max_event_durations =
       input_timing.max_event_durations->get_user_interaction_latencies();
   max_event_durations.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(50), UserInteractionType::kKeyboard, 0,
-      current_time + base::Milliseconds(1000)));
+      base::Milliseconds(50), 0, current_time + base::Milliseconds(1000)));
   max_event_durations.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(100), UserInteractionType::kTapOrClick, 1,
-      current_time + base::Milliseconds(2000)));
+      base::Milliseconds(100), 1, current_time + base::Milliseconds(2000)));
   max_event_durations.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(150), UserInteractionType::kDrag, 2,
-      current_time + base::Milliseconds(3000)));
+      base::Milliseconds(150), 2, current_time + base::Milliseconds(3000)));
 
   tester()->SimulateInputTimingUpdate(input_timing, subframe);
 

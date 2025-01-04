@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//build/config/ui.gni")
 import("//chrome/common/features.gni")
@@ -11,7 +10,7 @@ import("//testing/test.gni")
 import("//ui/base/ui_features.gni")
 
 assert(use_ozone)
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 if (use_xkbcommon) {
   pkg_config("xkbcommon") {
@@ -138,7 +137,6 @@ static_library("exo") {
     "//base",
     "//cc",
     "//cc/mojo_embedder:mojo_embedder",
-    "//chromeos/crosapi/cpp:crosapi_constants",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/ui/base",
@@ -186,7 +184,7 @@ static_library("exo") {
 
   assert_no_deps = [
     "//ash/components/arc",
-    "//components/arc",
+    "//ash/components/arc/intent_helper",
     "//content/public/browser",
     "//content/public/common",
   ]

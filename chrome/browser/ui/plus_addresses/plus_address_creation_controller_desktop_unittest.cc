@@ -105,9 +105,7 @@ class PlusAddressCreationControllerDesktopEnabledTest
     PlusAddressCreationControllerDesktop::CreateForWebContents(web_contents());
   }
 
-  void TearDown() override {
-    ChromeRenderViewHostTestHarness::TearDown();
-  }
+  void TearDown() override { ChromeRenderViewHostTestHarness::TearDown(); }
 
   PlusAddressCreationControllerDesktop& controller() {
     return *PlusAddressCreationControllerDesktop::FromWebContents(

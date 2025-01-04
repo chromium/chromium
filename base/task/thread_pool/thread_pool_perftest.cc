@@ -185,8 +185,9 @@ class ThreadPoolPerfTest : public testing::Test {
     tasks_run_duration_ = TimeTicks::Now() - tasks_run_start;
     ASSERT_EQ(0U, num_tasks_pending_);
 
-    for (auto& thread : threads_)
+    for (auto& thread : threads_) {
       thread->Join();
+    }
     ThreadPoolInstance::Get()->JoinForTesting();
 
     auto reporter = SetUpReporter(story_name);

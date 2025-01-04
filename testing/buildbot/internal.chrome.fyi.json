@@ -85,20 +85,6 @@
       }
     ]
   },
-  "chromeos-arm-generic-cfi-thin-lto-chrome-reclient": {
-    "additional_compile_targets": [
-      "chromiumos_preflight"
-    ]
-  },
-  "linux-chrome-reclient": {
-    "additional_compile_targets": [
-      "base_unittests",
-      "chrome",
-      "chrome/installer/linux",
-      "chrome_sizes",
-      "variations_smoke_tests"
-    ]
-  },
   "linux-finch-smoke-chrome": {
     "isolated_scripts": [
       {
@@ -160,23 +146,6 @@
         "test": "variations_desktop_smoke_tests",
         "test_id_prefix": "ninja://chrome/test/variations:variations_desktop_smoke_tests/"
       }
-    ]
-  },
-  "mac-chrome-reclient": {
-    "additional_compile_targets": [
-      "chrome",
-      "chrome/installer/mac",
-      "chrome_sizes",
-      "variations_smoke_tests"
-    ]
-  },
-  "win-chrome-reclient": {
-    "additional_compile_targets": [
-      "base_unittests",
-      "chrome",
-      "chrome_official_builder",
-      "chrome_sizes",
-      "variations_smoke_tests"
     ]
   },
   "win-finch-smoke-chrome": {

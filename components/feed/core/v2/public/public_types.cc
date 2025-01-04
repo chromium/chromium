@@ -11,7 +11,7 @@
 namespace feed {
 
 AccountInfo::AccountInfo() = default;
-AccountInfo::AccountInfo(const std::string& gaia, const std::string& email)
+AccountInfo::AccountInfo(const GaiaId& gaia, const std::string& email)
     : gaia(gaia), email(email) {}
 AccountInfo::AccountInfo(CoreAccountInfo account_info)
     : gaia(std::move(account_info.gaia)),

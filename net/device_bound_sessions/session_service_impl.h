@@ -62,7 +62,8 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
 
   void RegisterBoundSession(OnAccessCallback on_access_callback,
                             RegistrationFetcherParam registration_params,
-                            const IsolationInfo& isolation_info) override;
+                            const IsolationInfo& isolation_info,
+                            const NetLogWithSource& net_log) override;
 
   std::optional<Session::Id> GetAnySessionRequiringDeferral(
       URLRequest* request) override;
@@ -81,6 +82,11 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       base::OnceCallback<void(const std::vector<SessionKey>&)> callback)
       override;
   void DeleteSession(const SchemefulSite& site, const Session::Id& id) override;
+  void DeleteAllSessions(
+      std::optional<base::Time> created_after_time,
+      std::optional<base::Time> created_before_time,
+      base::RepeatingCallback<bool(const net::SchemefulSite&)> site_matcher,
+      base::OnceClosure completion_callback) override;
   Session* GetSession(const SchemefulSite& site,
                       const Session::Id& session_id) const;
 
@@ -99,6 +105,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       OnAccessCallback on_access_callback,
       std::optional<RegistrationFetcher::RegistrationCompleteParams> params);
   void OnRefreshRequestCompletion(
+      OnAccessCallback on_access_callback,
       SchemefulSite site,
       Session::Id session_id,
       std::optional<RegistrationFetcher::RegistrationCompleteParams> result);
@@ -116,7 +123,6 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   // `session_store_` and any BFCache entries.
   // Return the iterator to the next session in the map.
   [[nodiscard]] SessionsMap::iterator DeleteSessionInternal(
-      const SchemefulSite& site,
       SessionsMap::iterator it);
 
   // Whether we are waiting on the initial load of saved sessions to complete.

@@ -106,13 +106,12 @@ void BuildInfo::set_gms_version_code_for_test(
 
 std::string BuildInfo::host_signing_cert_sha256() {
   JNIEnv* env = AttachCurrentThread();
-  return base::android::ConvertJavaStringToUTF8(
-      env, Java_BuildInfo_lazyGetHostSigningCertSha256(env));
+  return Java_BuildInfo_lazyGetHostSigningCertSha256(env);
 }
 
 // static
 BuildInfo* BuildInfo::GetInstance() {
-  return Singleton<BuildInfo, BuildInfoSingletonTraits >::get();
+  return Singleton<BuildInfo, BuildInfoSingletonTraits>::get();
 }
 
 }  // namespace android

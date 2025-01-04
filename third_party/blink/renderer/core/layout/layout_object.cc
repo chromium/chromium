@@ -758,6 +758,17 @@ void LayoutObject::RemoveChild(LayoutObject* old_child) {
   children->RemoveChildNode(this, old_child);
 }
 
+bool LayoutObject::IsInTopOrViewTransitionLayer() const {
+  NOT_DESTROYED();
+  if (IsViewTransitionRoot()) {
+    return true;
+  }
+  if (Element* element = DynamicTo<Element>(GetNode())) {
+    return StyleRef().IsRenderedInTopLayer(*element);
+  }
+  return false;
+}
+
 void LayoutObject::NotifyPriorityScrollAnchorStatusChanged() {
   NOT_DESTROYED();
   if (!Parent())
@@ -1689,7 +1700,7 @@ void LayoutObject::MarkParentForSpannerOrOutOfFlowPositionedChange() {
   const LayoutBlock* containing_block = ContainingBlock();
   while (object != containing_block) {
     object->SetChildNeedsLayout(kMarkOnlyThis);
-    object = object->Parent();
+    object = object->Container();
   }
   // Finally mark the parent block for layout. This will mark everything which
   // has an OOF-positioned object or column spanner in a LayoutResult as
@@ -2686,10 +2697,10 @@ void LayoutObject::SetPseudoElementStyle(const LayoutObject& owner,
          pseudo_style->StyleType() == kPseudoIdScrollMarkerGroup ||
          pseudo_style->IsPageMarginBox() ||
          pseudo_style->StyleType() == kPseudoIdScrollMarker ||
-         pseudo_style->StyleType() == kPseudoIdScrollUpButton ||
-         pseudo_style->StyleType() == kPseudoIdScrollDownButton ||
-         pseudo_style->StyleType() == kPseudoIdScrollLeftButton ||
-         pseudo_style->StyleType() == kPseudoIdScrollRightButton);
+         pseudo_style->StyleType() == kPseudoIdScrollButtonBlockStart ||
+         pseudo_style->StyleType() == kPseudoIdScrollButtonInlineStart ||
+         pseudo_style->StyleType() == kPseudoIdScrollButtonBlockEnd ||
+         pseudo_style->StyleType() == kPseudoIdScrollButtonInlineEnd);
 
   InheritIsInDetachedNonDomTree(owner);
 

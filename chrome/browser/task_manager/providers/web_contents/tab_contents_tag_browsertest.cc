@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
+
+#include <array>
 
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
@@ -60,26 +57,13 @@ struct TestPageData {
 // The below test files are available in src/chrome/test/data/
 // TODO(afakhry): Add more test pages here as needed (e.g. pages that are hosted
 // in the tabs as apps or extensions).
-const TestPageData kTestPages[] = {
-    {
-        "/title1.html",
-        "",
-        Task::RENDERER,
-        IDS_TASK_MANAGER_TAB_PREFIX
-    },
-    {
-        "/title2.html",
-        "Title Of Awesomeness",
-        Task::RENDERER,
-        IDS_TASK_MANAGER_TAB_PREFIX
-    },
-    {
-        "/title3.html",
-        "Title Of More Awesomeness",
-        Task::RENDERER,
-        IDS_TASK_MANAGER_TAB_PREFIX
-    },
-};
+const auto kTestPages = std::to_array<TestPageData>({
+    {"/title1.html", "", Task::RENDERER, IDS_TASK_MANAGER_TAB_PREFIX},
+    {"/title2.html", "Title Of Awesomeness", Task::RENDERER,
+     IDS_TASK_MANAGER_TAB_PREFIX},
+    {"/title3.html", "Title Of More Awesomeness", Task::RENDERER,
+     IDS_TASK_MANAGER_TAB_PREFIX},
+});
 
 const size_t kTestPagesLength = std::size(kTestPages);
 

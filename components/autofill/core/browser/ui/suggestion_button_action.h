@@ -9,8 +9,8 @@
 
 namespace autofill {
 
-// Used by `FillingProduct::kPredictionImprovements` to offer users more
-// suggestion interaction options.
+// Used by `FillingProduct::kAutofillAi` to offer users more suggestion
+// interaction options.
 enum class AutofillAiSuggestionButtonAction {
   // Records that the user has given a good feedback about the feature.
   kThumbsUpClicked,

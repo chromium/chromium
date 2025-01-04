@@ -17,7 +17,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.app.Activity;
 import android.widget.FrameLayout;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -41,7 +40,6 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.feature_engagement.Tracker;
@@ -59,7 +57,6 @@ public class HubCoordinatorUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private Activity mActivity;
     @Mock private Tab mTab;
     @Mock private Tab mIncognitoTab;
     @Mock private HubLayoutController mHubLayoutController;
@@ -83,8 +80,6 @@ public class HubCoordinatorUnitTest {
             new ObservableSupplierImpl<>();
     private OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
             new OneshotSupplierImpl<>();
-    private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
-            new ObservableSupplierImpl<>();
     private PaneManager mPaneManager;
     private FrameLayout mRootView;
     private HubCoordinator mHubCoordinator;
@@ -95,6 +90,7 @@ public class HubCoordinatorUnitTest {
         mReferenceButtonDataSupplier.set(mReferenceButtonData);
         mProfileProviderSupplier.set(mProfileProvider);
         when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
+        when(mTabSwitcherPane.getColorScheme()).thenReturn(HubColorScheme.DEFAULT);
         when(mTabSwitcherPane.getHandleBackPressChangedSupplier())
                 .thenReturn(mTabSwitcherBackPressSupplier);
         when(mTabSwitcherPane.getActionButtonDataSupplier())
@@ -102,6 +98,7 @@ public class HubCoordinatorUnitTest {
         when(mTabSwitcherPane.getReferenceButtonDataSupplier())
                 .thenReturn(mReferenceButtonDataSupplier);
         when(mIncognitoTabSwitcherPane.getPaneId()).thenReturn(PaneId.INCOGNITO_TAB_SWITCHER);
+        when(mIncognitoTabSwitcherPane.getColorScheme()).thenReturn(HubColorScheme.INCOGNITO);
         when(mIncognitoTabSwitcherPane.getHandleBackPressChangedSupplier())
                 .thenReturn(mIncognitoTabSwitcherBackPressSupplier);
         when(mIncognitoTabSwitcherPane.getActionButtonDataSupplier())
@@ -136,14 +133,13 @@ public class HubCoordinatorUnitTest {
 
         mHubCoordinator =
                 new HubCoordinator(
-                        mActivity,
+                        activity,
                         mProfileProviderSupplier,
                         mRootView,
                         mPaneManager,
                         mHubLayoutController,
                         mTabSupplier,
                         mMenuButtonCoordinator,
-                        mEdgeToEdgeSupplier,
                         mSearchActivityClient);
         ShadowLooper.runUiThreadTasks();
         mRootView.getChildCount();

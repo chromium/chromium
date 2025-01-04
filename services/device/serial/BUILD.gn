@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 
 if (is_win || ((is_linux || is_chromeos) && use_udev) || is_mac) {
@@ -44,7 +43,6 @@ if (is_win || ((is_linux || is_chromeos) && use_udev) || is_mac) {
 
     deps = [
       "//base",
-      "//build:chromeos_buildflags",
       "//components/device_event_log",
       "//device/bluetooth:bluetooth",
       "//device/bluetooth/public/cpp",
@@ -88,7 +86,7 @@ if (is_win || ((is_linux || is_chromeos) && use_udev) || is_mac) {
       deps += [ "//device/udev_linux" ]
     }
 
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       deps += [ "//chromeos/dbus/permission_broker" ]
     }
 

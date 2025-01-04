@@ -25,14 +25,14 @@
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_utils.h"
 #include "chrome/browser/ui/autofill/next_idle_barrier.h"
-#include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/filling_product.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
-#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -377,7 +377,6 @@ void AutofillKeyboardAccessoryControllerImpl::OnDeletionDialogClosed(
       }
       break;
     case FillingProduct::kCreditCard:
-    case FillingProduct::kStandaloneCvc:
       // TODO(crbug.com/41482065): Add metrics for credit cards.
       break;
     case FillingProduct::kNone:
@@ -386,7 +385,7 @@ void AutofillKeyboardAccessoryControllerImpl::OnDeletionDialogClosed(
     case FillingProduct::kPassword:
     case FillingProduct::kCompose:
     case FillingProduct::kPlusAddresses:
-    case FillingProduct::kPredictionImprovements:
+    case FillingProduct::kAutofillAi:
       break;
   }
 

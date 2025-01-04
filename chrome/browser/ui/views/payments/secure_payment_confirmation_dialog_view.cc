@@ -151,8 +151,9 @@ void SecurePaymentConfirmationDialogView::ShowDialog(
                              model_->progress_bar_visible());
 
   // ui_observer_for_test_ is used in platform browsertests.
-  if (ui_observer_for_test_)
+  if (ui_observer_for_test_) {
     ui_observer_for_test_->OnUIDisplayed();
+  }
 }
 
 void SecurePaymentConfirmationDialogView::OnDialogAccepted() {
@@ -250,13 +251,15 @@ void SecurePaymentConfirmationDialogView::UpdateLabelView(
 }
 
 void SecurePaymentConfirmationDialogView::HideDialog() {
-  if (GetWidget())
+  if (GetWidget()) {
     GetWidget()->Close();
+  }
 }
 
 bool SecurePaymentConfirmationDialogView::ClickOptOutForTesting() {
-  if (!model_->opt_out_visible())
+  if (!model_->opt_out_visible()) {
     return false;
+  }
   OnOptOutClicked();
   return true;
 }

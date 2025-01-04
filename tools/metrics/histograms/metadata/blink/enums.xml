@@ -289,6 +289,9 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Cancel button clicked"/>
   <int value="2" label="Back button clicked"/>
   <int value="3" label="Tab or window is closed or refreshed"/>
+  <int value="4" label="Bottom sheet swiped down on Android"/>
+  <int value="5" label="Bottom sheet swiped back on Android"/>
+  <int value="6" label="Tap scrim on Android"/>
 </enum>
 
 <enum name="FedCmIdpSigninMatchStatus">
@@ -334,6 +337,9 @@ chromium-metrics-reviews@google.com.
   <int value="2"
       label="Proceeds by completing login to IDP flow in pop-up or CCT"/>
   <int value="3" label="Tab or window is destroyed"/>
+  <int value="4" label="Bottom sheet swiped down on Android"/>
+  <int value="5" label="Bottom sheet swiped back on Android"/>
+  <int value="6" label="Tap scrim on Android"/>
 </enum>
 
 <enum name="FedCmMismatchDialogResult">

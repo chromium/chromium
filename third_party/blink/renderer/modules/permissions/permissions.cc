@@ -155,7 +155,7 @@ ScriptPromise<PermissionStatus> Permissions::revoke(
 
 ScriptPromise<IDLSequence<PermissionStatus>> Permissions::requestAll(
     ScriptState* script_state,
-    const HeapVector<ScriptValue>& raw_permissions,
+    const HeapVector<ScriptObject>& raw_permissions,
     ExceptionState& exception_state) {
   Vector<PermissionDescriptorPtr> internal_permissions;
   Vector<int> caller_index_to_internal_index;
@@ -164,7 +164,7 @@ ScriptPromise<IDLSequence<PermissionStatus>> Permissions::requestAll(
   ExecutionContext* context = ExecutionContext::From(script_state);
 
   for (wtf_size_t i = 0; i < raw_permissions.size(); ++i) {
-    const ScriptValue& raw_permission = raw_permissions[i];
+    const ScriptObject& raw_permission = raw_permissions[i];
 
     auto descriptor = ParsePermissionDescriptor(script_state, raw_permission,
                                                 exception_state);

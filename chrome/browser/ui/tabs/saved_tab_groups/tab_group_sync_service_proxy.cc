@@ -216,6 +216,18 @@ void TabGroupSyncServiceProxy::MakeTabGroupShared(
   NOTIMPLEMENTED();
 }
 
+void TabGroupSyncServiceProxy::AboutToUnShareTabGroup(
+    const LocalTabGroupID& local_group_id,
+    base::OnceClosure on_complete_callback) {
+  NOTIMPLEMENTED();
+}
+
+void TabGroupSyncServiceProxy::OnTabGroupUnShareComplete(
+    const LocalTabGroupID& local_group_id,
+    bool success) {
+  NOTIMPLEMENTED();
+}
+
 std::vector<SavedTabGroup> TabGroupSyncServiceProxy::GetAllGroups() const {
   return service_->model()->saved_tab_groups();
 }
@@ -232,10 +244,30 @@ std::optional<SavedTabGroup> TabGroupSyncServiceProxy::GetGroup(
   return group ? std::optional<SavedTabGroup>(*group) : std::nullopt;
 }
 
+std::optional<SavedTabGroup> TabGroupSyncServiceProxy::GetGroup(
+    const EitherGroupID& either_id) const {
+  const SavedTabGroup* group = nullptr;
+
+  if (std::holds_alternative<LocalTabGroupID>(either_id)) {
+    group = service_->model()->Get(std::get<LocalTabGroupID>(either_id));
+  } else {
+    group = service_->model()->Get(std::get<base::Uuid>(either_id));
+  }
+
+  return group ? std::make_optional<SavedTabGroup>(*group) : std::nullopt;
+}
+
 std::vector<LocalTabGroupID> TabGroupSyncServiceProxy::GetDeletedGroupIds()
     const {
   NOTIMPLEMENTED();
   return std::vector<LocalTabGroupID>();
+}
+
+std::optional<std::u16string>
+TabGroupSyncServiceProxy::GetTitleForPreviouslyExistingSharedTabGroup(
+    const CollaborationId& collaboration_id) const {
+  NOTIMPLEMENTED();
+  return std::nullopt;
 }
 
 void TabGroupSyncServiceProxy::OpenTabGroup(

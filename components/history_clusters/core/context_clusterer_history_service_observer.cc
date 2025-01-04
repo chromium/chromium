@@ -19,6 +19,10 @@ namespace history_clusters {
 
 namespace {
 
+constexpr int kEngagementScoreCacheSize = 100;
+constexpr base::TimeDelta kEngagementScoreCacheRefreshDuration =
+    base::Minutes(120);
+
 // Returns whether `visit` should be added to `cluster`.
 bool ShouldAddVisitToCluster(const history::VisitRow& new_visit,
                              const std::u16string& search_terms,
@@ -129,7 +133,7 @@ ContextClustererHistoryServiceObserver::ContextClustererHistoryServiceObserver(
     : history_service_(history_service),
       template_url_service_(template_url_service),
       optimization_guide_decider_(optimization_guide_decider),
-      engagement_score_cache_(GetConfig().engagement_score_cache_size),
+      engagement_score_cache_(kEngagementScoreCacheSize),
       engagement_score_provider_(engagement_score_provider),
       clock_(base::DefaultClock::GetInstance()) {
   if (history_service_) {
@@ -484,10 +488,6 @@ ContextClustererHistoryServiceObserver::CreateClusterVisit(
 
 float ContextClustererHistoryServiceObserver::GetEngagementScore(
     const GURL& normalized_url) {
-  if (!GetConfig().use_engagement_score_cache) {
-    return engagement_score_provider_->GetScore(normalized_url);
-  }
-
   std::string visit_host = normalized_url.host();
   auto it = engagement_score_cache_.Peek(visit_host);
   if (it != engagement_score_cache_.end() &&
@@ -499,8 +499,7 @@ float ContextClustererHistoryServiceObserver::GetEngagementScore(
   engagement_score_cache_.Put(
       visit_host,
       CachedEngagementScore(
-          score,
-          clock_->Now() + GetConfig().engagement_score_cache_refresh_duration));
+          score, clock_->Now() + kEngagementScoreCacheRefreshDuration));
   return score;
 }
 

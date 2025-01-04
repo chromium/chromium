@@ -308,7 +308,7 @@ SavedDeskLibraryView::SavedDeskLibraryView() {
   // Create grids depending on which features are enabled.
   if (saved_desk_util::AreDesksTemplatesEnabled()) {
     auto group_contents = GetLabelAndGridGroupContents();
-    if (features::IsCoralSavedDeskFeatureEnabled()) {
+    if (features::IsCoralFeatureEnabled()) {
       grid_labels_.push_back(group_contents->AddChildView(
           MakeGridLabel(IDS_ASH_DESKS_TEMPLATES_LIBRARY_TEMPLATES_GRID_LABEL)));
     }
@@ -320,7 +320,7 @@ SavedDeskLibraryView::SavedDeskLibraryView() {
   }
   if (saved_desk_util::ShouldShowSavedDesksOptions()) {
     auto group_contents = GetLabelAndGridGroupContents();
-    if (features::IsCoralSavedDeskFeatureEnabled()) {
+    if (features::IsCoralFeatureEnabled()) {
       grid_labels_.push_back(group_contents->AddChildView(MakeGridLabel(
           IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVE_AND_RECALL_GRID_LABEL)));
     }
@@ -330,9 +330,9 @@ SavedDeskLibraryView::SavedDeskLibraryView() {
 
     scroll_contents->AddChildView(std::move(group_contents));
   }
-  if (features::IsCoralSavedDeskFeatureEnabled()) {
+  if (features::IsCoralFeatureEnabled()) {
     auto group_contents = GetLabelAndGridGroupContents();
-    if (features::IsCoralSavedDeskFeatureEnabled()) {
+    if (features::IsCoralFeatureEnabled()) {
       grid_labels_.push_back(group_contents->AddChildView(
           MakeGridLabel(IDS_ASH_DESKS_TEMPLATES_LIBRARY_CORAL_GRID_LABEL)));
     }
@@ -571,7 +571,7 @@ std::optional<gfx::Rect> SavedDeskLibraryView::GetDeskPreviewBoundsForLaunch(
 }
 
 void SavedDeskLibraryView::UpdateGridLabels() {
-  if (!features::IsCoralSavedDeskFeatureEnabled()) {
+  if (!features::IsCoralFeatureEnabled()) {
     return;
   }
 

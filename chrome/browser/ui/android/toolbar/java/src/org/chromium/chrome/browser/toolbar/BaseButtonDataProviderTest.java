@@ -23,7 +23,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -96,10 +96,7 @@ public class BaseButtonDataProviderTest {
 
     @Test
     public void testButtonData_QuietVariation() {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(
-                ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2, true);
-        FeatureList.setTestValues(testValues);
+        FeatureOverrides.enable(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2);
         AdaptiveToolbarFeatures.setActionChipOverrideForTesting(
                 AdaptiveToolbarButtonVariant.READER_MODE, false);
 
@@ -120,10 +117,7 @@ public class BaseButtonDataProviderTest {
 
     @Test
     public void testButtonData_ActionChipVariation() {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(
-                ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2, true);
-        FeatureList.setTestValues(testValues);
+        FeatureOverrides.enable(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2);
         AdaptiveToolbarFeatures.setActionChipOverrideForTesting(
                 AdaptiveToolbarButtonVariant.READER_MODE, true);
 

@@ -52,8 +52,7 @@ bool IsMetadataPublished(const nearby::fastpair::Device& device) {
 bool IsValidDeviceType(const nearby::fastpair::Device& device) {
   // Fast Pair HID only works on Floss.
   if (floss::features::IsFlossEnabled()) {
-    if (ash::features::IsFastPairHIDEnabled() &&
-        device.device_type() == nearby::fastpair::DeviceType::MOUSE) {
+    if (device.device_type() == nearby::fastpair::DeviceType::MOUSE) {
       return true;
     }
     if (ash::features::IsFastPairKeyboardsEnabled() &&

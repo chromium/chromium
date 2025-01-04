@@ -49,8 +49,7 @@ namespace {
 
 // This is a global map between frame_tree_node_ids and pointers to
 // FrameTreeNodes.
-using FrameTreeNodeIdMap = std::
-    unordered_map<FrameTreeNodeId, FrameTreeNode*, FrameTreeNodeId::Hasher>;
+using FrameTreeNodeIdMap = std::unordered_map<FrameTreeNodeId, FrameTreeNode*>;
 
 base::LazyInstance<FrameTreeNodeIdMap>::DestructorAtExit
     g_frame_tree_node_id_map = LAZY_INSTANCE_INITIALIZER;
@@ -811,32 +810,29 @@ bool FrameTreeNode::NotifyUserActivation(
 
   // See the "Same-origin Visibility" section in |UserActivationState| class
   // doc.
-  if (base::FeatureList::IsEnabled(
-          features::kUserActivationSameOriginVisibility)) {
-    const url::Origin& current_origin =
-        this->current_frame_host()->GetLastCommittedOrigin();
-    for (FrameTreeNode* node : frame_tree().Nodes()) {
-      if (node->current_frame_host()->GetLastCommittedOrigin().IsSameOriginWith(
-              current_origin)) {
-        node->current_frame_host()->ActivateUserActivation(notification_type,
-                                                           sticky_only);
-      }
+  const url::Origin& current_origin =
+      this->current_frame_host()->GetLastCommittedOrigin();
+  for (FrameTreeNode* node : frame_tree().Nodes()) {
+    if (node->current_frame_host()->GetLastCommittedOrigin().IsSameOriginWith(
+            current_origin)) {
+      node->current_frame_host()->ActivateUserActivation(notification_type,
+                                                         sticky_only);
     }
+  }
 
-    if (base::FeatureList::IsEnabled(
-            blink::features::kDocumentPictureInPictureUserActivation)) {
-      // If we own a picture-in-picture window, then also activate same-origin
-      // frames within the picture-in-picture window.
-      FrameTree* picture_in_picture_frame_tree =
-          frame_tree().delegate()->GetOwnedPictureInPictureFrameTree();
-      if (picture_in_picture_frame_tree) {
-        for (FrameTreeNode* node : picture_in_picture_frame_tree->Nodes()) {
-          if (node->current_frame_host()
-                  ->GetLastCommittedOrigin()
-                  .IsSameOriginWith(current_origin)) {
-            node->current_frame_host()->ActivateUserActivation(
-                notification_type, sticky_only);
-          }
+  if (base::FeatureList::IsEnabled(
+          blink::features::kDocumentPictureInPictureUserActivation)) {
+    // If we own a picture-in-picture window, then also activate same-origin
+    // frames within the picture-in-picture window.
+    FrameTree* picture_in_picture_frame_tree =
+        frame_tree().delegate()->GetOwnedPictureInPictureFrameTree();
+    if (picture_in_picture_frame_tree) {
+      for (FrameTreeNode* node : picture_in_picture_frame_tree->Nodes()) {
+        if (node->current_frame_host()
+                ->GetLastCommittedOrigin()
+                .IsSameOriginWith(current_origin)) {
+          node->current_frame_host()->ActivateUserActivation(notification_type,
+                                                             sticky_only);
         }
       }
     }

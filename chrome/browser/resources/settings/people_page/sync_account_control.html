@@ -6,7 +6,7 @@
       }
 
       .account-icon {
-        border-radius: 20px;
+        border-radius: 50%;
         flex-shrink: 0;
         height: var(--shown-avatar-size);
         width: var(--shown-avatar-size);
@@ -141,7 +141,9 @@
       <div class="cr-row first two-line" id="avatar-row">
         <div id="avatar-container">
           <img class="account-icon" alt=""
-              src="[[getAccountImageSrc_(shownAccount_.avatarImage)]]">
+              src="[[getProfileImageSrc_(
+                shownAccount_.avatarImage,
+                profileAvatarURL_)]]">
           <div id="sync-icon-container"
               hidden="[[!isSyncing_(syncStatus.signedInState)]]"
               class$="[[getSyncIconStyle_(
@@ -158,16 +160,24 @@
                 '$i18nPolymer{syncNotWorking}',
                 '$i18nPolymer{syncPasswordsNotWorking}',
                 '$i18nPolymer{syncPaused}',
-                '$i18nPolymer{syncDisabled}', syncStatus.hasError,
+                '$i18nPolymer{syncDisabled}',
+                '$i18nPolymer{accountAwareRowTitle}',
+                syncStatus.hasError,
                 syncStatus.statusAction, syncStatus.disabled)]]
           </div>
-          <div class="secondary text-elide">
+          <div class="secondary text-elide"
+          hidden="[[shouldShowSubtitleWithAccountInfoText_()]]">
             [[getAccountLabel_(
-                '$i18nPolymer{signedInTo}', '$i18nPolymer{syncingTo}',
+                '$i18nPolymer{signedInTo}',
+                '$i18nPolymer{syncingTo}',
                 shownAccount_.email, syncStatus.hasError,
                 syncStatus.signedInState, syncStatus.disabled,
                 syncStatus.firstSetupInProgress,
                 shownAccount_.isPrimaryAccount)]]
+          </div>
+          <div class="secondary"
+          hidden="[[!shouldShowSubtitleWithAccountInfoText_()]]">
+            $i18nPolymer{accountAwareRowSubtitle}
           </div>
         </div>
         <cr-icon-button class="icon-arrow-dropdown cr-button-gap"
@@ -206,10 +216,20 @@
         </cr-button>
         <cr-button id="sync-error-button" class="action-button cr-button-gap"
             hidden="[[!shouldShowErrorActionButton_(syncStatus,
-                showSetupButtons_)]]"
+            showSetupButtons_)]]"
             on-click="onErrorButtonClick_"
             disabled="[[syncStatus.firstSetupInProgress]]">
           [[syncStatus.statusActionText]]
+        </cr-button>
+        <cr-button class="action-button cr-button-gap" on-click="onSigninClick_"
+        id="account-aware"
+        hidden="[[!shouldShowAccountAwareSigninButton_(syncStatus.signedInState)]]">
+        <img class="account-icon small" alt=""
+        src="[[getAccountImageSrc_(shownAccount_.avatarImage)]]"
+        slot="prefix-icon">
+        [[getAccountAwareSigninButtonLabel_(
+          '$i18nPolymer{accountAwareSigninButtonLabel}',
+          shownAccount_.givenName)]]
         </cr-button>
         <div id="setup-buttons" hidden="[[!showSetupButtons_]]"
             class="cr-button-gap">

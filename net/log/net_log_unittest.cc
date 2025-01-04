@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/log/net_log.h"
+
+#include <array>
 
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
@@ -328,7 +325,7 @@ void RunTestThreads(NetLog* net_log) {
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
 
-  ThreadType threads[kThreads];
+  std::array<ThreadType, kThreads> threads;
   for (size_t i = 0; i < std::size(threads); ++i) {
     threads[i].Init(net_log, &start_event);
     threads[i].Start();
@@ -401,7 +398,7 @@ TEST(NetLogTest, NetLogAddRemoveObserver) {
 
 // Test adding and removing two observers at different log levels.
 TEST(NetLogTest, NetLogTwoObservers) {
-  LoggingObserver observer[2];
+  std::array<LoggingObserver, 2> observer;
 
   // Add first observer.
   NetLog::Get()->AddObserver(&observer[0],

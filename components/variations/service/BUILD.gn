@@ -4,7 +4,6 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/chromeos/ui_mode.gni")
 
 declare_args() {
   # Set to true make a build that disables activation of field trial tests
@@ -64,7 +63,6 @@ static_library("service") {
     ":buildflags",
     "//base/version_info:channel",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//build/config/chromebox_for_meetings:buildflags",
     "//components/country_codes",
     "//components/encrypted_messages",

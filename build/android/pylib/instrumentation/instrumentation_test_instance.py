@@ -618,6 +618,8 @@ class InstrumentationTestInstance(test_instance.TestInstance):
 
     self._webview_process_mode = args.webview_process_mode
 
+    self._webview_rebaseline_mode = args.webview_rebaseline_mode
+
     self._wpr_enable_record = args.wpr_enable_record
 
     self._external_shard_index = args.test_launcher_shard_index
@@ -1052,6 +1054,10 @@ class InstrumentationTestInstance(test_instance.TestInstance):
   @property
   def webview_process_mode(self):
     return self._webview_process_mode
+
+  @property
+  def webview_rebaseline_mode(self):
+    return self._webview_rebaseline_mode
 
   @property
   def wpr_replay_mode(self):

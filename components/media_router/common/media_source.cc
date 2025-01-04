@@ -88,8 +88,9 @@ bool IsAutoJoinPresentationId(const std::string& presentation_id) {
 
 MediaSource::MediaSource(const MediaSource::Id& source_id) : id_(source_id) {
   GURL url(source_id);
-  if (IsValidPresentationUrl(url))
+  if (IsValidPresentationUrl(url)) {
     url_ = url;
+  }
 }
 
 MediaSource::MediaSource(const GURL& presentation_url)

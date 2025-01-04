@@ -402,7 +402,7 @@ bool Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
     // TODO(nasko): Convert to CHECK() once it is confirmed this is not
     // violated in reality.
     if (!ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
-            render_frame_host->GetProcess()->GetID())) {
+            render_frame_host->GetProcess()->GetDeprecatedID())) {
       base::debug::DumpWithoutCrashing();
     }
 
@@ -1022,7 +1022,8 @@ void Navigator::RequestOpenURL(
   params.source_site_instance = current_site_instance;
 
   params.source_render_frame_id = render_frame_host->GetRoutingID();
-  params.source_render_process_id = render_frame_host->GetProcess()->GetID();
+  params.source_render_process_id =
+      render_frame_host->GetProcess()->GetDeprecatedID();
 
   if (render_frame_host->web_ui()) {
     // Note that we hide the referrer for Web UI pages. We don't really want
@@ -1122,7 +1123,9 @@ void Navigator::NavigateFromFrameProxy(
 
 void Navigator::BeforeUnloadCompleted(FrameTreeNode* frame_tree_node,
                                       bool proceed,
-                                      const base::TimeTicks& proceed_time) {
+                                      const base::TimeTicks& proceed_time,
+                                      bool for_legacy,
+                                      bool showed_dialog) {
   DCHECK(frame_tree_node);
 
   NavigationRequest* navigation_request = frame_tree_node->navigation_request();
@@ -1156,7 +1159,8 @@ void Navigator::BeforeUnloadCompleted(FrameTreeNode* frame_tree_node,
 
   // Update the navigation start: it should be when it was determined that the
   // navigation will proceed.
-  navigation_request->set_navigation_start_time(proceed_time);
+  navigation_request->UpdateNavigationStartTime(proceed_time, for_legacy,
+                                                showed_dialog);
 
   DCHECK_EQ(NavigationRequest::WAITING_FOR_RENDERER_RESPONSE,
             navigation_request->state());

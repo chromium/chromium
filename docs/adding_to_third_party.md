@@ -78,25 +78,15 @@ questions.
 
 ### Rust
 
-Rust is allowed for third-party libraries as long as there is a business need,
-which includes the following:
+Rust is allowed for third party libraries. Unlike C++ libraries, Rust third
+party libraries are [regularly rolled to updated versions by a
+rotation](https://chromium.googlesource.com/chromium/src/tools/+/HEAD/crates/create_update_cl.md)
+and can be audited for unsafety. The process for adding a Googler adding new Rust third-party
+dependencies is documented at go/chrome-rust. External contributors adding a new
+third party Rust dependency will be shepherded through the process as part of
+their ATL review.
 
-* The Rust implementation is the best (e.g., speed, memory, lack of bugs) or
-only existing implementation available for the third-party library.
-* The Rust implementation allows the operation to move to a higher privileged
-process, and this benefits the product by improving on guardrail metrics (e.g.
-through avoiding process startup, IPC overheads, or C++ memory-unsafety
-mitigations).
-* The Rust implementation can meaningfully reduce our expected risk of
-(memory/crashes/undefined behavior) bugs, when compared to the existing
-third-party library and related C++ code required to use the library. We realize
-assessing risk is quite complex and very nuanced. If this is the criteria by
-which the third-party library is being added, chrome-atls-discuss@google.com and
-chrome-rust@google.com may ask for more data.
-
-Support for third-party libraries written in Rust is in active development. If
-the library you wish to add is in Rust, reach out to chrome-rust@google.com
-first.
+Email rust-dev@chromium.org with any questions about the Rust toolchain.
 
 ### A note on size constraints
 
@@ -313,6 +303,18 @@ If the library will never be shipped as a part of Chrome (e.g. build-time tools,
 testing tools), make sure to set the "Shipped" field to "no" so that the license
 is not included in about:credits page ([more on this below](#credits)).
 
+When a dependency allows a choice of license, OWNERS should choose the least
+restrictive license that meets Chromium's needs and document only the chosen
+license(s) in the README.chromium file.
+
+Multiple licenses apply when there are dependencies bundled together, or
+different parts have different restrictions, these are inherently 'and'. This is
+very different to a project allowing multiple license options.
+
+The license field in README.chromium must use a _comma-separated list_ of licenses
+that are actively in use. Complex license expressions are not allowed or
+supported.
+
 ## Get a review
 
 All third party additions and substantive changes like re-licensing need the
@@ -323,11 +325,10 @@ Non-Googlers can email one of the people in
 * Make sure you have the approval from Chrome ATLs as mentioned
   [above](#before-you-start).
 * Get security@chromium.org (or chrome-security@google.com, Google-only)
-  approval. Email the list with relevant details and a link to the CL.
-  Third party code is a hot spot for security vulnerabilities.
-  When adding a new package that could potentially carry security risk, make
-  sure to highlight risk to security@chromium.org. You may be asked to add
-  a README.security or, in dangerous cases, README.SECURITY.URGENTLY file.
+  approval. Document all security considerations, concerns, and risks in the
+  `Description:` field of the README.chromium. Third party code is a hot spot
+  for security vulnerabilities. Help people make informed decisions about
+  relying on this package by highlighting security considerations.
 * Add chromium-third-party@google.com as a reviewer on your change. This
   will trigger an automatic round-robin assignment to a reviewer who will check
   licensing matters. These reviewers may not be able to +1 a change so look for

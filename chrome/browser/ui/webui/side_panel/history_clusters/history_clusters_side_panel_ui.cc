@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/ui/webui/cr_components/history_embeddings/history_embeddings_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/history_clusters/history_clusters_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -35,6 +35,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 
 HistoryClustersSidePanelUIConfig::HistoryClustersSidePanelUIConfig()
     : DefaultTopChromeWebUIConfig(
@@ -43,6 +44,17 @@ HistoryClustersSidePanelUIConfig::HistoryClustersSidePanelUIConfig()
 
 bool HistoryClustersSidePanelUIConfig::IsPreloadable() {
   return true;
+}
+
+bool HistoryClustersSidePanelUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  auto* history_clusters_service =
+      HistoryClustersServiceFactory::GetForBrowserContext(browser_context);
+  // Keep in sync with history_clusters.mojom.PageHandler registration.
+  // If the WebUI is enabled without registering the PageHandler, the WebUI will
+  // crash on getting the PageHandler remote.
+  return history_clusters_service &&
+         history_clusters_service->is_journeys_feature_flag_enabled();
 }
 
 std::optional<int> HistoryClustersSidePanelUIConfig::GetCommandIdForTesting() {

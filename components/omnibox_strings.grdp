@@ -235,6 +235,9 @@
   <message name="IDS_ACC_KEYWORD_MODE" desc="Announcement when entering keyword search mode.">
     Search <ph name="KEYWORD_SUFFIX">$1<ex>Youtube</ex>, type a query and press Enter to search</ph>
   </message>
+  <message name="IDS_ACC_ASK_KEYWORD_MODE" desc="Announcement when entering keyword mode for an engine that is suitable for asking vs. searching (e.g. Gemini).">
+    Ask <ph name="KEYWORD_SUFFIX">$1<ex>Gemini</ex>, type a question or ask it to do something and press Enter</ph>
+  </message>
 
   <!-- Accessibility labels for the omnibox thumbs up feedback button. -->
   <message name="IDS_ACC_THUMBS_UP_SUGGESTION_FOCUSED_PREFIX" desc="Announcement when thumbs up feedback button is focused.">
@@ -318,17 +321,17 @@
   <message name="IDS_SEARCH_ENGINES_STARTER_PACK_GEMINI_NAME" desc = "The name of the Gemini engine as it appears on chrome://settings/searchEngines.">
     Gemini
   </message>
-  <message name="IDS_SEARCH_ENGINES_STARTER_PACK_GEMINI_KEYWORD" desc = "The keyword required to trigger Chat with Gemini in keyword mode. This will be prepended with an '@'.">
+  <message name="IDS_SEARCH_ENGINES_STARTER_PACK_GEMINI_KEYWORD" desc = "The keyword required to trigger Ask Gemini in keyword mode. This will be prepended with an '@'.">
     Gemini
   </message>
-  <message name="IDS_OMNIBOX_INSTANT_KEYWORD_CHAT_TEXT" desc="Text shown in an omnibox suggestion ready for instant keyword search when the destination is suitable for chatting. For example, starter pack suggestions like @gemini will chat with Gemini.">
-    <ph name="KEYWORD">$1<ex>@gemini</ex></ph> - Chat with <ph name="KEYWORD_SHORT_NAME">$2<ex>Gemini</ex></ph>
+  <message name="IDS_OMNIBOX_INSTANT_KEYWORD_ASK_TEXT" desc="Text shown in an omnibox suggestion ready for instant keyword search when the destination is suitable for asking. For example, starter pack suggestions like @gemini will Ask Gemini.">
+    <ph name="KEYWORD">$1<ex>@gemini</ex></ph> - Ask <ph name="KEYWORD_SHORT_NAME">$2<ex>Gemini</ex></ph>
   </message>
   <message name="IDS_OMNIBOX_INSTANT_KEYWORD_SEARCH_TEXT" desc="Text shown in an omnibox suggestion ready for instant keyword search when the destination is suitable for searching. For example, starter pack suggestions like @bookmarks will search Bookmarks.">
     <ph name="KEYWORD">$1<ex>@bookmarks</ex></ph> - Search <ph name="KEYWORD_SHORT_NAME">$2<ex>Bookmarks</ex></ph>
   </message>
-  <message name="IDS_OMNIBOX_SELECTED_KEYWORD_CHAT_TEXT" desc="Text shown at the front of the Omnibox when a user has selected a keyword that is suitable for chatting. For example, starter pack suggestions like @gemini will chat with Gemini.">
-    Chat with <ph name="KEYWORD_SHORT_NAME">$1<ex>Gemini</ex></ph>
+  <message name="IDS_OMNIBOX_SELECTED_KEYWORD_ASK_TEXT" desc="Text shown at the front of the Omnibox when a user has selected a keyword that is suitable for asking. For example, starter pack suggestions like @gemini will Ask Gemini.">
+    Ask <ph name="KEYWORD_SHORT_NAME">$1<ex>Gemini</ex></ph>
   </message>
 
   <!-- No results description for the Starter Pack's tab search feature (@tabs). This appears as the first suggestion when no matching tabs are found. -->
@@ -392,7 +395,7 @@
     Enter a word or two
   </message>
   <message name="IDS_OMNIBOX_GEMINI_SCOPE_PLACEHOLDER_TEXT" desc="The string displayed in the omnibox as placeholder text when the user input is empty and the user is in the @gemini scope.">
-    Enter your question or prompt
+    Enter a question
   </message>
 
   <!-- Strings for Android Hub Search. -->

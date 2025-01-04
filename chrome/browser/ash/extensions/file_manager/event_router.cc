@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/webui/file_manager/file_manager_ui.h"
 #include "base/command_line.h"
@@ -71,7 +72,6 @@
 #include "chromeos/components/disks/disks_prefs.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"

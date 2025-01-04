@@ -339,8 +339,8 @@ TEST(CommitContributionImplTest, ShouldPopulateIdStringForCommitOnlyTypes) {
 
 TEST(CommitContributionImplTest, ShouldPopulateCollaborationId) {
   std::unique_ptr<EntityData> data = CreateDefaultPreferenceEntityData();
-  data->collaboration_metadata =
-      CollaborationMetadata::ForLocalChange(/*changed_by=*/"", "collaboration");
+  data->collaboration_metadata = CollaborationMetadata::ForLocalChange(
+      /*changed_by=*/GaiaId(), "collaboration");
 
   CommitRequestData request_data;
   request_data.sequence_number = 2;

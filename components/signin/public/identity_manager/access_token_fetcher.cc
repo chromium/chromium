@@ -179,8 +179,9 @@ void AccessTokenFetcher::OnRefreshTokenAvailable(
     const CoreAccountId& account_id) {
   DCHECK_EQ(Mode::kWaitUntilRefreshTokenAvailable, mode_);
 
-  if (!IsRefreshTokenAvailable())
+  if (!IsRefreshTokenAvailable()) {
     return;
+  }
 
   DCHECK(token_service_observation_.IsObservingSource(token_service_.get()));
   token_service_observation_.Reset();

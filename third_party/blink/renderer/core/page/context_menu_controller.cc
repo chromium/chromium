@@ -711,9 +711,8 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
       data.misspelled_word = to_u16string(misspelled_word);
       const String& description = misspelled_word_and_description.second;
       if (description.length()) {
-        // Suggestions were cached for the misspelled word (won't be true for
-        // Hunspell, or Windows platform spellcheck if the
-        // kWinRetrieveSuggestionsOnlyOnDemand feature flag is set).
+        // Suggestions were cached for the misspelled word (not true for
+        // Hunspell or Windows platform spellcheck).
         Vector<String> suggestions;
         description.Split('\n', suggestions);
         WebVector<std::u16string> web_suggestions(suggestions.size());
@@ -779,7 +778,9 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
       data.referrer_policy = network::mojom::ReferrerPolicy::kNever;
 
     data.link_text = anchor->innerText().Utf8();
+  }
 
+  if (auto* anchor = DynamicTo<HTMLAnchorElementBase>(result.URLElement())) {
     if (AttributionSrcLoader* attribution_src_loader =
             selected_frame->GetAttributionSrcLoader()) {
       data.impression = attribution_src_loader->PrepareContextMenuNavigation(

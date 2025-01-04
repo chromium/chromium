@@ -121,6 +121,7 @@ public class AccountSelectionJUnitTestBase {
                 IdentityRequestDialogDisclosureField.EMAIL,
                 IdentityRequestDialogDisclosureField.PICTURE
             };
+    protected static final float ALPHA_COMPARISON_DELTA = 0.00001f;
 
     @Mock Callback<Account> mAccountCallback;
     @Mock AccountSelectionComponent.Delegate mMockDelegate;

@@ -21,7 +21,6 @@
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_factory.h"
@@ -113,11 +112,13 @@ class MockRenderProcessHost : public RenderProcessHost {
   bool ShutdownRequested() override;
   bool FastShutdownIfPossible(size_t page_count,
                               bool skip_unload_handlers,
-                              bool ignore_workers) override;
+                              bool ignore_workers,
+                              bool ignore_keep_alive) override;
   bool FastShutdownStarted() override;
   const base::Process& GetProcess() override;
   bool IsReady() override;
-  int GetID() const override;
+  ChildProcessId GetID() const override;
+  int GetDeprecatedID() const override;
   base::SafeRef<RenderProcessHost> GetSafeRef() const override;
   bool IsInitializedAndNotDead() override;
   bool IsDeletingSoon() override;
@@ -278,7 +279,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   std::string GetInfoForBrowserContextDestructionCrashReporting() override;
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> proto) const override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void ReinitializeLogging(uint32_t logging_dest,
                            base::ScopedFD log_file_descriptor) override;
 #endif
@@ -323,7 +324,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   // Stores IPC messages that would have been sent to the renderer.
   IPC::TestSink sink_;
   int bad_msg_count_;
-  int id_;
+  ChildProcessId id_;
   bool has_connection_;
   raw_ptr<BrowserContext, DanglingUntriaged> browser_context_;
   base::ObserverList<RenderProcessHostObserver> observers_;

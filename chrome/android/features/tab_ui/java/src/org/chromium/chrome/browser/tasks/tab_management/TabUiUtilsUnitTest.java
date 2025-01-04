@@ -109,6 +109,13 @@ public class TabUiUtilsUnitTest {
     }
 
     @Test
+    public void testCloseTabGroup_NoTab() {
+        TabUiUtils.closeTabGroup(
+                mFilter, Tab.INVALID_TAB_ID, /* hideTabGroups= */ false, mDidCloseTabsCallback);
+        verify(mDidCloseTabsCallback).onResult(false);
+    }
+
+    @Test
     public void testCloseTabGroup_NoHide() {
         boolean hideTabGroups = false;
 

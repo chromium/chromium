@@ -237,17 +237,15 @@ static void JNI_FeedSurfaceRendererBridge_ReportOpenAction(
     JNIEnv* env,
     jint surface_id,
     const JavaParamRef<jobject>& j_url,
-    const JavaParamRef<jstring>& slice_id,
+    std::string& slice_id,
     int action_type) {
   FeedApi* feed_api = GetFeedApi();
   if (!feed_api) {
     return;
   }
   GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
-  feed_api->ReportOpenAction(
-      url, FromJavaSurfaceId(surface_id),
-      base::android::ConvertJavaStringToUTF8(env, slice_id),
-      static_cast<OpenActionType>(action_type));
+  feed_api->ReportOpenAction(url, FromJavaSurfaceId(surface_id), slice_id,
+                             static_cast<OpenActionType>(action_type));
 }
 
 static void JNI_FeedSurfaceRendererBridge_ReportOpenVisitComplete(
@@ -280,14 +278,12 @@ static void JNI_FeedSurfaceRendererBridge_UpdateUserProfileOnLinkClick(
 static void JNI_FeedSurfaceRendererBridge_ReportSliceViewed(
     JNIEnv* env,
     jint surface_id,
-    const JavaParamRef<jstring>& slice_id) {
+    std::string& slice_id) {
   FeedApi* feed_api = GetFeedApi();
   if (!feed_api) {
     return;
   }
-  feed_api->ReportSliceViewed(
-      FromJavaSurfaceId(surface_id),
-      base::android::ConvertJavaStringToUTF8(env, slice_id));
+  feed_api->ReportSliceViewed(FromJavaSurfaceId(surface_id), slice_id);
 }
 
 static void JNI_FeedSurfaceRendererBridge_ReportFeedViewed(JNIEnv* env,

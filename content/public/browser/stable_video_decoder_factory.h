@@ -11,9 +11,8 @@
 
 namespace content {
 
-// Binds a StableVideoDecoderFactory PendingReceiver by either using the crosapi
-// (on LaCrOS) or starting a new utility process (on non-LaCrOS). This function
-// can be called from any thread.
+// Binds a StableVideoDecoderFactory PendingReceiver by starting a new utility
+// process. This function can be called from any thread.
 CONTENT_EXPORT void LaunchStableVideoDecoderFactory(
     mojo::PendingReceiver<media::stable::mojom::StableVideoDecoderFactory>
         receiver);

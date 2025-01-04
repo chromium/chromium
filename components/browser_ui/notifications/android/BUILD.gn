@@ -19,7 +19,6 @@ source_set("android") {
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/components/browser_ui/notifications/AsyncNotificationManagerProxy.java",
     "java/src/org/chromium/components/browser_ui/notifications/AsyncNotificationManagerProxyImpl.java",
     "java/src/org/chromium/components/browser_ui/notifications/BaseNotificationManagerProxy.java",
     "java/src/org/chromium/components/browser_ui/notifications/BaseNotificationManagerProxyFactory.java",

@@ -15,18 +15,26 @@ public class ActivityLogItem {
     // The type of collaboration event associated with the log item.
     public @CollaborationEvent int collaborationEvent;
 
-    // Display name of the user.
+    // Explicit display metadata to be shown in the UI.
+    public String titleText;
+    public String descriptionText;
+    public String timeDeltaText;
+
+    // Deprecated. Display name of the user.
     public String userDisplayName;
 
-    // Whether the user associated with the activity log item is the current signed in user
+    // Deprecated. Whether the user associated with the activity log item is the current signed in
+    // user
     // themselves.
     public boolean userIsSelf;
 
-    // Description text to be shown on first half of the description line. Timestamp will be
+    // Deprecated. Description text to be shown on first half of the description line. Timestamp
+    // will be
     // appended.
     public @Nullable String description;
 
-    // The time duration in milliseconds that has passed since the action happened. Used for
+    // Deprecated. The time duration in milliseconds that has passed since the action happened. Used
+    // for
     // generating the relative duration text that will be appended to the description. If the
     // description is empty, the entire description line will contain only the relative duration
     // without the concatenation character.

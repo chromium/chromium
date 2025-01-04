@@ -42,7 +42,7 @@ class CodecWrapperTest : public testing::Test {
     wrapper_ = std::make_unique<CodecWrapper>(
         CodecSurfacePair(std::move(codec), surface_bundle_),
         output_buffer_release_cb_.Get(), kInitialCodedSize,
-        gfx::ColorSpace::CreateREC709(), kCodedSizeAlignment, false);
+        gfx::ColorSpace::CreateREC709(), kCodedSizeAlignment);
     ON_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
         .WillByDefault(Return(OkStatus()));
     ON_CALL(*codec_, DequeueInputBuffer(_, _))
@@ -238,7 +238,7 @@ TEST_F(CodecWrapperTest, CodecOutputBuffersGuessCodedSizeNoAlignment) {
   auto surface_pair = wrapper_->TakeCodecSurfacePair();
   wrapper_ = std::make_unique<CodecWrapper>(
       std::move(surface_pair), output_buffer_release_cb_.Get(),
-      kInitialCodedSize, gfx::ColorSpace::CreateREC709(), std::nullopt, false);
+      kInitialCodedSize, gfx::ColorSpace::CreateREC709(), std::nullopt);
 
   EXPECT_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
       .WillOnce(Return(MediaCodecResult::Codes::kOutputFormatChanged))
@@ -254,8 +254,7 @@ TEST_F(CodecWrapperTest, CodecOutputBuffersGuessCodedSizeWeirdAlignment) {
   auto surface_pair = wrapper_->TakeCodecSurfacePair();
   wrapper_ = std::make_unique<CodecWrapper>(
       std::move(surface_pair), output_buffer_release_cb_.Get(),
-      kInitialCodedSize, gfx::ColorSpace::CreateREC709(), gfx::Size(128, 1),
-      false);
+      kInitialCodedSize, gfx::ColorSpace::CreateREC709(), gfx::Size(128, 1));
 
   EXPECT_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
       .WillOnce(Return(MediaCodecResult::Codes::kOutputFormatChanged))
@@ -409,7 +408,7 @@ TEST_F(CodecWrapperTest, CodecWrapperDefaultsToSRGB) {
   auto surface_pair = wrapper_->TakeCodecSurfacePair();
   wrapper_ = std::make_unique<CodecWrapper>(
       std::move(surface_pair), output_buffer_release_cb_.Get(),
-      kInitialCodedSize, gfx::ColorSpace(), std::nullopt, false);
+      kInitialCodedSize, gfx::ColorSpace(), std::nullopt);
 
   // If MediaCodec doesn't provide a color space and we don't have a valid
   // config color space, then CodecWrapper should default to sRGB for sanity.
@@ -427,7 +426,7 @@ TEST_F(CodecWrapperTest, CodecWrapperUseConfigColorSpace) {
   auto surface_pair = wrapper_->TakeCodecSurfacePair();
   wrapper_ = std::make_unique<CodecWrapper>(
       std::move(surface_pair), output_buffer_release_cb_.Get(),
-      kInitialCodedSize, gfx::ColorSpace::CreateJpeg(), std::nullopt, false);
+      kInitialCodedSize, gfx::ColorSpace::CreateJpeg(), std::nullopt);
 
   // If MediaCodec doesn't provide a color space and we have a valid config
   // color space, then CodecWrapper should use it.

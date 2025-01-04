@@ -15,6 +15,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
@@ -22,14 +24,17 @@ import java.io.IOException;
 
 /** Helper class for publishing download files to the public download collection. */
 @JNINamespace("download")
+@NullMarked
 public class InMemoryDownloadFile {
     private static final String TAG = "InMemoryDownload";
-    private FileOutputStream mFos;
+    private @Nullable FileOutputStream mFos;
     private ParcelFileDescriptor mPfd;
 
     @CalledByNative
     @RequiresApi(Build.VERSION_CODES.R)
-    private static InMemoryDownloadFile createFile(@JniType("std::string") String filename) {
+    @SuppressWarnings("NullAway") // NPE caught by broad catch handler.
+    private static @Nullable InMemoryDownloadFile createFile(
+            @JniType("std::string") String filename) {
         try {
             return new InMemoryDownloadFile(filename);
         } catch (Exception e) {
@@ -45,6 +50,7 @@ public class InMemoryDownloadFile {
     }
 
     @CalledByNative
+    @SuppressWarnings("NullAway") // NPE caught by broad catch handler.
     private void writeData(@JniType("std::vector<uint8_t>") byte[] data) {
         try {
             mFos.write(data);

@@ -26,18 +26,10 @@ namespace base {
 template <class T, RawPtrTraits Traits>
 class raw_ref;
 
-namespace internal {
-
 template <class T>
-struct is_raw_ref : std::false_type {};
-
+inline constexpr bool IsRawRef = false;
 template <class T, RawPtrTraits Traits>
-struct is_raw_ref<::base::raw_ref<T, Traits>> : std::true_type {};
-
-template <class T>
-constexpr inline bool is_raw_ref_v = is_raw_ref<T>::value;
-
-}  // namespace internal
+inline constexpr bool IsRawRef<::base::raw_ref<T, Traits>> = true;
 
 // A smart pointer for a pointer which can not be null, and which provides
 // Use-after-Free protection in the same ways as raw_ptr. This class acts like a
@@ -256,25 +248,25 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ref {
                                    const raw_ref<V, Traits2>& rhs);
 #endif
 
-  template <class U, class = std::enable_if_t<!internal::is_raw_ref_v<U>, void>>
+  template <class U, class = std::enable_if_t<!IsRawRef<U>, void>>
   PA_ALWAYS_INLINE friend constexpr bool operator==(const raw_ref& lhs,
                                                     const U& rhs) {
     PA_RAW_PTR_CHECK(lhs.inner_);  // Catch use-after-move.
     return lhs.inner_ == &rhs;
   }
-  template <class U, class = std::enable_if_t<!internal::is_raw_ref_v<U>, void>>
+  template <class U, class = std::enable_if_t<!IsRawRef<U>, void>>
   PA_ALWAYS_INLINE friend constexpr bool operator!=(const raw_ref& lhs,
                                                     const U& rhs) {
     PA_RAW_PTR_CHECK(lhs.inner_);  // Catch use-after-move.
     return lhs.inner_ != &rhs;
   }
-  template <class U, class = std::enable_if_t<!internal::is_raw_ref_v<U>, void>>
+  template <class U, class = std::enable_if_t<!IsRawRef<U>, void>>
   PA_ALWAYS_INLINE friend constexpr bool operator==(const U& lhs,
                                                     const raw_ref& rhs) {
     PA_RAW_PTR_CHECK(rhs.inner_);  // Catch use-after-move.
     return &lhs == rhs.inner_;
   }
-  template <class U, class = std::enable_if_t<!internal::is_raw_ref_v<U>, void>>
+  template <class U, class = std::enable_if_t<!IsRawRef<U>, void>>
   PA_ALWAYS_INLINE friend constexpr bool operator!=(const U& lhs,
                                                     const raw_ref& rhs) {
     PA_RAW_PTR_CHECK(rhs.inner_);  // Catch use-after-move.
@@ -282,62 +274,62 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ref {
   }
 
 #if PA_HAVE_SPACESHIP_OPERATOR
-  template <class U, class = std::enable_if_t<!internal::is_raw_ref_v<U>, void>>
+  template <class U, class = std::enable_if_t<!IsRawRef<U>, void>>
   PA_ALWAYS_INLINE friend constexpr auto operator<=>(const raw_ref& lhs,
                                                      const U& rhs) {
     PA_RAW_PTR_CHECK(lhs.inner_);  // Catch use-after-move.
     return lhs.inner_ <=> &rhs;
   }
-  template <class U, class = std::enable_if_t<!internal::is_raw_ref_v<U>, void>>
+  template <class U, class = std::enable_if_t<!IsRawRef<U>, void>>
   PA_ALWAYS_INLINE friend constexpr auto operator<=>(const U& lhs,
                                                      const raw_ref& rhs) {
     PA_RAW_PTR_CHECK(rhs.inner_);  // Catch use-after-move.
     return &lhs <=> rhs.inner_;
   }
 #else
-  template <class U, class = std::enable_if_t<!internal::is_raw_ref_v<U>, void>>
+  template <class U, class = std::enable_if_t<!IsRawRef<U>, void>>
   PA_ALWAYS_INLINE friend constexpr bool operator<(const raw_ref& lhs,
                                                    const U& rhs) {
     PA_RAW_PTR_CHECK(lhs.inner_);  // Catch use-after-move.
     return lhs.inner_ < &rhs;
   }
-  template <class U, class = std::enable_if_t<!internal::is_raw_ref_v<U>, void>>
+  template <class U, class = std::enable_if_t<!IsRawRef<U>, void>>
   PA_ALWAYS_INLINE friend constexpr bool operator>(const raw_ref& lhs,
                                                    const U& rhs) {
     PA_RAW_PTR_CHECK(lhs.inner_);  // Catch use-after-move.
     return lhs.inner_ > &rhs;
   }
-  template <class U, class = std::enable_if_t<!internal::is_raw_ref_v<U>, void>>
+  template <class U, class = std::enable_if_t<!IsRawRef<U>, void>>
   PA_ALWAYS_INLINE friend constexpr bool operator<=(const raw_ref& lhs,
                                                     const U& rhs) {
     PA_RAW_PTR_CHECK(lhs.inner_);  // Catch use-after-move.
     return lhs.inner_ <= &rhs;
   }
-  template <class U, class = std::enable_if_t<!internal::is_raw_ref_v<U>, void>>
+  template <class U, class = std::enable_if_t<!IsRawRef<U>, void>>
   PA_ALWAYS_INLINE friend constexpr bool operator>=(const raw_ref& lhs,
                                                     const U& rhs) {
     PA_RAW_PTR_CHECK(lhs.inner_);  // Catch use-after-move.
     return lhs.inner_ >= &rhs;
   }
-  template <class U, class = std::enable_if_t<!internal::is_raw_ref_v<U>, void>>
+  template <class U, class = std::enable_if_t<!IsRawRef<U>, void>>
   PA_ALWAYS_INLINE friend constexpr bool operator<(const U& lhs,
                                                    const raw_ref& rhs) {
     PA_RAW_PTR_CHECK(rhs.inner_);  // Catch use-after-move.
     return &lhs < rhs.inner_;
   }
-  template <class U, class = std::enable_if_t<!internal::is_raw_ref_v<U>, void>>
+  template <class U, class = std::enable_if_t<!IsRawRef<U>, void>>
   PA_ALWAYS_INLINE friend constexpr bool operator>(const U& lhs,
                                                    const raw_ref& rhs) {
     PA_RAW_PTR_CHECK(rhs.inner_);  // Catch use-after-move.
     return &lhs > rhs.inner_;
   }
-  template <class U, class = std::enable_if_t<!internal::is_raw_ref_v<U>, void>>
+  template <class U, class = std::enable_if_t<!IsRawRef<U>, void>>
   PA_ALWAYS_INLINE friend constexpr bool operator<=(const U& lhs,
                                                     const raw_ref& rhs) {
     PA_RAW_PTR_CHECK(rhs.inner_);  // Catch use-after-move.
     return &lhs <= rhs.inner_;
   }
-  template <class U, class = std::enable_if_t<!internal::is_raw_ref_v<U>, void>>
+  template <class U, class = std::enable_if_t<!IsRawRef<U>, void>>
   PA_ALWAYS_INLINE friend constexpr bool operator>=(const U& lhs,
                                                     const raw_ref& rhs) {
     PA_RAW_PTR_CHECK(rhs.inner_);  // Catch use-after-move.
@@ -411,26 +403,15 @@ raw_ref(T&) -> raw_ref<T>;
 template <class T>
 raw_ref(const T&) -> raw_ref<const T>;
 
-// Template helpers for working with raw_ref<T>.
-template <typename T>
-struct IsRawRef : std::false_type {};
-
-template <typename T, RawPtrTraits Traits>
-struct IsRawRef<raw_ref<T, Traits>> : std::true_type {};
-
-template <typename T>
-inline constexpr bool IsRawRefV = IsRawRef<T>::value;
-
+// Converts `raw_ref<T>` => `T`; leaves l/rvalue refs alone.
 template <typename T>
 struct RemoveRawRef {
   using type = T;
 };
-
 template <typename T, RawPtrTraits Traits>
 struct RemoveRawRef<raw_ref<T, Traits>> {
   using type = T;
 };
-
 template <typename T>
 using RemoveRawRefT = typename RemoveRawRef<T>::type;
 

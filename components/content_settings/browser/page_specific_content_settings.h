@@ -20,7 +20,6 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/browsing_data/content/browsing_data_model.h"
 #include "components/browsing_data/content/cookie_helper.h"
 #include "components/content_settings/common/content_settings_manager.mojom.h"

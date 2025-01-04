@@ -7,11 +7,14 @@ import '../../module_header.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {I18nMixinLit, loadTimeData} from '../../../i18n_setup.js';
+import type {MicrosoftAuthPageHandlerRemote} from '../../../microsoft_auth.mojom-webui.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
 import type {MenuItem, ModuleHeaderElement} from '../module_header.js';
 
 import {getCss} from './microsoft_auth_module.css.js';
 import {getHtml} from './microsoft_auth_module.html.js';
+import {MicrosoftAuthProxyImpl} from './microsoft_auth_module_proxy.js';
+
 
 export interface MicrosoftAuthModuleElement {
   $: {
@@ -37,6 +40,13 @@ export class MicrosoftAuthModuleElement extends MicrosoftAuthModuleElementBase {
 
   override render() {
     return getHtml.bind(this)();
+  }
+
+  private handler_: MicrosoftAuthPageHandlerRemote;
+
+  constructor() {
+    super();
+    this.handler_ = MicrosoftAuthProxyImpl.getInstance().handler;
   }
 
   protected getMenuItemGroups_(): MenuItem[][] {
@@ -76,7 +86,17 @@ export class MicrosoftAuthModuleElement extends MicrosoftAuthModuleElementBase {
   }
 
   protected onDismissButtonClick_() {
-    // TODO(crbug.com/377378212): Handle button click.
+    this.handler_.dismissModule();
+    this.dispatchEvent(new CustomEvent('dismiss-module-instance', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        message: loadTimeData.getStringF(
+            'dismissModuleToastMessage',
+            loadTimeData.getString('modulesMicrosoftAuthName')),
+        restoreCallback: () => this.handler_.restoreModule(),
+      },
+    }));
   }
 
   protected onSignInClick_() {

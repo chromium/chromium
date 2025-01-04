@@ -5,8 +5,6 @@
 package org.chromium.components.privacy_sandbox;
 
 import android.os.Bundle;
-import android.text.style.ClickableSpan;
-import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -16,6 +14,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 /** Fragment to manage settings for ip protection. */
@@ -78,12 +77,8 @@ public class IpProtectionSettingsFragment extends PrivacySandboxBaseFragment {
                         new SpanApplier.SpanInfo(
                                 "<link>",
                                 "</link>",
-                                new ClickableSpan() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        onLearnMoreClicked();
-                                    }
-                                })));
+                                new ChromeClickableSpan(
+                                        getContext(), (view) -> onLearnMoreClicked()))));
     }
 
     private void onLearnMoreClicked() {

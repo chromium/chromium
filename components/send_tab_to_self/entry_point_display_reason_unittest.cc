@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
@@ -69,15 +68,12 @@ class EntryPointDisplayReasonTest : public ::testing::Test {
   TestingPrefServiceSimple pref_service_;
 };
 
-// The promo isn't supported on Lacros yet.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST_F(EntryPointDisplayReasonTest, ShouldShowPromoIfSignedOut) {
   EXPECT_EQ(
       EntryPointDisplayReason::kOfferSignIn,
       GetEntryPointDisplayReason(GURL(kHttpsUrl), sync_service(),
                                  send_tab_to_self_model(), pref_service()));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 TEST_F(EntryPointDisplayReasonTest, ShouldHidePromoIfSyncDisabledByPolicy) {
   sync_service()->SetAllowedByEnterprisePolicy(false);

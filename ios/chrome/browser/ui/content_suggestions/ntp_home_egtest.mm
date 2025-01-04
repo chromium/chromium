@@ -16,6 +16,9 @@
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/supervised_user/core/common/features.h"
+#import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
@@ -31,9 +34,6 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
-#import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/new_tab_page_app_interface.h"
@@ -577,10 +577,14 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // defocuses the omnibox works.
 - (void)testDefocusOmniboxTapWorks {
   [self focusFakebox];
-  // Tap on a space in the collectionView that is not a Feed card.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kContentSuggestionsCollectionIdentifier)]
+  // Tap on a space in the collectionView that is not a link.
+  id<GREYMatcher> firstMagicStackModuleLabel = grey_allOf(
+      grey_ancestor(
+          grey_accessibilityID(kMagicStackScrollViewAccessibilityIdentifier)),
+      grey_kindOfClassName(@"UILabel"),
+      grey_accessibilityTrait(UIAccessibilityTraitHeader),
+      grey_sufficientlyVisible(), nil);
+  [[EarlGrey selectElementWithMatcher:firstMagicStackModuleLabel]
       performAction:grey_tap()];
 
   [ChromeEarlGreyUI waitForAppToIdle];
@@ -940,6 +944,12 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 }
 
 - (void)testFavicons {
+  // Make sure the MVT position is consistent across bots.
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.features_disabled.push_back(kNewFeedPositioning);
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
   for (NSInteger index = 0; index < 4; index++) {
     [[EarlGrey
         selectElementWithMatcher:
@@ -1688,6 +1698,8 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.features_enabled.push_back(kHomeCustomization);
+  // Tests most visited tiles visibility separately.
+  config.features_disabled.push_back(kNewFeedPositioning);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   [self resetCustomizationPrefs];
@@ -1800,6 +1812,8 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.features_enabled.push_back(kHomeCustomization);
+  // Tests most visited tiles visibility separately.
+  config.features_disabled.push_back(kNewFeedPositioning);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   [self resetCustomizationPrefs];

@@ -23,6 +23,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -54,7 +55,8 @@ class GraduationUiHandlerTest : public testing::Test {
   ~GraduationUiHandlerTest() override = default;
 
   void SetUp() override {
-    auto account_id = AccountId::FromUserEmailGaiaId(kUserEmail, kUserGaiaId);
+    auto account_id =
+        AccountId::FromUserEmailGaiaId(kUserEmail, GaiaId(kUserGaiaId));
     fake_user_manager_.Reset(std::make_unique<user_manager::FakeUserManager>());
     auto* user = fake_user_manager_->AddUser(account_id);
 

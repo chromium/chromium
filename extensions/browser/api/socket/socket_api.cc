@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/api/socket/socket_api.h"
 
 #include <memory>
@@ -593,8 +588,7 @@ void SocketReadFunction::OnCompleted(int bytes_read,
   result.Set(kResultCodeKey, bytes_read);
   base::span<const uint8_t> data_span;
   if (bytes_read > 0) {
-    data_span = base::as_bytes(
-        base::span(io_buffer->data(), static_cast<size_t>(bytes_read)));
+    data_span = io_buffer->span().subspan(0u, static_cast<size_t>(bytes_read));
   }
   result.Set(kDataKey, base::Value(data_span));
   Respond(WithArguments(std::move(result)));
@@ -674,8 +668,7 @@ void SocketRecvFromFunction::OnCompleted(int bytes_read,
   result.Set(kResultCodeKey, bytes_read);
   base::span<const uint8_t> data_span;
   if (bytes_read > 0) {
-    data_span = base::as_bytes(
-        base::span(io_buffer->data(), static_cast<size_t>(bytes_read)));
+    data_span = io_buffer->span().subspan(0u, static_cast<size_t>(bytes_read));
   }
   result.Set(kDataKey, base::Value(data_span));
   result.Set(kAddressKey, address);

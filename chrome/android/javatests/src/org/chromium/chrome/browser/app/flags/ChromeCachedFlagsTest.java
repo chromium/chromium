@@ -52,33 +52,12 @@ public class ChromeCachedFlagsTest {
     // DO NOT ADD FLAGS TO THIS LIST.
     private static final Set<CachedFlag> BASELINE =
             Set.of(
-                    ChromeFeatureList.sAndroidAppIntegration,
-                    ChromeFeatureList.sAsyncNotificationManager,
-                    ChromeFeatureList.sCctFeatureUsage,
-                    ChromeFeatureList.sCctGoogleBottomBar,
-                    ChromeFeatureList.sCollectAndroidFrameTimelineMetrics,
                     ChromeFeatureList.sDownloadsMigrateToJobsAPI,
-                    ChromeFeatureList.sDrawKeyNativeEdgeToEdge,
-                    ChromeFeatureList.sEdgeToEdgeBottomChin,
-                    ChromeFeatureList.sEdgeToEdgeWebOptIn,
-                    ChromeFeatureList.sNewTabPageAndroidTriggerForPrerender2,
                     ChromeFeatureList.sPostGetMyMemoryStateToBackground,
                     ChromeFeatureList.sPrefetchBrowserInitiatedTriggers,
-                    ChromeFeatureList.sSearchInCCT,
-                    ChromeFeatureList.sTabGroupPaneAndroid,
-                    ChromeFeatureList.sTabResumptionModuleAndroid,
-                    ChromeFeatureList.sTabStateFlatBuffer,
-                    ChromeFeatureList.sTabStripGroupCollapse,
+                    ChromeFeatureList.sSafetyHubMagicStack,
                     ChromeFeatureList.sTraceBinderIpc,
-                    OmniboxFeatures.sAndroidHubSearch,
-                    OmniboxFeatures.sAnimateSuggestionsListAppearance,
-                    OmniboxFeatures.sAsyncViewInflation,
-                    OmniboxFeatures.sElegantTextHeight,
-                    OmniboxFeatures.sJumpStartOmnibox,
-                    OmniboxFeatures.sOmniboxAnswerActions,
-                    OmniboxFeatures.sRetainOmniboxOnFocus,
-                    OmniboxFeatures.sRichInlineAutocomplete,
-                    OmniboxFeatures.sTouchDownTriggerForPrefetch);
+                    OmniboxFeatures.sAndroidHubSearch);
 
     /**
      * Tests that the |defaultValueForTests| in the CachedFlag declaration matches

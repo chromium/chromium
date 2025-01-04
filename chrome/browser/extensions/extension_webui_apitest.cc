@@ -121,6 +121,7 @@ class ExtensionWebUIEmbeddedOptionsTest : public ExtensionWebUITest {
     guest_view::GuestViewBase* guest_view =
         test_guest_view_manager_->WaitForSingleGuestViewCreated();
     EXPECT_TRUE(guest_view);
+    test_guest_view_manager_->WaitUntilAttached(guest_view);
     WaitForGuestViewLoadStop(guest_view);
 
     return guest_view->GetGuestMainFrame();

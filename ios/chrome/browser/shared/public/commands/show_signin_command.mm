@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 
 #import "base/check.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 
 @implementation ShowSigninCommand
 
@@ -23,6 +23,7 @@
     _accessPoint = accessPoint;
     _promoAction = promoAction;
     _completion = [completion copy];
+    _optionalHistorySync = YES;
   }
   return self;
 }

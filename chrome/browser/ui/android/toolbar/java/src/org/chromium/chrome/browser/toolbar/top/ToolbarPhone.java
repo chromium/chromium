@@ -2201,7 +2201,7 @@ public class ToolbarPhone extends ToolbarLayout
                     }
                 });
         mUrlFocusLayoutAnimator.start();
-        if (!hasFocus) {
+        if (!hasFocus || mLocationBar.shouldShortCircuitFocusAnimation(true)) {
             TraceEvent.instant("ToolbarPhone.ShortCircuitUnfocusAnimation");
             mUrlFocusLayoutAnimator.end();
         }

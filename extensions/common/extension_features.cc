@@ -31,9 +31,13 @@ BASE_FEATURE(kApiPermissionsHostAccessRequests,
              "ApiPermissionsHostAccessRequests",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kApiUserScriptsExecute,
+             "ApiUserScriptsExecute",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kApiUserScriptsMultipleWorlds,
              "ApiUserScriptsMultipleWorlds",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kApiOdfsConfigPrivate,
              "ApiOdfsConfigPrivate",
@@ -133,10 +137,6 @@ BASE_FEATURE(kForceWebRequestProxyForTest,
 BASE_FEATURE(kLaunchWindowsNativeHostsDirectly,
              "LaunchWindowsNativeHostsDirectly",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kNewExtensionFaviconHandling,
-             "ExtensionsNewFaviconHandling",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // To investigate signal beacon loss in crrev.com/c/2262402.
 BASE_FEATURE(kReportKeepaliveUkm,

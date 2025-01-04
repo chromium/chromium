@@ -55,7 +55,6 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/content_navigation_policy.h"
@@ -1434,7 +1433,7 @@ class RenderFrameImpl::MHTMLBodyLoaderClient
 
   // blink::WebNavigationBodyLoader::Client overrides:
   void BodyDataReceived(base::span<const char> data) override {
-    data_.Append(data.data(), data.size());
+    data_.Append(base::as_bytes(data));
   }
 
   void BodyLoadingFinished(base::TimeTicks completion_time,
@@ -2226,7 +2225,8 @@ void RenderFrameImpl::Unload(
     blink::mojom::FrameReplicationStatePtr replicated_frame_state,
     const blink::RemoteFrameToken& proxy_frame_token,
     blink::mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
-    blink::mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces) {
+    blink::mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces,
+    const std::optional<base::UnguessableToken>& devtools_frame_token) {
   TRACE_EVENT1("navigation,rail", "RenderFrameImpl::UnloadFrame", "frame_token",
                frame_token_);
   DCHECK(!base::RunLoop::IsNestedOnCurrentThread());
@@ -2247,10 +2247,10 @@ void RenderFrameImpl::Unload(
       GetTaskRunner(blink::TaskType::kInternalPostMessageForwarding);
 
   // Important: |this| is deleted after this call!
-  if (!SwapOutAndDeleteThis(is_loading, std::move(replicated_frame_state),
-                            proxy_frame_token,
-                            std::move(remote_frame_interfaces),
-                            std::move(remote_main_frame_interfaces))) {
+  if (!SwapOutAndDeleteThis(
+          is_loading, std::move(replicated_frame_state), proxy_frame_token,
+          std::move(remote_frame_interfaces),
+          std::move(remote_main_frame_interfaces), devtools_frame_token)) {
     // The swap is cancelled because running the unload handlers ended up
     // detaching this frame.
     return;
@@ -2349,7 +2349,8 @@ void RenderFrameImpl::UndoCommitNavigation(
   // `DidCommitNavigation()`).
   SwapOutAndDeleteThis(is_loading, std::move(replicated_frame_state),
                        proxy_frame_token, std::move(remote_frame_interfaces),
-                       std::move(remote_main_frame_interfaces));
+                       std::move(remote_main_frame_interfaces),
+                       /*devtools_frame_token=*/std::nullopt);
 }
 
 void RenderFrameImpl::SnapshotAccessibilityTree(
@@ -2482,7 +2483,7 @@ blink::WebPlugin* RenderFrameImpl::CreatePlugin(
       return new PepperWebPluginImpl(pepper_module.get(), params, this);
     }
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   LOG(WARNING) << "Pepper module/plugin creation failed.";
 #endif
 #endif  // BUILDFLAG(ENABLE_PPAPI)
@@ -4413,7 +4414,8 @@ bool RenderFrameImpl::SwapOutAndDeleteThis(
     blink::mojom::FrameReplicationStatePtr replicated_frame_state,
     const blink::RemoteFrameToken& proxy_frame_token,
     blink::mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
-    blink::mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces) {
+    blink::mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces,
+    const std::optional<base::UnguessableToken>& devtools_frame_token) {
   TRACE_EVENT1("navigation,rail", "RenderFrameImpl::SwapOutAndDeleteThis",
                "frame_token", frame_token_);
   DCHECK(!base::RunLoop::IsNestedOnCurrentThread());
@@ -4437,7 +4439,7 @@ bool RenderFrameImpl::SwapOutAndDeleteThis(
   bool success =
       frame_->Swap(remote_frame, std::move(remote_frame_interfaces->frame_host),
                    std::move(remote_frame_interfaces->frame_receiver),
-                   std::move(replicated_frame_state));
+                   std::move(replicated_frame_state), devtools_frame_token);
 
   // WARNING: Do not access 'this' past this point!
 
@@ -4703,12 +4705,11 @@ void RenderFrameImpl::DidObserveUserInteraction(
     base::TimeTicks max_event_queued_main_thread,
     base::TimeTicks max_event_commit_finish,
     base::TimeTicks max_event_end,
-    blink::UserInteractionType interaction_type,
     uint64_t interaction_offset) {
   for (auto& observer : observers_) {
     observer.DidObserveUserInteraction(
         max_event_start, max_event_queued_main_thread, max_event_commit_finish,
-        max_event_end, interaction_type, interaction_offset);
+        max_event_end, interaction_offset);
   }
 }
 

@@ -139,9 +139,12 @@
       <sea-pen-freeform></sea-pen-freeform>
     </template>
   </div>
-  <template is="dom-if" if="[[showSeaPenIntroductionDialog_]]" restamp>
+  <template is="dom-if"
+      if="[[shouldSeaPenIntroductionDialog_(relativePath_, showSeaPenFreeformIntroductionDialog_, showSeaPenIntroductionDialog_)]]"
+      restamp>
     <sea-pen-introduction-dialog
-        on-sea-pen-introduction-dialog-close="onCloseSeaPenIntroductionDialog_">
+        on-sea-pen-introduction-dialog-close="onCloseSeaPenIntroductionDialog_"
+        on-sea-pen-freeform-introduction-dialog-close="onCloseSeaPenFreeformIntroductionDialog_">
     </sea-pen-introduction-dialog>
   </template>
   <!-- Prevent the right margin from collapsing when window gets very narrow -->

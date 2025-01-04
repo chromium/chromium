@@ -45,7 +45,8 @@ class KAnonymityServiceSqlStorage : public KAnonymityServiceStorage {
       : db_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
              base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
-        db_(std::make_unique<sql::Database>(sql::DatabaseOptions{})),
+        db_(std::make_unique<sql::Database>(
+            sql::Database::Tag("KAnonymityService"))),
         db_storage_path_(std::move(db_storage_path)),
         table_manager_(base::MakeRefCounted<sqlite_proto::ProtoTableManager>(
             db_task_runner_)),

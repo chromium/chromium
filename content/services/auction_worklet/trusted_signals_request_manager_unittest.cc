@@ -4,6 +4,7 @@
 
 #include "content/services/auction_worklet/trusted_signals_request_manager.h"
 
+#include <array>
 #include <cstddef>
 #include <memory>
 #include <optional>
@@ -21,6 +22,7 @@
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/cbor/reader.h"
@@ -237,17 +239,17 @@ const uint8_t kKeyId = 0xAA;
 // EVP_HPKE_KEY_generate(&keys, EVP_hpke_x25519_hkdf_sha256());
 // and then EVP_HPKE_KEY_public_key and EVP_HPKE_KEY_private_key were used to
 // extract the keys.
-const uint8_t kTestPrivateKey[] = {
+const auto kTestPrivateKey = std::to_array<uint8_t>({
     0xff, 0x1f, 0x47, 0xb1, 0x68, 0xb6, 0xb9, 0xea, 0x65, 0xf7, 0x97,
     0x4f, 0xf2, 0x2e, 0xf2, 0x36, 0x94, 0xe2, 0xf6, 0xb6, 0x8d, 0x66,
     0xf3, 0xa7, 0x64, 0x14, 0x28, 0xd4, 0x45, 0x35, 0x01, 0x8f,
-};
+});
 
-const uint8_t kTestPublicKey[] = {
+const auto kTestPublicKey = std::to_array<uint8_t>({
     0xa1, 0x5f, 0x40, 0x65, 0x86, 0xfa, 0xc4, 0x7b, 0x99, 0x59, 0x70,
     0xf1, 0x85, 0xd9, 0xd8, 0x91, 0xc7, 0x4d, 0xcf, 0x1e, 0xb9, 0x1a,
     0x7d, 0x50, 0xa5, 0x8b, 0x01, 0x68, 0x3e, 0x60, 0x05, 0x2d,
-};
+});
 
 mojom::TrustedSignalsPublicKeyPtr CreateDefaultPublicKey() {
   return mojom::TrustedSignalsPublicKey::New(
@@ -639,6 +641,8 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsOneRequestNullKeys) {
 }
 
 TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsOneRequest) {
+  base::HistogramTester histogram_tester;
+
   const std::vector<std::string> kKeys{"key2", "key1"};
   scoped_refptr<TrustedSignals::Result> signals =
       FetchBiddingSignalsWithResponse(
@@ -668,9 +672,16 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsOneRequest) {
                            "&keys=key1,key2&interestGroupNames=name1"
                            "&trusted_bidding_signals_slot_size_param=foo",
                            "Completion Status: net::OK"));
+  // Measured time for URL computation is zero since this is using MOCK_TIME
+  // and nothing advances it during straight computation.
+  histogram_tester.ExpectUniqueTimeSample(
+      "Ads.InterestGroup.Auction.TrustedBidderBatchCompute", base::TimeDelta(),
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(TrustedSignalsRequestManagerTest, ScoringSignalsOneRequest) {
+  base::HistogramTester histogram_tester;
+
   const GURL kRenderUrl = GURL("https://foo.test/");
   const std::vector<std::string> kAdComponentRenderUrls{
       "https://foosub.test/", "https://barsub.test/", "https://bazsub.test/"};
@@ -692,6 +703,12 @@ TEST_F(TrustedSignalsRequestManagerTest, ScoringSignalsOneRequest) {
       R"("adComponentRenderUrls":{"https://foosub.test/":2,)"
       R"("https://barsub.test/":[3],"https://bazsub.test/":"4"}})",
       ExtractScoringSignals(signals.get(), kRenderUrl, kAdComponentRenderUrls));
+
+  // Measured time for URL computation is zero since this is using MOCK_TIME
+  // and nothing advances it during straight computation.
+  histogram_tester.ExpectUniqueTimeSample(
+      "Ads.InterestGroup.Auction.TrustedSellerBatchCompute", base::TimeDelta(),
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsSequentialRequests) {

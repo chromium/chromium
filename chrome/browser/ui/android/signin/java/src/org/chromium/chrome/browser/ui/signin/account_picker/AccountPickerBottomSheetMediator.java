@@ -59,6 +59,9 @@ public class AccountPickerBottomSheetMediator
     private @Nullable String mSelectedAccountEmail;
     private @Nullable String mDefaultAccountEmail;
     private @Nullable String mAddedAccountEmail;
+    // This field is used to save the added account email while the account info becomes available
+    // in AccountManagerFacade for sign-in.
+    private @Nullable String mPendingSelectedAccountEmail;
     private boolean mAcceptedAccountManagement;
 
     private final PropertyObserver<PropertyKey> mModelPropertyChangedObserver;
@@ -121,6 +124,23 @@ public class AccountPickerBottomSheetMediator
     /** Implements {@link AccountPickerCoordinator.Listener}. */
     @Override
     public void onAccountSelected(String accountName) {
+        if (mPendingSelectedAccountEmail != null) {
+            mPendingSelectedAccountEmail = null;
+        }
+
+        var coreAccountInfos =
+                AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
+                        mAccountManagerFacade.getCoreAccountInfos());
+        @Nullable
+        CoreAccountInfo selectedAccount =
+                AccountUtils.findCoreAccountInfoByEmail(coreAccountInfos, accountName);
+        if (selectedAccount == null) {
+            // #updateAccounts() will call #onAccountSelected() when the account is available in
+            // AccountManagerFacade.
+            mPendingSelectedAccountEmail = accountName;
+            return;
+        }
+
         setSelectedAccountName(accountName);
         launchDeviceLockIfNeededAndSignIn();
     }
@@ -277,6 +297,14 @@ public class AccountPickerBottomSheetMediator
             // If all accounts disappeared, no matter if the account list is collapsed or expanded,
             // we will go to the zero account screen.
             setNoAccountState();
+            return;
+        }
+
+        if (mPendingSelectedAccountEmail != null
+                && AccountUtils.findCoreAccountInfoByEmail(
+                                coreAccountInfos, mPendingSelectedAccountEmail)
+                        != null) {
+            onAccountSelected(mPendingSelectedAccountEmail);
             return;
         }
 

@@ -822,19 +822,16 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage(
   // custom resource provider. This avoids consuming compositing-specific
   // resources (e.g. GpuMemoryBuffer). We tag the SharedImage with display usage
   // since there are uncommon paths which may use this snapshot for compositing.
-  const auto color_info = CanvasRenderingContextSkColorInfo();
   constexpr auto kShouldInitialize =
       CanvasResourceProvider::ShouldInitialize::kNo;
   std::unique_ptr<CanvasResourceProvider> resource_provider =
       CanvasResourceProvider::CreateSharedImageProvider(
-          size, color_info.colorType(), color_info.alphaType(),
-          color_info.refColorSpace(), kShouldInitialize,
-          SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
+          size, GetSkColorType(), GetAlphaType(), GetSkColorSpace(),
+          kShouldInitialize, SharedGpuContext::ContextProviderWrapper(),
+          RasterMode::kGPU, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
   if (!resource_provider || !resource_provider->IsValid()) {
     resource_provider = CanvasResourceProvider::CreateBitmapProvider(
-        size, color_info.colorType(), color_info.alphaType(),
-        color_info.refColorSpace(),
+        size, GetSkColorType(), GetAlphaType(), GetSkColorSpace(),
         CanvasResourceProvider::ShouldInitialize::kNo);
   }
 
@@ -4456,7 +4453,8 @@ ScriptValue WebGLRenderingContextBase::getUniform(
               std::array<bool, 4> bool_value = {};
               for (unsigned j = 0; j < length; j++)
                 bool_value[j] = static_cast<bool>(value[j]);
-              return WebGLAny(script_state, bool_value.data(), length);
+              return WebGLAny(script_state,
+                              base::span(bool_value).first(length));
             }
 
             return WebGLAny(script_state, static_cast<bool>(value[0]));
@@ -5618,20 +5616,22 @@ gfx::Rect WebGLRenderingContextBase::SafeGetImageSize(Image* image) {
   return GetTextureSourceSize(image);
 }
 
-SkColorInfo WebGLRenderingContextBase::CanvasRenderingContextSkColorInfo()
-    const {
+SkAlphaType WebGLRenderingContextBase::GetAlphaType() const {
   // This selection of alpha type disregards whether or not the drawing buffer
   // is premultiplied. This is to match historical behavior that may or may not
   // have been intentional.
-  const SkAlphaType alpha_type =
-      CreationAttributes().alpha ? kPremul_SkAlphaType : kOpaque_SkAlphaType;
-  SkColorType color_type = kN32_SkColorType;
+  return CreationAttributes().alpha ? kPremul_SkAlphaType : kOpaque_SkAlphaType;
+}
+
+SkColorType WebGLRenderingContextBase::GetSkColorType() const {
   if (drawing_buffer_ && drawing_buffer_->StorageFormat() == GL_RGBA16F) {
-    color_type = kRGBA_F16_SkColorType;
+    return kRGBA_F16_SkColorType;
   }
-  return SkColorInfo(
-      color_type, alpha_type,
-      PredefinedColorSpaceToSkColorSpace(drawing_buffer_color_space_));
+  return kN32_SkColorType;
+}
+
+sk_sp<SkColorSpace> WebGLRenderingContextBase::GetSkColorSpace() const {
+  return PredefinedColorSpaceToSkColorSpace(drawing_buffer_color_space_);
 }
 
 gfx::Rect WebGLRenderingContextBase::GetImageDataSize(ImageData* pixels) {
@@ -7368,7 +7368,7 @@ ScriptValue WebGLRenderingContextBase::GetBooleanArrayParameter(
     GLenum pname) {
   if (pname != GL_COLOR_WRITEMASK) {
     NOTIMPLEMENTED();
-    return WebGLAny(script_state, nullptr, 0);
+    return WebGLAny(script_state, base::span<const bool>());
   }
   std::array<GLboolean, 4> value = {0};
   if (!isContextLost()) {
@@ -7377,7 +7377,7 @@ ScriptValue WebGLRenderingContextBase::GetBooleanArrayParameter(
   std::array<bool, 4> bool_value = {};
   for (int ii = 0; ii < 4; ++ii)
     bool_value[ii] = static_cast<bool>(value[ii]);
-  return WebGLAny(script_state, bool_value.data(), 4);
+  return WebGLAny(script_state, bool_value);
 }
 
 ScriptValue WebGLRenderingContextBase::GetFloatParameter(

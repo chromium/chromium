@@ -23,13 +23,7 @@ struct ConfigureQuickActionsWidgetEntryProvider: TimelineProvider {
     // On iOS 16, color icons are displayed in monochrome, so still present
     // the monochrome icon as it may be better adapted.
     if #available(iOS 17, *) {
-      guard shouldUseLens() else { return false }
-
-      let sharedDefaults: UserDefaults = AppGroupHelper.groupUserDefaults()
-      let useColorLensAndVoiceIcons: Bool =
-        sharedDefaults.bool(
-          forKey: WidgetConstants.QuickActionsWidget.enableColorLensAndVoiceIconsInWidgetKey)
-      return useColorLensAndVoiceIcons
+      return shouldUseLens()
     }
     return false
   }

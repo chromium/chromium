@@ -800,6 +800,13 @@ RuleSet& StyleSheetContents::EnsureRuleSet(const MediaQueryEvaluator& medium) {
   return *rule_set_.Get();
 }
 
+RuleSet* StyleSheetContents::CreateUnconnectedRuleSet(
+    const MediaQueryEvaluator& medium) const {
+  auto* rule_set = MakeGarbageCollected<RuleSet>();
+  rule_set->AddRulesFromSheet(this, medium);
+  return rule_set;
+}
+
 static void SetNeedsActiveStyleUpdateForClients(
     HeapHashSet<WeakMember<CSSStyleSheet>>& clients) {
   for (const auto& sheet : clients) {

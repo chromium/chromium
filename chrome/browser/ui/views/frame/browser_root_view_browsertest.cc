@@ -18,6 +18,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/navigation_handle_observer.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -267,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, DropOrderingCorrect) {
          BrowserRootView::DropIndex::RelativeToIndex relative_to_index) {
         std::vector<GURL> urls;
         for (const auto& url_string : url_strings) {
-          urls.push_back(GURL(url_string));
+          urls.emplace_back(url_string);
         }
         std::unique_ptr<BrowserRootView::DropInfo> drop_info;
         drop_info = std::make_unique<BrowserRootView::DropInfo>();
@@ -430,4 +431,43 @@ IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, DropOrderingCorrect) {
     assert_tab_order({"about:blank?1", "about:blank?2", "about:blank?3"},
                      std::nullopt);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest,
+                       InitiatorOriginForDroppedLink) {
+  TabStripModel* model = browser()->tab_strip_model();
+  ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
+  using BrowserRootView::DropIndex::RelativeToIndex::kReplaceIndex;
+  ui::mojom::DragOperation drag_operation;
+
+  // Set drop event data with initiator origin.
+  ui::OSExchangeData data;
+  GURL target_url("about:blank?1");
+  url::Origin initiator_origin =
+      url::Origin::Create(GURL("https://www.initiator.com/"));
+  data.SetURL(target_url, std::u16string());
+  data.MarkRendererTaintedFromOrigin(initiator_origin);
+
+  ui::DropTargetEvent event(data, gfx::PointF(), gfx::PointF(),
+                            ui::DragDropTypes::DRAG_COPY);
+
+  std::unique_ptr<BrowserRootView::DropInfo> drop_info =
+      std::make_unique<BrowserRootView::DropInfo>();
+  drop_info->urls.push_back(target_url);
+  drop_info->index.emplace();
+  drop_info->index->index = 0;
+  drop_info->index->relative_to_index = kReplaceIndex;
+
+  // Add observer to web contents to track the navigation.
+  content::WebContents* contents = model->GetActiveWebContents();
+  content::NavigationHandleObserver observer(contents, target_url);
+
+  // Call NavigateToDroppedUrls and verify the initiator origin.
+  browser_root_view()->NavigateToDroppedUrls(std::move(drop_info), event,
+                                             drag_operation, nullptr);
+  content::WaitForLoadStop(contents);
+
+  EXPECT_EQ(target_url, contents->GetLastCommittedURL());
+  EXPECT_TRUE(observer.last_initiator_origin().has_value());
+  EXPECT_EQ(initiator_origin, observer.last_initiator_origin().value());
 }

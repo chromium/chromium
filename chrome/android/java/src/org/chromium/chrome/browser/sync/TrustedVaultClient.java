@@ -9,6 +9,7 @@ import android.app.PendingIntent;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Promise;
@@ -382,7 +383,10 @@ public class TrustedVaultClient {
     @NativeMethods
     interface Natives {
         void fetchKeysCompleted(
-                long nativeTrustedVaultClientAndroid, int requestId, String gaiaId, byte[][] keys);
+                long nativeTrustedVaultClientAndroid,
+                int requestId,
+                @JniType("std::string") String gaiaId,
+                byte[][] keys);
 
         void markLocalKeysAsStaleCompleted(
                 long nativeTrustedVaultClientAndroid, int requestId, boolean succeeded);

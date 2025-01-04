@@ -361,6 +361,7 @@
 <translation id="2295777434187870477">Микрофон қосулы. Егер түймені бассаңыз, кіріс дыбыс өшеді.</translation>
 <translation id="2302092602801625023">Бұл аккаунт Family Link арқылы басқарылады</translation>
 <translation id="2303600792989757991">Терезеде шолу режимін ауыстыру</translation>
+<translation id="2304702218354340897">Бетпен басқару функциясын расымен де өшіру қажет пе?</translation>
 <translation id="2305738328104302723">Google тапсырмалар тізімі: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: экраннан түсірілген соңғы кескіндер, соңғы жүктеп алынған және бекітілген файлдар.</translation>
 <translation id="2318576281648121272">Бүгін <ph name="TODAY_DATE" /></translation>
@@ -387,6 +388,7 @@
 <translation id="2370971919968699910">Тариф ақысы алынуы мүмкін.
 <ph name="DEVICECOUNT" /> құрылғы жалғанды.</translation>
 <translation id="2386292613071805067">Беттегі барлығын таңдау</translation>
+<translation id="2389423187722941333">Gemini-ды өшіріп-қосу</translation>
 <translation id="2392659840443812875">Хотспот табылмады. Телефоныңыз жаныңызда болсын. Bluetooth қосылып тұрғанын тексеріңіз.</translation>
 <translation id="2397416548179033562">Chrome мәзірін көрсету</translation>
 <translation id="240006516586367791">Мультимедианы басқару элементтері</translation>
@@ -394,6 +396,7 @@
 <translation id="2402411679569069051">Chromebook құлпын ашу үшін саусақ ізін пайдаланыңыз немесе телефон құлпын ашыңыз.</translation>
 <translation id="240545663114741956">Аккаунттан шығу үшін <ph name="ACCELERATOR" /> тіркесімін екі рет басыңыз.</translation>
 <translation id="2405664212338326887">Қосылмаған</translation>
+<translation id="2406710117564540804">Мазаламау функциясын қосу/өшіру</translation>
 <translation id="2408955596600435184">PIN кодын енгізіңіз</translation>
 <translation id="2412593942846481727">Жаңартылған нұсқа қолжетімді</translation>
 <translation id="2416438829169535743">Көріністен шығу қажет пе?</translation>
@@ -899,6 +902,7 @@
 <translation id="4119928251231465047">PIN коды тым көп рет қате терілді</translation>
 <translation id="412298498316631026">терезе</translation>
 <translation id="4123259114412175274">Chromebook-тың құлпын ашу үшін телефонда Bluetooth қосылып тұрғанына көз жеткізіңіз.</translation>
+<translation id="4123868835475902435">Негізгі әрекеттерді қарастырдық! Кеңестер мен анықтама алу үшін ендірілген Explore қолданбамызға өтіңіз. Іске кірісу кеңестерін, арнайы ұсыныстарды және <ph name="PRODUCT_NAME" /> құрылғысының ең жаңа функцияларын табасыз.</translation>
 <translation id="4125970834901680537">Планшет режимінде қолданбалардағы контентті трансляциялау мүмкін емес. Ноутбук режимінде қайталап көріңіз.</translation>
 <translation id="4131973331381812765">Температура: <ph name="TEMPERATURE" />°C - Қазіргі жылдамдығы: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> ГГц</translation>
 <translation id="4136724716305260864">Күн шыққанға дейін қосулы</translation>
@@ -1019,7 +1023,6 @@
 <translation id="4481530544597605423">Жұпталмаған құрылғылар</translation>
 <translation id="4485506555414638855">Телефондағы соңғы фотосуреттерді, медиафайлдарды, хабарландыруларды және қолданбаларды көру мүмкіндігін реттеуден бас тарту</translation>
 <translation id="4491109536499578614">Кескін</translation>
-<translation id="4493452241184130939">Негізгі әрекеттерді қарастырдық! Кеңестер мен анықтама алу үшін ендірілген Explore қолданбамызға өтіңіз. Іске кірісу кеңестерін, ұсынылған қолданбаларды, арнайы ұсыныстарды және <ph name="PRODUCT_NAME" /> құрылғысының ең жаңа функцияларын табасыз.</translation>
 <translation id="450584155212756404">Әзірлеуші арнасы</translation>
 <translation id="4513946894732546136">Пікір жіберу</translation>
 <translation id="4518404433291145981">Chromebook құлпын ашу үшін алдымен телефонның құлпын ашыңыз.</translation>
@@ -1082,7 +1085,6 @@
 <translation id="4708065238214351979">Пернетақта жарықтығын арттыру</translation>
 <translation id="4708185346211948049">Келесі аптадағы <ph name="DAY_OF_WEEK" /></translation>
 <translation id="4717575069099566988">USB-C кабелі USB4 стандартын қолдамайды. Құрылғының өнімділігі шектелуі мүмкін.</translation>
-<translation id="4724328513667182700"><ph name="PRODUCT_NAME" /> құрылғысында іске кірісуге арналған 6 кеңес</translation>
 <translation id="4730374152663651037">ЖИІ ПАЙДАЛАНЫЛАТЫНДАР</translation>
 <translation id="4731797938093519117">Ата-ананың кіру рұқсаты</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (сол)</translation>
@@ -1309,7 +1311,6 @@
 <translation id="5409208741270395213">Тапсырманы аяқталды деп белгілеу</translation>
 <translation id="5413656666631274079">Параметрлер беті</translation>
 <translation id="5414198321558177633">Профиль тізімі жаңартылуда. Бұл бірнеше минутқа созылуы мүмкін.</translation>
-<translation id="5417965108047245734"><ph name="PRODUCT_NAME" /> құрылғысын пайдалану жолын білу үшін қысқаша шолу жасаңыз.</translation>
 <translation id="5426063383988017631">Параметрлер мәзірі жабық</translation>
 <translation id="5428899915242071344">Таңдай бастау</translation>
 <translation id="5429993543155113935">Инкогнито терезелеріне қазір қолдау көрсетілмейді.</translation>
@@ -1647,6 +1648,7 @@
 <translation id="6539852571005954999">Жүктеп алынған <ph name="FILENAME" /> файлы сканерленіп жатыр</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> құрылғысына трансляциялануда</translation>
 <translation id="6542891623636520977">Эмоджилер, GIF-тер және т.б.</translation>
+<translation id="6543942526104794893">Бет қимылдарын расымен де өшіру қажет пе?</translation>
 <translation id="6545382064335350438">PIN кодыңыз әлі расталмады. Қайталап көріңіз.</translation>
 <translation id="6555373427270923730">Мекенжай жолағына веб-мекенжайды енгізіп, <ph name="MODIFIER" /><ph name="KEY" /> пернесін басыңыз</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2313,6 +2315,7 @@
 <translation id="8855885154700222542">Толық экран пернесі</translation>
 <translation id="8858369206579825206">Құпиялық параметрлері</translation>
 <translation id="8860366331836346216">eSIM картасын қосу</translation>
+<translation id="8869149849311827122">Тінтуір курсорын басқару мүмкіндігін расымен де өшіру қажет пе?</translation>
 <translation id="8870509716567206129">Қолданба бөлінген экранды қолдамайды.</translation>
 <translation id="8873203135446552888">Ендірілген сенсорлық тақтаны өшіргіңіз келетінін растаңыз</translation>
 <translation id="8874184842967597500">Қосылмаған</translation>

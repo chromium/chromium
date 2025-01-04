@@ -57,10 +57,12 @@ import {setInitialAudio} from './playback-page.js';
 export class MainPage extends ReactiveLitElement {
   static override styles = css`
     :host {
+      --actions-padding-horizontal: 44px;
       --actions-padding-vertical: 24px;
       --record-button-height: 96px;
 
       @container style(--small-viewport: 1) {
+        --actions-padding-horizontal: 36px;
         --record-button-height: 80px;
       }
 
@@ -93,11 +95,13 @@ export class MainPage extends ReactiveLitElement {
       border-radius: var(--border-radius-rounded-with-short-side);
       display: flex;
       flex-flow: row;
-      gap: 24px;
+      gap: 28px;
       height: fit-content;
       inset: 0;
       margin: auto auto 32px;
-      padding: var(--actions-padding-vertical) 44px;
+      padding:
+        var(--actions-padding-vertical)
+        var(--actions-padding-horizontal);
       position: absolute;
       width: fit-content;
     }

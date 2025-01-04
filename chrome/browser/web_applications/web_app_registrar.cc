@@ -17,6 +17,7 @@
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/map_util.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -66,19 +67,6 @@ using InstallStateSet = base::EnumSet<proto::InstallState,
                                       proto::InstallState_MIN,
                                       proto::InstallState_MAX>;
 
-// With Lacros, only system web apps are exposed using the Ash browser.
-bool WebAppSourceSupported(const WebApp& web_app) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (IsWebAppsCrosapiEnabled() && !web_app.IsSystemApp()) {
-    return false;
-  }
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (web_app.IsSystemApp())
-    return false;
-#endif
-  return true;
-}
-
 BASE_FEATURE(kDiyAppsDefaultCaptureForcedOff,
              "capture_forced_off_diy_apps",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -86,6 +74,8 @@ BASE_FEATURE(kDiyAppsDefaultCaptureForcedOff,
 struct AppStateForNavigationCapturing {
   bool is_diy_app = false;
   bool is_preinstalled_browser_tab_app = false;
+  blink::Manifest::LaunchHandler::ClientMode client_mode =
+      blink::Manifest::LaunchHandler::ClientMode::kAuto;
 };
 
 bool IsNavigationCapturingSettingOffByDefault(
@@ -108,10 +98,17 @@ bool IsNavigationCapturingSettingOffByDefault(
     return false;
   }
 
-  return features::kNavigationCapturingDefaultState.Get() ==
-             features::CapturingState::kDefaultOff ||
-         features::kNavigationCapturingDefaultState.Get() ==
-             features::CapturingState::kReimplDefaultOff;
+  switch (features::kNavigationCapturingDefaultState.Get()) {
+    case features::CapturingState::kDefaultOff:
+    case features::CapturingState::kReimplDefaultOff:
+      return true;
+    case features::CapturingState::kDefaultOn:
+    case features::CapturingState::kReimplDefaultOn:
+      return false;
+    case features::CapturingState::kReimplOnViaClientMode:
+      return app_state.client_mode ==
+             blink::Manifest::LaunchHandler::ClientMode::kAuto;
+  }
 }
 
 bool IsAppCapturingSettingForcedOff(const webapps::AppId& app_id) {
@@ -483,15 +480,6 @@ int WebAppRegistrar::GetUrlInAppScopeScore(const std::string& url_spec,
   return score;
 }
 
-bool WebAppRegistrar::IsShortcutApp(const webapps::AppId& app_id) const {
-  if (!GetAppById(app_id)) {
-    return false;
-  }
-  // TODO(crbug.com/40277513): Record shortcut distinction explicitly instead of
-  // using scope.
-  return !GetAppScopeInternal(app_id).has_value();
-}
-
 bool WebAppRegistrar::IsSystemApp(const webapps::AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);
   return web_app && web_app->IsSystemApp();
@@ -605,29 +593,23 @@ void WebAppRegistrar::NotifyAlwaysShowToolbarInFullscreenChanged(
 #endif
 
 const WebApp* WebAppRegistrar::GetAppById(const webapps::AppId& app_id) const {
-  auto it = registry_.find(app_id);
-  if (it != registry_.end() && WebAppSourceSupported(*it->second))
-    return it->second.get();
-
-  return nullptr;
+  return base::FindPtrOrNull(registry_, app_id);
 }
 
 const WebApp* WebAppRegistrar::GetAppByStartUrl(const GURL& start_url) const {
   for (auto const& it : registry_) {
-    if (WebAppSourceSupported(*it.second) &&
-        it.second->start_url() == start_url)
+    if (it.second->start_url() == start_url) {
       return it.second.get();
+    }
   }
   return nullptr;
 }
 
 std::vector<webapps::AppId>
 WebAppRegistrar::GetAppsFromSyncAndPendingInstallation() const {
-  AppSet apps_in_sync_install =
-      AppSet(this, [](const WebApp& web_app) {
-        return WebAppSourceSupported(web_app) &&
-               web_app.is_from_sync_and_pending_installation();
-      });
+  AppSet apps_in_sync_install = AppSet(this, [](const WebApp& web_app) {
+    return web_app.is_from_sync_and_pending_installation();
+  });
 
   std::vector<webapps::AppId> app_ids;
   for (const WebApp& app : apps_in_sync_install)
@@ -637,16 +619,15 @@ WebAppRegistrar::GetAppsFromSyncAndPendingInstallation() const {
 }
 
 std::vector<webapps::AppId> WebAppRegistrar::GetAppsPendingUninstall() const {
-  AppSet apps_in_sync_uninstall =
-      AppSet(this, [](const WebApp& web_app) {
-        return WebAppSourceSupported(web_app) &&
-               !web_app.is_from_sync_and_pending_installation() &&
-               web_app.is_uninstalling();
-      });
+  AppSet apps_in_sync_uninstall = AppSet(this, [](const WebApp& web_app) {
+    return !web_app.is_from_sync_and_pending_installation() &&
+           web_app.is_uninstalling();
+  });
 
   std::vector<webapps::AppId> app_ids;
-  for (const WebApp& app : apps_in_sync_uninstall)
+  for (const WebApp& app : apps_in_sync_uninstall) {
     app_ids.push_back(app.app_id());
+  }
 
   return app_ids;
 }
@@ -798,7 +779,6 @@ std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
 
   std::optional<webapps::AppId> best_app_id;
   int best_score = 0;
-  bool best_app_is_shortcut = true;
 
   for (const webapps::AppId& app_id :
        GetAppIdsForAppSet(GetAppsIncludingStubs())) {
@@ -813,11 +793,8 @@ std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
     if (!options.include_diy && IsDiyApp(app_id)) {
       continue;
     }
-    // TODO(crbug.com/40277513): Consider treating shortcuts differently to
-    // PWAs.
-    // TODO(crbug.com/341316725): Remove shortcut apps.
-    bool app_is_shortcut = IsShortcutApp(app_id);
-    if (app_is_shortcut && !best_app_is_shortcut) {
+
+    if (!GetAppScope(app_id).is_valid()) {
       continue;
     }
 
@@ -830,11 +807,9 @@ std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
       score = GetUrlInAppScopeScore(url_spec, app_id);
     }
 
-    if (score > 0 &&
-        (score > best_score || (best_app_is_shortcut && !app_is_shortcut))) {
+    if (score > 0 && score > best_score) {
       best_app_id = app_id;
       best_score = score;
-      best_app_is_shortcut = app_is_shortcut;
     }
   }
   return best_app_id;
@@ -1135,7 +1110,6 @@ bool WebAppRegistrar::CanCaptureLinksInScope(
   if (!IsInstallState(app_id,
                       {proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
                        proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}) ||
-      IsShortcutApp(app_id) ||
       !IsSupportedDisplayModeForNavigationCapture(
           GetAppEffectiveDisplayMode(app_id))) {
     return false;
@@ -1160,7 +1134,10 @@ bool WebAppRegistrar::CapturesLinksInScope(const webapps::AppId& app_id) const {
       if (IsNavigationCapturingSettingOffByDefault(
               {.is_diy_app = web_app->is_diy_app(),
                .is_preinstalled_browser_tab_app =
-                   is_preinstalled_browser_tab_app})) {
+                   is_preinstalled_browser_tab_app,
+               .client_mode = web_app->launch_handler()
+                                  .value_or(LaunchHandler())
+                                  .client_mode})) {
         return false;
       }
       break;
@@ -1283,7 +1260,7 @@ bool WebAppRegistrar::IsLinkCapturableByApp(const webapps::AppId& app,
     return IsInstallState(
                app_id, {proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
                         proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}) &&
-           !IsShortcutApp(app_id) && other_score > app_score;
+           other_score > app_score;
   });
 }
 
@@ -1500,12 +1477,6 @@ std::optional<GURL> WebAppRegistrar::GetAppScopeInternal(
   if (!web_app)
     return std::nullopt;
 
-  // TODO(crbug.com/40277513): Record shortcut distinction explicitly instead of
-  // using scope.
-  // Shortcuts on the WebApp system have empty scopes, while the implementation
-  // of IsShortcutApp just checks if the scope is |std::nullopt|, so make sure
-  // we return |std::nullopt| rather than an empty scope.
-  // TODO(crbug.com/341316725): Remove shortcut apps.
   if (web_app->scope().is_empty())
     return std::nullopt;
 
@@ -1696,18 +1667,14 @@ WebAppRegistrar::AppSet::const_iterator WebAppRegistrar::AppSet::end() const {
 }
 
 WebAppRegistrar::AppSet WebAppRegistrar::GetAppsIncludingStubs() const {
-  return AppSet(this, [](const WebApp& web_app) {
-    return WebAppSourceSupported(web_app);
-  });
+  return AppSet(this, [](const WebApp& web_app) { return true; });
 }
 
 WebAppRegistrar::AppSet WebAppRegistrar::GetApps() const {
-  return AppSet(
-      this, [](const WebApp& web_app) {
-        return WebAppSourceSupported(web_app) &&
-               !web_app.is_from_sync_and_pending_installation() &&
-               !web_app.is_uninstalling();
-      });
+  return AppSet(this, [](const WebApp& web_app) {
+    return !web_app.is_from_sync_and_pending_installation() &&
+           !web_app.is_uninstalling();
+  });
 }
 
 base::Value WebAppRegistrar::AsDebugValue() const {
@@ -1805,12 +1772,10 @@ WebApp* WebAppRegistrarMutable::GetAppByIdMutable(
 }
 
 WebAppRegistrar::AppSet WebAppRegistrarMutable::GetAppsMutable() {
-  return AppSet(
-      this, [](const WebApp& web_app) {
-        return WebAppSourceSupported(web_app) &&
-               !web_app.is_from_sync_and_pending_installation() &&
-               !web_app.is_uninstalling();
-      });
+  return AppSet(this, [](const WebApp& web_app) {
+    return !web_app.is_from_sync_and_pending_installation() &&
+           !web_app.is_uninstalling();
+  });
 }
 
 bool IsRegistryEqual(const Registry& registry,

@@ -17,7 +17,6 @@
 <translation id="1185134272377778587">關於 Chromium</translation>
 <translation id="1188705220418984327">如要分享視窗內容，請前往「系統偏好設定」允許 Chromium 螢幕錄影。</translation>
 <translation id="1203500561924088507">感謝你安裝本服務。你必須重新啟動瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
-<translation id="1235768345431527125">登入即可存取自己的資料，你也可以在使用 Chromium 時不登入帳戶</translation>
 <translation id="1262876892872089030">當這個分頁處於閒置狀態時，系統會釋出記憶體，加快 Chromium 的運作速度。你可以選擇一律不讓這個網站進入閒置狀態。</translation>
 <translation id="1265577313130862557">這個檔案有危險，因此 Chromium 已禁止下載</translation>
 <translation id="126567311906253476">使用 <ph name="USER_EMAIL" /> 登入 Gmail 或 YouTube 等 Google 服務時，可以用同一個帳戶自動登入 Chromium</translation>
@@ -57,6 +56,7 @@
 <translation id="1779356040007214683">為了讓 Chromium 的安全性更有保障，我們已將部分未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> 中的擴充功能停用，它們可能在你不知情的情況下加入瀏覽器。</translation>
 <translation id="1808667845054772817">重新安裝 Chromium</translation>
 <translation id="1820835682567584003">Chromium 正在嘗試<ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1838374766361614909">清除搜尋</translation>
 <translation id="18552579716432081">如果只要刪除這部裝置上的瀏覽資料，但保留 Google 帳戶中的資料，請<ph name="BEGIN_LINK" />登出 Chromium<ph name="END_LINK" />。</translation>
 <translation id="185970820835152459">你可以管理已登入的 Google 帳戶。Google 帳戶可用於 Chromium 瀏覽器、Play 商店和 Gmail 等服務。如要添加他人 (例如家庭成員) 的帳戶，請改為將使用者新增至你的 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">使用「圖片搜尋」尋找內容</translation>
@@ -66,6 +66,7 @@
 <translation id="1896836275755235458">Chromium 會限制背景活動和視覺效果 (例如順暢捲動和視訊畫面更新率)，以節省電池電力。<ph name="BEGIN_LINK" />進一步瞭解節能模式<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium 更新工具服務</translation>
 <translation id="1911763535808217981">關閉這項功能後，你可以單獨登入 Gmail 等這類 Google 網站，不必同時登入 Chromium</translation>
+<translation id="1916451563296275579">從 Chromium 中移除這個應用程式的資料</translation>
 <translation id="1929939181775079593">Chromium 沒有回應，要立即重新啟動嗎？</translation>
 <translation id="1933341829955786215">貴機構 (<ph name="MANAGER" />) 要求你登入 Chromium</translation>
 <translation id="193439633299369377">Chromium OS 必須重新啟動，才能套用更新。</translation>
@@ -92,6 +93,7 @@
 <translation id="2199210295479376551">從 Chromium 中移除帳戶</translation>
 <translation id="2210682093923538346">危險網站。Chromium 已移除通知權限。</translation>
 <translation id="2236949375853147973">我的活動</translation>
+<translation id="2238130810669087193">如要在所有裝置上使用你的地址和其他資料，請登入 Chromium。登入後，這個地址就會儲存到 Google 帳戶。</translation>
 <translation id="2240214816234246077">由於近期沒有造訪記錄，Chromium 已移除「<ph name="PERMISSION_1" />」和「<ph name="PERMISSION_2" />」權限</translation>
 <translation id="2241627712206172106">如果你與親朋好友共用電腦，人人皆可享有獨立的瀏覽空間，依照自己的偏好設定 Chromium。</translation>
 <translation id="2313870531055795960">可使用儲存在 Chromium 中的不安全網站清單檢查網址。如果有網站試圖竊取你的密碼，或當你下載有害檔案時，Chromium 可能也會將網址 (包括部分網頁內容) 傳送給安全瀏覽功能。</translation>
@@ -109,6 +111,7 @@
 <translation id="2483889755041906834">在 Chromium 中</translation>
 <translation id="2485422356828889247">解除安裝</translation>
 <translation id="2513154137948333830">必須重新啟動：<ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2522009821193247726">如要繼續，請使用 <ph name="EMAIL" /> 登入 Chromium，確保符合貴機構的政策。</translation>
 <translation id="2542968102051442371">選取要使用「圖片搜尋」尋找的文字</translation>
 <translation id="2554739539410784893">Chromium 正在嘗試更換現有密碼。如果允許，請輸入 Windows 密碼。</translation>
 <translation id="2560420686485554789">Chromium 需要儲存空間存取權，才能下載檔案</translation>
@@ -118,6 +121,7 @@
 <translation id="2583187216237139145">凡是在使用這個資料夾期間產生的 Chromium 資料 (例如建立的書籤、歷史記錄、密碼和其他設定)，工作資料夾管理員皆可予以移除。<ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">繼續使用 Chromium</translation>
 <translation id="259935314519650377">無法快取下載的安裝程式，錯誤碼：<ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
+<translation id="2635452620547538388">請驗證身分，才能將 Chromium 資料儲存到帳戶 (<ph name="ACCOUNT_EMAIL" />)，或使用帳戶中的 Chromium 資料</translation>
 <translation id="264613044588233783">提高 Chromium 執行速度，讓使用 JavaScript 的功能正常運作 (建議)</translation>
 <translation id="2648074677641340862">安裝期間發生作業系統錯誤，請重新下載 Chromium。</translation>
 <translation id="2661879430930417727">如果你與親朋好友共用裝置，人人皆可享有獨立的瀏覽空間，依照自己的偏好設定 Chromium</translation>
@@ -203,7 +207,6 @@
 <translation id="3802055581630249637">Chromium 會預先載入你可能會造訪的網頁，以便在你造訪時更快載入</translation>
 <translation id="3830894615770080216">Chromium OS 系統</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
-<translation id="386822487697155367">前往 Chromium OS 說明頁面</translation>
 <translation id="3871664619793219264">透過 <ph name="ACCOUNT_EMAIL" /> 存取你的 Chromium 瀏覽器資料</translation>
 <translation id="3885770153807205175">語言選單</translation>
 <translation id="388648406173476553">自訂及管理 Chromium。重要注意事項 - 按這裡瞭解詳情。</translation>
@@ -251,7 +254,6 @@
 <translation id="4438870983368648614">Chromium 是由「<ph name="MANAGER" />」管理</translation>
 <translation id="444069871276811466">新增 Chromium 設定檔</translation>
 <translation id="4447409407328223819">關於 Chrome for Testing</translation>
-<translation id="4470974262661801543">如要將 Chromium 資料儲存到 Google 帳戶，或使用帳戶中的 Chromium 資料，請輸入通關密語</translation>
 <translation id="4493028449971051158">啟動錯誤：請以系統管理員身分執行安裝程式。</translation>
 <translation id="4501471624619070934">安裝失敗，因為這個國家/地區設有存取限制。</translation>
 <translation id="4510853178268397146">這項擴充功能尚未發布隱私權實務規範 (例如擴充功能如何收集和使用資料)，因此 Chromium 建議你移除。</translation>
@@ -403,6 +405,7 @@
 <translation id="6455857529632101747">歡迎使用 Chromium 設定檔</translation>
 <translation id="6466344609055215035">從 Chromium 中移除帳戶</translation>
 <translation id="6475912303565314141">這個擴充功能也會控管你啟動 Chromium 時所顯示的網頁。</translation>
+<translation id="648062525172759633">這些頁面的適用對象為 Chromium 開發人員，可能不會主動維護或測試。如要啟用，請前往 <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> 點選啟用偵錯頁面的按鈕，再返回這個頁面。</translation>
 <translation id="648319183876919572">安全瀏覽強化防護功能可進一步協助你防範危險的網站和下載內容</translation>
 <translation id="6510925080656968729">解除安裝 Chromium</translation>
 <translation id="651535675648445253">系統會使用 Chromium 開啟捷徑</translation>
@@ -446,6 +449,7 @@
 <translation id="6980074797973263542">貴機構可以查看及管理瀏覽資料，例如書籤、歷史記錄和密碼，但無法查看個人 Chromium 設定檔中的瀏覽資料。</translation>
 <translation id="6985329841647292029">Chromium OS 條款</translation>
 <translation id="6990124437352146030">Chromium 需要相關權限，才能讓這個網站使用你的麥克風</translation>
+<translation id="7003299027384820442">請輸入通關密語，才能將 Chromium 資料儲存到帳戶 (<ph name="ACCOUNT_EMAIL" />)，或使用帳戶中的 Chromium 資料</translation>
 <translation id="7011190694940573312">安裝失敗，因為應用程式不支援這個版本的作業系統。</translation>
 <translation id="7024536598735240744">解壓縮錯誤：<ph name="UNPACK_ERROR" />。</translation>
 <translation id="7025789849649390912">已停止安裝。</translation>
@@ -512,6 +516,7 @@ Chromium 無法復原你的設定。</translation>
 為保護個人隱私，我們會自動刪除 4 週以前的興趣喜好。視瀏覽內容而定，某個主題可能會再次顯示在你的興趣喜好清單中。或者，你可以移除不希望 Chromium 列在興趣喜好清單中的項目。</translation>
 <translation id="7888981273428720788">將 Chromium 設為預設瀏覽器</translation>
 <translation id="7934340546140346950">Chromium 會盡可能自動將不安全的連線升級為 HTTPS</translation>
+<translation id="7935734571048689933">Chromium 是受管理的應用程式</translation>
 <translation id="7937630085815544518">你使用了 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入 Chromium，請使用相同帳戶重新登入。</translation>
 <translation id="7975919845073681630">這是以並存形式安裝的次要 Chromium，無法設為您的預設瀏覽器。</translation>
 <translation id="7997934263947464652">來源不明的擴充功能、應用程式和主題可能會損害你的裝置。Chromium 建議你只透過 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />安裝這些項目</translation>
@@ -541,6 +546,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8330519371938183845">登入即可進行同步處理，讓你在所有裝置上享有個人化的 Chromium 體驗</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> 先前使用的是 Chromium</translation>
 <translation id="8357820681460164151">如要透過所有裝置存取你的 Chromium 瀏覽器資料，請登入並開啟同步功能</translation>
+<translation id="8359544530202147897">請更新 Chromium，以便繼續使用 Google 帳戶 (<ph name="ACCOUNT_EMAIL" />) 中的 Chromium 資料</translation>
 <translation id="8360718212975266891">如要取得日後的 Chromium 更新，必須使用 Windows 10 以上版本。這部電腦目前版本為 Windows 8。</translation>
 <translation id="8362914115861174987">譯文語言：</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. 保留所有權利。</translation>

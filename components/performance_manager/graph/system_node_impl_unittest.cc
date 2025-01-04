@@ -11,6 +11,7 @@
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
+#include "components/performance_manager/test_support/graph/mock_system_node_observer.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -19,15 +20,6 @@
 namespace performance_manager {
 
 namespace {
-
-// Observer used to make sure that signals are dispatched correctly.
-class SystemObserver : public SystemNodeImpl::ObserverDefaultImpl {
- public:
-  size_t system_event_seen_count() const { return system_event_seen_count_; }
-
- private:
-  size_t system_event_seen_count_ = 0;
-};
 
 using SystemNodeImplTest = GraphTestHarness;
 
@@ -52,24 +44,13 @@ TEST_F(SystemNodeImplDeathTest, SafeDowncast) {
 
 namespace {
 
-class LenientMockObserver : public SystemNodeImpl::Observer {
+using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
+using testing::_;
+using testing::Invoke;
+using testing::InvokeWithoutArgs;
+
+class MockObserver : public MockSystemNodeObserver {
  public:
-  LenientMockObserver() = default;
-  ~LenientMockObserver() override = default;
-
-  MOCK_METHOD(void,
-              OnProcessMemoryMetricsAvailable,
-              (const SystemNode*),
-              (override));
-  MOCK_METHOD(void,
-              OnMemoryPressure,
-              (base::MemoryPressureListener::MemoryPressureLevel),
-              (override));
-  MOCK_METHOD(void,
-              OnBeforeMemoryPressure,
-              (base::MemoryPressureListener::MemoryPressureLevel),
-              (override));
-
   void SetNotifiedSystemNode(const SystemNode* system_node) {
     notified_system_node_ = system_node;
   }
@@ -83,13 +64,6 @@ class LenientMockObserver : public SystemNodeImpl::Observer {
  private:
   raw_ptr<const SystemNode> notified_system_node_ = nullptr;
 };
-
-using MockObserver = ::testing::StrictMock<LenientMockObserver>;
-
-using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
-using testing::_;
-using testing::Invoke;
-using testing::InvokeWithoutArgs;
 
 }  // namespace
 

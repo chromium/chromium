@@ -50,8 +50,12 @@ class CONTENT_EXPORT HidService : public blink::mojom::HidService,
 
   // Removes reports from `device` if the report IDs match the IDs in the
   // protected report ID lists. If all of the reports are removed from a
-  // collection, the collection is also removed.
+  // collection, the collection is also removed. If `is_fido_allowed` is true,
+  // reports contained in FIDO collections are not removed. If
+  // both `is_fido_allowed` and `is_known_security_key` are true, no reports are
+  // removed.
   static void RemoveProtectedReports(device::mojom::HidDeviceInfo& device,
+                                     bool is_known_security_key,
                                      bool is_fido_allowed);
 
   // blink::mojom::HidService:

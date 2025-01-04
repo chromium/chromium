@@ -153,10 +153,10 @@ void VerifyAttachment(std::string_view name,
 class FeedbackServiceTest : public ApiUnitTest {
  protected:
   FeedbackServiceTest() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     test_url_loader_factory_.AddResponse(
         kVariationsFetchHpkeKey, kTestPublicKeyResponseBody, net::HTTP_OK);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     test_shared_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);

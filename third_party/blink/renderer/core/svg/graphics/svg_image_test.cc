@@ -44,10 +44,10 @@ class SVGImageTest : public testing::Test, private ScopedMockOverlayScrollbars {
  public:
   SVGImage& GetImage() { return *image_; }
 
-  void Load(const char* data, bool should_pause) {
+  void Load(base::span<const char> data, bool should_pause) {
     observer_ = MakeGarbageCollected<PauseControlImageObserver>(should_pause);
     image_ = SVGImage::Create(observer_);
-    image_->SetData(SharedBuffer::Create(data, strlen(data)), true);
+    image_->SetData(SharedBuffer::Create(data), true);
     test::RunPendingTasks();
   }
 
@@ -121,7 +121,7 @@ const char kAnimatedDocument[] =
 
 TEST_F(SVGImageTest, TimelineSuspendAndResume) {
   const bool kShouldPause = true;
-  Load(kAnimatedDocument, kShouldPause);
+  Load(base::span_from_cstring(kAnimatedDocument), kShouldPause);
   SVGImageChromeClient& chrome_client = GetImage().ChromeClientForTesting();
   DisallowNewWrapper<HeapTaskRunnerTimer<SVGImageChromeClient>>* timer =
       MakeGarbageCollected<
@@ -151,7 +151,7 @@ TEST_F(SVGImageTest, TimelineSuspendAndResume) {
 
 TEST_F(SVGImageTest, ResetAnimation) {
   const bool kShouldPause = false;
-  Load(kAnimatedDocument, kShouldPause);
+  Load(base::span_from_cstring(kAnimatedDocument), kShouldPause);
   SVGImageChromeClient& chrome_client = GetImage().ChromeClientForTesting();
   DisallowNewWrapper<HeapTaskRunnerTimer<SVGImageChromeClient>>* timer =
       MakeGarbageCollected<
@@ -186,7 +186,7 @@ TEST_F(SVGImageTest, ResetAnimation) {
 
 TEST_F(SVGImageTest, SupportsSubsequenceCaching) {
   const bool kShouldPause = true;
-  Load(kAnimatedDocument, kShouldPause);
+  Load(base::span_from_cstring(kAnimatedDocument), kShouldPause);
   PumpFrame();
   LocalFrame* local_frame =
       To<LocalFrame>(GetImage().GetPageForTesting()->MainFrame());
@@ -200,7 +200,9 @@ TEST_F(SVGImageTest, SupportsSubsequenceCaching) {
 
 TEST_F(SVGImageTest, LayoutShiftTrackerDisabled) {
   const bool kDontPause = false;
-  Load("<svg xmlns='http://www.w3.org/2000/svg'></svg>", kDontPause);
+  Load(
+      base::span_from_cstring("<svg xmlns='http://www.w3.org/2000/svg'></svg>"),
+      kDontPause);
   LocalFrame* local_frame =
       To<LocalFrame>(GetImage().GetPageForTesting()->MainFrame());
   EXPECT_TRUE(local_frame->GetDocument()->IsSVGDocument());
@@ -210,11 +212,11 @@ TEST_F(SVGImageTest, LayoutShiftTrackerDisabled) {
 
 TEST_F(SVGImageTest, SetSizeOnVisualViewport) {
   const bool kDontPause = false;
-  Load(
-      "<svg xmlns='http://www.w3.org/2000/svg'>"
-      "   <rect id='green' width='100%' height='100%' fill='green' />"
-      "</svg>",
-      kDontPause);
+  Load(base::span_from_cstring(
+           "<svg xmlns='http://www.w3.org/2000/svg' width='200' height='100'>"
+           "   <rect id='green' width='100%' height='100%' fill='green' />"
+           "</svg>"),
+       kDontPause);
   PumpFrame();
   LocalFrame* local_frame =
       To<LocalFrame>(GetImage().GetPageForTesting()->MainFrame());
@@ -225,19 +227,23 @@ TEST_F(SVGImageTest, SetSizeOnVisualViewport) {
 
 TEST_F(SVGImageTest, IsSizeAvailable) {
   const bool kShouldPause = false;
-  Load("<svg xmlns='http://www.w3.org/2000/svg'></svg>", kShouldPause);
+  Load(
+      base::span_from_cstring("<svg xmlns='http://www.w3.org/2000/svg'></svg>"),
+      kShouldPause);
   EXPECT_TRUE(GetImage().IsSizeAvailable());
 
-  Load("<notsvg></notsvg>", kShouldPause);
+  Load(base::span_from_cstring("<notsvg></notsvg>"), kShouldPause);
   EXPECT_FALSE(GetImage().IsSizeAvailable());
 
-  Load("<notsvg xmlns='http://www.w3.org/2000/svg'></notsvg>", kShouldPause);
+  Load(base::span_from_cstring(
+           "<notsvg xmlns='http://www.w3.org/2000/svg'></notsvg>"),
+       kShouldPause);
   EXPECT_FALSE(GetImage().IsSizeAvailable());
 }
 
 TEST_F(SVGImageTest, DisablesSMILEvents) {
   const bool kShouldPause = true;
-  Load(kAnimatedDocument, kShouldPause);
+  Load(base::span_from_cstring(kAnimatedDocument), kShouldPause);
   LocalFrame* local_frame =
       To<LocalFrame>(GetImage().GetPageForTesting()->MainFrame());
   EXPECT_TRUE(local_frame->GetDocument()->IsSVGDocument());
@@ -249,11 +255,11 @@ TEST_F(SVGImageTest, DisablesSMILEvents) {
 
 TEST_F(SVGImageTest, PaintFrameForCurrentFrameWithMQAndZoom) {
   const bool kShouldPause = false;
-  Load(R"SVG(
+  Load(base::span_from_cstring(R"SVG(
          <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'>
            <style>@media(max-width:50px){rect{fill:blue}}</style>
            <rect width='10' height='10' fill='red'/>
-         </svg>)SVG",
+         </svg>)SVG"),
        kShouldPause);
 
   auto container =
@@ -271,13 +277,13 @@ TEST_F(SVGImageTest, PaintFrameForCurrentFrameWithMQAndZoom) {
 
 TEST_F(SVGImageTest, SVGWithSmilAnimationIsAnimated) {
   const bool kShouldPause = true;
-  Load(R"SVG(
+  Load(base::span_from_cstring(R"SVG(
          <svg xmlns="http://www.w3.org/2000/svg">
            <rect width="10" height="10"/>
            <animateTransform attributeName="transform" type="rotate"
                              from="0 5 5" to="360 5 5" dur="1s"
                              repeatCount="indefinite"/>
-         </svg>)SVG",
+         </svg>)SVG"),
        kShouldPause);
 
   EXPECT_TRUE(GetImage().MaybeAnimated());
@@ -285,7 +291,7 @@ TEST_F(SVGImageTest, SVGWithSmilAnimationIsAnimated) {
 
 TEST_F(SVGImageTest, NestedSVGWithSmilAnimationIsAnimated) {
   const bool kShouldPause = true;
-  Load(R"SVG(
+  Load(base::span_from_cstring(R"SVG(
          <svg xmlns="http://www.w3.org/2000/svg">
            <svg>
              <rect width="10" height="10"/>
@@ -293,7 +299,7 @@ TEST_F(SVGImageTest, NestedSVGWithSmilAnimationIsAnimated) {
                                from="0 5 5" to="360 5 5" dur="1s"
                                repeatCount="indefinite"/>
            </svg>
-         </svg>)SVG",
+         </svg>)SVG"),
        kShouldPause);
 
   EXPECT_TRUE(GetImage().MaybeAnimated());

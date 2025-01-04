@@ -122,9 +122,6 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
   bool RequiresSetNeedsDisplayOnHdrHeadroomChange() const override;
   bool Update() override;
   bool IsSnappedToPixelGridInTarget() const override;
-  void PushPropertiesTo(LayerImpl* layer,
-                        const CommitState& commit_state,
-                        const ThreadUnsafeCommitState& unsafe_state) override;
 
   // Request a mapping from SharedBitmapId to SharedMemory be registered via the
   // LayerTreeFrameSink with the display compositor. Once this mapping is
@@ -150,6 +147,11 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
  protected:
   explicit TextureLayer(TextureLayerClient* client);
   ~TextureLayer() override;
+  void PushDirtyPropertiesTo(
+      LayerImpl* layer,
+      uint8_t dirty_flag,
+      const CommitState& commit_state,
+      const ThreadUnsafeCommitState& unsafe_state) override;
   bool HasDrawableContent() const override;
 
  private:

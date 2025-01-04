@@ -137,11 +137,14 @@ class ThrottleManager : public base::SupportsUserData::Data,
       content::NavigationHandle* navigation_handle,
       std::vector<std::unique_ptr<content::NavigationThrottle>>* throttles);
 
+  // On a DISALLOW or WOULD_DISALLOW load policy decision, notify the throttle
+  // manager to log the associated ukm metrics, i.e. `ActivationDecision`,
+  // `DryRun`.
+  void NotifyDisallowLoadPolicy(content::NavigationHandle* navigation_handle);
+
   subresource_filter::VerifiedRuleset::Handle* ruleset_handle_for_testing() {
     return ruleset_handle_.get();
   }
-
-  void NotifyDisallowLoadPolicy(content::NavigationHandle* navigation_handle);
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(

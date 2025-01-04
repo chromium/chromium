@@ -14,7 +14,6 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -25,7 +24,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #endif
 
@@ -59,7 +58,7 @@ class MockCallbackObserver {
 class RealtimeReportingJobConfigurationTest : public testing::Test {
  public:
   RealtimeReportingJobConfigurationTest()
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       : client_(&service_),
         fake_serial_number_(&fake_statistics_provider_)
 #else
@@ -159,7 +158,7 @@ class RealtimeReportingJobConfigurationTest : public testing::Test {
   MockCloudPolicyClient client_;
   StrictMock<MockCallbackObserver> callback_observer_;
   DeviceManagementService::Job job_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   class ScopedFakeSerialNumber {
    public:

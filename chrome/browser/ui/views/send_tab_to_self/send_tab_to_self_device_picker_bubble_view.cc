@@ -97,8 +97,9 @@ void SendTabToSelfDevicePickerBubbleView::BackButtonPressed() {
 
 void SendTabToSelfDevicePickerBubbleView::DeviceButtonPressed(
     SendTabToSelfBubbleDeviceButton* device_button) {
-  if (!controller_)
+  if (!controller_) {
     return;
+  }
 
   controller_->OnDeviceSelected(device_button->device_guid());
 
@@ -134,8 +135,9 @@ void SendTabToSelfDevicePickerBubbleView::Init() {
 }
 
 void SendTabToSelfDevicePickerBubbleView::AddedToWidget() {
-  if (!controller_->show_back_button())
+  if (!controller_->show_back_button()) {
     return;
+  }
 
   // Adding a title view will replace the default title.
   GetBubbleFrameView()->SetTitleView(
@@ -179,8 +181,9 @@ void SendTabToSelfDevicePickerBubbleView::CreateDevicesScrollView() {
     view->SetGroup(kDeviceButtonGroup);
   }
 
-  if (!device_list_view->children().empty())
+  if (!device_list_view->children().empty()) {
     SetInitiallyFocusedView(device_list_view->children()[0]);
+  }
 }
 
 BEGIN_METADATA(SendTabToSelfDevicePickerBubbleView)

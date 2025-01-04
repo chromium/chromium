@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 package org.chromium.webapk.lib.common;
+import org.chromium.build.annotations.NullMarked;
 
 import android.os.Bundle;
 
 /** Contains utility methods for extracting WebAPK's meta data. */
+@NullMarked
 public class WebApkMetaDataUtils {
     /**
      * Extracts long value from the WebAPK's meta data.

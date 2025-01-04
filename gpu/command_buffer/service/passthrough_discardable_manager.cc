@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/passthrough_discardable_manager.h"
 
 #include "base/not_fatal_until.h"
+#include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_passthrough.h"

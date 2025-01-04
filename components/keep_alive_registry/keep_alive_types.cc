@@ -16,8 +16,6 @@ std::ostream& operator<<(std::ostream& out, const KeepAliveOrigin& origin) {
       return out << "BROWSER_PROCESS_CHROMEOS";
     case KeepAliveOrigin::BROWSER_PROCESS_FUCHSIA:
       return out << "BROWSER_PROCESS_FUCHSIA";
-    case KeepAliveOrigin::BROWSER_PROCESS_LACROS:
-      return out << "BROWSER_PROCESS_LACROS";
     case KeepAliveOrigin::SESSION_RESTORE:
       return out << "SESSION_RESTORE";
     case KeepAliveOrigin::HEADLESS_COMMAND:
@@ -38,8 +36,6 @@ std::ostream& operator<<(std::ostream& out, const KeepAliveOrigin& origin) {
       return out << "LOGIN_DISPLAY_HOST_WEBUI";
     case KeepAliveOrigin::PIN_MIGRATION:
       return out << "PIN_MIGRATION";
-    case KeepAliveOrigin::DRIVEFS_NATIVE_MESSAGE_HOST_LACROS:
-      return out << "DRIVEFS_NATIVE_MESSAGE_HOST_LACROS";
     case KeepAliveOrigin::REMOTE_DEBUGGING:
       return out << "REMOTE_DEBUGGING";
     case KeepAliveOrigin::DEVTOOLS_WINDOW:
@@ -48,8 +44,6 @@ std::ostream& operator<<(std::ostream& out, const KeepAliveOrigin& origin) {
       return out << "NATIVE_MESSAGING_HOST_ERROR_REPORT";
     case KeepAliveOrigin::GLIC_LAUNCHER:
       return out << "GLIC_LAUNCHER";
-    case KeepAliveOrigin::GLIC_VIEW:
-      return out << "GLIC_VIEW";
     case KeepAliveOrigin::NOTIFICATION:
       return out << "NOTIFICATION";
     case KeepAliveOrigin::PENDING_NOTIFICATION_CLICK_EVENT:

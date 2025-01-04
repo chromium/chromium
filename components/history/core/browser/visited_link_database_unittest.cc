@@ -11,6 +11,7 @@
 #include "components/history/core/browser/features.h"
 #include "components/history/core/browser/url_database.h"
 #include "sql/database.h"
+#include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Time;
@@ -29,9 +30,6 @@ bool IsVisitedLinkRowEqual(const VisitedLinkRow& a, const VisitedLinkRow& b) {
 class VisitedLinkDatabaseTest : public testing::Test,
                                 public URLDatabase,
                                 public VisitedLinkDatabase {
- public:
-  VisitedLinkDatabaseTest() = default;
-
  protected:
   URLID GetLinkURLID() { return link_url_id_; }
   // Provided for URL/Visit/VisitedLinksDatabase.
@@ -76,7 +74,7 @@ class VisitedLinkDatabaseTest : public testing::Test,
 
   URLID link_url_id_;
   base::ScopedTempDir temp_dir_;
-  sql::Database db_;
+  sql::Database db_{sql::test::kTestTag};
 };
 
 // Test add, update, and delete operations for the

@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/types/optional_util.h"
@@ -24,6 +25,7 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
+#include "third_party/skia/include/effects/SkRuntimeEffect.h"
 
 namespace cc {
 namespace {
@@ -225,6 +227,19 @@ sk_sp<PaintShader> PaintShader::MakePaintRecord(
   return shader;
 }
 
+// static:
+sk_sp<PaintShader> PaintShader::MakeSkSLCommand(std::string_view sksl) {
+  SkString cmd(sksl);
+  auto [effect, error] = SkRuntimeEffect::MakeForShader(cmd);
+  if (!effect) {
+    LOG(ERROR) << error.data();
+    return nullptr;
+  }
+  sk_sp<PaintShader> shader(new PaintShader(Type::kSkSLCommand));
+  shader->sksl_command_ = cmd;
+  return shader;
+}
+
 // static
 size_t PaintShader::GetSerializedSize(const PaintShader* shader) {
   if (!shader) {
@@ -254,7 +269,8 @@ size_t PaintShader::GetSerializedSize(const PaintShader* shader) {
           PaintOpWriter::SerializedSizeOfElements(shader->colors_.data(),
                                                   shader->colors_.size()) +
           PaintOpWriter::SerializedSizeOfElements(shader->positions_.data(),
-                                                  shader->positions_.size()))
+                                                  shader->positions_.size()) +
+          PaintOpWriter::SerializedSize(shader->sksl_command_))
       .ValueOrDie();
 }
 
@@ -270,6 +286,7 @@ bool PaintShader::HasDiscardableImages(
     case Type::kRadialGradient:
     case Type::kTwoPointConicalGradient:
     case Type::kSweepGradient:
+    case Type::kSkSLCommand:
       return false;
     case Type::kImage:
       if (image_ && !image_.IsTextureBacked()) {
@@ -505,6 +522,14 @@ sk_sp<SkShader> PaintShader::GetSkShader(
         break;
       }
       break;
+    case Type::kSkSLCommand: {
+      auto [effect, error] = SkRuntimeEffect::MakeForShader(sksl_command_);
+      if (!effect) {
+        // Fallback the the color shader.
+        break;
+      }
+      return effect->makeShader(/*uniforms=*/nullptr, /*children=*/{});
+    }
     case Type::kShaderCount:
       NOTREACHED();
   }
@@ -598,6 +623,8 @@ bool PaintShader::IsOpaque() const {
       return false;
     case Type::kPaintRecord:
       return false;
+    case Type::kSkSLCommand:
+      return false;
     case Type::kShaderCount:
       NOTREACHED();
   }
@@ -626,6 +653,10 @@ bool PaintShader::IsValid() const {
       return true;
     case Type::kPaintRecord:
       return !!record_;
+    case Type::kSkSLCommand: {
+      auto [effect, error] = SkRuntimeEffect::MakeForShader(sksl_command_);
+      return !!effect;
+    }
     case Type::kShaderCount:
       return false;
   }
@@ -692,6 +723,8 @@ bool PaintShader::EqualsForTesting(const PaintShader& other) const {
       // tile_ and record_ intentionally omitted since they are modified on the
       // serialized shader based on the ctm.
       break;
+    case Type::kSkSLCommand:
+      return sksl_command_ == other.sksl_command_;
     case Type::kShaderCount:
       break;
   }

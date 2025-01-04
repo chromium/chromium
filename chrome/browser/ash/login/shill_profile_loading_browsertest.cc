@@ -8,6 +8,7 @@
 // login password has been saved to SessionManager (b/183084821).
 // This means that triggering the shill user profile load depends on user
 // policy having been processed (as user policy would mandate whether the login
+#include "google_apis/gaia/gaia_id.h"
 // password should be reused, and thus only after processing user network policy
 // does chrome decide if the password should be saved in SessionManager).
 //
@@ -111,12 +112,12 @@ class ShillProfileLoadingTest : public LoginManagerTest {
   }
 
   const LoginManagerMixin::TestUserInfo unmanaged_user_{
-      AccountId::FromUserEmailGaiaId(kUnmanagedUser, kUnmanagedGaiaID)};
+      AccountId::FromUserEmailGaiaId(kUnmanagedUser, GaiaId(kUnmanagedGaiaID))};
   const LoginManagerMixin::TestUserInfo secondary_unmanaged_user_{
       AccountId::FromUserEmailGaiaId(kSecondaryUnmanagedUser,
-                                     kSecondaryUnmanagedGaiaID)};
+                                     GaiaId(kSecondaryUnmanagedGaiaID))};
   const LoginManagerMixin::TestUserInfo managed_user_{
-      AccountId::FromUserEmailGaiaId(kManagedUser, kManagedGaiaID)};
+      AccountId::FromUserEmailGaiaId(kManagedUser, GaiaId(kManagedGaiaID))};
 
   UserPolicyMixin user_policy_mixin_{&mixin_host_, managed_user_.account_id};
   LoginManagerMixin login_manager_{&mixin_host_,

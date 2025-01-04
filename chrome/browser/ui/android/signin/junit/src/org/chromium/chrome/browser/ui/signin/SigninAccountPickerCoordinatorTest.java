@@ -29,10 +29,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.Promise;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -42,9 +40,8 @@ import org.chromium.chrome.browser.signin.services.SigninMetricsUtilsJni;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetMediator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerLaunchMode;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
-import org.chromium.components.signin.AccountManagerFacade;
-import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.TestActivity;
@@ -53,7 +50,6 @@ import org.chromium.ui.base.WindowAndroid;
 import java.lang.ref.WeakReference;
 
 /** Unit tests for {@link SigninAccountPickerCoordinator}. */
-@Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowPostTask.class})
 @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
@@ -64,8 +60,9 @@ public class SigninAccountPickerCoordinatorTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
+    @Rule public AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
+
     @Mock private CoreAccountInfo mCoreAccountInfoMock;
-    @Mock private AccountManagerFacade mAccountManagerFacadeMock;
     @Mock private SigninManager mSigninManagerMock;
     @Mock private SigninMetricsUtils.Natives mSigninMetricsUtilsNativeMock;
     @Mock private WindowAndroid mWindowAndroidMock;
@@ -90,8 +87,6 @@ public class SigninAccountPickerCoordinatorTest {
                         });
         ShadowPostTask.setTestImpl((taskTraits, task, delay) -> task.run());
         SigninMetricsUtilsJni.setInstanceForTesting(mSigninMetricsUtilsNativeMock);
-        AccountManagerFacadeProvider.setInstanceForTests(mAccountManagerFacadeMock);
-        when(mAccountManagerFacadeMock.getCoreAccountInfos()).thenReturn(new Promise<>());
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
         when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(mActivity));
         AccountPickerBottomSheetStrings bottomSheetStrings =

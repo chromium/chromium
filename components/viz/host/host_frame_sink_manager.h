@@ -210,12 +210,16 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
 
   // Setup the connection between the Browser (at WebContentsImpl level) and the
   // VizCompositor thread (at InputManager level) to allow transferring
-  // information from Viz to the Browser when the VizCompositor thread is
-  // handling input with InputVizard.
+  // information from Viz to the Browser and vice versa. Viz can inform Browser
+  // about inputs that it process on VizCompositor thread, and Browser can
+  // inform Viz about |TouchTransferState| to start processing input events for
+  // a sequence.
   void SetupRenderInputRouterDelegateConnection(
-      uint32_t grouping_id,
+      base::UnguessableToken grouping_id,
       mojo::PendingRemote<input::mojom::RenderInputRouterDelegateClient>
-          rir_delegate_client_remote);
+          rir_delegate_client_remote,
+      mojo::PendingReceiver<input::mojom::RenderInputRouterDelegate>
+          rir_delegate_receiver);
 
   using ScreenshotDestinationReadyCallback =
       base::OnceCallback<void(const SkBitmap& copy_output)>;

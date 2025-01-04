@@ -298,15 +298,7 @@ class PreinstalledWebAppMigrationBrowserTest
   }
 
   bool IsUninstallSilentlySupported() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    DCHECK(IsWebAppsCrosapiEnabled());
-    return chromeos::LacrosService::Get()
-               ->GetInterfaceVersion<crosapi::mojom::AppServiceProxy>() >=
-           int{crosapi::mojom::AppServiceProxy::MethodMinVersions::
-                   kUninstallSilentlyMinVersion};
-#else   // BUILDFLAG(IS_CHROMEOS_LACROS)
     return true;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
  protected:

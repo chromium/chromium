@@ -25,12 +25,31 @@ namespace blink {
 // and the pending policy, which will take effect when the frame is next
 // navigated.
 struct BLINK_COMMON_EXPORT FramePolicy {
+  // `DeferredFetchPolicy` tells how the deferred fetching feature is
+  // enabled for the subframe of an owner frame. On navigation, a value should
+  // be calculated by using the combination of the frame's inherited permissions
+  // policies of "deferred-fetch" and "deferred-fetch-minimal".
+  //
+  // See https://whatpr.org/fetch/1647.html#deferred-fetch-policy for policy
+  // definition and
+  // https://whatpr.org/fetch/1647.html#determine-subframe-deferred-fetch-policy
+  // for how to choose a value.
+  enum class DeferredFetchPolicy {
+    kDisabled,
+    kDeferredFetch,
+    kDeferredFetchMinimal,
+  };
+
   FramePolicy();
   FramePolicy(network::mojom::WebSandboxFlags sandbox_flags,
               const ParsedPermissionsPolicy& container_policy,
-              const DocumentPolicyFeatureState& required_document_policy);
+              const DocumentPolicyFeatureState& required_document_policy,
+              DeferredFetchPolicy deferred_fetch_policy);
   FramePolicy(const FramePolicy& lhs);
   ~FramePolicy();
+
+  friend bool BLINK_COMMON_EXPORT operator==(const FramePolicy& lhs,
+                                             const FramePolicy& rhs);
 
   network::mojom::WebSandboxFlags sandbox_flags;
   ParsedPermissionsPolicy container_policy;
@@ -39,10 +58,10 @@ struct BLINK_COMMON_EXPORT FramePolicy {
   // - 'Require-Document-Policy' http header
   // - |required_document_policy| of parent frame
   DocumentPolicyFeatureState required_document_policy;
+  // Derived from `container_policy` of the frame and the ancestor frames.
+  DeferredFetchPolicy deferred_fetch_policy;
 };
 
-bool BLINK_COMMON_EXPORT operator==(const FramePolicy& lhs,
-                                    const FramePolicy& rhs);
 bool BLINK_COMMON_EXPORT operator!=(const FramePolicy& lhs,
                                     const FramePolicy& rhs);
 

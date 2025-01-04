@@ -76,4 +76,19 @@ TEST(NativeThemeMacTest, GetCaretBlinkInterval) {
   EXPECT_EQ(new_interval, actual_interval);
 }
 
+TEST(NativeThemeMacTest, GetCaretBlinkIntervalIfUserPrefersNonBlinking) {
+  TestNativeThemeMac theme;
+  // Fake user prefers non-blinking cursor.
+  theme.SetPrefersNonBlinkingCursorForTesting(true);
+  base::TimeDelta actual_interval = theme.GetCaretBlinkInterval();
+  // Use 0 as the interval for non-blinking caret.
+  EXPECT_EQ(base::TimeDelta(), actual_interval);
+
+  // The setter overrides the system value or the default value.
+  base::TimeDelta new_interval = base::Milliseconds(42);
+  theme.set_caret_blink_interval(new_interval);
+  actual_interval = theme.GetCaretBlinkInterval();
+  EXPECT_EQ(new_interval, actual_interval);
+}
+
 }  // namespace ui

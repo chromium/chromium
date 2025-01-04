@@ -62,8 +62,9 @@ void RelaunchNotificationControllerPlatformImpl::CloseRelaunchNotification() {
 
 void RelaunchNotificationControllerPlatformImpl::SetDeadline(
     base::Time deadline) {
-  if (relaunch_required_timer_)
+  if (relaunch_required_timer_) {
     relaunch_required_timer_->SetDeadline(deadline);
+  }
 }
 
 void RelaunchNotificationControllerPlatformImpl::
@@ -127,10 +128,12 @@ bool RelaunchNotificationControllerPlatformImpl::CanScheduleReboot() {
 }
 
 void RelaunchNotificationControllerPlatformImpl::StartObserving() {
-  if (!display_observation_.IsObserving())
+  if (!display_observation_.IsObserving()) {
     display_observation_.Observe(ash::Shell::Get()->display_configurator());
-  if (!session_observation_.IsObserving())
+  }
+  if (!session_observation_.IsObserving()) {
     session_observation_.Observe(session_manager::SessionManager::Get());
+  }
 }
 
 void RelaunchNotificationControllerPlatformImpl::StopObserving() {

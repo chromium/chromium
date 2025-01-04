@@ -32,7 +32,19 @@ namespace {
     (defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARM_FAMILY))
 
 using PackedMaskType = uint32_t __attribute__((vector_size(16)));
+}
+}  // namespace net
 
+// TODO(https://github.com/llvm/llvm-project/issues/119290): Until
+// `std::has_unique_object_representations_v<>` works correctly for vector
+// types, explicitly mark this as safe to convert to/from bytes.
+namespace base {
+template <>
+inline constexpr bool kCanSafelyConvertToByteSpan<net::PackedMaskType> = true;
+}
+
+namespace net {
+namespace {
 #else
 
 using PackedMaskType = size_t;

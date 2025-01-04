@@ -36,7 +36,6 @@ static_library("main") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/ash/settings:resources",
-    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/browser/ui/webui/ash/settings/services/hats",
     "//chrome/common",
@@ -47,6 +46,7 @@ static_library("main") {
     "//content/public/browser",
     "//ui/base",
     "//ui/chromeos",
+    "//ui/webui",
   ]
 }
 

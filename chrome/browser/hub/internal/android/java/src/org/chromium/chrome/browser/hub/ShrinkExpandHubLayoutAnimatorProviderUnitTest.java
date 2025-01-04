@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -112,9 +113,13 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                         .expectAnyRecord(
                                 "Android.GridTabSwitcher.Animation.FirstFrameLatency.Shrink")
                         .build();
+        ShrinkExpandImageView imageView = spy(new ShrinkExpandImageView(mActivity));
         HubLayoutAnimatorProvider animatorProvider =
-                ShrinkExpandHubLayoutAnimationFactory.createShrinkTabAnimatorProvider(
+                new ShrinkExpandHubLayoutAnimatorProvider(
+                        HubLayoutAnimationType.SHRINK_TAB,
+                        /* needsBitmap= */ true,
                         mHubContainerView,
+                        imageView,
                         mAnimationDataSupplier,
                         Color.BLUE,
                         HUB_LAYOUT_SHRINK_EXPAND_DURATION_MS,
@@ -126,14 +131,24 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
         Size thumbnailSize = new Size(20, 85);
         Rect initialRect = new Rect(0, 0, WIDTH, HEIGHT);
         Rect finalRect = new Rect(50, 10, 70, 95);
+        int initialTopCorner = 0;
+        int initialBottomCorner = 0;
+        int finalTopCorner = 30;
+        int finalBottomCorner = 40;
         ShrinkExpandAnimationData data =
                 new ShrinkExpandAnimationData(
-                        initialRect, finalRect, thumbnailSize, /* useFallbackAnimation= */ false);
+                        initialRect,
+                        finalRect,
+                        initialTopCorner,
+                        initialBottomCorner,
+                        finalTopCorner,
+                        finalBottomCorner,
+                        thumbnailSize,
+                        /* useFallbackAnimation= */ false);
 
         HubLayoutAnimationRunner runner =
                 HubLayoutAnimationRunnerFactory.createHubLayoutAnimationRunner(animatorProvider);
 
-        ShrinkExpandImageView imageView = getImageView(animatorProvider);
         setUpShrinkExpandListener(
                 /* isShrink= */ true, imageView, initialRect, finalRect, /* hasBitmap= */ true);
         runner.addListener(mListener);
@@ -144,6 +159,15 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
 
         ShadowLooper.runUiThreadTasks();
 
+        verify(imageView, atLeastOnce())
+                .setRoundedCorners(
+                        initialTopCorner,
+                        initialTopCorner,
+                        initialBottomCorner,
+                        initialBottomCorner);
+        verify(imageView, atLeastOnce())
+                .setRoundedCorners(
+                        finalTopCorner, finalTopCorner, finalBottomCorner, finalBottomCorner);
         verifyFinalState(animatorProvider, /* wasForcedToFinish= */ false);
         watcher.assertExpected();
     }
@@ -159,9 +183,13 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                         .expectAnyRecord(
                                 "Android.GridTabSwitcher.Animation.FirstFrameLatency.Expand")
                         .build();
+        ShrinkExpandImageView imageView = spy(new ShrinkExpandImageView(mActivity));
         HubLayoutAnimatorProvider animatorProvider =
-                ShrinkExpandHubLayoutAnimationFactory.createExpandTabAnimatorProvider(
+                new ShrinkExpandHubLayoutAnimatorProvider(
+                        HubLayoutAnimationType.EXPAND_TAB,
+                        /* needsBitmap= */ true,
                         mHubContainerView,
+                        imageView,
                         mAnimationDataSupplier,
                         Color.RED,
                         HUB_LAYOUT_SHRINK_EXPAND_DURATION_MS,
@@ -173,14 +201,24 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
         Size thumbnailSize = new Size(20, 85);
         Rect initialRect = new Rect(50, 10, 70, 95);
         Rect finalRect = new Rect(0, 0, WIDTH, HEIGHT);
+        int initialTopCorner = 30;
+        int initialBottomCorner = 40;
+        int finalTopCorner = 0;
+        int finalBottomCorner = 0;
         ShrinkExpandAnimationData data =
                 new ShrinkExpandAnimationData(
-                        initialRect, finalRect, thumbnailSize, /* useFallbackAnimation= */ false);
+                        initialRect,
+                        finalRect,
+                        initialTopCorner,
+                        initialBottomCorner,
+                        finalTopCorner,
+                        finalBottomCorner,
+                        thumbnailSize,
+                        /* useFallbackAnimation= */ false);
 
         HubLayoutAnimationRunner runner =
                 HubLayoutAnimationRunnerFactory.createHubLayoutAnimationRunner(animatorProvider);
 
-        ShrinkExpandImageView imageView = getImageView(animatorProvider);
         setUpShrinkExpandListener(
                 /* isShrink= */ false, imageView, initialRect, finalRect, /* hasBitmap= */ true);
         runner.addListener(mListener);
@@ -191,6 +229,15 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
+        verify(imageView, atLeastOnce())
+                .setRoundedCorners(
+                        initialTopCorner,
+                        initialTopCorner,
+                        initialBottomCorner,
+                        initialBottomCorner);
+        verify(imageView, atLeastOnce())
+                .setRoundedCorners(
+                        finalTopCorner, finalTopCorner, finalBottomCorner, finalBottomCorner);
         verifyFinalState(animatorProvider, /* wasForcedToFinish= */ false);
         watcher.assertExpected();
     }
@@ -215,6 +262,10 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                 new ShrinkExpandAnimationData(
                         initialRect,
                         finalRect,
+                        /* initialTopCornerRadius= */ 0,
+                        /* initialBottomCornerRadius= */ 0,
+                        /* finalTopCornerRadius= */ 0,
+                        /* finalBottomCornerRadius= */ 0,
                         /* thumbnailSize= */ null,
                         /* useFallbackAnimation= */ false);
         mAnimationDataSupplier.set(data);
@@ -278,7 +329,14 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
         Rect finalRect = new Rect(50, 10, 70, 95);
         ShrinkExpandAnimationData data =
                 new ShrinkExpandAnimationData(
-                        initialRect, finalRect, thumbnailSize, /* useFallbackAnimation= */ false);
+                        initialRect,
+                        finalRect,
+                        /* initialTopCornerRadius= */ 0,
+                        /* initialBottomCornerRadius= */ 0,
+                        /* finalTopCornerRadius= */ 0,
+                        /* finalBottomCornerRadius= */ 0,
+                        thumbnailSize,
+                        /* useFallbackAnimation= */ false);
         HubLayoutAnimationRunner runner =
                 HubLayoutAnimationRunnerFactory.createHubLayoutAnimationRunner(animatorProvider);
 
@@ -310,7 +368,14 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
         Rect finalRect = new Rect(50, 10, 70, 95);
         ShrinkExpandAnimationData data =
                 new ShrinkExpandAnimationData(
-                        initialRect, finalRect, thumbnailSize, /* useFallbackAnimation= */ true);
+                        initialRect,
+                        finalRect,
+                        /* initialTopCornerRadius= */ 0,
+                        /* initialBottomCornerRadius= */ 0,
+                        /* finalTopCornerRadius= */ 0,
+                        /* finalBottomCornerRadius= */ 0,
+                        thumbnailSize,
+                        /* useFallbackAnimation= */ true);
         HubLayoutAnimationRunner runner =
                 HubLayoutAnimationRunnerFactory.createHubLayoutAnimationRunner(animatorProvider);
 
@@ -371,6 +436,10 @@ public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
                 new ShrinkExpandAnimationData(
                         initialRect,
                         finalRect,
+                        /* initialTopCornerRadius= */ 0,
+                        /* initialBottomCornerRadius= */ 0,
+                        /* finalTopCornerRadius= */ 0,
+                        /* finalBottomCornerRadius= */ 0,
                         /* thumbnailSize= */ null,
                         /* useFallbackAnimation= */ true);
 

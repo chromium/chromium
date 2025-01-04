@@ -20,18 +20,19 @@
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
+#include "components/autofill/content/browser/autofill_log_router_factory.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/autofill/core/browser/autofill_ablation_study.h"
-#include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/crowdsourcing/votes_uploader.h"
-#include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/integrators/autofill_plus_address_delegate.h"
+#include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
-#include "components/autofill/core/browser/password_form_classification.h"
-#include "components/autofill/core/browser/single_field_fill_router.h"
+#include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
+#include "components/autofill/core/browser/studies/autofill_ablation_study.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -41,7 +42,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/autofill/autofill_snackbar_controller_impl.h"
-#include "components/autofill/core/browser/ui/fast_checkout_client.h"
+#include "components/autofill/core/browser/integrators/fast_checkout_client.h"
 #else
 #include "chrome/browser/ui/autofill/payments/manage_migration_ui_controller.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -58,6 +59,7 @@ class SaveUpdateAddressProfileFlowManager;
 class AutofillOptimizationGuide;
 class AutofillAiDelegate;
 class FormFieldData;
+class LogRouter;
 enum class SuggestionType;
 
 // Chrome implementation of AutofillClient.
@@ -179,7 +181,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   bool IsPasswordManagerEnabled() const final;
   void DidFillForm(AutofillTriggerSource trigger_source, bool is_refill) final;
   bool IsContextSecure() const final;
-  LogManager* GetLogManager() const final;
+  LogManager* GetCurrentLogManager() final;
   autofill_metrics::FormInteractionsUkmLogger& GetFormInteractionsUkmLogger()
       final;
 
@@ -248,6 +250,9 @@ class ChromeAutofillClient : public ContentAutofillClient,
       const PopupOpenArgs& open_args,
       base::WeakPtr<AutofillSuggestionDelegate> delegate);
 
+  const raw_ptr<LogRouter> log_router_ =
+      AutofillLogRouterFactory::GetForBrowserContext(
+          GetWebContents().GetBrowserContext());
   std::unique_ptr<LogManager> log_manager_;
   autofill_metrics::FormInteractionsUkmLogger form_interactions_ukm_logger_{
       this};

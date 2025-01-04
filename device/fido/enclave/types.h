@@ -110,6 +110,16 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) ClaimedPIN {
   std::vector<uint8_t> wrapped_pin;
 };
 
+// Legal `up` and `uv` bit combinations.
+enum class UserPresentAndVerifiedBits {
+  // up=0, uv=0. Only allowed for MakeCredential (for mediation=conditional).
+  kNeither,
+  // up=1, uv=0
+  kPresentOnly,
+  // up=1, uv=1
+  kPresentAndVerified,
+};
+
 // A CredentialRequest contains the values that, in addition to a CTAP request,
 // are needed for building a fully-formed enclave request.
 struct COMPONENT_EXPORT(DEVICE_FIDO) CredentialRequest {
@@ -151,8 +161,11 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CredentialRequest {
   // The PIN entered by the user (wrapped for the enclave), and the correct PIN
   // (encrypted to the security domain secret). Optional, may be nullptr.
   std::unique_ptr<ClaimedPIN> claimed_pin;
-  // True when a user verification has been performed, false otherwise.
-  bool user_verified = false;
+  // The user presence and user verified bits. Only considered for
+  // MakeCredential. For GetAssertion the authenticatorData that contains these
+  // bits is enclave-supplied.
+  UserPresentAndVerifiedBits up_and_uv_bits =
+      UserPresentAndVerifiedBits::kPresentOnly;
 };
 
 }  // namespace device::enclave

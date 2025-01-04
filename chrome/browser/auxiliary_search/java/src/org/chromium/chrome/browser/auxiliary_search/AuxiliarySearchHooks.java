@@ -37,4 +37,7 @@ public interface AuxiliarySearchHooks {
     default boolean isSettingDefaultEnabledByOs() {
         return false;
     }
+
+    /** Sets whether the current device is a tablet. */
+    default void setIsTablet(boolean isTablet) {}
 }

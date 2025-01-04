@@ -13,9 +13,9 @@
 #include "base/functional/callback.h"
 #include "components/autofill/content/browser/bad_message.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_driver_router.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_driver_router.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
@@ -62,16 +62,19 @@ FormData Lift(ContentAutofillDriver& source, FormData form) {
   content::RenderFrameHost& rfh = *source.render_frame_host();
   form.set_host_frame(source.GetFrameToken());
   form.set_main_frame_origin(rfh.GetMainFrame()->GetLastCommittedOrigin());
-  form.set_url([&] {
-    // GetLastCommittedURL() doesn't include URL updates due to
-    // document.open() and so it might be about:blank or about:srcdoc. In this
-    // case fallback to GetLastCommittedOrigin(). See crbug.com/1209270.
-    GURL url = StripAuthAndParams(rfh.GetLastCommittedURL());
-    if (url.SchemeIs(url::kAboutScheme)) {
-      url = StripAuthAndParams(rfh.GetLastCommittedOrigin().GetURL());
-    }
-    return url;
-  }());
+
+  // GetLastCommittedURL() doesn't include URL updates due to
+  // document.open() and so it might be about:blank or about:srcdoc. In this
+  // case fallback to GetLastCommittedOrigin(). See crbug.com/1209270.
+  GURL unstripped_url = rfh.GetLastCommittedURL();
+  if (unstripped_url.SchemeIs(url::kAboutScheme)) {
+    unstripped_url = rfh.GetLastCommittedOrigin().GetURL();
+  }
+  form.set_url(StripAuthAndParams(unstripped_url));
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillIncludeUrlInCrowdsourcing)) {
+    form.set_full_url(StripAuth(unstripped_url));
+  }
 
   // The form signature must be calculated after setting FormData::url.
   FormSignature signature = CalculateFormSignature(form);
@@ -387,7 +390,7 @@ std::optional<LocalFrameToken> ContentAutofillDriver::Resolve(
   blink::RemoteFrameToken blink_remote_token(
       absl::get<RemoteFrameToken>(query).value());
   content::RenderFrameHost* remote_rfh =
-      content::RenderFrameHost::FromPlaceholderToken(rph->GetID(),
+      content::RenderFrameHost::FromPlaceholderToken(rph->GetDeprecatedID(),
                                                      blink_remote_token);
   if (!remote_rfh) {
     return std::nullopt;

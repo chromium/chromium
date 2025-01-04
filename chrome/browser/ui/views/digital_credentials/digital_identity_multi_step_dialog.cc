@@ -205,6 +205,15 @@ void DigitalIdentityMultiStepDialog::TryShow(
   }
 }
 
+SkColor DigitalIdentityMultiStepDialog::GetBackgroundColor() {
+  DigitalIdentityMultiStepDialog::Delegate* widget_delegate =
+      GetWidgetDelegate();
+  if (!widget_delegate) {
+    return gfx::kPlaceholderColor;
+  }
+  return widget_delegate->GetBackgroundColor();
+}
+
 DigitalIdentityMultiStepDialog::Delegate*
 DigitalIdentityMultiStepDialog::GetWidgetDelegate() {
   if (!dialog_) {

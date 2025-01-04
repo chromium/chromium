@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">Скачивание приостановлено.</translation>
 <translation id="1396327438254055134">Вы можете разрешить сайту использовать оптимизатор V8.</translation>
 <translation id="1415402041810619267">URL укорочен</translation>
+<translation id="1415855080660575082">Разрешите Chrome отправлять недавние вкладки на ваше устройство, чтобы они появлялись в списке приложений и результатах поиска. Вы можете включить или отключить эту функцию в настройках Chrome.</translation>
 <translation id="1448064542941920355">Уменьшить масштаб</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> сайт}one{<ph name="SITE_COUNT" /> сайт}few{<ph name="SITE_COUNT" /> сайта}many{<ph name="SITE_COUNT" /> сайтов}other{<ph name="SITE_COUNT" /> сайта}}</translation>
 <translation id="1500473259453106018">Скрыть карточку "Скидки на вкладках"</translation>
@@ -72,9 +73,9 @@
 <translation id="2194856509914051091">Важная информация</translation>
 <translation id="2215727959747642672">Редактирование файлов</translation>
 <translation id="2228071138934252756">Чтобы у приложения "<ph name="APP_NAME" />" был доступ к камере, включите ее в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
-<translation id="2235344399760031203">Сторонние файлы cookie заблокированы.</translation>
+<translation id="2235344399760031203">Сторонние файлы cookie блокируются</translation>
 <translation id="2238944249568001759">Варианты поисковых запросов, основанные на данных последней вкладки</translation>
-<translation id="2241587408274973373">Карточки страницы быстрого доступа</translation>
+<translation id="2241587408274973373">Карточки на новой вкладке</translation>
 <translation id="2241634353105152135">Однократно</translation>
 <translation id="2253414712144136228">Удалить пункт "<ph name="NAME_OF_LIST_ITEM" />"</translation>
 <translation id="228293613124499805">Большинство сайтов, которые вы посещаете, скорее всего, сохраняют на устройстве такую информацию, как ваши предпочтения или данные, которыми вы делитесь с ними. Чаще всего это делается для вашего удобства. Мы рекомендуем не отключать этот параметр.</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">Вы временно разрешили этому сайту использовать сторонние файлы cookie. Браузер станет хуже защищен, но функции сайта могут начать работать правильно. <ph name="BEGIN_LINK" />Отправить отзыв<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">В режиме инкогнито некоторые функции сайтов могут быть отключены</translation>
 <translation id="2442870161001914531">Всегда запрашивать версию для ПК</translation>
+<translation id="2445311670906052406">Chrome теперь отправляет недавние вкладки на ваше устройство. Они появляются в списке приложений и результатах поиска. Вы можете в любой момент отключить эту функцию в настройках Chrome.</translation>
 <translation id="2469312991797799607">Будут удалены все данные и файлы cookie, сохраненные сайтом <ph name="ORIGIN" /> и связанными с ним сайтами.</translation>
 <translation id="2482878487686419369">Уведомления</translation>
 <translation id="2485422356828889247">Удалить</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">Сайты могут показывать предложения войти в аккаунт от сервисов идентификации.</translation>
 <translation id="2787357173144933081">Сразу устанавливать курсор в омнибокс</translation>
 <translation id="2790501146643349491">Когда этот параметр включен, недавно закрытые сайты могут завершать отправку и получение данных. Когда параметр отключен, недавно закрытым сайтам запрещено это делать.</translation>
+<translation id="2814830417943086299">Chrome теперь показывает в списке приложений и результатах поиска ваши недавние вкладки. Вы можете в любой момент отключить эту функцию в настройках Chrome.</translation>
 <translation id="2822354292072154809">Сбросить разрешения для сайта <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Запрашивать мобильную версию</translation>
 <translation id="2870560284913253234">Сайт</translation>
@@ -124,7 +127,6 @@
 <translation id="2903493209154104877">Адреса</translation>
 <translation id="2910701580606108292">Запрашивать разрешение на воспроизведение защищенного контента</translation>
 <translation id="2918484639460781603">Перейти к настройкам</translation>
-<translation id="2927133898344569563">Рекомендуемые вкладки можно быстро открывать из списка приложений и со страницы результатов поиска на вашем устройстве. Вы можете в любой момент включить или отключить эту функцию в настройках Chrome.</translation>
 <translation id="2932883381142163287">Сообщить о нарушении</translation>
 <translation id="2939338015096024043">Когда этот параметр включен, сайты могут запрашивать разрешение на отслеживание положения камеры и получение доступа к информации о вашем окружении. Когда параметр отключен, им запрещено отслеживать положение камеры и получать доступ к информации об окружении.</translation>
 <translation id="2968755619301702150">Просмотр сертификатов</translation>
@@ -137,7 +139,7 @@
 <translation id="310979712355504754">Удалить все</translation>
 <translation id="3114012059975132928">Видеопроигрыватель</translation>
 <translation id="3115898365077584848">Показать информацию</translation>
-<translation id="3123473560110926937">Заблокировано на некоторых сайтах</translation>
+<translation id="3123473560110926937">Блокируется на некоторых сайтах</translation>
 <translation id="3143754809889689516">Воспроизвести с начала</translation>
 <translation id="3162899666601560689">Сайты могут использовать файлы cookie для вашего удобства, например, чтобы вам не приходилось вновь входить в аккаунт или повторно добавлять товары в корзину.</translation>
 <translation id="3165022941318558018">Разрешите сайту использовать сторонние файлы cookie.</translation>
@@ -214,7 +216,7 @@
 <translation id="4200726100658658164">Открыть настройки геолокации</translation>
 <translation id="4226663524361240545">Вибрация при получении уведомлений</translation>
 <translation id="4259722352634471385">Навигация заблокирована: <ph name="URL" /></translation>
-<translation id="4278390842282768270">Разрешены</translation>
+<translation id="4278390842282768270">Разрешено</translation>
 <translation id="429312253194641664">На сайте воспроизводятся медиафайлы</translation>
 <translation id="42981349822642051">Развернуть</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Срок действия истекает завтра}one{Срок действия истекает через # день}few{Срок действия истекает через # дня}many{Срок действия истекает через # дней}other{Срок действия истекает через # дня}}</translation>
@@ -314,7 +316,7 @@
 <translation id="5691080386278724773"><ph name="SITE" /> может использовать ваши данные при просмотре сайтов</translation>
 <translation id="5700761515355162635">Сторонние файлы cookie разрешены</translation>
 <translation id="5706552988683188916">Будут удалены файлы cookie и другие данные сайта <ph name="WEBSITE" />.</translation>
-<translation id="5723967018671998714">Сторонние файлы cookie заблокированы в режиме инкогнито</translation>
+<translation id="5723967018671998714">Сторонние файлы cookie блокируются в режиме инкогнито</translation>
 <translation id="5740126560802162366">Сайты могут сохранять данные на вашем устройстве</translation>
 <translation id="5750869797196646528">Отслеживание рук</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" />: заблокировано</translation>
@@ -336,7 +338,6 @@
 <translation id="5968921426641056619">Введите веб-адрес</translation>
 <translation id="5975083100439434680">Уменьшить</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
-<translation id="6015145568571136419">Рекомендуемые вкладки теперь можно быстро открывать из списка приложений и со страницы результатов поиска на вашем устройстве. Вы можете в любой момент отключить эту функцию в настройках Chrome.</translation>
 <translation id="6015775454662021376">Управляйте доступом сайта к данным на устройстве.</translation>
 <translation id="6040143037577758943">Закрыть</translation>
 <translation id="6042308850641462728">Ещё</translation>
@@ -399,7 +400,7 @@
 <translation id="6818926723028410516">Выберите объекты</translation>
 <translation id="6838525730752203626">Используйте Chrome по умолчанию</translation>
 <translation id="6840760312327750441">Чтобы сгруппировать вкладки: нажмите и удерживайте одну вкладку, затем перетащите ее на другую.</translation>
-<translation id="6851981911629679515">Включить дополнительную защиту движка JavaScript и WebAssembly в Chrome</translation>
+<translation id="6851981911629679515">Включить дополнительную защиту системы обработки JavaScript и WebAssembly в Chrome</translation>
 <translation id="6864395892908308021">Это устройство не поддерживает NFC.</translation>
 <translation id="6870169401250095575">Скрыть карточку "Проверка безопасности"</translation>
 <translation id="6900883974539674431">Группы вкладок автоматически сохраняются и обновляются на всех ваших устройствах.</translation>
@@ -559,9 +560,10 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Предоставьте приложению "<ph name="APP_NAME" />" разрешения в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Текущий масштаб: <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="9156722768168878035">Разрешите Chrome показывать в списке приложений и результатах поиска ваши недавние вкладки. Вы сможете в любой момент отключить эту функцию в настройках Chrome.</translation>
 <translation id="9162462602695099906">Опасная страница</translation>
 <translation id="947156494302904893">Сайты, которые вы посещаете, могут получать данные о том, что вы реальный человек</translation>
 <translation id="959682366969460160">Организация работы</translation>
-<translation id="967624055006145463">Объем памяти</translation>
+<translation id="967624055006145463">Сохраненные данные</translation>
 <translation id="969975166333045662">Вы можете запретить сайту использовать оптимизатор V8.</translation>
 </translationbundle>

@@ -45,6 +45,16 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "graph/mock_frame_node_observer.cc",
+    "graph/mock_frame_node_observer.h",
+    "graph/mock_page_node_observer.cc",
+    "graph/mock_page_node_observer.h",
+    "graph/mock_process_node_observer.cc",
+    "graph/mock_process_node_observer.h",
+    "graph/mock_system_node_observer.cc",
+    "graph/mock_system_node_observer.h",
+    "graph/mock_worker_node_observer.cc",
+    "graph/mock_worker_node_observer.h",
     "graph_test_harness.cc",
     "graph_test_harness.h",
     "mock_graphs.cc",

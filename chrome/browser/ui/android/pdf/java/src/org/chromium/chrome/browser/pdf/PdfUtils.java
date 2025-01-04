@@ -364,6 +364,11 @@ public class PdfUtils {
                 "Android.Pdf.FindInPageCounts", findInPageCounts, /* max= */ 9);
     }
 
+    static void recordIsWorkProfile(boolean isWorkProfile) {
+        RecordHistogram.recordBooleanHistogram(
+                "Android.Pdf.AssistContent.IsWorkProfile", isWorkProfile);
+    }
+
     static void recordHasFilepathWithoutFragmentOnDestroy(boolean hasFilepath) {
         RecordHistogram.recordBooleanHistogram(
                 "Android.Pdf.HasFilepathWithoutFragmentOnDestroy", hasFilepath);

@@ -8,11 +8,10 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
-
 #include <linux/input.h>
 #include <wayland-server.h>
 
+#include <array>
 #include <memory>
 #include <string>
 #include <vector>
@@ -41,6 +40,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device_manager.h"
+#include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_offer.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
@@ -899,9 +899,12 @@ TEST_P(WaylandDataDragControllerTest, DragToNonToplevelWindows) {
 
   // Post test tasks, for each non-toplevel window type, to be performed
   // asynchronously once the dnd-related protocol objects are ready.
-  constexpr PlatformWindowType kNonToplevelWindowTypes[]{
-      PlatformWindowType::kPopup, PlatformWindowType::kMenu,
-      PlatformWindowType::kTooltip, PlatformWindowType::kBubble};
+  constexpr auto kNonToplevelWindowTypes = std::to_array<PlatformWindowType>({
+      PlatformWindowType::kPopup,
+      PlatformWindowType::kMenu,
+      PlatformWindowType::kTooltip,
+      PlatformWindowType::kBubble,
+  });
   for (auto window_type : kNonToplevelWindowTypes) {
     // Given there is no guarantee how tasks are scheduled are executed, the end
     // of the test must only be scheduled once all the test cases run.

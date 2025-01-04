@@ -68,9 +68,6 @@ class ArcPaiStarter : public ArcAppListPrefs::Observer {
   const raw_ptr<Profile> profile_;
   const raw_ptr<PrefService> pref_service_;
   std::vector<base::OnceClosure> onstart_callbacks_;
-  // Set to true in case external component (Assistant) wants to lock PAI for
-  // awhile.
-  bool locked_ = false;
   // Set to true once PAI request was successfully processed.
   bool started_ = false;
   // Indicates that PAI request is pending.

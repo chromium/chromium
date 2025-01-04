@@ -6,6 +6,8 @@ package org.chromium.mojo.bindings;
 
 import android.annotation.SuppressLint;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.mojo.system.Core;
 import org.chromium.mojo.system.MessagePipeHandle;
 import org.chromium.mojo.system.Watcher;
@@ -15,6 +17,7 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 
 /** Implementation of {@link Router}. */
+@NullMarked
 @SuppressLint("UseSparseArrays") // https://crbug.com/600699
 public class RouterImpl implements Router {
 
@@ -83,7 +86,7 @@ public class RouterImpl implements Router {
      * The {@link MessageReceiverWithResponder} that will consume the messages received from the
      * pipe.
      */
-    private MessageReceiverWithResponder mIncomingMessageReceiver;
+    private @Nullable MessageReceiverWithResponder mIncomingMessageReceiver;
 
     /** The next id to use for a request id which needs a response. It is auto-incremented. */
     private long mNextRequestId = 1;
@@ -96,7 +99,7 @@ public class RouterImpl implements Router {
      * this Router is bound. This may be {@code Null} if the MessagePipeHandle passed
      * in to the constructor is not valid.
      */
-    private final Executor mExecutor;
+    private final @Nullable Executor mExecutor;
 
     /**
      * Constructor that will use the default {@link Watcher}.
@@ -104,7 +107,7 @@ public class RouterImpl implements Router {
      * @param messagePipeHandle The {@link MessagePipeHandle} to route message for.
      */
     public RouterImpl(MessagePipeHandle messagePipeHandle) {
-        this(messagePipeHandle, BindingsHelper.getWatcherForHandle(messagePipeHandle));
+        this(messagePipeHandle, BindingsHelper.getWatcherForHandleNonNull(messagePipeHandle));
     }
 
     /**

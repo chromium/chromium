@@ -5,8 +5,8 @@
 #include "chrome/browser/sync/test/integration/contact_info_helper.h"
 
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace contact_info_helper {

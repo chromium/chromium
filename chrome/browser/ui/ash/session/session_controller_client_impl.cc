@@ -81,8 +81,9 @@ SessionControllerClientImpl* g_session_controller_client_instance = nullptr;
 uint32_t GetSessionId(const User& user) {
   const AccountId& account_id = user.GetAccountId();
   for (auto& session : SessionManager::Get()->sessions()) {
-    if (session.user_account_id == account_id)
+    if (session.user_account_id == account_id) {
       return session.id;
+    }
   }
 
   return 0u;
@@ -124,15 +125,17 @@ std::unique_ptr<ash::UserSession> UserToUserSession(const User& user) {
 }
 
 void DoSwitchUser(const AccountId& account_id, bool switch_user) {
-  if (switch_user)
+  if (switch_user) {
     UserManager::Get()->SwitchActiveUser(account_id);
+  }
 }
 
 // Callback for the dialog that warns the user about multi-profile, which has
 // a "never show again" checkbox.
 void OnAcceptMultiprofilesIntroDialog(bool accept, bool never_show_again) {
-  if (!accept)
+  if (!accept) {
     return;
+  }
 
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   prefs->SetBoolean(user_manager::prefs::kMultiProfileNeverShowIntro,
@@ -268,8 +271,9 @@ void SessionControllerClientImpl::CycleActiveUser(
 }
 
 void SessionControllerClientImpl::ShowMultiProfileLogin() {
-  if (!IsMultiProfileAvailable())
+  if (!IsMultiProfileAvailable()) {
     return;
+  }
 
   // Only regular non-supervised users could add other users to current session.
   if (UserManager::Get()->GetActiveUser()->GetType() !=
@@ -293,8 +297,9 @@ void SessionControllerClientImpl::ShowMultiProfileLogin() {
         !multi_user_util::GetProfileFromAccountId(user->GetAccountId())
              ->GetPrefs()
              ->GetBoolean(user_manager::prefs::kMultiProfileNeverShowIntro);
-    if (!show_intro)
+    if (!show_intro) {
       break;
+    }
   }
   if (show_intro) {
     session_controller_->ShowMultiprofilesIntroDialog(
@@ -322,8 +327,9 @@ PrefService* SessionControllerClientImpl::GetUserPrefService(
     const AccountId& account_id) {
   Profile* const user_profile =
       multi_user_util::GetProfileFromAccountId(account_id);
-  if (!user_profile)
+  if (!user_profile) {
     return nullptr;
+  }
 
   return user_profile->GetPrefs();
 }
@@ -360,8 +366,9 @@ std::optional<int> SessionControllerClientImpl::GetExistingUsersCount() const {
 
 // static
 bool SessionControllerClientImpl::IsMultiProfileAvailable() {
-  if (!profiles::IsMultipleProfilesEnabled() || !UserManager::IsInitialized())
+  if (!profiles::IsMultipleProfilesEnabled() || !UserManager::IsInitialized()) {
     return false;
+  }
   if (ash::SessionTerminationManager::Get() &&
       ash::SessionTerminationManager::Get()->IsLockedToSingleUser()) {
     return false;
@@ -381,8 +388,10 @@ void SessionControllerClientImpl::ActiveUserChanged(User* active_user) {
   // order if user session ends up to be pending (due to user profile loading).
   // TODO(crbug.com/40489520): Get rid of this after refactoring.
   SendUserSession(*active_user);
-  if (pending_users_.find(active_user->GetAccountId()) != pending_users_.end())
+  if (pending_users_.find(active_user->GetAccountId()) !=
+      pending_users_.end()) {
     return;
+  }
 
   SendUserSessionOrder();
 }
@@ -399,8 +408,9 @@ void SessionControllerClientImpl::LocalStateChanged(
 
 void SessionControllerClientImpl::OnUserImageChanged(const User& user) {
   // Only sends user session for signed-in user.
-  if (GetSessionId(user) != 0)
+  if (GetSessionId(user) != 0) {
     SendUserSession(user);
+  }
 }
 
 void SessionControllerClientImpl::OnUserNotAllowed(
@@ -436,8 +446,9 @@ bool SessionControllerClientImpl::ShouldLockScreenAutomatically() {
 // static
 ash::AddUserSessionPolicy
 SessionControllerClientImpl::GetAddUserSessionPolicy() {
-  if (ash::SessionTerminationManager::Get()->IsLockedToSingleUser())
+  if (ash::SessionTerminationManager::Get()->IsLockedToSingleUser()) {
     return ash::AddUserSessionPolicy::ERROR_LOCKED_TO_SINGLE_USER;
+  }
 
   UserManager* const user_manager = UserManager::Get();
   if (user_manager->GetUsersAllowedForMultiUserSignIn().empty()) {
@@ -459,8 +470,9 @@ SessionControllerClientImpl::GetAddUserSessionPolicy() {
 
 // static
 void SessionControllerClientImpl::DoLockScreen() {
-  if (!CanLockScreen())
+  if (!CanLockScreen()) {
     return;
+  }
 
   VLOG(1) << "b/228873153 : Requesting screen lock from "
              "SessionControllerClientImpl";
@@ -471,8 +483,9 @@ void SessionControllerClientImpl::DoLockScreen() {
 void SessionControllerClientImpl::DoSwitchActiveUser(
     const AccountId& account_id) {
   // Disallow switching to an already active user since that might crash.
-  if (account_id == UserManager::Get()->GetActiveUser()->GetAccountId())
+  if (account_id == UserManager::Get()->GetActiveUser()->GetAccountId()) {
     return;
+  }
 
   // |client| may be null in tests.
   SessionControllerClientImpl* client = SessionControllerClientImpl::Get();
@@ -489,8 +502,9 @@ void SessionControllerClientImpl::DoSwitchActiveUser(
 void SessionControllerClientImpl::DoCycleActiveUser(
     ash::CycleUserDirection direction) {
   const UserList& logged_in_users = UserManager::Get()->GetLoggedInUsers();
-  if (logged_in_users.size() <= 1)
+  if (logged_in_users.size() <= 1) {
     return;
+  }
 
   AccountId account_id = UserManager::Get()->GetActiveUser()->GetAccountId();
 
@@ -499,19 +513,22 @@ void SessionControllerClientImpl::DoCycleActiveUser(
       base::ranges::find(logged_in_users, account_id, &User::GetAccountId);
 
   // Active user not found.
-  if (it == logged_in_users.end())
+  if (it == logged_in_users.end()) {
     return;
+  }
 
   // Get the user's email to select, wrapping to the start/end of the list if
   // necessary.
   if (direction == ash::CycleUserDirection::NEXT) {
-    if (++it == logged_in_users.end())
+    if (++it == logged_in_users.end()) {
       account_id = (*logged_in_users.begin())->GetAccountId();
-    else
+    } else {
       account_id = (*it)->GetAccountId();
+    }
   } else if (direction == ash::CycleUserDirection::PREVIOUS) {
-    if (it == logged_in_users.begin())
+    if (it == logged_in_users.begin()) {
       it = logged_in_users.end();
+    }
     account_id = (*(--it))->GetAccountId();
   } else {
     NOTREACHED() << "Invalid direction=" << static_cast<int>(direction);
@@ -546,8 +563,9 @@ void SessionControllerClientImpl::OnCustodianInfoChanged() {
   DCHECK(supervised_user_profile_);
   User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(supervised_user_profile_);
-  if (user)
+  if (user) {
     SendUserSession(*user);
+  }
 }
 
 void SessionControllerClientImpl::OnAppTerminating() {
@@ -599,8 +617,9 @@ void SessionControllerClientImpl::SendSessionInfoIfChanged() {
   info->add_user_session_policy = GetAddUserSessionPolicy();
   info->state = session_manager->session_state();
 
-  if (last_sent_session_info_ && *info == *last_sent_session_info_)
+  if (last_sent_session_info_ && *info == *last_sent_session_info_) {
     return;
+  }
 
   last_sent_session_info_ = std::move(info);
   session_controller_->SetSessionInfo(*last_sent_session_info_);
@@ -619,16 +638,18 @@ void SessionControllerClientImpl::SendUserSession(const User& user) {
   }
 
   auto user_session = UserToUserSession(user);
-  if (last_sent_user_session_ && *user_session == *last_sent_user_session_)
+  if (last_sent_user_session_ && *user_session == *last_sent_user_session_) {
     return;
+  }
 
   last_sent_user_session_ = std::move(user_session);
   session_controller_->UpdateUserSession(*last_sent_user_session_);
 
   if (!pending_users_.empty()) {
     pending_users_.erase(user.GetAccountId());
-    if (pending_users_.empty())
+    if (pending_users_.empty()) {
       SendUserSessionOrder();
+    }
   }
 }
 
@@ -652,7 +673,7 @@ void SessionControllerClientImpl::SendSessionLengthLimit() {
   if (local_state->HasPrefPath(prefs::kSessionLengthLimit)) {
     session_length_limit = base::Milliseconds(
         std::clamp(local_state->GetInteger(prefs::kSessionLengthLimit),
-                    kSessionLengthLimitMinMs, kSessionLengthLimitMaxMs));
+                   kSessionLengthLimitMinMs, kSessionLengthLimitMaxMs));
   }
   base::Time session_start_time;
   if (local_state->HasPrefPath(prefs::kSessionStartTime)) {
@@ -664,8 +685,9 @@ void SessionControllerClientImpl::SendSessionLengthLimit() {
       ash::DeviceSettingsService::Get()->device_off_hours_controller();
   base::Time off_hours_session_end_time;
   // Use "OffHours" end time only if the session will be actually terminated.
-  if (off_hours_controller->IsCurrentSessionAllowedOnlyForOffHours())
+  if (off_hours_controller->IsCurrentSessionAllowedOnlyForOffHours()) {
     off_hours_session_end_time = off_hours_controller->GetOffHoursEndTime();
+  }
 
   // If |session_length_limit| is zero or |session_start_time| is null then
   // "SessionLengthLimit" policy is unset.
@@ -692,11 +714,4 @@ void SessionControllerClientImpl::SendSessionLengthLimit() {
       off_hours_session_end_time - off_hours_session_start_time;
   session_controller_->SetSessionLengthLimit(off_hours_session_length_limit,
                                              off_hours_session_start_time);
-}
-
-void SessionControllerClientImpl::OnStateChanged() {
-  // Lacros is mutually exclusive with multi sign-in. If Lacros was running
-  // (or launching/terminating) and now is not (or vice-versa), we want to
-  // propagate this change to make multi sign-in unavailable or available.
-  SendSessionInfoIfChanged();
 }

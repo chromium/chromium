@@ -399,6 +399,14 @@ bool FakeSystemIdentityManager::IsMDMError(id<SystemIdentity> identity,
   return false;
 }
 
+void FakeSystemIdentityManager::FetchTokenAuthURL(
+    id<SystemIdentity> identity,
+    NSURL* target_url,
+    AuthenticatedURLCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::move(callback).Run(/*url=*/target_url, /*error=*/nil);
+}
+
 base::WeakPtr<FakeSystemIdentityManager>
 FakeSystemIdentityManager::GetWeakPtr() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -16,6 +16,7 @@
 class ChromePageInfoUiDelegate;
 class PageSwitcherView;
 class PageInfoViewFactory;
+class PageInfoMerchantTrustCoordinator;
 
 // The views implementation of the page info UI.
 class PageInfoBubbleView : public PageInfoBubbleViewBase,
@@ -85,6 +86,8 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
   std::unique_ptr<PageInfoViewFactory> view_factory_;
 
   std::unique_ptr<PageInfoHistoryController> history_controller_;
+
+  std::unique_ptr<PageInfoMerchantTrustCoordinator> merchant_trust_coordinator_;
 
   raw_ptr<PageSwitcherView> page_container_ = nullptr;
 

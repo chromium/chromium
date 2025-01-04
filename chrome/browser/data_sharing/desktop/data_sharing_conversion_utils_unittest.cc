@@ -18,7 +18,8 @@ TEST_F(DataSharingConversionUtilsTest, ConvertGroup) {
   auto member = data_sharing::mojom::GroupMember::New();
   member->gaia_id = "456";
   member->role = data_sharing::mojom::MemberRole::kMember;
-  member->display_name = "member";
+  member->display_name = "member display";
+  member->given_name = "member given";
   member->email = "test@gmail.com";
   member->avatar_url = GURL("example.com");
   group->members.push_back(std::move(member));
@@ -33,6 +34,7 @@ TEST_F(DataSharingConversionUtilsTest, ConvertGroup) {
   ASSERT_EQ(group->members[0]->gaia_id, result.members(0).gaia_id());
   ASSERT_EQ(data_sharing_pb::MEMBER_ROLE_MEMBER, result.members(0).role());
   ASSERT_EQ(group->members[0]->display_name, result.members(0).display_name());
+  ASSERT_EQ(group->members[0]->given_name, result.members(0).given_name());
   ASSERT_EQ(group->members[0]->email, result.members(0).email());
   ASSERT_EQ(group->members[0]->avatar_url, result.members(0).avatar_url());
 }

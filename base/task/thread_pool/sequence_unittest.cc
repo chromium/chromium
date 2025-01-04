@@ -218,9 +218,8 @@ TEST(ThreadPoolSequenceTest, DidProcessTaskWithoutWillRunTask) {
 
   auto registered_task_source =
       RegisteredTaskSource::CreateForTesting(sequence);
-  EXPECT_DCHECK_DEATH({
-    registered_task_source.DidProcessTask(&sequence_transaction);
-  });
+  EXPECT_DCHECK_DEATH(
+      { registered_task_source.DidProcessTask(&sequence_transaction); });
 }
 
 // Verify that a DCHECK fires if TakeTask() is called on a sequence whose front

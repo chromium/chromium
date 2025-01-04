@@ -28,14 +28,16 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "client_behavior_constants.h"
-#include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
@@ -46,10 +48,8 @@
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/strike_databases/strike_database.h"
-#include "components/autofill/core/browser/validation.h"
+#include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -425,7 +425,7 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
       base::BindOnce(&CreditCardSaveManager::OnDidGetUploadDetails,
                      weak_ptr_factory_.GetWeakPtr(), ukm_source_id),
       payments::kUploadPaymentMethodBillableServiceNumber,
-      payments::GetBillingCustomerId(&payments_data_manager()),
+      payments::GetBillingCustomerId(payments_data_manager()),
       payments::UploadCardSource::UPSTREAM_CHECKOUT_FLOW);
 }
 
@@ -461,7 +461,7 @@ bool CreditCardSaveManager::IsCreditCardUploadEnabled() {
       client_->GetSyncService(), *client_->GetPrefs(),
       payments_data_manager().GetCountryCodeForExperimentGroup(),
       payments_data_manager().GetPaymentsSigninStateForMetrics(),
-      client_->GetLogManager());
+      client_->GetCurrentLogManager());
 }
 
 void CreditCardSaveManager::OnDidUploadCard(
@@ -766,13 +766,14 @@ void CreditCardSaveManager::OfferCardUploadSave(ukm::SourceId ukm_source_id) {
     if (observer_for_testing_) {
       observer_for_testing_->OnOfferUploadSave();
     }
-    auto server_cards = payments_data_manager().GetServerCreditCards();
+    std::vector<const CreditCard*> server_cards =
+        payments_data_manager().GetServerCreditCards();
     // At this point of the flow, we know there are no masked server cards with
     // the same last four digits and expiration date as the card we are
     // attempting to save, since if there were any we would have matched it and
     // not be saving this card.
     bool found_server_card_with_same_last_four_but_different_expiration =
-        std::ranges::any_of(server_cards, [&](const auto* server_card) {
+        std::ranges::any_of(server_cards, [&](const CreditCard* server_card) {
           return server_card->HasSameNumberAs(upload_request_.card) &&
                  !server_card->HasSameExpirationDateAs(upload_request_.card);
         });
@@ -1060,7 +1061,7 @@ int CreditCardSaveManager::GetDetectedValues() const {
   // Payments account. Include a bit for existence of this account (NOT the id
   // itself), as it will help determine if a new Payments customer might need to
   // be created when save is accepted.
-  if (payments::GetBillingCustomerId(&payments_data_manager()) != 0) {
+  if (payments::HasGooglePaymentsAccount(payments_data_manager())) {
     detected_values |= DetectedValue::HAS_GOOGLE_PAYMENTS_ACCOUNT;
   }
 
@@ -1295,7 +1296,7 @@ void CreditCardSaveManager::SendUploadCardRequest() {
   }
   upload_request_.app_locale = client_->GetAppLocale();
   upload_request_.billing_customer_number =
-      payments::GetBillingCustomerId(&payments_data_manager());
+      payments::GetBillingCustomerId(payments_data_manager());
 
   AutofillMetrics::LogUploadAcceptedCardOriginMetric(
       uploading_local_card_
@@ -1351,7 +1352,7 @@ void CreditCardSaveManager::LogCardUploadDecisions(
 
 void CreditCardSaveManager::LogCardUploadDecisionsToAutofillInternals(
     int upload_decision_metrics) {
-  LogManager* log_manager = client_->GetLogManager();
+  LogManager* log_manager = client_->GetCurrentLogManager();
 
   auto final_decision =
       (upload_decision_metrics_ & autofill_metrics::UPLOAD_OFFERED)

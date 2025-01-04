@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Отключить тёмную тему</translation>
 <translation id="1807246157184219062">Светлая</translation>
 <translation id="1808803439260407870">Классическое искусство</translation>
+<translation id="181434555916624618">Результаты с изображением людей пока недоступны. Попробуйте ввести другой запрос.</translation>
 <translation id="1815850098929213707">Выбрана клавиша "<ph name="KEYS" />". Чтобы настроить управление, нажмите кнопку.</translation>
 <translation id="1823120442877418684">Объекты</translation>
 <translation id="1827738518074806965">Галерея</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">Правый наушник заряжен на <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">настройки</translation>
 <translation id="3347558044552027859">модерн</translation>
+<translation id="3353477144743332882">Скачать модель для создания кратких пересказов и названий</translation>
 <translation id="3359218928534347896">включить или отключить звук микрофона</translation>
 <translation id="3360306038446926262">Окна</translation>
 <translation id="3361618936611118375">суши</translation>
@@ -689,6 +691,7 @@
 <translation id="4354430579665871434">клавиша</translation>
 <translation id="4356100841225547054">Отключить звук</translation>
 <translation id="4361257691546579041">Точка доступа используется по умолчанию.</translation>
+<translation id="4368101969572512692">Предложить другие подсказки</translation>
 <translation id="437294888293595148">Сбросить все сочетания клавиш</translation>
 <translation id="437477383107495720">кролики</translation>
 <translation id="4376423484621194274">Администратор запретил закрывать приложение "<ph name="APP_NAME" />".</translation>
@@ -768,6 +771,7 @@
 <translation id="4731797938093519117">Родительский доступ</translation>
 <translation id="473775607612524610">Обновить</translation>
 <translation id="4744944742468440486">Информация на основе выделенного текста</translation>
+<translation id="4750394297954878236">Предложения</translation>
 <translation id="4771607256327216405">клавиатура сделать ярче</translation>
 <translation id="4771923071974529837">завтра</translation>
 <translation id="4773299976671772492">Остановлено</translation>
@@ -853,6 +857,7 @@
 <translation id="5121677070210013200">Не удалось скачать модель расшифровки. Повторите попытку или перезагрузите Chromebook.</translation>
 <translation id="5130848777448318809">пони</translation>
 <translation id="5137451382116112100">Полноэкранный режим</translation>
+<translation id="5139813694804168398">не беспокоить</translation>
 <translation id="5140788690559353412">Если вы больше не сможете пользоваться учебным аккаунтом, то также потеряете доступ к данным в нем, включая письма из Gmail, а также документы, презентации и другие файлы на Google Диске.</translation>
 <translation id="5142961317498132443">Аутентификация</translation>
 <translation id="5144311987923128508">Кнопка "Подтвердить" стала недоступной</translation>
@@ -897,6 +902,7 @@
 <translation id="5302048478445481009">Язык</translation>
 <translation id="5303837385540978511">Эксклюзивные обои для <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="530883153651464140">Обновите устройство (<ph name="DEVICE_NAME" />) до версии <ph name="VERSION" /></translation>
 <translation id="5315873049536339193">Идентификационные данные</translation>
 <translation id="5317780077021120954">Сохранить</translation>
 <translation id="5318310531701770497">Невозможно создать названия. Расшифровка слишком короткая.</translation>
@@ -973,7 +979,6 @@
 <translation id="5703716265115423771">уменьшить громкость</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> из <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Кнопка, позволяющая изменить сочетание клавиш для действия "<ph name="SHORTCUT_DESCRIPTION" />".</translation>
-<translation id="5733298426544876109">Обновить программное обеспечение устройства "<ph name="DEVICE_NAME" />"</translation>
 <translation id="5736820754189340309">Счетчик расхода трафика сброшен</translation>
 <translation id="574392208103952083">Средний</translation>
 <translation id="5744175046705638478">Перевести "<ph name="QUERY" />"</translation>
@@ -998,6 +1003,7 @@
 <translation id="5859969039821714932">Недопустимое сочетание клавиш. Выберите новое, в котором нет клавиши <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">ВЫКЛ</translation>
 <translation id="5860491529813859533">Включить</translation>
+<translation id="5875913454160982848">Скачать модель расшифровки</translation>
 <translation id="5876385649737594562">Включите, чтобы изменить настройки</translation>
 <translation id="5877503382465267833">Приостановить воспроизведение записи "<ph name="RECORDING_NAME" />"</translation>
 <translation id="588258955323874662">Полноэкранный режим</translation>
@@ -1037,7 +1043,6 @@
 <translation id="6040143037577758943">Закрыть</translation>
 <translation id="6040852767465482106">Анонимная идентификация</translation>
 <translation id="604124094241169006">Автоматически</translation>
-<translation id="6042308850641462728">Ещё</translation>
 <translation id="6048107060512778456">Сбой: застряла бумага</translation>
 <translation id="6050189528197190982">Оттенки серого</translation>
 <translation id="6054711098834486579">экспрессионизм</translation>
@@ -1067,7 +1072,7 @@
 <translation id="6137767437444130246">Сертификат пользователя</translation>
 <translation id="6146993107019042706">Чтобы завершить процедуру, введите новый пароль.</translation>
 <translation id="6147514244879357420">PNG</translation>
-<translation id="6149015141270619212">Не удается подключиться к Интернету</translation>
+<translation id="6149015141270619212">Не удается подключиться к интернету</translation>
 <translation id="6156030503438652198">темно-бордовых и розовых</translation>
 <translation id="6165508094623778733">Подробнее</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1293,6 +1298,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Сервер доменных имен}one{Серверы доменных имен}few{Серверы доменных имен}many{Серверы доменных имен}other{Серверы доменных имен}}</translation>
 <translation id="7135814714616751706">Быстрые клавиши для поиска</translation>
 <translation id="7138614237884624401">Упрощенный текст</translation>
+<translation id="7138668887584231801">Для краткого пересказа выбрано недостаточно слов</translation>
 <translation id="7141470099673912333">Перенос контента</translation>
 <translation id="7143207342074048698">Подключение</translation>
 <translation id="7144878232160441200">Повторить</translation>
@@ -1588,6 +1594,7 @@
 <translation id="8503836310948963452">Осталось несколько минут…</translation>
 <translation id="8505011850330200833">Чтобы обрабатывать расшифровки и создавать краткие пересказы, модели Gemini требуется 2 ГБ в хранилище.</translation>
 <translation id="8508640263392900755">Сведения о точке доступа</translation>
+<translation id="8509574872955173831">Подробнее о кратком пересказе и создании названий</translation>
 <translation id="8522687886059337719">Вам доступны новые <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />обои<ph name="END_LINK_WALLPAPER_SUBPAGE" /> и <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />заставка<ph name="END_LINK_SCREENSAVER_SUBPAGE" />.</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">чайная</translation>
@@ -1724,7 +1731,6 @@
 <translation id="9133772297793293778">Нажмите модификаторы 1–4 и одну любую клавишу на клавиатуре. Чтобы выйти из режима редактирования, нажмите Alt + Esc.</translation>
 <translation id="9137526406337347448">Сервисы Google</translation>
 <translation id="9138630967333032450">Левая клавиша Shift</translation>
-<translation id="9147928237330776930">Для краткого пересказа выбрано слишком мало слов</translation>
 <translation id="9149391708638971077">Запустить проверку памяти</translation>
 <translation id="9159524746324788320">гамбургеры</translation>
 <translation id="9161276708550942948">пробел</translation>

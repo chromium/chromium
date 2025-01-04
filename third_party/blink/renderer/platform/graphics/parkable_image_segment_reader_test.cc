@@ -41,7 +41,9 @@ TEST_F(ParkableImageSegmentReaderTest, NonEmpty) {
   auto pi = ParkableImage::Create();
   ASSERT_EQ(pi->size(), 0u);  // ParkableImage is empty when created.
 
-  pi->Append(WTF::SharedBuffer::Create(g_abc, sizeof(g_abc)).get(), 0);
+  pi->Append(
+      WTF::SharedBuffer::Create(base::span_with_nul_from_cstring(g_abc)).get(),
+      0);
   ASSERT_EQ(pi->size(),
             sizeof(g_abc));  // ParkableImage is larger after Append.
 
@@ -58,7 +60,11 @@ TEST_F(ParkableImageSegmentReaderTest, Append) {
   ASSERT_EQ(pi->size(), 0u);  // ParkableImage is empty when created.
 
   const size_t shared_buffer_size = sizeof(g_123) / 2;
-  pi->Append(WTF::SharedBuffer::Create(g_123, shared_buffer_size).get(), 0);
+  pi->Append(
+      WTF::SharedBuffer::Create(
+          base::span_with_nul_from_cstring(g_123).first(shared_buffer_size))
+          .get(),
+      0);
   ASSERT_EQ(pi->size(),
             shared_buffer_size);  // ParkableImage is larger after Append.
 
@@ -66,7 +72,9 @@ TEST_F(ParkableImageSegmentReaderTest, Append) {
   // ParkableImageSegmentReader is same size as ParkableImage when created.
   EXPECT_EQ(segment_reader->size(), shared_buffer_size);
 
-  pi->Append(WTF::SharedBuffer::Create(g_123, sizeof(g_123)).get(), pi->size());
+  pi->Append(
+      WTF::SharedBuffer::Create(base::span_with_nul_from_cstring(g_123)).get(),
+      pi->size());
   ASSERT_EQ(pi->size(),
             sizeof(g_123));  // ParkableImage is larger after Append.
 
@@ -82,8 +90,8 @@ TEST_F(ParkableImageSegmentReaderTest, GetSomeData) {
   auto shared_buffer = SharedBuffer::Create();
   auto parkable_image = ParkableImage::Create(kDataSize);
   for (size_t pos = 0; pos < kDataSize; pos += 4096) {
-    shared_buffer->Append(data + pos,
-                          std::min(static_cast<size_t>(4096), kDataSize - pos));
+    shared_buffer->Append(base::span(data).subspan(
+        pos, std::min(static_cast<size_t>(4096), kDataSize - pos)));
     parkable_image->Append(shared_buffer.get(), parkable_image->size());
   }
 
@@ -113,8 +121,8 @@ TEST_F(ParkableImageSegmentReaderTest, GetAsSkData) {
   auto shared_buffer = SharedBuffer::Create();
   auto parkable_image = ParkableImage::Create(kDataSize);
   for (size_t pos = 0; pos < kDataSize; pos += 4096) {
-    shared_buffer->Append(data + pos,
-                          std::min(static_cast<size_t>(4096), kDataSize - pos));
+    shared_buffer->Append(base::span(data).subspan(
+        pos, std::min(static_cast<size_t>(4096), kDataSize - pos)));
     parkable_image->Append(shared_buffer.get(), parkable_image->size());
   }
 
@@ -144,7 +152,7 @@ TEST_F(ParkableImageSegmentReaderTest, GetAsSkDataLongLived) {
 
   auto shared_buffer = SharedBuffer::Create();
   auto parkable_image = ParkableImage::Create(kDataSize);
-  shared_buffer->Append(data, kDataSize);
+  shared_buffer->Append(base::span(data));
   parkable_image->Append(shared_buffer.get(), parkable_image->size());
 
   auto segment_reader = parkable_image->CreateSegmentReader();

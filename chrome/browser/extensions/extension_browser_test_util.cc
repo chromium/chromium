@@ -172,37 +172,45 @@ bool ModifyExtensionForServiceWorker(const base::FilePath& extension_root,
     return false;
   }
 
-  // Generate combined script as Service Worker script using importScripts().
-  static constexpr const char kGeneratedSWFileName[] =
-      "generated_service_worker__.js";
+  std::string service_worker_script;
 
-  std::vector<std::string> script_filenames;
-  for (const base::Value& script : *background_scripts_list) {
-    script_filenames.push_back(base::StrCat({"'", script.GetString(), "'"}));
-  }
+  // If there's just one script, use it directly in the "service_worker" key.
+  if (background_scripts_list->size() == 1) {
+    service_worker_script = (*background_scripts_list)[0].GetString();
+  } else {
+    // Otherwise, generate a script that uses importScripts() to import
+    // all of the scripts.
+    service_worker_script = "generated_service_worker__.js";
+    std::vector<std::string> script_filenames;
+    for (const base::Value& script : *background_scripts_list) {
+      script_filenames.push_back(base::StrCat({"'", script.GetString(), "'"}));
+    }
 
-  base::FilePath combined_script_filepath =
-      extension_root.AppendASCII(kGeneratedSWFileName);
-  // Collision with generated script filename.
-  if (base::PathExists(combined_script_filepath)) {
-    ADD_FAILURE() << combined_script_filepath.value()
-                  << " already exists, make sure " << extension_root.value()
-                  << " does not contained file named " << kGeneratedSWFileName;
-    return false;
-  }
-  std::string generated_sw_script_content = base::StringPrintf(
-      "importScripts(%s);", base::JoinString(script_filenames, ",").c_str());
-  if (!base::WriteFile(combined_script_filepath, generated_sw_script_content)) {
-    ADD_FAILURE() << "Could not write combined Service Worker script to: "
-                  << combined_script_filepath.value();
-    return false;
+    base::FilePath combined_script_filepath =
+        extension_root.AppendASCII(service_worker_script);
+    // Collision with generated script filename.
+    if (base::PathExists(combined_script_filepath)) {
+      ADD_FAILURE() << combined_script_filepath.value()
+                    << " already exists, make sure " << extension_root.value()
+                    << " does not contained file named "
+                    << service_worker_script;
+      return false;
+    }
+    std::string generated_sw_script_content = base::StringPrintf(
+        "importScripts(%s);", base::JoinString(script_filenames, ",").c_str());
+    if (!base::WriteFile(combined_script_filepath,
+                         generated_sw_script_content)) {
+      ADD_FAILURE() << "Could not write combined Service Worker script to: "
+                    << combined_script_filepath.value();
+      return false;
+    }
   }
 
   // Remove the existing background specification and replace it with a service
   // worker.
   background_dict->Remove("persistent");
   background_dict->Remove("scripts");
-  background_dict->Set("service_worker", kGeneratedSWFileName);
+  background_dict->Set("service_worker", std::move(service_worker_script));
 
   return true;
 }

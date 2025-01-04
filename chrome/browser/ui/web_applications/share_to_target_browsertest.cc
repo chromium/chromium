@@ -83,16 +83,18 @@ class ShareToTargetBrowserTest : public WebAppBrowserTestBase {
  private:
   // WebAppBrowserTestBase:
   void TearDownOnMainThread() override {
-    if (!app_id_.empty())
+    if (!app_id_.empty()) {
       CloseAppWindows(app_id_);
+    }
     WebAppBrowserTestBase::TearDownOnMainThread();
   }
 
   static void CloseAppWindows(const webapps::AppId& app_id) {
     for (Browser* browser : *BrowserList::GetInstance()) {
       const AppBrowserController* app_controller = browser->app_controller();
-      if (app_controller && app_controller->app_id() == app_id)
+      if (app_controller && app_controller->app_id() == app_id) {
         browser->window()->Close();
+      }
     }
   }
 

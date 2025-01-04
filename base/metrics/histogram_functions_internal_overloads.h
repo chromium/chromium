@@ -5,6 +5,8 @@
 #ifndef BASE_METRICS_HISTOGRAM_FUNCTIONS_INTERNAL_OVERLOADS_H_
 #define BASE_METRICS_HISTOGRAM_FUNCTIONS_INTERNAL_OVERLOADS_H_
 
+// IWYU pragma: private, include "base/metrics/histogram_functions.h"
+
 #include <stdint.h>
 
 #include <string>
@@ -17,14 +19,17 @@
 #include "base/metrics/histogram_base.h"
 #include "base/time/time.h"
 
+// Do not include this header directly.
+//
 // This file provides overloads for the functions defined in
 // histogram_functions.h. These functions are duplicated to also support both
-// std::string and char* for the name. This avoids ctor/dtor instantiation for
-// constant strings to std::string, which makes the call be larger than caching
-// macros (which do accept char*) in those cases. These overloads are in a
-// separate header for readability.
-
-// See the main header for documentation:
+// std::string and char* for the name. This avoids extra ctors/dtors at call
+// sites. As of Dec. 18, 2024, having all the overloads saves about 45KiB in
+// binary size for 32-bit Android, at the cost of a total (across several files)
+// of about 800 lines of boilerplate that doesn't need significant maintenance.
+//
+// These overloads are in a separate header for readability. See the main header
+// for documentation:
 // https://chromium.googlesource.com/chromium/src/+/HEAD/base/metrics/histogram_functions.h.
 
 namespace base {

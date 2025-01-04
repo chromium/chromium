@@ -34,7 +34,6 @@
 #include "chrome/browser/ui/webui/settings/captions_handler.h"
 #include "chrome/browser/ui/webui/settings/font_handler.h"
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/live_caption/caption_util.h"
@@ -49,6 +48,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/events/ash/keyboard_layout_util.h"
 #include "ui/native_theme/native_theme_features.h"
+#include "ui/webui/webui_util.h"
 
 namespace ash::settings {
 
@@ -61,6 +61,7 @@ using ::chromeos::settings::mojom::kDisplayAndMagnificationSubpagePath;
 using ::chromeos::settings::mojom::kFaceGazeSettingsSubpagePath;
 using ::chromeos::settings::mojom::kKeyboardAndTextInputSubpagePath;
 using ::chromeos::settings::mojom::kManageAccessibilitySubpagePath;
+using ::chromeos::settings::mojom::kMouseKeysSettingsSubpagePath;
 using ::chromeos::settings::mojom::kSelectToSpeakSubpagePath;
 using ::chromeos::settings::mojom::kSwitchAccessOptionsSubpagePath;
 using ::chromeos::settings::mojom::kTextToSpeechPagePath;
@@ -531,6 +532,18 @@ base::span<const SearchConcept> GetA11yFaceGazeSearchConcepts() {
   return tags;
 }
 
+base::span<const SearchConcept> GetA11yMouseKeysSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
+      {IDS_OS_SETTINGS_TAG_A11Y_MOUSE_KEYS,
+       mojom::kMouseKeysSettingsSubpagePath,
+       mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kMouseKeysEnabled}},
+  });
+  return tags;
+}
+
 base::span<const SearchConcept> GetA11yDisableTouchpadSearchConcepts() {
   static constexpr auto tags = std::to_array<SearchConcept>(
       {{IDS_OS_SETTINGS_TAG_A11Y_DISABLE_TOUCHPAD,
@@ -678,9 +691,6 @@ AccessibilitySection::~AccessibilitySection() {
 
 void AccessibilitySection::AddLoadTimeData(
     content::WebUIDataSource* html_source) {
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-
   webui::LocalizedString kLocalizedStrings[] = {
       {"a11yExplanation", IDS_SETTINGS_ACCESSIBILITY_EXPLANATION},
       {"a11yPageTitle", IDS_SETTINGS_ACCESSIBILITY},
@@ -1470,11 +1480,8 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_A11Y_TABLET_MODE_SHELF_BUTTONS_DESCRIPTION},
       {"tabletModeShelfNavigationButtonsSettingLabel",
        IDS_SETTINGS_A11Y_TABLET_MODE_SHELF_BUTTONS_LABEL},
-      {"tapDraggingLabel", kIsRevampEnabled
-                               ? IDS_OS_SETTINGS_REVAMP_TAP_DRAGGING_LABEL
-                               : IDS_SETTINGS_TAP_DRAGGING_LABEL},
-      {"tapDraggingDescription",
-       IDS_OS_SETTINGS_REVAMP_TAP_DRAGGING_DESCRIPTION},
+      {"tapDraggingLabel", IDS_OS_SETTINGS_TAP_DRAGGING_LABEL},
+      {"tapDraggingDescription", IDS_OS_SETTINGS_TAP_DRAGGING_DESCRIPTION},
       {"textToSpeechEngines", IDS_SETTINGS_TEXT_TO_SPEECH_ENGINES},
       {"textToSpeechHeading",
        IDS_SETTINGS_ACCESSIBILITY_TEXT_TO_SPEECH_HEADING},
@@ -1935,6 +1942,13 @@ void AccessibilitySection::RegisterHierarchy(
       mojom::Subpage::kFaceGazeSettings, mojom::SearchResultIcon::kA11y,
       mojom::SearchResultDefaultRank::kMedium,
       mojom::kFaceGazeSettingsSubpagePath);
+
+  // Mouse keys settings.
+  generator->RegisterTopLevelSubpage(
+      IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_LABEL,
+      mojom::Subpage::kMouseKeysSettings, mojom::SearchResultIcon::kA11y,
+      mojom::SearchResultDefaultRank::kMedium,
+      mojom::kMouseKeysSettingsSubpagePath);
 }
 
 void AccessibilitySection::OnVoicesChanged() {
@@ -2034,6 +2048,10 @@ void AccessibilitySection::UpdateSearchTags() {
 
   if (IsAccessibilitySlowKeysEnabled()) {
     updater.AddSearchTags(GetA11ySlowKeysSearchConcepts());
+  }
+
+  if (IsAccessibilityMouseKeysEnabled()) {
+    updater.AddSearchTags(GetA11yMouseKeysSearchConcepts());
   }
 
   if (IsAccessibilityDisableTouchpadEnabled()) {

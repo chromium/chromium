@@ -7,17 +7,17 @@
 #include "base/check_deref.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_experiments.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/strike_databases/payments/iban_save_strike_database.h"
+#include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/sync/service/sync_user_settings.h"
 
@@ -202,8 +202,8 @@ bool IbanSaveManager::AttemptToOfferUploadSave(Iban& import_candidate) {
   client_->GetPaymentsAutofillClient()
       ->GetPaymentsNetworkInterface()
       ->GetIbanUploadDetails(
-          client_->GetPersonalDataManager().app_locale(),
-          payments::GetBillingCustomerId(&payments_data_manager()),
+          payments_data_manager().app_locale(),
+          payments::GetBillingCustomerId(payments_data_manager()),
           import_candidate.GetCountryCode(),
           base::BindOnce(&IbanSaveManager::OnDidGetUploadDetails,
                          weak_ptr_factory_.GetWeakPtr(), show_save_prompt,
@@ -377,10 +377,9 @@ void IbanSaveManager::SendUploadRequest(const Iban& import_candidate,
   if (observer_for_testing_) {
     observer_for_testing_->OnSentUploadRequest();
   }
-  upload_request_details_.app_locale =
-      client_->GetPersonalDataManager().app_locale();
+  upload_request_details_.app_locale = payments_data_manager().app_locale();
   upload_request_details_.billing_customer_number =
-      payments::GetBillingCustomerId(&payments_data_manager());
+      payments::GetBillingCustomerId(payments_data_manager());
   upload_request_details_.context_token = context_token_;
   upload_request_details_.value = import_candidate.value();
   upload_request_details_.nickname = import_candidate.nickname();

@@ -66,12 +66,19 @@ FullHashToStoreAndHashPrefixesMap CheckStores(
     std::vector<std::pair<ListIdentifier, V4Store*>> stores) {
   FullHashToStoreAndHashPrefixesMap results;
   for (const auto& store : stores) {
+    base::TimeTicks start = base::TimeTicks::Now();
     for (const auto& full_hash : full_hashes) {
       HashPrefixStr hash_prefix =
           store.second->GetMatchingHashPrefix(full_hash);
       if (!hash_prefix.empty()) {
         results[full_hash].emplace_back(store.first, hash_prefix);
       }
+    }
+    if (store.first.threat_type() == ThreatType::HIGH_CONFIDENCE_ALLOWLIST) {
+      base::UmaHistogramTimes(
+          "SafeBrowsing.V4Store.DbThread."
+          "CheckHighConfidenceAllowlistStoreDuration",
+          base::TimeTicks::Now() - start);
     }
   }
   return results;

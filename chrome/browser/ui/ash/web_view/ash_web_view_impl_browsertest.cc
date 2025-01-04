@@ -12,13 +12,17 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
@@ -97,12 +101,16 @@ using ash::AshWebViewFactory;
 
 // Helpers ---------------------------------------------------------------------
 
-std::unique_ptr<views::Widget> CreateWidget() {
+std::unique_ptr<views::Widget> CreateWidget(bool activatable = true) {
   auto widget = std::make_unique<views::Widget>();
 
   views::Widget::InitParams params(
       views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.activatable = activatable
+                           ? views::Widget::InitParams::Activatable::kDefault
+                           : views::Widget::InitParams::Activatable::kNo;
+
   widget->Init(std::move(params));
   return widget;
 }
@@ -309,4 +317,36 @@ IN_PROC_BROWSER_TEST_F(AshWebViewImplBrowserTest,
       zoom_map->UsesTemporaryZoomLevel(render_frame_host->GetGlobalId()));
   EXPECT_DOUBLE_EQ(
       1.0, content::HostZoomMap::GetZoomLevel(web_view_impl->web_contents()));
+}
+
+// Tests that AshWebViewImpl will open a browser window if the AshWebView is
+// activated (while the widget is not activatable) and provided an
+// `activation_url`.
+IN_PROC_BROWSER_TEST_F(AshWebViewImplBrowserTest, ShouldOpenNewWindow) {
+  auto widget = CreateWidget(/*activatable=*/false);
+  AshWebView::InitParams init_params;
+  const GURL destination_url("https://www.google.com");
+  init_params.activation_url = destination_url;
+
+  AshWebView* web_view =
+      widget->SetContentsView(AshWebViewFactory::Get()->Create(init_params));
+  AshWebViewImpl* web_view_impl = static_cast<AshWebViewImpl*>(web_view);
+
+  web_view->Navigate(CreateDataUrl());
+  EXPECT_DID_STOP_LOADING(web_view);
+
+  // Activate the web contents and wait for the browser tab to load.
+  ASSERT_TRUE(browser());
+  content::TestNavigationObserver navigation_observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  navigation_observer.StartWatchingNewWebContents();
+  content::WebContents* web_contents = web_view_impl->web_contents();
+  web_contents->GetDelegate()->ActivateContents(web_contents);
+  navigation_observer.Wait();
+
+  // Verify that the browser was launched with the correct url as the active
+  // tab.
+  EXPECT_EQ(
+      destination_url,
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
 }

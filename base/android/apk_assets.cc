@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <jni.h>
-
 #include "base/android/apk_assets.h"
+
+#include <jni.h>
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -26,8 +26,7 @@ int OpenApkAsset(const std::string& file_path,
   // resources :(
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jlongArray> jarr =
-      Java_ApkAssets_open(env, ConvertUTF8ToJavaString(env, file_path),
-                          ConvertUTF8ToJavaString(env, split_name));
+      Java_ApkAssets_open(env, file_path, split_name);
   std::vector<jlong> results;
   base::android::JavaLongArrayToLongVector(env, jarr, &results);
   CHECK_EQ(3U, results.size());
@@ -48,8 +47,9 @@ bool RegisterApkAssetWithFileDescriptorStore(const std::string& key,
   base::MemoryMappedFile::Region region =
       base::MemoryMappedFile::Region::kWholeFile;
   int asset_fd = OpenApkAsset(file_path.value(), &region);
-  if (asset_fd == -1)
+  if (asset_fd == -1) {
     return false;
+  }
   base::FileDescriptorStore::GetInstance().Set(key, base::ScopedFD(asset_fd),
                                                region);
   return true;
@@ -57,13 +57,11 @@ bool RegisterApkAssetWithFileDescriptorStore(const std::string& key,
 
 void DumpLastOpenApkAssetFailure() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jstring> error =
-      Java_ApkAssets_takeLastErrorString(env);
-  if (!error) {
+  std::string error = Java_ApkAssets_takeLastErrorString(env);
+  if (error.empty()) {
     return;
   }
-  SCOPED_CRASH_KEY_STRING256("base", "OpenApkAssetError",
-                             ConvertJavaStringToUTF8(env, error));
+  SCOPED_CRASH_KEY_STRING256("base", "OpenApkAssetError", error);
   base::debug::DumpWithoutCrashing();
 }
 

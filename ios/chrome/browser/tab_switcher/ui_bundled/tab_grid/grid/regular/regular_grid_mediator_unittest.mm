@@ -6,17 +6,24 @@
 
 #import "base/containers/contains.h"
 #import "base/memory/raw_ptr.h"
+#import "components/collaboration/test_support/mock_collaboration_service.h"
 #import "components/policy/core/common/policy_pref_names.h"
+#import "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
+#import "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #import "components/sessions/core/tab_restore_service.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/test_share_kit_service.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_mediator_test.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_mode_holder.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
@@ -32,8 +39,19 @@ class RegularGridMediatorTest : public GridMediatorTestClass {
   void SetUp() override {
     GridMediatorTestClass::SetUp();
     mode_holder_ = [[TabGridModeHolder alloc] init];
-    mediator_ = [[RegularGridMediator alloc] initWithModeHolder:mode_holder_
-                                               messagingService:nil];
+    tab_group_sync_service_ =
+        std::make_unique<tab_groups::FakeTabGroupSyncService>();
+    share_kit_service_ =
+        std::make_unique<TestShareKitService>(nullptr, nullptr, nullptr);
+    collaboration_service_ =
+        std::make_unique<collaboration::MockCollaborationService>();
+
+    mediator_ = [[RegularGridMediator alloc]
+          initWithModeHolder:mode_holder_
+         tabGroupSyncService:tab_group_sync_service_.get()
+             shareKitService:share_kit_service_.get()
+        collaborationService:collaboration_service_.get()
+            messagingService:nil];
     mediator_.consumer = consumer_;
     mediator_.browser = browser_.get();
     mediator_.toolbarsMutator = fake_toolbars_mediator_;
@@ -44,15 +62,16 @@ class RegularGridMediatorTest : public GridMediatorTestClass {
   }
 
   void TearDown() override {
-    // Forces the RegularGridMediator to removes its Observer from WebStateList
-    // before the Browser is destroyed.
-    mediator_.browser = nullptr;
-    mediator_ = nil;
+    [mediator_ disconnect];
     GridMediatorTestClass::TearDown();
   }
 
  protected:
   RegularGridMediator* mediator_ = nullptr;
+  std::unique_ptr<tab_groups::FakeTabGroupSyncService> tab_group_sync_service_;
+  std::unique_ptr<ShareKitService> share_kit_service_;
+  std::unique_ptr<collaboration::MockCollaborationService>
+      collaboration_service_;
   raw_ptr<sessions::TabRestoreService> tab_restore_service_ = nullptr;
   TabGridModeHolder* mode_holder_;
 };
@@ -203,4 +222,28 @@ TEST_F(RegularGridMediatorTest, TestToolbarsNormalModeWithoutWebstates) {
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.closeSelectedTabsButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.shareButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.cancelSearchButton);
+}
+
+// Tests that `facePileViewControllerForItem` returns an UIViewController when
+// the group is shared.
+TEST_F(RegularGridMediatorTest, FacePileViewControllerForItem) {
+  // Set a saved tab group.
+  tab_groups::TabGroupId tab_group_id = tab_groups::TabGroupId::GenerateNew();
+  const TabGroup* local_group = browser_->GetWebStateList()->CreateGroup(
+      {2}, tab_groups::test::CreateTabGroupVisualData(), tab_group_id);
+  tab_groups::SavedTabGroup group = tab_groups::test::CreateTestSavedTabGroup();
+  group.SetLocalGroupId(tab_group_id);
+  tab_group_sync_service_->AddGroup(group);
+  EXPECT_TRUE(
+      tab_group_sync_service_->GetGroup(group.saved_guid()).has_value());
+
+  GridItemIdentifier* group_item_id =
+      [GridItemIdentifier groupIdentifier:local_group
+                         withWebStateList:browser_->GetWebStateList()];
+  EXPECT_FALSE([mediator_ facePileViewControllerForItem:group_item_id]);
+
+  // Share the group.
+  tab_group_sync_service_->MakeTabGroupShared(group.local_group_id().value(),
+                                              "collaboration");
+  EXPECT_TRUE([mediator_ facePileViewControllerForItem:group_item_id]);
 }

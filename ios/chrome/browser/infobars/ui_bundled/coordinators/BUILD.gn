@@ -12,6 +12,7 @@ source_set("coordinators") {
   deps = [
     "//base",
     "//components/infobars/core",
+    "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/infobars/ui_bundled:constants",
     "//ios/chrome/browser/infobars/ui_bundled:public",
@@ -28,7 +29,6 @@ source_set("coordinators") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:util_swift",
-    "//ios/chrome/browser/ui/fullscreen",
     "//ui/base",
   ]
 }

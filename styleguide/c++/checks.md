@@ -1,11 +1,15 @@
 # CHECK(), DCHECK() and NOTREACHED()
 
 `CHECK()`, `DCHECK()` and `NOTREACHED()` are all used to ensure that invariants
-hold.  They document (and verify) programmer expectations that either some
+hold. They document (and verify) programmer expectations that either some
 statement *always* holds true at the point of `(D)CHECK`ing or that a piece of
-code is unreachable. They should not be used to validate data that is provided
-by end-users or website developers. Such data is untrusted, and must be
-validated by standard control flow.
+code is unreachable (for `NOTREACHED`). `CHECK` failures and reachable
+`NOTREACHED`s result in an application crash (generating a crash report).
+`DCHECK`s are only evaluated on developer builds, test infrastructure and a
+minuscule in-the-wild population that does not currently represent all
+platforms. None of these should be used to validate data that is provided by
+end-users or website developers. Such data is untrusted, and must be validated
+by standard control flow.
 
 An invariant that does not hold should be seen as Undefined Behavior, and
 continuing past it puts the program into an unexpected state. This applies in

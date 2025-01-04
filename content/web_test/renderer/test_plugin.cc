@@ -22,7 +22,6 @@
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "cc/layers/texture_layer.h"
-#include "cc/resources/cross_thread_shared_bitmap.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "content/web_test/renderer/test_runner.h"
@@ -302,9 +301,7 @@ void TestPlugin::UpdateGeometry(const gfx::Rect& window_rect,
     sync_token_ = gpu::SyncToken();
   }
 
-  if (rect_.IsEmpty()) {
-    shared_bitmap_ = nullptr;
-  } else if (gl_) {
+  if (!rect_.IsEmpty() && gl_) {
     DCHECK(context_provider_);
     auto* sii = context_provider_->data->SharedImageInterface();
     // We will draw to the SI via GL directly below and then send it off to the
@@ -333,22 +330,18 @@ void TestPlugin::UpdateGeometry(const gfx::Rect& window_rect,
 
       sync_token_ = gpu::SharedImageTexture::ScopedAccess::EndAccess(
           std::move(color_texture_scoped_access));
-      shared_bitmap_ = nullptr;
     }
-  } else {
+  } else if (!rect_.IsEmpty()) {
     DCHECK(shared_image_interface_);
     const viz::SharedImageFormat format = viz::SinglePlaneFormat::kBGRA_8888;
-    auto shared_image_mapping = shared_image_interface_->CreateSharedImage(
-        {format, rect_.size(), gfx::ColorSpace(),
-         gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "TestPluginSharedBitmap"});
-    shared_bitmap_ = base::MakeRefCounted<cc::CrossThreadSharedBitmap>(
-        viz::SharedBitmapId(), base::ReadOnlySharedMemoryRegion(),
-        std::move(shared_image_mapping.mapping), gfx::Rect(rect_).size(),
-        format);
-    shared_image_ = std::move(shared_image_mapping.shared_image);
+    shared_image_ =
+        shared_image_interface_->CreateSharedImageForSoftwareCompositor(
+            {format, rect_.size(), gfx::ColorSpace(),
+             gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "TestPluginSharedBitmap"});
     sync_token_ = shared_image_interface_->GenVerifiedSyncToken();
 
-    DrawSceneSoftware(shared_bitmap_->memory());
+    auto scoped_mapping = shared_image_->Map();
+    DrawSceneSoftware(scoped_mapping->GetMemoryForPlane(0).data());
   }
 
   content_changed_ = true;
@@ -378,7 +371,7 @@ bool TestPlugin::PrepareTransferableResource(
     return false;
   gfx::Size size(rect_.size());
 
-  if (shared_image_ && shared_bitmap_) {
+  if (shared_image_ && !gl_) {
     *resource = viz::TransferableResource::MakeSoftwareSharedImage(
         shared_image_, sync_token_, shared_image_->size(),
         viz::SinglePlaneFormat::kBGRA_8888,

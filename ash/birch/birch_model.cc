@@ -602,9 +602,20 @@ void BirchModel::OnGeolocationPermissionChanged(bool enabled) {
 }
 
 void BirchModel::OnCoralGroupRemoved(const base::Token& group_id) {
-  std::erase_if(coral_data_.items, [&group_id](auto& item) {
-    return static_cast<BirchCoralItem>(item).group_id() == group_id;
+  std::erase_if(coral_data_.items, [&group_id](const BirchCoralItem& item) {
+    return item.group_id() == group_id;
   });
+}
+
+void BirchModel::OnCoralGroupTitleUpdated(const base::Token& group_id,
+                                          const std::string& title) {
+  auto it = std::find_if(coral_data_.items.begin(), coral_data_.items.end(),
+                         [&group_id](const BirchCoralItem& item) {
+                           return item.group_id() == group_id;
+                         });
+  if (it != coral_data_.items.end() && !title.empty()) {
+    it->set_title(base::UTF8ToUTF16(title));
+  }
 }
 
 BirchDataProvider* BirchModel::GetWeatherProviderForTest() {

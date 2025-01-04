@@ -78,6 +78,13 @@ SourceLocation::CreateFromNonEmptyV8StackTraceInternal(
                          std::move(stack_trace), script_id));
 }
 
+SourceLocation::SourceLocation(const String& url, int char_position)
+    : url_(url),
+      line_number_(0),
+      column_number_(0),
+      char_position_(char_position),
+      script_id_(0) {}
+
 SourceLocation::SourceLocation(
     const String& url,
     const String& function,
@@ -89,6 +96,7 @@ SourceLocation::SourceLocation(
       function_(function),
       line_number_(line_number),
       column_number_(column_number),
+      char_position_(-1),
       stack_trace_(std::move(stack_trace)),
       script_id_(script_id) {}
 

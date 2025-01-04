@@ -4,12 +4,13 @@
 
 #include "chrome/browser/nearby_sharing/certificates/common.h"
 
+#include <array>
+
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
 #include "crypto/encryptor.h"
 #include "crypto/hkdf.h"
-#include "crypto/random.h"
 #include "crypto/sha2.h"
 #include "crypto/symmetric_key.h"
 
@@ -39,22 +40,10 @@ bool IsNearbyShareCertificateWithinValidityPeriod(
                                           use_public_certificate_tolerance);
 }
 
-std::vector<uint8_t> DeriveNearbyShareKey(base::span<const uint8_t> key,
-                                          size_t new_num_bytes) {
-  return crypto::HkdfSha256(key,
-                            /*salt=*/base::span<const uint8_t>(),
-                            /*info=*/base::span<const uint8_t>(),
-                            new_num_bytes);
-}
-
-std::vector<uint8_t> ComputeAuthenticationTokenHash(
-    base::span<const uint8_t> authentication_token,
-    base::span<const uint8_t> secret_key) {
-  return crypto::HkdfSha256(authentication_token, secret_key,
-                            /*info=*/base::span<const uint8_t>(),
-                            kNearbyShareNumBytesAuthenticationTokenHash);
-}
-
-std::vector<uint8_t> GenerateRandomBytes(size_t num_bytes) {
-  return crypto::RandBytesAsVector(num_bytes);
+std::array<uint8_t, kNearbyShareNumBytesAuthenticationTokenHash>
+ComputeAuthenticationTokenHash(base::span<const uint8_t> authentication_token,
+                               base::span<const uint8_t> secret_key) {
+  return crypto::HkdfSha256<kNearbyShareNumBytesAuthenticationTokenHash>(
+      authentication_token, secret_key,
+      /*info=*/base::span<const uint8_t>());
 }

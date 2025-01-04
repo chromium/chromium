@@ -21,6 +21,22 @@ namespace ash {
 namespace {
 
 using cros_safety::mojom::SafetyClassifierVerdict;
+using cros_safety::mojom::SafetyRuleset;
+using ImageType = manta::WalrusProvider::ImageType;
+
+std::optional<ImageType> ToWalrusImageType(SafetyRuleset ruleset) {
+  switch (ruleset) {
+    case SafetyRuleset::kMantisInputImage:
+      return ImageType::kInputImage;
+    case SafetyRuleset::kMantisOutputImage:
+      return ImageType::kOutputImage;
+    case SafetyRuleset::kMantisGeneratedRegion:
+      return ImageType::kGeneratedRegion;
+    default:
+      LOG(WARNING) << "Unexpected ruleset for Walrus filter: " << ruleset;
+      return std::nullopt;
+  }
+}
 
 SafetyClassifierVerdict ToSafetyClassifierVerdict(
     manta::MantaStatusCode status_code,
@@ -31,6 +47,10 @@ SafetyClassifierVerdict ToSafetyClassifierVerdict(
     case manta::MantaStatusCode::kBlockedOutputs:
       return is_classify_image ? SafetyClassifierVerdict::kFailedImage
                                : SafetyClassifierVerdict::kFailedText;
+    case manta::MantaStatusCode::kInvalidInput:
+      return SafetyClassifierVerdict::kInvalidInput;
+    case manta::MantaStatusCode::kBackendFailure:
+      return SafetyClassifierVerdict::kBackendFailure;
     default:
       return SafetyClassifierVerdict::kGenericError;
   }
@@ -70,23 +90,32 @@ void CloudSafetySession::AddReceiver(
                     base::SequencedTaskRunner::GetCurrentDefault());
 }
 
-void CloudSafetySession::ClassifyTextSafety(
-    cros_safety::mojom::SafetyRuleset ruleset,
-    const std::string& text,
-    ClassifySafetyCallback callback) {
+void CloudSafetySession::ClassifyTextSafety(SafetyRuleset ruleset,
+                                            const std::string& text,
+                                            ClassifySafetyCallback callback) {
   walrus_provider_->Filter(
       text, base::BindOnce(&OnClassifyTextSafetyComplete, std::move(callback)));
 }
+
 void CloudSafetySession::ClassifyImageSafety(
-    cros_safety::mojom::SafetyRuleset ruleset,
+    SafetyRuleset ruleset,
     const std::optional<std::string>& text,
     mojo_base::BigBuffer image,
     ClassifySafetyCallback callback) {
   std::vector<std::vector<uint8_t>> images;
   images.push_back(std::vector<uint8_t>(image.begin(), image.end()));
-  walrus_provider_->Filter(
-      text, images,
-      base::BindOnce(&OnClassifyImageSafetyComplete, std::move(callback)));
+  std::optional<ImageType> filter_type = ToWalrusImageType(ruleset);
+  if (filter_type.has_value()) {
+    std::vector<ImageType> image_types;
+    image_types.push_back(filter_type.value());
+    walrus_provider_->Filter(
+        text, images, image_types,
+        base::BindOnce(&OnClassifyImageSafetyComplete, std::move(callback)));
+  } else {
+    walrus_provider_->Filter(
+        text, images,
+        base::BindOnce(&OnClassifyImageSafetyComplete, std::move(callback)));
+  }
 }
 
 }  // namespace ash

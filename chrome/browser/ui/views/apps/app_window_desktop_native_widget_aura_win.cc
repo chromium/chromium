@@ -17,8 +17,8 @@ AppWindowDesktopNativeWidgetAuraWin::AppWindowDesktopNativeWidgetAuraWin(
   GetNativeWindow()->SetName("AppWindowAura");
 }
 
-AppWindowDesktopNativeWidgetAuraWin::~AppWindowDesktopNativeWidgetAuraWin() {
-}
+AppWindowDesktopNativeWidgetAuraWin::~AppWindowDesktopNativeWidgetAuraWin() =
+    default;
 
 void AppWindowDesktopNativeWidgetAuraWin::InitNativeWidget(
     views::Widget::InitParams params) {

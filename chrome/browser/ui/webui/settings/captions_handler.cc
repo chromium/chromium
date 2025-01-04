@@ -66,8 +66,9 @@ CaptionsHandler::CaptionsHandler(PrefService* prefs) : prefs_(prefs) {
 }
 
 CaptionsHandler::~CaptionsHandler() {
-  if (soda_available_)
+  if (soda_available_) {
     speech::SodaInstaller::GetInstance()->RemoveObserver(this);
+  }
 }
 
 void CaptionsHandler::RegisterMessages() {
@@ -98,13 +99,15 @@ void CaptionsHandler::RegisterMessages() {
 }
 
 void CaptionsHandler::OnJavascriptAllowed() {
-  if (soda_available_)
+  if (soda_available_) {
     speech::SodaInstaller::GetInstance()->AddObserver(this);
+  }
 }
 
 void CaptionsHandler::OnJavascriptDisallowed() {
-  if (soda_available_)
+  if (soda_available_) {
     speech::SodaInstaller::GetInstance()->RemoveObserver(this);
+  }
 }
 
 void CaptionsHandler::HandleLiveCaptionSectionReady(
@@ -243,8 +246,9 @@ void CaptionsHandler::OnSodaInstalled(speech::LanguageCode language_code) {
     // early. We do not check for a matching language if multi-language is
     // enabled because we show all of the languages' download status in the UI,
     // even ones that are not currently selected.
-    if (!prefs::IsLanguageCodeForLiveCaption(language_code, prefs_))
+    if (!prefs::IsLanguageCodeForLiveCaption(language_code, prefs_)) {
       return;
+    }
     speech::SodaInstaller::GetInstance()->RemoveObserver(this);
   }
 

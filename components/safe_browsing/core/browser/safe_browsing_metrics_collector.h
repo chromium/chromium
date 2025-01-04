@@ -192,6 +192,10 @@ class SafeBrowsingMetricsCollector : public KeyedService {
                          base::Time since_time);
   UserState GetUserState();
 
+  ProtegoPingType GetMostRecentPingType(base::Time last_ping_with_token,
+                                        base::Time last_ping_without_token,
+                                        base::TimeDelta time_delta);
+
   raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
   base::OneShotTimer metrics_collector_timer_;

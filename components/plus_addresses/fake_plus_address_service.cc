@@ -161,6 +161,11 @@ bool FakePlusAddressService::IsPlusAddress(
   return potential_plus_address == plus_addresses::test::kFakePlusAddress;
 }
 
+bool FakePlusAddressService::MatchesPlusAddressFormat(
+    const std::u16string& value) const {
+  return value.ends_with(u"@grelay.com");
+}
+
 void FakePlusAddressService::GetAffiliatedPlusProfiles(
     const url::Origin& origin,
     GetPlusProfilesCallback callback) {

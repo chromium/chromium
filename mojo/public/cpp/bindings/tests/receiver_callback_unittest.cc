@@ -17,7 +17,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/test_support/test_support.h"
-#include "mojo/public/interfaces/bindings/tests/sample_interfaces.mojom.h"
+#include "mojo/public/interfaces/bindings/tests/sample_interfaces.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 ///////////////////////////////////////////////////////////////////////////////

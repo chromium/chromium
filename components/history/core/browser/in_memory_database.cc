@@ -13,7 +13,8 @@
 namespace history {
 
 InMemoryDatabase::InMemoryDatabase()
-    : db_({.page_size = 4096, .cache_size = 500}) {}
+    : db_({.page_size = 4096, .cache_size = 500}, /*tag=*/"HistoryInMemoryDB") {
+}
 
 InMemoryDatabase::~InMemoryDatabase() = default;
 

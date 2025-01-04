@@ -335,7 +335,8 @@ class CORE_EXPORT ContainerNode : public Node {
                                    Node* node_before_change,
                                    Node* node_after_change);
   void RecalcDescendantStyles(const StyleRecalcChange,
-                              const StyleRecalcContext&);
+                              const StyleRecalcContext&,
+                              Element& host_or_element);
   void RebuildChildrenLayoutTrees(WhitespaceAttacher&);
   void RebuildLayoutTreeForChild(Node* child, WhitespaceAttacher&);
 
@@ -502,12 +503,8 @@ class CORE_EXPORT ContainerNode : public Node {
                                            Element* attribute_owner_element,
                                            const ChildrenChange*);
 
-  void SetFirstChild(Node* child) {
-    first_child_ = child;
-  }
-  void SetLastChild(Node* child) {
-    last_child_ = child;
-  }
+  void SetFirstChild(Node* child) { first_child_ = child; }
+  void SetLastChild(Node* child) { last_child_ = child; }
 
   // Utility functions for NodeListsNodeData API.
   template <typename Collection>

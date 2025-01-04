@@ -2170,7 +2170,7 @@ TEST_F(RenderWidgetHostTest, RendererExitedNoDrag) {
   blink::DragOperationsMask drag_operation = blink::kDragOperationEvery;
   host_->StartDragging(
       DropDataToDragData(
-          drop_data, file_system_manager, process_->GetID(),
+          drop_data, file_system_manager, process_->GetDeprecatedID(),
           ChromeBlobStorageContext::GetFor(process_->GetBrowserContext())),
       url::Origin(), drag_operation, SkBitmap(), gfx::Vector2d(), gfx::Rect(),
       blink::mojom::DragEventSourceInfo::New());
@@ -2181,7 +2181,7 @@ TEST_F(RenderWidgetHostTest, RendererExitedNoDrag) {
   EXPECT_FALSE(host_->GetView());
   host_->StartDragging(
       DropDataToDragData(
-          drop_data, file_system_manager, process_->GetID(),
+          drop_data, file_system_manager, process_->GetDeprecatedID(),
           ChromeBlobStorageContext::GetFor(process_->GetBrowserContext())),
       url::Origin(), drag_operation, SkBitmap(), gfx::Vector2d(), gfx::Rect(),
       blink::mojom::DragEventSourceInfo::New());

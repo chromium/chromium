@@ -5,6 +5,7 @@
 package org.chromium.base;
 
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.HashMap;
 
@@ -21,6 +22,7 @@ import javax.annotation.concurrent.NotThreadSafe;
  *
  * <p>This class and its subclasses are not thread safe.
  */
+@NullMarked
 @NotThreadSafe
 public abstract class Flag {
     // Used to reset all flags between tests.

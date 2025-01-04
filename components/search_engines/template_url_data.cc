@@ -10,6 +10,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
 #include "base/i18n/case_conversion.h"
+#include "base/pickle.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -18,6 +19,7 @@
 #include "base/values.h"
 #include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/regulatory_extension_type.h"
+#include "crypto/hash.h"
 
 namespace {
 
@@ -50,7 +52,7 @@ TemplateURLData::TemplateURLData()
       id(0),
       date_created(base::Time::Now()),
       last_modified(base::Time::Now()),
-      created_by_policy(CreatedByPolicy::kNoPolicy),
+      policy_origin(PolicyOrigin::kNoPolicy),
       enforced_by_policy(false),
       created_from_play_api(false),
       usage_count(0),
@@ -113,7 +115,7 @@ TemplateURLData::TemplateURLData(
       favicon_url(favicon_url),
       safe_for_autoreplace(true),
       id(0),
-      created_by_policy(CreatedByPolicy::kNoPolicy),
+      policy_origin(PolicyOrigin::kNoPolicy),
       enforced_by_policy(false),
       created_from_play_api(false),
       usage_count(0),
@@ -168,6 +170,22 @@ void TemplateURLData::SetURL(const std::string& url) {
   url_ = url;
 }
 
+std::vector<uint8_t> TemplateURLData::GenerateHash() const {
+  CHECK(!url_.empty());
+  CHECK_NE(id, 0);
+  base::Pickle pickle;
+  pickle.WriteInt64(id);
+  pickle.WriteString(url_);
+  // Prepend a hash version. This would allow expanding the data contained
+  // within the hash in the future, while keeping backwards compatibility.
+  const uint8_t kHashVersion = 1u;
+  std::vector<uint8_t> result(1, kHashVersion);
+
+  const auto hash = crypto::hash::Sha256(pickle);
+  result.insert(result.end(), hash.begin(), hash.end());
+  return result;
+}
+
 void TemplateURLData::GenerateSyncGUID() {
   sync_guid = GenerateGUID(prepopulate_id, starter_pack_id);
 }
@@ -197,4 +215,16 @@ size_t TemplateURLData::EstimateMemoryUsage() const {
   res += base::trace_event::EstimateMemoryUsage(url_);
 
   return res;
+}
+
+bool TemplateURLData::CreatedByPolicy() const {
+  return policy_origin != PolicyOrigin::kNoPolicy;
+}
+
+bool TemplateURLData::CreatedByDefaultSearchProviderPolicy() const {
+  return policy_origin == PolicyOrigin::kDefaultSearchProvider;
+}
+
+bool TemplateURLData::CreatedByNonDefaultSearchProviderPolicy() const {
+  return CreatedByPolicy() && !CreatedByDefaultSearchProviderPolicy();
 }

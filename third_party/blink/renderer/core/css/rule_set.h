@@ -151,9 +151,6 @@ class CORE_EXPORT RuleData {
   bool SelectorIsEasy() const { return is_easy_; }
   bool IsStartingStyle() const { return is_starting_style_; }
 
-  bool ContainsUncommonAttributeSelector() const {
-    return contains_uncommon_attribute_selector_;
-  }
   unsigned Specificity() const { return specificity_; }
   unsigned LinkMatchType() const { return link_match_type_; }
   ValidPropertyFilter GetValidPropertyFilter(
@@ -190,8 +187,8 @@ class CORE_EXPORT RuleData {
   Member<StyleRule> rule_;
   unsigned selector_index_ : kSelectorIndexBits;
   unsigned position_ : kPositionBits;
-  unsigned contains_uncommon_attribute_selector_ : 1;
-  // 32 bits above
+  unsigned unused_bit_ : 1;
+  // 31 bits above (1 free bit).
   unsigned specificity_ : 24;
   unsigned link_match_type_ : 2;
   unsigned valid_property_filter_ : 3;
@@ -378,7 +375,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   RuleSet(const RuleSet&) = delete;
   RuleSet& operator=(const RuleSet&) = delete;
 
-  void AddRulesFromSheet(StyleSheetContents*,
+  void AddRulesFromSheet(const StyleSheetContents*,
                          const MediaQueryEvaluator&,
                          CascadeLayer* = nullptr,
                          const StyleScope* = nullptr);

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.data_sharing;
 
+import android.content.Context;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
@@ -16,6 +17,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -190,6 +192,7 @@ public class DataSharingTabGroupUtils {
 
     private static boolean willRemoveAllTabsInGroup(
             TabModel tabModel, List<SavedTabGroupTab> savedTabs, List<Tab> tabsToRemove) {
+        boolean areAllAlreadyClosing = true;
         for (SavedTabGroupTab savedTab : savedTabs) {
             // First check that we have local IDs for the tab. It is possible that we don't if the
             // tab group is open in another window that hasn't been foregrounded yet as the tabs are
@@ -205,6 +208,7 @@ public class DataSharingTabGroupUtils {
             switch (getTabPresence(tabModel, localTabId)) {
                 case TabPresence.IN_WINDOW:
                     // Intentional no-op.
+                    areAllAlreadyClosing = false;
                     break;
                 case TabPresence.IN_WINDOW_CLOSING:
                     // If the tab is closing we should keep checking since all the rest of the tabs
@@ -228,7 +232,8 @@ public class DataSharingTabGroupUtils {
                 return false;
             }
         }
-        return true;
+        // If all the tabs in the group are already closing showing a dialog does not make sense.
+        return !areAllAlreadyClosing;
     }
 
     private static @TabPresence int getTabPresence(TabModel tabModel, int tabId) {
@@ -265,5 +270,24 @@ public class DataSharingTabGroupUtils {
             }
         }
         return null;
+    }
+
+    /**
+     * @param context The activity context.
+     * @param collaborationId The sharing ID associated with the group.
+     * @param tabGroupSyncService The sync service to get tab group data form.
+     * @return The title of the tab group.
+     */
+    @Nullable
+    public static String getTabGroupTitle(
+            Context context, String collaborationId, TabGroupSyncService tabGroupSyncService) {
+        SavedTabGroup tabGroup =
+                getTabGroupForCollabIdFromSync(collaborationId, tabGroupSyncService);
+        if (tabGroup == null) {
+            return null;
+        }
+        return TextUtils.isEmpty(tabGroup.title)
+                ? TabGroupTitleUtils.getDefaultTitle(context, tabGroup.savedTabs.size())
+                : tabGroup.title;
     }
 }

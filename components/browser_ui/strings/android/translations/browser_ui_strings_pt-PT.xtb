@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">Transferência interrompida</translation>
 <translation id="1396327438254055134">Permita que o site use o otimizador do V8.</translation>
 <translation id="1415402041810619267">URL truncado</translation>
+<translation id="1415855080660575082">Permita que o Chrome partilhe os seus separadores recentes com o seu dispositivo para os ver na lista de apps e nos resultados da pesquisa do dispositivo. Pode ativar ou desativar esta opção nas definições do Chrome.</translation>
 <translation id="1448064542941920355">Diminuir zoom</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> sites}}</translation>
 <translation id="1500473259453106018">Ocultar cartão Descidas de preços nos separadores</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">Permitiu temporariamente que este site usasse cookies de terceiros, o que significa uma proteção da navegação inferior, mas é mais provável que as funcionalidades do site funcionem conforme esperado. <ph name="BEGIN_LINK" />Envie feedback<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">As funcionalidades em alguns sites podem não funcionar no Modo de navegação anónima</translation>
 <translation id="2442870161001914531">Peça sempre o site para computador</translation>
+<translation id="2445311670906052406">Agora, o Chrome partilha os seus separadores recentes com o seu dispositivo. Irá vê-los na lista de apps e nos resultados da pesquisa do seu dispositivo. Pode desativar esta opção em qualquer altura nas definições do Chrome.</translation>
 <translation id="2469312991797799607">Esta ação vai eliminar todos os dados e cookies de <ph name="ORIGIN" /> e de todos os sites associados a este</translation>
 <translation id="2482878487686419369">Notificações</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">Os sites podem mostrar pedidos de início de sessão de serviços de identidade.</translation>
 <translation id="2787357173144933081">Iniciar rapidamente caixa geral</translation>
 <translation id="2790501146643349491">Quando esta opção está ativada, os sites fechados recentemente podem concluir o envio e a receção de dados. Quando esta opção está desativada, os sites fechados recentemente não podem concluir o envio nem a receção de dados.</translation>
+<translation id="2814830417943086299">Agora, o Chrome mostra os seus separadores recentes na lista de apps e nos resultados da pesquisa do seu dispositivo. Pode desativar esta opção em qualquer altura nas definições do Chrome.</translation>
 <translation id="2822354292072154809">Tem a certeza de que quer repor todas as autorizações do site para <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Peça a vista de dispositivo móvel</translation>
 <translation id="2870560284913253234">Site</translation>
@@ -124,7 +127,6 @@
 <translation id="2903493209154104877">Moradas</translation>
 <translation id="2910701580606108292">Perguntar antes de permitir que os sites reproduzam conteúdos protegidos</translation>
 <translation id="2918484639460781603">Ir para definições</translation>
-<translation id="2927133898344569563">Aceda rapidamente a separadores sugeridos a partir da lista de apps do seu dispositivo e nos resultados da pesquisa do dispositivo. Pode ativar ou desativar esta opção em qualquer altura nas definições do Chrome.</translation>
 <translation id="2932883381142163287">Denunciar abuso</translation>
 <translation id="2939338015096024043">Quando esta opção está ativada, os sites podem pedir para monitorizar a posição da câmara e saber mais sobre o ambiente à sua volta. Quando esta opção está desativada, os sites não podem monitorizar a posição da câmara nem saber mais sobre o ambiente à sua volta.</translation>
 <translation id="2968755619301702150">Visualizador de certificados</translation>
@@ -336,7 +338,6 @@
 <translation id="5968921426641056619">Introduza o endereço Web</translation>
 <translation id="5975083100439434680">Reduzir</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
-<translation id="6015145568571136419">Agora, pode aceder rapidamente a separadores sugeridos a partir da lista de apps do seu dispositivo e nos resultados da pesquisa do dispositivo. Pode desativar esta opção em qualquer altura nas definições do Chrome.</translation>
 <translation id="6015775454662021376">Controle o acesso deste site ao seu dispositivo.</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6042308850641462728">Mais</translation>
@@ -559,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" />.}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" />.}}</translation>
 <translation id="913657688200966289">Ative as autorizações para a app <ph name="APP_NAME" /> nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">O zoom atual é de <ph name="ZOOM_LEVEL" />%%</translation>
+<translation id="9156722768168878035">Permita que o Chrome mostre os seus separadores recentes na lista de apps e nos resultados da pesquisa do seu dispositivo. Pode desativar esta opção em qualquer altura nas definições do Chrome.</translation>
 <translation id="9162462602695099906">Esta página é perigosa</translation>
 <translation id="947156494302904893">Os sites que visita podem validar que é uma pessoa real e não um bot</translation>
 <translation id="959682366969460160">Organize-se</translation>

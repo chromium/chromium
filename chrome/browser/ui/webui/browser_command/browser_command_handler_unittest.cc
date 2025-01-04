@@ -148,7 +148,7 @@ class TestCommandHandler : public BrowserCommandHandler {
   }
 
  private:
-  bool tutorial_service_exists_;
+  bool tutorial_service_exists_ = false;
   std::unique_ptr<CommandUpdater> command_updater_;
 
   bool tab_groups_feature_supported_ = true;
@@ -169,12 +169,11 @@ class TestTutorialService : public user_education::TutorialService {
     return std::u16string();
   }
 
-  void StartTutorial(
-      user_education::TutorialIdentifier id,
-      ui::ElementContext context,
-      base::OnceClosure completed_callback = base::DoNothing(),
-      base::OnceClosure aborted_callback = base::DoNothing(),
-      base::RepeatingClosure restart_callback = base::DoNothing()) override {
+  void StartTutorial(user_education::TutorialIdentifier id,
+                     ui::ElementContext context,
+                     base::OnceClosure completed_callback,
+                     base::OnceClosure aborted_callback,
+                     base::RepeatingClosure restart_callback) override {
     running_id_ = id;
   }
 

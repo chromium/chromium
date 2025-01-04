@@ -53,7 +53,9 @@ namespace userScripts {
     DOMString[]? excludeGlobs;
     // The list of ScriptSource objects defining sources of scripts to be
     // injected into matching pages.
-    ScriptSource[] js;
+    // This property must be specified for  ${ref:register}, and when specified
+    // it must be a non-empty array.
+    ScriptSource[]? js;
     // Specifies which pages this user script will be injected into. See
     // <a href="develop/concepts/match-patterns">Match Patterns</a> for more details on the
     // syntax of these strings. This property must be specified for
@@ -70,8 +72,7 @@ namespace userScripts {
     // Only valid if `world` is omitted or is `USER_SCRIPT`. If omitted, the
     // script will execute in the default user script world.
     // Values with leading underscores (`_`) are reserved.
-    // TODO(https://crbug.com/331680187): Remove nodoc.
-    [nodoc] DOMString? worldId;
+    DOMString? worldId;
   };
 
   // An object used to filter user scripts for ${ref:getScripts}.
@@ -81,6 +82,49 @@ namespace userScripts {
     DOMString[]? ids;
   };
 
+  // TODO(crbug.com/326657581): Remove nodoc.
+  [nodoc] dictionary InjectionTarget {
+    // Whether the script should inject into all frames within the tab. Defaults
+    // to false. This must not be true if <code>frameIds</code> is specified.
+    boolean? allFrames;
+    // The IDs of specific documentIds to inject into. This must not be set if
+    // <code>frameIds</code> is set.
+    DOMString[]? documentIds;
+    // The IDs of specific frames to inject into.
+    long[]? frameIds;
+    // The ID of the tab into which to inject.
+    long tabId;
+  };
+
+  // TODO(crbug.com/326657581): Remove nodoc.
+  [nodoc] dictionary InjectionResult {
+    // The document associated with the injection.
+    DOMString documentId;
+    // The frame associated with the injection.
+    long frameId;
+    // The result of the script execution.
+    any? result;
+    // The error, if any. <code>error</code> and <code>result</code> are
+    // mutually exclusive.
+    DOMString? error;
+  };
+
+  // TODO(crbug.com/326657581): Remove nodoc.
+  [nodoc] dictionary UserScriptInjection {
+    // Whether the injection should be triggered in the target as soon as
+    // possible. Note that this is not a guarantee that injection will occur
+    // prior to page load, as the page may have already loaded by the time the
+    // script reaches the target.
+    boolean? injectImmediately;
+    // The script source to inject into the target.
+    ScriptSource js;
+    // Details specifying the target into which to inject the script.
+    InjectionTarget target;
+    // The JavaScript "world" to run the script in. The default is
+    // <code>USER_SCRIPT</code>.
+    ExecutionWorld? world;
+  };
+
   // An object used to update the <code>`USER_SCRIPT`</code> world
   // configuration. If a property is not specified, it will reset it to its
   // default value.
@@ -88,8 +132,7 @@ namespace userScripts {
     // Specifies the ID of the specific user script world to update.
     // If not provided, updates the properties of the default user script world.
     // Values with leading underscores (`_`) are reserved.
-    // TODO(https://crbug.com/331680187): Remove nodoc.
-    [nodoc] DOMString? worldId;
+    DOMString? worldId;
 
     // Specifies the world csp. The default is the <code>`ISOLATED`</code>
     // world csp.
@@ -107,6 +150,8 @@ namespace userScripts {
   callback UnregisterCallback = void();
 
   callback UpdateCallback = void();
+
+  callback ExecuteCallback = void(InjectionResult[] result);
 
   callback ConfigureWorldCallback = void();
 
@@ -153,6 +198,18 @@ namespace userScripts {
         RegisteredUserScript[] scripts,
         optional UpdateCallback callback);
 
+    // Injects a script into a target context. By default, the script will be
+    // run at <code>document_idle</code>, or immediately if the page has already
+    // loaded. If the <code>injectImmediately</code> property is set, the script
+    // will inject without waiting, even if the page has not finished loading.
+    // If the script evaluates to a promise, the browser will wait for the
+    // promise to settle and return the resulting value.
+    // TODO(crbug.com/326657581): Remove nodoc.
+    [nodoc] static void execute(
+        UserScriptInjection injection,
+        optional ExecuteCallback callback
+    );
+
     // Configures the <code>`USER_SCRIPT`</code> execution environment.
     // |properties|: Contains the user script world configuration.
     // |callback|: Called once world hase been configured.
@@ -162,8 +219,7 @@ namespace userScripts {
 
     // Retrieves all registered world configurations.
     // |callback|: Called with the registered world configurations.
-    // TODO(https://crbug.com/331680187): Remove nodoc.
-    [nodoc] static void getWorldConfigurations(
+    static void getWorldConfigurations(
         GetAllWorldConfigurationsCallback callback);
 
     // Resets the configuration for a user script world. Any scripts that inject
@@ -172,8 +228,7 @@ namespace userScripts {
     // |worldId|: The ID of the user script world to reset. If omitted, resets
     // the default world's configuration.
     // |callback|: Called when the configuration is reset.
-    // TODO(https://crbug.com/331680187): Remove nodoc.
-    [nodoc] static void resetWorldConfiguration(
+    static void resetWorldConfiguration(
         optional DOMString worldId,
         ResetWorldConfigurationCallback callback);
   };

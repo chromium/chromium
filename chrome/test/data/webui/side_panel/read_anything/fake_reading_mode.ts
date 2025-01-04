@@ -58,6 +58,7 @@ export class FakeReadingMode {
 
   // Fonts supported by the browser's preferred language.
   supportedFonts: string[] = ['roboto'];
+  allFonts: string[] = [];
 
   // The base language code that should be used for speech synthesis voices.
   baseLanguageForSpeech: string = '';

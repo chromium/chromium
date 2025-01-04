@@ -11,6 +11,7 @@ include_rules = [
   "+third_party/skia/include",
   "+ui/accelerated_widget_mac",
   "+ui/base",
+  "+ui/color",
   "+ui/compositor",
   "+ui/display",
   "+ui/events",

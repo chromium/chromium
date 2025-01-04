@@ -61,6 +61,9 @@ void OnTaskExtensionsManagerImpl::DisableExtensions() {
     }
   }
 
+  if (disabled_extension_ids.empty()) {
+    return;
+  }
   SaveDisabledExtensionIds(disabled_extension_ids);
 }
 

@@ -27,6 +27,7 @@
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -203,6 +204,9 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
       const BiddingAndAuctionServerKey& bidding_and_auction_key,
       std::string plaintext_request_body,
       Callback callback);
+
+  void OnResponseStarted(const GURL& final_url,
+                         const network::mojom::URLResponseHead& response_head);
 
   void OnRequestComplete(std::unique_ptr<std::string> response_body);
 

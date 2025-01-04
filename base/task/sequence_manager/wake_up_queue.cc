@@ -32,8 +32,9 @@ void WakeUpQueue::RemoveAllCanceledDelayedTasksFromFront(LazyNow* lazy_now) {
 
     // If no tasks are removed from the top queue, then it means the top queue
     // cannot change anymore.
-    if (!top_queue->RemoveAllCanceledDelayedTasksFromFront(lazy_now))
+    if (!top_queue->RemoveAllCanceledDelayedTasksFromFront(lazy_now)) {
       break;
+    }
   }
 }
 
@@ -66,8 +67,9 @@ void WakeUpQueue::SetNextWakeUpForQueue(internal::TaskQueueImpl* queue,
     }
   } else {
     // Remove a wake-up from heap if present.
-    if (queue->heap_handle().IsValid())
+    if (queue->heap_handle().IsValid()) {
       wake_up_queue_.erase(queue->heap_handle());
+    }
   }
 
   std::optional<WakeUp> new_wake_up = GetNextDelayedWakeUp();
@@ -76,12 +78,14 @@ void WakeUpQueue::SetNextWakeUpForQueue(internal::TaskQueueImpl* queue,
       *previous_queue_resolution == WakeUpResolution::kHigh) {
     pending_high_res_wake_up_count_--;
   }
-  if (wake_up && wake_up->resolution == WakeUpResolution::kHigh)
+  if (wake_up && wake_up->resolution == WakeUpResolution::kHigh) {
     pending_high_res_wake_up_count_++;
+  }
   DCHECK_GE(pending_high_res_wake_up_count_, 0);
 
-  if (new_wake_up != previous_wake_up)
+  if (new_wake_up != previous_wake_up) {
     OnNextWakeUpChanged(lazy_now, GetNextDelayedWakeUp());
+  }
 }
 
 void WakeUpQueue::MoveReadyDelayedTasksToWorkQueues(
@@ -98,8 +102,9 @@ void WakeUpQueue::MoveReadyDelayedTasksToWorkQueues(
     update_needed = true;
   }
 
-  if (!update_needed || wake_up_queue_.empty())
+  if (!update_needed || wake_up_queue_.empty()) {
     return;
+  }
   // If any queue was notified, possibly update following queues. This ensures
   // the wake up is up to date, which is necessary because calling OnWakeUp() on
   // a throttled queue may affect state that is shared between other related
@@ -112,16 +117,18 @@ void WakeUpQueue::MoveReadyDelayedTasksToWorkQueues(
   while (!wake_up_queue_.empty()) {
     internal::TaskQueueImpl* old_queue =
         std::exchange(queue, wake_up_queue_.top().queue);
-    if (old_queue == queue)
+    if (old_queue == queue) {
       break;
+    }
     queue->UpdateWakeUp(lazy_now);
   }
 }
 
 std::optional<WakeUp> WakeUpQueue::GetNextDelayedWakeUp() const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
-  if (wake_up_queue_.empty())
+  if (wake_up_queue_.empty()) {
     return std::nullopt;
+  }
   WakeUp wake_up = wake_up_queue_.top().wake_up;
   // `wake_up.resolution` is not meaningful since it may be different from
   // has_pending_high_resolution_tasks(). Return WakeUpResolution::kLow here to

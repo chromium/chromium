@@ -200,8 +200,8 @@ void SyncFileSystemGetFileStatusFunction::DidGetFileStatus(
       SyncFileStatusToExtensionEnum(sync_file_status))));
 }
 
-SyncFileSystemGetFileStatusesFunction::SyncFileSystemGetFileStatusesFunction() {
-}
+SyncFileSystemGetFileStatusesFunction::SyncFileSystemGetFileStatusesFunction() =
+    default;
 
 SyncFileSystemGetFileStatusesFunction::
     ~SyncFileSystemGetFileStatusesFunction() = default;

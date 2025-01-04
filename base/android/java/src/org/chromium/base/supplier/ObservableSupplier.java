@@ -5,6 +5,8 @@
 package org.chromium.base.supplier;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * ObservableSupplier wraps an asynchronously provided object E, notifying observers when the
@@ -26,6 +28,7 @@ import org.chromium.base.Callback;
  *
  * @param <E> The type of the wrapped object.
  */
+@NullMarked
 public interface ObservableSupplier<E> extends Supplier<E> {
     /**
      * @param obs An observer to be notified when the object owned by this supplier is available.
@@ -33,6 +36,7 @@ public interface ObservableSupplier<E> extends Supplier<E> {
      *       current message loop (so long as the object hasn't changed).
      * @return The current object or null if it hasn't been set yet.
      */
+    @Nullable
     E addObserver(Callback<E> obs);
 
     /**

@@ -17,7 +17,7 @@ class Browser;
 namespace views {
 class MenuRunner;
 class Widget;
-}
+}  // namespace views
 
 // Observer for the BookmarkContextMenu.
 class BookmarkContextMenuObserver {

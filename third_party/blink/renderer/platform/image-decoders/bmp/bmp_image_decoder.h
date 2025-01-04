@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_BMP_BMP_IMAGE_DECODER_H_
 
 #include <memory>
+
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 
 namespace blink {

@@ -32,23 +32,23 @@ class MerchantSignalDB {
 
   // Save signal for key.
   void Save(JNIEnv* env,
-            const base::android::JavaParamRef<jstring>& jkey,
+            std::string& key,
             const jlong jtimestamp,
             const base::android::JavaParamRef<jobject>& jcallback);
 
   // Load signal corresponding to key.
   void Load(JNIEnv* env,
-            const base::android::JavaParamRef<jstring>& jkey,
+            std::string& key,
             const base::android::JavaParamRef<jobject>& jcallback);
 
   // Load signal whose keys have specific prefix.
   void LoadWithPrefix(JNIEnv* env,
-                      const base::android::JavaParamRef<jstring>& jprefix,
+                      std::string& prefix,
                       const base::android::JavaParamRef<jobject>& jcallback);
 
   // Delete entry corresponding to key.
   void Delete(JNIEnv* env,
-              const base::android::JavaParamRef<jstring>& jkey,
+              std::string& key,
               const base::android::JavaParamRef<jobject>& jcallback);
 
   // Delete all entries in the database.

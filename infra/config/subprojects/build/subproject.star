@@ -7,7 +7,7 @@ luci.realm(
         # Allow FYI builders to create invocations in their own builds.
         luci.binding(
             roles = "role/resultdb.invocationCreator",
-            users = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
+            groups = "project-chromium-ci-task-accounts",
         ),
     ],
 )

@@ -191,16 +191,15 @@ OnDeviceModelServiceController::CreateSession(
   opts.token_limits = adaptation_metadata->adapter()->GetTokenLimits();
   opts.adapter = adaptation_metadata->adapter();
 
-  base::WeakPtr<ModelQualityLogsUploaderService> log_uploader =
+  opts.logger = optimization_guide_logger;
+  opts.log_uploader =
       (config_params && config_params->logging_mode ==
                             SessionConfigParams::LoggingMode::kAlwaysDisable
            ? nullptr
            : model_quality_uploader_service);
 
-  has_started_session_ = true;
   return std::make_unique<SessionImpl>(
-      feature, std::move(opts), std::move(execute_remote_fn),
-      optimization_guide_logger, log_uploader, config_params);
+      feature, std::move(opts), std::move(execute_remote_fn), config_params);
 }
 
 // static
@@ -279,6 +278,10 @@ void OnDeviceModelServiceController::OnModelAssetsLoaded(
   // TODO(crbug.com/302402959): Choose max_tokens based on device.
   params->max_tokens = features::GetOnDeviceModelMaxTokens();
   params->adaptation_ranks = features::GetOnDeviceModelAllowedAdaptationRanks();
+  if (on_device_component_state_manager_ &&
+      on_device_component_state_manager_->IsLowTierDevice()) {
+    params->performance_hint = ml::ModelPerformanceHint::kFastestInference;
+  }
   service_client_.Get()->LoadModel(
       std::move(params), std::move(model),
       base::DoNothingAs<void(on_device_model::mojom::LoadModelResult)>());
@@ -288,11 +291,13 @@ void OnDeviceModelServiceController::OnModelAssetsLoaded(
 void OnDeviceModelServiceController::SetLanguageDetectionModel(
     base::optional_ref<const ModelInfo> model_info) {
   safety_client_.SetLanguageDetectionModel(model_info);
+  NotifyModelAvailabilityChanges();
 }
 
 void OnDeviceModelServiceController::MaybeUpdateSafetyModel(
     base::optional_ref<const ModelInfo> model_info) {
   safety_client_.MaybeUpdateSafetyModel(model_info);
+  NotifyModelAvailabilityChanges();
 }
 
 on_device_model::ModelAssetPaths
@@ -309,13 +314,10 @@ void OnDeviceModelServiceController::UpdateModel(
   base_model_remote_.reset();
   base_model_scoped_weak_ptr_factory_.InvalidateWeakPtrs();
   model_metadata_ = std::move(model_metadata);
-  has_started_session_ = false;
   model_validator_ = nullptr;
 
   if (did_model_change) {
-    for (const auto& entry : model_availability_change_observers_) {
-      NotifyModelAvailabilityChange(entry.first);
-    }
+    NotifyModelAvailabilityChanges();
   }
 
   if (!model_metadata_ || !features::IsOnDeviceModelValidationEnabled()) {
@@ -339,8 +341,8 @@ void OnDeviceModelServiceController::UpdateModel(
 }
 
 void OnDeviceModelServiceController::StartValidation() {
-  // Skip validation if a session has started to avoid interrupting.
-  if (has_started_session_) {
+  // Skip validation if the base model is already in use to avoid interrupting.
+  if (base_model_remote_) {
     return;
   }
 
@@ -443,6 +445,12 @@ OnDeviceModelServiceController::OnDeviceModelClient::OnDeviceModelClient(
 OnDeviceModelServiceController::OnDeviceModelClient::~OnDeviceModelClient() =
     default;
 
+std::unique_ptr<SessionImpl::OnDeviceModelClient>
+OnDeviceModelServiceController::OnDeviceModelClient::Clone() const {
+  return std::make_unique<OnDeviceModelServiceController::OnDeviceModelClient>(
+      feature_, controller_, model_paths_, adaptation_assets_);
+}
+
 bool OnDeviceModelServiceController::OnDeviceModelClient::ShouldUse() {
   return controller_ &&
          controller_->access_controller_->ShouldStartNewSession() ==
@@ -485,6 +493,12 @@ void OnDeviceModelServiceController::
         OnDeviceModelAvailabilityObserver* observer) {
   DCHECK(features::internal::GetOptimizationTargetForCapability(feature));
   model_availability_change_observers_[feature].RemoveObserver(observer);
+}
+
+void OnDeviceModelServiceController::NotifyModelAvailabilityChanges() {
+  for (const auto& entry : model_availability_change_observers_) {
+    NotifyModelAvailabilityChange(entry.first);
+  }
 }
 
 void OnDeviceModelServiceController::NotifyModelAvailabilityChange(

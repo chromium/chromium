@@ -26,7 +26,7 @@ class StubPasswordReuseDetectionManagerClient
   // PasswordReuseDetectionManagerClient:
   password_manager::PasswordReuseManager* GetPasswordReuseManager()
       const override;
-  autofill::LogManager* GetLogManager() override;
+  autofill::LogManager* GetCurrentLogManager() override;
   bool IsHistorySyncAccountEmail(const std::string& username) override;
   bool IsPasswordFieldDetectedOnPage() override;
   void CheckProtectedPasswordEntry(

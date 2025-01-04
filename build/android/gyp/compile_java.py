@@ -349,13 +349,11 @@ def _OnStaleMd5(changes, options, javac_cmd, javac_args, java_files, kt_files):
   logging.info('Starting _OnStaleMd5')
 
   # Use the build server for errorprone runs.
-  if (options.enable_errorprone and not options.skip_build_server
-      and server_utils.MaybeRunCommand(
-          name=options.target_name,
-          argv=sys.argv,
-          stamp_file=options.jar_path,
-          force=options.use_build_server,
-          experimental=options.experimental_build_server)):
+  if (options.enable_errorprone and not options.skip_build_server and
+      server_utils.MaybeRunCommand(name=options.target_name,
+                                   argv=sys.argv,
+                                   stamp_file=options.jar_path,
+                                   use_build_server=options.use_build_server)):
     logging.info('Using build server')
     return
 
@@ -591,9 +589,6 @@ def _ParseOptions(argv):
   parser.add_option('--use-build-server',
                     action='store_true',
                     help='Always use the build server.')
-  parser.add_option('--experimental-build-server',
-                    action='store_true',
-                    help='Use experimental build server features.')
   parser.add_option('--java-srcjars',
                     action='append',
                     default=[],
@@ -739,12 +734,18 @@ def main(argv):
       # Treat these packages as @NullMarked by default.
       # These apply to both .jars in classpath as well as code being compiled.
       # Chrome classes rely on the presence of @NullMarked.
+      errorprone_flags += ['-XepOpt:NullAway:AnnotatedPackages=']
       errorprone_flags += [
-          '-XepOpt:NullAway:AnnotatedPackages=android,androidx'
+          '-XepOpt:NullAway:CustomContractAnnotations='
+          'org.chromium.build.annotations.Contract'
       ]
+      errorprone_flags += ['-XepOpt:NullAway:CheckContracts=true']
+      # Make it a warning to use assumeNonNull() with a @NonNull.
+      errorprone_flags += [('-XepOpt:NullAway:CastToNonNullMethod='
+                            'org.chromium.build.NullUtil.assumeNonNull')]
       # Detect "assert foo != null" as a null check.
       errorprone_flags += ['-XepOpt:NullAway:AssertsEnabled=true']
-      # Do not ignore @Nullable in non-annotated packages.
+      # Do not ignore @Nullable & @NonNull in non-annotated packages.
       errorprone_flags += [
           '-XepOpt:NullAway:AcknowledgeRestrictiveAnnotations=true'
       ]

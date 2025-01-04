@@ -102,7 +102,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.DEFAULT_TRAFFICSTATS_TAGGING,
                 Features.ASYNC_WEBVIEW_STARTUP,
                 Features.PRERENDER_WITH_URL + Features.DEV_SUFFIX,
-                Features.WEB_STORAGE_DELETE_BROWSING_DATA + Features.DEV_SUFFIX,
+                Features.WEB_STORAGE_DELETE_BROWSING_DATA,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The final
                 // feature should have a trailing comma for cleaner diffs.

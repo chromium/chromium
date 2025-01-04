@@ -95,12 +95,9 @@ END_METADATA
 
 }  // namespace
 
-HoverButton::HoverButton(PressedCallback callback, const std::u16string& text)
-    : views::LabelButton(
-          base::BindRepeating(&HoverButton::OnPressed, base::Unretained(this)),
-          text,
-          views::style::CONTEXT_BUTTON),
-      callback_(std::move(callback)) {
+HoverButton::HoverButton()
+    : views::LabelButton(base::BindRepeating(&HoverButton::OnPressed,
+                                             base::Unretained(this))) {
   SetButtonController(std::make_unique<HoverButtonController>(
       this,
       std::make_unique<views::Button::DefaultButtonControllerDelegate>(this)));
@@ -126,6 +123,12 @@ HoverButton::HoverButton(PressedCallback callback, const std::u16string& text)
                            ui::EF_RIGHT_MOUSE_BUTTON);
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnRelease);
+}
+
+HoverButton::HoverButton(PressedCallback callback, const std::u16string& text)
+    : HoverButton() {
+  SetCallback(std::move(callback));
+  SetText(text);
 }
 
 HoverButton::HoverButton(PressedCallback callback,
@@ -234,6 +237,12 @@ HoverButton::HoverButton(PressedCallback callback,
 
 HoverButton::~HoverButton() = default;
 
+void HoverButton::SetCallback(PressedCallback callback) {
+  // TODO(pkasting): Why does HoverButton have its own callback -- to disable
+  // special handling of the label? Can we remove this member and override?
+  callback_ = std::move(callback);
+}
+
 gfx::Size HoverButton::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   if (label_wrapper_) {
@@ -278,8 +287,9 @@ void HoverButton::SetTitleTextStyle(views::style::TextStyle text_style,
 
 void HoverButton::SetSubtitleTextStyle(int text_context,
                                        views::style::TextStyle text_style) {
-  if (!subtitle())
+  if (!subtitle()) {
     return;
+  }
 
   subtitle()->SetTextContext(text_context);
   subtitle()->SetTextStyle(text_style);
@@ -358,8 +368,9 @@ void HoverButton::StateChanged(ButtonState old_state) {
 }
 
 views::View* HoverButton::GetTooltipHandlerForPoint(const gfx::Point& point) {
-  if (!HitTestPoint(point))
+  if (!HitTestPoint(point)) {
     return nullptr;
+  }
 
   // Let the secondary control handle it if it has a tooltip.
   if (secondary_view_) {

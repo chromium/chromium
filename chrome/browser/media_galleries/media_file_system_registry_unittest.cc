@@ -411,8 +411,7 @@ bool MediaFileSystemInfoComparator(const MediaFileSystemInfo& a,
 ///////////////////////////////////////////////
 
 MockProfileSharedRenderProcessHostFactory::
-    ~MockProfileSharedRenderProcessHostFactory() {
-}
+    ~MockProfileSharedRenderProcessHostFactory() = default;
 
 std::unique_ptr<content::MockRenderProcessHost>
 MockProfileSharedRenderProcessHostFactory::ReleaseRPH(

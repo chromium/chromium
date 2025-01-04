@@ -26,10 +26,12 @@ def _GetDirAbove(dirname: str):
 
 SOURCE_DIR = _GetDirAbove('testing')
 
-sys.path.insert(1, os.path.join(SOURCE_DIR, 'third_party'))
+# //build imports.
 sys.path.append(os.path.join(SOURCE_DIR, 'build'))
-
 import action_helpers
+
+# //third_party imports.
+sys.path.insert(1, os.path.join(SOURCE_DIR, 'third_party'))
 import jinja2
 
 _C_STR_TRANS = str.maketrans({

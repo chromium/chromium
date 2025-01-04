@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -284,12 +280,10 @@ TEST_F(CanvasRenderingContext2DAPITest, CreateImageData) {
   EXPECT_EQ(100, image_data->width());
   EXPECT_EQ(50, image_data->height());
 
-  for (size_t i = 0; i < image_data->data()->GetAsUint8ClampedArray()->length();
-       ++i) {
-    image_data->data()->GetAsUint8ClampedArray()->Data()[i] = 255;
-  }
+  std::ranges::fill(image_data->data()->GetAsUint8ClampedArray()->AsSpan(),
+                    255);
 
-  EXPECT_EQ(255, image_data->data()->GetAsUint8ClampedArray()->Data()[32]);
+  EXPECT_EQ(255, image_data->data()->GetAsUint8ClampedArray()->AsSpan()[32]);
 
   // createImageData(imageData) should create a new ImageData of the same size
   // as 'imageData' but filled with transparent black
@@ -299,8 +293,8 @@ TEST_F(CanvasRenderingContext2DAPITest, CreateImageData) {
   EXPECT_FALSE(exception_state.HadException());
   EXPECT_EQ(100, same_size_image_data->width());
   EXPECT_EQ(50, same_size_image_data->height());
-  EXPECT_EQ(0,
-            same_size_image_data->data()->GetAsUint8ClampedArray()->Data()[32]);
+  EXPECT_EQ(
+      0, same_size_image_data->data()->GetAsUint8ClampedArray()->AsSpan()[32]);
 
   // createImageData(width, height) takes the absolute magnitude of the size
   // arguments

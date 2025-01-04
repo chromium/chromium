@@ -12,16 +12,19 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
+
 #include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
 
 TEST(GetKeySymsForUnicode, Map) {
-  const static struct Test {
+  struct Test {
     uint32_t code_point;
     uint32_t expected_keysyms[4];
-  } kTests[] = {
+  };
+  static const auto kTests = std::to_array<Test>({
       {0x0040, {0x0040, 0x01000040, 0}},
       {0x00b0, {0x00b0, 0x010000b0, 0}},
       {0x0100, {0x03c0, 0x01000100, 0}},
@@ -37,7 +40,7 @@ TEST(GetKeySymsForUnicode, Map) {
 
       // Characters for which there are no regular keysyms.
       {0x4444, {0x01004444, 0}},
-  };
+  });
 
   for (size_t i = 0; i < std::size(kTests); ++i) {
     std::vector<uint32_t> keysyms = GetKeySymsForUnicode(kTests[i].code_point);

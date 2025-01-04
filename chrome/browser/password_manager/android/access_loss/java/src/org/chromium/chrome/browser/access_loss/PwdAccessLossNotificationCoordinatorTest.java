@@ -32,7 +32,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNotificationType;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
-import org.chromium.components.browser_ui.notifications.AsyncNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationFeatureMap;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
@@ -49,7 +49,7 @@ public class PwdAccessLossNotificationCoordinatorTest {
     private Context mContext;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
-    @Mock private AsyncNotificationManagerProxy mNotificationManagerProxy;
+    @Mock private BaseNotificationManagerProxy mNotificationManagerProxy;
 
     @Before
     public void setUp() {

@@ -55,6 +55,7 @@ chromium-metrics-reviews@google.com.
       label="Chrome starts up with intent to ChromeTabbedActivity"/>
   <suffix name="WebApk" label="Chrome starts up with intent to WebApkActivity"/>
   <affected-histogram name="Startup.Android.Cold.TimeToFirstContentfulPaint"/>
+  <affected-histogram name="Startup.Android.Cold.TimeToFirstContentfulPaint3"/>
   <affected-histogram name="Startup.Android.Cold.TimeToFirstNavigationCommit"/>
 </histogram_suffixes>
 
@@ -222,6 +223,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="chrome" label="Chrome Module"/>
   <suffix name="dev_ui" label="Developer UI Module"/>
   <suffix name="feedv2" label="Feed V2 Module"/>
+  <suffix name="google3" label="Google3 Module"/>
   <suffix name="image_editor" label="Image Editor Module"/>
   <suffix name="read_aloud_playback" label="Read Aloud Playback Module"/>
   <suffix name="stack_unwinder" label="Stack Unwinder Module"/>
@@ -3634,37 +3636,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Duration100MilliSecTo1Sec"
       label="remoting sessions have duration in (0.1, 1] seconds"/>
   <affected-histogram name="Media.Remoting.SessionStopTrigger"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="RendererScheduler_MainThreadLoadSplit" separator=".">
-  <suffix name="Background"
-      label="Main thread load when the renderer is backgrounded. This does
-             not include extension renderers."/>
-  <suffix name="Background.AfterFifthMinute"
-      label="Main thread load when the renderer is backgrounded for longer
-             than five minutes. This does not include extension renderers."/>
-  <suffix name="Background.AfterFirstMinute"
-      label="Main thread load when the renderer is backgrounded for longer
-             than one minute. Most of loading tasks are expected to complete
-             by then. This does not include extension renderers."/>
-  <suffix name="Background.AfterTenthMinute"
-      label="Main thread load when the renderer is backgrounded for longer
-             than ten minutes. This does not include extension renderers."/>
-  <suffix name="Extension" label="This only includes extension renderers"/>
-  <suffix name="Extension.Background"
-      label="Main thread load when the renderer is backgrounded. This only
-             includes extension renderers."/>
-  <suffix name="Extension.Foreground"
-      label="Main thread load when the renderer is foregrounded. This only
-             includes extension renderers."/>
-  <suffix name="Foreground"
-      label="Main thread load when the renderer is foregrounded. This does
-             not include extension renderers."/>
-  <suffix name="Foreground.AfterFirstMinute"
-      label="Main thread load when the renderer is foregrounded for longer
-             than one minute. Most of loading tasks are expected to complete
-             by then. This does not include extension renderers."/>
-  <affected-histogram name="RendererScheduler.RendererMainThreadLoad5"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="RendererThreadType" separator=".">

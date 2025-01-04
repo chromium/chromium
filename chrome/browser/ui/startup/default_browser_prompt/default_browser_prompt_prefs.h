@@ -25,4 +25,4 @@ void MaybeResetAppMenuPromptPrefs(Profile* profile);
 
 }  // namespace chrome::startup::default_prompt
 
-#endif // CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_PROMPT_DEFAULT_BROWSER_PROMPT_PREFS_H_
+#endif  // CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_PROMPT_DEFAULT_BROWSER_PROMPT_PREFS_H_

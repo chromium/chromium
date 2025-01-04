@@ -315,6 +315,7 @@ source_set("browser_sources") {
     "extension_navigation_throttle.h",
     "extension_navigation_ui_data.cc",
     "extension_navigation_ui_data.h",
+    "extension_pref_names.h",
     "extension_pref_store.cc",
     "extension_pref_store.h",
     "extension_pref_value_map.cc",
@@ -578,6 +579,13 @@ source_set("browser_sources") {
     "//url",
   ]
 
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/ash/crosapi:browser_util",
+      "//chromeos/constants",
+    ]
+  }
+
   public_deps = [
     "//base",
     "//components/url_matcher",
@@ -713,6 +721,10 @@ source_set("browser_sources") {
     ]
 
     deps += [ "//services/device/public/cpp/hid" ]
+
+    if (is_chromeos) {
+      deps += [ "//chromeos/dbus/permission_broker" ]
+    }
   }
 
   if (is_mac) {
@@ -721,18 +733,7 @@ source_set("browser_sources") {
   }
 
   if (is_chromeos) {
-    sources += [
-      "api/clipboard/clipboard_api.cc",
-      "api/clipboard/clipboard_api.h",
-    ]
-    deps += [
-      "//chrome/browser/ash/crosapi:browser_util",
-      "//chromeos/ash/components/login/login_state",
-      "//chromeos/constants",
-      "//chromeos/dbus/permission_broker",
-      "//components/prefs:prefs",
-      "//ui/base/clipboard",
-    ]
+    deps += [ "//chromeos/constants" ]
   }
 
   if (enable_pdf) {
@@ -831,6 +832,7 @@ source_set("unit_tests") {
     "api/declarative_net_request/prefs_helper_unittest.cc",
     "api/declarative_net_request/ruleset_matcher_unittest.cc",
     "api/idle/idle_api_unittest.cc",
+    "api/power/power_api_unittest.cc",
     "api/storage/session_storage_manager_unittest.cc",
     "api/storage/settings_quota_unittest.cc",
     "api/storage/storage_api_unittest.cc",
@@ -959,7 +961,6 @@ source_set("unit_tests") {
       "api/file_handlers/directory_util_unittest.cc",
       "api/file_handlers/mime_util_unittest.cc",
       "api/mime_handler_private/mime_handler_private_unittest.cc",
-      "api/power/power_api_unittest.cc",
       "api/runtime/restart_after_delay_api_unittest.cc",
       "api/socket/mojo_data_pump_unittest.cc",
       "api/sockets_tcp/sockets_tcp_api_unittest.cc",
@@ -1010,8 +1011,6 @@ source_set("unit_tests") {
       "//chromeos/ash/components/dbus/upstart",
       "//chromeos/ash/components/login/login_state",
       "//chromeos/ash/components/network:test_support",
-      "//chromeos/ash/components/standalone_browser",
-      "//chromeos/ash/components/standalone_browser:test_support",
       "//chromeos/constants",
       "//chromeos/crosapi/mojom",
       "//chromeos/dbus/permission_broker",

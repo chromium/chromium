@@ -645,9 +645,7 @@ void TrayBubbleView::OnThemeChanged() {
 
   SetBorder(std::make_unique<views::HighlightBorder>(
       params_.corner_radius,
-      chromeos::features::IsJellyrollEnabled()
-          ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-          : views::HighlightBorder::Type::kHighlightBorder1));
+      views::HighlightBorder::Type::kHighlightBorderOnShadow));
 
   const ui::ColorId background_color_id =
       chromeos::features::IsSystemBlurEnabled()

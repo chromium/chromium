@@ -13,6 +13,7 @@
 
 #include "base/functional/callback.h"
 #include "build/build_config.h"
+#include "components/input/render_input_router.mojom.h"
 #include "components/viz/common/vertical_scroll_direction.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/common/content_export.h"
@@ -171,7 +172,7 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // Request the renderer to Move the caret to the new position.
   virtual void MoveCaret(const gfx::Point& extent) {}
 
-  virtual uint32_t GetCompositorFrameSinkGroupingId() const;
+  virtual base::UnguessableToken GetCompositorFrameSinkGroupingId() const;
 
   virtual input::RenderWidgetHostInputEventRouter* GetInputEventRouter();
 
@@ -365,6 +366,10 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
 
   // Notifies when an input event is ignored.
   virtual void OnInputIgnored(const blink::WebInputEvent& event) {}
+
+  // Get remote for making calls to RenderInputRouterDelegate interface.
+  virtual input::mojom::RenderInputRouterDelegate*
+  GetRenderInputRouterDelegateRemote();
 
  protected:
   virtual ~RenderWidgetHostDelegate() {}

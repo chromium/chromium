@@ -1380,8 +1380,7 @@ TEST_F(PageSpecificContentSettingsTest, GetLastUsedReturnCorrectTimeTest) {
 TEST_F(PageSpecificContentSettingsTest, MediaBlockedIndicatorsDismissDelay) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitWithFeatures(
-      {content_settings::features::kImprovedSemanticsActivityIndicators},
-      {content_settings::features::kLeftHandSideActivityIndicators});
+      {}, {content_settings::features::kLeftHandSideActivityIndicators});
 
   NavigateAndCommit(GURL("http://google.com"));
 
@@ -1421,9 +1420,6 @@ TEST_F(PageSpecificContentSettingsTest, MediaBlockedIndicatorsDismissDelay) {
 TEST_F(PageSpecificContentSettingsTest,
        MediaIndicatorsDoNotDismissIfOpenedDelay) {
   base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(
-      content_settings::features::kImprovedSemanticsActivityIndicators);
-
   NavigateAndCommit(GURL("http://google.com"));
 
   PageSpecificContentSettings* pscs = PageSpecificContentSettings::GetForFrame(

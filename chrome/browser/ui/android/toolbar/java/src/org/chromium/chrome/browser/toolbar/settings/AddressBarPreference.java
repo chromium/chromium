@@ -7,12 +7,14 @@ package org.chromium.chrome.browser.toolbar.settings;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.toolbar.R;
@@ -21,6 +23,7 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayou
 
 /** Preferences that allows the user to configure address bar. */
 public class AddressBarPreference extends Preference implements RadioGroup.OnCheckedChangeListener {
+    private @NonNull TextView mDescription;
     private @NonNull RadioButtonWithDescriptionLayout mGroup;
     private @NonNull RadioButtonWithDescription mTopButton;
     private @NonNull RadioButtonWithDescription mBottomButton;
@@ -34,6 +37,7 @@ public class AddressBarPreference extends Preference implements RadioGroup.OnChe
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
+        mDescription = (TextView) holder.findViewById(R.id.address_bar_settings_description);
         mGroup =
                 (RadioButtonWithDescriptionLayout)
                         holder.findViewById(R.id.address_bar_radio_group);
@@ -43,6 +47,7 @@ public class AddressBarPreference extends Preference implements RadioGroup.OnChe
         mBottomButton = (RadioButtonWithDescription) holder.findViewById(R.id.address_bar_bottom);
 
         initializeRadioButtonSelection();
+        overrideDescriptionIfFoldable();
     }
 
     @Override
@@ -60,6 +65,12 @@ public class AddressBarPreference extends Preference implements RadioGroup.OnChe
         mBottomButton.setChecked(!showOnTop);
     }
 
+    private void overrideDescriptionIfFoldable() {
+        if (BuildInfo.getInstance().isFoldable) {
+            mDescription.setText(R.string.address_bar_settings_description_foldable);
+        }
+    }
+
     @VisibleForTesting
     RadioButtonWithDescription getTopRadioButton() {
         return mTopButton;
@@ -68,5 +79,10 @@ public class AddressBarPreference extends Preference implements RadioGroup.OnChe
     @VisibleForTesting
     RadioButtonWithDescription getBottomRadioButton() {
         return mBottomButton;
+    }
+
+    @VisibleForTesting
+    TextView getDescription() {
+        return mDescription;
     }
 }

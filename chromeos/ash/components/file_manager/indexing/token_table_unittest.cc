@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "sql/database.h"
+#include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::file_manager {
@@ -19,7 +20,7 @@ class TokenTableTest : public testing::Test {
  public:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    db_ = std::make_unique<sql::Database>(sql::DatabaseOptions());
+    db_ = std::make_unique<sql::Database>(sql::test::kTestTag);
     ASSERT_TRUE(InitDb(*db_));
   }
 

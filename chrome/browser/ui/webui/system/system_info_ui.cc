@@ -21,7 +21,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/feedback/system_logs/about_system_logs_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/about_sys_resources.h"
@@ -40,6 +39,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/jstemplate_builder.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/webui/webui_util.h"
 
 using content::WebContents;
 using content::WebUIMessageHandler;
@@ -131,8 +131,9 @@ void SystemInfoUIHandler::HandleRequestSystemInfo(
 void SystemInfoUIHandler::OnSystemInfo(
     std::unique_ptr<SystemLogsResponse> sys_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!sys_info)
+  if (!sys_info) {
     return;
+  }
   base::Value::List data;
   for (SystemLogsResponse::const_iterator it = sys_info->begin();
        it != sys_info->end(); ++it) {

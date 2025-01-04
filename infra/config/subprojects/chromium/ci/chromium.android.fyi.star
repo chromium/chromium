@@ -1025,7 +1025,6 @@ ci.builder(
     ),
     targets = targets.bundle(
         targets = [
-            "android_14_device_fyi_gtests",
             "chromium_android_scripts",
         ],
         mixins = [

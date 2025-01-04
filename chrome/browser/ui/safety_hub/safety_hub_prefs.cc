@@ -12,7 +12,7 @@ void RegisterSafetyHubProfilePrefs(PrefRegistrySimple* registry) {
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterDictionaryPref(
       safety_hub_prefs::kBackgroundPasswordCheckTimeAndInterval);
-#else  // BUILDFLAG(IS_ANDROID)
+#else   // BUILDFLAG(IS_ANDROID)
   // TODO(sideyilmaz): Move kBreachedCredentialsCount to safety_hub_prefs.h
   registry->RegisterIntegerPref(prefs::kBreachedCredentialsCount, -1);
 

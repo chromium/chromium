@@ -28,7 +28,7 @@ class Image;
 namespace ui {
 class ColorProvider;
 class NativeTheme;
-}
+}  // namespace ui
 
 // A representation of a theme. All theme properties can be accessed through the
 // public methods. Subclasses are expected to override all methods which should

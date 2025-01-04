@@ -190,7 +190,8 @@ public class HistoryUiTest {
                         /* clientPackageName= */ null,
                         /* shouldShowClearData= */ true,
                         /* launchedForApp= */ false,
-                        /* showAppFilter= */ isAppSpecificHistoryEnabled);
+                        /* showAppFilter= */ isAppSpecificHistoryEnabled,
+                        /* openHistoryItemCallback= */ null);
         mContentManager = mHistoryManager.getContentManagerForTests();
         mAdapter = mContentManager.getAdapter();
         mRecyclerView = mContentManager.getRecyclerView();
@@ -755,10 +756,12 @@ public class HistoryUiTest {
                         /* Supplier<Tab>= */ null,
                         mHistoryProvider,
                         new HistoryUmaRecorder(),
-                        appId,
-                        true,
-                        true,
-                        false);
+                        /* clientPackageName= */ appId,
+                        /* shouldShowClearData= */ true,
+                        /* launchedForApp= */ true,
+                        /* showAppFilter= */ false,
+                        /* openHistoryItemCallback= */ null);
+
         final HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
         Assert.assertNull(toolbar.getItemById(R.id.close_menu_id));
         Assert.assertEquals(
@@ -790,10 +793,11 @@ public class HistoryUiTest {
                         /* Supplier<Tab>= */ null,
                         mHistoryProvider,
                         new HistoryUmaRecorder(),
-                        appId,
-                        true,
-                        true,
-                        false);
+                        /* clientPackageName= */ appId,
+                        /* shouldShowClearData= */ true,
+                        /* launchedForApp= */ true,
+                        /* showAppFilter= */ false,
+                        /* openHistoryItemCallback= */ null);
         InfoHeaderPref headerPref = mHistoryManager.getInfoHeaderPrefForTests();
         Assert.assertFalse(headerPref.isVisible());
         HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();

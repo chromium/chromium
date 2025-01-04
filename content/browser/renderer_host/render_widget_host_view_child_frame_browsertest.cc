@@ -77,9 +77,10 @@ class RenderWidgetHostViewChildFrameBrowserTest : public ContentBrowserTest {
     // The viz::FrameSinkID will be replaced while the test blocks for
     // navigation. It should differ from the information stored in the child's
     // RenderWidgetHost.
-    EXPECT_NE(base::checked_cast<uint32_t>(
-                  child_view->GetRenderWidgetHost()->GetProcess()->GetID()),
-              actual_frame_sink_id_.client_id());
+    EXPECT_NE(
+        base::checked_cast<uint32_t>(
+            child_view->GetRenderWidgetHost()->GetProcess()->GetDeprecatedID()),
+        actual_frame_sink_id_.client_id());
     EXPECT_NE(base::checked_cast<uint32_t>(
                   child_view->GetRenderWidgetHost()->GetRoutingID()),
               actual_frame_sink_id_.sink_id());

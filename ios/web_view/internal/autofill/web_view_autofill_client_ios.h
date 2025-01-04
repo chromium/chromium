@@ -5,30 +5,34 @@
 #ifndef IOS_WEB_VIEW_INTERNAL_AUTOFILL_WEB_VIEW_AUTOFILL_CLIENT_IOS_H_
 #define IOS_WEB_VIEW_INTERNAL_AUTOFILL_WEB_VIEW_AUTOFILL_CLIENT_IOS_H_
 
-#include <memory>
-#include <string>
-#include <vector>
+#import <memory>
+#import <string>
+#import <vector>
 
 #import "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "components/autofill/core/browser/autocomplete_history_manager.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
+#import "base/memory/weak_ptr.h"
+#import "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #import "components/autofill/core/browser/crowdsourcing/votes_uploader.h"
-#include "components/autofill/core/browser/logging/log_manager.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#import "components/autofill/core/browser/foundations/autofill_client.h"
+#import "components/autofill/core/browser/logging/log_manager.h"
 #import "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/single_field_fill_router.h"
-#include "components/autofill/core/browser/strike_databases/strike_database.h"
-#include "components/prefs/pref_service.h"
-#include "components/sync/service/sync_service.h"
+#import "components/autofill/core/browser/single_field_fillers/autocomplete/autocomplete_history_manager.h"
+#import "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
+#import "components/autofill/core/browser/strike_databases/strike_database.h"
+#import "components/autofill/ios/browser/autofill_client_ios.h"
+#import "components/autofill/ios/browser/autofill_driver_ios_bridge.h"
+#import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
+#import "components/prefs/pref_service.h"
+#import "components/sync/service/sync_service.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_client_ios_bridge.h"
-#include "ios/web_view/internal/autofill/ios_web_view_payments_autofill_client.h"
-#include "ios/web_view/internal/web_view_browser_state.h"
+#import "ios/web_view/internal/autofill/ios_web_view_payments_autofill_client.h"
+#import "ios/web_view/internal/web_view_browser_state.h"
 
 namespace autofill {
 
+class LogRouter;
 enum class SuggestionType;
 
 namespace payments {
@@ -36,21 +40,56 @@ class IOSWebViewPaymentsAutofillClient;
 }  // namespace payments
 
 // WebView implementation of AutofillClient.
-class WebViewAutofillClientIOS : public AutofillClient {
+//
+// The argument why it satisfies the AutofillClientIOS contract is lengthy.
+//
+// Firstly, observe that
+// - WebState is an instance variable of CWVWebView and
+// - WebViewAutofillClientIOS is indirectly an implicitly-`strong` property of
+//   CWVWebView.
+//
+// There are multiple ways of destruction of CWVWebView.
+//
+// - Case 1: CWVWebView's `shutDown` is called before `dealloc`.
+//   Then ~WebStateImpl() first notifies WebStateDestroyed(), which leads to
+//   potentially two calls of AutofillDriverIOSFactory::WebStateDestroyed()
+//   (whose relative ordering isn't obvious):
+//   (a) AutofillDriverIOSFactory is notified directly, and
+//   (b) CWVAutofillController is notified, which calls
+//       ~WebViewAutofillClientIOS(), which in turn calls
+//       AutofillDriverIOSFactory::WebStateDestroyed().
+//   Since AutofillDriverIOSFactory::WebStateDestroyed() removes itself as
+//   observer, (a) cannot happen after (b). So either only (b) happens or (a)
+//   happens before (b).
+//   At the time of (b), all members of WebViewAutofillClientIOS are still alive
+//   and web_state() is valid, so the AutofillClientIOS contract is satisfied.
+//
+// - Case 2: CWVWebView's `dealloc` is called without `shutDown`.
+//   Then ~WebViewAutofillClientIOS() may be called before, during, or after
+//   ~WebStateImpl().
+//   If it is called during or after ~WebStateImpl(), the argument from Case 1
+//   applies.
+//   If it is called before ~WebStateImpl(), then ~WebViewAutofillClientIOS()
+//   calls AutofillDriverIOSFactory::WebStateDestroyed(), so the
+//   AutofillClientIOS contract is satisfied.
+class WebViewAutofillClientIOS : public AutofillClientIOS {
  public:
   static std::unique_ptr<WebViewAutofillClientIOS> Create(
+      FromWebStateImpl from_web_state_impl,
       web::WebState* web_state,
-      ios_web_view::WebViewBrowserState* browser_state);
+      id<CWVAutofillClientIOSBridge, AutofillDriverIOSBridge> bridge);
 
   WebViewAutofillClientIOS(
+      FromWebStateImpl from_web_state_impl,
       PrefService* pref_service,
       PersonalDataManager* personal_data_manager,
       AutocompleteHistoryManager* autocomplete_history_manager,
       web::WebState* web_state,
+      id<CWVAutofillClientIOSBridge, AutofillDriverIOSBridge> bridge,
       signin::IdentityManager* identity_manager,
       StrikeDatabase* strike_database,
       syncer::SyncService* sync_service,
-      std::unique_ptr<autofill::LogManager> log_manager);
+      LogRouter* log_router);
 
   WebViewAutofillClientIOS(const WebViewAutofillClientIOS&) = delete;
   WebViewAutofillClientIOS& operator=(const WebViewAutofillClientIOS&) = delete;
@@ -62,7 +101,6 @@ class WebViewAutofillClientIOS : public AutofillClient {
   const std::string& GetAppLocale() const override;
   bool IsOffTheRecord() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
-  AutofillDriverFactory& GetAutofillDriverFactory() override;
   AutofillCrowdsourcingManager& GetCrowdsourcingManager() override;
   VotesUploader& GetVotesUploader() override;
   PersonalDataManager& GetPersonalDataManager() override;
@@ -109,22 +147,20 @@ class WebViewAutofillClientIOS : public AutofillClient {
       override;
   bool IsLastQueriedField(FieldGlobalId field_id) override;
 
-  LogManager* GetLogManager() const override;
-
-  void set_bridge(id<CWVAutofillClientIOSBridge> bridge);
+  LogManager* GetCurrentLogManager() override;
 
  private:
+  __weak id<CWVAutofillClientIOSBridge> bridge_;
   raw_ptr<PrefService> pref_service_;
   std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager_;
-  std::unique_ptr<VotesUploader> votes_uploader_;
+  VotesUploader votes_uploader_{this};
   PersonalDataManager* personal_data_manager_;
   AutocompleteHistoryManager* autocomplete_history_manager_;
-  web::WebState* web_state_;
-  __weak id<CWVAutofillClientIOSBridge> bridge_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
   StrikeDatabase* strike_database_;
   syncer::SyncService* sync_service_ = nullptr;
+  raw_ptr<LogRouter> log_router_;
   std::unique_ptr<LogManager> log_manager_;
   autofill_metrics::FormInteractionsUkmLogger form_interactions_ukm_logger_{
       this};
@@ -133,7 +169,7 @@ class WebViewAutofillClientIOS : public AutofillClient {
   // after all of the members passed into the constructor of
   // `payments_autofill_client_` are initialized, other than `this`.
   payments::IOSWebViewPaymentsAutofillClient payments_autofill_client_{
-      this, bridge_, web_state_};
+      this, bridge_, web_state()};
   SingleFieldFillRouter single_field_fill_router_{
       autocomplete_history_manager_, payments_autofill_client_.GetIbanManager(),
       payments_autofill_client_.GetMerchantPromoCodeManager()};

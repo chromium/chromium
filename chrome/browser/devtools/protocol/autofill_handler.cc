@@ -16,14 +16,14 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
-#include "components/autofill/core/browser/autofill_address_util.h"
-#include "components/autofill/core/browser/autofill_manager.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/manual_testing_import.h"
+#include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
@@ -164,12 +164,6 @@ protocol::Response AutofillHandler::Trigger(
 void AutofillHandler::SetAddresses(
     std::unique_ptr<protocol::Array<protocol::Autofill::Address>> addresses,
     std::unique_ptr<SetAddressesCallback> callback) {
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillTestFormWithTestAddresses)) {
-    std::move(callback)->sendSuccess();
-    return;
-  }
-
   if (!content::DevToolsAgentHost::GetForId(target_id_)) {
     std::move(callback)->sendFailure(Response::ServerError("Target not found"));
     return;
@@ -227,19 +221,18 @@ void AutofillHandler::OnFillOrPreviewDataModelForm(
     autofill::FormGlobalId form,
     autofill::mojom::ActionPersistence action_persistence,
     base::span<const autofill::FormFieldData* const> filled_fields,
-    absl::variant<const autofill::AutofillProfile*, const autofill::CreditCard*>
-        profile_or_credit_card) {
+    const autofill::FillingPayload& filling_payload) {
   // We only care about address forms that were filled.
   if (action_persistence != autofill::mojom::ActionPersistence::kFill ||
       !absl::holds_alternative<const autofill::AutofillProfile*>(
-          profile_or_credit_card)) {
+          filling_payload)) {
     return;
   }
 
   autofill::FormStructure& form_structure =
       CHECK_DEREF(manager.FindCachedFormById(form));
   const autofill::AutofillProfile* profile_used_to_fill_form =
-      absl::get<const autofill::AutofillProfile*>(profile_or_credit_card);
+      absl::get<const autofill::AutofillProfile*>(filling_payload);
 
   auto field_id_to_form_field_data =
       base::MakeFlatMap<autofill::FieldGlobalId,

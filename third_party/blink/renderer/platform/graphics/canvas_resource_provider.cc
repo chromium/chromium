@@ -40,9 +40,9 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_shared_image_interface_provider.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_deferred_paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
@@ -805,7 +805,6 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     // The only resources that should be coming in here are
     // CanvasResourceSharedImage instances, since that is the only type of
     // resource that this class creates.
-    CHECK(resource->UsesClientSharedImage());
     return resource->GetClientSharedImage()->usage().HasAll(
         shared_image_usage_flags_);
   }
@@ -917,7 +916,9 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
                                    .gpu_rasterization) {
     resource_ = CanvasResourceSwapChain::Create(
         size, viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type),
-        alpha_type, SkColorSpaceToGfxColorSpace(std::move(sk_color_space)),
+        alpha_type,
+        SkColorSpaceToGfxColorSpace(
+            GetSkImageInfo().colorInfo().refColorSpace()),
         ContextProviderWrapper(), CreateWeakPtr());
     // CanvasResourceProviderSwapChain can only operate in a single buffered
     // mode so enable it as soon as possible.
@@ -1567,7 +1568,7 @@ void CanvasResourceProvider::NotifyWillTransfer(
 }
 
 bool CanvasResourceProvider::OverwriteImage(
-    const gpu::Mailbox& shared_image_mailbox,
+    const scoped_refptr<gpu::ClientSharedImage>& shared_image,
     const gfx::Rect& copy_rect,
     const gpu::SyncToken& ready_sync_token,
     gpu::SyncToken& completion_sync_token) {
@@ -1581,7 +1582,7 @@ bool CanvasResourceProvider::OverwriteImage(
   }
 
   raster->WaitSyncTokenCHROMIUM(ready_sync_token.GetConstData());
-  raster->CopySharedImage(shared_image_mailbox, dst_client_si->mailbox(),
+  raster->CopySharedImage(shared_image->mailbox(), dst_client_si->mailbox(),
                           /*xoffset=*/0,
                           /*yoffset=*/0, copy_rect.x(), copy_rect.y(),
                           copy_rect.width(), copy_rect.height());
@@ -1741,6 +1742,10 @@ gfx::ColorSpace CanvasResourceProvider::GetColorSpace() const {
   auto* color_space = GetSkImageInfo().colorSpace();
   return color_space ? gfx::ColorSpace(*color_space)
                      : gfx::ColorSpace::CreateSRGB();
+}
+
+SkAlphaType CanvasResourceProvider::GetAlphaType() const {
+  return GetSkImageInfo().alphaType();
 }
 
 std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(

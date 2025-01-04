@@ -11,6 +11,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
+#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_breakage_exception.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/subresource_filter/content/shared/browser/utils.h"
@@ -74,6 +75,14 @@ FingerprintingProtectionPageActivationThrottle::GetActivation() const {
             .decision = ActivationDecision::ACTIVATION_DISABLED};
   }
 
+  if (features::IsFingerprintingProtectionRefreshHeuristicExceptionEnabled(
+          is_incognito_) &&
+      HasBreakageException(navigation_handle()->GetURL(), *prefs_)) {
+    // Disabled by breakage exception.
+    return {.level = ActivationLevel::kDisabled,
+            .decision = ActivationDecision::URL_ALLOWLISTED};
+  }
+
   if (features::kActivationLevel.Get() == ActivationLevel::kDryRun) {
     // Activated for dry run
     return {.level = ActivationLevel::kDryRun,
@@ -103,8 +112,8 @@ FingerprintingProtectionPageActivationThrottle::GetActivation() const {
   // If we have a reference to TrackingProtectionSettings, use it to check for
   // a URL-level exclusion.
   if (tracking_protection_settings_ != nullptr &&
-      tracking_protection_settings_->GetTrackingProtectionSetting(
-          navigation_handle()->GetURL()) == CONTENT_SETTING_ALLOW) {
+      tracking_protection_settings_->HasTrackingProtectionException(
+          navigation_handle()->GetURL())) {
     // FP disabled by a Tracking Protection exception for the current URL.
     return {.level = ActivationLevel::kDisabled,
             .decision = ActivationDecision::URL_ALLOWLISTED};

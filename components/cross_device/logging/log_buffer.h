@@ -8,7 +8,9 @@
 #include <stddef.h>
 
 #include <list>
+#include <string>
 
+#include "base/component_export.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -23,10 +25,10 @@ enum class Feature {
 // and will discard entries in FIFO order.
 // Call CrossDeviceLogBuffer::GetInstance() to get the global
 // CrossDeviceLogBuffer instance.
-class CrossDeviceLogBuffer {
+class COMPONENT_EXPORT(COMPONENTS_CROSS_DEVICE_LOGGING) CrossDeviceLogBuffer {
  public:
   // Represents a single log entry in the log buffer.
-  struct LogMessage {
+  struct COMPONENT_EXPORT(COMPONENTS_CROSS_DEVICE_LOGGING) LogMessage {
     const std::string text;
     Feature feature;
     base::Time time;

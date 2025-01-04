@@ -154,7 +154,7 @@ ScriptObject CryptoKey::algorithm(ScriptState* script_state) {
 //        instead is return the same (immutable) array. (Javascript callers can
 //        distinguish this by doing an == test on the arrays and seeing they are
 //        different).
-ScriptValue CryptoKey::usages(ScriptState* script_state) {
+ScriptObject CryptoKey::usages(ScriptState* script_state) {
   Vector<String> result;
   for (const auto& mapping : kKeyUsageMappings) {
     WebCryptoKeyUsage usage = mapping.value;
@@ -162,7 +162,7 @@ ScriptValue CryptoKey::usages(ScriptState* script_state) {
       result.push_back(KeyUsageToString(usage));
   }
 
-  return ScriptValue(
+  return ScriptObject(
       script_state->GetIsolate(),
       ToV8Traits<IDLSequence<IDLString>>::ToV8(script_state, result));
 }

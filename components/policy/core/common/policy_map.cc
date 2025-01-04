@@ -16,7 +16,6 @@
 #include "base/types/optional_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/cloud/affiliation.h"
 #include "components/policy/core/common/policy_details.h"
 #include "components/policy/core/common/policy_logger.h"

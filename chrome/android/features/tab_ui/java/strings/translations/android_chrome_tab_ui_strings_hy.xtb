@@ -77,7 +77,6 @@
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> ներդիր փոփոխվել է, <ph name="ANY_CLOSED" />-ը՝ փակվել}one{<ph name="MANY_CHANGED" /> ներդիր փոփոխվել է, <ph name="ANY_CLOSED" />-ը՝ փակվել}other{<ph name="MANY_CHANGED" /> ներդիր փոփոխվել է, <ph name="ANY_CLOSED" />-ը՝ փակվել}}</translation>
 <translation id="4371591986692297148">Ակտիվ չէ</translation>
 <translation id="4460014764210899310">Ապախմբավորել</translation>
-<translation id="4590027107044272416">Այժմ կարող եք նոր ներդիր բացել այստեղ</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Փակե՞լ 1 ոչ ակտիվ ներդիրը}one{Փակե՞լ <ph name="TAB_COUNT_MANY" /> ոչ ակտիվ ներդիրը}other{Փակե՞լ <ph name="TAB_COUNT_MANY" /> ոչ ակտիվ ներդիրները}}</translation>
 <translation id="4686942373615810936">Ստեղծվել է քիչ առաջ</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Փակել 1 օր հետո}one{Փակել <ph name="DAY_COUNT_MANY" /> օր հետո}other{Փակել <ph name="DAY_COUNT_MANY" /> օր հետո}}</translation>
@@ -98,7 +97,9 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ներդիր ավելացվել է}one{<ph name="MANY_ADDED" /> ներդիր ավելացվել է}other{<ph name="MANY_ADDED" /> ներդիր ավելացվել է}}</translation>
 <translation id="5161254044473106830">Վերնագիրը պարտադիր է</translation>
 <translation id="5339733443032484186">Ձեր վերջին ներդիրը</translation>
+<translation id="5380159289133845234">Արխիվացնել կրկնօրինակ ներդիրները</translation>
 <translation id="5400836586163650660">Մոխրագույն</translation>
+<translation id="5446043142172831860">Հեռացնել ներդիրը և լքել խումբը</translation>
 <translation id="5490235265819901748">Ներդիրների խումբը ծավալվեց</translation>
 <translation id="5494920125229734069">Ընտրել բոլորը</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Փակել ներդիրների խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, այնտեղ կա <ph name="TABS_COUNT_ONE" /> ներդիր։}one{Փակել ներդիրների խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, այնտեղ կա <ph name="TABS_COUNT_MANY" /> ներդիր։}other{Փակել ներդիրների խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, այնտեղ կա <ph name="TABS_COUNT_MANY" /> ներդիր։}}</translation>
@@ -117,6 +118,7 @@
 <translation id="6051432659151380973">Ներդիրների խմբերն ավտոմատ պահվում են</translation>
 <translation id="6054741997831917303">Այս ապրանքի գինը <ph name="PREVIOUS_PRICE" />-ից իջել է <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Ձեզ անմիջապես անհասանելի կդառնա ներդիրների «<ph name="GROUP_NAME" />» խումբը</translation>
+<translation id="6109251075362363230">Բոլոր կրկնօրինակ ներդիրները նույնպես կարխիվացվեն՝ բացառությամբ ամենավերջին կրկնօրինակից։</translation>
 <translation id="6193448654517602979">Ընտրեք ներդիրներ</translation>
 <translation id="6228793724645064692">(խանութի վարկանիշը)</translation>
 <translation id="6271513594716432922">Փակել բոլոր անգործուն ներդիրները</translation>

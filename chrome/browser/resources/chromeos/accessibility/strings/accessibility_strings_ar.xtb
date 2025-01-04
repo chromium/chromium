@@ -845,6 +845,7 @@
 <translation id="6385591741672306837">العمود</translation>
 <translation id="6387719785439924554">aside</translation>
 <translation id="6393014464788431702">إيقاف جميع فلاتر الأحداث</translation>
+<translation id="6406989068857078334">تم خفض سرعة الماوس، يُرجى "<ph name="GESTURE" />" مرة أخرى لتنشيط النقر</translation>
 <translation id="6411569524720229058">فصل الخريف</translation>
 <translation id="6417265370957905582">‏مساعد Google</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{علامة نقطتين واحدة}zero{# colons}two{علامتا نقطتين (#)}few{# علامات نقطتين}many{# علامة نقطتين}other{# من علامات النقطتين}}</translation>
@@ -1098,6 +1099,7 @@
 <translation id="8205922869661890178">فتح صفحة سجلّ مطوّر البرامج</translation>
 <translation id="8212109599554677485">تغيير نمط العرض إلى "جنبًا إلى جنب"</translation>
 <translation id="8215202828671303819">تحديد متعدد</translation>
+<translation id="822316432305106615">تفعيل النقر الدقيق</translation>
 <translation id="8249864170673238087">تعتيم <ph name="COLOR" />، <ph name="OPACITY_PERCENTAGE" />%.</translation>
 <translation id="8261506727792406068">حذف</translation>
 <translation id="826825447994856889">مقدمة</translation>

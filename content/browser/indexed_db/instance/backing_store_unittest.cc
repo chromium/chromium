@@ -606,9 +606,12 @@ class BackingStoreTestWithExternalObjects
   std::vector<IndexedDBExternalObject> external_objects_;
 
   std::vector<std::string> blob_remote_uuids_;
+
+#if DCHECK_IS_ON()
   // Number of blob deletions previously counted by a call to
   // `VerifyNumBlobsRemoved()`.
   int removed_blobs_count_ = 0;
+#endif
 };
 
 INSTANTIATE_TEST_SUITE_P(

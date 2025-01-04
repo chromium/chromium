@@ -36,6 +36,7 @@
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash {
 namespace {
@@ -216,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(DeviceIDTest, PRE_PRE_PRE_PRE_PRE_NewUsers) {
       ->GetWizardController()
       ->SkipToLoginForTesting();
   SignInOnline(FakeGaiaMixin::kFakeUserEmail, FakeGaiaMixin::kFakeUserPassword,
-               kRefreshToken1, FakeGaiaMixin::kFakeUserGaiaId);
+               kRefreshToken1, GaiaId(FakeGaiaMixin::kFakeUserGaiaId));
   CheckDeviceIDIsConsistent(
       AccountId::FromUserEmail(FakeGaiaMixin::kFakeUserEmail), kRefreshToken1);
 }
@@ -234,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(DeviceIDTest, PRE_PRE_PRE_PRE_NewUsers) {
   test::TapForPersonalUseCrRadioButton();
   test::TapUserCreationNext();
   SignInOnline(FakeGaiaMixin::kFakeUserEmail, FakeGaiaMixin::kFakeUserPassword,
-               kRefreshToken2, FakeGaiaMixin::kFakeUserGaiaId);
+               kRefreshToken2, GaiaId(FakeGaiaMixin::kFakeUserGaiaId));
   CheckDeviceIDIsConsistent(
       AccountId::FromUserEmail(FakeGaiaMixin::kFakeUserEmail), kRefreshToken2);
 
@@ -268,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(DeviceIDTest, PRE_PRE_NewUsers) {
   test::TapForPersonalUseCrRadioButton();
   test::TapUserCreationNext();
   SignInOnline(kSecondUserEmail, kSecondUserPassword, kSecondUserRefreshToken1,
-               kSecondUserGaiaId);
+               GaiaId(kSecondUserGaiaId));
   CheckDeviceIDIsConsistent(AccountId::FromUserEmail(kSecondUserEmail),
                             kSecondUserRefreshToken1);
 }
@@ -285,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(DeviceIDTest, NewUsers) {
   test::TapForPersonalUseCrRadioButton();
   test::TapUserCreationNext();
   SignInOnline(kSecondUserEmail, kSecondUserPassword, kSecondUserRefreshToken2,
-               kSecondUserGaiaId);
+               GaiaId(kSecondUserGaiaId));
   CheckDeviceIDIsConsistent(AccountId::FromUserEmail(kSecondUserEmail),
                             kSecondUserRefreshToken2);
   EXPECT_NE(GetDeviceIdFromGAIA(kSecondUserRefreshToken1),
@@ -298,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(DeviceIDTest, PRE_Migration) {
       ->GetWizardController()
       ->SkipToLoginForTesting();
   SignInOnline(FakeGaiaMixin::kFakeUserEmail, FakeGaiaMixin::kFakeUserPassword,
-               kRefreshToken1, FakeGaiaMixin::kFakeUserGaiaId);
+               kRefreshToken1, GaiaId(FakeGaiaMixin::kFakeUserGaiaId));
 
   // Simulate user that has device ID saved only in preferences (pre-M44).
   PrefService* prefs =
@@ -335,7 +336,7 @@ IN_PROC_BROWSER_TEST_F(DeviceIDTest, PRE_LegacyUsers) {
       ->GetWizardController()
       ->SkipToLoginForTesting();
   SignInOnline(FakeGaiaMixin::kFakeUserEmail, FakeGaiaMixin::kFakeUserPassword,
-               kRefreshToken1, FakeGaiaMixin::kFakeUserGaiaId);
+               kRefreshToken1, GaiaId(FakeGaiaMixin::kFakeUserGaiaId));
 
   PrefService* prefs =
       ProfileHelper::Get()

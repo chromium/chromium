@@ -81,7 +81,7 @@ class FontAccessManagerTest : public RenderViewHostImplTestHarness {
     RenderViewHostImplTestHarness::SetUp();
     NavigateAndCommit(kTestUrl);
 
-    const int process_id = main_rfh()->GetProcess()->GetID();
+    const int process_id = main_rfh()->GetProcess()->GetDeprecatedID();
     const int routing_id = main_rfh()->GetRoutingID();
     const GlobalRenderFrameHostId main_frame_id(process_id, routing_id);
 

@@ -131,7 +131,7 @@ void KeyboardLockServiceImpl::CancelKeyboardLock() {
   auto& frame_host_impl =
       static_cast<RenderFrameHostImpl&>(render_frame_host());
   frame_host_impl.GetRenderWidgetHost()->CancelKeyboardLock();
-  feature_handle_.reset();
+  feature_handle_.Reset();
 }
 
 void KeyboardLockServiceImpl::GetKeyboardLayoutMap(

@@ -29,12 +29,10 @@ class SavedTabGroupV2PromoTest : public InteractiveFeaturePromoTest,
     if (GetParam()) {
       feature_list_.InitWithFeatures(
           {{tab_groups::kTabGroupSyncServiceDesktopMigration,
-            tab_groups::kTabGroupsSaveV2, tab_groups::kTabGroupsSaveUIUpdate}},
+            tab_groups::kTabGroupsSaveV2}},
           {});
     } else {
-      feature_list_.InitWithFeatures(
-          {{tab_groups::kTabGroupsSaveV2, tab_groups::kTabGroupsSaveUIUpdate}},
-          {});
+      feature_list_.InitWithFeatures({{tab_groups::kTabGroupsSaveV2}}, {});
     }
   }
 

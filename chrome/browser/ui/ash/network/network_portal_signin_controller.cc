@@ -146,9 +146,9 @@ void NetworkPortalSigninController::ShowSignin(SigninSource source) {
       ShowTab(ProfileManager::GetActiveUserProfile(), url);
       break;
     case SigninMode::kIncognitoDisabledByParentalControls: {
-      // Supervised users require SupervisedUserNavigationThrottle which is
-      // only available to non OTR profiles.
-      ShowTab(ProfileManager::GetActiveUserProfile(), url);
+      // Supervised users require SupervisedUserNavigationThrottle, now
+      // available on OTR profiles.
+      ShowSigninWindow(url);
       break;
     }
   }

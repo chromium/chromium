@@ -74,6 +74,27 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="prepareGetCredential request failed."/>
 </enum>
 
+<enum name="GPMGetAssertionEvents">
+  <int value="0" label="Started - GPM passkey selected"/>
+  <int value="1" label="Success - Authentication complete"/>
+  <int value="2" label="Failure - Error dialog shown"/>
+</enum>
+
+<enum name="GPMMakeCredentialEvents">
+  <int value="0" label="Started - Create GPM passkey dialog shown"/>
+  <int value="1" label="Success - Passkey saved"/>
+  <int value="2" label="Failure - Error dialog shown"/>
+</enum>
+
+<enum name="OnboardingEvents">
+  <int value="0" label="Started (Create GPM passkey dialog shown)"/>
+  <int value="1" label="Succeeded (GPM passkey created)"/>
+  <int value="2" label="Cancelled - Passkey creation - Cancel"/>
+  <int value="3" label="Cancelled - Passkey creation - Save another way"/>
+  <int value="4" label="Cancelled - PIN create modal"/>
+  <int value="5" label="Failure dialog shown"/>
+</enum>
+
 <enum name="SignalAllAcceptedCredentialsResult">
   <int value="0" label="No passkeys were removed"/>
   <int value="1" label="A passkey was removed"/>
@@ -293,6 +314,16 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Enclave Authenticator Error"/>
   <int value="16" label="Timeout Occurred"/>
   <int value="17" label="Other Failure"/>
+</enum>
+
+<enum name="WebAuthenticationPinRenewalEvent">
+  <int value="0" label="Considered renewing the PIN"/>
+  <int value="1" label="No PIN to renew"/>
+  <int value="2" label="Another renewal was running concurrently"/>
+  <int value="3" label="Not yet time to renew"/>
+  <int value="4" label="Started renewal"/>
+  <int value="5" label="Successful renewal"/>
+  <int value="6" label="Renewal failed"/>
 </enum>
 
 <enum name="WebAuthenticationRequestMode">

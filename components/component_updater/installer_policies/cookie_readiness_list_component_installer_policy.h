@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"
 
@@ -22,17 +23,29 @@ namespace component_updater {
 class CookieReadinessListComponentInstallerPolicy
     : public ComponentInstallerPolicy {
  public:
-  CookieReadinessListComponentInstallerPolicy() = default;
+  using ListReadyRepeatingCallback =
+      base::RepeatingCallback<void(const std::optional<std::string>)>;
+
+  explicit CookieReadinessListComponentInstallerPolicy(
+      ListReadyRepeatingCallback on_list_ready);
+  CookieReadinessListComponentInstallerPolicy();
   CookieReadinessListComponentInstallerPolicy(
       const CookieReadinessListComponentInstallerPolicy&) = delete;
   CookieReadinessListComponentInstallerPolicy& operator=(
       const CookieReadinessListComponentInstallerPolicy&) = delete;
-  ~CookieReadinessListComponentInstallerPolicy() override = default;
+  ~CookieReadinessListComponentInstallerPolicy() override;
+
+  void ComponentReadyForTesting(const base::Version& version,
+                                const base::FilePath& install_dir,
+                                base::Value::Dict manifest) {
+    ComponentReady(version, install_dir, std::move(manifest));
+  }
+
+  static base::FilePath GetInstalledPathForTesting(const base::FilePath& base);
 
   // ComponentInstallerPolicy:
   bool VerifyInstallation(const base::Value::Dict& manifest,
                           const base::FilePath& install_dir) const override;
-
  private:
   // ComponentInstallerPolicy:
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
@@ -48,6 +61,8 @@ class CookieReadinessListComponentInstallerPolicy
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
+
+  ListReadyRepeatingCallback on_list_ready_;
 };
 
 }  // namespace component_updater

@@ -69,11 +69,13 @@ void PaintThemedFrame(gfx::Canvas* canvas,
                          bounds.width(), bounds.height(), 1.0f,
                          SkTileMode::kRepeat, SkTileMode::kMirror);
   }
-  if (!frame_overlay_image.isNull())
+  if (!frame_overlay_image.isNull()) {
     canvas->DrawImageInt(frame_overlay_image, 0, 0);
+  }
 
-  if (blending_required)
+  if (blending_required) {
     canvas->Restore();
+  }
 }
 
 // Returns the frame path with the given |bounds| and |corner_radius|

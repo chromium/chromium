@@ -5,6 +5,7 @@
 #include "components/page_load_metrics/browser/observers/prerender_page_load_metrics_observer.h"
 
 #include "base/containers/contains.h"
+#include "base/time/time.h"
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -695,15 +696,14 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   ASSERT_TRUE(
       content::NavigateToURL(web_contents(), GURL(url::kAboutBlankURL)));
 
-  histogram_tester().ExpectTotalCount(
-      prerender_helper_.GenerateHistogramName(
-          "PageLoad.Internal.Prerender2.DomContentLoadedToActivation",
-          content::PreloadingTriggerType::kSpeculationRule, ""),
-      1);
-  std::unique_ptr<base::HistogramSamples> samples =
-      histogram_tester().GetHistogramSamplesSinceCreation(
-          "PageLoad.Internal.Prerender2.DomContentLoadedToActivation");
-  EXPECT_GE(samples->sum(), 0);
+  std::string histogram_name = prerender_helper_.GenerateHistogramName(
+      "PageLoad.Internal.Prerender2.DomContentLoadedToActivation2",
+      content::PreloadingTriggerType::kSpeculationRule, "");
+  histogram_tester().ExpectTotalCount(histogram_name, 1);
+  // We shift the duration by the 1 minute when recording the metric.
+  base::TimeDelta shifting_duration = base::Minutes(1);
+  EXPECT_GE(histogram_tester().GetTotalSum(histogram_name),
+            shifting_duration.InMilliseconds());
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
@@ -764,15 +764,14 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   // Flush metrics.
   ASSERT_TRUE(
       content::NavigateToURL(web_contents(), GURL(url::kAboutBlankURL)));
-  histogram_tester().ExpectTotalCount(
-      prerender_helper_.GenerateHistogramName(
-          "PageLoad.Internal.Prerender2.DomContentLoadedToActivation",
-          content::PreloadingTriggerType::kSpeculationRule, ""),
-      1);
-  std::unique_ptr<base::HistogramSamples> samples =
-      histogram_tester().GetHistogramSamplesSinceCreation(
-          "PageLoad.Internal.Prerender2.DomContentLoadedToActivation");
-  EXPECT_LE(samples->sum(), 0);
+  std::string histogram_name = prerender_helper_.GenerateHistogramName(
+      "PageLoad.Internal.Prerender2.DomContentLoadedToActivation2",
+      content::PreloadingTriggerType::kSpeculationRule, "");
+  histogram_tester().ExpectTotalCount(histogram_name, 1);
+  // We shift the duration by the 1 minute when recording the metric.
+  base::TimeDelta shifting_duration = base::Minutes(1);
+  EXPECT_LE(histogram_tester().GetTotalSum(histogram_name),
+            shifting_duration.InMilliseconds());
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,

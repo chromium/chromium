@@ -23,8 +23,7 @@ class FederatedServiceControllerImplTestBase : public NoSessionAshTestBase {
       : NoSessionAshTestBase(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kFederatedService,
-                              features::kFederatedServiceScheduleTasks},
+        /*enabled_features=*/{features::kFederatedService},
         /*disabled_features=*/{});
   }
 

@@ -82,8 +82,9 @@ void SharingHubBubbleViewImpl::OnThemeChanged() {
 
 void SharingHubBubbleViewImpl::OnActionSelected(
     SharingHubBubbleActionButton* button) {
-  if (!controller_)
+  if (!controller_) {
     return;
+  }
 
   // The announcement has to happen here rather than in the button itself: the
   // button doesn't know whether controller_ will be null, so it doesn't know

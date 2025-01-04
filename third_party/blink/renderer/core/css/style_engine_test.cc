@@ -7049,4 +7049,84 @@ TEST_F(StyleEngineTest, UseCountMediaQueryRangeSyntax) {
   EXPECT_TRUE(IsUseCounted(WebFeature::kMediaQueryRangeSyntax));
 }
 
+TEST_F(StyleEngineTest, CreateUnconnectedRuleSet) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style id=style>
+      .a { color: green; }
+      .a { width: 100px; }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+
+  CSSStyleSheet* sheet =
+      To<HTMLStyleElement>(GetDocument().getElementById(AtomicString("style")))
+          ->sheet();
+  ASSERT_TRUE(sheet);
+  EXPECT_TRUE(sheet->Contents()->HasRuleSet());
+
+  sheet->Contents()->ClearRuleSet();
+  EXPECT_FALSE(sheet->Contents()->HasRuleSet());
+
+  RuleSet* rule_set = GetStyleEngine().CreateUnconnectedRuleSet(*sheet);
+  ASSERT_TRUE(rule_set);
+  EXPECT_EQ(2u, rule_set->ClassRules(AtomicString("a")).size());
+
+  // As the above RuleSet is unconnected, it should not have affected
+  // the RuleSet held by StyleSheetContents.
+  EXPECT_FALSE(sheet->Contents()->HasRuleSet());
+}
+
+TEST_F(StyleEngineTest, CreateUnconnectedRuleSetMedia) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style id=style media=print>
+      .a { color: green; }
+      .a { width: 100px; }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  CSSStyleSheet* sheet =
+      To<HTMLStyleElement>(GetDocument().getElementById(AtomicString("style")))
+          ->sheet();
+  EXPECT_FALSE(GetStyleEngine().CreateUnconnectedRuleSet(*sheet));
+}
+
+TEST_F(StyleEngineTest, HasComplexSafaAreaConstraints) {
+  ScopedUpdateComplexSafaAreaConstraintsForTest
+      update_complex_safe_area_constraints(true);
+
+  // When no style properties use env(safe-area-inset-bottom), there are no
+  // complex safe area constraints.
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div style="bottom: 5px; padding-bottom: 30px" />
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(GetStyleEngine().HasComplexSafaAreaConstraints());
+
+  // When a style property other than 'bottom' uses env(safe-area-inset-bottom),
+  // there are complex safe area constraints.
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div style="padding-bottom: env(safe-area-inset-bottom)" />
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(GetStyleEngine().HasComplexSafaAreaConstraints());
+
+  // When the 'bottom' style property uses env(safe-area-inset-bottom)
+  // as defined under 'IsBottomRelativeToSafeAreaInset' in
+  // computed_style_extra_fields.json5, this is considered a "fast-path"
+  // and there are no complex safe area constraints.
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div style="bottom: env(safe-area-inset-bottom)" />
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(GetStyleEngine().HasComplexSafaAreaConstraints());
+
+  // When a style property other than 'bottom' uses calc() with
+  // env(safe-area-inset-bottom), there are complex safe area constraints.
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <div style="height: calc(env(safe-area-inset-bottom) + 30px)" />
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(GetStyleEngine().HasComplexSafaAreaConstraints());
+}
+
 }  // namespace blink

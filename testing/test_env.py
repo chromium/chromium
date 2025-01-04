@@ -399,6 +399,7 @@ def run_executable(cmd, env, stdoutfile=None, cwd=None):
 
   # pylint: disable=import-outside-toplevel
   if '--skip-set-lpac-acls=1' not in cmd and sys.platform == 'win32':
+    # //testing imports.
     sys.path.insert(
         0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'scripts'))
     from scripts import common  # pylint: disable=cyclic-import

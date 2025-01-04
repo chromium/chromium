@@ -1,0 +1,23 @@
+<style include="settings-shared"></style>
+
+<settings-toggle-button
+    id="geolocationToggle" pref="{{prefs.glic.geolocation_enabled}}"
+    label="$i18n{glicLocationToggle}"
+    sub-label="$i18n{glicLocationToggleSublabel}" icon="settings:location-on">
+</settings-toggle-button>
+
+<settings-toggle-button
+    id="microphoneToggle" pref="{{prefs.glic.microphone_enabled}}"
+    label="$i18n{glicMicrophoneToggle}"
+    sub-label="$i18n{glicMicrophoneToggleSublabel}" icon="privacy:mic">
+</settings-toggle-button>
+
+<settings-toggle-button
+    id="tabAccessToggle" pref="{{prefs.glic.tab_context_enabled}}"
+    label="$i18n{glicTabAccessToggle}"
+    sub-label="$i18n{glicTabAccessToggleSublabel}" icon="settings:tab">
+</settings-toggle-button>
+
+<cr-link-row
+    label="$i18n{glicActivityButton}"
+    sub-label="$i18n{glicActivityButtonSublabel}" external></cr-link-row>

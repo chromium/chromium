@@ -110,23 +110,19 @@ TEST_F(L10nUtilTest, FindMostRelevantLocale) {
 
   std::vector<std::string> most_relevant_language_codes;
   EXPECT_EQ("en-US", FindMostRelevantLocale(most_relevant_language_codes,
-                                            available_locales,
-                                            "en-US"));
+                                            available_locales, "en-US"));
 
   most_relevant_language_codes.push_back("xx");
   EXPECT_EQ("en-US", FindMostRelevantLocale(most_relevant_language_codes,
-                                            available_locales,
-                                            "en-US"));
+                                            available_locales, "en-US"));
 
   most_relevant_language_codes.push_back("fr");
   EXPECT_EQ("fr", FindMostRelevantLocale(most_relevant_language_codes,
-                                         available_locales,
-                                         "en-US"));
+                                         available_locales, "en-US"));
 
   most_relevant_language_codes.push_back("de");
   EXPECT_EQ("fr", FindMostRelevantLocale(most_relevant_language_codes,
-                                         available_locales,
-                                         "en-US"));
+                                         available_locales, "en-US"));
 }
 
 void InitStartupCustomizationDocumentForTesting(const std::string& manifest) {

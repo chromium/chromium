@@ -5,10 +5,5 @@
 #include "base/trace_event/builtin_categories.h"
 
 namespace base {
-namespace trace_event {
-
-constexpr const char* BuiltinCategories::kBuiltinCategories[];
-constexpr const char* BuiltinCategories::kCategoriesForTesting[];
-
-}  // namespace trace_event
+namespace trace_event {}  // namespace trace_event
 }  // namespace base

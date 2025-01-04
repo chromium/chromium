@@ -55,8 +55,9 @@ template <typename T1, typename T2>
 inline size_t HashInts(T1 value1, T2 value2) {
   // This condition is expected to be compile-time evaluated and optimised away
   // in release builds.
-  if (sizeof(T1) > sizeof(uint32_t) || (sizeof(T2) > sizeof(uint32_t)))
+  if (sizeof(T1) > sizeof(uint32_t) || (sizeof(T2) > sizeof(uint32_t))) {
     return HashInts64(value1, value2);
+  }
 
   return HashInts32(static_cast<uint32_t>(value1),
                     static_cast<uint32_t>(value2));

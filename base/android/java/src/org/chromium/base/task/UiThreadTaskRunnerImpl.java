@@ -7,8 +7,10 @@ package org.chromium.base.task;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
 
 /** TaskRunner for UI thread. */
+@NullMarked
 @JNINamespace("base")
 public class UiThreadTaskRunnerImpl extends TaskRunnerImpl implements SequencedTaskRunner {
     /**

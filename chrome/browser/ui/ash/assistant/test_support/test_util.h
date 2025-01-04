@@ -22,8 +22,9 @@ void FindDescendentsOfClass(views::View* parent,
                             const std::string& class_name,
                             std::vector<T*>* result) {
   for (views::View* child : parent->children()) {
-    if (child->GetClassName() == class_name)
+    if (child->GetClassName() == class_name) {
       result->push_back(static_cast<T*>(child));
+    }
     FindDescendentsOfClass(child, class_name, result);
   }
 }

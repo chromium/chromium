@@ -191,6 +191,10 @@ interface PasswordGenerationAgent {
   // generated password.
   GeneratedPasswordAccepted(mojo_base.mojom.String16 generated_password);
 
+  // Tells the renderer that the generated password was rejected by the user
+  // and should not be shown again in the same generation flow.
+  GeneratedPasswordRejected();
+
   // Tells the renderer to find a focused element, and if it is a password field
   // eligible for generation then to trigger generation by returning
   // non-empty PasswordGenerationUIData.

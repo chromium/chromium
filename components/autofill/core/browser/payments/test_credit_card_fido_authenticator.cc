@@ -7,8 +7,8 @@
 #include <string>
 #include <utility>
 
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_driver.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 
 namespace autofill {

@@ -26,6 +26,7 @@ class ManagedProfileRequiredPage
   ManagedProfileRequiredPage(
       content::WebContents* web_contents,
       const GURL& request_url,
+      const std::u16string& email,
       std::unique_ptr<
           security_interstitials::SecurityInterstitialControllerClient>
           controller_client);
@@ -49,6 +50,8 @@ class ManagedProfileRequiredPage
 
  private:
   void PopulateStringsForSharedHTML(base::Value::Dict& load_time_data);
+
+  const std::u16string email_;
 };
 
 #endif  // CHROME_BROWSER_ENTERPRISE_SIGNIN_INTERSTITIALS_MANAGED_PROFILE_REQUIRED_PAGE_H_

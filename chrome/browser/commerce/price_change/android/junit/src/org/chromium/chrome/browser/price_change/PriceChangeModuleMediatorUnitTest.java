@@ -40,9 +40,9 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.FeatureList;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
@@ -70,10 +70,8 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /** Test relating to {@link PriceChangeModuleMediator} */
@@ -81,6 +79,7 @@ import java.util.Set;
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowAppCompatResources.class})
+@EnableFeatures(ChromeFeatureList.PRICE_CHANGE_MODULE)
 public class PriceChangeModuleMediatorUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -136,11 +135,7 @@ public class PriceChangeModuleMediatorUnitTest {
                         ContextUtils.getAppSharedPreferences());
         mSharedPreferenceManager = ChromeSharedPreferences.getInstance();
         mFaviconSize = mContext.getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
-
-        Map<String, Boolean> featureOverride = new HashMap<>();
-        featureOverride.put(ChromeFeatureList.PRICE_CHANGE_MODULE, true);
-        FeatureList.setTestFeatures(featureOverride);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(true);
     }
 
     @After

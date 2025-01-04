@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <vector>
 
@@ -130,9 +126,9 @@ class TaskGraphRunnerPerfTest : public testing::Test {
                                      int num_tasks,
                                      int num_leaf_tasks) {
     const size_t kNumVersions = 2;
-    PerfTaskImpl::Vector top_level_tasks[kNumVersions];
-    PerfTaskImpl::Vector tasks[kNumVersions];
-    PerfTaskImpl::Vector leaf_tasks[kNumVersions];
+    std::array<PerfTaskImpl::Vector, kNumVersions> top_level_tasks;
+    std::array<PerfTaskImpl::Vector, kNumVersions> tasks;
+    std::array<PerfTaskImpl::Vector, kNumVersions> leaf_tasks;
     for (size_t i = 0; i < kNumVersions; ++i) {
       CreateTasks(num_top_level_tasks, &top_level_tasks[i]);
       CreateTasks(num_tasks, &tasks[i]);

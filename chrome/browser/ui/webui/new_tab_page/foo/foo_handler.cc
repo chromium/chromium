@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/new_tab_page/foo/foo_handler.h"
+
 #include "base/strings/string_number_conversions.h"
 
 FooHandler::FooHandler(mojo::PendingReceiver<foo::mojom::FooHandler> handler)

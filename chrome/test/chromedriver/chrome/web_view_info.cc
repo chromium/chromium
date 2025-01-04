@@ -34,8 +34,7 @@ bool WebViewInfo::IsInactiveBackgroundPage() const {
 }
 
 bool WebViewInfo::IsExtensionTarget() const {
-  return type == WebViewInfo::kBackgroundPage ||
-         url.starts_with("chrome-extension://");
+  return type == WebViewInfo::kBackgroundPage;
 }
 
 Status WebViewInfo::ParseType(const std::string& type_as_string,

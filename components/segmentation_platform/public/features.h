@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
+// Feature flags for the segmentation platform. Don't remove these feature flags.
 namespace segmentation_platform::features {
 
 // Core feature flag for segmentation platform.
@@ -112,6 +113,9 @@ BASE_DECLARE_FEATURE(kSegmentationPlatformIosModuleRankerSplitBySurface);
 // Feature flag for enabling the URL visit resumption ranker.
 BASE_DECLARE_FEATURE(kSegmentationPlatformURLVisitResumptionRanker);
 
+// Feature flag for enabling the URL visit resumption ranker.
+BASE_DECLARE_FEATURE(kSegmentationPlatformEphemeralBottomRank);
+
 extern const char kEphemeralCardRankerForceShowCardParam[];
 extern const char kEphemeralCardRankerForceHideCardParam[];
 
@@ -152,6 +156,9 @@ extern const base::FeatureParam<int> kMaxDefaultBrowserCardImpressions;
 // The maximum number of times the tab group promo card can be visible to the
 // user.
 extern const base::FeatureParam<int> kMaxTabGroupCardImpressions;
+// The maximum number of times the tab group sync promo card can be visible to
+// the user.
+extern const base::FeatureParam<int> kMaxTabGroupSyncCardImpressions;
 
 }  // namespace segmentation_platform::features
 

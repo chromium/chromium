@@ -519,10 +519,9 @@ class SyncSocketSource : public AudioOutputStream::AudioSourceCallback {
       output_buffer()->params.delay_us = delay.InMicroseconds();
       output_buffer()->params.delay_timestamp_us =
           (delay_timestamp - base::TimeTicks()).InMicroseconds();
-      const size_t span_size =
-          static_cast<size_t>(packet_size_) / sizeof(decltype(*data_.get()));
-      uint32_t size = socket_->Receive(
-          base::as_writable_bytes(base::span(data_.get(), span_size)));
+      const size_t span_size = packet_size_ / sizeof(decltype(*data_.get()));
+      uint32_t size = socket_->Receive(base::as_writable_bytes(
+          base::allow_nonunique_obj, base::span(data_.get(), span_size)));
       ++current_packet_count_;
 
       DCHECK_EQ(static_cast<size_t>(size) % sizeof(*audio_bus_->channel(0)),
@@ -546,7 +545,7 @@ class SyncSocketSource : public AudioOutputStream::AudioSourceCallback {
  private:
   raw_ptr<base::SyncSocket> socket_;
   const AudioParameters params_;
-  int packet_size_;
+  size_t packet_size_;
   std::unique_ptr<float, base::AlignedFreeDeleter> data_;
   std::unique_ptr<AudioBus> audio_bus_;
 

@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_base.h"
 #include "third_party/blink/renderer/modules/ml/ml_trace.h"
+#include "third_party/blink/renderer/modules/ml/webnn/allow_shared_buffer_source_util.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -74,16 +75,9 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
                                        const MLTensorDescriptor* descriptor,
                                        ExceptionState& exception_state);
 
-  // Writes data specified by an array buffer view.
   void writeTensor(ScriptState* script_state,
                    MLTensor* dst_tensor,
-                   const MaybeShared<DOMArrayBufferView>& src_data,
-                   ExceptionState& exception_state);
-
-  // Writes data specified by an array buffer.
-  void writeTensor(ScriptState* script_state,
-                   MLTensor* dst_tensor,
-                   const DOMArrayBufferBase* src_data,
+                   AllowSharedBufferSource* src_data,
                    ExceptionState& exception_state);
 
   ScriptPromise<DOMArrayBuffer> readTensor(ScriptState* script_state,
@@ -92,14 +86,8 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
 
   ScriptPromise<IDLUndefined> readTensor(ScriptState* script_state,
                                          MLTensor* src_tensor,
-                                         DOMArrayBufferBase* dst_data,
+                                         AllowSharedBufferSource* dst_data,
                                          ExceptionState& exception_state);
-
-  ScriptPromise<IDLUndefined> readTensor(
-      ScriptState* script_state,
-      MLTensor* src_tensor,
-      MaybeShared<DOMArrayBufferView> dst_data,
-      ExceptionState& exception_state);
 
   void dispatch(ScriptState* script_state,
                 MLGraph* graph,
@@ -119,14 +107,6 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
 
   // Close the `context_remote_` pipe because the context has been lost.
   void OnLost(uint32_t custom_reason, const std::string& description);
-
-  // Validate and write ArrayBuffer data to hardware accelerated OS
-  // machine learning tensors in the WebNN Service.
-  // `src_data` is the source span of the array buffer data.
-  void WriteWebNNTensor(ScriptState* script_state,
-                        MLTensor* dst_tensor,
-                        base::span<const uint8_t> src_data,
-                        ExceptionState& exception_state);
 
   void DidCreateWebNNTensor(ScopedMLTrace scoped_trace,
                             ScriptPromiseResolver<blink::MLTensor>* resolver,

@@ -8,7 +8,7 @@
 #import <tuple>
 
 #import "base/strings/sys_string_conversions.h"
-#import "components/autofill/core/browser/autofill_test_utils.h"
+#import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/common/password_manager_features.h"

@@ -488,7 +488,7 @@ void SigninMetricsService::RecordSigninInterceptionMetrics(
     signin_metrics::AccessPoint access_point) {
   ChromeSigninUserChoice signin_choice =
       SigninPrefs(pref_service_.get())
-          .GetChromeSigninInterceptionUserChoice(gaia_id.ToString());
+          .GetChromeSigninInterceptionUserChoice(gaia_id);
   base::UmaHistogramEnumeration("Signin.Settings.ChromeSignin.OnSignin",
                                 signin_choice);
   if (signin_choice == ChromeSigninUserChoice::kDoNotSignin) {

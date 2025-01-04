@@ -4,6 +4,8 @@
 
 package org.chromium.ui.modelutil;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
 
 /**
@@ -14,6 +16,7 @@ import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
  * @param <V> The view object that is changing.
  * @param <P> The property of the view that changed.
  */
+@NullMarked
 public class PropertyModelChangeProcessor<M extends PropertyObservable<P>, V, P> {
     /**
      * A generic view binder that associates a view with a model.
@@ -23,7 +26,7 @@ public class PropertyModelChangeProcessor<M extends PropertyObservable<P>, V, P>
      * @param <P> The property of the view that changed.
      */
     public interface ViewBinder<M, V, P> {
-        void bind(M model, V view, P propertyKey);
+        void bind(M model, @Nullable V view, @Nullable P propertyKey);
     }
 
     private final V mView;
@@ -87,7 +90,7 @@ public class PropertyModelChangeProcessor<M extends PropertyObservable<P>, V, P>
         mModel.removeObserver(mPropertyObserver);
     }
 
-    private void onPropertyChanged(PropertyObservable<P> source, P propertyKey) {
+    private void onPropertyChanged(PropertyObservable<P> source, @Nullable P propertyKey) {
         assert source == mModel;
 
         // TODO(bauerb): Add support for batching updates.

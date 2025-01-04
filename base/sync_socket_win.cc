@@ -46,28 +46,20 @@ bool CreatePairImpl(ScopedHandle* socket_a,
   wchar_t name[kPipePathMax];
   ScopedHandle handle_a;
   DWORD flags = PIPE_ACCESS_DUPLEX | FILE_FLAG_FIRST_PIPE_INSTANCE;
-  if (overlapped)
+  if (overlapped) {
     flags |= FILE_FLAG_OVERLAPPED;
+  }
 
   do {
     unsigned long rnd_name;
     RandBytes(byte_span_from_ref(rnd_name));
 
-    swprintf(name, kPipePathMax,
-             kPipeNameFormat,
-             GetCurrentProcessId(),
-             GetCurrentThreadId(),
-             rnd_name);
+    swprintf(name, kPipePathMax, kPipeNameFormat, GetCurrentProcessId(),
+             GetCurrentThreadId(), rnd_name);
 
     handle_a.Set(CreateNamedPipeW(
-        name,
-        flags,
-        PIPE_TYPE_BYTE | PIPE_READMODE_BYTE,
-        1,
-        kOutBufferSize,
-        kInBufferSize,
-        kDefaultTimeoutMilliSeconds,
-        NULL));
+        name, flags, PIPE_TYPE_BYTE | PIPE_READMODE_BYTE, 1, kOutBufferSize,
+        kInBufferSize, kDefaultTimeoutMilliSeconds, NULL));
   } while (!handle_a.is_valid() && (GetLastError() == ERROR_PIPE_BUSY));
 
   CHECK(handle_a.is_valid());
@@ -76,16 +68,16 @@ bool CreatePairImpl(ScopedHandle* socket_a,
   // impersonate the client (handle_b). This allows us not to care which side
   // ends up in which side of a privilege boundary.
   flags = SECURITY_SQOS_PRESENT | SECURITY_ANONYMOUS;
-  if (overlapped)
+  if (overlapped) {
     flags |= FILE_FLAG_OVERLAPPED;
+  }
 
-  ScopedHandle handle_b(CreateFileW(name,
-                                    GENERIC_READ | GENERIC_WRITE,
-                                    0,          // no sharing.
-                                    NULL,       // default security attributes.
+  ScopedHandle handle_b(CreateFileW(name, GENERIC_READ | GENERIC_WRITE,
+                                    0,     // no sharing.
+                                    NULL,  // default security attributes.
                                     OPEN_EXISTING,  // opens existing pipe.
                                     flags,
-                                    NULL));     // no template file.
+                                    NULL));  // no template file.
   if (!handle_b.is_valid()) {
     DPLOG(ERROR) << "CreateFileW failed";
     return false;
@@ -108,8 +100,9 @@ bool CreatePairImpl(ScopedHandle* socket_a,
 // Inline helper to avoid having the cast everywhere.
 DWORD GetNextChunkSize(size_t current_pos, size_t max_size) {
   // The following statement is for 64 bit portability.
-  return static_cast<DWORD>(((max_size - current_pos) <= UINT_MAX) ?
-      (max_size - current_pos) : UINT_MAX);
+  return static_cast<DWORD>(((max_size - current_pos) <= UINT_MAX)
+                                ? (max_size - current_pos)
+                                : UINT_MAX);
 }
 
 // Template function that supports calling ReadFile or WriteFile in an
@@ -141,7 +134,7 @@ size_t CancelableFileOperation(Function operation,
   size_t count = 0;
   do {
     // The OVERLAPPED structure will be modified by ReadFile or WriteFile.
-    OVERLAPPED ol = { 0 };
+    OVERLAPPED ol = {0};
     ol.hEvent = io_event->handle();
 
     const DWORD chunk_size = GetNextChunkSize(count, buffer.size());
@@ -157,7 +150,7 @@ size_t CancelableFileOperation(Function operation,
                   static_cast<DWORD>(operation_buffer.size()), &len, &ol);
     if (!operation_ok) {
       if (::GetLastError() == ERROR_IO_PENDING) {
-        HANDLE events[] = { io_event->handle(), cancel_event->handle() };
+        HANDLE events[] = {io_event->handle(), cancel_event->handle()};
         const DWORD wait_result = WaitForMultipleObjects(
             std::size(events), events, FALSE,
             timeout_in_ms == INFINITE
@@ -173,8 +166,9 @@ size_t CancelableFileOperation(Function operation,
 
         // We set the |bWait| parameter to TRUE for GetOverlappedResult() to
         // ensure writes are complete before returning.
-        if (!GetOverlappedResult(file, &ol, &len, TRUE))
+        if (!GetOverlappedResult(file, &ol, &len, TRUE)) {
           len = 0;
+        }
 
         if (wait_result == WAIT_OBJECT_0 + 1) {
           DVLOG(1) << "Shutdown was signaled. Closing socket.";

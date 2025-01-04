@@ -15,7 +15,6 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/language_util.h"
 #include "components/language/core/common/locale_util.h"
@@ -40,7 +39,7 @@ void LanguagePrefs::RegisterProfilePrefs(
                                user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
   registry->RegisterListPref(language::prefs::kForcedLanguages);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterStringPref(language::prefs::kPreferredLanguages,
                                kFallbackInputMethodLocale);
 
@@ -74,7 +73,7 @@ void LanguagePrefs::GetAcceptLanguagesList(
     std::vector<std::string>* languages) const {
   DCHECK(languages);
   DCHECK(languages->empty());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const std::string& key = language::prefs::kPreferredLanguages;
 #else
   const std::string& key = language::prefs::kAcceptLanguages;
@@ -99,7 +98,7 @@ void LanguagePrefs::SetUserSelectedLanguagesList(
       l10n_util::KeepAcceptedLanguages(languages);
   std::string languages_str = base::JoinString(filtered_languages, ",");
   prefs_->SetString(language::prefs::kSelectedLanguages, languages_str);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   prefs_->SetString(language::prefs::kPreferredLanguages, languages_str);
 #endif
 }
@@ -174,7 +173,7 @@ void LanguagePrefs::InitializeSelectedLanguagesPref() {
 void ResetLanguagePrefs(PrefService* prefs) {
   prefs->ClearPref(language::prefs::kSelectedLanguages);
   prefs->ClearPref(language::prefs::kAcceptLanguages);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   prefs->ClearPref(language::prefs::kPreferredLanguages);
   prefs->ClearPref(language::prefs::kPreferredLanguagesSyncable);
 #endif

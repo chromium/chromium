@@ -85,6 +85,8 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/autocomplete/keyword_extensions_delegate_impl.h"
+#include "chrome/browser/autocomplete/unscoped_extension_provider_delegate_impl.h"
+#include "extensions/common/extension_features.h"
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -268,6 +270,19 @@ ChromeAutocompleteProviderClient::GetKeywordExtensionsDelegate(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   return std::make_unique<KeywordExtensionsDelegateImpl>(profile_,
                                                          keyword_provider);
+#else
+  return nullptr;
+#endif
+}
+
+std::unique_ptr<UnscopedExtensionProviderDelegate>
+ChromeAutocompleteProviderClient::GetUnscopedExtensionProviderDelegate(
+    UnscopedExtensionProvider* provider) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  CHECK(base::FeatureList::IsEnabled(
+      extensions_features::kExperimentalOmniboxLabs));
+  return std::make_unique<UnscopedExtensionProviderDelegateImpl>(profile_,
+                                                                 provider);
 #else
   return nullptr;
 #endif
@@ -502,12 +517,10 @@ bool ChromeAutocompleteProviderClient::StrippedURLsAreEqual(
   const TemplateURLService* template_url_service = GetTemplateURLService();
   return AutocompleteMatch::GURLToStrippedGURL(
              url1, *input, template_url_service, std::u16string(),
-             /*keep_search_intent_params=*/false,
-             /*normalize_search_terms=*/false) ==
+             /*keep_search_intent_params=*/false) ==
          AutocompleteMatch::GURLToStrippedGURL(
              url2, *input, template_url_service, std::u16string(),
-             /*keep_search_intent_params=*/false,
-             /*normalize_search_terms=*/false);
+             /*keep_search_intent_params=*/false);
 }
 
 void ChromeAutocompleteProviderClient::OpenSharingHub() {

@@ -778,7 +778,6 @@ void TestingProfile::CreatePrefServiceForSupervisedUser() {
       /*managed_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
       supervised_user_pref_store_,
       /*extension_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
-      /*standalone_browser_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
       /*user_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
       /*recommended_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
       base::MakeRefCounted<user_prefs::PrefRegistrySyncable>(),

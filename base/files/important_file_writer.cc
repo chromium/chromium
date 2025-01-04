@@ -136,8 +136,9 @@ void DeleteTmpFileWithRetry(File tmp_file,
 #if BUILDFLAG(IS_WIN)
   // Mark the file for deletion when it is closed and then close it implicitly.
   if (tmp_file.IsValid()) {
-    if (tmp_file.DeleteOnClose(true))
+    if (tmp_file.DeleteOnClose(true)) {
       return;
+    }
     // The file was opened with exclusive r/w access, so failures are primarily
     // due to I/O errors or other phenomena out of the process's control. Go
     // ahead and close the file. The call to DeleteFile below will basically
@@ -192,8 +193,9 @@ void ImportantFileWriter::ProduceAndWriteStringToFileAtomically(
     return;
   }
 
-  if (!before_write_callback.is_null())
+  if (!before_write_callback.is_null()) {
     std::move(before_write_callback).Run();
+  }
 
   // Calling the impl by way of the private
   // ProduceAndWriteStringToFileAtomically, which originated from an
@@ -202,8 +204,9 @@ void ImportantFileWriter::ProduceAndWriteStringToFileAtomically(
                                               /*from_instance=*/true,
                                               std::move(replace_file_callback));
 
-  if (!after_write_callback.is_null())
+  if (!after_write_callback.is_null()) {
     std::move(after_write_callback).Run(result);
+  }
 }
 
 // static
@@ -214,8 +217,9 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(
     bool from_instance,
     ReplaceFileCallback replace_file_callback) {
   const TimeTicks write_start = TimeTicks::Now();
-  if (!from_instance)
+  if (!from_instance) {
     ImportantFileWriterCleaner::AddDirectory(path.DirName());
+  }
 
 #if BUILDFLAG(IS_WIN) && DCHECK_IS_ON()
   // In https://crbug.com/920174, we have cases where CreateTemporaryFileInDir

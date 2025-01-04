@@ -5,10 +5,13 @@
 #include "chrome/browser/net/server_certificate_database.h"
 
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/types/zip.h"
 #include "build/build_config.h"
+#include "crypto/sha2.h"
 #include "net/cert/x509_util.h"
 #include "sql/init_status.h"
 #include "sql/meta_table.h"
@@ -186,6 +189,12 @@ bool ServerCertificateDatabase::DeleteCertificate(
   return delete_statement.Run() && db_.GetLastChangeCount() > 0;
 }
 
+ServerCertificateDatabase::CertInformation::CertInformation(
+    base::span<const uint8_t> cert) {
+  der_cert = base::ToVector(cert);
+  sha256hash_hex =
+      base::ToLowerASCII(base::HexEncode(crypto::SHA256Hash(cert)));
+}
 ServerCertificateDatabase::CertInformation::CertInformation() = default;
 ServerCertificateDatabase::CertInformation::~CertInformation() = default;
 ServerCertificateDatabase::CertInformation::CertInformation(

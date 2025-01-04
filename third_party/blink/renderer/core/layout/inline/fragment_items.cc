@@ -115,8 +115,13 @@ void FragmentItems::FinalizeAfterLayout(
         // formatting context. The non-atomic inline boxes themselves also don't
         // contribute to having inflow content, as they may just be wrappers
         // around such floats. We need something "real", such as text or a
-        // non-atomic inline.
-        found_inflow_content = !item.IsFloating() && !item.IsInlineBox();
+        // non-atomic inline. Blocks in inlines cannot unconditionally count as
+        // "real" here, since it's possible that they only contain fragmented
+        // parallel flows (e.g. floats). We *could* examine this situation more
+        // closely, since there might indeed be real in-flow content in there,
+        // but let's keep this as simple as possible.
+        found_inflow_content = !item.IsFloating() && !item.IsInlineBox() &&
+                               !item.IsBlockInInline();
       }
       LayoutObject* const layout_object = item.GetMutableLayoutObject();
       DCHECK(!layout_object->IsOutOfFlowPositioned());

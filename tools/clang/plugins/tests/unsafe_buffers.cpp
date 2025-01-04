@@ -15,6 +15,8 @@
 
 #include "unsafe_buffers_clean.h"
 #include "unsafe_buffers_not_clean.h"
+#include "unsafe_buffers_not_clean_dir/clean_dir_1/not_clean_header.h"
+#include "unsafe_buffers_not_clean_dir/clean_dir_1/still_not_clean_dir_3/not_clean_header.h"
 #include "unsafe_buffers_not_clean_dir/clean_header.h"
 #include "unsafe_buffers_not_clean_dir/not_checked_header.h"
 #include "unsafe_buffers_not_clean_dir/not_clean_header.h"

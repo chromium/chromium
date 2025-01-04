@@ -57,8 +57,9 @@ std::pair<int, std::string> GetVersionData() {
     // when naming changed to mixed letters and numbers.
     key.ReadValue(L"DisplayVersion", &release_id);
     // Use discontinued "ReleaseId" instead, if the former is unavailable.
-    if (release_id.empty())
+    if (release_id.empty()) {
       key.ReadValue(L"ReleaseId", &release_id);
+    }
   }
 
   return std::make_pair(static_cast<int>(ubr), WideToUTF8(release_id));
@@ -240,10 +241,11 @@ OSInfo::OSInfo(const _OSVERSIONINFOEXW& version_info,
     }
   } else if (version_info.dwMajorVersion == 5 &&
              version_info.dwMinorVersion == 1) {
-    if (version_info.wSuiteMask & VER_SUITE_PERSONAL)
+    if (version_info.wSuiteMask & VER_SUITE_PERSONAL) {
       version_type_ = SUITE_HOME;
-    else
+    } else {
       version_type_ = SUITE_PROFESSIONAL;
+    }
   } else {
     // Windows is pre XP so we don't care but pick a safe default.
     version_type_ = SUITE_HOME;
@@ -504,8 +506,9 @@ OSInfo::WowNativeMachine OSInfo::GetWowNativeMachineArchitecture(
 
 void OSInfo::InitializeWowStatusValuesFromLegacyApi(HANDLE process_handle) {
   BOOL is_wow64 = FALSE;
-  if (!::IsWow64Process(process_handle, &is_wow64))
+  if (!::IsWow64Process(process_handle, &is_wow64)) {
     return;
+  }
   if (is_wow64) {
     wow_process_machine_ = WowProcessMachine::kX86;
     wow_native_machine_ = WowNativeMachine::kAMD64;

@@ -88,13 +88,14 @@ T CeilDiv(T a, T b) {
 
 // Extracts the counter as a `absl::uint128`. The counter is the rightmost
 // `counter_length_bits` of the block, interpreted as a big-endian number.
-absl::uint128 GetCounter(base::span<const uint8_t, 16> counter_block,
-                         unsigned int counter_length_bits) {
+absl::uint128 GetCounter(
+    base::span<const uint8_t, AES_BLOCK_SIZE> counter_block,
+    unsigned int counter_length_bits) {
   unsigned int counter_length_remainder_bits = counter_length_bits % 8;
   unsigned int byte_length = CeilDiv(counter_length_bits, 8u);
   DCHECK_GT(byte_length, 0u);
 
-  base::span<const uint8_t> suffix = counter_block.last(byte_length);
+  base::span suffix = counter_block.last(byte_length);
   absl::uint128 ret = suffix[0];
   // The first byte may be partial.
   if (counter_length_remainder_bits != 0) {
@@ -150,8 +151,8 @@ Status AesCtrEncryptDecrypt(const blink::WebCryptoAlgorithm& algorithm,
 
   if (params->Counter().size() != AES_BLOCK_SIZE)
     return Status::ErrorIncorrectSizeAesCtrCounter();
-  base::span<const uint8_t, AES_BLOCK_SIZE> counter_block(
-      params->Counter().data(), params->Counter().size());
+  auto counter_block =
+      *base::span(params->Counter()).to_fixed_extent<AES_BLOCK_SIZE>();
 
   unsigned int counter_length_bits = params->LengthBits();
   if (counter_length_bits < 1 || counter_length_bits > 128)

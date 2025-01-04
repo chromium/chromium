@@ -143,6 +143,7 @@ size_t EstimateBlinkInterestGroupSize(
           size += origin->ToString().length();
         }
       }
+      size += ad->creative_scanning_metadata.length();
     }
   }
 
@@ -152,6 +153,7 @@ size_t EstimateBlinkInterestGroupSize(
       size += ad->size_group.length();
       size += ad->metadata.length();
       size += ad->ad_render_id.length();
+      size += ad->creative_scanning_metadata.length();
     }
   }
 
@@ -316,6 +318,16 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
   }
 
   if (group.ads) {
+    std::optional<WTF::wtf_size_t>
+        selectable_buyer_and_seller_reporting_ids_hard_limit;
+    if (base::FeatureList::IsEnabled(
+            features::kFledgeLimitSelectableBuyerAndSellerReportingIds) &&
+        features::kFledgeSelectableBuyerAndSellerReportingIdsHardLimit.Get() >=
+            0) {
+      selectable_buyer_and_seller_reporting_ids_hard_limit =
+          features::kFledgeSelectableBuyerAndSellerReportingIdsHardLimit.Get();
+    }
+
     for (WTF::wtf_size_t i = 0; i < group.ads.value().size(); ++i) {
       const KURL& render_url = KURL(group.ads.value()[i]->render_url);
       if (!IsUrlAllowedForRenderUrls(render_url)) {
@@ -343,6 +355,20 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
         error_field_name = String::Format("ads[%u].adRenderId", i);
         error_field_value = group.ads.value()[i]->ad_render_id;
         error = "The adRenderId is too long.";
+        return false;
+      }
+      if (selectable_buyer_and_seller_reporting_ids_hard_limit &&
+          group.ads.value()[i]->selectable_buyer_and_seller_reporting_ids &&
+          group.ads.value()[i]
+                  ->selectable_buyer_and_seller_reporting_ids->size() >
+              *selectable_buyer_and_seller_reporting_ids_hard_limit) {
+        error_field_name =
+            String::Format("ads[%u].selectableBuyerAndSellerReportingIds", i);
+        error_field_value = "";
+        error = String::Format(
+            "selectableBuyerAndSellerReportingIds cannot have more than %u "
+            "elements.",
+            *selectable_buyer_and_seller_reporting_ids_hard_limit);
         return false;
       }
       auto& allowed_reporting_origins =
@@ -522,6 +548,40 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
     return false;
   }
 
+  return true;
+}
+
+// Must be kept in sync with blink::InterestGroup::IsValidForJoinAndUpdate()
+// in blink/common/interest_group/.
+bool PerformAdditionalJoinAndUpdateTimeValidations(
+    const mojom::blink::InterestGroup& group,
+    String& error_field_name,
+    String& error_field_value,
+    String& error) {
+  if (!group.ads ||
+      !base::FeatureList::IsEnabled(
+          features::kFledgeLimitSelectableBuyerAndSellerReportingIds) ||
+      features::kFledgeSelectableBuyerAndSellerReportingIdsSoftLimit.Get() <
+          0) {
+    return true;
+  }
+  WTF::wtf_size_t selectable_buyer_and_seller_reporting_ids_soft_limit =
+      features::kFledgeSelectableBuyerAndSellerReportingIdsSoftLimit.Get();
+  for (WTF::wtf_size_t i = 0; i < group.ads.value().size(); ++i) {
+    if (group.ads.value()[i]->selectable_buyer_and_seller_reporting_ids &&
+        group.ads.value()[i]
+                ->selectable_buyer_and_seller_reporting_ids->size() >
+            selectable_buyer_and_seller_reporting_ids_soft_limit) {
+      error_field_name =
+          String::Format("ads[%u].selectableBuyerAndSellerReportingIds", i);
+      error_field_value = "";
+      error = String::Format(
+          "selectableBuyerAndSellerReportingIds cannot have more than %u "
+          "elements.",
+          selectable_buyer_and_seller_reporting_ids_soft_limit);
+      return false;
+    }
+  }
   return true;
 }
 

@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/live_caption/translation_dispatcher.h"
+#include "components/live_caption/translation_util.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -26,8 +27,6 @@ class PrefRegistrySyncable;
 }  // namespace user_prefs
 
 namespace captions {
-
-using OnTranslateEventCallback = base::OnceCallback<void(const std::string&)>;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Live Translate Controller
@@ -49,7 +48,7 @@ class LiveTranslateController : public KeyedService {
   virtual void GetTranslation(const std::string& result,
                               std::string source_language,
                               std::string target_language,
-                              OnTranslateEventCallback callback);
+                              TranslateEventCallback callback);
 
  private:
   void OnLiveTranslateEnabledChanged();

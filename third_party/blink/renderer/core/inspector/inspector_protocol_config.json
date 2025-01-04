@@ -110,7 +110,7 @@
                 "domain": "Network",
                 "exclude": ["clearBrowserCache", "clearBrowserCookies", "getCookies", "getAllCookies", "deleteCookies", "setCookie", "setCookies", "canEmulateNetworkConditions",
                             "setRequestInterception", "continueInterceptedRequest", "getResponseBodyForInterception",
-                            "takeResponseBodyForInterceptionAsStream", "getSecurityIsolationStatus", "loadNetworkResource", "enableReportingApi"],
+                            "takeResponseBodyForInterceptionAsStream", "getSecurityIsolationStatus", "loadNetworkResource", "enableReportingApi", "setCookieControls"],
                 "async": ["getResponseBody", "getRequestPostData"]
             },
             {

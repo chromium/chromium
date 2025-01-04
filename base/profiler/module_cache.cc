@@ -65,14 +65,18 @@ ModuleCache::~ModuleCache() {
 }
 
 const ModuleCache::Module* ModuleCache::GetModuleForAddress(uintptr_t address) {
-  if (const ModuleCache::Module* module = GetExistingModuleForAddress(address))
+  if (const ModuleCache::Module* module =
+          GetExistingModuleForAddress(address)) {
     return module;
+  }
 
   std::unique_ptr<const Module> new_module = CreateModuleForAddress(address);
-  if (!new_module && auxiliary_module_provider_)
+  if (!new_module && auxiliary_module_provider_) {
     new_module = auxiliary_module_provider_->TryCreateModuleForAddress(address);
-  if (!new_module)
+  }
+  if (!new_module) {
     return nullptr;
+  }
 
   const auto result = native_modules_.insert(std::move(new_module));
   // TODO(crbug.com/40150346): Reintroduce DCHECK(result.second) after
@@ -83,10 +87,12 @@ const ModuleCache::Module* ModuleCache::GetModuleForAddress(uintptr_t address) {
 std::vector<const ModuleCache::Module*> ModuleCache::GetModules() const {
   std::vector<const Module*> result;
   result.reserve(native_modules_.size());
-  for (const std::unique_ptr<const Module>& module : native_modules_)
+  for (const std::unique_ptr<const Module>& module : native_modules_) {
     result.push_back(module.get());
-  for (const std::unique_ptr<const Module>& module : non_native_modules_)
+  }
+  for (const std::unique_ptr<const Module>& module : non_native_modules_) {
     result.push_back(module.get());
+  }
   return result;
 }
 
@@ -150,12 +156,14 @@ void ModuleCache::AddCustomNativeModule(std::unique_ptr<const Module> module) {
 const ModuleCache::Module* ModuleCache::GetExistingModuleForAddress(
     uintptr_t address) const {
   const auto non_native_module_loc = non_native_modules_.find(address);
-  if (non_native_module_loc != non_native_modules_.end())
+  if (non_native_module_loc != non_native_modules_.end()) {
     return non_native_module_loc->get();
+  }
 
   const auto native_module_loc = native_modules_.find(address);
-  if (native_module_loc != native_modules_.end())
+  if (native_module_loc != native_modules_.end()) {
     return native_module_loc->get();
+  }
 
   return nullptr;
 }

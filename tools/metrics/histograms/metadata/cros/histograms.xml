@@ -76,7 +76,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisks.Error.Fuse.Start.archive" enum="FuseArchiveError"
-    expires_after="2025-03-01">
+    expires_after="2025-06-08">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>

@@ -61,9 +61,10 @@ std::vector<ntp::calendar::mojom::CalendarEventPtr> GetFakeEvents(
   return events;
 }
 
-void GetFakeJsonResponse(GetResponseCallback callback) {
+std::unique_ptr<std::string> GetFakeJsonResponse() {
+  std::unique_ptr<std::string> response = std::make_unique<std::string>();
   // clang-format off
-  std::string response = R"(
+  *response = R"(
     {"data-context": "some-context",
     "value": [
       {
@@ -110,6 +111,8 @@ void GetFakeJsonResponse(GetResponseCallback callback) {
                     "@odata.type": "#microsoft.graph.fileAttachment",
                     "@odata.mediaContentType":
                       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    "contentType":
+                      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                     "id": "1-ABC",
                     "name": "Some document.docx"
               }
@@ -152,7 +155,7 @@ void GetFakeJsonResponse(GetResponseCallback callback) {
         "attachments": []
       }]})";
   // clang-format on
-  std::move(callback).Run(std::move(response));
+  return response;
 }
 
 }  // namespace calendar::calendar_fake_data_helper

@@ -55,6 +55,11 @@
   self.areOmniboxChangesQueued = NO;
   self.inProgressAnimationCount = 0;
 
+  if (animated && [self isTriggerPinnedFakebox]) {
+    [self.locationBarAnimatee addFakeboxButtonsSnapshot];
+    [self.locationBarAnimatee setFakeboxButtonsSnapshotFaded:!omniboxFocused];
+  }
+
   if (omniboxFocused) {
     [self prepareToFocusOmniboxAnimated:animated];
   }
@@ -155,6 +160,7 @@
           if (shouldCrossfadeEditAndSteadyViews) {
             [self.locationBarAnimatee
                     resetTextFieldOffsetAndOffsetSteadyViewToMatch];
+            [self.locationBarAnimatee setFakeboxButtonsSnapshotFaded:YES];
 
             // Fading the views happens with a different timing for a better
             // visual effect. The steady view looks like an ordinary label, and
@@ -237,6 +243,7 @@
         animations:^{
           [self.locationBarAnimatee
                   resetSteadyViewOffsetAndOffsetTextFieldToMatch];
+          [self.locationBarAnimatee setFakeboxButtonsSnapshotFaded:NO];
         }
         completion:^(BOOL finished) {
           cleanup();
@@ -415,6 +422,7 @@
       [self.toolbarAnimatee setLocationBarHeightExpanded];
     }
   }
+  [self.locationBarAnimatee clearFakeboxButtonsSnapshot];
   self.stateChangedDuringAnimation = NO;
 }
 
@@ -455,6 +463,20 @@
     case OmniboxFocusTrigger::kOther:
     case OmniboxFocusTrigger::kPinnedFakebox:
     case OmniboxFocusTrigger::kPinnedLargeFakebox:
+      return NO;
+  }
+}
+
+// Returns YES if the focus event was triggered by the NTP Fakebox in its
+// pinned state.
+- (BOOL)isTriggerPinnedFakebox {
+  switch (_trigger) {
+    case OmniboxFocusTrigger::kPinnedFakebox:
+    case OmniboxFocusTrigger::kPinnedLargeFakebox:
+      return YES;
+    case OmniboxFocusTrigger::kOther:
+    case OmniboxFocusTrigger::kUnpinnedLargeFakebox:
+    case OmniboxFocusTrigger::kUnpinnedFakebox:
       return NO;
   }
 }

@@ -13,7 +13,6 @@ source_set("profile_service") {
     ":push_notification_service_header",
     ":push_notification_util",
     "//base",
-    "//components/keyed_service/core",
     "//components/prefs",
     "//components/signin/public/identity_manager",
     "//ios/chrome/browser/commerce/model",

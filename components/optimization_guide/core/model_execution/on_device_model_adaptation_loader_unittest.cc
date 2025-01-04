@@ -82,8 +82,7 @@ class OnDeviceModelAdaptationLoaderTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::internal::kOnDeviceModelTestFeature,
-          {{"enable_adaptation", "true"}}},
+        {{features::internal::kOnDeviceModelTestFeature, {}},
          {features::kOptimizationGuideModelExecution, {}},
          {features::kOptimizationGuideOnDeviceModel, {}}},
         {});

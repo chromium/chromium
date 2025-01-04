@@ -517,6 +517,10 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.MarkerStartResource() == b.MarkerStartResource();
     case CSSPropertyID::kMaskType:
       return a.MaskType() == b.MaskType();
+    case CSSPropertyID::kMasonryDirection:
+      return a.MasonryDirection() == b.MasonryDirection();
+    case CSSPropertyID::kMasonryFill:
+      return a.MasonryFill() == b.MasonryFill();
     case CSSPropertyID::kMasonrySlack:
       return a.MasonrySlack() == b.MasonrySlack();
     case CSSPropertyID::kMasonryTemplateTracks:
@@ -626,6 +630,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.ScrollbarWidth() == b.ScrollbarWidth();
     case CSSPropertyID::kScrollBehavior:
       return a.GetScrollBehavior() == b.GetScrollBehavior();
+    case CSSPropertyID::kScrollInitialTarget:
+      return a.ScrollInitialTarget() == b.ScrollInitialTarget();
     case CSSPropertyID::kScrollMarginBottom:
       return a.ScrollMarginBottom() == b.ScrollMarginBottom();
     case CSSPropertyID::kScrollMarginLeft:
@@ -648,8 +654,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.ScrollSnapStop() == b.ScrollSnapStop();
     case CSSPropertyID::kScrollSnapType:
       return a.GetScrollSnapType() == b.GetScrollSnapType();
-    case CSSPropertyID::kScrollStartTarget:
-      return a.ScrollStartTarget() == b.ScrollStartTarget();
     case CSSPropertyID::kScrollStartX:
       return a.ScrollStartX() == b.ScrollStartX();
     case CSSPropertyID::kScrollStartY:

@@ -150,13 +150,6 @@ void WebApps::LaunchAppWithParams(apps::AppLaunchParams&& params,
           std::move(callback)));
 }
 
-void WebApps::LaunchShortcut(const std::string& app_id,
-                             const std::string& shortcut_id,
-                             int64_t display_id) {
-  publisher_helper().ExecuteContextMenuCommand(app_id, shortcut_id, display_id,
-                                               base::DoNothing());
-}
-
 void WebApps::SetPermission(const std::string& app_id,
                             apps::PermissionPtr permission) {
   publisher_helper().SetPermission(app_id, std::move(permission));

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -246,13 +248,11 @@ class PageInfoBubbleViewTestApi {
     return base::ASCIIToUTF16(name);
   }
 
-  std::u16string GetSecurityInformationButtonText() {
+  std::u16string_view GetSecurityInformationButtonText() {
     auto* button = bubble_delegate_->GetViewByID(
         PageInfoViewFactory::
             VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SECURITY_INFORMATION);
-    return static_cast<RichHoverButton*>(button)
-        ->GetTitleViewForTesting()
-        ->GetText();
+    return static_cast<RichHoverButton*>(button)->GetTitleText();
   }
 
   std::u16string GetSecuritySummaryText() {
@@ -261,12 +261,10 @@ class PageInfoBubbleViewTestApi {
         ->GetText();
   }
 
-  std::u16string GetCookiesButtonTitleText() {
+  std::u16string_view GetCookiesButtonTitleText() {
     auto* button = bubble_delegate_->GetViewByID(
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIES_SUBPAGE);
-    return static_cast<RichHoverButton*>(button)
-        ->GetTitleViewForTesting()
-        ->GetText();
+    return static_cast<RichHoverButton*>(button)->GetTitleText();
   }
 
   std::u16string GetPermissionLabelTextAt(int index) {
@@ -289,8 +287,9 @@ class PageInfoBubbleViewTestApi {
 
     // Non-empty permission section has a reset all button
     // after all permission rows.
-    if (actual_count)
+    if (actual_count) {
       --actual_count;
+    }
 
     return actual_count;
   }
@@ -313,10 +312,9 @@ class PageInfoBubbleViewTestApi {
     CreateView();
   }
 
-  std::u16string GetCertificateButtonSubtitleText() const {
+  std::u16string_view GetCertificateButtonSubtitleText() const {
     EXPECT_TRUE(certificate_button());
-    EXPECT_TRUE(certificate_button()->GetSubTitleViewForTesting());
-    return certificate_button()->GetSubTitleViewForTesting()->GetText();
+    return certificate_button()->GetSubtitleText();
   }
 
   const views::View::Views& GetChosenObjectChildren() {
@@ -394,8 +392,9 @@ class ScopedWebContentsTestHelper {
                             HistoryServiceFactory::GetDefaultFactory()}});
     EXPECT_TRUE(profile_);
 
-    if (off_the_record)
+    if (off_the_record) {
       profile_ = profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+    }
     web_contents_ = factory_.CreateWebContents(profile_);
   }
 
@@ -460,9 +459,7 @@ class PageInfoBubbleViewTest : public testing::Test {
         web_contents);
   }
 
-  void TearDown() override {
-    parent_window_->CloseNow();
-  }
+  void TearDown() override { parent_window_->CloseNow(); }
 
  protected:
   std::unique_ptr<ScopedWebContentsTestHelper> web_contents_helper_;

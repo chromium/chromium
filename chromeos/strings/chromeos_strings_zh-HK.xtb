@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">停用深色主題背景</translation>
 <translation id="1807246157184219062">淺色</translation>
 <translation id="1808803439260407870">經典藝術</translation>
+<translation id="181434555916624618">目前系統不會顯示有人臉的結果，請嘗試其他提示。</translation>
 <translation id="1815850098929213707">揀咗嘅按鍵係 <ph name="KEYS" />。㩒一下個掣就可以修改控制項</translation>
 <translation id="1823120442877418684">角色</translation>
 <translation id="1827738518074806965">畫廊</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">裝置嘅右邊耳機有 <ph name="BATTERY_PERCENTAGE" />% 電。</translation>
 <translation id="3340978935015468852">設定</translation>
 <translation id="3347558044552027859">現代</translation>
+<translation id="3353477144743332882">下載摘要同名稱建立模型</translation>
 <translation id="3359218928534347896">將個咪校去靜音</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">壽司</translation>
@@ -689,6 +691,7 @@
 <translation id="4354430579665871434">鍵</translation>
 <translation id="4356100841225547054">關閉音量</translation>
 <translation id="4361257691546579041">呢個 APN 係預設 APN。</translation>
+<translation id="4368101969572512692">隨機建議</translation>
 <translation id="437294888293595148">重設所有快速鍵</translation>
 <translation id="437477383107495720">兔子</translation>
 <translation id="4376423484621194274">管理員不允許關閉「<ph name="APP_NAME" />」</translation>
@@ -768,6 +771,7 @@
 <translation id="4731797938093519117">家長存取</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4744944742468440486">所揀內容嘅相關資料</translation>
+<translation id="4750394297954878236">建議</translation>
 <translation id="4771607256327216405">提高鍵盤亮度</translation>
 <translation id="4771923071974529837">明天</translation>
 <translation id="4773299976671772492">已停止</translation>
@@ -853,6 +857,7 @@
 <translation id="5121677070210013200">無法下載轉錄模型，請再試一次或重新啟動 Chromebook。</translation>
 <translation id="5130848777448318809">小馬</translation>
 <translation id="5137451382116112100">全螢幕</translation>
+<translation id="5139813694804168398">請勿騷擾</translation>
 <translation id="5140788690559353412">失去學校帳戶存取權後，你將無法再存取相關聯的電郵和「Google 雲端硬碟」檔案，例如 Gmail、「文件」和「簡」報等。</translation>
 <translation id="5142961317498132443">驗證</translation>
 <translation id="5144311987923128508">而家停用咗「確認」掣</translation>
@@ -897,6 +902,7 @@
 <translation id="5302048478445481009">語言</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> 專屬桌布</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="530883153651464140">將「<ph name="DEVICE_NAME" />」更新至版本 <ph name="VERSION" /></translation>
 <translation id="5315873049536339193">身分</translation>
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5318310531701770497">無法建立名稱，請改用較長的轉錄文字。</translation>
@@ -973,7 +979,6 @@
 <translation id="5703716265115423771">調低音量</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">修改 <ph name="SHORTCUT_DESCRIPTION" /> 嘅按鈕。</translation>
-<translation id="5733298426544876109">更新 <ph name="DEVICE_NAME" /></translation>
 <translation id="5736820754189340309">數據用量已重設</translation>
 <translation id="574392208103952083">中</translation>
 <translation id="5744175046705638478">翻譯「<ph name="QUERY" />」</translation>
@@ -998,6 +1003,7 @@
 <translation id="5859969039821714932">無法使用快速鍵。請按下不包含 <ph name="KEY" /> 鍵的新快速鍵。</translation>
 <translation id="5860033963881614850">關閉</translation>
 <translation id="5860491529813859533">開啟</translation>
+<translation id="5875913454160982848">下載轉錄模型</translation>
 <translation id="5876385649737594562">開啟即可選取選項</translation>
 <translation id="5877503382465267833">暫停「<ph name="RECORDING_NAME" />」</translation>
 <translation id="588258955323874662">全螢幕</translation>
@@ -1037,7 +1043,6 @@
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6040852767465482106">匿名身分</translation>
 <translation id="604124094241169006">自動</translation>
-<translation id="6042308850641462728">更多選項</translation>
 <translation id="6048107060512778456">失敗 - 卡紙</translation>
 <translation id="6050189528197190982">灰階</translation>
 <translation id="6054711098834486579">表現主義</translation>
@@ -1293,6 +1298,7 @@
 <translation id="7134436342991564651">{0,plural, =1{域名伺服器}other{域名伺服器}}</translation>
 <translation id="7135814714616751706">搜尋捷徑</translation>
 <translation id="7138614237884624401">簡化版文字</translation>
+<translation id="7138668887584231801">字數不足，無法撮要</translation>
 <translation id="7141470099673912333">內容轉移</translation>
 <translation id="7143207342074048698">正在連接</translation>
 <translation id="7144878232160441200">重試</translation>
@@ -1588,6 +1594,7 @@
 <translation id="8503836310948963452">只需多幾分鐘…</translation>
 <translation id="8505011850330200833">Gemini 模型需要 2GB 儲存空間，處理轉錄文字和建立摘要</translation>
 <translation id="8508640263392900755">APN 詳情</translation>
+<translation id="8509574872955173831">進一步了解點樣建立摘要同名稱</translation>
 <translation id="8522687886059337719">您現可使用全新的<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />桌布<ph name="END_LINK_WALLPAPER_SUBPAGE" />和<ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />螢幕保護程式<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">茶居</translation>
@@ -1724,7 +1731,6 @@
 <translation id="9133772297793293778">按下鍵盤上的 1 至 4 個輔助鍵和 1 個其他按鍵。如要退出編輯模式，請按下 Alt + Esc 鍵。</translation>
 <translation id="9137526406337347448">Google 服務</translation>
 <translation id="9138630967333032450">左邊 Shift</translation>
-<translation id="9147928237330776930">字數太少，無法撮要</translation>
 <translation id="9149391708638971077">執行記憶體測試</translation>
 <translation id="9159524746324788320">漢堡包</translation>
 <translation id="9161276708550942948">空格鍵</translation>

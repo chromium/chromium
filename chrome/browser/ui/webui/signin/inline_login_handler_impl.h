@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/webui/signin/inline_login_handler.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace content {
 class StoragePartition;
@@ -41,8 +42,8 @@ class InlineLoginHandlerImpl : public InlineLoginHandler {
 
   ~InlineLoginHandlerImpl() override;
 
-  using InlineLoginHandler::web_ui;
   using InlineLoginHandler::CloseDialogFromJavascript;
+  using InlineLoginHandler::web_ui;
 
   base::WeakPtr<InlineLoginHandlerImpl> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
@@ -75,7 +76,7 @@ class InlineLoginHandlerImpl : public InlineLoginHandler {
                               const base::FilePath& profile_path,
                               bool confirm_untrusted_signin,
                               const std::string& email,
-                              const std::string& gaia_id,
+                              const GaiaId& gaia_id,
                               const std::string& password,
                               const std::string& auth_code,
                               bool is_force_sign_in_with_usermanager);
@@ -97,7 +98,7 @@ class InlineLoginHandlerImpl : public InlineLoginHandler {
     // Email address of the account used to sign in.
     std::string email;
     // Obfustcated gaia id of the account used to sign in.
-    std::string gaia_id;
+    GaiaId gaia_id;
     // Password of the account used to sign in.
     std::string password;
     // Authentication code used to exchange for a login scoped refresh token
@@ -132,7 +133,7 @@ class InlineSigninHelper : public GaiaAuthConsumer {
       Profile* profile,
       const GURL& current_url,
       const std::string& email,
-      const std::string& gaia_id,
+      const GaiaId& gaia_id,
       const std::string& password,
       const std::string& auth_code,
       const std::string& signin_scoped_device_id,
@@ -150,8 +151,7 @@ class InlineSigninHelper : public GaiaAuthConsumer {
  private:
   // Overridden from GaiaAuthConsumer.
   void OnClientOAuthSuccess(const ClientOAuthResult& result) override;
-  void OnClientOAuthFailure(const GoogleServiceAuthError& error)
-      override;
+  void OnClientOAuthFailure(const GoogleServiceAuthError& error) override;
 
   void OnClientOAuthSuccessAndBrowserOpened(const ClientOAuthResult& result);
 
@@ -169,7 +169,7 @@ class InlineSigninHelper : public GaiaAuthConsumer {
   raw_ptr<Profile> profile_;
   const GURL current_url_;
   const std::string email_;
-  const std::string gaia_id_;
+  const GaiaId gaia_id_;
   const std::string password_;
   const std::string auth_code_;
   const bool confirm_untrusted_signin_;

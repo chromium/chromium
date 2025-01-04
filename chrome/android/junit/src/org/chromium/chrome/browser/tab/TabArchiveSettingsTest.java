@@ -13,8 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureList.TestValues;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
@@ -99,16 +98,12 @@ public class TabArchiveSettingsTest {
         assertTrue(mSettings.getArchiveEnabled());
         assertFalse(mSettings.isAutoDeleteEnabled());
 
-        TestValues testValues = new TestValues();
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.ANDROID_TAB_DECLUTTER, ARCHIVE_ENABLED_PARAM, "false");
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.ANDROID_TAB_DECLUTTER, ARCHIVE_TIME_DELTA_PARAM, "10");
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.ANDROID_TAB_DECLUTTER, AUTO_DELETE_ENABLED_PARAM, "true");
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.ANDROID_TAB_DECLUTTER, AUTO_DELETE_TIME_DELTA_PARAM, "20");
-        FeatureList.setTestValues(testValues);
+        FeatureOverrides.newBuilder()
+                .param(ChromeFeatureList.ANDROID_TAB_DECLUTTER, ARCHIVE_ENABLED_PARAM, false)
+                .param(ChromeFeatureList.ANDROID_TAB_DECLUTTER, ARCHIVE_TIME_DELTA_PARAM, 10)
+                .param(ChromeFeatureList.ANDROID_TAB_DECLUTTER, AUTO_DELETE_ENABLED_PARAM, true)
+                .param(ChromeFeatureList.ANDROID_TAB_DECLUTTER, AUTO_DELETE_TIME_DELTA_PARAM, 20)
+                .apply();
 
         // Archive is disabled for tests, reset it to the default param value.
         mSettings.setArchiveEnabled(

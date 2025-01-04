@@ -12,7 +12,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/tests/bindings_test_base.h"
 #include "mojo/public/cpp/system/functions.h"
-#include "mojo/public/interfaces/bindings/tests/test_bad_messages.mojom.h"
+#include "mojo/public/interfaces/bindings/tests/test_bad_messages.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo {

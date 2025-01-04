@@ -91,6 +91,46 @@ TEST_F(AutofillErrorDialogControllerImplTest,
 }
 #endif  // BUILDFLAG(IS_IOS)
 
+// Test to verify the title, description and button label for autofill error
+// dialog for temporary failure when the card is enrolled in runtime retrieval.
+TEST_F(AutofillErrorDialogControllerImplTest, CardInfoRetrievalTemporaryError) {
+  AutofillErrorDialogContext context = AutofillErrorDialogContext::
+      WithCardInfoRetrievalPermanentOrTemporaryError(
+          /*is_permanent_error=*/false);
+
+  ShowPrompt(context);
+
+  EXPECT_EQ(controller()->GetTitle(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_CARD_INFO_RETRIEVAL_TEMPORARY_ERROR_TITLE));
+  EXPECT_EQ(controller()->GetDescription(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_CARD_INFO_RETRIEVAL_TEMPORARY_ERROR_DESCRIPTION));
+  EXPECT_EQ(controller()->GetButtonLabel(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_ERROR_DIALOG_NEGATIVE_BUTTON_LABEL));
+}
+
+// Test to verify the title, description and button label for autofill error
+// dialog for permanent failure when the card is enrolled in runtime retrieval.
+TEST_F(AutofillErrorDialogControllerImplTest, CardInfoRetrievalPermanentError) {
+  AutofillErrorDialogContext context = AutofillErrorDialogContext::
+      WithCardInfoRetrievalPermanentOrTemporaryError(
+          /*is_permanent_error=*/true);
+
+  ShowPrompt(context);
+
+  EXPECT_EQ(controller()->GetTitle(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_CARD_INFO_RETRIEVAL_PERMANENT_ERROR_TITLE));
+  EXPECT_EQ(controller()->GetDescription(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_CARD_INFO_RETRIEVAL_PERMANENT_ERROR_DESCRIPTION));
+  EXPECT_EQ(controller()->GetButtonLabel(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_ERROR_DIALOG_NEGATIVE_BUTTON_LABEL));
+}
+
 // Param of the AutofillErrorDialogControllerImplTest:
 // -- bool server_did_return_decline_details;
 class AutofillErrorDialogControllerImplParameterizedTest

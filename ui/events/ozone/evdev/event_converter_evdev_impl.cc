@@ -318,6 +318,8 @@ void EventConverterEvdevImpl::OnKeyChange(unsigned int key,
   // State transition: !(down) -> (down)
   key_state_.set(key, down);
 
+  const double timestamp_in_seconds = ui::EventTimeStampToSeconds(timestamp);
+
   // Checks for a key press that could only have occurred from a non-imposter
   // keyboard. Disables Imposter flag and triggers a callback which will update
   // the dispatched list of keyboards with this new information.
@@ -325,8 +327,15 @@ void EventConverterEvdevImpl::OnKeyChange(unsigned int key,
     bool was_suspected = IsSuspectedKeyboardImposter();
     SetSuspectedKeyboardImposter(false);
     if (was_suspected && received_valid_input_callback_) {
-      received_valid_input_callback_.Run(this);
+      received_valid_input_callback_.Run(this, timestamp_in_seconds);
     }
+  }
+
+  // For internal devices with with valid key presses trigger the valid input
+  // callback.
+  if (down && type() == InputDeviceType::INPUT_DEVICE_INTERNAL &&
+      received_valid_input_callback_) {
+    received_valid_input_callback_.Run(this, timestamp_in_seconds);
   }
 
   dispatcher_->DispatchKeyEvent(

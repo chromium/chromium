@@ -46,6 +46,9 @@ class NavigationHandleObserver : public WebContentsObserver {
   bool was_redirected() { return was_redirected_; }
   FrameTreeNodeId frame_tree_node_id() { return frame_tree_node_id_; }
   const GURL& last_committed_url() { return last_committed_url_; }
+  const std::optional<url::Origin>& last_initiator_origin() {
+    return last_initiator_origin_;
+  }
   ui::PageTransition page_transition() { return page_transition_; }
   net::Error net_error_code() { return net_error_code_; }
   int64_t navigation_id() { return navigation_id_; }
@@ -82,6 +85,8 @@ class NavigationHandleObserver : public WebContentsObserver {
   ui::PageTransition page_transition_ = ui::PAGE_TRANSITION_LINK;
   GURL expected_start_url_;
   GURL last_committed_url_;
+  // Tracks the origin that initiated the last committed navigation.
+  std::optional<url::Origin> last_initiator_origin_;
   net::Error net_error_code_ = net::OK;
   int64_t navigation_id_ = -1;
   bool is_download_ = false;

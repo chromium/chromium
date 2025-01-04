@@ -26,7 +26,7 @@ LayerTreeSettings::~LayerTreeSettings() = default;
 
 bool LayerTreeSettings::UseLayerContextForDisplay() const {
   return use_layer_lists && !is_display_tree &&
-         base::FeatureList::IsEnabled(features::kVizLayers);
+         base::FeatureList::IsEnabled(features::kTreesInViz);
 }
 
 SchedulerSettings LayerTreeSettings::ToSchedulerSettings() const {

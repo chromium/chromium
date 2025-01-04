@@ -56,6 +56,9 @@ class VIEWS_EXPORT Checkbox : public LabelButton {
   // Bitmask constants for GetIconImageColor.
   enum IconState { CHECKED = 0b1, ENABLED = 0b10 };
 
+  // Button:
+  void UpdateAccessibleCheckedState() override;
+
   // LabelButton:
   void OnThemeChanged() override;
 
@@ -79,7 +82,6 @@ class VIEWS_EXPORT Checkbox : public LabelButton {
 
   // Button:
   void NotifyClick(const ui::Event& event) override;
-  void UpdateAccessibleCheckedState();
 
   ui::NativeTheme::Part GetThemePart() const override;
   void GetExtraParams(ui::NativeTheme::ExtraParams* params) const override;

@@ -134,6 +134,9 @@ bool HttpAuthCoordinator::Flow::ForwardToExtension(
                                  std::move(continuation), web_view_guest)) {
     return true;
   }
+#else
+  // Suppress -Wunused-private-field warning.
+  (void)is_request_for_navigation_;
 #endif
   return false;
 }

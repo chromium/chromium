@@ -115,8 +115,9 @@ gfx::Rect CustomFrameView::GetWindowBoundsForClientBounds(
 
 int CustomFrameView::NonClientHitTest(const gfx::Point& point) {
   // Sanity check.
-  if (!bounds().Contains(point))
+  if (!bounds().Contains(point)) {
     return HTNOWHERE;
+  }
 
   int frame_component = frame_->client_view()->NonClientHitTest(point);
 
@@ -125,26 +126,34 @@ int CustomFrameView::NonClientHitTest(const gfx::Point& point) {
   gfx::Rect sysmenu_rect(IconBounds());
   // In maximized mode we extend the rect to the screen corner to take advantage
   // of Fitts' Law.
-  if (frame_->IsMaximized())
+  if (frame_->IsMaximized()) {
     sysmenu_rect.SetRect(0, 0, sysmenu_rect.right(), sysmenu_rect.bottom());
+  }
   sysmenu_rect.set_x(GetMirroredXForRect(sysmenu_rect));
-  if (sysmenu_rect.Contains(point))
+  if (sysmenu_rect.Contains(point)) {
     return (frame_component == HTCLIENT) ? HTCLIENT : HTSYSMENU;
+  }
 
-  if (frame_component != HTNOWHERE)
+  if (frame_component != HTNOWHERE) {
     return frame_component;
+  }
 
   // Then see if the point is within any of the window controls.
-  if (close_button_->GetMirroredBounds().Contains(point))
+  if (close_button_->GetMirroredBounds().Contains(point)) {
     return HTCLOSE;
-  if (restore_button_->GetMirroredBounds().Contains(point))
+  }
+  if (restore_button_->GetMirroredBounds().Contains(point)) {
     return HTMAXBUTTON;
-  if (maximize_button_->GetMirroredBounds().Contains(point))
+  }
+  if (maximize_button_->GetMirroredBounds().Contains(point)) {
     return HTMAXBUTTON;
-  if (minimize_button_->GetMirroredBounds().Contains(point))
+  }
+  if (minimize_button_->GetMirroredBounds().Contains(point)) {
     return HTMINBUTTON;
-  if (window_icon_ && window_icon_->GetMirroredBounds().Contains(point))
+  }
+  if (window_icon_ && window_icon_->GetMirroredBounds().Contains(point)) {
     return HTSYSMENU;
+  }
 
   gfx::Insets resize_border(NonClientBorderThickness());
   // The top resize border has extra thickness.
@@ -159,8 +168,9 @@ int CustomFrameView::NonClientHitTest(const gfx::Point& point) {
 void CustomFrameView::GetWindowMask(const gfx::Size& size,
                                     SkPath* window_mask) {
   DCHECK(window_mask);
-  if (frame_->IsMaximized() || !ShouldShowTitleBarAndBorder())
+  if (frame_->IsMaximized() || !ShouldShowTitleBarAndBorder()) {
     return;
+  }
 
   GetDefaultWindowMask(size, window_mask);
 }
@@ -173,8 +183,9 @@ void CustomFrameView::ResetWindowControls() {
 }
 
 void CustomFrameView::UpdateWindowIcon() {
-  if (window_icon_)
+  if (window_icon_) {
     window_icon_->SchedulePaint();
+  }
 }
 
 void CustomFrameView::UpdateWindowTitle() {
@@ -192,8 +203,9 @@ void CustomFrameView::SizeConstraintsChanged() {
 }
 
 void CustomFrameView::OnPaint(gfx::Canvas* canvas) {
-  if (!ShouldShowTitleBarAndBorder())
+  if (!ShouldShowTitleBarAndBorder()) {
     return;
+  }
 
   frame_background_->set_frame_color(GetFrameColor());
   frame_background_->set_use_custom_frame(true);
@@ -202,13 +214,15 @@ void CustomFrameView::OnPaint(gfx::Canvas* canvas) {
   frame_background_->set_theme_image(frame_image);
   frame_background_->set_top_area_height(frame_image.height());
 
-  if (frame_->IsMaximized())
+  if (frame_->IsMaximized()) {
     PaintMaximizedFrameBorder(canvas);
-  else
+  } else {
     PaintRestoredFrameBorder(canvas);
+  }
   PaintTitleBar(canvas);
-  if (ShouldShowClientEdge())
+  if (ShouldShowClientEdge()) {
     PaintRestoredClientEdge(canvas);
+  }
 }
 
 void CustomFrameView::Layout(PassKey) {
@@ -366,8 +380,9 @@ void CustomFrameView::PaintTitleBar(gfx::Canvas* canvas) {
   // It seems like in some conditions we can be asked to paint after the window
   // that contains us is WM_DESTROYed. At this point, our delegate is NULL. The
   // correct long term fix may be to shut down the RootView in WM_DESTROY.
-  if (!delegate || !delegate->ShouldShowWindowTitle())
+  if (!delegate || !delegate->ShouldShowWindowTitle()) {
     return;
+  }
 
   gfx::Rect rect = title_bounds_;
   rect.set_x(GetMirroredXForRect(title_bounds_));
@@ -445,8 +460,9 @@ void CustomFrameView::LayoutWindowControls() {
   minimum_title_bar_x_ = 0;
   maximum_title_bar_x_ = width();
 
-  if (bounds().IsEmpty())
+  if (bounds().IsEmpty()) {
     return;
+  }
 
   int caption_y = CaptionButtonY();
   bool is_maximized = frame_->IsMaximized();
@@ -472,12 +488,14 @@ void CustomFrameView::LayoutWindowControls() {
   ImageButton* button = nullptr;
   for (auto frame_button : leading_buttons) {
     button = GetImageButton(frame_button);
-    if (!button)
+    if (!button) {
       continue;
+    }
     gfx::Rect target_bounds(gfx::Point(next_button_x, caption_y),
                             button->GetPreferredSize({}));
-    if (frame_button == leading_buttons.front())
+    if (frame_button == leading_buttons.front()) {
       target_bounds.set_width(target_bounds.width() + extra_width);
+    }
     LayoutButton(button, target_bounds);
     next_button_x += button->width();
     minimum_title_bar_x_ = std::min(width(), next_button_x);
@@ -487,12 +505,14 @@ void CustomFrameView::LayoutWindowControls() {
   next_button_x = width() - FrameBorderThickness();
   for (auto frame_button : base::Reversed(trailing_buttons)) {
     button = GetImageButton(frame_button);
-    if (!button)
+    if (!button) {
       continue;
+    }
     gfx::Rect target_bounds(gfx::Point(next_button_x, caption_y),
                             button->GetPreferredSize({}));
-    if (frame_button == trailing_buttons.back())
+    if (frame_button == trailing_buttons.back()) {
       target_bounds.set_width(target_bounds.width() + extra_width);
+    }
     target_bounds.Offset(-target_bounds.width(), 0);
     LayoutButton(button, target_bounds);
     next_button_x = button->x();
@@ -506,11 +526,13 @@ void CustomFrameView::LayoutTitleBar() {
   // when there is no icon.
   gfx::Rect icon_bounds(IconBounds());
   bool show_window_icon = window_icon_ != nullptr;
-  if (show_window_icon)
+  if (show_window_icon) {
     window_icon_->SetBoundsRect(icon_bounds);
+  }
 
-  if (!frame_->widget_delegate()->ShouldShowWindowTitle())
+  if (!frame_->widget_delegate()->ShouldShowWindowTitle()) {
     return;
+  }
 
   // The offset between the window left edge and the title text.
   int title_x = show_window_icon ? icon_bounds.right() + kTitleIconOffsetX
@@ -575,8 +597,9 @@ ImageButton* CustomFrameView::GetImageButton(views::FrameButton frame_button) {
       // don't want this button to become visible and to be laid out.
       bool should_show = frame_->widget_delegate()->CanMinimize();
       button->SetVisible(should_show);
-      if (!should_show)
+      if (!should_show) {
         return nullptr;
+      }
 
       break;
     }
@@ -588,8 +611,9 @@ ImageButton* CustomFrameView::GetImageButton(views::FrameButton frame_button) {
       // out.
       bool should_show = frame_->widget_delegate()->CanMaximize();
       button->SetVisible(should_show);
-      if (!should_show)
+      if (!should_show) {
         return nullptr;
+      }
 
       break;
     }

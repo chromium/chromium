@@ -50,6 +50,7 @@ class COMPONENT_EXPORT(MANTA) MahiProvider : public BaseProvider {
   // Will give an empty response if `IdentityManager` is no longer valid.
   virtual void Summarize(const std::string& input,
                          const std::string& title,
+                         const std::optional<std::string>& context,
                          const std::optional<std::string>& url,
                          MantaGenericCallback done_callback);
 

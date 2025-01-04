@@ -72,7 +72,7 @@ public class ShoppingPersistedTabDataServiceTest {
         ProfileManager.setLastUsedProfileForTesting(mProfileMock);
         mService = new ShoppingPersistedTabDataService();
         mSharedPrefsManager = ChromeSharedPreferences.getInstance();
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
         ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
     }
 

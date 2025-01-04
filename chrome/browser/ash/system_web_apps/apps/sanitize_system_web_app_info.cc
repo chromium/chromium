@@ -60,7 +60,15 @@ bool SanitizeSystemAppDelegate::ShouldAllowResize() const {
   return false;
 }
 
+bool SanitizeSystemAppDelegate::ShouldAllowMaximize() const {
+  return false;
+}
+
 bool SanitizeSystemAppDelegate::ShouldShowInLauncher() const {
+  return false;
+}
+
+bool SanitizeSystemAppDelegate::ShouldShowInSearchAndShelf() const {
   return false;
 }
 

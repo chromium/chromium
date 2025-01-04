@@ -1017,7 +1017,7 @@ TEST_F(FaviconDatabaseTest, Recovery) {
   {
     EXPECT_TRUE(history::CreateDatabaseFromSQL(file_name_, "Favicons.v8.sql"));
 
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     EXPECT_TRUE(raw_db.Open(file_name_));
     VerifyTablesAndColumns(&raw_db);
   }
@@ -1037,7 +1037,7 @@ TEST_F(FaviconDatabaseTest, Recovery) {
 
   // Corrupt the `icon_mapping.page_url` index by zeroing its root page.
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     EXPECT_TRUE(raw_db.Open(file_name_));
     ASSERT_EQ("ok", sql::test::IntegrityCheck(raw_db));
   }
@@ -1046,7 +1046,7 @@ TEST_F(FaviconDatabaseTest, Recovery) {
 
   // Database should be corrupt at the SQLite level.
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     EXPECT_TRUE(raw_db.Open(file_name_));
     EXPECT_NE("ok", sql::test::IntegrityCheck(raw_db));
   }
@@ -1069,7 +1069,7 @@ TEST_F(FaviconDatabaseTest, Recovery) {
 
   // Check that the database is recovered at the SQLite level.
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     EXPECT_TRUE(raw_db.Open(file_name_));
     ASSERT_EQ("ok", sql::test::IntegrityCheck(raw_db));
 
@@ -1096,7 +1096,7 @@ TEST_F(FaviconDatabaseTest, Recovery) {
 
   // Database is unusable at the SQLite level.
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     {
       sql::test::ScopedErrorExpecter expecter;
       expecter.ExpectError(sql::SqliteResultCode::kCorrupt);
@@ -1132,7 +1132,7 @@ TEST_F(FaviconDatabaseTest, Recovery7) {
 
   // Corrupt the `icon_mapping.page_url` index by zeroing its root page.
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     EXPECT_TRUE(raw_db.Open(file_name_));
     ASSERT_EQ("ok", sql::test::IntegrityCheck(raw_db));
   }
@@ -1141,7 +1141,7 @@ TEST_F(FaviconDatabaseTest, Recovery7) {
 
   // Database should be corrupt at the SQLite level.
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     EXPECT_TRUE(raw_db.Open(file_name_));
     EXPECT_NE("ok", sql::test::IntegrityCheck(raw_db));
   }
@@ -1164,7 +1164,7 @@ TEST_F(FaviconDatabaseTest, Recovery7) {
 
   // Check that the database is recovered at the SQLite level.
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     EXPECT_TRUE(raw_db.Open(file_name_));
     ASSERT_EQ("ok", sql::test::IntegrityCheck(raw_db));
 
@@ -1191,7 +1191,7 @@ TEST_F(FaviconDatabaseTest, Recovery7) {
 
   // Database is unusable at the SQLite level.
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     {
       sql::test::ScopedErrorExpecter expecter;
       expecter.ExpectError(sql::SqliteResultCode::kCorrupt);
@@ -1232,7 +1232,7 @@ TEST_F(FaviconDatabaseTest, Recovery6) {
 
   // Database is unusable at the SQLite level.
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     {
       sql::test::ScopedErrorExpecter expecter;
       expecter.ExpectError(sql::SqliteResultCode::kCorrupt);
@@ -1254,7 +1254,7 @@ TEST_F(FaviconDatabaseTest, Recovery6) {
   // The database should be usable at the SQLite level, with a current schema
   // and no data.
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     EXPECT_TRUE(raw_db.Open(file_name_));
     ASSERT_EQ("ok", sql::test::IntegrityCheck(raw_db));
 
@@ -1278,7 +1278,7 @@ TEST_F(FaviconDatabaseTest, Recovery5) {
 
   // Database is unusable at the SQLite level.
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     {
       sql::test::ScopedErrorExpecter expecter;
       expecter.ExpectError(sql::SqliteResultCode::kCorrupt);
@@ -1300,7 +1300,7 @@ TEST_F(FaviconDatabaseTest, Recovery5) {
   // The database should be usable at the SQLite level, with a current schema
   // and no data.
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     EXPECT_TRUE(raw_db.Open(file_name_));
     ASSERT_EQ("ok", sql::test::IntegrityCheck(raw_db));
 

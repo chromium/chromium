@@ -7,7 +7,6 @@
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "build/chromeos_buildflags.h"
 #include "components/signin/internal/identity_manager/accounts_mutator_impl.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/device_id_helper.h"
@@ -26,7 +25,7 @@
 namespace {
 
 const char kTestEmail[] = "test_user@test.com";
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 const char kTestGaiaId[] = "gaia-id-test_user-test.com";
 const char kTestGaiaId2[] = "gaia-id-test_user-2-test.com";
 const char kTestEmail2[] = "test_user@test-2.com";
@@ -135,8 +134,9 @@ TEST_F(AccountsMutatorTest, Basic) {
 // Test that the information of an existing account for a given ID gets updated.
 TEST_F(AccountsMutatorTest, UpdateAccountInfo) {
   // Abort the test if the current platform does not support accounts mutation.
-  if (!accounts_mutator())
+  if (!accounts_mutator()) {
     return;
+  }
 
   // First of all add the account to the account tracker service.
   base::RunLoop run_loop;
@@ -208,14 +208,15 @@ TEST_F(AccountsMutatorTest, UpdateAccountInfo) {
   EXPECT_EQ(Tribool::kFalse, reset_account_info.is_child_account);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Test that a new account gets added to the AccountTrackerService when calling
 // AddOrUpdateAccount() and that a new refresh token becomes available for the
 // passed account_id when adding an account for the first time.
 TEST_F(AccountsMutatorTest, AddOrUpdateAccount_AddNewAccount) {
   // Abort the test if the current platform does not support accounts mutation.
-  if (!accounts_mutator())
+  if (!accounts_mutator()) {
     return;
+  }
 
   base::RunLoop run_loop;
   identity_manager_observer()->SetOnRefreshTokenUpdatedCallback(
@@ -247,8 +248,9 @@ TEST_F(AccountsMutatorTest, AddOrUpdateAccount_AddNewAccount) {
 // and that its refresh token gets updated if a different one is passed.
 TEST_F(AccountsMutatorTest, AddOrUpdateAccount_UpdateExistingAccount) {
   // Abort the test if the current platform does not support accounts mutation.
-  if (!accounts_mutator())
+  if (!accounts_mutator()) {
     return;
+  }
 
   // First of all add the account to the account tracker service.
   base::RunLoop run_loop;
@@ -323,8 +325,9 @@ TEST_F(AccountsMutatorTest, AddOrUpdateAccount_UpdateExistingAccount) {
 TEST_F(AccountsMutatorTest,
        InvalidateRefreshTokenForPrimaryAccount_WithPrimaryAccount) {
   // Abort the test if the current platform does not support accounts mutation.
-  if (!accounts_mutator())
+  if (!accounts_mutator()) {
     return;
+  }
 
   // Set up the primary account.
   std::string primary_account_email("primary.account@example.com");
@@ -361,8 +364,9 @@ TEST_F(
     AccountsMutatorTest,
     InvalidateRefreshTokenForPrimaryAccount_WithPrimaryAndSecondaryAccounts) {
   // Abort the test if the current platform does not support accounts mutation.
-  if (!accounts_mutator())
+  if (!accounts_mutator()) {
     return;
+  }
 
   // Set up the primary account.
   std::string primary_account_email("primary.account@example.com");
@@ -425,8 +429,9 @@ TEST_F(
 TEST_F(AccountsMutatorTest,
        InvalidateRefreshTokenForPrimaryAccount_WithoutPrimaryAccount) {
   // Abort the test if the current platform does not support accounts mutation.
-  if (!accounts_mutator())
+  if (!accounts_mutator()) {
     return;
+  }
 
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
@@ -444,8 +449,9 @@ TEST_F(AccountsMutatorTest,
 // firing any callback from AccountTrackerService or ProfileOAuth2TokenService.
 TEST_F(AccountsMutatorTest, RemoveAccount_NonExistingAccount) {
   // Abort the test if the current platform does not support accounts mutation.
-  if (!accounts_mutator())
+  if (!accounts_mutator()) {
     return;
+  }
 
   base::RunLoop run_loop;
   identity_manager_observer()->SetOnRefreshTokenUpdatedCallback(
@@ -471,8 +477,9 @@ TEST_F(AccountsMutatorTest, RemoveAccount_NonExistingAccount) {
 // the right callbacks from AccountTrackerService or ProfileOAuth2TokenService.
 TEST_F(AccountsMutatorTest, RemoveAccount_ExistingAccount) {
   // Abort the test if the current platform does not support accounts mutation.
-  if (!accounts_mutator())
+  if (!accounts_mutator()) {
     return;
+  }
 
   // First of all add the account to the account tracker service.
   base::RunLoop run_loop;
@@ -516,8 +523,9 @@ TEST_F(AccountsMutatorTest, RemoveAccount_ExistingAccount) {
 // PO2TS and every account from the AccountTrackerService.
 TEST_F(AccountsMutatorTest, RemoveAllAccounts) {
   // Abort the test if the current platform does not support accounts mutation.
-  if (!accounts_mutator())
+  if (!accounts_mutator()) {
     return;
+  }
 
   // First of all the first account to the account tracker service.
   base::RunLoop run_loop;
@@ -569,8 +577,9 @@ TEST_F(AccountsMutatorTest, RemoveAllAccounts) {
 
 TEST_F(AccountsMutatorTest, UpdateAccessTokenFromSource) {
   // Abort the test if the current platform does not support accounts mutation.
-  if (!accounts_mutator())
+  if (!accounts_mutator()) {
     return;
+  }
 
   // Add a default account.
   CoreAccountId account_id = accounts_mutator()->AddOrUpdateAccount(
@@ -601,8 +610,9 @@ TEST_F(AccountsMutatorTest, UpdateAccessTokenFromSource) {
 
 TEST_F(AccountsMutatorTest, RemoveRefreshTokenFromSource) {
   // Abort the test if the current platform does not support accounts mutation.
-  if (!accounts_mutator())
+  if (!accounts_mutator()) {
     return;
+  }
 
   // Add a default account.
   CoreAccountId account_id = accounts_mutator()->AddOrUpdateAccount(
@@ -617,7 +627,7 @@ TEST_F(AccountsMutatorTest, RemoveRefreshTokenFromSource) {
   EXPECT_EQ("Settings::Signout",
             identity_manager_diagnostics_observer()->token_remover_source());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 TEST_F(AccountsMutatorTest, MoveAccount) {

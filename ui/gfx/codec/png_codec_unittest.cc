@@ -934,10 +934,11 @@ TEST_P(PNGCodecTest, EncodeBGRASkBitmapStridePadded) {
   // Encode the bitmap.
   std::optional<std::vector<uint8_t>> encoded = PNGCodec::EncodeBGRASkBitmap(
       original_bitmap, /*discard_transparency=*/false);
+  ASSERT_TRUE(encoded);
 
   // Decode the encoded string.
   SkBitmap decoded_bitmap = PNGCodec::Decode(encoded.value());
-  EXPECT_FALSE(decoded_bitmap.isNull());
+  ASSERT_FALSE(decoded_bitmap.isNull());
 
   // Compare the original bitmap and the output bitmap. We use ColorsClose
   // as SkBitmaps are considered to be pre-multiplied, the unpremultiplication
@@ -963,10 +964,11 @@ TEST_P(PNGCodecTest, EncodeBGRASkBitmap) {
   // Encode the bitmap.
   std::optional<std::vector<uint8_t>> encoded = PNGCodec::EncodeBGRASkBitmap(
       original_bitmap, /*discard_transparency=*/false);
+  ASSERT_TRUE(encoded);
 
   // Decode the encoded string.
   SkBitmap decoded_bitmap = PNGCodec::Decode(encoded.value());
-  EXPECT_FALSE(decoded_bitmap.isNull());
+  ASSERT_FALSE(decoded_bitmap.isNull());
 
   // Compare the original bitmap and the output bitmap. We use ColorsClose
   // as SkBitmaps are considered to be pre-multiplied, the unpremultiplication
@@ -992,10 +994,11 @@ TEST_P(PNGCodecTest, EncodeBGRASkBitmapDiscardTransparency) {
   // Encode the bitmap.
   std::optional<std::vector<uint8_t>> encoded = PNGCodec::EncodeBGRASkBitmap(
       original_bitmap, /*discard_transparency=*/true);
+  ASSERT_TRUE(encoded);
 
   // Decode the encoded string.
   SkBitmap decoded_bitmap = PNGCodec::Decode(encoded.value());
-  EXPECT_FALSE(decoded_bitmap.isNull());
+  ASSERT_FALSE(decoded_bitmap.isNull());
 
   // Compare the original bitmap and the output bitmap. We need to
   // unpremultiply original_pixel, as the decoded bitmap doesn't have an alpha

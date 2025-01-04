@@ -98,12 +98,12 @@ bool IsAccessibilityRestrictiveIA2AXModesEnabled() {
       ::features::kEnableAccessibilityRestrictiveIA2AXModes);
 }
 
-BASE_FEATURE(kEnableAccessibilityTreeForViews,
-             "AccessibilityTreeForViews",
+BASE_FEATURE(kExtensionManifestV3NetworkSpeechSynthesis,
+             "ExtensionManifestV3NetworkSpeechSynthesis",
              base::FEATURE_DISABLED_BY_DEFAULT);
-bool IsAccessibilityTreeForViewsEnabled() {
+bool IsExtensionManifestV3NetworkSpeechSynthesisEnabled() {
   return base::FeatureList::IsEnabled(
-      ::features::kEnableAccessibilityTreeForViews);
+      ::features::kExtensionManifestV3NetworkSpeechSynthesis);
 }
 
 BASE_FEATURE(kEnableAriaElementReflection,
@@ -231,7 +231,7 @@ bool IsAccessibilityFlashScreenFeatureEnabled() {
 
 BASE_FEATURE(kAccessibilityBounceKeys,
              "AccessibilityBounceKeys",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAccessibilityBounceKeysEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityBounceKeys);
 }
@@ -251,16 +251,6 @@ bool IsAccessibilityShakeToLocateEnabled() {
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kAccessibilitySnapshotStressTests,
-             "AccessibilitySnapshotStressTests",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-bool IsAccessibilitySnapshotStressTestsEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kAccessibilitySnapshotStressTests);
-}
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
 bool IsScreenAIMainContentExtractionEnabled() {
@@ -387,11 +377,27 @@ bool IsMacAccessibilityAPIMigrationEnabled() {
       ::features::kMacAccessibilityAPIMigration);
 }
 
+BASE_FEATURE(kMacAccessibilityOptimizeChildrenChanged,
+             "MacAccessibilityOptimizeChildrenChanged",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsMacAccessibilityOptimizeChildrenChangedEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kMacAccessibilityOptimizeChildrenChanged);
+}
+
 BASE_FEATURE(kAccessibilityRemoteUIApp,
              "AccessibilityRemoteUIApp",
              base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAccessibilityRemoteUIAppEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityRemoteUIApp);
+}
+
+BASE_FEATURE(kBlockRootWindowAccessibleNameChangeEvent,
+             "BlockRootWindowAccessibleNameChangeEvent",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+bool IsBlockRootWindowAccessibleNameChangeEventEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kBlockRootWindowAccessibleNameChangeEvent);
 }
 #endif  // BUILDFLAG(IS_MAC)
 

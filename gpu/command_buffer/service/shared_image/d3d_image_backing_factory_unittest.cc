@@ -2050,11 +2050,9 @@ void D3DImageBackingFactoryTest::RunMultiplanarUploadAndReadback(
     size_t plane_offset = 0;
     for (int plane = 0; plane < format.NumberOfPlanes(); ++plane) {
       gfx::Size plane_size = format.GetPlaneSize(plane, size);
-      auto info =
-          SkImageInfo::Make(gfx::SizeToSkISize(plane_size),
-                            viz::ToClosestSkColorType(
-                                /*gpu_compositing=*/true, format, plane),
-                            alpha_type, color_space.ToSkColorSpace());
+      auto info = SkImageInfo::Make(gfx::SizeToSkISize(plane_size),
+                                    viz::ToClosestSkColorType(format, plane),
+                                    alpha_type, color_space.ToSkColorSpace());
       DCHECK_LE(info.computeMinByteSize() + plane_offset, kDataSize);
       pixmaps.emplace_back(info, buffer.data() + plane_offset,
                            info.minRowBytes());

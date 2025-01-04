@@ -26,18 +26,15 @@ SessionServiceTabGroupSyncObserver::SessionServiceTabGroupSyncObserver(
     SessionID session_id)
     : profile_(profile),
       tab_strip_model_(tab_strip_model),
-      session_id_(session_id) {
-  TabGroupSyncService* tab_group_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile_);
-  CHECK(tab_group_service);
-  tab_group_service->AddObserver(this);
+      session_id_(session_id),
+      service_(tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile_)) {
+  CHECK(service_);
+  service_->AddObserver(this);
 }
 
 SessionServiceTabGroupSyncObserver::~SessionServiceTabGroupSyncObserver() {
-  TabGroupSyncService* tab_group_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile_);
-  CHECK(tab_group_service);
-  tab_group_service->RemoveObserver(this);
+  CHECK(service_);
+  service_->RemoveObserver(this);
 }
 
 void SessionServiceTabGroupSyncObserver::OnTabGroupAdded(

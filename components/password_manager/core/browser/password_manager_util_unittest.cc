@@ -19,14 +19,14 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/device_reauth/mock_device_authenticator.h"
@@ -676,17 +676,17 @@ TEST(PasswordManagerUtil, AvoidOverlappingAutofillMenuAndManualGeneration) {
       autofill::AutofillClient::PopupOpenArgs(), /*delegate=*/nullptr);
   test_autofill_client.ShowAutofillFieldIphForFeature(
       autofill::FormFieldData(),
-      autofill::AutofillClient::IphFeature::kManualFallback);
+      autofill::AutofillClient::IphFeature::kAutofillAi);
 
   ASSERT_TRUE(test_autofill_client.IsShowingAutofillPopup());
-  ASSERT_TRUE(test_autofill_client.IsShowingManualFallbackIph());
+  ASSERT_TRUE(test_autofill_client.IsShowingAutofillAiIph());
 
   UserTriggeredManualGenerationFromContextMenu(&stub_password_client,
                                                &test_autofill_client);
   EXPECT_EQ(test_autofill_client.popup_hiding_reason(),
             autofill::SuggestionHidingReason::
                 kOverlappingWithPasswordGenerationPopup);
-  EXPECT_FALSE(test_autofill_client.IsShowingManualFallbackIph());
+  EXPECT_FALSE(test_autofill_client.IsShowingAutofillAiIph());
 }
 
 TEST(PasswordManagerUtil, StripAuthAndParams) {

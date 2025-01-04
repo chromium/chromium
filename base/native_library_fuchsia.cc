@@ -58,16 +58,16 @@ NativeLibrary LoadNativeLibraryWithOptions(const FilePath& library_path,
     computed_path = library_root_path.Append(library_path);
   }
 
-  // Use fdio_open_fd (a Fuchsia-specific API) here so we can pass the
+  // Use fdio_open3_fd (a Fuchsia-specific API) here so we can pass the
   // appropriate FS rights flags to request executability.
   // TODO(crbug.com/40655456): Teach base::File about FLAG_WIN_EXECUTE on
-  // Fuchsia, and then use it here instead of using fdio_open_fd() directly.
+  // Fuchsia, and then use it here instead of using fdio_open3_fd() directly.
   base::ScopedFD fd;
-  zx_status_t status = fdio_open_fd(
-      computed_path.value().c_str(),
-      static_cast<uint32_t>(fuchsia::io::OpenFlags::RIGHT_READABLE |
-                            fuchsia::io::OpenFlags::RIGHT_EXECUTABLE),
-      base::ScopedFD::Receiver(fd).get());
+  zx_status_t status =
+      fdio_open3_fd(computed_path.value().c_str(),
+                    static_cast<uint64_t>(fuchsia::io::PERM_READABLE |
+                                          fuchsia::io::PERM_EXECUTABLE),
+                    base::ScopedFD::Receiver(fd).get());
   if (status != ZX_OK) {
     if (error) {
       error->message =

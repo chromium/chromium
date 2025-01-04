@@ -127,8 +127,9 @@ void FilePathValid(Profile* profile,
             bool valid = true;
             const ValidityRequirement& requirement =
                 file_path_with_requirement.second;
-            if (requirement.must_exist)
+            if (requirement.must_exist) {
               valid = result == base::File::Error::FILE_OK;
+            }
             if (valid && requirement.must_be_newer_than) {
               valid =
                   file_info.creation_time >
@@ -145,8 +146,9 @@ void PartitionFilePathsByExistence(
     FilePathList file_paths,
     PartitionFilePathsByExistenceCallback callback) {
   FilePathsWithValidityRequirements file_paths_with_requirements;
-  for (const auto& file_path : file_paths)
+  for (const auto& file_path : file_paths) {
     file_paths_with_requirements.push_back({file_path, /*requirements=*/{}});
+  }
   PartitionFilePathsByValidity(profile, file_paths_with_requirements,
                                std::move(callback));
 }
@@ -168,8 +170,9 @@ void PartitionFilePathsByValidity(
   auto* invalid_file_paths_ptr = invalid_file_paths.get();
 
   FilePathList file_paths;
-  for (const auto& file_path_with_requirement : file_paths_with_requirements)
+  for (const auto& file_path_with_requirement : file_paths_with_requirements) {
     file_paths.push_back(file_path_with_requirement.first);
+  }
 
   // This `barrier_closure` will be run after verifying the existence of all
   // `file_paths`. It is expected that both `valid_file_paths` and
@@ -190,8 +193,9 @@ void PartitionFilePathsByValidity(
               FilePathList temp_file_paths;
               temp_file_paths.swap(*file_paths);
               for (const auto& file_path : sorted_file_paths) {
-                if (base::Contains(temp_file_paths, file_path))
+                if (base::Contains(temp_file_paths, file_path)) {
                   file_paths->push_back(file_path);
+                }
               }
             };
             sort(valid_file_paths.get());
@@ -214,10 +218,11 @@ void PartitionFilePathsByValidity(
             [](base::FilePath file_path, FilePathList* valid_file_paths,
                FilePathList* invalid_file_paths,
                base::RepeatingClosure barrier_closure, bool exists) {
-              if (exists)
+              if (exists) {
                 valid_file_paths->push_back(file_path);
-              else
+              } else {
                 invalid_file_paths->push_back(file_path);
+              }
               barrier_closure.Run();
             },
             file_path_with_requirement.first,
@@ -268,8 +273,9 @@ std::unique_ptr<HoldingSpaceImage> ResolveImageWithPlaceholderImageSkiaResolver(
           [](const base::WeakPtr<ThumbnailLoader>& thumbnail_loader,
              const base::FilePath& file_path, const gfx::Size& size,
              HoldingSpaceImage::BitmapCallback callback) {
-            if (thumbnail_loader)
+            if (thumbnail_loader) {
               thumbnail_loader->Load({file_path, size}, std::move(callback));
+            }
           },
           thumbnail_loader->GetWeakPtr()),
       /*placeholder_image_skia_resolver=*/
@@ -282,8 +288,9 @@ std::unique_ptr<HoldingSpaceImage> ResolveImageWithPlaceholderImageSkiaResolver(
             // When the initial placeholder is being created during
             // construction, `dark_background` and `is_folder` will be absent.
             // In that case, don't show a placeholder to minimize jank.
-            if (!dark_background.has_value() && !is_folder.has_value())
+            if (!dark_background.has_value() && !is_folder.has_value()) {
               return image_util::CreateEmptyImage(size);
+            }
             // If an explicit `placeholder_image_skia_resolver` has been
             // specified, use it to create the appropriate placeholder image.
             if (!placeholder_image_skia_resolver.is_null()) {

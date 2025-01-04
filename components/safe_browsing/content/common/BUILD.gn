@@ -84,7 +84,6 @@ if (safe_browsing_mode != 0) {
       ":file_type_policies",
       ":file_type_policies_test_support",
       "//base:base",
-      "//build:chromeos_buildflags",
       "//components/policy/core/browser:test_support",
       "//components/prefs:test_support",
       "//testing/gmock:gmock",

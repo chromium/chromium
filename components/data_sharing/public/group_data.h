@@ -23,6 +23,13 @@ enum class MemberRole { kUnknown = 0, kOwner = 1, kMember = 2, kInvitee = 3 };
 struct GroupMember {
   GroupMember();
 
+  GroupMember(GaiaId gaia_id,
+              std::string display_name,
+              std::string email,
+              MemberRole role,
+              GURL avatar_url,
+              std::string given_name);
+
   GroupMember(const GroupMember&);
   GroupMember& operator=(const GroupMember&);
 
@@ -54,10 +61,13 @@ struct GroupMemberPartialData {
 
   ~GroupMemberPartialData();
 
+  GroupMember ToGroupMember();
+
   GaiaId gaia_id;
   std::string display_name;
   std::string email;
   GURL avatar_url;
+  std::string given_name;
 };
 
 struct GroupToken {
@@ -102,6 +112,7 @@ struct GroupData {
 
 struct GroupEvent {
   enum class EventType {
+    kGroupAdded,
     kGroupRemoved,
     kMemberRemoved,
     kMemberAdded,
@@ -115,11 +126,16 @@ struct GroupEvent {
   GroupEvent(GroupEvent&&);
   GroupEvent& operator=(GroupEvent&&);
 
+  GroupEvent(EventType event_type,
+             const GroupId& group_id,
+             const std::optional<GaiaId>& affected_member_gaia_id,
+             const base::Time& event_time);
+
   ~GroupEvent();
 
   EventType event_type;
   GroupId group_id;
-  // Unset for kGroupRemoved events.
+  // Unset for kGroupAdded and kGroupRemoved events.
   std::optional<GaiaId> affected_member_gaia_id;
   base::Time event_time;
 };

@@ -431,7 +431,7 @@ class LayerTreeHostClientForTesting : public LayerTreeHostClient,
       bool,
       PaintHoldingReason,
       std::optional<PaintHoldingCommitTrigger>) override {}
-  void OnCommitRequested() override {}
+  void OnCommitRequested() override { test_hooks_->OnCommitRequested(); }
 
   void RecordStartOfFrameMetrics() override {}
   void RecordEndOfFrameMetrics(base::TimeTicks,

@@ -5,6 +5,11 @@
 // For linux_syscall_support.h. This makes it safe to call embedded system
 // calls when in seccomp mode.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/crash/core/app/breakpad_linux.h"
 
 #include <fcntl.h>

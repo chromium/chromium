@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//components/signin/features.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -53,7 +52,6 @@ static_library("base") {
     "wait_for_network_callback_helper.h",
   ]
   deps = [
-    "//build:chromeos_buildflags",
     "//components/prefs",
     "//third_party/boringssl",
     "//third_party/icu:icui18n",
@@ -74,11 +72,8 @@ static_library("base") {
     deps += [ "//components/signin/public/android:jni_headers" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//components/user_manager" ]
-    public_deps += [ "//components/account_manager_core" ]
-  }
-  if (is_chromeos_lacros) {
     public_deps += [ "//components/account_manager_core" ]
   }
 
@@ -123,7 +118,6 @@ static_library("test_support") {
 
   deps = [
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/prefs",
 
     # TODO(b/309104936): Remove this unwanted dependency.
@@ -163,7 +157,6 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
     "//testing/gtest",
@@ -186,7 +179,6 @@ component("signin_switches") {
   deps = [
     ":signin_buildflags",
     "//base",
-    "//build:chromeos_buildflags",
     "//components/prefs",
   ]
 }

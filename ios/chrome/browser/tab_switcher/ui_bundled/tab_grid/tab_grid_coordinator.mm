@@ -13,6 +13,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/bookmarks/browser/bookmark_model.h"
+#import "components/collaboration/public/collaboration_service.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -21,6 +22,9 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "components/sync/service/sync_service.h"
+#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_popup_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_utils.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_coordinator.h"
 #import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service.h"
@@ -28,6 +32,8 @@
 #import "ios/chrome/browser/bring_android_tabs/ui_bundled/bring_android_tabs_prompt_coordinator.h"
 #import "ios/chrome/browser/bring_android_tabs/ui_bundled/tab_list_from_android_coordinator.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
+#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
+#import "ios/chrome/browser/collaboration/model/ios_collaboration_controller_delegate.h"
 #import "ios/chrome/browser/commerce/ui_bundled/price_card/price_card_mediator.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -125,9 +131,6 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_handler.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
-#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
-#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_popup_coordinator.h"
-#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_utils.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -783,6 +786,26 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     case TabGridPageTabGroups:
       NOTREACHED();
   }
+}
+
+// Shows the "share" or "manage" screen for the `group`. The choice is
+// automatically made based on whether the group is already shared or not.
+- (void)showShareOrManageForGroup:(base::WeakPtr<const TabGroup>)group {
+  Browser* browser = self.regularBrowser;
+  collaboration::CollaborationService* collaborationService =
+      collaboration::CollaborationServiceFactory::GetForProfile(
+          browser->GetProfile());
+  const TabGroup* tabGroup = group.get();
+
+  if (!tabGroup || !collaborationService) {
+    return;
+  }
+
+  std::unique_ptr<collaboration::CollaborationControllerDelegate> delegate =
+      std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
+          browser, self.baseViewController);
+  collaborationService->StartShareOrManageFlow(std::move(delegate),
+                                               tabGroup->tab_group_id());
 }
 
 #pragma mark - ChromeCoordinator
@@ -1567,39 +1590,11 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (void)manageTabGroup:(base::WeakPtr<const TabGroup>)group {
-  ProfileIOS* profile = self.regularBrowser->GetProfile();
-  tab_groups::TabGroupSyncService* syncService =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
-  ShareKitService* shareKitService =
-      ShareKitServiceFactory::GetForProfile(profile);
-  NSString* collabID =
-      tab_groups::utils::GetTabGroupCollabID(group.get(), syncService);
-  if (!shareKitService || !collabID) {
-    return;
-  }
-  ShareKitManageConfiguration* config =
-      [[ShareKitManageConfiguration alloc] init];
-  config.baseViewController = self.baseViewController;
-  config.collabID = collabID;
-  config.applicationHandler = HandlerForProtocol(
-      self.regularBrowser->GetCommandDispatcher(), ApplicationCommands);
-  shareKitService->ManageGroup(config);
+  [self showShareOrManageForGroup:group];
 }
 
 - (void)shareTabGroup:(base::WeakPtr<const TabGroup>)group {
-  ShareKitService* shareKitService =
-      ShareKitServiceFactory::GetForProfile(self.regularBrowser->GetProfile());
-  const TabGroup* tabGroup = group.get();
-  if (!tabGroup || !shareKitService) {
-    return;
-  }
-  ShareKitShareGroupConfiguration* config =
-      [[ShareKitShareGroupConfiguration alloc] init];
-  config.tabGroup = tabGroup;
-  config.baseViewController = self.baseViewController;
-  config.applicationHandler = HandlerForProtocol(
-      self.regularBrowser->GetCommandDispatcher(), ApplicationCommands);
-  shareKitService->ShareGroup(config);
+  [self showShareOrManageForGroup:group];
 }
 
 - (void)showRecentActivityForTabGroup:(base::WeakPtr<const TabGroup>)tabGroup {

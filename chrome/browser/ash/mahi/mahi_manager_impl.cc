@@ -868,10 +868,15 @@ void MahiManagerImpl::OnGetPageContentForSummary(
     return;
   }
 
+  std::optional<std::string> context = std::nullopt;
+  if (current_selected_text_ != std::nullopt) {
+    context = base::UTF16ToUTF8(current_panel_content_->page_content);
+  }
+
   CHECK(mahi_provider_);
   mahi_provider_->Summarize(
       base::UTF16ToUTF8(text_to_summary),
-      base::UTF16ToUTF8(request_page_info->title),
+      base::UTF16ToUTF8(request_page_info->title), context,
       MaybeGetUrl(request_page_info),
       base::BindOnce(&MahiManagerImpl::OnMahiProviderSummaryResponse,
                      weak_ptr_factory_for_requests_.GetWeakPtr(),

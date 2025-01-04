@@ -158,6 +158,20 @@ class CORE_EXPORT LocalFrameView final
     virtual void DidFinishLayout() {}
   };
 
+  // Enables forcing lifecycle updates for throttled frames.
+  class CORE_EXPORT DisallowThrottlingScope {
+    STACK_ALLOCATED();
+
+   public:
+    explicit DisallowThrottlingScope(const LocalFrameView& frame_view);
+    DisallowThrottlingScope(const DisallowThrottlingScope&) = delete;
+    DisallowThrottlingScope& operator=(const DisallowThrottlingScope&) = delete;
+    ~DisallowThrottlingScope() = default;
+
+   private:
+    base::AutoReset<bool> value_;
+  };
+
   explicit LocalFrameView(LocalFrame&);
   LocalFrameView(LocalFrame&, const gfx::Size& initial_size);
   ~LocalFrameView() override;
@@ -707,9 +721,11 @@ class CORE_EXPORT LocalFrameView final
   String MainThreadScrollingReasonsAsText();
 
   bool MapToVisualRectInRemoteRootFrame(PhysicalRect& rect,
-                                        bool apply_overflow_clip = true);
+                                        bool apply_overflow_clip = true,
+                                        bool apply_viewport_transform = false);
 
-  void MapLocalToRemoteMainFrame(TransformState&);
+  void MapLocalToRemoteMainFrame(TransformState&,
+                                 bool apply_remote_main_frame_scroll_offset);
 
   void CrossOriginToNearestMainFrameChanged();
   void CrossOriginToParentFrameChanged();
@@ -874,19 +890,6 @@ class CORE_EXPORT LocalFrameView final
     base::AutoReset<bool> value_;
   };
 
-  class DisallowThrottlingScope {
-    STACK_ALLOCATED();
-
-   public:
-    explicit DisallowThrottlingScope(const LocalFrameView& frame_view);
-    DisallowThrottlingScope(const DisallowThrottlingScope&) = delete;
-    DisallowThrottlingScope& operator=(const DisallowThrottlingScope&) = delete;
-    ~DisallowThrottlingScope() = default;
-
-   private:
-    base::AutoReset<bool> value_;
-  };
-
   // The logic to determine whether a view can be render throttled is delicate,
   // but in some cases we want to unconditionally force all views in a local
   // frame tree to be throttled. Having ForceThrottlingScope on the stack will
@@ -959,7 +962,6 @@ class CORE_EXPORT LocalFrameView final
 
   void PaintTree(PaintBenchmarkMode, std::optional<PaintController>&);
   void PushPaintArtifactToCompositor(bool repainted);
-  void CreatePaintTimelineEvents();
 
   void ClearLayoutSubtreeRootsAndMarkContainingBlocks();
 

@@ -26,6 +26,8 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/client_side_phishing_model.h"
@@ -75,6 +77,26 @@ struct ClientSideDetectionService::ClientPhishingReportInfo {
   ClientReportPhishingRequestCallback callback;
   GURL phishing_url;
 };
+
+void LogOnDeviceModelSessionCreationSuccess(bool success) {
+  base::UmaHistogramBoolean(
+      "SBClientPhishing.OnDeviceModelSessionCreationSuccess", success);
+}
+
+void LogOnDeviceModelExecutionSuccessAndTime(
+    bool success,
+    base::TimeTicks session_execution_start_time) {
+  base::UmaHistogramBoolean("SBClientPhishing.OnDeviceModelExecutionSuccess",
+                            success);
+  base::UmaHistogramMediumTimes(
+      "SBClientPhishing.OnDeviceModelExecutionDuration",
+      base::TimeTicks::Now() - session_execution_start_time);
+}
+
+void LogOnDeviceModelExecutionParse(bool success) {
+  base::UmaHistogramBoolean(
+      "SBClientPhishing.OnDeviceModelResponseParseSuccess", success);
+}
 
 ClientSideDetectionService::CacheState::CacheState(bool phish, base::Time time)
     : is_phishing(phish), timestamp(time) {}
@@ -127,6 +149,9 @@ void ClientSideDetectionService::Shutdown() {
   enabled_ = false;
   client_side_phishing_model_.reset();
   on_device_model_available_ = false;
+  if (session_) {
+    session_.reset();
+  }
 }
 
 void ClientSideDetectionService::OnPrefsUpdated() {
@@ -164,7 +189,8 @@ void ClientSideDetectionService::OnPrefsUpdated() {
     for (auto& client_phishing_report : client_phishing_reports_) {
       ClientPhishingReportInfo* info = client_phishing_report.second.get();
       if (!info->callback.is_null()) {
-        std::move(info->callback).Run(info->phishing_url, false, std::nullopt);
+        std::move(info->callback)
+            .Run(info->phishing_url, false, std::nullopt, std::nullopt);
       }
     }
     client_phishing_reports_.clear();
@@ -221,11 +247,9 @@ void ClientSideDetectionService::OnURLLoaderComplete(
     response_code = static_cast<net::HttpStatusCode>(
         url_loader->ResponseInfo()->headers->response_code());
   }
-  if (response_code.has_value()) {
-    RecordHttpResponseOrErrorCode("SBClientPhishing.NetworkResult",
-                                  url_loader->NetError(),
-                                  response_code.value());
-  }
+  RecordHttpResponseOrErrorCode(
+      "SBClientPhishing.NetworkResult2", url_loader->NetError(),
+      response_code.has_value() ? response_code.value() : 0);
 
   DCHECK(base::Contains(client_phishing_reports_, url_loader));
   HandlePhishingVerdict(url_loader, url_loader->GetFinalURL(),
@@ -269,7 +293,8 @@ void ClientSideDetectionService::StartClientReportPhishingRequest(
 
   if (!enabled_) {
     if (!callback.is_null()) {
-      std::move(callback).Run(GURL(request->url()), false, std::nullopt);
+      std::move(callback).Run(GURL(request->url()), false, std::nullopt,
+                              std::nullopt);
     }
     return;
   }
@@ -279,7 +304,8 @@ void ClientSideDetectionService::StartClientReportPhishingRequest(
   // or prefs are null, abandon the request.
   if (!AddPhishingReport(base::Time::Now())) {
     if (!callback.is_null()) {
-      std::move(callback).Run(GURL(request->url()), false, std::nullopt);
+      std::move(callback).Run(GURL(request->url()), false, std::nullopt,
+                              std::nullopt);
     }
     return;
   }
@@ -380,12 +406,16 @@ void ClientSideDetectionService::HandlePhishingVerdict(
   client_phishing_reports_.erase(source);
 
   bool is_phishing = false;
+  std::optional<IntelligentScanVerdict> intelligent_scan_verdict = std::nullopt;
   if (net_error == net::OK && response_code.has_value() &&
       net::HTTP_OK == response_code.value() && response.ParseFromString(data)) {
     // Cache response, possibly flushing an old one.
     cache_[info->phishing_url] =
         base::WrapUnique(new CacheState(response.phishy(), base::Time::Now()));
     is_phishing = response.phishy();
+    if (response.has_intelligent_scan_verdict()) {
+      intelligent_scan_verdict = response.intelligent_scan_verdict();
+    }
   }
 
   content::GetUIThreadTaskRunner({})->PostTask(
@@ -400,7 +430,8 @@ void ClientSideDetectionService::HandlePhishingVerdict(
     }
 
     std::move(info->callback)
-        .Run(info->phishing_url, is_phishing, response_code);
+        .Run(info->phishing_url, is_phishing, response_code,
+             intelligent_scan_verdict);
   }
 }
 
@@ -776,12 +807,116 @@ ClientSideDetectionService::RegisterCallbackForModelUpdates(
   return client_side_phishing_model_->RegisterCallback(callback);
 }
 
+void ClientSideDetectionService::InquireOnDeviceModel(
+    ClientPhishingRequest* verdict,
+    std::string rendered_texts,
+    base::OnceCallback<
+        void(std::optional<optimization_guide::proto::ScamDetectionResponse>)>
+        callback) {
+  base::UmaHistogramBoolean(
+      "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime",
+      IsOnDeviceModelAvailable());
+
+  if (!IsOnDeviceModelAvailable()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  // Close off the previous session if session's model execution from a previous
+  // call into InquireOnDeviceModel is still happening.
+  if (session_) {
+    session_.reset();
+  }
+
+  base::TimeTicks session_creation_start_time = base::TimeTicks::Now();
+
+  session_ = delegate_->GetModelExecutorSession();
+
+  if (!session_) {
+    LogOnDeviceModelSessionCreationSuccess(false);
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  base::UmaHistogramMediumTimes(
+      "SBClientPhishing.OnDeviceModelSessionCreationTime",
+      base::TimeTicks::Now() - session_creation_start_time);
+  LogOnDeviceModelSessionCreationSuccess(true);
+
+  ScamDetectionRequest request;
+  request.set_rendered_text(rendered_texts);
+
+  inquire_on_device_model_callback_ = std::move(callback);
+  session_execution_start_time_ = base::TimeTicks::Now();
+  session_->ExecuteModel(
+      *std::make_unique<ScamDetectionRequest>(request),
+      base::BindRepeating(&ClientSideDetectionService::ModelExecutionCallback,
+                          weak_factory_.GetWeakPtr(), verdict));
+}
+
+void ClientSideDetectionService::ModelExecutionCallback(
+    ClientPhishingRequest* verdict,
+    optimization_guide::OptimizationGuideModelStreamingExecutionResult result) {
+  if (!result.response.has_value()) {
+    LogOnDeviceModelExecutionSuccessAndTime(/*success=*/false,
+                                            session_execution_start_time_);
+    if (inquire_on_device_model_callback_) {
+      std::move(inquire_on_device_model_callback_).Run(std::nullopt);
+    }
+    return;
+  }
+
+  // This is a non-error response, but it's not completed, yet so we wait till
+  // it's complete. We will not respond to the callback yet because of this.
+  if (!result.response->is_complete) {
+    return;
+  }
+
+  LogOnDeviceModelExecutionSuccessAndTime(/*success=*/true,
+                                          session_execution_start_time_);
+
+  auto scam_detection_response = optimization_guide::ParsedAnyMetadata<
+      optimization_guide::proto::ScamDetectionResponse>(
+      result.response->response);
+
+  if (!scam_detection_response) {
+    LogOnDeviceModelExecutionParse(false);
+    if (inquire_on_device_model_callback_) {
+      std::move(inquire_on_device_model_callback_).Run(std::nullopt);
+    }
+    return;
+  }
+
+  LogOnDeviceModelExecutionParse(true);
+
+  // Because of the use of DeleteSoon below, we can't guarantee that session_
+  // is still available when the callback is invoked.
+  if (session_) {
+    // Reset session immediately so that future inference is not affected by the
+    // old context.
+    // TODO(crbug.com/380928557): Call session_.reset() directly once
+    // crbug.com/384774788 is fixed.
+    content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE,
+                                                   std::move(session_));
+  }
+
+  if (inquire_on_device_model_callback_) {
+    std::move(inquire_on_device_model_callback_).Run(scam_detection_response);
+  }
+}
+
 // IN-TEST
 void ClientSideDetectionService::SetModelAndVisualTfLiteForTesting(
     const base::FilePath& model,
     const base::FilePath& visual_tf_lite) {
   client_side_phishing_model_->SetModelAndVisualTfLiteForTesting(  // IN-TEST
       model, visual_tf_lite);
+}
+
+// IN-TEST
+void ClientSideDetectionService::SetOnDeviceAvailabilityForTesting(
+    bool available) {
+  on_device_model_available_ = available;
 }
 
 }  // namespace safe_browsing

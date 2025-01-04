@@ -42,6 +42,7 @@
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_data.h"
+#include "components/sync/base/features.h"
 #include "components/url_formatter/url_formatter.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/mime_util.h"
@@ -221,12 +222,8 @@ bool IsPolicySearchEngineBetterThanNonPolicyEngine(
   // the `SiteSearchSettings` or `EnterpriseSearchAggregatorSettings` policy,
   // `other_engine` should have been created by something else, but not via
   // policy.
-  CHECK(policy_engine->created_by_policy() ==
-            TemplateURLData::CreatedByPolicy::kSiteSearch ||
-        policy_engine->created_by_policy() ==
-            TemplateURLData::CreatedByPolicy::kSearchAggregator);
-  CHECK_EQ(other_engine->created_by_policy(),
-           TemplateURLData::CreatedByPolicy::kNoPolicy);
+  CHECK(policy_engine->CreatedByNonDefaultSearchProviderPolicy());
+  CHECK(!other_engine->CreatedByPolicy());
 
   const std::u16string& keyword = policy_engine->keyword();
   // Prefer `policy_engine` if the `keyword` starts with the "@" symbol.
@@ -1605,7 +1602,13 @@ size_t TemplateURL::AssociatedExtensionInfo::EstimateMemoryUsage() const {
 }
 
 TemplateURL::TemplateURL(const TemplateURLData& data, Type type)
-    : data_(data),
+    : TemplateURL(data, std::nullopt, type) {}
+
+TemplateURL::TemplateURL(const std::optional<TemplateURLData>& local_data,
+                         const std::optional<TemplateURLData>& account_data,
+                         Type type)
+    : local_data_(local_data),
+      account_data_(account_data),
       suggestions_url_ref_(this, TemplateURLRef::SUGGEST),
       image_url_ref_(this, TemplateURLRef::IMAGE),
       image_translate_url_ref_(this, TemplateURLRef::IMAGE_TRANSLATE),
@@ -1614,7 +1617,7 @@ TemplateURL::TemplateURL(const TemplateURLData& data, Type type)
       type_(type),
       engine_type_(SEARCH_ENGINE_UNKNOWN) {
   ResizeURLRefVector();
-  SetPrepopulateId(data_.prepopulate_id);
+  SetPrepopulateId(active_data().prepopulate_id);
 }
 
 TemplateURL::TemplateURL(const TemplateURLData& data,
@@ -1639,26 +1642,16 @@ bool TemplateURL::IsBetterThanConflictingEngine(
     const TemplateURL* other) const {
   DCHECK(other);
 
-  auto by_policy = [](const TemplateURL* turl) {
-    return turl->created_by_policy() ==
-               TemplateURLData::CreatedByPolicy::kSiteSearch ||
-           turl->created_by_policy() ==
-               TemplateURLData::CreatedByPolicy::kSearchAggregator;
-  };
-
-  auto no_policy = [](const TemplateURL* turl) {
-    return turl->created_by_policy() ==
-           TemplateURLData::CreatedByPolicy::kNoPolicy;
-  };
-
   // Site search and Enterprise Search Aggregator engines set by enterprise
   // policy have different priority over existing search engines because we
   // don't want to break current workflows for power users.
-  if (by_policy(this) && no_policy(other)) {
+  if (CreatedByNonDefaultSearchProviderPolicy() && !other->CreatedByPolicy()) {
     return IsPolicySearchEngineBetterThanNonPolicyEngine(this, other);
-  } else if (no_policy(this) && by_policy(other)) {
+  } else if (!CreatedByPolicy() &&
+             other->CreatedByNonDefaultSearchProviderPolicy()) {
     return !IsPolicySearchEngineBetterThanNonPolicyEngine(other, this);
-  } else if (by_policy(this) && by_policy(other)) {
+  } else if (CreatedByNonDefaultSearchProviderPolicy() &&
+             other->CreatedByNonDefaultSearchProviderPolicy()) {
     // If both engines are created by the `SiteSearchSettings` or
     // `EnterpriseSearchAggregatorSettings` policy, prefer the one that is
     // featured. Otherwise, fallback to the comparison based on the signals
@@ -1674,8 +1667,7 @@ bool TemplateURL::IsBetterThanConflictingEngine(
     return std::make_tuple(
         // Policy-created engines always win over non-policy created engines.
         // At this point, managed search engine should be created by DSP policy.
-        engine->created_by_policy() ==
-            TemplateURLData::CreatedByPolicy::kDefaultSearchProvider,
+        engine->CreatedByDefaultSearchProviderPolicy(),
         // Policy-enforced engines always win over policy-recommended engines.
         engine->enforced_by_policy(),
         // The integral value of the type enum is used to sort next.
@@ -1761,7 +1753,7 @@ bool TemplateURL::MatchesData(const TemplateURL* t_url,
 }
 
 std::u16string TemplateURL::AdjustedShortNameForLocaleDirection() const {
-  std::u16string bidi_safe_short_name = data_.short_name();
+  std::u16string bidi_safe_short_name = data().short_name();
   base::i18n::AdjustStringForLocaleDirection(&bidi_safe_short_name);
   return bidi_safe_short_name;
 }
@@ -1788,22 +1780,22 @@ bool TemplateURL::HasGoogleBaseURLs(
 bool TemplateURL::IsGoogleSearchURLWithReplaceableKeyword(
     const SearchTermsData& search_terms_data) const {
   return (type_ == NORMAL) && url_ref().HasGoogleBaseURLs(search_terms_data) &&
-         google_util::IsGoogleHostname(base::UTF16ToUTF8(data_.keyword()),
+         google_util::IsGoogleHostname(base::UTF16ToUTF8(data().keyword()),
                                        google_util::DISALLOW_SUBDOMAIN);
 }
 
 bool TemplateURL::HasSameKeywordAs(
     const TemplateURLData& other,
     const SearchTermsData& search_terms_data) const {
-  return (data_.keyword() == other.keyword()) ||
-      (IsGoogleSearchURLWithReplaceableKeyword(search_terms_data) &&
-       TemplateURL(other).IsGoogleSearchURLWithReplaceableKeyword(
-           search_terms_data));
+  return (data().keyword() == other.keyword()) ||
+         (IsGoogleSearchURLWithReplaceableKeyword(search_terms_data) &&
+          TemplateURL(other).IsGoogleSearchURLWithReplaceableKeyword(
+              search_terms_data));
 }
 
 std::string TemplateURL::GetExtensionId() const {
   DCHECK(extension_info_);
-  return extension_info_->extension_id;
+  return GetExtensionInfo()->extension_id;
 }
 
 SearchEngineType TemplateURL::GetEngineType(
@@ -1818,10 +1810,10 @@ SearchEngineType TemplateURL::GetEngineType(
 }
 
 BuiltinEngineType TemplateURL::GetBuiltinEngineType() const {
-  if (data_.prepopulate_id != 0) {
+  if (data().prepopulate_id != 0) {
     return KEYWORD_MODE_PREPOPULATED_ENGINE;
-  } else if (data_.starter_pack_id != 0) {
-    switch (data_.starter_pack_id) {
+  } else if (data().starter_pack_id != 0) {
+    switch (data().starter_pack_id) {
       case TemplateURLStarterPackData::kBookmarks:
         return KEYWORD_MODE_STARTER_PACK_BOOKMARKS;
       case TemplateURLStarterPackData::kHistory:
@@ -1882,9 +1874,9 @@ bool TemplateURL::KeepSearchTermsInURL(const GURL& url,
   }
 
   std::vector<std::string> query_params;
-  if (keep_search_intent_params && !data_.search_intent_params.empty()) {
+  if (keep_search_intent_params && !data().search_intent_params.empty()) {
     for (net::QueryIterator it(url); !it.IsAtEnd(); it.Advance()) {
-      if (!base::Contains(data_.search_intent_params, it.GetKey())) {
+      if (!base::Contains(data().search_intent_params, it.GetKey())) {
         continue;
       }
       query_params.push_back(base::StrCat({it.GetKey(), "=", it.GetValue()}));
@@ -2001,8 +1993,20 @@ GURL TemplateURL::GenerateSuggestionURL(
       TemplateURLRef::SearchTermsArgs(), search_terms_data, nullptr));
 }
 
+bool TemplateURL::CreatedByPolicy() const {
+  return data().CreatedByPolicy();
+}
+
+bool TemplateURL::CreatedByDefaultSearchProviderPolicy() const {
+  return data().CreatedByDefaultSearchProviderPolicy();
+}
+
+bool TemplateURL::CreatedByNonDefaultSearchProviderPolicy() const {
+  return data().CreatedByNonDefaultSearchProviderPolicy();
+}
+
 RegulatoryExtensionType TemplateURL::GetRegulatoryExtensionType() const {
-  if (data_.created_from_play_api) {
+  if (data().created_from_play_api) {
     return RegulatoryExtensionType::kAndroidEEA;
   }
   return RegulatoryExtensionType::kDefault;
@@ -2010,8 +2014,8 @@ RegulatoryExtensionType TemplateURL::GetRegulatoryExtensionType() const {
 
 const TemplateURLData::RegulatoryExtension* TemplateURL::GetRegulatoryExtension(
     RegulatoryExtensionType type) const {
-  auto extension_iter = data_.regulatory_extensions.find(type);
-  auto* extension = extension_iter == data_.regulatory_extensions.end()
+  auto extension_iter = data().regulatory_extensions.find(type);
+  auto* extension = extension_iter == data().regulatory_extensions.end()
                         ? nullptr
                         : extension_iter->second.get();
 
@@ -2070,20 +2074,22 @@ void TemplateURL::CopyFrom(const TemplateURL& other) {
   if (this == &other)
     return;
 
-  data_ = other.data_;
+  local_data_ = other.local_data_;
+  account_data_ = other.account_data_;
   ResizeURLRefVector();
   InvalidateCachedValues();
-  SetPrepopulateId(other.data_.prepopulate_id);
+  SetPrepopulateId(other.data().prepopulate_id);
 }
 
 void TemplateURL::SetURL(const std::string& url) {
-  data_.SetURL(url);
+  active_data().SetURL(url);
+
   engine_type_ = SEARCH_ENGINE_UNKNOWN;
   url_ref().InvalidateCachedValues();
 }
 
 void TemplateURL::SetPrepopulateId(int id) {
-  data_.prepopulate_id = id;
+  active_data().prepopulate_id = id;
   const bool prepopulated = id > 0;
   for (TemplateURLRef& ref : url_refs_)
     ref.prepopulated_ = prepopulated;
@@ -2101,7 +2107,7 @@ void TemplateURL::ResetKeywordIfNecessary(
     DCHECK_NE(OMNIBOX_API_EXTENSION, type_);
     GURL url(GenerateSearchURL(search_terms_data));
     if (url.is_valid())
-      data_.SetKeyword(GenerateKeyword(url));
+      active_data().SetKeyword(GenerateKeyword(url));
   }
 }
 
@@ -2118,7 +2124,12 @@ void TemplateURL::InvalidateCachedValues() const {
 size_t TemplateURL::EstimateMemoryUsage() const {
   size_t res = 0;
 
-  res += base::trace_event::EstimateMemoryUsage(data_);
+  if (local_data_) {
+    res += base::trace_event::EstimateMemoryUsage(*local_data_);
+  }
+  if (account_data_) {
+    res += base::trace_event::EstimateMemoryUsage(*account_data_);
+  }
   res += base::trace_event::EstimateMemoryUsage(url_refs_);
   res += base::trace_event::EstimateMemoryUsage(suggestions_url_ref_);
   res += base::trace_event::EstimateMemoryUsage(image_url_ref_);
@@ -2131,14 +2142,15 @@ size_t TemplateURL::EstimateMemoryUsage() const {
 }
 
 void TemplateURL::ResizeURLRefVector() {
-  const size_t new_size = data_.alternate_urls.size() + 1;
+  const size_t new_size = active_data().alternate_urls.size() + 1;
   if (url_refs_.size() == new_size)
     return;
 
   url_refs_.clear();
   url_refs_.reserve(new_size);
-  for (size_t i = 0; i != data_.alternate_urls.size(); ++i)
+  for (size_t i = 0; i != active_data().alternate_urls.size(); ++i) {
     url_refs_.emplace_back(this, i);
+  }
   url_refs_.emplace_back(this, TemplateURLRef::SEARCH);
 }
 
@@ -2184,4 +2196,60 @@ bool TemplateURL::ContainsSideImageSearchParam(const GURL& url) const {
   net::GetValueForKeyInQuery(url, side_image_search_param(),
                              &side_image_search_value);
   return !side_image_search_value.empty();
+}
+
+const TemplateURLData& TemplateURL::data() const {
+  return const_cast<TemplateURL*>(this)->active_data();
+}
+
+TemplateURLData& TemplateURL::active_data() {
+  CHECK(local_data_ || base::FeatureList::IsEnabled(
+                           syncer::kSeparateLocalAndAccountSearchEngines));
+  CHECK(!account_data_ || base::FeatureList::IsEnabled(
+                              syncer::kSeparateLocalAndAccountSearchEngines));
+  // TODO(crbug.com/386916073): Improve the conflict resolution.
+  if (local_data_ && account_data_) {
+    TemplateURL local_turl(local_data_, std::nullopt);
+    TemplateURL account_turl(std::nullopt, account_data_);
+    return local_turl.IsBetterThanConflictingEngine(&account_turl)
+               ? *local_data_
+               : *account_data_;
+  }
+  return local_data_ ? *local_data_ : *account_data_;
+}
+
+void TemplateURL::set_short_name(const std::u16string& short_name) {
+  active_data().SetShortName(short_name);
+}
+
+void TemplateURL::set_keyword(const std::u16string& keyword) {
+  active_data().SetKeyword(keyword);
+}
+
+void TemplateURL::set_safe_for_autoreplace(bool safe_for_autoreplace) {
+  active_data().safe_for_autoreplace = safe_for_autoreplace;
+}
+
+void TemplateURL::set_id(TemplateURLID id) {
+  active_data().id = id;
+}
+
+void TemplateURL::IncrementUsageCount() {
+  active_data().usage_count++;
+}
+
+void TemplateURL::GenerateSyncGUID() {
+  active_data().GenerateSyncGUID();
+}
+
+void TemplateURL::set_is_active(TemplateURLData::ActiveStatus active_status) {
+  active_data().is_active = active_status;
+}
+
+const std::optional<TemplateURLData>& TemplateURL::GetLocalData() const {
+  return local_data_;
+}
+
+const std::optional<TemplateURLData>& TemplateURL::GetAccountData() const {
+  return account_data_;
 }

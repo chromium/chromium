@@ -68,9 +68,9 @@ class TestingSyncConfirmationHandler : public SyncConfirmationHandler {
       const TestingSyncConfirmationHandler&) = delete;
 
   using SyncConfirmationHandler::HandleConfirm;
-  using SyncConfirmationHandler::HandleUndo;
-  using SyncConfirmationHandler::HandleInitializedWithSize;
   using SyncConfirmationHandler::HandleGoToSettings;
+  using SyncConfirmationHandler::HandleInitializedWithSize;
+  using SyncConfirmationHandler::HandleUndo;
   using SyncConfirmationHandler::RecordConsent;
 };
 
@@ -94,11 +94,8 @@ class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
   SyncConfirmationHandlerTest()
       : BrowserWithTestWindowTest(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        did_user_explicitly_interact_(false),
-        on_sync_confirmation_ui_closed_called_(false),
-        sync_confirmation_ui_closed_result_(LoginUIService::ABORT_SYNC),
-        web_ui_(new content::TestWebUI) {
-  }
+
+        web_ui_(new content::TestWebUI) {}
 
   SyncConfirmationHandlerTest(const SyncConfirmationHandlerTest&) = delete;
   SyncConfirmationHandlerTest& operator=(const SyncConfirmationHandlerTest&) =
@@ -137,13 +134,9 @@ class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
 
   TestingSyncConfirmationHandler* handler() { return handler_; }
 
-  content::TestWebUI* web_ui() {
-    return web_ui_.get();
-  }
+  content::TestWebUI* web_ui() { return web_ui_.get(); }
 
-  base::UserActionTester* user_action_tester() {
-    return &user_action_tester_;
-  }
+  base::UserActionTester* user_action_tester() { return &user_action_tester_; }
 
   consent_auditor::FakeConsentAuditor* consent_auditor() {
     return static_cast<consent_auditor::FakeConsentAuditor*>(
@@ -224,10 +217,10 @@ class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
   }
 
  protected:
-  bool did_user_explicitly_interact_;
-  bool on_sync_confirmation_ui_closed_called_;
+  bool did_user_explicitly_interact_ = false;
+  bool on_sync_confirmation_ui_closed_called_ = false;
   LoginUIService::SyncConfirmationUIClosedResult
-      sync_confirmation_ui_closed_result_;
+      sync_confirmation_ui_closed_result_ = LoginUIService::ABORT_SYNC;
   // Holds information for the account currently logged in.
   AccountInfo account_info_;
   base::HistogramTester histogram_tester_;
@@ -434,9 +427,9 @@ TEST_F(SyncConfirmationHandlerTest, TestHandleUndo) {
   EXPECT_EQ(LoginUIService::ABORT_SYNC, sync_confirmation_ui_closed_result_);
   EXPECT_EQ(1, user_action_tester()->GetActionCount("Signin_Undo_Signin"));
   EXPECT_EQ(0, user_action_tester()->GetActionCount(
-      "Signin_Signin_WithDefaultSyncSettings"));
+                   "Signin_Signin_WithDefaultSyncSettings"));
   EXPECT_EQ(0, user_action_tester()->GetActionCount(
-      "Signin_Signin_WithAdvancedSyncSettings"));
+                   "Signin_Signin_WithAdvancedSyncSettings"));
 }
 
 TEST_F(SyncConfirmationHandlerTest, TestHandleConfirm) {
@@ -463,9 +456,9 @@ TEST_F(SyncConfirmationHandlerTest, TestHandleConfirm) {
             sync_confirmation_ui_closed_result_);
   EXPECT_EQ(0, user_action_tester()->GetActionCount("Signin_Undo_Signin"));
   EXPECT_EQ(1, user_action_tester()->GetActionCount(
-      "Signin_Signin_WithDefaultSyncSettings"));
+                   "Signin_Signin_WithDefaultSyncSettings"));
   EXPECT_EQ(0, user_action_tester()->GetActionCount(
-      "Signin_Signin_WithAdvancedSyncSettings"));
+                   "Signin_Signin_WithAdvancedSyncSettings"));
 
   // The corresponding string IDs get recorded.
   std::vector<std::vector<int>> expected_id_vectors = {{1, 2, 4}};

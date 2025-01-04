@@ -403,7 +403,8 @@ bool WebContentsDelegate::IsBackForwardCacheSupported(
 }
 
 PreloadingEligibility WebContentsDelegate::IsPrerender2Supported(
-    WebContents& web_contents) {
+    WebContents& web_contents,
+    PreloadingTriggerType trigger_type) {
   return PreloadingEligibility::kPreloadingUnsupportedByWebContents;
 }
 

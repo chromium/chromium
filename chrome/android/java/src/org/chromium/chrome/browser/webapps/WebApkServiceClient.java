@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -220,14 +219,11 @@ public class WebApkServiceClient {
                         return;
                     }
 
-                    String channelName = null;
-                    if (webApkTargetsAtLeastO(webApkPackage)) {
-                        notificationBuilder.setChannelId(
-                                ChromeChannelDefinitions.CHANNEL_ID_WEBAPKS);
-                        channelName =
-                                ContextUtils.getApplicationContext()
-                                        .getString(R.string.webapk_notification_channel_name);
-                    }
+                    notificationBuilder.setChannelId(ChromeChannelDefinitions.CHANNEL_ID_WEBAPKS);
+                    String channelName =
+                            ContextUtils.getApplicationContext()
+                                    .getString(R.string.webapk_notification_channel_name);
+
                     NotificationMetadata metadata =
                             new NotificationMetadata(
                                     NotificationUmaTracker.SystemNotificationType.WEBAPK,
@@ -284,20 +280,6 @@ public class WebApkServiceClient {
         if (sInstance == null) return;
 
         sInstance.mConnectionManager.disconnectAll(ContextUtils.getApplicationContext());
-    }
-
-    /** Returns whether the WebAPK targets SDK 26+. */
-    private boolean webApkTargetsAtLeastO(String webApkPackage) {
-        try {
-            ApplicationInfo info =
-                    ContextUtils.getApplicationContext()
-                            .getPackageManager()
-                            .getApplicationInfo(webApkPackage, 0);
-            return info.targetSdkVersion >= Build.VERSION_CODES.O;
-        } catch (PackageManager.NameNotFoundException e) {
-        }
-
-        return false;
     }
 
     /** Decodes into a Bitmap an Image resource stored in an APK with the given package name. */

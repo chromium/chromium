@@ -171,29 +171,33 @@ constexpr int ThemeProperties::kFrameHeightAboveTabs;
 // static
 int ThemeProperties::StringToAlignment(const std::string& alignment) {
   int alignment_mask = 0;
-  for (const std::string& component : base::SplitString(
-           alignment, base::kWhitespaceASCII,
-           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
-    if (base::EqualsCaseInsensitiveASCII(component, kAlignmentTop))
+  for (const std::string& component :
+       base::SplitString(alignment, base::kWhitespaceASCII,
+                         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+    if (base::EqualsCaseInsensitiveASCII(component, kAlignmentTop)) {
       alignment_mask |= ALIGN_TOP;
-    else if (base::EqualsCaseInsensitiveASCII(component, kAlignmentBottom))
+    } else if (base::EqualsCaseInsensitiveASCII(component, kAlignmentBottom)) {
       alignment_mask |= ALIGN_BOTTOM;
-    else if (base::EqualsCaseInsensitiveASCII(component, kAlignmentLeft))
+    } else if (base::EqualsCaseInsensitiveASCII(component, kAlignmentLeft)) {
       alignment_mask |= ALIGN_LEFT;
-    else if (base::EqualsCaseInsensitiveASCII(component, kAlignmentRight))
+    } else if (base::EqualsCaseInsensitiveASCII(component, kAlignmentRight)) {
       alignment_mask |= ALIGN_RIGHT;
+    }
   }
   return alignment_mask;
 }
 
 // static
 int ThemeProperties::StringToTiling(const std::string& tiling) {
-  if (base::EqualsCaseInsensitiveASCII(tiling, kTilingRepeatX))
+  if (base::EqualsCaseInsensitiveASCII(tiling, kTilingRepeatX)) {
     return REPEAT_X;
-  if (base::EqualsCaseInsensitiveASCII(tiling, kTilingRepeatY))
+  }
+  if (base::EqualsCaseInsensitiveASCII(tiling, kTilingRepeatY)) {
     return REPEAT_Y;
-  if (base::EqualsCaseInsensitiveASCII(tiling, kTilingRepeat))
+  }
+  if (base::EqualsCaseInsensitiveASCII(tiling, kTilingRepeat)) {
     return REPEAT;
+  }
   // NO_REPEAT is the default choice.
   return NO_REPEAT;
 }
@@ -204,15 +208,17 @@ std::string ThemeProperties::AlignmentToString(int alignment) {
   std::string vertical_string(kAlignmentCenter);
   std::string horizontal_string(kAlignmentCenter);
 
-  if (alignment & ALIGN_TOP)
+  if (alignment & ALIGN_TOP) {
     vertical_string = kAlignmentTop;
-  else if (alignment & ALIGN_BOTTOM)
+  } else if (alignment & ALIGN_BOTTOM) {
     vertical_string = kAlignmentBottom;
+  }
 
-  if (alignment & ALIGN_LEFT)
+  if (alignment & ALIGN_LEFT) {
     horizontal_string = kAlignmentLeft;
-  else if (alignment & ALIGN_RIGHT)
+  } else if (alignment & ALIGN_RIGHT) {
     horizontal_string = kAlignmentRight;
+  }
 
   return horizontal_string + " " + vertical_string;
 }
@@ -220,12 +226,15 @@ std::string ThemeProperties::AlignmentToString(int alignment) {
 // static
 std::string ThemeProperties::TilingToString(int tiling) {
   // Convert from a TilingProperty back into a string.
-  if (tiling == REPEAT_X)
+  if (tiling == REPEAT_X) {
     return kTilingRepeatX;
-  if (tiling == REPEAT_Y)
+  }
+  if (tiling == REPEAT_Y) {
     return kTilingRepeatY;
-  if (tiling == REPEAT)
+  }
+  if (tiling == REPEAT) {
     return kTilingRepeat;
+  }
   return kTilingNoRepeat;
 }
 
@@ -242,23 +251,27 @@ color_utils::HSL ThemeProperties::GetDefaultTint(int id,
 
   // TINT_BUTTONS is used by ThemeService::GetDefaultColor() for both incognito
   // and dark mode, and so must be applied to both.
-  if ((id == TINT_BUTTONS) && (incognito || dark_mode))
+  if ((id == TINT_BUTTONS) && (incognito || dark_mode)) {
     return {-1, 0.57, 0.9605};  // kGoogleGrey700 -> kGoogleGrey100
+  }
 
-  if ((id == TINT_FRAME) && incognito)
+  if ((id == TINT_FRAME) && incognito) {
     return {-1, 0.7, 0.075};  // #DEE1E6 -> kGoogleGrey900
+  }
   if (id == TINT_FRAME_INACTIVE) {
     // |dark_mode| is only true here when attempting to tint the Windows native
     // frame color while in dark mode when using OS accent titlebar colors.
     // The goal in this case is to match the difference between Chrome default
     // dark mode active and inactive frames as closely as possible without
     // a hue change.
-    if (dark_mode)
+    if (dark_mode) {
       return {-1, 0.54, 0.567};  // Roughly kGoogleGrey900 -> kGoogleGrey800
+    }
 
-    if (incognito)
+    if (incognito) {
       return {0.57, 0.65, 0.1405};  // #DEE1E6 -> kGoogleGrey800
-    return {-1, -1, 0.642};         // #DEE1E6 -> #E7EAED
+    }
+    return {-1, -1, 0.642};  // #DEE1E6 -> #E7EAED
   }
 
   return {-1, -1, -1};
@@ -270,13 +283,15 @@ SkColor ThemeProperties::GetDefaultColor(int id,
                                          bool dark_mode) {
   if (incognito) {
     std::optional<SkColor> incognito_color = GetIncognitoColor(id);
-    if (incognito_color.has_value())
+    if (incognito_color.has_value()) {
       return incognito_color.value();
+    }
   }
   if (dark_mode) {
     std::optional<SkColor> dark_mode_color = GetDarkModeColor(id);
-    if (dark_mode_color.has_value())
+    if (dark_mode_color.has_value()) {
       return dark_mode_color.value();
+    }
   }
   return GetLightModeColor(id);
 }

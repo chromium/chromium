@@ -6,7 +6,6 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/profile_internals/profile_internals_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/dev_ui_browser_resources.h"
@@ -18,6 +17,7 @@
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "ui/webui/webui_util.h"
 
 ProfileInternalsUI::ProfileInternalsUI(content::WebUI* web_ui)
     : WebUIController(web_ui) {

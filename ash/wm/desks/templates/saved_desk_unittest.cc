@@ -1381,17 +1381,12 @@ TEST_F(SavedDeskTest, IconsOrder) {
   }
 }
 
-// Tests that both regular and lacros browsers have an icon for each unique tab.
+// Tests that browser has an icon for each unique tab.
 TEST_F(SavedDeskTest, NumIconsForBrowser) {
-  // Create fake restore data with one chrome and one lacros browser. Each
-  // browser has two unique tabs.
+  // Create fake restore data.
   const std::string kAppId1 = app_constants::kChromeAppId;
   constexpr int kWindowId1 = 1;
   const std::vector<GURL> kTabs1{GURL("http://a.com"), GURL("http://b.com")};
-
-  const std::string kAppId2 = app_constants::kLacrosAppId;
-  constexpr int kWindowId2 = 2;
-  const std::vector<GURL> kTabs2{GURL("http://c.com"), GURL("http://d.com")};
 
   auto restore_data = std::make_unique<app_restore::RestoreData>();
 
@@ -1402,18 +1397,10 @@ TEST_F(SavedDeskTest, NumIconsForBrowser) {
   app_launch_info_1->browser_extra_info.urls = kTabs1;
   restore_data->AddAppLaunchInfo(std::move(app_launch_info_1));
 
-  // Add app launch info for the lacros browser instance.
-  auto app_launch_info_2 =
-      std::make_unique<app_restore::AppLaunchInfo>(kAppId2, kWindowId2);
-  app_launch_info_2->browser_extra_info.active_tab_index = 1;
-  app_launch_info_2->browser_extra_info.urls = kTabs2;
-  restore_data->AddAppLaunchInfo(std::move(app_launch_info_2));
-
   // A non empty activation index is assumed by the icon placing logic.
   app_restore::WindowInfo window_info;
   window_info.activation_index = 0;
   restore_data->ModifyWindowInfo(kAppId1, kWindowId1, window_info);
-  restore_data->ModifyWindowInfo(kAppId2, kWindowId2, window_info);
 
   AddEntry(base::Uuid::GenerateRandomV4(), "template", base::Time::Now(),
            DeskTemplateSource::kUser, DeskTemplateType::kTemplate,
@@ -1421,13 +1408,13 @@ TEST_F(SavedDeskTest, NumIconsForBrowser) {
 
   OpenOverviewAndShowSavedDeskGrid();
 
-  // Test that there is a total of 4 icons, one for each tab on each browser.
+  // Test that there is a total of 3 icons, one for each tab on each browser.
   // There is also the overflow icon, which is created but hidden.
   SavedDeskItemView* item_view = GetItemViewFromSavedDeskGrid(
       /*grid_item_index=*/0);
   const std::vector<SavedDeskIconView*>& icon_views =
       SavedDeskItemViewTestApi(item_view).GetIconViews();
-  EXPECT_EQ(5u, icon_views.size());
+  EXPECT_EQ(3u, icon_views.size());
 }
 
 // Tests that icons are ordered such that active tabs and windows are ordered

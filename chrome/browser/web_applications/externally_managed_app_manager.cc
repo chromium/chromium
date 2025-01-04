@@ -25,12 +25,14 @@
 #include "chrome/browser/web_applications/externally_managed_app_install_task.h"
 #include "chrome/browser/web_applications/externally_managed_app_registration_task.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/common/chrome_features.h"
@@ -42,23 +44,27 @@
 
 namespace web_app {
 
-ExternallyManagedAppManager::InstallResult::InstallResult() = default;
+ExternallyManagedAppManagerInstallResult::
+    ExternallyManagedAppManagerInstallResult() = default;
 
-ExternallyManagedAppManager::InstallResult::InstallResult(
-    webapps::InstallResultCode code,
-    std::optional<webapps::AppId> app_id,
-    bool did_uninstall_and_replace)
+ExternallyManagedAppManagerInstallResult::
+    ExternallyManagedAppManagerInstallResult(
+        webapps::InstallResultCode code,
+        std::optional<webapps::AppId> app_id,
+        bool did_uninstall_and_replace)
     : code(code),
       app_id(std::move(app_id)),
       did_uninstall_and_replace(did_uninstall_and_replace) {}
 
-ExternallyManagedAppManager::InstallResult::InstallResult(
-    const InstallResult&) = default;
+ExternallyManagedAppManagerInstallResult::
+    ExternallyManagedAppManagerInstallResult(
+        const ExternallyManagedAppManagerInstallResult&) = default;
 
-ExternallyManagedAppManager::InstallResult::~InstallResult() = default;
+ExternallyManagedAppManagerInstallResult::
+    ~ExternallyManagedAppManagerInstallResult() = default;
 
-bool ExternallyManagedAppManager::InstallResult::operator==(
-    const InstallResult& other) const {
+bool ExternallyManagedAppManagerInstallResult::operator==(
+    const ExternallyManagedAppManagerInstallResult& other) const {
   return std::tie(code, app_id, did_uninstall_and_replace) ==
          std::tie(other.code, other.app_id, other.did_uninstall_and_replace);
 }
@@ -329,11 +335,10 @@ void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
       return;
     }
 
-    if (lock.registrar().IsInstallState(
-            app_id.value(),
-            {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-             proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-             proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
+    std::optional<proto::InstallState> install_state =
+        lock.registrar().GetInstallState(app_id.value());
+    if (install_state == web_app::proto::INSTALLED_WITH_OS_INTEGRATION ||
+        install_state == web_app::proto::INSTALLED_WITHOUT_OS_INTEGRATION) {
       if (install_options.placeholder_resolution_behavior ==
               PlaceholderResolutionBehavior::kWaitForAppWindowsClosed &&
           lock.ui_manager().GetNumWindowsForApp(app_id.value()) != 0) {
@@ -365,21 +370,21 @@ void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
         StartInstallationTask(std::move(front),
                               /*installed_placeholder_app_id=*/std::nullopt);
         return;
-      } else {
-        debug_value.Set("simple_source_addition", true);
-        // Add install source before returning the result.
-        ScopedRegistryUpdate update = lock.sync_bridge().BeginUpdate();
-        WebApp* app_to_update = update->UpdateApp(app_id.value());
-        app_to_update->AddSource(ConvertExternalInstallSourceToSource(
-            install_options.install_source));
-        app_to_update->AddInstallURLToManagementExternalConfigMap(
-            ConvertExternalInstallSourceToSource(
-                install_options.install_source),
-            install_options.install_url);
       }
+
+      debug_value.Set("simple_source_addition", true);
+      // Add install source before returning the result.
+      ScopedRegistryUpdate update = lock.sync_bridge().BeginUpdate();
+      WebApp* app_to_update = update->UpdateApp(app_id.value());
+      app_to_update->AddSource(
+          ConvertExternalInstallSourceToSource(install_options.install_source));
+      app_to_update->AddInstallURLToManagementExternalConfigMap(
+          ConvertExternalInstallSourceToSource(install_options.install_source),
+          install_options.install_url);
+
       std::move(front->callback)
           .Run(install_options.install_url,
-               ExternallyManagedAppManager::InstallResult(
+               ExternallyManagedAppManagerInstallResult(
                    webapps::InstallResultCode::kSuccessAlreadyInstalled,
                    app_id));
       continue;
@@ -454,7 +459,7 @@ void ExternallyManagedAppManager::CreateWebContentsIfNecessary() {
 }
 
 void ExternallyManagedAppManager::OnInstalled(
-    ExternallyManagedAppManager::InstallResult result) {
+    ExternallyManagedAppManagerInstallResult result) {
   if (result.app_id && IsSuccess(result.code)) {
     MaybeEnqueueServiceWorkerRegistration(
         current_install_->task->install_options());
@@ -601,7 +606,7 @@ void ExternallyManagedAppManager::SetRegistrationsCompleteCallbackForTesting(
 void ExternallyManagedAppManager::InstallForSynchronizeCallback(
     ExternalInstallSource source,
     const GURL& install_url,
-    ExternallyManagedAppManager::InstallResult result) {
+    ExternallyManagedAppManagerInstallResult result) {
   if (!IsSuccess(result.code)) {
     LOG(ERROR) << install_url << " from install source "
                << static_cast<int>(source) << " failed to install with reason "
@@ -690,7 +695,7 @@ void ExternallyManagedAppManager::ClearSynchronizeRequestsForTesting() {
 
 std::ostream& operator<<(
     std::ostream& out,
-    const ExternallyManagedAppManager::InstallResult& install_result) {
+    const ExternallyManagedAppManagerInstallResult& install_result) {
   base::Value::Dict output;
   output.Set("code", base::ToString(install_result.code));
   output.Set("app_id", base::ToString(install_result.app_id));

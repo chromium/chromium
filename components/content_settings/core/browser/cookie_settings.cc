@@ -206,8 +206,8 @@ bool CookieSettings::IsStoragePartitioningBypassEnabled(
   if (base::FeatureList::IsEnabled(
           privacy_sandbox::kTrackingProtectionContentSettingFor3pcb) &&
       tracking_protection_settings_ &&
-      tracking_protection_settings_->GetTrackingProtectionSetting(
-          first_party_url) == CONTENT_SETTING_ALLOW) {
+      tracking_protection_settings_->HasTrackingProtectionException(
+          first_party_url)) {
     return true;
   }
   return false;
@@ -342,6 +342,9 @@ bool CookieSettings::ShouldAlwaysAllowCookies(
       first_party_url.SchemeIs(extension_scheme_)) {
     return true;
   }
+#else
+  // Suppress -Wunused-private-field warning.
+  (void)extension_scheme_;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   return false;

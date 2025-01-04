@@ -41,6 +41,10 @@ class MockSegmentationPlatformService : public SegmentationPlatformService {
                scoped_refptr<InputContext>,
                AnnotatedNumericResultCallback));
   MOCK_METHOD(void,
+              GetInputKeysForModel,
+              (const std::string& segmentation_key,
+               InputContextKeysCallback callback));
+  MOCK_METHOD(void,
               CollectTrainingData,
               (proto::SegmentId,
                TrainingRequestId,

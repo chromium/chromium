@@ -54,7 +54,6 @@ class AutofillBubbleSignInPromoView : public views::View,
   void AddedToWidget() override;
 
   autofill::AutofillBubbleSignInPromoController controller_;
-  const signin_metrics::AccessPoint access_point_;
   std::unique_ptr<DiceSigninPromoDelegate> dice_sign_in_promo_delegate_;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       scoped_widget_observation_{this};

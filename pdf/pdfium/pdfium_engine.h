@@ -62,7 +62,7 @@
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
 #include "pdf/pdf_ink_ids.h"
-#include "third_party/ink/src/ink/geometry/modeled_shape.h"
+#include "third_party/ink/src/ink/geometry/partitioned_mesh.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -408,8 +408,8 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // PDFium page object.
   //
   // Virtual to support testing.
-  virtual std::map<InkModeledShapeId, ink::ModeledShape> LoadV2InkPathsForPage(
-      int page_index);
+  virtual std::map<InkModeledShapeId, ink::PartitionedMesh>
+  LoadV2InkPathsForPage(int page_index);
 
   // Modifies an existing shape identified by `id` on the page at `page_index`
   // to become either active or inactive. The caller must pass the same

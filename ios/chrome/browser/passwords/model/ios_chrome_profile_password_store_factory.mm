@@ -12,7 +12,6 @@
 #import "base/no_destructor.h"
 #import "components/affiliations/core/browser/affiliation_service.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/password_manager/core/browser/affiliation/password_affiliation_source_adapter.h"
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/password_store/login_database.h"
@@ -26,7 +25,6 @@
 #import "ios/chrome/browser/passwords/model/credentials_cleaner_runner_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_password_store_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -62,9 +60,9 @@ IOSChromeProfilePasswordStoreFactory::GetForProfile(
       profile->IsOffTheRecord()) {
     return nullptr;
   }
-  return base::WrapRefCounted(
-      static_cast<password_manager::PasswordStoreInterface*>(
-          GetInstance()->GetServiceForBrowserState(profile, true).get()));
+  return GetInstance()
+      ->GetServiceForProfileAs<password_manager::PasswordStoreInterface>(
+          profile, /*create=*/true);
 }
 
 // static
@@ -75,9 +73,10 @@ IOSChromeProfilePasswordStoreFactory::GetInstance() {
 }
 
 IOSChromeProfilePasswordStoreFactory::IOSChromeProfilePasswordStoreFactory()
-    : RefcountedBrowserStateKeyedServiceFactory(
+    : RefcountedProfileKeyedServiceFactoryIOS(
           "PasswordStore",
-          BrowserStateDependencyManager::GetInstance()) {
+          ProfileSelection::kRedirectedInIncognito,
+          TestingCreation::kNoServiceForTests) {
   DependsOn(CredentialsCleanerRunnerFactory::GetInstance());
   DependsOn(IOSChromeAffiliationServiceFactory::GetInstance());
 }
@@ -127,13 +126,4 @@ IOSChromeProfilePasswordStoreFactory::BuildServiceInstanceFor(
   password_affiliation_adapter->RegisterPasswordStore(store.get());
   affiliation_service->RegisterSource(std::move(password_affiliation_adapter));
   return store;
-}
-
-web::BrowserState* IOSChromeProfilePasswordStoreFactory::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  return GetBrowserStateRedirectedInIncognito(context);
-}
-
-bool IOSChromeProfilePasswordStoreFactory::ServiceIsNULLWhileTesting() const {
-  return true;
 }

@@ -92,9 +92,7 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
         r.SITE_SETTINGS.createChild('smartCardReaders');
   }
   // </if>
-  if (loadTimeData.getBoolean('privateStateTokensEnabled')) {
-    r.SITE_SETTINGS_AUTO_VERIFY = r.SITE_SETTINGS.createChild('autoVerify');
-  }
+  r.SITE_SETTINGS_AUTO_VERIFY = r.SITE_SETTINGS.createChild('autoVerify');
   if (!loadTimeData.getBoolean('enableAiSettingsPageRefresh') &&
       loadTimeData.getBoolean('enableComposeProactiveNudge')) {
     r.OFFER_WRITING_HELP = r.SITE_SETTINGS.createChild('offerWritingHelp');
@@ -194,9 +192,6 @@ function createRoutes(): SettingsRoutes {
 
     r.SYNC = r.PEOPLE.createChild('/syncSetup');
     r.SYNC_ADVANCED = r.SYNC.createChild('/syncSetup/advanced');
-    if (loadTimeData.getBoolean('enablePageContentSetting')) {
-      r.PAGE_CONTENT = r.SYNC.createChild('/syncSetup/pageContent');
-    }
     if (!loadTimeData.getBoolean('enableAiSettingsPageRefresh') &&
         loadTimeData.getBoolean('showHistorySearchControl')) {
       r.HISTORY_SEARCH = r.SYNC.createChild('/historySearch');
@@ -245,9 +240,14 @@ function createRoutes(): SettingsRoutes {
     r.PAYMENTS = r.AUTOFILL.createChild('/payments');
     r.ADDRESSES = r.AUTOFILL.createChild('/addresses');
 
-    if (loadTimeData.getBoolean('autofillPredictionImprovementsEnabled')) {
-      r.AUTOFILL_PREDICTION_IMPROVEMENTS =
-          r.AUTOFILL.createChild('/autofillPredictionImprovements');
+    if (loadTimeData.getBoolean('autofillAiEnabled')) {
+      r.AUTOFILL_AI = r.AUTOFILL.createChild('/autofillAi');
+    }
+
+    if (visibility.glic !== false &&
+        loadTimeData.getBoolean('showGlicSettings')) {
+      r.GLIC = r.BASIC.createSection(
+          '/glic', 'glic', loadTimeData.getString('glicPageTitle'));
     }
 
     // <if expr="is_win or is_macosx">

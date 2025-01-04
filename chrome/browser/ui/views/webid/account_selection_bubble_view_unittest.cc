@@ -45,6 +45,8 @@
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 
+namespace webid {
+
 using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
 using IdentityRequestAccountPtr =
     scoped_refptr<content::IdentityRequestAccount>;
@@ -58,7 +60,7 @@ constexpr char kTopFrameEtldPlusOne[] = "rp-example.com";
 
 class FakeTabInterface : public tabs::MockTabInterface {
  public:
-  virtual ~FakeTabInterface() = default;
+  ~FakeTabInterface() override = default;
   explicit FakeTabInterface(content::WebContents* contents)
       : contents_(contents) {}
   content::WebContents* GetContents() const override { return contents_; }
@@ -320,9 +322,8 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
                         /*expect_privacy_policy=*/true);
   }
 
-  void TestMultipleAccounts(
-      const std::u16string& expected_title,
-      bool expect_idp_brand_icon_in_header) {
+  void TestMultipleAccounts(const std::u16string& expected_title,
+                            bool expect_idp_brand_icon_in_header) {
     const std::vector<std::string> kAccountSuffixes = {"0", "1", "2"};
     CreateAndShowMultiAccountPicker(kAccountSuffixes);
 
@@ -452,7 +453,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
     ASSERT_TRUE(GetHoverButtonIconView(idp_button));
     // Using GetPreferredSize() since BrandIconImageView uses a fetched image.
     EXPECT_EQ(GetHoverButtonIconView(idp_button)->GetPreferredSize(),
-              gfx::Size(fedcm::kMultiIdpIconSize, fedcm::kMultiIdpIconSize));
+              gfx::Size(kMultiIdpIconSize, kMultiIdpIconSize));
   }
 
   void CheckUseOtherAccount(
@@ -486,7 +487,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
               expected_subtitle);
     ASSERT_TRUE(GetHoverButtonIconView(choose_account_button));
     EXPECT_EQ(GetHoverButtonIconView(choose_account_button)->size(),
-              gfx::Size(fedcm::kMultiIdpIconSize, fedcm::kMultiIdpIconSize));
+              gfx::Size(kMultiIdpIconSize, kMultiIdpIconSize));
   }
 
   void SetUp() override {
@@ -1477,3 +1478,5 @@ TEST_F(AccountSelectionBubbleViewTest, OneDisabledAccountAndOneEnabledAccount) {
   EXPECT_TRUE(IsViewClass<views::Separator>(accounts[index++]));
   CheckUseOtherAccount(accounts, index);
 }
+
+}  //  namespace webid

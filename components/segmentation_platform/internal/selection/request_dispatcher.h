@@ -60,6 +60,10 @@ class RequestDispatcher {
                                  scoped_refptr<InputContext> input_context,
                                  AnnotatedNumericResultCallback callback);
 
+  // Client API. See `SegmentationPlatformService::GetInputKeysForModel`.
+  void GetInputKeysForModel(const std::string& segmentation_key,
+                            InputContextKeysCallback callback);
+
   // For testing only.
   int GetPendingActionCountForTesting();
   void set_request_handler_for_testing(

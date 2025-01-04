@@ -80,7 +80,7 @@ class Product:
         options.processes = self.processes
         # pylint: disable=assignment-from-none
         options.browser_version = self.get_version()
-        options.webdriver_binary = self.webdriver_binary
+        options.webdriver_binary = self._options.webdriver_binary or self.webdriver_binary
         options.webdriver_args.extend(self.additional_webdriver_args())
 
     @functools.cached_property
@@ -137,7 +137,7 @@ class HeadlessShell(DesktopProduct):
     def additional_binary_args(self):
         # TODO(crbug.com/40887057): Support `--enable-leak-detection` and plumb
         # the flag here.
-        return [
+        rv = [
             *super().additional_binary_args(),
             "--canvas-2d-layers",
             '--enable-bfcache',
@@ -147,6 +147,9 @@ class HeadlessShell(DesktopProduct):
             # default, so set an arbitrary one that some tests expect.
             '--accept-lang=en-US,en',
         ]
+        if self._port.operating_system() != 'linux':
+            rv.append('--disable-site-isolation-trials')
+        return rv
 
 
 class ChromeiOS(Product):

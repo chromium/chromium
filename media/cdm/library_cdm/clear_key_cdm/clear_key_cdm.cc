@@ -178,11 +178,14 @@ void* CreateCdmInstance(int cdm_interface_version,
     return nullptr;
   }
 
-  // We support CDM_10 and CDM_11.
+  // We support CDM_10, CDM_11, and CDM_12.
   using CDM_10 = cdm::ContentDecryptionModule_10;
   using CDM_11 = cdm::ContentDecryptionModule_11;
+  using CDM_12 = cdm::ContentDecryptionModule_12;
 
   if (cdm_interface_version == CDM_10::kVersion) {
+    static_assert(CDM_10::kVersion == CDM_10::Host::kVersion,
+                  "CDM host version mismatch");
     CDM_10::Host* host = static_cast<CDM_10::Host*>(
         get_cdm_host_func(CDM_10::Host::kVersion, user_data));
     if (!host)
@@ -194,6 +197,8 @@ void* CreateCdmInstance(int cdm_interface_version,
   }
 
   if (cdm_interface_version == CDM_11::kVersion) {
+    static_assert(CDM_11::kVersion == CDM_11::Host::kVersion,
+                  "CDM host version mismatch");
     CDM_11::Host* host = static_cast<CDM_11::Host*>(
         get_cdm_host_func(CDM_11::Host::kVersion, user_data));
     if (!host)
@@ -201,6 +206,18 @@ void* CreateCdmInstance(int cdm_interface_version,
 
     DVLOG(1) << __func__ << ": Create ClearKeyCdm with CDM_11::Host.";
     return static_cast<CDM_11*>(
+        new media::ClearKeyCdm(host, key_system_string));
+  }
+
+  if (cdm_interface_version == CDM_12::kVersion) {
+    CDM_12::Host* host = static_cast<CDM_12::Host*>(
+        get_cdm_host_func(CDM_12::Host::kVersion, user_data));
+    if (!host) {
+      return nullptr;
+    }
+
+    DVLOG(1) << __func__ << ": Create ClearKeyCdm with CDM_12::Host.";
+    return static_cast<CDM_12*>(
         new media::ClearKeyCdm(host, key_system_string));
   }
 
@@ -379,6 +396,7 @@ void ClearKeyCdm::CreateSessionAndGenerateRequest(
                      promise_id),
       base::BindOnce(&ClearKeyCdm::OnPromiseFailed, base::Unretained(this),
                      promise_id));
+  cdm_host_proxy_->ReportMetrics(cdm::kSdkVersion, 12345);
   cdm_->CreateSessionAndGenerateRequest(
       ToMediaSessionType(session_type), ToEmeInitDataType(init_data_type),
       std::vector<uint8_t>(init_data, init_data + init_data_size),

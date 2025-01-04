@@ -230,8 +230,9 @@ void ShowSafetyTipDialog(
     const GURL& suggested_url,
     base::OnceCallback<void(SafetyTipInteraction)> close_callback) {
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  if (!browser)
+  if (!browser) {
     return;
+  }
 
   bubble_anchor_util::AnchorConfiguration configuration =
       bubble_anchor_util::GetPageInfoAnchorConfiguration(

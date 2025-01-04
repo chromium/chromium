@@ -62,6 +62,8 @@ enum NumberPadPresence {
 };
 
 // Note that this enumeration will need to be extended if new keys are added.
+//
+// NextMinVersion: 2
 [Stable, Extensible]
 enum TopRowKey {
   // This is required for backwards compatibility, should not be used.
@@ -91,6 +93,8 @@ enum TopRowKey {
   kPlayPause,
   kScreenMirror,
   kDelete,
+  [MinVersion=1] kAccessibility,
+  [MinVersion=1] kDictation,
 };
 
 [Stable, Extensible]
@@ -103,7 +107,38 @@ enum TopRightKey {
   kControlPanel,
 };
 
+[Stable, Extensible]
+enum BottomLeftLayout {
+  [Default] kUnknown,
+  // The bottom left is consist of ctrl, fn and alt.
+  kBottomLeft3Keys,
+  // The bottom left is consist of ctrl, fn, search and alt.
+  kBottomLeft4Keys,
+};
+
+[Stable, Extensible]
+enum BottomRightLayout {
+  [Default] kUnknown,
+  // The bottom right is consist of alt and ctrl.
+  kBottomRight2Keys,
+  // The bottom right is consist of alt, fn and ctrl.
+  kBottomRight3Keys,
+  // The bottom right is consist of alt, fn, globe and ctrl.
+  kBottomRight4Keys,
+};
+
+[Stable, Extensible]
+enum NumpadLayout {
+  [Default] kUnknown,
+  // The numpad has 3 columns in total.
+  kNumpad3Column,
+  // The numpad has 4 columns in total.
+  kNumpad4Column,
+};
+
 // Describes a connected keyboard.
+//
+// NextMinVersion: 2
 [Stable]
 struct KeyboardInfo {
   // The number of the keyboard's /dev/input/event* node.
@@ -126,6 +161,18 @@ struct KeyboardInfo {
   TopRightKey top_right_key@8;
   // Only applicable to CrOS keyboards.
   bool has_assistant_key@9;
+  // Specify the layout of the bottom left keys (fn, etc.) Only required for
+  // split modifier keyboards.
+  [MinVersion=1]
+  BottomLeftLayout bottom_left_layout@10;
+  // Specify the layout of the bottom right keys (fn, etc.) Only required for
+  // split modifier keyboards.
+  [MinVersion=1]
+  BottomRightLayout bottom_right_layout@11;
+  [MinVersion=1]
+  // Specify the layout of the numpad. Only required for split modifier
+  // keyboards that has a numpad.
+  NumpadLayout numpad_layout@12;
 };
 
 // Keyboard diagnostics event info. It is fired when users completed a keyboard

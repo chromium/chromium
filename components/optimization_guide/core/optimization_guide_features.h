@@ -57,8 +57,6 @@ BASE_DECLARE_FEATURE(kOverrideNumThreadsForModelExecution);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOptGuideEnableXNNPACKDelegateWithTFLite);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-BASE_DECLARE_FEATURE(kOptimizationHintsComponent);
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOptimizationGuidePersonalizedFetching);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOptimizationGuidePredictionModelKillswitch);
@@ -90,12 +88,24 @@ BASE_DECLARE_FEATURE(kPrivacyGuideAiSettings);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const base::FeatureParam<bool> kShowAiSettingsForTesting;
 
+// Allows setting feature params for model download configuration, such as
+// minimum performance class for download.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+BASE_DECLARE_FEATURE(kOnDeviceModelPerformanceParams);
+
 // Comma-separated list of performance classes (e.g. "3,4,5") that should
 // download the base model. Use "*" if there is no performance class
 // requirement.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const base::FeatureParam<std::string>
     kPerformanceClassListForOnDeviceModel;
+
+// Comma-separated list of performance classes that should use a smaller model
+// if available. This should be a subset of
+// kPerformanceClassListForOnDeviceModel.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const base::FeatureParam<std::string>
+    kLowTierPerformanceClassListForOnDeviceModel;
 
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOptimizationGuideIconView);
@@ -351,10 +361,6 @@ std::optional<int> OverrideNumThreadsForOptTarget(
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool TFLiteXNNPACKDelegateEnabled();
 
-// Whether to check the pref for whether a previous component version failed.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool ShouldCheckFailedComponentVersionPref();
-
 // Whether logging of model quality is enabled.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool IsModelQualityLoggingEnabled();
@@ -450,6 +456,10 @@ base::TimeDelta GetOnDeviceEligibleModelFeatureRecentUsePeriod();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 base::TimeDelta GetOnDeviceModelRetentionTime();
 
+// Return the disk space (in MiB) required for on device model install.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+int GetDiskSpaceRequiredInMbForOnDeviceModelInstall();
+
 // Whether there is enough free disk space to allow on-device model
 // installation.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
@@ -539,6 +549,10 @@ bool IsAiSettingsPageRefreshEnabled();
 // Whether Ai settings page integration with Privacy Guide is enabled.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool IsPrivacyGuideAiSettingsEnabled();
+
+// Whether policy-disabled AI settings are visible.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+BASE_DECLARE_FEATURE(kAiSettingsPageEnterpriseDisabledUi);
 
 }  // namespace features
 }  // namespace optimization_guide

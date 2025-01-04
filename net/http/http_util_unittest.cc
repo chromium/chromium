@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/http/http_util.h"
 
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <string_view>
 
@@ -733,35 +729,42 @@ TEST(HttpUtilTest, AssembleRawHeaders) {
 
 // Test SpecForRequest().
 TEST(HttpUtilTest, RequestUrlSanitize) {
-  struct {
+  struct Tests {
     const char* const url;
     const char* const expected_spec;
-  } tests[] = {
-    { // Check that #hash is removed.
-      "http://www.google.com:78/foobar?query=1#hash",
-      "http://www.google.com:78/foobar?query=1",
-    },
-    { // The reference may itself contain # -- strip all of it.
-      "http://192.168.0.1?query=1#hash#10#11#13#14",
-      "http://192.168.0.1/?query=1",
-    },
-    { // Strip username/password.
-      "http://user:pass@google.com",
-      "http://google.com/",
-    },
-    { // https scheme
-      "https://www.google.com:78/foobar?query=1#hash",
-      "https://www.google.com:78/foobar?query=1",
-    },
-    { // WebSocket's ws scheme
-      "ws://www.google.com:78/foobar?query=1#hash",
-      "ws://www.google.com:78/foobar?query=1",
-    },
-    { // WebSocket's wss scheme
-      "wss://www.google.com:78/foobar?query=1#hash",
-      "wss://www.google.com:78/foobar?query=1",
-    }
   };
+  auto tests = std::to_array<Tests>({
+      {
+          // Check that #hash is removed.
+          "http://www.google.com:78/foobar?query=1#hash",
+          "http://www.google.com:78/foobar?query=1",
+      },
+      {
+          // The reference may itself contain # -- strip all of it.
+          "http://192.168.0.1?query=1#hash#10#11#13#14",
+          "http://192.168.0.1/?query=1",
+      },
+      {
+          // Strip username/password.
+          "http://user:pass@google.com",
+          "http://google.com/",
+      },
+      {
+          // https scheme
+          "https://www.google.com:78/foobar?query=1#hash",
+          "https://www.google.com:78/foobar?query=1",
+      },
+      {
+          // WebSocket's ws scheme
+          "ws://www.google.com:78/foobar?query=1#hash",
+          "ws://www.google.com:78/foobar?query=1",
+      },
+      {
+          // WebSocket's wss scheme
+          "wss://www.google.com:78/foobar?query=1#hash",
+          "wss://www.google.com:78/foobar?query=1",
+      },
+  });
   for (size_t i = 0; i < std::size(tests); ++i) {
     SCOPED_TRACE(i);
 
@@ -1152,25 +1155,28 @@ TEST(HttpUtilTest, ParseRetryAfterHeader) {
   base::Time later;
   EXPECT_TRUE(base::Time::FromUTCExploded(later_exploded, &later));
 
-  const struct {
+  struct Tests {
     const char* retry_after_string;
     bool expected_return_value;
     base::TimeDelta expected_retry_after;
-  } tests[] = {{"", false, base::TimeDelta()},
-               {"-3", false, base::TimeDelta()},
-               {"-2", false, base::TimeDelta()},
-               {"-1", false, base::TimeDelta()},
-               {"+0", false, base::TimeDelta()},
-               {"+1", false, base::TimeDelta()},
-               {"0", true, base::Seconds(0)},
-               {"1", true, base::Seconds(1)},
-               {"2", true, base::Seconds(2)},
-               {"3", true, base::Seconds(3)},
-               {"60", true, base::Seconds(60)},
-               {"3600", true, base::Seconds(3600)},
-               {"86400", true, base::Seconds(86400)},
-               {"Thu, 1 Jan 2015 12:34:56 GMT", true, later - now},
-               {"Mon, 1 Jan 1900 12:34:56 GMT", false, base::TimeDelta()}};
+  };
+  const auto tests = std::to_array<Tests>({
+      {"", false, base::TimeDelta()},
+      {"-3", false, base::TimeDelta()},
+      {"-2", false, base::TimeDelta()},
+      {"-1", false, base::TimeDelta()},
+      {"+0", false, base::TimeDelta()},
+      {"+1", false, base::TimeDelta()},
+      {"0", true, base::Seconds(0)},
+      {"1", true, base::Seconds(1)},
+      {"2", true, base::Seconds(2)},
+      {"3", true, base::Seconds(3)},
+      {"60", true, base::Seconds(60)},
+      {"3600", true, base::Seconds(3600)},
+      {"86400", true, base::Seconds(86400)},
+      {"Thu, 1 Jan 2015 12:34:56 GMT", true, later - now},
+      {"Mon, 1 Jan 1900 12:34:56 GMT", false, base::TimeDelta()},
+  });
 
   for (size_t i = 0; i < std::size(tests); ++i) {
     base::TimeDelta retry_after;

@@ -33,8 +33,6 @@ class OptimizationHintsMockComponentUpdateService
       const OptimizationHintsMockComponentUpdateService&) = delete;
   OptimizationHintsMockComponentUpdateService& operator=(
       const OptimizationHintsMockComponentUpdateService&) = delete;
-
-  ~OptimizationHintsMockComponentUpdateService() override = default;
 };
 
 }  // namespace
@@ -42,16 +40,7 @@ class OptimizationHintsMockComponentUpdateService
 namespace component_updater {
 
 class OptimizationHintsComponentInstallerTest : public PlatformTest {
- public:
-  OptimizationHintsComponentInstallerTest() = default;
-
-  OptimizationHintsComponentInstallerTest(
-      const OptimizationHintsComponentInstallerTest&) = delete;
-  OptimizationHintsComponentInstallerTest& operator=(
-      const OptimizationHintsComponentInstallerTest&) = delete;
-
-  ~OptimizationHintsComponentInstallerTest() override = default;
-
+ protected:
   void SetUp() override {
     PlatformTest::SetUp();
 
@@ -79,7 +68,6 @@ class OptimizationHintsComponentInstallerTest : public PlatformTest {
     base::RunLoop().RunUntilIdle();
   }
 
- protected:
   void RunUntilIdle() {
     task_environment_.RunUntilIdle();
     base::RunLoop().RunUntilIdle();

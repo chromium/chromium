@@ -2,8 +2,14 @@
 # cargo-vet imports lock
 
 [[publisher.libc]]
-version = "0.2.167"
-when = "2024-11-29"
+version = "0.2.168"
+when = "2024-12-09"
+user-id = 55123
+user-login = "rust-lang-owner"
+
+[[publisher.libc]]
+version = "0.2.169"
+when = "2024-12-19"
 user-id = 55123
 user-login = "rust-lang-owner"
 
@@ -164,21 +170,6 @@ version = "0.6.4"
 who = "George Burgess IV <gbiv@google.com>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 version = "0.1.0"
-
-[[audits.chromeos.audits.syn]]
-who = "Ying Hsu <yinghsu@chromium.org>"
-criteria = ["safe-to-run", "does-not-implement-crypto"]
-version = "2.0.58"
-
-[[audits.chromeos.audits.syn]]
-who = "Hung-Hsien Chen <hunghsienchen@chromium.org>"
-criteria = ["safe-to-run", "does-not-implement-crypto"]
-delta = "2.0.58 -> 2.0.77"
-
-[[audits.chromeos.audits.syn]]
-who = "Nicholas Bishop <nicholasbishop@google.com>"
-criteria = ["safe-to-run", "does-not-implement-crypto"]
-delta = "2.0.77 -> 2.0.87"
 
 [audits.fuchsia.criteria.ub-risk-0]
 description = """

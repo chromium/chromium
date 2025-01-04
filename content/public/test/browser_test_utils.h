@@ -1015,7 +1015,7 @@ std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(
 // BrowserContext.
 std::vector<WebContents*> GetAllWebContents();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Executes the WebUI resource tests. Injects the test runner script prior to
 // executing the tests.
 //
@@ -1326,9 +1326,10 @@ class RenderProcessHostBadMojoMessageWaiter {
   [[nodiscard]] std::optional<std::string> Wait();
 
  private:
-  void OnBadMojoMessage(int render_process_id, const std::string& error);
+  void OnBadMojoMessage(ChildProcessId render_process_id,
+                        const std::string& error);
 
-  int monitored_render_process_id_;
+  ChildProcessId monitored_render_process_id_;
   std::optional<std::string> observed_mojo_error_;
   RenderProcessHostKillWaiter kill_waiter_;
 };

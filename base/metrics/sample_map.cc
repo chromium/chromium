@@ -7,6 +7,7 @@
 #include <type_traits>
 
 #include "base/check.h"
+#include "base/metrics/sample_map_iterator.h"
 #include "base/numerics/safe_conversions.h"
 
 namespace base {
@@ -14,91 +15,7 @@ namespace base {
 typedef HistogramBase::Count Count;
 typedef HistogramBase::Sample Sample;
 
-namespace {
-
-// An iterator for going through a SampleMap. The logic here is identical
-// to that of the iterator for PersistentSampleMap but with different data
-// structures. Changes here likely need to be duplicated there.
-template <typename T, typename I>
-class IteratorTemplate : public SampleCountIterator {
- public:
-  explicit IteratorTemplate(T& sample_counts)
-      : iter_(sample_counts.begin()), end_(sample_counts.end()) {
-    SkipEmptyBuckets();
-  }
-
-  ~IteratorTemplate() override;
-
-  // SampleCountIterator:
-  bool Done() const override { return iter_ == end_; }
-  void Next() override {
-    DCHECK(!Done());
-    ++iter_;
-    SkipEmptyBuckets();
-  }
-  void Get(HistogramBase::Sample* min,
-           int64_t* max,
-           HistogramBase::Count* count) override;
-
- private:
-  void SkipEmptyBuckets() {
-    while (!Done() && iter_->second == 0) {
-      ++iter_;
-    }
-  }
-
-  I iter_;
-  const I end_;
-};
-
 typedef std::map<HistogramBase::Sample, HistogramBase::Count> SampleToCountMap;
-typedef IteratorTemplate<const SampleToCountMap,
-                         SampleToCountMap::const_iterator>
-    SampleMapIterator;
-
-template <>
-SampleMapIterator::~IteratorTemplate() = default;
-
-// Get() for an iterator of a SampleMap.
-template <>
-void SampleMapIterator::Get(Sample* min, int64_t* max, Count* count) {
-  DCHECK(!Done());
-  *min = iter_->first;
-  *max = strict_cast<int64_t>(iter_->first) + 1;
-  // We do not have to do the following atomically -- if the caller needs thread
-  // safety, they should use a lock. And since this is in local memory, if a
-  // lock is used, we know the value would not be concurrently modified by a
-  // different process (in contrast to PersistentSampleMap, where the value in
-  // shared memory may be modified concurrently by a subprocess).
-  *count = iter_->second;
-}
-
-typedef IteratorTemplate<SampleToCountMap, SampleToCountMap::iterator>
-    ExtractingSampleMapIterator;
-
-template <>
-ExtractingSampleMapIterator::~IteratorTemplate() {
-  // Ensure that the user has consumed all the samples in order to ensure no
-  // samples are lost.
-  DCHECK(Done());
-}
-
-// Get() for an extracting iterator of a SampleMap.
-template <>
-void ExtractingSampleMapIterator::Get(Sample* min, int64_t* max, Count* count) {
-  DCHECK(!Done());
-  *min = iter_->first;
-  *max = strict_cast<int64_t>(iter_->first) + 1;
-  // We do not have to do the following atomically -- if the caller needs thread
-  // safety, they should use a lock. And since this is in local memory, if a
-  // lock is used, we know the value would not be concurrently modified by a
-  // different process (in contrast to PersistentSampleMap, where the value in
-  // shared memory may be modified concurrently by a subprocess).
-  *count = iter_->second;
-  iter_->second = 0;
-}
-
-}  // namespace
 
 SampleMap::SampleMap() : SampleMap(0) {}
 
@@ -119,8 +36,9 @@ void SampleMap::Accumulate(Sample value, Count count) {
 
 Count SampleMap::GetCount(Sample value) const {
   auto it = sample_counts_.find(value);
-  if (it == sample_counts_.end())
+  if (it == sample_counts_.end()) {
     return 0;
+  }
   return it->second;
 }
 
@@ -133,11 +51,13 @@ Count SampleMap::TotalCount() const {
 }
 
 std::unique_ptr<SampleCountIterator> SampleMap::Iterator() const {
-  return std::make_unique<SampleMapIterator>(sample_counts_);
+  return std::make_unique<SampleMapIterator<SampleToCountMap, false>>(
+      sample_counts_);
 }
 
 std::unique_ptr<SampleCountIterator> SampleMap::ExtractingIterator() {
-  return std::make_unique<ExtractingSampleMapIterator>(sample_counts_);
+  return std::make_unique<SampleMapIterator<SampleToCountMap, true>>(
+      sample_counts_);
 }
 
 bool SampleMap::IsDefinitelyEmpty() const {

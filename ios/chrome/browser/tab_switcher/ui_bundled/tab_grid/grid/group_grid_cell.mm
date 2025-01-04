@@ -37,18 +37,24 @@ const CGFloat kSnapShotViewBottomOffset = 4;
 const CGFloat kColorDotSize = 16;
 // The size of the group color dot under accessibility font size.
 const CGFloat kColorDotLargeSize = 24;
-// The insets of the group color dot under normal font size.
-const CGFloat kColorDotInset = 10;
-// The insets of the group color dot under accessibility font size.
-const CGFloat kColorDotLargeInset = 20;
+// The top bar inset of the t under normal font size.
+const CGFloat kTopBarInset = 10;
+// The top bar inset under accessibility font size.
+const CGFloat kTopBarLargeInset = 20;
 
 }  // namespace
 
 @implementation GroupGridCell {
-  // The constraints enabled under accessibility font size.
-  NSArray<NSLayoutConstraint*>* _accessibilityConstraints;
-  // The constraints enabled under normal font size.
-  NSArray<NSLayoutConstraint*>* _nonAccessibilityConstraints;
+  // The group color view constraints enabled under accessibility font size.
+  NSArray<NSLayoutConstraint*>* _groupColorViewAccessibilityConstraints;
+  // The group color view constraints enabled under normal font size.
+  NSArray<NSLayoutConstraint*>* _groupColorViewNonAccessibilityConstraints;
+  // The face pile container view constraints enabled under accessibility font
+  // size.
+  NSArray<NSLayoutConstraint*>* _facePileContainerViewAccessibilityConstraints;
+  // The face pile container view constraints enabled under normal font size.
+  NSArray<NSLayoutConstraint*>*
+      _facePileContainerViewNonAccessibilityConstraints;
   // The constraints enabled while showing the close icon.
   NSArray<NSLayoutConstraint*>* _closeIconConstraints;
   // The constraints enabled while showing the selection icon.
@@ -58,6 +64,7 @@ const CGFloat kColorDotLargeInset = 20;
   // Visual components of the cell.
   UIView* _topBar;
   UIView* _groupColorView;
+  UIView* _facePileContainerView;
   UILabel* _titleLabel;
   UIImageView* _closeIconView;
   UIImageView* _selectIconView;
@@ -67,6 +74,8 @@ const CGFloat kColorDotLargeInset = 20;
   UIView* _border;
 
   TabGroupSnapshotsView* _groupSnapshotsView;
+
+  UIViewController* _facePileViewController;
 }
 
 // `-dequeueReusableCellWithReuseIdentifier:forIndexPath:` calls this method to
@@ -157,7 +166,7 @@ const CGFloat kColorDotLargeInset = 20;
 
   if (@available(iOS 17, *)) {
     [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
-                       withAction:@selector(updateTopBarSize)];
+                       withAction:@selector(updateTopBarConstraints)];
   }
   return self;
 }
@@ -178,7 +187,7 @@ const CGFloat kColorDotLargeInset = 20;
       UIContentSizeCategoryIsAccessibilityCategory(
           self.traitCollection.preferredContentSizeCategory);
   if (isPreviousAccessibilityCategory ^ isCurrentAccessibilityCategory) {
-    [self updateTopBarSize];
+    [self updateTopBarConstraints];
   }
 }
 
@@ -199,11 +208,11 @@ const CGFloat kColorDotLargeInset = 20;
 - (void)prepareForReuse {
   [super prepareForReuse];
   self.title = nil;
-  self.titleHidden = NO;
   self.groupColor = nil;
   self.selected = NO;
   self.opacity = 1.0;
   self.hidden = NO;
+  [self setFacePileViewController:nil parentViewController:nil];
 }
 
 #pragma mark - UIAccessibility
@@ -213,7 +222,21 @@ const CGFloat kColorDotLargeInset = 20;
   // title and close button.
   return YES;
 }
-// TODO(crbug.com/41484563): Add the accessibility custom actions.
+
+- (NSArray*)accessibilityCustomActions {
+  if ([self isInSelectionMode]) {
+    // If the cell is in tab grid selection mode, only allow toggling the
+    // selection state.
+    return nil;
+  }
+
+  // In normal cell mode, there are 2 actions, accessible through swiping. The
+  // default is to select the group cell. Another is to close the group cell.
+  return @[ [[UIAccessibilityCustomAction alloc]
+      initWithName:l10n_util::GetNSString(IDS_IOS_TAB_SWITCHER_CLOSE_GROUP)
+            target:self
+          selector:@selector(closeButtonTapped:)] ];
+}
 
 #pragma mark - Public
 
@@ -277,11 +300,6 @@ const CGFloat kColorDotLargeInset = 20;
   _title = [title copy];
 }
 
-- (void)setTitleHidden:(BOOL)titleHidden {
-  _titleLabel.hidden = titleHidden;
-  _titleHidden = titleHidden;
-}
-
 - (UIDragPreviewParameters*)dragPreviewParameters {
   UIBezierPath* visiblePath = [UIBezierPath
       bezierPathWithRoundedRect:self.bounds
@@ -302,6 +320,32 @@ const CGFloat kColorDotLargeInset = 20;
   super.alpha = _opacity;
 }
 
+- (void)setFacePileViewController:(UIViewController*)facePileViewController
+             parentViewController:(UIViewController*)parentViewController {
+  if (_facePileViewController == facePileViewController) {
+    return;
+  }
+
+  [_facePileViewController willMoveToParentViewController:nil];
+  [_facePileViewController.view removeFromSuperview];
+  [_facePileViewController removeFromParentViewController];
+
+  _facePileViewController = facePileViewController;
+  _groupColorView.hidden = _facePileViewController != nil;
+
+  if (_facePileViewController) {
+    CHECK(parentViewController);
+    [parentViewController addChildViewController:_facePileViewController];
+    UIView* facePileView = _facePileViewController.view;
+    [_facePileContainerView addSubview:facePileView];
+    [_facePileViewController
+        didMoveToParentViewController:parentViewController];
+    facePileView.translatesAutoresizingMaskIntoConstraints = NO;
+    AddSameConstraints(facePileView, _facePileContainerView);
+  }
+  [self updateTopBarConstraints];
+}
+
 #pragma mark - Private
 
 // Sets up the top bar with icon, title, and close button.
@@ -312,6 +356,14 @@ const CGFloat kColorDotLargeInset = 20;
   _groupColorView = [[UIView alloc] init];
   _groupColorView.accessibilityIdentifier = kGroupGridCellColoredDotIdentifier;
   _groupColorView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  _facePileContainerView = [[UIView alloc] init];
+  _facePileContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  NSLayoutConstraint* facePileSmallWidth =
+      [_facePileContainerView.widthAnchor constraintEqualToConstant:0];
+  facePileSmallWidth.priority = UILayoutPriorityDefaultLow;
+  facePileSmallWidth.active = YES;
 
   _titleLabel = [[UILabel alloc] init];
   _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -335,21 +387,46 @@ const CGFloat kColorDotLargeInset = 20;
   [_topBar addSubview:_selectIconView];
 
   [_topBar addSubview:_groupColorView];
+  [_topBar addSubview:_facePileContainerView];
   [_topBar addSubview:_titleLabel];
   [_topBar addSubview:_closeIconView];
 
-  _accessibilityConstraints = @[
+  _groupColorViewAccessibilityConstraints = @[
     [_groupColorView.widthAnchor constraintEqualToConstant:kColorDotLargeSize],
     [_groupColorView.heightAnchor constraintEqualToConstant:kColorDotLargeSize],
     [_groupColorView.leadingAnchor constraintEqualToAnchor:_topBar.leadingAnchor
-                                                  constant:kColorDotLargeInset],
+                                                  constant:kTopBarLargeInset],
+    [_titleLabel.leadingAnchor
+        constraintEqualToAnchor:_groupColorView.trailingAnchor
+                       constant:kGridCellHeaderLeadingInset],
   ];
 
-  _nonAccessibilityConstraints = @[
+  _groupColorViewNonAccessibilityConstraints = @[
     [_groupColorView.widthAnchor constraintEqualToConstant:kColorDotSize],
     [_groupColorView.heightAnchor constraintEqualToConstant:kColorDotSize],
     [_groupColorView.leadingAnchor constraintEqualToAnchor:_topBar.leadingAnchor
-                                                  constant:kColorDotInset],
+                                                  constant:kTopBarInset],
+    [_titleLabel.leadingAnchor
+        constraintEqualToAnchor:_groupColorView.trailingAnchor
+                       constant:kGridCellHeaderLeadingInset],
+  ];
+
+  _facePileContainerViewAccessibilityConstraints = @[
+    [_facePileContainerView.leadingAnchor
+        constraintEqualToAnchor:_topBar.leadingAnchor
+                       constant:kTopBarLargeInset],
+    [_titleLabel.leadingAnchor
+        constraintEqualToAnchor:_facePileContainerView.trailingAnchor
+                       constant:kGridCellHeaderLeadingInset],
+  ];
+
+  _facePileContainerViewNonAccessibilityConstraints = @[
+    [_facePileContainerView.leadingAnchor
+        constraintEqualToAnchor:_topBar.leadingAnchor
+                       constant:kTopBarInset],
+    [_titleLabel.leadingAnchor
+        constraintEqualToAnchor:_facePileContainerView.trailingAnchor
+                       constant:kGridCellHeaderLeadingInset],
   ];
 
   _topBarHeightConstraint =
@@ -381,7 +458,7 @@ const CGFloat kColorDotLargeInset = 20;
                        constant:-kGridCellSelectIconContentInset],
   ];
 
-  [self updateTopBarSize];
+  [self updateTopBarConstraints];
   [self configureCloseOrSelectIconConstraints];
 
   NSArray* constraints = @[
@@ -389,9 +466,8 @@ const CGFloat kColorDotLargeInset = 20;
     [_groupColorView.centerYAnchor
         constraintEqualToAnchor:_topBar.centerYAnchor],
     [_titleLabel.centerYAnchor constraintEqualToAnchor:_topBar.centerYAnchor],
-    [_titleLabel.leadingAnchor
-        constraintEqualToAnchor:_groupColorView.trailingAnchor
-                       constant:kGridCellHeaderLeadingInset],
+    [_facePileContainerView.centerYAnchor
+        constraintEqualToAnchor:_topBar.centerYAnchor],
   ];
 
   [NSLayoutConstraint activateConstraints:constraints];
@@ -417,24 +493,6 @@ const CGFloat kColorDotLargeInset = 20;
   }
   return DefaultSymbolTemplateWithPointSize(kCheckmarkCircleFillSymbol,
                                             kIconSymbolPointSize);
-}
-
-// Update constraints of top bar when system font size changes. If accessibility
-// font size is chosen, the favicon will be enlarged, and the title text will be
-// shown on two lines.
-- (void)updateTopBarSize {
-  _topBarHeightConstraint.constant = [self topBarHeight];
-
-  if (UIContentSizeCategoryIsAccessibilityCategory(
-          self.traitCollection.preferredContentSizeCategory)) {
-    _groupColorView.layer.cornerRadius = kColorDotLargeSize / 2;
-    [NSLayoutConstraint deactivateConstraints:_nonAccessibilityConstraints];
-    [NSLayoutConstraint activateConstraints:_accessibilityConstraints];
-  } else {
-    _groupColorView.layer.cornerRadius = kColorDotSize / 2;
-    [NSLayoutConstraint deactivateConstraints:_accessibilityConstraints];
-    [NSLayoutConstraint activateConstraints:_nonAccessibilityConstraints];
-  }
 }
 
 - (void)configureCloseOrSelectIconConstraints {
@@ -545,6 +603,60 @@ const CGFloat kColorDotLargeInset = 20;
                        traitCollection:(UITraitCollection*)traitCollection {
   self.overrideUserInterfaceStyle =
       self.window.windowScene.traitCollection.userInterfaceStyle;
+}
+
+// Updates the top bar constraints accoring to the availability of
+// `facePileViewController` and the accessibility font size.
+- (void)updateTopBarConstraints {
+  _topBarHeightConstraint.constant = [self topBarHeight];
+  if (UIContentSizeCategoryIsAccessibilityCategory(
+          self.traitCollection.preferredContentSizeCategory)) {
+    if (_facePileViewController) {
+      [NSLayoutConstraint
+          deactivateConstraints:
+              _facePileContainerViewNonAccessibilityConstraints];
+      [NSLayoutConstraint
+          deactivateConstraints:_groupColorViewNonAccessibilityConstraints];
+      [NSLayoutConstraint
+          deactivateConstraints:_groupColorViewAccessibilityConstraints];
+      [NSLayoutConstraint
+          activateConstraints:_facePileContainerViewAccessibilityConstraints];
+    } else {
+      _groupColorView.layer.cornerRadius = kColorDotLargeSize / 2;
+      [NSLayoutConstraint
+          deactivateConstraints:_facePileContainerViewAccessibilityConstraints];
+      [NSLayoutConstraint
+          deactivateConstraints:
+              _facePileContainerViewNonAccessibilityConstraints];
+      [NSLayoutConstraint
+          deactivateConstraints:_groupColorViewNonAccessibilityConstraints];
+      [NSLayoutConstraint
+          activateConstraints:_groupColorViewAccessibilityConstraints];
+    }
+  } else {
+    if (_facePileViewController) {
+      [NSLayoutConstraint
+          deactivateConstraints:_facePileContainerViewAccessibilityConstraints];
+      [NSLayoutConstraint
+          deactivateConstraints:_groupColorViewNonAccessibilityConstraints];
+      [NSLayoutConstraint
+          deactivateConstraints:_groupColorViewAccessibilityConstraints];
+      [NSLayoutConstraint
+          activateConstraints:
+              _facePileContainerViewNonAccessibilityConstraints];
+    } else {
+      _groupColorView.layer.cornerRadius = kColorDotSize / 2;
+      [NSLayoutConstraint
+          deactivateConstraints:_facePileContainerViewAccessibilityConstraints];
+      [NSLayoutConstraint
+          deactivateConstraints:
+              _facePileContainerViewNonAccessibilityConstraints];
+      [NSLayoutConstraint
+          deactivateConstraints:_groupColorViewAccessibilityConstraints];
+      [NSLayoutConstraint
+          activateConstraints:_groupColorViewNonAccessibilityConstraints];
+    }
+  }
 }
 
 @end

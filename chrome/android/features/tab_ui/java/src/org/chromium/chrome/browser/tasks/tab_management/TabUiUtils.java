@@ -65,7 +65,12 @@ public class TabUiUtils {
             boolean hideTabGroups,
             @Nullable Callback<Boolean> didCloseCallback) {
         TabModel tabModel = filter.getTabModel();
-        int rootId = tabModel.getTabById(tabId).getRootId();
+        @Nullable Tab tab = tabModel.getTabById(tabId);
+        if (tab == null) {
+            Callback.runNullSafe(didCloseCallback, false);
+            return;
+        }
+        int rootId = tab.getRootId();
         TabClosureParams closureParams =
                 TabClosureParams.forCloseTabGroup(filter, rootId)
                         .hideTabGroups(hideTabGroups)
@@ -246,21 +251,18 @@ public class TabUiUtils {
      *     UI and DataSharing services.
      * @param tabId The local id of the tab.
      * @param tabGroupDisplayName The display name of the current group title.
-     * @param onGroupSharedCallback The callback to execute after the create share flow is
-     *     completed.
      */
     public static void startShareTabGroupFlow(
             Activity activity,
             TabGroupModelFilter filter,
             DataSharingTabManager dataSharingTabManager,
             int tabId,
-            String tabGroupDisplayName,
-            Callback<Boolean> onGroupSharedCallback) {
+            String tabGroupDisplayName) {
         Tab tab = filter.getTabModel().getTabById(tabId);
         LocalTabGroupId localTabGroupId = TabGroupSyncUtils.getLocalTabGroupId(tab);
 
         dataSharingTabManager.createGroupFlow(
-                activity, tabGroupDisplayName, localTabGroupId, onGroupSharedCallback);
+                activity, tabGroupDisplayName, localTabGroupId, (ignored) -> {});
     }
 
     /**

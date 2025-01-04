@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_CSS_AGENT_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_import_rule.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
@@ -134,6 +135,7 @@ class CORE_EXPORT InspectorCSSAgent final
   void Trace(Visitor*) const override;
 
   void ForcePseudoState(Element*, CSSSelector::PseudoType, bool* result);
+  void ForceStartingStyle(Element*, bool* result);
   void DidCommitLoadForLocalFrame(LocalFrame*) override;
   void Restore() override;
   void FlushPendingProtocolNotifications() override;
@@ -156,6 +158,14 @@ class CORE_EXPORT InspectorCSSAgent final
 
   void enable(std::unique_ptr<EnableCallback>) override;
   protocol::Response disable() override;
+  protocol::Response getAnimatedStylesForNode(
+      int node_id,
+      std::unique_ptr<protocol::Array<protocol::CSS::CSSAnimationStyle>>*
+          animation_styles,
+      std::unique_ptr<protocol::CSS::CSSStyle>* transitions_style,
+      std::unique_ptr<
+          protocol::Array<protocol::CSS::InheritedAnimatedStyleEntry>>*
+          inherited) override;
   protocol::Response getMatchedStylesForNode(
       int node_id,
       std::unique_ptr<protocol::CSS::CSSStyle>* inline_style,
@@ -254,6 +264,7 @@ class CORE_EXPORT InspectorCSSAgent final
   protocol::Response forcePseudoState(
       int node_id,
       std::unique_ptr<protocol::Array<String>> forced_pseudo_classes) override;
+  protocol::Response forceStartingStyle(int node_id, bool forced) override;
   protocol::Response getMediaQueries(
       std::unique_ptr<protocol::Array<protocol::CSS::CSSMedia>>*) override;
   protocol::Response getLayersForNode(
@@ -340,6 +351,7 @@ class CORE_EXPORT InspectorCSSAgent final
                                   // styles
   typedef HashMap<int, unsigned> NodeIdToForcedPseudoState;
   typedef HashMap<int, unsigned> NodeIdToNumberFocusedChildren;
+  typedef HashSet<int> NodeIdToForcedStartingStyle;
 
   void ResourceContentLoaded(std::unique_ptr<EnableCallback>);
   void CompleteEnabled();
@@ -414,10 +426,14 @@ class CORE_EXPORT InspectorCSSAgent final
       const InspectorGhostRules&,
       PseudoId pseudo_id = kPseudoIdNone,
       const AtomicString& pseudo_argument = g_null_atom);
+  std::unique_ptr<protocol::Array<protocol::CSS::CSSAnimationStyle>>
+  BuildArrayForCSSAnimationStyleList(Element* element);
   std::unique_ptr<protocol::CSS::CSSStyle> BuildObjectForAttributesStyle(
       Element*);
   std::unique_ptr<protocol::Array<int>>
   BuildArrayForComputedStyleUpdatedNodes();
+  std::unique_ptr<protocol::CSS::CSSStyle> BuildObjectForTransitionsStyle(
+      Element*);
 
   // Container Queries implementation
   std::unique_ptr<protocol::CSS::CSSContainerQuery> BuildContainerQueryObject(
@@ -472,6 +488,7 @@ class CORE_EXPORT InspectorCSSAgent final
   void StyleSheetChanged(InspectorStyleSheetBase*) override;
 
   void ResetPseudoStates();
+  void ResetStartingStyles();
 
   void IncrementFocusedCountForAncestors(Element*);
   void DecrementFocusedCountForAncestors(Element*);
@@ -498,6 +515,7 @@ class CORE_EXPORT InspectorCSSAgent final
   NodeToInspectorStyleSheet node_to_inspector_style_sheet_;
   NodeIdToForcedPseudoState node_id_to_forced_pseudo_state_;
   NodeIdToNumberFocusedChildren node_id_to_number_focused_children_;
+  NodeIdToForcedStartingStyle node_id_to_forced_starting_style_;
 
   Member<StyleRuleUsageTracker> tracker_;
 

@@ -1472,7 +1472,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, AllowUnusedProcessToExit) {
                             .root();
   RenderFrameHostImpl* original_rfh = root->current_frame_host();
   RenderProcessHost* original_process = original_rfh->GetProcess();
-  int original_process_id = original_process->GetID();
+  int original_process_id = original_process->GetDeprecatedID();
   EXPECT_FALSE(original_process->IsInitializedAndNotDead());
   EXPECT_FALSE(original_rfh->IsRenderFrameLive());
 
@@ -1543,7 +1543,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, AllowUnusedProcessToExit) {
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   RenderFrameHostImpl* replaced_rfh = root->current_frame_host();
   ASSERT_EQ(original_process, replaced_rfh->GetProcess());
-  EXPECT_EQ(original_process_id, replaced_rfh->GetProcess()->GetID());
+  EXPECT_EQ(original_process_id, replaced_rfh->GetProcess()->GetDeprecatedID());
   EXPECT_TRUE(replaced_rfh->GetProcess()->IsInitializedAndNotDead());
   EXPECT_TRUE(replaced_rfh->IsRenderFrameLive());
   EXPECT_FALSE(original_process->FastShutdownStarted());
@@ -1561,7 +1561,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, AllowUnusedProcessToExit) {
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
   cleanup_observer.Wait();
   RenderFrameHostImpl* rfh_b = root->current_frame_host();
-  EXPECT_NE(original_process_id, rfh_b->GetProcess()->GetID());
+  EXPECT_NE(original_process_id, rfh_b->GetProcess()->GetDeprecatedID());
   EXPECT_EQ(1, process_exits_);
   EXPECT_EQ(1, host_destructions_);
 
@@ -1590,7 +1590,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
   RenderFrameHostImpl* child_rfh0 = root->child_at(0)->current_frame_host();
   RenderFrameHostImpl* child_rfh1 = root->child_at(1)->current_frame_host();
   RenderViewHostImpl* rvh_b = child_rfh0->render_view_host();
-  int process_b_id = child_rfh0->GetProcess()->GetID();
+  int process_b_id = child_rfh0->GetProcess()->GetDeprecatedID();
   EXPECT_EQ(child_rfh0->GetProcess(), child_rfh1->GetProcess());
   EXPECT_TRUE(child_rfh0->GetProcess()->IsInitializedAndNotDead());
   EXPECT_TRUE(child_rfh0->IsRenderFrameLive());
@@ -1680,7 +1680,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
     reload_observer.Wait();
   }
   RenderFrameHostImpl* new_child_rfh1 = root->child_at(1)->current_frame_host();
-  EXPECT_EQ(process_b_id, new_child_rfh1->GetProcess()->GetID());
+  EXPECT_EQ(process_b_id, new_child_rfh1->GetProcess()->GetDeprecatedID());
   EXPECT_TRUE(new_child_rfh1->GetProcess()->IsInitializedAndNotDead());
   EXPECT_TRUE(new_child_rfh1->IsRenderFrameLive());
   EXPECT_EQ(0, process_exits_);
@@ -1706,7 +1706,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, HandleNestedFrameDeletion) {
                             .root();
   RenderFrameHostImpl* rfh_a = root->current_frame_host();
   RenderProcessHost* process_a = rfh_a->GetProcess();
-  int process_a_id = process_a->GetID();
+  int process_a_id = process_a->GetDeprecatedID();
   Observe(process_a);
 
   // Navigate cross-process and evict process A from the back-forward cache.
@@ -1718,7 +1718,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, HandleNestedFrameDeletion) {
   shell()->web_contents()->GetController().GetBackForwardCache().Flush();
   cleanup_observer.Wait();
   RenderFrameHostImpl* rfh_b = root->current_frame_host();
-  EXPECT_NE(process_a_id, rfh_b->GetProcess()->GetID());
+  EXPECT_NE(process_a_id, rfh_b->GetProcess()->GetDeprecatedID());
   EXPECT_EQ(1, process_exits_);
   EXPECT_EQ(1, host_destructions_);
 }
@@ -1788,7 +1788,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ForEachFrameNestedFrameDeletion) {
                             .root();
   RenderFrameHostImpl* rfh_a = root->current_frame_host();
   RenderProcessHost* process_a = rfh_a->GetProcess();
-  int process_a_id = process_a->GetID();
+  int process_a_id = process_a->GetDeprecatedID();
 
   // Listen for RenderFrameDeleted and count the other RenderFrameHosts in the
   // process at the time.
@@ -1803,7 +1803,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ForEachFrameNestedFrameDeletion) {
   shell()->web_contents()->GetController().GetBackForwardCache().Flush();
   cleanup_observer.Wait();
   RenderFrameHostImpl* rfh_b = root->current_frame_host();
-  EXPECT_NE(process_a_id, rfh_b->GetProcess()->GetID());
+  EXPECT_NE(process_a_id, rfh_b->GetProcess()->GetDeprecatedID());
 
   // RenderFrameDeleted should have been called for both the main frame and
   // subframe in process A.

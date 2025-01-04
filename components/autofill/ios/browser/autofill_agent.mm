@@ -36,13 +36,13 @@
 #import "base/values.h"
 #import "build/branding_buildflags.h"
 #import "components/autofill/core/browser/autofill_field.h"
-#import "components/autofill/core/browser/browser_autofill_manager.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
-#import "components/autofill/core/browser/filling_product.h"
+#import "components/autofill/core/browser/filling/filling_product.h"
+#import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #import "components/autofill/core/browser/metrics/autofill_metrics.h"
-#import "components/autofill/core/browser/ui/suggestion.h"
-#import "components/autofill/core/browser/ui/suggestion_type.h"
+#import "components/autofill/core/browser/suggestions/suggestion.h"
+#import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/core/common/autofill_constants.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
@@ -1230,8 +1230,8 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 
   // Necessary so the values can be used inside a block.
   GURL pageURL = _webState->GetLastCommittedURL();
-  GURL frameOrigin = frame ? frame->GetSecurityOriginDeprecated()
-                           : pageURL.DeprecatedGetOriginAsURL();
+  url::Origin frameOrigin =
+      frame ? frame->GetSecurityOrigin() : url::Origin::Create(pageURL);
 
   if (auto* driver = autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
           _webState, frame)) {
@@ -1242,7 +1242,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
       FieldDataManagerFactoryIOS::GetRetainable(frame);
   const auto callback = [](FormFetchCompletion completion, BOOL filtered,
                            const std::u16string& formName, const GURL& pageURL,
-                           const GURL& frameOrigin,
+                           const url::Origin& frameOrigin,
                            scoped_refptr<FieldDataManager> fieldDataManager,
                            const std::string& frame_id, NSString* formJSON) {
     std::optional<std::vector<FormData>> formData =

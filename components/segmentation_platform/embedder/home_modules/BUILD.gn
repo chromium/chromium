@@ -18,6 +18,8 @@ static_library("home_modules") {
     "home_modules_card_registry.h",
     "price_tracking_notification_promo.cc",
     "price_tracking_notification_promo.h",
+    "rank_fetcher_helper.cc",
+    "rank_fetcher_helper.h",
     "send_tab_notification_promo.cc",
     "send_tab_notification_promo.h",
   ]
@@ -43,6 +45,8 @@ static_library("home_modules") {
       "default_browser_promo.h",
       "tab_group_promo.cc",
       "tab_group_promo.h",
+      "tab_group_sync_promo.cc",
+      "tab_group_sync_promo.h",
     ]
   }
 
@@ -75,6 +79,7 @@ source_set("unit_tests") {
     "ephemeral_home_module_backend_unittest.cc",
     "home_modules_card_registry_unittest.cc",
     "price_tracking_notification_promo_unittest.cc",
+    "rank_fetcher_helper_unittest.cc",
     "send_tab_notification_promo_unittest.cc",
     "test_utils.cc",
     "test_utils.h",
@@ -94,6 +99,7 @@ source_set("unit_tests") {
     sources += [
       "default_browser_promo_unittest.cc",
       "tab_group_promo_unittest.cc",
+      "tab_group_sync_promo_unittest.cc",
     ]
   }
 
@@ -109,6 +115,7 @@ source_set("unit_tests") {
     "//components/segmentation_platform/embedder/home_modules/tips_manager:signal_constants",
     "//components/segmentation_platform/internal",
     "//components/segmentation_platform/public",
+    "//components/segmentation_platform/public:test_support",
     "//components/send_tab_to_self",
     "//testing/gmock",
     "//testing/gtest",

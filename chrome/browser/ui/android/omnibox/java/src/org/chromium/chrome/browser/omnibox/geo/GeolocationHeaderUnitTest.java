@@ -47,6 +47,7 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.omnibox.OmniboxFeatureList;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
@@ -169,10 +170,15 @@ public class GeolocationHeaderUnitTest {
                         eq(null));
 
         LocationRequest actualRequest = mLocationRequestCaptor.getValue();
-        assertEquals(GeolocationHeader.REFRESH_LOCATION_AGE, actualRequest.getMaxUpdateAgeMillis());
         assertEquals(
-                GeolocationHeader.LOCATION_REQUEST_UPDATE_INTERVAL,
+                OmniboxFeatures.sGeolocationRequestMaxLocationAge.getValue(),
+                actualRequest.getMaxUpdateAgeMillis());
+        assertEquals(
+                OmniboxFeatures.sGeolocationRequestUpdateInterval.getValue(),
                 actualRequest.getMinUpdateIntervalMillis());
+        assertEquals(
+                OmniboxFeatures.sGeolocationRequestPriority.getValue(),
+                actualRequest.getPriority());
         assertEquals(Granularity.GRANULARITY_PERMISSION_LEVEL, actualRequest.getGranularity());
 
         Location mockLocation = generateMockLocation("network", LOCATION_TIME);

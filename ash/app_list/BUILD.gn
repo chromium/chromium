@@ -342,6 +342,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/feature_usage",
+    "//chromeos/ash/services/assistant:test_support",
     "//chromeos/ash/services/assistant/public/cpp",
     "//components/feature_engagement/public",
     "//mojo/core/embedder",

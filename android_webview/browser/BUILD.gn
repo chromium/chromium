@@ -189,6 +189,8 @@ source_set("browser") {
     "page_load_metrics/aw_page_load_metrics_provider.h",
     "page_load_metrics/page_load_metrics_initialize.cc",
     "page_load_metrics/page_load_metrics_initialize.h",
+    "page_load_metrics/service_level_page_load_metrics_observer.cc",
+    "page_load_metrics/service_level_page_load_metrics_observer.h",
     "permission/aw_permission_request.cc",
     "permission/aw_permission_request.h",
     "permission/aw_permission_request_delegate.cc",

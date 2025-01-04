@@ -25,7 +25,9 @@ const char kSecondaryProfileName[] = "secondary_profile@example.com";
 class GlanceablesKeyedServiceTest : public BrowserWithTestWindowTest {
  public:
   // BrowserWithTestWindowTest:
-  std::string GetDefaultProfileName() override { return kPrimaryProfileName; }
+  std::optional<std::string> GetDefaultProfileName() override {
+    return kPrimaryProfileName;
+  }
 
   // BrowserWithTestWindowTest:
   TestingProfile* CreateProfile(const std::string& profile_name) override {

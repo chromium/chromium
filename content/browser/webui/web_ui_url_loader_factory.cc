@@ -281,6 +281,11 @@ class WebUIURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
       SCOPED_CRASH_KEY_STRING32("WebUI", "actual_scheme", request.url.scheme());
       SCOPED_CRASH_KEY_STRING32("WebUI", "expected_scheme", scheme_);
       SCOPED_CRASH_KEY_STRING64("WebUI", "requested_url", request.url.spec());
+      SCOPED_CRASH_KEY_STRING64(
+          "WebUI", "initiator_origin",
+          request.request_initiator.has_value()
+              ? request.request_initiator->GetDebugString(false)
+              : "nullopt");
       mojo::ReportBadMessage("Incorrect scheme");
       mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
           ->OnComplete(network::URLLoaderCompletionStatus(net::ERR_FAILED));
@@ -302,9 +307,19 @@ class WebUIURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
       return;
     }
 
+    // This path is entered on user-trigger navigations (e.g. from omnibox or
+    // links) to chrome://network-error or chrome://dino. Actual network error
+    // does not trigger this path.
     if (request.url.host_piece() == kChromeUINetworkErrorHost ||
         request.url.host_piece() == kChromeUIDinoHost) {
+      // Simulate a network error.
       StartNetworkErrorsURLLoader(request, std::move(client));
+      // Logs WebUI usage. These WebUIs don't create a WebUI object.
+      // TODO(crbug.com/40089364): all WebUIs should have a WebUI object.
+      WebContents* web_contents =
+          WebContents::FromFrameTreeNodeId(frame_tree_node_id_);
+      CHECK(web_contents);
+      GetContentClient()->browser()->LogWebUIUsage(request.url);
       return;
     }
 

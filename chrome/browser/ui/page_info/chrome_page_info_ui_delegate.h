@@ -50,8 +50,8 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
   void OpenMoreAboutThisPageUrl(const GURL& url, const ui::Event& event);
 
   // If PageInfo should show a link to the site or app's settings page, this
-  // will return true and set the params to the appropriate resource IDs (IDS_*).
-  // Otherwise, it will return false.
+  // will return true and set the params to the appropriate resource IDs
+  // (IDS_*). Otherwise, it will return false.
   bool ShouldShowSiteSettings(int* link_text_id, int* tooltip_text_id);
 
   // The returned string, if non-empty, should be added as a sublabel that gives
@@ -87,6 +87,7 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
       ContentSettingsType type) override;
 
   bool IsTrackingProtection3pcdEnabled() override;
+  void GetMerchantTrustInfo(page_info::MerchantDataCallback callback) override;
 
  private:
   Profile* GetProfile() const;

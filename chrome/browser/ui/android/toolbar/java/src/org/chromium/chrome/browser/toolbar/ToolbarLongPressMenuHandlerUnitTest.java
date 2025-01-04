@@ -283,7 +283,12 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
                                 .getResources()
                                 .getDimensionPixelSize(R.dimen.list_menu_item_horizontal_padding),
                 location[0]);
-        assertEquals(URLBAR_BOTTOM, location[1]);
+        assertEquals(
+                URLBAR_BOTTOM
+                        - mActivity
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.omnibox_longpress_menu_overlap),
+                location[1]);
     }
 
     @Test
@@ -300,7 +305,13 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
                                 .getResources()
                                 .getDimensionPixelSize(R.dimen.list_menu_item_horizontal_padding),
                 location[0]);
-        assertEquals(URLBAR_TOP - LONG_PRESS_MENU_HEIGHT, location[1]);
+        assertEquals(
+                URLBAR_TOP
+                        - LONG_PRESS_MENU_HEIGHT
+                        + mActivity
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.omnibox_longpress_menu_overlap),
+                location[1]);
     }
 
     @Test
@@ -318,7 +329,12 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
                                 .getResources()
                                 .getDimensionPixelSize(R.dimen.list_menu_item_horizontal_padding),
                 location[0]);
-        assertEquals(URLBAR_BOTTOM, location[1]);
+        assertEquals(
+                URLBAR_BOTTOM
+                        - mActivity
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.omnibox_longpress_menu_overlap),
+                location[1]);
     }
 
     @Test
@@ -336,6 +352,12 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
                                 .getResources()
                                 .getDimensionPixelSize(R.dimen.list_menu_item_horizontal_padding),
                 location[0]);
-        assertEquals(URLBAR_TOP - LONG_PRESS_MENU_HEIGHT, location[1]);
+        assertEquals(
+                URLBAR_TOP
+                        - LONG_PRESS_MENU_HEIGHT
+                        + mActivity
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.omnibox_longpress_menu_overlap),
+                location[1]);
     }
 }

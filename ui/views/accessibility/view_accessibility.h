@@ -342,6 +342,12 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   void SetTableRowCount(int row_count);
   void SetTableColumnCount(int column_count);
+  void SetAriaTableRowCount(int row_count);
+  void SetAriaTableColumnCount(int column_count);
+  void ClearTableRowCount();
+  void ClearTableColumnCount();
+  void ClearAriaTableRowCount();
+  void ClearAriaTableColumnCount();
 
   void ClearDescriptionAndDescriptionFrom();
   void RemoveDescription();
@@ -364,6 +370,8 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   void OnTooltipTextChanged(
       std::optional<std::u16string> old_tooltip_text = std::nullopt);
+
+  void OnViewAddedToWidget();
 
   void SetPlaceholder(const std::string& placeholder);
 

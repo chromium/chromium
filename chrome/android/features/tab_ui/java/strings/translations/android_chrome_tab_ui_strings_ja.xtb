@@ -77,7 +77,6 @@
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> 個のタブを変更、<ph name="ANY_CLOSED" /> 個のタブを閉じました}other{<ph name="MANY_CHANGED" /> 個のタブを変更、<ph name="ANY_CLOSED" /> 個のタブを閉じました}}</translation>
 <translation id="4371591986692297148">無効</translation>
 <translation id="4460014764210899310">グループを解除</translation>
-<translation id="4590027107044272416">ここで新しいタブを開くことができます</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{アクティブでない 1 個のタブを閉じますか？}other{アクティブでない <ph name="TAB_COUNT_MANY" /> 個のタブを閉じますか？}}</translation>
 <translation id="4686942373615810936">作成: たった今</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{1 日後に閉じる}other{<ph name="DAY_COUNT_MANY" /> 日後に閉じる}}</translation>
@@ -98,7 +97,9 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> 個のタブを追加しました}other{<ph name="MANY_ADDED" /> 個のタブを追加しました}}</translation>
 <translation id="5161254044473106830">タイトルが必要です</translation>
 <translation id="5339733443032484186">最後のタブ</translation>
+<translation id="5380159289133845234">重複するタブをアーカイブする</translation>
 <translation id="5400836586163650660">グレー</translation>
+<translation id="5446043142172831860">タブを削除するとグループから退出します</translation>
 <translation id="5490235265819901748">タブグループを展開しました</translation>
 <translation id="5494920125229734069">すべて選択する</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{タブグループ（タブの数: <ph name="TABS_COUNT_ONE" />、色: <ph name="COLOR_NAME" />）を閉じます。}other{タブグループ（タブの数: <ph name="TABS_COUNT_MANY" />、色: <ph name="COLOR_NAME" />）を閉じます。}}</translation>
@@ -117,6 +118,7 @@
 <translation id="6051432659151380973">タブグループは自動的に保存されます</translation>
 <translation id="6054741997831917303">このアイテムの価格は最近 <ph name="PREVIOUS_PRICE" /> から <ph name="NEW_PRICE" /> に下がりました</translation>
 <translation id="6082313992897617440">「<ph name="GROUP_NAME" />」タブグループに直ちにアクセスできなくなります</translation>
+<translation id="6109251075362363230">最後に使用したもの以外の重複するすべてのタブもアーカイブされるようになりました。</translation>
 <translation id="6193448654517602979">タブを選択</translation>
 <translation id="6228793724645064692">（ストアの評価）</translation>
 <translation id="6271513594716432922">アクティブでないタブをすべて閉じる</translation>

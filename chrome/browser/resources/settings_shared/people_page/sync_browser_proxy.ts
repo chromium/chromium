@@ -244,6 +244,11 @@ export interface SyncBrowserProxy {
   getStoredAccounts(): Promise<StoredAccount[]>;
 
   /**
+   * Gets the current profile avatar.
+   */
+  getProfileAvatar(): Promise<string>;
+
+  /**
    * Function to invoke when the sync page has been navigated to. This
    * registers the UI as the "active" sync UI so that if the user tries to
    * open another sync UI, this one will be shown instead.
@@ -363,6 +368,10 @@ export class SyncBrowserProxyImpl implements SyncBrowserProxy {
 
   getStoredAccounts() {
     return sendWithPromise('SyncSetupGetStoredAccounts');
+  }
+
+  getProfileAvatar() {
+    return sendWithPromise('SyncSetupGetProfileAvatar');
   }
 
   didNavigateToSyncPage() {

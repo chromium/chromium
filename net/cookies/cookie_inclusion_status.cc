@@ -16,6 +16,24 @@
 
 namespace net {
 
+namespace {
+// Check that the given `reason` is valid, i.e., is within the range of values
+// allowed by the `CookieInclusionStatus::WarningReason` enum.
+bool IsWarningReasonOutOfBounds(CookieInclusionStatus::WarningReason reason) {
+  return reason < 0 ||
+         reason >= CookieInclusionStatus::WarningReason::NUM_WARNING_REASONS;
+}
+
+// Check that the given `reason` is valid, i.e., is within the range of values
+// allowed by the `CookieInclusionStatus::ExclusionReason` enum.
+bool IsExclusionReasonOutOfBounds(
+    CookieInclusionStatus::ExclusionReason reason) {
+  return reason < 0 ||
+         reason >=
+             CookieInclusionStatus::ExclusionReason::NUM_EXCLUSION_REASONS;
+}
+}  // namespace
+
 CookieInclusionStatus::CookieInclusionStatus() = default;
 
 CookieInclusionStatus::CookieInclusionStatus(
@@ -35,15 +53,25 @@ bool CookieInclusionStatus::IsInclude() const {
 }
 
 bool CookieInclusionStatus::HasExclusionReason(ExclusionReason reason) const {
+  if (IsExclusionReasonOutOfBounds(reason)) {
+    return false;
+  }
   return exclusion_reasons_[reason];
 }
 
 bool CookieInclusionStatus::HasOnlyExclusionReason(
     ExclusionReason reason) const {
+  if (IsExclusionReasonOutOfBounds(reason)) {
+    return false;
+  }
   return exclusion_reasons_[reason] && exclusion_reasons_.count() == 1;
 }
 
 void CookieInclusionStatus::AddExclusionReason(ExclusionReason reason) {
+  if (IsExclusionReasonOutOfBounds(reason)) {
+    return;
+  }
+
   exclusion_reasons_[reason] = true;
   // If the cookie would be excluded for reasons other than the new SameSite
   // rules, don't bother warning about it.
@@ -56,6 +84,9 @@ void CookieInclusionStatus::AddExclusionReason(ExclusionReason reason) {
 }
 
 void CookieInclusionStatus::RemoveExclusionReason(ExclusionReason reason) {
+  if (IsExclusionReasonOutOfBounds(reason)) {
+    return;
+  }
   exclusion_reasons_[reason] = false;
 }
 
@@ -75,7 +106,9 @@ CookieInclusionStatus::ExclusionReasonsWithout(
     const std::vector<ExclusionReason>& reasons) const {
   CookieInclusionStatus::ExclusionReasonBitset result(exclusion_reasons_);
   for (const ExclusionReason reason : reasons) {
-    result[reason] = false;
+    if (!IsExclusionReasonOutOfBounds(reason)) {
+      result[reason] = false;
+    }
   }
   return result;
 }
@@ -126,6 +159,9 @@ bool CookieInclusionStatus::ShouldWarn() const {
 }
 
 bool CookieInclusionStatus::HasWarningReason(WarningReason reason) const {
+  if (IsWarningReasonOutOfBounds(reason)) {
+    return false;
+  }
   return warning_reasons_[reason];
 }
 
@@ -156,10 +192,16 @@ bool CookieInclusionStatus::HasSchemefulDowngradeWarning(
 }
 
 void CookieInclusionStatus::AddWarningReason(WarningReason reason) {
+  if (IsWarningReasonOutOfBounds(reason)) {
+    return;
+  }
   warning_reasons_[reason] = true;
 }
 
 void CookieInclusionStatus::RemoveWarningReason(WarningReason reason) {
+  if (IsWarningReasonOutOfBounds(reason)) {
+    return;
+  }
   warning_reasons_[reason] = false;
 }
 
@@ -239,6 +281,7 @@ std::string CookieInclusionStatus::GetDebugString() const {
       {EXCLUDE_DISALLOWED_CHARACTER, "EXCLUDE_DISALLOWED_CHARACTER"},
       {EXCLUDE_THIRD_PARTY_PHASEOUT, "EXCLUDE_THIRD_PARTY_PHASEOUT"},
       {EXCLUDE_NO_COOKIE_CONTENT, "EXCLUDE_NO_COOKIE_CONTENT"},
+      {EXCLUDE_ALIASING, "EXCLUDE_ALIASING"},
   };
   static_assert(
       std::size(exclusion_reasons) == ExclusionReason::NUM_EXCLUSION_REASONS,

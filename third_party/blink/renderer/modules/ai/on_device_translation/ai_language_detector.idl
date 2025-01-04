@@ -1,6 +1,11 @@
+dictionary LanguageDetectionResult {
+  DOMString? detectedLanguage; // null represents unknown language
+  double confidence;
+};
+
 [
     RuntimeEnabled=LanguageDetectionAPI,
-    Exposed=(Window),
+    Exposed=(Window, Worker),
     SecureContext
 ]
 interface AILanguageDetector {
@@ -11,9 +16,9 @@ interface AILanguageDetector {
   Promise<sequence<LanguageDetectionResult>> detect(DOMString input,
     optional AILanguageDetectorDetectOptions options = {});
 
-[
-  CallWith=ScriptState
-]
+  [
+    CallWith=ScriptState
+  ]
   undefined destroy();
 };
 

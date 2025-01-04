@@ -212,7 +212,7 @@ class PipeReader {
     DetermineRecipient(message, &send_to_chromedriver);
     if (send_to_chromedriver) {
       notification_is_needed = received_queue_.empty();
-      received_queue_.push_back(message);
+      received_queue_.push_back(std::move(message));
     }
     on_update_event_.Signal();
 
@@ -421,6 +421,7 @@ PipeConnectionWin::PipeConnectionWin(base::ScopedPlatformFile read_file,
 }
 
 PipeConnectionWin::~PipeConnectionWin() {
+  notify_ = base::RepeatingClosure();
   Shutdown();
 }
 
@@ -490,6 +491,9 @@ void PipeConnectionWin::Shutdown() {
 
   PipeWriter::Shutdown(std::move(pipe_writer_));
   PipeReader::Shutdown(std::move(pipe_reader_));
+  if (notify_) {
+    notify_.Run();
+  }
 }
 
 bool PipeConnectionWin::IsNull() const {

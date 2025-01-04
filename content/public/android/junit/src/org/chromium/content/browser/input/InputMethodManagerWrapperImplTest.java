@@ -28,8 +28,6 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -40,7 +38,6 @@ import java.lang.ref.WeakReference;
 // Any VERSION_CODE >= O is fine.
 @Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.O)
 @LooperMode(LooperMode.Mode.LEGACY)
-@EnableFeatures({ContentFeatureList.OPTIMIZE_IMM_HIDE_CALLS})
 public class InputMethodManagerWrapperImplTest {
     private static final boolean DEBUG = false;
 

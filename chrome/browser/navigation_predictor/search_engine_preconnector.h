@@ -38,6 +38,13 @@ class SearchEnginePreconnector {
   // Stops preconnecting to the DSE. Called on app background.
   void StopPreconnecting();
 
+  // TODO:(crbug.com/384636714): Remove this function and
+  // `preconnect_interval_for_testing_` once we reintroduce
+  // `kSearchEnginePreconnectorInterval`.
+  static void SetPreconnectIntervalForTesting(int interval) {
+    preconnect_interval_for_testing_ = interval;
+  }
+
  private:
   // Preconnects to the default search engine synchronously. Preconnects in
   // credentialed and uncredentialed mode.
@@ -49,6 +56,12 @@ class SearchEnginePreconnector {
   // Returns true if the browser app is likely to be in foreground and being
   // interacted by the user.
   bool IsBrowserAppLikelyInForeground() const;
+
+  int GetPreconnectIntervalSec() const;
+
+  // TODO:(crbug.com/384636714): Remove this once we reintroduce
+  // `kSearchEnginePreconnectorInterval`.
+  static std::optional<int> preconnect_interval_for_testing_;
 
   // Used to get keyed services.
   const raw_ptr<content::BrowserContext> browser_context_;

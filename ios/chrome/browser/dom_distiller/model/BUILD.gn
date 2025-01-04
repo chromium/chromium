@@ -12,7 +12,6 @@ source_set("model") {
   deps = [
     "//base",
     "//components/dom_distiller/ios",
-    "//components/keyed_service/core",
     "//components/leveldb_proto",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",

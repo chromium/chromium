@@ -114,9 +114,6 @@ class MediaSessionImpl : public MediaSession,
   // these were the last players in the session.
   CONTENT_EXPORT void RemovePlayers(MediaSessionPlayerObserver* observer);
 
-  // Record that the session was ducked.
-  void RecordSessionDuck();
-
   // Called when a player is paused in the content.
   // If the paused player is the last player, we suspend the MediaSession.
   // Otherwise, the paused player will be removed from the MediaSession.
@@ -579,6 +576,13 @@ class MediaSessionImpl : public MediaSession,
   // is set to |true| after StartDucking(), and will be set to |false| after
   // StopDucking().
   bool is_ducking_;
+
+  // True if we should unduck when we gain audio focus. This is set to true each
+  // time we request focus, and set to false if the AudioFocusManager tells us
+  // to duck. If our request is granted and this is still true, we will unduck.
+  // If false (because we were told to duck after our request began) we will
+  // remain ducked, as that is the intended state the AudioFocusManager expects.
+  bool should_unduck_on_focus_gained_ = true;
 
   base::UnguessableToken audio_focus_group_id_ = base::UnguessableToken::Null();
 

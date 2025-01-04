@@ -79,8 +79,9 @@ void SidePanelEntry::RemoveObserver(SidePanelEntryObserver* observer) {
 }
 
 GURL SidePanelEntry::GetOpenInNewTabURL() const {
-  if (open_in_new_tab_url_callback_.is_null())
+  if (open_in_new_tab_url_callback_.is_null()) {
     return GURL();
+  }
 
   return open_in_new_tab_url_callback_.Run();
 }

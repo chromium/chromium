@@ -21,6 +21,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -45,7 +46,10 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UserActionTester;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -74,7 +78,7 @@ public final class FledgeFragmentTest {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setBugComponent(RenderTestRule.Component.UI_SETTINGS_PRIVACY)
+                    .setBugComponent(RenderTestRule.Component.UI_BROWSER_PRIVACY_SANDBOX)
                     .setRevision(1)
                     .build();
 
@@ -126,6 +130,10 @@ public final class FledgeFragmentTest {
         return getRootViewSanitized(R.string.settings_fledge_page_toggle_sub_label);
     }
 
+    private View getFledgeRootViewV2() {
+        return getRootViewSanitized(R.string.settings_site_suggested_ads_page_toggle_sub_label_v2);
+    }
+
     private View getAllSitesPageRootView() {
         return getRootViewSanitized(R.string.settings_fledge_all_sites_sub_page_title);
     }
@@ -164,6 +172,7 @@ public final class FledgeFragmentTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
     public void testRenderFledgeOff() throws IOException {
         setFledgePrefEnabled(false);
         startFledgeSettings();
@@ -173,6 +182,7 @@ public final class FledgeFragmentTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
     public void testRenderFledgeEmpty() throws IOException {
         setFledgePrefEnabled(true);
         startFledgeSettings();
@@ -182,6 +192,7 @@ public final class FledgeFragmentTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
     public void testRenderFledgePopulated() throws IOException {
         setFledgePrefEnabled(true);
         mFakePrivacySandboxBridge.setCurrentFledgeSites(SITE_NAME_1, SITE_NAME_2);
@@ -227,12 +238,78 @@ public final class FledgeFragmentTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
     public void testRenderLearnMore() throws IOException {
         setFledgePrefEnabled(true);
         mFakePrivacySandboxBridge.setCurrentFledgeSites(SITE_NAME_1, SITE_NAME_2);
         startFledgeSettings();
         onView(withText(containsString("30 days. Learn more"))).perform(clickOnClickableSpan(0));
         mRenderTestRule.render(getLearnMoreRootView(), "fledge_learn_more");
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
+    public void siteSuggestedAdsDisclaimerMetrics() throws IOException {
+        setFledgePrefEnabled(true);
+        startFledgeSettings();
+        String disclaimerText =
+                mSettingsActivityTestRule
+                        .getActivity()
+                        .getResources()
+                        .getString(R.string.settings_site_suggested_ads_page_disclaimer_clank);
+        String matcherText = disclaimerText.replaceAll("<link>|</link>", "");
+        scrollToSetting(withText(matcherText));
+        onView(withText(matcherText)).check(matches(isDisplayed()));
+        onView(withText(matcherText)).perform(clickOnClickableSpan(0));
+        assertEquals(
+                1,
+                mUserActionTester.getActionCount(
+                        "Settings.PrivacySandbox.SiteSuggestedAds.PrivacyPolicyLinkClicked"));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
+    public void renderFledgePageOffV2() throws IOException {
+        setFledgePrefEnabled(false);
+        startFledgeSettings();
+        mRenderTestRule.render(getFledgeRootViewV2(), "fledge_page_off_v2");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
+    public void renderFledgePageEmptyV2() throws IOException {
+        setFledgePrefEnabled(true);
+        startFledgeSettings();
+        mRenderTestRule.render(getFledgeRootViewV2(), "fledge_page_empty_v2");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
+    public void renderFledgePagePopulatedV2() throws IOException {
+        setFledgePrefEnabled(true);
+        mFakePrivacySandboxBridge.setCurrentFledgeSites(SITE_NAME_1, SITE_NAME_2);
+        startFledgeSettings();
+        mRenderTestRule.render(getFledgeRootViewV2(), "fledge_page_populated_v2");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
+    public void renderFledgeLearnMoreV2() throws IOException {
+        setFledgePrefEnabled(true);
+        mFakePrivacySandboxBridge.setCurrentFledgeSites(SITE_NAME_1, SITE_NAME_2);
+        startFledgeSettings();
+        onView(withText(containsString("managing your ad privacy")))
+                .perform(clickOnClickableSpan(0));
+        mRenderTestRule.render(getLearnMoreRootView(), "fledge_learn_more_v2");
     }
 
     @Test
@@ -397,6 +474,7 @@ public final class FledgeFragmentTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
     public void testUnblockSites() {
         setFledgePrefEnabled(true);
         mFakePrivacySandboxBridge.setBlockedFledgeSites(SITE_NAME_1, SITE_NAME_2);
@@ -425,6 +503,50 @@ public final class FledgeFragmentTest {
         // Go back to the main Fledge fragment.
         pressBack();
         onViewWaiting(withText(R.string.settings_fledge_page_toggle_sub_label));
+
+        // Verify that the sites are unblocked.
+        onView(withText(SITE_NAME_1)).check(matches(isDisplayed()));
+        onView(withText(SITE_NAME_2)).check(matches(isDisplayed()));
+
+        // Verify that actions are reported
+        assertThat(
+                mUserActionTester.getActions(),
+                hasItems(
+                        "Settings.PrivacySandbox.Fledge.BlockedSitesOpened",
+                        "Settings.PrivacySandbox.Fledge.SiteAdded"));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
+    public void unblockSitesV2() {
+        setFledgePrefEnabled(true);
+        mFakePrivacySandboxBridge.setBlockedFledgeSites(SITE_NAME_1, SITE_NAME_2);
+        startFledgeSettings();
+
+        // Open the blocked sites sub-page.
+        onView(withText(R.string.settings_fledge_page_blocked_sites_heading)).perform(click());
+        onViewWaiting(withText(R.string.settings_fledge_page_blocked_sites_sub_page_title));
+
+        // Unblock the first site.
+        clickImageButtonNextToText(SITE_NAME_1);
+        onView(withText(SITE_NAME_1)).check(doesNotExist());
+        onView(withText(R.string.settings_fledge_page_add_site_snackbar))
+                .check(matches(isDisplayed()));
+
+        // Unblock the second site.
+        clickImageButtonNextToText(SITE_NAME_2);
+        onView(withText(SITE_NAME_2)).check(doesNotExist());
+        onView(withText(R.string.settings_fledge_page_add_site_snackbar))
+                .check(matches(isDisplayed()));
+
+        // Check that the empty state UI is displayed when the site list is empty.
+        onView(withText(R.string.settings_fledge_page_blocked_sites_description_empty))
+                .check(matches(isDisplayed()));
+
+        // Go back to the main Fledge fragment.
+        pressBack();
+        onViewWaiting(withText(R.string.settings_site_suggested_ads_page_toggle_sub_label_v2));
 
         // Verify that the sites are unblocked.
         onView(withText(SITE_NAME_1)).check(matches(isDisplayed()));
@@ -493,10 +615,28 @@ public final class FledgeFragmentTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
     public void testLearnMoreLink() {
         startFledgeSettings();
         // Open the Fledge learn more activity
         onView(withText(containsString("30 days. Learn more"))).perform(clickOnClickableSpan(0));
+        onViewWaiting(withText(R.string.settings_fledge_page_learn_more_heading))
+                .check(matches(isDisplayed()));
+        // Close the additional activity
+        pressBack();
+        assertThat(
+                mUserActionTester.getActions(),
+                hasItems("Settings.PrivacySandbox.Fledge.LearnMoreClicked"));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)
+    public void openLearnMoreAndVerifyMetrics() {
+        startFledgeSettings();
+        // Open the Fledge learn more activity
+        onView(withText(containsString("managing your ad privacy")))
+                .perform(clickOnClickableSpan(0));
         onViewWaiting(withText(R.string.settings_fledge_page_learn_more_heading))
                 .check(matches(isDisplayed()));
         // Close the additional activity

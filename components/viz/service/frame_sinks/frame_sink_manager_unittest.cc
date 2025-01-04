@@ -141,10 +141,12 @@ class FrameSinkManagerTest : public testing::Test {
     EXPECT_TRUE(CompositorFrameSinkExists(frame_sink_id));
   }
 
-  input::mojom::RenderInputRouterConfigPtr CreateRIRConfig(int grouping_id) {
+  input::mojom::RenderInputRouterConfigPtr CreateRIRConfig(
+      const base::UnguessableToken& grouping_id) {
     auto config = input::mojom::RenderInputRouterConfig::New();
-    mojo::PendingRemote<blink::mojom::RenderInputRouterClient> rir_client;
-    config->rir_client = std::move(rir_client);
+    mojo::PendingReceiver<blink::mojom::RenderInputRouterClient>
+        rir_client_receiver;
+    config->rir_client = rir_client_receiver.InitWithNewPipeAndPassRemote();
     config->grouping_id = grouping_id;
     return config;
   }
@@ -1118,8 +1120,11 @@ TEST_P(AndroidFrameSinkManagerTest, RenderInputRouterLifecycle) {
 
   manager_.RegisterFrameSinkId(kFrameSinkIdA, true /* report_activation */);
 
+  // Create a grouping id.
+  base::UnguessableToken grouping_id = base::UnguessableToken::Create();
+
   // Create a CompositorFrameSinkImpl.
-  CreateCompositorFrameSink(kFrameSinkIdA, CreateRIRConfig(/*grouping_id=*/1));
+  CreateCompositorFrameSink(kFrameSinkIdA, CreateRIRConfig(grouping_id));
 
   if (InputManagerExists()) {
     EXPECT_TRUE(GetMockInputManager()->RIRExistsForFrameSinkId(kFrameSinkIdA));
@@ -1255,15 +1260,18 @@ TEST_P(AndroidFrameSinkManagerTest, RWHIERLifecycleDiffWebContents) {
   const bool expected_creation = input::IsTransferInputToVizSupported();
   manager_.RegisterFrameSinkId(kFrameSinkIdA, true /* report_activation */);
 
+  base::UnguessableToken grouping_id_1 = base::UnguessableToken::Create();
+  base::UnguessableToken grouping_id_2 = base::UnguessableToken::Create();
+
   // Create a CompositorFrameSinkImpl.
-  CreateCompositorFrameSink(kFrameSinkIdA, CreateRIRConfig(/*grouping_id=*/1));
+  CreateCompositorFrameSink(kFrameSinkIdA, CreateRIRConfig(grouping_id_1));
 
   EXPECT_EQ(InputManagerExists(), expected_creation);
 
   manager_.RegisterFrameSinkId(kFrameSinkIdB, true /* report_activation */);
 
   // Create another CompositorFrameSinkImpl for a different WebContent.
-  CreateCompositorFrameSink(kFrameSinkIdB, CreateRIRConfig(/*grouping_id=*/2));
+  CreateCompositorFrameSink(kFrameSinkIdB, CreateRIRConfig(grouping_id_2));
 
   EXPECT_EQ(InputManagerExists(), expected_creation);
 
@@ -1296,15 +1304,17 @@ TEST_P(AndroidFrameSinkManagerTest, RWHIERLifecycleSameWebContents) {
   const bool expected_creation = input::IsTransferInputToVizSupported();
   manager_.RegisterFrameSinkId(kFrameSinkIdA, true /* report_activation */);
 
+  base::UnguessableToken grouping_id = base::UnguessableToken::Create();
+
   // Create a CompositorFrameSinkImpl.
-  CreateCompositorFrameSink(kFrameSinkIdA, CreateRIRConfig(/*grouping_id=*/1));
+  CreateCompositorFrameSink(kFrameSinkIdA, CreateRIRConfig(grouping_id));
 
   EXPECT_EQ(InputManagerExists(), expected_creation);
 
   manager_.RegisterFrameSinkId(kFrameSinkIdB, true /* report_activation */);
 
   // Create another CompositorFrameSinkImpl for the same WebContent.
-  CreateCompositorFrameSink(kFrameSinkIdB, CreateRIRConfig(/*grouping_id=*/1));
+  CreateCompositorFrameSink(kFrameSinkIdB, CreateRIRConfig(grouping_id));
 
   EXPECT_EQ(InputManagerExists(), expected_creation);
 
@@ -1340,8 +1350,10 @@ TEST_P(AndroidFrameSinkManagerTest, VizRIRDelegateLifecycle) {
   const bool expected_creation = input::IsTransferInputToVizSupported();
   manager_.RegisterFrameSinkId(kFrameSinkIdA, true /* report_activation */);
 
+  base::UnguessableToken grouping_id = base::UnguessableToken::Create();
+
   // Create a CompositorFrameSinkImpl.
-  CreateCompositorFrameSink(kFrameSinkIdA, CreateRIRConfig(/*grouping_id=*/1));
+  CreateCompositorFrameSink(kFrameSinkIdA, CreateRIRConfig(grouping_id));
 
   EXPECT_EQ(InputManagerExists(), expected_creation);
   EXPECT_EQ(InputManagerExists(), ExpectedInputManagerCreation());
@@ -1394,12 +1406,73 @@ TEST_P(AndroidFrameSinkManagerTest, VizRIRDelegateLifecycle) {
   }
 }
 
+TEST_P(AndroidFrameSinkManagerTest, VizRenderInputRouterSupportBaseLifecycle) {
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace("viz, input");
+
+  manager_.RegisterFrameSinkId(kFrameSinkIdA, true /* report_activation */);
+
+  // Create a grouping id.
+  base::UnguessableToken grouping_id = base::UnguessableToken::Create();
+
+  // Create a CompositorFrameSinkImpl.
+  CreateCompositorFrameSink(kFrameSinkIdA, CreateRIRConfig(grouping_id));
+
+  EXPECT_EQ(InputManagerExists(), ExpectedInputManagerCreation());
+
+  // Invalidating should destroy the CompositorFrameSinkImpl.
+  manager_.InvalidateFrameSinkId(kFrameSinkIdA);
+
+  EXPECT_FALSE(CompositorFrameSinkExists(kFrameSinkIdA));
+
+  absl::Status status = ttp.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+
+  std::string query = R"(
+    SELECT name
+    FROM slice
+    WHERE
+    (
+      name = 'RenderInputRouter::RenderInputRouter'
+      OR
+      name = 'RenderInputRouter::~RenderInputRouter'
+      OR
+      name = 'RenderInputRouterSupportBase::RenderInputRouterSupportBase'
+      OR
+      name = 'RenderInputRouterSupportBase::~RenderInputRouterSupportBase'
+    )
+    ORDER BY ts ASC
+  )";
+
+  auto result = ttp.RunQuery(query);
+  ASSERT_TRUE(result.has_value());
+
+  // `result.value()` would look something like this: {{"name"},
+  // {"<name1>"}, {"<name2>"}, {"<name3>"}, {"<name4>"}}.
+  if (input::IsTransferInputToVizSupported()) {
+    EXPECT_THAT(
+        result.value(),
+        testing::ElementsAre(
+            testing::ElementsAre("name"),
+            testing::ElementsAre("RenderInputRouter::RenderInputRouter"),
+            testing::ElementsAre(
+                "RenderInputRouterSupportBase::RenderInputRouterSupportBase"),
+            testing::ElementsAre(
+                "RenderInputRouterSupportBase::~RenderInputRouterSupportBase"),
+            testing::ElementsAre("RenderInputRouter::~RenderInputRouter")));
+  } else {
+    EXPECT_EQ(result.value()[0][0], "name");
+  }
+}
+
 TEST_P(AndroidFrameSinkManagerTest, RenderInputRouterSupportTraversals) {
   const bool expected_creation = input::IsTransferInputToVizSupported();
 
   if (!expected_creation) {
     return;
   }
+
+  base::UnguessableToken grouping_id = base::UnguessableToken::Create();
 
   RootCompositorFrameSinkData root_data1;
   manager_.CreateRootCompositorFrameSink(
@@ -1418,11 +1491,11 @@ TEST_P(AndroidFrameSinkManagerTest, RenderInputRouterSupportTraversals) {
   manager_.RegisterFrameSinkId(kFrameSinkIdE, true /* report_activation */);
 
   // Create CompositorFrameSinkImpl's.
-  CreateCompositorFrameSink(kFrameSinkIdA, CreateRIRConfig(/*grouping_id=*/1));
-  CreateCompositorFrameSink(kFrameSinkIdB, CreateRIRConfig(/*grouping_id=*/1));
-  CreateCompositorFrameSink(kFrameSinkIdC, CreateRIRConfig(/*grouping_id=*/1));
-  CreateCompositorFrameSink(kFrameSinkIdD, CreateRIRConfig(/*grouping_id=*/1));
-  CreateCompositorFrameSink(kFrameSinkIdE, CreateRIRConfig(/*grouping_id=*/1));
+  CreateCompositorFrameSink(kFrameSinkIdA, CreateRIRConfig(grouping_id));
+  CreateCompositorFrameSink(kFrameSinkIdB, CreateRIRConfig(grouping_id));
+  CreateCompositorFrameSink(kFrameSinkIdC, CreateRIRConfig(grouping_id));
+  CreateCompositorFrameSink(kFrameSinkIdD, CreateRIRConfig(grouping_id));
+  CreateCompositorFrameSink(kFrameSinkIdE, CreateRIRConfig(grouping_id));
 
   // Set up initial hierarchy.
   // root1 -> A -> B -> C
@@ -1514,6 +1587,8 @@ TEST_P(AndroidFrameSinkManagerTest, EmbeddedRenderInputRouters) {
     return;
   }
 
+  base::UnguessableToken grouping_id = base::UnguessableToken::Create();
+
   RootCompositorFrameSinkData root_data1;
   manager_.CreateRootCompositorFrameSink(
       root_data1.BuildParams(kFrameSinkIdRoot));
@@ -1531,11 +1606,11 @@ TEST_P(AndroidFrameSinkManagerTest, EmbeddedRenderInputRouters) {
   manager_.RegisterFrameSinkId(kFrameSinkIdE, true /* report_activation */);
 
   // Create CompositorFrameSinkImpl's.
-  CreateCompositorFrameSink(kFrameSinkIdA, CreateRIRConfig(/*grouping_id=*/1));
-  CreateCompositorFrameSink(kFrameSinkIdB, CreateRIRConfig(/*grouping_id=*/1));
-  CreateCompositorFrameSink(kFrameSinkIdC, CreateRIRConfig(/*grouping_id=*/1));
-  CreateCompositorFrameSink(kFrameSinkIdD, CreateRIRConfig(/*grouping_id=*/1));
-  CreateCompositorFrameSink(kFrameSinkIdE, CreateRIRConfig(/*grouping_id=*/1));
+  CreateCompositorFrameSink(kFrameSinkIdA, CreateRIRConfig(grouping_id));
+  CreateCompositorFrameSink(kFrameSinkIdB, CreateRIRConfig(grouping_id));
+  CreateCompositorFrameSink(kFrameSinkIdC, CreateRIRConfig(grouping_id));
+  CreateCompositorFrameSink(kFrameSinkIdD, CreateRIRConfig(grouping_id));
+  CreateCompositorFrameSink(kFrameSinkIdE, CreateRIRConfig(grouping_id));
 
   // Set up initial hierarchy.
   // root1 -> A -> B -> C

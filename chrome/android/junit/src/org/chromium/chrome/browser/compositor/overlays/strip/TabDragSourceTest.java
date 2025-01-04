@@ -98,7 +98,6 @@ import java.lang.ref.WeakReference;
 
 /** Tests for {@link TabDragSource}. */
 @DisableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
-@EnableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING_ENABLE_OEM)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(qualifiers = "sw600dp", sdk = VERSION_CODES.S, shadows = ShadowToast.class)
 public class TabDragSourceTest {
@@ -161,7 +160,7 @@ public class TabDragSourceTest {
         mTabsToolbarView = new FrameLayout(mActivity);
         mTabsToolbarView.setLayoutParams(new MarginLayoutParams(150, 50));
 
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
         mTabBeingDragged = MockTab.createAndInitialize(TAB_ID, mProfile);
         when(mSourceMultiInstanceManager.getCurrentInstanceId()).thenReturn(CURR_INSTANCE_ID);
         when(mDestMultiInstanceManager.getCurrentInstanceId()).thenReturn(ANOTHER_INSTANCE_ID);
@@ -551,7 +550,7 @@ public class TabDragSourceTest {
         // Verify appropriate events are generated.
         // Strip prepares for drop on drag enter.
         verify(mSourceStripLayoutHelper, times(1))
-                .prepareForTabDrop(anyLong(), anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
+                .prepareForTabDrop(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
         // Stop reorder on drop.
         verify(mSourceStripLayoutHelper, times(1)).onUpOrCancel(anyLong());
         // Verify tab is not moved.
@@ -589,7 +588,7 @@ public class TabDragSourceTest {
         // Verify appropriate events are generated.
         // Strip prepares for drop on drag enter.
         verify(mSourceStripLayoutHelper, times(1))
-                .prepareForTabDrop(anyLong(), anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
+                .prepareForTabDrop(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
         // Strip clears state for drop on drag exit.
         verify(mSourceStripLayoutHelper, times(1))
                 .clearForTabDrop(anyLong(), anyBoolean(), anyBoolean());
@@ -620,7 +619,7 @@ public class TabDragSourceTest {
         // Verify appropriate events are generated.
         // Strip prepares for drop on drag enter.
         verify(mSourceStripLayoutHelper, times(1))
-                .prepareForTabDrop(anyLong(), anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
+                .prepareForTabDrop(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
         // Strip clears state for drop on drag exit.
         verify(mSourceStripLayoutHelper, times(1))
                 .clearForTabDrop(anyLong(), anyBoolean(), anyBoolean());
@@ -671,7 +670,7 @@ public class TabDragSourceTest {
         // Verify appropriate events are generated.
         // Strip prepares for drop on drag enter.
         verify(mSourceStripLayoutHelper, times(1))
-                .prepareForTabDrop(anyLong(), anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
+                .prepareForTabDrop(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
         // Strip clears state for drop on drag exit.
         verify(mSourceStripLayoutHelper, times(1))
                 .clearForTabDrop(anyLong(), anyBoolean(), anyBoolean());
@@ -829,7 +828,7 @@ public class TabDragSourceTest {
         verify(mSourceStripLayoutHelper, times(1)).clearTabDragState();
         // Verify destination strip calls.
         verify(mDestStripLayoutHelper)
-                .prepareForTabDrop(anyLong(), anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
+                .prepareForTabDrop(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
         verify(mDestStripLayoutHelper).onUpOrCancel(anyLong());
 
         assertNull(ShadowToast.getLatestToast());
@@ -915,13 +914,13 @@ public class TabDragSourceTest {
         // Verify appropriate events are generated.
         // Source strip prepares for drop on drag enter.
         verify(mSourceStripLayoutHelper, times(1))
-                .prepareForTabDrop(anyLong(), anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
+                .prepareForTabDrop(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
         // Source strip clears state for drop on drag exit.
         verify(mSourceStripLayoutHelper, times(1))
                 .clearForTabDrop(anyLong(), anyBoolean(), anyBoolean());
         // Destination strip prepares for drop on drag enter.
         verify(mDestStripLayoutHelper, times(1))
-                .prepareForTabDrop(anyLong(), anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
+                .prepareForTabDrop(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
         // Destination strip clears state for drop on drag exit.
         verify(mDestStripLayoutHelper, times(1))
                 .clearForTabDrop(anyLong(), anyBoolean(), anyBoolean());
@@ -957,7 +956,7 @@ public class TabDragSourceTest {
         // Verify appropriate events are generated.
         // Strip prepares for drop on drag enter. Entered twice.
         verify(mSourceStripLayoutHelper, times(2))
-                .prepareForTabDrop(anyLong(), anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
+                .prepareForTabDrop(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
         // Stop reorder on drop.
         verify(mSourceStripLayoutHelper, times(1)).onUpOrCancel(anyLong());
         // Verify tab is not moved.

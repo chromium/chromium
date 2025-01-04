@@ -41,6 +41,24 @@ class EnumDefinition:
                comments=None,
                fixed_type=None,
                is_flag=False):
+    """Represents a C++ enum that must be converted to java.
+
+    Args:
+      original_enum_name: The name of the enum itself, without its package.
+        If every entry starts with this value, this prefix is removed.
+      class_name_override: the name for the enum in java.
+        If None, the original enum name is used.
+      enum_package: The java package in which this enum must be defined
+      entries: A list of pairs. Each pair contains an enum entry, followed by
+        either None or the value of this entry. The definition could be, for
+        example, an integer, an expression `2 << 5`, or another enun entry.
+      comments: A list of pairs. Each pair contains an entry and a comment
+        associated to this entry.
+      fixed_type: The type encoding this enum. Should belong to
+        `ENUM_FIXED_TYPE_ALLOWLIST`.
+      is_flag: Whether this value is used as a boolean flag whose entries can
+        be xored together.
+    """
     self.original_enum_name = original_enum_name
     self.class_name_override = class_name_override
     self.enum_package = enum_package
@@ -106,8 +124,13 @@ class EnumDefinition:
       prefixes = [shout_case, self.original_enum_name,
                   'k' + self.original_enum_name]
 
+      # "kMaxValue" is a special enum entry representing the last value of an
+      # histogram enum. It is not expected to have prefix even when other values
+      # have a prefix.
+      standard_keys = [key for key in self.entries.keys() if key != "kMaxValue"]
+
       for prefix in prefixes:
-        if all(w.startswith(prefix) for w in self.entries.keys()):
+        if all(w.startswith(prefix) for w in standard_keys):
           prefix_to_strip = prefix
           break
       else:

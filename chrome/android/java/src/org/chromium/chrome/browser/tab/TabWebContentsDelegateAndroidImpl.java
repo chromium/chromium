@@ -11,7 +11,6 @@ import android.os.Handler;
 import android.view.KeyEvent;
 
 import org.jni_zero.CalledByNative;
-import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.BuildInfo;
@@ -234,9 +233,13 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     public void visibleSSLStateChanged() {
         PolicyAuditor auditor = PolicyAuditor.maybeCreate();
         if (auditor != null) {
-            auditor.notifyCertificateFailure(
-                    PolicyAuditorJni.get().getCertificateFailure(mTab.getWebContents()),
-                    ContextUtils.getApplicationContext());
+            WebContents webContents = mTab.getWebContents();
+            // Speculative fix for crbug.com/384566650
+            if (webContents != null && !webContents.isDestroyed()) {
+                auditor.notifyCertificateFailure(
+                        PolicyAuditorJni.get().getCertificateFailure(mTab.getWebContents()),
+                        ContextUtils.getApplicationContext());
+            }
         }
         RewindableIterator<TabObserver> observers = mTab.getTabObservers();
         while (observers.hasNext()) observers.next().onSSLStateUpdated(mTab);
@@ -467,11 +470,6 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
         }
     }
 
-    void showFramebustBlockInfobarForTesting(String url) {
-        TabWebContentsDelegateAndroidImplJni.get()
-                .showFramebustBlockInfoBar(mTab.getWebContents(), url);
-    }
-
     @Override
     public void didChangeCloseSignalInterceptStatus() {
         mTab.didChangeCloseSignalInterceptStatus();
@@ -485,8 +483,5 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     @NativeMethods
     interface Natives {
         void onRendererUnresponsive(WebContents webContents);
-
-        void showFramebustBlockInfoBar(
-                WebContents webContents, @JniType("std::u16string") String url);
     }
 }

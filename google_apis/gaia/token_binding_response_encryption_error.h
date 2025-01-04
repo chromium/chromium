@@ -13,7 +13,9 @@
 enum class TokenBindingResponseEncryptionError {
   kResponseUnexpectedlyEncrypted = 0,
   kDecryptionFailed = 1,
-  kMaxValue = kDecryptionFailed
+  kSuccessfullyDecrypted = 2,
+  kSuccessNoEncryption = 3,
+  kMaxValue = kSuccessNoEncryption
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:TokenBindingResponseEncryptionError)
 

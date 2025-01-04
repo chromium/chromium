@@ -23,24 +23,20 @@ public class AppHeaderUtils {
     @IntDef({
         DesktopWindowHeuristicResult.UNKNOWN,
         DesktopWindowHeuristicResult.IN_DESKTOP_WINDOW,
-        DesktopWindowHeuristicResult.NOT_IN_MULTIWINDOW_MODE,
-        DesktopWindowHeuristicResult.NAV_BAR_BOTTOM_INSETS_PRESENT,
-        DesktopWindowHeuristicResult.CAPTION_BAR_BOUNDING_RECTS_UNEXPECTED_NUMBER,
         DesktopWindowHeuristicResult.CAPTION_BAR_TOP_INSETS_ABSENT,
         DesktopWindowHeuristicResult.CAPTION_BAR_BOUNDING_RECT_INVALID_HEIGHT,
+        DesktopWindowHeuristicResult.WIDEST_UNOCCLUDED_RECT_EMPTY,
         DesktopWindowHeuristicResult.NUM_ENTRIES,
     })
     public @interface DesktopWindowHeuristicResult {
         int UNKNOWN = 0;
         int IN_DESKTOP_WINDOW = 1;
-        int NOT_IN_MULTIWINDOW_MODE = 2;
-        int NAV_BAR_BOTTOM_INSETS_PRESENT = 3;
-        int CAPTION_BAR_BOUNDING_RECTS_UNEXPECTED_NUMBER = 4;
-        int CAPTION_BAR_TOP_INSETS_ABSENT = 5;
-        int CAPTION_BAR_BOUNDING_RECT_INVALID_HEIGHT = 6;
+        int CAPTION_BAR_TOP_INSETS_ABSENT = 2;
+        int CAPTION_BAR_BOUNDING_RECT_INVALID_HEIGHT = 3;
+        int WIDEST_UNOCCLUDED_RECT_EMPTY = 4;
 
         // Be sure to also update enums.xml when updating these values.
-        int NUM_ENTRIES = 7;
+        int NUM_ENTRIES = 5;
     }
 
     // These values are persisted to logs. Entries should not be renumbered and

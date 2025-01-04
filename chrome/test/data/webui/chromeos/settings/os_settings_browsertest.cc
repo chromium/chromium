@@ -18,7 +18,6 @@
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
-#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
@@ -280,13 +279,8 @@ class OSSettingsFilesTestCrosComponentsAndJellyEnabled
     : public OSSettingsMochaTest {
  protected:
   OSSettingsFilesTestCrosComponentsAndJellyEnabled() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled=*/
-        {
-            chromeos::features::kCrosComponents,
-            chromeos::features::kJelly,
-        },
-        /*disabled=*/{});
+    scoped_feature_list_.InitAndEnableFeature(
+        chromeos::features::kCrosComponents);
   }
 
  private:
@@ -948,6 +942,11 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestMouseKeysEnabled,
   RunSettingsTest("os_a11y_page/cursor_and_touchpad_page_test.js");
 }
 
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestMouseKeysEnabled,
+                       OsA11yPageMouseKeysSubpage) {
+  RunSettingsTest("os_a11y_page/mouse_keys_subpage_test.js");
+}
+
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestFaceGazeEnabled,
                        OsA11yPageFaceGazeSubpage) {
   RunSettingsTest("os_a11y_page/facegaze_subpage_test.js");
@@ -1558,9 +1557,8 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsSettingsUiPageAvailability) {
   RunSettingsTest("os_settings_ui/os_settings_ui_page_availability_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsSettingsUiPageVisibilityRevamp) {
-  RunSettingsTest(
-      "os_settings_ui/os_settings_ui_page_visibility_revamp_test.js");
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsSettingsUiPageVisibility) {
+  RunSettingsTest("os_settings_ui/os_settings_ui_page_visibility_test.js");
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsSettingsUiPrefSync) {
@@ -1573,10 +1571,6 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsSettingsUiToolbar) {
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsSettingsUiUserActionRecorder) {
   RunSettingsTest("os_settings_ui/user_action_recorder_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, ParentalControlsPage) {
-  RunSettingsTest("parental_controls_page/parental_controls_page_test.js");
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, ParentalControlsSettingsCard) {

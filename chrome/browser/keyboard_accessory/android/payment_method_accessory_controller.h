@@ -7,8 +7,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_controller.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
-#include "components/autofill/core/browser/personal_data_manager_observer.h"
 
 namespace content {
 class WebContents;

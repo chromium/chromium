@@ -20,15 +20,14 @@
 namespace settings {
 
 StartupPagesHandler::StartupPagesHandler(content::WebUI* webui)
-    : startup_custom_pages_table_model_(Profile::FromWebUI(webui)) {
-}
+    : startup_custom_pages_table_model_(Profile::FromWebUI(webui)) {}
 
-StartupPagesHandler::~StartupPagesHandler() {
-}
+StartupPagesHandler::~StartupPagesHandler() = default;
 
 void StartupPagesHandler::RegisterMessages() {
-  if (Profile::FromWebUI(web_ui())->IsOffTheRecord())
+  if (Profile::FromWebUI(web_ui())->IsOffTheRecord()) {
     return;
+  }
 
   web_ui()->RegisterMessageCallback(
       "addStartupPage",
@@ -60,8 +59,9 @@ void StartupPagesHandler::OnJavascriptAllowed() {
   SessionStartupPref pref = SessionStartupPref::GetStartupPref(prefService);
   startup_custom_pages_table_model_.SetURLs(pref.urls);
 
-  if (pref.urls.empty())
+  if (pref.urls.empty()) {
     pref.type = SessionStartupPref::DEFAULT;
+  }
 
   pref_change_registrar_.Init(prefService);
   pref_change_registrar_.Add(
@@ -190,8 +190,9 @@ void StartupPagesHandler::SaveStartupPagesPref() {
   SessionStartupPref pref = SessionStartupPref::GetStartupPref(prefs);
   pref.urls = startup_custom_pages_table_model_.GetURLs();
 
-  if (pref.urls.empty())
+  if (pref.urls.empty()) {
     pref.type = SessionStartupPref::DEFAULT;
+  }
 
   SessionStartupPref::SetStartupPref(prefs, pref);
 }

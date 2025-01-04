@@ -93,32 +93,45 @@ const char* LocationToString(ManifestLocation loc) {
 
 base::Value::List CreationFlagsToList(int creation_flags) {
   base::Value::List flags_value;
-  if (creation_flags == extensions::Extension::NO_FLAGS)
+  if (creation_flags == extensions::Extension::NO_FLAGS) {
     flags_value.Append("NO_FLAGS");
-  if (creation_flags & extensions::Extension::REQUIRE_KEY)
+  }
+  if (creation_flags & extensions::Extension::REQUIRE_KEY) {
     flags_value.Append("REQUIRE_KEY");
-  if (creation_flags & extensions::Extension::REQUIRE_MODERN_MANIFEST_VERSION)
+  }
+  if (creation_flags & extensions::Extension::REQUIRE_MODERN_MANIFEST_VERSION) {
     flags_value.Append("REQUIRE_MODERN_MANIFEST_VERSION");
-  if (creation_flags & extensions::Extension::ALLOW_FILE_ACCESS)
+  }
+  if (creation_flags & extensions::Extension::ALLOW_FILE_ACCESS) {
     flags_value.Append("ALLOW_FILE_ACCESS");
-  if (creation_flags & extensions::Extension::FROM_WEBSTORE)
+  }
+  if (creation_flags & extensions::Extension::FROM_WEBSTORE) {
     flags_value.Append("FROM_WEBSTORE");
-  if (creation_flags & extensions::Extension::FOLLOW_SYMLINKS_ANYWHERE)
+  }
+  if (creation_flags & extensions::Extension::FOLLOW_SYMLINKS_ANYWHERE) {
     flags_value.Append("FOLLOW_SYMLINKS_ANYWHERE");
-  if (creation_flags & extensions::Extension::ERROR_ON_PRIVATE_KEY)
+  }
+  if (creation_flags & extensions::Extension::ERROR_ON_PRIVATE_KEY) {
     flags_value.Append("ERROR_ON_PRIVATE_KEY");
-  if (creation_flags & extensions::Extension::WAS_INSTALLED_BY_DEFAULT)
+  }
+  if (creation_flags & extensions::Extension::WAS_INSTALLED_BY_DEFAULT) {
     flags_value.Append("WAS_INSTALLED_BY_DEFAULT");
-  if (creation_flags & extensions::Extension::REQUIRE_PERMISSIONS_CONSENT)
+  }
+  if (creation_flags & extensions::Extension::REQUIRE_PERMISSIONS_CONSENT) {
     flags_value.Append("REQUIRE_PERMISSIONS_CONSENT");
-  if (creation_flags & extensions::Extension::IS_EPHEMERAL)
+  }
+  if (creation_flags & extensions::Extension::IS_EPHEMERAL) {
     flags_value.Append("IS_EPHEMERAL");
-  if (creation_flags & extensions::Extension::WAS_INSTALLED_BY_OEM)
+  }
+  if (creation_flags & extensions::Extension::WAS_INSTALLED_BY_OEM) {
     flags_value.Append("WAS_INSTALLED_BY_OEM");
-  if (creation_flags & extensions::Extension::MAY_BE_UNTRUSTED)
+  }
+  if (creation_flags & extensions::Extension::MAY_BE_UNTRUSTED) {
     flags_value.Append("MAY_BE_UNTRUSTED");
-  if (creation_flags & extensions::Extension::WITHHOLD_PERMISSIONS)
+  }
+  if (creation_flags & extensions::Extension::WITHHOLD_PERMISSIONS) {
     flags_value.Append("WITHHOLD_PERMISSIONS");
+  }
   return flags_value;
 }
 

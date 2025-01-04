@@ -96,13 +96,14 @@ InputMethodDescriptor MockInputMethodManager::State::GetCurrentInputMethod()
 
 bool MockInputMethodManager::State::ReplaceEnabledInputMethods(
     const std::vector<std::string>& new_enabled_input_method_ids) {
-  return true;
+  enabled_input_method_ids = new_enabled_input_method_ids;
+  return !enabled_input_method_ids.empty();
 }
 
 bool MockInputMethodManager::State::SetAllowedInputMethods(
     const std::vector<std::string>& new_allowed_input_method_ids) {
   allowed_input_method_ids_ = new_allowed_input_method_ids;
-  return true;
+  return !allowed_input_method_ids_.empty();
 }
 
 const std::vector<std::string>&

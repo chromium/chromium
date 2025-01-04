@@ -1377,7 +1377,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest,
       ui::mojom::ModifierKey::kMeta,      ui::mojom::ModifierKey::kControl,
       ui::mojom::ModifierKey::kAlt,       ui::mojom::ModifierKey::kCapsLock,
       ui::mojom::ModifierKey::kEscape,    ui::mojom::ModifierKey::kBackspace,
-      ui::mojom::ModifierKey::kFunction,  ui::mojom::ModifierKey::kRightAlt,
+      ui::mojom::ModifierKey::kFunction,  ui::mojom::ModifierKey::kQuickInsert,
       ui::mojom::ModifierKey::kAssistant,
   };
 

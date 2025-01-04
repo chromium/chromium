@@ -3,6 +3,9 @@
   "manifest_version": 3,
   "version": "0.1",
   "permissions": ["scripting", "tabs"],
-  "background": {"service_worker": "worker.js"},
+  "background": {
+    "service_worker": "worker.js",
+    "type": "module"
+  },
   "host_permissions": ["http://example.com/*"]
 }

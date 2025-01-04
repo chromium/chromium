@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.translate;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.content_public.browser.WebContents;
 
@@ -16,5 +17,7 @@ public interface TranslationObserver {
 
     @CalledByNative
     default void onPageTranslated(
-            String sourceLanguage, String translatedLanguage, int errorCode) {}
+            @JniType("std::string") String sourceLanguage,
+            @JniType("std::string") String translatedLanguage,
+            int errorCode) {}
 }

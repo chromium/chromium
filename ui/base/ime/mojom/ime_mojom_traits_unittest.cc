@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
+#include <array>
 #include <utility>
 
 #include "base/test/task_environment.h"
@@ -50,7 +46,7 @@ class IMEStructTraitsTest : public testing::Test,
 }  // namespace
 
 TEST_F(IMEStructTraitsTest, TextInputType) {
-  const ui::TextInputType kTextInputTypes[] = {
+  const auto kTextInputTypes = std::to_array<ui::TextInputType>({
       ui::TEXT_INPUT_TYPE_NONE,
       ui::TEXT_INPUT_TYPE_TEXT,
       ui::TEXT_INPUT_TYPE_PASSWORD,
@@ -68,7 +64,7 @@ TEST_F(IMEStructTraitsTest, TextInputType) {
       ui::TEXT_INPUT_TYPE_TEXT_AREA,
       ui::TEXT_INPUT_TYPE_CONTENT_EDITABLE,
       ui::TEXT_INPUT_TYPE_DATE_TIME_FIELD,
-  };
+  });
 
   mojo::Remote<mojom::IMEStructTraitsTest> remote = GetTraitsTestRemote();
   for (size_t i = 0; i < std::size(kTextInputTypes); i++) {

@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD - style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//content/common/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
@@ -128,6 +127,8 @@ source_set("browser_sources") {
     "cookie_access_details.cc",
     "cookie_access_details.h",
     "cookie_deprecation_label_manager.h",
+    "cookie_insight_list_data.h",
+    "cookie_insight_list_handler.h",
     "cookie_store_factory.h",
     "cors_origin_pattern_setter.cc",
     "cors_origin_pattern_setter.h",
@@ -160,6 +161,9 @@ source_set("browser_sources") {
     "digital_identity_provider.h",
     "dips_delegate.cc",
     "dips_delegate.h",
+    "dips_redirect_info.cc",
+    "dips_redirect_info.h",
+    "dips_service.h",
     "disallow_activation_reason.h",
     "document_picture_in_picture_window_controller.h",
     "document_ref.cc",
@@ -219,6 +223,7 @@ source_set("browser_sources") {
     "gpu_utils.h",
     "guest_page_holder.h",
     "hid_chooser.h",
+    "hid_delegate.cc",
     "hid_delegate.h",
     "histogram_fetcher.h",
     "host_zoom_map.h",
@@ -231,6 +236,8 @@ source_set("browser_sources") {
     "installed_payment_apps_finder.h",
     "interest_group_api_operation.h",
     "interest_group_manager.h",
+    "internal_webui_config.cc",
+    "internal_webui_config.h",
     "invalidate_type.h",
     "isolated_context_util.cc",
     "isolated_context_util.h",
@@ -575,9 +582,11 @@ source_set("browser_sources") {
     "//ui/base/mojom:ui_base_types",
   ]
   deps = [
-    "//build:chromeos_buildflags",
     "//cc",
     "//components/input",
+    "//components/language_detection/content/browser",
+    "//components/language_detection/content/common",
+    "//components/language_detection/core/browser:language_detection_model_service",
     "//components/services/storage/public/cpp",
     "//components/variations:variations",
     "//components/viz/host",
@@ -697,10 +706,13 @@ source_set("browser_sources") {
 
   if (is_chromeos) {
     sources += [
+      "chromeos/delegate_to_browser_gpu_service_accelerator_factory.h",
       "chromeos/multi_capture_service.cc",
       "chromeos/multi_capture_service.h",
       "lock_screen_storage.h",
       "smart_card_delegate.h",
+      "tts_controller_delegate.cc",
+      "tts_controller_delegate.h",
     ]
   }
 
@@ -713,14 +725,6 @@ source_set("browser_sources") {
       "authenticator_request_client_delegate.cc",
       "authenticator_request_client_delegate.h",
       "web_authentication_request_proxy.h",
-    ]
-  }
-
-  if (is_chromeos_ash) {
-    sources += [
-      "chromeos/delegate_to_browser_gpu_service_accelerator_factory.h",
-      "tts_controller_delegate.cc",
-      "tts_controller_delegate.h",
     ]
   }
 
@@ -741,10 +745,6 @@ source_set("browser_sources") {
 
   if (use_clang_profiling_inside_sandbox) {
     sources += [ "profiling_utils.h" ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/startup" ]
   }
 
   if (enable_video_effects) {

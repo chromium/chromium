@@ -116,6 +116,7 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
   # TODO (rbpotter): If possible, standardize the build setup in some of these
   # folders such that they can be more accurately specified in the list below.
   ash_directories = [
+      'ash/webui/annotator/resources/untrusted/',
       'ash/webui/camera_app_ui/',
       'ash/webui/color_internals/',
       'ash/webui/common/resources/',
@@ -147,6 +148,8 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
       'chrome/browser/resources/chromeos/accessibility',
       # TODO(crbug.com/41484340): Migrate to TypeScript.
       'chrome/browser/resources/device_log',
+      # TODO(crbug.com/385341235): Migrate inspect to TypeScript.
+      'chrome/browser/resources/inspect',
       'chrome/test/data/webui',
       # TODO(crbug.com/40848285): Migrate bluetooth-internals to TypeScript and
       # remove exception.
@@ -261,7 +264,6 @@ def validateDefinitionDeps(definitions_files, target_path, gen_dir,
   # safe for computation of gn input values.
   exceptions_list = [
       'third_party/d3/',
-      'third_party/jstemplate/',
       'third_party/material_web_components/',
       'third_party/node/node_modules/',
       'third_party/polymer/v3_0/',

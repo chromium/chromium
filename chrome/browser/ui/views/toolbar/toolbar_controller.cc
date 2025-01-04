@@ -9,6 +9,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/adapters.h"
 #include "base/functional/overloaded.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -53,9 +54,8 @@ base::flat_map<ui::ElementIdentifier, int> CalculateFlexOrder(
 
   // Loop in reverse order to ensure the first element gets the largest flex
   // order and overflows the first.
-  for (auto it = elements_in_overflow_order.rbegin();
-       it != elements_in_overflow_order.rend(); ++it) {
-    id_to_order_map[*it] = element_flex_order_start++;
+  for (auto it : base::Reversed(elements_in_overflow_order)) {
+    id_to_order_map[it] = element_flex_order_start++;
   }
 
   return id_to_order_map;
@@ -539,25 +539,24 @@ bool ToolbarController::IsOverflowed(
     const ResponsiveElementInfo& element,
     const views::ProposedLayout* proposed_layout) const {
   return absl::visit(
-      base::Overloaded{[&](actions::ActionId id) {
-                         CHECK(!proposed_layout);
-                         return pinned_actions_delegate_ &&
-                                pinned_actions_delegate_->IsOverflowed(id);
-                       },
-                       [&](ToolbarController::ElementIdInfo id) {
-                         const auto* const toolbar_element =
-                             FindToolbarElementWithId(toolbar_container_view_,
-                                                      id.overflow_identifier);
-                         const views::FlexLayout* const flex_layout =
-                             static_cast<views::FlexLayout*>(
-                                 toolbar_container_view_->GetLayoutManager());
-                         return flex_layout->CanBeVisible(toolbar_element) &&
-                                !(proposed_layout
-                                      ? proposed_layout
-                                            ->GetLayoutFor(toolbar_element)
-                                            ->visible
-                                      : toolbar_element->GetVisible());
-                       }},
+      base::Overloaded{
+          [&](actions::ActionId id) {
+            CHECK(!proposed_layout);
+            return pinned_actions_delegate_ &&
+                   pinned_actions_delegate_->IsOverflowed(id);
+          },
+          [&](ToolbarController::ElementIdInfo id) {
+            const auto* const toolbar_element = FindToolbarElementWithId(
+                toolbar_container_view_, id.overflow_identifier);
+            const views::FlexLayout* const flex_layout =
+                static_cast<views::FlexLayout*>(
+                    toolbar_container_view_->GetLayoutManager());
+            return flex_layout->CanBeVisible(toolbar_element) &&
+                   !(proposed_layout
+                         ? proposed_layout->GetLayoutFor(toolbar_element)
+                               ->visible
+                         : toolbar_element->GetVisible());
+          }},
       element.overflow_id);
 }
 
@@ -748,11 +747,9 @@ void ToolbarController::ShowStatusIndicator() {
           ui::VectorIconModel vector_icon_model =
               pinned_icon_image.GetVectorIcon();
 
-          menu_item->icon_view()->SetImage(gfx::CreateVectorIcon(
-              *vector_icon_model.vector_icon(),
-              ui::SimpleMenuModel::kDefaultIconSize,
-              menu_item->icon_view()->GetColorProvider()->GetColor(
-                  kColorToolbarActionItemEngaged)));
+          menu_item->icon_view()->SetImage(ui::ImageModel::FromVectorIcon(
+              *vector_icon_model.vector_icon(), kColorToolbarActionItemEngaged,
+              ui::SimpleMenuModel::kDefaultIconSize));
         }
         status_indicator->Show();
       }
@@ -802,11 +799,9 @@ void ToolbarController::ActionItemChanged(actions::ActionItem* action_item) {
     if (!pinned_icon_image.IsEmpty() && pinned_icon_image.IsVectorIcon()) {
       ui::VectorIconModel vector_icon_model = pinned_icon_image.GetVectorIcon();
 
-      menu_item->icon_view()->SetImage(gfx::CreateVectorIcon(
-          *vector_icon_model.vector_icon(),
-          ui::SimpleMenuModel::kDefaultIconSize,
-          menu_item->icon_view()->GetColorProvider()->GetColor(
-              kColorToolbarActionItemEngaged)));
+      menu_item->icon_view()->SetImage(ui::ImageModel::FromVectorIcon(
+          *vector_icon_model.vector_icon(), kColorToolbarActionItemEngaged,
+          ui::SimpleMenuModel::kDefaultIconSize));
     }
     status_indicator->Show();
   } else {
@@ -814,11 +809,9 @@ void ToolbarController::ActionItemChanged(actions::ActionItem* action_item) {
     if (!pinned_icon_image.IsEmpty() && pinned_icon_image.IsVectorIcon()) {
       ui::VectorIconModel vector_icon_model = pinned_icon_image.GetVectorIcon();
 
-      menu_item->icon_view()->SetImage(gfx::CreateVectorIcon(
-          *vector_icon_model.vector_icon(),
-          ui::SimpleMenuModel::kDefaultIconSize,
-          menu_item->icon_view()->GetColorProvider()->GetColor(
-              vector_icon_model.color_id())));
+      menu_item->icon_view()->SetImage(ui::ImageModel::FromVectorIcon(
+          *vector_icon_model.vector_icon(), vector_icon_model.color_id(),
+          ui::SimpleMenuModel::kDefaultIconSize));
     }
     status_indicator->Hide();
   }

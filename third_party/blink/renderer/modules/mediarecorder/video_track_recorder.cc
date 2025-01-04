@@ -126,14 +126,15 @@ static const struct {
   media::VideoCodecProfile min_profile;
   media::VideoCodecProfile max_profile;
 } kPreferredCodecIdAndVEAProfiles[] = {
-    {CodecId::kVp8, media::VP8PROFILE_MIN, media::VP8PROFILE_MAX},
-    {CodecId::kVp9, media::VP9PROFILE_MIN, media::VP9PROFILE_MAX},
+    {CodecId::kVp8, media::VP8PROFILE_ANY, media::VP8PROFILE_ANY},
+    {CodecId::kVp9, media::VP9PROFILE_PROFILE0, media::VP9PROFILE_PROFILE0},
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-    {CodecId::kH264, media::H264PROFILE_MIN, media::H264PROFILE_MAX},
+    {CodecId::kH264, media::H264PROFILE_BASELINE, media::H264PROFILE_HIGH},
 #endif
-    {CodecId::kAv1, media::AV1PROFILE_MIN, media::AV1PROFILE_MAX},
+    {CodecId::kAv1, media::AV1PROFILE_PROFILE_MAIN,
+     media::AV1PROFILE_PROFILE_MAIN},
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-    {CodecId::kHevc, media::HEVCPROFILE_MIN, media::HEVCPROFILE_MAX},
+    {CodecId::kHevc, media::HEVCPROFILE_MAIN, media::HEVCPROFILE_MAIN},
 #endif
 };
 

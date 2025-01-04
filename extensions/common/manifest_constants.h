@@ -278,8 +278,6 @@ inline constexpr char kCannotScriptGallery[] =
     "The extensions gallery cannot be scripted.";
 inline constexpr char kCannotScriptNtp[] =
     "The New Tab Page cannot be scripted.";
-inline constexpr char kCannotScriptSigninPage[] =
-    "The sign-in page cannot be scripted.";
 inline constexpr char16_t kChromeStyleInvalidForManifestV3[] =
     u"The chrome_style option cannot be used with manifest version 3.";
 inline constexpr char kChromeVersionTooLow[] =
@@ -655,11 +653,8 @@ inline constexpr char16_t kInvalidVersion[] =
     "dot-separated integers each between 0 and 65536.";
 inline constexpr char16_t kInvalidVersionName[] =
     u"Invalid value for 'version_name'.";
-inline constexpr char kInvalidWebAccessibleResourcesList[] =
-    "Invalid value for 'web_accessible_resources'.";
 inline constexpr char kInvalidWebAccessibleResource[] =
     "Invalid value for 'web_accessible_resources[*]'. *";
-inline constexpr char kInvalidSidePanel[] = "Invalid value for 'side_panel'. *";
 inline constexpr char16_t kInvalidWebview[] = u"Invalid value for 'webview'.";
 inline constexpr char16_t kInvalidWebviewAccessibleResourcesList[] =
     u"Invalid value for'webview.accessible_resources'.";
@@ -673,10 +668,6 @@ inline constexpr char16_t kInvalidWebviewPartitionsList[] =
     u"Invalid value for 'webview.partitions'.";
 inline constexpr char kInvalidWebURL[] = "Invalid value for 'app.urls[*]': *";
 inline constexpr char kInvalidWebURLs[] = "Invalid value for 'app.urls'.";
-inline constexpr char kInvalidZipHash[] =
-    "Required key 'zip_hash' is missing or invalid.";
-inline constexpr char kKeyIsDeprecatedWithReplacement[] =
-    "Key \"*\" is deprecated.  Key \"*\" should be used instead.";
 inline constexpr char16_t kLaunchPathAndExtentAreExclusive[] =
     u"The 'app.launch.local_path' and 'app.urls' keys cannot both be set.";
 inline constexpr char16_t kLaunchPathAndURLAreExclusive[] =
@@ -753,8 +744,6 @@ inline constexpr char16_t
         "persistent background page.";
 inline constexpr char kUnrecognizedManifestKey[] =
     "Unrecognized manifest key '*'.";
-inline constexpr char kUnrecognizedManifestProperty[] =
-    "Unrecognized property '*' of manifest key '*'.";
 inline constexpr char16_t kWebRequestConflictsWithLazyBackground[] =
     u"The 'webRequest' API cannot be used with event pages.";
 #if BUILDFLAG(IS_CHROMEOS)

@@ -17,12 +17,16 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * A singleton that helps detecting changes in input devices through the interface
  * {@link InputDeviceObserver}.
  */
 @JNINamespace("ui")
+@NullMarked
 public class InputDeviceObserver implements InputDeviceListener {
     private static final InputDeviceObserver INSTANCE = new InputDeviceObserver();
     private static final String KEYBOARD_CONNECTION_HISTOGRAM_NAME =
@@ -50,7 +54,7 @@ public class InputDeviceObserver implements InputDeviceListener {
         INSTANCE.detachObserver();
     }
 
-    private InputManager mInputManager;
+    private @Nullable InputManager mInputManager;
     private int mObserversCounter;
 
     // Override InputDeviceListener methods
@@ -96,6 +100,7 @@ public class InputDeviceObserver implements InputDeviceListener {
         }
     }
 
+    @NullUnmarked
     private void detachObserver() {
         assert mObserversCounter > 0;
         if (--mObserversCounter == 0) {

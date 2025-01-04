@@ -1,0 +1,12 @@
+{
+  "name": "chrome.power",
+  "manifest_version": 3,
+  "version": "0.1",
+  "description": "chrome.power API basics",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": [
+    "power"
+  ]
+}

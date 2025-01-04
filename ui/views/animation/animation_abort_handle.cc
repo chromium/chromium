@@ -18,13 +18,15 @@ AnimationAbortHandle::~AnimationAbortHandle() {
   DCHECK_NE(animation_state_, AnimationState::kNotStarted)
       << "You can't destroy the handle before the animation starts.";
 
-  if (observer_)
+  if (observer_) {
     observer_->SetAbortHandle(nullptr);
+  }
 
   if (animation_state_ != AnimationState::kEnded) {
     for (ui::Layer* layer : tracked_layers_) {
-      if (deleted_layers_.find(layer) != deleted_layers_.end())
+      if (deleted_layers_.find(layer) != deleted_layers_.end()) {
         continue;
+      }
 
       layer->GetAnimator()->AbortAllAnimations();
     }
@@ -32,8 +34,9 @@ AnimationAbortHandle::~AnimationAbortHandle() {
 
   // Remove the abort handle itself from the alive tracked layers.
   for (ui::Layer* layer : tracked_layers_) {
-    if (deleted_layers_.find(layer) != deleted_layers_.end())
+    if (deleted_layers_.find(layer) != deleted_layers_.end()) {
       continue;
+    }
     layer->RemoveObserver(this);
   }
 }
@@ -49,8 +52,9 @@ void AnimationAbortHandle::AddLayer(ui::Layer* layer) {
   bool inserted = tracked_layers_.insert(layer).second;
 
   // In case that one layer is added to the abort handle multiple times.
-  if (inserted)
+  if (inserted) {
     layer->AddObserver(this);
+  }
 }
 
 void AnimationAbortHandle::OnAnimationStarted() {

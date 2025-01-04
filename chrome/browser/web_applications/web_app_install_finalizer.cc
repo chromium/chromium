@@ -99,6 +99,7 @@ bool ShouldInstallOverwriteUserDisplayMode(
     case InstallSource::WEBAPK_RESTORE:
     case InstallSource::OOBE_APP_RECOMMENDATIONS:
     case InstallSource::WEB_INSTALL:
+    case InstallSource::CHROMEOS_HELP_APP:
       return true;
     case InstallSource::DEVTOOLS:
     case InstallSource::MANAGEMENT_API:

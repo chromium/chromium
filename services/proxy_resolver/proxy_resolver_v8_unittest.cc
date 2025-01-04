@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/proxy_resolver/proxy_resolver_v8.h"
+
+#include <array>
 
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
@@ -211,11 +208,14 @@ TEST_F(ProxyResolverV8Test, BadReturnType) {
   // These are the filenames of PAC scripts which each return a non-string
   // types for FindProxyForURL(). They should all fail with
   // net::ERR_PAC_SCRIPT_FAILED.
-  static const char* const filenames[] = {
-      "return_undefined.js", "return_integer.js", "return_function.js",
+  static const auto filenames = std::to_array<const char*>({
+      "return_undefined.js",
+      "return_integer.js",
+      "return_function.js",
       "return_object.js",
       // TODO(eroman): Should 'null' be considered equivalent to "DIRECT" ?
-      "return_null.js"};
+      "return_null.js",
+  });
 
   for (size_t i = 0; i < std::size(filenames); ++i) {
     ASSERT_THAT(CreateResolver(filenames[i]), IsOk());

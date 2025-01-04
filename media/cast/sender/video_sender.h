@@ -25,7 +25,7 @@ class Sender;
 namespace media {
 class VideoEncoderMetricsProvider;
 class VideoFrame;
-}
+}  // namespace media
 
 namespace media::cast {
 

@@ -471,7 +471,7 @@ void WebRtcEventLogManager::RenderProcessHostExitedDestroyed(
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&WebRtcEventLogManager::RenderProcessExitedInternal,
-                     base::Unretained(this), host->GetID()));
+                     base::Unretained(this), host->GetDeprecatedID()));
 }
 
 void WebRtcEventLogManager::OnPeerConnectionAdded(

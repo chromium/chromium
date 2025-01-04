@@ -11,13 +11,15 @@ TabHoverCardThumbnailObserver::~TabHoverCardThumbnailObserver() = default;
 
 void TabHoverCardThumbnailObserver::Observe(
     scoped_refptr<ThumbnailImage> thumbnail_image) {
-  if (current_image_ == thumbnail_image)
+  if (current_image_ == thumbnail_image) {
     return;
+  }
 
   subscription_.reset();
   current_image_ = std::move(thumbnail_image);
-  if (!current_image_)
+  if (!current_image_) {
     return;
+  }
 
   subscription_ = current_image_->Subscribe();
   if (!current_image_) {
@@ -41,6 +43,7 @@ base::CallbackListSubscription TabHoverCardThumbnailObserver::AddCallback(
 void TabHoverCardThumbnailObserver::ThumbnailImageCallback(
     const ThumbnailImage* image,
     gfx::ImageSkia preview_image) {
-  if (image == current_image_.get())
+  if (image == current_image_.get()) {
     callback_list_.Notify(this, preview_image);
+  }
 }

@@ -17,9 +17,9 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
-#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/provider_state_service.h"
 #include "components/omnibox/browser/search_provider.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 
 CalculatorProvider::CalculatorProvider(AutocompleteProviderClient* client,
                                        AutocompleteProviderListener* listener,

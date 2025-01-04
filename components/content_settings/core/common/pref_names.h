@@ -186,6 +186,12 @@ inline constexpr char
         "profile.managed_direct_sockets_pna_blocked_for_urls";
 inline constexpr char kManagedLegacyCookieScopeForDomains[] =
     "profile.managed_legacy_cookie_scope_for_domains";
+#if BUILDFLAG(IS_CHROMEOS)
+inline constexpr char kManagedSmartCardConnectAllowedForUrls[] =
+    "profile.managed_smart_card_connect_allowed_for_urls";
+inline constexpr char kManagedSmartCardConnectBlockedForUrls[] =
+    "profile.managed_smart_card_connect_blocked_for_urls";
+#endif
 
 // Boolean indicating whether the quiet UI is enabled for notification
 // permission requests. This and kEnableNotificationCPSS can't both be true

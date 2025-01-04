@@ -72,8 +72,9 @@ void PlaybackImageButton::OnBoundsChanged(const gfx::Rect& rect) {
 
 void PlaybackImageButton::SetPlaybackState(
     const VideoOverlayWindowViews::PlaybackState playback_state) {
-  if (playback_state_ == playback_state)
+  if (playback_state_ == playback_state) {
     return;
+  }
 
   playback_state_ = playback_state;
   UpdateImageAndText();

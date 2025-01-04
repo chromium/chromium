@@ -110,7 +110,7 @@ DatabaseTracker::DatabaseTracker(
               .page_size = 4096,
               .cache_size = 500,
           },
-          /*tag=*/"DatabaseTracker")),
+          sql::Database::Tag("DatabaseTracker"))),
       quota_manager_proxy_(std::move(quota_manager_proxy)),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,

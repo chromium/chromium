@@ -82,8 +82,9 @@ class TabMenuBridgeTest : public ::testing::Test {
   int ModelIndexForTabNamed(const std::string& name) {
     std::u16string title16 = base::UTF8ToUTF16(name);
     for (int i = 0; i < model()->count(); ++i) {
-      if (model()->GetWebContentsAt(i)->GetTitle() == title16)
+      if (model()->GetWebContentsAt(i)->GetTitle() == title16) {
         return i;
+      }
     }
     return -1;
   }
@@ -136,8 +137,9 @@ class TabMenuBridgeTest : public ::testing::Test {
     }
 
     ASSERT_EQ(actual_titles.size(), titles.size());
-    for (int i = 0; i < static_cast<int>(titles.size()); ++i)
+    for (int i = 0; i < static_cast<int>(titles.size()); ++i) {
       EXPECT_EQ(actual_titles[i], titles[i]);
+    }
   }
 
   std::string ActiveTabName() {
@@ -149,8 +151,9 @@ class TabMenuBridgeTest : public ::testing::Test {
     // Check the static items too, to make sure none of them are checked.
     for (int i = 0; i < menu().numberOfItems; ++i) {
       NSMenuItem* item = [menu() itemAtIndex:i];
-      if (item.state == NSControlStateValueOn)
+      if (item.state == NSControlStateValueOn) {
         active_items.push_back(base::SysNSStringToUTF8(item.title));
+      }
     }
 
     ASSERT_EQ(active_items.size(), 1u);

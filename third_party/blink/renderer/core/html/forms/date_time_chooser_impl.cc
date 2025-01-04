@@ -79,11 +79,16 @@ void DateTimeChooserImpl::Trace(Visitor* visitor) const {
 void DateTimeChooserImpl::EndChooser() {
   if (!popup_)
     return;
-  frame_->View()->GetChromeClient()->ClosePagePopup(popup_);
+  if (auto* frame_view = frame_->View())
+    frame_view->GetChromeClient()->ClosePagePopup(popup_);
 }
 
 AXObject* DateTimeChooserImpl::RootAXObject(Element* popup_owner) {
   return popup_ ? popup_->RootAXObject(popup_owner) : nullptr;
+}
+
+bool DateTimeChooserImpl::IsPickerVisible() const {
+  return popup_;
 }
 
 static String ValueToDateTimeString(double value, InputType::Type type) {

@@ -108,7 +108,6 @@ class TokenService : public TokenServiceInterface {
  public:
   TokenService(const base::FilePath& enrollment_token_path,
                const base::FilePath& dm_token_path);
-  ~TokenService() override = default;
 
   // Overrides for TokenServiceInterface.
   std::string GetDeviceID() const override { return device_id_; }

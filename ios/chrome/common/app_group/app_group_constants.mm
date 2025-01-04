@@ -47,8 +47,6 @@ const char kChromeAppGroupSupportsSearchByImage[] = "supportsSearchByImage";
 const char kChromeAppGroupIsGoogleDefaultSearchEngine[] =
     "isGoogleDefaultSearchEngine";
 const char kChromeAppGroupEnableLensInWidget[] = "enableLensInWidget";
-const char kChromeAppGroupEnableColorLensAndVoiceIconsInWidget[] =
-    "enableColorLensAndVoiceIconsInWidget";
 
 const char kChromeAppClientID[] = "ClientID";
 const char kUserMetricsEnabledDate[] = "UserMetricsEnabledDate";
@@ -88,6 +86,11 @@ NSString* const kOpenExtensionOutcomeFailureOpenInNotFound =
     @"OpenExtensionOutcomeFailureOpenInNotFound";
 NSString* const kOpenExtensionOutcomeFailureUnsupportedScheme =
     @"OpenExtensionOutcomeFailureUnsupportedScheme";
+
+NSString* const kAccountsOnDevice = @"ios.registered_accounts_on_device";
+NSString* const kHostedDomain = @"hosted_domain";
+NSString* const kPictureUrl = @"picture_url";
+NSString* const kEmail = @"email";
 
 NSString* ApplicationGroup() {
   return [AppGroupHelper applicationGroup];

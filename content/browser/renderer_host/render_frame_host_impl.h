@@ -246,13 +246,6 @@ class UkmRecorder;
 
 namespace features {
 
-// Feature to prevent name updates to RenderFrameHost (and by extension its
-// relevant BrowsingContextState) when it is not current (i.e. is in the
-// BackForwardCache or is pending delete). This primarily will affect the
-// non-legacy implementation of BrowsingContextState.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(
-    kDisableFrameNameUpdateOnNonCurrentRenderFrameHost);
-
 // Feature to evict when accessibility events occur while in back/forward cache.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kEvictOnAXEvents);
 
@@ -1181,7 +1174,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Unload this frame for the proxy. Similar to `Unload()` but without
   // managing the lifecycle of this object.
-  void SwapOuterDelegateFrame(RenderFrameProxyHost* proxy);
+  void SwapOuterDelegateFrame(
+      RenderFrameProxyHost* proxy,
+      const base::UnguessableToken& devtools_frame_token);
 
   // Process the acknowledgment of the unload of this frame from the renderer.
   void OnUnloadACK();
@@ -1954,16 +1949,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
     BackForwardCacheDisablingFeatureHandle& operator=(
         BackForwardCacheDisablingFeatureHandle&& other) = default;
 
-    inline ~BackForwardCacheDisablingFeatureHandle() { reset(); }
+    ~BackForwardCacheDisablingFeatureHandle();
+
+    bool IsValid() const;
 
     // This will reduce the feature count for |feature_| for the first time, and
     // do nothing for further calls.
-    inline void reset() {
-      if (render_frame_host_) {
-        render_frame_host_->OnBackForwardCacheDisablingFeatureRemoved(feature_);
-      }
-      render_frame_host_ = nullptr;
-    }
+    void Reset();
 
    private:
     friend class RenderFrameHostImpl;
@@ -1986,7 +1978,42 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void OnBackForwardCacheDisablingStickyFeatureUsed(
       BackForwardCacheDisablingFeature feature);
 
-  // Returns true if the frame is frozen.
+  // Used to notify that a document is blocking another IDB transaction, which
+  // means that it must not be frozen.
+  class HoldingBlockingIDBLockHandle {
+   public:
+    HoldingBlockingIDBLockHandle();
+    HoldingBlockingIDBLockHandle(HoldingBlockingIDBLockHandle&&);
+    HoldingBlockingIDBLockHandle& operator=(
+        HoldingBlockingIDBLockHandle&& other) = default;
+
+    ~HoldingBlockingIDBLockHandle();
+
+    bool IsValid() const;
+
+    void Reset();
+
+   private:
+    friend class RenderFrameHostImpl;
+    explicit HoldingBlockingIDBLockHandle(
+        RenderFrameHostImpl* render_frame_host);
+
+    base::WeakPtr<RenderFrameHostImpl> render_frame_host_ = nullptr;
+  };
+
+  // Disables freezing for this document for the duration of the handle's
+  // lifetime.
+  HoldingBlockingIDBLockHandle RegisterHoldingBlockingIDBLockHandle();
+
+  // Invoked whenever a document starts/stops holding an IndexedDB lock that
+  // blocks other clients.
+  void OnStartHoldingBlockingIDBLock();
+  void OnStopHoldingBlockingIDBLock();
+
+  // Returns true if this document is frozen. As opposed to IsActive() or
+  // GetLifecycleState(), this considers if the document is frozen for reasons
+  // other than BFCache.
+  // TODO(crbug.com/40691610): Add a dedicated kFrozen state to LifecycleState.
   bool IsFrozen();
 
   // Set the `frame_` for sending messages to the renderer process.
@@ -3162,6 +3189,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // popin from impacting partitioning).
   // See https://explainers-by-googlers.github.io/partitioned-popins/
   bool ShouldPartitionAsPopin() const;
+
+  void SimulateDiscardShutdownKeepAliveTimeoutForTesting();
 
  protected:
   friend class RenderFrameHostFactory;
@@ -4988,6 +5017,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Count the usage of BackForwardCacheDisablingFeature.
   base::flat_map<BackForwardCacheDisablingFeature, int>
       browser_reported_bfcache_disabling_features_counts_;
+
+  // Counts the number of blocking IndexedDB locks being currently held.
+  int holding_blocking_idb_lock_count_ = 0;
 
   // Holds prefetched signed exchanges for SignedExchangeSubresourcePrefetch.
   // They will be passed to the next navigation.

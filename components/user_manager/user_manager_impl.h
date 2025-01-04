@@ -277,10 +277,6 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
   ash::CrosSettings* cros_settings() { return cros_settings_; }
   const ash::CrosSettings* cros_settings() const { return cros_settings_; }
 
-  // Adds |user| to users list, and adds it to front of LRU list. It is assumed
-  // that there is no user with same id.
-  virtual void AddUserRecord(User* user);
-
   // Returns true if user may be removed.
   virtual bool CanUserBeRemoved(const User* user) const;
 

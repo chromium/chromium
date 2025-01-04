@@ -64,7 +64,7 @@ TEST(ScopedTemporaryFile, Basics) {
 
     ASSERT_TRUE(FullWrite(temp_file_1.fd(), kTestString, sizeof(kTestString)));
 
-    char test_string_read[sizeof(kTestString)] = {0};
+    char test_string_read[sizeof(kTestString)] = {};
     ASSERT_TRUE(FullRead(
         temp_file_2.get(), test_string_read, sizeof(test_string_read)));
     ASSERT_EQ(0, memcmp(kTestString, test_string_read, sizeof(kTestString)));

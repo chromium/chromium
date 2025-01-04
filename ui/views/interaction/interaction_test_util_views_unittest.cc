@@ -198,8 +198,9 @@ class InteractionTestUtilViewsTest
 
   void TearDown() override {
     test_util_.reset();
-    if (menu_runner_)
+    if (menu_runner_) {
       CloseMenu();
+    }
     contents_ = nullptr;
     widget_.reset();
     ViewsTestBase::TearDown();
@@ -312,8 +313,9 @@ TEST_P(InteractionTestUtilViewsTest, SelectTab) {
 TEST_P(InteractionTestUtilViewsTest, SelectDropdownItem_Combobox) {
 #if BUILDFLAG(IS_MAC)
   // Only kDontCare is supported on Mac.
-  if (GetParam() != ui::test::InteractionTestUtil::InputType::kDontCare)
+  if (GetParam() != ui::test::InteractionTestUtil::InputType::kDontCare) {
     GTEST_SKIP();
+  }
 #endif
 
   auto* const box = contents_->AddChildView(
@@ -336,8 +338,9 @@ TEST_P(InteractionTestUtilViewsTest, SelectDropdownItem_Combobox) {
 TEST_P(InteractionTestUtilViewsTest, SelectDropdownItem_EditableCombobox) {
 #if BUILDFLAG(IS_MAC)
   // Only kDontCare is supported on Mac.
-  if (GetParam() != ui::test::InteractionTestUtil::InputType::kDontCare)
+  if (GetParam() != ui::test::InteractionTestUtil::InputType::kDontCare) {
     GTEST_SKIP();
+  }
 #endif
 
   auto* const box = contents_->AddChildView(
@@ -360,8 +363,9 @@ TEST_P(InteractionTestUtilViewsTest, SelectDropdownItem_EditableCombobox) {
 TEST_P(InteractionTestUtilViewsTest, SelectDropdownItem_Combobox_NoArrow) {
 #if BUILDFLAG(IS_MAC)
   // Only kDontCare is supported on Mac.
-  if (GetParam() != ui::test::InteractionTestUtil::InputType::kDontCare)
+  if (GetParam() != ui::test::InteractionTestUtil::InputType::kDontCare) {
     GTEST_SKIP();
+  }
 #endif
 
   auto* const box = contents_->AddChildView(
@@ -386,8 +390,9 @@ TEST_P(InteractionTestUtilViewsTest,
        SelectDropdownItem_EditableCombobox_NoArrow) {
 #if BUILDFLAG(IS_MAC)
   // Only kDontCare is supported on Mac.
-  if (GetParam() != ui::test::InteractionTestUtil::InputType::kDontCare)
+  if (GetParam() != ui::test::InteractionTestUtil::InputType::kDontCare) {
     GTEST_SKIP();
+  }
 #endif
 
   // These cases are not supported for editable combobox without an arrow

@@ -18,6 +18,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/table_layout.h"
 
+namespace webid {
 namespace {
 
 gfx::Rect ComputePopupWindowBounds(gfx::Rect source_window_bounds) {
@@ -183,3 +184,5 @@ void FedCmModalDialogView::ResetObserver() {
 FedCmModalDialogView::Observer* FedCmModalDialogView::GetObserverForTesting() {
   return observer_;
 }
+
+}  // namespace webid

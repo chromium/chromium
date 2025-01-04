@@ -48,6 +48,28 @@ std::unique_ptr<SourceLocation> CaptureSourceLocation(
       String(), 0, 0, std::move(stack_trace));
 }
 
+std::unique_ptr<SourceLocation> CapturePartialSourceLocationFromStack(
+    v8::Isolate* isolate) {
+  DCHECK(isolate);
+
+  if (!isolate->InContext()) {
+    return std::make_unique<SourceLocation>(String(), -1);
+  }
+  v8::Local<v8::String> script_name =
+      v8::StackTrace::CurrentScriptNameOrSourceURL(isolate);
+  String script_url = ToCoreStringWithNullCheck(isolate, script_name);
+
+  v8::Local<v8::StackTrace> stack_trace =
+      v8::StackTrace::CurrentStackTrace(isolate, /*frame_limit=*/1);
+
+  int script_position = -1;
+  if (stack_trace->GetFrameCount() > 0) {
+    v8::Local<v8::StackFrame> frame = stack_trace->GetFrame(isolate, 0);
+    script_position = frame->GetSourcePosition();
+  }
+  return std::make_unique<SourceLocation>(script_url, script_position);
+}
+
 std::unique_ptr<SourceLocation> CaptureSourceLocation(
     v8::Isolate* isolate,
     v8::Local<v8::Message> message,

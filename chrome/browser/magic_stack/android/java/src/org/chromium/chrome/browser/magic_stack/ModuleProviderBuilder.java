@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -54,4 +56,10 @@ public interface ModuleProviderBuilder {
      * ModuleProviderBuilder to do some cleanup.
      */
     default void onPauseWithNative() {}
+
+    /** Creates an instance of InputContext. */
+    @Nullable
+    default InputContext createInputContext() {
+        return null;
+    }
 }

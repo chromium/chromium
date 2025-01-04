@@ -277,7 +277,7 @@ void RenderFrameHostImpl::SetUpMojoConnection() {
           base::Unretained(this)));
 
   file_system_manager_.reset(new FileSystemManagerImpl(
-      GetProcess()->GetID(),
+      GetProcess()->GetDeprecatedID(),
       GetProcess()->GetStoragePartition()->GetFileSystemContext(),
       ChromeBlobStorageContext::GetFor(GetProcess()->GetBrowserContext())));
 

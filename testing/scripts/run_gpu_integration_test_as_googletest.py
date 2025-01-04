@@ -20,6 +20,7 @@ invoke an arbitrary executable.
 import json
 import sys
 
+# //testing/scripts imports.
 import common
 import gpu_integration_test_adapter
 

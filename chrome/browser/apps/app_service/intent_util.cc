@@ -54,13 +54,13 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "ash/components/arc/intent_helper/intent_constants.h"
+#include "ash/components/arc/intent_helper/intent_filter.h"
 #include "ash/components/arc/mojom/intent_helper.mojom-shared.h"
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "chrome/browser/ash/app_list/arc/intent.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
-#include "components/arc/intent_helper/intent_constants.h"
-#include "components/arc/intent_helper/intent_filter.h"
 #include "net/base/filename_util.h"
 #include "storage/browser/file_system/file_system_url.h"
 #endif

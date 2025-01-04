@@ -17,12 +17,12 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -64,7 +64,7 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTest
   }
 
   void CreateVirtualCardEnrollmentFields() {
-    CreditCard credit_card = test::GetFullServerCard();
+    CreditCard credit_card = test::GetCreditCard();
     LegalMessageLines google_legal_message = {
         TestLegalMessageLine("google_test_legal_message")};
     LegalMessageLines issuer_legal_message = {

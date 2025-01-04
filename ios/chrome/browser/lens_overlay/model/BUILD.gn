@@ -20,12 +20,12 @@ source_set("model") {
   deps = [
     ":detent_state_header",
     "//base",
+    "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/snapshots/model",
-    "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/common/ui/colors",
     "//ios/public/provider/chrome/browser/lens:lens_overlay_api",
     "//ios/web/public",

@@ -18,6 +18,7 @@ set -u
 # have any type of "significant/visible changes" log that we could use for this?
 gen_changelog() {
   rm -f "${DEB_CHANGELOG}"
+  DATE_RFC5322="$(date --rfc-email)"
   process_template "${SCRIPTDIR}/changelog.template" "${DEB_CHANGELOG}"
   debchange -a --nomultimaint -m --changelog "${DEB_CHANGELOG}" \
     "Release Notes: ${RELEASENOTES}"
@@ -255,7 +256,7 @@ if [ "$BRANDING" = "google_chrome" ]; then
 else
   source "${OUTPUTDIR}/installer/common/chromium-browser.info"
 fi
-eval $(sed -e "s/^\([^=]\+\)=\(.*\)$/export \1='\2'/" \
+eval $(sed -e "s/^\([^=]\+\)=\(.*\)$/\1='\2'/" \
   "${OUTPUTDIR}/installer/theme/BRANDING")
 
 verify_channel
@@ -277,7 +278,7 @@ BASEREPOCONFIG="dl.google.com/linux/chrome/deb/ stable main"
 REPOCONFIG="${REPOCONFIG-deb [arch=${ARCHITECTURE}] https://${BASEREPOCONFIG}}"
 # Allowed configs include optional HTTPS support and explicit multiarch
 # platforms.
-REPOCONFIGREGEX="deb (\\\\[arch=[^]]*\\\\b${ARCHITECTURE}\\\\b[^]]*\\\\]"
+REPOCONFIGREGEX="deb (\\[arch=[^]]*\\b${ARCHITECTURE}\\b[^]]*\\]"
 REPOCONFIGREGEX+="[[:space:]]*) https?://${BASEREPOCONFIG}"
 stage_install_debian
 

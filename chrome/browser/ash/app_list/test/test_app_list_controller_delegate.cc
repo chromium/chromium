@@ -11,11 +11,9 @@
 
 namespace test {
 
-TestAppListControllerDelegate::TestAppListControllerDelegate() {
-}
+TestAppListControllerDelegate::TestAppListControllerDelegate() = default;
 
-TestAppListControllerDelegate::~TestAppListControllerDelegate() {
-}
+TestAppListControllerDelegate::~TestAppListControllerDelegate() = default;
 
 int64_t TestAppListControllerDelegate::GetAppListDisplayId() {
   return display::kInvalidDisplayId;

@@ -112,14 +112,16 @@ base::Value::List GetLanguageList(
   std::set<std::string> language_codes;
   // Collect the language codes from the supported input methods.
   for (const auto& descriptor : descriptors) {
-    for (const auto& language : descriptor.language_codes())
+    for (const auto& language : descriptor.language_codes()) {
       language_codes.insert(language);
+    }
   }
 
   // Language sort order.
   std::map<std::string, int /* index */> language_index;
-  for (size_t i = 0; i < most_relevant_language_codes.size(); ++i)
+  for (size_t i = 0; i < most_relevant_language_codes.size(); ++i) {
     language_index[most_relevant_language_codes[i]] = i;
+  }
 
   // Map of display name -> {language code, native_display_name}.
   // In theory, we should be able to create a map that is sorted by
@@ -151,16 +153,18 @@ base::Value::List GetLanguageList(
     const std::string lang = l10n_util::GetLanguage(language_id);
 
     // Ignore non-specific codes.
-    if (lang.empty() || lang == language_id)
+    if (lang.empty() || lang == language_id) {
       continue;
+    }
 
     if (base::Contains(base_language_codes, language_id)) {
       // Language is supported. No need to replace
       continue;
     }
     std::string resolved_locale;
-    if (!l10n_util::CheckAndResolveLocale(language_id, &resolved_locale))
+    if (!l10n_util::CheckAndResolveLocale(language_id, &resolved_locale)) {
       continue;
+    }
 
     if (!base::Contains(base_language_codes, resolved_locale)) {
       // Resolved locale is not supported.
@@ -183,8 +187,9 @@ base::Value::List GetLanguageList(
   for (const auto& language_code : language_codes) {
     // Exclude the language which is not in `base_langauge_codes` even it has
     // input methods.
-    if (!base::Contains(base_language_codes, language_code))
+    if (!base::Contains(base_language_codes, language_code)) {
       continue;
+    }
 
     const std::u16string display_name =
         l10n_util::GetDisplayNameForLocale(language_code, app_locale, true);
@@ -213,8 +218,9 @@ base::Value::List GetLanguageList(
   // Build the list of display names, and build the language map.
   for (const auto& base_language_code : base_language_codes) {
     // Skip this language if it was already added.
-    if (language_codes.find(base_language_code) != language_codes.end())
+    if (language_codes.find(base_language_code) != language_codes.end()) {
       continue;
+    }
 
     std::u16string display_name = l10n_util::GetDisplayNameForLocale(
         base_language_code, app_locale, false);
@@ -240,8 +246,9 @@ base::Value::List GetLanguageList(
   std::vector<std::u16string> out_display_names;
   for (const auto& most_relevant_locales_display_name :
        most_relevant_locales_display_names) {
-    if (most_relevant_locales_display_name.size() == 0)
+    if (most_relevant_locales_display_name.size() == 0) {
       continue;
+    }
     out_display_names.push_back(most_relevant_locales_display_name);
   }
 
@@ -315,8 +322,9 @@ void GetKeyboardLayoutsForResolvedLocale(
        it != layouts.end(); ++it) {
     const input_method::InputMethodDescriptor* ime =
         util->GetInputMethodDescriptorFromId(*it);
-    if (!InsertString(ime->id(), &input_methods_added))
+    if (!InsertString(ime->id(), &input_methods_added)) {
       continue;
+    }
     input_methods_list.Append(CreateInputMethodsEntry(*ime, selected, util));
   }
 
@@ -330,11 +338,13 @@ void GetKeyboardLayoutsForResolvedLocale(
 std::string CalculateSelectedLanguage(const std::string& requested_locale,
                                       const std::string& loaded_locale) {
   std::string resolved_locale;
-  if (!l10n_util::CheckAndResolveLocale(requested_locale, &resolved_locale))
+  if (!l10n_util::CheckAndResolveLocale(requested_locale, &resolved_locale)) {
     return loaded_locale;
+  }
 
-  if (resolved_locale == loaded_locale)
+  if (resolved_locale == loaded_locale) {
     return requested_locale;
+  }
 
   return loaded_locale;
 }
@@ -410,8 +420,9 @@ void AdjustUILanguageList(const std::string& selected,
 
     language_info.Set("value", value);
     language_info.Set("title", display_name);
-    if (value == selected)
+    if (value == selected) {
       language_info.Set("selected", true);
+    }
   }
 }
 
@@ -472,15 +483,17 @@ std::string FindMostRelevantLocale(
   for (const auto& most_relevant : most_relevant_language_codes) {
     for (const auto& entry : available_locales) {
       const std::string* available_locale = nullptr;
-      if (entry.is_dict())
+      if (entry.is_dict()) {
         available_locale = entry.GetDict().FindString("value");
+      }
 
       if (!available_locale) {
         NOTREACHED();
       }
 
-      if (*available_locale == most_relevant)
+      if (*available_locale == most_relevant) {
         return most_relevant;
+      }
     }
   }
 
@@ -523,8 +536,9 @@ base::Value::List GetAndActivateLoginKeyboardLayouts(
   for (size_t i = 0; i < input_methods.size(); ++i) {
     // Makes sure the id is in legacy xkb id format.
     const std::string& ime_id = input_methods[i].id();
-    if (!InsertString(ime_id, &input_methods_added))
+    if (!InsertString(ime_id, &input_methods_added)) {
       continue;
+    }
     if (!optgroup_added) {
       optgroup_added = true;
       AddOptgroupOtherLayouts(input_methods_list);

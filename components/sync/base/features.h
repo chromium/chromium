@@ -139,9 +139,6 @@ BASE_DECLARE_FEATURE(kSyncSharedTabGroupDataInTransportMode);
 BASE_DECLARE_FEATURE(kSyncEnableWalletMetadataInTransportMode);
 BASE_DECLARE_FEATURE(kSyncEnableWalletOfferInTransportMode);
 
-// Flag to enable setting `deleted_by_version` on a `EntityMetadata`.
-BASE_DECLARE_FEATURE(kSyncEntityMetadataRecordDeletedByVersionOnLocalDeletion);
-
 // Flag to enable clean up of password deletions that may be unintentional.
 BASE_DECLARE_FEATURE(kSyncPasswordCleanUpAccidentalBatchDeletions);
 // The minimum number of deletions that can be considered a batch deletion.
@@ -160,6 +157,12 @@ inline constexpr base::FeatureParam<base::TimeDelta>
 // If enabled, sync-the-transport will auto-start (avoid deferring startup) if
 // sync metadata isn't available (i.e. initial sync never completed).
 BASE_DECLARE_FEATURE(kSyncAlwaysForceImmediateStartIfTransportDataMissing);
+
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+// If enabled, holds the account preference values under a dictionary in the
+// main preferences file.
+BASE_DECLARE_FEATURE(kMigrateAccountPrefs);
+#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 
 // If enabled, distinguishes between local and account themes.
 BASE_DECLARE_FEATURE(kSeparateLocalAndAccountThemes);

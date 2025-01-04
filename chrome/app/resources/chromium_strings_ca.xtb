@@ -17,7 +17,6 @@
 <translation id="1185134272377778587">Sobre Chromium</translation>
 <translation id="1188705220418984327">Per compartir la finestra, permet que Chromium gravi la pantalla a Preferències del sistema.</translation>
 <translation id="1203500561924088507">T'agraïm la instal·lació. Has de reiniciar el navegador abans d'utilitzar <ph name="BUNDLE_NAME" />.</translation>
-<translation id="1235768345431527125">Pots iniciar la sessió per accedir a les teves coses o utilitzar Chromium sense cap compte</translation>
 <translation id="1262876892872089030">Mentre aquesta pestanya estava inactiva, s'ha alliberat memòria perquè Chromium funcioni sempre de pressa. Pots optar per excloure sempre aquest lloc web d'estar inactiu.</translation>
 <translation id="1265577313130862557">Chromium ha bloquejat aquesta baixada perquè el fitxer és perillós</translation>
 <translation id="126567311906253476">Si inicies la sessió en serveis de Google com ara Gmail o YouTube amb <ph name="USER_EMAIL" />, pots utilitzar el mateix compte per iniciar la sessió automàticament a Chromium</translation>
@@ -58,6 +57,7 @@
 <translation id="1779356040007214683">Perquè Chromium sigui més segur, hem desactivat algunes de les extensions que no apareixen a <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i que és possible que s'hagin afegit sense que ho sapigueu.</translation>
 <translation id="1808667845054772817">Torna a instal·lar Chromium</translation>
 <translation id="1820835682567584003">Chromium està intentant <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1838374766361614909">Esborra la cerca</translation>
 <translation id="18552579716432081">Per suprimir les dades de navegació només d'aquest dispositiu i conservar-les al teu Compte de Google, <ph name="BEGIN_LINK" />tanca la sessió de Chromium<ph name="END_LINK" />.</translation>
 <translation id="185970820835152459">Pots gestionar els Comptes de Google en què tens la sessió iniciada. Els Comptes de Google s'utilitzen per al navegador Chromium, Play Store, Gmail i més. Si vols afegir un compte per a algú altre, com ara un membre de la família, afegeix una persona nova al teu dispositiu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Cerca amb la cerca d'imatges</translation>
@@ -67,6 +67,7 @@
 <translation id="1896836275755235458">Chromium estalvia bateria limitant l'activitat en segon pla i els efectes visuals, com ara el desplaçament suau i els fotogrames per segon dels vídeos. <ph name="BEGIN_LINK" />Obtén més informació sobre la funció Estalvi d'energia<ph name="END_LINK" />.</translation>
 <translation id="1900969832270057921">Servei de l'actualitzador de Chromium</translation>
 <translation id="1911763535808217981">En desactivar aquesta opció, pots iniciar la sessió en llocs web de Google, com ara Gmail, sense iniciar la sessió a Chromium</translation>
+<translation id="1916451563296275579">Suprimeix les dades d'aquesta aplicació de Chromium</translation>
 <translation id="1929939181775079593">Chromium no respon. Voleu tornar-lo a iniciar ara?</translation>
 <translation id="1933341829955786215">La teva organització, <ph name="MANAGER" />, requereix que iniciïs la sessió a Chromium</translation>
 <translation id="193439633299369377">Cal reiniciar Chromium OS per aplicar l'actualització.</translation>
@@ -93,6 +94,7 @@
 <translation id="2199210295479376551">Suprimeix el compte de Chromium</translation>
 <translation id="2210682093923538346">Lloc web perillós. Chromium ha suprimit les notificacions.</translation>
 <translation id="2236949375853147973">La meva activitat</translation>
+<translation id="2238130810669087193">Per obtenir les teves adreces i altres dades en tots els dispositius, inicia la sessió a Chromium. Aquesta adreça es desarà al teu Compte de Google després d'iniciar-hi la sessió.</translation>
 <translation id="2240214816234246077">No l'has visitat recentment. Chromium ha suprimit <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" />.</translation>
 <translation id="2241627712206172106">Si compartiu un ordinador, els amics i els familiars poden navegar de manera independent i configurar Chromium com vulguin.</translation>
 <translation id="2313870531055795960">Compara els URL amb una llista de llocs web no segurs emmagatzemada a Chromium. Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chromium també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Navegació segura.</translation>
@@ -110,6 +112,7 @@
 <translation id="2483889755041906834">A Chromium</translation>
 <translation id="2485422356828889247">Desinstal·la</translation>
 <translation id="2513154137948333830">Reinici necessari: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2522009821193247726">Per continuar, cal que iniciïs la sessió a Chromium amb <ph name="EMAIL" />. D'aquesta manera, es garanteix el compliment de les polítiques de la teva organització.</translation>
 <translation id="2542968102051442371">Selecciona text amb la cerca d'imatges</translation>
 <translation id="2554739539410784893">Chromium està provant de substituir les contrasenyes existents. Escriu la teva contrasenya de Windows per permetre-ho.</translation>
 <translation id="2560420686485554789">Chromium necessita accedir a l'emmagatzematge per baixar fitxers</translation>
@@ -119,6 +122,7 @@
 <translation id="2583187216237139145">L'administrador del perfil de treball pot suprimir qualsevol dada de Chromium que es generi durant l'ús d'aquest perfil, com ara les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Continua utilitzant Chromium</translation>
 <translation id="259935314519650377">No s'ha pogut desar l'instal·lador baixat a la memòria cau. Error: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2635452620547538388">Verifica la teva identitat per utilitzar i desar les dades de Chromium al teu compte, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="264613044588233783">Chromium s'executa més ràpidament i les funcions que utilitzen JavaScript haurien de funcionar tal com es van dissenyar (opció recomanada)</translation>
 <translation id="2648074677641340862">Hi ha hagut un error en el sistema operatiu durant la instal·lació. Torneu a baixar Chromium.</translation>
 <translation id="2661879430930417727">Si comparteixes un dispositiu, els amics i els familiars poden navegar per separat i configurar Chromium com vulguin</translation>
@@ -204,7 +208,6 @@
 <translation id="3802055581630249637">Chromium precarrega les pàgines que és probable que visitis perquè es carreguin més ràpidament quan ho facis</translation>
 <translation id="3830894615770080216">Sistema Chromium OS</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" />: Chromium</translation>
-<translation id="386822487697155367">Obtén ajuda per a Chromium OS</translation>
 <translation id="3871664619793219264">Obtén el contingut del teu navegador Chromium del compte <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3885770153807205175">Selector d'idioma</translation>
 <translation id="388648406173476553">Personalitza i controla Chromium. Cal la teva intervenció. Fes clic per obtenir més informació.</translation>
@@ -252,7 +255,6 @@
 <translation id="4438870983368648614"><ph name="MANAGER" /> gestiona Chromium</translation>
 <translation id="444069871276811466">Afegeix un perfil de Chromium</translation>
 <translation id="4447409407328223819">Sobre Chrome for Testing</translation>
-<translation id="4470974262661801543">Per utilitzar i desar les dades de Chromium al teu Compte de Google, introdueix la frase de contrasenya</translation>
 <translation id="4493028449971051158">Error d'arrencada: executa l'instal·lador com a administrador.</translation>
 <translation id="4501471624619070934">La instal·lació ha fallat perquè l'accés està restringit en aquest país.</translation>
 <translation id="4510853178268397146">Aquesta extensió no ha publicat les seves pràctiques de privadesa, per exemple, la manera com recull i utilitza les dades. Chromium et recomana que la suprimeixis.</translation>
@@ -404,6 +406,7 @@
 <translation id="6455857529632101747">Et donem la benvinguda als perfils de Chromium</translation>
 <translation id="6466344609055215035">Suprimeix el compte de Chromium</translation>
 <translation id="6475912303565314141">També controla la pàgina que es mostra quan inicieu Chromium.</translation>
+<translation id="648062525172759633">Aquestes pàgines estan pensades per a desenvolupadors de Chromium i és possible que no es mantinguin ni es provin activament. Per activar-les, navega fins a <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, fes clic al botó per activar les pàgines de depuració i, a continuació, torna a aquesta pàgina.</translation>
 <translation id="648319183876919572">La Navegació segura millorada és més eficaç a l'hora de protegir-te de baixades i llocs web perillosos</translation>
 <translation id="6510925080656968729">Desinstal·la Chromium</translation>
 <translation id="651535675648445253">Dreceres obertes a Chromium</translation>
@@ -447,6 +450,7 @@
 <translation id="6980074797973263542">La teva organització pot veure i gestionar les dades de navegació, com ara les adreces d'interès, l'historial i les contrasenyes. No pot veure les dades de navegació dels perfils personals de Chromium.</translation>
 <translation id="6985329841647292029">Condicions de Chromium OS</translation>
 <translation id="6990124437352146030">Per visitar aquest lloc web, Chromium necessita permís per accedir al micròfon</translation>
+<translation id="7003299027384820442">Introdueix la frase de contrasenya per utilitzar i desar les dades de Chromium al teu compte, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">La instal·lació ha fallat perquè aquesta versió del sistema operatiu no és compatible.</translation>
 <translation id="7024536598735240744">Error de descompressió: <ph name="UNPACK_ERROR" /></translation>
 <translation id="7025789849649390912">La instal·lació s'ha aturat.</translation>
@@ -512,6 +516,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Com pots gestionar les teves dades<ph name="END_BOLD" />: amb la finalitat de protegir la teva privadesa, suprimim automàticament els interessos que tenen més de 4 setmanes. A mesura que continuïs navegant, és possible que torni a aparèixer un interès a la llista. També pots suprimir els interessos que no vulguis que Chromium tingui en compte.</translation>
 <translation id="7888981273428720788">Defineix Chromium com a navegador predeterminat</translation>
 <translation id="7934340546140346950">Quan és possible, Chromium actualitza automàticament les connexions no segures a HTTPS</translation>
+<translation id="7935734571048689933">Chromium està gestionat</translation>
 <translation id="7937630085815544518">Teníeu la sessió iniciada a Chromium com a <ph name="USER_EMAIL_ADDRESS" />. Utilitzeu el mateix compte per tornar a iniciar-hi la sessió.</translation>
 <translation id="7975919845073681630">Aquesta és una instal·lació secundària de Chromium i no pot definir-se com a navegador predeterminat.</translation>
 <translation id="7997934263947464652">Les extensions, les aplicacions i els temes de fonts desconegudes poden malmetre el dispositiu. Chromium recomana que només n'instal·lis de <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
@@ -541,6 +546,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8330519371938183845">Inicia la sessió per sincronitzar i personalitzar Chromium en tots els teus dispositius</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> abans utilitzava Chromium</translation>
 <translation id="8357820681460164151">Per accedir al teu contingut del navegador Chromium des de tots els teus dispositius, inicia la sessió i, després, activa la sincronització</translation>
+<translation id="8359544530202147897">Actualitza Chromium per continuar utilitzant les dades de Chromium al teu Compte de Google, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">Per obtenir actualitzacions de Chromium en el futur, necessitaràs Windows 10 o una versió posterior. Aquest ordinador utilitza Windows 8.</translation>
 <translation id="8362914115861174987">Tradueix a</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Tots els drets reservats.</translation>

@@ -148,7 +148,7 @@ class PowerButtonTest : public NoSessionAshTestBase {
 // `PowerButton` should be with the correct view id and have the UMA tracking
 // with the correct catalog name.
 TEST_F(PowerButtonTest, PowerButtonHasCorrectViewIdAndUma) {
-  CreateUserSessions(1);
+  SimulateUserLogin(kDefaultUserEmail);
 
   // No metrics logged before clicking on any buttons.
   histogram_tester_.ExpectTotalCount("Ash.QuickSettings.Button.Activated",
@@ -170,7 +170,9 @@ TEST_F(PowerButtonTest, PowerButtonHasCorrectViewIdAndUma) {
 }
 
 TEST_F(PowerButtonTest, LockMenuButtonRecordsUma) {
-  CreateUserSessions(1);
+  SimulateUserLogin(kDefaultUserEmail);
+  // TOOD(crbug.com/383442863): Move this to SimulateUserLogin.
+  GetSessionControllerClient()->SetCanLockScreen(true);
   SimulatePowerButtonPress();
 
   LeftClickOn(GetLockButton());
@@ -184,7 +186,7 @@ TEST_F(PowerButtonTest, LockMenuButtonRecordsUma) {
 }
 
 TEST_F(PowerButtonTest, SignOutMenuButtonRecordsUma) {
-  CreateUserSessions(1);
+  SimulateUserLogin(kDefaultUserEmail);
   SimulatePowerButtonPress();
 
   LeftClickOn(GetSignOutButton());
@@ -199,7 +201,7 @@ TEST_F(PowerButtonTest, SignOutMenuButtonRecordsUma) {
 }
 
 TEST_F(PowerButtonTest, RestartMenuButtonRecordsUma) {
-  CreateUserSessions(1);
+  SimulateUserLogin(kDefaultUserEmail);
   SimulatePowerButtonPress();
 
   LeftClickOn(GetRestartButton());
@@ -214,7 +216,7 @@ TEST_F(PowerButtonTest, RestartMenuButtonRecordsUma) {
 }
 
 TEST_F(PowerButtonTest, PowerOffMenuButtonRecordsUma) {
-  CreateUserSessions(1);
+  SimulateUserLogin(kDefaultUserEmail);
   SimulatePowerButtonPress();
 
   LeftClickOn(GetPowerOffButton());
@@ -228,7 +230,7 @@ TEST_F(PowerButtonTest, PowerOffMenuButtonRecordsUma) {
 }
 
 TEST_F(PowerButtonTest, EmailMenuButtonRecordsUma) {
-  CreateUserSessions(1);
+  SimulateUserLogin(kDefaultUserEmail);
   SimulatePowerButtonPress();
 
   LeftClickOn(GetEmailButton());
@@ -269,7 +271,9 @@ TEST_F(PowerButtonTest, ButtonStatesNotLoggedIn) {
 
 // All buttons are shown after login.
 TEST_F(PowerButtonTest, ButtonStatesLoggedIn) {
-  CreateUserSessions(1);
+  SimulateUserLogin(kDefaultUserEmail);
+  // TOOD(crbug.com/383442863): Move this to SimulateUserLogin.
+  GetSessionControllerClient()->SetCanLockScreen(true);
 
   EXPECT_TRUE(GetPowerButton()->GetVisible());
 
@@ -297,7 +301,7 @@ TEST_F(PowerButtonTest, ButtonStatesLoggedIn) {
 
 // The lock button are hidden at the lock screen.
 TEST_F(PowerButtonTest, ButtonStatesLockScreen) {
-  CreateUserSessions(1);
+  SimulateUserLogin(kDefaultUserEmail);
   BlockUserSession(BLOCKED_BY_LOCK_SCREEN);
 
   // Changes in lock state close the system tray bubble, so re-show it.
@@ -331,7 +335,7 @@ TEST_F(PowerButtonTest, ButtonStatesLockScreen) {
 
 // The lock button is hidden when adding a second multiprofile user.
 TEST_F(PowerButtonTest, ButtonStatesAddingUser) {
-  CreateUserSessions(1);
+  SimulateUserLogin(kDefaultUserEmail);
   SetUserAddingScreenRunning(true);
 
   EXPECT_TRUE(GetPowerButton()->GetVisible());
@@ -407,10 +411,50 @@ TEST_F(PowerButtonTest, ClickingEmailShowsUserChooserView) {
   EXPECT_TRUE(quick_settings_view->GetDetailedViewForTest<UserChooserView>());
 }
 
+TEST_F(PowerButtonTest, UserItemButtonTooltipText) {
+  SimulateUserLogin("user@gmail.com", user_manager::UserType::kRegular);
+  SimulatePowerButtonPress();
+  LeftClickOn(GetEmailButton());
+
+  QuickSettingsView* quick_settings_view =
+      GetPrimaryUnifiedSystemTray()->bubble()->quick_settings_view();
+  EXPECT_TRUE(quick_settings_view->IsDetailedViewShown());
+
+  auto* user_chooser_view =
+      quick_settings_view->GetDetailedViewForTest<UserChooserView>();
+
+  ui::AXNodeData data;
+  gfx::Size zero_size;
+
+  for (const auto& button : user_chooser_view->user_item_buttons_) {
+    EXPECT_EQ(button->GetTooltipText(gfx::Point()),
+              user_chooser_view->GetUserItemAccessibleStringForTesting(
+                  button->user_index_for_testing()));
+    data = ui::AXNodeData();
+    button->GetViewAccessibility().GetAccessibleNodeData(&data);
+    EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              button->GetTooltipText(gfx::Point()));
+    EXPECT_NE(
+        data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+        button->GetTooltipText(gfx::Point()));
+
+    button->SetBoundsRect(gfx::Rect(zero_size));
+
+    EXPECT_EQ(button->GetTooltipText(gfx::Point()), u"");
+    data = ui::AXNodeData();
+    button->GetViewAccessibility().GetAccessibleNodeData(&data);
+    EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              button->GetTooltipText(gfx::Point()));
+    EXPECT_EQ(
+        data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+        button->GetTooltipText(gfx::Point()));
+  }
+}
+
 // Power button's rounded radii should change correctly when switching between
 // active/inactive.
 TEST_F(PowerButtonTest, ButtonRoundedRadii) {
-  CreateUserSessions(1);
+  SimulateUserLogin(kDefaultUserEmail);
 
   // Sets a LTR locale.
   base::i18n::SetICUDefaultLocale("en_US");
@@ -443,7 +487,7 @@ TEST_F(PowerButtonTest, ButtonRoundedRadii) {
 }
 
 TEST_F(PowerButtonTest, DeviceRebootOnShutdownPolicyHidesPowerOffButton) {
-  CreateUserSessions(1);
+  SimulateUserLogin(kDefaultUserEmail);
   // Simulate DeviceRebootOnShutdownPolicy is enabled.
   Shell::Get()->shutdown_controller()->SetRebootOnShutdown(true);
 
@@ -454,7 +498,7 @@ TEST_F(PowerButtonTest, DeviceRebootOnShutdownPolicyHidesPowerOffButton) {
 }
 
 TEST_F(PowerButtonTest, ChevronFlipsWhenMenuIsShowing) {
-  CreateUserSessions(1);
+  SimulateUserLogin(kDefaultUserEmail);
 
   EXPECT_TRUE(GetPowerButton()->GetVisible());
   EXPECT_FALSE(IsMenuShowing());

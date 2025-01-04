@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Vypnúť tmavý motív</translation>
 <translation id="1807246157184219062">Svetlý režim</translation>
 <translation id="1808803439260407870">Klasické umenie</translation>
+<translation id="181434555916624618">Výsledky s ľuďmi sa teraz nezobrazia. Vyskúšajte iný pokyn.</translation>
 <translation id="1815850098929213707">Je vybraný kláves <ph name="KEYS" />. Ak chcete ovládanie upraviť, klepnite na tlačidlo.</translation>
 <translation id="1823120442877418684">Znaky</translation>
 <translation id="1827738518074806965">Umelecká galéria</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">Úroveň batérie pravého slúchadla zariadenia je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">nastavenia</translation>
 <translation id="3347558044552027859">Moderná</translation>
+<translation id="3353477144743332882">Stiahnuť model na vytvorenie zhrnutia a názvu</translation>
 <translation id="3359218928534347896">prepínač vypnutia zvuku mikrofónu</translation>
 <translation id="3360306038446926262">Okná</translation>
 <translation id="3361618936611118375">sushi</translation>
@@ -498,7 +500,7 @@
 <translation id="3428551088151258685">nezastrešená</translation>
 <translation id="3428971106895559033">pastelová</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
-<translation id="3435738964857648380">Bezpečnosť</translation>
+<translation id="3435738964857648380">Zabezpečenie</translation>
 <translation id="3435896845095436175">Aktivovať</translation>
 <translation id="345256797477978759">Ukotviť okno na <ph name="DIRECTION" /> väčšej časti obrazovky</translation>
 <translation id="3456078764689556234">Bola vytlačená <ph name="PRINTED_PAGES" />. strana z <ph name="TOTAL_PAGES" />.</translation>
@@ -689,6 +691,7 @@
 <translation id="4354430579665871434">kláves</translation>
 <translation id="4356100841225547054">Vypnutie zvuku</translation>
 <translation id="4361257691546579041">Názov prístupového bodu (APN) je typ Predvolený.</translation>
+<translation id="4368101969572512692">Náhodné návrhy</translation>
 <translation id="437294888293595148">Resetovať všetky skratky</translation>
 <translation id="437477383107495720">zajace</translation>
 <translation id="4376423484621194274">Váš správca zavretie aplikácie <ph name="APP_NAME" /> nepovoľuje</translation>
@@ -768,6 +771,7 @@
 <translation id="4731797938093519117">Rodičovský prístup</translation>
 <translation id="473775607612524610">Aktualizovať</translation>
 <translation id="4744944742468440486">Informácie súvisiace s vaším výberom</translation>
+<translation id="4750394297954878236">Návrhy</translation>
 <translation id="4771607256327216405">zjasnenie klávesnice</translation>
 <translation id="4771923071974529837">zajtra</translation>
 <translation id="4773299976671772492">Zastavené</translation>
@@ -853,6 +857,7 @@
 <translation id="5121677070210013200">Model prepisov sa nedá stiahnuť. Skúste to znova alebo reštartujte Chromebook.</translation>
 <translation id="5130848777448318809">poníky</translation>
 <translation id="5137451382116112100">Na celú obrazovku</translation>
+<translation id="5139813694804168398">režim bez vyrušení</translation>
 <translation id="5140788690559353412">Keď stratíte prístup k svojmu školskému účtu, už nebudete mať prístup k spojeným e‑mailom ani súborom na Disku Google, ako sú Gmail, Dokumenty, Prezentácie a ďalšie.</translation>
 <translation id="5142961317498132443">Overenie totožnosti</translation>
 <translation id="5144311987923128508">Tlačidlo Potvrdiť je vypnuté</translation>
@@ -897,6 +902,7 @@
 <translation id="5302048478445481009">Jazyk</translation>
 <translation id="5303837385540978511">Tapeta exkluzívna pre službu <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EvDo</translation>
+<translation id="530883153651464140">Aktualizovať zariadenie <ph name="DEVICE_NAME" /> na verziu <ph name="VERSION" /></translation>
 <translation id="5315873049536339193">Identita</translation>
 <translation id="5317780077021120954">Uložiť</translation>
 <translation id="5318310531701770497">Nedajú sa vytvoriť názvy. Skúste dlhší prepis.</translation>
@@ -973,7 +979,6 @@
 <translation id="5703716265115423771">zníženie hlasitosti</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> z <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Tlačidlo Upraviť pre <ph name="SHORTCUT_DESCRIPTION" />.</translation>
-<translation id="5733298426544876109">Aktualizovať zariadenie <ph name="DEVICE_NAME" /></translation>
 <translation id="5736820754189340309">Spotreba dát bola resetovaná</translation>
 <translation id="574392208103952083">Stredné</translation>
 <translation id="5744175046705638478">Preklad výrazu <ph name="QUERY" /></translation>
@@ -998,6 +1003,7 @@
 <translation id="5859969039821714932">Skratka nie je k dispozícii. Stlačte novú bez klávesa <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Vypnuté</translation>
 <translation id="5860491529813859533">Zapnúť</translation>
+<translation id="5875913454160982848">Stiahnuť model prepisov</translation>
 <translation id="5876385649737594562">Zapnite toto nastavenie a vyberte možnosti</translation>
 <translation id="5877503382465267833">Pozastaviť <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Celá obrazovka</translation>
@@ -1037,7 +1043,6 @@
 <translation id="6040143037577758943">Zavrieť</translation>
 <translation id="6040852767465482106">Anonymná identita</translation>
 <translation id="604124094241169006">Automatické</translation>
-<translation id="6042308850641462728">Viac</translation>
 <translation id="6048107060512778456">Nepodarilo sa – zaseknutý papier</translation>
 <translation id="6050189528197190982">Odtiene sivej</translation>
 <translation id="6054711098834486579">expresionizmu</translation>
@@ -1293,6 +1298,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Menný server}few{Menné servery}many{Name servers}other{Menné servery}}</translation>
 <translation id="7135814714616751706">Hľadajte skratky</translation>
 <translation id="7138614237884624401">Zjednodušený text</translation>
+<translation id="7138668887584231801">Na vytvorenie zhrnutia nie je k dispozícii dostatok slov</translation>
 <translation id="7141470099673912333">Prenos obsahu</translation>
 <translation id="7143207342074048698">Pripája sa</translation>
 <translation id="7144878232160441200">Skúsiť znova</translation>
@@ -1588,6 +1594,7 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="8503836310948963452">Už iba niekoľko minút…</translation>
 <translation id="8505011850330200833">Na spracovanie prepisov a vytváranie zhrnutí vyžaduje model Gemini 2 GB priestoru</translation>
 <translation id="8508640263392900755">Podrobnosti názvu prístupového bodu (APN)</translation>
+<translation id="8509574872955173831">Ďalšie informácie o vytvorení zhrnutia a názvu</translation>
 <translation id="8522687886059337719">Teraz máte prístup k novým <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />tapetám<ph name="END_LINK_WALLPAPER_SUBPAGE" /> a <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />šetriču obrazovky<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">čaj podávajúca</translation>
@@ -1724,7 +1731,6 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="9133772297793293778">Stlačte prvý až štyrtý modifikátor a jeden ďalší kláves na klávesnici. Režim úprav ukončíte stlačením klávesov alt + esc.</translation>
 <translation id="9137526406337347448">Služby Google</translation>
 <translation id="9138630967333032450">Ľavý kláves Shift</translation>
-<translation id="9147928237330776930">Príliš málo slov na zhrnutie</translation>
 <translation id="9149391708638971077">Spustiť test pamäte</translation>
 <translation id="9159524746324788320">hamburgery</translation>
 <translation id="9161276708550942948">medzera</translation>

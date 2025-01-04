@@ -111,6 +111,7 @@ WorkletLoaderBase::WorkletLoaderBase(
       url_loader_factory, source_url,
       AuctionDownloader::DownloadMode::kActualDownload, mime_type,
       /*post_body=*/std::nullopt, /*content_type=*/std::nullopt,
+      /*is_trusted_bidding_signals_kvv1_download=*/false,
       std::move(response_started_callback),
       base::BindOnce(&WorkletLoaderBase::OnDownloadComplete,
                      base::Unretained(this)),

@@ -55,16 +55,18 @@ class SigninPrepareUserListTest : public testing::Test {
         TestingBrowserProcess::GetGlobal(), &local_state_);
     ASSERT_TRUE(profile_manager_->SetUp());
 
-    for (size_t i = 0; i < std::size(kUsersPublic); ++i)
+    for (size_t i = 0; i < std::size(kUsersPublic); ++i) {
       fake_user_manager_->AddPublicAccountUser(
           AccountId::FromUserEmail(kUsersPublic[i]));
+    }
 
     for (size_t i = 0; i < kMaxUsers + 1; ++i) {
       fake_user_manager_->AddUser(
           AccountId::FromUserEmail(GenerateUserEmail(i)));
       // Insert owner second to last.
-      if (i == kMaxUsers - 1)
+      if (i == kMaxUsers - 1) {
         fake_user_manager_->AddUser(AccountId::FromUserEmail(kOwner));
+      }
     }
 
     fake_user_manager_->SetOwnerId(AccountId::FromUserEmail(kOwner));

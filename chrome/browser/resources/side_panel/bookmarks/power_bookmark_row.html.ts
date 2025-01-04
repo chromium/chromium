@@ -44,7 +44,7 @@ export function getHtml(this: PowerBookmarkRowElement) {
     </cr-input>` : ''}
 
   ${this.showTrailingIcon_() ? html`
-    ${this.isPriceTracked_(this.bookmark) ? html`
+    ${this.isPriceTracked ? html`
     <sp-list-item-badge slot="badges"
         .updated="${this.showDiscountedPrice_(this.bookmark)}">
       <cr-icon icon="bookmarks:price-tracking"></cr-icon>
@@ -65,7 +65,8 @@ export function getHtml(this: PowerBookmarkRowElement) {
   ` : ''}
 
   ${this.isBookmarksBar_() ? html`
-    <cr-icon slot="folder-icon" icon="bookmarks:bookmarks-bar"></cr-icon>
+    <cr-icon class="bookmark-icon" slot="folder-icon"
+        icon="bookmarks:bookmarks-bar"></cr-icon>
   ` :''}
 
   ${this.isShoppingCollection_(this.bookmark) ? html`

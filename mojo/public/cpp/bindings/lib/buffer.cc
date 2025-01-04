@@ -73,7 +73,7 @@ size_t Buffer::Allocate(size_t num_bytes) {
     uint32_t new_size;
     MojoResult rv = MojoAppendMessageData(
         message_.value(), static_cast<uint32_t>(additional_bytes), nullptr, 0,
-        nullptr, &data_, &new_size);
+        nullptr, &data_.AsEphemeralRawAddr(), &new_size);
     DCHECK_EQ(MOJO_RESULT_OK, rv);
     message_payload_size_ = new_cursor;
     size_ = new_size;
@@ -100,7 +100,8 @@ bool Buffer::AttachHandles(std::vector<ScopedHandle>* handles) {
   uint32_t new_size = 0;
   MojoResult rv = MojoAppendMessageData(
       message_.value(), 0, reinterpret_cast<MojoHandle*>(handles->data()),
-      static_cast<uint32_t>(handles->size()), nullptr, &data_, &new_size);
+      static_cast<uint32_t>(handles->size()), nullptr,
+      &data_.AsEphemeralRawAddr(), &new_size);
   if (rv != MOJO_RESULT_OK)
     return false;
 

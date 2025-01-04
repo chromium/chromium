@@ -11,6 +11,7 @@
 #include <set>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <vector>
 
 namespace base {
@@ -336,6 +337,42 @@ void CompareNotComparable() {
   const NonConstEq non_arr[] = {{1}, {2}, {3}};
   (void)(span(non_arr) == non_arr);  // expected-error@*:* {{invalid operands to binary expression}}
   (void)(span(non_arr) == span(non_arr));  // expected-error@*:* {{invalid operands to binary expression}}
+}
+
+void ByteConversionsFromNonUnique() {
+  // Test that byte span constructions from a type the does not meet
+  // `std::has_unique_object_representations_v<>` fail by default.
+  struct S {
+    float f = 0;
+  };
+  static_assert(!std::has_unique_object_representations_v<S>);
+
+  // `as_[writable_](bytes,chars)()`
+  S arr[] = {{1}, {2}, {3}};
+  span sp(arr);
+  as_bytes(sp);           // expected-error {{no matching function for call}}
+  as_writable_bytes(sp);  // expected-error {{no matching function for call}}
+  as_chars(sp);           // expected-error {{no matching function for call}}
+  as_writable_chars(sp);  // expected-error {{no matching function for call}}
+
+  // `byte_span_from_ref()`
+  const S const_obj;
+  S obj;
+  // Read-only
+  byte_span_from_ref(const_obj);  // expected-error {{no matching function for call}}
+  // Writable
+  byte_span_from_ref(obj);        // expected-error {{no matching function for call}}
+
+  // `as_[writable_]byte_span()`
+  std::vector<S> vec;
+  // Non-borrowed range
+  as_byte_span(std::vector<S>());           // expected-error {{no matching function for call}}
+  // Borrowed range
+  as_byte_span(vec);                        // expected-error {{no matching function for call}}
+  as_writable_byte_span(vec);               // expected-error {{no matching function for call}}
+  // Array
+  as_byte_span(arr);                        // expected-error {{no matching function for call}}
+  as_writable_byte_span(arr);               // expected-error {{no matching function for call}}
 }
 
 void AsStringViewNotBytes() {

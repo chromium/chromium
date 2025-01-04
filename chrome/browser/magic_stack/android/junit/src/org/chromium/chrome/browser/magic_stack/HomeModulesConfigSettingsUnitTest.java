@@ -52,6 +52,7 @@ public class HomeModulesConfigSettingsUnitTest {
 
     @After
     public void tearDown() {
+        mHomeModulesConfigManager.cleanupForTesting();
         mActivityScenario.close();
     }
 

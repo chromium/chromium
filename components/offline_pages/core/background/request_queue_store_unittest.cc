@@ -19,6 +19,7 @@
 #include "components/offline_pages/core/offline_clock.h"
 #include "sql/database.h"
 #include "sql/statement.h"
+#include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace offline_pages {
@@ -64,7 +65,7 @@ SavePageRequest GetTestRequest(const GURL& url, const GURL& original_url) {
 
 void BuildTestStoreWithSchemaFromM57(const base::FilePath& file,
                                      const GURL& url) {
-  sql::Database connection;
+  sql::Database connection(sql::test::kTestTag);
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("RequestQueue.db"))));
   ASSERT_TRUE(connection.is_open());
@@ -109,7 +110,7 @@ void BuildTestStoreWithSchemaFromM57(const base::FilePath& file,
 void BuildTestStoreWithSchemaFromM58(const base::FilePath& file,
                                      const GURL& url,
                                      const GURL& original_url) {
-  sql::Database connection;
+  sql::Database connection(sql::test::kTestTag);
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("RequestQueue.db"))));
   ASSERT_TRUE(connection.is_open());
@@ -156,7 +157,7 @@ void BuildTestStoreWithSchemaFromM58(const base::FilePath& file,
 void BuildTestStoreWithSchemaFromM61(const base::FilePath& file,
                                      const GURL& url,
                                      const GURL& original_url) {
-  sql::Database connection;
+  sql::Database connection(sql::test::kTestTag);
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("RequestQueue.db"))));
   ASSERT_TRUE(connection.is_open());
@@ -205,7 +206,7 @@ void BuildTestStoreWithSchemaFromM61(const base::FilePath& file,
 void BuildTestStoreWithSchemaFromM72(const base::FilePath& file,
                                      const GURL& url,
                                      const GURL& original_url) {
-  sql::Database connection;
+  sql::Database connection(sql::test::kTestTag);
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("RequestQueue.db"))));
   ASSERT_TRUE(connection.is_open());

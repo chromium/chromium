@@ -26,12 +26,17 @@ constexpr char kInvalidScreenColorDepth[] = "Invalid screen color depth: ";
 constexpr char kInvalidScreenIsInternal[] = "Invalid screen is internal: ";
 constexpr char kInvalidScreenDevicePixelRatio[] =
     "Invalid screen device pixel ratio: ";
+constexpr char kInvalidWorkAreaInset[] = "Invalid work area inset: ";
 
 // Screen Info parameters, keep in sync with window.getScreenDetails() output.
 constexpr char kColorDepth[] = "colorDepth";
 constexpr char kDevicePixelRatio[] = "devicePixelRatio";
 constexpr char kIsInternal[] = "isInternal";
 constexpr char kLabel[] = "label";
+constexpr char kWorkAreaLeft[] = "workAreaLeft";
+constexpr char kWorkAreaRight[] = "workAreaRight";
+constexpr char kWorkAreaTop[] = "workAreaTop";
+constexpr char kWorkAreaBottom[] = "workAreaBottom";
 
 constexpr int kMinColorDepth = 1;
 constexpr float kMinDevicePixelRatio = 0.5f;
@@ -101,6 +106,50 @@ std::string ParseScreenInfoParameter(std::string_view key,
   // label='primary screen'
   if (key == kLabel) {
     screen_info->label = value;
+    return {};
+  }
+
+  // workAreaLeft=NNN
+  if (key == kWorkAreaLeft) {
+    int work_area_left;
+    if (!base::StringToInt(value, &work_area_left) || work_area_left < 0) {
+      return kInvalidWorkAreaInset + std::string(value);
+    }
+
+    screen_info->work_area_insets.set_left(work_area_left);
+    return {};
+  }
+
+  // workAreaRight=NNN
+  if (key == kWorkAreaRight) {
+    int work_area_right;
+    if (!base::StringToInt(value, &work_area_right) || work_area_right < 0) {
+      return kInvalidWorkAreaInset + std::string(value);
+    }
+
+    screen_info->work_area_insets.set_right(work_area_right);
+    return {};
+  }
+
+  // workAreaTop=NNN
+  if (key == kWorkAreaTop) {
+    int work_area_top;
+    if (!base::StringToInt(value, &work_area_top) || work_area_top < 0) {
+      return kInvalidWorkAreaInset + std::string(value);
+    }
+
+    screen_info->work_area_insets.set_top(work_area_top);
+    return {};
+  }
+
+  // workAreaBottom=NNN
+  if (key == kWorkAreaBottom) {
+    int work_area_bottom;
+    if (!base::StringToInt(value, &work_area_bottom) || work_area_bottom < 0) {
+      return kInvalidWorkAreaInset + std::string(value);
+    }
+
+    screen_info->work_area_insets.set_bottom(work_area_bottom);
     return {};
   }
 

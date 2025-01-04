@@ -200,14 +200,6 @@ source_set("unit_tests_mobile") {
   }
 }
 
-source_set("referring_app_info") {
-  sources = [ "referring_app_info.h" ]
-  deps = [
-    "//components/safe_browsing/core/common/proto:csd_proto",
-    "//url",
-  ]
-}
-
 java_cpp_enum("java_enums") {
   sources = [ "safe_browsing_api_handler_util.h" ]
 }

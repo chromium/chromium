@@ -34,17 +34,23 @@ public class BookmarkOpener {
     private final BookmarkModel mModel;
     private final Context mContext;
     private final ComponentName mComponentName;
+    private final @Nullable Runnable mBookmarkOpenedCallback;
 
     /**
      * @param model The bookmark model, used to query for bookmark urls and type.
      * @param context The android context, used to build the intent to open bookmarks.
      * @param componentName The name of the parent component, can be null on tablets.
+     * @param bookmarkOpenedCallback Callback that's run when a bookmark is opened.
      */
     public BookmarkOpener(
-            BookmarkModel model, Context context, @Nullable ComponentName componentName) {
+            BookmarkModel model,
+            Context context,
+            @Nullable ComponentName componentName,
+            @Nullable Runnable bookmarkOpenedCallback) {
         mModel = model;
         mContext = context;
         mComponentName = componentName;
+        mBookmarkOpenedCallback = bookmarkOpenedCallback;
     }
 
     /**
@@ -62,6 +68,11 @@ public class BookmarkOpener {
 
         Intent intent = createBasicOpenIntent(item, incognito);
         IntentHandler.startActivityForTrustedIntent(intent);
+
+        if (mBookmarkOpenedCallback != null) {
+            mBookmarkOpenedCallback.run();
+        }
+
         return true;
     }
 
@@ -101,6 +112,11 @@ public class BookmarkOpener {
         intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, incognito);
         intent.putExtra(IntentHandler.EXTRA_ADDITIONAL_URLS, additionalUrls);
         IntentHandler.startActivityForTrustedIntent(intent);
+
+        if (mBookmarkOpenedCallback != null) {
+            mBookmarkOpenedCallback.run();
+        }
+
         return true;
     }
 

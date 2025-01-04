@@ -35,8 +35,7 @@ SiteDataSizeCollector::SiteDataSizeCollector(
       in_flight_operations_(0),
       total_bytes_(0) {}
 
-SiteDataSizeCollector::~SiteDataSizeCollector() {
-}
+SiteDataSizeCollector::~SiteDataSizeCollector() = default;
 
 void SiteDataSizeCollector::Fetch(FetchCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

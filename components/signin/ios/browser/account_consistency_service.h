@@ -40,10 +40,9 @@ class AccountConsistencyService : public KeyedService,
   using CookieManagerCallback =
       base::RepeatingCallback<network::mojom::CookieManager*()>;
 
-  AccountConsistencyService(
-      CookieManagerCallback cookie_manager_cb,
-      AccountReconcilor* account_reconcilor,
-      signin::IdentityManager* identity_manager);
+  AccountConsistencyService(CookieManagerCallback cookie_manager_cb,
+                            AccountReconcilor* account_reconcilor,
+                            signin::IdentityManager* identity_manager);
 
   AccountConsistencyService(const AccountConsistencyService&) = delete;
   AccountConsistencyService& operator=(const AccountConsistencyService&) =

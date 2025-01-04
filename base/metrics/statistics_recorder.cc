@@ -38,14 +38,6 @@ bool HistogramNameLesser(const base::HistogramBase* a,
 LazyInstance<Lock>::Leaky StatisticsRecorder::lock_ = LAZY_INSTANCE_INITIALIZER;
 
 // static
-LazyInstance<Lock>::Leaky StatisticsRecorder::snapshot_lock_ =
-    LAZY_INSTANCE_INITIALIZER;
-
-// static
-StatisticsRecorder::SnapshotTransactionId
-    StatisticsRecorder::last_snapshot_transaction_id_ = 0;
-
-// static
 StatisticsRecorder* StatisticsRecorder::top_ = nullptr;
 
 // static
@@ -186,10 +178,11 @@ const BucketRanges* StatisticsRecorder::RegisterOrDeleteDuplicateRanges(
 // static
 void StatisticsRecorder::WriteGraph(const std::string& query,
                                     std::string* output) {
-  if (query.length())
+  if (query.length()) {
     StringAppendF(output, "Collections of histograms for %s\n", query.c_str());
-  else
+  } else {
     output->append("Collections of all histograms\n");
+  }
 
   for (const HistogramBase* const histogram :
        Sort(WithName(GetHistograms(), query))) {
@@ -283,35 +276,14 @@ void StatisticsRecorder::ImportProvidedHistogramsSync() {
 }
 
 // static
-StatisticsRecorder::SnapshotTransactionId StatisticsRecorder::PrepareDeltas(
+void StatisticsRecorder::PrepareDeltas(
     bool include_persistent,
     HistogramBase::Flags flags_to_set,
     HistogramBase::Flags required_flags,
     HistogramSnapshotManager* snapshot_manager) {
   Histograms histograms = Sort(GetHistograms(include_persistent));
-  AutoLock lock(snapshot_lock_.Get());
   snapshot_manager->PrepareDeltas(std::move(histograms), flags_to_set,
                                   required_flags);
-  return ++last_snapshot_transaction_id_;
-}
-
-// static
-StatisticsRecorder::SnapshotTransactionId
-StatisticsRecorder::SnapshotUnloggedSamples(
-    HistogramBase::Flags required_flags,
-    HistogramSnapshotManager* snapshot_manager) {
-  Histograms histograms = Sort(GetHistograms());
-  AutoLock lock(snapshot_lock_.Get());
-  snapshot_manager->SnapshotUnloggedSamples(std::move(histograms),
-                                            required_flags);
-  return ++last_snapshot_transaction_id_;
-}
-
-// static
-StatisticsRecorder::SnapshotTransactionId
-StatisticsRecorder::GetLastSnapshotTransactionId() {
-  AutoLock lock(snapshot_lock_.Get());
-  return last_snapshot_transaction_id_;
 }
 
 // static
@@ -585,8 +557,9 @@ void StatisticsRecorder::ImportGlobalPersistentHistograms() {
   // added by other processes and they must be fetched and recognized locally.
   // If the persistent memory segment is not shared between processes, this call
   // does nothing.
-  if (GlobalHistogramAllocator* allocator = GlobalHistogramAllocator::Get())
+  if (GlobalHistogramAllocator* allocator = GlobalHistogramAllocator::Get()) {
     allocator->ImportHistogramsToStatisticsRecorder();
+  }
 }
 
 StatisticsRecorder::StatisticsRecorder() {

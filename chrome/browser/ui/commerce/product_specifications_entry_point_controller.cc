@@ -437,7 +437,7 @@ void ProductSpecificationsEntryPointController::ShowEntryPointWithTitle(
       "Commerce.Compare.CandidateClusterSizeWhenShown",
       entry_point_info->similar_candidate_products.size());
   for (auto& observer : observers_) {
-    observer.ShowEntryPointWithTitle(std::move(title));
+    observer.ShowEntryPointWithTitle(title);
   }
 }
 

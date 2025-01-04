@@ -76,7 +76,7 @@ struct NET_EXPORT TransportInfo {
   //
   // Invariant: if `type` is `kCached` or `kCachedFromProxy`, then this is
   // always kProtoUnknown.
-  NextProto negotiated_protocol = kProtoUnknown;
+  NextProto negotiated_protocol = NextProto::kProtoUnknown;
 };
 
 // Instances of these types are streamable for easier debugging.

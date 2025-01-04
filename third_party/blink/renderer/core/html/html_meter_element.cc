@@ -47,11 +47,11 @@ HTMLMeterElement::~HTMLMeterElement() = default;
 
 LayoutObject* HTMLMeterElement::CreateLayoutObject(const ComputedStyle& style) {
   switch (style.EffectiveAppearance()) {
-    case kMeterPart:
+    case AppearanceValue::kMeter:
       UseCounter::Count(GetDocument(),
                         WebFeature::kMeterElementWithMeterAppearance);
       break;
-    case kNoControlPart:
+    case AppearanceValue::kNone:
       UseCounter::Count(GetDocument(),
                         WebFeature::kMeterElementWithNoneAppearance);
       break;

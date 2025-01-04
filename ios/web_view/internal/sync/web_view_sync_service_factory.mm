@@ -9,7 +9,7 @@
 #import "base/functional/callback_helpers.h"
 #import "base/no_destructor.h"
 #import "base/time/time.h"
-#import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/webdata/addresses/autofill_profile_sync_bridge.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/browser_sync/common_controller_builder.h"

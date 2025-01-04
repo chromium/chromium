@@ -2432,7 +2432,8 @@ TEST_F(ArcVmClientAdapterTest, StartArc_EnablePrivacyHubForChrome_Default) {
   EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
   EXPECT_FALSE(is_system_shutdown().has_value());
   const auto& request = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_FALSE(request.mini_instance_request().enable_privacy_hub_for_chrome());
+  EXPECT_EQ(base::FeatureList::IsEnabled(ash::features::kCrosPrivacyHub),
+            request.mini_instance_request().enable_privacy_hub_for_chrome());
 }
 
 TEST_F(ArcVmClientAdapterTest, StartArc_EnablePrivacyHubForChrome_Enabled) {

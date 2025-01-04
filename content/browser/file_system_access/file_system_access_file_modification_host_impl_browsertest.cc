@@ -6,7 +6,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -159,9 +158,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileModificationHostImplBrowserTest,
 }
 
 // TODO(crbug.com/40826793): Failing on various builders.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||                     \
-    (BUILDFLAG(IS_CHROMEOS_LACROS) && defined(ADDRESS_SANITIZER) && \
-     defined(LEAK_SANITIZER))
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_QuotaUsageOverallocation DISABLED_QuotaUsageOverallocation
 #else
 #define MAYBE_QuotaUsageOverallocation QuotaUsageOverallocation

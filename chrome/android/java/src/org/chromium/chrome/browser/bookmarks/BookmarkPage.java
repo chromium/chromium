@@ -41,7 +41,8 @@ public class BookmarkPage extends BasicNativePage {
                         false,
                         snackbarManager,
                         profile,
-                        new BookmarkUiPrefs(ChromeSharedPreferences.getInstance()));
+                        new BookmarkUiPrefs(ChromeSharedPreferences.getInstance()),
+                        /* bookmarkOpenedCallback= */ null);
         mBookmarkManagerCoordinator.setBasicNativePage(this);
         mTitle = host.getContext().getString(R.string.bookmarks);
 

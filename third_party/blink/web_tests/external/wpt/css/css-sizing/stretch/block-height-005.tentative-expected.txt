@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] .float + div 1
+  assert_equals: \n<div style="height: stretch; width: 30px; margin-top: 50px; display: flow-root; border: solid magenta;" data-expected-height="100" data-offset-y="0">\n  </div>\nheight expected 100 but got 50
+[FAIL] .float + div 2
+  assert_equals: \n<div style="height: stretch; width: 90px; margin-top: 50px; display: flow-root; border: solid cyan;" data-expected-height="100" data-offset-y="30">\n  </div>\nheight expected 100 but got 50
+[FAIL] .float + div 3
+  assert_equals: \n<div style="height: stretch; width: 90px; margin-top: 50px; border: solid green;" data-expected-height="100" data-offset-y="0">\n  </div>\nheight expected 100 but got 50
+[FAIL] .float + div 4
+  assert_equals: \n<div style="height: stretch; width: 90px; clear: both; margin-top: 50px; border: solid orange;" data-expected-height="100" data-offset-y="30">\n  </div>\nheight expected 100 but got 50
+Harness: the test ran to completion.
+

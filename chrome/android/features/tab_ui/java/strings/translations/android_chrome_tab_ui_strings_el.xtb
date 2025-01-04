@@ -77,7 +77,6 @@
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{Άλλαξε <ph name="ONE_CHANGED" /> καρτέλα, έκλεισαν <ph name="ANY_CLOSED" />}other{Άλλαξαν <ph name="MANY_CHANGED" /> καρτέλες, έκλεισαν <ph name="ANY_CLOSED" />}}</translation>
 <translation id="4371591986692297148">Ανενεργή</translation>
 <translation id="4460014764210899310">Κατάργηση ομαδοποίησης</translation>
-<translation id="4590027107044272416">Τώρα μπορείτε να ανοίξετε μια νέα καρτέλα εδώ</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Κλείσιμο 1 ανενεργής καρτέλας;}other{Κλείσιμο <ph name="TAB_COUNT_MANY" /> ανενεργών καρτελών;}}</translation>
 <translation id="4686942373615810936">Δημιουργήθηκε μόλις τώρα</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Κλείσιμο μετά από 1 ημέρα}other{Κλείσιμο μετά από <ph name="DAY_COUNT_MANY" /> ημέρες}}</translation>
@@ -98,7 +97,9 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{Προστέθηκε <ph name="ONE_ADDED" /> καρτέλα}other{Προστέθηκαν <ph name="MANY_ADDED" /> καρτέλες}}</translation>
 <translation id="5161254044473106830">Απαιτείται τίτλος</translation>
 <translation id="5339733443032484186">Η τελευταία καρτέλα σας</translation>
+<translation id="5380159289133845234">Αρχειοθέτηση διπλότυπων καρτελών</translation>
 <translation id="5400836586163650660">Γκρι</translation>
+<translation id="5446043142172831860">Κατάργηση καρτέλας και αποχώρηση από την ομάδα</translation>
 <translation id="5490235265819901748">Η ομάδα καρτελών αναπτύχθηκε</translation>
 <translation id="5494920125229734069">Επιλογή όλων</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Κλείσιμο ομάδας καρτελών με <ph name="TABS_COUNT_ONE" /> καρτέλα, χρώμα <ph name="COLOR_NAME" />.}other{Κλείσιμο ομάδας καρτελών με <ph name="TABS_COUNT_MANY" /> καρτέλες, χρώμα <ph name="COLOR_NAME" />.}}</translation>
@@ -117,6 +118,7 @@
 <translation id="6051432659151380973">Οι ομάδες καρτελών σας αποθηκεύονται αυτόματα</translation>
 <translation id="6054741997831917303">Η τιμή αυτού του στοιχείου μειώθηκε πρόσφατα από <ph name="PREVIOUS_PRICE" /> σε <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Θα χάσετε αμέσως την πρόσβαση στην ομάδα καρτελών <ph name="GROUP_NAME" /></translation>
+<translation id="6109251075362363230">Από εδώ και στο εξής, όλες οι διπλότυπες καρτέλες θα αρχειοθετούνται, με εξαίρεση το αντίγραφο που χρησιμοποιήθηκε πιο πρόσφατα.</translation>
 <translation id="6193448654517602979">Επιλογή καρτελών</translation>
 <translation id="6228793724645064692">(αξιολόγηση καταστήματος)</translation>
 <translation id="6271513594716432922">Κλείσιμο όλων των ανενεργών καρτελών</translation>

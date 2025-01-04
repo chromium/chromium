@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.task_manager.ui;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.ALL_COLUMN_KEYS;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.COLUMNS;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.CPU;
+import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.GPU_MEMORY;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.IS_KILLABLE;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.IS_SELECTED;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.MEMORY_FOOTPRINT;
+import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.NETWORK_USAGE;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.PROCESS_ID;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.SORT_DESCRIPTOR;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.TASK_ID;
@@ -197,8 +199,12 @@ class TaskManagerMediator {
             return RefreshType.MEMORY_FOOTPRINT;
         } else if (columnKey == CPU) {
             return RefreshType.CPU;
+        } else if (columnKey == NETWORK_USAGE) {
+            return RefreshType.NETWORK_USAGE;
         } else if (columnKey == PROCESS_ID) {
             return 0;
+        } else if (columnKey == GPU_MEMORY) {
+            return RefreshType.GPU_MEMORY;
         }
         throw new IllegalArgumentException();
     }
@@ -226,8 +232,12 @@ class TaskManagerMediator {
                 task.model.set(MEMORY_FOOTPRINT, mBridge.getMemoryFootprintUsage(taskId));
             } else if (columnKey == CPU) {
                 task.model.set(CPU, (float) mBridge.getPlatformIndependentCpuUsage(taskId));
+            } else if (columnKey == NETWORK_USAGE) {
+                task.model.set(NETWORK_USAGE, mBridge.getNetworkUsage(taskId));
             } else if (columnKey == PROCESS_ID) {
                 task.model.set(PROCESS_ID, mBridge.getProcessId(taskId));
+            } else if (columnKey == GPU_MEMORY) {
+                task.model.set(GPU_MEMORY, mBridge.getGpuMemoryUsage(taskId));
             } else {
                 throw new IllegalArgumentException("column key " + columnKey + " not supported");
             }
@@ -354,8 +364,13 @@ class TaskManagerMediator {
                                 a.model.get(MEMORY_FOOTPRINT), b.model.get(MEMORY_FOOTPRINT));
                     } else if (descriptor.key == CPU) {
                         return Float.compare(a.model.get(CPU), b.model.get(CPU));
+                    } else if (descriptor.key == NETWORK_USAGE) {
+                        return Long.compare(a.model.get(NETWORK_USAGE), b.model.get(NETWORK_USAGE));
                     } else if (descriptor.key == PROCESS_ID) {
                         return Long.compare(a.model.get(PROCESS_ID), b.model.get(PROCESS_ID));
+                    } else if (descriptor.key == GPU_MEMORY) {
+                        return Long.compare(
+                                a.model.get(GPU_MEMORY).bytes, b.model.get(GPU_MEMORY).bytes);
                     } else {
                         throw new IllegalArgumentException(
                                 "column key " + descriptor.key + " not supported");

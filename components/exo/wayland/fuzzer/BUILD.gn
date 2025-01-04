@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//components/exo/wayland/fuzzer/wayland_templater.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
@@ -115,7 +114,7 @@ source_set("unit_tests") {
 }
 
 source_set("server_environment") {
-  assert(is_chromeos_ash)
+  assert(is_chromeos)
 
   testonly = true
 

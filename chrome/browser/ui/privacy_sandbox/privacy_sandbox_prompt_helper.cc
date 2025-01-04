@@ -35,8 +35,9 @@ constexpr char kPrivacySandboxPromptHelperEventHistogram[] =
 // Gets the type of prompt that should be displayed for |profile|, this includes
 // the possibility of no prompt being required.
 PrivacySandboxService::PromptType GetRequiredPromptType(Profile* profile) {
-  if (!profile || !profile->IsRegularProfile())
+  if (!profile || !profile->IsRegularProfile()) {
     return PrivacySandboxService::PromptType::kNone;
+  }
 
   auto* privacy_sandbox_service =
       PrivacySandboxServiceFactory::GetForProfile(profile);

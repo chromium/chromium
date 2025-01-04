@@ -4,9 +4,10 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -20,6 +21,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -29,7 +31,9 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -83,22 +87,25 @@ public class SafetyHubModuleDelegateTest {
     public void testLaunchSigninPromo() {
         mSafetyHubTestRule.setSignedInState(false);
         when(mSigninLauncher.createBottomSheetSigninIntentOrShowError(
-                        eq(mContext),
-                        eq(mProfile),
-                        any(),
-                        eq(
-                                BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
-                                        .BOTTOM_SHEET),
-                        eq(
-                                BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                                        .DEFAULT_ACCOUNT_BOTTOM_SHEET),
-                        eq(HistorySyncConfig.OptInMode.NONE),
-                        eq(SigninAccessPoint.SAFETY_CHECK),
-                        isNull()))
+                        eq(mContext), eq(mProfile), any(), eq(SigninAccessPoint.SAFETY_CHECK)))
                 .thenReturn(mSigninIntent);
 
         mSafetyHubModuleDelegate.launchSigninPromo(mContext);
 
+        ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> configCaptor =
+                ArgumentCaptor.forClass(BottomSheetSigninAndHistorySyncConfig.class);
+        verify(mSigninLauncher)
+                .createBottomSheetSigninIntentOrShowError(
+                        eq(mContext),
+                        eq(mProfile),
+                        configCaptor.capture(),
+                        eq(SigninAccessPoint.SAFETY_CHECK));
+        BottomSheetSigninAndHistorySyncConfig config = configCaptor.getValue();
+        assertEquals(config.noAccountSigninMode, NoAccountSigninMode.BOTTOM_SHEET);
+        assertEquals(
+                config.withAccountSigninMode, WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET);
+        assertEquals(config.historyOptInMode, HistorySyncConfig.OptInMode.NONE);
+        assertNull(config.selectedCoreAccountId);
         verify(mContext).startActivity(mSigninIntent);
     }
 }

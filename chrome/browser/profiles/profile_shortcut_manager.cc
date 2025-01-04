@@ -4,8 +4,6 @@
 
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
 
-ProfileShortcutManager::~ProfileShortcutManager() {
-}
+ProfileShortcutManager::~ProfileShortcutManager() = default;
 
-ProfileShortcutManager::ProfileShortcutManager() {
-}
+ProfileShortcutManager::ProfileShortcutManager() = default;

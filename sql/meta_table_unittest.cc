@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "sql/database.h"
+#include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sql {
@@ -19,8 +20,6 @@ namespace {
 
 class SQLMetaTableTest : public testing::Test {
  public:
-  ~SQLMetaTableTest() override = default;
-
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     ASSERT_TRUE(
@@ -29,7 +28,7 @@ class SQLMetaTableTest : public testing::Test {
 
  protected:
   base::ScopedTempDir temp_dir_;
-  Database db_;
+  Database db_{test::kTestTag};
 };
 
 TEST_F(SQLMetaTableTest, DoesTableExist) {

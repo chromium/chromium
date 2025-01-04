@@ -51,6 +51,9 @@ PerformanceNavigationTiming::PerformanceNavigationTiming(
                                 window.CrossOriginIsolatedCapability(),
                                 &window),
       ExecutionContextClient(&window),
+      navigation_delivery_type_(
+          window.document()->Loader()->GetNavigationDeliveryType()),
+      navigation_type_(window.document()->Loader()->GetNavigationType()),
       document_timing_values_(
           window.document()->GetTiming().GetDocumentTimingValues()),
       document_load_timing_values_(window.document()
@@ -185,20 +188,11 @@ DOMHighResTimeStamp PerformanceNavigationTiming::loadEventEnd() const {
 }
 
 V8NavigationTimingType PerformanceNavigationTiming::type() const {
-  if (DomWindow()) {
-    return V8NavigationTimingType(
-        GetNavigationTimingType(GetDocumentLoader()->GetNavigationType()));
-  }
-  return V8NavigationTimingType(V8NavigationTimingType::Enum::kNavigate);
+  return V8NavigationTimingType(GetNavigationTimingType(navigation_type_));
 }
 
 AtomicString PerformanceNavigationTiming::deliveryType() const {
-  DocumentLoader* loader = GetDocumentLoader();
-  if (!loader) {
-    return GetDeliveryType();
-  }
-
-  switch (loader->GetNavigationDeliveryType()) {
+  switch (navigation_delivery_type_) {
     case NavigationDeliveryType::kDefault:
       return GetDeliveryType();
     case NavigationDeliveryType::kNavigationalPrefetch:

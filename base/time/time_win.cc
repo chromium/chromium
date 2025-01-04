@@ -135,10 +135,12 @@ constexpr UINT kMinTimerIntervalLowResMs = 8;
 // Calculate the desired timer interrupt interval. Note that zero means that the
 // system default should be used.
 UINT GetIntervalMs() {
-  if (!g_high_res_timer_count)
+  if (!g_high_res_timer_count) {
     return 0;  // Use the default, typically 15.625
-  if (g_high_res_timer_enabled)
+  }
+  if (g_high_res_timer_enabled) {
     return kMinTimerIntervalHighResMs;
+  }
   return kMinTimerIntervalLowResMs;
 }
 
@@ -147,8 +149,9 @@ UINT GetIntervalMs() {
 // new request). If there is no change then do nothing.
 void UpdateTimerIntervalLocked() {
   UINT new_interval = GetIntervalMs();
-  if (new_interval == g_last_interval_requested_ms)
+  if (new_interval == g_last_interval_requested_ms) {
     return;
+  }
   if (g_last_interval_requested_ms) {
     // Record how long the timer interrupt frequency was raised.
     g_high_res_timer_usage += subtle::TimeTicksNowIgnoringOverride() -
@@ -174,6 +177,18 @@ int64_t QPCNowRaw() {
   return perf_counter_now.QuadPart;
 }
 
+#if !defined(ARCH_CPU_ARM64)
+// Returns the performance frequency.
+int64_t QPFRaw() {
+  LARGE_INTEGER perf_counter_frequency = {};
+  // According to the MSDN documentation for QueryPerformanceFrequency(), this
+  // will never fail on systems that run XP or later.
+  // https://learn.microsoft.com/en-us/windows/win32/api/profileapi/nf-profileapi-queryperformancefrequency
+  ::QueryPerformanceFrequency(&perf_counter_frequency);
+  return perf_counter_frequency.QuadPart;
+}
+#endif
+
 bool SafeConvertToWord(int in, WORD* out) {
   CheckedNumeric<WORD> result = in;
   *out = result.ValueOrDefault(std::numeric_limits<WORD>::max());
@@ -186,8 +201,9 @@ bool SafeConvertToWord(int in, WORD* out) {
 
 namespace subtle {
 Time TimeNowIgnoringOverride() {
-  if (g_initial_time == 0)
+  if (g_initial_time == 0) {
     InitializeClock();
+  }
 
   // We implement time using the high-resolution timers so that we can get
   // timeouts which likely are smaller than those if we just used
@@ -224,17 +240,20 @@ Time TimeNowFromSystemTimeIgnoringOverride() {
 
 // static
 Time Time::FromFileTime(FILETIME ft) {
-  if (bit_cast<int64_t, FILETIME>(ft) == 0)
+  if (bit_cast<int64_t, FILETIME>(ft) == 0) {
     return Time();
+  }
   if (ft.dwHighDateTime == std::numeric_limits<DWORD>::max() &&
-      ft.dwLowDateTime == std::numeric_limits<DWORD>::max())
+      ft.dwLowDateTime == std::numeric_limits<DWORD>::max()) {
     return Max();
+  }
   return Time(FileTimeToMicroseconds(ft));
 }
 
 FILETIME Time::ToFileTime() const {
-  if (is_null())
+  if (is_null()) {
     return bit_cast<FILETIME, int64_t>(0);
+  }
   if (is_max()) {
     FILETIME result;
     result.dwHighDateTime = std::numeric_limits<DWORD>::max();
@@ -294,8 +313,9 @@ void Time::ResetHighResolutionTimerUsage() {
   AutoLock lock(*GetHighResLock());
   g_high_res_timer_usage = TimeDelta();
   g_high_res_timer_usage_start = subtle::TimeTicksNowIgnoringOverride();
-  if (g_high_res_timer_count > 0)
+  if (g_high_res_timer_count > 0) {
     g_high_res_timer_last_activation = g_high_res_timer_usage_start;
+  }
 }
 
 // static
@@ -425,9 +445,9 @@ union LastTimeAndRolloversState {
   } as_values;
 };
 std::atomic<int32_t> g_last_time_and_rollovers = 0;
-static_assert(
-    sizeof(LastTimeAndRolloversState) <= sizeof(g_last_time_and_rollovers),
-    "LastTimeAndRolloversState does not fit in a single atomic word");
+static_assert(sizeof(LastTimeAndRolloversState) <=
+                  sizeof(g_last_time_and_rollovers),
+              "LastTimeAndRolloversState does not fit in a single atomic word");
 
 // We use timeGetTime() to implement TimeTicks::Now().  This can be problematic
 // because it returns the number of milliseconds since Windows has started,
@@ -448,20 +468,23 @@ TimeTicks RolloverProtectedNow() {
     state.as_opaque_32 = original;
     now = g_tick_function();
     uint8_t now_8 = static_cast<uint8_t>(now >> 24);
-    if (now_8 < state.as_values.last_8)
+    if (now_8 < state.as_values.last_8) {
       ++state.as_values.rollovers;
+    }
     state.as_values.last_8 = now_8;
 
     // If the state hasn't changed, exit the loop.
-    if (state.as_opaque_32 == original)
+    if (state.as_opaque_32 == original) {
       break;
+    }
 
     // Save the changed state. If the existing value is unchanged from the
     // original so that the operation is successful. Exit the loop.
     bool success = g_last_time_and_rollovers.compare_exchange_strong(
         original, state.as_opaque_32, std::memory_order_release);
-    if (success)
+    if (success) {
       break;
+    }
 
     // Another thread has done something in between so retry from the top.
   }
@@ -542,8 +565,9 @@ TimeTicks QPCNow() {
 
 void InitializeNowFunctionPointer() {
   LARGE_INTEGER ticks_per_sec = {};
-  if (!QueryPerformanceFrequency(&ticks_per_sec))
+  if (!QueryPerformanceFrequency(&ticks_per_sec)) {
     ticks_per_sec.QuadPart = 0;
+  }
 
   // If Windows cannot provide a QPC implementation, TimeTicks::Now() must use
   // the low-resolution clock.
@@ -615,8 +639,9 @@ TimeTicks TimeTicksLowResolutionNowIgnoringOverride() {
 
 // static
 bool TimeTicks::IsHighResolution() {
-  if (g_time_ticks_now_ignoring_override_function == &InitialNowFunction)
+  if (g_time_ticks_now_ignoring_override_function == &InitialNowFunction) {
     InitializeNowFunctionPointer();
+  }
   return g_time_ticks_now_ignoring_override_function == &QPCNow;
 }
 
@@ -626,7 +651,8 @@ bool TimeTicks::IsConsistentAcrossProcesses() {
   // Vista. So if we are using QPC then we are consistent which is the same as
   // being high resolution.
   //
-  // [1] https://msdn.microsoft.com/en-us/library/windows/desktop/dn553408(v=vs.85).aspx
+  // [1]
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/dn553408(v=vs.85).aspx
   //
   // "In general, the performance counter results are consistent across all
   // processors in multi-core and multi-processor systems, even when measured on
@@ -690,8 +716,9 @@ ThreadTicks ThreadTicks::GetForThread(
 
   // Get the frequency of the TSC.
   const double tsc_ticks_per_second = time_internal::TSCTicksPerSecond();
-  if (tsc_ticks_per_second == 0)
+  if (tsc_ticks_per_second == 0) {
     return ThreadTicks();
+  }
 
   // Return the CPU time of the current thread.
   const double thread_time_seconds = thread_cycle_time / tsc_ticks_per_second;
@@ -716,8 +743,9 @@ bool ThreadTicks::IsSupportedWin() {
 // static
 void ThreadTicks::WaitUntilInitializedWin() {
 #if !defined(ARCH_CPU_ARM64)
-  while (time_internal::TSCTicksPerSecond() == 0)
+  while (time_internal::TSCTicksPerSecond() == 0) {
     ::Sleep(10);
+  }
 #endif
 }
 
@@ -778,8 +806,9 @@ double TSCTicksPerSecond() {
   // The TSC frequency is cached in a static variable because it takes some time
   // to compute it.
   static double tsc_ticks_per_second = 0;
-  if (tsc_ticks_per_second != 0)
+  if (tsc_ticks_per_second != 0) {
     return tsc_ticks_per_second;
+  }
 
   // Increase the thread priority to reduces the chances of having a context
   // switch during a reading of the TSC and the performance counter.
@@ -791,6 +820,7 @@ double TSCTicksPerSecond() {
 
   static const uint64_t tsc_initial = __rdtsc();
   static const int64_t perf_counter_initial = QPCNowRaw();
+  static const int64_t perf_counter_frequency = QPFRaw();
 
   // Make a another reading of the TSC and the performance counter every time
   // that this function is called.
@@ -806,19 +836,15 @@ double TSCTicksPerSecond() {
   //   accurate the computed TSC frequency will be. The 50 ms value was
   //   chosen because local benchmarks show that it allows us to get a
   //   stddev of less than 1 tick/us between multiple runs.
-  // Note: According to the MSDN documentation for QueryPerformanceFrequency(),
-  //   this will never fail on systems that run XP or later.
-  //   https://msdn.microsoft.com/library/windows/desktop/ms644905.aspx
-  LARGE_INTEGER perf_counter_frequency = {};
-  ::QueryPerformanceFrequency(&perf_counter_frequency);
   DCHECK_GE(perf_counter_now, perf_counter_initial);
   const int64_t perf_counter_ticks = perf_counter_now - perf_counter_initial;
   const double elapsed_time_seconds =
-      perf_counter_ticks / static_cast<double>(perf_counter_frequency.QuadPart);
+      perf_counter_ticks / static_cast<double>(perf_counter_frequency);
 
   constexpr double kMinimumEvaluationPeriodSeconds = 0.05;
-  if (elapsed_time_seconds < kMinimumEvaluationPeriodSeconds)
+  if (elapsed_time_seconds < kMinimumEvaluationPeriodSeconds) {
     return 0;
+  }
 
   // Compute the frequency of the TSC.
   DCHECK_GE(tsc_now, tsc_initial);

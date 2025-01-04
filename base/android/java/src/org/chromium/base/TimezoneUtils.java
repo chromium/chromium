@@ -9,8 +9,11 @@ import android.os.StrictMode;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.TimeZone;
 
+@NullMarked
 @JNINamespace("base::android")
 class TimezoneUtils {
     /** Guards this class from being instantiated. */

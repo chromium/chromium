@@ -67,6 +67,11 @@
 #endif
 
 namespace WTF {
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
+class Vector;
+}
+
+namespace WTF {
 
 #if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 // The allocation pool for nodes is one big chunk that ASAN has no insight
@@ -1660,7 +1665,7 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
     constexpr TypeConstraints() {
       // This condition is relied upon by TraceCollectionIfEnabled.
       static_assert(!IsWeak<T>::value);
-      static_assert(!IsStackAllocatedType<T>);
+      static_assert(!IsStackAllocatedTypeV<T>);
       static_assert(!std::is_polymorphic_v<T> ||
                         !VectorTraits<T>::kCanInitializeWithMemset,
                     "Cannot initialize with memset if there is a vtable.");
@@ -1675,8 +1680,7 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
           Allocator::kIsGarbageCollected || !IsWeakMemberType<T>::value,
           "WeakMember is not allowed in Vector nor HeapVector.");
       static_assert(
-          Allocator::kIsGarbageCollected ||
-              !IsPointerToGarbageCollectedType<T>::value,
+          Allocator::kIsGarbageCollected || !IsPointerToGarbageCollectedType<T>,
           "Cannot put raw pointers to garbage-collected classes into an "
           "off-heap Vector.  Use HeapVector<Member<T>> instead.");
     }

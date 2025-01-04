@@ -134,7 +134,7 @@ public class SmsFetcherMessageHandler {
     @CalledByNative
     private static void showNotification(
             @JniType("std::string") String oneTimeCode,
-            String topOrigin,
+            @JniType("std::u16string") String topOrigin,
             @Nullable String embeddedOrigin,
             @JniType("std::string") String clientName,
             long smsFetcherMessageHandlerAndroid) {
@@ -191,8 +191,14 @@ public class SmsFetcherMessageHandler {
 
     @NativeMethods
     interface Natives {
-        void onConfirm(long nativeSmsFetchRequestHandler, String topOrigin, String embeddedOrigin);
+        void onConfirm(
+                long nativeSmsFetchRequestHandler,
+                @JniType("std::u16string") String topOrigin,
+                String embeddedOrigin);
 
-        void onDismiss(long nativeSmsFetchRequestHandler, String topOrigin, String embeddedOrigin);
+        void onDismiss(
+                long nativeSmsFetchRequestHandler,
+                @JniType("std::u16string") String topOrigin,
+                String embeddedOrigin);
     }
 }

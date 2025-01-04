@@ -42,4 +42,7 @@ interface AIWriter {
   void destroy();
 
   readonly attribute DOMString sharedContext;
+  readonly attribute AIWriterTone tone;
+  readonly attribute AIWriterFormat format;
+  readonly attribute AIWriterLength length;
 };

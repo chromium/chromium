@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
@@ -26,18 +22,18 @@ namespace extensions {
 namespace {
 
 // Manifest permissions injected into |kManifest|:
-const char* const kPermissions[] = {
-  "*://*/*",              // ALL
-  "http://127.0.0.1/*",   // PARTICULAR
-  "http://nowhere.com/*"  // NOWHERE
-};
+const auto kPermissions = std::to_array<const char*>({
+    "*://*/*",               // ALL
+    "http://127.0.0.1/*",    // PARTICULAR
+    "http://nowhere.com/*",  // NOWHERE
+});
 
 // Script matchers for injected into |kBackgroundScriptSource|:
-const char* const kScriptMatchers[] = {
-  "{ pageUrl: { hostContains: '' } }",          // ALL
-  "{ pageUrl: { hostEquals: '127.0.0.1' } }",   // PARTICULAR
-  "{ pageUrl: { hostEquals: 'nowhere.com' } }"  // NOWHERE
-};
+const auto kScriptMatchers = std::to_array<const char*>({
+    "{ pageUrl: { hostContains: '' } }",           // ALL
+    "{ pageUrl: { hostEquals: '127.0.0.1' } }",    // PARTICULAR
+    "{ pageUrl: { hostEquals: 'nowhere.com' } }",  // NOWHERE
+});
 
 enum PermissionOrMatcherType {
   ALL = 0,

@@ -191,9 +191,11 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   void EnableFrameSinkManagerTestApi(
       mojo::PendingReceiver<mojom::FrameSinkManagerTestApi> receiver) override;
   void SetupRenderInputRouterDelegateConnection(
-      uint32_t grouping_id,
+      const base::UnguessableToken& grouping_id,
       mojo::PendingRemote<input::mojom::RenderInputRouterDelegateClient>
-          rir_delegate_client_remote) override;
+          rir_delegate_client_remote,
+      mojo::PendingReceiver<input::mojom::RenderInputRouterDelegate>
+          rir_delegate_receiver) override;
 
   // mojom::FrameSinksMetricsTracker implementation:
   void StartFrameCounting(base::TimeTicks start_time,
@@ -392,6 +394,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
  private:
   friend class FrameSinkManagerTest;
   friend class CompositorFrameSinkSupportTestBase;
+  friend class FlingSchedulerTest;
 
   // Metadata for a CompositorFrameSink.
   struct FrameSinkData {

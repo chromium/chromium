@@ -85,6 +85,8 @@ class PrivacySandboxPromptHelperTest : public InProcessBrowserTest {
         .WillByDefault(testing::Return(TestPromptType()));
     ON_CALL(*mock_privacy_sandbox_service, IsPromptOpenForBrowser(testing::_))
         .WillByDefault(testing::Return(false));
+    ON_CALL(*mock_privacy_sandbox_service, IsHoldingHandle())
+        .WillByDefault(testing::Return(true));
   }
 
   virtual PrivacySandboxService::PromptType TestPromptType() {
@@ -243,11 +245,11 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
 }
 
 // TODO(crbug.com/40270789): Debug and re-enable the test.
-# if BUILDFLAG(IS_CHROMEOS)
-# define MAYBE_PromptOpensOnHistory DISABLED_PromptOpensOnHistory
-# else
-# define MAYBE_PromptOpensOnHistory PromptOpensOnHistory
-# endif
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_PromptOpensOnHistory DISABLED_PromptOpensOnHistory
+#else
+#define MAYBE_PromptOpensOnHistory PromptOpensOnHistory
+#endif
 IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
                        MAYBE_PromptOpensOnHistory) {
   // Check when a navigation to the Chrome history occurs, which is a

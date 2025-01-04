@@ -243,6 +243,7 @@ public class PartialCustomTabTestRule implements TestRule {
         mContext = ApplicationProvider.getApplicationContext();
         ContextUtils.initApplicationContextForTests(mContext);
         when(mActivity.getSystemService(Context.ACTIVITY_SERVICE)).thenReturn(mActivityManager);
+        when(mActivity.getSystemService(Context.WINDOW_SERVICE)).thenReturn(mWindowManager);
         when(mActivity.getPackageManager()).thenReturn(mPackageManager);
     }
 

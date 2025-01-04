@@ -20,7 +20,7 @@ static_library("facilitated_payments") {
     "//components/autofill/core/browser",
     "//components/facilitated_payments/content/browser",
     "//components/facilitated_payments/core/browser",
-    "//components/facilitated_payments/core/ui_utils",
+    "//components/facilitated_payments/core/utils",
   ]
 }
 

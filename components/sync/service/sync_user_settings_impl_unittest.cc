@@ -8,7 +8,6 @@
 
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/saved_tab_groups/public/pref_names.h"
@@ -22,6 +21,7 @@
 #include "components/sync/service/sync_prefs.h"
 #include "components/sync/service/sync_service_crypto.h"
 #include "components/trusted_vault/test/fake_trusted_vault_client.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -95,7 +95,7 @@ class SyncUserSettingsImplTest : public testing::Test,
   CoreAccountInfo GetSyncAccountInfoForPrefs() const override {
     CoreAccountInfo account;
     account.email = "name@account.com";
-    account.gaia = "name";
+    account.gaia = GaiaId("name");
     account.account_id = CoreAccountId::FromGaiaId(account.gaia);
     return account;
   }

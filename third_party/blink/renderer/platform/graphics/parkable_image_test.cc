@@ -316,7 +316,7 @@ TEST_F(ParkableImageTest, AppendMultiple) {
 
   EXPECT_TRUE(IsSameContent(pi, data));
 
-  sb->Append(data.data(), kDataSize);
+  sb->Append(data);
   ASSERT_EQ(sb->size(), 2 * kDataSize);
 
   pi->Append(sb.get(), pi->size());

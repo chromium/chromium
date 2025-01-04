@@ -128,10 +128,6 @@ extern const char kChromeAppGroupIsGoogleDefaultSearchEngine[];
 // provider.
 extern const char kChromeAppGroupEnableLensInWidget[];
 
-// The key of a preference containing whether the home screen widget should show
-// the color Lens and voice icons if Lens is shown.
-extern const char kChromeAppGroupEnableColorLensAndVoiceIconsInWidget[];
-
 // The key of a preference containing Chrome client ID reported in the metrics
 // client ID. If the user does not opt in, this value must be cleared from the
 // shared user defaults.
@@ -189,6 +185,14 @@ extern NSString* const kOpenExtensionOutcomeFailureUnsupportedScheme;
 // A key in the application group NSUserDefault that contains
 // the outcomes of the Open Extension.
 extern NSString* const kOpenExtensionOutcomes;
+
+// Name of NSUserDefault key containing info about registered profiles to be
+// passed to widgets.
+extern NSString* const kAccountsOnDevice;
+// Names of keys in dictionary saved in kAccountsOnDevice.
+extern NSString* const kHostedDomain;
+extern NSString* const kPictureUrl;
+extern NSString* const kEmail;
 
 // Conversion helpers between keys and OpenExtensionOutcome.
 NSString* KeyForOpenExtensionOutcomeType(OpenExtensionOutcome);

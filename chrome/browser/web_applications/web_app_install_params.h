@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"

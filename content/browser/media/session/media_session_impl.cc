@@ -70,9 +70,6 @@ using MapRenderFrameHostToDepth = std::map<RenderFrameHost*, size_t>;
 
 using media_session::mojom::AudioFocusType;
 
-using MediaSessionSuspendedSource =
-    MediaSessionUmaHelper::MediaSessionSuspendedSource;
-
 const char kMediaSessionDataName[] = "MediaSessionDataName";
 
 class MediaSessionData : public base::SupportsUserData::Data {
@@ -571,11 +568,6 @@ void MediaSessionImpl::RemovePlayers(MediaSessionPlayerObserver* observer) {
   RebuildAndNotifyMediaPositionChanged();
 }
 
-void MediaSessionImpl::RecordSessionDuck() {
-  uma_helper_.RecordSessionSuspended(
-      MediaSessionSuspendedSource::kSystemTransientDuck);
-}
-
 void MediaSessionImpl::OnPlayerPaused(MediaSessionPlayerObserver* observer,
                                       int player_id) {
   // If a playback is completed, BrowserMediaPlayerManager will call
@@ -815,6 +807,7 @@ RenderFrameHost* MediaSessionImpl::GetRoutedFrame() {
 }
 
 void MediaSessionImpl::StartDucking() {
+  should_unduck_on_focus_gained_ = false;
   if (is_ducking_)
     return;
   is_ducking_ = true;
@@ -823,6 +816,7 @@ void MediaSessionImpl::StartDucking() {
 }
 
 void MediaSessionImpl::StopDucking() {
+  should_unduck_on_focus_gained_ = true;
   if (!is_ducking_)
     return;
   is_ducking_ = false;
@@ -834,6 +828,10 @@ void MediaSessionImpl::UpdateVolumeMultiplier() {
   for (const auto& it : normal_players_) {
     it.first.observer->OnSetVolumeMultiplier(it.first.player_id,
                                              GetVolumeMultiplier());
+  }
+
+  for (const auto& it : one_shot_players_) {
+    it.observer->OnSetVolumeMultiplier(it.player_id, GetVolumeMultiplier());
   }
 
   for (const auto& it : pepper_players_)
@@ -921,8 +919,9 @@ void MediaSessionImpl::OnImageDownloadComplete(
 }
 
 void MediaSessionImpl::OnSystemAudioFocusRequested(bool result) {
-  if (result)
+  if (result && should_unduck_on_focus_gained_) {
     StopDucking();
+  }
 }
 
 void MediaSessionImpl::OnSuspendInternal(SuspendType suspend_type,
@@ -938,29 +937,6 @@ void MediaSessionImpl::OnSuspendInternal(SuspendType suspend_type,
 
   if (audio_focus_state_ != State::ACTIVE)
     return;
-
-  switch (suspend_type) {
-    case SuspendType::kUI:
-      uma_helper_.RecordSessionSuspended(MediaSessionSuspendedSource::kUI);
-      break;
-    case SuspendType::kSystem:
-      switch (new_state) {
-        case State::SUSPENDED:
-          uma_helper_.RecordSessionSuspended(
-              MediaSessionSuspendedSource::kSystemTransient);
-          break;
-        case State::INACTIVE:
-          uma_helper_.RecordSessionSuspended(
-              MediaSessionSuspendedSource::kSystemPermanent);
-          break;
-        case State::ACTIVE:
-          NOTREACHED();
-      }
-      break;
-    case SuspendType::kContent:
-      uma_helper_.RecordSessionSuspended(MediaSessionSuspendedSource::kCONTENT);
-      break;
-  }
 
   SetAudioFocusState(new_state);
   suspend_type_ = suspend_type;
@@ -1034,6 +1010,8 @@ AudioFocusDelegate::AudioFocusResult MediaSessionImpl::RequestSystemAudioFocus(
   // |kGainTransient| is not used in MediaSessionImpl.
   DCHECK_NE(media_session::mojom::AudioFocusType::kGainTransient,
             audio_focus_type);
+
+  should_unduck_on_focus_gained_ = true;
 
   AudioFocusDelegate::AudioFocusResult result =
       delegate_->RequestAudioFocus(audio_focus_type);

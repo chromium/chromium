@@ -429,7 +429,8 @@ viz::SharedQuadState* Layer::CreateAndAppendSharedQuadState(
                      data.mask_filter_info_in_target, clip_opt,
                      contents_opaque(), opacity, SkBlendMode::kSrcOver,
                      /*sorting_context=*/0,
-                     /*layer_id=*/0u, /*fast_rounded_corner=*/false);
+                     /*layer_id=*/static_cast<uint32_t>(id()),
+                     /*fast_rounded_corner=*/false);
   quad_state->is_fast_rounded_corner = true;
   quad_state->offset_tag = data.offset_tag;
   return quad_state;

@@ -86,7 +86,7 @@ class RangeInputType final : public InputType, public InputTypeView {
   void UpdateTickMarkValues();
 
   // InputTypeView function:
-  ControlPart AutoAppearance() const override;
+  AppearanceValue AutoAppearance() const override;
   void UpdateView() override;
   void ValueAttributeChanged() override;
   bool IsDraggedSlider() const override;

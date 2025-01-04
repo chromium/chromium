@@ -16,17 +16,6 @@
 
 using base::android::JavaParamRef;
 
-// static
-void SigninBridge::LaunchSigninActivity(
-    ui::WindowAndroid* window,
-    signin_metrics::AccessPoint access_point) {
-  if (window) {
-    Java_SigninBridge_launchSigninActivity(base::android::AttachCurrentThread(),
-                                           window->GetJavaObject(),
-                                           static_cast<int>(access_point));
-  }
-}
-
 void SigninBridge::OpenAccountManagementScreen(
     ui::WindowAndroid* window,
     signin::GAIAServiceType service_type) {
@@ -44,7 +33,6 @@ void SigninBridge::OpenAccountPickerBottomSheet(
     return;
   }
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_SigninBridge_openAccountPickerBottomSheet(
-      env, tab->GetJavaObject(),
-      base::android::ConvertUTF8ToJavaString(env, continue_url));
+  Java_SigninBridge_openAccountPickerBottomSheet(env, tab->GetJavaObject(),
+                                                 continue_url);
 }

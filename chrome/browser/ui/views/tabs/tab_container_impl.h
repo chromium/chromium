@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_CONTAINER_IMPL_H_
 
 #include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/timer/timer.h"

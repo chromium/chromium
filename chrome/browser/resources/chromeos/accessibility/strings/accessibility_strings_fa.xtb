@@ -845,6 +845,7 @@
 <translation id="6385591741672306837">ستون</translation>
 <translation id="6387719785439924554">جدا</translation>
 <translation id="6393014464788431702">غیرفعال کردن همه فیلترهای رویداد</translation>
+<translation id="6406989068857078334">سرعت موشواره کاهش یافت، برای کلیک کردن، دوباره <ph name="GESTURE" /></translation>
 <translation id="6411569524720229058">پاییز</translation>
 <translation id="6417265370957905582">‏دستیار Google</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{دونقطه}one{# دونقطه}other{# دونقطه}}</translation>
@@ -1099,6 +1100,7 @@
 <translation id="8205922869661890178">باز کردن صفحه گزارش برنامه‌نویس</translation>
 <translation id="8212109599554677485">تغییر سبک نمایش به حالت پهلوبه‌پهلو</translation>
 <translation id="8215202828671303819">چندانتخابی</translation>
+<translation id="822316432305106615">شروع کردن کلیک دقیق</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />% ماتی.</translation>
 <translation id="8261506727792406068">حذف</translation>
 <translation id="826825447994856889">مقدمه</translation>

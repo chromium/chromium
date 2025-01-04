@@ -19,7 +19,7 @@ class WebContents;
 namespace views {
 class MessageBoxView;
 class Widget;
-}
+}  // namespace views
 
 // Displays a tab-modal dialog, i.e. a dialog that will block the current page
 // but still allow the user to switch to a different page.

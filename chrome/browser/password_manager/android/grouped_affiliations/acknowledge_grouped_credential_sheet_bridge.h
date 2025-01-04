@@ -33,7 +33,8 @@ class AcknowledgeGroupedCredentialSheetBridge {
   // Represents all possible ways to resolve the sheet: acceptance, clicking
   // `Back`, or just dismissing it. The difference between `Back` and just
   // dismissing is that the first may navigate user to the previous UI (like
-  // TTF).
+  // TTF). These values are persisted to logs. Entries should not be renumbered
+  // and numeric values should never be reused.
   //
   // GENERATED_JAVA_ENUM_PACKAGE: (
   //    org.chromium.chrome.browser.grouped_affiliations)
@@ -41,6 +42,7 @@ class AcknowledgeGroupedCredentialSheetBridge {
     kAccept = 0,
     kBack = 1,
     kIgnore = 2,
+    kMaxValue = kIgnore,
   };
   AcknowledgeGroupedCredentialSheetBridge();
   // Test constructors

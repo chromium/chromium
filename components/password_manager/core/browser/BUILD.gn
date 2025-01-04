@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//components/password_manager/core/browser/buildflags.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
@@ -250,7 +249,7 @@ static_library("browser") {
     ]
   }
 
-  if (!is_chromeos_ash && !is_android) {
+  if (!is_chromeos && !is_android) {
     sources += [
       "password_reuse_manager_signin_notifier_impl.cc",
       "password_reuse_manager_signin_notifier_impl.h",
@@ -520,7 +519,7 @@ source_set("unit_tests") {
     sources += [ "hash_password_manager_unittest.cc" ]
   }
 
-  if (!is_chromeos_ash && !is_android) {
+  if (!is_chromeos && !is_android) {
     sources += [ "password_reuse_manager_signin_notifier_impl_unittest.cc" ]
   }
 

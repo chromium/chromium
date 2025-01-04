@@ -64,6 +64,9 @@
   <message name="IDS_EXTENSIONS_REPAIR_CORRUPTED" desc="The link for repairing corrupted extensions.">
     Repair
   </message>
+  <message name="IDS_EXTENSIONS_MOVE_TO_ACCOUNT_ICON_TOOLTIP" desc="The tooltip displayed when the user hovers the button to move the extension to their account.">
+    Save in your Google Account
+  </message>
   <message name="IDS_EXTENSIONS_VIEW_IFRAME" desc="Text that signifies that the extension view is an iframe.">
     (iframe)
   </message>
@@ -75,6 +78,15 @@
   </message>
   <message name="IDS_EXTENSIONS_DEVELOPER_MODE" desc="The text displayed next to the checkbox to toggle developer mode in the extensions page.">
     Developer mode
+  </message>
+  <message name="IDS_EXTENSIONS_DISABLED_UNSUPPORTED_DEVELOPER_MODE" desc="Text shown in the extension card for extensions disabled due to unsupported developer mode.">
+    Turn on developer mode to use this extension, which can't be reviewed by the Chrome Web Store.
+  </message>
+  <message name="IDS_EXTENSIONS_DISABLED_UNSUPPORTED_DEVELOPER_MODE_DETAILS" desc="Text shown in the details extension view for extensions disabled due to unsupported developer mode.">
+    Turn on developer mode to use this extension, but only if you trust the extension. It may contain experimental features and hasn't been reviewed by the Chrome Web Store.
+  </message>
+  <message name="IDS_EXTENSIONS_DISABLED_UNSUPPORTED_DEVELOPER_MODE_TOAST" desc="Text displayed in a toast popup message when extensions are disabled due to unsupported developer mode.">
+    Developer Mode Off. Some extensions were disabled.
   </message>
   <message name="IDS_EXTENSIONS_DISABLED_UPDATE_REQUIRED_BY_POLICY" desc="Text shown in the extensions settings for extensions disabled due to minimum version requirement from enterprise policy">
     This extension is outdated and disabled by enterprise policy. It might become enabled automatically when a newer version is available.
@@ -613,8 +625,8 @@
   </message>
   <message name="IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_WARNING_SUBTITLE" desc="Subtitle text displayed in the manifest v2 deprecation panel for the warning stage.">
     {NUM_EXTENSIONS, plural,
-      =1 {Remove or replace it with similar extensions from the <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Chrome Web Store<ph name="END_LINK">&lt;/a&gt;</ph>.}
-      other {Remove or replace them with similar extensions from the <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Chrome Web Store<ph name="END_LINK">&lt;/a&gt;</ph>}
+      =1 {Remove or replace it with similar extensions from the <ph name="BEGIN_LINK">&lt;a href="$1" aria-description="$2" target="_blank"&gt;</ph>Chrome Web Store<ph name="END_LINK">&lt;/a&gt;</ph>.}
+      other {Remove or replace them with similar extensions from the <ph name="BEGIN_LINK">&lt;a href="$1" aria-description="$2" target="_blank"&gt;</ph>Chrome Web Store<ph name="END_LINK">&lt;/a&gt;</ph>}
     }
   </message>
   <message name="IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_DISABLED_HEADER" desc="Header text displayed in the manifest v2 deprecation panel for the disabled stage.">
@@ -627,7 +639,7 @@
     This extension may soon no longer be supported
   </message>
   <message name="IDS_EXTENSIONS_MV2_DEPRECATION_MESSAGE_WARNING_SUBTITLE" desc="Subtitle text displayed in the manifest v2 deprecation message for a specific extension during the warning stage.">
-    Remove or replace it with similar extensions from the <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Chrome Web Store<ph name="END_LINK">&lt;/a&gt;</ph>
+    Remove or replace it with similar extensions from the <ph name="BEGIN_LINK">&lt;a href="$1" aria-description="$2" target="_blank"&gt;</ph>Chrome Web Store<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_EXTENSIONS_MV2_DEPRECATION_MESSAGE_DISABLED_HEADER" desc="Header text displayed in the manifest v2 deprecation message for a specific extension during the disabled stage.">
     This extension was turned off because it is no longer supported

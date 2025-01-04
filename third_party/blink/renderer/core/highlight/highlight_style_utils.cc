@@ -568,11 +568,6 @@ HighlightStyleUtils::HighlightPaintingStyle(
     }
   }
 
-  // Text shadows are disabled when printing. http://crbug.com/258321
-  if (document.Printing()) {
-    highlight_style.shadow = nullptr;
-  }
-
   return {highlight_style, text_decoration_color, background_color,
           colors_from_previous_layer};
 }

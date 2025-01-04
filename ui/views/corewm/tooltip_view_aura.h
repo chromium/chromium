@@ -6,6 +6,7 @@
 #define UI_VIEWS_COREWM_TOOLTIP_VIEW_AURA_H_
 
 #include <memory>
+
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/render_text.h"

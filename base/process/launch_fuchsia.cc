@@ -4,8 +4,6 @@
 
 #include "base/process/launch.h"
 
-#include <tuple>
-
 #include <lib/fdio/limits.h>
 #include <lib/fdio/namespace.h>
 #include <lib/fdio/spawn.h>
@@ -13,6 +11,8 @@
 #include <stdint.h>
 #include <unistd.h>
 #include <zircon/processargs.h>
+
+#include <tuple>
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
@@ -42,11 +42,13 @@ bool GetAppOutputInternal(const CommandLine& cmd_line,
   // LaunchProcess will automatically clone any stdio fd we do not explicitly
   // map.
   int pipe_fd[2];
-  if (pipe(pipe_fd) < 0)
+  if (pipe(pipe_fd) < 0) {
     return false;
+  }
   options.fds_to_remap.emplace_back(pipe_fd[1], STDOUT_FILENO);
-  if (include_stderr)
+  if (include_stderr) {
     options.fds_to_remap.emplace_back(pipe_fd[1], STDERR_FILENO);
+  }
 
   Process process = LaunchProcess(cmd_line, options);
   close(pipe_fd[1]);
@@ -59,8 +61,9 @@ bool GetAppOutputInternal(const CommandLine& cmd_line,
   for (;;) {
     char buffer[256];
     ssize_t bytes_read = read(pipe_fd[0], buffer, sizeof(buffer));
-    if (bytes_read <= 0)
+    if (bytes_read <= 0) {
       break;
+    }
     output->append(buffer, static_cast<size_t>(bytes_read));
   }
   close(pipe_fd[0]);
@@ -155,8 +158,9 @@ Process LaunchProcess(const std::vector<std::string>& argv,
   // Construct an |argv| array of C-strings from the supplied std::strings.
   std::vector<const char*> argv_cstr;
   argv_cstr.reserve(argv.size() + 1);
-  for (const auto& arg : argv)
+  for (const auto& arg : argv) {
     argv_cstr.push_back(arg.c_str());
+  }
   argv_cstr.push_back(nullptr);
 
   // If |environment| is set then it contains values to set/replace to create
@@ -249,8 +253,9 @@ Process LaunchProcess(const std::vector<std::string>& argv,
 
   // fdio_spawn_etc() will close all handles specified in add-handle actions,
   // regardless of whether it succeeds or fails, so release our copies.
-  for (auto& transferred_handle : transferred_handles)
+  for (auto& transferred_handle : transferred_handles) {
     std::ignore = transferred_handle.release();
+  }
 
   if (status != ZX_OK) {
     ZX_LOG(ERROR, status) << "fdio_spawn: " << error_message;

@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Dunkles Design deaktivieren</translation>
 <translation id="1807246157184219062">Hell</translation>
 <translation id="1808803439260407870">Klassik</translation>
+<translation id="181434555916624618">Ergebnisse mit Personen werden vorerst nicht angezeigt. Versuche es mit einem anderen Prompt.</translation>
 <translation id="1815850098929213707">Die ausgewählte Taste ist „<ph name="KEYS" />“. Wenn du das Steuerelement bearbeiten möchtest, tippe auf die Schaltfläche.</translation>
 <translation id="1823120442877418684">Objekte</translation>
 <translation id="1827738518074806965">Kunstgalerie</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">Der Akkustand des rechten Kopfhörers liegt bei <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">Einstellungen</translation>
 <translation id="3347558044552027859">modernes</translation>
+<translation id="3353477144743332882">Modell für Zusammenfassung und Namenserstellung herunterladen</translation>
 <translation id="3359218928534347896">Mikrofonstummschalten ein- oder ausschalten</translation>
 <translation id="3360306038446926262">Fenster</translation>
 <translation id="3361618936611118375">Sushi</translation>
@@ -689,6 +691,7 @@
 <translation id="4354430579665871434">Taste</translation>
 <translation id="4356100841225547054">Ton ausschalten</translation>
 <translation id="4361257691546579041">APN-Typ ist „Standard“.</translation>
+<translation id="4368101969572512692">Vorschläge zufällig anordnen</translation>
 <translation id="437294888293595148">Alle Tastenkombinationen zurücksetzen</translation>
 <translation id="437477383107495720">Hasen</translation>
 <translation id="4376423484621194274">Dein Administrator lässt das Schließen von <ph name="APP_NAME" /> nicht zu</translation>
@@ -768,6 +771,7 @@
 <translation id="4731797938093519117">Elternzugang</translation>
 <translation id="473775607612524610">Aktualisieren</translation>
 <translation id="4744944742468440486">Informationen in Bezug auf deine Auswahl</translation>
+<translation id="4750394297954878236">Vorschläge</translation>
 <translation id="4771607256327216405">Tastatur aufhellen</translation>
 <translation id="4771923071974529837">morgen</translation>
 <translation id="4773299976671772492">Angehalten</translation>
@@ -853,6 +857,7 @@
 <translation id="5121677070210013200">Transkriptmodell kann nicht heruntergeladen werden. Versuche es noch einmal oder starte dein Chromebook neu.</translation>
 <translation id="5130848777448318809">Ponys</translation>
 <translation id="5137451382116112100">Voll</translation>
+<translation id="5139813694804168398">Bitte nicht stören</translation>
 <translation id="5140788690559353412">Wenn du den Zugriff auf dein Konto einer Bildungseinrichtung verlierst, hast du auch keinen Zugriff mehr auf die zugehörigen E‑Mails und Google Drive-Dateien in Produkten wie Gmail, Google Docs und Google Präsentationen.</translation>
 <translation id="5142961317498132443">Authentifizierung</translation>
 <translation id="5144311987923128508">Schaltfläche „Bestätigen“ ist jetzt deaktiviert</translation>
@@ -871,7 +876,7 @@
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5220549459260334974"><ph name="PROGRESS_PERCENTAGE" /> % heruntergeladen</translation>
 <translation id="5222676887888702881">Abmelden</translation>
-<translation id="522307662484862935">E-Mail-Adresse nicht einfügen</translation>
+<translation id="522307662484862935">Anonym senden</translation>
 <translation id="5223226274641517059">Während der Aufnahme wird ein automatisches Transkript angezeigt. Du kannst diese Funktion jederzeit wieder in den Einstellungen deaktivieren.</translation>
 <translation id="5226879510707344687">Transkript exportieren</translation>
 <translation id="5227902338748591677">Zeitplan für dunkles Design</translation>
@@ -897,6 +902,7 @@
 <translation id="5302048478445481009">Sprache</translation>
 <translation id="5303837385540978511">Exklusiver <ph name="PRODUCT_NAME" />-Hintergrund</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="530883153651464140">„<ph name="DEVICE_NAME" />“ auf Version <ph name="VERSION" /> aktualisieren</translation>
 <translation id="5315873049536339193">Identität</translation>
 <translation id="5317780077021120954">Speichern</translation>
 <translation id="5318310531701770497">Namen können nicht erstellt werden. Versuche es mit einem längeren Transkript.</translation>
@@ -973,7 +979,6 @@
 <translation id="5703716265115423771">Lautstärke verringern</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> von <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Schaltfläche zum Bearbeiten von „<ph name="SHORTCUT_DESCRIPTION" />“.</translation>
-<translation id="5733298426544876109">„<ph name="DEVICE_NAME" />“ aktualisieren</translation>
 <translation id="5736820754189340309">Datennutzung wurde zurückgesetzt</translation>
 <translation id="574392208103952083">Mittel</translation>
 <translation id="5744175046705638478">„<ph name="QUERY" />“ übersetzen</translation>
@@ -998,6 +1003,7 @@
 <translation id="5859969039821714932">Tastenkombination nicht verfügbar. Drücke eine andere ohne <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Aus</translation>
 <translation id="5860491529813859533">Aktivieren</translation>
+<translation id="5875913454160982848">Transkriptmodell herunterladen</translation>
 <translation id="5876385649737594562">Aktivieren, um Optionen auszuwählen</translation>
 <translation id="5877503382465267833">„<ph name="RECORDING_NAME" />“ pausieren</translation>
 <translation id="588258955323874662">Vollbild</translation>
@@ -1037,7 +1043,6 @@
 <translation id="6040143037577758943">Schließen</translation>
 <translation id="6040852767465482106">Anonyme Identität</translation>
 <translation id="604124094241169006">Automatisch</translation>
-<translation id="6042308850641462728">Mehr</translation>
 <translation id="6048107060512778456">Fehlgeschlagen – Papierstau</translation>
 <translation id="6050189528197190982">Graustufen</translation>
 <translation id="6054711098834486579">Expressionismus</translation>
@@ -1293,6 +1298,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Nameserver}other{Nameserver}}</translation>
 <translation id="7135814714616751706">Tastenkombinationen suchen</translation>
 <translation id="7138614237884624401">Vereinfachter Text</translation>
+<translation id="7138668887584231801">Nicht genügend Wörter für eine Zusammenfassung</translation>
 <translation id="7141470099673912333">Inhaltsübertragung</translation>
 <translation id="7143207342074048698">Verbindung...</translation>
 <translation id="7144878232160441200">Wiederholen</translation>
@@ -1588,6 +1594,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8503836310948963452">Nur noch ein paar Minuten…</translation>
 <translation id="8505011850330200833">Das Gemini-Modell zum Verarbeiten von Transkripten und Erstellen von Zusammenfassungen erfordert 2 GB Speicherplatz</translation>
 <translation id="8508640263392900755">APN-Details</translation>
+<translation id="8509574872955173831">Weitere Informationen zur Zusammenfassung und Namenserstellung</translation>
 <translation id="8522687886059337719">Du hast jetzt Zugriff auf neue <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />Hintergründe<ph name="END_LINK_WALLPAPER_SUBPAGE" /> und <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />Bildschirmschoner<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">Teehaus</translation>
@@ -1724,7 +1731,6 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="9133772297793293778">Drücke eine bis vier Modifikatortasten und eine weitere Taste auf deiner Tastatur. Um den Bearbeitungsmodus zu beenden, drücke Alt + Esc-Taste.</translation>
 <translation id="9137526406337347448">Google-Dienste</translation>
 <translation id="9138630967333032450">Umschalttaste links</translation>
-<translation id="9147928237330776930">Zum Zusammenfassen sind nicht genug Wörter vorhanden</translation>
 <translation id="9149391708638971077">Speichertest ausführen</translation>
 <translation id="9159524746324788320">Hamburger</translation>
 <translation id="9161276708550942948">Leerzeichen</translation>

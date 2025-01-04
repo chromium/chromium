@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -92,7 +93,7 @@ TEST_F(SodaClientImplUnitTest, CreateSodaClient) {
   std::string buffer;
   ASSERT_TRUE(base::ReadFileToString(audio_file, &buffer));
 
-  auto handler = media::WavAudioHandler::Create(buffer);
+  auto handler = media::WavAudioHandler::Create(base::as_byte_span(buffer));
   ASSERT_TRUE(handler.get());
   ASSERT_EQ(handler->GetNumChannels(), 1);
 

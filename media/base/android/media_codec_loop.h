@@ -109,26 +109,6 @@ namespace media {
 
 class MEDIA_EXPORT MediaCodecLoop {
  public:
-  // Data that the client wants to put into an input buffer.
-  struct InputData {
-    InputData();
-    InputData(const InputData&);
-    ~InputData();
-
-    // TODO(367764863) Rewrite to base::raw_span.
-    RAW_PTR_EXCLUSION base::span<const uint8_t> memory;
-
-    std::string key_id;
-    std::string iv;
-    std::vector<SubsampleEntry> subsamples;
-
-    base::TimeDelta presentation_time;
-
-    bool is_eos = false;
-    EncryptionScheme encryption_scheme = EncryptionScheme::kUnencrypted;
-    std::optional<EncryptionPattern> encryption_pattern;
-  };
-
   // Handy enum for "no buffer".
   enum { kInvalidBufferIndex = -1 };
 
@@ -164,7 +144,7 @@ class MEDIA_EXPORT MediaCodecLoop {
 
     // Fills and returns an input buffer for MediaCodecLoop to queue.  It is
     // an error for MediaCodecLoop to call this while !IsAnyInputPending().
-    virtual InputData ProvideInputData() = 0;
+    virtual scoped_refptr<DecoderBuffer> ProvideInputData() = 0;
 
     // Called to notify the client that the previous data (or eos) provided by
     // ProvideInputData has been queued with the codec.  IsAnyInputPending and
@@ -321,7 +301,7 @@ class MEDIA_EXPORT MediaCodecLoop {
 
   // When processing a pending input buffer, this is the data that was returned
   // to us by the client.  |memory| has been cleared, since the codec has it.
-  InputData pending_input_buf_data_;
+  scoped_refptr<DecoderBuffer> pending_input_buf_data_;
 
   // Optional clock for use during testing.  It may be null.  We do not maintain
   // ownership of it.

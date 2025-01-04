@@ -11,6 +11,7 @@
 
 #include <utility>
 
+#include "ash/components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "ash/components/arc/mojom/scale_factor.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 
 // Check ScaleFactor values are the same for arc::mojom and crosapi::mojom.
 #define STATIC_ASSERT_SCALE_FACTOR(v)                               \

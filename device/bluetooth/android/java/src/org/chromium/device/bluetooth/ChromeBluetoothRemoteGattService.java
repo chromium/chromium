@@ -9,6 +9,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.device.bluetooth.wrapper.BluetoothGattCharacteristicWrapper;
 import org.chromium.device.bluetooth.wrapper.BluetoothGattServiceWrapper;
 
@@ -22,6 +23,7 @@ import java.util.List;
  * device::BluetoothRemoteGattServiceAndroid.
  */
 @JNINamespace("device")
+@NullMarked
 final class ChromeBluetoothRemoteGattService {
     private static final String TAG = "Bluetooth";
 

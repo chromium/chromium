@@ -324,7 +324,8 @@ bool DoWebViewScripstMatch(const Extension& extension,
       owner_site_url.host_piece() == extension.id()) {
     WebViewContentScriptManager* script_manager =
         WebViewContentScriptManager::Get(frame.GetBrowserContext());
-    int embedder_process_id = guest->owner_rfh()->GetProcess()->GetID();
+    int embedder_process_id =
+        guest->owner_rfh()->GetProcess()->GetDeprecatedID();
     std::set<std::string> script_ids = script_manager->GetContentScriptIDSet(
         embedder_process_id, guest->view_instance_id());
 

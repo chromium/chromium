@@ -8,17 +8,32 @@
     <style>
       html {
         background: var(--md-background-color);
+        color: var(--md-loading-message-color);
+        text-align: center;
+      }
+
+      a {
+       color: rgb(11, 87, 208); /* --cr-fallback-color-primary */
+      }
+
+      @media (prefers-color-scheme: dark) {
+        a {
+         color: rgb(168, 199, 250); /* --cr-fallback-color-primary */
+        }
       }
 
       h1 {
-        color: var(--md-loading-message-color);
         font-weight: 500;
         margin-top: 80px;
-        text-align: center;
+      }
+
+      p {
+       line-height: 1.5rem;
       }
     </style>
   </head>
   <body>
     <h1>$i18n{pageHeading}</h1>
+    <p>$i18nRaw{pageBody}</p>
   </body>
 </html>

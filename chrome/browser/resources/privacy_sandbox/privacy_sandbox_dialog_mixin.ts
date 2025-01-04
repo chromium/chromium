@@ -23,10 +23,15 @@ export const PrivacySandboxDialogMixin = dedupingMixin(
         wasScrolledToBottom: boolean = true;
 
         private didStartWithScrollbar_: boolean = false;
-        private shouldShowV2_: boolean = loadTimeData.getBoolean(
-            'isPrivacySandboxAdsApiUxEnhancementsEnabled');
         private wasScrolledToBottomResolver_: PromiseResolver<void>;
         private moreButtonInitialized_: PromiseResolver<void>;
+        private shouldShowV2_: boolean;
+
+        /**
+         * Contains true if the dialog dismissal buttons should be the same
+         * styling.
+         */
+        private equalizedButtons_: boolean;
 
         static get properties() {
           return {
@@ -34,7 +39,36 @@ export const PrivacySandboxDialogMixin = dedupingMixin(
               type: Boolean,
               observer: 'onWasScrolledToBottomChange_',
             },
+
+            /**
+             * If true, the Ads API UX Enhancement should be shown.
+             */
+            shouldShowV2_: {
+              type: Boolean,
+              value: () => {
+                return loadTimeData.getBoolean(
+                    'isPrivacySandboxAdsApiUxEnhancementsEnabled');
+              },
+            },
+
+            /*
+             * If true the dismissal buttons should have the same styling.
+             */
+            equalizedButtons_: {
+              type: Boolean,
+              value: () => {
+                return loadTimeData.getBoolean('isEqualizedPromptButtons');
+              },
+            },
           };
+        }
+
+        shouldShowV2(): boolean {
+          return this.shouldShowV2_;
+        }
+
+        equalizedButtons(): boolean {
+          return this.equalizedButtons_;
         }
 
         onConsentLearnMoreExpandedChanged(
@@ -70,23 +104,33 @@ export const PrivacySandboxDialogMixin = dedupingMixin(
 
         onNoticeSiteSuggestedAdsLearnMoreExpandedChanged(
             newValue: boolean, oldValue: boolean) {
-          // TODO(crbug.com/377557616): Create new PromptAction and add metrics
           if (newValue && !oldValue) {
             this.onContentSizeChanging_(/*expanding=*/ true);
+            this.promptActionOccurred(
+                PrivacySandboxPromptAction
+                    .NOTICE_SITE_SUGGESTED_ADS_MORE_INFO_OPENED);
           }
           if (!newValue && oldValue) {
             this.onContentSizeChanging_(/*expanding=*/ false);
+            this.promptActionOccurred(
+                PrivacySandboxPromptAction
+                    .NOTICE_SITE_SUGGESTED_ADS_MORE_INFO_CLOSED);
           }
         }
 
-        onNoticeAdMeasurementLearnMoreExpandedChanged(
+        onNoticeAdsMeasurementLearnMoreExpandedChanged(
             newValue: boolean, oldValue: boolean) {
-          // TODO(crbug.com/377557616): Create new PromptAction and add metrics
           if (newValue && !oldValue) {
             this.onContentSizeChanging_(/*expanding=*/ true);
+            this.promptActionOccurred(
+                PrivacySandboxPromptAction
+                    .NOTICE_ADS_MEASUREMENT_MORE_INFO_OPENED);
           }
           if (!newValue && oldValue) {
             this.onContentSizeChanging_(/*expanding=*/ false);
+            this.promptActionOccurred(
+                PrivacySandboxPromptAction
+                    .NOTICE_ADS_MEASUREMENT_MORE_INFO_CLOSED);
           }
         }
 
@@ -185,7 +229,7 @@ export const PrivacySandboxDialogMixin = dedupingMixin(
 
             const buttonRowHeight = 64;
             let lastTextElementId = '#lastTextElement';
-            if (this.shouldShowV2_ &&
+            if (this.shouldShowV2() &&
                 scrollable.querySelector('#lastTextElementV2')) {
               lastTextElementId = '#lastTextElementV2';
             }
@@ -262,11 +306,17 @@ export const PrivacySandboxDialogMixin = dedupingMixin(
 export interface PrivacySandboxDialogMixinInterface {
   wasScrolledToBottom: boolean;
 
+  // Returns true if the Ads API UX Enhancement should be shown.
+  shouldShowV2(): boolean;
+
+  // Returns true if the notice buttons should be equalized.
+  equalizedButtons(): boolean;
+
   onConsentLearnMoreExpandedChanged(newValue: boolean, oldValue: boolean): void;
   onNoticeLearnMoreExpandedChanged(newValue: boolean, oldValue: boolean): void;
   onNoticeSiteSuggestedAdsLearnMoreExpandedChanged(
       newValue: boolean, oldValue: boolean): void;
-  onNoticeAdMeasurementLearnMoreExpandedChanged(
+  onNoticeAdsMeasurementLearnMoreExpandedChanged(
       newValue: boolean, oldValue: boolean): void;
   onNoticeOpenSettings(): void;
   onNoticeAcknowledge(): void;

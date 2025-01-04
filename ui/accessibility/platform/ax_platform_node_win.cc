@@ -4324,10 +4324,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_caretOffset(LONG* offset) {
   if (!HasVisibleCaretOrSelection())
     return S_FALSE;
 
-  int selection_start, selection_end;
-  GetSelectionOffsets(&selection_start, &selection_end);
-  // The caret is always at the end of the selection.
-  *offset = selection_end;
+  *offset = GetCaretOffset();
   if (*offset < 0)
     return S_FALSE;
 
@@ -4662,7 +4659,7 @@ AXPlatformNodeWin::get_selections(IA2TextSelection** selections,
   // the method's declaration.
 
   int anchor_offset = unignored_selection.anchor_offset;
-  if (anchor_node->IsDescendant(this)) {
+  if (anchor_node->IsDescendantOf(this)) {
     anchor_offset =
         anchor_node->GetHypertextOffsetFromEndpoint(anchor_node, anchor_offset);
   } else {
@@ -4680,7 +4677,7 @@ AXPlatformNodeWin::get_selections(IA2TextSelection** selections,
     return E_FAIL;
 
   int focus_offset = unignored_selection.focus_offset;
-  if (focus_node->IsDescendant(this)) {
+  if (focus_node->IsDescendantOf(this)) {
     focus_offset =
         focus_node->GetHypertextOffsetFromEndpoint(focus_node, focus_offset);
   } else {

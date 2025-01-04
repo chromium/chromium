@@ -35,8 +35,9 @@ OSStatus MenuBarRevealHandler(EventHandlerCallRef handler,
     GetEventParameter(event, FOUR_CHAR_CODE('rvlf'), typeCGFloat,
                       /*outActualType=*/nullptr, sizeof(CGFloat),
                       /*outActualSize=*/nullptr, &revealFraction);
-    if (revealFraction > 0.0 && revealFraction < 1.0)
+    if (revealFraction > 0.0 && revealFraction < 1.0) {
       [self setMenubarProgress:revealFraction];
+    }
   } else if (GetEventKind(event) == kEventMenuBarShown) {
     [self setMenubarProgress:1.0];
   } else {
@@ -115,22 +116,24 @@ OSStatus MenuBarRevealHandler(EventHandlerCallRef handler,
 
   // If the menubarFraction increases, check if we are in the right screen
   // so that the toolbar is not revealed on the wrong screen.
-  if (![self isMouseOnScreen] && progress > _menubarFraction)
+  if (![self isMouseOnScreen] && progress > _menubarFraction) {
     return;
+  }
 
   // Ignore the menubarFraction changes if the Space is inactive.
   if (!_controller.window.onActiveSpace) {
     return;
   }
 
-  if (ui::IsCGFloatEqual(progress, 1.0))
+  if (ui::IsCGFloatEqual(progress, 1.0)) {
     _state = FullscreenMenubarState::SHOWN;
-  else if (ui::IsCGFloatEqual(progress, 0.0))
+  } else if (ui::IsCGFloatEqual(progress, 0.0)) {
     _state = FullscreenMenubarState::HIDDEN;
-  else if (progress < _menubarFraction)
+  } else if (progress < _menubarFraction) {
     _state = FullscreenMenubarState::HIDING;
-  else if (progress > _menubarFraction)
+  } else if (progress > _menubarFraction) {
     _state = FullscreenMenubarState::SHOWING;
+  }
 
   _menubarFraction = progress;
   [_controller layoutToolbar];

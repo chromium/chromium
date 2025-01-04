@@ -59,8 +59,9 @@ GURL AppendSyncConfirmationQueryParams(const GURL& url,
 signin_metrics::ReauthAccessPoint GetReauthAccessPointForReauthConfirmationURL(
     const GURL& url) {
   std::string value;
-  if (!net::GetValueForKeyInQuery(url, kAccessPointParamKey, &value))
+  if (!net::GetValueForKeyInQuery(url, kAccessPointParamKey, &value)) {
     return signin_metrics::ReauthAccessPoint::kUnknown;
+  }
 
   int access_point_int = -1;
   base::StringToInt(value, &access_point_int);

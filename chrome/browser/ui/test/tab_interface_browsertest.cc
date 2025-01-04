@@ -16,8 +16,8 @@ class TabInterfaceBrowserTest : public PlatformBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(TabInterfaceBrowserTest, ActiveTabIsInForeground) {
+IN_PROC_BROWSER_TEST_F(TabInterfaceBrowserTest, ActiveTabIsActivated) {
   auto* active_tab = GetActiveTabInterface();
   ASSERT_TRUE(active_tab);
-  EXPECT_TRUE(active_tab->IsInForeground());
+  EXPECT_TRUE(active_tab->IsActivated());
 }

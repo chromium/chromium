@@ -18,7 +18,7 @@
 namespace views {
 class MenuItemView;
 class MenuRunner;
-}
+}  // namespace views
 
 // This is a convenience base class for menu related tests to provide some
 // common functionality.
@@ -54,13 +54,9 @@ class MenuTestBase : public ViewEventTestBase,
   // Generate a keypress and run |next| once the event has been processed.
   void KeyPress(ui::KeyboardCode keycode, base::OnceClosure next);
 
-  views::MenuItemView* menu() {
-    return menu_;
-  }
+  views::MenuItemView* menu() { return menu_; }
 
-  int last_command() const {
-    return last_command_;
-  }
+  int last_command() const { return last_command_; }
 
  protected:
   views::MenuRunner* menu_runner() { return menu_runner_.get(); }

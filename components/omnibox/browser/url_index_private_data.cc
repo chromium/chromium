@@ -69,7 +69,7 @@ bool LengthGreater(const std::u16string& string_a,
 class UpdateRecentVisitsFromHistoryDBTask : public history::HistoryDBTask {
  public:
   explicit UpdateRecentVisitsFromHistoryDBTask(
-      URLIndexPrivateData* private_data,
+      scoped_refptr<URLIndexPrivateData> private_data,
       history::URLID url_id);
   UpdateRecentVisitsFromHistoryDBTask(
       const UpdateRecentVisitsFromHistoryDBTask&) = delete;
@@ -85,7 +85,7 @@ class UpdateRecentVisitsFromHistoryDBTask : public history::HistoryDBTask {
 
   // The URLIndexPrivateData that gets updated after the historyDB
   // task returns.
-  raw_ptr<URLIndexPrivateData, AcrossTasksDanglingUntriaged> private_data_;
+  scoped_refptr<URLIndexPrivateData> private_data_;
   // The ID of the URL to get visits for and then update.
   history::URLID url_id_;
   // Whether fetching the recent visits for the URL succeeded.
@@ -96,9 +96,11 @@ class UpdateRecentVisitsFromHistoryDBTask : public history::HistoryDBTask {
 };
 
 UpdateRecentVisitsFromHistoryDBTask::UpdateRecentVisitsFromHistoryDBTask(
-    URLIndexPrivateData* private_data,
+    scoped_refptr<URLIndexPrivateData> private_data,
     history::URLID url_id)
-    : private_data_(private_data), url_id_(url_id), succeeded_(false) {}
+    : private_data_(std::move(private_data)),
+      url_id_(url_id),
+      succeeded_(false) {}
 
 bool UpdateRecentVisitsFromHistoryDBTask::RunOnDBThread(
     history::HistoryBackend* backend,

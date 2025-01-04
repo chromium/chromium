@@ -110,8 +110,8 @@ bool ValidateClampAttributes(const mojom::Clamp& clamp) {
 }
 
 bool ValidateEluAttributes(const mojom::Elu& elu) {
-  if (std::isnan(elu.alpha) || elu.alpha <= 0.0f) {
-    // The value of alpha must be greater than 0.
+  if (std::isnan(elu.alpha) || std::isinf(elu.alpha)) {
+    // The value of alpha is nan.
     return false;
   }
 
@@ -1141,6 +1141,7 @@ bool OperationValidationContext::ValidateElu(const mojom::Elu& elu,
           elu, context_properties_->data_type_limits.elu_input, operation_id)) {
     return false;
   }
+
   if (!ValidateEluAttributes(elu)) {
     return false;
   }
@@ -2961,11 +2962,19 @@ WebNNGraphBuilderImpl::ValidateGraphImpl(
   std::tie(processed_operands, operands_to_dependent_operations) =
       *std::move(result);
 
-  // Now that all the operations have been processed we can check that the
-  // output operands are connected to the graph.
-  for (const uint64_t output : graph_outputs) {
-    if (!processed_operands.contains(output)) {
-      return std::nullopt;
+  // Now that all the operations have been processed we can check that all the
+  // operands are connected to the graph inputs and outputs.
+  for (auto& [id, operand] : graph_info.id_to_operand_map) {
+    if (operand->kind == mojom::Operand::Kind::kOutput && operand->name) {
+      // Graph outputs must be the output of some operator.
+      if (!processed_operands.contains(id)) {
+        return std::nullopt;
+      }
+    } else {
+      // All other operands must be the input to some operator.
+      if (!operands_to_dependent_operations.contains(id)) {
+        return std::nullopt;
+      }
     }
   }
 

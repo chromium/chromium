@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/credential_provider/gaiacp/os_gaia_user_manager.h"
+
+#include "base/win/atl.h"
+#include "base/win/ntsecapi_shim.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
-#include "chrome/credential_provider/gaiacp/os_gaia_user_manager.h"
-#include "chrome/credential_provider/gaiacp/stdafx.h"
 #include "chrome/credential_provider/test/gcp_fakes.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

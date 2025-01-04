@@ -21,6 +21,9 @@
 // Fetches the `cell` favicons.
 - (void)fetchFaviconsForCell:(TabGroupsPanelCell*)cell;
 
+// Returns the facePile view controller associated with the item.
+- (UIViewController*)facePileViewControllerForItem:(TabGroupsPanelItem*)item;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_TAB_GROUPS_TAB_GROUPS_PANEL_ITEM_DATA_SOURCE_H_

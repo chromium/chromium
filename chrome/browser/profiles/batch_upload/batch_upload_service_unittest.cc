@@ -288,7 +288,8 @@ TEST_F(BatchUploadServiceTest, LocalDataReturnedShowsDialogAndReturnIdToMove) {
 
   std::map<syncer::DataType, std::vector<syncer::LocalDataItemModel::DataId>>
       result{{syncer::PASSWORDS, {passwords.local_data_models[0].id}}};
-  EXPECT_CALL(sync_service_mock(), TriggerLocalDataMigration(result)).Times(1);
+  EXPECT_CALL(sync_service_mock(), TriggerLocalDataMigrationForItems(result))
+      .Times(1);
   std::move(returned_complete_callback).Run(result);
   EXPECT_FALSE(service.IsDialogOpened());
 }
@@ -323,9 +324,8 @@ TEST_F(BatchUploadServiceTest,
       opened_callback.Get());
   EXPECT_TRUE(service.IsDialogOpened());
 
-  std::map<syncer::DataType, std::vector<syncer::LocalDataItemModel::DataId>>
-      result;
-  EXPECT_CALL(sync_service_mock(), TriggerLocalDataMigration(result)).Times(0);
-  std::move(returned_complete_callback).Run(result);
+  EXPECT_CALL(sync_service_mock(), TriggerLocalDataMigrationForItems(_))
+      .Times(0);
+  std::move(returned_complete_callback).Run({});
   EXPECT_FALSE(service.IsDialogOpened());
 }

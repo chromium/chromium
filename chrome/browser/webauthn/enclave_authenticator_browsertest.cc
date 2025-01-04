@@ -555,22 +555,17 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
       : public ChromeAuthenticatorRequestDelegate::TestObserver {
    public:
     explicit DelegateObserver(EnclaveAuthenticatorBrowserTest* test_instance)
-        : test_instance_(test_instance) {
-      run_loop_ = std::make_unique<base::RunLoop>();
-      tai_run_loop_ = std::make_unique<base::RunLoop>();
-      pre_tai_run_loop_ = std::make_unique<base::RunLoop>();
-      destruction_run_loop_ = std::make_unique<base::RunLoop>();
-    }
+        : test_instance_(test_instance) {}
     virtual ~DelegateObserver() = default;
 
     void WaitForUI() {
-      run_loop_->Run();
-      run_loop_ = std::make_unique<base::RunLoop>();
+      ui_shown_run_loop_->Run();
+      ui_shown_run_loop_ = std::make_unique<base::RunLoop>();
     }
 
-    void WaitForTransportAvailabilityEnumerated() {
-      tai_run_loop_->Run();
-      tai_run_loop_ = std::make_unique<base::RunLoop>();
+    void WaitForUIReady() {
+      ui_ready_run_loop_->Run();
+      ui_ready_run_loop_ = std::make_unique<base::RunLoop>();
     }
 
     void WaitForPreTransportAvailabilityEnumerated() {
@@ -602,6 +597,11 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
       return on_transport_availability_enumerated_called_;
     }
 
+    const std::optional<base::flat_set<device::FidoTransportProtocol>>&
+    transports_observed() const {
+      return transports_observed_;
+    }
+
     // ChromeAuthenticatorRequestDelegate::TestObserver:
     void Created(ChromeAuthenticatorRequestDelegate* delegate) override {
       test_instance_->UpdateRequestDelegate(delegate);
@@ -612,6 +612,13 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
       delegate->SetMockTimeForTesting(
           test_instance_->timer_task_runner_->GetMockTickClock(),
           test_instance_->timer_task_runner_);
+      transports_observed_ = std::nullopt;
+    }
+
+    void PreStartOver() override {
+      // Start over creates a new request handler and invokes
+      // OnTransportAvailabilityEnumerated() again.
+      transports_observed_ = std::nullopt;
     }
 
     void OnDestroy(ChromeAuthenticatorRequestDelegate* delegate) override {
@@ -630,25 +637,30 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
       return ret;
     }
 
+    void OnTransportAvailabilityEnumerated(
+        ChromeAuthenticatorRequestDelegate* delegate,
+        device::FidoRequestHandlerBase::TransportAvailabilityInfo* tai)
+        override {
+      CHECK(!transports_observed_);
+      transports_observed_ = tai->available_transports;
+      if (additional_transport_.has_value()) {
+        tai->available_transports.insert(*additional_transport_);
+      }
+      on_transport_availability_enumerated_called_ = true;
+    }
+
     void OnPreTransportAvailabilityEnumerated(
         ChromeAuthenticatorRequestDelegate* delegate) override {
       pre_tai_run_loop_->QuitWhenIdle();
     }
 
-    void OnTransportAvailabilityEnumerated(
-        ChromeAuthenticatorRequestDelegate* delegate,
-        device::FidoRequestHandlerBase::TransportAvailabilityInfo* tai)
-        override {
-      if (additional_transport_.has_value()) {
-        tai->available_transports.insert(*additional_transport_);
-      }
-      on_transport_availability_enumerated_called_ = true;
-      tai_run_loop_->QuitWhenIdle();
+    void UIReady(ChromeAuthenticatorRequestDelegate* delegate) override {
+      ui_ready_run_loop_->QuitWhenIdle();
     }
 
     void UIShown(ChromeAuthenticatorRequestDelegate* delegate) override {
       ui_shown_ = true;
-      run_loop_->QuitWhenIdle();
+      ui_shown_run_loop_->QuitWhenIdle();
     }
 
     void CableV2ExtensionSeen(
@@ -660,15 +672,21 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
 
    private:
     raw_ptr<EnclaveAuthenticatorBrowserTest> test_instance_;
+    std::optional<base::flat_set<device::FidoTransportProtocol>>
+        transports_observed_;
     std::optional<device::FidoTransportProtocol> additional_transport_;
     std::unique_ptr<trusted_vault::TrustedVaultConnection> pending_connection_;
     bool use_synced_device_cable_pairing_ = false;
     bool ui_shown_ = false;
     bool on_transport_availability_enumerated_called_ = false;
-    std::unique_ptr<base::RunLoop> run_loop_;
-    std::unique_ptr<base::RunLoop> tai_run_loop_;
-    std::unique_ptr<base::RunLoop> pre_tai_run_loop_;
-    std::unique_ptr<base::RunLoop> destruction_run_loop_;
+    std::unique_ptr<base::RunLoop> ui_shown_run_loop_ =
+        std::make_unique<base::RunLoop>();
+    std::unique_ptr<base::RunLoop> ui_ready_run_loop_ =
+        std::make_unique<base::RunLoop>();
+    std::unique_ptr<base::RunLoop> pre_tai_run_loop_ =
+        std::make_unique<base::RunLoop>();
+    std::unique_ptr<base::RunLoop> destruction_run_loop_ =
+        std::make_unique<base::RunLoop>();
   };
 
   class ModelObserver : public AuthenticatorRequestDialogModel::Observer {
@@ -4199,7 +4217,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorConditionalCreateBrowserTest,
   ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
   std::optional<std::vector<uint8_t>> cred_id =
       ParseCredentialId(script_result);
-  ASSERT_TRUE(cred_id);
+  EXPECT_TRUE(cred_id);
+
+  // The request should not have instantiated non-enclave discoveries.
+  ASSERT_TRUE(
+      delegate_observer()->on_transport_availability_enumerated_called());
+  EXPECT_TRUE(delegate_observer()->transports_observed()->empty());
 }
 
 }  // namespace

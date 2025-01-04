@@ -5,22 +5,25 @@
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/prerender/model/prerender_service_impl.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
-#import "ios/web/public/browser_state.h"
 
+namespace {
+
+// Default factory for PrerenderServiceFactory.
 std::unique_ptr<KeyedService> BuildPrerenderService(
     web::BrowserState* context) {
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<PrerenderServiceImpl>(profile);
 }
 
+}  // anonymous namespace
+
 // static
 PrerenderService* PrerenderServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return static_cast<PrerenderService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<PrerenderService>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -29,10 +32,11 @@ PrerenderServiceFactory* PrerenderServiceFactory::GetInstance() {
   return instance.get();
 }
 
+// PrerenderService is omitted while testing because it complicates
+// measurements in perf tests.
 PrerenderServiceFactory::PrerenderServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "PrerenderService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("PrerenderService",
+                                    TestingCreation::kNoServiceForTests) {
   DependsOn(ios::AccountConsistencyServiceFactory::GetInstance());
 }
 
@@ -47,10 +51,4 @@ std::unique_ptr<KeyedService> PrerenderServiceFactory::BuildServiceInstanceFor(
 PrerenderServiceFactory::TestingFactory
 PrerenderServiceFactory::GetDefaultFactory() {
   return base::BindRepeating(&BuildPrerenderService);
-}
-
-bool PrerenderServiceFactory::ServiceIsNULLWhileTesting() const {
-  // PrerenderService is omitted while testing because it complicates
-  // measurements in perf tests.
-  return true;
 }

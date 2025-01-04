@@ -176,7 +176,6 @@
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/ui/base/app_types.h"
@@ -6817,7 +6816,6 @@ AutotestPrivateIsFeatureEnabledFunction::Run() {
       // clang-format off
       &ash::features::kFeatureManagementVideoConference,
       &ash::features::kSavedDeskUiRevamp,
-      &chromeos::features::kJelly,
       &kDisabledFeatureForTest,
       &kEnabledFeatureForTest,
       // clang-format on

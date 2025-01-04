@@ -314,10 +314,9 @@ ExtensionsMenuViewController::ExtensionsMenuViewController(
       PermissionsManager::Get(browser_->profile()));
 }
 
-ExtensionsMenuViewController::~ExtensionsMenuViewController() {
-  // Note: No need to call TabStripModel::RemoveObserver(), because it's handled
-  // directly within TabStripModelObserver::~TabStripModelObserver().
-}
+// Note: No need to call TabStripModel::RemoveObserver(), because it's handled
+// directly within TabStripModelObserver::~TabStripModelObserver().
+ExtensionsMenuViewController::~ExtensionsMenuViewController() = default;
 
 void ExtensionsMenuViewController::OpenMainPage() {
   auto main_page = std::make_unique<ExtensionsMenuMainPageView>(browser_, this);

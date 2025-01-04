@@ -4,15 +4,13 @@
 
 #include "chrome/credential_provider/gaiacp/scoped_lsa_policy.h"
 
-#include <Windows.h>  // Needed for ACCESS_MASK, <lm.h>
-#include <Winternl.h>
-#include <lm.h>  // Needed for LSA_UNICODE_STRING
+#include <windows.h>
+
+#include <lm.h>
 #include <ntstatus.h>
 
-#define _NTDEF_  // Prevent redefition errors, must come after <winternl.h>
-#include <ntsecapi.h>  // For LSA_xxx types
-
-#include "chrome/credential_provider/gaiacp/gcp_utils.h"  // For STATUS_SUCCESS.
+#include "base/win/ntsecapi_shim.h"
+#include "chrome/credential_provider/gaiacp/gcp_utils.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
 
 namespace credential_provider {

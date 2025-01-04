@@ -46,7 +46,6 @@
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"  // PLATFORM_CFM
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/ai/ai_manager.h"
@@ -88,6 +87,7 @@
 #include "chrome/browser/hid/chrome_hid_delegate.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/interstitials/enterprise_util.h"
+#include "chrome/browser/language_detection/language_detection_model_service_factory.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/lookalikes/lookalike_url_navigation_throttle.h"
 #include "chrome/browser/media/audio_service_util.h"
@@ -173,6 +173,7 @@
 #include "chrome/browser/supervised_user/supervised_user_navigation_throttle.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_utils.h"
 #include "chrome/browser/task_manager/sampling/task_manager_impl.h"
+#include "chrome/browser/task_manager/task_manager_interface.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/tracing/chrome_tracing_delegate.h"
@@ -194,6 +195,7 @@
 #include "chrome/browser/ui/web_applications/navigation_capturing_redirection_throttle.h"
 #include "chrome/browser/ui/webid/identity_dialog_controller.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
+#include "chrome/browser/ui/webui/internal_debug_pages_disabled/internal_debug_pages_disabled_ui.h"
 #include "chrome/browser/ui/webui/log_web_ui_url.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_url_utils.h"
 #include "chrome/browser/universal_web_contents_observers.h"
@@ -262,6 +264,8 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/language_detection/content/browser/content_language_detection_driver.h"
+#include "components/language_detection/content/common/language_detection.mojom.h"
 #include "components/lens/buildflags.h"
 #include "components/live_caption/caption_util.h"
 #include "components/media_device_salt/media_device_salt_service.h"
@@ -282,7 +286,6 @@
 #include "components/payments/content/payment_handler_navigation_throttle.h"
 #include "components/payments/content/payment_request_display_manager.h"
 #include "components/pdf/common/pdf_util.h"
-#include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "components/permissions/permission_context_base.h"
 #include "components/policy/content/policy_blocklist_navigation_throttle.h"
 #include "components/policy/content/policy_blocklist_service.h"
@@ -304,6 +307,7 @@
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
 #include "components/safe_browsing/core/browser/realtime/policy_engine.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
+#include "components/safe_browsing/core/browser/referring_app_info.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
@@ -451,7 +455,7 @@
 #include "sandbox/mac/sandbox_compiler.h"
 #include "sandbox/policy/mac/params.h"
 #include "sandbox/policy/mac/sandbox_mac.h"
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -499,9 +503,7 @@
 #include "components/user_manager/user_manager.h"
 #include "services/service_manager/public/mojom/interface_provider_spec.mojom.h"
 #include "storage/browser/file_system/external_mount_points.h"
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX)
 #include "chrome/browser/chrome_browser_main_linux.h"
 #include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views_linux.h"
 #elif BUILDFLAG(IS_ANDROID)
@@ -519,6 +521,7 @@
 #include "chrome/browser/digital_credentials/digital_identity_provider_android.h"
 #include "chrome/browser/download/android/intercept_oma_download_navigation_throttle.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/safe_browsing/android/safe_browsing_referring_app_bridge_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/common/chrome_descriptors.h"
 #include "components/browser_ui/accessibility/android/font_size_prefs_android.h"
@@ -585,7 +588,6 @@
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/serial/chrome_serial_delegate.h"
-#include "chrome/browser/task_manager/task_manager_interface.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -613,10 +615,7 @@
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #endif  //  !BUILDFLAG(IS_ANDROID)
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/browser_switcher/browser_switcher_navigation_throttle.h"
 #endif
 
@@ -640,10 +639,10 @@
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_CHROMEOS_ASH)
+    BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/enterprise/connectors/device_trust/navigation_throttle.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
-        // BUILDFLAG(IS_CHROMEOS_ASH)
+        // BUILDFLAG(IS_CHROMEOS)
 
 #if defined(TOOLKIT_VIEWS)
 #include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h"
@@ -759,21 +758,6 @@
 #include "chrome/browser/vr/chrome_xr_integration_client.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/chrome_browser_main_parts_lacros.h"
-#include "chrome/browser/lacros/chrome_browser_main_extra_parts_lacros.h"
-#include "chrome/browser/speech/tts_lacros.h"
-#include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views_lacros.h"
-#include "chrome/common/chrome_descriptors.h"
-#include "chromeos/crosapi/mojom/kerberos_in_browser.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#include "chromeos/startup/browser_init_params.h"
-#include "chromeos/startup/startup.h"           // nogncheck
-#include "chromeos/startup/startup_switches.h"  // nogncheck
-#include "mojo/core/embedder/embedder.h"
-#include "ui/base/ui_base_switches.h"
-#endif
-
 #if BUILDFLAG(USE_MINIKIN_HYPHENATION) && !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/component_updater/hyphenation_component_installer.h"
 #endif
@@ -799,9 +783,12 @@
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS) && !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 #include "chrome/browser/enterprise/data_protection/paste_allowed_request.h"
 #endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS) && !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+#include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
 #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 #include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
@@ -1253,7 +1240,7 @@ void LaunchURL(
         url_state == policy::URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Never skip security checks for the intent:// scheme because
   // `ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck` does not handle
   // intent:// URLs correctly (or any URLs that should be opened in ARC).
@@ -1341,13 +1328,6 @@ void MaybeAddCondition(
 }
 #endif
 
-void MaybeAddThrottles(
-    std::vector<std::unique_ptr<content::NavigationThrottle>> additional,
-    std::vector<std::unique_ptr<content::NavigationThrottle>>* combined) {
-  combined->insert(combined->end(), std::make_move_iterator(additional.begin()),
-                   std::make_move_iterator(additional.end()));
-}
-
 // Returns whether |web_contents| is within a hosted app.
 bool IsInHostedApp(WebContents* web_contents) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -1374,7 +1354,6 @@ bool IsErrorPageAutoReloadEnabled() {
 void NotifyMultiCaptureStarted(const std::string& label,
                                content::WebContents* web_contents,
                                const webapps::AppId* app_id) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (app_id &&
       video_capture::mojom::MultiCaptureServiceClient::Version_ >=
           video_capture::mojom::MultiCaptureServiceClient::MethodMinVersions::
@@ -1390,39 +1369,10 @@ void NotifyMultiCaptureStarted(const std::string& label,
     content::GetMultiCaptureService().NotifyMultiCaptureStarted(
         label, url::Origin::Create(web_contents->GetLastCommittedURL()));
   }
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosService& service =
-      CHECK_DEREF(chromeos::LacrosService::Get());
-  crosapi::mojom::MultiCaptureService& multi_capture_service = CHECK_DEREF(
-      service.GetRemote<crosapi::mojom::MultiCaptureService>().get());
-  if (app_id &&
-      service.GetInterfaceVersion<crosapi::mojom::MultiCaptureService>() >=
-          (int)crosapi::mojom::MultiCaptureService::MethodMinVersions::
-              kMultiCaptureStartedFromAppMinVersion) {
-    multi_capture_service.MultiCaptureStartedFromApp(
-        label, *app_id,
-        web_app::WebAppProvider::GetForWebContents(web_contents)
-            ->registrar_unsafe()
-            .GetAppShortName(*app_id));
-  } else {
-    // TODO(b/319317165): Remove this case once the pivot to web apps is
-    // complete.
-    multi_capture_service.MultiCaptureStarted(
-        label, web_contents->GetLastCommittedURL().host());
-  }
-#endif
 }
 
 void NotifyMultiCaptureStopped(const std::string& label) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   content::GetMultiCaptureService().NotifyMultiCaptureStopped(label);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  crosapi::mojom::MultiCaptureService& multi_capture_service =
-      CHECK_DEREF(chromeos::LacrosService::Get()
-                      ->GetRemote<crosapi::mojom::MultiCaptureService>()
-                      .get());
-  multi_capture_service.MultiCaptureStopped(label);
-#endif
 }
 
 bool IsSubAppsPermissionGrantedByAdmins(content::WebContents* contents) {
@@ -1789,13 +1739,10 @@ ChromeContentBrowserClient::CreateBrowserMainParts(bool is_integration_test) {
 #elif BUILDFLAG(IS_MAC)
   main_parts = std::make_unique<ChromeBrowserMainPartsMac>(is_integration_test,
                                                            &startup_data_);
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
   main_parts = std::make_unique<ash::ChromeBrowserMainPartsAsh>(
       is_integration_test, &startup_data_);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  main_parts = std::make_unique<ChromeBrowserMainPartsLacros>(
-      is_integration_test, &startup_data_);
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX)
   main_parts = std::make_unique<ChromeBrowserMainPartsLinux>(
       is_integration_test, &startup_data_);
 #elif BUILDFLAG(IS_ANDROID)
@@ -1824,12 +1771,7 @@ ChromeContentBrowserClient::CreateBrowserMainParts(bool is_integration_test) {
     // Construct additional browser parts. Stages are called in the order in
     // which they are added.
 #if defined(TOOLKIT_VIEWS)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  main_parts->AddParts(
-      std::make_unique<ChromeBrowserMainExtraPartsViewsLacros>());
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   main_parts->AddParts(
       std::make_unique<ChromeBrowserMainExtraPartsViewsLinux>());
 #else
@@ -1841,13 +1783,9 @@ ChromeContentBrowserClient::CreateBrowserMainParts(bool is_integration_test) {
   main_parts->AddParts(std::make_unique<ChromeBrowserMainExtraPartsMac>());
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // TODO(jamescook): Combine with `ChromeBrowserMainPartsAsh`.
   main_parts->AddParts(std::make_unique<ChromeBrowserMainExtraPartsAsh>());
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  main_parts->AddParts(std::make_unique<ChromeBrowserMainExtraPartsLacros>());
 #endif
 
 #if BUILDFLAG(IS_LINUX)
@@ -1997,8 +1935,9 @@ void ChromeContentBrowserClient::RenderProcessWillLaunch(
 
 #if BUILDFLAG(ENABLE_NACL)
   if (IsNaclAllowed() && !profile->IsSystemProfile()) {
-    host->AddFilter(new nacl::NaClHostMessageFilter(
-        host->GetID(), profile->IsOffTheRecord(), profile->GetPath()));
+    host->AddFilter(new nacl::NaClHostMessageFilter(host->GetDeprecatedID(),
+                                                    profile->IsOffTheRecord(),
+                                                    profile->GetPath()));
   }
 #endif
 
@@ -2272,11 +2211,6 @@ void ChromeContentBrowserClient::OverrideURLLoaderFactoryParams(
     const url::Origin& origin,
     bool is_for_isolated_world,
     network::mojom::URLLoaderFactoryParams* factory_params) {
-#if BUILDFLAG(IS_ANDROID)
-  // Loading state text isn't used on Android, only in desktop UI.
-  factory_params->provide_loading_state_updates = false;
-#endif
-
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (ChromeContentBrowserClientExtensionsPart::AreExtensionsDisabledForProfile(
           browser_context)) {
@@ -2320,12 +2254,9 @@ ChromeContentBrowserClient::DetermineAddressSpaceFromURL(const GURL& url) {
   return network::mojom::IPAddressSpace::kUnknown;
 }
 
-bool ChromeContentBrowserClient::LogWebUICreated(const GURL& web_ui_url) {
-  return webui::LogWebUICreated(web_ui_url);
-}
-
-bool ChromeContentBrowserClient::LogWebUIShown(const GURL& web_ui_url) {
-  return webui::LogWebUIShown(web_ui_url);
+void ChromeContentBrowserClient::LogWebUIUsage(
+    std::variant<content::WebUI*, GURL> webui_variant) {
+  webui::LogWebUIUsage(webui_variant);
 }
 
 bool ChromeContentBrowserClient::IsWebUIAllowedToMakeNetworkRequests(
@@ -2438,7 +2369,7 @@ bool ChromeContentBrowserClient::IsSuitableHost(
       InstantServiceFactory::GetForProfile(profile);
   if (instant_service) {
     bool is_instant_process =
-        instant_service->IsInstantProcess(process_host->GetID());
+        instant_service->IsInstantProcess(process_host->GetDeprecatedID());
     bool should_be_in_instant_process =
         search::ShouldAssignURLToInstantRenderer(site_url, profile);
     if (is_instant_process || should_be_in_instant_process)
@@ -2789,16 +2720,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
   const base::CommandLine& browser_command_line =
       *base::CommandLine::ForCurrentProcess();
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Pass startup parameter FDs to child processes in Lacros.
-  if (process_type != switches::kZygoteProcess) {
-    constexpr int kStartupDataFD =
-        kCrosStartupDataDescriptor + base::GlobalDescriptors::kBaseDescriptor;
-    command_line->AppendSwitchASCII(chromeos::switches::kCrosStartupDataFD,
-                                    base::NumberToString(kStartupDataFD));
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   static const char* const kCommonSwitchNames[] = {
       embedder_support::kUserAgent,
       switches::kUserDataDir,  // Make logs go to the right file.
@@ -2812,7 +2733,7 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
   command_line->CopySwitchesFrom(browser_command_line,
                                  kDinosaurEasterEggSwitches);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // On Chrome OS need to pass primary user homedir (in multi-profiles session).
   base::FilePath homedir;
   base::PathService::Get(base::DIR_HOME, &homedir);
@@ -2828,7 +2749,7 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
       }
     }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     const std::string& login_profile =
         browser_command_line.GetSwitchValueASCII(ash::switches::kLoginProfile);
     if (!login_profile.empty()) {
@@ -2897,7 +2818,7 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
       InstantService* instant_service =
           InstantServiceFactory::GetForProfile(profile);
       if (instant_service &&
-          instant_service->IsInstantProcess(process->GetID())) {
+          instant_service->IsInstantProcess(process->GetDeprecatedID())) {
         command_line->AppendSwitch(switches::kInstantProcess);
       }
 
@@ -2994,7 +2915,7 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
     static const char* const kSwitchNames[] = {
         autofill::switches::kIgnoreAutocompleteOffForAutofill,
         autofill::switches::kShowAutofillSignatures,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         switches::kShortMergeSessionTimeoutForTest,  // For tests only.
 #endif
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -3067,11 +2988,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
 
     command_line->CopySwitchesFrom(browser_command_line, kSwitchNames);
 #endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Ensure zygote loads the resource bundle for the right locale.
-    static const char* const kMoreSwitchNames[] = {switches::kLang};
-    command_line->CopySwitchesFrom(browser_command_line, kMoreSwitchNames);
-#endif
 #if BUILDFLAG(IS_CHROMEOS)
     // This is called before feature flags are parsed, so pass them in their raw
     // form.
@@ -3087,7 +3003,7 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
       command_line->AppendSwitch(switches::kDisableBreakpad);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (ChromeCrashReporterClient::ShouldPassCrashLoopBefore(process_type)) {
     static const char* const kSwitchNames[] = {
         crash_reporter::switches::kCrashLoopBefore,
@@ -3123,7 +3039,7 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
     }
   }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Opt into a hardened stack canary mitigation if it hasn't already been
   // force-disabled.
   if (!browser_command_line.HasSwitch(switches::kChangeStackGuardOnFork)) {
@@ -3752,18 +3668,6 @@ bool ChromeContentBrowserClient::IsFullCookieAccessAllowed(
     content::WebContents* web_contents,
     const GURL& url,
     const blink::StorageKey& storage_key) {
-  return dips_move::IsFullCookieAccessAllowed(browser_context, web_contents,
-                                              url, storage_key);
-}
-
-// TODO: crbug.com/369813097 - Move this implementation into
-// ChromeContentBrowserClient::IsFullCookieAccessAllowed() after DIPS migrates
-// to //content.
-namespace dips_move {
-bool IsFullCookieAccessAllowed(content::BrowserContext* browser_context,
-                               content::WebContents* web_contents,
-                               const GURL& url,
-                               const blink::StorageKey& storage_key) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
   scoped_refptr<content_settings::CookieSettings> cookie_settings =
       CookieSettingsFactory::GetForProfile(profile);
@@ -3775,7 +3679,6 @@ bool IsFullCookieAccessAllowed(content::BrowserContext* browser_context,
       url::Origin::Create(storage_key.top_level_site().GetURL()),
       cookie_settings->SettingOverridesForStorage());
 }
-}  // namespace dips_move
 
 void ChromeContentBrowserClient::GrantCookieAccessDueToHeuristic(
     content::BrowserContext* browser_context,
@@ -3783,19 +3686,6 @@ void ChromeContentBrowserClient::GrantCookieAccessDueToHeuristic(
     const net::SchemefulSite& accessing_site,
     base::TimeDelta ttl,
     bool ignore_schemes) {
-  dips_move::GrantCookieAccessDueToHeuristic(
-      browser_context, top_frame_site, accessing_site, ttl, ignore_schemes);
-}
-
-// TODO: crbug.com/369813097 - Move this implementation into
-// ChromeContentBrowserClient::GrantCookieAccessDueToHeuristic() after DIPS
-// migrates to //content.
-namespace dips_move {
-void GrantCookieAccessDueToHeuristic(content::BrowserContext* browser_context,
-                                     const net::SchemefulSite& top_frame_site,
-                                     const net::SchemefulSite& accessing_site,
-                                     base::TimeDelta ttl,
-                                     bool ignore_schemes) {
   scoped_refptr<content_settings::CookieSettings> cookie_settings =
       CookieSettingsFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context));
@@ -3807,7 +3697,6 @@ void GrantCookieAccessDueToHeuristic(content::BrowserContext* browser_context,
       accessing_site.GetURL(), top_frame_site.GetURL(), ttl,
       /*use_schemeless_patterns=*/ignore_schemes);
 }
-}  // namespace dips_move
 
 #if BUILDFLAG(IS_CHROMEOS)
 void ChromeContentBrowserClient::OnTrustAnchorUsed(
@@ -4093,7 +3982,7 @@ bool UpdatePreferredColorScheme(WebPreferences* web_prefs,
 // Returns whether the user can be prompted to select a client certificate after
 // no certificate got auto-selected.
 bool CanPromptWithNonmatchingCertificates(const Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (ash::ProfileHelper::IsSigninProfile(profile) ||
       ash::ProfileHelper::IsLockScreenProfile(profile)) {
     // On non-regular profiles (e.g. sign-in profile or lock-screen profile),
@@ -4142,7 +4031,7 @@ base::OnceClosure ChromeContentBrowserClient::SelectClientCertificate(
   }
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // On the sign-in or lock screen profile, only allow client certs in the
   // context of the sign-in frame.
   // Note that this is explicitly not happening for the lock screen app profile
@@ -4182,7 +4071,7 @@ base::OnceClosure ChromeContentBrowserClient::SelectClientCertificate(
     }
     VLOG(1) << "Client cert requested in " << profile_name << " profile.";
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   GURL requesting_url =
       enterprise_util::GetRequestingUrl(cert_request_info->host_and_port);
@@ -4315,7 +4204,7 @@ bool ChromeContentBrowserClient::CanCreateWindow(
     auto* process_map = extensions::ProcessMap::Get(profile);
     auto* registry = extensions::ExtensionRegistry::Get(profile);
     if (!URLHasExtensionPermission(process_map, registry, opener_url,
-                                   opener->GetProcess()->GetID(),
+                                   opener->GetProcess()->GetDeprecatedID(),
                                    APIPermissionID::kBackground)) {
       return false;
     }
@@ -4337,7 +4226,7 @@ bool ChromeContentBrowserClient::CanCreateWindow(
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
   if (extensions::WebViewRendererState::GetInstance()->IsGuest(
-          opener->GetProcess()->GetID())) {
+          opener->GetProcess()->GetDeprecatedID())) {
     return true;
   }
 #endif
@@ -4377,7 +4266,7 @@ ChromeContentBrowserClient::CreateSpeechRecognitionManagerDelegate() {
   return new speech::ChromeSpeechRecognitionManagerDelegate();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 content::TtsControllerDelegate*
 ChromeContentBrowserClient::GetTtsControllerDelegate() {
   return TtsControllerDelegateImpl::GetInstance();
@@ -4402,10 +4291,8 @@ content::TtsPlatform* ChromeContentBrowserClient::GetTtsPlatform() {
   content::TtsController::GetInstance()->SetTtsEngineDelegate(
       TtsExtensionEngine::GetInstance());
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return TtsPlatformImplChromeOs::GetInstance();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return TtsPlatformImplLacros::GetInstance();
 #else
   return nullptr;
 #endif
@@ -4495,7 +4382,7 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
   web_prefs->force_dark_mode_enabled =
       prefs->GetBoolean(prefs::kWebKitForceDarkModeEnabled);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   web_prefs->always_show_focus =
       prefs->GetBoolean(ash::prefs::kAccessibilityFocusHighlightEnabled);
 #else
@@ -4602,13 +4489,13 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
           web_prefs->web_app_scope = registrar.GetAppScope(app_id);
         }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         auto* system_app = browser->app_controller()->system_app();
         if (system_app) {
           web_prefs->allow_scripts_to_close_windows =
               system_app->ShouldAllowScriptsToCloseWindows();
         }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
       }
     }
 #endif
@@ -4972,7 +4859,7 @@ void ChromeContentBrowserClient::GetAdditionalFileSystemBackends(
     const base::FilePath& storage_partition_path,
     std::vector<std::unique_ptr<storage::FileSystemBackend>>*
         additional_backends) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   storage::ExternalMountPoints* external_mount_points =
       browser_context->GetMountPoints();
   DCHECK(external_mount_points);
@@ -5038,61 +4925,8 @@ void ChromeContentBrowserClient::GetAdditionalMappedFilesForChildProcess(
   }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Map startup parameter files to child processes in Lacros.
-  // The FD numbers are passed via command line switches in
-  // |AppendExtraCommandLineSwitches|.
-  //
-  // NOTE: the Zygote process requires special handling.
-  // Serializing startup data early in the initialization
-  // process requires temporarily initializing Mojo. That's handled in the
-  // |LaunchZygoteHelper| function in |content_main_runner_impl.cc|. Here, we
-  // deal with all other type of processes.
-  std::string process_type =
-      command_line.GetSwitchValueASCII(switches::kProcessType);
-  if (process_type != switches::kZygoteProcess) {
-    base::ScopedFD cros_startup_fd =
-        chromeos::BrowserInitParams::CreateStartupData();
-    if (cros_startup_fd.is_valid()) {
-      constexpr int kStartupDataFD =
-          kCrosStartupDataDescriptor + base::GlobalDescriptors::kBaseDescriptor;
-      mappings->Transfer(kStartupDataFD, std::move(cros_startup_fd));
-    }
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void ChromeContentBrowserClient::GetAdditionalMappedFilesForZygote(
-    base::CommandLine* command_line,
-    PosixFileDescriptorInfo* mappings) {
-  // Create the file descriptor for Cros startup data and pass it.
-  // This FD will be used to obtain BrowserInitParams in Zygote process.
-  // Note that this requires Mojo, but Mojo cannot be fully initialized this
-  // due to dependencies on base::FeatureList. So we also temporarily initialize
-  // Mojo and then shut it down immediately after preparing the FD. This is
-  // inexpensive, an the features which control Mojo behavior aren't relevant
-  // for this operation.
-  //
-  // TODO(crbug.com/40058840): This will need to be changed before
-  // MojoIpcz experimentation can happen on Lacros, as it results in
-  // inconsistent MojoIpcz feature status across Mojo initializations.
-  mojo::core::Init();
-  base::ScopedFD cros_startup_fd =
-      chromeos::BrowserInitParams::CreateStartupData();
-  mojo::core::ShutDown();
-
-  if (cros_startup_fd.is_valid()) {
-    constexpr int kStartupDataFD =
-        kCrosStartupDataDescriptor + base::GlobalDescriptors::kBaseDescriptor;
-    command_line->AppendSwitchASCII(chromeos::switches::kCrosStartupDataFD,
-                                    base::NumberToString(kStartupDataFD));
-    mappings->Transfer(kStartupDataFD, std::move(cros_startup_fd));
-  }
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_WIN)
 std::wstring ChromeContentBrowserClient::GetAppContainerSidForSandboxType(
@@ -5425,7 +5259,7 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
       &throttles);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Check if we need to add merge session throttle. This throttle will postpone
   // loading of main frames.
   if (handle->IsInMainFrame()) {
@@ -5438,9 +5272,7 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
       throttles.push_back(ash::MergeSessionNavigationThrottle::Create(handle));
     }
   }
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS)
   auto disabled_app_throttle =
       apps::ChromeOsDisabledAppsThrottle::MaybeCreate(handle);
   if (disabled_app_throttle) {
@@ -5488,6 +5320,12 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
                          ->CreateNavigationThrottle(handle),
                      &throttles);
   }
+#endif
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+  MaybeAddThrottle(
+      extensions::WebViewGuest::MaybeCreateNavigationThrottle(handle),
+      &throttles);
 #endif
 
   MaybeAddThrottle(
@@ -5578,12 +5416,12 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_CHROMEOS_ASH)
+    BUILDFLAG(IS_CHROMEOS)
   MaybeAddThrottle(enterprise_connectors::DeviceTrustNavigationThrottle::
                        MaybeCreateThrottleFor(handle),
                    &throttles);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
-        // BUILDFLAG(IS_CHROMEOS_ASH)
+        // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
   MaybeAddThrottle(DevToolsWindow::MaybeCreateNavigationThrottle(handle),
@@ -5623,7 +5461,7 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
                    &throttles);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   MaybeAddThrottle(
       chromeos::KioskSettingsNavigationThrottle::MaybeCreateThrottleFor(handle),
       &throttles);
@@ -5638,14 +5476,6 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
 #if BUILDFLAG(IS_MAC)
   MaybeAddThrottle(MaybeCreateAuthSessionThrottleFor(handle), &throttles);
 #endif
-
-  auto* performance_manager_registry =
-      performance_manager::PerformanceManagerRegistry::GetInstance();
-  if (performance_manager_registry) {
-    MaybeAddThrottles(
-        performance_manager_registry->CreateThrottlesForNavigation(handle),
-        &throttles);
-  }
 
   if (profile && profile->GetPrefs()) {
     MaybeAddThrottle(
@@ -5787,9 +5617,8 @@ ChromeContentBrowserClient::CreateScreenEnumerator() const {
 
 bool ChromeContentBrowserClient::EnforceSystemAudioEchoCancellation() {
   // TODO(b/270042522): This is a short term solution to enforce the system
-  // audio cancellation and will be removed before Lacros is released. The
-  // short term solution will not work on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_CRAS)
+  // audio cancellation.
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CRAS)
   bool system_aec_enabled = false;
   ash::CrosSettings::Get()->GetBoolean(ash::kDeviceSystemAecEnabled,
                                        &system_aec_enabled);
@@ -6043,6 +5872,19 @@ ChromeContentBrowserClient::MaybeCreateSafeBrowsingURLLoaderThrottle(
       wc_getter, is_enterprise_lookup_enabled, is_consumer_lookup_enabled,
       hash_realtime_selection, frame_tree_node_id);
 
+  std::optional<safe_browsing::internal::ReferringAppInfo> referring_app_info =
+      std::nullopt;
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kAddReferringAppInfoToProtegoPings)) {
+    WebContents* web_contents = wc_getter.Run();
+    if (web_contents) {
+      referring_app_info =
+          std::make_optional<safe_browsing::internal::ReferringAppInfo>(
+              safe_browsing::GetReferringAppInfo(web_contents));
+    }
+  }
+#endif
   return safe_browsing::BrowserURLLoaderThrottle::Create(
       base::BindRepeating(
           &ChromeContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate,
@@ -6055,7 +5897,8 @@ ChromeContentBrowserClient::MaybeCreateSafeBrowsingURLLoaderThrottle(
       url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr,
       hash_realtime_service ? hash_realtime_service->GetWeakPtr() : nullptr,
       hash_realtime_selection,
-      async_check_tracker ? async_check_tracker->GetWeakPtr() : nullptr);
+      async_check_tracker ? async_check_tracker->GetWeakPtr() : nullptr,
+      std::move(referring_app_info));
 }
 #endif
 
@@ -6270,7 +6113,7 @@ mojo::PendingRemote<network::mojom::URLLoaderFactory>
 ChromeContentBrowserClient::CreateNonNetworkNavigationURLLoaderFactory(
     const std::string& scheme,
     content::FrameTreeNodeId frame_tree_node_id) {
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE) || BUILDFLAG(IS_CHROMEOS) || \
     !BUILDFLAG(IS_ANDROID)
   content::WebContents* web_contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
@@ -6285,7 +6128,6 @@ ChromeContentBrowserClient::CreateNonNetworkNavigationURLLoaderFactory(
       is_guest =
           !!extensions::WebViewGuest::FromFrameTreeNodeId(frame_tree_node_id);
 #endif
-
       return extensions::CreateExtensionNavigationURLLoaderFactory(
           browser_context, is_guest);
     }
@@ -6300,12 +6142,12 @@ ChromeContentBrowserClient::CreateNonNetworkNavigationURLLoaderFactory(
   if (AreKeyedServicesDisabledForProfileByDefault(profile))
     return {};
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (scheme == content::kExternalFileScheme) {
     return ash::ExternalFileURLLoaderFactory::Create(
         profile, content::ChildProcessHost::kInvalidUniqueID);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #if !BUILDFLAG(IS_ANDROID)
   if (scheme == chrome::kIsolatedAppScheme) {
     if (content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(
@@ -6318,7 +6160,7 @@ ChromeContentBrowserClient::CreateNonNetworkNavigationURLLoaderFactory(
     return {};
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE) || BUILDFLAG(IS_CHROMEOS_ASH) ||
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE) || BUILDFLAG(IS_CHROMEOS) ||
         // !BUILDFLAG(IS_ANDROID)
 
   return {};
@@ -6468,7 +6310,7 @@ bool IsSystemFeatureURLDisabled(const GURL& url) {
     return IsSystemFeatureDisabled(policy::SystemFeature::kBrowserSettings);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (url.DomainIs(chrome::kChromeUIUntrustedCroshHost)) {
     return IsSystemFeatureDisabled(policy::SystemFeature::kCrosh);
   }
@@ -6602,15 +6444,15 @@ void ChromeContentBrowserClient::
         int render_frame_id,
         const std::optional<url::Origin>& request_initiator_origin,
         NonNetworkURLLoaderFactoryMap* factories) {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(ENABLE_EXTENSIONS) || \
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(ENABLE_EXTENSIONS) || \
     !BUILDFLAG(IS_ANDROID)
   content::RenderFrameHost* frame_host =
       RenderFrameHost::FromID(render_process_id, render_frame_id);
   WebContents* web_contents = WebContents::FromRenderFrameHost(frame_host);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(ENABLE_EXTENSIONS) || \
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(ENABLE_EXTENSIONS) || \
         // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (web_contents) {
     Profile* profile =
         Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -6618,7 +6460,7 @@ void ChromeContentBrowserClient::
         content::kExternalFileScheme,
         ash::ExternalFileURLLoaderFactory::Create(profile, render_process_id));
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
   {
@@ -6925,12 +6767,10 @@ void ChromeContentBrowserClient::OnNetworkServiceCreated(
   SystemNetworkContextManager::GetInstance()->OnNetworkServiceCreated(
       network_service);
 
-#if !BUILDFLAG(IS_ANDROID)
   if (task_manager::TaskManagerImpl::IsCreated() &&
       task_manager::TaskManagerImpl::GetInstance()->is_running()) {
     network_service->EnableDataUseUpdates(true);
   }
-#endif
 }
 
 void ChromeContentBrowserClient::ConfigureNetworkContextParams(
@@ -7154,19 +6994,10 @@ ChromeContentBrowserClient::CreateLoginDelegate(
   if (base::FeatureList::IsEnabled(net::features::kKerberosInBrowserRedirect) &&
       auth_info.scheme ==
           net::HttpAuth::SchemeToString(net::HttpAuth::AUTH_SCHEME_NEGOTIATE)) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     ash::KerberosInBrowserDialog::Show();
-#else
-    // Requests to show Kerberos ui via crosapi mojo call.
-    chromeos::LacrosService::Get()
-        ->GetRemote<crosapi::mojom::KerberosInBrowser>()
-        ->ShowKerberosInBrowserDialog();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     return nullptr;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* system_proxy_manager = ash::SystemProxyManager::Get();
   // For Managed Guest Session and Kiosk devices, the credentials configured
   // via the policy SystemProxySettings may be used for proxy authentication.
@@ -7181,13 +7012,11 @@ ChromeContentBrowserClient::CreateLoginDelegate(
     return ash::HttpAuthDialog::Create(auth_info, web_contents, url,
                                        std::move(auth_required_callback));
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (!http_auth_coordinator_) {
     http_auth_coordinator_ = CreateHttpAuthCoordinator();
   }
-  // Once Lacros ships this logic will no longer need to be included in
-  // ash-chrome.
   return http_auth_coordinator_->CreateLoginDelegate(
       web_contents, browser_context, auth_info, request_id,
       is_request_for_primary_main_frame_navigation, is_request_for_navigation,
@@ -7308,7 +7137,7 @@ bool ChromeContentBrowserClient::HandleWebUI(
     return false;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Special case : in ChromeOS in Guest mode bookmarks and history are
   // disabled for security reasons. New tab page explains the reasons, so
   // we redirect user to new tab page.
@@ -7320,9 +7149,7 @@ bool ChromeContentBrowserClient::HandleWebUI(
       *url = GURL(chrome::kChromeUINewTabURL);
     }
   }
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS)
   if (IsSystemFeatureURLDisabled(*url)) {
     *url = GURL(chrome::kChromeUIAppDisabledURL);
     return true;
@@ -7515,10 +7342,8 @@ void ChromeContentBrowserClient::OnNetworkServiceDataUseUpdate(
     int32_t network_traffic_annotation_id_hash,
     int64_t recv_bytes,
     int64_t sent_bytes) {
-#if !BUILDFLAG(IS_ANDROID)
   task_manager::TaskManagerInterface::UpdateAccumulatedStatsNetworkForRoute(
       render_frame_host_id, recv_bytes, sent_bytes);
-#endif
 }
 
 base::FilePath
@@ -7843,10 +7668,10 @@ bool ChromeContentBrowserClient::IsClipboardPasteAllowed(
       render_frame_host->GetMainFrame()->GetLastCommittedOrigin().GetURL();
   auto* registry = extensions::ExtensionRegistry::Get(profile);
   if (url.SchemeIs(extensions::kExtensionScheme)) {
-    return URLHasExtensionPermission(extensions::ProcessMap::Get(profile),
-                                     registry, url,
-                                     render_frame_host->GetProcess()->GetID(),
-                                     APIPermissionID::kClipboardRead);
+    return URLHasExtensionPermission(
+        extensions::ProcessMap::Get(profile), registry, url,
+        render_frame_host->GetProcess()->GetDeprecatedID(),
+        APIPermissionID::kClipboardRead);
   }
 
   // or (4) origination from a process that at least might be running a
@@ -7880,6 +7705,13 @@ void ChromeContentBrowserClient::IsClipboardPasteAllowedByPolicy(
   enterprise_data_protection::PasteAllowedRequest::StartPasteAllowedRequest(
       source, destination, metadata, std::move(clipboard_paste_data),
       std::move(callback));
+#elif BUILDFLAG(IS_ANDROID)
+  // PasteAllowedRequest::StartPasteAllowedRequest triggers logic for policies
+  // that aren't supported on Clank. Thus, PasteIfAllowedByPolicy is instead
+  // called directly.
+  enterprise_data_protection::PasteIfAllowedByPolicy(
+      source, destination, metadata, std::move(clipboard_paste_data),
+      std::move(callback));
 #else
   std::move(callback).Run(std::move(clipboard_paste_data));
 #endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
@@ -7890,8 +7722,7 @@ void ChromeContentBrowserClient::IsClipboardCopyAllowedByPolicy(
     const content::ClipboardMetadata& metadata,
     const ClipboardPasteData& data,
     IsClipboardCopyAllowedCallback callback) {
-// TODO(b/352728209): Add Android-specific hook for Data Controls.
-#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS) && !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
   enterprise_data_protection::IsClipboardCopyAllowedByPolicy(
       source, metadata, data, std::move(callback));
 #else
@@ -7923,14 +7754,6 @@ ChromeContentBrowserClient::GetXrIntegrationClient() {
   return xr_integration_client_.get();
 }
 #endif  // BUILDFLAG(ENABLE_VR)
-
-void ChromeContentBrowserClient::BindBrowserControlInterface(
-    mojo::ScopedMessagePipeHandle pipe) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosService::Get()->BindReceiver(
-      chrome::GetVersionString(chrome::WithExtendedStable(true)));
-#endif
-}
 
 bool ChromeContentBrowserClient::
     ShouldInheritCrossOriginEmbedderPolicyImplicitly(const GURL& url) {
@@ -8360,7 +8183,7 @@ ChromeContentBrowserClient::GetAlternativeErrorPageOverrideInfo(
     }
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   using PortalState = chromeos::network_config::mojom::PortalState;
   auto portal_state = ash::network_health::NetworkHealthManager::GetInstance()
                           ->helper()
@@ -8756,6 +8579,27 @@ void ChromeContentBrowserClient::BindTranslationManager(
 }
 #endif
 
+namespace {
+
+const char kContentLanguageDetectionDriverUserDataKey[] =
+    "ContentLanguageDetectionDriverUserDataKey";
+
+}  // namespace
+
+void ChromeContentBrowserClient::BindLanguageDetectionDriver(
+    content::BrowserContext* browser_context,
+    base::SupportsUserData* context_user_data,
+    mojo::PendingReceiver<
+        language_detection::mojom::ContentLanguageDetectionDriver> receiver) {
+  auto language_detection_driver =
+      std::make_unique<language_detection::ContentLanguageDetectionDriver>(
+          LanguageDetectionModelServiceFactory::GetForProfile(
+              Profile::FromBrowserContext(browser_context)));
+  language_detection_driver->AddReceiver(std::move(receiver));
+  context_user_data->SetUserData(kContentLanguageDetectionDriverUserDataKey,
+                                 std::move(language_detection_driver));
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 void ChromeContentBrowserClient::QueryInstalledWebAppsByManifestId(
     const GURL& frame_url,
@@ -8929,3 +8773,20 @@ void ChromeContentBrowserClient::OnTracingServiceStopped() {
   windows_system_tracing_client_.reset();
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+std::unique_ptr<content::WebUIController>
+ChromeContentBrowserClient::OverrideForInternalWebUI(content::WebUI* web_ui,
+                                                     const GURL& url) {
+  if (!base::FeatureList::IsEnabled(features::kInternalOnlyUisPref)) {
+    return nullptr;
+  }
+
+  PrefService* local_state = g_browser_process->local_state();
+  DCHECK(local_state);
+  DCHECK(local_state->FindPreference(prefs::kInternalOnlyUisEnabled));
+  if (local_state->GetBoolean(prefs::kInternalOnlyUisEnabled)) {
+    return nullptr;
+  }
+
+  return std::make_unique<InternalDebugPagesDisabledUI>(web_ui, url.host());
+}

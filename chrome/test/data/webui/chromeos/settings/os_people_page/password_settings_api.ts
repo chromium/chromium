@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {PasswordSettingsApiInterface, PasswordSettingsApiReceiver, PasswordSettingsApiRemote} from '../password_settings_api.test-mojom-webui.js';
 import {assertAsync, assertForDuration, retry, retryUntilSome} from '../utils.js';
@@ -101,13 +102,17 @@ export class PasswordSettingsApi implements PasswordSettingsApiInterface {
     return button;
   }
 
-  private moreButton(): HTMLElement|null {
-    return this.shadowRoot().getElementById('moreButton');
+  private moreButton(): HTMLButtonElement {
+    const button =
+        this.shadowRoot().getElementById('moreButton') as HTMLButtonElement;
+    assertTrue(button != null);
+    return button;
   }
 
-
   private hasPassword(): boolean {
-    return this.moreButton() !== null;
+    const button =
+        this.shadowRoot().getElementById('switchLocalPasswordButton');
+    return button === null || !isVisible(button);
   }
 
   async removePassword(): Promise<void> {
@@ -122,6 +127,14 @@ export class PasswordSettingsApi implements PasswordSettingsApiInterface {
 
   async assertCanRemovePassword(canRemove: boolean): Promise<void> {
     const buttons = this.getRemoveMenuItems();
-    assertTrue(canRemove === (buttons.length > 0));
+    await assertAsync(() => canRemove === (buttons.length > 0));
+  }
+
+  async assertCanSwitchToLocalPassword(canSwitch: boolean): Promise<void> {
+    const button = this.switchLocalPasswordButton();
+    if (button == null) {
+      assertFalse(canSwitch)
+    }
+    await assertAsync(() => canSwitch === isVisible(button));
   }
 }

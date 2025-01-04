@@ -38,8 +38,15 @@ constexpr char kEmptySourceError[] =
 constexpr char kInvalidSourceError[] =
     "User script with ID '*' must specify exactly one of 'code' or 'file' as a "
     "js source.";
+constexpr char kInvalidSourceWithoutIdError[] =
+    "User script must specify exactly one of 'code' or 'file' as a js source.";
 constexpr char kMatchesMissingError[] =
     "User script with ID '*' must specify 'matches'.";
+constexpr char kInvalidAllFramesError[] =
+    "User script must not specify injection to 'all frames' when it has a "
+    "specific set of 'frameIds' to inject into.";
+constexpr char kInvalidInjectionTargetIdsError[] =
+    "User script must not specify both 'documentIds' and 'frameIds'.";
 
 // Sanitizes the given `world_id`, updating it if necessary.
 // Returns true on success; on failure, returns false and populates `error_out`.
@@ -110,7 +117,7 @@ ConvertRegisteredUserScriptToSerializedUserScript(
   serialized_script.include_globs = std::move(user_script.include_globs);
   serialized_script.exclude_globs = std::move(user_script.exclude_globs);
   serialized_script.js =
-      user_script_sources_to_serialized_sources(std::move(user_script.js));
+      user_script_sources_to_serialized_sources(std::move(*user_script.js));
   serialized_script.matches = std::move(*user_script.matches);
   serialized_script.run_at = std::move(user_script.run_at);
   serialized_script.world = convert_execution_world(user_script.world);
@@ -138,14 +145,14 @@ std::unique_ptr<UserScript> ParseUserScript(
     return nullptr;
   }
 
-  // `js` must not be empty.
-  if (user_script.js.empty()) {
+  // `js` must be existent and not empty.
+  if (!user_script.js || user_script.js.value().empty()) {
     *error = ErrorUtils::FormatErrorMessageUTF16(
         kEmptySourceError, UserScript::TrimPrefixFromScriptID(user_script.id));
     return nullptr;
   }
 
-  for (const api::user_scripts::ScriptSource& source : user_script.js) {
+  for (const api::user_scripts::ScriptSource& source : *user_script.js) {
     if ((source.code && source.file) || (!source.code && !source.file)) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           kInvalidSourceError,
@@ -499,7 +506,7 @@ std::unique_ptr<UserScript> UserScriptsUpdateFunction::ApplyUpdate(
     original_script.exclude_matches = std::move(new_script.exclude_matches);
   }
 
-  if (!new_script.js.empty()) {
+  if (new_script.js) {
     original_script.js = std::move(new_script.js);
   }
 
@@ -588,9 +595,6 @@ ExtensionFunction::ResponseAction UserScriptsConfigureWorldFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(extension());
 
-  std::optional<std::string> csp = std::move(params->properties.csp);
-  bool enable_messaging = params->properties.messaging.value_or(false);
-
   std::optional<std::string> world_id;
   if (base::FeatureList::IsEnabled(
           extensions_features::kApiUserScriptsMultipleWorlds)) {
@@ -613,9 +617,52 @@ ExtensionFunction::ResponseAction UserScriptsConfigureWorldFunction::Run() {
                                  kMaxNumberOfRegisteredWorlds)));
   }
 
-  config_manager->SetUserScriptWorldInfo(*extension(), world_id, csp,
-                                         enable_messaging);
+  mojom::UserScriptWorldInfoPtr world_info =
+      config_manager->GetUserScriptWorldInfo(extension()->id(), world_id);
+  bool changed = false;
 
+  std::optional<std::string> csp = std::move(params->properties.csp);
+  if (csp && csp != world_info->csp) {
+    changed = true;
+    world_info->csp = std::move(csp);
+  }
+
+  std::optional<bool> enable_messaging = params->properties.messaging;
+  if (enable_messaging && *enable_messaging != world_info->enable_messaging) {
+    changed = true;
+    world_info->enable_messaging = *enable_messaging;
+  }
+
+  if (changed) {
+    config_manager->SetUserScriptWorldInfo(*extension(), std::move(world_info));
+  }
+
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction UserScriptsExecuteFunction::Run() {
+  std::optional<api::user_scripts::Execute::Params> params(
+      api::user_scripts::Execute::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+  EXTENSION_FUNCTION_VALIDATE(extension());
+
+  injection_ = std::move(params->injection);
+
+  if ((injection_.js.code && injection_.js.file) ||
+      (!injection_.js.code && !injection_.js.file)) {
+    return RespondNow(Error(kInvalidSourceWithoutIdError));
+  }
+
+  if (injection_.target.frame_ids &&
+      injection_.target.all_frames.value_or(false)) {
+    return RespondNow(Error(kInvalidAllFramesError));
+  }
+
+  if (injection_.target.document_ids && injection_.target.frame_ids) {
+    return RespondNow(Error(kInvalidInjectionTargetIdsError));
+  }
+
+  // TODO(crbug.com/326657581): Execute script with the given parameters.
   return RespondNow(NoArguments());
 }
 

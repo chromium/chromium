@@ -17,7 +17,6 @@
 #include <string>
 #include <vector>
 
-#include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/sequence_checker.h"
 #include "components/metrics/dwa/mojom/dwa_interface.mojom.h"
@@ -26,9 +25,9 @@
 namespace metrics::dwa {
 
 // Enables DWA recording.
-COMPONENT_EXPORT(DWA) BASE_DECLARE_FEATURE(kDwaFeature);
+BASE_DECLARE_FEATURE(kDwaFeature);
 
-class COMPONENT_EXPORT(DWA) DwaRecorder {
+class DwaRecorder {
  public:
   DwaRecorder();
 

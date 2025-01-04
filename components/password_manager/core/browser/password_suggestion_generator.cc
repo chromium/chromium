@@ -11,7 +11,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -354,9 +354,7 @@ std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
 #if !BUILDFLAG(IS_IOS)
     const bool passkey_from_another_device_in_autofill =
         !(base::FeatureList::IsEnabled(
-              features::kPasswordManualFallbackAvailable) &&
-          base::FeatureList::IsEnabled(
-              features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu));
+            features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu));
 #else
     const bool passkey_from_another_device_in_autofill = true;
 #endif  //! BUILDFLAG(IS_IOS)

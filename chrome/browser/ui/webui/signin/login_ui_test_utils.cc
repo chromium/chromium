@@ -54,7 +54,7 @@ const char kGetPasswordFieldFromDiceSigninPage[] =
 // success or failure notification is fired.
 class SignInObserver : public signin::IdentityManager::Observer {
  public:
-  SignInObserver() : seen_(false), running_(false), signed_in_(false) {}
+  SignInObserver() = default;
 
   // Returns whether a GoogleSigninSucceeded event has happened.
   bool DidSignIn() { return signed_in_; }
@@ -110,11 +110,11 @@ class SignInObserver : public signin::IdentityManager::Observer {
  private:
   // Bool to mark an observed event as seen prior to calling Wait(), used to
   // prevent the observer from blocking.
-  bool seen_;
+  bool seen_ = false;
   // True is the message loop runner is running.
-  bool running_;
+  bool running_ = false;
   // True if a GoogleSigninSucceeded event has been observed.
-  bool signed_in_;
+  bool signed_in_ = false;
   scoped_refptr<MessageLoopRunner> message_loop_runner_;
 };
 

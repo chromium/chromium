@@ -43,6 +43,11 @@ LayerTitleCache::LayerTitleCache(JNIEnv* env,
                                  jint icon_end_padding,
                                  jint spinner_resource_id,
                                  jint spinner_incognito_resource_id,
+                                 jint bubble_inner_dimension,
+                                 jint bubble_outer_dimension,
+                                 jint bubble_offset,
+                                 jint bubble_inner_tint,
+                                 jint bubble_outer_tint,
                                  ui::ResourceManager* resource_manager)
     : weak_java_title_cache_(env, obj),
       fade_width_(fade_width),
@@ -50,6 +55,11 @@ LayerTitleCache::LayerTitleCache(JNIEnv* env,
       icon_end_padding_(icon_end_padding),
       spinner_resource_id_(spinner_resource_id),
       spinner_incognito_resource_id_(spinner_incognito_resource_id),
+      bubble_inner_dimension_(bubble_inner_dimension),
+      bubble_outer_dimension_(bubble_outer_dimension),
+      bubble_offset_(bubble_offset),
+      bubble_inner_tint_(bubble_inner_tint),
+      bubble_outer_tint_(bubble_outer_tint),
       resource_manager_(resource_manager) {}
 
 void LayerTitleCache::Destroy(JNIEnv* env) {
@@ -62,14 +72,15 @@ void LayerTitleCache::UpdateLayer(JNIEnv* env,
                                   jint title_resource_id,
                                   jint icon_resource_id,
                                   bool is_incognito,
-                                  bool is_rtl) {
+                                  bool is_rtl,
+                                  bool show_bubble) {
   DecorationTabTitle* title_layer = layer_cache_.Lookup(tab_id);
   if (title_layer) {
     if (title_resource_id != ui::Resource::kInvalidResourceId &&
         icon_resource_id != ui::Resource::kInvalidResourceId) {
       title_layer->Update(title_resource_id, icon_resource_id, fade_width_,
                           icon_start_padding_, icon_end_padding_, is_incognito,
-                          is_rtl);
+                          is_rtl, show_bubble);
     } else {
       layer_cache_.Remove(tab_id);
     }
@@ -78,7 +89,9 @@ void LayerTitleCache::UpdateLayer(JNIEnv* env,
         std::make_unique<DecorationTabTitle>(
             resource_manager_, title_resource_id, icon_resource_id,
             spinner_resource_id_, spinner_incognito_resource_id_, fade_width_,
-            icon_start_padding_, icon_end_padding_, is_incognito, is_rtl),
+            icon_start_padding_, icon_end_padding_, is_incognito, is_rtl,
+            show_bubble, bubble_inner_dimension_, bubble_outer_dimension_,
+            bubble_offset_, bubble_inner_tint_, bubble_outer_tint_),
         tab_id);
   }
 }
@@ -111,10 +124,21 @@ void LayerTitleCache::UpdateGroupLayer(JNIEnv* env,
 void LayerTitleCache::UpdateIcon(JNIEnv* env,
                                  const JavaParamRef<jobject>& obj,
                                  jint tab_id,
-                                 jint icon_resource_id) {
+                                 jint icon_resource_id,
+                                 bool show_bubble) {
   DecorationTabTitle* title_layer = layer_cache_.Lookup(tab_id);
   if (title_layer && icon_resource_id != ui::Resource::kInvalidResourceId) {
     title_layer->SetIconResourceId(icon_resource_id);
+  }
+}
+
+void LayerTitleCache::UpdateTabBubble(JNIEnv* env,
+                                      const JavaParamRef<jobject>& obj,
+                                      jint tab_id,
+                                      bool show_bubble) {
+  DecorationTabTitle* title_layer = layer_cache_.Lookup(tab_id);
+  if (title_layer) {
+    title_layer->SetShowBubble(show_bubble);
   }
 }
 
@@ -152,12 +176,19 @@ jlong JNI_LayerTitleCache_Init(JNIEnv* env,
                                jint icon_end_padding,
                                jint spinner_resource_id,
                                jint spinner_incognito_resource_id,
+                               jint bubble_inner_dimension,
+                               jint bubble_outer_dimension,
+                               jint bubble_offset,
+                               jint bubble_inner_tint,
+                               jint bubble_outer_tint,
                                const JavaParamRef<jobject>& jresource_manager) {
   ui::ResourceManager* resource_manager =
       ui::ResourceManagerImpl::FromJavaObject(jresource_manager);
   LayerTitleCache* cache = new LayerTitleCache(
       env, obj, fade_width, icon_start_padding, icon_end_padding,
-      spinner_resource_id, spinner_incognito_resource_id, resource_manager);
+      spinner_resource_id, spinner_incognito_resource_id,
+      bubble_inner_dimension, bubble_outer_dimension, bubble_offset,
+      bubble_inner_tint, bubble_outer_tint, resource_manager);
   return reinterpret_cast<intptr_t>(cache);
 }
 

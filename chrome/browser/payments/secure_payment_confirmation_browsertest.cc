@@ -22,7 +22,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/autofill/core/browser/test_event_waiter.h"
+#include "components/autofill/core/browser/test_utils/test_event_waiter.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/core/error_strings.h"

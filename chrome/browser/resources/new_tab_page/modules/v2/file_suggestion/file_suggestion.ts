@@ -35,18 +35,12 @@ export class FileSuggestionElement extends CrLitElement {
   static override get properties() {
     return {
       files: {type: Array},
-      imageSourceBaseUrl: {type: String},
       moduleName: {type: String},
     };
   }
 
   files: File[] = [];
-  imageSourceBaseUrl: string;
   moduleName: string;
-
-  protected getImageSrc_(file: File): string {
-    return this.imageSourceBaseUrl + file.mimeType;
-  }
 
   protected onFileClick_(e: Event) {
     const clickFileEvent = new Event('usage', {composed: true, bubbles: true});

@@ -117,6 +117,7 @@
 #include "crypto/nss_util.h"
 #include "crypto/nss_util_internal.h"
 #include "crypto/scoped_test_system_nss_key_slot.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -1385,18 +1386,12 @@ IN_PROC_BROWSER_TEST_F(ReauthTokenWebviewLoginTest,
 
 class ReauthEndpointWebviewLoginTest : public WebviewLoginTest {
  protected:
-  ReauthEndpointWebviewLoginTest() {
-    // TODO(https://crbug.com/1153912) Makes tests work with
-    // kParentAccessCodeForOnlineLogin enabled.
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndDisableFeature(
-        ::features::kParentAccessCodeForOnlineLogin);
-  }
+  ReauthEndpointWebviewLoginTest() = default;
   ~ReauthEndpointWebviewLoginTest() override = default;
 
   LoginManagerMixin::TestUserInfo reauth_user_{
       AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
-                                     FakeGaiaMixin::kFakeUserGaiaId),
+                                     GaiaId(FakeGaiaMixin::kFakeUserGaiaId)),
       test::UserAuthConfig::Create(test::kDefaultAuthSetup).RequireReauth(),
       user_manager::UserType::kChild};
   LoginManagerMixin login_manager_mixin_{&mixin_host_, {reauth_user_}};
@@ -1453,7 +1448,7 @@ class ReauthEndpointWebviewLoginOwnerTest
     ReauthEndpointWebviewLoginTest::SetUpOnMainThread();
 
     GetFakeUserManager().SetOwnerId(AccountId::FromUserEmailGaiaId(
-        FakeGaiaMixin::kFakeUserEmail, FakeGaiaMixin::kFakeUserGaiaId));
+        FakeGaiaMixin::kFakeUserEmail, GaiaId(FakeGaiaMixin::kFakeUserGaiaId)));
   }
 
  private:
@@ -1817,7 +1812,7 @@ class WebviewClientCertsLoginTest : public WebviewClientCertsLoginTestBase {
  protected:
   LoginManagerMixin::TestUserInfo test_user_{
       AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
-                                     FakeGaiaMixin::kFakeUserGaiaId),
+                                     GaiaId(FakeGaiaMixin::kFakeUserGaiaId)),
       test::kDefaultAuthSetup, user_manager::UserType::kRegular};
   LoginManagerMixin login_manager_mixin_{&mixin_host_, {test_user_}};
 
@@ -2573,7 +2568,7 @@ class WebviewChildLoginTest : public WebviewLoginTest {
  protected:
   AccountId child_account_id_{
       AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
-                                     FakeGaiaMixin::kFakeUserGaiaId)};
+                                     GaiaId(FakeGaiaMixin::kFakeUserGaiaId))};
   EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
   UserPolicyMixin user_policy_mixin_{&mixin_host_, child_account_id_,
                                      &policy_test_server_mixin_};

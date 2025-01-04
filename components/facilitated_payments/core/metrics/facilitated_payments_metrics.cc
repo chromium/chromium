@@ -8,10 +8,65 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
-#include "components/facilitated_payments/core/ui_utils/facilitated_payments_ui_utils.h"
+#include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
+#include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
+#include "components/facilitated_payments/core/validation/payment_link_validator.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace payments::facilitated {
+namespace {
+
+// Helper to convert `PurchaseActionResult` to a string for logging.
+std::string GetInitiatePurchaseActionResultString(PurchaseActionResult result) {
+  switch (result) {
+    case PurchaseActionResult::kResultOk:
+      return "Succeeded";
+    case PurchaseActionResult::kCouldNotInvoke:
+      return "Failed";
+    case PurchaseActionResult::kResultCanceled:
+      return "Abandoned";
+  }
+}
+
+std::string PaymentTypeToString(FacilitatedPaymentsType payment_type) {
+  switch (payment_type) {
+    case FacilitatedPaymentsType::kPix:
+      return "Pix";
+    case FacilitatedPaymentsType::kEwallet:
+      return "Ewallet";
+  }
+}
+
+std::string PaymentTypeToFopSelectorLatencyString(
+    FacilitatedPaymentsType payment_type) {
+  switch (payment_type) {
+    case FacilitatedPaymentsType::kPix:
+      return "LatencyAfterCopy";
+    case FacilitatedPaymentsType::kEwallet:
+      return "LatencyAfterDetectingPaymentLink";
+  }
+}
+
+std::string SchemeToString(PaymentLinkValidator::Scheme scheme) {
+  switch (scheme) {
+    case PaymentLinkValidator::Scheme::kDuitNow:
+      return "DuitNow";
+    case PaymentLinkValidator::Scheme::kShopeePay:
+      return "ShopeePay";
+    case PaymentLinkValidator::Scheme::kTngd:
+      return "Tngd";
+    case PaymentLinkValidator::Scheme::kInvalid:
+      // This case can't happen because `kInvalid` causes an early return in
+      // eWallet manager.
+      NOTREACHED();
+  }
+}
+
+std::string ResultToString(bool result) {
+  return result ? "Success" : "Failure";
+}
+
+}  // namespace
 
 void LogPixCodeCopied(ukm::SourceId ukm_source_id) {
   base::UmaHistogramBoolean("FacilitatedPayments.Pix.PixCodeCopied",
@@ -58,105 +113,196 @@ void LogPaymentCodeValidationResultAndLatency(
       duration);
 }
 
-void LogApiAvailabilityCheckResultAndLatency(bool result,
-                                             base::TimeDelta duration) {
-  // TODO(crbug.com/337929926): Remove hardcoding for Pix and use
-  // FacilitatedPaymentsType enum.
+void LogApiAvailabilityCheckResultAndLatency(
+    FacilitatedPaymentsType payment_type,
+    bool result,
+    base::TimeDelta duration,
+    std::optional<PaymentLinkValidator::Scheme> scheme) {
   base::UmaHistogramLongTimes(
-      base::StrCat({"FacilitatedPayments.Pix.IsApiAvailable.",
-                    result ? "Success" : "Failure", ".Latency"}),
+      base::StrCat({"FacilitatedPayments.", PaymentTypeToString(payment_type),
+                    ".IsApiAvailable.", ResultToString(result), ".Latency"}),
       duration);
+  if (payment_type == FacilitatedPaymentsType::kEwallet) {
+    CHECK(scheme.has_value());
+    CHECK_NE(PaymentLinkValidator::Scheme::kInvalid, *scheme);
+    base::UmaHistogramLongTimes(
+        base::StrCat({"FacilitatedPayments.Ewallet.IsApiAvailable.",
+                      ResultToString(result), ".Latency.",
+                      SchemeToString(*scheme)}),
+        duration);
+  }
 }
 
-void LogLoadRiskDataResultAndLatency(bool was_successful,
-                                     base::TimeDelta duration) {
-  // TODO(crbug.com/337929926): Remove hardcoding for Pix and use
-  // FacilitatedPaymentsType enum.
+void LogLoadRiskDataResultAndLatency(
+    FacilitatedPaymentsType payment_type,
+    bool was_successful,
+    base::TimeDelta duration,
+    std::optional<PaymentLinkValidator::Scheme> scheme) {
   base::UmaHistogramLongTimes(
-      base::StrCat({"FacilitatedPayments.Pix.LoadRiskData.",
-                    was_successful ? "Success" : "Failure", ".Latency"}),
+      base::StrCat({"FacilitatedPayments.", PaymentTypeToString(payment_type),
+                    ".LoadRiskData.", ResultToString(was_successful),
+                    ".Latency"}),
       duration);
+  if (payment_type == FacilitatedPaymentsType::kEwallet) {
+    CHECK(scheme.has_value());
+    CHECK_NE(PaymentLinkValidator::Scheme::kInvalid, *scheme);
+    base::UmaHistogramLongTimes(
+        base::StrCat({"FacilitatedPayments.Ewallet.LoadRiskData.",
+                      ResultToString(was_successful), ".Latency.",
+                      SchemeToString(*scheme)}),
+        duration);
+  }
 }
 
-void LogGetClientTokenResultAndLatency(bool result, base::TimeDelta duration) {
-  // TODO(crbug.com/337929926): Remove hardcoding for Pix and use
-  // FacilitatedPaymentsType enum.
+void LogGetClientTokenResultAndLatency(
+    FacilitatedPaymentsType payment_type,
+    bool result,
+    base::TimeDelta duration,
+    std::optional<PaymentLinkValidator::Scheme> scheme) {
   base::UmaHistogramLongTimes(
-      base::StrCat({"FacilitatedPayments.Pix.GetClientToken.",
-                    result ? "Success" : "Failure", ".Latency"}),
+      base::StrCat({"FacilitatedPayments.", PaymentTypeToString(payment_type),
+                    ".GetClientToken.", ResultToString(result), ".Latency"}),
       duration);
+  if (payment_type == FacilitatedPaymentsType::kEwallet) {
+    CHECK(scheme.has_value());
+    CHECK_NE(PaymentLinkValidator::Scheme::kInvalid, *scheme);
+    base::UmaHistogramLongTimes(
+        base::StrCat({"FacilitatedPayments.Ewallet.GetClientToken.",
+                      ResultToString(result), ".Latency.",
+                      SchemeToString(*scheme)}),
+        duration);
+  }
 }
 
-void LogPayflowExitedReason(PayflowExitedReason reason) {
-  // TODO(crbug.com/337929926): Remove hardcoding for Pix and use
-  // FacilitatedPaymentsType enum.
+void LogEwalletFlowExitedReason(
+    EwalletFlowExitedReason reason,
+    std::optional<PaymentLinkValidator::Scheme> scheme) {
+  base::UmaHistogramEnumeration(
+      "FacilitatedPayments.Ewallet.PayflowExitedReason", reason);
+  // `scheme` might be empty during some invalid cases (payment url not in
+  // allowlist).
+  if (scheme.has_value() && *scheme != PaymentLinkValidator::Scheme::kInvalid) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({"FacilitatedPayments.Ewallet.PayflowExitedReason.",
+                      SchemeToString(*scheme)}),
+        reason);
+  }
+}
+
+void LogPixFlowExitedReason(PixFlowExitedReason reason) {
   base::UmaHistogramEnumeration("FacilitatedPayments.Pix.PayflowExitedReason",
                                 reason);
 }
 
-void LogInitiatePaymentAttempt() {
-  // TODO(crbug.com/337929926): Remove hardcoding for Pix and use
-  // FacilitatedPaymentsType enum.
-  base::UmaHistogramBoolean("FacilitatedPayments.Pix.InitiatePayment.Attempt",
-                            /*sample=*/true);
-}
-
-void LogInitiatePaymentResultAndLatency(bool result, base::TimeDelta duration) {
-  // TODO(crbug.com/337929926): Remove hardcoding for Pix and use
-  // FacilitatedPaymentsType enum.
-  base::UmaHistogramLongTimes(
-      base::StrCat({"FacilitatedPayments.Pix.InitiatePayment.",
-                    result ? "Success" : "Failure", ".Latency"}),
-      duration);
-}
-
-void LogInitiatePurchaseActionAttempt() {
-  // TODO(crbug.com/337929926): Remove hardcoding for Pix and use
-  // FacilitatedPaymentsType enum.
+void LogInitiatePaymentAttempt(
+    FacilitatedPaymentsType payment_type,
+    std::optional<PaymentLinkValidator::Scheme> scheme) {
   base::UmaHistogramBoolean(
-      "FacilitatedPayments.Pix.InitiatePurchaseAction.Attempt",
+      base::StrCat({"FacilitatedPayments.", PaymentTypeToString(payment_type),
+                    ".InitiatePayment.Attempt"}),
       /*sample=*/true);
-}
-
-void LogInitiatePurchaseActionResultAndLatency(const std::string& result,
-                                               base::TimeDelta duration) {
-  // TODO(crbug.com/337929926): Remove hardcoding for Pix and use
-  // FacilitatedPaymentsType enum.
-  base::UmaHistogramLongTimes(
-      base::StrCat({"FacilitatedPayments.Pix.InitiatePurchaseAction.", result,
-                    ".Latency"}),
-      duration);
-}
-
-void LogInitiatePurchaseActionResultUkm(const std::string& result,
-                                        ukm::SourceId ukm_source_id) {
-  ukm::builders::FacilitatedPayments_Pix_InitiatePurchaseActionResult(
-      ukm_source_id)
-      .SetResult(ConvertPurchaseActionResultToEnumValue(result))
-      .Record(ukm::UkmRecorder::Get());
-}
-
-uint8_t ConvertPurchaseActionResultToEnumValue(const std::string& result) {
-  if (result == "Failed") {
-    return 0;  // See the definition of the enum
-               // FacilitatedPayments.InitiatePurchaseActionResult.
-  } else if (result == "Succeeded") {
-    return 1;
-  } else if (result == "Abandoned") {
-    return 2;
-  } else {
-    NOTREACHED();
+  if (payment_type == FacilitatedPaymentsType::kEwallet) {
+    CHECK(scheme.has_value());
+    CHECK_NE(PaymentLinkValidator::Scheme::kInvalid, *scheme);
+    base::UmaHistogramBoolean(
+        base::StrCat({"FacilitatedPayments.Ewallet.InitiatePayment.Attempt.",
+                      SchemeToString(*scheme)}),
+        /*sample=*/true);
   }
 }
 
-void LogUiScreenShown(UiState ui_screen) {
-  base::UmaHistogramEnumeration("FacilitatedPayments.Pix.UiScreenShown",
-                                ui_screen);
+void LogInitiatePaymentResultAndLatency(
+    FacilitatedPaymentsType payment_type,
+    bool result,
+    base::TimeDelta duration,
+    std::optional<PaymentLinkValidator::Scheme> scheme) {
+  base::UmaHistogramLongTimes(
+      base::StrCat({"FacilitatedPayments.", PaymentTypeToString(payment_type),
+                    ".InitiatePayment.", ResultToString(result), ".Latency"}),
+      duration);
+  if (payment_type == FacilitatedPaymentsType::kEwallet) {
+    CHECK(scheme.has_value());
+    CHECK_NE(PaymentLinkValidator::Scheme::kInvalid, *scheme);
+    base::UmaHistogramLongTimes(
+        base::StrCat({"FacilitatedPayments.", PaymentTypeToString(payment_type),
+                      ".InitiatePayment.", ResultToString(result), ".Latency.",
+                      SchemeToString(*scheme)}),
+        duration);
+  }
 }
 
-void LogPixFopSelectorShownLatency(base::TimeDelta latency) {
+void LogInitiatePurchaseActionAttempt(
+    FacilitatedPaymentsType payment_type,
+    std::optional<PaymentLinkValidator::Scheme> scheme) {
+  base::UmaHistogramBoolean(
+      base::StrCat({"FacilitatedPayments.", PaymentTypeToString(payment_type),
+                    ".InitiatePurchaseAction.Attempt"}),
+      /*sample=*/true);
+  if (payment_type == FacilitatedPaymentsType::kEwallet) {
+    CHECK(scheme.has_value());
+    CHECK_NE(PaymentLinkValidator::Scheme::kInvalid, *scheme);
+    base::UmaHistogramBoolean(
+        base::StrCat(
+            {"FacilitatedPayments.Ewallet.InitiatePurchaseAction.Attempt.",
+             SchemeToString(*scheme)}),
+        /*sample=*/true);
+  }
+}
+
+void LogInitiatePurchaseActionResultAndLatency(PurchaseActionResult result,
+                                               base::TimeDelta duration) {
   base::UmaHistogramLongTimes(
-      "FacilitatedPayments.Pix.FopSelectorShown.LatencyAfterCopy", latency);
+      base::StrCat({"FacilitatedPayments.Pix.InitiatePurchaseAction.",
+                    GetInitiatePurchaseActionResultString(result), ".Latency"}),
+      duration);
+}
+
+void LogInitiatePurchaseActionResultUkm(PurchaseActionResult result,
+                                        ukm::SourceId ukm_source_id) {
+  ukm::builders::FacilitatedPayments_Pix_InitiatePurchaseActionResult(
+      ukm_source_id)
+      .SetResult(static_cast<uint8_t>(result))
+      .Record(ukm::UkmRecorder::Get());
+}
+
+void LogUiScreenShown(FacilitatedPaymentsType payment_type,
+                      UiState ui_screen,
+                      std::optional<PaymentLinkValidator::Scheme> scheme) {
+  base::UmaHistogramEnumeration(base::StrCat({
+                                    "FacilitatedPayments.",
+                                    PaymentTypeToString(payment_type),
+                                    ".UiScreenShown",
+                                }),
+                                ui_screen);
+  if (payment_type == FacilitatedPaymentsType::kEwallet) {
+    CHECK(scheme.has_value());
+    CHECK_NE(PaymentLinkValidator::Scheme::kInvalid, *scheme);
+    base::UmaHistogramEnumeration(
+        base::StrCat({"FacilitatedPayments.Ewallet.UiScreenShown.",
+                      SchemeToString(*scheme)}),
+        ui_screen);
+  }
+}
+
+void LogFopSelectorShownLatency(
+    FacilitatedPaymentsType payment_type,
+    base::TimeDelta latency,
+    std::optional<PaymentLinkValidator::Scheme> scheme) {
+  base::UmaHistogramLongTimes(
+      base::StrCat({"FacilitatedPayments.", PaymentTypeToString(payment_type),
+                    ".FopSelectorShown.",
+                    PaymentTypeToFopSelectorLatencyString(payment_type)}),
+      latency);
+
+  if (payment_type == FacilitatedPaymentsType::kEwallet) {
+    CHECK(scheme.has_value());
+    CHECK_NE(PaymentLinkValidator::Scheme::kInvalid, *scheme);
+    base::UmaHistogramLongTimes(
+        base::StrCat({"FacilitatedPayments.Ewallet.FopSelectorShown."
+                      "LatencyAfterDetectingPaymentLink.",
+                      SchemeToString(*scheme)}),
+        latency);
+  }
 }
 
 }  // namespace payments::facilitated

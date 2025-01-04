@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -27,7 +26,7 @@ class CreditCard;
 class CreditCardAccessManagerTestBase;
 class CreditCardCvcAuthenticatorTest;
 class FormFillerTest;
-class PersonalDataManager;
+class PaymentsDataManager;
 
 namespace autofill_metrics {
 class AutofillMetricsBaseTest;
@@ -107,15 +106,13 @@ class FullCardRequest final : public CardUnmaskDelegate {
 #endif
   };
 
-  // The parameters should outlive the FullCardRequest.
-  FullCardRequest(AutofillClient* autofill_client,
-                  PaymentsNetworkInterface* payments_network_interface,
-                  PersonalDataManager* personal_data_manager);
+  // `autofill_client` should outlive the `FullCardRequest`.
+  explicit FullCardRequest(AutofillClient* autofill_client);
 
   FullCardRequest(const FullCardRequest&) = delete;
   FullCardRequest& operator=(const FullCardRequest&) = delete;
 
-  ~FullCardRequest();
+  ~FullCardRequest() override;
 
   // Retrieves the pan for |card| after querying the user for CVC and invokes
   // Delegate::OnFullCardRequestSucceeded() or
@@ -235,14 +232,12 @@ class FullCardRequest final : public CardUnmaskDelegate {
   // Resets the state of the request.
   void Reset();
 
+  PaymentsDataManager& GetPaymentsDataManager();
+
+  PaymentsNetworkInterface* GetPaymentsNetworkInterface();
+
   // The associated autofill client.
   const raw_ref<AutofillClient> autofill_client_;
-
-  // Responsible for unmasking a masked server card.
-  const raw_ptr<PaymentsNetworkInterface> payments_network_interface_;
-
-  // Responsible for updating the server card on disk after it's been unmasked.
-  const raw_ptr<PersonalDataManager> personal_data_manager_;
 
   // Receiver of the full PAN and CVC.
   base::WeakPtr<ResultDelegate> result_delegate_;
@@ -254,7 +249,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
   std::unique_ptr<UnmaskRequestDetails> request_;
 
   // Whether the card unmask request should be sent to the payment server.
-  bool should_unmask_card_;
+  bool should_unmask_card_ = false;
 
   // The timestamp when the full PAN was requested from a server. For
   // histograms.

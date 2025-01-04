@@ -469,6 +469,19 @@ _BANNED_IOS_OBJC_FUNCTIONS = (
         '^ios/chrome/\w+_extension/',
       ),
     ),
+    BanRule(
+      r'public (RefCounted)?BrowserStateKeyedServiceFactory',
+      (
+        'KeyedService factories in //ios/chrome/browser should inherit from',
+        '(Refcounted)?ProfileKeyedServieFactoryIOS, not directory from',
+        '(Refcounted)?BrowserStateKeyedServiceFactory.'
+      ),
+      treat_as_error=True,
+      excluded_paths=(
+        'ios/components',
+        'ios/web_view',
+      ),
+    ),
 )
 
 _BANNED_IOS_EGTEST_FUNCTIONS : Sequence[BanRule] = (
@@ -1073,6 +1086,7 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             'services/on_device_model/ml/on_device_model_executor\.h',
             # Required to interop with interfaces from the third-party perfetto
             # library.
+            'components/tracing/common/etw_consumer_win_unittest\.cc',
             'services/tracing/public/cpp/perfetto/custom_event_recorder\.cc',
             'services/tracing/public/cpp/perfetto/perfetto_traced_process\.cc',
             'services/tracing/public/cpp/perfetto/perfetto_traced_process\.h',
@@ -2230,9 +2244,9 @@ _GENERIC_PYDEPS_FILES = [
     'build/android/gyp/apkbuilder.pydeps',
     'build/android/gyp/assert_static_initializers.pydeps',
     'build/android/gyp/binary_baseline_profile.pydeps',
-    'build/android/gyp/bytecode_processor.pydeps',
     'build/android/gyp/bytecode_rewriter.pydeps',
     'build/android/gyp/check_flag_expectations.pydeps',
+    'build/android/gyp/check_for_missing_direct_deps.pydeps',
     'build/android/gyp/compile_java.pydeps',
     'build/android/gyp/compile_kt.pydeps',
     'build/android/gyp/compile_resources.pydeps',
@@ -3453,7 +3467,7 @@ def _FindAllDepsFilesForSubpath(input_api, subpath):
     ret = []
     while subpath:
         cur = input_api.os_path.join(input_api.change.RepositoryRoot(), subpath, 'DEPS')
-        if input_api.os_path.exists(cur):
+        if input_api.os_path.isfile(cur):
             ret.append(cur)
         subpath = input_api.os_path.dirname(subpath)
     return ret
@@ -7349,19 +7363,20 @@ def CheckPythonShebang(input_api, output_api):
     return result
 
 
-def CheckBatchAnnotation(input_api, output_api):
+def CheckAndroidTestAnnotations(input_api, output_api):
     """Checks that tests have either @Batch or @DoNotBatch annotation. If this
     is not an instrumentation test, disregard."""
 
     batch_annotation = input_api.re.compile(r'^\s*@Batch')
     do_not_batch_annotation = input_api.re.compile(r'^\s*@DoNotBatch')
-    robolectric_test = input_api.re.compile(r'[rR]obolectric')
+    robolectric_test = input_api.re.compile(r'@RunWith\((.*?)RobolectricTestRunner')
     test_class_declaration = input_api.re.compile(r'^\s*public\sclass.*Test')
     uiautomator_test = input_api.re.compile(r'[uU]i[aA]utomator')
     test_annotation_declaration = input_api.re.compile(r'^\s*public\s@interface\s.*{')
 
     missing_annotation_errors = []
     extra_annotation_errors = []
+    wrong_robolectric_test_runner_errors = []
 
     def _FilterFile(affected_file):
         return input_api.FilterSourceFile(
@@ -7374,9 +7389,20 @@ def CheckBatchAnnotation(input_api, output_api):
         do_not_batch_matched = None
         is_instrumentation_test = True
         test_annotation_declaration_matched = None
+        has_base_robolectric_rule = False
         for line in f.NewContents():
-            if robolectric_test.search(line) or uiautomator_test.search(line):
-                # Skip Robolectric and UiAutomator tests.
+            if 'BaseRobolectricTestRule' in line:
+                has_base_robolectric_rule = True
+                continue
+            if m := robolectric_test.search(line):
+                is_instrumentation_test = False
+                if m.group(1) == '' and not has_base_robolectric_rule:
+                  path = str(f.LocalPath())
+                  # These two spots cannot use it.
+                  if 'webapk' not in path and 'build' not in path:
+                    wrong_robolectric_test_runner_errors.append(path)
+                break
+            if uiautomator_test.search(line):
                 is_instrumentation_test = False
                 break
             if not batch_matched:
@@ -7418,6 +7444,13 @@ See https://source.chromium.org/chromium/chromium/src/+/main:docs/testing/batchi
                 """
 Robolectric tests do not need a @Batch or @DoNotBatch annotations.
 """, extra_annotation_errors))
+    if wrong_robolectric_test_runner_errors:
+        results.append(
+            output_api.PresubmitPromptWarning(
+                """
+Robolectric tests should use either @RunWith(BaseRobolectricTestRunner.class) (or
+a subclass of it), or use "@Rule BaseRobolectricTestRule".
+""", wrong_robolectric_test_runner_errors))
 
     return results
 

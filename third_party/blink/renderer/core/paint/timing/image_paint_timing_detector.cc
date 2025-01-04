@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "third_party/blink/renderer/core/paint/timing/image_paint_timing_detector.h"
 
+#include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -20,6 +21,8 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -89,14 +92,11 @@ void ImageRecord::Trace(Visitor* visitor) const {
   visitor->Trace(media_timing);
 }
 
-ImagePaintTimingDetector::ImagePaintTimingDetector(
-    LocalFrameView* frame_view,
-    PaintTimingCallbackManager* callback_manager)
+ImagePaintTimingDetector::ImagePaintTimingDetector(LocalFrameView* frame_view)
     : uses_page_viewport_(
           base::FeatureList::IsEnabled(features::kUsePageViewportInLCP)),
       records_manager_(frame_view),
-      frame_view_(frame_view),
-      callback_manager_(callback_manager) {}
+      frame_view_(frame_view) {}
 
 ImageRecord* ImageRecordsManager::LargestImage() const {
   if (!largest_painted_image_ ||
@@ -201,15 +201,33 @@ ImagePaintTimingDetector::UpdateMetricsCandidate() {
   return {largest_image_record, changed};
 }
 
-void ImagePaintTimingDetector::OnPaintFinished() {
+OptionalPaintTimingCallback
+ImagePaintTimingDetector::TakePaintTimingCallback() {
   viewport_size_ = std::nullopt;
   if (!added_entry_in_latest_frame_)
-    return;
+    return std::nullopt;
 
   added_entry_in_latest_frame_ = false;
-
+  auto callback = WTF::BindOnce(
+      [](ImagePaintTimingDetector* self, unsigned int frame_index,
+         const base::TimeTicks& presentation_timestamp,
+         const DOMPaintTimingInfo& paint_timing_info) {
+        if (self) {
+          self->records_manager_.AssignPaintTimeToRegisteredQueuedRecords(
+              presentation_timestamp, paint_timing_info, frame_index);
+        }
+      },
+      WrapWeakPersistent(this), frame_index_);
   last_registered_frame_index_ = frame_index_++;
-  RegisterNotifyPresentationTime();
+
+  // This is for unit-testing purposes only. Some of these tests check for UKMs
+  // and things that are not covered by WPT.
+  // TODO(crbug.com/382396711) convert tests to WPT and remove this.
+  if (callback_manager_) {
+    callback_manager_->RegisterCallback(std::move(callback));
+    return std::nullopt;
+  }
+  return std::move(callback);
 }
 
 void ImagePaintTimingDetector::NotifyImageRemoved(
@@ -231,24 +249,9 @@ void ImagePaintTimingDetector::StopRecordEntries() {
   }
 }
 
-void ImagePaintTimingDetector::RegisterNotifyPresentationTime() {
-  auto callback =
-      WTF::BindOnce(&ImagePaintTimingDetector::ReportPresentationTime,
-                    WrapWeakPersistent(this), last_registered_frame_index_);
-  callback_manager_->RegisterCallback(std::move(callback));
-}
-
-void ImagePaintTimingDetector::ReportPresentationTime(
-    unsigned last_queued_frame_index,
-    base::TimeTicks timestamp) {
-  // The callback is safe from race-condition only when running on main-thread.
-  DCHECK(ThreadState::Current()->IsMainThread());
-  records_manager_.AssignPaintTimeToRegisteredQueuedRecords(
-      timestamp, last_queued_frame_index);
-}
-
 void ImageRecordsManager::AssignPaintTimeToRegisteredQueuedRecords(
-    const base::TimeTicks& timestamp,
+    const base::TimeTicks& presentation_timestamp,
+    const DOMPaintTimingInfo& paint_timing_info,
     unsigned last_queued_frame_index) {
   while (!images_queued_for_paint_time_.empty()) {
     ImageRecord* record = images_queued_for_paint_time_.front();
@@ -265,7 +268,7 @@ void ImageRecordsManager::AssignPaintTimeToRegisteredQueuedRecords(
     images_queued_for_paint_time_.pop_front();
 
     if (record->queue_animated_paint) {
-      record->first_animated_frame_time = timestamp;
+      record->first_animated_frame_time = presentation_timestamp;
       record->queue_animated_paint = false;
     }
 
@@ -294,7 +297,8 @@ void ImageRecordsManager::AssignPaintTimeToRegisteredQueuedRecords(
 
     // Set paint time.
     if (record->paint_time.is_null()) {
-      record->paint_time = timestamp;
+      record->paint_time = presentation_timestamp;
+      record->paint_timing_info = paint_timing_info;
     }
     // Update largest if necessary.
     if (!largest_painted_image_ ||
@@ -482,6 +486,15 @@ bool ImageRecordsManager::OnFirstAnimatedFramePainted(
     if (base::FeatureList::IsEnabled(
             features::kReportFirstFrameTimeAsRenderTime)) {
       record->paint_time = record->first_animated_frame_time;
+
+      // TODO(crbug.com/383568320): this timestamp it not specified, and it's
+      // not clear how it should be coarsened
+      DOMHighResTimeStamp dom_timestamp =
+          DOMWindowPerformance::performance(
+              *frame_view_->GetFrame().GetDocument()->domWindow())
+              ->MonotonicTimeToDOMHighResTimeStamp(record->paint_time);
+      record->paint_timing_info =
+          DOMPaintTimingInfo{dom_timestamp, dom_timestamp};
     }
   } else if (record->first_animated_frame_time.is_null()) {
     // Otherwise, this is an animated image, and so we should wait for the
@@ -577,8 +590,7 @@ bool ImageRecordsManager::RecordFirstPaintAndReturnIsPending(
        largest_painted_image_->recorded_size > visual_size)) {
     return false;
   }
-  if (base::FeatureList::IsEnabled(features::kExcludeLowEntropyImagesFromLCP) &&
-      bpp < features::kMinimumEntropyForLCP.Get()) {
+  if (bpp < kMinimumEntropyForLCP) {
     return false;
   }
 

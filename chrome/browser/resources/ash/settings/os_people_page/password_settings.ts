@@ -6,7 +6,6 @@ import {CrActionMenuElement} from 'chrome://resources/ash/common/cr_elements/cr_
 import {CrIconButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import {fireAuthTokenInvalidEvent} from 'chrome://resources/ash/common/quick_unlock/utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {AuthFactor, AuthFactorConfig, ConfigureResult, FactorObserverReceiver, PasswordFactorEditor} from 'chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -40,21 +39,17 @@ export class SettingsPasswordSettingsElement extends PolymerElement {
         value: false,
       },
 
-      changePasswordFactorSetupEnabled_: {
+      hasCryptohomePinV2_: {
         type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('changePasswordFactorSetupEnabled');
-        },
-        readOnly: true,
+        value: false,
       },
     };
   }
 
   authToken: string|null;
-  private hasPin_: boolean;
+  private hasCryptohomePinV2_: boolean;
   private hasGaiaPassword_: boolean;
   private hasLocalPassword_: boolean;
-  private changePasswordFactorSetupEnabled_: boolean;
 
   override ready(): void {
     super.ready();
@@ -72,7 +67,7 @@ export class SettingsPasswordSettingsElement extends PolymerElement {
     switch (factor) {
       case AuthFactor.kGaiaPassword:
       case AuthFactor.kLocalPassword:
-      case AuthFactor.kPin:
+      case AuthFactor.kCryptohomePinV2:
         this.updatePasswordState_();
         break;
       default:
@@ -89,18 +84,20 @@ export class SettingsPasswordSettingsElement extends PolymerElement {
       return;
     }
     const authToken = this.authToken;
-
     const afc = AuthFactorConfig.getRemote();
-    const [{ configured: hasGaiaPassword }, { configured: hasLocalPassword },
-      { configured: hasPin }] = await Promise.all([
+    // clang-format off
+    const [{configured: hasGaiaPassword},
+      {configured: hasLocalPassword},
+      {configured: hasCryptohomePinV2}] =
+        await Promise.all([
           afc.isConfigured(authToken, AuthFactor.kGaiaPassword),
           afc.isConfigured(authToken, AuthFactor.kLocalPassword),
-          afc.isConfigured(authToken, AuthFactor.kPin),
+          afc.isConfigured(authToken, AuthFactor.kCryptohomePinV2),
         ]);
-
+    // clang-format on
     this.hasGaiaPassword_ = hasGaiaPassword;
     this.hasLocalPassword_ = hasLocalPassword;
-    this.hasPin_ = hasPin;
+    this.hasCryptohomePinV2_ = hasCryptohomePinV2;
   }
 
   private hasPassword_(): boolean {
@@ -119,10 +116,6 @@ export class SettingsPasswordSettingsElement extends PolymerElement {
 
   private openSetLocalPasswordDialog_(): void {
     this.setLocalPasswordDialog().showModal();
-  }
-
-  private canSwitchLocalPassword_(): boolean {
-    return this.hasGaiaPassword_ && this.changePasswordFactorSetupEnabled_;
   }
 
   private moreButton_(): CrIconButtonElement {
@@ -147,10 +140,9 @@ export class SettingsPasswordSettingsElement extends PolymerElement {
   }
 
   private isRemoveAllowed_(
-      hasPin: boolean, hasGaiaPassword: boolean,
+      hasCryptohomePinV2: boolean, hasGaiaPassword: boolean,
       hasLocalPassword: boolean): boolean {
-    // TODO(b/368707638): Replace with an API call. hasPin_ is not sufficient.
-    return hasPin && (hasGaiaPassword || hasLocalPassword);
+    return hasCryptohomePinV2 && (hasGaiaPassword || hasLocalPassword);
   }
 
   private async onRemovePasswordButtonClicked_(): Promise<void> {

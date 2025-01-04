@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef PRINTING_IMAGE_H_
 #define PRINTING_IMAGE_H_
 
@@ -15,7 +10,6 @@
 
 #include <vector>
 
-#include "base/check.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace printing {
@@ -41,13 +35,7 @@ class Image {
     return color & 0xFFFFFF;  // Strip out alpha channel.
   }
 
-  uint32_t pixel_at(int x, int y) const {
-    DCHECK(x >= 0 && x < size_.width());
-    DCHECK(y >= 0 && y < size_.height());
-    const uint32_t* data = reinterpret_cast<const uint32_t*>(&*data_.begin());
-    const uint32_t* data_row = data + y * row_length_ / sizeof(uint32_t);
-    return Color(data_row[x]);
-  }
+  uint32_t pixel_at(int x, int y) const;
 
  private:
   // Pixel dimensions of the image.

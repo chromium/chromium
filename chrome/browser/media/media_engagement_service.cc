@@ -14,6 +14,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/media/media_engagement_contents_observer.h"
+#include "chrome/browser/media/media_engagement_preloaded_list.h"
 #include "chrome/browser/media/media_engagement_score.h"
 #include "chrome/browser/media/media_engagement_service_factory.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
@@ -256,7 +257,26 @@ double MediaEngagementService::GetEngagementScore(
 
 bool MediaEngagementService::HasHighEngagement(
     const url::Origin& origin) const {
-  return CreateEngagementScore(origin).high_score();
+  MediaEngagementScore score = CreateEngagementScore(origin);
+  bool has_high_engagement = score.high_score();
+  if (has_high_engagement) {
+    return true;
+  }
+
+  if (base::FeatureList::IsEnabled(media::kMediaEngagementHTTPSOnly)) {
+    DCHECK(!has_high_engagement || (origin.scheme() == url::kHttpsScheme));
+  }
+
+  if (!base::FeatureList::IsEnabled(media::kPreloadMediaEngagementData)) {
+    return false;
+  }
+
+  if (score.visits() >= MediaEngagementScore::GetScoreMinVisits()) {
+    return false;
+  }
+
+  return MediaEngagementPreloadedList::GetInstance()->CheckOriginIsPresent(
+      origin);
 }
 
 std::map<url::Origin, double> MediaEngagementService::GetScoreMapForTesting()

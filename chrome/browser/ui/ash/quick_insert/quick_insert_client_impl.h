@@ -21,11 +21,9 @@
 #include "chrome/browser/ash/app_list/search/ranking/ranker_manager.h"
 #include "chrome/browser/ash/input_method/editor_announcer.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chrome/browser/ui/ash/quick_insert/quick_insert_link_suggester.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
-class PrefService;
 class Profile;
 class ChromeSearchResult;
 class QuickInsertFileSuggester;
@@ -76,14 +74,13 @@ class QuickInsertClientImpl
                                  RecentFilesCallback callback) override;
   void GetRecentDriveFileResults(size_t max_files,
                                  RecentFilesCallback callback) override;
-  void GetSuggestedLinkResults(size_t max_results,
-                               SuggestedLinksCallback callback) override;
   void FetchFileThumbnail(const base::FilePath& path,
                           const gfx::Size& size,
                           FetchFileThumbnailCallback callback) override;
-  PrefService* GetPrefs() override;
   std::optional<ash::QuickInsertWebPasteTarget> GetWebPasteTarget() override;
   void Announce(std::u16string_view message) override;
+  history::HistoryService* GetHistoryService() override;
+  favicon::FaviconService* GetFaviconService() override;
 
   // user_manager::UserManager::UserSessionStateObserver:
   void ActiveUserChanged(user_manager::User* active_user) override;
@@ -91,10 +88,6 @@ class QuickInsertClientImpl
   void set_ranker_manager_for_test(
       std::unique_ptr<app_list::RankerManager> ranker_manager) {
     ranker_manager_ = std::move(ranker_manager);
-  }
-
-  QuickInsertLinkSuggester* get_link_suggester_for_test() {
-    return link_suggester_.get();
   }
 
   // Returns a bitmask of `AutocompleteProvider::Type` for Quick Insert's
@@ -133,7 +126,6 @@ class QuickInsertClientImpl
   std::unique_ptr<app_list::RankerManager> ranker_manager_;
 
   std::unique_ptr<QuickInsertFileSuggester> file_suggester_;
-  std::unique_ptr<QuickInsertLinkSuggester> link_suggester_;
   std::unique_ptr<QuickInsertThumbnailLoader> thumbnail_loader_;
 
   std::unique_ptr<ash::LobsterController::Trigger> lobster_trigger_;

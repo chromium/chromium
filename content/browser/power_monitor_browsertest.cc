@@ -115,7 +115,7 @@ class PowerMonitorTest : public ContentBrowserTest {
         base::NullCallback());
   }
 
-  void BindForRenderer(int render_process_id,
+  void BindForRenderer(ChildProcessId render_process_id,
                        mojo::GenericPendingReceiver* receiver) {
     auto r = receiver->As<device::mojom::PowerMonitor>();
     if (!r)
@@ -176,7 +176,7 @@ class PowerMonitorTest : public ContentBrowserTest {
  private:
   void BindForRendererOnMainThread(
       mojo::PendingReceiver<device::mojom::PowerMonitor> receiver,
-      int render_process_id) {
+      ChildProcessId render_process_id) {
     // We can receive binding requests for the spare RenderProcessHost -- this
     // might happen before the test has provided the |renderer_bound_closure_|.
     auto* render_process_host =

@@ -1,0 +1,41 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("persistent_cache") {
+  sources = [
+    "backend.cc",
+    "backend.h",
+    "backend_params.cc",
+    "backend_params.h",
+    "entry.cc",
+    "entry.h",
+    "persistent_cache.cc",
+    "persistent_cache.h",
+  ]
+
+  # See base/component_export.h
+  defines = [ "IS_PERSISTENT_CACHE_IMPL" ]
+
+  deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "entry_unittest.cc",
+    "mock/mock_backend_impl.cc",
+    "mock/mock_backend_impl.h",
+    "mock/mock_entry_impl.cc",
+    "mock/mock_entry_impl.h",
+    "persistent_cache_unittest.cc",
+  ]
+
+  deps = [
+    ":persistent_cache",
+    "//base",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

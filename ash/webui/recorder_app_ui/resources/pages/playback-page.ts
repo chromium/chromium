@@ -140,6 +140,10 @@ export class PlaybackPage extends ReactiveLitElement {
       flex-flow: row;
       padding: 8px;
 
+      @container style(--small-viewport: 1) {
+        padding: 2px;
+      }
+
       & > recording-title {
         margin: 0 auto 0 -4px;
       }
@@ -312,7 +316,7 @@ export class PlaybackPage extends ReactiveLitElement {
       align-items: center;
       display: flex;
       flex-flow: row;
-      gap: 24px;
+      gap: 28px;
     }
 
     #speed-controls {

@@ -24,8 +24,9 @@ ChildAccountInfoFetcherAndroid::Create(AccountFetcherService* service,
   CoreAccountInfo account_info =
       service->account_tracker_service()->GetAccountInfo(account_id);
   // The AccountTrackerService may not be populated correctly in tests.
-  if (account_info.email.empty())
+  if (account_info.email.empty()) {
     return nullptr;
+  }
 
   // Call the constructor directly instead of using std::make_unique because the
   // constructor is private.

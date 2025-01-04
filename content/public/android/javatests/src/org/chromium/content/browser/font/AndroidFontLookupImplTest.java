@@ -20,6 +20,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.test.mock.MockContentProvider;
@@ -44,6 +45,7 @@ import org.mockito.stubbing.OngoingStubbing;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.blink.mojom.AndroidFontLookup;
 import org.chromium.blink.mojom.AndroidFontLookup.FetchAllFontFiles_Response;
@@ -149,6 +151,7 @@ public final class AndroidFontLookupImplTest {
 
     @SmallTest
     @Test
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.Q, message = "crbug.com/384944230")
     public void testFetchAllFontFiles_Available() throws NameNotFoundException {
         FontInfo fontInfo = new FontInfo(URI, 0, 400, false, Columns.RESULT_CODE_OK);
         FontFamilyResult result =
@@ -176,6 +179,7 @@ public final class AndroidFontLookupImplTest {
 
     @SmallTest
     @Test
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.Q, message = "crbug.com/384944230")
     public void testFetchAllFontFiles_OneNotAvailable() throws NameNotFoundException {
         FontInfo fontInfo = new FontInfo(URI, 0, 400, false, Columns.RESULT_CODE_OK);
         FontFamilyResult result =
@@ -394,6 +398,7 @@ public final class AndroidFontLookupImplTest {
 
     @SmallTest
     @Test
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.Q, message = "crbug.com/384944230")
     public void testMatchLocalFontByUniqueName_Success() throws NameNotFoundException {
         FontInfo fontInfo = new FontInfo(URI, 0, 400, false, Columns.RESULT_CODE_OK);
         FontFamilyResult result =

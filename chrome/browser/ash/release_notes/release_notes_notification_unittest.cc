@@ -64,7 +64,7 @@ class ReleaseNotesNotificationTest
     BrowserWithTestWindowTest::TearDown();
   }
 
-  std::string GetDefaultProfileName() override {
+  std::optional<std::string> GetDefaultProfileName() override {
     // TODO(crbug.com/40286020): Use google.com domain to forcibly enable
     // release note notification. Will merge into BrowserWithTestWindowTest.
     return "primary_profile@google.com";

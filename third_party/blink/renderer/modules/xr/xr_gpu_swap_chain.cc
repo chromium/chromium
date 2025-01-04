@@ -13,7 +13,6 @@ namespace blink {
 
 bool IsDepthFormat(wgpu::TextureFormat format) {
   switch (format) {
-    case wgpu::TextureFormat::Stencil8:
     case wgpu::TextureFormat::Depth24Plus:
     case wgpu::TextureFormat::Depth16Unorm:
     case wgpu::TextureFormat::Depth24PlusStencil8:

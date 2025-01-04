@@ -4,6 +4,8 @@
 
 package org.chromium.base;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.ComponentCallbacks2;
 import android.os.Handler;
@@ -15,6 +17,8 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.memory.MemoryPressureCallback;
 import org.chromium.base.memory.SelfFreezeCallback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * This class is Java equivalent of base::MemoryPressureListener: it distributes signals to
@@ -30,6 +34,7 @@ import org.chromium.base.memory.SelfFreezeCallback;
  * main thread for Chrome, but can be some other thread for WebView), except for the self freeze
  * calls, which are done on the launcher thread.
  */
+@NullMarked
 public class MemoryPressureListener {
     /**
      * Sending an intent with this action to Chrome will cause it to issue a call to onLowMemory
@@ -57,10 +62,10 @@ public class MemoryPressureListener {
     private static final String ACTION_TRIM_MEMORY_MODERATE =
             "org.chromium.base.ACTION_TRIM_MEMORY_MODERATE";
 
-    private static ObserverList<MemoryPressureCallback> sCallbacks;
+    private static @Nullable ObserverList<MemoryPressureCallback> sCallbacks;
     // This is used only on the Launcher thread.
-    private static ObserverList<SelfFreezeCallback> sSelfFreezeCallbacks;
-    private static volatile Handler sSelfFreezeHandler;
+    private static @Nullable ObserverList<SelfFreezeCallback> sSelfFreezeCallbacks;
+    private static volatile @Nullable Handler sSelfFreezeHandler;
 
     /** Called by the native side to add native callback. */
     @CalledByNative
@@ -104,9 +109,8 @@ public class MemoryPressureListener {
     }
 
     public static void removeSelfFreezeCallback(SelfFreezeCallback callback) {
-        assert sSelfFreezeCallbacks != null;
-        assert sSelfFreezeHandler.getLooper() == Looper.myLooper();
-        sSelfFreezeCallbacks.removeObserver(callback);
+        assert assumeNonNull(sSelfFreezeHandler).getLooper() == Looper.myLooper();
+        assumeNonNull(sSelfFreezeCallbacks).removeObserver(callback);
     }
 
     /**

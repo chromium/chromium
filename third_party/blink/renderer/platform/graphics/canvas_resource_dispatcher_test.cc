@@ -25,6 +25,7 @@
 #include "ui/gfx/mojom/presentation_feedback.mojom-blink.h"
 
 using testing::_;
+using testing::AtLeast;
 using testing::Mock;
 using testing::ValuesIn;
 
@@ -39,17 +40,24 @@ constexpr size_t kHeight = 10;
 
 struct TestParams {
   bool context_alpha;
+  CanvasResourceDispatcher::AnimationState animation_state;
 };
 
 viz::ResourceId NextId(viz::ResourceId id) {
   return viz::ResourceId(id.GetUnsafeValue() + 1);
 }
 
+class MockCanvasResourceDispatcherClient
+    : public CanvasResourceDispatcherClient {
+ public:
+  MOCK_METHOD(bool, BeginFrame, (), (override));
+};
+
 class MockCanvasResourceDispatcher : public CanvasResourceDispatcher {
  public:
   MockCanvasResourceDispatcher()
       : CanvasResourceDispatcher(
-            /*client=*/nullptr,
+            &client_,
             /*task_runner=*/scheduler::GetSingleThreadTaskRunnerForTesting(),
             /*agent_group_scheduler_compositor_task_runner=*/
             scheduler::GetSingleThreadTaskRunnerForTesting(),
@@ -61,6 +69,11 @@ class MockCanvasResourceDispatcher : public CanvasResourceDispatcher {
   MOCK_METHOD2(PostImageToPlaceholder,
                void(scoped_refptr<CanvasResource>&&,
                     viz::ResourceId resource_id));
+
+  MockCanvasResourceDispatcherClient& MockClient() { return client_; }
+
+ private:
+  MockCanvasResourceDispatcherClient client_;
 };
 
 }  // namespace
@@ -118,9 +131,12 @@ class CanvasResourceDispatcherTest
 
   MockCanvasResourceDispatcher* Dispatcher() { return dispatcher_.get(); }
 
+  test::TaskEnvironment& TaskEnvironment() { return task_environment_; }
+
  private:
   scoped_refptr<StaticBitmapImage> PrepareStaticBitmapImage();
-  test::TaskEnvironment task_environment_;
+  test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<MockCanvasResourceDispatcher> dispatcher_;
   std::unique_ptr<CanvasResourceProvider> resource_provider_;
   std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>
@@ -232,6 +248,95 @@ TEST_F(CanvasResourceDispatcherTest, PlaceholderBeingBlocked) {
   Mock::VerifyAndClearExpectations(Dispatcher());
 }
 
+TEST_F(CanvasResourceDispatcherTest, UsesRealOnBeginFrameWhenActive) {
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
+
+  MockEmbeddedFrameSinkProvider mock_embedded_frame_sink_provider;
+  mojo::Receiver<mojom::blink::EmbeddedFrameSinkProvider>
+      embedded_frame_sink_provider_receiver(&mock_embedded_frame_sink_provider);
+  auto scoped_override =
+      mock_embedded_frame_sink_provider.CreateScopedOverrideMojoInterface(
+          &embedded_frame_sink_provider_receiver);
+
+  CreateCanvasResourceDispatcher();
+  Dispatcher()->SetAnimationState(
+      CanvasResourceDispatcher::AnimationState::kActive);
+  platform->RunUntilIdle();
+  EXPECT_CALL(mock_embedded_frame_sink_provider.mock_compositor_frame_sink(),
+              SetNeedsBeginFrame(true))
+      .Times(AtLeast(1));
+  Dispatcher()->SetNeedsBeginFrame(true);
+  platform->RunUntilIdle();
+  // Advance time, and verify that there isn't a synthetic OBF generated for the
+  // client by the dispatcher.
+  EXPECT_CALL(Dispatcher()->MockClient(), BeginFrame()).Times(0);
+  TaskEnvironment().FastForwardBy(base::Seconds(0.25));
+  platform->RunUntilIdle();
+
+  // Verify that the client's BeginFrame is called in response to a real OBF.
+  EXPECT_CALL(Dispatcher()->MockClient(), BeginFrame()).Times(1);
+  Dispatcher()->OnBeginFrame(/*begin_frame_args=*/{}, /*timing details*/ {},
+                             /*frame_ack=*/false, /*resources=*/{});
+}
+
+TEST_F(CanvasResourceDispatcherTest,
+       UsesSyntheticOnBeginFrameWhenActiveWithSynthetic) {
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
+
+  MockEmbeddedFrameSinkProvider mock_embedded_frame_sink_provider;
+  mojo::Receiver<mojom::blink::EmbeddedFrameSinkProvider>
+      embedded_frame_sink_provider_receiver(&mock_embedded_frame_sink_provider);
+  auto scoped_override =
+      mock_embedded_frame_sink_provider.CreateScopedOverrideMojoInterface(
+          &embedded_frame_sink_provider_receiver);
+
+  CreateCanvasResourceDispatcher();
+  Dispatcher()->SetAnimationState(
+      CanvasResourceDispatcher::AnimationState::kActiveWithSyntheticTiming);
+  platform->RunUntilIdle();
+  EXPECT_CALL(mock_embedded_frame_sink_provider.mock_compositor_frame_sink(),
+              SetNeedsBeginFrame(false))
+      .Times(AtLeast(1));
+  Dispatcher()->SetNeedsBeginFrame(true);
+  platform->RunUntilIdle();
+  // Advance time and make sure that we still get a CompositorFrame, even though
+  // we don't send any OBF.
+  EXPECT_CALL(Dispatcher()->MockClient(), BeginFrame()).Times(AtLeast(1));
+  TaskEnvironment().FastForwardBy(base::Seconds(0.25));
+  platform->RunUntilIdle();
+}
+
+TEST_F(CanvasResourceDispatcherTest, UsesNoOnBeginFrameWhenSuspended) {
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
+
+  MockEmbeddedFrameSinkProvider mock_embedded_frame_sink_provider;
+  mojo::Receiver<mojom::blink::EmbeddedFrameSinkProvider>
+      embedded_frame_sink_provider_receiver(&mock_embedded_frame_sink_provider);
+  auto scoped_override =
+      mock_embedded_frame_sink_provider.CreateScopedOverrideMojoInterface(
+          &embedded_frame_sink_provider_receiver);
+
+  CreateCanvasResourceDispatcher();
+  Dispatcher()->SetAnimationState(
+      CanvasResourceDispatcher::AnimationState::kSuspended);
+  platform->RunUntilIdle();
+  // Since OBF is off by default zero or more calls to turn it off is okay.  For
+  // clarity, explicitly require no calls that would enable OBF.
+  EXPECT_CALL(mock_embedded_frame_sink_provider.mock_compositor_frame_sink(),
+              SetNeedsBeginFrame(false))
+      .Times(AtLeast(0));
+  EXPECT_CALL(mock_embedded_frame_sink_provider.mock_compositor_frame_sink(),
+              SetNeedsBeginFrame(true))
+      .Times(0);
+  Dispatcher()->SetNeedsBeginFrame(true);
+  platform->RunUntilIdle();
+  // Advance time, and verify that there isn't a synthetic OBF generated for the
+  // client by the dispatcher.
+  EXPECT_CALL(Dispatcher()->MockClient(), BeginFrame()).Times(0);
+  TaskEnvironment().FastForwardBy(base::Seconds(0.25));
+  platform->RunUntilIdle();
+}
+
 TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
   ::testing::InSequence s;
@@ -242,11 +347,18 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
   MockEmbeddedFrameSinkProvider mock_embedded_frame_sink_provider;
   mojo::Receiver<mojom::blink::EmbeddedFrameSinkProvider>
       embedded_frame_sink_provider_receiver(&mock_embedded_frame_sink_provider);
-  auto override =
+  auto scoped_override =
       mock_embedded_frame_sink_provider.CreateScopedOverrideMojoInterface(
           &embedded_frame_sink_provider_receiver);
 
   CreateCanvasResourceDispatcher();
+  Dispatcher()->SetAnimationState(GetParam().animation_state);
+  // Throttling should be allowed if the animation is suspended.  If it's active
+  // or if it's using a synthetic OBF, then the intention is that viz should not
+  // throttle since the canvas might be driving some on-screen work indirectly.
+  const bool expected_throttle =
+      GetParam().animation_state ==
+      CanvasResourceDispatcher::AnimationState::kSuspended;
 
   // CanvasResourceDispatcher ctor will cause a CreateCompositorFrameSink() to
   // be issued.
@@ -272,7 +384,11 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
   EXPECT_CALL(mock_embedded_frame_sink_provider.mock_compositor_frame_sink(),
               SubmitCompositorFrame_(_))
       .WillOnce(::testing::WithArg<0>(
-          ::testing::Invoke([context_alpha](const viz::CompositorFrame* frame) {
+          ::testing::Invoke([context_alpha, expected_throttle](
+                                const viz::CompositorFrame* frame) {
+            EXPECT_EQ(frame->metadata.may_throttle_if_undrawn_frames,
+                      expected_throttle);
+
             const viz::CompositorRenderPass* render_pass =
                 frame->render_pass_list[0].get();
 
@@ -305,7 +421,15 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
   platform->RunUntilIdle();
 }
 
-const TestParams kTestCases[] = {{false /* context_alpha */}, {true}};
+const TestParams kTestCases[] = {
+    {false /* context_alpha */,
+     CanvasResourceDispatcher::AnimationState::kActive},
+    {true, CanvasResourceDispatcher::AnimationState::kActive},
+    // These test the requested throttling state.  Alpha doesn't matter.
+    {false,
+     CanvasResourceDispatcher::AnimationState::kActiveWithSyntheticTiming},
+    {false, CanvasResourceDispatcher::AnimationState::kSuspended},
+};
 
 INSTANTIATE_TEST_SUITE_P(All,
                          CanvasResourceDispatcherTest,

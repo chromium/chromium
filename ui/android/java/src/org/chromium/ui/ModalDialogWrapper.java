@@ -4,10 +4,14 @@
 
 package org.chromium.ui;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -15,11 +19,12 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 @JNINamespace("ui")
+@NullMarked
 public class ModalDialogWrapper implements ModalDialogProperties.Controller {
     /** The native-side counterpart of this class */
     private final long mNativeDelegatePtr;
 
-    private final ModalDialogManager mModalDialogManager;
+    private final @Nullable ModalDialogManager mModalDialogManager;
 
     private final PropertyModel.Builder mPropertyModelBuilder;
 
@@ -55,10 +60,11 @@ public class ModalDialogWrapper implements ModalDialogProperties.Controller {
 
     @Override
     public void onClick(PropertyModel model, int buttonType) {
+        ModalDialogManager modalDialogManager = assumeNonNull(mModalDialogManager);
         if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
-            mModalDialogManager.dismissDialog(model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+            modalDialogManager.dismissDialog(model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
         } else {
-            mModalDialogManager.dismissDialog(model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+            modalDialogManager.dismissDialog(model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
         }
     }
 

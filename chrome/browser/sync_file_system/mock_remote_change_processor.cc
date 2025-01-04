@@ -6,10 +6,8 @@
 
 namespace sync_file_system {
 
-MockRemoteChangeProcessor::MockRemoteChangeProcessor() {
-}
+MockRemoteChangeProcessor::MockRemoteChangeProcessor() = default;
 
-MockRemoteChangeProcessor::~MockRemoteChangeProcessor() {
-}
+MockRemoteChangeProcessor::~MockRemoteChangeProcessor() = default;
 
 }  // sync_file_system

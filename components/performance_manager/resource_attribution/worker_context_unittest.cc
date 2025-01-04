@@ -61,12 +61,12 @@ TEST_F(ResourceAttrWorkerContextTest, WorkerContexts) {
   blink::DedicatedWorkerToken worker_token2;
   ASSERT_NE(worker_token, worker_token2);
 
-  worker_watcher->OnWorkerCreated(worker_token, rfh->GetProcess()->GetID(),
-                                  rfh->GetLastCommittedOrigin(),
-                                  rfh->GetGlobalId());
-  worker_watcher->OnWorkerCreated(worker_token2, rfh->GetProcess()->GetID(),
-                                  rfh->GetLastCommittedOrigin(),
-                                  rfh->GetGlobalId());
+  worker_watcher->OnWorkerCreated(
+      worker_token, rfh->GetProcess()->GetDeprecatedID(),
+      rfh->GetLastCommittedOrigin(), rfh->GetGlobalId());
+  worker_watcher->OnWorkerCreated(
+      worker_token2, rfh->GetProcess()->GetDeprecatedID(),
+      rfh->GetLastCommittedOrigin(), rfh->GetGlobalId());
   absl::Cleanup delete_workers = [&] {
     worker_watcher->OnBeforeWorkerDestroyed(worker_token, rfh->GetGlobalId());
     worker_watcher->OnBeforeWorkerDestroyed(worker_token2, rfh->GetGlobalId());

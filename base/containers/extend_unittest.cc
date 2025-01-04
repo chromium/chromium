@@ -57,14 +57,17 @@ bool operator==(const CopyableMovable& a, const CopyableMovable& b) {
 
 TEST(ExtendTest, ExtendWithMove) {
   std::vector<NonCopyable> dst;
-  for (char c : {'a', 'b', 'c', 'd'})
+  for (char c : {'a', 'b', 'c', 'd'}) {
     dst.emplace_back(c);
+  }
   std::vector<NonCopyable> src;
-  for (char c : {'e', 'f', 'g'})
+  for (char c : {'e', 'f', 'g'}) {
     src.emplace_back(c);
+  }
   std::vector<NonCopyable> expected;
-  for (char c : {'a', 'b', 'c', 'd', 'e', 'f', 'g'})
+  for (char c : {'a', 'b', 'c', 'd', 'e', 'f', 'g'}) {
     expected.emplace_back(c);
+  }
 
   Extend(dst, std::move(src));
   EXPECT_EQ(dst, expected);
@@ -73,14 +76,17 @@ TEST(ExtendTest, ExtendWithMove) {
 
 TEST(ExtendTest, ExtendCopyableWithMove) {
   std::vector<CopyableMovable> dst;
-  for (char c : {'a', 'b', 'c', 'd'})
+  for (char c : {'a', 'b', 'c', 'd'}) {
     dst.emplace_back(c);
+  }
   std::vector<CopyableMovable> src;
-  for (char c : {'e', 'f', 'g'})
+  for (char c : {'e', 'f', 'g'}) {
     src.emplace_back(c);
+  }
   std::vector<CopyableMovable> expected;
-  for (char c : {'a', 'b', 'c', 'd', 'e', 'f', 'g'})
+  for (char c : {'a', 'b', 'c', 'd', 'e', 'f', 'g'}) {
     expected.emplace_back(c);
+  }
 
   Extend(dst, std::move(src));
   EXPECT_EQ(dst, expected);
@@ -89,14 +95,17 @@ TEST(ExtendTest, ExtendCopyableWithMove) {
 
 TEST(ExtendTest, ExtendWithCopy) {
   std::vector<CopyableMovable> dst;
-  for (char c : {'a', 'b', 'c', 'd'})
+  for (char c : {'a', 'b', 'c', 'd'}) {
     dst.emplace_back(c);
+  }
   std::vector<CopyableMovable> src;
-  for (char c : {'e', 'f', 'g'})
+  for (char c : {'e', 'f', 'g'}) {
     src.emplace_back(c);
+  }
   std::vector<CopyableMovable> expected;
-  for (char c : {'a', 'b', 'c', 'd', 'e', 'f', 'g'})
+  for (char c : {'a', 'b', 'c', 'd', 'e', 'f', 'g'}) {
     expected.emplace_back(c);
+  }
 
   EXPECT_FALSE(dst[0].copied_);
   Extend(dst, src);

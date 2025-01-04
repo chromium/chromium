@@ -30,8 +30,6 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableBuyNowPayLaterSyncing);
 COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillEnableCardArtImage);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillEnableCardArtServerSideStretching);
-COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableCardBenefitsForAmericanExpress);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableCardBenefitsForCapitalOne);
@@ -122,11 +120,6 @@ extern const base::FeatureParam<int>
     kAutofillUploadCardRequestTimeoutMilliseconds;
 
 COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillUpstream);
-
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillUpstreamUpdatedUi);
-COMPONENT_EXPORT(AUTOFILL)
-extern const base::FeatureParam<int> kAutofillUpstreamUpdatedUiTreatment;
 
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillVcnEnrollRequestTimeout);

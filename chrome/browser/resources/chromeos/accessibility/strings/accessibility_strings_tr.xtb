@@ -845,6 +845,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="6385591741672306837">sütun</translation>
 <translation id="6387719785439924554">aside</translation>
 <translation id="6393014464788431702">Tüm etkinlik filtrelerini devre dışı bırak</translation>
+<translation id="6406989068857078334">Fare hızı azaltıldı. Tıklamak için tekrar <ph name="GESTURE" /></translation>
 <translation id="6411569524720229058">Sonbahar</translation>
 <translation id="6417265370957905582">Google Asistan</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{iki nokta}other{# iki nokta}}</translation>
@@ -1098,6 +1099,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="8205922869661890178">Geliştiricinin günlük sayfasını açar</translation>
 <translation id="8212109599554677485">Görüntüleme stilini yan yana olarak değiştir</translation>
 <translation id="8215202828671303819">Çoklu seçim</translation>
+<translation id="822316432305106615">Hassas tıklamayı başlat</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, %<ph name="OPACITY_PERCENTAGE" /> opaklık.</translation>
 <translation id="8261506727792406068">Sil</translation>
 <translation id="826825447994856889">Giriş</translation>

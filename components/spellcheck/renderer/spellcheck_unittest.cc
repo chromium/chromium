@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/spellcheck/renderer/spellcheck.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -194,7 +190,7 @@ class MockTextCheckingCompletion : public blink::WebTextCheckingCompletion {
 // grammatically incorrect string.
 // TODO(groby): Please feel free to add more tests.
 TEST_F(SpellCheckTest, SpellCheckStrings_EN_US) {
-  static const struct {
+  struct TestCases {
     // A string to be tested.
     const wchar_t* input;
     // An expected result for this test case.
@@ -204,7 +200,8 @@ TEST_F(SpellCheckTest, SpellCheckStrings_EN_US) {
     // The position and the length of the first invalid word.
     size_t misspelling_start;
     size_t misspelling_length;
-  } kTestCases[] = {
+  };
+  static const auto kTestCases = std::to_array<TestCases>({
       // Empty strings.
       {L"", true},
       {L" ", true},
@@ -551,7 +548,7 @@ TEST_F(SpellCheckTest, SpellCheckStrings_EN_US) {
       {L"2012", true},
       {L"100,000,000", true},
       {L"3.141592653", true},
-  };
+  });
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
     size_t misspelling_start;
     size_t misspelling_length;
@@ -617,10 +614,11 @@ TEST_F(SpellCheckTest, SpellCheckSuggestions_EN_US) {
 // This test verifies our spellchecker can split a text into words and check
 // the spelling of each word in the text.
 TEST_F(SpellCheckTest, SpellCheckText) {
-  static const struct {
+  struct TestCases {
     const char* language;
     const wchar_t* input;
-  } kTestCases[] = {
+  };
+  static const auto kTestCases = std::to_array<TestCases>({
       {// Afrikaans
        "af-ZA",
        L"Google se missie is om die w\x00EAreld se inligting te organiseer en "
@@ -950,7 +948,7 @@ TEST_F(SpellCheckTest, SpellCheckText) {
        L"\x0443\x043c\x0443\x043c "
        L"\x0433\x0430\x0440\x0434\x043e\x043d\x0438\x0434\x0430\x043d\x0438 "
        L"\x043e\x043d\x04b3\x043e \x0430\x0441\x0442."},
-  };
+  });
 
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
     ReinitializeSpellCheck(kTestCases[i].language);
@@ -975,36 +973,42 @@ TEST_F(SpellCheckTest, SpellCheckText) {
 // Verify that our SpellCheck::SpellCheckWord() returns false when it checks
 // misspelled words.
 TEST_F(SpellCheckTest, MisspelledWords) {
-  static const struct {
+  struct TestCases {
     const char* language;
     const wchar_t* input;
-  } kTestCases[] = {
-    {
-      // A misspelled word for English
-      "en-US",
-      L"aaaaaaaaaa",
-    }, {
-      // A misspelled word for Greek.
-      "el-GR",
-      L"\x03B1\x03B1\x03B1\x03B1\x03B1\x03B1\x03B1\x03B1\x03B1\x03B1",
-    }, {
-      // A misspelled word for Persian.
-      "fa",
-      L"\x06cc\x06a9\x06cc\x0634\x0627\x0646",
-    }, {
-      // A misspelled word for Hebrew
-      "he-IL",
-      L"\x05D0\x05D0\x05D0\x05D0\x05D0\x05D0\x05D0\x05D0\x05D0\x05D0",
-    }, {
-      // Hindi
-      "hi-IN",
-      L"\x0905\x0905\x0905\x0905\x0905\x0905\x0905\x0905\x0905\x0905",
-    }, {
-      // A misspelled word for Russian
-      "ru-RU",
-      L"\x0430\x0430\x0430\x0430\x0430\x0430\x0430\x0430\x0430\x0430",
-    },
   };
+  static const auto kTestCases = std::to_array<TestCases>({
+      {
+          // A misspelled word for English
+          "en-US",
+          L"aaaaaaaaaa",
+      },
+      {
+          // A misspelled word for Greek.
+          "el-GR",
+          L"\x03B1\x03B1\x03B1\x03B1\x03B1\x03B1\x03B1\x03B1\x03B1\x03B1",
+      },
+      {
+          // A misspelled word for Persian.
+          "fa",
+          L"\x06cc\x06a9\x06cc\x0634\x0627\x0646",
+      },
+      {
+          // A misspelled word for Hebrew
+          "he-IL",
+          L"\x05D0\x05D0\x05D0\x05D0\x05D0\x05D0\x05D0\x05D0\x05D0\x05D0",
+      },
+      {
+          // Hindi
+          "hi-IN",
+          L"\x0905\x0905\x0905\x0905\x0905\x0905\x0905\x0905\x0905\x0905",
+      },
+      {
+          // A misspelled word for Russian
+          "ru-RU",
+          L"\x0430\x0430\x0430\x0430\x0430\x0430\x0430\x0430\x0430\x0430",
+      },
+  });
 
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
     ReinitializeSpellCheck(kTestCases[i].language);
@@ -1173,9 +1177,10 @@ TEST_F(SpellCheckTest, RequestSpellCheckWithMisspellings) {
 // A test case that multiple requests comes at once. Make sure all
 // requests are processed.
 TEST_F(SpellCheckTest, RequestSpellCheckWithMultipleRequests) {
-  MockTextCheckingResult completion[3];
+  std::array<MockTextCheckingResult, 3> completion;
 
-  const std::u16string text[3] = {u"what, zz", u"apple, zz", u"orange, zz"};
+  const std::array<std::u16string, 3> text = {u"what, zz", u"apple, zz",
+                                              u"orange, zz"};
 
   for (int i = 0; i < 3; ++i)
     spell_check()->RequestTextChecking(
@@ -1214,8 +1219,9 @@ TEST_F(SpellCheckTest, RequestSpellCheckWithoutInitialization) {
 TEST_F(SpellCheckTest, RequestSpellCheckMultipleTimesWithoutInitialization) {
   UninitializeSpellCheck();
 
-  MockTextCheckingResult completion[3];
-  const std::u16string text[3] = {u"what, zz", u"apple, zz", u"orange, zz"};
+  std::array<MockTextCheckingResult, 3> completion;
+  const std::array<std::u16string, 3> text = {u"what, zz", u"apple, zz",
+                                              u"orange, zz"};
 
   // Calls RequestTextchecking a few times.
   for (int i = 0; i < 3; ++i)
@@ -1375,33 +1381,36 @@ TEST_F(SpellCheckTest, CreateTextCheckingResultsKeepsTypographicalApostrophe) {
 
 // Checks some words that should be present in all English dictionaries.
 TEST_F(SpellCheckTest, EnglishWords) {
-  static const struct {
+  struct TestCases {
     const char* input;
     bool should_pass;
-  } kTestCases[] = {
-    // Issue 146093: "Chromebook" and "Chromebox" not included in spell-checking
-    // dictionary.
-    {"Chromebook", true},
-    {"Chromebooks", true},
-    {"Chromebox", true},
-    {"Chromeboxes", true},
-    {"Chromeblade", true},
-    {"Chromeblades", true},
-    {"Chromebase", true},
-    {"Chromebases", true},
-    // Issue 94708: Spell-checker incorrectly reports whisky as misspelled.
-    {"whisky", true},
-    {"whiskey", true},
-    {"whiskies", true},
-    // Issue 98678: "Recency" should be included in client-side dictionary.
-    {"recency", true},
-    {"recencies", false},
-    // Issue 140486
-    {"movie", true},
-    {"movies", true},
   };
+  static const auto kTestCases = std::to_array<TestCases>({
+      // Issue 146093: "Chromebook" and "Chromebox" not included in
+      // spell-checking
+      // dictionary.
+      {"Chromebook", true},
+      {"Chromebooks", true},
+      {"Chromebox", true},
+      {"Chromeboxes", true},
+      {"Chromeblade", true},
+      {"Chromeblades", true},
+      {"Chromebase", true},
+      {"Chromebases", true},
+      // Issue 94708: Spell-checker incorrectly reports whisky as misspelled.
+      {"whisky", true},
+      {"whiskey", true},
+      {"whiskies", true},
+      // Issue 98678: "Recency" should be included in client-side dictionary.
+      {"recency", true},
+      {"recencies", false},
+      // Issue 140486
+      {"movie", true},
+      {"movies", true},
+  });
 
-  static const char* const kLocales[] = { "en-GB", "en-US", "en-CA", "en-AU" };
+  static const auto kLocales =
+      std::to_array<const char*>({"en-GB", "en-US", "en-CA", "en-AU"});
 
   for (size_t j = 0; j < std::size(kLocales); ++j) {
     ReinitializeSpellCheck(kLocales[j]);

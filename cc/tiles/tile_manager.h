@@ -303,6 +303,8 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
     return has_scheduled_tile_tasks_;
   }
 
+  void FlushImageControllerTasksForTesting();
+
   void OnRasterTaskCompleted(Tile::Id tile_id,
                              ResourcePool::InUsePoolResource resource,
                              bool was_canceled);

@@ -128,14 +128,13 @@ bool SequencedTaskRunner::DeleteOrReleaseSoonInternal(
 
 OnTaskRunnerDeleter::OnTaskRunnerDeleter(
     scoped_refptr<SequencedTaskRunner> task_runner)
-    : task_runner_(std::move(task_runner)) {
-}
+    : task_runner_(std::move(task_runner)) {}
 
 OnTaskRunnerDeleter::~OnTaskRunnerDeleter() = default;
 
 OnTaskRunnerDeleter::OnTaskRunnerDeleter(OnTaskRunnerDeleter&&) = default;
 
-OnTaskRunnerDeleter& OnTaskRunnerDeleter::operator=(
-    OnTaskRunnerDeleter&&) = default;
+OnTaskRunnerDeleter& OnTaskRunnerDeleter::operator=(OnTaskRunnerDeleter&&) =
+    default;
 
 }  // namespace base

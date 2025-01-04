@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
 
 // Objective-C version of the AutofillManager::Observer interface. Only the
 // methods that are currently in use in Objective-C are implemented.

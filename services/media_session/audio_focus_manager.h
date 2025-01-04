@@ -79,6 +79,10 @@ class AudioFocusManager : public mojom::AudioFocusManager,
   void GetSourceFocusRequests(const base::UnguessableToken& source_id,
                               GetFocusRequestsCallback callback) override;
   void RequestIdReleased(const base::UnguessableToken& request_id) override;
+  void StartDuckingAllAudio(const std::optional<base::UnguessableToken>&
+                                exempted_request_id) override;
+  void StopDuckingAllAudio() override;
+  void FlushForTesting(FlushForTestingCallback callback) override;
 
   // mojom::AudioFocusManagerDebug.
   void GetDebugInfoForRequest(const RequestId& request_id,
@@ -186,6 +190,10 @@ class AudioFocusManager : public mojom::AudioFocusManager,
   std::unique_ptr<MediaPowerDelegate> power_delegate_;
 
   mojom::EnforcementMode enforcement_mode_;
+
+  bool ducking_all_audio_ = false;
+
+  std::optional<base::UnguessableToken> ducking_exempted_request_id_;
 
   // Adding observers should happen on the same thread that the service is
   // running on.

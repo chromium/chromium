@@ -4,6 +4,9 @@
 
 #include "components/permissions/notifications_engagement_service.h"
 
+#include "base/metrics/histogram.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/values.h"
 #include "components/permissions/permissions_client.h"
 #include "url/gurl.h"
 
@@ -45,18 +48,64 @@ void EraseStaleEntries(base::Value::Dict& engagement) {
     ++it;
   }
 }
+
+int ExtractNotificationCount(const base::Value::Dict& engagement,
+                             std::string date) {
+  const base::Value::Dict* bucket = engagement.FindDict(date);
+  if (!bucket) {
+    return 0;
+  }
+  return bucket->FindInt(kDisplayedKey).value_or(0);
+}
+
+void ReportNotificationEngagement(std::string_view type,
+                                  int daily_notification_count,
+                                  double site_engagement_score,
+                                  int count) {
+  if (count <= 0) {
+    return;
+  }
+
+  std::string_view volume;
+  if (daily_notification_count < 0) {
+    return;
+  } else if (daily_notification_count == 0) {
+    volume = "Volume0";
+  } else if (daily_notification_count == 1) {
+    volume = "Volume1";
+  } else if (daily_notification_count <= 5) {
+    volume = "Volume5";
+  } else if (daily_notification_count <= 10) {
+    volume = "Volume10";
+  } else if (daily_notification_count <= 20) {
+    volume = "Volume20";
+  } else {
+    volume = "VolumeAbove20";
+  }
+
+  // `site_engagement_score` is a double between 0 and 100, and starts being
+  // interested when greater than 0.5. We record `site_engagement_score * 2` in
+  // order to be able to distinguish positive values from zero.
+  int site_engagement_score_to_report =
+      base::saturated_cast<int>(site_engagement_score * 2);
+  base::HistogramBase* histogram = base::Histogram::FactoryGet(
+      base::StrCat({"Notifications.Engagement.", type, ".", volume}), 1, 201,
+      50, base::HistogramBase::kUmaTargetedHistogramFlag);
+  histogram->AddCount(site_engagement_score_to_report, count);
+}
+
 }  // namespace
 
 NotificationsEngagementService::NotificationsEngagementService(
     content::BrowserContext* context,
     PrefService* pref_service)
-    : pref_service_(pref_service) {
-  settings_map_ =
-      permissions::PermissionsClient::Get()->GetSettingsMap(context);
-}
+    : pref_service_(pref_service),
+      browser_context_(context),
+      settings_map_(PermissionsClient::Get()->GetSettingsMap(context)) {}
 
 void NotificationsEngagementService::Shutdown() {
   settings_map_ = nullptr;
+  browser_context_ = nullptr;
 }
 
 void NotificationsEngagementService::RecordNotificationDisplayed(
@@ -75,6 +124,32 @@ void NotificationsEngagementService::RecordNotificationInteraction(
   IncrementCounts(url, 0 /*display_count_delta*/, 1 /*click_count_delta*/);
 }
 
+// static
+int NotificationsEngagementService::GetDailyAverageNotificationCount(
+    const base::Value::Dict& engagement) {
+  // Calculate daily average count for the past week.
+  base::Time date = base::Time::Now();
+  int notification_count_total = 0;
+
+  static constexpr int kDays = 7;
+
+  for (int day = 0; day < kDays; ++day) {
+    notification_count_total += ExtractNotificationCount(
+        engagement, GetBucketLabel(date - base::Days(day)));
+  }
+
+  return std::ceil(notification_count_total / kDays);
+}
+
+// static
+int NotificationsEngagementService::GetDailyAverageNotificationCount(
+    ContentSettingPatternSource setting) {
+  if (!setting.setting_value.is_dict()) {
+    return 0;
+  }
+  return GetDailyAverageNotificationCount(setting.setting_value.GetDict());
+}
+
 void NotificationsEngagementService::IncrementCounts(const GURL& url,
                                                      int display_count_delta,
                                                      int click_count_delta) {
@@ -82,12 +157,15 @@ void NotificationsEngagementService::IncrementCounts(const GURL& url,
       url, GURL(), ContentSettingsType::NOTIFICATION_INTERACTIONS);
 
   base::Value::Dict engagement;
-  if (engagement_as_value.is_dict())
+
+  if (engagement_as_value.is_dict()) {
     engagement = std::move(engagement_as_value).TakeDict();
+  }
 
   std::string date = GetBucketLabel(base::Time::Now());
-  if (date == std::string())
+  if (date == std::string()) {
     return;
+  }
 
   EraseStaleEntries(engagement);
   base::Value::Dict* bucket = engagement.FindDict(date);
@@ -103,6 +181,14 @@ void NotificationsEngagementService::IncrementCounts(const GURL& url,
         kEngagementKey,
         click_count_delta + bucket->FindInt(kEngagementKey).value_or(0));
   }
+
+  int daily_notification_count = GetDailyAverageNotificationCount(engagement);
+  double site_engagement_score =
+      PermissionsClient::Get()->GetSiteEngagementScore(browser_context_, url);
+  ReportNotificationEngagement("Displayed", daily_notification_count,
+                               site_engagement_score, display_count_delta);
+  ReportNotificationEngagement("Clicked", daily_notification_count,
+                               site_engagement_score, click_count_delta);
 
   // Set the website setting of this origin with the updated |engagement|.
   settings_map_->SetWebsiteSettingDefaultScope(
@@ -123,8 +209,9 @@ std::string NotificationsEngagementService::GetBucketLabel(base::Time date) {
   base::Time last_date;
   bool converted = base::Time::FromUTCExploded(local_date_exploded, &last_date);
 
-  if (converted)
+  if (converted) {
     return base::NumberToString(last_date.base::Time::ToTimeT());
+  }
 
   return std::string();
 }
@@ -140,8 +227,9 @@ NotificationsEngagementService::ParsePeriodBeginFromBucketLabel(
   if (base::StringToInt(label.c_str(), &maybe_engagement_time)) {
     base::Time::Exploded date_exploded;
     base::Time::FromTimeT(maybe_engagement_time).UTCExplode(&date_exploded);
-    if (base::Time::FromLocalExploded(date_exploded, &local_period_begin))
+    if (base::Time::FromLocalExploded(date_exploded, &local_period_begin)) {
       return local_period_begin;
+    }
   }
 
   return std::nullopt;

@@ -208,9 +208,9 @@ class ProcessNodeImpl
   void OnAllFramesInProcessFrozen();
 
   // NodeBase:
-  void OnJoiningGraph() override;
-  void OnUninitializing() override;
-  void RemoveNodeAttachedData() override;
+  void OnInitializingProperties() override;
+  void OnUninitializingEdges() override;
+  void CleanUpNodeState() override;
 
   // Receiver for renderer-only messages.
   mojo::Receiver<mojom::ProcessCoordinationUnit> render_process_receiver_

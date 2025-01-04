@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/css_string_value.h"
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_save_point.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 
 namespace blink {
@@ -52,12 +53,14 @@ std::optional<CSSAttrType> CSSAttrType::Consume(CSSParserTokenStream& stream) {
     return CSSAttrType(*unit_type);
   }
   if (stream.Peek().FunctionId() == CSSValueID::kType) {
-    CSSParserSavePoint save_point(stream);
-    CSSParserTokenStream::BlockGuard guard(stream);
+    CSSParserTokenStream::RestoringBlockGuard guard(stream);
+    stream.ConsumeWhitespace();
     std::optional<CSSSyntaxDefinition> syntax =
         CSSSyntaxDefinition::Consume(stream);
-    if (syntax.has_value() && stream.AtEnd()) {
-      save_point.Release();
+    // TODO(crbug.com/384959111): Consider adding support for <url>.
+    if (syntax.has_value() && !syntax->ContainsUrlComponent() &&
+        guard.Release()) {
+      stream.ConsumeWhitespace();
       return CSSAttrType(*syntax);
     }
   }

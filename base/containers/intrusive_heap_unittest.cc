@@ -32,10 +32,12 @@ void ExpectHeap(const H& heap) {
     size_t left = intrusive_heap::LeftIndex(i);
     size_t right = left + 1;
 
-    if (left < heap.size())
+    if (left < heap.size()) {
       EXPECT_FALSE(less(heap[i], heap[left]));
-    if (right < heap.size())
+    }
+    if (right < heap.size()) {
       EXPECT_FALSE(less(heap[i], heap[right]));
+    }
 
     intrusive_heap::CheckInvalidOrEqualTo(handle_access.GetHeapHandle(&heap[i]),
                                           i);
@@ -61,8 +63,9 @@ void ExpectCanonical(const IntrusiveHeapInt& heap) {
   // 7 4 6 1 3 2 5 0
   std::vector<int> expected{7, 4, 6, 1, 3, 2, 5, 0};
   std::vector<int> actual;
-  for (const auto& element : heap)
+  for (const auto& element : heap) {
     actual.push_back(element.value());
+  }
   ASSERT_THAT(actual, testing::ContainerEq(expected));
 }
 
@@ -233,8 +236,9 @@ void DoSameSizeOperation(IntrusiveHeap<T>* heap) {
 
   size_t old_size = heap->size();
   size_t index = static_cast<size_t>(base::RandInt(0, old_size - 1));
-  if (op == kReplaceTop)
+  if (op == kReplaceTop) {
     index = 0;
+  }
   int new_value = base::RandInt(0, 1000);
   typename IntrusiveHeap<T>::const_iterator it;
 
@@ -465,8 +469,9 @@ class Value : public InternalHeapHandleStorage {
         value_(std::exchange(other.value_, -1)) {}
   Value(const Value& other) : value_(other.value_) {
     HeapHandle h = other.GetHeapHandle();
-    if (h.IsValid())
+    if (h.IsValid()) {
       SetHeapHandle(h);
+    }
   }
   ~Value() override = default;
 
@@ -535,18 +540,21 @@ struct TestElement {
   bool operator<(const TestElement& other) const { return key > other.key; }
 
   void SetHeapHandle(HeapHandle h) {
-    if (handle)
+    if (handle) {
       *handle = h;
+    }
   }
 
   void ClearHeapHandle() {
-    if (handle)
+    if (handle) {
       handle->reset();
+    }
   }
 
   HeapHandle GetHeapHandle() const {
-    if (handle)
+    if (handle) {
       return *handle;
+    }
     return HeapHandle::Invalid();
   }
 };
@@ -825,8 +833,9 @@ TEST(IntrusiveHeapTest, InsertAscending) {
 TEST(IntrusiveHeapTest, InsertDescending) {
   IntrusiveHeap<TestElement> heap;
 
-  for (int i = 0; i < 50; i++)
+  for (int i = 0; i < 50; i++) {
     heap.insert({50 - i, nullptr});
+  }
 
   EXPECT_EQ(1, heap.top().key);
   EXPECT_EQ(50u, heap.size());
@@ -903,8 +912,9 @@ TEST(IntrusiveHeapTest, Pop) {
 TEST(IntrusiveHeapTest, PopMany) {
   IntrusiveHeap<TestElement> heap;
 
-  for (int i = 0; i < 500; i++)
+  for (int i = 0; i < 500; i++) {
     heap.insert({i, nullptr});
+  }
 
   EXPECT_FALSE(heap.empty());
   EXPECT_EQ(500u, heap.size());
@@ -946,13 +956,15 @@ TEST(IntrusiveHeapTest, Erase) {
 TEST(IntrusiveHeapTest, ReplaceTop) {
   IntrusiveHeap<TestElement> heap;
 
-  for (int i = 0; i < 500; i++)
+  for (int i = 0; i < 500; i++) {
     heap.insert({500 - i, nullptr});
+  }
 
   EXPECT_EQ(1, heap.top().key);
 
-  for (int i = 0; i < 500; i++)
+  for (int i = 0; i < 500; i++) {
     heap.ReplaceTop({1000 + i, nullptr});
+  }
 
   EXPECT_EQ(1000, heap.top().key);
 }
@@ -967,8 +979,9 @@ TEST(IntrusiveHeapTest, ReplaceTopWithNonLeafNode) {
 
   EXPECT_EQ(0, heap.top().key);
 
-  for (int i = 0; i < 50; i++)
+  for (int i = 0; i < 50; i++) {
     heap.ReplaceTop({100 + i, nullptr});
+  }
 
   for (int i = 0; i < 50; i++) {
     EXPECT_EQ((100 + i), heap.top().key);
@@ -1106,8 +1119,9 @@ TEST(IntrusiveHeapTest, At) {
   std::array<HeapHandle, 10> index;
   IntrusiveHeap<TestElement> heap;
 
-  for (int i = 0; i < 10; i++)
+  for (int i = 0; i < 10; i++) {
     heap.insert({static_cast<int>(i ^ (i + 1)), &index[i]});
+  }
 
   for (int i = 0; i < 10; i++) {
     EXPECT_EQ(heap.at(index[i]).key, i ^ (i + 1));
@@ -1123,8 +1137,9 @@ TEST(IntrusiveHeapTest, EraseIf) {
   std::array<HeapHandle, 10> index;
   IntrusiveHeap<TestElement> heap;
 
-  for (int i = 0; i < 10; i++)
+  for (int i = 0; i < 10; i++) {
     heap.insert({i, &index[i]});
+  }
   ASSERT_EQ(heap.size(), 10u);
 
   // Remove all even elements.
@@ -1132,8 +1147,9 @@ TEST(IntrusiveHeapTest, EraseIf) {
   ASSERT_EQ(heap.size(), 5u);
 
   // Handles were correctly updated.
-  for (int i = 0; i < 10; i++)
+  for (int i = 0; i < 10; i++) {
     EXPECT_EQ(IsEven(i), !index[i].IsValid());
+  }
 
   // Now iterate over all elements of the heap and check their handles.
   for (size_t i = 0; i < heap.size(); i++) {

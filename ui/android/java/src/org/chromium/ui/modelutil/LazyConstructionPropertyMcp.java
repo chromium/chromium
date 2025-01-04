@@ -4,8 +4,8 @@
 
 package org.chromium.ui.modelutil;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.ViewProvider;
 
 import java.util.HashSet;
@@ -19,6 +19,7 @@ import java.util.Set;
  * @param <V> The view type
  * @param <P> The property type for the model
  */
+@NullMarked
 public class LazyConstructionPropertyMcp<M extends PropertyObservable<P>, V, P>
         implements PropertyObservable.PropertyObserver<P> {
     /**

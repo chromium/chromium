@@ -93,7 +93,6 @@ inline constexpr char kChromeUIDevToolsHost[] = "devtools";
 inline constexpr char kChromeUIDevToolsRemotePath[] = "remote";
 inline constexpr char kChromeUIDevToolsURL[] =
     "devtools://devtools/bundled/inspector.html";
-inline constexpr char kChromeUIDevUiLoaderURL[] = "chrome://dev-ui-loader/";
 inline constexpr char kChromeUIDiceWebSigninInterceptChromeSigninSubPage[] =
     "chrome-signin";
 inline constexpr char kChromeUIDiceWebSigninInterceptChromeSigninURL[] =
@@ -238,7 +237,6 @@ inline constexpr char kChromeUISigninErrorURL[] = "chrome://signin-error/";
 inline constexpr char kChromeUISignInInternalsHost[] = "signin-internals";
 inline constexpr char kChromeUISigninReauthHost[] = "signin-reauth";
 inline constexpr char kChromeUISigninReauthURL[] = "chrome://signin-reauth/";
-inline constexpr char kChromeUISiteDataDeprecatedPath[] = "/siteData";
 inline constexpr char kChromeUISiteEngagementHost[] = "site-engagement";
 inline constexpr char kChromeUISuggestInternalsHost[] = "suggest-internals";
 inline constexpr char kChromeUISuggestInternalsURL[] =
@@ -250,7 +248,6 @@ inline constexpr char kChromeUISyncConfirmationHost[] = "sync-confirmation";
 inline constexpr char kChromeUISyncConfirmationLoadingPath[] = "loading";
 inline constexpr char kChromeUISyncConfirmationURL[] =
     "chrome://sync-confirmation/";
-inline constexpr char kChromeUISyncHost[] = "sync";
 inline constexpr char kChromeUISyncInternalsHost[] = "sync-internals";
 inline constexpr char kChromeUISystemInfoHost[] = "system";
 inline constexpr char kChromeUITermsHost[] = "terms";
@@ -280,6 +277,10 @@ inline constexpr char kChromeUIUntrustedThemeURL[] =
     "chrome-untrusted://theme/";
 inline constexpr char kChromeUIUsbInternalsHost[] = "usb-internals";
 inline constexpr char kChromeUIUserActionsHost[] = "user-actions";
+inline constexpr char kChromeUIUserEducationInternalsHost[] =
+    "user-education-internals";
+inline constexpr char kChromeUIUserEducationInternalsURL[] =
+    "chrome://user-education-internals";
 inline constexpr char kChromeUIVersionHost[] = "version";
 inline constexpr char kChromeUIVersionURL[] = "chrome://version/";
 inline constexpr char16_t kChromeUIVersionURL16[] = u"chrome://version/";
@@ -287,13 +288,11 @@ inline constexpr char kChromeUIWebRtcLogsHost[] = "webrtc-logs";
 inline constexpr char kChromeUIWebuiGalleryHost[] = "webui-gallery";
 
 #if BUILDFLAG(IS_ANDROID)
-inline constexpr char kChromeUIInternalsQueryTilesPath[] = "query-tiles";
 inline constexpr char kChromeUIJavaCrashURL[] = "chrome://java-crash/";
 inline constexpr char kChromeUINativeBookmarksURL[] =
     "chrome-native://bookmarks/";
 inline constexpr char kChromeUINativeExploreURL[] = "chrome-native://explore";
 inline constexpr char kChromeUINativeNewTabURL[] = "chrome-native://newtab/";
-inline constexpr char kChromeUIOfflineInternalsHost[] = "offline-internals";
 inline constexpr char kChromeUISnippetsInternalsHost[] = "snippets-internals";
 inline constexpr char kChromeUIWebApksHost[] = "webapks";
 #else
@@ -335,10 +334,6 @@ inline constexpr char kChromeUISearchEngineChoiceURL[] =
 inline constexpr char kChromeUITabSearchHost[] = "tab-search.top-chrome";
 inline constexpr char kChromeUITabSearchURL[] =
     "chrome://tab-search.top-chrome/";
-inline constexpr char kChromeUIUntrustedCompanionSidePanelHost[] =
-    "companion-side-panel.top-chrome";
-inline constexpr char kChromeUIUntrustedCompanionSidePanelURL[] =
-    "chrome-untrusted://companion-side-panel.top-chrome/";
 inline constexpr char kChromeUIUntrustedFeedURL[] = "chrome-untrusted://feed/";
 inline constexpr char kChromeUIUntrustedReadAnythingSidePanelHost[] =
     "read-anything-side-panel.top-chrome";
@@ -585,8 +580,7 @@ inline constexpr char kAdPrivacySubPage[] = "adPrivacy";
 inline constexpr char kAllSitesSettingsSubpage[] = "content/all";
 inline constexpr char kAppearanceSubPage[] = "appearance";
 inline constexpr char kAutofillSubPage[] = "autofill";
-inline constexpr char kAutofillPredictionImprovementsSubPage[] =
-    "autofillPredictionImprovements";
+inline constexpr char kAutofillAiSubPage[] = "autofillAi";
 inline constexpr char kClearBrowserDataSubPage[] = "clearBrowserData";
 inline constexpr char kContentSettingsSubPage[] = "content";
 inline constexpr char kCookieSettingsSubPage[] = "cookies";
@@ -654,10 +648,6 @@ inline constexpr char kExtensionConfigureCommandsSubPage[] =
 
 // Gets the hosts/domains that are shown in chrome://chrome-urls.
 base::span<const base::cstring_view> ChromeURLHosts();
-
-// Gets the path strings of chrome://internals URLs that are shown in
-// chrome://chrome-urls.
-base::span<const base::cstring_view> ChromeInternalsURLPaths();
 
 // Gets the URL strings of "debug" pages which are dangerous and not for general
 // consumption.

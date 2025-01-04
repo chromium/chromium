@@ -28,8 +28,7 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureList.TestValues;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -59,7 +58,6 @@ public class MiniPlayerMediatorUnitTest {
 
     private PropertyModel mModel;
     private MiniPlayerMediator mMediator;
-    private FeatureList.TestValues mTestFeatures;
 
     @Mock private BottomControlsStacker mBottomControlsStacker;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
@@ -73,8 +71,6 @@ public class MiniPlayerMediatorUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mTestFeatures = new TestValues();
-        FeatureList.setTestValues(mTestFeatures);
         // By default, test behavior of using yOffset from bottom stacker.
         setBottomControlsStackerYOffset(mTestBottomControlsStacker);
 
@@ -574,7 +570,7 @@ public class MiniPlayerMediatorUnitTest {
                 .getBottomControlsMinHeightOffset();
 
         if (mTestBottomControlsStacker) {
-            mMediator.onBrowserControlsOffsetUpdate(layerYOffset);
+            mMediator.onBrowserControlsOffsetUpdate(layerYOffset, false);
         } else {
             mBrowserControlsObserverCaptor
                     .getValue()
@@ -599,10 +595,12 @@ public class MiniPlayerMediatorUnitTest {
     }
 
     private void setBottomControlsStackerYOffset(boolean doTestYOffset) {
-        mTestFeatures.addFeatureFlagOverride(
-                ChromeFeatureList.BOTTOM_BROWSER_CONTROLS_REFACTOR, doTestYOffset);
-        mTestFeatures.addFieldTrialParamOverride(
-                ChromeFeatureList.sDisableBottomControlsStackerYOffsetDispatching,
-                Boolean.toString(!mTestBottomControlsStacker));
+        FeatureOverrides.newBuilder()
+                .flag(ChromeFeatureList.BOTTOM_BROWSER_CONTROLS_REFACTOR, doTestYOffset)
+                .param(
+                        ChromeFeatureList.BOTTOM_BROWSER_CONTROLS_REFACTOR,
+                        "disable_bottom_controls_stacker_y_offset",
+                        !mTestBottomControlsStacker)
+                .apply();
     }
 }

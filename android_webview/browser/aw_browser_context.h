@@ -151,6 +151,7 @@ class AwBrowserContext : public content::BrowserContext,
       override;
   std::unique_ptr<content::ZoomLevelDelegate> CreateZoomLevelDelegate(
       const base::FilePath& partition_path) override;
+  std::string GetExtraHeadersForUrl(const GURL& url) override;
 
   // visitedlink::VisitedLinkDelegate implementation.
   void RebuildTable(const scoped_refptr<URLEnumerator>& enumerator) override;
@@ -185,7 +186,6 @@ class AwBrowserContext : public content::BrowserContext,
   scoped_refptr<AwContentsOriginMatcher> service_worker_xrw_allowlist_matcher();
 
   void SetExtraHeaders(const GURL& url, const std::string& headers);
-  std::string GetExtraHeaders(const GURL& url);
 
  private:
   friend class AwBrowserContextIoThreadHandle;

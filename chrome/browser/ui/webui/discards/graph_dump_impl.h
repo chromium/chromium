@@ -25,13 +25,12 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-class DiscardsGraphDumpImpl
-    : public discards::mojom::GraphDump,
-      public performance_manager::GraphOwned,
-      public performance_manager::FrameNode::ObserverDefaultImpl,
-      public performance_manager::PageNode::ObserverDefaultImpl,
-      public performance_manager::ProcessNode::ObserverDefaultImpl,
-      public performance_manager::WorkerNode::ObserverDefaultImpl {
+class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
+                              public performance_manager::GraphOwned,
+                              public performance_manager::FrameNodeObserver,
+                              public performance_manager::PageNodeObserver,
+                              public performance_manager::ProcessNodeObserver,
+                              public performance_manager::WorkerNodeObserver {
  public:
   DiscardsGraphDumpImpl();
 

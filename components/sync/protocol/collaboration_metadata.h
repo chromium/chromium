@@ -10,6 +10,7 @@
 
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace syncer {
 
@@ -30,15 +31,14 @@ class CollaborationMetadata {
   // update). For a new entity, `changed_by` will be used for both `created_by`
   // and `last_updated_by`.
   static CollaborationMetadata ForLocalChange(
-      std::string_view changed_by,
+      const GaiaId& changed_by,
       std::string_view collaboration_id);
 
   // The account that created the entity (may be empty).
-  // TODO(crbug.com/380416867): use StrongAlias to represent obfuscated Gaia ID.
-  const std::string& created_by() const { return created_by_; }
+  const GaiaId& created_by() const { return created_by_; }
 
   // The account that last updated the entity (may be empty).
-  const std::string& last_updated_by() const { return last_updated_by_; }
+  const GaiaId& last_updated_by() const { return last_updated_by_; }
 
   // The collaboration ID of the entity.
   // TODO(crbug.com/380406615): use CollaborationId instead.
@@ -50,12 +50,12 @@ class CollaborationMetadata {
   size_t EstimateMemoryUsage() const;
 
  private:
-  CollaborationMetadata(std::string created_by,
-                        std::string last_updated_by,
+  CollaborationMetadata(GaiaId created_by,
+                        GaiaId last_updated_by,
                         std::string collaboration_id);
 
-  std::string created_by_;
-  std::string last_updated_by_;
+  GaiaId created_by_;
+  GaiaId last_updated_by_;
   std::string collaboration_id_;
 };
 

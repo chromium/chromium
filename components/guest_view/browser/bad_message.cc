@@ -27,7 +27,8 @@ void ReceivedBadMessage(content::RenderProcessHost* host,
       content::RenderProcessHost::CrashReportMode::GENERATE_CRASH_DUMP);
 }
 
-void ReceivedBadMessage(int render_process_id, BadMessageReason reason) {
+void ReceivedBadMessage(content::ChildProcessId render_process_id,
+                        BadMessageReason reason) {
   content::RenderProcessHost* rph =
       content::RenderProcessHost::FromID(render_process_id);
   if (!rph)
@@ -35,6 +36,5 @@ void ReceivedBadMessage(int render_process_id, BadMessageReason reason) {
 
   ReceivedBadMessage(rph, reason);
 }
-
 }  // namespace bad_message
 }  // namespace guest_view

@@ -786,4 +786,36 @@ TEST_F(TabGroupChangeNotifierImplTest, TestTabSelection) {
                                 tab1.saved_tab_guid());
 }
 
+TEST_F(TabGroupChangeNotifierImplTest, TestTabSelectionReadsLiveData) {
+  InitializeNotifier(
+      /*startup_tab_groups=*/std::vector<tab_groups::SavedTabGroup>(),
+      /*init_tab_groups=*/std::vector<tab_groups::SavedTabGroup>());
+
+  tab_groups::SavedTabGroup tab_group = CreateTestSharedTabGroupWithNoTabs();
+  tab_groups::SavedTabGroupTab tab = tab_groups::test::CreateSavedTabGroupTab(
+      "url", u"title", tab_group.saved_guid());
+  // The local tab ID is not set yet.
+  tab_group.AddTabFromSync(tab);
+
+  // Set up notifier with initial tab group data.
+  EXPECT_CALL(*notifier_observer_, OnTabGroupAdded(TabGroupGuidEq(tab_group)));
+  tgss_observer_->OnTabGroupAdded(tab_group, tab_groups::TriggerSource::REMOTE);
+
+  // Now, set the local tab ID, but do not inform our observers.
+  tab_groups::SavedTabGroupTab* tab_for_update =
+      tab_group.GetTab(tab.saved_tab_guid());
+  tab_for_update->SetLocalTabID(42);
+
+  // We expect the notifier to use live data to get the updated local tab id.
+  EXPECT_CALL(*tab_group_sync_service_, GetGroup(tab_group.saved_guid()))
+      .WillOnce(Return(tab_group));
+
+  std::optional<tab_groups::SavedTabGroupTab> tab_selection_received;
+  // Select the tab: This should lead to our notifier reading the live data.
+  EXPECT_CALL(*notifier_observer_, OnTabSelected(TabGuidEq(tab)))
+      .WillOnce(SaveArg<0>(&tab_selection_received));
+  tgss_observer_->OnTabSelected(tab_group.saved_guid(), tab.saved_tab_guid());
+  EXPECT_EQ(42, tab_selection_received->local_tab_id());
+}
+
 }  // namespace collaboration::messaging

@@ -5,13 +5,8 @@
 #ifndef MEDIA_GPU_WINDOWS_AV1_VIDEO_RATE_CONTROL_WRAPPER_H_
 #define MEDIA_GPU_WINDOWS_AV1_VIDEO_RATE_CONTROL_WRAPPER_H_
 
+#include "third_party/libaom/source/libaom/av1/ratectrl_rtc.h"
 #include "video_rate_control_wrapper.h"
-
-namespace aom {
-struct AV1RateControlRtcConfig;
-struct AV1FrameParamsRTC;
-class AV1RateControlRTC;
-}  // namespace aom
 
 namespace media {
 

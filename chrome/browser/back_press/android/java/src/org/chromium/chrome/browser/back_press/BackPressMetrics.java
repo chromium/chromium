@@ -10,6 +10,7 @@ import androidx.activity.BackEventCompat;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.Type;
 import org.chromium.ui.UiUtils;
 
@@ -28,6 +29,10 @@ public class BackPressMetrics {
             "Android.BackPress.Intercept.LeftEdge";
     private static final String INTERCEPT_FROM_RIGHT_HISTOGRAM =
             "Android.BackPress.Intercept.RightEdge";
+    private static final String INCORRECT_EDGE_SWIPE_HISTOGRAM =
+            "Android.BackPress.IncorrectEdgeSwipe";
+    private static final String INCORRECT_EDGE_SWIPE_COUNT_CHAINED_HISTOGRAM =
+            "Android.BackPress.IncorrectEdgeSwipe.CountChained";
 
     @IntDef({
         PredictiveGestureNavPhase.ACTIVATED,
@@ -41,6 +46,21 @@ public class BackPressMetrics {
         int COMPLETED = 2;
 
         int NUM_ENTRIES = 3;
+    }
+
+    /**
+     * @param edge The edge from which the gesture is swiped from {@link BackEventCompat}.
+     */
+    public static void recordIncorrectEdgeSwipe(int edge) {
+        RecordHistogram.recordEnumeratedHistogram(INCORRECT_EDGE_SWIPE_HISTOGRAM, edge, 2);
+    }
+
+    /**
+     * @param count The consecutive number of incorrect edge swipes the user has performed.
+     */
+    public static void recordIncorrectEdgeSwipeCountChained(int count) {
+        RecordHistogram.recordCount100Histogram(
+                INCORRECT_EDGE_SWIPE_COUNT_CHAINED_HISTOGRAM, count);
     }
 
     /**
@@ -118,5 +138,39 @@ public class BackPressMetrics {
                         : "Android.PredictiveGestureNavigation.WithoutTransition",
                 phase,
                 PredictiveGestureNavPhase.NUM_ENTRIES);
+    }
+
+    /**
+     * Record how long the feed stream is restored on NTP.
+     *
+     * @param duration The duration of feed restoration.
+     */
+    public static void recordNTPFeedRestorationDuration(long duration) {
+        RecordHistogram.recordTimesHistogram(
+                "Android.PredictiveNavigationTransition.NTPFeedRestorationDuration", duration);
+    }
+
+    /**
+     * Record if NTP smooth transition is triggered by fallback or because of restored feed stream.
+     *
+     * @param byFallback True if the smooth transition is triggered by fallback.
+     */
+    public static void recordNTPSmoothTransitionMethod(boolean byFallback) {
+        RecordHistogram.recordBooleanHistogram(
+                "Android.PredictiveNavigationTransition.NTPSmoothTransitionByFallback", byFallback);
+    }
+
+    /**
+     * The delay used by the fallback of NTP smooth transition in case the restoring state is not
+     * correctly supplied.
+     *
+     * @return The max fallback delay.
+     */
+    public static long maxFallbackDelayOfNtpSmoothTransition() {
+        return (long)
+                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                        ChromeFeatureList.BACK_FORWARD_TRANSITIONS,
+                        "max_fallback_delay_ntp_smooth_transition",
+                        1000);
     }
 }

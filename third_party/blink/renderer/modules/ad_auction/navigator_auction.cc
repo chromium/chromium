@@ -988,6 +988,9 @@ bool CopyAdsFromIdlToMojo(const ExecutionContext& context,
         }
       }
     }
+    if (ad->hasCreativeScanningMetadata()) {
+      mojo_ad->creative_scanning_metadata = ad->creativeScanningMetadata();
+    }
     output.ads->push_back(std::move(mojo_ad));
   }
   return true;
@@ -1024,6 +1027,9 @@ bool CopyAdComponentsFromIdlToMojo(const ExecutionContext& context,
     }
     if (ad->hasAdRenderId()) {
       mojo_ad->ad_render_id = ad->adRenderId();
+    }
+    if (ad->hasCreativeScanningMetadata()) {
+      mojo_ad->creative_scanning_metadata = ad->creativeScanningMetadata();
     }
     output.ad_components->push_back(std::move(mojo_ad));
   }
@@ -2650,6 +2656,11 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
         base::Milliseconds(config.reportingTimeout());
   }
 
+  if (config.hasSendCreativeScanningMetadata()) {
+    mojo_config->send_creative_scanning_metadata =
+        config.sendCreativeScanningMetadata();
+  }
+
   if (config.hasSellerCurrency()) {
     std::string seller_currency_str = config.sellerCurrency().Ascii();
     if (!IsValidAdCurrencyCode(seller_currency_str)) {
@@ -3378,6 +3389,13 @@ ScriptPromise<IDLUndefined> NavigatorAuction::joinAdInterestGroup(
   String error;
   if (!ValidateBlinkInterestGroup(*mojo_group, error_field_name,
                                   error_field_value, error)) {
+    exception_state.ThrowTypeError(ErrorInvalidInterestGroup(
+        *group, error_field_name, error_field_value, error));
+    return EmptyPromise();
+  }
+
+  if (!PerformAdditionalJoinAndUpdateTimeValidations(
+          *mojo_group, error_field_name, error_field_value, error)) {
     exception_state.ThrowTypeError(ErrorInvalidInterestGroup(
         *group, error_field_name, error_field_value, error));
     return EmptyPromise();

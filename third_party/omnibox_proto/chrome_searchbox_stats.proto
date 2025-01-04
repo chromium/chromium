@@ -49,6 +49,7 @@ message ChromeSearchboxStats {
     optional uint32 why_this_result_reason = 3;
   }
   repeated GroupInfo group_infos = 103;
+  repeated fixed64 gws_event_id_hash = 94;
 }
 
 message ActionInfo {

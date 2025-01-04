@@ -79,7 +79,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 @LooperMode(Mode.PAUSED)
 @DisableFeatures({
     ChromeFeatureList.ANDROID_TAB_DECLUTTER,
-    ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH
+    ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH,
+    ChromeFeatureList.CHANGE_UNFOCUSED_PRIORITY
 })
 public class TabPersistentStoreIntegrationTest {
 
@@ -127,7 +128,7 @@ public class TabPersistentStoreIntegrationTest {
         profileProviderSupplier.set(mProfileProvider);
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
 
         mOrchestrator =
                 new TabbedModeTabModelOrchestrator(

@@ -19,13 +19,15 @@ export function getHtml(this: ViewerBottomToolbarElement) {
     <ink-brush-selector .currentType="${this.currentType}">
     </ink-brush-selector>
     <span id="vertical-separator"></span>
-    <viewer-bottom-toolbar-dropdown id="size">
+    <viewer-bottom-toolbar-dropdown id="size"
+        .buttonTitle="${this.getSizeTitle_()}">
       <cr-icon slot="icon" icon="${this.getSizeIcon_()}"></cr-icon>
       <ink-size-selector slot="menu" .currentSize="${this.currentSize}"
           .currentType="${this.currentType}"></ink-size-selector>
     </viewer-bottom-toolbar-dropdown>
     ${this.shouldShowColorOptions_() ? html`
-      <viewer-bottom-toolbar-dropdown id="color">
+      <viewer-bottom-toolbar-dropdown id="color"
+          .buttonTitle="${this.getColorTitle_()}">
         <div slot="icon" id="color-chip"></div>
         <ink-color-selector slot="menu" .currentColor="${this.currentColor}"
             .currentType="${this.currentType}"></ink-color-selector>

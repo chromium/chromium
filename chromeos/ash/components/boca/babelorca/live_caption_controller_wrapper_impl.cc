@@ -9,6 +9,7 @@
 
 #include "components/live_caption/caption_bubble_context.h"
 #include "components/live_caption/live_caption_controller.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
 
 namespace ash::babelorca {
@@ -30,6 +31,12 @@ bool LiveCaptionControllerWrapperImpl::DispatchTranscription(
 void LiveCaptionControllerWrapperImpl::ToggleLiveCaptionForBabelOrca(
     bool enabled) {
   live_caption_controller_->ToggleLiveCaptionForBabelOrca(enabled);
+}
+
+void LiveCaptionControllerWrapperImpl::OnLanguageIdentificationEvent(
+    const media::mojom::LanguageIdentificationEventPtr& event) {
+  live_caption_controller_->OnLanguageIdentificationEvent(
+      caption_bubble_context_.get(), event);
 }
 
 void LiveCaptionControllerWrapperImpl::OnAudioStreamEnd() {

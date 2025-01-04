@@ -10,12 +10,8 @@ Invoked by GN from fuzzer_test.gni.
 
 import argparse
 import os
-import sys
 
-if sys.version_info.major == 2:
-  from ConfigParser import ConfigParser
-else:
-  from configparser import ConfigParser
+from configparser import ConfigParser
 
 
 def AddSectionOptions(config, section_name, options):

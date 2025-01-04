@@ -479,8 +479,7 @@ void WebContentDecryptionModuleSessionImpl::OnSessionKeysChange(
   WebVector<WebEncryptedMediaKeyInformation> keys(keys_info.size());
   for (size_t i = 0; i < keys_info.size(); ++i) {
     auto& key_info = keys_info[i];
-    keys[i].SetId(WebData(reinterpret_cast<char*>(key_info->key_id.data()),
-                          key_info->key_id.size()));
+    keys[i].SetId(WebData(key_info->key_id));
     keys[i].SetStatus(ConvertCdmKeyStatus(key_info->status));
     keys[i].SetSystemCode(key_info->system_code);
 

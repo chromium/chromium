@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_icon_view.h"
+#include "chrome/browser/ui/views/tabs/glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_icon.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/user_education/autofill_help_bubble_factory.h"
@@ -256,20 +257,6 @@ void MaybeRegisterChromeFeaturePromos(
                     .SetMetadata(115, "vykochko@chromium.org",
                                  "Triggered after autofill popup appears.")));
 
-  // kIPHAutofillManualFallbackFeature:
-  registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForToastPromo(
-          feature_engagement::kIPHAutofillManualFallbackFeature,
-          kAutofillManualFallbackElementId, IDS_AUTOFILL_IPH_MANUAL_FALLBACK,
-          IDS_AUTOFILL_IPH_MANUAL_FALLBACK_SCREENREADER,
-          FeaturePromoSpecification::AcceleratorInfo())
-          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
-          .SetMetadata(
-              123, "theocristea@chromium.org",
-              "User focuses a field, but autofill cannot be triggered "
-              "automatically because the field has autocomplete=garbage. In "
-              "this case, autofill can be triggered from the context menu.")));
-
   // kIPHAutofillPredictionImprovementsFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForCustomAction(
@@ -284,8 +271,8 @@ void MaybeRegisterChromeFeaturePromos(
                 if (!browser) {
                   return;
                 }
-                chrome::ShowSettingsSubPage(
-                    browser, chrome::kAutofillPredictionImprovementsSubPage);
+                chrome::ShowSettingsSubPage(browser,
+                                            chrome::kAutofillAiSubPage);
               }))
           .SetBubbleTitleText(IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_TITLE)
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
@@ -576,6 +563,27 @@ void MaybeRegisterChromeFeaturePromos(
           IDS_LIVE_CAPTION_PROMO_SCREENREADER,
           FeaturePromoSpecification::AcceleratorInfo())
           .SetBubbleArrow(HelpBubbleArrow::kTopCenter)));
+
+  // kIPHGlicPromoFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForCustomAction(
+          feature_engagement::kIPHGlicPromoFeature, kGlicButtonElementId,
+          IDS_GLIC_PROMO_BODY, IDS_GLIC_PROMO_CUSTOM_ACTION,
+          base::BindRepeating(
+              [](ui::ElementContext context,
+                 user_education::FeaturePromoHandle promo_handle) {
+                if (auto* const button =
+                        views::ElementTrackerViews::GetInstance()
+                            ->GetUniqueViewAs<glic::GlicButton>(
+                                kGlicButtonElementId, context)) {
+                  button->LaunchUI();
+                }
+              }))
+          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+          .SetBubbleTitleText(IDS_GLIC_PROMO_TITLE)
+          .SetMetadata(
+              133, "dfried@chromium.org",
+              "Attempts to trigger when the user is on a supported page.")));
 
   // kIPHGMCCastStartStopFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(

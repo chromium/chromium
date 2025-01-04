@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//extensions/buildflags/buildflags.gni")
+
 assert(is_chromeos)
 
 component("cpp") {
@@ -18,11 +20,16 @@ component("cpp") {
 
   deps = [
     "//base",
+    "//build:branding_buildflags",
     "//chromeos/ui/vector_icons",
     "//components/vector_icons",
     "//ui/gfx",
     "//ui/gfx/range",
   ]
+
+  if (is_chrome_branded) {
+    deps += [ "//chromeos/ash/resources/internal/icons:vector_icons" ]
+  }
 }
 
 source_set("unit_tests") {

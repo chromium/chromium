@@ -49,13 +49,16 @@ class ASH_EXPORT BirchChipButton : public BirchChipButtonBase,
   void ExecuteCommand(int command_id, int event_flags) override;
 
  protected:
-  views::Label* title() const { return title_; }
+  views::Label* title() { return title_; }
 
   void SetAddon(std::unique_ptr<views::View> addon_view);
 
   void SetIconImage(PrimaryIconType primary_icon_type,
                     SecondaryIconType secondary_icon_type,
                     const ui::ImageModel& icon_image);
+
+  // The source of the chip.
+  raw_ptr<BirchItem> item_ = nullptr;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BirchBarTest, NoCrashOnSettingIconAfterShutdown);
@@ -65,9 +68,6 @@ class ASH_EXPORT BirchChipButton : public BirchChipButtonBase,
 
   // The chip context menu controller.
   std::unique_ptr<ChipMenuController> chip_menu_controller_;
-
-  // The source of the chip.
-  raw_ptr<BirchItem> item_ = nullptr;
 
   // The components owned by the chip view.
   raw_ptr<views::FlexLayout> flex_layout_ = nullptr;

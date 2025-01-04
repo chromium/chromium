@@ -15,10 +15,5 @@ Dumping matched rules:
     transition-property: background-color; @[undefined-undefined]
     display: inline-block; @[undefined-undefined]
 }
-@starting-style
-    *div* {    regular
-        background-color: yellow; @[9:6-9:31]
-        background-color: yellow; @[undefined-undefined]
-    }
 Dumping inherited rules: 
 

@@ -3,11 +3,12 @@
 # found in the LICENSE file.
 
 import os
-
 from typing import List, Tuple, Iterable
 
-from pyfakefs import fake_filesystem_unittest
+# vpython-provided modules.
+from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
 
+# //testing imports.
 from flake_suppressor_common import common_typing as ct
 from flake_suppressor_common import expectations as expectations_module
 from flake_suppressor_common import queries

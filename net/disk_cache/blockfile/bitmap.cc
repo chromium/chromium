@@ -13,6 +13,8 @@
 #include <bit>
 
 #include "base/check_op.h"
+#include "base/containers/heap_array.h"
+#include "base/numerics/safe_conversions.h"
 
 namespace {
 // Returns the index of the first bit set to |value| from |word|. This code
@@ -33,9 +35,9 @@ Bitmap::Bitmap() = default;
 
 Bitmap::Bitmap(int num_bits, bool clear_bits)
     : num_bits_(num_bits),
-      array_size_(RequiredArraySize(num_bits)),
-      allocated_map_(std::make_unique<uint32_t[]>(array_size_)) {
-  map_ = allocated_map_.get();
+      allocated_map_(
+          base::HeapArray<uint32_t>::Uninit(RequiredArraySize(num_bits))) {
+  map_ = allocated_map_.as_span();
 
   // Initialize all of the bits.
   if (clear_bits)
@@ -44,26 +46,28 @@ Bitmap::Bitmap(int num_bits, bool clear_bits)
 
 Bitmap::Bitmap(uint32_t* map, int num_bits, int num_words)
     : num_bits_(num_bits),
-      // If size is larger than necessary, trim because array_size_ is used
-      // as a bound by various methods.
-      array_size_(std::min(RequiredArraySize(num_bits), num_words)),
-      map_(map) {}
+      // If size is larger than necessary, trim. base::span will guard against
+      // out-of-bounds accesses.
+      map_(base::span<uint32_t>(
+          map,
+          base::checked_cast<size_t>(
+              std::min(RequiredArraySize(num_bits), num_words)))) {}
 
 Bitmap::~Bitmap() = default;
 
 void Bitmap::Resize(int num_bits, bool clear_bits) {
-  DCHECK(allocated_map_ || !map_);
   const int old_maxsize = num_bits_;
-  const int old_array_size = array_size_;
-  array_size_ = RequiredArraySize(num_bits);
+  const int old_array_size = map_.size();
+  const int new_array_size = RequiredArraySize(num_bits);
 
-  if (array_size_ != old_array_size) {
-    auto new_map = std::make_unique<uint32_t[]>(array_size_);
+  if (new_array_size != old_array_size) {
+    auto new_map = base::HeapArray<uint32_t>::Uninit(new_array_size);
     // Always clear the unused bits in the last word.
-    new_map[array_size_ - 1] = 0;
-    std::copy(map_, map_ + std::min(array_size_, old_array_size),
-              new_map.get());
-    map_ = new_map.get();
+    new_map[new_array_size - 1] = 0;
+    new_map.copy_prefix_from(map_.subspan(
+        0u,
+        base::checked_cast<size_t>(std::min(new_array_size, old_array_size))));
+    map_ = new_map.as_span();
     allocated_map_ = std::move(new_map);
   }
 
@@ -101,19 +105,19 @@ void Bitmap::Toggle(int index) {
 }
 
 void Bitmap::SetMapElement(int array_index, uint32_t value) {
-  DCHECK_LT(array_index, array_size_);
   DCHECK_GE(array_index, 0);
   map_[array_index] = value;
 }
 
 uint32_t Bitmap::GetMapElement(int array_index) const {
-  DCHECK_LT(array_index, array_size_);
   DCHECK_GE(array_index, 0);
   return map_[array_index];
 }
 
 void Bitmap::SetMap(const uint32_t* map, int size) {
-  std::copy(map, map + std::min(size, array_size_), map_);
+  auto src = base::span<const uint32_t>(
+      map, std::min(base::checked_cast<size_t>(size), map_.size()));
+  map_.copy_prefix_from(src);
 }
 
 void Bitmap::SetRange(int begin, int end, bool value) {
@@ -135,8 +139,10 @@ void Bitmap::SetRange(int begin, int end, bool value) {
   SetWordBits(end, end_offset, value);
 
   // Set all the words in the middle.
-  memset(map_ + (begin / kIntBits), (value ? 0xFF : 0x00),
-         ((end / kIntBits) - (begin / kIntBits)) * sizeof(*map_));
+  base::ranges::fill(map_.subspan(base::checked_cast<size_t>(begin / kIntBits),
+                                  base::checked_cast<size_t>(
+                                      (end / kIntBits) - (begin / kIntBits))),
+                     (value ? 0xFFFFFFFFu : 0x00u));
 }
 
 // Return true if any bit between begin inclusive and end exclusive
@@ -149,8 +155,9 @@ bool Bitmap::TestRange(int begin, int end, bool value) const {
   DCHECK_GE(end, 0);
 
   // Return false immediately if the range is empty.
-  if (begin >= end || end <= 0)
+  if (begin == end) {
     return false;
+  }
 
   // Calculate the indices of the words containing the first and last bits,
   // along with the positions of the bits within those words.

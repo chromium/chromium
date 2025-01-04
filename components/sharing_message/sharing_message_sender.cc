@@ -246,6 +246,12 @@ void SharingMessageSender::RegisterSendDelegate(
   DCHECK(result.second) << "Delegate type already registered";
 }
 
+void SharingMessageSender::ClearPendingMessages() {
+  for (const auto& [_, delegate] : send_delegates_) {
+    delegate->ClearPendingMessages();
+  }
+}
+
 SharingFCMSender* SharingMessageSender::GetFCMSenderForTesting() const {
   auto delegate_iter = send_delegates_.find(DelegateType::kFCM);
   DCHECK(delegate_iter != send_delegates_.end());

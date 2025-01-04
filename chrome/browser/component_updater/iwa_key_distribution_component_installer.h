@@ -29,6 +29,9 @@ namespace component_updater {
 
 BASE_DECLARE_FEATURE(kIwaKeyDistributionComponent);
 
+inline constexpr char kIwaKeyDistributionComponentExpCohort[] =
+    "iwa-kd-component-exp-cohort";
+
 class ComponentUpdateService;
 
 class IwaKeyDistributionComponentInstallerPolicy

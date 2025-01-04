@@ -133,8 +133,8 @@ class ChipExpansionObserver : PermissionChipView::Observer {
 class PermissionChipInteractiveUITest : public InProcessBrowserTest {
  public:
   PermissionChipInteractiveUITest() = default;
-  PermissionChipInteractiveUITest(
-      const PermissionChipInteractiveUITest&) = delete;
+  PermissionChipInteractiveUITest(const PermissionChipInteractiveUITest&) =
+      delete;
   PermissionChipInteractiveUITest& operator=(
       const PermissionChipInteractiveUITest&) = delete;
 
@@ -176,7 +176,6 @@ class PermissionChipInteractiveUITest : public InProcessBrowserTest {
 
     return lbv->GetChipController();
   }
-
 
   void ClickOnChip(PermissionChipView* chip) {
     ASSERT_TRUE(chip != nullptr);
@@ -281,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(LocationBarIconOverrideTest,
               l10n_util::GetStringUTF16(
                   IDS_PERMISSIONS_PERMISSION_ALLOWED_CONFIRMATION));
 
-    EXPECT_FALSE(IsLocationIconVisible());
+  EXPECT_FALSE(IsLocationIconVisible());
 
   // Check collapse timer is running and fast forward fire callback. Then,
   // fast forward animation to trigger callback and wait until it completes.
@@ -1102,8 +1101,8 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
           LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
 }
 
-class QuietChipFailFastInteractiveTest : public
-                                    PermissionChipInteractiveUITest {
+class QuietChipFailFastInteractiveTest
+    : public PermissionChipInteractiveUITest {
  public:
   QuietChipFailFastInteractiveTest() {
     scoped_feature_list_.InitWithFeatures({features::kQuietNotificationPrompts},

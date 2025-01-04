@@ -101,7 +101,7 @@ void OnDeviceLlmInternalsHandler::RegisterMessages() {
 
 void OnDeviceLlmInternalsHandler::HandleRequestModelInformation(
     const base::Value::List& args) {
-  // TODO(crbug.com/370768381): Load model name.
+  // TODO(crbug.com/387510419): Load model name.
   std::string model_name = "";
   if (model_name.empty()) {
     model_name = "(Model name unavailable)";

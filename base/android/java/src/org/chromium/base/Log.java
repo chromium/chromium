@@ -4,11 +4,10 @@
 
 package org.chromium.base;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.AlwaysInline;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Locale;
 
@@ -161,33 +160,42 @@ public class Log {
     }
 
     @AlwaysInline
-    public static void i(String tag, String messageTemplate, Object param1) {
+    public static void i(String tag, String messageTemplate, @Nullable Object param1) {
         tag = normalizeTag(tag);
         android.util.Log.i(tag, String.format(Locale.US, messageTemplate, param1));
     }
 
     @AlwaysInline
-    public static void i(String tag, String messageTemplate, Object param1, Throwable t) {
+    public static void i(String tag, String messageTemplate, @Nullable Object param1, Throwable t) {
         tag = normalizeTag(tag);
         android.util.Log.i(tag, String.format(Locale.US, messageTemplate, param1), t);
     }
 
     @AlwaysInline
-    public static void i(String tag, String messageTemplate, Object param1, Object param2) {
+    public static void i(
+            String tag, String messageTemplate, @Nullable Object param1, @Nullable Object param2) {
         tag = normalizeTag(tag);
         android.util.Log.i(tag, String.format(Locale.US, messageTemplate, param1, param2));
     }
 
     @AlwaysInline
     public static void i(
-            String tag, String messageTemplate, Object param1, Object param2, Throwable t) {
+            String tag,
+            String messageTemplate,
+            @Nullable Object param1,
+            @Nullable Object param2,
+            Throwable t) {
         tag = normalizeTag(tag);
         android.util.Log.i(tag, String.format(Locale.US, messageTemplate, param1, param2), t);
     }
 
     @AlwaysInline
     public static void i(
-            String tag, String messageTemplate, Object param1, Object param2, Object param3) {
+            String tag,
+            String messageTemplate,
+            @Nullable Object param1,
+            @Nullable Object param2,
+            @Nullable Object param3) {
         tag = normalizeTag(tag);
         android.util.Log.i(tag, String.format(Locale.US, messageTemplate, param1, param2, param3));
     }
@@ -196,9 +204,9 @@ public class Log {
     public static void i(
             String tag,
             String messageTemplate,
-            Object param1,
-            Object param2,
-            Object param3,
+            @Nullable Object param1,
+            @Nullable Object param2,
+            @Nullable Object param3,
             Throwable t) {
         tag = normalizeTag(tag);
         android.util.Log.i(
@@ -209,10 +217,10 @@ public class Log {
     public static void i(
             String tag,
             String messageTemplate,
-            Object param1,
-            Object param2,
-            Object param3,
-            Object param4) {
+            @Nullable Object param1,
+            @Nullable Object param2,
+            @Nullable Object param3,
+            @Nullable Object param4) {
         tag = normalizeTag(tag);
         android.util.Log.i(
                 tag, String.format(Locale.US, messageTemplate, param1, param2, param3, param4));
@@ -222,10 +230,10 @@ public class Log {
     public static void i(
             String tag,
             String messageTemplate,
-            Object param1,
-            Object param2,
-            Object param3,
-            Object param4,
+            @Nullable Object param1,
+            @Nullable Object param2,
+            @Nullable Object param3,
+            @Nullable Object param4,
             Throwable t) {
         tag = normalizeTag(tag);
         android.util.Log.i(
@@ -236,11 +244,11 @@ public class Log {
     public static void i(
             String tag,
             String messageTemplate,
-            Object param1,
-            Object param2,
-            Object param3,
-            Object param4,
-            Object param5) {
+            @Nullable Object param1,
+            @Nullable Object param2,
+            @Nullable Object param3,
+            @Nullable Object param4,
+            @Nullable Object param5) {
         tag = normalizeTag(tag);
         android.util.Log.i(
                 tag,
@@ -251,11 +259,11 @@ public class Log {
     public static void i(
             String tag,
             String messageTemplate,
-            Object param1,
-            Object param2,
-            Object param3,
-            Object param4,
-            Object param5,
+            @Nullable Object param1,
+            @Nullable Object param2,
+            @Nullable Object param3,
+            @Nullable Object param4,
+            @Nullable Object param5,
             Throwable t) {
         tag = normalizeTag(tag);
         android.util.Log.i(
@@ -268,12 +276,12 @@ public class Log {
     public static void i(
             String tag,
             String messageTemplate,
-            Object param1,
-            Object param2,
-            Object param3,
-            Object param4,
-            Object param5,
-            Object param6) {
+            @Nullable Object param1,
+            @Nullable Object param2,
+            @Nullable Object param3,
+            @Nullable Object param4,
+            @Nullable Object param5,
+            @Nullable Object param6) {
         tag = normalizeTag(tag);
         android.util.Log.i(
                 tag,
@@ -292,12 +300,12 @@ public class Log {
     public static void i(
             String tag,
             String messageTemplate,
-            Object param1,
-            Object param2,
-            Object param3,
-            Object param4,
-            Object param5,
-            Object param6,
+            @Nullable Object param1,
+            @Nullable Object param2,
+            @Nullable Object param3,
+            @Nullable Object param4,
+            @Nullable Object param5,
+            @Nullable Object param6,
             Throwable t) {
         tag = normalizeTag(tag);
         android.util.Log.i(
@@ -344,33 +352,42 @@ public class Log {
     }
 
     @AlwaysInline
-    public static void w(String tag, String messageTemplate, Object param1) {
+    public static void w(String tag, String messageTemplate, @Nullable Object param1) {
         tag = normalizeTag(tag);
         android.util.Log.w(tag, String.format(Locale.US, messageTemplate, param1));
     }
 
     @AlwaysInline
-    public static void w(String tag, String messageTemplate, Object param1, Throwable t) {
+    public static void w(String tag, String messageTemplate, @Nullable Object param1, Throwable t) {
         tag = normalizeTag(tag);
         android.util.Log.w(tag, String.format(Locale.US, messageTemplate, param1), t);
     }
 
     @AlwaysInline
-    public static void w(String tag, String messageTemplate, Object param1, Object param2) {
+    public static void w(
+            String tag, String messageTemplate, @Nullable Object param1, @Nullable Object param2) {
         tag = normalizeTag(tag);
         android.util.Log.w(tag, String.format(Locale.US, messageTemplate, param1, param2));
     }
 
     @AlwaysInline
     public static void w(
-            String tag, String messageTemplate, Object param1, Object param2, Throwable t) {
+            String tag,
+            String messageTemplate,
+            @Nullable Object param1,
+            @Nullable Object param2,
+            Throwable t) {
         tag = normalizeTag(tag);
         android.util.Log.w(tag, String.format(Locale.US, messageTemplate, param1, param2), t);
     }
 
     @AlwaysInline
     public static void w(
-            String tag, String messageTemplate, Object param1, Object param2, Object param3) {
+            String tag,
+            String messageTemplate,
+            @Nullable Object param1,
+            @Nullable Object param2,
+            @Nullable Object param3) {
         tag = normalizeTag(tag);
         android.util.Log.w(tag, String.format(Locale.US, messageTemplate, param1, param2, param3));
     }
@@ -379,9 +396,9 @@ public class Log {
     public static void w(
             String tag,
             String messageTemplate,
-            Object param1,
-            Object param2,
-            Object param3,
+            @Nullable Object param1,
+            @Nullable Object param2,
+            @Nullable Object param3,
             Throwable t) {
         tag = normalizeTag(tag);
         android.util.Log.w(
@@ -392,10 +409,10 @@ public class Log {
     public static void w(
             String tag,
             String messageTemplate,
-            Object param1,
-            Object param2,
-            Object param3,
-            Object param4) {
+            @Nullable Object param1,
+            @Nullable Object param2,
+            @Nullable Object param3,
+            @Nullable Object param4) {
         tag = normalizeTag(tag);
         android.util.Log.w(
                 tag, String.format(Locale.US, messageTemplate, param1, param2, param3, param4));
@@ -405,10 +422,10 @@ public class Log {
     public static void w(
             String tag,
             String messageTemplate,
-            Object param1,
-            Object param2,
-            Object param3,
-            Object param4,
+            @Nullable Object param1,
+            @Nullable Object param2,
+            @Nullable Object param3,
+            @Nullable Object param4,
             Throwable t) {
         tag = normalizeTag(tag);
         android.util.Log.w(
@@ -419,11 +436,11 @@ public class Log {
     public static void w(
             String tag,
             String messageTemplate,
-            Object param1,
-            Object param2,
-            Object param3,
-            Object param4,
-            Object param5) {
+            @Nullable Object param1,
+            @Nullable Object param2,
+            @Nullable Object param3,
+            @Nullable Object param4,
+            @Nullable Object param5) {
         tag = normalizeTag(tag);
         android.util.Log.w(
                 tag,
@@ -434,11 +451,11 @@ public class Log {
     public static void w(
             String tag,
             String messageTemplate,
-            Object param1,
-            Object param2,
-            Object param3,
-            Object param4,
-            Object param5,
+            @Nullable Object param1,
+            @Nullable Object param2,
+            @Nullable Object param3,
+            @Nullable Object param4,
+            @Nullable Object param5,
             Throwable t) {
         tag = normalizeTag(tag);
         android.util.Log.w(
@@ -451,12 +468,12 @@ public class Log {
     public static void w(
             String tag,
             String messageTemplate,
-            Object param1,
-            Object param2,
-            Object param3,
-            Object param4,
-            Object param5,
-            Object param6) {
+            @Nullable Object param1,
+            @Nullable Object param2,
+            @Nullable Object param3,
+            @Nullable Object param4,
+            @Nullable Object param5,
+            @Nullable Object param6) {
         tag = normalizeTag(tag);
         android.util.Log.w(
                 tag,
@@ -475,12 +492,12 @@ public class Log {
     public static void w(
             String tag,
             String messageTemplate,
-            Object param1,
-            Object param2,
-            Object param3,
-            Object param4,
-            Object param5,
-            Object param6,
+            @Nullable Object param1,
+            @Nullable Object param2,
+            @Nullable Object param3,
+            @Nullable Object param4,
+            @Nullable Object param5,
+            @Nullable Object param6,
             Throwable t) {
         tag = normalizeTag(tag);
         android.util.Log.w(
@@ -526,33 +543,42 @@ public class Log {
     }
 
     @AlwaysInline
-    public static void e(String tag, String messageTemplate, Object param1) {
+    public static void e(String tag, String messageTemplate, @Nullable Object param1) {
         tag = normalizeTag(tag);
         android.util.Log.e(tag, String.format(Locale.US, messageTemplate, param1));
     }
 
     @AlwaysInline
-    public static void e(String tag, String messageTemplate, Object param1, Throwable t) {
+    public static void e(String tag, String messageTemplate, @Nullable Object param1, Throwable t) {
         tag = normalizeTag(tag);
         android.util.Log.e(tag, String.format(Locale.US, messageTemplate, param1), t);
     }
 
     @AlwaysInline
-    public static void e(String tag, String messageTemplate, Object param1, Object param2) {
+    public static void e(
+            String tag, String messageTemplate, @Nullable Object param1, @Nullable Object param2) {
         tag = normalizeTag(tag);
         android.util.Log.e(tag, String.format(Locale.US, messageTemplate, param1, param2));
     }
 
     @AlwaysInline
     public static void e(
-            String tag, String messageTemplate, Object param1, Object param2, Throwable t) {
+            String tag,
+            String messageTemplate,
+            @Nullable Object param1,
+            @Nullable Object param2,
+            Throwable t) {
         tag = normalizeTag(tag);
         android.util.Log.e(tag, String.format(Locale.US, messageTemplate, param1, param2), t);
     }
 
     @AlwaysInline
     public static void e(
-            String tag, String messageTemplate, Object param1, Object param2, Object param3) {
+            String tag,
+            String messageTemplate,
+            @Nullable Object param1,
+            @Nullable Object param2,
+            @Nullable Object param3) {
         tag = normalizeTag(tag);
         android.util.Log.e(tag, String.format(Locale.US, messageTemplate, param1, param2, param3));
     }
@@ -561,9 +587,9 @@ public class Log {
     public static void e(
             String tag,
             String messageTemplate,
-            Object param1,
-            Object param2,
-            Object param3,
+            @Nullable Object param1,
+            @Nullable Object param2,
+            @Nullable Object param3,
             Throwable t) {
         tag = normalizeTag(tag);
         android.util.Log.e(
@@ -574,10 +600,10 @@ public class Log {
     public static void e(
             String tag,
             String messageTemplate,
-            Object param1,
-            Object param2,
-            Object param3,
-            Object param4) {
+            @Nullable Object param1,
+            @Nullable Object param2,
+            @Nullable Object param3,
+            @Nullable Object param4) {
         tag = normalizeTag(tag);
         android.util.Log.e(
                 tag, String.format(Locale.US, messageTemplate, param1, param2, param3, param4));
@@ -587,10 +613,10 @@ public class Log {
     public static void e(
             String tag,
             String messageTemplate,
-            Object param1,
-            Object param2,
-            Object param3,
-            Object param4,
+            @Nullable Object param1,
+            @Nullable Object param2,
+            @Nullable Object param3,
+            @Nullable Object param4,
             Throwable t) {
         tag = normalizeTag(tag);
         android.util.Log.e(
@@ -601,11 +627,11 @@ public class Log {
     public static void e(
             String tag,
             String messageTemplate,
-            Object param1,
-            Object param2,
-            Object param3,
-            Object param4,
-            Object param5) {
+            @Nullable Object param1,
+            @Nullable Object param2,
+            @Nullable Object param3,
+            @Nullable Object param4,
+            @Nullable Object param5) {
         tag = normalizeTag(tag);
         android.util.Log.e(
                 tag,
@@ -616,11 +642,11 @@ public class Log {
     public static void e(
             String tag,
             String messageTemplate,
-            Object param1,
-            Object param2,
-            Object param3,
-            Object param4,
-            Object param5,
+            @Nullable Object param1,
+            @Nullable Object param2,
+            @Nullable Object param3,
+            @Nullable Object param4,
+            @Nullable Object param5,
             Throwable t) {
         tag = normalizeTag(tag);
         android.util.Log.e(
@@ -633,12 +659,12 @@ public class Log {
     public static void e(
             String tag,
             String messageTemplate,
-            Object param1,
-            Object param2,
-            Object param3,
-            Object param4,
-            Object param5,
-            Object param6) {
+            @Nullable Object param1,
+            @Nullable Object param2,
+            @Nullable Object param3,
+            @Nullable Object param4,
+            @Nullable Object param5,
+            @Nullable Object param6) {
         tag = normalizeTag(tag);
         android.util.Log.e(
                 tag,
@@ -657,12 +683,12 @@ public class Log {
     public static void e(
             String tag,
             String messageTemplate,
-            Object param1,
-            Object param2,
-            Object param3,
-            Object param4,
-            Object param5,
-            Object param6,
+            @Nullable Object param1,
+            @Nullable Object param2,
+            @Nullable Object param3,
+            @Nullable Object param4,
+            @Nullable Object param5,
+            @Nullable Object param6,
             Throwable t) {
         tag = normalizeTag(tag);
         android.util.Log.e(
@@ -713,33 +739,43 @@ public class Log {
     }
 
     @AlwaysInline
-    public static void wtf(String tag, String messageTemplate, Object param1) {
+    public static void wtf(String tag, String messageTemplate, @Nullable Object param1) {
         tag = normalizeTag(tag);
         android.util.Log.wtf(tag, String.format(Locale.US, messageTemplate, param1));
     }
 
     @AlwaysInline
-    public static void wtf(String tag, String messageTemplate, Object param1, Throwable t) {
+    public static void wtf(
+            String tag, String messageTemplate, @Nullable Object param1, Throwable t) {
         tag = normalizeTag(tag);
         android.util.Log.wtf(tag, String.format(Locale.US, messageTemplate, param1), t);
     }
 
     @AlwaysInline
-    public static void wtf(String tag, String messageTemplate, Object param1, Object param2) {
+    public static void wtf(
+            String tag, String messageTemplate, @Nullable Object param1, @Nullable Object param2) {
         tag = normalizeTag(tag);
         android.util.Log.wtf(tag, String.format(Locale.US, messageTemplate, param1, param2));
     }
 
     @AlwaysInline
     public static void wtf(
-            String tag, String messageTemplate, Object param1, Object param2, Throwable t) {
+            String tag,
+            String messageTemplate,
+            @Nullable Object param1,
+            @Nullable Object param2,
+            Throwable t) {
         tag = normalizeTag(tag);
         android.util.Log.wtf(tag, String.format(Locale.US, messageTemplate, param1, param2), t);
     }
 
     @AlwaysInline
     public static void wtf(
-            String tag, String messageTemplate, Object param1, Object param2, Object param3) {
+            String tag,
+            String messageTemplate,
+            @Nullable Object param1,
+            @Nullable Object param2,
+            @Nullable Object param3) {
         tag = normalizeTag(tag);
         android.util.Log.wtf(
                 tag, String.format(Locale.US, messageTemplate, param1, param2, param3));
@@ -749,9 +785,9 @@ public class Log {
     public static void wtf(
             String tag,
             String messageTemplate,
-            Object param1,
-            Object param2,
-            Object param3,
+            @Nullable Object param1,
+            @Nullable Object param2,
+            @Nullable Object param3,
             Throwable t) {
         tag = normalizeTag(tag);
         android.util.Log.wtf(
@@ -762,10 +798,10 @@ public class Log {
     public static void wtf(
             String tag,
             String messageTemplate,
-            Object param1,
-            Object param2,
-            Object param3,
-            Object param4) {
+            @Nullable Object param1,
+            @Nullable Object param2,
+            @Nullable Object param3,
+            @Nullable Object param4) {
         tag = normalizeTag(tag);
         android.util.Log.wtf(
                 tag, String.format(Locale.US, messageTemplate, param1, param2, param3, param4));
@@ -775,10 +811,10 @@ public class Log {
     public static void wtf(
             String tag,
             String messageTemplate,
-            Object param1,
-            Object param2,
-            Object param3,
-            Object param4,
+            @Nullable Object param1,
+            @Nullable Object param2,
+            @Nullable Object param3,
+            @Nullable Object param4,
             Throwable t) {
         tag = normalizeTag(tag);
         android.util.Log.wtf(
@@ -789,11 +825,11 @@ public class Log {
     public static void wtf(
             String tag,
             String messageTemplate,
-            Object param1,
-            Object param2,
-            Object param3,
-            Object param4,
-            Object param5) {
+            @Nullable Object param1,
+            @Nullable Object param2,
+            @Nullable Object param3,
+            @Nullable Object param4,
+            @Nullable Object param5) {
         tag = normalizeTag(tag);
         android.util.Log.wtf(
                 tag,
@@ -804,11 +840,11 @@ public class Log {
     public static void wtf(
             String tag,
             String messageTemplate,
-            Object param1,
-            Object param2,
-            Object param3,
-            Object param4,
-            Object param5,
+            @Nullable Object param1,
+            @Nullable Object param2,
+            @Nullable Object param3,
+            @Nullable Object param4,
+            @Nullable Object param5,
             Throwable t) {
         tag = normalizeTag(tag);
         android.util.Log.wtf(
@@ -821,12 +857,12 @@ public class Log {
     public static void wtf(
             String tag,
             String messageTemplate,
-            Object param1,
-            Object param2,
-            Object param3,
-            Object param4,
-            Object param5,
-            Object param6) {
+            @Nullable Object param1,
+            @Nullable Object param2,
+            @Nullable Object param3,
+            @Nullable Object param4,
+            @Nullable Object param5,
+            @Nullable Object param6) {
         tag = normalizeTag(tag);
         android.util.Log.wtf(
                 tag,
@@ -845,12 +881,12 @@ public class Log {
     public static void wtf(
             String tag,
             String messageTemplate,
-            Object param1,
-            Object param2,
-            Object param3,
-            Object param4,
-            Object param5,
-            Object param6,
+            @Nullable Object param1,
+            @Nullable Object param2,
+            @Nullable Object param3,
+            @Nullable Object param4,
+            @Nullable Object param5,
+            @Nullable Object param6,
             Throwable t) {
         tag = normalizeTag(tag);
         android.util.Log.wtf(

@@ -56,7 +56,7 @@ export function getHtml(this: AppElement) {
       <hr class="sp-cards-separator">
       <div id="extensions" class="section sp-card">
         <sp-heading hide-back-button>
-          <h2 slot="heading">Extensions</h2>
+          <h2 slot="heading">$i18n{extensionsHeader}</h2>
         </sp-heading>
         <div class="description" @click="${this.onChromeWebStoreLinkClick_}">
           $i18nRaw{customizeWithChromeWebstoreLabel}

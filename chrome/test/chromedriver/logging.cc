@@ -13,6 +13,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include <array>
 #include <cmath>
 #include <memory>
 #include <utility>
@@ -58,14 +59,14 @@ int64_t g_start_time = 0;
 bool readable_timestamp;
 
 // Array indices are the Log::Level enum values.
-const char* const kLevelToName[] = {
-  "ALL",  // kAll
-  "DEBUG",  // kDebug
-  "INFO",  // kInfo
-  "WARNING",  // kWarning
-  "SEVERE",  // kError
-  "OFF",  // kOff
-};
+const auto kLevelToName = std::to_array<const char*>({
+    "ALL",      // kAll
+    "DEBUG",    // kDebug
+    "INFO",     // kInfo
+    "WARNING",  // kWarning
+    "SEVERE",   // kError
+    "OFF",      // kOff
+});
 
 const char* LevelToName(Log::Level level) {
   const int index = level - Log::kAll;
@@ -79,14 +80,14 @@ struct LevelPair {
   Log::Level level;
 };
 
-const LevelPair kNameToLevel[] = {
+const auto kNameToLevel = std::to_array<LevelPair>({
     {"ALL", Log::kAll},
     {"DEBUG", Log::kDebug},
     {"INFO", Log::kInfo},
     {"WARNING", Log::kWarning},
     {"SEVERE", Log::kError},
     {"OFF", Log::kOff},
-};
+});
 
 Log::Level GetLevelFromSeverity(int severity) {
   switch (severity) {

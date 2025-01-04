@@ -110,8 +110,9 @@ void OpenURLAfterCheckIsDefaultBrowser(
   // open it.
   Profile* profile = Profile::FromBrowserContext(source->GetBrowserContext());
   DCHECK(profile);
-  if (!profile)
+  if (!profile) {
     return;
+  }
   switch (state) {
     case shell_integration::IS_DEFAULT:
       OpenURLFromTabInternal(profile, params,
@@ -356,8 +357,9 @@ int ChromeAppDelegate::PreferredIconSize() const {
 void ChromeAppDelegate::SetWebContentsBlocked(
     content::WebContents* web_contents,
     bool blocked) {
-  if (!blocked)
+  if (!blocked) {
     web_contents->Focus();
+  }
   // RenderFrameHost may be NULL during shutdown.
   content::RenderFrameHost* host = web_contents->GetPrimaryMainFrame();
   if (host && host->IsRenderFrameLive()) {
@@ -422,6 +424,7 @@ void ChromeAppDelegate::ExitPictureInPicture() {
 }
 
 void ChromeAppDelegate::OnAppTerminating() {
-  if (!terminating_callback_.is_null())
+  if (!terminating_callback_.is_null()) {
     std::move(terminating_callback_).Run();
+  }
 }

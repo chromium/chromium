@@ -2215,10 +2215,10 @@ static void AssertLayoutTreeUpdatedForPseudoElements(const Element& element) {
                                       kPseudoIdBackdrop,
                                       kPseudoIdScrollMarkerGroupBefore,
                                       kPseudoIdScrollMarkerGroupAfter,
-                                      kPseudoIdScrollUpButton,
-                                      kPseudoIdScrollDownButton,
-                                      kPseudoIdScrollLeftButton,
-                                      kPseudoIdScrollRightButton,
+                                      kPseudoIdScrollButtonBlockStart,
+                                      kPseudoIdScrollButtonInlineStart,
+                                      kPseudoIdScrollButtonInlineEnd,
+                                      kPseudoIdScrollButtonBlockEnd,
                                       kPseudoIdScrollMarker};
   for (auto pseudo_id : pseudo_ids) {
     if (const PseudoElement* pseudo_element =
@@ -2444,6 +2444,11 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
   UpdateStyle();
   GetStyleResolver().ClearResizedForViewportUnits();
   InvalidatePendingSVGResources();
+
+  if (RuntimeEnabledFeatures::UpdateComplexSafaAreaConstraintsEnabled()) {
+    GetViewportData().SetHasComplexSafaAreaConstraint(
+        style_engine.HasComplexSafaAreaConstraints());
+  }
 
   rendering_had_begun_for_last_style_update_ = RenderingHasBegun();
 
@@ -8884,8 +8889,10 @@ bool Document::IsFocusAllowed() const {
   CountUse(uma_type);
   if (!RuntimeEnabledFeatures::BlockingFocusWithoutUserActivationEnabled())
     return true;
-  return GetExecutionContext()->IsFeatureEnabled(
-      mojom::blink::PermissionsPolicyFeature::kFocusWithoutUserActivation);
+  return GetFrame()->AllowFocusDuringFocusAdvance() ||
+         GetExecutionContext()->IsFeatureEnabled(
+             mojom::blink::PermissionsPolicyFeature::
+                 kFocusWithoutUserActivation);
 }
 
 LazyLoadImageObserver& Document::EnsureLazyLoadImageObserver() {

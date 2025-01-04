@@ -13,6 +13,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -2155,9 +2156,9 @@ TEST_F(DriveApiRequestsTest, BatchUploadRequest) {
   request_sender_->StartRequestWithAuthRetry(std::move(request));
 
   // Create child request.
-  ApiErrorCode errors[] = {OTHER_ERROR, OTHER_ERROR};
-  std::unique_ptr<FileResource> file_resources[2];
-  base::RunLoop run_loop[2];
+  auto errors = std::to_array<ApiErrorCode>({OTHER_ERROR, OTHER_ERROR});
+  std::array<std::unique_ptr<FileResource>, 2> file_resources;
+  std::array<base::RunLoop, 2> run_loop;
   for (int i = 0; i < 2; ++i) {
     FileResourceCallback callback = test_util::CreateQuitCallback(
         &run_loop[i],
@@ -2278,7 +2279,7 @@ TEST_F(DriveApiRequestsTest, BatchUploadRequestProgress) {
   std::unique_ptr<drive::BatchUploadRequest> request =
       std::make_unique<drive::BatchUploadRequest>(request_sender_.get(),
                                                   *url_generator_);
-  TestBatchableDelegate* requests[] = {
+  auto requests = std::to_array<TestBatchableDelegate*>({
       new TestBatchableDelegate(GURL("http://example.com/test"),
                                 "application/binary", std::string(100, 'a'),
                                 base::DoNothing()),
@@ -2287,8 +2288,10 @@ TEST_F(DriveApiRequestsTest, BatchUploadRequestProgress) {
                                 base::DoNothing()),
       new TestBatchableDelegate(GURL("http://example.com/test"),
                                 "application/binary", std::string(0, 'c'),
-                                base::DoNothing())};
-  const size_t kExpectedUploadDataPosition[] = {207, 515, 773};
+                                base::DoNothing()),
+  });
+  const auto kExpectedUploadDataPosition =
+      std::to_array<size_t>({207, 515, 773});
   const size_t kExpectedUploadDataSize = 851;
   request->AddRequest(requests[0]);
   request->AddRequest(requests[1]);

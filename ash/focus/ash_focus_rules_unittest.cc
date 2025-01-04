@@ -38,7 +38,10 @@ class LockScreenSessionControllerClient : public TestSessionControllerClient {
                                     TestPrefServiceProvider* prefs_provider)
       : TestSessionControllerClient(controller, prefs_provider) {
     InitializeAndSetClient();
-    CreatePredefinedUserSessions(1);
+
+    Reset();
+    AddUserSession("user0@tray");
+    SetSessionState(session_manager::SessionState::ACTIVE);
   }
 
   LockScreenSessionControllerClient(const LockScreenSessionControllerClient&) =

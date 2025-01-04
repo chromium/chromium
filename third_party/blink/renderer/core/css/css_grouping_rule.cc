@@ -177,6 +177,34 @@ StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
   return new_rule;
 }
 
+void ParseAndQuietlyInsertRule(
+    const ExecutionContext* execution_context,
+    const String& rule_string,
+    unsigned index,
+    CSSRule& parent_rule,
+    HeapVector<Member<StyleRuleBase>>& child_rules,
+    HeapVector<Member<CSSRule>>& child_rule_cssom_wrappers) {
+  CHECK_EQ(child_rule_cssom_wrappers.size(), child_rules.size());
+  StyleRuleBase* new_rule =
+      ParseRuleForInsert(execution_context, rule_string, index,
+                         child_rules.size(), parent_rule, ASSERT_NO_EXCEPTION);
+  CHECK(new_rule);
+  child_rules.insert(index, new_rule);
+  child_rule_cssom_wrappers.insert(index, Member<CSSRule>(nullptr));
+}
+
+void QuietlyDeleteRule(unsigned index,
+                       HeapVector<Member<StyleRuleBase>>& child_rules,
+                       HeapVector<Member<CSSRule>>& child_rule_cssom_wrappers) {
+  CHECK_EQ(child_rule_cssom_wrappers.size(), child_rules.size());
+  CHECK_LT(index, child_rules.size());
+  child_rules.EraseAt(index);
+  if (child_rule_cssom_wrappers[index]) {
+    child_rule_cssom_wrappers[index]->SetParentRule(nullptr);
+  }
+  child_rule_cssom_wrappers.EraseAt(index);
+}
+
 CSSGroupingRule::CSSGroupingRule(StyleRuleGroup* group_rule,
                                  CSSStyleSheet* parent)
     : CSSRule(parent),
@@ -228,6 +256,20 @@ void CSSGroupingRule::deleteRule(unsigned index,
     child_rule_cssom_wrappers_[index]->SetParentRule(nullptr);
   }
   child_rule_cssom_wrappers_.EraseAt(index);
+}
+
+void CSSGroupingRule::QuietlyInsertRule(
+    const ExecutionContext* execution_context,
+    const String& rule,
+    unsigned index) {
+  ParseAndQuietlyInsertRule(execution_context, rule, index,
+                            /*parent_rule=*/*this, group_rule_->ChildRules(),
+                            child_rule_cssom_wrappers_);
+}
+
+void CSSGroupingRule::QuietlyDeleteRule(unsigned index) {
+  blink::QuietlyDeleteRule(index, group_rule_->ChildRules(),
+                           child_rule_cssom_wrappers_);
 }
 
 void CSSGroupingRule::AppendCSSTextForItems(StringBuilder& result) const {

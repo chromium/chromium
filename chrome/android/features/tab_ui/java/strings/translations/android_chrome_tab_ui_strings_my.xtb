@@ -77,7 +77,6 @@
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{တဘ် <ph name="ONE_CHANGED" /> ခု ပြောင်းသွားသည်။ <ph name="ANY_CLOSED" /> ခု ပိတ်လိုက်သည်}other{တဘ် <ph name="MANY_CHANGED" /> ခု ပြောင်းသွားသည်။ <ph name="ANY_CLOSED" /> ခု ပိတ်လိုက်သည်}}</translation>
 <translation id="4371591986692297148">သုံးမနေပါ</translation>
 <translation id="4460014764210899310">အုပ်စု ဖွဲ့မထားပါ</translation>
-<translation id="4590027107044272416">ဤနေရာတွင် တဘ်အသစ် ဖွင့်နိုင်ပါပြီ</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{မသုံးသောတဘ် ၁ ခုကို ပိတ်မလား။}other{မသုံးသောတဘ် <ph name="TAB_COUNT_MANY" /> ခုကို ပိတ်မလား။}}</translation>
 <translation id="4686942373615810936">ယခုလေးတင် ပြုလုပ်ထားသည်</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{၁ ရက် ကြာပြီးနောက် ပိတ်ပါ}other{<ph name="DAY_COUNT_MANY" /> ရက် ကြာပြီးနောက် ပိတ်ပါ}}</translation>
@@ -98,7 +97,9 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{တဘ် <ph name="ONE_ADDED" /> ခု ထည့်လိုက်သည်}other{တဘ် <ph name="MANY_ADDED" /> ခု ထည့်လိုက်သည်}}</translation>
 <translation id="5161254044473106830">ခေါင်းစီးလိုအပ်သည်</translation>
 <translation id="5339733443032484186">သင့်နောက်ဆုံးတဘ်</translation>
+<translation id="5380159289133845234">မိတ္တူပွားတဘ်များ သိမ်းဆည်းခြင်း</translation>
 <translation id="5400836586163650660">မီးခိုး</translation>
+<translation id="5446043142172831860">တဘ်ဖယ်ရှားပြီး အဖွဲ့မှထွက်ရန်</translation>
 <translation id="5490235265819901748">တဘ်အုပ်စုကို ချဲ့ထားသည်</translation>
 <translation id="5494920125229734069">အားလုံး ရွေးရန်</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခု၊ <ph name="COLOR_NAME" /> ရောင်ဖြင့် တဘ်အုပ်စုကို ပိတ်ပါ။}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခု၊ <ph name="COLOR_NAME" /> ရောင်ဖြင့် တဘ်အုပ်စုကို ပိတ်ပါ။}}</translation>
@@ -117,6 +118,7 @@
 <translation id="6051432659151380973">သင့်တဘ်အုပ်စုများကို အလိုအလျောက်သိမ်းသည်</translation>
 <translation id="6054741997831917303">ဤပစ္စည်းမှာ မကြာမီက <ph name="PREVIOUS_PRICE" /> မှ <ph name="NEW_PRICE" /> သို့ ဈေးကျသွားသည်</translation>
 <translation id="6082313992897617440">သင်သည် <ph name="GROUP_NAME" /> တဘ်အုပ်စုသုံးခွင့်ကို ချက်ချင်းဆုံးရှုံးမည်</translation>
+<translation id="6109251075362363230">နောက်ဆုံးသုံးထားသည့် မိတ္တူမှလွဲ၍ မိတ္တူပွားတဘ်အားလုံးကိုလည်း ယခုသိမ်းဆည်းပါမည်။</translation>
 <translation id="6193448654517602979">တဘ်ရွေးရန်</translation>
 <translation id="6228793724645064692">(ဆိုင်အဆင့်)</translation>
 <translation id="6271513594716432922">အသုံးမပြုသောတဘ်အားလုံး ပိတ်ရန်</translation>

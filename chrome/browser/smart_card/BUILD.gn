@@ -81,6 +81,7 @@ if (is_chromeos) {
       ":smart_card",
       "//chrome/browser",
       "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/policy:test_support",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
       "//chrome/test:test_support_ui",

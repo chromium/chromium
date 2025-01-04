@@ -26,7 +26,8 @@ NavigationCapturingRedirectionInfo::Disabled() {
       /*source_browser_app_id=*/std::nullopt,
       /* source_tab_app_id= */ std::nullopt,
       NavigationHandlingInitialResult::kNotHandledByNavigationHandling,
-      /*first_navigation_app_id=*/std::nullopt, WindowOpenDisposition::UNKNOWN);
+      /*first_navigation_app_id=*/std::nullopt, WindowOpenDisposition::UNKNOWN,
+      /*navigation_params_browser=*/nullptr);
 }
 
 // static
@@ -38,7 +39,8 @@ NavigationCapturingRedirectionInfo::AuxiliaryContext(
   return NavigationCapturingRedirectionInfo(
       source_browser_app_id, source_tab_app_id,
       NavigationHandlingInitialResult::kAuxContext,
-      /*first_navigation_app_id=*/std::nullopt, disposition);
+      /*first_navigation_app_id=*/std::nullopt, disposition,
+      /*navigation_params_browser=*/nullptr);
 }
 
 // Created for user-modified or capturable navigations that don't have an
@@ -48,11 +50,13 @@ NavigationCapturingRedirectionInfo
 NavigationCapturingRedirectionInfo::NoInitialActionRedirectionHandlingEligible(
     const std::optional<webapps::AppId>& source_browser_app_id,
     const std::optional<webapps::AppId>& source_tab_app_id,
-    WindowOpenDisposition disposition) {
+    WindowOpenDisposition disposition,
+    Browser* navigation_params_browser) {
   return NavigationCapturingRedirectionInfo(
       source_browser_app_id, source_tab_app_id,
       NavigationHandlingInitialResult::kBrowserTab,
-      /*first_navigation_app_id=*/std::nullopt, disposition);
+      /*first_navigation_app_id=*/std::nullopt, disposition,
+      navigation_params_browser);
 }
 
 // static
@@ -62,13 +66,14 @@ NavigationCapturingRedirectionInfo::ForcedNewContext(
     const std::optional<webapps::AppId>& source_tab_app_id,
     const webapps::AppId& capturing_app_id,
     blink::mojom::DisplayMode capturing_display_mode,
-    WindowOpenDisposition disposition) {
+    WindowOpenDisposition disposition,
+    Browser* navigation_params_browser) {
   return NavigationCapturingRedirectionInfo(
       source_browser_app_id, source_tab_app_id,
       capturing_display_mode == blink::mojom::DisplayMode::kBrowser
           ? NavigationHandlingInitialResult::kForcedNewAppContextBrowserTab
           : NavigationHandlingInitialResult::kForcedNewAppContextAppWindow,
-      capturing_app_id, disposition);
+      capturing_app_id, disposition, navigation_params_browser);
 }
 
 // static
@@ -78,13 +83,14 @@ NavigationCapturingRedirectionInfo::CapturedNewContext(
     const std::optional<webapps::AppId>& source_tab_app_id,
     const webapps::AppId& capturing_app_id,
     blink::mojom::DisplayMode capturing_display_mode,
-    WindowOpenDisposition disposition) {
+    WindowOpenDisposition disposition,
+    Browser* navigation_params_browser) {
   return NavigationCapturingRedirectionInfo(
       source_browser_app_id, source_tab_app_id,
       capturing_display_mode == blink::mojom::DisplayMode::kBrowser
           ? NavigationHandlingInitialResult::kNavigateCapturedNewBrowserTab
           : NavigationHandlingInitialResult::kNavigateCapturedNewAppWindow,
-      capturing_app_id, disposition);
+      capturing_app_id, disposition, navigation_params_browser);
 }
 
 // static
@@ -93,11 +99,12 @@ NavigationCapturingRedirectionInfo::CapturedNavigateExisting(
     const std::optional<webapps::AppId>& source_browser_app_id,
     const std::optional<webapps::AppId>& source_tab_app_id,
     const webapps::AppId& capturing_app_id,
-    WindowOpenDisposition disposition) {
+    WindowOpenDisposition disposition,
+    Browser* navigation_params_browser) {
   return NavigationCapturingRedirectionInfo(
       source_browser_app_id, source_tab_app_id,
       NavigationHandlingInitialResult::kNavigateCapturingNavigateExisting,
-      capturing_app_id, disposition);
+      capturing_app_id, disposition, navigation_params_browser);
 }
 
 NavigationCapturingRedirectionInfo::~NavigationCapturingRedirectionInfo() =
@@ -126,12 +133,14 @@ NavigationCapturingRedirectionInfo::NavigationCapturingRedirectionInfo(
     const std::optional<webapps::AppId>& source_tab_app_id,
     NavigationHandlingInitialResult initial_nav_handling_result,
     const std::optional<webapps::AppId>& first_navigation_app_id,
-    WindowOpenDisposition disposition)
+    WindowOpenDisposition disposition,
+    Browser* navigation_params_browser)
     : source_browser_app_id_(source_browser_app_id),
       source_tab_app_id_(source_tab_app_id),
       initial_nav_handling_result_(initial_nav_handling_result),
       first_navigation_app_id_(first_navigation_app_id),
-      disposition_(disposition) {}
+      disposition_(disposition),
+      navigation_params_browser_(navigation_params_browser) {}
 
 NavigationCapturingNavigationHandleUserData::
     ~NavigationCapturingNavigationHandleUserData() = default;

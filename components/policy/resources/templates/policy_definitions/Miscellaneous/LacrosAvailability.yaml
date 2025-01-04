@@ -48,6 +48,7 @@ schema:
   - lacros_only
   type: string
 supported_on:
-- chrome_os:92-
+- chrome_os:92-130
 tags: []
 type: string-enum
+deprecated: true

@@ -95,7 +95,7 @@ class PLATFORM_EXPORT XRWebGLDrawingBuffer
 
    private:
     friend class ThreadSafeRefCounted<ColorBuffer>;
-    ~ColorBuffer();
+    ~ColorBuffer() = default;
 
     // The texture that imports the shared image into the DrawingBuffer's
     // context.

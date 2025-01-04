@@ -22,10 +22,9 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
+#include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/obsolete_system/obsolete_system.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
@@ -47,7 +46,6 @@
 #include "chrome/browser/ui/webui/settings/reset_settings_handler.h"
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/version/version_ui.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -59,13 +57,13 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill/core/browser/autofill_experiments.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -76,7 +74,6 @@
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/google/core/common/google_util.h"
 #include "components/history/core/common/pref_names.h"
-#include "components/history_embeddings/history_embeddings_features.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -121,6 +118,7 @@
 #include "ui/base/l10n/time_format.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/webui/webui_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -255,7 +253,7 @@ void AddCommonStrings(content::WebUIDataSource* html_source, Profile* profile) {
       user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
           user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession());
 #else
-                          profile->IsGuestSession());
+      profile->IsGuestSession());
 #endif
 
   html_source->AddBoolean("isChildAccount", profile->IsChild());
@@ -377,6 +375,8 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_AI_SUBPAGE_SUBLABEL_REVIEWERS},
       {"aiSubpageSublabelLoggingManagedDisabled",
        IDS_SETTINGS_AI_SUBPAGE_SUBLABEL_LOGGING_MANAGED_DISABLED},
+      {"aiSubpageFeatureManagedDisabledLabel",
+       IDS_SETTINGS_AI_SUBPAGE_FEATURE_MANAGED_DISABLED_LABEL},
 
       // History search strings.
       {"historySearchSettingLabel", IDS_SETTINGS_HISTORY_SEARCH_SETTING_LABEL},
@@ -396,6 +396,8 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_HISTORY_SEARCH_ANSWERS_WHEN_ON_BULLET_ONE},
       {"historySearchAnswersWhenOnBulletTwo",
        IDS_SETTINGS_HISTORY_SEARCH_ANSWERS_WHEN_ON_BULLET_TWO},
+      {"historySearchWhenOnLogStart",
+       IDS_SETTINGS_HISTORY_SEARCH_WHEN_ON_LOG_START},
       {"historySearchAnswersConsiderBulletOne",
        IDS_SETTINGS_HISTORY_SEARCH_ANSWERS_CONSIDER_BULLET_ONE},
       {"historySearchAnswersConsiderBulletTwo",
@@ -415,8 +417,8 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_SETTING_SUBLABEL_V2},
       {"historySearchWithAnswersWhenOnPageContent",
        IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_WHEN_ON_PAGE_CONTENT},
-      {"historySearchWithAnswersWhenOnLogStart",
-       IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_WHEN_ON_LOG_START},
+      {"historySearchWithAnswersWhenOnRecallInfo",
+       IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_WHEN_ON_RECALL_INFO},
       {"historySearchWithAnswersConsiderDataEncrypted",
        IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_CONSIDER_DATA_ENCRYPTED},
       {"historySearchWithAnswersConsiderOutdated",
@@ -432,6 +434,12 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
       {"aiCompareLearnMoreA11yLabel", IDS_SETTINGS_COMPARE_SETTING_LINK_A11Y},
       {"aiCompareWhenOnProductDetails",
        IDS_SETTINGS_COMPARE_WHEN_ON_PRODUCT_DETAILS},
+      {"aiCompareWhenOnProductSuggest",
+       IDS_SETTINGS_COMPARE_WHEN_ON_PRODUCT_SUGGEST},
+      {"aiCompareWhenOnProductFilter",
+       IDS_SETTINGS_COMPARE_WHEN_ON_PRODUCT_FILTER},
+      {"aiCompareWhenOnProductReviews",
+       IDS_SETTINGS_COMPARE_WHEN_ON_PRODUCT_REVIEWS},
       {"aiCompareConsiderData", IDS_SETTINGS_COMPARE_CONSIDER_DATA},
       {"aiCompareConsiderTablesInAccount",
        IDS_SETTINGS_COMPARE_CONSIDER_TABLES_IN_ACCOUNT},
@@ -453,6 +461,10 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_OFFER_WRITING_HELP_REMOVE_SITE_ARIA_LABEL},
       {"aiComposeSettingLearnMoreA11y", IDS_SETTINGS_COMPOSE_SETTING_LINK_A11Y},
       {"aiComposeWhenOnWritingHelp", IDS_SETTINGS_COMPOSE_WHEN_ON_WRITING_HELP},
+      {"aiComposeWhenOnWritingExamples",
+       IDS_SETTINGS_COMPOSE_WHEN_ON_WRITING_EXAMPLES},
+      {"aiComposeWhenOnWritingReferences",
+       IDS_SETTINGS_COMPOSE_WHEN_ON_WRITING_REFERENCES},
       {"aiComposeComposeConsiderData", IDS_SETTINGS_COMPOSE_CONSIDER_DATA},
 
       // Tab Organization strings.
@@ -464,6 +476,8 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_AUTOTABS_SETTING_LINK_A11Y},
       {"tabOrganizationSettingWhenOnAutoGroups",
        IDS_SETTINGS_TAB_ORGANIZER_WHEN_ON_AUTO_GROUPS},
+      {"tabOrganizationSettingWhenOnImproveFocus",
+       IDS_SETTINGS_TAB_ORGANIZER_WHEN_ON_IMPROVE_FOCUS},
       {"tabOrganizationSettingConsiderData",
        IDS_SETTINGS_TAB_ORGANIZER_CONSIDER_DATA},
 
@@ -574,8 +588,6 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean(
       "showHoverCardImagesOption",
       base::FeatureList::IsEnabled(features::kTabHoverCardImages));
-  html_source->AddBoolean("tabGroupsSaveUIUpdateEnabled",
-                          tab_groups::IsTabGroupsSaveUIUpdateEnabled());
   html_source->AddBoolean("showTabSearchPositionSettings",
                           tabs::CanShowTabSearchPositionSetting());
   html_source->AddBoolean("tabSearchIsRightAlignedAtStartup",
@@ -703,6 +715,33 @@ void AddDownloadsStrings(content::WebUIDataSource* html_source) {
       {"openFileTypesAutomatically",
        IDS_SETTINGS_OPEN_FILE_TYPES_AUTOMATICALLY},
       {"showDownloadsWhenFinished", IDS_SETTINGS_DOWNLOADS_SHOW_WHEN_FINISHED},
+  };
+  html_source->AddLocalizedStrings(kLocalizedStrings);
+}
+
+void AddGlicStrings(content::WebUIDataSource* html_source) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"glicPageTitle", IDS_SETTINGS_GLIC_PAGE_TITLE},
+      {"glicPreferencesSection", IDS_SETTINGS_GLIC_PREFERENCES_SECTION},
+      {"glicDataSection", IDS_SETTINGS_GLIC_DATA_SECTION},
+      {"glicOsWidgetToggle", IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE},
+      {"glicOsWidgetToggleSublabel",
+       IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE_SUBLABEL},
+      {"glicKeyboardShortcut", IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT},
+      {"glicKeyboardShortcutSublabel",
+       IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT_SUBLABEL},
+      {"glicLocationToggle", IDS_SETTINGS_GLIC_DATA_LOCATION_TOGGLE},
+      {"glicLocationToggleSublabel",
+       IDS_SETTINGS_GLIC_DATA_LOCATION_TOGGLE_SUBLABEL},
+      {"glicMicrophoneToggle", IDS_SETTINGS_GLIC_DATA_MICROPHONE_TOGGLE},
+      {"glicMicrophoneToggleSublabel",
+       IDS_SETTINGS_GLIC_DATA_MICROPHONE_TOGGLE_SUBLABEL},
+      {"glicTabAccessToggle", IDS_SETTINGS_GLIC_DATA_TAB_ACCESS_TOGGLE},
+      {"glicTabAccessToggleSublabel",
+       IDS_SETTINGS_GLIC_DATA_TAB_ACCESS_TOGGLE_SUBLABEL},
+      {"glicActivityButton", IDS_SETTINGS_GLIC_DATA_ACTIVITY_BUTTON},
+      {"glicActivityButtonSublabel",
+       IDS_SETTINGS_GLIC_DATA_ACTIVITY_BUTTON_SUBLABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
@@ -1067,10 +1106,7 @@ void AddLanguagesStrings(content::WebUIDataSource* html_source,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   html_source->AddString(
       "osSettingsLanguagesPageUrl",
-      chrome::GetOSSettingsUrl(
-          ash::features::IsOsSettingsRevampWayfindingEnabled()
-              ? chromeos::settings::mojom::kLanguagesSubpagePath
-              : chromeos::settings::mojom::kLanguagesAndInputSectionPath)
+      chrome::GetOSSettingsUrl(chromeos::settings::mojom::kLanguagesSubpagePath)
           .spec());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
@@ -1287,35 +1323,35 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"benefitsTermsTagForCreditCardListEntry",
        IDS_AUTOFILL_SETTINGS_PAGE_BENEFITS_TERMS_TAG_FOR_CREDIT_CARD_LIST_ENTRY},
       {"cardBenefitsLabel", IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_LABEL},
-      {"autofillPredictionImprovementsPageTitle",
+      {"autofillAiPageTitle",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_PAGE_TITLE},
-      {"autofillPredictionImprovementsDescription",
+      {"autofillAiDescription",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DESCRIPTION},
-      {"autofillPredictionImprovementsWhenOnSavedInfo",
+      {"autofillAiWhenOnSavedInfo",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_WHEN_ON_SAVED_INFO},
-      {"autofillPredictionImprovementsUseToFill",
+      {"autofillAiUseToFill",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_WHEN_ON_USE_TO_FILL},
-      {"autofillPredictionImprovementsNewFeature",
+      {"autofillAiNewFeature",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TO_CONSIDER_NEW_FEATURE},
-      {"autofillPredictionImprovementsToConsiderDataUsage",
+      {"autofillAiToConsiderDataUsage",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TO_CONSIDER_DATA_USAGE},
-      {"autofillPredictionImprovementsToConsiderDataStorage",
+      {"autofillAiToConsiderDataStorage",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TO_CONSIDER_STORAGE},
-      {"autofillPredictionImprovementsToConsiderDataImprovement",
+      {"autofillAiToConsiderDataImprovement",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TO_CONSIDER_IMPROVEMENT},
-      {"autofillPredictionImprovementsUserAnnotationsHeader",
+      {"autofillAiUserAnnotationsHeader",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_USER_ANNOTATIONS_HEADER},
-      {"autofillPredictionImprovementsUserAnnotationsNone",
+      {"autofillAiUserAnnotationsNone",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_USER_ANNOTATIONS_NONE},
-      {"autofillPredictionImprovementsDeleteEntryDialogTitle",
+      {"autofillAiDeleteEntryDialogTitle",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ENTRY_DIALOG_TITLE},
-      {"autofillPredictionImprovementsDeleteEntryDialogText",
+      {"autofillAiDeleteEntryDialogText",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ENTRY_DIALOG_TEXT},
-      {"autofillPredictionImprovementsDeleteAllEntriesButtonLabel",
+      {"autofillAiDeleteAllEntriesButtonLabel",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ALL_ENTRIES_BUTTON_LABEL},
-      {"autofillPredictionImprovementsDeleteAllEntriesDialogTitle",
+      {"autofillAiDeleteAllEntriesDialogTitle",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ALL_ENTRIES_DIALOG_TITLE},
-      {"autofillPredictionImprovementsDeleteAllEntriesDialogText",
+      {"autofillAiDeleteAllEntriesDialogText",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ALL_ENTRIES_DIALOG_TEXT},
   };
 
@@ -1331,8 +1367,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                          autofill::payments::GetManageInstrumentsUrl().spec());
   html_source->AddString("addressesAndPaymentMethodsLearnMoreURL",
                          chrome::kAddressesAndPaymentMethodsLearnMoreURL);
-  html_source->AddString("autofillPredictionImprovementsLearnMoreURL",
-                         chrome::kAutofillPredictionImprovementsLearnMoreURL);
+  html_source->AddString("autofillAiLearnMoreURL",
+                         chrome::kAutofillAiLearnMoreURL);
   html_source->AddString(
       "signedOutUserLabel",
       l10n_util::GetStringFUTF16(IDS_SETTINGS_SIGNED_OUT_USER_LABEL,
@@ -1350,21 +1386,21 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
 #else   // !BUILDFLAG(IS_CHROMEOS_ASH)
   is_guest_mode = profile->IsOffTheRecord();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  autofill::PersonalDataManager& personal_data =
-      *autofill::PersonalDataManagerFactory::GetForBrowserContext(profile);
+  autofill::PaymentsDataManager& payments_data =
+      autofill::PersonalDataManagerFactory::GetForBrowserContext(profile)
+          ->payments_data_manager();
   html_source->AddBoolean(
       "migrationEnabled",
       !is_guest_mode &&
           autofill::IsCreditCardMigrationEnabled(
-              personal_data, SyncServiceFactory::GetForProfile(profile),
+              payments_data, SyncServiceFactory::GetForProfile(profile),
               *profile->GetPrefs(),
               /*is_test_mode=*/false,
               /*log_manager=*/nullptr));
 
   html_source->AddBoolean("showIbansSettings",
                           autofill::ShouldShowIbanOnSettingsPage(
-                              personal_data.payments_data_manager()
-                                  .GetCountryCodeForExperimentGroup(),
+                              payments_data.GetCountryCodeForExperimentGroup(),
                               profile->GetPrefs()));
 
   html_source->AddBoolean("deviceAuthAvailable",
@@ -1423,18 +1459,18 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       plus_addresses::features::kPlusAddressManagementUrl.Get());
 
   html_source->AddBoolean(
-      "autofillPredictionImprovementsEnabled",
+      "autofillAiEnabled",
       autofill_ai::IsAutofillAiSupported(profile->GetPrefs()));
 
   html_source->AddBoolean(
-      "autofillPredictionBootstrappingEnabled",
+      "autofillAiBootstrappingEnabled",
       base::FeatureList::IsEnabled(autofill_ai::kAutofillAiBootstrapping));
 
   html_source->AddString(
-      "autofillPredictionImprovementsToggleSubLabel",
+      "autofillAiToggleSubLabel",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TOGGLE_SUB_LABEL,
-          chrome::kAutofillPredictionImprovementsLearnMoreURL));
+          chrome::kAutofillAiLearnMoreURL));
 }
 
 void AddSignOutDialogStrings(content::WebUIDataSource* html_source,
@@ -1518,6 +1554,12 @@ void AddSyncAccountControlStrings(content::WebUIDataSource* html_source) {
       {"syncAdvancedPageTitle", IDS_SETTINGS_NEW_SYNC_ADVANCED_PAGE_TITLE},
       {"verifyAccount", IDS_SETTINGS_PEOPLE_VERIFY_ACCOUNT_BUTTON},
       {"signOutOfChrome", IDS_PROFILE_MENU_SIGN_OUT},
+      {"accountAwareSigninButtonLabel",
+       IDS_SETTINGS_ACCOUNT_AWARE_SIGNIN_BUTTON_LABEL},
+      {"accountAwareRowTitle",
+       IDS_SETTINGS_PEOPLE_ACCOUNT_AWARE_SIGNIN_ACCOUNT_ROW_TITLE},
+      {"accountAwareRowSubtitle",
+       IDS_SETTINGS_PEOPLE_ACCOUNT_AWARE_SIGNIN_ACCOUNT_ROW_SUBTITLE},
   };
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
@@ -1545,21 +1587,6 @@ void AddPersonalizationOptionsStrings(content::WebUIDataSource* html_source) {
       {"priceEmailNotificationsPref", IDS_PRICE_TRACKING_SETTINGS_TITLE},
       {"priceEmailNotificationsPrefDesc",
        IDS_PRICE_TRACKING_SETTINGS_EMAIL_DESCRIPTION},
-      {"pageContentLinkRowSublabelOn",
-       IDS_SETTINGS_PAGE_CONTENT_LINK_ROW_SUBLABEL_ON},
-      {"pageContentLinkRowSublabelOff",
-       IDS_SETTINGS_PAGE_CONTENT_LINK_ROW_SUBLABEL_OFF},
-      {"pageContentPageTitle", IDS_SETTINGS_PAGE_CONTENT_PAGE_TITLE},
-      {"pageContentToggleLabel", IDS_SETTINGS_PAGE_CONTENT_TOGGLE_LABEL},
-      {"pageContentToggleSublabel", IDS_SETTINGS_PAGE_CONTENT_TOGGLE_SUBLABEL},
-      {"pageContentWhenOnBulletOne",
-       IDS_SETTINGS_PAGE_CONTENT_WHEN_ON_BULLET_ONE},
-      {"pageContentThingsToConsiderBulletOne",
-       IDS_SETTINGS_PAGE_CONTENT_THINGS_TO_CONSIDER_BULLET_ONE},
-      {"pageContentThingsToConsiderBulletTwo",
-       IDS_SETTINGS_PAGE_CONTENT_THINGS_TO_CONSIDER_BULLET_TWO},
-      {"pageContentThingsToConsiderBulletThree",
-       IDS_SETTINGS_PAGE_CONTENT_THINGS_TO_CONSIDER_BULLET_THREE},
       {"chromeSigninChoiceTitle",
        IDS_SETTINGS_SIGNIN_CHROME_SIGNIN_OPTIONS_TITLE},
       {"chromeSigninChoiceDescription",
@@ -1747,14 +1774,9 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
           : IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT_SECONDARY_WITH_ACCOUNT);
 #endif
 
-  OptimizationGuideKeyedService* optimization_guide_keyed_service =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   html_source->AddBoolean(
       "historyEmbeddingsAnswersFeatureEnabled",
-      history_embeddings::IsHistoryEmbeddingsAnswersEnabled() &&
-          optimization_guide_keyed_service &&
-          optimization_guide_keyed_service
-              ->ShouldModelExecutionBeAllowedForUser());
+      history_embeddings::IsHistoryEmbeddingsAnswersSettingVisible(profile));
 
   // Add Google Account URL and include UTM parameter to signal the source of
   // the navigation.
@@ -1784,10 +1806,7 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
                           ash::IsAccountManagerAvailable(profile));
   html_source->AddString(
       "osSettingsAccountsPageUrl",
-      chrome::GetOSSettingsUrl(
-          ash::features::IsOsSettingsRevampWayfindingEnabled()
-              ? chromeos::settings::mojom::kPeopleSectionPath
-              : chromeos::settings::mojom::kMyAccountsSubpagePath)
+      chrome::GetOSSettingsUrl(chromeos::settings::mojom::kPeopleSectionPath)
           .spec());
 #endif
 
@@ -3714,6 +3733,7 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
   AddCommonStrings(html_source, profile);
   AddDownloadsStrings(html_source);
   AddExtensionsStrings(html_source);
+  AddGlicStrings(html_source);
   AddPerformanceStrings(html_source);
   AddLanguagesStrings(html_source, profile);
   AddOnStartupStrings(html_source);

@@ -55,6 +55,9 @@ class ProfileManagerIOS {
   // profile with LoadProfileAsync() or LoadProfile() will also fail.
   virtual std::string ReserveNewProfileName() = 0;
 
+  // Returns whether a profile with `name` can be deleted.
+  virtual bool CanDeleteProfileWithName(std::string_view name) const = 0;
+
   // Asynchronously loads a Profile known by `name` if it exists. The
   // `created_callback` will be called with the Profile when it has been created
   // (but not yet initialised) and `initialised_callback` will be called once
@@ -103,6 +106,11 @@ class ProfileManagerIOS {
   // Unloads all loaded Profile objects. Meant to be called right before the
   // ProfileManagerIOS itself is destroyed.
   virtual void UnloadAllProfiles() = 0;
+
+  // Marks the given Profile for deletion. This must not be called if the
+  // profile can not be deleted (for example, personal profile cannot be
+  // deleted). Observers will be notified only if the profile is loaded.
+  virtual void MarkProfileForDeletion(std::string_view name) = 0;
 
   // Returns the ProfileAttributesStorageIOS associated with this manager.
   virtual ProfileAttributesStorageIOS* GetProfileAttributesStorage() = 0;

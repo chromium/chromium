@@ -23,14 +23,23 @@ class MockTabInterface : public testing::NiceMock<TabInterface> {
               RegisterWillDiscardContents,
               (WillDiscardContentsCallback),
               (override));
-  MOCK_METHOD(bool, IsInForeground, (), (const, override));
+  MOCK_METHOD(bool, IsActivated, (), (const, override));
   MOCK_METHOD(base::CallbackListSubscription,
-              RegisterDidEnterForeground,
-              (DidEnterForegroundCallback),
+              RegisterDidActivate,
+              (DidActivateCallback),
               (override));
   MOCK_METHOD(base::CallbackListSubscription,
-              RegisterWillEnterBackground,
-              (WillEnterBackgroundCallback),
+              RegisterWillDeactivate,
+              (WillDeactivateCallback),
+              (override));
+  MOCK_METHOD(bool, IsVisible, (), (const, override));
+  MOCK_METHOD(base::CallbackListSubscription,
+              RegisterDidBecomeVisible,
+              (DidBecomeVisibleCallback),
+              (override));
+  MOCK_METHOD(base::CallbackListSubscription,
+              RegisterWillBecomeHidden,
+              (WillBecomeHiddenCallback),
               (override));
   MOCK_METHOD(base::CallbackListSubscription,
               RegisterWillDetach,
@@ -50,6 +59,10 @@ class MockTabInterface : public testing::NiceMock<TabInterface> {
               (override));
   MOCK_METHOD(bool, CanShowModalUI, (), (const, override));
   MOCK_METHOD(std::unique_ptr<ScopedTabModalUI>, ShowModalUI, (), (override));
+  MOCK_METHOD(base::CallbackListSubscription,
+              RegisterModalUIChanged,
+              (TabInterfaceCallback),
+              (override));
   MOCK_METHOD(bool, IsInNormalWindow, (), (const override));
   MOCK_METHOD(BrowserWindowInterface*,
               GetBrowserWindowInterface,
@@ -61,6 +74,14 @@ class MockTabInterface : public testing::NiceMock<TabInterface> {
               GetGroup,
               (),
               (const override));
+  MOCK_METHOD(bool,
+              ShouldAcceptMouseEventsWhileWindowInactive,
+              (),
+              (const override));
+  MOCK_METHOD(std::unique_ptr<ScopedAcceptMouseEventsWhileWindowInactive>,
+              AcceptMouseEventsWhileWindowInactive,
+              (),
+              (override));
   MOCK_METHOD(uint32_t, GetTabHandle, (), (const override));
 };
 

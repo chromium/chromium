@@ -163,7 +163,7 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
   // If an interface doesn't have PaintTimingMixin, these functions
   // would not be exposed by WebIDL.
   DOMHighResTimeStamp paintTime() const;
-  DOMHighResTimeStamp presentationTime() const;
+  std::optional<DOMHighResTimeStamp> presentationTime() const;
 
   void Trace(Visitor*) const override;
 

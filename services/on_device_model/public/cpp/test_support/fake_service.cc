@@ -130,6 +130,12 @@ void FakeOnDeviceSession::ExecuteImpl(
     mojom::InputOptionsPtr input,
     mojo::PendingRemote<mojom::StreamingResponder> response) {
   mojo::Remote<mojom::StreamingResponder> remote(std::move(response));
+  if (model_->performance_hint() ==
+      ml::ModelPerformanceHint::kFastestInference) {
+    auto chunk = mojom::ResponseChunk::New();
+    chunk->text = "Fastest inference\n";
+    remote->OnResponse(std::move(chunk));
+  }
   if (model_->data().base_weight != "0") {
     auto chunk = mojom::ResponseChunk::New();
     chunk->text = "Base model: " + model_->data().base_weight + "\n";
@@ -184,8 +190,11 @@ void FakeOnDeviceSession::AddContextInternal(
 }
 
 FakeOnDeviceModel::FakeOnDeviceModel(FakeOnDeviceServiceSettings* settings,
-                                     FakeOnDeviceModel::Data&& data)
-    : settings_(settings), data_(std::move(data)) {}
+                                     FakeOnDeviceModel::Data&& data,
+                                     ml::ModelPerformanceHint performance_hint)
+    : settings_(settings),
+      data_(std::move(data)),
+      performance_hint_(performance_hint) {}
 
 FakeOnDeviceModel::~FakeOnDeviceModel() = default;
 
@@ -198,9 +207,6 @@ void FakeOnDeviceModel::StartSession(
 void FakeOnDeviceModel::AddSession(
     mojo::PendingReceiver<mojom::Session> receiver,
     std::unique_ptr<FakeOnDeviceSession> session) {
-  // Mirror what the real OnDeviceModel does, which is only allow a single
-  // Session.
-  receivers_.Clear();
   receivers_.Add(std::move(session), std::move(receiver));
 }
 
@@ -221,8 +227,8 @@ void FakeOnDeviceModel::LoadAdaptation(
     LoadAdaptationCallback callback) {
   Data data = data_;
   data.adaptation_model_weight = ReadFile(params->assets.weights);
-  auto test_model =
-      std::make_unique<FakeOnDeviceModel>(settings_, std::move(data));
+  auto test_model = std::make_unique<FakeOnDeviceModel>(
+      settings_, std::move(data), ml::ModelPerformanceHint::kHighestQuality);
   model_adaptation_receivers_.Add(std::move(test_model), std::move(model));
   std::move(callback).Run(mojom::LoadModelResult::kSuccess);
 }
@@ -292,8 +298,8 @@ void FakeOnDeviceModelService::LoadModel(
   }
   FakeOnDeviceModel::Data data;
   data.base_weight = ReadFile(params->assets.weights);
-  auto test_model =
-      std::make_unique<FakeOnDeviceModel>(settings_, std::move(data));
+  auto test_model = std::make_unique<FakeOnDeviceModel>(
+      settings_, std::move(data), params->performance_hint);
   model_receivers_.Add(std::move(test_model), std::move(model));
   std::move(callback).Run(mojom::LoadModelResult::kSuccess);
 }

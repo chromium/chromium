@@ -19,8 +19,6 @@ class CORE_EXPORT ContentCaptureTaskHistogramReporter
     : public RefCounted<ContentCaptureTaskHistogramReporter> {
  public:
   // Visible for testing.
-  static constexpr char kCaptureContentDelayTime[] =
-      "ContentCapture.CaptureContentDelayTime";
   static constexpr char kCaptureContentTime[] =
       "ContentCapture.CaptureContentTime2";
   static constexpr char kSendContentTime[] = "ContentCapture.SendContentTime";
@@ -33,7 +31,6 @@ class CORE_EXPORT ContentCaptureTaskHistogramReporter
   ContentCaptureTaskHistogramReporter();
   ~ContentCaptureTaskHistogramReporter();
 
-  void OnContentChanged();
   void OnTaskScheduled(bool record_task_delay);
   // Invoked on every task starts.
   void OnTaskRun();
@@ -52,12 +49,6 @@ class CORE_EXPORT ContentCaptureTaskHistogramReporter
  private:
   void MayRecordTaskRunsPerCapture();
 
-  // The time of first content change since the last content captured.
-  std::optional<base::TimeTicks> content_change_time_;
-  // The copy of |content_change_time| after the content has been captured; we
-  // need to record the time the content has been sent, |content_change_time_|
-  // shall be released for the next content change.
-  std::optional<base::TimeTicks> captured_content_change_time_;
   // The time to start capturing content.
   base::TimeTicks capture_content_start_time_;
   // The time to start sending content.

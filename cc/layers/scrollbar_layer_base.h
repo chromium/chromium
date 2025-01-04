@@ -29,10 +29,6 @@ class CC_EXPORT ScrollbarLayerBase : public Layer {
   }
   bool SetHasFindInPageTickmarks(bool has_find_in_page_tickmarks);
 
-  void PushPropertiesTo(LayerImpl* layer,
-                        const CommitState& commit_state,
-                        const ThreadUnsafeCommitState& unsafe_state) override;
-
   enum ScrollbarLayerType {
     kSolidColor,
     kPainted,
@@ -44,6 +40,12 @@ class CC_EXPORT ScrollbarLayerBase : public Layer {
   ScrollbarLayerBase(ScrollbarOrientation orientation,
                      bool is_left_side_vertical_scrollbar);
   ~ScrollbarLayerBase() override;
+
+  void PushDirtyPropertiesTo(
+      LayerImpl* layer,
+      uint8_t dirty_flag,
+      const CommitState& commit_state,
+      const ThreadUnsafeCommitState& unsafe_state) override;
 
  private:
   bool IsScrollbarLayerForTesting() const final;

@@ -56,6 +56,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -121,7 +122,7 @@ class LoginOnlineCryptohomeError : public LoginManagerTest {
  protected:
   LoginManagerMixin::TestUserInfo reauth_user_{
       AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
-                                     FakeGaiaMixin::kFakeUserGaiaId),
+                                     GaiaId(FakeGaiaMixin::kFakeUserGaiaId)),
       test::UserAuthConfig::Create(test::kDefaultAuthSetup).RequireReauth()};
   LoginManagerMixin login_manager_{&mixin_host_, {reauth_user_}};
   FakeGaiaMixin fake_gaia_{&mixin_host_};

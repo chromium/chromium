@@ -14,14 +14,18 @@ import android.provider.MediaStore;
 import android.system.Os;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.task.AsyncTask;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,6 +34,7 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** This class provides the path related methods for the native library. */
+@NullUnmarked // Too hard to annotated this class.
 public abstract class PathUtils {
     private static final String TAG = "PathUtils";
     private static final String THUMBNAIL_DIRECTORY_NAME = "textures";
@@ -39,15 +44,15 @@ public abstract class PathUtils {
     private static final int CACHE_DIRECTORY = 2;
     private static final int NUM_DIRECTORIES = 3;
     private static final AtomicBoolean sInitializationStarted = new AtomicBoolean();
-    private static FutureTask<String[]> sDirPathFetchTask;
+    private static @Nullable FutureTask<String[]> sDirPathFetchTask;
 
     // If the FutureTask started in setPrivateDataDirectorySuffix() fails to complete by the time we
     // need the values, we will need the suffix so that we can restart the task synchronously on
     // the UI thread.
-    private static String sDataDirectorySuffix;
-    private static String sCacheSubDirectory;
-    private static String sDataDirectoryBasePath;
-    private static String sCacheDirectoryBasePath;
+    private static @Nullable String sDataDirectorySuffix;
+    private static @Nullable String sCacheSubDirectory;
+    private static @Nullable String sDataDirectoryBasePath;
+    private static @Nullable String sCacheDirectoryBasePath;
 
     // Prevent instantiation.
     private PathUtils() {}
@@ -69,6 +74,7 @@ public abstract class PathUtils {
      * above to guarantee thread-safety as part of the initialization-on-demand holder idiom.
      */
     private static String[] getOrComputeDirectoryPaths() {
+        assert sDirPathFetchTask != null : "setDataDirectorySuffix must be called first.";
         if (!sDirPathFetchTask.isDone()) {
             try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
                 // No-op if already ran.
@@ -98,8 +104,10 @@ public abstract class PathUtils {
         File dataDir = context.getDataDir();
         File externalDir = ContextUtils.getApplicationContext().getExternalFilesDir(null);
         try {
-            return (file.toPath().toRealPath().startsWith(dataDir.toPath().toRealPath())
-                    || file.toPath().toRealPath().startsWith(externalDir.toPath().toRealPath()));
+            Path fileRealPath = file.toPath().toRealPath();
+            return (fileRealPath.startsWith(dataDir.toPath().toRealPath())
+                    || (externalDir != null
+                            && fileRealPath.startsWith(externalDir.toPath().toRealPath())));
         } catch (Exception e) {
             return false;
         }
@@ -113,6 +121,7 @@ public abstract class PathUtils {
      *
      * @see Context#getDir(String, int)
      */
+    @RequiresNonNull("sDataDirectorySuffix")
     private static String[] setPrivateDirectoryPathInternal() {
         String[] paths = new String[NUM_DIRECTORIES];
         File dataDir = null;
@@ -170,7 +179,10 @@ public abstract class PathUtils {
      * @see Context#getDir(String, int)
      */
     public static void setPrivateDirectoryPath(
-            String dataBasePath, String cacheBasePath, String dataDirSuffix, String cacheSubDir) {
+            @Nullable String dataBasePath,
+            @Nullable String cacheBasePath,
+            String dataDirSuffix,
+            @Nullable String cacheSubDir) {
         // This method should only be called once, but many tests end up calling it multiple times,
         // so adding a guard here.
         if (!sInitializationStarted.getAndSet(true)) {
@@ -210,7 +222,7 @@ public abstract class PathUtils {
      * @param cacheSubDir The subdirectory in the cache directory to use, if non-null.
      * @see Context#getDir(String, int)
      */
-    public static void setPrivateDataDirectorySuffix(String suffix, String cacheSubDir) {
+    public static void setPrivateDataDirectorySuffix(String suffix, @Nullable String cacheSubDir) {
         setPrivateDirectoryPath(null, null, suffix, cacheSubDir);
     }
 
@@ -231,8 +243,7 @@ public abstract class PathUtils {
      * @return the private directory that is used to store application data.
      */
     @CalledByNative
-    public static String getDataDirectory() {
-        assert sDirPathFetchTask != null : "setDataDirectorySuffix must be called first.";
+    public static @JniType("std::string") String getDataDirectory() {
         return getDirectoryPath(DATA_DIRECTORY);
     }
 
@@ -240,16 +251,14 @@ public abstract class PathUtils {
      * @return the cache directory.
      */
     @CalledByNative
-    public static String getCacheDirectory() {
-        assert sDirPathFetchTask != null : "setDataDirectorySuffix must be called first.";
+    public static @JniType("std::string") String getCacheDirectory() {
         return getDirectoryPath(CACHE_DIRECTORY);
     }
 
     // Should not be called from WebView, since it does not support being used in a multiprocess
     // environment.
     @CalledByNative
-    public static String getThumbnailCacheDirectory() {
-        assert sDirPathFetchTask != null : "setDataDirectorySuffix must be called first.";
+    public static @JniType("std::string") String getThumbnailCacheDirectory() {
         return getDirectoryPath(THUMBNAIL_DIRECTORY);
     }
 
@@ -261,7 +270,7 @@ public abstract class PathUtils {
      */
     @SuppressWarnings("unused")
     @CalledByNative
-    public static @NonNull String getDownloadsDirectory() {
+    public static @JniType("std::string") String getDownloadsDirectory() {
         // TODO(crbug.com/41187555): Move calls to getDownloadsDirectory() to background thread.
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -285,7 +294,7 @@ public abstract class PathUtils {
      */
     @SuppressWarnings("unused")
     @CalledByNative
-    public static @NonNull String[] getAllPrivateDownloadsDirectories() {
+    public static String[] getAllPrivateDownloadsDirectories() {
         List<File> files = new ArrayList<>();
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
             File[] externalDirs =
@@ -304,7 +313,7 @@ public abstract class PathUtils {
      */
     @RequiresApi(Build.VERSION_CODES.R)
     @CalledByNative
-    public static @NonNull String[] getExternalDownloadVolumesNames() {
+    public static String[] getExternalDownloadVolumesNames() {
         ArrayList<File> files = new ArrayList<>();
         Set<String> volumes =
                 MediaStore.getExternalVolumeNames(ContextUtils.getApplicationContext());
@@ -336,7 +345,7 @@ public abstract class PathUtils {
         return toAbsolutePathStrings(files);
     }
 
-    private static @NonNull String[] toAbsolutePathStrings(@NonNull List<File> files) {
+    private static String[] toAbsolutePathStrings(List<File> files) {
         ArrayList<String> absolutePaths = new ArrayList<String>();
         for (File file : files) {
             if (file == null || TextUtils.isEmpty(file.getAbsolutePath())) continue;
@@ -351,7 +360,7 @@ public abstract class PathUtils {
      */
     @SuppressWarnings("unused")
     @CalledByNative
-    private static String getNativeLibraryDirectory() {
+    private static @JniType("std::string") String getNativeLibraryDirectory() {
         ApplicationInfo ai = ContextUtils.getApplicationContext().getApplicationInfo();
         if ((ai.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0
                 || (ai.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
@@ -366,7 +375,7 @@ public abstract class PathUtils {
      */
     @SuppressWarnings("unused")
     @CalledByNative
-    public static String getExternalStorageDirectory() {
+    public static @JniType("std::string") String getExternalStorageDirectory() {
         return Environment.getExternalStorageDirectory().getAbsolutePath();
     }
 }

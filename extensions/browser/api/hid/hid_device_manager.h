@@ -135,6 +135,10 @@ class HidDeviceManager : public BrowserContextKeyedAPI,
   base::WeakPtrFactory<HidDeviceManager> weak_factory_{this};
 };
 
+template <>
+void BrowserContextKeyedAPIFactory<
+    HidDeviceManager>::DeclareFactoryDependencies();
+
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_API_HID_HID_DEVICE_MANAGER_H_

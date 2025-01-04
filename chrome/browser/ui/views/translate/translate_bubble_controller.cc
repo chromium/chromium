@@ -56,8 +56,9 @@ views::Widget* TranslateBubbleController::ShowTranslateBubble(
     LocationBarBubbleDelegateView::DisplayReason reason) {
   // If the Partial Translate bubble is already being shown, close it before
   // showing the full translate bubble.
-  if (partial_translate_bubble_view_)
+  if (partial_translate_bubble_view_) {
     partial_translate_bubble_view_->CloseBubble();
+  }
 
   if (translate_bubble_view_) {
     // When the user reads the advanced setting panel, the bubble should not be
@@ -96,8 +97,9 @@ views::Widget* TranslateBubbleController::ShowTranslateBubble(
       GetOnTranslateBubbleClosedCallback());
   translate_bubble_view_ = translate_bubble_view.get();
 
-  if (highlighted_button)
+  if (highlighted_button) {
     translate_bubble_view_->SetHighlightedButton(highlighted_button);
+  }
   views::Widget* bubble_widget = views::BubbleDialogDelegateView::CreateBubble(
       std::move(translate_bubble_view));
 
@@ -186,8 +188,9 @@ void TranslateBubbleController::CreatePartialTranslateBubble(
     translate::TranslateErrors error_type) {
   // If the other Translate bubble is already being shown, close it before
   // showing this one.
-  if (translate_bubble_view_)
+  if (translate_bubble_view_) {
     translate_bubble_view_->CloseBubble();
+  }
 
   // Truncate text selection, if needed. Log the length of the text selection
   // before truncating.
@@ -253,8 +256,9 @@ void TranslateBubbleController::CreatePartialTranslateBubble(
           anchor_view, std::move(model), web_contents,
           GetOnPartialTranslateBubbleClosedCallback());
   partial_translate_bubble_view_ = partial_translate_bubble_view.get();
-  if (highlighted_button)
+  if (highlighted_button) {
     partial_translate_bubble_view_->SetHighlightedButton(highlighted_button);
+  }
   views::BubbleDialogDelegateView::CreateBubble(
       std::move(partial_translate_bubble_view));
   partial_translate_bubble_view_->SetViewState(view_state, error_type);

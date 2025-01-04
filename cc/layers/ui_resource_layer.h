@@ -24,10 +24,6 @@ class CC_EXPORT UIResourceLayer : public Layer {
   UIResourceLayer(const UIResourceLayer&) = delete;
   UIResourceLayer& operator=(const UIResourceLayer&) = delete;
 
-  void PushPropertiesTo(LayerImpl* layer,
-                        const CommitState& commit_state,
-                        const ThreadUnsafeCommitState& unsafe_state) override;
-
   void SetLayerTreeHost(LayerTreeHost* host) override;
 
   // Sets the resource. If they don't exist already, the shared UI resource and
@@ -48,6 +44,12 @@ class CC_EXPORT UIResourceLayer : public Layer {
  protected:
   UIResourceLayer();
   ~UIResourceLayer() override;
+
+  void PushDirtyPropertiesTo(
+      LayerImpl* layer,
+      uint8_t dirty_flag,
+      const CommitState& commit_state,
+      const ThreadUnsafeCommitState& unsafe_state) override;
 
   bool HasDrawableContent() const override;
 

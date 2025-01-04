@@ -275,7 +275,7 @@ void FileBrowserHandlerExecutor::SetupPermissionsAndDispatchEvent(
     return;
   }
 
-  int handler_pid = context_info->render_process_host->GetID();
+  int handler_pid = context_info->render_process_host->GetDeprecatedID();
   if (handler_pid <= 0) {
     ExecuteDoneOnUIThread(false, "No app available");
     return;

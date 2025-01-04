@@ -17,7 +17,7 @@ class BookmarkTabHelperObserver;
 namespace bookmarks {
 class BookmarkModel;
 struct BookmarkNodeData;
-}
+}  // namespace bookmarks
 
 namespace content {
 class WebContents;

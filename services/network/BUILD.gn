@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//net/features.gni")
@@ -272,11 +271,6 @@ component("network_service") {
     sources += [
       "cert_verifier_with_trust_anchors.cc",
       "cert_verifier_with_trust_anchors.h",
-    ]
-  }
-
-  if (is_chromeos_ash) {
-    sources += [
       "dhcp_pac_file_fetcher_mojo.cc",
       "dhcp_pac_file_fetcher_mojo.h",
     ]
@@ -309,7 +303,6 @@ component("network_service") {
   deps = [
     "//base",
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
     "//components/content_settings/core/common",
     "//components/cookie_config",
     "//components/domain_reliability",
@@ -523,7 +516,7 @@ source_set("tests") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "cert_verifier_with_trust_anchors_unittest.cc",
       "dhcp_pac_file_fetcher_mojo_unittest.cc",
@@ -543,7 +536,6 @@ source_set("tests") {
     ":network_service",
     ":test_support",
     "//base",
-    "//build:chromeos_buildflags",
     "//components/ip_protection/common:ip_protection_telemetry_uma",
     "//components/ip_protection/common:masked_domain_list_manager",
     "//components/network_session_configurator/browser",
@@ -612,6 +604,8 @@ source_set("test_support") {
     "test/client_security_state_builder.h",
     "test/fake_test_cert_verifier_params_factory.cc",
     "test/fake_test_cert_verifier_params_factory.h",
+    "test/mock_device_bound_session_manager.cc",
+    "test/mock_device_bound_session_manager.h",
     "test/mock_devtools_observer.cc",
     "test/mock_devtools_observer.h",
     "test/mock_url_loader_client.cc",
@@ -661,7 +655,7 @@ source_set("test_support") {
     "test/url_loader_context_for_tests.h",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "mock_mojo_dhcp_wpad_url_client.cc",
       "mock_mojo_dhcp_wpad_url_client.h",
@@ -678,7 +672,6 @@ source_set("test_support") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//components/cbor:cbor",
     "//mojo/public/cpp/bindings",
     "//net",

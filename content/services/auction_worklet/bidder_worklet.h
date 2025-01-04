@@ -221,6 +221,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       const std::optional<url::Origin>& browser_signal_top_level_seller_origin,
       const std::optional<base::TimeDelta> browser_signal_reporting_timeout,
       std::optional<uint32_t> bidding_signals_data_version,
+      const std::optional<std::string>& aggregate_win_signals,
       uint64_t trace_id,
       ReportWinCallback report_win_callback) override;
   void ConnectDevToolsAgent(
@@ -360,6 +361,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     bool browser_signal_made_highest_scoring_other_bid;
     std::optional<double> browser_signal_ad_cost;
     std::optional<uint16_t> browser_signal_modeling_signals;
+    std::optional<std::string> aggregate_win_signals;
     uint8_t browser_signal_join_count;
     uint8_t browser_signal_recency;
     url::Origin browser_signal_seller_origin;
@@ -526,6 +528,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
             browser_signal_top_level_seller_origin,
         const std::optional<base::TimeDelta> browser_signal_reporting_timeout,
         const std::optional<uint32_t>& bidding_signals_data_version,
+        const std::optional<std::string>& aggregate_win_signals,
         uint64_t trace_id,
         ReportWinCallbackInternal callback);
 

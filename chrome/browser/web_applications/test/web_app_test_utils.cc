@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 
@@ -494,9 +490,11 @@ proto::WebAppOsIntegrationState GenerateRandomWebAppOsIntegrationState(
   }
 
   // Randomly fill run_on_os_login.
-  const proto::RunOnOsLoginMode run_on_os_login_modes[3] = {
-      proto::RunOnOsLoginMode::NOT_RUN, proto::RunOnOsLoginMode::WINDOWED,
-      proto::RunOnOsLoginMode::MINIMIZED};
+  const std::array<proto::RunOnOsLoginMode, 3> run_on_os_login_modes = {
+      proto::RunOnOsLoginMode::NOT_RUN,
+      proto::RunOnOsLoginMode::WINDOWED,
+      proto::RunOnOsLoginMode::MINIMIZED,
+  };
   state.mutable_run_on_os_login()->set_run_on_os_login_mode(
       run_on_os_login_modes[random.next_uint(/*bound=*/3)]);
 
@@ -728,10 +726,12 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
                                         proto::InstallState_MAX>());
   app->SetIsFromSyncAndPendingInstallation(random.next_bool());
 
-  const sync_pb::WebAppSpecifics::UserDisplayMode user_display_modes[3] = {
-      sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER,
-      sync_pb::WebAppSpecifics_UserDisplayMode_STANDALONE,
-      sync_pb::WebAppSpecifics_UserDisplayMode_TABBED};
+  const std::array<sync_pb::WebAppSpecifics::UserDisplayMode, 3>
+      user_display_modes = {
+          sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER,
+          sync_pb::WebAppSpecifics_UserDisplayMode_STANDALONE,
+          sync_pb::WebAppSpecifics_UserDisplayMode_TABBED,
+      };
   // Explicitly set a UserDisplayMode for each platform (instead of calling
   // `SetUserDisplayMode` which sets the current platform's value only) so the
   // test expectations are consistent across platforms.
@@ -767,9 +767,12 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
 
   app->SetFirstInstallTime(random.next_time());
 
-  const DisplayMode display_modes[4] = {
-      DisplayMode::kBrowser, DisplayMode::kMinimalUi, DisplayMode::kStandalone,
-      DisplayMode::kFullscreen};
+  const std::array<DisplayMode, 4> display_modes = {
+      DisplayMode::kBrowser,
+      DisplayMode::kMinimalUi,
+      DisplayMode::kStandalone,
+      DisplayMode::kFullscreen,
+  };
   app->SetDisplayMode(display_modes[random.next_uint(4)]);
 
   // Add only unique display modes.
@@ -1106,7 +1109,31 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
   app->SetSupportedLinksOfferDismissCount(random.next_uint());
 
   app->SetIsDiyApp(random.next_bool());
+
+  app->SetWasShortcutApp(random.next_bool());
   return app;
+}
+
+void MaybeEnsureShortcutAppsTreatedAsDiy(WebApp& app) {
+  if (!base::FeatureList::IsEnabled(kMigrateShortcutsToDiy)) {
+    return;
+  }
+  bool is_shortcut = app.scope().is_empty() ||
+                     (app.latest_install_source().has_value() &&
+                      app.latest_install_source() ==
+                          webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
+  if (is_shortcut) {
+    app.SetIsDiyApp(true);
+    // Shortcut apps are separated from other web apps based on the fact that
+    // they have an empty scope. DIY apps do not have that distinction, so
+    // populate the scope from the start_url of the web app.
+    if (!app.scope().is_valid() || app.scope().is_empty()) {
+      CHECK(app.start_url().is_valid());
+      GURL scope(app.start_url().GetWithoutFilename());
+      app.SetScope(scope);
+    }
+    app.SetWasShortcutApp(true);
+  }
 }
 
 void TestAcceptDialogCallback(

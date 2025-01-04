@@ -14,10 +14,8 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
-#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/task_features.h"
 #include "base/task/thread_pool/environment_config.h"
 #include "base/task/thread_pool/worker_thread_observer.h"
 #include "base/threading/hang_watcher.h"
@@ -26,7 +24,10 @@
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 #include "partition_alloc/buildflags.h"
-#include "partition_alloc/partition_alloc_config.h"
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
+#include "partition_alloc/partition_alloc_config.h"  // nogncheck
+#endif
 
 #if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
 #include "base/files/file_descriptor_watcher_posix.h"
@@ -38,7 +39,7 @@
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     PA_CONFIG(THREAD_CACHE_SUPPORTED)
-#include "partition_alloc/thread_cache.h"
+#include "partition_alloc/thread_cache.h"  // nogncheck
 #endif
 
 namespace base::internal {
@@ -96,19 +97,10 @@ void WorkerThread::Delegate::WaitForWork() {
         // PA_CONFIG(THREAD_CACHE_SUPPORTED)
 }
 
-bool WorkerThread::Delegate::IsDelayFirstWorkerSleepEnabled() {
-  static bool state = FeatureList::IsEnabled(kDelayFirstWorkerWake);
-  return state;
-}
-
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     PA_CONFIG(THREAD_CACHE_SUPPORTED)
 TimeDelta WorkerThread::Delegate::GetSleepDurationBeforePurge(TimeTicks now) {
   base::TimeDelta sleep_duration_before_purge = kPurgeThreadCacheIdleDelay;
-
-  if (!IsDelayFirstWorkerSleepEnabled()) {
-    return sleep_duration_before_purge;
-  }
 
   // Use the first time a worker goes to sleep in this process as an
   // approximation of the process creation time.
@@ -171,20 +163,6 @@ bool WorkerThread::Start(
     scoped_refptr<SingleThreadTaskRunner> io_thread_task_runner,
     WorkerThreadObserver* worker_thread_observer) {
   CheckedLock::AssertNoLockHeldOnCurrentThread();
-
-  // Prime kDelayFirstWorkerWake's feature state right away on thread creation
-  // instead of looking it up for the first time later on thread as this avoids
-  // a data race in tests that may ~FeatureList while the first worker thread
-  // is still initializing (the first WorkerThread will be started on the main
-  // thread as part of ThreadPoolImpl::Start() so doing it then avoids this
-  // race), crbug.com/1344573.
-  // Note 1: the feature state is always available at this point as
-  // ThreadPoolInstance::Start() contractually happens-after FeatureList
-  // initialization.
-  // Note 2: This is done on Start instead of in the constructor as construction
-  // happens under a ThreadGroup lock which precludes calling into
-  // FeatureList (as that can also use a lock).
-  delegate()->IsDelayFirstWorkerSleepEnabled();
 
   CheckedAutoLock auto_lock(thread_lock_);
   DCHECK(thread_handle_.is_null());
@@ -312,15 +290,17 @@ bool WorkerThread::ShouldExit() const {
 
 ThreadType WorkerThread::GetDesiredThreadType() const {
   // To avoid shutdown hangs, disallow a type below kNormal during shutdown
-  if (task_tracker_->HasShutdownStarted())
+  if (task_tracker_->HasShutdownStarted()) {
     return ThreadType::kDefault;
+  }
 
   return thread_type_hint_;
 }
 
 void WorkerThread::UpdateThreadType(ThreadType desired_thread_type) {
-  if (desired_thread_type == current_thread_type_)
+  if (desired_thread_type == current_thread_type_) {
     return;
+  }
 
   PlatformThread::SetCurrentThreadType(desired_thread_type);
   current_thread_type_ = desired_thread_type;

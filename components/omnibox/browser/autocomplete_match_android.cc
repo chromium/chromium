@@ -14,8 +14,8 @@
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_action_factory_android.h"
 #include "components/omnibox/browser/clipboard_provider.h"
-#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().

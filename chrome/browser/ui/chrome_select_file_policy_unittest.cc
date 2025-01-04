@@ -31,11 +31,12 @@ namespace {
 
 class FileSelectionUser : public ui::SelectFileDialog::Listener {
  public:
-  FileSelectionUser() : file_selection_initialisation_in_progress(false) {}
+  FileSelectionUser() = default;
 
   ~FileSelectionUser() override {
-    if (select_file_dialog_.get())
+    if (select_file_dialog_.get()) {
       select_file_dialog_->ListenerDestroyed();
+    }
   }
 
   void StartFileSelection() {
@@ -68,7 +69,7 @@ class FileSelectionUser : public ui::SelectFileDialog::Listener {
  private:
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
 
-  bool file_selection_initialisation_in_progress;
+  bool file_selection_initialisation_in_progress = false;
 };
 
 }  // namespace

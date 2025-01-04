@@ -9,13 +9,18 @@ import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
+
 import androidx.annotation.VisibleForTesting;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 /** Wraps android.bluetooth.BluetoothLeScanner. */
+@NullMarked
 public class BluetoothLeScannerWrapper {
     protected final BluetoothLeScanner mScanner;
     private final HashMap<ScanCallbackWrapper, ForwardScanCallbackToWrapper> mCallbacks;
@@ -37,7 +42,7 @@ public class BluetoothLeScannerWrapper {
         mScanner.startScan(filters, settings, callbackForwarder);
     }
 
-    public void stopScan(ScanCallbackWrapper callback) {
+    public void stopScan(@Nullable ScanCallbackWrapper callback) {
         ForwardScanCallbackToWrapper callbackForwarder = mCallbacks.remove(callback);
         mScanner.stopScan(callbackForwarder);
     }
@@ -62,14 +67,14 @@ public class BluetoothLeScannerWrapper {
             ArrayList<ScanResultWrapper> resultsWrapped =
                     new ArrayList<ScanResultWrapper>(results.size());
             for (ScanResult result : results) {
-                resultsWrapped.add(new ScanResultWrapper(result));
+                resultsWrapped.add(new ScanResultWrapperImpl(result));
             }
             mWrapperCallback.onBatchScanResult(resultsWrapped);
         }
 
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
-            mWrapperCallback.onScanResult(callbackType, new ScanResultWrapper(result));
+            mWrapperCallback.onScanResult(callbackType, new ScanResultWrapperImpl(result));
         }
 
         @Override

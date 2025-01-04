@@ -210,6 +210,17 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Succeed"/>
 </enum>
 
+<enum name="KeywordTableHashValidationStatus">
+  <int value="0" label="Hash was validated successfully"/>
+  <int value="1" label="Decryption failed"/>
+  <int value="2" label="Hash format was invalid"/>
+  <int value="3" label="Hash did not match expected value"/>
+  <int value="4"
+      label="Hash was not verified as decryption services were not available"/>
+  <int value="5"
+      label="Hash was not verified as hash verification is disabled"/>
+</enum>
+
 <!-- LINT.IfChange(LaunchOsChoiceScreenTapHandlingStatus) -->
 
 <enum name="LaunchOsChoiceScreenTapHandlingStatus">

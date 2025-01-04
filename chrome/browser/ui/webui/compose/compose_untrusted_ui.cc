@@ -14,7 +14,6 @@
 #include "chrome/browser/compose/chrome_compose_client.h"
 #include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/browser/ui/webui/theme_source.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/grit/compose_resources.h"
 #include "chrome/grit/compose_resources_map.h"
 #include "chrome/grit/generated_resources.h"
@@ -24,8 +23,8 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/resources/grit/webui_resources.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 
 ComposeUIUntrustedConfig::ComposeUIUntrustedConfig()
     : DefaultTopChromeWebUIConfig(content::kChromeUIUntrustedScheme,
@@ -120,9 +119,9 @@ ComposeUntrustedUI::ComposeUntrustedUI(content::WebUI* web_ui)
       "enableOnDeviceDogfoodFooter",
       base::FeatureList::IsEnabled(
           compose::features::kEnableComposeOnDeviceDogfoodFooter));
-  source->AddBoolean(
-    "enableUpfrontInputModes",
-    base::FeatureList::IsEnabled(compose::features::kComposeUpfrontInputModes));
+  source->AddBoolean("enableUpfrontInputModes",
+                     base::FeatureList::IsEnabled(
+                         compose::features::kComposeUpfrontInputModes));
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::StyleSrc,

@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/autofill/payments/autofill_progress_dialog_views.h"
+
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
-#include "chrome/browser/ui/autofill/payments/view_factory.h"
+#include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/views/autofill/payments/autofill_progress_dialog_views.h"
 #include "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
@@ -41,6 +42,9 @@ class AutofillProgressDialogViewsBrowserTest
       return AutofillProgressDialogType::kServerCardUnmaskProgressDialog;
     } else if (GetParam() == "3dsFetchVirtualCard") {
       return AutofillProgressDialogType::k3dsFetchVcnProgressDialog;
+    } else if (GetParam() == "CardInfoRetrievalEnrolledUnmask") {
+      return AutofillProgressDialogType::
+          kCardInfoRetrievalEnrolledUnmaskProgressDialog;
     }
     NOTREACHED();
   }
@@ -59,8 +63,9 @@ class AutofillProgressDialogViewsBrowserTest
 
     base::WeakPtr<AutofillProgressDialogView> dialog_view =
         controller()->autofill_progress_dialog_view();
-    if (!dialog_view)
+    if (!dialog_view) {
       return nullptr;
+    }
 
     return static_cast<AutofillProgressDialogViews*>(dialog_view.get());
   }
@@ -188,6 +193,7 @@ INSTANTIATE_TEST_SUITE_P(,
                          AutofillProgressDialogViewsBrowserTest,
                          testing::Values("VirtualCardUnmask",
                                          "ServerCardUnmask",
-                                         "3dsFetchVirtualCard"));
+                                         "3dsFetchVirtualCard",
+                                         "CardInfoRetrievalEnrolledUnmask"));
 
 }  // namespace autofill

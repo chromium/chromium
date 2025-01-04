@@ -228,8 +228,6 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
   mixer[kColorOmniboxBubbleOutline] = ui::SelectBasedOnDarkInput(
       kColorToolbarBackgroundSubtleEmphasis, gfx::kGoogleGrey100,
       SkColorSetA(gfx::kGoogleGrey900, 0x24));
-  mixer[kColorOmniboxBubbleOutlineExperimentalKeywordMode] = {
-      kColorOmniboxKeywordSelected};
 
   // Results background, chip, button, and focus colors.
   mixer[kColorOmniboxResultsBackground] =

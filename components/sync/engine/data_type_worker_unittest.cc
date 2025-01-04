@@ -3506,13 +3506,13 @@ TEST_F(DataTypeWorkerSharedTabGroupDataTest,
       /*version_offset=*/10,
       ClientTagHash::FromUnhashed(SHARED_TAB_GROUP_DATA, "client_tag_2"),
       specifics,
-      CollaborationMetadata::ForLocalChange(/*changed_by=*/"",
+      CollaborationMetadata::ForLocalChange(/*changed_by=*/GaiaId(),
                                             "inactive_collaboration"));
   SyncEntity entity_active = server()->UpdateFromServer(
       /*version_offset=*/10,
       ClientTagHash::FromUnhashed(SHARED_TAB_GROUP_DATA, "client_tag_1"),
       specifics,
-      CollaborationMetadata::ForLocalChange(/*changed_by=*/"",
+      CollaborationMetadata::ForLocalChange(/*changed_by=*/GaiaId(),
                                             "active_collaboration"));
 
   worker()->ProcessGetUpdatesResponse(
@@ -3587,8 +3587,8 @@ TEST_F(DataTypeWorkerSharedTabGroupDataTest, ShouldPopulateAttributionData) {
           .front()
           ->entity.collaboration_metadata;
   ASSERT_TRUE(collaboration_metadata.has_value());
-  EXPECT_EQ(collaboration_metadata->created_by(), kCreatorUserId);
-  EXPECT_EQ(collaboration_metadata->last_updated_by(), kUpdaterUserId);
+  EXPECT_EQ(collaboration_metadata->created_by(), GaiaId(kCreatorUserId));
+  EXPECT_EQ(collaboration_metadata->last_updated_by(), GaiaId(kUpdaterUserId));
 }
 
 }  // namespace syncer

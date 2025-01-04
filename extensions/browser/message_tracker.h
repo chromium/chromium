@@ -39,7 +39,7 @@ class MessageTracker : public KeyedService {
     kHung = 2,
 
     // The channel was not opened due to one of theses issues. See enums.xml for
-    // more details.
+    // more details (part 1).
     kNoReceivers = 3,
     kOpenChannelToNonEnabledExtension = 4,
     kNotExternallyConnectable = 5,
@@ -56,7 +56,15 @@ class MessageTracker : public KeyedService {
     // The DispatchConnect IPC was not acknowledged because the channel closed.
     kOpenChannelClosedBeforeResponse = 12,
 
-    kMaxValue = kOpenChannelClosedBeforeResponse,
+    // The channel was not opened due to one of theses issues. See enums.xml for
+    // more details (part 2).
+    kOpenChannelSourceEndpointInvalid = 13,
+    kOpenChannelOpenerPortInvalid = 14,
+    kOnOpenChannelSourceInvalid = 15,
+    kOnOpenChannelOpenerPortInvalid = 16,
+    kOnOpenChannelExtensionNotEnabled = 17,
+
+    kMaxValue = kOnOpenChannelExtensionNotEnabled,
   };
 
   class TestObserver {

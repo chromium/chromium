@@ -15,6 +15,7 @@ import androidx.annotation.StringDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
@@ -387,15 +388,15 @@ public class MinidumpUploadServiceImpl extends MinidumpUploadService.Impl {
     /**
      * Attempts to upload the crash report with the given local ID.
      *
-     * Note that this method is asynchronous. All that is guaranteed is that
-     * upload attempts will be enqueued.
+     * <p>Note that this method is asynchronous. All that is guaranteed is that upload attempts will
+     * be enqueued.
      *
-     * This method is safe to call from the UI thread.
+     * <p>This method is safe to call from the UI thread.
      *
      * @param localId The local ID of the crash report.
      */
     @CalledByNative
-    public static void tryUploadCrashDumpWithLocalId(String localId) {
+    public static void tryUploadCrashDumpWithLocalId(@JniType("std::string") String localId) {
         if (localId == null || localId.isEmpty()) {
             Log.w(TAG, "Cannot force crash upload since local crash id is absent.");
             return;

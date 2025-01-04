@@ -182,4 +182,38 @@ DenseSet<FormTypeNameForLogging> GetCreditCardFormTypesForLogging(
   return internal::GetFormTypesForLogging(form, internal::kCreditCardFormTypes);
 }
 
+bool ShouldLogAutofillSuggestionShown(
+    AutofillSuggestionTriggerSource trigger_source) {
+  switch (trigger_source) {
+    case AutofillSuggestionTriggerSource::kUnspecified:
+    case AutofillSuggestionTriggerSource::kFormControlElementClicked:
+    case AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick:
+    case AutofillSuggestionTriggerSource::kContentEditableClicked:
+    case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
+    case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
+    case AutofillSuggestionTriggerSource::kComposeDialogLostFocus:
+    case AutofillSuggestionTriggerSource::kShowCardsFromAccount:
+    case AutofillSuggestionTriggerSource::kPasswordManager:
+    case AutofillSuggestionTriggerSource::kiOS:
+    case AutofillSuggestionTriggerSource::
+        kShowPromptAfterDialogClosedNonManualFallback:
+    case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
+    case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
+    case AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses:
+      return true;
+    case AutofillSuggestionTriggerSource::kTextFieldDidChange:
+    case AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge:
+    case AutofillSuggestionTriggerSource::kAutofillAi:
+    case AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess:
+      return false;
+  }
+}
+
+int GetBucketForAcceptanceMetricsGroupedByFieldType(FieldType field_type,
+                                                    bool suggestion_accepted) {
+  static_assert(FieldType::MAX_VALID_FIELD_TYPE <= (UINT16_MAX >> 4),
+                "Autofill::FieldType value needs more than 12 bits.");
+
+  return (field_type << 2) | suggestion_accepted;
+}
 }  // namespace autofill::autofill_metrics

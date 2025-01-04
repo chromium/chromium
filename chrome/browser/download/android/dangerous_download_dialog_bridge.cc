@@ -56,10 +56,8 @@ void DangerousDownloadDialogBridge::Show(download::DownloadItem* download_item,
 
   Java_DangerousDownloadDialogBridge_showDialog(
       env, java_object_, window_android->GetJavaObject(),
-      base::android::ConvertUTF8ToJavaString(env, download_item->GetGuid()),
-      base::android::ConvertUTF16ToJavaString(
-          env,
-          base::UTF8ToUTF16(download_item->GetFileNameToReportUser().value())),
+      download_item->GetGuid(),
+      base::UTF8ToUTF16(download_item->GetFileNameToReportUser().value()),
       download_item->GetTotalBytes(),
       ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_INFOBAR_WARNING));
 }
@@ -73,22 +71,20 @@ void DangerousDownloadDialogBridge::OnDownloadDestroyed(
   }
 }
 
-void DangerousDownloadDialogBridge::Accepted(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& jdownload_guid) {
+void DangerousDownloadDialogBridge::Accepted(JNIEnv* env,
+                                             std::string& download_guid) {
   download::DownloadItem* download = DownloadDialogUtils::FindAndRemoveDownload(
-      &download_items_, ConvertJavaStringToUTF8(env, jdownload_guid));
+      &download_items_, download_guid);
   if (download) {
     download->RemoveObserver(this);
     download->ValidateDangerousDownload();
   }
 }
 
-void DangerousDownloadDialogBridge::Cancelled(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& jdownload_guid) {
+void DangerousDownloadDialogBridge::Cancelled(JNIEnv* env,
+                                              std::string& download_guid) {
   download::DownloadItem* download = DownloadDialogUtils::FindAndRemoveDownload(
-      &download_items_, ConvertJavaStringToUTF8(env, jdownload_guid));
+      &download_items_, download_guid);
   if (download) {
     download->RemoveObserver(this);
     download->Remove();

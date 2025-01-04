@@ -275,17 +275,6 @@ TEST_F(IsAdAuctionHeadersEligibleForNavigationTest, RequestIsEligible) {
       frame, url::Origin::Create(test_url)));
 }
 
-TEST_F(IsAdAuctionHeadersEligibleForNavigationTest, DisabledByFeature) {
-  base::test::ScopedFeatureList disable_feature;
-  disable_feature.InitAndDisableFeature(
-      features::kEnableIFrameAdAuctionHeaders);
-
-  GURL test_url("https://google.com");
-  const FrameTreeNode& frame = NavigatePage(test_url);
-  EXPECT_FALSE(IsAdAuctionHeadersEligibleForNavigation(
-      frame, url::Origin::Create(test_url)));
-}
-
 TEST_F(IsAdAuctionHeadersEligibleForNavigationTest,
        NotEligibleDueToUntrustworthyOrigin) {
   GURL test_url("http://google.com");

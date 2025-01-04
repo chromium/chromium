@@ -12,8 +12,6 @@
 #include "components/download/public/common/download_create_info.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_url_parameters.h"
-#include "content/browser/cookie_insight_list/cookie_insight_list.h"
-#include "content/browser/cookie_insight_list/cookie_insight_list_handler.h"
 #include "content/browser/devtools/browser_devtools_agent_host.h"
 #include "content/browser/devtools/dedicated_worker_devtools_agent_host.h"
 #include "content/browser/devtools/devtools_issue_storage.h"
@@ -48,6 +46,8 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_package/signed_exchange_envelope.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/cookie_insight_list_data.h"
+#include "content/public/browser/cookie_insight_list_handler.h"
 #include "devtools_agent_host_impl.h"
 #include "devtools_instrumentation.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -228,11 +228,12 @@ BuildAttributionReportingIssue(
   protocol::String violation_type = BuildAttributionReportingIssueViolationType(
       issue_details->violation_type);
 
-  CHECK(issue_details->request->url.has_value());
   auto request = protocol::Audits::AffectedRequest::Create()
-                     .SetRequestId(issue_details->request->request_id)
-                     .SetUrl(issue_details->request->url.value())
+                     .SetUrl(issue_details->request->url)
                      .Build();
+  if (issue_details->request->request_id.has_value()) {
+    request->SetRequestId(issue_details->request->request_id.value());
+  }
   auto attribution_reporting_issue_details =
       protocol::Audits::AttributionReportingIssueDetails::Create()
           .SetViolationType(violation_type)
@@ -1454,7 +1455,8 @@ WillCreateURLLoaderFactoryParams WillCreateURLLoaderFactoryParams::ForFrame(
     RenderFrameHostImpl* rfh) {
   return WillCreateURLLoaderFactoryParams(
       RenderFrameDevToolsAgentHost::GetFor(rfh), rfh->GetDevToolsFrameToken(),
-      rfh->GetProcess()->GetID(), rfh->GetProcess()->GetStoragePartition());
+      rfh->GetProcess()->GetDeprecatedID(),
+      rfh->GetProcess()->GetStoragePartition());
 }
 
 WillCreateURLLoaderFactoryParams
@@ -1462,10 +1464,10 @@ WillCreateURLLoaderFactoryParams::ForServiceWorker(RenderProcessHost& rph,
                                                    int routing_id) {
   ServiceWorkerDevToolsAgentHost* agent_host =
       ServiceWorkerDevToolsManager::GetInstance()
-          ->GetDevToolsAgentHostForWorker(rph.GetID(), routing_id);
+          ->GetDevToolsAgentHostForWorker(rph.GetDeprecatedID(), routing_id);
   CHECK(agent_host);
   return WillCreateURLLoaderFactoryParams(
-      agent_host, agent_host->devtools_worker_token(), rph.GetID(),
+      agent_host, agent_host->devtools_worker_token(), rph.GetDeprecatedID(),
       rph.GetStoragePartition());
 }
 
@@ -1499,7 +1501,7 @@ WillCreateURLLoaderFactoryParams::ForSharedWorker(SharedWorkerHost* host) {
   RenderProcessHost* rph = agent_host->GetProcessHost();
   CHECK(rph);
   return WillCreateURLLoaderFactoryParams(
-      agent_host, agent_host->devtools_worker_token(), rph->GetID(),
+      agent_host, agent_host->devtools_worker_token(), rph->GetDeprecatedID(),
       rph->GetStoragePartition());
 }
 
@@ -1922,23 +1924,23 @@ BuildCookieDeprecationMetadataIssue(
 std::unique_ptr<protocol::Audits::CookieIssueInsight> BuildCookieIssueInsight(
     std::string_view cookie_domain,
     const net::CookieInclusionStatus& status) {
-  std::optional<CookieInsightList::CookieIssueInsight> insight =
+  std::optional<CookieIssueInsight> insight =
       CookieInsightListHandler::GetInstance().GetInsight(cookie_domain, status);
   if (!insight.has_value()) {
     return nullptr;
   }
 
   switch (insight->type) {
-    case CookieInsightList::InsightType::kGitHubResource:
+    case InsightType::kGitHubResource:
       return protocol::Audits::CookieIssueInsight::Create()
           .SetType(protocol::Audits::InsightTypeEnum::GitHubResource)
           .SetTableEntryUrl(insight->domain_info.entry_url)
           .Build();
-    case CookieInsightList::InsightType::kGracePeriod:
+    case InsightType::kGracePeriod:
       return protocol::Audits::CookieIssueInsight::Create()
           .SetType(protocol::Audits::InsightTypeEnum::GracePeriod)
           .Build();
-    case CookieInsightList::InsightType::kHeuristics:
+    case InsightType::kHeuristics:
       return protocol::Audits::CookieIssueInsight::Create()
           .SetType(protocol::Audits::InsightTypeEnum::Heuristics)
           .Build();

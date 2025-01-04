@@ -8,8 +8,8 @@
 
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/ui/android/autofill/save_update_address_profile_prompt_view_android.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/messages/android/messages_feature.h"
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/safe_browsing/extension_telemetry/potential_password_theft_signal_processor.h"
 
+#include <array>
 #include <vector>
 
 #include "chrome/browser/safe_browsing/extension_telemetry/password_reuse_signal.h"
@@ -34,9 +35,14 @@ using RemoteHostContactedInfo =
 using LoginReputationClientReusedPasswordAccountType =
     LoginReputationClientRequest::PasswordReuseEvent::ReusedPasswordAccountType;
 
-constexpr const char* kExtensionId[] = {"crx-0", "crx-1"};
-const char* host_urls[] = {"http://www.google.com", "http://www.youtube.com",
-                           "http://www.giggle.com", "http://www.yutube.com"};
+constexpr const auto kExtensionId =
+    std::to_array<const char*>({"crx-0", "crx-1"});
+auto host_urls = std::to_array<const char*>({
+    "http://www.google.com",
+    "http://www.youtube.com",
+    "http://www.giggle.com",
+    "http://www.yutube.com",
+});
 RemoteHostContactedInfo::ProtocolType kProtocolType =
     RemoteHostContactedInfo::HTTP_HTTPS;
 

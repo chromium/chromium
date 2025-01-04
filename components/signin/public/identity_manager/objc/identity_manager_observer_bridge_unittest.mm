@@ -255,4 +255,4 @@ TEST_F(IdentityManagerObserverBridgeTest, OnIdentityManagerShutdown) {
   // Reset counter to pass the tear down.
   observer_bridge_delegate_.onIdentityManagerShutdownCount = 0;
 }
-}
+}  // namespace signin

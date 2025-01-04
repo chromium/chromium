@@ -6,7 +6,6 @@
 #define CONTENT_PUBLIC_BROWSER_NETWORK_CONTEXT_CLIENT_BASE_H_
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/network_service_buildflags.h"

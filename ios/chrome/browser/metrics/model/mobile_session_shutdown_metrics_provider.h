@@ -25,11 +25,6 @@ enum MobileSessionShutdownType {
   MOBILE_SESSION_SHUTDOWN_TYPE_COUNT,
 };
 
-// Percentage of battery level which is assumed low enough to have possibly
-// been the reason for the previous session ending in an unclean shutdown.
-// Percent rpresented by a value between 0 and 1.
-extern const float kCriticallyLowBatteryLevel;
-
 class MobileSessionShutdownMetricsProvider : public metrics::MetricsProvider {
  public:
   explicit MobileSessionShutdownMetricsProvider(

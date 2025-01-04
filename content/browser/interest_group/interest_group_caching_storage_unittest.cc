@@ -45,12 +45,7 @@ blink::InterestGroup MakeInterestGroup(url::Origin owner, std::string name) {
 
 class InterestGroupCachingStorageTest : public testing::Test {
  public:
-  void SetUp() override {
-    ASSERT_TRUE(temp_directory_.CreateUniqueTempDir());
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kFledgeUseInterestGroupCache},
-        /*disabled_features=*/{});
-  }
+  void SetUp() override { ASSERT_TRUE(temp_directory_.CreateUniqueTempDir()); }
 
   std::optional<scoped_refptr<StorageInterestGroups>> GetInterestGroupsForOwner(
       InterestGroupCachingStorage* caching_storage,
@@ -66,6 +61,12 @@ class InterestGroupCachingStorageTest : public testing::Test {
             }));
     run_loop.Run();
     return result;
+  }
+
+  void UpdateCachedOrigins(InterestGroupCachingStorage* caching_storage,
+                           const url::Origin& owner) {
+    GetInterestGroupsForOwner(caching_storage, owner);
+    caching_storage->UpdateCachedOriginsIfEnabled(owner);
   }
 
   std::optional<SingleStorageInterestGroup> GetInterestGroup(
@@ -209,7 +210,6 @@ class InterestGroupCachingStorageTest : public testing::Test {
   base::ScopedTempDir temp_directory_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(InterestGroupCachingStorageTest, DBUpdatesShouldModifyCache) {
@@ -764,40 +764,6 @@ TEST_F(InterestGroupCachingStorageTest,
   ASSERT_EQ(loaded_igs5->get()->size(), 0u);
 }
 
-TEST_F(InterestGroupCachingStorageTest, NoCachingWhenFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFledgeUseInterestGroupCache});
-  base::HistogramTester histogram_tester;
-  std::unique_ptr<content::InterestGroupCachingStorage> caching_storage =
-      CreateCachingStorage();
-  url::Origin owner = url::Origin::Create(GURL("https://www.example.test/"));
-  auto ig = MakeInterestGroup(owner, "name");
-
-  JoinInterestGroup(caching_storage.get(), ig, GURL("https://www.test.com"));
-
-  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs =
-      GetInterestGroupsForOwner(caching_storage.get(), owner);
-  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs_again =
-      GetInterestGroupsForOwner(caching_storage.get(), owner);
-  ASSERT_NE(loaded_igs->get(), loaded_igs_again->get());
-
-  std::optional<SingleStorageInterestGroup> single_loaded_group =
-      GetInterestGroup(caching_storage.get(),
-                       blink::InterestGroupKey(ig.owner, ig.name));
-  ASSERT_TRUE(single_loaded_group.has_value());
-  ASSERT_NE(&(loaded_igs->get()->GetInterestGroups()[0]->interest_group),
-            &(single_loaded_group.value()->interest_group));
-
-  ASSERT_TRUE(histogram_tester
-                  .GetAllSamples("Ads.InterestGroup.Auction.LoadGroupsCacheHit")
-                  .empty());
-  ASSERT_TRUE(histogram_tester
-                  .GetAllSamples("Ads.InterestGroup.GetInterestGroupCacheHit")
-                  .empty());
-}
-
 TEST_F(InterestGroupCachingStorageTest, LoadGroupsCacheHitHistogram) {
   std::unique_ptr<content::InterestGroupCachingStorage> caching_storage =
       CreateCachingStorage();
@@ -898,27 +864,40 @@ TEST_F(InterestGroupCachingStorageTest, GetCachedOwnerAndSignalsOrigins) {
 
   GURL test_url("https://www.test.test");
 
-  // Join an interest group without a bidding signals url.
+  // We shouldn't be able to cache owners which aren't in the
+  // database.
+  UpdateCachedOrigins(caching_storage.get(), owner1);
+  ASSERT_FALSE(caching_storage->GetCachedOwnerAndSignalsOrigins(
+      owner1, loaded_signals_origin));
+  ASSERT_FALSE(loaded_signals_origin);
+
+  // Join an interest group without a bidding signals url. We should be able to
+  // cache the owner.
   JoinInterestGroup(caching_storage.get(), ig1, test_url);
+  UpdateCachedOrigins(caching_storage.get(), owner1);
   ASSERT_TRUE(caching_storage->GetCachedOwnerAndSignalsOrigins(
       owner1, loaded_signals_origin));
   ASSERT_FALSE(loaded_signals_origin);
 
-  // Join an interest group with a bidding signals url (different origin).
+  // Join an interest group with a bidding signals url (different origin as the
+  // owner).
   task_environment_.FastForwardBy(base::Minutes(1));
   blink::InterestGroup ig2 = MakeInterestGroup(owner1, "2");
   ig2.trusted_bidding_signals_url = GURL("https://www.other.test");
   JoinInterestGroup(caching_storage.get(), ig2, test_url);
+  UpdateCachedOrigins(caching_storage.get(), owner1);
   ASSERT_TRUE(caching_storage->GetCachedOwnerAndSignalsOrigins(
       owner1, loaded_signals_origin));
   ASSERT_EQ(loaded_signals_origin,
             url::Origin::Create(*ig2.trusted_bidding_signals_url));
 
-  // Join an interest group with a bidding signals url (same origin).
+  // Join an interest group with a bidding signals url (same origin as the
+  // owner).
   task_environment_.FastForwardBy(base::Minutes(1));
   blink::InterestGroup ig3 = MakeInterestGroup(owner1, "3");
   ig3.trusted_bidding_signals_url = owner1.GetURL();
   JoinInterestGroup(caching_storage.get(), ig3, test_url);
+  UpdateCachedOrigins(caching_storage.get(), owner1);
   ASSERT_TRUE(caching_storage->GetCachedOwnerAndSignalsOrigins(
       owner1, loaded_signals_origin));
   ASSERT_FALSE(loaded_signals_origin);
@@ -933,6 +912,7 @@ TEST_F(InterestGroupCachingStorageTest, GetCachedOwnerAndSignalsOrigins) {
   ig4.expiry = ig3.expiry + base::Minutes(3);
   ig4.trusted_bidding_signals_url = GURL("https://www.other.test");
   JoinInterestGroup(caching_storage.get(), ig4, test_url);
+  UpdateCachedOrigins(caching_storage.get(), owner2);
 
   InterestGroupCachingStorage::CachedOriginsInfo expected_owner2_cached_info(
       ig4);
@@ -952,6 +932,7 @@ TEST_F(InterestGroupCachingStorageTest, GetCachedOwnerAndSignalsOrigins) {
   ig5.name = "5";
   ig5.expiry = ig3.expiry;
   JoinInterestGroup(caching_storage.get(), ig5, test_url);
+  UpdateCachedOrigins(caching_storage.get(), owner2);
   ASSERT_TRUE(caching_storage->GetCachedOwnerAndSignalsOrigins(
       owner1, loaded_signals_origin));
   ASSERT_FALSE(loaded_signals_origin);
@@ -1015,6 +996,7 @@ TEST_F(InterestGroupCachingStorageTest, GetCachedOwnerAndSignalsOrigins) {
   task_environment_.FastForwardBy(base::Seconds(1));
   blink::InterestGroup ig8 = MakeInterestGroup(owner1, "8");
   JoinInterestGroup(caching_storage.get(), ig8, test_url);
+  UpdateCachedOrigins(caching_storage.get(), owner1);
   ASSERT_TRUE(caching_storage->GetCachedOwnerAndSignalsOrigins(
       owner1, loaded_signals_origin));
   ASSERT_FALSE(loaded_signals_origin);
@@ -1050,6 +1032,7 @@ TEST_F(InterestGroupCachingStorageTest, GetCachedOwnerAndSignalsOrigins) {
   // We can get this cache again from an IG load. The signals URL reflects
   // the update to ig8.
   groups = GetInterestGroupsForOwner(caching_storage.get(), owner1);
+  UpdateCachedOrigins(caching_storage.get(), owner1);
   ASSERT_TRUE(caching_storage->GetCachedOwnerAndSignalsOrigins(
       owner1, loaded_signals_origin));
   ASSERT_EQ(loaded_signals_origin,
@@ -1072,9 +1055,11 @@ TEST_F(InterestGroupCachingStorageTest, GetCachedOwnerAndSignalsOrigins) {
   ASSERT_FALSE(caching_storage->GetCachedOwnerAndSignalsOrigins(
       owner1, loaded_signals_origin));
 
-  // We can get the cache again by loading IGs because there were other interest
-  // groups with the same owner. Now the latest expiring IG will be ig7.
+  // We can get the cache again by loading IGs + running
+  // UpdateCachedOriginsIfEnabled because there were other interest groups with
+  // the same owner. Now the latest expiring IG will be ig7.
   groups = GetInterestGroupsForOwner(caching_storage.get(), owner1);
+  UpdateCachedOrigins(caching_storage.get(), owner1);
   ASSERT_TRUE(groups.has_value());
   ASSERT_GT(groups.value()->size(), 0u);
   ASSERT_TRUE(caching_storage->GetCachedOwnerAndSignalsOrigins(
@@ -1103,9 +1088,24 @@ TEST_F(InterestGroupCachingStorageTest, GetCachedOwnerAndSignalsOrigins) {
   // When the latest expiring interest group expires, the cache does too.
   blink::InterestGroup ig9 = MakeInterestGroup(owner1, "9");
   JoinInterestGroup(caching_storage.get(), ig9, test_url);
+  UpdateCachedOrigins(caching_storage.get(), owner1);
   ASSERT_TRUE(caching_storage->GetCachedOwnerAndSignalsOrigins(
       owner1, loaded_signals_origin));
   task_environment_.FastForwardBy(base::Days(1) + base::Minutes(2));
+  ASSERT_FALSE(caching_storage->GetCachedOwnerAndSignalsOrigins(
+      owner1, loaded_signals_origin));
+
+  // When we join the same interest group twice, the earlier expiry is
+  // respected.
+  blink::InterestGroup ig10 = MakeInterestGroup(owner1, "10");
+  JoinInterestGroup(caching_storage.get(), ig10, test_url);
+  UpdateCachedOrigins(caching_storage.get(), owner1);
+  ig10.expiry = ig10.expiry - base::Minutes(1);
+  ASSERT_TRUE(caching_storage->GetCachedOwnerAndSignalsOrigins(
+      owner1, loaded_signals_origin));
+  JoinInterestGroup(caching_storage.get(), ig10, test_url);
+  task_environment_.FastForwardBy(base::Days(1) - base::Minutes(1) +
+                                  base::Milliseconds(1));
   ASSERT_FALSE(caching_storage->GetCachedOwnerAndSignalsOrigins(
       owner1, loaded_signals_origin));
 }

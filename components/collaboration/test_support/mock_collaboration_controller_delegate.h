@@ -19,19 +19,38 @@ class MockCollaborationControllerDelegate
   MOCK_METHOD(void, PrepareFlowUI, (ResultCallback result), (override));
   MOCK_METHOD(void,
               ShowError,
-              (ResultCallback result, const ErrorInfo& error),
+              (const ErrorInfo& error, ResultCallback result),
               (override));
   MOCK_METHOD(void, Cancel, (ResultCallback result), (override));
   MOCK_METHOD(void, ShowAuthenticationUi, (ResultCallback result), (override));
   MOCK_METHOD(void, NotifySignInAndSyncStatusChange, (), (override));
   MOCK_METHOD(void,
               ShowJoinDialog,
-              (data_sharing::SharedDataPreview preview_data,
+              (const data_sharing::GroupToken& token,
+               const data_sharing::SharedDataPreview& preview_data,
                ResultCallback result),
               (override));
-  MOCK_METHOD(void, ShowShareDialog, (ResultCallback result), (override));
-  MOCK_METHOD(void, PromoteTabGroup, (ResultCallback result), (override));
+  MOCK_METHOD(void,
+              ShowShareDialog,
+              (const tab_groups::EitherGroupID& either_id,
+               ResultCallback result),
+              (override));
+  MOCK_METHOD(void,
+              ShowManageDialog,
+              (const tab_groups::EitherGroupID& either_id,
+               ResultCallback result),
+              (override));
+  MOCK_METHOD(void,
+              PromoteTabGroup,
+              (const data_sharing::GroupId& group_id, ResultCallback result),
+              (override));
   MOCK_METHOD(void, PromoteCurrentScreen, (), (override));
+#if BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(base::android::ScopedJavaLocalRef<jobject>,
+              GetJavaObject,
+              (),
+              (override));
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace collaboration

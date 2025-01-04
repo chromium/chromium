@@ -22,10 +22,6 @@ class CC_EXPORT NinePatchLayer : public UIResourceLayer {
   NinePatchLayer(const NinePatchLayer&) = delete;
   NinePatchLayer& operator=(const NinePatchLayer&) = delete;
 
-  void PushPropertiesTo(LayerImpl* layer,
-                        const CommitState& commit_state,
-                        const ThreadUnsafeCommitState& unsafe_state) override;
-
   // |border| is the space around the center rectangular region in layer space
   // (known as aperture in image space).  |border.x()| and |border.y()| are the
   // size of the left and top boundary, respectively.
@@ -52,6 +48,12 @@ class CC_EXPORT NinePatchLayer : public UIResourceLayer {
   ~NinePatchLayer() override;
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
+
+  void PushDirtyPropertiesTo(
+      LayerImpl* layer,
+      uint8_t dirty_flag,
+      const CommitState& commit_state,
+      const ThreadUnsafeCommitState& unsafe_state) override;
 
   ProtectedSequenceReadable<gfx::Rect> border_;
   ProtectedSequenceReadable<bool> fill_center_;

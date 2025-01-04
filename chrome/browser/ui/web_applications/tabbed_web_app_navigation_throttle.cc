@@ -34,8 +34,9 @@ const char* TabbedWebAppNavigationThrottle::GetNameForLogging() {
 std::unique_ptr<content::NavigationThrottle>
 TabbedWebAppNavigationThrottle::MaybeCreateThrottleFor(
     content::NavigationHandle* handle) {
-  if (!handle->IsInPrimaryMainFrame())
+  if (!handle->IsInPrimaryMainFrame()) {
     return nullptr;
+  }
 
   // Reloading the page should not cause the tab to change.
   if (handle->GetReloadType() != content::ReloadType::NONE) {
@@ -45,12 +46,14 @@ TabbedWebAppNavigationThrottle::MaybeCreateThrottleFor(
   content::WebContents* web_contents = handle->GetWebContents();
 
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  if (!browser || !browser->app_controller())
+  if (!browser || !browser->app_controller()) {
     return nullptr;
+  }
 
   WebAppProvider* provider = WebAppProvider::GetForWebContents(web_contents);
-  if (!provider)
+  if (!provider) {
     return nullptr;
+  }
 
   const webapps::AppId& app_id = browser->app_controller()->app_id();
 

@@ -7,8 +7,8 @@ import './ai_page/ai_tab_organization_subpage.js';
 import './ai_page/history_search_page.js';
 import './ai_page/offer_writing_help_page.js';
 import './appearance_page/appearance_fonts_page.js';
+import './autofill_page/autofill_ai_section.js';
 import './autofill_page/autofill_section.js';
-import './autofill_page/autofill_prediction_improvements_section.js';
 // <if expr="is_win or is_macosx">
 import './autofill_page/passkeys_subpage.js';
 // </if>
@@ -111,6 +111,7 @@ export {SettingsLiveTranslateElement} from './a11y_page/live_translate_section.j
 // </if>
 
 export {SettingsAiCompareSubpageElement} from './ai_page/ai_compare_subpage.js';
+export {isFeatureDisabledByPolicy, SettingsAiPolicyIndicator} from './ai_page/ai_policy_indicator.js';
 export {SettingsAiTabOrganizationSubpageElement} from './ai_page/ai_tab_organization_subpage.js';
 export {AiEnterpriseFeaturePrefName, AiPageActions, FeatureOptInState, SettingsAiPageFeaturePrefName} from './ai_page/constants.js';
 export {SettingsHistorySearchPageElement} from './ai_page/history_search_page.js';
@@ -118,8 +119,8 @@ export {COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF, COMPOSE_PROACTIVE_NUDGE_PRE
 export {SettingsAppearanceFontsPageElement} from './appearance_page/appearance_fonts_page.js';
 export {CountryDetailManager, CountryDetailManagerImpl, SettingsAddressEditDialogElement} from './autofill_page/address_edit_dialog.js';
 export {SettingsAddressRemoveConfirmationDialogElement} from './autofill_page/address_remove_confirmation_dialog.js';
+export {SettingsAutofillAiSectionElement} from './autofill_page/autofill_ai_section.js';
 export {AutofillManagerImpl, AutofillManagerProxy, PersonalDataChangedListener} from './autofill_page/autofill_manager_proxy.js';
-export {SettingsAutofillPredictionImprovementsSectionElement} from './autofill_page/autofill_prediction_improvements_section.js';
 export {SettingsAutofillSectionElement} from './autofill_page/autofill_section.js';
 export {SettingsCreditCardEditDialogElement} from './autofill_page/credit_card_edit_dialog.js';
 export {SettingsCreditCardListEntryElement} from './autofill_page/credit_card_list_entry.js';
@@ -169,7 +170,6 @@ export {SettingsImportDataDialogElement} from './people_page/import_data_dialog.
 export {SettingsManageProfileElement} from './people_page/manage_profile.js';
 export {ManageProfileBrowserProxy, ManageProfileBrowserProxyImpl, ProfileShortcutStatus} from './people_page/manage_profile_browser_proxy.js';
 // </if>
-export {SettingsPageContentPageElement} from './people_page/page_content_page.js';
 export {SettingsSyncControlsElement} from './people_page/sync_controls.js';
 export {SettingsSyncEncryptionOptionsElement} from './people_page/sync_encryption_options.js';
 export {SettingsSyncPageElement} from './people_page/sync_page.js';
@@ -192,9 +192,6 @@ export {SettingsPrivacyGuidePageElement} from './privacy_page/privacy_guide/priv
 export {PrivacyGuideSafeBrowsingFragmentElement} from './privacy_page/privacy_guide/privacy_guide_safe_browsing_fragment.js';
 export {PrivacyGuideWelcomeFragmentElement} from './privacy_page/privacy_guide/privacy_guide_welcome_fragment.js';
 export {SecureDnsResolverType, SettingsSecureDnsElement} from './privacy_page/secure_dns.js';
-// <if expr="chromeos_ash">
-export {SettingsSecureDnsDialogElement} from './privacy_page/secure_dns_dialog.js';
-// </if>
 export {SecureDnsInputElement} from './privacy_page/secure_dns_input.js';
 export {BioEnrollDialogPage, SettingsSecurityKeysBioEnrollDialogElement} from './privacy_page/security_keys_bio_enroll_dialog.js';
 export {Ctap2Status, SampleStatus, SecurityKeysBioEnrollProxy, SecurityKeysBioEnrollProxyImpl, SecurityKeysCredentialBrowserProxy, SecurityKeysCredentialBrowserProxyImpl, SecurityKeysPhone, SecurityKeysPhonesBrowserProxy, SecurityKeysPhonesBrowserProxyImpl, SecurityKeysPhonesList, SecurityKeysPinBrowserProxy, SecurityKeysPinBrowserProxyImpl, SecurityKeysResetBrowserProxy, SecurityKeysResetBrowserProxyImpl} from './privacy_page/security_keys_browser_proxy.js';

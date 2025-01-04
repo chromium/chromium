@@ -445,13 +445,13 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
   GetTestApi().manager()->Accept();
   base::RunLoop().RunUntilIdle();
 
-    histograms.ExpectBucketCount(
-        "Permissions.Prompt.Geolocation.LocationBarLeftChipAutoBubble.Action",
-        static_cast<int>(permissions::PermissionAction::GRANTED), 1);
-    histograms.ExpectTimeBucketCount(
-        "Permissions.Prompt.Geolocation.LocationBarLeftChipAutoBubble.Accepted."
-        "TimeToAction",
-        duration, 1);
+  histograms.ExpectBucketCount(
+      "Permissions.Prompt.Geolocation.LocationBarLeftChipAutoBubble.Action",
+      static_cast<int>(permissions::PermissionAction::GRANTED), 1);
+  histograms.ExpectTimeBucketCount(
+      "Permissions.Prompt.Geolocation.LocationBarLeftChipAutoBubble.Accepted."
+      "TimeToAction",
+      duration, 1);
 
   ShowUi("notifications");
 
@@ -466,14 +466,14 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
   GetTestApi().manager()->Accept();
   base::RunLoop().RunUntilIdle();
 
-    histograms.ExpectBucketCount(
-        "Permissions.Prompt.Notifications.LocationBarLeftChipAutoBubble.Action",
-        static_cast<int>(permissions::PermissionAction::GRANTED), 1);
-    histograms.ExpectTimeBucketCount(
-        "Permissions.Prompt.Notifications.LocationBarLeftChipAutoBubble."
-        "Accepted."
-        "TimeToAction",
-        duration, 1);
+  histograms.ExpectBucketCount(
+      "Permissions.Prompt.Notifications.LocationBarLeftChipAutoBubble.Action",
+      static_cast<int>(permissions::PermissionAction::GRANTED), 1);
+  histograms.ExpectTimeBucketCount(
+      "Permissions.Prompt.Notifications.LocationBarLeftChipAutoBubble."
+      "Accepted."
+      "TimeToAction",
+      duration, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
@@ -493,14 +493,14 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
   GetTestApi().manager()->AcceptThisTime();
   base::RunLoop().RunUntilIdle();
 
-    histograms.ExpectBucketCount(
-        "Permissions.Prompt.Geolocation.LocationBarLeftChipAutoBubble.Action",
-        static_cast<int>(permissions::PermissionAction::GRANTED_ONCE), 1);
-    histograms.ExpectTimeBucketCount(
-        "Permissions.Prompt.Geolocation.LocationBarLeftChipAutoBubble."
-        "AcceptedOnce."
-        "TimeToAction",
-        duration, 1);
+  histograms.ExpectBucketCount(
+      "Permissions.Prompt.Geolocation.LocationBarLeftChipAutoBubble.Action",
+      static_cast<int>(permissions::PermissionAction::GRANTED_ONCE), 1);
+  histograms.ExpectTimeBucketCount(
+      "Permissions.Prompt.Geolocation.LocationBarLeftChipAutoBubble."
+      "AcceptedOnce."
+      "TimeToAction",
+      duration, 1);
 
   ShowUi("notifications");
 
@@ -515,14 +515,14 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,
   GetTestApi().manager()->AcceptThisTime();
   base::RunLoop().RunUntilIdle();
 
-    histograms.ExpectBucketCount(
-        "Permissions.Prompt.Notifications.LocationBarLeftChipAutoBubble.Action",
-        static_cast<int>(permissions::PermissionAction::GRANTED_ONCE), 1);
-    histograms.ExpectTimeBucketCount(
-        "Permissions.Prompt.Notifications.LocationBarLeftChipAutoBubble."
-        "AcceptedOnce."
-        "TimeToAction",
-        duration, 1);
+  histograms.ExpectBucketCount(
+      "Permissions.Prompt.Notifications.LocationBarLeftChipAutoBubble.Action",
+      static_cast<int>(permissions::PermissionAction::GRANTED_ONCE), 1);
+  histograms.ExpectTimeBucketCount(
+      "Permissions.Prompt.Notifications.LocationBarLeftChipAutoBubble."
+      "AcceptedOnce."
+      "TimeToAction",
+      duration, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleBaseViewBrowserTest,

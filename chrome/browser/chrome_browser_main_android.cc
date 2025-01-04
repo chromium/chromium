@@ -39,8 +39,7 @@ ChromeBrowserMainPartsAndroid::ChromeBrowserMainPartsAndroid(
     StartupData* startup_data)
     : ChromeBrowserMainParts(is_integration_test, startup_data) {}
 
-ChromeBrowserMainPartsAndroid::~ChromeBrowserMainPartsAndroid() {
-}
+ChromeBrowserMainPartsAndroid::~ChromeBrowserMainPartsAndroid() = default;
 
 int ChromeBrowserMainPartsAndroid::PreCreateThreads() {
   TRACE_EVENT0("startup", "ChromeBrowserMainPartsAndroid::PreCreateThreads");

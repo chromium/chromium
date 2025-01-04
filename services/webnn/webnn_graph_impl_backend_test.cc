@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include <cmath>
+#include <concepts>
 #include <type_traits>
 
 #include "base/containers/fixed_flat_set.h"
@@ -133,10 +134,17 @@ BuildAndCompute(
 
     auto tensor_info = mojom::TensorInfo::New(
         operand.descriptor, MLTensorUsage{MLTensorUsageFlags::kWrite});
+    base::span<const uint8_t> data;
+    if constexpr (std::floating_point<InputDataType>) {
+      // Floating point types do not have unique object representations, but
+      // this code appears to be using a byte span to type-erase, which is fine.
+      data = base::as_byte_span(base::allow_nonunique_obj, it->second);
+    } else {
+      data = base::as_byte_span(it->second);
+    }
     named_input_remotes_and_handles.emplace_back(
         *operand.name,
-        CreateTensorWithValues(context_remote, std::move(tensor_info),
-                               base::as_byte_span(it->second)));
+        CreateTensorWithValues(context_remote, std::move(tensor_info), data));
   }
 
   // Create output tensors.
@@ -415,8 +423,7 @@ class WebNNGraphImplBackendTest : public testing::Test {
  public:
   WebNNGraphImplBackendTest()
       : scoped_feature_list_(
-            webnn::mojom::features::kWebMachineLearningNeuralNetwork) {
-  }
+            webnn::mojom::features::kWebMachineLearningNeuralNetwork) {}
 
   void SetUp() override;
   void SetUpBase();
@@ -776,7 +783,8 @@ struct Conv2dTester {
     uint64_t input_operand_id =
         builder.BuildInput("input", input.dimensions, input.type);
     uint64_t filter_operand_id = builder.BuildConstant(
-        filter.dimensions, filter.type, base::as_byte_span(filter.values));
+        filter.dimensions, filter.type,
+        base::as_byte_span(base::allow_nonunique_obj, filter.values));
     uint64_t conv2d_output_operand_id =
         builder.BuildIntermediateOperand(output.dimensions, output.type);
 
@@ -784,7 +792,8 @@ struct Conv2dTester {
     if (attributes.bias.has_value()) {
       bias_operand_id = builder.BuildConstant(
           attributes.bias->dimensions, attributes.bias->type,
-          base::as_byte_span(attributes.bias->values));
+          base::as_byte_span(base::allow_nonunique_obj,
+                             attributes.bias->values));
     }
 
     builder.BuildConv2d(type, input_operand_id, filter_operand_id,
@@ -845,7 +854,7 @@ TEST_F(WebNNGraphImplBackendTest, FuseStandaloneActivationIntoConv2d) {
                              15}},
         .filter = {.type = OperandDataType::kFloat32,
                    .dimensions = {1, 1, 3, 3},
-                   .values = std::vector<float>(9, 1)},
+                   .values = {1, 1, 1, 1, 1, 1, 1, 1, 1}},
         .attributes = {.bias =
                            OperandInfo<float>{.type = OperandDataType::kFloat32,
                                               .dimensions = {1},
@@ -869,7 +878,7 @@ TEST_F(WebNNGraphImplBackendTest, FuseStandaloneActivationIntoConv2d) {
                              13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}},
         .filter = {.type = OperandDataType::kFloat32,
                    .dimensions = {1, 1, 3, 3},
-                   .values = std::vector<float>(9, 1)},
+                   .values = {1, 1, 1, 1, 1, 1, 1, 1, 1}},
         .attributes = {.padding = {1, 1, 1, 1},
                        .bias =
                            OperandInfo<float>{.type = OperandDataType::kFloat32,
@@ -896,7 +905,7 @@ TEST_F(WebNNGraphImplBackendTest, FuseStandaloneActivationIntoConv2d) {
                              13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}},
         .filter = {.type = OperandDataType::kFloat32,
                    .dimensions = {1, 1, 3, 3},
-                   .values = std::vector<float>(9, 1)},
+                   .values = {1, 1, 1, 1, 1, 1, 1, 1, 1}},
         .attributes = {.padding = {1, 1, 1, 1},
                        .bias =
                            OperandInfo<float>{.type = OperandDataType::kFloat32,
@@ -980,7 +989,7 @@ TEST_F(WebNNGraphImplBackendTest, FuseStandaloneActivationIntoConv2d) {
                                   .values = {-3, -2, -1, -4, 0, 2, 1, 3, 4}},
                         .filter = {.type = OperandDataType::kFloat32,
                                    .dimensions = {1, 1, 2, 2},
-                                   .values = std::vector<float>(4, 1)},
+                                   .values = {1, 1, 1, 1}},
                         .output = {.type = OperandDataType::kFloat32,
                                    .dimensions = {1, 1, 2, 2},
                                    .values = {-0.9, -0.5, 0, 0.9}}}
@@ -998,7 +1007,8 @@ TEST_F(WebNNGraphImplBackendTest, FuseStandaloneActivationIntoConv2d) {
                              13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}},
         .filter = {.type = OperandDataType::kFloat32,
                    .dimensions = {1, 1, 3, 3},
-                   .values = std::vector<float>(9, 0.05)},
+                   .values = {0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05,
+                              0.05}},
         .attributes = {.padding = {1, 1, 1, 1}},
         .output = {.type = OperandDataType::kFloat32,
                    .dimensions = {1, 1, 5, 5},
@@ -1030,7 +1040,6 @@ struct ElementWiseBinaryTester {
   mojom::ElementWiseBinary::Kind kind;
   OperandInfo<O> output;
   void Test(WebNNGraphImplBackendTest& helper) {
-
     // Build the graph with mojo type.
     mojo::AssociatedRemote<mojom::WebNNGraphBuilder> remote =
         helper.BindNewGraphBuilderRemote();
@@ -1195,13 +1204,11 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeGraphWithSplitAndReshape) {
 
   // [[1  2]
   //  [6  7]] with shape (2, 2)
-  VerifyFloatDataIsEqual(named_outputs["output1"],
-                         std::array<float, 4>{1, 2, 6, 7});
+  VerifyFloatDataIsEqual(named_outputs["output1"], {1, 2, 6, 7});
   // [[3  4]
   //  [5  8]
   //  [9  10]] with shape (3, 2)
-  VerifyFloatDataIsEqual(named_outputs["output2"],
-                         std::array<float, 6>{3, 4, 5, 8, 9, 10});
+  VerifyFloatDataIsEqual(named_outputs["output2"], {3, 4, 5, 8, 9, 10});
 }
 
 template <typename T>
@@ -1382,10 +1389,9 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeGraphWithTwoRelu) {
       BuildAndCompute(context(), std::move(remote), builder.TakeGraphInfo(),
                       std::move(named_inputs));
 
-  VerifyFloatDataIsEqual(
-      named_outputs["output"],
-      std::array<float, 24>({0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-                             13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}));
+  VerifyFloatDataIsEqual(named_outputs["output"],
+                         {0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+                          13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24});
 }
 
 // Test building and computing a graph with two operators (reshape as the
@@ -1516,14 +1522,12 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeGraphWithTwoOutputs) {
       BuildAndCompute(context(), std::move(remote), builder.TakeGraphInfo(),
                       std::move(named_inputs));
 
-  VerifyFloatDataIsEqual(
-      named_outputs["output1"],
-      std::vector<float>({-1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11, -12,
-                          13, 14, 15, 16, 17, 18, 19, 20, 21, 22,  23,  24}));
-  VerifyFloatDataIsEqual(
-      named_outputs["output2"],
-      std::vector<float>({0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-                          13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}));
+  VerifyFloatDataIsEqual(named_outputs["output1"],
+                         {-1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11, -12,
+                          13, 14, 15, 16, 17, 18, 19, 20, 21, 22,  23,  24});
+  VerifyFloatDataIsEqual(named_outputs["output2"],
+                         {0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+                          13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24});
 }
 
 struct GemmAttributes {
@@ -1675,7 +1679,8 @@ struct GruTester {
     if (initial_hidden_state.has_value()) {
       attributes.initial_hidden_state_operand_id = builder.BuildConstant(
           initial_hidden_state->dimensions, initial_hidden_state->type,
-          base::as_byte_span(initial_hidden_state->values));
+          base::as_byte_span(base::allow_nonunique_obj,
+                             initial_hidden_state->values));
     }
 
     std::vector<uint64_t> output_operand_ids;
@@ -2155,8 +2160,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeMultipleOperatorGemm) {
       BuildAndCompute(context(), std::move(remote), builder.TakeGraphInfo(),
                       std::move(named_inputs));
 
-  VerifyFloatDataIsEqual(named_outputs["output"],
-                         std::vector<float>({30, 30, 70, 70}));
+  VerifyFloatDataIsEqual(named_outputs["output"], {30, 30, 70, 70});
 }
 
 // Test building and computing a graph with one input and one constant.
@@ -2169,7 +2173,8 @@ TEST_F(WebNNGraphImplBackendTest, BuildOneInputAndOneConstantOperand) {
   uint64_t input_a_operand_id =
       builder.BuildInput("input_a", {2, 2}, OperandDataType::kFloat32);
   uint64_t input_b_operand_id = builder.BuildConstant(
-      {2, 2}, OperandDataType::kFloat32, base::as_byte_span(constant_data));
+      {2, 2}, OperandDataType::kFloat32,
+      base::as_byte_span(base::allow_nonunique_obj, constant_data));
   uint64_t output_operand_id =
       builder.BuildOutput("output", {2, 2}, OperandDataType::kFloat32);
   builder.BuildGemm(input_a_operand_id, input_b_operand_id, output_operand_id,
@@ -2182,8 +2187,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildOneInputAndOneConstantOperand) {
       BuildAndCompute(context(), std::move(remote), builder.TakeGraphInfo(),
                       std::move(named_inputs));
 
-  VerifyFloatDataIsEqual(named_outputs["output"],
-                         std::vector<float>({12, 14, 12, 14}));
+  VerifyFloatDataIsEqual(named_outputs["output"], {12, 14, 12, 14});
 }
 
 template <typename T>
@@ -2551,21 +2555,21 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorLstm) {
                   .values = {-4, -3, -2, -1, 0, 1, 2, 3}},
         .weight = {.type = OperandDataType::kFloat32,
                    .dimensions = {direction_count, 4 * hidden_size, input_size},
-                   .values = std::vector<float>(8, 1)},
+                   .values = {1, 1, 1, 1, 1, 1, 1, 1}},
         .recurrent_weight = {.type = OperandDataType::kFloat32,
                              .dimensions = {direction_count, 4 * hidden_size,
                                             hidden_size},
-                             .values = std::vector<float>(4, 1)},
+                             .values = {1, 1, 1, 1}},
         .steps = steps,
         .hidden_size = hidden_size,
         .bias =
             OperandInfo<float>{.type = OperandDataType::kFloat32,
                                .dimensions = {direction_count, 4 * hidden_size},
-                               .values = std::vector<float>(4, 0.5)},
+                               .values = {0.5, 0.5, 0.5, 0.5}},
         .recurrent_bias =
             OperandInfo<float>{.type = OperandDataType::kFloat32,
                                .dimensions = {direction_count, 4 * hidden_size},
-                               .values = std::vector<float>(4, 0.5)},
+                               .values = {0.5, 0.5, 0.5, 0.5}},
         .attributes =
             {.activations = {mojom::RecurrentNetworkActivation::kRelu,
                              mojom::RecurrentNetworkActivation::kRelu,
@@ -2592,21 +2596,22 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorLstm) {
                   .values = {1, 2, 3, 4}},
         .weight = {.type = OperandDataType::kFloat32,
                    .dimensions = {direction_count, 4 * hidden_size, input_size},
-                   .values = std::vector<float>(16, 1)},
+                   .values = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}},
         .recurrent_weight = {.type = OperandDataType::kFloat32,
                              .dimensions = {direction_count, 4 * hidden_size,
                                             hidden_size},
-                             .values = std::vector<float>(16, 1)},
+                             .values = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                        1, 1, 1}},
         .steps = steps,
         .hidden_size = hidden_size,
         .bias =
             OperandInfo<float>{.type = OperandDataType::kFloat32,
                                .dimensions = {direction_count, 4 * hidden_size},
-                               .values = std::vector<float>(8, 1)},
+                               .values = {1, 1, 1, 1, 1, 1, 1, 1}},
         .peephole_weight =
             OperandInfo<float>{.type = OperandDataType::kFloat32,
                                .dimensions = {direction_count, 3 * hidden_size},
-                               .values = std::vector<float>(6, 0)},
+                               .values = {0, 0, 0, 0, 0, 0}},
         .attributes =
             {.activations = {mojom::RecurrentNetworkActivation::kRelu,
                              mojom::RecurrentNetworkActivation::kRelu,
@@ -2640,24 +2645,27 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorLstm) {
     GraphInfoBuilder builder(remote);
     uint64_t input_operand_id = builder.BuildConstant(
         {steps, batch_size, input_size}, OperandDataType::kFloat32,
-        base::as_byte_span(input_data));
+        base::as_byte_span(base::allow_nonunique_obj, input_data));
     uint64_t weight_operand_id = builder.BuildConstant(
         {direction_count, 4 * hidden_size, input_size},
-        OperandDataType::kFloat32, base::as_byte_span(weight_data));
+        OperandDataType::kFloat32,
+        base::as_byte_span(base::allow_nonunique_obj, weight_data));
     uint64_t recurrent_weight_operand_id = builder.BuildConstant(
         {direction_count, 4 * hidden_size, hidden_size},
-        OperandDataType::kFloat32, base::as_byte_span(recurrent_weight_data));
+        OperandDataType::kFloat32,
+        base::as_byte_span(base::allow_nonunique_obj, recurrent_weight_data));
 
     LstmTester<float>::LstmAttributes attributes;
     attributes.peephole_weight_operand_id = builder.BuildConstant(
         {direction_count, 3 * hidden_size}, OperandDataType::kFloat32,
-        base::as_byte_span(peephole_weight_data));
+        base::as_byte_span(base::allow_nonunique_obj, peephole_weight_data));
     attributes.initial_hidden_state_operand_id = builder.BuildConstant(
         {direction_count, batch_size, hidden_size}, OperandDataType::kFloat32,
-        base::as_byte_span(initial_hidden_state_data));
+        base::as_byte_span(base::allow_nonunique_obj,
+                           initial_hidden_state_data));
     attributes.initial_cell_state_operand_id = builder.BuildConstant(
         {direction_count, batch_size, hidden_size}, OperandDataType::kFloat32,
-        base::as_byte_span(initial_cell_state_data));
+        base::as_byte_span(base::allow_nonunique_obj, initial_cell_state_data));
     attributes.activations = {mojom::RecurrentNetworkActivation::kRelu,
                               mojom::RecurrentNetworkActivation::kRelu,
                               mojom::RecurrentNetworkActivation::kRelu};
@@ -2959,9 +2967,11 @@ TEST_F(WebNNGraphImplBackendTest, BuildMultipleInputsAppendingConstants) {
       builder.BuildInput("input_b", {2, 2}, OperandDataType::kFloat32);
   std::vector<float> constant_data = {1, 1, 1, 1};
   uint64_t constant_a_operand_id = builder.BuildConstant(
-      {2, 2}, OperandDataType::kFloat32, base::as_byte_span(constant_data));
+      {2, 2}, OperandDataType::kFloat32,
+      base::as_byte_span(base::allow_nonunique_obj, constant_data));
   uint64_t constant_b_operand_id = builder.BuildConstant(
-      {2, 2}, OperandDataType::kFloat32, base::as_byte_span(constant_data));
+      {2, 2}, OperandDataType::kFloat32,
+      base::as_byte_span(base::allow_nonunique_obj, constant_data));
 
   // The order of inputs are [input_a, constant_a, input_b, constant_b].
   uint64_t intermediate_1_operand_id =
@@ -2985,8 +2995,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildMultipleInputsAppendingConstants) {
       BuildAndCompute(context(), std::move(remote), builder.TakeGraphInfo(),
                       std::move(named_inputs));
 
-  VerifyFloatDataIsEqual(named_outputs["output"],
-                         std::vector<float>({30, 30, 70, 70}));
+  VerifyFloatDataIsEqual(named_outputs["output"], {30, 30, 70, 70});
 }
 
 // Test building and computing a graph with two inputs and two constant in
@@ -3007,9 +3016,11 @@ TEST_F(WebNNGraphImplBackendTest, BuildMultipleConstantsAppendingInputs) {
       builder.BuildInput("input_b", {2, 2}, OperandDataType::kFloat32);
   std::vector<float> constant_data = {1, 2, 3, 4};
   uint64_t constant_a_operand_id = builder.BuildConstant(
-      {2, 2}, OperandDataType::kFloat32, base::as_byte_span(constant_data));
+      {2, 2}, OperandDataType::kFloat32,
+      base::as_byte_span(base::allow_nonunique_obj, constant_data));
   uint64_t constant_b_operand_id = builder.BuildConstant(
-      {2, 2}, OperandDataType::kFloat32, base::as_byte_span(constant_data));
+      {2, 2}, OperandDataType::kFloat32,
+      base::as_byte_span(base::allow_nonunique_obj, constant_data));
 
   // The order of inputs are [constant_a, input_a, constant_b, input_b].
   uint64_t intermediate_1_operand_id =
@@ -3033,8 +3044,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildMultipleConstantsAppendingInputs) {
       BuildAndCompute(context(), std::move(remote), builder.TakeGraphInfo(),
                       std::move(named_inputs));
 
-  VerifyFloatDataIsEqual(named_outputs["output"],
-                         std::vector<float>({30, 30, 70, 70}));
+  VerifyFloatDataIsEqual(named_outputs["output"], {30, 30, 70, 70});
 }
 
 // Test building and computing a graph whose gemm operator takes a reshaped
@@ -3058,7 +3068,8 @@ TEST_F(WebNNGraphImplBackendTest, BuildGemmWithReshapedConstantOperand) {
       builder.BuildInput("input_b", {2, 2}, OperandDataType::kFloat32);
   std::vector<float> constant_data = {1, 1};
   uint64_t constant_c_operand_id = builder.BuildConstant(
-      {2}, OperandDataType::kFloat32, base::as_byte_span(constant_data));
+      {2}, OperandDataType::kFloat32,
+      base::as_byte_span(base::allow_nonunique_obj, constant_data));
   // Reshape constant_c from [2] to [1, 2] and use it as operand c for gemm.
   uint64_t reshape_operand_id =
       builder.BuildIntermediateOperand({1, 2}, OperandDataType::kFloat32);
@@ -3078,8 +3089,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildGemmWithReshapedConstantOperand) {
       BuildAndCompute(context(), std::move(remote), builder.TakeGraphInfo(),
                       std::move(named_inputs));
 
-  VerifyFloatDataIsEqual(named_outputs["output"],
-                         std::vector<float>({8, 11, 16, 23}));
+  VerifyFloatDataIsEqual(named_outputs["output"], {8, 11, 16, 23});
 }
 
 // Test building a graph whose add operator takes a reshaped
@@ -3098,7 +3108,8 @@ TEST_F(WebNNGraphImplBackendTest, BuildAddWithReshapedConstantOperand) {
       builder.BuildInput("input_a", {1, 1, 2, 2}, OperandDataType::kFloat32);
   std::vector<float> constant_data = {1, 1};
   uint64_t constant_b_operand_id = builder.BuildConstant(
-      {2}, OperandDataType::kFloat32, base::as_byte_span(constant_data));
+      {2}, OperandDataType::kFloat32,
+      base::as_byte_span(base::allow_nonunique_obj, constant_data));
   // Reshape constant_b from [2] to [1, 2] and use it as operand b for add.
   uint64_t reshape_operand_id =
       builder.BuildIntermediateOperand({1, 2}, OperandDataType::kFloat32);
@@ -3115,8 +3126,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAddWithReshapedConstantOperand) {
   base::flat_map<std::string, std::vector<float>> named_outputs =
       BuildAndCompute(context(), std::move(remote), builder.TakeGraphInfo(),
                       std::move(named_inputs));
-  VerifyFloatDataIsEqual(named_outputs["output"],
-                         std::vector<float>({2, 2, 2, 2}));
+  VerifyFloatDataIsEqual(named_outputs["output"], {2, 2, 2, 2});
 }
 
 // Test building and computing a graph whose relu operator only has a
@@ -3131,7 +3141,8 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeReluWithOnlyConstantInput) {
   GraphInfoBuilder builder(remote);
   std::vector<float> constant_data = {-1, 0, 1};
   uint64_t constant_operand_id = builder.BuildConstant(
-      {3}, OperandDataType::kFloat32, base::as_byte_span(constant_data));
+      {3}, OperandDataType::kFloat32,
+      base::as_byte_span(base::allow_nonunique_obj, constant_data));
   uint64_t output_operand_id =
       builder.BuildOutput("output", {3}, OperandDataType::kFloat32);
   builder.BuildRelu(constant_operand_id, output_operand_id);
@@ -3140,8 +3151,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeReluWithOnlyConstantInput) {
       BuildAndCompute<float>(context(), std::move(remote),
                              builder.TakeGraphInfo(),
                              /*named_inputs=*/{});
-  VerifyFloatDataIsEqual(named_outputs["output"],
-                         std::vector<float>({0, 0, 1}));
+  VerifyFloatDataIsEqual(named_outputs["output"], {0, 0, 1});
 }
 
 // Test building and computing a graph whose add operator only has constant
@@ -3156,10 +3166,12 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeAddWithOnlyConstantInputs) {
   GraphInfoBuilder builder(remote);
   std::vector<float> constant_a_data = {1, 1, 1, 1};
   uint64_t constant_a_operand_id = builder.BuildConstant(
-      {2, 2}, OperandDataType::kFloat32, base::as_byte_span(constant_a_data));
+      {2, 2}, OperandDataType::kFloat32,
+      base::as_byte_span(base::allow_nonunique_obj, constant_a_data));
   std::vector<float> constant_b_data = {2, 2, 2, 2};
   uint64_t constant_b_operand_id = builder.BuildConstant(
-      {2, 2}, OperandDataType::kFloat32, base::as_byte_span(constant_b_data));
+      {2, 2}, OperandDataType::kFloat32,
+      base::as_byte_span(base::allow_nonunique_obj, constant_b_data));
   uint64_t output_operand_id =
       builder.BuildOutput("output", {2, 2}, OperandDataType::kFloat32);
   builder.BuildElementWiseBinary(mojom::ElementWiseBinary::Kind::kAdd,
@@ -3170,8 +3182,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeAddWithOnlyConstantInputs) {
       BuildAndCompute<float>(context(), std::move(remote),
                              builder.TakeGraphInfo(),
                              /*named_inputs=*/{});
-  VerifyFloatDataIsEqual(named_outputs["output"],
-                         std::vector<float>({3, 3, 3, 3}));
+  VerifyFloatDataIsEqual(named_outputs["output"], {3, 3, 3, 3});
 }
 
 // Test building and computing a graph whose add and mul operators only have
@@ -3189,10 +3200,12 @@ TEST_F(WebNNGraphImplBackendTest,
   GraphInfoBuilder builder(remote);
   std::vector<float> constant_a_data = {1, 1, 1, 1};
   uint64_t constant_a_operand_id = builder.BuildConstant(
-      {2, 2}, OperandDataType::kFloat32, base::as_byte_span(constant_a_data));
+      {2, 2}, OperandDataType::kFloat32,
+      base::as_byte_span(base::allow_nonunique_obj, constant_a_data));
   std::vector<float> constant_b_data = {2, 2, 2, 2};
   uint64_t constant_b_operand_id = builder.BuildConstant(
-      {2, 2}, OperandDataType::kFloat32, base::as_byte_span(constant_b_data));
+      {2, 2}, OperandDataType::kFloat32,
+      base::as_byte_span(base::allow_nonunique_obj, constant_b_data));
   uint64_t intermediate_operand_id =
       builder.BuildIntermediateOperand({2, 2}, OperandDataType::kFloat32);
   builder.BuildElementWiseBinary(mojom::ElementWiseBinary::Kind::kAdd,
@@ -3200,7 +3213,8 @@ TEST_F(WebNNGraphImplBackendTest,
                                  intermediate_operand_id);
   std::vector<float> constant_c_data = {3, 3, 3, 3};
   uint64_t constant_c_operand_id = builder.BuildConstant(
-      {2, 2}, OperandDataType::kFloat32, base::as_byte_span(constant_c_data));
+      {2, 2}, OperandDataType::kFloat32,
+      base::as_byte_span(base::allow_nonunique_obj, constant_c_data));
   uint64_t output_operand_id =
       builder.BuildOutput("output", {2, 2}, OperandDataType::kFloat32);
   builder.BuildElementWiseBinary(mojom::ElementWiseBinary::Kind::kMul,
@@ -3211,8 +3225,7 @@ TEST_F(WebNNGraphImplBackendTest,
       BuildAndCompute<float>(context(), std::move(remote),
                              builder.TakeGraphInfo(),
                              /*named_inputs=*/{});
-  VerifyFloatDataIsEqual(named_outputs["output"],
-                         std::vector<float>({9, 9, 9, 9}));
+  VerifyFloatDataIsEqual(named_outputs["output"], {9, 9, 9, 9});
 }
 
 struct Pool2dAttributes {
@@ -3270,8 +3283,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildMaxPooingAsThirdOperator) {
   base::flat_map<std::string, std::vector<float>> named_outputs =
       BuildAndCompute(context(), std::move(remote), builder.TakeGraphInfo(),
                       std::move(named_inputs));
-  VerifyFloatDataIsEqual(named_outputs["output"],
-                         std::vector<float>({2, 2, 2, 2}));
+  VerifyFloatDataIsEqual(named_outputs["output"], {2, 2, 2, 2});
 }
 
 // Test building a graph in the following topology.
@@ -3321,8 +3333,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildMaxPooingAsSecondOperator) {
   base::flat_map<std::string, std::vector<float>> named_outputs =
       BuildAndCompute(context(), std::move(remote), builder.TakeGraphInfo(),
                       std::move(named_inputs));
-  VerifyFloatDataIsEqual(named_outputs["output"],
-                         std::vector<float>({2, 2, 2, 2}));
+  VerifyFloatDataIsEqual(named_outputs["output"], {2, 2, 2, 2});
 }
 
 // Test building a graph in the following topology.
@@ -3373,8 +3384,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildMaxPooingAsFirstOperator) {
   base::flat_map<std::string, std::vector<float>> named_outputs =
       BuildAndCompute(context(), std::move(remote), builder.TakeGraphInfo(),
                       std::move(named_inputs));
-  VerifyFloatDataIsEqual(named_outputs["output"],
-                         std::vector<float>({2, 2, 2, 2}));
+  VerifyFloatDataIsEqual(named_outputs["output"], {2, 2, 2, 2});
 }
 
 // Test building and computing a graph with float 16 data type in the
@@ -3457,16 +3467,16 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeConcatWithConstants) {
 
   // [[[[1 2 3]]]] with shape (1, 1, 1, 3)
   std::vector<float> constant_data_a = {1, 2, 3};
-  uint64_t constant_a_operand_id =
-      builder.BuildConstant({1, 1, 1, 3}, OperandDataType::kFloat32,
-                            base::as_byte_span(constant_data_a));
+  uint64_t constant_a_operand_id = builder.BuildConstant(
+      {1, 1, 1, 3}, OperandDataType::kFloat32,
+      base::as_byte_span(base::allow_nonunique_obj, constant_data_a));
 
   // [[[[-1 -2 -3]
   //    [-4 -5 -6]]]] with shape (1, 1, 2, 3)
   std::vector<float> constant_data_b = {-1, -2, -3, -4, -5, -6};
-  uint64_t constant_b_operand_id =
-      builder.BuildConstant({1, 1, 2, 3}, OperandDataType::kFloat32,
-                            base::as_byte_span(constant_data_b));
+  uint64_t constant_b_operand_id = builder.BuildConstant(
+      {1, 1, 2, 3}, OperandDataType::kFloat32,
+      base::as_byte_span(base::allow_nonunique_obj, constant_data_b));
 
   uint64_t concat_operand_id =
       builder.BuildIntermediateOperand({1, 1, 2, 3}, OperandDataType::kFloat32);
@@ -3609,10 +3619,9 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeGraphWithTwoTranspose) {
   //  [[[ -4  16]]
   //   [[ -8  20]]
   //   [[-12  24]]]] with shape (4, 3, 1, 2)
-  VerifyFloatDataIsEqual(
-      named_outputs["output"],
-      std::vector<float>({-1, 13, -5, 17, -9,  21, -2, 14, -6, 18, -10, 22,
-                          -3, 15, -7, 19, -11, 23, -4, 16, -8, 20, -12, 24}));
+  VerifyFloatDataIsEqual(named_outputs["output"],
+                         {-1, 13, -5, 17, -9,  21, -2, 14, -6, 18, -10, 22,
+                          -3, 15, -7, 19, -11, 23, -4, 16, -8, 20, -12, 24});
 }
 
 // Test building and computing a graph in the following topology.
@@ -3663,10 +3672,9 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeGraphWithTransposeAndRelu) {
   //  [[[ 0  16]]
   //   [[ 0  20]]
   //   [[ 0  24]]]] wit shape (4, 3, 1, 2)
-  VerifyFloatDataIsEqual(
-      named_outputs["output"],
-      std::vector<float>({0, 13, 0, 17, 0, 21, 0, 14, 0, 18, 0, 22,
-                          0, 15, 0, 19, 0, 23, 0, 16, 0, 20, 0, 24}));
+  VerifyFloatDataIsEqual(named_outputs["output"],
+                         {0, 13, 0, 17, 0, 21, 0, 14, 0, 18, 0, 22,
+                          0, 15, 0, 19, 0, 23, 0, 16, 0, 20, 0, 24});
 }
 
 // Test building and computing a graph in the following topology.
@@ -3721,10 +3729,9 @@ TEST_F(WebNNGraphImplBackendTest,
 
   // [[ -1  -5  -9  -2  -6 -10  -3  -7 -11  -4  -8 -12]
   //  [ 13  17  21  14  18  22  15  19  23  16  20  24]] wit shape (2, 12)
-  VerifyFloatDataIsEqual(
-      named_outputs["output"],
-      std::vector<float>({-1, -5, -9, -2, -6, -10, -3, -7, -11, -4, -8, -12,
-                          13, 17, 21, 14, 18, 22,  15, 19, 23,  16, 20, 24}));
+  VerifyFloatDataIsEqual(named_outputs["output"],
+                         {-1, -5, -9, -2, -6, -10, -3, -7, -11, -4, -8, -12,
+                          13, 17, 21, 14, 18, 22,  15, 19, 23,  16, 20, 24});
 }
 
 // Test building and computing a graph in the following topology.
@@ -3769,16 +3776,14 @@ TEST_F(WebNNGraphImplBackendTest,
   // [[ 0  0  0  0]
   //  [ 0  0  1  2]
   //  [ 3  6 10 20]] with shape (3, 4)
-  VerifyFloatDataIsEqual(
-      named_outputs["output1"],
-      std::vector<float>({0, 0, 0, 0, 0, 0, 1, 2, 3, 6, 10, 20}));
+  VerifyFloatDataIsEqual(named_outputs["output1"],
+                         {0, 0, 0, 0, 0, 0, 1, 2, 3, 6, 10, 20});
   // [[[[ 0  0  0]
   //    [ 1  3 10]]
   //   [[ 0  0  0]
   //    [ 2  6 20]]]] with shape (1, 2, 2, 3)
-  VerifyFloatDataIsEqual(
-      named_outputs["output2"],
-      std::vector<float>({0, 0, 0, 1, 3, 10, 0, 0, 0, 2, 6, 20}));
+  VerifyFloatDataIsEqual(named_outputs["output2"],
+                         {0, 0, 0, 1, 3, 10, 0, 0, 0, 2, 6, 20});
 }
 
 // Test building and computing a graph which can't be automatically fused
@@ -3800,9 +3805,11 @@ TEST_F(WebNNGraphImplBackendTest,
     GraphInfoBuilder builder(remote);
     uint64_t input_operand_id =
         builder.BuildInput("input", {1, 1, 5, 5}, OperandDataType::kFloat32);
-    uint64_t filter_operand_id =
-        builder.BuildConstant({1, 1, 3, 3}, OperandDataType::kFloat32,
-                              base::as_byte_span(std::vector<float>(9, 1)));
+    uint64_t filter_operand_id = builder.BuildConstant(
+        {1, 1, 3, 3}, OperandDataType::kFloat32,
+        base::as_byte_span(
+            base::allow_nonunique_obj,
+            {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f}));
     uint64_t conv2d_output_operand_id = builder.BuildIntermediateOperand(
         {1, 1, 5, 5}, OperandDataType::kFloat32);
 
@@ -3817,7 +3824,8 @@ TEST_F(WebNNGraphImplBackendTest,
     if (attributes.bias.has_value()) {
       bias_operand_id = builder.BuildConstant(
           attributes.bias->dimensions, attributes.bias->type,
-          base::as_byte_span(attributes.bias->values));
+          base::as_byte_span(base::allow_nonunique_obj,
+                             attributes.bias->values));
     }
 
     builder.BuildConv2d(mojom::Conv2d::Kind::kDirect, input_operand_id,
@@ -3835,9 +3843,8 @@ TEST_F(WebNNGraphImplBackendTest,
     base::flat_map<std::string, base::span<const float>> named_inputs;
 
     named_inputs.insert(
-        {"input", std::array<float, 25>{0,  1,  2,  3,  4,  5,  6,  7,  8,
-                                        9,  10, 11, 12, 13, 14, 15, 16, 17,
-                                        18, 19, 20, 21, 22, 23, 24}});
+        {"input", {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
+                   13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}});
     base::flat_map<std::string, std::vector<float>> named_outputs =
         BuildAndCompute(context(), std::move(remote), builder.TakeGraphInfo(),
                         std::move(named_inputs));
@@ -3863,9 +3870,11 @@ TEST_F(WebNNGraphImplBackendTest,
     GraphInfoBuilder builder(remote);
     uint64_t input_operand_id =
         builder.BuildInput("input", {1, 1, 5, 5}, OperandDataType::kFloat32);
-    uint64_t filter_operand_id =
-        builder.BuildConstant({1, 1, 3, 3}, OperandDataType::kFloat32,
-                              base::as_byte_span(std::vector<float>(9, 1)));
+    uint64_t filter_operand_id = builder.BuildConstant(
+        {1, 1, 3, 3}, OperandDataType::kFloat32,
+        base::as_byte_span(
+            base::allow_nonunique_obj,
+            {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f}));
     uint64_t conv2d_output_operand_id = builder.BuildIntermediateOperand(
         {1, 1, 5, 5}, OperandDataType::kFloat32);
 
@@ -3880,7 +3889,8 @@ TEST_F(WebNNGraphImplBackendTest,
     if (attributes.bias.has_value()) {
       bias_operand_id = builder.BuildConstant(
           attributes.bias->dimensions, attributes.bias->type,
-          base::as_byte_span(attributes.bias->values));
+          base::as_byte_span(base::allow_nonunique_obj,
+                             attributes.bias->values));
     }
 
     builder.BuildConv2d(mojom::Conv2d::Kind::kDirect, input_operand_id,
@@ -3898,22 +3908,19 @@ TEST_F(WebNNGraphImplBackendTest,
     base::flat_map<std::string, base::span<const float>> named_inputs;
 
     named_inputs.insert(
-        {"input", std::array<float, 25>{0,  1,  2,  3,  4,  5,  6,  7,  8,
-                                        9,  10, 11, 12, 13, 14, 15, 16, 17,
-                                        18, 19, 20, 21, 22, 23, 24}});
+        {"input", {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
+                   13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}});
     base::flat_map<std::string, std::vector<float>> named_outputs =
         BuildAndCompute(context(), std::move(remote), builder.TakeGraphInfo(),
                         std::move(named_inputs));
 
     VerifyFloatDataIsEqual(
         named_outputs["output1"],
-        std::array<float, 25>{-88, -79, -73, -67, -76, -67, -46, -37, -28,
-                              -49, -37, -1,  8,   17,  -19, -7,  44,  53,
-                              62,  11,  -28, 11,  17,  23,  -16});
-    VerifyFloatDataIsEqual(
-        named_outputs["output2"],
-        std::array<float, 25>{0,  0, 0, 0,  0,  0,  0,  0, 0,  0,  0,  0, 8,
-                              17, 0, 0, 44, 53, 62, 11, 0, 11, 17, 23, 0});
+        {-88, -79, -73, -67, -76, -67, -46, -37, -28, -49, -37, -1, 8,
+         17,  -19, -7,  44,  53,  62,  11,  -28, 11,  17,  23,  -16});
+    VerifyFloatDataIsEqual(named_outputs["output2"],
+                           {0,  0, 0, 0,  0,  0,  0,  0, 0,  0,  0,  0, 8,
+                            17, 0, 0, 44, 53, 62, 11, 0, 11, 17, 23, 0});
   }
   //     [input]
   //        |
@@ -3930,9 +3937,11 @@ TEST_F(WebNNGraphImplBackendTest,
     GraphInfoBuilder builder(remote);
     uint64_t input_operand_id =
         builder.BuildInput("input", {1, 1, 5, 5}, OperandDataType::kFloat32);
-    uint64_t filter_operand_id =
-        builder.BuildConstant({1, 1, 3, 3}, OperandDataType::kFloat32,
-                              base::as_byte_span(std::vector<float>(9, 1)));
+    uint64_t filter_operand_id = builder.BuildConstant(
+        {1, 1, 3, 3}, OperandDataType::kFloat32,
+        base::as_byte_span(
+            base::allow_nonunique_obj,
+            {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f}));
     uint64_t conv2d_output_operand_id = builder.BuildIntermediateOperand(
         {1, 1, 5, 5}, OperandDataType::kFloat32);
 
@@ -3947,7 +3956,8 @@ TEST_F(WebNNGraphImplBackendTest,
     if (attributes.bias.has_value()) {
       bias_operand_id = builder.BuildConstant(
           attributes.bias->dimensions, attributes.bias->type,
-          base::as_byte_span(attributes.bias->values));
+          base::as_byte_span(base::allow_nonunique_obj,
+                             attributes.bias->values));
     }
 
     builder.BuildConv2d(mojom::Conv2d::Kind::kDirect, input_operand_id,
@@ -3962,22 +3972,19 @@ TEST_F(WebNNGraphImplBackendTest,
     base::flat_map<std::string, base::span<const float>> named_inputs;
 
     named_inputs.insert(
-        {"input", std::array<float, 25>{0,  1,  2,  3,  4,  5,  6,  7,  8,
-                                        9,  10, 11, 12, 13, 14, 15, 16, 17,
-                                        18, 19, 20, 21, 22, 23, 24}});
+        {"input", {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
+                   13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}});
     base::flat_map<std::string, std::vector<float>> named_outputs =
         BuildAndCompute(context(), std::move(remote), builder.TakeGraphInfo(),
                         std::move(named_inputs));
 
-    VerifyFloatDataIsEqual(
-        named_outputs["output1"],
-        std::array<float, 25>{0,  0, 0, 0,  0,  0,  0,  0, 0,  0,  0,  0, 8,
-                              17, 0, 0, 44, 53, 62, 11, 0, 11, 17, 23, 0});
+    VerifyFloatDataIsEqual(named_outputs["output1"],
+                           {0,  0, 0, 0,  0,  0,  0,  0, 0,  0,  0,  0, 8,
+                            17, 0, 0, 44, 53, 62, 11, 0, 11, 17, 23, 0});
     VerifyFloatDataIsEqual(
         named_outputs["output2"],
-        std::array<float, 25>{-88, -79, -73, -67, -76, -67, -46, -37, -28,
-                              -49, -37, -1,  8,   17,  -19, -7,  44,  53,
-                              62,  11,  -28, 11,  17,  23,  -16});
+        {-88, -79, -73, -67, -76, -67, -46, -37, -28, -49, -37, -1, 8,
+         17,  -19, -7,  44,  53,  62,  11,  -28, 11,  17,  23,  -16});
   }
 }
 

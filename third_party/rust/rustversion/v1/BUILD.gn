@@ -47,4 +47,7 @@ cargo_crate("lib") {
   build_sources = [ "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.18/build/build.rs" ]
   build_script_inputs = [ "//third_party/rust/chromium_crates_io/vendor/rustversion-1.0.18/src/../build/rustc.rs" ]
   build_script_outputs = [ "version.expr" ]
+  rustflags = [
+    "--cap-lints=allow",  # Suppress all warnings in crates.io crates
+  ]
 }

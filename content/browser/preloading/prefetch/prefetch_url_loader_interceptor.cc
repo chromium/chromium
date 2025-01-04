@@ -74,6 +74,7 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
     BrowserContext* browser_context,
     NavigationLoaderInterceptor::LoaderCallback callback,
     NavigationLoaderInterceptor::FallbackCallback fallback_callback) {
+  TRACE_EVENT0("loading", "PrefetchURLLoaderInterceptor::MaybeCreateLoader");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(!loader_callback_);
@@ -88,7 +89,11 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
           redirect_reader_.GetPrefetchContainer();
       CHECK(prefetch_container);
       if (UseNewWaitLoop()) {
-        prefetch_container->OnDetectedCookiesChange2();
+        // Use `std::nullopt` as we need to record the crash key to identify
+        // which case in `PrefetchMatchResolver2` is the cause.
+        prefetch_container->OnDetectedCookiesChange2(
+            /*is_unblock_for_cookies_changed_triggered_by_this_prefetch_container*/
+            std::nullopt);
       } else {
         // Note: This method can only be called once per PrefetchContainer (we
         // have a CHECK in the method). This is guaranteed to be the first time
@@ -107,7 +112,7 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
       }
     } else {
       OnGotPrefetchToServe(
-          frame_tree_node_id_, tentative_resource_request,
+          frame_tree_node_id_, tentative_resource_request.url,
           base::BindOnce(&PrefetchURLLoaderInterceptor::OnGetPrefetchComplete,
                          weak_factory_.GetWeakPtr()),
           std::move(redirect_reader_));
@@ -159,6 +164,7 @@ void PrefetchURLLoaderInterceptor::GetPrefetch(
     PrefetchMatchResolver& prefetch_match_resolver,
     base::OnceCallback<void(PrefetchContainer::Reader)> get_prefetch_callback)
     const {
+  TRACE_EVENT0("loading", "PrefetchURLLoaderInterceptor::GetPrefetch");
   PrefetchService* prefetch_service =
       PrefetchService::GetFromFrameTreeNodeId(frame_tree_node_id_);
   if (!prefetch_service) {
@@ -178,11 +184,13 @@ void PrefetchURLLoaderInterceptor::GetPrefetch(
     CHECK(!serving_page_metrics_container_);
   }
 
+  const GURL tentative_resource_request_url = tentative_resource_request.url;
   auto callback = base::BindOnce(&OnGotPrefetchToServe, frame_tree_node_id_,
-                                 tentative_resource_request,
+                                 tentative_resource_request_url,
                                  std::move(get_prefetch_callback));
   auto key = PrefetchContainer::Key(initiator_document_token_,
-                                    tentative_resource_request.url);
+                                    tentative_resource_request_url);
+
   if (UseNewWaitLoop()) {
     const bool is_nav_prerender = [&]() -> bool {
       auto* frame_tree_node =
@@ -208,6 +216,8 @@ void PrefetchURLLoaderInterceptor::GetPrefetch(
 
 void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
     PrefetchContainer::Reader reader) {
+  TRACE_EVENT0("loading",
+               "PrefetchURLLoaderInterceptor::OnGetPrefetchComplete");
   PrefetchRequestHandler request_handler;
   if (!reader || !(request_handler = reader.CreateRequestHandler())) {
     // Do not intercept the request.
@@ -255,7 +265,8 @@ void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
                   network::mojom::kBrowserProcessId),
               url_loader_factory::ContentClientParams(
                   BrowserContextFromFrameTreeNodeId(frame_tree_node_id_),
-                  render_frame_host, render_frame_host->GetProcess()->GetID(),
+                  render_frame_host,
+                  render_frame_host->GetProcess()->GetDeprecatedID(),
                   url::Origin(), net::IsolationInfo(),
                   ukm::SourceIdObj::FromInt64(
                       navigation_request->GetNextPageUkmSourceId()),

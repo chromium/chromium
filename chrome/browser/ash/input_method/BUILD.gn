@@ -89,8 +89,6 @@ static_library("input_method") {
     "editor_transition_enums.h",
     "emoji_suggester.cc",
     "emoji_suggester.h",
-    "field_trial.cc",
-    "field_trial.h",
     "get_current_window_properties.cc",
     "get_current_window_properties.h",
     "grammar_manager.cc",

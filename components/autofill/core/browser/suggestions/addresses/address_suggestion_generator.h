@@ -12,12 +12,12 @@
 #include "base/check_deref.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
 
 namespace autofill {
@@ -37,9 +37,7 @@ struct ProfilesToSuggestOptions {
 // matching on unclassified fields. The suggestions returned will contain
 // profile data whose prefix matches what the user has typed. As for now, only
 // use the top profile to generate suggestions.
-// TODO(crbug.com/381994105): Use more than one profile to build suggestions.
 // `field_contents` is the string contained in the triggering field.
-// TODO(crbug.com/381994105): Add "Manage addresses" footer suggestion.
 std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
     const AddressDataManager& adress_data_manager,
     const std::u16string& field_contents);

@@ -477,7 +477,7 @@ class PrefetchURLLoaderInterceptorTestBase : public RenderViewHostTestHarness {
     return std::make_unique<PrefetchContainer>(
         *main_rfhi(), referring_document_token, prefetch_url,
         std::move(prefetch_type), blink::mojom::Referrer(),
-        /*no_vary_search_expected=*/std::nullopt,
+        /*no_vary_search_hint=*/std::nullopt,
         /*prefetch_document_manager=*/nullptr,
         base::MakeRefCounted<PreloadPipelineInfo>(), attempt->GetWeakPtr());
   }
@@ -496,7 +496,7 @@ class PrefetchURLLoaderInterceptorTestBase : public RenderViewHostTestHarness {
     return std::make_unique<PrefetchContainer>(
         *web_contents(), prefetch_url, std::move(prefetch_type),
         blink::mojom::Referrer(), std::move(referring_origin),
-        /*no_vary_search_expected=*/std::nullopt, /*attempt=*/nullptr);
+        /*no_vary_search_hint=*/std::nullopt, /*attempt=*/nullptr);
   }
 
   void SimulateCookieCopyProcess(PrefetchContainer& prefetch_container) {
@@ -576,17 +576,17 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
        DISABLE_ASAN(InterceptNavigationCookieCopyCompleted)) {
   const GURL kTestUrl("https://foo.com");
 
-  EXPECT_CALL(
-      *test_content_browser_client(),
-      WillCreateURLLoaderFactory(
-          testing::NotNull(), main_rfh(), main_rfh()->GetProcess()->GetID(),
-          ContentBrowserClient::URLLoaderFactoryType::kNavigation,
-          HasOpaqueFrameOrigin(), IsEmptyIsolationInfo(),
-          testing::Optional(navigation_request()->GetNavigationId()),
-          ukm::SourceIdObj::FromInt64(
-              navigation_request()->GetNextPageUkmSourceId()),
-          testing::_, testing::IsNull(), testing::NotNull(), testing::IsNull(),
-          testing::IsNull(), testing::IsNull()));
+  EXPECT_CALL(*test_content_browser_client(),
+              WillCreateURLLoaderFactory(
+                  testing::NotNull(), main_rfh(),
+                  main_rfh()->GetProcess()->GetDeprecatedID(),
+                  ContentBrowserClient::URLLoaderFactoryType::kNavigation,
+                  HasOpaqueFrameOrigin(), IsEmptyIsolationInfo(),
+                  testing::Optional(navigation_request()->GetNavigationId()),
+                  ukm::SourceIdObj::FromInt64(
+                      navigation_request()->GetNextPageUkmSourceId()),
+                  testing::_, testing::IsNull(), testing::NotNull(),
+                  testing::IsNull(), testing::IsNull(), testing::IsNull()));
 
   std::unique_ptr<PrefetchContainer> prefetch_container =
       CreateSpeculationRulesPrefetchContainer(
@@ -633,17 +633,17 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
        DISABLE_ASAN(InterceptNavigationCookieCopyInProgress)) {
   const GURL kTestUrl("https://example.com");
 
-  EXPECT_CALL(
-      *test_content_browser_client(),
-      WillCreateURLLoaderFactory(
-          testing::NotNull(), main_rfh(), main_rfh()->GetProcess()->GetID(),
-          ContentBrowserClient::URLLoaderFactoryType::kNavigation,
-          HasOpaqueFrameOrigin(), IsEmptyIsolationInfo(),
-          testing::Optional(navigation_request()->GetNavigationId()),
-          ukm::SourceIdObj::FromInt64(
-              navigation_request()->GetNextPageUkmSourceId()),
-          testing::_, testing::IsNull(), testing::NotNull(), testing::IsNull(),
-          testing::IsNull(), testing::IsNull()));
+  EXPECT_CALL(*test_content_browser_client(),
+              WillCreateURLLoaderFactory(
+                  testing::NotNull(), main_rfh(),
+                  main_rfh()->GetProcess()->GetDeprecatedID(),
+                  ContentBrowserClient::URLLoaderFactoryType::kNavigation,
+                  HasOpaqueFrameOrigin(), IsEmptyIsolationInfo(),
+                  testing::Optional(navigation_request()->GetNavigationId()),
+                  ukm::SourceIdObj::FromInt64(
+                      navigation_request()->GetNextPageUkmSourceId()),
+                  testing::_, testing::IsNull(), testing::NotNull(),
+                  testing::IsNull(), testing::IsNull(), testing::IsNull()));
 
   std::unique_ptr<PrefetchContainer> prefetch_container =
       CreateSpeculationRulesPrefetchContainer(
@@ -697,17 +697,17 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
        DISABLE_ASAN(InterceptNavigationNoCookieCopyNeeded)) {
   const GURL kTestUrl("https://example.com");
 
-  EXPECT_CALL(
-      *test_content_browser_client(),
-      WillCreateURLLoaderFactory(
-          testing::NotNull(), main_rfh(), main_rfh()->GetProcess()->GetID(),
-          ContentBrowserClient::URLLoaderFactoryType::kNavigation,
-          HasOpaqueFrameOrigin(), IsEmptyIsolationInfo(),
-          testing::Optional(navigation_request()->GetNavigationId()),
-          ukm::SourceIdObj::FromInt64(
-              navigation_request()->GetNextPageUkmSourceId()),
-          testing::_, testing::IsNull(), testing::NotNull(), testing::IsNull(),
-          testing::IsNull(), testing::IsNull()));
+  EXPECT_CALL(*test_content_browser_client(),
+              WillCreateURLLoaderFactory(
+                  testing::NotNull(), main_rfh(),
+                  main_rfh()->GetProcess()->GetDeprecatedID(),
+                  ContentBrowserClient::URLLoaderFactoryType::kNavigation,
+                  HasOpaqueFrameOrigin(), IsEmptyIsolationInfo(),
+                  testing::Optional(navigation_request()->GetNavigationId()),
+                  ukm::SourceIdObj::FromInt64(
+                      navigation_request()->GetNextPageUkmSourceId()),
+                  testing::_, testing::IsNull(), testing::NotNull(),
+                  testing::IsNull(), testing::IsNull(), testing::IsNull()));
 
   // No cookies are copied for prefetches where |use_isolated_network_context|
   // is false (i.e. same origin prefetches).
@@ -751,17 +751,17 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
 
   const GURL kTestUrl("https://example.com");
 
-  EXPECT_CALL(
-      *test_content_browser_client(),
-      WillCreateURLLoaderFactory(
-          testing::NotNull(), main_rfh(), main_rfh()->GetProcess()->GetID(),
-          ContentBrowserClient::URLLoaderFactoryType::kNavigation,
-          HasOpaqueFrameOrigin(), IsEmptyIsolationInfo(),
-          testing::Optional(navigation_request()->GetNavigationId()),
-          ukm::SourceIdObj::FromInt64(
-              navigation_request()->GetNextPageUkmSourceId()),
-          testing::_, testing::IsNull(), testing::NotNull(), testing::IsNull(),
-          testing::IsNull(), testing::IsNull()));
+  EXPECT_CALL(*test_content_browser_client(),
+              WillCreateURLLoaderFactory(
+                  testing::NotNull(), main_rfh(),
+                  main_rfh()->GetProcess()->GetDeprecatedID(),
+                  ContentBrowserClient::URLLoaderFactoryType::kNavigation,
+                  HasOpaqueFrameOrigin(), IsEmptyIsolationInfo(),
+                  testing::Optional(navigation_request()->GetNavigationId()),
+                  ukm::SourceIdObj::FromInt64(
+                      navigation_request()->GetNextPageUkmSourceId()),
+                  testing::_, testing::IsNull(), testing::NotNull(),
+                  testing::IsNull(), testing::IsNull(), testing::IsNull()));
 
   // Creates a same-origin embedder prefetch, which means cookie copy is not
   // needed.
@@ -1060,17 +1060,17 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
 TEST_P(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeSuccess)) {
   const GURL kTestUrl("https://cross-site.example");
 
-  EXPECT_CALL(
-      *test_content_browser_client(),
-      WillCreateURLLoaderFactory(
-          testing::NotNull(), main_rfh(), main_rfh()->GetProcess()->GetID(),
-          ContentBrowserClient::URLLoaderFactoryType::kNavigation,
-          HasOpaqueFrameOrigin(), IsEmptyIsolationInfo(),
-          testing::Optional(navigation_request()->GetNavigationId()),
-          ukm::SourceIdObj::FromInt64(
-              navigation_request()->GetNextPageUkmSourceId()),
-          testing::_, testing::IsNull(), testing::NotNull(), testing::IsNull(),
-          testing::IsNull(), testing::IsNull()));
+  EXPECT_CALL(*test_content_browser_client(),
+              WillCreateURLLoaderFactory(
+                  testing::NotNull(), main_rfh(),
+                  main_rfh()->GetProcess()->GetDeprecatedID(),
+                  ContentBrowserClient::URLLoaderFactoryType::kNavigation,
+                  HasOpaqueFrameOrigin(), IsEmptyIsolationInfo(),
+                  testing::Optional(navigation_request()->GetNavigationId()),
+                  ukm::SourceIdObj::FromInt64(
+                      navigation_request()->GetNextPageUkmSourceId()),
+                  testing::_, testing::IsNull(), testing::NotNull(),
+                  testing::IsNull(), testing::IsNull(), testing::IsNull()));
 
   std::unique_ptr<PrefetchContainer> prefetch_container =
       CreateSpeculationRulesPrefetchContainer(
@@ -1352,17 +1352,17 @@ TEST_P(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(HandleRedirects)) {
   const GURL kTestUrl("https://example.com");
   const GURL kRedirectUrl("https://redirect.com");
 
-  EXPECT_CALL(
-      *test_content_browser_client(),
-      WillCreateURLLoaderFactory(
-          testing::NotNull(), main_rfh(), main_rfh()->GetProcess()->GetID(),
-          ContentBrowserClient::URLLoaderFactoryType::kNavigation,
-          HasOpaqueFrameOrigin(), IsEmptyIsolationInfo(),
-          testing::Optional(navigation_request()->GetNavigationId()),
-          ukm::SourceIdObj::FromInt64(
-              navigation_request()->GetNextPageUkmSourceId()),
-          testing::_, testing::IsNull(), testing::NotNull(), testing::IsNull(),
-          testing::IsNull(), testing::IsNull()))
+  EXPECT_CALL(*test_content_browser_client(),
+              WillCreateURLLoaderFactory(
+                  testing::NotNull(), main_rfh(),
+                  main_rfh()->GetProcess()->GetDeprecatedID(),
+                  ContentBrowserClient::URLLoaderFactoryType::kNavigation,
+                  HasOpaqueFrameOrigin(), IsEmptyIsolationInfo(),
+                  testing::Optional(navigation_request()->GetNavigationId()),
+                  ukm::SourceIdObj::FromInt64(
+                      navigation_request()->GetNextPageUkmSourceId()),
+                  testing::_, testing::IsNull(), testing::NotNull(),
+                  testing::IsNull(), testing::IsNull(), testing::IsNull()))
       .Times(2);
 
   std::unique_ptr<PrefetchContainer> prefetch_container =
@@ -1429,17 +1429,17 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
   const GURL kTestUrl("https://example.com");
   const GURL kRedirectUrl("https://redirect.com");
 
-  EXPECT_CALL(
-      *test_content_browser_client(),
-      WillCreateURLLoaderFactory(
-          testing::NotNull(), main_rfh(), main_rfh()->GetProcess()->GetID(),
-          ContentBrowserClient::URLLoaderFactoryType::kNavigation,
-          HasOpaqueFrameOrigin(), IsEmptyIsolationInfo(),
-          testing::Optional(navigation_request()->GetNavigationId()),
-          ukm::SourceIdObj::FromInt64(
-              navigation_request()->GetNextPageUkmSourceId()),
-          testing::_, testing::IsNull(), testing::NotNull(), testing::IsNull(),
-          testing::IsNull(), testing::IsNull()))
+  EXPECT_CALL(*test_content_browser_client(),
+              WillCreateURLLoaderFactory(
+                  testing::NotNull(), main_rfh(),
+                  main_rfh()->GetProcess()->GetDeprecatedID(),
+                  ContentBrowserClient::URLLoaderFactoryType::kNavigation,
+                  HasOpaqueFrameOrigin(), IsEmptyIsolationInfo(),
+                  testing::Optional(navigation_request()->GetNavigationId()),
+                  ukm::SourceIdObj::FromInt64(
+                      navigation_request()->GetNextPageUkmSourceId()),
+                  testing::_, testing::IsNull(), testing::NotNull(),
+                  testing::IsNull(), testing::IsNull(), testing::IsNull()))
       .Times(2);
 
   std::unique_ptr<PrefetchContainer> prefetch_container =

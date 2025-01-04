@@ -220,9 +220,8 @@ void PwaInstallView::OnExecuting(PageActionIconView::ExecuteSource source) {
 #endif
 
   web_app::CreateWebAppFromManifest(
-      GetWebContents(),
-      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, base::DoNothing(),
-      iph_state);
+      GetWebContents(), webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+      base::DoNothing(), iph_state);
 }
 
 views::BubbleDialogDelegate* PwaInstallView::GetBubble() const {

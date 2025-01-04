@@ -11,12 +11,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -39,7 +39,7 @@ namespace {
 using ::autofill::Suggestion;
 using ::autofill::SuggestionType;
 using enum SuggestionType;
-using PredictionImprovementsPayload = Suggestion::PredictionImprovementsPayload;
+using AutofillAiPayload = Suggestion::AutofillAiPayload;
 using PredictionsByGlobalId = AutofillAiModelExecutor::PredictionsByGlobalId;
 using ::base::test::RunOnceCallback;
 using ::testing::_;
@@ -69,9 +69,9 @@ auto HasType(SuggestionType expected_type) {
   return Field("Suggestion::type", &Suggestion::type, Eq(expected_type));
 }
 
-auto HasPredictionImprovementsPayload(auto expected_payload) {
+auto HasAutofillAiPayload(auto expected_payload) {
   return Field("Suggestion::payload", &Suggestion::payload,
-               VariantWith<PredictionImprovementsPayload>(expected_payload));
+               VariantWith<AutofillAiPayload>(expected_payload));
 }
 
 auto HasValueToFill(const std::u16string& expected_value_to_fill) {
@@ -288,7 +288,7 @@ TEST_F(AutofillAiManagerTest, RetrievalFailed_FallbackToAutofill) {
 }
 
 // Tests that the `update_suggestions_callback` is called eventually with the
-// `kFillPredictionImprovements` suggestion.
+// `kFillAutofillAi` suggestion.
 TEST_F(AutofillAiManagerTest, EndToEnd) {
   // Empty form, as seen by the user.
   autofill::test::FormDescription form_description = {
@@ -322,8 +322,8 @@ TEST_F(AutofillAiManagerTest, EndToEnd) {
         update_suggestions_callback,
         Run(AllOf(ElementsAre(HasType(kFillAutofillAi), HasType(kSeparator),
                               HasType(kAutofillAiFeedback)),
-                  FirstElementIs(HasPredictionImprovementsPayload(
-                      Field(&PredictionImprovementsPayload::values_to_fill,
+                  FirstElementIs(HasAutofillAiPayload(
+                      Field(&AutofillAiPayload::values_to_fill,
                             ElementsAre(Pair(filled_field.global_id(),
                                              filled_field.value()))))),
                   FirstElementIs(Field(
@@ -604,7 +604,7 @@ INSTANTIATE_TEST_SUITE_P(
 // before autofill suggestions.
 TEST_F(
     AutofillAiManagerTest,
-    GetSuggestions_DoneSuccessWithAutofillSuggestions_PredictionImprovementsSuggestionsShownBeforeAutofill) {
+    GetSuggestions_DoneSuccessWithAutofillSuggestions_AutofillAiSuggestionsShownBeforeAutofill) {
   std::vector<Suggestion> autofill_suggestions = {Suggestion(kAddressEntry),
                                                   Suggestion(kSeparator),
                                                   Suggestion(kManageAddress)};
@@ -673,29 +673,29 @@ TEST_F(AutofillAiManagerTest,
       ElementsAre(
           AllOf(
               HasType(kFillAutofillAi),
-              HasPredictionImprovementsPayload(Field(
-                  "PredictionImprovementsPayload::values_to_fill",
-                  &PredictionImprovementsPayload::values_to_fill,
+              HasAutofillAiPayload(Field(
+                  "AutofillAiPayload::values_to_fill",
+                  &AutofillAiPayload::values_to_fill,
                   ElementsAre(
                       Pair(form.fields()[0].global_id(), trigger_field_value),
                       Pair(form.fields()[1].global_id(), select_field_value)))),
-              Field("Suggestion::children", &Suggestion::children,
-                    ElementsAre(AllOf(HasType(kFillAutofillAi),
-                                      HasPredictionImprovementsPayload(_)),
-                                HasType(kSeparator),
-                                AllOf(HasType(kFillAutofillAi),
-                                      HasValueToFill(trigger_field_value),
-                                      HasMainText(trigger_field_value),
-                                      HasLabel(trigger_field_label)),
-                                AllOf(HasType(kFillAutofillAi),
-                                      // For <select> elements expect both value
-                                      // to fill and main text to be set to the
-                                      // option text, not the value.
-                                      HasValueToFill(select_field_option_text),
-                                      HasMainText(select_field_option_text),
-                                      HasLabel(select_field_label)),
-                                HasType(kSeparator),
-                                HasType(kEditAutofillAiData)))),
+              Field(
+                  "Suggestion::children", &Suggestion::children,
+                  ElementsAre(
+                      AllOf(HasType(kFillAutofillAi), HasAutofillAiPayload(_)),
+                      HasType(kSeparator),
+                      AllOf(HasType(kFillAutofillAi),
+                            HasValueToFill(trigger_field_value),
+                            HasMainText(trigger_field_value),
+                            HasLabel(trigger_field_label)),
+                      AllOf(HasType(kFillAutofillAi),
+                            // For <select> elements expect both value
+                            // to fill and main text to be set to the
+                            // option text, not the value.
+                            HasValueToFill(select_field_option_text),
+                            HasMainText(select_field_option_text),
+                            HasLabel(select_field_label)),
+                      HasType(kSeparator), HasType(kEditAutofillAiData)))),
           HasType(kSeparator), HasType(kAutofillAiFeedback)));
 }
 
@@ -1017,7 +1017,7 @@ TEST_F(AutofillAiManagerTest, HasDataStoredReturnsFalseIfDataIsNotStored) {
 // Tests that the prediction improvements settings page is opened when the
 // manage prediction improvements link is clicked.
 TEST_F(AutofillAiManagerTest, OpenSettingsWhenManagePILinkIsClicked) {
-  EXPECT_CALL(client(), OpenPredictionImprovementsSettings);
+  EXPECT_CALL(client(), OpenAutofillAiSettings);
   manager().UserClickedLearnMore();
 }
 
@@ -1302,8 +1302,7 @@ TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleOnEmptyForm) {
   EXPECT_FALSE(manager().IsEligibleForAutofillAi(form, field));
 }
 
-TEST_F(IsFormAndFieldEligibleAutofillAiTest,
-       PredictionImprovementsEligibility_Eligible) {
+TEST_F(IsFormAndFieldEligibleAutofillAiTest, AutofillAiEligibility_Eligible) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kAutofillAi, {{"skip_allowlist", "true"}});

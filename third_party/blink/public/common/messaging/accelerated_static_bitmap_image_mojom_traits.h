@@ -40,10 +40,6 @@ struct BLINK_COMMON_EXPORT
     return input.image_info;
   }
 
-  static bool is_origin_top_left(const blink::AcceleratedImageInfo& input) {
-    return input.is_origin_top_left;
-  }
-
   static bool supports_display_compositing(
       const blink::AcceleratedImageInfo& input) {
     return input.supports_display_compositing;

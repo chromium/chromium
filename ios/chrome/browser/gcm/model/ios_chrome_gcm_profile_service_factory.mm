@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/gcm/model/ios_chrome_gcm_profile_service_factory.h"
 
 #import "base/functional/bind.h"
-#import "base/memory/ptr_util.h"
 #import "base/memory/ref_counted.h"
 #import "base/no_destructor.h"
 #import "base/task/sequenced_task_runner.h"
@@ -13,7 +12,6 @@
 #import "build/branding_buildflags.h"
 #import "components/gcm_driver/gcm_client_factory.h"
 #import "components/gcm_driver/gcm_profile_service.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -58,8 +56,8 @@ void RequestProxyResolvingSocketFactory(
 // static
 gcm::GCMProfileService* IOSChromeGCMProfileServiceFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<gcm::GCMProfileService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<gcm::GCMProfileService>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -79,9 +77,7 @@ std::string IOSChromeGCMProfileServiceFactory::GetProductCategoryForSubtypes() {
 }
 
 IOSChromeGCMProfileServiceFactory::IOSChromeGCMProfileServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "GCMProfileService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("GCMProfileService") {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
@@ -104,7 +100,6 @@ IOSChromeGCMProfileServiceFactory::BuildServiceInstanceFor(
       GetApplicationContext()->GetNetworkConnectionTracker(), ::GetChannel(),
       GetProductCategoryForSubtypes(),
       IdentityManagerFactory::GetForProfile(profile),
-      base::WrapUnique(new gcm::GCMClientFactory),
-      web::GetUIThreadTaskRunner({}), web::GetIOThreadTaskRunner({}),
-      blocking_task_runner);
+      std::make_unique<gcm::GCMClientFactory>(), web::GetUIThreadTaskRunner({}),
+      web::GetIOThreadTaskRunner({}), blocking_task_runner);
 }

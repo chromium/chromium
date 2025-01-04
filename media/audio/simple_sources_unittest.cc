@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <limits>
 #include <memory>
 
@@ -95,7 +96,7 @@ void VerifyContainsTestFile(const AudioBus* audio_bus) {
   // Convert the test data (little-endian) into floats and compare. We need to
   // index past the first bytes in the data, which contain the wav header.
   const int kFirstSampleIndex = 12 + 8 + 16 + 8;
-  int16_t data[2];
+  std::array<int16_t, 2> data;
   data[0] = kTestAudioData[kFirstSampleIndex];
   data[0] |= (kTestAudioData[kFirstSampleIndex + 1] << 8);
   data[1] = kTestAudioData[kFirstSampleIndex + 2];

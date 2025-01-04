@@ -19,6 +19,7 @@
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/views/controls/scroll_view.h"
 
 namespace {
@@ -76,7 +77,7 @@ class GlanceablesTasksPixelTest : public AshTestBase {
 
  protected:
   const AccountId account_id_ =
-      AccountId::FromUserEmailGaiaId("test_user@gmail.com", "123456");
+      AccountId::FromUserEmailGaiaId("test_user@gmail.com", GaiaId("123456"));
   std::unique_ptr<api::FakeTasksClient> fake_glanceables_tasks_client_;
 
  private:

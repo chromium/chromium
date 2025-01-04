@@ -4,7 +4,6 @@
 
 package org.chromium.android_webview.selection;
 
-import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
@@ -15,7 +14,6 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,14 +31,13 @@ import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.autofill.AutofillSelectionActionMenuDelegate;
-import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.SelectionMenuItem;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.common.ContentFeatures;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -66,16 +63,17 @@ public class SamsungSelectionActionMenuDelegate extends AutofillSelectionActionM
     private static final String WRITING_TOOLKIT_SUBJECT = "toolkitSubject";
     private static final String WRITING_TOOLKIT_IS_TEXT_EDITABLE = "isTextEditable";
     private static final String WRITING_TOOLKIT_URI = "honeyboard://writing-toolkit";
-    public static final int WRITING_TOOLKIT_REQUEST_CODE = 102;
-    private static final String TEXT_KEY_FROM_WRITING_TOOLKIT = "toolkitText";
-    private static final String ACTION_KEY_FROM_WRITING_TOOLKIT = "toolkitAction";
-    private static final String REPLACE_ACTION_KEY_FROM_WRITING_TOOLKIT = "replace";
     private static final int SCAN_TEXT_ID;
     private static final ComponentName WRITING_TOOLKIT_COMPONENT =
             new ComponentName(
                     "com.samsung.android.honeyboard",
                     "com.samsung.android.writingtoolkit.view.WritingToolkitActivity");
+    private static final String FEATURE_FLAG_STATUS_CHECK_CLASS =
+            "com.samsung.android.feature.SemFloatingFeature";
+    private static final String AI_FEATURES_DISABLED_FLAG =
+            "SEC_FLOATING_FEATURE_COMMON_DISABLE_NATIVE_AI";
     private static Boolean sIsManageAppsSupported;
+    private static Boolean sAiFeaturesDisabled;
 
     /**
      * Android Intent size limitations prevent sending over a megabyte of data. Limit query lengths
@@ -248,27 +246,8 @@ public class SamsungSelectionActionMenuDelegate extends AutofillSelectionActionM
         return !isManageAppsSupported();
     }
 
-    public String getTextFromAdditionalActivityResult(
-            int requestCode, int resultCode, Intent data) {
-        if (requestCode != WRITING_TOOLKIT_REQUEST_CODE) {
-            return null;
-        }
-        if (resultCode == Activity.RESULT_OK && data != null) {
-            CharSequence writingToolkitText =
-                    data.getCharSequenceExtra(TEXT_KEY_FROM_WRITING_TOOLKIT);
-            CharSequence action = data.getCharSequenceExtra(ACTION_KEY_FROM_WRITING_TOOLKIT);
-            if (TextUtils.equals(action, REPLACE_ACTION_KEY_FROM_WRITING_TOOLKIT)
-                    && writingToolkitText != null) {
-                return writingToolkitText.toString();
-            }
-        }
-        return null;
-    }
-
     public static boolean shouldUseSamsungMenuItemOrdering() {
-        return Build.VERSION.SDK_INT <= Build.VERSION_CODES.VANILLA_ICE_CREAM
-                && isSamsungDevice()
-                && ContentFeatureMap.isEnabled(ContentFeatures.SELECTION_MENU_ITEM_MODIFICATION);
+        return Build.VERSION.SDK_INT <= Build.VERSION_CODES.VANILLA_ICE_CREAM && isSamsungDevice();
     }
 
     private static int getMenuItemOrder(@IdRes int id) {
@@ -296,8 +275,7 @@ public class SamsungSelectionActionMenuDelegate extends AutofillSelectionActionM
         }
         if (!isSamsungDevice()
                 || Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE
-                || Build.VERSION.SDK_INT > Build.VERSION_CODES.VANILLA_ICE_CREAM
-                || !ContentFeatureMap.isEnabled(ContentFeatures.SELECTION_MENU_ITEM_MODIFICATION)) {
+                || Build.VERSION.SDK_INT > Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             sIsManageAppsSupported = false;
             return false;
         }
@@ -345,21 +323,14 @@ public class SamsungSelectionActionMenuDelegate extends AutofillSelectionActionM
     public static boolean handleMenuItemClick(
             MenuItem item, WebContents webContents, ViewGroup containerView) {
         if (!isWritingToolKitMenuItem(item)) return false;
-        prepareForWritingToolkit(containerView);
         SelectionPopupController selectionPopupController =
                 SelectionPopupController.fromWebContents(webContents);
         selectionPopupController.setPreserveSelectionOnNextLossOfFocus(true);
-        Activity parentActivity = ContextUtils.activityFromContext(containerView.getContext());
-        // If WebView exists in application context, then activity context can be null for the
-        // WebView. To support writing toolkit in such activities, we are just starting writing
-        // toolkit activity and discard any result. This is similar to how menu item with
-        // PROCESS_TEXT intent are handled.
-        if (parentActivity == null) {
-            startActivity(item.getIntent());
-        } else {
-            AwContents awContents = AwContents.fromWebContents(webContents);
-            awContents.startActivityForResult(item.getIntent(), WRITING_TOOLKIT_REQUEST_CODE);
+        prepareForWritingToolkit(containerView);
+        if (selectionPopupController.isFocusedNodeEditable()) {
+            return true;
         }
+        startActivity(item.getIntent());
         return true;
     }
 
@@ -397,11 +368,39 @@ public class SamsungSelectionActionMenuDelegate extends AutofillSelectionActionM
             @NonNull String selectedText, boolean isSelectionPassword) {
         return isSamsungDevice()
                 && Build.VERSION.SDK_INT == Build.VERSION_CODES.VANILLA_ICE_CREAM
-                && ContentFeatureMap.isEnabled(ContentFeatures.SELECTION_MENU_ITEM_MODIFICATION)
                 && !selectedText.isEmpty()
                 && !isSelectionPassword
                 && SCAN_TEXT_ID != 0
-                && isWritingToolkitActivityAvailable();
+                && isWritingToolkitActivityAvailable()
+                && !isAiFeaturesDisabled();
+    }
+
+    private static boolean isAiFeaturesDisabled() {
+        if (sAiFeaturesDisabled != null) {
+            return sAiFeaturesDisabled;
+        }
+        try {
+            Class<?> featureStatusCheckClass = Class.forName(FEATURE_FLAG_STATUS_CHECK_CLASS);
+            // Executing Reflection:
+            // SemFloatingFeature.getInstance().getBoolean(AI_FEATURES_DISABLED_FLAG);
+            // While invoking getInstance method argument is passed null since it is a
+            // static method.
+            sAiFeaturesDisabled =
+                    (Boolean)
+                            featureStatusCheckClass
+                                    .getMethod("getBoolean", String.class)
+                                    .invoke(
+                                            featureStatusCheckClass
+                                                    .getMethod("getInstance")
+                                                    .invoke(/* obj= */ null),
+                                            AI_FEATURES_DISABLED_FLAG);
+        } catch (ClassNotFoundException
+                | NoSuchMethodException
+                | InvocationTargetException
+                | IllegalAccessException e) {
+            sAiFeaturesDisabled = true;
+        }
+        return Boolean.TRUE.equals(sAiFeaturesDisabled);
     }
 
     private static boolean isWritingToolkitActivityAvailable() {

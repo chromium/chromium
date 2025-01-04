@@ -2357,8 +2357,11 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   {
     // Reloading the blocked document from the browser process still ends up
     // in the error page process.
-    int process_id =
-        shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
+    int process_id = shell()
+                         ->web_contents()
+                         ->GetPrimaryMainFrame()
+                         ->GetProcess()
+                         ->GetDeprecatedID();
     NavigationHandleObserver observer(shell()->web_contents(), blocked_url);
     TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
 
@@ -2376,7 +2379,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
                                 ->web_contents()
                                 ->GetPrimaryMainFrame()
                                 ->GetProcess()
-                                ->GetID());
+                                ->GetDeprecatedID());
     } else if (AreAllSitesIsolatedForTesting()) {
       EXPECT_NE(
           site_instance,
@@ -3001,12 +3004,17 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest_IsolateAllSites,
   }
   {
     base::HistogramTester histograms;
-    int previous_process_id =
-        shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
+    int previous_process_id = shell()
+                                  ->web_contents()
+                                  ->GetPrimaryMainFrame()
+                                  ->GetProcess()
+                                  ->GetDeprecatedID();
     EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
-    bool process_changed =
-        (previous_process_id !=
-         shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID());
+    bool process_changed = (previous_process_id != shell()
+                                                       ->web_contents()
+                                                       ->GetPrimaryMainFrame()
+                                                       ->GetProcess()
+                                                       ->GetDeprecatedID());
     check_navigation(histograms,
                      process_changed ? ProcessType::kCross : ProcessType::kSame,
                      FrameType::kMain, TransitionType::kNew);

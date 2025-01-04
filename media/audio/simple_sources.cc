@@ -17,6 +17,7 @@
 #include <string_view>
 
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/logging.h"
 #include "base/thread_annotations.h"
@@ -189,7 +190,7 @@ void FileSource::LoadWavFile(const base::FilePath& path_to_wav_file) {
 
   // Attempt to create a handler with this data. If the data is invalid, return.
   wav_audio_handler_ =
-      WavAudioHandler::Create(base::as_string_view(raw_wav_data_));
+      WavAudioHandler::Create(base::as_byte_span(raw_wav_data_));
   if (!wav_audio_handler_) {
     LOG(ERROR) << "WAV data could be read but is not valid";
     load_failed_ = true;

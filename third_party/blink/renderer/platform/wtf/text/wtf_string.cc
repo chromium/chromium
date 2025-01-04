@@ -20,11 +20,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 #include <locale.h>
@@ -44,6 +39,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/case_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/code_point_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/text/copy_lchars_from_uchar_source.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -63,9 +59,10 @@ String::String(base::span<const UChar> utf16_data)
 
 // Construct a string with UTF-16 data, from a null-terminated source.
 String::String(const UChar* str) {
-  if (!str)
+  if (!str) {
     return;
-  impl_ = StringImpl::Create({str, LengthOfNullTerminatedString(str)});
+  }
+  impl_ = StringImpl::Create(std::u16string_view(str));
 }
 
 // Construct a string with latin1 data.
@@ -385,28 +382,17 @@ void String::Split(UChar separator,
 std::string String::Ascii() const {
   // Printable ASCII characters 32..127 and the null character are
   // preserved, characters outside of this range are converted to '?'.
-
   unsigned length = this->length();
   if (!length)
     return std::string();
 
   std::string ascii(length, '\0');
-  if (Is8Bit()) {
-    const LChar* characters = Characters8();
-
-    for (unsigned i = 0; i < length; ++i) {
-      LChar ch = characters[i];
-      ascii[i] = ch && (ch < 0x20 || ch > 0x7f) ? '?' : ch;
+  VisitCharacters(*this, [&ascii](auto chars) {
+    for (size_t i = 0; i < chars.size(); ++i) {
+      const auto ch = chars[i];
+      ascii[i] = ch && (ch < 0x20 || ch > 0x7f) ? '?' : static_cast<char>(ch);
     }
-    return ascii;
-  }
-
-  const UChar* characters = Characters16();
-  for (unsigned i = 0; i < length; ++i) {
-    UChar ch = characters[i];
-    ascii[i] = ch && (ch < 0x20 || ch > 0x7f) ? '?' : static_cast<char>(ch);
-  }
-
+  });
   return ascii;
 }
 
@@ -414,21 +400,19 @@ std::string String::Latin1() const {
   // Basic Latin1 (ISO) encoding - Unicode characters 0..255 are
   // preserved, characters outside of this range are converted to '?'.
   unsigned length = this->length();
-
   if (!length)
     return std::string();
 
   if (Is8Bit()) {
-    return std::string(reinterpret_cast<const char*>(Characters8()), length);
+    return std::string(base::as_string_view(Span8()));
   }
 
-  const UChar* characters = Characters16();
   std::string latin1(length, '\0');
-  for (unsigned i = 0; i < length; ++i) {
-    UChar ch = characters[i];
+  base::span<const UChar> characters = Span16();
+  for (size_t i = 0; i < characters.size(); ++i) {
+    const UChar ch = characters[i];
     latin1[i] = ch > 0xff ? '?' : static_cast<char>(ch);
   }
-
   return latin1;
 }
 

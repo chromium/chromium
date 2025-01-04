@@ -77,8 +77,7 @@ TestExtensionPrefs::TestExtensionPrefs(
   RecreateExtensionPrefs();
 }
 
-TestExtensionPrefs::~TestExtensionPrefs() {
-}
+TestExtensionPrefs::~TestExtensionPrefs() = default;
 
 ExtensionPrefs* TestExtensionPrefs::prefs() {
   return ExtensionPrefs::Get(&profile_);

@@ -7,6 +7,7 @@
 #import "base/values.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 #import "ios/chrome/common/ui/instruction_view/instruction_view.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -76,8 +77,11 @@ NSString* const kWhatsNewInstructionsLabelAccessibilityIdentifier =
   _alertScreen.titleView = self.titleLabel;
   _alertScreen.actionHandler = self.actionHandler;
   _alertScreen.showDismissBarButton = YES;
-  _alertScreen.customDismissBarButtonImage =
-      DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, kDismissSymbolSize);
+  UIImage* xmarkSymbol = SymbolWithPalette(
+      DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, kDismissSymbolSize),
+      @[ [UIColor colorNamed:kGrey600Color] ]);
+  _alertScreen.customDismissBarButtonImage = xmarkSymbol;
+
   _alertScreen.topAlignedLayout = YES;
 
   [NSLayoutConstraint activateConstraints:@[

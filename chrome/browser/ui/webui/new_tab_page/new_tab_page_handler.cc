@@ -53,10 +53,12 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/side_panel_controller_views.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_util_desktop.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -342,12 +344,14 @@ new_tab_page::mojom::PromoPtr MakePromo(const PromoData& data) {
   // PromoService to base::Value. The middle-slot promo part is then reencoded
   // from base::Value to a JSON string stored in |data.middle_slot_json|.
   auto middle_slot = base::JSONReader::Read(data.middle_slot_json);
-  if (!middle_slot.has_value())
+  if (!middle_slot.has_value()) {
     return nullptr;
+  }
 
   base::Value::Dict& middle_slot_dict = middle_slot->GetDict();
-  if (middle_slot_dict.FindBoolByDottedPath("hidden").value_or(false))
+  if (middle_slot_dict.FindBoolByDottedPath("hidden").value_or(false)) {
     return nullptr;
+  }
 
   auto promo = new_tab_page::mojom::Promo::New();
   promo->id = data.promo_id;
@@ -474,9 +478,7 @@ NewTabPageHandler::NewTabPageHandler(
     std::unique_ptr<NewTabPageFeaturePromoHelper>
         customize_chrome_feature_promo_helper,
     const base::Time& ntp_navigation_start_time,
-    const std::vector<ntp::ModuleIdDetail>* module_id_details,
-    customize_chrome::SidePanelController*
-        customize_chrome_side_panel_controller)
+    const std::vector<ntp::ModuleIdDetail>* module_id_details)
     : SettingsEnabledObserver(
           optimization_guide::UserVisibleFeatureKey::kWallpaperSearch),
       ntp_background_service_(
@@ -498,8 +500,10 @@ NewTabPageHandler::NewTabPageHandler(
       promo_service_(PromoServiceFactory::GetForProfile(profile)),
       interaction_module_id_trigger_dict_(
           MakeModuleInteractionTriggerIdDictionary()),
-      customize_chrome_side_panel_controller_(
-          customize_chrome_side_panel_controller),
+      tab_changed_subscription_(webui::RegisterTabInterfaceChanged(
+          web_contents,
+          base::BindRepeating(&NewTabPageHandler::OnTabInterfaceChanged,
+                              base::Unretained(this)))),
       page_{std::move(pending_page)},
       receiver_{this, std::move(pending_page_handler)} {
   CHECK(ntp_background_service_);
@@ -545,12 +549,7 @@ NewTabPageHandler::NewTabPageHandler(
       base::BindRepeating(&NewTabPageHandler::MaybeShowWebstoreToast,
                           base::Unretained(this)));
 
-  page_->SetCustomizeChromeSidePanelVisibility(
-      customize_chrome_side_panel_controller_->IsCustomizeChromeEntryShowing());
-  customize_chrome_side_panel_controller_->SetEntryChangedCallback(
-      base::BindRepeating(
-          &NewTabPageHandler::NotifyCustomizeChromeSidePanelVisibilityChanged,
-          weak_ptr_factory_.GetWeakPtr()));
+  OnTabInterfaceChanged();
 }
 
 NewTabPageHandler::~NewTabPageHandler() {
@@ -563,10 +562,6 @@ NewTabPageHandler::~NewTabPageHandler() {
         ->RemoveModelExecutionSettingsEnabledObserver(this);
     optimization_guide_keyed_service_ = nullptr;
   }
-}
-
-void NewTabPageHandler::TabWillDelete() {
-  customize_chrome_side_panel_controller_ = nullptr;
 }
 
 // static
@@ -689,8 +684,9 @@ void NewTabPageHandler::GetDoodle(GetDoodleCallback callback) {
 void NewTabPageHandler::ChooseLocalCustomBackground(
     ChooseLocalCustomBackgroundCallback callback) {
   // Early return if the select file dialog is already active.
-  if (select_file_dialog_)
+  if (select_file_dialog_) {
     return;
+  }
 
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this, std::make_unique<ChromeSelectFilePolicy>(web_contents_));
@@ -751,8 +747,9 @@ void NewTabPageHandler::SetModuleDisabled(const std::string& module_id,
   base::Value::List& list = update.Get();
   base::Value module_id_value(module_id);
   if (disabled) {
-    if (!base::Contains(list, module_id_value))
+    if (!base::Contains(list, module_id_value)) {
       list.Append(std::move(module_id_value));
+    }
   } else {
     list.EraseValue(module_id_value);
   }
@@ -883,6 +880,7 @@ void NewTabPageHandler::GetModulesOrder(GetModulesOrderCallback callback) {
 void NewTabPageHandler::SetCustomizeChromeSidePanelVisible(
     bool visible,
     new_tab_page::mojom::CustomizeChromeSection section_mojo) {
+  CHECK(customize_chrome_side_panel_controller_);
   if (!visible) {
     customize_chrome_side_panel_controller_->CloseSidePanel();
     return;
@@ -1126,6 +1124,11 @@ void NewTabPageHandler::OnPromoLinkClicked() {
   LogEvent(NTP_MIDDLE_SLOT_PROMO_LINK_CLICKED);
 }
 
+void NewTabPageHandler::SetCustomizeChromeSidePanelControllerForTesting(
+    customize_chrome::SidePanelController* side_panel_controller) {
+  SetCustomizeChromeSidePanelController(side_panel_controller);
+}
+
 void NewTabPageHandler::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
   OnThemeChanged();
 }
@@ -1276,8 +1279,9 @@ void NewTabPageHandler::FileSelected(const ui::SelectedFileInfo& file,
   LogEvent(NTP_CUSTOMIZE_LOCAL_IMAGE_DONE);
   LogEvent(NTP_BACKGROUND_UPLOAD_DONE);
 
-  if (choose_local_custom_background_callback_)
+  if (choose_local_custom_background_callback_) {
     std::move(choose_local_custom_background_callback_).Run(true);
+  }
 }
 
 void NewTabPageHandler::FileSelectionCanceled() {
@@ -1287,8 +1291,28 @@ void NewTabPageHandler::FileSelectionCanceled() {
   // with the event.
   LogEvent(NTP_CUSTOMIZE_LOCAL_IMAGE_CANCEL);
   LogEvent(NTP_BACKGROUND_UPLOAD_CANCEL);
-  if (choose_local_custom_background_callback_)
+  if (choose_local_custom_background_callback_) {
     std::move(choose_local_custom_background_callback_).Run(false);
+  }
+}
+
+void NewTabPageHandler::OnTabInterfaceChanged() {
+  tabs::TabInterface* tab_interface =
+      webui::GetTabInterface(web_contents_.get());
+  if (!tab_interface) {
+    // TODO(crbug.com/378475391): NTP should always load into a WebContents
+    // owned by a TabModel. Remove this once NTP loading has been restricted to
+    // browser tabs only.
+    LOG(ERROR) << "NewTabPage loaded into a non-browser-tab context";
+
+    // Reset any composed tab features here.
+    SetCustomizeChromeSidePanelController(nullptr);
+    return;
+  }
+
+  SetCustomizeChromeSidePanelController(
+      tab_interface->GetTabFeatures()
+          ->customize_chrome_side_panel_controller());
 }
 
 void NewTabPageHandler::OnLogoAvailable(
@@ -1317,8 +1341,7 @@ void NewTabPageHandler::OnLogoAvailable(
           logo->metadata.type, logo->dark_encoded_image->as_string(),
           logo->metadata.dark_mime_type, logo->metadata.dark_animated_url,
           logo->metadata.dark_width_px, logo->metadata.dark_height_px,
-          logo->metadata.dark_background_color,
-          logo->metadata.dark_log_url,
+          logo->metadata.dark_background_color, logo->metadata.dark_log_url,
           logo->metadata.dark_cta_log_url);
     }
     if (logo->metadata.on_click_url.is_valid()) {
@@ -1628,4 +1651,21 @@ void NewTabPageHandler::OnUndoDismissMobilePromo() {
                               appearance_count);
   profile_->GetPrefs()->SetBoolean(promos_prefs::kDesktopToiOSNtpPromoDismissed,
                                    false);
+}
+
+void NewTabPageHandler::SetCustomizeChromeSidePanelController(
+    customize_chrome::SidePanelController* side_panel_controller) {
+  customize_chrome_side_panel_controller_ = side_panel_controller;
+
+  if (customize_chrome_side_panel_controller_) {
+    page_->SetCustomizeChromeSidePanelVisibility(
+        customize_chrome_side_panel_controller_
+            ->IsCustomizeChromeEntryShowing());
+    customize_chrome_side_panel_controller_->SetEntryChangedCallback(
+        base::BindRepeating(
+            &NewTabPageHandler::NotifyCustomizeChromeSidePanelVisibilityChanged,
+            weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    page_->SetCustomizeChromeSidePanelVisibility(false);
+  }
 }

@@ -27,11 +27,11 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
-#include "components/autofill/core/browser/autofill_plus_address_delegate.h"
-#include "components/autofill/core/browser/password_form_classification.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
-#include "components/autofill/core/browser/ui/suggestion_test_helpers.h"
+#include "components/autofill/core/browser/integrators/autofill_plus_address_delegate.h"
+#include "components/autofill/core/browser/integrators/password_form_classification.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
@@ -287,6 +287,12 @@ TEST_F(PlusAddressServiceTest, BasicTest) {
             profile.plus_address);
 }
 
+TEST_F(PlusAddressServiceTest, MatchesPlusAddressFormat) {
+  EXPECT_FALSE(service().MatchesPlusAddressFormat(u"invalid_email"));
+  EXPECT_FALSE(service().MatchesPlusAddressFormat(u"asd@foo.com"));
+  EXPECT_TRUE(service().MatchesPlusAddressFormat(u"asd@grelay.com"));
+}
+
 TEST_F(PlusAddressServiceTest, GetPlusProfileByFacet) {
   const PlusProfile profile = test::CreatePlusProfile();
   EXPECT_FALSE(service().IsPlusAddress(*profile.plus_address));
@@ -496,7 +502,7 @@ TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Fails) {
 }
 
 // Doesn't run on ChromeOS since ClearPrimaryAccount() doesn't exist for it.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(PlusAddressServiceRequestsTest,
        PrimaryAccountCleared_TogglesPlusAddressCreationOff) {
   // Toggle creation off by removing the primary account.
@@ -537,7 +543,7 @@ TEST_F(PlusAddressServiceRequestsTest,
       kCreatePlusAddressEndpoint, test::MakeCreationResponse(profile));
   EXPECT_EQ(confirm.Get()->plus_address, profile.plus_address);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Tests that if an account error happens while a server request is ongoing,
 // the request ends in an error and the eventual server response is ignored.
@@ -614,7 +620,7 @@ TEST_F(PlusAddressServiceRequestsTest,
 }
 
 // Tests that ongoing network requests are cancelled on signout.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(PlusAddressServiceRequestsTest, OngoingRequestsCancelledOnSignout) {
   base::test::TestFuture<const PlusProfileOrError&> future;
   service().ReservePlusAddress(kNoSubdomainOrigin, future.GetCallback());
@@ -627,7 +633,7 @@ TEST_F(PlusAddressServiceRequestsTest, OngoingRequestsCancelledOnSignout) {
   EXPECT_EQ(future.Get(), base::unexpected(PlusAddressRequestError(
                               PlusAddressRequestErrorType::kUserSignedOut)));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Tests that if an inline suggestion without a proposed address is shown, then
@@ -1329,7 +1335,7 @@ class PlusAddressServiceSignoutTest : public PlusAddressServiceTest {
 };
 
 // Doesn't run on ChromeOS since ClearPrimaryAccount() doesn't exist for it.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(PlusAddressServiceSignoutTest, PrimaryAccountCleared_TogglesIsEnabled) {
   ASSERT_TRUE(service().IsEnabled());
 
@@ -1351,7 +1357,7 @@ TEST_F(PlusAddressServiceSignoutTest, PrimaryAccountCleared_TogglesIsEnabled) {
   EXPECT_FALSE(service().ShouldShowManualFallback(origin,
                                                   /*is_off_the_record=*/false));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(PlusAddressServiceSignoutTest,
        PrimaryRefreshTokenError_TogglesIsEnabled) {

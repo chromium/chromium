@@ -131,8 +131,6 @@ extern const base::FeatureParam<std::string>
 BASE_DECLARE_FEATURE(kPressAndHoldEscToExitBrowserFullscreen);
 #endif
 
-BASE_DECLARE_FEATURE(kResponsiveToolbar);
-
 BASE_DECLARE_FEATURE(kTabDuplicateMetrics);
 
 BASE_DECLARE_FEATURE(kTabScrollingButtonPosition);
@@ -246,8 +244,6 @@ BASE_DECLARE_FEATURE(kViewsFirstRunDialog);
 BASE_DECLARE_FEATURE(kViewsJSAppModalDialog);
 #endif
 
-BASE_DECLARE_FEATURE(kStopLoadingAnimationForHiddenWindow);
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 BASE_DECLARE_FEATURE(kUsePortalAccentColor);
 #endif
@@ -271,6 +267,10 @@ BASE_DECLARE_FEATURE(kEnablePolicyPromotionBanner);
 // Controls whether a performance improvement in browser feature support
 // checking is enabled.
 BASE_DECLARE_FEATURE(kInlineFullscreenPerfExperiment);
+
+// Controls whether the new page actions framework should be displaying page
+// actions.
+BASE_DECLARE_FEATURE(kPageActionsMigration);
 
 }  // namespace features
 

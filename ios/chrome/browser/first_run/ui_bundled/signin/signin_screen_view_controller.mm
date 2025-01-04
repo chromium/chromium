@@ -6,12 +6,13 @@
 
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/authentication/ui_bundled/views/identity_button_control.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/shared/public/commands/tos_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
@@ -178,7 +179,9 @@ constexpr CGFloat kEnterpriseIconPointSize = 13;
   // Set secondary button.
   if (self.signinStatus == SigninScreenConsumerSigninStatusAvailable) {
     self.secondaryActionString =
-        l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_DONT_SIGN_IN);
+        FRESignInSecondaryActionLabelUpdate()
+            ? l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_STAY_SIGNED_OUT)
+            : l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_DONT_SIGN_IN);
   }
 
   // Call super after setting up the strings and others, as required per super

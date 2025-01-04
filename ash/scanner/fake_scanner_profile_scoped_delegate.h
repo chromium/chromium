@@ -47,7 +47,10 @@ class FakeScannerProfileScopedDelegate : public ScannerProfileScopedDelegate {
   }
 
   // ScannerProfileScopedDelegate:
-  MOCK_METHOD(ScannerSystemState, GetSystemState, (), (const, override));
+  MOCK_METHOD(specialized_features::FeatureAccessFailureSet,
+              CheckFeatureAccess,
+              (),
+              (const, override));
   // Use the following as a gMock action to run `callback` synchronously when
   // this method is called:
   //     base::test::RunOnceCallback<1>(scanner_output, manta_status)
@@ -72,7 +75,6 @@ class FakeScannerProfileScopedDelegate : public ScannerProfileScopedDelegate {
               (override));
   drive::DriveServiceInterface* GetDriveService() override;
   google_apis::RequestSender* GetGoogleApisRequestSender() override;
-  bool IsGoogler() override;
 
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(

@@ -136,11 +136,12 @@ std::unique_ptr<FormFieldParser> CreditCardFieldParser::Parse(
     // Check for a credit card type (Visa, Mastercard, etc.) field.
     // All CC type fields encountered so far have been of type select.
     if (!credit_card_field->type_ && LikelyCardTypeSelectField(scanner)) {
-      // `MatchAttribute::kLabel` is not fully accurate, since
+      // Label as a match attribute is not fully accurate, since
       // `LikelyCardTypeSelectField()` decides based on the text/value of select
       // options. Since the value is like a label, label is used.
       credit_card_field->type_ = {
-          scanner->Cursor(), {.matched_attribute = MatchAttribute::kLabel}};
+          scanner->Cursor(),
+          {.matched_attribute = MatchInfo::MatchAttribute::kHighQualityLabel}};
       scanner->Advance();
       nb_unknown_fields = 0;
       continue;
@@ -507,8 +508,9 @@ bool CreditCardFieldParser::ParseExpirationDate(ParsingContext& context,
     // `MatchAttribute::kName` is not fully accurate, since the match was
     // determined based on the form control type. Since the form control type
     // is not a human visible string, name is preferred here.
-    expiration_date_ = {scanner->Cursor(),
-                        {.matched_attribute = MatchAttribute::kName}};
+    expiration_date_ = {
+        scanner->Cursor(),
+        {.matched_attribute = MatchInfo::MatchAttribute::kName}};
     expiration_month_.reset();
     expiration_year_.reset();
     scanner->Advance();
@@ -528,7 +530,11 @@ bool CreditCardFieldParser::ParseExpirationDate(ParsingContext& context,
                     {&expiration_year_field,
                      base::BindRepeating(&LikelyCardYearSelectField, &context,
                                          scanner)}})) {
-    MatchInfo match_info = {.matched_attribute = MatchAttribute::kLabel};
+    // `LikelyCardMonthSelectField()` and  `LikelyCardYearSelectField()` look at
+    // select option values, which are considered (high quality) labels for the
+    // lack of a better enum value.
+    MatchInfo match_info = {.matched_attribute =
+                                MatchInfo::MatchAttribute::kHighQualityLabel};
     expiration_month_ = {expiration_month_field, match_info};
     expiration_year_ = {expiration_year_field, match_info};
     return true;

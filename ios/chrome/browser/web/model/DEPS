@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/os_crypt/sync",
   "+ios/chrome/browser/application_context/model",
   "+ios/chrome/browser/autofill/model",
   "+ios/chrome/browser/browser_container/model",
@@ -127,8 +128,8 @@ specific_include_rules = {
     "+ios/chrome/browser/shared/ui/elements/windowed_container_view.h",
   ],
   "^sad_tab_tab_helper.mm": [
-    "+ios/chrome/browser/ui/fullscreen/fullscreen_controller.h",
-    "+ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h",
+    "+ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h",
+    "+ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h",
   ],
   "^web_state_delegate_browser_agent.h": [
     "+ios/chrome/browser/dialogs/ui_bundled/overlay_java_script_dialog_presenter.h",

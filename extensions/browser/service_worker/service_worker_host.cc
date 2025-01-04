@@ -152,7 +152,7 @@ void ServiceWorkerHost::DidInitializeServiceWorkerContext(
     return;
   }
 
-  int render_process_id = render_process_host_->GetID();
+  int render_process_id = render_process_host_->GetDeprecatedID();
   auto* process_map = ProcessMap::Get(browser_context);
   if (!process_map || !process_map->Contains(extension_id, render_process_id)) {
     // We check the process in addition to the registry to guard against
@@ -188,7 +188,7 @@ void ServiceWorkerHost::DidStartServiceWorkerContext(
   }
 
   DCHECK_NE(kMainThreadId, worker_thread_id);
-  int render_process_id = render_process_host_->GetID();
+  int render_process_id = render_process_host_->GetDeprecatedID();
   auto* process_map = ProcessMap::Get(browser_context);
   if (!process_map || !process_map->Contains(extension_id, render_process_id)) {
     // We can legitimately get here if the extension was already unloaded.
@@ -216,7 +216,7 @@ void ServiceWorkerHost::DidStopServiceWorkerContext(
   }
 
   DCHECK_NE(kMainThreadId, worker_thread_id);
-  int render_process_id = render_process_host_->GetID();
+  int render_process_id = render_process_host_->GetDeprecatedID();
   auto* process_map = ProcessMap::Get(browser_context);
   if (!process_map || !process_map->Contains(extension_id, render_process_id)) {
     // We can legitimately get here if the extension was already unloaded.
@@ -242,8 +242,9 @@ void ServiceWorkerHost::RequestWorker(mojom::RequestParamsPtr params,
     return;
   }
 
-  dispatcher_->DispatchForServiceWorker(
-      std::move(params), render_process_host_->GetID(), std::move(callback));
+  dispatcher_->DispatchForServiceWorker(std::move(params),
+                                        render_process_host_->GetDeprecatedID(),
+                                        std::move(callback));
 }
 
 void ServiceWorkerHost::WorkerResponseAck(const base::Uuid& request_uuid) {

@@ -124,6 +124,8 @@ class AppListClientImpl
       const std::vector<std::string>& apps_below_the_fold,
       bool is_apps_collections_page) override;
   bool HasReordered() override;
+  void GetAssistantNewEntryPointEligibility(
+      GetAssistantNewEntryPointEligibilityCallback callback) override;
 
   // user_manager::UserManager::UserSessionStateObserver:
   void ActiveUserChanged(user_manager::User* active_user) override;
@@ -228,6 +230,13 @@ class AppListClientImpl
       const std::string& id,
       ash::AppListLaunchedFrom launched_from,
       bool is_app_above_the_fold);
+
+  // Called when Assistant new entry point eligibility value is ready to read.
+  // `profile` is used to check if a profile has been switched during the async
+  // call.
+  void OnAssistantNewEntryPointEligibilityReady(
+      Profile* profile,
+      GetAssistantNewEntryPointEligibilityCallback callback);
 
   // Unowned pointer to the associated profile. May change if SetProfile is
   // called.

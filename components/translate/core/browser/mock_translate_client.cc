@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "build/chromeos_buildflags.h"
 #include "components/translate/core/browser/mock_translate_client.h"
 #include "components/translate/core/browser/translate_prefs.h"
 
@@ -12,7 +11,7 @@ namespace translate {
 
 namespace testing {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const char* preferred_languages_prefs = "settings.language.preferred_languages";
 #else
 const char* preferred_languages_prefs = nullptr;

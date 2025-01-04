@@ -188,6 +188,10 @@ class VIEWS_EXPORT LabelButton : public Button,
   // widget, and the parent of the containing widget.
   ButtonState GetVisualState() const;
 
+  bool has_paint_as_active_subscription_for_testing() {
+    return !!paint_as_active_subscription_;
+  }
+
  protected:
   LabelButtonImageContainer* image_container() {
     return image_container_.get();

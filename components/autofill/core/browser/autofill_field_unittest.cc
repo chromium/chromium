@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/autofill_field.h"
+
 #include "base/test/scoped_feature_list.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,28 +53,24 @@ TEST_F(AutofillFieldTest, AssumedProfileValueSource) {
   EXPECT_FALSE(field.assumed_profile_value_source().has_value());
 }
 
-TEST_F(AutofillFieldTest, FieldIsEligableForPredictionImprovementsFlag) {
+TEST_F(AutofillFieldTest, FieldIsEligibleForAutofillAiFlag) {
   AutofillField field;
 
   // Initially the value should not be identified as sensitive.
-  EXPECT_FALSE(
-      field.field_is_eligible_for_prediction_improvements().has_value());
+  EXPECT_FALSE(field.field_is_eligible_for_autofill_ai().has_value());
 
   // Test that setting the value works.
-  field.set_field_is_eligible_for_prediction_improvements(true);
-  ASSERT_TRUE(
-      field.field_is_eligible_for_prediction_improvements().has_value());
-  EXPECT_TRUE(field.field_is_eligible_for_prediction_improvements().value());
+  field.set_field_is_eligible_for_autofill_ai(true);
+  ASSERT_TRUE(field.field_is_eligible_for_autofill_ai().has_value());
+  EXPECT_TRUE(field.field_is_eligible_for_autofill_ai().value());
 
-  field.set_field_is_eligible_for_prediction_improvements(false);
-  ASSERT_TRUE(
-      field.field_is_eligible_for_prediction_improvements().has_value());
-  EXPECT_FALSE(field.field_is_eligible_for_prediction_improvements().value());
+  field.set_field_is_eligible_for_autofill_ai(false);
+  ASSERT_TRUE(field.field_is_eligible_for_autofill_ai().has_value());
+  EXPECT_FALSE(field.field_is_eligible_for_autofill_ai().value());
 
   // Verify that the state can also be reset.
-  field.set_field_is_eligible_for_prediction_improvements(std::nullopt);
-  EXPECT_FALSE(
-      field.field_is_eligible_for_prediction_improvements().has_value());
+  field.set_field_is_eligible_for_autofill_ai(std::nullopt);
+  EXPECT_FALSE(field.field_is_eligible_for_autofill_ai().has_value());
 }
 
 // Tests that if both autocomplete attributes and server agree it's a phone
@@ -391,7 +388,32 @@ INSTANTIATE_TEST_SUITE_P(
             .html_field_type = HtmlFieldType::kUnspecified,
             .server_type = ADDRESS_HOME_APT_NUM,
             .heuristic_type = ADDRESS_HOME_HOUSE_NUMBER_AND_APT,
-            .expected_result = ADDRESS_HOME_HOUSE_NUMBER_AND_APT}));
+            .expected_result = ADDRESS_HOME_HOUSE_NUMBER_AND_APT},
+        AutofillLocalHeuristicsOverridesParams{
+            .html_field_type = HtmlFieldType::kUnspecified,
+            .server_type = NAME_FULL,
+            .heuristic_type = ALTERNATIVE_FULL_NAME,
+            .expected_result = ALTERNATIVE_FULL_NAME},
+        AutofillLocalHeuristicsOverridesParams{
+            .html_field_type = HtmlFieldType::kUnspecified,
+            .server_type = NAME_FIRST,
+            .heuristic_type = ALTERNATIVE_GIVEN_NAME,
+            .expected_result = ALTERNATIVE_GIVEN_NAME},
+        AutofillLocalHeuristicsOverridesParams{
+            .html_field_type = HtmlFieldType::kUnspecified,
+            .server_type = NAME_LAST,
+            .heuristic_type = ALTERNATIVE_FAMILY_NAME,
+            .expected_result = ALTERNATIVE_FAMILY_NAME},
+        AutofillLocalHeuristicsOverridesParams{
+            .html_field_type = HtmlFieldType::kUnspecified,
+            .server_type = NAME_LAST_SECOND,
+            .heuristic_type = ALTERNATIVE_FAMILY_NAME,
+            .expected_result = ALTERNATIVE_FAMILY_NAME},
+        AutofillLocalHeuristicsOverridesParams{
+            .html_field_type = HtmlFieldType::kUnspecified,
+            .server_type = NAME_LAST_CORE,
+            .heuristic_type = ALTERNATIVE_FAMILY_NAME,
+            .expected_result = ALTERNATIVE_FAMILY_NAME}));
 
 // Tests that consecutive identical events are not added twice to the event log.
 TEST(AutofillFieldLogEventTypeTest, AppendLogEventIfNotRepeated) {

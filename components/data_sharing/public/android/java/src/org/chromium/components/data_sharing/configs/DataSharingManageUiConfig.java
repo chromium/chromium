@@ -25,6 +25,9 @@ public class DataSharingManageUiConfig {
 
         default void onShareInviteLinkClicked(GroupToken groupToken) {}
 
+        default void onShareInviteLinkClickedWithWait(
+                GroupToken groupToken, Callback<Boolean> onShareDone) {}
+
         default void onStopSharingInitiated(GroupData groupData, Callback<Boolean> readyToStop) {}
 
         default void onStopSharingSuccess(GroupData groupData) {}

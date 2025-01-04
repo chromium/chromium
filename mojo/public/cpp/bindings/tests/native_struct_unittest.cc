@@ -15,7 +15,7 @@
 #include "mojo/public/cpp/bindings/tests/bindings_test_base.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/wait.h"
-#include "mojo/public/interfaces/bindings/tests/test_native_types.mojom.h"
+#include "mojo/public/interfaces/bindings/tests/test_native_types.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo {

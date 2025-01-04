@@ -41,6 +41,9 @@
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
@@ -138,9 +141,6 @@
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
-#import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
-#import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_utils.h"
 #import "ios/chrome/browser/voice/model/speech_input_locale_config.h"
 #import "ios/chrome/browser/voice/model/voice_search_prefs.h"
@@ -1593,6 +1593,12 @@ struct EnhancedSafeBrowsingActivePromoData
 
 #pragma mark - Private methods
 
+- (void)stopManageSyncSettingsCoordinator {
+  [_manageSyncSettingsCoordinator stop];
+  _manageSyncSettingsCoordinator.delegate = nil;
+  _manageSyncSettingsCoordinator = nil;
+}
+
 - (void)handleIdentityUpdated:(id<SystemIdentity>)identity {
   if ([_identity isEqual:identity]) {
     [self reloadAccountCell];
@@ -2262,8 +2268,7 @@ struct EnhancedSafeBrowsingActivePromoData
   [_privacyCoordinator stop];
   _privacyCoordinator = nil;
 
-  [_manageSyncSettingsCoordinator stop];
-  _manageSyncSettingsCoordinator = nil;
+  [self stopManageSyncSettingsCoordinator];
 
   [_tabsCoordinator stop];
   _tabsCoordinator = nil;
@@ -2628,8 +2633,7 @@ struct EnhancedSafeBrowsingActivePromoData
 - (void)manageSyncSettingsCoordinatorWasRemoved:
     (ManageSyncSettingsCoordinator*)coordinator {
   DCHECK_EQ(_manageSyncSettingsCoordinator, coordinator);
-  [_manageSyncSettingsCoordinator stop];
-  _manageSyncSettingsCoordinator = nil;
+  [self stopManageSyncSettingsCoordinator];
 }
 
 - (NSString*)manageSyncSettingsCoordinatorTitle {

@@ -108,7 +108,7 @@ void ContextualSearchManager::GatherSurroundingText(
 void ContextualSearchManager::RemoveLastHistoryEntry(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jstring>& search_url,
+    std::string& search_url,
     jlong search_start_time_ms) {
   // The deletion window is from the time a search URL was put in history, up
   // to a short amount of time later.
@@ -124,8 +124,7 @@ void ContextualSearchManager::RemoveLastHistoryEntry(
     // because search results that are not promoted to a Tab do not make it to
     // the web history, only local.
     std::set<GURL> restrict_set;
-    restrict_set.insert(
-        GURL(base::android::ConvertJavaStringToUTF8(env, search_url)));
+    restrict_set.insert(GURL(search_url));
     service->ExpireHistoryBetween(
         restrict_set, history::kNoAppIdFilter, begin_time, end_time,
         /*user_initiated*/ false, base::DoNothing(), &history_task_tracker_);
@@ -136,47 +135,20 @@ void ContextualSearchManager::OnSearchTermResolutionResponse(
     const ResolvedSearchTerm& resolved_search_term) {
   // Notify the Java UX of the result.
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jstring> j_search_term =
-      base::android::ConvertUTF8ToJavaString(env,
-                                             resolved_search_term.search_term);
-  base::android::ScopedJavaLocalRef<jstring> j_display_text =
-      base::android::ConvertUTF8ToJavaString(env,
-                                             resolved_search_term.display_text);
-  base::android::ScopedJavaLocalRef<jstring> j_alternate_term =
-      base::android::ConvertUTF8ToJavaString(
-          env, resolved_search_term.alternate_term);
-  base::android::ScopedJavaLocalRef<jstring> j_mid =
-      base::android::ConvertUTF8ToJavaString(env, resolved_search_term.mid);
-  base::android::ScopedJavaLocalRef<jstring> j_context_language =
-      base::android::ConvertUTF8ToJavaString(
-          env, resolved_search_term.context_language);
-  base::android::ScopedJavaLocalRef<jstring> j_thumbnail_url =
-      base::android::ConvertUTF8ToJavaString(
-          env, resolved_search_term.thumbnail_url);
-  base::android::ScopedJavaLocalRef<jstring> j_caption =
-      base::android::ConvertUTF8ToJavaString(env, resolved_search_term.caption);
-  base::android::ScopedJavaLocalRef<jstring> j_quick_action_uri =
-      base::android::ConvertUTF8ToJavaString(
-          env, resolved_search_term.quick_action_uri);
-  base::android::ScopedJavaLocalRef<jstring> j_search_url_full =
-      base::android::ConvertUTF8ToJavaString(
-          env, resolved_search_term.search_url_full);
-  base::android::ScopedJavaLocalRef<jstring> j_search_url_preload =
-      base::android::ConvertUTF8ToJavaString(
-          env, resolved_search_term.search_url_preload);
-  base::android::ScopedJavaLocalRef<jstring> j_related_searches_json =
-      base::android::ConvertUTF8ToJavaString(
-          env, resolved_search_term.related_searches_json);
   Java_ContextualSearchManager_onSearchTermResolutionResponse(
       env, java_manager_, resolved_search_term.is_invalid,
-      resolved_search_term.response_code, j_search_term, j_display_text,
-      j_alternate_term, j_mid, resolved_search_term.prevent_preload,
+      resolved_search_term.response_code, resolved_search_term.search_term,
+      resolved_search_term.display_text, resolved_search_term.alternate_term,
+      resolved_search_term.mid, resolved_search_term.prevent_preload,
       resolved_search_term.selection_start_adjust,
-      resolved_search_term.selection_end_adjust, j_context_language,
-      j_thumbnail_url, j_caption, j_quick_action_uri,
-      resolved_search_term.quick_action_category, j_search_url_full,
-      j_search_url_preload, resolved_search_term.coca_card_tag,
-      j_related_searches_json);
+      resolved_search_term.selection_end_adjust,
+      resolved_search_term.context_language, resolved_search_term.thumbnail_url,
+      resolved_search_term.caption, resolved_search_term.quick_action_uri,
+      resolved_search_term.quick_action_category,
+      resolved_search_term.search_url_full,
+      resolved_search_term.search_url_preload,
+      resolved_search_term.coca_card_tag,
+      resolved_search_term.related_searches_json);
 }
 
 void ContextualSearchManager::OnTextSurroundingSelectionAvailable(
@@ -185,13 +157,8 @@ void ContextualSearchManager::OnTextSurroundingSelectionAvailable(
     size_t start_offset,
     size_t end_offset) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jstring> j_encoding =
-      base::android::ConvertUTF8ToJavaString(env, encoding.c_str());
-  base::android::ScopedJavaLocalRef<jstring> j_surrounding_text =
-      base::android::ConvertUTF16ToJavaString(env, surrounding_text.c_str());
   Java_ContextualSearchManager_onTextSurroundingSelectionAvailable(
-      env, java_manager_, j_encoding, j_surrounding_text, start_offset,
-      end_offset);
+      env, java_manager_, encoding, surrounding_text, start_offset, end_offset);
 }
 
 jlong JNI_ContextualSearchManager_Init(JNIEnv* env,

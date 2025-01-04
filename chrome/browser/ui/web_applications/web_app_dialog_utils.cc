@@ -122,8 +122,9 @@ WebAppInstalledCallback& GetInstalledCallbackForTesting() {
 void OnWebAppInstalled(WebAppInstalledCallback callback,
                        const webapps::AppId& installed_app_id,
                        webapps::InstallResultCode code) {
-  if (GetInstalledCallbackForTesting())
+  if (GetInstalledCallbackForTesting()) {
     std::move(GetInstalledCallbackForTesting()).Run(installed_app_id, code);
+  }
 
   std::move(callback).Run(installed_app_id, code);
 }
@@ -133,8 +134,9 @@ void OnWebAppInstalled(WebAppInstalledCallback callback,
 bool CanCreateWebApp(const Browser* browser) {
   // Check whether user is allowed to install web app.
   if (!WebAppProvider::GetForWebApps(browser->profile()) ||
-      !AreWebAppsUserInstallable(browser->profile()))
+      !AreWebAppsUserInstallable(browser->profile())) {
     return false;
+  }
 
   // Check whether we're able to install the current page as an app.
   content::WebContents* web_contents =
@@ -145,8 +147,9 @@ bool CanCreateWebApp(const Browser* browser) {
   }
   content::NavigationEntry* entry =
       web_contents->GetController().GetLastCommittedEntry();
-  if (entry && entry->GetPageType() == content::PAGE_TYPE_ERROR)
+  if (entry && entry->GetPageType() == content::PAGE_TYPE_ERROR) {
     return false;
+  }
 
   return true;
 }
@@ -219,8 +222,9 @@ bool CreateWebAppFromManifest(content::WebContents* web_contents,
                               WebAppInstalledCallback installed_callback,
                               PwaInProductHelpState iph_state) {
   auto* provider = WebAppProvider::GetForWebContents(web_contents);
-  if (!provider)
+  if (!provider) {
     return false;
+  }
 
   webapps::MLInstallabilityPromoter* promoter =
       webapps::MLInstallabilityPromoter::FromWebContents(web_contents);

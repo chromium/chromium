@@ -39,8 +39,9 @@ void OneClickSigninDialogView::ShowDialog(
     std::unique_ptr<OneClickSigninLinksDelegate> delegate,
     gfx::NativeWindow window,
     base::OnceCallback<void(bool)> confirmed_callback) {
-  if (IsShowing())
+  if (IsShowing()) {
     return;
+  }
 
   dialog_view_ = new OneClickSigninDialogView(email, std::move(delegate),
                                               std::move(confirmed_callback));
@@ -55,8 +56,9 @@ bool OneClickSigninDialogView::IsShowing() {
 
 // static
 void OneClickSigninDialogView::Hide() {
-  if (IsShowing())
+  if (IsShowing()) {
     dialog_view_->GetWidget()->Close();
+  }
 }
 
 void OneClickSigninDialogView::WindowClosing() {
@@ -113,8 +115,9 @@ OneClickSigninDialogView::OneClickSigninDialogView(
                             IDS_ONE_CLICK_SIGNIN_DIALOG_ADVANCED))
                         .SetCallback(base::BindRepeating(
                             [](OneClickSigninDialogView* view) {
-                              if (view->Accept())
+                              if (view->Accept()) {
                                 Hide();
+                              }
                             },
                             base::Unretained(this)))
                         .SetHorizontalAlignment(gfx::ALIGN_LEFT))
@@ -122,8 +125,9 @@ OneClickSigninDialogView::OneClickSigninDialogView(
 }
 
 OneClickSigninDialogView::~OneClickSigninDialogView() {
-  if (!confirmed_callback_.is_null())
+  if (!confirmed_callback_.is_null()) {
     std::move(confirmed_callback_).Run(false);
+  }
 }
 
 BEGIN_METADATA(OneClickSigninDialogView)

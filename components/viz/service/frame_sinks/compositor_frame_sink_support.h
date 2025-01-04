@@ -491,12 +491,15 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
     // surface, to set `frame_embed_timestamp_`.
     void set_surface_id(SurfaceId surface_id);
 
+    void set_frame_id(BeginFrameId frame_id);
+
     base::TimeTicks frame_submit_timestamp() const {
       return frame_submit_timestamp_;
     }
     base::TimeTicks frame_embed_timestamp() const {
       return frame_embed_timestamp_;
     }
+    BeginFrameId frame_id() const { return frame_id_; }
 
    private:
     void OnAddedSurfaceReference(const SurfaceId& parent_id,
@@ -513,6 +516,12 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
     // The surface ID that is associated with the frame.
     SurfaceId surface_id_;
     const raw_ptr<SurfaceManager> surface_manager_;
+    // This frame id maps to BeginFrameId during compositor frame submission in
+    // order to preserve frame submission info across atypical rendering flows.
+    // Values will be propagated through presentation promise feedback to
+    // renderer main thread, and being useful there as an indicator for
+    // unreliable presentation time.
+    BeginFrameId frame_id_;
   };
 
   // Maps |frame_token| to the timestamps when that frame was received and
@@ -573,7 +582,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // Region capture bounds associated with the last surface that was aggregated.
   RegionCaptureBounds current_capture_bounds_;
 
-  // When VizLayers is enabled, this owns the display tree and forwards its
+  // When TreesInViz is enabled, this owns the display tree and forwards its
   // submitted compositor frames directly to `this`.
   std::unique_ptr<LayerContextImpl> layer_context_;
   bool layer_context_wants_begin_frames_ = false;

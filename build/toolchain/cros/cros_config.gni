@@ -6,4 +6,10 @@ declare_args() {
   # If set, build lacros with Chromium's toolchain instead of with Chrome OS's.
   # TODO(thakis): Set this to `= chromeos_is_browser_only` once that works.
   lacros_use_chromium_toolchain = false
+
+  # Whether or not the toolchain used to build for ChromeOS needs
+  # --rewrapper-path and --rewrapper-cfg arguments.
+  # TODO(crbug.com/356466829): Remove this once we no longer use
+  # ChromeOS's toolchain.
+  cros_needs_rewrapper_path_arg = true
 }

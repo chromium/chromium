@@ -53,8 +53,8 @@ base::Value SiteSearchDictFromPolicyValue(const base::Value::Dict& policy_dict,
 
   dict.Set(DefaultSearchManager::kFeaturedByPolicy, featured);
 
-  dict.Set(DefaultSearchManager::kCreatedByPolicy,
-           static_cast<int>(TemplateURLData::CreatedByPolicy::kSiteSearch));
+  dict.Set(DefaultSearchManager::kPolicyOrigin,
+           static_cast<int>(TemplateURLData::PolicyOrigin::kSiteSearch));
   dict.Set(DefaultSearchManager::kEnforcedByPolicy, false);
   dict.Set(DefaultSearchManager::kIsActive,
            static_cast<int>(TemplateURLData::ActiveStatus::kTrue));
@@ -226,16 +226,16 @@ void SiteSearchPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
 
   base::Value::List providers;
   for (const base::Value& item : policy_value->GetList()) {
-      const base::Value::Dict& policy_dict = item.GetDict();
-      const std::string& shortcut = *policy_dict.FindString(kShortcut);
-      if (ignored_shortcuts_.find(shortcut) == ignored_shortcuts_.end()) {
-        providers.Append(
-            SiteSearchDictFromPolicyValue(policy_dict, /*featured=*/false));
-        if (policy_dict.FindBool(kFeatured).value_or(false)) {
-          providers.Append(SiteSearchDictFromPolicyValue(policy_dict,
-                                                         /*featured=*/true));
-        }
+    const base::Value::Dict& policy_dict = item.GetDict();
+    const std::string& shortcut = *policy_dict.FindString(kShortcut);
+    if (ignored_shortcuts_.find(shortcut) == ignored_shortcuts_.end()) {
+      providers.Append(
+          SiteSearchDictFromPolicyValue(policy_dict, /*featured=*/false));
+      if (policy_dict.FindBool(kFeatured).value_or(false)) {
+        providers.Append(SiteSearchDictFromPolicyValue(policy_dict,
+                                                       /*featured=*/true));
       }
+    }
   }
 
   prefs->SetValue(EnterpriseSearchManager::kSiteSearchSettingsPrefName,

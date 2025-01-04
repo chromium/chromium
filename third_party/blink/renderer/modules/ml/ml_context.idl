@@ -297,13 +297,7 @@ typedef record<USVString, MLTensor> MLNamedTensors;
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
     RaisesException
-  ] void writeTensor(MLTensor dstTensor, [AllowShared] ArrayBufferView srcData);
-
-  [
-    RuntimeEnabled=MachineLearningNeuralNetwork,
-    CallWith=ScriptState,
-    RaisesException
-  ] void writeTensor(MLTensor dstTensor, [AllowShared] ArrayBuffer srcData);
+  ] void writeTensor(MLTensor dstTensor, AllowSharedBufferSource srcData);
 
   [
     RuntimeEnabled=MachineLearningNeuralNetwork,
@@ -318,15 +312,7 @@ typedef record<USVString, MLTensor> MLNamedTensors;
     RaisesException
   ] Promise<undefined> readTensor(
         MLTensor sourceTensor,
-        [AllowShared] ArrayBufferView destinationData);
-
-  [
-    RuntimeEnabled=MachineLearningNeuralNetwork,
-    CallWith=ScriptState,
-    RaisesException
-  ] Promise<undefined> readTensor(
-        MLTensor sourceTensor,
-        [AllowShared] ArrayBuffer destinationData);
+        AllowSharedBufferSource destinationData);
 
   [
     RuntimeEnabled=MachineLearningNeuralNetwork,

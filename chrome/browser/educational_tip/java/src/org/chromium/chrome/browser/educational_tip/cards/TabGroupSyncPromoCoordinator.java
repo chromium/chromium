@@ -62,9 +62,4 @@ public class TabGroupSyncPromoCoordinator implements EducationalTipCardProvider 
     public void onCardClicked() {
         mOnClickedRunnable.run();
     }
-
-    @Override
-    public @EducationalTipCardType int getCardType() {
-        return EducationalTipCardType.TAB_GROUP_SYNC;
-    }
 }

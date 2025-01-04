@@ -30,7 +30,6 @@ import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowPackageManager;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -46,9 +45,8 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.toolbar.ToolbarPositionController.StateTransition;
 import org.chromium.ui.KeyboardVisibilityDelegate;
-
-import java.util.Observer;
 
 /** Unit tests for {@link ToolbarPositionController}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -167,6 +165,11 @@ public class ToolbarPositionControllerTest {
 
                 @Override
                 public boolean shouldAnimateBrowserControlsHeightChanges() {
+                    return false;
+                }
+
+                @Override
+                public boolean shouldUpdateOffsetsWhenConstraintsChange() {
                     return false;
                 }
 
@@ -308,13 +311,8 @@ public class ToolbarPositionControllerTest {
     public void testIsToolbarPositionCustomizationEnabled_foldable() {
         ShadowPackageManager shadowPackageManager = Shadows.shadowOf(mContext.getPackageManager());
         shadowPackageManager.setSystemFeature(PackageManager.FEATURE_SENSOR_HINGE_ANGLE, true);
-        // Foldable check is disabled on debug builds to work around emulators reporting as
-        // foldable.
-        if (!BuildInfo.isDebugApp()) {
-            assertFalse(
-                    ToolbarPositionController.isToolbarPositionCustomizationEnabled(
-                            mContext, false));
-        }
+        assertTrue(
+                ToolbarPositionController.isToolbarPositionCustomizationEnabled(mContext, false));
     }
 
     @Test
@@ -444,7 +442,7 @@ public class ToolbarPositionControllerTest {
         assertEquals(toolbarLayer.getLayerVisibility(), LayerVisibility.VISIBLE);
         assertEquals(toolbarLayer.getScrollBehavior(), LayerScrollBehavior.DEFAULT_SCROLL_OFF);
 
-        toolbarLayer.onBrowserControlsOffsetUpdate(12);
+        toolbarLayer.onBrowserControlsOffsetUpdate(12, false);
         verify(mControlContainerView).setTranslationY(12);
         assertEquals(mBottomToolbarOffsetSupplier.get().intValue(), 12);
 
@@ -454,7 +452,7 @@ public class ToolbarPositionControllerTest {
         assertEquals(progressBarLayer.getLayerVisibility(), LayerVisibility.VISIBLE);
         assertEquals(progressBarLayer.getScrollBehavior(), LayerScrollBehavior.DEFAULT_SCROLL_OFF);
 
-        progressBarLayer.onBrowserControlsOffsetUpdate(-12);
+        progressBarLayer.onBrowserControlsOffsetUpdate(-12, false);
         verify(mProgressBarContainer).setTranslationY(-12);
 
         mIsOmniboxFocused.set(true);
@@ -483,6 +481,149 @@ public class ToolbarPositionControllerTest {
         assertEquals(
                 R.string.address_bar_settings_bottom,
                 ToolbarPositionController.getToolbarPositionResId());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
+    public void testCalculateStateTransition() {
+        boolean formFieldStateChanged = false;
+        boolean prefStateChanged = false;
+        boolean ntpShowing = false;
+        boolean tabSwitcherShowing = false;
+        boolean isOmniboxFocused = false;
+        boolean isFindInPageShowing = false;
+        boolean isFormFieldFocusedWithKeyboardVisible = false;
+        boolean doesUserPreferTopToolbar = false;
+
+        assertEquals(
+                StateTransition.NONE,
+                ToolbarPositionController.calculateStateTransition(
+                        formFieldStateChanged,
+                        prefStateChanged,
+                        ntpShowing,
+                        tabSwitcherShowing,
+                        isOmniboxFocused,
+                        isFindInPageShowing,
+                        isFormFieldFocusedWithKeyboardVisible,
+                        doesUserPreferTopToolbar,
+                        ControlsPosition.BOTTOM));
+
+        assertEquals(
+                StateTransition.SNAP_TO_TOP,
+                ToolbarPositionController.calculateStateTransition(
+                        formFieldStateChanged,
+                        prefStateChanged,
+                        true,
+                        tabSwitcherShowing,
+                        isOmniboxFocused,
+                        isFindInPageShowing,
+                        isFormFieldFocusedWithKeyboardVisible,
+                        doesUserPreferTopToolbar,
+                        ControlsPosition.BOTTOM));
+
+        assertEquals(
+                StateTransition.SNAP_TO_TOP,
+                ToolbarPositionController.calculateStateTransition(
+                        formFieldStateChanged,
+                        prefStateChanged,
+                        ntpShowing,
+                        true,
+                        isOmniboxFocused,
+                        isFindInPageShowing,
+                        isFormFieldFocusedWithKeyboardVisible,
+                        doesUserPreferTopToolbar,
+                        ControlsPosition.BOTTOM));
+
+        assertEquals(
+                StateTransition.SNAP_TO_TOP,
+                ToolbarPositionController.calculateStateTransition(
+                        formFieldStateChanged,
+                        prefStateChanged,
+                        ntpShowing,
+                        true,
+                        isOmniboxFocused,
+                        isFindInPageShowing,
+                        isFormFieldFocusedWithKeyboardVisible,
+                        doesUserPreferTopToolbar,
+                        ControlsPosition.BOTTOM));
+
+        assertEquals(
+                StateTransition.SNAP_TO_TOP,
+                ToolbarPositionController.calculateStateTransition(
+                        formFieldStateChanged,
+                        prefStateChanged,
+                        ntpShowing,
+                        tabSwitcherShowing,
+                        true,
+                        isFindInPageShowing,
+                        isFormFieldFocusedWithKeyboardVisible,
+                        doesUserPreferTopToolbar,
+                        ControlsPosition.BOTTOM));
+
+        assertEquals(
+                StateTransition.SNAP_TO_TOP,
+                ToolbarPositionController.calculateStateTransition(
+                        formFieldStateChanged,
+                        prefStateChanged,
+                        ntpShowing,
+                        tabSwitcherShowing,
+                        isOmniboxFocused,
+                        true,
+                        isFormFieldFocusedWithKeyboardVisible,
+                        doesUserPreferTopToolbar,
+                        ControlsPosition.BOTTOM));
+
+        assertEquals(
+                StateTransition.SNAP_TO_TOP,
+                ToolbarPositionController.calculateStateTransition(
+                        formFieldStateChanged,
+                        prefStateChanged,
+                        ntpShowing,
+                        tabSwitcherShowing,
+                        isOmniboxFocused,
+                        isFindInPageShowing,
+                        true,
+                        doesUserPreferTopToolbar,
+                        ControlsPosition.BOTTOM));
+
+        assertEquals(
+                StateTransition.SNAP_TO_BOTTOM,
+                ToolbarPositionController.calculateStateTransition(
+                        formFieldStateChanged,
+                        prefStateChanged,
+                        ntpShowing,
+                        tabSwitcherShowing,
+                        isOmniboxFocused,
+                        isFindInPageShowing,
+                        isFormFieldFocusedWithKeyboardVisible,
+                        doesUserPreferTopToolbar,
+                        ControlsPosition.TOP));
+
+        assertEquals(
+                StateTransition.ANIMATE_TO_BOTTOM,
+                ToolbarPositionController.calculateStateTransition(
+                        true,
+                        prefStateChanged,
+                        ntpShowing,
+                        tabSwitcherShowing,
+                        isOmniboxFocused,
+                        isFindInPageShowing,
+                        isFormFieldFocusedWithKeyboardVisible,
+                        doesUserPreferTopToolbar,
+                        ControlsPosition.TOP));
+
+        assertEquals(
+                StateTransition.ANIMATE_TO_BOTTOM,
+                ToolbarPositionController.calculateStateTransition(
+                        formFieldStateChanged,
+                        true,
+                        ntpShowing,
+                        tabSwitcherShowing,
+                        isOmniboxFocused,
+                        isFindInPageShowing,
+                        isFormFieldFocusedWithKeyboardVisible,
+                        doesUserPreferTopToolbar,
+                        ControlsPosition.TOP));
     }
 
     private void assertControlsAtBottom() {

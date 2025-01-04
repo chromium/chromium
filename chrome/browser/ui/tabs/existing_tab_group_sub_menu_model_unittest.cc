@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/tabs/existing_tab_group_sub_menu_model.h"
+
 #include <memory>
 
 #include "chrome/browser/ui/browser_list.h"
@@ -157,8 +158,9 @@ TEST_F(ExistingTabGroupSubMenuModelTest, AddAllSelectedTabsToAnotherWindow) {
   // order since at this point the only tab that is selected is the grouped tab.
   // We are unable to deselect this tab first. Doing so creates a state where no
   // tabs are selected which is not allowed.
-  for (int i = model_1->count() - 1; i >= 0; --i)
+  for (int i = model_1->count() - 1; i >= 0; --i) {
     model_1->ToggleSelectionAt(i);
+  }
 
   const ui::ListSelectionModel::SelectedIndices selection_indices =
       model_1->selection_model().selected_indices();
@@ -179,8 +181,9 @@ TEST_F(ExistingTabGroupSubMenuModelTest, AddAllSelectedTabsToAnotherWindow) {
   int num_selected = 0;
 
   for (int i = 0; i < model_2->count(); ++i) {
-    if (model_2->IsTabSelected(i))
+    if (model_2->IsTabSelected(i)) {
       ++num_selected;
+    }
   }
 
   // Expect the number of tabs we moved from model_1 into model_2 is still 3.

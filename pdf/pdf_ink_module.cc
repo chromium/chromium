@@ -40,7 +40,7 @@
 #include "third_party/ink/src/ink/brush/brush.h"
 #include "third_party/ink/src/ink/geometry/affine_transform.h"
 #include "third_party/ink/src/ink/geometry/intersects.h"
-#include "third_party/ink/src/ink/geometry/modeled_shape.h"
+#include "third_party/ink/src/ink/geometry/partitioned_mesh.h"
 #include "third_party/ink/src/ink/geometry/rect.h"
 #include "third_party/ink/src/ink/rendering/skia/native/skia_renderer.h"
 #include "third_party/ink/src/ink/strokes/in_progress_stroke.h"
@@ -163,16 +163,10 @@ bool PdfInkModule::DrawThumbnail(SkCanvas& canvas, int page_index) {
     return false;
   }
 
-  // Since thumbnails are always drawn without any rotation, `transform` only
-  // needs to perform scaling.
-  const SkImageInfo canvas_info = canvas.imageInfo();
-  const gfx::Rect content_rect = client_->GetPageContentsRect(page_index);
-  const float ratio =
-      client_->GetZoom() *
-      std::min(
-          static_cast<float>(canvas_info.width()) / content_rect.width(),
-          static_cast<float>(canvas_info.height()) / content_rect.height());
-  const ink::AffineTransform transform = {ratio, 0, 0, 0, ratio, 0};
+  const ink::AffineTransform transform = GetInkThumbnailTransform(
+      gfx::SkISizeToSize(canvas.imageInfo().dimensions()),
+      client_->GetOrientation(), client_->GetPageContentsRect(page_index),
+      client_->GetZoom());
 
   ink::SkiaRenderer skia_renderer;
   for (const FinishedStrokeState& finished_stroke : it->second) {
@@ -464,7 +458,7 @@ bool PdfInkModule::StartStroke(const gfx::PointF& position,
   // compensate for missed input events.
   CHECK(!state.input_last_event.has_value());
   state.input_last_event =
-      DrawingStrokeState::EventDetails{position, timestamp};
+      DrawingStrokeState::EventDetails{position, timestamp, tool_type};
 
   return true;
 }
@@ -492,7 +486,7 @@ bool PdfInkModule::ContinueStroke(const gfx::PointF& position,
     // If `position` is outside the page, and so was `last_position`, then just
     // update `last_input_event` and treat the event as handled.
     state.input_last_event =
-        DrawingStrokeState::EventDetails{position, timestamp};
+        DrawingStrokeState::EventDetails{position, timestamp, tool_type};
     return true;
   }
 
@@ -514,7 +508,7 @@ bool PdfInkModule::ContinueStroke(const gfx::PointF& position,
     // Remember `position` and `timestamp` for use in the next event and treat
     // event as handled.
     state.input_last_event =
-        DrawingStrokeState::EventDetails{position, timestamp};
+        DrawingStrokeState::EventDetails{position, timestamp, tool_type};
     return true;
   }
 
@@ -543,7 +537,7 @@ bool PdfInkModule::ContinueStroke(const gfx::PointF& position,
 
   // Remember `position` and `timestamp` for use in the next event.
   state.input_last_event =
-      DrawingStrokeState::EventDetails{position, timestamp};
+      DrawingStrokeState::EventDetails{position, timestamp, tool_type};
 
   return true;
 }
@@ -695,7 +689,7 @@ bool PdfInkModule::EraseHelper(const gfx::PointF& position, int page_index) {
 
       // No transform needed, as `eraser_rect` is already using transformed
       // coordinates from `canonical_position`.
-      const ink::ModeledShape& shape = stroke.stroke.GetShape();
+      const ink::PartitionedMesh& shape = stroke.stroke.GetShape();
       if (!ink::Intersects(eraser_rect, shape, kIdentityTransform)) {
         continue;
       }
@@ -815,10 +809,41 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
 
   const std::string& brush_type_string = *data->FindString("type");
   if (brush_type_string == "eraser") {
-    current_tool_state_.emplace<EraserState>();
+    if (is_drawing_stroke()) {
+      DrawingStrokeState& state = drawing_stroke_state();
+      if (state.start_time.has_value()) {
+        // PdfInkModule is currently drawing a stroke.  Finish that before
+        // transitioning, using the last known input.
+        CHECK(state.input_last_event.has_value());
+        const DrawingStrokeState::EventDetails& input_last_event =
+            state.input_last_event.value();
+        FinishStroke(input_last_event.position, input_last_event.timestamp,
+                     input_last_event.tool_type);
+      }
+
+      current_tool_state_.emplace<EraserState>();
+    } else {
+      // Do not adjust `current_tool_state_` if an erase stroke is already
+      // in-progress.  Changes to the tool state will only apply to subsequent
+      // strokes.
+      if (!erasing_stroke_state().erasing) {
+        current_tool_state_.emplace<EraserState>();
+      }
+    }
+
     eraser_size_ = size;
     MaybeSetCursor();
     return;
+  }
+
+  if (is_erasing_stroke()) {
+    EraserState& state = erasing_stroke_state();
+    if (state.erasing) {
+      // An erasing stroke is in-progress.  Finish that off before
+      // transitioning, using the last known input.
+      CHECK(state.input_last_event_position.has_value());
+      FinishEraseStroke(state.input_last_event_position.value());
+    }
   }
 
   // All brush types except the eraser should have a color and size.
@@ -836,7 +861,12 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
   std::optional<PdfInkBrush::Type> brush_type =
       PdfInkBrush::StringToType(brush_type_string);
   CHECK(brush_type.has_value());
-  current_tool_state_.emplace<DrawingStrokeState>();
+  // Do not adjust `current_tool_state_` if a drawing stroke is already
+  // in-progress.  Changes to the tool state will only apply to subsequent
+  // strokes.
+  if (is_erasing_stroke() || !drawing_stroke_state().start_time.has_value()) {
+    current_tool_state_.emplace<DrawingStrokeState>();
+  }
   drawing_stroke_state().brush_type = brush_type.value();
 
   PdfInkBrush& current_brush = GetDrawingBrush();
@@ -1179,7 +1209,7 @@ PdfInkModule::FinishedStrokeState& PdfInkModule::FinishedStrokeState::operator=(
 
 PdfInkModule::FinishedStrokeState::~FinishedStrokeState() = default;
 
-PdfInkModule::LoadedV2ShapeState::LoadedV2ShapeState(ink::ModeledShape shape,
+PdfInkModule::LoadedV2ShapeState::LoadedV2ShapeState(ink::PartitionedMesh shape,
                                                      InkModeledShapeId id)
     : shape(std::move(shape)), id(id) {}
 

@@ -41,8 +41,9 @@ base::FilePath GetPath(std::string_view basename) {
 bool WriteToFile(const std::string& content, std::string_view basename) {
   base::FilePath path = GetPath(basename);
   bool succeeded = base::WriteFile(path, content.data());
-  if (!succeeded)
+  if (!succeeded) {
     std::cerr << "Failed to write to " << path.AsUTF8Unsafe() << '\n';
+  }
   return succeeded;
 }
 
@@ -171,8 +172,9 @@ int GenerateSkeletons(const char* input_file_name,
     }
   }
 
-  if (!WriteToFile(output, output_file_name))
+  if (!WriteToFile(output, output_file_name)) {
     return 1;
+  }
 
   std::cout << "The first domain with the largest number of labels is "
             << domain_with_max_labels << " and has " << max_labels

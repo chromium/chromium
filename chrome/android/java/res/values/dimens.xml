@@ -104,6 +104,11 @@ found in the LICENSE file.
     <!-- Slop value for allowing slight misses on the compositor button. -->
     <dimen name="compositor_button_slop">10dp</dimen>
 
+    <!-- The activity indicator bubble dimensions on tab favicons for tablet tab strip. -->
+    <dimen name="compositor_tab_title_favicon_bubble_inner_size">6dp</dimen>
+    <dimen name="compositor_tab_title_favicon_bubble_outer_size">10dp</dimen>
+    <dimen name="compositor_tab_title_favicon_bubble_offset">6dp</dimen>
+
     <!-- First Run Experience dimensions -->
     <dimen name="fre_tos_image_height">110dp</dimen>
     <dimen name="fre_loading_spinner_size">48dp</dimen>

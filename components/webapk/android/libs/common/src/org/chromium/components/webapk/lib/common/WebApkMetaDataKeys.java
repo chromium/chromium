@@ -4,7 +4,10 @@
 
 package org.chromium.components.webapk.lib.common;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** <meta-data> keys for WebAPK Android Manifest. */
+@NullMarked
 public final class WebApkMetaDataKeys {
     public static final String SHELL_APK_VERSION = "org.chromium.webapk.shell_apk.shellApkVersion";
     public static final String RUNTIME_HOST = "org.chromium.webapk.shell_apk.runtimeHost";

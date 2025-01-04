@@ -20,9 +20,11 @@ class Rect;
 // `opacity_ratio` is expected to have a value between 0.0 and 1.0, otherwise it
 // will clamped. It can be used with animation current value to fade in the
 // ring.
+// `stroke_width` is the width of the ring.
 void PaintRingDottedPath(gfx::Canvas* canvas,
                          const gfx::Rect& ring_bounds,
                          SkColor ring_color,
-                         double opacity_ratio = 1.);
+                         double opacity_ratio = 1.,
+                         float stroke_width = 1.5);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DOTTED_ICON_H_

@@ -43,4 +43,7 @@ cargo_crate("lib") {
     "release_max_level_info",
     "std",
   ]
+  rustflags = [
+    "--cap-lints=allow",  # Suppress all warnings in crates.io crates
+  ]
 }

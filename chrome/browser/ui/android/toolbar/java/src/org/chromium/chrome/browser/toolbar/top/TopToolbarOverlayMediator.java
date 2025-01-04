@@ -209,19 +209,11 @@ public class TopToolbarOverlayMediator {
                                         offsetTagsInfo.getContentOffsetTag());
                             }
 
-                            // With BCIV enabled, scrolling will not update the content offset of
-                            // the browser's compositor frame. If we transition to a HIDDEN state
-                            // while the controls are already scrolled offscreen, then there is no
-                            // need to move the top controls, which means the renderer will not
-                            // notify the browser to move them. We set the content offset here so
-                            // the browser will submit a compositor frame with the correct offset.
-                            int contentOffset = mBrowserControlsStateProvider.getContentOffset();
-                            if (constraints == BrowserControlsState.HIDDEN
-                                    && contentOffset
-                                            == mBrowserControlsStateProvider
-                                                    .getTopControlsMinHeight()) {
+                            if (mBrowserControlsStateProvider
+                                    .shouldUpdateOffsetsWhenConstraintsChange()) {
                                 mModel.set(
-                                        TopToolbarOverlayProperties.CONTENT_OFFSET, contentOffset);
+                                        TopToolbarOverlayProperties.CONTENT_OFFSET,
+                                        mBrowserControlsStateProvider.getContentOffset());
                             }
                         }
                     }

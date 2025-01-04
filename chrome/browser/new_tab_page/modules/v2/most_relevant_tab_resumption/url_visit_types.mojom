@@ -45,6 +45,11 @@ struct URLVisit {
   // See components/sync_device_info/device_info.h
   FormFactor form_factor;
 
+  // Set to true for visits known to Chrome Sync, which can be:
+  //  1. Remote visits that have been synced to the local machine.
+  //  2. Local visits that have been sent to Sync.
+  bool is_known_to_sync;
+
   // Denotes whether visit is from history or tab.
   VisitSource source;
 

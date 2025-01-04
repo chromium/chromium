@@ -5,7 +5,7 @@
 // https://dom.spec.whatwg.org/#interface-AbortSignal
 
 [
-    Exposed=(Window,Worker)
+    Exposed=(Window,Worker,ShadowRealm) // TODO(crbug.com/41480387): This should be Exposed=*
 ] interface AbortSignal : EventTarget {
     [
         CallWith=ScriptState,
@@ -13,6 +13,7 @@
         NewObject
     ] static AbortSignal abort(optional any reason);
     [
+        Exposed=(Window,Worker),
         CallWith=ScriptState,
         MeasureAs=AbortSignalTimeout,
         NewObject

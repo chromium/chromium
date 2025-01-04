@@ -40,22 +40,25 @@ class PerformanceLongAnimationFrameTiming final : public PerformanceEntry {
   const AtomicString& entryType() const override;
   PerformanceEntryType EntryTypeEnum() const override;
 
-  DOMHighResTimeStamp renderStart() const;
-  DOMHighResTimeStamp desiredRenderStart() const;
-  DOMHighResTimeStamp styleAndLayoutStart() const;
-  DOMHighResTimeStamp firstUIEventTimestamp() const;
-  DOMHighResTimeStamp blockingDuration() const;
+  DOMHighResTimeStamp renderStart() const { return render_start_; }
+  DOMHighResTimeStamp styleAndLayoutStart() const {
+    return style_and_layout_start_;
+  }
+  DOMHighResTimeStamp firstUIEventTimestamp() const {
+    return first_ui_event_timestamp_;
+  }
+  DOMHighResTimeStamp blockingDuration() const { return blocking_duration_; }
 
-  const PerformanceScriptVector& scripts() const;
+  const PerformanceScriptVector& scripts() const { return scripts_; }
 
   void Trace(Visitor*) const override;
  private:
   void BuildJSONValue(V8ObjectBuilder&) const override;
-  DOMHighResTimeStamp ToMonotonicTime(base::TimeTicks) const;
-  base::TimeTicks time_origin_;
-  bool cross_origin_isolated_capability_;
-  Member<AnimationFrameTimingInfo> info_;
-  mutable PerformanceScriptVector scripts_;
+  DOMHighResTimeStamp render_start_;
+  DOMHighResTimeStamp style_and_layout_start_;
+  DOMHighResTimeStamp first_ui_event_timestamp_;
+  double blocking_duration_;
+  PerformanceScriptVector scripts_;
 };
 
 }  // namespace blink

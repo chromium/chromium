@@ -83,9 +83,15 @@ as well.
 More information about [developing with Xcode](xcode_tips.md). *Xcode project
 is an artifact, any changes made in the project itself will be ignored.*
 
-You can customize the build by editing the file `$HOME/.setup-gn` (create it if
-it does not exist).  Look at `src/ios/build/tools/setup-gn.config` for
-available configuration options.
+You can customize the build by editing a file called `.setup-gn` (create it if
+it does not exist). It can be stored in two locations:
+
+* `$HOME/.setup-gn` (the settings will be applied to all Chromium checkouts).
+* The directory above `src/` (i.e. the directory containing your `.gclient`)
+  for checkout-specific settings.
+
+Look at `src/ios/build/tools/setup-gn.config` for available configuration
+options.
 
 From this point, you can either build from Xcode or from the command line using
 `autoninja`. `setup-gn.py` creates sub-directories named

@@ -58,7 +58,7 @@ void RendererFreezer::OnRenderProcessHostCreated(
     return;
   }
 
-  const int rph_id = rph->GetID();
+  const int rph_id = rph->GetDeprecatedID();
 
   if (gcm_extension_processes_.find(rph_id) != gcm_extension_processes_.end()) {
     LOG(ERROR) << "Received duplicate notifications about the creation of a "
@@ -103,7 +103,7 @@ void RendererFreezer::OnRenderProcessHostCreated(
 void RendererFreezer::RenderProcessExited(
     content::RenderProcessHost* host,
     const content::ChildProcessTerminationInfo& info) {
-  auto it = gcm_extension_processes_.find(host->GetID());
+  auto it = gcm_extension_processes_.find(host->GetDeprecatedID());
   if (it == gcm_extension_processes_.end()) {
     LOG(ERROR) << "Received unrequested RenderProcessExited message";
     return;
@@ -120,7 +120,7 @@ void RendererFreezer::RenderProcessExited(
 
 void RendererFreezer::RenderProcessHostDestroyed(
     content::RenderProcessHost* host) {
-  auto it = gcm_extension_processes_.find(host->GetID());
+  auto it = gcm_extension_processes_.find(host->GetDeprecatedID());
   if (it == gcm_extension_processes_.end()) {
     LOG(ERROR) << "Received unrequested RenderProcessHostDestroyed message";
     return;

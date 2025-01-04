@@ -37,7 +37,7 @@ _COPYBARA_CONFIG_PATH = os.path.join(REPOSITORY_ROOT,
                                      'components/cronet/gn2bp/copy.bara.sky')
 _COPYBARA_PATH = os.path.join(REPOSITORY_ROOT,
                               'tools/copybara/copybara/copybara_deploy.jar')
-_EXTRA_GN_ARGS = 'is_cronet_for_aosp_build=true'
+_EXTRA_GN_ARGS = 'is_cronet_for_aosp_build=true use_nss_certs=false'
 _GENERATE_BUILD_SCRIPT_PATH = os.path.join(
     REPOSITORY_ROOT,
     'components/cronet/gn2bp/generate_build_scripts_output.py')

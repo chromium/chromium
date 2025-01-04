@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "components/omnibox/browser/shortcuts_backend.h"
 
@@ -230,14 +226,15 @@ void ShortcutsBackendTest::ClearShortcutsMap() {
 // Verifies that creating MatchCores strips classifications and sanitizes match
 // types.
 TEST_F(ShortcutsBackendTest, SanitizeMatchCore) {
-  struct {
+  struct Cases {
     std::string input_contents_class;
     std::string input_description_class;
     AutocompleteMatch::Type input_type;
     std::string output_contents_class;
     std::string output_description_class;
     AutocompleteMatch::Type output_type;
-  } cases[] = {
+  };
+  auto cases = std::to_array<Cases>({
       {"0,1,4,0", "0,3,4,1", AutocompleteMatchType::URL_WHAT_YOU_TYPED,
        "0,1,4,0", "0,1", AutocompleteMatchType::HISTORY_URL},
       {"0,3,5,1", "0,2,5,0", AutocompleteMatchType::NAVSUGGEST, "0,1", "0,0",
@@ -254,7 +251,7 @@ TEST_F(ShortcutsBackendTest, SanitizeMatchCore) {
        AutocompleteMatchType::SEARCH_HISTORY},
       {"0,1", "0,0", AutocompleteMatchType::SEARCH_SUGGEST_PROFILE, "", "",
        AutocompleteMatchType::SEARCH_HISTORY},
-  };
+  });
 
   for (size_t i = 0; i < std::size(cases); ++i) {
     ShortcutsDatabase::Shortcut::MatchCore match_core(MatchCoreForTesting(

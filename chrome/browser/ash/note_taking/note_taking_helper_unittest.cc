@@ -18,6 +18,8 @@
 #include "ash/components/arc/session/connection_holder.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_file_system_instance.h"
+#include "ash/components/arc/test/fake_intent_helper_host.h"
+#include "ash/components/arc/test/fake_intent_helper_instance.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/note_taking_client.h"
 #include "ash/shell.h"
@@ -61,8 +63,6 @@
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
-#include "components/arc/test/fake_intent_helper_host.h"
-#include "components/arc/test/fake_intent_helper_instance.h"
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
@@ -367,7 +367,9 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
   }
 
   // BrowserWithTestWindowTest:
-  std::string GetDefaultProfileName() override { return kTestProfileName; }
+  std::optional<std::string> GetDefaultProfileName() override {
+    return kTestProfileName;
+  }
 
   // TODO(crbug.com/40286020): merge into BrowserWithTestWindowTest.
   void LogIn(const std::string& email) override {
@@ -882,8 +884,6 @@ TEST_F(NoteTakingHelperTest, AddProfileWithPlayStoreEnabled) {
   EXPECT_TRUE(helper()->play_store_enabled());
   EXPECT_TRUE(helper()->android_apps_received());
   EXPECT_EQ(2, observer.num_updates());
-
-  profile_manager()->DeleteTestingProfile(kSecondProfileName);
 }
 
 TEST_F(NoteTakingHelperTest, ListAndroidApps) {
@@ -1105,7 +1105,6 @@ TEST_F(NoteTakingHelperTest, NotifyObserverAboutChromeApps) {
   EXPECT_EQ(1, observer.num_updates());
   UninstallExtension(second_keep_extension.get(), second_profile);
   EXPECT_EQ(2, observer.num_updates());
-  profile_manager()->DeleteTestingProfile(kSecondProfileName);
 }
 
 TEST_F(NoteTakingHelperTest, NotifyObserverAboutPreferredAppChanges) {
@@ -1169,8 +1168,6 @@ TEST_F(NoteTakingHelperTest, NotifyObserverAboutPreferredAppChanges) {
   EXPECT_EQ(std::vector<raw_ptr<Profile>>{second_profile},
             observer.preferred_app_updates());
   observer.clear_preferred_app_updates();
-
-  profile_manager()->DeleteTestingProfile(kSecondProfileName);
 }
 
 TEST_F(NoteTakingHelperTest, NoteTakingControllerClient) {
@@ -1231,8 +1228,6 @@ TEST_F(NoteTakingHelperTest, NoteTakingControllerClient) {
 
     UninstallExtension(extension2.get(), second_profile);
     EXPECT_TRUE(has_note_taking_apps());
-
-    profile_manager()->DeleteTestingProfile(kSecondProfileName);
   }
 }
 

@@ -2,7 +2,7 @@ Name: rustc-demangle-capi
 URL: https://crates.io/crates/rustc-demangle-capi
 Version: 0.1.0
 Revision: f540792067ab84d0f47164b29d7db5c7ba3b367d
-License: Apache 2.0
+License: Apache-2.0
 License File:
 Shipped: no
 Security Critical: yes

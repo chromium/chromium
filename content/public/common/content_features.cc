@@ -8,11 +8,10 @@
 
 #include "base/feature_list.h"
 #include "base/time/time.h"
-#include "build/android_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"
 #include "content/common/buildflags.h"
+#include "content/public/common/buildflags.h"
 #include "content/public/common/dips_utils.h"
 
 namespace features {
@@ -69,10 +68,7 @@ BASE_FEATURE(kAudioServiceLaunchOnStartup,
 // Runs the audio service in a separate process.
 BASE_FEATURE(kAudioServiceOutOfProcess,
              "AudioServiceOutOfProcess",
-// TODO(crbug.com/40118868): Remove !IS_CHROMEOS_LACROS once lacros starts being
-// built with OS_CHROMEOS instead of OS_LINUX.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -198,19 +194,6 @@ BASE_FEATURE(kCapturedSurfaceControlStickyPermissions,
              "CapturedSurfaceControlStickyPermissions",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, render processes associated only with tabs in unfocused windows
-// will be downgraded to "vis" priority, rather than remaining at "fg". This
-// will allow tabs in unfocused windows to be prioritized for OOM kill in
-// low-memory scenarios.
-BASE_FEATURE(kChangeUnfocusedPriority,
-             "ChangeUnfocusedPriority",
-#if BUILDFLAG(IS_DESKTOP_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
-);
-
 // Clear the window.name property for the top-level cross-site navigations that
 // swap BrowsingContextGroups(BrowsingInstances).
 BASE_FEATURE(kClearCrossSiteCrossBrowsingContextGroupWindowName,
@@ -258,12 +241,6 @@ BASE_FEATURE(kDevToolsPrivacyUI,
 BASE_FEATURE(kCooperativeScheduling,
              "CooperativeScheduling",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables crash reporting via Reporting API.
-// https://www.w3.org/TR/reporting/#crash-report
-BASE_FEATURE(kCrashReporting,
-             "CrashReporting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables deferring the creation of the speculative RFH when the navigation
 // starts. The creation of a speculative RFH consumes about 2ms and is blocking
@@ -367,11 +344,6 @@ const base::FeatureParam<content::DIPSTriggeringAction> kDIPSTriggeringAction{
 const base::FeatureParam<base::TimeDelta> kDIPSClientBounceDetectionTimeout{
     &kDIPS, "client_bounce_detection_timeout", base::Seconds(10)};
 
-// Whether DIPS deletes Privacy Sandbox data.
-BASE_FEATURE(kDIPSPreservePSData,
-             "DIPSPreservePSData",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables HW decode acceleration for WebRTC.
 BASE_FEATURE(kWebRtcHWDecoding,
              "webrtc-hw-decoding",
@@ -392,12 +364,6 @@ BASE_FEATURE(kWebRtcHWEncoding,
 BASE_FEATURE(kWebContentsDiscard,
              "WebContentsDiscard",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables disconnecting the `ExtensionMessagePort` when the page using the port
-// enters BFCache.
-BASE_FEATURE(kDisconnectExtensionMessagePortWhenPageEntersBFCache,
-             "DisconnectExtensionMessagePortWhenPageEntersBFCache",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the Origin Trial of Document-Isolation-Policy.
 BASE_FEATURE(kDocumentIsolationPolicyOriginTrial,
@@ -464,6 +430,11 @@ BASE_FEATURE(kFedCmButtonMode,
              "FedCmButtonMode",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables usage of the FedCM Delegation API.
+BASE_FEATURE(kFedCmDelegation,
+             "FedCmDelegation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables usage of the FedCM IdP Registration API.
 BASE_FEATURE(kFedCmIdPRegistration,
              "FedCmIdPregistration",
@@ -498,7 +469,7 @@ BASE_FEATURE(kFedCmSelectiveDisclosure,
 // login to an account. These accounts are shown greyed out.
 BASE_FEATURE(kFedCmShowFilteredAccounts,
              "FedCmShowFilteredAccounts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables bypassing the well-known file enforcement.
 BASE_FEATURE(kFedCmWithoutWellKnownEnforcement,
@@ -550,11 +521,6 @@ BASE_FEATURE(kFractionalScrollOffsets,
 BASE_FEATURE(kNetworkQualityEstimatorWebHoldback,
              "NetworkQualityEstimatorWebHoldback",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Determines if an extra brand version pair containing possibly escaped double
-// quotes and escaped backslashed should be added to the Sec-CH-UA header
-// (activated by kUserAgentClientHint)
-BASE_FEATURE(kGreaseUACH, "GreaseUACH", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether GuestViews (see components/guest_view/README.md) are implemented
 // using MPArch inner pages. See https://crbug.com/40202416
@@ -644,11 +610,6 @@ BASE_FEATURE(kLogJsConsoleMessages,
 #endif
 );
 
-// Uses ThreadType::kDisplayCritical for the main thread
-BASE_FEATURE(kMainThreadCompositingPriority,
-             "MainThreadCompositingPriority",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // The MBI mode controls whether or not communication over the
 // AgentSchedulingGroup is ordered with respect to the render-process-global
 // legacy IPC channel, as well as the granularity of AgentSchedulingGroup
@@ -702,16 +663,6 @@ BASE_FEATURE(kNetworkServiceInProcess,
 #endif
 );
 
-// Kill switch for Web Notification content images.
-BASE_FEATURE(kNotificationContentImage,
-             "NotificationContentImage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables the notification trigger API.
-BASE_FEATURE(kNotificationTriggers,
-             "NotificationTriggers",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Feature which holdbacks NoStatePrefetch on all surfaces.
 BASE_FEATURE(kNoStatePrefetchHoldback,
              "NoStatePrefetchHoldback",
@@ -754,24 +705,11 @@ BASE_FEATURE(kPeriodicBackgroundSync,
              "PeriodicBackgroundSync",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Kill-switch to introduce a compatibility breaking restriction.
-BASE_FEATURE(kPepperCrossOriginRedirectRestriction,
-             "PepperCrossOriginRedirectRestriction",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables Persistent Origin Trials. It causes tokens for an origin to be stored
-// and persisted for the next navigation. This way, an origin trial can affect
-// things before receiving the response, for instance it can affect the next
-// navigation's network request.
-BASE_FEATURE(kPersistentOriginTrials,
-             "PersistentOriginTrials",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, browser-initiated prefetch is allowed.
 // Please see crbug.com/40946257 for more details.
 BASE_FEATURE(kPrefetchBrowserInitiatedTriggers,
              "PrefetchBrowserInitiatedTriggers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables exposure of ads APIs in the renderer: Attribution Reporting,
 // FLEDGE, Topics, along with a number of other features actively in development
@@ -866,13 +804,12 @@ BASE_FEATURE(kQueueNavigationsWhileWaitingForCommit,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, sends SubresourceResponseStarted IPC only when the user has
-// allowed any HTTPS-related warning exceptions. From field data, (see
-// `SSL.Experimental.SubresourceResponse`), ~100% of subresource notifications
-// are not required, since allowing certificate exceptions by users is a rare
-// event. Hence, if user has never allowed any certificate or HTTP exceptions,
-// notifications are not sent to the browser. Once we start sending these
-// messages, we keep sending them until all exceptions are revoked and browser
-// restart occurs.
+// allowed any HTTPS-related warning exceptions. From field data, ~100% of
+// subresource notifications are not required, since allowing certificate
+// exceptions by users is a rare event. Hence, if user has never allowed any
+// certificate or HTTP exceptions, notifications are not sent to the browser.
+// Once we start sending these messages, we keep sending them until all
+// exceptions are revoked and browser restart occurs.
 BASE_FEATURE(kReduceSubresourceResponseStartedIPC,
              "ReduceSubresourceResponseStartedIPC",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -980,12 +917,6 @@ BASE_FEATURE(kServiceWorkerAutoPreload,
              "ServiceWorkerAutoPreload",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables ServiceWorker static routing API.
-// https://github.com/WICG/service-worker-static-routing-api
-BASE_FEATURE(kServiceWorkerStaticRouter,
-             "ServiceWorkerStaticRouter",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // crbug.com/374606637: When this is enabled, race-network-and-fetch-hander will
 // prioritize the response processing for the network request over the
 // processing for the fetch handler.
@@ -996,17 +927,9 @@ BASE_FEATURE(
 
 // Run video capture service in the Browser process as opposed to a dedicated
 // utility process.
-// Camera requests from Lacros are forwarded to Ash via a Mojo connection
-// established through cros-api. Since cros-api isn't available in utility
-// processes, Lacros's video capture service has to run within the browser
-// process.
 BASE_FEATURE(kRunVideoCaptureServiceInBrowserProcess,
              "RunVideoCaptureServiceInBrowserProcess",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
              base::FEATURE_DISABLED_BY_DEFAULT
-#endif
 );
 
 // Update scheduler settings using resourced on ChromeOS.
@@ -1229,14 +1152,6 @@ BASE_FEATURE(kUseContextSnapshot,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Allows user activation propagation to all frames having the same origin as
-// the activation notifier frame.  This is an intermediate measure before we
-// have an iframe attribute to declaratively allow user activation propagation
-// to subframes.
-BASE_FEATURE(kUserActivationSameOriginVisibility,
-             "UserActivationSameOriginVisibility",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables comparing browser and renderer's DidCommitProvisionalLoadParams in
 // RenderFrameHostImpl::VerifyThatBrowserAndRendererCalculatedDidCommitParamsMatch.
 BASE_FEATURE(kVerifyDidCommitParams,
@@ -1409,28 +1324,17 @@ BASE_FEATURE(kReduceGpuPriorityOnBackground,
              "ReduceGpuPriorityOnBackground",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Apply text selection menu order correction logic for Android.
-// TODO(crbug.com/40947146) This is a kill switch landed in M122.
-// Please remove after M124.
-BASE_FEATURE(kSelectionMenuItemModification,
-             "SelectionMenuItemModification",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Screen Capture API support for Android
+// Screen Capture API support for Android.
+// This should not be enabled unless ENABLE_SCREEN_CAPTURE is on, otherwise
+// it won't work.
 BASE_FEATURE(kUserMediaScreenCapturing,
              "UserMediaScreenCapturing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Kill switch for the WebNFC feature. This feature can be enabled for all sites
-// using the kEnableExperimentalWebPlatformFeatures flag.
-// https://w3c.github.io/web-nfc/
-BASE_FEATURE(kWebNfc, "WebNFC", base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Kill switch for allowing webview to suppress tap immediately after fling,
-// matching chrome behavior.
-BASE_FEATURE(kWebViewSuppressTapDuringFling,
-             "WebViewSuppressTapDuringFling",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
@@ -1469,7 +1373,8 @@ const base::FeatureParam<CapturingState>::Option kNavigationCapturingParams[] =
     {{CapturingState::kDefaultOn, "on_by_default"},
      {CapturingState::kDefaultOff, "off_by_default"},
      {CapturingState::kReimplDefaultOn, "reimpl_default_on"},
-     {CapturingState::kReimplDefaultOff, "reimpl_default_off"}};
+     {CapturingState::kReimplDefaultOff, "reimpl_default_off"},
+     {CapturingState::kReimplOnViaClientMode, "reimpl_on_via_client_mode"}};
 
 const base::FeatureParam<CapturingState> kNavigationCapturingDefaultState{
     &kPwaNavigationCapturing, "link_capturing_state",

@@ -22,6 +22,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -38,7 +39,6 @@
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
-#include "media/cdm/cdm_auxiliary_helper.h"
 #include "media/cdm/cdm_helpers.h"
 #include "media/cdm/cdm_type_conversion.h"
 #include "media/cdm/cdm_wrapper.h"
@@ -130,7 +130,7 @@ void* GetCdmHost(int host_interface_version, void* user_data) {
 
   static_assert(
       CheckSupportedCdmHostVersions(cdm::Host_10::kVersion,
-                                    cdm::Host_11::kVersion),
+                                    cdm::Host_12::kVersion),
       "Mismatch between GetCdmHost() and IsSupportedCdmHostVersion()");
 
   DCHECK(IsSupportedCdmHostVersion(host_interface_version));
@@ -142,6 +142,8 @@ void* GetCdmHost(int host_interface_version, void* user_data) {
       return static_cast<cdm::Host_10*>(cdm_adapter);
     case cdm::Host_11::kVersion:
       return static_cast<cdm::Host_11*>(cdm_adapter);
+    case cdm::Host_12::kVersion:
+      return static_cast<cdm::Host_12*>(cdm_adapter);
     // When future Host versions are used, update to include them over here.
     // Older Chrome versions that don't support new host versions would return
     // nullptr.
@@ -170,6 +172,28 @@ enum OutputProtectionStatus {
 void ReportOutputProtectionUMA(OutputProtectionStatus status) {
   UMA_HISTOGRAM_ENUMERATION("Media.EME.OutputProtection", status,
                             OutputProtectionStatus::kStatusCount);
+}
+
+void ReportDecoderBypassBlockCountUMA(uint64_t bypass_count,
+                                      uint64_t total_frames) {
+  // Keep track of the average number of decoder bypass blocks per frame. As
+  // `bypass_count` is typically expected to be low, multiply by 100. So if
+  // `bypass_count` == `total_frames`, then the reported value would be 100.
+  // Need to round-up so that if `bypass_count` is small then the value reported
+  // is at least 1. UMA has a maximum value of 10000.
+  constexpr std::string_view kDecoderBypassBlockCountUMAName =
+      "Media.EME.DecoderBypassBlockCount";
+  int report_result = 0;
+
+  if (bypass_count > 0u && total_frames > 0u) {
+    double ratio = (bypass_count * 100.0) / total_frames;
+    report_result = base::ClampRound<int>(ratio);
+    if (report_result == 0) {
+      // As at least 1 bypass was recorded, make sure we don't record 0.
+      report_result = 1;
+    }
+  }
+  base::UmaHistogramCounts10000(kDecoderBypassBlockCountUMAName, report_result);
 }
 
 crash_reporter::CrashKeyString<256> g_origin_crash_key("cdm-origin");
@@ -237,6 +261,15 @@ CdmAdapter::CdmAdapter(
 
 CdmAdapter::~CdmAdapter() {
   DVLOG(1) << __func__;
+
+  // Only Cdms using an interface version greater than 10 have access to the
+  // ReportMetrics function, so to prevent from reporting a lot of metrics that
+  // are left unset, check if the interface version is greater than 10. We
+  // should also only report to the UKM in cases where at least one of the CDM
+  // values are set, otherwise too many impractical values will be reported.
+  if (GetInterfaceVersion() > 10 && cdm_metrics_data_.IsCdmValueSet()) {
+    helper_->RecordUkm(cdm_metrics_data_);
+  }
 
   // Reject any outstanding promises and close all the existing sessions.
   cdm_promise_adapter_.Clear(CdmPromiseAdapter::ClearReason::kDestruction);
@@ -374,6 +407,8 @@ void CdmAdapter::UpdateSession(const std::string& session_id,
   DCHECK(!session_id.empty());
   DCHECK(!response.empty());
   TRACE_EVENT1("media", "CdmAdapter::UpdateSession", "session_id", session_id);
+
+  cdm_metrics_data_.number_of_update_calls++;
 
   uint32_t promise_id =
       cdm_promise_adapter_.SavePromise(std::move(promise), __func__);
@@ -542,6 +577,7 @@ void CdmAdapter::InitializeVideoDecoder(const VideoDecoderConfig& config,
 
   aspect_ratio_ = config.aspect_ratio();
   is_video_encrypted_ = config.is_encrypted();
+  frames_processed_ = 0;
 
   if (status == cdm::kDeferredInitialization) {
     DVLOG(1) << "Deferred initialization in " << __func__;
@@ -628,6 +664,7 @@ void CdmAdapter::DecryptAndDecodeVideo(scoped_refptr<DecoderBuffer> encrypted,
   }
 
   decoded_frame->metadata().protected_video = is_video_encrypted_;
+  ++frames_processed_;
 
   std::move(video_decode_cb).Run(Decryptor::kSuccess, decoded_frame);
 }
@@ -771,6 +808,8 @@ void CdmAdapter::OnSessionMessage(const char* session_id,
   std::string session_id_str(session_id, session_id_size);
   DVLOG(2) << __func__ << ": session_id = " << session_id_str;
   DCHECK(task_runner_->BelongsToCurrentThread());
+
+  cdm_metrics_data_.number_of_on_message_events++;
 
   TRACE_EVENT2("media", "CdmAdapter::OnSessionMessage", "session_id",
                session_id_str, "message_type", message_type);
@@ -1035,6 +1074,22 @@ void CdmAdapter::RequestStorageId(uint32_t version) {
   helper_->GetStorageId(version,
                         base::BindOnce(&CdmAdapter::OnStorageIdObtained,
                                        weak_factory_.GetWeakPtr()));
+}
+
+void CdmAdapter::ReportMetrics(cdm::MetricName metric_name, uint64_t value) {
+  switch (metric_name) {
+    case cdm::kSdkVersion:
+      cdm_metrics_data_.license_sdk_version = value;
+      return;
+    case cdm::kCertificateSerialNumber:
+      cdm_metrics_data_.certificate_serial_number = value;
+      return;
+    case cdm::kDecoderBypassBlockCount:
+      cdm_metrics_data_.decoder_bypass_block_count =
+          cdm_metrics_data_.decoder_bypass_block_count.value_or(0) + value;
+      ReportDecoderBypassBlockCountUMA(value, frames_processed_);
+      return;
+  }
 }
 
 void CdmAdapter::OnStorageIdObtained(uint32_t version,

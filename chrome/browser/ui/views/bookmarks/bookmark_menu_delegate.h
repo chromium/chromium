@@ -29,22 +29,25 @@ class Profile;
 
 namespace bookmarks {
 class ManagedBookmarkService;
-}
+}  // namespace bookmarks
 
 namespace ui {
 class OSExchangeData;
-}
+}  // namespace ui
 
 namespace views {
 class MenuItemView;
 class Widget;
-}
+}  // namespace views
 
 // BookmarkMenuDelegate acts as the (informal) views::MenuDelegate for showing
 // bookmarks in a MenuItemView. BookmarkMenuDelegate informally implements
 // MenuDelegate as its assumed another class is going to forward the appropriate
 // methods to this class. Doing so allows this class to be used for both menus
 // on the bookmark bar and the bookmarks in the app menu.
+// TODO(crbug.com/382749219): This class has some unnecessary complexity
+// stemming from the fact that it's trying to handle distinct requirements from
+// various clients. This client-specific logic should be split out.
 class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
                              public BookmarkContextMenuObserver {
  public:
@@ -97,8 +100,7 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
 
   // MenuDelegate like methods (see class description for details).
   std::u16string GetTooltipText(int id, const gfx::Point& p) const;
-  bool IsTriggerableEvent(views::MenuItemView* menu,
-                          const ui::Event& e);
+  bool IsTriggerableEvent(views::MenuItemView* menu, const ui::Event& e);
   void ExecuteCommand(int id, int mouse_event_flags);
   bool ShouldExecuteCommandWithoutClosingMenu(int id, const ui::Event& e);
   bool GetDropFormats(views::MenuItemView* menu,
@@ -127,6 +129,10 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
   // BookmarkModelObserver methods.
   void BookmarkModelChanged() override;
   void BookmarkNodeFaviconChanged(const bookmarks::BookmarkNode* node) override;
+  void BookmarkNodeMoved(const bookmarks::BookmarkNode* old_parent,
+                         size_t old_index,
+                         const bookmarks::BookmarkNode* new_parent,
+                         size_t new_index) override;
 
   // BookmarkContextMenuObserver methods.
   void WillRemoveBookmarks(
@@ -197,11 +203,24 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
   void BuildMenuForFolder(const bookmarks::BookmarkNode* node,
                           const ui::ImageModel& icon,
                           views::MenuItemView* parent_menu);
+  void BuildMenuForFolderAt(const bookmarks::BookmarkNode* node,
+                            const ui::ImageModel& icon,
+                            views::MenuItemView* parent_menu,
+                            size_t index);
 
   // Builds a menu item for the provided bookmark url, adding it to
   // `parent_menu`.
-  void BuildMenuForURL(const bookmarks::BookmarkNode* node,
-                       views::MenuItemView* parent_menu);
+  void BuildMenuForURLAt(const bookmarks::BookmarkNode* node,
+                         views::MenuItemView* parent_menu,
+                         size_t index);
+
+  // Build a menu item for the providied bookmark folder or url, adding it to
+  // `parent_menu`.
+  void BuildNodeMenuItem(const bookmarks::BookmarkNode* node,
+                         views::MenuItemView* parent_menu);
+  void BuildNodeMenuItemAt(const bookmarks::BookmarkNode* node,
+                           views::MenuItemView* parent_menu,
+                           size_t index);
 
   // Creates an entry in menu for each child node of |parent| starting at
   // |start_child_index|.
@@ -221,6 +240,40 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
   // command ids with the recent tabs menu, which also uses every other int as
   // an id.
   int GetAndIncrementNextMenuID();
+
+  // Removes `node` and its `menu`'s view. All descendants of the removed node
+  // are also removed.
+  void RemoveBookmarkNode(const bookmarks::BookmarkNode* node,
+                          views::MenuItemView* menu);
+
+  // Builds a menu for `node`, inserting it into `new_parent_menu`.
+  // `new_index` is `node`'s position relative to other bookmarks in its parent
+  // folder, and is used to determine where the new menu should be inserted.
+  // This also considers other non-bookmark menu items (e.g. "Bookmarks" title)
+  // when determining where to insert the menu.
+  void AddBookmarkNode(const bookmarks::BookmarkNode* node,
+                       views::MenuItemView* new_parent_menu,
+                       size_t new_index);
+
+  // Updates non-bookmark node menu items that are managed by this controller.
+  // E.g., removes the separator in the "other" bookmarks folder if there are no
+  // more child bookmarks.
+  // Returns a list of menus whose children changed. The caller is responsible
+  // for invoking `ChildrenChanged` on them.
+  std::vector<raw_ref<views::MenuItemView>> GetAndUpdateStaleMenuArtifacts();
+
+  // Adds or removes the bookmarks title + separator as necessary.
+  // Returns the updated menu if there were changes; otherwise, returns null.
+  views::MenuItemView* UpdateBookmarksTitle();
+  bool ShouldHaveBookmarksTitle();
+  void BuildBookmarksTitle(size_t index);
+  void RemoveBookmarksTitle();
+
+  // Adds or removes the separator of the "other" bookmarks folder as necessary.
+  // Returns the updated menu if there were changes; otherwise, returns null.
+  views::MenuItemView* UpdateOtherNodeSeparator();
+  void BuildOtherNodeMenuHeader(const bookmarks::BookmarkNode* other_node,
+                                views::MenuItemView* menu);
 
   const raw_ptr<Browser> browser_;
   raw_ptr<Profile> profile_;
@@ -244,8 +297,25 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
   // by us.
   raw_ptr<views::MenuItemView> parent_menu_item_;
 
+  // Views built by this delegate, but not tracked by the maps.
+  // These are all owned by `parent_menu_item_`, if not null.
+  raw_ptr<views::View> bookmarks_title_;
+  raw_ptr<views::View> bookmarks_title_separator_;
+  raw_ptr<views::View> permanent_nodes_separator_;
+
+  // The separator within the "other" bookmarks menu.
+  raw_ptr<views::View> other_node_menu_separator_;
+
   // Maps from node to menu.
   NodeToMenuMap node_to_menu_map_;
+
+  // For root menu items created by `CreateMenu`, stores the `start_child_idx`
+  // used when building the menu.
+  std::map<raw_ptr<const bookmarks::BookmarkNode>, size_t>
+      node_start_child_idx_map_;
+
+  // Nodes whose submenus have been built (i.e. `BuildMenu` was called on them).
+  std::set<raw_ptr<const bookmarks::BookmarkNode>> built_nodes_;
 
   // ID of the next menu item.
   int next_menu_id_;

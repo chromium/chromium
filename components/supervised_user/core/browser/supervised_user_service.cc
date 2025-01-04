@@ -106,8 +106,7 @@ bool SupervisedUserService::IsBlockedURL(const GURL& url) const {
   if (!active_) {
     return false;
   }
-  return GetURLFilter()->GetFilteringBehaviorForURL(url) ==
-         supervised_user::FilteringBehavior::kBlock;
+  return GetURLFilter()->GetFilteringBehavior(url).IsBlocked();
 }
 
 void SupervisedUserService::AddObserver(

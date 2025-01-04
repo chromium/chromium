@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "ui/gl/gl_display_manager.h"
+#include "ui/gl/startup_trace.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
@@ -215,7 +216,7 @@ BASE_FEATURE(kDirectCompositionSoftwareOverlays,
 // that DWM power optimization can be turned on.
 BASE_FEATURE(kDirectCompositionLetterboxVideoOptimization,
              "DirectCompositionLetterboxVideoOptimization",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Do not consider hardware YUV overlay count when promoting quads to DComp
 // visuals. If there are more videos than hardware overlay planes, there may be
@@ -306,8 +307,12 @@ bool IsDefaultANGLEVulkan() {
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   angle::SystemInfo system_info;
-  if (!angle::GetSystemInfoVulkan(&system_info))
-    return false;
+  {
+    GPU_STARTUP_TRACE_EVENT("angle::GetSystemInfoVulkan");
+    if (!angle::GetSystemInfoVulkan(&system_info)) {
+      return false;
+    }
+  }
 
   if (static_cast<size_t>(system_info.activeGPUIndex) >=
       system_info.gpus.size()) {
@@ -328,6 +333,22 @@ bool IsDefaultANGLEVulkan() {
   // Encountered bugs with older Imagination drivers.  New drivers seem fixed,
   // but disabled for the sake of experiment for now. crbug.com/371512561
   if (active_gpu.driverId == VK_DRIVER_ID_IMAGINATION_PROPRIETARY) {
+    return false;
+  }
+
+  // Exclude old ARM drivers due to crashes related to creating
+  // AHB-based Video images in Vulkan.  http://anglebug.com/382676807.
+  if (active_gpu.driverId == VK_DRIVER_ID_ARM_PROPRIETARY &&
+      active_gpu.detailedDriverVersion.major <= 32) {
+    return false;
+  }
+
+  // Exclude old Qualcomm drivers due to inefficient (and buggy) fallback
+  // to CPU path in glCopyTextureCHROMIUM with multi-plane images.
+  // http://anglebug.com/383056998.
+  if (active_gpu.driverId == VK_DRIVER_ID_QUALCOMM_PROPRIETARY &&
+      (active_gpu.detailedDriverVersion.major != 512 ||
+       active_gpu.detailedDriverVersion.minor <= 530)) {
     return false;
   }
 #endif  // BUILDFLAG(IS_ANDROID)

@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Disable Dark theme</translation>
 <translation id="1807246157184219062">Light</translation>
 <translation id="1808803439260407870">Classic art</translation>
+<translation id="181434555916624618">For now, results with people won't be shown. Try another prompt.</translation>
 <translation id="1815850098929213707">Selected key is <ph name="KEYS" />. Tap on the button to edit the control</translation>
 <translation id="1823120442877418684">Characters</translation>
 <translation id="1827738518074806965">Art gallery</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">Device has <ph name="BATTERY_PERCENTAGE" />% right bud battery.</translation>
 <translation id="3340978935015468852">settings</translation>
 <translation id="3347558044552027859">modern</translation>
+<translation id="3353477144743332882">Download summary and name creation model</translation>
 <translation id="3359218928534347896">toggle microphone mute</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">sushi</translation>
@@ -689,6 +691,7 @@
 <translation id="4354430579665871434">key</translation>
 <translation id="4356100841225547054">Turn off volume</translation>
 <translation id="4361257691546579041">APN is type default.</translation>
+<translation id="4368101969572512692">Shuffle suggestions</translation>
 <translation id="437294888293595148">Reset all shortcuts</translation>
 <translation id="437477383107495720">bunnies</translation>
 <translation id="4376423484621194274">Your administrator doesn't allow closing <ph name="APP_NAME" /></translation>
@@ -768,6 +771,7 @@
 <translation id="4731797938093519117">Parent access</translation>
 <translation id="473775607612524610">Update</translation>
 <translation id="4744944742468440486">Info related to your selection</translation>
+<translation id="4750394297954878236">Suggestions</translation>
 <translation id="4771607256327216405">keyboard brighten</translation>
 <translation id="4771923071974529837">tomorrow</translation>
 <translation id="4773299976671772492">Stopped</translation>
@@ -853,6 +857,7 @@
 <translation id="5121677070210013200">Can't download transcription model. Try again or restart your Chromebook.</translation>
 <translation id="5130848777448318809">ponies</translation>
 <translation id="5137451382116112100">Full</translation>
+<translation id="5139813694804168398">do not disturb</translation>
 <translation id="5140788690559353412">When you lose access to your school account, you will no longer have access to the associated email and Google Drive files such as Gmail, Docs, Slides and more.</translation>
 <translation id="5142961317498132443">Authentication</translation>
 <translation id="5144311987923128508">Confirm button is now disabled</translation>
@@ -897,6 +902,7 @@
 <translation id="5302048478445481009">Language</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> exclusive wallpaper</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="530883153651464140">Update <ph name="DEVICE_NAME" /> to version <ph name="VERSION" /></translation>
 <translation id="5315873049536339193">Identity</translation>
 <translation id="5317780077021120954">Save</translation>
 <translation id="5318310531701770497">Can't create names. Try a longer transcript.</translation>
@@ -973,7 +979,6 @@
 <translation id="5703716265115423771">volume down</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> of <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Edit button for <ph name="SHORTCUT_DESCRIPTION" />.</translation>
-<translation id="5733298426544876109">Update <ph name="DEVICE_NAME" /></translation>
 <translation id="5736820754189340309">Data usage has been reset</translation>
 <translation id="574392208103952083">Medium</translation>
 <translation id="5744175046705638478">Translate '<ph name="QUERY" />'</translation>
@@ -998,6 +1003,7 @@
 <translation id="5859969039821714932">Shortcut not available. Press a new shortcut without <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Off</translation>
 <translation id="5860491529813859533">Turn on</translation>
+<translation id="5875913454160982848">Download transcription model</translation>
 <translation id="5876385649737594562">Turn on to select options</translation>
 <translation id="5877503382465267833">Pause <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Full screen</translation>
@@ -1037,7 +1043,6 @@
 <translation id="6040143037577758943">Close</translation>
 <translation id="6040852767465482106">Anonymous Identity</translation>
 <translation id="604124094241169006">Automatic</translation>
-<translation id="6042308850641462728">More</translation>
 <translation id="6048107060512778456">Failed – Paper jam</translation>
 <translation id="6050189528197190982">Greyscale</translation>
 <translation id="6054711098834486579">expressionist</translation>
@@ -1293,6 +1298,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Name server}other{Name servers}}</translation>
 <translation id="7135814714616751706">Search shortcuts</translation>
 <translation id="7138614237884624401">Simplified text</translation>
+<translation id="7138668887584231801">Not enough words to summarise</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Connecting</translation>
 <translation id="7144878232160441200">Retry</translation>
@@ -1588,6 +1594,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8503836310948963452">Just a few more minutes…</translation>
 <translation id="8505011850330200833">The Gemini model requires 2 GB of storage to process transcripts and create summaries</translation>
 <translation id="8508640263392900755">APN details</translation>
+<translation id="8509574872955173831">Learn more about summary and name creation</translation>
 <translation id="8522687886059337719">You now have access to new <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />wallpapers<ph name="END_LINK_WALLPAPER_SUBPAGE" /> and <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />screen savers<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">tea house</translation>
@@ -1724,7 +1731,6 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="9133772297793293778">Press one to four modifiers and one other key on your keyboard. To exit editing mode, press alt + esc.</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9138630967333032450">Left shift</translation>
-<translation id="9147928237330776930">Too few words to summarise</translation>
 <translation id="9149391708638971077">Run memory test</translation>
 <translation id="9159524746324788320">hamburgers</translation>
 <translation id="9161276708550942948">space</translation>

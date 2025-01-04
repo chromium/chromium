@@ -215,9 +215,9 @@ void SecretPortalKeyProvider::ReceivedSecret() {
     return Finalize(InitStatus::kEmptySecret);
   }
 
-  auto hashed = crypto::HkdfSha256(
+  auto hashed = crypto::HkdfSha256<Encryptor::Key::kAES256GCMKeySize>(
       base::span(secret_), base::as_byte_span(kSaltForHkdf),
-      base::as_byte_span(kInfoForHkdf), Encryptor::Key::kAES256GCMKeySize);
+      base::as_byte_span(kInfoForHkdf));
   secret_.clear();
 
   Encryptor::Key derived_key(hashed, mojom::Algorithm::kAES256GCM);

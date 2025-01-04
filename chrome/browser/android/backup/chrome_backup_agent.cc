@@ -11,6 +11,7 @@
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_prefs.h"
+#include "google_apis/gaia/gaia_id.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/ChromeBackupAgentImpl_jni.h"
@@ -34,5 +35,5 @@ void JNI_ChromeBackupAgentImpl_MigrateGlobalDataTypePrefsToAccount(
     std::string& gaia_id) {
   syncer::SyncPrefs sync_prefs(pref_service);
   sync_prefs.MigrateGlobalDataTypePrefsToAccount(
-      pref_service, signin::GaiaIdHash::FromGaiaId(gaia_id));
+      pref_service, signin::GaiaIdHash::FromGaiaId(GaiaId(gaia_id)));
 }

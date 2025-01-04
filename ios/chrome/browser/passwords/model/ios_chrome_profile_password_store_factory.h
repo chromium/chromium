@@ -7,9 +7,8 @@
 
 #import "base/memory/ref_counted.h"
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/refcounted_browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/refcounted_profile_keyed_service_factory_ios.h"
 
-class ProfileIOS;
 enum class ServiceAccessType;
 
 namespace password_manager {
@@ -19,17 +18,12 @@ class PasswordStoreInterface;
 // Singleton that owns all PasswordStores and associates them with
 // ProfileIOS.
 class IOSChromeProfilePasswordStoreFactory
-    : public RefcountedBrowserStateKeyedServiceFactory {
+    : public RefcountedProfileKeyedServiceFactoryIOS {
  public:
   static scoped_refptr<password_manager::PasswordStoreInterface> GetForProfile(
       ProfileIOS* profile,
       ServiceAccessType access_type);
   static IOSChromeProfilePasswordStoreFactory* GetInstance();
-
-  IOSChromeProfilePasswordStoreFactory(
-      const IOSChromeProfilePasswordStoreFactory&) = delete;
-  IOSChromeProfilePasswordStoreFactory& operator=(
-      const IOSChromeProfilePasswordStoreFactory&) = delete;
 
  private:
   friend class base::NoDestructor<IOSChromeProfilePasswordStoreFactory>;
@@ -40,9 +34,6 @@ class IOSChromeProfilePasswordStoreFactory
   // BrowserStateKeyedServiceFactory:
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
-      web::BrowserState* context) const override;
-  bool ServiceIsNULLWhileTesting() const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_PROFILE_PASSWORD_STORE_FACTORY_H_

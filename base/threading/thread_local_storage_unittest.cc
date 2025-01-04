@@ -9,6 +9,8 @@
 
 #include "base/threading/thread_local_storage.h"
 
+#include <array>
+
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/threading/simple_thread.h"
@@ -87,13 +89,13 @@ class ThreadLocalStorageRunner : public DelegateSimpleThread::Delegate {
   raw_ptr<int> tls_value_ptr_;
 };
 
-
-void ThreadLocalStorageCleanup(void *value) {
-  int *ptr = static_cast<int*>(value);
+void ThreadLocalStorageCleanup(void* value) {
+  int* ptr = static_cast<int*>(value);
   // Destructors should never be called with a NULL.
   ASSERT_NE(nullptr, ptr);
-  if (*ptr == kFinalTlsValue)
+  if (*ptr == kFinalTlsValue) {
     return;  // We've been called enough times.
+  }
   ASSERT_LT(kFinalTlsValue, *ptr);
   ASSERT_GE(kFinalTlsValue + kNumberDestructorCallRepetitions, *ptr);
   --*ptr;  // Move closer to our target.
@@ -289,16 +291,16 @@ TEST(ThreadLocalStorageTest, MAYBE_TLSDestructors) {
   // threads that set the TLS, while the destructor cleans it up.
   // After the threads finish, verify that the value is cleaned up.
   const int kNumThreads = 5;
-  int values[kNumThreads];
-  ThreadLocalStorageRunner* thread_delegates[kNumThreads];
-  DelegateSimpleThread* threads[kNumThreads];
+  std::array<int, kNumThreads> values;
+  std::array<ThreadLocalStorageRunner*, kNumThreads> thread_delegates;
+  std::array<DelegateSimpleThread*, kNumThreads> threads;
 
   // Spawn the threads.
   for (int index = 0; index < kNumThreads; index++) {
     values[index] = kInitialTlsValue;
     thread_delegates[index] = new ThreadLocalStorageRunner(&values[index]);
-    threads[index] = new DelegateSimpleThread(thread_delegates[index],
-                                              "tls thread");
+    threads[index] =
+        new DelegateSimpleThread(thread_delegates[index], "tls thread");
     threads[index]->Start();
   }
 

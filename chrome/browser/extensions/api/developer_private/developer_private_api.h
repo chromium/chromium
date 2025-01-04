@@ -1098,6 +1098,40 @@ class DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction
   std::optional<bool> accept_bubble_for_testing_;
 };
 
+class DeveloperPrivateUploadExtensionToAccountFunction
+    : public DeveloperPrivateAPIFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.uploadExtensionToAccount",
+                             DEVELOPERPRIVATE_UPLOADEXTENSIONTOACCOUNT)
+  DeveloperPrivateUploadExtensionToAccountFunction();
+
+  DeveloperPrivateUploadExtensionToAccountFunction(
+      const DeveloperPrivateUploadExtensionToAccountFunction&) = delete;
+  DeveloperPrivateUploadExtensionToAccountFunction& operator=(
+      const DeveloperPrivateUploadExtensionToAccountFunction&) = delete;
+
+  void accept_bubble_for_testing(bool accept_bubble) {
+    accept_bubble_for_testing_ = accept_bubble;
+  }
+
+ private:
+  ~DeveloperPrivateUploadExtensionToAccountFunction() override;
+
+  ResponseAction Run() override;
+
+  // A callback function to run when the user accepts the action dialog.
+  void OnDialogAccepted();
+
+  // A callback function to run when the user cancels the action dialog.
+  void OnDialogCancelled();
+
+  // The ID of the extension to be uploaded.
+  ExtensionId extension_id_;
+
+  // If true, immediately accepts the keep dialog by running the callback.
+  std::optional<bool> accept_bubble_for_testing_;
+};
+
 }  // namespace api
 
 }  // namespace extensions

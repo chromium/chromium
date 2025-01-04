@@ -33,10 +33,12 @@ class TabGroupPromoTest : public testing::Test {
 TEST_F(TabGroupPromoTest, GetInputsReturnsExpectedInputs) {
   auto card = std::make_unique<TabGroupPromo>(&pref_service_);
   std::map<SignalKey, FeatureQuery> inputs = card->GetInputs();
-  EXPECT_EQ(inputs.size(), 2u);
+  EXPECT_EQ(inputs.size(), 3u);
   // Verify that the inputs map contains the expected keys.
   EXPECT_NE(inputs.find(segmentation_platform::kTabGroupExists), inputs.end());
   EXPECT_NE(inputs.find(segmentation_platform::kNumberOfTabs), inputs.end());
+  EXPECT_NE(inputs.find(segmentation_platform::kTabGroupPromoShownCount),
+            inputs.end());
 }
 
 // Validates that ComputeCardResult() returns kTop when tab group promo
@@ -46,7 +48,8 @@ TEST_F(TabGroupPromoTest, TestComputeCardResultWithCardEnabled) {
                             std::make_unique<base::Value>(false));
   auto card = std::make_unique<TabGroupPromo>(&pref_service_);
   AllCardSignals all_signals = CreateAllCardSignals(
-      card.get(), {/* kNumberOfTabs */ 11, /* kTabGroupExists */ 0});
+      card.get(), {/* kNumberOfTabs */ 11, /* kTabGroupExists */ 0,
+                   /* kTabGroupPromoShownCount */ 0});
   CardSelectionSignals card_signal(&all_signals, kTabGroupPromo);
   CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
   EXPECT_EQ(EphemeralHomeModuleRank::kTop, result.position);
@@ -60,7 +63,8 @@ TEST_F(TabGroupPromoTest,
                             std::make_unique<base::Value>(false));
   auto card = std::make_unique<TabGroupPromo>(&pref_service_);
   AllCardSignals all_signals = CreateAllCardSignals(
-      card.get(), {/* kNumberOfTabs */ 11, /* kTabGroupExists */ 1});
+      card.get(), {/* kNumberOfTabs */ 11, /* kTabGroupExists */ 1,
+                   /* kTabGroupPromoShownCount */ 0});
   CardSelectionSignals card_signal(&all_signals, kTabGroupPromo);
   CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
   EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
@@ -74,7 +78,24 @@ TEST_F(TabGroupPromoTest,
                             std::make_unique<base::Value>(false));
   auto card = std::make_unique<TabGroupPromo>(&pref_service_);
   AllCardSignals all_signals = CreateAllCardSignals(
-      card.get(), {/* kNumberOfTabs */ 10, /* kTabGroupExists */ 0});
+      card.get(), {/* kNumberOfTabs */ 10, /* kTabGroupExists */ 0,
+                   /* kTabGroupPromoShownCount */ 0});
+  CardSelectionSignals card_signal(&all_signals, kTabGroupPromo);
+  CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
+  EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
+}
+
+// Validates that the ComputeCardResult() function returns kNotShown when the
+// card has been displayed to the user more times than the single day limit
+// allows.
+TEST_F(TabGroupPromoTest,
+       TestComputeCardResultWithCardDisabledForHasReachedSessionLimit) {
+  pref_service_.SetUserPref(kTabGroupPromoInteractedPref,
+                            std::make_unique<base::Value>(false));
+  auto card = std::make_unique<TabGroupPromo>(&pref_service_);
+  AllCardSignals all_signals = CreateAllCardSignals(
+      card.get(), {/* kNumberOfTabs */ 11, /* kTabGroupExists */ 0,
+                   /* kTabGroupPromoShownCount */ 3});
   CardSelectionSignals card_signal(&all_signals, kTabGroupPromo);
   CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
   EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);
@@ -89,7 +110,8 @@ TEST_F(TabGroupPromoTest,
                             std::make_unique<base::Value>(true));
   auto card = std::make_unique<TabGroupPromo>(&pref_service_);
   AllCardSignals all_signals = CreateAllCardSignals(
-      card.get(), {/* kNumberOfTabs */ 11, /* kTabGroupExists */ 0});
+      card.get(), {/* kNumberOfTabs */ 11, /* kTabGroupExists */ 0,
+                   /* kTabGroupPromoShownCount */ 0});
   CardSelectionSignals card_signal(&all_signals, kTabGroupPromo);
   CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
   EXPECT_EQ(EphemeralHomeModuleRank::kNotShown, result.position);

@@ -5,7 +5,6 @@
 #include "components/feedback/feedback_common.h"
 
 #include "base/functional/bind.h"
-#include "build/chromeos_buildflags.h"
 #include "components/feedback/feedback_report.h"
 #include "components/feedback/proto/common.pb.h"
 #include "components/feedback/proto/dom.pb.h"
@@ -23,11 +22,11 @@ constexpr char kLongLog[] = TEN_LINES TEN_LINES TEN_LINES TEN_LINES TEN_LINES;
 constexpr char kLogsAttachmentName[] = "system_logs.zip";
 constexpr int kTestProductId = 3490;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr int kDefaultProductId = 208;  // ChromeOS default product ID.
 #else
 constexpr int kDefaultProductId = 237;  // Chrome default product ID.
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }  // namespace
 
 class FeedbackCommonTest : public testing::Test {

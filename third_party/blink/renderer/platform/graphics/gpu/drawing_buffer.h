@@ -414,7 +414,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   struct ColorBuffer : public ThreadSafeRefCounted<ColorBuffer> {
     ColorBuffer(base::WeakPtr<DrawingBuffer> drawing_buffer,
                 const gfx::Size&,
-                const gfx::ColorSpace& color_space,
                 viz::SharedImageFormat,
                 SkAlphaType alpha_type,
                 scoped_refptr<gpu::ClientSharedImage> shared_image,
@@ -436,7 +435,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     // ColorBuffers.
     base::WeakPtr<DrawingBuffer> drawing_buffer;
     const gfx::Size size;
-    const gfx::ColorSpace color_space;
     const viz::SharedImageFormat format;
     const SkAlphaType alpha_type;
 
@@ -514,11 +512,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // renderbuffer if needed.
   CheckForDestructionResult CheckForDestructionAndChangeAndResolveIfNeeded(
       DiscardBehavior discardBehavior);
-
-  bool PrepareTransferableResourceInternal(
-      scoped_refptr<gpu::ClientSharedImage>* client_si,
-      viz::TransferableResource* out_resource,
-      viz::ReleaseCallback* out_release_callback);
 
   // Helper functions to be called only by PrepareTransferableResourceInternal.
   bool FinishPrepareTransferableResourceGpu(

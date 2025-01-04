@@ -64,6 +64,10 @@ class MockCampaignsManagerClient : public CampaignsManagerClient {
               GetIdentityManager,
               (),
               (const, override));
+  MOCK_METHOD(void,
+              RecordImpressionEvents,
+              (int campaign_id, std::optional<int> group_id),
+              (override));
 };
 
 }  // namespace growth

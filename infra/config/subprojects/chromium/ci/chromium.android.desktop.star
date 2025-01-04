@@ -256,6 +256,18 @@ ci.thin_tester(
                     "14-desktop-x64-emulator",
                     "emulator-8-cores",
                 ],
+                per_test_modifications = {
+                    "android_browsertests": targets.mixin(
+                        args = [
+                            "--test-launcher-filter-file=../../testing/buildbot/filters/android.desktop.emulator_14.android_browsertests.filter",
+                        ],
+                    ),
+                    "unit_tests": targets.mixin(
+                        args = [
+                            "--test-launcher-filter-file=../../testing/buildbot/filters/android.desktop.emulator_14.unit_tests.filter",
+                        ],
+                    ),
+                },
             ),
         ],
     ),

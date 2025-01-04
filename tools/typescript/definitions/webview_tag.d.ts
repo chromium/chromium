@@ -275,6 +275,8 @@ declare global {
         insertCSS(details: InjectDetails,
             callback?: (results: any[]) => void): void;
         terminate(): void;
+        getUserAgent(): string;
+        setUserAgentOverride(userAgent: string): void;
       }
 
       export enum ZoomMode {

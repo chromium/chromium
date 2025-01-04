@@ -22,6 +22,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
 #include "base/barrier_callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -113,12 +114,19 @@ bool BirchCoralItem::operator==(const BirchCoralItem& rhs) const = default;
 BirchCoralItem::~BirchCoralItem() = default;
 
 void BirchCoralItem::LaunchGroup(BirchChipButtonBase* birch_chip_button) {
+  // Record basic metrics.
+  RecordActionMetrics();
+
+  auto* birch_coral_provider = BirchCoralProvider::Get();
+
   switch (source_) {
     case CoralSource::kPostLogin: {
       coral::mojom::GroupPtr group =
-          BirchCoralProvider::Get()->ExtractGroupById(group_id_);
+          birch_coral_provider->ExtractGroupById(group_id_);
       Shell::Get()->coral_delegate()->LaunchPostLoginGroup(std::move(group));
       BirchCoralProvider::Get()->OnPostLoginClusterRestored();
+      base::UmaHistogramEnumeration("Ash.Birch.Coral.Action",
+                                    ActionType::kRestore);
       // End the Overview after restore.
       // TODO(zxdan|sammie): Consider the restoring failed cases.
       OverviewController::Get()->EndOverview(OverviewEndAction::kCoral,
@@ -141,9 +149,18 @@ void BirchCoralItem::LaunchGroup(BirchChipButtonBase* birch_chip_button) {
       aura::Window* active_root =
           birch_chip_button->GetWidget()->GetNativeWindow()->GetRootWindow();
 
+      // Cache the in-session source desk before extracting the group in case
+      // the pointer gets reset.
+      const Desk* source_desk = birch_coral_provider->in_session_source_desk();
+      CHECK(source_desk);
+
       coral::mojom::GroupPtr group =
-          BirchCoralProvider::Get()->ExtractGroupById(group_id_);
-      Shell::Get()->coral_controller()->OpenNewDeskWithGroup(std::move(group));
+          birch_coral_provider->ExtractGroupById(group_id_);
+      Shell::Get()->coral_controller()->OpenNewDeskWithGroup(std::move(group),
+                                                             source_desk);
+
+      base::UmaHistogramEnumeration("Ash.Birch.Coral.Action",
+                                    ActionType::kLaunchToNewDesk);
 
       // Nudge the desk name on the same display with the `birch_chip_button`.
       auto* overview_controller = Shell::Get()->overview_controller();
@@ -191,8 +208,7 @@ base::Value::Dict BirchCoralItem::ToCoralItemDetails() const {
       base::Value::Dict().Set("title", title()).Set("items", std::move(items)));
 }
 
-void BirchCoralItem::PerformAction() {
-}
+void BirchCoralItem::PerformAction() {}
 
 // TODO(b/362530155): Consider refactoring icon loading logic into
 // `CoralGroupedIconImage`.

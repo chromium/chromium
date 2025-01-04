@@ -489,6 +489,9 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
     bool draw_success = scoped_output_device_paint_->Draw(
         std::move(graphite_recording), std::move(on_finished));
     RecordInsertRenderPassRecording(draw_success);
+    if (!draw_success) {
+      draw_render_pass_failed_ = true;
+    }
     return;
   }
 
@@ -708,7 +711,11 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
         local_scoped_access->NeedGraphiteContextSubmit()) {
       graphite_context()->submit();
     }
-    skia_representation->SetCleared();
+    if (insert_success) {
+      skia_representation->SetCleared();
+    } else {
+      draw_render_pass_failed_ = true;
+    }
     return;
   }
 
@@ -1645,7 +1652,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
       backing_representation =
           shared_image_representation_factory_->ProduceSkia(
               mailbox, context_state_.get());
-      DCHECK(backing_representation);
+      CHECK(backing_representation);
 
       SkSurfaceProps surface_props;
       // TODO(crbug.com/40776586): Use BeginScopedReadAccess instead
@@ -1653,6 +1660,10 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
           /*final_msaa_count=*/1, surface_props, &begin_semaphores,
           &end_semaphores,
           gpu::SharedImageRepresentation::AllowUnclearedAccess::kNo);
+      if (!scoped_access) {
+        DLOG(ERROR) << "Failed begin access to CopyOutputRequest source";
+        return;
+      }
       surface = scoped_access->surface();
       if (!begin_semaphores.empty()) {
         auto result =
@@ -2273,7 +2284,12 @@ void SkiaOutputSurfaceImplOnGpu::SwapBuffersInternal(
     return;
   }
 
-  if (frame) {
+  // If drawing to any render pass failed then skip presenting incorrect
+  // content.
+  bool skip_present = draw_render_pass_failed_;
+  draw_render_pass_failed_ = false;
+
+  if (!skip_present && frame) {
     if (presenter_) {
       presenter_->SetChoreographerVsyncIdForNextFrame(
           frame->choreographer_vsync_id);
@@ -2293,12 +2309,14 @@ void SkiaOutputSurfaceImplOnGpu::SwapBuffersInternal(
   gl::ScopedProgressReporter scoped_process_reporter(
       context_state_->progress_reporter());
   output_device_->Submit(
-      sync_cpu, base::BindOnce(&SkiaOutputSurfaceImplOnGpu::PostSubmit,
-                               base::Unretained(this), std::move(frame)));
+      sync_cpu,
+      base::BindOnce(&SkiaOutputSurfaceImplOnGpu::PostSubmit,
+                     base::Unretained(this), std::move(frame), skip_present));
 }
 
 void SkiaOutputSurfaceImplOnGpu::PostSubmit(
-    std::optional<OutputSurfaceFrame> frame) {
+    std::optional<OutputSurfaceFrame> frame,
+    bool skip_present) {
   promise_image_access_helper_.EndAccess();
   scoped_output_device_paint_.reset();
   overlay_pass_accesses_.clear();
@@ -2329,7 +2347,6 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
 #else
   DCHECK(pending_release_fence_cbs_.empty());
 #endif
-
   if (frame) {
     TRACE_EVENT(
         "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
@@ -2344,56 +2361,10 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
           data->set_display_trace_id(swap_trace_id);
         });
 
-    if (waiting_for_full_damage_) {
-      // If we're using partial swap, we need to check whether the sub-buffer
-      // rect is actually the entire screen, but otherwise, the damage is
-      // always the full surface.
-      if (frame->sub_buffer_rect && capabilities().supports_post_sub_buffer &&
-          frame->sub_buffer_rect->size() != size_) {
-        output_device_->SwapBuffersSkipped(buffer_presented_callback_,
-                                           std::move(*frame));
-        destroy_after_swap_.clear();
-        return;
-      }
-      waiting_for_full_damage_ = false;
+    if (skip_present || !PresentFrame(std::move(*frame))) {
+      output_device_->SwapBuffersSkipped(buffer_presented_callback_,
+                                         std::move(*frame));
     }
-
-    if (frame->sub_buffer_rect) {
-      if (capabilities().supports_post_sub_buffer) {
-        if (capabilities().output_surface_origin ==
-            gfx::SurfaceOrigin::kBottomLeft) {
-          frame->sub_buffer_rect->set_y(size_.height() -
-                                        frame->sub_buffer_rect->y() -
-                                        frame->sub_buffer_rect->height());
-        }
-      }
-    }
-
-    if (overlays_.size()) {
-      for (auto& each : overlays_) {
-        DBG_DRAW_RECT("output.overlay.rect", each.display_rect);
-        DBG_DRAW_RECT("output.overlay.damage", each.damage_rect);
-      }
-      TRACE_EVENT1("viz", "SkiaOutputDevice->ScheduleOverlays()",
-                   "num_overlays", overlays_.size());
-      constexpr base::TimeDelta kHistogramMinTime = base::Microseconds(5);
-      constexpr base::TimeDelta kHistogramMaxTime = base::Milliseconds(16);
-      constexpr int kHistogramTimeBuckets = 50;
-      base::TimeTicks start_time = base::TimeTicks::Now();
-
-      output_device_->ScheduleOverlays(std::move(overlays_));
-
-      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-          "Gpu.OutputSurface.ScheduleOverlaysUs",
-          base::TimeTicks::Now() - start_time, kHistogramMinTime,
-          kHistogramMaxTime, kHistogramTimeBuckets);
-    }
-
-    output_device_->SetViewportSize(frame->size);
-
-    DCHECK(!frame->sub_buffer_rect || capabilities().supports_post_sub_buffer);
-    output_device_->Present(frame->sub_buffer_rect, buffer_presented_callback_,
-                            std::move(*frame));
   }
 
   // Reset the overlay plane information even on skipped swap.
@@ -2404,6 +2375,58 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
   UMA_HISTOGRAM_EXACT_LINEAR("Gpu.FenceHandle.CloneCountsPerSubmit",
                              gfx::GpuFenceHandle::GetAndClearNumberOfClones(),
                              200);
+}
+
+bool SkiaOutputSurfaceImplOnGpu::PresentFrame(OutputSurfaceFrame frame) {
+  if (waiting_for_full_damage_) {
+    // If we're using partial swap, we need to check whether the sub-buffer
+    // rect is actually the entire screen, but otherwise, the damage is
+    // always the full surface.
+    if (frame.sub_buffer_rect && capabilities().supports_post_sub_buffer &&
+        frame.sub_buffer_rect->size() != size_) {
+      return false;
+    }
+    waiting_for_full_damage_ = false;
+  }
+
+  if (frame.sub_buffer_rect) {
+    if (capabilities().supports_post_sub_buffer) {
+      if (capabilities().output_surface_origin ==
+          gfx::SurfaceOrigin::kBottomLeft) {
+        frame.sub_buffer_rect->set_y(size_.height() -
+                                     frame.sub_buffer_rect->y() -
+                                     frame.sub_buffer_rect->height());
+      }
+    }
+  }
+
+  if (!overlays_.empty()) {
+    for (auto& each : overlays_) {
+      DBG_DRAW_RECT("output.overlay.rect", each.display_rect);
+      DBG_DRAW_RECT("output.overlay.damage", each.damage_rect);
+    }
+    TRACE_EVENT1("viz", "SkiaOutputDevice->ScheduleOverlays()", "num_overlays",
+                 overlays_.size());
+    constexpr base::TimeDelta kHistogramMinTime = base::Microseconds(5);
+    constexpr base::TimeDelta kHistogramMaxTime = base::Milliseconds(16);
+    constexpr int kHistogramTimeBuckets = 50;
+    base::TimeTicks start_time = base::TimeTicks::Now();
+
+    output_device_->ScheduleOverlays(std::move(overlays_));
+
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Gpu.OutputSurface.ScheduleOverlaysUs",
+        base::TimeTicks::Now() - start_time, kHistogramMinTime,
+        kHistogramMaxTime, kHistogramTimeBuckets);
+  }
+
+  output_device_->SetViewportSize(frame.size);
+
+  DCHECK(!frame.sub_buffer_rect || capabilities().supports_post_sub_buffer);
+  output_device_->Present(frame.sub_buffer_rect, buffer_presented_callback_,
+                          std::move(frame));
+
+  return true;
 }
 
 #if BUILDFLAG(IS_WIN)

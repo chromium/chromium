@@ -6,10 +6,10 @@ import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
   files = [
-    "no_logs_test.ts",
-    "with_log_test.ts",
-    "utils.ts",
     "field_trials_test.ts",
+    "no_logs_test.ts",
+    "utils.ts",
+    "with_log_test.ts",
   ]
 
   ts_path_mappings =

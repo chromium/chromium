@@ -15,12 +15,14 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_translation_language_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
-#include "third_party/blink/renderer/modules/on_device_translation/language_detector.h"
 #include "third_party/blink/renderer/modules/on_device_translation/language_translator.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/language_detection/language_detection_model.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 namespace {
@@ -256,43 +258,4 @@ ScriptPromise<LanguageTranslator> Translation::createTranslator(
   return promise;
 }
 
-// TODO(crbug.com/349927087): The new version is
-// AILanguageDetectorCapabilities::languageAvailable(). Delete this old version.
-ScriptPromise<V8TranslationAvailability> Translation::canDetect(
-    ScriptState* script_state,
-    ExceptionState& exception_state) {
-  if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The execution context is not valid.");
-    return ScriptPromise<V8TranslationAvailability>();
-  }
-
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<V8TranslationAvailability>>(
-          script_state);
-  auto promise = resolver->Promise();
-
-  resolver->Resolve(
-      V8TranslationAvailability(V8TranslationAvailability::Enum::kReadily));
-
-  return promise;
-}
-
-// TODO(crbug.com/349927087): The new version is
-// AILanguageDetectorFactory::create(). Delete this old version.
-ScriptPromise<LanguageDetector> Translation::createDetector(
-    ScriptState* script_state,
-    ExceptionState& exception_state) {
-  if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The execution context is not valid.");
-    return ScriptPromise<LanguageDetector>();
-  }
-
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<LanguageDetector>>(
-          script_state);
-  resolver->Resolve(MakeGarbageCollected<LanguageDetector>());
-  return resolver->Promise();
-}
 }  // namespace blink

@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Онемогућите тамну тему</translation>
 <translation id="1807246157184219062">Светлa</translation>
 <translation id="1808803439260407870">Класична уметност</translation>
+<translation id="181434555916624618">Резултати са људима се тренутно не приказују. Пробајте са другим упитом.</translation>
 <translation id="1815850098929213707">Изабрани тастер је <ph name="KEYS" />. Додирните дугме да бисте изменили контролу</translation>
 <translation id="1823120442877418684">Знакови</translation>
 <translation id="1827738518074806965">Ликовна галерија</translation>
@@ -463,7 +464,7 @@
 <translation id="3226405216343213872">Траже се скенери</translation>
 <translation id="3226657629376379887">Мени са радњама за распоред</translation>
 <translation id="3227186760713762082">Вредност (<ph name="CATEGORY_TEXT" />) дели се бројем <ph name="CONVERSION_RATE" /></translation>
-<translation id="3237710083340813756">Преради</translation>
+<translation id="3237710083340813756">Прерада</translation>
 <translation id="3246869037381808805">Задаци штампања старији од 1 дана се уклањају</translation>
 <translation id="324961752321393509">Администратор не дозвољава затварање ове апликације</translation>
 <translation id="3263941347294171263">Искључите и поново прикључите уређај <ph name="DEVICE_NAME" /> да бисте наставили процес ажурирања</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">Уређај има <ph name="BATTERY_PERCENTAGE" />% батерије десне слушалице.</translation>
 <translation id="3340978935015468852">подешавања</translation>
 <translation id="3347558044552027859">модерни</translation>
+<translation id="3353477144743332882">Преузмите модел за прављење резимеа и назива</translation>
 <translation id="3359218928534347896">искључите звук микрофона</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">суши</translation>
@@ -689,6 +691,7 @@
 <translation id="4354430579665871434">тастер</translation>
 <translation id="4356100841225547054">Искључите звук</translation>
 <translation id="4361257691546579041">Назив приступне тачке је подразумеваног типа.</translation>
+<translation id="4368101969572512692">Насумично прикажите предлоге</translation>
 <translation id="437294888293595148">Ресетуј све пречице</translation>
 <translation id="437477383107495720">зеке</translation>
 <translation id="4376423484621194274">Администратор не дозвољава затварање апликације <ph name="APP_NAME" /></translation>
@@ -768,6 +771,7 @@
 <translation id="4731797938093519117">Родитељски приступ</translation>
 <translation id="473775607612524610">Ажурирај</translation>
 <translation id="4744944742468440486">Информације везане за ваш избор</translation>
+<translation id="4750394297954878236">Предлози</translation>
 <translation id="4771607256327216405">осветљавање тастатуре</translation>
 <translation id="4771923071974529837">сутра</translation>
 <translation id="4773299976671772492">Заустављено је</translation>
@@ -853,6 +857,7 @@
 <translation id="5121677070210013200">Преузимање модела транскрипције није успело. Пробајте поново или рестартујте Chromebook.</translation>
 <translation id="5130848777448318809">понији</translation>
 <translation id="5137451382116112100">Цео екран</translation>
+<translation id="5139813694804168398">не узнемиравај</translation>
 <translation id="5140788690559353412">Када изгубите приступ школском налогу, више нећете имати приступ повезаном имејлу и фајловима на Google диску, као што су Gmail, Документи, Презентације и друго.</translation>
 <translation id="5142961317498132443">Потврда идентитета</translation>
 <translation id="5144311987923128508">Дугме за потврду је сада онемогућено</translation>
@@ -897,6 +902,7 @@
 <translation id="5302048478445481009">Језик</translation>
 <translation id="5303837385540978511">Ексклузивна <ph name="PRODUCT_NAME" /> позадина</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="530883153651464140">Ажурирајте <ph name="DEVICE_NAME" /> на верзију <ph name="VERSION" /></translation>
 <translation id="5315873049536339193">Идентитет</translation>
 <translation id="5317780077021120954">Сачувај</translation>
 <translation id="5318310531701770497">Прављење назива није успело. Пробајте са дужим транскриптом.</translation>
@@ -973,7 +979,6 @@
 <translation id="5703716265115423771">утишај звук</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> од <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Дугме Измени за <ph name="SHORTCUT_DESCRIPTION" />.</translation>
-<translation id="5733298426544876109">Ажурирајте <ph name="DEVICE_NAME" /></translation>
 <translation id="5736820754189340309">Потрошња података је ресетована</translation>
 <translation id="574392208103952083">Средња</translation>
 <translation id="5744175046705638478">Преведите „<ph name="QUERY" />“</translation>
@@ -998,6 +1003,7 @@
 <translation id="5859969039821714932">Пречица није доступна. Притисните нову пречицу без тастера <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Искључено</translation>
 <translation id="5860491529813859533">Укључи</translation>
+<translation id="5875913454160982848">Преузмите модел за транскрипцију</translation>
 <translation id="5876385649737594562">Укључите да бисте изабрали опције</translation>
 <translation id="5877503382465267833">Паузирајте снимак <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Цеo екран</translation>
@@ -1037,7 +1043,6 @@
 <translation id="6040143037577758943">Затвори</translation>
 <translation id="6040852767465482106">Непознати идентитет</translation>
 <translation id="604124094241169006">Аутоматски</translation>
-<translation id="6042308850641462728">Још</translation>
 <translation id="6048107060512778456">Није успело – папир је заглављен</translation>
 <translation id="6050189528197190982">Сиви тонови</translation>
 <translation id="6054711098834486579">експресионизам</translation>
@@ -1293,6 +1298,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Сервер имена}one{Сервери имена}few{Сервери имена}other{Сервери имена}}</translation>
 <translation id="7135814714616751706">Претражите пречице</translation>
 <translation id="7138614237884624401">Поједностављен текст</translation>
+<translation id="7138668887584231801">Нема довољно речи за резимирање</translation>
 <translation id="7141470099673912333">Пренос садржаја</translation>
 <translation id="7143207342074048698">Повезивање</translation>
 <translation id="7144878232160441200">Пробај поново</translation>
@@ -1588,6 +1594,7 @@
 <translation id="8503836310948963452">Још само пар минута…</translation>
 <translation id="8505011850330200833">Gemini модел захтева 2 GB меморијског простора за обраду транскрипата и прављење резимеа</translation>
 <translation id="8508640263392900755">Детаљи назива приступне тачке</translation>
+<translation id="8509574872955173831">Сазнајте више о прављењу резимеа и назива</translation>
 <translation id="8522687886059337719">Сада имате приступ новим <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />позадинама<ph name="END_LINK_WALLPAPER_SUBPAGE" /> и <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />чувару екрана<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">чајџиница</translation>
@@ -1724,7 +1731,6 @@
 <translation id="9133772297793293778">Притисните модификаторе 1-4 и још 1 тастер на тастатури. Да бисте изашли из режима за измене, притисните alt + esc.</translation>
 <translation id="9137526406337347448">Google услуге</translation>
 <translation id="9138630967333032450">Леви тастер shift</translation>
-<translation id="9147928237330776930">Премало речи за резимирање</translation>
 <translation id="9149391708638971077">Покрени тест меморије</translation>
 <translation id="9159524746324788320">хамбургери</translation>
 <translation id="9161276708550942948">размак</translation>

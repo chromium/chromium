@@ -95,6 +95,9 @@ void FeaturePromoControllerTestBase::SetUp() {
   EXPECT_CALL(tracker_, NotifyEvent).Times(testing::AnyNumber());
 #if !BUILDFLAG(IS_ANDROID)
   EXPECT_CALL(tracker_, NotifyUsedEvent).Times(testing::AnyNumber());
+  EXPECT_CALL(tracker_, ListEvents)
+      .WillRepeatedly(
+          testing::Return(feature_engagement::Tracker::EventList()));
 #endif
   EXPECT_CALL(tracker_, Dismissed).Times(testing::AnyNumber());
   SetTrackerResult(true);

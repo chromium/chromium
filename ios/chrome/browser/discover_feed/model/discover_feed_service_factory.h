@@ -6,23 +6,19 @@
 #define IOS_CHROME_BROWSER_DISCOVER_FEED_MODEL_DISCOVER_FEED_SERVICE_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class DiscoverFeedService;
 class ProfileIOS;
 
 // Singleton that owns all DiscoverFeedServices and associates them with
 // Profile.
-class DiscoverFeedServiceFactory : public BrowserStateKeyedServiceFactory {
+class DiscoverFeedServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static DiscoverFeedService* GetForProfile(ProfileIOS* profile);
   static DiscoverFeedService* GetForProfileIfExists(ProfileIOS* profile);
 
   static DiscoverFeedServiceFactory* GetInstance();
-
-  DiscoverFeedServiceFactory(const DiscoverFeedServiceFactory&) = delete;
-  DiscoverFeedServiceFactory& operator=(const DiscoverFeedServiceFactory&) =
-      delete;
 
  private:
   friend class base::NoDestructor<DiscoverFeedServiceFactory>;

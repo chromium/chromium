@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_PERSONAL_DATA_HELPER_IMPL_H_
 
 #include "chrome/browser/fast_checkout/fast_checkout_personal_data_helper.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 #include "content/public/browser/web_contents.h"
 
 class FastCheckoutPersonalDataHelperImpl

@@ -177,6 +177,14 @@ public class ContentShellActivity extends Activity {
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+
+        WebContents webContents = getActiveWebContents();
+        if (webContents != null) webContents.updateWebContentsVisibility(Visibility.HIDDEN);
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         mIntentRequestTracker.onActivityResult(requestCode, resultCode, data);

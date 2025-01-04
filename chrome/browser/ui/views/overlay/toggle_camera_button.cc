@@ -24,15 +24,17 @@ void ToggleCameraButton::SetCameraState(bool is_turned_on) {
 }
 
 void ToggleCameraButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  if (size() == previous_bounds.size())
+  if (size() == previous_bounds.size()) {
     return;
+  }
 
   UpdateImageAndTooltipText();
 }
 
 void ToggleCameraButton::UpdateImageAndTooltipText() {
-  if (bounds().IsEmpty())
+  if (bounds().IsEmpty()) {
     return;
+  }
 
   const auto& icon = is_turned_on_ ? vector_icons::kVideocamIcon
                                    : vector_icons::kVideocamOffIcon;

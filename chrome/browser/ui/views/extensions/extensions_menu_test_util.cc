@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/extensions/extensions_menu_test_util.h"
+
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
-
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"

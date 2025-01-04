@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.shape_detection;
+import org.chromium.build.annotations.NullMarked;
 
 import android.content.Context;
 
@@ -18,8 +19,10 @@ import org.chromium.shape_detection.mojom.BarcodeDetection;
 import org.chromium.shape_detection.mojom.BarcodeDetectionProvider;
 import org.chromium.shape_detection.mojom.BarcodeDetectorOptions;
 import org.chromium.shape_detection.mojom.BarcodeFormat;
+import org.chromium.build.annotations.Nullable;
 
 /** Service provider to create BarcodeDetection services */
+@NullMarked
 public class BarcodeDetectionProviderImpl implements BarcodeDetectionProvider {
     private static final String TAG = "BarcodeProviderImpl";
 
@@ -60,7 +63,7 @@ public class BarcodeDetectionProviderImpl implements BarcodeDetectionProvider {
     @Override
     public void onConnectionError(MojoException e) {}
 
-    public static BarcodeDetectionProvider create() {
+    public static @Nullable BarcodeDetectionProvider create() {
         Context ctx = ContextUtils.getApplicationContext();
         if (!ChromiumPlayServicesAvailability.isGooglePlayServicesAvailable(ctx)) {
             Log.w(TAG, "Google Play Services not available");

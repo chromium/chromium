@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Išjungti tamsiąją temą</translation>
 <translation id="1807246157184219062">Šviesi</translation>
 <translation id="1808803439260407870">Klasikinis menas</translation>
+<translation id="181434555916624618">Kol kas rezultatai su žmonėmis nebus rodomi. Bandykite kitą užklausą.</translation>
 <translation id="1815850098929213707">Pasirinktas klavišas yra „<ph name="KEYS" />“. Palieskite mygtuką, kad redaguotumėte valdiklį</translation>
 <translation id="1823120442877418684">Personažai</translation>
 <translation id="1827738518074806965">Meno galerija</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">Įrenginio dešiniosios ausinės akumuliatoriaus energijos lygis: <ph name="BATTERY_PERCENTAGE" /> proc.</translation>
 <translation id="3340978935015468852">Nustatymai</translation>
 <translation id="3347558044552027859">modernus</translation>
+<translation id="3353477144743332882">Atsisiųsti suvestinės ir pavadinimo kūrimo modelį</translation>
 <translation id="3359218928534347896">perjungti mikrofono nutildymą</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">sušis</translation>
@@ -689,6 +691,7 @@
 <translation id="4354430579665871434">klavišas</translation>
 <translation id="4356100841225547054">Išjungti garsumą</translation>
 <translation id="4361257691546579041">APN yra numatytojo tipo.</translation>
+<translation id="4368101969572512692">Maišyti pasiūlymus</translation>
 <translation id="437294888293595148">Iš naujo nustatyti visus sparčiuosius klavišus</translation>
 <translation id="437477383107495720">triušiai</translation>
 <translation id="4376423484621194274">Administratorius neleidžia uždaryti „<ph name="APP_NAME" />“</translation>
@@ -768,6 +771,7 @@
 <translation id="4731797938093519117">Tėvų prieiga</translation>
 <translation id="473775607612524610">Atnaujinti</translation>
 <translation id="4744944742468440486">Informacija, susijusi su jūsų pasirinkimu</translation>
+<translation id="4750394297954878236">Pasiūlymai</translation>
 <translation id="4771607256327216405">klaviatūros pašviesinimas</translation>
 <translation id="4771923071974529837">rytoj</translation>
 <translation id="4773299976671772492">Sustabdyta</translation>
@@ -853,6 +857,7 @@
 <translation id="5121677070210013200">Nepavyko atsisiųsti transkribavimo modelio. Bandykite dar kartą arba paleiskite „Chromebook“ iš naujo.</translation>
 <translation id="5130848777448318809">poniai</translation>
 <translation id="5137451382116112100">Viso ekrano režimas</translation>
+<translation id="5139813694804168398">netrukdymo režimas</translation>
 <translation id="5140788690559353412">Praradę prieigą prie mokyklos paskyros nebegalėsite pasiekti susietų el. pašto ir „Google“ disko failų, pvz., „Gmail“, Dokumentų, Skaidrių ir kt.</translation>
 <translation id="5142961317498132443">Autentifikavimas</translation>
 <translation id="5144311987923128508">Mygtukas „Patvirtinti“ dabar išjungtas</translation>
@@ -897,6 +902,7 @@
 <translation id="5302048478445481009">Kalba</translation>
 <translation id="5303837385540978511">„<ph name="PRODUCT_NAME" />“ išskirtinis ekrano fonas</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="530883153651464140">Atnaujinti įrenginį „<ph name="DEVICE_NAME" />“ į <ph name="VERSION" /> versiją</translation>
 <translation id="5315873049536339193">Tapatybė</translation>
 <translation id="5317780077021120954">Išsaugoti</translation>
 <translation id="5318310531701770497">Nepavyko sukurti pavadinimų. Išbandykite ilgesnį transkribuotą tekstą.</translation>
@@ -973,7 +979,6 @@
 <translation id="5703716265115423771">garsumo mažinimas</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> iš <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">„<ph name="SHORTCUT_DESCRIPTION" />“ redagavimo mygtukas.</translation>
-<translation id="5733298426544876109">Atnaujinti „<ph name="DEVICE_NAME" />“</translation>
 <translation id="5736820754189340309">Duomenų naudojimas nustatytas iš naujo</translation>
 <translation id="574392208103952083">Vidutinis</translation>
 <translation id="5744175046705638478">Versti „<ph name="QUERY" />“</translation>
@@ -998,6 +1003,7 @@
 <translation id="5859969039821714932">Spartusis klavišas nepasiekiamas. Paspauskite naują spartųjį klavišą be „<ph name="KEY" />“.</translation>
 <translation id="5860033963881614850">Išjungta</translation>
 <translation id="5860491529813859533">Įjungti</translation>
+<translation id="5875913454160982848">Atsisiųsti transkribavimo modelį</translation>
 <translation id="5876385649737594562">Įjunkite ir pasirinkite parinktis</translation>
 <translation id="5877503382465267833">Pristabdyti „<ph name="RECORDING_NAME" />“</translation>
 <translation id="588258955323874662">Visas ekranas</translation>
@@ -1037,7 +1043,6 @@
 <translation id="6040143037577758943">Uždaryti</translation>
 <translation id="6040852767465482106">Anoniminė tapatybė</translation>
 <translation id="604124094241169006">Automatinis</translation>
-<translation id="6042308850641462728">Daugiau</translation>
 <translation id="6048107060512778456">Nepavyko – įstrigęs popierius</translation>
 <translation id="6050189528197190982">Pilkumo tonas</translation>
 <translation id="6054711098834486579">ekspresionizmas</translation>
@@ -1293,6 +1298,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Pavadinimų serveris}one{Pavadinimų serveriai}few{Pavadinimų serveriai}many{Pavadinimų serveriai}other{Pavadinimų serveriai}}</translation>
 <translation id="7135814714616751706">Ieškoti sparčiųjų klavišų</translation>
 <translation id="7138614237884624401">Supaprastintas tekstas</translation>
+<translation id="7138668887584231801">Nepakanka žodžių, kad būtų galima apibendrinti</translation>
 <translation id="7141470099673912333">Turinio perkėlimas</translation>
 <translation id="7143207342074048698">Jungiama</translation>
 <translation id="7144878232160441200">Kartoti</translation>
@@ -1588,6 +1594,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8503836310948963452">Dar kelios minutės...</translation>
 <translation id="8505011850330200833">„Gemini“ modeliui reikia 2 GB saugyklos vietos, kad būtų galima apdoroti transkribuotą tekstą ir kurti santraukas</translation>
 <translation id="8508640263392900755">Išsami APN informacija</translation>
+<translation id="8509574872955173831">Sužinokite daugiau apie suvestinės ir pavadinimo kūrimą</translation>
 <translation id="8522687886059337719">Dabar galite pasiekti naujus <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ekrano fonus<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ir <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ekrano užsklandą<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">arbatos namai</translation>
@@ -1724,7 +1731,6 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="9133772297793293778">Paspauskite klaviatūros 1–4 modifikatorius ir dar vieną klavišą. Kad išeitumėte iš redagavimo režimo, paspauskite „Alt“ + „Esc“.</translation>
 <translation id="9137526406337347448">„Google“ paslaugos</translation>
 <translation id="9138630967333032450">Kairysis antrojo lygio klavišas</translation>
-<translation id="9147928237330776930">Per mažai žodžių, kad būtų galima apibendrinti</translation>
 <translation id="9149391708638971077">Vykdyti atminties bandymą</translation>
 <translation id="9159524746324788320">mėsainiai</translation>
 <translation id="9161276708550942948">tarpo klavišas</translation>

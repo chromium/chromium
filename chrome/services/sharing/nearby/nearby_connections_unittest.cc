@@ -424,7 +424,8 @@ class NearbyConnectionsTest : public testing::Test {
           }
           client->StartedDiscovery(std::string{service_id}, options.strategy,
                                    std::move(listener),
-                                   /* mediums= */ {});
+                                   /* mediums= */ {},
+                                   /* operation_result_with_medium= */ {});
           EXPECT_TRUE(callback);
           callback({Status::kAlreadyDiscovering});
         });
@@ -471,9 +472,10 @@ class NearbyConnectionsTest : public testing::Test {
           EXPECT_TRUE(options.enforce_topology_constraints);
           EXPECT_EQ(endpoint_info, ByteArrayToMojom(info.endpoint_info));
 
-          client_proxy->StartedAdvertising(std::string{service_id},
-                                           options.strategy, info.listener,
-                                           /* mediums= */ {});
+          client_proxy->StartedAdvertising(
+              std::string{service_id}, options.strategy, info.listener,
+              /* mediums= */ {},
+              /* operation_result_with_medium= */ {});
           ConnectionOptions connection_options{
               .auto_upgrade_bandwidth = options.auto_upgrade_bandwidth,
               .enforce_topology_constraints =

@@ -46,8 +46,9 @@ class ScopedLogIn {
     // Prevent access to DBus. This switch is reset in case set from test SetUp
     // due massive usage of InitFromArgv.
     base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
-    if (!command_line.HasSwitch(switches::kTestType))
+    if (!command_line.HasSwitch(switches::kTestType)) {
       command_line.AppendSwitch(switches::kTestType);
+    }
 
     switch (user_type) {
       case user_manager::UserType::kRegular:  // fallthrough
@@ -124,8 +125,9 @@ class ProjectorUtilsTest : public testing::Test {
     RegisterUserProfilePrefs(prefs->registry());
     TestingProfile::Builder builder;
     builder.SetPrefService(std::move(prefs));
-    if (is_child())
+    if (is_child()) {
       builder.SetIsSupervisedProfile();
+    }
     builder.OverridePolicyConnectorIsManagedForTesting(is_managed());
     profile_ = builder.Build();
   }

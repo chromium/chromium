@@ -4,6 +4,7 @@
 
 #include "chrome/browser/hid/hid_chooser_context.h"
 
+#include <array>
 #include <optional>
 #include <string_view>
 
@@ -56,8 +57,8 @@ constexpr uint16_t kTestVendorId = 0x1234;
 constexpr uint16_t kTestProductId = 0xabcd;
 constexpr char kTestSerialNumber[] = "serial-number";
 constexpr char kTestProductName[] = "product-name";
-const char* const kTestPhysicalDeviceIds[] = {"physical-device-id-1",
-                                              "physical-device-id-2"};
+const auto kTestPhysicalDeviceIds = std::to_array<const char*>(
+    {"physical-device-id-1", "physical-device-id-2"});
 constexpr char kTestUserEmail[] = "user@example.com";
 
 // The HID usages assigned to the top-level collection of the simulated device.

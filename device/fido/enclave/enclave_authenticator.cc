@@ -341,7 +341,7 @@ void EnclaveAuthenticator::ProcessMakeCredentialResponse(
   std::string error_description;
   auto parse_result = ParseMakeCredentialResponse(
       std::move(response), pending_make_credential_request_->request,
-      *ui_request_->key_version, ui_request_->user_verified);
+      *ui_request_->key_version, ui_request_->up_and_uv_bits);
   if (absl::holds_alternative<ErrorResponse>(parse_result)) {
     auto& error_details = absl::get<ErrorResponse>(parse_result);
     ProcessErrorResponse(error_details);

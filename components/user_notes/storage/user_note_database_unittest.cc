@@ -91,7 +91,7 @@ TEST_F(UserNoteDatabaseTest, InitDatabase) {
   }
 
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     EXPECT_TRUE(db.Open(db_file_path()));
 
     // Should have 4 tables and 6 indexes
@@ -108,7 +108,7 @@ TEST_F(UserNoteDatabaseTest, DatabaseNewVersion) {
 
   // Create an empty database with a newer schema version (version=1000000).
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     EXPECT_TRUE(db.Open(db_file_path()));
 
     sql::MetaTable meta_table;
@@ -140,7 +140,7 @@ TEST_F(UserNoteDatabaseTest, DatabaseHasSchemaNoMeta) {
 
   // Drop meta table.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     EXPECT_TRUE(db.Open(db_file_path()));
     sql::MetaTable::DeleteTableForTesting(&db);
   }

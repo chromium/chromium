@@ -425,7 +425,7 @@ void SavedDeskPresenter::LaunchSavedDesk(
     return;
   }
 
-  // Copy fields we need from `desk_template` since we're about to move it.
+  // Copy fields we need from `saved_desk` since we're about to move it.
   const auto saved_desk_type = saved_desk->type();
   Desk* new_desk = desks_controller->CreateNewDeskForSavedDesk(
       saved_desk_type, saved_desk->template_name());

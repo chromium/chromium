@@ -5,11 +5,16 @@
 package org.chromium.base;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** This class provides JNI-related methods to the native library. */
+@NullMarked
 public class JNIUtils {
     private static final String TAG = "JNIUtils";
-    private static ClassLoader sJniClassLoader;
+    private static @Nullable ClassLoader sJniClassLoader;
 
     /**
      * Returns a ClassLoader which can load Java classes from the specified split.
@@ -17,7 +22,7 @@ public class JNIUtils {
      * @param splitName Name of the split, or empty string for the base split.
      */
     @CalledByNative
-    private static ClassLoader getSplitClassLoader(String splitName) {
+    private static ClassLoader getSplitClassLoader(@JniType("std::string") String splitName) {
         if (!splitName.isEmpty()) {
             boolean isInstalled = BundleUtils.isIsolatedSplitInstalled(splitName);
             Log.i(TAG, "Init JNI Classloader for %s. isInstalled=%b", splitName, isInstalled);

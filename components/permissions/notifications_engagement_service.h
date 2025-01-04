@@ -7,7 +7,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class GURL;
@@ -41,6 +43,9 @@ class NotificationsEngagementService : public KeyedService {
   void RecordNotificationDisplayed(const GURL& url, int display_count);
   void RecordNotificationInteraction(const GURL& url);
 
+  static int GetDailyAverageNotificationCount(
+      ContentSettingPatternSource setting);
+
   static std::string GetBucketLabel(base::Time time);
   static std::optional<base::Time> ParsePeriodBeginFromBucketLabel(
       const std::string& label);
@@ -50,10 +55,14 @@ class NotificationsEngagementService : public KeyedService {
                        const int display_count_delta,
                        const int click_count_delta);
 
-  // Used to update the notification engagement per URL.
-  raw_ptr<HostContentSettingsMap> settings_map_;
+  static int GetDailyAverageNotificationCount(
+      const base::Value::Dict& engagement);
 
   raw_ptr<PrefService> pref_service_;
+  raw_ptr<content::BrowserContext> browser_context_;
+
+  // Used to update the notification engagement per URL.
+  raw_ptr<HostContentSettingsMap> settings_map_;
 };
 
 }  // namespace permissions

@@ -18,6 +18,7 @@
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_utils.h"
+#include "components/commerce/core/mock_account_checker.h"
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/mojom/shared.mojom.h"
 #include "components/commerce/core/pref_names.h"
@@ -102,7 +103,7 @@ class ProductSpecificationsHandlerTest : public testing::Test {
     history_service_ = std::make_unique<MockHistoryService>();
 
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-    RegisterCommercePrefs(pref_service_->registry());
+    MockAccountChecker::RegisterCommercePrefs(pref_service_->registry());
     SetTabCompareEnterprisePolicyPref(pref_service_.get(), 0);
     SetShoppingListEnterprisePolicyPref(pref_service_.get(), true);
 
@@ -264,6 +265,21 @@ TEST_F(ProductSpecificationsHandlerTest, TestGetPageTitleFromHistory_NotFound) {
       GURL(kTestUrl1), base::BindOnce([](const std::string& title) {
                          ASSERT_EQ("", title);
                        }).Then(run_loop.QuitClosure()));
+
+  run_loop.Run();
+}
+
+TEST_F(ProductSpecificationsHandlerTest, TestGetComparisonTableUrlForUuid) {
+  base::Uuid uuid = base::Uuid::GenerateRandomV4();
+
+  base::RunLoop run_loop;
+  handler_->GetComparisonTableUrlForUuid(
+      uuid, base::BindOnce(
+                [](const base::Uuid& uuid, const GURL& url) {
+                  ASSERT_EQ(commerce::GetProductSpecsTabUrlForID(uuid), url);
+                },
+                uuid)
+                .Then(run_loop.QuitClosure()));
 
   run_loop.Run();
 }

@@ -232,7 +232,7 @@ TEST_P(CaretPositionForOffsetBidiTest, CaretPositionForOffsetsBidi) {
 
   for (wtf_size_t i = 0; i < test_data.points.size(); ++i) {
     EXPECT_EQ(test_data.positions[i],
-              text_metrics->caretPositionFromPoint(test_data.points[i]))
+              text_metrics->getIndexFromOffset(test_data.points[i]))
         << "at index " << i;
   }
 }

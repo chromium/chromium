@@ -22,10 +22,11 @@ namespace {
 
 void RunOrPostToTaskRunner(scoped_refptr<SequencedTaskRunner> task_runner,
                            OnceClosure closure) {
-  if (task_runner->RunsTasksInCurrentSequence())
+  if (task_runner->RunsTasksInCurrentSequence()) {
     std::move(closure).Run();
-  else
+  } else {
     task_runner->PostTask(FROM_HERE, std::move(closure));
+  }
 }
 
 }  // namespace
@@ -78,8 +79,9 @@ CancelableTaskTracker::TaskId CancelableTaskTracker::PostTaskAndReply(
       BindOnce(&RunThenUntrackIfNotCanceled, flag, std::move(reply),
                std::move(untrack_closure)));
 
-  if (!success)
+  if (!success) {
     return kBadTaskId;
+  }
 
   Track(id, std::move(flag));
   return id;
@@ -135,8 +137,9 @@ void CancelableTaskTracker::TryCancel(TaskId id) {
 
 void CancelableTaskTracker::TryCancelAll() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (const auto& it : task_flags_)
+  for (const auto& it : task_flags_) {
     it.second->data.Set();
+  }
   task_flags_.clear();
 }
 

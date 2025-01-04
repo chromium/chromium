@@ -309,12 +309,4 @@ TEST_P(GLES2DecoderTest3, PopGroupMarkerEXTValidArgs) {
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 }
-
-TEST_P(GLES2DecoderTest3, SwapBuffersValidArgs) {
-  SpecializedSetup<cmds::SwapBuffers, 0>(true);
-  cmds::SwapBuffers cmd;
-  cmd.Init(1, 0);
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-}
 #endif  // GPU_COMMAND_BUFFER_SERVICE_GLES2_CMD_DECODER_UNITTEST_3_AUTOGEN_H_

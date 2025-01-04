@@ -128,8 +128,8 @@ class ScopedPlusAddressFeatureList {
   void Reinit(const std::string& server_url, bool enable_onboarding = false) {
     CHECK(!server_url.empty());
     features_.Reset();
-      // Don't enable the 'sync-with-server' param so that the dialog is the
-      // only way to trigger requests to the server.
+    // Don't enable the 'sync-with-server' param so that the dialog is the
+    // only way to trigger requests to the server.
     base::FieldTrialParams plus_addresses_enabled_params_with_server =
         plus_addresses_enabled_params_;
     plus_addresses_enabled_params_with_server["server-url"] = server_url;

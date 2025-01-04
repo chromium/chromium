@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Deaktiver Mørkt tema</translation>
 <translation id="1807246157184219062">Lys</translation>
 <translation id="1808803439260407870">Klassisk kunst</translation>
+<translation id="181434555916624618">Der vises ikke resultater med personer i øjeblikket. Prøv en anden prompt.</translation>
 <translation id="1815850098929213707">Den valgte tast er <ph name="KEYS" />. Tryk på knappen for at redigere styringselementet</translation>
 <translation id="1823120442877418684">Figurer</translation>
 <translation id="1827738518074806965">Kunstgalleri</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">Enheden har <ph name="BATTERY_PERCENTAGE" /> % batteri på højre øretelefon.</translation>
 <translation id="3340978935015468852">indstillinger</translation>
 <translation id="3347558044552027859">moderne</translation>
+<translation id="3353477144743332882">Download model til opsummering og navngivning</translation>
 <translation id="3359218928534347896">slå mikrofonen til/fra</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">sushi</translation>
@@ -689,6 +691,7 @@
 <translation id="4354430579665871434">tast</translation>
 <translation id="4356100841225547054">Slå lyden fra</translation>
 <translation id="4361257691546579041">APN-typen er: standard.</translation>
+<translation id="4368101969572512692">Bland forslag</translation>
 <translation id="437294888293595148">Nulstil alle genveje</translation>
 <translation id="437477383107495720">kaniner</translation>
 <translation id="4376423484621194274">Din administrator tillader ikke lukning af <ph name="APP_NAME" /></translation>
@@ -768,6 +771,7 @@
 <translation id="4731797938093519117">Forældreadgang</translation>
 <translation id="473775607612524610">Opdater</translation>
 <translation id="4744944742468440486">Oplysninger relateret til det, du har markeret</translation>
+<translation id="4750394297954878236">Forslag</translation>
 <translation id="4771607256327216405">skru op for tastaturlys</translation>
 <translation id="4771923071974529837">i morgen</translation>
 <translation id="4773299976671772492">Stoppet</translation>
@@ -853,6 +857,7 @@
 <translation id="5121677070210013200">Transskriptionsmodellen kan ikke downloades. Prøv igen, eller genstart din Chromebook.</translation>
 <translation id="5130848777448318809">ponyer</translation>
 <translation id="5137451382116112100">Fuld</translation>
+<translation id="5139813694804168398">forstyr ikke</translation>
 <translation id="5140788690559353412">Når du mister adgangen til din skolekonto, har du ikke længere adgang til den tilknyttede mail og Google Drev-filer som f.eks. Gmail, Docs, Slides m.m.</translation>
 <translation id="5142961317498132443">Godkendelse</translation>
 <translation id="5144311987923128508">Knappen Bekræft er nu deaktiveret</translation>
@@ -897,6 +902,7 @@
 <translation id="5302048478445481009">Sprog</translation>
 <translation id="5303837385540978511">Baggrund udelukkende til <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EvDo</translation>
+<translation id="530883153651464140">Opdater <ph name="DEVICE_NAME" /> til version <ph name="VERSION" /></translation>
 <translation id="5315873049536339193">Identitet</translation>
 <translation id="5317780077021120954">Gem</translation>
 <translation id="5318310531701770497">Det er ikke muligt at oprette navne. Prøv med en længere transskription.</translation>
@@ -973,7 +979,6 @@
 <translation id="5703716265115423771">lydstyrke ned</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> af <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Knappen Rediger for <ph name="SHORTCUT_DESCRIPTION" />.</translation>
-<translation id="5733298426544876109">Opdater <ph name="DEVICE_NAME" /></translation>
 <translation id="5736820754189340309">Dataforbrug er blevet nulstillet</translation>
 <translation id="574392208103952083">Mellem</translation>
 <translation id="5744175046705638478">Oversæt "<ph name="QUERY" />"</translation>
@@ -998,6 +1003,7 @@
 <translation id="5859969039821714932">Genvejen er ikke tilgængelig. Tryk på en ny genvej uden <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Fra</translation>
 <translation id="5860491529813859533">Aktivér</translation>
+<translation id="5875913454160982848">Download transskriptionsmodel</translation>
 <translation id="5876385649737594562">Aktivér for at vælge muligheder</translation>
 <translation id="5877503382465267833">Sæt <ph name="RECORDING_NAME" /> på pause</translation>
 <translation id="588258955323874662">Fuld skærm</translation>
@@ -1037,7 +1043,6 @@
 <translation id="6040143037577758943">Luk</translation>
 <translation id="6040852767465482106">Anonym identitet</translation>
 <translation id="604124094241169006">Automatisk</translation>
-<translation id="6042308850641462728">Mere</translation>
 <translation id="6048107060512778456">Handlingen mislykkedes – Papirstop</translation>
 <translation id="6050189528197190982">Gråtone</translation>
 <translation id="6054711098834486579">ekspressionisme</translation>
@@ -1293,6 +1298,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Navneserver}one{Navneserver}other{Navneservere}}</translation>
 <translation id="7135814714616751706">Søg efter genveje</translation>
 <translation id="7138614237884624401">Forenklet tekst</translation>
+<translation id="7138668887584231801">Der er ikke nok ord til at generere en opsummering</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Tilslutter</translation>
 <translation id="7144878232160441200">Prøv igen</translation>
@@ -1588,6 +1594,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="8503836310948963452">Det tager kun et par minutter mere...</translation>
 <translation id="8505011850330200833">Gemini-modellen kræver 2 GB lagerplads for at behandle transskriptioner og oprette opsummeringer</translation>
 <translation id="8508640263392900755">Oplysninger om APN</translation>
+<translation id="8509574872955173831">Få flere oplysninger om opsummering og navngivning</translation>
 <translation id="8522687886059337719">Du har nu adgang til nye <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />baggrunde<ph name="END_LINK_WALLPAPER_SUBPAGE" /> og <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />pauseskærme<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">tehus</translation>
@@ -1621,7 +1628,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="8723108084122415655">Det netværk, der ikke er angivet som standardnetværket, overstiger grænsen for forsinkelse</translation>
 <translation id="8725066075913043281">Forsøg igen</translation>
 <translation id="8726019395068607495">Stoppet – Åben låge</translation>
-<translation id="8730621377337864115">Udfør</translation>
+<translation id="8730621377337864115">Udført</translation>
 <translation id="8739555075907731077">Sat på pause (<ph name="PERCENTAGE_VALUE" /> % fuldført)</translation>
 <translation id="8747900814994928677">Bekræft ændring</translation>
 <translation id="8749478549112817787">Kamerabaggrund</translation>
@@ -1724,7 +1731,6 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="9133772297793293778">Tryk på 1-4 ændringstaster og 1 anden tast på dit tastatur. Hvis du vil afslutte redigeringstilstand, skal du trykke på Alt + Esc.</translation>
 <translation id="9137526406337347448">Google-tjenester</translation>
 <translation id="9138630967333032450">Shift i venstre side</translation>
-<translation id="9147928237330776930">Der er for få ord til at generere en opsummering</translation>
 <translation id="9149391708638971077">Kør hukommelsestest</translation>
 <translation id="9159524746324788320">hamburgere</translation>
 <translation id="9161276708550942948">mellemrum</translation>

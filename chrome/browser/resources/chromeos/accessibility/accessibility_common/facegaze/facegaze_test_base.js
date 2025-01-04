@@ -282,9 +282,19 @@ FaceGazeTestBase = class extends E2ETestBase {
     return accessibilityCommon.getFaceGazeForTest();
   }
 
+  /** @return {!MouseController} */
+  getMouseController() {
+    return this.getFaceGaze().mouseController_;
+  }
+
   /** @return {!ScrollModeController} */
   getScrollModeController() {
-    return this.getFaceGaze().mouseController_.scrollModeController_;
+    return this.getMouseController().scrollModeController_;
+  }
+
+  /** @return {!GestureHandler} */
+  getGestureHandler() {
+    return this.getFaceGaze().gestureHandler_;
   }
 
   async startFacegazeWithConfigAndForeheadLocation_(
@@ -550,5 +560,14 @@ FaceGazeTestBase = class extends E2ETestBase {
   /** @return {string|undefined} */
   getBubbleText() {
     return this.mockAccessibilityPrivate.getFaceGazeBubbleText();
+  }
+
+  /** @return {boolean} */
+  getBubbleIsWarning() {
+    return this.mockAccessibilityPrivate.getFaceGazeBubbleIsWarning();
+  }
+
+  getLatestCursorPosition() {
+    return this.mockAccessibilityPrivate.getLatestCursorPosition();
   }
 };

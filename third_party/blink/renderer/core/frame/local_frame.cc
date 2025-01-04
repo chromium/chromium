@@ -214,6 +214,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -528,6 +529,7 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(lcpp_);
   visitor->Trace(v8_local_compile_hints_producer_);
   visitor->Trace(browser_interface_broker_proxy_);
+  visitor->Trace(frame_visibility_observers_);
 #if !BUILDFLAG(IS_ANDROID)
   visitor->Trace(window_controls_overlay_changed_delegate_);
 #endif
@@ -796,6 +798,8 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
   if (text_fragment_handler_)
     text_fragment_handler_->DidDetachDocumentOrFrame();
 
+  frame_visibility_observers_.clear();
+
   not_restored_reasons_.reset();
 
   DCHECK(!view_->IsAttached());
@@ -813,6 +817,12 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
   frame_scheduler_.reset();
   mojo_handler_->DidDetachFrame();
   WeakIdentifierMap<LocalFrame>::NotifyObjectDestroyed(this);
+
+  LocalFramesByTokenMap& local_frames_map = GetLocalFramesMap();
+  auto it =
+      local_frames_map.find(LocalFrameToken::Hasher()(GetLocalFrameToken()));
+  CHECK(it != local_frames_map.end());
+  local_frames_map.erase(it);
 
   did_run_detach_impl_ = true;
   return true;
@@ -2548,27 +2558,21 @@ void LocalFrame::ForceSynchronousDocumentInstall(const AtomicString& mime_type,
   DocumentParser* parser = document->OpenForNavigation(
       kForceSynchronousParsing, mime_type, AtomicString("UTF-8"));
 
-  if (RuntimeEnabledFeatures::DocumentInstallChunkingEnabled()) {
-    // Some code creates a very large number of tiny chunks that show up in
-    // |data|, such as InternalPopupMenu. Calling parser->AppendBytes() with
-    // each tiny piece dramatically slows down document loading. By combining
-    // these chunks in a Vector before passing it to parser->AppendBytes() gets
-    // around this problem.
-    Vector<char> current_chunk;
-    for (const auto& segment : data) {
-      current_chunk.AppendSpan(base::span(segment));
-      if (current_chunk.size() > kMaxDocumentChunkSize) {
-        parser->AppendBytes(base::as_byte_span(current_chunk));
-        current_chunk.clear();
-      }
-    }
-    parser->AppendBytes(base::as_byte_span(current_chunk));
-    current_chunk.clear();
-  } else {
-    for (const auto& segment : data) {
-      parser->AppendBytes(base::as_bytes(segment));
+  // Some code creates a very large number of tiny chunks that show up in
+  // |data|, such as InternalPopupMenu. Calling parser->AppendBytes() with
+  // each tiny piece dramatically slows down document loading. By combining
+  // these chunks in a Vector before passing it to parser->AppendBytes() gets
+  // around this problem.
+  Vector<char> current_chunk;
+  for (const auto& segment : data) {
+    current_chunk.AppendSpan(base::span(segment));
+    if (current_chunk.size() > kMaxDocumentChunkSize) {
+      parser->AppendBytes(base::as_byte_span(current_chunk));
+      current_chunk.clear();
     }
   }
+  parser->AppendBytes(base::as_byte_span(current_chunk));
+  current_chunk.clear();
 
   parser->Finish();
 
@@ -4155,6 +4159,20 @@ void LocalFrame::OnStorageAccessCallback(
     bool is_allowed) {
   GetLocalFrameHostRemote().NotifyStorageAccessed(storage_type, !is_allowed);
   std::move(callback).Run(is_allowed);
+}
+
+void LocalFrame::NotifyFrameVisibilityChanged(
+    mojom::blink::FrameVisibility visibility) {
+  HeapVector<Member<FrameVisibilityObserver>>
+      frame_visibility_observers_as_vector;
+  // Iterate on a copy of the vector to avoid invalidating the iterator if
+  // `FrameVisibilityChanged` happens to remove the observer from
+  // `frame_visibility_observers_`.
+  CopyToVector(frame_visibility_observers_,
+               frame_visibility_observers_as_vector);
+  for (auto observer : frame_visibility_observers_as_vector) {
+    observer->FrameVisibilityChanged(visibility);
+  }
 }
 
 }  // namespace blink

@@ -367,7 +367,7 @@ class LogMessageFatal final : public LogMessage {
   LogMessageFatal(absl::Nonnull<const char*> file,
                   int line) ABSL_ATTRIBUTE_COLD;
   LogMessageFatal(absl::Nonnull<const char*> file, int line,
-                  absl::string_view failure_msg) ABSL_ATTRIBUTE_COLD;
+                  absl::Nonnull<const char*> failure_msg) ABSL_ATTRIBUTE_COLD;
   [[noreturn]] ~LogMessageFatal();
 };
 
@@ -397,7 +397,8 @@ class LogMessageQuietlyFatal final : public LogMessage {
   LogMessageQuietlyFatal(absl::Nonnull<const char*> file,
                          int line) ABSL_ATTRIBUTE_COLD;
   LogMessageQuietlyFatal(absl::Nonnull<const char*> file, int line,
-                         absl::string_view failure_msg) ABSL_ATTRIBUTE_COLD;
+                         absl::Nonnull<const char*> failure_msg)
+      ABSL_ATTRIBUTE_COLD;
   [[noreturn]] ~LogMessageQuietlyFatal();
 };
 

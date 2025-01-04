@@ -363,8 +363,7 @@ clean_sources_lists() {
 
   find_apt_sources
 
-  rm -f "$APT_SOURCESDIR/@@PACKAGE@@.list" \
-        "$APT_SOURCESDIR/@@PACKAGE@@-@@CHANNEL@@.list"
+  rm -f "$APT_SOURCESDIR/@@PACKAGE@@.list"
 }
 
 # Detect if the repo config was disabled by distro upgrade and enable if

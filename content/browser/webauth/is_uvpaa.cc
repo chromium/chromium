@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/common/content_client.h"
 #include "device/fido/features.h"

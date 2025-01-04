@@ -139,6 +139,14 @@ public class FinancialAccountsManagementFragmentTest {
                                     FINANCIAL_ACCOUNT_DISPLAY_ICON_BITMAP,
                                     CardIconSpecs.create(
                                             ContextUtils.getApplicationContext(), ImageSize.LARGE));
+                    personalDataManager
+                            .getImageFetcherForTesting()
+                            .addImageToCacheForTesting(
+                                    FINANCIAL_ACCOUNT_DISPLAY_ICON_URL,
+                                    FINANCIAL_ACCOUNT_DISPLAY_ICON_BITMAP,
+                                    CardIconSpecs.create(
+                                            ContextUtils.getApplicationContext(),
+                                            ImageSize.SQUARE));
                     // Set the eWallet and Pix pref to true.
                     getPrefService().setBoolean(Pref.FACILITATED_PAYMENTS_EWALLET, true);
                     getPrefService().setBoolean(Pref.FACILITATED_PAYMENTS_PIX, true);
@@ -564,7 +572,7 @@ public class FinancialAccountsManagementFragmentTest {
         var pixToggleEnabledHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
                         FinancialAccountsManagementFragment
-                                .FACILITATED_PAYMENTS_TOGGLE_UPDATED_HISTOGRAM,
+                                .FACILITATED_PAYMENTS_PIX_TOGGLE_UPDATED_HISTOGRAM,
                         true);
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity(new Bundle());
         ChromeSwitchPreference pixSwitch = getPixSwitchPreference(activity);
@@ -586,7 +594,7 @@ public class FinancialAccountsManagementFragmentTest {
         var pixToggleDisabledHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
                         FinancialAccountsManagementFragment
-                                .FACILITATED_PAYMENTS_TOGGLE_UPDATED_HISTOGRAM,
+                                .FACILITATED_PAYMENTS_PIX_TOGGLE_UPDATED_HISTOGRAM,
                         false);
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity(new Bundle());
         ChromeSwitchPreference pixSwitch = getPixSwitchPreference(activity);
@@ -596,6 +604,52 @@ public class FinancialAccountsManagementFragmentTest {
         rule.clickOnPreferenceAndWait(pixSwitch);
 
         pixToggleDisabledHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @RequiresRestart("crbug.com/344671557")
+    public void testEwalletToggleTurnedOn_histogramLogged() {
+        AutofillTestHelper.addEwallet(EWALLET_ACCOUNT);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService().setBoolean(Pref.FACILITATED_PAYMENTS_EWALLET, false);
+                });
+        var eWalletToggleEnabledHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        FinancialAccountsManagementFragment
+                                .FACILITATED_PAYMENTS_EWALLET_TOGGLE_UPDATED_HISTOGRAM,
+                        true);
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity(new Bundle());
+        ChromeSwitchPreference eWalletSwitch = getEwalletSwitchPreference(activity);
+        assertThat(eWalletSwitch.isChecked()).isFalse();
+
+        // Set the eWallet toggle to on.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    eWalletSwitch.performClick();
+                });
+
+        eWalletToggleEnabledHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testEwalletToggleTurnedOff_histogramLogged() throws TimeoutException {
+        AutofillTestHelper.addEwallet(EWALLET_ACCOUNT);
+        var eWalletToggleEnabledHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        FinancialAccountsManagementFragment
+                                .FACILITATED_PAYMENTS_EWALLET_TOGGLE_UPDATED_HISTOGRAM,
+                        false);
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity(new Bundle());
+        ChromeSwitchPreference eWalletSwitch = getEwalletSwitchPreference(activity);
+        assertThat(eWalletSwitch.isChecked()).isTrue();
+
+        // Set the eWallet toggle to off.
+        rule.clickOnPreferenceAndWait(eWalletSwitch);
+
+        eWalletToggleEnabledHistogram.assertExpected();
     }
 
     @Test

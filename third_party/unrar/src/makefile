@@ -2,8 +2,11 @@
 # Makefile for UNIX - unrar
 
 # Linux using GCC
+# 2024.08.19: -march=native isn't recognized on some platforms such as RISCV64.
+# Thus we removed it. Clang ARM users can add -march=armv8-a+crypto to enable
+# ARM NEON crypto.
 CXX=c++
-CXXFLAGS=-march=native -O2 -std=c++11 -Wno-logical-op-parentheses -Wno-switch -Wno-dangling-else
+CXXFLAGS=-O2 -std=c++11 -Wno-logical-op-parentheses -Wno-switch -Wno-dangling-else
 LIBFLAGS=-fPIC
 DEFINES=-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -DRAR_SMP
 STRIP=strip
@@ -25,7 +28,7 @@ OBJECTS=rar.o strlist.o strfn.o pathfn.o smallfn.o global.o file.o filefn.o filc
 	archive.o arcread.o unicode.o system.o crypt.o crc.o rawread.o encname.o \
 	resource.o match.o timefn.o rdwrfn.o consio.o options.o errhnd.o rarvm.o secpassword.o \
 	rijndael.o getbits.o sha1.o sha256.o blake2s.o hash.o extinfo.o extract.o volume.o \
-	list.o find.o unpack.o headers.o threadpool.o rs16.o cmddata.o ui.o
+	list.o find.o unpack.o headers.o threadpool.o rs16.o cmddata.o ui.o largepage.o
 
 .cpp.o:
 	$(COMPILE) -D$(WHAT) -c $<

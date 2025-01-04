@@ -104,10 +104,6 @@ BASE_FEATURE(kOptGuideEnableXNNPACKDelegateWithTFLite,
              "OptGuideEnableXNNPACKDelegateWithTFLite",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOptimizationHintsComponent,
-             "OptimizationHintsComponent",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Killswitch for fetching on search results from a remote Optimization Guide
 // Service.
 BASE_FEATURE(kOptimizationGuideFetchingForSRP,
@@ -198,9 +194,22 @@ BASE_FEATURE(kPrivacyGuideAiSettings,
              "PrivacyGuideAiSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAiSettingsPageEnterpriseDisabledUi,
+             "AiSettingsPageEnterpriseDisabledUi",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kOnDeviceModelPerformanceParams,
+             "OnDeviceModelPerformanceParams",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 const base::FeatureParam<std::string> kPerformanceClassListForOnDeviceModel{
-    &kOptimizationGuideOnDeviceModel,
+    &kOnDeviceModelPerformanceParams,
     "compatible_on_device_performance_classes", "5,6"};
+
+const base::FeatureParam<std::string>
+    kLowTierPerformanceClassListForOnDeviceModel{
+        &kOnDeviceModelPerformanceParams,
+        "compatible_low_tier_on_device_performance_classes", ""};
 
 BASE_FEATURE(kOptimizationGuideIconView,
              "OptimizationGuideIconView",
@@ -586,12 +595,6 @@ bool TFLiteXNNPACKDelegateEnabled() {
   return base::FeatureList::IsEnabled(kOptGuideEnableXNNPACKDelegateWithTFLite);
 }
 
-bool ShouldCheckFailedComponentVersionPref() {
-  return GetFieldTrialParamByFeatureAsBool(
-      kOptimizationHintsComponent, "check_failed_component_version_pref",
-      false);
-}
-
 std::map<proto::OptimizationTarget, std::set<int64_t>>
 GetPredictionModelVersionsInKillSwitch() {
   if (!base::FeatureList::IsEnabled(
@@ -748,12 +751,16 @@ base::TimeDelta GetOnDeviceModelRetentionTime() {
       base::Days(30));
 }
 
+int GetDiskSpaceRequiredInMbForOnDeviceModelInstall() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      kOptimizationGuideOnDeviceModel,
+      "on_device_model_free_space_mb_required_to_install", 20 * 1024);
+}
+
 bool IsFreeDiskSpaceSufficientForOnDeviceModelInstall(
     int64_t free_disk_space_bytes) {
-  return base::GetFieldTrialParamByFeatureAsInt(
-             kOptimizationGuideOnDeviceModel,
-             "on_device_model_free_space_mb_required_to_install",
-             20 * 1024) <= free_disk_space_bytes / (1024 * 1024);
+  return GetDiskSpaceRequiredInMbForOnDeviceModelInstall() <=
+         free_disk_space_bytes / (1024 * 1024);
 }
 
 bool IsFreeDiskSpaceTooLowForOnDeviceModelInstall(
@@ -882,7 +889,8 @@ bool ShouldEnableOptimizationGuideIconView() {
 
 bool IsAiSettingsPageRefreshEnabled() {
   return base::FeatureList::IsEnabled(kAiSettingsPageRefresh) ||
-         base::FeatureList::IsEnabled(kPrivacyGuideAiSettings);
+         base::FeatureList::IsEnabled(kPrivacyGuideAiSettings) ||
+         base::FeatureList::IsEnabled(kAiSettingsPageEnterpriseDisabledUi);
 }
 
 bool IsPrivacyGuideAiSettingsEnabled() {

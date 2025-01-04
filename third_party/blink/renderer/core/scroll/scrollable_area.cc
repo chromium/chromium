@@ -42,6 +42,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -254,6 +255,9 @@ ScrollResult ScrollableArea::UserScroll(ui::ScrollGranularity granularity,
       GetScrollAnimator().UserScroll(granularity, scrollable_axis_delta,
                                      std::move(run_scroll_complete_callbacks));
   if (result.DidScroll()) {
+    if (ScrollMarkerGroupPseudoElement* group = GetScrollMarkerGroup()) {
+      group->UnPinSelectedMarker();
+    }
     UpdateScrollMarkers();
   }
 
@@ -277,7 +281,8 @@ void ScrollableArea::ClearPendingScrollAnchorAdjustment() {
 bool ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
                                      mojom::blink::ScrollType scroll_type,
                                      mojom::blink::ScrollBehavior behavior,
-                                     ScrollCallback on_finish) {
+                                     ScrollCallback on_finish,
+                                     bool targeted_scroll) {
   if (on_finish)
     RegisterScrollCompleteCallback(std::move(on_finish));
 
@@ -301,6 +306,14 @@ bool ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
     std::move(run_scroll_complete_callbacks)
         .Run(ScrollCompletionMode::kFinished);
     return false;
+  }
+
+  // If this was not a targeted scroll, the associated scroll-marker-group
+  // should stop pinning its selected scroll-marker.
+  if (!targeted_scroll) {
+    if (ScrollMarkerGroupPseudoElement* marker_group = GetScrollMarkerGroup()) {
+      marker_group->UnPinSelectedMarker();
+    }
   }
 
   ScrollOffset previous_offset = GetScrollOffset();
@@ -332,7 +345,7 @@ bool ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
                                        gfx::ToRoundedVector2d(previous_offset);
 
   // After a scroller has been explicitly scrolled, we should no longer apply
-  // scroll-start or scroll-start-target.
+  // scroll-start or scroll-initial-target.
   if (IsExplicitScrollType(scroll_type)) {
     StopApplyingScrollStart();
   }
@@ -461,28 +474,28 @@ bool ScrollableArea::ScrollStartIsDefault() const {
          GetLayoutBox()->Style()->ScrollStartY() == ScrollStartData();
 }
 
-const LayoutObject* ScrollableArea::GetScrollStartTarget() const {
+const LayoutObject* ScrollableArea::GetScrollInitialTarget() const {
   for (const auto& fragment : GetLayoutBox()->PhysicalFragments()) {
-    if (auto scroll_start_target = fragment.ScrollStartTarget()) {
+    if (auto scroll_start_target = fragment.ScrollInitialTarget()) {
       return scroll_start_target;
     }
   }
   return nullptr;
 }
 
-void ScrollableArea::ScrollToScrollStartTarget(
-    const LayoutObject* scroll_start_target) {
+void ScrollableArea::ScrollToScrollInitialTarget(
+    const LayoutObject* scroll_initial_target) {
   using Behavior = mojom::ScrollAlignment_Behavior;
   mojom::blink::ScrollAlignment align_x(
       Behavior::kNoScroll, Behavior::kNoScroll, Behavior::kNoScroll);
   mojom::blink::ScrollAlignment align_y(
       Behavior::kNoScroll, Behavior::kNoScroll, Behavior::kNoScroll);
-  const LayoutBox* target_box = scroll_start_target->EnclosingBox();
+  const LayoutBox* target_box = scroll_initial_target->EnclosingBox();
   if (!target_box) {
     return;
   }
   cc::ScrollSnapAlign snap_alignment =
-      scroll_start_target->Style()->GetScrollSnapAlign();
+      scroll_initial_target->Style()->GetScrollSnapAlign();
   switch (snap_alignment.alignment_block) {
     case cc::SnapAlignment::kStart:
       align_y = ScrollAlignment::TopAlways();
@@ -522,14 +535,14 @@ void ScrollableArea::ScrollToScrollStartTarget(
 }
 
 void ScrollableArea::ApplyScrollStart() {
-  if (RuntimeEnabledFeatures::CSSScrollStartTargetEnabled()) {
-    if (const LayoutObject* scroll_start_target = GetScrollStartTarget()) {
+  if (RuntimeEnabledFeatures::CSSScrollInitialTargetEnabled()) {
+    if (const LayoutObject* scroll_initial_target = GetScrollInitialTarget()) {
       if (auto* box = GetLayoutBox()) {
         UseCounter::Count(box->GetDocument(),
-                          WebFeature::kCSSScrollStartTarget);
+                          WebFeature::kCSSScrollInitialTarget);
       }
-      ScrollToScrollStartTarget(scroll_start_target);
-      // scroll-start-target takes precedence over scroll-start, so we should
+      ScrollToScrollInitialTarget(scroll_initial_target);
+      // scroll-initial-target takes precedence over scroll-start, so we should
       // return here.
       return;
     }
@@ -1159,7 +1172,16 @@ gfx::Size ScrollableArea::ExcludeScrollbars(const gfx::Size& size) const {
 
 void ScrollableArea::DidCompositorScroll(const gfx::PointF& position) {
   ScrollOffset new_offset(ScrollPositionToOffset(position));
-  SetScrollOffset(new_offset, mojom::blink::ScrollType::kCompositor);
+  ScrollMarkerGroupPseudoElement* group = GetScrollMarkerGroup();
+  // A non-latched compositor scroll update might be in service of a
+  // targeted (i.e. smooth scrollIntoView) or non-targeted scroll (e.g
+  // smooth scrollTo or a gesture scroll). If we are still executing a
+  // targeted scroll, the associated ScrollMarkerGroupPseudoElement's
+  // selected marker will still be pinned and we should not change that.
+  bool targeted_scroll = group && group->SelectedMarkerIsPinned();
+  SetScrollOffset(new_offset, mojom::blink::ScrollType::kCompositor,
+                  mojom::blink::ScrollBehavior::kInstant, ScrollCallback(),
+                  targeted_scroll);
 }
 
 Scrollbar* ScrollableArea::GetScrollbar(

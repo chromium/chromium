@@ -113,16 +113,35 @@
   self.delegate = nil;
 }
 
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (BOOL)textView:(UITextView*)textView
     shouldInteractWithURL:(NSURL*)URL
                   inRange:(NSRange)characterRange
               interaction:(UITextItemInteraction)interaction {
+  if (@available(iOS 17, *)) {
+    return NO;
+  }
+
   DCHECK(self.textView == textView);
   DCHECK(URL);
   CrURL* crurl = [[CrURL alloc] initWithNSURL:URL];
   [self.delegate tableViewTextLinkCell:self didRequestOpenURL:crurl];
   // Returns NO as the app is handling the opening of the URL.
   return NO;
+}
+#endif
+
+- (UIAction*)textView:(UITextView*)textView
+    primaryActionForTextItem:(UITextItem*)textItem
+               defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
+  DCHECK(self.textView == textView);
+  NSURL* URL = textItem.link;
+  DCHECK(URL);
+  CrURL* crurl = [[CrURL alloc] initWithNSURL:URL];
+  __weak __typeof(self) weakSelf = self;
+  return [UIAction actionWithHandler:^(UIAction* action) {
+    [weakSelf.delegate tableViewTextLinkCell:weakSelf didRequestOpenURL:crurl];
+  }];
 }
 
 @end

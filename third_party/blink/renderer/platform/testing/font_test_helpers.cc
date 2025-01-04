@@ -30,8 +30,8 @@ class TestFontSelector : public FontSelector {
         FontCustomPlatformData::Create(font_buffer.get(), ots_parse_message));
   }
 
-  static TestFontSelector* Create(const uint8_t* data, size_t size) {
-    scoped_refptr<SharedBuffer> font_buffer = SharedBuffer::Create(data, size);
+  static TestFontSelector* Create(base::span<const uint8_t> data) {
+    scoped_refptr<SharedBuffer> font_buffer = SharedBuffer::Create(data);
     String ots_parse_message;
     FontCustomPlatformData* font_custom_platform_data =
         FontCustomPlatformData::Create(font_buffer.get(), ots_parse_message);
@@ -127,8 +127,7 @@ class TestFontSelector : public FontSelector {
 }  // namespace
 
 Font CreateTestFont(const AtomicString& family_name,
-                    const uint8_t* data,
-                    size_t data_size,
+                    base::span<const uint8_t> data,
                     float size,
                     const FontDescription::VariantLigatures* ligatures) {
   FontDescription font_description;
@@ -139,7 +138,7 @@ Font CreateTestFont(const AtomicString& family_name,
   if (ligatures)
     font_description.SetVariantLigatures(*ligatures);
 
-  return Font(font_description, TestFontSelector::Create(data, data_size));
+  return Font(font_description, TestFontSelector::Create(data));
 }
 
 Font CreateTestFont(const AtomicString& family_name,

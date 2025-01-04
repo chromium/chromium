@@ -11,6 +11,9 @@ This directory contains an ETC1 encoding/decoding API.  The source derives from
 frameworks/base/opengl/include/ETC1/etc1.cpp from the Android Open Source
 Project.
 
+This library has not been reviewed by security team for handling untrusted
+input.  Contact security@chromium.org for any questions.
+
 Local modifications:
 - Removed decoding.
 - Generalize so that output size is independent of input size.

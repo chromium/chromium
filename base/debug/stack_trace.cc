@@ -95,20 +95,30 @@ uintptr_t GetStackFramePC(uintptr_t fp) {
 bool IsStackFrameValid(uintptr_t fp, uintptr_t prev_fp, uintptr_t stack_end) {
   // With the stack growing downwards, older stack frame must be
   // at a greater address that the current one.
-  if (fp <= prev_fp) return false;
+  if (fp <= prev_fp) {
+    return false;
+  }
 
   // Assume huge stack frames are bogus.
-  if (fp - prev_fp > 100000) return false;
+  if (fp - prev_fp > 100000) {
+    return false;
+  }
 
   // Check alignment.
-  if (fp & (sizeof(uintptr_t) - 1)) return false;
+  if (fp & (sizeof(uintptr_t) - 1)) {
+    return false;
+  }
 
   if (stack_end) {
     // Both fp[0] and fp[1] must be within the stack.
-    if (fp > stack_end - 2 * sizeof(uintptr_t)) return false;
+    if (fp > stack_end - 2 * sizeof(uintptr_t)) {
+      return false;
+    }
 
     // Additional check to filter out false positives.
-    if (GetStackFramePC(fp) < 32768) return false;
+    if (GetStackFramePC(fp) < 32768) {
+      return false;
+    }
   }
 
   return true;
@@ -141,9 +151,9 @@ uintptr_t ScanStackForNextFrame(uintptr_t fp, uintptr_t stack_end) {
   }
 
   fp += sizeof(uintptr_t);  // current frame is known to be invalid
-  uintptr_t last_fp_to_scan = std::min(fp + kMaxStackScanArea, stack_end) -
-                                  sizeof(uintptr_t);
-  for (;fp <= last_fp_to_scan; fp += sizeof(uintptr_t)) {
+  uintptr_t last_fp_to_scan =
+      std::min(fp + kMaxStackScanArea, stack_end) - sizeof(uintptr_t);
+  for (; fp <= last_fp_to_scan; fp += sizeof(uintptr_t)) {
     uintptr_t next_fp = GetNextStackFrame(fp);
     if (IsStackFrameValid(next_fp, fp, stack_end)) {
       // Check two frames deep. Since stack frame is just a pointer to

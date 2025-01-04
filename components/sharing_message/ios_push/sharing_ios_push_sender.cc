@@ -103,6 +103,10 @@ void SharingIOSPushSender::DoSendUnencryptedMessageToDevice(
                      SharingChannelType::kIosPush));
 }
 
+void SharingIOSPushSender::ClearPendingMessages() {
+  // There are no pending messages for iOS push notifications.
+}
+
 bool SharingIOSPushSender::CanSendSendTabPushMessage(
     const syncer::DeviceInfo& target_device_info) {
   bool custom_passphrase_enabled =

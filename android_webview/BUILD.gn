@@ -1012,7 +1012,7 @@ android_assets("locale_pak_assets") {
 
 repack("repack_pack") {
   sources = [
-    "$root_gen_dir/components/metrics/metrics_url_constants.pak",
+    "$root_gen_dir/components/metrics/metrics_server_urls.pak",
     "$root_gen_dir/content/content_resources.pak",
     "$root_gen_dir/content/histograms_resources.pak",
     "$root_gen_dir/net/net_resources.pak",
@@ -1026,7 +1026,7 @@ repack("repack_pack") {
     ":generate_components_resources",
     ":generate_mojo_resources",
     ":generate_webui_resources",
-    "//components/metrics:url_constants",
+    "//components/metrics:server_urls_grd",
     "//content:content_resources",
     "//content/browser/resources/histograms:resources",
     "//net:net_resources",

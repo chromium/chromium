@@ -138,6 +138,18 @@ OnDeviceModelComponentStateManager::GetRegistrationCriteria() {
   return registration_criteria_.get();
 }
 
+int64_t OnDeviceModelComponentStateManager::GetDiskBytesAvailableForModel() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return disk_space_available_;
+}
+
+bool OnDeviceModelComponentStateManager::IsLowTierDevice() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return IsPerformanceClassCompatible(
+      features::kLowTierPerformanceClassListForOnDeviceModel.Get(),
+      PerformanceClassFromPref(*local_state_));
+}
+
 void OnDeviceModelComponentStateManager::OnDeviceEligibleFeatureUsed(
     ModelBasedCapabilityKey feature) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -227,8 +239,9 @@ void OnDeviceModelComponentStateManager::BeginUpdateRegistration() {
 void OnDeviceModelComponentStateManager::CompleteUpdateRegistration(
     int64_t disk_space_free_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  disk_space_available_ = disk_space_free_bytes;
   RegistrationCriteria criteria =
-      GetRegistrationCriteria(disk_space_free_bytes);
+      ComputeRegistrationCriteria(disk_space_free_bytes);
   bool first_registration_attempt = !registration_criteria_;
   registration_criteria_ = std::make_unique<RegistrationCriteria>(criteria);
 
@@ -273,7 +286,7 @@ void OnDeviceModelComponentStateManager::CompleteUpdateRegistration(
 }
 
 OnDeviceModelComponentStateManager::RegistrationCriteria
-OnDeviceModelComponentStateManager::GetRegistrationCriteria(
+OnDeviceModelComponentStateManager::ComputeRegistrationCriteria(
     int64_t disk_space_free_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RegistrationCriteria result;

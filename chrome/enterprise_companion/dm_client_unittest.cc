@@ -134,11 +134,11 @@ class TestDMStorage final : public device_management_storage::DMStorage {
   }
 
  private:
+  ~TestDMStorage() override = default;
+
   scoped_refptr<device_management_storage::DMStorage> storage_;
   bool can_persist_policies_ = true;
   bool will_persist_policies_ = true;
-
-  ~TestDMStorage() override = default;
 };
 
 class MockCloudPolicyClient : public policy::MockCloudPolicyClient {
@@ -157,8 +157,6 @@ class MockCloudPolicyClient : public policy::MockCloudPolicyClient {
 class TestTokenService
     : public device_management_storage::TokenServiceInterface {
  public:
-  ~TestTokenService() override = default;
-
   // Overrides for TokenServiceInterface.
   std::string GetDeviceID() const override { return kFakeDeviceId; }
 
@@ -192,8 +190,6 @@ class TestTokenService
 
 class TestEventLogger : public EnterpriseCompanionEventLogger {
  public:
-  TestEventLogger() = default;
-
   const std::vector<EnterpriseCompanionStatus>& registration_events() {
     return registration_events_;
   }
@@ -219,16 +215,16 @@ class TestEventLogger : public EnterpriseCompanionEventLogger {
   void Flush(base::OnceClosure callback) override { std::move(callback).Run(); }
 
  private:
+  ~TestEventLogger() override = default;
+
   std::vector<EnterpriseCompanionStatus> registration_events_;
   std::vector<EnterpriseCompanionStatus> policy_fetch_events_;
-
-  ~TestEventLogger() override = default;
 };
 
 }  // namespace
 
 class DMClientTest : public ::testing::Test {
- public:
+ protected:
   void SetUp() override {
     ASSERT_TRUE(storage_dir_.CreateUniqueTempDir());
 
@@ -247,7 +243,6 @@ class DMClientTest : public ::testing::Test {
         dm_storage_, mock_policy_fetch_response_validator_.Get());
   }
 
- protected:
   base::test::TaskEnvironment environment_;
   base::ScopedTempDir storage_dir_;
   policy::MockJobCreationHandler mock_job_creation_handler_;

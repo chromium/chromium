@@ -92,6 +92,10 @@ ukm::UkmService* MetricsServiceClient::GetUkmService() {
   return nullptr;
 }
 
+metrics::dwa::DwaService* MetricsServiceClient::GetDwaService() {
+  return nullptr;
+}
+
 IdentifiabilityStudyState*
 MetricsServiceClient::GetIdentifiabilityStudyState() {
   return nullptr;
@@ -173,6 +177,10 @@ bool MetricsServiceClient::IsOnCellularConnection() {
 }
 
 bool MetricsServiceClient::IsUkmAllowedForAllProfiles() {
+  return false;
+}
+
+bool MetricsServiceClient::IsDwaAllowedForAllProfiles() {
   return false;
 }
 

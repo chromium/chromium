@@ -11,6 +11,8 @@ import android.graphics.Color;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
+import androidx.annotation.DimenRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
 import androidx.core.content.ContextCompat;
@@ -48,17 +50,15 @@ public final class HubColors {
     }
 
     /** Returns the color most icons should use per the given color scheme. */
-    public static ColorStateList getIconColor(Context context, @HubColorScheme int colorScheme) {
+    public static @ColorInt int getIconColor(Context context, @HubColorScheme int colorScheme) {
         switch (colorScheme) {
             case HubColorScheme.DEFAULT:
-                return ContextCompat.getColorStateList(
-                        context, R.color.default_icon_color_tint_list);
+                return SemanticColorUtils.getDefaultIconColor(context);
             case HubColorScheme.INCOGNITO:
-                return ContextCompat.getColorStateList(
-                        context, R.color.default_icon_color_light_tint_list);
+                return ContextCompat.getColor(context, R.color.default_icon_color_light);
             default:
                 assert false;
-                return ColorStateList.valueOf(Color.TRANSPARENT);
+                return Color.TRANSPARENT;
         }
     }
 
@@ -76,11 +76,24 @@ public final class HubColors {
         }
     }
 
-    /** Returns the color of secondary containers that reacts to being disabled. */
-    public static ColorStateList getSecondaryContainerColorStateList(
-            Context context, @HubColorScheme int colorScheme) {
-        @ColorInt int color = getSecondaryContainerColor(context, colorScheme);
-        return asDisabledAndNormalStates(context, color);
+    /** Returns the color for the icon in the floating action button. */
+    public static @ColorInt int getOnContainerColor(
+            boolean shouldUseAlternativeFabColor,
+            Context context,
+            @HubColorScheme int colorScheme) {
+        return shouldUseAlternativeFabColor
+                ? getOnPrimaryContainerColor(context, colorScheme)
+                : getOnSecondaryContainerColor(context, colorScheme);
+    }
+
+    /** Returns the color of containers like the floating action button. */
+    public static @ColorInt int getContainerColor(
+            boolean shouldUseAlternativeFabColor,
+            Context context,
+            @HubColorScheme int colorScheme) {
+        return shouldUseAlternativeFabColor
+                ? getPrimaryContainerColor(context, colorScheme)
+                : getSecondaryContainerColor(context, colorScheme);
     }
 
     /** Returns the color of secondary containers like the floating action button. */
@@ -113,11 +126,10 @@ public final class HubColors {
         }
     }
 
-    /** Returns the color of primary containers that reacts to being disabled. */
-    public static ColorStateList getPrimaryContainerColorStateList(
-            Context context, @HubColorScheme int colorScheme) {
-        @ColorInt int color = getPrimaryContainerColor(context, colorScheme);
-        return asDisabledAndNormalStates(context, color);
+    /** Returns the color of containers that reacts to being disabled. */
+    public static ColorStateList getContainerColorStateList(
+            Context context, @ColorInt int containerColor) {
+        return asDisabledAndNormalStates(context, containerColor);
     }
 
     /** Returns the color of primary containers like the floating action button. */
@@ -229,10 +241,23 @@ public final class HubColors {
         return ContextCompat.getColor(context, backgroundColorRes);
     }
 
+    public static ColorStateList getActionButtonColor(Context context, @ColorInt int color) {
+        @DimenRes int disabledAlpha = R.dimen.default_disabled_alpha;
+        return generateDisabledAndNormalStatesColorStateList(context, color, disabledAlpha);
+    }
+
     private static ColorStateList asDisabledAndNormalStates(Context context, @ColorInt int color) {
+        @DimenRes int disabledAlpha = R.dimen.filled_button_bg_disabled_alpha;
+        return generateDisabledAndNormalStatesColorStateList(context, color, disabledAlpha);
+    }
+
+    @NonNull
+    private static ColorStateList generateDisabledAndNormalStatesColorStateList(
+            Context context, int color, int disabledAlpha) {
         Resources resources = context.getResources();
-        float alpha = ValueUtils.getFloat(resources, R.dimen.filled_button_bg_disabled_alpha);
-        int[] colors = new int[] {ColorUtils.setAlphaComponentWithFloat(color, alpha), color};
+        float alpha = ValueUtils.getFloat(resources, disabledAlpha);
+        int alphaScaled = Math.round(alpha * 255);
+        int[] colors = new int[] {ColorUtils.setAlphaComponent(color, alphaScaled), color};
         return new ColorStateList(DISABLED_AND_NORMAL_STATES, colors);
     }
 }

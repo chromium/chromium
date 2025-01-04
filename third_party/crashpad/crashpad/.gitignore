@@ -25,6 +25,7 @@
 .cache
 .gdb_history
 .gdbinit
+/.vscode/
 /Makefile
 /build/fuchsia
 /out

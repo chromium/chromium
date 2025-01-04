@@ -603,13 +603,15 @@ LayoutUnit ComputeUsedInlineSizeForTableFragment(
 
 MinMaxSizes ComputeInitialMinMaxBlockSizes(const ConstraintSpace& space,
                                            const BlockNode& node,
-                                           const BoxStrut& border_padding) {
+                                           const BoxStrut& border_padding,
+                                           LayoutUnit override_available_size) {
   const ComputedStyle& style = node.Style();
-  MinMaxSizes sizes = {
-      ResolveInitialMinBlockLength(space, style, border_padding,
-                                   style.LogicalMinHeight()),
-      ResolveInitialMaxBlockLength(space, style, border_padding,
-                                   style.LogicalMaxHeight())};
+  MinMaxSizes sizes = {ResolveInitialMinBlockLength(
+                           space, style, border_padding,
+                           style.LogicalMinHeight(), override_available_size),
+                       ResolveInitialMaxBlockLength(
+                           space, style, border_padding,
+                           style.LogicalMaxHeight(), override_available_size)};
   sizes.max_size = std::max(sizes.max_size, sizes.min_size);
   return sizes;
 }

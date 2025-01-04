@@ -26,9 +26,21 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ATTRIBUTE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ATTRIBUTE_H_
 
+#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+
+namespace blink {
+class Attribute;
+}
+
+namespace base {
+template <>
+inline constexpr bool kCanSafelyConvertToByteSpan<::blink::Attribute> =
+    kCanSafelyConvertToByteSpan<::blink::QualifiedName> &&
+    kCanSafelyConvertToByteSpan<::WTF::AtomicString>;
+}
 
 namespace blink {
 

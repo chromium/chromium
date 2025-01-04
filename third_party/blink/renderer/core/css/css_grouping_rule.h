@@ -61,6 +61,20 @@ StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
                                   const CSSRule& parent_rule,
                                   ExceptionState& exception_state);
 
+// See CSSStyleRule/CSSGroupingRule::QuietlyInsertRule.
+void ParseAndQuietlyInsertRule(
+    const ExecutionContext*,
+    const String& rule_string,
+    unsigned index,
+    CSSRule& parent_rule,
+    HeapVector<Member<StyleRuleBase>>& child_rules,
+    HeapVector<Member<CSSRule>>& child_rule_cssom_wrappers);
+
+// See CSSStyleRule/CSSGroupingRule::QuietlyDeleteRule.
+void QuietlyDeleteRule(unsigned index,
+                       HeapVector<Member<StyleRuleBase>>& child_rules,
+                       HeapVector<Member<CSSRule>>& child_rule_cssom_wrappers);
+
 class CORE_EXPORT CSSGroupingRule : public CSSRule {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -76,6 +90,14 @@ class CORE_EXPORT CSSGroupingRule : public CSSRule {
                       unsigned index,
                       ExceptionState&);
   void deleteRule(unsigned index, ExceptionState&);
+
+  // Like insertRule/deleteRule, but does not cause any invalidation.
+  // Used by Inspector to temporarily insert non-existent rules for
+  // the purposes of rule matching (see InspectorGhostRules).
+  void QuietlyInsertRule(const ExecutionContext*,
+                         const String& rule,
+                         unsigned index);
+  void QuietlyDeleteRule(unsigned index);
 
   // For CSSRuleList
   unsigned length() const;

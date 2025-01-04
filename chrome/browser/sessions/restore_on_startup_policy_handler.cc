@@ -20,8 +20,7 @@ RestoreOnStartupPolicyHandler::RestoreOnStartupPolicyHandler()
     : TypeCheckingPolicyHandler(key::kRestoreOnStartup,
                                 base::Value::Type::INTEGER) {}
 
-RestoreOnStartupPolicyHandler::~RestoreOnStartupPolicyHandler() {
-}
+RestoreOnStartupPolicyHandler::~RestoreOnStartupPolicyHandler() = default;
 
 void RestoreOnStartupPolicyHandler::ApplyPolicySettings(
     const PolicyMap& policies,

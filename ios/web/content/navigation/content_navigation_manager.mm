@@ -5,7 +5,10 @@
 #import "ios/web/content/navigation/content_navigation_manager.h"
 
 #import <Foundation/Foundation.h>
+
 #import <sstream>
+
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "content/public/browser/navigation_controller.h"
 #import "content/public/browser/navigation_entry.h"
@@ -110,9 +113,8 @@ void ContentNavigationManager::LoadURLWithParams(
 
   if (web_params.post_data) {
     params.post_data = new network::ResourceRequestBody();
-    params.post_data->AppendBytes(
-        static_cast<const char*>([web_params.post_data bytes]),
-        [web_params.post_data length]);
+    params.post_data->AppendCopyOfBytes(
+        base::apple::NSDataToSpan(web_params.post_data));
   }
 
   // We are not setting the virtual URL for data URL here.

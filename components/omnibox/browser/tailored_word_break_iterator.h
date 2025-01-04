@@ -29,8 +29,7 @@ class TailoredWordBreakIterator : public base::i18n::BreakIterator {
   // Returns characters between `prev_` and `pos_` if `special_word_` is not
   // empty. Otherwise returns the normal `BreakIterator`-determined current
   // word.
-  std::u16string_view GetStringView() const;
-  std::u16string GetString() const;
+  std::u16string_view GetString() const;
   size_t prev() const;
   size_t pos() const;
 

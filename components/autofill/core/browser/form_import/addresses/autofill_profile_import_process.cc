@@ -10,14 +10,14 @@
 #include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/address_data_cleaner.h"
-#include "components/autofill/core/browser/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_cleaner.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/data_quality/addresses/profile_requirement_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/profile_deduplication_metrics.h"
 #include "components/autofill/core/browser/metrics/profile_import_metrics.h"
-#include "components/autofill/core/browser/profile_requirement_utils.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 
@@ -345,7 +345,7 @@ void ProfileImportProcess::SetUserDecision(
 
       // Make sure the verification status of all settings-visible non-empty
       // fields in the edited profile are set to kUserVerified.
-      for (auto type : GetUserVisibleTypes()) {
+      for (auto type : edited_profile->GetUserVisibleTypes()) {
         std::u16string value = confirmed_import_candidate_->GetRawInfo(type);
         if (!value.empty() &&
             confirmed_import_candidate_->GetVerificationStatus(type) ==

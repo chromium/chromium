@@ -24,6 +24,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
@@ -31,6 +33,7 @@ import java.util.Queue;
 
 /** A MediaCodec wrapper for adapting the API and catching exceptions. */
 @JNINamespace("media")
+@NullMarked
 class MediaCodecBridge {
     private static final String TAG = "MediaCodecBridge";
 
@@ -60,7 +63,7 @@ class MediaCodecBridge {
     // execute on an arbitrary thread.
     private boolean mUseAsyncApi;
     private Queue<MediaFormatWrapper> mPendingFormat;
-    private MediaFormatWrapper mCurrentFormat;
+    private @Nullable MediaFormatWrapper mCurrentFormat;
     private boolean mPendingError;
     private int mPendingErrorCode; // only valid if mPendingError = true
     private boolean mPendingStart;
@@ -70,12 +73,12 @@ class MediaCodecBridge {
     private Queue<DequeueOutputResult> mPendingOutputBuffers;
 
     // Cache for codec name array that is passed to LinearBlock.obtain().
-    private String[] mObtainBlockNames;
+    private String @Nullable [] mObtainBlockNames;
 
     // Set by tests which don't have a Java MessagePump to ensure the MediaCodec
     // callbacks are actually delivered. Always null in production.
-    private static HandlerThread sCallbackHandlerThread;
-    private static Handler sCallbackHandler;
+    private static @Nullable HandlerThread sCallbackHandlerThread;
+    private static @Nullable Handler sCallbackHandler;
 
     // |errorCode| is the error reported by MediaCodec.CryptoException
     // (https://developer.android.com/reference/android/media/MediaCodec.CryptoException)
@@ -192,21 +195,23 @@ class MediaCodecBridge {
     }
 
     private static class ObtainBlockResult {
-        private MediaCodec.LinearBlock mBlock;
-        private ByteBuffer mBuffer;
+        private MediaCodec.@Nullable LinearBlock mBlock;
+        private @Nullable ByteBuffer mBuffer;
 
-        private ObtainBlockResult(MediaCodec.LinearBlock block, ByteBuffer buffer) {
+        private ObtainBlockResult(
+                MediaCodec.@Nullable LinearBlock block, @Nullable ByteBuffer buffer) {
             mBlock = block;
             mBuffer = buffer;
+            assert (mBlock == null && mBuffer == null) || (mBlock != null && mBuffer != null);
         }
 
         @CalledByNative("ObtainBlockResult")
-        private MediaCodec.LinearBlock block() {
+        private MediaCodec.@Nullable LinearBlock block() {
             return mBlock;
         }
 
         @CalledByNative("ObtainBlockResult")
-        private ByteBuffer buffer() {
+        private @Nullable ByteBuffer buffer() {
             return mBuffer;
         }
 
@@ -214,7 +219,11 @@ class MediaCodecBridge {
         @SuppressLint("NewApi")
         private void recycle() {
             if (mBlock != null) {
-                mBlock.recycle();
+                try {
+                    mBlock.recycle();
+                } catch (IllegalStateException ise) {
+                    Log.e(TAG, "Failed to recyle LinearBlock: ", ise);
+                }
                 mBlock = null;
                 mBuffer = null;
             }
@@ -395,7 +404,7 @@ class MediaCodecBridge {
         mBitrateAdjuster = bitrateAdjuster;
 
         try {
-            mMediaCodecName = mMediaCodec.getName();
+            mMediaCodecName = mediaCodec.getName();
         } catch (IllegalStateException e) {
             Log.e(TAG, "Cannot get codec name", e);
         }
@@ -507,7 +516,6 @@ class MediaCodecBridge {
             // the surface.
             Log.e(TAG, "Cannot release media codec", e);
         }
-        mMediaCodec = null;
     }
 
     // TODO(sanfin): Move this to constructor or builder.
@@ -611,6 +619,15 @@ class MediaCodecBridge {
             }
         } catch (Exception e) {
             Log.e(TAG, "Failed to obtain LinearBlock", e);
+            if (block != null) {
+                assert buffer == null;
+                try {
+                    block.recycle();
+                } catch (IllegalStateException ise) {
+                    Log.e(TAG, "Failed to recyle LinearBlock after map failure: ", ise);
+                }
+                block = null;
+            }
         }
         return new ObtainBlockResult(block, buffer);
     }
@@ -664,7 +681,7 @@ class MediaCodecBridge {
     }
 
     @CalledByNative
-    private MediaFormatWrapper getOutputFormat() {
+    private @Nullable MediaFormatWrapper getOutputFormat() {
         if (mUseAsyncApi && mCurrentFormat != null) return mCurrentFormat;
 
         try {
@@ -677,7 +694,7 @@ class MediaCodecBridge {
     }
 
     @CalledByNative
-    private MediaFormatWrapper getInputFormat() {
+    private @Nullable MediaFormatWrapper getInputFormat() {
         try {
             MediaFormat format = mMediaCodec.getInputFormat();
             if (format != null) return new MediaFormatWrapper(format);
@@ -689,7 +706,7 @@ class MediaCodecBridge {
 
     /** Returns null if MediaCodec throws IllegalStateException. */
     @CalledByNative
-    private ByteBuffer getInputBuffer(int index) {
+    private @Nullable ByteBuffer getInputBuffer(int index) {
         if (mUseAsyncApi) {
             synchronized (this) {
                 if (mPendingError) return null;
@@ -705,7 +722,7 @@ class MediaCodecBridge {
 
     /** Returns null if MediaCodec throws IllegalStateException. */
     @CalledByNative
-    protected ByteBuffer getOutputBuffer(int index) {
+    protected @Nullable ByteBuffer getOutputBuffer(int index) {
         try {
             return mMediaCodec.getOutputBuffer(index);
         } catch (IllegalStateException e) {
@@ -964,7 +981,11 @@ class MediaCodecBridge {
     }
 
     @SuppressLint("NewApi")
-    boolean configureVideo(MediaFormat format, Surface surface, MediaCrypto crypto, int flags) {
+    boolean configureVideo(
+            MediaFormat format,
+            @Nullable Surface surface,
+            @Nullable MediaCrypto crypto,
+            int flags) {
         try {
             if ((flags & MediaCodec.CONFIGURE_FLAG_USE_BLOCK_MODEL) != 0) {
                 format.removeKey(MediaFormat.KEY_MAX_INPUT_SIZE);

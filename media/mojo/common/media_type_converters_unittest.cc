@@ -91,7 +91,7 @@ TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_Normal) {
   // Note: We intentionally do not serialize the data section of the
   // DecoderBuffer; no need to check the data here.
   EXPECT_EQ(kDataSize, result->size());
-  EXPECT_TRUE(result->has_side_data());
+  EXPECT_TRUE(result->side_data());
   EXPECT_TRUE(buffer->side_data()->Matches(*result->side_data()));
   EXPECT_EQ(buffer->timestamp(), result->timestamp());
   EXPECT_EQ(buffer->duration(), result->duration());

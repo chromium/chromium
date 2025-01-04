@@ -19,9 +19,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
+#include "chrome/enterprise_companion/constants.h"
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 #include "chrome/enterprise_companion/enterprise_companion_client.h"
-#include "chrome/enterprise_companion/enterprise_companion_status.h"
 #include "chrome/enterprise_companion/global_constants.h"
 #include "chrome/enterprise_companion/mojom/enterprise_companion.mojom.h"
 #include "chrome/updater/configurator.h"
@@ -268,13 +268,10 @@ void OutOfProcessPolicyFetcher::FetchPolicies(
   CHECK(!fetch_complete_callback_);
   fetch_complete_callback_ = std::move(callback);
 
-  const std::string& cohort_id =
-      persisted_data_->GetCohort(enterprise_companion::kCompanionAppId);
-
   enterprise_companion::ConnectAndLaunchServer(
       base::DefaultClock::GetInstance(), connection_timeout_,
       persisted_data_->GetUsageStatsEnabled(),
-      cohort_id.empty() ? std::nullopt : std::make_optional(cohort_id),
+      persisted_data_->GetCohort(enterprise_companion::kCompanionAppId),
       base::BindOnce(&OutOfProcessPolicyFetcher::OnConnected,
                      base::WrapRefCounted(this)));
 }
@@ -307,10 +304,7 @@ void OutOfProcessPolicyFetcher::OnPoliciesFetched(
   VLOG(1) << "Policy fetch status: " << mojom_status->code
           << ", space: " << mojom_status->space
           << ", description: " << mojom_status->description;
-  enterprise_companion::EnterpriseCompanionStatus status =
-      enterprise_companion::EnterpriseCompanionStatus::FromMojomStatus(
-          std::move(mojom_status));
-  if (status.ok()) {
+  if (mojom_status->space == enterprise_companion::kStatusOk) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
         base::BindOnce(
@@ -326,8 +320,10 @@ void OutOfProcessPolicyFetcher::OnPoliciesFetched(
             std::move(fetch_complete_callback_)));
   } else {
     int result = kErrorPolicyFetchFailed;
-    if (status.EqualsApplicationError(enterprise_companion::ApplicationError::
-                                          kRegistrationPreconditionFailed)) {
+    if (mojom_status->space == enterprise_companion::kStatusApplicationError &&
+        mojom_status->code ==
+            static_cast<int>(enterprise_companion::ApplicationError::
+                                 kRegistrationPreconditionFailed)) {
       scoped_refptr<device_management_storage::DMStorage> dm_storage =
           device_management_storage::GetDefaultDMStorage();
       result = (dm_storage && dm_storage->IsEnrollmentMandatory())

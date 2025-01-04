@@ -51,6 +51,7 @@
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image.h"
@@ -373,7 +374,7 @@ void ProfileAttributesStorage::AddProfile(ProfileAttributesInitParams params) {
   base::Value::Dict info =
       base::Value::Dict()
           .Set(ProfileAttributesEntry::kNameKey, params.profile_name)
-          .Set(ProfileAttributesEntry::kGAIAIdKey, params.gaia_id)
+          .Set(ProfileAttributesEntry::kGAIAIdKey, params.gaia_id.ToString())
           .Set(ProfileAttributesEntry::kUserNameKey, params.user_name)
           .Set(ProfileAttributesEntry::kIsConsentedPrimaryAccountKey,
                params.is_consented_primary_account)

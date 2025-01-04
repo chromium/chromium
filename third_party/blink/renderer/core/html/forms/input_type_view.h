@@ -114,11 +114,14 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
   virtual void SubtreeHasChanged();
   virtual LayoutObject* CreateLayoutObject(const ComputedStyle&) const;
   virtual void AdjustStyle(ComputedStyleBuilder&) {}
-  virtual ControlPart AutoAppearance() const;
+  virtual AppearanceValue AutoAppearance() const;
   virtual TextDirection ComputedTextDirection();
   virtual void OpenPopupView();
   virtual void ClosePopupView();
+  // HasOpenedPopup will return true if the popup has ever been opened on this
+  // element. IsPickerVisible will return true if the popup is currently open.
   virtual bool HasOpenedPopup() const;
+  virtual bool IsPickerVisible() const;
 
   // Functions for shadow trees
 
@@ -128,7 +131,6 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
   // changing the input-type.
   void CreateShadowSubtreeIfNeeded(bool is_type_changing = false);
   void set_needs_update_view_in_create_shadow_subtree(bool value) {
-    DCHECK(RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled());
     needs_update_view_in_create_shadow_subtree_ = value;
   }
   virtual bool IsInnerEditorValueEmpty() const { return false; }

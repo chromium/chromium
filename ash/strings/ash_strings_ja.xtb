@@ -361,6 +361,7 @@
 <translation id="2295777434187870477">マイクはオンです。切り替えるとミュートになります。</translation>
 <translation id="2302092602801625023">このアカウントはファミリー リンクによって管理されています</translation>
 <translation id="2303600792989757991">ウィンドウ切り替えの概要</translation>
+<translation id="2304702218354340897">フェイスナビをオフにしてもよろしいですか？</translation>
 <translation id="2305738328104302723">Google ToDo リストのタスク一覧: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: 最近撮影したスクリーン キャプチャや、最近ダウンロードまたは固定したファイル</translation>
 <translation id="2318576281648121272">今日 <ph name="TODAY_DATE" /></translation>
@@ -387,6 +388,7 @@
 <translation id="2370971919968699910">データ料金が発生する場合があります。
 <ph name="DEVICECOUNT" /> 台のデバイスが接続されています。</translation>
 <translation id="2386292613071805067">ページ上のすべてを選択する</translation>
+<translation id="2389423187722941333">Gemini を切り替える</translation>
 <translation id="2392659840443812875">利用できるアクセス ポイントはありません。デバイスが近くにあり、Bluetooth がオンになっていることを確認してください。</translation>
 <translation id="2397416548179033562">Chrome メニューを表示</translation>
 <translation id="240006516586367791">メディア コントロール</translation>
@@ -394,6 +396,7 @@
 <translation id="2402411679569069051">Chromebook のロックを解除するには、指紋認証を使用するか、スマートフォンのロックを解除します</translation>
 <translation id="240545663114741956"><ph name="ACCELERATOR" /> を 2 回押すとログアウトします。</translation>
 <translation id="2405664212338326887">未接続</translation>
+<translation id="2406710117564540804">サイレント モードをオン / オフにする</translation>
 <translation id="2408955596600435184">PIN を入力してください</translation>
 <translation id="2412593942846481727">アップデートが利用可能</translation>
 <translation id="2416438829169535743">画面を離れますか？</translation>
@@ -899,6 +902,7 @@
 <translation id="4119928251231465047">PIN の試行回数が上限を超えました</translation>
 <translation id="412298498316631026">ウィンドウ</translation>
 <translation id="4123259114412175274">Chromebook のロックを解除するには、スマートフォンの Bluetooth がオンになっていることをご確認ください</translation>
+<translation id="4123868835475902435">基本的なことは以上です。より詳しい情報をご覧になりたい場合は、組み込みのアプリ「使い方・ヒント」をご活用ください。ご利用開始のヒント、スペシャル オファー、<ph name="PRODUCT_NAME" /> の最新機能を紹介しています。</translation>
 <translation id="4125970834901680537">タブレット モードでアプリをストリーミングできません。ノートパソコン モードでもう一度お試しください。</translation>
 <translation id="4131973331381812765">温度: <ph name="TEMPERATURE" />°C - 現在の速度: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="4136724716305260864">日の出までオン</translation>
@@ -1019,7 +1023,6 @@
 <translation id="4481530544597605423">ペア設定されていないデバイス</translation>
 <translation id="4485506555414638855">スマートフォンの最近の写真、メディア、通知、アプリの表示の設定を行わない</translation>
 <translation id="4491109536499578614">画像</translation>
-<translation id="4493452241184130939">基本的なことは以上です。より詳しい情報をご覧になりたい場合は、組み込みのアプリ「使い方・ヒント」をご活用ください。ご利用開始のヒント、おすすめのアプリ、スペシャル オファー、<ph name="PRODUCT_NAME" /> の最新機能を紹介しています。</translation>
 <translation id="450584155212756404">Dev チャンネル</translation>
 <translation id="4513946894732546136">フィードバック</translation>
 <translation id="4518404433291145981">Chromebook のロックを解除するには、先にスマートフォンのロックを解除します</translation>
@@ -1082,7 +1085,6 @@
 <translation id="4708065238214351979">キーボードを明るくする</translation>
 <translation id="4708185346211948049">来週の <ph name="DAY_OF_WEEK" /></translation>
 <translation id="4717575069099566988">USB-C ケーブルは USB4 に対応していません。デバイスのパフォーマンスが制限される可能性があります。</translation>
-<translation id="4724328513667182700"><ph name="PRODUCT_NAME" /> を使い始めるための 6 つのヒント</translation>
 <translation id="4730374152663651037">よく使用するアプリ</translation>
 <translation id="4731797938093519117">保護者によるアクセス</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />%（左）</translation>
@@ -1309,7 +1311,6 @@
 <translation id="5409208741270395213">タスクを完了としてマーク</translation>
 <translation id="5413656666631274079">設定ページ</translation>
 <translation id="5414198321558177633">プロファイル リストを更新しています。この処理には数分かかることがあります。</translation>
-<translation id="5417965108047245734"><ph name="PRODUCT_NAME" /> について学べるクイックツアーをお試しください</translation>
 <translation id="5426063383988017631">設定メニューは閉じています</translation>
 <translation id="5428899915242071344">選択を開始</translation>
 <translation id="5429993543155113935">シークレット ウィンドウは現在サポートされていません</translation>
@@ -1647,6 +1648,7 @@
 <translation id="6539852571005954999">ダウンロードする <ph name="FILENAME" /> をスキャンしています</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> にキャストしています</translation>
 <translation id="6542891623636520977">絵文字、GIF など</translation>
+<translation id="6543942526104794893">顔の動きをオフにしてもよろしいですか？</translation>
 <translation id="6545382064335350438">PIN を確認できませんでした。もう一度お試しください。</translation>
 <translation id="6555373427270923730">アドレスバーにウェブアドレスを入力して、<ph name="MODIFIER" />+<ph name="KEY" /> キーを押す</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2313,6 +2315,7 @@
 <translation id="8855885154700222542">全画面表示キー</translation>
 <translation id="8858369206579825206">プライバシー管理</translation>
 <translation id="8860366331836346216">eSIM を追加</translation>
+<translation id="8869149849311827122">マウスカーソルの制御をオフにしてもよろしいですか？</translation>
 <translation id="8870509716567206129">アプリで分割画面がサポートされていません。</translation>
 <translation id="8873203135446552888">内蔵タッチパッドの無効化を確認</translation>
 <translation id="8874184842967597500">未接続</translation>

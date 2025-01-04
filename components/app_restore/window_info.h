@@ -44,6 +44,8 @@ struct COMPONENT_EXPORT(APP_RESTORE) BrowserExtraInfo {
   // value conversions.
   std::vector<tab_groups::TabGroupInfo> tab_group_infos;
   // Lacros only, the ID of the lacros profile that this browser uses.
+  // TODO(crbug.com/381216377): remove this once usages of this member have
+  // been removed from outside the //components/app_restore.
   std::optional<uint64_t> lacros_profile_id;
 };
 

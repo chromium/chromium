@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PERFORMANCE_CONTROLS_MEMORY_SAVER_CHIP_VIEW_H_
 
 #include <string>
+
 #include "base/scoped_observation.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/ui/browser.h"

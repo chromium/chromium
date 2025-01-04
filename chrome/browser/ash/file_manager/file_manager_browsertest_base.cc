@@ -3820,6 +3820,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     ASSERT_TRUE(timezone);
     auto* user = user_manager::UserManager::Get()->GetActiveUser();
     ash::system::SetSystemTimezone(user, *timezone);
+    base::RunLoop().RunUntilIdle();
     return;
   }
 

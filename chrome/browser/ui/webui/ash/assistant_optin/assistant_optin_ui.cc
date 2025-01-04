@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/views/chrome_web_dialog_view.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/assistant_optin_resources.h"
 #include "chrome/grit/assistant_optin_resources_map.h"
@@ -44,6 +43,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/widget/widget.h"
+#include "ui/webui/webui_util.h"
 #include "ui/wm/core/window_animations.h"
 
 namespace ash {
@@ -145,8 +145,9 @@ void AssistantOptInDialog::Show(
 
 // static
 bool AssistantOptInDialog::BounceIfActive() {
-  if (!g_dialog)
+  if (!g_dialog) {
     return false;
+  }
 
   g_dialog->Focus();
   wm::AnimateWindow(g_dialog->dialog_window(),
@@ -190,8 +191,9 @@ void AssistantOptInDialog::OnDialogShown(content::WebUI* webui) {
 }
 
 void AssistantOptInDialog::OnDialogClosed(const std::string& json_retval) {
-  if (assistant_ui_)
+  if (assistant_ui_) {
     assistant_ui_->OnDialogClosed();
+  }
 
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   const bool completed =

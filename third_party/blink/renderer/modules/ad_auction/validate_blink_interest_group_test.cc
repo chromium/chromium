@@ -39,16 +39,20 @@ mojom::blink::InterestGroupAdPtr MakeAdWithUrl(const KURL& url) {
       /*buyer_and_seller_reporting_id=*/String(),
       /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
       /*metadata=*/String(), /*ad_render_id=*/String(),
-      /*allowed_reporting_origins=*/std::nullopt);
+      /*allowed_reporting_origins=*/std::nullopt,
+      /*creative_scanning_metadata=*/String());
 }
 
 }  // namespace
 
 // Test fixture for testing both ValidateBlinkInterestGroup() and
-// ValidateInterestGroup(), and making sure they behave the same.
+// blink::InterestGroup::IsValid(), and making sure they behave the same.
+// Similarly used to test both PerformAdditionalJoinAndUpdateTimeValidations()
+// and blink::InterestGroup::IsValidForJoinAndUpdate(), and to make sure they
+// behave the same.
 class ValidateBlinkInterestGroupTest : public testing::Test {
  public:
-  // Check that `blink_interest_group` is valid, if added from its owner origin.
+  // Check that `blink_interest_group` is valid.
   void ExpectInterestGroupIsValid(
       const mojom::blink::InterestGroupPtr& blink_interest_group) {
     String error_field_name;
@@ -68,8 +72,8 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
               interest_group.EstimateSize());
   }
 
-  // Check that `blink_interest_group` is not valid, if added from
-  // `blink_origin`, and returns the provided error values.
+  // Check that `blink_interest_group` is not valid, and returns the provided
+  // error values.
   void ExpectInterestGroupIsNotValid(
       const mojom::blink::InterestGroupPtr& blink_interest_group,
       String expected_error_field_name,
@@ -92,6 +96,48 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
           mojo::test::SerializeAndDeserialize<mojom::blink::InterestGroup>(
               blink_interest_group, interest_group));
     }
+  }
+
+  // Check that `blink_interest_group` is valid for join or update.
+  void ExpectInterestGroupIsValidForJoinAndUpdate(
+      const mojom::blink::InterestGroupPtr& blink_interest_group) {
+    String error_field_name;
+    String error_field_value;
+    String error;
+    EXPECT_TRUE(PerformAdditionalJoinAndUpdateTimeValidations(
+        *blink_interest_group, error_field_name, error_field_value, error));
+    EXPECT_TRUE(error_field_name.IsNull());
+    EXPECT_TRUE(error_field_value.IsNull());
+    EXPECT_TRUE(error.IsNull());
+
+    blink::InterestGroup interest_group;
+    EXPECT_TRUE(
+        mojo::test::SerializeAndDeserialize<mojom::blink::InterestGroup>(
+            blink_interest_group, interest_group));
+    EXPECT_TRUE(interest_group.IsValidForJoinAndUpdate());
+  }
+
+  // Check that `blink_interest_group` is not valid and returns the provided
+  // error values.
+  void ExpectInterestGroupIsNotValidForJoinAndUpdate(
+      const mojom::blink::InterestGroupPtr& blink_interest_group,
+      String expected_error_field_name,
+      String expected_error_field_value,
+      String expected_error) {
+    String error_field_name;
+    String error_field_value;
+    String error;
+    EXPECT_FALSE(PerformAdditionalJoinAndUpdateTimeValidations(
+        *blink_interest_group, error_field_name, error_field_value, error));
+    EXPECT_EQ(expected_error_field_name, error_field_name);
+    EXPECT_EQ(expected_error_field_value, error_field_value);
+    EXPECT_EQ(expected_error, error);
+
+    blink::InterestGroup interest_group;
+    EXPECT_TRUE(
+        mojo::test::SerializeAndDeserialize<mojom::blink::InterestGroup>(
+            blink_interest_group, interest_group));
+    EXPECT_FALSE(interest_group.IsValidForJoinAndUpdate());
   }
 
   // Creates and returns a minimally populated mojom::blink::InterestGroup.
@@ -146,6 +192,7 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
     mojo_ad1->ad_render_id = String::FromUTF8("\"NotTooLong\"");
     mojo_ad1->allowed_reporting_origins.emplace();
     mojo_ad1->allowed_reporting_origins->emplace_back(kOrigin);
+    mojo_ad1->creative_scanning_metadata = String::FromUTF8("scan me");
     blink_interest_group->ads->push_back(std::move(mojo_ad1));
     auto mojo_ad2 = mojom::blink::InterestGroupAd::New();
     mojo_ad2->render_url =
@@ -165,6 +212,8 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
     auto mojo_ad_component2 = mojom::blink::InterestGroupAd::New();
     mojo_ad_component2->render_url =
         KURL(String::FromUTF8("https://origin.test/foo?component#baz2"));
+    mojo_ad_component2->creative_scanning_metadata =
+        String::FromUTF8("scan this");
     blink_interest_group->ad_components->push_back(
         std::move(mojo_ad_component2));
 
@@ -1031,7 +1080,8 @@ TEST_F(ValidateBlinkInterestGroupTest, AdSizeGroupEmptyNameOrNotInSizeGroups) {
         /*buyer_and_seller_reporting_id=*/String(),
         /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
         /*metadata=*/String(), /*ad_render_id=*/String(),
-        /*allowed_reporting_origins=*/std::nullopt));
+        /*allowed_reporting_origins=*/std::nullopt,
+        /*creative_scanning_metadata=*/String()));
     blink_interest_group->ad_sizes.emplace();
     blink_interest_group->ad_sizes->insert(
         "size_name", blink::mojom::blink::AdSize::New(
@@ -1074,7 +1124,8 @@ TEST_F(ValidateBlinkInterestGroupTest,
             /*buyer_and_seller_reporting_id=*/String(),
             /*selectable_buyer_and_seller_reporting_id=*/std::nullopt,
             /*metadata=*/String(), /*ad_render_id=*/String(),
-            /*allowed_reporting_origins=*/std::nullopt));
+            /*allowed_reporting_origins=*/std::nullopt,
+            /*creative_scanning_metadata=*/String()));
     blink_interest_group->ad_sizes.emplace();
     blink_interest_group->ad_sizes->insert(
         "size_name", blink::mojom::blink::AdSize::New(
@@ -1122,6 +1173,193 @@ TEST_F(ValidateBlinkInterestGroupTest, AdComponentRenderIdTooLong) {
       String::FromUTF8("adComponents[0].adRenderId"),
       /*expected_error_field_value=*/String::FromUTF8("ThisIsTooLong"),
       /*expected_error=*/String::FromUTF8("The adRenderId is too long."));
+}
+
+// The interest group is invalid because its ad object's
+// `selectableBuyerAndSellerReportingIds` field has more than the
+// Finch-configured hard limit on the number of elements.
+TEST_F(ValidateBlinkInterestGroupTest,
+       AdSelectableBuyerAndSellerReportingIdsExceedsHardLimit) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kFledgeLimitSelectableBuyerAndSellerReportingIds,
+      {{"SelectableBuyerAndSellerReportingIdsHardLimit", "2"}});
+
+  mojom::blink::InterestGroupPtr blink_interest_group =
+      CreateMinimalInterestGroup();
+  blink_interest_group->ads.emplace();
+  auto ad = mojom::blink::InterestGroupAd::New();
+  ad->render_url = KURL(String::FromUTF8("https://origin.test/foo?bar"));
+  ad->selectable_buyer_and_seller_reporting_ids.emplace();
+  ad->selectable_buyer_and_seller_reporting_ids->emplace_back(
+      String::FromUTF8("selected1"));
+  ad->selectable_buyer_and_seller_reporting_ids->emplace_back(
+      String::FromUTF8("selected2"));
+  ad->selectable_buyer_and_seller_reporting_ids->emplace_back(
+      String::FromUTF8("selected3"));
+  blink_interest_group->ads->emplace_back(std::move(ad));
+
+  ExpectInterestGroupIsNotValid(
+      blink_interest_group,
+      /*expected_error_field_name=*/
+      String::FromUTF8("ads[0].selectableBuyerAndSellerReportingIds"),
+      /*expected_error_field_value=*/String::FromUTF8(""),
+      /*expected_error=*/
+      String::FromUTF8(
+          "selectableBuyerAndSellerReportingIds cannot have more than "
+          "2 elements."));
+}
+
+// The ad object's `selectableBuyerAndSellerReportingIds` field is
+// within the Finch-configured hard limit on the number of elements.
+TEST_F(ValidateBlinkInterestGroupTest,
+       AdNumberOfSelectableBuyerAndSellerReportingIdsWithinHardLimit) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kFledgeLimitSelectableBuyerAndSellerReportingIds,
+      {{"SelectableBuyerAndSellerReportingIdsHardLimit", "3"}});
+
+  mojom::blink::InterestGroupPtr blink_interest_group =
+      CreateMinimalInterestGroup();
+  blink_interest_group->ads.emplace();
+  auto ad = mojom::blink::InterestGroupAd::New();
+  ad->render_url = KURL(String::FromUTF8("https://origin.test/foo?bar"));
+  ad->selectable_buyer_and_seller_reporting_ids.emplace();
+  ad->selectable_buyer_and_seller_reporting_ids->emplace_back(
+      String::FromUTF8("selected1"));
+  ad->selectable_buyer_and_seller_reporting_ids->emplace_back(
+      String::FromUTF8("selected2"));
+  ad->selectable_buyer_and_seller_reporting_ids->emplace_back(
+      String::FromUTF8("selected3"));
+  blink_interest_group->ads->emplace_back(std::move(ad));
+  ExpectInterestGroupIsValid(blink_interest_group);
+}
+
+// The ad object's `selectableBuyerAndSellerReportingIds` field is inherently
+// within the Finch-configured limit on the number of elements, since the
+// parameter is set to -1, so that no hard limit is enforced.
+TEST_F(ValidateBlinkInterestGroupTest,
+       AdSelectableBuyerAndSellerReportingIdsNoHardLimit) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kFledgeLimitSelectableBuyerAndSellerReportingIds,
+      {{"SelectableBuyerAndSellerReportingIdsHardLimit", "-1"}});
+
+  mojom::blink::InterestGroupPtr blink_interest_group =
+      CreateMinimalInterestGroup();
+  blink_interest_group->ads.emplace();
+  auto ad = mojom::blink::InterestGroupAd::New();
+  ad->render_url = KURL(String::FromUTF8("https://origin.test/foo?bar"));
+  ad->selectable_buyer_and_seller_reporting_ids.emplace();
+  ad->selectable_buyer_and_seller_reporting_ids->emplace_back(
+      String::FromUTF8("selected1"));
+  ad->selectable_buyer_and_seller_reporting_ids->emplace_back(
+      String::FromUTF8("selected2"));
+  ad->selectable_buyer_and_seller_reporting_ids->emplace_back(
+      String::FromUTF8("selected3"));
+  blink_interest_group->ads->emplace_back(std::move(ad));
+  ExpectInterestGroupIsValid(blink_interest_group);
+}
+
+// The interest group is invalid because its ad object's
+// `selectableBuyerAndSellerReportingIds` field has more than the
+// Finch-configured soft limit on the number of elements.
+TEST_F(ValidateBlinkInterestGroupTest,
+       AdSelectableBuyerAndSellerReportingIdsExceedsSoftLimit) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kFledgeLimitSelectableBuyerAndSellerReportingIds,
+      {{"SelectableBuyerAndSellerReportingIdsSoftLimit", "2"}});
+
+  mojom::blink::InterestGroupPtr blink_interest_group =
+      CreateMinimalInterestGroup();
+  blink_interest_group->ads.emplace();
+  auto ad = mojom::blink::InterestGroupAd::New();
+  ad->render_url = KURL(String::FromUTF8("https://origin.test/foo?bar"));
+  ad->selectable_buyer_and_seller_reporting_ids.emplace();
+  ad->selectable_buyer_and_seller_reporting_ids->emplace_back(
+      String::FromUTF8("selected1"));
+  ad->selectable_buyer_and_seller_reporting_ids->emplace_back(
+      String::FromUTF8("selected2"));
+  ad->selectable_buyer_and_seller_reporting_ids->emplace_back(
+      String::FromUTF8("selected3"));
+  blink_interest_group->ads->emplace_back(std::move(ad));
+
+  ExpectInterestGroupIsValid(blink_interest_group);
+  ExpectInterestGroupIsNotValidForJoinAndUpdate(
+      blink_interest_group,
+      /*expected_error_field_name=*/
+      String::FromUTF8("ads[0].selectableBuyerAndSellerReportingIds"),
+      /*expected_error_field_value=*/String::FromUTF8(""),
+      /*expected_error=*/
+      String::FromUTF8(
+          "selectableBuyerAndSellerReportingIds cannot have more than "
+          "2 elements."));
+}
+
+// An interest group with no ads is valid from the perspective of the additional
+// validation performed for join and update.
+TEST_F(ValidateBlinkInterestGroupTest,
+       InterestGroupWithNoAdsIsValidForJoinAndUpdate) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kFledgeLimitSelectableBuyerAndSellerReportingIds,
+      {{"SelectableBuyerAndSellerReportingIdsSoftLimit", "3"}});
+
+  mojom::blink::InterestGroupPtr blink_interest_group =
+      CreateMinimalInterestGroup();
+  ExpectInterestGroupIsValidForJoinAndUpdate(blink_interest_group);
+}
+
+// The ad object's `selectableBuyerAndSellerReportingIds` field is
+// within the Finch-configured soft limit on the number of elements.
+TEST_F(ValidateBlinkInterestGroupTest,
+       AdNumberOfSelectableBuyerAndSellerReportingIdsWithinSoftLimit) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kFledgeLimitSelectableBuyerAndSellerReportingIds,
+      {{"SelectableBuyerAndSellerReportingIdsSoftLimit", "3"}});
+
+  mojom::blink::InterestGroupPtr blink_interest_group =
+      CreateMinimalInterestGroup();
+  blink_interest_group->ads.emplace();
+  auto ad = mojom::blink::InterestGroupAd::New();
+  ad->render_url = KURL(String::FromUTF8("https://origin.test/foo?bar"));
+  ad->selectable_buyer_and_seller_reporting_ids.emplace();
+  ad->selectable_buyer_and_seller_reporting_ids->emplace_back(
+      String::FromUTF8("selected1"));
+  ad->selectable_buyer_and_seller_reporting_ids->emplace_back(
+      String::FromUTF8("selected2"));
+  ad->selectable_buyer_and_seller_reporting_ids->emplace_back(
+      String::FromUTF8("selected3"));
+  blink_interest_group->ads->emplace_back(std::move(ad));
+  ExpectInterestGroupIsValidForJoinAndUpdate(blink_interest_group);
+}
+
+// The ad object's `selectableBuyerAndSellerReportingIds` field is inherently
+// within the Finch-configured limit on the number of elements, since the
+// parameter is set to -1, so that no soft limit is enforced.
+TEST_F(ValidateBlinkInterestGroupTest,
+       AdSelectableBuyerAndSellerReportingIdsNoSoftLimit) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kFledgeLimitSelectableBuyerAndSellerReportingIds,
+      {{"SelectableBuyerAndSellerReportingIdsHardLimit", "-1"}});
+
+  mojom::blink::InterestGroupPtr blink_interest_group =
+      CreateMinimalInterestGroup();
+  blink_interest_group->ads.emplace();
+  auto ad = mojom::blink::InterestGroupAd::New();
+  ad->render_url = KURL(String::FromUTF8("https://origin.test/foo?bar"));
+  ad->selectable_buyer_and_seller_reporting_ids.emplace();
+  ad->selectable_buyer_and_seller_reporting_ids->emplace_back(
+      String::FromUTF8("selected1"));
+  ad->selectable_buyer_and_seller_reporting_ids->emplace_back(
+      String::FromUTF8("selected2"));
+  ad->selectable_buyer_and_seller_reporting_ids->emplace_back(
+      String::FromUTF8("selected3"));
+  blink_interest_group->ads->emplace_back(std::move(ad));
+  ExpectInterestGroupIsValidForJoinAndUpdate(blink_interest_group);
 }
 
 // The interest group is invalid if its ad object's "allowedReporting" field

@@ -380,14 +380,17 @@ std::unique_ptr<protocol::DictionaryValue> BuildElementInfo(Element* element) {
       class_names.Append("::scroll-marker-group");
     } else if (pseudo_element->GetPseudoId() == kPseudoIdScrollMarker) {
       class_names.Append("::scroll-marker");
-    } else if (pseudo_element->GetPseudoId() == kPseudoIdScrollUpButton) {
-      class_names.Append("::scroll-button(up)");
-    } else if (pseudo_element->GetPseudoId() == kPseudoIdScrollDownButton) {
-      class_names.Append("::scroll-button(down)");
-    } else if (pseudo_element->GetPseudoId() == kPseudoIdScrollLeftButton) {
-      class_names.Append("::scroll-button(left)");
-    } else if (pseudo_element->GetPseudoId() == kPseudoIdScrollRightButton) {
-      class_names.Append("::scroll-button(right)");
+    } else if (pseudo_element->GetPseudoId() ==
+               kPseudoIdScrollButtonBlockStart) {
+      class_names.Append("::scroll-button(block-start)");
+    } else if (pseudo_element->GetPseudoId() ==
+               kPseudoIdScrollButtonInlineStart) {
+      class_names.Append("::scroll-button(inline-start)");
+    } else if (pseudo_element->GetPseudoId() == kPseudoIdScrollButtonBlockEnd) {
+      class_names.Append("::scroll-button(block-end)");
+    } else if (pseudo_element->GetPseudoId() ==
+               kPseudoIdScrollButtonInlineEnd) {
+      class_names.Append("::scroll-button(inline-end)");
     }
   }
   if (!class_names.empty())
@@ -1832,9 +1835,9 @@ void InspectorHighlight::VisitAndCollectDistanceInfo(Node* node) {
            {kPseudoIdFirstLetter, kPseudoIdScrollMarkerGroupBefore,
             kPseudoIdCheckMark, kPseudoIdBefore, kPseudoIdAfter,
             kPseudoIdPickerIcon, kPseudoIdScrollMarkerGroupAfter,
-            kPseudoIdScrollMarker, kPseudoIdScrollUpButton,
-            kPseudoIdScrollDownButton, kPseudoIdScrollLeftButton,
-            kPseudoIdScrollRightButton}) {
+            kPseudoIdScrollMarker, kPseudoIdScrollButtonBlockStart,
+            kPseudoIdScrollButtonInlineStart, kPseudoIdScrollButtonBlockEnd,
+            kPseudoIdScrollButtonInlineEnd}) {
         if (Node* pseudo_node = element->GetPseudoElement(pseudo_id))
           VisitAndCollectDistanceInfo(pseudo_node);
       }

@@ -295,7 +295,7 @@ TEST(StrongAliasTest, CanWrapComplexStructures) {
 
 TYPED_TEST(StrongAliasTest, CanBeKeysInStdUnorderedMap) {
   using FooAlias = StrongAlias<class FooTag, TypeParam>;
-  std::unordered_map<FooAlias, std::string, typename FooAlias::Hasher> map;
+  std::unordered_map<FooAlias, std::string> map;
 
   FooAlias k1(GetExampleValue<TypeParam>(0));
   FooAlias k2(GetExampleValue<TypeParam>(1));

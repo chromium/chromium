@@ -30,6 +30,8 @@ class CORE_EXPORT FlexChildIterator {
     return children_[position_++].child;
   }
 
+  wtf_size_t size() const { return children_.size(); }
+
   struct ChildWithOrder {
     DISALLOW_NEW();
 

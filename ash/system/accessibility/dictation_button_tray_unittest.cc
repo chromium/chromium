@@ -35,7 +35,6 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/soda/soda_installer.h"
 #include "components/soda/soda_installer_impl_chromeos.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -46,6 +45,7 @@
 #include "ui/base/ime/fake_text_input_client.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_manager.h"
@@ -216,16 +216,11 @@ TEST_F(DictationButtonTrayTest, ImageIcons) {
   TestAccessibilityControllerClient client;
   controller->dictation().SetEnabled(true);
 
-  const bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
   const auto* color_provider = GetTray()->GetColorProvider();
-  const auto off_icon_color = color_provider->GetColor(
-      is_jelly_enabled
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-          : kColorAshIconColorPrimary);
-  const auto on_icon_color = color_provider->GetColor(
-      is_jelly_enabled ? static_cast<ui::ColorId>(
-                             cros_tokens::kCrosSysSystemOnPrimaryContainer)
-                       : kColorAshIconColorPrimary);
+  const auto off_icon_color =
+      color_provider->GetColor(cros_tokens::kCrosSysOnSurface);
+  const auto on_icon_color =
+      color_provider->GetColor(cros_tokens::kCrosSysSystemOnPrimaryContainer);
 
   gfx::ImageSkia off_icon =
       gfx::CreateVectorIcon(kDictationOffNewuiIcon, off_icon_color);

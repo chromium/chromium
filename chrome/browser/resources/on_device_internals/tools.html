@@ -1,4 +1,4 @@
-<style include="cr-shared-style cr-hidden-style">
+<style include="cr-shared-style cr-hidden-style md-select">
   :host {
     display: block;
     margin: auto;
@@ -22,7 +22,7 @@
 
   #textInput {
     --cr-input-error-display: none;
-    margin: 0 0 20px 0;
+    margin: 0 0 10px 0;
   }
 
   .output-options {
@@ -42,11 +42,23 @@
   }
 
   .model-text {
-    margin: 0 5px 20px 5px;
+    margin: 15px 5px 20px 0;
   }
 
   .session {
-    margin-top: 10px;
+    margin-top: 20px;
+  }
+
+  .action-button {
+    margin-inline-end: 8px;
+  }
+
+  .image-buttons {
+    margin-bottom: 10px;
+  }
+
+  #imageInput {
+    display: none;
   }
 
   .text,
@@ -67,6 +79,11 @@
 
   .retracted, .error {
     background-color: var(--google-red-100);
+  }
+
+  .image-error {
+    color: var(--cr-fallback-color-error);
+    margin-bottom: 3px;
   }
 
   .text {
@@ -93,21 +110,40 @@
   cr-expand-button:hover {
     background-color: var(--cr-hover-background-color);
   }
+
+  .model-options {
+    display: flex;
+    flex-direction: row;
+  }
+
+  cr-checkbox {
+    margin-left: 20px;
+    --cr-checkbox-label-padding-start: 10px;
+  }
 </style>
 <div class="performance-class">
   Device performance class: <strong>[[performanceClassText_]]</strong>
 </div>
 <cr-input id="modelInput" label="Model directory" placeholder="/tmp/model"
     disabled="[[isLoading_(loadModelStart_)]]"
-    on-change="onModelSelected_" error-message="[[error_]]"
-    invalid="[[error_.length]]" autofocus>
+    error-message="[[error_]]" invalid="[[error_.length]]" autofocus>
   <cr-button slot="suffix" disabled="[[isLoading_(loadModelStart_)]]"
       on-click="onLoadClick_">
     Load
   </cr-button>
 </cr-input>
+<div class="model-options">
+  <select id="performanceHintSelect" class="md-select"
+      value="[[performanceHint_]]" on-change="onPerformanceHintChange_">
+    <option value="kHighestQuality">Highest Quality</option>
+    <option value="kFastestInference">Fastest Inference</option>
+  </select>
+  <cr-checkbox slot="suffix" checked="{{enableImageInput_}}">
+    Enable images
+  </cr-checkbox>
+</div>
 <div class="model-text">
-  [[getModelText_(modelPath_, loadModelDuration_)]]
+  [[getModelText_(modelPath_, loadModelDuration_, loadedPerformanceHint_)]]
   <div class="throbber" hidden$="[[!isLoading_(loadModelStart_)]]"></div>
 </div>
 
@@ -139,19 +175,37 @@
 <cr-textarea id="textInput" disabled="[[!canExecute_(currentResponse_, model_)]]"
     label="Input"
     placeholder="Place control tokens {$SYSTEM, $MODEL, $USER, $END} on their own lines, in between lines of text."
-    on-change="onExecute_"
     value="{{text_}}">
-  <cr-button slot="suffix"
+</cr-textarea>
+<div class="image-buttons" hidden$="[[!imagesEnabled_(model_, baseModel_)]]">
+  <div class="image-error">[[imageError_]]</div>
+  <div hidden$="[[imageFile_]]">
+    <cr-button class="floating-button"
+        disabled="[[!canUploadFile_(currentResponse_, model_, imageFile_)]]"
+        on-click="onAddImageClick_">
+      <cr-icon icon="cr:add" slot="prefix-icon"></cr-icon>
+      Add image
+    </cr-button>
+    <input id="imageInput" type="file"></input>
+  </div>
+  <cr-button class="floating-button" hidden$="[[!imageFile_]]"
+      on-click="onRemoteImageClick_">
+    <cr-icon icon="cr:delete" slot="prefix-icon"></cr-icon>
+    [[imageFile_.name]]
+  </cr-button>
+</div>
+<div>
+  <cr-button class="action-button"
       disabled="[[!canExecute_(currentResponse_, model_)]]"
       on-click="onExecuteClick_">
     Execute
   </cr-button>
-  <cr-button slot="suffix"
+  <cr-button
       disabled="[[!currentResponse_]]"
       on-click="onCancelClick_">
     Cancel
   </cr-button>
-</cr-textarea>
+</div>
 
 <div class="session" hidden="[[!currentResponse_]]">
   <div class="text">[[currentResponse_.text]]</div>

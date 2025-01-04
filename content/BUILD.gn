@@ -96,7 +96,7 @@ grit("content_resources") {
     "content_resources.pak",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps = [
       "//mojo/public/mojom/base:base_js__generator",
       "//ui/base/mojom:mojom_js__generator",

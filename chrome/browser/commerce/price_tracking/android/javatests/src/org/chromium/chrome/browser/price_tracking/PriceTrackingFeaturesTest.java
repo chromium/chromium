@@ -66,7 +66,7 @@ public class PriceTrackingFeaturesTest {
         setMbbStatus(true);
         setSignedInStatus(true);
         setTabSyncStatus(true, true);
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(true);
     }
 
     @UiThreadTest
@@ -74,7 +74,7 @@ public class PriceTrackingFeaturesTest {
     @SmallTest
     public void testIsPriceTrackingEligible() {
         Assert.assertTrue(
-                PriceTrackingFeatures.isPriceTrackingEligible(
+                PriceTrackingFeatures.isPriceAnnotationsEligible(
                         ProfileManager.getLastUsedRegularProfile()));
     }
 
@@ -82,9 +82,9 @@ public class PriceTrackingFeaturesTest {
     @Test
     @SmallTest
     public void testIsPriceTrackingEligibleFlagIsDisabled() {
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
         Assert.assertFalse(
-                PriceTrackingFeatures.isPriceTrackingEligible(
+                PriceTrackingFeatures.isPriceAnnotationsEligible(
                         ProfileManager.getLastUsedRegularProfile()));
     }
 
@@ -94,7 +94,7 @@ public class PriceTrackingFeaturesTest {
     public void testIsPriceTrackingEligibleNoMbb() {
         setMbbStatus(false);
         Assert.assertFalse(
-                PriceTrackingFeatures.isPriceTrackingEligible(
+                PriceTrackingFeatures.isPriceAnnotationsEligible(
                         ProfileManager.getLastUsedRegularProfile()));
     }
 
@@ -104,7 +104,7 @@ public class PriceTrackingFeaturesTest {
     public void testIsPriceTrackingEligibleNotSignedIn() {
         setSignedInStatus(false);
         Assert.assertFalse(
-                PriceTrackingFeatures.isPriceTrackingEligible(
+                PriceTrackingFeatures.isPriceAnnotationsEligible(
                         ProfileManager.getLastUsedRegularProfile()));
     }
 
@@ -116,7 +116,7 @@ public class PriceTrackingFeaturesTest {
         Profile incognitoProfile =
                 ProfileManager.getLastUsedRegularProfile()
                         .getOffTheRecordProfile(otrProfileId, /* createIfNeeded= */ true);
-        Assert.assertFalse(PriceTrackingFeatures.isPriceTrackingEligible(incognitoProfile));
+        Assert.assertFalse(PriceTrackingFeatures.isPriceAnnotationsEligible(incognitoProfile));
     }
 
     @UiThreadTest
@@ -129,7 +129,7 @@ public class PriceTrackingFeaturesTest {
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
 
         Assert.assertTrue(
-                PriceTrackingFeatures.isPriceTrackingEligible(
+                PriceTrackingFeatures.isPriceAnnotationsEligible(
                         ProfileManager.getLastUsedRegularProfile()));
     }
 

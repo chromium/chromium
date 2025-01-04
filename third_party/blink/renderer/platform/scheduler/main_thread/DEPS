@@ -15,6 +15,9 @@ specific_include_rules = {
   "agent_interference_recorder.h": [
     "+base/task/sequence_manager/enqueue_order.h"
   ],
+  "memory_purge_manager.cc": [
+    "+base/android/pre_freeze_background_memory_trimmer.h"
+  ],
   "frame_scheduler_impl.h": [
     "+net/base/request_priority.h"
   ],

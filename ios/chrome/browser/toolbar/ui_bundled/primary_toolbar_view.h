@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/adaptive_toolbar_view.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_element.h"
 
 @class TabGroupIndicatorView;
 @class ToolbarButtonFactory;

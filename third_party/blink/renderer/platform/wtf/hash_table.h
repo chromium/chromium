@@ -940,12 +940,12 @@ class HashTable final {
 
   struct TypeConstraints {
     constexpr TypeConstraints() {
-      static_assert(!IsStackAllocatedType<Key>);
-      static_assert(!IsStackAllocatedType<Value>);
+      static_assert(!IsStackAllocatedTypeV<Key>);
+      static_assert(!IsStackAllocatedTypeV<Value>);
       static_assert(
           Allocator::kIsGarbageCollected ||
-              (!IsPointerToGarbageCollectedType<Key>::value &&
-               !IsPointerToGarbageCollectedType<Value>::value),
+              (!IsPointerToGarbageCollectedType<Key> &&
+               !IsPointerToGarbageCollectedType<Value>),
           "Cannot put raw pointers to garbage-collected classes into an "
           "off-heap collection.");
     }

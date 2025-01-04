@@ -6,6 +6,8 @@
 
 #include <unicode/uscript.h>
 
+#include <array>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
@@ -97,7 +99,7 @@ TEST_F(ShapeResultViewTest, LatinSingleView) {
   result->ForEachGlyph(0, AddGlyphInfo, static_cast<void*>(&glyphs));
 
   // Test view at the start of the result: "Test run with multiple"
-  ShapeResultView::Segment segments[] = {{result, 0, 22}};
+  auto segments = std::to_array<ShapeResultView::Segment>({{result, 0, 22}});
   auto* first4 = ShapeResultView::Create(segments);
 
   EXPECT_EQ(first4->StartIndex(), 0u);
@@ -148,7 +150,7 @@ TEST_F(ShapeResultViewTest, ArabicSingleView) {
   result->ForEachGlyph(0, AddGlyphInfo, static_cast<void*>(&glyphs));
 
   // Test view at the start of the result: "عربى"
-  ShapeResultView::Segment segments[] = {{result, 0, 4}};
+  auto segments = std::to_array<ShapeResultView::Segment>({{result, 0, 4}});
   auto* first_word = ShapeResultView::Create(segments);
   Vector<ShapeResultTestGlyphInfo> first_glyphs;
   first_word->ForEachGlyph(0, AddGlyphInfo, static_cast<void*>(&first_glyphs));

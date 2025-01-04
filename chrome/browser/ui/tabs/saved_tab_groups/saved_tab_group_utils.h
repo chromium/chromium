@@ -25,7 +25,7 @@ class Profile;
 namespace content {
 class NavigationHandle;
 class WebContents;
-}
+}  // namespace content
 
 namespace tab_groups {
 

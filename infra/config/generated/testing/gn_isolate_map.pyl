@@ -1036,6 +1036,10 @@
     "label": "//headless:headless_unittests",
     "type": "console_test_launcher",
   },
+  "highway_tests": {
+    "label": "//third_party/highway:highway_tests",
+    "type": "console_test_launcher",
+  },
   "image_processor_perf_test": {
     "label": "//media/gpu/chromeos:image_processor_perf_test",
     "type": "additional_compile_target",
@@ -1420,6 +1424,10 @@
     "label": "//chrome/browser/media/router:openscreen_unittests",
     "type": "console_test_launcher",
     "skip_usage_check": True,
+  },
+  "opt_target_coverage_test": {
+    "label": "//components/optimization_guide/internal/testing:opt_target_coverage_test",
+    "type": "generated_script",
   },
   "optimization_guide_gpu_unittests": {
     "label": "//components/optimization_guide/internal:optimization_guide_gpu_unittests",

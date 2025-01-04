@@ -41,12 +41,14 @@ const char16_t kExtraViewText[] = u"Learn";
 }  // namespace
 
 class ToolbarActionsBarBubbleViewsTest : public ChromeViewsTestBase {
- protected:
-  ToolbarActionsBarBubbleViewsTest() = default;
+ public:
   ToolbarActionsBarBubbleViewsTest(const ToolbarActionsBarBubbleViewsTest&) =
       delete;
   ToolbarActionsBarBubbleViewsTest& operator=(
       const ToolbarActionsBarBubbleViewsTest&) = delete;
+
+ protected:
+  ToolbarActionsBarBubbleViewsTest() = default;
   ~ToolbarActionsBarBubbleViewsTest() override = default;
 
   void TearDown() override {

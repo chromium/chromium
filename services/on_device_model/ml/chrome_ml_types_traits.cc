@@ -98,4 +98,62 @@ bool UnionTraits<on_device_model::mojom::InputPieceDataView, ml::InputPiece>::
   return false;
 }
 
+// static
+on_device_model::mojom::ModelBackendType
+EnumTraits<on_device_model::mojom::ModelBackendType,
+           ml::ModelBackendType>::ToMojom(ml::ModelBackendType input) {
+  switch (input) {
+    case ml::ModelBackendType::kGpuBackend:
+      return on_device_model::mojom::ModelBackendType::kGpu;
+    case ml::ModelBackendType::kApuBackend:
+      return on_device_model::mojom::ModelBackendType::kApu;
+  }
+  NOTREACHED();
+}
+
+// static
+bool EnumTraits<on_device_model::mojom::ModelBackendType,
+                ml::ModelBackendType>::
+    FromMojom(on_device_model::mojom::ModelBackendType input,
+              ml::ModelBackendType* output) {
+  switch (input) {
+    case on_device_model::mojom::ModelBackendType::kGpu:
+      *output = ml::ModelBackendType::kGpuBackend;
+      return true;
+    case on_device_model::mojom::ModelBackendType::kApu:
+      *output = ml::ModelBackendType::kApuBackend;
+      return true;
+  }
+  return false;
+}
+
+// static
+on_device_model::mojom::ModelPerformanceHint
+EnumTraits<on_device_model::mojom::ModelPerformanceHint,
+           ml::ModelPerformanceHint>::ToMojom(ml::ModelPerformanceHint input) {
+  switch (input) {
+    case ml::ModelPerformanceHint::kHighestQuality:
+      return on_device_model::mojom::ModelPerformanceHint::kHighestQuality;
+    case ml::ModelPerformanceHint::kFastestInference:
+      return on_device_model::mojom::ModelPerformanceHint::kFastestInference;
+  }
+  NOTREACHED();
+}
+
+// static
+bool EnumTraits<on_device_model::mojom::ModelPerformanceHint,
+                ml::ModelPerformanceHint>::
+    FromMojom(on_device_model::mojom::ModelPerformanceHint input,
+              ml::ModelPerformanceHint* output) {
+  switch (input) {
+    case on_device_model::mojom::ModelPerformanceHint::kHighestQuality:
+      *output = ml::ModelPerformanceHint::kHighestQuality;
+      return true;
+    case on_device_model::mojom::ModelPerformanceHint::kFastestInference:
+      *output = ml::ModelPerformanceHint::kFastestInference;
+      return true;
+  }
+  return false;
+}
+
 }  // namespace mojo

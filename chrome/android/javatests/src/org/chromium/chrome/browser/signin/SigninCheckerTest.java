@@ -21,8 +21,8 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.UserActionTester;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -30,6 +30,7 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.AccountRenameChecker;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.TestAccounts;
 
@@ -57,11 +58,8 @@ public class SigninCheckerTest {
         AccountRenameChecker.overrideDelegateForTests(mAccountRenameCheckerDelegateMock);
     }
 
-    @Test
-    @MediumTest
-    public void signinWhenChildAccountIsTheOnlyAccount() {
+    private void signinWhenChildAccountIsTheOnlyAccount() {
         mActivityTestRule.startMainActivityOnBlankPage();
-        UserActionTester actionTester = new UserActionTester();
 
         mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
 
@@ -75,21 +73,24 @@ public class SigninCheckerTest {
                 2,
                 SigninCheckerProvider.get(mActivityTestRule.getProfile(false))
                         .getNumOfChildAccountChecksDoneForTests());
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            // When REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS is enabled - the data is no longer wiped
-            // on a supervised sign-in.
-            Assert.assertTrue(
-                    actionTester
-                            .getActions()
-                            .contains("Signin_Signin_WipeDataOnChildAccountSignin2"));
-        }
         Assert.assertFalse(SyncTestUtil.isSyncFeatureEnabled());
     }
 
     @Test
     @MediumTest
-    public void noSigninWhenChildAccountIsTheOnlyAccountButSigninIsNotAllowed() {
+    @Features.EnableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
+    public void signinWhenChildAccountIsTheOnlyAccountWithCapabilities() {
+        signinWhenChildAccountIsTheOnlyAccount();
+    }
+
+    @Test
+    @MediumTest
+    @Features.DisableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
+    public void signinWhenChildAccountIsTheOnlyAccountWithUsm() {
+        signinWhenChildAccountIsTheOnlyAccount();
+    }
+
+    private void noSigninWhenChildAccountIsTheOnlyAccountButSigninIsNotAllowed() {
         mActivityTestRule.startMainActivityOnBlankPage();
         UserActionTester actionTester = new UserActionTester();
         when(mExternalAuthUtilsMock.isGooglePlayServicesMissing(any())).thenReturn(true);
@@ -108,7 +109,19 @@ public class SigninCheckerTest {
 
     @Test
     @MediumTest
-    public void noSigninWhenChildAccountIsTheSecondaryAccount() {
+    @Features.EnableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
+    public void noSigninWhenChildAccountIsTheOnlyAccountButSigninIsNotAllowedWithCapabilities() {
+        noSigninWhenChildAccountIsTheOnlyAccountButSigninIsNotAllowed();
+    }
+
+    @Test
+    @MediumTest
+    @Features.DisableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
+    public void noSigninWhenChildAccountIsTheOnlyAccountButSigninIsNotAllowedWithUsm() {
+        noSigninWhenChildAccountIsTheOnlyAccountButSigninIsNotAllowed();
+    }
+
+    private void noSigninWhenChildAccountIsTheSecondaryAccount() {
         // If a child account co-exists with another account on the device, then the child account
         // must be the first device (this is enforced by the Kids Module).  The behaviour in this
         // test case therefore is not currently hittable on a real device; however it is included
@@ -130,12 +143,22 @@ public class SigninCheckerTest {
 
     @Test
     @MediumTest
-    public void signinWhenChildAccountIsFirstAccount() {
+    @Features.EnableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
+    public void noSigninWhenChildAccountIsTheSecondaryAccountWithCapabilities() {
+        noSigninWhenChildAccountIsTheSecondaryAccount();
+    }
+
+    @Test
+    @MediumTest
+    @Features.DisableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
+    public void noSigninWhenChildAccountIsTheSecondaryAccountWithUsm() {
+        noSigninWhenChildAccountIsTheSecondaryAccount();
+    }
+
+    private void signinWhenChildAccountIsFirstAccount() {
         mActivityTestRule.startMainActivityOnBlankPage();
         mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
         mSigninTestRule.addAccount("the.second.account@gmail.com");
-
-        UserActionTester actionTester = new UserActionTester();
 
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -148,14 +171,19 @@ public class SigninCheckerTest {
                 3,
                 SigninCheckerProvider.get(mActivityTestRule.getProfile(false))
                         .getNumOfChildAccountChecksDoneForTests());
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            // When REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS is enabled - the data is no longer wiped
-            // on a supervised sign-in.
-            Assert.assertTrue(
-                    actionTester
-                            .getActions()
-                            .contains("Signin_Signin_WipeDataOnChildAccountSignin2"));
-        }
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
+    public void signinWhenChildAccountIsFirstAccountWithCapabilities() {
+        signinWhenChildAccountIsFirstAccount();
+    }
+
+    @Test
+    @MediumTest
+    @Features.DisableFeatures(SigninFeatures.FORCE_SUPERVISED_SIGNIN_WITH_CAPABILITIES)
+    public void signinWhenChildAccountIsFirstAccountWithUsm() {
+        signinWhenChildAccountIsFirstAccount();
     }
 }

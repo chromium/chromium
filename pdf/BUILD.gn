@@ -325,6 +325,7 @@ if (enable_pdf) {
 
     deps = [
       "//base",
+      "//services/screen_ai/buildflags",
       "//skia",
       "//ui/gfx/geometry",
     ]

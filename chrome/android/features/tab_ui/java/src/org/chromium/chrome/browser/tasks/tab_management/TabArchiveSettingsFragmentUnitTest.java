@@ -130,6 +130,24 @@ public class TabArchiveSettingsFragmentUnitTest {
         enableAutoDelete.onClick();
         histogramWatcher.assertExpected();
         assertFalse(mArchiveSettings.isAutoDeleteEnabled());
+
+        ChromeSwitchPreference enableArchiveDuplicateTabs =
+                tabArchiveSettingsFragment.findPreference(
+                        TabArchiveSettingsFragment.PREF_TAB_ARCHIVE_INCLUDE_DUPLICATE_TABS);
+        assertFalse(enableArchiveDuplicateTabs.isChecked());
+
+        histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.ArchiveSettings.ArchiveDuplicateTabsEnabled", true);
+        enableArchiveDuplicateTabs.onClick();
+        assertTrue(mArchiveSettings.isArchiveDuplicateTabsEnabled());
+
+        histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.ArchiveSettings.ArchiveDuplicateTabsEnabled", false);
+        enableArchiveDuplicateTabs.onClick();
+        histogramWatcher.assertExpected();
+        assertFalse(mArchiveSettings.isArchiveDuplicateTabsEnabled());
     }
 
     @Test

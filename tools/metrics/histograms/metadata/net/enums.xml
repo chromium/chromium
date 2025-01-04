@@ -2373,6 +2373,16 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="SETTING_DO_NOT_FRAGMENT"/>
 </enum>
 
+<!-- LINT.IfChange(QuicSessionKeyPartialMatchResult) -->
+
+<enum name="QuicSessionKeyPartialMatchResult">
+  <int value="0" label="kNoMatch"/>
+  <int value="1" label="kMatchedToActiveSession"/>
+  <int value="2" label="kMatchedToActiveJob"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/quic/quic_session_pool.cc:QuicSessionKeyPartialMatchResult) -->
+
 <enum name="QuicTransportErrorCodes">
   <int value="0" label="NO_ERROR"/>
   <int value="1" label="INTERNAL_ERROR"/>
@@ -2659,6 +2669,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="0" label="ALPN not used"/>
   <int value="1" label="HTTP/1.1 negotiated via ALPN"/>
   <int value="2" label="HTTP/2 negotiated via ALPN"/>
+  <int value="3" label="HTTP/3 (QUIC) negotiated via ALPN"/>
 </enum>
 
 <enum name="SSLOrQUICVersion">
@@ -2672,6 +2683,13 @@ Called by update_net_trust_anchors.py.-->
   <int value="7" label="QUIC"/>
 </enum>
 
+<enum name="StorageAccessNetRequestKind">
+  <int value="0" label="Same-origin request with storage access override"/>
+  <int value="1"
+      label="Cross-origin, same-site request with storage access override"/>
+  <int value="2" label="Cross-site request with storage access override"/>
+</enum>
+
 <enum name="StorageAccessRedirectKind">
   <int value="0" label="No Storage Access override"/>
   <int value="1" label="Same-origin redirect with storage access override"/>
@@ -2680,7 +2698,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Cross-site redirect with storage access override"/>
 </enum>
 
-<enum name="StreamCloseReason">
+<enum name="StreamSocketCloseReason">
   <int value="0" label="Unspecified"/>
   <int value="1" label="Close all connections"/>
   <int value="2" label="IP address changed"/>
@@ -2688,6 +2706,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="Cannot use TCP-based protocols"/>
   <int value="5" label="SPDY session created"/>
   <int value="6" label="QUIC session created"/>
+  <int value="7" label="Using existing SPDY session"/>
+  <int value="8" label="Using existing QUIC session"/>
 </enum>
 
 <enum name="TPMSupport">
@@ -2857,6 +2877,10 @@ Called by update_net_trust_anchors.py.-->
      https://learn.microsoft.com/en-us/windows/win32/com/com-error-codes-6
      with some amendments-->
 
+  <int value="-2146893808" label="NTE_PERM">Access denied.</int>
+  <int value="-2146893785" label="NTE_INVALID_PARAMETER">
+    The parameter is incorrect.
+  </int>
   <int value="-2144862208" label="TPM_E_ERROR_MASK">
     This is an error mask to convert TPM hardware errors to win errors.
   </int>
@@ -3454,6 +3478,16 @@ Called by update_net_trust_anchors.py.-->
   <int value="-2144859869" label="TPM_20_E_NV_UNAVAILABLE">
     TPM 2.0: the command may require writing of NV and NV is not current
     accessible..
+  </int>
+  <int value="-2144845823" label="TBS_E_INTERNAL_ERROR">
+    An internal error has occurred within the Trusted Platform Module support
+    program.
+  </int>
+  <int value="-2144845822" label="TBS_E_BAD_PARAMETER">
+    One or more input parameters is bad.
+  </int>
+  <int value="-2144795641" label="TPM_E_PCP_INTERNAL_ERROR">
+    An unexpected internal error has occurred in the Platform Crypto Provider.
   </int>
 </enum>
 

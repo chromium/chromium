@@ -213,7 +213,7 @@ class SystemInfoProviderTest : public testing::Test {
         std::make_unique<SystemInfoProvider>(SystemInfo::Builder()
                                                  .SetDeviceName(kFakeDeviceName)
                                                  .SetBoardName(kFakeBoardName)
-                                                 .SetGaiaId(kFakeGaiaId)
+                                                 .SetGaiaId(GaiaId(kFakeGaiaId))
                                                  .SetDeviceType(kFakeDeviceType)
                                                  .SetOsVersion(kFakeOsVersion)
                                                  .SetChannel(kFakeChannel)

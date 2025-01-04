@@ -19,7 +19,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1185134272377778587">Chromium arakatzaileari buruz</translation>
 <translation id="1188705220418984327">Leihoa partekatzeko, eman pantaila grabatzeko baimena Chromium-i sistemaren hobespenetan.</translation>
 <translation id="1203500561924088507">Eskerrik asko instalatzeagatik. <ph name="BUNDLE_NAME" /> erabiltzeko, arakatzailea berrabiarazi behar duzu.</translation>
-<translation id="1235768345431527125">Zure gauzak eskura izateko, saioa has dezakezu. Bestela, erabili Chromium konturik gabe.</translation>
 <translation id="1262876892872089030">Fitxa inaktibo zegoen bitartean, memorian tokia egin da Chromium-ek bizkor funtzionatzen jarrai dezan. Webgune hau inoiz ez inaktibo ezartzea aukera dezakezu.</translation>
 <translation id="1265577313130862557">Chromium-ek deskarga hau blokeatu du, fitxategia arriskutsua delako</translation>
 <translation id="126567311906253476"><ph name="USER_EMAIL" /> kontuarekin Google-ren zerbitzuetan saioa hastean (adibidez, Gmail-en edo YouTube-n), Chromium-en ere automatikoki has dezakezu saioa kontu berarekin</translation>
@@ -59,6 +58,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="1779356040007214683">Chromium seguruagoa izan dadin, zuk jakin gabe gehitu izan dituzten eta <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dendan zerrendatu gabe dauden luzapen batzuk desgaitu ditugu.</translation>
 <translation id="1808667845054772817">Instalatu berriro Chromium</translation>
 <translation id="1820835682567584003">Chromium-ek <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1838374766361614909">Garbitu bilaketa</translation>
 <translation id="18552579716432081">Zure arakatze-datuak gailu honetatik soilik ezabatzeko, baina haiek Google-ko kontuan mantentzeko, <ph name="BEGIN_LINK" />amaitu saioa Chromium-en<ph name="END_LINK" />.</translation>
 <translation id="185970820835152459">Saioa hasita daukaten Google-ko kontuak kudea ditzakezu. Google-ko kontuak Chromium arakatzaile, Play Store, Gmail eta abarrerako erabiltzen dira. Kontu bat beste norbaitentzat gehitu nahi baduzu (adibidez, familiako kide batentzat), gehitu beste pertsona bat <ph name="DEVICE_TYPE" /> gailuan. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Bilatu irudi-bilaketaren bidez</translation>
@@ -68,6 +68,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="1896836275755235458">Chromium-ek bateria aurrezten du atzeko planoko jarduerak eta ikusizko efektuak mugatuta (esaterako, gora eta behera modu leunean egiteko aukera eta bideoen irudi-abiadurak). <ph name="BEGIN_LINK" />Lortu energia-aurreztaileari buruzko informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium eguneratzeko zerbitzua</translation>
 <translation id="1911763535808217981">Aukera hau desaktibatzen baduzu, Google-ren webguneetan saioa hasi ahalko duzu (adibidez, Gmail-en) Chromium-en saioa hasi beharrik gabe</translation>
+<translation id="1916451563296275579">Kendu aplikazio honetako datuak Chromium-etik</translation>
 <translation id="1929939181775079593">Chromium-ek ez du eranzuten. Berrabiarazi nahi duzu?</translation>
 <translation id="1933341829955786215">Chromium-en saioa hasteko eskatzen dizu zure erakundeak (<ph name="MANAGER" />)</translation>
 <translation id="193439633299369377">Eguneratzea aplikatzeko, berrabiarazi egin behar da Chromium OS.</translation>
@@ -94,6 +95,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="2199210295479376551">Kendu kontua Chromium-etik</translation>
 <translation id="2210682093923538346">Webgune arriskutsua. Chromium-ek jakinarazpenak erabiltzeko baimena kendu dio.</translation>
 <translation id="2236949375853147973">Nire jarduerak</translation>
+<translation id="2238130810669087193">Helbideak eta bestelako datuak zure gailu guztietan gordeta edukitzeko, hasi saioa Chromium-en. Saioa hasi ondoren, helbide hau zure Google-ko kontuan gordeko da.</translation>
 <translation id="2240214816234246077">Azkenaldian ez duzu bisitatu webgune hau. Chromium-ek <ph name="PERMISSION_1" /> eta <ph name="PERMISSION_2" /> erabiltzeko baimenak kendu dizkio.</translation>
 <translation id="2241627712206172106">Ordenagailua partekatzen baduzu, lagunek eta familiako kideek euren kontuak erabilita ibil daitezke Interneten, nahi duten moduan.</translation>
 <translation id="2313870531055795960">URLak Chromium-en gordetako webgune ez-seguruen zerrendan dauden ala ez egiaztatzen du. Webguneren bat pasahitza lapurtzen saiatzen bada, edo fitxategi kaltegarriren bat deskargatzen baduzu, baliteke Chromium-ek URLak ere bidaltzea (orriko edukiaren zati batzuk barne) Arakatze segurua eginbideari.</translation>
@@ -111,6 +113,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="2483889755041906834">Chromium-en</translation>
 <translation id="2485422356828889247">Desinstalatu</translation>
 <translation id="2513154137948333830">Berrabiarazi egin behar da: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2522009821193247726">Aurrera egiteko, Chromium-en saioa hasi behar duzu <ph name="EMAIL" /> kontuarekin. Horrela, erakundearen gidalerroak gordetzen direla bermatuko da.</translation>
 <translation id="2542968102051442371">Hautatu testua irudi-bilaketaren bidez</translation>
 <translation id="2554739539410784893">Lehendik dauden pasahitzak ordezten saiatzen ari da Chromium. Horretarako baimena emateko, idatzi Windows-eko pasahitza.</translation>
 <translation id="2560420686485554789">Chromium-ek fitxategiak deskargatzearren memorian sartzeko baimena behar du</translation>
@@ -120,6 +123,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="2583187216237139145">Laneko profilaren administratzaileak kendu egin ditzake profil hau erabiltzean sortutako Chromium-eko datuak (adibidez, sortutako laster-markak, historia, pasahitzak eta bestelako ezarpenak). <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Jarraitu Chromium erabiltzen</translation>
 <translation id="259935314519650377">Ezin izan da gorde cachean deskargatutako instalatzailea. Errorea: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2635452620547538388">Chromium-eko datuak zure kontuan (<ph name="ACCOUNT_EMAIL" />) erabiltzeko eta gordetzeko, egiaztatu zeu zarela</translation>
 <translation id="264613044588233783">Chromium-ek bizkorrago funtzionatzen du eta JavaScript darabilten eginbideek behar bezala funtzionatu beharko lukete (gomendatua)</translation>
 <translation id="2648074677641340862">Sistema-eragilean errore bat gertatu da instalatu bitartean. Deskargatu Chromium berriro.</translation>
 <translation id="2661879430930417727">Gailu bat partekatzen baduzu, lagunak eta familiako kideak beren kontuak erabilita ibil daitezke Interneten, eta Chromium nahi duten moduan konfiguratu</translation>
@@ -205,7 +209,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="3802055581630249637">Ziurrenik bisitatuko dituzun orriak aurrez kargatzen ditu Chromium-ek, bisitatzen dituzunean bizkorrago karga daitezen</translation>
 <translation id="3830894615770080216">Chromium OS sistema</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
-<translation id="386822487697155367">Lortu Chromium OS erabiltzeko laguntza</translation>
 <translation id="3871664619793219264">Eskuratu Chromium arakatzaileko gauzak <ph name="ACCOUNT_EMAIL" /> bidez</translation>
 <translation id="3885770153807205175">Hizkuntza-hautatzailea</translation>
 <translation id="388648406173476553">Pertsonalizatu eta kontrolatu Chromium. Zure arreta behar duen zerbait dago. Sakatu informazio gehiago ikusteko.</translation>
@@ -253,7 +256,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="4438870983368648614"><ph name="MANAGER" /> erabiltzaileak kudeatzen du Chromium</translation>
 <translation id="444069871276811466">Gehitu Chromium-eko profil bat</translation>
 <translation id="4447409407328223819">Chrome for Testing-i buruz</translation>
-<translation id="4470974262661801543">Chromium-eko datuak Google-ko kontuan gordetzeko eta erabiltzeko, idatzi pasaesaldia</translation>
 <translation id="4493028449971051158">Abiarazte-errorea: exekutatu instalatzailea administratzaile gisa.</translation>
 <translation id="4501471624619070934">Ezin izan da instalatu, herrialde honetan sarbidea murriztuta dagoelako.</translation>
 <translation id="4510853178268397146">Luzapen honek ez du argitaratu pribatutasun-jardunbiderik (adibidez, datuak biltzeko eta erabiltzeko duen moduari buruz). Kentzea gomendatzen dizu Chromium-ek.</translation>
@@ -405,6 +407,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6455857529632101747">Ongi etorri Chromium-eko profiletara</translation>
 <translation id="6466344609055215035">Kendu kontua Chromium-etik</translation>
 <translation id="6475912303565314141">Chromium abiarazten duzunean erakusten den orria ere kontrolatzen du.</translation>
+<translation id="648062525172759633">Orri hauek Chromium-en garatzaileek erabiltzeko pentsatuta daude, eta baliteke aktiboki ez mantentzea edo probatzea. Haiek gaitzeko, joan <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> helbidera, sakatu orrien arazketa gaitzeko botoia eta itzuli orri honetara.</translation>
 <translation id="648319183876919572">Arakatze seguru hobetuak are gehiago babesten zaitu webgune eta deskarga arriskutsuen aurka</translation>
 <translation id="6510925080656968729">Desinstalatu Chromium</translation>
 <translation id="651535675648445253">Chromium-en irekita dauden lasterbideak</translation>
@@ -448,6 +451,7 @@ Baliteke eginbide batzuk erabilgarri ez egotea. Adierazi beste profil-direktorio
 <translation id="6980074797973263542">Erakundeak zure arakatze-datuak ikusi eta kudea ditzake, hala nola laster-markak, historia eta pasahitzak. Ezin ditu ikusi Chromium-eko profil pertsonaletako arakatze-datuak.</translation>
 <translation id="6985329841647292029">Chromium OS-ren baldintzak</translation>
 <translation id="6990124437352146030">Chromium-ek webgune honen izenean mikrofonoa erabiltzeko baimena behar du</translation>
+<translation id="7003299027384820442">Chromium-eko datuak zure kontuan (<ph name="ACCOUNT_EMAIL" />) erabiltzeko eta gordetzeko, idatzi pasaesaldia</translation>
 <translation id="7011190694940573312">Instalazioak huts egin du, sistema eragilearen bertsio hau bateragarria ez delako.</translation>
 <translation id="7024536598735240744">Despaketatze-errorea: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Gelditu da instalazioa.</translation>
@@ -513,6 +517,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Nola kudea ditzakezu datuak?<ph name="END_BOLD" /> Zure pribatutasuna babesteko, lau aste baino gehiago dituzten interesak automatikoki ezabatzen ditugu. Arakatzen jarraitu ahala, baliteke interes bat berriro agertzea zerrendan. Bestela, Chromium-ek aintzat hartzea nahi ez duzun interesak ken ditzakezu.</translation>
 <translation id="7888981273428720788">Ezarri Chromium arakatzaile lehenetsi gisa</translation>
 <translation id="7934340546140346950">Chromium-ek konexio ez-seguruen maila HTTPSra igotzen du automatikoki posible denean</translation>
+<translation id="7935734571048689933">Chromium kudeatzen da</translation>
 <translation id="7937630085815544518">Chromium-en <ph name="USER_EMAIL_ADDRESS" /> gisa hasi duzu saioa. Saioa berriro hasteko, erabili hasiera batean erabilitako kontu bera.</translation>
 <translation id="7975919845073681630">Chromium-en bigarren mailako instalazio bat da hau; beraz, ezin duzu ezarri arakatzaile lehenetsi gisa.</translation>
 <translation id="7997934263947464652">Iturburu ezezagunetatik datozen luzapenek, aplikazioek eta gaiek gailua kalte dezakete. Halakoak <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> zerbitzutik bakarrik instalatzea gomendatzen du Chromium-ek.</translation>
@@ -542,6 +547,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="8330519371938183845">Hasi saioa Chromium gailu guztietan sinkronizatu eta pertsonalizatzeko</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> Chromium erabiltzen ari da lehendik ere</translation>
 <translation id="8357820681460164151">Chromium arakatzaileko gauzak gailu guztietan atzitzeko, hasi saioa eta aktibatu sinkronizazioa</translation>
+<translation id="8359544530202147897">Chromium-eko datuak Google-ko kontuan (<ph name="ACCOUNT_EMAIL" />) erabiltzen jarraitzeko, eguneratu Chromium</translation>
 <translation id="8360718212975266891">Etorkizunean Chromium-en eguneratzeak eskuratzeko, Windows 10 edo bertsio berriago bat beharko duzu. Ordenagailua Windows 8 erabiltzen ari da.</translation>
 <translation id="8362914115861174987">Itzuli hizkuntza honetara:</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Eskubide guztiak erreserbatuta.</translation>

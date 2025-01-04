@@ -21,6 +21,7 @@
 
 #if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_64)
 #include <pthread.h>
+
 #include <type_traits>
 #endif
 
@@ -373,13 +374,16 @@ void OnThreadExitInternal(TlsVectorEntry* tls_data) {
       size_t slot = ordered_slot.slot;
       void* tls_value = stack_allocated_tls_data[slot].data;
       if (!tls_value || tls_metadata[slot].status == TlsStatus::FREE ||
-          stack_allocated_tls_data[slot].version != tls_metadata[slot].version)
+          stack_allocated_tls_data[slot].version !=
+              tls_metadata[slot].version) {
         continue;
+      }
 
       base::ThreadLocalStorage::TLSDestructorFunc destructor =
           tls_metadata[slot].destructor;
-      if (!destructor)
+      if (!destructor) {
         continue;
+      }
       stack_allocated_tls_data[slot].data = nullptr;  // pre-clear the slot.
       destructor(tls_value);
       // Any destructor might have called a different service, which then set a
@@ -407,8 +411,9 @@ namespace internal {
 void PlatformThreadLocalStorage::OnThreadExit() {
   PlatformThreadLocalStorage::TLSKey key =
       g_native_tls_key.load(std::memory_order_relaxed);
-  if (key == PlatformThreadLocalStorage::TLS_KEY_OUT_OF_INDEXES)
+  if (key == PlatformThreadLocalStorage::TLS_KEY_OUT_OF_INDEXES) {
     return;
+  }
   TlsVectorEntry* tls_vector = nullptr;
   const TlsVectorState state = GetTlsVectorStateAndValue(key, &tls_vector);
 
@@ -417,8 +422,9 @@ void PlatformThreadLocalStorage::OnThreadExit() {
   DCHECK_NE(state, TlsVectorState::kDestroyed);
 
   // Maybe we have never initialized TLS for this thread.
-  if (state == TlsVectorState::kUninitialized)
+  if (state == TlsVectorState::kUninitialized) {
     return;
+  }
   OnThreadExitInternal(tls_vector);
 }
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -445,8 +451,9 @@ void PlatformThreadLocalStorage::OnThreadExit(void* value) {
 bool ThreadLocalStorage::HasBeenDestroyed() {
   PlatformThreadLocalStorage::TLSKey key =
       g_native_tls_key.load(std::memory_order_relaxed);
-  if (key == PlatformThreadLocalStorage::TLS_KEY_OUT_OF_INDEXES)
+  if (key == PlatformThreadLocalStorage::TLS_KEY_OUT_OF_INDEXES) {
     return false;
+  }
   const TlsVectorState state = GetTlsVectorStateAndValue(key);
   return state == TlsVectorState::kDestroying ||
          state == TlsVectorState::kDestroyed;
@@ -502,12 +509,14 @@ void* ThreadLocalStorage::Slot::Get() const {
   const TlsVectorState state = GetTlsVectorStateAndValue(
       g_native_tls_key.load(std::memory_order_relaxed), &tls_data);
   DCHECK_NE(state, TlsVectorState::kDestroyed);
-  if (!tls_data)
+  if (!tls_data) {
     return nullptr;
+  }
   DCHECK_LT(slot_, kThreadLocalStorageSize);
   // Version mismatches means this slot was previously freed.
-  if (tls_data[slot_].version != version_)
+  if (tls_data[slot_].version != version_) {
     return nullptr;
+  }
   return tls_data[slot_].data;
 }
 
@@ -517,8 +526,9 @@ void ThreadLocalStorage::Slot::Set(void* value) {
       g_native_tls_key.load(std::memory_order_relaxed), &tls_data);
   DCHECK_NE(state, TlsVectorState::kDestroyed);
   if (!tls_data) [[unlikely]] {
-    if (!value)
+    if (!value) {
       return;
+    }
     tls_data = ConstructTlsVector();
   }
   DCHECK_LT(slot_, kThreadLocalStorageSize);

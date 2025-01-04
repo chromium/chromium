@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/api/web_request/web_request_info.h"
 
 #include <cstdint>
@@ -18,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/types/zip.h"
 #include "base/values.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "content/public/browser/render_frame_host.h"
@@ -148,12 +144,12 @@ std::optional<base::Value::Dict> CreateRequestBodyData(
                                       keys::kRequestBodyRawKey};
   bool some_succeeded = false;
   if (!data_sources.empty()) {
-    for (size_t i = 0; i < std::size(presenters); ++i) {
+    for (auto [presenter, key] : base::zip(presenters, kKeys)) {
       for (auto& source : data_sources) {
-        source->FeedToPresenter(presenters[i]);
+        source->FeedToPresenter(presenter);
       }
-      if (presenters[i]->Succeeded()) {
-        request_body_data.Set(kKeys[i], presenters[i]->TakeResult().value());
+      if (presenter->Succeeded()) {
+        request_body_data.Set(key, presenter->TakeResult().value());
         some_succeeded = true;
         break;
       }

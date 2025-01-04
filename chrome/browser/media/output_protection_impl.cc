@@ -33,7 +33,7 @@ OutputProtectionImpl::OutputProtectionImpl(
     content::RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<media::mojom::OutputProtection> receiver)
     : DocumentService(render_frame_host, std::move(receiver)),
-      render_process_id_(render_frame_host.GetProcess()->GetID()),
+      render_process_id_(render_frame_host.GetProcess()->GetDeprecatedID()),
       render_frame_id_(render_frame_host.GetRoutingID()) {}
 
 OutputProtectionImpl::~OutputProtectionImpl() {

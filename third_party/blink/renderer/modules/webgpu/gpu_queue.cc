@@ -438,8 +438,8 @@ void GPUQueue::writeBuffer(ScriptState* script_state,
                            const MaybeShared<DOMArrayBufferView>& data,
                            uint64_t data_element_offset,
                            ExceptionState& exception_state) {
-  WriteBufferImpl(script_state, buffer, buffer_offset, data->byteLength(),
-                  data->BaseAddressMaybeShared(), data->TypeSize(),
+  WriteBufferImpl(script_state, buffer, buffer_offset,
+                  data->ByteSpanMaybeShared(), data->TypeSize(),
                   data_element_offset, {}, exception_state);
 }
 
@@ -450,8 +450,8 @@ void GPUQueue::writeBuffer(ScriptState* script_state,
                            uint64_t data_element_offset,
                            uint64_t data_element_count,
                            ExceptionState& exception_state) {
-  WriteBufferImpl(script_state, buffer, buffer_offset, data->byteLength(),
-                  data->BaseAddressMaybeShared(), data->TypeSize(),
+  WriteBufferImpl(script_state, buffer, buffer_offset,
+                  data->ByteSpanMaybeShared(), data->TypeSize(),
                   data_element_offset, data_element_count, exception_state);
 }
 
@@ -461,8 +461,8 @@ void GPUQueue::writeBuffer(ScriptState* script_state,
                            const DOMArrayBufferBase* data,
                            uint64_t data_byte_offset,
                            ExceptionState& exception_state) {
-  WriteBufferImpl(script_state, buffer, buffer_offset, data->ByteLength(),
-                  data->DataMaybeShared(), 1, data_byte_offset, {},
+  WriteBufferImpl(script_state, buffer, buffer_offset,
+                  data->ByteSpanMaybeShared(), 1, data_byte_offset, {},
                   exception_state);
 }
 
@@ -473,30 +473,29 @@ void GPUQueue::writeBuffer(ScriptState* script_state,
                            uint64_t data_byte_offset,
                            uint64_t byte_size,
                            ExceptionState& exception_state) {
-  WriteBufferImpl(script_state, buffer, buffer_offset, data->ByteLength(),
-                  data->DataMaybeShared(), 1, data_byte_offset, byte_size,
+  WriteBufferImpl(script_state, buffer, buffer_offset,
+                  data->ByteSpanMaybeShared(), 1, data_byte_offset, byte_size,
                   exception_state);
 }
 
 void GPUQueue::WriteBufferImpl(ScriptState* script_state,
                                GPUBuffer* buffer,
                                uint64_t buffer_offset,
-                               uint64_t data_byte_length,
-                               const void* data_base_ptr,
+                               base::span<const uint8_t> data,
                                unsigned data_bytes_per_element,
                                uint64_t data_element_offset,
                                std::optional<uint64_t> data_element_count,
                                ExceptionState& exception_state) {
   CHECK_LE(data_bytes_per_element, 8u);
 
-  if (data_element_offset > data_byte_length / data_bytes_per_element) {
+  if (data_element_offset > data.size() / data_bytes_per_element) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Data offset is too large");
     return;
   }
 
   uint64_t data_byte_offset = data_element_offset * data_bytes_per_element;
-  uint64_t max_write_size = data_byte_length - data_byte_offset;
+  uint64_t max_write_size = data.size() - data_byte_offset;
 
   uint64_t write_byte_size = max_write_size;
   if (data_element_count.has_value()) {
@@ -516,21 +515,15 @@ void GPUQueue::WriteBufferImpl(ScriptState* script_state,
   }
 
   // Check that the write size can be cast to a size_t. This should always be
-  // the case since data_byte_length comes from an ArrayBuffer size.
+  // the case since `data` comes from an ArrayBuffer.
   if (write_byte_size > uint64_t(std::numeric_limits<size_t>::max())) {
     exception_state.ThrowRangeError(
         "writeSize larger than size_t (please report a bug if you see this)");
     return;
   }
 
-  // SAFETY: Bounds already checked
-  auto data_span =
-      UNSAFE_BUFFERS(
-          base::span<const uint8_t>(static_cast<const uint8_t*>(data_base_ptr),
-                                    static_cast<size_t>(data_byte_length)))
-          .subspan(static_cast<size_t>(data_byte_offset),
-                   static_cast<size_t>(write_byte_size));
-
+  auto data_span = data.subspan(static_cast<size_t>(data_byte_offset),
+                                static_cast<size_t>(write_byte_size));
   GetHandle().WriteBuffer(buffer->GetHandle(), buffer_offset, data_span.data(),
                           data_span.size());
   EnsureFlush(ToEventLoop(script_state));
@@ -542,9 +535,8 @@ void GPUQueue::writeTexture(ScriptState* script_state,
                             GPUImageDataLayout* data_layout,
                             const V8GPUExtent3D* write_size,
                             ExceptionState& exception_state) {
-  WriteTextureImpl(script_state, destination, data->BaseAddressMaybeShared(),
-                   data->byteLength(), data_layout, write_size,
-                   exception_state);
+  WriteTextureImpl(script_state, destination, data->ByteSpanMaybeShared(),
+                   data_layout, write_size, exception_state);
 }
 
 void GPUQueue::writeTexture(ScriptState* script_state,
@@ -553,16 +545,13 @@ void GPUQueue::writeTexture(ScriptState* script_state,
                             GPUImageDataLayout* data_layout,
                             const V8GPUExtent3D* write_size,
                             ExceptionState& exception_state) {
-  WriteTextureImpl(script_state, destination, data->DataMaybeShared(),
-                   data->ByteLength(), data_layout, write_size,
-                   exception_state);
+  WriteTextureImpl(script_state, destination, data->ByteSpanMaybeShared(),
+                   data_layout, write_size, exception_state);
 }
 
-// TODO(crbug.com/351564777): should be UNSAFE_BUFFER_USAGE
 void GPUQueue::WriteTextureImpl(ScriptState* script_state,
                                 GPUImageCopyTexture* destination,
-                                const void* data,
-                                size_t data_size,
+                                base::span<const uint8_t> data,
                                 GPUImageDataLayout* data_layout,
                                 const V8GPUExtent3D* write_size,
                                 ExceptionState& exception_state) {
@@ -583,20 +572,16 @@ void GPUQueue::WriteTextureImpl(ScriptState* script_state,
     }
   }
 
-  if (dawn_data_layout.offset > data_size) {
+  if (dawn_data_layout.offset > data.size()) {
     device_->InjectError(wgpu::ErrorType::Validation,
                          "Data offset is too large");
     return;
   }
 
-  // SAFETY: Required from caller
   // Handle the data layout offset by offsetting the data pointer instead. This
   // helps move less data between then renderer and GPU process (otherwise all
   // the data from 0 to offset would be copied over as well).
-  auto data_span =
-      UNSAFE_BUFFERS(base::span<const uint8_t>(
-                         static_cast<const uint8_t*>(data), data_size))
-          .subspan(base::checked_cast<size_t>(dawn_data_layout.offset));
+  auto data_span = data.subspan(static_cast<size_t>(dawn_data_layout.offset));
   dawn_data_layout.offset = 0;
 
   // Compute a tight upper bound of the number of bytes to send for this

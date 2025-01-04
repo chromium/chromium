@@ -1786,6 +1786,87 @@ TEST_P(CompositingSimTest, AffectedByOuterViewportBoundsDelta) {
   }
 }
 
+// This test ensures that adding and removing "env(safe--area-insert-bottom)"
+// values to the 'bottom' CSS property, correctly invalidates and updates
+// transform node properties.
+TEST_P(CompositingSimTest, IsBottomRelativeToSafeAreaInsetUpdates) {
+  InitializeWithHTML(R"HTML(
+      <!DOCTYPE html>
+      <style>
+        body { height: 2000px; }
+        #fixed {
+          width: 100px;
+          height: 100px;
+          position: fixed;
+          left: 0;
+          background-color: red;
+        }
+      </style>
+      <div id='fixed'></div>
+  )HTML");
+  // env(safe-area-inset-bottom) should be 0px so that computed 'bottom'
+  // property does not itself invalidate layout, and mask other issues.
+  // The 'IsBottomRelativeToSafeAreaInset' property should by itself
+  // trigger layout invalidation and transform node update.
+  WebView().GetPage()->SetMaxSafeAreaInsets(
+      WebView().MainFrameImpl()->GetFrame(), gfx::Insets().set_bottom(0));
+
+  auto* fixed_element = GetElementById("fixed");
+  auto* fixed_element_layer = CcLayerByDOMElementId("fixed");
+
+  // A bottom fixed position DIV not using env(safe-area-inset-bottom)
+  // should be moved by viewport bounds, but not by safe area bottom in cc.
+  {
+    fixed_element->setAttribute(html_names::kStyleAttr,
+                                AtomicString("bottom: 10px"));
+    Compositor().BeginFrame();
+
+    auto transform_tree_index = fixed_element_layer->transform_tree_index();
+    const auto* transform_node =
+        GetPropertyTrees()->transform_tree().Node(transform_tree_index);
+
+    DCHECK(transform_node);
+    EXPECT_TRUE(transform_node->moved_by_outer_viewport_bounds_delta_y);
+    EXPECT_FALSE(transform_node->moved_by_safe_area_bottom);
+  }
+
+  // A bottom fixed position DIV using calc(env(safe-area-inset-bottom) +
+  // length) should be moved by viewport bounds, and by safe area bottom in cc.
+  {
+    fixed_element->setAttribute(
+        html_names::kStyleAttr,
+        AtomicString("bottom: calc(env(safe-area-inset-bottom) + 10px)"));
+    Compositor().BeginFrame();
+
+    auto transform_tree_index = fixed_element_layer->transform_tree_index();
+    const auto* transform_node =
+        GetPropertyTrees()->transform_tree().Node(transform_tree_index);
+
+    DCHECK(transform_node);
+    EXPECT_TRUE(transform_node->moved_by_outer_viewport_bounds_delta_y);
+    EXPECT_TRUE(transform_node->moved_by_safe_area_bottom);
+  }
+
+  // A bottom fixed position DIV using calc(env(safe-area-inset-bottom) *
+  // number) should be moved by viewport bounds, but not by safe area bottom in
+  // cc.
+  {
+    fixed_element->setAttribute(
+        html_names::kStyleAttr,
+        AtomicString("bottom: calc(env(safe-area-inset-bottom) * 1 + 10px)"));
+
+    Compositor().BeginFrame();
+
+    auto transform_tree_index = fixed_element_layer->transform_tree_index();
+    const auto* transform_node =
+        GetPropertyTrees()->transform_tree().Node(transform_tree_index);
+
+    DCHECK(transform_node);
+    EXPECT_TRUE(transform_node->moved_by_outer_viewport_bounds_delta_y);
+    EXPECT_FALSE(transform_node->moved_by_safe_area_bottom);
+  }
+}
+
 // When a property tree change occurs that affects layer transform-origin, the
 // transform can be directly updated without explicitly marking the layer as
 // damaged. The ensure damage occurs, the transform node should have

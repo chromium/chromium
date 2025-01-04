@@ -213,6 +213,13 @@ struct TokenLimits {
   uint32_t max_output_tokens = 0;
 };
 
+// The configuration that specifies the default sampling params.
+// TODO(crbug.com/367771112): support `max_top_k` and `max_temperature`.
+struct SamplingParamsConfig {
+  std::optional<uint32_t> default_top_k;
+  std::optional<float> default_temperature;
+};
+
 // Interface for model execution.
 class OptimizationGuideModelExecutor {
  public:
@@ -276,13 +283,6 @@ class OptimizationGuideModelExecutor {
     // OnDeviceModelExecutionFeatureConfig.
     virtual const proto::Any& GetOnDeviceFeatureMetadata() const = 0;
   };
-
-  // Whether an on-device session can be created for `feature`. An optional
-  // `on_device_model_eligibility_reason` parameter can be provided for more
-  // detailed reasons for why an on-device session could not be created.
-  virtual bool CanCreateOnDeviceSession(
-      ModelBasedCapabilityKey feature,
-      OnDeviceModelEligibilityReason* on_device_model_eligibility_reason) = 0;
 
   // Starts a session which allows streaming input and output from the model.
   // May return nullptr if model execution is not supported. This session should

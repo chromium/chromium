@@ -36,7 +36,7 @@ ManagePasswordsListView::ManagePasswordsListView(
   SetOrientation(views::BoxLayout::Orientation::kVertical);
   for (const std::unique_ptr<password_manager::PasswordForm>& password_form :
        credentials) {
-    std::optional<ui::ImageModel> store_icon = std::nullopt;
+    ui::ImageModel store_icon;
     if (is_account_storage_available && !password_form->IsUsingAccountStore()) {
       store_icon = ui::ImageModel::FromVectorIcon(
           vector_icons::kNotUploadedIcon, ui::kColorIcon, gfx::kFaviconSize);
@@ -97,8 +97,7 @@ ManagePasswordsListView::ManagePasswordsListView(
           /*action_image_icon=*/
           ui::ImageModel::FromVectorIcon(
               vector_icons::kLaunchIcon, ui::kColorIconSecondary,
-              GetLayoutConstant(PAGE_INFO_ICON_SIZE)),
-          /*state_icon=*/std::nullopt));
+              GetLayoutConstant(PAGE_INFO_ICON_SIZE))));
   manage_passwords_button->SetID(static_cast<int>(
       password_manager::ManagePasswordsViewIDs::kManagePasswordsButton));
   manage_passwords_button->SetTooltipText(

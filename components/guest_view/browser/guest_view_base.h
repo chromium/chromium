@@ -18,6 +18,7 @@
 #include "components/guest_view/common/guest_view_constants.h"
 #include "components/zoom/zoom_observer.h"
 #include "content/public/browser/browser_plugin_guest_delegate.h"
+#include "content/public/browser/child_process_id.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/guest_page_holder.h"
@@ -68,6 +69,9 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
                       public zoom::ZoomObserver,
                       public base::SupportsUserData::Data {
  public:
+  static GuestViewBase* FromInstanceID(content::ChildProcessId owner_process_id,
+                                       int instance_id);
+
   static GuestViewBase* FromInstanceID(int owner_process_id, int instance_id);
 
   // Prefer using FromRenderFrameHost. See https://crbug.com/1362569.
@@ -146,6 +150,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   using GuestCreatedCallback =
       base::OnceCallback<void(std::unique_ptr<GuestViewBase> guest)>;
   void Init(std::unique_ptr<GuestViewBase> owned_this,
+            scoped_refptr<content::SiteInstance> site_instance,
             const base::Value::Dict& create_params,
             GuestCreatedCallback callback);
 
@@ -335,9 +340,11 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // Given a set of initialization parameters, a concrete subclass of
   // GuestViewBase can create a specialized `WebContents`/`GuestPageHolder` that
   // it returns back to GuestViewBase.
-  virtual void CreateInnerPage(std::unique_ptr<GuestViewBase> owned_this,
-                               const base::Value::Dict& create_params,
-                               GuestPageCreatedCallback callback) = 0;
+  virtual void CreateInnerPage(
+      std::unique_ptr<GuestViewBase> owned_this,
+      scoped_refptr<content::SiteInstance> site_instance,
+      const base::Value::Dict& create_params,
+      GuestPageCreatedCallback callback) = 0;
 
   // This method is called after the guest has been attached to an embedder and
   // suspended resource loads have been resumed.
@@ -450,6 +457,15 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   void GuestDidChangeLoadProgress(double progress) final;
   void GuestMainFrameProcessGone(base::TerminationStatus status) final;
   void GuestResizeDueToAutoResize(const gfx::Size& new_size) final;
+  content::GuestPageHolder* GuestCreateNewWindow(
+      WindowOpenDisposition disposition,
+      const GURL& url,
+      const std::string& main_frame_name,
+      content::RenderFrameHost* opener,
+      scoped_refptr<content::SiteInstance> site_instance) override;
+  void GuestOpenURL(const content::OpenURLParams& params,
+                    base::OnceCallback<void(content::NavigationHandle&)>
+                        navigation_handle_callback) override;
 
   // WebContentsDelegate implementation.
   void ActivateContents(content::WebContents* contents) final;

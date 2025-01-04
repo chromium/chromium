@@ -69,6 +69,7 @@
 #include "cc/metrics/custom_metrics_recorder.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "cc/metrics/lcd_text_metrics_reporter.h"
+#include "cc/metrics/submit_info.h"
 #include "cc/metrics/ukm_smoothness_data.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_worklet_job.h"
@@ -165,6 +166,22 @@ constexpr size_t kContainsSrgbCacheSize = 3;
 static_assert(kContainsSrgbCacheSize ==
                   gfx::DisplayColorSpaces::kConfigCount / 2,
               "sRGB cache must match the size of DisplayColorSpaces");
+
+void AccumulateInvalidatedArea(
+    LayerImpl* layer,
+    base::CheckedNumeric<uint32_t>& total_invalidated_area_out) {
+  const Region invalidation_region = layer->GetInvalidationRegionForDebugging();
+  if (invalidation_region.IsEmpty() || !layer->draws_content()) {
+    return;
+  }
+
+  for (gfx::Rect rect : invalidation_region) {
+    total_invalidated_area_out +=
+        MathUtil::MapEnclosingClippedRect(layer->ScreenSpaceTransform(), rect)
+            .size()
+            .GetCheckedArea();
+  }
+}
 
 bool IsMobileOptimized(LayerTreeImpl* active_tree) {
   return util::IsMobileOptimized(active_tree->min_page_scale_factor(),
@@ -529,6 +546,10 @@ LayerTreeHostImpl::LayerTreeHostImpl(
   frame_trackers_.set_custom_tracker_results_added_callback(base::BindRepeating(
       &LayerTreeHostImpl::NotifyCompositorMetricsTrackerResults,
       weak_factory_.GetWeakPtr()));
+
+  if (settings_.is_layer_tree_for_ui) {
+    total_invalidated_area_ = 0u;
+  }
 }
 
 LayerTreeHostImpl::~LayerTreeHostImpl() {
@@ -847,6 +868,7 @@ void LayerTreeHostImpl::UpdateSyncTreeAfterCommitOrImplSideInvalidation() {
 
   sync_tree()->InvalidateRegionForImages(images_to_invalidate);
 
+  sync_tree()->set_did_raster_inducing_scroll(false);
   if (!pending_invalidation_raster_inducing_scrolls_.empty()) {
     base::flat_set<ElementId> scrolls_to_invalidate;
     std::swap(scrolls_to_invalidate,
@@ -1473,6 +1495,9 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
       if (append_quads_data.num_missing_tiles > 0) {
         have_missing_animated_tiles |=
             layer->screen_space_transform_is_animating();
+      }
+      if (settings_.is_layer_tree_for_ui) {
+        AccumulateInvalidatedArea(layer, total_invalidated_area_.value());
       }
     }
     frame->activation_dependencies.insert(
@@ -2628,6 +2653,7 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
   }
   metadata.has_transparent_background =
       frame->render_passes.back()->has_transparent_background;
+  metadata.has_offset_tag = browser_controls_offset_manager_->HasOffsetTag();
 #endif
 
   bool allocate_new_local_surface_id = false;
@@ -2673,21 +2699,44 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
         last_draw_render_frame_metadata_->has_transparent_background !=
             metadata.has_transparent_background;
 
-    if (!features::IsBrowserControlsInVizEnabled()) {
+    if (features::IsBrowserControlsInVizEnabled()) {
+      // When the browser controls become locked, the browser will update the
+      // offset tags, and also update the controls' offsets if they don't match
+      // the current renderer scroll position. These updates result in a new
+      // renderer frame, but sometimes it gets drawn before the browser frame
+      // with the updated offsets arrives, which causes the controls to jump, so
+      // we need a new surface id here to sync the updates.
+      allocate_new_local_surface_id |=
+          (last_draw_render_frame_metadata_->has_offset_tag &&
+           !metadata.has_offset_tag);
+
+      // If BCIV is enabled but there's no offset tags, it means the controls
+      // aren't scrollable, and any movement of the controls is the result of
+      // the browser updating their offsets and submitting a new browser frame.
+      // We need a new surface id in this case, as this is identical to the
+      // situation without BCIV.
+      if (!browser_controls_offset_manager_->HasOffsetTag()) {
+        allocate_new_local_surface_id |=
+            last_draw_render_frame_metadata_->top_controls_shown_ratio !=
+                metadata.top_controls_shown_ratio ||
+            last_draw_render_frame_metadata_->bottom_controls_shown_ratio !=
+                metadata.bottom_controls_shown_ratio;
+      } else if (!features::IsBcivBottomControlsEnabled()) {
+        // When AndroidBrowserControlsInViz is enabled, don't always use
+        // bottom_controls_shown_ratio to determine if surface sync is needed,
+        // because it changes even when there are no bottom controls.
+        bool bottom_controls_exist =
+            metadata.bottom_controls_height != 0 ||
+            last_draw_render_frame_metadata_->bottom_controls_height != 0;
+        allocate_new_local_surface_id |=
+            bottom_controls_exist &&
+            last_draw_render_frame_metadata_->bottom_controls_shown_ratio !=
+                metadata.bottom_controls_shown_ratio;
+      }
+    } else {
       allocate_new_local_surface_id |=
           last_draw_render_frame_metadata_->top_controls_shown_ratio !=
               metadata.top_controls_shown_ratio ||
-          last_draw_render_frame_metadata_->bottom_controls_shown_ratio !=
-              metadata.bottom_controls_shown_ratio;
-    } else if (!features::IsBcivBottomControlsEnabled()) {
-      // When AndroidBrowserControlsInViz is enabled, don't always use
-      // bottom_controls_shown_ratio to determine if surface sync is needed,
-      // because it changes even when there are no bottom controls.
-      bool bottom_controls_exist =
-          metadata.bottom_controls_height != 0 ||
-          last_draw_render_frame_metadata_->bottom_controls_height != 0;
-      allocate_new_local_surface_id |=
-          bottom_controls_exist &&
           last_draw_render_frame_metadata_->bottom_controls_shown_ratio !=
               metadata.bottom_controls_shown_ratio;
     }
@@ -2777,6 +2826,20 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
       events_metrics_manager_.TakeSavedEventsMetrics());
   lag_tracking_manager_.CollectScrollEventsFromFrame(frame_token,
                                                      events_metrics);
+
+  std::optional<float> normalized_invalidated_area;
+  if (settings_.is_layer_tree_for_ui) {
+    CHECK(total_invalidated_area_.has_value());
+
+    const gfx::Rect& output_rect =
+        active_tree()->RootRenderSurface()->content_rect();
+    normalized_invalidated_area =
+        static_cast<float>(
+            total_invalidated_area_.value().ValueOrDefault(UINT_MAX)) /
+        output_rect.size().GetArea();
+
+    total_invalidated_area_ = 0;
+  }
 
   // Dump property trees and layers if VerboseLogEnabled().
   VERBOSE_LOG() << "Submitting a frame:\n"
@@ -2879,7 +2942,9 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
                     frame->checkerboarded_needs_record,
                     top_controls_moved,
                     std::move(events_metrics),
-                    drawn_with_new_layer_tree};
+                    drawn_with_new_layer_tree,
+                    active_tree_->did_raster_inducing_scroll(),
+                    normalized_invalidated_area};
 }
 
 viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
@@ -3381,6 +3446,23 @@ void LayerTreeHostImpl::DidFinishImplFrame(const viz::BeginFrameArgs& args) {
 
 void LayerTreeHostImpl::DidNotProduceFrame(const viz::BeginFrameAck& ack,
                                            FrameSkippedReason reason) {
+  TRACE_EVENT2(
+      "cc,benchmark", "LayerTreeHostImpl::DidNotProduceFrame",
+      "FrameSkippedReason",
+      [](FrameSkippedReason reason) {
+        switch (reason) {
+          case FrameSkippedReason::kRecoverLatency:
+            return "kRecoverLatency";
+          case FrameSkippedReason::kNoDamage:
+            return "kNoDamage";
+          case FrameSkippedReason::kWaitingOnMain:
+            return "kWaitingOnMain";
+          case FrameSkippedReason::kDrawThrottled:
+            return "kDrawThrottled";
+        }
+        return "";
+      }(reason),
+      "Frame Sequence Number", ack.frame_id.sequence_number);
   frame_rate_estimator_.DidNotProduceFrame();
   if (layer_tree_frame_sink_) {
     static const bool feature_allowed = base::FeatureList::IsEnabled(
@@ -3406,6 +3488,7 @@ void LayerTreeHostImpl::OnBeginImplFrameDeadline() {
 void LayerTreeHostImpl::SynchronouslyInitializeAllTiles() {
   // Only valid for the single-threaded non-scheduled/synchronous case
   // using the zero copy raster worker pool.
+  tile_manager_.FlushImageControllerTasksForTesting();  // IN-TEST
   single_thread_synchronous_task_graph_runner_->RunUntilIdle();
 }
 
@@ -4086,19 +4169,23 @@ void LayerTreeHostImpl::SetPaintWorkletLayerPainter(
 }
 
 void LayerTreeHostImpl::QueueImageDecode(int request_id,
-                                         const PaintImage& image) {
+                                         const DrawImage& image) {
   DCHECK(!settings_.is_display_tree);
-  TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
-               "LayerTreeHostImpl::QueueImageDecode", "frame_key",
-               image.GetKeyForFrame(PaintImage::kDefaultFrameIndex).ToString());
+  const PaintImage& paint_image = image.paint_image();
+  TRACE_EVENT1(
+      TRACE_DISABLED_BY_DEFAULT("cc.debug"),
+      "LayerTreeHostImpl::QueueImageDecode", "frame_key",
+      paint_image.GetKeyForFrame(PaintImage::kDefaultFrameIndex).ToString());
   // Optimistically specify the current raster color space, since we assume that
   // it won't change.
-  auto content_color_usage = image.GetContentColorUsage();
+  DrawImage image_copy(
+      image, /*scale_adjustment=*/1.0,
+      /*frame_index=*/PaintImage::kDefaultFrameIndex,
+      GetTargetColorParams(paint_image.GetContentColorUsage()));
   tile_manager_.decoded_image_tracker().QueueImageDecode(
-      image, GetTargetColorParams(content_color_usage),
-      base::BindOnce(&LayerTreeHostImpl::ImageDecodeFinished,
-                     weak_factory_.GetWeakPtr(), request_id));
-  tile_manager_.checker_image_tracker().DisallowCheckeringForImage(image);
+      image_copy, base::BindOnce(&LayerTreeHostImpl::ImageDecodeFinished,
+                                 weak_factory_.GetWeakPtr(), request_id));
+  tile_manager_.checker_image_tracker().DisallowCheckeringForImage(paint_image);
 }
 
 void LayerTreeHostImpl::ImageDecodeFinished(int request_id,

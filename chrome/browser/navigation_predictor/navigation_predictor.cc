@@ -497,14 +497,6 @@ void NavigationPredictor::SetModelScoreCallbackForTesting(
   model_score_callback_ = std::move(callback);
 }
 
-void NavigationPredictor::SetTaskRunnerForTesting(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    const base::TickClock* clock) {
-  ml_model_execution_timer_.SetTaskRunner(task_runner);
-  clock_ = clock;
-  navigation_start_ = NowTicks();
-}
-
 // static
 bool NavigationPredictor::disable_renderer_metric_sending_delay_for_testing_ =
     false;

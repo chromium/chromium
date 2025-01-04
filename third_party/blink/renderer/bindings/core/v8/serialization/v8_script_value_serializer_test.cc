@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/bindings/core/v8/serialization/v8_script_value_serializer.h"
+
+#include <array>
 
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -1208,11 +1205,12 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageBitmapWithColorSpaceInfo) {
   // component is presented as a half float in Skia. However, difference in
   // GPU hardware may result in small differences in lower significant byte in
   // Skia color conversion pipeline. Hence, we use a tolerance of 2 here.
-  uint8_t pixel[8] = {};
+  std::array<uint8_t, 8> pixel = {};
   ASSERT_TRUE(
       new_image_bitmap->BitmapImage()->PaintImageForCurrentFrame().readPixels(
           info.makeWH(1, 1), &pixel, 8, 3, 3));
-  uint8_t p3_red[8] = {0x57, 0x3B, 0x68, 0x32, 0x6E, 0x30, 0x00, 0x3C};
+  std::array<uint8_t, 8> p3_red = {0x57, 0x3B, 0x68, 0x32,
+                                   0x6E, 0x30, 0x00, 0x3C};
   bool approximate_match = true;
   uint8_t tolerance = 2;
   for (int i = 0; i < 8; i++) {
@@ -2090,7 +2088,8 @@ TEST(V8ScriptValueSerializerTest, RoundTripReadableStream) {
   auto* rs = ReadableStream::Create(script_state, ASSERT_NO_EXCEPTION);
   v8::Local<v8::Value> wrapper =
       ToV8Traits<ReadableStream>::ToV8(scope.GetScriptState(), rs);
-  HeapVector<ScriptValue> transferable_array = {ScriptValue(isolate, wrapper)};
+  HeapVector<ScriptObject> transferable_array = {
+      ScriptObject(isolate, wrapper)};
   Transferables transferables;
   ASSERT_TRUE(SerializedScriptValue::ExtractTransferables(
       isolate, transferable_array, transferables, ASSERT_NO_EXCEPTION));
@@ -2115,7 +2114,8 @@ TEST(V8ScriptValueSerializerTest, TransformStreamIntegerOverflow) {
   auto* ts = TransformStream::Create(script_state, ASSERT_NO_EXCEPTION);
   v8::Local<v8::Value> wrapper =
       ToV8Traits<TransformStream>::ToV8(scope.GetScriptState(), ts);
-  HeapVector<ScriptValue> transferable_array = {ScriptValue(isolate, wrapper)};
+  HeapVector<ScriptObject> transferable_array = {
+      ScriptObject(isolate, wrapper)};
   Transferables transferables;
   ASSERT_TRUE(SerializedScriptValue::ExtractTransferables(
       isolate, transferable_array, transferables, ASSERT_NO_EXCEPTION));

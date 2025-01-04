@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Desactivar tema escuro</translation>
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1808803439260407870">Arte clásica</translation>
+<translation id="181434555916624618">De momento, no se mostrarán resultados con persoas. Proba con outra solicitude.</translation>
 <translation id="1815850098929213707">A tecla seleccionada é <ph name="KEYS" />. Toca o botón para editar o control</translation>
 <translation id="1823120442877418684">Temas</translation>
 <translation id="1827738518074806965">Galería de arte</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">Nivel de batería do auricular dereito do dispositivo: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">configuración</translation>
 <translation id="3347558044552027859">moderna</translation>
+<translation id="3353477144743332882">Descargar o modelo de creación de nomes e resumos</translation>
 <translation id="3359218928534347896">activar ou desactivar o son do micrófono</translation>
 <translation id="3360306038446926262">Ventás</translation>
 <translation id="3361618936611118375">sushi</translation>
@@ -689,6 +691,7 @@
 <translation id="4354430579665871434">tecla</translation>
 <translation id="4356100841225547054">Desactivar o volume</translation>
 <translation id="4361257691546579041">O APN é predeterminado.</translation>
+<translation id="4368101969572512692">Ordenar suxestións aleatoriamente</translation>
 <translation id="437294888293595148">Restablecer todos os atallos</translation>
 <translation id="437477383107495720">coelliños</translation>
 <translation id="4376423484621194274">A persoa administradora non permite pechar <ph name="APP_NAME" /></translation>
@@ -768,6 +771,7 @@
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="4744944742468440486">Información relacionada coa túa selección</translation>
+<translation id="4750394297954878236">Suxestións</translation>
 <translation id="4771607256327216405">iluminación do teclado</translation>
 <translation id="4771923071974529837">mañá</translation>
 <translation id="4773299976671772492">Detido</translation>
@@ -853,6 +857,7 @@
 <translation id="5121677070210013200">Non se puido descargar o modelo de transcrición. Téntao de novo ou reinicia o Chromebook.</translation>
 <translation id="5130848777448318809">ponis</translation>
 <translation id="5137451382116112100">Completa</translation>
+<translation id="5139813694804168398">non molestar</translation>
 <translation id="5140788690559353412">Cando perdas o acceso á túa conta de centro educativo, tampouco poderás acceder ao correo electrónico asociado nin aos ficheiros de Google Drive, como os de Gmail, Documentos ou Presentacións, entre outros.</translation>
 <translation id="5142961317498132443">Autenticación</translation>
 <translation id="5144311987923128508">O botón de confirmación xa está desactivado</translation>
@@ -897,6 +902,7 @@
 <translation id="5302048478445481009">Idioma</translation>
 <translation id="5303837385540978511">Fondo de pantalla exclusivo de <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EvDO</translation>
+<translation id="530883153651464140">Actualizar <ph name="DEVICE_NAME" /> á versión <ph name="VERSION" /></translation>
 <translation id="5315873049536339193">Identidade</translation>
 <translation id="5317780077021120954">Gardar</translation>
 <translation id="5318310531701770497">Non se poden crear nomes. Proba cunha transcrición máis longa.</translation>
@@ -973,7 +979,6 @@
 <translation id="5703716265115423771">baixa o volume</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Botón para editar de <ph name="SHORTCUT_DESCRIPTION" />.</translation>
-<translation id="5733298426544876109">Actualizar <ph name="DEVICE_NAME" /></translation>
 <translation id="5736820754189340309">Uso de datos restablecido</translation>
 <translation id="574392208103952083">Medio</translation>
 <translation id="5744175046705638478">Traducir "<ph name="QUERY" />"</translation>
@@ -998,6 +1003,7 @@
 <translation id="5859969039821714932">O atallo non está dispoñible. Preme un novo sen a tecla <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Non</translation>
 <translation id="5860491529813859533">Activar</translation>
+<translation id="5875913454160982848">Descargar o modelo de transcrición</translation>
 <translation id="5876385649737594562">Actívao para seleccionar as opcións</translation>
 <translation id="5877503382465267833">Pór <ph name="RECORDING_NAME" /> en pausa</translation>
 <translation id="588258955323874662">Pantalla completa</translation>
@@ -1037,7 +1043,6 @@
 <translation id="6040143037577758943">Pechar</translation>
 <translation id="6040852767465482106">Identidade anónima</translation>
 <translation id="604124094241169006">Automático</translation>
-<translation id="6042308850641462728">Máis</translation>
 <translation id="6048107060512778456">Produciuse un erro: atasco de papel</translation>
 <translation id="6050189528197190982">Escala de grises</translation>
 <translation id="6054711098834486579">expresionista</translation>
@@ -1293,6 +1298,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Servidor de nomes}other{Servidores de nomes}}</translation>
 <translation id="7135814714616751706">Busca atallos</translation>
 <translation id="7138614237884624401">Texto simplificado</translation>
+<translation id="7138668887584231801">Non hai suficientes palabras para xerar un resumo</translation>
 <translation id="7141470099673912333">Transferencia de contido</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="7144878232160441200">Volver tentar</translation>
@@ -1588,6 +1594,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="8503836310948963452">Só faltan uns minutos…</translation>
 <translation id="8505011850330200833">O modelo de Gemini ocupa 2 GB de almacenamento para procesar transcricións e crear resumos</translation>
 <translation id="8508640263392900755">Detalles do APN</translation>
+<translation id="8509574872955173831">Máis información sobre a creación de nomes e resumos</translation>
 <translation id="8522687886059337719">Xa podes acceder a novos <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fondos<ph name="END_LINK_WALLPAPER_SUBPAGE" /> e <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />protectores de pantalla<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">tipo casa de té</translation>
@@ -1724,7 +1731,6 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="9133772297793293778">Preme entre 1 e 4 modificadoras e 1 tecla máis do teclado. Para saír do modo de edición, pulsa Alt + Escape.</translation>
 <translation id="9137526406337347448">Servizos de Google</translation>
 <translation id="9138630967333032450">Maiúsculas (esquerda)</translation>
-<translation id="9147928237330776930">Non se pode resumir o texto porque hai moi poucas palabras</translation>
 <translation id="9149391708638971077">Realizar proba de memoria</translation>
 <translation id="9159524746324788320">hamburguesas</translation>
 <translation id="9161276708550942948">espazo</translation>

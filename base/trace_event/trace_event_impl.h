@@ -25,7 +25,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_arguments.h"
-#include "base/trace_event/trace_event_memory_overhead.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -66,7 +65,6 @@ class BASE_EXPORT TraceEvent {
              const char* name,
              const char* scope,
              unsigned long long id,
-             unsigned long long bind_id,
              TraceArguments* args,
              unsigned int flags);
 
@@ -96,13 +94,10 @@ class BASE_EXPORT TraceEvent {
              const char* name,
              const char* scope,
              unsigned long long id,
-             unsigned long long bind_id,
              TraceArguments* args,
              unsigned int flags);
 
   void UpdateDuration(const TimeTicks& now, const ThreadTicks& thread_now);
-
-  void EstimateTraceMemoryOverhead(TraceEventMemoryOverhead* overhead);
 
   // Serialize event data to JSON
   void AppendAsJSON(
@@ -120,7 +115,6 @@ class BASE_EXPORT TraceEvent {
   const char* scope() const { return scope_; }
   unsigned long long id() const { return id_; }
   unsigned int flags() const { return flags_; }
-  unsigned long long bind_id() const { return bind_id_; }
   // Exposed for unittesting:
 
   const StringStorage& parameter_copy_storage() const LIFETIME_BOUND {
@@ -173,7 +167,6 @@ class BASE_EXPORT TraceEvent {
     ProcessId process_id_;
   };
   unsigned int flags_ = 0;
-  unsigned long long bind_id_ = 0;
   char phase_ = TRACE_EVENT_PHASE_BEGIN;
 };
 

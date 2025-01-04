@@ -1950,6 +1950,8 @@ TEST_F(SharedStorageWorkletTest, InterestGroups) {
            {{url::Origin::Create(GURL("https://reporting.example.org"))}}),
        blink::InterestGroup::Ad(GURL("https://example.com/plane"),
                                 "\"meta2\"")}};
+  ig.ads.value()[0].creative_scanning_metadata = "scan";
+  ig.ads.value()[1].creative_scanning_metadata = "me please";
   ig.ad_components = {{
       {GURL("https://example.com/locomotive"), "\"meta3\""},
       {GURL("https://example.com/turbojet"), "\"meta4\""},
@@ -2102,6 +2104,7 @@ TEST_F(SharedStorageWorkletTest, InterestGroups) {
                   ],
                   "buyerAndSellerReportingId": "bsid",
                   "buyerReportingId": "bid",
+                  "creativeScanningMetadata": "scan",
                   "metadata": "metadata",
                   "renderURL": "https://example.com/train",
                   "renderUrl": "https://example.com/train",
@@ -2112,9 +2115,10 @@ TEST_F(SharedStorageWorkletTest, InterestGroups) {
                   "sizeGroup": "sizegroup"
                 },
                 {
+                  "creativeScanningMetadata": "me please",
                   "metadata": "meta2",
                   "renderURL": "https://example.com/plane",
-                  "renderUrl": "https://example.com/plane"
+                  "renderUrl": "https://example.com/plane",
                 }
               ],
               "auctionServerRequestFlags": [

@@ -36,14 +36,6 @@ constexpr int64_t kMaxRetries = 50;
 constexpr base::TimeDelta kHardwareInfoReadyRetryInterval =
     base::Milliseconds(100);
 
-const std::unordered_set<std::string>
-    ArcRevenHardwareChecker::kSupportedWiFiIds{
-        "8086:095a", "8086:a0f0", "8086:2526", "8086:31dc", "8086:9df0",
-        "8086:51f0", "168c:003e", "8086:2723", "8086:06f0", "10ec:c822",
-        "8086:7af0", "8086:4df0", "8086:2725", "8086:095b", "14c3:7961",
-        "8086:a370", "14c3:0616", "10ec:8852", "8086:43f0", "8086:02f0",
-        "8086:24fd", "8086:24f3"};
-
 const std::unordered_set<std::string> ArcRevenHardwareChecker::kSupportedGpuIds{
     "8086:9a49", "8086:9a78", "8086:9a60", "8086:9a40", "8086:9a70",
     "8086:9a68", "8086:9a59", "8086:9af8", "8086:9ad9", "8086:9ac9",
@@ -258,8 +250,6 @@ bool ArcRevenHardwareChecker::CheckPciRequirements(
     LOG(WARNING) << "No bus devices in response from cros_healthd.";
     return false;
   }
-  bool is_wifi_compatible = false;
-  bool is_gpu_compatible = false;
 
   for (const auto& device : bus_devices) {
     if (device->bus_info->which() == mojom::BusInfo::Tag::kPciBusInfo) {
@@ -267,28 +257,17 @@ bool ArcRevenHardwareChecker::CheckPciRequirements(
       const auto& pci_id =
           IntToHex(pci_info->vendor_id) + ":" + IntToHex(pci_info->device_id);
 
-      if (device->device_class == mojom::BusDeviceClass::kWirelessController &&
-          kSupportedWiFiIds.find(pci_id) != kSupportedWiFiIds.end()) {
-        is_wifi_compatible = true;
-      }
       if (device->device_class == mojom::BusDeviceClass::kDisplayController &&
           kSupportedGpuIds.find(pci_id) != kSupportedGpuIds.end()) {
-        is_gpu_compatible = true;
+        return true;
       }
     }
   }
 
-  if (!is_wifi_compatible) {
-    LOG(WARNING) << "WiFi fails arcvm hardware requirements on reven: no "
-                    "compatible device found.";
-  }
+  LOG(WARNING) << "GPU fails arcvm hardware requirements on reven: no "
+                  "compatible device found.";
 
-  if (!is_gpu_compatible) {
-    LOG(WARNING) << "GPU fails arcvm hardware requirements on reven: no "
-                    "compatible device found.";
-  }
-
-  return is_wifi_compatible && is_gpu_compatible;
+  return false;
 }
 
 }  // namespace arc

@@ -8296,8 +8296,8 @@ class LayerTreeHostTestQueueImageDecode : public LayerTreeHostTest {
         &LayerTreeHostTestQueueImageDecode::ImageDecodeFinished,
         base::Unretained(this));
     // Schedule the decode twice for the same image.
-    layer_tree_host()->QueueImageDecode(image_.paint_image(), callback);
-    layer_tree_host()->QueueImageDecode(image_.paint_image(), callback);
+    layer_tree_host()->QueueImageDecode(image_, callback);
+    layer_tree_host()->QueueImageDecode(image_, callback);
   }
 
   void ReadyToCommitOnThread(LayerTreeHostImpl* impl) override {
@@ -8350,7 +8350,12 @@ class LayerTreeHostTestQueueImageDecodeNonLazy : public LayerTreeHostTest {
     auto callback = base::BindOnce(
         &LayerTreeHostTestQueueImageDecodeNonLazy::ImageDecodeFinished,
         base::Unretained(this));
-    layer_tree_host()->QueueImageDecode(image, std::move(callback));
+    layer_tree_host()->QueueImageDecode(
+        DrawImage(image,
+                  /*use_dark_mode=*/false,
+                  SkIRect::MakeWH(image.width(), image.height()),
+                  PaintFlags::FilterQuality::kNone, SkM44()),
+        std::move(callback));
   }
 
   void ImageDecodeFinished(bool decode_succeeded) {
@@ -10633,7 +10638,7 @@ class LayerTreeHostTestForceRecreateTilingForLCDText
     layer_id_ = layer_on_main_->id();
   }
 
-  void WillCommit(const CommitState&) override {
+  void OnCommitRequested() override {
     switch (layer_tree_host()->SourceFrameNumber()) {
       case 0:
         // First frame enables LCD text by marking the layer opaque.
@@ -10679,6 +10684,7 @@ class LayerTreeHostTestForceRecreateTilingForLCDText
                   LCDTextDisallowedReason::kContentsNotOpaque);
         EXPECT_FALSE(layer_impl->HighResTiling()->can_use_lcd_text());
         host_impl->GetInputHandler().PinchGestureEnd(gfx::Point(1, 1));
+        PostSetNeedsCommitToMainThread();
         break;
       case 2:
         ASSERT_FALSE(host_impl->IsPinchGestureActive());
@@ -10916,8 +10922,8 @@ class LayerTreeHostTestBlockOnCommitAfterInputEvent : public LayerTreeHostTest {
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
   void WillBeginMainFrame() override { ++main_frame_num_; }
   void DidBeginMainFrame() override {
-    EXPECT_EQ(main_frame_num_ % 2 == 0,
-              layer_tree_host()->WaitedForCommitForTesting());
+    EXPECT_EQ(main_frame_num_ % 2 != 0,
+              layer_tree_host()->MustWaitForCommitForTesting());
   }
   void DidCommit() override {
     if (main_frame_num_ < 5) {

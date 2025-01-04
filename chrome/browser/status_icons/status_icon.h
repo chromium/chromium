@@ -75,6 +75,14 @@ class StatusIcon {
   // thread to do it.  Use sparingly.
   virtual void ForceVisible();
 
+#if BUILDFLAG(IS_MAC)
+  // On mac, if there is a menu, by default primary click will open it and not
+  // call DispatchClickEvent(). Use this function to make the menu open on
+  // secondary click, and dispatch the click event on left click.
+  virtual void SetOpenMenuWithSecondaryClick(
+      bool open_menu_with_secondary_click);
+#endif
+
  protected:
   // Invoked after a call to SetContextMenu() to let the platform-specific
   // subclass update the native context menu based on the new model. If NULL is

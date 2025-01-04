@@ -74,7 +74,7 @@
 <translation id="133801305381959373">Следующего редактируемого текстового поля нет</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1346059596910821859">Совет</translation>
-<translation id="1354356357730355833">копировать</translation>
+<translation id="1354356357730355833">скопировать</translation>
 <translation id="1360699455582016846">Нажать на объект под клавишей перемещения <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1365650529628379165">Поднять брови</translation>
 <translation id="1376703628032300005">Перейти к следующему символу</translation>
@@ -845,6 +845,7 @@
 <translation id="6385591741672306837">стлбц</translation>
 <translation id="6387719785439924554">aside</translation>
 <translation id="6393014464788431702">Отключить все фильтры событий</translation>
+<translation id="6406989068857078334">Скорость указателя для мыши снижена. Чтобы выполнить клик, сделайте жест "<ph name="GESTURE" />".</translation>
 <translation id="6411569524720229058">Осень</translation>
 <translation id="6417265370957905582">Google Ассистент</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{двоеточие}one{# двоеточие}few{# двоеточия}many{# двоеточий}other{# colons}}</translation>
@@ -897,7 +898,7 @@
 <translation id="6865519907510167493">Орфографическая ошибка</translation>
 <translation id="6873188295213080042">Подсказка. Чтобы перемещаться по экрану, нажимайте на стрелки, удерживая клавишу Поиск.</translation>
 <translation id="6894148351896207544">Озвучить текущее время и дату</translation>
-<translation id="6896758677409633944">Копировать</translation>
+<translation id="6896758677409633944">Скопировать</translation>
 <translation id="6897341342232909480">Переместить влево</translation>
 <translation id="6901540140423170855">date</translation>
 <translation id="6910211073230771657">Удалено</translation>
@@ -1040,7 +1041,7 @@
 <translation id="7839679365527550018">К предыдущему слову</translation>
 <translation id="7846634333498149051">Клавиатура</translation>
 <translation id="7851816175263618915">Некоторые знаки препинания.</translation>
-<translation id="7871691770940645922">Виртуальный брайлевский дисплей</translation>
+<translation id="7871691770940645922">Виртуальный дисплей Брайля</translation>
 <translation id="7882421473871500483">Коричневый</translation>
 <translation id="78826985582142166">sldr</translation>
 <translation id="7913106023953875143">Следующего заголовка второго уровня нет</translation>
@@ -1098,6 +1099,7 @@
 <translation id="8205922869661890178">Открыть страницу с журналом разработчика.</translation>
 <translation id="8212109599554677485">Изменить стиль дисплея на параллельный</translation>
 <translation id="8215202828671303819">Множественный выбор</translation>
+<translation id="822316432305106615">Выполнить точный клик</translation>
 <translation id="8249864170673238087">Цвет <ph name="COLOR" />, прозрачность <ph name="OPACITY_PERCENTAGE" /> %.</translation>
 <translation id="8261506727792406068">Удалить</translation>
 <translation id="826825447994856889">Введение</translation>

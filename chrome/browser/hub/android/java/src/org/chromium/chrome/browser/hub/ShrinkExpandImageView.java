@@ -18,11 +18,14 @@ import android.widget.ImageView;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
+import org.chromium.ui.animation.RunOnNextLayout;
+import org.chromium.ui.animation.RunOnNextLayoutDelegate;
 import org.chromium.ui.display.DisplayUtil;
 
 /** {@link ImageView} for the Shrink, Expand, and New Tab animations. */
 // TODO(crbug.com/40286625): Move to hub/internal/ once TabSwitcherLayout no longer depends on this.
-public class ShrinkExpandImageView extends ImageView implements RunOnNextLayout {
+public class ShrinkExpandImageView extends RoundedCornerImageView implements RunOnNextLayout {
     private final RunOnNextLayoutDelegate mRunOnNextLayoutDelegate;
 
     /**

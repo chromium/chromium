@@ -361,12 +361,15 @@ END_METADATA
 ui::mojom::WindowShowState GetWidgetShowState(const Widget* widget) {
   // Use IsMaximized/IsMinimized/IsFullScreen instead of GetWindowPlacement
   // because the former is implemented on all platforms but the latter is not.
-  if (widget->IsFullscreen())
+  if (widget->IsFullscreen()) {
     return ui::mojom::WindowShowState::kFullscreen;
-  if (widget->IsMaximized())
+  }
+  if (widget->IsMaximized()) {
     return ui::mojom::WindowShowState::kMaximized;
-  if (widget->IsMinimized())
+  }
+  if (widget->IsMinimized()) {
     return ui::mojom::WindowShowState::kMinimized;
+  }
   return widget->IsActive() ? ui::mojom::WindowShowState::kNormal
                             : ui::mojom::WindowShowState::kInactive;
 }
@@ -2250,6 +2253,50 @@ TEST_F(WidgetCaptureTest, SetCaptureToNonToplevel) {
 
   EXPECT_TRUE(observer.activation_observed());
   EXPECT_TRUE(child->HasCapture());
+}
+
+// This tests that a widget's mouse button state is updated when setting
+// capture. This is required for cases where a widget registers the mouse-down
+// event, but the mouse-up event is handled by a different widget.
+TEST_F(WidgetCaptureTest, SetCaptureUpdatesMouseState) {
+  static constexpr gfx::Rect kBounds(300, 300);
+  auto widget = std::make_unique<MouseEventWidget>();
+  widget->Init(CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                            Widget::InitParams::TYPE_WINDOW));
+  widget->Show();
+  widget->SetBounds(kBounds);
+
+  auto generator =
+      std::make_unique<ui::test::EventGenerator>(GetRootWindow(widget.get()));
+  generator->PressLeftButton();
+
+  // TYPE_MENU widgets are initialized using the current mouse button state.
+  // The new widget will record that the mouse button is pressed.
+  auto late_init_widget = std::make_unique<MouseEventWidget>();
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_MENU);
+  late_init_widget->Init(std::move(params));
+  late_init_widget->SetBounds(kBounds);
+
+  // The mouse-up event is handled by `widget` and not registered by the new
+  // widget.
+  generator->ReleaseLeftButton();
+
+  MouseEventRootView* widget_view = widget->root_view();
+  MouseEventRootView* late_init_view = late_init_widget->root_view();
+  widget_view->reset_counts();
+  late_init_view->reset_counts();
+
+  // Setting capture on the new widget should update the mouse button state.
+  late_init_widget->Show();
+  late_init_widget->SetCapture(nullptr);
+
+  generator->SetTargetWindow(GetRootWindow(late_init_widget.get()));
+  // Further mouse movement should be handled by the new widget as movements
+  // rather than drags.
+  generator->MoveMouseBy(10, 10);
+  EXPECT_EQ(0, late_init_view->dragged());
+  EXPECT_GT(late_init_view->moved(), 0);
 }
 
 #if BUILDFLAG(IS_WIN)

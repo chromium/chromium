@@ -354,6 +354,9 @@ chromium_strings.grd. -->
       <message name="IDS_TASK_MANAGER_SEARCH_ACCESSIBILITY_NAME" desc="The accessibility description for the Search bar in the Task Manager window" translateable="false">
         Look up the name of any tab title or extension to highlight it in the process table.
       </message>
+      <message name="IDS_TASK_MANAGER_CLEAR_SEARCH_BUTTON_ACCESSIBILITY_NAME" desc="The accessibility name for the clear button accompanying the task manager search bar input.">
+        Clear search
+      </message>
       <message name="IDS_TASK_MANAGER_KILL_ACCESSIBILITY_NAME" desc="The accessibility description for the End Process button in the Task Manager window" translateable="false">
         Ends the highlighted process.
       </message>
@@ -363,8 +366,11 @@ chromium_strings.grd. -->
       <message name="IDS_TASK_MANAGER_CATEGORY_EXTENSIONS_NAME" desc="The title of the 'Extensions' filter category." translateable="false">
         Extensions
       </message>
-      <message name="IDS_TASK_MANAGER_CATEGORY_SYSTEM_NAME" desc="The title of the 'System' filter category." translateable="false">
+      <message name="IDS_TASK_MANAGER_CATEGORY_SYSTEM_NAME" desc="The title of the 'System' filter category on ChromeOS." translateable="false">
         System
+      </message>
+      <message name="IDS_TASK_MANAGER_CATEGORY_BROWSER_NAME" desc="The title of the 'System' filter category on Windows/Mac/Linux." translateable="false">
+        Browser
       </message>
       <message name="IDS_SESSION_CRASHED_VIEW_UMA_OPTIN" desc="Text besides the checkbox to let users optin to UMA in the restore from previous crash bubble.">
         Help make Google Chrome better by sending crash reports and <ph name="UMA_LINK">$1<ex>usage statistics</ex></ph> to Google
@@ -677,7 +683,7 @@ Permissions you've already given to websites and apps may apply to this account.
       <!-- Download Bubble Items -->
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_UNKNOWN_SOURCE"
                desc="Summary of dangerous warning for a file (like an extension) from an unknown source.">
-        Extensions, apps, and themes from unknown sources can harm your device. Chrome recommends only installing them from the Chrome Web Store
+        Extensions, apps, and themes from unknown sources can harm your device. Chrome recommends only installing them from the <ph name="IDS_EXTENSION_WEB_STORE_TITLE">$1<ex>Chrome Web Store</ex></ph>
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_BLOCKED_LEARN_MORE_LINK"
                desc="Text for the link to the help page about why Chrome blocks some downloaded files.">
@@ -815,12 +821,12 @@ Permissions you've already given to websites and apps may apply to this account.
           other {These extensions are no longer supported. Chrome recommends that you remove them.}}
         </message>
         <message name="IDS_EXTENSIONS_MV2_DEPRECATION_MESSAGE_DISABLED_SUBTITLE" desc="Subtitle text displayed in the manifest v2 deprecation message for a specific extension during the disabled stage.">
-          Chrome recommends that you remove it. <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Learn more about supported extensions<ph name="END_LINK">&lt;/a&gt;</ph>
+          Chrome recommends that you remove it. <ph name="BEGIN_LINK">&lt;a href="$1" aria-description="$2" target="_blank"&gt;</ph>Learn more about supported extensions<ph name="END_LINK">&lt;/a&gt;</ph>
         </message>
         <message name="IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_DISABLED_SUBTITLE" desc="Subtitle text displayed in the manifest v2 deprecation panel for the disabled stage.">
           {NUM_EXTENSIONS, plural,
-            =1 {Chrome recommends that you remove it. <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Learn more about supported extensions<ph name="END_LINK">&lt;/a&gt;</ph>}
-            other {Chrome recommends that you remove them. <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Learn more about supported extensions<ph name="END_LINK">&lt;/a&gt;</ph>}
+            =1 {Chrome recommends that you remove it. <ph name="BEGIN_LINK">&lt;a href="$1" aria-description="$2" target="_blank"&gt;</ph>Learn more about supported extensions<ph name="END_LINK">&lt;/a&gt;</ph>}
+            other {Chrome recommends that you remove them. <ph name="BEGIN_LINK">&lt;a href="$1" aria-description="$2" target="_blank"&gt;</ph>Learn more about supported extensions<ph name="END_LINK">&lt;/a&gt;</ph>}
           }
         </message>
         <message name="IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_REMOVE_BUTTON_ACC_LABEL" desc="The (accessible) label for the button to remove an extension.">
@@ -1021,7 +1027,7 @@ Permissions you've already given to websites and apps may apply to this account.
 
       <!-- Managed profile required interstitial -->
       <message name="IDS_MANAGED_PROFILE_INTERSTITIAL_PRIMARY_PARAGRAPH" desc="The main text of the interstitial that tells the user that their organization requires them to sign in to Chrome with their managed account in order to access it.">
-        You can sign in to get your stuff, or use Chrome without an account
+        To continue, you'll need to sign in to Chrome with <ph name="EMAIL">$1<ex>user@example.com</ex></ph>. This ensures compliance with your organization's policies.
       </message>
 
       <!-- Extension requests sign in to Chrome through chrome.identity API -->
@@ -1215,6 +1221,9 @@ Permissions you've already given to websites and apps may apply to this account.
       <message name="IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON" desc="Text for the button in the sign-in promo in the profile menu when the used is signed out.">
         Sign in to Chrome
       </message>
+      <message name="IDS_PROFILE_MENU_BROWSER_MANAGED_HEADER" desc="Disclaimer indicating that Chrome is managed">
+        Chrome is managed
+      </message>
       <if expr="not use_titlecase">
         <message name="IDS_PROFILE_MENU_SIGN_OUT_WHEN_SIGNIN_PENDING" desc="The text label of the Sign out of Chrome button in the Profile Menu when the user is in sign in pending state.">
           Remove account from Chrome
@@ -1256,6 +1265,10 @@ Permissions you've already given to websites and apps may apply to this account.
           Remove from Chrome...
         </message>
       </if>
+
+      <message name="IDS_APP_ALSO_DELETE_APPS_DATA" desc="Checkbox text to ask the user during uninstall; Whether they want to remove associated data for the app being uninstalled. Only used when uninstalling an app associated with a particular website.">
+        Remove this apps data from Chrome
+      </message>
 
       <!-- App shortcuts -->
       <message name="IDS_APP_SHORTCUTS_SUBDIR_NAME" desc="Name for the Chrome Apps Start Menu folder name.">
@@ -1706,11 +1719,17 @@ Permissions you've already given to websites and apps may apply to this account.
       <message name="IDS_SYNC_ERROR_USER_MENU_UPGRADE_BUTTON" desc="Button in the header of desktop user menu that prompts the user to update Chrome to fix the out-of-date Chrome client error.">
         Update Chrome
       </message>
-      <message name="IDS_SYNC_ERROR_PASSPHRASE_USER_MENU_TITLE_SIGNED_IN_ONLY" desc="Title of the sync/signin error header of desktop user menu. Shown for users who are signed-in but not syncing.">
-        To use and save Chrome data in your Google Account, enter your passphrase
+      <message name="IDS_SYNC_ERROR_PASSPHRASE_USER_MENU_ERROR_DESCRIPTION" desc="Error description of the sync/signin error header of desktop user menu.">
+        Enter your passphrase to use and save Chrome data in your account, <ph name="ACCOUNT_EMAIL">$1<ex>elisa.beckett@gmail.com</ex></ph>
+      </message>
+      <message name="IDS_SYNC_ERROR_TRUSTED_VAULT_USER_MENU_ERROR_DESCRIPTION" desc="Error description of the sync/signin error header of desktop user menu.">
+        Verify it's you to use and save Chrome data in your account, <ph name="ACCOUNT_EMAIL">$1<ex>elisa.beckett@gmail.com</ex></ph>
       </message>
       <message name="IDS_SYNC_ERROR_UPGRADE_CLIENT_USER_MENU_TITLE" desc="Error message to resolve sync protocol error for out-of-date client.">
         To use and save Chrome data in your Google Account, update Chrome
+      </message>
+      <message name="IDS_SYNC_ERROR_UPGRADE_CLIENT_USER_MENU_ERROR_DESCRIPTION" desc="Error message to resolve sync protocol error for out-of-date client.">
+        Update Chrome to keeping using the Chrome data in your Google Account, <ph name="ACCOUNT_EMAIL">$1<ex>elisa.beckett@gmail.com</ex></ph>
       </message>
 
       <!-- Sync errors. -->
@@ -2760,6 +2779,11 @@ Permissions you've already given to websites and apps may apply to this account.
           To get your extensions on all your computers, sign in to Chrome
         </message>
       </if>
+
+      <!-- Internal debug pages disabled interstitial. -->
+      <message name="IDS_INTERNAL_DEBUG_PAGES_DISABLED_BODY" desc="This is the text, with a link, that appears below the heading for the page that appears when the user attempts to load an internal developer debugging page when such pages are disabled by a pref. It instructs the user on how to enable the pref if they wish.">
+        These pages are intended for use by Chrome developers, and may not be actively maintained or tested. To enable them, navigate to <ph name="BEGIN_LINK">&lt;a href="$1"&gt;</ph>chrome://chrome-urls<ph name="LINK_END">&lt;/a&gt;</ph>, click the button to enable debug pages, and then navigate to this page again.
+      </message>
     </messages>
   </release>
 </grit>

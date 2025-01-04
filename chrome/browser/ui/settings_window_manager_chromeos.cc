@@ -206,8 +206,9 @@ Browser* SettingsWindowManager::FindBrowserForProfile(Profile* profile) {
   }
 
   auto iter = settings_session_map_.find(profile);
-  if (iter != settings_session_map_.end())
+  if (iter != settings_session_map_.end()) {
     return chrome::FindBrowserWithID(iter->second);
+  }
 
   return nullptr;
 }
@@ -217,8 +218,9 @@ bool SettingsWindowManager::IsSettingsBrowser(Browser* browser) const {
 
   Profile* profile = browser->profile();
   if (!UseDeprecatedSettingsWindow(profile)) {
-    if (!browser->app_controller())
+    if (!browser->app_controller()) {
       return false;
+    }
 
     // TODO(calamity): Determine whether, during startup, we need to wait for
     // app install and then provide a valid answer here.

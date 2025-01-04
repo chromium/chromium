@@ -1219,8 +1219,13 @@ void V4L2VideoEncodeAccelerator::Enqueue() {
     std::optional<V4L2WritableBufferRef> input_buffer;
     switch (input_memory_type_) {
       case V4L2_MEMORY_DMABUF:
-        input_buffer = input_queue_->GetFreeBufferForFrame(
-            GetSharedMemoryId(*encoder_input_queue_.front().frame));
+        if (encoder_input_queue_.front()
+                .frame->metadata()
+                .tracking_token.has_value()) {
+          input_buffer = input_queue_->GetFreeBufferForFrame(
+              *encoder_input_queue_.front().frame->metadata().tracking_token);
+        }
+
         // We may have failed to preserve buffer affinity, fallback to any
         // buffer in that case.
         if (!input_buffer)

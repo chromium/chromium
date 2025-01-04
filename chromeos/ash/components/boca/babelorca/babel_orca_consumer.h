@@ -73,14 +73,9 @@ class BabelOrcaConsumer : public BabelOrcaController {
   void OnLocalCaptionConfigUpdated(bool local_captions_enabled) override;
 
  private:
-  void OnTranslationPrefChanged();
   void OnTranslationCallback(
       const std::optional<media::SpeechRecognitionResult>& result);
   void DispatchTranscription(const media::SpeechRecognitionResult& result);
-
-  void HandleLanguageAndDispatch(
-      const media::SpeechRecognitionResult& transcript,
-      const std::string& language);
 
   void StartReceiving();
 
@@ -121,8 +116,6 @@ class BabelOrcaConsumer : public BabelOrcaController {
   bool local_captions_enabled_ = false;
   bool session_captions_enabled_ = false;
   bool in_session_ = false;
-
-  std::string current_language_;
 
   base::WeakPtrFactory<BabelOrcaConsumer> weak_ptr_factory_{this};
 };

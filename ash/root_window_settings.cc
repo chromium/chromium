@@ -13,9 +13,7 @@ DEFINE_UI_CLASS_PROPERTY_TYPE(ash::RootWindowSettings*)
 
 namespace ash {
 
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(RootWindowSettings,
-                                   kRootWindowSettingsKey,
-                                   nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(RootWindowSettings, kRootWindowSettingsKey)
 
 RootWindowSettings::RootWindowSettings()
     : display_id(display::kInvalidDisplayId), controller(nullptr) {}

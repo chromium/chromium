@@ -45,9 +45,7 @@ bool HandleMessage(int severity,
 
 class NewTabUIBrowserTest : public InProcessBrowserTest {
  public:
-  NewTabUIBrowserTest() {
-    logging::SetLogMessageHandler(&HandleMessage);
-  }
+  NewTabUIBrowserTest() { logging::SetLogMessageHandler(&HandleMessage); }
 
   ~NewTabUIBrowserTest() override { logging::SetLogMessageHandler(nullptr); }
 

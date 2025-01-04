@@ -1,6 +1,6 @@
 [
     RuntimeEnabled=LanguageDetectionAPI,
-    Exposed=(Window),
+    Exposed=(Window, Worker),
     SecureContext
 ]
 interface AILanguageDetectorFactory {
@@ -17,5 +17,5 @@ interface AILanguageDetectorFactory {
 
 dictionary AILanguageDetectorCreateOptions {
   AbortSignal signal;
-  // TODO(crbug.com/349927087): Add AICreateMonitorCallback.
+  AICreateMonitorCallback monitor;
 };

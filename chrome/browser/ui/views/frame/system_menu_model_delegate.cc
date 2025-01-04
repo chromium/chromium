@@ -28,9 +28,7 @@
 SystemMenuModelDelegate::SystemMenuModelDelegate(
     ui::AcceleratorProvider* provider,
     Browser* browser)
-    : provider_(provider),
-      browser_(browser) {
-}
+    : provider_(provider), browser_(browser) {}
 
 SystemMenuModelDelegate::~SystemMenuModelDelegate() = default;
 

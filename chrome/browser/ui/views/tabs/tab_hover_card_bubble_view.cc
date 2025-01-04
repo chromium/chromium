@@ -20,6 +20,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
@@ -385,12 +386,12 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab,
   // navigating through the tab strip.
   set_focus_traversable_from_anchor_view(false);
 
-    title_label_ = AddChildView(std::make_unique<FadeLabelView>(
-        kHoverCardTitleMaxLines, CONTEXT_TAB_HOVER_CARD_TITLE,
-        views::style::STYLE_BODY_3_EMPHASIS));
-    domain_label_ = AddChildView(std::make_unique<FadeLabelView>(
-        1, views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_BODY_4));
-    domain_label_->SetEnabledColorId(kColorTabHoverCardSecondaryText);
+  title_label_ = AddChildView(std::make_unique<FadeLabelView>(
+      kHoverCardTitleMaxLines, CONTEXT_TAB_HOVER_CARD_TITLE,
+      views::style::STYLE_BODY_3_EMPHASIS));
+  domain_label_ = AddChildView(std::make_unique<FadeLabelView>(
+      1, views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_BODY_4));
+  domain_label_->SetEnabledColorId(kColorTabHoverCardSecondaryText);
 
   if (bubble_params_.show_image_preview) {
     thumbnail_view_ = AddChildView(std::make_unique<ThumbnailView>(this));
@@ -474,32 +475,37 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab,
 
 TabHoverCardBubbleView::~TabHoverCardBubbleView() = default;
 
-RecentActivityRowData TabHoverCardBubbleView::GetRecentActivityData(
+CollaborationMessagingRowData
+TabHoverCardBubbleView::GetCollaborationMessagingData(
     const TabRendererData& tab_data) {
-  RecentActivityRowData recent_activity_data;
-  bool show_recent_activity = false;
+  using collaboration::messaging::CollaborationEvent;
 
-  if (auto message = tab_data.recent_activity) {
-    if (auto member = message->attribution.triggering_user) {
-      using collaboration::messaging::CollaborationEvent;
+  CollaborationMessagingRowData collaboration_messaging_data;
+  collaboration_messaging_data.should_show_collaboration_messaging = false;
 
-      const std::u16string username = base::UTF8ToUTF16(member->display_name);
-      const CollaborationEvent action = message->collaboration_event;
-
-      if (action == CollaborationEvent::TAB_ADDED) {
-        recent_activity_data.text = l10n_util::GetStringFUTF16(
-            IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_ADDED_THIS_TAB, username);
-        show_recent_activity = true;
-      } else if (action == CollaborationEvent::TAB_UPDATED) {
-        recent_activity_data.text = l10n_util::GetStringFUTF16(
-            IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_CHANGED_THIS_TAB, username);
-        show_recent_activity = true;
-      }
-    }
+  auto data = tab_data.collaboration_messaging;
+  if (!data || !data->HasMessage()) {
+    return collaboration_messaging_data;
   }
-  recent_activity_data.should_show_recent_activity = show_recent_activity;
 
-  return recent_activity_data;
+  switch (data->collaboration_event()) {
+    case CollaborationEvent::TAB_ADDED:
+      collaboration_messaging_data.text = l10n_util::GetStringFUTF16(
+          IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_ADDED_THIS_TAB,
+          data->given_name());
+      break;
+    case CollaborationEvent::TAB_UPDATED:
+      collaboration_messaging_data.text = l10n_util::GetStringFUTF16(
+          IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_CHANGED_THIS_TAB,
+          data->given_name());
+      break;
+    default:
+      NOTREACHED();
+  }
+  collaboration_messaging_data.avatar = data->hover_card_avatar();
+  collaboration_messaging_data.should_show_collaboration_messaging = true;
+
+  return collaboration_messaging_data;
 }
 
 void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
@@ -565,12 +571,15 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
   title_label_->SetData({title, is_filename});
   domain_label_->SetData({domain, false});
 
-  RecentActivityRowData recent_activity_data = GetRecentActivityData(tab_data);
-  bool show_recent_activity = recent_activity_data.should_show_recent_activity;
+  CollaborationMessagingRowData collaboration_messaging_data =
+      GetCollaborationMessagingData(tab_data);
+  bool show_collaboration_messaging =
+      collaboration_messaging_data.should_show_collaboration_messaging;
 
-  // Recent activity takes precedence over discard status for shared tabs.
+  // Collaboration messaging takes precedence over discard status for shared
+  // tabs.
   const bool show_discard_status =
-      !show_recent_activity && tab_data.should_show_discard_status;
+      !show_collaboration_messaging && tab_data.should_show_discard_status;
   const int64_t tab_memory_usage_in_bytes =
       tab_data.tab_resource_usage
           ? tab_data.tab_resource_usage->memory_usage_in_bytes()
@@ -581,14 +590,14 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
           : false;
   // High memory usage notification is considered a tab alert. Show it even
   // if the memory usage in hover cards pref is disabled.
-  // However, recent activity takes precedence over memory usage for
+  // However, collaboration messaging takes precedence over memory usage for
   // shared tabs.
   const bool show_memory_usage =
-      !show_recent_activity && !show_discard_status &&
+      !show_collaboration_messaging && !show_discard_status &&
       ((bubble_params_.show_memory_usage && tab_memory_usage_in_bytes > 0) ||
        is_high_memory_usage);
   const bool show_footer = alert_state_.has_value() || show_discard_status ||
-                           show_memory_usage || show_recent_activity;
+                           show_memory_usage || show_collaboration_messaging;
 
   footer_view_->SetAlertData({alert_state_, show_discard_status,
                               tab_data.discarded_memory_savings_in_bytes});
@@ -596,7 +605,7 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
   footer_view_->SetPerformanceData(
       {show_memory_usage, is_high_memory_usage, tab_memory_usage_in_bytes});
 
-  footer_view_->SetRecentActivityData(recent_activity_data);
+  footer_view_->SetCollaborationMessagingData(collaboration_messaging_data);
 
   if (thumbnail_view_) {
     // We only clip the corners of the fade image when there isn't a footer.

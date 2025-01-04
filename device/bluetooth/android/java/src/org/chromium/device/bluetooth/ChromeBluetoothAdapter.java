@@ -22,6 +22,10 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.device.bluetooth.wrapper.BluetoothAdapterWrapper;
 import org.chromium.device.bluetooth.wrapper.BluetoothDeviceWrapper;
@@ -38,13 +42,14 @@ import java.util.Map;
  * Lifetime is controlled by device::BluetoothAdapterAndroid.
  */
 @JNINamespace("device")
+@NullMarked
 final class ChromeBluetoothAdapter extends BroadcastReceiver {
     private static final String TAG = "Bluetooth";
 
     private long mNativeBluetoothAdapterAndroid;
     // mAdapter is final to ensure registerReceiver is followed by unregisterReceiver.
-    private final BluetoothAdapterWrapper mAdapter;
-    private final ChromeBluetoothLeScanner mLeScanner;
+    private final @Nullable BluetoothAdapterWrapper mAdapter;
+    private final @Nullable ChromeBluetoothLeScanner mLeScanner;
 
     // ---------------------------------------------------------------------------------------------
     // Construction and handler for C++ object destruction.
@@ -61,10 +66,10 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
             long nativeBluetoothAdapterAndroid, BluetoothAdapterWrapper adapterWrapper) {
         mNativeBluetoothAdapterAndroid = nativeBluetoothAdapterAndroid;
         mAdapter = adapterWrapper;
-        if (isPresent()) {
+        if (adapterWrapper != null) {
             mLeScanner =
                     new ChromeBluetoothLeScanner(
-                            mAdapter::getBluetoothLeScanner, new BleScanCallback());
+                            adapterWrapper::getBluetoothLeScanner, new BleScanCallback());
         } else {
             mLeScanner = null;
         }
@@ -116,8 +121,13 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
 
     // Implements BluetoothAdapterAndroid::IsPresent.
     @CalledByNative
+    @EnsuresNonNullIf({"mAdapter", "mLeScanner"})
     private boolean isPresent() {
-        return mAdapter != null;
+        if (mAdapter != null) {
+            assert mLeScanner != null;
+            return true;
+        }
+        return false;
     }
 
     // Implements BluetoothAdapterAndroid::IsPowered.
@@ -157,7 +167,7 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
      */
     @CalledByNative
     private boolean startScan(List<ScanFilter> filters) {
-        if (!canScan()) {
+        if (!isPresent() || !canScan()) {
             return false;
         }
 
@@ -185,11 +195,8 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
      * @return true if Chromium has permission to scan for Bluetooth devices and location services
      *     are on.
      */
+    @RequiresNonNull("mAdapter")
     private boolean canScan() {
-        if (mAdapter == null) {
-            return false;
-        }
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             Context context = mAdapter.getContext();
             return context.checkCallingOrSelfPermission(Manifest.permission.BLUETOOTH_SCAN)
@@ -379,7 +386,7 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
                 ChromeBluetoothAdapter caller,
                 String address,
                 BluetoothDeviceWrapper deviceWrapper,
-                String localName,
+                @Nullable String localName,
                 int rssi,
                 String[] advertisedUuids,
                 int txPower,

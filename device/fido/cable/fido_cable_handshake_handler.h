@@ -64,7 +64,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableV1HandshakeHandler
   FRIEND_TEST_ALL_PREFIXES(FidoCableHandshakeHandlerTest,
                            HandshakeFailWithIncorrectAuthenticatorResponse);
 
-  std::vector<uint8_t> GetEncryptionKeyAfterSuccessfulHandshake(
+  std::array<uint8_t, 32> GetEncryptionKeyAfterSuccessfulHandshake(
       base::span<const uint8_t, 16> authenticator_random_nonce) const;
 
   const raw_ptr<FidoCableDevice> cable_device_;

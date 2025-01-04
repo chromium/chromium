@@ -19,8 +19,7 @@ AddressSignInPromoView::AddressSignInPromoView(
     views::View* anchor_view,
     content::WebContents* web_contents,
     base::OnceCallback<void(content::WebContents*)> move_address_callback)
-    : AddressBubbleBaseView(anchor_view, web_contents),
-      web_contents_(web_contents) {
+    : AddressBubbleBaseView(anchor_view, web_contents) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetTitle(IDS_AUTOFILL_SIGNIN_PROMO_TITLE_ADDRESS);
   SetShowCloseButton(true);
@@ -71,7 +70,11 @@ void AddressSignInPromoView::Hide() {
 }
 
 void AddressSignInPromoView::WindowClosing() {
-  AddressBubblesController::FromWebContents(web_contents_)->OnBubbleClosed();
+  if (!web_contents()) {
+    return;
+  }
+
+  AddressBubblesController::FromWebContents(web_contents())->OnBubbleClosed();
 }
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AddressSignInPromoView,

@@ -63,9 +63,9 @@ class COMPONENT_EXPORT(EVDEV) GestureInterpreterLibevdevCros
   void SetupHapticButtonGeneration(
       const base::RepeatingCallback<void(bool)>& callback) override;
   void SetReceivedValidKeyboardInputCallback(
-      base::RepeatingCallback<void(uint64_t)> callback) override;
+      base::RepeatingCallback<void(uint64_t, double)> callback) override;
   void SetReceivedValidMouseInputCallback(
-      base::RepeatingCallback<void(int)> callback) override;
+      base::RepeatingCallback<void(int, double)> callback) override;
   void SetBlockModifiers(bool block_modifiers) override;
 
   // Handler for gesture events generated from libgestures.
@@ -153,10 +153,10 @@ class COMPONENT_EXPORT(EVDEV) GestureInterpreterLibevdevCros
   base::RepeatingCallback<void(bool)> click_callback_;
 
   // Callback for when a keyboard key press is registered.
-  base::RepeatingCallback<void(uint64_t)> received_keyboard_input_;
+  base::RepeatingCallback<void(uint64_t, double)> received_keyboard_input_;
 
   // Callback for when a mouse rel event is registered.
-  base::RepeatingCallback<void(int)> received_mouse_input_;
+  base::RepeatingCallback<void(int, double)> received_mouse_input_;
 };
 
 }  // namespace ui

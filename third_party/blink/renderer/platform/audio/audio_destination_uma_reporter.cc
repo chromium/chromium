@@ -39,7 +39,19 @@ AudioDestinationUmaReporter::AudioDestinationUmaReporter(
         "TotalPlayoutDelay",
         latency_hint,
         /*max_value = */ 1000,
+        /*bucket_count = */ 50)),
+      fifo_underrun_count_uma_callback_(CreateAggregateUmaCallback(
+        "FIFOUnderrunCount",
+        latency_hint,
+        /*max_value = */ 1000,
         /*bucket_count = */ 50)) {}
+
+AudioDestinationUmaReporter::~AudioDestinationUmaReporter() {
+  if (is_stream_short_ && callback_count_ > 0) {
+    fifo_underrun_count_uma_callback_.Run(fifo_underrun_count_,
+                                          SamplingPeriod::kShort);
+  }
+}
 
 void AudioDestinationUmaReporter::UpdateFifoDelay(base::TimeDelta fifo_delay) {
   fifo_delay_ = fifo_delay;
@@ -50,9 +62,21 @@ void AudioDestinationUmaReporter::UpdateTotalPlayoutDelay(
   total_playout_delay_ = total_playout_delay;
 }
 
+void AudioDestinationUmaReporter::IncreaseFifoUnderrunCount() {
+  fifo_underrun_count_++;
+}
+
 void AudioDestinationUmaReporter::Report() {
   fifo_delay_uma_callback_.Run(fifo_delay_.InMilliseconds());
   total_playout_delay_uma_callback_.Run(total_playout_delay_.InMilliseconds());
+
+  if (++callback_count_ >= 1000) {
+    fifo_underrun_count_uma_callback_.Run(fifo_underrun_count_,
+                                          SamplingPeriod::kIntervals);
+    callback_count_ = 0;
+    fifo_underrun_count_ = 0;
+    is_stream_short_ = false;
+  }
 }
 
 AudioDestinationUmaReporter::RealtimeUmaCallback
@@ -82,6 +106,44 @@ AudioDestinationUmaReporter::CreateRealtimeUmaCallback(
         histogram_with_latency->Add(value);
       },
       base::Unretained(histogram), base::Unretained(histogram_with_latency));
+}
+
+AudioDestinationUmaReporter::AggregateUmaCallback
+AudioDestinationUmaReporter::CreateAggregateUmaCallback(
+    const std::string& stat_name,
+    WebAudioLatencyHint latency_hint,
+    int max_value,
+    size_t bucket_count) {
+  std::string base_name(
+      base::StrCat({"WebAudio.AudioDestination.", stat_name}));
+  std::string short_name(base::StrCat({base_name, ".Short"}));
+  std::string intervals_name(base::StrCat({base_name, ".Intervals"}));
+  std::string short_with_latency_name(
+      base::StrCat({short_name, ".", LatencyToString(latency_hint)}));
+  std::string intervals_with_latency_name(
+      base::StrCat({intervals_name, ".", LatencyToString(latency_hint)}));
+
+  return base::BindRepeating(
+      [](int max_value, size_t bucket_count, const std::string& short_name,
+         const std::string& intervals_name,
+         const std::string& short_with_latency_name,
+         const std::string& intervals_with_latency_name, int value,
+         SamplingPeriod sampling_period) {
+        if (sampling_period == SamplingPeriod::kShort) {
+          base::UmaHistogramCustomCounts(short_name, value, 1, max_value,
+                                         bucket_count);
+          base::UmaHistogramCustomCounts(short_with_latency_name, value, 1,
+                                         max_value, bucket_count);
+        } else {
+          base::UmaHistogramCustomCounts(intervals_name, value, 1, max_value,
+                                         bucket_count);
+          base::UmaHistogramCustomCounts(intervals_with_latency_name, value, 1,
+                                         max_value, bucket_count);
+        }
+      },
+      max_value, bucket_count, std::move(short_name), std::move(intervals_name),
+      std::move(short_with_latency_name),
+      std::move(intervals_with_latency_name));
 }
 
 }  // namespace blink

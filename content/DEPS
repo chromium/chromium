@@ -27,6 +27,7 @@ include_rules = [
   "+components/app_launch_prefetch",
   "+components/attribution_reporting",
   "+components/browsing_topics/common",
+  "+components/content_settings/core/common",
   "+components/input",
   "+components/memory_pressure",
   # components/performance_manager sits between chrome/ and content/, except for
@@ -100,13 +101,13 @@ include_rules = [
   "+ui/latency",
   "+ui/native_theme",
   "+ui/resources/grit/ui_resources.h",
-  "+ui/resources/grit/webui_resources.h",
-  "+ui/resources/grit/webui_resources_map.h",
   "+ui/shell_dialogs",
   "+ui/snapshot",
   "+ui/strings/grit/ui_strings.h",
   "+ui/surface",
   "+ui/touch_selection",
+  "+ui/webui/resources/grit/webui_resources.h",
+  "+ui/webui/resources/grit/webui_resources_map.h",
   "+ui/wm",
   # Content knows about grd files, but the specifics of how to get a resource
   # given its id is left to the embedder.

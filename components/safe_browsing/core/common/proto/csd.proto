@@ -155,6 +155,11 @@ message LlamaForcedTriggerInfo {
   optional bool intelligent_scan = 2;
 }
 
+message IntelligentScanInfo {
+  optional string brand = 1;
+  optional string intent = 2;
+}
+
 message ClientPhishingRequest {
   // URL that the client visited.  The CGI parameters are stripped by the
   // client.
@@ -284,7 +289,17 @@ message ClientPhishingRequest {
   // if client_side_detection_type = FORCE_REQUEST.
   optional LlamaForcedTriggerInfo llama_forced_trigger_info = 31;
 
-  // next available tag number: 32.
+  // Represents the on-device model LLM response.
+  optional IntelligentScanInfo intelligent_scan_info = 32;
+
+  // next available tag number: 33.
+}
+
+// Verdict based on IntelligentScanInfo included in ClientPhishingRequest
+enum IntelligentScanVerdict {
+  INTELLIGENT_SCAN_VERDICT_UNSPECIFIED = 0;
+  INTELLIGENT_SCAN_VERDICT_SAFE = 1;
+  SCAM_EXPERIMENT_VERDICT_1 = 2;
 }
 
 message ClientPhishingResponse {
@@ -302,6 +317,8 @@ message ClientPhishingResponse {
   // Marked OBSOLETE because the URL is sent for all users, so the server
   // can do allowlist matching.
   repeated string OBSOLETE_allowlist_expression = 2;
+
+  optional IntelligentScanVerdict intelligent_scan_verdict = 3;
 }
 
 // Enum used to keep stats about why the pre-classification check failed.
@@ -569,8 +586,9 @@ message LoginReputationClientRequest {
     optional bool hide_on_interaction = 4;
     // True if OmniboxUIExperimentElideToRegistrableDomain is enabled.
     optional bool elide_to_registrable_domain = 5;
-    // True if this is the control group. This sent by the finch config.
-    optional bool simplified_url_display_enabled = 6;
+
+    // Deprecated: simplified_url_display_enabled.
+    reserved 6;
   };
   optional UrlDisplayExperiment url_display_experiment = 14;
 

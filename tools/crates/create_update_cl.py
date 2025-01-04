@@ -12,6 +12,7 @@ import datetime
 import os
 import re
 import shlex
+import shutil
 import subprocess
 import sys
 import textwrap
@@ -647,6 +648,18 @@ def RaiseErrorIfGitIsDirty():
                            "before rerunning the script")
 
 
+def RaiseErrorIfCantUploadToGerrit():
+    creds_check = Git("cl", "creds_check")
+    if "SSO" in creds_check:
+        if not shutil.which('gcertstatus'):
+            raise RuntimeError("No `gcertstatus` in `PATH` despite "\
+                               "`git cl creds-check` saying that SSO "\
+                               "authentication will be used.")
+        RunCommandAndCheckForErrors(["gcertstatus", "--check_remaining=45m"],
+                                    check_stdout=False,
+                                    check_exitcode=True)
+
+
 def CheckoutInitialBranch(branch):
     print(f"Checking out the `{branch}` branch...")
     RaiseErrorIfGitIsDirty()
@@ -877,6 +890,8 @@ def main():
         print(msg)
         parser.print_help()
         raise RuntimeError(msg)
+    if args.upload:
+        RaiseErrorIfCantUploadToGerrit()
 
     global g_is_verbose
     g_is_verbose = args.verbose

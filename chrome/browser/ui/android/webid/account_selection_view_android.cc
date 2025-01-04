@@ -342,8 +342,8 @@ content::WebContents* AccountSelectionViewAndroid::ShowModalDialog(
 }
 
 void AccountSelectionViewAndroid::CloseModalDialog() {
-  // Since this is triggered only after the CCT is opened, leaving it out of the metrics
-  // to focus on cases where a UI cannot be displayed.
+  // Since this is triggered only after the CCT is opened, leaving it out of the
+  // metrics to focus on cases where a UI cannot be displayed.
   if (!MaybeCreateJavaObject(/*rp_mode=*/std::nullopt)) {
     return;
   }

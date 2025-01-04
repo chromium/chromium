@@ -8,8 +8,8 @@
 
 #include "base/command_line.h"
 #include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/glic/guest_util.h"
 #include "chrome/browser/ui/webui/glic/glic_page_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
@@ -22,6 +22,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/webui/webui_allowlist.h"
+#include "ui/webui/webui_util.h"
 
 namespace glic {
 
@@ -33,27 +34,33 @@ bool GlicUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
 }
 
 GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
+  content::BrowserContext* browser_context =
+      web_ui->GetWebContents()->GetBrowserContext();
+
   // Set up the chrome://glic source.
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      web_ui->GetWebContents()->GetBrowserContext(), chrome::kChromeUIGlicHost);
+      browser_context, chrome::kChromeUIGlicHost);
 
   // Add required resources.
   webui::SetupWebUIDataSource(source, kGlicResources, IDR_GLIC_GLIC_HTML);
 
+  // Register auto-granted permissions.
+  auto* allowlist = WebUIAllowlist::GetOrCreate(browser_context);
+  allowlist->RegisterAutoGrantedPermission(source->GetOrigin(),
+                                           ContentSettingsType::GEOLOCATION);
+
   auto* command_line = base::CommandLine::ForCurrentProcess();
 
   // Set up guest URL via cli flag or default to finch param value.
-  bool hasGlicGuestURL = command_line->HasSwitch(::switches::kGlicGuestURL);
-  source->AddString("glicGuestURL", hasGlicGuestURL
-                                        ? command_line->GetSwitchValueASCII(
-                                              ::switches::kGlicGuestURL)
-                                        : features::kGlicGuestURL.Get());
+  source->AddString("glicGuestURL", GetGuestURL().spec());
 
   // Set up guest api source.
+  // This comes from 'glic_api_injection' in
+  // chrome/browser/resources/glic/BUILD.gn.
   source->AddString(
       "glicGuestAPISource",
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-          IDR_GLIC_GLIC_API_GLIC_API_CLIENT_ROLLUP_JS));
+          IDR_GLIC_GLIC_API_GLIC_API_INJECTED_CLIENT_ROLLUP_JS));
 
   // TODO(crbug.com/378951332): Configure an approved CSP.
   // Set up csp override by cli flag or default to finch param value. This will

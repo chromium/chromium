@@ -77,7 +77,6 @@ Kui te selle kustutate, kaotavad kõik kohe juurdepääsu vahelehegrupile „<ph
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> vahelehte muudeti, <ph name="ANY_CLOSED" /> suleti}other{<ph name="MANY_CHANGED" /> vahelehte muudeti, <ph name="ANY_CLOSED" /> suleti}}</translation>
 <translation id="4371591986692297148">Mitteaktiivne</translation>
 <translation id="4460014764210899310">Tühista grupeerimine</translation>
-<translation id="4590027107044272416">Nüüd saate uue vahekaardi avada siin</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Kas sulgeda üks inaktiivne vaheleht?}other{Kas sulgeda <ph name="TAB_COUNT_MANY" /> inaktiivset vahelehte?}}</translation>
 <translation id="4686942373615810936">Loodud just praegu</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Sule 1 päeva pärast}other{Sule <ph name="DAY_COUNT_MANY" /> päeva pärast}}</translation>
@@ -98,7 +97,9 @@ Kui te selle kustutate, kaotavad kõik kohe juurdepääsu vahelehegrupile „<ph
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> vaheleht lisati}other{<ph name="MANY_ADDED" /> vahelehte lisati}}</translation>
 <translation id="5161254044473106830">Pealkiri on kohustuslik</translation>
 <translation id="5339733443032484186">Viimane vaheleht</translation>
+<translation id="5380159289133845234">Vahelehtede duplikaatide arhiivimine</translation>
 <translation id="5400836586163650660">Hall</translation>
+<translation id="5446043142172831860">Eemaldage vahekaart ja lahkuge grupist</translation>
 <translation id="5490235265819901748">Vahelehegruppi laiendati</translation>
 <translation id="5494920125229734069">Valige kõik</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Sule <ph name="TABS_COUNT_ONE" /> vahelehega vahelehegrupp, värv on <ph name="COLOR_NAME" />.}other{Sule <ph name="TABS_COUNT_MANY" /> vahelehega vahelehegrupp, värv on <ph name="COLOR_NAME" />.}}</translation>
@@ -117,6 +118,7 @@ Kui lahkute, kaotate kohe juurdepääsu vahelehegrupile „<ph name="TITLE_OF_GR
 <translation id="6051432659151380973">Teie vahelehegrupid salvestatakse automaatselt.</translation>
 <translation id="6054741997831917303">Selle üksuse hind <ph name="PREVIOUS_PRICE" /> langes hiljuti ja uus hind on <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Kaotate kohe juurdepääsu vahelehegrupile <ph name="GROUP_NAME" /></translation>
+<translation id="6109251075362363230">Nüüd arhiivitakse ka kõik vahelehtede duplikaadid, välja arvatud viimati kasutatud koopia.</translation>
 <translation id="6193448654517602979">Valige vahelehed</translation>
 <translation id="6228793724645064692">(hinnang poes)</translation>
 <translation id="6271513594716432922">Sule kõik inaktiivsed vahelehed</translation>

@@ -3,7 +3,6 @@ include_rules = [
   "+ash/components/arc/video_accelerator",
   "+chrome/common/profiler",
   "+chromeos/components/cdm_factory_daemon",
-  "+components/arc/mojom",
   "+components/heap_profiling/in_process/heap_profiler_controller.h",
   "+components/metrics",
   "+components/sampling_profiler",

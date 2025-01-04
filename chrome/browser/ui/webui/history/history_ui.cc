@@ -42,12 +42,12 @@
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/page_not_available_for_guest/page_not_available_for_guest_ui.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/history_resources.h"
 #include "chrome/grit/history_resources_map.h"
 #include "chrome/grit/locale_settings.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/mojom/shopping_service.mojom.h"
 #include "components/commerce/core/shopping_service.h"
@@ -72,6 +72,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/webui/webui_util.h"
 
 namespace {
 
@@ -248,9 +249,13 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
   commerce::ShoppingService* service =
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
   // Used to determine when the compare tab on history sidepanel is shown.
-  source->AddBoolean("compareHistoryEnabled",
-                     commerce::CanLoadProductSpecificationsFullPageUi(
-                         service->GetAccountChecker()));
+  // Hide the compare tab when the new management interface is enabled, since
+  // this interface provides the same functionality.
+  source->AddBoolean(
+      "compareHistoryEnabled",
+      commerce::CanLoadProductSpecificationsFullPageUi(
+          service->GetAccountChecker()) &&
+          !base::FeatureList::IsEnabled(commerce::kCompareManagementInterface));
   return source;
 }
 
@@ -370,8 +375,7 @@ void HistoryUI::CreateShoppingServiceHandler(
       std::make_unique<commerce::ShoppingServiceHandler>(
           std::move(receiver), bookmark_model, shopping_service,
           profile->GetPrefs(), tracker,
-          std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr,
-                                                                profile),
+          std::make_unique<commerce::ShoppingUiHandlerDelegate>(profile),
           nullptr);
 }
 

@@ -46,8 +46,9 @@ std::optional<const HoldingSpaceItem*> GetAlternativeHoldingSpaceItem(
     const HoldingSpaceModel& model,
     const HoldingSpaceItem* item) {
   for (const auto& candidate_item : model.items()) {
-    if (candidate_item.get() == item)
+    if (candidate_item.get() == item) {
       continue;
+    }
     if (candidate_item->file().file_path == item->file().file_path) {
       return candidate_item.get();
     }
@@ -100,8 +101,9 @@ HoldingSpaceKeyedService::HoldingSpaceKeyedService(Profile* profile,
   holding_space_prefs::MarkTimeOfFirstAvailability(profile_->GetPrefs());
 
   ProfileManager* const profile_manager = GetProfileManager();
-  if (!profile_manager)  // May be `nullptr` in tests.
+  if (!profile_manager) {  // May be `nullptr` in tests.
     return;
+  }
 
   // The associated profile may not be ready yet. If it is, we can immediately
   // proceed with profile dependent initialization.
@@ -115,8 +117,9 @@ HoldingSpaceKeyedService::HoldingSpaceKeyedService(Profile* profile,
 }
 
 HoldingSpaceKeyedService::~HoldingSpaceKeyedService() {
-  if (chromeos::PowerManagerClient::Get())
+  if (chromeos::PowerManagerClient::Get()) {
     chromeos::PowerManagerClient::Get()->RemoveObserver(this);
+  }
 
   if (HoldingSpaceController::Get()) {  // May be `nullptr` in tests.
     HoldingSpaceController::Get()->RegisterClientAndModelForUser(
@@ -140,8 +143,9 @@ void HoldingSpaceKeyedService::AddPinnedFiles(
   std::vector<std::unique_ptr<HoldingSpaceItem>> items;
   std::vector<const HoldingSpaceItem*> items_to_record;
   for (const storage::FileSystemURL& file_system_url : file_system_urls) {
-    if (ContainsPinnedFile(file_system_url))
+    if (ContainsPinnedFile(file_system_url)) {
       continue;
+    }
 
     items.push_back(HoldingSpaceItem::CreateFileBackedItem(
         HoldingSpaceItem::Type::kPinnedFile,
@@ -159,19 +163,22 @@ void HoldingSpaceKeyedService::AddPinnedFiles(
         GetAlternativeHoldingSpaceItem(holding_space_model_, items.back().get())
             .value_or(items.back().get()));
 
-    if (file_system_url.type() == storage::kFileSystemTypeDriveFs)
+    if (file_system_url.type() == storage::kFileSystemTypeDriveFs) {
       MakeDriveItemAvailableOffline(file_system_url);
+    }
   }
 
   DCHECK_EQ(items.size(), items_to_record.size());
-  if (items.empty())
+  if (items.empty()) {
     return;
+  }
 
   // Mark when the first pin to holding space occurred. If this is not the first
   // pin to holding space, this will no-op. If this is the first pin, record the
   // amount of time from first entry to first pin into holding space.
-  if (holding_space_prefs::MarkTimeOfFirstPin(profile_->GetPrefs()))
+  if (holding_space_prefs::MarkTimeOfFirstPin(profile_->GetPrefs())) {
     RecordTimeFromFirstEntryToFirstPin(profile_);
+  }
 
   holding_space_metrics::RecordItemAction(
       items_to_record, holding_space_metrics::ItemAction::kPin);
@@ -190,8 +197,9 @@ void HoldingSpaceKeyedService::RemovePinnedFiles(
   for (const storage::FileSystemURL& file_system_url : file_system_urls) {
     const HoldingSpaceItem* item = holding_space_model_.GetItem(
         HoldingSpaceItem::Type::kPinnedFile, file_system_url.path());
-    if (!item)
+    if (!item) {
       continue;
+    }
 
     items.emplace(item->id());
 
@@ -205,8 +213,9 @@ void HoldingSpaceKeyedService::RemovePinnedFiles(
   }
 
   DCHECK_EQ(items.size(), items_to_record.size());
-  if (items.empty())
+  if (items.empty()) {
     return;
+  }
 
   holding_space_metrics::RecordItemAction(
       items_to_record, holding_space_metrics::ItemAction::kUnpin);
@@ -223,8 +232,9 @@ bool HoldingSpaceKeyedService::ContainsPinnedFile(
 std::vector<GURL> HoldingSpaceKeyedService::GetPinnedFiles() const {
   std::vector<GURL> pinned_files;
   for (const auto& item : holding_space_model_.items()) {
-    if (item->type() == HoldingSpaceItem::Type::kPinnedFile)
+    if (item->type() == HoldingSpaceItem::Type::kPinnedFile) {
       pinned_files.push_back(item->file().file_system_url);
+    }
   }
   return pinned_files;
 }
@@ -320,8 +330,9 @@ void HoldingSpaceKeyedService::SetSuggestions(
           /*placeholder_image_skia_resolver=*/base::NullCallback());
     }
 
-    if (item)
+    if (item) {
       items_to_add.push_back(std::move(item));
+    }
   }
 
   // Add new items before removing old items to prevent UI from transitioning to
@@ -353,8 +364,9 @@ const std::string& HoldingSpaceKeyedService::AddItemOfType(
 
   std::unique_ptr<HoldingSpaceItem> item = CreateItemOfType(
       type, file_path, progress, placeholder_image_skia_resolver);
-  if (!item)
+  if (!item) {
     return base::EmptyString();
+  }
 
   return AddItem(std::move(item));
 }
@@ -410,8 +422,9 @@ void HoldingSpaceKeyedService::OnProfileReady() {
   });
 
   // Observe suspend status - the delegates will be shutdown during suspend.
-  if (chromeos::PowerManagerClient::Get())
+  if (chromeos::PowerManagerClient::Get()) {
     chromeos::PowerManagerClient::Get()->AddObserver(this);
+  }
 
   InitializeDelegates();
 
@@ -514,8 +527,9 @@ void HoldingSpaceKeyedService::InitializeDelegates() {
   // Initialize all delegates only after they have been added to our collection.
   // Delegates should not fire their respective callbacks during construction
   // but once they have been initialized they are free to do so.
-  for (auto& delegate : delegates_)
+  for (auto& delegate : delegates_) {
     delegate->Init();
+  }
 }
 
 void HoldingSpaceKeyedService::ShutdownDelegates() {
@@ -527,8 +541,9 @@ void HoldingSpaceKeyedService::ShutdownDelegates() {
 void HoldingSpaceKeyedService::OnPersistenceRestored(
     std::vector<std::unique_ptr<HoldingSpaceItem>> restored_items) {
   AddItems(std::move(restored_items), /*allow_duplicates=*/false);
-  for (auto& delegate : delegates_)
+  for (auto& delegate : delegates_) {
     delegate->NotifyPersistenceRestored();
+  }
 }
 
 void HoldingSpaceKeyedService::MakeDriveItemAvailableOffline(
@@ -537,11 +552,13 @@ void HoldingSpaceKeyedService::MakeDriveItemAvailableOffline(
       drive::DriveIntegrationServiceFactory::GetForProfile(profile_);
 
   bool drive_fs_mounted = drive_service && drive_service->IsMounted();
-  if (!drive_fs_mounted)
+  if (!drive_fs_mounted) {
     return;
+  }
 
-  if (!drive_service->GetDriveFsInterface())
+  if (!drive_service->GetDriveFsInterface()) {
     return;
+  }
 
   base::FilePath path;
   if (drive_service->GetRelativeDrivePath(file_system_url.path(), &path)) {
@@ -565,8 +582,9 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceKeyedService::CreateItemOfType(
         placeholder_image_skia_resolver) {
   const GURL file_system_url =
       holding_space_util::ResolveFileSystemUrl(profile_, file_path);
-  if (file_system_url.is_empty())
+  if (file_system_url.is_empty()) {
     return nullptr;
+  }
 
   return HoldingSpaceItem::CreateFileBackedItem(
       type,

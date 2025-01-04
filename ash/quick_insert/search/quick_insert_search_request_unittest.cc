@@ -148,8 +148,8 @@ TEST_F(QuickInsertSearchRequestTest, ShowsResultsFromOmniboxSearch) {
       base::DoNothing(), &client(), kAllCategories);
 
   client().cros_search_callback().Run(
-      ash::AppListSearchResultType::kOmnibox,
-      {ash::QuickInsertBrowsingHistoryResult(
+      AppListSearchResultType::kOmnibox,
+      {QuickInsertBrowsingHistoryResult(
           GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
           ui::ImageModel())});
 }
@@ -177,9 +177,9 @@ TEST_F(QuickInsertSearchRequestTest, TruncatesOmniboxResults) {
       base::DoNothing(), &client(), kAllCategories);
 
   client().cros_search_callback().Run(
-      ash::AppListSearchResultType::kOmnibox,
-      {ash::QuickInsertTextResult(u"1"), ash::QuickInsertTextResult(u"2"),
-       ash::QuickInsertTextResult(u"3"), ash::QuickInsertTextResult(u"4")});
+      AppListSearchResultType::kOmnibox,
+      {QuickInsertTextResult(u"1"), QuickInsertTextResult(u"2"),
+       QuickInsertTextResult(u"3"), QuickInsertTextResult(u"4")});
 }
 
 TEST_F(QuickInsertSearchRequestTest, DoesNotTruncateOmniboxOnlyResults) {
@@ -207,9 +207,9 @@ TEST_F(QuickInsertSearchRequestTest, DoesNotTruncateOmniboxOnlyResults) {
       base::DoNothing(), &client(), kAllCategories);
 
   client().cros_search_callback().Run(
-      ash::AppListSearchResultType::kOmnibox,
-      {ash::QuickInsertTextResult(u"1"), ash::QuickInsertTextResult(u"2"),
-       ash::QuickInsertTextResult(u"3"), ash::QuickInsertTextResult(u"4")});
+      AppListSearchResultType::kOmnibox,
+      {QuickInsertTextResult(u"1"), QuickInsertTextResult(u"2"),
+       QuickInsertTextResult(u"3"), QuickInsertTextResult(u"4")});
 }
 
 TEST_F(QuickInsertSearchRequestTest, DeduplicatesGoogleCorpGoLinks) {
@@ -311,8 +311,8 @@ TEST_F(QuickInsertSearchRequestTest,
       base::DoNothing(), &client(), kAllCategories);
   after_start_search.Call();
   client().cros_search_callback().Run(
-      ash::AppListSearchResultType::kOmnibox,
-      {ash::QuickInsertBrowsingHistoryResult(
+      AppListSearchResultType::kOmnibox,
+      {QuickInsertBrowsingHistoryResult(
           GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
           ui::ImageModel())});
 }
@@ -328,8 +328,8 @@ TEST_F(QuickInsertSearchRequestTest, RecordsOmniboxMetrics) {
       base::DoNothing(), &client(), kAllCategories);
   task_environment().FastForwardBy(kMetricMetricTime);
   client().cros_search_callback().Run(
-      ash::AppListSearchResultType::kOmnibox,
-      {ash::QuickInsertBrowsingHistoryResult(
+      AppListSearchResultType::kOmnibox,
+      {QuickInsertBrowsingHistoryResult(
           GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
           ui::ImageModel())});
 
@@ -407,8 +407,8 @@ TEST_F(QuickInsertSearchRequestTest,
                             base::Unretained(&search_results_callback)),
         base::DoNothing(), &client(), kAllCategories);
     client().cros_search_callback().Run(
-        ash::AppListSearchResultType::kFileSearch,
-        {ash::QuickInsertTextResult(u"monorail_cat.jpg")});
+        AppListSearchResultType::kFileSearch,
+        {QuickInsertTextResult(u"monorail_cat.jpg")});
   }
 
   histogram.ExpectTotalCount("Ash.Picker.Search.OmniboxProvider.QueryTime", 0);
@@ -451,8 +451,8 @@ TEST_F(
                             base::Unretained(&first_search_results_callback)),
         base::DoNothing(), &client(), kAllCategories);
     client().cros_search_callback().Run(
-        ash::AppListSearchResultType::kOmnibox,
-        {ash::QuickInsertBrowsingHistoryResult(
+        AppListSearchResultType::kOmnibox,
+        {QuickInsertBrowsingHistoryResult(
             GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
             ui::ImageModel())});
   }
@@ -477,8 +477,8 @@ TEST_F(QuickInsertSearchRequestTest, ShowsResultsFromFileSearch) {
                           base::Unretained(&search_results_callback)),
       base::DoNothing(), &client(), kAllCategories);
   client().cros_search_callback().Run(
-      ash::AppListSearchResultType::kFileSearch,
-      {ash::QuickInsertTextResult(u"monorail_cat.jpg")});
+      AppListSearchResultType::kFileSearch,
+      {QuickInsertTextResult(u"monorail_cat.jpg")});
 }
 
 TEST_F(QuickInsertSearchRequestTest, TruncatesResultsFromFileSearch) {
@@ -503,11 +503,10 @@ TEST_F(QuickInsertSearchRequestTest, TruncatesResultsFromFileSearch) {
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
       base::DoNothing(), &client(), kAllCategories);
-  client().cros_search_callback().Run(ash::AppListSearchResultType::kFileSearch,
-                                      {ash::QuickInsertTextResult(u"1.jpg"),
-                                       ash::QuickInsertTextResult(u"2.jpg"),
-                                       ash::QuickInsertTextResult(u"3.jpg"),
-                                       ash::QuickInsertTextResult(u"4.jpg")});
+  client().cros_search_callback().Run(
+      AppListSearchResultType::kFileSearch,
+      {QuickInsertTextResult(u"1.jpg"), QuickInsertTextResult(u"2.jpg"),
+       QuickInsertTextResult(u"3.jpg"), QuickInsertTextResult(u"4.jpg")});
 }
 
 TEST_F(QuickInsertSearchRequestTest, DoesNotTruncateResultsFromFileOnlySearch) {
@@ -534,11 +533,10 @@ TEST_F(QuickInsertSearchRequestTest, DoesNotTruncateResultsFromFileOnlySearch) {
       base::BindRepeating(&MockSearchResultsCallback::Call,
                           base::Unretained(&search_results_callback)),
       base::DoNothing(), &client(), kAllCategories);
-  client().cros_search_callback().Run(ash::AppListSearchResultType::kFileSearch,
-                                      {ash::QuickInsertTextResult(u"1.jpg"),
-                                       ash::QuickInsertTextResult(u"2.jpg"),
-                                       ash::QuickInsertTextResult(u"3.jpg"),
-                                       ash::QuickInsertTextResult(u"4.jpg")});
+  client().cros_search_callback().Run(
+      AppListSearchResultType::kFileSearch,
+      {QuickInsertTextResult(u"1.jpg"), QuickInsertTextResult(u"2.jpg"),
+       QuickInsertTextResult(u"3.jpg"), QuickInsertTextResult(u"4.jpg")});
 }
 
 TEST_F(QuickInsertSearchRequestTest, RecordsFileMetrics) {
@@ -552,8 +550,8 @@ TEST_F(QuickInsertSearchRequestTest, RecordsFileMetrics) {
       base::DoNothing(), &client(), kAllCategories);
   task_environment().FastForwardBy(kMetricMetricTime);
   client().cros_search_callback().Run(
-      ash::AppListSearchResultType::kFileSearch,
-      {ash::QuickInsertTextResult(u"monorail_cat.jpg")});
+      AppListSearchResultType::kFileSearch,
+      {QuickInsertTextResult(u"monorail_cat.jpg")});
 
   histogram.ExpectUniqueTimeSample("Ash.Picker.Search.FileProvider.QueryTime",
                                    kMetricMetricTime, 1);
@@ -628,8 +626,8 @@ TEST_F(QuickInsertSearchRequestTest,
                             base::Unretained(&search_results_callback)),
         base::DoNothing(), &client(), kAllCategories);
     client().cros_search_callback().Run(
-        ash::AppListSearchResultType::kOmnibox,
-        {ash::QuickInsertBrowsingHistoryResult(
+        AppListSearchResultType::kOmnibox,
+        {QuickInsertBrowsingHistoryResult(
             GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
             ui::ImageModel())});
   }
@@ -654,8 +652,8 @@ TEST_F(QuickInsertSearchRequestTest, ShowsResultsFromDriveSearch) {
                           base::Unretained(&search_results_callback)),
       base::DoNothing(), &client(), kAllCategories);
   client().cros_search_callback().Run(
-      ash::AppListSearchResultType::kDriveSearch,
-      {ash::QuickInsertTextResult(u"catrbug_135117.jpg")});
+      AppListSearchResultType::kDriveSearch,
+      {QuickInsertTextResult(u"catrbug_135117.jpg")});
 }
 
 TEST_F(QuickInsertSearchRequestTest, TruncatesResultsFromDriveSearch) {
@@ -681,11 +679,9 @@ TEST_F(QuickInsertSearchRequestTest, TruncatesResultsFromDriveSearch) {
                           base::Unretained(&search_results_callback)),
       base::DoNothing(), &client(), kAllCategories);
   client().cros_search_callback().Run(
-      ash::AppListSearchResultType::kDriveSearch,
-      {ash::QuickInsertTextResult(u"1.jpg"),
-       ash::QuickInsertTextResult(u"2.jpg"),
-       ash::QuickInsertTextResult(u"3.jpg"),
-       ash::QuickInsertTextResult(u"4.jpg")});
+      AppListSearchResultType::kDriveSearch,
+      {QuickInsertTextResult(u"1.jpg"), QuickInsertTextResult(u"2.jpg"),
+       QuickInsertTextResult(u"3.jpg"), QuickInsertTextResult(u"4.jpg")});
 }
 
 TEST_F(QuickInsertSearchRequestTest,
@@ -714,11 +710,9 @@ TEST_F(QuickInsertSearchRequestTest,
                           base::Unretained(&search_results_callback)),
       base::DoNothing(), &client(), kAllCategories);
   client().cros_search_callback().Run(
-      ash::AppListSearchResultType::kDriveSearch,
-      {ash::QuickInsertTextResult(u"1.jpg"),
-       ash::QuickInsertTextResult(u"2.jpg"),
-       ash::QuickInsertTextResult(u"3.jpg"),
-       ash::QuickInsertTextResult(u"4.jpg")});
+      AppListSearchResultType::kDriveSearch,
+      {QuickInsertTextResult(u"1.jpg"), QuickInsertTextResult(u"2.jpg"),
+       QuickInsertTextResult(u"3.jpg"), QuickInsertTextResult(u"4.jpg")});
 }
 
 TEST_F(QuickInsertSearchRequestTest, RecordsDriveMetrics) {
@@ -732,8 +726,8 @@ TEST_F(QuickInsertSearchRequestTest, RecordsDriveMetrics) {
       base::DoNothing(), &client(), kAllCategories);
   task_environment().FastForwardBy(kMetricMetricTime);
   client().cros_search_callback().Run(
-      ash::AppListSearchResultType::kDriveSearch,
-      {ash::QuickInsertTextResult(u"catrbug_135117.jpg")});
+      AppListSearchResultType::kDriveSearch,
+      {QuickInsertTextResult(u"catrbug_135117.jpg")});
 
   histogram.ExpectUniqueTimeSample("Ash.Picker.Search.DriveProvider.QueryTime",
                                    kMetricMetricTime, 1);
@@ -809,8 +803,8 @@ TEST_F(QuickInsertSearchRequestTest,
                             base::Unretained(&search_results_callback)),
         base::DoNothing(), &client(), kAllCategories);
     client().cros_search_callback().Run(
-        ash::AppListSearchResultType::kOmnibox,
-        {ash::QuickInsertBrowsingHistoryResult(
+        AppListSearchResultType::kOmnibox,
+        {QuickInsertBrowsingHistoryResult(
             GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
             ui::ImageModel())});
   }

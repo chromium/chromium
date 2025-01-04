@@ -162,4 +162,7 @@ interface CertificateManagerPage {
   // Returns true if the user confirmed or false if the user cancelled or
   // closed the dialog.
   AskForConfirmation(string title, string message) => (bool confirmed);
+
+  // Triggers a reload of the certificates for the given sources.
+  TriggerReload(array<CertificateSource> sources);
 };

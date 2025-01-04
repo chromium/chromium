@@ -21,8 +21,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.ANDROID_HUB_FLOATING_ACTION_BUTTON;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -57,7 +55,6 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
-import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.DisplayButtonData;
 import org.chromium.chrome.browser.hub.FullButtonData;
@@ -88,7 +85,6 @@ import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.feature_engagement.FeatureConstants;
-import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -129,14 +125,9 @@ public class TabSwitcherPaneUnitTest {
         return new IphCommandMatcher(FeatureConstants.TAB_GROUPS_REMOTE_GROUP);
     }
 
-    private static IphCommandMatcher floatingActionButtonIph() {
-        return new IphCommandMatcher(FeatureConstants.TAB_SWITCHER_FLOATING_ACTION_BUTTON);
-    }
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private SharedPreferences mSharedPreferences;
-    @Mock private Tracker mTracker;
     @Mock private Profile mProfile;
     @Mock private ProfileProvider mProfileProvider;
     @Mock private TabSwitcherPaneCoordinatorFactory mTabSwitcherPaneCoordinatorFactory;
@@ -189,14 +180,12 @@ public class TabSwitcherPaneUnitTest {
 
         mContext = ApplicationProvider.getApplicationContext();
 
-        TrackerFactory.setTrackerForTests(mTracker);
-
         when(mHubContainerView.getContext()).thenReturn(mContext);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
 
         mActionTester = new UserActionTester();
 
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(true);
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
 
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
@@ -410,7 +399,6 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
-    @EnableFeatures(ANDROID_HUB_FLOATING_ACTION_BUTTON)
     public void testNewTabButton() {
         FullButtonData buttonData = mTabSwitcherPane.getActionButtonDataSupplier().get();
 
@@ -425,26 +413,6 @@ public class TabSwitcherPaneUnitTest {
 
         buttonData.getOnPressRunnable().run();
         verify(mNewTabButtonClickListener).onClick(isNull());
-        verify(mTracker).notifyEvent("tab_switcher_floating_action_button_clicked");
-    }
-
-    @Test
-    @DisableFeatures(ANDROID_HUB_FLOATING_ACTION_BUTTON)
-    public void testNewTabButton_NonFloating() {
-        FullButtonData buttonData = mTabSwitcherPane.getActionButtonDataSupplier().get();
-
-        assertEquals(mContext.getString(R.string.button_new_tab), buttonData.resolveText(mContext));
-        assertEquals(
-                mContext.getString(R.string.button_new_tab),
-                buttonData.resolveContentDescription(mContext));
-        assertTrue(
-                AppCompatResources.getDrawable(mContext, R.drawable.new_tab_icon)
-                        .getConstantState()
-                        .equals(buttonData.resolveIcon(mContext).getConstantState()));
-
-        buttonData.getOnPressRunnable().run();
-        verify(mNewTabButtonClickListener).onClick(isNull());
-        verify(mTracker, never()).notifyEvent(any());
     }
 
     @Test
@@ -960,62 +928,10 @@ public class TabSwitcherPaneUnitTest {
         mTabSwitcherPane.setPaneHubController(mPaneHubController);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {""});
         when(mPaneHubController.getPaneButton(anyInt())).thenReturn(mAnchorView);
-        when(mPaneHubController.getFloatingActionButton()).thenReturn(null);
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         verify(mUserEducationHelper).requestShowIph(argThat(surfaceIph()));
-    }
-
-    @Test
-    public void testFloatingActionButtonIphOnShown_shown() {
-        mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
-        mTabSwitcherPane.setPaneHubController(mPaneHubController);
-        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {""});
-        when(mPaneHubController.getFloatingActionButton()).thenReturn(mAnchorView);
-
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-
-        verify(mUserEducationHelper).requestShowIph(argThat(floatingActionButtonIph()));
-    }
-
-    @Test
-    public void testFloatingActionButtonIphOnShown_nullButton() {
-        mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
-        mTabSwitcherPane.setPaneHubController(mPaneHubController);
-        when(mPaneHubController.getFloatingActionButton()).thenReturn(null);
-
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-
-        verify(mUserEducationHelper, never()).requestShowIph(any());
-    }
-
-    @Test
-    public void testFloatingActionButtonIphOnShown_nullController() {
-        mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
-        mTabSwitcherPane.setPaneHubController(null);
-        when(mPaneHubController.getFloatingActionButton()).thenReturn(mAnchorView);
-
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-
-        verify(mUserEducationHelper, never()).requestShowIph(any());
-    }
-
-    @Test
-    public void testFloatingActionButtonIphOnShown_animating() {
-        mTabSwitcherPane.setPaneHubController(mPaneHubController);
-        when(mPaneHubController.getFloatingActionButton()).thenReturn(mAnchorView);
-        HubLayoutAnimationListener hubLayoutAnimationListener =
-                mTabSwitcherPane.getHubLayoutAnimationListener();
-        hubLayoutAnimationListener.beforeStart();
-
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        verify(mUserEducationHelper, never()).requestShowIph(any());
-
-        hubLayoutAnimationListener.afterEnd();
-
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        verify(mUserEducationHelper, never()).requestShowIph(any());
     }
 
     @Test

@@ -15,7 +15,6 @@ static_library("web_resource") {
   deps = [
     "//base",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//components/pref_registry",
     "//components/prefs",
     "//services/network/public/cpp",

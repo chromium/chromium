@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.collaboration;
 
 import static org.chromium.base.test.util.Batch.PER_CLASS;
 
+import androidx.annotation.Nullable;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -24,12 +25,15 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.components.collaboration.CollaborationControllerDelegate;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.CollaborationStatus;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.collaboration.SigninStatus;
 import org.chromium.components.collaboration.SyncStatus;
+import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.member_role.MemberRole;
+import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
 
@@ -51,6 +55,13 @@ public class CollaborationServiceFactoryTest {
                     }
 
                     @Override
+                    public void startJoinFlow(CollaborationControllerDelegate delegate, GURL url) {}
+
+                    @Override
+                    public void startShareOrManageFlow(
+                            CollaborationControllerDelegate delegate, String syncId) {}
+
+                    @Override
                     public ServiceStatus getServiceStatus() {
                         return new ServiceStatus(
                                 SigninStatus.NOT_SIGNED_IN,
@@ -59,8 +70,13 @@ public class CollaborationServiceFactoryTest {
                     }
 
                     @Override
-                    public @MemberRole int getCurrentUserRoleForGroup(String groupId) {
+                    public @MemberRole int getCurrentUserRoleForGroup(String collaborationId) {
                         return MemberRole.UNKNOWN;
+                    }
+
+                    @Override
+                    public @Nullable GroupData getGroupData(String collaborationId) {
+                        return null;
                     }
                 };
 

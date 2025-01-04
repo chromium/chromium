@@ -1617,10 +1617,6 @@ group("strings") {
 }
 
 if (is_android) {
-  java_cpp_enum("partner_bookmarks_javagen") {
-    sources = [ "browser/android/bookmarks/partner_bookmarks_reader.h" ]
-  }
-
   java_cpp_enum("offline_pages_enum_javagen") {
     sources = [ "browser/offline_pages/offline_page_utils.h" ]
   }

@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_ray_value.h"
+#include "third_party/blink/renderer/core/css/css_shape_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
@@ -454,6 +455,9 @@ scoped_refptr<BasicShape> BasicShapeForValue(
   } else if (const auto* path_value =
                  DynamicTo<cssvalue::CSSPathValue>(basic_shape_value)) {
     basic_shape = path_value->GetStylePath();
+  } else if (basic_shape_value.IsShapeValue()) {
+    // TODO(crbug.com/384605099) Placeholder until we render shape().
+    basic_shape = BasicShapePolygon::Create();
   } else {
     NOTREACHED();
   }

@@ -299,8 +299,9 @@ bool IsStateless() {
 
   // Once a provider is found, use it to retrieve suggestions.
   PipelineCompletionBlock completion = ^(NSUInteger providerIndex) {
-    // Ignore outdated results.
-    if (weakSelf.requestIdentifier != requestIdentifier) {
+    // Ignore outdated results. As `_requestIdentifier` is useless when the
+    // suggestion controller is stateless, complete all requests.
+    if (weakSelf.requestIdentifier != requestIdentifier && !IsStateless()) {
       return;
     }
     if (providerIndex == NSNotFound) {
@@ -348,13 +349,15 @@ bool IsStateless() {
   NSArray<FormSuggestion*>* suggestionsCopy =
       [self copyAndAdjustSuggestions:suggestions];
 
-  // TODO(crbug.com/3407699): Make sure the provider is wrapped in the
-  // suggestions when the statless controller is used.
-  //
   // Cache the provider and state for the stateful controller. Those should not
   // be used when the provider is stateless.
   _provider = provider;
-  _suggestionState->suggestions = [self copyAndAdjustSuggestions:suggestions];
+  if (_suggestionState) {
+    // This case is only reached when using the stateless suggestion controller
+    // where the `_suggestionState` isn't required, so updating the suggestions
+    // can be skipped when no `_suggestionState`.
+    _suggestionState->suggestions = [self copyAndAdjustSuggestions:suggestions];
+  }
 
   if (IsStateless() && completion) {
     // Use the stateless way for passing suggestions when the feature is

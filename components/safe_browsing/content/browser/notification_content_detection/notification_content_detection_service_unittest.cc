@@ -9,6 +9,7 @@
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
@@ -22,6 +23,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
+
+using ::testing::_;
 
 namespace safe_browsing {
 
@@ -49,10 +52,11 @@ class MockNotificationContentDetectionModel
                                               background_task_runner,
                                               browser_context) {}
 
-  MOCK_METHOD3(Execute,
+  MOCK_METHOD4(Execute,
                void(blink::PlatformNotificationData& notification_data,
                     const GURL& origin,
-                    bool did_match_allowlist));
+                    bool did_match_allowlist,
+                    ModelVerdictCallback model_verdict_callback));
 
  private:
   std::vector<blink::PlatformNotificationData> execute_inputs_;
@@ -132,6 +136,10 @@ class NotificationContentDetectionServiceTest : public ::testing::Test {
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
+ protected:
+  base::MockCallback<NotificationContentDetectionModel::ModelVerdictCallback>
+      model_verdict_callback_;
+
  private:
   scoped_refptr<MockSafeBrowsingDatabaseManager> database_manager_;
   std::unique_ptr<TestModelObserverTracker> model_observer_tracker_;
@@ -161,7 +169,9 @@ TEST_F(NotificationContentDetectionServiceTest, DelayedAllowlistCheckCallback) {
   database_manager()->SetCallbackToDelayed(origin);
   SetUpTestNotificationContentDetectionModel();
   notification_content_detection_service()
-      ->MaybeCheckNotificationContentDetectionModel(*notification_data, origin);
+      ->MaybeCheckNotificationContentDetectionModel(
+          *notification_data, origin,
+          /*model_verdict_callback=*/base::DoNothing());
 
   // Deleting `notification_data` should still result in successful callback
   // execution with a non-empty title.
@@ -169,7 +179,7 @@ TEST_F(NotificationContentDetectionServiceTest, DelayedAllowlistCheckCallback) {
   EXPECT_CALL(*notification_content_detection_model(),
               Execute(testing::Field(&blink::PlatformNotificationData::title,
                                      u"Notification title"),
-                      origin, false))
+                      origin, false, _))
       .Times(1);
   database_manager()->RestartDelayedCallback(origin);
 }
@@ -183,10 +193,12 @@ TEST_F(NotificationContentDetectionServiceTest,
   blink::PlatformNotificationData notification_data;
   SetUpTestNotificationContentDetectionModel();
   EXPECT_CALL(*notification_content_detection_model(),
-              Execute(testing::_, origin, false))
+              Execute(_, origin, false, _))
       .Times(1);
+  EXPECT_CALL(model_verdict_callback_, Run(/*is_suspicious=*/false)).Times(0);
   notification_content_detection_service()
-      ->MaybeCheckNotificationContentDetectionModel(notification_data, origin);
+      ->MaybeCheckNotificationContentDetectionModel(
+          notification_data, origin, model_verdict_callback_.Get());
 
   // Check that histograms logging happens as expected.
   histogram_tester().ExpectTotalCount(kAllowlistCheckLatencyHistogram, 1);
@@ -202,10 +214,12 @@ TEST_F(NotificationContentDetectionServiceTest,
   blink::PlatformNotificationData notification_data;
   SetUpTestNotificationContentDetectionModel();
   EXPECT_CALL(*notification_content_detection_model(),
-              Execute(testing::_, origin, true))
+              Execute(_, origin, true, _))
       .Times(1);
+  EXPECT_CALL(model_verdict_callback_, Run(/*is_suspicious=*/false)).Times(0);
   notification_content_detection_service()
-      ->MaybeCheckNotificationContentDetectionModel(notification_data, origin);
+      ->MaybeCheckNotificationContentDetectionModel(
+          notification_data, origin, model_verdict_callback_.Get());
 
   // Check that histograms logging happens as expected.
   histogram_tester().ExpectTotalCount(kAllowlistCheckLatencyHistogram, 1);
@@ -220,11 +234,12 @@ TEST_F(NotificationContentDetectionServiceTest,
   // Model should not be checked.
   blink::PlatformNotificationData notification_data;
   SetUpTestNotificationContentDetectionModel();
-  EXPECT_CALL(*notification_content_detection_model(),
-              Execute(testing::_, testing::_, testing::_))
+  EXPECT_CALL(*notification_content_detection_model(), Execute(_, _, _, _))
       .Times(0);
+  EXPECT_CALL(model_verdict_callback_, Run(/*is_suspicious=*/false)).Times(1);
   notification_content_detection_service()
-      ->MaybeCheckNotificationContentDetectionModel(notification_data, origin);
+      ->MaybeCheckNotificationContentDetectionModel(
+          notification_data, origin, model_verdict_callback_.Get());
 
   // Check that histograms logging happens as expected.
   histogram_tester().ExpectTotalCount(kAllowlistCheckLatencyHistogram, 1);

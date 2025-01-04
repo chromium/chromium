@@ -12,7 +12,6 @@ static_library("page_info") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//components/browsing_data/content",
     "//components/browsing_data/core",
     "//components/content_settings/browser",
@@ -65,7 +64,6 @@ source_set("unit_tests") {
   deps = [
     ":page_info",
     "//base",
-    "//build:chromeos_buildflags",
     "//components/strings:components_strings_grit",
     "//testing/gmock",
     "//testing/gtest",

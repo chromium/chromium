@@ -28,7 +28,7 @@ using bookmarks::BookmarkNode;
 // specified like:
 //
 //   make new bookmark folder with properties {title:"foo"}
-@property (nonatomic, copy) NSString* tempTitle;
+@property(nonatomic, copy) NSString* tempTitle;
 
 @end
 

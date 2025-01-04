@@ -7,6 +7,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/scoped_observation.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/collaboration/public/collaboration_service.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -150,17 +151,7 @@ constexpr CGFloat kFacePileAvatarSize = 20;
 #pragma mark - TabGroupIndicatorMutator
 
 - (void)shareGroup {
-  const TabGroup* tabGroup = [self currentTabGroup];
-  if (!tabGroup || !_shareKitService) {
-    return;
-  }
-
-  ShareKitShareGroupConfiguration* config =
-      [[ShareKitShareGroupConfiguration alloc] init];
-  config.tabGroup = tabGroup;
-  config.baseViewController = self.baseViewController;
-  config.applicationHandler = self.applicationHandler;
-  _shareKitService->ShareGroup(config);
+  [self.delegate shareOrManageTabGroup:[self currentTabGroup]];
 }
 
 - (void)showRecentActivity {
@@ -172,19 +163,7 @@ constexpr CGFloat kFacePileAvatarSize = 20;
 }
 
 - (void)manageGroup {
-  const TabGroup* tabGroup = [self currentTabGroup];
-  NSString* collabID =
-      tab_groups::utils::GetTabGroupCollabID(tabGroup, _tabGroupSyncService);
-  if (!_shareKitService || !collabID) {
-    return;
-  }
-
-  ShareKitManageConfiguration* config =
-      [[ShareKitManageConfiguration alloc] init];
-  config.baseViewController = self.baseViewController;
-  config.collabID = collabID;
-  config.applicationHandler = self.applicationHandler;
-  _shareKitService->ManageGroup(config);
+  [self.delegate shareOrManageTabGroup:[self currentTabGroup]];
 }
 
 - (void)showTabGroupEdition {
@@ -299,9 +278,9 @@ constexpr CGFloat kFacePileAvatarSize = 20;
 
   const TabGroup* tabGroup = [self currentTabGroup];
 
-  NSString* savedCollabID =
+  tab_groups::CollaborationId savedCollabID =
       tab_groups::utils::GetTabGroupCollabID(tabGroup, _tabGroupSyncService);
-  BOOL isShared = savedCollabID != nil;
+  BOOL isShared = !savedCollabID.value().empty();
   [_consumer setShared:isShared];
 
   // Prevent the face pile from being set up for tab groups that are not shared.
@@ -312,7 +291,7 @@ constexpr CGFloat kFacePileAvatarSize = 20;
   // Configure the face pile.
   ShareKitFacePileConfiguration* config =
       [[ShareKitFacePileConfiguration alloc] init];
-  config.collabID = savedCollabID;
+  config.collabID = base::SysUTF8ToNSString(savedCollabID.value());
   config.showsEmptyState = NO;
   config.avatarSize = kFacePileAvatarSize;
 

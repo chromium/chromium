@@ -5,6 +5,8 @@
 #include "chrome/browser/net/server_certificate_database_service_factory.h"
 
 #include "base/feature_list.h"
+#include "chrome/browser/net/nss_service.h"
+#include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/net/server_certificate_database_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
@@ -48,9 +50,16 @@ ServerCertificateDatabaseServiceFactory::
 
 std::unique_ptr<KeyedService>
 ServerCertificateDatabaseServiceFactory::BuildServiceInstanceForBrowserContext(
-    content::BrowserContext* profile) const {
+    content::BrowserContext* browser_context) const {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+#if BUILDFLAG(IS_CHROMEOS)
   return std::make_unique<ServerCertificateDatabaseService>(
-      Profile::FromBrowserContext(profile));
+      profile->GetPath(), profile->GetPrefs(),
+      NssServiceFactory::GetForContext(profile)
+          ->CreateNSSCertDatabaseGetterForIOThread());
+#else
+  return std::make_unique<ServerCertificateDatabaseService>(profile->GetPath());
+#endif
 }
 
 }  // namespace net

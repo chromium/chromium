@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Note: The actual URLs are stored in an internal version of url_constants.grd
+// Note: The actual URLs are stored in an internal version of server_urls.grd
 // to prevent Chromium forks from accidentally sending metrics to Google
 // servers. The URLs can be found here:
-// https://chrome-internal.googlesource.com/chrome/components/metrics/internal/+/main/url_constants.grd
+// https://chrome-internal.googlesource.com/chrome/components/metrics/internal/+/main/server_urls.grd
 // Further, the reason why the URLs are provided through GRIT is for LGPL
 // compliance reasons.
 
@@ -13,7 +13,7 @@
 
 #include <string>
 
-#include "components/metrics/grit/metrics_url_constants.h"
+#include "components/metrics/grit/metrics_server_urls.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -33,37 +33,31 @@ GURL GetUrl(int id) {
 
 }  // namespace
 
-// TODO(crbug.com/358224254): Remove mime types from GRIT.
 const char kMetricsMimeType[] = "application/vnd.chrome.uma";
 const char kUkmMimeType[] = "application/vnd.chrome.ukm";
 
 GURL GetMetricsServerUrl() {
-  // TODO(crbug.com/358224254): Remove "NEW" from the GRIT name.
-  static const GURL url = GetUrl(IDS_NEW_METRICS_SERVER_URL);
+  static const GURL url = GetUrl(IDS_METRICS_SERVER_URL);
   return url;
 }
 
 GURL GetInsecureMetricsServerUrl() {
-  // TODO(crbug.com/358224254): Remove "NEW" from the GRIT name.
-  static const GURL url = GetUrl(IDS_NEW_METRICS_SERVER_URL_INSECURE);
+  static const GURL url = GetUrl(IDS_INSECURE_METRICS_SERVER_URL);
   return url;
 }
 
 GURL GetCastMetricsServerUrl() {
-  // TODO(crbug.com/358224254): Change "OLD" to "CAST" in the GRIT name.
-  static const GURL url = GetUrl(IDS_OLD_METRICS_SERVER_URL);
+  static const GURL url = GetUrl(IDS_CAST_METRICS_SERVER_URL);
   return url;
 }
 
 GURL GetUkmServerUrl() {
-  // TODO(crbug.com/358224254): Remove "DEFAULT" from the GRIT name.
-  static const GURL url = GetUrl(IDS_DEFAULT_UKM_SERVER_URL);
+  static const GURL url = GetUrl(IDS_UKM_SERVER_URL);
   return url;
 }
 
 GURL GetDwaServerUrl() {
-  // TODO(crbug.com/358224254): Remove "DEFAULT" from the GRIT name.
-  static const GURL url = GetUrl(IDS_DEFAULT_DWA_SERVER_URL);
+  static const GURL url = GetUrl(IDS_DWA_SERVER_URL);
   return url;
 }
 

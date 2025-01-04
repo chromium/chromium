@@ -44,9 +44,6 @@ class CompressionModule : public base::RefCountedThreadSafe<CompressionModule> {
       base::OnceCallback<void(std::string,
                               std::optional<CompressionInformation>)> cb) const;
 
-  // Returns 'true' if |kCompressReportingPipeline| feature is enabled.
-  static bool is_enabled();
-
   // Variable which defines which compression type to use
   const CompressionInformation::CompressionAlgorithm compression_type_;
 

@@ -66,6 +66,7 @@ class FakeLayerTreeHost : private TaskRunnerProviderHolder,
 
   void SetNeedsCommit() override;
   void SetNeedsUpdateLayers() override {}
+  void ClearPendingLayerCommitStates();
 
   std::unique_ptr<LayerTreeHostImpl> CreateLayerTreeHostImplInternal(
       LayerTreeHostImplClient* client,

@@ -4,7 +4,10 @@
 
 package org.chromium.components.browser_ui.accessibility;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Constants used for accessibility classes. */
+@NullMarked
 public final class AccessibilityConstants {
     /**
      * Page Zoom feature preferences. Tracks if a user wants the menu item always visible, and what

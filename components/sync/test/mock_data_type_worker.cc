@@ -262,7 +262,7 @@ syncer::UpdateResponseData MockDataTypeWorker::GenerateSharedUpdateData(
   syncer::UpdateResponseData response_data =
       GenerateUpdateData(tag_hash, specifics);
   response_data.entity.collaboration_metadata =
-      CollaborationMetadata::ForLocalChange(/*changed_by=*/"",
+      CollaborationMetadata::ForLocalChange(/*changed_by=*/GaiaId(),
                                             collaboration_id);
   return response_data;
 }

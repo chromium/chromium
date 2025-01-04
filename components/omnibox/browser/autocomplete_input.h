@@ -136,6 +136,14 @@ class AutocompleteInput {
   // Returns whether |text| begins with "https:" or "view-source:https:".
   static bool HasHTTPSScheme(const std::u16string& text);
 
+  // Whether the text might be matching featured keyword suggestions.
+  enum class FeaturedKeywordMode {
+    kFalse,   // `text_` doesn't start with '@'.
+    kPrefix,  // `text_` starts with '@'.
+    kExact,   // `text_` is exactly '@'.
+  };
+  static FeaturedKeywordMode GetFeaturedKeywordMode(const std::u16string& text);
+
   // User-provided text to be completed.
   const std::u16string& text() const { return text_; }
 
@@ -323,6 +331,9 @@ class AutocompleteInput {
   // Uses the keyword entry mode to decide if the user is currently in keyword
   // mode.
   bool InKeywordMode() const;
+
+  // Whether the input might be matching featured keyword suggestions.
+  FeaturedKeywordMode GetFeaturedKeywordMode() const;
 
  private:
   friend class AutocompleteProviderTest;

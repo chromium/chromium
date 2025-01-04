@@ -6,8 +6,7 @@
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(SidePanelContentProxy*)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(SidePanelContentProxy,
-                                   kSidePanelContentProxyKey,
-                                   nullptr)
+                                   kSidePanelContentProxyKey)
 
 SidePanelContentProxy::SidePanelContentProxy(bool available)
     : available_(available) {}
@@ -16,8 +15,9 @@ SidePanelContentProxy::~SidePanelContentProxy() = default;
 
 void SidePanelContentProxy::SetAvailable(bool available) {
   available_ = available;
-  if (available && available_callback_)
+  if (available && available_callback_) {
     std::move(available_callback_).Run();
+  }
 }
 
 void SidePanelContentProxy::ResetAvailableCallback() {

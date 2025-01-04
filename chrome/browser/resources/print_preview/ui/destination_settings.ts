@@ -30,11 +30,13 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+// <if expr="not is_chromeos">
 import type {Destination, RecentDestination} from '../data/destination.js';
 import {createRecentDestinationKey, isPdfPrinter, makeRecentDestination, PrinterType} from '../data/destination.js';
-
+// </if>
 // <if expr="is_chromeos">
-import {SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from '../data/destination.js';
+import type {Destination, RecentDestination} from '../data/destination_cros.js';
+import {createRecentDestinationKey, isPdfPrinter, makeRecentDestination, PrinterType, SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from '../data/destination_cros.js';
 // </if>
 
 import {DestinationErrorType, DestinationStore, DestinationStoreEventType} from '../data/destination_store.js';

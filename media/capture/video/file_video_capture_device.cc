@@ -17,6 +17,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -206,7 +207,7 @@ class VideoFileParser {
 
  protected:
   const base::FilePath file_path_;
-  int frame_size_;
+  size_t frame_size_;
   size_t current_byte_index_;
   size_t first_frame_byte_index_;
 };
@@ -225,7 +226,7 @@ class Y4mFileParser final : public VideoFileParser {
 
  private:
   std::unique_ptr<base::File> file_;
-  std::unique_ptr<uint8_t[]> video_frame_;
+  base::HeapArray<uint8_t> video_frame_;
 };
 
 class MjpegFileParser final : public VideoFileParser {
@@ -280,26 +281,26 @@ bool Y4mFileParser::Initialize(VideoCaptureFormat* capture_format) {
 }
 
 base::span<const uint8_t> Y4mFileParser::GetNextFrame() {
-  if (!video_frame_)
-    video_frame_ = std::make_unique<uint8_t[]>(frame_size_);
-  int result =
-      file_->Read(current_byte_index_,
-                  reinterpret_cast<char*>(video_frame_.get()), frame_size_);
+  if (video_frame_.size() != frame_size_) {
+    video_frame_ = base::HeapArray<uint8_t>::Uninit(frame_size_);
+  }
+  std::optional<size_t> result = file_->Read(current_byte_index_, video_frame_);
+
+  // Result will only not have a value if there was an error.
+  CHECK(result.has_value());
 
   // If we passed EOF to base::File, it will return 0 read characters. In that
   // case, reset the pointer and read again.
-  if (result != frame_size_) {
-    CHECK_EQ(result, 0);
+  if (result.value() != frame_size_) {
+    CHECK_EQ(result.value(), 0u);
     current_byte_index_ = first_frame_byte_index_;
-    CHECK_EQ(
-        file_->Read(current_byte_index_,
-                    reinterpret_cast<char*>(video_frame_.get()), frame_size_),
-        frame_size_);
+    result = file_->Read(current_byte_index_, video_frame_);
+    CHECK(result.has_value());
+    CHECK_EQ(result.value(), frame_size_);
   } else {
     current_byte_index_ += frame_size_ + kY4MSimpleFrameDelimiterSize;
   }
-  return base::span(video_frame_.get(),
-                    base::checked_cast<size_t>(frame_size_));
+  return video_frame_;
 }
 
 MjpegFileParser::MjpegFileParser(const base::FilePath& file_path)
@@ -321,7 +322,7 @@ bool MjpegFileParser::Initialize(VideoCaptureFormat* capture_format) {
   }
 
   frame_size_ = result.image_size;
-  if (frame_size_ > base::checked_cast<int>(mapped_file_->length())) {
+  if (frame_size_ > mapped_file_->length()) {
     LOG(ERROR) << "File is incomplete";
     return false;
   }

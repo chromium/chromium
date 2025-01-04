@@ -20,10 +20,6 @@
 @class DeferredInitializationRunner;
 @protocol StartupInformation;
 
-namespace base {
-class TimeTicks;
-}
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class PostCrashAction {
@@ -68,9 +64,6 @@ enum class PostCrashAction {
 
 // YES if the app is resuming from safe mode.
 @property(nonatomic) BOOL resumingFromSafeMode;
-
-// Timestamp of when a scene was last becoming active. Can be null.
-@property(nonatomic, assign) base::TimeTicks lastTimeInForeground;
 
 // The initialization stage the app is currently at.
 @property(nonatomic, readonly) AppInitStage initStage;

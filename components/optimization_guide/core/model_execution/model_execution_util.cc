@@ -114,18 +114,6 @@ GetGenAILocalFoundationalModelEnterprisePolicySettings(
               kGenAILocalFoundationalModelEnterprisePolicySettings));
 }
 
-OnDeviceModelLoadResult ConvertToOnDeviceModelLoadResult(
-    on_device_model::mojom::LoadModelResult result) {
-  switch (result) {
-    case on_device_model::mojom::LoadModelResult::kSuccess:
-      return OnDeviceModelLoadResult::kSuccess;
-    case on_device_model::mojom::LoadModelResult::kGpuBlocked:
-      return OnDeviceModelLoadResult::kGpuBlocked;
-    case on_device_model::mojom::LoadModelResult::kFailedToLoadLibrary:
-      return OnDeviceModelLoadResult::kFailedToLoadLibrary;
-  }
-}
-
 std::unique_ptr<proto::OnDeviceModelExecutionConfig>
 ReadOnDeviceModelExecutionConfig(const base::FilePath& config_path) {
   // Unpack and verify model config file.

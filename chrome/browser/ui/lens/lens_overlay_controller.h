@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_CONTROLLER_H_
 
 #include <optional>
+#include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -40,6 +42,7 @@
 #include "components/lens/lens_overlay_first_interaction_type.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_mime_type.h"
+#include "components/lens/lens_overlay_side_panel_result.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/sessions/core/session_id.h"
@@ -380,8 +383,15 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Sets whether the results frame should show its loading state.
   virtual void SetSidePanelIsLoadingResults(bool is_loading);
-  // Sets whether the side panel should show a full error page.
-  virtual void SetSidePanelShowErrorPage(bool should_show_error_page);
+  // Sets whether the side panel should show a full error page. This is only
+  // done if the side panel is not already in the state provided by the
+  // parameters or on its first load.
+  void MaybeSetSidePanelShowErrorPage(bool should_show_error_page,
+                                      lens::SidePanelResultStatus status);
+  // Set the side panel state as being offline.
+  void SetSidePanelIsOffline(bool is_offline);
+  // Record the error page being hidden / shown and set the value on the WebUI.
+  void RecordAndShowSidePanelErrorPage();
   // Whether it's possible to capture a screenshot. virtual for testing.
   virtual bool IsScreenshotPossible(content::RenderWidgetHostView* view);
 
@@ -597,6 +607,13 @@ class LensOverlayController : public LensSearchboxClient,
     // empty.
     lens::MimeType page_content_type_ = lens::MimeType::kUnknown;
 
+    // The page count of the PDF document if page_content_type_ is kPdf.
+    std::optional<uint32_t> pdf_page_count_;
+
+    // The partial representation of a PDF document. The element at a given
+    // index holds the text of the PDF page at the same index.
+    std::vector<std::u16string> pdf_pages_text_;
+
     // Bounding boxes for significant regions identified in the screenshot.
     std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes_;
 
@@ -695,6 +712,19 @@ class LensOverlayController : public LensSearchboxClient,
                           pdf::mojom::PdfListener::GetPdfBytesStatus status,
                           const std::vector<uint8_t>& bytes,
                           uint32_t pdf_page_count);
+
+  // Starts the process of fetching the text from the PDF to be used for suggest
+  // signals.
+  void GetPartialPdfText(uint32_t total_page_count);
+
+  // Gets the partial text from the PDF to be used for suggest. Schedules for
+  // the next page of text to be fetched, from the PDF in page order until
+  // either 1) all the text is received or 2) the character limit is reached.
+  // This method should only be called by GetPartialPdfText.
+  void GetPartialPdfTextCallback(uint32_t page_index,
+                                 uint32_t total_page_count,
+                                 uint32_t total_characters_retrieved,
+                                 const std::u16string& page_text);
 #endif  // BUILDFLAG(ENABLE_PDF)
 
   // Callback for when the inner text is retrieved from the underlying page.
@@ -721,11 +751,8 @@ class LensOverlayController : public LensSearchboxClient,
                                    std::optional<uint32_t> pdf_page_count);
 
   // Updates state of the ghost loader. |suppress_ghost_loader| is true when
-  // the page bytes can't be uploaded. |reset_loading_state| is true whenever
-  // a user navigates to a new page (as this will lead to a new attempt at
-  // contextualization and suggestions).
-  void UpdateGhostLoaderState(bool suppress_ghost_loader,
-                              bool reset_loading_state);
+  // the page bytes can't be uploaded.
+  void SuppressGhostLoader();
 
   // Enables/disables the background blur updating live. This should be used to
   // save resources on blurring the background when not needed.
@@ -781,6 +808,9 @@ class LensOverlayController : public LensSearchboxClient,
   void OnViewBoundsChanged(views::View* observed_view) override;
 
   // views::WidgetObserver:
+#if BUILDFLAG(IS_MAC)
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+#endif
   void OnWidgetDestroying(views::Widget* widget) override;
 
   // OmniboxTabHelper::Observer:
@@ -1033,9 +1063,12 @@ class LensOverlayController : public LensSearchboxClient,
   // side panel is not bound at the time of a region request.
   std::optional<std::string> pending_thumbnail_uri_ = std::nullopt;
 
-  // Whether the pending side panel should open with the error page showing.
-  // This happens when the full image request resulted in an error response.
-  bool pending_side_panel_should_show_error_page_ = false;
+  // Whether the side panel should show the error page.
+  bool side_panel_should_show_error_page_ = false;
+  // The status of the side panel, or whether it is currently showing an error
+  // page.
+  lens::SidePanelResultStatus side_panel_result_status_ =
+      lens::SidePanelResultStatus::kUnknown;
 
   // Pending region to search after the overlay loads.
   lens::mojom::CenterRotatedBoxPtr pending_region_;
@@ -1170,10 +1203,23 @@ class LensOverlayController : public LensSearchboxClient,
   // shown.
   bool hats_triggered_in_session_ = false;
 
-  // The stored suggest inputs to be attached to the initialization data
-  // if suggest inputs were updated before the initialization data was ready.
+  // TODO(384778180): The three `pre_initialization_*` fields below are used to
+  // store data that came back before the initialization data was ready. This
+  // should be refactored into one struct to make it cleaner.
+  //
+  // The stored suggest inputs to be attached to the initialization data if
+  // suggest inputs were updated before the initialization data was ready.
   std::optional<lens::proto::LensOverlaySuggestInputs>
       pre_initialization_suggest_inputs_;
+
+  // The stored objects response to be attached to the initialization data
+  // if the object response came back before the initialization data was ready.
+  std::optional<std::vector<lens::mojom::OverlayObjectPtr>>
+      pre_initialization_objects_;
+
+  // The stored text response to be attached to the initialization data
+  // if the text response came back before the initialization data was ready.
+  std::optional<lens::mojom::TextPtr> pre_initialization_text_;
 
   // The callback subscription for the element shown callback used to show the
   // translate feature promo.

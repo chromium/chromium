@@ -82,7 +82,7 @@ Supported platforms are:
 * `auralinux-xenial` -- expected Linux ATK output (Version Specific Expected File)
 * `blink` -- representation of internal accessibility tree
 * `blink-cros` -- representation of internal accessibility tree
-  (Version Specific Expected File for Chrome OS and Lacros)
+  (Version Specific Expected File for Chrome OS)
 * `mac` -- expected Mac NSAccessibility output
 * `win` -- expected Win IAccessible/IAccessible2 output
 * `uia-win` -- expected Win UIA output
@@ -131,12 +131,12 @@ needed. However, if the `foo.html` test passes on the Linux release build
 At the present time there is no version-specific support for Bionic Beaver,
 which is the current version run on "linux-rel".
 
-The need for a version-specific expectations file on Chrome OS / Lacros is
-extremely rare. However, there can be occasional differences in the internal
-accessibility tree. For instance, the SVG `g` element is always included
-in order to support select-to-speak functionality. If `foo.html` has a
-`foo-expected-blink.txt` file which works on all platforms except the Chrome OS
-and Lacros bots, create `foo-expected-blink-cros.txt`.
+The need for a version-specific expectations file on Chrome OS is extremely
+rare. However, there can be occasional differences in the internal accessibility
+tree. For instance, the SVG `g` element is always included in order to support
+select-to-speak functionality. If `foo.html` has a `foo-expected-blink.txt` file
+which works on all platforms except the Chrome OS bots, create
+`foo-expected-blink-cros.txt`.
 
 ## Directives
 

@@ -13,20 +13,20 @@
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/browser/web_contents.h"
 
 namespace {
 
-supervised_user::WebContentHandler::LocalApprovalResult
-AndroidOutcomeToLocalApprovalResult(
+supervised_user::LocalApprovalResult AndroidOutcomeToLocalApprovalResult(
     AndroidLocalWebApprovalFlowOutcome outcome) {
   switch (outcome) {
     case AndroidLocalWebApprovalFlowOutcome::kApproved:
-      return supervised_user::WebContentHandler::LocalApprovalResult::kApproved;
+      return supervised_user::LocalApprovalResult::kApproved;
     case AndroidLocalWebApprovalFlowOutcome::kRejected:
-      return supervised_user::WebContentHandler::LocalApprovalResult::kDeclined;
+      return supervised_user::LocalApprovalResult::kDeclined;
     case AndroidLocalWebApprovalFlowOutcome::kIncomplete:
-      return supervised_user::WebContentHandler::LocalApprovalResult::kCanceled;
+      return supervised_user::LocalApprovalResult::kCanceled;
   }
 }
 

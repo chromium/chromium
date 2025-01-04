@@ -211,7 +211,9 @@ class QuickUnlockPrivateUnitTest
     RunSetModes(QuickUnlockModeList{}, CredentialList{});
   }
 
-  std::string GetDefaultProfileName() override { return kTestUserEmail; }
+  std::optional<std::string> GetDefaultProfileName() override {
+    return kTestUserEmail;
+  }
 
   TestingProfile* CreateProfile(const std::string& profile_name) override {
     auto pref_service =

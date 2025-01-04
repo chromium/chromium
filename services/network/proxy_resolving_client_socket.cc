@@ -179,7 +179,7 @@ bool ProxyResolvingClientSocket::WasEverUsed() const {
 net::NextProto ProxyResolvingClientSocket::GetNegotiatedProtocol() const {
   if (socket_)
     return socket_->GetNegotiatedProtocol();
-  return net::kProtoUnknown;
+  return net::NextProto::kProtoUnknown;
 }
 
 bool ProxyResolvingClientSocket::GetSSLInfo(net::SSLInfo* ssl_info) {
@@ -236,8 +236,6 @@ int ProxyResolvingClientSocket::DoProxyResolve() {
   next_state_ = STATE_PROXY_RESOLVE_COMPLETE;
   // base::Unretained(this) is safe because resolution request is canceled when
   // |proxy_resolve_request_| is destroyed.
-  //
-  // TODO(crbug.com/40658165): Pass along a NetworkAnonymizationKey.
   return network_session_->proxy_resolution_service()->ResolveProxy(
       url_, net::HttpRequestHeaders::kPostMethod, network_anonymization_key_,
       &proxy_info_,
@@ -282,12 +280,6 @@ int ProxyResolvingClientSocket::DoInitConnection() {
                               : std::optional<net::NetworkTrafficAnnotationTag>(
                                     proxy_info_.traffic_annotation());
 
-  // Now that the proxy is resolved, create and start a ConnectJob. Using an
-  // empty NetworkAnonymizationKey means that tunnels over H2 or QUIC proxies
-  // will be shared, which may result in privacy leaks, depending on the nature
-  // of the consumer.
-  //
-  // TODO(mmenke): Investigate that.
   connect_job_ = connect_job_factory_->CreateConnectJob(
       use_tls_, net::HostPortPair::FromURL(url_), proxy_info_.proxy_chain(),
       proxy_annotation_tag, /*force_tunnel=*/true, net::PRIVACY_MODE_DISABLED,

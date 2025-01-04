@@ -6,8 +6,8 @@
 
 #include "base/notreached.h"
 
-#define TO_PROTO_ENUM(enum)  \
-  case enum:                 \
+#define TO_PROTO_ENUM(enum) \
+  case enum:                \
     return proto::enum
 
 namespace media {

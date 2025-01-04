@@ -83,6 +83,7 @@
 #include "third_party/blink/renderer/core/css/css_scoped_keyword_value.h"
 #include "third_party/blink/renderer/core/css/css_scroll_value.h"
 #include "third_party/blink/renderer/core/css/css_shadow_value.h"
+#include "third_party/blink/renderer/core/css/css_shape_value.h"
 #include "third_party/blink/renderer/core/css/css_string_value.h"
 #include "third_party/blink/renderer/core/css/css_timing_function_value.h"
 #include "third_party/blink/renderer/core/css/css_unicode_range_value.h"
@@ -271,6 +272,8 @@ bool CSSValue::operator==(const CSSValue& other) const {
                                                                      other);
       case kPathClass:
         return CompareCSSValues<cssvalue::CSSPathValue>(*this, other);
+      case kShapeClass:
+        return CompareCSSValues<cssvalue::CSSShapeValue>(*this, other);
       case kNumericLiteralClass:
         return CompareCSSValues<CSSNumericLiteralValue>(*this, other);
       case kMathFunctionClass:
@@ -437,6 +440,8 @@ String CSSValue::CssText() const {
       return To<cssvalue::CSSGridTemplateAreasValue>(this)->CustomCSSText();
     case kPathClass:
       return To<cssvalue::CSSPathValue>(this)->CustomCSSText();
+    case kShapeClass:
+      return To<cssvalue::CSSShapeValue>(this)->CustomCSSText();
     case kNumericLiteralClass:
       return To<CSSNumericLiteralValue>(this)->CustomCSSText();
     case kMathFunctionClass:
@@ -592,6 +597,7 @@ unsigned CSSValue::Hash() const {
     case kAlternateClass:
     case kReflectClass:
     case kShadowClass:
+    case kShapeClass:
     case kUnicodeRangeClass:
     case kGridTemplateAreasClass:
     case kPaletteMixClass:
@@ -769,6 +775,9 @@ void CSSValue::Trace(Visitor* visitor) const {
       return;
     case kPathClass:
       To<cssvalue::CSSPathValue>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kShapeClass:
+      To<cssvalue::CSSShapeValue>(this)->TraceAfterDispatch(visitor);
       return;
     case kNumericLiteralClass:
       To<CSSNumericLiteralValue>(this)->TraceAfterDispatch(visitor);
@@ -995,6 +1004,8 @@ String CSSValue::ClassTypeToString() const {
       return "PathClass";
     case kRayClass:
       return "RayClass";
+    case kShapeClass:
+      return "ShapeClass";
     case kUnparsedDeclarationClass:
       return "UnparsedDeclarationClass";
     case kPendingSubstitutionValueClass:

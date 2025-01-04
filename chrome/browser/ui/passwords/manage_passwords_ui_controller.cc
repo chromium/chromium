@@ -160,7 +160,7 @@ GetSaveProgressLogger(password_manager::PasswordManagerClient* client) {
     return std::nullopt;
   }
 
-  autofill::LogManager* log_manager = client->GetLogManager();
+  autofill::LogManager* log_manager = client->GetCurrentLogManager();
   if (!log_manager || !log_manager->IsLoggingActive()) {
     return std::nullopt;
   }
@@ -193,7 +193,14 @@ ManagePasswordsUIController::~ManagePasswordsUIController() = default;
 
 void ManagePasswordsUIController::OnPasswordSubmitted(
     std::unique_ptr<PasswordFormManagerForUI> form_manager) {
-  DestroyPopups();
+  bool password_change_ongoing = IsPasswordChangeOngoing();
+
+  if (!password_change_ongoing) {
+    // Password change bubble shouldn't be destroyed if the flow is still
+    // running.
+    DestroyPopups();
+  }
+
   save_fallback_timer_.Stop();
 
   // TODO(crbug.com/40943570): This is used to align the default password store
@@ -204,6 +211,14 @@ void ManagePasswordsUIController::OnPasswordSubmitted(
   } else {
     passwords_data_.OnPendingPassword(std::move(form_manager));
   }
+
+  // All necessary events should be triggered in `passwords_data_`, so that the
+  // state would be correct after password change is finished, but no other
+  // bubbles should be displayed.
+  if (password_change_ongoing) {
+    return;
+  }
+
   if (!IsSavingPromptBlockedExplicitlyOrImplicitly()) {
     bubble_status_ = BubbleStatus::SHOULD_POP_UP;
   }
@@ -668,6 +683,9 @@ ManagePasswordsUIController::GetPasswordFeatureManager() {
 }
 
 password_manager::ui::State ManagePasswordsUIController::GetState() const {
+  if (IsPasswordChangeOngoing()) {
+    return password_manager::ui::State::PASSWORD_CHANGE_STATE;
+  }
   return passwords_data_.state();
 }
 
@@ -1005,7 +1023,6 @@ void ManagePasswordsUIController::NavigateToPasswordCheckup(
   password_manager::LogPasswordCheckReferrer(referrer);
 }
 
-
 void ManagePasswordsUIController::OnDialogHidden() {
   dialog_controller_.reset();
   if (GetState() == password_manager::ui::CREDENTIAL_REQUEST_STATE) {
@@ -1017,6 +1034,10 @@ void ManagePasswordsUIController::OnDialogHidden() {
 }
 
 void ManagePasswordsUIController::OnLeakDialogHidden() {
+  // Should not trigger any other dialogs while password change is running.
+  if (IsPasswordChangeOngoing()) {
+    return;
+  }
   dialog_controller_.reset();
   if (GetState() == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE) {
     bubble_status_ = BubbleStatus::SHOULD_POP_UP;
@@ -1235,6 +1256,17 @@ void ManagePasswordsUIController::OnVisibilityChanged(
   }
 }
 
+PasswordChangeDelegate* ManagePasswordsUIController::GetPasswordChangeDelegate()
+    const {
+  ChromePasswordChangeService* password_change_service =
+      PasswordChangeServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+  if (!password_change_service) {
+    return nullptr;
+  }
+  return password_change_service->GetPasswordChangeDelegate(web_contents());
+}
+
 // static
 base::TimeDelta ManagePasswordsUIController::GetTimeoutForSaveFallback() {
   return base::Seconds(
@@ -1388,6 +1420,10 @@ bool ManagePasswordsUIController::IsPendingPasswordPhished() const {
   return pending_form.password_issues.find(
              password_manager::InsecureType::kPhished) !=
          pending_form.password_issues.end();
+}
+
+bool ManagePasswordsUIController::IsPasswordChangeOngoing() const {
+  return GetPasswordChangeDelegate();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ManagePasswordsUIController);

@@ -6,9 +6,12 @@ package org.chromium.ui.permissions;
 
 import android.app.Activity;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.ref.WeakReference;
 
 /** AndroidPermissionDelegate implementation for Activity. */
+@NullMarked
 public class ActivityAndroidPermissionDelegate extends AndroidPermissionDelegateWithRequester {
     private WeakReference<Activity> mActivity;
 

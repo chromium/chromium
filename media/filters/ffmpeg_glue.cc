@@ -151,8 +151,8 @@ bool FFmpegGlue::OpenContext(bool is_local_file) {
 
   // By passing nullptr for the filename (second parameter) we are telling
   // FFmpeg to use the AVIO context we setup from the AVFormatContext structure.
-  const int ret =
-      avformat_open_input(&format_context_, nullptr, nullptr, &options);
+  const int ret = avformat_open_input(&format_context_.AsEphemeralRawAddr(),
+                                      nullptr, nullptr, &options);
 
   if (options) {
     av_dict_free(&options);
@@ -227,7 +227,7 @@ FFmpegGlue::~FFmpegGlue() {
     return;
   }
 
-  avformat_close_input(&format_context_);
+  avformat_close_input(&format_context_.AsEphemeralRawAddr());
   av_free(avio_context_->buffer);
 }
 

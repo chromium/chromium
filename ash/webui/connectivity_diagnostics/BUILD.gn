@@ -30,6 +30,6 @@ static_library("connectivity_diagnostics") {
     "//chromeos/strings/",
     "//content/public/browser",
     "//ui/base",
-    "//ui/resources",
+    "//ui/webui/resources",
   ]
 }

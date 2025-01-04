@@ -251,7 +251,7 @@ class SharedDictionaryManagerOnDiskTest : public ::testing::Test {
 
   void ManipulateDatabase(const std::vector<std::string>& queries) {
     std::unique_ptr<sql::Database> db =
-        std::make_unique<sql::Database>(sql::DatabaseOptions{});
+        std::make_unique<sql::Database>(sql::test::kTestTag);
     ASSERT_TRUE(db->Open(database_path_));
 
     sql::MetaTable meta_table;

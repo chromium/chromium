@@ -47,8 +47,8 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Tests the entire flow of performing a stylus gesture on a website. Uses JavaScript to get an
- * area of text, simulates a handwriting gesture object over that area and asserts that the correct
+ * Tests the entire flow of performing a stylus gesture on a website. Uses JavaScript to get an area
+ * of text, simulates a handwriting gesture object over that area and asserts that the correct
  * change has been made to the page.
  */
 @RunWith(ContentJUnit4ClassRunner.class)

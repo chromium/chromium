@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/common/profiler/thread_profiler_configuration.h"
 
 #include "base/check.h"
@@ -14,9 +19,9 @@
 #include "build/branding_buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/profiler/core_unwinders.h"
 #include "chrome/common/profiler/process_type.h"
 #include "chrome/common/profiler/thread_profiler_platform_configuration.h"
-#include "chrome/common/profiler/unwind_util.h"
 #include "components/sampling_profiler/process_type.h"
 #include "components/version_info/version_info.h"
 

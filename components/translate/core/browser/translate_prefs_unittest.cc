@@ -19,7 +19,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/language_prefs_test_util.h"
 #include "components/language/core/browser/pref_names.h"
@@ -71,7 +70,7 @@ class TranslatePrefsTest : public testing::Test {
 
   void SetUp() override {
     prefs_.SetString(language::prefs::kAcceptLanguages, std::string());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     prefs_.SetString(language::prefs::kPreferredLanguages, std::string());
 #endif
     prefs_.registry()->RegisterBooleanPref(
@@ -591,7 +590,7 @@ TEST_F(TranslatePrefsTest, MoveLanguageUp) {
                                       {"it", "es"});
   accept_languages_tester_->ExpectAcceptLanguagePrefs("it,en,fr,es");
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   //---------------------------------------------------------------------------
   // Move with policy-forced languages present.
   // Forced languages should always remain at the top of the languages list and
@@ -720,7 +719,7 @@ TEST_F(TranslatePrefsTest, MoveLanguageUp) {
                                       {"en", "fr", "it", "es", "zh"});
   accept_languages_tester_->ExpectAcceptLanguagePrefs("es,en,fr,it,zh");
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   //---------------------------------------------------------------------------
   // Move with policy-forced languages present.
   // Only test on non-Chrome OS platforms.
@@ -810,7 +809,7 @@ TEST_F(TranslatePrefsTest, MoveLanguageDown) {
                                       {"fr", "it"});
   accept_languages_tester_->ExpectAcceptLanguagePrefs("en,fr,es,it");
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   //---------------------------------------------------------------------------
   // Move with policy-forced languages present.
   // Only test on non-Chrome OS platforms.

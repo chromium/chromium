@@ -25,20 +25,42 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
+import org.robolectric.shadows.ShadowParcelFileDescriptor;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(
+        manifest = Config.NONE,
+        shadows = {PdfContentProviderUnitTest.CustomShadowParcelFileDescriptor.class})
 public class PdfContentProviderUnitTest {
     private static final String TEST_FILE_PATH = "/proc/5202/fd/344";
     private static final String TEST_FILE_NAME = "test_pdf.pdf";
+
+    /**
+     * A custom shadow is required to override {@link adoptFd(int)} which calls {@code setFdInt}.
+     * {@code setFdInt} changed from a silent no-op, to a {@link RuntimeException} in robolectric
+     * 4.14.1.
+     */
+    @Implements(ParcelFileDescriptor.class)
+    public static class CustomShadowParcelFileDescriptor extends ShadowParcelFileDescriptor {
+        @Implementation
+        protected static ParcelFileDescriptor adoptFd(int fd) {
+            FileDescriptor fdesc = new FileDescriptor();
+
+            return new ParcelFileDescriptor(fdesc);
+        }
+    }
+
     private PdfContentProvider mProvider;
     @Mock private Context mContext;
 

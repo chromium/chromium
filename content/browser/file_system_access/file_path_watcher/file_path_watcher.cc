@@ -13,8 +13,12 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "build/build_config.h"
+#include "content/browser/file_system_access/features.h"
 
 namespace content {
+
+// static
+size_t FilePathWatcher::quota_limit_override_for_testing_ = 0;
 
 FilePathWatcher::ChangeInfo::ChangeInfo() = default;
 
@@ -134,8 +138,16 @@ size_t FilePathWatcher::current_usage() const {
 
 // static
 size_t FilePathWatcher::quota_limit() {
-  // TODO(crbug.com/338457523): Decide per platform limits.
-  return SIZE_MAX;
+  if (FilePathWatcher::quota_limit_override_for_testing_ > 0) {
+    return FilePathWatcher::quota_limit_override_for_testing_;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kFileSystemAccessObserverQuotaLimit)) {
+    return GetQuotaLimitImpl();
+  }
+
+  return std::numeric_limits<size_t>::max();
 }
 
 }  // namespace content

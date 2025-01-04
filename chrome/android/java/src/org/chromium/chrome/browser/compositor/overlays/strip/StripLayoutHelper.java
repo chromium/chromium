@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.compositor.layouts.components.CompositorButto
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.ButtonType;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller;
+import org.chromium.chrome.browser.compositor.overlays.strip.ReorderDelegate.ReorderType;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle.StripLayoutGroupTitleDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripTabModelActionListener.ActionType;
@@ -92,6 +93,9 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
+import org.chromium.chrome.browser.tasks.tab_management.TabBubbler;
+import org.chromium.chrome.browser.tasks.tab_management.TabCardLabelData;
+import org.chromium.chrome.browser.tasks.tab_management.TabListNotificationHandler;
 import org.chromium.chrome.browser.tasks.tab_management.TabShareUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
@@ -115,9 +119,11 @@ import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.RectProvider;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -128,7 +134,10 @@ import java.util.Set;
  * <p>The stacking and visual behavior is driven by setting a {@link StripStacker}.
  */
 public class StripLayoutHelper
-        implements StripLayoutGroupTitleDelegate, StripLayoutViewOnClickHandler, AnimationHost {
+        implements StripLayoutGroupTitleDelegate,
+                StripLayoutViewOnClickHandler,
+                AnimationHost,
+                TabListNotificationHandler {
     private static final String TAG = "StripLayoutHelper";
 
     // Animation/Timer Constants
@@ -145,9 +154,6 @@ public class StripLayoutHelper
 
     // Visibility Constants
     private static final float TAB_WIDTH_MEDIUM = 156.f;
-    private static final float REORDER_EDGE_SCROLL_MAX_SPEED_DP = 1000.f;
-    private static final float REORDER_EDGE_SCROLL_START_MIN_DP = 87.4f;
-    private static final float REORDER_EDGE_SCROLL_START_MAX_DP = 18.4f;
     private static final float NEW_TAB_BUTTON_BACKGROUND_Y_OFFSET_DP = 3.f;
     private static final float NEW_TAB_BUTTON_CLICK_SLOP_DP = 8.f;
     private static final float NEW_TAB_BUTTON_BACKGROUND_WIDTH_DP = 32.f;
@@ -211,7 +217,7 @@ public class StripLayoutHelper
                 public void didMergeTabToGroup(Tab movedTab, int selectedTabIdInGroup) {
                     // TODO(crbug.com/375047646): Investigate kicking off animations here.
                     int rootId = movedTab.getRootId();
-                    updateGroupTitleTextOrAvatar(rootId);
+                    updateGroupTextAndSharedState(rootId);
                     onTabMergeToOrMoveOutOfGroup();
 
                     // Tab merging should not automatically expand a collapsed tab group. If the
@@ -232,7 +238,7 @@ public class StripLayoutHelper
 
                 @Override
                 public void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {
-                    updateGroupTitleTextOrAvatar(mSourceRootId);
+                    updateGroupTextAndSharedState(mSourceRootId);
                     int groupIdToHide = mGroupIdToHideSupplier.get();
                     boolean removedLastTabInGroup =
                             (groupIdToHide != Tab.INVALID_TAB_ID)
@@ -265,7 +271,7 @@ public class StripLayoutHelper
                     final StripLayoutGroupTitle groupTitle = findGroupTitle(rootId);
                     if (groupTitle == null) return;
 
-                    updateGroupTitleTextOrAvatar(groupTitle, newTitle);
+                    updateGroupTextAndSharedState(groupTitle, newTitle);
                     mRenderHost.requestRender();
                 }
 
@@ -279,6 +285,10 @@ public class StripLayoutHelper
                     final StripLayoutGroupTitle groupTitle = findGroupTitle(rootId);
                     if (groupTitle == null) return;
 
+                    if (!isCollapsed && groupTitle.shouldShowBubble()) {
+                        groupTitle.setShowBubble(false);
+                        updateGroupTextAndSharedState(rootId);
+                    }
                     updateTabGroupCollapsed(groupTitle, isCollapsed, true);
                 }
 
@@ -293,7 +303,7 @@ public class StripLayoutHelper
                         groupTitle.updateRootId(newRootId);
                         // Refresh properties since removing the root tab may have cleared the ones
                         // associated with the oldRootId before updating to the newRootId here.
-                        updateGroupTitleTextOrAvatar(groupTitle);
+                        updateGroupTextAndSharedState(groupTitle);
                         updateGroupTitleTint(groupTitle);
                     }
 
@@ -378,10 +388,11 @@ public class StripLayoutHelper
 
     // Strip State
     /**
-     * The width of a tab based on the number of tabs and the available space on the tab strip.
-     * Constricted by MIN_TAB_WIDTH_DP and MAX_TAB_WIDTH_DP.
+     * The {@link Supplier} for the width of a tab based on the number of tabs and the available
+     * space on the tab strip. Constricted by MIN_TAB_WIDTH_DP and MAX_TAB_WIDTH_DP.
      */
-    private float mCachedTabWidth;
+    private ObservableSupplierImpl<Float> mCachedTabWidthSupplier =
+            new ObservableSupplierImpl<>(0f);
 
     // Reorder State
     private boolean mMovingGroup;
@@ -455,10 +466,6 @@ public class StripLayoutHelper
     // Tab Drag and Drop state to hold clicked tab being dragged.
     private final View mToolbarContainerView;
     @Nullable private final TabDragSource mTabDragSource;
-    private StripLayoutTab mActiveClickedTab;
-
-    // Tab Drag and Drop state to set correct reorder state when dragging on/off tab strip.
-    private float mLastOffsetX;
 
     // Tab hover state.
     private StripLayoutTab mLastHoveredTab;
@@ -638,7 +645,7 @@ public class StripLayoutHelper
         mTabMenu.setAdapter(
                 new ArrayAdapter<String>(
                         mContext,
-                        android.R.layout.simple_list_item_1,
+                        R.layout.one_line_list_item,
                         new String[] {
                             mContext.getString(
                                     !mIncognito
@@ -746,7 +753,7 @@ public class StripLayoutHelper
      * @return The effective width of a tab (accounting for overlap).
      */
     private float getEffectiveTabWidth() {
-        return mCachedTabWidth - TAB_OVERLAP_WIDTH_DP;
+        return mCachedTabWidthSupplier.get() - TAB_OVERLAP_WIDTH_DP;
     }
 
     /**
@@ -770,7 +777,7 @@ public class StripLayoutHelper
      * @return Whether the tab strip is full.
      */
     private boolean isTabStripFull() {
-        return mCachedTabWidth < MAX_TAB_WIDTH_DP;
+        return mCachedTabWidthSupplier.get() < MAX_TAB_WIDTH_DP;
     }
 
     /**
@@ -1033,6 +1040,8 @@ public class StripLayoutHelper
                 /* animationHost= */ this,
                 mTabGroupModelFilter,
                 mScrollDelegate,
+                mTabDragSource,
+                mCachedTabWidthSupplier,
                 mGroupIdToHideSupplier,
                 mToolbarContainerView);
 
@@ -1095,7 +1104,7 @@ public class StripLayoutHelper
 
         for (int i = 0; i < mStripGroupTitles.length; ++i) {
             final StripLayoutGroupTitle groupTitle = mStripGroupTitles[i];
-            updateGroupTitleTextOrAvatar(groupTitle, groupTitle.getTitle());
+            updateGroupTextAndSharedState(groupTitle, groupTitle.getTitle());
         }
     }
 
@@ -1296,7 +1305,7 @@ public class StripLayoutHelper
      * @param tab The tab that will be closed.
      */
     public void willCloseTab(long time, Tab tab) {
-        if (tab != null) updateGroupTitleTextOrAvatar(tab.getRootId());
+        if (tab != null) updateGroupTextAndSharedState(tab.getRootId());
     }
 
     /**
@@ -1387,7 +1396,7 @@ public class StripLayoutHelper
         boolean collapsed = false;
         if (tab != null) {
             int rootId = tab.getRootId();
-            updateGroupTitleTextOrAvatar(rootId);
+            updateGroupTextAndSharedState(rootId);
             if (mTabGroupModelFilter.getTabGroupCollapsed(rootId)) {
                 if (selected) {
                     mTabGroupModelFilter.deleteTabGroupCollapsed(rootId);
@@ -1635,82 +1644,47 @@ public class StripLayoutHelper
         }
     }
 
-    private void setTabContainerVisible(StripLayoutTab tab, boolean selected, boolean hovered) {
-        // Don't interrupt a hovered tab container visibility animation, this will be handled in the
-        // #onHover* methods.
-        if (hovered) return;
-
+    private void setTabContainerVisible(StripLayoutTab tab, boolean selected) {
         // The container will be visible if the tab is selected or is a placeholder tab.
         float containerOpacity =
                 selected || tab.getIsPlaceholder() ? TAB_OPACITY_VISIBLE : TAB_OPACITY_HIDDEN;
         tab.setContainerOpacity(containerOpacity);
     }
 
-    /**
-     * Called to show/hide dividers and the foreground/hovered tab container. Dividers are only
-     * necessary between tabs that both do not have a visible tab container (foreground or
-     * background).
-     */
     private void updateTabContainersAndDividers() {
-        if (mStripTabs.length < 1) return;
-
         int hoveredId = mLastHoveredTab != null ? mLastHoveredTab.getTabId() : Tab.INVALID_TAB_ID;
-
-        // Divider is never shown for the first tab.
-        if (mStripViews[0] instanceof StripLayoutTab tab) {
-            tab.setStartDividerVisible(false);
-            setTabContainerVisible(tab, isSelectedTab(tab.getTabId()), hoveredId == tab.getTabId());
-
-            boolean currContainerHidden = tab.getContainerOpacity() == TAB_OPACITY_HIDDEN;
-            // End divider should only be shown if the following view is a group indicator.
-            boolean endDividerVisible =
-                    currContainerHidden
-                            && mStripViews.length > 1
-                            && mStripViews[1] instanceof StripLayoutGroupTitle;
-            tab.setEndDividerVisible(endDividerVisible);
-        }
-
-        for (int i = 1; i < mStripViews.length; i++) {
+        for (int i = 0; i < mStripViews.length; ++i) {
             if (!(mStripViews[i] instanceof StripLayoutTab currTab)) continue;
 
-            boolean currTabSelected = isSelectedTab(currTab.getTabId());
-            boolean currTabHovered = hoveredId == currTab.getTabId();
-
-            // Set container opacity.
-            setTabContainerVisible(currTab, currTabSelected, currTabHovered);
-
-            /*
-             * Start divider should be visible when: 1. prevTab is dragged off of the strip OR 2.
-             * currTab container is hidden and (a) prevTab has trailing margin (ie: currTab is start
-             * of group or an individual tab) OR (b) prevTab container is also hidden.
-             */
+            // 1. Set container visibility. Handled in a separate animation for hovered tabs.
+            if (hoveredId != currTab.getTabId()) {
+                setTabContainerVisible(currTab, isSelectedTab(currTab.getTabId()));
+            }
             boolean currContainerHidden = currTab.getContainerOpacity() == TAB_OPACITY_HIDDEN;
-            boolean startDividerVisible;
-            if (mStripViews[i - 1] instanceof StripLayoutTab prevTab) {
-                boolean prevTabNotLeftMostAndDraggedOffStrip = prevTab.isDraggedOffStrip() && i > 1;
+
+            // 2. Set start divider visibility.
+            if (i > 0 && mStripViews[i - 1] instanceof StripLayoutTab prevTab) {
                 boolean prevContainerHidden = prevTab.getContainerOpacity() == TAB_OPACITY_HIDDEN;
                 boolean prevTabHasMargin = prevTab.getTrailingMargin() > 0;
-                startDividerVisible =
-                        prevTabNotLeftMostAndDraggedOffStrip
-                                || (currContainerHidden
-                                        && (prevContainerHidden || prevTabHasMargin));
+                boolean prevTabNotLeftMostAndDraggedOffStrip = prevTab.isDraggedOffStrip() && i > 1;
+                boolean startDividerVisible =
+                        (currContainerHidden && (prevContainerHidden || prevTabHasMargin))
+                                || prevTabNotLeftMostAndDraggedOffStrip;
+                currTab.setStartDividerVisible(startDividerVisible);
             } else {
-                startDividerVisible = false;
+                currTab.setStartDividerVisible(/* visible= */ false);
             }
-            currTab.setStartDividerVisible(startDividerVisible);
 
-            /*
-             * End divider should be applied when: 1. currTab container is hidden and (a) currTab's
-             * trailing margin > 0 (i.e. is last tab in group) OR (b) currTab is last tab in strip
-             * (as the last tab does not have trailing margin)
-             */
-            boolean currIsLastTab = i == (mStripViews.length - 1);
-            // End divider should be shown if the following view is a group indicator.
-            boolean endDividerVisible =
-                    currContainerHidden
-                            && (currIsLastTab
-                                    || mStripViews[i + 1] instanceof StripLayoutGroupTitle);
-            currTab.setEndDividerVisible(endDividerVisible);
+            // 3. Set end divider visibility. May be forced hidden for group reorder.
+            if (currTab.shouldForceHideEndDivider()) {
+                currTab.setEndDividerVisible(/* visible= */ false);
+            } else {
+                boolean isLastTab = i == (mStripViews.length - 1);
+                boolean endDividerVisible =
+                        (isLastTab || mStripViews[i + 1] instanceof StripLayoutGroupTitle)
+                                && currContainerHidden;
+                currTab.setEndDividerVisible(endDividerVisible);
+            }
         }
     }
 
@@ -1737,13 +1711,6 @@ public class StripLayoutHelper
             touchableRect.right = Math.min(ntbTouchRect.right, getVisibleRightBound());
         }
         mTouchableRect.set(touchableRect);
-    }
-
-    private int getStripTabRootId(StripLayoutTab stripTab) {
-        if (mModel == null || stripTab == null || getTabById(stripTab.getTabId()) == null) {
-            return Tab.INVALID_TAB_ID;
-        }
-        return getTabById(stripTab.getTabId()).getRootId();
     }
 
     /**
@@ -1837,39 +1804,14 @@ public class StripLayoutHelper
                 // Intentionally start the reorder at the initial long-press x. The difference from
                 // the current event (accumulatedDeltaX in step 3) will then "snap" the interacting
                 // view to its expected position.
-                startDragOrReorder(mDelayedReorderInitialX, y, mDelayedReorderView);
+                startReorderMode(
+                        mDelayedReorderInitialX, y, mDelayedReorderView, ReorderType.VIEW_DRAG);
             }
         }
 
         if (mReorderDelegate.getInReorderMode()) {
-            // 3.a. Handle reordering.
-            // This isn't the accumulated delta since the beginning of the drag.  It accumulates
-            // the delta X until a threshold is crossed and then the event gets processed.
-            float accumulatedDeltaX = x - mReorderDelegate.getLastReorderX();
-
-            if (Math.abs(accumulatedDeltaX) >= 1.f) {
-                if (!LocalizationUtils.isLayoutRtl()) {
-                    if (deltaX >= 1.f) {
-                        mReorderDelegate.allowReorderScrollRight();
-                    } else if (deltaX <= -1.f) {
-                        mReorderDelegate.allowReorderScrollLeft();
-                    }
-                } else {
-                    if (deltaX >= 1.f) {
-                        mReorderDelegate.allowReorderScrollLeft();
-                    } else if (deltaX <= -1.f) {
-                        mReorderDelegate.allowReorderScrollRight();
-                    }
-                }
-
-                mReorderDelegate.setLastReorderX(x);
-                if (mReorderDelegate.getReorderingForTabDrop()) {
-                    updateReorderPositionForTabDrop(x);
-                } else {
-                    mReorderDelegate.updateReorderPosition(
-                            mStripViews, mStripGroupTitles, mStripTabs, accumulatedDeltaX);
-                }
-            }
+            mReorderDelegate.updateReorderPosition(
+                    mStripViews, mStripGroupTitles, mStripTabs, x, deltaX);
         } else if (!isViewContextMenuShowing()) {
             // 3.b. Handle scroll if the tab group context menu is not showing.
             if (!mIsStripScrollInProgress) {
@@ -1877,7 +1819,7 @@ public class StripLayoutHelper
                 RecordUserAction.record("MobileToolbarSlideTabs");
                 onStripScrollStart();
             }
-            updateScrollOffsetPosition(mScrollDelegate.getScrollOffset() + deltaX);
+            mScrollDelegate.setScrollOffset(mScrollDelegate.getScrollOffset() + deltaX);
         }
 
         mUpdateHost.requestUpdate();
@@ -1938,8 +1880,8 @@ public class StripLayoutHelper
         // The first onDown is passed by the Chrome pipeline directly by GestureHandler. The
         // subsequent ones may be simulated by the DragDrop handler if the pointer goes beyond the
         // strip layout view.
-        mActiveClickedTab = null;
-        mLastOffsetX = 0.f;
+        mReorderDelegate.setViewBeingDragged(null);
+        mReorderDelegate.setDragLastOffsetX(0f);
         resetResizeTimeout(false);
 
         if (mNewTabButton.onDown(x, y, fromMouse, buttons)) {
@@ -1978,19 +1920,13 @@ public class StripLayoutHelper
             } else {
                 resetResizeTimeout(false);
 
-                startDragOrReorder(x, y, clickedTab);
+                startReorderMode(x, y, clickedTab, ReorderType.VIEW_DRAG);
             }
         } else {
             StripLayoutGroupTitle groupTitle = (StripLayoutGroupTitle) stripView;
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU)) {
-                showTabGroupContextMenu(groupTitle);
-                mDelayedReorderView = groupTitle;
-                mDelayedReorderInitialX = x;
-            } else if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_GROUP_REORDER)) {
-                // Should be obsolete, since context menu has launched. Code path will be
-                // unreachable, then removed once the context menu flag has been cleaned up.
-                startDragOrReorder(x, y, groupTitle);
-            }
+            showTabGroupContextMenu(groupTitle);
+            mDelayedReorderView = groupTitle;
+            mDelayedReorderInitialX = x;
         }
     }
 
@@ -2013,8 +1949,7 @@ public class StripLayoutHelper
                             mActionConfirmationManager,
                             mModalDialogManager,
                             mWindowAndroid,
-                            mDataSharingTabManager,
-                            (unused) -> {});
+                            mDataSharingTabManager);
         }
         // Popup menu requires screen coordinates for anchor view. Get absolute position for title.
         RectProvider anchorRectProvider = new RectProvider();
@@ -2043,7 +1978,8 @@ public class StripLayoutHelper
     }
 
     /**
-     * Update group shared state and avatar face piles displayed on group title for a shared group.
+     * Updates the shared state of a tab group, including the avatar face piles and setup
+     * notification bubbler for the group title when the group is shared.
      *
      * @param collaborationId The sharing ID associated with the group.
      * @param groupTitle The group title to update with the shared tab group state.
@@ -2052,13 +1988,22 @@ public class StripLayoutHelper
         if (groupTitle == null) {
             return;
         }
+
+        if (groupTitle.getTabBubbler() == null) {
+            groupTitle.setTabBubbler(
+                    new TabBubbler(
+                            mTabGroupModelFilter.getTabModel().getProfile(),
+                            this,
+                            new ObservableSupplierImpl<>(groupTitle.getTabGroupId())));
+        }
+
         groupTitle.updateSharedTabGroup(
                 collaborationId,
                 mDataSharingService,
                 (avatarRes) -> {
                     mLayerTitleCache.registerSharedGroupAvatar(groupTitle.getRootId(), avatarRes);
                 },
-                () -> updateGroupTitleTextOrAvatar(groupTitle));
+                () -> updateGroupTextAndSharedState(groupTitle));
     }
 
     /**
@@ -2077,7 +2022,7 @@ public class StripLayoutHelper
         }
         groupTitle.clearSharedTabGroup();
         mLayerTitleCache.removeSharedGroupAvatar(groupTitle.getRootId());
-        updateGroupTitleTextOrAvatar(groupTitle);
+        updateGroupTextAndSharedState(groupTitle);
     }
 
     private void getAnchorRect(StripLayoutGroupTitle groupTitle, RectProvider anchorRectProvider) {
@@ -2097,16 +2042,23 @@ public class StripLayoutHelper
         anchorRectProvider.getRect().offset(xOffset, toolbarCoordinates[1]);
     }
 
-    private void startDragOrReorder(float x, float y, StripLayoutView clickedView) {
-        // Allow the user to drag the selected tab out of the tab toolbar.
-        if (clickedView != null) {
-            boolean res = false;
-            if (clickedView instanceof StripLayoutTab clickedTab) {
-                // TODO(crbug.com/380327012): Allow tearing group out of the strip.
-                res = startDragAndDropTab(clickedTab, new PointF(x, y));
+    private void startReorderMode(
+            float x, float y, StripLayoutView interactingView, @ReorderType int reorderType) {
+        // Allow the user to drag the selected tab out of the tab strip.
+        if (interactingView != null) {
+            if (mReorderDelegate.getInReorderMode()) return;
+            // Attempt to start reordering. If the interacting view is a StripLayoutTab,
+            // only continue if it is valid (non-null, non-dying, non-placeholder) and
+            // the tab state is initialized.
+            if (interactingView instanceof StripLayoutTab interactingTab
+                    && (interactingTab.isDying()
+                            || interactingTab.getTabId() == Tab.INVALID_TAB_ID
+                            || !mTabStateInitialized)) {
+                return;
             }
-            // If tab drag did not succeed, fallback to reorder within strip.
-            if (!res) startReorderMode(x, clickedView);
+
+            mReorderDelegate.startReorderMode(
+                    mStripTabs, mStripGroupTitles, interactingView, new PointF(x, y), reorderType);
         } else {
             // Broadcast to start moving the window instance as the user has long pressed on the
             // open space of the tab strip.
@@ -2723,19 +2675,6 @@ public class StripLayoutHelper
         }
     }
 
-    private void updateScrollOffsetPosition(float pos) {
-        float delta = mScrollDelegate.setScrollOffset(pos);
-
-        if (mReorderDelegate.getInReorderMode() && mScrollDelegate.isFinished()) {
-            if (mReorderDelegate.getReorderingForTabDrop()) {
-                updateReorderPositionForTabDrop(mReorderDelegate.getLastReorderX());
-            } else {
-                mReorderDelegate.updateReorderPosition(
-                        mStripViews, mStripGroupTitles, mStripTabs, delta);
-            }
-        }
-    }
-
     @VisibleForTesting
     void updateScrollOffsetLimits() {
         mScrollDelegate.updateScrollOffsetLimits(
@@ -2743,7 +2682,7 @@ public class StripLayoutHelper
                 mWidth,
                 mLeftMargin,
                 mRightMargin,
-                mCachedTabWidth,
+                mCachedTabWidthSupplier.get(),
                 TAB_OVERLAP_WIDTH_DP,
                 mGroupTitleOverlapWidth);
     }
@@ -2849,16 +2788,6 @@ public class StripLayoutHelper
         };
     }
 
-    private ArrayList<StripLayoutTab> getGroupedTabs(int rootId) {
-        ArrayList<StripLayoutTab> groupedTabs = new ArrayList<>();
-        for (int i = 0; i < mStripTabs.length; ++i) {
-            final StripLayoutTab stripTab = mStripTabs[i];
-            final Tab tab = getTabById(stripTab.getTabId());
-            if (tab != null && tab.getRootId() == rootId) groupedTabs.add(stripTab);
-        }
-        return groupedTabs;
-    }
-
     void collapseTabGroupForTesting(StripLayoutGroupTitle groupTitle, boolean isCollapsed) {
         updateTabGroupCollapsed(groupTitle, isCollapsed, true);
         // End animator set to invoke all pending listeners on set.
@@ -2898,7 +2827,8 @@ public class StripLayoutHelper
 
         finishAnimations();
         groupTitle.setCollapsed(isCollapsed);
-        for (StripLayoutTab tab : getGroupedTabs(groupTitle.getRootId())) {
+        for (StripLayoutTab tab :
+                StripLayoutUtils.getGroupedTabs(mModel, mStripTabs, groupTitle.getRootId())) {
             if (collapseAnimationList != null) {
                 Animator animator = updateTabCollapsed(tab, isCollapsed, true);
                 if (animator != null) collapseAnimationList.add(animator);
@@ -3046,24 +2976,25 @@ public class StripLayoutHelper
     }
 
     @VisibleForTesting
-    void updateGroupTitleTextOrAvatar(int rootId) {
-        updateGroupTitleTextOrAvatar(findGroupTitle(rootId));
+    void updateGroupTextAndSharedState(int rootId) {
+        updateGroupTextAndSharedState(findGroupTitle(rootId));
     }
 
-    private void updateGroupTitleTextOrAvatar(StripLayoutGroupTitle groupTitle) {
+    private void updateGroupTextAndSharedState(StripLayoutGroupTitle groupTitle) {
         if (groupTitle == null) return;
-        updateGroupTitleTextOrAvatar(
+        updateGroupTextAndSharedState(
                 groupTitle, mTabGroupModelFilter.getTabGroupTitle(groupTitle.getRootId()));
     }
 
     /**
      * Sets a non-empty title text for the given group indicator. Also updates the title text
-     * bitmap, accessibility description, and tab/indicator sizes if necessary.
+     * bitmap, accessibility description, and tab/indicator sizes if necessary. If the group is
+     * shared, it may also update user avatars and the notification bubble.
      *
      * @param groupTitle The {@link StripLayoutGroupTitle} that we're update the title text for.
      * @param titleText The title text to apply. If empty, use a default title text.
      */
-    private void updateGroupTitleTextOrAvatar(StripLayoutGroupTitle groupTitle, String titleText) {
+    private void updateGroupTextAndSharedState(StripLayoutGroupTitle groupTitle, String titleText) {
         assert groupTitle != null;
 
         // 1. Update indicator text and width.
@@ -3111,7 +3042,7 @@ public class StripLayoutHelper
         // Must pass in the group title instead of rootId, since the StripLayoutGroupTitle has not
         // been added to mStripViews yet.
         updateGroupTitleTint(groupTitle);
-        updateGroupTitleTextOrAvatar(groupTitle);
+        updateGroupTextAndSharedState(groupTitle);
 
         // Update tab group share avatars if necessary. The data sharing observer should already be
         // in place by this point (added during #setTabGroupModelFilter).
@@ -3251,6 +3182,14 @@ public class StripLayoutHelper
         assert viewIndex == mStripViews.length - 1 : "Did not find all tab groups.";
         mStripViews[viewIndex] = mStripTabs[mStripTabs.length - 1];
 
+        // Destroy TabBubbler for removed group titles.
+        List<StripLayoutGroupTitle> newGroupTitles = new ArrayList<>(Arrays.asList(groupTitles));
+        for (StripLayoutGroupTitle groupTitle : mStripGroupTitles) {
+            if (!newGroupTitles.contains(groupTitle)) {
+                groupTitle.setTabBubbler(null);
+            }
+        }
+
         int oldGroupCount = mStripGroupTitles.length;
         mStripGroupTitles = groupTitles;
         if (mStripGroupTitles.length != oldGroupCount) {
@@ -3337,7 +3276,7 @@ public class StripLayoutHelper
     private void pushPropertiesToTab(StripLayoutTab tab) {
         // The close button is visible by default. If it should be hidden on tab creation, do not
         // animate the fade-out. See (https://crbug.com/1342654).
-        boolean shouldShowCloseButton = mCachedTabWidth >= TAB_WIDTH_MEDIUM;
+        boolean shouldShowCloseButton = mCachedTabWidthSupplier.get() >= TAB_WIDTH_MEDIUM;
         tab.setCanShowCloseButton(shouldShowCloseButton, false);
         tab.setHeight(mHeight);
     }
@@ -3401,7 +3340,8 @@ public class StripLayoutHelper
         float optimalTabWidth = (stripWidth + overlapWidth) / numTabs;
 
         // 4. Calculate the realistic tab width.
-        mCachedTabWidth = MathUtils.clamp(optimalTabWidth, MIN_TAB_WIDTH_DP, MAX_TAB_WIDTH_DP);
+        mCachedTabWidthSupplier.set(
+                MathUtils.clamp(optimalTabWidth, MIN_TAB_WIDTH_DP, MAX_TAB_WIDTH_DP));
 
         // 5. Prepare animations and propagate width to all tabs.
         finishAnimationsAndPushTabUpdates();
@@ -3411,8 +3351,9 @@ public class StripLayoutHelper
             StripLayoutTab tab = mStripTabs[i];
             if (tab.isClosed()) tab.setWidth(TAB_OVERLAP_WIDTH_DP);
             if (tab.isDying() || tab.isCollapsed()) continue;
+            Float cachedTabWidth = mCachedTabWidthSupplier.get();
             if (resizeAnimationList != null) {
-                if (mCachedTabWidth > 0f && tab.getWidth() == mCachedTabWidth) {
+                if (cachedTabWidth > 0f && tab.getWidth() == cachedTabWidth) {
                     // No need to create an animator to animate to the width we're already at.
                     continue;
                 }
@@ -3422,11 +3363,11 @@ public class StripLayoutHelper
                                 tab,
                                 StripLayoutTab.WIDTH,
                                 tab.getWidth(),
-                                mCachedTabWidth,
+                                cachedTabWidth,
                                 ANIM_TAB_RESIZE_MS);
                 resizeAnimationList.add(animator);
             } else {
-                mStripTabs[i].setWidth(mCachedTabWidth);
+                mStripTabs[i].setWidth(cachedTabWidth);
             }
         }
 
@@ -3525,7 +3466,7 @@ public class StripLayoutHelper
                 getVisibleLeftBound(),
                 stripWidth,
                 mMultiStepTabCloseAnimRunning,
-                mCachedTabWidth);
+                mCachedTabWidthSupplier.get());
 
         // 4. Create render list.
         createRenderList();
@@ -3556,7 +3497,7 @@ public class StripLayoutHelper
                     + mScrollDelegate.getReorderStartMargin();
         } else {
             return mWidth
-                    - mCachedTabWidth
+                    - mCachedTabWidthSupplier.get()
                     - mScrollDelegate.getScrollOffset()
                     - mRightMargin
                     - mScrollDelegate.getReorderStartMargin();
@@ -3585,7 +3526,7 @@ public class StripLayoutHelper
                 float drawXOffset = mGroupTitleDrawXOffset;
                 // Adjust for RTL.
                 if (LocalizationUtils.isLayoutRtl()) {
-                    drawXOffset = mCachedTabWidth - view.getWidth() - drawXOffset;
+                    drawXOffset = mCachedTabWidthSupplier.get() - view.getWidth() - drawXOffset;
                 }
 
                 view.setIdealX(startX + drawXOffset);
@@ -3650,7 +3591,7 @@ public class StripLayoutHelper
 
         boolean rtl = LocalizationUtils.isLayoutRtl();
         float offset = getStartPositionForStripViews() + MathUtils.flipSignIf(viewsWidth, rtl);
-        if (rtl) offset += mCachedTabWidth - mNewTabButtonWidth;
+        if (rtl) offset += mCachedTabWidthSupplier.get() - mNewTabButtonWidth;
         offset = adjustNewTabButtonOffsetIfFull(offset);
 
         CompositorAnimator animator =
@@ -3720,7 +3661,7 @@ public class StripLayoutHelper
 
         final float optimalStart = startOffset - tabPosition;
         // Also account for mCachedTabWidth to allocate space to show tab at the end.
-        final float optimalEnd = mWidth - endOffset - tabPosition - mCachedTabWidth;
+        final float optimalEnd = mWidth - endOffset - tabPosition - mCachedTabWidthSupplier.get();
 
         // 2. Return the scroll delta to make the given tab fully visible with the least scrolling.
         // This will result in the tab being at either the start or end of the strip.
@@ -3751,7 +3692,7 @@ public class StripLayoutHelper
     }
 
     int getTabIndexForTabDrop(float x) {
-        float halfTabWidth = mCachedTabWidth / 2;
+        float halfTabWidth = mCachedTabWidthSupplier.get() / 2;
         for (int i = 0; i < mStripTabs.length; i++) {
             final StripLayoutTab stripTab = mStripTabs[i];
 
@@ -3807,32 +3748,7 @@ public class StripLayoutHelper
         if (mTabAtPositionForTesting != null) {
             return mTabAtPositionForTesting;
         }
-
-        for (int i = 0; i < mStripViews.length; ++i) {
-            final StripLayoutView view = mStripViews[i];
-
-            float leftEdge;
-            float rightEdge;
-            if (view instanceof StripLayoutTab tab) {
-                leftEdge = tab.getTouchTargetLeft();
-                rightEdge = tab.getTouchTargetRight();
-                if (LocalizationUtils.isLayoutRtl()) {
-                    leftEdge -= tab.getTrailingMargin();
-                } else {
-                    rightEdge += tab.getTrailingMargin();
-                }
-            } else {
-                if (!includeGroupTitles) continue;
-                leftEdge = view.getDrawX();
-                rightEdge = leftEdge + view.getWidth();
-            }
-
-            if (view.isVisible() && leftEdge <= x && x <= rightEdge) {
-                return view;
-            }
-        }
-
-        return null;
+        return StripLayoutUtils.findViewAtPositionX(mStripViews, x, includeGroupTitles);
     }
 
     public boolean getInReorderModeForTesting() {
@@ -3847,61 +3763,11 @@ public class StripLayoutHelper
         StripLayoutTab tab = mStripTabs[index];
         updateStrip();
         float x = tab.getDrawX() + (tab.getWidth() / 2);
-        startReorderMode(x, getTabAtPosition(x));
-    }
-
-    private void startReorderMode(float x, StripLayoutView interactingView) {
-        if (mReorderDelegate.getInReorderMode() || interactingView == null) return;
-
-        // Attempt to start reordering. If the interacting view is a StripLayoutTab, only continue
-        // if it is valid (non-null, non-dying, non-placeholder) and the tab state is initialized.
-        if (interactingView instanceof StripLayoutTab interactingTab
-                && (interactingTab.isDying()
-                        || interactingTab.getTabId() == Tab.INVALID_TAB_ID
-                        || !mTabStateInitialized)) {
-            return;
-        }
-
-        mReorderDelegate.startReorderMode(mStripTabs, interactingView, getEffectiveTabWidth(), x);
-    }
-
-    void updateStripForExternalTabDrop(float startX) {
-        // 1. StartX indicates the position where the tab drag entered the destination tab strip.
-        // Adjust by a half tab-width so that we target the nearest tab gap.
-        startX = adjustXForTabDrop(startX);
-
-        // 2. Mark the "interacting" tab. This is not the DnD dragged tab, but rather the tab in the
-        // strip that is currently being hovered by the DnD drag.
-        StripLayoutTab hoveredTab = getTabAtPosition(startX);
-        if (hoveredTab == null) hoveredTab = mStripTabs[mStripTabs.length - 1];
-        mReorderDelegate.setInteractingTab(hoveredTab);
-
-        // 3. Set initial state.
-        mReorderDelegate.setInReorderMode(true);
-        mReorderDelegate.setReorderingForTabDrop(true);
-        mReorderDelegate.prepareStripForReorder(mStripTabs, getEffectiveTabWidth(), startX);
-
-        // 4. Add a tab group margin to the "interacting" tab to indicate where the tab will be
-        // inserted should the drag be dropped.
-        ArrayList<Animator> animationList = new ArrayList<>();
-        setTrailingMarginForTab(hoveredTab, /* shouldHaveTrailingMargin= */ true, animationList);
-
-        // 5. Kick-off animations and request an update.
-        startAnimations(animationList);
+        startReorderMode(x, 0, getTabAtPosition(x), ReorderType.VIEW_IN_STRIP);
     }
 
     void stopReorderModeForTesting() {
         mReorderDelegate.stopReorderMode(mStripGroupTitles, mStripTabs);
-    }
-
-    /** See {@link ReorderDelegate#setTrailingMarginForTab} */
-    private boolean setTrailingMarginForTab(
-            StripLayoutTab tab,
-            boolean shouldHaveTrailingMargin,
-            @NonNull List<Animator> animationList) {
-        StripLayoutGroupTitle groupTitle = findGroupTitle(getStripTabRootId(tab));
-        return mReorderDelegate.setTrailingMarginForTab(
-                tab, groupTitle, shouldHaveTrailingMargin, animationList);
     }
 
     private void setCompositorButtonsVisible(boolean visible) {
@@ -3970,112 +3836,17 @@ public class StripLayoutHelper
                         || stripLayoutTab.getContainerOpacity() == TAB_OPACITY_VISIBLE);
     }
 
-    private float adjustXForTabDrop(float x) {
-        if (LocalizationUtils.isLayoutRtl()) {
-            return x + (mCachedTabWidth / 2);
-        } else {
-            return x - (mCachedTabWidth / 2);
-        }
-    }
-
-    void updateReorderPositionForTabDrop(float x) {
-        // 1. Adjust by a half tab-width so that we target the nearest tab gap.
-        x = adjustXForTabDrop(x);
-
-        // 2. Clear previous "interacting" tab if inserting at the start of the strip.
-        boolean inStartGap =
-                LocalizationUtils.isLayoutRtl()
-                        ? x > mStripTabs[0].getTouchTargetRight()
-                        : x < mStripTabs[0].getTouchTargetLeft();
-        StripLayoutTab interactingTab = mReorderDelegate.getInteractingTab();
-        if (inStartGap && interactingTab != null) {
-            mScrollDelegate.setReorderStartMargin(/* newStartMargin= */ getEffectiveTabWidth() / 2);
-
-            finishAnimations();
-            ArrayList<Animator> animationList = new ArrayList<>();
-            setTrailingMarginForTab(
-                    interactingTab, /* shouldHaveTrailingMargin= */ false, animationList);
-            mReorderDelegate.setInteractingTab(null);
-            startAnimations(animationList);
-
-            // 2.a. Early-out if we just entered the start gap.
-            return;
-        }
-
-        // 3. Otherwise, update drop indicator if necessary.
-        StripLayoutTab hoveredTab = getTabAtPosition(x);
-        if (hoveredTab != null && hoveredTab != interactingTab) {
-            finishAnimations();
-
-            // 3.a. Reset the state for the previous "interacting" tab.
-            ArrayList<Animator> animationList = new ArrayList<>();
-            if (interactingTab != null) {
-                setTrailingMarginForTab(
-                        interactingTab, /* shouldHaveTrailingMargin= */ false, animationList);
-            }
-
-            // 3.b. Set state for the new "interacting" tab.
-            setTrailingMarginForTab(
-                    hoveredTab, /* shouldHaveTrailingMargin= */ true, animationList);
-            mReorderDelegate.setInteractingTab(hoveredTab);
-
-            // 3.c. Animate.
-            startAnimations(animationList);
-        }
-    }
-
     private void handleReorderAutoScrolling(long time) {
         if (!mReorderDelegate.getInReorderMode()) return;
-
-        // 1. Track the delta time since the last auto scroll.
-        final float deltaSec =
-                mReorderDelegate.getLastReorderScrollTime() == INVALID_TIME
-                        ? 0.f
-                        : (time - mReorderDelegate.getLastReorderScrollTime()) / 1000.f;
-        mReorderDelegate.setLastReorderScrollTime(time);
-
-        // When we are reordering for tab drop, we are not offsetting the interacting tab. Instead,
-        // we are adding a visual indicator (a gap between tabs) to indicate where the tab will be
-        // added. As such, we need to base this on the most recent x-position of the drag, rather
-        // than the interacting tab's drawX.
-        final float x =
-                mReorderDelegate.getReorderingForTabDrop()
-                        ? adjustXForTabDrop(mReorderDelegate.getLastReorderX())
-                        : mReorderDelegate.getInteractingTab().getDrawX();
-
-        // 2. Calculate the gutters for accelerating the scroll speed.
-        // Speed: MAX    MIN                  MIN    MAX
-        // |-------|======|--------------------|======|-------|
-        final float dragRange = REORDER_EDGE_SCROLL_START_MAX_DP - REORDER_EDGE_SCROLL_START_MIN_DP;
-        final float leftMinX = REORDER_EDGE_SCROLL_START_MIN_DP + mLeftMargin;
-        final float leftMaxX = REORDER_EDGE_SCROLL_START_MAX_DP + mLeftMargin;
-        final float rightMinX =
-                mWidth - mLeftMargin - mRightMargin - REORDER_EDGE_SCROLL_START_MIN_DP;
-        final float rightMaxX =
-                mWidth - mLeftMargin - mRightMargin - REORDER_EDGE_SCROLL_START_MAX_DP;
-
-        // 3. See if the current draw position is in one of the gutters and figure out how far in.
-        // Note that we only allow scrolling in each direction if the user has already manually
-        // moved that way.
-        float dragSpeedRatio = 0.f;
-        if (mReorderDelegate.canReorderScrollLeft() && x < leftMinX) {
-            dragSpeedRatio = -(leftMinX - Math.max(x, leftMaxX)) / dragRange;
-        } else if (mReorderDelegate.canReorderScrollRight() && x + mCachedTabWidth > rightMinX) {
-            dragSpeedRatio = (Math.min(x + mCachedTabWidth, rightMaxX) - rightMinX) / dragRange;
-        }
-
-        dragSpeedRatio = MathUtils.flipSignIf(dragSpeedRatio, LocalizationUtils.isLayoutRtl());
-
-        if (dragSpeedRatio != 0.f) {
-            // 4.a. We're in a gutter.  Update the scroll offset.
-            float dragSpeed = REORDER_EDGE_SCROLL_MAX_SPEED_DP * dragSpeedRatio;
-            updateScrollOffsetPosition(mScrollDelegate.getScrollOffset() + (dragSpeed * deltaSec));
-
-            mUpdateHost.requestUpdate();
-        } else {
-            // 4.b. We're not in a gutter.  Reset the scroll delta time tracker.
-            mReorderDelegate.setLastReorderScrollTime(INVALID_TIME);
-        }
+        mReorderDelegate.updateReorderPositionAutoScroll(
+                mStripViews,
+                mStripGroupTitles,
+                mStripTabs,
+                time,
+                mWidth,
+                mLeftMargin,
+                mRightMargin,
+                () -> mUpdateHost.requestUpdate());
     }
 
     private Tab getTabById(int tabId) {
@@ -4124,6 +3895,44 @@ public class StripLayoutHelper
     protected void scrollTabToView(long time, boolean requestUpdate) {
         bringSelectedTabToVisibleArea(time, true);
         if (requestUpdate) mUpdateHost.requestUpdate();
+    }
+
+    /**
+     * Updates the notification bubble for a set of tabs and group title if collapsed. Tabs passed
+     * in this call all belong to same group.
+     *
+     * @param tabIdsToBeUpdated The set of tab IDs to update the notification bubble for.
+     * @param hasUpdate Whether there is an update to the notification bubble.
+     */
+    @Override
+    public void updateTabStripNotificationBubble(
+            @NonNull Set<Integer> tabIdsToBeUpdated, boolean hasUpdate) {
+        int rootId = Tab.INVALID_TAB_ID;
+
+        for (int tabId : tabIdsToBeUpdated) {
+            Tab tab = getTabById(tabId);
+            StripLayoutTab stripTab = findTabById(tabId);
+
+            // Skip invalid tabs or selected tabs when showing updates.
+            if (stripTab == null || (isSelectedTab(tabId) && hasUpdate)) continue;
+
+            // Show bubble on collapsed group title.
+            if (stripTab.isCollapsed() && rootId == Tab.INVALID_TAB_ID) {
+                rootId = tab.getRootId();
+                StripLayoutGroupTitle groupTitle = findGroupTitle(rootId);
+                groupTitle.setShowBubble(hasUpdate);
+                updateGroupTextAndSharedState(rootId);
+            }
+
+            // Update bubble on tab favicon.
+            mLayerTitleCache.updateTabBubble(tabId, hasUpdate);
+        }
+        mUpdateHost.requestUpdate();
+    }
+
+    @Override
+    public void updateTabCardLabels(Map<Integer, TabCardLabelData> labelData) {
+        // Not implemented for tablet tab strip.
     }
 
     @SuppressLint("HandlerLeak")
@@ -4297,7 +4106,7 @@ public class StripLayoutHelper
      * @return The width of a tab.
      */
     float getCachedTabWidthForTesting() {
-        return mCachedTabWidth;
+        return mCachedTabWidthSupplier.get();
     }
 
     /**
@@ -4442,59 +4251,51 @@ public class StripLayoutHelper
             }
             dragActiveClickedTabOntoStrip(/* x= */ 0.0f, /* startReorder= */ false);
         }
-        mLastOffsetX = 0.f;
-        mActiveClickedTab = null;
+        mReorderDelegate.setViewBeingDragged(null);
+        mReorderDelegate.setDragLastOffsetX(0f);
     }
 
     StripLayoutTab getActiveClickedTabForTesting() {
-        return mActiveClickedTab;
-    }
-
-    @VisibleForTesting
-    boolean startDragAndDropTab(
-            @NonNull StripLayoutTab clickedTab, @NonNull PointF dragStartPointF) {
-        if (mTabDragSource == null || !mTabStateInitialized) return false;
-        // In addition to reordering, one can drag and drop the tab beyond the strip layout view.
-        Tab tabBeingDragged = getTabById(clickedTab.getTabId());
-        boolean dragStarted = false;
-        if (tabBeingDragged != null) {
-            dragStarted =
-                    mTabDragSource.startTabDragAction(
-                            mToolbarContainerView,
-                            tabBeingDragged,
-                            dragStartPointF,
-                            clickedTab.getDrawX(),
-                            clickedTab.getWidth());
-            if (dragStarted) {
-                mActiveClickedTab = clickedTab;
-                mLastOffsetX = 0.f;
-            }
-        }
-        return dragStarted;
+        return (StripLayoutTab) mReorderDelegate.getViewBeingDragged();
     }
 
     void setLastOffsetXForTesting(float lastOffsetX) {
-        mLastOffsetX = lastOffsetX;
+        mReorderDelegate.setDragLastOffsetX(lastOffsetX);
     }
 
     float getLastOffsetXForTesting() {
-        return mLastOffsetX;
+        return mReorderDelegate.getDragLastOffsetX();
     }
 
     void setActiveClickedTabAtIndexForTesting(int index) {
-        mActiveClickedTab = mStripTabs[index];
+        mReorderDelegate.setViewBeingDragged(mStripTabs[index]);
+    }
+
+    void startDragAndDropTabForTesting(
+            @NonNull StripLayoutTab clickedTab, @NonNull PointF dragStartPointF) {
+        startReorderMode(dragStartPointF.x, dragStartPointF.y, clickedTab, ReorderType.VIEW_DRAG);
     }
 
     void prepareForTabDrop(
-            long time,
-            float currX,
-            float lastX,
-            boolean isSourceStrip,
-            boolean draggedTabIncognito) {
+            float currX, float lastX, boolean isSourceStrip, boolean draggedTabIncognito) {
         if (isSourceStrip) {
             dragActiveClickedTabOntoStrip(lastX, /* startReorder= */ true);
-        } else if (mIncognito == draggedTabIncognito) {
-            updateStripForExternalTabDrop(currX);
+        } else {
+            // Destination strip (ie: view dragged onto another strip)
+            // 1. If strip model does not match dragged view's, no-op.
+            if (mIncognito != draggedTabIncognito) return;
+
+            // 2. StartX indicates where the external drag enters the  tab strip.
+            // Adjust by a half tab-width so that we target the nearest tab gap.
+            float startX = mReorderDelegate.adjustXForTabDrop(currX);
+
+            // 3. Mark the "interacting" view. This is not the DnD dragged tab, but rather the tab
+            // in the strip that is currently being hovered by the DnD drag.
+            StripLayoutTab hoveredTab = getTabAtPosition(startX);
+            if (hoveredTab == null) hoveredTab = mStripTabs[mStripTabs.length - 1];
+
+            // 4. Start reorder - prepare strip to indicate drop target.
+            startReorderMode(startX, /* y= */ 0.f, hoveredTab, ReorderType.EXTERNAL_VIEW_IN_STRIP);
         }
     }
 
@@ -4507,7 +4308,7 @@ public class StripLayoutHelper
     }
 
     private void dragActiveClickedTabOntoStrip(float x, boolean startReorder) {
-        StripLayoutTab draggedTab = getSelectedStripTab();
+        StripLayoutTab draggedTab = (StripLayoutTab) mReorderDelegate.getViewBeingDragged();
         assert draggedTab != null;
 
         finishAnimationsAndPushTabUpdates();
@@ -4516,11 +4317,15 @@ public class StripLayoutHelper
         if (startReorder) {
             // If we're reordering, bring the tab to the correct position so we can begin reordering
             // immediately.
-            draggedTab.setOffsetX(mLastOffsetX);
+            draggedTab.setOffsetX(mReorderDelegate.getDragLastOffsetX());
             draggedTab.setOffsetY(0);
-            mLastOffsetX = 0.f;
+            mReorderDelegate.setDragLastOffsetX(0f);
             resizeTabStrip(false, false, false);
-            startReorderMode(x, mActiveClickedTab);
+            startReorderMode(
+                    x,
+                    /* y= */ 0f,
+                    mReorderDelegate.getViewBeingDragged(),
+                    ReorderType.VIEW_IN_STRIP);
         } else {
             // Else, animate the tab translating back up onto the tab strip.
             draggedTab.setWidth(0.f);
@@ -4542,7 +4347,7 @@ public class StripLayoutHelper
     }
 
     private void dragActiveClickedTabOutOfStrip(long time) {
-        StripLayoutTab draggedTab = getSelectedStripTab();
+        StripLayoutTab draggedTab = (StripLayoutTab) mReorderDelegate.getViewBeingDragged();
         assert draggedTab != null;
 
         int tabId = draggedTab.getTabId();
@@ -4573,7 +4378,7 @@ public class StripLayoutHelper
         }
 
         // Store reorder state, then exit reorder mode.
-        mLastOffsetX = draggedTab.getOffsetX();
+        mReorderDelegate.setDragLastOffsetX(draggedTab.getOffsetX());
         onUpOrCancel(time);
         finishAnimationsAndPushTabUpdates();
 

@@ -437,7 +437,6 @@ size_t ChromeContentRulesRegistry::GetActiveRulesCountForTesting() {
   return count;
 }
 
-ChromeContentRulesRegistry::~ChromeContentRulesRegistry() {
-}
+ChromeContentRulesRegistry::~ChromeContentRulesRegistry() = default;
 
 }  // namespace extensions

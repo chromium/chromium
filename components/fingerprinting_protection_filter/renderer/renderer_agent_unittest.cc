@@ -421,10 +421,11 @@ TEST_F(RendererAgentTest, Enabled_NewRulesetIsPickedUpAtNextLoad) {
       DocumentLoadRulesetIsAvailableHistogramName, 1, 2);
 }
 
-// Make sure that the activation decision does not outlive a failed provisional
-// load (and affect the second load).
-TEST_F(RendererAgentTest,
-       Enabled_FilteringNoLongerActiveAfterProvisionalLoadIsCancelled) {
+// Make sure that the activation decision does not outlive a failed main frame
+// provisional load (Document/Page change) and affect the second load.
+TEST_F(
+    RendererAgentTest,
+    Enabled_FilteringNoLongerActiveAfterMainFrameProvisionalLoadIsCancelled) {
   base::HistogramTester histogram_tester;
   ASSERT_NO_FATAL_FAILURE(
       SetTestRulesetToDisallowURLsWithPathSuffix(kTestBothURLsPathSuffix));
@@ -440,14 +441,47 @@ TEST_F(RendererAgentTest,
   agent_as_rfo()->DidFailProvisionalLoad();
   ASSERT_TRUE(::testing::Mock::VerifyAndClearExpectations(agent()));
 
-  EXPECT_CALL(*agent(), OnSetFilterCalled()).Times(0);
-  agent_as_rfo()->DidStartNavigation(GURL(), std::nullopt);
-  agent_as_rfo()->ReadyToCommitNavigation(nullptr);
-  agent_as_rfo()->DidCommitProvisionalLoad(ui::PAGE_TRANSITION_LINK);
-  FinishLoad();
+  // The activation state should have been reset.
+  EXPECT_EQ(agent()->activation_state().activation_level,
+            subresource_filter::mojom::ActivationLevel::kDisabled);
 
   histogram_tester.ExpectUniqueSample(
       MainFrameLoadRulesetIsAvailableAnyActivationLevelHistogramName, 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      DocumentLoadRulesetIsAvailableHistogramName, 1, 1);
+}
+
+// A failed provisional load in a subframe should not reset activation state
+// because subframes should always have the same state as the main frame.
+TEST_F(RendererAgentTest,
+       Enabled_FilteringStillActiveAfterSubframeProvisionalLoadIsCancelled) {
+  base::HistogramTester histogram_tester;
+  ASSERT_NO_FATAL_FAILURE(
+      SetTestRulesetToDisallowURLsWithPathSuffix(kTestBothURLsPathSuffix));
+
+  // Simulate an agent for a subframe.
+  ResetAgent(/*is_top_level_main_frame=*/false, /*has_valid_opener=*/true);
+
+  EXPECT_CALL(*agent(), OnSetFilterCalled());
+  agent_as_rfo()->DidStartNavigation(GURL(), std::nullopt);
+  agent_as_rfo()->ReadyToCommitNavigation(nullptr);
+  subresource_filter::mojom::ActivationStatePtr state =
+      subresource_filter::mojom::ActivationState::New();
+  state->activation_level =
+      subresource_filter::mojom::ActivationLevel::kEnabled;
+  state->measure_performance = true;
+  agent()->OnActivationComputed(std::move(state));
+  agent_as_rfo()->DidFailProvisionalLoad();
+  ASSERT_TRUE(::testing::Mock::VerifyAndClearExpectations(agent()));
+
+  // The activation state should still be Enabled.
+  EXPECT_EQ(agent()->activation_state().activation_level,
+            subresource_filter::mojom::ActivationLevel::kEnabled);
+
+  // Expect no samples for main frame histogram because we didn't load a main
+  // frame.
+  histogram_tester.ExpectUniqueSample(
+      MainFrameLoadRulesetIsAvailableAnyActivationLevelHistogramName, 0, 0);
   histogram_tester.ExpectUniqueSample(
       DocumentLoadRulesetIsAvailableHistogramName, 1, 1);
 }

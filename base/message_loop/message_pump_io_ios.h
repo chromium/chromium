@@ -84,7 +84,7 @@ class BASE_EXPORT MessagePumpIOSForIO : public MessagePumpNSRunLoop,
 
   ThreadChecker watch_file_descriptor_caller_checker_;
 
-  base::WeakPtrFactory<MessagePumpIOSForIO> weak_factory_;
+  base::WeakPtrFactory<MessagePumpIOSForIO> weak_factory_{this};
 };
 
 }  // namespace base

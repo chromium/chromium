@@ -244,6 +244,15 @@ void FeaturePromoController20::MaybeShowPromo(FeaturePromoParams params) {
 
 void FeaturePromoController20::MaybeShowPromoForDemoPage(
     FeaturePromoParams params) {
+  // Override all queued promos.
+  for (auto& data : queued_promos_) {
+    auto& cb = data.params.show_promo_result_callback;
+    if (cb) {
+      std::move(cb).Run(FeaturePromoResult::kBlockedByPromo);
+    }
+  }
+  queued_promos_.clear();
+
   auto callback = std::move(params.show_promo_result_callback);
   PostShowPromoResult(std::move(callback),
                       MaybeShowPromoImpl(std::move(params), ShowSource::kDemo));
@@ -483,6 +492,7 @@ FeaturePromoResult FeaturePromoController20::MaybeShowPromoImpl(
   }
   return result;
 }
+
 // Returns whether `iph_feature` is queued to be shown.
 bool FeaturePromoController20::IsPromoQueued(
     const base::Feature& iph_feature) const {
@@ -547,6 +557,12 @@ base::WeakPtr<FeaturePromoController> FeaturePromoController20::GetAsWeakPtr() {
 base::WeakPtr<FeaturePromoControllerCommon>
 FeaturePromoController20::GetCommonWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+bool FeaturePromoController20::CanShowPromoForElement(
+    ui::TrackedElement* anchor_element) const {
+  // Default implementation for testing.
+  return true;
 }
 
 }  // namespace user_education

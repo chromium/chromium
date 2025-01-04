@@ -68,7 +68,7 @@ TEST_F(QuickInsertShortcutsTest, GetsCapsLockShortcutWithFnKey) {
       keyboard, std::move(keyboard_info));
 
   EXPECT_EQ(GetQuickInsertShortcutForCapsLock(),
-            QuickInsertCapsLockResult::Shortcut::kFnRightAlt);
+            QuickInsertCapsLockResult::Shortcut::kFnQuickInsert);
 }
 
 }  // namespace

@@ -34,6 +34,7 @@
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
@@ -105,6 +106,9 @@ class ScopedSetMetricsConsent {
  private:
   const bool consent_;
 };
+
+constexpr float kTestDefaultTemperature = 0.9;
+constexpr int kTestDefaultTopK = 7;
 
 }  // namespace
 
@@ -232,12 +236,11 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
     run_loop.Run();
   }
 
-  bool CanCreateOnDeviceSession(
+  OnDeviceModelEligibilityReason GetOnDeviceModelEligibility(
       ModelBasedCapabilityKey feature,
-      OnDeviceModelEligibilityReason* on_device_model_eligibility_reason,
       Profile* profile = nullptr) {
-    return GetOptimizationGuideKeyedService(profile)->CanCreateOnDeviceSession(
-        feature, on_device_model_eligibility_reason);
+    return GetOptimizationGuideKeyedService(profile)
+        ->GetOnDeviceModelEligibility(feature);
   }
 
   void SetExpectedBearerAccessToken(
@@ -417,20 +420,16 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionDisabledBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionDisabledBrowserTest,
-                       CanCreateOnDeviceSessionExecutionDisabled) {
-  OnDeviceModelEligibilityReason on_device_model_eligibility_reason;
-  EXPECT_FALSE(CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose,
-                                        &on_device_model_eligibility_reason));
-  EXPECT_EQ(on_device_model_eligibility_reason,
+                       GetOnDeviceModelEligibilityExecutionDisabled) {
+  EXPECT_EQ(GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose),
             OnDeviceModelEligibilityReason::kFeatureNotEnabled);
 }
 
 IN_PROC_BROWSER_TEST_F(
     ModelExecutionDisabledBrowserTest,
-    CanCreateOnDeviceSessionExecutionDisabledNullDebugReason) {
-  EXPECT_FALSE(
-      CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose,
-                               /*on_device_model_eligibility_reason=*/nullptr));
+    GetOnDeviceModelEligibilityExecutionDisabledNullDebugReason) {
+  EXPECT_NE(GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose),
+            OnDeviceModelEligibilityReason::kSuccess);
 }
 
 class ModelExecutionEnabledOnDeviceDisabledBrowserTest
@@ -444,20 +443,16 @@ class ModelExecutionEnabledOnDeviceDisabledBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledOnDeviceDisabledBrowserTest,
-                       CanCreateOnDeviceSessionOnDeviceDisabled) {
-  OnDeviceModelEligibilityReason on_device_model_eligibility_reason;
-  EXPECT_FALSE(CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose,
-                                        &on_device_model_eligibility_reason));
-  EXPECT_EQ(on_device_model_eligibility_reason,
+                       GetOnDeviceModelEligibilityOnDeviceDisabled) {
+  EXPECT_EQ(GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose),
             OnDeviceModelEligibilityReason::kFeatureNotEnabled);
 }
 
 IN_PROC_BROWSER_TEST_F(
     ModelExecutionEnabledOnDeviceDisabledBrowserTest,
-    CanCreateOnDeviceSessionExecutionDisabledNullDebugReason) {
-  EXPECT_FALSE(
-      CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose,
-                               /*on_device_model_eligibility_reason=*/nullptr));
+    GetOnDeviceModelEligibilityExecutionDisabledNullDebugReason) {
+  EXPECT_NE(GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose, ),
+            OnDeviceModelEligibilityReason::kSuccess);
 }
 
 class ModelExecutionEnabledBrowserTest : public ModelExecutionBrowserTestBase {
@@ -667,20 +662,16 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
-                       CanCreateOnDeviceSessionModelNotEligible) {
-  OnDeviceModelEligibilityReason on_device_model_eligibility_reason;
-  EXPECT_FALSE(CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose,
-                                        &on_device_model_eligibility_reason));
-  EXPECT_EQ(on_device_model_eligibility_reason,
+                       GetOnDeviceModelEligibilityModelNotEligible) {
+  EXPECT_EQ(GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose),
             OnDeviceModelEligibilityReason::kModelNotEligible);
 }
 
 IN_PROC_BROWSER_TEST_F(
     ModelExecutionEnabledBrowserTest,
-    CanCreateOnDeviceSessionExecutionDisabledNullDebugReason) {
-  EXPECT_FALSE(
-      CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose,
-                               /*on_device_model_eligibility_reason=*/nullptr));
+    GetOnDeviceModelEligibilityExecutionDisabledNullDebugReason) {
+  EXPECT_NE(GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose),
+            OnDeviceModelEligibilityReason::kSuccess);
 }
 
 class OnDeviceModelExecutionEnabledBrowserTest
@@ -690,7 +681,8 @@ class OnDeviceModelExecutionEnabledBrowserTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kOptimizationGuideModelExecution, {}},
          {features::kModelQualityLogging, {}},
-         {features::kOptimizationGuideOnDeviceModel,
+         {features::kOptimizationGuideOnDeviceModel, {}},
+         {features::kOnDeviceModelPerformanceParams,
           {{"compatible_on_device_performance_classes", "*"}}}},
         {});
   }
@@ -705,6 +697,12 @@ class OnDeviceModelExecutionEnabledBrowserTest
   void SetUpComposeModelExecutionConfig() {
     proto::OnDeviceModelExecutionFeatureConfig feature_config;
     feature_config.set_can_skip_text_safety(true);
+    auto sampling_params_proto =
+        std::make_unique<optimization_guide::proto::SamplingParams>();
+    sampling_params_proto->set_top_k(kTestDefaultTopK);
+    sampling_params_proto->set_temperature(kTestDefaultTemperature);
+    feature_config.set_allocated_sampling_params(
+        sampling_params_proto.release());
     auto metadata = OnDeviceModelAdaptationMetadata::New(
         nullptr, 123,
         base::MakeRefCounted<OnDeviceModelFeatureAdapter>(
@@ -720,43 +718,53 @@ class OnDeviceModelExecutionEnabledBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(OnDeviceModelExecutionEnabledBrowserTest,
-                       CanCreateOnDeviceSessionInRegularProfile) {
+                       GetOnDeviceModelEligibilityInRegularProfile) {
   SetUpBaseModel();
   SetUpComposeModelExecutionConfig();
 
-  OnDeviceModelEligibilityReason on_device_model_eligibility_reason;
-  EXPECT_TRUE(CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose,
-                                       &on_device_model_eligibility_reason));
+  EXPECT_EQ(GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose),
+            OnDeviceModelEligibilityReason::kSuccess);
 }
 
 IN_PROC_BROWSER_TEST_F(OnDeviceModelExecutionEnabledBrowserTest,
-                       CanCreateOnDeviceSessionInIncognito) {
+                       GetOnDeviceModelEligibilityInIncognito) {
   SetUpBaseModel();
 
   Browser* otr_browser = CreateIncognitoBrowser();
   SetUpComposeModelExecutionConfig();
 
-  OnDeviceModelEligibilityReason on_device_model_eligibility_reason;
-  EXPECT_TRUE(CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose,
-                                       &on_device_model_eligibility_reason,
-                                       otr_browser->profile()));
+  EXPECT_EQ(GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose,
+                                        otr_browser->profile()),
+            OnDeviceModelEligibilityReason::kSuccess);
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 // Guest profile only available in some platforms.
 IN_PROC_BROWSER_TEST_F(OnDeviceModelExecutionEnabledBrowserTest,
-                       CanCreateOnDeviceSessionInGuestProfile) {
+                       GetOnDeviceModelEligibilityInGuestProfile) {
   SetUpBaseModel();
 
   Browser* guest_browser = CreateGuestBrowser();
   SetUpComposeModelExecutionConfig();
 
-  OnDeviceModelEligibilityReason on_device_model_eligibility_reason;
-  EXPECT_TRUE(CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose,
-                                       &on_device_model_eligibility_reason,
-                                       guest_browser->profile()));
+  EXPECT_EQ(GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose,
+                                        guest_browser->profile()),
+            OnDeviceModelEligibilityReason::kSuccess);
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+
+IN_PROC_BROWSER_TEST_F(OnDeviceModelExecutionEnabledBrowserTest,
+                       GetSamplingParamsConfig) {
+  SetUpBaseModel();
+  SetUpComposeModelExecutionConfig();
+
+  auto sampling_config =
+      GetOptimizationGuideKeyedService()->GetSamplingParamsConfig(
+          ModelBasedCapabilityKey::kCompose);
+
+  EXPECT_EQ(sampling_config->default_top_k, kTestDefaultTopK);
+  EXPECT_EQ(sampling_config->default_temperature, kTestDefaultTemperature);
+}
 
 class ModelExecutionInternalsPageBrowserTest
     : public ModelExecutionEnabledBrowserTest {
@@ -971,7 +979,8 @@ class ModelExecutionNewFeaturesEnabledAutomaticallyTest
 #if !BUILDFLAG(IS_ANDROID)
 
 class ModelExecutionEnterprisePolicyBrowserTest
-    : public ModelExecutionEnabledBrowserTest {
+    : public ModelExecutionEnabledBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
     policy_provider_.SetDefaultReturns(
@@ -983,12 +992,18 @@ class ModelExecutionEnterprisePolicyBrowserTest
   }
 
   void InitializeFeatureList() override {
+    std::vector<base::test::FeatureRef> enabled_features = {
+        features::kOptimizationGuideModelExecution,
+        features::kModelQualityLogging,
+        features::internal::kTabOrganizationSettingsVisibility,
+        features::internal::kWallpaperSearchSettingsVisibility};
+
+    if (ShowEnterpriseDisabledFeatures()) {
+      enabled_features.push_back(features::kAiSettingsPageEnterpriseDisabledUi);
+    }
+
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {features::kOptimizationGuideModelExecution,
-         features::kModelQualityLogging,
-         features::internal::kTabOrganizationSettingsVisibility,
-         features::internal::kWallpaperSearchSettingsVisibility},
+        enabled_features,
         /*disabled_features=*/
         {features::internal::kComposeGraduated,
          features::internal::kComposeSettingsVisibility,
@@ -996,11 +1011,13 @@ class ModelExecutionEnterprisePolicyBrowserTest
          features::internal::kWallpaperSearchGraduated});
   }
 
+  bool ShowEnterpriseDisabledFeatures() { return GetParam(); }
+
  protected:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
-IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
+IN_PROC_BROWSER_TEST_P(ModelExecutionEnterprisePolicyBrowserTest,
                        DisableThenEnable) {
   EnableSignin();
 
@@ -1031,7 +1048,8 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
                nullptr);
   policy_provider_.UpdateChromePolicy(policies);
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
+  EXPECT_EQ(ShowEnterpriseDisabledFeatures(),
+            IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
   EXPECT_FALSE(ShouldFeatureBeCurrentlyEnabledForUser(
       UserVisibleFeatureKey::kTabOrganization));
   EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
@@ -1062,7 +1080,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
       proto::LogAiDataRequest::FeatureCase::kCompose));
 }
 
-IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
+IN_PROC_BROWSER_TEST_P(ModelExecutionEnterprisePolicyBrowserTest,
                        DisableThenEnableCompose) {
   EnableSignin();
 
@@ -1140,7 +1158,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
       1);
 }
 
-IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
+IN_PROC_BROWSER_TEST_P(ModelExecutionEnterprisePolicyBrowserTest,
                        EnableComposeWithoutLogging) {
   EnableSignin();
 
@@ -1210,7 +1228,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
       1);
 }
 
-IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
+IN_PROC_BROWSER_TEST_P(ModelExecutionEnterprisePolicyBrowserTest,
                        DisableThenEnableWallpaperSearch) {
   EnableSignin();
 
@@ -1236,7 +1254,8 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
                nullptr);
   policy_provider_.UpdateChromePolicy(policies);
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kWallpaperSearch));
+  EXPECT_EQ(ShowEnterpriseDisabledFeatures(),
+            IsSettingVisible(UserVisibleFeatureKey::kWallpaperSearch));
   EXPECT_FALSE(ShouldFeatureBeCurrentlyEnabledForUser(
       UserVisibleFeatureKey::kWallpaperSearch));
 
@@ -1257,7 +1276,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
       UserVisibleFeatureKey::kWallpaperSearch));
 }
 
-IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
+IN_PROC_BROWSER_TEST_P(ModelExecutionEnterprisePolicyBrowserTest,
                        EnableTabOrganizationWithoutLogging) {
   EnableSignin();
 
@@ -1290,6 +1309,10 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
   EXPECT_TRUE(ShouldFeatureBeCurrentlyAllowedForLogging(
       proto::LogAiDataRequest::FeatureCase::kCompose));
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         ModelExecutionEnterprisePolicyBrowserTest,
+                         ::testing::Bool());
 
 #endif  //  !BUILDFLAG(IS_ANDROID)
 

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 
+#include <array>
 #include <memory>
 
 #include "base/containers/adapters.h"
@@ -4322,7 +4318,7 @@ TEST_P(PaintArtifactCompositorTest, OpacityRenderSurfaces) {
   Update(artifact.Build());
   ASSERT_EQ(6u, LayerCount());
 
-  int effect_ids[6];
+  std::array<int, 6> effect_ids;
   for (size_t i = 0; i < LayerCount(); i++)
     effect_ids[i] = LayerAt(i)->effect_tree_index();
 
@@ -4409,7 +4405,7 @@ TEST_P(PaintArtifactCompositorTest, OpacityAnimationRenderSurfaces) {
   Update(artifact.Build());
   ASSERT_EQ(6u, LayerCount());
 
-  int effect_ids[6];
+  std::array<int, 6> effect_ids;
   for (size_t i = 0; i < LayerCount(); i++)
     effect_ids[i] = LayerAt(i)->effect_tree_index();
 

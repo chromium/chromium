@@ -12,6 +12,7 @@
 #include "ash/ash_export.h"
 #include "ash/lobster/lobster_entry_point_enums.h"
 #include "ash/public/cpp/lobster/lobster_enums.h"
+#include "ash/shell.h"
 #include "base/memory/raw_ptr.h"
 
 namespace ash {
@@ -24,8 +25,7 @@ class ASH_EXPORT LobsterController {
  public:
   class Trigger {
    public:
-    explicit Trigger(LobsterController* controller,
-                     std::unique_ptr<LobsterClient> client,
+    explicit Trigger(std::unique_ptr<LobsterClient> client,
                      LobsterEntryPoint entry_point,
                      LobsterMode mode);
     ~Trigger();
@@ -37,9 +37,6 @@ class ASH_EXPORT LobsterController {
       kReady,
       kDisabled,
     };
-
-    // Not owned by this class
-    raw_ptr<LobsterController> controller_;
 
     // The client to use for the session created with this trigger.
     std::unique_ptr<LobsterClient> client_;

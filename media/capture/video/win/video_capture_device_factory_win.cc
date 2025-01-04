@@ -104,8 +104,9 @@ enum BlockedCameraNames {
   BLOCKED_CAMERA_IP_CAMERA = 1,
   BLOCKED_CAMERA_CYBERLINK_WEBCAM_SPLITTER = 2,
   BLOCKED_CAMERA_EPOCCAM = 3,
+  BLOCKED_CAMERA_PLEORA_EBUS = 4,
   // This one must be last, and equal to the previous enumerated value.
-  BLOCKED_CAMERA_MAX = BLOCKED_CAMERA_EPOCCAM,
+  BLOCKED_CAMERA_MAX = BLOCKED_CAMERA_PLEORA_EBUS,
 };
 
 #define UWP_ENUM_ERROR_HANDLER(hr, err_log)                         \
@@ -123,6 +124,7 @@ const char* const kBlockedCameraNames[] = {
     "IP Camera [JPEG/MJPEG]",
     "CyberLink Webcam Splitter",
     "EpocCam",
+    "eBUS DirectShow Source",
 };
 static_assert(std::size(kBlockedCameraNames) == BLOCKED_CAMERA_MAX + 1,
               "kBlockedCameraNames should be same size as "

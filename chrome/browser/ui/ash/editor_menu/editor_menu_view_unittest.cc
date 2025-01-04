@@ -8,6 +8,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_chip_view.h"
+#include "chrome/browser/ui/ash/editor_menu/editor_menu_strings.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_textfield_view.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_view.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_view_delegate.h"
@@ -264,6 +265,33 @@ TEST_F(EditorMenuViewTest, DisablesMenu) {
       editor_menu_view->textfield_for_testing()->textfield()->GetEnabled());
   EXPECT_FALSE(
       editor_menu_view->textfield_for_testing()->arrow_button()->GetEnabled());
+}
+
+TEST_F(EditorMenuViewTest, UpdatesFreeformPlaceholderWhenSwitchingCardTab) {
+  NiceMock<MockEditorMenuViewDelegate> delegate;
+  const PresetTextQueries queries = {
+      PresetTextQuery("ID1", u"Rephrase", PresetQueryCategory::kRephrase),
+      PresetTextQuery("ID2", u"Emojify", PresetQueryCategory::kEmojify)};
+
+  std::unique_ptr<views::Widget> editor_menu_widget =
+      EditorMenuView::CreateWidget(TextAndImageMode::kEditorWriteAndLobster,
+                                   queries, gfx::Rect(200, 300, 400, 200),
+                                   &delegate);
+  editor_menu_widget->Show();
+  auto* editor_menu_view =
+      views::AsViewClass<EditorMenuView>(editor_menu_widget->GetContentsView());
+
+  editor_menu_view->TabSelectedAt(0);
+  EXPECT_EQ(editor_menu_view->textfield_for_testing()
+                ->textfield()
+                ->GetPlaceholderText(),
+            GetEditorMenuFreeformPromptInputFieldPlaceholderForHelpMeWrite());
+
+  editor_menu_view->TabSelectedAt(1);
+  EXPECT_EQ(editor_menu_view->textfield_for_testing()
+                ->textfield()
+                ->GetPlaceholderText(),
+            GetEditorMenuFreeformPromptInputFieldPlaceholderForLobster());
 }
 
 TEST_F(EditorMenuViewTest, AccessibleProperties) {

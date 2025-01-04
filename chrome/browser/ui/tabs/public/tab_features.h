@@ -63,8 +63,17 @@ namespace page_actions {
 class PageActionController;
 }  // namespace page_actions
 
+namespace passage_embeddings {
+class EmbedderTabObserver;
+}  // namespace passage_embeddings
+
+namespace tab_groups {
+class CollaborationMessagingTabData;
+}  // namespace tab_groups
+
 namespace tabs {
 
+class DisconnectFileChooserOnBackgroundController;
 class TabInterface;
 class TabDialogManager;
 
@@ -140,6 +149,11 @@ class TabFeatures {
 
   page_actions::PageActionController* page_action_controller() {
     return page_action_controller_.get();
+  }
+
+  tab_groups::CollaborationMessagingTabData*
+  collaboration_messaging_tab_data() {
+    return collaboration_messaging_tab_data_.get();
   }
 
   // Called exactly once to initialize features.
@@ -224,6 +238,16 @@ class TabFeatures {
 
   // Responsible for managing page actions of a tab.
   std::unique_ptr<page_actions::PageActionController> page_action_controller_;
+
+  // Contains the recent collaboration message for a shared tab.
+  std::unique_ptr<tab_groups::CollaborationMessagingTabData>
+      collaboration_messaging_tab_data_;
+
+  std::unique_ptr<passage_embeddings::EmbedderTabObserver>
+      embedder_tab_observer_;
+
+  std::unique_ptr<DisconnectFileChooserOnBackgroundController>
+      disconnect_file_chooser_on_background_controller_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

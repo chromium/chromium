@@ -68,8 +68,12 @@ const CGFloat kFaviconContainerWidth = 30;
         UITraitUserInterfaceLevel.class
       ];
 
-      [self registerForTraitChanges:traits
-                         withAction:@selector(updateColorOnTraitChange:)];
+      __weak __typeof(self) weakSelf = self;
+      UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                       UITraitCollection* previousCollection) {
+        [weakSelf updateColorOnTraitChange:previousCollection];
+      };
+      [self registerForTraitChanges:traits withHandler:handler];
     }
   }
   return self;

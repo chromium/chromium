@@ -72,8 +72,8 @@ source_set("drive_service") {
     "drive_service.mm",
     "drive_service_configuration.h",
   ]
-  deps = [ "//components/keyed_service/core" ]
   public_deps = [ "//base" ]
+  deps = [ "//components/keyed_service/core" ]
 }
 
 source_set("drive_file_downloader") {

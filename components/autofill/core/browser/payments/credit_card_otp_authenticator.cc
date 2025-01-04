@@ -5,13 +5,13 @@
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 
 #include "base/check_deref.h"
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
 #include "components/autofill/core/browser/payments/otp_unmask_result.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 
 namespace autofill {
 namespace {
@@ -47,14 +47,14 @@ void CreditCardOtpAuthenticator::OnUnmaskPromptAccepted(
     unmask_request_->client_behavior_signals.push_back(
         ClientBehaviorConstants::kShowingCardArtImageAndCardProductName);
   }
-  if (DidDisplayBenefitForCard(
-          *card_, *autofill_client_,
-          autofill_client_->GetPersonalDataManager().payments_data_manager())) {
+  if (DidDisplayBenefitForCard(*card_, *autofill_client_)) {
     unmask_request_->client_behavior_signals.push_back(
         ClientBehaviorConstants::kShowingCardBenefits);
   }
 
-  if (card_->record_type() == CreditCard::RecordType::kVirtualCard) {
+  if (card_->record_type() == CreditCard::RecordType::kVirtualCard ||
+      card_->card_info_retrieval_enrollment_state() ==
+          CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled) {
     std::optional<GURL> last_committed_primary_main_frame_origin;
     if (autofill_client_->GetLastCommittedPrimaryMainFrameURL().is_valid()) {
       last_committed_primary_main_frame_origin =
@@ -113,11 +113,11 @@ void CreditCardOtpAuthenticator::OnChallengeOptionSelected(
     return;
   }
 
-  // Currently only virtual cards are supported for OTP authentication.
-  // If non-virtual cards are allowed for OTP unmasking in the future,
-  // |OnDidSelectChallengeOption()| and |OnDidGetRealPan()| should allow for a
-  // generic error dialog.
-  CHECK_EQ(card->record_type(), CreditCard::RecordType::kVirtualCard);
+  // Currently only virtual cards and cards enrolled in runtime retrieval are
+  // supported for OTP authentication.
+  CHECK((card->record_type() == CreditCard::RecordType::kVirtualCard) ||
+        (card->card_info_retrieval_enrollment_state() ==
+         CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled));
   CHECK(selected_challenge_option.type ==
             CardUnmaskChallengeOptionType::kSmsOtp ||
         selected_challenge_option.type ==
@@ -204,13 +204,24 @@ void CreditCardOtpAuthenticator::OnDidSelectChallengeOption(
   // this function is invoked.
   autofill_client_->GetPaymentsAutofillClient()->OnUnmaskOtpVerificationResult(
       OtpUnmaskResult::kPermanentFailure);
-  // Show the virtual card permanent error dialog if server explicitly returned
-  // vcn permanent error, show temporary error dialog for the rest failure cases
-  // since currently only virtual card is supported.
-  autofill_client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
-      AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
-          /*is_permanent_error=*/result ==
-          PaymentsRpcResult::kVcnRetrievalPermanentFailure));
+  // Show the virtual card vcn error dialogs if server explicitly returned vcn
+  // errors, show card info retrieval permanent error dialog for permanent error
+  // and temporary errors for the rest failure cases since the message there is
+  // generic for all errors.
+  if (result == PaymentsRpcResult::kVcnRetrievalPermanentFailure ||
+      result == PaymentsRpcResult::kVcnRetrievalTryAgainFailure) {
+    autofill_client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
+        AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
+            /*is_permanent_error=*/result ==
+            PaymentsRpcResult::kVcnRetrievalPermanentFailure));
+  } else {
+    autofill_client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
+        AutofillErrorDialogContext::
+            WithCardInfoRetrievalPermanentOrTemporaryError(
+                /*is_permanent_error=*/result ==
+                PaymentsRpcResult::kPermanentFailure));
+  }
+
   if (requester_) {
     OtpAuthenticationResponse response;
     if (result == PaymentsRpcResult::kVcnRetrievalPermanentFailure ||
@@ -372,14 +383,23 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
 
   // If the server returned error dialog fields to be displayed, we prefer them
   // since they will be more detailed to the specific error that occurred.
+  // Otherwise we display virtual card errors for Vcn failure results and card
+  // info retrieval errors as default since the message is more generic there.
   if (response_details.autofill_error_dialog_context) {
     autofill_client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
         *response_details.autofill_error_dialog_context);
-  } else {
+  } else if (result == PaymentsRpcResult::kVcnRetrievalPermanentFailure ||
+             result == PaymentsRpcResult::kVcnRetrievalTryAgainFailure) {
     autofill_client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
         AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
             /*is_permanent_error=*/result ==
             PaymentsRpcResult::kVcnRetrievalPermanentFailure));
+  } else {
+    autofill_client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
+        AutofillErrorDialogContext::
+            WithCardInfoRetrievalPermanentOrTemporaryError(
+                /*is_permanent_error=*/result ==
+                PaymentsRpcResult::kPermanentFailure));
   }
   Reset();
 }

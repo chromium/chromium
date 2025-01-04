@@ -48,8 +48,7 @@ ChromeWebViewGuestDelegate::ChromeWebViewGuestDelegate(
     WebViewGuest* web_view_guest)
     : pending_context_menu_request_id_(0), web_view_guest_(web_view_guest) {}
 
-ChromeWebViewGuestDelegate::~ChromeWebViewGuestDelegate() {
-}
+ChromeWebViewGuestDelegate::~ChromeWebViewGuestDelegate() = default;
 
 bool ChromeWebViewGuestDelegate::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,

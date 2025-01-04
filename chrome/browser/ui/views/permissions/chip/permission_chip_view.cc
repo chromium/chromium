@@ -133,9 +133,9 @@ void PermissionChipView::OnThemeChanged() {
 }
 
 void PermissionChipView::UpdateBackgroundColor() {
-    SetBackground(views::CreateBackgroundFromPainter(
-        views::Painter::CreateSolidRoundRectPainterWithVariableRadius(
-            GetBackgroundColor(), GetCornerRadii())));
+  SetBackground(views::CreateBackgroundFromPainter(
+      views::Painter::CreateSolidRoundRectPainterWithVariableRadius(
+          GetBackgroundColor(), GetCornerRadii())));
 }
 
 void PermissionChipView::AnimationEnded(const gfx::Animation* animation) {

@@ -44,10 +44,11 @@ class SublevelManagerMacTest
   // Call Show() or ShowInactive() depending on WidgetShowType.
   void ShowWidget(const std::unique_ptr<Widget>& widget) {
     WidgetShowType show_type = std::get<WidgetShowType>(GetParam());
-    if (show_type == WidgetShowType::kShowActive)
+    if (show_type == WidgetShowType::kShowActive) {
       widget->Show();
-    else
+    } else {
       widget->ShowInactive();
+    }
     test::WidgetVisibleWaiter(widget.get()).Wait();
   }
 

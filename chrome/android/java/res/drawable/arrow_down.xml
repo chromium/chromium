@@ -15,14 +15,14 @@ found in the LICENSE file.
         android:strokeWidth="0.5"
         android:fillColor="@color/modern_white"
         android:fillType="nonZero"
-        android:strokeColor="@color/modern_grey_600"/>
+        android:strokeColor="@color/baseline_neutral_40"/>
     <group>
     <clip-path
         android:pathData="M12,14.94l-4.4733,-4.4667l0.9467,-0.9467l3.5267,3.5333l3.5267,-3.5333l0.9467,0.9467z"/>
     <path
         android:pathData="M4,4h16v16h-16z"
         android:strokeWidth="1"
-        android:fillColor="@color/modern_grey_800"
+        android:fillColor="@color/baseline_neutral_20"
         android:fillType="evenOdd"
         android:strokeColor="@color/black_alpha_11"/>
     </group>

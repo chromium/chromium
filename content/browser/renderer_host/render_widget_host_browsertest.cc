@@ -626,7 +626,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostSitePerProcessTest,
     EXPECT_TRUE(popup_routing_id);
     // Grab a pointer to the popup RenderWidget.
     RenderWidgetHost* popup_widget_host =
-        RenderWidgetHost::FromID(process->GetID(), popup_routing_id);
+        RenderWidgetHost::FromID(process->GetDeprecatedID(), popup_routing_id);
     ASSERT_TRUE(popup_widget_host);
     ASSERT_NE(popup_widget_host, root_frame_host->GetRenderWidgetHost());
 
@@ -707,7 +707,7 @@ class ShowPopupInterceptor
   }
 
   void DidCreatePopupWidget(RenderWidgetHostImpl* render_widget_host) {
-    process_id_ = render_widget_host->GetProcess()->GetID();
+    process_id_ = render_widget_host->GetProcess()->GetDeprecatedID();
     routing_id_ = render_widget_host->GetRoutingID();
     std::ignore = render_widget_host->popup_widget_host_receiver_for_testing()
                       .SwapImplForTesting(this);
@@ -826,7 +826,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostSitePerProcessTest,
 #else
   show_popup_interceptor.Wait();
   ASSERT_FALSE(
-      RenderWidgetHost::FromID(root_frame_host->GetProcess()->GetID(),
+      RenderWidgetHost::FromID(root_frame_host->GetProcess()->GetDeprecatedID(),
                                show_popup_interceptor.last_routing_id()));
 #endif  // BUILDFLAG(IS_MAC)
 }

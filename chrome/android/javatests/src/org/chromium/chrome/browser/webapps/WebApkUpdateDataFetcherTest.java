@@ -27,7 +27,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.webapps.WebApkIntentDataProviderBuilder;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestPage;
-import org.chromium.components.webapps.WebappsIconUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
 
 /** Tests the WebApkUpdateDataFetcher. */
@@ -155,7 +154,7 @@ public class WebApkUpdateDataFetcherTest {
     @MediumTest
     @Feature({"WebApk"})
     public void testLaunchWithDesiredManifestUrl() throws Exception {
-        WebappTestPage.navigateToServiceWorkerPageWithManifest(
+        WebappTestPage.navigateToPageWithManifest(
                 mTestServerRule.getServer(), mTab, WEB_MANIFEST_URL1);
 
         CallbackWaiter waiter = new CallbackWaiter();
@@ -168,14 +167,14 @@ public class WebApkUpdateDataFetcherTest {
     }
 
     /**
-     * Test that WebApkUpdateDataFetcher selects a maskable icon when 1. the manifest has a maskable
-     * icon, and 2. the Android version >= 26 (which supports adaptive icon).
+     * Test that WebApkUpdateDataFetcher selects a maskable icon when the manifest has a maskable
+     * icon.
      */
     @Test
     @MediumTest
     @Feature({"WebApk"})
     public void testLaunchWithMaskablePrimaryIconManifestUrl() throws Exception {
-        WebappTestPage.navigateToServiceWorkerPageWithManifest(
+        WebappTestPage.navigateToPageWithManifest(
                 mTestServerRule.getServer(), mTab, WEB_MANIFEST_URL_MASKABLE);
 
         CallbackWaiter waiter = new CallbackWaiter();
@@ -183,8 +182,7 @@ public class WebApkUpdateDataFetcherTest {
                 getTestIntentDataProviderBuilder(WEB_MANIFEST_URL_MASKABLE), waiter);
         waiter.waitForCallback(0);
 
-        Assert.assertEquals(
-                WebappsIconUtils.doesAndroidSupportMaskableIcons(), waiter.isPrimaryIconMaskable());
+        Assert.assertTrue(waiter.isPrimaryIconMaskable());
     }
 
     /**
@@ -195,7 +193,7 @@ public class WebApkUpdateDataFetcherTest {
     @MediumTest
     @Feature({"Webapps"})
     public void testLargeIconMurmur2Hash() throws Exception {
-        WebappTestPage.navigateToServiceWorkerPageWithManifest(
+        WebappTestPage.navigateToPageWithManifest(
                 mTestServerRule.getServer(), mTab, WEB_MANIFEST_WITH_LONG_ICON_MURMUR2_HASH);
 
         CallbackWaiter waiter = new CallbackWaiter();
@@ -214,7 +212,7 @@ public class WebApkUpdateDataFetcherTest {
     @MediumTest
     @Feature({"Webapps"})
     public void testLaunchWithDifferentManifestUrlSameId() throws Exception {
-        WebappTestPage.navigateToServiceWorkerPageWithManifest(
+        WebappTestPage.navigateToPageWithManifest(
                 mTestServerRule.getServer(), mTab, WEB_MANIFEST_URL1);
 
         CallbackWaiter waiter = new CallbackWaiter();
@@ -234,13 +232,13 @@ public class WebApkUpdateDataFetcherTest {
     @MediumTest
     @Feature({"Webapps"})
     public void testLaunchWithDifferentManifestId() throws Exception {
-        WebappTestPage.navigateToServiceWorkerPageWithManifest(
+        WebappTestPage.navigateToPageWithManifest(
                 mTestServerRule.getServer(), mTab, WEB_MANIFEST_URL3);
 
         CallbackWaiter waiter = new CallbackWaiter();
         startWebApkUpdateDataFetcher(getTestIntentDataProviderBuilder(WEB_MANIFEST_URL1), waiter);
 
-        WebappTestPage.navigateToServiceWorkerPageWithManifest(
+        WebappTestPage.navigateToPageWithManifest(
                 mTestServerRule.getServer(), mTab, WEB_MANIFEST_URL2);
         waiter.waitForOnly();
         Assert.assertTrue(waiter.isWebApkCompatible());
@@ -253,7 +251,7 @@ public class WebApkUpdateDataFetcherTest {
     @MediumTest
     @Feature({"Webapps"})
     public void testLaunchWithEmptyOldManifestId() throws Exception {
-        WebappTestPage.navigateToServiceWorkerPageWithManifest(
+        WebappTestPage.navigateToPageWithManifest(
                 mTestServerRule.getServer(), mTab, WEB_MANIFEST_URL3);
 
         CallbackWaiter waiter = new CallbackWaiter();

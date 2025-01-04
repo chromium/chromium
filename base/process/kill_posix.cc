@@ -27,8 +27,8 @@ TerminationStatus GetTerminationStatusImpl(ProcessHandle handle,
   DCHECK(exit_code);
 
   int status = 0;
-  const pid_t result = HANDLE_EINTR(waitpid(handle, &status,
-                                            can_block ? 0 : WNOHANG));
+  const pid_t result =
+      HANDLE_EINTR(waitpid(handle, &status, can_block ? 0 : WNOHANG));
   if (result == -1) {
     DPLOG(ERROR) << "waitpid(" << handle << ")";
     *exit_code = 0;
@@ -66,8 +66,9 @@ TerminationStatus GetTerminationStatusImpl(ProcessHandle handle,
     }
   }
 
-  if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
+  if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
     return TERMINATION_STATUS_ABNORMAL_TERMINATION;
+  }
 
   return TERMINATION_STATUS_NORMAL_TERMINATION;
 }
@@ -82,8 +83,9 @@ TerminationStatus GetKnownDeadTerminationStatus(ProcessHandle handle,
                                                 int* exit_code) {
   bool result = kill(handle, SIGKILL) == 0;
 
-  if (!result)
+  if (!result) {
     DPLOG(ERROR) << "Unable to terminate process " << handle;
+  }
 
   return GetTerminationStatusImpl(handle, true /* can_block */, exit_code);
 }
@@ -114,8 +116,9 @@ bool CleanupProcesses(const FilePath::StringType& executable_name,
                       int exit_code,
                       const ProcessFilter* filter) {
   bool exited_cleanly = WaitForProcessesToExit(executable_name, wait, filter);
-  if (!exited_cleanly)
+  if (!exited_cleanly) {
     KillProcesses(executable_name, exit_code, filter);
+  }
   return exited_cleanly;
 }
 
@@ -150,8 +153,9 @@ class BackgroundReaper : public PlatformThread::Delegate {
 void EnsureProcessTerminated(Process process) {
   DCHECK(!process.is_current());
 
-  if (process.WaitForExitWithTimeout(TimeDelta(), nullptr))
+  if (process.WaitForExitWithTimeout(TimeDelta(), nullptr)) {
     return;
+  }
 
   PlatformThread::CreateNonJoinable(
       0, new BackgroundReaper(std::move(process), Seconds(2)));
@@ -162,8 +166,9 @@ void EnsureProcessGetsReaped(Process process) {
   DCHECK(!process.is_current());
 
   // If the child is already dead, then there's nothing to do.
-  if (process.WaitForExitWithTimeout(TimeDelta(), nullptr))
+  if (process.WaitForExitWithTimeout(TimeDelta(), nullptr)) {
     return;
+  }
 
   PlatformThread::CreateNonJoinable(
       0, new BackgroundReaper(std::move(process), TimeDelta()));

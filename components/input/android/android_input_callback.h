@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_INPUT_ANDROID_ANDROID_INPUT_CALLBACK_H_
 #define COMPONENTS_INPUT_ANDROID_ANDROID_INPUT_CALLBACK_H_
 
+#include "base/android/scoped_input_event.h"
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -15,7 +16,7 @@ namespace input {
 
 class AndroidInputCallbackClient {
  public:
-  virtual bool OnMotionEvent(AInputEvent* input_event,
+  virtual bool OnMotionEvent(base::android::ScopedInputEvent input_event,
                              const viz::FrameSinkId& root_frame_sink_id) = 0;
 };
 
@@ -26,7 +27,7 @@ class COMPONENT_EXPORT(INPUT) AndroidInputCallback {
 
   static bool OnMotionEventThunk(void* context, AInputEvent* input_event);
 
-  bool OnMotionEvent(AInputEvent* input_event);
+  bool OnMotionEvent(base::android::ScopedInputEvent input_event);
 
   const viz::FrameSinkId& root_frame_sink_id() const {
     return root_frame_sink_id_;

@@ -40,8 +40,6 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CollectionUtil;
@@ -333,7 +331,6 @@ class TabListMediator implements TabListNotificationHandler {
 
     private static final String TAG = "TabListMediator";
     private static Map<Integer, Integer> sTabClosedFromMapTabClosedFromMap = new HashMap<>();
-    private static Set<Integer> sViewedTabIds = new HashSet<>();
 
     private final ValueChangedCallback<TabGroupModelFilter> mOnTabGroupModelFilterChanged =
             new ValueChangedCallback<>(this::onTabGroupModelFilterChanged);
@@ -370,10 +367,6 @@ class TabListMediator implements TabListNotificationHandler {
     private Size mDefaultGridCardSize;
     private ComponentCallbacks mComponentCallbacks;
     private GridLayoutManager mGridLayoutManager;
-    // mRecyclerView and mOnScrollListener are null, unless the the price drop IPH or badge is
-    // enabled.
-    private @Nullable RecyclerView mRecyclerView;
-    private @Nullable OnScrollListener mOnScrollListener;
     // Set to true after a `resetWithListOfTabs` that used a non-null list of tabs. Remains true
     // until `postHiding` is invoked or the mediator is destroyed. While true, this mediator is
     // actively tracking updates to a TabModel.
@@ -381,7 +374,6 @@ class TabListMediator implements TabListNotificationHandler {
     private Tab mTabToAddDelayed;
     private RecyclerViewItemAnimationToggle mRecyclerViewItemAnimationToggle;
     private ListObserver<Void> mListObserver;
-    private TabGroupTitleEditor mTabGroupTitleEditor;
     private View.AccessibilityDelegate mAccessibilityDelegate;
     private int mCurrentSpanCount;
 
@@ -589,6 +581,8 @@ class TabListMediator implements TabListNotificationHandler {
                         // Changing URL will result in a thumbnail invalidation if the on-disk
                         // thumbnail doesn't match.
                         updateThumbnailFetcher(model, tab.getId());
+                        // Changing URL should also invalidate the favicon.
+                        updateFaviconForTab(model, tab, null, null);
                     }
                 }
             };
@@ -1281,48 +1275,11 @@ class TabListMediator implements TabListNotificationHandler {
         }
         mCollaborationService = CollaborationServiceFactory.getForProfile(originalProfile);
 
-        mTabGroupTitleEditor =
-                new TabGroupTitleEditor() {
-                    @Override
-                    public void updateTabGroupTitle(Tab tab, String title) {
-                        // Only update title in PropertyModel for tab switcher.
-                        if (!mActionsOnAllRelatedTabs) return;
-                        Tab currentGroupSelectedTab =
-                                TabGroupUtils.getSelectedTabInGroupForTab(
-                                        mCurrentTabGroupModelFilterSupplier.get(), tab);
-                        int index = mModelList.indexFromId(currentGroupSelectedTab.getId());
-                        if (index == TabModel.INVALID_TAB_INDEX) return;
-
-                        PropertyModel model = mModelList.get(index).model;
-                        model.set(TabProperties.TITLE, title);
-                        updateDescriptionString(tab, model);
-                        updateActionButtonDescriptionString(tab, model);
-                    }
-
-                    @Override
-                    public void deleteTabGroupTitle(int tabRootId) {
-                        TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
-                        filter.deleteTabGroupTitle(tabRootId);
-                    }
-
-                    @Override
-                    public String getTabGroupTitle(int tabRootId) {
-                        TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
-                        return filter.getTabGroupTitle(tabRootId);
-                    }
-
-                    @Override
-                    public void storeTabGroupTitle(int tabRootId, String title) {
-                        TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
-                        filter.setTabGroupTitle(tabRootId, title);
-                    }
-                };
-
         // Right now we need to update layout only if there is a price welcome message card in tab
         // switcher.
         if (mMode == TabListMode.GRID
                 && mTabActionState != TabActionState.SELECTABLE
-                && PriceTrackingFeatures.isPriceTrackingEnabled(originalProfile)) {
+                && PriceTrackingFeatures.isPriceAnnotationsEnabled(originalProfile)) {
             mListObserver =
                     new ListObserver<Void>() {
                         @Override
@@ -1492,23 +1449,9 @@ class TabListMediator implements TabListNotificationHandler {
         return false;
     }
 
-    /**
-     * Add the tab id of a {@Tab} that has been viewed to the sViewedTabIds set.
-     *
-     * @param tabIndex The tab index of a {@Tab} the user has viewed.
-     */
-    private void addViewedTabId(int tabIndex) {
-        TabModel tabModel = mCurrentTabGroupModelFilterSupplier.get().getTabModel();
-        assert !tabModel.isIncognito();
-        int tabId = mModelList.get(tabIndex).model.get(TabProperties.TAB_ID);
-        assert tabModel.getTabById(tabId) != null;
-        sViewedTabIds.add(tabId);
-    }
-
     void postHiding() {
         removeObservers(mCurrentTabGroupModelFilterSupplier.get());
         mShowingTabs = false;
-        unregisterOnScrolledListener();
         // if tab was marked for add later, add to model and mark as selected.
         if (mTabToAddDelayed != null) {
             int index = onTabAdded(mTabToAddDelayed, !mActionsOnAllRelatedTabs);
@@ -1538,11 +1481,6 @@ class TabListMediator implements TabListNotificationHandler {
                 model.set(TabProperties.FAVICON_FETCHER, null);
             }
         }
-    }
-
-    void hardCleanup() {
-        assert !mShowingTabs;
-        sViewedTabIds.clear();
     }
 
     private void updateTab(int index, Tab tab, boolean isUpdatingId, boolean quickMode) {
@@ -1600,10 +1538,6 @@ class TabListMediator implements TabListNotificationHandler {
         assert filter.isTabModelRestored();
 
         return filter.isTabInTabGroup(tab);
-    }
-
-    public Set<Integer> getViewedTabIdsForTesting() {
-        return sViewedTabIds;
     }
 
     /**
@@ -1670,52 +1604,6 @@ class TabListMediator implements TabListNotificationHandler {
     }
 
     /**
-     * Adds an on scroll listener to {@link TabListRecyclerView} that determines whether a tab
-     * thumbnail is within view after a scroll is completed.
-     *
-     * @param recyclerView the {@link TabListRecyclerView} to add the listener too.
-     */
-    void registerOnScrolledListener(RecyclerView recyclerView) {
-        // For InstantStart, this can be called before native is initialized, so ensure the Profile
-        // is available before proceeding.
-        if (mOriginalProfile == null) return;
-
-        if (!mCurrentTabGroupModelFilterSupplier.get().isIncognitoBranded()
-                && PriceTrackingUtilities.isTrackPricesOnTabsEnabled(mOriginalProfile)
-                && (PriceTrackingFeatures.isPriceDropIphEnabled(mOriginalProfile)
-                        || PriceTrackingFeatures.isPriceDropBadgeEnabled(mOriginalProfile))) {
-            mRecyclerView = recyclerView;
-            mOnScrollListener =
-                    new OnScrollListener() {
-                        @Override
-                        public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                            if (!mCurrentTabGroupModelFilterSupplier
-                                    .get()
-                                    .getTabModel()
-                                    .isIncognito()) {
-                                for (int i = 0; i < mRecyclerView.getChildCount(); i++) {
-                                    if (mRecyclerView
-                                            .getLayoutManager()
-                                            .isViewPartiallyVisible(
-                                                    mRecyclerView.getChildAt(i), false, true)) {
-                                        addViewedTabId(i);
-                                    }
-                                }
-                            }
-                        }
-                    };
-            mRecyclerView.addOnScrollListener(mOnScrollListener);
-        }
-    }
-
-    private void unregisterOnScrolledListener() {
-        if (mRecyclerView != null && mOnScrollListener != null) {
-            mRecyclerView.removeOnScrollListener(mOnScrollListener);
-            mOnScrollListener = null;
-        }
-    }
-
-    /**
      * Span count is computed based on screen width for tablets and orientation for phones. When in
      * multi-window mode on phone, the span count is fixed to 2 to keep tab card size reasonable.
      */
@@ -1769,15 +1657,6 @@ class TabListMediator implements TabListNotificationHandler {
                 };
     }
 
-    /**
-     * Exposes a {@link TabGroupTitleEditor} to modify the title of a tab group.
-     * @return The {@link TabGroupTitleEditor} used to modify the title of a tab group.
-     */
-    @Nullable
-    TabGroupTitleEditor getTabGroupTitleEditor() {
-        return mTabGroupTitleEditor;
-    }
-
     /** Destroy any members that needs clean up. */
     public void destroy() {
         if (mListObserver != null) {
@@ -1789,7 +1668,6 @@ class TabListMediator implements TabListNotificationHandler {
         if (mComponentCallbacks != null) {
             mActivity.unregisterComponentCallbacks(mComponentCallbacks);
         }
-        unregisterOnScrolledListener();
     }
 
     void setTabActionState(@TabActionState int tabActionState) {
@@ -2119,14 +1997,14 @@ class TabListMediator implements TabListNotificationHandler {
     @VisibleForTesting
     String getLatestTitleForTab(Tab tab, boolean useDefault) {
         String originalTitle = tab.getTitle();
-        if (!mActionsOnAllRelatedTabs || mTabGroupTitleEditor == null || !isTabInTabGroup(tab)) {
+        if (!mActionsOnAllRelatedTabs || !isTabInTabGroup(tab)) {
             return originalTitle;
         }
 
-        String storedTitle = mTabGroupTitleEditor.getTabGroupTitle(tab.getRootId());
+        TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
+        String storedTitle = filter.getTabGroupTitle(tab.getRootId());
         if (TextUtils.isEmpty(storedTitle)) {
             if (useDefault) {
-                TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
                 return TabGroupTitleUtils.getDefaultTitle(
                         mActivity, filter.getRelatedTabCountForRootId(tab.getRootId()));
             } else {
@@ -2329,7 +2207,7 @@ class TabListMediator implements TabListNotificationHandler {
                 || mCurrentTabGroupModelFilterSupplier.get().isIncognitoBranded()
                 || !mActionsOnAllRelatedTabs
                 || mOriginalProfile == null
-                || !PriceTrackingFeatures.isPriceTrackingEligible(mOriginalProfile)) {
+                || !PriceTrackingFeatures.isPriceAnnotationsEligible(mOriginalProfile)) {
             return;
         }
         SharedPreferencesManager preferencesManager = ChromeSharedPreferences.getInstance();
@@ -2718,8 +2596,7 @@ class TabListMediator implements TabListNotificationHandler {
                     mCurrentTabGroupModelFilterSupplier.get(),
                     mDataSharingTabManager,
                     tabId,
-                    model.get(TabProperties.TITLE),
-                    (unused) -> {});
+                    model.get(TabProperties.TITLE));
         }
     }
 

@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <cmath>
 #include <limits>
 #include <map>
@@ -951,8 +952,8 @@ TEST_F(NetworkQualityEstimatorTest, ObtainThresholdsOnlyRTT) {
 }
 
 TEST_F(NetworkQualityEstimatorTest, ClampKbpsBasedOnEct) {
-  const int32_t kTypicalDownlinkKbpsEffectiveConnectionType
-      [net::EFFECTIVE_CONNECTION_TYPE_LAST] = {0, 0, 40, 75, 400, 1600};
+  const std::array<int32_t, net::EFFECTIVE_CONNECTION_TYPE_LAST>
+      kTypicalDownlinkKbpsEffectiveConnectionType = {0, 0, 40, 75, 400, 1600};
 
   const struct {
     std::string upper_bound_typical_kbps_multiplier;

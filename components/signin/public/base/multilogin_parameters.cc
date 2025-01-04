@@ -17,8 +17,9 @@ namespace {
 std::string GetAccountsAsString(
     const std::vector<CoreAccountId>& accounts_to_send) {
   std::vector<std::string> parts;
-  for (const CoreAccountId& account : accounts_to_send)
+  for (const CoreAccountId& account : accounts_to_send) {
     parts.push_back(account.ToString());
+  }
   return "{" + base::JoinString(parts, ", ") + "}";
 }
 

@@ -55,6 +55,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/string_util_win.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/threading/thread_restrictions.h"
@@ -92,13 +94,16 @@ bool SetPropVariantValueForPropertyStore(
   DCHECK(property_store);
 
   HRESULT result = property_store->SetValue(property_key, property_value.get());
-  if (result == S_OK)
+  if (result == S_OK) {
     result = property_store->Commit();
-  if (SUCCEEDED(result))
+  }
+  if (SUCCEEDED(result)) {
     return true;
+  }
 #if DCHECK_IS_ON()
-  if (HRESULT_FACILITY(result) == FACILITY_WIN32)
+  if (HRESULT_FACILITY(result) == FACILITY_WIN32) {
     ::SetLastError(HRESULT_CODE(result));
+  }
   // See third_party/perl/c/i686-w64-mingw32/include/propkey.h for GUID and
   // PID definitions.
   DPLOG(ERROR) << "Failed to set property with GUID "
@@ -124,8 +129,9 @@ POWER_PLATFORM_ROLE GetPlatformRole() {
 // available (i.e., prior to Windows 10 1703) or fails, returns false.
 // https://docs.microsoft.com/en-us/windows/desktop/hidpi/dpi-awareness-context
 bool EnablePerMonitorV2() {
-  if (!IsUser32AndGdi32Available())
+  if (!IsUser32AndGdi32Available()) {
     return false;
+  }
 
   static const auto set_process_dpi_awareness_context_func =
       reinterpret_cast<decltype(&::SetProcessDpiAwarenessContext)>(
@@ -155,8 +161,9 @@ bool* GetRegisteredWithManagementStateStorage() {
 
     ScopedNativeLibrary library(
         FilePath(FILE_PATH_LITERAL("MDMRegistration.dll")));
-    if (!library.is_valid())
+    if (!library.is_valid()) {
       return false;
+    }
 
     using IsDeviceRegisteredWithManagementFunction =
         decltype(&::IsDeviceRegisteredWithManagement);
@@ -164,8 +171,9 @@ bool* GetRegisteredWithManagementStateStorage() {
         is_device_registered_with_management_function =
             reinterpret_cast<IsDeviceRegisteredWithManagementFunction>(
                 library.GetFunctionPointer("IsDeviceRegisteredWithManagement"));
-    if (!is_device_registered_with_management_function)
+    if (!is_device_registered_with_management_function) {
       return false;
+    }
 
     BOOL is_managed = FALSE;
     HRESULT hr =
@@ -187,14 +195,16 @@ bool* GetAzureADJoinStateStorage() {
 
     ScopedNativeLibrary netapi32(
         base::LoadSystemLibrary(FILE_PATH_LITERAL("netapi32.dll")));
-    if (!netapi32.is_valid())
+    if (!netapi32.is_valid()) {
       return false;
+    }
 
     const auto net_get_aad_join_information_function =
         reinterpret_cast<decltype(&::NetGetAadJoinInformation)>(
             netapi32.GetFunctionPointer("NetGetAadJoinInformation"));
-    if (!net_get_aad_join_information_function)
+    if (!net_get_aad_join_information_function) {
       return false;
+    }
 
     const auto net_free_aad_join_information_function =
         reinterpret_cast<decltype(&::NetFreeAadJoinInformation)>(
@@ -220,9 +230,128 @@ NativeLibrary PinUser32Internal(NativeLibraryLoadError* error) {
   static NativeLibraryLoadError load_error;
   static const NativeLibrary user32_module =
       PinSystemLibrary(FILE_PATH_LITERAL("user32.dll"), &load_error);
-  if (!user32_module && error)
+  if (!user32_module && error) {
     error->code = load_error.code;
+  }
   return user32_module;
+}
+
+// Returns true if the internal display, if any, is on and the device is not in
+// extend mode. This allows for the correct posture decision for devices that
+// are docked but either closed or in second-screen only projection mode.
+bool IsValidTabletDisplayConfig() {
+  uint32_t path_count;
+  uint32_t mode_count;
+  // All paths is expensive, therefore check only active paths.
+  uint32_t flags = QDC_ONLY_ACTIVE_PATHS | QDC_VIRTUAL_MODE_AWARE;
+  // Get the buffer sizes used for `QueryDisplayConfig()`.
+  // https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-querydisplayconfig
+  if (::GetDisplayConfigBufferSizes(flags, &path_count, &mode_count) !=
+      ERROR_SUCCESS) {
+    // Default safely to Desktop in the unlikely case these calls fail.
+    return false;
+  }
+
+  std::vector<DISPLAYCONFIG_PATH_INFO> paths(path_count);
+  std::vector<DISPLAYCONFIG_MODE_INFO> modes(mode_count);
+
+  // Read all active paths.
+  if (::QueryDisplayConfig(flags, &path_count, paths.data(), &mode_count,
+                           modes.data(), nullptr) != ERROR_SUCCESS) {
+    return false;
+  }
+
+  // Resize buffers to exact size from `QueryDisplayConfig()`.
+  paths.resize(path_count);
+  modes.resize(mode_count);
+
+  // For each active path, check if the target points to an internal
+  // display and there are no extended displays.
+  // https://learn.microsoft.com/en-us/windows/win32/api/wingdi/ne-wingdi-displayconfig_video_output_technology
+  bool internal_monitor_active = false;
+  bool has_extended_monitor = false;
+  for (auto& path : paths) {
+    if (path.sourceInfo.sourceModeInfoIdx ==
+        DISPLAYCONFIG_PATH_SOURCE_MODE_IDX_INVALID) {
+      // Safely default to desktop mode if the status of an extended monitor can
+      // not be determined. This prevents the browser from going into tablet
+      // mode if for any reason the user is using a combination of extended and
+      // duplicate displays.
+      return false;
+    }
+
+    switch (path.targetInfo.outputTechnology) {
+      case DISPLAYCONFIG_OUTPUT_TECHNOLOGY_INTERNAL:
+      case DISPLAYCONFIG_OUTPUT_TECHNOLOGY_DISPLAYPORT_EMBEDDED:
+      case DISPLAYCONFIG_OUTPUT_TECHNOLOGY_UDI_EMBEDDED:
+        internal_monitor_active = true;
+        break;
+      default:
+        internal_monitor_active = false;
+    }
+
+    auto& mode = modes[path.sourceInfo.sourceModeInfoIdx];
+    POINTL pos = mode.sourceMode.position;
+    if ((pos.x != 0) || (pos.y != 0)) {
+      has_extended_monitor = true;
+      break;
+    }
+  }
+
+  return internal_monitor_active && !has_extended_monitor;
+}
+
+// Check attached keyboards and populate reason string if we find ACPI\* or
+// HID\VID* keyboards.
+void SetKeyboardPresentOnDeviceReason(std::ostringstream& reason) {
+  static constexpr GUID kKeyboardClassGuid = {
+      0x4D36E96B,
+      0xE325,
+      0x11CE,
+      {0xBF, 0xC1, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18}};
+
+  // Query for all the keyboard devices.
+  HDEVINFO device_info = ::SetupDiGetClassDevs(&kKeyboardClassGuid, nullptr,
+                                               nullptr, DIGCF_PRESENT);
+  if (device_info == INVALID_HANDLE_VALUE) {
+    reason << "No keyboard info\n";
+    return;
+  }
+
+  // Enumerate all keyboards and look for ACPI\PNP and HID\VID devices. If
+  // the count is more than 1 we assume that a keyboard is present. This is
+  // under the assumption that there will always be one keyboard device.
+  for (DWORD i = 0;; ++i) {
+    SP_DEVINFO_DATA device_info_data = {};
+    device_info_data.cbSize = sizeof(device_info_data);
+    if (!::SetupDiEnumDeviceInfo(device_info, i, &device_info_data)) {
+      break;
+    }
+
+    // Get the device ID.
+    wchar_t device_id[MAX_DEVICE_ID_LEN];
+    CONFIGRET status = ::CM_Get_Device_ID(device_info_data.DevInst, device_id,
+                                          ARRAYSIZE(device_id), 0);
+    if (status == CR_SUCCESS) {
+      // To reduce the scope of the hack we only look for ACPI and HID\\VID
+      // prefixes in the keyboard device ids.
+      if (StartsWith(device_id, L"ACPI", CompareCase::INSENSITIVE_ASCII) ||
+          StartsWith(device_id, L"HID\\VID", CompareCase::INSENSITIVE_ASCII)) {
+        reason << "device: ";
+        reason << WideToUTF8(device_id);
+        reason << '\n';
+      }
+    }
+  }
+}
+
+bool IsWindows11TabletMode() {
+  // Check if the device is convertible. Then check if the device is being
+  // used as a tablet. Finally, check whether the device is in a valid
+  // tablet display configuration.
+  return QueryDeviceConvertibility() &&
+         IsDeviceUsedAsATablet(/*reason=*/nullptr) &&
+         IsValidTabletDisplayConfig();
 }
 
 }  // namespace
@@ -265,7 +394,7 @@ bool& IsDeviceFormConvertible() {
 bool& IsChassisConvertible() {
   static bool chassis_convertible = [] {
     ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-    AssertComApartmentType(ComApartmentType::STA);
+    AssertComInitialized();
 
     constexpr std::wstring_view kQuery =
         L"select ChassisTypes from Win32_SystemEnclosure";
@@ -376,53 +505,15 @@ QueryKeyFunction& HasCSMStateChanged() {
   return state;
 }
 
-// Uses the Windows 10 WRL API's to query the current system state. The API's
-// we are using in the function below are supported in Win32 apps as per msdn.
-// It looks like the API implementation is buggy at least on Surface 4 causing
-// it to always return UserInteractionMode_Touch which as per documentation
-// indicates tablet mode.
-bool IsWindows10OrGreaterTabletMode(HWND hwnd) {
+void IsDeviceInTabletMode(HWND hwnd, OnceCallback<void(bool)> callback) {
   if (GetVersion() >= Version::WIN11) {
-    // Only Win10 supports explicit tablet mode. On Win11,
-    // get_UserInteractionMode always returns UserInteractionMode_Mouse, so
-    // instead we check if we're in slate mode or not - 0 value means slate
-    // mode. See
-    // https://docs.microsoft.com/en-us/windows-hardware/customize/desktop/unattend/microsoft-windows-gpiobuttons-convertibleslatemode
-
-    constexpr int kKeyboardPresent = 1;
-    base::win::RegKey registry_key(
-        HKEY_LOCAL_MACHINE,
-        L"System\\CurrentControlSet\\Control\\PriorityControl",
-        KEY_QUERY_VALUE);
-    DWORD slate_mode = 0;
-    bool value_exists = registry_key.ReadValueDW(L"ConvertibleSlateMode",
-                                                 &slate_mode) == ERROR_SUCCESS;
-    // Some devices don't set the reg key to 1 for keyboard-only devices, so
-    // also check if the device is used as a tablet if it is not 1. Some devices
-    // don't set the registry key at all; fall back to checking if the device
-    // is used as a tablet for them as well.
-    return !(value_exists && slate_mode == kKeyboardPresent) &&
-           IsDeviceUsedAsATablet(/*reason=*/nullptr);
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(&IsWindows11TabletMode), std::move(callback));
+    return;
   }
-
-  ScopedHString view_settings_guid = ScopedHString::Create(
-      RuntimeClass_Windows_UI_ViewManagement_UIViewSettings);
-  Microsoft::WRL::ComPtr<IUIViewSettingsInterop> view_settings_interop;
-  HRESULT hr = ::RoGetActivationFactory(view_settings_guid.get(),
-                                        IID_PPV_ARGS(&view_settings_interop));
-  if (FAILED(hr))
-    return false;
-
-  Microsoft::WRL::ComPtr<ABI::Windows::UI::ViewManagement::IUIViewSettings>
-      view_settings;
-  hr = view_settings_interop->GetForWindow(hwnd, IID_PPV_ARGS(&view_settings));
-  if (FAILED(hr))
-    return false;
-
-  ABI::Windows::UI::ViewManagement::UserInteractionMode mode =
-      ABI::Windows::UI::ViewManagement::UserInteractionMode_Mouse;
-  view_settings->get_UserInteractionMode(&mode);
-  return mode == ABI::Windows::UI::ViewManagement::UserInteractionMode_Touch;
+  SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, BindOnce(std::move(callback), IsWindows10TabletMode(hwnd)));
 }
 
 bool QueryDeviceConvertibility() {
@@ -445,143 +536,94 @@ bool QueryDeviceConvertibility() {
   return (HasCSMStateChanged())();
 }
 
-// Returns true if a physical keyboard is detected on Windows 8 and up.
-// Uses the Setup APIs to enumerate the attached keyboards and returns true
-// if the keyboard count is 1 or more.. While this will work in most cases
-// it won't work if there are devices which expose keyboard interfaces which
-// are attached to the machine.
-bool IsKeyboardPresentOnSlate(HWND hwnd, std::string* reason) {
-  bool result = false;
+// Uses the Windows 10 WRL API's to query the current system state. The APIs
+// used in the function below are supported in Win32 apps as per msdn.
+// It looks like the API implementation is buggy at least on Surface 4 causing
+// it to always return UserInteractionMode_Touch which as per documentation
+// indicates tablet mode.
+bool IsWindows10TabletMode(HWND hwnd) {
+  ScopedHString view_settings_guid = ScopedHString::Create(
+      RuntimeClass_Windows_UI_ViewManagement_UIViewSettings);
+  Microsoft::WRL::ComPtr<IUIViewSettingsInterop> view_settings_interop;
+  HRESULT hr = ::RoGetActivationFactory(view_settings_guid.get(),
+                                        IID_PPV_ARGS(&view_settings_interop));
+  if (FAILED(hr)) {
+    return false;
+  }
 
+  Microsoft::WRL::ComPtr<ABI::Windows::UI::ViewManagement::IUIViewSettings>
+      view_settings;
+  hr = view_settings_interop->GetForWindow(hwnd, IID_PPV_ARGS(&view_settings));
+  if (FAILED(hr)) {
+    return false;
+  }
+
+  ABI::Windows::UI::ViewManagement::UserInteractionMode mode =
+      ABI::Windows::UI::ViewManagement::UserInteractionMode_Mouse;
+  hr = view_settings->get_UserInteractionMode(&mode);
+  if (FAILED(hr)) {
+    return false;
+  }
+
+  return mode == ABI::Windows::UI::ViewManagement::UserInteractionMode_Touch;
+}
+
+void IsDeviceSlateWithKeyboard(HWND hwnd,
+                               OnceCallback<void(bool, std::string)> callback) {
+  std::ostringstream reason;
   if (CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableUsbKeyboardDetect)) {
-    if (reason) {
-      *reason = "Detection disabled";
-    }
-    return false;
+    reason << "Detection disabled";
+    SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, BindOnce(std::move(callback), /*keyboard_present=*/false,
+                            std::move(reason).str()));
+    return;
   }
 
-  // This function should be only invoked for machines with touch screens.
+  // If no touch screen detected, assume keyboard attached.
+  // TODO(crbug.com/383267933) If the device is mouse only with no touch screen,
+  // this will determine that the device has a keyboard.
   if ((GetSystemMetrics(SM_DIGITIZER) & NID_INTEGRATED_TOUCH) !=
       NID_INTEGRATED_TOUCH) {
-    if (!reason) {
-      return true;
-    }
-
-    *reason += "NID_INTEGRATED_TOUCH\n";
-    result = true;
+    reason << "NID_INTEGRATED_TOUCH\n";
   }
 
-  // If it is a tablet device we assume that there is no keyboard attached.
-  if (IsTabletDevice(reason, hwnd)) {
-    if (reason) {
-      *reason += "Tablet device.\n";
-    }
-    return false;
-  }
+  // Once the async call to IsDeviceInTabletMode is complete, run
+  // `on_tablet_mode_determined` to populate the `reason` string if present and
+  // run the `callback`.
+  auto on_tablet_mode_determined =
+      [](OnceCallback<void(bool, std::string)> keyboard_callback,
+         std::ostringstream reason, bool is_tablet_mode) {
+        if (is_tablet_mode) {
+          reason << "Tablet device.\n";
 
-  if (!reason) {
-    return true;
-  }
-
-  *reason += "Not a tablet device";
-  result = true;
-
-  // To determine whether a keyboard is present on the device, we do the
-  // following:-
-  // 1. Check whether the device supports auto rotation. If it does then
-  //    it possibly supports flipping from laptop to slate mode. If it
-  //    does not support auto rotation, then we assume it is a desktop
-  //    or a normal laptop and assume that there is a keyboard.
-
-  // 2. If the device supports auto rotation, then we get its platform role
-  //    and check the system metric SM_CONVERTIBLESLATEMODE to see if it is
-  //    being used in slate mode. If yes then we return false here to ensure
-  //    that the OSK is displayed.
-
-  // 3. If step 1 and 2 fail then we check attached keyboards and return true
-  //    if we find ACPI\* or HID\VID* keyboards.
-
-  using GetAutoRotationState = decltype(&::GetAutoRotationState);
-  static const auto get_rotation_state = reinterpret_cast<GetAutoRotationState>(
-      GetUser32FunctionPointer("GetAutoRotationState"));
-  if (get_rotation_state) {
-    AR_STATE auto_rotation_state = AR_ENABLED;
-    get_rotation_state(&auto_rotation_state);
-    if ((auto_rotation_state & AR_NOSENSOR) ||
-        (auto_rotation_state & AR_NOT_SUPPORTED)) {
-      // If there is no auto rotation sensor or rotation is not supported in
-      // the current configuration, then we can assume that this is a desktop
-      // or a traditional laptop.
-      if (!reason) {
-        return true;
-      }
-
-      *reason += (auto_rotation_state & AR_NOSENSOR) ? "AR_NOSENSOR\n"
-                                                     : "AR_NOT_SUPPORTED\n";
-      result = true;
-    }
-  }
-
-  const GUID KEYBOARD_CLASS_GUID = {
-      0x4D36E96B,
-      0xE325,
-      0x11CE,
-      {0xBF, 0xC1, 0x08, 0x00, 0x2B, 0xE1, 0x03, 0x18}};
-
-  // Query for all the keyboard devices.
-  HDEVINFO device_info = SetupDiGetClassDevs(&KEYBOARD_CLASS_GUID, nullptr,
-                                             nullptr, DIGCF_PRESENT);
-  if (device_info == INVALID_HANDLE_VALUE) {
-    if (reason) {
-      *reason += "No keyboard info\n";
-    }
-    return result;
-  }
-
-  // Enumerate all keyboards and look for ACPI\PNP and HID\VID devices. If
-  // the count is more than 1 we assume that a keyboard is present. This is
-  // under the assumption that there will always be one keyboard device.
-  for (DWORD i = 0;; ++i) {
-    SP_DEVINFO_DATA device_info_data = {0};
-    device_info_data.cbSize = sizeof(device_info_data);
-    if (!SetupDiEnumDeviceInfo(device_info, i, &device_info_data))
-      break;
-
-    // Get the device ID.
-    wchar_t device_id[MAX_DEVICE_ID_LEN];
-    CONFIGRET status = CM_Get_Device_ID(device_info_data.DevInst, device_id,
-                                        MAX_DEVICE_ID_LEN, 0);
-    if (status == CR_SUCCESS) {
-      // To reduce the scope of the hack we only look for ACPI and HID\\VID
-      // prefixes in the keyboard device ids.
-      if (StartsWith(device_id, L"ACPI", CompareCase::INSENSITIVE_ASCII) ||
-          StartsWith(device_id, L"HID\\VID", CompareCase::INSENSITIVE_ASCII)) {
-        if (reason) {
-          *reason += "device: ";
-          *reason += WideToUTF8(device_id);
-          *reason += '\n';
+          std::move(keyboard_callback)
+              .Run(/*keyboard_present=*/false, std::move(reason).str());
+          return;
         }
-        // The heuristic we are using is to check the count of keyboards and
-        // return true if the API's report one or more keyboards. Please note
-        // that this will break for non keyboard devices which expose a
-        // keyboard PDO.
-        result = true;
-      }
-    }
-  }
-  return result;
+
+        reason << "Not a tablet device.\n";
+        SetKeyboardPresentOnDeviceReason(reason);
+        std::move(keyboard_callback)
+            .Run(/*keyboard_present=*/true, std::move(reason).str());
+      };
+
+  IsDeviceInTabletMode(hwnd,
+                       base::BindOnce(std::move(on_tablet_mode_determined),
+                                      std::move(callback), std::move(reason)));
 }
 
 static bool g_crash_on_process_detach = false;
 
 bool GetUserSidString(std::wstring* user_sid) {
   std::optional<AccessToken> token = AccessToken::FromCurrentProcess();
-  if (!token)
+  if (!token) {
     return false;
+  }
   std::optional<std::wstring> sid_string = token->User().ToSddlString();
-  if (!sid_string)
+  if (!sid_string) {
     return false;
+  }
   *user_sid = *sid_string;
   return true;
 }
@@ -702,13 +744,6 @@ void SetAbortBehaviorForCrashReporting() {
   signal(SIGABRT, ForceCrashOnSigAbort);
 }
 
-bool IsTabletDevice(std::string* reason, HWND hwnd) {
-  if (IsWindows10OrGreaterTabletMode(hwnd))
-    return true;
-
-  return IsDeviceUsedAsATablet(reason);
-}
-
 // This method is used to set the right interactions media queries,
 // see https://drafts.csswg.org/mediaqueries-4/#mf-interaction. It doesn't
 // check the Windows 10 tablet mode because it doesn't reflect the actual
@@ -738,22 +773,6 @@ bool IsDeviceUsedAsATablet(std::string* reason) {
     *reason += "SM_SYSTEMDOCKED\n";
     if (!ret.has_value()) {
       ret = false;
-    }
-  }
-
-  // If the device is not supporting rotation, it's unlikely to be a tablet,
-  // a convertible or a detachable.
-  // See
-  // https://msdn.microsoft.com/en-us/library/windows/desktop/dn629263(v=vs.85).aspx
-  using GetAutoRotationStateType = decltype(GetAutoRotationState)*;
-  static const auto get_auto_rotation_state_func =
-      reinterpret_cast<GetAutoRotationStateType>(
-          GetUser32FunctionPointer("GetAutoRotationState"));
-  if (get_auto_rotation_state_func) {
-    AR_STATE rotation_state = AR_ENABLED;
-    if (get_auto_rotation_state_func(&rotation_state) &&
-        (rotation_state & (AR_NOT_SUPPORTED | AR_LAPTOP | AR_NOSENSOR)) != 0) {
-      return ret.value_or(false);
     }
   }
 
@@ -789,8 +808,9 @@ bool IsDeviceRegisteredWithManagement() {
   // GetRegisteredWithManagementStateStorage() can be true for devices running
   // the Home sku, however the Home sku does not allow for management of the web
   // browser. As such, we automatically exclude devices running the Home sku.
-  if (OSInfo::GetInstance()->version_type() == SUITE_HOME)
+  if (OSInfo::GetInstance()->version_type() == SUITE_HOME) {
     return false;
+  }
   return *GetRegisteredWithManagementStateStorage();
 }
 
@@ -871,12 +891,14 @@ void DisableFlicks(HWND hwnd) {
 }
 
 void EnableHighDPISupport() {
-  if (!IsUser32AndGdi32Available())
+  if (!IsUser32AndGdi32Available()) {
     return;
+  }
 
   // Enable per-monitor V2 if it is available (Win10 1703 or later).
-  if (EnablePerMonitorV2())
+  if (EnablePerMonitorV2()) {
     return;
+  }
 
   // Fall back to per-monitor DPI for older versions of Win10.
   PROCESS_DPI_AWARENESS process_dpi_awareness = PROCESS_PER_MONITOR_DPI_AWARE;
@@ -910,8 +932,9 @@ bool PinUser32(NativeLibraryLoadError* error) {
 void* GetUser32FunctionPointer(const char* function_name,
                                NativeLibraryLoadError* error) {
   NativeLibrary user32_module = PinUser32Internal(error);
-  if (user32_module)
+  if (user32_module) {
     return GetFunctionPointerFromNativeLibrary(user32_module, function_name);
+  }
   return nullptr;
 }
 
@@ -962,8 +985,9 @@ bool RegisterPointerDeviceNotifications(HWND hwnd,
 
 bool IsRunningUnderDesktopName(std::wstring_view desktop_name) {
   HDESK thread_desktop = ::GetThreadDesktop(::GetCurrentThreadId());
-  if (!thread_desktop)
+  if (!thread_desktop) {
     return false;
+  }
 
   std::wstring current_desktop_name = GetWindowObjectName(thread_desktop);
   return EqualsCaseInsensitiveASCII(AsStringPiece16(current_desktop_name),
@@ -974,19 +998,22 @@ bool IsRunningUnderDesktopName(std::wstring_view desktop_name) {
 // See:
 // https://docs.microsoft.com/en-us/windows/desktop/TermServ/detecting-the-terminal-services-environment
 bool IsCurrentSessionRemote() {
-  if (::GetSystemMetrics(SM_REMOTESESSION))
+  if (::GetSystemMetrics(SM_REMOTESESSION)) {
     return true;
+  }
 
   DWORD current_session_id = 0;
 
-  if (!::ProcessIdToSessionId(::GetCurrentProcessId(), &current_session_id))
+  if (!::ProcessIdToSessionId(::GetCurrentProcessId(), &current_session_id)) {
     return false;
+  }
 
   static constexpr wchar_t kRdpSettingsKeyName[] =
       L"SYSTEM\\CurrentControlSet\\Control\\Terminal Server";
   RegKey key(HKEY_LOCAL_MACHINE, kRdpSettingsKeyName, KEY_READ);
-  if (!key.Valid())
+  if (!key.Valid()) {
     return false;
+  }
 
   static constexpr wchar_t kGlassSessionIdValueName[] = L"GlassSessionId";
   DWORD glass_session_id = 0;

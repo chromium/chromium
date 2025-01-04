@@ -91,13 +91,16 @@ struct DictionaryIdComparator {
     std::u16string a_str;
     std::u16string b_str;
     const std::string* ptr = a_dict.FindString(kCertificatesHandlerNameField);
-    if (ptr)
+    if (ptr) {
       a_str = base::UTF8ToUTF16(*ptr);
+    }
     ptr = b_dict.FindString(kCertificatesHandlerNameField);
-    if (ptr)
+    if (ptr) {
       b_str = base::UTF8ToUTF16(*ptr);
-    if (collator_ == nullptr)
+    }
+    if (collator_ == nullptr) {
       return a_str < b_str;
+    }
     return base::i18n::CompareString16WithCollator(*collator_, a_str, b_str) ==
            UCOL_LESS;
   }
@@ -149,12 +152,14 @@ struct CertEquals {
 //  Therefore PFX can be distingushed by checking if the file starts with an
 //  indefinite SEQUENCE, or a definite SEQUENCE { INTEGER,  ... }.
 bool CouldBePFX(std::string_view data) {
-  if (data.size() < 4)
+  if (data.size() < 4) {
     return false;
+  }
 
   // Indefinite length SEQUENCE.
-  if (data[0] == 0x30 && static_cast<uint8_t>(data[1]) == 0x80)
+  if (data[0] == 0x30 && static_cast<uint8_t>(data[1]) == 0x80) {
     return true;
+  }
 
   // If the SEQUENCE is definite length, it can be parsed through the version
   // tag using DER parser, since INTEGER must be definite length, even in BER.
@@ -278,8 +283,9 @@ CertificatesHandler::CertificatesHandler()
       file_access_provider_(base::MakeRefCounted<FileAccessProvider>()) {}
 
 CertificatesHandler::~CertificatesHandler() {
-  if (select_file_dialog_.get())
+  if (select_file_dialog_.get()) {
     select_file_dialog_->ListenerDestroyed();
+  }
   select_file_dialog_.reset();
 }
 
@@ -401,8 +407,9 @@ void CertificatesHandler::FileSelectionCanceled() {
 void CertificatesHandler::HandleViewCertificate(const base::Value::List& args) {
   CertificateManagerModel::CertInfo* cert_info =
       GetCertInfoFromCallbackArgs(args, 0 /* arg_index */);
-  if (!cert_info)
+  if (!cert_info) {
     return;
+  }
   net::ScopedCERTCertificateList certs;
   certs.push_back(net::x509_util::DupCERTCertificate(cert_info->cert()));
   CertificateViewerDialog::ShowConstrained(
@@ -411,8 +418,9 @@ void CertificatesHandler::HandleViewCertificate(const base::Value::List& args) {
 
 bool CertificatesHandler::AssignWebUICallbackId(const base::Value::List& args) {
   CHECK_LE(1U, args.size());
-  if (!webui_callback_id_.empty())
+  if (!webui_callback_id_.empty()) {
     return false;
+  }
   webui_callback_id_ = args[0].GetString();
   return true;
 }
@@ -428,8 +436,9 @@ void CertificatesHandler::HandleGetCATrust(const base::Value::List& args) {
 
   CertificateManagerModel::CertInfo* cert_info =
       GetCertInfoFromCallbackArgs(args, 1 /* arg_index */);
-  if (!cert_info)
+  if (!cert_info) {
     return;
+  }
 
   net::NSSCertDatabase::TrustBits trust_bits =
       certificate_manager_model_->cert_db()->GetCertTrust(cert_info->cert(),
@@ -457,8 +466,9 @@ void CertificatesHandler::HandleEditCATrust(const base::Value::List& args) {
 
   CertificateManagerModel::CertInfo* cert_info =
       GetCertInfoFromCallbackArgs(args, 1 /* arg_index */);
-  if (!cert_info)
+  if (!cert_info) {
     return;
+  }
 
   if (!CanEditCertificate(cert_info)) {
     RejectCallbackWithError(
@@ -492,8 +502,9 @@ void CertificatesHandler::HandleEditCATrust(const base::Value::List& args) {
 
 void CertificatesHandler::HandleExportPersonal(const base::Value::List& args) {
   // Early return if the select file dialog is already active.
-  if (select_file_dialog_)
+  if (select_file_dialog_) {
     return;
+  }
 
   CHECK_EQ(2U, args.size());
   if (!AssignWebUICallbackId(args)) {
@@ -503,8 +514,9 @@ void CertificatesHandler::HandleExportPersonal(const base::Value::List& args) {
 
   CertificateManagerModel::CertInfo* cert_info =
       GetCertInfoFromCallbackArgs(args, 1 /* arg_index */);
-  if (!cert_info)
+  if (!cert_info) {
     return;
+  }
 
   selected_cert_list_.push_back(
       net::x509_util::DupCERTCertificate(cert_info->cert()));
@@ -590,8 +602,9 @@ void CertificatesHandler::ExportPersonalFileWritten(const int* write_errno) {
 
 void CertificatesHandler::HandleImportPersonal(const base::Value::List& args) {
   // Early return if the select file dialog is already active.
-  if (select_file_dialog_)
+  if (select_file_dialog_) {
     return;
+  }
 
   // When the "allowed" value changes while user on the certificate manager
   // page, the UI doesn't update without page refresh and user can still see and
@@ -767,16 +780,18 @@ void CertificatesHandler::ImportExportCleanup() {
 
   // There may be pending file dialogs, we need to tell them that we've gone
   // away so they don't try and call back to us.
-  if (select_file_dialog_.get())
+  if (select_file_dialog_.get()) {
     select_file_dialog_->ListenerDestroyed();
+  }
   select_file_dialog_.reset();
   pending_operation_ = std::nullopt;
 }
 
 void CertificatesHandler::HandleImportServer(const base::Value::List& args) {
   // Early return if the select file dialog is already active.
-  if (select_file_dialog_)
+  if (select_file_dialog_) {
     return;
+  }
 
   CHECK_EQ(1U, args.size());
   if (!AssignWebUICallbackId(args)) {
@@ -851,8 +866,9 @@ void CertificatesHandler::ImportServerFileRead(const int* read_errno,
 
 void CertificatesHandler::HandleImportCA(const base::Value::List& args) {
   // Early return if the select file dialog is already active.
-  if (select_file_dialog_)
+  if (select_file_dialog_) {
     return;
+  }
 
   // When the "allowed" value changes while user on the certificate manager
   // page, the UI doesn't update without page refresh and user can still see and
@@ -964,8 +980,9 @@ void CertificatesHandler::HandleExportCertificate(
     const base::Value::List& args) {
   CertificateManagerModel::CertInfo* cert_info =
       GetCertInfoFromCallbackArgs(args, 0 /* arg_index */);
-  if (!cert_info)
+  if (!cert_info) {
     return;
+  }
 
   net::ScopedCERTCertificateList export_certs;
   export_certs.push_back(net::x509_util::DupCERTCertificate(cert_info->cert()));
@@ -983,8 +1000,9 @@ void CertificatesHandler::HandleDeleteCertificate(
 
   CertificateManagerModel::CertInfo* cert_info =
       GetCertInfoFromCallbackArgs(args, 1 /* arg_index */);
-  if (!cert_info)
+  if (!cert_info) {
     return;
+  }
 
   if (!CanDeleteCertificate(cert_info)) {
     RejectCallbackWithError(
@@ -1063,8 +1081,9 @@ void CertificatesHandler::PopulateTree(const std::string& tab_name,
   UErrorCode error = U_ZERO_ERROR;
   collator.reset(icu::Collator::createInstance(
       icu::Locale(g_browser_process->GetApplicationLocale().c_str()), error));
-  if (U_FAILURE(error))
+  if (U_FAILURE(error)) {
     collator.reset();
+  }
   DictionaryIdComparator comparator(collator.get());
   CertificateManagerModel::OrgGroupingMap org_grouping_map;
 
@@ -1155,15 +1174,16 @@ void CertificatesHandler::RejectCallbackWithImportError(
     const std::string& title,
     const net::NSSCertDatabase::ImportCertFailureList& not_imported) {
   std::string error;
-  if (selected_cert_list_.size() == 1)
+  if (selected_cert_list_.size() == 1) {
     error = l10n_util::GetStringUTF8(
         IDS_SETTINGS_CERTIFICATE_MANAGER_IMPORT_SINGLE_NOT_IMPORTED);
-  else if (not_imported.size() == selected_cert_list_.size())
+  } else if (not_imported.size() == selected_cert_list_.size()) {
     error = l10n_util::GetStringUTF8(
         IDS_SETTINGS_CERTIFICATE_MANAGER_IMPORT_ALL_NOT_IMPORTED);
-  else
+  } else {
     error = l10n_util::GetStringUTF8(
         IDS_SETTINGS_CERTIFICATE_MANAGER_IMPORT_SOME_NOT_IMPORTED);
+  }
 
   base::Value::List cert_error_list;
   for (const auto& failure : not_imported) {
@@ -1190,15 +1210,18 @@ gfx::NativeWindow CertificatesHandler::GetParentWindow() {
 CertificateManagerModel::CertInfo*
 CertificatesHandler::GetCertInfoFromCallbackArgs(const base::Value::List& args,
                                                  size_t arg_index) {
-  if (arg_index >= args.size())
+  if (arg_index >= args.size()) {
     return nullptr;
+  }
   const auto& arg = args[arg_index];
-  if (!arg.is_string())
+  if (!arg.is_string()) {
     return nullptr;
+  }
 
   int32_t cert_info_id = 0;
-  if (!base::StringToInt(arg.GetString(), &cert_info_id))
+  if (!base::StringToInt(arg.GetString(), &cert_info_id)) {
     return nullptr;
+  }
 
   return cert_info_id_map_.Lookup(cert_info_id);
 }

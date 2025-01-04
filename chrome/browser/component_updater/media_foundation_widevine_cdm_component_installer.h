@@ -27,7 +27,6 @@ class MediaFoundationWidevineCdmComponentInstallerPolicy
       MediaFoundationWidevineCdmComponentInstallerPolicy& other) = delete;
   MediaFoundationWidevineCdmComponentInstallerPolicy& operator=(
       const MediaFoundationWidevineCdmComponentInstallerPolicy& other) = delete;
-  ~MediaFoundationWidevineCdmComponentInstallerPolicy() override = default;
 
  private:
   // The following methods override ComponentInstallerPolicy.

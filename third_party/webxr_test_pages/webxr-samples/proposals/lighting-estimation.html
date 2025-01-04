@@ -33,7 +33,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     <script type="importmap">
       {
         "imports": {
-          "three": "https://unpkg.com/three@0.139.2/build/three.module.js"
+          "three": "https://unpkg.com/three@0.172.0/build/three.module.js"
         }
       }
     </script>
@@ -150,7 +150,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             }
 
             ctx.reflectionChanged = true;
-            ctx.renderer.setAnimationLoop((time, frame) => {
+            ctx.renderer.xr.setAnimationLoop((time, frame) => {
               render(ctx, time, frame);
             });
           });
@@ -203,6 +203,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             if (cubeMap) {
               let rendererProps = ctx.renderer.properties.get(ctx.threeEnvMap);
               rendererProps.__webglTexture = cubeMap;
+              ctx.threeEnvMap.needsPMREMUpdate = true;
             } else {
               console.log("Cube map not available");
             }

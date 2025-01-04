@@ -19,6 +19,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -377,10 +378,13 @@ public class ClearBrowsingDataFragmentTest {
         return datatypes;
     }
 
-    /** Tests that changing the time interval for deletion affects the delete request. */
+    /**
+     * Tests that changing the time interval for a deletion changes the option prefs of Clear
+     * Browsing Data and affects the delete request if the deletion goes through.
+     */
     @Test
     @MediumTest
-    public void testClearTimeInterval() throws Exception {
+    public void testTimeIntervalChangedAndDelete() throws Exception {
         setDataTypesToClear(DialogOption.CLEAR_CACHE);
 
         final ClearBrowsingDataFragment preferences =
@@ -407,6 +411,40 @@ public class ClearBrowsingDataFragmentTest {
                         any(),
                         any(),
                         any());
+
+        // Verify the preferences are saved if the deletion goes through.
+        verify(mBrowsingDataBridgeMock)
+                .setBrowsingDataDeletionTimePeriod(
+                        eq(expectedProfile), anyInt(), eq(TimePeriod.LAST_HOUR));
+        verify(mBrowsingDataBridgeMock)
+                .setBrowsingDataDeletionPreference(
+                        eq(expectedProfile), eq(BrowsingDataType.CACHE), anyInt(), eq(true));
+    }
+
+    /**
+     * Tests that changing the time interval for a deletion does not change the option prefs of
+     * Clear Browsing Data if the deletion doesn't go through.
+     */
+    @Test
+    @MediumTest
+    public void testTimeIntervalChangedAndDismiss() throws Exception {
+        setDataTypesToClear(DialogOption.CLEAR_CACHE);
+
+        final ClearBrowsingDataFragment preferences =
+                (ClearBrowsingDataFragment) startPreferences().getMainFragment();
+        final Profile expectedProfile = preferences.getProfile();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    changeTimePeriodTo(preferences, TimePeriod.LAST_HOUR);
+                });
+
+        // Verify the preferences are not set if the deletion doesn't go through.
+        verify(mBrowsingDataBridgeMock, never())
+                .setBrowsingDataDeletionTimePeriod(any(), anyInt(), anyInt());
+        verify(mBrowsingDataBridgeMock, never())
+                .setBrowsingDataDeletionPreference(
+                        eq(expectedProfile), anyInt(), anyInt(), anyBoolean());
     }
 
     /** Selects the specified time for browsing data removal. */

@@ -93,7 +93,7 @@ FilePathWatcherFSEvents::~FilePathWatcherFSEvents() {
 }
 
 size_t FilePathWatcherFSEvents::current_usage() const {
-  return kNumberOfWatches;
+  return kNumberOfFSEventStreamCreateCalls;
 }
 
 bool FilePathWatcherFSEvents::Watch(const base::FilePath& path,
@@ -248,10 +248,6 @@ WatchWithChangeInfoResult FilePathWatcherFSEvents::UpdateEventStream(
       base::apple::FilePathToCFString(resolved_target_);
   CFStringRef paths_array[] = {cf_path.get()};
 
-  static_assert(std::size(paths_array) == kNumberOfWatches,
-                "Update kNumberOfWatches to equal the number of paths we're "
-                "watching so that usage is reported accurately.");
-
   base::apple::ScopedCFTypeRef<CFArrayRef> watched_paths(
       CFArrayCreate(NULL, reinterpret_cast<const void**>(paths_array),
                     std::size(paths_array), &kCFTypeArrayCallBacks));
@@ -262,6 +258,9 @@ WatchWithChangeInfoResult FilePathWatcherFSEvents::UpdateEventStream(
   context.retain = NULL;
   context.release = NULL;
   context.copyDescription = NULL;
+
+  // Ensure that if more `FSEventStreamCreate` calls are added that
+  // `kNumberOfFSEventStreamCreateCalls` is updated to match.
 
   // The parameters of `FSEventStreamCreate` are defined by the FSEvents API:
   // (https://developer.apple.com/documentation/coreservices/1443980-fseventstreamcreate).

@@ -23,6 +23,7 @@ source_set("metadata_headers") {
     "//base:base",
     "//skia:skia",
     "//ui/base",
+    "//ui/base/ime:text_input_types",
     "//ui/gfx",
     "//url",
   ]
@@ -38,6 +39,7 @@ component("metadata") {
   defines = [ "IS_UI_BASE_METADATA_IMPL" ]
 
   deps = [
+    "//components/url_formatter",
     "//skia:skia",
     "//ui/gfx:color_utils",
   ]

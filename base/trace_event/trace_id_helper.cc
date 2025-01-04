@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/trace_event/trace_id_helper.h"
+
 #include "base/atomic_sequence_num.h"
 #include "base/rand_util.h"
 

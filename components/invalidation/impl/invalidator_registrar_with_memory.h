@@ -26,8 +26,6 @@ namespace invalidation {
 
 class Invalidation;
 
-BASE_DECLARE_FEATURE(kRestoreInterestingTopicsFeature);
-
 // A helper class for FCMInvalidationService.  It helps keep track of registered
 // handlers and which topic registrations are associated with each handler.
 class INVALIDATION_EXPORT InvalidatorRegistrarWithMemory {

@@ -77,7 +77,6 @@ Se o eliminas, todas as persoas perderán inmediatamente o acceso ao grupo de pe
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> pestana cambiada. Pestanas pechadas: <ph name="ANY_CLOSED" />}other{<ph name="MANY_CHANGED" /> pestanas cambiadas. Pestanas pechadas: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="4371591986692297148">Inactivo</translation>
 <translation id="4460014764210899310">Desagrupar</translation>
-<translation id="4590027107044272416">Agora a opción para abrir pestanas novas está aquí</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Queres pechar 1 pestana inactiva?}other{Queres pechar <ph name="TAB_COUNT_MANY" /> pestanas inactivas?}}</translation>
 <translation id="4686942373615810936">Creouse agora mesmo</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Pechar despois de 1 día}other{Pechar despois de <ph name="DAY_COUNT_MANY" /> días}}</translation>
@@ -98,7 +97,9 @@ Se o eliminas, todas as persoas perderán inmediatamente o acceso ao grupo de pe
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> pestana engadida}other{<ph name="MANY_ADDED" /> pestanas engadidas}}</translation>
 <translation id="5161254044473106830">Título obrigatorio</translation>
 <translation id="5339733443032484186">A túa última pestana</translation>
+<translation id="5380159289133845234">Arquivar pestanas duplicadas</translation>
 <translation id="5400836586163650660">Gris</translation>
+<translation id="5446043142172831860">Quitar pestana e saír do grupo</translation>
 <translation id="5490235265819901748">Grupo de pestanas despregado</translation>
 <translation id="5494920125229734069">Seleccionar todo</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Pecha o grupo de pestanas de cor <ph name="COLOR_NAME" /> que ten <ph name="TABS_COUNT_ONE" /> pestana.}other{Pecha o grupo de pestanas de cor <ph name="COLOR_NAME" /> que ten <ph name="TABS_COUNT_MANY" /> pestanas.}}</translation>
@@ -117,6 +118,7 @@ Se saes del, perderás inmediatamente o acceso ao grupo de pestanas "<ph name="T
 <translation id="6051432659151380973">Os teus grupos de pestanas gárdanse automaticamente</translation>
 <translation id="6054741997831917303">O prezo deste artigo baixou recentemente de <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Perderás inmediatamente o acceso ao grupo de pestanas <ph name="GROUP_NAME" /></translation>
+<translation id="6109251075362363230">Agora tamén se arquivarán todas as pestanas duplicadas, a excepción da copia usada máis recentemente.</translation>
 <translation id="6193448654517602979">Selecciona pestanas</translation>
 <translation id="6228793724645064692">(valoración da tenda)</translation>
 <translation id="6271513594716432922">Pechar todas as pestanas inactivas</translation>

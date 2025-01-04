@@ -85,18 +85,19 @@ bool ParentAccessService::IsApprovalRequired(SupervisedAction action) {
   switch (action) {
     case SupervisedAction::kUpdateClock:
     case SupervisedAction::kUpdateTimezone:
-      if (user_manager::UserManager::Get()->IsUserLoggedIn())
+      if (user_manager::UserManager::Get()->IsUserLoggedIn()) {
         return user_manager::UserManager::Get()->GetActiveUser()->IsChild();
+      }
       return IsDeviceOwnedByChild();
     case SupervisedAction::kAddUser:
-      if (!features::IsParentAccessCodeForOnlineLoginEnabled())
-        return false;
       return IsDeviceOwnedByChild();
     case SupervisedAction::kReauth:
-      if (!features::IsParentAccessCodeForOnlineLoginEnabled())
+      if (!features::IsParentAccessCodeForReauthEnabled()) {
         return false;
-      if (!IsParentCodeConfigAvailable())
+      }
+      if (!IsParentCodeConfigAvailable()) {
         return false;
+      }
       return IsDeviceOwnedByChild();
     case SupervisedAction::kUnlockTimeLimits:
       DCHECK(user_manager::UserManager::Get()->IsUserLoggedIn());

@@ -18,12 +18,15 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Utilities for accessing device input information. Note that this class is not thread-safe and
  * currently asserts all interactions occur on the UI thread. If usage is required off the UI thread
  * in the future, this class can be modified for multi-thread support.
  */
+@NullMarked
 public class DeviceInput implements InputDeviceListener {
 
     /** Wrapper class which provides lazy initialization of a singleton instance. */
@@ -32,10 +35,10 @@ public class DeviceInput implements InputDeviceListener {
     }
 
     /** See {@link #setSupportsAlphabeticKeyboardForTesting(boolean)}. */
-    private static Boolean sSupportsAlphabeticKeyboardForTesting;
+    private static @Nullable Boolean sSupportsAlphabeticKeyboardForTesting;
 
     /** See {@link #setSupportsPrevisionPointerForTesting(boolean)}. */
-    private static Boolean sSupportsPrecisionPointerForTesting;
+    private static @Nullable Boolean sSupportsPrecisionPointerForTesting;
 
     /** Cached snapshots of all currently connected {@link InputDevice}s. */
     private final SparseArray<DeviceSnapshot> mDeviceSnapshotsById = new SparseArray<>();

@@ -174,14 +174,15 @@ void BlobURLStoreImpl::ResolveForWorkerScriptFetch(
     std::move(callback).Run(std::nullopt);
     return;
   }
-  if (base::FeatureList::IsEnabled(
-          features::kBlockCrossPartitionBlobUrlFetching) &&
-      !registry_->IsUrlMapped(BlobUrlUtils::ClearUrlFragment(url),
+  if (!registry_->IsUrlMapped(BlobUrlUtils::ClearUrlFragment(url),
                               storage_key_)) {
-    std::move(callback).Run(std::nullopt);
-    return;
+    partitioned_fetch_failure_closure_.Run();
+    if (base::FeatureList::IsEnabled(
+            features::kBlockCrossPartitionBlobUrlFetching)) {
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
   }
-
   ResolveForNavigation(url, std::move(token), std::move(callback));
 }
 

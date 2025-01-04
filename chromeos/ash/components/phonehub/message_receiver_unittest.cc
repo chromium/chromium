@@ -348,12 +348,7 @@ TEST_F(MessageReceiverImplTest, OnPhoneStatusUpdated) {
   EXPECT_EQ(expected_removed_id, actual_update.removed_notification_ids()[0]);
 }
 
-TEST_F(MessageReceiverImplTest,
-       OnFeatrueSetupResponseReceivedWithFeatureEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kPhoneHubFeatureSetupErrorHandling);
-
+TEST_F(MessageReceiverImplTest, OnFeatrueSetupResponseReceived) {
   proto::FeatureSetupResponse expected_response;
   expected_response.set_camera_roll_setup_result(
       proto::FeatureSetupResult::RESULT_PERMISSION_GRANTED);
@@ -373,29 +368,6 @@ TEST_F(MessageReceiverImplTest,
             actual_response.camera_roll_setup_result());
   EXPECT_EQ(proto::FeatureSetupResult::RESULT_PERMISSION_GRANTED,
             actual_response.notification_setup_result());
-}
-
-TEST_F(MessageReceiverImplTest,
-       OnFeatrueSetupResponseReceivedWithFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kPhoneHubFeatureSetupErrorHandling);
-
-  proto::FeatureSetupResponse expected_response;
-  expected_response.set_camera_roll_setup_result(
-      proto::FeatureSetupResult::RESULT_PERMISSION_GRANTED);
-  expected_response.set_notification_setup_result(
-      proto::FeatureSetupResult::RESULT_PERMISSION_GRANTED);
-
-  const std::string expected_message =
-      SerializeMessage(proto::FEATURE_SETUP_RESPONSE, &expected_response);
-  fake_connection_manager_->NotifyMessageReceived(expected_message);
-
-  proto::FeatureSetupResponse actual_response = GetLastFeatureSetupResponse();
-
-  EXPECT_EQ(0u, GetNumPhoneStatusSnapshotCalls());
-  EXPECT_EQ(0u, GetNumPhoneStatusUpdatedCalls());
-  EXPECT_EQ(0u, GetNumFeatureSetupResponseCalls());
 }
 
 TEST_F(MessageReceiverImplTest,
@@ -658,7 +630,6 @@ TEST_F(MessageReceiverImplTest, OnMessageReceivedParseFailureStates) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kEcheSWA, features::kPhoneHubCameraRoll,
-                            features::kPhoneHubFeatureSetupErrorHandling,
                             features::kPhoneHubPingOnBubbleOpen},
       /*disabled_features=*/{});
 

@@ -77,7 +77,6 @@ Os byddwch yn ei ddileu, bydd pawb yn colli mynediad at y grŵp tabiau "<ph name
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> tab wedi newid, <ph name="ANY_CLOSED" /> wedi cau}zero{<ph name="MANY_CHANGED" /> tabiau wedi newid, <ph name="ANY_CLOSED" /> wedi cau}two{<ph name="MANY_CHANGED" /> dab wedi newid, <ph name="ANY_CLOSED" /> wedi cau}few{<ph name="MANY_CHANGED" /> thab wedi newid, <ph name="ANY_CLOSED" /> wedi cau}many{<ph name="MANY_CHANGED" /> thab wedi newid, <ph name="ANY_CLOSED" /> wedi cau}other{<ph name="MANY_CHANGED" /> tab wedi newid, <ph name="ANY_CLOSED" /> wedi cau}}</translation>
 <translation id="4371591986692297148">Anweithredol</translation>
 <translation id="4460014764210899310">Dadgrwpio</translation>
-<translation id="4590027107044272416">Gallwch agor tab newydd yma bellach.</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Cau 1 tab anweithredol?}zero{Cau <ph name="TAB_COUNT_MANY" /> tab anweithredol?}two{Cau <ph name="TAB_COUNT_MANY" /> dab anweithredol?}few{Cau <ph name="TAB_COUNT_MANY" /> thab anweithredol?}many{Cau <ph name="TAB_COUNT_MANY" /> thab anweithredol?}other{Cau <ph name="TAB_COUNT_MANY" /> tab anweithredol?}}</translation>
 <translation id="4686942373615810936">Newydd ei greu</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Cau ar ôl 1 diwrnod}zero{Cau ar ôl <ph name="DAY_COUNT_MANY" /> diwrnod}two{Cau ar ôl <ph name="DAY_COUNT_MANY" /> ddiwrnod}few{Cau ar ôl <ph name="DAY_COUNT_MANY" /> diwrnod}many{Cau ar ôl <ph name="DAY_COUNT_MANY" /> diwrnod}other{Cau ar ôl <ph name="DAY_COUNT_MANY" /> diwrnod}}</translation>
@@ -98,7 +97,9 @@ Os byddwch yn ei ddileu, bydd pawb yn colli mynediad at y grŵp tabiau "<ph name
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{Ychwanegwyd <ph name="ONE_ADDED" /> tab}zero{Ychwanegwyd <ph name="MANY_ADDED" /> tabiau}two{Ychwanegwyd <ph name="MANY_ADDED" /> dab}few{Ychwanegwyd <ph name="MANY_ADDED" /> thab}many{Ychwanegwyd <ph name="MANY_ADDED" /> thab}other{Ychwanegwyd <ph name="MANY_ADDED" /> tab}}</translation>
 <translation id="5161254044473106830">Mae teitl yn ofynnol</translation>
 <translation id="5339733443032484186">Eich tab diwethaf</translation>
+<translation id="5380159289133845234">Archifo tabiau dyblyg</translation>
 <translation id="5400836586163650660">Llwyd</translation>
+<translation id="5446043142172831860">Tynnu'r tab a gadael y grŵp</translation>
 <translation id="5490235265819901748">Mae'r grŵp tabiau wedi'i ehangu</translation>
 <translation id="5494920125229734069">Dewis pob un</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Cau grŵp tabiau gydag <ph name="TABS_COUNT_ONE" /> tab, lliw <ph name="COLOR_NAME" />.}zero{Cau grŵp tabiau gyda <ph name="TABS_COUNT_MANY" /> tab, lliw <ph name="COLOR_NAME" />.}two{Cau grŵp tabiau gyda <ph name="TABS_COUNT_MANY" /> dab, lliw <ph name="COLOR_NAME" />.}few{Cau grŵp tabiau gyda <ph name="TABS_COUNT_MANY" /> thab, lliw <ph name="COLOR_NAME" />.}many{Cau grŵp tabiau gyda <ph name="TABS_COUNT_MANY" /> thab, lliw <ph name="COLOR_NAME" />.}other{Cau grŵp tabiau gyda <ph name="TABS_COUNT_MANY" /> tab, lliw <ph name="COLOR_NAME" />.}}</translation>
@@ -117,6 +118,7 @@ Os byddwch yn gadael, byddwch yn colli mynediad at y grŵp tabiau "<ph name="TIT
 <translation id="6051432659151380973">Mae eich grwpiau tab yn cadw'n awtomatig</translation>
 <translation id="6054741997831917303">Gwnaeth pris yr eitem hon ostwng yn ddiweddar o <ph name="PREVIOUS_PRICE" /> i <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Byddwch yn colli mynediad at y grŵp tabiau <ph name="GROUP_NAME" /> ar unwaith</translation>
+<translation id="6109251075362363230">Bydd pob tab dyblyg nawr yn cael ei archifo hefyd, ac eithrio'r copi a ddefnyddiwyd yn fwyaf diweddar.</translation>
 <translation id="6193448654517602979">Dewis tabiau</translation>
 <translation id="6228793724645064692">(sgôr siop)</translation>
 <translation id="6271513594716432922">Cau pob tab anweithredol</translation>

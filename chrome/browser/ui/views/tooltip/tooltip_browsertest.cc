@@ -72,16 +72,18 @@ class TooltipMonitor {
   void OnTooltipShown(views::Widget* widget) {
     if (widget->GetName() == TooltipAura::kWidgetName) {
       active_widget_ = widget;
-      if (run_loop_ && run_loop_->running())
+      if (run_loop_ && run_loop_->running()) {
         run_loop_->Quit();
+      }
     }
   }
 
   void OnTooltipClosed(views::Widget* widget) {
     if (active_widget_ == widget) {
       active_widget_ = nullptr;
-      if (run_loop_ && run_loop_->running())
+      if (run_loop_ && run_loop_->running()) {
         run_loop_->Quit();
+      }
     }
   }
 

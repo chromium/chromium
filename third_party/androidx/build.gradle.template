@@ -88,21 +88,24 @@ dependencies {
     compile 'androidx.mediarouter:mediarouter:{{androidx_dependency_version}}'
     compile 'androidx.navigation:navigation-compose:{{androidx_dependency_version}}'
     compile 'androidx.navigation:navigation-runtime:{{androidx_dependency_version}}'
-    compile 'androidx.pdf:pdf-viewer:{{androidx_dependency_version}}'
-    compile 'androidx.pdf:pdf-viewer-fragment:{{androidx_dependency_version}}'
+    // Take pdf library 1.0.0-alpha05 until beta release is thoroughly tested.
+    // TODO(https://crbug.com/383610568): Switch to beta version of pdf library once ready.
+    compile 'androidx.pdf:pdf-viewer:1.0.0-alpha05'
+    compile 'androidx.pdf:pdf-viewer-fragment:1.0.0-alpha05'
     compile 'androidx.preference:preference:{{androidx_dependency_version}}'
     // Privacy Sandbox is less stable than others. Use only release versions.
-    compile 'androidx.privacysandbox.ads:ads-adservices:1.1.0-beta07'
-    compile 'androidx.privacysandbox.ads:ads-adservices-java:1.1.0-beta07'
+    compile 'androidx.privacysandbox.ads:ads-adservices:1.1.0-beta11'
+    compile 'androidx.privacysandbox.ads:ads-adservices-java:1.1.0-beta11'
     compile 'androidx.recyclerview:recyclerview:{{androidx_dependency_version}}'
     compile 'androidx.room:room-guava:{{androidx_dependency_version}}'
     // TODO(https://crbug.com/359896493): Remove the following dep once rolls
     // succeed again. Deps on it will need to be removed first.
     compile 'androidx.savedstate:savedstate:{{androidx_dependency_version}}'
     compile 'androidx.savedstate:savedstate-android:{{androidx_dependency_version}}'
-    compile 'androidx.slice:slice-builders:{{androidx_dependency_version}}'
-    compile 'androidx.slice:slice-core:{{androidx_dependency_version}}'
-    compile 'androidx.slice:slice-view:{{androidx_dependency_version}}'
+    // Slice libraries no longer exist at tip-of-tree (https://crbug.com/385155411)
+    compile 'androidx.slice:slice-builders:1.1.0-alpha02'
+    compile 'androidx.slice:slice-core:1.1.0-alpha02'
+    compile 'androidx.slice:slice-view:1.1.0-alpha02'
     compile 'androidx.swiperefreshlayout:swiperefreshlayout:{{androidx_dependency_version}}'
     compile 'androidx.tracing:tracing:{{androidx_dependency_version}}'
     compile 'androidx.tvprovider:tvprovider:{{androidx_dependency_version}}'
@@ -149,6 +152,9 @@ dependencies {
     androidTestCompile 'androidx.benchmark:benchmark-macro:{{androidx_dependency_version}}'
     androidTestCompile 'androidx.benchmark:benchmark-macro-junit4:{{androidx_dependency_version}}'
     androidTestCompile 'androidx.benchmark:benchmark-junit4:{{androidx_dependency_version}}'
+    androidTestCompile 'androidx.compose.ui:ui-test-android:{{androidx_dependency_version}}'
+    androidTestCompile 'androidx.compose.ui:ui-test-junit4:{{androidx_dependency_version}}'
+    androidTestCompile 'androidx.compose.ui:ui-test-manifest:{{androidx_dependency_version}}'
     androidTestCompile 'androidx.core:core-animation-testing:{{androidx_dependency_version}}'
     androidTestCompile 'androidx.test:core:1.4.0-rc01'
     androidTestCompile 'androidx.test:monitor:1.4.0-rc01'

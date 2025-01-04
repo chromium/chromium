@@ -114,10 +114,6 @@ const re2::RE2& GetCouponPartnerMerchantPattern() {
 
 }  // namespace
 
-BASE_FEATURE(kCommerceAllowChipExpansion,
-             "CommerceAllowChipExpansion",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kCommerceAllowLocalImages,
              "CommerceAllowLocalImages",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -140,7 +136,7 @@ BASE_FEATURE(kCommerceMerchantViewer,
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kCommerceMerchantViewerRegionLaunched,
              "CommerceMerchantViewerRegionLaunched",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #else
 BASE_FEATURE(kCommerceMerchantViewerRegionLaunched,
              "CommerceMerchantViewerRegionLaunched",
@@ -198,11 +194,6 @@ const base::FeatureParam<bool> kProductSpecsMigrateToMultiSpecifics{
     &commerce::kProductSpecificationsMultiSpecifics,
     kProductSpecsMigrateToMultiSpecificsParam, false};
 
-// Tonal colors for the expanded state of the price tracking chip on desktop.
-BASE_FEATURE(kPriceTrackingIconColors,
-             "PriceTrackingIconColors",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Promotion in Magic Stack for Price Tracking users from other platforms.
 BASE_FEATURE(kPriceTrackingPromo,
              "PriceTrackingPromo",
@@ -211,12 +202,6 @@ BASE_FEATURE(kPriceTrackingPromo,
 BASE_FEATURE(kProductSpecifications,
              "ProductSpecifications",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Sync title (in addition to all other attributes) in
-// ProductComparisonSpecifics.
-BASE_FEATURE(kProductSpecificationsSyncTitle,
-             "ProductSpecificationsSyncTitle",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Kill switch for unsupported fields becoming supported in the event of a
 // browser upgrade.
@@ -237,8 +222,10 @@ BASE_FEATURE(kProductSpecificationsCache,
              "ProductSpecificationsCache",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kShoppingIconColorVariant,
-             "ShoppingIconColorVariant",
+// Moves the table management interface from history to chrome://compare and
+// enables a new context menu for comparison tables under Bookmarks and Lists.
+BASE_FEATURE(kCompareManagementInterface,
+             "CompareManagementInterface",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Discount on navigation
@@ -384,15 +371,7 @@ BASE_FEATURE(kDiscountConsentV2,
              "DiscountConsentV2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCommerceHintAndroid,
-             "CommerceHintAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kCodeBasedRBD, "CodeBasedRBD", base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kChromeCartDomBasedHeuristics,
-             "ChromeCartDomBasedHeuristics",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kParcelTracking,
              "ParcelTracking",
@@ -400,120 +379,6 @@ BASE_FEATURE(kParcelTracking,
 BASE_FEATURE(kParcelTrackingRegionLaunched,
              "ParcelTrackingRegionLaunched",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Params for Discount Consent V2 in the NTP Cart module.
-const char kNtpChromeCartModuleDiscountConsentNtpVariationParam[] =
-    "discount-consent-ntp-variation";
-const base::FeatureParam<int> kNtpChromeCartModuleDiscountConsentNtpVariation{
-    &commerce::kDiscountConsentV2,
-    kNtpChromeCartModuleDiscountConsentNtpVariationParam, 4};
-const char kNtpChromeCartModuleDiscountConsentReshowTimeParam[] =
-    "discount-consent-ntp-reshow-time";
-const base::FeatureParam<base::TimeDelta>
-    kNtpChromeCartModuleDiscountConsentReshowTime{
-        &commerce::kDiscountConsentV2,
-        kNtpChromeCartModuleDiscountConsentReshowTimeParam, base::Days(28)};
-const char kNtpChromeCartModuleDiscountConsentMaxDismissalCountParam[] =
-    "discount-consent-ntp-max-dismiss-count";
-const base::FeatureParam<int>
-    kNtpChromeCartModuleDiscountConsentMaxDismissalCount{
-        &commerce::kDiscountConsentV2,
-        kNtpChromeCartModuleDiscountConsentMaxDismissalCountParam, 1};
-
-// String change variation params.
-const char kNtpChromeCartModuleDiscountConsentStringChangeContentParam[] =
-    "string-change-content";
-const base::FeatureParam<std::string>
-    kNtpChromeCartModuleDiscountConsentStringChangeContent{
-        &commerce::kDiscountConsentV2,
-        kNtpChromeCartModuleDiscountConsentStringChangeContentParam, ""};
-
-const char kNtpChromeCartModuleDiscountConsentInlineShowCloseButtonParam[] =
-    "inline-card-show-button";
-const base::FeatureParam<bool>
-    kNtpChromeCartModuleDiscountConsentInlineShowCloseButton{
-        &commerce::kDiscountConsentV2,
-        kNtpChromeCartModuleDiscountConsentStringChangeContentParam, true};
-
-// Discount consent v2 step 1 params.
-const char
-    kNtpChromeCartModuleDiscountConsentNtpStepOneUseStaticContentParam[] =
-        "step-one-use-static-content";
-const base::FeatureParam<bool>
-    kNtpChromeCartModuleDiscountConsentNtpStepOneUseStaticContent{
-        &commerce::kDiscountConsentV2,
-        kNtpChromeCartModuleDiscountConsentNtpStepOneUseStaticContentParam,
-        true};
-const char kNtpChromeCartModuleDiscountConsentNtpStepOneStaticContentParam[] =
-    "step-one-static-content";
-const base::FeatureParam<std::string>
-    kNtpChromeCartModuleDiscountConsentNtpStepOneStaticContent{
-        &commerce::kDiscountConsentV2,
-        kNtpChromeCartModuleDiscountConsentNtpStepOneStaticContentParam, ""};
-const char kNtpChromeCartModuleDiscountConsentNtpStepOneContentOneCartParam[] =
-    "step-one-one-cart-content";
-const base::FeatureParam<std::string>
-    kNtpChromeCartModuleDiscountConsentNtpStepOneContentOneCart{
-        &commerce::kDiscountConsentV2,
-        kNtpChromeCartModuleDiscountConsentNtpStepOneContentOneCartParam, ""};
-const char kNtpChromeCartModuleDiscountConsentNtpStepOneContentTwoCartsParam[] =
-    "step-one-two-carts-content";
-const base::FeatureParam<std::string>
-    kNtpChromeCartModuleDiscountConsentNtpStepOneContentTwoCarts{
-        &commerce::kDiscountConsentV2,
-        kNtpChromeCartModuleDiscountConsentNtpStepOneContentTwoCartsParam, ""};
-const char
-    kNtpChromeCartModuleDiscountConsentNtpStepOneContentThreeCartsParam[] =
-        "step-one-three-carts-content";
-const base::FeatureParam<std::string>
-    kNtpChromeCartModuleDiscountConsentNtpStepOneContentThreeCarts{
-        &commerce::kDiscountConsentV2,
-        kNtpChromeCartModuleDiscountConsentNtpStepOneContentThreeCartsParam,
-        ""};
-
-// Discount consent v2 step 2 params.
-const char kNtpChromeCartModuleDiscountConsentNtpStepTwoContentParam[] =
-    "step-two-content";
-const base::FeatureParam<std::string>
-    kNtpChromeCartModuleDiscountConsentNtpStepTwoContent{
-        &commerce::kDiscountConsentV2,
-        kNtpChromeCartModuleDiscountConsentNtpStepTwoContentParam, ""};
-const char
-    kNtpChromeCartModuleDiscountConsentInlineStepTwoDifferentColorParam[] =
-        "step-two-different-color";
-const base::FeatureParam<bool>
-    kNtpChromeCartModuleDiscountConsentInlineStepTwoDifferentColor{
-        &commerce::kDiscountConsentV2,
-        kNtpChromeCartModuleDiscountConsentInlineStepTwoDifferentColorParam,
-        false};
-const char kNtpChromeCartModuleDiscountConsentNtpDialogContentTitleParam[] =
-    "dialog-content-title";
-const base::FeatureParam<std::string>
-    kNtpChromeCartModuleDiscountConsentNtpDialogContentTitle{
-        &commerce::kDiscountConsentV2,
-        kNtpChromeCartModuleDiscountConsentNtpDialogContentTitleParam, ""};
-
-const char kContextualConsentShowOnCartAndCheckoutPageParam[] =
-    "show-on-cart-and-checkout-page";
-const base::FeatureParam<bool> kContextualConsentShowOnCartAndCheckoutPage{
-    &commerce::kDiscountConsentV2,
-    kContextualConsentShowOnCartAndCheckoutPageParam, false};
-const char kContextualConsentShowOnSRPParam[] = "show-on-srp";
-const base::FeatureParam<bool> kContextualConsentShowOnSRP{
-    &commerce::kDiscountConsentV2, kContextualConsentShowOnSRPParam, false};
-
-const char kCommerceHintAndroidHeuristicsImprovementParam[] =
-    "CommerceHintAndroidHeuristicsImprovementParam";
-
-const char kCodeBasedRuleDiscountParam[] = "code-based-rbd";
-const base::FeatureParam<bool> kCodeBasedRuleDiscount{
-    &commerce::kCodeBasedRBD, kCodeBasedRuleDiscountParam, true};
-const char kCodeBasedRuleDiscountCouponDeletionTimeParam[] =
-    "coupon-deletion-time";
-const base::FeatureParam<base::TimeDelta>
-    kCodeBasedRuleDiscountCouponDeletionTime{
-        &commerce::kCodeBasedRBD, kCodeBasedRuleDiscountCouponDeletionTimeParam,
-        base::Seconds(6)};
 
 const char kProductSpecificationsSetValidForClusteringTimeParam[] =
     "set-valid-for-clustering-time";
@@ -565,11 +430,6 @@ bool IsFakeDataEnabled() {
   return base::GetFieldTrialParamValueByFeature(
              ntp_features::kNtpChromeCartModule,
              ntp_features::kNtpChromeCartModuleDataParam) == "fake";
-}
-
-bool isContextualConsentEnabled() {
-  return kContextualConsentShowOnCartAndCheckoutPage.Get() ||
-         kContextualConsentShowOnSRP.Get();
 }
 
 bool IsShoppingListAllowedForEnterprise(PrefService* prefs) {

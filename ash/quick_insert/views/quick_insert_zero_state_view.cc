@@ -85,6 +85,8 @@ EditorSubmenu GetEditorSubmenu(
       return EditorSubmenu::kTone;
     case chromeos::editor_menu::PresetQueryCategory::kProofread:
       return EditorSubmenu::kNone;
+    case chromeos::editor_menu::PresetQueryCategory::kLobster:
+      return EditorSubmenu::kNone;
   }
 }
 
@@ -118,8 +120,7 @@ QuickInsertZeroStateView::QuickInsertZeroStateView(
       continue;
     }
 
-    if (!base::FeatureList::IsEnabled(
-            ash::features::kLobsterQuickInsertZeroState) &&
+    if (!base::FeatureList::IsEnabled(features::kLobsterQuickInsertZeroState) &&
         category == QuickInsertCategory::kLobsterWithNoSelectedText) {
       continue;
     }

@@ -15,8 +15,9 @@ SearchIPCRouterPolicyImpl::SearchIPCRouterPolicyImpl(
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-  if (profile)
+  if (profile) {
     is_incognito_ = profile->IsOffTheRecord();
+  }
 }
 
 SearchIPCRouterPolicyImpl::~SearchIPCRouterPolicyImpl() = default;

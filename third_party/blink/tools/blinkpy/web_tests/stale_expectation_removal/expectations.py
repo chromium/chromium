@@ -87,7 +87,7 @@ class WebTestExpectations(expectations.Expectations):
         if self._known_tags is None:
             self._known_tags = set()
             for f in self.GetExpectationFilepaths():
-                list_parser = self.ParseTaggedTestListContent(
+                list_parser = expectations.ParseTaggedTestListContent(
                     self._GetExpectationFileTagHeader(f))
                 for ts in list_parser.tag_sets:
                     self._known_tags |= ts

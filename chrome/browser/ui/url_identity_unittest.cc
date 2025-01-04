@@ -6,7 +6,10 @@
 
 #include <string_view>
 
+#include "chrome/common/chrome_features.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -15,12 +18,15 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "components/webapps/common/web_app_id.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 using Type = UrlIdentity::Type;
@@ -38,12 +44,16 @@ struct TestCase {
   UrlIdentity expected_result;
 };
 
-constexpr std::string_view kTestIsolatedWebAppUrl =
-    "isolated-app://"
-    "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
-constexpr std::string_view kTestIsolatedWebAppName = "Test IWA Name";
 constexpr std::string_view kTestExtensionId =
     "0264075e-fd33-4a20-8484-b834afb0333d";
+
+constexpr std::string_view kTestIsolatedWebAppName = "Test IWA Name";
+const web_package::SignedWebBundleId kTestIsolatedWebAppId =
+    web_app::test::GetDefaultEd25519WebBundleId();
+
+const std::string kTestIsolatedWebAppUrl =
+    base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
+                  kTestIsolatedWebAppId.id()});
 }  // namespace
 
 class UrlIdentityTest : public testing::Test {
@@ -58,10 +68,15 @@ class UrlIdentityTest : public testing::Test {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   void InstallIsolatedWebApp() {
     web_app::test::AwaitStartWebAppProviderAndSubsystems(&testing_profile_);
-    std::string iwa_name(kTestIsolatedWebAppName);
-    GURL iwa_url(kTestIsolatedWebAppUrl);
-    web_app::AddDummyIsolatedAppToRegistry(&testing_profile_, iwa_url,
-                                           iwa_name);
+
+    const std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> bundle =
+        web_app::IsolatedWebAppBuilder(
+            web_app::ManifestBuilder().SetName(kTestIsolatedWebAppName))
+            .BuildBundle(kTestIsolatedWebAppId,
+                         {web_app::test::GetDefaultEd25519KeyPair()});
+    bundle->FakeInstallPageState(&testing_profile_);
+    bundle->TrustSigningKey();
+    bundle->InstallChecked(&testing_profile_);
   }
 
   void InstallExtension() {
@@ -80,6 +95,9 @@ class UrlIdentityTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile testing_profile_;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
+#endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   web_app::test::ScopedSkipMainProfileCheck skip_main_profile_check_;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -88,36 +106,36 @@ class UrlIdentityTest : public testing::Test {
 TEST_F(UrlIdentityTest, AllowlistedTypesAreAllowed) {
   std::string extension_id(kTestExtensionId);
   std::vector<TestCase> test_cases = {
-    {GURL("http://example.com"),
-     {Type::kDefault},
-     {},
-     {
-         .type = Type::kDefault,
-         .name = u"http://example.com",
-     }},
+      {GURL("http://example.com"),
+       {Type::kDefault},
+       {},
+       {
+           .type = Type::kDefault,
+           .name = u"http://example.com",
+       }},
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-    {GURL(kTestIsolatedWebAppUrl),
-     {Type::kIsolatedWebApp},
-     {},
-     {
-         .type = Type::kIsolatedWebApp,
-         .name = u"Test IWA Name",
-     }},
-    {extensions::Extension::GetBaseURLFromExtensionId(extension_id),
-     {Type::kChromeExtension},
-     {},
-     {
-         .type = Type::kChromeExtension,
-         .name = u"Test Extension 1",
-     }},
+      {GURL(kTestIsolatedWebAppUrl),
+       {Type::kIsolatedWebApp},
+       {},
+       {
+           .type = Type::kIsolatedWebApp,
+           .name = u"Test IWA Name",
+       }},
+      {extensions::Extension::GetBaseURLFromExtensionId(extension_id),
+       {Type::kChromeExtension},
+       {},
+       {
+           .type = Type::kChromeExtension,
+           .name = u"Test Extension 1",
+       }},
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-    {GURL("file:///tmp/index.html"),
-     {Type::kFile},
-     {},
-     {
-         .type = Type::kFile,
-         .name = u"file:///tmp/index.html",
-     }},
+      {GURL("file:///tmp/index.html"),
+       {Type::kFile},
+       {},
+       {
+           .type = Type::kFile,
+           .name = u"file:///tmp/index.html",
+       }},
   };
 
   for (const auto& test_case : test_cases) {
@@ -246,7 +264,7 @@ TEST_F(UrlIdentityTest, IsolatedWebAppFallsBackIfNoWebAppProvider) {
   EXPECT_EQ(result.type, Type::kDefault);
   EXPECT_EQ(result.name,
             u"isolated-app://"
-            u"berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
+            u"4tkrnsmftl4ggvvdkfth3piainqragus2qbhf7rlz2a3wo3rh4wqaaic");
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 

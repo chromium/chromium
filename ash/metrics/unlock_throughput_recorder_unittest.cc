@@ -40,7 +40,7 @@ class UnlockThroughputRecorderTest : public LoginTestBase,
 
  protected:
   void LoginOwner() {
-    CreateUserSessions(1);
+    SimulateUserLogin(kDefaultUserEmail);
     LoginState::Get()->SetLoggedInState(LoginState::LOGGED_IN_ACTIVE,
                                         LoginState::LOGGED_IN_USER_REGULAR);
   }

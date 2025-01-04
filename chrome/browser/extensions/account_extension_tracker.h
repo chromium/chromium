@@ -75,8 +75,8 @@ class AccountExtensionTracker : public KeyedService,
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
 
-  // Called when sync data is applied for the given `extension_id`.
-  void OnExtensionSyncDataApplied(const ExtensionId& extension_id);
+  // Called when sync data is received for the given `extension_id`.
+  void OnExtensionSyncDataReceived(const ExtensionId& extension_id);
 
   AccountExtensionType GetAccountExtensionType(
       const ExtensionId& extension_id) const;

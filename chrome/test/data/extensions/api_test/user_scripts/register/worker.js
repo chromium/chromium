@@ -142,6 +142,21 @@ chrome.test.runTests([
 
   // Test that an error is returned if a user script does not specify any
   // script source to inject.
+  async function invalidScriptSource_NoJs() {
+    await chrome.userScripts.unregister();
+
+    const scriptId = 'noJs';
+    const scripts = [{id: scriptId, matches: ['*://notused.com/*']}];
+
+    await chrome.test.assertPromiseRejects(
+        chrome.userScripts.register(scripts),
+        `Error: User script with ID '${scriptId}' must specify at least one ` +
+            `js source.`);
+    chrome.test.succeed();
+  },
+
+  // Test that an error is returned if a user script specify an empty list of
+  // script sources to inject.
   async function invalidScriptSource_EmptyJs() {
     await chrome.userScripts.unregister();
 

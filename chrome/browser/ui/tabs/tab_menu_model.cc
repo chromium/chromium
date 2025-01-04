@@ -201,9 +201,14 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
   AddItemWithStringId(TabStripModel::CommandCloseTab, IDS_TAB_CXMENU_CLOSETAB);
   AddItemWithStringId(TabStripModel::CommandCloseOtherTabs,
                       IDS_TAB_CXMENU_CLOSEOTHERTABS);
-  AddItemWithStringId(TabStripModel::CommandCloseTabsToRight,
-                      base::i18n::IsRTL() ? IDS_TAB_CXMENU_CLOSETABSTOLEFT
-                                          : IDS_TAB_CXMENU_CLOSETABSTORIGHT);
+  {
+    AddItemWithStringId(TabStripModel::CommandCloseTabsToRight,
+                        base::i18n::IsRTL() ? IDS_TAB_CXMENU_CLOSETABSTOLEFT
+                                            : IDS_TAB_CXMENU_CLOSETABSTORIGHT);
+    SetEnabledAt(GetItemCount() - 1,
+                 tab_strip->IsContextMenuCommandEnabled(
+                     index, TabStripModel::CommandCloseTabsToRight));
+  }
 }
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabMenuModel,

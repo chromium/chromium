@@ -316,18 +316,15 @@ void AwComponentUpdateService::UpdateMetadataFiles(
 std::string AwComponentUpdateService::GetHighestSequenceNumberDirectory(
     base::FilePath cps_component_base_path) {
   JNIEnv* env = jni_zero::AttachCurrentThread();
-  return base::android::ConvertJavaStringToUTF8(
-      env, Java_ComponentsProviderPathUtil_getTheHighestSequenceNumberDirectory(
-               env, base::android::ConvertUTF8ToJavaString(
-                        env, cps_component_base_path.MaybeAsASCII())));
+  return Java_ComponentsProviderPathUtil_getTheHighestSequenceNumberDirectory(
+      env, cps_component_base_path.MaybeAsASCII());
 }
 
 int AwComponentUpdateService::GetHighestSequenceNumber(
     base::FilePath cps_component_base_path) {
   JNIEnv* env = jni_zero::AttachCurrentThread();
   return Java_ComponentsProviderPathUtil_getTheHighestSequenceNumber(
-      env, base::android::ConvertUTF8ToJavaString(
-               env, cps_component_base_path.MaybeAsASCII()));
+      env, cps_component_base_path.MaybeAsASCII());
 }
 
 base::FilePath AwComponentUpdateService::GetComponentsProviderServiceDirectory(
@@ -337,10 +334,9 @@ base::FilePath AwComponentUpdateService::GetComponentsProviderServiceDirectory(
 
   JNIEnv* env = jni_zero::AttachCurrentThread();
   return base::FilePath(
-             base::android::ConvertJavaStringToUTF8(
-                 env,
-                 Java_ComponentsProviderPathUtil_getComponentsServingDirectoryPath(
-                     env)))
+
+             Java_ComponentsProviderPathUtil_getComponentsServingDirectoryPath(
+                 env))
       .AppendASCII(component_id);
 }
 

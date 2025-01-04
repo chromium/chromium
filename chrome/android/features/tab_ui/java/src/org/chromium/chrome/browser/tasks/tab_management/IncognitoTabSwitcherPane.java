@@ -19,14 +19,12 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.DelegateButtonData;
 import org.chromium.chrome.browser.hub.FullButtonData;
 import org.chromium.chrome.browser.hub.HubColorScheme;
-import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneHubController;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.ResourceButtonData;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager.IncognitoReauthCallback;
-import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -102,7 +100,6 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
 
     /**
      * @param context The activity context.
-     * @param profileProviderSupplier The profile provider supplier.
      * @param factory The factory used to construct {@link TabSwitcherPaneCoordinator}s.
      * @param incognitoTabGroupModelFilterSupplier The incognito tab model filter.
      * @param newTabButtonClickListener The {@link OnClickListener} for the new tab button.
@@ -113,7 +110,6 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
      */
     IncognitoTabSwitcherPane(
             @NonNull Context context,
-            @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
             @NonNull TabSwitcherPaneCoordinatorFactory factory,
             @NonNull Supplier<TabGroupModelFilter> incognitoTabGroupModelFilterSupplier,
             @NonNull OnClickListener newTabButtonClickListener,
@@ -123,7 +119,6 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
             @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         super(
                 context,
-                profileProviderSupplier,
                 factory,
                 /* isIncognito= */ true,
                 onToolbarAlphaChange,
@@ -150,7 +145,6 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                 new DelegateButtonData(
                         newTabButtonData,
                         () -> {
-                            notifyNewTabButtonClick();
                             newTabButtonClickListener.onClick(null);
                         });
         mDisabledNewTabButtonData = new DelegateButtonData(newTabButtonData, null);
@@ -308,12 +302,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
     }
 
     private void setNewTabButtonEnabledState(boolean enabled) {
-        if (enabled) {
-            mNewTabButtonDataSupplier.set(mEnabledNewTabButtonData);
-        } else {
-            // The FAB may overlap the reauth buttons. So just remove it by nulling instead.
-            mNewTabButtonDataSupplier.set(
-                    HubFieldTrial.usesFloatActionButton() ? null : mDisabledNewTabButtonData);
-        }
+        mNewTabButtonDataSupplier.set(
+                enabled ? mEnabledNewTabButtonData : mDisabledNewTabButtonData);
     }
 }

@@ -12,6 +12,7 @@
 
 #include <bit>
 #include <concepts>
+#include <type_traits>
 
 #include "base/check.h"
 

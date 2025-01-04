@@ -19,8 +19,9 @@ namespace base {
 namespace win {
 
 EnumVariant::EnumVariant(ULONG count) : current_index_(0) {
-  for (ULONG i = 0; i < count; ++i)
+  for (ULONG i = 0; i < count; ++i) {
     items_.emplace_back(ScopedVariant::kEmptyVariant);
+  }
 }
 
 EnumVariant::~EnumVariant() = default;
@@ -36,28 +37,32 @@ VARIANT* EnumVariant::ItemAt(ULONG index) {
 HRESULT EnumVariant::Next(ULONG requested_count,
                           VARIANT* out_elements,
                           ULONG* out_elements_received) {
-  if (!out_elements)
+  if (!out_elements) {
     return E_INVALIDARG;
+  }
 
   DCHECK_LE(current_index_, items_.size());
   ULONG available_count = static_cast<ULONG>(items_.size()) - current_index_;
   ULONG count = std::min(requested_count, available_count);
-  for (ULONG i = 0; i < count; ++i)
+  for (ULONG i = 0; i < count; ++i) {
     out_elements[i] = items_[current_index_ + i].Copy();
+  }
   current_index_ += count;
 
   // The caller can choose not to get the number of received elements by setting
   // |out_elements_received| to nullptr.
-  if (out_elements_received)
+  if (out_elements_received) {
     *out_elements_received = count;
+  }
 
   return (count == requested_count ? S_OK : S_FALSE);
 }
 
 HRESULT EnumVariant::Skip(ULONG skip_count) {
   ULONG count = skip_count;
-  if (current_index_ + count > static_cast<ULONG>(items_.size()))
+  if (current_index_ + count > static_cast<ULONG>(items_.size())) {
     count = static_cast<ULONG>(items_.size()) - current_index_;
+  }
 
   current_index_ += count;
   return (count == skip_count ? S_OK : S_FALSE);
@@ -69,14 +74,16 @@ HRESULT EnumVariant::Reset() {
 }
 
 HRESULT EnumVariant::Clone(IEnumVARIANT** out_cloned_object) {
-  if (!out_cloned_object)
+  if (!out_cloned_object) {
     return E_INVALIDARG;
+  }
 
   size_t count = items_.size();
   Microsoft::WRL::ComPtr<EnumVariant> other =
       Microsoft::WRL::Make<EnumVariant>(static_cast<ULONG>(count));
-  for (size_t i = 0; i < count; ++i)
+  for (size_t i = 0; i < count; ++i) {
     other->items_[i] = static_cast<const VARIANT&>(items_[i]);
+  }
 
   other->Skip(current_index_);
   return other.CopyTo(IID_PPV_ARGS(out_cloned_object));

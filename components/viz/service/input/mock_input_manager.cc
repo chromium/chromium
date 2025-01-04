@@ -21,4 +21,13 @@ RenderInputRouterSupportBase* MockInputManager::GetSupportForFrameSink(
   return frame_sink_metadata_map_.find(id)->second.rir_support.get();
 }
 
+input::RenderInputRouter* MockInputManager::GetRenderInputRouterForId(
+    const FrameSinkId& id) {
+  auto itr = rir_map_.find(id);
+  if (itr == rir_map_.end()) {
+    return nullptr;
+  }
+  return itr->second.get();
+}
+
 }  // namespace viz

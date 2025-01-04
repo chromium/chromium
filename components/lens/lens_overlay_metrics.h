@@ -14,6 +14,7 @@
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_overlay_new_tab_source.h"
+#include "components/lens/lens_overlay_side_panel_result.h"
 #include "components/lens/lens_permission_user_action.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -113,6 +114,10 @@ void RecordDocumentSizeBytes(lens::MimeType page_content_type,
 
 // Record the number of pages in a PDF.
 void RecordPdfPageCount(uint32_t page_count);
+
+// Records the side panel result status when attempting a load into the side
+// panel.
+void RecordSidePanelResultStatus(SidePanelResultStatus status);
 
 }  // namespace lens
 

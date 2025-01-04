@@ -15,9 +15,29 @@
 #include "base/run_loop.h"
 #include "net/quic/quic_test_packet_printer.h"
 #include "net/socket/socket_test_util.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_compressed_certs_cache.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_crypto_server_config.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_config.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_crypto_server_stream_base.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_session.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/mock_quic_session_visitor.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/quic_test_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/tools/quic_memory_cache_backend.h"
+#include "net/third_party/quiche/src/quiche/quic/tools/quic_simple_server_session.h"
 
 namespace net::test {
+
+// A `QuicSimpleServerSession` that decodes the HTTP frame received from the
+// QuicSocketDataProvider.
+class QuicSimpleServerSessionForTest : public quic::QuicSimpleServerSession {
+ public:
+  using quic::QuicSimpleServerSession::QuicSimpleServerSession;
+  ~QuicSimpleServerSessionForTest() override;
+
+  bool IsEncryptionEstablished() const override;
+};
 
 // A `SocketDataProvider` specifically designed to handle QUIC's packet-based
 // nature, and to give useful errors when things do not go as planned. This
@@ -44,6 +64,10 @@ namespace net::test {
 // added expectation, but the `After` method can be used to adjust this ordering
 // for cases where the order is unimportant or might vary. For example, an ACK
 // might be written before or after a read of stream data.
+//
+// To decode HTTP packets, two server sessions are created, one for the
+// expected packets and one for the actual packets. If VerifyWriteData() failed
+// the accumulated logs from both sessions will be printed.
 //
 // When a Write expectation is not met, such as write data not matching the
 // expected packet, the Write call will result in `ERR_UNEXPECTED`.
@@ -217,6 +241,12 @@ class QuicSocketDataProvider : public SocketDataProvider {
   // Generate a comma-separated list of expectation names.
   std::string ExpectationList(const std::vector<size_t>& indices);
 
+  // Generate a `QuicSimpleServerSession` for decrypting HTTP packets.
+  std::unique_ptr<quic::QuicSimpleServerSession> GenSimpleServerSession();
+  // Helper to print packet data with `QuicSimpleServerSession`.
+  std::string PrintWithQuicSession(quic::QuicSimpleServerSession* session,
+                                   std::string data);
+
   std::vector<Expectation> expectations_;
   bool pending_maybe_consume_expectations_ = false;
   std::map<size_t, std::set<size_t>> dependencies_;
@@ -225,6 +255,19 @@ class QuicSocketDataProvider : public SocketDataProvider {
   QuicPacketPrinter printer_;
   std::optional<size_t> paused_at_;
   std::unique_ptr<base::RunLoop> run_until_run_loop_;
+
+  quic::test::MockQuicSessionVisitor owner_;
+  quic::test::MockQuicCryptoServerStreamHelper stream_helper_;
+  quic::QuicConfig config_;
+  quic::test::MockQuicConnectionHelper helper_;
+  quic::test::MockAlarmFactory alarm_factory_;
+  quic::QuicCryptoServerConfig crypto_config_;
+  quic::QuicCompressedCertsCache compressed_certs_cache_;
+  quic::QuicMemoryCacheBackend memory_cache_backend_;
+  std::unique_ptr<quic::QuicSimpleServerSession> session_for_actual_;
+  std::unique_ptr<quic::QuicSimpleServerSession> session_for_expected_;
+  std::string actual_log_;
+  std::string expected_log_;
 
   base::WeakPtrFactory<QuicSocketDataProvider> weak_factory_{this};
 };

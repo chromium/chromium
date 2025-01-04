@@ -67,8 +67,8 @@ TouchHandleDrawableAura::TouchHandleDrawableAura(aura::Window* parent)
       enabled_(false),
       alpha_(0),
       orientation_(TouchHandleOrientation::UNDEFINED) {
-  window_->SetTransparent(true);
   window_->Init(LAYER_TEXTURED);
+  window_->SetTransparent(true);
   window_->set_owned_by_parent(false);
   window_->SetEventTargetingPolicy(aura::EventTargetingPolicy::kNone);
   window_->layer()->set_delegate(this);

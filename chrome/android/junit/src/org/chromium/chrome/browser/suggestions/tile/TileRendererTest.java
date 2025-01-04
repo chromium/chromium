@@ -34,7 +34,9 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.suggestions.ImageFetcher;
@@ -56,6 +58,7 @@ import java.util.List;
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowPostTask.class})
+@Features.EnableFeatures(ChromeFeatureList.TILE_CONTEXT_MENU_REFACTOR)
 public class TileRendererTest {
     /**
      * Backend that substitutes normal PostTask operations. Allow us to coordinate task execution

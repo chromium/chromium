@@ -1978,12 +1978,6 @@ void ServiceWorkerVersion::SkipWaiting(SkipWaitingCallback callback) {
 void ServiceWorkerVersion::AddRoutes(
     const blink::ServiceWorkerRouterRules& rules,
     AddRoutesCallback callback) {
-  if (!IsStaticRouterEnabled()) {
-    // This renderer should have called this only when the feature is enabled.
-    associated_interface_receiver_.ReportBadMessage(
-        "Unexpected router registration call during the feature is disabled.");
-    return;
-  }
   auto error = SetupRouterEvaluator(rules);
   bool is_parse_error = false;
   switch (error) {
@@ -3157,7 +3151,6 @@ void ServiceWorkerVersion::SetResources(
 ServiceWorkerRouterEvaluatorErrorEnums
 ServiceWorkerVersion::SetupRouterEvaluator(
     const blink::ServiceWorkerRouterRules& rules) {
-  CHECK(IsStaticRouterEnabled());
   blink::ServiceWorkerRouterRules new_rules;
   // If there are existing router rules, set them first.
   // TODO(crbug.com/40277030) Consider having a method to merge rules instead of
@@ -3210,17 +3203,6 @@ bool ServiceWorkerVersion::NeedRouterEvaluate() const {
     case FetchHandlerType::kNotSkippable:
       return true;
   }
-}
-
-bool ServiceWorkerVersion::IsStaticRouterEnabled() {
-  if (base::FeatureList::IsEnabled(features::kServiceWorkerStaticRouter)) {
-    return true;
-  }
-  if (origin_trial_tokens_ &&
-      origin_trial_tokens_->contains("ServiceWorkerStaticRouter")) {
-    return true;
-  }
-  return false;
 }
 
 void ServiceWorkerVersion::GetAssociatedInterface(

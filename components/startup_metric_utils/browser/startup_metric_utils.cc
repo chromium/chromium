@@ -14,6 +14,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <vector>
 
@@ -22,6 +23,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -134,19 +136,21 @@ StartupTemperature g_startup_temperature = UNDETERMINED_STARTUP_TEMPERATURE;
 // This function must only be used in code that runs after
 // |g_startup_temperature| has been initialized.
 template <typename T>
-void EmitHistogramWithTemperature(
-    void (*histogram_function)(const std::string& name, T),
-    const std::string& histogram_basename,
-    T value) {
+void EmitHistogramWithTemperature(void (*histogram_function)(std::string_view,
+                                                             T),
+                                  std::string_view histogram_basename,
+                                  T value) {
   // Always record to the base histogram.
   (*histogram_function)(histogram_basename, value);
   // Record to the cold/warm suffixed histogram as appropriate.
   switch (g_startup_temperature) {
     case COLD_STARTUP_TEMPERATURE:
-      (*histogram_function)(histogram_basename + ".ColdStartup", value);
+      (*histogram_function)(base::StrCat({histogram_basename, ".ColdStartup"}),
+                            value);
       break;
     case WARM_STARTUP_TEMPERATURE:
-      (*histogram_function)(histogram_basename + ".WarmStartup", value);
+      (*histogram_function)(base::StrCat({histogram_basename, ".WarmStartup"}),
+                            value);
       break;
     case LUKEWARM_STARTUP_TEMPERATURE:
       // No suffix emitted for lukewarm startups.
@@ -163,7 +167,7 @@ void EmitHistogramWithTemperature(
 namespace startup_metric_utils {
 
 void BrowserStartupMetricRecorder::EmitHistogramWithTemperatureAndTraceEvent(
-    void (*histogram_function)(const std::string& name, base::TimeDelta),
+    void (*histogram_function)(std::string_view, base::TimeDelta),
     const char* histogram_basename,
     base::TimeTicks begin_ticks,
     base::TimeTicks end_ticks) {

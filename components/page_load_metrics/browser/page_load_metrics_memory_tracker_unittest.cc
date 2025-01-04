@@ -169,7 +169,7 @@ class PageLoadMetricsMemoryTrackerTest
 
     content::GlobalRenderFrameHostId global_routing_id =
         render_frame_host->GetGlobalId();
-    int process_id = render_frame_host->GetProcess()->GetID();
+    int process_id = render_frame_host->GetProcess()->GetDeprecatedID();
 
     performance_manager::RenderProcessHostId pm_process_id =
         static_cast<performance_manager::RenderProcessHostId>(process_id);

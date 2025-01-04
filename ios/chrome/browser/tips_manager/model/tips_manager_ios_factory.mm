@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
 
-#import "components/keyed_service/core/keyed_service.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/tips_manager.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -55,7 +53,7 @@ TipsManagerIOSFactory::TipsManagerIOSFactory()
 TipsManagerIOSFactory::~TipsManagerIOSFactory() = default;
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
+TipsManagerIOSFactory::TestingFactory
 TipsManagerIOSFactory::GetDefaultFactory() {
   return base::BindRepeating(&BuildServiceInstance);
 }

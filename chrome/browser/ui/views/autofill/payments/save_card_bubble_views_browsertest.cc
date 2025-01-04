@@ -46,20 +46,20 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
-#include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/autofill_experiments.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/manage_cards_prompt_metrics.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/strike_databases/payments/credit_card_save_strike_database.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
-#include "components/autofill/core/browser/test_autofill_manager_waiter.h"
-#include "components/autofill/core/browser/test_event_waiter.h"
+#include "components/autofill/core/browser/studies/autofill_experiments.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
+#include "components/autofill/core/browser/test_utils/test_event_waiter.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -158,8 +158,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
   ~SaveCardBubbleViewsFullFormBrowserTest() override = default;
 
  protected:
-  SaveCardBubbleViewsFullFormBrowserTest() : SyncTest(SINGLE_CLIENT) {
-  }
+  SaveCardBubbleViewsFullFormBrowserTest() : SyncTest(SINGLE_CLIENT) {}
 
   class TestAutofillManager : public BrowserAutofillManager {
    public:
@@ -240,13 +239,13 @@ class SaveCardBubbleViewsFullFormBrowserTest
   }
 
   void TearDownOnMainThread() override {
-     if (!closed_all_tabs_) {
-       GetSaveCardIconView()->RemovePageIconViewObserver(this);
-       // credit_card_save_manager() will be null if the active web contents
-       // have changed since the test began.
-       if (credit_card_save_manager()) {
-         credit_card_save_manager()->SetEventObserverForTesting(nullptr);
-       }
+    if (!closed_all_tabs_) {
+      GetSaveCardIconView()->RemovePageIconViewObserver(this);
+      // credit_card_save_manager() will be null if the active web contents
+      // have changed since the test began.
+      if (credit_card_save_manager()) {
+        credit_card_save_manager()->SetEventObserverForTesting(nullptr);
+      }
     }
     SyncTest::TearDownOnMainThread();
   }
@@ -266,50 +265,58 @@ class SaveCardBubbleViewsFullFormBrowserTest
 
   // CreditCardSaveManager::ObserverForTest:
   void OnOfferLocalSave() override {
-    if (event_waiter_)
+    if (event_waiter_) {
       event_waiter_->OnEvent(DialogEvent::OFFERED_LOCAL_SAVE);
+    }
   }
 
   // CreditCardSaveManager::ObserverForTest:
   void OnOfferUploadSave() override {
-    if (event_waiter_)
+    if (event_waiter_) {
       event_waiter_->OnEvent(DialogEvent::OFFERED_UPLOAD_SAVE);
+    }
   }
 
   // CreditCardSaveManager::ObserverForTest:
   void OnDecideToRequestUploadSave() override {
-    if (event_waiter_)
+    if (event_waiter_) {
       event_waiter_->OnEvent(DialogEvent::REQUESTED_UPLOAD_SAVE);
+    }
   }
 
   // CreditCardSaveManager::ObserverForTest:
   void OnReceivedGetUploadDetailsResponse() override {
-    if (event_waiter_)
+    if (event_waiter_) {
       event_waiter_->OnEvent(DialogEvent::RECEIVED_GET_UPLOAD_DETAILS_RESPONSE);
+    }
   }
 
   // CreditCardSaveManager::ObserverForTest:
   void OnSentUploadCardRequest() override {
-    if (event_waiter_)
+    if (event_waiter_) {
       event_waiter_->OnEvent(DialogEvent::SENT_UPLOAD_CARD_REQUEST);
+    }
   }
 
   // CreditCardSaveManager::ObserverForTest:
   void OnReceivedUploadCardResponse() override {
-    if (event_waiter_)
+    if (event_waiter_) {
       event_waiter_->OnEvent(DialogEvent::RECEIVED_UPLOAD_CARD_RESPONSE);
+    }
   }
 
   // CreditCardSaveManager::ObserverForTest:
   void OnShowCardSavedFeedback() override {
-    if (event_waiter_)
+    if (event_waiter_) {
       event_waiter_->OnEvent(DialogEvent::SHOW_CARD_SAVED_FEEDBACK);
+    }
   }
 
   // CreditCardSaveManager::ObserverForTest:
   void OnStrikeChangeComplete() override {
-    if (event_waiter_)
+    if (event_waiter_) {
       event_waiter_->OnEvent(DialogEvent::STRIKE_CHANGE_COMPLETE);
+    }
   }
 
   void OnWidgetShown(views::Widget* widget) {
@@ -320,8 +327,9 @@ class SaveCardBubbleViewsFullFormBrowserTest
 
   // PageActionIconViewObserver:
   void OnPageActionIconViewShown(PageActionIconView* view) override {
-    if (event_waiter_)
+    if (event_waiter_) {
       event_waiter_->OnEvent(DialogEvent::ICON_SHOWN);
+    }
   }
 
   inline views::Combobox* month_input() {
@@ -725,12 +733,14 @@ class SaveCardBubbleViewsFullFormBrowserTest
     SaveCardBubbleControllerImpl::CreateForWebContents(GetActiveWebContents());
     SaveCardBubbleControllerImpl* save_card_bubble_controller =
         SaveCardBubbleControllerImpl::FromWebContents(GetActiveWebContents());
-    if (!save_card_bubble_controller)
+    if (!save_card_bubble_controller) {
       return nullptr;
+    }
     AutofillBubbleBase* save_card_bubble_view =
         save_card_bubble_controller->GetPaymentBubbleView();
-    if (!save_card_bubble_view)
+    if (!save_card_bubble_view) {
       return nullptr;
+    }
     return static_cast<SaveCardBubbleViews*>(save_card_bubble_view);
   }
 
@@ -797,9 +807,8 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
 // Tests the upload save bubble. Ensures that clicking the [Save] button
 // does not close the bubble, causes a loading throbber to appear and hides the
 // other dialog buttons.
-IN_PROC_BROWSER_TEST_F(
-    SaveCardBubbleViewsFullFormBrowserTest,
-    Upload_ClickingSave_ShowsLoadingView) {
+IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
+                       Upload_ClickingSave_ShowsLoadingView) {
   ASSERT_TRUE(SetupSync());
 
   FillForm();
@@ -822,9 +831,8 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the local save bubble. Ensures that clicking the [Save] button
 // closes the bubble.
-IN_PROC_BROWSER_TEST_F(
-    SaveCardBubbleViewsFullFormBrowserTest,
-    Local_ClickingSave_ClosesBubble) {
+IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
+                       Local_ClickingSave_ClosesBubble) {
   FillForm();
   SubmitFormAndWaitForCardLocalSaveBubble();
 
@@ -840,9 +848,8 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests that when the bubble view is created while the controller is in an
 // UPLOAD_IN_PROGRESS state, the loading view will be shown.
-IN_PROC_BROWSER_TEST_F(
-    SaveCardBubbleViewsFullFormBrowserTest,
-    Upload_InProgress_ShowsLoadingView) {
+IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
+                       Upload_InProgress_ShowsLoadingView) {
   ASSERT_TRUE(SetupSync());
 
   FillForm();
@@ -1844,7 +1851,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
   // Ensure that a strike was added.
   histogram_tester.ExpectUniqueSample(
       "Autofill.StrikeDatabase.NthStrikeAdded.CreditCardSave",
-      /*sample=*/(1), /*count=*/1);
+      /*sample=*/(1), /*expected_bucket_count=*/1);
 }
 
 // Tests the local save bubble. Ensures that clicking the [X] button
@@ -1886,7 +1893,7 @@ IN_PROC_BROWSER_TEST_F(
   // Ensure that a strike was added.
   histogram_tester.ExpectUniqueSample(
       "Autofill.StrikeDatabase.NthStrikeAdded.CreditCardSave",
-      /*sample=*/(1), /*count=*/1);
+      /*sample=*/(1), /*expected_bucket_count=*/1);
 }
 
 // Tests the upload save bubble. Ensures that clicking the [X] button
@@ -1935,7 +1942,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
     // The sample logged is the Nth strike added, or (i+1).
     histogram_tester.ExpectUniqueSample(
         "Autofill.StrikeDatabase.NthStrikeAdded.CreditCardSave",
-        /*sample=*/(i + 1), /*count=*/1);
+        /*sample=*/(i + 1), /*expected_bucket_count=*/1);
   }
 
   base::HistogramTester histogram_tester;
@@ -2002,7 +2009,7 @@ IN_PROC_BROWSER_TEST_F(
     // The sample logged is the Nth strike added, or (i+1).
     histogram_tester.ExpectUniqueSample(
         "Autofill.StrikeDatabase.NthStrikeAdded.CreditCardSave",
-        /*sample=*/(i + 1), /*count=*/1);
+        /*sample=*/(i + 1), /*expected_bucket_count=*/1);
   }
 
   base::HistogramTester histogram_tester;

@@ -4,11 +4,16 @@
 
 #include "third_party/blink/renderer/modules/ai/on_device_translation/ai_language_detector.h"
 
-#include "third_party/blink/renderer/platform/language_detection/detect.h"
-
 namespace blink {
 
-AILanguageDetector::AILanguageDetector() = default;
+AILanguageDetector::AILanguageDetector(
+    LanguageDetectionModel* language_detection_model)
+    : language_detection_model_(language_detection_model) {}
+
+void AILanguageDetector::Trace(Visitor* visitor) const {
+  visitor->Trace(language_detection_model_);
+  ScriptWrappable::Trace(visitor);
+}
 
 ScriptPromise<IDLSequence<LanguageDetectionResult>> AILanguageDetector::detect(
     ScriptState* script_state,
@@ -26,8 +31,9 @@ ScriptPromise<IDLSequence<LanguageDetectionResult>> AILanguageDetector::detect(
       ScriptPromiseResolver<IDLSequence<LanguageDetectionResult>>>(
       script_state);
 
-  DetectLanguage(input, WTF::BindOnce(AILanguageDetector::OnDetectComplete,
-                                      WrapPersistent(resolver)));
+  language_detection_model_->DetectLanguage(
+      input, WTF::BindOnce(AILanguageDetector::OnDetectComplete,
+                           WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
@@ -36,7 +42,7 @@ void AILanguageDetector::destroy(ScriptState*) {
 }
 
 HeapVector<Member<LanguageDetectionResult>> AILanguageDetector::ConvertResult(
-    WTF::Vector<LanguagePrediction> predictions) {
+    WTF::Vector<LanguageDetectionModel::LanguagePrediction> predictions) {
   HeapVector<Member<LanguageDetectionResult>> result;
   for (const auto& prediction : predictions) {
     auto* one = MakeGarbageCollected<LanguageDetectionResult>();
@@ -49,8 +55,8 @@ HeapVector<Member<LanguageDetectionResult>> AILanguageDetector::ConvertResult(
 
 void AILanguageDetector::OnDetectComplete(
     ScriptPromiseResolver<IDLSequence<LanguageDetectionResult>>* resolver,
-    base::expected<WTF::Vector<LanguagePrediction>, DetectLanguageError>
-        result) {
+    base::expected<WTF::Vector<LanguageDetectionModel::LanguagePrediction>,
+                   DetectLanguageError> result) {
   if (result.has_value()) {
     // Order the result from most to least confident.
     std::sort(result.value().rbegin(), result.value().rend());

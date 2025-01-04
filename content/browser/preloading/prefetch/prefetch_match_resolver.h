@@ -195,7 +195,7 @@ class CONTENT_EXPORT PrefetchMatchResolver2 final
   // Unregisters unmatched prefetch and unblocks if there are no other waiting
   // prefetches.
   void MaybeUnblockForUnmatch(const PrefetchContainer::Key& prefetch_key);
-  void UnblockForCookiesChanged();
+  void UnblockForCookiesChanged(const PrefetchContainer::Key& key);
   void UnblockInternal(PrefetchContainer::Reader reader);
 
   // Lifetime of this class is from the call of `FindPrefetch()` to calling

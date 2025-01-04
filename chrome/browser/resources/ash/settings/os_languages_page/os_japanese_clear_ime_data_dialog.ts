@@ -12,6 +12,7 @@ import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './os_japanese_clear_ime_data_dialog.html.js';
+import {UserDataServiceProvider} from './user_data_service_provider.js';
 
 export interface OsSettingsClearPersonalizedDataDialogElement {
   $: {
@@ -30,10 +31,27 @@ export class OsSettingsClearPersonalizedDataDialogElement extends
   }
 
   static get properties() {
-    return {};
+    return {
+      clearConversionHistory_: {
+        type: Boolean,
+      },
+      clearSuggestionHistory_: {
+        type: Boolean,
+      },
+    };
   }
 
+  private clearConversionHistory_ = false;
+
+  private clearSuggestionHistory_ = false;
+
   private onCancelButtonClick_(): void {
+    this.$.dialog.close();
+  }
+
+  private async onClearButtonClick_(): Promise<void> {
+    await UserDataServiceProvider.getRemote().clearJapanesePersonalizationData(
+        this.clearConversionHistory_, this.clearSuggestionHistory_);
     this.$.dialog.close();
   }
 }

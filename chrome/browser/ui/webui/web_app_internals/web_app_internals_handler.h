@@ -70,6 +70,15 @@ class WebAppInternalsHandler : public mojom::WebAppInternalsHandler {
       const webapps::AppId& app_id,
       const std::string& update_channel,
       SetUpdateChannelForIsolatedWebAppCallback callback) override;
+  void SetPinnedVersionForIsolatedWebApp(
+      const webapps::AppId& app_id,
+      const std::string& pinned_version,
+      SetPinnedVersionForIsolatedWebAppCallback callback) override;
+  void ResetPinnedVersionForIsolatedWebApp(
+      const webapps::AppId& app_id) override;
+  void SetAllowDowngradesForIsolatedWebApp(
+      bool allow_downgrades,
+      const webapps::AppId& app_id) override;
 
  private:
   const raw_ref<content::WebUI> web_ui_;

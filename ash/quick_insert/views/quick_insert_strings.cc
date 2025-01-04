@@ -27,20 +27,20 @@ std::u16string GetLabelForQuickInsertCategory(QuickInsertCategory category) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       return l10n_util::GetStringUTF16(IDS_EDITOR_MENU_WRITE_CARD_TITLE);
 #else
-      return u"";
+      return u"Editor";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case QuickInsertCategory::kEditorRewrite:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       return l10n_util::GetStringUTF16(IDS_EDITOR_MENU_REWRITE_CARD_TITLE);
 #else
-      return u"";
+      return u"Editor";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case QuickInsertCategory::kLobsterWithNoSelectedText:
     case QuickInsertCategory::kLobsterWithSelectedText:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       return l10n_util::GetStringUTF16(IDS_PICKER_LOBSTER_SELECTION_LABEL);
 #else
-      return u"";
+      return u"Lobster";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case QuickInsertCategory::kLinks:
       return l10n_util::GetStringUTF16(IDS_PICKER_LINKS_CATEGORY_LABEL);

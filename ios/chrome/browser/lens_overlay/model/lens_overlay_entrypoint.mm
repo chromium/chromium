@@ -12,6 +12,10 @@ LensOverlayInvocationSource InvocationSourceFromEntrypoint(
     case LensOverlayEntrypoint::kLocationBar:
       return LensOverlayInvocationSource::kOmnibox;
     case LensOverlayEntrypoint::kOverflowMenu:
+    case LensOverlayEntrypoint::kSearchImageContextMenu:
+      return LensOverlayInvocationSource::kAppMenu;
+    case LensOverlayEntrypoint::kLVFImagePicker:
+    case LensOverlayEntrypoint::kLVFCameraCapture:
       return LensOverlayInvocationSource::kAppMenu;
   }
 }

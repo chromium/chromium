@@ -243,7 +243,7 @@ base::Value::Dict NetLogSpdyInitializedParams(NetLogSource source) {
   if (source.IsValid()) {
     source.AddToEventParameters(dict);
   }
-  dict.Set("protocol", NextProtoToString(kProtoHTTP2));
+  dict.Set("protocol", NextProtoToString(NextProto::kProtoHTTP2));
   return dict;
 }
 
@@ -751,16 +751,15 @@ bool SpdySession::CanPool(TransportSecurityState* transport_security_state,
   if (!ssl_info.cert->VerifyNameMatch(new_hostname))
     return false;
 
-  // Port is left at 0 as it is never used.
   if (transport_security_state->CheckPublicKeyPins(
-          HostPortPair(new_hostname, 0), ssl_info.is_issued_by_known_root,
+          new_hostname, ssl_info.is_issued_by_known_root,
           ssl_info.public_key_hashes) ==
       TransportSecurityState::PKPStatus::VIOLATED) {
     return false;
   }
 
   switch (transport_security_state->CheckCTRequirements(
-      HostPortPair(new_hostname, 0), ssl_info.is_issued_by_known_root,
+      new_hostname, ssl_info.is_issued_by_known_root,
       ssl_info.public_key_hashes, ssl_info.cert.get(),
       ssl_info.ct_policy_compliance)) {
     case TransportSecurityState::CT_REQUIREMENTS_NOT_MET:

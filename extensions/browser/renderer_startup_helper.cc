@@ -209,7 +209,8 @@ void RendererStartupHelper::InitializeProcess(
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
   // If the new render process is a WebView guest process, propagate the WebView
   // partition ID to it.
-  if (WebViewRendererState::GetInstance()->IsGuest(process->GetID())) {
+  if (WebViewRendererState::GetInstance()->IsGuest(
+          process->GetDeprecatedID())) {
     std::string webview_partition_id = WebViewGuest::GetPartitionID(process);
     renderer->SetWebViewPartitionID(webview_partition_id);
   }
@@ -400,11 +401,7 @@ void RendererStartupHelper::OnDeveloperModeChanged(bool in_developer_mode) {
 
 void RendererStartupHelper::SetUserScriptWorldProperties(
     const Extension& extension,
-    std::optional<std::string> world_id,
-    std::optional<std::string> csp,
-    bool enable_messaging) {
-  mojom::UserScriptWorldInfoPtr info = mojom::UserScriptWorldInfo::New(
-      extension.id(), std::move(world_id), std::move(csp), enable_messaging);
+    mojom::UserScriptWorldInfoPtr world_info) {
   for (auto& process_entry : process_mojo_map_) {
     content::RenderProcessHost* process = process_entry.first;
     mojom::Renderer* renderer = GetRenderer(process);
@@ -418,7 +415,7 @@ void RendererStartupHelper::SetUserScriptWorldProperties(
     }
 
     std::vector<mojom::UserScriptWorldInfoPtr> worlds_info;
-    worlds_info.push_back(info.Clone());
+    worlds_info.push_back(world_info.Clone());
     renderer->UpdateUserScriptWorlds(std::move(worlds_info));
   }
 }

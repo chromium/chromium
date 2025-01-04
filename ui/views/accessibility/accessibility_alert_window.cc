@@ -29,8 +29,9 @@ AccessibilityAlertWindow::AccessibilityAlertWindow(aura::Window* parent,
 AccessibilityAlertWindow::~AccessibilityAlertWindow() = default;
 
 void AccessibilityAlertWindow::HandleAlert(const std::string& alert_string) {
-  if (!alert_window_ || !alert_window_->parent())
+  if (!alert_window_ || !alert_window_->parent()) {
     return;
+  }
 
   alert_window_->SetTitle(base::UTF8ToUTF16(alert_string));
   cache_->FireEvent(cache_->GetOrCreate(alert_window_.get()),

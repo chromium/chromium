@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import org.chromium.chrome.browser.commerce.PriceUtils;
-import org.chromium.components.payments.CurrencyFormatter;
+import org.chromium.components.payments.ui.CurrencyFormatter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;

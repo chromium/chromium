@@ -717,8 +717,9 @@ void AdAuctionServiceImpl::CreateUnderlyingTrustedURLLoaderFactory(
               .GetStoragePartition()),
       url_loader_factory::ContentClientParams(
           render_frame_host().GetSiteInstance()->GetBrowserContext(),
-          &render_frame_host(), render_frame_host().GetProcess()->GetID(),
-          url::Origin(), net::IsolationInfo(),
+          &render_frame_host(),
+          render_frame_host().GetProcess()->GetDeprecatedID(), url::Origin(),
+          net::IsolationInfo(),
           ukm::SourceIdObj::FromInt64(
               render_frame_host().GetPageUkmSourceId())));
 }
@@ -1186,16 +1187,11 @@ void AdAuctionServiceImpl::OnGotAuctionDataAndKey(base::Uuid request_id) {
       EVP_HPKE_AES_256_GCM);
   CHECK(maybe_key_config.ok()) << maybe_key_config.status();
 
-  const bool use_new_format =
-      base::FeatureList::IsEnabled(kBiddingAndAuctionEncryptionMediaType);
-
   auto maybe_request =
       quiche::ObliviousHttpRequest::CreateClientObliviousRequest(
           std::string(state.data->request.begin(), state.data->request.end()),
           state.key->key, maybe_key_config.value(),
-          use_new_format
-              ? kBiddingAndAuctionEncryptionRequestMediaType
-              : quiche::ObliviousHttpHeaderKeyConfig::kOhttpRequestLabel);
+          kBiddingAndAuctionEncryptionRequestMediaType);
   if (!maybe_request.ok()) {
     ReturnEmptyGetInterestGroupAdAuctionDataCallback(
         "Could not create request");
@@ -1232,12 +1228,9 @@ void AdAuctionServiceImpl::OnGotAuctionDataAndKey(base::Uuid request_id) {
   // Pre-warm data decoder.
   ad_auction_page_data->GetDecoderFor(state.seller)->GetService();
 
-  size_t start_offset = 0;
-  if (use_new_format) {
-    // For the modified request format we need to prepend a version number byte
-    // to the request.
-    start_offset = 1;
-  }
+  // For the modified request format we need to prepend a version number byte
+  // to the request.
+  size_t start_offset = 1;
   mojo_base::BigBuffer buf(data.size() + start_offset);
 
   // Write the version byte. If we are not using a modified request this will

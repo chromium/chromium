@@ -340,7 +340,7 @@ class PlatformAppPathLauncher
     std::vector<GrantedFileEntry> granted_entries;
     for (size_t i = 0; i < entry_paths_.size(); ++i) {
       granted_entries.push_back(CreateFileEntry(
-          context_, app, context_info->render_process_host->GetID(),
+          context_, app, context_info->render_process_host->GetDeprecatedID(),
           entries_[i].path, entries_[i].is_directory));
     }
 

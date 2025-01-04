@@ -581,11 +581,6 @@ mojom::URLLoaderClient* URLLoader::MaybeSyncURLLoaderClient::Get() {
   return nullptr;
 }
 
-URLLoader::PartialLoadInfo::PartialLoadInfo(net::LoadStateWithParam load_state,
-                                            net::UploadProgress upload_progress)
-    : load_state(std::move(load_state)),
-      upload_progress(std::move(upload_progress)) {}
-
 URLLoader::URLLoader(
     URLLoaderContext& context,
     DeleteCallback delete_callback,
@@ -640,6 +635,7 @@ URLLoader::URLLoader(
       has_user_activation_(request.trusted_params &&
                            request.trusted_params->has_user_activation),
       request_destination_(request.destination),
+      expected_signatures_(request.expected_signatures),
       resource_scheduler_client_(context.GetResourceSchedulerClient()),
       keepalive_statistics_recorder_(std::move(keepalive_statistics_recorder)),
       custom_proxy_pre_cache_headers_(request.custom_proxy_pre_cache_headers),
@@ -888,9 +884,8 @@ void URLLoader::ConfigureRequest(
   // Note: There are some ordering dependencies here. `SetRequestCredentials`
   // depends on `SetLoadFlags`; `CalculateStorageAccessStatus` depends on
   // `cookie_setting_overrides` and `SetRequestCredentials`.
-  // `SetFetchMetadataHeaders` will depend on
-  // `url_request_->storage_access_status()`, once https://crbug.com/366284840
-  // is fixed.
+  // `SetFetchMetadataHeaders` depends on
+  // `url_request_->storage_access_status()`.
   url_request_->cookie_setting_overrides() = cookie_setting_overrides;
   url_request_->SetLoadFlags(request_load_flags);
   SetRequestCredentials(url);
@@ -901,6 +896,8 @@ void URLLoader::ConfigureRequest(
                           has_user_activation_, request_destination_, nullptr,
                           *factory_params_, *origin_access_list_,
                           request_credentials_mode_);
+
+  MaybeSetAcceptSignatureHeader(url_request_.get(), expected_signatures_);
 
   url_request_->set_first_party_url_policy(first_party_url_policy);
 
@@ -1677,9 +1674,8 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
 
   // Note: There are some ordering dependencies here.
   // `CalculateStorageAccessStatus` depends on
-  // `url_request->cookie_setting_overrides()`.  `SetFetchMetadataHeaders` will
-  // depend on `url_request_->storage_access_status()`, once
-  // https://crbug.com/366284840 is fixed.
+  // `url_request->cookie_setting_overrides()`. `SetFetchMetadataHeaders`
+  // depends on `url_request_->storage_access_status()`.
   url_request_->set_storage_access_status(
       url_request_->CalculateStorageAccessStatus(redirect_info));
 
@@ -1799,13 +1795,14 @@ net::CookieSettingOverrides URLLoader::CalculateCookieSettingOverrides(
   // factory_overrides.
   CHECK(
       !overrides.Has(net::CookieSettingOverride::kStorageAccessGrantEligible));
-  // Add/remove the Storage Access override enum based on whether the request's
-  // url and initiator are same-site, to prevent cross-site sibling iframes
-  // benefit from each other's storage access API grants. This must be updated
-  // on redirects.
-  net::cookie_util::AddOrRemoveStorageAccessApiOverride(
-      request.url, request.storage_access_api_status, request.request_initiator,
-      overrides);
+  // Add the Storage Access override enum based on whether the request's url and
+  // initiator are same-site, to prevent cross-site sibling iframes benefit from
+  // each other's storage access API grants. This must be updated on redirects.
+  if (net::cookie_util::ShouldAddInitialStorageAccessApiOverride(
+          request.url, request.storage_access_api_status,
+          request.request_initiator, emit_metrics)) {
+    overrides.Put(net::CookieSettingOverride::kStorageAccessGrantEligible);
+  }
 
   // The `kStorageAccessGrantEligibleViaHeader` override will be applied
   // (in-place) by individual request jobs as appropriate, but should not be
@@ -2034,7 +2031,8 @@ void URLLoader::ContinueOnResponseStarted() {
   //
   // https://wicg.github.io/signature-based-sri/
   if (std::optional<mojom::BlockedByResponseReason> blocked_reason =
-          MaybeBlockResponseForSRIMessageSignature(*response_)) {
+          MaybeBlockResponseForSRIMessageSignature(url_request_->url(),
+                                                   *response_)) {
     CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE, false,
                             blocked_reason);
     // Close the socket associated with the request, to prevent leaking
@@ -2412,20 +2410,6 @@ int URLLoader::OnHeadersReceived(
     return net::ERR_IO_PENDING;
   }
   return net::OK;
-}
-
-URLLoader::PartialLoadInfo URLLoader::GetPartialLoadInfo() const {
-  return PartialLoadInfo(url_request_->GetLoadState(),
-                         url_request_->GetUploadProgress());
-}
-
-mojom::LoadInfoPtr URLLoader::CreateLoadInfo(
-    const PartialLoadInfo& partial_load_info) {
-  return mojom::LoadInfo::New(
-      base::TimeTicks::Now(), url_request_->url().host(),
-      partial_load_info.load_state.state, partial_load_info.load_state.param,
-      partial_load_info.upload_progress.position(),
-      partial_load_info.upload_progress.size());
 }
 
 net::LoadState URLLoader::GetLoadState() const {

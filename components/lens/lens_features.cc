@@ -18,18 +18,6 @@ BASE_FEATURE(kLensStandalone,
              "LensStandalone",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableLatencyLogging,
-             "LensImageLatencyLogging",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableRegionSearchKeyboardShortcut,
-             "LensEnableRegionSearchKeyboardShortcut",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableImageTranslate,
-             "LensEnableImageTranslate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLensOverlay,
              "LensOverlay",
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -225,7 +213,7 @@ constexpr base::FeatureParam<int> kLensOverlaySegmentationMaskCornerRadius{
 
 constexpr base::FeatureParam<bool>
     kLensOverlayImageContextMenuActionsEnableCopyAsImage{
-        &kLensOverlayImageContextMenuActions, "enable-copy-as-image", false};
+        &kLensOverlayImageContextMenuActions, "enable-copy-as-image", true};
 
 constexpr base::FeatureParam<bool>
     kLensOverlayImageContextMenuActionsEnableSaveAsImage{
@@ -293,7 +281,7 @@ constexpr base::FeatureParam<bool>
 
 constexpr base::FeatureParam<base::TimeDelta> kLensSearchboxAutocompleteTimeout{
     &kLensOverlayContextualSearchbox, "lens-searchbox-autocomplete-timeout",
-    base::Milliseconds(3000)};
+    base::Milliseconds(10000)};
 
 constexpr base::FeatureParam<bool> kShowContextualSearchboxSearchSuggest{
     &kLensOverlayContextualSearchbox,
@@ -304,8 +292,15 @@ constexpr base::FeatureParam<bool>
         &kLensOverlayContextualSearchbox,
         "send-lens-visual-interaction-data-for-lens-suggest", false};
 
+constexpr base::FeatureParam<bool> kLensOverlaySendImageSignalsForLensSuggest{
+    &kLensOverlayContextualSearchbox, "send-image-signals-for-lens-suggest",
+    true};
+
 constexpr base::FeatureParam<size_t> kLensOverlayFileUploadLimitBytes{
     &kLensOverlayContextualSearchbox, "file-upload-limit-bytes", 200000000};
+
+constexpr base::FeatureParam<size_t> kLensOverlayPdfTextCharacterLimit{
+    &kLensOverlayContextualSearchbox, "pdf-text-character-limit", 2500};
 
 const base::FeatureParam<base::TimeDelta> kLensOverlaySurveyResultsTime{
     &kLensOverlaySurvey, "results-time", base::Seconds(1)};
@@ -321,6 +316,9 @@ constexpr base::FeatureParam<bool> kUsePdfInteractionType{
 
 constexpr base::FeatureParam<bool> kUseWebpageInteractionType{
     &kLensOverlayContextualSearchbox, "use-webpage-interaction-type", false};
+
+constexpr base::FeatureParam<int> kScannedPdfCharacterPerPageHeuristic{
+    &kLensOverlayContextualSearchbox, "characters-per-page-heuristic", 200};
 
 constexpr base::FeatureParam<std::string> kTranslateEndpointUrl{
     &kLensOverlayTranslateLanguages, "translate-endpoint-url",
@@ -364,11 +362,6 @@ constexpr base::FeatureParam<std::string> kPreconnectKeyForLens{
 
 constexpr base::FeatureParam<bool> kShouldIssueProcessPrewarmingForLens{
     &kLensStandalone, "lens-issue-process-prewarming", true};
-
-bool GetEnableLatencyLogging() {
-  return base::FeatureList::IsEnabled(kEnableLatencyLogging) &&
-         base::FeatureList::IsEnabled(kLensStandalone);
-}
 
 std::string GetHomepageURLForLens() {
   return kHomepageURLForLens.Get();
@@ -526,8 +519,19 @@ bool GetLensOverlaySendLensVisualInteractionDataForLensSuggest() {
   return kLensOverlaySendLensVisualInteractionDataForLensSuggest.Get();
 }
 
+bool GetLensOverlaySendImageSignalsForLensSuggest() {
+  return kLensOverlaySendImageSignalsForLensSuggest.Get();
+}
+
 uint32_t GetLensOverlayFileUploadLimitBytes() {
   size_t limit = kLensOverlayFileUploadLimitBytes.Get();
+  return base::IsValueInRangeForNumericType<uint32_t>(limit)
+             ? static_cast<uint32_t>(limit)
+             : 0;
+}
+
+uint32_t GetLensOverlayPdfSuggestCharacterTarget() {
+  size_t limit = kLensOverlayPdfTextCharacterLimit.Get();
   return base::IsValueInRangeForNumericType<uint32_t>(limit)
              ? static_cast<uint32_t>(limit)
              : 0;
@@ -547,6 +551,10 @@ bool UsePdfInteractionType() {
 
 bool UseWebpageInteractionType() {
   return kUseWebpageInteractionType.Get();
+}
+
+int GetScannedPdfCharacterPerPageHeuristic() {
+  return kScannedPdfCharacterPerPageHeuristic.Get();
 }
 
 bool UsePdfsAsContext() {

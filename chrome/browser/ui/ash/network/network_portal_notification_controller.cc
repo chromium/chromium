@@ -123,8 +123,9 @@ const char NetworkPortalNotificationController::kNotificationId[] =
     "chrome://net/network_portal_detector";
 
 NetworkPortalNotificationController::NetworkPortalNotificationController() {
-  if (NetworkHandler::IsInitialized())  // May be null in tests.
+  if (NetworkHandler::IsInitialized()) {  // May be null in tests.
     NetworkHandler::Get()->network_state_handler()->AddObserver(this);
+  }
   DCHECK(session_manager::SessionManager::Get());
   session_manager::SessionManager::Get()->AddObserver(this);
 }
@@ -133,8 +134,9 @@ NetworkPortalNotificationController::~NetworkPortalNotificationController() {
   if (NetworkHandler::IsInitialized()) {
     NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
   }
-  if (session_manager::SessionManager::Get())
+  if (session_manager::SessionManager::Get()) {
     session_manager::SessionManager::Get()->RemoveObserver(this);
+  }
 }
 
 void NetworkPortalNotificationController::PortalStateChanged(

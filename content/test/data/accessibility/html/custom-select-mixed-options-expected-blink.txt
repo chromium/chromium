@@ -1,0 +1,21 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++comboBoxSelect collapsed value='only text'
+++++++++menuListPopup invisible ispopup=auto
+++++++++++menuListOption name='only text' selected=true
+++++++++++menuListOption invisible name='with img ' selected=false
+++++++comboBoxSelect collapsed value='only text'
+++++++++menuListPopup invisible ispopup=auto
+++++++++++menuListOption name='only text' selected=true
+++++++++++menuListOption invisible name='with img ' selected=false
+++++++++++++genericContainer ignored invisible
+++++++++++++++staticText invisible name='with img<newline>    '
+++++++++++++++image invisible
+++++++comboBoxSelect collapsed value='only text'
+++++++++menuListPopup invisible ispopup=auto
+++++++++++menuListOption name='only text' selected=true
+++++++++++menuListOption invisible name='with img ' selected=false
+++++++++++++genericContainer ignored invisible
+++++++++++++++staticText invisible name='with img<newline>    '
+++++++++++++++image invisible

@@ -1202,13 +1202,13 @@ const CSSValue* StyleCascade::ResolvePendingSubstitution(
 
   unsigned parsed_properties_count = parsed_properties.size();
   for (unsigned i = 0; i < parsed_properties_count; ++i) {
-    const CSSProperty& longhand = CSSProperty::Get(parsed_properties[i].Id());
-    const CSSValue* parsed = parsed_properties[i].Value();
+    const CSSProperty& longhand =
+        CSSProperty::Get(parsed_properties[i].PropertyID());
 
     // When using var() in a css-logical shorthand (e.g. margin-inline),
     // the longhands here will also be logical.
     if (unvisited_property == &ResolveSurrogate(longhand)) {
-      return parsed;
+      return &parsed_properties[i].Value();
     }
   }
 
@@ -1445,6 +1445,8 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
     //
     // TODO(sesse): Do we need the token range here anymore?
     if (!ValidateFallback(property, fallback.OriginalText())) {
+      // TODO(crbug.com/372475301): We should not validate the fallback.
+      CountUse(WebFeature::kVarFallbackValidation);
       return false;
     }
     if (!data) {
@@ -1590,6 +1592,14 @@ bool StyleCascade::ResolveEnvInto(CSSParserTokenStream& stream,
                                   TokenSequence& out) {
   state_.StyleBuilder().SetHasEnv();
   AtomicString variable_name = ConsumeVariableName(stream);
+
+  if (variable_name == "safe-area-inset-bottom") {
+    state_.StyleBuilder().SetReferencesSafeAreaInsetBottom(true);
+    state_.GetDocument()
+        .GetStyleEngine()
+        .SetNeedsToUpdateComplexSafeAreaConstraints();
+  }
+
   DCHECK(stream.AtEnd() || (stream.Peek().GetType() == kCommaToken) ||
          (stream.Peek().GetType() == kNumberToken));
 
@@ -1643,15 +1653,18 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
                                    CascadeResolver& resolver,
                                    const CSSParserContext& context,
                                    TokenSequence& out) {
-  AtomicString attribute_name = ConsumeVariableName(stream);
+  AtomicString local_name = ConsumeVariableName(stream);
   std::optional<CSSAttrType> attr_type = CSSAttrType::Consume(stream);
   if (!attr_type.has_value()) {
     attr_type = CSSAttrType::GetDefaultValue();
   }
   DCHECK(stream.AtEnd() || stream.Peek().GetType() == kCommaToken);
 
-  const String& attribute_value =
-      state_.GetUltimateOriginatingElementOrSelf().getAttribute(attribute_name);
+  Element& element = state_.GetUltimateOriginatingElementOrSelf();
+
+  // TODO(crbug.com/387281256): Support namespaces.
+  const String& attribute_value = element.getAttributeNS(
+      /*namespace_uri=*/g_null_atom, element.LowercaseIfNecessary(local_name));
 
   const CSSValue* substitution_value =
       attribute_value.IsNull() ? nullptr
@@ -1829,6 +1842,10 @@ void StyleCascade::ApplyIsBottomRelativeToSafeAreaInset() {
   if (CSSParserFastPaths::IsSafeAreaInsetBottom(
           unparsed->VariableDataValue()->OriginalText())) {
     state_.StyleBuilder().SetIsBottomRelativeToSafeAreaInset(true);
+
+    UseCounter::Count(
+        state_.GetDocument(),
+        WebFeature::kCSSEnvironmentVariable_SafeAreaInsetBottom_FastPath);
   }
 }
 

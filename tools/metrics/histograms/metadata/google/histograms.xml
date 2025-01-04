@@ -44,7 +44,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GoogleUpdate.InstallDetails.UpdateCohortId"
-    enum="GoogleUpdateHashedCohortId" expires_after="2025-04-25">
+    enum="GoogleUpdateHashedCohortId" expires_after="2025-06-29">
   <owner>waffles@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <owner>omaha-team@google.com</owner>

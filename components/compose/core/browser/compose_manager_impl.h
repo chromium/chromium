@@ -8,8 +8,8 @@
 #include <optional>
 
 #include "base/memory/raw_ref.h"
-#include "components/autofill/core/browser/autofill_driver.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/foundations/autofill_driver.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/core/browser/compose_client.h"
 #include "components/compose/core/browser/compose_manager.h"

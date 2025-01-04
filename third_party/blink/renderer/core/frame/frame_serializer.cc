@@ -1173,9 +1173,8 @@ function main(metadata) {
             text_string, WTF::kCSSEncodedEntitiesForUnencodables);
       }
 
-      resource_serializer_->AddToResources(
-          String("text/css"), SharedBuffer::Create(text.c_str(), text.length()),
-          url);
+      resource_serializer_->AddToResources(String("text/css"),
+                                           SharedBuffer::Create(text), url);
     }
 
     // Sub resources need to be serialized even if the CSS definition doesn't
@@ -1279,10 +1278,8 @@ function main(metadata) {
     // The background-image and list-style-image (for ul or ol) are the CSS
     // properties that make use of images. We iterate to make sure we include
     // any other image properties there might be.
-    unsigned property_count = style_declaration->PropertyCount();
-    for (unsigned i = 0; i < property_count; ++i) {
-      const CSSValue& css_value = style_declaration->PropertyAt(i).Value();
-      RetrieveResourcesForCSSValue(css_value, document);
+    for (const CSSPropertyValue& property : style_declaration->Properties()) {
+      RetrieveResourcesForCSSValue(property.Value(), document);
     }
   }
 
@@ -1373,9 +1370,8 @@ void FrameSerializer::SerializeFrame(
 
     std::string frame_html =
         document.Encoding().Encode(text, WTF::kEntitiesForUnencodables);
-    resource_serializer->AddMainResource(
-        document.SuggestedMIMEType(),
-        SharedBuffer::Create(frame_html.c_str(), frame_html.length()), url);
+    resource_serializer->AddMainResource(document.SuggestedMIMEType(),
+                                         SharedBuffer::Create(frame_html), url);
     resource_serializer->Finish(std::move(callback));
   }
 }

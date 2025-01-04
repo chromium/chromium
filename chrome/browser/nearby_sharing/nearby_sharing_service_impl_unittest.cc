@@ -4,9 +4,11 @@
 
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_impl.h"
 
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/barrier_closure.h"
 #include "base/containers/span.h"
@@ -848,10 +850,16 @@ class NearbySharingServiceImplTestBase : public testing::Test {
                 device_name = kDeviceName;
               }
 
+              auto encrypted_metadata_key =
+                  GetNearbyShareTestEncryptedMetadataKey();
               sharing::mojom::AdvertisementPtr advertisement =
                   sharing::mojom::Advertisement::New(
-                      GetNearbyShareTestEncryptedMetadataKey().salt(),
-                      GetNearbyShareTestEncryptedMetadataKey().encrypted_key(),
+                      std::vector<uint8_t>(
+                          encrypted_metadata_key.salt().begin(),
+                          encrypted_metadata_key.salt().end()),
+                      std::vector<uint8_t>(
+                          encrypted_metadata_key.encrypted_key().begin(),
+                          encrypted_metadata_key.encrypted_key().end()),
                       kDeviceType, device_name);
               std::move(callback).Run(std::move(advertisement));
             }));
@@ -4674,7 +4682,7 @@ TEST_P(NearbySharingServiceImplTest, ShutdownCallsObserversWithArcCallback) {
 }
 
 TEST_P(NearbySharingServiceImplTest, RotateBackgroundAdvertisement_Periodic) {
-  certificate_manager()->set_next_salt({0x00, 0x01});
+  certificate_manager()->set_next_salt(std::to_array<uint8_t>({0x00, 0x01}));
   SetVisibility(nearby_share::mojom::Visibility::kAllContacts);
   NiceMock<MockTransferUpdateCallback> callback;
   NearbySharingService::StatusCodes result = service_->RegisterReceiveSurface(
@@ -4684,7 +4692,7 @@ TEST_P(NearbySharingServiceImplTest, RotateBackgroundAdvertisement_Periodic) {
   auto endpoint_info_initial =
       fake_nearby_connections_manager_->advertising_endpoint_info();
 
-  certificate_manager()->set_next_salt({0x00, 0x02});
+  certificate_manager()->set_next_salt(std::to_array<uint8_t>({0x00, 0x02}));
   task_environment_.FastForwardBy(base::Seconds(870));
   EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
   auto endpoint_info_rotated =
@@ -4694,7 +4702,7 @@ TEST_P(NearbySharingServiceImplTest, RotateBackgroundAdvertisement_Periodic) {
 
 TEST_P(NearbySharingServiceImplTest,
        RotateBackgroundAdvertisement_PrivateCertificatesChange) {
-  certificate_manager()->set_next_salt({0x00, 0x01});
+  certificate_manager()->set_next_salt(std::to_array<uint8_t>({0x00, 0x01}));
   SetVisibility(nearby_share::mojom::Visibility::kAllContacts);
   NiceMock<MockTransferUpdateCallback> callback;
   NearbySharingService::StatusCodes result = service_->RegisterReceiveSurface(
@@ -4704,7 +4712,7 @@ TEST_P(NearbySharingServiceImplTest,
   auto endpoint_info_initial =
       fake_nearby_connections_manager_->advertising_endpoint_info();
 
-  certificate_manager()->set_next_salt({0x00, 0x02});
+  certificate_manager()->set_next_salt(std::to_array<uint8_t>({0x00, 0x02}));
   certificate_manager()->NotifyPrivateCertificatesChanged();
   EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
   auto endpoint_info_rotated =
@@ -5265,11 +5273,14 @@ TEST_P(NearbySharingServiceImplTest, VisibilityReminderTimerIsTriggered) {
 }
 
 TEST_P(NearbySharingServiceImplTest, CreateShareTarget) {
+  auto encrypted_metadata_key = GetNearbyShareTestEncryptedMetadataKey();
   sharing::mojom::AdvertisementPtr advertisement =
       sharing::mojom::Advertisement::New(
-          GetNearbyShareTestEncryptedMetadataKey().salt(),
-          GetNearbyShareTestEncryptedMetadataKey().encrypted_key(), kDeviceType,
-          kDeviceName);
+          std::vector<uint8_t>(encrypted_metadata_key.salt().begin(),
+                               encrypted_metadata_key.salt().end()),
+          std::vector<uint8_t>(encrypted_metadata_key.encrypted_key().begin(),
+                               encrypted_metadata_key.encrypted_key().end()),
+          kDeviceType, kDeviceName);
 
   // Flip |for_self_share| to true to ensure the resulting ShareTarget picks
   // this up.
@@ -5280,7 +5291,7 @@ TEST_P(NearbySharingServiceImplTest, CreateShareTarget) {
 
   std::optional<NearbyShareDecryptedPublicCertificate> certificate =
       NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
-          certificate_proto, GetNearbyShareTestEncryptedMetadataKey());
+          certificate_proto, encrypted_metadata_key);
   ASSERT_TRUE(certificate.has_value());
   ASSERT_EQ(certificate_proto.for_self_share(), certificate->for_self_share());
 

@@ -18,6 +18,7 @@ import androidx.annotation.RequiresApi;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -25,6 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * This class receives OnFrameMetricsAvailableListener.onFrameMetricsAvailable() callbacks and
  * records frame durations in a FrameMetricsStore instance.
  */
+@NullMarked
 @RequiresApi(api = VERSION_CODES.N)
 public class FrameMetricsListener implements OnFrameMetricsAvailableListener {
     private class DisplayListenerBackend implements DisplayListener {

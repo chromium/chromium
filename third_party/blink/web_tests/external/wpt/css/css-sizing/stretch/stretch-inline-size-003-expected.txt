@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] .test 4
+  assert_equals: \n<div class="test htb" data-expected-width="55"></div>\nwidth expected 55 but got 10
+[FAIL] .test 10
+  assert_equals: \n<div class="test htb" data-expected-width="41"></div>\nwidth expected 41 but got 10
+[FAIL] .test 13
+  assert_equals: \n<div class="test htb" data-expected-width="41"></div>\nwidth expected 41 but got 10
+[FAIL] .test 22
+  assert_equals: \n<div class="test htb" data-expected-width="55" style="box-sizing: border-box;"></div>\nwidth expected 55 but got 10
+[FAIL] .test 28
+  assert_equals: \n<div class="test htb" data-expected-width="41" style="box-sizing: border-box;"></div>\nwidth expected 41 but got 10
+[FAIL] .test 31
+  assert_equals: \n<div class="test htb" data-expected-width="41" style="box-sizing: border-box;"></div>\nwidth expected 41 but got 10
+Harness: the test ran to completion.
+

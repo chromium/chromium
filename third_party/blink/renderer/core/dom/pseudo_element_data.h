@@ -71,10 +71,10 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
     visitor->Trace(generated_scroll_marker_group_before_);
     visitor->Trace(generated_scroll_marker_group_after_);
     visitor->Trace(generated_scroll_marker_);
-    visitor->Trace(generated_scroll_up_button_);
-    visitor->Trace(generated_scroll_down_button_);
-    visitor->Trace(generated_scroll_left_button_);
-    visitor->Trace(generated_scroll_right_button_);
+    visitor->Trace(generated_scroll_button_block_start_);
+    visitor->Trace(generated_scroll_button_inline_start_);
+    visitor->Trace(generated_scroll_button_inline_end_);
+    visitor->Trace(generated_scroll_button_block_end_);
     visitor->Trace(backdrop_);
     visitor->Trace(transition_data_);
     visitor->Trace(column_pseudo_elements_);
@@ -91,10 +91,10 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
   Member<PseudoElement> generated_scroll_marker_group_before_;
   Member<PseudoElement> generated_scroll_marker_group_after_;
   Member<PseudoElement> generated_scroll_marker_;
-  Member<PseudoElement> generated_scroll_up_button_;
-  Member<PseudoElement> generated_scroll_down_button_;
-  Member<PseudoElement> generated_scroll_left_button_;
-  Member<PseudoElement> generated_scroll_right_button_;
+  Member<PseudoElement> generated_scroll_button_block_start_;
+  Member<PseudoElement> generated_scroll_button_inline_start_;
+  Member<PseudoElement> generated_scroll_button_inline_end_;
+  Member<PseudoElement> generated_scroll_button_block_end_;
   Member<PseudoElement> backdrop_;
 
   Member<TransitionPseudoElementData> transition_data_;
@@ -112,8 +112,10 @@ inline bool PseudoElementData::HasPseudoElements() const {
          generated_first_letter_ || transition_data_ ||
          generated_scroll_marker_group_before_ ||
          generated_scroll_marker_group_after_ || generated_scroll_marker_ ||
-         generated_scroll_up_button_ || generated_scroll_down_button_ ||
-         generated_scroll_left_button_ || generated_scroll_right_button_ ||
+         generated_scroll_button_block_start_ ||
+         generated_scroll_button_inline_start_ ||
+         generated_scroll_button_inline_end_ ||
+         generated_scroll_button_block_end_ ||
          (column_pseudo_elements_ && !column_pseudo_elements_->empty());
 }
 
@@ -128,10 +130,10 @@ inline void PseudoElementData::ClearPseudoElements() {
   SetPseudoElement(kPseudoIdScrollMarkerGroupBefore, nullptr);
   SetPseudoElement(kPseudoIdScrollMarkerGroupAfter, nullptr);
   SetPseudoElement(kPseudoIdScrollMarker, nullptr);
-  SetPseudoElement(kPseudoIdScrollUpButton, nullptr);
-  SetPseudoElement(kPseudoIdScrollDownButton, nullptr);
-  SetPseudoElement(kPseudoIdScrollLeftButton, nullptr);
-  SetPseudoElement(kPseudoIdScrollRightButton, nullptr);
+  SetPseudoElement(kPseudoIdScrollButtonBlockStart, nullptr);
+  SetPseudoElement(kPseudoIdScrollButtonInlineStart, nullptr);
+  SetPseudoElement(kPseudoIdScrollButtonBlockEnd, nullptr);
+  SetPseudoElement(kPseudoIdScrollButtonInlineEnd, nullptr);
   if (column_pseudo_elements_) {
     column_pseudo_elements_->clear();
   }
@@ -179,21 +181,21 @@ inline void PseudoElementData::SetPseudoElement(
       previous_element = generated_scroll_marker_;
       generated_scroll_marker_ = element;
       break;
-    case kPseudoIdScrollUpButton:
-      previous_element = generated_scroll_up_button_;
-      generated_scroll_up_button_ = element;
+    case kPseudoIdScrollButtonBlockStart:
+      previous_element = generated_scroll_button_block_start_;
+      generated_scroll_button_block_start_ = element;
       break;
-    case kPseudoIdScrollDownButton:
-      previous_element = generated_scroll_down_button_;
-      generated_scroll_down_button_ = element;
+    case kPseudoIdScrollButtonInlineStart:
+      previous_element = generated_scroll_button_inline_start_;
+      generated_scroll_button_inline_start_ = element;
       break;
-    case kPseudoIdScrollLeftButton:
-      previous_element = generated_scroll_left_button_;
-      generated_scroll_left_button_ = element;
+    case kPseudoIdScrollButtonBlockEnd:
+      previous_element = generated_scroll_button_block_end_;
+      generated_scroll_button_block_end_ = element;
       break;
-    case kPseudoIdScrollRightButton:
-      previous_element = generated_scroll_right_button_;
-      generated_scroll_right_button_ = element;
+    case kPseudoIdScrollButtonInlineEnd:
+      previous_element = generated_scroll_button_inline_end_;
+      generated_scroll_button_inline_end_ = element;
       break;
     case kPseudoIdBackdrop:
       previous_element = backdrop_;
@@ -249,17 +251,17 @@ inline PseudoElement* PseudoElementData::GetPseudoElement(
   if (kPseudoIdScrollMarker == pseudo_id) {
     return generated_scroll_marker_.Get();
   }
-  if (kPseudoIdScrollUpButton == pseudo_id) {
-    return generated_scroll_up_button_.Get();
+  if (kPseudoIdScrollButtonBlockStart == pseudo_id) {
+    return generated_scroll_button_block_start_.Get();
   }
-  if (kPseudoIdScrollDownButton == pseudo_id) {
-    return generated_scroll_down_button_.Get();
+  if (kPseudoIdScrollButtonInlineStart == pseudo_id) {
+    return generated_scroll_button_inline_start_.Get();
   }
-  if (kPseudoIdScrollLeftButton == pseudo_id) {
-    return generated_scroll_left_button_.Get();
+  if (kPseudoIdScrollButtonBlockEnd == pseudo_id) {
+    return generated_scroll_button_block_end_.Get();
   }
-  if (kPseudoIdScrollRightButton == pseudo_id) {
-    return generated_scroll_right_button_.Get();
+  if (kPseudoIdScrollButtonInlineEnd == pseudo_id) {
+    return generated_scroll_button_inline_end_.Get();
   }
 // Workaround for CPU bug. This avoids compiler optimizing
 // this group of if conditions into switch. See http://crbug.com/855390.
@@ -308,17 +310,17 @@ PseudoElementData::GetPseudoElements() const {
   if (generated_scroll_marker_) {
     result.push_back(generated_scroll_marker_);
   }
-  if (generated_scroll_up_button_) {
-    result.push_back(generated_scroll_up_button_);
+  if (generated_scroll_button_block_start_) {
+    result.push_back(generated_scroll_button_block_start_);
   }
-  if (generated_scroll_down_button_) {
-    result.push_back(generated_scroll_down_button_);
+  if (generated_scroll_button_inline_start_) {
+    result.push_back(generated_scroll_button_inline_start_);
   }
-  if (generated_scroll_left_button_) {
-    result.push_back(generated_scroll_left_button_);
+  if (generated_scroll_button_block_end_) {
+    result.push_back(generated_scroll_button_block_end_);
   }
-  if (generated_scroll_right_button_) {
-    result.push_back(generated_scroll_right_button_);
+  if (generated_scroll_button_inline_end_) {
+    result.push_back(generated_scroll_button_inline_end_);
   }
   if (column_pseudo_elements_) {
     result.AppendVector(*column_pseudo_elements_);

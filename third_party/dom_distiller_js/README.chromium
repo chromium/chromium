@@ -1,7 +1,7 @@
 Name: dom-distiller-js
 URL: https://github.com/chromium/dom-distiller
 Version: 36c7178512
-License: BSD
+License: BSD-3-Clause, Apache-2.0
 License File: LICENSE
 Security Critical: yes
 Shipped: yes

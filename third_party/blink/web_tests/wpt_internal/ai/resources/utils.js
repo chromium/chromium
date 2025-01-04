@@ -1,3 +1,5 @@
+const kTestPrompt = 'Please write a sentence in English.';
+
 const testSession = async (session) => {
   if (typeof session.topK !== 'number') {
     return {success: false, error: 'session topK property is not properly set'};
@@ -30,7 +32,7 @@ const testSession = async (session) => {
   const prevTokenSoFar = session.tokensSoFar;
   const prevTokensLeft = session.tokensLeft;
 
-  const result = await session.prompt("What is the result of 0*2?");
+  const result = await session.prompt(kTestPrompt);
   if (typeof result !== "string" || result.length === 0) {
     return {
       success: false,
@@ -79,7 +81,7 @@ const testPromptAPI = async () => {
     const session = await ai.languageModel.create({
       topK: 3,
       temperature: 0.8,
-      systemPrompt: "Let's talk about Mauritius.",
+      systemPrompt: "Let's talk in English.",
       monitor(m) {
         m.addEventListener("downloadprogress", e => {
           isDownloadProgressEventTriggered = true;
@@ -103,6 +105,26 @@ const testPromptAPI = async () => {
       error: e
     };
   }
+};
+
+// The createSummarizerMaybeDownload function creates
+// a summarizer object and the download progress monitor
+// on the first download. The test cases shall always
+// call this function to create the summarizer.
+const createSummarizerMaybeDownload = async (options) => {
+  const capabilities = await ai.summarizer.capabilities();
+  if (capabilities.available == "after-download") {
+    isDownloadProgressEventTriggered = false;
+    options.monitor = (m) => {
+      m.addEventListener("downloadprogress", e => {
+        isDownloadProgressEventTriggered = true;
+      });
+    }
+    const summarizer = await ai.summarizer.create(options);
+    assert_true(isDownloadProgressEventTriggered);
+    return summarizer;
+  }
+  return await ai.summarizer.create(options);
 };
 
 // The method should take the AbortSignal as an option and return a promise.

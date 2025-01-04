@@ -3,6 +3,8 @@
 <link rel=help href="https://issues.chromium.org/issues/361129480">
 <script src="../../../../resources/testharness.js"></script>
 <script src="../../../../resources/testharnessreport.js"></script>
+<script src="../../../../resources/testdriver.js"></script>
+<script src="../../../../resources/testdriver-vendor.js"></script>
 
 <select>
   <option>option</option>
@@ -49,7 +51,13 @@ promise_test(async () => {
   await new Promise(requestAnimationFrame);
   assert_true(internals.isUseCounted(document, buttonUseCounterId),
     'Button use counter should be hit with base-select on button and picker.');
+  assert_false(internals.isUseCounted(document, pickerUseCounterId),
+    "Picker use counter should not be hit if picker isn't open.");
+
+  await test_driver.click(select);
+  await new Promise(requestAnimationFrame);
+  await new Promise(requestAnimationFrame);
   assert_true(internals.isUseCounted(document, pickerUseCounterId),
-    'Picker use counter should be hit with base-select on button and picker.');
+    'Picker use counter should be hit after picker is opened.');
 }, 'UseCounters for base-select on button and picker should work.');
 </script>

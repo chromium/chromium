@@ -13,10 +13,12 @@ import android.view.View;
 import androidx.annotation.ColorRes;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.R;
 import org.chromium.ui.util.AttrUtils;
 
 /** Shows a blue clickable link with underlines turned on. */
+@NullMarked
 public class ChromeClickableSpan extends ClickableSpan {
     private final int mColor;
     private final Callback<View> mOnClick;

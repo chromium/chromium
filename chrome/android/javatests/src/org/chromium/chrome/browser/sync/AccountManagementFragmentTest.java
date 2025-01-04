@@ -152,7 +152,9 @@ public class AccountManagementFragmentTest {
                     throws Exception {
         final SigninTestRule signinTestRule = mSyncTestRule.getSigninTestRule();
         AccountInfo accountInfo = TestAccounts.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME;
-        signinTestRule.addAccountThenSignin(accountInfo);
+        signinTestRule.addAccount(accountInfo);
+        // Child accounts are signed-in automatically in the background.
+        signinTestRule.waitForSignin(accountInfo);
         mSettingsActivityTestRule.startSettingsActivity();
         CriteriaHelper.pollUiThread(
                 () -> {

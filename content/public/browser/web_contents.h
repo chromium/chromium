@@ -40,6 +40,7 @@
 #include "content/public/browser/visibility.h"
 #include "content/public/common/stop_find_action.h"
 #include "net/base/network_handle.h"
+#include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom-forward.h"
@@ -1583,7 +1584,8 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
       const GURL& prerendering_url,
       PreloadingTriggerType trigger_type,
       const std::string& embedder_histogram_suffix,
-      std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
+      net::HttpRequestHeaders additional_headers,
+      std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
       ui::PageTransition page_transition,
       bool should_warm_up_compositor,
       bool should_prepare_paint_tree,
@@ -1641,6 +1643,10 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // `kInvalidNetworkHandle` indicates that the current default network will
   // be bound.
   virtual net::handles::NetworkHandle GetTargetNetwork() = 0;
+
+  // Disconnect any outstanding `FileSelectListener` so that any calls will be
+  // no-op.
+  virtual void DisconnectFileSelectListenerIfAny() = 0;
 
  private:
   // This interface should only be implemented inside content.

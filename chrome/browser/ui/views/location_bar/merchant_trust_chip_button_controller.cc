@@ -8,11 +8,13 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
+#include "components/page_info/core/merchant_trust_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_entry.h"
@@ -20,13 +22,32 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view_class_properties.h"
 
+namespace {
+
+// A duration of the expand animation.
+constexpr auto kExpandAnimationDuration = base::Milliseconds(350);
+// A duration of the collapse animation.
+constexpr auto kCollapseAnimationDuration = base::Milliseconds(250);
+// A delay before collapsing an expanded chip.
+constexpr auto kCollapseDelay = base::Seconds(12);
+
+base::TimeDelta GetAnimationDuration(base::TimeDelta duration) {
+  return gfx::Animation::ShouldRenderRichAnimation() ? duration
+                                                     : base::TimeDelta();
+}
+
+}  // namespace
+
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MerchantTrustChipButtonController,
                                       kElementIdForTesting);
 
 MerchantTrustChipButtonController::MerchantTrustChipButtonController(
     OmniboxChipButton* chip_button,
-    LocationIconView* location_icon_view)
-    : chip_button_(chip_button), location_icon_view_(location_icon_view) {
+    LocationIconView* location_icon_view,
+    page_info::MerchantTrustService* service)
+    : chip_button_(chip_button),
+      location_icon_view_(location_icon_view),
+      service_(service) {
   // TODO(crbug.com/378854462): Revisit icons, strings and theme.
   chip_button_->SetIcon(vector_icons::kStorefrontIcon);
   chip_button_->SetText(
@@ -34,7 +55,7 @@ MerchantTrustChipButtonController::MerchantTrustChipButtonController(
   chip_button_->SetTheme(OmniboxChipTheme::kLowVisibility);
   chip_button_->SetCallback(base::BindRepeating(
       &MerchantTrustChipButtonController::OpenPageInfoSubpage,
-      base::Unretained(this)));
+      weak_factory_.GetWeakPtr()));
   chip_button_->SetProperty(views::kElementIdentifierKey, kElementIdForTesting);
 }
 
@@ -42,10 +63,57 @@ MerchantTrustChipButtonController::~MerchantTrustChipButtonController() =
     default;
 
 void MerchantTrustChipButtonController::UpdateWebContents(
-    content::WebContents* web_contents) {
-  web_contents_ = web_contents->GetWeakPtr();
+    content::WebContents* contents) {
+  if (contents && contents != web_contents()) {
+    Observe(contents);
+    // Fetch the data when the web contents changes. `PrimaryPageChanged()` only
+    // covers changes to the currently observed web contents.
+    FetchData();
+  }
+}
 
-  // TODO(crbug.com/378854906): Fetch the data.
+void MerchantTrustChipButtonController::PrimaryPageChanged(
+    content::Page& page) {
+  FetchData();
+}
+
+void MerchantTrustChipButtonController::FetchData() {
+  DCHECK(service_);
+  service_->GetMerchantTrustInfo(
+      web_contents()->GetVisibleURL(),
+      base::BindOnce(
+          &MerchantTrustChipButtonController::OnMerchantTrustDataFetched,
+          weak_factory_.GetWeakPtr()));
+}
+
+void MerchantTrustChipButtonController::OnMerchantTrustDataFetched(
+    const GURL& url,
+    std::optional<page_info::MerchantData> merchant_data) {
+  merchant_data_ = merchant_data;
+
+  if (ShouldBeVisible()) {
+    // Reset if animation is in progress. Animate expand when visibility
+    // changes.
+    chip_button_->ResetAnimation(0.0);
+    if (!chip_button_->GetVisible()) {
+      if (!web_contents()->GetUserData(kChipAnimated)) {
+        chip_button_->AnimateExpand(
+            GetAnimationDuration(kExpandAnimationDuration));
+        web_contents()->SetUserData(
+            kChipAnimated, std::make_unique<base::SupportsUserData::Data>());
+      }
+    }
+    Show();
+    StartCollapseTimer();
+  } else {
+    // Don't animate collapse because the chip gets hidden instantly when
+    // switching tabs.
+    Hide();
+  }
+}
+
+bool MerchantTrustChipButtonController::ShouldBeVisible() {
+  return merchant_data_.has_value();
 }
 
 void MerchantTrustChipButtonController::Show() {
@@ -54,25 +122,33 @@ void MerchantTrustChipButtonController::Show() {
       gfx::RoundedCornersF(radius, 0, 0, radius));
   chip_button_->SetCornerRadii(gfx::RoundedCornersF(0, radius, radius, 0));
   chip_button_->SetVisible(true);
-
-  // TODO(crbug.com/378854906): Animate expand.
 }
 
 void MerchantTrustChipButtonController::Hide() {
   location_icon_view_->SetCornerRadii(gfx::RoundedCornersF(
       location_icon_view_->GetPreferredSize().height() / 2));
   chip_button_->SetVisible(false);
+}
 
-  // TODO(crbug.com/378854906): Animate collapse.
+void MerchantTrustChipButtonController::StartCollapseTimer() {
+  collapse_timer_.Start(
+      FROM_HERE, GetAnimationDuration(kCollapseDelay),
+      base::BindOnce(&MerchantTrustChipButtonController::Collapse,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void MerchantTrustChipButtonController::Collapse() {
+  chip_button_->AnimateCollapse(
+      GetAnimationDuration(kCollapseAnimationDuration));
 }
 
 void MerchantTrustChipButtonController::OpenPageInfoSubpage() {
-  if (!web_contents_) {
+  if (!web_contents()) {
     return;
   }
 
   content::NavigationEntry* entry =
-      web_contents_->GetController().GetVisibleEntry();
+      web_contents()->GetController().GetVisibleEntry();
   if (entry->IsInitialEntry()) {
     return;
   }
@@ -88,7 +164,7 @@ void MerchantTrustChipButtonController::OpenPageInfoSubpage() {
   views::BubbleDialogDelegateView* bubble =
       PageInfoBubbleView::CreatePageInfoBubble(
           location_icon_view_, gfx::Rect(),
-          chip_button_->GetWidget()->GetNativeWindow(), web_contents_.get(),
+          chip_button_->GetWidget()->GetNativeWindow(), web_contents(),
           entry->GetVirtualURL(), std::move(initialized_callback),
           base::DoNothing(),
           /*allow_about_this_site=*/true, std::nullopt, true);

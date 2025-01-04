@@ -438,7 +438,7 @@ TurbulenceFilterOperation* ResolveTurbulence(const Dictionary& dict,
 }  // namespace
 
 FilterOperations CanvasFilterOperationResolver::CreateFilterOperationsFromList(
-    const HeapVector<ScriptValue>& filters,
+    const HeapVector<ScriptObject>& filters,
     ExecutionContext& execution_context,
     ExceptionState& exception_state) {
   FilterOperations operations;

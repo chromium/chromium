@@ -169,8 +169,9 @@ void BidirectionalStream::SendvData(
 }
 
 NextProto BidirectionalStream::GetProtocol() const {
-  if (!stream_impl_)
-    return kProtoUnknown;
+  if (!stream_impl_) {
+    return NextProto::kProtoUnknown;
+  }
 
   return stream_impl_->GetProtocol();
 }

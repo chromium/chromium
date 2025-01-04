@@ -21,8 +21,9 @@ ButtonController::ButtonController(
 ButtonController::~ButtonController() = default;
 
 bool ButtonController::OnMousePressed(const ui::MouseEvent& event) {
-  if (button_->GetState() == Button::STATE_DISABLED)
+  if (button_->GetState() == Button::STATE_DISABLED) {
     return true;
+  }
   if (button_->GetState() != Button::STATE_PRESSED &&
       button_controller_delegate_->ShouldEnterPushedState(event) &&
       button_->HitTestPoint(event.location())) {
@@ -55,8 +56,9 @@ void ButtonController::OnMouseReleased(const ui::MouseEvent& event) {
       }
     }
   }
-  if (notify_action_ == ButtonController::NotifyAction::kOnRelease)
+  if (notify_action_ == ButtonController::NotifyAction::kOnRelease) {
     button_controller_delegate_->OnClickCanceled(event);
+  }
 }
 
 void ButtonController::OnMouseMoved(const ui::MouseEvent& event) {
@@ -68,20 +70,23 @@ void ButtonController::OnMouseMoved(const ui::MouseEvent& event) {
 }
 
 void ButtonController::OnMouseEntered(const ui::MouseEvent& event) {
-  if (button_->GetState() != Button::STATE_DISABLED)
+  if (button_->GetState() != Button::STATE_DISABLED) {
     button_->SetState(Button::STATE_HOVERED);
+  }
 }
 
 void ButtonController::OnMouseExited(const ui::MouseEvent& event) {
   // Starting a drag results in a MouseExited, we need to ignore it.
   if (button_->GetState() != Button::STATE_DISABLED &&
-      !button_controller_delegate_->InDrag())
+      !button_controller_delegate_->InDrag()) {
     button_->SetState(Button::STATE_NORMAL);
+  }
 }
 
 bool ButtonController::OnKeyPressed(const ui::KeyEvent& event) {
-  if (button_->GetState() == Button::STATE_DISABLED)
+  if (button_->GetState() == Button::STATE_DISABLED) {
     return false;
+  }
 
   switch (button_->GetKeyClickActionForEvent(event)) {
     case Button::KeyClickAction::kOnKeyRelease:
@@ -107,8 +112,9 @@ bool ButtonController::OnKeyReleased(const ui::KeyEvent& event) {
   const bool click_button = button_->GetState() == Button::STATE_PRESSED &&
                             button_->GetKeyClickActionForEvent(event) ==
                                 Button::KeyClickAction::kOnKeyRelease;
-  if (!click_button)
+  if (!click_button) {
     return false;
+  }
 
   button_->SetState(Button::STATE_NORMAL);
   button_controller_delegate_->NotifyClick(event);
@@ -116,8 +122,9 @@ bool ButtonController::OnKeyReleased(const ui::KeyEvent& event) {
 }
 
 void ButtonController::OnGestureEvent(ui::GestureEvent* event) {
-  if (button_->GetState() == Button::STATE_DISABLED)
+  if (button_->GetState() == Button::STATE_DISABLED) {
     return;
+  }
 
   if (event->type() == ui::EventType::kGestureTap &&
       button_controller_delegate_->IsTriggerableEvent(*event)) {

@@ -15,9 +15,9 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.description;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -54,16 +54,13 @@ import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
-import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
-import org.chromium.components.sync.SyncFirstSetupCompleteSource;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.io.IOException;
@@ -114,185 +111,6 @@ public class SyncErrorMessageTest {
                         })
                 .when(mMessageDispatcher)
                 .dismissMessage(any(), anyInt());
-    }
-
-    @Test
-    @LargeTest
-    public void testSyncErrorMessageShownForAuthError() throws Exception {
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS);
-        mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
-        verifyHasShownMessage();
-
-        // Resolving the error should dismiss the current message.
-        mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.NONE);
-        verifyHasDismissedMessage();
-    }
-
-    @Test
-    @LargeTest
-    public void testSyncErrorMessageShownForSyncSetupIncomplete() throws Exception {
-        mSyncTestRule.setUpTestAccountAndSignInWithSyncSetupAsIncomplete();
-        mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
-        verifyHasShownMessage();
-
-        // Resolving the error should dismiss the current message.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mFakeSyncServiceImpl.setInitialSyncFeatureSetupComplete(
-                            SyncFirstSetupCompleteSource.BASIC_FLOW);
-                });
-        verifyHasDismissedMessage();
-    }
-
-    @Test
-    @LargeTest
-    public void testSyncErrorMessageShownForPassphraseRequired() throws Exception {
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        mFakeSyncServiceImpl.setEngineInitialized(true);
-        mFakeSyncServiceImpl.setPassphraseRequiredForPreferredDataTypes(true);
-        mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
-        verifyHasShownMessage();
-
-        // Resolving the error should dismiss the current message.
-        mFakeSyncServiceImpl.setPassphraseRequiredForPreferredDataTypes(false);
-        verifyHasDismissedMessage();
-    }
-
-    @Test
-    @LargeTest
-    public void testSyncErrorMessageShownForClientOutOfDate() throws Exception {
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        mFakeSyncServiceImpl.setRequiresClientUpgrade(true);
-        mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
-        verifyHasShownMessage();
-
-        // Not possible to resolve this error from within chrome unlike the other
-        // SyncErrorMessage-s.
-    }
-
-    @Test
-    @LargeTest
-    public void testSyncErrorMessageShownForTrustedVaultKeyRequired() throws Exception {
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        mFakeSyncServiceImpl.setEngineInitialized(true);
-        mFakeSyncServiceImpl.setTrustedVaultKeyRequiredForPreferredDataTypes(true);
-        mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
-        verifyHasShownMessage();
-
-        // Resolving the error should dismiss the current message.
-        mFakeSyncServiceImpl.setTrustedVaultKeyRequiredForPreferredDataTypes(false);
-        verifyHasDismissedMessage();
-    }
-
-    @Test
-    @LargeTest
-    public void testSyncErrorMessageShownForTrustedVaultRecoverabilityDegraded() throws Exception {
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        mFakeSyncServiceImpl.setEngineInitialized(true);
-        mFakeSyncServiceImpl.setTrustedVaultRecoverabilityDegraded(true);
-        mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
-        verifyHasShownMessage();
-
-        // Resolving the error should dismiss the current message.
-        mFakeSyncServiceImpl.setTrustedVaultRecoverabilityDegraded(false);
-        verifyHasDismissedMessage();
-    }
-
-    @Test
-    @LargeTest
-    public void testSyncErrorMessageNotShownWhenNoError() throws Exception {
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        SyncTestUtil.waitForSyncFeatureActive();
-        mFakeSyncServiceImpl.setEngineInitialized(true);
-
-        @SyncError
-        int syncError =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            return SyncSettingsUtils.getSyncError(
-                                    mSyncTestRule.getProfile(/* incognito= */ false));
-                        });
-
-        Assert.assertEquals(SyncError.NO_ERROR, syncError);
-        mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
-
-        verifyHasNeverShownMessage();
-    }
-
-    @Test
-    @LargeTest
-    public void testSyncErrorMessageNotShownForUpmBackendOutdated() {
-        when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired(any(), any()))
-                .thenReturn(true);
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        @SyncError
-        int syncError =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            return SyncSettingsUtils.getSyncError(
-                                    mSyncTestRule.getProfile(/* incognito= */ false));
-                        });
-        Assert.assertEquals(SyncError.UPM_BACKEND_OUTDATED, syncError);
-        mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
-
-        verifyHasNeverShownMessage();
-    }
-
-    @Test
-    @LargeTest
-    @Feature("RenderTest")
-    public void testSyncErrorMessageForAuthErrorViewModern() throws IOException {
-        SyncErrorMessage.setMessageDispatcherForTesting(null);
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS);
-        mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
-        ViewGroup view = mSyncTestRule.getActivity().findViewById(R.id.message_container);
-        // Wait until the message ui is shown.
-        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(view.getChildCount(), Matchers.is(1)));
-        mRenderTestRule.render(view, "sync_error_message_auth_error_modern");
-    }
-
-    @Test
-    @LargeTest
-    @Feature("RenderTest")
-    public void testSyncErrorMessageForSyncSetupIncompleteView() throws IOException {
-        SyncErrorMessage.setMessageDispatcherForTesting(null);
-        mSyncTestRule.setUpTestAccountAndSignInWithSyncSetupAsIncomplete();
-        mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
-        ViewGroup view = mSyncTestRule.getActivity().findViewById(R.id.message_container);
-        // Wait until the message ui is shown.
-        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(view.getChildCount(), Matchers.is(1)));
-        mRenderTestRule.render(view, "sync_error_message_sync_setup_incomplete");
-    }
-
-    @Test
-    @LargeTest
-    @Feature("RenderTest")
-    public void testSyncErrorMessageForPassphraseRequiredView() throws IOException {
-        SyncErrorMessage.setMessageDispatcherForTesting(null);
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        mFakeSyncServiceImpl.setEngineInitialized(true);
-        mFakeSyncServiceImpl.setPassphraseRequiredForPreferredDataTypes(true);
-        mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
-        ViewGroup view = mSyncTestRule.getActivity().findViewById(R.id.message_container);
-        // Wait until the message ui is shown.
-        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(view.getChildCount(), Matchers.is(1)));
-        mRenderTestRule.render(view, "sync_error_message_passphrase_required");
-    }
-
-    @Test
-    @LargeTest
-    @Feature("RenderTest")
-    public void testSyncErrorMessageForClientOutOfDateView() throws IOException {
-        SyncErrorMessage.setMessageDispatcherForTesting(null);
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        mFakeSyncServiceImpl.setRequiresClientUpgrade(true);
-        mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
-        ViewGroup view = mSyncTestRule.getActivity().findViewById(R.id.message_container);
-        // Wait until the message ui is shown.
-        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(view.getChildCount(), Matchers.is(1)));
-        mRenderTestRule.render(view, "sync_error_message_client_out_of_date");
     }
 
     @Test
@@ -408,6 +226,27 @@ public class SyncErrorMessageTest {
         mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.NONE);
         mFakeSyncServiceImpl.setPassphraseRequiredForPreferredDataTypes(false);
         mFakeSyncServiceImpl.setRequiresClientUpgrade(false);
+
+        mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
+        verifyHasNeverShownMessage();
+    }
+
+    @Test
+    @LargeTest
+    public void testSyncErrorMessageNotShownForUpmBackendOutdatedSignedInUsers() {
+        // Sign in.
+        doReturn(true)
+                .when(mPasswordManagerUtilBridgeJniMock)
+                .isGmsCoreUpdateRequired(any(), any());
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        @SyncSettingsUtils.SyncError
+        int syncError =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return SyncSettingsUtils.getIdentityError(
+                                    mSyncTestRule.getProfile(/* incognito= */ false));
+                        });
+        Assert.assertEquals(SyncSettingsUtils.SyncError.UPM_BACKEND_OUTDATED, syncError);
 
         mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
         verifyHasNeverShownMessage();

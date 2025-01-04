@@ -89,7 +89,6 @@ source_set("tests") {
 
   sources = [
     "perfetto/consumer_host_unittest.cc",
-    "perfetto/perfetto_integration_unittest.cc",
     "perfetto/privacy_filtering_check_unittest.cc",
     "public/cpp/perfetto/perfetto_config_unittest.cc",
     "public/cpp/perfetto/trace_packet_tokenizer_unittest.cc",
@@ -105,7 +104,6 @@ source_set("tests") {
     "//base:base_stack_sampling_profiler_test_util",
     "//base/test:proto_test_support",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//mojo/public/cpp/bindings",
     "//services/tracing/public/cpp:buildflags",
     "//services/tracing/public/cpp/background_tracing:unit_tests",

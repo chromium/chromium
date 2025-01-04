@@ -10,10 +10,9 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.blink.mojom.HandwritingGestureResult;
 
@@ -21,8 +20,7 @@ import org.chromium.blink.mojom.HandwritingGestureResult;
  * Tests for the OngoingGesture helper class which is used in association with
  * StylusGestureConverter to process and apply stylus gestures in Chrome and WebView.
  */
-@RunWith(RobolectricTestRunner.class)
-@Batch(Batch.PER_CLASS)
+@RunWith(BaseRobolectricTestRunner.class)
 public class OngoingGestureTest {
     private static final String GESTURE_RESULT_HISTOGRAM =
             "InputMethod.StylusHandwriting.GestureResult";

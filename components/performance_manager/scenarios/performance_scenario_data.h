@@ -5,16 +5,13 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_SCENARIOS_PERFORMANCE_SCENARIO_DATA_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_SCENARIOS_PERFORMANCE_SCENARIO_DATA_H_
 
-#include <memory>
 #include <optional>
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/structured_shared_memory.h"
-#include "base/observer_list.h"
 #include "base/types/optional_util.h"
 #include "components/performance_manager/graph/node_inline_data.h"
-#include "components/performance_manager/public/scenarios/performance_scenario_observer.h"
 #include "third_party/blink/public/common/performance/performance_scenarios.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
@@ -92,9 +89,6 @@ class PerformanceScenarioMemoryData final
   // The shared scenario memory region for the process.
   scoped_refptr<RefCountedScenarioState> state_ptr =
       RefCountedScenarioState::Create();
-
-  // Observers to notify when a scenario in the shared memory changes.
-  std::unique_ptr<base::ObserverList<PerformanceScenarioObserver>> observers;
 };
 
 }  // namespace performance_manager

@@ -87,8 +87,9 @@ ChromeNativeAppWindowViewsAura::CreateNonStandardAppFrame() {
 ui::mojom::WindowShowState ChromeNativeAppWindowViewsAura::GetRestoredState()
     const {
   // First normal states are checked.
-  if (IsMaximized())
+  if (IsMaximized()) {
     return ui::mojom::WindowShowState::kMaximized;
+  }
   if (IsFullscreen()) {
     return ui::mojom::WindowShowState::kFullscreen;
   }

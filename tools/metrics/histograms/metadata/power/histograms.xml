@@ -197,7 +197,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="PerformanceMonitor.AverageCPU8.Total{UsageScenario}"
-    units="1/100 %" expires_after="2025-04-13">
+    units="1/100 %" expires_after="2025-06-15">
   <owner>fdoray@chromium.org</owner>
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -209,7 +209,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PerformanceMonitor.AverageCPU8.{ProcessName}" units="1/100 %"
-    expires_after="2025-04-13">
+    expires_after="2025-06-15">
   <owner>fdoray@chromium.org</owner>
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -244,7 +244,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PerformanceMonitor.IdleWakeups2.Total{UsageScenario}"
-    units="WakeupsPerSecond" expires_after="2025-04-13">
+    units="WakeupsPerSecond" expires_after="2025-06-22">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -275,7 +275,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PerformanceMonitor.PackageExitIdleWakeups2.Total{UsageScenario}"
-    units="WakeupsPerSecond" expires_after="2025-04-13">
+    units="WakeupsPerSecond" expires_after="2025-06-22">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.orgg</owner>
   <summary>
@@ -287,7 +287,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PerformanceMonitor.PackageExitIdleWakeups2.{ProcessName}"
-    units="WakeupsPerSecond" expires_after="2025-04-13">
+    units="WakeupsPerSecond" expires_after="2025-06-22">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.orgg</owner>
   <summary>
@@ -389,7 +389,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.AdaptiveChargingMinutes.{ReportType}" units="minutes"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>dbasehore@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -493,7 +493,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.AmbientLightOnResume" units="lux"
-    expires_after="2025-03-30">
+    expires_after="2025-06-08">
   <owner>bkersten@chromium.org</owner>
   <owner>slangley@chromium.org</owner>
   <summary>
@@ -503,7 +503,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.AvgCpuLoad.{ProcessType}" units="%"
-    expires_after="2025-04-06">
+    expires_after="2025-06-08">
   <owner>eseckler@chromium.org</owner>
   <owner>khokhlov@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
@@ -522,7 +522,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.BacklightLevel{PrivacyScreenState}{PowerSource}"
-    units="%" expires_after="2025-04-13">
+    units="%" expires_after="2025-06-22">
   <owner>puthik@chromium.org</owner>
   <owner>mqg@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
@@ -547,7 +547,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.BatteryCapacity.{BatteryCapacityType}" units="mWh"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -557,7 +557,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.BatteryChargeHealth" units="%"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -652,7 +652,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.BatteryDischargeMode5{UsageScenario}{IntervalType}"
-    enum="BatteryDischargeMode" expires_after="2025-04-13">
+    enum="BatteryDischargeMode" expires_after="2025-06-22">
   <owner>etiennep@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <summary>
@@ -682,7 +682,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.BatteryDischargeRateMilliwatts6.TenMinutes"
-    units="milliwatts" expires_after="2025-04-13">
+    units="milliwatts" expires_after="2025-06-22">
   <owner>pmonette@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <summary>
@@ -699,7 +699,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Power.BatteryDischargeRateMilliwatts6{UsageScenario}{IntervalType}{BatterySaverMode}"
-    units="milliwatts" expires_after="2025-04-13">
+    units="milliwatts" expires_after="2025-06-15">
   <owner>etiennep@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
@@ -726,7 +726,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Power.BatteryDischargeRatePreciseMilliwatts{UsageScenario}{IntervalType}{BatterySaverMode}"
-    units="milliwatts" expires_after="2025-04-13">
+    units="milliwatts" expires_after="2025-06-15">
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -755,7 +755,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Power.BatteryDischargeRateRelative5{UsageScenario}{IntervalType}{BatterySaverMode}"
-    units="hundredth of percent" expires_after="2025-04-13">
+    units="hundredth of percent" expires_after="2025-06-15">
   <owner>etiennep@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
@@ -783,7 +783,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.BatteryDischargeRateWhileSuspended" units="mW"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -813,7 +813,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.BatteryLife.Detail.{BatteryCapacityType}" units="minute"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -831,7 +831,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.BatteryLife.RollingAverage.{BatteryCapacityType}"
-    units="minute" expires_after="2025-04-13">
+    units="minute" expires_after="2025-06-22">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -860,7 +860,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.BatteryLifeWhileSuspended.{BatteryCapacityType}"
-    units="hour" expires_after="2025-04-13">
+    units="hour" expires_after="2025-06-22">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -873,7 +873,7 @@ chromium-metrics-reviews@google.com.
   <token key="BatteryCapacityType" variants="BatteryCapacityType"/>
 </histogram>
 
-<histogram name="Power.BatteryPercentDrop" units="%" expires_after="2025-04-13">
+<histogram name="Power.BatteryPercentDrop" units="%" expires_after="2025-06-22">
   <owner>ryansturm@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -927,7 +927,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.BatteryRemainingWhenChargeStarts" units="%"
-    expires_after="2025-04-10">
+    expires_after="2025-06-22">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1008,7 +1008,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.CpuTimeSecondsPerProcessType.{Visibility}"
-    enum="ProcessType2" expires_after="2025-04-13">
+    enum="ProcessType2" expires_after="2025-06-22">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
@@ -1032,7 +1032,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.CpuTimeSecondsPerThreadType.{ProcessType}"
-    enum="CpuTimeMetricsThreadType" expires_after="2025-04-06">
+    enum="CpuTimeMetricsThreadType" expires_after="2025-06-08">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
@@ -1140,7 +1140,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.DarkResumeWakeupsPerHour" units="units"
-    expires_after="2025-04-10">
+    expires_after="2025-06-22">
   <owner>mka@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1362,20 +1362,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Power.ForegroundThermalState.ChangeEvent.Android"
-    enum="DeviceThermalState" expires_after="2023-10-15">
-  <owner>carlscab@google.com</owner>
-  <owner>eseckler@chromium.org</owner>
-  <owner>khokhlov@google.com</owner>
-  <owner>woa-performance@google.com</owner>
-  <summary>
-    Recorded every time the device thermal state changes while Chrome is a
-    foreground app.
-
-    Only supported on Android.
-  </summary>
-</histogram>
-
 <histogram name="Power.HasPreciseBatteryDischargeGranularity" enum="Boolean"
     expires_after="2024-02-11">
   <owner>pmonette@chromium.org</owner>
@@ -1475,7 +1461,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.KernelResumeTimeOnAC" units="ms"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>puthik@chromium.org</owner>
   <owner>mhiramat@google.com</owner>
   <owner>chromeos-platform-power@google.com</owner>
@@ -1502,7 +1488,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.KernelSuspendTimeOnAC" units="ms"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>puthik@chromium.org</owner>
   <owner>mhiramat@google.com</owner>
   <owner>chromeos-platform-power@google.com</owner>
@@ -1517,7 +1503,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.KernelSuspendTimeOnBattery" units="ms"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>puthik@chromium.org</owner>
   <owner>mhiramat@google.com</owner>
   <owner>chromeos-platform-power@google.com</owner>
@@ -1532,7 +1518,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.KeyboardBacklightLevel" units="%"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The level of the keyboard backlight as a percentage. Sampled every 30
@@ -1715,7 +1701,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.PowerSupplyType" enum="PowerSupplyType"
-    expires_after="2025-04-10">
+    expires_after="2025-06-22">
   <owner>bleung@chromium.org</owner>
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
@@ -1730,7 +1716,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.ShutdownReason" enum="ShutdownReason"
-    expires_after="2025-04-06">
+    expires_after="2025-06-08">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The reason for the Chrome OS power manager shutting down or rebooting the
@@ -1783,7 +1769,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Power.SuspendDelay" units="seconds" expires_after="2025-03-30">
+<histogram name="Power.SuspendDelay" units="seconds" expires_after="2025-06-08">
   <owner>niwa@chromium.org</owner>
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
@@ -1794,8 +1780,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Power.SuspendJourneyResult" enum="SuspendJourneyResult"
+    expires_after="2025-12-31">
+  <owner>eizan@chromium.org</owner>
+  <owner>chromeos-power-team@google.com</owner>
+  <summary>
+    The results of suspend journeys on Chrome OS which might comprise multiple
+    suspend attempts. Samples are reported after each journey.
+  </summary>
+</histogram>
+
 <histogram name="Power.SuspendResult" enum="SuspendResult"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1814,7 +1810,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.TimeInSuspendAtResume" units="minutes"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>tbroch@chromium.org</owner>
   <summary>
     Chrome OS time in minutes spent in suspend-to-RAM mode sampled at resume.

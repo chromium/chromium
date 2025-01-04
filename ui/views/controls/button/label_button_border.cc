@@ -40,8 +40,9 @@ void PaintHelper(LabelButtonAssetBorder* border,
   if (!painter && button.is_focused) {
     painter = border->GetPainter(false, Button::GetButtonStateFrom(state));
   }
-  if (painter)
+  if (painter) {
     Painter::PaintPainterAt(canvas, painter, rect);
+  }
 }
 
 }  // namespace
@@ -130,8 +131,9 @@ gfx::Size LabelButtonAssetBorder::GetMinimumSize() const {
   gfx::Size minimum_size;
   for (const auto& painters_for_focus_state : painters_) {
     for (const auto& painter_for_button_state : painters_for_focus_state) {
-      if (painter_for_button_state)
+      if (painter_for_button_state) {
         minimum_size.SetToMax(painter_for_button_state->GetMinimumSize());
+      }
     }
   }
   return minimum_size;

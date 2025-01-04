@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(UNSAFE_BUFFERS_BUILD)
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef PDF_LOADER_CHUNK_STREAM_H_
 #define PDF_LOADER_CHUNK_STREAM_H_
 
@@ -19,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "pdf/loader/range_set.h"
 
 namespace chrome_pdf {
@@ -59,8 +55,10 @@ class ChunkStream {
       const size_t chunk_start = start % kChunkSize;
       const size_t len =
           std::min(kChunkSize - chunk_start, range.end() - start);
-      memcpy(data_buffer, data_[chunk_index]->data() + chunk_start, len);
-      data_buffer += len;
+      UNSAFE_TODO({
+        memcpy(data_buffer, data_[chunk_index]->data() + chunk_start, len);
+        data_buffer += len;
+      });
       start += len;
     }
     return true;

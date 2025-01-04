@@ -18,7 +18,4 @@ FrameNode::~FrameNode() = default;
 FrameNodeObserver::FrameNodeObserver() = default;
 FrameNodeObserver::~FrameNodeObserver() = default;
 
-FrameNode::ObserverDefaultImpl::ObserverDefaultImpl() = default;
-FrameNode::ObserverDefaultImpl::~ObserverDefaultImpl() = default;
-
 }  // namespace performance_manager

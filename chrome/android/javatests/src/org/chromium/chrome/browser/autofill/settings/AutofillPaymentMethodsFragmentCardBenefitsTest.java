@@ -17,7 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
@@ -168,14 +168,14 @@ public class AutofillPaymentMethodsFragmentCardBenefitsTest {
 
     private static void setCardBenefitsFlags(
             boolean isAmexFlagEnabled, boolean isCapOneFlagEnabled) {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(
-                ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS,
-                isAmexFlagEnabled);
-        testValues.addFeatureFlagOverride(
-                ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_CAPITAL_ONE,
-                isCapOneFlagEnabled);
-        FeatureList.setTestValues(testValues);
+        FeatureOverrides.newBuilder()
+                .flag(
+                        ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS,
+                        isAmexFlagEnabled)
+                .flag(
+                        ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_CAPITAL_ONE,
+                        isCapOneFlagEnabled)
+                .apply();
     }
 
     private static PreferenceScreen getPreferenceScreen(SettingsActivity activity) {

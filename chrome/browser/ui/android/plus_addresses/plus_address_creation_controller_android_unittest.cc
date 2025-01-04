@@ -106,9 +106,7 @@ class PlusAddressCreationControllerAndroidEnabledTest
     PlusAddressCreationControllerAndroid::CreateForWebContents(web_contents());
   }
 
-  void TearDown() override {
-    ChromeRenderViewHostTestHarness::TearDown();
-  }
+  void TearDown() override { ChromeRenderViewHostTestHarness::TearDown(); }
 
  protected:
   void FastForwardBy(base::TimeDelta delta) {

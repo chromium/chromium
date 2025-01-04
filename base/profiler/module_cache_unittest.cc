@@ -350,8 +350,9 @@ TEST(ModuleCacheTest, CheckAgainstProcMaps) {
   using RegionVector = std::vector<const debug::MappedMemoryRegion*>;
   using PathRegionsMap = std::map<std::string_view, RegionVector>;
   PathRegionsMap path_regions;
-  for (const debug::MappedMemoryRegion& region : regions)
+  for (const debug::MappedMemoryRegion& region : regions) {
     path_regions[region.path].push_back(&region);
+  }
 
   const auto find_last_executable_region = [](const RegionVector& regions) {
     const auto rloc = base::ranges::find_if(
@@ -368,15 +369,17 @@ TEST(ModuleCacheTest, CheckAgainstProcMaps) {
   for (const auto& path_regions_pair : path_regions) {
     // Regions that aren't associated with absolute paths are unlikely to be
     // part of modules.
-    if (path_regions_pair.first.empty() || path_regions_pair.first[0] != '/')
+    if (path_regions_pair.first.empty() || path_regions_pair.first[0] != '/') {
       continue;
+    }
 
     const debug::MappedMemoryRegion* const last_executable_region =
         find_last_executable_region(path_regions_pair.second);
     // The region isn't part of a module if no executable regions are associated
     // with the same path.
-    if (!last_executable_region)
+    if (!last_executable_region) {
       continue;
+    }
 
     // Loop through all the regions associated with the path, checking that
     // modules created for addresses in each region have the expected extents.
@@ -389,8 +392,9 @@ TEST(ModuleCacheTest, CheckAgainstProcMaps) {
       // Not all regions matching the prior conditions are necessarily modules;
       // things like resources are also mmapped into memory from files. Ignore
       // any region isn't part of a module.
-      if (!module)
+      if (!module) {
         continue;
+      }
 
       ++module_count;
 

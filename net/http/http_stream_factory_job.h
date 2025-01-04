@@ -449,7 +449,7 @@ class HttpStreamFactory::Job
   std::unique_ptr<BidirectionalStreamImpl> bidirectional_stream_impl_;
 
   // Protocol negotiated with the server.
-  NextProto negotiated_protocol_ = kProtoUnknown;
+  NextProto negotiated_protocol_ = NextProto::kProtoUnknown;
 
   // 0 if we're not preconnecting. Otherwise, the number of streams to
   // preconnect.

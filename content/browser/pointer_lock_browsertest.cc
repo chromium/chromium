@@ -9,7 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
@@ -833,7 +832,7 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest, DISABLED_UnadjustedMovement) {
 
 #if defined(USE_AURA)
 // TODO(crbug.com/40635377): Remove failure test when fully implemented
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ChangeUnadjustedMovementFailure \
   DISABLED_ChangeUnadjustedMovementFailure
 #else

@@ -126,4 +126,10 @@ const ClipboardFormatType& ClipboardFormatType::DataTransferCustomType() {
   return *type;
 }
 
+// static
+const ClipboardFormatType& ClipboardFormatType::InternalSourceUrlType() {
+  static base::NoDestructor<ClipboardFormatType> type(kMimeTypeSourceUrl);
+  return *type;
+}
+
 }  // namespace ui

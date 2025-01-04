@@ -17,6 +17,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * This class is similar in principle to MemoryPurgeManager in blink, but on the browser process
@@ -25,6 +26,7 @@ import org.chromium.base.metrics.RecordHistogram;
  *
  * <p>UI thread only.
  */
+@NullMarked
 public class MemoryPurgeManager implements ApplicationStatus.ApplicationStateListener {
     private boolean mStarted;
     private long mLastBackgroundPeriodStart = NEVER;

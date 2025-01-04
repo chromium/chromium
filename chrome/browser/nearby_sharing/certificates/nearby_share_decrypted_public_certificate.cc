@@ -4,6 +4,7 @@
 
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_decrypted_public_certificate.h"
 
+#include <array>
 #include <utility>
 
 #include "chrome/browser/nearby_sharing/certificates/common.h"
@@ -38,12 +39,11 @@ std::optional<std::vector<uint8_t>> DecryptMetadataKey(
     const NearbyShareEncryptedMetadataKey& encrypted_metadata_key,
     const crypto::SymmetricKey* secret_key) {
   auto key = base::as_byte_span(secret_key->key());
-  auto counter = DeriveNearbyShareKey(encrypted_metadata_key.salt(),
-                                      crypto::aes_ctr::kCounterSize);
+  auto counter = DeriveNearbyShareKey<crypto::aes_ctr::kCounterSize>(
+      encrypted_metadata_key.salt());
 
   return crypto::aes_ctr::Decrypt(
-      key, base::span<const uint8_t, crypto::aes_ctr::kCounterSize>(counter),
-      base::as_byte_span(encrypted_metadata_key.encrypted_key()));
+      key, counter, base::as_byte_span(encrypted_metadata_key.encrypted_key()));
 }
 
 // Attempts to decrypt |encrypted_metadata| with |metadata_encryption_key|,
@@ -55,16 +55,16 @@ std::optional<std::vector<uint8_t>> DecryptMetadataPayload(
     const crypto::SymmetricKey* secret_key) {
   // Init() keeps a reference to the input key, so that reference must outlive
   // the lifetime of |aead|.
-  std::vector<uint8_t> derived_key = DeriveNearbyShareKey(
-      metadata_encryption_key, kNearbyShareNumBytesAesGcmKey);
+  auto derived_key = DeriveNearbyShareKey<kNearbyShareNumBytesAesGcmKey>(
+      metadata_encryption_key);
 
   crypto::Aead aead(crypto::Aead::AeadAlgorithm::AES_256_GCM);
   aead.Init(derived_key);
 
   return aead.Open(encrypted_metadata,
                    /*nonce=*/
-                   DeriveNearbyShareKey(base::as_byte_span(secret_key->key()),
-                                        kNearbyShareNumBytesAesGcmIv),
+                   DeriveNearbyShareKey<kNearbyShareNumBytesAesGcmIv>(
+                       base::as_byte_span(secret_key->key())),
                    /*additional_data=*/base::span<const uint8_t>());
 }
 
@@ -221,7 +221,7 @@ bool NearbyShareDecryptedPublicCertificate::VerifySignature(
   return verifier.VerifyFinal();
 }
 
-std::vector<uint8_t>
+std::array<uint8_t, kNearbyShareNumBytesAuthenticationTokenHash>
 NearbyShareDecryptedPublicCertificate::HashAuthenticationToken(
     base::span<const uint8_t> authentication_token) const {
   return ComputeAuthenticationTokenHash(authentication_token,

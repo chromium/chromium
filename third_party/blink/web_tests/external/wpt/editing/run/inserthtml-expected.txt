@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 60 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 57 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["stylewithcss","true"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandState("stylewithcss") before
   assert_equals: Wrong result returned expected false but got true
 [FAIL] [["defaultparagraphseparator","div"],["inserthtml","<p>abc"]] "<p>foo[bar]baz" compare innerHTML
@@ -39,17 +39,11 @@ Found 60 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["inserthtml","<dt>abc</dt>"]] "f[o]o" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "f<dl><dt>abc</dt></dl>o" but got "f<dt>abc</dt>o"
 [FAIL] [["inserthtml","<dt>abc</dt>"]] "<ol><li>f[o]o</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>f<dl><dt>abc</dt></dl>o</li></ol>" but got "<ol><li>f<dt>abc</dt>o</li></ol>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>f<dl><dt>abc</dt></dl>o</li></ol>" but got "<ol><li>f</li><dt>abc</dt><li>o</li></ol>"
 [FAIL] [["inserthtml","<dd>abc</dd>"]] "f[o]o" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "f<dl><dd>abc</dd></dl>o" but got "f<dd>abc</dd>o"
 [FAIL] [["inserthtml","<dd>abc</dd>"]] "<ol><li>f[o]o</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>f<dl><dd>abc</dd></dl>o</li></ol>" but got "<ol><li>f<dd>abc</dd>o</li></ol>"
-[FAIL] [["inserthtml","<li>abc</li>"]] "<dir><li>f[o]o</dir>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<dir><li>f</li><li>abc</li><li>o</li></dir>" but got "<dir><li>f<li>abc</li>o</li></dir>"
-[FAIL] [["inserthtml","<li>abc</li>"]] "<ol><li>f[o]o</ol>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>f</li><li>abc</li><li>o</li></ol>" but got "<ol><li>f<li>abc</li>o</li></ol>"
-[FAIL] [["inserthtml","<li>abc</li>"]] "<ul><li>f[o]o</ul>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ul><li>f</li><li>abc</li><li>o</li></ul>" but got "<ul><li>f<li>abc</li>o</li></ul>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>f<dl><dd>abc</dd></dl>o</li></ol>" but got "<ol><li>f</li><dd>abc</dd><li>o</li></ol>"
 [FAIL] [["inserthtml","<ol><li>abc</ol>"]] "<dir><li>f[o]o</dir>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<dir><li>f<ol><li>abc</li></ol>o</li></dir>" but got "<dir><li>f</li><li>abc</li><li>o</li></dir>"
 [FAIL] [["inserthtml","<ol><li>abc</ol>"]] "<ol><li>f[o]o</ol>" compare innerHTML
@@ -120,3 +114,5 @@ Found 60 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<div>ab</div><span class=\\"s1\\"></span><span class=\\"s2\\"></span><div>c</div>" not in array ["<div>a<span class=\\"s1\\"></span>b<span class=\\"s2\\"></span>c</div>", "<div>a<span class=\\"s1\\"></span>b<span class=\\"s2\\"></span>c<br></div>"]
 [FAIL] [["inserthtml","<i>Z</i>"]] "<p><b><span contenteditable=false>abc</span>[Y]</b><i>def</i></p>" compare innerHTML
   assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<p><b><span contenteditable=\\"false\\">abc</span></b><i>def</i></p>" not in array ["<p><b><span contenteditable=\\"false\\">abc</span></b><i>Z</i><i>def</i></p>", "<p><b><span contenteditable=\\"false\\">abc</span></b><i>Zdef</i></p>"]
+Harness: the test ran to completion.
+

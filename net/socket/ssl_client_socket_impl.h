@@ -282,7 +282,7 @@ class SSLClientSocketImpl : public SSLClientSocket,
   // True if certificate verification used an ECH name override.
   bool used_ech_name_override_ = false;
 
-  NextProto negotiated_protocol_ = kProtoUnknown;
+  NextProto negotiated_protocol_ = NextProto::kProtoUnknown;
 
   // Set to true if a CertificateRequest was received.
   bool certificate_requested_ = false;

@@ -223,6 +223,12 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
      * signed-in profile.
      */
     private void fetchWeakCredentialsCount(Callback<Boolean> onFinishedCallback) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS)) {
+            mWeakCredentialsCountFetched = true;
+            onFetchCredentialsFinished(onFinishedCallback);
+            return;
+        }
+
         PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(mProfile);
         PrefService prefService = UserPrefs.get(mProfile);
 
@@ -246,6 +252,12 @@ public class SafetyHubFetchService implements SigninManager.SignInStateObserver,
      * signed-in profile.
      */
     private void fetchReusedCredentialsCount(Callback<Boolean> onFinishedCallback) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS)) {
+            mReusedCredentialsCountFetched = true;
+            onFetchCredentialsFinished(onFinishedCallback);
+            return;
+        }
+
         PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(mProfile);
         PrefService prefService = UserPrefs.get(mProfile);
 

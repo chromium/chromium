@@ -19,14 +19,13 @@ namespace sharing {
 
 namespace {
 
-const char kDeviceName[] = "deviceName";
+constexpr char kDeviceName[] = "deviceName";
 // Salt for advertisement.
-const std::vector<uint8_t> kSalt(Advertisement::kSaltSize, 0);
+constexpr std::array<uint8_t, Advertisement::kSaltSize> kSalt = {};
 // Key for encrypting personal info metadata.
-static const std::vector<uint8_t> kEncryptedMetadataKey(
-    Advertisement::kMetadataEncryptionKeyHashByteSize,
-    0);
-const nearby_share::mojom::ShareTargetType kDeviceType =
+constexpr std::array<uint8_t, Advertisement::kMetadataEncryptionKeyHashByteSize>
+    kEncryptedMetadataKey = {};
+constexpr nearby_share::mojom::ShareTargetType kDeviceType =
     nearby_share::mojom::ShareTargetType::kPhone;
 
 class AdvertisementDecoderTest : public testing::Test {

@@ -25,7 +25,6 @@ component("os_crypt") {
     "//base",
     "//build:branding_buildflags",
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
     "//components/prefs",
     "//crypto",
   ]
@@ -126,7 +125,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//components/prefs:test_support",
     "//crypto",
     "//testing/gmock",

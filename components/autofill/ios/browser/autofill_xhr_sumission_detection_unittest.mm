@@ -10,8 +10,8 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/time/time.h"
-#import "components/autofill/core/browser/browser_autofill_manager.h"
-#import "components/autofill/core/browser/test_autofill_client.h"
+#import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#import "components/autofill/core/browser/foundations/test_autofill_client.h"
 #import "components/autofill/core/common/field_data_manager.h"
 #import "components/autofill/core/common/form_data.h"
 #import "components/autofill/core/common/form_field_data.h"
@@ -20,6 +20,7 @@
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
+#import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/autofill/ios/browser/test_autofill_manager_injector.h"
 #import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
@@ -72,8 +73,8 @@ class AutofillXHRSubmissionDetectionTest : public PlatformTest {
 
     // Driver factory needs to exist before any call to
     // `AutofillDriverIOS::FromWebStateAndWebFrame`, or we crash.
-    autofill::AutofillDriverIOSFactory::CreateForWebState(
-        &web_state_, &autofill_client_, /*bridge=*/nil);
+    autofill_client_ =
+        std::make_unique<TestAutofillClientIOS>(&web_state_, /*bridge=*/nil);
 
     // Replace AutofillManager with the test implementation.
     autofill_manager_injector_ =
@@ -100,7 +101,7 @@ class AutofillXHRSubmissionDetectionTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
-  autofill::TestAutofillClient autofill_client_;
+  std::unique_ptr<TestAutofillClientIOS> autofill_client_;
   web::FakeWebState web_state_;
   raw_ptr<web::FakeWebFramesManager> web_frames_manager_;
   std::unique_ptr<TestAutofillManagerInjector<TestingAutofillManager>>

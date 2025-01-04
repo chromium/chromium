@@ -36,7 +36,7 @@ import {UserAction} from './lens.mojom-webui.js';
 import {getTemplate} from './lens_overlay_app.html.js';
 import {recordLensOverlayInteraction, recordTimeToWebUIReady} from './metrics_utils.js';
 import {PerformanceTracker} from './performance_tracker.js';
-import {handleEscapeSearchbox, onEscapeKeyPressed, onSearchboxKeydown} from './searchbox_utils.js';
+import {handleEscapeSearchbox, onSearchboxKeydown} from './searchbox_utils.js';
 import type {SelectionOverlayElement} from './selection_overlay.js';
 import {focusShimmerOnRegion, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
 import type {TranslateButtonElement} from './translate_button.js';
@@ -146,6 +146,11 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
             suppressGhostLoader)`,
         reflectToAttribute: true,
       },
+      showErrorState: {
+        type: Boolean,
+        value: false,
+        notify: true,
+      },
       areLanguagePickersOpen: Boolean,
       toastMessage: String,
     };
@@ -157,6 +162,8 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   // the searchbox when there's text (this doesn't create a zero suggset
   // request).
   suppressGhostLoader: boolean;
+  // Whether the ghost loader should show its error state.
+  showErrorState: boolean;
   // Whether the translate button is enabled.
   private isTranslateButtonEnabled: boolean;
   // Whether the image has finished rendering.
@@ -233,6 +240,8 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         this.isClosing = true;
         this.performanceTracker.endSession();
       }),
+      this.browserProxy.callbackRouter.suppressGhostLoader.addListener(
+          this.suppressGhostLoader_.bind(this)),
     ];
     this.eventTracker_.add(
         document, 'set-cursor-tooltip', (e: CustomEvent<CursorTooltipData>) => {
@@ -267,12 +276,13 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
       if (event.key !== 'Escape' && this.isSearchboxFocused) {
         onSearchboxKeydown(this, this.$.searchbox);
       }
-      if (event.key === 'Escape') {
-        onEscapeKeyPressed(this, event);
-      }
     });
     this.eventTracker_.add(
         document, 'pointermove', this.updateCursorPosition.bind(this));
+    this.eventTracker_.add(this.$.searchbox, 'mousedown', () => {
+      this.suppressGhostLoader = false;
+      this.showErrorState = false;
+    });
 
     this.performanceTracker.startSession();
   }
@@ -365,6 +375,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
 
   private handleSearchboxBlurred() {
     this.isSearchboxFocused = false;
+    this.showErrorState = false;
     this.$.translateButtonContainer.classList.add('searchbox-unfocused');
 
     // Unfocus the shimmer.
@@ -422,6 +433,11 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
 
   private computeShowGhostLoader(): boolean {
     return this.isSearchboxFocused && !this.suppressGhostLoader;
+  }
+
+  private suppressGhostLoader_() {
+    // If tab is foregrounded don't show ghost loader.
+    this.suppressGhostLoader = true;
   }
 
   private onMoreOptionsButtonClick() {
@@ -544,6 +560,12 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     const g = parseInt(hex.substring(3, 5), 16);
     const b = parseInt(hex.substring(5, 7), 16);
     return `${r}, ${g}, ${b}`;
+  }
+
+  private getSearchboxAriaDescription(): string {
+    // Get the the text from the ghost loader to add to the searchbox aria
+    // description.
+    return this.$.searchboxGhostLoader.getText();
   }
 
   setSearchboxFocusForTesting(isFocused: boolean) {

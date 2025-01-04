@@ -820,6 +820,14 @@ base::Value::Dict SerializeImageFeatureEmbedding(
   return dict;
 }
 
+base::Value::Dict SerializeIntelligentScanInfo(
+    IntelligentScanInfo intelligent_scan_info) {
+  base::Value::Dict dict;
+  dict.Set("brand", intelligent_scan_info.brand());
+  dict.Set("intent", intelligent_scan_info.intent());
+  return dict;
+}
+
 base::Value::Dict SerializeClientReportingMetadata(
     const enterprise_connectors::ClientMetadata& client_metadata) {
   base::Value::Dict client_metadata_dict;
@@ -1226,6 +1234,11 @@ std::string SerializeClientPhishingRequest(
     dict.Set("visual_features", SerializeVisualFeatures(cpr.visual_features()));
   }
 
+  if (cpr.has_intelligent_scan_info()) {
+    dict.Set("intelligent_scan_info",
+             SerializeIntelligentScanInfo(cpr.intelligent_scan_info()));
+  }
+
   std::string request_serialized;
   JSONStringValueSerializer serializer(&request_serialized);
   serializer.set_pretty_print(true);
@@ -1236,6 +1249,11 @@ std::string SerializeClientPhishingRequest(
 std::string SerializeClientPhishingResponse(const ClientPhishingResponse& cpr) {
   base::Value::Dict dict;
   dict.Set("phishy", cpr.phishy());
+
+  if (cpr.has_intelligent_scan_verdict()) {
+    dict.Set("intelligent_scan_verdict",
+             IntelligentScanVerdict_Name(cpr.intelligent_scan_verdict()));
+  }
 
   std::string request_serialized;
   JSONStringValueSerializer serializer(&request_serialized);
@@ -1948,6 +1966,12 @@ std::string SerializeURTLookupPing(const URTLookupRequest& ping) {
     referrer_chain.Append(SerializeReferrer(referrer_chain_entry));
   }
   request_dict.Set("referrer_chain", std::move(referrer_chain));
+#if BUILDFLAG(IS_ANDROID)
+  if (request.has_referring_app_info()) {
+    request_dict.Set("referring_app_info",
+                     SerializeReferringAppInfo(request.referring_app_info()));
+  }
+#endif
 
   std::string request_serialized;
   JSONStringValueSerializer serializer(&request_serialized);

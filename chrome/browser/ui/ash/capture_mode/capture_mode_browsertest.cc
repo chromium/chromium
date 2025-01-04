@@ -111,8 +111,9 @@ class DlpWarningDialogWaiter : public aura::WindowObserver {
 
   // aura::WindowObserver:
   void OnWindowAdded(aura::Window* new_window) override {
-    if (on_window_added_callback_)
+    if (on_window_added_callback_) {
       std::move(on_window_added_callback_).Run();
+    }
   }
 
  private:

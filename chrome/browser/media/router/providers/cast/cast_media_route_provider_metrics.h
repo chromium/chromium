@@ -48,7 +48,6 @@ enum class ReceiverAppTypeSet {
 void RecordAppAvailabilityResult(cast_channel::GetAppAvailabilityResult result,
                                  base::TimeDelta duration);
 
-
 // Records the type of app (web app, native Android app etc.) launched on the
 // receiver side in an Enumeration histogram.
 // If |app_type| is "WEB", a kWeb will be recorded. If |app_type| is

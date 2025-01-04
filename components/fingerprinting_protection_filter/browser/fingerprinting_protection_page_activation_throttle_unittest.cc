@@ -15,6 +15,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
 #include "components/fingerprinting_protection_filter/browser/test_support.h"
+#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_breakage_exception.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -418,7 +419,9 @@ struct FPFGetActivationTestCase {
   // Configuration
   bool is_fp_feature_enabled;
   ActivationLevel activation_level_param;
+  bool is_refresh_heuristic_breakage_exception_enabled;
   bool site_has_tp_exception;
+  bool site_has_refresh_heuristic_breakage_exception;
   bool only_if_3pc_blocked_param;
   content_settings::CookieControlsMode cookie_controls_mode =
       content_settings::CookieControlsMode::kBlockThirdParty;
@@ -448,28 +451,30 @@ class FPFPageActivationThrottleTestGetActivationTest
   }
 
   void SetFingerprintingProtectionFeatureEnabled(
-      bool is_enabled,
-      ActivationLevel activation_level,
-      bool only_if_3pc_blocked) {
-    if (is_enabled) {
+      const FPFGetActivationTestCase& test_case) {
+    if (test_case.is_fp_feature_enabled) {
       std::string activation_level_param;
-      if (activation_level == ActivationLevel::kEnabled) {
+      if (test_case.activation_level_param == ActivationLevel::kEnabled) {
         activation_level_param = "enabled";
       }
-      if (activation_level == ActivationLevel::kDisabled) {
+      if (test_case.activation_level_param == ActivationLevel::kDisabled) {
         activation_level_param = "disabled";
       }
-      if (activation_level == ActivationLevel::kDryRun) {
+      if (test_case.activation_level_param == ActivationLevel::kDryRun) {
         activation_level_param = "dry_run";
       }
       scoped_feature_list_.InitWithFeaturesAndParameters(
           {{features::kEnableFingerprintingProtectionFilter,
             {{"enable_only_if_3pc_blocked",
-              only_if_3pc_blocked ? "true" : "false"},
-             {"activation_level", activation_level_param}}}},
+              test_case.only_if_3pc_blocked_param ? "true" : "false"},
+             {"activation_level", activation_level_param},
+             {features::kRefreshHeuristicExceptionThresholdParam,
+              test_case.is_refresh_heuristic_breakage_exception_enabled
+                  ? "3"
+                  : "0"}}}},
           {});
     } else {
-      EXPECT_FALSE(only_if_3pc_blocked);
+      EXPECT_FALSE(test_case.only_if_3pc_blocked_param);
       scoped_feature_list_.InitAndDisableFeature(
           features::kEnableFingerprintingProtectionFilter);
     }
@@ -539,6 +544,42 @@ const FPFGetActivationTestCase kTestCases[] = {
 
      .expected_level = ActivationLevel::kDisabled,
      .expected_decision = ActivationDecision::ACTIVATION_CONDITIONS_NOT_MET},
+    {.test_name =
+         "FPFEnabled_ActivationEnabled_BreakageExceptionsDisabled_HasException",
+     .is_fp_feature_enabled = true,
+     .activation_level_param = ActivationLevel::kEnabled,
+     .is_refresh_heuristic_breakage_exception_enabled = false,
+     .site_has_tp_exception = false,
+     .site_has_refresh_heuristic_breakage_exception = true,
+     .only_if_3pc_blocked_param = false,
+     .cookie_controls_mode = content_settings::CookieControlsMode::kOff,
+
+     .expected_level = ActivationLevel::kEnabled,
+     .expected_decision = ActivationDecision::ACTIVATED},
+    {.test_name =
+         "FPFEnabled_ActivationEnabled_BreakageExceptionsEnabled_HasException",
+     .is_fp_feature_enabled = true,
+     .activation_level_param = ActivationLevel::kEnabled,
+     .is_refresh_heuristic_breakage_exception_enabled = true,
+     .site_has_tp_exception = false,
+     .site_has_refresh_heuristic_breakage_exception = true,
+     .only_if_3pc_blocked_param = false,
+     .cookie_controls_mode = content_settings::CookieControlsMode::kOff,
+
+     .expected_level = ActivationLevel::kDisabled,
+     .expected_decision = ActivationDecision::URL_ALLOWLISTED},
+    {.test_name = "FPFEnabled_ActivationEnabled_BreakageExceptionsEnabled_"
+                  "HasNoException",
+     .is_fp_feature_enabled = true,
+     .activation_level_param = ActivationLevel::kEnabled,
+     .is_refresh_heuristic_breakage_exception_enabled = true,
+     .site_has_tp_exception = false,
+     .site_has_refresh_heuristic_breakage_exception = false,
+     .only_if_3pc_blocked_param = false,
+     .cookie_controls_mode = content_settings::CookieControlsMode::kOff,
+
+     .expected_level = ActivationLevel::kEnabled,
+     .expected_decision = ActivationDecision::ACTIVATED},
     // Not testing all permutations with FPF disabled because the expected
     // return
     // value is the same.
@@ -591,20 +632,27 @@ TEST_P(FPFPageActivationThrottleTestGetActivationTest,
        GetActivationComputesLevelAndDecision) {
   const FPFGetActivationTestCase& test_case = GetParam();
 
-  // Initialize whether the feature is enabled.
-  SetFingerprintingProtectionFeatureEnabled(
-      test_case.is_fp_feature_enabled, test_case.activation_level_param,
-      test_case.only_if_3pc_blocked_param);
-  // Navigate to the test url.
-  mock_nav_handle_->set_url(GetTestUrl());
+  // Initialize feature flags and params.
+  SetFingerprintingProtectionFeatureEnabled(test_case);
+
+  // Set cookie controls mode
   test_support_.prefs()->SetInteger(
-      prefs::kCookieControlsMode,
+      ::prefs::kCookieControlsMode,
       static_cast<int>(test_case.cookie_controls_mode));
+
+  // Add exceptions
+  if (test_case.site_has_refresh_heuristic_breakage_exception) {
+    AddBreakageException(GURL(GetTestUrl()), *test_support_.prefs());
+  }
 
   if (test_case.site_has_tp_exception) {
     test_support_.tracking_protection_settings()
         ->AddTrackingProtectionException(GetTestUrl());
   }
+
+  // Navigate to the test url.
+  mock_nav_handle_->set_url(GetTestUrl());
+
   // Prepare the manager under test and input with initial_decision param.
   auto test_throttle = FingerprintingProtectionPageActivationThrottle(
       mock_nav_handle_.get(), test_support_.tracking_protection_settings(),

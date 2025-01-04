@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/pickle.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -251,15 +252,15 @@ int64_t ReadInteger64(SerializeObject* obj) {
 }
 
 void WriteReal(double data, SerializeObject* obj) {
-  WriteData(base::byte_span_from_ref(data), obj);
+  WriteData(base::byte_span_from_ref(base::allow_nonunique_obj, data), obj);
 }
 
 double ReadReal(SerializeObject* obj) {
   std::optional<base::span<const uint8_t>> data = ReadData(obj);
   if (data && data->size() == sizeof(double)) {
     double value;
-    base::byte_span_from_ref(value).copy_from(
-        data.value().first<sizeof(double)>());
+    base::byte_span_from_ref(base::allow_nonunique_obj, value)
+        .copy_from(data.value().first<sizeof(double)>());
     return value;
   }
 
@@ -996,6 +997,13 @@ int DecodePageStateInternal(const std::string& encoded,
 
   SerializeObject obj(base::as_byte_span(encoded));
   ReadPageState(&obj, exploded);
+
+  if (obj.version < kCurrentVersion) {
+    // Record when a PageState with an earlier version number is decoded, to
+    // estimate how long older version support should be retained.
+    base::UmaHistogramSparse("SessionRestore.PageStateOldVersions",
+                             obj.version);
+  }
   return obj.parse_error ? -1 : obj.version;
 }
 

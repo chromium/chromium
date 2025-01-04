@@ -44,7 +44,7 @@ SelectedKeywordView::GetKeywordLabelNames(const std::u16string& keyword,
         keyword, &is_extension_keyword, &is_gemini_keyword);
     if (is_gemini_keyword) {
       names.full_name = l10n_util::GetStringFUTF16(
-          IDS_OMNIBOX_SELECTED_KEYWORD_CHAT_TEXT, names.short_name);
+          IDS_OMNIBOX_SELECTED_KEYWORD_ASK_TEXT, names.short_name);
     } else if (is_extension_keyword) {
       names.full_name = names.short_name;
     } else {
@@ -134,13 +134,15 @@ gfx::Size SelectedKeywordView::GetMinimumSize() const {
 
 void SelectedKeywordView::OnThemeChanged() {
   IconLabelBubbleView::OnThemeChanged();
-  if (!using_custom_image_)
+  if (!using_custom_image_) {
     SetCustomImage(gfx::Image());
+  }
 }
 
 void SelectedKeywordView::SetKeyword(const std::u16string& keyword) {
-  if (keyword_ == keyword)
+  if (keyword_ == keyword) {
     return;
+  }
   keyword_ = keyword;
   OnPropertyChanged(&keyword_, views::kPropertyEffectsNone);
 

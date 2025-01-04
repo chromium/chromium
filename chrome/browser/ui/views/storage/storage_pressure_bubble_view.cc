@@ -52,8 +52,9 @@ void ShowStoragePressureBubble(const url::Origin& origin) {
 
 void StoragePressureBubbleView::ShowBubble(const url::Origin& origin) {
   Browser* browser = BrowserList::GetInstance()->GetLastActive();
-  if (!browser)
+  if (!browser) {
     return;
+  }
 
   StoragePressureBubbleView* bubble = new StoragePressureBubbleView(
       BrowserView::GetBrowserViewForBrowser(browser)

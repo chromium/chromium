@@ -1130,6 +1130,11 @@ targets.binaries.console_test_launcher(
 )
 
 targets.binaries.console_test_launcher(
+    name = "highway_tests",
+    label = "//third_party/highway:highway_tests",
+)
+
+targets.binaries.console_test_launcher(
     name = "install_static_unittests",
     label = "//chrome/install_static:install_static_unittests",
     # All references have been moved to starlark
@@ -1553,6 +1558,11 @@ targets.binaries.generated_script(
 targets.binaries.generated_script(
     name = "ondevice_stability_tests_light",
     label = "//components/optimization_guide/internal/testing:ondevice_stability_tests_light",
+)
+
+targets.binaries.generated_script(
+    name = "opt_target_coverage_test",
+    label = "//components/optimization_guide/internal/testing:opt_target_coverage_test",
 )
 
 targets.binaries.generated_script(

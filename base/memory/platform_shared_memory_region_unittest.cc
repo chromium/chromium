@@ -21,6 +21,7 @@
 #include <sys/mman.h>
 #elif BUILDFLAG(IS_POSIX)
 #include <sys/mman.h>
+
 #include "base/debug/proc_maps_linux.h"
 #elif BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -29,6 +30,7 @@
 #elif BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/object.h>
 #include <lib/zx/process.h>
+
 #include "base/fuchsia/fuchsia_logging.h"
 #endif
 

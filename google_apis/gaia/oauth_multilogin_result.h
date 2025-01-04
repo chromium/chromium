@@ -19,8 +19,10 @@
 #include "net/cookies/cookie_constants.h"
 #include "url/gurl.h"
 
-// Values for the 'status' field of multilogin responses. Used for UMA logging,
-// do not remove or reorder values.
+// Values for the 'status' field of multilogin responses.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(OAuthMultiloginResponseStatus)
 enum class OAuthMultiloginResponseStatus {
   // Status could not be parsed.
   kUnknownStatus = 0,
@@ -58,6 +60,7 @@ enum class OAuthMultiloginResponseStatus {
 
   kMaxValue = kRetryWithTokenBindingChallenge,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:OAuthMultiloginResponseStatus)
 
 // Parses the status field of the response.
 COMPONENT_EXPORT(GOOGLE_APIS)

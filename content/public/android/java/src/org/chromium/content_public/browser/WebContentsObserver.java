@@ -204,12 +204,21 @@ public abstract class WebContentsObserver {
 
     /**
      * Called when the viewport fit of the Web Contents changes.
+     *
      * @param value the new viewport fit value.
      */
     public void viewportFitChanged(@ViewportFitType int value) {}
 
     /**
+     * Called when the safe area constraint of the Web Contents changes.
+     *
+     * @param hasConstraint Whether there are safe area constraint.
+     */
+    public void safeAreaConstraintChanged(boolean hasConstraint) {}
+
+    /**
      * Called when the virtual keyboard mode of the Web Contents changes.
+     *
      * @param mode the new virtual keyboard mode.
      */
     public void virtualKeyboardModeChanged(@VirtualKeyboardMode.EnumType int mode) {}

@@ -53,8 +53,8 @@ public class RecentActivityListMediatorUnitTest {
     private static final String TEST_COLLABORATION_ID1 = "collaboration1";
     private static final String USER_DISPLAY_NAME1 = "User 1";
     private static final String USER_DISPLAY_NAME2 = "User 2";
-    private static final String TEST_DESCRIPTION_1 = "www.foo.com";
-    private static final String TEST_DESCRIPTION_2 = "user2@gmail.com";
+    private static final String TEST_DESCRIPTION_1 = "www.foo.com • 1 day ago";
+    private static final String TEST_DESCRIPTION_2 = "user2@gmail.com • 1 day ago";
     private static final String TAB_URL1 = "https://google.com";
     private static final int TAB_ID1 = 5;
 
@@ -101,9 +101,8 @@ public class RecentActivityListMediatorUnitTest {
     private ActivityLogItem createLog1(@CollaborationEvent int collaborationEvent) {
         ActivityLogItem logItem = new ActivityLogItem();
         logItem.collaborationEvent = collaborationEvent;
-        logItem.userDisplayName = USER_DISPLAY_NAME1;
-        logItem.description = TEST_DESCRIPTION_1;
-        logItem.timeDeltaMs = TimeUtils.MILLISECONDS_PER_DAY;
+        logItem.titleText = USER_DISPLAY_NAME1 + " changed a tab";
+        logItem.descriptionText = TEST_DESCRIPTION_1;
         GroupMember triggeringUser = new GroupMember(null, null, null, MemberRole.OWNER, null, "");
         logItem.activityMetadata = new MessageAttribution();
         logItem.activityMetadata.triggeringUser = triggeringUser;
@@ -116,12 +115,12 @@ public class RecentActivityListMediatorUnitTest {
     private ActivityLogItem createLog2(@CollaborationEvent int collaborationEvent) {
         ActivityLogItem logItem = new ActivityLogItem();
         logItem.collaborationEvent = collaborationEvent;
-        logItem.userDisplayName = USER_DISPLAY_NAME2;
-        logItem.description = TEST_DESCRIPTION_2;
+        logItem.titleText = USER_DISPLAY_NAME2 + " removed a tab";
+        logItem.descriptionText = TEST_DESCRIPTION_2;
         logItem.timeDeltaMs = TimeUtils.MILLISECONDS_PER_DAY;
-        GroupMember triggeringUser = new GroupMember(null, null, null, MemberRole.OWNER, null, "");
+        GroupMember affectedUser = new GroupMember(null, null, null, MemberRole.OWNER, null, "");
         logItem.activityMetadata = new MessageAttribution();
-        logItem.activityMetadata.triggeringUser = triggeringUser;
+        logItem.activityMetadata.affectedUser = affectedUser;
         logItem.activityMetadata.tabMetadata = new TabMessageMetadata();
         logItem.activityMetadata.tabMetadata.lastKnownUrl = TAB_URL1;
         logItem.activityMetadata.tabMetadata.localTabId = TAB_ID1;
@@ -130,9 +129,8 @@ public class RecentActivityListMediatorUnitTest {
 
     @Test
     public void testTwoItemsTitleAndDescription() {
-        // Expected title: "You changed a tab".
+        // Expected title: "User 1 changed a tab".
         ActivityLogItem logItem1 = createLog1(CollaborationEvent.TAB_UPDATED);
-        logItem1.userIsSelf = true;
         mTestItems.add(logItem1);
         // Expected title: "User 2 removed a tab".
         mTestItems.add(createLog2(CollaborationEvent.TAB_REMOVED));
@@ -148,7 +146,8 @@ public class RecentActivityListMediatorUnitTest {
         String descriptionText2 =
                 mModelList.get(1).model.get(RecentActivityListProperties.DESCRIPTION_TEXT);
 
-        Assert.assertEquals("You changed a tab", titleText1);
+        // TODO(crbug.com/387304832): Verify timestamp separately after separating timestamp view.
+        Assert.assertEquals("User 1 changed a tab", titleText1);
         Assert.assertEquals("www.foo.com • 1 day ago", descriptionText1);
 
         Assert.assertEquals("User 2 removed a tab", titleText2);
@@ -159,18 +158,18 @@ public class RecentActivityListMediatorUnitTest {
     public void testDescriptionContainsTimestampOnly() {
         // Expected description: "8 minutes ago".
         ActivityLogItem logItem1 = createLog1(CollaborationEvent.TAB_UPDATED);
-        logItem1.userIsSelf = true;
-        logItem1.description = null;
-        logItem1.timeDeltaMs = TimeUtils.MILLISECONDS_PER_MINUTE * 8;
+        logItem1.descriptionText = "";
+        logItem1.timeDeltaText = "8 minutes ago";
         mTestItems.add(logItem1);
 
         // Show UI and verify.
         mMediator.requestShowUI(TEST_COLLABORATION_ID1, mCallback1);
         Assert.assertEquals(1, mModelList.size());
 
-        String descriptionText1 =
-                mModelList.get(0).model.get(RecentActivityListProperties.DESCRIPTION_TEXT);
-        Assert.assertEquals("8 min ago", descriptionText1);
+        // TODO(crbug.com/387304832): Uncomment this after separating timestamp view.
+        // String descriptionText1 =
+        //         mModelList.get(0).model.get(RecentActivityListProperties.DESCRIPTION_TEXT);
+        // Assert.assertEquals("8 min ago", descriptionText1);
     }
 
     @Test
@@ -276,49 +275,5 @@ public class RecentActivityListMediatorUnitTest {
     public void testOnBottomSheetClosed() {
         mMediator.onBottomSheetClosed();
         Assert.assertEquals(0, mModelList.size());
-    }
-
-    @Test
-    public void testGetTitleResStringForAllEventTypes() {
-        // Create one item for each type of collaboration event and add to the backend.
-        int[] events = {
-            CollaborationEvent.TAB_ADDED,
-            CollaborationEvent.TAB_REMOVED,
-            CollaborationEvent.TAB_UPDATED,
-            CollaborationEvent.TAB_GROUP_NAME_UPDATED,
-            CollaborationEvent.TAB_GROUP_COLOR_UPDATED,
-            CollaborationEvent.COLLABORATION_MEMBER_ADDED,
-            CollaborationEvent.COLLABORATION_MEMBER_REMOVED
-        };
-        for (int i = 0; i < events.length; i++) {
-            ActivityLogItem logItem = createLog1(events[i]);
-            mTestItems.add(logItem);
-        }
-
-        // Show UI and verify each item's title text.
-        mMediator.requestShowUI(TEST_COLLABORATION_ID1, mCallback1);
-        Assert.assertEquals(events.length, mModelList.size());
-
-        Assert.assertEquals(
-                "User 1 added a tab",
-                mModelList.get(0).model.get(RecentActivityListProperties.TITLE_TEXT));
-        Assert.assertEquals(
-                "User 1 removed a tab",
-                mModelList.get(1).model.get(RecentActivityListProperties.TITLE_TEXT));
-        Assert.assertEquals(
-                "User 1 changed a tab",
-                mModelList.get(2).model.get(RecentActivityListProperties.TITLE_TEXT));
-        Assert.assertEquals(
-                "User 1 changed the group name",
-                mModelList.get(3).model.get(RecentActivityListProperties.TITLE_TEXT));
-        Assert.assertEquals(
-                "User 1 changed the group color",
-                mModelList.get(4).model.get(RecentActivityListProperties.TITLE_TEXT));
-        Assert.assertEquals(
-                "User 1 joined the group",
-                mModelList.get(5).model.get(RecentActivityListProperties.TITLE_TEXT));
-        Assert.assertEquals(
-                "User 1 left the group",
-                mModelList.get(6).model.get(RecentActivityListProperties.TITLE_TEXT));
     }
 }

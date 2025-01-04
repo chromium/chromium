@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/frame/csp/conversion_util.h"
+
+#include <algorithm>
 
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
@@ -22,20 +19,20 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static BlinkFuzzerTestSupport test_support = BlinkFuzzerTestSupport();
   test::TaskEnvironment task_environment;
 
+  // SAFETY: Making a span from the input provided by libFuzzer.
+  auto data_span = UNSAFE_BUFFERS(base::span(data, size));
+
   // We need two pieces of input: a URL and a CSP string. Split |data| in two at
   // the first whitespace.
-  const uint8_t* it = data;
-  for (; it < data + size; it++) {
-    if (base::IsAsciiWhitespace(*reinterpret_cast<const char*>(it))) {
-      it++;
-      break;
-    }
-  }
-  if (it == data + size) {
+  auto it = std::ranges::find_if(data_span, [](uint8_t c) {
+    return base::IsAsciiWhitespace(static_cast<char>(c));
+  });
+  if (it == data_span.end()) {
     // Not much point in going on with an empty CSP string.
     return EXIT_SUCCESS;
   }
-  if (it - data > 250) {
+  const size_t url_length = it - data_span.begin();
+  if (url_length > 250) {
     // Origins should not be too long. The origin of size 'N' is copied into 'M'
     // policies. The fuzzer can send an input of size N+M and use O(N*M) memory.
     // Due to this quadratic behavior, we must limit the size of the origin to
@@ -44,8 +41,8 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     return EXIT_SUCCESS;
   }
 
-  String url = String(base::span(data, it - 1));
-  String header = String(base::span(it, data + size));
+  String url(data_span.first(url_length));
+  String header(data_span.subspan(url_length + 1));
   unsigned hash = header.IsNull() ? 0 : header.Impl()->GetHash();
 
   // Use the 'hash' value to pick header_type and header_source input.

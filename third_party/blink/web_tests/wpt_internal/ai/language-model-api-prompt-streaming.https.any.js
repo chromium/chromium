@@ -1,4 +1,5 @@
-// META: script=resources/workaround-for-362676838.js
+// META: script=resources/utils.js
+// META: script=resources/workaround-for-382640509.js
 // META: timeout=long
 
 promise_test(async t => {
@@ -11,7 +12,8 @@ promise_test(async t => {
   // Start a new session.
   const session = await ai.languageModel.create();
   // Test the streaming prompt API.
-  const streamingResponse = session.promptStreaming("What is 1+2?");
+  const streamingResponse =
+    session.promptStreaming(kTestPrompt);
   assert_true(Object.prototype.toString.call(streamingResponse) === "[object ReadableStream]");
   const reader = streamingResponse.getReader();
   let result = "";

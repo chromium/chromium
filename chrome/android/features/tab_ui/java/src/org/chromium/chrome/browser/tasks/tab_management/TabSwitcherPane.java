@@ -130,7 +130,6 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
             @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         super(
                 context,
-                profileProviderSupplier,
                 factory,
                 /* isIncognito= */ false,
                 onToolbarAlphaChange,
@@ -152,7 +151,6 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
                                 R.string.button_new_tab,
                                 R.drawable.new_tab_icon),
                         () -> {
-                            notifyNewTabButtonClick();
                             newTabButtonClickListener.onClick(null);
                         }));
 
@@ -282,7 +280,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
         Profile profile = profileProvider.getOriginalProfile();
         mTabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
 
-        if (!PriceTrackingFeatures.isPriceTrackingEnabled(profileProvider.getOriginalProfile())
+        if (!PriceTrackingFeatures.isPriceAnnotationsEnabled(profileProvider.getOriginalProfile())
                 && getTabListMode() == TabListMode.GRID) {
             return;
         }

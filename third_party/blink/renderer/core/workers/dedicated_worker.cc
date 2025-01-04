@@ -143,7 +143,7 @@ void DedicatedWorker::Dispose() {
 
 void DedicatedWorker::postMessage(ScriptState* script_state,
                                   const ScriptValue& message,
-                                  HeapVector<ScriptValue> transfer,
+                                  HeapVector<ScriptObject> transfer,
                                   ExceptionState& exception_state) {
   PostMessageOptions* options = PostMessageOptions::Create();
   if (!transfer.empty())
@@ -205,7 +205,7 @@ void DedicatedWorker::PostCustomEvent(
         event_factory_callback,
     CrossThreadFunction<Event*(ScriptState*)> event_factory_error_callback,
     const ScriptValue& message,
-    HeapVector<ScriptValue> transfer,
+    HeapVector<ScriptObject> transfer,
     ExceptionState& exception_state) {
   CHECK(!GetExecutionContext() || GetExecutionContext()->IsContextThread());
   if (!GetExecutionContext()) {

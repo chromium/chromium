@@ -26,6 +26,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -136,7 +137,7 @@ class AnnouncementNotificationServiceTest : public testing::Test {
     params.profile_path =
         test_profile_manager_->profiles_dir().AppendASCII(kProfileId);
     params.profile_name = u"dummy_name";
-    params.gaia_id = sign_in ? "dummy_gaia_id" : std::string();
+    params.gaia_id = sign_in ? GaiaId("dummy_gaia_id") : GaiaId();
     params.is_consented_primary_account = sign_in;
     test_profile_manager_->profile_attributes_storage()->AddProfile(
         std::move(params));

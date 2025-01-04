@@ -917,8 +917,9 @@ TEST_F(LabelTest, MultilineSmallAvailableWidthSizing) {
   // splitting the words into up to one character per line if necessary.
   // Incorrect word splitting may cause infinite loops in text layout.
   gfx::Size required_size = label()->GetPreferredSize({});
-  for (int i = 1; i < required_size.width(); ++i)
+  for (int i = 1; i < required_size.width(); ++i) {
     EXPECT_GT(label()->GetHeightForWidth(i), 0);
+  }
 }
 
 // Verifies if SetAllowCharacterBreak(true) doesn't change the preferred size.

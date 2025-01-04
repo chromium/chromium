@@ -38,10 +38,11 @@ class ASH_EXPORT CoralChipButton : public BirchChipButton {
 
   // Called during `Init()` and for a coral chip, when the title gets updated.
   // Handles the title loading animation for a coral chip.
-  void UpdateTitle();
+  void UpdateTitle(const std::optional<std::string>& group_title);
 
   // BirchChipButton:
   void Init(BirchItem* item) override;
+  void ExecuteCommand(int command_id, int event_flags) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(CoralBrowserTest, AsyncGroupTitle);

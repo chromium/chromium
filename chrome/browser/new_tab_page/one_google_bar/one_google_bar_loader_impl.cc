@@ -20,6 +20,7 @@
 #include "components/google/core/common/google_util.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/variations/net/variations_http_headers.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
@@ -215,7 +216,7 @@ void OneGoogleBarLoaderImpl::AuthenticatedURLLoader::SetRequestHeaders(
       chrome_connected_header_helper.BuildRequestHeader(
           /*is_header_request=*/true, api_url_,
           // Gaia ID is only needed for (drive|docs).google.com.
-          /*gaia_id=*/std::string(),
+          GaiaId(),
           /*is_child_account=*/signin::Tribool::kUnknown, profile_mode,
           signin::kChromeMirrorHeaderSource,
           /*force_account_consistency=*/false);

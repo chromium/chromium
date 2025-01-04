@@ -17,7 +17,6 @@
 #include "base/tracing/trace_time.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "services/tracing/public/mojom/perfetto_service.mojom.h"
 #include "third_party/perfetto/protos/perfetto/config/track_event/track_event_config.gen.h"
@@ -100,16 +99,14 @@ void AddDataSourceConfigs(
   // Capture system trace events if supported and enabled. The datasources will
   // only emit events if system tracing is enabled in |chrome_config|.
   if (!privacy_filtering_enabled && systrace_enabled) {
-// TODO(crbug.com/40118868): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CASTOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_CASTOS)
     AddDataSourceConfig(
         perfetto_config, tracing::mojom::kSystemTraceDataSourceName,
         chrome_config_string, privacy_filtering_enabled, convert_to_legacy_json,
         client_priority, json_agent_label_filter);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     AddDataSourceConfig(
         perfetto_config, tracing::mojom::kArcTraceDataSourceName,
         chrome_config_string, privacy_filtering_enabled, convert_to_legacy_json,
@@ -182,7 +179,7 @@ std::optional<base::trace_event::TraceConfig> GetChromeTraceConfig(
   std::string category_filter_string;
   bool systrace_enabled = false;
   for (const auto& data_source_config : perfetto_config.data_sources()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CASTOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_CASTOS)
     if (data_source_config.config().name() ==
             tracing::mojom::kSystemTraceDataSourceName ||
         data_source_config.config().name() ==

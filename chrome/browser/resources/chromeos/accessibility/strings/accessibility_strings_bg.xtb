@@ -845,6 +845,7 @@
 <translation id="6385591741672306837">кол.</translation>
 <translation id="6387719785439924554">странично съдържание</translation>
 <translation id="6393014464788431702">Деактивиране на всички филтри за събития</translation>
+<translation id="6406989068857078334">Скоростта на мишката е намалена. <ph name="GESTURE" /> отново, за да кликнете</translation>
 <translation id="6411569524720229058">Есен</translation>
 <translation id="6417265370957905582">Google Асистент</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{двоеточие}other{# двоеточия}}</translation>
@@ -1099,6 +1100,7 @@
 <translation id="8205922869661890178">Отваряне на страницата с регистрационна информация за програмисти</translation>
 <translation id="8212109599554677485">Преминаване към стила с успоредно показване</translation>
 <translation id="8215202828671303819">Избор на няколко елемента</translation>
+<translation id="822316432305106615">Стартиране на кликването с точност</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />% плътност.</translation>
 <translation id="8261506727792406068">Изтриване</translation>
 <translation id="826825447994856889">Въведение</translation>

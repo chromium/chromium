@@ -62,6 +62,7 @@ class StubGuestView : public GuestView<StubGuestView> {
     ADD_FAILURE();
   }
   void CreateInnerPage(std::unique_ptr<GuestViewBase> owned_this,
+                       scoped_refptr<content::SiteInstance> site_instance,
                        const base::Value::Dict& create_params,
                        GuestPageCreatedCallback callback) override {
     ADD_FAILURE();

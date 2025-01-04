@@ -7,10 +7,12 @@ package org.chromium.media;
 import android.media.AudioManager;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@NullMarked
 abstract class AudioDeviceSelector {
     private static final String TAG = "media";
 
@@ -258,7 +260,7 @@ abstract class AudioDeviceSelector {
 
         /** Returns the list of currently available devices, to be used by the native side. */
         public AudioManagerAndroid.AudioDeviceName[] getAudioInputDeviceNames() {
-            boolean devices[] = null;
+            boolean[] devices = null;
             synchronized (mLock) {
                 devices = getAvailableDevices_Locked();
             }

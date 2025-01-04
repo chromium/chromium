@@ -61,6 +61,9 @@ class KioskIwaManager : public KioskAppManagerBase {
   // Starts observing web app updates from App Service in a Kiosk session.
   void StartObservingAppUpdate(Profile* profile, const AccountId& account_id);
 
+  // Adds fake apps in tests.
+  void AddAppForTesting(const policy::DeviceLocalAccount& account);
+
  private:
   void UpdateAppsFromPolicy() override;
 

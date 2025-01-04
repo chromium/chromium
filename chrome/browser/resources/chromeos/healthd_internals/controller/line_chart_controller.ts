@@ -67,12 +67,8 @@ export class LineChartController {
   private fixedMaxValue: number|null = null;
 
   // Set up the lists of data series.
-  setupDataSeriesLists(
+  setupDataSeries(
       category: CategoryTypeEnum, dataSeriesLists: DataSeriesList[]) {
-    if (category === this.displayedCategory) {
-      return;
-    }
-
     this.displayedCategory = category;
     this.displayedDataSeriesLists = dataSeriesLists;
 
@@ -300,6 +296,6 @@ export class LineChartController {
       }
     }
     this.element.getSummaryTable().updateSummaryInfo(output);
-    this.element.sendTimeRange(visibleStartTime, visibleEndTime);
+    this.element.updateVisibleTimeSpan(visibleStartTime, visibleEndTime);
   }
 }

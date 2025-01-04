@@ -278,7 +278,8 @@ ClipPathOperation* StyleBuilderConverter::ConvertClipPath(
     StyleResolverState& state,
     const CSSValue& value) {
   if (const auto* list = DynamicTo<CSSValueList>(value)) {
-    if (list->First().IsBasicShapeValue() || list->First().IsPathValue()) {
+    if (list->First().IsBasicShapeValue() || list->First().IsPathValue() ||
+        list->First().IsShapeValue()) {
       const CSSValue& shape_value = list->First();
       const CSSIdentifierValue* geometry_box_value = nullptr;
       if (list->length() == 2) {
@@ -2294,7 +2295,7 @@ GapDataList<T> ConvertGapDecorationDataList(StyleResolverState& state,
   // The CSS Gap Decorations API accepts a space separated list of values.
   // These values can be an auto repeater, an integer repeater, or a single
   // value.
-  // See: https://kbabbitt.github.io/css-gap-decorations/#column-row-rule-color
+  // See: https://drafts.csswg.org/css-gaps-1/#lists-repeat
   const auto& values = To<CSSValueList>(value);
   typename GapDataList<T>::GapDataVector gap_data_list;
   gap_data_list.ReserveInitialCapacity(values.length());
@@ -2521,6 +2522,9 @@ StyleViewTransitionName* StyleBuilderConverter::ConvertViewTransitionName(
       case CSSValueID::kAuto:
         // TODO: tree scope for auto
         return StyleViewTransitionName::Auto(&state.GetDocument());
+      case CSSValueID::kMatchElement:
+        // TODO: tree scope for match-element
+        return StyleViewTransitionName::MatchElement(&state.GetDocument());
       default:
         NOTREACHED();
     }

@@ -95,8 +95,9 @@ LoginView::LoginView(const std::u16string& authority,
 }
 
 LoginView::~LoginView() {
-  if (http_auth_manager_)
+  if (http_auth_manager_) {
     http_auth_manager_->DetachObserver(this);
+  }
 }
 
 const std::u16string& LoginView::GetUsername() const {

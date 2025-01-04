@@ -36,8 +36,7 @@ EnableDebuggingScreenHandler::AsWeakPtr() {
 
 void EnableDebuggingScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
-  builder->Add("enableDebuggingScreenTitle",
-               IDS_ENABLE_DEBUGGING_SCREEN_TITLE);
+  builder->Add("enableDebuggingScreenTitle", IDS_ENABLE_DEBUGGING_SCREEN_TITLE);
   builder->Add("enableDebuggingScreenAccessibleTitle",
                IDS_ENABLE_DEBUGGING_SCREEN_TITLE);
   builder->Add("enableDebuggingCancelButton", IDS_CANCEL);
@@ -48,21 +47,17 @@ void EnableDebuggingScreenHandler::DeclareLocalizedValues(
                IDS_ENABLE_DEBUGGING_ENABLE_BUTTON);
   builder->Add("enableDebuggingRemveRootfsMessage",
                IDS_ENABLE_DEBUGGING_SCREEN_ROOTFS_REMOVE_MSG);
-  builder->Add("enableDebuggingLearnMore",
-               IDS_ENABLE_DEBUGGING_LEARN_MORE);
+  builder->Add("enableDebuggingLearnMore", IDS_ENABLE_DEBUGGING_LEARN_MORE);
   builder->Add("enableDebuggingSetupMessage",
                IDS_ENABLE_DEBUGGING_SETUP_MESSAGE);
   builder->AddF("enableDebuggingWarningTitle",
                 IDS_ENABLE_DEBUGGING_SCREEN_WARNING_MSG,
                 IDS_SHORT_PRODUCT_NAME);
-  builder->AddF("enableDebuggingDoneMessage",
-                IDS_ENABLE_DEBUGGING_DONE_MESSAGE,
+  builder->AddF("enableDebuggingDoneMessage", IDS_ENABLE_DEBUGGING_DONE_MESSAGE,
                 IDS_SHORT_PRODUCT_NAME);
-  builder->Add("enableDebuggingErrorTitle",
-                IDS_ENABLE_DEBUGGING_ERROR_TITLE);
+  builder->Add("enableDebuggingErrorTitle", IDS_ENABLE_DEBUGGING_ERROR_TITLE);
   builder->AddF("enableDebuggingErrorMessage",
-                IDS_ENABLE_DEBUGGING_ERROR_MESSAGE,
-                IDS_SHORT_PRODUCT_NAME);
+                IDS_ENABLE_DEBUGGING_ERROR_MESSAGE, IDS_SHORT_PRODUCT_NAME);
   builder->Add("enableDebuggingPasswordLabel",
                IDS_ENABLE_DEBUGGING_ROOT_PASSWORD_LABEL);
   builder->Add("enableDebuggingConfirmPasswordLabel",

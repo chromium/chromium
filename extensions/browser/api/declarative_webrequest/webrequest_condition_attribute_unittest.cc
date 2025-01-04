@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/api/declarative_webrequest/webrequest_condition_attribute.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -152,12 +148,11 @@ TEST(WebRequestConditionAttributeTest, ContentType) {
 // applicable in all stages.
 TEST(WebRequestConditionAttributeTest, Stages) {
   typedef std::pair<RequestStage, const char*> StageNamePair;
-  static const StageNamePair active_stages[] = {
-    StageNamePair(ON_BEFORE_REQUEST, keys::kOnBeforeRequestEnum),
-    StageNamePair(ON_BEFORE_SEND_HEADERS, keys::kOnBeforeSendHeadersEnum),
-    StageNamePair(ON_HEADERS_RECEIVED, keys::kOnHeadersReceivedEnum),
-    StageNamePair(ON_AUTH_REQUIRED, keys::kOnAuthRequiredEnum)
-  };
+  static constexpr auto active_stages = std::to_array<StageNamePair>(
+      {{ON_BEFORE_REQUEST, keys::kOnBeforeRequestEnum},
+       {ON_BEFORE_SEND_HEADERS, keys::kOnBeforeSendHeadersEnum},
+       {ON_HEADERS_RECEIVED, keys::kOnHeadersReceivedEnum},
+       {ON_AUTH_REQUIRED, keys::kOnAuthRequiredEnum}});
 
   // Check that exactly all active stages are considered in this test.
   unsigned int covered_stages = 0;
@@ -222,24 +217,22 @@ TEST(WebRequestConditionAttributeTest, Stages) {
 
 namespace {
 
-// Builds a vector of vectors of string pointers from an array of strings.
-// |array| is in fact a sequence of arrays. The array |sizes| captures the sizes
-// of all parts of |array|, and |size| is the length of |sizes| itself.
+// Builds a vector of vectors of string pointers from a vector of strings.
+// `strings` is in fact a sequence of arrays. The vector `sizes` captures the
+// sizes of all parts of `strings`.
 // Example (this is pseudo-code, not C++):
-// array = { "a", "b", "c", "d", "e", "f" }
+// strings = { "a", "b", "c", "d", "e", "f" }
 // sizes = { 2, 0, 4 }
-// size = 3
 // results in out == { {&"a", &"b"}, {}, {&"c", &"d", &"e", &"f"} }
-void GetArrayAsVector(const std::string array[],
-                      const size_t sizes[],
-                      const size_t size,
-                      std::vector< std::vector<const std::string*> >* out) {
+void GetArrayAsVector(const std::vector<std::string>& strings,
+                      const std::vector<size_t>& sizes,
+                      std::vector<std::vector<const std::string*>>* out) {
   out->clear();
   size_t next = 0;
-  for (size_t i = 0; i < size; ++i) {
+  for (size_t i = 0; i < sizes.size(); ++i) {
     out->push_back(std::vector<const std::string*>());
     for (size_t j = next; j < next + sizes[i]; ++j) {
-      out->back().push_back(&(array[j]));
+      out->back().push_back(&strings[j]);
     }
     next += sizes[i];
   }
@@ -323,14 +316,13 @@ TEST(WebRequestConditionAttributeTest, RequestHeaders) {
   const RequestStage stage = ON_BEFORE_SEND_HEADERS;
 
   // First set of test data -- passing conjunction.
-  const std::string kPassingCondition[] = {
-    keys::kNameContainsKey, "CuStOm",  // Header names are case insensitive.
-    keys::kNameEqualsKey, "custom-header",
-    keys::kValueSuffixKey, "alue",
-    keys::kValuePrefixKey, "custom/value"
-  };
-  const size_t kPassingConditionSizes[] = {std::size(kPassingCondition)};
-  GetArrayAsVector(kPassingCondition, kPassingConditionSizes, 1u, &tests);
+  const std::vector<std::string> kPassingCondition = {
+      keys::kNameContainsKey, "CuStOm",  // Header names are case insensitive.
+      keys::kNameEqualsKey,   "custom-header", keys::kValueSuffixKey, "alue",
+      keys::kValuePrefixKey,  "custom/value"};
+  const std::vector<size_t> kPassingConditionSizes = {
+      std::size(kPassingCondition)};
+  GetArrayAsVector(kPassingCondition, kPassingConditionSizes, &tests);
   // Positive filter, passing (conjunction of tests).
   MatchAndCheck(tests, keys::kRequestHeadersKey, stage, request_info, &result);
   EXPECT_TRUE(result);
@@ -340,14 +332,14 @@ TEST(WebRequestConditionAttributeTest, RequestHeaders) {
   EXPECT_FALSE(result);
 
   // Second set of test data -- failing disjunction.
-  const std::string kFailCondition[] = {
-    keys::kNameSuffixKey, "Custom",      // Test 1.
-    keys::kNameEqualsKey, "ustom-valu",  // Test 2.
-    keys::kValuePrefixKey, "custom ",    // Test 3.
-    keys::kValueContainsKey, " value"    // Test 4.
+  const std::vector<std::string> kFailCondition = {
+      keys::kNameSuffixKey,    "Custom",      // Test 1.
+      keys::kNameEqualsKey,    "ustom-valu",  // Test 2.
+      keys::kValuePrefixKey,   "custom ",     // Test 3.
+      keys::kValueContainsKey, " value"       // Test 4.
   };
-  const size_t kFailConditionSizes[] = { 2u, 2u, 2u, 2u };
-  GetArrayAsVector(kFailCondition, kFailConditionSizes, 4u, &tests);
+  const std::vector<size_t> kFailConditionSizes = {2u, 2u, 2u, 2u};
+  GetArrayAsVector(kFailCondition, kFailConditionSizes, &tests);
   // Positive filter, failing (disjunction of tests).
   MatchAndCheck(tests, keys::kRequestHeadersKey, stage, request_info, &result);
   EXPECT_FALSE(result);
@@ -357,7 +349,7 @@ TEST(WebRequestConditionAttributeTest, RequestHeaders) {
   EXPECT_TRUE(result);
 
   // Third set of test data, corner case -- empty disjunction.
-  GetArrayAsVector(nullptr, nullptr, 0u, &tests);
+  GetArrayAsVector({}, {}, &tests);
   // Positive filter, failing (no test to pass).
   MatchAndCheck(tests, keys::kRequestHeadersKey, stage, request_info, &result);
   EXPECT_FALSE(result);
@@ -367,8 +359,8 @@ TEST(WebRequestConditionAttributeTest, RequestHeaders) {
   EXPECT_TRUE(result);
 
   // Fourth set of test data, corner case -- empty conjunction.
-  const size_t kEmptyConjunctionSizes[] = { 0u };
-  GetArrayAsVector(nullptr, kEmptyConjunctionSizes, 1u, &tests);
+  const std::vector<size_t> kEmptyConjunctionSizes = {0u};
+  GetArrayAsVector({}, kEmptyConjunctionSizes, &tests);
   // Positive filter, passing (trivial test).
   MatchAndCheck(tests, keys::kRequestHeadersKey, stage, request_info, &result);
   EXPECT_TRUE(result);
@@ -410,151 +402,142 @@ TEST(WebRequestConditionAttributeTest, ResponseHeaders) {
   const RequestStage stage = ON_HEADERS_RECEIVED;
 
   // 1.a. -- All these tests should pass.
-  const std::string kPassingCondition[] = {
-    keys::kNamePrefixKey, "Custom",
-    keys::kNameSuffixKey, "m-header",  // Header names are case insensitive.
-    keys::kValueContainsKey, "alu",
-    keys::kValueEqualsKey, "custom/value"
-  };
-  const size_t kPassingConditionSizes[] = {std::size(kPassingCondition)};
-  GetArrayAsVector(kPassingCondition, kPassingConditionSizes, 1u, &tests);
+  const std::vector<std::string> kPassingCondition = {
+      keys::kNamePrefixKey,
+      "Custom",
+      keys::kNameSuffixKey,
+      "m-header",  // Header names are case insensitive.
+      keys::kValueContainsKey,
+      "alu",
+      keys::kValueEqualsKey,
+      "custom/value"};
+  const std::vector<size_t> kPassingConditionSizes = {
+      std::size(kPassingCondition)};
+  GetArrayAsVector(kPassingCondition, kPassingConditionSizes, &tests);
   MatchAndCheck(tests, keys::kResponseHeadersKey, stage, request_info, &result);
   EXPECT_TRUE(result);
 
   // 1.b. -- None of the following tests in the discjunction should pass.
-  const std::string kFailCondition[] = {
-    keys::kNamePrefixKey, " Custom",  // Test 1.
-    keys::kNameContainsKey, " -",     // Test 2.
-    keys::kValueSuffixKey, "alu",     // Test 3.
-    keys::kValueEqualsKey, "custom"   // Test 4.
+  const std::vector<std::string> kFailCondition = {
+      keys::kNamePrefixKey,   " Custom",  // Test 1.
+      keys::kNameContainsKey, " -",       // Test 2.
+      keys::kValueSuffixKey,  "alu",      // Test 3.
+      keys::kValueEqualsKey,  "custom"    // Test 4.
   };
-  const size_t kFailConditionSizes[] = { 2u, 2u, 2u, 2u };
-  GetArrayAsVector(kFailCondition, kFailConditionSizes, 4u, &tests);
+  const std::vector<size_t> kFailConditionSizes = {2u, 2u, 2u, 2u};
+  GetArrayAsVector(kFailCondition, kFailConditionSizes, &tests);
   MatchAndCheck(tests, keys::kResponseHeadersKey, stage, request_info, &result);
   EXPECT_FALSE(result);
 
   // 1.c. -- This should fail (mixing name and value from different headers)
-  const std::string kMixingCondition[] = {
-    keys::kNameSuffixKey, "Header-B",
-    keys::kValueEqualsKey, "custom/value"
-  };
-  const size_t kMixingConditionSizes[] = {std::size(kMixingCondition)};
-  GetArrayAsVector(kMixingCondition, kMixingConditionSizes, 1u, &tests);
+  const std::vector<std::string> kMixingCondition = {
+      keys::kNameSuffixKey, "Header-B", keys::kValueEqualsKey, "custom/value"};
+  const std::vector<size_t> kMixingConditionSizes = {
+      std::size(kMixingCondition)};
+  GetArrayAsVector(kMixingCondition, kMixingConditionSizes, &tests);
   MatchAndCheck(tests, keys::kResponseHeadersKey, stage, request_info, &result);
   EXPECT_FALSE(result);
 
   // 1.d. -- Test handling multiple values for one header (both should pass).
-  const std::string kMoreValues1[] = {
-    keys::kNameEqualsKey, "Custom-header-b",
-    keys::kValueEqualsKey, "valueA"
-  };
-  const size_t kMoreValues1Sizes[] = {std::size(kMoreValues1)};
-  GetArrayAsVector(kMoreValues1, kMoreValues1Sizes, 1u, &tests);
+  const std::vector<std::string> kMoreValues1 = {
+      keys::kNameEqualsKey, "Custom-header-b", keys::kValueEqualsKey, "valueA"};
+  const std::vector<size_t> kMoreValues1Sizes = {std::size(kMoreValues1)};
+  GetArrayAsVector(kMoreValues1, kMoreValues1Sizes, &tests);
   MatchAndCheck(tests, keys::kResponseHeadersKey, stage, request_info, &result);
   EXPECT_TRUE(result);
-  const std::string kMoreValues2[] = {
-    keys::kNameEqualsKey, "Custom-header-b",
-    keys::kValueEqualsKey, "valueB"
-  };
-  const size_t kMoreValues2Sizes[] = {std::size(kMoreValues2)};
-  GetArrayAsVector(kMoreValues2, kMoreValues2Sizes, 1u, &tests);
+  const std::vector<std::string> kMoreValues2 = {
+      keys::kNameEqualsKey, "Custom-header-b", keys::kValueEqualsKey, "valueB"};
+  const std::vector<size_t> kMoreValues2Sizes = {std::size(kMoreValues2)};
+  GetArrayAsVector(kMoreValues2, kMoreValues2Sizes, &tests);
   MatchAndCheck(tests, keys::kResponseHeadersKey, stage, request_info, &result);
   EXPECT_TRUE(result);
 
   // 1.e. -- This should fail as conjunction but pass as disjunction.
-  const std::string kConflict[] = {
-    keys::kNameSuffixKey, "Header",      // True for some header.
-    keys::kNameContainsKey, "Header-B"   // True for a different header.
+  const std::vector<std::string> kConflict = {
+      keys::kNameSuffixKey, "Header",     // True for some header.
+      keys::kNameContainsKey, "Header-B"  // True for a different header.
   };
   // First disjunction, no conflict.
-  const size_t kNoConflictSizes[] = { 2u, 2u };
-  GetArrayAsVector(kConflict, kNoConflictSizes, 2u, &tests);
+  const std::vector<size_t> kNoConflictSizes = {2u, 2u};
+  GetArrayAsVector(kConflict, kNoConflictSizes, &tests);
   MatchAndCheck(tests, keys::kResponseHeadersKey, stage, request_info, &result);
   EXPECT_TRUE(result);
   // Then conjunction, conflict.
-  const size_t kConflictSizes[] = {std::size(kConflict)};
-  GetArrayAsVector(kConflict, kConflictSizes, 1u, &tests);
+  const std::vector<size_t> kConflictSizes = {std::size(kConflict)};
+  GetArrayAsVector(kConflict, kConflictSizes, &tests);
   MatchAndCheck(tests, keys::kResponseHeadersKey, stage, request_info, &result);
   EXPECT_FALSE(result);
 
   // 1.f. -- This should pass, checking for correct treatment of ',' in values.
-  const std::string kComma[] = {
-    keys::kNameSuffixKey, "Header-C",
-    keys::kValueEqualsKey, "valueC, valueD"
-  };
-  const size_t kCommaSizes[] = {std::size(kComma)};
-  GetArrayAsVector(kComma, kCommaSizes, 1u, &tests);
+  const std::vector<std::string> kComma = {keys::kNameSuffixKey, "Header-C",
+                                           keys::kValueEqualsKey,
+                                           "valueC, valueD"};
+  const std::vector<size_t> kCommaSizes = {std::size(kComma)};
+  GetArrayAsVector(kComma, kCommaSizes, &tests);
   MatchAndCheck(tests, keys::kResponseHeadersKey, stage, request_info, &result);
   EXPECT_TRUE(result);
 
   // 1.g. -- This should pass, empty values are values as well.
-  const std::string kEmpty[] = {
-    keys::kNameEqualsKey, "custom-header-d",
-    keys::kValueEqualsKey, ""
-  };
-  const size_t kEmptySizes[] = {std::size(kEmpty)};
-  GetArrayAsVector(kEmpty, kEmptySizes, 1u, &tests);
+  const std::vector<std::string> kEmpty = {
+      keys::kNameEqualsKey, "custom-header-d", keys::kValueEqualsKey, ""};
+  const std::vector<size_t> kEmptySizes = {std::size(kEmpty)};
+  GetArrayAsVector(kEmpty, kEmptySizes, &tests);
   MatchAndCheck(tests, keys::kResponseHeadersKey, stage, request_info, &result);
   EXPECT_TRUE(result);
 
   // 1.h. -- Values are case-sensitive, this should fail.
-  const std::string kLowercase[] = {
-    keys::kNameEqualsKey, "Custom-header-b",
-    keys::kValuePrefixKey, "valueb",  // valueb != valueB
-    keys::kNameEqualsKey, "Custom-header-b",
-    keys::kValueSuffixKey, "valueb",
-    keys::kNameEqualsKey, "Custom-header-b",
-    keys::kValueContainsKey, "valueb",
-    keys::kNameEqualsKey, "Custom-header-b",
-    keys::kValueEqualsKey, "valueb"
-  };
-  const size_t kLowercaseSizes[] = { 4u, 4u, 4u, 4u };  // As disjunction.
-  GetArrayAsVector(kLowercase, kLowercaseSizes, 4u, &tests);
+  const std::vector<std::string> kLowercase = {
+      keys::kNameEqualsKey,    "Custom-header-b",
+      keys::kValuePrefixKey,   "valueb",  // valueb != valueB
+      keys::kNameEqualsKey,    "Custom-header-b",
+      keys::kValueSuffixKey,   "valueb",
+      keys::kNameEqualsKey,    "Custom-header-b",
+      keys::kValueContainsKey, "valueb",
+      keys::kNameEqualsKey,    "Custom-header-b",
+      keys::kValueEqualsKey,   "valueb"};
+  const std::vector<size_t> kLowercaseSizes = {4u, 4u, 4u,
+                                               4u};  // As disjunction.
+  GetArrayAsVector(kLowercase, kLowercaseSizes, &tests);
   MatchAndCheck(tests, keys::kResponseHeadersKey, stage, request_info, &result);
   EXPECT_FALSE(result);
 
   // 1.i. -- Names are case-insensitive, this should pass.
-  const std::string kUppercase[] = {
-    keys::kNamePrefixKey, "CUSTOM-HEADER-B",
-    keys::kNameSuffixKey, "CUSTOM-HEADER-B",
-    keys::kNameEqualsKey, "CUSTOM-HEADER-B",
-    keys::kNameContainsKey, "CUSTOM-HEADER-B"
-  };
-  const size_t kUppercaseSizes[] = {std::size(kUppercase)};  // Conjunction.
-  GetArrayAsVector(kUppercase, kUppercaseSizes, 1u, &tests);
+  const std::vector<std::string> kUppercase = {
+      keys::kNamePrefixKey,   "CUSTOM-HEADER-B",    keys::kNameSuffixKey,
+      "CUSTOM-HEADER-B",      keys::kNameEqualsKey, "CUSTOM-HEADER-B",
+      keys::kNameContainsKey, "CUSTOM-HEADER-B"};
+  const std::vector<size_t> kUppercaseSizes = {
+      std::size(kUppercase)};  // Conjunction.
+  GetArrayAsVector(kUppercase, kUppercaseSizes, &tests);
   MatchAndCheck(tests, keys::kResponseHeadersKey, stage, request_info, &result);
   EXPECT_TRUE(result);
 
   // 2.a. -- This should pass as disjunction, because one of the tests passes.
-  const std::string kDisjunction[] = {
-    keys::kNamePrefixKey, "Non-existing",  // This one fails.
-    keys::kNameSuffixKey, "Non-existing",  // This one fails.
-    keys::kValueEqualsKey, "void",         // This one fails.
-    keys::kValueContainsKey, "alu"         // This passes.
+  const std::vector<std::string> kDisjunction = {
+      keys::kNamePrefixKey,    "Non-existing",  // This one fails.
+      keys::kNameSuffixKey,    "Non-existing",  // This one fails.
+      keys::kValueEqualsKey,   "void",          // This one fails.
+      keys::kValueContainsKey, "alu"            // This passes.
   };
-  const size_t kDisjunctionSizes[] = { 2u, 2u, 2u, 2u };
-  GetArrayAsVector(kDisjunction, kDisjunctionSizes, 4u, &tests);
+  const std::vector<size_t> kDisjunctionSizes = {2u, 2u, 2u, 2u};
+  GetArrayAsVector(kDisjunction, kDisjunctionSizes, &tests);
   MatchAndCheck(tests, keys::kResponseHeadersKey, stage, request_info, &result);
   EXPECT_TRUE(result);
 
   // 3.a. -- This should pass.
-  const std::string kNonExistent[] = {
-    keys::kNameEqualsKey, "Non-existing",
-    keys::kValueEqualsKey, "void"
-  };
-  const size_t kNonExistentSizes[] = {std::size(kNonExistent)};
-  GetArrayAsVector(kNonExistent, kNonExistentSizes, 1u, &tests);
+  const std::vector<std::string> kNonExistent = {
+      keys::kNameEqualsKey, "Non-existing", keys::kValueEqualsKey, "void"};
+  const std::vector<size_t> kNonExistentSizes = {std::size(kNonExistent)};
+  GetArrayAsVector(kNonExistent, kNonExistentSizes, &tests);
   MatchAndCheck(tests, keys::kExcludeResponseHeadersKey, stage, request_info,
                 &result);
   EXPECT_TRUE(result);
 
   // 3.b. -- This should fail.
-  const std::string kExisting[] = {
-    keys::kNameEqualsKey, "custom-header-b",
-    keys::kValueEqualsKey, "valueB"
-  };
-  const size_t kExistingSize[] = {std::size(kExisting)};
-  GetArrayAsVector(kExisting, kExistingSize, 1u, &tests);
+  const std::vector<std::string> kExisting = {
+      keys::kNameEqualsKey, "custom-header-b", keys::kValueEqualsKey, "valueB"};
+  const std::vector<size_t> kExistingSize = {std::size(kExisting)};
+  GetArrayAsVector(kExisting, kExistingSize, &tests);
   MatchAndCheck(tests, keys::kExcludeResponseHeadersKey, stage, request_info,
                 &result);
   EXPECT_FALSE(result);
@@ -578,9 +561,10 @@ TEST(WebRequestConditionAttributeTest, HideResponseHeaders) {
   std::vector<std::vector<const std::string*>> tests;
   bool result;
   const RequestStage stage = ON_HEADERS_RECEIVED;
-  const std::string kCondition[] = {keys::kValueEqualsKey, "custom/value"};
-  const size_t kConditionSizes[] = {std::size(kCondition)};
-  GetArrayAsVector(kCondition, kConditionSizes, 1u, &tests);
+  const std::vector<std::string> kCondition = {keys::kValueEqualsKey,
+                                               "custom/value"};
+  const std::vector<size_t> kConditionSizes = {std::size(kCondition)};
+  GetArrayAsVector(kCondition, kConditionSizes, &tests);
 
   {
     // Default client does not hide the response header.

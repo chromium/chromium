@@ -14,12 +14,15 @@ import android.util.SparseArray;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid.IntentCallback;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 
 /** The implementation of IntentRequestTracker. */
+@NullMarked
 /* package */ final class IntentRequestTrackerImpl implements IntentRequestTracker {
     // Constants used for intent request code bounding.
     private static final int REQUEST_CODE_PREFIX = 1000;
@@ -57,7 +60,8 @@ import java.util.HashMap;
     }
 
     @Override
-    public int showCancelableIntent(Intent intent, IntentCallback callback, Integer errorId) {
+    public int showCancelableIntent(
+            @Nullable Intent intent, IntentCallback callback, Integer errorId) {
         int requestCode = generateNextRequestCode();
 
         if (!mDelegate.startActivityForResult(intent, requestCode)) {

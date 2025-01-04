@@ -30,19 +30,15 @@ import org.chromium.ui.listmenu.ListMenuButton;
  * toolbar.
  */
 public class ToggleTabStackButton extends ListMenuButton implements TabSwitcherDrawable.Observer {
-    private final Callback<Integer> mTabCountSupplierObserver;
+    private final Callback<Integer> mTabCountSupplierObserver = this::onUpdateTabCount;
+    private final Callback<Boolean> mNotificationDotObserver = this::onUpdateNotificationDot;
     private TabSwitcherDrawable mTabSwitcherButtonDrawable;
     private ObservableSupplier<Integer> mTabCountSupplier;
+    private ObservableSupplier<Boolean> mNotificationDotSupplier;
     private Supplier<Boolean> mIsIncognitoSupplier;
 
     public ToggleTabStackButton(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        mTabCountSupplierObserver =
-                (tabCount) -> {
-                    setEnabled(tabCount >= 1);
-                    mTabSwitcherButtonDrawable.updateForTabCount(
-                            tabCount, mIsIncognitoSupplier.get());
-                };
     }
 
     @Override
@@ -63,6 +59,9 @@ public class ToggleTabStackButton extends ListMenuButton implements TabSwitcherD
         if (mTabCountSupplier != null) {
             mTabCountSupplier.removeObserver(mTabCountSupplierObserver);
         }
+        if (mNotificationDotSupplier != null) {
+            mNotificationDotSupplier.removeObserver(mNotificationDotObserver);
+        }
         mTabSwitcherButtonDrawable.removeTabSwitcherDrawableObserver(this);
     }
 
@@ -77,12 +76,22 @@ public class ToggleTabStackButton extends ListMenuButton implements TabSwitcherD
 
     /**
      * @param tabCountSupplier A supplier used to observe the number of tabs in the current model.
+     * @param notificationDotSupplier A supplier used to observe whether to show the notification
+     *     dot.
      * @param incognitoSupplier A supplier used to check for incongito state.
      */
-    void setTabCountSupplier(
-            ObservableSupplier<Integer> tabCountSupplier, Supplier<Boolean> isIncognitoSupplier) {
+    void setSuppliers(
+            ObservableSupplier<Integer> tabCountSupplier,
+            ObservableSupplier<Boolean> notificationDotSupplier,
+            Supplier<Boolean> isIncognitoSupplier) {
+        assert mTabCountSupplier == null : "setSuppliers should only be called once.";
+
         mTabCountSupplier = tabCountSupplier;
-        mTabCountSupplier.addObserver(mTabCountSupplierObserver);
+        tabCountSupplier.addObserver(mTabCountSupplierObserver);
+
+        mNotificationDotSupplier = notificationDotSupplier;
+        notificationDotSupplier.addObserver(mNotificationDotObserver);
+
         mIsIncognitoSupplier = isIncognitoSupplier;
     }
 
@@ -146,5 +155,14 @@ public class ToggleTabStackButton extends ListMenuButton implements TabSwitcherD
 
     public TabSwitcherDrawable getTabSwitcherDrawableForTesting() {
         return mTabSwitcherButtonDrawable;
+    }
+
+    private void onUpdateTabCount(int tabCount) {
+        setEnabled(tabCount >= 1);
+        mTabSwitcherButtonDrawable.updateForTabCount(tabCount, mIsIncognitoSupplier.get());
+    }
+
+    private void onUpdateNotificationDot(boolean showDot) {
+        mTabSwitcherButtonDrawable.setNotificationIconStatus(showDot);
     }
 }

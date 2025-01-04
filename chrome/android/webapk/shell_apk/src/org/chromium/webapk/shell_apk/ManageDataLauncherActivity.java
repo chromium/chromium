@@ -17,15 +17,12 @@ import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
 import android.graphics.drawable.Icon;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
-import androidx.annotation.RequiresApi;
 
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.webapk.lib.common.WebApkConstants;
@@ -156,7 +153,6 @@ public class ManageDataLauncherActivity extends Activity {
      * app's main activity will be used by default. This activity needs to define the MAIN action
      * and LAUNCHER category in order to attach the shortcut.
      */
-    @RequiresApi(Build.VERSION_CODES.N_MR1)
     private static ShortcutInfo createSiteSettingsShortcutInfo(
             Context context, String url, String providerPackage) {
         Intent siteSettingsIntent = new Intent(context, ManageDataLauncherActivity.class);
@@ -181,8 +177,6 @@ public class ManageDataLauncherActivity extends Activity {
      */
     public static void updateSiteSettingsShortcut(
             Context context, HostBrowserLauncherParams params) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) return;
-
         ShortcutManager shortcutManager = context.getSystemService(ShortcutManager.class);
 
         // Remove potentially existing shortcut if package does not support shortcuts.

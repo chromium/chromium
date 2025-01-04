@@ -17,7 +17,7 @@ TestSessionRestorationService::TestSessionRestorationService() = default;
 TestSessionRestorationService::~TestSessionRestorationService() = default;
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
+TestSessionRestorationService::TestingFactory
 TestSessionRestorationService::GetTestingFactory() {
   return base::BindRepeating(
       [](web::BrowserState*) -> std::unique_ptr<KeyedService> {

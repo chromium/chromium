@@ -432,15 +432,11 @@ struct AutocompleteMatch {
   // - If the match's keyword is known, it can be provided in `keyword`.
   //   Otherwise, it can be left empty and the template URL (if any) is
   //   determined from the destination's hostname.
-  // - If `normalize_search_terms` is true, the search terms in the final URL
-  //   will be converted to lowercase with extra whitespace characters
-  //   collapsed.
   static GURL GURLToStrippedGURL(const GURL& url,
                                  const AutocompleteInput& input,
                                  const TemplateURLService* template_url_service,
                                  const std::u16string& keyword,
-                                 const bool keep_search_intent_params,
-                                 const bool normalize_search_terms);
+                                 const bool keep_search_intent_params);
 
   // Sets the |match_in_scheme| and |match_in_subdomain| flags based on the
   // provided |url| and list of substring |match_positions|. |match_positions|

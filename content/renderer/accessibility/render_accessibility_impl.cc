@@ -399,7 +399,10 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
 
   // Ensure the next serialization comes immediately after the action is
   // complete, even if the document is still loading.
-  ScheduleImmediateAXUpdate();
+  // Note: the document could close as a result of the action.
+  if (ax_context_ && !GetMainDocument().IsNull()) {
+    ScheduleImmediateAXUpdate();
+  }
 }
 
 void RenderAccessibilityImpl::Reset(uint32_t reset_token) {

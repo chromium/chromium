@@ -9,20 +9,20 @@
 ] interface PaintRenderingContext2D {
     // state
     void save(); // push state on state stack
-    [RaisesException] void restore(); // pop state stack if top state was pushed by save, and restore state
+    [NoAllocDirectCall, RaisesException] void restore(); // pop state stack if top state was pushed by save, and restore state
     [MeasureAs=Canvas2DLayers, RuntimeEnabled=Canvas2dLayers, CallWith=ScriptState] void beginLayer(); // push state on state stack and creates bitmap for subsequent draw ops
     [MeasureAs=Canvas2DLayers, RuntimeEnabled=Canvas2dLayersWithOptions, CallWith=ScriptState, RaisesException] void beginLayer(BeginLayerOptions options); // push state on state stack and creates bitmap for subsequent draw ops
-    [RuntimeEnabled=Canvas2dLayers, RaisesException] void endLayer(); // pop state stack if top state was pushed by beginLayer, restore state and draw the bitmap
+    [NoAllocDirectCall, RuntimeEnabled=Canvas2dLayers, RaisesException] void endLayer(); // pop state stack if top state was pushed by beginLayer, restore state and draw the bitmap
     // Clear the canvas and reset the path
     void reset();
 
     // transformations (default transform is the identity matrix)
     [HighEntropy] void scale(unrestricted double x, unrestricted double y);
-    [HighEntropy] void rotate(unrestricted double angle);
+    [HighEntropy, NoAllocDirectCall] void rotate(unrestricted double angle);
     [HighEntropy] void translate(unrestricted double x, unrestricted double y);
     [HighEntropy] void transform(unrestricted double a, unrestricted double b, unrestricted double c, unrestricted double d, unrestricted double e, unrestricted double f);
-    void setTransform(unrestricted double a, unrestricted double b, unrestricted double c, unrestricted double d, unrestricted double e, unrestricted double f);
-    void resetTransform();
+    [HighEntropy] void setTransform(unrestricted double a, unrestricted double b, unrestricted double c, unrestricted double d, unrestricted double e, unrestricted double f);
+    [NoAllocDirectCall] void resetTransform();
     [RaisesException] void setTransform(optional DOMMatrixInit transform = {});
     DOMMatrix getTransform();
 
@@ -34,7 +34,7 @@
 
     // image smoothing
     attribute boolean imageSmoothingEnabled; // (default True)
-    [RuntimeEnabled=CanvasImageSmoothing] attribute ImageSmoothingQuality imageSmoothingQuality; // (default "low")
+    [RuntimeEnabled=CanvasImageSmoothing, MeasureAs=Canvas2DImageSmoothingQuality2] attribute ImageSmoothingQuality imageSmoothingQuality; // (default "low")
 
     // colors and styles (see also the CanvasDrawingStyles interface)
     [HighEntropy, SetterCallWith=Isolate, RaisesException=Setter, GetterCallWith=ScriptState] attribute any strokeStyle; // (default black)
@@ -51,23 +51,23 @@
     [HighEntropy] attribute DOMString shadowColor;
 
     // rects
-    [HighEntropy] void clearRect(unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
-    [HighEntropy] void fillRect(unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
-    [HighEntropy] void strokeRect(unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
+    [HighEntropy, NoAllocDirectCall] void clearRect(unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
+    [HighEntropy, NoAllocDirectCall] void fillRect(unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
+    [HighEntropy, NoAllocDirectCall] void strokeRect(unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
 
     // path API (see also CanvasPath)
-    [HighEntropy] void beginPath();
+    [HighEntropy, NoAllocDirectCall] void beginPath();
     [HighEntropy] void fill(optional CanvasFillRule winding);
     [HighEntropy] void fill(Path2D path, optional CanvasFillRule winding);
-    [HighEntropy] void stroke();
+    [HighEntropy, NoAllocDirectCall] void stroke();
     [HighEntropy] void stroke(Path2D path);
 
-    void clip(optional CanvasFillRule winding);
-    void clip(Path2D path, optional CanvasFillRule winding);
-    [HighEntropy, Measure] boolean isPointInPath(unrestricted double x, unrestricted double y, optional CanvasFillRule winding);
-    [HighEntropy, Measure] boolean isPointInPath(Path2D path, unrestricted double x, unrestricted double y, optional CanvasFillRule winding);
-    [HighEntropy, Measure] boolean isPointInStroke(unrestricted double x, unrestricted double y);
-    [HighEntropy, Measure] boolean isPointInStroke(Path2D path, unrestricted double x, unrestricted double y);
+    [HighEntropy] void clip(optional CanvasFillRule winding);
+    [HighEntropy] void clip(Path2D path, optional CanvasFillRule winding);
+    [HighEntropy, MeasureAs=Canvas2DIsPointInPath] boolean isPointInPath(unrestricted double x, unrestricted double y, optional CanvasFillRule winding);
+    [HighEntropy, MeasureAs=Canvas2DIsPointInPath] boolean isPointInPath(Path2D path, unrestricted double x, unrestricted double y, optional CanvasFillRule winding);
+    [HighEntropy, MeasureAs=Canvas2DIsPointInStroke] boolean isPointInStroke(unrestricted double x, unrestricted double y);
+    [HighEntropy, MeasureAs=Canvas2DIsPointInStroke] boolean isPointInStroke(Path2D path, unrestricted double x, unrestricted double y);
 
     // drawing images
     [RaisesException] void drawImage(CanvasImageSource image, unrestricted double x, unrestricted double y);

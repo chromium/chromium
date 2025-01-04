@@ -10,12 +10,15 @@ import android.graphics.Paint;
 import android.text.Layout;
 import android.text.style.BulletSpan;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 
 /**
  * A wrapper around Android's BulletSpan that provides default styling and adjusts the bullet
  * positioning to prevent it from being cut off.
  */
+@NullMarked
 public class ChromeBulletSpan extends BulletSpan {
     private int mXOffset;
 
@@ -42,7 +45,7 @@ public class ChromeBulletSpan extends BulletSpan {
             int start,
             int end,
             boolean first,
-            Layout l) {
+            @Nullable Layout l) {
         // Android cuts off the bullet points. Adjust the x-position so that the bullets aren't
         // cut off.
         super.drawLeadingMargin(

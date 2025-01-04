@@ -329,8 +329,11 @@ void LayoutView::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
                                                    mode);
     } else {
       DCHECK(!ancestor);
-      if (mode & kApplyRemoteMainFrameTransform)
-        GetFrameView()->MapLocalToRemoteMainFrame(transform_state);
+      if (mode &
+          (kApplyRemoteMainFrameTransform | kApplyRemoteViewportTransform)) {
+        GetFrameView()->MapLocalToRemoteMainFrame(
+            transform_state, mode & kApplyRemoteViewportTransform);
+      }
     }
   }
 }
@@ -352,9 +355,11 @@ void LayoutView::MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
       DCHECK(!ancestor);
       // Note that MapLocalToRemoteMainFrame is correct here because
       // transform_state will be set to kUnapplyInverseTransformDirection.
-      if ((mode & kApplyRemoteMainFrameTransform) &&
+      if ((mode &
+           (kApplyRemoteMainFrameTransform | kApplyRemoteViewportTransform)) &&
           GetFrame()->IsLocalRoot()) {
-        GetFrameView()->MapLocalToRemoteMainFrame(transform_state);
+        GetFrameView()->MapLocalToRemoteMainFrame(
+            transform_state, mode & kApplyRemoteViewportTransform);
       }
     }
   } else {
@@ -423,7 +428,8 @@ bool LayoutView::MapToVisualRectInAncestorSpaceInternal(
     PhysicalRect rect = PhysicalRect::EnclosingRect(
         transform_state.LastPlanarQuad().BoundingBox());
     bool retval = GetFrameView()->MapToVisualRectInRemoteRootFrame(
-        rect, !(visual_rect_flags & kDontApplyMainFrameOverflowClip));
+        rect, !(visual_rect_flags & kDontApplyMainFrameOverflowClip),
+        visual_rect_flags & kVisualRectApplyRemoteViewportTransform);
     transform_state.SetQuad(gfx::QuadF(gfx::RectF(rect)));
     return retval;
   }

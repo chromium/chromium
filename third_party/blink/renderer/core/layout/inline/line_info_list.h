@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_LINE_INFO_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_LINE_INFO_LIST_H_
 
@@ -34,13 +29,15 @@ class LineInfoList {
   // max_lines_`.
   LineInfo& operator[](wtf_size_t index) {
     DCHECK_LT(index, Size());
-    return line_infos_[(start_index_ + index) % max_lines_];
+    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+    return UNSAFE_TODO(line_infos_[(start_index_ + index) % max_lines_]);
   }
   // Out-of-bounds `index` will hit `DCHECK` and returns the value at `index %
   // max_lines_`.
   const LineInfo& operator[](wtf_size_t index) const {
     DCHECK_LT(index, Size());
-    return line_infos_[(start_index_ + index) % max_lines_];
+    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+    return UNSAFE_TODO(line_infos_[(start_index_ + index) % max_lines_]);
   }
   // If empty, this will hit `DCHECK`.
   LineInfo& Front() { return (*this)[0]; }

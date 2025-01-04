@@ -16,7 +16,6 @@ namespace base {
 
 namespace {
 
-
 internal::ThreadPoolImpl* GetThreadPoolImpl() {
   auto* instance = ThreadPoolInstance::Get();
   DCHECK(instance)

@@ -824,6 +824,10 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // commit is finished.
   void WaitForProtectedSequenceCompletion() const override;
 
+  bool MustWaitForCommitForTesting() const {
+    return !!commit_completion_event_;
+  }
+
   // MutatorHostClient implementation.
   bool IsElementInPropertyTrees(ElementId element_id,
                                 ElementListType list_type) const override;
@@ -865,7 +869,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void NotifyAnimationWorkletStateChange(AnimationWorkletMutationState state,
                                          ElementListType tree_type) override {}
 
-  void QueueImageDecode(const PaintImage& image,
+  void QueueImageDecode(const DrawImage& image,
                         base::OnceCallback<void(bool)> callback);
   void ImageDecodesFinished(const std::vector<std::pair<int, bool>>& results);
 
@@ -925,12 +929,11 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
     return base::AutoReset<bool>(&syncing_deltas_for_test_, true);
   }
 
-  bool WaitedForCommitForTesting() const {
-    return waited_for_protected_sequence_;
-  }
-
   // See CommitState::scrollers_clobbering_active_value_.
   void DropActiveScrollDeltaNextCommit(ElementId scroll_element);
+
+  // Causes gpu crash for testing.
+  void CrashGpuProcessForTesting();
 
  protected:
   LayerTreeHost(InitParams params, CompositorMode mode);
@@ -1082,8 +1085,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   bool in_paint_layer_contents_ = false;
 
-  bool in_apply_compositor_changes_ = false;
-
   // This is true if atleast one layer in the layer tree has a copy request. We
   // use this bool to decide whether we need to compute subtree has copy request
   // for every layer during property tree building.
@@ -1114,10 +1115,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // A list of callbacks that need to be invoked when they are processed.
   base::flat_map<uint32_t, ViewTransitionRequest::ViewTransitionCaptureCallback>
       view_transition_callbacks_;
-
-  // Set if WaitForCommitCompletion() was called before commit completes. Used
-  // for histograms.
-  mutable bool waited_for_protected_sequence_ = false;
 
   bool in_composite_for_test_ = false;
 

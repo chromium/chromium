@@ -14,13 +14,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
-import androidx.annotation.NonNull;
 import androidx.asynclayoutinflater.view.AsyncLayoutInflater;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * An implementation of ViewStub that inflates the view in a background thread. Callbacks are still
@@ -28,9 +29,10 @@ import org.chromium.base.TraceEvent;
  *
  * <p>TODO(crbug.com/40937701): Deprecate AsyncViewStub or make it per activity.
  */
+@NullMarked
 public class AsyncViewStub extends View implements AsyncLayoutInflater.OnInflateFinishedListener {
     private int mLayoutResource;
-    private View mInflatedView;
+    private @Nullable View mInflatedView;
 
     private AsyncLayoutInflater mAsyncLayoutInflater;
 
@@ -72,7 +74,8 @@ public class AsyncViewStub extends View implements AsyncLayoutInflater.OnInflate
     protected void dispatchDraw(Canvas canvas) {}
 
     @Override
-    public void onInflateFinished(@NonNull View view, int resId, ViewGroup parent) {
+    public void onInflateFinished(View view, int resId, @Nullable ViewGroup parent) {
+        assert parent != null;
         mInflatedView = view;
         replaceSelfWithView(view, parent);
         callListeners(view);
@@ -135,6 +138,7 @@ public class AsyncViewStub extends View implements AsyncLayoutInflater.OnInflate
     /**
      * @return the inflated view or null if inflation is not complete yet.
      */
+    @Nullable
     View getInflatedView() {
         return mInflatedView;
     }

@@ -462,11 +462,17 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Button to download summary model in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_SUMMARY_DOWNLOAD_BUTTON">
     Download
   </message>
+  <message desc="Accessibility label of the button to download summary and name creation model in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_SUMMARY_DOWNLOAD_BUTTON_ARIA_LABEL">
+    Download summary and name creation model
+  </message>
   <message desc="Label of the summary setting in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_SUMMARY_LABEL">
     Recording summary and name creation
   </message>
   <message desc="Link to more information about summary and name creation model." name="IDS_RECORDER_SETTINGS_OPTIONS_SUMMARY_LEARN_MORE_LINK">
     Learn more
+  </message>
+  <message desc="Accessibility label of the link to more information about summary and name creation model." name="IDS_RECORDER_SETTINGS_OPTIONS_SUMMARY_LEARN_MORE_LINK_ARIA_LABEL">
+    Learn more about summary and name creation
   </message>
   <message desc="Button when transcription model is downloading in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_TRANSCRIPTION_DOWNLOADING_BUTTON">
     Downloading…
@@ -476,6 +482,9 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   </message>
   <message desc="Button to download transcription model in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_TRANSCRIPTION_DOWNLOAD_BUTTON">
     Download
+  </message>
+  <message desc="Accessibility label of the transcription model download button in the settings." name="IDS_RECORDER_SETTINGS_OPTIONS_TRANSCRIPTION_DOWNLOAD_BUTTON_ARIA_LABEL">
+    Download transcription model
   </message>
   <message desc="Description of transcription error state in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_TRANSCRIPTION_ERROR_DESCRIPTION">
     Can’t download. Try again or restart your Chromebook.

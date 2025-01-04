@@ -612,28 +612,16 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
     const char* csp_frame_src;
     const char* sub_document_url;
     int expected_kCspWouldBlockIfWildcardDoesNotMatchWs;
-    int expected_kCspWouldBlockIfWildcardDoesNotMatchFtp;
   } test_cases[] = {
-      {"*", "http://example.com", 0, 0},
+      {"*", "http://example.com", 0},
       // Feature shouldn't be logged if matches explicitly.
-      {"ftp:*", "ftp://example.com", 0, 0},
-      {"ws:*", "ws://example.com", 0, 0},
-      {"wss:*", "wss://example.com", 0, 0},
-      // Feature should be logged if matched with wildcard.
-      {
-          "*",
-          "ftp://example.com",
-          0,
-          base::FeatureList::IsEnabled(
-              network::features::kCspStopMatchingWildcardDirectivesToFtp)
-              ? 0
-              : 1,
-      },
-      {"*", "ws://example.com", 1, 0},
-      {"*", "wss://example.com", 1, 0},
+      {"ftp:*", "ftp://example.com", 0},
+      {"ws:*", "ws://example.com", 0},
+      {"wss:*", "wss://example.com", 0},
+      {"*", "ws://example.com", 1},
+      {"*", "wss://example.com", 1},
   };
   int total_kCspWouldBlockIfWildcardDoesNotMatchWs = 0;
-  int total_kCspWouldBlockIfWildcardDoesNotMatchFtp = 0;
   for (const auto& test_case : test_cases) {
     GURL main_document_url = https_server().GetURL(
         "a.com",
@@ -656,9 +644,6 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
     CheckCounter(WebFeature::kCspWouldBlockIfWildcardDoesNotMatchWs,
                  total_kCspWouldBlockIfWildcardDoesNotMatchWs +=
                  test_case.expected_kCspWouldBlockIfWildcardDoesNotMatchWs);
-    CheckCounter(WebFeature::kCspWouldBlockIfWildcardDoesNotMatchFtp,
-                 total_kCspWouldBlockIfWildcardDoesNotMatchFtp +=
-                 test_case.expected_kCspWouldBlockIfWildcardDoesNotMatchFtp);
   }
 }
 

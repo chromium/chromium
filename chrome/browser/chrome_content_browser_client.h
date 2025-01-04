@@ -25,7 +25,6 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/startup_data.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/guest_view/buildflags/buildflags.h"
@@ -227,8 +226,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       std::vector<std::string>* additional_schemes) override;
   network::mojom::IPAddressSpace DetermineAddressSpaceFromURL(
       const GURL& url) override;
-  bool LogWebUICreated(const GURL& web_ui_url) override;
-  bool LogWebUIShown(const GURL& web_ui_url) override;
+  void LogWebUIUsage(
+      std::variant<content::WebUI*, GURL> webui_variant) override;
   bool IsWebUIAllowedToMakeNetworkRequests(const url::Origin& origin) override;
   bool IsHandledURL(const GURL& url) override;
   bool HasCustomSchemeHandler(content::BrowserContext* browser_context,
@@ -483,7 +482,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
                        bool* no_javascript_access) override;
   content::SpeechRecognitionManagerDelegate*
   CreateSpeechRecognitionManagerDelegate() override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   content::TtsControllerDelegate* GetTtsControllerDelegate() override;
 #endif
   void MaybeOverrideManifest(content::RenderFrameHost* render_frame_host,
@@ -552,11 +551,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       int child_process_id,
       content::PosixFileDescriptorInfo* mappings) override;
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void GetAdditionalMappedFilesForZygote(
-      base::CommandLine* command_line,
-      content::PosixFileDescriptorInfo* mappings) override;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #if BUILDFLAG(IS_WIN)
   bool PreSpawnChild(sandbox::TargetConfig* config,
                      sandbox::mojom::Sandbox sandbox_type,
@@ -912,7 +906,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   content::XrIntegrationClient* GetXrIntegrationClient() override;
 #endif
 
-  void BindBrowserControlInterface(mojo::ScopedMessagePipeHandle pipe) override;
   bool ShouldInheritCrossOriginEmbedderPolicyImplicitly(
       const GURL& url) override;
   bool ShouldServiceWorkerInheritPolicyContainerFromCreator(
@@ -1104,6 +1097,18 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       override;
 #endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 
+  // Binds to a new instance of
+  // `language_detection::ContentLanguageDetectionDriver` which receives the
+  // model from Optimization Guide. The instance becomes owned
+  // `context_user_data` to ensure it does not outlive the execution context for
+  // which it was created.
+  void BindLanguageDetectionDriver(
+      content::BrowserContext* browser_context,
+      base::SupportsUserData* context_user_data,
+      mojo::PendingReceiver<
+          language_detection::mojom::ContentLanguageDetectionDriver> receiver)
+      override;
+
 #if !BUILDFLAG(IS_ANDROID)
   void QueryInstalledWebAppsByManifestId(
       const GURL& frame_url,
@@ -1128,6 +1133,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void OnTracingServiceStarted() override;
   void OnTracingServiceStopped() override;
 #endif
+
+  std::unique_ptr<content::WebUIController> OverrideForInternalWebUI(
+      content::WebUI* web_ui,
+      const GURL& url) override;
 
   void SetSamplingProfiler(
       std::unique_ptr<MainThreadStackSamplingProfiler> sampling_profiler);
@@ -1353,21 +1362,5 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   base::WeakPtrFactory<ChromeContentBrowserClient> weak_factory_{this};
 };
-
-// DO NOT USE. Functions in this namespace are only for the migration of DIPS to
-// the content/ folder. They will be deleted soon.
-//
-// TODO: crbug.com/369813097 - Remove this after DIPS migrates to //content.
-namespace dips_move {
-void GrantCookieAccessDueToHeuristic(content::BrowserContext* browser_context,
-                                     const net::SchemefulSite& top_frame_site,
-                                     const net::SchemefulSite& accessing_site,
-                                     base::TimeDelta ttl,
-                                     bool ignore_schemes);
-bool IsFullCookieAccessAllowed(content::BrowserContext* browser_context,
-                               content::WebContents* web_contents,
-                               const GURL& url,
-                               const blink::StorageKey& storage_key);
-}  // namespace dips_move
 
 #endif  // CHROME_BROWSER_CHROME_CONTENT_BROWSER_CLIENT_H_

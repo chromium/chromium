@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 
 #include <algorithm>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -14,6 +15,8 @@
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/char_iterator.h"
+#include "base/i18n/unicodestring.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -24,6 +27,8 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_regex_provider.h"
 #include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "third_party/icu/source/common/unicode/ustring.h"
+#include "third_party/icu/source/i18n/unicode/translit.h"
 
 namespace autofill {
 
@@ -121,13 +126,15 @@ bool HasMiddleNameInitialsCharacteristics(const std::string& middle_name) {
 bool HasHispanicLatinxNameCharacteristics(const std::string& name) {
   // Check if the name contains one of the most common Hispanic/Latinx
   // last names.
-  if (IsPartialMatch(name, RegEx::kMatchHispanicCommonNameCharacteristics))
+  if (IsPartialMatch(name, RegEx::kMatchHispanicCommonNameCharacteristics)) {
     return true;
+  }
 
   // Check if it contains a last name conjunction.
   if (IsPartialMatch(name,
-                     RegEx::kMatchHispanicLastNameConjuctionCharacteristics))
+                     RegEx::kMatchHispanicLastNameConjuctionCharacteristics)) {
     return true;
+  }
 
   // If none of the above, there is not sufficient reason to assume this is a
   // Hispanic/Latinx name.
@@ -143,8 +150,9 @@ ParseValueByRegularExpression(const std::string& value,
 
 std::optional<base::flat_map<std::string, std::string>>
 ParseValueByRegularExpression(const std::string& value, const RE2* regex) {
-  if (!regex || !regex->ok())
+  if (!regex || !regex->ok()) {
     return std::nullopt;
+  }
 
   // Get the number of capturing groups in the expression.
   // Note, the capturing group for the full match is not counted.
@@ -164,8 +172,9 @@ ParseValueByRegularExpression(const std::string& value, const RE2* regex) {
 
   // One capturing group is not counted since it holds the full match.
   if (!RE2::FullMatchN(value, *regex, match_results_ptr.data(),
-                       number_of_capturing_groups - 1))
+                       number_of_capturing_groups - 1)) {
     return std::nullopt;
+  }
 
   // If successful, write the values into the results map.
   // Note, the capturing group for the full match creates an off-by-one scenario
@@ -193,8 +202,9 @@ bool IsPartialMatch(const std::string& value, const RE2* expression) {
 std::vector<std::string> GetAllPartialMatches(const std::string& value,
                                               const std::string& pattern) {
   const RE2* regex = Re2RegExCache::Instance()->GetRegEx(pattern);
-  if (!regex || !regex->ok())
+  if (!regex || !regex->ok()) {
     return {};
+  }
   std::string_view input(value);
   std::string match;
   std::vector<std::string> matches;
@@ -347,12 +357,14 @@ SortedTokenComparisonResult CompareSortedTokens(
                                  first.end(), cmp_normalized);
 
   // If first is both a superset and a subset it is the same.
-  if (is_supserset && is_subset)
+  if (is_supserset && is_subset) {
     return SortedTokenComparisonResult(SortedTokenComparisonStatus::kMatch);
+  }
 
   // If it is neither, both are distinct.
-  if (!is_supserset && !is_subset)
+  if (!is_supserset && !is_subset) {
     return SortedTokenComparisonResult(SortedTokenComparisonStatus::kDistinct);
+  }
 
   std::vector<AddressToken> additional_tokens;
 
@@ -415,6 +427,44 @@ std::vector<AddressToken> TokenizeValue(const std::u16string value) {
   });
 
   return tokens;
+}
+
+std::u16string TransliterateAlternativeName(const std::u16string& value,
+                                  TransliterationId id) {
+  if (value.empty()) {
+    return value;
+  }
+
+  std::string transliteration_rule;
+  switch (id) {
+    case TransliterationId::kKatakanaToHiragana:
+      transliteration_rule = "Katakana-Hiragana";
+      break;
+    case TransliterationId::kHiraganaToKatakana:
+      transliteration_rule = "Hiragana-Katakana";
+      break;
+  }
+
+  UErrorCode err = U_ZERO_ERROR;
+  std::unique_ptr<icu::Transliterator> transliterator(
+      icu::Transliterator::createInstance(transliteration_rule.c_str(),
+                                          UTRANS_FORWARD, err));
+  if (U_FAILURE(err)) {
+    // TODO(crbug.com/359768803): Remove the metric recording once we confirm
+    // that transliteration initialization never fails.
+    // This metric records the status of the transliterator initialization. It
+    // is set to false if the initialization fails.
+    base::UmaHistogramBoolean(
+        "Autofill.Filling.AlternativeNameTransliteratorInitStatus", false);
+    return value;
+  }
+  icu::UnicodeString transliterated_value(value.c_str());
+  transliterator->transliterate(transliterated_value);
+  // The metric is set to true if the transliterator initialization was
+  // successful.
+  base::UmaHistogramBoolean(
+      "Autofill.Filling.AlternativeNameTransliteratorInitStatus", true);
+  return base::i18n::UnicodeStringToString16(transliterated_value);
 }
 
 }  // namespace autofill

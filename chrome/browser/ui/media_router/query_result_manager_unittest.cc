@@ -42,8 +42,7 @@ class MockObserver : public MediaSinkWithCastModesObserver {
 
 class QueryResultManagerTest : public ::testing::Test {
  public:
-  QueryResultManagerTest()
-      : mock_router_(), query_result_manager_(&mock_router_) {}
+  QueryResultManagerTest() : query_result_manager_(&mock_router_) {}
 
   QueryResultManagerTest(const QueryResultManagerTest&) = delete;
   QueryResultManagerTest& operator=(const QueryResultManagerTest&) = delete;
@@ -82,12 +81,14 @@ class QueryResultManagerTest : public ::testing::Test {
 
 // Requires that the elements of |expected| are unique.
 MATCHER_P(VectorSetEquals, expected, "") {
-  if (expected.size() != arg.size())
+  if (expected.size() != arg.size()) {
     return false;
+  }
 
   for (size_t i = 0; i < expected.size(); ++i) {
-    if (!base::Contains(arg, expected[i]))
+    if (!base::Contains(arg, expected[i])) {
       return false;
+    }
   }
   return true;
 }

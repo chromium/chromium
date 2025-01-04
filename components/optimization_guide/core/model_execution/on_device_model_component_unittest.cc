@@ -53,7 +53,8 @@ class OnDeviceModelComponentTest : public testing::Test {
 
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kOptimizationGuideModelExecution, {}},
-         {features::kOptimizationGuideOnDeviceModel,
+         {features::kOptimizationGuideOnDeviceModel, {}},
+         {features::kOnDeviceModelPerformanceParams,
           {{"compatible_on_device_performance_classes", "3,4,5,6"}}}},
         /*disabled_features=*/{});
   }

@@ -9,11 +9,13 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
     SyncBrowserProxy {
   private impressionCount_: number = 0;
   private storedAccounts_: StoredAccount[] = [];
+  private profileAvatarURL_: string = '';
   private syncStatus_: SyncStatus = {
     signedInState: SignedInState.SYNCING,
     signedInUsername: 'fakeUsername',
     statusAction: StatusAction.NO_ACTION,
   };
+
 
   constructor() {
     super([
@@ -21,6 +23,7 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
       'didNavigateToSyncPage',
       'getPromoImpressionCount',
       'getStoredAccounts',
+      'getProfileAvatar',
       'getSyncStatus',
       'incrementPromoImpressionCount',
       'pauseSync',
@@ -48,6 +51,11 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
   getStoredAccounts(): Promise<StoredAccount[]> {
     this.methodCalled('getStoredAccounts');
     return Promise.resolve(this.storedAccounts_);
+  }
+
+  getProfileAvatar() {
+    this.methodCalled('getProfileAvatar');
+    return Promise.resolve(this.profileAvatarURL_);
   }
 
   signOut(deleteProfile: boolean): void {

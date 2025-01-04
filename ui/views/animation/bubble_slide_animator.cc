@@ -81,8 +81,9 @@ void BubbleSlideAnimator::AnimationProgressed(const gfx::Animation* animation) {
 
   const gfx::Rect current_bounds = gfx::Tween::RectValueBetween(
       value, starting_bubble_bounds_, target_bubble_bounds_);
-  if (current_bounds == target_bubble_bounds_ && desired_anchor_view_)
+  if (current_bounds == target_bubble_bounds_ && desired_anchor_view_) {
     bubble_delegate_->SetAnchorView(desired_anchor_view_);
+  }
 
   bubble_delegate_->GetWidget()->SetBounds(current_bounds);
   slide_progressed_callbacks_.Notify(this, value);

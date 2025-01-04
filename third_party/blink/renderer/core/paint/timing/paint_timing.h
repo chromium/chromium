@@ -29,6 +29,11 @@ namespace blink {
 struct DOMPaintTimingInfo;
 class LocalFrame;
 
+using PaintTimingCallback =
+    base::OnceCallback<void(const base::TimeTicks&, const DOMPaintTimingInfo&)>;
+
+using OptionalPaintTimingCallback = std::optional<PaintTimingCallback>;
+
 // PaintTiming is responsible for tracking paint-related timings for a given
 // document.
 class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,

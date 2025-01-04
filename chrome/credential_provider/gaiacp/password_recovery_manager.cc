@@ -10,17 +10,13 @@
 #include "chrome/credential_provider/gaiacp/password_recovery_manager.h"
 
 #include <windows.h>
-
-#include <lm.h>  // Needed for LSA_UNICODE_STRING
-#include <process.h>
 #include <winternl.h>
 
-#include <string_view>
-
-#define _NTDEF_  // Prevent redefition errors, must come after <winternl.h>
-#include <ntsecapi.h>  // For POLICY_ALL_ACCESS types
+#include <lm.h>
+#include <process.h>
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/containers/span.h"
@@ -30,6 +26,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/win/ntsecapi_shim.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
 #include "chrome/credential_provider/gaiacp/logging.h"

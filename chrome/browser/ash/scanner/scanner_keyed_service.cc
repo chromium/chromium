@@ -31,7 +31,6 @@
 #include "google_apis/common/request_sender.h"
 #include "google_apis/drive/drive_api_url_generator.h"
 #include "google_apis/gaia/core_account_id.h"
-#include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -78,6 +77,11 @@ ScannerKeyedService::ScannerKeyedService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<manta::ScannerProvider> scanner_provider)
     : identity_manager_(identity_manager),
+      // TODO: crbug.com/38176766 - Add checks in this config.
+      access_checker_(specialized_features::FeatureAccessConfig(),
+                      /*prefs=*/nullptr,
+                      /*identity_manager=*/nullptr,
+                      /*variations_service=*/nullptr),
       scanner_provider_(std::move(scanner_provider)) {
   if (identity_manager_ != nullptr) {
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner =
@@ -108,8 +112,9 @@ ScannerKeyedService::ScannerKeyedService(
 
 ScannerKeyedService::~ScannerKeyedService() = default;
 
-ash::ScannerSystemState ScannerKeyedService::GetSystemState() const {
-  return system_state_provider_.GetSystemState();
+specialized_features::FeatureAccessFailureSet
+ScannerKeyedService::CheckFeatureAccess() const {
+  return access_checker_.Check();
 }
 
 void ScannerKeyedService::FetchActionsForImage(
@@ -152,14 +157,6 @@ drive::DriveServiceInterface* ScannerKeyedService::GetDriveService() {
 
 google_apis::RequestSender* ScannerKeyedService::GetGoogleApisRequestSender() {
   return request_sender_.get();
-}
-
-bool ScannerKeyedService::IsGoogler() {
-  return identity_manager_ != nullptr &&
-         gaia::IsGoogleInternalAccountEmail(
-             identity_manager_
-                 ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-                 .email);
 }
 
 void ScannerKeyedService::Shutdown() {}

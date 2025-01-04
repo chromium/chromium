@@ -143,6 +143,7 @@ NewFeatureBadgeView* NewIPHBadgeView() {
   NSLayoutConstraint* _iconVisibleConstraint;
   NSLayoutConstraint* _iconCenterAlignment;
   NSLayoutConstraint* _iconTopAlignment;
+  NSLayoutConstraint* _textTopAlignment;
   NSLayoutConstraint* _iconBackgroundDefaultWidthConstraint;
   NSLayoutConstraint* _iconBackgroundCustomWidthConstraint;
 
@@ -218,6 +219,13 @@ NewFeatureBadgeView* NewIPHBadgeView() {
                        constant:kIconTopAlignmentVerticalSpacing];
     [self updateIconAlignment];
 
+    // This constraint is not enabled by default and is set by
+    // `setTextLabelMarginTop`.
+    _textLabelMarginTop = 0.;
+    _textTopAlignment = [self.textLabel.topAnchor
+        constraintEqualToAnchor:_textStackView.topAnchor
+                       constant:_textLabelMarginTop];
+
     _iconBackgroundDefaultWidthConstraint = [_iconBackground.widthAnchor
         constraintEqualToConstant:kTableViewIconImageSize];
     _iconBackgroundDefaultWidthConstraint.active = YES;
@@ -270,6 +278,14 @@ NewFeatureBadgeView* NewIPHBadgeView() {
     }
   }
   return self;
+}
+
+- (void)setTextLabelMarginTop:(CGFloat)marginTop {
+  _textLabelMarginTop = marginTop;
+  _textTopAlignment.constant = _textLabelMarginTop;
+  _textTopAlignment.active = YES;
+  [self.textLabel setNeedsUpdateConstraints];
+  [self.textStackView setNeedsLayout];
 }
 
 - (void)setIconImage:(UIImage*)image
@@ -400,6 +416,7 @@ NewFeatureBadgeView* NewIPHBadgeView() {
   [self setDetailText:nil];
   [self setBadgeType:BadgeType::kNone];
   [self updateIconBackgroundWidthToFitContent:NO];
+  _textTopAlignment.active = NO;
 }
 
 #pragma mark - Private

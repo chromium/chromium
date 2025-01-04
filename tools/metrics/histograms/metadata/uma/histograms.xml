@@ -59,7 +59,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Histogram.MismatchedConstructionArguments"
-    enum="HistogramNameHash" expires_after="2025-03-30">
+    enum="HistogramNameHash" expires_after="2025-06-08">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -162,7 +162,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.CleanExitBeaconConsistency3"
-    enum="UmaCleanExitConsistency3" expires_after="2025-04-06">
+    enum="UmaCleanExitConsistency3" expires_after="2025-06-08">
   <owner>caitlinfischer@google.com</owner>
   <owner>justincohen@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -193,7 +193,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UMA.ClientIdCleared" enum="Boolean" expires_after="2025-04-13">
+<histogram name="UMA.ClientIdCleared" enum="Boolean" expires_after="2025-06-29">
   <owner>pdyson@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -262,7 +262,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="UMA.DriveIs{Attribute}Result" enum="OptionalBoolRecord"
     expires_after="2025-02-28">
   <owner>spvw@chromium.org</owner>
-  <owner>chrome-catan@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
   <summary>
     Whether the hard drive containing either the user profile or chrome binary
     was able to be queried for whether it is {Attribute}, and if so, the result
@@ -489,19 +489,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UMA.MetricsService.MaybeCleanUpAndStoreFinalizedLog.Time"
-    units="ms" expires_after="2025-02-28">
-  <owner>lucnguyen@google.com</owner>
-  <owner>src/base/metrics/OWNERS</owner>
-  <summary>
-    The amount of time the main thread spends on storing a finalized async log
-    and marking its unlogged samples as logged. I.e., the run time of
-    MetricsService::MaybeCleanUpAndStoreFinalizedLog(). This is not emitted if
-    the async log is not stored (see the UMA.MetricsService.ShouldStoreAsyncLog
-    histogram).
-  </summary>
-</histogram>
-
 <histogram name="UMA.MetricsService.OnBackgroundedScopedTerminationChecker"
     enum="ScopedTerminationCheckerStatus" expires_after="2025-02-28">
   <owner>lucnguyen@google.com</owner>
@@ -577,30 +564,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UMA.MetricsService.PeriodicOngoingLog.ReplyTime" units="ms"
-    expires_after="2025-02-28">
-  <owner>lucnguyen@google.com</owner>
-  <owner>src/base/metrics/OWNERS</owner>
-  <summary>
-    The time it took between posting a task to finalize a periodic ongoing log,
-    and when the reply task was run (on the main thread) to store the finalized
-    log. This is only emitted if the periodic ongoing log was created
-    asynchronously.
-  </summary>
-</histogram>
-
-<histogram name="UMA.MetricsService.ShouldStoreAsyncLog" enum="Boolean"
-    expires_after="2025-02-28">
-  <owner>lucnguyen@google.com</owner>
-  <owner>src/base/metrics/OWNERS</owner>
-  <summary>
-    Whether a log that was created asynchronously is going to be stored. An
-    async log will not be stored if a synchronous log was created while the
-    async one was being finalized. Emitted every time the
-    MetricsService::MaybeCleanUpAndStoreFinalizedLog() callback runs.
-  </summary>
-</histogram>
-
 <histogram name="UMA.MetricsService.SnapshotDeltasTime" units="ms"
     expires_after="2025-05-04">
   <owner>lucnguyen@google.com</owner>
@@ -641,7 +604,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="UMA.PersistentAllocator.EarlyHistograms.{PersistentAllocatorType}"
-    units="histograms" expires_after="2025-04-06">
+    units="histograms" expires_after="2025-06-08">
   <owner>rogerm@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -652,7 +615,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.PersistentAllocator.{PersistentAllocatorType}.UsedPct"
-    units="%" expires_after="2025-04-13">
+    units="%" expires_after="2025-06-15">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -818,7 +781,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="UMA.SeekPenaltyResult.{Implementation}"
     enum="OptionalBoolRecord" expires_after="2025-02-28">
   <owner>spvw@chromium.org</owner>
-  <owner>chrome-catan@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
   <summary>
     Whether the hard drive containing either the user profile or chrome binary
     was able to be queried for seek delay using the {Implementation}
@@ -993,7 +956,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.TruncatedEvents.UserAction" units="events"
-    expires_after="2025-05-25">
+    expires_after="2025-06-08">
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>

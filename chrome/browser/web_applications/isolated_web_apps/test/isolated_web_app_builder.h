@@ -17,6 +17,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
 #include "base/version.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
@@ -158,6 +159,9 @@ class BundledIsolatedWebApp {
   base::expected<IsolatedWebAppUrlInfo, std::string> Install(Profile* profile);
   base::expected<IsolatedWebAppUrlInfo, std::string> TrustBundleAndInstall(
       Profile* profile);
+  base::expected<IsolatedWebAppUrlInfo, std::string> InstallWithSource(
+      Profile* profile,
+      IsolatedWebAppInstallSource src_source);
 
  private:
   web_package::SignedWebBundleId web_bundle_id_;

@@ -48,7 +48,8 @@ IN_PROC_BROWSER_TEST_F(EventBasedLogManagerBrowserTest,
   EXPECT_FALSE(event_observers_map.empty());
   EXPECT_THAT(event_observers_map,
               UnorderedElementsAreArray(
-                  {Key(ash::reporting::TriggerEventType::OS_UPDATE_FAILED)}));
+                  {Key(ash::reporting::TriggerEventType::OS_UPDATE_FAILED),
+                   Key(ash::reporting::TriggerEventType::FATAL_CRASH)}));
 }
 
 IN_PROC_BROWSER_TEST_F(EventBasedLogManagerBrowserTest,

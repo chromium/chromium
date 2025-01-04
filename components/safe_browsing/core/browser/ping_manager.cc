@@ -250,8 +250,21 @@ void PingManager::OnURLLoaderComplete(
   auto it = safebrowsing_reports_.find(source);
   CHECK(it != safebrowsing_reports_.end(), base::NotFatalUntil::M130);
   safebrowsing_reports_.erase(it);
+  if (!on_url_loader_complete_callback_.is_null()) {
+    std::move(on_url_loader_complete_callback_).Run();
+  }
 }
 
+void PingManager::OnSafeBrowsingHitURLLoaderComplete(
+    network::SimpleURLLoader* source,
+    std::unique_ptr<std::string> response_body) {
+  int response_code = source->ResponseInfo() && source->ResponseInfo()->headers
+                          ? source->ResponseInfo()->headers->response_code()
+                          : 0;
+  RecordHttpResponseOrErrorCode("SafeBrowsing.HitReport.NetworkResult",
+                                source->NetError(), response_code);
+  OnURLLoaderComplete(source, std::move(response_body));
+}
 void PingManager::OnThreatDetailsReportURLLoaderComplete(
     network::SimpleURLLoader* source,
     bool has_access_token,
@@ -259,8 +272,11 @@ void PingManager::OnThreatDetailsReportURLLoaderComplete(
   int response_code = source->ResponseInfo() && source->ResponseInfo()->headers
                           ? source->ResponseInfo()->headers->response_code()
                           : 0;
-  std::string metric = "SafeBrowsing.ClientSafeBrowsingReport.NetworkResult.";
-  std::string suffix = (has_access_token ? "YesAccessToken" : "NoAccessToken");
+  std::string metric = "SafeBrowsing.ClientSafeBrowsingReport.NetworkResult";
+  std::string suffix =
+      (has_access_token ? ".YesAccessToken" : ".NoAccessToken");
+  RecordHttpResponseOrErrorCode(metric.c_str(), source->NetError(),
+                                response_code);
   RecordHttpResponseOrErrorCode((metric + suffix).c_str(), source->NetError(),
                                 response_code);
   OnURLLoaderComplete(source, std::move(response_body));
@@ -290,8 +306,8 @@ void PingManager::ReportSafeBrowsingHit(
 
   report_ptr->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
-      base::BindOnce(&PingManager::OnURLLoaderComplete, base::Unretained(this),
-                     report_ptr.get()));
+      base::BindOnce(&PingManager::OnSafeBrowsingHitURLLoaderComplete,
+                     base::Unretained(this), report_ptr.get()));
   safebrowsing_reports_.insert(std::move(report_ptr));
 
   // The following is to log this HitReport on any open chrome://safe-browsing
@@ -602,6 +618,11 @@ void PingManager::SetTokenFetcherForTesting(
 void PingManager::SetHatsDelegateForTesting(
     std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate) {
   hats_delegate_ = std::move(hats_delegate);
+}
+
+void PingManager::SetOnURLLoaderCompleteCallbackForTesting(
+    base::OnceCallback<void()> callback) {
+  on_url_loader_complete_callback_ = std::move(callback);
 }
 
 }  // namespace safe_browsing

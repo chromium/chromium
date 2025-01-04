@@ -6,6 +6,8 @@ package org.chromium.components.feature_engagement;
 
 import androidx.annotation.StringDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -64,7 +66,6 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.SHOPPING_LIST_SAVE_FLOW_FEATURE,
     FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE,
     FeatureConstants.TAB_SWITCHER_BUTTON_SWITCH_INCOGNITO,
-    FeatureConstants.TAB_SWITCHER_FLOATING_ACTION_BUTTON,
     FeatureConstants.FEED_CARD_MENU_FEATURE,
     FeatureConstants.IDENTITY_DISC_FEATURE,
     FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE,
@@ -105,13 +106,13 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.VIDEO_TUTORIAL_NTP_SUMMARY_FEATURE,
     FeatureConstants.VIDEO_TUTORIAL_NTP_VOICE_SEARCH_FEATURE,
     FeatureConstants.VIDEO_TUTORIAL_TRY_NOW_FEATURE,
-    FeatureConstants.PRICE_DROP_NTP_FEATURE,
     FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE,
     FeatureConstants.IPH_RTL_GESTURE_NAVIGATION,
     FeatureConstants.TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE,
     FeatureConstants.TAB_GROUP_SYNC_ON_STRIP_FEATURE,
 })
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 public @interface FeatureConstants {
     String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_NEW_TAB_FEATURE =
             "IPH_AdaptiveButtonInTopToolbarCustomization_NewTab";
@@ -230,9 +231,6 @@ public @interface FeatureConstants {
      */
     String TAB_SWITCHER_BUTTON_SWITCH_INCOGNITO = "IPH_TabSwitcherButtonSwitchIncognito";
 
-    /** An IPH feature to show a highlight on the floating action button in the tab switcher. */
-    String TAB_SWITCHER_FLOATING_ACTION_BUTTON = "IPH_TabSwitcherFloatingActionButton";
-
     /** An IPH feature to show a card item on grid tab switcher to educate drag-and-drop. */
     String TAB_GROUPS_DRAG_AND_DROP_FEATURE = "IPH_TabGroupsDragAndDrop";
 
@@ -338,9 +336,6 @@ public @interface FeatureConstants {
 
     /** An IPH feature to inform users about the Webnotes Stylize feature in Sharing Hub. */
     String SHARING_HUB_WEBNOTES_STYLIZE_FEATURE = "IPH_SharingHubWebnotesStylize";
-
-    /** An IPH feature to inform users that a price drop has occurred in any of their open tabs */
-    String PRICE_DROP_NTP_FEATURE = "IPH_PriceDropNTP";
 
     /**
      * An IPH feature to inform users that tabs from another synced device can be restored on FRE.

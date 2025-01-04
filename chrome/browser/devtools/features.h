@@ -73,6 +73,7 @@ BASE_DECLARE_FEATURE(kDevToolsSharedProcessInfobar);
 BASE_DECLARE_FEATURE(kDevToolsVeLogging);
 extern const base::FeatureParam<bool> kDevToolsVeLoggingTesting;
 
+BASE_DECLARE_FEATURE(kDevToolsAnimationStylesInStylesTab);
 }  // namespace features
 
 #endif  // CHROME_BROWSER_DEVTOOLS_FEATURES_H_

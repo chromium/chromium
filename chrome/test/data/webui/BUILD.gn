@@ -97,11 +97,6 @@ source_set("browser_tests") {
     sources += [ "print_preview/print_preview_browsertest.cc" ]
   }
 
-  if (enable_webui_certificate_viewer) {
-    sources +=
-        [ "certificate_viewer_dialog/certificate_viewer_dialog_browsertest.cc" ]
-  }
-
   if (chrome_root_store_cert_management_ui) {
     sources += [ "certificate_manager/certificate_manager_browsertest.cc" ]
   }
@@ -242,13 +237,18 @@ source_set("browser_tests") {
       "//chrome/browser/ui/webui/ash/extended_updates",
       "//chrome/browser/ui/webui/ash/login",
       "//chrome/browser/ui/webui/ash/settings:settings",
-      "//chromeos/ash/components/standalone_browser",
       "//components/manta",
     ]
   }
   if (enable_compose) {
     sources += [ "compose/compose_browsertest.cc" ]
     deps += [ "//components/compose/core/browser:features" ]
+  }
+
+  if (enable_webui_certificate_viewer) {
+    sources +=
+        [ "certificate_viewer_dialog/certificate_viewer_dialog_browsertest.cc" ]
+    deps += [ "//chrome/browser/net:server_certificate_database_test_support" ]
   }
 }
 
@@ -298,6 +298,7 @@ source_set("interactive_ui_tests") {
 
   deps = [
     "//chrome/test:test_support",
+    "//components/history_clusters/core",
     "//components/password_manager/content/common",
     "//components/power_bookmarks/core:features",
     "//components/search",
@@ -596,7 +597,6 @@ generate_grd("build_grd") {
   if (is_chromeos_ash) {
     deps += [
       "chromeos:build_grdp",
-      "chromeos:build_web_ui_test_mojo_grdp",
       "chromeos:build_web_ui_test_mojo_lite_grdp",
       "chromeos/ash_common:build_grdp",
       "chromeos/ash_common/cr_elements:build_grdp",
@@ -664,7 +664,6 @@ generate_grd("build_grd") {
       "$target_gen_dir/chromeos/os_feedback_ui/resources.grdp",
       "$target_gen_dir/chromeos/shortcut_customization/resources.grdp",
       "$target_gen_dir/chromeos/web_ui_test_mojo_lite_resources.grdp",
-      "$target_gen_dir/chromeos/web_ui_test_mojo_resources.grdp",
       "$root_gen_dir/ui/file_manager/tests_resources.grdp",
       "$root_gen_dir/ui/file_manager/tests_gen_resources.grdp",
     ]

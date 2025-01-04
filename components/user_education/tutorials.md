@@ -134,7 +134,7 @@ If your tutorial launches from an IPH, you can test it any of the ways you could
 test an IPH, suggestions are [in the documentation](./feature-promos.md).
 
 You can also launch your Tutorial directly from the tester page
-(chrome://internals/user-education). Note that unlike IPH, you do not need to
+(chrome://user-education-internals). Note that unlike IPH, you do not need to
 have the starting point of the tutorial present when you click the "Launch"
 button; you merely need to be able to bring it up in 20-30 seconds. The tutorial
 will start as soon as the anchor view for the first bubble of the tutorial

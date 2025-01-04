@@ -92,6 +92,12 @@ export class SettingsSyncAccountControlElement extends
 
       storedAccounts_: Object,
 
+      profileAvatarURL_: {
+        type: String,
+        value: null,
+        observer: 'handleUpdateAvatar_',
+      },
+
       shownAccount_: Object,
 
       showingPromo: {
@@ -158,6 +164,7 @@ export class SettingsSyncAccountControlElement extends
   promoSecondaryLabelWithNoAccount: string;
   private syncing_: boolean;
   private storedAccounts_: StoredAccount[];
+  private profileAvatarURL_: string;
   private shownAccount_: StoredAccount|null;
   showingPromo: boolean;
   embeddedInSubpage: boolean;
@@ -174,8 +181,14 @@ export class SettingsSyncAccountControlElement extends
 
     this.syncBrowserProxy_.getStoredAccounts().then(
         this.handleStoredAccounts_.bind(this));
+
+    this.syncBrowserProxy_.getProfileAvatar().then(
+        this.handleUpdateAvatar_.bind(this));
+
     this.addWebUiListener(
         'stored-accounts-updated', this.handleStoredAccounts_.bind(this));
+    this.addWebUiListener(
+        'profile-avatar-changed', this.handleUpdateAvatar_.bind(this));
   }
 
   /**
@@ -243,12 +256,40 @@ export class SettingsSyncAccountControlElement extends
         email;
   }
 
+  // Determines whether the subtitle should show account specific information or
+  // not. This matters because showing account specific information needs to be
+  // trimmed using ellipsis for potentially long texts, whereas fixed
+  // information needs to be fully displayed regardless of the length.
+  private shouldShowSubtitleWithAccountInfoText_() {
+    return loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') &&
+        this.syncStatus.signedInState === SignedInState.WEB_ONLY_SIGNED_IN;
+  }
+
+  private getAccountAwareSigninButtonLabel_(
+      accountAwareSigninButtonLabel: string, givenName: string): string {
+    return loadTimeData.substituteString(
+        accountAwareSigninButtonLabel, givenName);
+  }
+
   private getTurnOnSyncLabel_(peopleSignIn: string, turnOnSync: string):
       string {
     return loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') ?
         turnOnSync :
         peopleSignIn;
   }
+
+
+  private getProfileImageSrc_(image: string|null, profileAvatarURL: string):
+      string {
+    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') &&
+        (this.syncStatus.signedInState === SignedInState.WEB_ONLY_SIGNED_IN)) {
+      return profileAvatarURL;
+    }
+
+    // image can be undefined if the account has not set an avatar photo.
+    return image || 'chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE';
+  }
+
 
   private getAccountImageSrc_(image: string|null): string {
     // image can be undefined if the account has not set an avatar photo.
@@ -292,7 +333,12 @@ export class SettingsSyncAccountControlElement extends
   private getAvatarRowTitle_(
       accountName: string, syncErrorLabel: string,
       syncPasswordsOnlyErrorLabel: string, authErrorLabel: string,
-      disabledLabel: string): string {
+      disabledLabel: string, webOnlySignedInAccountRowTitle: string): string {
+    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') &&
+        this.syncStatus.signedInState === SignedInState.WEB_ONLY_SIGNED_IN) {
+      return webOnlySignedInAccountRowTitle;
+    }
+
     if (this.syncStatus.disabled) {
       return disabledLabel;
     }
@@ -347,7 +393,21 @@ export class SettingsSyncAccountControlElement extends
    * has sync enabled or if the property to hide the banner was explicitly set.
    */
   private shouldHideBanner_(): boolean {
-    return this.hideBanner || (!!this.syncStatus && this.isSyncing_());
+    if (!loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled')) {
+      return this.hideBanner || !!this.syncStatus && this.isSyncing_();
+    }
+
+    switch (this.syncStatus.signedInState) {
+      case SignedInState.SYNCING:
+      case SignedInState.SIGNED_IN:
+      case SignedInState.SIGNED_OUT:
+      case SignedInState.WEB_ONLY_SIGNED_IN:
+        return false;
+      case SignedInState.SIGNED_IN_PAUSED:
+        return true;
+    }
+
+    assertNotReached('Invalid SignedInState');
   }
 
   /**
@@ -356,6 +416,11 @@ export class SettingsSyncAccountControlElement extends
    * the banner was explicitly set.
    */
   private shouldHideSyncButton_(): boolean {
+    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') &&
+        this.syncStatus.signedInState === SignedInState.WEB_ONLY_SIGNED_IN) {
+      return true;
+    }
+
     return this.hideButtons ||
         (!!this.syncStatus &&
          (this.isSyncing_() ||
@@ -377,6 +442,13 @@ export class SettingsSyncAccountControlElement extends
         this.syncStatus.statusAction !== StatusAction.NO_ACTION;
   }
 
+  private shouldShowAccountAwareSigninButton_(): boolean {
+    // Only show the button when user is in sync paused state
+    return loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') &&
+        this.syncStatus.signedInState === SignedInState.WEB_ONLY_SIGNED_IN;
+  }
+
+
   private shouldAllowAccountSwitch_(): boolean {
     if (this.hideButtons) {
       return false;
@@ -391,8 +463,8 @@ export class SettingsSyncAccountControlElement extends
       case SignedInState.SIGNED_OUT:
       case SignedInState.WEB_ONLY_SIGNED_IN:
         return true;
-      case SignedInState.SYNCING:
       case SignedInState.SIGNED_IN_PAUSED:
+      case SignedInState.SYNCING:
         return false;
       case SignedInState.SIGNED_IN:
         return !loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled');
@@ -405,9 +477,17 @@ export class SettingsSyncAccountControlElement extends
     this.storedAccounts_ = accounts;
   }
 
+  private handleUpdateAvatar_(profileAvatarURL: string) {
+    this.profileAvatarURL_ = profileAvatarURL;
+  }
+
   private computeShouldShowAvatarRow_(): boolean {
     if (this.storedAccounts_ === undefined || this.syncStatus === undefined) {
       return false;
+    }
+    if (loadTimeData.getBoolean('isImprovedSettingsUIOnDesktopEnabled') &&
+        this.syncStatus.signedInState === SignedInState.WEB_ONLY_SIGNED_IN) {
+      return true;
     }
 
     return (this.isSyncing_() || this.storedAccounts_.length > 0) &&

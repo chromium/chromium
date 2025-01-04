@@ -1,27 +1,14 @@
 # Benchmark tl;dr:
 
-1. The time for JNI calls is negligible, comparable to a main memory load so
-   unless you are doing JNI in a big loop, you can ignore its cost.
-1. `AttachCurrentThread()` costs the same as a trivial JNI call.
-1. Sending a few parameters (< 50bytes) in a JNI call might only add 25-50%
-   extra latency.
-1. For sending a lot of data, primitive arrays are the most performant way,
-   even if java has to convert a List to array + unbox first.
-1. If you need to traverse in java vs copying it over, traversing Java arrays is
-   2x faster than doing the same for Java Lists but it is still much faster to
-   convert all the way to c++ vector.
-1. Converting a java List to a c++ vector before iterating is ~10x faster than
-   traversing the java List directly and 5x faster than traversing a java array
-   directly (for arrays ~= 10,000 long). This includes the time for type
-   conversion.
-1. Direct access to primitive arrays is incredibly fast (eg: `ByteArrayView` or
-   direct JNI API calls from `<jni.h>`).
-1. non-ASCII utf-16 strings are the fastest to convert to java strings, followed
-   by ASCII strings in general and finally the slowest is non-ASCII utf-16 to utf-8
-   conversion (because optimizations).
-1. Integer boxing and unboxing is could be expensive if done through JNI
-   and very cheap when done on java's side.
-
+1.  1 JNI call overhead is equivalent to a few main memory loads, i.e. it's
+    trivial most of the time.
+1.  For sending a lot of data, primitive arrays are the most performant by far
+    (eg: int[] or byte[]).
+    -   Including the time it takes to convert from more complex data
+        structures.
+1.  Sending strings is pretty cheap (equivalent to primitive arrays).
+1.  AttachCurrentThread is about as expensive as a JNI call.
+    -   Might not need to keep passing an env reference everywhere.
 
 # How to run the benchmarks
 

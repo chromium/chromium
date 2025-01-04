@@ -27,7 +27,10 @@ source_set("test_support") {
     "test_utils.h",
   ]
   deps = [ "//crypto" ]
-  public_deps = [ ":browser" ]
+  public_deps = [
+    ":browser",
+    "//components/os_crypt/async/common:test_support",
+  ]
 }
 
 source_set("key_provider_interface") {

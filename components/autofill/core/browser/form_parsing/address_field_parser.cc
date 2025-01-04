@@ -278,27 +278,6 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
   // arbitrary order the parsing is considered successful.
   const size_t saved_cursor_position = scanner->CursorPosition();
 
-  base::span<const MatchPatternRef> street_location_patterns =
-      GetMatchPatterns(ADDRESS_HOME_STREET_LOCATION, context);
-  base::span<const MatchPatternRef> street_name_patterns =
-      GetMatchPatterns(ADDRESS_HOME_STREET_NAME, context);
-  base::span<const MatchPatternRef> house_number_patterns =
-      GetMatchPatterns(ADDRESS_HOME_HOUSE_NUMBER, context);
-  base::span<const MatchPatternRef> apartment_number_patterns =
-      GetMatchPatterns(ADDRESS_HOME_APT_NUM, context);
-  base::span<const MatchPatternRef> overflow_patterns =
-      GetMatchPatterns("OVERFLOW", context);
-  base::span<const MatchPatternRef> overflow_and_landmark_patterns =
-      GetMatchPatterns("OVERFLOW_AND_LANDMARK", context);
-  base::span<const MatchPatternRef> between_streets_or_landmark_patterns =
-      GetMatchPatterns("BETWEEN_STREETS_OR_LANDMARK", context);
-  base::span<const MatchPatternRef> between_streets_patterns =
-      GetMatchPatterns("BETWEEN_STREETS", context);
-  base::span<const MatchPatternRef> between_streets_line_1_patterns =
-      GetMatchPatterns("BETWEEN_STREETS_LINE_1", context);
-  base::span<const MatchPatternRef> between_streets_line_2_patterns =
-      GetMatchPatterns("BETWEEN_STREETS_LINE_2", context);
-
   std::optional<FieldAndMatchInfo> old_street_location = street_location_;
   std::optional<FieldAndMatchInfo> old_street_name = street_name_;
   std::optional<FieldAndMatchInfo> old_overflow = overflow_;
@@ -324,54 +303,36 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
     // We look for street location before street name, because the name/label of
     // a street location typically contains strings that match the regular
     // expressions for a street name as well.
-    if (!street_location_ &&
-        // TODO(crbug.com/40279279) Find a better way to gate street location
-        // support. This is easy to confuse with with an address line 1 field.
-        // This is currently allowlisted for MX which prefers pairs of
-        // street location and address overflow fields.
-        context.client_country == GeoIpCountryCode("MX") &&
-        ParseField(context, scanner, street_location_patterns,
-                   &street_location_, "ADDRESS_HOME_STREET_LOCATION")) {
+    if (ParseStreetLocation(context, scanner)) {
       continue;
     }
 
-    // TODO(crbug.com/40279279) Factor out these ParseFieldSpecifics into
-    // ParseStreetName and similar functions.
-    if (!street_name_ && !street_location_ &&
-        ParseField(context, scanner, street_name_patterns, &street_name_,
-                   "ADDRESS_HOME_STREET_NAME")) {
+    if (ParseHouseNumAptNumStreetNameSequence(context, scanner)) {
+      continue;
+    }
+
+    if (!street_location_ && ParseStreetName(context, scanner)) {
       continue;
     }
 
     if (ParseZipCode(context, scanner)) {
       continue;
     }
-    if (!(between_streets_or_landmark_ || between_streets_ ||
-          between_streets_line_1_ || between_streets_line_2_) &&
-        i18n_model_definition::IsTypeEnabledForCountry(
-            ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK, country_code) &&
-        ParseField(context, scanner, between_streets_or_landmark_patterns,
-                   &between_streets_or_landmark_,
-                   "BETWEEN_STREETS_OR_LANDMARK")) {
+
+    if (!between_streets_ && !between_streets_line_1_ &&
+        !between_streets_line_2_ &&
+        ParseBetweenStreetsOrLandmark(context, scanner)) {
       continue;
     }
 
-    if (!(overflow_and_landmark_ || overflow_) &&
-        i18n_model_definition::IsTypeEnabledForCountry(
-            ADDRESS_HOME_OVERFLOW_AND_LANDMARK, country_code) &&
-        ParseField(context, scanner, overflow_and_landmark_patterns,
-                   &overflow_and_landmark_, "OVERFLOW_AND_LANDMARK")) {
+    if (!overflow_ && ParseOverflowAndLandmark(context, scanner)) {
       continue;
     }
 
     // Because `overflow_and_landmark_` and `overflow_` overflow in semantics
     // we don't want them both to be in the same form section. This would
     // probably point to some problem in the classification.
-    if (!(overflow_and_landmark_ || overflow_) &&
-        i18n_model_definition::IsTypeEnabledForCountry(ADDRESS_HOME_OVERFLOW,
-                                                       country_code) &&
-        ParseField(context, scanner, overflow_patterns, &overflow_,
-                   "OVERFLOW")) {
+    if (!overflow_and_landmark_ && ParseOverflow(context, scanner)) {
       continue;
     }
 
@@ -379,40 +340,16 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
       continue;
     }
 
-    if (!house_number_ && !street_location_ &&
-        ParseField(context, scanner, house_number_patterns, &house_number_,
-                   "ADDRESS_HOME_HOUSE_NUMBER")) {
+    if (!street_location_ && ParseHouseNumber(context, scanner)) {
       continue;
     }
 
-    if (!apartment_number_ &&
-        i18n_model_definition::IsTypeEnabledForCountry(ADDRESS_HOME_APT_NUM,
-                                                       country_code) &&
-        ParseField(context, scanner, apartment_number_patterns,
-                   &apartment_number_, "ADDRESS_HOME_APT_NUM")) {
+    if (ParseApartmentNumber(context, scanner)) {
       continue;
     }
 
-    if (i18n_model_definition::IsTypeEnabledForCountry(
-            ADDRESS_HOME_BETWEEN_STREETS, country_code)) {
-      if (!between_streets_ && !between_streets_line_1_ &&
-          ParseField(context, scanner, between_streets_patterns,
-                     &between_streets_, "BETWEEN_STREETS")) {
-        continue;
-      }
-
-      if (!between_streets_line_1_ &&
-          ParseField(context, scanner, between_streets_line_1_patterns,
-                     &between_streets_line_1_, "BETWEEN_STREETS_LINE_1")) {
-        continue;
-      }
-
-      if ((between_streets_ || between_streets_line_1_) &&
-          !between_streets_line_2_ &&
-          ParseField(context, scanner, between_streets_line_2_patterns,
-                     &between_streets_line_2_, "BETWEEN_STREETS_LINE_2")) {
-        continue;
-      }
+    if (ParseBetweenStreetsFields(context, scanner)) {
+      continue;
     }
 
     break;
@@ -534,6 +471,53 @@ bool AddressFieldParser::ParseAddressLines(ParsingContext& context,
   return true;
 }
 
+bool AddressFieldParser::ParseHouseNumAptNumStreetNameSequence(
+    ParsingContext& context,
+    AutofillScanner* scanner) {
+  // TODO(crbug.com/383972664) Extend to other countries where prioritizing
+  // house number is beneficial.
+  // Currently, we only support this sequence in NL.
+  if (context.client_country != GeoIpCountryCode("NL") ||
+      !base::FeatureList::IsEnabled(features::kAutofillUseNLAddressModel)) {
+    return false;
+  }
+
+  // Assumes that no field expected in the sequence is present.
+  if (street_name_ || house_number_ || apartment_number_) {
+    return false;
+  }
+
+  const size_t saved_cursor_position = scanner->CursorPosition();
+
+  std::optional<FieldAndMatchInfo> old_street_name = street_name_;
+  std::optional<FieldAndMatchInfo> old_house_number = house_number_;
+  std::optional<FieldAndMatchInfo> old_apartment_number = apartment_number_;
+
+  ParseHouseNumber(context, scanner);
+  ParseApartmentNumber(context, scanner);
+  if (house_number_) {
+    ParseStreetName(context, scanner);
+  }
+
+  // Sequence counts as detected if house number is followed by either a street
+  // name, an apartment number, or both.
+  // Common address sequence patterns parsed with this function:
+  // 1. House number, apartment number, street name.
+  // 2. House number, street name.
+  // 3. House number, apartment number.
+  if (house_number_ && (street_name_ || apartment_number_)) {
+    return true;
+  }
+
+  // Reset all fields if the non-optional requirements could not be met.
+  street_name_ = old_street_name;
+  house_number_ = old_house_number;
+  apartment_number_ = old_apartment_number;
+
+  scanner->RewindTo(saved_cursor_position);
+  return false;
+}
+
 bool AddressFieldParser::ParseZipCode(ParsingContext& context,
                                       AutofillScanner* scanner) {
   if (zip_)
@@ -574,6 +558,143 @@ bool AddressFieldParser::ParseState(ParsingContext& context,
   return ParseField(context, scanner, patterns_state, &state_, "STATE");
 }
 
+bool AddressFieldParser::ParseStreetLocation(ParsingContext& context,
+                                             AutofillScanner* scanner) {
+  if (street_location_ ||
+      // TODO(crbug.com/40279279) Find a better way to gate street location
+      // support. This is easy to confuse with with an address line 1 field.
+      // This is currently allowlisted for MX which prefers pairs of
+      // street location and address overflow fields.
+      context.client_country != GeoIpCountryCode("MX")) {
+    return false;
+  }
+
+  base::span<const MatchPatternRef> street_location_patterns =
+      GetMatchPatterns(ADDRESS_HOME_STREET_LOCATION, context);
+  return ParseField(context, scanner, street_location_patterns,
+                    &street_location_, "ADDRESS_HOME_STREET_LOCATION");
+}
+
+bool AddressFieldParser::ParseStreetName(ParsingContext& context,
+                                         AutofillScanner* scanner) {
+  if (street_name_) {
+    return false;
+  }
+
+  base::span<const MatchPatternRef> street_name_patterns =
+      GetMatchPatterns(ADDRESS_HOME_STREET_NAME, context);
+  return ParseField(context, scanner, street_name_patterns, &street_name_,
+                    "ADDRESS_HOME_STREET_NAME");
+}
+
+bool AddressFieldParser::ParseHouseNumber(ParsingContext& context,
+                                          AutofillScanner* scanner) {
+  if (house_number_) {
+    return false;
+  }
+
+  base::span<const MatchPatternRef> house_number_patterns =
+      GetMatchPatterns(ADDRESS_HOME_HOUSE_NUMBER, context);
+  return ParseField(context, scanner, house_number_patterns, &house_number_,
+                    "ADDRESS_HOME_HOUSE_NUMBER");
+}
+
+bool AddressFieldParser::ParseApartmentNumber(ParsingContext& context,
+                                              AutofillScanner* scanner) {
+  AddressCountryCode country_code(context.client_country.value());
+  if (apartment_number_ || !i18n_model_definition::IsTypeEnabledForCountry(
+                               ADDRESS_HOME_APT_NUM, country_code)) {
+    return false;
+  }
+
+  base::span<const MatchPatternRef> apartment_number_patterns =
+      GetMatchPatterns(ADDRESS_HOME_APT_NUM, context);
+  return ParseField(context, scanner, apartment_number_patterns,
+                    &apartment_number_, "ADDRESS_HOME_APT_NUM");
+}
+
+bool AddressFieldParser::ParseBetweenStreetsOrLandmark(
+    ParsingContext& context,
+    AutofillScanner* scanner) {
+  AddressCountryCode country_code(context.client_country.value());
+  if (between_streets_or_landmark_ ||
+      !i18n_model_definition::IsTypeEnabledForCountry(
+          ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK, country_code)) {
+    return false;
+  }
+
+  base::span<const MatchPatternRef> between_streets_or_landmark_patterns =
+      GetMatchPatterns("BETWEEN_STREETS_OR_LANDMARK", context);
+  return ParseField(context, scanner, between_streets_or_landmark_patterns,
+                    &between_streets_or_landmark_,
+                    "BETWEEN_STREETS_OR_LANDMARK");
+}
+
+bool AddressFieldParser::ParseOverflowAndLandmark(ParsingContext& context,
+                                                  AutofillScanner* scanner) {
+  AddressCountryCode country_code(context.client_country.value());
+  if (overflow_and_landmark_ ||
+      !i18n_model_definition::IsTypeEnabledForCountry(
+          ADDRESS_HOME_OVERFLOW_AND_LANDMARK, country_code)) {
+    return false;
+  }
+
+  base::span<const MatchPatternRef> overflow_and_landmark_patterns =
+      GetMatchPatterns("OVERFLOW_AND_LANDMARK", context);
+  return ParseField(context, scanner, overflow_and_landmark_patterns,
+                    &overflow_and_landmark_, "OVERFLOW_AND_LANDMARK");
+}
+
+bool AddressFieldParser::ParseOverflow(ParsingContext& context,
+                                       AutofillScanner* scanner) {
+  AddressCountryCode country_code(context.client_country.value());
+  if (overflow_ || !i18n_model_definition::IsTypeEnabledForCountry(
+                       ADDRESS_HOME_OVERFLOW, country_code)) {
+    return false;
+  }
+
+  base::span<const MatchPatternRef> overflow_patterns =
+      GetMatchPatterns("OVERFLOW", context);
+  return ParseField(context, scanner, overflow_patterns, &overflow_,
+                    "OVERFLOW");
+}
+
+bool AddressFieldParser::ParseBetweenStreetsFields(ParsingContext& context,
+                                                   AutofillScanner* scanner) {
+  AddressCountryCode country_code(context.client_country.value());
+  if (!i18n_model_definition::IsTypeEnabledForCountry(
+          ADDRESS_HOME_BETWEEN_STREETS, country_code)) {
+    return false;
+  }
+
+  base::span<const MatchPatternRef> between_streets_patterns =
+      GetMatchPatterns("BETWEEN_STREETS", context);
+  base::span<const MatchPatternRef> between_streets_line_1_patterns =
+      GetMatchPatterns("BETWEEN_STREETS_LINE_1", context);
+  base::span<const MatchPatternRef> between_streets_line_2_patterns =
+      GetMatchPatterns("BETWEEN_STREETS_LINE_2", context);
+
+  if (!between_streets_ && !between_streets_line_1_ &&
+      ParseField(context, scanner, between_streets_patterns, &between_streets_,
+                 "BETWEEN_STREETS")) {
+    return true;
+  }
+
+  if (!between_streets_line_1_ &&
+      ParseField(context, scanner, between_streets_line_1_patterns,
+                 &between_streets_line_1_, "BETWEEN_STREETS_LINE_1")) {
+    return true;
+  }
+
+  if (!between_streets_line_2_ &&
+      (between_streets_ || between_streets_line_1_) &&
+      ParseField(context, scanner, between_streets_line_2_patterns,
+                 &between_streets_line_2_, "BETWEEN_STREETS_LINE_2")) {
+    return true;
+  }
+  return false;
+}
+
 // static
 AddressFieldParser::ParseNameLabelResult
 AddressFieldParser::ParseNameAndLabelSeparately(
@@ -598,6 +719,10 @@ AddressFieldParser::ParseNameAndLabelSeparately(
                  [](const MatchParams& p) {
                    return WithoutAttribute(p, MatchAttribute::kName);
                  });
+  // Only consider high quality label matches to avoid false positives.
+  parsed_label =
+      parsed_label && cur_match->match_info.matched_attribute ==
+                          MatchInfo::MatchAttribute::kHighQualityLabel;
   if (parsed_name && parsed_label) {
     if (match) {
       *match = std::move(cur_match);
@@ -1068,10 +1193,12 @@ bool AddressFieldParser::SetFieldAndAdvanceCursor(
       case RESULT_MATCH_LABEL:
       // Since the parser matches against the label first, interpret
       // RESULT_MATCH_NAME_LABEL as a label match.
+      // `ParseNameAndLabelSeparately()` only allows for high quality label
+      // matches.
       case RESULT_MATCH_NAME_LABEL:
-        return MatchAttribute::kLabel;
+        return MatchInfo::MatchAttribute::kHighQualityLabel;
       case RESULT_MATCH_NAME:
-        return MatchAttribute::kName;
+        return MatchInfo::MatchAttribute::kName;
     }
   };
   *match = {scanner->Cursor(),

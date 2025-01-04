@@ -64,7 +64,7 @@ class DataSharingPageHandlerUnitTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {data_sharing::features::kDataSharingFeature,
-         tab_groups::kTabGroupsSaveUIUpdate, tab_groups::kTabGroupsSaveV2,
+         tab_groups::kTabGroupsSaveV2,
          tab_groups::kTabGroupSyncServiceDesktopMigration},
         {});
     BrowserWithTestWindowTest::SetUp();

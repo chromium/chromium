@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/safe_browsing/tailored_security_desktop_dialog_manager.h"
+
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/views/safe_browsing/tailored_security_desktop_dialog_manager.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_outcome.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"

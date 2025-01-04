@@ -68,8 +68,9 @@ bool CreateFileWithSd(const FilePath& path, void* sd, bool directory) {
   SECURITY_ATTRIBUTES security_attr = {};
   security_attr.nLength = sizeof(security_attr);
   security_attr.lpSecurityDescriptor = sd;
-  if (directory)
+  if (directory) {
     return !!::CreateDirectory(path.value().c_str(), &security_attr);
+  }
 
   return ScopedHandle(::CreateFile(path.value().c_str(), GENERIC_ALL, 0,
                                    &security_attr, CREATE_ALWAYS, 0, nullptr))

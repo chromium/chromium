@@ -63,7 +63,7 @@ TEST_F(UserMetricsRecorderTest, VerifyIsUserInActiveDesktopEnvironmentValues) {
   EXPECT_FALSE(test_api().IsUserInActiveDesktopEnvironment());
 
   // Environment is active after login.
-  CreateUserSessions(1);
+  SimulateUserLogin(kDefaultUserEmail);
   ASSERT_TRUE(session->IsActiveUserSessionStarted());
   EXPECT_TRUE(test_api().IsUserInActiveDesktopEnvironment());
 
@@ -97,7 +97,7 @@ TEST_F(UserMetricsRecorderTest,
 // recorded when a user is active in a desktop environment.
 TEST_F(UserMetricsRecorderTest,
        VerifyStatsRecordedWhenUserInActiveDesktopEnvironment) {
-  CreateUserSessions(1);
+  SimulateUserLogin(kDefaultUserEmail);
   ASSERT_TRUE(test_api().IsUserInActiveDesktopEnvironment());
   test_api().RecordPeriodicMetrics();
 
@@ -109,7 +109,7 @@ TEST_F(UserMetricsRecorderTest,
 // Verify the shelf item counts recorded by the
 // UserMetricsRecorder::RecordPeriodicMetrics() method.
 TEST_F(UserMetricsRecorderTest, ValuesRecordedByRecordShelfItemCounts) {
-  CreateUserSessions(1);
+  SimulateUserLogin(kDefaultUserEmail);
 
   // Make sure the shelf model is empty at first.
   ShelfModel* shelf_model = ShelfModel::Get();

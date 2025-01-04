@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/extensions/commands/command_service.h"
+
 #include <memory>
 #include <utility>
 
@@ -10,7 +12,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -23,6 +24,7 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/accelerators/command.h"
 
 namespace {
 const char kBasicBrowserActionKeybinding[] = "Ctrl+Shift+F";
@@ -592,13 +594,13 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest,
   CommandService* command_service = CommandService::Get(browser()->profile());
 
   {
-    CommandMap command_map;
+    ui::CommandMap command_map;
     EXPECT_TRUE(command_service->GetNamedCommands(
         extension->id(), CommandService::ALL, CommandService::ANY_SCOPE,
         &command_map));
 
     ASSERT_EQ(1u, command_map.count(kBasicNamedCommand));
-    Command command = command_map[kBasicNamedCommand];
+    ui::Command command = command_map[kBasicNamedCommand];
     EXPECT_EQ(kBasicNamedKeybinding,
               Command::AcceleratorToString(command.accelerator()));
   }
@@ -607,13 +609,13 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest,
       extension->id(), kBasicNamedCommand, kBasicAlternateKeybinding);
 
   {
-    CommandMap command_map;
+    ui::CommandMap command_map;
     EXPECT_TRUE(command_service->GetNamedCommands(
         extension->id(), CommandService::ALL, CommandService::ANY_SCOPE,
         &command_map));
 
     ASSERT_EQ(1u, command_map.count(kBasicNamedCommand));
-    Command command = command_map[kBasicNamedCommand];
+    ui::Command command = command_map[kBasicNamedCommand];
     EXPECT_EQ(kBasicAlternateKeybinding,
               Command::AcceleratorToString(command.accelerator()));
   }
@@ -621,13 +623,13 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest,
   command_service->RemoveKeybindingPrefs(extension->id(), kBasicNamedCommand);
 
   {
-    CommandMap command_map;
+    ui::CommandMap command_map;
     EXPECT_TRUE(command_service->GetNamedCommands(
         extension->id(), CommandService::ALL, CommandService::ANY_SCOPE,
         &command_map));
 
     ASSERT_EQ(1u, command_map.count(kBasicNamedCommand));
-    Command command = command_map[kBasicNamedCommand];
+    ui::Command command = command_map[kBasicNamedCommand];
     EXPECT_EQ(kBasicNamedKeybinding,
               Command::AcceleratorToString(command.accelerator()));
   }
@@ -642,13 +644,13 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest, GetNamedCommandsQueryActive) {
   CommandService* command_service = CommandService::Get(browser()->profile());
 
   {
-    CommandMap command_map;
+    ui::CommandMap command_map;
     EXPECT_TRUE(command_service->GetNamedCommands(
         extension->id(), CommandService::ACTIVE, CommandService::ANY_SCOPE,
         &command_map));
 
     ASSERT_EQ(1u, command_map.count(kBasicNamedCommand));
-    Command command = command_map[kBasicNamedCommand];
+    ui::Command command = command_map[kBasicNamedCommand];
     EXPECT_EQ(kBasicNamedKeybinding,
               Command::AcceleratorToString(command.accelerator()));
   }
@@ -657,13 +659,13 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest, GetNamedCommandsQueryActive) {
       extension->id(), kBasicNamedCommand, kBasicAlternateKeybinding);
 
   {
-    CommandMap command_map;
+    ui::CommandMap command_map;
     EXPECT_TRUE(command_service->GetNamedCommands(
         extension->id(), CommandService::ACTIVE, CommandService::ANY_SCOPE,
         &command_map));
 
     ASSERT_EQ(1u, command_map.count(kBasicNamedCommand));
-    Command command = command_map[kBasicNamedCommand];
+    ui::Command command = command_map[kBasicNamedCommand];
     EXPECT_EQ(kBasicAlternateKeybinding,
               Command::AcceleratorToString(command.accelerator()));
   }
@@ -671,7 +673,7 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest, GetNamedCommandsQueryActive) {
   command_service->RemoveKeybindingPrefs(extension->id(), kBasicNamedCommand);
 
   {
-    CommandMap command_map;
+    ui::CommandMap command_map;
     command_service->GetNamedCommands(
         extension->id(), CommandService::ACTIVE, CommandService::ANY_SCOPE,
         &command_map);

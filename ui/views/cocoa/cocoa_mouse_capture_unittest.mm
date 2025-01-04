@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "components/remote_cocoa/app_shim/mouse_capture.h"
-
 #import <Cocoa/Cocoa.h>
 
+#import "components/remote_cocoa/app_shim/mouse_capture.h"
 #import "components/remote_cocoa/app_shim/mouse_capture_delegate.h"
 #import "ui/base/test/cocoa_helper.h"
 #import "ui/events/test/cocoa_test_event_utils.h"

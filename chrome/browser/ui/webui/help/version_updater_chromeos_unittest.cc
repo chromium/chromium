@@ -69,9 +69,7 @@ class VersionUpdaterCrosTest : public ::testing::Test {
     ash::ShillServiceClient::TestInterface* service_test =
         network_handler_test_helper_->service_test();
     service_test->ClearServices();
-    service_test->AddService("/service/eth",
-                             "eth" /* guid */,
-                             "eth",
+    service_test->AddService("/service/eth", "eth" /* guid */, "eth",
                              shill::kTypeEthernet, shill::kStateOnline,
                              true /* visible */);
     base::RunLoop().RunUntilIdle();

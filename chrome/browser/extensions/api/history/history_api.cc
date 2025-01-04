@@ -134,8 +134,7 @@ HistoryEventRouter::HistoryEventRouter(Profile* profile,
   history_service_observation_.Observe(history_service);
 }
 
-HistoryEventRouter::~HistoryEventRouter() {
-}
+HistoryEventRouter::~HistoryEventRouter() = default;
 
 void HistoryEventRouter::OnURLVisited(history::HistoryService* history_service,
                                       const history::URLRow& url_row,
@@ -179,8 +178,7 @@ HistoryAPI::HistoryAPI(content::BrowserContext* context)
                                  api::history::OnVisitRemoved::kEventName);
 }
 
-HistoryAPI::~HistoryAPI() {
-}
+HistoryAPI::~HistoryAPI() = default;
 
 void HistoryAPI::Shutdown() {
   history_event_router_.reset();

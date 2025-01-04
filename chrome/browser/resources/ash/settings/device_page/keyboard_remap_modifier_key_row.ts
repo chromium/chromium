@@ -180,8 +180,8 @@ export class KeyboardRemapModifierKeyRowElement extends
       case ModifierKey.kMeta: {
         return this.getMetaKeyLabel();
       }
-      case ModifierKey.kRightAlt: {
-        return this.i18n('perDeviceKeyboardKeyRightAlt');
+      case ModifierKey.kQuickInsert: {
+        return this.i18n('perDeviceKeyboardKeyQuickInsert');
       }
       case ModifierKey.kFunction: {
         return this.i18n('perDeviceKeyboardKeyFunction');
@@ -227,8 +227,8 @@ export class KeyboardRemapModifierKeyRowElement extends
 
       if (loadTimeData.getBoolean('enableModifierSplit')) {
         keyMapTargets.push({
-          value: ModifierKey.kRightAlt,
-          name: this.i18n('perDeviceKeyboardKeyRightAlt'),
+          value: ModifierKey.kQuickInsert,
+          name: this.i18n('perDeviceKeyboardKeyQuickInsert'),
         });
       }
 
@@ -262,7 +262,7 @@ export class KeyboardRemapModifierKeyRowElement extends
       }
     } else if (this.key === ModifierKey.kAssistant) {
       return 'os-settings:assistant';
-    } else if (this.key === ModifierKey.kRightAlt) {
+    } else if (this.key === ModifierKey.kQuickInsert) {
       return 'shortcut-input-keys:quick-insert';
     }
 

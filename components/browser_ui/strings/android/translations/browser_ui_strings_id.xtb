@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">Download dijeda</translation>
 <translation id="1396327438254055134">Izinkan situs menggunakan pengoptimal V8.</translation>
 <translation id="1415402041810619267">URL dipotong</translation>
+<translation id="1415855080660575082">Izinkan Chrome membagikan tab terbaru ke perangkat Anda agar Anda dapat melihatnya di daftar aplikasi dan hasil penelusuran perangkat. Anda dapat mengaktifkan atau menonaktifkannya di setelan Chrome.</translation>
 <translation id="1448064542941920355">Kurangi zoom</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> situs}other{<ph name="SITE_COUNT" /> situs}}</translation>
 <translation id="1500473259453106018">Sembunyikan kartu penurunan harga di tab</translation>
@@ -51,7 +52,7 @@
 <translation id="1915307458270490472">Akhiri</translation>
 <translation id="1919950603503897840">Pilih kontak</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
-<translation id="1979673356880165407">Memperbesar atau memperkecil teks dan gambar untuk semua situs yang Anda buka</translation>
+<translation id="1979673356880165407">Perbesar atau perkecil teks dan gambar untuk semua situs yang Anda buka</translation>
 <translation id="1984937141057606926">Diizinkan, kecuali pihak ketiga</translation>
 <translation id="1985247341569771101">Jika diaktifkan, situs dapat menggunakan sensor gerakan perangkat Anda. Jika dinonaktifkan, situs tidak dapat menggunakan sensor gerakan.</translation>
 <translation id="1985716030964443178">Tindakan ini akan mereset semua situs dalam daftar ke zoom default</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">Anda mengizinkan situs ini menggunakan cookie pihak ketiga untuk sementara. Dengan demikian, Anda mendapatkan lebih sedikit perlindungan terhadap penjelajahan, tetapi fitur situs cenderung berfungsi seperti yang diharapkan. <ph name="BEGIN_LINK" />Kirim masukan<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Fitur di beberapa situs mungkin tidak berfungsi dalam mode Samaran</translation>
 <translation id="2442870161001914531">Selalu minta situs desktop</translation>
+<translation id="2445311670906052406">Chrome kini membagikan tab terbaru ke perangkat Anda. Anda akan melihatnya di daftar aplikasi dan hasil penelusuran perangkat Anda. Anda dapat menonaktifkannya kapan saja di setelan Chrome.</translation>
 <translation id="2469312991797799607">Tindakan ini akan menghapus semua data dan cookie untuk <ph name="ORIGIN" /> dan semua situs di bawahnya</translation>
 <translation id="2482878487686419369">Notifikasi</translation>
 <translation id="2485422356828889247">Uninstal</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">Situs dapat menampilkan perintah login dari layanan identitas.</translation>
 <translation id="2787357173144933081">Mulai Omnibox</translation>
 <translation id="2790501146643349491">Jika diaktifkan, situs yang baru saja ditutup dapat menyelesaikan pengiriman dan penerimaan data. Jika dinonaktifkan, situs yang baru saja ditutup tidak dapat menyelesaikan pengiriman atau penerimaan data.</translation>
+<translation id="2814830417943086299">Chrome kini menampilkan tab terbaru di daftar aplikasi dan hasil penelusuran perangkat Anda. Anda dapat menonaktifkannya kapan saja di setelan Chrome.</translation>
 <translation id="2822354292072154809">Yakin ingin menyetel ulang semua izin situs untuk <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Minta tampilan seluler</translation>
 <translation id="2870560284913253234">Situs</translation>
@@ -124,7 +127,6 @@
 <translation id="2903493209154104877">Alamat</translation>
 <translation id="2910701580606108292">Tanyakan sebelum mengizinkan situs untuk memutar konten yang dilindungi</translation>
 <translation id="2918484639460781603">Buka setelan</translation>
-<translation id="2927133898344569563">Akses tab yang disarankan dengan cepat dari daftar aplikasi perangkat Anda dan di hasil penelusuran perangkat. Anda dapat mengaktifkan atau menonaktifkannya kapan saja di setelan Chrome.</translation>
 <translation id="2932883381142163287">Laporkan penyalahgunaan</translation>
 <translation id="2939338015096024043">Jika diaktifkan, situs dapat meminta untuk melacak posisi kamera dan mempelajari lingkungan sekitar Anda. Jika dinonaktifkan, situs tidak dapat melacak posisi kamera Anda atau mempelajari lingkungan sekitar Anda.</translation>
 <translation id="2968755619301702150">Penampil sertifikat</translation>
@@ -227,7 +229,7 @@
 <translation id="443552056913301231">Tindakan ini akan menghapus semua data lokal, termasuk cookie, dan mereset semua izin untuk <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Mematikan suara untuk situs tertentu.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}other{# cookie}}</translation>
-<translation id="4478158430052450698">Memudahkan penyesuaian zoom untuk berbagai situs</translation>
+<translation id="4478158430052450698">Permudah penyesuaian zoom untuk berbagai situs</translation>
 <translation id="4479647676395637221">Minta izin terlebih dahulu sebelum memungkinkan situs menggunakan kamera Anda (disarankan)</translation>
 <translation id="4505788138578415521">URL ditampilkan penuh</translation>
 <translation id="4534723447064627427">Untuk mengizinkan <ph name="APP_NAME" /> mengakses mikrofon, aktifkan juga mikrofon di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
@@ -336,7 +338,6 @@
 <translation id="5968921426641056619">Masukkan alamat web</translation>
 <translation id="5975083100439434680">Perkecil</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
-<translation id="6015145568571136419">Anda kini dapat mengakses tab yang disarankan dengan cepat dari daftar aplikasi perangkat dan di hasil penelusuran perangkat. Anda dapat menonaktifkannya kapan saja di setelan Chrome.</translation>
 <translation id="6015775454662021376">Mengontrol akses situs ini ke perangkat Anda</translation>
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="6042308850641462728">Lainnya</translation>
@@ -559,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, dan <ph name="NUM_MORE" /> lainnya}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, dan <ph name="NUM_MORE" /> lainnya}}</translation>
 <translation id="913657688200966289">Aktifkan izin untuk <ph name="APP_NAME" /> di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Zoom saat ini sebesar <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="9156722768168878035">Izinkan Chrome menampilkan tab terbaru di daftar aplikasi dan hasil penelusuran perangkat Anda. Anda dapat menonaktifkannya kapan saja di setelan Chrome.</translation>
 <translation id="9162462602695099906">Halaman ini berbahaya</translation>
 <translation id="947156494302904893">Situs yang Anda buka dapat memverifikasi bahwa Anda adalah orang sungguhan dan bukan bot</translation>
 <translation id="959682366969460160">Atur dengan mudah</translation>

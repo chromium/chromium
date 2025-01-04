@@ -35,6 +35,12 @@ group("updater") {
       "//chrome/updater/tools",
     ]
   }
+
+  # These packages have problematic license files that we need to avoid for
+  # updater redistribution.
+  if (!is_component_build) {
+    assert_no_deps = [ "//third_party/libaom" ]
+  }
 }
 
 group("all") {
@@ -291,6 +297,8 @@ if (is_win || is_mac || is_linux) {
         "app/server/win/com_classes.h",
         "app/server/win/com_classes_legacy.cc",
         "app/server/win/com_classes_legacy.h",
+        "app/server/win/com_classes_util.cc",
+        "app/server/win/com_classes_util.h",
         "app/server/win/update_service_internal_stub_win.cc",
         "app/server/win/update_service_internal_stub_win.h",
         "app/server/win/update_service_stub_win.cc",
@@ -954,6 +962,7 @@ if (is_win || is_mac || is_linux) {
         "activity_impl_win_unittest.cc",
         "app/app_install_win_unittest.cc",
         "app/server/win/com_classes_legacy_unittest.cc",
+        "app/server/win/com_classes_util_unittest.cc",
         "auto_run_on_os_upgrade_task_unittest.cc",
         "policy/win/group_policy_manager_unittest.cc",
         "test/integration_tests_win.cc",

@@ -202,7 +202,7 @@ class ServiceWorkerVersionTest
     if (in_different_process) {
       auto client_render_process_host =
           std::make_unique<MockRenderProcessHost>(helper_->browser_context());
-      controllee_process_id = client_render_process_host->GetID();
+      controllee_process_id = client_render_process_host->GetDeprecatedID();
       client_render_process_hosts_.push_back(
           std::move(client_render_process_host));
     } else {
@@ -2009,12 +2009,7 @@ TEST_P(ServiceWorkerVersionTest, SetResources) {
 
 class ServiceWorkerVersionStaticRouterTest : public ServiceWorkerVersionTest {
  public:
-  ServiceWorkerVersionStaticRouterTest() {
-    feature_list_.InitWithFeatures({features::kServiceWorkerStaticRouter}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
+  ServiceWorkerVersionStaticRouterTest() = default;
 };
 
 INSTANTIATE_TEST_SUITE_P(

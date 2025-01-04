@@ -36,11 +36,10 @@ class SavedTabGroupButton : public views::MenuButton,
   METADATA_HEADER(SavedTabGroupButton, views::MenuButton)
 
  public:
-  SavedTabGroupButton(
-      const SavedTabGroup& group,
-      PressedCallback callback,
-      Browser* browser,
-      bool animations_enabled = true);
+  SavedTabGroupButton(const SavedTabGroup& group,
+                      PressedCallback callback,
+                      Browser* browser,
+                      bool animations_enabled = true);
 
   SavedTabGroupButton(const SavedTabGroupButton&) = delete;
   SavedTabGroupButton& operator=(const SavedTabGroupButton&) = delete;

@@ -19,27 +19,22 @@ PrivacySandboxTabObserver::PrivacySandboxTabObserver(
 PrivacySandboxTabObserver::~PrivacySandboxTabObserver() = default;
 
 void PrivacySandboxTabObserver::PrimaryPageChanged(content::Page& page) {
-  MaybeTriggerSurveys(web_contents());
-}
-
-void PrivacySandboxTabObserver::MaybeTriggerSurveys(
-    content::WebContents* web_contents) {
-  if (web_contents->GetLastCommittedURL() != chrome::kChromeUINewTabPageURL &&
-      web_contents->GetLastCommittedURL() != chrome::kChromeUINewTabURL) {
-    return;
-  }
-
-  if (has_seen_ntp_) {
+  if (IsNewTabPage()) {
     Profile* profile =
-        Profile::FromBrowserContext(web_contents->GetBrowserContext());
+        Profile::FromBrowserContext(web_contents()->GetBrowserContext());
     auto* desktop_survey_controller =
         PrivacySandboxSurveyDesktopControllerFactory::GetForProfile(profile);
-
     if (desktop_survey_controller) {
       desktop_survey_controller->MaybeShowSentimentSurvey(profile);
+      desktop_survey_controller->OnNewTabPageSeen();
     }
   }
-  has_seen_ntp_ = true;
+}
+
+bool PrivacySandboxTabObserver::IsNewTabPage() {
+  return web_contents()->GetLastCommittedURL() ==
+             chrome::kChromeUINewTabPageURL ||
+         web_contents()->GetLastCommittedURL() == chrome::kChromeUINewTabURL;
 }
 
 }  // namespace privacy_sandbox

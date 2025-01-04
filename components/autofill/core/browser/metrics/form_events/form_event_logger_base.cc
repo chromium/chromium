@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/metrics/form_events/form_event_logger_base.h"
 
 #include <cstddef>
+#include <cstdint>
 
 #include "base/check_deref.h"
 #include "base/feature_list.h"
@@ -14,13 +15,12 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/field_type_utils.h"
-#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_driver.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
@@ -147,6 +147,12 @@ void FormEventLoggerBase::OnDidShowSuggestions(
   }
 
   has_logged_autocomplete_off_ |= field.autocomplete_attribute() == "off";
+
+  FieldType field_type = field.Type().GetStorableType();
+  // Do not mark the field as shown if it was already accepted.
+  if (!field_types_with_accepted_suggestions_.contains(field_type)) {
+    field_types_with_shown_suggestions_.insert(field_type);
+  }
 
   RecordShowSuggestions();
 }
@@ -306,7 +312,7 @@ void FormEventLoggerBase::RecordFunnelMetrics() {
   if (!has_parsed_form_) {
     return;
   }
-  LogBuffer logs(IsLoggingActive(client().GetLogManager()));
+  LogBuffer logs(IsLoggingActive(client().GetCurrentLogManager()));
   for (std::string_view form_type : GetParsedFormTypesAsStringViews()) {
     LOG_AF(logs) << Tr{} << "Form Type: " << form_type;
   }
@@ -323,7 +329,7 @@ void FormEventLoggerBase::RecordFunnelMetrics() {
     RecordSubmissionAfterFill(logs);
   }
 
-  LOG_AF(client().GetLogManager())
+  LOG_AF(client().GetCurrentLogManager())
       << LoggingScope::kMetrics << LogMessage::kFunnelMetrics << Tag{"table"}
       << std::move(logs) << CTag{"table"};
 }
@@ -376,7 +382,7 @@ void FormEventLoggerBase::RecordKeyMetrics() {
     return;
   }
 
-  LogBuffer logs(IsLoggingActive(client().GetLogManager()));
+  LogBuffer logs(IsLoggingActive(client().GetCurrentLogManager()));
   for (std::string_view form_type : GetParsedFormTypesAsStringViews()) {
     LOG_AF(logs) << Tr{} << "Form Type: " << form_type;
   }
@@ -405,7 +411,7 @@ void FormEventLoggerBase::RecordKeyMetrics() {
     RecordFormSubmission(logs);
   }
 
-  LOG_AF(client().GetLogManager())
+  LOG_AF(client().GetCurrentLogManager())
       << LoggingScope::kMetrics << LogMessage::kKeyMetrics << Tag{"table"}
       << std::move(logs) << CTag{"table"};
 }
@@ -441,6 +447,19 @@ void FormEventLoggerBase::RecordFillingAcceptance(LogBuffer& logs) const {
   if (is_heuristic_only_email_form_) {
     base::UmaHistogramBoolean("Autofill.EmailHeuristicOnlyAcceptance",
                               has_logged_form_filling_suggestion_filled_);
+  }
+
+  static constexpr char acceptance_by_focused_field_type_histogram[] =
+      "Autofill.KeyMetrics.FillingAcceptance.GroupedByFocusedFieldType";
+  for (auto field_type : field_types_with_shown_suggestions_) {
+    base::UmaHistogramSparse(acceptance_by_focused_field_type_histogram,
+                             GetBucketForAcceptanceMetricsGroupedByFieldType(
+                                 field_type, /*suggestion_accepted=*/false));
+  }
+  for (auto field_type : field_types_with_accepted_suggestions_) {
+    base::UmaHistogramSparse(acceptance_by_focused_field_type_histogram,
+                             GetBucketForAcceptanceMetricsGroupedByFieldType(
+                                 field_type, /*suggestion_accepted=*/true));
   }
 }
 

@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <set>
 #include <sstream>
@@ -939,27 +935,27 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, MimeTypesToShowNotDownload) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // These files should all be displayed in the browser.
-  const char* mime_types[] = {
-    // It is unclear whether to display text/css or download it.
-    //   Firefox 3: Display
-    //   Internet Explorer 7: Download
-    //   Safari 3.2: Download
-    // We choose to match Firefox due to the lot of complains
-    // from the users if css files are downloaded:
-    // http://code.google.com/p/chromium/issues/detail?id=7192
-    "text/css",
-    "text/javascript",
-    "text/plain",
-    "application/x-javascript",
-    "text/html",
-    "text/xml",
-    "text/xsl",
-    "application/xhtml+xml",
-    "image/png",
-    "image/gif",
-    "image/jpeg",
-    "image/bmp",
-  };
+  auto mime_types = std::to_array<const char*>({
+      // It is unclear whether to display text/css or download it.
+      //   Firefox 3: Display
+      //   Internet Explorer 7: Download
+      //   Safari 3.2: Download
+      // We choose to match Firefox due to the lot of complains
+      // from the users if css files are downloaded:
+      // http://code.google.com/p/chromium/issues/detail?id=7192
+      "text/css",
+      "text/javascript",
+      "text/plain",
+      "application/x-javascript",
+      "text/html",
+      "text/xml",
+      "text/xsl",
+      "application/xhtml+xml",
+      "image/png",
+      "image/gif",
+      "image/jpeg",
+      "image/bmp",
+  });
   for (size_t i = 0; i < std::size(mime_types); ++i) {
     const char* mime_type = mime_types[i];
     GURL url(
@@ -4066,7 +4062,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadTest_Renaming) {
 #define MAYBE_DownloadTest_CrazyFilenames DownloadTest_CrazyFilenames
 #endif
 IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_DownloadTest_CrazyFilenames) {
-  static constexpr const wchar_t* kCrazyFilenames[] = {
+  constexpr static const auto kCrazyFilenames = std::to_array<const wchar_t*>({
       L"a_file_name.zip",
       L"\u89c6\u9891\u76f4\u64ad\u56fe\u7247.zip",  // chinese chars
       (L"\u0412\u043e "
@@ -4088,7 +4084,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_DownloadTest_CrazyFilenames) {
       L"Wohoo-to hoo+I.zip",
       L"Picture 1.zip",
       L"This is a very very long english sentence with spaces and , and +.zip",
-  };
+  });
 
   std::vector<raw_ptr<DownloadItem, VectorExperimental>> download_items;
   base::ScopedAllowBlockingForTesting allow_blocking;

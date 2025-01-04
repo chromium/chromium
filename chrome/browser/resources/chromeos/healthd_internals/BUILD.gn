@@ -15,9 +15,9 @@ build_webui("build") {
 
   web_component_files = [
     "app.ts",
-    "view/info_card/info_card.ts",
     "view/info_card/cpu_card.ts",
     "view/info_card/fan_card.ts",
+    "view/info_card/info_card.ts",
     "view/info_card/memory_card.ts",
     "view/info_card/power_card.ts",
     "view/info_card/thermal_card.ts",
@@ -25,10 +25,13 @@ build_webui("build") {
     "view/line_chart/line_chart.ts",
     "view/line_chart/menu.ts",
     "view/line_chart/scrollbar.ts",
+    "view/pages/info.ts",
     "view/pages/process.ts",
     "view/pages/system_trend.ts",
     "view/pages/telemetry.ts",
+    "view/settings/chart_category_dialog.ts",
     "view/settings/config_slider.ts",
+    "view/settings/data_series_checkbox.ts",
     "view/settings/settings_dialog.ts",
   ]
 
@@ -40,8 +43,10 @@ build_webui("build") {
     "model/cpu_usage_helper.ts",
     "model/data_manager.ts",
     "model/data_series.ts",
+    "utils/cpu_usage_utils.ts",
     "utils/externs.ts",
     "utils/line_chart_configs.ts",
+    "utils/memory_utils.ts",
     "utils/number_utils.ts",
     "utils/page_interface.ts",
     "utils/ui_update_helper.ts",

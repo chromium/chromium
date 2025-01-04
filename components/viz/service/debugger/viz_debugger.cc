@@ -18,9 +18,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
+#include "skia/ext/codec_utils.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkSwizzle.h"
-#include "third_party/skia/include/encode/SkPngEncoder.h"
 
 #if VIZ_DEBUGGER_IS_ON()
 
@@ -174,18 +174,12 @@ base::Value VizDebugger::FrameAsJson(const uint64_t counter,
   base::Value::Dict buff_map;
 
   for (auto&& each : buffers_) {
-    SkDynamicMemoryWStream stream;
-    bool result = SkPngEncoder::Encode(
-        &stream, each.buffer_info.bitmap.pixmap(), SkPngEncoder::Options());
-    if (!result) {
+    std::string uri =
+        skia::EncodePngAsDataUri(each.buffer_info.bitmap.pixmap());
+    if (uri.empty()) {
       DLOG(ERROR) << "encode failed";
       continue;
     }
-    sk_sp<SkData> data = stream.detachAsData();
-    std::string uri =
-        "data:image/png;base64," +
-        base::Base64Encode(base::span<const uint8_t>(
-            static_cast<const uint8_t*>(data->data()), data->size()));
     buff_map.Set(base::NumberToString(each.id), std::move(uri));
   }
 

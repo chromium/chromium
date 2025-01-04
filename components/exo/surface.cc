@@ -234,7 +234,9 @@ class CustomWindowDelegate : public aura::WindowDelegate {
 
   // Overridden from aura::WindowDelegate:
   gfx::Size GetMinimumSize() const override { return gfx::Size(); }
-  gfx::Size GetMaximumSize() const override { return gfx::Size(); }
+  std::optional<gfx::Size> GetMaximumSize() const override {
+    return gfx::Size();
+  }
   void OnBoundsChanged(const gfx::Rect& old_bounds,
                        const gfx::Rect& new_bounds) override {}
   gfx::NativeCursor GetCursor(const gfx::Point& point) override {
@@ -339,7 +341,7 @@ void ImmediateExplicitRelease(
 
 }  // namespace
 
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kClientSurfaceIdKey, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kClientSurfaceIdKey)
 
 // A property key to store the window session Id set by client or full_restore
 // component.

@@ -18,13 +18,15 @@ ViewTracker::ViewTracker(View* view) {
 ViewTracker::~ViewTracker() = default;
 
 void ViewTracker::SetView(View* view) {
-  if (view == view_)
+  if (view == view_) {
     return;
+  }
 
   observation_.Reset();
   view_ = view;
-  if (view_)
+  if (view_) {
     observation_.Observe(view_.get());
+  }
 }
 
 void ViewTracker::SetIsDeletingCallback(

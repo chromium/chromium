@@ -333,7 +333,11 @@ class SkiaOutputSurfaceImplOnGpu
   void DestroyCopyOutputResourcesOnGpuThread(const gpu::Mailbox& mailbox);
 
   void SwapBuffersInternal(std::optional<OutputSurfaceFrame> frame);
-  void PostSubmit(std::optional<OutputSurfaceFrame> frame);
+  void PostSubmit(std::optional<OutputSurfaceFrame> frame, bool skip_present);
+
+  // Attempts presentation for `frame`. Returns false if presentation was
+  // skipped.
+  bool PresentFrame(OutputSurfaceFrame frame);
 
   GrDirectContext* gr_context() const { return context_state_->gr_context(); }
 
@@ -574,6 +578,8 @@ class SkiaOutputSurfaceImplOnGpu
   // Micro-optimization to get to issuing GPU SwapBuffers as soon as possible.
   std::vector<sk_sp<GrDeferredDisplayList>> destroy_after_swap_;
 
+  bool draw_render_pass_failed_ = false;
+
   bool waiting_for_full_damage_ = false;
 
   int num_readbacks_pending_ = 0;
@@ -590,7 +596,7 @@ class SkiaOutputSurfaceImplOnGpu
   // external semaphore type has copy transference, which means importing
   // semaphores has to be delayed until submission.
   base::circular_deque<std::pair<GrBackendSemaphore,
-                       base::OnceCallback<void(gfx::GpuFenceHandle)>>>
+                                 base::OnceCallback<void(gfx::GpuFenceHandle)>>>
       pending_release_fence_cbs_;
 
   // A cache of solid color image mailboxes so we can destroy them in the

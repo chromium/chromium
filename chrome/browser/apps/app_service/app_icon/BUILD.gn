@@ -44,6 +44,8 @@ source_set("app_icon") {
     ]
   }
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   if (is_chromeos_ash) {
     sources += [
       "app_icon_decoder.cc",
@@ -64,10 +66,9 @@ source_set("app_icon") {
       "//chrome/browser/ash/app_list/arc",
       "//chrome/browser/image_decoder",
       "//chrome/browser/resources:component_extension_resources",
-      "//components/arc/common",
     ]
+    public_deps += [ "//ash/components/arc/intent_helper" ]
   }
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("util") {

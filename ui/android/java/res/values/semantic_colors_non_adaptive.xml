@@ -63,7 +63,7 @@ found in the LICENSE file.
 
     <!-- Common background colors. -->
     <color name="default_bg_color_light">@color/modern_white</color>
-    <color name="default_bg_color_dark">@color/modern_grey_900</color>
+    <color name="default_bg_color_dark">@color/baseline_neutral_10</color>
     <color name="default_bg_color_secondary_light">@color/baseline_neutral_100_with_surface_tint_light_alpha_5</color>
     <color name="default_bg_color_secondary_dark">@color/baseline_neutral_10_with_surface_tint_dark_alpha_5</color>
     <color name="default_bg_color_light_elev_1_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_100_with_surface_tint_light_alpha_5</color>
@@ -129,13 +129,13 @@ found in the LICENSE file.
     <color name="image_loading_color_light">@color/white_alpha_12</color>
 
     <!-- Incognito icon colors -->
-    <color name="incognito_icon_filled_bg_color_dark">@color/modern_grey_800</color>
+    <color name="incognito_icon_filled_bg_color_dark">@color/baseline_neutral_20</color>
     <color name="incognito_icon_filled_bg_color_light">@color/baseline_neutral_70</color>
     <color name="ntp_incognito_icon_color" tools:ignore="UnusedResources">@color/baseline_neutral_95</color>
 
     <!-- Illustration -->
     <color name="promo_illustration_bg_color_light">@color/baseline_neutral_90_alpha_38</color>
-    <color name="promo_illustration_bg_color_dark">@color/modern_grey_800_alpha_38</color>
+    <color name="promo_illustration_bg_color_dark">@color/baseline_neutral_20_alpha_38</color>
 
     <!-- Omnibox bg color -->
     <color name="omnibox_bg_color_light">@color/baseline_neutral_100_with_surface_tint_light_alpha_8</color>
@@ -156,7 +156,7 @@ found in the LICENSE file.
     <!-- Colors of adaptive toolbar -->
     <color name="adaptive_toolbar_preference_header_background_light">@color/modern_white</color>
     <color name="adaptive_toolbar_preference_header_background_dark">@color/baseline_neutral_10_with_surface_tint_dark_alpha_11</color>
-    <color name="adaptive_toolbar_preference_header_line_light">@color/modern_grey_800</color>
+    <color name="adaptive_toolbar_preference_header_line_light">@color/baseline_neutral_20</color>
     <color name="adaptive_toolbar_preference_header_line_dark">@color/modern_white</color>
     <color name="adaptive_toolbar_preference_header_blue_light">@color/baseline_primary_40</color>
     <color name="adaptive_toolbar_preference_header_blue_dark">@color/baseline_primary_80</color>

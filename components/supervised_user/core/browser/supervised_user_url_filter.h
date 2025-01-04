@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -14,7 +15,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "build/chromeos_buildflags.h"
 #include "components/safe_search_api/url_checker.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
@@ -22,8 +22,8 @@
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/page_transition_types.h"
+#include "url/gurl.h"
 
-class GURL;
 class PrefService;
 
 namespace version_info {
@@ -84,6 +84,42 @@ class SupervisedUserURLFilter {
     kMaxValue = kTrivialSubdomainConflictAndOtherConflict,
   };
 
+  // Represents the result of url filtering request.
+  struct Result {
+    // The URL that was subject to filtering
+    GURL url;
+    // How the URL should be handled.
+    FilteringBehavior behavior;
+    // Why the URL is handled as indicated in `behavior`.
+    FilteringBehaviorReason reason;
+    // Details of asynchronous check if it was performed, otherwise empty.
+    std::optional<safe_search_api::ClassificationDetails> async_check_details;
+
+    bool IsFromManualList() const {
+      return reason == FilteringBehaviorReason::MANUAL;
+    }
+    bool IsFromDefaultSetting() const {
+      return reason == FilteringBehaviorReason::DEFAULT;
+    }
+
+    // True when the result of the classification means that the url is safe.
+    // See `::IsClassificationSuccessful` for caveats.
+    bool IsAllowed() const { return behavior == FilteringBehavior::kAllow; }
+    // True when the result of the classification means that the url is not
+    // safe. See `::IsClassificationSuccessful` for caveats.
+    bool IsBlocked() const { return behavior == FilteringBehavior::kBlock; }
+
+    // True when remote classification was successful. It's useful to understand
+    // if the result is "allowed" because the classification succeeded, or
+    // because it failed and the system uses a default classification.
+    bool IsClassificationSuccessful() const {
+      return !async_check_details.has_value() ||
+             async_check_details->reason !=
+                 safe_search_api::ClassificationDetails::Reason::
+                     kFailedUseDefault;
+    }
+  };
+
   // Provides access to functionality from services on which we don't want
   // to depend directly.
   class Delegate {
@@ -94,19 +130,13 @@ class SupervisedUserURLFilter {
     virtual bool SupportsWebstoreURL(const GURL& url) const = 0;
   };
 
-  using FilteringBehaviorCallback =
-      base::OnceCallback<void(supervised_user::FilteringBehavior,
-                              supervised_user::FilteringBehaviorReason,
-                              bool /* uncertain */)>;
+  using ResultCallback = base::OnceCallback<void(Result)>;
 
   class Observer {
    public:
     // Called whenever a check started via
-    // GetFilteringBehaviorForURLWithAsyncChecks completes.
-    virtual void OnURLChecked(
-        const GURL& url,
-        FilteringBehavior behavior,
-        supervised_user::FilteringBehaviorDetails details) {}
+    // GetFilteringBehaviorWithAsyncChecks completes.
+    virtual void OnURLChecked(Result result) {}
   };
 
   SupervisedUserURLFilter(PrefService& user_prefs,
@@ -139,40 +169,37 @@ class SupervisedUserURLFilter {
   static bool HostMatchesPattern(const std::string& canonical_host,
                                  const std::string& pattern);
 
-  // Records the metrics on navigation loaded after completing a filtering
-  // event.
-  static void RecordFilterResultEvent(FilteringBehavior behavior,
-                                      FilteringBehaviorReason reason,
-                                      bool is_filtering_behavior_known,
-                                      ui::PageTransition transition_type);
+  // Returns the filtering status for a given URL which includes both behavior
+  // and reason, based on the default behavior and whether it is on a site list.
+  virtual Result GetFilteringBehavior(const GURL& url);
 
-  // Returns the filtering behavior for a given URL, based on the default
-  // behavior and whether it is on a site list.
-  FilteringBehavior GetFilteringBehaviorForURL(const GURL& url);
-
-  // Checks for a manual setting (i.e. manual exceptions and content packs)
-  // for the given URL. If there is one, returns true and writes the result
-  // into |behavior|. Otherwise returns false; in this case the value of
-  // |behavior| is unspecified.
-  bool GetManualFilteringBehaviorForURL(const GURL& url,
-                                        FilteringBehavior* behavior);
-
-  // Like |GetFilteringBehaviorForURL|, but also includes asynchronous checks
+  // Like `GetFilteringBehavior`, but also includes asynchronous checks
   // against a remote service. If the result is already determined by the
-  // synchronous checks, then |callback| will be called synchronously.
-  // Returns true if |callback| was called synchronously. If
-  // |skip_manual_parent_filter| is set to true, it only uses the asynchronous
+  // synchronous checks, then `callback` will be called synchronously.
+  // Returns true if `callback` was called synchronously. If
+  // `skip_manual_parent_filter` is set to true, it only uses the asynchronous
   // safe search checks.
-  virtual bool GetFilteringBehaviorForURLWithAsyncChecks(
+  //
+  // The `url` argument is included in `callback` invocation.
+  //
+  // `context` and `transition_type` parameters control metric-related flow:
+  // `transition_type` is used to record detailed metric in the navigation
+  // throttle `context`; otherwise high-level metrics are split by `context`.
+  bool GetFilteringBehaviorWithAsyncChecks(
       const GURL& url,
-      FilteringBehaviorCallback callback,
-      bool skip_manual_parent_filter);
+      ResultCallback callback,
+      bool skip_manual_parent_filter,
+      FilteringContext filtering_context = FilteringContext::kDefault,
+      std::optional<ui::PageTransition> transition_type = std::nullopt);
 
-  // Like |GetFilteringBehaviorForURLWithAsyncChecks| but used for subframes.
-  bool GetFilteringBehaviorForSubFrameURLWithAsyncChecks(
+  // Like `GetFilteringBehaviorWithAsyncChecks` but used for subframes. The
+  // `url` argument is included in `callback` invocation.
+  bool GetFilteringBehaviorForSubFrameWithAsyncChecks(
       const GURL& url,
       const GURL& main_frame_url,
-      FilteringBehaviorCallback callback);
+      ResultCallback callback,
+      FilteringContext filtering_context = FilteringContext::kDefault,
+      std::optional<ui::PageTransition> transition_type = std::nullopt);
 
   // Sets the filtering behavior for pages not on a list (default is ALLOW).
   void SetDefaultFilteringBehavior(FilteringBehavior behavior);
@@ -223,36 +250,24 @@ class SupervisedUserURLFilter {
   friend class SupervisedUserURLFilterTest;
   friend class SupervisedUserURLFilteringWithConflictsTest;
 
-  // Converts FilteringBehavior to the SupervisedUserFilterTopLevelResult
-  // histogram value in tools/metrics/histograms/enums.xml to be used in the
-  // "ManagedUsers.TopLevelFilteringResult" histogram.
-  static SupervisedUserFilterTopLevelResult
-  GetHistogramValueForTopLevelFilteringBehavior(
-      FilteringBehavior behavior,
-      FilteringBehaviorReason reason,
-      bool is_filtering_behavior_known);
-
-  // Converts FilteringBehavior to SupervisedUserSafetyFilterResult histogram
-  // value in tools/metrics/histograms/enums.xml.
-  static int GetHistogramValueForFilteringBehavior(
-      FilteringBehavior behavior,
-      FilteringBehaviorReason reason,
-      bool is_filtering_behavior_known);
-
   bool IsExemptedFromGuardianApproval(const GURL& effective_url);
 
-  bool RunAsyncChecker(const GURL& url,
-                       FilteringBehaviorCallback callback) const;
+  virtual bool RunAsyncChecker(const GURL& url, ResultCallback callback) const;
 
-  virtual FilteringBehavior GetFilteringBehaviorForURL(
-      const GURL& url,
-      supervised_user::FilteringBehaviorReason* reason);
   FilteringBehavior GetManualFilteringBehaviorForURL(const GURL& url);
 
-  void CheckCallback(FilteringBehaviorCallback callback,
-                     const GURL& url,
+  // `requested_url` is the system's input, and `checked_url` is what was sent
+  // to the remote async service. Since synchronous checks use the same
+  // normalization methods but report actual requested url as filtered, the
+  // async checks will behave the same. Normalized url that is sent to async
+  // services is implementation detail.
+  void CheckCallback(ResultCallback callback,
+                     const GURL& requested_url,
+                     const GURL& checked_url,
                      safe_search_api::Classification classification,
                      safe_search_api::ClassificationDetails details) const;
+
+  void NotifyCallerAndObservers(ResultCallback callback, Result result) const;
 
   base::ObserverList<Observer>::Unchecked observers_;
 

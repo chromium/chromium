@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/intent_picker_bubble_view.h"
+
 #include <string>
 
 #include "base/functional/bind.h"
@@ -17,7 +19,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_link_capturing_test_utils.h"
@@ -73,6 +74,13 @@ class IntentPickerBrowserTest : public web_app::WebAppNavigationBrowserTest {
     auto* tab_helper = IntentPickerTabHelper::FromWebContents(GetWebContents());
     tab_helper->SetIconUpdateCallbackForTesting(
         intent_picker_done.GetCallback());
+    // On Mac, updating the icon requires asynchronous work that is done on the
+    // threadpool (see `WebAppsIntentPickerDelegate::FindAllAppsForUrl()` for
+    // more information). Flushing the thread pool thus helps prevent flakiness
+    // in tests.
+#if BUILDFLAG(IS_MAC)
+    base::ThreadPoolInstance::Get()->FlushForTesting();
+#endif  // BUILDFLAG(IS_MAC)
     action();
     if (HasFailure()) {
       return testing::AssertionFailure();
@@ -180,16 +188,8 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
 
 // Tests that clicking a link from a tabbed browser to within the scope of an
 // installed app shows the intent picker icon in Omnibox.
-// TODO(crbug.com/41488032): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_NavigationToInScopeLinkShowsIntentPicker \
-  DISABLED_NavigationToInScopeLinkShowsIntentPicker
-#else
-#define MAYBE_NavigationToInScopeLinkShowsIntentPicker \
-  NavigationToInScopeLinkShowsIntentPicker
-#endif
 IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
-                       MAYBE_NavigationToInScopeLinkShowsIntentPicker) {
+                       NavigationToInScopeLinkShowsIntentPicker) {
   if (IsDefaultOnEnabled()) {
     GTEST_SKIP() << "Default On will launch app by default";
   }
@@ -210,17 +210,10 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
   EXPECT_TRUE(intent_picker_icon->GetVisible());
 }
 
-// TODO(crbug.com/41488032): This test is flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_IconVisibilityAfterTabSwitching \
-  DISABLED_IconVisibilityAfterTabSwitching
-#else
-#define MAYBE_IconVisibilityAfterTabSwitching IconVisibilityAfterTabSwitching
-#endif
 // Tests that the intent icon updates its visibility when switching between
 // tabs.
 IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
-                       MAYBE_IconVisibilityAfterTabSwitching) {
+                       IconVisibilityAfterTabSwitching) {
   InstallTestWebApp();
 
   const GURL in_scope_url =
@@ -228,18 +221,16 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
   const GURL out_of_scope_url =
       https_server().GetURL(GetAppUrlHost(), GetOutOfScopeUrlPath());
 
-  views::Button* intent_picker_icon = GetIntentPickerIcon();
-
   // OpenNewTab opens a new tab and focus on the new tab.
   OpenNewTab(in_scope_url, /*rel=*/rel());
-  EXPECT_TRUE(intent_picker_icon->GetVisible());
+  EXPECT_TRUE(GetIntentPickerIcon()->GetVisible());
   OpenNewTab(out_of_scope_url, /*rel=*/rel());
-  EXPECT_FALSE(intent_picker_icon->GetVisible());
+  EXPECT_FALSE(GetIntentPickerIcon()->GetVisible());
 
   chrome::SelectPreviousTab(browser());
-  EXPECT_TRUE(intent_picker_icon->GetVisible());
+  EXPECT_TRUE(GetIntentPickerIcon()->GetVisible());
   chrome::SelectNextTab(browser());
-  EXPECT_FALSE(intent_picker_icon->GetVisible());
+  EXPECT_FALSE(GetIntentPickerIcon()->GetVisible());
 }
 
 // Tests that the navigation in iframe doesn't affect intent picker icon
@@ -271,16 +262,8 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
 
 // Tests that the intent picker icon is not visible if the navigation redirects
 // to a URL that doesn't have an installed PWA.
-// TODO(crbug.com/41488032): This test is flaky. Re-enable this test.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_DoesNotShowIntentPickerWhenRedirectedOutOfScope \
-  DISABLED_DoesNotShowIntentPickerWhenRedirectedOutOfScope
-#else
-#define MAYBE_DoesNotShowIntentPickerWhenRedirectedOutOfScope \
-  DoesNotShowIntentPickerWhenRedirectedOutOfScope
-#endif
 IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
-                       MAYBE_DoesNotShowIntentPickerWhenRedirectedOutOfScope) {
+                       DoesNotShowIntentPickerWhenRedirectedOutOfScope) {
   InstallTestWebApp(GetOtherAppUrlHost(), /*app_scope=*/"/");
 
   const GURL out_of_scope_url =
@@ -303,16 +286,8 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
 
 // Test that navigating to service pages (chrome://) will hide the intent picker
 // icon.
-// TODO(crbug.com/41488032): Re-enable this test
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_DoNotShowIconAndBubbleOnServicePages \
-  DISABLED_DoNotShowIconAndBubbleOnServicePages
-#else
-#define MAYBE_DoNotShowIconAndBubbleOnServicePages \
-  DoNotShowIconAndBubbleOnServicePages
-#endif
 IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
-                       MAYBE_DoNotShowIconAndBubbleOnServicePages) {
+                       DoNotShowIconAndBubbleOnServicePages) {
   InstallTestWebApp();
 
   const GURL in_scope_url =
@@ -339,14 +314,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
 }
 
 // Test that error pages do not show the intent picker icon.
-// TODO(crbug.com/41488032): Fix the test.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_DoNotShowIconOnErrorPages DISABLED_DoNotShowIconOnErrorPages
-#else
-#define MAYBE_DoNotShowIconOnErrorPages DoNotShowIconOnErrorPages
-#endif  // BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
-                       MAYBE_DoNotShowIconOnErrorPages) {
+IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest, DoNotShowIconOnErrorPages) {
   InstallTestWebApp();
   InstallTestWebApp("www.google.com", "/");
 
@@ -376,14 +344,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
 
 // Test that loading a page with pushState() call that changes URL updates the
 // intent picker view.
-// TODO(crbug.com/41488032): Re-enable this test
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_PushStateURLChangeTest DISABLED_PushStateURLChangeTest
-#else
-#define MAYBE_PushStateURLChangeTest PushStateURLChangeTest
-#endif
-IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
-                       MAYBE_PushStateURLChangeTest) {
+IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest, PushStateURLChangeTest) {
   // Note: The test page is served from embedded_test_server() as https_server()
   // always returns empty responses.
   ASSERT_TRUE(embedded_test_server()->Start());

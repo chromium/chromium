@@ -36,8 +36,9 @@ void order_ranges(std::vector<gfx::Range>* ranges) {
 size_t adjust_position_for_removals(size_t position,
                                     std::vector<gfx::Range> ranges) {
   size_t adjustment = 0;
-  for (auto range : ranges)
+  for (auto range : ranges) {
     adjustment += range.Intersect(gfx::Range(0, position)).length();
+  }
   return position - adjustment;
 }
 
@@ -165,8 +166,9 @@ class Edit {
     // Remove |new_text_|.
     old_texts.erase(new_text_start_, new_text_.length());
     // Add |old_texts_| in reverse order since we're undoing an edit.
-    for (size_t i = old_texts_.size(); i != 0; i--)
+    for (size_t i = old_texts_.size(); i != 0; i--) {
       old_texts.insert(old_text_starts_[i - 1], old_texts_[i - 1]);
+    }
 
     merge_type_ = MergeType::kDoNotMerge;
     old_texts_ = {old_texts};
@@ -221,8 +223,9 @@ class InsertEdit : public Edit {
     // Reject other edit types, and inserts starting somewhere other than where
     // this insert ended.
     if (edit->type() != Type::kInsert ||
-        new_text_end() != edit->new_text_start_)
+        new_text_end() != edit->new_text_start_) {
       return false;
+    }
     new_text_ += edit->new_text_;
     new_cursor_pos_ = edit->new_cursor_pos_;
     return true;
@@ -263,10 +266,12 @@ class ReplaceEdit : public Edit {
     if (edit->type() == Type::kDelete || edit->old_texts_.size() > 1 ||
         new_text_end() != edit->new_text_start_ ||
         (!edit->old_text_starts_.empty() &&
-         new_text_end() != edit->old_text_starts_[0]))
+         new_text_end() != edit->old_text_starts_[0])) {
       return false;
-    if (edit->old_texts_.size() == 1)
+    }
+    if (edit->old_texts_.size() == 1) {
       old_texts_[0] += edit->old_texts_[0];
+    }
     new_text_ += edit->new_text_;
     new_cursor_pos_ = edit->new_cursor_pos_;
     return true;
@@ -298,8 +303,9 @@ class DeleteEdit : public Edit {
   // where |this| ended. E.g. If |this| changed "ab|c" to "a|c" an edit to "|c"
   // can be merged.
   bool DoMerge(const Edit* edit) override {
-    if (edit->type() != Type::kDelete)
+    if (edit->type() != Type::kDelete) {
       return false;
+    }
     // Deletions with selections are marked kDoNotMerge and should not get here.
     DCHECK(old_secondary_selections_.empty());
     DCHECK(old_primary_selection_.is_empty());
@@ -310,16 +316,18 @@ class DeleteEdit : public Edit {
       // Backspace can be merged only with backspace at the same position.
       if (!edit->delete_backward_ ||
           old_text_starts_[0] !=
-              edit->old_text_starts_[0] + edit->old_texts_[0].length())
+              edit->old_text_starts_[0] + edit->old_texts_[0].length()) {
         return false;
+      }
       old_text_starts_[0] = edit->old_text_starts_[0];
       old_texts_[0] = edit->old_texts_[0] + old_texts_[0];
       new_cursor_pos_ = edit->new_cursor_pos_;
     } else {
       // Delete can be merged only with delete at the same position.
       if (edit->delete_backward_ ||
-          old_text_starts_[0] != edit->old_text_starts_[0])
+          old_text_starts_[0] != edit->old_text_starts_[0]) {
         return false;
+      }
       old_texts_[0] += edit->old_texts_[0];
     }
     return true;
@@ -335,8 +343,9 @@ namespace {
 // there is no such a range.
 gfx::Range GetFirstEmphasizedRange(const ui::CompositionText& composition) {
   for (const auto& underline : composition.ime_text_spans) {
-    if (underline.thickness == ui::ImeTextSpan::Thickness::kThick)
+    if (underline.thickness == ui::ImeTextSpan::Thickness::kThick) {
       return gfx::Range(underline.start_offset, underline.end_offset);
+    }
   }
   return gfx::Range::InvalidRange();
 }
@@ -402,8 +411,9 @@ bool TextfieldModel::SetText(const std::u16string& new_text,
     changed = true;
   }
   if (text() != new_text) {
-    if (changed)  // No need to remember composition.
+    if (changed) {  // No need to remember composition.
       Undo();
+    }
     // If there is a composition text, don't merge with previous edit.
     // Otherwise, force merge the edits.
     ExecuteAndRecordReplace(
@@ -415,8 +425,9 @@ bool TextfieldModel::SetText(const std::u16string& new_text,
 }
 
 void TextfieldModel::Append(const std::u16string& new_text) {
-  if (HasCompositionText())
+  if (HasCompositionText()) {
     ConfirmCompositionText();
+  }
   size_t save = GetCursorPosition();
   MoveCursor(gfx::LINE_BREAK, render_text_->GetVisualDirectionOfLogicalEnd(),
              gfx::SELECTION_NONE);
@@ -436,8 +447,9 @@ bool TextfieldModel::Delete(bool add_to_kill_buffer) {
   }
 
   if (HasSelection()) {
-    if (add_to_kill_buffer)
+    if (add_to_kill_buffer) {
       SetKillBuffer(GetSelectedText());
+    }
     DeleteSelection();
     return true;
   }
@@ -446,8 +458,9 @@ bool TextfieldModel::Delete(bool add_to_kill_buffer) {
     size_t next_grapheme_index = render_text_->IndexOfAdjacentGrapheme(
         cursor_position, gfx::CURSOR_FORWARD);
     gfx::Range range_to_delete(cursor_position, next_grapheme_index);
-    if (add_to_kill_buffer)
+    if (add_to_kill_buffer) {
       SetKillBuffer(GetTextFromRange(range_to_delete));
+    }
     ExecuteAndRecordDelete({range_to_delete}, true);
     return true;
   }
@@ -465,8 +478,9 @@ bool TextfieldModel::Backspace(bool add_to_kill_buffer) {
   }
 
   if (HasSelection()) {
-    if (add_to_kill_buffer)
+    if (add_to_kill_buffer) {
       SetKillBuffer(GetSelectedText());
+    }
     DeleteSelection();
     return true;
   }
@@ -474,8 +488,9 @@ bool TextfieldModel::Backspace(bool add_to_kill_buffer) {
   if (cursor_position > 0) {
     gfx::Range range_to_delete(
         PlatformStyle::RangeToDeleteBackwards(text(), cursor_position));
-    if (add_to_kill_buffer)
+    if (add_to_kill_buffer) {
       SetKillBuffer(GetTextFromRange(range_to_delete));
+    }
     ExecuteAndRecordDelete({range_to_delete}, true);
     return true;
   }
@@ -489,8 +504,9 @@ size_t TextfieldModel::GetCursorPosition() const {
 void TextfieldModel::MoveCursor(gfx::BreakType break_type,
                                 gfx::VisualCursorDirection direction,
                                 gfx::SelectionBehavior selection_behavior) {
-  if (HasCompositionText())
+  if (HasCompositionText()) {
     ConfirmCompositionText();
+  }
   render_text_->MoveCursor(break_type, direction, selection_behavior);
 }
 
@@ -500,8 +516,9 @@ bool TextfieldModel::MoveCursorTo(const gfx::SelectionModel& cursor) {
     // ConfirmCompositionText() updates cursor position. Need to reflect it in
     // the SelectionModel parameter of MoveCursorTo().
     gfx::Range range(render_text_->selection().start(), cursor.caret_pos());
-    if (!range.is_empty())
+    if (!range.is_empty()) {
       return render_text_->SelectRange(range);
+    }
     return render_text_->SetSelection(
         gfx::SelectionModel(cursor.caret_pos(), cursor.caret_affinity()));
   }
@@ -513,8 +530,9 @@ bool TextfieldModel::MoveCursorTo(size_t pos) {
 }
 
 bool TextfieldModel::MoveCursorTo(const gfx::Point& point, bool select) {
-  if (HasCompositionText())
+  if (HasCompositionText()) {
     ConfirmCompositionText();
+  }
   return render_text_->MoveCursorToPoint(point, select);
 }
 
@@ -523,32 +541,37 @@ std::u16string TextfieldModel::GetSelectedText() const {
 }
 
 void TextfieldModel::SelectRange(const gfx::Range& range, bool primary) {
-  if (HasCompositionText())
+  if (HasCompositionText()) {
     ConfirmCompositionText();
+  }
   render_text_->SelectRange(range, primary);
 }
 
 void TextfieldModel::SelectSelectionModel(const gfx::SelectionModel& sel) {
-  if (HasCompositionText())
+  if (HasCompositionText()) {
     ConfirmCompositionText();
+  }
   render_text_->SetSelection(sel);
 }
 
 void TextfieldModel::SelectAll(bool reversed) {
-  if (HasCompositionText())
+  if (HasCompositionText()) {
     ConfirmCompositionText();
+  }
   render_text_->SelectAll(reversed);
 }
 
 void TextfieldModel::SelectWord() {
-  if (HasCompositionText())
+  if (HasCompositionText()) {
     ConfirmCompositionText();
+  }
   render_text_->SelectWord();
 }
 
 void TextfieldModel::ClearSelection() {
-  if (HasCompositionText())
+  if (HasCompositionText()) {
     ConfirmCompositionText();
+  }
   render_text_->ClearSelection();
 }
 
@@ -557,8 +580,9 @@ bool TextfieldModel::CanUndo() {
 }
 
 bool TextfieldModel::CanRedo() {
-  if (edit_history_.empty())
+  if (edit_history_.empty()) {
     return false;
+  }
   // There is no redo iff the current edit is the last element in the history.
   auto iter = current_edit_;
   return iter == edit_history_.end() ||  // at the top.
@@ -566,35 +590,41 @@ bool TextfieldModel::CanRedo() {
 }
 
 bool TextfieldModel::Undo() {
-  if (!CanUndo())
+  if (!CanUndo()) {
     return false;
+  }
   DCHECK(!HasCompositionText());
-  if (HasCompositionText())
+  if (HasCompositionText()) {
     CancelCompositionText();
+  }
 
   std::u16string old = text();
   size_t old_cursor = GetCursorPosition();
   (*current_edit_)->Commit();
   (*current_edit_)->Undo(this);
 
-  if (current_edit_ == edit_history_.begin())
+  if (current_edit_ == edit_history_.begin()) {
     current_edit_ = edit_history_.end();
-  else
+  } else {
     --current_edit_;
+  }
   return old != text() || old_cursor != GetCursorPosition();
 }
 
 bool TextfieldModel::Redo() {
-  if (!CanRedo())
+  if (!CanRedo()) {
     return false;
+  }
   DCHECK(!HasCompositionText());
-  if (HasCompositionText())
+  if (HasCompositionText()) {
     CancelCompositionText();
+  }
 
-  if (current_edit_ == edit_history_.end())
+  if (current_edit_ == edit_history_.end()) {
     current_edit_ = edit_history_.begin();
-  else
+  } else {
     ++current_edit_;
+  }
   std::u16string old = text();
   size_t old_cursor = GetCursorPosition();
   (*current_edit_)->Redo(this);
@@ -626,8 +656,9 @@ bool TextfieldModel::Paste() {
   std::u16string text;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr, &text);
-  if (text.empty())
+  if (text.empty()) {
     return false;
+  }
 
   if (render_text()->multiline()) {
     InsertTextInternal(text, false);
@@ -642,16 +673,18 @@ bool TextfieldModel::Paste() {
   // CollapseWhitespace().
   base::TrimWhitespace(text, base::TRIM_ALL, &text);
   // If the clipboard contains all whitespace then paste a single space.
-  if (text.empty())
+  if (text.empty()) {
     text = u" ";
+  }
 
   InsertTextInternal(text, false);
   return true;
 }
 
 bool TextfieldModel::Transpose() {
-  if (HasCompositionText() || HasSelection())
+  if (HasCompositionText() || HasSelection()) {
     return false;
+  }
 
   size_t cur = GetCursorPosition();
   size_t next = render_text_->IndexOfAdjacentGrapheme(cur, gfx::CURSOR_FORWARD);
@@ -667,8 +700,9 @@ bool TextfieldModel::Transpose() {
 
   // This happens at the beginning of the line or when the line has less than
   // two graphemes.
-  if (gfx::UTF16IndexToOffset(text(), prev, next) != 2)
+  if (gfx::UTF16IndexToOffset(text(), prev, next) != 2) {
     return false;
+  }
 
   SelectRange(gfx::Range(prev, next));
   std::u16string text = GetSelectedText();
@@ -689,8 +723,9 @@ bool TextfieldModel::Yank() {
 }
 
 bool TextfieldModel::HasSelection(bool primary_only) const {
-  if (primary_only)
+  if (primary_only) {
     return !render_text_->selection().is_empty();
+  }
   return base::ranges::any_of(
       render_text_->GetAllSelections(),
       [](const auto& selection) { return !selection.is_empty(); });
@@ -706,8 +741,9 @@ void TextfieldModel::DeletePrimarySelectionAndInsertTextAt(
     const std::u16string& new_text,
     size_t position) {
   using MergeType = internal::MergeType;
-  if (HasCompositionText())
+  if (HasCompositionText()) {
     CancelCompositionText();
+  }
   // We don't use |ExecuteAndRecordReplaceSelection| because that assumes the
   // insertion occurs at the cursor.
   ExecuteAndRecordReplace(MergeType::kDoNotMerge, {render_text_->selection()},
@@ -724,13 +760,15 @@ void TextfieldModel::GetTextRange(gfx::Range* range) const {
 
 void TextfieldModel::SetCompositionText(
     const ui::CompositionText& composition) {
-  if (HasCompositionText())
+  if (HasCompositionText()) {
     CancelCompositionText();
-  else if (HasSelection())
+  } else if (HasSelection()) {
     DeleteSelection();
+  }
 
-  if (composition.text.empty())
+  if (composition.text.empty()) {
     return;
+  }
 
   size_t cursor = GetCursorPosition();
   std::u16string new_text = text();
@@ -739,10 +777,11 @@ void TextfieldModel::SetCompositionText(
   // Don't render IME spans with thickness "kNone".
   if (composition.ime_text_spans.size() > 0 &&
       composition.ime_text_spans[0].thickness !=
-          ui::ImeTextSpan::Thickness::kNone)
+          ui::ImeTextSpan::Thickness::kNone) {
     render_text_->SetCompositionRange(composition_range_);
-  else
+  } else {
     render_text_->SetCompositionRange(gfx::Range::InvalidRange());
+  }
   gfx::Range emphasized_range = GetFirstEmphasizedRange(composition);
   if (emphasized_range.IsValid()) {
     // This is a workaround due to the lack of support in RenderText to draw
@@ -782,8 +821,9 @@ size_t TextfieldModel::ConfirmCompositionText() {
       false, composition, composition_range_.start()));
   render_text_->SetCursorPosition(composition_range_.end());
   ClearComposition();
-  if (delegate_)
+  if (delegate_) {
     delegate_->OnCompositionTextConfirmedOrCleared();
+  }
   return composition_length;
 }
 
@@ -794,8 +834,9 @@ void TextfieldModel::CancelCompositionText() {
   std::u16string new_text = text();
   SetRenderTextText(new_text.erase(range.start(), range.length()));
   render_text_->SetCursorPosition(range.start());
-  if (delegate_)
+  if (delegate_) {
     delegate_->OnCompositionTextConfirmedOrCleared();
+  }
 }
 
 void TextfieldModel::ClearComposition() {
@@ -844,18 +885,20 @@ void TextfieldModel::ReplaceTextInternal(const std::u16string& new_text,
     // with |new_text|. So, need to find the index of next grapheme first.
     size_t next =
         render_text_->IndexOfAdjacentGrapheme(cursor, gfx::CURSOR_FORWARD);
-    if (next == model.caret_pos())
+    if (next == model.caret_pos()) {
       render_text_->SetSelection(model);
-    else
+    } else {
       render_text_->SelectRange(gfx::Range(next, model.caret_pos()));
+    }
   }
   // Edit history is recorded in InsertText.
   InsertTextInternal(new_text, mergeable);
 }
 
 void TextfieldModel::ClearRedoHistory() {
-  if (edit_history_.begin() == edit_history_.end())
+  if (edit_history_.begin() == edit_history_.end()) {
     return;
+  }
   if (current_edit_ == edit_history_.end()) {
     ClearEditHistory();
     return;
@@ -965,24 +1008,29 @@ void TextfieldModel::ModifyText(
   std::u16string old_text = text();
   ClearComposition();
 
-  for (auto deletion : deletions)
+  for (auto deletion : deletions) {
     old_text.erase(deletion.start(), deletion.length());
-  for (size_t i = 0; i < insertion_texts.size(); ++i)
+  }
+  for (size_t i = 0; i < insertion_texts.size(); ++i) {
     old_text.insert(insertion_positions[i], insertion_texts[i]);
+  }
   SetRenderTextText(old_text);
 
-  if (primary_selection.start() == primary_selection.end())
+  if (primary_selection.start() == primary_selection.end()) {
     render_text_->SetCursorPosition(primary_selection.start());
-  else
+  } else {
     render_text_->SelectRange(primary_selection);
-  for (auto secondary_selection : secondary_selections)
+  }
+  for (auto secondary_selection : secondary_selections) {
     render_text_->SelectRange(secondary_selection, false);
+  }
 }
 
 void TextfieldModel::SetRenderTextText(const std::u16string& text) {
   render_text_->SetText(text);
-  if (delegate_)
+  if (delegate_) {
     delegate_->OnTextChanged();
+  }
 }
 
 // static

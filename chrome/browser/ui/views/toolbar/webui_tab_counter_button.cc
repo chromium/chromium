@@ -79,8 +79,9 @@ constexpr base::TimeDelta kFirstPartDuration = base::Milliseconds(100);
 // throbber animation.
 bool ShouldChangeStartThrobber(TabStripModel* tab_strip_model,
                                const TabStripModelChange& change) {
-  if (change.type() != TabStripModelChange::kInserted)
+  if (change.type() != TabStripModelChange::kInserted) {
     return false;
+  }
   const auto& contents = change.GetInsert()->contents;
   return contents.size() > 1 ||
          tab_strip_model->GetActiveWebContents() != contents[0].contents;
@@ -88,8 +89,9 @@ bool ShouldChangeStartThrobber(TabStripModel* tab_strip_model,
 
 std::u16string GetTabCounterLabelText(int num_tabs) {
   // In the triple-digit case, fall back to ':D' to match Android.
-  if (num_tabs >= 100)
+  if (num_tabs >= 100) {
     return std::u16string(u":D");
+  }
   return base::FormatNumber(num_tabs);
 }
 
@@ -135,8 +137,9 @@ class InteractionTracker : public ui::EventHandler,
  public:
   explicit InteractionTracker(views::Widget* widget)
       : native_window_(widget->GetNativeWindow()) {
-    if (native_window_)
+    if (native_window_) {
       native_window_->AddPreTargetHandler(this);
+    }
     scoped_widget_observation_.Observe(widget);
   }
 
@@ -144,8 +147,9 @@ class InteractionTracker : public ui::EventHandler,
   void operator=(const InteractionTracker& other) = delete;
 
   ~InteractionTracker() override {
-    if (native_window_)
+    if (native_window_) {
       native_window_->RemovePreTargetHandler(this);
+    }
   }
 
   const std::optional<gfx::Point>& last_interaction_location() const {
@@ -281,13 +285,15 @@ void TabCounterAnimator::Animate(int new_num_tabs, bool should_start_throbber) {
 }
 
 void TabCounterAnimator::MaybeStartPendingAnimation() {
-  if (flying_link_ && flying_link_->is_flying())
+  if (flying_link_ && flying_link_->is_flying()) {
     return;
+  }
 
   if (pending_throbber_) {
     // Start the throbber if it is not already showing.
-    if (!throbber_timer_.IsRunning())
+    if (!throbber_timer_.IsRunning()) {
       throbber_->Start();
+    }
 
     // Automatically stop the throbber after 1 second. This will reset the timer
     // if it is already running. Currently we do not check the real loading
@@ -333,8 +339,9 @@ void TabCounterAnimator::StartFlyingLinkFrom(
 }
 
 void TabCounterAnimator::LayoutIfAnimating() {
-  if (!border_animation_.is_animating() && !label_animation_.is_animating())
+  if (!border_animation_.is_animating() && !label_animation_.is_animating()) {
     return;
+  }
 
   // |border_view_| does a hop or a dip based on animation type.
   int border_y_delta = 0;
@@ -604,8 +611,9 @@ void WebUITabCounterButton::AddedToWidget() {
 void WebUITabCounterButton::AfterPropertyChange(const void* key,
                                                 int64_t old_value) {
   View::AfterPropertyChange(key, old_value);
-  if (key != user_education::kHasInProductHelpPromoKey)
+  if (key != user_education::kHasInProductHelpPromoKey) {
     return;
+  }
   UpdateColors();
 }
 
@@ -655,9 +663,10 @@ void WebUITabCounterButton::MaybeStartFlyingLink(
     WindowOpenDisposition disposition) {
   if (disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB &&
       interaction_tracker_ &&
-      interaction_tracker_->last_interaction_location().has_value())
+      interaction_tracker_->last_interaction_location().has_value()) {
     animator_->StartFlyingLinkFrom(
         interaction_tracker_->last_interaction_location().value());
+  }
 }
 
 void WebUITabCounterButton::OnTabStripModelChanged(

@@ -7,8 +7,8 @@
 namespace content {
 
 MediaPlayerId::MediaPlayerId(GlobalRenderFrameHostId frame_routing_id,
-                             int delegate_id)
-    : frame_routing_id(frame_routing_id), delegate_id(delegate_id) {}
+                             int player_id)
+    : frame_routing_id(frame_routing_id), player_id(player_id) {}
 
 MediaPlayerId MediaPlayerId::CreateMediaPlayerIdForTests() {
   return MediaPlayerId(GlobalRenderFrameHostId(), 0);
@@ -16,17 +16,17 @@ MediaPlayerId MediaPlayerId::CreateMediaPlayerIdForTests() {
 
 bool MediaPlayerId::operator==(const MediaPlayerId& other) const {
   return frame_routing_id == other.frame_routing_id &&
-         delegate_id == other.delegate_id;
+         player_id == other.player_id;
 }
 
 bool MediaPlayerId::operator!=(const MediaPlayerId& other) const {
   return frame_routing_id != other.frame_routing_id ||
-         delegate_id != other.delegate_id;
+         player_id != other.player_id;
 }
 
 bool MediaPlayerId::operator<(const MediaPlayerId& other) const {
   if (frame_routing_id == other.frame_routing_id)
-    return delegate_id < other.delegate_id;
+    return player_id < other.player_id;
   return frame_routing_id < other.frame_routing_id;
 }
 

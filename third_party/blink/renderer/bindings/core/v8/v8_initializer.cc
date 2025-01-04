@@ -742,6 +742,10 @@ void HostGetImportMetaProperties(v8::Local<v8::Context> context,
   meta->CreateDataProperty(context, resolve_key, resolve_value).ToChecked();
 }
 
+bool IsDOMExceptionWrapper(v8::Isolate* isolate, v8::Local<v8::Object> object) {
+  return V8DOMException::HasInstance(isolate, object);
+}
+
 struct PrintV8OOM {
   const char* location;
   const v8::OOMDetails& details;
@@ -783,6 +787,7 @@ void V8Initializer::InitializeV8Common(v8::Isolate* isolate) {
   isolate->SetHostImportModuleDynamicallyCallback(HostImportModuleDynamically);
   isolate->SetHostInitializeImportMetaObjectCallback(
       HostGetImportMetaProperties);
+  isolate->SetIsJSApiWrapperNativeErrorCallback(IsDOMExceptionWrapper);
   isolate->SetMetricsRecorder(std::make_shared<V8MetricsRecorder>(isolate));
 
 #if BUILDFLAG(IS_WIN)

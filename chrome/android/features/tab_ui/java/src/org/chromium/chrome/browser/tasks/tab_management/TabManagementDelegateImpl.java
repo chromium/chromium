@@ -102,7 +102,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull DoubleConsumer onToolbarAlphaChange,
             @NonNull BackPressManager backPressManager,
             @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
-            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager,
+            @NonNull ObservableSupplier<Boolean> tabModelNotificationDotSupplier) {
         // TODO(crbug.com/40946413): Consider making this an activity scoped singleton and possibly
         // hosting it in CTA/HubProvider.
         TabSwitcherPaneCoordinatorFactory factory =
@@ -140,7 +141,6 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             pane =
                     new IncognitoTabSwitcherPane(
                             activity,
-                            profileProviderSupplier,
                             factory,
                             incongitorTabGroupModelFilterSupplier,
                             newTabButtonOnClickListener,
@@ -162,7 +162,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                             factory,
                             tabGroupModelFilterSupplier,
                             newTabButtonOnClickListener,
-                            new TabSwitcherPaneDrawableCoordinator(activity, tabModelSelector),
+                            new TabSwitcherPaneDrawableCoordinator(
+                                    activity, tabModelSelector, tabModelNotificationDotSupplier),
                             onToolbarAlphaChange,
                             userEducationHelper,
                             edgeToEdgeSupplier);

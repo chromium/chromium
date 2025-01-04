@@ -33,11 +33,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDebugManagerClient
                                   const std::string& error_message)>
       ErrorCallback;
 
-  // Invoke D-Bus API to update bluetooth devcoredump state.
-  virtual void SetDevCoredump(const bool enable,
-                              base::OnceClosure callback,
-                              ErrorCallback error_callback) = 0;
-
   // Invoke D-Bus API to enable or disable LL privacy.
   virtual void SetLLPrivacy(const bool enable,
                             base::OnceClosure callback,

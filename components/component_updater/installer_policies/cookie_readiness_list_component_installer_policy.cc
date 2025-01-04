@@ -6,7 +6,9 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -18,6 +20,8 @@
 #include "base/version.h"
 
 namespace {
+using ListReadyRepeatingCallback = component_updater::
+    CookieReadinessListComponentInstallerPolicy::ListReadyRepeatingCallback;
 
 // The SHA256 of the SubjectPublicKeyInfo used to sign the component.
 // The extension id is: mcfjlbnicoclaecapilmleaelokfnijm
@@ -34,10 +38,9 @@ constexpr base::FilePath::CharType kCookieReadinessListJsonFileName[] =
 constexpr base::FilePath::CharType kCookieReadinessListRelativeInstallDir[] =
     FILE_PATH_LITERAL("CookieReadinessList");
 
-void LoadCookieReadinessListFromDisk(const base::FilePath& json_path) {
-  if (json_path.empty()) {
-    return;
-  }
+std::optional<std::string> LoadCookieReadinessListFromDisk(
+    const base::FilePath& json_path) {
+  CHECK(!json_path.empty());
 
   VLOG(1) << "Reading Cookie Readiness List from file: " << json_path.value();
   std::string json_content;
@@ -45,19 +48,29 @@ void LoadCookieReadinessListFromDisk(const base::FilePath& json_path) {
     // The file won't exist on new installations, so this is not always an
     // error.
     VLOG(1) << "Failed reading from " << json_path.value();
-    return;
+    return std::nullopt;
   }
-  // TODO(crbug.com/372881302): Implement Cookie Readiness List handler and pass
-  // in json.
+  return json_content;
 }
 
-base::FilePath GetInstalledPath(const base::FilePath& path) {
-  return path.Append(kCookieReadinessListJsonFileName);
+base::FilePath GetInstalledPath(const base::FilePath& install_dir) {
+  return install_dir.Append(kCookieReadinessListJsonFileName);
 }
 
 }  // namespace
 
 namespace component_updater {
+
+CookieReadinessListComponentInstallerPolicy::
+    CookieReadinessListComponentInstallerPolicy(
+        ListReadyRepeatingCallback on_list_ready)
+    : on_list_ready_(std::move(on_list_ready)) {}
+
+CookieReadinessListComponentInstallerPolicy::
+    CookieReadinessListComponentInstallerPolicy() = default;
+
+CookieReadinessListComponentInstallerPolicy::
+    ~CookieReadinessListComponentInstallerPolicy() = default;
 
 bool CookieReadinessListComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
@@ -85,18 +98,17 @@ void CookieReadinessListComponentInstallerPolicy::ComponentReady(
   VLOG(1) << "Component ready, version " << version.GetString() << " in "
           << install_dir.value();
 
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
       base::BindOnce(&LoadCookieReadinessListFromDisk,
-                     GetInstalledPath(install_dir)));
+                     GetInstalledPath(install_dir)),
+      base::BindOnce(on_list_ready_));
 }
 
 // Called during startup and installation before ComponentReady().
 bool CookieReadinessListComponentInstallerPolicy::VerifyInstallation(
     const base::Value::Dict& manifest,
     const base::FilePath& install_dir) const {
-  // TODO(crbug.com/372881302): - Actual verification will happen in the Cookie
-  // Readiness List handler.
   return base::PathExists(GetInstalledPath(install_dir));
 }
 
@@ -118,6 +130,13 @@ std::string CookieReadinessListComponentInstallerPolicy::GetName() const {
 update_client::InstallerAttributes
 CookieReadinessListComponentInstallerPolicy::GetInstallerAttributes() const {
   return {};
+}
+
+// static
+base::FilePath
+CookieReadinessListComponentInstallerPolicy::GetInstalledPathForTesting(
+    const base::FilePath& base) {
+  return GetInstalledPath(base);
 }
 
 }  // namespace component_updater

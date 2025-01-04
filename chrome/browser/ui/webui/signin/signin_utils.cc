@@ -75,8 +75,9 @@ extensions::WebViewGuest* GetAuthWebViewGuest(
 
 Browser* GetDesktopBrowser(content::WebUI* web_ui) {
   Browser* browser = chrome::FindBrowserWithTab(web_ui->GetWebContents());
-  if (!browser)
+  if (!browser) {
     browser = chrome::FindLastActiveWithProfile(Profile::FromWebUI(web_ui));
+  }
   return browser;
 }
 
@@ -92,8 +93,9 @@ base::TimeDelta GetMinorModeRestrictionsDeadline() {
 void SetInitializedModalHeight(Browser* browser,
                                content::WebUI* web_ui,
                                const base::Value::List& args) {
-  if (!browser)
+  if (!browser) {
     return;
+  }
 
   double height = args[0].GetDouble();
   browser->signin_view_controller()->SetModalSigninHeight(

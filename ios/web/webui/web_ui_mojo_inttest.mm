@@ -19,7 +19,7 @@
 #import "ios/web/public/webui/web_ui_ios_controller_factory.h"
 #import "ios/web/public/webui/web_ui_ios_data_source.h"
 #import "ios/web/test/grit/test_resources.h"
-#import "ios/web/test/mojo_test.mojom.h"
+#import "ios/web/test/mojo_test.test-mojom.h"
 #import "ios/web/test/test_url_constants.h"
 #import "ios/web/test/web_int_test.h"
 #import "mojo/public/cpp/bindings/pending_remote.h"
@@ -116,7 +116,7 @@ class TestUI : public WebUIIOSController {
 
     source->AddResourcePath("mojo_test.js", IDR_MOJO_TEST_JS);
     source->AddResourcePath("mojo_bindings.js", IDR_IOS_MOJO_BINDINGS_JS);
-    source->AddResourcePath("mojo_test.mojom.js", IDR_MOJO_TEST_MOJO_JS);
+    source->AddResourcePath("mojo_test.test-mojom.js", IDR_MOJO_TEST_MOJO_JS);
     source->SetDefaultResource(IDR_MOJO_TEST_HTML);
 
     web::WebState* web_state = web_ui->GetWebState();

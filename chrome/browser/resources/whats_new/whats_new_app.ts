@@ -429,14 +429,9 @@ export class WhatsNewAppElement extends CrLitElement {
 
     const latest = this.isAutoOpen_ && !isChromeOS ? 'true' : 'false';
     url += url.includes('?') ? '&' : '?';
-    if (loadTimeData.getBoolean('isWhatsNewV2')) {
-      // The browser has auto-opened the page due to an upgrade.
-      // Let the embedded page know to display the "up to date" banner.
-      this.url_ = url.concat(`updated=${latest}`);
-    } else {
-      // The latest version of the page is being shown. Do not redirect.
-      this.url_ = url.concat(`latest=${latest}`);
-    }
+    // The browser has auto-opened the page due to an upgrade.
+    // Let the embedded page know to display the "up to date" banner.
+    this.url_ = url.concat(`updated=${latest}`);
 
     this.eventTracker_.add(
         window, 'message',

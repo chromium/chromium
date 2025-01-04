@@ -265,6 +265,9 @@ class AutocompleteController : public AutocompleteProviderListener,
     return history_url_provider_;
   }
   KeywordProvider* keyword_provider() const { return keyword_provider_; }
+  UnscopedExtensionProvider* unscoped_extension_provider() const {
+    return unscoped_extension_provider_;
+  }
   SearchProvider* search_provider() const { return search_provider_; }
   ClipboardProvider* clipboard_provider() const { return clipboard_provider_; }
   VoiceSuggestProvider* voice_suggest_provider() const {
@@ -289,8 +292,7 @@ class AutocompleteController : public AutocompleteProviderListener,
 
   // Returns whether the given provider should be ran based on whether we're in
   // keyword mode and which keyword we're searching. Currently runs all enabled
-  // providers unless in a Starter Pack scope, except for OpenTabProvider which
-  // only runs on Lacros and the @tabs scope.
+  // providers unless in a Starter Pack scope, except for the @tabs scope.
   bool ShouldRunProvider(AutocompleteProvider* provider) const;
 
   const base::TimeTicks& last_time_default_match_changed() const {
@@ -517,6 +519,8 @@ class AutocompleteController : public AutocompleteProviderListener,
   raw_ptr<HistoryURLProvider> history_url_provider_;
 
   raw_ptr<KeywordProvider> keyword_provider_;
+
+  raw_ptr<UnscopedExtensionProvider> unscoped_extension_provider_;
 
   raw_ptr<SearchProvider> search_provider_;
 

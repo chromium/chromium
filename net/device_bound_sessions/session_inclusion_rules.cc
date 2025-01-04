@@ -63,6 +63,15 @@ std::optional<SessionInclusionRules::InclusionResult> GetInclusionResult(
   return std::nullopt;
 }
 
+std::string RuleTypeToString(SessionInclusionRules::InclusionResult rule_type) {
+  switch (rule_type) {
+    case SessionInclusionRules::InclusionResult::kExclude:
+      return "exclude";
+    case SessionInclusionRules::InclusionResult::kInclude:
+      return "include";
+  }
+}
+
 }  // namespace
 
 // Encapsulates a single rule which applies to the request URL.
@@ -338,6 +347,16 @@ std::unique_ptr<SessionInclusionRules> SessionInclusionRules::CreateFromProto(
     }
   }
 
+  return result;
+}
+
+std::string SessionInclusionRules::DebugString() const {
+  std::string result;
+  for (const UrlRule& rule : url_rules_) {
+    base::StrAppend(&result, {"Type=", RuleTypeToString(rule.rule_type),
+                              "; Domain=", rule.host_matcher_rule->ToString(),
+                              "; Path=", rule.path_prefix, "\n"});
+  }
   return result;
 }
 

@@ -29,8 +29,6 @@ source_set("model") {
   deps = [
     ":capabilities",
     ":sync_settings_factory",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/prefs",
     "//components/security_interstitials/core",
     "//components/signin/public/identity_manager",
@@ -40,10 +38,10 @@ source_set("model") {
     "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/model/web_state_list:web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/common",
@@ -85,10 +83,9 @@ source_set("sync_settings_factory") {
     "supervised_user_settings_service_factory.mm",
   ]
   deps = [
-    "//components/keyed_service/ios",
     "//components/supervised_user/core/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
   ]
 }
 
@@ -144,6 +141,7 @@ source_set("eg2_tests") {
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/policy/model:eg_test_support+eg2",
     "//ios/chrome/browser/policy/model:policy_earl_grey_matchers",
@@ -158,7 +156,6 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_metrics",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_ui_constants",
     "//ios/chrome/browser/toolbar/ui_bundled/public:constants",
-    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

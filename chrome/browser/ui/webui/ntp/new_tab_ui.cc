@@ -73,8 +73,9 @@ const char kRTLHtmlTextDirection[] = "rtl";
 const char kLTRHtmlTextDirection[] = "ltr";
 
 const char* GetHtmlTextDirection(const std::u16string& text) {
-  if (base::i18n::IsRTL() && base::i18n::StringContainsStrongRTLChars(text))
+  if (base::i18n::IsRTL() && base::i18n::StringContainsStrongRTLChars(text)) {
     return kRTLHtmlTextDirection;
+  }
   return kLTRHtmlTextDirection;
 }
 
@@ -141,10 +142,11 @@ void NewTabUI::SetUrlTitleAndDirection(base::Value::Dict* dictionary,
   // title will be rendered as "!Yahoo" if its "dir" attribute is not set to
   // "ltr".
   std::string direction;
-  if (using_url_as_the_title)
+  if (using_url_as_the_title) {
     direction = kLTRHtmlTextDirection;
-  else
+  } else {
     direction = GetHtmlTextDirection(title);
+  }
 
   dictionary->Set("title", title_to_set);
   dictionary->Set("direction", direction);

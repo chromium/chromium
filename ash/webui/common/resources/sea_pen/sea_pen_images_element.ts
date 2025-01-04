@@ -24,7 +24,7 @@ import './sea_pen_zero_state_svg_element.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {QUERY, Query, SeaPenImageId} from './constants.js';
-import {isLacrosEnabled, isManagedSeaPenFeedbackEnabled, isSeaPenTextInputEnabled, isVcResizeThumbnailEnabled} from './load_time_booleans.js';
+import {isManagedSeaPenFeedbackEnabled, isSeaPenTextInputEnabled, isVcResizeThumbnailEnabled} from './load_time_booleans.js';
 import {MantaStatusCode, SeaPenQuery, SeaPenThumbnail, TextQueryHistoryEntry} from './sea_pen.mojom-webui.js';
 import {clearSeaPenThumbnails, openFeedbackDialog, selectSeaPenThumbnail} from './sea_pen_controller.js';
 import {SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
@@ -64,10 +64,8 @@ type Tile = 'loading'|SeaPenThumbnail;
 let cameraAspectRatio: number|null = null;
 (function() {
 // Try to set aspect ratio if it is not set yet.
-// We only need this when it is not Wallpaper, not Lacros, and aspectRatio
-// is not set.
-if (!isPersonalizationApp() && !isLacrosEnabled() &&
-    isVcResizeThumbnailEnabled()) {
+// We only need this when it is not Wallpaper and aspectRatio is not set.
+if (!isPersonalizationApp() && isVcResizeThumbnailEnabled()) {
   if (navigator.mediaDevices.getUserMedia) {
     navigator.mediaDevices.getUserMedia({video: true})
         .then((stream: MediaStream) => {
@@ -321,7 +319,7 @@ export class SeaPenImagesElement extends WithSeaPenStore {
       this.shadowRoot!.querySelector<HTMLElement>('.sea-pen-image')?.focus();
 
       // Resize images if cameraAspectRatio is set.
-      // This only happens when it is not wallpaper, not lacros.
+      // This only happens when it is not wallpaper.
       if (cameraAspectRatio) {
         // Handle each sea-pen-image element.
         this.shadowRoot!.querySelectorAll<HTMLElement>('.sea-pen-image')
@@ -358,7 +356,7 @@ export class SeaPenImagesElement extends WithSeaPenStore {
   }
 
   private maybeCreateCameraFeed_(): HTMLVideoElement|null {
-    if (isPersonalizationApp() || isLacrosEnabled()) {
+    if (isPersonalizationApp()) {
       return null;
     }
     let cameraFeed: HTMLVideoElement|null = document.createElement('video');

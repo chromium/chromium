@@ -20,7 +20,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
@@ -223,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginNTPBrowserTest,
   InstantService* instant_service =
       InstantServiceFactory::GetForProfile(browser()->profile());
   EXPECT_TRUE(instant_service->IsInstantProcess(
-      contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
+      contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID()));
   EXPECT_EQ(contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL(),
             ntp_site_instance->GetSiteURL());
 
@@ -231,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginNTPBrowserTest,
   // process.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), isolated_url));
   EXPECT_FALSE(instant_service->IsInstantProcess(
-      contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
+      contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID()));
   EXPECT_EQ(contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL(),
             site_instance->GetSiteURL());
 }
@@ -277,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(OpenWindowFromNTPBrowserTest,
   InstantService* instant_service =
       InstantServiceFactory::GetForProfile(browser()->profile());
   EXPECT_TRUE(instant_service->IsInstantProcess(
-      ntp_tab->GetPrimaryMainFrame()->GetProcess()->GetID()));
+      ntp_tab->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID()));
 
   // Execute script that creates new window from ntp tab with
   // ntp.com/title1.html as target url. Host is same as remote-ntp host, yet
@@ -299,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(OpenWindowFromNTPBrowserTest,
   EXPECT_EQ(generic_url, opened_tab->GetLastCommittedURL());
   // New created tab should not reside in an Instant process.
   EXPECT_FALSE(instant_service->IsInstantProcess(
-      opened_tab->GetPrimaryMainFrame()->GetProcess()->GetID()));
+      opened_tab->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID()));
 }
 
 // Test that the System AccentColor keyword is supported ONLY for installed
@@ -962,7 +961,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest, HandlersIgnoredWhenDisabled) {
   EXPECT_EQ(u"about:blank", tab_title);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Tests that if a protocol handler is registered for a scheme, an external
 // program (another Chrome tab in this case) is not launched to handle the
 // navigation. This is a regression test for crbug.com/963133.
@@ -1069,7 +1068,6 @@ class ScopedFakeExternalProtocolHandlerDelegate
  private:
   base::RunLoop launch_url_run_loop_;
   const std::u16string program_name_ = u"custom";
-  bool launch_url_called_ = false;
   bool external_protocol_dialog_called_ = false;
   std::string launched_url_without_security_check_;
   std::string launched_url_with_security_check_;

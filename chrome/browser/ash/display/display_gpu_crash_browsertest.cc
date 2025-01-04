@@ -5,16 +5,15 @@
 #include "ash/display/mirror_window_controller.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/shell.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
+#include "cc/trees/layer_tree_host.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
-#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_observer.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
@@ -22,13 +21,12 @@
 
 namespace {
 
-void SimulateGpuCrash(Browser* browser) {
-  NavigateParams params(
-      browser, GURL(blink::kChromeUIGpuCrashURL),
-      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
-  params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
-  Navigate(&params);
+void SimulateGpuCrash() {
+  const cc::LayerTreeHost* host = ash::Shell::GetPrimaryRootWindow()
+                                      ->layer()
+                                      ->GetCompositor()
+                                      ->host_for_testing();
+  const_cast<cc::LayerTreeHost*>(host)->CrashGpuProcessForTesting();
 }
 
 display::DisplayManager* GetDisplayManager() {
@@ -106,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(DisplayGpuCrashBrowserTest, CrashInMirror) {
     TestSurfaceIdObserver surface_id_observer(
         primary_root->GetHost()->compositor(), loop.QuitClosure());
 
-    SimulateGpuCrash(browser());
+    SimulateGpuCrash();
 
     loop.Run();
     EXPECT_NE(local_surface_id, primary_root->GetLocalSurfaceId());
@@ -125,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(DisplayGpuCrashBrowserTest, CrashInMirror) {
 
 // TODO(crbug.com/368538284): Debug build prints too many error messages while
 // waiting for GPU restart, which causes test failure on bots.
-IN_PROC_BROWSER_TEST_F(DisplayGpuCrashBrowserTest, DISABLED_CrashInUnified) {
+IN_PROC_BROWSER_TEST_F(DisplayGpuCrashBrowserTest, CrashInUnified) {
   auto* display_manager = GetDisplayManager();
   display_manager->SetUnifiedDesktopEnabled(true);
 
@@ -144,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(DisplayGpuCrashBrowserTest, DISABLED_CrashInUnified) {
   TestSurfaceIdObserver surface_id_observer(
       primary_root->GetHost()->compositor(), loop.QuitClosure());
 
-  SimulateGpuCrash(browser());
+  SimulateGpuCrash();
 
   loop.Run();
   EXPECT_NE(local_surface_id, primary_root->GetLocalSurfaceId());

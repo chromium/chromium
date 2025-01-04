@@ -169,7 +169,7 @@ void DwaService::RecordCoarseSystemInformation(
   coarse_system_info->set_platform(::dwa::CoarseSystemInfo::PLATFORM_ANDROID);
 #elif BUILDFLAG(IS_IOS)
   coarse_system_info->set_platform(::dwa::CoarseSystemInfo::PLATFORM_IOS);
-#elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_CHROMEOS)
   coarse_system_info->set_platform(::dwa::CoarseSystemInfo::PLATFORM_CHROMEOS);
 #else
   coarse_system_info->set_platform(::dwa::CoarseSystemInfo::PLATFORM_OTHER);

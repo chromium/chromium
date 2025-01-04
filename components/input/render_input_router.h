@@ -59,6 +59,7 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
                     scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   void SetupInputRouter(float device_scale_factor);
+  void SetFlingScheduler(std::unique_ptr<FlingSchedulerBase> fling_scheduler);
 
   void BindRenderInputRouterInterfaces(
       mojo::PendingRemote<blink::mojom::RenderInputRouterClient> remote);
@@ -196,6 +197,9 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
 
   void SetInputTargetClientForTesting(
       mojo::Remote<viz::mojom::InputTargetClient> input_target_client);
+  FlingSchedulerBase* GetFlingSchedulerForTesting() {
+    return fling_scheduler_.get();
+  }
 
  private:
   friend content::MockRenderInputRouter;

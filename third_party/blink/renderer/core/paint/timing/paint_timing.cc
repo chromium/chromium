@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 #include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/frame_request_callback_collection.h"
@@ -23,6 +24,10 @@
 #include "third_party/blink/renderer/core/loader/progress_tracker.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
+#include "third_party/blink/renderer/core/paint/timing/image_paint_timing_detector.h"
+#include "third_party/blink/renderer/core/paint/timing/text_element_timing.h"
+#include "third_party/blink/renderer/core/paint/timing/text_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/timing/animation_frame_timing_info.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
@@ -30,10 +35,13 @@
 #include "third_party/blink/renderer/core/timing/performance_timing_for_reporting.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/graphics/paint/ignore_paint_timing_scope.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/document_resource_coordinator.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -238,13 +246,20 @@ void PaintTiming::MarkPaintTiming() {
 }
 
 void PaintTiming::MarkPaintTimingInternal() {
-  FrameWidget* widget = GetFrame()->GetWidgetForLocalRoot();
-  if (!widget) {
-    return;
-  }
+  PaintTimingDetector* detector = &GetFrame()->View()->GetPaintTimingDetector();
 
-  // 3-6: TODO(crbug.com/381270287) export PaintTimingMixin for
-  // LCP/element-timing.
+  // 3. Let paintedImages be a new ordered set...
+  auto add_painted_images_element_timing_entries =
+      ImageElementTiming::From(*GetFrame()->DomWindow())
+          .TakePaintTimingCallback();
+  // 4. Let paintedTextNodes be a new ordered set
+  auto add_painted_text_entries =
+      detector->GetTextPaintTimingDetector().TakePaintTimingCallback();
+
+  // TODO(crbug.com/381270287) expose PaintTiming also for LCP, and ensure
+  // entries are queued in spec order.
+  auto add_image_lcp_entries =
+      detector->GetImagePaintTimingDetector().TakePaintTimingCallback();
 
   // 7. Let reportedPaints be the document’s set of previously reported paints.
   PendingPaintTimingRecord paint_timing_record{
@@ -253,24 +268,42 @@ void PaintTiming::MarkPaintTimingInternal() {
       .rendering_update_end_time = last_rendering_update_end_time_};
   pending_paint_events_.clear();
 
+  FrameWidget* widget = GetFrame()->GetWidgetForLocalRoot();
+  if (!widget) {
+    return;
+  }
+
   // 8. Let frameTimingInfo be document’s current frame timing info.
   // 9. Set document’s current frame timing info to null.
   // (RecordRenderingUpdateEndTime resets the |current frame timing info| inside
   // AnimationFrameTimingMonitor, so it reads a bit different from the spec).
   AnimationFrameTimingInfo* frame_timing_info =
-      widget->RecordRenderingUpdateEndTime(last_rendering_update_end_time_);
+      GetFrame()->IsLocalRoot() ? widget->RecordRenderingUpdateEndTime(
+                                      last_rendering_update_end_time_)
+                                : nullptr;
 
-  if (paint_timing_record.paint_events.empty() && !frame_timing_info) {
+  if (paint_timing_record.paint_events.empty() && !frame_timing_info &&
+      !add_painted_images_element_timing_entries && !add_painted_text_entries &&
+      !add_image_lcp_entries) {
     return;
   }
 
   // 10. Let flushPaintTimings be the following steps:
-  base::OnceCallback<void(WindowPerformance*, const DOMPaintTimingInfo&)>
-      flush_paint_timings = WTF::BindOnce(
-          [](const PendingPaintTimingRecord& record,
+  PaintTimingCallback flush_paint_timings =
+      WTF::BindOnce(
+          [](WindowPerformance* performance,
+             const PendingPaintTimingRecord& record,
              AnimationFrameTimingInfo* frame_timing_info,
-             WindowPerformance* performance,
+             OptionalPaintTimingCallback image_lcp_callback,
+             OptionalPaintTimingCallback painted_images_callback,
+             OptionalPaintTimingCallback painted_text_callback,
+             PaintTimingDetector* paint_timing_detector,
+             const base::TimeTicks& raw_presentation_timestamp,
              const DOMPaintTimingInfo& paint_timing_info) {
+            if (!performance) {
+              return;
+            }
+
             // 10.1. If document should report first paint,
             // then: Report paint timing given document,
             // "first-paint", and paintTimingInfo.
@@ -288,7 +321,30 @@ void PaintTiming::MarkPaintTimingInternal() {
                   paint_timing_info, record.is_soft_navigation);
             }
 
-            // TODO(crbug.com/381270287): 10.3, 10.4 (LCP and element timing).
+            // 10.3. Report largest contentful paint given document,
+            // paintTimingInfo, paintedImages and paintedTextNodes.
+            if (image_lcp_callback) {
+              std::move(image_lcp_callback.value())
+                  .Run(raw_presentation_timestamp, paint_timing_info);
+            }
+
+            const bool may_have_lcp =
+                image_lcp_callback || painted_text_callback;
+
+            // 10.4 Report element timing given document, paintTimingInfo,
+            // paintedImages and paintedTextNodes.
+            if (painted_images_callback) {
+              std::move(painted_images_callback.value())
+                  .Run(raw_presentation_timestamp, paint_timing_info);
+            }
+            if (painted_text_callback) {
+              std::move(painted_text_callback.value())
+                  .Run(raw_presentation_timestamp, paint_timing_info);
+            }
+
+            if (paint_timing_detector && may_have_lcp) {
+              paint_timing_detector->UpdateLcpCandidate();
+            }
 
             // 10.5 If frameTimingInfo is not null, then queue a long
             // animation frame entry given document, frameTimingInfo, and
@@ -298,7 +354,11 @@ void PaintTiming::MarkPaintTimingInternal() {
                                                          paint_timing_info);
             }
           },
-          paint_timing_record, WrapPersistent(frame_timing_info));
+          WrapWeakPersistent(GetPerformanceInstance(GetFrame())),
+          paint_timing_record, WrapPersistent(frame_timing_info),
+          std::move(add_image_lcp_entries),
+          std::move(add_painted_images_element_timing_entries),
+          std::move(add_painted_text_entries), WrapWeakPersistent(detector));
 
   // 11. If the user-agent does not support implementation-defined presentation
   // times, call flushPaintTimings and return.
@@ -307,9 +367,7 @@ void PaintTiming::MarkPaintTimingInternal() {
   // 12.1 Wait until an implementation-defined time when the current frame has
   //    been presented to the user.
   RegisterNotifyPresentationTime(WTF::BindOnce(
-      [](PaintTiming* self,
-         base::OnceCallback<void(WindowPerformance*, const DOMPaintTimingInfo&)>
-             flush_paint_timings,
+      [](PaintTiming* self, PaintTimingCallback flush_paint_timings,
          const PendingPaintTimingRecord& record,
          const viz::FrameTimingDetails& frame_timing_details) {
         if (!self) {
@@ -335,23 +393,47 @@ void PaintTiming::MarkPaintTimingInternal() {
         // (Note: the "current time" is acquired in parallel inside
         // RegisterNotifyPresentationTime, not here).
         // 12.3 If document’s cross-origin isolated capability is false, then:
-        //
-        // 12.3.1 Coarsen paintTimingInfo’s implementation-defined presentation
-        // time to the next multiple of 4 milliseconds, or coarser. (The
-        // coarsening happens in Performance::RenderTimeToDOMHighResTimeStamp)
+
         DOMPaintTimingInfo paint_timing_info{
             .paint_time = performance->MonotonicTimeToDOMHighResTimeStamp(
                 record.rendering_update_end_time),
-            .presentation_time = performance->RenderTimeToDOMHighResTimeStamp(
-                frame_timing_details.presentation_feedback.timestamp)};
+            .presentation_time =
+                performance->MonotonicTimeToDOMHighResTimeStamp(
+                    frame_timing_details.presentation_feedback.timestamp)};
 
-        // 12.3.2 Wait until the current high resolution time is
-        // paintTimingInfo’s implementation-defined presentation time.
-        // GetPerformanceInstance(self->GetFrame())->QueueEntryWithPaintTiming(
-        // 12.4 Queue a global task on the performance timeline task source
-        // given document’s relevant global object to run flushPaintTimings.
-        performance->QueueEntryWithPaintTiming(std::move(flush_paint_timings),
-                                               paint_timing_info);
+        // 12.3.1 Coarsen paintTimingInfo’s implementation-defined presentation
+        // time to the next multiple of 4 milliseconds, or coarser.
+        bool coarsen =
+            RuntimeEnabledFeatures::ExposeCoarsenedRenderTimeEnabled() &&
+            !performance->CrossOriginIsolatedCapability();
+        if (coarsen) {
+          paint_timing_info.presentation_time =
+              (frame_timing_details.presentation_feedback.timestamp -
+               performance->GetTimeOriginInternal())
+                  .CeilToMultiple(base::Milliseconds(4))
+                  .InMillisecondsF();
+        }
+
+        auto flush =
+            BindOnce(std::move(flush_paint_timings),
+                     frame_timing_details.presentation_feedback.timestamp,
+                     paint_timing_info);
+
+        if (coarsen) {
+          // 12.3.2 Wait until the current high resolution time is
+          // paintTimingInfo’s implementation-defined presentation time.
+          // 12.4 Queue a global task on the performance timeline task source
+          // given document’s relevant global object to run flushPaintTimings.
+          base::TimeTicks target_time =
+              performance->GetTimeOriginInternal() +
+              base::Milliseconds(paint_timing_info.presentation_time);
+
+          performance->GetTaskRunner().PostDelayedTask(
+              FROM_HERE, std::move(flush),
+              target_time - base::TimeTicks::Now());
+        } else {
+          std::move(flush).Run();
+        }
       },
       WrapWeakPersistent(this), std::move(flush_paint_timings),
       paint_timing_record));

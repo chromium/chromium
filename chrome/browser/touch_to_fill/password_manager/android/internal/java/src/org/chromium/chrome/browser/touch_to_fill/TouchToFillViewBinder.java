@@ -27,7 +27,9 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.We
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.WEBAUTHN_FAVICON_OR_FALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.WEBAUTHN_ITEM_COLLECTION_INFO;
 
+import android.content.Context;
 import android.text.Html;
+import android.text.TextUtils;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.view.ViewGroup;
@@ -186,28 +188,42 @@ class TouchToFillViewBinder {
             passwordText.setText(credential.getPassword());
             passwordText.setTransformationMethod(new PasswordTransformationMethod());
 
-            String label =
-                    view.getContext()
-                            .getString(
-                                    R.string
-                                            .touch_to_fill_password_credential_accessibility_description,
-                                    credential.getFormattedUsername());
-            FillableItemCollectionInfo collectionInfo = model.get(ITEM_COLLECTION_INFO);
-            String contentDescription =
-                    collectionInfo == null
-                            ? label
-                            : view.getContext()
-                                    .getString(
-                                            R.string.touch_to_fill_a11y_item_collection_info,
-                                            label,
-                                            collectionInfo.getPosition(),
-                                            collectionInfo.getTotal());
-            view.setContentDescription(contentDescription);
+            view.setContentDescription(
+                    createContentDescription(
+                            credential, model.get(ITEM_COLLECTION_INFO), view.getContext()));
         } else if (propertyKey == SHOW_SUBMIT_BUTTON) {
             // Whether Touch To Fill should auto-submit a form doesn't affect the credentials list.
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
+    }
+
+    private static String createContentDescription(
+            Credential credential, FillableItemCollectionInfo collectionInfo, Context context) {
+        String label;
+        if (TextUtils.isEmpty(credential.getDisplayName())) {
+            label =
+                    context.getString(
+                            R.string.touch_to_fill_password_credential_accessibility_description,
+                            credential.getFormattedUsername());
+        } else {
+            label =
+                    context.getString(
+                            R.string
+                                    .touch_to_fill_password_credential_accessibility_description_with_url,
+                            credential.getFormattedUsername(),
+                            credential.getDisplayName());
+        }
+
+        String contentDescription =
+                collectionInfo == null
+                        ? label
+                        : context.getString(
+                                R.string.touch_to_fill_a11y_item_collection_info,
+                                label,
+                                collectionInfo.getPosition(),
+                                collectionInfo.getTotal());
+        return contentDescription;
     }
 
     /**

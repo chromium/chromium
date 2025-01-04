@@ -9,7 +9,7 @@
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/shell.h"
 #include "base/strings/utf_string_conversions.h"
-#include "ui/base/accelerators/ash/right_alt_event_property.h"
+#include "ui/base/accelerators/ash/quick_insert_event_property.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -41,8 +41,8 @@ ui::KeyboardCode RetrieveKeyCode(const ui::KeyEvent& event) {
     key_code = ui::VKEY_MEDIA_LAUNCH_APP1;
   }
 
-  if (ui::HasRightAltProperty(event)) {
-    key_code = ui::VKEY_RIGHT_ALT;
+  if (ui::HasQuickInsertProperty(event)) {
+    key_code = ui::VKEY_QUICK_INSERT;
   }
 
   return key_code;
@@ -63,10 +63,9 @@ ShortcutInputHandler::~ShortcutInputHandler() {
 
 void ShortcutInputHandler::Initialize() {
   CHECK(Shell::Get());
-  if (!features::IsPeripheralCustomizationEnabled() &&
-      !::features::IsShortcutCustomizationEnabled()) {
+  if (!features::IsPeripheralCustomizationEnabled()) {
     LOG(ERROR) << "ShortcutInputHandler can only be initialized if "
-               << "shortcut or peripherals customization flags are enabled.";
+               << "peripherals customization flag is enabled.";
     return;
   }
 

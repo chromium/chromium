@@ -21,6 +21,7 @@
 #include "ui/compositor/debug_utils.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/debug_utils.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -64,7 +65,8 @@ void PrintViewHierarchy(std::ostringstream* out) {
 
   *out << "Host widget:\n";
   views::PrintWidgetInformation(*widget, /*detailed*/ true, out);
-  views::PrintViewHierarchy(widget->GetRootView(), out);
+  *out << "View hierarchy:\n"
+       << views::PrintViewHierarchy(widget->GetRootView());
 }
 
 std::vector<std::string> PrintWindowHierarchy(std::ostringstream* out,

@@ -828,15 +828,6 @@ void WaitForCopyableViewInWebContents(WebContents* web_contents);
 // against its view.
 void WaitForCopyableViewInFrame(RenderFrameHost* render_frame_host);
 
-// Blocks the current execution until the frame submitted via the browser's
-// compositor is presented on the screen.
-void WaitForBrowserCompositorFramePresented(WebContents* web_contents);
-
-// Forces the browser to submit a compositor frame, even if nothing has changed
-// in the viewport. Use `WaitForBrowserCompositorFramePresented()` to wait for
-// the frame's presentation.
-void ForceNewCompositorFrameFromBrowser(WebContents* web_contents);
-
 // Sets up a /redirect-on-second-navigation?url endpoint on the provided
 // `server`, which will return a 200 OK response for the first request, and
 // redirect the second request to `url` provided in the query param. This should

@@ -43,6 +43,24 @@ struct UnionTraits<on_device_model::mojom::InputPieceDataView, ml::InputPiece> {
                    ml::InputPiece* out);
 };
 
+template <>
+struct EnumTraits<on_device_model::mojom::ModelBackendType,
+                  ml::ModelBackendType> {
+  static on_device_model::mojom::ModelBackendType ToMojom(
+      ml::ModelBackendType input);
+  static bool FromMojom(on_device_model::mojom::ModelBackendType input,
+                        ml::ModelBackendType* output);
+};
+
+template <>
+struct EnumTraits<on_device_model::mojom::ModelPerformanceHint,
+                  ml::ModelPerformanceHint> {
+  static on_device_model::mojom::ModelPerformanceHint ToMojom(
+      ml::ModelPerformanceHint input);
+  static bool FromMojom(on_device_model::mojom::ModelPerformanceHint input,
+                        ml::ModelPerformanceHint* output);
+};
+
 }  // namespace mojo
 
 #endif  // SERVICES_ON_DEVICE_MODEL_ML_CHROME_ML_TYPES_TRAITS_H_

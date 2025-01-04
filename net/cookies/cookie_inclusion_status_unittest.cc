@@ -418,4 +418,34 @@ TEST(CookieInclusionStatusTest, ExcludedByUserPreferencesOrTPCD) {
   EXPECT_FALSE(status.ExcludedByUserPreferencesOrTPCD());
 }
 
+TEST(CookieInclusionStatusTest, InvalidExclusionReason) {
+  CookieInclusionStatus status;
+  // Ensure adding, removing, and checking invalid exclusion reasons
+  // works as expected.
+  status.AddExclusionReason(CookieInclusionStatus::NUM_EXCLUSION_REASONS);
+  status.AddExclusionReason(
+      static_cast<CookieInclusionStatus::ExclusionReason>(-1));
+  EXPECT_FALSE(
+      status.HasExclusionReason(CookieInclusionStatus::NUM_EXCLUSION_REASONS));
+  status.RemoveExclusionReason(CookieInclusionStatus::NUM_EXCLUSION_REASONS);
+  EXPECT_FALSE(
+      status.HasExclusionReason(CookieInclusionStatus::NUM_EXCLUSION_REASONS));
+  EXPECT_FALSE(status.HasOnlyExclusionReason(
+      CookieInclusionStatus::NUM_EXCLUSION_REASONS));
+}
+
+TEST(CookieInclusionStatusTest, InvalidWarningReason) {
+  CookieInclusionStatus status;
+  // Ensure adding, removing, and checking invalid warning reasons
+  // works as expected.
+  status.AddWarningReason(CookieInclusionStatus::NUM_WARNING_REASONS);
+  status.AddWarningReason(
+      static_cast<CookieInclusionStatus::WarningReason>(-1));
+  EXPECT_FALSE(
+      status.HasWarningReason(CookieInclusionStatus::NUM_WARNING_REASONS));
+  status.RemoveWarningReason(CookieInclusionStatus::NUM_WARNING_REASONS);
+  EXPECT_FALSE(
+      status.HasWarningReason(CookieInclusionStatus::NUM_WARNING_REASONS));
+}
+
 }  // namespace net

@@ -11,6 +11,8 @@
 #include "chrome/browser/ash/accessibility/live_caption/system_live_caption_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_speech_recognizer.h"
+#include "chromeos/ash/components/boca/babelorca/speech_recognition_event_handler.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
 
 namespace ash::babelorca {
@@ -26,19 +28,22 @@ class BabelOrcaSpeechRecognizerImpl : public BabelOrcaSpeechRecognizer,
       const std::u16string& text,
       bool is_final,
       const std::optional<media::SpeechRecognitionResult>& result) override;
+  void OnLanguageIdentificationEvent(
+      media::mojom::LanguageIdentificationEventPtr event) override;
 
   // BabelOrcaSpeechRecognizer
   void Start() override;
   void Stop() override;
-  void ObserveTranscriptionResult(
+  void ObserveSpeechRecognition(
       BabelOrcaSpeechRecognizer::TranscriptionResultCallback
-          transcription_result_callback) override;
-  void RemoveTranscriptionResultObservation() override;
+          transcription_result_callback,
+      BabelOrcaSpeechRecognizer::LanguageIdentificationEventCallback
+          language_identification_callback) override;
+  void RemoveSpeechRecognitionObservation() override;
 
  private:
+  SpeechRecognitionEventHandler speech_recognition_event_handler_;
   raw_ptr<Profile> primary_profile_;
-  BabelOrcaSpeechRecognizer::TranscriptionResultCallback
-      transcription_result_callback_;
 };
 
 }  // namespace ash::babelorca

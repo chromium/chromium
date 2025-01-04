@@ -14,7 +14,6 @@
 #include "base/task/current_thread.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_paths.h"
@@ -34,9 +33,7 @@
 #include "content/shell/app/paths_mac.h"
 #endif
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #include "ui/base/ime/init/input_method_initializer.h"
 #endif
 
@@ -131,9 +128,7 @@ void ContentBrowserTest::SetUp() {
 #endif
 
   // LinuxInputMethodContextFactory has to be initialized.
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   ui::InitializeInputMethodForTesting();
 #endif
 
@@ -156,9 +151,7 @@ void ContentBrowserTest::TearDown() {
   }
 
   // LinuxInputMethodContextFactory has to be shutdown.
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   ui::ShutdownInputMethodForTesting();
 #endif
 }

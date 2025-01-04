@@ -48,9 +48,7 @@ class UserScriptWorldConfigurationManager
   // `world_id` is omitted, sets the configuration for the default user script
   // world.
   void SetUserScriptWorldInfo(const Extension& extension,
-                              const std::optional<std::string>& world_id,
-                              std::optional<std::string> csp,
-                              bool enable_messaging);
+                              mojom::UserScriptWorldInfoPtr world_info);
 
   // Clears any stored configuration for a user script world indicated by
   // `world_id`. If `world_id` is omitted, removes the configuration for the

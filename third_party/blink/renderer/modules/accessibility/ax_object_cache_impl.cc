@@ -165,7 +165,9 @@ Node* RetargetInput(Node* node) {
       possible_select = NodeTraversal::Parent(*node);
     }
     if (auto* select = DynamicTo<HTMLSelectElement>(possible_select)) {
-      if (select->IsAppearanceBaseButton() && node == select->SlottedButton()) {
+      if (select->IsAppearanceBaseButton(
+              HTMLSelectElement::StyleUpdateBehavior::kDontUpdateStyle) &&
+          node == select->SlottedButton()) {
         return select;
       }
     }
@@ -1225,7 +1227,8 @@ bool AXObjectCacheImpl::IsRelevantSlotElement(const HTMLSlotElement& slot) {
   DCHECK(AXObject::CanSafelyUseFlatTreeTraversalNow(slot.GetDocument()));
   DCHECK(slot.SupportsAssignment());
 
-  if (slot.IsInUserAgentShadowRoot() &&
+  if (!RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
+      slot.IsInUserAgentShadowRoot() &&
       IsA<HTMLSelectElement>(slot.OwnerShadowHost())) {
     return slot.GetIdAttribute() == shadow_element_names::kSelectOptions;
   }

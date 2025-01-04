@@ -175,9 +175,9 @@ void SyncTransportDataPrefs::SetCurrentSyncingGaiaId(const GaiaId& gaia_id) {
   pref_service_->SetString(kSyncGaiaId, gaia_id.ToString());
 }
 
-std::string SyncTransportDataPrefs::GetCurrentSyncingGaiaId() const {
+GaiaId SyncTransportDataPrefs::GetCurrentSyncingGaiaId() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return pref_service_->GetString(kSyncGaiaId);
+  return GaiaId(pref_service_->GetString(kSyncGaiaId));
 }
 
 void SyncTransportDataPrefs::ClearCurrentSyncingGaiaId() {

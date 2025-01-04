@@ -34,6 +34,8 @@ export enum SeaPenActionName {
   SET_SELECTED_RECENT_SEA_PEN_IMAGE = 'set_selected_recent_sea_pen_image',
   SET_SHOULD_SHOW_SEA_PEN_INTRODUCTION_DIALOG =
       'set_should_show_sea_pen_introduction_dialog',
+  SET_SHOULD_SHOW_SEA_PEN_FREEFORM_INTRODUCTION_DIALOG =
+      'set_should_show_sea_pen_freeform_introduction_dialog',
   DISMISS_SEA_PEN_ERROR_ACTION = 'dismiss_sea_pen_error',
   SET_SEA_PEN_FULLSCREEN_STATE = 'set_sea_pen_fullscreen_state',
   SET_SEA_PEN_TEXT_QUERY_HISTORY = 'set_sea_pen_text_query_history',
@@ -48,6 +50,7 @@ export type SeaPenActions = BeginSearchSeaPenThumbnailsAction|
     SetSeaPenThumbnailsAction|SetRecentSeaPenImagesAction|
     SetRecentSeaPenImageDataAction|SetSelectedRecentSeaPenImageAction|
     BeginSelectSeaPenThumbnailAction|EndSelectSeaPenThumbnailAction|
+    SetShouldShowSeaPenFreeformIntroductionDialogAction|
     SetShouldShowSeaPenIntroductionDialogAction|DismissSeaPenErrorAction|
     SetSeaPenFullscreenStateAction|SetSeaPenTextQueryHistory;
 
@@ -317,6 +320,26 @@ export function setShouldShowSeaPenIntroductionDialogAction(
   return {
     name: SeaPenActionName.SET_SHOULD_SHOW_SEA_PEN_INTRODUCTION_DIALOG,
     shouldShowDialog,
+  };
+}
+
+export interface SetShouldShowSeaPenFreeformIntroductionDialogAction extends
+    Action {
+  name: SeaPenActionName.SET_SHOULD_SHOW_SEA_PEN_FREEFORM_INTRODUCTION_DIALOG;
+  shouldShowFreeformDialog: boolean;
+}
+
+/**
+ * Sets the boolean that determines whether to show the Sea Pen freeform
+ * introduction dialog.
+ */
+export function setShouldShowSeaPenFreeformIntroductionDialogAction(
+    shouldShowFreeformDialog: boolean):
+    SetShouldShowSeaPenFreeformIntroductionDialogAction {
+  assert(typeof shouldShowFreeformDialog === 'boolean');
+  return {
+    name: SeaPenActionName.SET_SHOULD_SHOW_SEA_PEN_FREEFORM_INTRODUCTION_DIALOG,
+    shouldShowFreeformDialog,
   };
 }
 

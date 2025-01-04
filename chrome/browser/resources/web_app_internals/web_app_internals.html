@@ -67,16 +67,24 @@
         </div>
       </dialog>
 
-      <dialog id="iwa-switch-channel-input-dialog">
+      <dialog id="iwa-switch-channel-input-dialog" class="update-input-dialog">
         <div>Switching update channel for IWA</div>
-        <div id="iwa-switch-channel">
-          <div id="iwa-switch-channel-title">New Channel:</div>
-          <input type="text" id="iwa-update-channel" size="15" required
-              placeholder="default">
-        </div>
-        <div id="iwa-switch-channel-dialog-buttons">
+        <div>New Channel:</div>
+        <input type="text" id="iwa-update-channel" size="15" required
+            placeholder="default">
+        <div class="dialog-buttons">
           <button id="iwa-switch-channel-dialog-close">Close</button>
           <button id="iwa-switch-channel-dialog-switch">Switch</button>
+        </div>
+      </dialog>
+
+      <dialog id="iwa-pinned-version-input-dialog" class="update-input-dialog">
+        <div>Pinned Version:</div>
+        <input type="text" id="iwa-pinned-version" size="15">
+        <div class="dialog-buttons">
+          <button id="iwa-pinned-version-dialog-close">Close</button>
+          <button id="iwa-pinned-version-dialog-unpin">Unpin</button>
+          <button id="iwa-pinned-version-dialog-pin">Pin</button>
         </div>
       </dialog>
 

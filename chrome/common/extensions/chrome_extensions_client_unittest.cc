@@ -34,8 +34,8 @@ class ChromeExtensionsClientTest : public testing::Test {
 };
 
 base::span<const char* const> GetFeatureList() {
-  constexpr const char* feature_list[] = {"AllowedFeature",
-                                          "DisallowedFeature"};
+  static constexpr const char* feature_list[] = {"AllowedFeature",
+                                                 "DisallowedFeature"};
   return base::span(feature_list);
 }
 

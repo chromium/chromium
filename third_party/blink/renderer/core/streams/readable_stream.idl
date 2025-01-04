@@ -10,7 +10,7 @@ enum ReadableStreamReaderMode { "byob" };
 enum ReadableStreamType { "bytes" };
 
 [
-    Exposed=(Window,Worker,Worklet)
+    Exposed=*
 ] interface ReadableStream {
     [RuntimeEnabled=ReadableStreamAsyncIterable, HasAsyncIteratorReturnAlgorithm] async iterable<any>(optional ReadableStreamIteratorOptions options = {});
 

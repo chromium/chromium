@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 
 #include "ash/login/ui/login_base_bubble_view.h"
+
 #include "ash/login/ui/login_test_base.h"
-#include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -13,6 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"

@@ -15,7 +15,9 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
@@ -37,6 +39,19 @@ const char kNonUtf8ResponseBody[] = "\xc3";
 
 const char kAsciiCharset[] = "us-ascii";
 const char kUtf8Charset[] = "utf-8";
+
+const char kCachedTrustedBiddingSignalsAge[] =
+    "Ads.InterestGroup.Auction.HttpCachedTrustedBiddingSignalsAge2";
+
+// Creates a URLResponseHeadPtr that the AuctionDownloader will accept as a
+// valid set of headers for a response.
+network::mojom::URLResponseHeadPtr CreateResponseHead() {
+  auto response_head = network::mojom::URLResponseHead::New();
+  response_head->headers = net::HttpResponseHeaders::TryToCreate(
+      "HTTP/1.1 200 OK\r\n"
+      "Ad-Auction-Allowed: true\r\n");
+  return response_head;
+}
 
 class AuctionDownloaderTest
     : public testing::TestWithParam<AuctionDownloader::DownloadMode> {
@@ -116,7 +131,7 @@ class AuctionDownloaderTest
     AuctionDownloader downloader(
         &url_loader_factory_, url_, download_mode(), mime_type_,
         std::move(post_body), std::move(content_type),
-        response_started_callback_,
+        is_trusted_bidding_signals_kvv1_download_, response_started_callback_,
         base::BindOnce(&AuctionDownloaderTest::DownloadCompleteCallback,
                        base::Unretained(this)),
         std::move(test_network_events_delegate));
@@ -141,7 +156,6 @@ class AuctionDownloaderTest
     return error_.value_or("Not an error.");
   }
 
- protected:
   void DownloadCompleteCallback(std::unique_ptr<std::string> body,
                                 scoped_refptr<net::HttpResponseHeaders> headers,
                                 std::optional<std::string> error) {
@@ -154,7 +168,9 @@ class AuctionDownloaderTest
     run_loop_->Quit();
   }
 
-  base::test::TaskEnvironment task_environment_;
+ protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   GURL url_ = GURL("https://url.test/script.js");
 
@@ -179,6 +195,8 @@ class AuctionDownloaderTest
 
   base::RepeatingCallback<void(const network::mojom::URLResponseHead&)>
       response_started_callback_;
+
+  bool is_trusted_bidding_signals_kvv1_download_ = false;
 };
 
 TEST_P(AuctionDownloaderTest, NetworkError) {
@@ -240,13 +258,30 @@ TEST_P(AuctionDownloaderTest, HttpError) {
 }
 
 TEST_P(AuctionDownloaderTest, Timeout) {
-  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
-              kAsciiResponseBody, kAllowFledgeHeader,
-              net::HTTP_REQUEST_TIMEOUT);
-  EXPECT_FALSE(RunRequest());
+  // Set up and start the downloader inline, since can't use RunRequest() in
+  // this test.
+  run_loop_ = std::make_unique<base::RunLoop>();
+  AuctionDownloader downloader(
+      &url_loader_factory_, url_, download_mode(), mime_type_,
+      /*post_body=*/std::nullopt, /*content_type=*/std::nullopt,
+      is_trusted_bidding_signals_kvv1_download_, response_started_callback_,
+      base::BindOnce(&AuctionDownloaderTest::DownloadCompleteCallback,
+                     base::Unretained(this)),
+      /*test_network_events_delegate=*/nullptr);
+
+  // Run until just before the timeout duration. The request should not time
+  // out.
+  constexpr base::TimeDelta kTinyTime = base::Milliseconds(1);
+  task_environment_.FastForwardBy(AuctionDownloader::kRequestTimeout -
+                                  kTinyTime);
+  EXPECT_FALSE(run_loop_->AnyQuitCalled());
+
+  // Wait until the timeout duration has passed. The request should have timed
+  // out.
+  task_environment_.FastForwardBy(kTinyTime);
+  EXPECT_TRUE(run_loop_->AnyQuitCalled());
   EXPECT_EQ(
-      "Failed to load https://url.test/script.js HTTP status = 408 Request "
-      "Timeout.",
+      "Failed to load https://url.test/script.js error = net::ERR_TIMED_OUT.",
       last_error_msg());
 }
 
@@ -823,6 +858,47 @@ TEST_P(AuctionDownloaderTest, Charset) {
         "charset.",
         last_error_msg());
   }
+}
+
+TEST_P(AuctionDownloaderTest, HttpCachedTrustedBiddingSignalsAge2_Cached) {
+  network::URLLoaderCompletionStatus status;
+  is_trusted_bidding_signals_kvv1_download_ = true;
+
+  base::HistogramTester histogram_tester;
+  auto response_head = CreateResponseHead();
+  response_head->was_fetched_via_cache = true;
+  response_head->original_response_time = base::Time::Now() - base::Minutes(2);
+  url_loader_factory_.AddResponse(url_, std::move(response_head),
+                                  kAsciiResponseBody, status);
+  std::unique_ptr<std::string> body = RunRequest();
+  histogram_tester.ExpectUniqueSample(kCachedTrustedBiddingSignalsAge,
+                                      base::Minutes(2).InMilliseconds(), 1);
+}
+
+TEST_P(AuctionDownloaderTest, HttpCachedTrustedBiddingSignalsAge2_NotCached) {
+  network::URLLoaderCompletionStatus status;
+  is_trusted_bidding_signals_kvv1_download_ = true;
+
+  base::HistogramTester histogram_tester;
+  auto response_head = CreateResponseHead();
+  url_loader_factory_.AddResponse(url_, std::move(response_head),
+                                  kAsciiResponseBody, status);
+  std::unique_ptr<std::string> body = RunRequest();
+  histogram_tester.ExpectTotalCount(kCachedTrustedBiddingSignalsAge, 0);
+}
+
+TEST_P(AuctionDownloaderTest, HttpCachedTrustedBiddingSignalsAge2_NotKVV1) {
+  network::URLLoaderCompletionStatus status;
+  is_trusted_bidding_signals_kvv1_download_ = false;
+
+  base::HistogramTester histogram_tester;
+  auto response_head = CreateResponseHead();
+  response_head->was_fetched_via_cache = true;
+  response_head->original_response_time = base::Time::Now() - base::Minutes(2);
+  url_loader_factory_.AddResponse(url_, std::move(response_head),
+                                  kAsciiResponseBody, status);
+  std::unique_ptr<std::string> body = RunRequest();
+  histogram_tester.ExpectTotalCount(kCachedTrustedBiddingSignalsAge, 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(

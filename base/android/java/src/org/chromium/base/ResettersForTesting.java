@@ -8,6 +8,8 @@ import androidx.annotation.GuardedBy;
 import androidx.annotation.IntDef;
 
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -83,6 +85,7 @@ import java.util.LinkedHashSet;
  * }
  * </code>
  */
+@NullMarked
 public class ResettersForTesting {
 
     @IntDef({
@@ -235,6 +238,7 @@ public class ResettersForTesting {
     }
 
     /** Enables calls to register(). */
+    @Initializer
     public static void enable() {
         assert BuildConfig.IS_FOR_TEST;
         synchronized (sLock) {

@@ -110,7 +110,9 @@ void MagicBoostCardController::OnPdfContextMenuHide() {
 
 void MagicBoostCardController::ShowOptInUi(
     const gfx::Rect& anchor_view_bounds) {
-  CHECK(!opt_in_widget_);
+  if (opt_in_widget_) {
+    opt_in_widget_.reset();
+  }
 
   // If the disclaimer view is showing, close it.
   CloseDisclaimerUi();

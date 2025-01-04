@@ -35,7 +35,7 @@ android_library("java") {
     "//components/browser_ui/notifications/android:utils_java",
     "//components/browser_ui/settings/android:java",
     "//components/commerce/core/android:core_java",
-    "//components/payments/content/android:java",
+    "//components/payments/content/android/ui:java",
     "//components/prefs/android:java",
     "//components/signin/public/android:java",
     "//components/user_prefs/android:java",

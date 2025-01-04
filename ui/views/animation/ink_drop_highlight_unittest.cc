@@ -101,8 +101,9 @@ TEST_F(InkDropHighlightTest, IsHighlightedStateTransitions) {
 TEST_F(InkDropHighlightTest, VerifyObserversAreNotified) {
   // TODO(bruthig): Re-enable! For some reason these tests fail on some win
   // trunk builds. See crbug.com/731811.
-  if (!gfx::Animation::ShouldRenderRichAnimation())
+  if (!gfx::Animation::ShouldRenderRichAnimation()) {
     return;
+  }
 
   ink_drop_highlight()->FadeIn(base::Seconds(1));
 
@@ -149,8 +150,9 @@ TEST_F(InkDropHighlightTest, VerifyObserversAreNotifiedOfSuccessfulAnimations) {
 TEST_F(InkDropHighlightTest, VerifyObserversAreNotifiedOfPreemptedAnimations) {
   // TODO(bruthig): Re-enable! For some reason these tests fail on some win
   // trunk builds. See crbug.com/731811.
-  if (!gfx::Animation::ShouldRenderRichAnimation())
+  if (!gfx::Animation::ShouldRenderRichAnimation()) {
     return;
+  }
 
   ink_drop_highlight()->FadeIn(base::Seconds(1));
   ink_drop_highlight()->FadeOut(base::Seconds(1));
@@ -179,8 +181,9 @@ TEST_F(InkDropHighlightTest, NullObserverIsSafe) {
 TEST_F(InkDropHighlightTest, AnimationsAbortedDuringDeletion) {
   // TODO(bruthig): Re-enable! For some reason these tests fail on some win
   // trunk builds. See crbug.com/731811.
-  if (!gfx::Animation::ShouldRenderRichAnimation())
+  if (!gfx::Animation::ShouldRenderRichAnimation()) {
     return;
+  }
 
   ink_drop_highlight()->FadeIn(base::Seconds(1));
   DestroyHighlight();

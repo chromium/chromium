@@ -1,10 +1,13 @@
 <style include="searchbox-shared-style">
   :host {
-    --cr-searchbox-shadow: 0 1px 6px 0 var(--color-searchbox-shadow);
     --cr-searchbox-min-width: 250px;
   }
 
   :host([is-searchbox-focused]) {
+    --cr-searchbox-min-width: 306px;
+  }
+
+  :host(:not([is-translate-button-enabled])) {
     --cr-searchbox-min-width: 306px;
   }
 
@@ -16,6 +19,7 @@
   #backgroundScrim {
     background-color: rgba(0, 0 ,0, 0.3);
     cursor: default;
+    forced-color-adjust: none;
     inset: 0;
     position: absolute;
   }
@@ -92,7 +96,14 @@
   }
 
   :host([is-searchbox-focused]) #translateButtonContainer {
-    visibility: hidden; /* Allows for opacity transition. */
+    /*
+      Instead of using visibility: hidden, hide the translate button behind
+      the searchbox. This allows for the corerct tab order, instead of the
+      translate button being skipped over when the searchbox is blurred because
+      it is hidden. Additionally, don't use opacity: 0 because that will cause
+      the button opacity transitions to break.
+    */
+    z-index: -1;
   }
 
   #translateButtonContainer.searchbox-unfocused {
@@ -234,14 +245,20 @@
   }
 
   #searchboxContainer {
+    --color-searchbox-background: #FFFFFF;
+    --color-searchbox-background-hovered: #FFFFFF;
     --color-searchbox-results-background: #ffffffff;
     --color-searchbox-google-g-background: var(--color-primary);
     --cr-searchbox-height: 48px;
-    --cr-searchbox-icon-left-position: 12px;
+    --cr-searchbox-icon-size-in-searchbox: 28px;
     --cr-searchbox-icon-top-position: 0px;
     position: absolute;
     inset-block-start: 36px;
     inset-inline-end: 140px;
+  }
+
+  :host(:not([is-translate-button-enabled])) #searchboxContainer {
+    inset-inline-end: 84px;
   }
 
   :host([show-ghost-loader]) #searchboxContainer {
@@ -250,6 +267,8 @@
 
   :host([is-searchbox-focused]) #searchboxContainer {
     inset-inline-end: 84px;
+    --cr-searchbox-height: 52px;
+    inset-block-start: 34px;
   }
 
   #searchboxContainer {
@@ -279,6 +298,14 @@
    */
   :host([show-ghost-loader]) #searchboxContainer:has(cr-searchbox:not([dropdown-is-visible])) cr-searchbox-ghost-loader {
     display: block;
+  }
+
+  /* Set styles for high contrast mode in Windows. */
+  @media (forced-colors: active) {
+    .menu-item-icon {
+      /* Set the icon color to hcm (high contrast mode) value. */
+      background-color: ButtonText;
+    }
   }
 </style>
 <div class="app-container"
@@ -321,10 +348,16 @@
   </lens-selection-overlay>
   <initial-gradient id="initialGradient"></initial-gradient>
   <div id="searchboxContainer">
-    <cr-searchbox id="searchbox" on-focus="handleSearchboxFocused"
-        on-blur="handleSearchboxBlurred">
+    <cr-searchbox
+      id="searchbox"
+      on-focus="handleSearchboxFocused"
+      on-blur="handleSearchboxBlurred"
+      searchbox-aria-description="[[getSearchboxAriaDescription(showErrorState, showGhostLoader)]]">
     </cr-searchbox>
-    <cr-searchbox-ghost-loader id="searchboxGhostLoader"></cr-searchbox-ghost-loader>
+    </cr-searchbox>
+    <cr-searchbox-ghost-loader id="searchboxGhostLoader"
+        show-error-state="{{showErrorState}}">
+    </cr-searchbox-ghost-loader>
   </div>
   <div id="translateButtonContainer" class="button-container">
     <translate-button id="translateButton"

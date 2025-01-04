@@ -230,7 +230,7 @@ AudioContext* AudioContext::Create(ExecutionContext* context,
   // requiring it for symmetry with OfflineAudioContext.
   audio_context->MaybeAllowAutoplayWithUnlockType(
       AutoplayUnlockType::kContextConstructor);
-  if (audio_context->IsAllowedToStart()) {
+  if (audio_context->IsAllowedToStart(/*should_suppress_warning=*/true)) {
     audio_context->StartRendering();
     audio_context->SetContextState(V8AudioContextState::Enum::kRunning);
   }
@@ -253,6 +253,7 @@ AudioContext::AudioContext(LocalDOMWindow& window,
                            WebAudioSinkDescriptor sink_descriptor,
                            bool update_echo_cancellation_on_first_start)
     : BaseAudioContext(&window, kRealtimeContext),
+      FrameVisibilityObserver(GetLocalFrame()),
       context_id_(context_id++),
       audio_context_manager_(&window),
       permission_service_(&window),
@@ -261,7 +262,15 @@ AudioContext::AudioContext(LocalDOMWindow& window,
       v8_sink_id_(
           MakeGarbageCollected<V8UnionAudioSinkInfoOrString>(g_empty_string)),
       media_device_service_(&window),
-      media_device_service_receiver_(this, &window) {
+      media_device_service_receiver_(this, &window),
+      should_interrupt_when_frame_is_hidden_(
+          RuntimeEnabledFeatures::
+              MediaPlaybackWhileNotVisiblePermissionPolicyEnabled() &&
+          RuntimeEnabledFeatures::AudioContextInterruptedStateEnabled() &&
+          !GetExecutionContext()->IsFeatureEnabled(
+              mojom::blink::PermissionsPolicyFeature::
+                  kMediaPlaybackWhileNotVisible,
+              ReportOptions::kDoNotReport)) {
   RecordAudioContextOperation(AudioContextOperation::kCreate);
   SendLogMessage(__func__, GetAudioContextLogString(latency_hint, sample_rate));
 
@@ -378,6 +387,7 @@ void AudioContext::Trace(Visitor* visitor) const {
   visitor->Trace(media_device_service_receiver_);
   visitor->Trace(v8_sink_id_);
   BaseAudioContext::Trace(visitor);
+  FrameVisibilityObserver::Trace(visitor);
 }
 
 ScriptPromise<IDLUndefined> AudioContext::suspendContext(
@@ -431,6 +441,8 @@ ScriptPromise<IDLUndefined> AudioContext::resumeContext(
         script_state, MakeGarbageCollected<DOMException>(
                           DOMExceptionCode::kInvalidStateError,
                           "Cannot resume an interrupted AudioContext."));
+  } else if (is_frame_hidden_ && should_interrupt_when_frame_is_hidden_) {
+    StartContextInterruption();
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
@@ -765,7 +777,7 @@ void AudioContext::MaybeAllowAutoplayWithUnlockType(AutoplayUnlockType type) {
   autoplay_unlock_type_ = type;
 }
 
-bool AudioContext::IsAllowedToStart() const {
+bool AudioContext::IsAllowedToStart(bool should_suppress_warning) const {
   if (blocked_by_prerendering_) {
     // In prerendering, the AudioContext will not start rendering. See:
     // https://wicg.github.io/nav-speculation/prerendering.html#web-audio-patch
@@ -785,18 +797,22 @@ bool AudioContext::IsAllowedToStart() const {
     case AutoplayPolicy::Type::kUserGestureRequired:
       DCHECK(window->GetFrame());
       DCHECK(window->GetFrame()->IsCrossOriginToOutermostMainFrame());
-      window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+      if (!should_suppress_warning) {
+        window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::ConsoleMessageSource::kOther,
           mojom::ConsoleMessageLevel::kWarning,
           "The AudioContext was not allowed to start. It must be resumed (or "
           "created) from a user gesture event handler. https://goo.gl/7K7WLu"));
+      }
       break;
     case AutoplayPolicy::Type::kDocumentUserActivationRequired:
-      window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+      if (!should_suppress_warning) {
+        window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::ConsoleMessageSource::kOther,
           mojom::ConsoleMessageLevel::kWarning,
           "The AudioContext was not allowed to start. It must be resumed (or "
           "created) after a user gesture on the page. https://goo.gl/7K7WLu"));
+      }
       break;
   }
 
@@ -1059,9 +1075,9 @@ void AudioContext::DidInitialPermissionCheck(
 
 double AudioContext::GetOutputLatencyQuantizingFactor() const {
   return microphone_permission_status_ ==
-      mojom::blink::PermissionStatus::GRANTED
-      ? kOutputLatencyMaxPrecisionFactor
-      : kOutputLatencyQuatizingFactor;
+                 mojom::blink::PermissionStatus::GRANTED
+             ? kOutputLatencyMaxPrecisionFactor
+             : kOutputLatencyQuatizingFactor;
 }
 
 void AudioContext::NotifySetSinkIdBegins() {
@@ -1139,9 +1155,9 @@ void AudioContext::DevicesEnumerated(
       enumeration[static_cast<wtf_size_t>(
           mojom::blink::MediaDeviceType::kMediaAudioOutput)];
 
-  TRACE_EVENT1(
-      "webaudio", "AudioContext::DevicesEnumerated", "DeviceEnumeration",
-      audio_utilities::GetDeviceEnumerationForTracing(output_devices));
+  TRACE_EVENT1("webaudio", "AudioContext::DevicesEnumerated",
+               "DeviceEnumeration",
+               audio_utilities::GetDeviceEnumerationForTracing(output_devices));
 
   OnDevicesChanged(mojom::blink::MediaDeviceType::kMediaAudioOutput,
                    output_devices);
@@ -1191,12 +1207,12 @@ void AudioContext::OnDevicesChanged(mojom::blink::MediaDeviceType device_type,
                      "=> sink was not explicitly specified, falling back to "
                      "default sink.");
       GetExecutionContext()->AddConsoleMessage(
-        MakeGarbageCollected<ConsoleMessage>(
-            mojom::ConsoleMessageSource::kOther,
-            mojom::ConsoleMessageLevel::kInfo,
-            "[AudioContext] Fallback to the default device due to an invalid"
-            " audio device change. ("
-            + String(sink_descriptor_.SinkId().Utf8()) + ")"));
+          MakeGarbageCollected<ConsoleMessage>(
+              mojom::ConsoleMessageSource::kOther,
+              mojom::ConsoleMessageLevel::kInfo,
+              "[AudioContext] Fallback to the default device due to an invalid"
+              " audio device change. (" +
+                  String(sink_descriptor_.SinkId().Utf8()) + ")"));
       sink_descriptor_ = WebAudioSinkDescriptor(
           g_empty_string,
           To<LocalDOMWindow>(GetExecutionContext())->GetLocalFrameToken());
@@ -1207,6 +1223,31 @@ void AudioContext::OnDevicesChanged(mojom::blink::MediaDeviceType device_type,
       }
       UpdateV8SinkId();
     }
+  }
+}
+
+void AudioContext::FrameVisibilityChanged(
+    mojom::blink::FrameVisibility frame_visibility) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
+
+  bool is_frame_hidden =
+      (frame_visibility == mojom::blink::FrameVisibility::kNotRendered);
+  if (is_frame_hidden == is_frame_hidden_) {
+    return;
+  }
+
+  is_frame_hidden_ = is_frame_hidden;
+
+  if (!should_interrupt_when_frame_is_hidden_) {
+    return;
+  }
+
+  if (is_frame_hidden_) {
+    // The frame is not rendered, so the audio context should be suspended.
+    StartContextInterruption();
+  } else {
+    // The frame is rendered, so the audio context should be resumed.
+    EndContextInterruption();
   }
 }
 
@@ -1245,10 +1286,10 @@ void AudioContext::OnRenderError() {
 
   CHECK(GetExecutionContext());
   render_error_occurred_ = true;
-  GetExecutionContext()->GetTaskRunner(TaskType::kMediaElementEvent)
-      ->PostTask(FROM_HERE,
-                 WTF::BindOnce(&AudioContext::HandleRenderError,
-                               WrapPersistent(this)));
+  GetExecutionContext()
+      ->GetTaskRunner(TaskType::kMediaElementEvent)
+      ->PostTask(FROM_HERE, WTF::BindOnce(&AudioContext::HandleRenderError,
+                                          WrapPersistent(this)));
 }
 
 void AudioContext::ResumeOnPrerenderActivation() {
@@ -1355,7 +1396,8 @@ void AudioContext::HandleRenderError() {
 }
 
 void AudioContext::invoke_onrendererror_from_platform_for_testing() {
-  GetRealtimeAudioDestinationNode()->GetOwnHandler()
+  GetRealtimeAudioDestinationNode()
+      ->GetOwnHandler()
       .invoke_onrendererror_from_platform_for_testing();
 }
 
@@ -1368,6 +1410,15 @@ void AudioContext::SendLogMessage(const char* const function_name,
           sink_descriptor_.SinkId().Utf8().c_str(),
           is_sink_id_given_ ? "true" : "false")
           .Utf8());
+}
+
+LocalFrame* AudioContext::GetLocalFrame() const {
+  LocalDOMWindow* window = GetWindow();
+  if (!window) {
+    return nullptr;
+  }
+
+  return window->GetFrame();
 }
 
 }  // namespace blink

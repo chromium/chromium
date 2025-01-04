@@ -117,8 +117,9 @@ TabStripModel* GetTabstripModelForWindowIfAny(aura::Window* window) {
 
 content::WebContents* GetActiveWebContentsForNativeBrowserWindow(
     gfx::NativeWindow window) {
-  if (!window)
+  if (!window) {
     return nullptr;
+  }
 
   TabStripModel* tab_strip_model = GetTabstripModelForWindowIfAny(window);
   return tab_strip_model ? tab_strip_model->GetActiveWebContents() : nullptr;
@@ -259,16 +260,19 @@ void ChromeShellDelegate::SetTabScrubberChromeOSEnabled(bool enabled) {
 bool ChromeShellDelegate::AllowDefaultTouchActions(gfx::NativeWindow window) {
   content::WebContents* contents =
       GetActiveWebContentsForNativeBrowserWindow(window);
-  if (!contents)
+  if (!contents) {
     return true;
+  }
   content::RenderWidgetHostView* render_widget_host_view =
       contents->GetRenderWidgetHostView();
-  if (!render_widget_host_view)
+  if (!render_widget_host_view) {
     return true;
+  }
   content::RenderWidgetHost* render_widget_host =
       render_widget_host_view->GetRenderWidgetHost();
-  if (!render_widget_host)
+  if (!render_widget_host) {
     return true;
+  }
   std::optional<cc::TouchAction> allowed_touch_action =
       render_widget_host->GetAllowedTouchAction();
   return allowed_touch_action.has_value()
@@ -279,12 +283,14 @@ bool ChromeShellDelegate::AllowDefaultTouchActions(gfx::NativeWindow window) {
 bool ChromeShellDelegate::ShouldWaitForTouchPressAck(gfx::NativeWindow window) {
   content::WebContents* contents =
       GetActiveWebContentsForNativeBrowserWindow(window);
-  if (!contents)
+  if (!contents) {
     return false;
+  }
   content::RenderWidgetHostView* render_widget_host_view =
       contents->GetRenderWidgetHostView();
-  if (!render_widget_host_view)
+  if (!render_widget_host_view) {
     return false;
+  }
   return !!render_widget_host_view->GetRenderWidgetHost();
 }
 
@@ -307,8 +313,9 @@ void ChromeShellDelegate::BindMultiDeviceSetup(
   ash::multidevice_setup::MultiDeviceSetupService* service =
       ash::multidevice_setup::MultiDeviceSetupServiceFactory::GetForProfile(
           ProfileManager::GetPrimaryUserProfile());
-  if (service)
+  if (service) {
     service->BindMultiDeviceSetup(std::move(receiver));
+  }
 }
 
 void ChromeShellDelegate::BindMultiCaptureService(
@@ -368,8 +375,9 @@ void ChromeShellDelegate::SetUpEnvironmentForLockedFullscreen(
       arc_session_manager->RequestDisable();
     } else {
       // Re-enable ARC if needed.
-      if (arc::IsArcPlayStoreEnabledForProfile(profile))
+      if (arc::IsArcPlayStoreEnabledForProfile(profile)) {
         arc_session_manager->RequestEnable();
+      }
     }
   }
 
@@ -398,8 +406,9 @@ int ChromeShellDelegate::GetUiDevToolsPort() const {
 }
 
 bool ChromeShellDelegate::IsLoggingRedirectDisabled() const {
-  if (disable_logging_redirect_for_testing.has_value())
+  if (disable_logging_redirect_for_testing.has_value()) {
     return disable_logging_redirect_for_testing.value();
+  }
 
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kDisableLoggingRedirect);
@@ -408,13 +417,15 @@ bool ChromeShellDelegate::IsLoggingRedirectDisabled() const {
 base::FilePath ChromeShellDelegate::GetPrimaryUserDownloadsFolder() const {
   const user_manager::User* primary_user =
       user_manager::UserManager::Get()->GetPrimaryUser();
-  if (!primary_user)
+  if (!primary_user) {
     return base::FilePath();
+  }
 
   Profile* user_profile =
       ash::ProfileHelper::Get()->GetProfileByUser(primary_user);
-  if (user_profile)
+  if (user_profile) {
     return file_manager::util::GetDownloadsFolderForProfile(user_profile);
+  }
 
   return base::FilePath();
 }
@@ -455,8 +466,9 @@ const GURL& ChromeShellDelegate::GetLastCommittedURLForWindowIfAny(
       const extensions::AppWindow* app_window =
           extensions::AppWindowRegistry::Get(profile)
               ->GetAppWindowForNativeWindow(window);
-      if (app_window)
+      if (app_window) {
         contents = app_window->web_contents();
+      }
     }
   }
 
@@ -500,14 +512,9 @@ ash::DeskProfilesDelegate* ChromeShellDelegate::GetDeskProfilesDelegate() {
 }
 
 void ChromeShellDelegate::OpenMultitaskingSettings() {
-  const auto& sub_page_path =
-      ash::features::IsOsSettingsRevampWayfindingEnabled()
-          ? std::string_view(
-                chromeos::settings::mojom::kSystemPreferencesSectionPath)
-          : std::string_view(
-                chromeos::settings::mojom::kPersonalizationSectionPath);
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      ProfileManager::GetActiveUserProfile(), sub_page_path,
+      ProfileManager::GetActiveUserProfile(),
+      chromeos::settings::mojom::kSystemPreferencesSectionPath,
       chromeos::settings::mojom::Setting::kSnapWindowSuggestions);
 }
 

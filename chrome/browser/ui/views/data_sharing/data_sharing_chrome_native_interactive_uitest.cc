@@ -6,6 +6,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -52,7 +53,7 @@ class DataSharingChromeNativeUiTest : public InteractiveBrowserTest {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {data_sharing::features::kDataSharingFeature,
-         tab_groups::kTabGroupsSaveUIUpdate, tab_groups::kTabGroupsSaveV2,
+         tab_groups::kTabGroupsSaveV2,
          tab_groups::kTabGroupSyncServiceDesktopMigration},
         {});
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
@@ -186,19 +187,24 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, GenerateWebUIUrl) {
   tab_groups::LocalTabGroupID group_id = InstrumentATabGroup();
   std::string fake_collab_id = "fake_collab_id";
   std::string fake_access_token = "fake_access_token";
+  std::string fake_tab_group_title = "fake_title";
 
   auto expected_share_flow_url =
       GURL(std::string(chrome::kChromeUIUntrustedDataSharingURL) + "?" +
            std::string(data_sharing::kQueryParamFlow) + "=" +
            std::string(data_sharing::kFlowShare) + "&" +
            std::string(data_sharing::kQueryParamTabGroupId) + "=" +
-           group_id.ToString());
+           group_id.ToString() + "&" +
+           std::string(data_sharing::kQueryParamTabGroupTitle) + "=" +
+           fake_tab_group_title);
 
   auto expected_manage_flow_url = GURL(
       std::string(chrome::kChromeUIUntrustedDataSharingURL) + "?" +
       std::string(data_sharing::kQueryParamFlow) + "=" +
       std::string(data_sharing::kFlowManage) + "&" +
-      std::string(data_sharing::kQueryParamGroupId) + "=" + fake_collab_id);
+      std::string(data_sharing::kQueryParamGroupId) + "=" + fake_collab_id +
+      "&" + std::string(data_sharing::kQueryParamTabGroupTitle) + "=" +
+      fake_tab_group_title);
 
   auto expected_join_flow_url = GURL(
       std::string(chrome::kChromeUIUntrustedDataSharingURL) + "?" +
@@ -208,14 +214,18 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, GenerateWebUIUrl) {
       "&" + std::string(data_sharing::kQueryParamTokenSecret) + "=" +
       fake_access_token);
 
-  auto url = data_sharing::GenerateWebUIUrl(group_id, browser()->profile());
-  EXPECT_EQ(url.value().spec(), expected_share_flow_url);
-
   auto* tab_group_service =
       tab_groups::SavedTabGroupUtils::GetServiceForProfile(
           browser()->profile());
   std::optional<tab_groups::SavedTabGroup> group =
       tab_group_service->GetGroup(group_id);
+  group->SetTitle(base::UTF8ToUTF16(fake_tab_group_title));
+  tab_group_service->RemoveGroup(group->saved_guid());
+  tab_group_service->AddGroup(group.value());
+
+  auto url = data_sharing::GenerateWebUIUrl(group_id, browser()->profile());
+  EXPECT_EQ(url.value().spec(), expected_share_flow_url);
+
   group->SetCollaborationId(tab_groups::CollaborationId(fake_collab_id));
   tab_group_service->RemoveGroup(group->saved_guid());
   tab_group_service->AddGroup(group.value());

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_callback_manager.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -26,10 +27,8 @@ void TextRecord::Trace(Visitor* visitor) const {
 
 TextPaintTimingDetector::TextPaintTimingDetector(
     LocalFrameView* frame_view,
-    PaintTimingDetector* paint_timing_detector,
-    PaintTimingCallbackManager* callback_manager)
-    : callback_manager_(callback_manager),
-      frame_view_(frame_view),
+    PaintTimingDetector* paint_timing_detector)
+    : frame_view_(frame_view),
       ltp_manager_(MakeGarbageCollected<LargestTextPaintManager>(
           frame_view,
           paint_timing_detector)) {}
@@ -84,16 +83,22 @@ std::pair<TextRecord*, bool> LargestTextPaintManager::UpdateMetricsCandidate() {
   return {largest_text_.Get(), changed};
 }
 
-void TextPaintTimingDetector::OnPaintFinished() {
+OptionalPaintTimingCallback TextPaintTimingDetector::TakePaintTimingCallback() {
   if (!added_entry_in_latest_frame_)
-    return;
+    return std::nullopt;
 
-  // |WeakPersistent| guarantees that when |this| is killed,
-  // the callback function will not be invoked.
-  RegisterNotifyPresentationTime(
-      WTF::BindOnce(&TextPaintTimingDetector::ReportPresentationTime,
-                    WrapWeakPersistent(this), frame_index_++));
   added_entry_in_latest_frame_ = false;
+
+  auto callback =
+      BindOnce(&TextPaintTimingDetector::AssignPaintTimeToQueuedRecords,
+               WrapWeakPersistent(this), frame_index_++);
+  if (!callback_manager_) {
+    return callback;
+  }
+
+  // This is for unit-tests only.
+  callback_manager_->RegisterCallback(std::move(callback));
+  return std::nullopt;
 }
 
 void TextPaintTimingDetector::LayoutObjectWillBeDestroyed(
@@ -101,26 +106,6 @@ void TextPaintTimingDetector::LayoutObjectWillBeDestroyed(
   recorded_set_.erase(&object);
   rewalkable_set_.erase(&object);
   texts_queued_for_paint_time_.erase(&object);
-}
-
-void TextPaintTimingDetector::RegisterNotifyPresentationTime(
-    PaintTimingCallbackManager::LocalThreadCallback callback) {
-  callback_manager_->RegisterCallback(std::move(callback));
-}
-
-void TextPaintTimingDetector::ReportPresentationTime(
-    uint32_t frame_index,
-    base::TimeTicks timestamp) {
-  if (!text_element_timing_) {
-    Document* document = frame_view_->GetFrame().GetDocument();
-    if (document) {
-      LocalDOMWindow* window = document->domWindow();
-      if (window) {
-        text_element_timing_ = TextElementTiming::From(*window);
-      }
-    }
-  }
-  AssignPaintTimeToQueuedRecords(frame_index, timestamp);
 }
 
 bool TextPaintTimingDetector::ShouldWalkObject(
@@ -150,18 +135,14 @@ void TextPaintTimingDetector::RecordAggregatedText(
     const LayoutBoxModelObject& aggregator,
     const gfx::Rect& aggregated_visual_rect,
     const PropertyTreeStateOrAlias& property_tree_state) {
-  if (RuntimeEnabledFeatures::
-          ExcludeTransparentTextsFromBeingLcpEligibleEnabled()) {
-    bool is_color_transparent =
-        aggregator.StyleRef()
-            .VisitedDependentColor(GetCSSPropertyColor())
-            .IsFullyTransparent();
-    bool has_shadow = !!aggregator.StyleRef().TextShadow();
-    bool has_text_stroke = aggregator.StyleRef().TextStrokeWidth();
+  bool is_color_transparent = aggregator.StyleRef()
+                                  .VisitedDependentColor(GetCSSPropertyColor())
+                                  .IsFullyTransparent();
+  bool has_shadow = !!aggregator.StyleRef().TextShadow();
+  bool has_text_stroke = aggregator.StyleRef().TextStrokeWidth();
 
-    if (is_color_transparent && !has_shadow && !has_text_stroke) {
-      return;
-    }
+  if (is_color_transparent && !has_shadow && !has_text_stroke) {
+    return;
   }
 
   DCHECK(ShouldWalkObject(aggregator));
@@ -246,7 +227,6 @@ void TextPaintTimingDetector::Trace(Visitor* visitor) const {
   visitor->Trace(text_element_timing_);
   visitor->Trace(rewalkable_set_);
   visitor->Trace(recorded_set_);
-  visitor->Trace(text_element_timing_);
   visitor->Trace(texts_queued_for_paint_time_);
   visitor->Trace(ltp_manager_);
 }
@@ -286,18 +266,27 @@ void LargestTextPaintManager::Trace(Visitor* visitor) const {
 
 void TextPaintTimingDetector::AssignPaintTimeToQueuedRecords(
     uint32_t frame_index,
-    const base::TimeTicks& timestamp) {
+    const base::TimeTicks& timestamp,
+    const DOMPaintTimingInfo& paint_timing_info) {
+  if (!text_element_timing_) {
+    if (Document* document = frame_view_->GetFrame().GetDocument()) {
+      if (LocalDOMWindow* window = document->domWindow()) {
+        text_element_timing_ = TextElementTiming::From(*window);
+      }
+    }
+  }
+
   bool can_report_element_timing =
-      text_element_timing_ ? text_element_timing_->CanReportElements() : false;
+      text_element_timing_ && text_element_timing_->CanReportElements();
   HeapVector<Member<const LayoutObject>> keys_to_be_removed;
-  for (const auto& it : texts_queued_for_paint_time_) {
-    const auto& record = it.value;
+  for (const auto& [key, record] : texts_queued_for_paint_time_) {
     if (!record->paint_time.is_null() || record->frame_index_ > frame_index) {
       continue;
     }
     record->paint_time = timestamp;
+    record->paint_timing_info = paint_timing_info;
     if (can_report_element_timing && record->is_needed_for_element_timing_) {
-      text_element_timing_->OnTextObjectPainted(*record);
+      text_element_timing_->OnTextObjectPainted(*record, paint_timing_info);
     }
 
     if (ltp_manager_ && (record->recorded_size > 0u) &&
@@ -305,7 +294,7 @@ void TextPaintTimingDetector::AssignPaintTimeToQueuedRecords(
           ltp_manager_->IsUnrelatedSoftNavigationPaint(*(record->node_)))) {
       ltp_manager_->MaybeUpdateLargestText(record);
     }
-    keys_to_be_removed.push_back(it.key);
+    keys_to_be_removed.push_back(key);
   }
   texts_queued_for_paint_time_.RemoveAll(keys_to_be_removed);
 }

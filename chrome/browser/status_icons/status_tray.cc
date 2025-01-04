@@ -10,8 +10,7 @@
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/status_icons/status_icon.h"
 
-StatusTray::~StatusTray() {
-}
+StatusTray::~StatusTray() = default;
 
 StatusIcon* StatusTray::CreateStatusIcon(StatusIconType type,
                                          const gfx::ImageSkia& image,

@@ -8,7 +8,6 @@
 
 #import "base/memory/scoped_refptr.h"
 #import "base/test/task_environment.h"
-#import "components/autofill/core/browser/logging/stub_log_manager.h"
 #import "components/password_manager/core/browser/features/password_manager_features_util.h"
 #import "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #import "components/password_manager/core/browser/password_form.h"
@@ -53,9 +52,8 @@ class WebViewPasswordManagerClientTest : public PlatformTest {
 
     password_manager_client_ = std::make_unique<WebViewPasswordManagerClient>(
         &web_state_, &sync_service_, &pref_service_,
-        /*identity_manager=*/nullptr,
-        std::make_unique<autofill::StubLogManager>(), profile_store_.get(),
-        account_store_.get(), /*reuse_manager=*/nullptr,
+        /*identity_manager=*/nullptr, /*log_router=*/nullptr,
+        profile_store_.get(), account_store_.get(), /*reuse_manager=*/nullptr,
         /*requirements_service=*/nullptr);
   }
 
@@ -67,7 +65,6 @@ class WebViewPasswordManagerClientTest : public PlatformTest {
   web::FakeWebState web_state_;
   syncer::TestSyncService sync_service_;
   TestingPrefServiceSimple pref_service_;
-  autofill::StubLogManager log_manager_;
   scoped_refptr<password_manager::TestPasswordStore> profile_store_;
   scoped_refptr<password_manager::TestPasswordStore> account_store_;
   std::unique_ptr<WebViewPasswordManagerClient> password_manager_client_;

@@ -426,8 +426,6 @@ bool ChromePasswordProtectionService::ShouldShowPasswordReusePageInfoBubble(
 safe_browsing::LoginReputationClientRequest::UrlDisplayExperiment
 ChromePasswordProtectionService::GetUrlDisplayExperiment() const {
   safe_browsing::LoginReputationClientRequest::UrlDisplayExperiment experiment;
-  experiment.set_simplified_url_display_enabled(
-      base::FeatureList::IsEnabled(safe_browsing::kSimplifiedUrlDisplay));
   // Delayed warnings parameters:
   experiment.set_delayed_warnings_enabled(
       base::FeatureList::IsEnabled(safe_browsing::kDelayedWarnings));

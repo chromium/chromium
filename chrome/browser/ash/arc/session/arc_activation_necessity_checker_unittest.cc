@@ -31,6 +31,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {
@@ -78,7 +79,7 @@ class ArcActivationNecessityCheckerTest : public testing::Test {
     profile_->GetPrefs()->SetBoolean(prefs::kArcPackagesIsUpToDate, true);
 
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
-        profile_->GetProfileUserName(), "1234567890"));
+        profile_->GetProfileUserName(), GaiaId("1234567890")));
     auto* fake_user_manager = static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
     fake_user_manager->AddUser(account_id);

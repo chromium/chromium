@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "cronet_bidirectional_stream_adapter.h"
 
 #include <string>
@@ -282,10 +287,10 @@ void CronetBidirectionalStreamAdapter::OnHeadersReceived(
 
   std::string protocol;
   switch (bidi_stream_->GetProtocol()) {
-    case net::kProtoHTTP2:
+    case net::NextProto::kProtoHTTP2:
       protocol = "h2";
       break;
-    case net::kProtoQUIC:
+    case net::NextProto::kProtoQUIC:
       protocol = "quic/1+spdy/3";
       break;
     default:

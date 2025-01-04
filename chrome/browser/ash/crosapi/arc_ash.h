@@ -8,13 +8,13 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/intent_helper/arc_intent_helper_observer.h"
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chromeos/crosapi/mojom/arc.mojom.h"
-#include "components/arc/intent_helper/arc_intent_helper_observer.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 

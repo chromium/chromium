@@ -151,7 +151,7 @@ std::u16string SystemTrayTestApi::GetBubbleViewText(int view_id) {
 
 bool SystemTrayTestApi::Is24HourClock() {
   base::HourClockType type =
-      GetTray()->time_view_->time_view()->GetHourTypeForTesting();
+      GetTray()->time_tray_item_view_->time_view()->GetHourTypeForTesting();
   return type == base::k24HourClock;
 }
 

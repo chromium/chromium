@@ -15,7 +15,9 @@ always be accepted in code reviews.
 You can propose changes to this style guide by sending an email to
 `cxx@chromium.org`. Ideally, the list will arrive at some consensus and you can
 request review for a change to this file. If there's no consensus,
-`src/styleguide/c++/OWNERS` get to decide.
+`src/styleguide/c++/OWNERS` get to decide. For further details on how style
+changes are handled and communicated, see the C++ Style Changes
+[process documentation](https://chromium.googlesource.com/chromium/src/+/main/docs/process/c++_style_changes.md).
 
 Blink code in `third_party/blink` uses [Blink style](blink-c++.md).
 

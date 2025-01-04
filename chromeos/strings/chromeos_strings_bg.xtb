@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Деактивиране на тъмната тема</translation>
 <translation id="1807246157184219062">Светло</translation>
 <translation id="1808803439260407870">Класическо изкуство</translation>
+<translation id="181434555916624618">Засега резултатите с хора няма да се показват. Опитайте с друга подкана.</translation>
 <translation id="1815850098929213707">Избраният клавиш е <ph name="KEYS" />. Докоснете бутона, за да редактирате контролата</translation>
 <translation id="1823120442877418684">Обекти</translation>
 <translation id="1827738518074806965">Художествена галерия</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">Нивото на батерията на дясната слушалка е <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">настройките</translation>
 <translation id="3347558044552027859">модерен/модерно място</translation>
+<translation id="3353477144743332882">Изтегляне на модела за създаване на обобщения и имена</translation>
 <translation id="3359218928534347896">превключване на спирането на звука на микрофона</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">парчета суши</translation>
@@ -689,6 +691,7 @@
 <translation id="4354430579665871434">клавиш</translation>
 <translation id="4356100841225547054">Изключване на звука</translation>
 <translation id="4361257691546579041">Името на точката за достъп (APN) е стандартно.</translation>
+<translation id="4368101969572512692">Разбъркване на предложенията</translation>
 <translation id="437294888293595148">Нулиране на всички клавишни комбинации</translation>
 <translation id="437477383107495720">зайчета</translation>
 <translation id="4376423484621194274">Администраторът ви не разрешава затварянето на <ph name="APP_NAME" /></translation>
@@ -768,6 +771,7 @@
 <translation id="4731797938093519117">Достъп на родител</translation>
 <translation id="473775607612524610">Актуализиране</translation>
 <translation id="4744944742468440486">Информация за избраното от вас</translation>
+<translation id="4750394297954878236">Предложения</translation>
 <translation id="4771607256327216405">увеличаване на яркостта на клавиатурата</translation>
 <translation id="4771923071974529837">утре</translation>
 <translation id="4773299976671772492">Спряно</translation>
@@ -853,6 +857,7 @@
 <translation id="5121677070210013200">Моделът за преписи не може да се изтегли. Опитайте отново или рестартирайте своя Chromebook.</translation>
 <translation id="5130848777448318809">понита</translation>
 <translation id="5137451382116112100">Цял екран</translation>
+<translation id="5139813694804168398">не безпокойте</translation>
 <translation id="5140788690559353412">Когато загубите достъп до училищния си профил, вече няма да имате достъп до свързаната електронна поща и файловете в Google Диск, като например Gmail, Документи, Презентации и др.</translation>
 <translation id="5142961317498132443">Удостоверяване</translation>
 <translation id="5144311987923128508">Бутонът за потвърждаване вече е деактивиран</translation>
@@ -897,6 +902,7 @@
 <translation id="5302048478445481009">Език</translation>
 <translation id="5303837385540978511">Тапет специално за <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="530883153651464140">Актуализиране на <ph name="DEVICE_NAME" /> до версия <ph name="VERSION" /></translation>
 <translation id="5315873049536339193">Самоличност</translation>
 <translation id="5317780077021120954">Запазване</translation>
 <translation id="5318310531701770497">Не могат да се създадат имена. Опитайте с по-дълъг препис.</translation>
@@ -973,7 +979,6 @@
 <translation id="5703716265115423771">намаляване на силата на звука</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> от <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Бутон за редактиране на <ph name="SHORTCUT_DESCRIPTION" />.</translation>
-<translation id="5733298426544876109">Актуализиране на <ph name="DEVICE_NAME" /></translation>
 <translation id="5736820754189340309">Преносът на данни е нулиран</translation>
 <translation id="574392208103952083">Среден</translation>
 <translation id="5744175046705638478">Превод на „<ph name="QUERY" />“</translation>
@@ -998,6 +1003,7 @@
 <translation id="5859969039821714932">Клавишната комбинация не е налице. Натиснете нова клавишна комбинация без <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Изключено</translation>
 <translation id="5860491529813859533">Включване</translation>
+<translation id="5875913454160982848">Изтегляне на модела за преписи</translation>
 <translation id="5876385649737594562">Включете, за да изберете опции</translation>
 <translation id="5877503382465267833">Поставяне на пауза на <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Цял екран</translation>
@@ -1037,7 +1043,6 @@
 <translation id="6040143037577758943">Затваряне</translation>
 <translation id="6040852767465482106">Анонимна самоличност</translation>
 <translation id="604124094241169006">Автоматично</translation>
-<translation id="6042308850641462728">Още</translation>
 <translation id="6048107060512778456">Неуспешно – заседнала хартия</translation>
 <translation id="6050189528197190982">Сива скала</translation>
 <translation id="6054711098834486579">експресионизъм</translation>
@@ -1293,6 +1298,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Сървър за имена}other{Сървъри за имена}}</translation>
 <translation id="7135814714616751706">Търсете комбинации</translation>
 <translation id="7138614237884624401">Опростен текст</translation>
+<translation id="7138668887584231801">Няма достатъчно думи за обобщаване</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Свързва се</translation>
 <translation id="7144878232160441200">Повторен опит</translation>
@@ -1588,6 +1594,7 @@
 <translation id="8503836310948963452">Само още няколко минути…</translation>
 <translation id="8505011850330200833">Моделът на Gemini се нуждае от 2 GB място в хранилището, за да обработва преписи и да създава обобщения</translation>
 <translation id="8508640263392900755">Подробности за името на точката за достъп (APN)</translation>
+<translation id="8509574872955173831">Научете повече за създаването на обобщения и имена</translation>
 <translation id="8522687886059337719">Вече имате достъп до нови <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />тапети<ph name="END_LINK_WALLPAPER_SUBPAGE" /> и <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />скрийнсейвър<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">чайна</translation>
@@ -1724,7 +1731,6 @@
 <translation id="9133772297793293778">Натиснете модификатор от 1 до 4 и още един клавиш на клавиатурата. За да излезете от режима на редактиране, натиснете Alt + Esc.</translation>
 <translation id="9137526406337347448">Услуги на Google</translation>
 <translation id="9138630967333032450">Клавиш „shift“ вляво</translation>
-<translation id="9147928237330776930">Твърде малко думи за обобщаване</translation>
 <translation id="9149391708638971077">Тестване на паметта</translation>
 <translation id="9159524746324788320">хамбургери</translation>
 <translation id="9161276708550942948">интервал</translation>

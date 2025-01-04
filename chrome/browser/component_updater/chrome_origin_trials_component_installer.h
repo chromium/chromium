@@ -21,7 +21,6 @@ class ChromeOriginTrialsComponentInstallerPolicy
     : public OriginTrialsComponentInstallerPolicy {
  public:
   ChromeOriginTrialsComponentInstallerPolicy() = default;
-  ~ChromeOriginTrialsComponentInstallerPolicy() override = default;
   ChromeOriginTrialsComponentInstallerPolicy(
       const ChromeOriginTrialsComponentInstallerPolicy&) = delete;
   ChromeOriginTrialsComponentInstallerPolicy& operator=(

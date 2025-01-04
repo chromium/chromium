@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <set>
@@ -35,7 +31,6 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/cloud/client_data_delegate.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
@@ -55,7 +50,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #endif
 
@@ -113,8 +108,7 @@ constexpr char kIdToken[] = "id_token";
 constexpr char kOidcState[] = "fake-oidc-state";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX)
 constexpr char kBrowserEnrollmentToken[] = "browser_enrollment_token";
 #endif
 
@@ -341,8 +335,7 @@ em::DeviceManagementRequest GetCertBasedRegistrationRequest(
   return request;
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX)
 em::DeviceManagementRequest GetEnrollmentRequest() {
   em::DeviceManagementRequest request;
 
@@ -465,7 +458,7 @@ class CloudPolicyClientTest : public testing::Test {
         job_type_(DeviceManagementService::JobConfiguration::TYPE_INVALID),
         client_id_(kClientID),
         policy_type_(dm_protocol::kChromeUserPolicyType) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
                                                   "fake_serial_number");
 #endif
@@ -612,7 +605,7 @@ class CloudPolicyClientTest : public testing::Test {
   std::unique_ptr<CloudPolicyClient> client_;
   network::TestURLLoaderFactory url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 #endif
 
@@ -918,8 +911,7 @@ TEST_F(CloudPolicyClientTest, SetupRegistrationAndPolicyFetchWithOAuthToken) {
   CheckPolicyResponse(policy_response);
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX)
 TEST_F(CloudPolicyClientTest, BrowserRegistrationWithTokenAndPolicyFetch) {
   const em::DeviceManagementResponse policy_response = GetPolicyResponse();
 
@@ -1877,11 +1869,11 @@ TEST_F(CloudPolicyClientTest, PolicyFetchWithExtensionPolicy) {
   em::DeviceManagementResponse policy_response = GetPolicyResponse();
 
   // Set up the |expected_responses| and |policy_response|.
-  static const char* kExtensions[] = {
+  static auto kExtensions = std::to_array<const char*>({
       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
       "cccccccccccccccccccccccccccccccc",
-  };
+  });
   typedef std::map<std::pair<std::string, std::string>, em::PolicyFetchResponse>
       ResponseMap;
   ResponseMap expected_responses;

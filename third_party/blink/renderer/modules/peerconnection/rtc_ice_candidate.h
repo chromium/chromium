@@ -76,7 +76,7 @@ class MODULES_EXPORT RTCIceCandidate final : public ScriptWrappable {
   std::optional<uint16_t> relatedPort() const;
   String usernameFragment() const;
   std::optional<V8RTCIceServerTransportProtocol> relayProtocol() const;
-  std::optional<String> url() const;
+  String url() const;
 
   ScriptObject toJSONForBinding(ScriptState*);
 

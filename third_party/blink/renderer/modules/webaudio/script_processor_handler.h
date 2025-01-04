@@ -65,6 +65,11 @@ class ScriptProcessorHandler final : public AudioHandler {
                          uint32_t number_of_output_channels,
                          const HeapVector<Member<AudioBuffer>>& input_buffers,
                          const HeapVector<Member<AudioBuffer>>& output_buffers);
+
+  // Used to avoid code duplication when using scoped objects that affect
+  // `Process`.
+  void ProcessInternal(uint32_t frames_to_process);
+
   double TailTime() const override;
   double LatencyTime() const override;
   bool RequiresTailProcessing() const final;
@@ -91,6 +96,9 @@ class ScriptProcessorHandler final : public AudioHandler {
   scoped_refptr<AudioBus> internal_input_bus_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+
+  // Cached feature flag value
+  const bool allow_denormal_in_processing_;
 
   base::WeakPtrFactory<ScriptProcessorHandler> weak_ptr_factory_{this};
 

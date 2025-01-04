@@ -153,6 +153,11 @@ signin::Tribool AccountCapabilities::can_use_generative_ai_in_recorder_app()
   return GetCapabilityByName(kCanUseGenerativeAiInRecorderApp);
 }
 
+signin::Tribool AccountCapabilities::can_use_generative_ai_photo_editing()
+    const {
+  return GetCapabilityByName(kCanUseGenerativeAiPhotoEditing);
+}
+
 bool AccountCapabilities::UpdateWith(const AccountCapabilities& other) {
   bool modified = false;
 

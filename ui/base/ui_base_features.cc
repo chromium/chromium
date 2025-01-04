@@ -82,14 +82,6 @@ bool IsNotificationsIgnoreRequireInteractionEnabled() {
   return base::FeatureList::IsEnabled(kNotificationsIgnoreRequireInteraction);
 }
 
-BASE_FEATURE(kShortcutCustomization,
-             "ShortcutCustomization",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsShortcutCustomizationEnabled() {
-  return base::FeatureList::IsEnabled(kShortcutCustomization);
-}
-
 // Enables settings that allow users to remap the F11 and F12 keys in the
 // "Customize keyboard keys" page.
 BASE_FEATURE(kSupportF11AndF12KeyShortcuts,
@@ -163,11 +155,6 @@ BASE_FEATURE(kInputMethodSettingsUiUpdate,
 // touch slop.
 BASE_FEATURE(kStylusSpecificTapSlop,
              "StylusSpecificTapSlop",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Allows system caption style for WebVTT Captions.
-BASE_FEATURE(kSystemCaptionStyle,
-             "SystemCaptionStyle",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, the feature will query the OS for a default cursor size,
@@ -257,13 +244,7 @@ BASE_FEATURE(kFocusFollowsCursor,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS)
-// This feature supersedes kNewShortcutMapping.
-BASE_FEATURE(kImprovedKeyboardShortcuts,
-             "ImprovedKeyboardShortcuts",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool IsImprovedKeyboardShortcutsEnabled() {
-#if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/40203434): Remove this once kDeviceI18nShortcutsEnabled
   // policy is deprecated.
   if (::ui::ShortcutMappingPrefDelegate::IsInitialized()) {
@@ -273,9 +254,7 @@ bool IsImprovedKeyboardShortcutsEnabled() {
       return instance->IsI18nShortcutPrefEnabled();
     }
   }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-  return base::FeatureList::IsEnabled(kImprovedKeyboardShortcuts);
+  return true;
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -454,7 +433,12 @@ BASE_FEATURE(kBubbleFrameViewTitleIsHeading,
 
 BASE_FEATURE(kEnableGestureBeginEndTypes,
              "EnableGestureBeginEndTypes",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if !BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+);
 
 BASE_FEATURE(kUseUtf8EncodingForSvgImage,
              "UseUtf8EncodingForSvgImage",

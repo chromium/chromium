@@ -187,7 +187,8 @@ bool InputScalesValid(std::string_view input,
     return false;
   }
   auto scales = base::HeapArray<float>::WithSize(expected.size());
-  base::as_writable_byte_span(scales).copy_from(base::as_byte_span(input));
+  base::as_writable_byte_span(base::allow_nonunique_obj, scales)
+      .copy_from(base::as_byte_span(input));
   for (size_t index = 0; index < expected.size(); ++index) {
     if (scales[index] != ui::GetScaleForResourceScaleFactor(expected[index])) {
       return false;
@@ -203,7 +204,8 @@ std::string GetResourceScaleFactorsAsString(
   for (size_t i = 0; i < scale_factors.size(); ++i) {
     scales[i] = ui::GetScaleForResourceScaleFactor(scale_factors[i]);
   }
-  return std::string(base::as_string_view(base::as_byte_span(scales)));
+  return std::string(base::as_string_view(
+      base::as_byte_span(base::allow_nonunique_obj, scales)));
 }
 
 struct StringToIntTable {
@@ -392,8 +394,7 @@ SkBitmap CreateLowQualityResizedBitmap(
 // if the ImageSkiaRep for the target scale factor isn't available.
 class ThemeImageSource : public gfx::ImageSkiaSource {
  public:
-  explicit ThemeImageSource(const gfx::ImageSkia& source) : source_(source) {
-  }
+  explicit ThemeImageSource(const gfx::ImageSkia& source) : source_(source) {}
 
   ThemeImageSource(const ThemeImageSource&) = delete;
   ThemeImageSource& operator=(const ThemeImageSource&) = delete;
@@ -401,8 +402,9 @@ class ThemeImageSource : public gfx::ImageSkiaSource {
   ~ThemeImageSource() override = default;
 
   gfx::ImageSkiaRep GetImageForScale(float scale) override {
-    if (source_.HasRepresentation(scale))
+    if (source_.HasRepresentation(scale)) {
       return source_.GetRepresentation(scale);
+    }
     const gfx::ImageSkiaRep& rep_100p = source_.GetRepresentation(1.0f);
     SkBitmap scaled_bitmap = CreateLowQualityResizedBitmap(
         rep_100p.GetBitmap(), ui::k100Percent,
@@ -437,8 +439,9 @@ class ThemeImagePngSource : public gfx::ImageSkiaSource {
     // Look up the bitmap for |scale factor| in the bitmap map. If found
     // return it.
     BitmapMap::const_iterator exact_bitmap_it = bitmap_map_.find(scale_factor);
-    if (exact_bitmap_it != bitmap_map_.end())
+    if (exact_bitmap_it != bitmap_map_.end()) {
       return gfx::ImageSkiaRep(exact_bitmap_it->second, scale);
+    }
 
     // Look up the raw PNG data for |scale_factor| in the png map. If found,
     // decode it, store the result in the bitmap map and return it.
@@ -464,8 +467,9 @@ class ThemeImagePngSource : public gfx::ImageSkiaSource {
         available_png_it = png_it;
       }
     }
-    if (available_png_it == png_map_.end())
+    if (available_png_it == png_map_.end()) {
       return gfx::ImageSkiaRep();
+    }
     ui::ResourceScaleFactor available_scale_factor = available_png_it->first;
 
     // Look up the bitmap for |available_scale_factor| in the bitmap map.
@@ -486,9 +490,7 @@ class ThemeImagePngSource : public gfx::ImageSkiaSource {
     // Scale the available bitmap to the desired scale factor, store the result
     // in the bitmap map and return it.
     SkBitmap scaled_bitmap = CreateLowQualityResizedBitmap(
-        available_bitmap_it->second,
-        available_scale_factor,
-        scale_factor);
+        available_bitmap_it->second, available_scale_factor, scale_factor);
     bitmap_map_[scale_factor] = scaled_bitmap;
     return gfx::ImageSkiaRep(scaled_bitmap, scale);
   }
@@ -575,8 +577,9 @@ class ControlButtonBackgroundImageSource : public gfx::CanvasImageSource {
   void Draw(gfx::Canvas* canvas) override {
     canvas->DrawColor(background_color_);
 
-    if (!bg_image_.isNull())
+    if (!bg_image_.isNull()) {
       canvas->DrawImageInt(bg_image_, 0, 0);
+    }
   }
 
  private:
@@ -623,10 +626,10 @@ BrowserThemePack::~BrowserThemePack() {
   } else {
     // When not using a data_pack, the memory is allocated and must be freed.
     delete header_;
-    delete [] tints_;
-    delete [] colors_;
-    delete [] display_properties_;
-    delete [] source_images_;
+    delete[] tints_;
+    delete[] colors_;
+    delete[] display_properties_;
+    delete[] source_images_;
   }
 }
 
@@ -639,8 +642,9 @@ void BrowserThemePack::SetColor(int id, SkColor color) {
       colors_[i].color = color;
       return;
     }
-    if (colors_[i].id == -1 && first_available_color == -1)
+    if (colors_[i].id == -1 && first_available_color == -1) {
       first_available_color = i;
+    }
   }
 
   DCHECK_NE(-1, first_available_color);
@@ -650,8 +654,9 @@ void BrowserThemePack::SetColor(int id, SkColor color) {
 
 void BrowserThemePack::SetColorIfUnspecified(int id, SkColor color) {
   SkColor temp_color;
-  if (!GetColor(id, &temp_color))
+  if (!GetColor(id, &temp_color)) {
     SetColor(id, color);
+  }
 }
 
 void BrowserThemePack::SetTint(int id, color_utils::HSL tint) {
@@ -665,8 +670,9 @@ void BrowserThemePack::SetTint(int id, color_utils::HSL tint) {
       tints_[i].l = tint.l;
       return;
     }
-    if (tints_[i].id == -1 && first_available_index == -1)
+    if (tints_[i].id == -1 && first_available_index == -1) {
       first_available_index = i;
+    }
   }
 
   DCHECK_NE(-1, first_available_index);
@@ -685,8 +691,9 @@ void BrowserThemePack::SetDisplayProperty(int id, int value) {
       display_properties_[i].property = value;
       return;
     }
-    if (display_properties_[i].id == -1 && first_available_index == -1)
+    if (display_properties_[i].id == -1 && first_available_index == -1) {
       first_available_index = i;
+    }
   }
 
   DCHECK_NE(-1, first_available_index);
@@ -728,8 +735,9 @@ void BrowserThemePack::BuildFromExtension(
                                 extension->path(), &file_paths);
   pack->BuildSourceImagesArray(file_paths);
 
-  if (!pack->LoadRawBitmapsTo(file_paths, &pack->images_))
+  if (!pack->LoadRawBitmapsTo(file_paths, &pack->images_)) {
     return;
+  }
 
   pack->AdjustThemePack();
 
@@ -739,7 +747,8 @@ void BrowserThemePack::BuildFromExtension(
 
 // static
 scoped_refptr<BrowserThemePack> BrowserThemePack::BuildFromDataPack(
-    const base::FilePath& path, const std::string& expected_id) {
+    const base::FilePath& path,
+    const std::string& expected_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Allow IO on UI thread due to deep-seated theme design issues.
   // (see http://crbug.com/80206)
@@ -870,8 +879,9 @@ void BrowserThemePack::BuildFromColors(AutogeneratedThemeColors colors,
 
   // Always use alternate logo (not colorful one) for all backgrounds except
   // white.
-  if (colors.active_tab_color != SK_ColorWHITE)
+  if (colors.active_tab_color != SK_ColorWHITE) {
     pack->SetDisplayProperty(TP::NTP_LOGO_ALTERNATE, 1);
+  }
 
   // Don't change frame color for inactive window.
   pack->SetTint(TP::TINT_FRAME_INACTIVE, {-1, -1, -1});
@@ -1022,20 +1032,23 @@ bool BrowserThemePack::GetDisplayProperty(int id, int* result) const {
 
 gfx::Image BrowserThemePack::GetImageNamed(int idr_id) const {
   PersistentID prs_id = GetPersistentIDByIDR(idr_id);
-  if (prs_id == PersistentID::kInvalid)
+  if (prs_id == PersistentID::kInvalid) {
     return gfx::Image();
+  }
 
   // Check if the image is cached.
   ImageCache::const_iterator image_iter = images_.find(prs_id);
-  if (image_iter != images_.end())
+  if (image_iter != images_.end()) {
     return image_iter->second;
+  }
 
   ThemeImagePngSource::PngMap png_map;
-  for (size_t i = 0; i < scale_factors_.size(); ++i) {
+  for (auto scale_factor : scale_factors_) {
     scoped_refptr<base::RefCountedMemory> memory =
-        GetRawData(idr_id, scale_factors_[i]);
-    if (memory.get())
-      png_map[scale_factors_[i]] = memory;
+        GetRawData(idr_id, scale_factor);
+    if (memory.get()) {
+      png_map[scale_factor] = memory;
+    }
   }
   if (!png_map.empty()) {
     gfx::ImageSkia image_skia(std::make_unique<ThemeImagePngSource>(png_map),
@@ -1071,8 +1084,9 @@ base::RefCountedMemory* BrowserThemePack::GetRawData(
 
 bool BrowserThemePack::HasCustomImage(int idr_id) const {
   PersistentID prs_id = GetPersistentIDByIDR(idr_id);
-  if (prs_id == PersistentID::kInvalid)
+  if (prs_id == PersistentID::kInvalid) {
     return false;
+  }
 
   SourceImage* img = source_images_;
   for (; img->id != -1; ++img) {
@@ -1136,8 +1150,9 @@ void BrowserThemePack::AddColorMixers(ui::ColorProvider* provider,
 
   SkColor color;
   for (const auto& entry : kThemePropertiesMap) {
-    if (GetColor(entry.property_id, &color))
+    if (GetColor(entry.property_id, &color)) {
       mixer[entry.color_id] = {color};
+    }
   }
 
   if (GetColor(TP::COLOR_TOOLBAR_BUTTON_ICON, &color)) {
@@ -1214,8 +1229,8 @@ void BrowserThemePack::AdjustThemePack() {
 
   // Generate raw images (for new-tab-page attribution and background) for
   // any missing scale from an available scale image.
-  for (size_t i = 0; i < std::size(kPreloadIDs); ++i) {
-    GenerateRawImageForAllSupportedScales(kPreloadIDs[i]);
+  for (auto kPreloadID : kPreloadIDs) {
+    GenerateRawImageForAllSupportedScales(kPreloadID);
   }
 
   // Generates missing NTP related colors. Should be called after theme images
@@ -1253,7 +1268,7 @@ void BrowserThemePack::InitHeader() {
   static_assert(__BYTE_ORDER == __LITTLE_ENDIAN,
                 "datapack assumes little endian");
 #elif defined(__BIG_ENDIAN__)
-// Mac check
+  // Mac check
 #error DataPack assumes little endian
 #endif
   header_->little_endian = 1;
@@ -1306,39 +1321,42 @@ void BrowserThemePack::SetHeaderId(const Extension* extension) {
 void BrowserThemePack::SetTintsFromJSON(const base::Value::Dict* tints_value) {
   DCHECK(tints_);
 
-  if (!tints_value)
+  if (!tints_value) {
     return;
+  }
 
   // Parse the incoming data from |tints_value| into an intermediary structure.
   std::map<int, color_utils::HSL> temp_tints;
   for (const auto [key, value] : *tints_value) {
-    if (!value.is_list())
+    if (!value.is_list()) {
       continue;
+    }
 
     const base::Value::List& tint_list = value.GetList();
-    if (tint_list.size() != 3)
+    if (tint_list.size() != 3) {
       continue;
+    }
 
     std::optional<double> h = tint_list[0].GetIfDouble();
     std::optional<double> s = tint_list[1].GetIfDouble();
     std::optional<double> l = tint_list[2].GetIfDouble();
-    if (!h || !s || !l)
+    if (!h || !s || !l) {
       continue;
+    }
 
     color_utils::HSL hsl = {*h, *s, *l};
     MakeHSLShiftValid(&hsl);
 
     int id = GetIntForString(key, kTintTable, kTintTableLength);
-    if (id != -1)
+    if (id != -1) {
       temp_tints[id] = hsl;
+    }
   }
 
   // Copy data from the intermediary data structure to the array.
   size_t count = 0;
-  for (std::map<int, color_utils::HSL>::const_iterator it =
-           temp_tints.begin();
-       it != temp_tints.end() && count < kTintTableLength;
-       ++it, ++count) {
+  for (std::map<int, color_utils::HSL>::const_iterator it = temp_tints.begin();
+       it != temp_tints.end() && count < kTintTableLength; ++it, ++count) {
     tints_[count].id = it->first;
     tints_[count].h = it->second.h;
     tints_[count].s = it->second.s;
@@ -1351,8 +1369,9 @@ void BrowserThemePack::SetColorsFromJSON(
   DCHECK(colors_);
 
   std::map<int, SkColor> temp_colors;
-  if (colors_value)
+  if (colors_value) {
     ReadColorsFromJSON(*colors_value, &temp_colors);
+  }
 
   // Copy data from the intermediary data structure to the array.
   size_t count = 0;
@@ -1368,11 +1387,13 @@ void BrowserThemePack::ReadColorsFromJSON(const base::Value::Dict& colors_value,
                                           std::map<int, SkColor>* temp_colors) {
   // Parse the incoming data from |colors_value| into an intermediary structure.
   for (const auto [key, value] : colors_value) {
-    if (!value.is_list())
+    if (!value.is_list()) {
       continue;
+    }
     const base::Value::List& color_list = value.GetList();
-    if (!(color_list.size() == 3 || color_list.size() == 4))
+    if (!(color_list.size() == 3 || color_list.size() == 4)) {
       continue;
+    }
 
     SkColor color = SK_ColorWHITE;
     std::optional<int> r = color_list[0].GetIfInt();
@@ -1401,8 +1422,9 @@ void BrowserThemePack::ReadColorsFromJSON(const base::Value::Dict& colors_value,
         }
       }
 
-      if (!alpha_valid)
+      if (!alpha_valid) {
         continue;
+      }
     } else {
       color = SkColorSetRGB(*r, *g, *b);
     }
@@ -1411,13 +1433,15 @@ void BrowserThemePack::ReadColorsFromJSON(const base::Value::Dict& colors_value,
       // We no longer use ntp_section, but to support legacy
       // themes we still need to use it as a fallback for
       // ntp_header.
-      if (!temp_colors->count(TP::COLOR_NTP_HEADER))
+      if (!temp_colors->count(TP::COLOR_NTP_HEADER)) {
         (*temp_colors)[TP::COLOR_NTP_HEADER] = color;
+      }
     } else {
       int id = GetIntForString(key, kOverwritableColorTable,
                                kOverwritableColorTableLength);
-      if (id != -1)
+      if (id != -1) {
         (*temp_colors)[id] = color;
+      }
     }
   }
 }
@@ -1426,8 +1450,9 @@ void BrowserThemePack::SetDisplayPropertiesFromJSON(
     const base::Value::Dict* display_properties_value) {
   DCHECK(display_properties_);
 
-  if (!display_properties_value)
+  if (!display_properties_value) {
     return;
+  }
 
   std::map<int, int> temp_properties;
   for (const auto [key, value] : *display_properties_value) {
@@ -1449,8 +1474,9 @@ void BrowserThemePack::SetDisplayPropertiesFromJSON(
         break;
       }
       case TP::NTP_LOGO_ALTERNATE: {
-        if (value.is_int())
+        if (value.is_int()) {
           temp_properties[TP::NTP_LOGO_ALTERNATE] = value.GetInt();
+        }
         break;
       }
     }
@@ -1470,8 +1496,9 @@ void BrowserThemePack::ParseImageNamesFromJSON(
     const base::Value::Dict* images_value,
     const base::FilePath& images_path,
     FilePathMap* file_paths) const {
-  if (!images_value)
+  if (!images_value) {
     return;
+  }
 
   for (const auto [key, value] : *images_value) {
     if (value.is_dict()) {
@@ -1497,8 +1524,9 @@ void BrowserThemePack::AddFileAtScaleToMap(const std::string& image_name,
                                            const base::FilePath& image_path,
                                            FilePathMap* file_paths) const {
   PersistentID id = GetPersistentIDByName(image_name);
-  if (id != PersistentID::kInvalid)
+  if (id != PersistentID::kInvalid) {
     (*file_paths)[id][scale_factor] = image_path;
+  }
 }
 
 void BrowserThemePack::BuildSourceImagesArray(const FilePathMap& file_paths) {
@@ -1509,9 +1537,8 @@ void BrowserThemePack::BuildSourceImagesArray(const FilePathMap& file_paths) {
   source_images_[file_paths.size()].id = -1;
 }
 
-bool BrowserThemePack::LoadRawBitmapsTo(
-    const FilePathMap& file_paths,
-    ImageCache* image_cache) {
+bool BrowserThemePack::LoadRawBitmapsTo(const FilePathMap& file_paths,
+                                        ImageCache* image_cache) {
   // Themes should be loaded on the file thread, not the UI thread.
   // http://crbug.com/61838
   base::ScopedAllowBlocking scoped_allow_blocking;
@@ -1537,8 +1564,7 @@ bool BrowserThemePack::LoadRawBitmapsTo(
         scoped_refptr<base::RefCountedMemory> raw_data(
             ReadFileData(s2f.second));
         if (!raw_data.get() || !raw_data->size()) {
-          LOG(ERROR) << "Could not load theme image"
-                     << " prs_id=" << prs_id
+          LOG(ERROR) << "Could not load theme image" << " prs_id=" << prs_id
                      << " scale_factor_enum=" << scale_factor
                      << " file=" << s2f.second.value()
                      << (raw_data.get() ? " (zero size)" : " (read error)");
@@ -1559,8 +1585,9 @@ bool BrowserThemePack::LoadRawBitmapsTo(
         }
       }
     }
-    if (!is_copyable && !image_skia.isNull())
+    if (!is_copyable && !image_skia.isNull()) {
       (*image_cache)[prs_id] = gfx::Image(image_skia);
+    }
   }
 
   return true;
@@ -1569,8 +1596,9 @@ bool BrowserThemePack::LoadRawBitmapsTo(
 void BrowserThemePack::CropImages(ImageCache* images) const {
   for (const auto& image_to_crop : kImagesToCrop) {
     auto it = images->find(image_to_crop.prs_id);
-    if (it == images->end())
+    if (it == images->end()) {
       continue;
+    }
 
     gfx::ImageSkia image_skia = it->second.AsImageSkia();
     (*images)[image_to_crop.prs_id] =
@@ -1646,8 +1674,9 @@ void BrowserThemePack::CreateToolbarImageAndColors(ImageCache* images) {
   constexpr PersistentID kSrcImageId = PRS::kToolbar;
 
   const auto image_it = images->find(kSrcImageId);
-  if (image_it == images->end())
+  if (image_it == images->end()) {
     return;
+  }
 
   auto image = image_it->second.AsImageSkia();
 
@@ -1700,17 +1729,20 @@ void BrowserThemePack::CreateFrameImagesAndColors(ImageCache* images) {
     // does.
     if (!images->count(src_id)) {
       // Fall back from inactive overlay to active overlay.
-      if (src_id == PRS::kFrameOverlayInactive)
+      if (src_id == PRS::kFrameOverlayInactive) {
         src_id = PRS::kFrameOverlay;
+      }
 
       // Fall back from inactive incognito to active incognito.
-      if (src_id == PRS::kFrameIncognitoInactive)
+      if (src_id == PRS::kFrameIncognitoInactive) {
         src_id = PRS::kFrameIncognito;
+      }
 
       // For all non-overlay images, fall back to PRS_THEME_FRAME as a last
       // resort.
-      if (!images->count(src_id) && src_id != PRS::kFrameOverlay)
+      if (!images->count(src_id) && src_id != PRS::kFrameOverlay) {
         src_id = PRS::kFrame;
+      }
     }
 
     // Note that if the original ID and all the fallbacks are absent, the caller
@@ -1778,13 +1810,15 @@ void BrowserThemePack::GenerateWindowControlButtonColor(ImageCache* images) {
   gfx::ImageSkia bg_image;
   ImageCache::const_iterator bg_img_it =
       images->find(PRS::kWindowControlBackground);
-  if (bg_img_it != images->end())
+  if (bg_img_it != images->end()) {
     bg_image = bg_img_it->second.AsImageSkia();
+  }
 
   SkColor button_bg_color = SK_ColorTRANSPARENT;
   SkAlpha button_bg_alpha = SK_AlphaTRANSPARENT;
-  if (GetColor(TP::COLOR_CONTROL_BUTTON_BACKGROUND, &button_bg_color))
+  if (GetColor(TP::COLOR_CONTROL_BUTTON_BACKGROUND, &button_bg_color)) {
     button_bg_alpha = SkColorGetA(button_bg_color);
+  }
 
   button_bg_alpha =
       WindowFrameUtil::CalculateWindowsCaptionButtonBackgroundAlpha(
@@ -1866,8 +1900,9 @@ void BrowserThemePack::CreateTabBackgroundImagesAndColors(ImageCache* images) {
 
     // Inactive images should be based on the active ones if the active ones
     // were customized.
-    if (tab_it == images->end() && entry.fallback_tab_id)
+    if (tab_it == images->end() && entry.fallback_tab_id) {
       tab_it = images->find(*entry.fallback_tab_id);
+    }
 
     // Generate background tab images when provided with custom frame or
     // background tab images; in the former case the theme author may want the
@@ -1880,12 +1915,14 @@ void BrowserThemePack::CreateTabBackgroundImagesAndColors(ImageCache* images) {
       GetColor(entry.frame_color_id, &frame_color);
 
       gfx::ImageSkia image_to_tint;
-      if (frame_it != images->end())
+      if (frame_it != images->end()) {
         image_to_tint = (frame_it->second).AsImageSkia();
+      }
 
       gfx::ImageSkia overlay;
-      if (tab_it != images->end())
+      if (tab_it != images->end()) {
         overlay = tab_it->second.AsImageSkia();
+      }
 
       auto source = std::make_unique<TabBackgroundImageSource>(
           frame_color, image_to_tint, overlay,
@@ -1920,8 +1957,9 @@ void BrowserThemePack::GenerateMissingNtpColors() {
   // Calculate NTP text color based on NTP background.
   SkColor text_color;
   if (!GetColor(TP::COLOR_NTP_TEXT, &text_color)) {
-    if (has_background_image)
+    if (has_background_image) {
       background_color = ComputeImageColor(image, image.Height());
+    }
 
     if (has_background_image || has_background_color) {
       SetColor(TP::COLOR_NTP_TEXT,
@@ -1950,8 +1988,9 @@ void BrowserThemePack::GenerateMissingNtpColors() {
 
   // Calculate NTP section border color.
   SkColor header_color;
-  if (GetColor(TP::COLOR_NTP_HEADER, &header_color))
+  if (GetColor(TP::COLOR_NTP_HEADER, &header_color)) {
     SetColor(TP::COLOR_NTP_SECTION_BORDER, SkColorSetA(header_color, 0x50));
+  }
 }
 
 void BrowserThemePack::RepackImages(const ImageCache& images,
@@ -1976,10 +2015,10 @@ void BrowserThemePack::RepackImages(const ImageCache& images,
   }
 }
 
-void BrowserThemePack::MergeImageCaches(
-    const ImageCache& source, ImageCache* destination) const {
-  for (auto it = source.begin(); it != source.end(); ++it) {
-    (*destination)[it->first] = it->second;
+void BrowserThemePack::MergeImageCaches(const ImageCache& source,
+                                        ImageCache* destination) const {
+  for (const auto& it : source) {
+    (*destination)[it.first] = it.second;
   }
 }
 
@@ -1992,14 +2031,16 @@ void BrowserThemePack::AddRawImagesTo(const RawImages& images,
 
 color_utils::HSL BrowserThemePack::GetTintInternal(int id) const {
   color_utils::HSL hsl;
-  if (GetTint(id, &hsl))
+  if (GetTint(id, &hsl)) {
     return hsl;
+  }
 
   int original_id = id;
-  if (id == TP::TINT_FRAME_INCOGNITO)
+  if (id == TP::TINT_FRAME_INCOGNITO) {
     original_id = TP::TINT_FRAME;
-  else if (id == TP::TINT_FRAME_INCOGNITO_INACTIVE)
+  } else if (id == TP::TINT_FRAME_INCOGNITO_INACTIVE) {
     original_id = TP::TINT_FRAME_INACTIVE;
+  }
 
   return TP::GetDefaultTint(original_id, original_id != id);
 }
@@ -2007,12 +2048,14 @@ color_utils::HSL BrowserThemePack::GetTintInternal(int id) const {
 int BrowserThemePack::GetRawIDByPersistentID(
     PersistentID prs_id,
     ui::ResourceScaleFactor scale_factor) const {
-  if (prs_id == PersistentID::kInvalid)
+  if (prs_id == PersistentID::kInvalid) {
     return -1;
+  }
 
   for (size_t i = 0; i < scale_factors_.size(); ++i) {
-    if (scale_factors_[i] == scale_factor)
+    if (scale_factors_[i] == scale_factor) {
       return ((PersistentID::kMaxValue + 1) * i) + prs_id;
+    }
   }
   return -1;
 }
@@ -2023,10 +2066,9 @@ bool BrowserThemePack::GetScaleFactorFromManifestKey(
   int percent = 0;
   if (base::StringToInt(key, &percent)) {
     float scale = static_cast<float>(percent) / 100.0f;
-    for (size_t i = 0; i < scale_factors_.size(); ++i) {
-      if (fabs(ui::GetScaleForResourceScaleFactor(scale_factors_[i]) - scale) <
-          0.001) {
-        *scale_factor = scale_factors_[i];
+    for (auto i : scale_factors_) {
+      if (fabs(ui::GetScaleForResourceScaleFactor(i) - scale) < 0.001) {
+        *scale_factor = i;
         return true;
       }
     }
@@ -2048,30 +2090,32 @@ void BrowserThemePack::GenerateRawImageForAllSupportedScales(
 
   // See if any image is missing. If not, we're done.
   bool image_missing = false;
-  for (size_t i = 0; i < scale_factors_.size(); ++i) {
-    int raw_id = GetRawIDByPersistentID(prs_id, scale_factors_[i]);
+  for (auto& scale_factor : scale_factors_) {
+    int raw_id = GetRawIDByPersistentID(prs_id, scale_factor);
     if (image_memory_.find(raw_id) == image_memory_.end()) {
       image_missing = true;
       break;
     }
   }
-  if (!image_missing)
+  if (!image_missing) {
     return;
+  }
 
   // Find available scale factor with highest scale.
   ui::ResourceScaleFactor available_scale_factor = ui::kScaleFactorNone;
-  for (size_t i = 0; i < scale_factors_.size(); ++i) {
-    int raw_id = GetRawIDByPersistentID(prs_id, scale_factors_[i]);
+  for (auto& scale_factor : scale_factors_) {
+    int raw_id = GetRawIDByPersistentID(prs_id, scale_factor);
     if ((available_scale_factor == ui::kScaleFactorNone ||
-         (ui::GetScaleForResourceScaleFactor(scale_factors_[i]) >
+         (ui::GetScaleForResourceScaleFactor(scale_factor) >
           ui::GetScaleForResourceScaleFactor(available_scale_factor))) &&
         image_memory_.find(raw_id) != image_memory_.end()) {
-      available_scale_factor = scale_factors_[i];
+      available_scale_factor = scale_factor;
     }
   }
   // If no scale factor is available, we're done.
-  if (available_scale_factor == ui::kScaleFactorNone)
+  if (available_scale_factor == ui::kScaleFactorNone) {
     return;
+  }
 
   // Get bitmap for the available scale factor.
   int available_raw_id = GetRawIDByPersistentID(prs_id, available_scale_factor);
@@ -2083,20 +2127,19 @@ void BrowserThemePack::GenerateRawImageForAllSupportedScales(
   }
 
   // Fill in all missing scale factors by scaling the available bitmap.
-  for (size_t i = 0; i < scale_factors_.size(); ++i) {
-    int scaled_raw_id = GetRawIDByPersistentID(prs_id, scale_factors_[i]);
-    if (image_memory_.find(scaled_raw_id) != image_memory_.end())
+  for (auto& scale_factor : scale_factors_) {
+    int scaled_raw_id = GetRawIDByPersistentID(prs_id, scale_factor);
+    if (image_memory_.find(scaled_raw_id) != image_memory_.end()) {
       continue;
-    SkBitmap scaled_bitmap =
-        CreateLowQualityResizedBitmap(available_bitmap,
-                                      available_scale_factor,
-                                      scale_factors_[i]);
+    }
+    SkBitmap scaled_bitmap = CreateLowQualityResizedBitmap(
+        available_bitmap, available_scale_factor, scale_factor);
     std::optional<std::vector<uint8_t>> bitmap_data =
         gfx::PNGCodec::EncodeBGRASkBitmap(scaled_bitmap,
                                           /*discard_transparency=*/false);
     if (!bitmap_data) {
       NOTREACHED() << "Unable to encode theme image for prs_id=" << prs_id
-                   << " for scale_factor=" << scale_factors_[i];
+                   << " for scale_factor=" << scale_factor;
     }
     image_memory_[scaled_raw_id] = base::MakeRefCounted<base::RefCountedBytes>(
         std::move(bitmap_data).value());

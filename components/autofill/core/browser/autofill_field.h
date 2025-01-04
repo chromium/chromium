@@ -19,7 +19,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/profile_value_source.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
@@ -301,12 +301,11 @@ class AutofillField : public FormFieldData {
     return value_identified_as_potentially_sensitive_;
   }
 
-  void set_field_is_eligible_for_prediction_improvements(
-      std::optional<bool> eligibily) {
-    field_is_eligible_for_prediction_improvements_ = eligibily;
+  void set_field_is_eligible_for_autofill_ai(std::optional<bool> eligibility) {
+    field_is_eligible_for_autofill_ai_ = eligibility;
   }
-  std::optional<bool> field_is_eligible_for_prediction_improvements() const {
-    return field_is_eligible_for_prediction_improvements_;
+  std::optional<bool> field_is_eligible_for_autofill_ai() const {
+    return field_is_eligible_for_autofill_ai_;
   }
 
   void set_credit_card_number_offset(size_t position) {
@@ -527,7 +526,7 @@ class AutofillField : public FormFieldData {
   // Indicates if the field was determined to be eligable for prediction
   // improvements. The `nullopt` state implies that the eligibility has not been
   // determined yet.
-  std::optional<bool> field_is_eligible_for_prediction_improvements_;
+  std::optional<bool> field_is_eligible_for_autofill_ai_;
 
   // Used to hold the position of the first digit to be copied as a substring
   // from credit card number.

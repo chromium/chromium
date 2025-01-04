@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">ڈاؤن لوڈ موقوف ہوگیا</translation>
 <translation id="1396327438254055134">‏سائٹ کو V8 کو بہتر بنانے والا استعمال کرنے کی اجازت دیں۔</translation>
 <translation id="1415402041810619267">‏URL کو چھوٹا کیا گیا</translation>
+<translation id="1415855080660575082">‏اپنے آلے کی مدد سے Chrome کو اپنے حالیہ ٹیبز کا اشتراک کرنے کی اجازت دیں تاکہ وہ آپ کے آلے کی ایپس کی فہرست اور تلاش کے نتائج میں دکھائی دیں۔ آپ اسے Chrome کی ترتیبات میں کسی بھی وقت آن یا آف کر سکتے ہیں۔</translation>
 <translation id="1448064542941920355">زوم آؤٹ کریں</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> سائٹ}other{<ph name="SITE_COUNT" /> سائٹس}}</translation>
 <translation id="1500473259453106018">ٹیبز کارڈ پر قیمت میں گرواٹ کو چھپائیں</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">آپ نے عارضی طور پر اس سائٹ کو فریق ثالث کوکیز استعمال کرنے کی اجازت دی ہے، جس کا مطلب ہے کہ براؤزنگ کا تحفظ کم ہے لیکن سائٹ کی خصوصیات کے توقع کے مطابق کام کرنے کا زیادہ امکان ہے۔ <ph name="BEGIN_LINK" />تاثرات بھیجیں<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">ہو سکتا ہے کہ کچھ سائٹس پر خصوصیات پوشیدگی وضع میں کام نہ کریں</translation>
 <translation id="2442870161001914531">ہمیشہ ڈیسک ٹاپ سائٹ کی درخواست کریں</translation>
+<translation id="2445311670906052406">‏اب Chrome آپ کے آلے کے ساتھ آپ کے حالیہ ٹیبز کا اشتراک کرتا ہے۔ وہ آپ کو اپنے آلے کی ایپس کی فہرست اور تلاش کے نتائج میں دکھائی دیں گے۔ آپ اسے Chrome کی ترتیبات میں کسی بھی وقت آف کر سکتے ہیں۔</translation>
 <translation id="2469312991797799607">اس کارروائی سے <ph name="ORIGIN" /> کے سبھی ڈیٹا اور کوکیز اور اس کے تحت سبھی سائٹس حذف ہو جائیں گی</translation>
 <translation id="2482878487686419369">اطلاعات</translation>
 <translation id="2485422356828889247">ان انسٹال کریں</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">سائٹس شناختی سروسز سے سائن ان پرامپٹس دکھا سکتی ہیں۔</translation>
 <translation id="2787357173144933081">اومنی باکس شروع کریں</translation>
 <translation id="2790501146643349491">آن ہونے پر، حال ہی میں بند کی گئی سائٹس ڈیٹا بھیجنا اور موصول کرنا مکمل کر سکتی ہیں۔ آف ہونے پر، حال ہی میں بند کی گئی سائٹس ڈیٹا بھیجنے یا موصول کرنے کے عمل کو مکمل نہیں کر سکتیں۔</translation>
+<translation id="2814830417943086299">‏اب Chrome آپ کے حالیہ ٹیبز کو آپ کے آلے کی ایپس کی فہرست اور تلاش کے نتائج میں ظاہر کرتا ہے۔ آپ اسے Chrome کی ترتیبات میں کسی بھی وقت آف کر سکتے ہیں۔</translation>
 <translation id="2822354292072154809">کیا آپ واقعی <ph name="CHOSEN_OBJECT_NAME" /> کے لیے سائٹ کی سبھی اجازتوں کو دوبارہ ترتیب دینا چاہتے ہیں؟</translation>
 <translation id="2850913818900871965">موبائل منظر کی درخواست کریں</translation>
 <translation id="2870560284913253234">سائٹ</translation>
@@ -335,7 +338,6 @@
 <translation id="5968921426641056619">ویب پتہ درج کریں</translation>
 <translation id="5975083100439434680">زوم آؤٹ کریں</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
-<translation id="6015145568571136419">‏اب آپ اپنے آلے کی ایپس کی فہرست سے اور آلے کے تلاش کے نتائج میں تجویز کردہ ٹیبز تک فوری طور پر رسائی حاصل کر سکتے ہیں۔ اسے Chrome کی ترتیبات میں کسی بھی وقت آف کریں۔</translation>
 <translation id="6015775454662021376">اپنے آلے تک اس سائٹ کی رسائی کو کنٹرول کریں</translation>
 <translation id="6040143037577758943">بند کریں</translation>
 <translation id="6042308850641462728">مزید</translation>
@@ -558,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید}}</translation>
 <translation id="913657688200966289">‏<ph name="BEGIN_LINK" />Android ترتیبات<ph name="END_LINK" /> میں <ph name="APP_NAME" /> کے لیے اجازتیں آن کریں۔</translation>
 <translation id="9138217887606523162">موجودہ زوم %% <ph name="ZOOM_LEVEL" /> ہے</translation>
+<translation id="9156722768168878035">‏‫Chrome کو اپنے حالیہ ٹیبز کو اپنے آلے کی ایپس کی فہرست اور تلاش کے نتائج میں دکھانے کی اجازت دیں۔ آپ اسے Chrome کی ترتیبات میں کسی بھی وقت آف کر سکتے ہیں۔</translation>
 <translation id="9162462602695099906">یہ صفحہ خطرناک ہے</translation>
 <translation id="947156494302904893">آپ کی ملاحظہ کردہ سائٹس اس بات کی تصدیق کر سکتی ہیں کہ آپ ایک حقیقی شخص ہیں نہ کہ ایک بوٹ</translation>
 <translation id="959682366969460160">منظم رہیں</translation>

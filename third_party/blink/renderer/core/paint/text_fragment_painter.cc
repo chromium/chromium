@@ -111,6 +111,10 @@ bool ShouldPaintEmphasisMark(const ComputedStyle& style,
   // emphasis mark at left/right side of |LayoutTextCombine|.
   DCHECK(!IsA<LayoutTextCombine>(layout_object.Parent()));
 
+  if (text_item.IsEllipsis()) {
+    return false;
+  }
+
   if (style.GetTextEmphasisLineLogicalSide() == LineLogicalSide::kOver) {
     return !text_item.HasOverAnnotation();
   }

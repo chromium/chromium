@@ -188,7 +188,8 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
           content::RenderFrameHost* existing_frame =
               existing_window->web_contents()->GetPrimaryMainFrame();
           std::string frame_token;
-          if (source_process_id() == existing_frame->GetProcess()->GetID()) {
+          if (source_process_id() ==
+              existing_frame->GetProcess()->GetDeprecatedID()) {
             frame_token = existing_frame->GetFrameToken().ToString();
           }
 
@@ -418,7 +419,7 @@ void AppWindowCreateFunction::OnAppWindowFinishedFirstNavigationOrClosed(
   content::RenderFrameHost* app_frame =
       app_window->web_contents()->GetPrimaryMainFrame();
   std::string frame_token;
-  if (source_process_id() == app_frame->GetProcess()->GetID()) {
+  if (source_process_id() == app_frame->GetProcess()->GetDeprecatedID()) {
     frame_token = app_frame->GetFrameToken().ToString();
   }
   base::Value::Dict result;

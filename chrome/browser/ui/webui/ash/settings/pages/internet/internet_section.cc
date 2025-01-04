@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/internet/internet_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/extension_control_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -37,6 +36,7 @@
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/chromeos/strings/network/network_element_localized_strings_provider.h"
+#include "ui/webui/webui_util.h"
 
 namespace ash::network_config {
 namespace mojom = chromeos::network_config::mojom;
@@ -835,8 +835,7 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INTERNET_TOGGLE_WIFI_ACCESSIBILITY_LABEL},
       {"knownNetworksAll", IDS_SETTINGS_INTERNET_KNOWN_NETWORKS_ALL},
       {"knownNetworksButton", IDS_SETTINGS_INTERNET_KNOWN_NETWORKS_BUTTON},
-      {"knownNetworksMessage",
-       IDS_OS_SETTINGS_REVAMP_INTERNET_KNOWN_NETWORKS_MESSAGE},
+      {"knownNetworksMessage", IDS_OS_SETTINGS_INTERNET_KNOWN_NETWORKS_MESSAGE},
       {"knownNetworksPreferred",
        IDS_SETTINGS_INTERNET_KNOWN_NETWORKS_PREFFERED},
       {"knownNetworksMenuAddPreferred",
@@ -895,7 +894,7 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"networkNameserversLearnMore", IDS_LEARN_MORE},
       {"networkPrefer", IDS_SETTINGS_INTERNET_NETWORK_PREFER},
       {"networkPreferDescription",
-       IDS_OS_SETTINGS_REVAMP_INTERNET_NETWORK_PREFER_DESCRIPTION},
+       IDS_OS_SETTINGS_INTERNET_NETWORK_PREFER_DESCRIPTION},
       {"networkPrimaryUserControlled",
        IDS_SETTINGS_INTERNET_NETWORK_PRIMARY_USER_CONTROLLED},
       {"networkA11yManagedByAdministrator",
@@ -925,8 +924,7 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"networkSectionProxyExpandA11yLabel",
        IDS_SETTINGS_INTERNET_NETWORK_SECTION_PROXY_ACCESSIBILITY_LABEL},
       {"networkShared", IDS_SETTINGS_INTERNET_NETWORK_SHARED},
-      {"networkSharedOwner",
-       IDS_OS_SETTINGS_REVAMP_INTERNET_NETWORK_SHARED_OWNER},
+      {"networkSharedOwner", IDS_OS_SETTINGS_INTERNET_NETWORK_SHARED_OWNER},
       {"networkSharedNotOwner", IDS_SETTINGS_INTERNET_NETWORK_SHARED_NOT_OWNER},
       {"networkVpnBuiltin", IDS_NETWORK_TYPE_VPN_BUILTIN},
       {"networkOutOfRange", IDS_SETTINGS_INTERNET_WIFI_NETWORK_OUT_OF_RANGE},

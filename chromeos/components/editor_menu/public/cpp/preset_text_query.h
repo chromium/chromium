@@ -20,6 +20,7 @@ enum class COMPONENT_EXPORT(EDITOR_MENU_PUBLIC_CPP) PresetQueryCategory {
   kFormalize,
   kEmojify,
   kProofread,
+  kLobster,
 };
 
 struct COMPONENT_EXPORT(EDITOR_MENU_PUBLIC_CPP) PresetTextQuery {

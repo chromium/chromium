@@ -54,9 +54,7 @@ class FakeStatusIconObserver : public StatusIconObserver {
   void OnStatusIconClicked() override { ++status_icon_click_count_; }
   void OnBalloonClicked() override { balloon_clicked_ = true; }
   bool balloon_clicked() const { return balloon_clicked_; }
-  size_t status_icon_click_count() const {
-    return status_icon_click_count_;
-  }
+  size_t status_icon_click_count() const { return status_icon_click_count_; }
 
  private:
   size_t status_icon_click_count_;

@@ -81,7 +81,7 @@ DynamicComponentHost::DynamicComponentHost(
                 .set_source_name(kDynamicComponentCapabilitiesPath)
                 .set_subdir(child_id_)
                 .set_target_name("svc")
-                .set_rights(fuchsia::io::RW_STAR_DIR)
+                .set_rights(fuchsia::io::R_STAR_DIR)
                 .set_dependency_type(
                     fuchsia::component::decl::DependencyType::STRONG))));
   }

@@ -18,10 +18,12 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_input_receiver_compat.h"
+#include "components/input/android/android_input_callback.h"
 #include "components/input/android/input_token_forwarder.h"
 #include "components/input/android/scoped_input_receiver.h"
 #include "components/input/android/scoped_input_receiver_callbacks.h"
 #include "components/input/android/scoped_input_transfer_token.h"
+#include "components/viz/service/input/fling_scheduler_android.h"
 #include "components/viz/service/input/render_input_router_support_android.h"
 #include "gpu/ipc/common/gpu_surface_lookup.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
@@ -56,7 +58,7 @@ bool IsFrameMetadataAvailable(CompositorFrameSinkSupport* support) {
 }  // namespace
 
 FrameSinkMetadata::FrameSinkMetadata(
-    uint32_t grouping_id,
+    base::UnguessableToken grouping_id,
     std::unique_ptr<RenderInputRouterSupportBase> support,
     std::unique_ptr<RenderInputRouterDelegateImpl> delegate)
     : grouping_id(grouping_id),
@@ -106,6 +108,27 @@ InputManager::InputManager(FrameSinkManagerImpl* frame_sink_manager)
   frame_sink_manager_->AddObserver(this);
 }
 
+std::unique_ptr<input::FlingSchedulerBase> InputManager::MakeFlingScheduler(
+    input::RenderInputRouter* rir,
+    const FrameSinkId& frame_sink_id) {
+#if BUILDFLAG(IS_ANDROID)
+  return std::make_unique<FlingSchedulerAndroid>(rir, this, frame_sink_id);
+#else
+  NOTREACHED();
+#endif
+}
+
+void InputManager::SetupRenderInputRouter(
+    input::RenderInputRouter* render_input_router,
+    const FrameSinkId& frame_sink_id) {
+  // TODO(382291983): Setup RenderInputRouter's mojo connections to renderer.
+  render_input_router->SetFlingScheduler(
+      MakeFlingScheduler(render_input_router, frame_sink_id));
+
+  render_input_router->SetupInputRouter(
+      GetDeviceScaleFactorForId(frame_sink_id));
+}
+
 void InputManager::OnCreateCompositorFrameSink(
     const FrameSinkId& frame_sink_id,
     bool is_root,
@@ -136,7 +159,8 @@ void InputManager::OnCreateCompositorFrameSink(
   DCHECK(render_input_router_config->rir_client.is_valid());
   DCHECK(input::IsTransferInputToVizSupported() && !is_root);
 
-  uint32_t grouping_id = render_input_router_config->grouping_id;
+  const base::UnguessableToken grouping_id =
+      render_input_router_config->grouping_id;
 
   auto [it, inserted] = rwhier_map_.try_emplace(
       grouping_id,
@@ -145,7 +169,7 @@ void InputManager::OnCreateCompositorFrameSink(
 
   if (inserted) {
     TRACE_EVENT_INSTANT("viz", "RenderWidgetHostInputEventRouterCreated",
-                        "grouping_id", grouping_id);
+                        "grouping_id", grouping_id.ToString());
   }
 
   // |rir_delegate| should outlive |render_input_router|.
@@ -158,8 +182,7 @@ void InputManager::OnCreateCompositorFrameSink(
       /* fling_scheduler */ nullptr,
       /* delegate */ rir_delegate.get(),
       base::SingleThreadTaskRunner::GetCurrentDefault());
-  render_input_router->SetupInputRouter(
-      GetDeviceScaleFactorForId(frame_sink_id));
+  SetupRenderInputRouter(render_input_router.get(), frame_sink_id);
 
   frame_sink_metadata_map_.emplace(std::make_pair(
       frame_sink_id,
@@ -182,21 +205,30 @@ void InputManager::OnDestroyedCompositorFrameSink(
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  auto rir_iter = rir_map_.find(frame_sink_id);
+  auto frame_sink_metadata_map_iter =
+      frame_sink_metadata_map_.find(frame_sink_id);
+
   // Return early if |frame_sink_id| is associated with a non layer tree frame
   // sink.
-  if (rir_iter == rir_map_.end()) {
+  if (frame_sink_metadata_map_iter == frame_sink_metadata_map_.end()) {
     return;
   }
 
+  // RenderInputRouterSupportBase must be destroyed first since it holds a
+  // reference to RenderInputRouter, otherwise, it could lead to dangling
+  // references.
+  frame_sink_metadata_map_iter->second.rir_support.reset();
+
+  auto rir_iter = rir_map_.find(frame_sink_id);
+  CHECK(rir_iter != rir_map_.end());
   rir_map_.erase(rir_iter);
 
-  uint32_t grouping_id =
-      frame_sink_metadata_map_.find(frame_sink_id)->second.grouping_id;
+  base::UnguessableToken grouping_id =
+      frame_sink_metadata_map_iter->second.grouping_id;
   // Deleting FrameSinkMetadata for |frame_sink_id| decreases the refcount for
   // RenderWidgetHostInputEventRouter in |rwhier_map_|(associated with the
   // RenderInputRouterDelegateImpl), for this |frame_sink_id|.
-  frame_sink_metadata_map_.erase(frame_sink_id);
+  frame_sink_metadata_map_.erase(frame_sink_metadata_map_iter);
 
   auto it = rwhier_map_.find(grouping_id);
   if (it != rwhier_map_.end()) {
@@ -313,7 +345,7 @@ InputManager::GetEmbeddedRenderInputRouters(const FrameSinkId& id) {
 
 void InputManager::NotifyObserversOfInputEvent(
     const FrameSinkId& frame_sink_id,
-    uint32_t grouping_id,
+    const base::UnguessableToken& grouping_id,
     std::unique_ptr<blink::WebCoalescedInputEvent> event) {
   rir_delegate_remote_map_.at(grouping_id)
       ->NotifyObserversOfInputEvent(frame_sink_id, std::move(event));
@@ -321,7 +353,7 @@ void InputManager::NotifyObserversOfInputEvent(
 
 void InputManager::NotifyObserversOfInputEventAcks(
     const FrameSinkId& frame_sink_id,
-    uint32_t grouping_id,
+    const base::UnguessableToken& grouping_id,
     blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result,
     std::unique_ptr<blink::WebCoalescedInputEvent> event) {
@@ -330,8 +362,9 @@ void InputManager::NotifyObserversOfInputEventAcks(
                                         std::move(event));
 }
 
-void InputManager::OnInvalidInputEventSource(const FrameSinkId& frame_sink_id,
-                                             uint32_t grouping_id) {
+void InputManager::OnInvalidInputEventSource(
+    const FrameSinkId& frame_sink_id,
+    const base::UnguessableToken& grouping_id) {
   rir_delegate_remote_map_.at(grouping_id)
       ->OnInvalidInputEventSource(frame_sink_id);
 }
@@ -339,21 +372,40 @@ void InputManager::OnInvalidInputEventSource(const FrameSinkId& frame_sink_id,
 std::optional<bool> InputManager::IsDelegatedInkHovering(
     const FrameSinkId& frame_sink_id) {
   auto* support = frame_sink_manager_->GetFrameSinkForId(frame_sink_id);
-  if (!IsFrameMetadataAvailable(support)) {
+  if (!IsFrameMetadataAvailable(support) ||
+      !support->GetLastActivatedFrameMetadata()->delegated_ink_metadata) {
     return std::nullopt;
   }
   return support->GetLastActivatedFrameMetadata()
       ->delegated_ink_metadata->is_hovering();
 }
+void InputManager::StateOnTouchTransfer(
+    input::mojom::TouchTransferStatePtr state) {
+  // TODO(crbug.com/370506271): Handle state to start processing input events.
+}
+
+void InputManager::NotifySiteIsMobileOptimized(
+    bool is_mobile_optimized,
+    const FrameSinkId& frame_sink_id) {
+  auto itr = rir_map_.find(frame_sink_id);
+  if (itr == rir_map_.end()) {
+    return;
+  }
+  itr->second->input_router()->NotifySiteIsMobileOptimized(is_mobile_optimized);
+}
 
 void InputManager::SetupRenderInputRouterDelegateConnection(
-    uint32_t grouping_id,
+    const base::UnguessableToken& grouping_id,
     mojo::PendingRemote<input::mojom::RenderInputRouterDelegateClient>
-        rir_delegate_remote) {
+        rir_delegate_remote,
+    mojo::PendingReceiver<input::mojom::RenderInputRouterDelegate>
+        rir_delegate_receiver) {
   rir_delegate_remote_map_[grouping_id].Bind(std::move(rir_delegate_remote));
   rir_delegate_remote_map_[grouping_id].set_disconnect_handler(
       base::BindOnce(&InputManager::OnRIRDelegateClientDisconnected,
                      base::Unretained(this), grouping_id));
+
+  rir_delegate_receivers_.Add(this, std::move(rir_delegate_receiver));
 }
 
 GpuServiceImpl* InputManager::GetGpuService() {
@@ -384,7 +436,8 @@ InputManager::MakeRenderInputRouterSupport(input::RenderInputRouter* rir,
                                                               frame_sink_id);
 }
 
-void InputManager::OnRIRDelegateClientDisconnected(uint32_t grouping_id) {
+void InputManager::OnRIRDelegateClientDisconnected(
+    const base::UnguessableToken& grouping_id) {
   rir_delegate_remote_map_.erase(grouping_id);
 }
 
@@ -507,7 +560,7 @@ void InputManager::CreateOrReuseAndroidInputReceiver(
       std::move(receiver), std::move(viz_input_token));
 }
 
-bool InputManager::OnMotionEvent(AInputEvent* input_event,
+bool InputManager::OnMotionEvent(base::android::ScopedInputEvent input_event,
                                  const FrameSinkId& root_frame_sink_id) {
   // TODO(370506271): Implement once we do the state transfer from Browser on
   // touch down.
@@ -515,6 +568,11 @@ bool InputManager::OnMotionEvent(AInputEvent* input_event,
   // Always return true since we are receiving input on Viz after hit testing on
   // Browser already determined that web contents are being hit.
   return true;
+}
+
+BeginFrameSource* InputManager::GetBeginFrameSourceForFrameSink(
+    const FrameSinkId& id) {
+  return frame_sink_manager_->GetFrameSinkForId(id)->begin_frame_source();
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

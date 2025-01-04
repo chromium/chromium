@@ -28,6 +28,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -109,8 +110,12 @@ class SendKeysMenuListener : public AppMenuButtonObserver {
     } else {
       DCHECK(observation_.IsObserving());
       observation_.Reset();
-      // Press DOWN to select the first item, then RETURN to select it.
-      SendKeyPress(browser_, ui::VKEY_DOWN);
+      if (!views::PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard) {
+        // Press DOWN to select the first item, then RETURN to select it. Only
+        // needed on platforms where we don't automatically select the first
+        // item on menu open.
+        SendKeyPress(browser_, ui::VKEY_DOWN);
+      }
       SendKeyPress(browser_, ui::VKEY_RETURN);
     }
   }

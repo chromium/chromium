@@ -8,19 +8,14 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
 #include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -37,18 +32,9 @@ namespace {
 
 #if BUILDFLAG(IS_CHROMEOS)
 bool IsSupportedChromeOS() {
-// Some Chrome OS devices do not support on-device speech.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!base::FeatureList::IsEnabled(
-          ash::features::kOnDeviceSpeechRecognition)) {
-    return false;
-  }
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!chromeos::BrowserParamsProxy::Get()->IsOndeviceSpeechSupported()) {
-    return false;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  return true;
+  // Some Chrome OS devices do not support on-device speech.
+  return base::FeatureList::IsEnabled(
+      ash::features::kOnDeviceSpeechRecognition);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

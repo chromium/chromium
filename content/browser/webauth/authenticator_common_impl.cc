@@ -1156,6 +1156,7 @@ void AuthenticatorCommonImpl::ContinueMakeCredentialAfterRpIdCheck(
       &absl::get<device::MakeCredentialOptions>(req_state_->request_options);
   make_credential_options->json =
       base::MakeRefCounted<device::JSONRequest>(webauthn::ToValue(options));
+  make_credential_options->is_passkey_upgrade_request = options->is_conditional;
   const bool might_create_resident_key =
       make_credential_options->resident_key !=
       device::ResidentKeyRequirement::kDiscouraged;
@@ -2484,7 +2485,7 @@ AuthenticatorCommonImpl::CreateMakeCredentialResponse(
   common_info->client_data_json.assign(req_state_->client_data_json.begin(),
                                        req_state_->client_data_json.end());
   common_info->raw_id = response_data.attestation_object.GetCredentialId();
-  common_info->id = Base64UrlEncodeChallenge(common_info->raw_id);
+  common_info->id = Base64UrlEncodeOmitPadding(common_info->raw_id);
 
   response->authenticator_attachment =
       response_data.transport_used
@@ -2685,7 +2686,7 @@ AuthenticatorCommonImpl::CreateGetAssertionResponse(
   common_info->client_data_json.assign(req_state_->client_data_json.begin(),
                                        req_state_->client_data_json.end());
   common_info->raw_id = response_data.credential->id;
-  common_info->id = Base64UrlEncodeChallenge(common_info->raw_id);
+  common_info->id = Base64UrlEncodeOmitPadding(common_info->raw_id);
   response->info = std::move(common_info);
   response->info->authenticator_data =
       response_data.authenticator_data.SerializeToByteArray();

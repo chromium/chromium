@@ -15,7 +15,6 @@
 #include "components/webapps/browser/android/installable/installable_ambient_badge_client.h"
 #include "components/webapps/browser/android/webapps_icon_utils.h"
 #include "components/webapps/browser/features.h"
-#include "components/webapps/common/switches.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -46,8 +45,7 @@ void InstallableAmbientBadgeMessageController::EnqueueMessage(
     const bool is_primary_icon_maskable,
     const GURL& start_url) {
   DCHECK(!message_);
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kBypassInstallThrottleForTesting) &&
+  if (base::FeatureList::IsEnabled(features::kInstallMessageThrottle) &&
       !GetThrottler()->ShouldShow(
           web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin())) {
     return;
@@ -68,8 +66,7 @@ void InstallableAmbientBadgeMessageController::EnqueueMessage(
   message_->SetDescription(url_formatter::FormatUrlForSecurityDisplay(
       start_url, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
   message_->DisableIconTint();
-  if (is_primary_icon_maskable &&
-      WebappsIconUtils::DoesAndroidSupportMaskableIcons()) {
+  if (is_primary_icon_maskable) {
     message_->SetIcon(WebappsIconUtils::GenerateAdaptiveIconBitmap(icon));
   } else {
     message_->SetIcon(icon);

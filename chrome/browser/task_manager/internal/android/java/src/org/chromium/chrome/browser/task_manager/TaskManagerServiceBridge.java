@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.task_manager;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 /**
@@ -11,7 +13,38 @@ import org.jni_zero.NativeMethods;
  * receiving updates and fetching specific task information (e.g., memory usage) from the C++ task
  * manager logic.
  */
+@JNINamespace("task_manager")
 public class TaskManagerServiceBridge {
+    /** Describes the GPU memory usage. */
+    public static class GpuMemoryUsage {
+        /**
+         * GPU memory usage of the task in bytes. A value of -1 means no valid value is currently
+         * available.
+         */
+        public final long bytes;
+
+        /**
+         * Whether this process's GPU resource count is inflated because it is counting other
+         * processes' resources.
+         */
+        public final boolean hasDuplicates;
+
+        @CalledByNative("GpuMemoryUsage")
+        GpuMemoryUsage(long bytes, boolean hasDuplicates) {
+            this.bytes = bytes;
+            this.hasDuplicates = hasDuplicates;
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            if (this == other) return true;
+            if (other == null) return false;
+            if (getClass() != other.getClass()) return false;
+            GpuMemoryUsage that = (GpuMemoryUsage) other;
+            return this.bytes == that.bytes && this.hasDuplicates == that.hasDuplicates;
+        }
+    }
+
     /**
      * Adds the observer.
      *
@@ -49,8 +82,16 @@ public class TaskManagerServiceBridge {
         return TaskManagerServiceBridgeJni.get().getPlatformIndependentCpuUsage(taskId);
     }
 
+    public long getNetworkUsage(long taskId) {
+        return TaskManagerServiceBridgeJni.get().getNetworkUsage(taskId);
+    }
+
     public long getProcessId(long taskId) {
         return TaskManagerServiceBridgeJni.get().getProcessId(taskId);
+    }
+
+    public GpuMemoryUsage getGpuMemoryUsage(long taskId) {
+        return TaskManagerServiceBridgeJni.get().getGpuMemoryUsage(taskId);
     }
 
     public boolean isTaskKillable(long taskId) {
@@ -86,7 +127,11 @@ public class TaskManagerServiceBridge {
 
         double getPlatformIndependentCpuUsage(long taskId);
 
+        long getNetworkUsage(long taskId);
+
         long getProcessId(long taskId);
+
+        GpuMemoryUsage getGpuMemoryUsage(long taskId);
 
         boolean isTaskKillable(long taskId);
 

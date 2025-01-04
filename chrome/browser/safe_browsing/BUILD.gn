@@ -176,6 +176,7 @@ static_library("safe_browsing") {
       "//build:branding_buildflags",
       "//build:chromeos_buildflags",
       "//chrome/browser:browser_process",
+      "//chrome/browser/content_extraction:content_extraction",
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/download",
       "//chrome/browser/profiles:profile",
@@ -203,6 +204,7 @@ static_library("safe_browsing") {
       "//components/safe_browsing/content/browser/triggers:trigger_throttler",
       "//components/safe_browsing/content/common:file_type_policies",
       "//components/safe_browsing/core/browser",
+      "//components/safe_browsing/core/browser:referring_app_info",
       "//components/safe_browsing/core/browser:token_fetcher",
       "//components/safe_browsing/core/browser:verdict_cache_manager",
       "//components/safe_browsing/core/browser/db:allowlist_checker_client",
@@ -460,10 +462,7 @@ static_library("safe_browsing") {
         deps += [ "//chromeos/lacros:lacros" ]
       }
       if (is_chromeos) {
-        deps += [
-          "//chromeos/components/mgs:mgs",
-          "//chromeos/crosapi/cpp:cpp",
-        ]
+        deps += [ "//chromeos/components/mgs:mgs" ]
       }
       if (!is_android) {
         deps += [ "//chrome/browser/ui:browser_list" ]

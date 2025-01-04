@@ -8,7 +8,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/autofill/core/browser/filling_product.h"
+#import "components/autofill/core/browser/filling/filling_product.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_client.h"
 #import "ios/chrome/browser/autofill/ui_bundled/branding/branding_view_controller.h"
@@ -494,7 +494,6 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
         break;
       case FillingProduct::kCreditCard:
       case FillingProduct::kIban:
-      case FillingProduct::kStandaloneCvc:
         mainFillingProductString = l10n_util::GetPluralStringFUTF16(
             IDS_IOS_AUTOFILL_PAYMENT_METHOD_OPTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
             suggestionCount);
@@ -506,7 +505,7 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
         break;
       case FillingProduct::kMerchantPromoCode:
       case FillingProduct::kCompose:
-      case FillingProduct::kPredictionImprovements:
+      case FillingProduct::kAutofillAi:
       case FillingProduct::kNone:
         // `kMerchantPromoCode` and `kCompose` cases are currently not available
         // on iOS. Also, there shouldn't be suggestions of type `kNone`.

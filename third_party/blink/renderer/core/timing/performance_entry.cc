@@ -168,7 +168,7 @@ DOMHighResTimeStamp PerformanceEntry::paintTime() const {
   CHECK(RuntimeEnabledFeatures::PaintTimingMixinEnabled());
   return paint_timing_info_ ? paint_timing_info_->paint_time : 0;
 }
-DOMHighResTimeStamp PerformanceEntry::presentationTime() const {
+std::optional<DOMHighResTimeStamp> PerformanceEntry::presentationTime() const {
   CHECK(RuntimeEnabledFeatures::PaintTimingMixinEnabled());
   return paint_timing_info_ ? paint_timing_info_->presentation_time : 0;
 }

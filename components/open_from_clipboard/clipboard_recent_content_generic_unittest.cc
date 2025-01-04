@@ -9,6 +9,7 @@
 
 #include "components/open_from_clipboard/clipboard_recent_content_generic.h"
 
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
@@ -95,10 +96,11 @@ class ClipboardRecentContentGenericTest : public testing::Test {
 };
 
 TEST_F(ClipboardRecentContentGenericTest, RecognizesURLs) {
-  struct {
+  struct TestData {
     std::string clipboard;
     const bool expected_get_recent_url_value;
-  } test_data[] = {
+  };
+  auto test_data = std::to_array<TestData>({
       {"www", false},
       {"query string", false},
       {"www.example.com", false},
@@ -125,7 +127,7 @@ TEST_F(ClipboardRecentContentGenericTest, RecognizesURLs) {
       {"http://點看/path", true},
       {"  http://點看/path ", true},
       {" http://點看/path extra word", false},
-  };
+  });
 
   ClipboardRecentContentGeneric recent_content;
   base::Time now = base::Time::Now();

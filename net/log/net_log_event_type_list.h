@@ -1401,6 +1401,39 @@ EVENT_TYPE(HTTP_STREAM_POOL_CONSISTENCY_CHECK_FAIL)
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_CLOSING_SOCKET)
 
+// Marks the start/end of a HttpStreamPool::JobController.
+// The following parameters are attached:
+//   {
+//      "origin_destination": <The destination of the origin>,
+//      "alternative_destination": <The destination of the alternative, if
+//                                  exists>,
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_JOB_CONTROLLER_ALIVE)
+
+// Emitted when an HttpStreamPool::JobController found an existing SPDY session.
+EVENT_TYPE(HTTP_STREAM_POOL_JOB_CONTROLLER_FOUND_EXISTING_SPDY_SESSION)
+
+// Emitted when an HttpStreamPool::JobController found an existing QUIC session.
+EVENT_TYPE(HTTP_STREAM_POOL_JOB_CONTROLLER_FOUND_EXISTING_QUIC_SESSION)
+
+// Emitted when an HttpStreamPool::Job is bound to an
+// HttpStreamPool::JobController.
+EVENT_TYPE(HTTP_STREAM_POOL_JOB_CONTROLLER_JOB_BOUND)
+
+// Emitted when an preconnect request in an HttpStreamPool::AttemptManager is
+// bound to an HttpStreamPool::JobController.
+EVENT_TYPE(HTTP_STREAM_POOL_JOB_CONTROLLER_PRECONNECT_BOUND)
+
+// Marks the start/end of a HttpStreamPool::Job.
+// The following parameters are attached:
+//   {
+//      "stream_key": <The HttpStreamKey of the job>,
+//      "quic_version": <The QUIC version to attempt>,
+//      "allowed_alpns": <List of allowed ALPNs>,
+//      "source_dependency": <The source identifier of the JobController>,
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_JOB_ALIVE)
+
 // Marks the start/end of a HttpStreamPool::Group.
 // The following parameters are attached:
 //   {
@@ -1412,6 +1445,14 @@ EVENT_TYPE(HTTP_STREAM_POOL_GROUP_ALIVE)
 // Emitted when an HttpStreamPool::AttemptManager is created. Used to add a
 // reference to HttpStreamPool::Group's net log.
 EVENT_TYPE(HTTP_STREAM_POOL_GROUP_ATTEMPT_MANAGER_CREATED)
+
+// Emitted when an HttpStreamPool::Handle is created for a group. The event
+// parameters are:
+//   {
+//      "source_dependency": <The source identifier of the stream socket>,
+//      "reuse_type": <The reuse type of the handle>,
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_GROUP_HANDLE_CREATED)
 
 // Emitted when an HttpStreamPool::AttemptManager starts a stream. The event
 // parameters are:
@@ -1433,7 +1474,8 @@ EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_JOB_BOUND)
 // event parameter is:
 //   {
 //      "num_streams": <The number of streams requested>,
-//      "quic_version": <The QUIC version to attempt>
+//      "quic_version": <The QUIC version to attempt>,
+//      "source_dependency": <The source identifier of the preconnect request>,
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_PRECONNECT)
 
@@ -1444,13 +1486,17 @@ EVENT_TYPE(HTTP_STREAM_POOL_GROUP_ATTEMPT_MANAGER_DESTROYED)
 // Marks the start/end of a HttpStreamPool::AttemptManager.
 // For the BEGIN event, the event parameters are:
 //   {
+//     "stream_key": <The HttpStreamKey of the AttemptManager>,
 //     "stream_attempt_delay": <The stream attempt delay in milliseconds>,
-//     "source_dependency": <The source identifier of the parent group>
+//     "should_block_stream_attempt": <True when TCP-based stream attempts
+//                                     should be blocked>,
+//     "supports_spdy": <True when the destination is known to support HTTP/2>,
+//     "source_dependency": <The source identifier of the parent group>,
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ALIVE)
 
-// Emitted when an HttpStreamPool::AttemptManager started a StreamAttempt.
-// The event parameters are:
+// Some HTTP_STREAM_POOL_ATTEMPT_MANAGER_* events have the following common
+// event parameters.
 //   {
 //     "num_jobs": <The number of active jobs>,
 //     "num_notified_jobs": <The number of jobs that are notified results but
@@ -1462,30 +1508,33 @@ EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ALIVE)
 //     "quic_task_alive": <True when a QuicTask is alive>,
 //     "quic_task_result": <The result of a QuicTask, if it is already finished>
 //   }
+
+// Emitted when an HttpStreamPool::AttemptManager started a StreamAttempt.
+// This event has the common event parameters (see above).
 EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_START)
 
 // Emitted when an HttpStreamPool::AttemptManager received completion from a
 // StreamAttempt.
-// The event parameters are:
+// This event has the common event parameters (see above).
+// In addition to the common event parameters, this event has the following
+// parameter:
 //   {
-//     "net_error": <Net error code integer>,
-//     "num_jobs": <The number of active jobs>,
-//     "num_notified_jobs": <The number of jobs that are notified results but
-//                           are still not destroyed yet>,
-//     "num_preconnects": <The number of preconnect requests>,
-//     "num_inflight_attempts": <The number of in-flight TCP/TLS attempts>,
-//     "num_slow_attempts": <The number of in-flight TCP/TLS attempts that are
-//                           treated as slow>,
-//     "quic_task_alive": <True when a QuicTask is alive>,
-//     "quic_task_result": <The result of a QuicTask, if it is already
-//                          finished>,
+//     "result": <String representation of the result>,
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_END)
+
+// Emitted when an HttpStreamPool::AttemptManager is going to notify failure.
+// In addition to the common event parameters, this event has the following
+// parameter:
+//   {
+//     "net_error": <Net error code integer>,
+//   }
+EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_NOTIFY_FAILURE)
 
 // Emitted when DNS resolution on an HttpStreamPool::AttemptManager finishes.
 // The event parameters are:
 //   {
-//     "net_error": <Net error code integer>,
+//     "result": <String representation of the result>,
 //     "resolve_error": <DNS resolution error code integer>,
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_DNS_RESOLUTION_FINISHED)
@@ -1502,19 +1551,14 @@ EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_STREAM_ATTEMPT_DELAY_PASSED)
 EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_TASK_BOUND)
 
 // Emitted when an HttpStreamPool::QuicTask is completed.
-// The event parameters are:
+// This event has the common event parameters (see above).
+// In addition to the common event parameters, this event has the following
+// parameters:
 //   {
-//     "num_jobs": <The number of active jobs>,
-//     "num_notified_jobs": <The number of jobs that are notified results but
-//                           are still not destroyed yet>,
-//     "num_preconnects": <The number of preconnect requests>,
-//     "num_inflight_attempts": <The number of in-flight TCP/TLS attempts>,
-//     "num_slow_attempts": <The number of in-flight TCP/TLS attempts that are
-//                           treated as slow>,
-//     "quic_task_alive": <True when a QuicTask is alive>,
-//     "quic_task_result": <The result of a QuicTask, if it is already
-//                          finished>,
-//     "quic_error_code": <The error code of the QuicTask>,
+//     "result": <String representation of the result>,
+//     "quic_error": <The QUIC error, if any>,
+//     "source_dependency": <The source identifier of the QUIC session, if the
+//                           task succeeded>,
 //   }
 EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_QUIC_TASK_COMPLETED)
 
@@ -4755,3 +4799,40 @@ EVENT_TYPE(OBLIVIOUS_HTTP_RESPONSE_HEADERS)
 //     "top_frame_entry": <string>,
 //   }
 EVENT_TYPE(FIRST_PARTY_SETS_METADATA)
+
+// ------------------------------------------------------------------------
+// Device Bound Sessions
+// ------------------------------------------------------------------------
+
+// This event is logged when an HTTP request is detected to be part of a
+// device-bound session. It includes details of the session parameters:
+//   {
+//     "refresh_url": <string>,
+//     "scope": <string>,
+//     "credentials": <string>,
+//     "session_id": <string>,
+//   }
+EVENT_TYPE(DBSC_REQUEST)
+
+// This event is logged when we determine if an HTTP request needs to be
+// deferred to wait for a device-bound session refresh request.
+//   {
+//     "refresh_required_reason": <string>,
+//     "refresh_missing_cookie": <string>,
+//   }
+EVENT_TYPE(CHECK_DBSC_REFRESH_REQUIRED)
+
+// This event identifies the NetLogSource() for a URLRequest of the
+// device bound session refresh request.
+EVENT_TYPE(DBSC_REFRESH_REQUEST)
+
+// This event identifies the NetLogSource() for a URLRequest of the
+// device bound session registration request.
+EVENT_TYPE(DBSC_REGISTRATION_REQUEST)
+
+// This event is logged when a device bound session refresh request
+// completes. It contains the following parameters:
+//   {
+//     "status": <string>,
+//   }
+EVENT_TYPE(DBSC_REFRESH_RESULT)

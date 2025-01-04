@@ -38,7 +38,7 @@ class ExtremeLightweightDetectorMallocShimsTest
 #else
         allocator_shim::EnableBrp(false),
 #endif
-        allocator_shim::EnableMemoryTagging(false),
+        /*brp_extra_extras_size=*/0, allocator_shim::EnableMemoryTagging(false),
         partition_alloc::TagViolationReportingMode::kDisabled,
         allocator_shim::BucketDistribution::kNeutral,
         allocator_shim::SchedulerLoopQuarantine(false),

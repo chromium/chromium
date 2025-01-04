@@ -21,6 +21,7 @@ inline std::string_view kQueryParamFlow = "flow";
 inline std::string_view kQueryParamGroupId = "group_id";
 inline std::string_view kQueryParamTokenSecret = "token_secret";
 inline std::string_view kQueryParamTabGroupId = "tab_group_id";
+inline std::string_view kQueryParamTabGroupTitle = "tab_group_title";
 
 // Possible values of kQueryParamFlow in url.
 inline std::string_view kFlowShare = "share";

@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
+
+#include <array>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -23,7 +20,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/test_support.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
-#include "mojo/public/interfaces/bindings/tests/ping_service.mojom.h"
+#include "mojo/public/interfaces/bindings/tests/ping_service.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo {
@@ -270,7 +267,7 @@ TEST_F(MojoBindingsPerftest, MultiplexRouterDispatchCost) {
       nullptr, {}, base::SingleThreadTaskRunner::GetCurrentDefault(), 0u,
       kTestInterfaceName, MessageToMethodInfo, MessageToMethodName);
 
-  static const uint32_t kIterations[] = {1000, 3000000};
+  static const auto kIterations = std::to_array<uint32_t>({1000, 3000000});
 
   for (size_t i = 0; i < 2; ++i) {
     receiver.Reset();

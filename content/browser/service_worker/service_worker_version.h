@@ -724,10 +724,6 @@ class CONTENT_EXPORT ServiceWorkerVersion
     return associated_interface_provider_.get();
   }
 
-  // Check if the static router API is enabled. It checks if the feature flag is
-  // enabled or having a valid trial token.
-  bool IsStaticRouterEnabled();
-
   // Check if the static router should be evaluated.
   bool NeedRouterEvaluate() const;
 

@@ -462,8 +462,9 @@ class SequenceManagerTest
 
   std::vector<TaskQueue::Handle> CreateTaskQueues(size_t num_queues) {
     std::vector<TaskQueue::Handle> queues;
-    for (size_t i = 0; i < num_queues; i++)
+    for (size_t i = 0; i < num_queues; i++) {
       queues.push_back(CreateTaskQueue());
+    }
     return queues;
   }
 
@@ -777,8 +778,9 @@ TEST_P(SequenceManagerTest, NonNestableTaskExecutesInExpectedOrder) {
 
 TEST_P(SequenceManagerTest, NonNestableTasksDoesntExecuteInNestedLoop) {
   // TestMockTimeTaskRunner doesn't support nested loops.
-  if (GetUnderlyingRunnerType() == RunnerType::kMockTaskRunner)
+  if (GetUnderlyingRunnerType() == RunnerType::kMockTaskRunner) {
     return;
+  }
   auto queue = CreateTaskQueue();
 
   std::vector<EnqueueOrder> run_order;
@@ -832,8 +834,9 @@ TEST_P(SequenceManagerTest, NonNestableTasksShutdownQueue) {
 
 TEST_P(SequenceManagerTest, NonNestableTaskQueueTimeShiftsToEndOfNestedLoop) {
   // TestMockTimeTaskRunner doesn't support nested loops.
-  if (GetUnderlyingRunnerType() == RunnerType::kMockTaskRunner)
+  if (GetUnderlyingRunnerType() == RunnerType::kMockTaskRunner) {
     return;
+  }
 
   auto queue = CreateTaskQueue();
 
@@ -920,8 +923,9 @@ void InsertFenceAndPostTestTask(int id,
 }  // namespace
 
 TEST_P(SequenceManagerTest, TaskQueueDisabledFromNestedLoop) {
-  if (GetUnderlyingRunnerType() == RunnerType::kMockTaskRunner)
+  if (GetUnderlyingRunnerType() == RunnerType::kMockTaskRunner) {
     return;
+  }
   auto queue = CreateTaskQueue();
   std::vector<EnqueueOrder> run_order;
 
@@ -2329,8 +2333,9 @@ void PostAndQuitFromNestedRunloop(RunLoop* run_loop,
 }  // namespace
 
 TEST_P(SequenceManagerTest, QuitWhileNested) {
-  if (GetUnderlyingRunnerType() == RunnerType::kMockTaskRunner)
+  if (GetUnderlyingRunnerType() == RunnerType::kMockTaskRunner) {
     return;
+  }
   // This test makes sure we don't continue running a work batch after a nested
   // run loop has been exited in the middle of the batch.
   auto queue = CreateTaskQueue();
@@ -2627,10 +2632,12 @@ class MockTaskQueueThrottler : public TaskQueue::Throttler {
       LazyNow* lazy_now,
       std::optional<WakeUp> next_desired_wake_up,
       bool has_immediate_work) override {
-    if (next_desired_wake_up)
+    if (next_desired_wake_up) {
       GetNextAllowedWakeUp_DesiredWakeUpTime(next_desired_wake_up->time);
-    if (next_allowed_wake_up_)
+    }
+    if (next_allowed_wake_up_) {
       return next_allowed_wake_up_;
+    }
     return next_desired_wake_up;
   }
 
@@ -2873,8 +2880,9 @@ class DestructionCallback {
   explicit DestructionCallback(OnceCallback<void()> on_destroy)
       : on_destroy_(std::move(on_destroy)) {}
   ~DestructionCallback() {
-    if (on_destroy_)
+    if (on_destroy_) {
       std::move(on_destroy_).Run();
+    }
   }
   DestructionCallback(const DestructionCallback&) = delete;
   DestructionCallback& operator=(const DestructionCallback&) = delete;
@@ -3120,8 +3128,9 @@ class QuadraticTask {
   }
 
   void Run() {
-    if (should_exit_.Run())
+    if (should_exit_.Run()) {
       return;
+    }
     count_++;
     task_runner_->PostDelayedTask(
         FROM_HERE, BindOnce(&QuadraticTask::Run, Unretained(this)), delay_);
@@ -3155,8 +3164,9 @@ class LinearTask {
   }
 
   void Run() {
-    if (should_exit_.Run())
+    if (should_exit_.Run()) {
       return;
+    }
     count_++;
     task_runner_->PostDelayedTask(
         FROM_HERE, BindOnce(&LinearTask::Run, Unretained(this)), delay_);
@@ -3591,8 +3601,9 @@ TEST_P(SequenceManagerTest, SweepCanceledDelayedTasks_ManyTasks) {
 
   // Invalidate ever other timer.
   for (int i = 0; i < kNumTasks; i++) {
-    if (i % 2)
+    if (i % 2) {
       tasks[i]->weak_factory_.InvalidateWeakPtrs();
+    }
   }
 
   sequence_manager()->ReclaimMemory();
@@ -3916,8 +3927,9 @@ void MessageLoopTaskWithDelayedQuit(Fixture* fixture, TaskQueue* task_queue) {
 }  // namespace
 
 TEST_P(SequenceManagerTest, DelayedTaskRunsInNestedMessageLoop) {
-  if (GetUnderlyingRunnerType() == RunnerType::kMockTaskRunner)
+  if (GetUnderlyingRunnerType() == RunnerType::kMockTaskRunner) {
     return;
+  }
   auto queue = CreateTaskQueue();
   RunLoop run_loop;
   queue->task_runner()->PostTask(
@@ -3940,8 +3952,9 @@ void MessageLoopTaskWithImmediateQuit(OnceClosure non_nested_quit_closure,
 }  // namespace
 
 TEST_P(SequenceManagerTest, DelayedNestedMessageLoopDoesntPreventTasksRunning) {
-  if (GetUnderlyingRunnerType() == RunnerType::kMockTaskRunner)
+  if (GetUnderlyingRunnerType() == RunnerType::kMockTaskRunner) {
     return;
+  }
   auto queue = CreateTaskQueue();
   RunLoop run_loop;
   queue->task_runner()->PostDelayedTask(
@@ -4862,8 +4875,9 @@ class MockTimeDomain : public TimeDomain {
 }  // namespace
 
 TEST_P(SequenceManagerTest, OnIdleTimeDomainNotification) {
-  if (GetUnderlyingRunnerType() != RunnerType::kMessagePump)
+  if (GetUnderlyingRunnerType() != RunnerType::kMessagePump) {
     return;
+  }
 
   auto queue = CreateTaskQueue();
 

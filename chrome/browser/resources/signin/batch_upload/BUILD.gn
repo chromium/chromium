@@ -6,12 +6,12 @@ build_webui("build") {
   static_files = [ "batch_upload.html" ]
 
   non_web_component_files = [
-    "batch_upload_app.ts",
-    "batch_upload_app.html.ts",
     "batch_upload.ts",
+    "batch_upload_app.html.ts",
+    "batch_upload_app.ts",
     "browser_proxy.ts",
-    "data_section.ts",
     "data_section.html.ts",
+    "data_section.ts",
   ]
 
   css_files = [

@@ -30,7 +30,7 @@
 namespace views {
 class NativeWindowTracker;
 class View;
-}
+}  // namespace views
 
 namespace views::test {
 

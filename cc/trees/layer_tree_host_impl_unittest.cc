@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/trees/layer_tree_host_impl.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <cmath>
 #include <memory>
 #include <optional>
@@ -9221,13 +9217,13 @@ TEST_F(CommitToActiveTreeLayerTreeHostImplTest,
 
   std::unique_ptr<CompositorCommitData> commit_data;
 
-  gfx::Vector2dF gesture_scroll_deltas[4];
+  std::array<gfx::Vector2dF, 4> gesture_scroll_deltas;
   gesture_scroll_deltas[0] = gfx::Vector2dF(4, 10);
   gesture_scroll_deltas[1] = gfx::Vector2dF(4, 10);
   gesture_scroll_deltas[2] = gfx::Vector2dF(10, 0);
   gesture_scroll_deltas[3] = gfx::Vector2dF(10, 0);
 
-  gfx::Vector2dF expected_scroll_deltas[4];
+  std::array<gfx::Vector2dF, 4> expected_scroll_deltas;
   // Perspective affects the vertical delta by a different
   // amount depending on the vertical position of the |viewport_point|.
   expected_scroll_deltas[0] = gfx::Vector2dF(2, 9);
@@ -18437,6 +18433,78 @@ TEST_P(UnifiedScrollingTest, CompositedWithSquashedLayerMutatesTransform) {
   TestNonCompositedScrollingState(/*mutates_transform_tree=*/true);
 
   ScrollEnd();
+}
+
+// Scroll operations on a non-composited scroller are eligible
+// for rasterization. This tests if rasterization is detected
+// and requested by the LTHI. The scroll is applied to the
+// pending tree, so activation will be required before the scroll
+// is presented.
+TEST_P(LayerTreeHostImplTest, NonCompositedScrollUsesRaster) {
+  gfx::Size scrollable_content_bounds(100, 100);
+  gfx::Size container_bounds(50, 50);
+  if (!CommitsToActiveTree()) {
+    CreatePendingTree();
+  }
+
+  // Create root and scroll layers so that we can set up a
+  // non-composited scrollable node, eligible for raster scroll.
+  auto* sync_tree_root = SetupRootLayer<LayerImpl>(host_impl_->sync_tree(),
+                                                   scrollable_content_bounds);
+  sync_tree_root->SetNeedsPushProperties();
+  auto* scrolling_layer =
+      AddScrollableLayer(sync_tree_root, container_bounds, gfx::Size());
+  scrolling_layer->SetNeedsPushProperties();
+  CreateScrollNodeForNonCompositedScroller(
+      host_impl_->sync_tree()->property_trees(), sync_tree_root->id(),
+      scrolling_layer->element_id(), scrollable_content_bounds,
+      container_bounds);
+
+  // Draw at least one frame before ScrollBegin.
+  host_impl_->sync_tree()->set_needs_update_draw_properties();
+  UpdateDrawProperties(host_impl_->sync_tree());
+  host_impl_->ActivateSyncTree();
+  DrawFrame();
+
+  // Scrolling on this non-composited tree should be marked as raster-inducing.
+  ScrollStateData scroll_state_data;
+  scroll_state_data.set_current_native_scrolling_element(
+      scrolling_layer->element_id());
+  scroll_state_data.is_beginning = true;
+  std::unique_ptr<ScrollState> scroll_state(new ScrollState(scroll_state_data));
+
+  InputHandler::ScrollStatus status = GetInputHandler().ScrollBegin(
+      scroll_state.get(), ui::ScrollInputType::kWheel);
+  EXPECT_EQ(true, status.raster_inducing);
+
+  // We always want to start applying the scroll offset to the active tree.
+  host_impl_->active_tree()->DidUpdateScrollOffset(
+      scrolling_layer->element_id(), /*pushed_from_main_or_pending_tree=*/true);
+
+  // Draw the next frame of the scroll.
+  {
+    host_impl_->NotifyInputEvent();
+    host_impl_->SetFullViewportDamage();
+    host_impl_->SetNeedsRedraw();
+    TestFrameData frame;
+    auto args = viz::CreateBeginFrameArgsForTesting(
+        BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId, 1,
+        base::TimeTicks() + base::Milliseconds(1));
+    host_impl_->WillBeginImplFrame(args);
+    EXPECT_EQ(DrawResult::kSuccess, host_impl_->PrepareToDraw(&frame));
+
+    // This call sets the invalidate_raster_scroll bit.
+    host_impl_->InvalidateContentOnImplSide();
+    if (!CommitsToActiveTree()) {
+      // Activate the pending tree before drawing layers.
+      host_impl_->ActivateSyncTree();
+    }
+    std::optional<SubmitInfo> draw_layers_state =
+        host_impl_->DrawLayers(&frame);
+    EXPECT_EQ(true, draw_layers_state->invalidate_raster_scroll);
+    host_impl_->DidDrawAllLayers(frame);
+    host_impl_->DidFinishImplFrame(args);
+  }
 }
 
 // Verifies that when a surface layer is occluded, its frame sink id will be

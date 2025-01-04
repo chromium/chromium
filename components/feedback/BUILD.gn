@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
@@ -34,7 +33,6 @@ static_library("feedback") {
   public_deps = [ "//base" ]
 
   deps = [
-    "//build:chromeos_buildflags",
     "//components/feedback/proto",
     "//components/feedback/redaction_tool",
     "//components/keyed_service/core",
@@ -45,7 +43,7 @@ static_library("feedback") {
     "//third_party/zlib/google:zip",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//ash/constants/" ]
   }
 }
@@ -65,7 +63,6 @@ source_set("unit_tests") {
   deps = [
     ":feedback",
     "//base",
-    "//build:chromeos_buildflags",
     "//components/feedback/proto",
     "//components/keyed_service/core",
     "//components/prefs:test_support",

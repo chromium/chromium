@@ -15,15 +15,19 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/time/time.h"
+#import "components/collaboration/test_support/mock_collaboration_service.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
+#import "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
 #import "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "components/tab_groups/tab_group_visual_data.h"
+#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/commerce/model/shopping_persisted_data_tab_helper.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/main/model/browser_web_state_list_delegate.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/test_share_kit_service.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -94,8 +98,19 @@ class BaseGridMediatorTest
       mediator_ =
           [[IncognitoGridMediator alloc] initWithModeHolder:mode_holder_];
     } else {
-      mediator_ = [[RegularGridMediator alloc] initWithModeHolder:mode_holder_
-                                                 messagingService:nil];
+      tab_group_sync_service_ =
+          std::make_unique<tab_groups::FakeTabGroupSyncService>();
+      share_kit_service_ =
+          std::make_unique<TestShareKitService>(nullptr, nullptr, nullptr);
+      collaboration_service_ =
+          std::make_unique<collaboration::MockCollaborationService>();
+
+      mediator_ = [[RegularGridMediator alloc]
+            initWithModeHolder:mode_holder_
+           tabGroupSyncService:tab_group_sync_service_.get()
+               shareKitService:share_kit_service_.get()
+          collaborationService:collaboration_service_.get()
+              messagingService:nil];
     }
     mediator_.consumer = consumer_;
     mediator_.browser = browser_.get();
@@ -104,10 +119,7 @@ class BaseGridMediatorTest
   }
 
   void TearDown() override {
-    // Forces the IncognitoGridMediator to removes its Observer from
-    // WebStateList before the Browser is destroyed.
-    mediator_.browser = nullptr;
-    mediator_ = nil;
+    [mediator_ disconnect];
     GridMediatorTestClass::TearDown();
   }
 
@@ -118,6 +130,10 @@ class BaseGridMediatorTest
   }
 
  protected:
+  std::unique_ptr<tab_groups::FakeTabGroupSyncService> tab_group_sync_service_;
+  std::unique_ptr<ShareKitService> share_kit_service_;
+  std::unique_ptr<collaboration::MockCollaborationService>
+      collaboration_service_;
   BaseGridMediator* mediator_;
   base::HistogramTester histogram_tester_;
   TabGridModeHolder* mode_holder_;
@@ -361,6 +377,7 @@ TEST_P(BaseGridMediatorTest, AddNewItemWithNoBrowserCommand) {
   [mediator_ addNewItem];
   EXPECT_EQ(3, browser_->GetWebStateList()->count());
   EXPECT_EQ(1, browser_->GetWebStateList()->active_index());
+  mediator_.browser = browser_.get();
 }
 
 // Tests that when `-searchItemsWithText:` is called, there is no change in the

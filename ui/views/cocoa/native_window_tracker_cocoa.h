@@ -5,10 +5,9 @@
 #ifndef UI_VIEWS_COCOA_NATIVE_WINDOW_TRACKER_COCOA_H_
 #define UI_VIEWS_COCOA_NATIVE_WINDOW_TRACKER_COCOA_H_
 
-#include "ui/views/native_window_tracker.h"
-
 #include <memory>
 
+#include "ui/views/native_window_tracker.h"
 #include "ui/views/views_export.h"
 
 namespace views {

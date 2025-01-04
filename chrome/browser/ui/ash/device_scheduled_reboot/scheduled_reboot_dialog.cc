@@ -30,8 +30,9 @@ ScheduledRebootDialog::ScheduledRebootDialog(const base::Time& reboot_time,
 ScheduledRebootDialog::~ScheduledRebootDialog() {
   if (dialog_delegate_) {
     views::Widget* widget = dialog_delegate_->GetWidget();
-    if (widget->HasObserver(this))
+    if (widget->HasObserver(this)) {
       widget->RemoveObserver(this);
+    }
     widget->CloseNow();
     dialog_delegate_ = nullptr;
   }
@@ -77,8 +78,9 @@ views::DialogDelegate* ScheduledRebootDialog::GetDialogDelegate() const {
 }
 
 void ScheduledRebootDialog::UpdateWindowTitle() {
-  if (dialog_delegate_)
+  if (dialog_delegate_) {
     dialog_delegate_->SetTitle(BuildTitle());
+  }
 }
 
 const std::u16string ScheduledRebootDialog::BuildTitle() const {

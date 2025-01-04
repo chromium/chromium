@@ -111,7 +111,7 @@ void LogUsingPossibleUsername(PasswordManagerClient* client,
   if (!password_manager_util::IsLoggingActive(client)) {
     return;
   }
-  BrowserSavePasswordProgressLogger logger(client->GetLogManager());
+  BrowserSavePasswordProgressLogger logger(client->GetCurrentLogManager());
   logger.LogString(is_used ? Logger::STRING_POSSIBLE_USERNAME_USED
                            : Logger::STRING_POSSIBLE_USERNAME_NOT_USED,
                    message);
@@ -953,12 +953,8 @@ bool PasswordFormManager::WebAuthnCredentialsAvailable() const {
     WebAuthnCredentialsDelegate* delegate =
         client_->GetWebAuthnCredentialsDelegateForDriver(driver_.get());
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-    const bool passkey_from_another_device_in_context_menu =
-        (base::FeatureList::IsEnabled(
-             features::kPasswordManualFallbackAvailable) &&
-         base::FeatureList::IsEnabled(
-             features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu));
-    if (passkey_from_another_device_in_context_menu) {
+    if (base::FeatureList::IsEnabled(
+            features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu)) {
       return delegate && delegate->GetPasskeys().has_value() &&
              !delegate->GetPasskeys()->empty();
     }
@@ -1005,7 +1001,7 @@ void PasswordFormManager::RecordProvisionalSaveFailure(
   std::unique_ptr<BrowserSavePasswordProgressLogger> logger;
   if (password_manager_util::IsLoggingActive(client_)) {
     logger = std::make_unique<BrowserSavePasswordProgressLogger>(
-        client_->GetLogManager());
+        client_->GetCurrentLogManager());
   }
   if (client_->GetMetricsRecorder()) {
     client_->GetMetricsRecorder()->RecordProvisionalSaveFailure(
@@ -1337,7 +1333,7 @@ FormParsingResult PasswordFormManager::ParseFormAndMakeLogging(
       parser_.ParseAndReturnParsingResult(form, mode, GetStoredUsernames());
 
   if (password_manager_util::IsLoggingActive(client_)) {
-    BrowserSavePasswordProgressLogger logger(client_->GetLogManager());
+    BrowserSavePasswordProgressLogger logger(client_->GetCurrentLogManager());
     logger.LogFormData(Logger::STRING_FORM_PARSING_INPUT, form);
     if (form_parsing_result.password_form) {
       logger.LogPasswordForm(Logger::STRING_FORM_PARSING_OUTPUT,

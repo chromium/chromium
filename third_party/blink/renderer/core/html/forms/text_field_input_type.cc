@@ -312,8 +312,8 @@ LayoutObject* TextFieldInputType::CreateLayoutObject(
   return MakeGarbageCollected<LayoutTextControlSingleLine>(&GetElement());
 }
 
-ControlPart TextFieldInputType::AutoAppearance() const {
-  return kTextFieldPart;
+AppearanceValue TextFieldInputType::AutoAppearance() const {
+  return AppearanceValue::kTextField;
 }
 
 bool TextFieldInputType::IsInnerEditorValueEmpty() const {
@@ -555,8 +555,7 @@ bool TextFieldInputType::ShouldRespectListAttribute() {
 
 HTMLElement* TextFieldInputType::UpdatePlaceholderText(
     bool is_suggested_value) {
-  if (!HasCreatedShadowSubtree() &&
-      RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled()) {
+  if (!HasCreatedShadowSubtree()) {
     return nullptr;
   }
   if (!SupportsPlaceholder()) {

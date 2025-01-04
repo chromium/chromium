@@ -7,6 +7,7 @@ package org.chromium.device.geolocation;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Location;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -16,6 +17,8 @@ import com.google.android.gms.location.LocationServices;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.gms.ChromiumPlayServicesAvailability;
 
 /**
@@ -23,6 +26,7 @@ import org.chromium.gms.ChromiumPlayServicesAvailability;
  *
  * https://developers.google.com/android/reference/com/google/android/gms/location/package-summary
  */
+@NullMarked
 public class LocationProviderGmsCore implements LocationProvider {
     private static final String TAG = "LocationProvider";
 
@@ -33,7 +37,7 @@ public class LocationProviderGmsCore implements LocationProvider {
     private final Context mContext;
     private final FusedLocationProviderClient mClient;
 
-    private LocationCallback mLocationCallback;
+    private @Nullable LocationCallback mLocationCallback;
 
     public static boolean isGooglePlayServicesAvailable(Context context) {
         return ChromiumPlayServicesAvailability.isGooglePlayServicesAvailable(context);
@@ -80,9 +84,7 @@ public class LocationProviderGmsCore implements LocationProvider {
                     .setInterval(UPDATE_INTERVAL_MS);
         }
 
-        if (mLocationCallback != null) {
-            mClient.removeLocationUpdates(mLocationCallback);
-        }
+        stop();
 
         mLocationCallback =
                 new LocationCallback() {
@@ -91,8 +93,10 @@ public class LocationProviderGmsCore implements LocationProvider {
                         if (locationResult == null) {
                             return;
                         }
-                        LocationProviderAdapter.onNewLocationAvailable(
-                                locationResult.getLastLocation());
+                        Location location = locationResult.getLastLocation();
+                        if (location != null) {
+                            LocationProviderAdapter.onNewLocationAvailable(location);
+                        }
                     }
                 };
 
@@ -126,8 +130,10 @@ public class LocationProviderGmsCore implements LocationProvider {
     public void stop() {
         ThreadUtils.assertOnUiThread();
 
-        mClient.removeLocationUpdates(mLocationCallback);
-        mLocationCallback = null;
+        if (mLocationCallback != null) {
+            mClient.removeLocationUpdates(mLocationCallback);
+            mLocationCallback = null;
+        }
     }
 
     @Override

@@ -343,17 +343,7 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
   if (self.view.alpha == 1) {
     return;
   }
-  [self.headerView hideFakeboxButtons];
   self.view.alpha = 1;
-
-  __weak __typeof(self) weakSelf = self;
-  [UIView animateWithDuration:kMaterialDuration6
-                        delay:0.0
-                      options:UIViewAnimationOptionCurveEaseOut
-                   animations:^{
-                     [weakSelf.headerView showFakeboxButtons];
-                   }
-                   completion:nil];
 }
 
 - (void)hideBadgeOnCustomizationMenu {
@@ -363,6 +353,12 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
 
 - (void)setTabGroupIndicatorView:(TabGroupIndicatorView*)view {
   self.headerView.tabGroupIndicatorView = view;
+}
+
+#pragma mark - FakeboxButtonsSnapshotProvider
+
+- (UIView*)fakeboxButtonsSnapshot {
+  return [self.headerView fakeboxButtonsSnapshot];
 }
 
 #pragma mark - Private

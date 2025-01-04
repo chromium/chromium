@@ -62,7 +62,7 @@ export class RecordingFileListItem extends ReactiveLitElement {
         --cros-card-padding: 24px;
         --cros-card-hover-color: none;
 
-        margin: 0 32px;
+        margin: 0 var(--container-padding-horizontal);
         position: relative;
 
         /* TODO: b/336963138 - Align with the motion spec. */

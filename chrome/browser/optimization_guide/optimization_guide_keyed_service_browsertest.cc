@@ -1193,7 +1193,9 @@ IN_PROC_BROWSER_TEST_P(
     SettingsNotVisible) {
   EnableSignIn();
 
-  EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kWallpaperSearch));
+  EXPECT_EQ(
+      ShouldFeatureBeEnabled() && features::IsAiSettingsPageRefreshEnabled(),
+      IsSettingVisible(UserVisibleFeatureKey::kWallpaperSearch));
 
   EXPECT_EQ(ShouldFeatureBeEnabled(),
             IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));

@@ -255,7 +255,8 @@ void OpenH264VideoEncoder::Initialize(VideoCodecProfile profile,
   }
 
   if (!options.avc.produce_annexb)
-    h264_converter_ = std::make_unique<H264AnnexBToAvcBitstreamConverter>();
+    h264_converter_ = std::make_unique<H264AnnexBToAvcBitstreamConverter>(
+        /*add_parameter_sets_in_bitstream=*/false);
 
   options_ = options;
   output_cb_ = BindCallbackToCurrentLoopIfNeeded(std::move(output_cb));
@@ -510,7 +511,8 @@ void OpenH264VideoEncoder::ChangeOptions(const Options& options,
   if (options.avc.produce_annexb) {
     h264_converter_.reset();
   } else if (!h264_converter_) {
-    h264_converter_ = std::make_unique<H264AnnexBToAvcBitstreamConverter>();
+    h264_converter_ = std::make_unique<H264AnnexBToAvcBitstreamConverter>(
+        /*add_parameter_sets_in_bitstream=*/false);
   }
 
   options_ = options;

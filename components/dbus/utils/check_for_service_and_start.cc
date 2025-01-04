@@ -24,7 +24,8 @@ constexpr char kMethodStartServiceByName[] = "StartServiceByName";
 void OnStartServiceByNameResponse(scoped_refptr<dbus::Bus> bus,
                                   const std::string& name,
                                   CheckForServiceAndStartCallback callback,
-                                  dbus::Response* response) {
+                                  dbus::Response* response,
+                                  dbus::ErrorResponse* error_response) {
   if (!response) {
     std::move(callback).Run(std::nullopt);
     return;
@@ -52,9 +53,10 @@ void StartServiceByName(scoped_refptr<dbus::Bus> bus,
   writer.AppendString(name);
   // No flags
   writer.AppendUint32(0);
-  proxy->CallMethod(&method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-                    base::BindOnce(&OnStartServiceByNameResponse, bus, name,
-                                   std::move(callback)));
+  proxy->CallMethodWithErrorResponse(
+      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+      base::BindOnce(&OnStartServiceByNameResponse, bus, name,
+                     std::move(callback)));
 }
 
 void OnListActivatableNamesResponse(scoped_refptr<dbus::Bus> bus,

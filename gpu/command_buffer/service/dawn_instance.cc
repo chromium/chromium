@@ -26,8 +26,12 @@ std::unique_ptr<DawnInstance> DawnInstance::Create(
     dawn::platform::Platform* platform,
     const GpuPreferences& gpu_preferences,
     SafetyLevel safety,
+#ifdef WGPU_BREAKING_CHANGE_LOGGING_CALLBACK_TYPE
+    wgpu::LoggingCallback<void> logging_callback) {
+#else
     WGPULoggingCallback logging_callback,
     void* logging_callback_userdata) {
+#endif
   // Populate the WGSL blocklist based on the Finch feature.
   std::vector<std::string> wgsl_unsafe_features_owned;
   std::vector<const char*> wgsl_unsafe_features;
@@ -106,8 +110,12 @@ std::unique_ptr<DawnInstance> DawnInstance::Create(
       dawn_search_path.empty() ? 0u : 1u;
   dawn_instance_desc.additionalRuntimeSearchPaths = &dawn_search_path_c_str;
   dawn_instance_desc.platform = platform;
+#ifdef WGPU_BREAKING_CHANGE_LOGGING_CALLBACK_TYPE
+  dawn_instance_desc.SetLoggingCallback(logging_callback);
+#else
   dawn_instance_desc.loggingCallback = logging_callback;
   dawn_instance_desc.loggingCallbackUserdata = logging_callback_userdata;
+#endif
 
   // Create the instance with all the previous descriptors chained.
   wgpu::InstanceDescriptor instance_desc;

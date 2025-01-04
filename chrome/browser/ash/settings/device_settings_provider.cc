@@ -76,6 +76,7 @@ constexpr auto kKnownSettings = base::MakeFixedFlatSet<std::string_view>({
     kAllowRedeemChromeOsRegistrationOffers,
     kAttestationForContentProtectionEnabled,
     kCastReceiverName,
+    kDeviceFlexArcPreloadEnabled,
     kDeviceActivityHeartbeatCollectionRateMs,
     kDeviceActivityHeartbeatEnabled,
     kDeviceAllowedBluetoothServices,
@@ -1072,6 +1073,15 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
       new_values_cache->SetValue(
           kUnaffiliatedArcAllowed,
           base::Value(container.unaffiliated_arc_allowed()));
+    }
+  }
+
+  if (policy.has_deviceflexarcpreloadenabled()) {
+    const em::BooleanPolicyProto& container(
+        policy.deviceflexarcpreloadenabled());
+    if (container.has_value()) {
+      new_values_cache->SetValue(kDeviceFlexArcPreloadEnabled,
+                                 base::Value(container.value()));
     }
   }
 

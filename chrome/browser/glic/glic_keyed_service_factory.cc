@@ -4,6 +4,8 @@
 
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 
+#include "chrome/browser/glic/glic_profile_manager.h"
+
 namespace glic {
 
 // static
@@ -32,7 +34,8 @@ bool GlicKeyedServiceFactory::ServiceIsCreatedWithBrowserContext() const {
 std::unique_ptr<KeyedService>
 GlicKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<GlicKeyedService>(context);
+  return std::make_unique<GlicKeyedService>(context,
+                                            GlicProfileManager::GetInstance());
 }
 
 }  // namespace glic

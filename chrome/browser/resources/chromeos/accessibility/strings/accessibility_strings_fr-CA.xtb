@@ -845,6 +845,7 @@
 <translation id="6385591741672306837">col.</translation>
 <translation id="6387719785439924554">contenu relatif</translation>
 <translation id="6393014464788431702">Désactiver tous les filtres d'événement</translation>
+<translation id="6406989068857078334">Vitesse de la souris réduite, <ph name="GESTURE" /> de nouveau pour cliquer</translation>
 <translation id="6411569524720229058">Automne</translation>
 <translation id="6417265370957905582">Assistant Google</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{deux-points}one{# deux-points}other{# deux-points}}</translation>
@@ -1099,6 +1100,7 @@
 <translation id="8205922869661890178">Ouvrir la page du journal pour développeur</translation>
 <translation id="8212109599554677485">Choisir le style d'affichage côte à côte</translation>
 <translation id="8215202828671303819">Sélection multiple</translation>
+<translation id="822316432305106615">Commencer le clic de précision</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, opacité à <ph name="OPACITY_PERCENTAGE" /> %.</translation>
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="826825447994856889">Introduction</translation>

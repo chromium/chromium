@@ -90,6 +90,7 @@
 #include "chrome/browser/ui/ash/shell_init/ash_shell_init.h"
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/ash/wallpaper/wallpaper_ash.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/ash/web_view/ash_web_view_factory_impl.h"
 #include "chrome/browser/ui/ash/wm/tab_cluster_ui_client.h"
@@ -180,7 +181,8 @@ ChromeBrowserMainExtraPartsAsh* ChromeBrowserMainExtraPartsAsh::Get() {
   return g_instance;
 }
 
-ChromeBrowserMainExtraPartsAsh::ChromeBrowserMainExtraPartsAsh() {
+ChromeBrowserMainExtraPartsAsh::ChromeBrowserMainExtraPartsAsh()
+    : wallpaper_ash_(std::make_unique<WallpaperAsh>()) {
   CHECK(!g_instance);
   g_instance = this;
 }

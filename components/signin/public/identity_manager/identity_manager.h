@@ -14,7 +14,6 @@
 #include "base/scoped_observation.h"
 #include "base/scoped_observation_traits.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/account_manager_core/account.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/internal/identity_manager/primary_account_manager.h"
@@ -449,7 +448,12 @@ class IdentityManager : public KeyedService,
 
 #if BUILDFLAG(IS_ANDROID)
   // Get the reference on the java IdentityManager.
-  base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const;
+
+  // Get the reference on the java IdentityManager.
+  static IdentityManager* FromJavaObject(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& j_identity_manager);
 
   // Provide the reference on the java IdentityMutator.
   base::android::ScopedJavaLocalRef<jobject> GetIdentityMutatorJavaObject();
@@ -559,7 +563,7 @@ class IdentityManager : public KeyedService,
 #if BUILDFLAG(IS_CHROMEOS)
   friend account_manager::AccountManagerFacade* GetAccountManagerFacade(
       IdentityManager* identity_manager);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Temporary access to getters (e.g. GetTokenService()).
   // TODO(crbug.com/40619310): Remove this friendship by
@@ -757,5 +761,23 @@ struct ScopedObservationTraits<signin::IdentityManager,
 };
 
 }  // namespace base
+
+#if BUILDFLAG(IS_ANDROID)
+namespace jni_zero {
+template <>
+inline signin::IdentityManager* FromJniType<signin::IdentityManager*>(
+    JNIEnv* env,
+    const JavaRef<jobject>& j_identity_manager) {
+  return signin::IdentityManager::FromJavaObject(env, j_identity_manager);
+}
+
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType(
+    JNIEnv* env,
+    signin::IdentityManager* identity_manager) {
+  return identity_manager ? identity_manager->GetJavaObject() : nullptr;
+}
+}  // namespace jni_zero
+#endif
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_IDENTITY_MANAGER_H_

@@ -1661,27 +1661,21 @@ export async function openQuickViewImageRawWithOrientation() {
   const mimeType = await getQuickViewMetadataBoxField(appId, 'Type');
   chrome.test.assertEq('image/tiff', mimeType);
 
-  // Get the fileSafeMedia element preview thumbnail image size.
+  // Get the fileSafeMedia element preview thumbnail image, as a data URL.
   const element = await remoteCall.waitForElement(appId, filesSafeMedia);
-  const image = new Image();
-  let imageSize = '';
-  image.onload = () => {
-    imageSize = `${image.naturalWidth} x ${image.naturalHeight}`;
-  };
+  const dataURL = JSON.parse(element.attributes['src']!).data as string;
 
-  const sourceContent = JSON.parse(element.attributes['src']!);
-
-  chrome.test.assertTrue(!!sourceContent.data);
-  image.src = sourceContent.data as string;
-
-  // Check: the preview thumbnail should have an orientated size.
-  await repeatUntil(async () => {
-    if (!image.complete || imageSize !== '120 x 160') {
-      return pending(caller, 'Waiting for preview thumbnail size.');
-    }
-
-    return;
-  });
+  // Check that the thumbnail image size is 120 x 160. In hexadecimal, this is
+  // 0x78 x 0xa0. We cannot say "new Image()" in a service worker, to decode
+  // the PNG-formatted image, so we look at the byte level for (0x78, 0xa0) as
+  // two big-endian uint32 values in the IHDR chunk of the PNG-formatted bytes.
+  // The "IHDR 120 x 160" bytes should be at byte offset 12: 8 bytes for the
+  // PNG magic header plus 4 bytes for the IHDR chunk length.
+  const prefix = 'data:image/png;base64,';
+  chrome.test.assertTrue(dataURL.startsWith(prefix));
+  const pngBytes = atob(dataURL.substring(prefix.length));
+  const ihdr120x160 = 'IHDR\x00\x00\x00\x78\x00\x00\x00\xa0';
+  chrome.test.assertEq(12, pngBytes.indexOf(ihdr120x160));
 }
 
 /**

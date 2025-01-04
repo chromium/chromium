@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/metrics/sparse_histogram.h"
 
+#include <array>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -46,8 +42,9 @@ class SparseHistogramTest : public testing::TestWithParam<bool> {
   using CountAndBucketData = base::SparseHistogram::CountAndBucketData;
 
   void SetUp() override {
-    if (use_persistent_histogram_allocator_)
+    if (use_persistent_histogram_allocator_) {
       CreatePersistentMemoryAllocator();
+    }
 
     // Each test will have a clean state (no Histogram / BucketRanges
     // registered).
@@ -387,8 +384,9 @@ TEST_P(SparseHistogramTest, FactoryTime) {
 
   // Calculate cost of creating histograms.
   TimeTicks create_start = TimeTicks::Now();
-  for (int i = 0; i < kTestCreateCount; ++i)
+  for (int i = 0; i < kTestCreateCount; ++i) {
     SparseHistogram::FactoryGet(histogram_names[i], HistogramBase::kNoFlags);
+  }
   TimeDelta create_ticks = TimeTicks::Now() - create_start;
   int64_t create_ms = create_ticks.InMilliseconds();
 
@@ -420,8 +418,9 @@ TEST_P(SparseHistogramTest, FactoryTime) {
       SparseHistogram::FactoryGet(histogram_names[0], HistogramBase::kNoFlags);
   ASSERT_TRUE(histogram);
   TimeTicks add_start = TimeTicks::Now();
-  for (int i = 0; i < kTestAddCount; ++i)
+  for (int i = 0; i < kTestAddCount; ++i) {
     histogram->Add(i & 127);
+  }
   TimeDelta add_ticks = TimeTicks::Now() - add_start;
   int64_t add_ms = add_ticks.InMilliseconds();
 
@@ -430,17 +429,18 @@ TEST_P(SparseHistogramTest, FactoryTime) {
 }
 
 TEST_P(SparseHistogramTest, ExtremeValues) {
-  static const struct {
+  struct Cases {
     Histogram::Sample sample;
     int64_t expected_max;
-  } cases[] = {
+  };
+  static const auto cases = std::to_array<Cases>({
       // Note: We use -2147483647 - 1 rather than -2147483648 because the later
       // is interpreted as - operator applied to 2147483648 and the latter can't
       // be represented as an int32 and causes a warning.
       {-2147483647 - 1, -2147483647LL},
       {0, 1},
       {2147483647, 2147483648LL},
-  };
+  });
 
   for (size_t i = 0; i < std::size(cases); ++i) {
     HistogramBase* histogram =

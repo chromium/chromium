@@ -104,8 +104,10 @@ RedactResult OnDeviceModelFeatureAdapter::Redact(
   return redact_result;
 }
 
-bool OnDeviceModelFeatureAdapter::ShouldParseResponse(bool is_complete) const {
-  return is_complete || !parser_->SuppressParsingIncompleteResponse();
+bool OnDeviceModelFeatureAdapter::ShouldParseResponse(
+    ResponseCompleteness completeness) const {
+  return completeness == ResponseCompleteness::kComplete ||
+         !parser_->SuppressParsingIncompleteResponse();
 }
 
 void OnDeviceModelFeatureAdapter::ParseResponse(
@@ -168,14 +170,14 @@ OnDeviceModelFeatureAdapter::ConstructTextSafetyRequest(
   return text_safety_request;
 }
 
-std::optional<SamplingParams> OnDeviceModelFeatureAdapter::MaybeSamplingParams()
-    const {
+std::optional<SamplingParamsConfig>
+OnDeviceModelFeatureAdapter::MaybeSamplingParamsConfig() const {
   if (!config_.has_sampling_params()) {
     return std::nullopt;
   }
-  return SamplingParams{
-      .top_k = config_.sampling_params().top_k(),
-      .temperature = config_.sampling_params().temperature(),
+  return SamplingParamsConfig{
+      .default_top_k = config_.sampling_params().top_k(),
+      .default_temperature = config_.sampling_params().temperature(),
   };
 }
 

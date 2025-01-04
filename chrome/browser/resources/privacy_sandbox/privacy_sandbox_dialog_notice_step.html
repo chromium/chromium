@@ -21,7 +21,7 @@
         <img class="logo" alt="">
         <h1>$i18n{m1NoticeEeaTitle}</h1>
       </div>
-      <template is="dom-if" if="[[!shouldShowV2_]]">
+      <template is="dom-if" if="[[!shouldShowV2()]]">
         <div id="noticeContent">
           <div class="section cr-secondary-text">
             $i18n{m1NoticeEeaDescription1}
@@ -52,7 +52,7 @@
           </div>
         </div>
       </template>
-      <template is="dom-if" if="[[shouldShowV2_]]">
+      <template is="dom-if" if="[[shouldShowV2()]]">
         <div id="noticeContentV2">
           <div class="section cr-secondary-text">
             $i18n{m1NoticeEEADescription1V2}
@@ -67,6 +67,7 @@
             $i18n{m1NoticeEEASiteSuggestedAdsDescription}
           </div>
           <privacy-sandbox-dialog-learn-more class="learn-more-section"
+              id="siteSuggestedAdsLearnMore"
               expanded="{{siteSuggestedAdsLearnMoreExpanded_}}"
               title="$i18n{m1NoticeEEASiteSuggestedAdsLearnMoreLabel}">
             <ul class="cr-secondary-text">
@@ -91,6 +92,7 @@
             $i18n{m1NoticeEEAAdMeasurementDescription}
           </div>
           <privacy-sandbox-dialog-learn-more class="learn-more-section"
+              id="adsMeasurementLearnMore"
               expanded="{{adMeasurementLearnMoreExpanded_}}"
               title="$i18n{m1NoticeEEAAdMeasurementLearnMoreLabel}">
             <ul class="cr-secondary-text">
@@ -105,11 +107,11 @@
     </div>
     <div class="buttons-container">
       <cr-button id="settingsButton"
-          class$="[[getSettingsButtonsClass_(shouldShowV2_)]]"
+          class$="[[getSettingsButtonsClass_()]]"
           on-click="onNoticeOpenSettings">
         $i18n{m1NoticeEeaSettingsButton}
       </cr-button>
-      <cr-button id="ackButton" class$="[[getAckButtonsClass_(shouldShowV2_)]]"
+      <cr-button id="ackButton" class$="[[getAckButtonsClass_()]]"
           on-click="onNoticeAcknowledge">
         $i18n{m1NoticeEeaAckButton}
       </cr-button>

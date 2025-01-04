@@ -491,7 +491,7 @@ const CGFloat kSeparatorHeight = 0.5;
 
 // Handles taps on the notifications opt-in button.
 - (void)notificationsOptInButtonWasTapped:(UIButton*)button {
-  [_delegate enableNotifications:_type];
+  [_delegate enableNotifications:_type viaContextMenu:NO];
 }
 
 // Determines if a subtitle should be displayed. Currently, a subtitle is

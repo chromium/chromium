@@ -118,8 +118,9 @@ class VideoEncoderTest
             &FakeVideoEncodeAcceleratorFactory::CreateVideoEncodeAccelerator,
             base::Unretained(vea_factory_.get())));
     RunTasksAndAdvanceClock();
-    if (is_encoder_present())
+    if (is_encoder_present()) {
       ASSERT_EQ(STATUS_INITIALIZED, operational_status_);
+    }
   }
 
   bool is_encoder_present() const { return !!video_encoder_; }
@@ -163,14 +164,16 @@ class VideoEncoderTest
   // that the VEA factory has responded (by running the callbacks) a specific
   // number of times.  Otherwise, check that the VEA factory is inactive.
   void ExpectVEAResponseForExternalVideoEncoder(int vea_response_count) const {
-    if (!vea_factory_)
+    if (!vea_factory_) {
       return;
+    }
     EXPECT_EQ(vea_response_count, vea_factory_->vea_response_count());
   }
 
   void SetVEAFactoryAutoRespond(bool auto_respond) {
-    if (vea_factory_)
+    if (vea_factory_) {
       vea_factory_->SetAutoRespond(auto_respond);
+    }
   }
 
  private:
@@ -273,11 +276,10 @@ TEST_P(VideoEncoderTest, EncodesVariedFrameSizes) {
     }
   }
 
-  // Flush the encoder and wait until all queued frames have been delivered.
-  // Then, shut it all down.
-  video_encoder()->EmitFrames();
-  while (encoded_frames.size() < static_cast<size_t>(count_frames_accepted))
+  // Wait until all queued frames have been delivered then shut everything down.
+  while (encoded_frames.size() < static_cast<size_t>(count_frames_accepted)) {
     RunTasksAndAdvanceClock();
+  }
   DestroyEncoder();
   RunTasksAndAdvanceClock();
   encoded_frames_weak_factory.InvalidateWeakPtrs();
@@ -328,8 +330,13 @@ TEST_P(VideoEncoderTest, CanBeDestroyedBeforeVEAIsCreated) {
       [](std::unique_ptr<SenderEncodedFrame> encoded_frame) {}));
 
   // Send a frame to spawn creation of the ExternalVideoEncoder instance.
-  video_encoder()->EncodeVideoFrame(CreateTestVideoFrame(gfx::Size(128, 72)),
-                                    Now());
+  const bool encode_result = video_encoder()->EncodeVideoFrame(
+      CreateTestVideoFrame(gfx::Size(128, 72)), Now());
+
+  // Hardware encoders should fail to encode at this point, since the VEA has
+  // not responded yet. Since software encoders don't use VEA, they should
+  // succeed.
+  ASSERT_EQ(encode_result, !GetParam().use_hardware_encoder);
 
   // Destroy the encoder, and confirm the VEA Factory did not respond yet.
   DestroyEncoder();

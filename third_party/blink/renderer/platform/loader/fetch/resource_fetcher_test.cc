@@ -73,6 +73,7 @@
 #include "third_party/blink/renderer/platform/loader/testing/test_loader_factory.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/scoped_mocked_url.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -429,47 +430,6 @@ TEST_F(ResourceFetcherTest, MetricsPerTopFrameSiteOpaqueOrigins) {
   histogram_tester.ExpectBucketCount(
       "Blink.MemoryCache.RevalidationPolicy.Mock",
       0 /* RevalidationPolicy::kUse */, 2);
-}
-
-// Verify that the ad bit is copied to WillSendRequest's request when the
-// response is served from the memory cache.
-TEST_F(ResourceFetcherTest, WillSendRequestAdBit) {
-  // Add a resource to the memory cache.
-  scoped_refptr<const SecurityOrigin> source_origin =
-      SecurityOrigin::CreateUniqueOpaque();
-  auto* properties =
-      MakeGarbageCollected<TestResourceFetcherProperties>(source_origin);
-  MockFetchContext* context = MakeGarbageCollected<MockFetchContext>();
-  KURL url("http://127.0.0.1:8000/foo.html");
-  Resource* resource =
-      RawResource::CreateForTest(url, source_origin, ResourceType::kRaw);
-  AddResourceToMemoryCache(resource);
-  ResourceResponse response(url);
-  response.SetHttpStatusCode(200);
-  response.SetHttpHeaderField(http_names::kCacheControl,
-                              AtomicString("max-age=3600"));
-  resource->ResponseReceived(response);
-  resource->FinishForTest();
-
-  auto* observer = MakeGarbageCollected<TestResourceLoadObserver>();
-  // Fetch the cached resource. The request to DispatchWillSendRequest should
-  // preserve the ad bit.
-  auto* fetcher = CreateFetcher(*properties, context);
-  fetcher->SetResourceLoadObserver(observer);
-  ResourceRequest resource_request(url);
-  resource_request.SetIsAdResource();
-  resource_request.SetRequestContext(
-      mojom::blink::RequestContextType::INTERNAL);
-  FetchParameters fetch_params =
-      FetchParameters::CreateForTest(std::move(resource_request));
-  platform_->GetURLLoaderMockFactory()->RegisterURL(url, WebURLResponse(), "");
-  Resource* new_resource = RawResource::Fetch(fetch_params, fetcher, nullptr);
-
-  EXPECT_EQ(resource, new_resource);
-  std::optional<PartialResourceRequest> new_request =
-      observer->GetLastRequest();
-  EXPECT_TRUE(new_request.has_value());
-  EXPECT_TRUE(new_request.value().IsAdResource());
 }
 
 TEST_F(ResourceFetcherTest, Vary) {
@@ -1569,12 +1529,33 @@ TEST_F(ResourceFetcherTest, StrongReferenceThreshold) {
   ASSERT_FALSE(perform_fetch.Run(KURL("http://127.0.0.1:8000/baz.png")));
 }
 
-TEST_F(ResourceFetcherTest,
+class ResourceFetcherInspectorTest
+    : public ResourceFetcherTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  ResourceFetcherInspectorTest() = default;
+
+ protected:
+  bool IsSkipCallbacksWhenDevToolsNotOpenEnabled() {
+    return std::get<0>(GetParam());
+  }
+  bool IsInterestedInAllRequests() { return std::get<1>(GetParam()); }
+};
+
+INSTANTIATE_TEST_SUITE_P(ResourceFetcherInspectorTest,
+                         ResourceFetcherInspectorTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
+
+TEST_P(ResourceFetcherInspectorTest,
        EmulateLoadStartedForInspectorOncePerResourceDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       features::kEmulateLoadStartedForInspectorOncePerResource);
+  ScopedSkipCallbacksWhenDevToolsNotOpenForTest
+      skip_callbacks_when_devtools_not_open(
+          IsSkipCallbacksWhenDevToolsNotOpenEnabled());
   auto* observer = MakeGarbageCollected<TestResourceLoadObserver>();
+  observer->SetInterestedInAllRequests(IsInterestedInAllRequests());
 
   // Set up the initial fetcher and mark the resource as cached.
   auto* fetcher = CreateFetcher();
@@ -1610,7 +1591,12 @@ TEST_F(ResourceFetcherTest,
   ASSERT_EQ(otherContextFetcher->CachedResource(url), nullptr);
   ASSERT_FALSE(
       otherContextFetcher->ResourceHasBeenEmulatedLoadStartedForInspector(url));
-  ASSERT_NE(observer->GetLastRequest(), std::nullopt);
+  if (IsSkipCallbacksWhenDevToolsNotOpenEnabled() &&
+      !IsInterestedInAllRequests()) {
+    ASSERT_EQ(observer->GetLastRequest(), std::nullopt);
+  } else {
+    ASSERT_NE(observer->GetLastRequest(), std::nullopt);
+  }
 
   // Clear out the last request to start fresh
   observer->ClearLastRequest();
@@ -1627,12 +1613,21 @@ TEST_F(ResourceFetcherTest,
   ASSERT_EQ(otherContextFetcher->CachedResource(url), nullptr);
   ASSERT_FALSE(
       otherContextFetcher->ResourceHasBeenEmulatedLoadStartedForInspector(url));
-  ASSERT_NE(observer->GetLastRequest(), std::nullopt);
+  if (IsSkipCallbacksWhenDevToolsNotOpenEnabled() &&
+      !IsInterestedInAllRequests()) {
+    ASSERT_EQ(observer->GetLastRequest(), std::nullopt);
+  } else {
+    ASSERT_NE(observer->GetLastRequest(), std::nullopt);
+  }
 }
 
-TEST_F(ResourceFetcherTest,
+TEST_P(ResourceFetcherInspectorTest,
        EmulateLoadStartedForInspectorOncePerResourceEnabled) {
+  ScopedSkipCallbacksWhenDevToolsNotOpenForTest
+      skip_callbacks_when_devtools_not_open(
+          IsSkipCallbacksWhenDevToolsNotOpenEnabled());
   auto* observer = MakeGarbageCollected<TestResourceLoadObserver>();
+  observer->SetInterestedInAllRequests(IsInterestedInAllRequests());
 
   // Set up the initial fetcher and mark the resource as cached.
   auto* fetcher = CreateFetcher();
@@ -1668,7 +1663,12 @@ TEST_F(ResourceFetcherTest,
   ASSERT_EQ(otherContextFetcher->CachedResource(url), nullptr);
   ASSERT_TRUE(
       otherContextFetcher->ResourceHasBeenEmulatedLoadStartedForInspector(url));
-  ASSERT_NE(observer->GetLastRequest(), std::nullopt);
+  if (IsSkipCallbacksWhenDevToolsNotOpenEnabled() &&
+      !IsInterestedInAllRequests()) {
+    ASSERT_EQ(observer->GetLastRequest(), std::nullopt);
+  } else {
+    ASSERT_NE(observer->GetLastRequest(), std::nullopt);
+  }
 
   // Clear out the last request to start fresh
   observer->ClearLastRequest();
@@ -1686,6 +1686,56 @@ TEST_F(ResourceFetcherTest,
   ASSERT_TRUE(
       otherContextFetcher->ResourceHasBeenEmulatedLoadStartedForInspector(url));
   ASSERT_EQ(observer->GetLastRequest(), std::nullopt);
+}
+
+// Verify that the ad bit is copied to WillSendRequest's request when the
+// response is served from the memory cache.
+TEST_P(ResourceFetcherInspectorTest, WillSendRequestAdBit) {
+  ScopedSkipCallbacksWhenDevToolsNotOpenForTest
+      skip_callbacks_when_devtools_not_open(
+          IsSkipCallbacksWhenDevToolsNotOpenEnabled());
+  // Add a resource to the memory cache.
+  scoped_refptr<const SecurityOrigin> source_origin =
+      SecurityOrigin::CreateUniqueOpaque();
+  auto* properties =
+      MakeGarbageCollected<TestResourceFetcherProperties>(source_origin);
+  MockFetchContext* context = MakeGarbageCollected<MockFetchContext>();
+  KURL url("http://127.0.0.1:8000/foo.html");
+  Resource* resource =
+      RawResource::CreateForTest(url, source_origin, ResourceType::kRaw);
+  AddResourceToMemoryCache(resource);
+  ResourceResponse response(url);
+  response.SetHttpStatusCode(200);
+  response.SetHttpHeaderField(http_names::kCacheControl,
+                              AtomicString("max-age=3600"));
+  resource->ResponseReceived(response);
+  resource->FinishForTest();
+
+  auto* observer = MakeGarbageCollected<TestResourceLoadObserver>();
+  observer->SetInterestedInAllRequests(IsInterestedInAllRequests());
+  // Fetch the cached resource. The request to DispatchWillSendRequest should
+  // preserve the ad bit.
+  auto* fetcher = CreateFetcher(*properties, context);
+  fetcher->SetResourceLoadObserver(observer);
+  ResourceRequest resource_request(url);
+  resource_request.SetIsAdResource();
+  resource_request.SetRequestContext(
+      mojom::blink::RequestContextType::INTERNAL);
+  FetchParameters fetch_params =
+      FetchParameters::CreateForTest(std::move(resource_request));
+  platform_->GetURLLoaderMockFactory()->RegisterURL(url, WebURLResponse(), "");
+  Resource* new_resource = RawResource::Fetch(fetch_params, fetcher, nullptr);
+
+  EXPECT_EQ(resource, new_resource);
+  std::optional<PartialResourceRequest> new_request =
+      observer->GetLastRequest();
+  if (IsSkipCallbacksWhenDevToolsNotOpenEnabled() &&
+      !IsInterestedInAllRequests()) {
+    EXPECT_FALSE(new_request.has_value());
+  } else {
+    EXPECT_TRUE(new_request.has_value());
+    EXPECT_TRUE(new_request.value().IsAdResource());
+  }
 }
 
 class DeferUnusedPreloadResourceFetcherTest : public ResourceFetcherTest {
@@ -2089,10 +2139,10 @@ TEST_P(DeferUnusedPreloadWithExcludedResourceTypeResourceFetcherTest,
 
 class TransparentPlaceholderResourceFetcherTest
     : public ResourceFetcherTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   TransparentPlaceholderResourceFetcherTest() {
-    if (GetParam()) {
+    if (IsSimplifyLoadingTransparentPlaceholderImageEnabled()) {
       scoped_feature_list_.InitAndEnableFeature(
           features::kSimplifyLoadingTransparentPlaceholderImage);
     } else {
@@ -2101,15 +2151,27 @@ class TransparentPlaceholderResourceFetcherTest
     }
   }
 
+ protected:
+  bool IsSimplifyLoadingTransparentPlaceholderImageEnabled() {
+    return std::get<0>(GetParam());
+  }
+
+  bool IsSkipCallbacksWhenDevToolsNotOpenEnabled() {
+    return std::get<1>(GetParam());
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(TransparentPlaceholderResourceFetcherTest,
                          TransparentPlaceholderResourceFetcherTest,
-                         testing::Bool());
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 TEST_P(TransparentPlaceholderResourceFetcherTest, InspectorAttached) {
+  ScopedSkipCallbacksWhenDevToolsNotOpenForTest
+      skip_callbacks_when_devtools_not_open(
+          IsSkipCallbacksWhenDevToolsNotOpenEnabled());
   auto* observer = MakeGarbageCollected<TestResourceLoadObserver>();
   observer->SetInterestedInAllRequests(true);
 
@@ -2138,6 +2200,9 @@ TEST_P(TransparentPlaceholderResourceFetcherTest, InspectorAttached) {
 }
 
 TEST_P(TransparentPlaceholderResourceFetcherTest, InspectorNotAttached) {
+  ScopedSkipCallbacksWhenDevToolsNotOpenForTest
+      skip_callbacks_when_devtools_not_open(
+          IsSkipCallbacksWhenDevToolsNotOpenEnabled());
   auto* observer = MakeGarbageCollected<TestResourceLoadObserver>();
   observer->SetInterestedInAllRequests(false);
 
@@ -2162,7 +2227,9 @@ TEST_P(TransparentPlaceholderResourceFetcherTest, InspectorNotAttached) {
   // is open.
   std::optional<PartialResourceRequest> last_request =
       observer->GetLastRequest();
-  EXPECT_EQ(last_request.has_value(), !GetParam());
+  EXPECT_EQ(last_request.has_value(),
+            (!IsSimplifyLoadingTransparentPlaceholderImageEnabled() &&
+             !IsSkipCallbacksWhenDevToolsNotOpenEnabled()));
 }
 
 }  // namespace blink

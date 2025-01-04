@@ -38,6 +38,7 @@ static_library("demo_mode") {
   ]
 
   deps = [
+    "//ash",
     "//ash/components/arc:arc_base_utils",
     "//ash/constants",
     "//ash/public/cpp",
@@ -52,6 +53,7 @@ static_library("demo_mode") {
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/ui:browser_list",
     "//chrome/common",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/demo_mode",

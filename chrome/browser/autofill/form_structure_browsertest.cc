@@ -29,11 +29,11 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
-#include "components/autofill/core/browser/autofill_experiments.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/heuristic_source.h"
-#include "components/autofill/core/browser/test_autofill_manager_waiter.h"
+#include "components/autofill/core/browser/studies/autofill_experiments.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -224,7 +224,11 @@ FormStructureBrowserTest::FormStructureBrowserTest()
       {// TODO(crbug.com/1493145): Remove when/if launched. This feature changes
        // default parsing behavior, so must be disabled to avoid
        // fieldtrial_testing_config interference.
-       features::kAutofillEnableEmailHeuristicOnlyAddressForms});
+       features::kAutofillEnableEmailHeuristicOnlyAddressForms,
+       // TODO(crbug.com/320965828): This feature is not supported on the iOS
+       // renderer side and disabled to avoid too many differences between
+       // the expectations.
+       features::kAutofillBetterLocalHeuristicPlaceholderSupport});
 }
 
 FormStructureBrowserTest::~FormStructureBrowserTest() = default;

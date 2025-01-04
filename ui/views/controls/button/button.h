@@ -349,6 +349,8 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
 
   virtual void OnEnabledChanged();
 
+  virtual void UpdateAccessibleCheckedState();
+
   // Sets the |default_action_verb_| for accessibility. Subclasses may
   // call this method to set their specific default action verb.
   void SetDefaultActionVerb(ax::mojom::DefaultActionVerb verb);
@@ -361,7 +363,6 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
   FRIEND_TEST_ALL_PREFIXES(BlueButtonTest, Border);
 
   void ReleaseAnchorHighlight();
-  void UpdateAccessibleCheckedState();
 
   // The button's listener. Notified when clicked.
   PressedCallback callback_;

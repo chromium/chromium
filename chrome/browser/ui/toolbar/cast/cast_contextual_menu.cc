@@ -43,16 +43,15 @@ std::unique_ptr<CastContextualMenu> CastContextualMenu::Create(
 }
 
 CastContextualMenu::CastContextualMenu(Browser* browser,
-                                                     bool shown_by_policy,
-                                                     Observer* observer)
+                                       bool shown_by_policy,
+                                       Observer* observer)
     : browser_(browser),
       observer_(observer),
       shown_by_policy_(shown_by_policy) {}
 
 CastContextualMenu::~CastContextualMenu() = default;
 
-std::unique_ptr<ui::SimpleMenuModel>
-CastContextualMenu::CreateMenuModel() {
+std::unique_ptr<ui::SimpleMenuModel> CastContextualMenu::CreateMenuModel() {
   auto menu_model = std::make_unique<ui::SimpleMenuModel>(this);
   menu_model->AddItemWithStringId(IDC_MEDIA_ROUTER_ABOUT,
                                   IDS_MEDIA_ROUTER_ABOUT);
@@ -119,8 +118,7 @@ bool CastContextualMenu::IsCommandIdVisible(int command_id) const {
   return true;
 }
 
-void CastContextualMenu::ExecuteCommand(int command_id,
-                                               int event_flags) {
+void CastContextualMenu::ExecuteCommand(int command_id, int event_flags) {
   const char kAboutPageUrl[] =
       "https://www.google.com/chrome/devices/chromecast/";
   const char kCastHelpCenterPageUrl[] =

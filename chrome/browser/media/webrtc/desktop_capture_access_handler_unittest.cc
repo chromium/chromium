@@ -37,8 +37,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
-#include "base/test/scoped_feature_list.h"
-#include "chrome/common/chrome_features.h"
+#include "chrome/browser/permissions/system/system_media_capture_permissions_mac.h"
 #endif
 
 constexpr char kOrigin[] = "https://origin/";
@@ -65,12 +64,10 @@ class DesktopCaptureAccessHandlerTest : public ChromeRenderViewHostTestHarness {
       blink::mojom::StreamDevices* devices_result,
       bool expect_result = true) {
 #if BUILDFLAG(IS_MAC)
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndDisableFeature(
-        features::kMacSystemScreenCapturePermissionCheck);
+    system_permission_settings::SetIsScreenCaptureAllowedForTesting(true);
 #endif
     content::MediaStreamRequest request(
-        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
         web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
         /*page_request_id=*/0, url::Origin::Create(origin),
         /*user_gesture=*/false, blink::MEDIA_GENERATE_STREAM,
@@ -365,7 +362,10 @@ TEST_F(DesktopCaptureAccessHandlerTest, GenerateStreamSuccess) {
   const GURL origin(kOrigin);
   const std::string id =
       content::DesktopStreamsRegistry::GetInstance()->RegisterStream(
-          web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents()
+              ->GetPrimaryMainFrame()
+              ->GetProcess()
+              ->GetDeprecatedID(),
           web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
           url::Origin::Create(origin),
           content::DesktopMediaID(content::DesktopMediaID::TYPE_SCREEN,
@@ -527,7 +527,10 @@ TEST_F(DesktopCaptureAccessHandlerTest, GenerateStreamDlpRestricted) {
 
   const std::string id =
       content::DesktopStreamsRegistry::GetInstance()->RegisterStream(
-          web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents()
+              ->GetPrimaryMainFrame()
+              ->GetProcess()
+              ->GetDeprecatedID(),
           web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
           url::Origin::Create(GURL(kOrigin)),
           content::DesktopMediaID(content::DesktopMediaID::TYPE_SCREEN,
@@ -559,7 +562,10 @@ TEST_F(DesktopCaptureAccessHandlerTest, GenerateStreamDlpNotRestricted) {
 
   const std::string id =
       content::DesktopStreamsRegistry::GetInstance()->RegisterStream(
-          web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents()
+              ->GetPrimaryMainFrame()
+              ->GetProcess()
+              ->GetDeprecatedID(),
           web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
           url::Origin::Create(GURL(kOrigin)),
           content::DesktopMediaID(content::DesktopMediaID::TYPE_SCREEN,

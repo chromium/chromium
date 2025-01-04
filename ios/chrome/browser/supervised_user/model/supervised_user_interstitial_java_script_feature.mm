@@ -18,7 +18,12 @@ const char kWebUIMessageHandlerName[] = "SupervisedUserInterstitialMessage";
 
 std::optional<security_interstitials::SecurityInterstitialCommand>
 GetEnumCommand(const std::string& command) {
-  if (command == "requestUrlAccessRemote") {
+  // TODO(crbug.com/384517702): Check if it is possible to directly tie the
+  // command names to their respective callbacks rather than a
+  // `SecurityInterstitialCommand`.
+  if (command == "requestUrlAccessLocal") {
+    return security_interstitials::SecurityInterstitialCommand::CMD_PROCEED;
+  } else if (command == "requestUrlAccessRemote") {
     return security_interstitials::SecurityInterstitialCommand::
         CMD_REQUEST_SITE_ACCESS_PERMISSION;
   } else if (command == "back") {
@@ -60,7 +65,8 @@ void SupervisedUserInterstitialJavaScriptFeature::ScriptMessageReceived(
 
   const base::Value::Dict& dict = script_message.body()->GetDict();
   // Expected valid message body struct is:
-  // `{"command": "requestUrlAccessRemote"}` or `{"command": "back"}`.
+  // `{"command": "requestUrlAccessRemote"}`, `{"command": "back"}`, or
+  // `{"command": "requestUrlAccessLocal"}`
   const std::string* command = dict.FindString("command");
   if (!command) {
     return;

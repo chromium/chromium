@@ -83,7 +83,6 @@ repack("resource_pack_data") {
     "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
     "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
-    "$root_gen_dir/ui/resources/webui_resources.pak",
   ]
 
   deps = [
@@ -496,7 +495,7 @@ component("headless_non_renderer") {
 
   # Normally set to false (see build/args/headless.gn), but we can optionally
   # use external v8 startup data too.
-  if ((!is_win || is_component_build) && v8_use_external_startup_data) {
+  if (v8_use_external_startup_data) {
     public_deps += [ "//v8" ]
     if (use_v8_context_snapshot) {
       data += [ "$root_out_dir/$v8_context_snapshot_filename" ]

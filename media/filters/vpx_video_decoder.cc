@@ -420,7 +420,7 @@ VpxVideoDecoder::AlphaDecodeStatus VpxVideoDecoder::DecodeAlphaPlane(
     const struct vpx_image** vpx_image_alpha,
     const DecoderBuffer* buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!vpx_codec_alpha_ || !buffer->has_side_data() ||
+  if (!vpx_codec_alpha_ || !buffer->side_data() ||
       buffer->side_data()->alpha_data.size() < 8) {
     return kAlphaPlaneProcessed;
   }

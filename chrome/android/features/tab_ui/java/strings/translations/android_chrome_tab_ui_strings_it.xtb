@@ -77,7 +77,6 @@ Se lo elimini, tutti perderanno immediatamente l'accesso al gruppo di schede "<p
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> scheda modificata, <ph name="ANY_CLOSED" /> chiusa}other{<ph name="MANY_CHANGED" /> schede modificate, <ph name="ANY_CLOSED" /> chiuse}}</translation>
 <translation id="4371591986692297148">Non attivo</translation>
 <translation id="4460014764210899310">Separa</translation>
-<translation id="4590027107044272416">Ora puoi aprire una nuova scheda qui</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Chiudere 1 scheda inattiva?}other{Chiudere <ph name="TAB_COUNT_MANY" /> schede inattive?}}</translation>
 <translation id="4686942373615810936">Creato un attimo fa</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Chiudi dopo 1 giorno}other{Chiudi dopo <ph name="DAY_COUNT_MANY" /> giorni}}</translation>
@@ -98,7 +97,9 @@ Se lo elimini, tutti perderanno immediatamente l'accesso al gruppo di schede "<p
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> scheda aggiunta}other{<ph name="MANY_ADDED" /> schede aggiunte}}</translation>
 <translation id="5161254044473106830">Titolo obbligatorio</translation>
 <translation id="5339733443032484186">Ultima scheda</translation>
+<translation id="5380159289133845234">Archivia le schede duplicate</translation>
 <translation id="5400836586163650660">Grigio</translation>
+<translation id="5446043142172831860">Rimuovi scheda e esci dal gruppo</translation>
 <translation id="5490235265819901748">Gruppo di schede espanso</translation>
 <translation id="5494920125229734069">Seleziona tutto</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Chiudi il gruppo di schede con <ph name="TABS_COUNT_ONE" /> scheda, colore <ph name="COLOR_NAME" />.}other{Chiudi il gruppo di schede con <ph name="TABS_COUNT_MANY" /> schede, colore <ph name="COLOR_NAME" />.}}</translation>
@@ -117,6 +118,7 @@ Se esci, perderai immediatamente l'accesso al gruppo di schede "<ph name="TITLE_
 <translation id="6051432659151380973">I gruppi di schede vengono salvati automaticamente</translation>
 <translation id="6054741997831917303">Il prezzo di questo articolo è recentemente sceso da <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Perderai immediatamente l'accesso al gruppo di schede <ph name="GROUP_NAME" /></translation>
+<translation id="6109251075362363230">Ora verranno archiviate anche tutte le schede duplicate, fatta eccezione per la copia utilizzata più di recente.</translation>
 <translation id="6193448654517602979">Seleziona schede</translation>
 <translation id="6228793724645064692">(valutazione del negozio)</translation>
 <translation id="6271513594716432922">Chiudi tutte le schede non attive</translation>

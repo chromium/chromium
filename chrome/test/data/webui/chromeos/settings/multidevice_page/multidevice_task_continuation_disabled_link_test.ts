@@ -55,6 +55,5 @@ suite('<settings-multidevice-task-continuation-disabled-link>', () => {
 
     await advancedSyncOpenedPromise;
     assertNotEquals(Router.getInstance().currentRoute, routes.OS_SYNC);
-    assertNotEquals(Router.getInstance().currentRoute, routes.SYNC_ADVANCED);
   });
 });

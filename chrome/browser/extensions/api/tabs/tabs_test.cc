@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <limits.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -57,6 +52,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -2623,7 +2619,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_OpenerAndOrigin) {
     std::optional<bool> set_self_as_opener;
     // The origin we expect the new tab to be in, opaque origins will be "null".
     std::string expected_origin_str;
-  } test_cases[] = {
+  };
+  auto test_cases = std::to_array<TestCase>({
       // about:blank URLs.
       // With opener relationship, about:blank urls will get the extension's
       // origin, without opener relationship, they will get opaque/"null"
@@ -2644,7 +2641,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_OpenerAndOrigin) {
       {extension_url_str, true, extension_origin_str},
       {extension_url_str, false, extension_origin_str},
       {extension_url_str, std::nullopt, extension_origin_str},
-  };
+  });
 
   auto run_test_case = [&web_contents](const TestCase& test_case) {
     std::string maybe_specify_set_self_as_opener;

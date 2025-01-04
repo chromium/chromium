@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.ui.signin.signin_promo;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -101,16 +104,53 @@ public class SigninPromoMediatorTest {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
         createSigninPromoMediator();
-        verify(mProfileDataCache).getProfileDataOrDefault(TestAccounts.ACCOUNT1.getEmail());
+        verify(mProfileDataCache, atLeastOnce())
+                .getProfileDataOrDefault(TestAccounts.ACCOUNT1.getEmail());
 
         mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
 
         verify(mProfileDataCache).getProfileDataOrDefault(TestAccounts.ACCOUNT2.getEmail());
     }
 
+    @Test
+    public void testDelegateUpdated_defaultAccountRemoved() {
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        createSigninPromoMediator();
+
+        // Set the mock delegate to return non-default values.
+        String newTitle = "newTitle";
+        String newDescription = "newDescription";
+        String newPrimaryButtonText = "newPrimaryButtonText";
+        String newSecondaryButtonText = "newSecondaryButtonText";
+        doReturn(true).when(mDelegate).refreshPromoState(any());
+        doReturn(true).when(mDelegate).shouldHideDismissButton();
+        doReturn(newTitle).when(mDelegate).getTitle();
+        doReturn(newDescription).when(mDelegate).getDescription();
+        doReturn(newPrimaryButtonText).when(mDelegate).getTextForPrimaryButton(any());
+        doReturn(newSecondaryButtonText).when(mDelegate).getTextForSecondaryButton();
+        // Remove the default account to trigger a promo content refresh.
+        mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
+
+        // Verify that the promo's model uses the new values returned by the delegate.
+        boolean shouldHideDismissButton =
+                mMediator.getModel().get(SigninPromoProperties.SHOULD_HIDE_DISMISS_BUTTON);
+        String title = mMediator.getModel().get(SigninPromoProperties.TITLE_TEXT);
+        String description = mMediator.getModel().get(SigninPromoProperties.DESCRIPTION_TEXT);
+        String primaryButtonText =
+                mMediator.getModel().get(SigninPromoProperties.PRIMARY_BUTTON_TEXT);
+        String secondaryButtonText =
+                mMediator.getModel().get(SigninPromoProperties.SECONDARY_BUTTON_TEXT);
+        assertTrue(shouldHideDismissButton);
+        assertEquals(newTitle, title);
+        assertEquals(newDescription, description);
+        assertEquals(newPrimaryButtonText, primaryButtonText);
+        assertEquals(newSecondaryButtonText, secondaryButtonText);
+    }
+
     private void createSigninPromoMediator() {
         Context context = ApplicationProvider.getApplicationContext();
         mProfileDataCache = spy(ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context));
+        doReturn(true).when(mDelegate).canShowPromo();
         mMediator =
                 new SigninPromoMediator(
                         mIdentityManager,

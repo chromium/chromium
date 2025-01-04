@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.webapk.lib.client;
+import org.chromium.build.annotations.NullMarked;
 
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
@@ -20,11 +21,13 @@ import org.chromium.base.task.TaskTraits;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Each WebAPK has several services. This class manages static global connections between the Chrome
  * application and the "WebAPK services."
  */
+@NullMarked
 public class WebApkServiceConnectionManager {
     /** Interface for getting notified once Chrome is connected to a WebAPK service. */
     public interface ConnectionCallback {
@@ -33,7 +36,7 @@ public class WebApkServiceConnectionManager {
          *
          * @param service The WebAPK service.
          */
-        void onConnected(IBinder service);
+        void onConnected(@Nullable IBinder service);
     }
 
     /** Managed connection to WebAPK service. */
@@ -45,13 +48,13 @@ public class WebApkServiceConnectionManager {
         private ArrayList<ConnectionCallback> mCallbacks = new ArrayList<>();
 
         /** WebAPK IBinder interface. */
-        private IBinder mBinder;
+        private @Nullable IBinder mBinder;
 
         public Connection(WebApkServiceConnectionManager manager) {
             mConnectionManager = manager;
         }
 
-        public IBinder getService() {
+        public @Nullable IBinder getService() {
             return mBinder;
         }
 
@@ -70,7 +73,7 @@ public class WebApkServiceConnectionManager {
         }
 
         @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
+        public void onServiceConnected(@Nullable ComponentName name, @Nullable IBinder service) {
             mBinder = service;
             Log.d(TAG, String.format("Got IBinder Service: %s", mBinder));
             for (ConnectionCallback callback : mCallbacks) {
@@ -83,14 +86,14 @@ public class WebApkServiceConnectionManager {
     private static final String TAG = "WebApkService";
 
     /** The category of the service to connect to. */
-    private String mCategory;
+    private @Nullable String mCategory;
 
     /** The action of the service to connect to. */
     private String mAction;
 
     private @TaskTraits int mUiThreadTaskTraits;
 
-    private TaskRunner mTaskRunner;
+    private @Nullable TaskRunner mTaskRunner;
 
     /** Number of tasks posted via {@link #postTaskAndReply()} whose reply has not yet been run. */
     private int mNumPendingPostedTasks;
@@ -99,7 +102,7 @@ public class WebApkServiceConnectionManager {
     private HashMap<String, Connection> mConnections = new HashMap<>();
 
     public WebApkServiceConnectionManager(
-            @TaskTraits int uiThreadTaskTraits, String category, String action) {
+            @TaskTraits int uiThreadTaskTraits, @Nullable String category, String action) {
         mUiThreadTaskTraits = uiThreadTaskTraits;
         mCategory = category;
         mAction = action;

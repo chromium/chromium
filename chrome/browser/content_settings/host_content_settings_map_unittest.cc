@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
@@ -37,7 +35,6 @@
 #include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/browser/user_modifiable_provider.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
@@ -312,7 +309,8 @@ TEST_F(HostContentSettingsMapTest, IndividualSettings) {
 
 TEST_F(HostContentSettingsMapTest, GetWebsiteSettingsForOneType) {
   TestingProfile profile;
-  GURL hosts[] = {GURL("https://example1.com/"), GURL("https://example2.com/")};
+  auto hosts = std::to_array<GURL>(
+      {GURL("https://example1.com/"), GURL("https://example2.com/")});
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
 

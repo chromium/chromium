@@ -5,15 +5,10 @@
 import("//media/gpu/args.gni")
 import("//testing/test.gni")
 
-if (is_linux) {
-  shared_library("fake_gbm") {
-    sources = [
-      "fake_gbm.cc",
-      "fake_gbm.h",
-    ]
+shared_library("fake_gbm") {
+  sources = [ "fake_gbm.cc" ]
 
-    deps = [ "//base" ]
-  }
+  deps = [ "//base" ]
 }
 
 shared_library("fake_drv_video") {
@@ -58,6 +53,7 @@ source_set("fake_libva_driver_internals") {
   ]
 
   deps = [
+    ":fake_gbm",
     "//base",
     "//build/config/linux/libdrm",
     "//third_party/dav1d",
@@ -69,10 +65,6 @@ source_set("fake_libva_driver_internals") {
 
   if (is_chromeos) {
     public_deps = [ "//third_party/minigbm" ]
-  }
-
-  if (is_linux) {
-    public_deps = [ ":fake_gbm" ]
   }
 }
 

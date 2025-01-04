@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/certificate_transparency/chrome_ct_policy_enforcer.h"
 
+#include <array>
 #include <map>
 #include <memory>
 #include <string>
@@ -625,20 +621,23 @@ TEST_F(ChromeCTPolicyEnforcerTest, UpdatedSCTRequirements) {
   base::Time time_2016_3_0_25_11_25_0_0 =
       CreateTime({2016, 3, 0, 25, 11, 25, 0, 0});
 
-  const struct TestData {
+  struct TestData {
     base::Time validity_start;
     base::Time validity_end;
     size_t scts_required;
-  } kTestData[] = {{// Cert valid for -12 months (nonsensical), needs 2 SCTs.
-                    time_2016_3_0_25_11_25_0_0, time_2015_3_0_25_11_25_0_0, 2},
-                   {// Cert valid for 179 days, needs 2 SCTs.
-                    time_2015_3_0_25_11_25_0_0, time_2015_9_0_20_11_25_0_0, 2},
-                   {// Cert valid for exactly 180 days, needs only 2 SCTs.
-                    time_2015_3_0_25_11_25_0_0, time_2015_9_0_21_11_25_0_0, 2},
-                   {// Cert valid for barely over 180 days, needs 3 SCTs.
-                    time_2015_3_0_25_11_25_0_0, time_2015_9_0_21_11_25_1_0, 3},
-                   {// Cert valid for over 180 days, needs 3 SCTs.
-                    time_2015_3_0_25_11_25_0_0, time_2016_3_0_25_11_25_0_0, 3}};
+  };
+  const auto kTestData = std::to_array<TestData>({
+      {// Cert valid for -12 months (nonsensical), needs 2 SCTs.
+       time_2016_3_0_25_11_25_0_0, time_2015_3_0_25_11_25_0_0, 2},
+      {// Cert valid for 179 days, needs 2 SCTs.
+       time_2015_3_0_25_11_25_0_0, time_2015_9_0_20_11_25_0_0, 2},
+      {// Cert valid for exactly 180 days, needs only 2 SCTs.
+       time_2015_3_0_25_11_25_0_0, time_2015_9_0_21_11_25_0_0, 2},
+      {// Cert valid for barely over 180 days, needs 3 SCTs.
+       time_2015_3_0_25_11_25_0_0, time_2015_9_0_21_11_25_1_0, 3},
+      {// Cert valid for over 180 days, needs 3 SCTs.
+       time_2015_3_0_25_11_25_0_0, time_2016_3_0_25_11_25_0_0, 3},
+  });
 
   for (size_t i = 0; i < std::size(kTestData); ++i) {
     SCOPED_TRACE(i);

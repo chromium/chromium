@@ -17,4 +17,8 @@
   // Whether this is the last tab in its group.
   // If this item is not a tab or does not belong to a group, then this should be false.
   @objc public var isLastTabInGroup: Bool = false
+
+  // Whether this is showing a notification dot on the cell.
+  // Show a blue dot on a tab strip cell and a dot with the same color as the text on a tab group cell.
+  @objc public var hasNotificationDot: Bool = false
 }

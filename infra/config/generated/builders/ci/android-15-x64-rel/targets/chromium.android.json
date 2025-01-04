@@ -843,7 +843,7 @@
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 40
+          "shards": 50
         },
         "test": "chrome_public_test_apk",
         "test_id_prefix": "ninja://chrome/android:chrome_public_test_apk/"
@@ -905,7 +905,6 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
-          "--gtest_filter=-All/AndroidInputBrowserTest.*/InputOnViz_Enabled",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -3043,7 +3042,6 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.viz_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],

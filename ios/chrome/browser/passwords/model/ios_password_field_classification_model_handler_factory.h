@@ -6,24 +6,19 @@
 #define IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_PASSWORD_FIELD_CLASSIFICATION_MODEL_HANDLER_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
-class ProfileIOS;
+namespace autofill {
+class FieldClassificationModelHandler;
+}
 
-// A factory for creating one `FieldClassificationModelHandler` per browser
-// state.
+// A factory for creating one `FieldClassificationModelHandler` per profile.
 class IOSPasswordFieldClassificationModelHandlerFactory
-    : public BrowserStateKeyedServiceFactory {
+    : public ProfileKeyedServiceFactoryIOS {
  public:
   static IOSPasswordFieldClassificationModelHandlerFactory* GetInstance();
   static autofill::FieldClassificationModelHandler* GetForProfile(
       ProfileIOS* profile);
-
-  IOSPasswordFieldClassificationModelHandlerFactory(
-      const IOSPasswordFieldClassificationModelHandlerFactory&) = delete;
-  IOSPasswordFieldClassificationModelHandlerFactory& operator=(
-      const IOSPasswordFieldClassificationModelHandlerFactory&) = delete;
 
  private:
   friend base::NoDestructor<IOSPasswordFieldClassificationModelHandlerFactory>;
@@ -32,8 +27,6 @@ class IOSPasswordFieldClassificationModelHandlerFactory
   ~IOSPasswordFieldClassificationModelHandlerFactory() override;
 
   // BrowserStateKeyedServiceFactory overrides:
-  web::BrowserState* GetBrowserStateToUse(
-      web::BrowserState* state) const override;
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* state) const override;
 };

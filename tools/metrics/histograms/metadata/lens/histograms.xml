@@ -540,6 +540,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Lens.Overlay.SidePanelResultStatus"
+    enum="SidePanelResultStatus" expires_after="2025-05-06">
+  <owner>juanmojica@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded one after loading a result in the side panel iframe. Records the
+    state of the side panel content, whether successful result display or the
+    specific reason for any error that prevented display.
+  </summary>
+</histogram>
+
 <histogram name="Lens.Overlay.TimeToFirstInteraction" units="ms"
     expires_after="2025-05-06">
   <owner>jdonnelly@chromium.org</owner>

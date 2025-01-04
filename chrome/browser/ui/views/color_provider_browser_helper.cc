@@ -14,8 +14,9 @@ void ColorProviderBrowserHelper::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  if (change.type() != TabStripModelChange::kInserted)
+  if (change.type() != TabStripModelChange::kInserted) {
     return;
+  }
   for (const auto& contents : change.GetInsert()->contents) {
     DCHECK(tab_strip_model->ContainsIndex(contents.index));
     contents.contents->SetColorProviderSource(

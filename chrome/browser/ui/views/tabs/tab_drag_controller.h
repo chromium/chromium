@@ -38,11 +38,11 @@
 namespace ui {
 class ListSelectionModel;
 class PresentationTimeRecorder;
-}
+}  // namespace ui
 namespace views {
 class View;
 class ViewTracker;
-}
+}  // namespace views
 namespace tabs {
 class TabModel;
 }
@@ -254,7 +254,7 @@ class TabDragController : public views::WidgetObserver,
   class DraggedTabsClosedTracker;
 
   // Used to indicate the direction the mouse has moved when attached.
-  static const int kMovedMouseLeft  = 1 << 0;
+  static const int kMovedMouseLeft = 1 << 0;
   static const int kMovedMouseRight = 1 << 1;
 
   enum class DragState {
@@ -304,18 +304,11 @@ class TabDragController : public views::WidgetObserver,
   };
 
   // Enumeration of the possible positions the detached tab may detach from.
-  enum DetachPosition {
-    DETACH_BEFORE,
-    DETACH_AFTER,
-    DETACH_ABOVE_OR_BELOW
-  };
+  enum DetachPosition { DETACH_BEFORE, DETACH_AFTER, DETACH_ABOVE_OR_BELOW };
 
   // Specifies what should happen when a drag motion exits the tab strip region
   // in an attempt to detach a tab.
-  enum DetachBehavior {
-    DETACHABLE,
-    NOT_DETACHABLE
-  };
+  enum DetachBehavior { DETACHABLE, NOT_DETACHABLE };
 
   // Indicates what should happen after invoking DragBrowserToNewTabStrip().
   enum DragBrowserResultType {
@@ -389,10 +382,6 @@ class TabDragController : public views::WidgetObserver,
   void OnActiveStripWebContentsReplaced(content::WebContents* previous,
                                         content::WebContents* next);
 
-  // Initialize the offset used to calculate the position to create windows
-  // in |GetWindowCreatePoint|. This should only be invoked from |Init|.
-  void InitWindowCreatePoint();
-
   // TabDragWithScrollManager:
   gfx::Point GetLastPointInScreen() override;
   views::View* GetAttachedContext() override;
@@ -401,10 +390,6 @@ class TabDragController : public views::WidgetObserver,
   gfx::Rect GetEnclosingRectForDraggedTabs() override;
   void MoveAttached(const gfx::Point& point_in_screen,
                     bool just_attached) override;
-
-  // Returns the point where a detached window should be created given the
-  // current mouse position |origin|.
-  gfx::Point GetWindowCreatePoint(const gfx::Point& origin) const;
 
   void UpdateDockInfo(const gfx::Point& point_in_screen);
 
@@ -697,12 +682,6 @@ class TabDragController : public views::WidgetObserver,
   // Ratio of the x-coordinate of the |source_view_offset| to the width of the
   // source view.
   float offset_to_width_ratio_;
-
-  // A hint to use when positioning new windows created by detaching Tabs. This
-  // is the distance of the mouse from the top left of the dragged tab as if it
-  // were the distance of the mouse from the top left of the first tab in the
-  // attached TabDragContext from the top left of the window.
-  gfx::Point window_create_point_;
 
   // Location of the first tab in the source tabstrip in screen coordinates.
   // This is used to calculate |window_create_point_|.

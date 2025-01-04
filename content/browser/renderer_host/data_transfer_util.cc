@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/public/browser/browser_thread.h"
@@ -40,7 +39,7 @@ namespace {
 // updates `entry_path` to the path that should be used by the File System
 // Access implementation.
 content::PathType MaybeRemapPath(base::FilePath* entry_path) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   base::FilePath virtual_path;
   auto* external_mount_points =
       storage::ExternalMountPoints::GetSystemInstance();

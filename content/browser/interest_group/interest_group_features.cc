@@ -42,11 +42,6 @@ BASE_FEATURE(kEnableBandATriggeredUpdates,
              "EnableBandATriggeredUpdates",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable parsing ad auction response headers for an iframe navigation request.
-BASE_FEATURE(kEnableIFrameAdAuctionHeaders,
-             "EnableIFrameAdAuctionHeaders",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable the user agent header in auction requests to be overridden.
 BASE_FEATURE(kFledgeEnableUserAgentOverrides,
              "FledgeEnableUserAgentOverrides",
@@ -60,11 +55,6 @@ BASE_FEATURE(kFledgeEnableWALForInterestGroupStorage,
 BASE_FEATURE(kFledgeFacilitatedTestingSignalsHeaders,
              "FledgeFacilitatedTestingSignalsHeaders",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enable prefetching B&A keys on the first joinAdInterestGroup call.
-BASE_FEATURE(kFledgePrefetchBandAKeys,
-             "FledgePrefetchBandAKeys",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables starting worklet processes at auction start time in anticipation
 // of needing them for future worklets.

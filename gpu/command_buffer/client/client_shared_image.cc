@@ -23,6 +23,141 @@ namespace gpu {
 
 namespace {
 
+class ScopedMappingSharedMemoryMapping
+    : public ClientSharedImage::ScopedMapping {
+ public:
+  ScopedMappingSharedMemoryMapping(SharedImageMetadata metadata,
+                                   base::WritableSharedMemoryMapping* mapping)
+      : metadata_(metadata), mapping_(mapping) {}
+  ~ScopedMappingSharedMemoryMapping() override = default;
+
+  // ClientSharedImage::ScopedMapping:
+  base::span<uint8_t> GetMemoryForPlane(const uint32_t plane_index) override {
+    CHECK(mapping_->IsValid());
+    CHECK_LT(plane_index, gfx::NumberOfPlanesForLinearBufferFormat(Format()));
+
+    size_t height_in_pixels;
+    CHECK(gfx::PlaneHeightForBufferFormatChecked(
+        Size().height(), Format(), plane_index, &height_in_pixels));
+    size_t span_length = Stride(plane_index) * height_in_pixels;
+
+    // SAFETY: The validity of the mapping combined with the construction of
+    // that mapping guarantee that it contains at least `span_length` bytes
+    // beyond the start of the plane.
+    return UNSAFE_BUFFERS(base::span<uint8_t>(
+        static_cast<uint8_t*>(mapping_->memory()) +
+            gfx::BufferOffsetForBufferFormat(Size(), Format(), plane_index),
+        span_length));
+  }
+  size_t Stride(const uint32_t plane_index) override {
+    CHECK_LT(plane_index, gfx::NumberOfPlanesForLinearBufferFormat(Format()));
+    return gfx::RowSizeForBufferFormat(Size().width(), Format(), plane_index);
+  }
+  gfx::Size Size() override { return metadata_.size; }
+  gfx::BufferFormat Format() override {
+    return viz::SinglePlaneSharedImageFormatToBufferFormat(metadata_.format);
+  }
+  bool IsSharedMemory() override { return true; }
+  void OnMemoryDump(
+      base::trace_event::ProcessMemoryDump* pmd,
+      const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
+      uint64_t tracing_process_id,
+      int importance) override {
+    NOTREACHED();
+  }
+
+ private:
+  SharedImageMetadata metadata_;
+  raw_ptr<base::WritableSharedMemoryMapping> mapping_;
+};
+
+class ScopedMappingGpuMemoryBuffer : public ClientSharedImage::ScopedMapping {
+ public:
+  ScopedMappingGpuMemoryBuffer() = default;
+  ~ScopedMappingGpuMemoryBuffer() override {
+    if (buffer_) {
+      buffer_->Unmap();
+    }
+  }
+
+  // ClientSharedImage::ScopedMapping:
+  base::span<uint8_t> GetMemoryForPlane(const uint32_t plane_index) override {
+    CHECK(buffer_);
+
+    size_t height_in_pixels;
+    size_t row_size_in_bytes;
+
+    CHECK(gfx::PlaneHeightForBufferFormatChecked(
+        Size().height(), Format(), plane_index, &height_in_pixels));
+    CHECK(gfx::RowSizeForBufferFormatChecked(Size().width(), Format(),
+                                             plane_index, &row_size_in_bytes));
+
+    // Note that the stride might be larger than the row size due to padding.
+    // For all rows other than the last, this is legal data for the client to
+    // access as it's part of the buffer.  However, the final row is not
+    // guaranteed to have padding (it's a system-dependent internal detail).
+    // Thus, the data that is legal for the client to access should *not*
+    // include any bytes beyond the actual end of the final row.
+    size_t span_length =
+        Stride(plane_index) * (height_in_pixels - 1) + row_size_in_bytes;
+
+    // SAFETY: The underlying platform-specific buffer generation mechanisms
+    // guarantee that the buffer contains at least `span_length` bytes following
+    // the start of the plane, as that region is by definition the memory
+    // storing the data of the plane.
+    return UNSAFE_BUFFERS(base::span<uint8_t>(
+        reinterpret_cast<uint8_t*>(buffer_->memory(plane_index)), span_length));
+  }
+  size_t Stride(const uint32_t plane_index) override {
+    CHECK(buffer_);
+    return buffer_->stride(plane_index);
+  }
+  gfx::Size Size() override {
+    CHECK(buffer_);
+    return buffer_->GetSize();
+  }
+  gfx::BufferFormat Format() override {
+    CHECK(buffer_);
+    return buffer_->GetFormat();
+  }
+  bool IsSharedMemory() override {
+    CHECK(buffer_);
+    return buffer_->GetType() == gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER;
+  }
+  void OnMemoryDump(
+      base::trace_event::ProcessMemoryDump* pmd,
+      const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
+      uint64_t tracing_process_id,
+      int importance) override {
+    buffer_->OnMemoryDump(pmd, buffer_dump_guid, tracing_process_id,
+                          importance);
+  }
+
+  bool Init(gfx::GpuMemoryBuffer* gpu_memory_buffer, bool is_already_mapped) {
+    if (!gpu_memory_buffer) {
+      LOG(ERROR) << "No GpuMemoryBuffer.";
+      return false;
+    }
+
+    if (!is_already_mapped && !gpu_memory_buffer->Map()) {
+      LOG(ERROR) << "Failed to map the buffer.";
+      return false;
+    }
+    buffer_ = gpu_memory_buffer;
+    return true;
+  }
+
+ private:
+  // ScopedMappingGpuMemoryBuffer is essentially a wrapper around
+  // GpuMemoryBuffer for now for simplicity and will be removed later.
+  // TODO(crbug.com/40279377): Refactor/Rename GpuMemoryBuffer and its
+  // implementations  as the end goal after all clients using GMB are
+  // converted to use the ScopedMapping and notion of GpuMemoryBuffer is being
+  // removed.
+  // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of MotionMark).
+  RAW_PTR_EXCLUSION gfx::GpuMemoryBuffer* buffer_ = nullptr;
+};
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_OZONE)
 bool GMBIsNative(gfx::GpuMemoryBufferType gmb_type) {
   return gmb_type != gfx::EMPTY_BUFFER && gmb_type != gfx::SHARED_MEMORY_BUFFER;
@@ -90,11 +225,12 @@ uint32_t ComputeTextureTargetForSharedImage(
 
 }  // namespace
 
-ClientSharedImage::ScopedMapping::ScopedMapping() = default;
-ClientSharedImage::ScopedMapping::~ScopedMapping() {
-  if (buffer_) {
-    buffer_->Unmap();
-  }
+// static
+std::unique_ptr<ClientSharedImage::ScopedMapping>
+ClientSharedImage::ScopedMapping::Create(
+    SharedImageMetadata metadata,
+    base::WritableSharedMemoryMapping* mapping) {
+  return std::make_unique<ScopedMappingSharedMemoryMapping>(metadata, mapping);
 }
 
 // static
@@ -102,7 +238,7 @@ std::unique_ptr<ClientSharedImage::ScopedMapping>
 ClientSharedImage::ScopedMapping::Create(
     gfx::GpuMemoryBuffer* gpu_memory_buffer,
     bool is_already_mapped) {
-  auto scoped_mapping = base::WrapUnique(new ScopedMapping());
+  auto scoped_mapping = base::WrapUnique(new ScopedMappingGpuMemoryBuffer());
   if (!scoped_mapping->Init(gpu_memory_buffer, is_already_mapped)) {
     LOG(ERROR) << "ScopedMapping init failed.";
     return nullptr;
@@ -132,84 +268,11 @@ void ClientSharedImage::ScopedMapping::FinishCreateAsync(
   std::move(result_cb).Run(std::move(mapping));
 }
 
-bool ClientSharedImage::ScopedMapping::Init(
-    gfx::GpuMemoryBuffer* gpu_memory_buffer,
-    bool is_already_mapped) {
-  if (!gpu_memory_buffer) {
-    LOG(ERROR) << "No GpuMemoryBuffer.";
-    return false;
-  }
-
-  if (!is_already_mapped && !gpu_memory_buffer->Map()) {
-    LOG(ERROR) << "Failed to map the buffer.";
-    return false;
-  }
-  buffer_ = gpu_memory_buffer;
-  return true;
-}
-
-base::span<uint8_t> ClientSharedImage::ScopedMapping::GetMemoryForPlane(
-    const uint32_t plane_index) {
-  CHECK(buffer_);
-
-  size_t height_in_pixels;
-  size_t row_size_in_bytes;
-
-  CHECK(gfx::PlaneHeightForBufferFormatChecked(Size().height(), Format(),
-                                               plane_index, &height_in_pixels));
-  CHECK(gfx::RowSizeForBufferFormatChecked(Size().width(), Format(),
-                                           plane_index, &row_size_in_bytes));
-
-  // Note that the stride might be larger than the row size due to padding. For
-  // all rows other than the last, this is legal data for the client to access
-  // as it's part of the buffer.  However, the final row is not guaranteed to
-  // have padding (it's a system-dependent internal detail). Thus, the data
-  // that is legal for the client to access should *not* include any bytes
-  // beyond the actual end of the final row.
-  size_t span_length =
-      Stride(plane_index) * (height_in_pixels - 1) + row_size_in_bytes;
-
-  // SAFETY: The underlying platform-specific buffer generation mechanisms
-  // guarantee that the buffer contains at least `span_length` bytes following
-  // the start of the plane, as that region is by definition the memory storing
-  // the data of the plane.
-  return UNSAFE_BUFFERS(base::span<uint8_t>(
-      reinterpret_cast<uint8_t*>(buffer_->memory(plane_index)), span_length));
-}
-
 SkPixmap ClientSharedImage::ScopedMapping::GetSkPixmapForPlane(
     const uint32_t plane_index,
     SkImageInfo sk_image_info) {
   return SkPixmap(sk_image_info, GetMemoryForPlane(plane_index).data(),
                   Stride(plane_index));
-}
-
-size_t ClientSharedImage::ScopedMapping::Stride(const uint32_t plane_index) {
-  CHECK(buffer_);
-  return buffer_->stride(plane_index);
-}
-
-gfx::Size ClientSharedImage::ScopedMapping::Size() {
-  CHECK(buffer_);
-  return buffer_->GetSize();
-}
-
-gfx::BufferFormat ClientSharedImage::ScopedMapping::Format() {
-  CHECK(buffer_);
-  return buffer_->GetFormat();
-}
-
-bool ClientSharedImage::ScopedMapping::IsSharedMemory() {
-  CHECK(buffer_);
-  return buffer_->GetType() == gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER;
-}
-
-void ClientSharedImage::ScopedMapping::OnMemoryDump(
-    base::trace_event::ProcessMemoryDump* pmd,
-    const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
-    uint64_t tracing_process_id,
-    int importance) {
-  buffer_->OnMemoryDump(pmd, buffer_dump_guid, tracing_process_id, importance);
 }
 
 ClientSharedImage::ClientSharedImage(
@@ -226,6 +289,20 @@ ClientSharedImage::ClientSharedImage(
   CHECK(sii_holder_);
   texture_target_ = ComputeTextureTargetForSharedImage(metadata_, gmb_type,
                                                        sii_holder_->Get());
+}
+
+ClientSharedImage::ClientSharedImage(
+    const Mailbox& mailbox,
+    const SharedImageMetadata& metadata,
+    const SyncToken& sync_token,
+    scoped_refptr<SharedImageInterfaceHolder> sii_holder,
+    base::WritableSharedMemoryMapping mapping)
+    : ClientSharedImage(mailbox,
+                        metadata,
+                        sync_token,
+                        sii_holder,
+                        gfx::SHARED_MEMORY_BUFFER) {
+  shared_memory_mapping_ = std::move(mapping);
 }
 
 ClientSharedImage::ClientSharedImage(
@@ -308,8 +385,14 @@ ClientSharedImage::~ClientSharedImage() {
 }
 
 std::unique_ptr<ClientSharedImage::ScopedMapping> ClientSharedImage::Map() {
-  auto scoped_mapping = ScopedMapping::Create(gpu_memory_buffer_.get(),
-                                              /*is_already_mapped=*/false);
+  std::unique_ptr<ClientSharedImage::ScopedMapping> scoped_mapping;
+  if (shared_memory_mapping_.IsValid()) {
+    scoped_mapping = ScopedMapping::Create(metadata_, &shared_memory_mapping_);
+  } else {
+    scoped_mapping = ScopedMapping::Create(gpu_memory_buffer_.get(),
+                                           /*is_already_mapped=*/false);
+  }
+
   if (!scoped_mapping) {
     LOG(ERROR) << "Unable to create ScopedMapping";
   }
@@ -400,6 +483,15 @@ void ClientSharedImage::EndAccess(bool readonly) {
 std::unique_ptr<SharedImageTexture> ClientSharedImage::CreateGLTexture(
     gles2::GLES2Interface* gl) {
   return base::WrapUnique(new SharedImageTexture(gl, this));
+}
+
+std::unique_ptr<RasterScopedAccess> ClientSharedImage::BeginRasterAccess(
+    InterfaceBase* raster_interface,
+    ClientSharedImage* shared_image,
+    const SyncToken& sync_token,
+    bool readonly) {
+  return base::WrapUnique(new RasterScopedAccess(raster_interface, shared_image,
+                                                 sync_token, readonly));
 }
 
 // static
@@ -535,6 +627,28 @@ SharedImageTexture::BeginAccess(const SyncToken& sync_token, bool readonly) {
 void SharedImageTexture::DidEndAccess(bool readonly) {
   has_active_access_ = false;
   shared_image_->EndAccess(readonly);
+}
+
+RasterScopedAccess::RasterScopedAccess(InterfaceBase* raster_interface,
+                                       ClientSharedImage* shared_image,
+                                       const SyncToken& sync_token,
+                                       bool readonly)
+    : raster_interface_(raster_interface),
+      shared_image_(shared_image),
+      readonly_(readonly) {
+  CHECK(raster_interface_);
+  shared_image_->BeginAccess(readonly);
+  raster_interface_->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+}
+
+// static
+SyncToken RasterScopedAccess::EndAccess(
+    std::unique_ptr<RasterScopedAccess> scoped_access) {
+  InterfaceBase* raster_interface = scoped_access->raster_interface_;
+  SyncToken sync_token;
+  scoped_access->shared_image_->EndAccess(scoped_access->readonly_);
+  raster_interface->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+  return sync_token;
 }
 
 }  // namespace gpu

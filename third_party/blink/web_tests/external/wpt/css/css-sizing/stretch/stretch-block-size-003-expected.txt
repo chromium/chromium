@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[FAIL] .test 5
+  assert_equals: \n<div class="test vlr" data-expected-width="41"></div>\nwidth expected 41 but got 10
+[FAIL] .test 6
+  assert_equals: \n<div class="test vrl" data-expected-width="41"></div>\nwidth expected 41 but got 10
+[FAIL] .test 11
+  assert_equals: \n<div class="test vlr" data-expected-width="55"></div>\nwidth expected 55 but got 10
+[FAIL] .test 12
+  assert_equals: \n<div class="test vrl" data-expected-width="55"></div>\nwidth expected 55 but got 10
+[FAIL] .test 14
+  assert_equals: \n<div class="test vlr" data-expected-width="55"></div>\nwidth expected 55 but got 10
+[FAIL] .test 15
+  assert_equals: \n<div class="test vrl" data-expected-width="55"></div>\nwidth expected 55 but got 10
+[FAIL] .test 23
+  assert_equals: \n<div class="test vlr" data-expected-width="41" style="box-sizing: border-box;"></div>\nwidth expected 41 but got 10
+[FAIL] .test 24
+  assert_equals: \n<div class="test vrl" data-expected-width="41" style="box-sizing: border-box;"></div>\nwidth expected 41 but got 10
+[FAIL] .test 29
+  assert_equals: \n<div class="test vlr" data-expected-width="55" style="box-sizing: border-box;"></div>\nwidth expected 55 but got 10
+[FAIL] .test 30
+  assert_equals: \n<div class="test vrl" data-expected-width="55" style="box-sizing: border-box;"></div>\nwidth expected 55 but got 10
+[FAIL] .test 32
+  assert_equals: \n<div class="test vlr" data-expected-width="55" style="box-sizing: border-box;"></div>\nwidth expected 55 but got 10
+[FAIL] .test 33
+  assert_equals: \n<div class="test vrl" data-expected-width="55" style="box-sizing: border-box;"></div>\nwidth expected 55 but got 10
+Harness: the test ran to completion.
+

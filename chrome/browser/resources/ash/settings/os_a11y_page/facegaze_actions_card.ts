@@ -165,6 +165,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
     this.dialogPageToShow_ = AddDialogPage.GESTURE_THRESHOLD;
     this.commandPairToConfigure_ = e.model.item;
     this.showAddActionDialog_ = true;
+    this.rowIdToUpdate_ = e.model.index;
   }
 
   private onAssignGestureButtonClick_(e: DomRepeatEvent<FaceGazeCommandPair>):
@@ -291,14 +292,14 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
       this.updateCommandPairGesture_(unassignIndex, null);
     }
 
-    if (this.dialogPageToShow_ === AddDialogPage.SELECT_GESTURE) {
+    if (this.dialogPageToShow_ === AddDialogPage.SELECT_ACTION) {
+      // Add new gesture/action pairing if it does not already exist.
+      this.addNewCommandPair_(newCommandPair);
+    } else if (this.dialogPageToShow_ === AddDialogPage.SELECT_GESTURE) {
       // Update an existing row for the action if coming from the Assign a
       // Gesture page.
       this.updateCommandPairGesture_(
           this.rowIdToUpdate_, newCommandPair.gesture);
-    } else {
-      // Add new gesture/action pairing if it does not already exist.
-      this.addNewCommandPair_(newCommandPair);
     }
 
     this.setAssignedAlertText_(newCommandPair);

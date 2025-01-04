@@ -3,19 +3,18 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
-import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
-  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/educational_tip/EducationTipModuleActionDelegate.java",
     "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipCardProvider.java",
     "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipCardProviderFactory.java",
-    "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipCardProviderTriggerState.java",
+    "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipCardProviderSignalHandler.java",
     "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleBuilder.java",
     "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleCoordinator.java",
     "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleMediator.java",
     "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleProperties.java",
+    "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleUtils.java",
     "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleView.java",
     "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleViewBinder.java",
     "java/src/org/chromium/chrome/browser/educational_tip/cards/DefaultBrowserPromoBottomSheetContent.java",
@@ -34,23 +33,21 @@ android_library("java") {
     "//chrome/browser/magic_stack/android:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/segmentation_platform:factory_java",
+    "//chrome/browser/tab_group_sync:factory_java",
+    "//chrome/browser/tab_group_sync:features_java",
     "//chrome/browser/tab_ui/android:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/default_browser_promo:java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/cached_flags:java",
     "//components/feature_engagement/public:public_java",
+    "//components/saved_tab_groups/public:java",
     "//components/segmentation_platform/public:public_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
   ]
   resources_package = "org.chromium.chrome.browser.educational_tip"
-}
-
-generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleMediator.java" ]
 }
 
 android_resources("java_resources") {
@@ -80,7 +77,7 @@ robolectric_library("junit") {
 
   sources = [
     "junit/src/org/chromium/chrome/browser/educational_tip/DefaultBrowserPromoCoordinatorUnitTest.java",
-    "junit/src/org/chromium/chrome/browser/educational_tip/EducationalTipCardProviderTriggerStateUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/educational_tip/EducationalTipCardProviderSignalHandlerUnitTest.java",
     "junit/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleBuilderUnitTest.java",
     "junit/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleMediatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/educational_tip/EducationalTipModuleViewBinderUnitTest.java",
@@ -100,16 +97,18 @@ robolectric_library("junit") {
     "//chrome/browser/hub:java",
     "//chrome/browser/magic_stack/android:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab_group_sync:factory_java",
+    "//chrome/browser/tab_group_sync:features_java",
     "//chrome/browser/tab_ui/android:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/default_browser_promo:java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/feature_engagement/public:public_java",
+    "//components/saved_tab_groups/public:java",
     "//components/segmentation_platform/public:public_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/jni_zero:gendeps_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",

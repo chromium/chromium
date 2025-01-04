@@ -514,6 +514,10 @@ BASE_FEATURE(kMacAppCodeSignClone,
              "MacAppCodeSignClone",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kMacAppCodeSignCloneRenameAsBundle,
+             "MacAppCodeSignCloneRenameAsBundle",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 CodeSignCloneManager::CodeSignCloneManager(
     const base::FilePath& src_path,
     const base::FilePath& main_executable_name,
@@ -600,6 +604,18 @@ void CodeSignCloneManager::Clone(const base::FilePath& src_path,
     return;
   }
 
+  // Give the clone a ".bundle" extension. Launch Services aggressively tracks
+  // the existence of applications, and creating a duplicate copy of the
+  // Chromium app leads to trouble when it comes to Launch Services tracking the
+  // default browser (see https://crbug.com/381199182 for gory details).
+  // Labeling the clone a "bundle" is good enough to solve the problem of code
+  // signature validation, but avoids issues.
+  base::FilePath app_name = src_path.BaseName();
+  if (base::FeatureList::IsEnabled(kMacAppCodeSignCloneRenameAsBundle)) {
+    app_name = app_name.AddExtension(".bundle");
+  }
+  base::FilePath clone_app_path = unique_temp_dir_path.Append(app_name);
+
   // Ignore any errors from creating the clone. There are many scenarios where
   // these operations could fail (different filesystems for the source and
   // destination, no clone filesystem support, read only disk, full disk,
@@ -607,8 +623,6 @@ void CodeSignCloneManager::Clone(const base::FilePath& src_path,
   // keep running. Instances of Chrome in this situation will be susceptible to
   // code signature validation errors when an update is staged on disk. This is
   // being tracked via the Mac.AppUpgradeCodeSignatureValidationStatus metric.
-  base::FilePath clone_app_path =
-      unique_temp_dir_path.Append(src_path.BaseName());
   if (!CloneApp(src_path, clone_app_path, main_executable_name)) {
     base::DeletePathRecursively(unique_temp_dir_path);
     std::move(callback).Run(base::FilePath());

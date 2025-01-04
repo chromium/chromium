@@ -24,6 +24,27 @@ namespace base {
 
 class SamplingHeapProfilerTest;
 
+// Stats about the allocation sampler.
+struct BASE_EXPORT PoissonAllocationSamplerStats {
+  PoissonAllocationSamplerStats(
+      size_t address_cache_hits,
+      size_t address_cache_misses,
+      size_t address_cache_max_size,
+      float address_cache_max_load_factor,
+      std::vector<size_t> address_cache_bucket_lengths);
+  ~PoissonAllocationSamplerStats();
+
+  PoissonAllocationSamplerStats(const PoissonAllocationSamplerStats&);
+  PoissonAllocationSamplerStats& operator=(
+      const PoissonAllocationSamplerStats&);
+
+  size_t address_cache_hits;
+  size_t address_cache_misses;
+  size_t address_cache_max_size;
+  float address_cache_max_load_factor;
+  std::vector<size_t> address_cache_bucket_lengths;
+};
+
 // This singleton class implements Poisson sampling of the incoming allocations
 // stream. It hooks onto base::allocator and base::PartitionAlloc.
 // The only control parameter is sampling interval that controls average value
@@ -131,6 +152,11 @@ class BASE_EXPORT PoissonAllocationSampler {
   // Returns the current mean sampling interval, in bytes.
   size_t SamplingInterval() const;
 
+  // Returns statistics about the allocation sampler, and resets the running
+  // counts so that each call to this returns only stats about the period
+  // between calls.
+  PoissonAllocationSamplerStats GetAndResetStats();
+
   ALWAYS_INLINE void OnAllocation(
       const base::allocator::dispatcher::AllocationNotificationData&
           allocation_data);
@@ -213,6 +239,19 @@ class BASE_EXPORT PoissonAllocationSampler {
 
   // Fast, thread-safe access to the current profiling state.
   static std::atomic<ProfilingStateFlagMask> profiling_state_;
+
+  // Running counts for PoissonAllocationSamplerStats. These are all atomic or
+  // mutex-guarded because they're updated from multiple threads. The atomics
+  // can always be accessed using std::memory_order_relaxed since each value is
+  // separately recorded in UMA and no other memory accesses depend on it. Some
+  // values are correlated (eg. `address_cache_hits_` and
+  // `address_cache_misses_`), and this might see a write to one but not the
+  // other, but this shouldn't cause enough errors in the aggregated UMA metrics
+  // to be worth adding overhead to avoid it.
+  std::atomic<size_t> address_cache_hits_;
+  std::atomic<size_t> address_cache_misses_;
+  size_t address_cache_max_size_ GUARDED_BY(mutex_) = 0;
+  float address_cache_max_load_factor_ GUARDED_BY(mutex_) = 0;
 
   friend class NoDestructor<PoissonAllocationSampler>;
   friend class PoissonAllocationSamplerStateTest;
@@ -320,8 +359,10 @@ ALWAYS_INLINE void PoissonAllocationSampler::OnFree(
     return;
   }
   if (!sampled_addresses_set().Contains(address)) [[likely]] {
+    address_cache_misses_.fetch_add(1, std::memory_order_relaxed);
     return;
   }
+  address_cache_hits_.fetch_add(1, std::memory_order_relaxed);
   if (ScopedMuteThreadSamples::IsMuted()) [[unlikely]] {
     return;
   }

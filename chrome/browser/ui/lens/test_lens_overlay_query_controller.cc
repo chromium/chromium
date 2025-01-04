@@ -62,6 +62,13 @@ void TestLensOverlayQueryController::StartQueryFlow(
   last_sent_underlying_content_type_ = underlying_content_type;
   last_sent_page_url_ = page_url;
 
+  // Deep copy significant_region_boxes to avoid lifetime issues after the
+  // std::move call below.
+  last_sent_significant_region_boxes_.clear();
+  for (const auto& box : significant_region_boxes) {
+    last_sent_significant_region_boxes_.push_back(box.Clone());
+  }
+
   LensOverlayQueryController::StartQueryFlow(
       screenshot, page_url, page_title, std::move(significant_region_boxes),
       underlying_content_bytes, underlying_content_type, ui_scale_factor,
@@ -139,12 +146,19 @@ void TestLensOverlayQueryController::SendPageContentUpdateRequest(
       new_content_bytes, new_content_type, new_page_url);
 }
 
+void TestLensOverlayQueryController::SendPartialPageContentRequest(
+    base::span<const std::u16string> partial_content) {
+  last_sent_partial_content_ = partial_content;
+  LensOverlayQueryController::SendPartialPageContentRequest(partial_content);
+}
+
 void TestLensOverlayQueryController::ResetTestingState() {
   last_lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
   last_queried_region_.reset();
   last_queried_text_.clear();
   last_queried_region_bytes_ = std::nullopt;
   last_sent_underlying_content_bytes_ = base::span<const uint8_t>();
+  last_sent_partial_content_ = base::span<const std::u16string>();
   last_sent_underlying_content_type_ = lens::MimeType::kUnknown;
   last_sent_page_url_ = GURL();
   num_interaction_requests_sent_ = 0;
@@ -157,7 +171,8 @@ TestLensOverlayQueryController::CreateEndpointFetcher(
     const std::string& http_method,
     const base::TimeDelta& timeout,
     const std::vector<std::string>& request_headers,
-    const std::vector<std::string>& cors_exempt_headers) {
+    const std::vector<std::string>& cors_exempt_headers,
+    const UploadProgressCallback upload_progress_callback) {
   lens::LensOverlayServerResponse fake_server_response;
   std::string fake_server_response_string;
   google_apis::ApiErrorCode fake_server_response_code =
@@ -169,6 +184,17 @@ TestLensOverlayQueryController::CreateEndpointFetcher(
     num_cluster_info_fetch_requests_sent_++;
     fake_server_response_string =
         fake_cluster_info_response_.SerializeAsString();
+  } else if (request->has_objects_request() &&
+             !request->objects_request().has_image_data() &&
+             request->objects_request().has_payload() &&
+             request->objects_request().payload().has_partial_pdf_document()) {
+    // Partial page content upload request.
+    num_partial_page_content_requests_sent_++;
+    sent_partial_page_content_objects_request_.CopyFrom(
+        request->objects_request());
+    // The server doesn't send a response to this request, so no need to set
+    // the response string to something meaningful.
+    fake_server_response_string = "";
   } else if (request->has_objects_request() &&
              !request->objects_request().has_image_data() &&
              request->objects_request().has_payload()) {
@@ -216,6 +242,18 @@ TestLensOverlayQueryController::CreateEndpointFetcher(
   EndpointResponse fake_endpoint_response;
   fake_endpoint_response.response = fake_server_response_string;
   fake_endpoint_response.http_status_code = fake_server_response_code;
+
+  if (upload_progress_callback) {
+    last_upload_progress_callback_ = std::move(upload_progress_callback);
+  }
+  // If there is an upload progress callback, run it immedietly with 100%
+  // progress, unless disable_page_upload_response_callback in which case the
+  // caller will need to call the callback manually.
+  if (!disable_page_upload_response_callback &&
+      !last_upload_progress_callback_.is_null()) {
+    // Simulate the upload progress callback completing the upload.
+    std::move(last_upload_progress_callback_).Run(1, 1);
+  }
 
   auto response = std::make_unique<FakeEndpointFetcher>(fake_endpoint_response);
   response->disable_responding_ = disable_response;

@@ -171,6 +171,12 @@ AutocompleteProviderClientImpl::GetKeywordExtensionsDelegate(
   return nullptr;
 }
 
+std::unique_ptr<UnscopedExtensionProviderDelegate>
+AutocompleteProviderClientImpl::GetUnscopedExtensionProviderDelegate(
+    UnscopedExtensionProvider* unscoped_extension_provider) {
+  return nullptr;
+}
+
 OmniboxTriggeredFeatureService*
 AutocompleteProviderClientImpl::GetOmniboxTriggeredFeatureService() const {
   return omnibox_triggered_feature_service_.get();

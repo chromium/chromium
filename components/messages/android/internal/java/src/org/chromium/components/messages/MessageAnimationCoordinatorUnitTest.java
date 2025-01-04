@@ -39,7 +39,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -101,10 +101,7 @@ public class MessageAnimationCoordinatorUnitTest {
 
     @Before
     public void setUp() {
-        var testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(
-                MessageFeatureList.MESSAGES_ANDROID_EXTRA_HISTOGRAMS, true);
-        FeatureList.setTestValues(testValues);
+        FeatureOverrides.enable(MessageFeatureList.MESSAGES_ANDROID_EXTRA_HISTOGRAMS);
         mAnimationCoordinator = new MessageAnimationCoordinator(mContainer, Animator::start);
         mAnimationCoordinator.setMessageQueueDelegate(mQueueDelegate);
         when(mContainer.isIsInitializingLayout()).thenReturn(false);

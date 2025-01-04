@@ -27,6 +27,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/dns/mock_host_resolver.h"
 
 namespace ash {
@@ -73,7 +74,8 @@ class LoginUIShelfVisibilityTest : public MixinBasedInProcessBrowserTest {
 
  private:
   LoginManagerMixin::TestUserInfo test_user_{
-      AccountId::FromUserEmailGaiaId(kExistingUserEmail, kExistingUserGaiaId)};
+      AccountId::FromUserEmailGaiaId(kExistingUserEmail,
+                                     GaiaId(kExistingUserGaiaId))};
   LoginManagerMixin login_manager_mixin_{&mixin_host_, {test_user_}};
   EmbeddedTestServerSetupMixin test_server_mixin_{&mixin_host_,
                                                   embedded_test_server()};

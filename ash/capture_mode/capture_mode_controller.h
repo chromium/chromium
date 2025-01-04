@@ -100,9 +100,6 @@ class ASH_EXPORT CaptureModeController
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  // Shows a toast informing the user that text has been copied to clipboard.
-  static void ShowTextCopiedToast();
-
   CaptureModeCameraController* camera_controller() {
     return camera_controller_.get();
   }
@@ -145,6 +142,9 @@ class ASH_EXPORT CaptureModeController
   // Shows the results panel with the captured region as `image` and the search
   // results `url`.
   void ShowSearchResultsPanel(const gfx::ImageSkia& image, GURL url);
+
+  // Closes the search results panel, or does nothing if it doesn't exist.
+  void CloseSearchResultsPanel();
 
   // Called explicitly by `CaptureModeSession` on a mouse drag, to hide the
   // panel.
@@ -730,6 +730,11 @@ class ASH_EXPORT CaptureModeController
   // remove it if remote.
   void DeleteFileAsync(const base::FilePath& path);
 
+  // Refreshes the search results panel stacking order if it exists. `is_active`
+  // indicates whether capture mode session is currently active and will be used
+  // to determine the panel stacking order.
+  void RefreshSearchResultsPanel(bool is_active);
+
   // The ID of this object as a client of the video conference manager.
   const base::UnguessableToken vc_client_id_ = base::UnguessableToken::Create();
 
@@ -820,7 +825,7 @@ class ASH_EXPORT CaptureModeController
 
   base::OnceClosure on_video_recording_started_callback_for_test_;
 
-  base::RepeatingCallback<void(PerformCaptureType capture_type)>
+  base::OnceCallback<void(PerformCaptureType capture_type)>
       on_image_captured_for_search_callback_for_test_;
 
   // Timers used to schedule recording of the number of screenshots taken.

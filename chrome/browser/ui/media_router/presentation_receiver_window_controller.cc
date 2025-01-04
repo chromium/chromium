@@ -143,15 +143,17 @@ void PresentationReceiverWindowController::OnProfileWillBeDestroyed(
 
 void PresentationReceiverWindowController::DidStartNavigation(
     content::NavigationHandle* handle) {
-  if (!navigation_policy_.AllowNavigation(handle))
+  if (!navigation_policy_.AllowNavigation(handle)) {
     Terminate();
+  }
 }
 
 void PresentationReceiverWindowController::TitleWasSet(
     content::NavigationEntry* entry) {
   window_->UpdateWindowTitle();
-  if (entry)
+  if (entry) {
     title_change_callback_.Run(base::UTF16ToUTF8(entry->GetTitle()));
+  }
 }
 
 void PresentationReceiverWindowController::NavigationStateChanged(

@@ -11,6 +11,8 @@
 #import "components/collaboration/public/collaboration_service.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
+#import "ios/chrome/browser/collaboration/model/ios_collaboration_controller_delegate.h"
+#import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_face_pile_configuration.h"
@@ -100,6 +102,9 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
       ShareKitServiceFactory::GetForProfile(profile);
   collaboration::CollaborationService* collaborationService =
       collaboration::CollaborationServiceFactory::GetForProfile(profile);
+  collaboration::messaging::MessagingBackendService* messagingService =
+      collaboration::messaging::MessagingBackendServiceFactory::GetForProfile(
+          profile);
 
   _mediator = [[TabGroupMediator alloc]
       initWithWebStateList:browser->GetWebStateList()
@@ -109,7 +114,8 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
                   tabGroup:_tabGroup->GetWeakPtr()
                   consumer:_viewController
               gridConsumer:_viewController.gridViewController
-                modeHolder:self.modeHolder];
+                modeHolder:self.modeHolder
+          messagingService:messagingService];
   _mediator.browser = browser;
   _mediator.tabGroupsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), TabGroupsCommands);
@@ -356,16 +362,20 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 #pragma mark - TabGroupPresentationCommands
 
 - (void)showShareKitFlow {
-  tab_groups::TabGroupSyncService* syncService =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-          self.browser->GetProfile());
+  Browser* browser = self.browser;
+  collaboration::CollaborationService* collaborationService =
+      collaboration::CollaborationServiceFactory::GetForProfile(
+          browser->GetProfile());
 
-  NSString* savedCollabID =
-      tab_groups::utils::GetTabGroupCollabID(_tabGroup, syncService);
-  if (savedCollabID) {
-    [self manageGroup:savedCollabID];
+  if (!_tabGroup || !collaborationService) {
+    return;
   }
-  [self shareGroup];
+
+  std::unique_ptr<collaboration::CollaborationControllerDelegate> delegate =
+      std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
+          browser, self.baseViewController);
+  collaborationService->StartShareOrManageFlow(std::move(delegate),
+                                               _tabGroup->tab_group_id());
 }
 
 #pragma mark - SharedTabGroupUserEducationCoordinatorDelegate
@@ -377,38 +387,6 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 }
 
 #pragma mark - Private
-
-// Share the current group.
-- (void)shareGroup {
-  ShareKitService* shareKitService =
-      ShareKitServiceFactory::GetForProfile(self.browser->GetProfile());
-  if (!_tabGroup || !shareKitService) {
-    return;
-  }
-  ShareKitShareGroupConfiguration* config =
-      [[ShareKitShareGroupConfiguration alloc] init];
-  config.tabGroup = _tabGroup;
-  config.baseViewController = self.baseViewController;
-  config.applicationHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  shareKitService->ShareGroup(config);
-}
-
-// Manage the group with `collabID`.
-- (void)manageGroup:(NSString*)collabID {
-  ShareKitService* shareKitService =
-      ShareKitServiceFactory::GetForProfile(self.browser->GetProfile());
-  if (!collabID || !shareKitService) {
-    return;
-  }
-  ShareKitManageConfiguration* config =
-      [[ShareKitManageConfiguration alloc] init];
-  config.baseViewController = self.baseViewController;
-  config.collabID = collabID;
-  config.applicationHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  shareKitService->ManageGroup(config);
-}
 
 // Sets up the `_viewController`.
 - (void)setUpViewController {

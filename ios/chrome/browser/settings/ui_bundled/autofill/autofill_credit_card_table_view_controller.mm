@@ -10,9 +10,9 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
-#import "components/autofill/core/browser/payments_data_manager.h"
-#import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/ios/browser/credit_card_util.h"
@@ -229,7 +229,7 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
   }
 
   TableViewModel* model = self.tableViewModel;
-  const std::vector<autofill::CreditCard*>& creditCards =
+  const std::vector<const autofill::CreditCard*>& creditCards =
       _personalDataManager->payments_data_manager().GetCreditCards();
   if (!creditCards.empty()) {
     [model addSectionWithIdentifier:SectionIdentifierCards];
@@ -618,7 +618,7 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
     return;
   }
 
-  const std::vector<autofill::CreditCard*>& creditCards =
+  const std::vector<const autofill::CreditCard*>& creditCards =
       _personalDataManager->payments_data_manager().GetCreditCards();
   autofill::CreditCard selectedCard = *creditCards[indexPath.item];
   if (autofill::IsCreditCardLocal(selectedCard) &&

@@ -30,10 +30,6 @@ struct ProfileValueDifference {
   bool operator==(const ProfileValueDifference& right) const = default;
 };
 
-// The values corresponding to those types are visible in the settings.
-// TODO(crbug.com/40275657): This should depend on the country.
-FieldTypeSet GetUserVisibleTypes();
-
 // A utility class to assist in the comparison of AutofillProfile data.
 class AutofillProfileComparator {
  public:
@@ -51,8 +47,9 @@ class AutofillProfileComparator {
   // techniques are applied to the given texts before comparing.
   //
   // (1) Diacritics are removed, e.g. حَ to ح, ビ to ヒ, and é to e;
-  // (2) Leading and trailing whitespace and punctuation are ignored; and
-  // (3) Characters are converted to lowercase.
+  // (2) Leading and trailing whitespace and punctuation are ignored;
+  // (3) Characters are converted to lowercase;
+  // (4) For alternative name types, katakana is converted to hiragana.
   //
   // If |whitespace_spec| is DISCARD_WHITESPACE, then punctuation and whitespace
   // are discarded. For example, the postal codes "B15 3TR" and "B153TR" and
@@ -63,14 +60,8 @@ class AutofillProfileComparator {
   // St" are because trailing whitespace and punctuation are ignored.
   bool Compare(std::u16string_view text1,
                std::u16string_view text2,
-               WhitespaceSpec whitespace_spec = DISCARD_WHITESPACE) const;
-
-  // Returns true if |existing_profile| is a merge candidate for |new_profile|.
-  // A profile is a merge candidate if it is mergeable with |new_profile| and if
-  // at least one settings-visible value is changed.
-  bool IsMergeCandidate(const AutofillProfile& existing_profile,
-                        const AutofillProfile& new_profile,
-                        const std::string& app_locale);
+               WhitespaceSpec whitespace_spec = DISCARD_WHITESPACE,
+               std::optional<FieldType> type = std::nullopt) const;
 
   // Returns true if two AutofillProfiles |p1| and |p2| have at least one
   // settings-visible value that is different.
@@ -321,7 +312,7 @@ class AutofillProfileComparator {
   // attempt to parse the names in each profile and determine if one
   // name can be derived from the other. For example, J Smith can be derived
   // from John Smith, so prefer the latter.
-  bool MergeNamesImpl(const AutofillProfile& p1,
+  void MergeNamesImpl(const AutofillProfile& p1,
                       const AutofillProfile& p2,
                       FieldType name_type,
                       AddressComponent& name_component) const;

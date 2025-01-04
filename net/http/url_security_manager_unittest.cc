@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/http/url_security_manager.h"
 
+#include <array>
 #include <utility>
 
 #include "net/base/net_errors.h"
@@ -34,19 +30,19 @@ const char kTestAuthAllowlist[] = "*example.com,*foobar.com,baz";
 //    host names without a period.
 // In Posix systems (or on Windows if an allowlist is specified explicitly),
 // everything depends on the allowlist.
-const TestData kTestDataList[] = {
-  { "http://localhost", true, false },
-  { "http://bat", true, false },
-  { "http://www.example.com", false, true },
-  { "http://example.com", false, true },
-  { "http://foobar.com", false, true },
-  { "http://boo.foobar.com", false, true },
-  { "http://baz", true, true },
-  { "http://www.exampl.com", false, false },
-  { "http://example.org", false, false },
-  { "http://foobar.net", false, false },
-  { "http://boo.fubar.com", false, false },
-};
+const auto kTestDataList = std::to_array<TestData>({
+    {"http://localhost", true, false},
+    {"http://bat", true, false},
+    {"http://www.example.com", false, true},
+    {"http://example.com", false, true},
+    {"http://foobar.com", false, true},
+    {"http://boo.foobar.com", false, true},
+    {"http://baz", true, true},
+    {"http://www.exampl.com", false, false},
+    {"http://example.org", false, false},
+    {"http://foobar.net", false, false},
+    {"http://boo.fubar.com", false, false},
+});
 
 }  // namespace
 

@@ -21,9 +21,7 @@ struct TestSupportsUserData : public SupportsUserData {
 
 struct UsesItself : public SupportsUserData::Data {
   UsesItself(SupportsUserData* supports_user_data, const void* key)
-      : supports_user_data_(supports_user_data),
-        key_(key) {
-  }
+      : supports_user_data_(supports_user_data), key_(key) {}
 
   ~UsesItself() override {
     EXPECT_EQ(nullptr, supports_user_data_->GetUserData(key_));

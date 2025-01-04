@@ -6,6 +6,8 @@ package org.chromium.net;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -20,6 +22,7 @@ import java.nio.charset.StandardCharsets;
  *   3. Where does the request go? (e.g. a Google server, a website the user is viewing...)
  *   4. How can I disable it if I don't like it?
  */
+@NullMarked
 public class NetworkTrafficAnnotationTag {
     /**
      * For network requests that aren't documented yet. These should be

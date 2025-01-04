@@ -182,16 +182,19 @@ void TurnSyncOnHelperDelegateImpl::OnSyncConfirmationUIClosed(
     LoginUIService::SyncConfirmationUIClosedResult result) {
   DCHECK(sync_confirmation_callback_);
   // Treat closing the ui as an implicit ABORT_SYNC action.
-  if (result == LoginUIService::UI_CLOSED)
+  if (result == LoginUIService::UI_CLOSED) {
     result = LoginUIService::ABORT_SYNC;
-  if (browser_)
+  }
+  if (browser_) {
     browser_->signin_view_controller()->CloseModalSignin();
+  }
   std::move(sync_confirmation_callback_).Run(result);
 }
 
 void TurnSyncOnHelperDelegateImpl::OnBrowserRemoved(Browser* browser) {
-  if (browser == browser_)
+  if (browser == browser_) {
     browser_ = nullptr;
+  }
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)

@@ -12,7 +12,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/tests/containers_of_nullable_types_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
-#include "mojo/public/interfaces/bindings/tests/containers_of_nullable_types.mojom.h"
+#include "mojo/public/interfaces/bindings/tests/containers_of_nullable_types.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo::test::containers_of_nullable_types {

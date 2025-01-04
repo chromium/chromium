@@ -9,8 +9,6 @@
 
 #import "components/collaboration/internal/collaboration_finder_impl.h"
 #import "components/data_sharing/public/features.h"
-#import "components/keyed_service/core/keyed_service.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service_factory_helper.h"
 #import "components/sync_device_info/device_info_sync_service.h"
@@ -32,37 +30,9 @@
 
 namespace tab_groups {
 
-// static
-TabGroupSyncService* TabGroupSyncServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return static_cast<TabGroupSyncService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
-}
-
-TabGroupSyncServiceFactory* TabGroupSyncServiceFactory::GetInstance() {
-  static base::NoDestructor<TabGroupSyncServiceFactory> instance;
-  return instance.get();
-}
-
-TabGroupSyncServiceFactory::TabGroupSyncServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("TabGroupSyncServiceFactory",
-                                    ServiceCreation::kCreateWithProfile) {
-  DependsOn(BrowserListFactory::GetInstance());
-  DependsOn(DataTypeStoreServiceFactory::GetInstance());
-  DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
-  DependsOn(SessionRestorationServiceFactory::GetInstance());
-  DependsOn(OptimizationGuideServiceFactory::GetInstance());
-  // The dependency on IdentityManager is only for the purpose of recording "on
-  // signin" metrics.
-  DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(data_sharing::DataSharingServiceFactory::GetInstance());
-}
-
-TabGroupSyncServiceFactory::~TabGroupSyncServiceFactory() = default;
-
-std::unique_ptr<KeyedService>
-TabGroupSyncServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+namespace {
+// Builds the service.
+std::unique_ptr<KeyedService> BuildService(web::BrowserState* context) {
   if (!IsTabGroupSyncEnabled()) {
     return nullptr;
   }
@@ -101,6 +71,48 @@ TabGroupSyncServiceFactory::BuildServiceInstanceFor(
 
   sync_service->SetTabGroupSyncDelegate(std::move(delegate));
   return sync_service;
+}
+}  // namespace
+
+// static
+TabGroupSyncService* TabGroupSyncServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return static_cast<TabGroupSyncService*>(
+      GetInstance()->GetServiceForBrowserState(profile, true));
+}
+
+// static
+TabGroupSyncServiceFactory* TabGroupSyncServiceFactory::GetInstance() {
+  static base::NoDestructor<TabGroupSyncServiceFactory> instance;
+  return instance.get();
+}
+
+// static
+BrowserStateKeyedServiceFactory::TestingFactory
+TabGroupSyncServiceFactory::GetDefaultFactory() {
+  return base::BindOnce(&BuildService);
+}
+
+TabGroupSyncServiceFactory::TabGroupSyncServiceFactory()
+    : ProfileKeyedServiceFactoryIOS("TabGroupSyncServiceFactory",
+                                    ServiceCreation::kCreateWithProfile) {
+  DependsOn(BrowserListFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
+  DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
+  DependsOn(SessionRestorationServiceFactory::GetInstance());
+  DependsOn(OptimizationGuideServiceFactory::GetInstance());
+  // The dependency on IdentityManager is only for the purpose of recording "on
+  // signin" metrics.
+  DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(data_sharing::DataSharingServiceFactory::GetInstance());
+}
+
+TabGroupSyncServiceFactory::~TabGroupSyncServiceFactory() = default;
+
+std::unique_ptr<KeyedService>
+TabGroupSyncServiceFactory::BuildServiceInstanceFor(
+    web::BrowserState* context) const {
+  return BuildService(context);
 }
 
 }  // namespace tab_groups

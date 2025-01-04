@@ -166,26 +166,26 @@ TEST_F(ProfileColorsUtilTest, IsLightForAutoselection) {
   // Get two variants of red color: put slightly transparent red (a) on white
   // and (b) on black. These should have enough similar lightness.
   SkColor lighter = color_utils::GetResultingPaintColor(
-      /*fg=*/SkColorSetA(SK_ColorRED, 200u),
-      /*bg=*/SK_ColorWHITE);
+      /*foreground=*/SkColorSetA(SK_ColorRED, 200u),
+      /*background=*/SK_ColorWHITE);
   color_utils::HSL lighter_hsl;
   color_utils::SkColorToHSL(lighter, &lighter_hsl);
 
   SkColor darker = color_utils::GetResultingPaintColor(
-      /*fg=*/SkColorSetA(SK_ColorRED, 200u),
-      /*bg=*/SK_ColorBLACK);
+      /*foreground=*/SkColorSetA(SK_ColorRED, 200u),
+      /*background=*/SK_ColorBLACK);
   EXPECT_TRUE(IsLightForAutoselection(darker, lighter_hsl.l));
 
   // Repeat the same with more difference to get the opposite outcome.
   SkColor very_light = color_utils::GetResultingPaintColor(
-      /*fg=*/SkColorSetA(SK_ColorRED, 100u),
-      /*bg=*/SK_ColorWHITE);
+      /*foreground=*/SkColorSetA(SK_ColorRED, 100u),
+      /*background=*/SK_ColorWHITE);
   color_utils::HSL very_light_hsl;
   color_utils::SkColorToHSL(very_light, &very_light_hsl);
 
   SkColor very_dark = color_utils::GetResultingPaintColor(
-      /*fg=*/SkColorSetA(SK_ColorRED, 100u),
-      /*bg=*/SK_ColorBLACK);
+      /*foreground=*/SkColorSetA(SK_ColorRED, 100u),
+      /*background=*/SK_ColorBLACK);
   EXPECT_FALSE(IsLightForAutoselection(very_dark, very_light_hsl.l));
 }
 

@@ -9,8 +9,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/metrics/enrollment_status.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/crosapi/mojom/metrics.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
 #include "chromeos/startup/browser_params_proxy.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -38,14 +36,7 @@ EnrollmentStatus GetEnrollmentStatus() {
 
 }  // namespace
 
-LacrosMetricsProvider::LacrosMetricsProvider() : weak_ptr_factory_(this) {
-  auto* lacros_service = chromeos::LacrosService::Get();
-  if (lacros_service->IsAvailable<crosapi::mojom::Metrics>()) {
-    lacros_service->GetRemote<crosapi::mojom::Metrics>()->GetFullHardwareClass(
-        base::BindOnce(&LacrosMetricsProvider::OnGetFullHardwareClass,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-}
+LacrosMetricsProvider::LacrosMetricsProvider() = default;
 
 LacrosMetricsProvider::~LacrosMetricsProvider() = default;
 
@@ -70,15 +61,4 @@ void LacrosMetricsProvider::ProvideCurrentSessionUKMData() {
   ukm::builders::ChromeOS_DeviceManagement(source_id)
       .SetEnrollmentStatus(static_cast<int64_t>(status))
       .Record(ukm::UkmRecorder::Get());
-}
-
-void LacrosMetricsProvider::ProvideSystemProfileMetrics(
-    metrics::SystemProfileProto* proto) {
-  metrics::SystemProfileProto::Hardware* hardware = proto->mutable_hardware();
-  hardware->set_full_hardware_class(full_hardware_class_);
-}
-
-void LacrosMetricsProvider::OnGetFullHardwareClass(
-    const std::string& full_hardware_class) {
-  full_hardware_class_ = full_hardware_class;
 }

@@ -210,144 +210,7 @@ class PasswordCredentialFillerBaseTest : public testing::Test {
   MockPasswordManagerDriver driver_;
 };
 
-class PasswordCredentialFillerTest
-    : public PasswordCredentialFillerBaseTest,
-      public testing::WithParamInterface<SubmissionReadinessState> {
- public:
-  PasswordCredentialFillerImpl PrepareFiller() {
-    const FormData form;
-    return PasswordCredentialFillerImpl(
-        driver().AsWeakPtr(),
-        PasswordFillingParams(form, 0, 0, autofill::FieldRendererId(),
-                              GetParam()));
-  }
-};
-
-TEST_P(PasswordCredentialFillerTest, FillWithUsername) {
-  SubmissionReadinessState submission_readiness = GetParam();
-
-  // If there is no field after the password and both username and password
-  // fields are there, then submit the form.
-  bool submission_expected =
-      submission_readiness == SubmissionReadinessState::kEmptyFields ||
-      submission_readiness == SubmissionReadinessState::kMoreThanTwoFields ||
-      submission_readiness == SubmissionReadinessState::kTwoFields;
-
-  PasswordCredentialFillerImpl filler = PrepareFiller();
-
-  EXPECT_CALL(driver(),
-              KeyboardReplacingSurfaceClosed(ToShowVirtualKeyboard(false)));
-  EXPECT_CALL(driver(), FillSuggestion(kUsername, kPassword, _))
-      .WillOnce(
-          base::test::RunOnceCallback<2>(/*was_filling_successful=*/true));
-  EXPECT_CALL(driver(), TriggerFormSubmission)
-      .Times(submission_expected ? 1 : 0);
-
-  filler.FillUsernameAndPassword(kUsername, kPassword, base::DoNothing());
-}
-
-TEST_P(PasswordCredentialFillerTest, FillWithEmptyUsername) {
-  PasswordCredentialFillerImpl filler = PrepareFiller();
-  const std::u16string kEmptyUsername = u"";
-
-  EXPECT_CALL(driver(),
-              KeyboardReplacingSurfaceClosed(ToShowVirtualKeyboard(false)));
-  EXPECT_CALL(driver(), FillSuggestion(kEmptyUsername, kPassword, _))
-      .WillOnce(
-          base::test::RunOnceCallback<2>(/*was_filling_successful=*/true));
-  EXPECT_CALL(driver(), TriggerFormSubmission).Times(0);
-
-  filler.FillUsernameAndPassword(kEmptyUsername, kPassword, base::DoNothing());
-}
-
-TEST_P(PasswordCredentialFillerTest,
-       UpdateTriggerSubmissionWithTrueControlsFormSubmission) {
-  PasswordCredentialFillerImpl filler = PrepareFiller();
-  // override SubmissionReadiness by calling UpdateTriggerSubmission:
-  filler.UpdateTriggerSubmission(true);
-  EXPECT_CALL(driver(),
-              KeyboardReplacingSurfaceClosed(ToShowVirtualKeyboard(false)));
-  EXPECT_CALL(driver(), FillSuggestion(kUsername, kPassword, _))
-      .WillOnce(
-          base::test::RunOnceCallback<2>(/*was_filling_successful=*/true));
-  EXPECT_CALL(driver(), TriggerFormSubmission).Times(1);
-
-  filler.FillUsernameAndPassword(kUsername, kPassword, base::DoNothing());
-}
-
-TEST_P(PasswordCredentialFillerTest,
-       UpdateTriggerSubmissionWithFalseControlsFormSubmission) {
-  PasswordCredentialFillerImpl filler = PrepareFiller();
-  // override SubmissionReadiness by calling UpdateTriggerSubmission:
-  filler.UpdateTriggerSubmission(false);
-  EXPECT_CALL(driver(),
-              KeyboardReplacingSurfaceClosed(ToShowVirtualKeyboard(false)));
-  EXPECT_CALL(driver(), FillSuggestion(kUsername, kPassword, _))
-      .WillOnce(
-          base::test::RunOnceCallback<2>(/*was_filling_successful=*/true));
-  EXPECT_CALL(driver(), TriggerFormSubmission).Times(0);
-
-  filler.FillUsernameAndPassword(kUsername, kPassword, base::DoNothing());
-}
-
-TEST_P(PasswordCredentialFillerTest, FillWithNullDriver) {
-  PasswordCredentialFillerImpl filler(
-      nullptr, PasswordFillingParams(FormData(), 0, 0,
-                                     autofill::FieldRendererId(), GetParam()));
-  // Should not crash.
-  filler.FillUsernameAndPassword(kUsername, kPassword, base::DoNothing());
-}
-
-TEST_P(PasswordCredentialFillerTest, Dismiss) {
-  PasswordCredentialFillerImpl filler = PrepareFiller();
-  EXPECT_CALL(driver(),
-              KeyboardReplacingSurfaceClosed(ToShowVirtualKeyboard(false)));
-  EXPECT_CALL(driver(), TriggerFormSubmission).Times(0);
-
-  filler.Dismiss(ToShowVirtualKeyboard(false));
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    PasswordCredentialFillerTest,
-    testing::Values(SubmissionReadinessState::kNoInformation,
-                    SubmissionReadinessState::kError,
-                    SubmissionReadinessState::kNoUsernameField,
-                    SubmissionReadinessState::kFieldBetweenUsernameAndPassword,
-                    SubmissionReadinessState::kFieldAfterPasswordField,
-                    SubmissionReadinessState::kEmptyFields,
-                    SubmissionReadinessState::kMoreThanTwoFields,
-                    SubmissionReadinessState::kTwoFields,
-                    SubmissionReadinessState::kNoPasswordField));
-
-class PasswordCredentialFillerV2ParameterTest
-    : public PasswordCredentialFillerBaseTest,
-      public testing::WithParamInterface<
-          std::tuple<PasswordFillingParams, SubmissionReadinessState>> {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      password_manager::features::kPasswordSuggestionBottomSheetV2};
-};
-
-TEST_P(PasswordCredentialFillerV2ParameterTest, SubmissionReadiness) {
-  PasswordFillingParams params = std::get<0>(GetParam());
-
-  PasswordCredentialFillerImpl filler(driver().AsWeakPtr(), params);
-  EXPECT_EQ(filler.GetSubmissionReadinessState(), std::get<1>(GetParam()));
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    PasswordCredentialFillerV2ParameterTest,
-    testing::ValuesIn(kPasswordCredentialFillerV2TestCases));
-
-class PasswordCredentialFillerV2Test : public PasswordCredentialFillerBaseTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      password_manager::features::kPasswordSuggestionBottomSheetV2};
-};
-
-TEST_F(PasswordCredentialFillerV2Test, FillingFailed) {
+TEST_F(PasswordCredentialFillerBaseTest, FillingFailed) {
   PasswordCredentialFillerImpl filler(
       driver().AsWeakPtr(),
       PasswordFillingParams(
@@ -370,3 +233,103 @@ TEST_F(PasswordCredentialFillerV2Test, FillingFailed) {
 
   filler.FillUsernameAndPassword(kUsername, kPassword, reply_call.Get());
 }
+
+TEST_F(PasswordCredentialFillerBaseTest, FillWithNullDriver) {
+  PasswordCredentialFillerImpl filler(
+      nullptr,
+      PasswordFillingParams(FormData(), 0, 0, autofill::FieldRendererId(),
+                            SubmissionReadinessState::kNoInformation));
+  // Should not crash.
+  filler.FillUsernameAndPassword(kUsername, kPassword, base::DoNothing());
+}
+
+class PasswordCredentialFillerV2ParameterTest
+    : public PasswordCredentialFillerBaseTest,
+      public testing::WithParamInterface<
+          std::tuple<PasswordFillingParams, SubmissionReadinessState>> {
+ public:
+  PasswordCredentialFillerImpl PrepareFiller() {
+    PasswordFillingParams params = std::get<0>(GetParam());
+    return PasswordCredentialFillerImpl(driver().AsWeakPtr(), params);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      password_manager::features::kPasswordSuggestionBottomSheetV2};
+};
+
+TEST_P(PasswordCredentialFillerV2ParameterTest, FillWithUsername) {
+  SubmissionReadinessState submission_readiness = std::get<1>(GetParam());
+
+  // If there is no field after the password and both username and password
+  // fields are there, then submit the form.
+  bool submission_expected =
+      submission_readiness == SubmissionReadinessState::kEmptyFields ||
+      submission_readiness == SubmissionReadinessState::kMoreThanTwoFields ||
+      submission_readiness == SubmissionReadinessState::kTwoFields;
+
+  PasswordCredentialFillerImpl filler = PrepareFiller();
+
+  EXPECT_CALL(driver(), FillSuggestion(kUsername, kPassword, _))
+      .WillOnce(
+          base::test::RunOnceCallback<2>(/*was_filling_successful=*/true));
+  EXPECT_CALL(driver(), TriggerFormSubmission)
+      .Times(submission_expected ? 1 : 0);
+
+  filler.FillUsernameAndPassword(kUsername, kPassword, base::DoNothing());
+}
+
+TEST_P(PasswordCredentialFillerV2ParameterTest, FillWithEmptyUsername) {
+  PasswordCredentialFillerImpl filler = PrepareFiller();
+  const std::u16string kEmptyUsername = u"";
+
+  EXPECT_CALL(driver(), FillSuggestion(kEmptyUsername, kPassword, _))
+      .WillOnce(
+          base::test::RunOnceCallback<2>(/*was_filling_successful=*/true));
+  EXPECT_CALL(driver(), TriggerFormSubmission).Times(0);
+
+  filler.FillUsernameAndPassword(kEmptyUsername, kPassword, base::DoNothing());
+}
+
+TEST_P(PasswordCredentialFillerV2ParameterTest,
+       UpdateTriggerSubmissionWithTrueControlsFormSubmission) {
+  PasswordCredentialFillerImpl filler = PrepareFiller();
+  // override SubmissionReadiness by calling UpdateTriggerSubmission:
+  filler.UpdateTriggerSubmission(true);
+  EXPECT_CALL(driver(), FillSuggestion(kUsername, kPassword, _))
+      .WillOnce(
+          base::test::RunOnceCallback<2>(/*was_filling_successful=*/true));
+  EXPECT_CALL(driver(), TriggerFormSubmission).Times(1);
+
+  filler.FillUsernameAndPassword(kUsername, kPassword, base::DoNothing());
+}
+
+TEST_P(PasswordCredentialFillerV2ParameterTest,
+       UpdateTriggerSubmissionWithFalseControlsFormSubmission) {
+  PasswordCredentialFillerImpl filler = PrepareFiller();
+  // override SubmissionReadiness by calling UpdateTriggerSubmission:
+  filler.UpdateTriggerSubmission(false);
+  EXPECT_CALL(driver(), FillSuggestion(kUsername, kPassword, _))
+      .WillOnce(
+          base::test::RunOnceCallback<2>(/*was_filling_successful=*/true));
+  EXPECT_CALL(driver(), TriggerFormSubmission).Times(0);
+
+  filler.FillUsernameAndPassword(kUsername, kPassword, base::DoNothing());
+}
+
+TEST_P(PasswordCredentialFillerV2ParameterTest, Dismiss) {
+  PasswordCredentialFillerImpl filler = PrepareFiller();
+  EXPECT_CALL(driver(), TriggerFormSubmission).Times(0);
+
+  filler.Dismiss(ToShowVirtualKeyboard(false));
+}
+
+TEST_P(PasswordCredentialFillerV2ParameterTest, SubmissionReadiness) {
+  PasswordCredentialFillerImpl filler = PrepareFiller();
+  EXPECT_EQ(filler.GetSubmissionReadinessState(), std::get<1>(GetParam()));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PasswordCredentialFillerV2ParameterTest,
+    testing::ValuesIn(kPasswordCredentialFillerV2TestCases));

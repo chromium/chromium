@@ -691,5 +691,9 @@ suite('ExtensionItemTest', function() {
     item.data = data;
     await microtasksFinished();
     testVisible(item, '#account-upload-button', true);
+
+    await mockDelegate.testClickingCalls(
+        item.shadowRoot!.querySelector<HTMLElement>('#account-upload-button')!,
+        'uploadItemToAccount', [item.data.id]);
   });
 });

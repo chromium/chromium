@@ -53,9 +53,6 @@ StyleFetchedImage::StyleFetchedImage(ImageResourceContent* image,
 
   image_ = image;
   image_->AddObserver(this);
-  // ResourceFetcher is not determined from StyleFetchedImage and it is
-  // impossible to send a request for refetching.
-  image_->SetNotRefetchableDataFromDiskCache();
 }
 
 StyleFetchedImage::~StyleFetchedImage() = default;
@@ -298,6 +295,10 @@ bool StyleFetchedImage::GetImageAnimationPolicy(
   }
   policy = document_->GetSettings()->GetImageAnimationPolicy();
   return true;
+}
+
+bool StyleFetchedImage::CanBeSpeculativelyDecoded() const {
+  return false;
 }
 
 void StyleFetchedImage::Trace(Visitor* visitor) const {

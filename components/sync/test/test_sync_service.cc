@@ -37,8 +37,8 @@ SyncCycleSnapshot MakeDefaultCycleSnapshot() {
 CoreAccountInfo GetDefaultAccountInfo() {
   CoreAccountInfo account;
   account.email = "foo@bar.com";
-  account.gaia = "foo-gaia-id";
-  account.account_id = CoreAccountId::FromGaiaId(GaiaId(account.gaia));
+  account.gaia = GaiaId("foo-gaia-id");
+  account.account_id = CoreAccountId::FromGaiaId(account.gaia);
   return account;
 }
 
@@ -78,13 +78,13 @@ void TestSyncService::SetSignedOut() {
 }
 
 void TestSyncService::MimicDashboardClear() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Clearing sync from the dashboard results in
   // IsSyncFeatureDisabledViaDashboard() returning true.
   user_settings_.SetSyncFeatureDisabledViaDashboard(true);
 #else
   SetSignedIn(signin::ConsentLevel::kSignin);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void TestSyncService::SetAllowedByEnterprisePolicy(bool allowed) {
@@ -197,9 +197,9 @@ base::android::ScopedJavaLocalRef<jobject> TestSyncService::GetJavaObject() {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 void TestSyncService::SetSyncFeatureRequested() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   user_settings_.SetSyncFeatureDisabledViaDashboard(false);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 TestSyncUserSettings* TestSyncService::GetUserSettings() {
@@ -284,11 +284,11 @@ DataTypeSet TestSyncService::GetActiveDataTypes() const {
   if (GetTransportState() != TransportState::ACTIVE) {
     return DataTypeSet();
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (user_settings_.IsSyncFeatureDisabledViaDashboard()) {
     return DataTypeSet();
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   return Difference(GetPreferredDataTypes(), failed_data_types_);
 }
 
@@ -430,9 +430,12 @@ void TestSyncService::GetLocalDataDescriptions(
 
 void TestSyncService::TriggerLocalDataMigration(DataTypeSet types) {}
 
-void TestSyncService::TriggerLocalDataMigration(
-    std::map<DataType, std::vector<syncer::LocalDataItemModel::DataId>> items) {
-}
+void TestSyncService::TriggerLocalDataMigrationForItems(
+    std::map<DataType, std::vector<LocalDataItemModel::DataId>> items) {}
+
+void TestSyncService::SelectTypeAndMigrateLocalDataItemsWhenActive(
+    DataType data_type,
+    std::vector<LocalDataItemModel::DataId> items) {}
 
 void TestSyncService::SetTriggerRefreshCallback(
     const base::RepeatingCallback<void(syncer::DataTypeSet)>&

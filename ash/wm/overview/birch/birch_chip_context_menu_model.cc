@@ -82,7 +82,7 @@ BirchChipContextMenuModel::BirchChipContextMenuModel(
       // TODO(zxdan): Localize the strings.
       AddItemWithIcon(base::to_underlying(CommandId::kCoralNewDesk), u"Open",
                       CreateIconForMenuItem(kCoralOpenIcon));
-      if (features::IsCoralSavedDeskFeatureEnabled() &&
+      if (features::IsCoralFeatureEnabled() &&
           !display::Screen::GetScreen()->InTabletMode() &&
           !BirchBarController::Get()->is_informed_restore()) {
         AddItemWithIcon(base::to_underlying(CommandId::kCoralSaveForLater),

@@ -484,28 +484,24 @@ TEST_F(CanvasResourceProviderTest,
   auto image = provider->Snapshot(FlushReason::kTesting);
   ASSERT_TRUE(image);
   auto new_image = provider->Snapshot(FlushReason::kTesting);
-  EXPECT_EQ(image->GetMailboxHolder().mailbox,
-            new_image->GetMailboxHolder().mailbox);
+  EXPECT_EQ(image->GetSharedImage(), new_image->GetSharedImage());
   EXPECT_EQ(provider->ProduceCanvasResource(FlushReason::kTesting)
-                ->GetClientSharedImage()
-                ->mailbox(),
-            image->GetMailboxHolder().mailbox);
+                ->GetClientSharedImage(),
+            image->GetSharedImage());
 
   // Resource updated after draw.
   provider->Canvas().clear(SkColors::kWhite);
   provider->FlushCanvas(FlushReason::kTesting);
   new_image = provider->Snapshot(FlushReason::kTesting);
-  EXPECT_NE(new_image->GetMailboxHolder().mailbox,
-            image->GetMailboxHolder().mailbox);
+  EXPECT_NE(new_image->GetSharedImage(), image->GetSharedImage());
 
   // Resource recycled.
-  auto original_mailbox = image->GetMailboxHolder().mailbox;
+  auto original_shared_image = image->GetSharedImage();
   image.reset();
   provider->Canvas().clear(SkColors::kBlack);
   provider->FlushCanvas(FlushReason::kTesting);
-  EXPECT_EQ(
-      original_mailbox,
-      provider->Snapshot(FlushReason::kTesting)->GetMailboxHolder().mailbox);
+  EXPECT_EQ(original_shared_image,
+            provider->Snapshot(FlushReason::kTesting)->GetSharedImage());
 }
 
 TEST_F(CanvasResourceProviderTest, NoRecycleIfLastRefCallback) {
@@ -535,17 +531,16 @@ TEST_F(CanvasResourceProviderTest, NoRecycleIfLastRefCallback) {
   provider->FlushCanvas(FlushReason::kTesting);
   scoped_refptr<StaticBitmapImage> snapshot2 =
       provider->Snapshot(FlushReason::kTesting);
-  EXPECT_NE(snapshot2->GetMailboxHolder().mailbox,
-            snapshot1->GetMailboxHolder().mailbox);
+  EXPECT_NE(snapshot2->GetSharedImage(), snapshot1->GetSharedImage());
 
-  auto snapshot1_mailbox = snapshot1->GetMailboxHolder().mailbox;
+  auto snapshot1_shared_image = snapshot1->GetSharedImage();
   snapshot1.reset();  // resource not recycled due to LastUnrefCallback
   provider->Canvas().clear(SkColors::kBlack);
   provider->FlushCanvas(FlushReason::kTesting);
   scoped_refptr<StaticBitmapImage> snapshot3 =
       provider->Snapshot(FlushReason::kTesting);
   // confirm resource is not recycled.
-  EXPECT_NE(snapshot3->GetMailboxHolder().mailbox, snapshot1_mailbox);
+  EXPECT_NE(snapshot3->GetSharedImage(), snapshot1_shared_image);
 }
 
 TEST_F(CanvasResourceProviderTest,
@@ -697,10 +692,10 @@ TEST_F(CanvasResourceProviderTest,
   tr.is_overlay_candidate = true;
 
   scoped_refptr<ExternalCanvasResource> resource =
-      ExternalCanvasResource::Create(client_si, tr, tr.resource_source,
-                                     viz::ReleaseCallback(),
-                                     SharedGpuContext::ContextProviderWrapper(),
-                                     provider->CreateWeakPtr());
+      ExternalCanvasResource::Create(
+          client_si, tr.sync_token(), tr.resource_source, tr.hdr_metadata,
+          viz::ReleaseCallback(), SharedGpuContext::ContextProviderWrapper(),
+          provider->CreateWeakPtr());
 
   // NewOrRecycledResource() would return nullptr before an ImportResource().
   EXPECT_TRUE(provider->ImportResource(resource));
@@ -808,6 +803,25 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderDirect2DSwapChain) {
   EXPECT_TRUE(provider->SupportsSingleBuffering());
   EXPECT_TRUE(provider->IsSingleBuffered());
   EXPECT_EQ(provider->GetSkImageInfo(), kInfo);
+}
+
+TEST_F(
+    CanvasResourceProviderTest,
+    CanvasResourceProviderSwapChain_NonDefaultColorSpaceIsPropagatedToResource) {
+  const gfx::Size kSize(10, 10);
+  const SkImageInfo kInfo = SkImageInfo::MakeN32(
+      10, 10, kPremul_SkAlphaType, SkColorSpace::MakeSRGBLinear());
+
+  auto provider = CanvasResourceProvider::CreateSwapChainProvider(
+      kSize, kInfo.colorType(), kInfo.alphaType(), kInfo.refColorSpace(),
+      CanvasResourceProvider::ShouldInitialize::kCallClear,
+      context_provider_wrapper_);
+
+  ASSERT_TRUE(provider);
+  ASSERT_EQ(provider->GetSkImageInfo(), kInfo);
+
+  auto resource = provider->ProduceCanvasResource(FlushReason::kTesting);
+  EXPECT_EQ(resource->CreateSkImageInfo(), kInfo);
 }
 
 TEST_F(CanvasResourceProviderTest, FlushForImage) {

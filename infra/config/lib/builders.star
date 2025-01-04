@@ -781,7 +781,7 @@ def builder(
 
     experiments = experiments or {}
 
-    # TODO(crbug.com/355218109): Remove when the experiment is the default.
+    # TODO(crbug.com/380434968): Remove when the experiment is the default.
     experiments.setdefault("chromium.use_per_builder_build_dir_name", 100)
 
     os = defaults.get_value("os", os)

@@ -19,8 +19,8 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 #include "chrome/test/views/chrome_views_test_base.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
@@ -134,7 +134,7 @@ TEST_F(PopupRowAutofillAiFeedbackViewTest,
   // Assert thumbs up button callback is run when clicked.
   EXPECT_CALL(controller(),
               PerformButtonActionForSuggestion(
-                  /*line_number=*/0,
+                  /*index=*/0,
                   VariantWith<AutofillAiSuggestionButtonAction>(
                       AutofillAiSuggestionButtonAction::kThumbsUpClicked)));
   // In test env we have to manually set the bounds when a view becomes visible.
@@ -152,7 +152,7 @@ TEST_F(PopupRowAutofillAiFeedbackViewTest,
   // Assert thumbs down button callback is run when clicked.
   EXPECT_CALL(controller(),
               PerformButtonActionForSuggestion(
-                  /*line_number=*/0,
+                  /*index=*/0,
                   VariantWith<AutofillAiSuggestionButtonAction>(
                       AutofillAiSuggestionButtonAction::kThumbsDownClicked)));
   generator().MoveMouseTo(
@@ -190,7 +190,7 @@ TEST_F(PopupRowAutofillAiFeedbackViewTest, LearnMoreClickTriggersCallback) {
 
   EXPECT_CALL(controller(),
               PerformButtonActionForSuggestion(
-                  /*line_number=*/0,
+                  /*index=*/0,
                   VariantWith<AutofillAiSuggestionButtonAction>(
                       AutofillAiSuggestionButtonAction::kLearnMoreClicked)));
 
@@ -265,7 +265,7 @@ TEST_F(PopupRowAutofillAiFeedbackViewTest,
 }
 
 TEST_F(PopupRowAutofillAiFeedbackViewTest,
-       EnterIsHandledForFocusedManagePredictionImprovementsLink) {
+       EnterIsHandledForFocusedManageAutofillAiLink) {
   CreateFeedbackRowAndGetButtons();
   view().SetSelectedCell(PopupRowView::CellType::kContent);
 

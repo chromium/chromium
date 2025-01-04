@@ -107,7 +107,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.Fullscreen.LockStateAtEntryViaApi"
-    enum="FullscreenLockState" expires_after="2025-04-20">
+    enum="FullscreenLockState" expires_after="2025-06-22">
   <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -120,7 +120,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.Fullscreen.LockStateAtEntryViaBrowserUi"
-    enum="FullscreenLockState" expires_after="2025-04-20">
+    enum="FullscreenLockState" expires_after="2025-06-22">
   <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -137,7 +137,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.Fullscreen.WebsiteStateAtApiRequest"
-    enum="WebsiteStateAtFullscreenRequest" expires_after="2025-04-13">
+    enum="WebsiteStateAtFullscreenRequest" expires_after="2025-06-22">
   <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -235,7 +235,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.BackingStore.OpenSuccessTime" units="ms"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -257,7 +257,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDB.CloseTime" units="ms"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -266,7 +266,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDB.OpenTime" units="ms"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -275,7 +275,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDB.WriteTime" units="ms"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -304,7 +304,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBOpenErrors.Corruption"
-    enum="LevelDBCorruptionTypes" expires_after="2025-04-13">
+    enum="LevelDBCorruptionTypes" expires_after="2025-06-22">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -378,7 +378,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBWriteErrors.Corruption"
-    enum="LevelDBCorruptionTypes" expires_after="2025-04-13">
+    enum="LevelDBCorruptionTypes" expires_after="2025-06-22">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -397,7 +397,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.OpenTime.Cold" units="ms"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -412,7 +412,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.OpenTime.Warm" units="ms"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -451,7 +451,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.RequestDuration2.{RequestType}" units="ms"
-    expires_after="2025-04-06">
+    expires_after="2025-06-08">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -495,20 +495,6 @@ chromium-metrics-reviews@google.com.
     is recorded whenever metrics state is snapshotted for
     WebCore.IndexedDB.Request* histograms.
   </summary>
-</histogram>
-
-<histogram name="WebCore.IndexedDB.Transaction.{TransactionType}.TimeActive"
-    units="ms" expires_after="2024-12-08">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    [deprecated - this measures only through the end of commit phase 1 and
-    misses commit phase 2, which includes the backing store commit] The time it
-    takes for an IndexedDB transaction to commit, starting from when it starts
-    executing tasks (when it reaches the front of the scheduling queue).
-    Recorded on transaction commit.
-  </summary>
-  <token key="TransactionType" variants="IdbTransactionTypes"/>
 </histogram>
 
 <histogram name="WebCore.IndexedDB.Transaction.{TransactionType}.TimeActive2"
@@ -712,7 +698,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.Scripts.V8CodeCacheMetadata.Get"
-    enum="V8CodeCacheGetMetadataType" expires_after="2025-03-30">
+    enum="V8CodeCacheGetMetadataType" expires_after="2025-06-08">
   <owner>marja@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>

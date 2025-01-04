@@ -111,6 +111,8 @@ PrefWatcher::PrefWatcher(Profile* profile)
                                      renderer_callback);
   profile_pref_change_registrar_.Add(prefs::kWebRTCIPHandlingPolicy,
                                      renderer_callback);
+  profile_pref_change_registrar_.Add(prefs::kWebRTCIPHandlingUrl,
+                                     renderer_callback);
   profile_pref_change_registrar_.Add(prefs::kWebRTCUDPPortRange,
                                      renderer_callback);
 
@@ -162,8 +164,7 @@ void PrefWatcher::Shutdown() {
   local_state_pref_change_registrar_.RemoveAll();
 }
 
-void PrefWatcher::OnNativeThemeUpdated(
-    ui::NativeTheme* observed_theme) {
+void PrefWatcher::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
   UpdateRendererPreferences();
 }
 
@@ -178,8 +179,9 @@ void PrefWatcher::UpdateRendererPreferences() {
 
   blink::RendererPreferences prefs;
   renderer_preferences_util::UpdateFromSystemSettings(&prefs, profile_);
-  for (auto& watcher : renderer_preference_watchers_)
+  for (auto& watcher : renderer_preference_watchers_) {
     watcher->NotifyUpdate(prefs);
+  }
 }
 
 void PrefWatcher::OnWebPrefChanged(const std::string& pref_name) {

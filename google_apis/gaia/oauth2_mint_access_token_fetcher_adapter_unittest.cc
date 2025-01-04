@@ -267,6 +267,10 @@ TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, SuccessWithEncryption) {
   histogram_tester().ExpectUniqueSample(kFetchAuthErrorHistogram,
                                         GoogleServiceAuthError::NONE,
                                         /*expected_bucket_count=*/1);
+  histogram_tester().ExpectUniqueSample(
+      kFetchEncryptionErrorHistogram,
+      TokenBindingResponseEncryptionError::kSuccessfullyDecrypted,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, SuccessDecryptorUnused) {
@@ -285,6 +289,10 @@ TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, SuccessDecryptorUnused) {
   histogram_tester().ExpectUniqueSample(kFetchAuthErrorHistogram,
                                         GoogleServiceAuthError::NONE,
                                         /*expected_bucket_count=*/1);
+  histogram_tester().ExpectUniqueSample(
+      kFetchEncryptionErrorHistogram,
+      TokenBindingResponseEncryptionError::kSuccessNoEncryption,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, Failure) {

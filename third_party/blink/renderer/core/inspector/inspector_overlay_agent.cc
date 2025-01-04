@@ -1364,9 +1364,9 @@ void InspectorOverlayAgent::LoadOverlayPageResource() {
 
   SegmentedBuffer data;
 
-  data.Append("<script>", static_cast<size_t>(8));
+  data.Append(base::span_from_cstring("<script>"));
   data.Append(UncompressResourceAsBinary(IDR_INSPECT_TOOL_MAIN_JS));
-  data.Append("</script>", static_cast<size_t>(9));
+  data.Append(base::span_from_cstring("</script>"));
 
   frame->ForceSynchronousDocumentInstall(AtomicString("text/html"),
                                          std::move(data));

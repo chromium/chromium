@@ -37,4 +37,11 @@ CreateIncognitoPrefServiceSyncable(
     sync_preferences::PrefServiceSyncable* pref_service,
     PrefStore* incognito_extension_pref_store);
 
+// Similar to CreateIncognitoPrefServiceSyncable, but doesn't allow any prefs
+// to be synced between |pref_service| and the returned service.
+// Intended for OTR profiles and browser contexts created by browser automation.
+std::unique_ptr<sync_preferences::PrefServiceSyncable>
+CreateAutomationPrefService(sync_preferences::PrefServiceSyncable* pref_service,
+                            PrefStore* incognito_extension_pref_store);
+
 #endif  // CHROME_BROWSER_PREFS_PREF_SERVICE_SYNCABLE_UTIL_H_

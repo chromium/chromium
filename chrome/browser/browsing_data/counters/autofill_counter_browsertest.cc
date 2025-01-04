@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/browsing_data/core/counters/autofill_counter.h"
 
+#include <array>
 #include <memory>
 
 #include "base/functional/bind.h"
@@ -27,15 +23,15 @@
 #include "chrome/browser/user_annotations/user_annotations_service_factory.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager_test_utils.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/pref_names.h"
@@ -459,10 +455,13 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, TimeRanges) {
     const browsing_data::BrowsingDataCounter::ResultInt expected_num_addresses;
     const browsing_data::BrowsingDataCounter::ResultInt
         expected_num_user_annotations;
-  } test_cases[] = {{base::Time(), 2, 3, 3, 0},
-                    {kTime1, 2, 3, 3, 0},
-                    {kTime2, 1, 2, 2, 0},
-                    {kTime3, 1, 1, 0, 0}};
+  };
+  auto test_cases = std::to_array<TestCase>({
+      {base::Time(), 2, 3, 3, 0},
+      {kTime1, 2, 3, 3, 0},
+      {kTime2, 1, 2, 2, 0},
+      {kTime3, 1, 1, 0, 0},
+  });
 
   Profile* profile = browser()->profile();
   browsing_data::AutofillCounter counter(

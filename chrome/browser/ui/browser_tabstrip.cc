@@ -43,8 +43,9 @@ content::WebContents* AddAndReturnTabAt(
   params.pwa_navigation_capturing_force_off = true;
   Navigate(&params);
 
-  if (!params.navigated_or_inserted_contents)
+  if (!params.navigated_or_inserted_contents) {
     return nullptr;
+  }
 
   CoreTabHelper* core_tab_helper =
       CoreTabHelper::FromWebContents(params.navigated_or_inserted_contents);
@@ -117,8 +118,9 @@ void CloseWebContents(Browser* browser,
 }
 
 void ConfigureTabGroupForNavigation(NavigateParams* nav_params) {
-  if (!nav_params->source_contents)
+  if (!nav_params->source_contents) {
     return;
+  }
 
   if (!nav_params->browser || !nav_params->browser->SupportsWindowFeature(
                                   Browser::WindowFeature::FEATURE_TABSTRIP)) {
@@ -134,8 +136,9 @@ void ConfigureTabGroupForNavigation(NavigateParams* nav_params) {
   // If the source tab is not in the current tab strip (e.g. if the current
   // navigation is in a new window), don't set the group. Groups cannot be
   // shared across multiple windows.
-  if (source_index == TabStripModel::kNoTab)
+  if (source_index == TabStripModel::kNoTab) {
     return;
+  }
 
   // Do not set the group when the navigation is from bookmarks.
   if (ui::PageTransitionCoreTypeIs(nav_params->transition,

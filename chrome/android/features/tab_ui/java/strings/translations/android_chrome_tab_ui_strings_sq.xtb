@@ -77,7 +77,6 @@ Nëse e fshin atë, të gjithë do të humbasin menjëherë qasjen te grupi i sk
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> skedë u ndryshua, <ph name="ANY_CLOSED" /> u mbyllën}other{<ph name="MANY_CHANGED" /> skeda u ndryshuan, <ph name="ANY_CLOSED" /> u mbyllën}}</translation>
 <translation id="4371591986692297148">Joaktiv</translation>
 <translation id="4460014764210899310">Mos grupo</translation>
-<translation id="4590027107044272416">Tani mund të hapësh një skedë të re këtu.</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Të mbyllet 1 skedë joaktive?}other{Të mbyllen <ph name="TAB_COUNT_MANY" /> skeda joaktive?}}</translation>
 <translation id="4686942373615810936">Krijuar pikërisht tani</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Mbyll pas 1 dite}other{Mbyll pas <ph name="DAY_COUNT_MANY" /> ditësh}}</translation>
@@ -98,7 +97,9 @@ Nëse e fshin atë, të gjithë do të humbasin menjëherë qasjen te grupi i sk
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> skedë u shtua}other{<ph name="MANY_ADDED" /> skeda u shtuan}}</translation>
 <translation id="5161254044473106830">Kërkohet titulli</translation>
 <translation id="5339733443032484186">Skeda jote e fundit</translation>
+<translation id="5380159289133845234">Arkivo skedat dublikata</translation>
 <translation id="5400836586163650660">Gri</translation>
+<translation id="5446043142172831860">Hiq skeda dhe largohu nga grupi</translation>
 <translation id="5490235265819901748">Grupi i skedave u zgjerua</translation>
 <translation id="5494920125229734069">Zgjidh të gjitha</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Mbyll grupin e skedave me <ph name="TABS_COUNT_ONE" /> skedë, ngjyrë <ph name="COLOR_NAME" />.}other{Mbyll grupin e skedave me <ph name="TABS_COUNT_MANY" /> skeda, ngjyrë <ph name="COLOR_NAME" />.}}</translation>
@@ -117,6 +118,7 @@ Nëse largohesh, do të humbasësh menjëherë qasjen te grupi i skedave "<ph na
 <translation id="6051432659151380973">Grupet e tua të skedave do të ruhen automatikisht</translation>
 <translation id="6054741997831917303">Çmimi i artikullit ra së fundi nga <ph name="PREVIOUS_PRICE" /> në <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Do të humbasësh menjëherë qasjen në grupin e skedave "<ph name="GROUP_NAME" />"</translation>
+<translation id="6109251075362363230">Të gjitha skedat dublikata tani do të arkivohen gjithashtu, me përjashtim të kopjes së përdorur më së fundi.</translation>
 <translation id="6193448654517602979">Zgjidh skedat</translation>
 <translation id="6228793724645064692">(vlerësimi i dyqanit)</translation>
 <translation id="6271513594716432922">Mbyll të gjitha skedat joaktive</translation>

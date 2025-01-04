@@ -58,6 +58,8 @@ class XRGPUBinding final : public ScriptWrappable, public XRGraphicsBinding {
 
  private:
   bool CanCreateLayer(ExceptionState& exception_state);
+  bool ValidateFormats(const XRGPUProjectionLayerInit* init,
+                       ExceptionState& exception_state);
 
   Member<GPUDevice> device_;
 };

@@ -161,6 +161,56 @@ PaymentManifestWebDataService::GetSecurePaymentConfirmationCredentialsImpl(
               std::move(credential_ids), std::move(relying_party_id)));
 }
 
+WebDataServiceBase::Handle PaymentManifestWebDataService::SetBrowserBoundKey(
+    std::vector<uint8_t> credential_id,
+    std::string relying_party_id,
+    std::vector<uint8_t> browser_bound_key_id,
+    WebDataServiceConsumer* consumer) {
+  return wdbs_->ScheduleDBTaskWithResult(
+      FROM_HERE,
+      base::BindOnce(&PaymentManifestWebDataService::SetBrowserBoundKeyImpl,
+                     this, std::move(credential_id),
+                     std::move(relying_party_id),
+                     std::move(browser_bound_key_id)),
+      consumer);
+}
+
+std::unique_ptr<WDTypedResult>
+PaymentManifestWebDataService::SetBrowserBoundKeyImpl(
+    std::vector<uint8_t> credential_id,
+    std::string relying_party_id,
+    std::vector<uint8_t> browser_bound_key_id,
+    WebDatabase* db) {
+  return std::make_unique<WDResult<bool>>(
+      BOOL_RESULT,
+      PaymentMethodManifestTable::FromWebDatabase(db)->SetBrowserBoundKey(
+          std::move(credential_id), std::move(relying_party_id),
+          std::move(browser_bound_key_id)));
+}
+
+WebDataServiceBase::Handle PaymentManifestWebDataService::GetBrowserBoundKey(
+    std::vector<uint8_t> credential_id,
+    std::string relying_party_id,
+    WebDataServiceConsumer* consumer) {
+  return wdbs_->ScheduleDBTaskWithResult(
+      FROM_HERE,
+      base::BindOnce(&PaymentManifestWebDataService::GetBrowserBoundKeyImpl,
+                     this, std::move(credential_id),
+                     std::move(relying_party_id)),
+      consumer);
+}
+
+std::unique_ptr<WDTypedResult>
+PaymentManifestWebDataService::GetBrowserBoundKeyImpl(
+    std::vector<uint8_t> credential_id,
+    std::string relying_party_id,
+    WebDatabase* db) {
+  return std::make_unique<WDResult<std::optional<std::vector<uint8_t>>>>(
+      BROWSER_BOUND_KEY,
+      PaymentMethodManifestTable::FromWebDatabase(db)->GetBrowserBoundKey(
+          std::move(credential_id), std::move(relying_party_id)));
+}
+
 void PaymentManifestWebDataService::ClearSecurePaymentConfirmationCredentials(
     base::Time begin,
     base::Time end,

@@ -40,16 +40,18 @@ void GetFilePaths(const base::FilePath& profile_path,
 
   base::FilePath executable_path = base::MakeAbsoluteFilePath(
       base::CommandLine::ForCurrentProcess()->GetProgram());
-  if (!executable_path.empty())
+  if (!executable_path.empty()) {
     *exec_path_out = executable_path.LossyDisplayName();
-  else
+  } else {
     *exec_path_out = l10n_util::GetStringUTF16(IDS_VERSION_UI_PATH_NOTFOUND);
+  }
 
   base::FilePath profile_path_copy(base::MakeAbsoluteFilePath(profile_path));
-  if (!profile_path.empty() && !profile_path_copy.empty())
+  if (!profile_path.empty() && !profile_path_copy.empty()) {
     *profile_path_out = profile_path.LossyDisplayName();
-  else
+  } else {
     *profile_path_out = l10n_util::GetStringUTF16(IDS_VERSION_UI_PATH_NOTFOUND);
+  }
 }
 
 }  // namespace

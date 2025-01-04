@@ -13,13 +13,12 @@ source_set("model") {
   deps = [
     "//base",
     "//components/bookmarks/browser",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/sessions",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/sessions/model",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/model/url",
     "//ios/chrome/browser/shared/model/web_state_list",
   ]

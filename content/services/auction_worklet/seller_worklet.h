@@ -106,6 +106,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       const url::Origin& top_window_origin,
       mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
       std::optional<uint16_t> experiment_group_id,
+      std::optional<bool> send_creative_scanning_metadata,
       mojom::TrustedSignalsPublicKeyPtr public_key,
       GetNextThreadIndexCallback next_thread_index_callback,
       mojo::PendingRemote<auction_worklet::mojom::LoadSellerWorkletClient>
@@ -385,6 +386,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
         const url::Origin& top_window_origin,
         mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
         std::optional<uint16_t> experiment_group_id,
+        std::optional<bool> send_creative_scanning_metadata,
         base::WeakPtr<SellerWorklet> parent);
 
     void SetWorkletScript(WorkletLoader::Result worklet_script,
@@ -532,6 +534,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     const url::Origin top_window_origin_;
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state_;
     const std::optional<uint16_t> experiment_group_id_;
+    std::optional<bool> send_creative_scanning_metadata_;
 
     mojo::Remote<mojom::AuctionSharedStorageHost> shared_storage_host_remote_;
 
@@ -654,6 +657,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
 
   const GURL script_source_url_;
   mojom::TrustedSignalsPublicKeyPtr public_key_;
+  std::optional<bool> send_creative_scanning_metadata_;
 
   // Populated only if `this` was created with a non-null
   // `trusted_scoring_signals_url`.

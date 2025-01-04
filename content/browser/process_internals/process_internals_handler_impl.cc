@@ -41,7 +41,7 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
   frame_info->routing_id = frame->GetRoutingID();
   frame_info->agent_scheduling_group_id =
       frame->GetAgentSchedulingGroup().id_for_debugging();
-  frame_info->process_id = frame->GetProcess()->GetID();
+  frame_info->process_id = frame->GetProcess()->GetDeprecatedID();
   frame_info->last_committed_url =
       frame->GetLastCommittedURL().is_valid()
           ? std::make_optional(frame->GetLastCommittedURL())

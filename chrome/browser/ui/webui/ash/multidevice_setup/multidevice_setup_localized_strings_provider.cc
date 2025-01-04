@@ -11,7 +11,6 @@
 #include "base/system/sys_info.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -27,6 +26,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/webui/webui_util.h"
 
 namespace ash::multidevice_setup {
 
@@ -155,8 +155,9 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
 }
 
 void AddLocalizedValuesToBuilder(::login::LocalizedValuesBuilder* builder) {
-  for (const auto& entry : kLocalizedStringsWithoutPlaceholders)
+  for (const auto& entry : kLocalizedStringsWithoutPlaceholders) {
     builder->Add(entry.name, entry.id);
+  }
 
   // TODO(crbug.com/964547): Refactor so that any change to these strings will
   // surface in both the OOBE and post-OOBE UIs without having to adjust both

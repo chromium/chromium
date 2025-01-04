@@ -24,7 +24,6 @@ function join_by {
 EXCLUDE_PATTERNS=(
   # Directories
   .git/
-  audio/
   docs/
   ios/
   java/

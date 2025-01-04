@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/frame/wide_frame_view.h"
+
 #include <memory>
 
 #include "ash/frame/non_client_frame_view_ash.h"
@@ -23,6 +24,7 @@
 #include "ui/aura/window_targeter.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/events/types/event_type.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/caption_button_layout_constants.h"
 
@@ -165,7 +167,8 @@ void WideFrameView::Layout(PassKey) {
 
 void WideFrameView::OnMouseEvent(ui::MouseEvent* event) {
   if (event->IsOnlyLeftMouseButton()) {
-    if ((event->flags() & ui::EF_IS_DOUBLE_CLICK)) {
+    if ((event->flags() & ui::EF_IS_DOUBLE_CLICK) &&
+        event->type() == ui::EventType::kMousePressed) {
       base::RecordAction(
           base::UserMetricsAction("Caption_ClickTogglesMaximize"));
       const WMEvent wm_event(WM_EVENT_TOGGLE_MAXIMIZE_CAPTION);

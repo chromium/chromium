@@ -20,6 +20,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
@@ -243,6 +244,17 @@ double GetRealTimeReportingQuota(
   return std::min(new_quota, max_real_time_reports);
 }
 
+void RecordNumberOfSelectableBuyerAndSellerReportingIds(
+    base::span<const blink::InterestGroup::Ad> ads) {
+  for (const blink::InterestGroup::Ad& ad : ads) {
+    if (ad.selectable_buyer_and_seller_reporting_ids) {
+      UMA_HISTOGRAM_COUNTS_1000(
+          "Ads.InterestGroup.NumSelectableBuyerAndSellerReportingIds",
+          ad.selectable_buyer_and_seller_reporting_ids->size());
+    }
+  }
+}
+
 }  // namespace
 
 InterestGroupManagerImpl::ReportRequest::ReportRequest() = default;
@@ -379,6 +391,10 @@ void InterestGroupManagerImpl::JoinInterestGroup(blink::InterestGroup group,
   // Create notify callback first.
   base::OnceClosure notify_callback = CreateNotifyInterestGroupAccessedCallback(
       InterestGroupObserver::kJoin, group.owner, group.name);
+
+  if (group.ads) {
+    RecordNumberOfSelectableBuyerAndSellerReportingIds(*group.ads);
+  }
 
   blink::InterestGroupKey group_key(group.owner, group.name);
   caching_storage_.JoinInterestGroup(
@@ -529,6 +545,11 @@ bool InterestGroupManagerImpl::GetCachedOwnerAndSignalsOrigins(
     std::optional<url::Origin>& signals_origin) {
   return caching_storage_.GetCachedOwnerAndSignalsOrigins(owner,
                                                           signals_origin);
+}
+
+void InterestGroupManagerImpl::UpdateCachedOriginsIfEnabled(
+    const url::Origin& owner) {
+  caching_storage_.UpdateCachedOriginsIfEnabled(owner);
 }
 
 void InterestGroupManagerImpl::DeleteInterestGroupData(
@@ -980,6 +1001,9 @@ void InterestGroupManagerImpl::UpdateInterestGroup(
     const blink::InterestGroupKey& group_key,
     InterestGroupUpdate update,
     base::OnceCallback<void(bool)> callback) {
+  if (update.ads) {
+    RecordNumberOfSelectableBuyerAndSellerReportingIds(*update.ads);
+  }
   caching_storage_.UpdateInterestGroup(
       group_key, std::move(update),
       base::BindOnce(&InterestGroupManagerImpl::OnUpdateComplete,

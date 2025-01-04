@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <string>
 #include <vector>
 
@@ -625,9 +626,12 @@ TEST_F(AutocompleteActionPredictorTest,
     const std::string kPrefix = "http://b/";
     return GURL(kPrefix + std::string(size - kPrefix.size(), 'c'));
   };
-  GURL urls[] = {test_url(10), test_url(maximum_string_length()),
-                 test_url(maximum_string_length() + 1),
-                 test_url(maximum_string_length() * 10)};
+  auto urls = std::to_array<GURL>({
+      test_url(10),
+      test_url(maximum_string_length()),
+      test_url(maximum_string_length() + 1),
+      test_url(maximum_string_length() * 10),
+  });
   ACMatches matches;
   for (const auto& url : urls) {
     AutocompleteMatch match;

@@ -22,13 +22,13 @@ static_library("bluetooth") {
 
   deps = [
     "//ash/components/arc",
+    "//ash/components/arc/intent_helper",
+    "//ash/components/arc/intent_helper:arc_intent_helper_constants",
     "//ash/constants",
     "//base",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ash/bluetooth",
-    "//components/arc",
-    "//components/arc/common:arc_intent_helper_constants",
     "//components/device_event_log",
     "//components/prefs",
     "//components/user_manager",

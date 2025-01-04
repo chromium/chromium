@@ -110,6 +110,7 @@
 #include "third_party/blink/renderer/core/dom/presentation_attribute_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment.h"
@@ -1506,6 +1507,124 @@ void Element::scrollIntoViewWithOptions(const ScrollIntoViewOptions* options) {
   ScrollIntoViewNoVisualUpdate(std::move(params));
 }
 
+// TODO(crbug.com/385129957): This only searches up to the nearest scroll
+// container. Ancestor scroll containers might also need to be notified.
+void Element::NotifyScrollMarkerGroupOfTargetedScroll() {
+  if (ScrollMarkerPseudoElement* marker = FindScrollMarkerForTargetedScroll()) {
+    if (ScrollMarkerGroupPseudoElement* group = marker->ScrollMarkerGroup()) {
+      group->PinSelectedMarker(marker);
+    }
+  }
+}
+
+ScrollMarkerPseudoElement* Element::FindScrollMarkerForTargetedScroll() {
+  if (auto* this_marker = DynamicTo<ScrollMarkerPseudoElement>(this)) {
+    // This itself is a scroll-marker.
+    return this_marker;
+  } else if (PseudoElement* scroll_marker =
+                 GetPseudoElement(kPseudoIdScrollMarker)) {
+    // This itself has a scroll-marker.
+    return DynamicTo<ScrollMarkerPseudoElement>(scroll_marker);
+  }
+
+  LayoutObject* target_obj = GetLayoutObject();
+  if (!target_obj) {
+    return nullptr;
+  }
+
+  // Search for the scroll-marker before |this| in pre-order.
+  ScrollMarkerPseudoElement* dom_marker = nullptr;
+  for (LayoutObject* obj = target_obj->PreviousInPreOrder(); obj;
+       obj = obj->PreviousInPreOrder()) {
+    if (obj->IsScrollContainerWithScrollMarkerGroup()) {
+      // Don't escape the target's nearest containing
+      // scroll-marker-group-generating containing scroll container.
+      break;
+    }
+    auto* obj_node = obj->GetNode();
+    if (!obj_node) {
+      continue;
+    }
+    if (ScrollMarkerPseudoElement* marker_node =
+            DynamicTo<ScrollMarkerPseudoElement>(obj_node)) {
+      dom_marker = marker_node;
+      break;
+    } else if (auto* obj_element = DynamicTo<Element>(obj_node)) {
+      if (ScrollMarkerPseudoElement* previous_marker =
+              DynamicTo<ScrollMarkerPseudoElement>(
+                  obj_element->GetPseudoElement(kPseudoIdScrollMarker))) {
+        dom_marker = previous_marker;
+        break;
+      }
+    }
+  }
+
+  // We might have found a marker before |this| in DOM-order, but we need to do
+  // one last check for whether the scroll target is within a
+  // scroll-marker-generating ::column which might be preferable to the
+  // already-found marker.
+  const LayoutBox* containing_box = target_obj->ContainingScrollContainer();
+  while (containing_box) {
+    if (containing_box->IsScrollContainerWithScrollMarkerGroup()) {
+      break;
+    }
+    containing_box = containing_box->ContainingScrollContainer();
+  }
+
+  if (!containing_box) {
+    return dom_marker;
+  }
+  const Element* containing_element =
+      DynamicTo<Element>(containing_box->GetNode());
+  if (!containing_element) {
+    return dom_marker;
+  }
+  const ColumnPseudoElementsVector* cols =
+      containing_element->GetColumnPseudoElements();
+  if (!cols) {
+    return dom_marker;
+  }
+  const LayoutBox* target_box = GetLayoutBox();
+  PhysicalRect scroll_target_rect = target_box->LocalToAncestorRect(
+      target_box->PhysicalBorderBoxRect(), containing_box);
+  ScrollableArea* current_scroll_area = containing_box->GetScrollableArea();
+  if (current_scroll_area) {
+    // Account for scroll translation.
+    scroll_target_rect.Move(current_scroll_area->LocalToScrollOriginOffset());
+  } else {
+    NOTREACHED();
+  }
+  for (const ColumnPseudoElement* column_pseudo : *cols) {
+    ScrollMarkerPseudoElement* column_marker =
+        DynamicTo<ScrollMarkerPseudoElement>(
+            column_pseudo->GetPseudoElement(kPseudoIdScrollMarker));
+    const PhysicalRect& column_rect = column_pseudo->ColumnRect();
+    if (column_marker && column_rect.Intersects(scroll_target_rect)) {
+      if (!dom_marker) {
+        // We didn't have a scroll-marker from the DOM search to begin, the
+        // ::column::scroll-marker we found will have to do.
+        return column_marker;
+      }
+      // If we already had a marker from the initial DOM search,
+      // we should figure out whether |dom_marker| belongs to an element that
+      // was flowed the scroll-marker-generating ::column, in which case
+      // |dom_marker| is the preferred scroll marker. Otherwise the
+      // scroll-marker belonging to the ::column is preferred.
+      LayoutBox* dom_marker_box =
+          dom_marker->UltimateOriginatingElement()->GetLayoutBox();
+      PhysicalRect dom_search_target_rect = dom_marker_box->LocalToAncestorRect(
+          dom_marker_box->PhysicalBorderBoxRect(), containing_box);
+      if (current_scroll_area) {
+        dom_search_target_rect.Move(
+            current_scroll_area->LocalToScrollOriginOffset());
+      }
+      return column_rect.Intersects(dom_search_target_rect) ? dom_marker
+                                                            : column_marker;
+    }
+  }
+  return dom_marker;
+}
+
 void Element::ScrollIntoViewNoVisualUpdate(
     mojom::blink::ScrollIntoViewParamsPtr params) {
   if (!GetLayoutObject() || !GetDocument().GetPage()) {
@@ -1532,6 +1651,8 @@ void Element::ScrollIntoViewNoVisualUpdate(
           *originating_element, DisplayLockActivationReason::kScrollIntoView)) {
     return;
   }
+
+  NotifyScrollMarkerGroupOfTargetedScroll();
 
   PhysicalRect bounds = BoundingBoxForScrollIntoView();
   scroll_into_view_util::ScrollRectToVisible(*target, bounds,
@@ -3226,16 +3347,10 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
 
   ContainerNode::RemovedFrom(insertion_point);
 
-  if (was_in_document) {
-    if (!RuntimeEnabledFeatures::KeepCSSTargetAfterReattachEnabled() &&
-        this == document.CssTarget()) {
-      document.SetCSSTarget(nullptr);
-    }
-
-    if (GetCustomElementState() == CustomElementState::kCustom &&
-        !GetDocument().StatePreservingAtomicMoveInProgress()) {
-      CustomElement::EnqueueDisconnectedCallback(*this);
-    }
+  if (was_in_document &&
+      GetCustomElementState() == CustomElementState::kCustom &&
+      !GetDocument().StatePreservingAtomicMoveInProgress()) {
+    CustomElement::EnqueueDisconnectedCallback(*this);
   }
 
   RecomputeDirectionFromParent();
@@ -3337,10 +3452,6 @@ void Element::AttachLayoutTree(AttachContext& context) {
   }
 
   AttachPseudoElement(kPseudoIdScrollMarkerGroupBefore, context);
-  AttachPseudoElement(kPseudoIdScrollUpButton, context);
-  AttachPseudoElement(kPseudoIdScrollLeftButton, context);
-  AttachPseudoElement(kPseudoIdScrollRightButton, context);
-  AttachPseudoElement(kPseudoIdScrollDownButton, context);
 
   AttachContext children_context(context);
   LayoutObject* layout_object = nullptr;
@@ -3370,6 +3481,12 @@ void Element::AttachLayoutTree(AttachContext& context) {
   }
   children_context.use_previous_in_flow = true;
 
+  // The order for buttons is described in
+  // https://drafts.csswg.org/css-overflow-5/#scroll-buttons.
+  AttachPseudoElement(kPseudoIdScrollButtonBlockStart, context);
+  AttachPseudoElement(kPseudoIdScrollButtonInlineStart, context);
+  AttachPseudoElement(kPseudoIdScrollButtonBlockEnd, context);
+  AttachPseudoElement(kPseudoIdScrollButtonInlineEnd, context);
   AttachPseudoElement(kPseudoIdScrollMarkerGroupAfter, context);
 
   if (skipped_container_descendants &&
@@ -3701,17 +3818,13 @@ bool Element::SkipStyleRecalcForContainer(
     return false;
   }
 
-  // ::scroll-marker-group boxes are created outside their originating element's
-  // box and cannot be skipped if the originating element is a size container
-  // because the pseudo element and its box need to be created before layout.
-  if (!style.ScrollMarkerGroupNone()) {
-    return false;
-  }
-
-  // Same as above about ::scroll-marker-group goes about ::scroll-button().
-  // Note: using generic kPseudoIdScrollButton here, as style collection only
-  // sets generic pseudo style flag on originating element.
-  if (CanGeneratePseudoElement(kPseudoIdScrollButton)) {
+  // ::scroll-marker-group and ::scroll-button() boxes are created outside their
+  // originating element's box and cannot be skipped if the originating element
+  // is a size container because the pseudo element and its box need to be
+  // created before layout.
+  if (!style.ScrollMarkerGroupNone() ||
+      CanGeneratePseudoElement(kPseudoIdScrollButton) ||
+      HasSiblingBoxPseudoElements()) {
     return false;
   }
 
@@ -3897,14 +4010,14 @@ void Element::RecalcStyle(const StyleRecalcChange change,
     UpdatePseudoElement(kPseudoIdMarker, child_change, child_recalc_context);
     UpdateLayoutSiblingPseudoElement(kPseudoIdScrollMarkerGroupBefore,
                                      child_change, child_recalc_context);
-    UpdateLayoutSiblingPseudoElement(kPseudoIdScrollUpButton, child_change,
-                                     child_recalc_context);
-    UpdateLayoutSiblingPseudoElement(kPseudoIdScrollDownButton, child_change,
-                                     child_recalc_context);
-    UpdateLayoutSiblingPseudoElement(kPseudoIdScrollLeftButton, child_change,
-                                     child_recalc_context);
-    UpdateLayoutSiblingPseudoElement(kPseudoIdScrollRightButton, child_change,
-                                     child_recalc_context);
+    UpdateLayoutSiblingPseudoElement(kPseudoIdScrollButtonBlockStart,
+                                     child_change, child_recalc_context);
+    UpdateLayoutSiblingPseudoElement(kPseudoIdScrollButtonInlineStart,
+                                     child_change, child_recalc_context);
+    UpdateLayoutSiblingPseudoElement(kPseudoIdScrollButtonBlockEnd,
+                                     child_change, child_recalc_context);
+    UpdateLayoutSiblingPseudoElement(kPseudoIdScrollButtonInlineEnd,
+                                     child_change, child_recalc_context);
     UpdatePseudoElement(kPseudoIdScrollMarker, child_change,
                         child_recalc_context);
     UpdateColumnPseudoElements(child_change, child_recalc_context);
@@ -3920,16 +4033,17 @@ void Element::RecalcStyle(const StyleRecalcChange change,
   }
 
   if (child_change.TraverseChildren(*this)) {
-    SelectorFilterParentScope filter_scope(*this);
     if (ShadowRoot* root = GetShadowRoot()) {
-      root->RecalcDescendantStyles(child_change, child_recalc_context);
+      root->RecalcDescendantStyles(child_change, child_recalc_context, *this);
       if (child_change.RecalcDescendants()) {
         MarkNonSlottedHostChildrenForStyleRecalc();
       }
     } else if (auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(this)) {
+      SelectorFilterParentScope filter_scope(
+          this, SelectorFilterParentScope::ScopeType::kParent);
       slot->RecalcStyleForSlotChildren(child_change, child_recalc_context);
     } else {
-      RecalcDescendantStyles(child_change, child_recalc_context);
+      RecalcDescendantStyles(child_change, child_recalc_context, *this);
     }
   }
 
@@ -4458,10 +4572,14 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
     RebuildPseudoElementLayoutTree(kPseudoIdCheckMark, *child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdBefore, *child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdMarker, *child_attacher);
-    RebuildPseudoElementLayoutTree(kPseudoIdScrollDownButton, local_attacher);
-    RebuildPseudoElementLayoutTree(kPseudoIdScrollRightButton, local_attacher);
-    RebuildPseudoElementLayoutTree(kPseudoIdScrollLeftButton, local_attacher);
-    RebuildPseudoElementLayoutTree(kPseudoIdScrollUpButton, local_attacher);
+    RebuildPseudoElementLayoutTree(kPseudoIdScrollButtonInlineEnd,
+                                   local_attacher);
+    RebuildPseudoElementLayoutTree(kPseudoIdScrollButtonBlockEnd,
+                                   local_attacher);
+    RebuildPseudoElementLayoutTree(kPseudoIdScrollButtonInlineStart,
+                                   local_attacher);
+    RebuildPseudoElementLayoutTree(kPseudoIdScrollButtonBlockStart,
+                                   local_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdScrollMarkerGroupBefore,
                                    local_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdBackdrop, *child_attacher);
@@ -5190,11 +5308,17 @@ Element::HighlightRecalc Element::CalculateHighlightRecalc(
     return HighlightRecalc::kNone;
   }
   // If we are a root element (our parent is a Document or ShadowRoot), we can
-  // skip highlight recalc if there neither are nor were any non-UA highlight
-  // rules (regardless of whether or not they are non-universal), and the root’s
-  // effective zoom (‘zoom’ × page zoom × device scale factor) did not change.
+  // skip highlight recalc if all of the following are true:
+  // * there neither are nor were any non-UA highlight rules (regardless of
+  //   whether or not they are non-universal), because then no inherited
+  //   highlight properties have changed.
+  // * the root’s effective zoom (‘zoom’ × page zoom × device scale factor) did
+  //   not change, because then no units have changed size.
+  // * the InitialData for custom properties has not changed, because then
+  //   custom properties will still have the same initial values.
   // In that case, we only need to calculate highlight styles once, because our
-  // UA styles only use type selectors and we never change them dynamically.
+  // UA styles only use type selectors, do not have custom properties, and we
+  // never change them dynamically.
   DCHECK(IsInTreeScope());
   if (parentNode() == GetTreeScope().RootNode()) {
     if (new_style.HasNonUaHighlightPseudoStyles()) {
@@ -5205,6 +5329,9 @@ Element::HighlightRecalc Element::CalculateHighlightRecalc(
         return HighlightRecalc::kFull;
       }
       if (old_style->EffectiveZoom() != new_style.EffectiveZoom()) {
+        return HighlightRecalc::kFull;
+      }
+      if (old_style->InitialData() != new_style.InitialData()) {
         return HighlightRecalc::kFull;
       }
       // Neither the new style nor the old style has any non-UA highlight rules,
@@ -7040,7 +7167,8 @@ ColumnPseudoElement* Element::GetOrCreateColumnPseudoElementIfNeeded(
     const ComputedStyle* scroll_marker_style =
         scroll_marker->CustomStyleForLayoutObject(
             StyleRecalcContext::FromInclusiveAncestors(*column_pseudo_element));
-    if (!scroll_marker_style) {
+    if (!PseudoElementLayoutObjectIsNeeded(kPseudoIdScrollMarker,
+                                           scroll_marker_style, this)) {
       scroll_marker->Dispose();
       return column_pseudo_element;
     }
@@ -7305,19 +7433,6 @@ void Element::SetInnerHTMLInternal(
     if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
             html, this, kAllowScriptingContent, parse_declarative_shadows,
             force_html, exception_state)) {
-      if (RuntimeEnabledFeatures::SanitizerAPIEnabled()) {
-        // TODO(vogelheim): Not sure if this is the correct point in time for
-        // sanitization. It should be before the parse result is connected to
-        // a live DOM tree. But I'm not sure (yet) how this interacts with the
-        // DOMParts handling below.
-        if (sanitize_html == SanitizeHtml::kSanitizeSafe) {
-          SanitizerAPI::SanitizeSafeInternal(fragment, set_html_options,
-                                             exception_state);
-        } else if (sanitize_html == SanitizeHtml::kSanitizeUnsafe) {
-          SanitizerAPI::SanitizeUnsafeInternal(fragment, set_html_options,
-                                               exception_state);
-        }
-      }
       ContainerNode* container = this;
       bool swap_dom_parts{false};
       if (auto* template_element = DynamicTo<HTMLTemplateElement>(*this)) {
@@ -7334,6 +7449,20 @@ void Element::SetInnerHTMLInternal(
         To<DocumentFragment>(*container)
             .getPartRoot()
             .SwapPartsList(fragment->getPartRoot());
+      }
+      if (RuntimeEnabledFeatures::SanitizerAPIEnabled()) {
+        // TODO(vogelheim): The interaction of sanitization with DOMParts
+        // handling above is still unclear.
+        // We need to know the container that we're parsing into (and not just
+        // the temporary fragment), and sanitization needs to happen before
+        // connecting the result to a live DOM tree.
+        if (sanitize_html == SanitizeHtml::kSanitizeSafe) {
+          SanitizerAPI::SanitizeSafeInternal(container, set_html_options,
+                                             exception_state);
+        } else if (sanitize_html == SanitizeHtml::kSanitizeUnsafe) {
+          SanitizerAPI::SanitizeUnsafeInternal(container, set_html_options,
+                                               exception_state);
+        }
       }
     }
   }
@@ -7634,8 +7763,8 @@ void Element::setPointerCapture(PointerId pointer_id,
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                         "InvalidStateError");
     } else {
-      GetDocument().GetFrame()->GetEventHandler().SetPointerCapture(
-          pointer_id, this, /* explicit_capture */ true);
+      GetDocument().GetFrame()->GetEventHandler().SetPointerCapture(pointer_id,
+                                                                    this);
     }
   }
 }
@@ -7734,7 +7863,6 @@ void Element::SetShadowPseudoId(const AtomicString& id) {
     DCHECK(type == CSSSelector::kPseudoWebKitCustomElement ||
            type == CSSSelector::kPseudoBlinkInternalElement ||
            type == CSSSelector::kPseudoDetailsContent ||
-           type == CSSSelector::kPseudoCheckMark ||
            id == shadow_element_names::kPickerSelect)
         << "type: " << type << ", id: " << id;
   }
@@ -7843,11 +7971,14 @@ const ComputedStyle* Element::EnsureComputedStyle(
       (filter_root &&
        !filter_root->ComputedStyleRef().IsEnsuredOutsideFlatTree());
   if (!is_in_flat_tree) {
+    if (!RuntimeEnabledFeatures::GetComputedStyleOutsideFlatTreeEnabled()) {
+      return nullptr;
+    }
     filter_root = nullptr;
   }
 
-  SelectorFilterRootScope root_scope(filter_root);
-  SelectorFilterParentScope::EnsureParentStackIsPushed();
+  SelectorFilterParentScope root_scope(
+      filter_root, SelectorFilterParentScope::ScopeType::kRoot);
   SelectorFilter& filter =
       top->GetDocument().GetStyleResolver().GetSelectorFilter();
   GetDocument().GetStyleEngine().UpdateViewportSize();
@@ -8264,10 +8395,10 @@ PseudoElement* Element::UpdateLayoutSiblingPseudoElement(
     const StyleRecalcContext& style_recalc_context) {
   DCHECK(pseudo_id == kPseudoIdScrollMarkerGroupBefore ||
          pseudo_id == kPseudoIdScrollMarkerGroupAfter ||
-         pseudo_id == kPseudoIdScrollUpButton ||
-         pseudo_id == kPseudoIdScrollDownButton ||
-         pseudo_id == kPseudoIdScrollLeftButton ||
-         pseudo_id == kPseudoIdScrollRightButton);
+         pseudo_id == kPseudoIdScrollButtonBlockStart ||
+         pseudo_id == kPseudoIdScrollButtonInlineStart ||
+         pseudo_id == kPseudoIdScrollButtonBlockEnd ||
+         pseudo_id == kPseudoIdScrollButtonInlineEnd);
   StyleRecalcContext context(style_recalc_context);
   if (style_recalc_context.container &&
       style_recalc_context.container == this) {
@@ -8713,8 +8844,42 @@ bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
   if (pseudo_id == kPseudoIdFirstLetter && IsSVGElement()) {
     return false;
   }
+  if (pseudo_id == kPseudoIdCheckMark) {
+    // We want to avoid the performance cost of generating the checkmark for
+    // old-style selects.  While it is technically needed only when we have an
+    // appearance:base picker, we condition it on an appearance:base button
+    // instead, since we can do that without re-entering style recalc.
+    auto is_option_in_appearance_base_select = [](const Element* e) {
+      if (const auto* option = DynamicTo<HTMLOptionElement>(e)) {
+        if (const HTMLSelectElement* select = option->OwnerSelectElement()) {
+          return select->IsAppearanceBaseButton(
+              HTMLSelectElement::StyleUpdateBehavior::kDontUpdateStyle);
+        }
+      }
+      return false;
+    };
+    if (!is_option_in_appearance_base_select(this)) {
+      return false;
+    }
+  }
   if (const ComputedStyle* style = GetComputedStyle()) {
     return style->CanGeneratePseudoElement(pseudo_id);
+  }
+  return false;
+}
+
+bool Element::HasSiblingBoxPseudoElements() const {
+  const ElementRareDataVector* rare_data = GetElementRareData();
+  if (!rare_data) {
+    return false;
+  }
+  for (PseudoId pseudo_id :
+       {kPseudoIdScrollButtonBlockStart, kPseudoIdScrollButtonInlineStart,
+        kPseudoIdScrollButtonBlockEnd, kPseudoIdScrollButtonInlineEnd,
+        kPseudoIdScrollMarkerGroupAfter, kPseudoIdScrollMarkerGroupBefore}) {
+    if (rare_data->GetPseudoElement(pseudo_id)) {
+      return true;
+    }
   }
   return false;
 }
@@ -9234,8 +9399,8 @@ static bool NeedsURLResolutionForInlineStyle(const Element& element,
   if (!style) {
     return false;
   }
-  for (unsigned i = 0; i < style->PropertyCount(); ++i) {
-    if (style->PropertyAt(i).Value().MayContainUrl()) {
+  for (const CSSPropertyValue& property : style->Properties()) {
+    if (property.Value().MayContainUrl()) {
       return true;
     }
   }
@@ -9244,8 +9409,8 @@ static bool NeedsURLResolutionForInlineStyle(const Element& element,
 
 static void ReResolveURLsInInlineStyle(const Document& document,
                                        MutableCSSPropertyValueSet& style) {
-  for (unsigned i = 0; i < style.PropertyCount(); ++i) {
-    const CSSValue& value = style.PropertyAt(i).Value();
+  for (const CSSPropertyValue& property : style.Properties()) {
+    const CSSValue& value = property.Value();
     if (value.MayContainUrl()) {
       value.ReResolveUrl(document);
     }
@@ -10753,10 +10918,10 @@ Element* Element::ImplicitAnchorElement() const {
       case kPseudoIdScrollMarkerGroupBefore:
       case kPseudoIdScrollMarkerGroupAfter:
       case kPseudoIdScrollMarker:
-      case kPseudoIdScrollUpButton:
-      case kPseudoIdScrollDownButton:
-      case kPseudoIdScrollLeftButton:
-      case kPseudoIdScrollRightButton:
+      case kPseudoIdScrollButtonBlockStart:
+      case kPseudoIdScrollButtonInlineStart:
+      case kPseudoIdScrollButtonBlockEnd:
+      case kPseudoIdScrollButtonInlineEnd:
         return pseudo_element->UltimateOriginatingElement()
             ->ImplicitAnchorElement();
       default:

@@ -8,17 +8,17 @@ build_webui("build") {
   grd_prefix = "commerce_product_specifications"
 
   static_files = [
-    "product_specifications.html",
     "disclosure/product_specifications_disclosure.html",
-    "images/empty_state_dark.svg",
     "images/empty_state.svg",
+    "images/empty_state_dark.svg",
+    "product_specifications.html",
   ]
 
   # Files holding a Polymer element definition and have an equivalent .html file.
   web_component_files = [
     "app.ts",
-    "header_menu.ts",
     "header.ts",
+    "header_menu.ts",
     "new_column_selector.ts",
     "product_selection_menu.ts",
     "product_selector.ts",
@@ -27,6 +27,8 @@ build_webui("build") {
 
   css_files = [
     "buying_options_section.css",
+    "comparison_table_list.css",
+    "comparison_table_list_item.css",
     "description_citation.css",
     "description_section.css",
     "disclosure/app.css",
@@ -46,6 +48,10 @@ build_webui("build") {
   non_web_component_files = [
     "buying_options_section.html.ts",
     "buying_options_section.ts",
+    "comparison_table_list.html.ts",
+    "comparison_table_list.ts",
+    "comparison_table_list_item.html.ts",
+    "comparison_table_list_item.ts",
     "description_citation.html.ts",
     "description_citation.ts",
     "description_section.html.ts",

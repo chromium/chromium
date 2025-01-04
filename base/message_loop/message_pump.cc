@@ -167,8 +167,9 @@ bool MessagePump::IsMessagePumpForUIFactoryOveridden() {
 std::unique_ptr<MessagePump> MessagePump::Create(MessagePumpType type) {
   switch (type) {
     case MessagePumpType::UI:
-      if (message_pump_for_ui_factory_)
+      if (message_pump_for_ui_factory_) {
         return message_pump_for_ui_factory_();
+      }
 #if BUILDFLAG(IS_APPLE)
       return message_pump_apple::Create();
 #elif BUILDFLAG(IS_NACL) || BUILDFLAG(IS_AIX)

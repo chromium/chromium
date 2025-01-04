@@ -4,7 +4,6 @@
 
 #include "components/signin/public/identity_manager/access_token_restriction.h"
 
-#include "build/chromeos_buildflags.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -46,7 +45,7 @@ const AccessTokenRestrictionTestParam kTestParams[] = {
  {GaiaConstants::kCloudSearchQueryOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kOAuth1LoginScope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kCalendarReadOnlyOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
  {GaiaConstants::kAssistantOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kAuditRecordingOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kCastBackdropOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
@@ -62,7 +61,7 @@ const AccessTokenRestrictionTestParam kTestParams[] = {
  {GaiaConstants::kContactsOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kPhotosOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kTachyonOAuthScope, OAuth2ScopeRestriction::kSignedIn},
- #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+ #endif  // BUILDFLAG(IS_CHROMEOS)
  {GaiaConstants::kAnyApiOAuth2Scope, OAuth2ScopeRestriction::kPrivilegedOAuth2Consumer},
  {GaiaConstants::kChromeSyncSupervisedOAuth2Scope, OAuth2ScopeRestriction::kExplicitConsent},
  {GaiaConstants::kKidManagementPrivilegedOAuth2Scope, OAuth2ScopeRestriction::kExplicitConsent},

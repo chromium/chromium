@@ -142,7 +142,7 @@ bool MergeArchive(Archive &Arc,ComprDataIO *DataIO,bool ShowFileName,wchar Comma
     // replacing an encrypted header volume to unencrypted and adding
     // unexpected files by third party to encrypted extraction.
     uiMsg(UIERROR_BADARCHIVE,Arc.FileName);
-    ErrHandler.Exit(RARX_FATAL);
+    ErrHandler.Exit(RARX_BADARC);
   }
 
   if (SplitHeader)

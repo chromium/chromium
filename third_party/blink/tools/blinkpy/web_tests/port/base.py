@@ -36,6 +36,7 @@ import hashlib
 import json
 import logging
 import optparse
+import posixpath
 import re
 import sys
 import tempfile
@@ -43,7 +44,17 @@ import time
 from collections import defaultdict
 from copy import deepcopy
 from datetime import datetime
-from typing import List, Literal, NamedTuple, Optional, Set, Tuple
+from typing import (
+    Collection,
+    Iterator,
+    List,
+    Literal,
+    Mapping,
+    NamedTuple,
+    Optional,
+    Set,
+    Tuple,
+)
 
 import six
 from six.moves import zip_longest
@@ -121,7 +132,7 @@ FONT_FILES = [
 # This is the fingerprint of wpt's certificate found in
 # `//third_party/wpt_tools/certs/127.0.0.1.pem`. The following line is updated
 # by `//third_party/wpt_tools/update_certs.py`.
-WPT_FINGERPRINT = 'Nxvaj3+bY3oVrTc+Jp7m3E3sB1n3lXtnMDCyBsqEXiY='
+WPT_FINGERPRINT = 'GHzeRS4aLf+NeadKdUm+tUlmntyCJI4XyqCVWkDCnoc='
 # One for `//third_party/wpt_tools/certs/127.0.0.1.sxg.pem` used by non-WPT
 # tests under `web_tests/http/`.
 SXG_FINGERPRINT = '55qC1nKu2A88ESbFmk5sTPQS/ScG+8DD7P+2bgFA9iM='
@@ -1100,7 +1111,33 @@ class Port(object):
         return (self._options.exit_after_n_crashes_or_timeouts
                 or max(100, num_tests // 33))
 
-    def tests(self, paths=None):
+    WPTDirectory = Literal[tuple(WPT_DIRS)]
+
+    # A "test root" represents a (virtual suite, WPT directory) pair (where
+    # `None` means the affiliated paths are not virtual and not WPT,
+    # respectively). It's essentially a mountpoint for runnable tests, which
+    # aren't necessarily backed by real files under `web_tests/`.
+    TestRoot = Tuple[Optional[str], Optional[WPTDirectory]]
+
+    # A structured representation of a collection of tests. This structure helps
+    # abstract away different handling for different parts of the path, which
+    # gives callers the illusion of one unified directory for all `web_tests/`.
+    #  * Each root is mapped to POSIX-style relative paths from that root.
+    #  * In some pre-resolution contexts, the path values can contain UNIX-style
+    #    globs.
+    #  * An empty path value represents all tests under that root because it's a
+    #    trivial path prefix of any other path.
+    #  * Each root can be filtered independently of the others.
+    #
+    # For example,
+    #   virtual/v/external/wpt
+    #   virtual/v/external/wpt/t.html
+    #
+    # ... would be parsed as:
+    #   {('v', 'external/wpt'): {'', 't.html'}}
+    PathsByRoot = Mapping[TestRoot, Set[str]]
+
+    def tests(self, paths: Optional[Collection[str]] = None) -> List[str]:
         """Returns all tests or tests matching supplied paths.
 
         Args:
@@ -1115,56 +1152,206 @@ class Port(object):
         [1]: https://web-platform-tests.org/writing-tests/testharness.html#tests-for-other-or-multiple-globals-any-js
         [2]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_tests.md#Virtual-test-suites
         """
-        tests = self.real_tests(paths)
+        # It might make more sense to put this code in `WebTestFinder`, with
+        # `Port.tests()` as a caller, instead of the other way around.
+        bases_by_root = self._parse_all_bases()
+        # Contrary to the behavior of `_parse_paths()`, `Port.tests([])` should
+        # still return all tests, so coerce `paths` here.
+        paths_by_root = self._parse_paths(paths or None)
+        bases_by_root = self._filter_paths(paths_by_root, bases_by_root)
+        tests_by_root = self._resolve_paths(bases_by_root)
+        return sorted(self._format_paths(tests_by_root))
 
-        # TODO(crbug.com/338295229): Consolidate the code paths for all/explicit
-        # tests so that they're less likely to diverge.
-        if paths:
-            if self._options.virtual_tests:
-                tests.extend(self._virtual_tests_matching_paths(paths))
-            if (any(wpt_path in path for wpt_path in self.WPT_DIRS
-                    for path in paths)
-                    # TODO(robertma): Remove this special case when external/wpt is moved to wpt.
-                    or any('external' in path for path in paths)):
-                tests.extend(self._wpt_test_urls_matching_paths(paths))
-        else:
-            # '/' is used instead of filesystem.sep as the WPT manifest always
-            # uses '/' for paths (it is not OS dependent).
-            wpt_tests = [
-                wpt_path + '/' + test for wpt_path in self.WPT_DIRS
-                for test in self.wpt_manifest(wpt_path).all_urls()
-            ]
-            tests_by_dir = defaultdict(list)
-            for test in tests + wpt_tests:
-                dirname = self._filesystem.dirname(test) + '/'
-                tests_by_dir[dirname].append(test)
+    @memoized
+    def _parse_all_bases(self) -> PathsByRoot:
+        """Parse all virtual test suite bases into the by-root format."""
+        bases = []
+        if self._options.virtual_tests:
+            for suite in self.virtual_test_suites():
+                bases.extend(suite.full_prefix + base for base in suite.bases)
+        bases_by_root = self._parse_paths(bases)
+        # Treat non-virtual tests like a special virtual suite that runs
+        # everything.
+        for root in (None, *self.WPT_DIRS):
+            bases_by_root[None, root] = {''}
+        if not self.get_option('run_wpt_internal', True):
+            # Exclude entries, including virtual ones, for `--no-wpt-internal`.
+            bases_by_root = {
+                (virtual_suite, wpt_dir): bases
+                for (virtual_suite, wpt_dir), bases in bases_by_root.items()
+                if wpt_dir != 'wpt_internal'
+            }
+        return bases_by_root
 
-            if self._options.virtual_tests:
-                tests.extend(self._all_virtual_tests(tests_by_dir))
-            tests.extend(wpt_tests)
+    def _parse_paths(self,
+                     paths: Optional[Collection[str]] = None) -> PathsByRoot:
+        """Parse the given test paths into the by-root format.
+
+        Arguments:
+            paths: Paths to test files or directories, or WPT URLs. Native OS
+                path separators will be normalized to POSIX style first so that
+                they are compatible with WPT manifests' URL-based interface.
+                `None` will return a representation of all tests; this is
+                different from passing an empty collection (e.g., a virtual
+                suite with no `exclusive_tests`), which represents no tests.
+        """
+        if paths is None:
+            return collections.defaultdict(lambda: {''})
+        paths_by_root = collections.defaultdict(set)
+        for path in map(self._as_posix_path, paths):
+            virtual_suite, base_test = self.get_suite_name_and_base_test(path)
+            wpt_dir, path_from_root = self.split_wpt_dir(base_test)
+            virtual_suite = virtual_suite or None
+            if virtual_suite and self._path_has_wildcard(path):
+                _log.warning('WARNING: Wildcards in paths are not supported '
+                             'for virtual test suites.')
+                continue
+            if not wpt_dir and path_from_root == 'external':
+                # In practice, `external/wpt` are the only tests available under
+                # `external`, even though the path doesn't parse that way. This
+                # special case handles that.
+                wpt_dir, path_from_root = 'external/wpt', ''
+            paths_by_root[virtual_suite, wpt_dir].add(path_from_root)
+            # For legacy web tests, search for real files under the `virtual/`
+            # directories too.
+            if virtual_suite and not wpt_dir:
+                paths_by_root[None, None].add(path)
+            # A pattern of the form `virtual/<suite>` should also encompass any
+            # virtual WPT roots.
+            if virtual_suite and not wpt_dir and not path_from_root:
+                for wpt_dir in self.WPT_DIRS:
+                    paths_by_root[virtual_suite, wpt_dir].add('')
+        return paths_by_root
+
+    def _as_posix_path(self, path: str) -> str:
+        posix_path = path.replace(self._filesystem.sep, posixpath.sep)
+        return posixpath.normpath(posix_path)
+
+    def _filter_paths(self, paths_by_root: PathsByRoot,
+                      bases_by_root: PathsByRoot) -> PathsByRoot:
+        """Filter for test paths that match at least one filter.
+
+        Both filters and the bases they are applied to are in by-root format.
+        This is a purely symbolic computation that doesn't consult the actual
+        filesystem or manifest state.
+        """
+        filtered_bases_by_root = {}
+        for (virtual_suite, wpt_dir), bases in bases_by_root.items():
+            path_filters = paths_by_root[virtual_suite, wpt_dir]
+            common_tests = set(self._common_tests(path_filters, bases,
+                                                  wpt_dir))
+            if common_tests:
+                filtered_bases_by_root[virtual_suite, wpt_dir] = common_tests
+        return filtered_bases_by_root
+
+    def _common_tests(self,
+                      paths1: Set[str],
+                      paths2: Set[str],
+                      wpt_dir: Optional[WPTDirectory] = None) -> Iterator[str]:
+        """Compute the intersection of two sets of test paths.
+
+        Arguments:
+            paths1, paths2: Sets of POSIX-normalized paths relative to the
+                test root. The operands are symmetric.
+            wpt_dir: If applicable, the WPT directory all paths are relative to.
+        """
+        # The intersection is yielded lazily because callers like
+        # `skipped_due_to_exclusive_tests()` are only interested in whether one
+        # path overlaps any tests in a set, not in the specific common tests. To
+        # optimize for that case, check the smaller operand first.
+        if len(paths2) < len(paths1):
+            paths1, paths2 = paths2, paths1
+        for path in paths1:
+            if self._is_test_descendent(paths2, path, wpt_dir):
+                yield path
+        for path in paths2:
+            if self._is_test_descendent(paths1, path, wpt_dir):
+                yield path
+
+    def _is_test_descendent(self,
+                            ancestors: Set[str],
+                            maybe_descendent: str,
+                            wpt_dir: Optional[WPTDirectory] = None) -> bool:
+        """Check if a set of test paths contains another.
+
+        Arguments:
+            ancestors: Set of paths from the test root that are possible
+                ancestors. An empty path in this set is always an ancestor.
+            maybe_descendent: The path to test.
+            wpt_dir: If applicable, the WPT directory all paths are relative to.
+
+        All path arguments must be POSIX-normalized. Each path from the root
+        represents a test directory, file, or (for WPT) URL.
+        """
+        if not ancestors:
+            return False
+        if '' in ancestors:
+            return True
+        manifest = self.wpt_manifest(wpt_dir) if wpt_dir else None
+        while maybe_descendent:
+            # Simulate walking up the test directory tree. A WPT file that
+            # generates URLs is treated like their parent.
+            if maybe_descendent in ancestors:
+                return True
+            if (manifest and manifest.is_test_url(maybe_descendent)
+                    and not manifest.is_test_file(maybe_descendent)):
+                # This case only handles generated tests like
+                # `.{any,worker}.js`. A WPT whose URL is identical to its file
+                # path should use the other case to complete the walk.
+                maybe_descendent = manifest.file_path_for_test_url(
+                    maybe_descendent)
+            else:
+                maybe_descendent = posixpath.dirname(maybe_descendent)
+        return False
+
+    def _resolve_paths(self, paths_by_root: PathsByRoot) -> PathsByRoot:
+        """Expand a group of test paths into concrete (runnable) test IDs."""
+        tests_by_root = {}
+        for (virtual_suite, wpt_dir), paths_from_root in paths_by_root.items():
+            if wpt_dir:
+                tests = self._resolve_wpt(wpt_dir, paths_from_root)
+            else:
+                # Because non-WPT roots are resolved independently of one
+                # another, `real_tests()` can query the same overlapping
+                # files/directories multiple times. Although benchmarks suggest
+                # this is not a bottleneck in practice, I/O can be reduced
+                # further by querying a trie that's built from a single walk of
+                # the non-WPT directories that don't share a common ancestor.
+                tests = self.real_tests(paths_from_root)
+            tests_by_root[virtual_suite, wpt_dir] = tests
+        return tests_by_root
+
+    def _resolve_wpt(self, wpt_dir: str,
+                     paths_from_root: Collection[str]) -> Set[str]:
+        """Expand WPT files, directories, or URLs into only URLs."""
+        # TODO(crbug.com/333024275): Support limited wildcards for WPT. It's
+        # already supported for legacy web tests.
+        manifest = self.wpt_manifest(wpt_dir)
+        if '' in paths_from_root:
+            return manifest.all_urls()
+        tests = set()
+        for path in paths_from_root:
+            if manifest.is_test_url(path):
+                tests.add(path)
+            else:
+                tests.update(manifest.tests_under_path(path))
         return tests
 
-    def real_tests_from_dict(self, paths, tests_by_dir):
-        """Find all real tests in paths, using results saved in dict."""
-        files = []
-        for path in paths:
-            # Some WPT files can expand to multiple tests, and the file itself
-            # is not a test so it is not in tests_by_dir. Do special handling
-            # when we find a WPT URL, file, or directory in virtual bases.
-            if any(path.startswith(wpt_dir) for wpt_dir in self.WPT_DIRS):
-                files.extend(self._wpt_test_urls_matching_paths([path]))
-                continue
-            if self._has_supported_extension_for_all(path):
-                # only append the file when it is in tests_by_dir
-                dirname = self._filesystem.dirname(path) + '/'
-                if path in tests_by_dir.get(dirname, []):
-                    files.append(path)
-                continue
-            path = path + '/' if path[-1] != '/' else path
-            for key, value in tests_by_dir.items():
-                if key.startswith(path):
-                    files.extend(value)
-        return files
+    def _format_paths(self, paths_by_root: PathsByRoot) -> Iterator[str]:
+        """Convert paths in parsed by-root format back to flat test IDs.
+
+        This method resembles an inverse of `_parse_paths()`.
+
+        The test IDs are lazily yielded in arbitrary order, which lets callers
+        choose how to collect the results without requiring an intermediate
+        copy.
+        """
+        for (virtual_suite, wpt_dir), paths_from_root in paths_by_root.items():
+            prefix = f'virtual/{virtual_suite}/' if virtual_suite else ''
+            if wpt_dir:
+                prefix += wpt_dir + '/'
+            for path in paths_from_root:
+                yield prefix + path
 
     def real_tests(self, paths):
         """Find all real tests in paths except WPT."""
@@ -2130,8 +2317,13 @@ class Port(object):
 
         return clean_env
 
-    def show_results_html_file(self, results_filename):
+    def show_results_html_file(self, results_filename: str):
         """Displays the given HTML file in a user's browser."""
+        if not self._filesystem.isfile(results_filename):
+            # Validate the path here, since `open_url()` on a nonexistent file
+            # will display a 404 error to the user that's opaque to blinkpy.
+            raise ValueError(
+                f'{results_filename!r} should be a path to an HTML file')
         return self.host.user.open_url(
             abspath_to_uri(self.host.platform, results_filename))
 
@@ -2723,177 +2915,8 @@ class Port(object):
                 path_to_virtual_test_suites, error))
         return virtual_test_suites
 
-    def _all_virtual_tests(self, tests_by_dir):
-        tests = []
-
-        for suite in self.virtual_test_suites():
-            if suite.bases:
-                tests.extend(map(lambda x: suite.full_prefix + x,
-                             self.real_tests_from_dict(suite.bases, tests_by_dir)))
-        return tests
-
-    def _get_bases_for_suite_with_paths(self, suite, paths):
-        """Returns a set of bases of the virutual suite that are referenced by
-        paths. E.g. given a virtual test suite `foo` with the following bases:
-          bar/baz
-          bar/quu
-          qux
-        and given paths of [virtual/foo/bar], this method would return
-          [bar/baz, bar/quu]
-
-        Given paths of [virtual/foo/bar/baz/test.html], the return would be
-        [bar/baz]
-        """
-
-        real_paths = [p.replace(suite.full_prefix, '', 1) for p in paths \
-            if p.startswith(suite.full_prefix)]
-        # Test for paths that are under the suite's bases, so that we don't run
-        # a non-existent test.
-        bases = set()
-        for real_path in real_paths:
-            for base in suite.bases:
-                if real_path.startswith(base) or base.startswith(real_path):
-                    bases.add(base)
-                if (self.is_wpt_file(base) and base.endswith('.js')
-                        and real_path in self._wpt_test_urls_matching_paths(
-                            [base])):
-                    bases.add(base)
-
-        return list(bases)
-
-    def _virtual_tests_for_suite_with_paths(self, suite, paths):
-        if not suite.bases:
-            return []
-
-        bases = self._get_bases_for_suite_with_paths(suite, paths)
-
-        if not bases:
-            return []
-
-        tests = []
-        tests.extend(
-            map(lambda x: suite.full_prefix + x, self.real_tests(bases)))
-
-        wpt_bases = []
-        for base in bases:
-            if any(base.startswith(wpt_dir) for wpt_dir in self.WPT_DIRS):
-                wpt_bases.append(base)
-
-        if wpt_bases:
-            tests.extend(
-                self._wpt_test_urls_matching_paths(
-                    wpt_bases, [suite.full_prefix] * len(wpt_bases)))
-
-        return tests
-
-    def _virtual_tests_matching_paths(self, paths):
-        tests = []
-        normalized_paths = [self.normalize_test_name(p) for p in paths]
-        # Remove the 'js' suffix so that the startswith test can pass
-        modified_paths = [
-            p[:-2] if self.is_wpt_test(p) and p.endswith('.js') else p
-            for p in normalized_paths
-        ]
-        for suite in self.virtual_test_suites():
-            virtual_paths = [
-                p for p in normalized_paths if p.startswith(suite.full_prefix)
-            ]
-            if not virtual_paths:
-                continue
-            for test in self._virtual_tests_for_suite_with_paths(
-                    suite, virtual_paths):
-                if any(test.startswith(p) for p in modified_paths):
-                    tests.append(test)
-
-        if any(self._path_has_wildcard(path) for path in paths):
-            _log.warning(
-                'WARNING: Wildcards in paths are not supported for virtual test suites.'
-            )
-
-        return tests
-
     def _path_has_wildcard(self, path):
         return '*' in path
-
-    def _wpt_test_urls_matching_paths(self, filter_paths, virtual_prefixes=[]):
-        """Returns a set of paths that are tests to be run from the
-        web-platform-test manifest files.
-
-        filter_paths: A list of strings that are prefix matched against the
-            list of tests in the WPT manifests. Only tests that match are returned.
-        virtual_prefixes: A list of prefixes corresponding to paths in |filter_paths|.
-            If present, each test path output should have its virtual prefix
-            prepended to the resulting path to the test.
-        """
-        # Generate the manifest files if needed and then read them. Do this once
-        # for this whole method as the file is large and generation/loading is
-        # slow.
-        wpts = [(wpt_path, self.wpt_manifest(wpt_path))
-                for wpt_path in self.WPT_DIRS]
-
-        tests = []
-        # This walks through the set of paths where we should look for tests.
-        # For each path, a map can be provided that we replace 'path' with in
-        # the result.
-        for filter_path, virtual_prefix in zip_longest(filter_paths,
-                                                       virtual_prefixes):
-            # This is to make sure "external[\\/]?" can also match to
-            # external/wpt.
-            # TODO(robertma): Remove this special case when external/wpt is
-            # moved to wpt.
-            if filter_path.rstrip('\\/').endswith('external'):
-                filter_path = self._filesystem.join(filter_path, 'wpt')
-            # '/' is used throughout this function instead of filesystem.sep as
-            # the WPT manifest always uses '/' for paths (it is not OS
-            # dependent).
-            if self._filesystem.sep != '/':
-                filter_path = filter_path.replace(self._filesystem.sep, '/')
-
-            # Drop empty path components.
-            filter_path = filter_path.replace('//', '/')
-
-            # We now have in |filter_path| a path to an actual test directory or file
-            # on disk, in unix format, relative to the root of the web_tests
-            # directory.
-
-            for wpt_path, wpt_manifest in wpts:
-                # If the |filter_path| is not inside a WPT dir, then we will
-                # match no tests in the manifest.
-                if not filter_path.startswith(wpt_path):
-                    continue
-                # Drop the WPT prefix (including the joining '/') from |path|.
-                filter_path_from_wpt = filter_path[len(wpt_path) + 1:]
-
-                # An empty filter matches everything.
-                if filter_path_from_wpt:
-                    # If the filter is to a specific test file that ends with .js,
-                    # we match that against tests with any extension by dropping
-                    # the extension from the filter.
-                    #
-                    # Else, when matching a directory, ensure the filter ends in '/'
-                    # to only match the exact directory name and not directories
-                    # with the filter as a prefix.
-                    if wpt_manifest.is_test_file(filter_path_from_wpt):
-                        filter_path_from_wpt = re.sub(r'\.js$', '.',
-                                                      filter_path_from_wpt)
-                    elif not wpt_manifest.is_test_url(filter_path_from_wpt):
-                        filter_path_from_wpt = filter_path_from_wpt.rstrip(
-                            '/') + '/'
-
-                # We now have a path to an actual test directory or file on
-                # disk, in unix format, relative to the WPT directory.
-                #
-                # Look for all tests in the manifest that are under the relative
-                # |filter_path_from_wpt|.
-                for test_path_from_wpt in wpt_manifest.all_urls():
-                    if test_path_from_wpt.startswith(filter_path_from_wpt):
-                        # The result is a test path from the root web test
-                        # directory. If a |virtual_prefix| was given, we prepend
-                        # that to the result.
-                        prefix = virtual_prefix if virtual_prefix else ''
-                        tests.append(prefix + wpt_path + '/' +
-                                     test_path_from_wpt)
-        return tests
 
     def _lookup_virtual_suite(self, test_name):
         if not test_name.startswith('virtual/'):
@@ -2903,13 +2926,15 @@ class Port(object):
                 return suite
         return None
 
-    def get_suite_name_and_base_test(self, test_name):
+    def get_suite_name_and_base_test(self, test_name: str) -> Tuple[str, str]:
         # This assumes test_name is a valid test, and returns suite name
         # and base test. For non virtual tests, returns empty string for
         # suite name
         if test_name.startswith('virtual/'):
-            _, name, base_test = test_name.split('/', 2)
-            return name, base_test
+            _, name, *rest = test_name.split(self.TEST_PATH_SEPARATOR, 2)
+            # Tolerate patterns of the form `virtual/<suite>` with just one
+            # separator.
+            return name, rest[0] if rest else ''
 
         return '', test_name
 

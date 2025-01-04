@@ -80,8 +80,8 @@ class SavedTabGroup {
   const std::optional<CollaborationId>& collaboration_id() const {
     return collaboration_id_;
   }
-  std::optional<base::Uuid> originating_saved_tab_group_guid() const {
-    return originating_saved_tab_group_guid_;
+  std::optional<base::Uuid> originating_tab_group_guid() const {
+    return originating_tab_group_guid_;
   }
   const SharedAttribution& shared_attribution() const {
     return shared_attribution_;
@@ -89,6 +89,7 @@ class SavedTabGroup {
 
   bool is_pinned() const { return position_.has_value(); }
   bool is_shared_tab_group() const { return collaboration_id_.has_value(); }
+  bool is_transitioning_to_saved() const { return is_transitioning_to_saved_; }
 
   std::vector<SavedTabGroupTab>& saved_tabs() { return saved_tabs_; }
 
@@ -126,8 +127,9 @@ class SavedTabGroup {
   SavedTabGroup& SetPinned(bool pinned);
   SavedTabGroup& SetCollaborationId(
       std::optional<CollaborationId> collaboration_id);
-  SavedTabGroup& SetOriginatingSavedTabGroupGuid(
-      std::optional<base::Uuid> originating_saved_tab_group_guid);
+  SavedTabGroup& SetOriginatingTabGroupGuid(
+      std::optional<base::Uuid> originating_tab_group_guid);
+  SavedTabGroup& SetIsTransitioningToSaved(bool is_transitioning_to_saved);
 
   // Sets the updater of the tab group, and also the creator if it's the first
   // update. This method should be preferred over SetCreatedByAttribution() for
@@ -195,6 +197,11 @@ class SavedTabGroup {
   // copied.
   SavedTabGroup CloneAsSharedTabGroup(CollaborationId collaboration_id) const;
 
+  // Creates a copy of this group and converts it to a saved tab group. The new
+  // group and new tabs will have new UUIDs. Local tab and group IDs are not
+  // copied. This method should only be called on shared tab groups.
+  SavedTabGroup CloneAsSavedTabGroup() const;
+
   // Whether the TabGroup is pending sanitization.
   bool IsPendingSanitization() const;
 
@@ -217,6 +224,10 @@ class SavedTabGroup {
   // not the last tab, unless `ignore_empty_groups_for_testing` is true.
   void RemoveTabImpl(const base::Uuid& saved_tab_guid,
                      bool ignore_empty_groups_for_testing = false);
+
+  // Make a copy the saved tab group, keeping fields like title, color, favicon
+  // and all the tabs. UUID and local tab and group IDs are not copied.
+  SavedTabGroup CopyBaseFieldsWithTabs() const;
 
   // The ID used to represent the group in sync.
   base::Uuid saved_guid_;
@@ -269,11 +280,16 @@ class SavedTabGroup {
   std::optional<CollaborationId> collaboration_id_;
 
   // The saved guid of the group that this group was created from. Used for
-  // shared tab groups only.
-  std::optional<base::Uuid> originating_saved_tab_group_guid_;
+  // both shared and saved tab groups when they are converted from the other
+  // type.
+  std::optional<base::Uuid> originating_tab_group_guid_;
 
   // Atribution data for the shared tab group.
   SharedAttribution shared_attribution_;
+
+  // Whether the tab group is transitioning from shared to private, but not yet
+  // completed. Can only be true if the tab group is currently shared.
+  bool is_transitioning_to_saved_ = false;
 };
 
 }  // namespace tab_groups

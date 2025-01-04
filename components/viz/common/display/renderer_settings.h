@@ -48,6 +48,8 @@ class VIZ_COMMON_EXPORT RendererSettings {
     // The minimum number of fragments that would not be drawn if a quads was
     // split into multiple quads during occlusion culling.
     int minimum_fragments_reduced = 128 * 128;
+    // The minimum visible quad size to be considered an occluder.
+    int occluder_minium_visible_quad_size = 32 * 32;
   };
 
   OcclusionCullerSettings occlusion_culler_settings;

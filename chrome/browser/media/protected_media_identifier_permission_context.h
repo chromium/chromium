@@ -10,11 +10,6 @@
 #include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_request_id.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/values.h"
-#include "chromeos/lacros/crosapi_pref_observer.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 // Manages protected media identifier permissions flow, and delegates UI
 // handling via PermissionQueueController.
 class ProtectedMediaIdentifierPermissionContext
@@ -49,14 +44,6 @@ class ProtectedMediaIdentifierPermissionContext
   void UpdateTabContext(const permissions::PermissionRequestID& id,
                         const GURL& requesting_frame,
                         bool allowed) override;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void OnAttestationEnabledChanged(base::Value value);
-  // We synchronize this property with ash-chrome so that we can check it
-  // synchronously and not disturb the existing flow here.
-  std::unique_ptr<CrosapiPrefObserver> attestation_enabled_observer_;
-  inline static bool attestation_enabled_ = true;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 #endif  // CHROME_BROWSER_MEDIA_PROTECTED_MEDIA_IDENTIFIER_PERMISSION_CONTEXT_H_

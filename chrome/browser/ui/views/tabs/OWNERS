@@ -11,4 +11,4 @@ per-file tab_search_button*=tluk@chromium.org
 mfoltz@chromium.org
 
 # For changes related to fallback (system-DnD-based) tab dragging.
-max@igalia.com
+per-file tab_drag_controller*=max@igalia.com

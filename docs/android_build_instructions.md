@@ -135,6 +135,7 @@ following arguments:
 target_os = "android"
 target_cpu = "arm64"  # See "Figuring out target_cpu" below
 use_remoteexec = true  # Enables distributed builds. See "Faster Builds".
+android_static_analysis = "build_server"  # Does static checks in background. See "Faster Builds".
 ```
 
 * You only have to run this once for each new build directory, Ninja will
@@ -408,63 +409,31 @@ Args that affect build speed:
    * Disables non-public code, which exists even when building public targets.
    * Use this is you do not need to test internal-only things.
 
-### Running Static Analysis Asynchronously
+### Asynchronous Static Analysis
 
 Normally analysis build steps like Lint and Error Prone will run as normal build
 steps. The build will then wait for all analysis steps to complete successfully.
 By offloading analysis build steps to a separate build server to be run lazily at
-a low priority when the machine is idle, the actual build can complete much faster.
+a low priority, the actual build can complete much faster.
 
 **Note**: Since the build completes before the analysis checks finish, the build
-will not fail if an analysis check fails. Make sure to check the server's output
-at regular intervals to fix outstanding issues caught by these analysis checks.
+will not fail if an analysis check fails.
 
-#### First way (by running it manually)
+To enable this mode, add the gn args:
 
-There are **two** steps to using the build server.
-1. Add the gn arg `android_static_analysis = "build_server"`
-2. Run the script at
-[//build/android/fast_local_dev_server.py][fast_local_dev]
-
-All your local builds will now forward analysis steps to this server, including
-android lint, errorprone, bytecode processor.
-
-If you run (2) in a terminal, the output of the checks will be displayed there.
-
-#### Second way (using systemd)
-
-Alternatively, you can set up the server as a Linux service, so it runs on the
-background and starts on boot. If you're using systemd:
-
-Save the following as /etc/systemd/user/fast-local-dev-server.service.
-```
-[Unit]
-Description=Chrome server for android build static analysis
-
-[Service]
-Type=simple
-ExecStart=<path to fast_local_dev_server.py>
-Restart=always
-
-[Install]
-WantedBy=default.target
+```gn
+android_static_analysis = "build_server"
 ```
 
-Then
-```bash
-systemctl --user daemon-reload
-systemctl --user enable fast-local-dev-server
-systemctl --user start fast-local-dev-server
+Command output will show up on the terminal that ran the build, as well as in
+`out/Debug/buildserver.log.0`.
+
+See the status of the server at any time via:
+```
+build/android/fast_local_dev_server.py --print-status-all
 ```
 
-The output can be inspected with
-```
-journalctl --user -e -u fast-local-dev-server
-```
-
-[fast_local_dev]: https://source.chromium.org/chromium/chromium/src/+/main:build/android/fast_local_dev_server.py
-
-#### Incremental Install
+### Incremental Install
 [Incremental Install](/build/android/incremental_install/README.md) uses
 reflection and sideloading to speed up the edit & deploy cycle (normally < 10
 seconds). The initial launch of the apk will be a lot slower on older Android

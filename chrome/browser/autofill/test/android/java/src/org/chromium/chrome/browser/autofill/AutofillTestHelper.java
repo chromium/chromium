@@ -20,6 +20,7 @@ import androidx.test.espresso.util.HumanReadables;
 
 import org.hamcrest.Matcher;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.test.util.CallbackHelper;
@@ -635,19 +636,21 @@ public class AutofillTestHelper {
         void addServerCreditCard(CreditCard card);
 
         void addServerCreditCardWithAdditionalFields(
-                CreditCard card, String nickname, int cardIssuer);
+                CreditCard card, @JniType("std::u16string") String nickname, int cardIssuer);
 
-        void setProfileUseStats(String guid, int count, int daysSinceLastUsed);
+        void setProfileUseStats(
+                @JniType("std::string") String guid, int count, int daysSinceLastUsed);
 
-        int getProfileUseCount(String guid);
+        int getProfileUseCount(@JniType("std::string") String guid);
 
-        long getProfileUseDate(String guid);
+        long getProfileUseDate(@JniType("std::string") String guid);
 
+        @JniType("std::string")
         String addCreditCardWithUseStats(CreditCard card, int count, int daysSinceLastUsed);
 
-        int getCreditCardUseCount(String guid);
+        int getCreditCardUseCount(@JniType("std::string") String guid);
 
-        long getCreditCardUseDate(String guid);
+        long getCreditCardUseDate(@JniType("std::string") String guid);
 
         long getCurrentDate();
 

@@ -210,9 +210,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kPostQuantumKyber);
 // stable without issues.
 NET_EXPORT BASE_DECLARE_FEATURE(kUseMLKEM);
 
-// Changes the timeout after which unused sockets idle sockets are cleaned up.
-NET_EXPORT BASE_DECLARE_FEATURE(kNetUnusedIdleSocketTimeout);
-
 // When enabled, the time threshold for Lax-allow-unsafe cookies will be lowered
 // from 2 minutes to 10 seconds. This time threshold refers to the age cutoff
 // for which cookies that default into SameSite=Lax, which are newer than the
@@ -292,6 +289,11 @@ NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
 // When enabled, a cross-site ancestor chain bit is included in the partition
 // key in partitioned cookies.
 NET_EXPORT BASE_DECLARE_FEATURE(kAncestorChainBitEnabledInPartitionedCookies);
+
+// When enabled, requestStorageAccessFor will require storage access permissions
+// granted by StorageAccessApi or StorageAccessHeaders to send cookies on
+// requests allowed because of requestStorageAccessFor instead of cors.
+NET_EXPORT BASE_DECLARE_FEATURE(kRequestStorageAccessNoCorsRequired);
 
 // Controls whether static key pinning is enforced.
 NET_EXPORT BASE_DECLARE_FEATURE(kStaticKeyPinningEnforcement);
@@ -678,6 +680,9 @@ NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
 // If enabled, use new implementation of client cert path building.
 NET_EXPORT BASE_DECLARE_FEATURE(kNewClientCertPathBuilding);
 #endif  // BUILDFLAG(USE_NSS_CERTS)
+
+// When enabled HSTS upgrades will only apply to top-level navigations.
+NET_EXPORT BASE_DECLARE_FEATURE(kHstsTopLevelNavigationsOnly);
 
 }  // namespace net::features
 

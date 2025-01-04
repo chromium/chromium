@@ -1,5 +1,5 @@
 include_rules = [
-  "+ios/chrome/browser/ui/authentication",
+  "+ios/chrome/browser/authentication/ui_bundled",
   "+ios/chrome/browser/settings/ui_bundled",
   "+ios/chrome/browser/drag_and_drop/model",
   "+ios/chrome/browser/favicon/model",

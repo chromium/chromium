@@ -32,6 +32,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "components/autofill/content/renderer/a11y_utils.h"
@@ -42,6 +43,7 @@
 #include "components/autofill/content/renderer/password_autofill_agent.h"
 #include "components/autofill/content/renderer/password_generation_agent.h"
 #include "components/autofill/content/renderer/suggestion_properties.h"
+#include "components/autofill/content/renderer/timing.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -90,6 +92,14 @@ namespace {
 
 using enum CallTimerState::CallSite;
 
+// Used for metrics. Do not renumber.
+// This enum is supposed to identify what is being returned by
+// `AutofillAgent::GetSubmittedForm`: Either no form (null) which means that
+// fetching the submitted form failed, or a form that was extracted at the time
+// of calling the function, or a form that was extracted before and cached until
+// submission time.
+enum class SubmittedFormType { kNull = 0, kExtracted = 1, kCached = 2 };
+
 constexpr char kSubmissionSourceHistogram[] =
     "Autofill.SubmissionDetectionSource.AutofillAgent";
 
@@ -98,6 +108,44 @@ constexpr char kSubmissionSourceHistogram[] =
 constexpr base::TimeDelta kWaitTimeForOptionsChanges = base::Milliseconds(50);
 
 using FormAndField = std::pair<FormData, raw_ref<const FormFieldData>>;
+
+void LogSubmittedFormMetric(mojom::SubmissionSource source,
+                            SubmittedFormType type) {
+  // Used for metrics. Do not renumber.
+  enum class SubmittedFormTypeBySource {
+    kNone_Null = 0,
+    kNone_Extracted = 1,
+    kNone_Cached = 2,
+    kSameDocumentNavigation_Null = 3,
+    kSameDocumentNavigation_Extracted = 4,
+    kSameDocumentNavigation_Cached = 5,
+    kXhrSucceeded_Null = 6,
+    kXhrSucceeded_Extracted = 7,
+    kXhrSucceeded_Cached = 8,
+    kFrameDetached_Null = 9,
+    kFrameDetached_Extracted = 10,
+    kFrameDetached_Cached = 11,
+    kProbableFormSubmission_Null = 12,
+    kProbableFormSubmission_Extracted = 13,
+    kProbableFormSubmission_Cached = 14,
+    kFormSubmission_Null = 15,
+    kFormSubmission_Extracted = 16,
+    kFormSubmission_Cached = 17,
+    kDomMutationAfterAutofill_Null = 18,
+    kDomMutationAfterAutofill_Extracted = 19,
+    kDomMutationAfterAutofill_Cached = 20,
+    kMaxValue = kDomMutationAfterAutofill_Cached
+  };
+  static_assert(
+      base::to_underlying(SubmittedFormTypeBySource::kMaxValue) + 1 ==
+          3 * (base::to_underlying(mojom::SubmissionSource::kMaxValue) + 1),
+      "SubmittedFormTypeBySource should have three values for each value of "
+      "SubmissionSource");
+  base::UmaHistogramEnumeration(
+      "Autofill.SubmissionDetection.SubmittedFormType",
+      static_cast<SubmittedFormTypeBySource>(base::to_underlying(source) * 3 +
+                                             base::to_underlying(type)));
+}
 
 // For each field in the |form| sets the title to include the field's heuristic
 // type, server type, and signature; as well as the form's signature and the
@@ -427,9 +475,9 @@ AutofillAgent::AutofillAgent(
       config_(config),
       password_autofill_agent_(std::move(password_autofill_agent)),
       password_generation_agent_(std::move(password_generation_agent)) {
+  form_tracker_->SetUserGestureRequired(config.user_gesture_required);
   render_frame->GetWebFrame()->SetAutofillClient(this);
   password_autofill_agent_->Init(this);
-  AddFormObserver(this);
   registry->AddInterface<mojom::AutofillAgent>(base::BindRepeating(
       &AutofillAgent::BindPendingReceiver, base::Unretained(this)));
 }
@@ -437,9 +485,7 @@ AutofillAgent::AutofillAgent(
 // The destructor is not guaranteed to be called. Destruction happens (only)
 // through the OnDestruct() event, which posts a task to delete this object.
 // The process may be killed before this deletion can happen.
-AutofillAgent::~AutofillAgent() {
-  RemoveFormObserver(this);
-}
+AutofillAgent::~AutofillAgent() = default;
 
 WebDocument AutofillAgent::GetDocument() const {
   return unsafe_render_frame()
@@ -483,7 +529,8 @@ void AutofillAgent::DidDispatchDOMContentLoadedEvent() {
                                 !unsafe_render_frame()->IsInFencedFrameTree());
   is_dom_content_loaded_ = true;
   timing_.last_dom_content_loaded = base::TimeTicks::Now();
-  ExtractFormsUnthrottled(/*callback=*/{});
+  ExtractFormsUnthrottled(/*callback=*/{},
+                          GetCallTimerState(kDidDispatchDomContentLoadedEvent));
 }
 
 void AutofillAgent::DidChangeScrollOffset() {
@@ -679,6 +726,11 @@ void AutofillAgent::AccessibilityModeChanged(const ui::AXMode& mode) {
 
 void AutofillAgent::FireHostSubmitEvents(const FormData& form_data,
                                          mojom::SubmissionSource source) {
+  if (source == mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL &&
+      !base::FeatureList::IsEnabled(
+          features::kAutofillAcceptDomMutationAfterAutofillSubmission)) {
+    return;
+  }
   DenseSet<mojom::SubmissionSource>& sources =
       submitted_forms_[form_data.renderer_id()];
   if (!sources.insert(source).second) {
@@ -1275,8 +1327,7 @@ void AutofillAgent::ShowSuggestions(
 
   // Manual fallbacks override any prioritization done based on the field type.
   // TODO(crbug.com/333990908): Test manual fallback on different form types.
-  if (IsPaymentsAutofillManuallyTriggered(trigger_source) ||
-      IsPlusAddressesManuallyTriggered(trigger_source)) {
+  if (IsPlusAddressesManuallyTriggered(trigger_source)) {
     QueryAutofillSuggestions(element, trigger_source);
     return;
   }
@@ -1456,7 +1507,8 @@ void AutofillAgent::ExtractLabeledTextNodeValue(
 
 void AutofillAgent::EmitFormIssuesToDevtools() {
   // TODO(crbug.com/1399414,crbug.com/1444566): Throttle this call if possible.
-  ExtractFormsUnthrottled(/*callback=*/{});
+  ExtractFormsUnthrottled(/*callback=*/{},
+                          GetCallTimerState(kEmitFormIssuesToDevtools));
 }
 
 void AutofillAgent::ExtractForms(base::OneShotTimer& timer,
@@ -1469,7 +1521,8 @@ void AutofillAgent::ExtractForms(base::OneShotTimer& timer,
   }
   timer.Start(FROM_HERE, kFormsSeenThrottle,
               base::BindOnce(&AutofillAgent::ExtractFormsUnthrottled,
-                             base::Unretained(this), std::move(callback)));
+                             base::Unretained(this), std::move(callback),
+                             GetCallTimerState(kExtractForms)));
 }
 
 void AutofillAgent::ExtractFormsAndNotifyPasswordAutofillAgent(
@@ -1487,11 +1540,13 @@ void AutofillAgent::ExtractFormsAndNotifyPasswordAutofillAgent(
                   password_autofill_agent->OnDynamicFormsSeen();
                 }
               },
-              base::Unretained(password_autofill_agent_.get()))));
+              base::Unretained(password_autofill_agent_.get())),
+          GetCallTimerState(kExtractFormsAndNotifyPasswordAutofillAgent)));
 }
 
 void AutofillAgent::ExtractFormsUnthrottled(
-    base::OnceCallback<void(bool)> callback) {
+    base::OnceCallback<void(bool)> callback,
+    const CallTimerState& timer_state) {
   content::RenderFrame* render_frame = unsafe_render_frame();
   if (!render_frame) {
     if (!callback.is_null()) {
@@ -1500,7 +1555,7 @@ void AutofillAgent::ExtractFormsUnthrottled(
     return;
   }
   FormCache::UpdateFormCacheResult cache =
-      form_cache_.UpdateFormCache(field_data_manager());
+      form_cache_.UpdateFormCache(field_data_manager(), timer_state);
   form_issues::MaybeEmitFormIssuesToDevtools(*render_frame->GetWebFrame(),
                                              cache.updated_forms);
   if (!cache.updated_forms.empty() || !cache.removed_forms.empty()) {
@@ -1807,7 +1862,7 @@ void AutofillAgent::JavaScriptChangedValue(WebFormControlElement element,
 void AutofillAgent::OnProvisionallySaveForm(
     const WebFormElement& form_element,
     const WebFormControlElement& element,
-    SaveFormReason source) {
+    FormTracker::SaveFormReason source) {
   DCHECK(form_util::MaybeWasOwnedByFrame(form_element, unsafe_render_frame()));
   DCHECK(form_util::MaybeWasOwnedByFrame(element, unsafe_render_frame()));
 
@@ -1839,7 +1894,7 @@ void AutofillAgent::OnProvisionallySaveForm(
   };
 
   switch (source) {
-    case FormTracker::Observer::SaveFormReason::kWillSendSubmitEvent:
+    case FormTracker::SaveFormReason::kWillSendSubmitEvent:
       // TODO(crbug.com/40281981): Figure out if this is still needed, and
       // document the reason, otherwise remove.
       password_autofill_agent_->InformBrowserAboutUserInput(
@@ -1848,135 +1903,65 @@ void AutofillAgent::OnProvisionallySaveForm(
       // TODO(crbug.com/40281981): Figure out if this is still needed, and
       // document the reason, otherwise remove.
       update_submission_data_on_user_edit();
-      if (submitted_forms_[form_util::GetFormRendererId(form_element)].contains(
-              mojom::SubmissionSource::FORM_SUBMISSION)) {
-        // Save an extraction call since the submission will be ignored
-        // anyways by the duplicate submission filtering logic.
-        break;
-      }
       // Fire the form submission event to avoid missing submissions where
       // websites handle the onsubmit event. This also gets the form before
       // Javascript's submit event handler could change it. We don't clear
       // submitted_forms_ because OnFormSubmitted will normally be invoked
       // afterwards and we don't want to fire the same event twice.
-      if (std::optional<FormData> form_data =
-              base::FeatureList::IsEnabled(
-                  features::kAutofillUseSubmittedFormInHtmlSubmission)
-                  ? GetSubmittedForm(form_element)
-                  : form_util::ExtractFormData(
-                        document, form_element, field_data_manager(),
-                        GetCallTimerState(kOnProvisionallySaveForm))) {
-        FireHostSubmitEvents(*form_data,
-                             mojom::SubmissionSource::FORM_SUBMISSION);
-      }
+      OnFormSubmission(mojom::SubmissionSource::FORM_SUBMISSION, form_element);
       break;
-    case FormTracker::Observer::SaveFormReason::kTextFieldChanged:
+    case FormTracker::SaveFormReason::kTextFieldChanged:
       update_submission_data_on_user_edit();
       OnTextFieldDidChange(element);
       break;
-    case FormTracker::Observer::SaveFormReason::kSelectChanged:
+    case FormTracker::SaveFormReason::kSelectChanged:
       update_submission_data_on_user_edit();
       OnSelectControlDidChange(element);
       break;
   }
 }
 
-void AutofillAgent::OnProbablyFormSubmitted() {
-  if (std::optional<FormData> form_data =
-          GetSubmittedForm(/*form_element=*/std::nullopt)) {
-    FireHostSubmitEvents(form_data.value(),
-                         mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED);
-  }
-  if (!base::FeatureList::IsEnabled(features::kAutofillFixFormTracking)) {
-    ResetLastInteractedElements();
-    OnFormNoLongerSubmittable();
-  }
-}
-
-void AutofillAgent::OnFormSubmitted(const WebFormElement& form_element) {
-  DCHECK(form_util::MaybeWasOwnedByFrame(form_element, unsafe_render_frame()));
-  if (submitted_forms_[form_util::GetFormRendererId(form_element)].contains(
-          mojom::SubmissionSource::FORM_SUBMISSION)) {
-    // Save an extraction call since the submission will be ignored anyways
-    // by the duplicate submission filtering logic.
-    return;
-  }
-  // Fire the submission event here because WILL_SEND_SUBMIT_EVENT is skipped
-  // if javascript calls submit() directly.
-  if (std::optional<FormData> form_data =
-          base::FeatureList::IsEnabled(
-              features::kAutofillUseSubmittedFormInHtmlSubmission)
-              ? GetSubmittedForm(form_element)
-              : form_util::ExtractFormData(
-                    form_element.GetDocument(), form_element,
-                    field_data_manager(),
-                    GetCallTimerState(kOnFormSubmitted))) {
-    FireHostSubmitEvents(*form_data, mojom::SubmissionSource::FORM_SUBMISSION);
-  }
-}
-
-void AutofillAgent::OnInferredFormSubmission(mojom::SubmissionSource source) {
+void AutofillAgent::OnFormSubmission(
+    mojom::SubmissionSource source,
+    std::optional<blink::WebFormElement> submitted_form_element) {
   if (!unsafe_render_frame()) {
     return;
   }
+  if (source == mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL) {
+    // TODO(crbug.com/40281981): Investigate removing this and relying on the
+    // call conditioned on the submitted form.
+    password_autofill_agent_->FireHostSubmitEvent(FormRendererId(), source);
+  }
+  if (std::optional<FormData> form_data =
+          GetSubmittedForm(source, submitted_form_element)) {
+    FireHostSubmitEvents(*form_data, source);
+  }
   switch (source) {
-    // This source is only used as a default value to variables.
-    case mojom::SubmissionSource::NONE:
-    // This source is handled by `AutofillAgent::OnFormSubmitted`.
     case mojom::SubmissionSource::FORM_SUBMISSION:
-    // This source is handled by `AutofillAgent::OnProbablyFormSubmitted`.
-    case mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED:
-      NOTREACHED();
     case mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL:
-      password_autofill_agent_->FireHostSubmitEvent(
-          FormRendererId(),
-          mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL);
-      if (std::optional<FormData> form_data =
-              GetSubmittedForm(/*form_element=*/std::nullopt);
-          form_data &&
-          base::FeatureList::IsEnabled(
-              features::kAutofillAcceptDomMutationAfterAutofillSubmission)) {
-        FireHostSubmitEvents(
-            *form_data, mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL);
-      }
-      // `BrowserAutofillManager` ignores submissions with
-      // DOM_MUTATION_AFTER_AUTOFILL as a source, therefore we early return in
-      // this case as to not call `AutofillAgent::ResetLastInteractedElements()`
-      // which could cause us to miss a submission that BAM actually cares
-      // about.
-      return;
-    // This event occurs only when either this frame or a same process parent
-    // frame of it gets detached.
-    case mojom::SubmissionSource::FRAME_DETACHED:
-      // Detaching the main frame means that navigation happened or the current
-      // tab was closed, both reasons being too general to be able to deduce
-      // submission from it (and the relevant use cases will most probably be
-      // handled by other sources), therefore we only consider detached
-      // subframes.
-      if (provisionally_saved_form()) {
-        // Should not access the frame because it is now detached. Instead, use
-        // `provisionally_saved_form()`.
-        FireHostSubmitEvents(*provisionally_saved_form(), source);
-      }
       break;
+    case mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED:
+      if (!base::FeatureList::IsEnabled(features::kAutofillFixFormTracking)) {
+        // TODO(crbug.com/40281981): Figure out if this is still needed, and
+        // document the reason, otherwise remove.
+        ResetLastInteractedElements();
+      }
+      // TODO(crbug.com/40281981): Figure out if this is still needed, and
+      // document the reason, otherwise remove.
+      OnFormNoLongerSubmittable();
+      break;
+    case mojom::SubmissionSource::FRAME_DETACHED:
     case mojom::SubmissionSource::SAME_DOCUMENT_NAVIGATION:
     case mojom::SubmissionSource::XHR_SUCCEEDED:
-      if (std::optional<FormData> form_data =
-              GetSubmittedForm(/*form_element=*/std::nullopt)) {
-        FireHostSubmitEvents(*form_data, source);
-      }
+      // TODO(crbug.com/40281981): Figure out if those two lines are still
+      // needed, and document the reason, otherwise remove.
+      ResetLastInteractedElements();
+      OnFormNoLongerSubmittable();
       break;
+    // This source is only used as a default value to variables.
+    case mojom::SubmissionSource::NONE:
+      NOTREACHED();
   }
-  ResetLastInteractedElements();
-  OnFormNoLongerSubmittable();
-}
-
-void AutofillAgent::AddFormObserver(Observer* observer) {
-  form_tracker_->AddObserver(observer);
-}
-
-void AutofillAgent::RemoveFormObserver(Observer* observer) {
-  form_tracker_->RemoveObserver(observer);
 }
 
 void AutofillAgent::TrackAutofilledElement(
@@ -1999,37 +1984,104 @@ void AutofillAgent::UpdateStateForTextChange(
 }
 
 std::optional<FormData> AutofillAgent::GetSubmittedForm(
-    std::optional<WebFormElement> form_element) const {
+    mojom::SubmissionSource source,
+    std::optional<WebFormElement> submitted_form_element) const {
+  // Behavior when `AutofillReplaceFormElementObserver` is enabled:
+  // - Never try to extract and unconditionally look at the provisionally saved
+  //   form. The reason is that some form extraction could happen during style
+  //   recalc, meaning that querying field focusability would crash.
   if (base::FeatureList::IsEnabled(
           features::kAutofillReplaceFormElementObserver)) {
+    LogSubmittedFormMetric(source, provisionally_saved_form()
+                                       ? SubmittedFormType::kCached
+                                       : SubmittedFormType::kNull);
     return provisionally_saved_form();
   }
+
+  // Behavior when the submission is a result of a detached iframe:
+  // - Look at the cached form and don't try extracting the form from the frame
+  //   since the frame became disconnected.
+  // TODO(crbug.com/40281981): Investigate following the default behavior for
+  // this source (i.e. trying to extract anyways).
+  if (source == mojom::SubmissionSource::FRAME_DETACHED) {
+    LogSubmittedFormMetric(source, provisionally_saved_form()
+                                       ? SubmittedFormType::kCached
+                                       : SubmittedFormType::kNull);
+    return provisionally_saved_form();
+  }
+
+  // Behavior when `AutofillPreferSavedFormAsSubmittedForm` is enabled
+  // (and the feature above is disabled):
+  // - Return null if there was no interaction so far and no `form_element` is
+  //   provided.
+  // - Primarily look at the provisionally saved form.
+  // - In case there isn't one try extracting the form (either
+  //   `last_interacted_form()` or `form_element` if provided).
   if (base::FeatureList::IsEnabled(
           features::kAutofillPreferSavedFormAsSubmittedForm)) {
     if (std::optional<FormData> form = provisionally_saved_form();
-        form &&
-        (!form_element.has_value() ||
-         form->renderer_id() == form_util::GetFormRendererId(*form_element))) {
-      return *form;
+        form && (!submitted_form_element.has_value() ||
+                 form->renderer_id() ==
+                     form_util::GetFormRendererId(*submitted_form_element))) {
+      LogSubmittedFormMetric(source, SubmittedFormType::kCached);
+      return form;
     }
     if (WebDocument document = GetDocument()) {
       if (std::optional<FormData> form = form_util::ExtractFormData(
               document,
-              form_element.has_value() ? *form_element
-                                       : last_interacted_form().GetForm(),
+              submitted_form_element.has_value()
+                  ? *submitted_form_element
+                  : last_interacted_form().GetForm(),
               field_data_manager(), GetCallTimerState(kGetSubmittedForm))) {
+        LogSubmittedFormMetric(source, SubmittedFormType::kExtracted);
         return form;
       }
     }
+    LogSubmittedFormMetric(source, SubmittedFormType::kNull);
     return std::nullopt;
   }
+
+  // Behavior when `AutofillUseSubmittedFormInHtmlSubmission` is enabled
+  // (and the features above are disabled):
+  // - If `form_element` isn't provided, fallback to the default behavior.
+  // - Primarily try to extract the form represented by `form_element`.
+  // - In case of failure, fallback to the provisionally saved form, only if it
+  //   has the same FormRendererId as `form_element`.
+  if (submitted_form_element.has_value() &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillUseSubmittedFormInHtmlSubmission)) {
+    if (std::optional<FormData> form = form_util::ExtractFormData(
+            submitted_form_element->GetDocument(), *submitted_form_element,
+            field_data_manager(), GetCallTimerState(kGetSubmittedForm))) {
+      LogSubmittedFormMetric(source, SubmittedFormType::kExtracted);
+      return form;
+    }
+    if (std::optional<FormData> form = provisionally_saved_form();
+        form && form->renderer_id() ==
+                    form_util::GetFormRendererId(*submitted_form_element)) {
+      LogSubmittedFormMetric(source, SubmittedFormType::kCached);
+      return form;
+    }
+    LogSubmittedFormMetric(source, SubmittedFormType::kNull);
+    return std::nullopt;
+  }
+
+  // Behavior of HTML Submissions (when none of the features above are enabled):
+  // - Only try extracting the form provided via `form_element`.
+  if (source == mojom::SubmissionSource::FORM_SUBMISSION &&
+      !base::FeatureList::IsEnabled(
+          features::kAutofillUseSubmittedFormInHtmlSubmission)) {
+    CHECK(submitted_form_element);
+    std::optional<FormData> form = form_util::ExtractFormData(
+        submitted_form_element->GetDocument(), *submitted_form_element,
+        field_data_manager(), GetCallTimerState(kGetSubmittedForm));
+    LogSubmittedFormMetric(source, form ? SubmittedFormType::kExtracted
+                                        : SubmittedFormType::kNull);
+    return form;
+  }
+
   auto has_been_user_edited = [this](const FormFieldData& field) {
     return formless_elements_user_edited_.contains(field.renderer_id());
-  };
-  auto know_expected_submitted_form = [&] {
-    return form_element.has_value() &&
-           base::FeatureList::IsEnabled(
-               features::kAutofillUseSubmittedFormInHtmlSubmission);
   };
   // The three cases handled by this function:
   bool user_autofilled_or_edited_owned_form = !!last_interacted_form().GetId();
@@ -2039,37 +2091,28 @@ std::optional<FormData> AutofillAgent::GetSubmittedForm(
                                   !formless_elements_user_edited_.empty();
   WebDocument document = GetDocument();
   if ((!user_autofilled_or_edited_owned_form && !user_autofilled_unowned_form &&
-       !user_edited_unowned_form && !know_expected_submitted_form()) ||
+       !user_edited_unowned_form) ||
       !document) {
+    LogSubmittedFormMetric(source, SubmittedFormType::kNull);
     return std::nullopt;
   }
 
   // Try extracting the corresponding form.
   if (std::optional<FormData> form = form_util::ExtractFormData(
-          document,
-          form_element.has_value() &&
-                  base::FeatureList::IsEnabled(
-                      features::kAutofillUseSubmittedFormInHtmlSubmission)
-              ? *form_element
-              : last_interacted_form().GetForm(),
-          field_data_manager(), GetCallTimerState(kGetSubmittedForm));
+          document, last_interacted_form().GetForm(), field_data_manager(),
+          GetCallTimerState(kGetSubmittedForm));
       form && (!user_edited_unowned_form ||
-               !std::ranges::none_of(form->fields(), has_been_user_edited) ||
-               know_expected_submitted_form())) {
+               !std::ranges::none_of(form->fields(), has_been_user_edited))) {
+    LogSubmittedFormMetric(source, SubmittedFormType::kExtracted);
     return form;
   }
 
-  // If extraction fails, fallback to the provisionally saved form. If
-  // `form_element` is provided, make sure the saved form corresponds to the
-  // passed `form_element`.
-  if (std::optional<FormData> form = provisionally_saved_form();
-      form &&
-      (!form_element.has_value() ||
-       form->renderer_id() == form_util::GetFormRendererId(*form_element) ||
-       !base::FeatureList::IsEnabled(
-           features::kAutofillUseSubmittedFormInHtmlSubmission))) {
-    return *form;
+  // If extraction fails, fallback to the provisionally saved form.
+  if (std::optional<FormData> form = provisionally_saved_form()) {
+    LogSubmittedFormMetric(source, SubmittedFormType::kCached);
+    return form;
   }
+  LogSubmittedFormMetric(source, SubmittedFormType::kNull);
   return std::nullopt;
 }
 

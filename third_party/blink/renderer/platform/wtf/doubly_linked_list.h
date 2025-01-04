@@ -131,7 +131,7 @@ class DoublyLinkedList {
  private:
   struct TypeConstraints {
     constexpr TypeConstraints() {
-      static_assert(!IsStackAllocatedType<T>);
+      static_assert(!IsStackAllocatedTypeV<T>);
       static_assert(
           !IsGarbageCollectedType<T>::value ||
               !std::is_same<PointerType, T*>::value,

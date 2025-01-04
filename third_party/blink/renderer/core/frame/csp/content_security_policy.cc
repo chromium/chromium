@@ -634,7 +634,7 @@ bool ContentSecurityPolicy::ShouldCheckEval() const {
     if (CSPDirectiveListShouldCheckEval(*policy))
       return true;
   }
-  return IsRequireTrustedTypes();
+  return TrustedTypesRequired();
 }
 
 bool ContentSecurityPolicy::AllowEval(
@@ -937,9 +937,6 @@ bool ContentSecurityPolicy::AllowFromSource(
 
   if (result.WouldBlockIfWildcardDoesNotMatchWs()) {
     Count(WebFeature::kCspWouldBlockIfWildcardDoesNotMatchWs);
-  }
-  if (result.WouldBlockIfWildcardDoesNotMatchFtp()) {
-    Count(WebFeature::kCspWouldBlockIfWildcardDoesNotMatchFtp);
   }
 
   return result.IsAllowed();
@@ -1448,13 +1445,6 @@ void ContentSecurityPolicy::ReportBlockedScriptExecutionToInspector(
 bool ContentSecurityPolicy::ExperimentalFeaturesEnabled() const {
   return RuntimeEnabledFeatures::
       ExperimentalContentSecurityPolicyFeaturesEnabled();
-}
-
-bool ContentSecurityPolicy::RequiresTrustedTypes() const {
-  return base::ranges::any_of(policies_, [](const auto& policy) {
-    return !CSPDirectiveListIsReportOnly(*policy) &&
-           CSPDirectiveListRequiresTrustedTypes(*policy);
-  });
 }
 
 // static

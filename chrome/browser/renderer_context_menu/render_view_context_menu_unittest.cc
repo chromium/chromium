@@ -4,6 +4,7 @@
 
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -29,6 +30,8 @@
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
+#include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
@@ -37,7 +40,6 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -52,15 +54,19 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
+#include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/test_autofill_driver.h"
-#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/content/browser/test_content_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/lens/buildflags.h"
 #include "components/lens/lens_features.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -69,8 +75,6 @@
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/sync/test/test_sync_service.h"
-#include "components/translate/core/browser/language_state.h"
-#include "components/translate/core/browser/translate_manager.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -586,18 +590,13 @@ class RenderViewContextMenuPrefsTest
     menu->AppendImageItems();
   }
 
-  void SetUserSelectedDefaultSearchProvider(
-      const std::string& base_url,
-      bool supports_image_search,
-      bool supports_image_translate = true) {
+  void SetUserSelectedDefaultSearchProvider(const std::string& base_url,
+                                            bool supports_image_search) {
     TemplateURLData data;
     data.SetShortName(u"t");
     data.SetURL(base_url + "?q={searchTerms}");
     if (supports_image_search) {
       data.image_url = base_url;
-    }
-    if (supports_image_translate) {
-      data.image_translate_url = base_url;
     }
     TemplateURL* template_url =
         template_url_service_->Add(std::make_unique<TemplateURL>(data));
@@ -971,7 +970,7 @@ TEST_F(RenderViewContextMenuPrefsTest, OpenLinkNavigationParamsSet) {
   // initiator.
   EXPECT_EQ(main_frame.GetFrameToken(),
             delegate.last_navigation_params()->initiator_frame_token);
-  EXPECT_EQ(main_frame.GetProcess()->GetID(),
+  EXPECT_EQ(main_frame.GetProcess()->GetDeprecatedID(),
             delegate.last_navigation_params()->initiator_process_id);
 
   // Verify that the impression is attached to the navigation.
@@ -1107,6 +1106,158 @@ TEST_F(RenderViewContextMenuPrefsTest,
   EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB));
 }
 
+class RenderViewContextMenuUsePasskeyFromAnotherDeviceTest
+    : public RenderViewContextMenuPrefsTest {
+ public:
+  class MockBrowserAutofillManager
+      : public autofill::TestBrowserAutofillManager {
+   public:
+    using autofill::TestBrowserAutofillManager::TestBrowserAutofillManager;
+    MOCK_METHOD(autofill::FormStructure*,
+                FindCachedFormById,
+                (autofill::FormGlobalId),
+                (const override));
+  };
+  void SetUp() override { RenderViewContextMenuPrefsTest::SetUp(); }
+
+  const GURL get_url() { return GURL("https://foo.com"); }
+
+  RenderViewContextMenuUsePasskeyFromAnotherDeviceTest() = default;
+
+  autofill::FormData CreateFormWithSingleField(bool is_webauthn = false) {
+    autofill::FormFieldData field = autofill::test::CreateTestFormField(
+        /*label=*/"label", /*name=*/"name",
+        /*value=*/"", autofill::FormControlType::kInputText,
+        /*autocomplete=*/is_webauthn ? "webauthn" : "");
+    field.set_host_frame(autofill_driver()->GetFrameToken());
+
+    autofill::FormData form;
+    form.set_renderer_id(autofill::test::MakeFormRendererId());
+    form.set_url(get_url());
+    form.set_fields({field});
+    return form;
+  }
+
+  std::unique_ptr<TestRenderViewContextMenu> CreateFormAndDisplayMenu(
+      bool is_webauthn_form) {
+    auto form = CreateFormWithSingleField(is_webauthn_form);
+    NotifyFormManagerAndWait(form);
+
+    content::ContextMenuParams params = CreateParams(MenuItem::EDITABLE);
+    params.form_renderer_id = form.renderer_id().value();
+    params.field_renderer_id = form.fields()[0].renderer_id().value();
+
+    auto menu = std::make_unique<TestRenderViewContextMenu>(
+        *web_contents()->GetPrimaryMainFrame(), params);
+    menu->Init();
+    return menu;
+  }
+
+  void NotifyFormManagerAndWait(autofill::FormData form) {
+    autofill::TestAutofillManagerWaiter waiter(
+        autofill_manager(), {autofill::AutofillManagerEvent::kFormsSeen});
+    autofill_manager().OnFormsSeen({form}, {});
+    ASSERT_TRUE(waiter.Wait());
+  }
+
+ protected:
+  autofill::TestContentAutofillDriver* autofill_driver() {
+    return af_driver_injector_[main_rfh()];
+  }
+
+  autofill::AutofillManager& autofill_manager() {
+    return autofill_driver()->GetAutofillManager();
+  }
+
+  ChromeWebAuthnCredentialsDelegate* webauthn_delegate() {
+    return ChromeWebAuthnCredentialsDelegateFactory::GetFactory(
+               content::WebContents::FromRenderFrameHost(main_rfh()))
+        ->GetDelegateForFrame(main_rfh());
+  }
+
+ private:
+  autofill::test::AutofillUnitTestEnvironment test_environment_;
+  autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>
+      af_client_injector;
+  autofill::TestAutofillDriverInjector<autofill::TestContentAutofillDriver>
+      af_driver_injector_;
+  autofill::TestAutofillManagerInjector<MockBrowserAutofillManager>
+      af_manager_injector_;
+};
+
+// Verify that "Use passkey from another device" is not displayed when the
+// feature is disabled.
+TEST_F(RenderViewContextMenuUsePasskeyFromAnotherDeviceTest,
+       UsePasskeyFromAnotherDeviceNotInContextMenu) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      password_manager::features::
+          kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu);
+  NavigateAndCommit(get_url());
+
+  auto menu = CreateFormAndDisplayMenu(/*is_webauthn_form=*/true);
+
+  EXPECT_FALSE(
+      menu->IsItemPresent(IDC_CONTENT_CONTEXT_USE_PASSKEY_FROM_ANOTHER_DEVICE));
+}
+
+// Verify that "Use passkey from another device" is displayed on a WebAuthn
+// field when the feature is enabled.
+TEST_F(RenderViewContextMenuUsePasskeyFromAnotherDeviceTest,
+       UsePasskeyFromAnotherDeviceInContextMenu) {
+  base::test::ScopedFeatureList features(
+      password_manager::features::
+          kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu);
+  NavigateAndCommit(get_url());
+  webauthn_delegate()->OnCredentialsReceived(
+      {}, ChromeWebAuthnCredentialsDelegate::SecurityKeyOrHybridFlowAvailable(
+              true));
+
+  auto menu = CreateFormAndDisplayMenu(/*is_webauthn_form=*/true);
+
+  EXPECT_TRUE(
+      menu->IsItemPresent(IDC_CONTENT_CONTEXT_USE_PASSKEY_FROM_ANOTHER_DEVICE));
+}
+
+// Verify that "Use passkey from another device" is not displayed on
+// non-WebAuthn fields when the feature is enabled.
+TEST_F(RenderViewContextMenuUsePasskeyFromAnotherDeviceTest,
+       UsePasskeyFromAnotherDeviceNotInContextMenuWhenNonWebauthnField) {
+  base::test::ScopedFeatureList features(
+      password_manager::features::
+          kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu);
+  NavigateAndCommit(get_url());
+  webauthn_delegate()->OnCredentialsReceived(
+      {}, ChromeWebAuthnCredentialsDelegate::SecurityKeyOrHybridFlowAvailable(
+              true));
+
+  auto menu = CreateFormAndDisplayMenu(/*is_webauthn_form=*/false);
+
+  EXPECT_FALSE(
+      menu->IsItemPresent(IDC_CONTENT_CONTEXT_USE_PASSKEY_FROM_ANOTHER_DEVICE));
+}
+
+// Verify that "Use passkey from another device" is not displayed when the
+// PasswordManualFallback feature is enabled.
+TEST_F(RenderViewContextMenuUsePasskeyFromAnotherDeviceTest,
+       UsePasskeyFromAnotherDeviceNotInContextMenuWhenPasswordsManualFallback) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {password_manager::features::
+           kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu,
+       password_manager::features::kPasswordManualFallbackAvailable},
+      {});
+  NavigateAndCommit(get_url());
+  webauthn_delegate()->OnCredentialsReceived(
+      {}, ChromeWebAuthnCredentialsDelegate::SecurityKeyOrHybridFlowAvailable(
+              true));
+
+  auto menu = CreateFormAndDisplayMenu(/*is_webauthn_form=*/true);
+
+  EXPECT_FALSE(
+      menu->IsItemPresent(IDC_CONTENT_CONTEXT_USE_PASSKEY_FROM_ANOTHER_DEVICE));
+}
+
 class RenderViewContextMenuHideAutofillSuggestionsTest
     : public RenderViewContextMenuPrefsTest {
  public:
@@ -1145,9 +1296,8 @@ TEST_F(RenderViewContextMenuHideAutofillSuggestionsTest,
 // Verify that the Lens Image Search menu item is disabled on non-image content
 TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchNonImage) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {lens::features::kLensStandalone, lens::features::kEnableImageTranslate},
-      {lens::features::kLensOverlay});
+  features.InitWithFeatures({lens::features::kLensStandalone},
+                            {lens::features::kLensOverlay});
   SetUserSelectedDefaultSearchProvider("https://www.google.com",
                                        /*supports_image_search=*/true);
   content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
@@ -1158,8 +1308,6 @@ TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchNonImage) {
 
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE));
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE));
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB));
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS));
 }
 
 // Verify that the Lens Image Search menu item is disabled when there is the
@@ -1184,9 +1332,8 @@ TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchNoBrowser) {
 // Verify that the Lens Image Search menu item is enabled on image content
 TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchEnabled) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {lens::features::kLensStandalone, lens::features::kEnableImageTranslate},
-      {lens::features::kLensOverlay});
+  features.InitWithFeatures({lens::features::kLensStandalone},
+                            {lens::features::kLensOverlay});
   SetUserSelectedDefaultSearchProvider("https://www.google.com",
                                        /*supports_image_search=*/true);
   content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
@@ -1198,17 +1345,14 @@ TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchEnabled) {
 
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE));
   EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE));
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB));
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS));
 }
 
 // Verify that the Lens Image Search menu item is enabled for Progressive Web
 // Apps
 TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchForProgressiveWebApp) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {lens::features::kLensStandalone, lens::features::kEnableImageTranslate},
-      {lens::features::kLensOverlay});
+  features.InitWithFeatures({lens::features::kLensStandalone},
+                            {lens::features::kLensOverlay});
   SetUserSelectedDefaultSearchProvider("https://www.google.com",
                                        /*supports_image_search=*/true);
   content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
@@ -1220,17 +1364,14 @@ TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchForProgressiveWebApp) {
 
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE));
   EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE));
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB));
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS));
 }
 
 // Verify that the Lens Image Search menu item is enabled for third-party
 // default search engines that support image search.
 TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchEnabledFor3pDse) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {lens::features::kLensStandalone, lens::features::kEnableImageTranslate},
-      {lens::features::kLensOverlay});
+  features.InitWithFeatures({lens::features::kLensStandalone},
+                            {lens::features::kLensOverlay});
   SetUserSelectedDefaultSearchProvider("https://www.bing.com",
                                        /*supports_image_search=*/true);
   content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
@@ -1242,17 +1383,14 @@ TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchEnabledFor3pDse) {
 
   EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE));
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE));
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB));
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS));
 }
 
 // Verify that the Lens Image Search menu item is disabled for third-part
 // default search engines that do not support image search.
 TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchDisabledFor3pDse) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {lens::features::kLensStandalone, lens::features::kEnableImageTranslate},
-      {lens::features::kLensOverlay});
+  features.InitWithFeatures({lens::features::kLensStandalone},
+                            {lens::features::kLensOverlay});
   SetUserSelectedDefaultSearchProvider("https://www.yahoo.com",
                                        /*supports_image_search=*/false);
   content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
@@ -1264,101 +1402,6 @@ TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchDisabledFor3pDse) {
 
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE));
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE));
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB));
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS));
-}
-
-// Verify that the Translate image menu item is enabled on image content when
-// the page is translated
-TEST_F(RenderViewContextMenuPrefsTest, LensTranslateImageEnabled) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {lens::features::kLensStandalone, lens::features::kEnableImageTranslate},
-      {lens::features::kLensOverlay});
-  SetUserSelectedDefaultSearchProvider("https://www.google.com",
-                                       /*supports_image_search=*/true,
-                                       /*supports_image_translate=*/true);
-  content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
-  params.has_image_contents = true;
-  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
-                                 params);
-  ChromeTranslateClient::CreateForWebContents(web_contents());
-  translate::LanguageState* language_state =
-      ChromeTranslateClient::FromWebContents(web_contents())
-          ->GetTranslateManager()
-          ->GetLanguageState();
-  language_state->SetSourceLanguage("zh-CN");
-  language_state->SetCurrentLanguage("fr");
-  language_state->SetTranslateEnabled(true);
-  menu.SetBrowser(GetBrowser());
-  menu.Init();
-
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE));
-  EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE));
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB));
-  EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS));
-}
-
-// Verify that the Translate image menu item is enabled for third-party
-// default search engines that support image translate.
-TEST_F(RenderViewContextMenuPrefsTest, LensTranslateImageEnabledFor3pDse) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {lens::features::kLensStandalone, lens::features::kEnableImageTranslate},
-      {lens::features::kLensOverlay});
-  SetUserSelectedDefaultSearchProvider("https://www.bing.com",
-                                       /*supports_image_search=*/true,
-                                       /*supports_image_translate=*/true);
-  content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
-  params.has_image_contents = true;
-  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
-                                 params);
-  ChromeTranslateClient::CreateForWebContents(web_contents());
-  translate::LanguageState* language_state =
-      ChromeTranslateClient::FromWebContents(web_contents())
-          ->GetTranslateManager()
-          ->GetLanguageState();
-  language_state->SetSourceLanguage("zh-CN");
-  language_state->SetCurrentLanguage("fr");
-  language_state->SetTranslateEnabled(true);
-  menu.SetBrowser(GetBrowser());
-  menu.Init();
-
-  EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE));
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE));
-  EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB));
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS));
-}
-
-// Verify that the Translate image menu item is disabled for third-party
-// default search engines that do not support image translate.
-TEST_F(RenderViewContextMenuPrefsTest, LensTranslateImageDisabledFor3pDse) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {lens::features::kLensStandalone, lens::features::kEnableImageTranslate},
-      {lens::features::kLensOverlay});
-  SetUserSelectedDefaultSearchProvider("https://www.bing.com",
-                                       /*supports_image_search=*/true,
-                                       /*supports_image_translate=*/false);
-  content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
-  params.has_image_contents = true;
-  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
-                                 params);
-  ChromeTranslateClient::CreateForWebContents(web_contents());
-  translate::LanguageState* language_state =
-      ChromeTranslateClient::FromWebContents(web_contents())
-          ->GetTranslateManager()
-          ->GetLanguageState();
-  language_state->SetSourceLanguage("zh-CN");
-  language_state->SetCurrentLanguage("fr");
-  language_state->SetTranslateEnabled(true);
-  menu.SetBrowser(GetBrowser());
-  menu.Init();
-
-  EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE));
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE));
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB));
-  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHLENS));
 }
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)

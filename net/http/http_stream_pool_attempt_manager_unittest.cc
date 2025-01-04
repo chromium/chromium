@@ -4,6 +4,7 @@
 
 #include "net/http/http_stream_pool_attempt_manager.h"
 
+#include <array>
 #include <list>
 #include <memory>
 #include <queue>
@@ -45,6 +46,7 @@
 #include "net/http/http_stream_pool_handle.h"
 #include "net/http/http_stream_pool_test_util.h"
 #include "net/http/http_stream_request.h"
+#include "net/log/net_log_with_source.h"
 #include "net/log/test_net_log.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
 #include "net/quic/crypto/proof_verifier_chromium.h"
@@ -56,6 +58,7 @@
 #include "net/quic/quic_test_packet_maker.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/socket_test_util.h"
+#include "net/socket/stream_socket_close_reason.h"
 #include "net/socket/stream_socket_handle.h"
 #include "net/socket/tcp_stream_attempt.h"
 #include "net/spdy/multiplexed_session_creation_initiator.h"
@@ -109,55 +112,6 @@ void ValidateConnectTiming(LoadTimingInfo::ConnectTiming& connect_timing) {
   EXPECT_LE(connect_timing.ssl_end, connect_timing.connect_end);
 }
 
-// A helper to create an HttpStreamKey.
-class StreamKeyBuilder {
- public:
-  explicit StreamKeyBuilder(std::string_view destination = "http://a.test")
-      : destination_(url::SchemeHostPort(GURL(destination))) {}
-
-  StreamKeyBuilder(const StreamKeyBuilder&) = delete;
-  StreamKeyBuilder& operator=(const StreamKeyBuilder&) = delete;
-
-  ~StreamKeyBuilder() = default;
-
-  StreamKeyBuilder& from_key(const HttpStreamKey& key) {
-    destination_ = key.destination();
-    privacy_mode_ = key.privacy_mode();
-    secure_dns_policy_ = key.secure_dns_policy();
-    disable_cert_network_fetches_ = key.disable_cert_network_fetches();
-    return *this;
-  }
-
-  const url::SchemeHostPort& destination() const { return destination_; }
-
-  StreamKeyBuilder& set_destination(std::string_view destination) {
-    set_destination(url::SchemeHostPort(GURL(destination)));
-    return *this;
-  }
-
-  StreamKeyBuilder& set_destination(url::SchemeHostPort destination) {
-    destination_ = std::move(destination);
-    return *this;
-  }
-
-  StreamKeyBuilder& set_privacy_mode(PrivacyMode privacy_mode) {
-    privacy_mode_ = privacy_mode;
-    return *this;
-  }
-
-  HttpStreamKey Build() const {
-    return HttpStreamKey(destination_, privacy_mode_, SocketTag(),
-                         NetworkAnonymizationKey(), secure_dns_policy_,
-                         disable_cert_network_fetches_);
-  }
-
- private:
-  url::SchemeHostPort destination_;
-  PrivacyMode privacy_mode_ = PRIVACY_MODE_DISABLED;
-  SecureDnsPolicy secure_dns_policy_ = SecureDnsPolicy::kAllow;
-  bool disable_cert_network_fetches_ = true;
-};
-
 class Preconnector {
  public:
   explicit Preconnector(std::string_view destination) {
@@ -194,7 +148,7 @@ class Preconnector {
             stream_key.secure_dns_policy(),
             stream_key.disable_cert_network_fetches(),
             alternative_service_info_, is_http1_allowed_, load_flags_,
-            proxy_info_),
+            proxy_info_, NetLogWithSource()),
         num_streams_,
         base::BindOnce(&Preconnector::OnComplete, base::Unretained(this)));
     if (rv != ERR_IO_PENDING) {
@@ -325,7 +279,7 @@ class StreamRequester : public HttpStreamRequest::Delegate {
             stream_key.secure_dns_policy(),
             stream_key.disable_cert_network_fetches(),
             alternative_service_info_, is_http1_allowed_, load_flags_,
-            proxy_info_),
+            proxy_info_, NetLogWithSource()),
         priority_, allowed_bad_certs_, enable_ip_based_pooling_,
         enable_alternative_services_, NetLogWithSource());
     return request_.get();
@@ -396,6 +350,11 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   void OnSwitchesToHttpStreamPool(
       HttpStreamPoolRequestInfo request_info) override {}
 
+  HttpStream* stream() {
+    CHECK(stream_);
+    return stream_.get();
+  }
+
   std::unique_ptr<HttpStream> ReleaseStream() { return std::move(stream_); }
 
   std::optional<int> result() const { return result_; }
@@ -454,105 +413,6 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   SSLInfo cert_error_ssl_info_;
   scoped_refptr<SSLCertRequestInfo> cert_info_;
   ProxyInfo used_proxy_info_;
-};
-
-class TestJobDelegate : public Job::Delegate {
- public:
-  explicit TestJobDelegate(
-      std::optional<HttpStreamKey> stream_key = std::nullopt) {
-    if (stream_key.has_value()) {
-      key_builder_.from_key(*stream_key);
-    } else {
-      key_builder_.set_destination(kDefaultDestination);
-    }
-  }
-
-  TestJobDelegate(const TestJobDelegate&) = delete;
-  TestJobDelegate& operator=(const TestJobDelegate&) = delete;
-  ~TestJobDelegate() override = default;
-
-  TestJobDelegate& set_expected_protocol(NextProto expected_protocol) {
-    expected_protocol_ = expected_protocol;
-    return *this;
-  }
-
-  TestJobDelegate& set_quic_version(quic::ParsedQuicVersion quic_version) {
-    quic_version_ = quic_version;
-    return *this;
-  }
-
-  void CreateAndStartJob(HttpStreamPool& pool) {
-    CHECK(!job_);
-    job_ = pool.GetOrCreateGroupForTesting(GetStreamKey())
-               .CreateJob(this, quic_version_, expected_protocol_,
-                          NetLogWithSource());
-    job_->Start();
-  }
-
-  int GetResult() { return result_future_.Get(); }
-
-  void OnStreamReady(Job* job,
-                     std::unique_ptr<HttpStream> stream,
-                     NextProto negotiated_protocol) override {
-    negotiated_protocol_ = negotiated_protocol;
-    SetResult(OK);
-  }
-
-  RequestPriority priority() const override {
-    return RequestPriority::DEFAULT_PRIORITY;
-  }
-
-  HttpStreamPool::RespectLimits respect_limits() const override {
-    return HttpStreamPool::RespectLimits::kRespect;
-  }
-
-  const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs()
-      const override {
-    return allowed_bad_certs_;
-  }
-
-  bool enable_ip_based_pooling() const override { return true; }
-
-  bool enable_alternative_services() const override { return true; }
-
-  bool is_http1_allowed() const override { return true; }
-
-  const ProxyInfo& proxy_info() const override { return proxy_info_; }
-
-  void OnStreamFailed(Job* job,
-                      int status,
-                      const NetErrorDetails& net_error_details,
-                      ResolveErrorInfo resolve_error_info) override {
-    SetResult(status);
-  }
-
-  void OnCertificateError(Job* job,
-                          int status,
-                          const SSLInfo& ssl_info) override {
-    SetResult(status);
-  }
-
-  void OnNeedsClientAuth(Job* job, SSLCertRequestInfo* cert_info) override {}
-
-  HttpStreamKey GetStreamKey() const { return key_builder_.Build(); }
-
-  NextProto negotiated_protocol() const { return negotiated_protocol_; }
-
- private:
-  void SetResult(int result) { result_future_.SetValue(result); }
-
-  StreamKeyBuilder key_builder_;
-
-  NextProto expected_protocol_ = NextProto::kProtoUnknown;
-  quic::ParsedQuicVersion quic_version_ =
-      quic::ParsedQuicVersion::Unsupported();
-  std::vector<SSLConfig::CertAndStatus> allowed_bad_certs_;
-  ProxyInfo proxy_info_ = ProxyInfo::Direct();
-
-  std::unique_ptr<Job> job_;
-
-  base::test::TestFuture<int> result_future_;
-  NextProto negotiated_protocol_ = NextProto::kProtoUnknown;
 };
 
 }  // namespace
@@ -1374,11 +1234,119 @@ TEST_F(HttpStreamPoolAttemptManagerTest, IPEndPointTimedout) {
   endpoint_request->CallOnServiceEndpointRequestFinished(OK);
   ASSERT_FALSE(requester.result().has_value());
 
-  FastForwardBy(HttpStreamPool::kConnectionAttemptDelay);
+  FastForwardBy(HttpStreamPool::GetConnectionAttemptDelay());
   ASSERT_FALSE(requester.result().has_value());
 
   FastForwardBy(TcpStreamAttempt::kTcpHandshakeTimeout);
   EXPECT_THAT(requester.result(), Optional(IsError(ERR_TIMED_OUT)));
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, GetIPEndPointToAttempt) {
+  using IPEndPointState = AttemptManager::IPEndPointState;
+  using IPEndPointStateMap = AttemptManager::IPEndPointStateMap;
+
+  struct TestCase {
+    std::string_view description = "";
+    std::vector<std::pair<IPEndPoint, std::optional<IPEndPointState>>>
+        endpoint_states;
+    std::optional<IPEndPoint> exclude_ip_endpoint = std::nullopt;
+    std::optional<IPEndPoint> expected;
+  } kTestCases[] = {
+      {
+          .description = "Prefer fast or non-attempted endpoint",
+          .endpoint_states =
+              {
+                  {MakeIPEndPoint("2001:db8::1"),
+                   IPEndPointState::kSlowAttempting},
+                  {MakeIPEndPoint("2001:db8::2"), std::nullopt},
+                  {MakeIPEndPoint("192.0.2.1"),
+                   IPEndPointState::kSlowSucceeded},
+              },
+          .expected = MakeIPEndPoint("2001:db8::2"),
+      },
+      {
+          .description = "Prefer slow-succeeded to slow-attempting",
+          .endpoint_states =
+              {
+                  {MakeIPEndPoint("2001:db8::1"),
+                   IPEndPointState::kSlowAttempting},
+                  {MakeIPEndPoint("192.0.2.1"),
+                   IPEndPointState::kSlowSucceeded},
+                  {MakeIPEndPoint("192.0.2.2"),
+                   IPEndPointState::kSlowSucceeded},
+              },
+          .expected = MakeIPEndPoint("192.0.2.1"),
+      },
+      {
+          .description = "Slow-attempting and failed only",
+          .endpoint_states =
+              {
+                  {MakeIPEndPoint("2001:db8::1"),
+                   IPEndPointState::kSlowAttempting},
+                  {MakeIPEndPoint("2001:db8::2"),
+                   IPEndPointState::kSlowAttempting},
+                  {MakeIPEndPoint("192.0.2.1"), IPEndPointState::kFailed},
+              },
+          .expected = MakeIPEndPoint("2001:db8::1"),
+      },
+      {
+          .description = "Failed endpoint only",
+          .endpoint_states = {{
+              {MakeIPEndPoint("2001:db8::1"), IPEndPointState::kFailed},
+              {MakeIPEndPoint("192.0.2.1"), IPEndPointState::kFailed},
+
+          }},
+          .expected = std::nullopt,
+      },
+      {
+          .description = "Exclude an endpoint that is the only endpoint",
+          .endpoint_states = {{
+              {MakeIPEndPoint("2001:db8::1"), IPEndPointState::kSlowAttempting},
+          }},
+          .exclude_ip_endpoint = MakeIPEndPoint("2001:db8::1"),
+          .expected = std::nullopt,
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.description);
+
+    ServiceEndpointBuilder service_endpoint_builder;
+    IPEndPointStateMap states;
+    for (const auto& [ip_endpoint, state] : test_case.endpoint_states) {
+      service_endpoint_builder.add_ip_endpoint(ip_endpoint);
+      if (state.has_value()) {
+        states.emplace(ip_endpoint, *state);
+      }
+    }
+
+    resolver()->AddFakeRequest()->add_endpoint(
+        service_endpoint_builder.endpoint());
+
+    const HttpStreamKey stream_key = StreamKeyBuilder().Build();
+    StreamRequester requester(stream_key);
+    requester.RequestStream(pool());
+    ASSERT_FALSE(requester.result().has_value());
+
+    AttemptManager* manager = pool()
+                                  .GetOrCreateGroupForTesting(stream_key)
+                                  .GetAttemptManagerForTesting();
+    // TODO(crbug.com/383606724): Don't modify internal representations. This
+    // makes the test fragile and overly depend on internal representation. Best
+    // practice is to test the public-facing API, when possible.
+    manager->ip_endpoint_states_for_testing() = std::move(states);
+
+    std::optional<IPEndPoint> ip_endpoint =
+        manager->GetIPEndPointToAttempt(test_case.exclude_ip_endpoint);
+    EXPECT_THAT(ip_endpoint, test_case.expected);
+
+    // Clean-up for the next iteration: destroy the attempt manager and the
+    // group by cancelling the in-flight attempt.
+    manager->CancelInFlightAttempts(StreamSocketCloseReason::kUnspecified);
+    requester.ResetRequest();
+    FastForwardUntilNoTasksRemain();
+    ASSERT_FALSE(pool().GetGroupForTesting(stream_key));
+  }
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, IPEndPointsSlow) {
@@ -1413,16 +1381,349 @@ TEST_F(HttpStreamPoolAttemptManagerTest, IPEndPointsSlow) {
   ASSERT_EQ(manager->InFlightAttemptCount(), 1u);
   ASSERT_FALSE(request->completed());
 
-  FastForwardBy(HttpStreamPool::kConnectionAttemptDelay);
+  FastForwardBy(HttpStreamPool::GetConnectionAttemptDelay());
   ASSERT_EQ(manager->InFlightAttemptCount(), 2u);
   ASSERT_EQ(manager->PendingJobCount(), 0u);
   ASSERT_FALSE(request->completed());
 
   // FastForwardBy() executes non-delayed tasks so the request finishes
   // immediately.
-  FastForwardBy(HttpStreamPool::kConnectionAttemptDelay);
+  FastForwardBy(HttpStreamPool::GetConnectionAttemptDelay());
   ASSERT_TRUE(request->completed());
   EXPECT_THAT(requester.result(), Optional(IsOk()));
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, IPEndPointSlowSuccessSlow) {
+  using IPEndPointState = AttemptManager::IPEndPointState;
+
+  const IPEndPoint ip_endpoint = MakeIPEndPoint("2001:db8::1");
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(
+          ServiceEndpointBuilder().add_ip_endpoint(ip_endpoint).endpoint())
+      .CompleteStartSynchronously(OK);
+
+  // The first attempt is slow but succeeds.
+  MockConnectCompleter completer1;
+  SequencedSocketData data1;
+  data1.set_connect_data(MockConnect(&completer1));
+  socket_factory()->AddSocketDataProvider(&data1);
+  StreamRequester requester1;
+  requester1.RequestStream(pool());
+  ASSERT_FALSE(requester1.result().has_value());
+
+  AttemptManager* manager =
+      pool()
+          .GetOrCreateGroupForTesting(requester1.GetStreamKey())
+          .GetAttemptManagerForTesting();
+  auto get_ip_endpoint_state = [&]() -> std::optional<IPEndPointState> {
+    auto it = manager->ip_endpoint_states_for_testing().find(ip_endpoint);
+    if (it == manager->ip_endpoint_states_for_testing().end()) {
+      return std::nullopt;
+    }
+    return it->second;
+  };
+
+  EXPECT_THAT(get_ip_endpoint_state(), std::nullopt);
+
+  FastForwardBy(HttpStreamPool::GetConnectionAttemptDelay());
+  EXPECT_THAT(get_ip_endpoint_state(),
+              Optional(IPEndPointState::kSlowAttempting));
+
+  completer1.Complete(OK);
+  requester1.WaitForResult();
+  EXPECT_THAT(requester1.result(), Optional(IsOk()));
+  EXPECT_THAT(get_ip_endpoint_state(),
+              Optional(IPEndPointState::kSlowSucceeded));
+
+  // Attempt connection to the endpoint again. Ensure that the state isn't
+  // updated when the second attempt is slow. Also ensure that triggering the
+  // slow timer doesn't start a new attempt for the endpoint.
+  MockConnectCompleter completer2;
+  SequencedSocketData data2;
+  data2.set_connect_data(MockConnect(&completer2));
+  socket_factory()->AddSocketDataProvider(&data2);
+  StreamRequester requester2;
+  requester2.RequestStream(pool());
+  ASSERT_FALSE(requester2.result().has_value());
+  EXPECT_THAT(get_ip_endpoint_state(),
+              Optional(IPEndPointState::kSlowSucceeded));
+
+  completer2.Complete(OK);
+  requester2.WaitForResult();
+  EXPECT_THAT(requester2.result(), Optional(IsOk()));
+  EXPECT_THAT(get_ip_endpoint_state(),
+              Optional(IPEndPointState::kSlowSucceeded));
+
+  // The third attempt fails.
+  SequencedSocketData data3;
+  data3.set_connect_data(MockConnect(ASYNC, ERR_CONNECTION_RESET));
+  socket_factory()->AddSocketDataProvider(&data3);
+  StreamRequester requester3;
+  requester3.RequestStream(pool());
+  requester3.WaitForResult();
+  EXPECT_THAT(requester3.result(), Optional(IsError(ERR_CONNECTION_RESET)));
+  EXPECT_THAT(get_ip_endpoint_state(), Optional(IPEndPointState::kFailed));
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, PreferNonSlowIPEndPoint) {
+  const IPEndPoint ip_endpoint_v6 = MakeIPEndPoint("2001:db8::1");
+  const IPEndPoint ip_endpoint_v4 = MakeIPEndPoint("192.0.2.1");
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder()
+                         .add_ip_endpoint(ip_endpoint_v6)
+                         .add_ip_endpoint(ip_endpoint_v4)
+                         .endpoint())
+      .CompleteStartSynchronously(OK);
+
+  auto get_remote_ip_endpoint = [&](StreamRequester& requester) -> IPEndPoint {
+    IPEndPoint ip_endpoint;
+    int result = requester.stream()->GetRemoteEndpoint(&ip_endpoint);
+    EXPECT_THAT(result, IsOk());
+    return ip_endpoint;
+  };
+
+  MockConnectCompleter completer1;
+  SequencedSocketData data1;
+  MockConnect connect1(&completer1);
+  data1.set_connect_data(std::move(connect1));
+  socket_factory()->AddSocketDataProvider(&data1);
+  MockConnectCompleter completer2;
+  SequencedSocketData data2;
+  MockConnect connect2(&completer2);
+  data2.set_connect_data(std::move(connect2));
+  socket_factory()->AddSocketDataProvider(&data2);
+  MockConnectCompleter completer3;
+  SequencedSocketData data3;
+  MockConnect connect3(&completer3);
+  data3.set_connect_data(std::move(connect3));
+  socket_factory()->AddSocketDataProvider(&data3);
+
+  // The first attempt triggered by the first request uses the IPv6 endpoint. It
+  // is slow but succeeds.
+  StreamRequester requester1;
+  requester1.RequestStream(pool());
+  ASSERT_FALSE(requester1.result().has_value());
+  // Trigger the slow timer. This results in starting the second attempt to the
+  // IPv4 endpoint.
+  FastForwardBy(HttpStreamPool::GetConnectionAttemptDelay());
+  // Complete the IPv6 attempt. The first request gets notified with the IPv6
+  // endpoint.
+  completer1.Complete(OK);
+  requester1.WaitForResult();
+  EXPECT_THAT(requester1.result(), Optional(IsOk()));
+  EXPECT_EQ(get_remote_ip_endpoint(requester1), ip_endpoint_v6);
+
+  // The second request uses the on-going attempt to the IPv4 endpoint.
+  StreamRequester requester2;
+  requester2.RequestStream(pool());
+  completer2.Complete(OK);
+  requester2.WaitForResult();
+  EXPECT_THAT(requester2.result(), Optional(IsOk()));
+  EXPECT_EQ(get_remote_ip_endpoint(requester2), ip_endpoint_v4);
+
+  // The third attempt triggered by the third request uses the IPv4 endpoint,
+  // which was not slow.
+  StreamRequester requester3;
+  requester3.RequestStream(pool());
+  completer3.Complete(OK);
+  requester3.WaitForResult();
+  EXPECT_THAT(requester3.result(), Optional(IsOk()));
+  EXPECT_EQ(get_remote_ip_endpoint(requester3), ip_endpoint_v4);
+}
+
+// Tests that a slow-attempting endpoint is used as a last resort option.
+TEST_F(HttpStreamPoolAttemptManagerTest, UseSlowAttemptingIPEndPoint) {
+  using IPEndPointState = AttemptManager::IPEndPointState;
+
+  // An endpoint that is slow.
+  const IPEndPoint ip_endpoint_slow = MakeIPEndPoint("2001:db8::1");
+  // An endpoint that fails.
+  const IPEndPoint ip_endpoint_failure = MakeIPEndPoint("192.0.2.1");
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder()
+                         .add_ip_endpoint(ip_endpoint_slow)
+                         .add_ip_endpoint(ip_endpoint_failure)
+                         .endpoint())
+      .CompleteStartSynchronously(OK);
+
+  // Socket data preparation, see the following comments for the scenario.
+  MockConnectCompleter completer1;
+  SequencedSocketData data1;
+  MockConnect connect1(&completer1);
+  data1.set_connect_data(std::move(connect1));
+  socket_factory()->AddSocketDataProvider(&data1);
+  MockConnectCompleter completer2;
+  SequencedSocketData data2;
+  MockConnect connect2(&completer2);
+  data2.set_connect_data(std::move(connect2));
+  socket_factory()->AddSocketDataProvider(&data2);
+  MockConnectCompleter completer3;
+  SequencedSocketData data3;
+  MockConnect connect3(&completer3);
+  data3.set_connect_data(std::move(connect3));
+  socket_factory()->AddSocketDataProvider(&data3);
+
+  // The first attempt triggered by the first request uses `ip_endpoint_slow`.
+  StreamRequester requester1;
+  requester1.RequestStream(pool());
+  ASSERT_FALSE(requester1.result().has_value());
+
+  AttemptManager* manager =
+      pool()
+          .GetOrCreateGroupForTesting(requester1.GetStreamKey())
+          .GetAttemptManagerForTesting();
+  auto get_ip_endpoint_state =
+      [&](const IPEndPoint& ip_endpoint) -> std::optional<IPEndPointState> {
+    auto it = manager->ip_endpoint_states_for_testing().find(ip_endpoint);
+    if (it == manager->ip_endpoint_states_for_testing().end()) {
+      return std::nullopt;
+    }
+    return it->second;
+  };
+
+  auto get_remote_ip_endpoint = [&](StreamRequester& requester) -> IPEndPoint {
+    IPEndPoint ip_endpoint;
+    int result = requester.stream()->GetRemoteEndpoint(&ip_endpoint);
+    EXPECT_THAT(result, IsOk());
+    return ip_endpoint;
+  };
+
+  // Trigger the slow timer. This results in starting the second attempt to
+  // `ip_endpoint_failure`.
+  FastForwardBy(HttpStreamPool::GetConnectionAttemptDelay());
+  EXPECT_THAT(get_ip_endpoint_state(ip_endpoint_slow),
+              IPEndPointState::kSlowAttempting);
+
+  // Complete the second attempt. The first request should not complete yet
+  // because the first attempt is still ongoing.
+  completer2.Complete(ERR_CONNECTION_REFUSED);
+  // Fast forard a bit (1ms) to ensure the second attempt to complete. We can't
+  // use FastForwardUntilNoTasksRemain() because it causes timeout for the first
+  // attempt.
+  FastForwardBy(base::Milliseconds(1));
+  EXPECT_THAT(get_ip_endpoint_state(ip_endpoint_failure),
+              IPEndPointState::kFailed);
+  EXPECT_THAT(get_ip_endpoint_state(ip_endpoint_slow),
+              IPEndPointState::kSlowAttempting);
+  ASSERT_FALSE(requester1.result().has_value());
+
+  // Request the second stream. It triggers the third attempt. The third attempt
+  // uses `ip_endpoint_slow` since that is the only remaining non-failure
+  // endpoint.
+  StreamRequester requester2;
+  requester2.RequestStream(pool());
+  ASSERT_FALSE(requester2.result().has_value());
+
+  // Complete the first attempt. The first request should complete successfully.
+  completer1.Complete(OK);
+  requester1.WaitForResult();
+  EXPECT_THAT(requester1.result(), Optional(IsOk()));
+  EXPECT_THAT(get_remote_ip_endpoint(requester1), ip_endpoint_slow);
+
+  // Complete the third attempt. The second request should complete
+  // successfully.
+  completer3.Complete(OK);
+  requester2.WaitForResult();
+  EXPECT_THAT(requester2.result(), Optional(IsOk()));
+  EXPECT_THAT(get_remote_ip_endpoint(requester2), ip_endpoint_slow);
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, PreferSlowSucceededToSlowAttempting) {
+  using IPEndPointState = AttemptManager::IPEndPointState;
+
+  // An endpoint that is slow but succeeds.
+  const IPEndPoint ip_endpoint_slow_success = MakeIPEndPoint("2001:db8::1");
+  // An endpoint that is slow.
+  const IPEndPoint ip_endpoint_slow = MakeIPEndPoint("192.0.2.1");
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder()
+                         .add_ip_endpoint(ip_endpoint_slow_success)
+                         .add_ip_endpoint(ip_endpoint_slow)
+                         .endpoint())
+      .CompleteStartSynchronously(OK);
+
+  // Socket data preparation, see the following comments for the scenario.
+  MockConnectCompleter completer1;
+  SequencedSocketData data1;
+  MockConnect connect1(&completer1);
+  data1.set_connect_data(std::move(connect1));
+  socket_factory()->AddSocketDataProvider(&data1);
+  MockConnectCompleter completer2;
+  SequencedSocketData data2;
+  MockConnect connect2(&completer2);
+  data2.set_connect_data(std::move(connect2));
+  socket_factory()->AddSocketDataProvider(&data2);
+  MockConnectCompleter completer3;
+  SequencedSocketData data3;
+  MockConnect connect3(&completer3);
+  data3.set_connect_data(std::move(connect3));
+  socket_factory()->AddSocketDataProvider(&data3);
+
+  // The first attempt triggered by the first request uses
+  // `ip_endpoint_slow_success`.
+  StreamRequester requester1;
+  requester1.RequestStream(pool());
+  ASSERT_FALSE(requester1.result().has_value());
+
+  AttemptManager* manager =
+      pool()
+          .GetOrCreateGroupForTesting(requester1.GetStreamKey())
+          .GetAttemptManagerForTesting();
+  auto get_ip_endpoint_state =
+      [&](const IPEndPoint& ip_endpoint) -> std::optional<IPEndPointState> {
+    auto it = manager->ip_endpoint_states_for_testing().find(ip_endpoint);
+    if (it == manager->ip_endpoint_states_for_testing().end()) {
+      return std::nullopt;
+    }
+    return it->second;
+  };
+
+  auto get_remote_ip_endpoint = [&](StreamRequester& requester) -> IPEndPoint {
+    IPEndPoint ip_endpoint;
+    int result = requester.stream()->GetRemoteEndpoint(&ip_endpoint);
+    EXPECT_THAT(result, IsOk());
+    return ip_endpoint;
+  };
+
+  // Trigger the slow timer for the first attempt. This results in starting the
+  // second attempt to `ip_endpoint_slow`
+  FastForwardBy(HttpStreamPool::GetConnectionAttemptDelay());
+  EXPECT_THAT(get_ip_endpoint_state(ip_endpoint_slow_success),
+              IPEndPointState::kSlowAttempting);
+
+  // Complete the first attempt. The first request should complete.
+  completer1.Complete(OK);
+  requester1.WaitForResult();
+  EXPECT_THAT(requester1.result(), Optional(IsOk()));
+  EXPECT_THAT(get_ip_endpoint_state(ip_endpoint_slow_success),
+              IPEndPointState::kSlowSucceeded);
+  EXPECT_EQ(get_remote_ip_endpoint(requester1), ip_endpoint_slow_success);
+
+  // Trigger the slow timer for the second attempt.
+  FastForwardBy(HttpStreamPool::GetConnectionAttemptDelay());
+  EXPECT_THAT(get_ip_endpoint_state(ip_endpoint_slow),
+              IPEndPointState::kSlowAttempting);
+
+  // Request the second stream. The third attempt uses
+  // `ip_endpoint_slow_success` since `ip_endpoint_slow` is slow-attempting.
+  StreamRequester requester2;
+  requester2.RequestStream(pool());
+  ASSERT_FALSE(requester2.result().has_value());
+
+  // Complete the third attempt. The second request should complete
+  // successfully.
+  completer3.Complete(OK);
+  requester2.WaitForResult();
+  EXPECT_THAT(requester2.result(), Optional(IsOk()));
+  EXPECT_THAT(get_remote_ip_endpoint(requester2), ip_endpoint_slow_success);
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest,
@@ -1465,7 +1766,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   // Complete TCP handshake after a delay that is less than the connection
   // attempt delay.
   constexpr base::TimeDelta kTcpDelay = base::Milliseconds(30);
-  ASSERT_LT(kTcpDelay, HttpStreamPool::kConnectionAttemptDelay);
+  ASSERT_LT(kTcpDelay, HttpStreamPool::GetConnectionAttemptDelay());
   FastForwardBy(kTcpDelay);
   tcp_connect_completer1.Complete(OK);
   RunUntilIdle();
@@ -1474,7 +1775,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   // Fast-forward to the connection attempt delay. Since the in-flight attempt
   // has completed TCP handshake and is waiting for HTTPS RR, the manager
   // shouldn't start another attempt.
-  FastForwardBy(HttpStreamPool::kConnectionAttemptDelay);
+  FastForwardBy(HttpStreamPool::GetConnectionAttemptDelay());
   ASSERT_EQ(manager->InFlightAttemptCount(), 1u);
 
   // Complete DNS resolution fully.
@@ -1485,7 +1786,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   // Fast-forward to the connection attempt delay again. This time the in-flight
   // attempt is still doing TLS handshake, it's treated as slow and the manager
   // should start another attempt.
-  FastForwardBy(HttpStreamPool::kConnectionAttemptDelay);
+  FastForwardBy(HttpStreamPool::GetConnectionAttemptDelay());
   ASSERT_EQ(manager->InFlightAttemptCount(), 2u);
 
   // Complete the second attempt. The request should finish successfully.
@@ -1527,7 +1828,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   ASSERT_EQ(group.ActiveStreamSocketCount(), 2u);
 
   // Fire the slow timer. It should not attempt another connection.
-  FastForwardBy(HttpStreamPool::kConnectionAttemptDelay);
+  FastForwardBy(HttpStreamPool::GetConnectionAttemptDelay());
   ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
   ASSERT_EQ(group.ActiveStreamSocketCount(), 2u);
 
@@ -2248,6 +2549,77 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   ASSERT_FALSE(pool().GetGroupForTesting(requester.GetStreamKey()));
 }
 
+// Tests that a group and corresponding attempt manager are destroyed after
+// cancelling in-flight attempts due to an SSLConfig change when there are no
+// jobs.
+TEST_F(HttpStreamPoolAttemptManagerTest, CancelAttemptOnSSLConfigChangeNoJobs) {
+  constexpr size_t kNumRequest = 2;
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  const HttpStreamKey stream_key = StreamKeyBuilder().Build();
+  std::vector<std::unique_ptr<MockConnectCompleter>> completers;
+  std::vector<std::unique_ptr<SequencedSocketData>> datas;
+  std::vector<std::unique_ptr<StreamRequester>> requesters;
+  for (size_t i = 0; i < kNumRequest; ++i) {
+    auto completer = std::make_unique<MockConnectCompleter>();
+    auto data = std::make_unique<SequencedSocketData>();
+    data->set_connect_data(MockConnect(completer.get()));
+    socket_factory()->AddSocketDataProvider(data.get());
+    completers.emplace_back(std::move(completer));
+    datas.emplace_back(std::move(data));
+
+    auto requester = std::make_unique<StreamRequester>(stream_key);
+    StreamRequester* raw_requester = requester.get();
+    requesters.emplace_back(std::move(requester));
+    raw_requester->RequestStream(pool());
+    ASSERT_FALSE(raw_requester->result().has_value());
+  }
+  AttemptManager* manager =
+      pool().GetGroupForTesting(stream_key)->GetAttemptManagerForTesting();
+  ASSERT_EQ(manager->JobCount(), 2u);
+  ASSERT_EQ(manager->NotifiedJobCount(), 0u);
+  ASSERT_EQ(manager->InFlightAttemptCount(), 2u);
+
+  auto count_slow_attempt_endpoints = [&]() {
+    size_t count = 0;
+    for (const auto& [_, state] : manager->ip_endpoint_states_for_testing()) {
+      if (state == AttemptManager::IPEndPointState::kSlowAttempting) {
+        ++count;
+      }
+    }
+    return count;
+  };
+
+  // Trigger slow timers.
+  FastForwardBy(HttpStreamPool::GetConnectionAttemptDelay());
+  ASSERT_EQ(count_slow_attempt_endpoints(), 1u);
+
+  // Cancel requests. This should remove all jobs from the corresponding group.
+  // Ensure that the job and attempt manager are still alive since there are
+  // in-flight attempts.
+  requesters.clear();
+  manager =
+      pool().GetGroupForTesting(stream_key)->GetAttemptManagerForTesting();
+  ASSERT_TRUE(manager);
+  ASSERT_EQ(manager->JobCount(), 0u);
+  ASSERT_EQ(manager->NotifiedJobCount(), 0u);
+  ASSERT_EQ(manager->InFlightAttemptCount(), 2u);
+
+  // Trigger an SSLConfig change. This should cancel in-flight attempts.
+  ssl_config_service()->NotifySSLContextConfigChange();
+  // Ensure IP endpoint states has been updated.
+  ASSERT_EQ(count_slow_attempt_endpoints(), 0u);
+
+  // Run the cleanup task. The corresponding group and attempt manager should be
+  // destroyed.
+  FastForwardUntilNoTasksRemain();
+  ASSERT_FALSE(pool().GetGroupForTesting(stream_key));
+}
+
 TEST_F(HttpStreamPoolAttemptManagerTest, SSLConfigForServersChanged) {
   // Create idle streams in group A and group B.
   StreamRequester requester_a;
@@ -2305,6 +2677,9 @@ TEST_F(HttpStreamPoolAttemptManagerTest, SpdyOk) {
   // SpdySession.
 
   constexpr size_t kNumRequests = 2;
+  const HttpStreamKey stream_key =
+      StreamKeyBuilder().set_destination("https://a.test").Build();
+
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
 
   std::vector<std::unique_ptr<SequencedSocketData>> socket_datas;
@@ -2322,19 +2697,17 @@ TEST_F(HttpStreamPoolAttemptManagerTest, SpdyOk) {
     socket_factory()->AddSSLSocketDataProvider(ssl.get());
     ssls.emplace_back(std::move(ssl));
 
-    auto requester = std::make_unique<StreamRequester>();
-    requester->set_destination("https://a.test")
-        .set_enable_ip_based_pooling(false)
-        .RequestStream(pool());
+    auto requester = std::make_unique<StreamRequester>(stream_key);
+    requester->set_enable_ip_based_pooling(false).RequestStream(pool());
     requesters.emplace_back(std::move(requester));
   }
 
   endpoint_request
       ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
       .CallOnServiceEndpointRequestFinished(OK);
-  RunUntilIdle();
 
   for (auto& requester : requesters) {
+    requester->WaitForResult();
     ASSERT_TRUE(requester->result().has_value());
     EXPECT_THAT(requester->result(), Optional(IsOk()));
   }
@@ -2344,6 +2717,8 @@ TEST_F(HttpStreamPoolAttemptManagerTest, SpdyOk) {
   ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
   ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
   ASSERT_EQ(pool().TotalConnectingStreamCount(), 0u);
+  ASSERT_TRUE(http_server_properties()->GetSupportsSpdy(
+      stream_key.destination(), stream_key.network_anonymization_key()));
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, SpdyCreateSessionFail) {
@@ -3015,6 +3390,13 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
        ThrottleAttemptForSpdyBlockSecondAttempt) {
   constexpr std::string_view kDestination = "https://a.test";
 
+  // Set the destination is known to support HTTP/2.
+  HttpStreamKey stream_key =
+      StreamKeyBuilder().set_destination(kDestination).Build();
+  http_server_properties()->SetSupportsSpdy(
+      stream_key.destination(), stream_key.network_anonymization_key(),
+      /*supports_spdy=*/true);
+
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
 
   StreamRequester requester1;
@@ -3022,12 +3404,6 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
 
   StreamRequester requester2;
   requester2.set_destination(kDestination).RequestStream(pool());
-
-  // Set the destination is known to support HTTP/2.
-  HttpStreamKey stream_key = requester1.GetStreamKey();
-  http_server_properties()->SetSupportsSpdy(
-      stream_key.destination(), stream_key.network_anonymization_key(),
-      /*supports_spdy=*/true);
 
   const MockWrite writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
   const MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
@@ -3056,6 +3432,13 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
        ThrottleAttemptForSpdyDelayPassedHttp2) {
   constexpr std::string_view kDestination = "https://a.test";
 
+  // Set the destination is known to support HTTP/2.
+  HttpStreamKey stream_key =
+      StreamKeyBuilder().set_destination(kDestination).Build();
+  http_server_properties()->SetSupportsSpdy(
+      stream_key.destination(), stream_key.network_anonymization_key(),
+      /*supports_spdy=*/true);
+
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
 
   StreamRequester requester1;
@@ -3063,12 +3446,6 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
 
   StreamRequester requester2;
   requester2.set_destination(kDestination).RequestStream(pool());
-
-  // Set the destination is known to support HTTP/2.
-  HttpStreamKey stream_key = requester1.GetStreamKey();
-  http_server_properties()->SetSupportsSpdy(
-      stream_key.destination(), stream_key.network_anonymization_key(),
-      /*supports_spdy=*/true);
 
   const MockWrite writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
   const MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
@@ -3110,6 +3487,13 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
        ThrottleAttemptForSpdyDelayPassedHttp1) {
   constexpr std::string_view kDestination = "https://a.test";
 
+  // Set the destination is known to support HTTP/2.
+  HttpStreamKey stream_key =
+      StreamKeyBuilder().set_destination(kDestination).Build();
+  http_server_properties()->SetSupportsSpdy(
+      stream_key.destination(), stream_key.network_anonymization_key(),
+      /*supports_spdy=*/true);
+
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
 
   StreamRequester requester1;
@@ -3117,12 +3501,6 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
 
   StreamRequester requester2;
   requester2.set_destination(kDestination).RequestStream(pool());
-
-  // Set the destination is known to support HTTP/2.
-  HttpStreamKey stream_key = requester1.GetStreamKey();
-  http_server_properties()->SetSupportsSpdy(
-      stream_key.destination(), stream_key.network_anonymization_key(),
-      /*supports_spdy=*/true);
 
   const MockWrite writes[] = {MockWrite(SYNCHRONOUS, ERR_IO_PENDING, 1)};
   const MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)};
@@ -3336,7 +3714,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, PreconnectRequireHttp1) {
     socket_factory()->AddSocketDataProvider(data.get());
     datas.emplace_back(std::move(data));
     auto ssl = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
-    ssl->next_protos_expected_in_ssl_config = {kProtoHTTP11};
+    ssl->next_protos_expected_in_ssl_config = {NextProto::kProtoHTTP11};
     socket_factory()->AddSSLSocketDataProvider(ssl.get());
     ssls.emplace_back(std::move(ssl));
   }
@@ -3437,7 +3815,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, PreconnectMultipleRequests) {
   Preconnector preconnector1(kDestination);
   Preconnector preconnector2(kDestination);
 
-  MockConnectCompleter completers[2];
+  std::array<MockConnectCompleter, 2> completers;
   std::vector<MockConnect> connects = {
       {MockConnect(&completers[0]), MockConnect(&completers[1])}};
   std::vector<std::unique_ptr<SequencedSocketData>> datas;
@@ -4094,7 +4472,8 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicOkDnsAlpn) {
 
 // Tests that QUIC is not attempted when marked broken.
 TEST_F(HttpStreamPoolAttemptManagerTest, QuicBroken) {
-  AlternativeService alternative_service(kProtoQUIC, "www.example.org", 443);
+  AlternativeService alternative_service(NextProto::kProtoQUIC,
+                                         "www.example.org", 443);
   http_server_properties()->MarkAlternativeServiceBroken(
       alternative_service, NetworkAnonymizationKey());
 
@@ -5487,8 +5866,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, FlushWithError) {
   EXPECT_EQ(pool().TotalActiveStreamCount(), 2u);
 
   // Flushing should destroy all active streams and in-flight attempts.
-  pool().FlushWithError(ERR_ABORTED,
-                        HttpStreamPool::StreamCloseReason::kUnspecified,
+  pool().FlushWithError(ERR_ABORTED, StreamSocketCloseReason::kUnspecified,
                         "For testing");
   EXPECT_EQ(pool().TotalActiveStreamCount(), 0u);
 }
@@ -5528,8 +5906,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, FlushWithErrorPendingJobs) {
   EXPECT_EQ(pool().GetGroupForTesting(stream_key)->PausedJobCount(),
             kNumPausedJobs);
 
-  pool().FlushWithError(ERR_ABORTED,
-                        HttpStreamPool::StreamCloseReason::kUnspecified,
+  pool().FlushWithError(ERR_ABORTED, StreamSocketCloseReason::kUnspecified,
                         "for testing");
   for (auto& requester : requesters) {
     requester->WaitForResult();
@@ -6080,6 +6457,54 @@ TEST_F(HttpStreamPoolAttemptManagerTest, JobAllowH3OnlyCancelTcpBasedAttempt) {
 
   EXPECT_THAT(delegate2.GetResult(), IsOk());
   EXPECT_EQ(delegate2.negotiated_protocol(), NextProto::kProtoQUIC);
+}
+
+// Regression test for crbug.com/384759835.
+TEST_F(HttpStreamPoolAttemptManagerTest, DestroyPoolDuringPreconnect) {
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  SequencedSocketData data;
+  MockConnectCompleter completer;
+  data.set_connect_data(MockConnect(&completer));
+  socket_factory()->AddSocketDataProvider(&data);
+
+  Preconnector preconnector("http://a.test");
+  preconnector.Preconnect(pool());
+  ASSERT_FALSE(preconnector.result().has_value());
+
+  completer.Complete(OK);
+  ASSERT_FALSE(preconnector.result().has_value());
+
+  // Destroy the pool.
+  InitializeSession();
+  FastForwardUntilNoTasksRemain();
+}
+
+// Regression test for crbug.com/384759836.
+TEST_F(HttpStreamPoolAttemptManagerTest, DestroyPoolDuringStreamRequest) {
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  SequencedSocketData data;
+  data.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory()->AddSocketDataProvider(&data);
+
+  StreamRequester requester;
+  requester.set_destination("http://a.test");
+  requester.RequestStream(pool());
+  ASSERT_FALSE(requester.result().has_value());
+
+  // Cancel request before destroy the pool. This behavior matches the
+  // production code.
+  requester.ResetRequest();
+  // Destroy the pool.
+  InitializeSession();
+  FastForwardUntilNoTasksRemain();
 }
 
 }  // namespace net

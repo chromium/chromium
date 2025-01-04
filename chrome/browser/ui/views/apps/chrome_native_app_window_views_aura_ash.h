@@ -32,7 +32,7 @@ enum class TabletState;
 namespace gfx {
 class ImageSkia;
 class RoundedCornersF;
-}
+}  // namespace gfx
 
 namespace ui {
 class MenuModel;

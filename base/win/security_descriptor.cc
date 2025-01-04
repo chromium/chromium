@@ -25,20 +25,23 @@ namespace base::win {
 namespace {
 template <typename T>
 std::optional<T> CloneValue(const std::optional<T>& value) {
-  if (!value)
+  if (!value) {
     return std::nullopt;
+  }
   return value->Clone();
 }
 
 PSID UnwrapSid(const std::optional<Sid>& sid) {
-  if (!sid)
+  if (!sid) {
     return nullptr;
+  }
   return sid->GetPSID();
 }
 
 PACL UnwrapAcl(std::optional<AccessControlList>& acl) {
-  if (!acl)
+  if (!acl) {
     return nullptr;
+  }
   return acl->get();
 }
 

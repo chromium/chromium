@@ -70,7 +70,7 @@ TEST_F(ScrollButtonPseudoElementTest, ScrollButtonsRetainFocus) {
   Element* body = GetDocument().body();
   Element* scroller = body->QuerySelector(AtomicString("#scroller"));
   auto* scroll_button = To<ScrollButtonPseudoElement>(
-      scroller->GetPseudoElement(kPseudoIdScrollRightButton));
+      scroller->GetPseudoElement(kPseudoIdScrollButtonInlineEnd));
   MouseEventInit& mouse_event_init = *MouseEventInit::Create();
   auto* mouse_event = MakeGarbageCollected<MouseEvent>(event_type_names::kClick,
                                                        &mouse_event_init);

@@ -46,8 +46,9 @@ bool MenuRunnerImplCocoa::IsRunning() const {
 
 void MenuRunnerImplCocoa::Release() {
   if (IsRunning()) {
-    if (delete_after_run_)
+    if (delete_after_run_) {
       return;  // We already canceled.
+    }
 
     delete_after_run_ = true;
 
@@ -105,8 +106,9 @@ void MenuRunnerImplCocoa::RunMenuAt(
 
   // Don't invoke the callback if Release() was called, since that usually means
   // the owning instance is being destroyed.
-  if (!on_menu_closed_callback_.is_null())
+  if (!on_menu_closed_callback_.is_null()) {
     on_menu_closed_callback_.Run();
+  }
 }
 
 void MenuRunnerImplCocoa::Cancel() {

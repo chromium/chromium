@@ -19,6 +19,7 @@
 #include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/debug/alias.h"
+#include "partition_alloc/partition_alloc_base/files/platform_file.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_constants.h"
@@ -89,9 +90,12 @@ std::ptrdiff_t PartitionAddressSpace::brp_pool_shadow_offset_ = 0;
 std::ptrdiff_t PartitionAddressSpace::configurable_pool_shadow_offset_ = 0;
 
 // File descriptors for shared mappings.
-int PartitionAddressSpace::regular_pool_fd_ = -1;
-int PartitionAddressSpace::brp_pool_fd_ = -1;
-int PartitionAddressSpace::configurable_pool_fd_ = -1;
+base::PlatformFile PartitionAddressSpace::regular_pool_fd_ =
+    base::kInvalidPlatformFile;
+base::PlatformFile PartitionAddressSpace::brp_pool_fd_ =
+    base::kInvalidPlatformFile;
+base::PlatformFile PartitionAddressSpace::configurable_pool_fd_ =
+    base::kInvalidPlatformFile;
 
 uintptr_t PartitionAddressSpace::pool_shadow_address_ =
     PartitionAddressSpace::kUninitializedPoolBaseAddress;
@@ -152,9 +156,6 @@ void PartitionAddressSpace::Init() {
 
   const size_t core_pool_size = CorePoolSize();
 
-  // TODO(crbug.com/40238514): Support PA_ENABLE_SHADOW_METADATA.
-  int pools_fd = -1;
-
   size_t glued_pool_sizes = core_pool_size * 2;
   // Note, BRP pool requires to be preceded by a "forbidden zone", which is
   // conveniently taken care of by the last guard page of the regular pool.
@@ -162,7 +163,7 @@ void PartitionAddressSpace::Init() {
       AllocPages(glued_pool_sizes, glued_pool_sizes,
                  PageAccessibilityConfiguration(
                      PageAccessibilityConfiguration::kInaccessible),
-                 PageTag::kPartitionAlloc, pools_fd);
+                 PageTag::kPartitionAlloc);
 #if PA_BUILDFLAG(IS_ANDROID)
   // On Android, Adreno-GSL library fails to mmap if we snatch address
   // 0x400000000. Find a different address instead.
@@ -171,7 +172,7 @@ void PartitionAddressSpace::Init() {
         AllocPages(glued_pool_sizes, glued_pool_sizes,
                    PageAccessibilityConfiguration(
                        PageAccessibilityConfiguration::kInaccessible),
-                   PageTag::kPartitionAlloc, pools_fd);
+                   PageTag::kPartitionAlloc);
     FreePages(setup_.regular_pool_base_address_, glued_pool_sizes);
     setup_.regular_pool_base_address_ = new_base_address;
   }
@@ -356,9 +357,10 @@ void PartitionAddressSpace::UninitThreadIsolatedPoolForTesting() {
 
 namespace {
 
-int CreateAnonymousFileForMapping([[maybe_unused]] const char* name,
-                                  [[maybe_unused]] size_t size) {
-  int fd = -1;
+base::PlatformFile CreateAnonymousFileForMapping(
+    [[maybe_unused]] const char* name,
+    [[maybe_unused]] size_t size) {
+  base::PlatformFile fd = base::kInvalidPlatformFile;
 #if PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/40238514): if memfd_secret() is available, try
   // memfd_secret() first.
@@ -396,7 +398,7 @@ void PartitionAddressSpace::InitShadowMetadata(PoolHandleMask mask) {
 
   // Set up a memory file for the given pool, and init |offset|.
   if (ContainsFlags(mask, PoolHandleMask::kConfigurable)) {
-    if (configurable_pool_fd_ == -1) {
+    if (configurable_pool_fd_ == base::kInvalidPlatformFile) {
       PA_DCHECK(pool_shadow_address_);
       PA_DCHECK(configurable_pool_shadow_offset_ == 0);
       configurable_pool_fd_ = CreateAnonymousFileForMapping(
@@ -407,7 +409,7 @@ void PartitionAddressSpace::InitShadowMetadata(PoolHandleMask mask) {
     }
   }
   if (ContainsFlags(mask, PoolHandleMask::kBRP)) {
-    if (brp_pool_fd_ == -1) {
+    if (brp_pool_fd_ == base::kInvalidPlatformFile) {
       PA_DCHECK(pool_shadow_address_);
       PA_DCHECK(brp_pool_shadow_offset_ == 0);
       brp_pool_fd_ = CreateAnonymousFileForMapping("brp_pool_shadow",
@@ -418,7 +420,7 @@ void PartitionAddressSpace::InitShadowMetadata(PoolHandleMask mask) {
     }
   }
   if (ContainsFlags(mask, PoolHandleMask::kRegular)) {
-    if (regular_pool_fd_ == -1) {
+    if (regular_pool_fd_ == base::kInvalidPlatformFile) {
       PA_DCHECK(pool_shadow_address_);
       PA_DCHECK(regular_pool_shadow_offset_ == 0);
       regular_pool_fd_ = CreateAnonymousFileForMapping("regular_pool_shadow",
@@ -437,7 +439,7 @@ void PartitionAddressSpace::MapMetadata(uintptr_t super_page,
   PA_DCHECK(pool_shadow_address_);
   PA_DCHECK(0u == (super_page & kSuperPageOffsetMask));
   std::ptrdiff_t offset;
-  int pool_fd = -1;
+  base::PlatformFile pool_fd = base::kInvalidPlatformFile;
   uintptr_t base_address;
 
   if (IsInRegularPool(super_page)) {

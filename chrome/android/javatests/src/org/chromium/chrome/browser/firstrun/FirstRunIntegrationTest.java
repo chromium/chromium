@@ -281,6 +281,10 @@ public class FirstRunIntegrationTest {
         return (FirstRunActivity) waitForActivity(FirstRunActivity.class);
     }
 
+    private CustomTabActivity waitForCustomTabActivity() {
+        return (CustomTabActivity) waitForActivity(CustomTabActivity.class);
+    }
+
     /**
      * When launching a second Chrome, the new FRE should replace the old FRE. In order to know when
      * the second FirstRunActivity is ready, use object inequality with old one.
@@ -803,6 +807,24 @@ public class FirstRunIntegrationTest {
         blocker.close();
         clickThroughFirstRun(firstRunActivity, testCase);
         verifyUrlEquals(TEST_URL, waitAndGetUriFromChromeActivity(ChromeTabbedActivity.class));
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.CCT_FRE_IN_SAME_TASK})
+    public void testLaunchFirstRunInSameTask() throws Exception {
+        launchCustomTabs(TEST_URL);
+        FirstRunActivity firstRunActivity = waitForFirstRunActivity();
+        CriteriaHelper.pollUiThread(
+                () -> firstRunActivity.getNativeInitializationPromise().isFulfilled(),
+                "native never initialized.");
+
+        clickThroughFirstRun(firstRunActivity, new FirstRunPagesTestCase().withoutSignIn());
+        CustomTabActivity customTabActivity = waitForCustomTabActivity();
+        Assert.assertEquals(
+                "FirstRun and CustomTab should be opened in the same task",
+                firstRunActivity.getTaskId(),
+                customTabActivity.getTaskId());
     }
 
     @Test

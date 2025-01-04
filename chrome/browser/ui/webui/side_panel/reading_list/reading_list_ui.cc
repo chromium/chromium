@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_page_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/side_panel_reading_list_resources.h"
@@ -34,6 +33,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 
 ReadingListUI::ReadingListUI(content::WebUI* web_ui)
     : TopChromeWebUIController(web_ui),
@@ -58,8 +58,9 @@ ReadingListUI::ReadingListUI(content::WebUI* web_ui)
       {"unreadHeader", IDS_READ_LATER_MENU_UNREAD_HEADER},
       {"cancelA11yLabel", IDS_CANCEL},
   };
-  for (const auto& str : kLocalizedStrings)
+  for (const auto& str : kLocalizedStrings) {
     webui::AddLocalizedString(source, str.name, str.id);
+  }
 
   source->AddBoolean("useRipples", views::PlatformStyle::kUseRipples);
 
@@ -105,8 +106,9 @@ void ReadingListUI::BindInterface(
 void ReadingListUI::BindInterface(
     mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
         pending_receiver) {
-  if (help_bubble_handler_factory_receiver_.is_bound())
+  if (help_bubble_handler_factory_receiver_.is_bound()) {
     help_bubble_handler_factory_receiver_.reset();
+  }
   help_bubble_handler_factory_receiver_.Bind(std::move(pending_receiver));
 }
 
@@ -122,6 +124,7 @@ void ReadingListUI::CreateHelpBubbleHandler(
 }
 
 void ReadingListUI::SetActiveTabURL(const GURL& url) {
-  if (page_handler_)
+  if (page_handler_) {
     page_handler_->SetActiveTabURL(url);
+  }
 }

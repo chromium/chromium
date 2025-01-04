@@ -34,10 +34,8 @@ class JniDelegateImpl : public JniDelegate {
   }
 
   void ShowAddUsernameDialog(const std::u16string& password) override {
-    JNIEnv* env = base::android::AttachCurrentThread();
     Java_AddUsernameDialogBridge_showAddUsernameDialog(
-        base::android::AttachCurrentThread(), java_bridge_,
-        base::android::ConvertUTF16ToJavaString(env, password));
+        base::android::AttachCurrentThread(), java_bridge_, password);
   }
 
   void Dismiss() override {
@@ -84,11 +82,9 @@ void AddUsernameDialogBridge::ShowAddUsernameDialog(
   jni_delegate_->ShowAddUsernameDialog(password);
 }
 
-void AddUsernameDialogBridge::OnDialogAccepted(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& username) {
-  std::move(dialog_accepted_callback_)
-      .Run(base::android::ConvertJavaStringToUTF16(env, username));
+void AddUsernameDialogBridge::OnDialogAccepted(JNIEnv* env,
+                                               const std::u16string& username) {
+  std::move(dialog_accepted_callback_).Run(username);
 }
 
 void AddUsernameDialogBridge::OnDialogDismissed(JNIEnv* env) {

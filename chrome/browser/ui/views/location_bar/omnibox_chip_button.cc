@@ -24,6 +24,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/painter.h"
 #include "ui/views/view_class_properties.h"
 
@@ -39,6 +40,8 @@ constexpr int kChipVerticalPadding = 4;
 constexpr int kChipHorizontalPadding = 6;
 
 }  // namespace
+
+DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kOmniboxChipButtonExpanded);
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxChipButton, kChipElementId);
 
@@ -98,8 +101,9 @@ gfx::Size OmniboxChipButton::CalculatePreferredSize(
   const int width =
       base::ClampRound(collapsable_width * animation_->GetCurrentValue()) +
       fixed_width;
-  return views::LabelButton::CalculatePreferredSize(
-      views::SizeBounds(width, {}));
+  return gfx::Size(width, views::LabelButton::CalculatePreferredSize(
+                              views::SizeBounds(width, {}))
+                              .height());
 }
 
 void OmniboxChipButton::OnThemeChanged() {
@@ -119,10 +123,18 @@ void OmniboxChipButton::UpdateBackgroundColor() {
 }
 
 void OmniboxChipButton::AnimationEnded(const gfx::Animation* animation) {
-  if (animation != animation_.get())
+  if (animation != animation_.get()) {
     return;
+  }
 
   OnAnimationValueMaybeChanged();
+
+  auto* element =
+      views::ElementTrackerViews::GetInstance()->GetElementForView(this);
+  if (animation->GetCurrentValue() == 1.0 && element) {
+    ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+        element, kOmniboxChipButtonExpanded);
+  }
 }
 
 void OmniboxChipButton::AnimationProgressed(const gfx::Animation* animation) {
@@ -191,10 +203,10 @@ void OmniboxChipButton::OnAnimationValueMaybeChanged() {
 }
 
 int OmniboxChipButton::GetIconSize() const {
-    // Mimic the sizing for other trailing icons.
-    return GetLayoutConstant((theme_ == OmniboxChipTheme::kIconStyle)
-                                 ? LOCATION_BAR_TRAILING_ICON_SIZE
-                                 : LOCATION_BAR_CHIP_ICON_SIZE);
+  // Mimic the sizing for other trailing icons.
+  return GetLayoutConstant((theme_ == OmniboxChipTheme::kIconStyle)
+                               ? LOCATION_BAR_TRAILING_ICON_SIZE
+                               : LOCATION_BAR_CHIP_ICON_SIZE);
 }
 
 void OmniboxChipButton::AddObserver(Observer* observer) {

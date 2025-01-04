@@ -279,7 +279,6 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
       const blink::WebGestureEvent& event);
   EventDisposition HandleGestureScrollUpdate(
       const blink::WebGestureEvent& event,
-      const blink::WebInputEventAttribution& original_attribution,
       cc::EventMetrics* metrics,
       int64_t trace_id);
   EventDisposition HandleGestureScrollEnd(const blink::WebGestureEvent& event);
@@ -327,8 +326,7 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
                                      cc::TouchAction* allowed_touch_action);
 
   EventDisposition RouteToTypeSpecificHandler(
-      EventWithCallback* event_with_callback,
-      const blink::WebInputEventAttribution& original_attribution);
+      EventWithCallback* event_with_callback);
 
   void set_event_attribution_enabled(bool enabled) {
     event_attribution_enabled_ = enabled;
@@ -336,7 +334,8 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
 
   void RecordScrollBegin(blink::WebGestureDevice device,
                          uint32_t main_thread_hit_tested_reasons,
-                         uint32_t main_thread_repaint_reasons);
+                         uint32_t main_thread_repaint_reasons,
+                         bool raster_inducing = false);
 
   bool HasQueuedEventsReadyForDispatch(bool frame_aligned) const;
 
@@ -392,7 +391,7 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   // Set only when the compositor input handler is handling a gesture. Denotes
   // which modifiers were present on the `WebInputEvent` so they can be applied
   // in GenerateAndDispatchSytheticScrollPrediction.
-  std::optional<int> current_active_gesture_scroll_modifiers_;
+  std::optional<int> currently_active_gesture_scroll_modifiers_;
 
   base::OnceClosure queue_flushed_callback_;
 

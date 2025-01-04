@@ -20,6 +20,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 
 // Structure of `account_manager::prefs::kAccountAppsAvailability`.
 // `kAccountAppsAvailability` is a dictionary of dictionaries of the following
@@ -64,7 +65,7 @@ void CompleteFindAccountByGaiaId(
     const std::vector<account_manager::Account>& accounts) {
   for (const auto& account : accounts) {
     if (account.key.account_type() == account_manager::AccountType::kGaia &&
-        account.key.id() == gaia_id) {
+        GaiaId(account.key.id()) == gaia_id) {
       std::move(callback).Run(account);
       return;
     }
@@ -124,7 +125,8 @@ std::optional<bool> IsAccountAvailableInArc(PrefService* prefs,
       prefs->GetDict(account_manager::prefs::kAccountAppsAvailability);
 
   // See structure of `accounts` at the top of the file.
-  const base::Value::Dict* account_entry = accounts.FindDict(gaia_id);
+  const base::Value::Dict* account_entry =
+      accounts.FindDict(gaia_id.ToString());
   if (!account_entry)
     return std::nullopt;
 
@@ -142,7 +144,7 @@ void RemoveAccountFromPrefs(PrefService* prefs, const GaiaId& gaia_id) {
 
   ScopedDictPrefUpdate update(prefs,
                               account_manager::prefs::kAccountAppsAvailability);
-  const bool success = update->Remove(gaia_id);
+  const bool success = update->Remove(gaia_id.ToString());
   if (!success)
     LOG(ERROR) << "Account apps availability pref not found";
 }
@@ -159,7 +161,7 @@ void AddAccountToPrefs(PrefService* prefs,
 
   ScopedDictPrefUpdate update(prefs,
                               account_manager::prefs::kAccountAppsAvailability);
-  update->Set(gaia_id, std::move(account_entry));
+  update->Set(gaia_id.ToString(), std::move(account_entry));
 }
 
 void UpdateAccountInPrefs(PrefService* prefs,
@@ -167,7 +169,7 @@ void UpdateAccountInPrefs(PrefService* prefs,
                           bool is_available_in_arc) {
   ScopedDictPrefUpdate update(prefs,
                               account_manager::prefs::kAccountAppsAvailability);
-  base::Value::Dict* account_entry = update->FindDict(gaia_id);
+  base::Value::Dict* account_entry = update->FindDict(gaia_id.ToString());
   DCHECK(account_entry);
 
   account_entry->Set(account_manager::prefs::kIsAvailableInArcKey,
@@ -250,10 +252,10 @@ void AccountAppsAvailability::SetIsAccountAvailableInArc(
   }
 
   std::optional<bool> current_status =
-      IsAccountAvailableInArc(prefs_, account.key.id());
+      IsAccountAvailableInArc(prefs_, GaiaId(account.key.id()));
   if (!current_status.has_value()) {
     // Account is not in prefs yet - add a new entry.
-    AddAccountToPrefs(prefs_, account.key.id(), is_available);
+    AddAccountToPrefs(prefs_, GaiaId(account.key.id()), is_available);
 
     // Notify observers only if account should be available.
     if (is_available)
@@ -265,7 +267,7 @@ void AccountAppsAvailability::SetIsAccountAvailableInArc(
   if (current_status.value() == is_available)
     return;
 
-  UpdateAccountInPrefs(prefs_, account.key.id(), is_available);
+  UpdateAccountInPrefs(prefs_, GaiaId(account.key.id()), is_available);
   NotifyObservers(account, is_available);
 }
 
@@ -349,8 +351,8 @@ void AccountAppsAvailability::OnAccountRemoved(
   }
 
   std::optional<bool> current_status =
-      IsAccountAvailableInArc(prefs_, account.key.id());
-  RemoveAccountFromPrefs(prefs_, account.key.id());
+      IsAccountAvailableInArc(prefs_, GaiaId(account.key.id()));
+  RemoveAccountFromPrefs(prefs_, GaiaId(account.key.id()));
   if (!current_status.has_value() || !current_status.value())
     return;
 

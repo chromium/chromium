@@ -14,6 +14,7 @@
 #include <sstream>
 #include <utility>
 
+#include "base/check.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -260,13 +261,14 @@ Window::~Window() {
 }
 
 void Window::Init(ui::LayerType layer_type) {
+  CHECK(!layer()) << "Window is already initialized";
+
   WindowOcclusionTracker::ScopedPause pause_occlusion_tracking;
 
   SetLayer(std::make_unique<ui::Layer>(layer_type));
   layer()->SetVisible(false);
   layer()->set_delegate(this);
   UpdateLayerName();
-  layer()->SetFillsBoundsOpaquely(!transparent_);
   Env::GetInstance()->NotifyWindowInitialized(this);
 }
 
@@ -326,15 +328,17 @@ bool Window::GetTransparent() const {
 }
 
 void Window::SetTransparent(bool transparent) {
+  CHECK(layer());
   if (transparent == transparent_)
     return;
   transparent_ = transparent;
-  if (layer())
-    layer()->SetFillsBoundsOpaquely(!transparent_);
+
+  layer()->SetFillsBoundsOpaquely(!transparent_);
   TriggerChangedCallback(&transparent_);
 }
 
 void Window::SetFillsBoundsCompletely(bool fills_bounds) {
+  CHECK(layer());
   layer()->SetFillsBoundsCompletely(fills_bounds);
 }
 
@@ -358,7 +362,9 @@ const WindowTreeHost* Window::GetHost() const {
 }
 
 void Window::Show() {
-  DCHECK_EQ(visible_, layer()->GetTargetVisibility());
+  CHECK(layer());
+  CHECK_EQ(visible_, layer()->GetTargetVisibility());
+
   // It is not allowed that a window is visible but the layers alpha is fully
   // transparent since the window would still be considered to be active but
   // could not be seen.
@@ -367,11 +373,15 @@ void Window::Show() {
 }
 
 void Window::Hide() {
+  CHECK(layer());
+
   // RootWindow::OnVisibilityChanged will call ReleaseCapture.
   SetVisibleInternal(false);
 }
 
 bool Window::IsVisible() const {
+  CHECK(layer());
+
   // Layer visibility can be inconsistent with window visibility, for example
   // when a Window is hidden, we want this function to return false immediately
   // after, even though the client may decide to animate the hide effect (and
@@ -410,6 +420,7 @@ gfx::Rect Window::GetActualBoundsInRootWindow() const {
 }
 
 const gfx::Transform& Window::transform() const {
+  CHECK(layer());
   return layer()->transform();
 }
 
@@ -440,6 +451,7 @@ gfx::Rect Window::GetActualBoundsInScreen() const {
 }
 
 void Window::SetTransform(const gfx::Transform& transform) {
+  CHECK(layer());
   WindowOcclusionTracker::ScopedPause pause_occlusion_tracking;
   for (WindowObserver& observer : observers_)
     observer.OnWindowTargetTransformChanging(this, transform);
@@ -462,6 +474,7 @@ std::unique_ptr<WindowTargeter> Window::SetEventTargeter(
 }
 
 void Window::SetBounds(const gfx::Rect& new_bounds) {
+  CHECK(layer());
   if (parent_ && parent_->layout_manager()) {
     parent_->layout_manager()->SetChildBounds(this, new_bounds);
   } else {
@@ -479,6 +492,7 @@ void Window::SetBounds(const gfx::Rect& new_bounds) {
 
 void Window::SetBoundsInScreen(const gfx::Rect& new_bounds_in_screen,
                                const display::Display& dst_display) {
+  CHECK(layer());
   if (auto* screen_position_client =
           aura::client::GetScreenPositionClient(GetRootWindow())) {
     screen_position_client->SetBounds(this, new_bounds_in_screen, dst_display);
@@ -492,10 +506,12 @@ gfx::Rect Window::GetTargetBounds() const {
 }
 
 void Window::ScheduleDraw() {
+  CHECK(layer());
   layer()->ScheduleDraw();
 }
 
 void Window::SchedulePaintInRect(const gfx::Rect& rect) {
+  CHECK(layer());
   layer()->SchedulePaint(rect);
 }
 
@@ -715,6 +731,8 @@ bool Window::HasObserver(const WindowObserver* observer) const {
 }
 
 void Window::SetEventTargetingPolicy(EventTargetingPolicy policy) {
+  CHECK(layer());
+
   // If the event targeting is blocked on the window, do not allow change event
   // targeting policy until all event targeting blockers are removed from the
   // window.
@@ -1857,6 +1875,8 @@ bool Window::GetVisible() const {
 }
 
 void Window::SetVisible(bool visible) {
+  CHECK(layer());
+
   if (visible == IsVisible())
     return;
   if (visible)

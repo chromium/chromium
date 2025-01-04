@@ -28,12 +28,13 @@ class FakeWebFrame : public WebFrame {
   // Creates a web frame. `frame_id` must be a string representing a valid
   // hexadecimal number.
   static std::unique_ptr<FakeWebFrame> Create(const std::string& frame_id,
+                                              bool is_main_frame);
+  static std::unique_ptr<FakeWebFrame> Create(const std::string& frame_id,
                                               bool is_main_frame,
-                                              GURL security_origin_gurl);
-  static std::unique_ptr<FakeWebFrame> Create(
-      const std::string& frame_id,
-      bool is_main_frame,
-      url::Origin security_origin = url::Origin());
+                                              GURL security_origin);
+  static std::unique_ptr<FakeWebFrame> Create(const std::string& frame_id,
+                                              bool is_main_frame,
+                                              url::Origin security_origin);
 
   // Creates a web frame representing the main frame with a frame id of
   // `kMainFakeFrameId`.

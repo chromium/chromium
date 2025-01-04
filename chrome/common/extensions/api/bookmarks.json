@@ -86,7 +86,6 @@
       {
         "id": "CreateDetails",
         "description": "Object passed to the create() function.",
-        "inline_doc": true,
         "type": "object",
         "properties": {
           "parentId": {

@@ -4,11 +4,14 @@
 
 package org.chromium.mojo.system;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Container that contains a mojo result and a value.
  *
  * @param <A> the type of the value.
  */
+@NullMarked
 public class ResultAnd<A> {
     private final int mMojoResult;
     private final A mValue;

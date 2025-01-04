@@ -6,7 +6,10 @@ package org.chromium.components.download;
 
 import android.net.Uri;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Helper class for providering some helper method needed by DownloadCollectionBridge. */
+@NullMarked
 public class DownloadDelegate {
     public DownloadDelegate() {}
 

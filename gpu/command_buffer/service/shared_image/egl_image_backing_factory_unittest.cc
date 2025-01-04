@@ -509,7 +509,7 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, Dawn_SampledTexture) {
   // Create a Dawn OpenGLES device.
   wgpu::RequestAdapterOptions adapter_options;
   adapter_options.backendType = wgpu::BackendType::OpenGLES;
-  adapter_options.compatibilityMode = true;
+  adapter_options.featureLevel = wgpu::FeatureLevel::Compatibility;
 
   std::vector<dawn::native::Adapter> adapters =
       instance.EnumerateAdapters(&adapter_options);

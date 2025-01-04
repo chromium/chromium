@@ -77,8 +77,9 @@ DesignerSurface::DesignerSurface(int grid_size) : grid_size_(grid_size) {}
 void DesignerSurface::SetGridSize(int grid_size) {
   if (grid_size_ != grid_size) {
     grid_size_ = grid_size;
-    if (GetWidget())
+    if (GetWidget()) {
       RebuildGridImage();
+    }
   }
 }
 
@@ -278,8 +279,9 @@ std::vector<std::unique_ptr<BaseClassRegistration>> GetClassRegistrations() {
 
 bool IsViewParent(View* parent, View* view) {
   while (view) {
-    if (view == parent)
+    if (view == parent) {
       return true;
+    }
     view = view->parent();
   }
   return false;
@@ -313,8 +315,9 @@ void DesignerExample::GrabHandle::SetAttachedView(View* view) {
 void DesignerExample::GrabHandle::UpdatePosition(bool reorder) {
   if (GetVisible() && attached_view_) {
     PositionOnView();
-    if (reorder)
+    if (reorder) {
       parent()->ReorderChildView(this, parent()->children().size());
+    }
   }
 }
 
@@ -378,21 +381,25 @@ void DesignerExample::GrabHandle::PositionOnView() {
   gfx::Point edge_position;
   if (IsTop(position_)) {
     edge_position.set_y(view_bounds.y());
-    if (position_ == GrabHandlePosition::kTop)
+    if (position_ == GrabHandlePosition::kTop) {
       edge_position.set_x(view_bounds.top_center().x());
+    }
   } else if (IsBottom(position_)) {
     edge_position.set_y(view_bounds.bottom());
-    if (position_ == GrabHandlePosition::kBottom)
+    if (position_ == GrabHandlePosition::kBottom) {
       edge_position.set_x(view_bounds.bottom_center().x());
+    }
   }
   if (IsLeft(position_)) {
     edge_position.set_x(view_bounds.x());
-    if (position_ == GrabHandlePosition::kLeft)
+    if (position_ == GrabHandlePosition::kLeft) {
       edge_position.set_y(view_bounds.left_center().y());
+    }
   } else if (IsRight(position_)) {
     edge_position.set_x(view_bounds.right());
-    if (position_ == GrabHandlePosition::kRight)
+    if (position_ == GrabHandlePosition::kRight) {
       edge_position.set_y(view_bounds.right_center().y());
+    }
   }
   SetPosition(edge_position - (bounds().CenterPoint() - origin()));
 }
@@ -406,15 +413,17 @@ void DesignerExample::GrabHandle::UpdateViewSize() {
                            (view_center.y() - view_bounds.y()));
     view_bounds.set_y(view_center.y());
   }
-  if (IsBottom(position_))
+  if (IsBottom(position_)) {
     view_bounds.set_height(view_center.y() - view_bounds.y());
+  }
   if (IsLeft(position_)) {
     view_bounds.set_width(view_bounds.width() -
                           (view_center.x() - view_bounds.x()));
     view_bounds.set_x(view_center.x());
   }
-  if (IsRight(position_))
+  if (IsRight(position_)) {
     view_bounds.set_width(view_center.x() - view_bounds.x());
+  }
   attached_view_->SetBoundsRect(view_bounds);
 }
 
@@ -462,8 +471,9 @@ void DesignerExample::GrabHandles::Initialize(View* layout_panel) {
 }
 
 void DesignerExample::GrabHandles::SetAttachedView(View* view) {
-  for (GrabHandle* grab_handle : grab_handles_)
+  for (GrabHandle* grab_handle : grab_handles_) {
     grab_handle->SetAttachedView(view);
+  }
 }
 
 bool DesignerExample::GrabHandles::IsGrabHandle(View* view) {
@@ -473,8 +483,9 @@ bool DesignerExample::GrabHandles::IsGrabHandle(View* view) {
 DesignerExample::DesignerExample() : ExampleBase("Designer") {}
 
 DesignerExample::~DesignerExample() {
-  if (tracker_.view())
+  if (tracker_.view()) {
     inspector_->SetModel(nullptr);
+  }
 }
 
 void DesignerExample::CreateExampleView(View* container) {
@@ -568,8 +579,9 @@ void DesignerExample::HandleDesignerMouseEvent(ui::Event* event) {
       break;
     case ui::EventType::kMouseDragged:
       if (dragging_) {
-        if (grab_handles_.IsGrabHandle(dragging_))
+        if (grab_handles_.IsGrabHandle(dragging_)) {
           return;
+        }
         gfx::Point new_position =
             selected_->origin() +
             SnapToGrid(mouse_event->location() - last_mouse_pos_);
@@ -587,8 +599,9 @@ void DesignerExample::HandleDesignerMouseEvent(ui::Event* event) {
       if (dragging_) {
         bool dragging_handle = grab_handles_.IsGrabHandle(dragging_);
         dragging_ = nullptr;
-        if (!dragging_handle)
+        if (!dragging_handle) {
           event->SetHandled();
+        }
         return;
       }
       break;
@@ -602,11 +615,13 @@ void DesignerExample::SelectView(View* view) {
     selected_ = view;
     selected_members_.clear();
     if (selected_) {
-      for (auto* member : *selected_->GetClassMetaData())
+      for (auto* member : *selected_->GetClassMetaData()) {
         selected_members_.push_back(member);
+      }
     }
-    if (model_observer_)
+    if (model_observer_) {
       model_observer_->OnModelChanged();
+    }
   }
 }
 
@@ -635,8 +650,9 @@ size_t DesignerExample::RowCount() {
 std::u16string DesignerExample::GetText(size_t row, int column_id) {
   if (selected_) {
     ui::metadata::MemberMetaDataBase* member = selected_members_[row];
-    if (column_id == 0)
+    if (column_id == 0) {
       return base::ASCIIToUTF16(member->member_name());
+    }
     return member->GetValueAsString(selected_);
   }
   return std::u16string();

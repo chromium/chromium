@@ -38,6 +38,7 @@
 #include "chromeos/ui/wm/constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash::boca {
 
@@ -165,7 +166,7 @@ BocaAppHandler::BocaAppHandler(
   auto* user = ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
       web_ui->GetWebContents()->GetBrowserContext());
   user_identity_.set_email(user->GetAccountId().GetUserEmail());
-  user_identity_.set_gaia_id(user->GetAccountId().GetGaiaId());
+  user_identity_.set_gaia_id(user->GetAccountId().GetGaiaId().ToString());
   user_identity_.set_full_name(base::UTF16ToUTF8(user->GetDisplayName()));
   user_identity_.set_photo_url(user->image_url().spec());
   // BocaAppClient is guaranteed to be live here.
@@ -254,7 +255,8 @@ void BocaAppHandler::CreateSession(mojom::ConfigPtr config,
 
 void BocaAppHandler::GetSession(GetSessionCallback callback) {
   auto get_session_request = std::make_unique<GetSessionRequest>(
-      session_client_impl_->sender(), is_producer_, user_identity_.gaia_id(),
+      session_client_impl_->sender(), is_producer_,
+      GaiaId(user_identity_.gaia_id()),
       base::BindOnce(
           [](GetSessionCallback callback,
              base::expected<std::unique_ptr<::boca::Session>,
@@ -326,7 +328,7 @@ void BocaAppHandler::RemoveStudent(const std::string& id,
 
   std::unique_ptr<RemoveStudentRequest> request =
       std::make_unique<RemoveStudentRequest>(
-          session_client_impl_->sender(), user_identity_.gaia_id(),
+          session_client_impl_->sender(), GaiaId(user_identity_.gaia_id()),
           session->session_id(),
           base::BindOnce(&BocaAppHandler::OnStudentRemoved,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback),

@@ -38,8 +38,8 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_host.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types_3d.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
@@ -178,7 +178,12 @@ class CORE_EXPORT CanvasRenderingContext
     return nullptr;
   }
 
-  virtual SkColorInfo CanvasRenderingContextSkColorInfo() const;
+  SkColorInfo CanvasRenderingContextSkColorInfo() const {
+    return SkColorInfo(GetSkColorType(), GetAlphaType(), GetSkColorSpace());
+  }
+  virtual SkAlphaType GetAlphaType() const = 0;
+  virtual SkColorType GetSkColorType() const = 0;
+  virtual sk_sp<SkColorSpace> GetSkColorSpace() const = 0;
 
   virtual scoped_refptr<StaticBitmapImage> GetImage(FlushReason) = 0;
   virtual bool IsComposited() const = 0;
@@ -330,7 +335,6 @@ class CORE_EXPORT CanvasRenderingContext
 
  private:
   Member<CanvasRenderingContextHost> host_;
-  CanvasColorParams color_params_;
   CanvasContextCreationAttributesCore creation_attributes_;
 
   void RenderTaskEnded();

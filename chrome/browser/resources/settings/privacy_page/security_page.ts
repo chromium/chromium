@@ -500,6 +500,10 @@ export class SettingsSecurityPageElement extends
     return subLabel;
   }
 
+  private computeSecureDnsSettingClass_(): string {
+    return this.enablePasswordLeakToggleMove_ ? 'hr' : 'no-hr';
+  }
+
   private computeSafeBrowsingStandardNoCollapse_(): boolean {
     return this.hideExtendedReportingRadioButton_ &&
         this.enablePasswordLeakToggleMove_;

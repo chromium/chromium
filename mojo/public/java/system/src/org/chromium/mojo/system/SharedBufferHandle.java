@@ -4,9 +4,12 @@
 
 package org.chromium.mojo.system;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.nio.ByteBuffer;
 
 /** A buffer that can be shared between applications. */
+@NullMarked
 public interface SharedBufferHandle extends Handle {
 
     /** Flags for the shared buffer creation operation. */

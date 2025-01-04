@@ -137,9 +137,9 @@ TEST_F(SettingsPrivateEventRouterTest, IncognitoEventRouting) {
       api::settings_private::OnPrefsChanged::kEventName, &otr_rph, kDummyURL);
 
   // Hook up some test observers
-  EventRouterObserver regular_counter(regular_rph.GetID());
+  EventRouterObserver regular_counter(regular_rph.GetDeprecatedID());
   regular_event_router->AddObserverForTesting(&regular_counter);
-  EventRouterObserver otr_counter(otr_rph.GetID());
+  EventRouterObserver otr_counter(otr_rph.GetDeprecatedID());
   otr_event_router->AddObserverForTesting(&otr_counter);
 
   EXPECT_EQ(0, regular_counter.dispatch_count);

@@ -503,8 +503,7 @@ MediaGalleriesPermissionController::DialogIdMap::DialogIdMap()
   forward_mapping_.push_back(kInvalidMediaGalleryPrefId);
 }
 
-MediaGalleriesPermissionController::DialogIdMap::~DialogIdMap() {
-}
+MediaGalleriesPermissionController::DialogIdMap::~DialogIdMap() = default;
 
 GalleryDialogId
 MediaGalleriesPermissionController::DialogIdMap::GetDialogId(

@@ -1141,8 +1141,9 @@ class FencedFrameFileSystemAccessBrowserTest
   content::RenderFrameHost* CreateFencedFrame(
       content::RenderFrameHost* fenced_frame_parent,
       const GURL& url) {
-    if (fenced_frame_helper_)
+    if (fenced_frame_helper_) {
       return fenced_frame_helper_->CreateFencedFrame(fenced_frame_parent, url);
+    }
 
     // FencedFrameTestHelper only supports the MPArch version of fenced
     // frames. So need to maually create a fenced frame for the ShadowDOM

@@ -10,8 +10,11 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.CalledByNativeForTesting;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Helper class for Autofill state and password preferences for accessibility related code. */
 @JNINamespace("ui")
+@NullMarked
 public class AccessibilityAutofillHelper {
 
     private static boolean sForceRespectDisplayedPasswordTextForTesting;

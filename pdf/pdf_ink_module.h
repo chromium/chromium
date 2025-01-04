@@ -21,7 +21,7 @@
 #include "pdf/pdf_ink_ids.h"
 #include "pdf/pdf_ink_undo_redo_model.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-#include "third_party/ink/src/ink/geometry/modeled_shape.h"
+#include "third_party/ink/src/ink/geometry/partitioned_mesh.h"
 #include "third_party/ink/src/ink/strokes/in_progress_stroke.h"
 #include "third_party/ink/src/ink/strokes/input/stroke_input.h"
 #include "third_party/ink/src/ink/strokes/input/stroke_input_batch.h"
@@ -183,7 +183,7 @@ class PdfInkModule {
   // A shape that was loaded from a "V2" path from the PDF itself, its ID, and
   // whether it should be drawn or not.
   struct LoadedV2ShapeState {
-    LoadedV2ShapeState(ink::ModeledShape shape, InkModeledShapeId id);
+    LoadedV2ShapeState(ink::PartitionedMesh shape, InkModeledShapeId id);
     LoadedV2ShapeState(const LoadedV2ShapeState&) = delete;
     LoadedV2ShapeState& operator=(const LoadedV2ShapeState&) = delete;
     LoadedV2ShapeState(LoadedV2ShapeState&&) noexcept;
@@ -192,7 +192,7 @@ class PdfInkModule {
 
     // Coordinates for each shape are stored in a canonical format specified in
     // pdf_ink_transform.h.
-    ink::ModeledShape shape;
+    ink::PartitionedMesh shape;
 
     // A unique ID to identify this shape.
     InkModeledShapeId id;
@@ -214,6 +214,9 @@ class PdfInkModule {
 
       // The event time.
       base::TimeTicks timestamp;
+
+      // The type of tool used to generate the input.
+      ink::StrokeInput::ToolType tool_type;
     };
 
     DrawingStrokeState();

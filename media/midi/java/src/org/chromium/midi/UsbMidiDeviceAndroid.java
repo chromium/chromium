@@ -18,16 +18,19 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Owned by its native counterpart declared in usb_midi_device_android.h.
- * Refer to that class for general comments.
+ * Owned by its native counterpart declared in usb_midi_device_android.h. Refer to that class for
+ * general comments.
  */
 @JNINamespace("midi")
+@NullMarked
 class UsbMidiDeviceAndroid {
     /** A connection handle for this device. */
     private final UsbDeviceConnection mConnection;
@@ -140,6 +143,7 @@ class UsbMidiDeviceAndroid {
                         continue;
                     }
                     ByteBuffer buffer = bufferForEndpoints.get(endpoint);
+                    assert buffer != null;
                     int length = getInputDataLength(buffer);
                     if (length > 0) {
                         buffer.rewind();

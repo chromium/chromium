@@ -994,14 +994,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
       GLsizei height,
       GLint border);
 
-  // Wrapper for SwapBuffers.
-  void DoSwapBuffers(uint64_t swap_id, GLbitfield flags);
-
-  // Callback for async SwapBuffers.
-  void FinishAsyncSwapBuffers(uint64_t swap_id,
-                              gfx::SwapCompletionResult result);
-  void FinishSwapBuffers(gfx::SwapResult result);
-
   // Wrapper for CopyTexSubImage2D.
   void DoCopyTexSubImage2D(
       GLenum target,
@@ -2443,8 +2435,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
   // Backbuffer attachments that are currently undefined.
   uint32_t backbuffer_needs_clear_bits_;
 
-  uint64_t swaps_since_resize_;
-
   // The current decoder error communicates the decoder error through command
   // processing functions that do not return the error value. Should be set only
   // if not returning an error.
@@ -2909,7 +2899,6 @@ GLES2DecoderImpl::GLES2DecoderImpl(
       back_buffer_draw_buffer_(GL_BACK),
       surfaceless_(false),
       backbuffer_needs_clear_bits_(0),
-      swaps_since_resize_(0),
       current_decoder_error_(error::kNoError),
       validators_(group_->feature_info()->validators()),
       feature_info_(group_->feature_info()),
@@ -4776,57 +4765,6 @@ bool GLES2DecoderImpl::ResizeOffscreenFramebuffer(const gfx::Size& size) {
   }
 
   return true;
-}
-
-error::Error GLES2DecoderImpl::HandleResizeCHROMIUM(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile gles2::cmds::ResizeCHROMIUM& c =
-      *static_cast<const volatile gles2::cmds::ResizeCHROMIUM*>(cmd_data);
-
-  GLuint width = static_cast<GLuint>(c.width);
-  GLuint height = static_cast<GLuint>(c.height);
-  GLfloat scale_factor = c.scale_factor;
-  GLboolean has_alpha = c.alpha;
-  gfx::ColorSpace color_space;
-  if (!ReadColorSpace(c.shm_id, c.shm_offset, c.color_space_size,
-                      &color_space)) {
-    return error::kOutOfBounds;
-  }
-  TRACE_EVENT2("gpu", "glResizeChromium", "width", width, "height", height);
-
-  // gfx::Size uses integers, make sure width and height do not overflow
-  static_assert(sizeof(GLuint) >= sizeof(int), "Unexpected GLuint size.");
-  static const GLuint kMaxDimension =
-      static_cast<GLuint>(std::numeric_limits<int>::max());
-  width = std::clamp(width, 1U, kMaxDimension);
-  height = std::clamp(height, 1U, kMaxDimension);
-
-  bool is_offscreen = !!offscreen_target_frame_buffer_.get();
-  if (is_offscreen) {
-    // We don't support Resize on the offscreen contexts.
-    LOG(ERROR) << "Resize called for the offscreen context";
-    return error::kUnknownCommand;
-  } else {
-    if (!surface_->Resize(gfx::Size(width, height), scale_factor, color_space,
-                          !!has_alpha)) {
-      LOG(ERROR) << "GLES2DecoderImpl: Context lost because resize failed.";
-      return error::kLostContext;
-    }
-    DCHECK(context_->IsCurrent(surface_.get()));
-    if (!context_->IsCurrent(surface_.get())) {
-      LOG(ERROR) << "GLES2DecoderImpl: Context lost because context no longer "
-                 << "current after resize callback.";
-      return error::kLostContext;
-    }
-    if (surface_->BuffersFlipped()) {
-      backbuffer_needs_clear_bits_ |= GL_COLOR_BUFFER_BIT;
-    }
-  }
-
-  swaps_since_resize_ = 0;
-
-  return error::kNoError;
 }
 
 const char* GLES2DecoderImpl::GetCommandName(unsigned int command_id) const {
@@ -14669,82 +14607,6 @@ error::Error GLES2DecoderImpl::HandleShaderBinary(
   // TODO(gman): call glShaderBinary
   return error::kNoError;
 #endif
-}
-
-void GLES2DecoderImpl::DoSwapBuffers(uint64_t swap_id, GLbitfield flags) {
-  bool is_offscreen = !!offscreen_target_frame_buffer_.get();
-
-  int this_frame_number = frame_number_++;
-  // TRACE_EVENT for gpu tests:
-  TRACE_EVENT_INSTANT2(
-      "test_gpu", "SwapBuffersLatency", TRACE_EVENT_SCOPE_THREAD, "GLImpl",
-      static_cast<int>(gl::GetGLImplementation()), "width",
-      (is_offscreen ? offscreen_size_.width() : surface_->GetSize().width()));
-  TRACE_EVENT2("gpu", "GLES2DecoderImpl::DoSwapBuffers",
-               "offscreen", is_offscreen,
-               "frame", this_frame_number);
-
-  ScopedGPUTrace scoped_gpu_trace(gpu_tracer_.get(), kTraceDecoder,
-                                  "GLES2Decoder", "SwapBuffer");
-
-  bool is_tracing;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED(TRACE_DISABLED_BY_DEFAULT("gpu.debug"),
-                                     &is_tracing);
-  if (is_tracing) {
-    ScopedFramebufferBinder binder(this, GetBoundDrawFramebufferServiceId());
-    gpu_state_tracer_->TakeSnapshotWithCurrentFramebuffer(
-        is_offscreen ? offscreen_size_ : surface_->GetSize());
-  }
-
-  if (is_offscreen) {
-    // We don't support SwapBuffers on the offscreen contexts.
-    LOG(ERROR) << "SwapBuffers called for the offscreen context";
-    return;
-  } else if (supports_async_swap_) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-        "gpu", "AsyncSwapBuffers",
-        TRACE_ID_WITH_SCOPE("AsyncSwapBuffers", swap_id));
-
-    client()->OnSwapBuffers(swap_id, flags);
-    surface_->SwapBuffersAsync(
-        base::BindOnce(&GLES2DecoderImpl::FinishAsyncSwapBuffers,
-                       weak_ptr_factory_.GetWeakPtr(), swap_id),
-        base::DoNothing(), gfx::FrameData());
-  } else {
-    client()->OnSwapBuffers(swap_id, flags);
-    FinishSwapBuffers(
-        surface_->SwapBuffers(base::DoNothing(), gfx::FrameData()));
-  }
-
-  // This may be a slow command.  Exit command processing to allow for
-  // context preemption and GPU watchdog checks.
-  ExitCommandProcessingEarly();
-}
-
-void GLES2DecoderImpl::FinishAsyncSwapBuffers(
-    uint64_t swap_id,
-    gfx::SwapCompletionResult result) {
-  TRACE_EVENT_NESTABLE_ASYNC_END0(
-      "gpu", "AsyncSwapBuffers",
-      TRACE_ID_WITH_SCOPE("AsyncSwapBuffers", swap_id));
-  FinishSwapBuffers(result.swap_result);
-}
-
-void GLES2DecoderImpl::FinishSwapBuffers(gfx::SwapResult result) {
-  if (result == gfx::SwapResult::SWAP_FAILED) {
-    // If SwapBuffers failed, we may not have a current context any more.
-    LOG(ERROR) << "Context lost because SwapBuffers failed.";
-    if (!context_->IsCurrent(surface_.get()) || !CheckResetStatus()) {
-      MarkContextLost(error::kUnknown);
-      group_->LoseContexts(error::kUnknown);
-    }
-  }
-  ++swaps_since_resize_;
-  if (swaps_since_resize_ == 1 && surface_->BuffersFlipped()) {
-    // The second buffer after a resize is new and needs to be cleared to
-    // known values.
-    backbuffer_needs_clear_bits_ |= GL_COLOR_BUFFER_BIT;
-  }
 }
 
 error::Error GLES2DecoderImpl::HandleEnableFeatureCHROMIUM(

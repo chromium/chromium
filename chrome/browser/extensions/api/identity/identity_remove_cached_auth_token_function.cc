@@ -11,8 +11,8 @@
 
 namespace extensions {
 
-IdentityRemoveCachedAuthTokenFunction::IdentityRemoveCachedAuthTokenFunction() {
-}
+IdentityRemoveCachedAuthTokenFunction::IdentityRemoveCachedAuthTokenFunction() =
+    default;
 
 IdentityRemoveCachedAuthTokenFunction::
     ~IdentityRemoveCachedAuthTokenFunction() = default;

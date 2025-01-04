@@ -132,9 +132,14 @@ void ShowSimpleInstallDialogForWebApps(
     dialog->set_close_on_deactivate(false);
   }
   dialog_delegate = dialog->AsBubbleDialogDelegate();
-  views::Widget* modal_widget = constrained_window::ShowWebModalDialogViews(
-      dialog.release(), web_contents);
-  delegate_weak_ptr->StartObservingForPictureInPictureOcclusion(modal_widget);
+  views::Widget* simple_dialog_widget =
+      constrained_window::ShowWebModalDialogViews(dialog.release(),
+                                                  web_contents);
+  if (IsWidgetCurrentSizeSmallerThanPreferredSize(simple_dialog_widget)) {
+    delegate_weak_ptr->CloseDialogAsIgnored();
+    return;
+  }
+  delegate_weak_ptr->StartObservingWidgetForChanges(simple_dialog_widget);
 
   base::RecordAction(base::UserMetricsAction("WebAppInstallShown"));
   if (g_auto_accept_pwa_for_testing) {

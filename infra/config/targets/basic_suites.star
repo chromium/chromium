@@ -553,6 +553,7 @@ targets.legacy_basic_suite(
     name = "clang_tot_gtests",
     tests = {
         "base_unittests": targets.legacy_test_config(),
+        "highway_tests": targets.legacy_test_config(),
     },
 )
 
@@ -1872,6 +1873,20 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "opt_target_coverage_test_suite",
+    tests = {
+        "opt_target_coverage_test": targets.legacy_test_config(
+            mixins = [
+                "has_native_resultdb_integration",
+            ],
+            linux_args = [
+                "--no-xvfb",
+            ],
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "chrome_ai_wpt_tests_suite",
     tests = {
         "chrome_ai_wpt_tests": targets.legacy_test_config(
@@ -1896,7 +1911,6 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "optimization_guide_android_gtests",
     tests = {
-        "optimization_guide_components_unittests": targets.legacy_test_config(),
         # TODO(mgeorgaklis): Add optimization_guide_unittests when they become Android compatible.
     },
 )
@@ -1905,7 +1919,6 @@ targets.legacy_basic_suite(
     name = "optimization_guide_cros_gtests",
     tests = {
         "optimization_guide_browser_tests": targets.legacy_test_config(),
-        "optimization_guide_components_unittests": targets.legacy_test_config(),
     },
 )
 
@@ -1930,11 +1943,6 @@ targets.legacy_basic_suite(
             ],
         ),
         "optimization_guide_browser_tests": targets.legacy_test_config(
-            linux_args = [
-                "--use-xvfb",
-            ],
-        ),
-        "optimization_guide_components_unittests": targets.legacy_test_config(
             linux_args = [
                 "--use-xvfb",
             ],

@@ -25,7 +25,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/about/about_ui.h"
 #include "chrome/browser/ui/webui/components/components_ui.h"
-#include "chrome/browser/ui/webui/crashes_ui.h"
+#include "chrome/browser/ui/webui/crashes/crashes_ui.h"
 #include "chrome/browser/ui/webui/download_internals/download_internals_ui.h"
 #include "chrome/browser/ui/webui/flags/flags_ui.h"
 #include "chrome/common/buildflags.h"
@@ -259,8 +259,9 @@ ChromeWebUIControllerFactory::CreateWebUIControllerForURL(WebUI* web_ui,
                                                           const GURL& url) {
   Profile* profile = Profile::FromWebUI(web_ui);
   WebUIFactoryFunction function = GetWebUIFactoryFunction(web_ui, profile, url);
-  if (!function)
+  if (!function) {
     return nullptr;
+  }
 
   return base::WrapUnique((*function)(web_ui, url));
 }
@@ -306,8 +307,7 @@ void ChromeWebUIControllerFactory::GetFaviconForURL(
     // |gfx::kFaviconSize| x |gfx::kFaviconSize| DIP.
     int candidate_edge_size =
         static_cast<int>(gfx::kFaviconSize * scale + 0.5f);
-    candidate_sizes.push_back(
-        gfx::Size(candidate_edge_size, candidate_edge_size));
+    candidate_sizes.emplace_back(candidate_edge_size, candidate_edge_size);
   }
   std::vector<size_t> selected_indices;
   SelectFaviconFrameIndices(candidate_sizes, desired_sizes_in_pixel,
@@ -371,22 +371,27 @@ base::RefCountedMemory* ChromeWebUIControllerFactory::GetFaviconResourceBytes(
   }
 #endif
 
-  if (!content::HasWebUIScheme(page_url))
+  if (!content::HasWebUIScheme(page_url)) {
     return nullptr;
+  }
 
-  if (page_url.host_piece() == chrome::kChromeUIComponentsHost)
+  if (page_url.host_piece() == chrome::kChromeUIComponentsHost) {
     return ComponentsUI::GetFaviconResourceBytes(scale_factor);
+  }
 
 #if BUILDFLAG(IS_WIN)
-  if (page_url.host_piece() == chrome::kChromeUIConflictsHost)
+  if (page_url.host_piece() == chrome::kChromeUIConflictsHost) {
     return ConflictsUI::GetFaviconResourceBytes(scale_factor);
+  }
 #endif
 
-  if (page_url.host_piece() == chrome::kChromeUICrashesHost)
+  if (page_url.host_piece() == chrome::kChromeUICrashesHost) {
     return CrashesUI::GetFaviconResourceBytes(scale_factor);
+  }
 
-  if (page_url.host_piece() == chrome::kChromeUIFlagsHost)
+  if (page_url.host_piece() == chrome::kChromeUIFlagsHost) {
     return FlagsUI::GetFaviconResourceBytes(scale_factor);
+  }
 
 #if !BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -396,35 +401,42 @@ base::RefCountedMemory* ChromeWebUIControllerFactory::GetFaviconResourceBytes(
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-  if (page_url.host_piece() == chrome::kChromeUINewTabPageHost)
+  if (page_url.host_piece() == chrome::kChromeUINewTabPageHost) {
     return NewTabPageUI::GetFaviconResourceBytes(scale_factor);
+  }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (page_url.host_piece() == chrome::kChromeUIWhatsNewHost)
+  if (page_url.host_piece() == chrome::kChromeUIWhatsNewHost) {
     return WhatsNewUI::GetFaviconResourceBytes(scale_factor);
+  }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   // Bookmarks are part of NTP on Android.
-  if (page_url.host_piece() == chrome::kChromeUIBookmarksHost)
+  if (page_url.host_piece() == chrome::kChromeUIBookmarksHost) {
     return BookmarksUI::GetFaviconResourceBytes(scale_factor);
+  }
 
-  if (page_url.host_piece() == chrome::kChromeUIHistoryHost)
+  if (page_url.host_piece() == chrome::kChromeUIHistoryHost) {
     return HistoryUI::GetFaviconResourceBytes(scale_factor);
+  }
 
-  if (page_url.host_piece() == password_manager::kChromeUIPasswordManagerHost)
+  if (page_url.host_piece() == password_manager::kChromeUIPasswordManagerHost) {
     return PasswordManagerUI::GetFaviconResourceBytes(scale_factor);
+  }
 
   // Android uses the native download manager.
-  if (page_url.host_piece() == chrome::kChromeUIDownloadsHost)
+  if (page_url.host_piece() == chrome::kChromeUIDownloadsHost) {
     return DownloadsUI::GetFaviconResourceBytes(scale_factor);
+  }
 
   // Android doesn't use the Options/Settings pages.
   if (page_url.host_piece() == chrome::kChromeUISettingsHost) {
     return settings_utils::GetFaviconResourceBytes(scale_factor);
   }
 
-  if (page_url.host_piece() == chrome::kChromeUIManagementHost)
+  if (page_url.host_piece() == chrome::kChromeUIManagementHost) {
     return ManagementUI::GetFaviconResourceBytes(scale_factor);
+  }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
@@ -443,8 +455,9 @@ base::RefCountedMemory* ChromeWebUIControllerFactory::GetFaviconResourceBytes(
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (page_url.host_piece() == chrome::kChromeUIOSSettingsHost)
+  if (page_url.host_piece() == chrome::kChromeUIOSSettingsHost) {
     return settings_utils::GetFaviconResourceBytes(scale_factor);
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   return nullptr;

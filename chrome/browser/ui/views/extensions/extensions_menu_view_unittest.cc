@@ -163,8 +163,9 @@ ExtensionsMenuViewUnitTest::GetPinnedExtensionViews() {
 #else
       const bool is_visible = action->GetVisible();
 #endif
-      if (is_visible)
+      if (is_visible) {
         result.push_back(action);
+      }
     }
   }
   return result;
@@ -309,8 +310,9 @@ TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionRemovedWhenDisabled) {
 }
 
 TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionLayout) {
-  for (int i = 0; i < 3; i++)
+  for (int i = 0; i < 3; i++) {
     InstallExtensionAndLayout(base::StringPrintf("Test %d", i));
+  }
   for (ExtensionMenuItemView* menu_item :
        extensions_menu()->extensions_menu_items_for_testing()) {
     ClickPinButton(menu_item);
@@ -409,8 +411,9 @@ TEST_F(ExtensionsMenuViewUnitTest, ReloadExtensionFailed) {
 
   // Since the extension is removed it's no longer visible on the toolbar or in
   // the menu.
-  for (views::View* child : extensions_container()->children())
+  for (views::View* child : extensions_container()->children()) {
     EXPECT_FALSE(views::IsViewClass<ToolbarActionView>(child));
+  }
   EXPECT_EQ(0u, extensions_menu()->extensions_menu_items_for_testing().size());
 }
 

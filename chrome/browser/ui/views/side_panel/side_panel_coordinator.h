@@ -73,12 +73,13 @@ class SidePanelCoordinator final : public TabStripModelObserver,
   SidePanelRegistry* GetWindowRegistry();
 
   // SidePanelUI:
-  void Show(SidePanelEntry::Id entry_id,
-            std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger =
-                std::nullopt) override;
-  void Show(SidePanelEntry::Key entry_key,
-            std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger =
-                std::nullopt) override;
+  using SidePanelUI::Show;
+  void Show(
+      SidePanelEntry::Id entry_id,
+      std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger) override;
+  void Show(
+      SidePanelEntry::Key entry_key,
+      std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger) override;
   void Close() override;
   void Toggle(SidePanelEntryKey key,
               SidePanelUtil::SidePanelOpenTrigger open_trigger) override;

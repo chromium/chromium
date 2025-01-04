@@ -16,6 +16,9 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
+#include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace {
 
@@ -53,21 +56,37 @@ IN_PROC_BROWSER_TEST_F(SyncSettingsInteractiveTest,
                                      "settings-sync-account-control",
                                      "cr-icon-button#dropdown-arrow"};
 
+  std::unique_ptr<views::NamedWidgetShownWaiter> widget_waiter;
+  if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
+    widget_waiter = std::make_unique<views::NamedWidgetShownWaiter>(
+        views::test::AnyWidgetTestPasskey{},
+        "ChromeSignoutConfirmationChoicePrompt");
+  }
+
   RunTestSequence(
       Do([&]() {
         identity_test_env()->MakePrimaryAccountAvailable(
             "kTestEmail@email.com", signin::ConsentLevel::kSignin);
       }),
-
       InstrumentTab(kFirstTabContents),
       NavigateWebContents(kFirstTabContents, GURL(chrome::GetSettingsUrl(
                                                  chrome::kSyncSetupSubPage))),
       ExecuteJsAt(kFirstTabContents, drop_down_query,
                   "e => e.visibility === \"hidden\""),
-      ExecuteJsAt(kFirstTabContents, turn_off_button_query, "e => e.click()"),
-      Do([&]() {
-        ASSERT_FALSE(identity_manager()->HasPrimaryAccountWithRefreshToken(
-            signin::ConsentLevel::kSignin));
-      }), );
+      ExecuteJsAt(kFirstTabContents, turn_off_button_query, "e => e.click()"));
+
+  if (widget_waiter.get()) {
+    // The signout confirmation dialog is shown.
+    views::Widget* confirmation_prompt = widget_waiter->WaitIfNeededAndGet();
+    views::DialogDelegate* dialog_delegate =
+        confirmation_prompt->widget_delegate()->AsDialogDelegate();
+    ASSERT_TRUE(dialog_delegate);
+    // Click "Sign Out Anyway".
+    dialog_delegate->AcceptDialog();
+  }
+
+  ASSERT_FALSE(identity_manager()->HasPrimaryAccountWithRefreshToken(
+      signin::ConsentLevel::kSignin));
 }
+
 }  // namespace

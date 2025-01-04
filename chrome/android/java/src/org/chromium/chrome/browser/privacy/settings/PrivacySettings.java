@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.ssl.HttpsFirstModeSettingsFragment;
 import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.usage_stats.UsageStatsConsentDialog;
@@ -62,6 +63,8 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
     private static final String PREF_CAN_MAKE_PAYMENT = "can_make_payment";
     private static final String PREF_PRELOAD_PAGES = "preload_pages";
     private static final String PREF_HTTPS_FIRST_MODE = "https_first_mode";
+    // TODO(crbug.com/349860796): Remove once new settings are fully rolled out.
+    private static final String PREF_HTTPS_FIRST_MODE_LEGACY = "https_first_mode_legacy";
     private static final String PREF_SECURE_DNS = "secure_dns";
     private static final String PREF_USAGE_STATS = "usage_stats_reporting";
     private static final String PREF_SAFE_BROWSING = "safe_browsing";
@@ -170,36 +173,51 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                 (ChromeSwitchPreference) findPreference(PREF_CAN_MAKE_PAYMENT);
         canMakePaymentPref.setOnPreferenceChangeListener(this);
 
-        ChromeSwitchPreference httpsFirstModePref =
-                (ChromeSwitchPreference) findPreference(PREF_HTTPS_FIRST_MODE);
-        httpsFirstModePref.setOnPreferenceChangeListener(this);
-        httpsFirstModePref.setManagedPreferenceDelegate(
-                new ChromeManagedPreferenceDelegate(getProfile()) {
-                    @Override
-                    public boolean isPreferenceControlledByPolicy(Preference preference) {
-                        String key = preference.getKey();
-                        assert PREF_HTTPS_FIRST_MODE.equals(key)
-                                : "Unexpected preference key: " + key;
-                        return UserPrefs.get(getProfile())
-                                .isManagedPreference(Pref.HTTPS_ONLY_MODE_ENABLED);
-                    }
+        // TODO(crbug.com/349860796): Remove old version (PREF_HTTPS_FIRST_MODE_LEGACY)
+        // when new settings are fully rolled out.
+        Preference httpsFirstModePref = findPreference(PREF_HTTPS_FIRST_MODE);
+        ChromeSwitchPreference httpsFirstModeLegacySwitchPref =
+                (ChromeSwitchPreference) findPreference(PREF_HTTPS_FIRST_MODE_LEGACY);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.HTTPS_FIRST_BALANCED_MODE)) {
+            // Hide the old toggle pref if the feature flag is enabled.
+            httpsFirstModeLegacySwitchPref.setVisible(false);
 
-                    @Override
-                    public boolean isPreferenceClickDisabled(Preference preference) {
-                        // Advanced Protection automatically enables HTTPS-Only Mode so
-                        // lock the setting.
-                        return isPreferenceControlledByPolicy(preference)
-                                || new SafeBrowsingBridge(getProfile()).isUnderAdvancedProtection();
-                    }
-                });
-        httpsFirstModePref.setChecked(
-                UserPrefs.get(getProfile()).getBoolean(Pref.HTTPS_ONLY_MODE_ENABLED));
-        if (new SafeBrowsingBridge(getProfile()).isUnderAdvancedProtection()) {
             httpsFirstModePref.setSummary(
-                    getContext()
-                            .getString(
-                                    R.string
-                                            .settings_https_first_mode_with_advanced_protection_summary));
+                    HttpsFirstModeSettingsFragment.getSummary(getContext(), getProfile()));
+        } else {
+            // Hide the new pref item if the feature flag isn't enabled.
+            httpsFirstModePref.setVisible(false);
+
+            httpsFirstModeLegacySwitchPref.setOnPreferenceChangeListener(this);
+            httpsFirstModeLegacySwitchPref.setManagedPreferenceDelegate(
+                    new ChromeManagedPreferenceDelegate(getProfile()) {
+                        @Override
+                        public boolean isPreferenceControlledByPolicy(Preference preference) {
+                            String key = preference.getKey();
+                            assert PREF_HTTPS_FIRST_MODE_LEGACY.equals(key)
+                                    : "Unexpected preference key: " + key;
+                            return UserPrefs.get(getProfile())
+                                    .isManagedPreference(Pref.HTTPS_ONLY_MODE_ENABLED);
+                        }
+
+                        @Override
+                        public boolean isPreferenceClickDisabled(Preference preference) {
+                            // Advanced Protection automatically enables HTTPS-Only Mode so
+                            // lock the setting.
+                            return isPreferenceControlledByPolicy(preference)
+                                    || new SafeBrowsingBridge(getProfile())
+                                            .isUnderAdvancedProtection();
+                        }
+                    });
+            httpsFirstModeLegacySwitchPref.setChecked(
+                    UserPrefs.get(getProfile()).getBoolean(Pref.HTTPS_ONLY_MODE_ENABLED));
+            if (new SafeBrowsingBridge(getProfile()).isUnderAdvancedProtection()) {
+                httpsFirstModeLegacySwitchPref.setSummary(
+                        getContext()
+                                .getString(
+                                        R.string
+                                                .settings_https_first_mode_with_advanced_protection_summary));
+            }
         }
 
         Preference syncAndServicesLink = findPreference(PREF_SYNC_AND_SERVICES_LINK);
@@ -272,36 +290,18 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                                         ManageSyncSettings.createArguments(false));
                     }
                 };
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            if (IdentityServicesProvider.get()
-                            .getIdentityManager(getProfile())
-                            .getPrimaryAccountInfo(ConsentLevel.SIGNIN)
-                    == null) {
-                // User is signed out, show the string with one link to "Google Services".
-                return SpanApplier.applySpans(
-                        getString(
-                                R.string.privacy_chrome_data_and_google_services_signed_out_footer),
-                        new SpanApplier.SpanInfo("<link>", "</link>", servicesLink));
-            }
-            // Otherwise, show the string with both links to account settings and "Google Services".
-            return SpanApplier.applySpans(
-                    getString(R.string.privacy_chrome_data_and_google_services_footer),
-                    new SpanApplier.SpanInfo("<link1>", "</link1>", accountSettingsLink),
-                    new SpanApplier.SpanInfo("<link2>", "</link2>", servicesLink));
-        }
         if (IdentityServicesProvider.get()
                         .getIdentityManager(getProfile())
-                        .getPrimaryAccountInfo(ConsentLevel.SYNC)
+                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN)
                 == null) {
-            // Sync is off, show the string with one link to "Google Services".
+            // User is signed out, show the string with one link to "Google Services".
             return SpanApplier.applySpans(
-                    getString(R.string.privacy_sync_and_services_link_sync_off),
+                    getString(R.string.privacy_chrome_data_and_google_services_signed_out_footer),
                     new SpanApplier.SpanInfo("<link>", "</link>", servicesLink));
         }
-        // Otherwise, show the string with both links to "Sync" and "Google Services".
+        // Otherwise, show the string with both links to account settings and "Google Services".
         return SpanApplier.applySpans(
-                getString(R.string.privacy_sync_and_services_link_sync_on),
+                getString(R.string.privacy_chrome_data_and_google_services_footer),
                 new SpanApplier.SpanInfo("<link1>", "</link1>", accountSettingsLink),
                 new SpanApplier.SpanInfo("<link2>", "</link2>", servicesLink));
     }
@@ -312,7 +312,8 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
         if (PREF_CAN_MAKE_PAYMENT.equals(key)) {
             UserPrefs.get(getProfile())
                     .setBoolean(Pref.CAN_MAKE_PAYMENT_ENABLED, (boolean) newValue);
-        } else if (PREF_HTTPS_FIRST_MODE.equals(key)) {
+        } else if (PREF_HTTPS_FIRST_MODE_LEGACY.equals(key)) {
+            // TODO(crbug.com/349860796): Remove once new settings are fully rolled out.
             UserPrefs.get(getProfile())
                     .setBoolean(Pref.HTTPS_ONLY_MODE_ENABLED, (boolean) newValue);
         }
@@ -375,6 +376,12 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
             safeBrowsingPreference.setSummary(
                     SafeBrowsingSettingsFragment.getSafeBrowsingSummaryString(
                             getContext(), getProfile()));
+        }
+
+        Preference httpsFirstModePreference = findPreference(PREF_HTTPS_FIRST_MODE);
+        if (httpsFirstModePreference != null && httpsFirstModePreference.isVisible()) {
+            httpsFirstModePreference.setSummary(
+                    HttpsFirstModeSettingsFragment.getSummary(getContext(), getProfile()));
         }
 
         Preference usageStatsPref = findPreference(PREF_USAGE_STATS);

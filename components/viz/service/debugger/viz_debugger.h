@@ -15,6 +15,7 @@
 #include "base/debug/debugging_buildflags.h"
 #include "base/macros/concat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"

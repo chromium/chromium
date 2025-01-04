@@ -22,7 +22,6 @@ source_set("idle") {
     "//base",
     "//components/browsing_data/core",
     "//components/enterprise/idle",
-    "//components/keyed_service/core",
     "//components/pref_registry",
     "//components/prefs",
     "//ios/chrome/browser/browsing_data/model",

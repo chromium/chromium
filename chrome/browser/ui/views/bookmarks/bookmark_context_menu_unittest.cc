@@ -165,10 +165,8 @@ TEST_F(BookmarkContextMenuTest, SingleURL) {
       controller.IsCommandEnabled(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW));
   EXPECT_TRUE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO));
   EXPECT_TRUE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_REMOVE));
-  EXPECT_TRUE(
-      controller.IsCommandEnabled(IDC_BOOKMARK_BAR_ADD_NEW_BOOKMARK));
-  EXPECT_TRUE(
-      controller.IsCommandEnabled(IDC_BOOKMARK_BAR_NEW_FOLDER));
+  EXPECT_TRUE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_ADD_NEW_BOOKMARK));
+  EXPECT_TRUE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_NEW_FOLDER));
 }
 
 // Tests the enabled state of the menus when supplied a vector with multiple
@@ -185,10 +183,8 @@ TEST_F(BookmarkContextMenuTest, MultipleURLs) {
       controller.IsCommandEnabled(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW));
   EXPECT_TRUE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO));
   EXPECT_TRUE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_REMOVE));
-  EXPECT_TRUE(
-      controller.IsCommandEnabled(IDC_BOOKMARK_BAR_ADD_NEW_BOOKMARK));
-  EXPECT_TRUE(
-      controller.IsCommandEnabled(IDC_BOOKMARK_BAR_NEW_FOLDER));
+  EXPECT_TRUE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_ADD_NEW_BOOKMARK));
+  EXPECT_TRUE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_NEW_FOLDER));
 }
 
 // Tests the enabled state of the menus when supplied an vector with a single
@@ -205,10 +201,8 @@ TEST_F(BookmarkContextMenuTest, SingleFolder) {
   EXPECT_FALSE(
       controller.IsCommandEnabled(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO));
   EXPECT_TRUE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_REMOVE));
-  EXPECT_TRUE(
-      controller.IsCommandEnabled(IDC_BOOKMARK_BAR_ADD_NEW_BOOKMARK));
-  EXPECT_TRUE(
-      controller.IsCommandEnabled(IDC_BOOKMARK_BAR_NEW_FOLDER));
+  EXPECT_TRUE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_ADD_NEW_BOOKMARK));
+  EXPECT_TRUE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_NEW_FOLDER));
 }
 
 // Tests the enabled state of the menus when supplied a vector with multiple
@@ -226,10 +220,8 @@ TEST_F(BookmarkContextMenuTest, MultipleEmptyFolders) {
   EXPECT_FALSE(
       controller.IsCommandEnabled(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO));
   EXPECT_TRUE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_REMOVE));
-  EXPECT_TRUE(
-      controller.IsCommandEnabled(IDC_BOOKMARK_BAR_ADD_NEW_BOOKMARK));
-  EXPECT_TRUE(
-      controller.IsCommandEnabled(IDC_BOOKMARK_BAR_NEW_FOLDER));
+  EXPECT_TRUE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_ADD_NEW_BOOKMARK));
+  EXPECT_TRUE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_NEW_FOLDER));
 }
 
 // Tests the enabled state of the menus when supplied a vector with multiple
@@ -246,10 +238,8 @@ TEST_F(BookmarkContextMenuTest, MultipleFoldersWithURLs) {
       controller.IsCommandEnabled(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW));
   EXPECT_TRUE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO));
   EXPECT_TRUE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_REMOVE));
-  EXPECT_TRUE(
-      controller.IsCommandEnabled(IDC_BOOKMARK_BAR_ADD_NEW_BOOKMARK));
-  EXPECT_TRUE(
-      controller.IsCommandEnabled(IDC_BOOKMARK_BAR_NEW_FOLDER));
+  EXPECT_TRUE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_ADD_NEW_BOOKMARK));
+  EXPECT_TRUE(controller.IsCommandEnabled(IDC_BOOKMARK_BAR_NEW_FOLDER));
 }
 
 // Tests the enabled state of open incognito.

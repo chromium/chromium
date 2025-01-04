@@ -106,7 +106,6 @@ class OptionalForm {
 // - password form fill, referred to as Password Autofill, and
 // - entire form fill based on one field entry, referred to as Form Autofill.
 class AutofillAgent : public content::RenderFrameObserver,
-                      public FormTracker::Observer,
                       public blink::WebAutofillClient,
                       public mojom::AutofillAgent {
  public:
@@ -231,16 +230,17 @@ class AutofillAgent : public content::RenderFrameObserver,
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  // FormTracker::Observer
+  // TODO(crbug.com/40147954): Find a better name for this method.
+  // Invoked when form needs to be saved because of `reason`, `element` is
+  // valid if the callback caused by a reason other than
+  // SaveFormReason::kWillSendSubmitEvent, |form| is valid for the callback
+  // caused by SaveFormReason::kWillSendSubmitEvent.
   void OnProvisionallySaveForm(const blink::WebFormElement& form,
                                const blink::WebFormControlElement& element,
-                               SaveFormReason source) override;
-  void OnProbablyFormSubmitted() override;
-  void OnFormSubmitted(const blink::WebFormElement& form_element) override;
-  void OnInferredFormSubmission(mojom::SubmissionSource source) override;
-
-  void AddFormObserver(Observer* observer);
-  void RemoveFormObserver(Observer* observer);
+                               FormTracker::SaveFormReason reason);
+  void OnFormSubmission(
+      mojom::SubmissionSource source,
+      std::optional<blink::WebFormElement> submitted_form_element);
 
   // Instructs `form_tracker_` to track the autofilled `element`.
   void TrackAutofilledElement(const blink::WebFormControlElement& element);
@@ -415,7 +415,8 @@ class AutofillAgent : public content::RenderFrameObserver,
   // running) is expensive.
   void ExtractFormsAndNotifyPasswordAutofillAgent(base::OneShotTimer& timer);
 
-  void ExtractFormsUnthrottled(base::OnceCallback<void(bool)> callback);
+  void ExtractFormsUnthrottled(base::OnceCallback<void(bool)> callback,
+                               const CallTimerState& timer_state);
 
   // Hides any currently showing Autofill popup.
   void HidePopup();
@@ -426,13 +427,15 @@ class AutofillAgent : public content::RenderFrameObserver,
   //   been removed afterwards).
   // - `last_interacted_form_`'s current `FormData`, because this corresponds to
   //   the last form element the user interacted with.
-  // - `known_submitted_form_element`'s current `FormData`, because the caller
+  // - `submitted_form_element`'s current `FormData`, because the caller
   //    specified that this is the form element that was submitted, regardless
   //    of autofill's tracking.
-  // When `known_submitted_form_element` is provided the function makes sure
+  // When `submitted_form_element` is provided the function makes sure
   // that the returned form corresponds to that DOM element.
+  // `source` is the type of submission requesting the submitted form.
   std::optional<FormData> GetSubmittedForm(
-      std::optional<blink::WebFormElement> known_submitted_form_element) const;
+      mojom::SubmissionSource source,
+      std::optional<blink::WebFormElement> submitted_form_element) const;
 
   void ResetLastInteractedElements();
   // A form_id means that the user last interacted with a FormElement.
@@ -510,9 +513,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   // This is never null, it is created at construction time and is not changed
   // until destruction time.
   std::unique_ptr<FormTracker> form_tracker_ =
-      std::make_unique<FormTracker>(unsafe_render_frame(),
-                                    config_.user_gesture_required,
-                                    *this);
+      std::make_unique<FormTracker>(unsafe_render_frame(), *this);
 
   mojo::AssociatedReceiver<mojom::AutofillAgent> receiver_{this};
 

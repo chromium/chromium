@@ -12,7 +12,10 @@ import android.content.pm.PackageManager;
 import android.media.AudioManager;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
+@NullMarked
 class AudioDeviceSelectorPreS extends AudioDeviceSelector {
     private static final String TAG = "media";
 
@@ -39,7 +42,7 @@ class AudioDeviceSelectorPreS extends AudioDeviceSelector {
 
     // Broadcast receiver for Bluetooth SCO broadcasts.
     // Utilized to detect if BT SCO streaming is on or off.
-    private BroadcastReceiver mBluetoothScoReceiver;
+    private @Nullable BroadcastReceiver mBluetoothScoReceiver;
 
     @Override
     public void init() {

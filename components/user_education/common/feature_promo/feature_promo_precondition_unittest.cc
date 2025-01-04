@@ -28,6 +28,7 @@ constexpr FeaturePromoResult::Failure kPrecondFailure3 =
 constexpr char kPrecondName[] = "Precond";
 constexpr char kPrecondName2[] = "Precond2";
 constexpr char kPrecondName3[] = "Precond3";
+using ComputedData = FeaturePromoPrecondition::ComputedData;
 
 DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE(int, kIntegerData);
 DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE(std::string, kStringData);
@@ -36,62 +37,112 @@ DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE(std::string, kStringData);
 TEST(FeaturePromoPreconditionTest, SetAndGetCachedData) {
   CachingFeaturePromoPrecondition precond1(kTestId, kPrecondName,
                                            kPrecondFailure);
+  ComputedData data;
   precond1.InitCache(kIntegerData);
-  precond1.InitCache(kStringData);
-  EXPECT_EQ(0, precond1.GetCachedData(kIntegerData));
-  EXPECT_EQ("", precond1.GetCachedData(kStringData));
-  precond1.GetCachedData(kIntegerData) = 2;
-  precond1.GetCachedData(kStringData) = "3";
-  EXPECT_EQ(2, precond1.GetCachedData(kIntegerData));
-  EXPECT_EQ("3", precond1.GetCachedData(kStringData));
+  precond1.InitCachedData(kStringData, "foo");
+  EXPECT_EQ(0, precond1.GetCachedDataForComputation(data, kIntegerData));
+  EXPECT_EQ("foo", precond1.GetCachedDataForComputation(data, kStringData));
+  EXPECT_EQ(0, data.Get(kIntegerData));
+  EXPECT_EQ("foo", data.Get(kStringData));
+  precond1.GetCachedDataForComputation(data, kIntegerData) = 2;
+  precond1.GetCachedDataForComputation(data, kStringData) = "3";
+  EXPECT_EQ(2, precond1.GetCachedDataForComputation(data, kIntegerData));
+  EXPECT_EQ("3", precond1.GetCachedDataForComputation(data, kStringData));
+  EXPECT_EQ(2, data.Get(kIntegerData));
+  EXPECT_EQ("3", data.Get(kStringData));
+}
+
+TEST(FeaturePromoPreconditionTest, SetAndGetCachedDataDifferentPreconditions) {
+  CachingFeaturePromoPrecondition precond1(kTestId, kPrecondName,
+                                           kPrecondFailure);
+  CachingFeaturePromoPrecondition precond2(kTestId2, kPrecondName2,
+                                           kPrecondFailure2);
+  ComputedData data;
+  precond1.InitCache(kIntegerData);
+  precond2.InitCachedData(kStringData, "foo");
+  EXPECT_EQ(0, precond1.GetCachedDataForComputation(data, kIntegerData));
+  EXPECT_EQ("foo", precond2.GetCachedDataForComputation(data, kStringData));
+  EXPECT_EQ(0, data.Get(kIntegerData));
+  EXPECT_EQ("foo", data.Get(kStringData));
+  precond1.GetCachedDataForComputation(data, kIntegerData) = 2;
+  precond2.GetCachedDataForComputation(data, kStringData) = "3";
+  EXPECT_EQ(2, precond1.GetCachedDataForComputation(data, kIntegerData));
+  EXPECT_EQ("3", precond2.GetCachedDataForComputation(data, kStringData));
+  EXPECT_EQ(2, data.Get(kIntegerData));
+  EXPECT_EQ("3", data.Get(kStringData));
 }
 
 TEST(FeaturePromoPreconditionTest, GetCachedDataCrashesIfDataNotPresent) {
   CachingFeaturePromoPrecondition precond1(kTestId, kPrecondName,
                                            kPrecondFailure);
-  EXPECT_CHECK_DEATH(precond1.GetCachedData(kIntegerData));
+  ComputedData data;
+  EXPECT_CHECK_DEATH(precond1.GetCachedDataForComputation(data, kIntegerData));
+}
+
+TEST(FeaturePromoPreconditionTest, GetCachedDataCrashesIfCacheCollision) {
+  CachingFeaturePromoPrecondition precond1(kTestId, kPrecondName,
+                                           kPrecondFailure);
+  precond1.InitCache(kIntegerData);
+  ComputedData data;
+  internal::TypedPreconditionData<int> kOtherData(kIntegerData, 1);
+  data.Add(kIntegerData, kOtherData);
+  EXPECT_CHECK_DEATH(precond1.GetCachedDataForComputation(data, kIntegerData));
 }
 
 TEST(FeaturePromoPreconditionTest, ExtractCachedData) {
   CachingFeaturePromoPrecondition precond1(kTestId, kPrecondName,
                                            kPrecondFailure);
-  precond1.InitCache(kIntegerData, kStringData);
-  precond1.GetCachedData(kIntegerData) = 2;
-  precond1.GetCachedData(kStringData) = "3";
-
   internal::PreconditionData::Collection coll;
+
+  // This should still be valid until `coll` is deleted.
+  ComputedData data;
+  precond1.InitCache(kIntegerData, kStringData);
+  precond1.GetCachedDataForComputation(data, kIntegerData) = 2;
+  precond1.GetCachedDataForComputation(data, kStringData) = "3";
+
   precond1.ExtractCachedData(coll);
   EXPECT_EQ(2, *internal::PreconditionData::Get(coll, kIntegerData));
   EXPECT_EQ("3", *internal::PreconditionData::Get(coll, kStringData));
+
+  // Data isn't moved from its memory location.
+  EXPECT_EQ(internal::PreconditionData::Get(coll, kIntegerData),
+            &data.Get(kIntegerData));
+  EXPECT_EQ(internal::PreconditionData::Get(coll, kStringData),
+            &data.Get(kStringData));
 }
 
 TEST(FeaturePromoPreconditionTest, GetAfterExtractCachedDataFails) {
   CachingFeaturePromoPrecondition precond1(kTestId, kPrecondName,
                                            kPrecondFailure);
-  precond1.InitCache(kIntegerData, kStringData);
-  precond1.GetCachedData(kIntegerData) = 2;
-  precond1.GetCachedData(kStringData) = "3";
-
   internal::PreconditionData::Collection coll;
+
+  // This should still be valid until `coll` is deleted.
+  ComputedData data;
+  precond1.InitCache(kIntegerData, kStringData);
+  precond1.GetCachedDataForComputation(data, kIntegerData) = 2;
+  precond1.GetCachedDataForComputation(data, kStringData) = "3";
+
   precond1.ExtractCachedData(coll);
-  EXPECT_CHECK_DEATH(precond1.GetCachedData(kIntegerData));
+  ComputedData data2;
+  EXPECT_CHECK_DEATH(precond1.GetCachedDataForComputation(data2, kIntegerData));
 }
 
 TEST(FeaturePromoPreconditionTest, CachingFeaturePromoPrecondition) {
   CachingFeaturePromoPrecondition precond1(kTestId, kPrecondName,
                                            kPrecondFailure);
+  ComputedData data;
   EXPECT_EQ(kTestId, precond1.GetIdentifier());
-  EXPECT_EQ(kPrecondFailure, precond1.CheckPrecondition());
+  EXPECT_EQ(kPrecondFailure, precond1.CheckPrecondition(data));
   EXPECT_EQ(kPrecondName, precond1.GetDescription());
 
   precond1.set_check_result_for_testing(FeaturePromoResult::Success());
-  EXPECT_EQ(FeaturePromoResult::Success(), precond1.CheckPrecondition());
+  EXPECT_EQ(FeaturePromoResult::Success(), precond1.CheckPrecondition(data));
   precond1.set_check_result_for_testing(kPrecondFailure);
-  EXPECT_EQ(kPrecondFailure, precond1.CheckPrecondition());
+  EXPECT_EQ(kPrecondFailure, precond1.CheckPrecondition(data));
 
   CachingFeaturePromoPrecondition precond2(kTestId, kPrecondName,
                                            FeaturePromoResult::Success());
-  EXPECT_EQ(FeaturePromoResult::Success(), precond2.CheckPrecondition());
+  EXPECT_EQ(FeaturePromoResult::Success(), precond2.CheckPrecondition(data));
 }
 
 TEST(FeaturePromoPreconditionTest, CallbackFeaturePromoPrecondition) {
@@ -102,26 +153,64 @@ TEST(FeaturePromoPreconditionTest, CallbackFeaturePromoPrecondition) {
   EXPECT_EQ(kTestId, precond.GetIdentifier());
   EXPECT_EQ(kPrecondName, precond.GetDescription());
 
+  ComputedData data;
   EXPECT_CALL(callback, Run)
       .WillOnce(testing::Return(FeaturePromoResult::Success()));
-  EXPECT_EQ(FeaturePromoResult::Success(), precond.CheckPrecondition());
+  EXPECT_EQ(FeaturePromoResult::Success(), precond.CheckPrecondition(data));
 
   EXPECT_CALL(callback, Run).WillOnce(testing::Return(kPrecondFailure));
-  EXPECT_EQ(kPrecondFailure, precond.CheckPrecondition());
+  EXPECT_EQ(kPrecondFailure, precond.CheckPrecondition(data));
+}
+
+TEST(FeaturePromoPreconditionTest, CallbackFeaturePromoPreconditionWithData) {
+  DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE(int, kIntValueId);
+  UNCALLED_MOCK_CALLBACK(
+      base::RepeatingCallback<FeaturePromoResult(ComputedData&)>, callback);
+  CallbackFeaturePromoPrecondition precond(kTestId, kPrecondName,
+                                           callback.Get());
+  internal::TypedPreconditionData<int> int_data(kIntValueId, 1);
+  ComputedData data;
+  data.Add(kIntValueId, int_data);
+  EXPECT_EQ(kTestId, precond.GetIdentifier());
+  EXPECT_EQ(kPrecondName, precond.GetDescription());
+
+  EXPECT_CALL(callback, Run).WillOnce([kIntValueId](ComputedData& data) {
+    EXPECT_EQ(1, data.Get(kIntValueId));
+    return FeaturePromoResult::Success();
+  });
+  EXPECT_EQ(FeaturePromoResult::Success(), precond.CheckPrecondition(data));
+
+  EXPECT_CALL(callback, Run).WillOnce(testing::Return(kPrecondFailure));
+  EXPECT_EQ(kPrecondFailure, precond.CheckPrecondition(data));
 }
 
 TEST(FeaturePromoPreconditionTest, ForwardingFeaturePromoPrecondition) {
   CachingFeaturePromoPrecondition precond1(kTestId, kPrecondName,
                                            kPrecondFailure);
   ForwardingFeaturePromoPrecondition precond2(precond1);
+  ComputedData data;
   EXPECT_EQ(kTestId, precond2.GetIdentifier());
-  EXPECT_EQ(kPrecondFailure, precond2.CheckPrecondition());
+  EXPECT_EQ(kPrecondFailure, precond2.CheckPrecondition(data));
   EXPECT_EQ(kPrecondName, precond2.GetDescription());
 
   precond1.set_check_result_for_testing(FeaturePromoResult::Success());
-  EXPECT_EQ(FeaturePromoResult::Success(), precond2.CheckPrecondition());
+  EXPECT_EQ(FeaturePromoResult::Success(), precond2.CheckPrecondition(data));
   precond1.set_check_result_for_testing(kPrecondFailure);
-  EXPECT_EQ(kPrecondFailure, precond2.CheckPrecondition());
+  EXPECT_EQ(kPrecondFailure, precond2.CheckPrecondition(data));
+}
+
+TEST(FeaturePromoPreconditionTest, ForwardingFeaturePromoPreconditionWithData) {
+  UNCALLED_MOCK_CALLBACK(
+      base::RepeatingCallback<FeaturePromoResult(ComputedData&)>, callback);
+  CallbackFeaturePromoPrecondition precond1(kTestId, kPrecondName,
+                                            callback.Get());
+  ForwardingFeaturePromoPrecondition precond2(precond1);
+  ComputedData data;
+  EXPECT_EQ(kTestId, precond2.GetIdentifier());
+  EXPECT_EQ(kPrecondName, precond2.GetDescription());
+  EXPECT_CALL(callback, Run(testing::Ref(data)))
+      .WillOnce(testing::Return(kPrecondFailure));
+  EXPECT_EQ(kPrecondFailure, precond2.CheckPrecondition(data));
 }
 
 namespace {
@@ -285,10 +374,8 @@ TEST(FeaturePromoPreconditionTest,
       kTestId, kPrecondName, FeaturePromoResult::Success());
   auto precond2 = std::make_unique<CachingFeaturePromoPrecondition>(
       kTestId2, kPrecondName2, FeaturePromoResult::Success());
-  precond1->InitCache(kIntegerData);
-  precond2->InitCache(kStringData);
-  precond1->GetCachedData(kIntegerData) = 2;
-  precond2->GetCachedData(kStringData) = "3";
+  precond1->InitCachedData(kIntegerData, 2);
+  precond2->InitCachedData(kStringData, "3");
 
   FeaturePromoPreconditionList list(std::move(precond1), std::move(precond2));
   internal::PreconditionData::Collection coll;

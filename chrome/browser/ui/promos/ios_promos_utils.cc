@@ -30,7 +30,7 @@ void ShowIOSDesktopPromoBubble(IOSPromoType promo_type,
     case IOSPromoType::kPassword:
       IOSPromoBubble::ShowPromoBubble(
           toolbar_button_provider->GetAnchorView(
-              PageActionIconType::kManagePasswords),
+              kActionShowPasswordsBubbleOrPage),
           toolbar_button_provider->GetPageActionIconView(
               PageActionIconType::kManagePasswords),
           profile, IOSPromoType::kPassword);
@@ -38,14 +38,15 @@ void ShowIOSDesktopPromoBubble(IOSPromoType promo_type,
     case IOSPromoType::kAddress:
       IOSPromoBubble::ShowPromoBubble(
           toolbar_button_provider->GetAnchorView(
-              PageActionIconType::kAutofillAddress),
+              kActionShowAddressesBubbleOrPage),
           toolbar_button_provider->GetPageActionIconView(
               PageActionIconType::kAutofillAddress),
           profile, IOSPromoType::kAddress);
       break;
     case IOSPromoType::kPayment:
       IOSPromoBubble::ShowPromoBubble(
-          toolbar_button_provider->GetAnchorView(PageActionIconType::kSaveCard),
+          toolbar_button_provider->GetAnchorView(
+              kActionShowPaymentsBubbleOrPage),
           toolbar_button_provider->GetPageActionIconView(
               PageActionIconType::kSaveCard),
           profile, IOSPromoType::kPayment);

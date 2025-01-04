@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "build/chromeos_buildflags.h"
 #include "components/payments/core/method_strings.h"
 #include "components/payments/core/native_error_strings.h"
 #include "components/payments/core/payer_data.h"

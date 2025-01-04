@@ -21,7 +21,9 @@ module ash.auth.mojom;
 // An enumeration of all authentication factors.
 enum AuthFactor {
   kRecovery,
-  kPin,
+  kPrefBasedPin,
+  kCryptohomePin,
+  kCryptohomePinV2,
   kGaiaPassword,
   kLocalPassword,
   // TODO(crbug.com/1327627): Add support for other authentication factors:
@@ -69,6 +71,7 @@ interface AuthFactorConfig {
   // Checks whether the user can configure |factor|. Is false if the factor is
   // not supported or e.g. a policy forces |factor| to be enabled/disabled.
   IsEditable(string auth_token, AuthFactor factor) => (bool editable);
+
 };
 
 // Returned from various operations that change ("configure") something about
@@ -108,6 +111,8 @@ interface PinFactorEditor {
   UpdatePin(string auth_token, string pin) => (ConfigureResult result);
   // Remove the pin factor for the user.
   RemovePin(string auth_token) => (ConfigureResult result);
+  // Returns the type of the pin factor, or nullopt if it has none.
+  GetConfiguredPinFactor(string auth_token) => (AuthFactor? pin_factor);
 };
 
 // A value describing the complexity of a password.

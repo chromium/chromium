@@ -196,7 +196,7 @@ class AmbientControllerTest : public AmbientAshTestBase {
   // AmbientAshTestBase:
   void SetUp() override {
     std::vector<base::test::FeatureRef> features_to_enable =
-        personalization_app::GetTimeOfDayEnabledFeatures();
+        personalization_app::GetTimeOfDayFeatures();
     feature_list_.InitWithFeatures(features_to_enable, {});
     AmbientAshTestBase::SetUp();
     GetSessionControllerClient()->set_show_lock_screen_views(true);
@@ -2043,7 +2043,7 @@ TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
   ASSERT_TRUE(GetContainerView());
 
   // Simulate user session start (e.g. user login)
-  CreateUserSessions(/*session_count=*/1);
+  SimulateUserLogin(kDefaultUserEmail);
 
   // Confirm that ambient mode is not shown if disabled. (disabled by default)
   FastForwardByLockScreenInactivityTimeout();
@@ -2093,7 +2093,7 @@ TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
   EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
 
   // Simulate login
-  CreateUserSessions(/*session_count=*/1);
+  SimulateUserLogin(kDefaultUserEmail);
   EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
 
   SetAmbientModeManagedScreensaverEnabled(true);
@@ -2126,7 +2126,7 @@ TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
   EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
 
   // Simulate login
-  CreateUserSessions(/*session_count=*/1);
+  SimulateUserLogin(kDefaultUserEmail);
   EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
 
   SetAmbientModeManagedScreensaverEnabled(true);

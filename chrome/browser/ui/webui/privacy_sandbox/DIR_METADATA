@@ -1,7 +1,7 @@
 monorail: {
-  component: "UI>Settings>Privacy"
+  component: "UI>Browser>Privacy Sandbox"
 }
-team_email: "chrome-privacy-controls@google.com"
+team_email: "koilos@google.com"
 buganizer_public: {
-  component_id: 1457044
+  component_id: 1697287
 }

@@ -18,7 +18,7 @@
     <div class="section cr-secondary-text">
       $i18n{m1NoticeRowDescription3}
     </div>
-    <template is="dom-if" if="[[!shouldShowV2_]]">
+    <template is="dom-if" if="[[!shouldShowV2()]]">
       <div id="learnMoreAndLastText">
         <privacy-sandbox-dialog-learn-more class="learn-more-section"
             expanded="{{expanded_}}"
@@ -54,7 +54,7 @@
         </div>
       </div>
     </template>
-    <template is="dom-if" if="[[shouldShowV2_]]">
+    <template is="dom-if" if="[[shouldShowV2()]]">
       <div id="learnMoreAndLastTextV2">
         <privacy-sandbox-dialog-learn-more class="learn-more-section"
             expanded="{{expanded_}}"

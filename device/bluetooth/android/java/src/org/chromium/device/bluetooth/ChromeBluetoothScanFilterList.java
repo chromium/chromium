@@ -9,10 +9,13 @@ import android.bluetooth.le.ScanFilter;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.ArrayList;
 
 /** Allows for the creation of a Java ArrayList of the ScanFilter object. */
 @JNINamespace("device")
+@NullMarked
 final class ChromeBluetoothScanFilterList {
     ArrayList<ScanFilter> mFilters;
 

@@ -169,7 +169,7 @@ std::optional<base::Value::List> ConstructFileSystemList(
   bool has_delete_permission = permissions_data->CheckAPIPermissionWithParam(
       extensions::mojom::APIPermissionID::kMediaGalleries, &delete_param);
 
-  const int child_id = rfh->GetProcess()->GetID();
+  const int child_id = rfh->GetProcess()->GetDeprecatedID();
   base::Value::List list;
   for (const auto& filesystem : filesystems) {
     base::Value::Dict file_system_dict_value;

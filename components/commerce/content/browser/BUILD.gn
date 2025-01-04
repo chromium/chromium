@@ -44,18 +44,3 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
-
-if (!is_android) {
-  static_library("hint") {
-    sources = [
-      "hint/commerce_hint_tab_helper.cc",
-      "hint/commerce_hint_tab_helper.h",
-    ]
-
-    deps = [
-      "//base",
-      "//components/commerce/core:heuristics_provider",
-      "//content/public/browser",
-    ]
-  }
-}

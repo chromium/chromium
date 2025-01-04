@@ -19,6 +19,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
@@ -35,6 +36,7 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/event_constants.h"
@@ -42,6 +44,16 @@
 #include "url/gurl.h"
 
 namespace ash::kiosk::test {
+
+namespace {
+
+const extensions::Extension* FindInExtensionRegistry(Profile& profile,
+                                                     std::string_view app_id) {
+  return extensions::ExtensionRegistry::Get(&profile)->GetInstalledExtension(
+      std::string(app_id));
+}
+
+}  // namespace
 
 KioskApp AutoLaunchKioskApp() {
   auto app = KioskController::Get().GetAutoLaunchApp();
@@ -77,10 +89,7 @@ bool IsChromeAppInstalled(Profile& profile, const KioskApp& app) {
 }
 
 bool IsChromeAppInstalled(Profile& profile, std::string_view app_id) {
-  auto* chrome_app =
-      extensions::ExtensionRegistry::Get(&profile)->GetInstalledExtension(
-          std::string(app_id));
-  return chrome_app != nullptr;
+  return FindInExtensionRegistry(profile, app_id) != nullptr;
 }
 
 bool IsWebAppInstalled(Profile& profile, const KioskApp& app) {
@@ -104,6 +113,19 @@ bool IsAppInstalled(Profile& profile, const KioskApp& app) {
       NOTIMPLEMENTED();
       return false;
   }
+}
+
+std::string InstalledChromeAppVersion(Profile& profile, const KioskApp& app) {
+  auto& chrome_app =
+      CHECK_DEREF(FindInExtensionRegistry(profile, app.id().app_id.value()));
+  return chrome_app.version().GetString();
+}
+
+std::string CachedChromeAppVersion(const KioskApp& app) {
+  auto& manager = CHECK_DEREF(KioskChromeAppManager::Get());
+  auto [_, cached_crx_version] =
+      manager.GetCachedCrx(app.id().app_id.value()).value();
+  return cached_crx_version;
 }
 
 Profile& CurrentProfile() {

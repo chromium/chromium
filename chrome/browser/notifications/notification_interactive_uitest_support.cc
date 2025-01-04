@@ -261,7 +261,6 @@ content::WebContents* NotificationsTest::GetActiveWebContents(
 NotificationsTestWithPermissionsEmbargo ::
     NotificationsTestWithPermissionsEmbargo() {
   feature_list_.InitWithFeatures(
-      {permissions::features::kBlockPromptsIfDismissedOften,
-       permissions::features::kBlockPromptsIfIgnoredOften},
+      {},
       {features::kSystemNotifications});
 }

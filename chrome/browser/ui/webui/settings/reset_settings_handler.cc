@@ -52,8 +52,9 @@ ResetRequestOriginFromString(const std::string& request_origin) {
   static const char kOriginUserClick[] = "userclick";
   static const char kOriginTriggeredReset[] = "triggeredreset";
 
-  if (request_origin == kOriginUserClick)
+  if (request_origin == kOriginUserClick) {
     return reset_report::ChromeResetReport::RESET_REQUEST_ORIGIN_USER_CLICK;
+  }
   if (request_origin == kOriginTriggeredReset) {
     return reset_report::ChromeResetReport::
         RESET_REQUEST_ORIGIN_TRIGGERED_RESET;
@@ -83,8 +84,9 @@ bool ResetSettingsHandler::ShouldShowResetProfileBanner(Profile* profile) {
   const base::Time reset_time = chrome_prefs::GetResetTime(profile);
 
   // If there is no reset time, do not show the banner.
-  if (reset_time.is_null())
+  if (reset_time.is_null()) {
     return false;
+  }
 
   // Otherwise, only show the banner if it has been less than |kBannerShowTime|
   // since reset.
@@ -199,8 +201,9 @@ void ResetSettingsHandler::OnShowResetProfileDialog(
 
 void ResetSettingsHandler::OnHideResetProfileDialog(
     const base::Value::List& args) {
-  if (!GetResetter()->IsActive())
+  if (!GetResetter()->IsActive()) {
     setting_snapshot_.reset();
+  }
 }
 
 void ResetSettingsHandler::OnHideResetProfileBanner(
@@ -222,8 +225,9 @@ void ResetSettingsHandler::ResetProfile(
 }
 
 ProfileResetter* ResetSettingsHandler::GetResetter() {
-  if (!resetter_)
+  if (!resetter_) {
     resetter_ = std::make_unique<ProfileResetter>(profile_);
+  }
   return resetter_.get();
 }
 

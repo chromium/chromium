@@ -180,14 +180,24 @@ class CertBuilder {
   // removed.
   void SetCaIssuersAndOCSPUrls(const std::vector<GURL>& ca_issuers_urls,
                                const std::vector<GURL>& ocsp_urls);
+  // Same as |SetCaIssuersAndOCSPUrls| above, but the inputs can be arbitrary
+  // strings.
+  void SetCaIssuersAndOCSPUrls(const std::vector<std::string>& ca_issuers_urls,
+                               const std::vector<std::string>& ocsp_urls);
 
   // Sets a cRLDistributionPoints extension with a single DistributionPoint
   // with |url| in distributionPoint.fullName.
   void SetCrlDistributionPointUrl(const GURL& url);
+  // Same as |SetCrlDistributionPointUrl| above, but the inputs can be an
+  // arbitrary string.
+  void SetCrlDistributionPointUrl(const std::string_view& url);
 
   // Sets a cRLDistributionPoints extension with a single DistributionPoint
   // with |urls| in distributionPoints.fullName.
   void SetCrlDistributionPointUrls(const std::vector<GURL>& urls);
+  // Same as |SetCrlDistributionPointUrls| above, but the inputs can be
+  // arbitrary strings.
+  void SetCrlDistributionPointUrls(const std::vector<std::string>& urls);
 
   // Sets the issuer bytes that will be encoded into the generated certificate.
   // If this is not called, or |issuer_tlv| is empty, the subject field from
@@ -410,6 +420,10 @@ class CertBuilder {
                              std::string* out);
 
   void GenerateCertificate();
+
+  void SetCaIssuersAndOCSPUrls(
+      const std::vector<std::pair<bssl::der::Input, std::string_view>>&
+          entries);
 
   struct ExtensionValue {
     bool critical = false;

@@ -457,11 +457,11 @@ fetch("http://example.org/path", {
 
 
 cURL Windows:
-curl ^"http://example.org/path^" -H ^"Cookie: _x=fdsfs; aA=fdsfdsf; FOO=ID=BAR:BAZ=FOO:F=d:AO=21.212.2.212-:A=dsadas8d9as8d9a8sd9sa8d9a; AAA=117^"
+curl ^"http://example.org/path^" -b ^"_x=fdsfs; aA=fdsfdsf; FOO=ID=BAR:BAZ=FOO:F=d:AO=21.212.2.212-:A=dsadas8d9as8d9a8sd9sa8d9a; AAA=117^"
 
 
 cURL Unix:
-curl 'http://example.org/path' -H 'Cookie: _x=fdsfs; aA=fdsfdsf; FOO=ID=BAR:BAZ=FOO:F=d:AO=21.212.2.212-:A=dsadas8d9as8d9a8sd9sa8d9a; AAA=117'
+curl 'http://example.org/path' -b '_x=fdsfs; aA=fdsfdsf; FOO=ID=BAR:BAZ=FOO:F=d:AO=21.212.2.212-:A=dsadas8d9as8d9a8sd9sa8d9a; AAA=117'
 
 
 Powershell:

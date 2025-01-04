@@ -2,18 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "ui/gfx/geometry/quad_f.h"
 
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -163,7 +160,7 @@ TEST(QuadFTest, IsRectilinear) {
 
 TEST(QuadFTest, IsRectilinearForMappedQuad) {
   const int kNumRectilinear = 8;
-  Transform rectilinear_trans[kNumRectilinear];
+  std::array<Transform, kNumRectilinear> rectilinear_trans;
   rectilinear_trans[1].Rotate(90.f);
   rectilinear_trans[2].Rotate(180.f);
   rectilinear_trans[3].Rotate(270.f);
@@ -183,7 +180,7 @@ TEST(QuadFTest, IsRectilinearForMappedQuad) {
   }
 
   const int kNumNonRectilinear = 10;
-  gfx::Transform non_rectilinear_trans[kNumNonRectilinear];
+  std::array<gfx::Transform, kNumNonRectilinear> non_rectilinear_trans;
   non_rectilinear_trans[0].Rotate(359.9999f);
   non_rectilinear_trans[1].Rotate(0.0000001f);
   non_rectilinear_trans[2].Rotate(89.9999f);

@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/log_web_ui_url.h"
 #include "chrome/browser/ui/webui/top_chrome/per_profile_webui_tracker.h"
 #include "chrome/browser/ui/webui/top_chrome/preload_context.h"
 #include "chrome/browser/ui/webui/top_chrome/profile_preload_candidate_selector.h"
@@ -31,6 +32,7 @@
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/crash/core/common/crash_key.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -447,6 +449,10 @@ RequestResult WebUIContentsPreloadManager::Request(
       WebUIContentsPreloadState::FromWebContents(web_contents_ret.get());
   CHECK(preload_state);
   preload_state->request_time = request_time;
+  // Non-preloaded WebUIs are logged by WebUIMainFrameObserver.
+  if (preload_state->preloaded) {
+    webui::LogWebUIShown(web_contents_ret->GetSiteInstance()->GetSiteURL());
+  }
 
   RequestResult result;
   result.web_contents = std::move(web_contents_ret);
@@ -463,6 +469,17 @@ std::optional<base::TimeTicks> WebUIContentsPreloadManager::GetRequestTime(
   }
 
   return preload_state->request_time;
+}
+
+bool WebUIContentsPreloadManager::WasPreloaded(
+    content::WebContents* web_contents) const {
+  if (!web_contents) {
+    return false;
+  }
+
+  auto* preload_state =
+      WebUIContentsPreloadState::FromWebContents(web_contents);
+  return preload_state ? preload_state->preloaded : false;
 }
 
 void WebUIContentsPreloadManager::DisableNavigationForTesting() {
@@ -554,6 +571,17 @@ void WebUIContentsPreloadManager::OnWebContentsPrimaryPageChanged(
   if (web_contents == preloaded_web_contents_.get()) {
     content::RenderWidgetHostView* render_widget_host_view =
         web_contents->GetRenderWidgetHostView();
+
+    // TODO(crbug.com/383937390): TopChromeWebUIConfig::From() returns nullptr.
+    // This crash key is to investigate if the visible URL is empty.
+    static crash_reporter::CrashKeyString<1024> visible_url(
+        "webui-preload-visible-url");
+    visible_url.Set(web_contents->GetVisibleURL().possibly_invalid_spec());
+    static crash_reporter::CrashKeyString<1024> site_instance_url(
+        "webui-preload-site-instance-url");
+    site_instance_url.Set(
+        web_contents->GetSiteInstance()->GetSiteURL().possibly_invalid_spec());
+
     const bool should_auto_reisze_host =
         TopChromeWebUIConfig::From(web_contents->GetBrowserContext(),
                                    web_contents->GetVisibleURL())

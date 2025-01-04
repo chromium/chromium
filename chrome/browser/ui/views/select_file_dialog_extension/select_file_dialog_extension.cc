@@ -58,9 +58,9 @@ using extensions::AppWindow;
 
 namespace {
 
-const int kFileManagerWidth = 972;  // pixels
-const int kFileManagerHeight = 640;  // pixels
-const int kFileManagerMinimumWidth = 640;  // pixels
+const int kFileManagerWidth = 972;          // pixels
+const int kFileManagerHeight = 640;         // pixels
+const int kFileManagerMinimumWidth = 640;   // pixels
 const int kFileManagerMinimumHeight = 240;  // pixels
 
 constexpr char kFakeEntryURLScheme[] = "fake-entry://";
@@ -93,10 +93,11 @@ PendingDialog* PendingDialog::GetInstance() {
 void PendingDialog::Add(SelectFileDialogExtension::RoutingID id,
                         scoped_refptr<SelectFileDialogExtension> dialog) {
   DCHECK(dialog.get());
-  if (map_.find(id) == map_.end())
+  if (map_.find(id) == map_.end()) {
     map_.insert(std::make_pair(id, dialog));
-  else
+  } else {
     DLOG(WARNING) << "Duplicate pending dialog " << id;
+  }
 }
 
 void PendingDialog::Remove(SelectFileDialogExtension::RoutingID id) {
@@ -106,8 +107,9 @@ void PendingDialog::Remove(SelectFileDialogExtension::RoutingID id) {
 scoped_refptr<SelectFileDialogExtension> PendingDialog::Find(
     SelectFileDialogExtension::RoutingID id) {
   Map::const_iterator it = map_.find(id);
-  if (it == map_.end())
+  if (it == map_.end()) {
     return nullptr;
+  }
   return it->second;
 }
 
@@ -135,9 +137,8 @@ void FindRuntimeContext(gfx::NativeWindow owner_window,
     if (!owner_browser) {
       // If an owner_window was supplied but we couldn't find a browser, this
       // could be for a app window.
-      app_window =
-          AppWindowRegistryUtil::GetAppWindowForNativeWindowAnyProfile(
-              owner_window);
+      app_window = AppWindowRegistryUtil::GetAppWindowForNativeWindowAnyProfile(
+          owner_window);
     }
   }
 
@@ -147,8 +148,9 @@ void FindRuntimeContext(gfx::NativeWindow owner_window,
   } else {
     // If the owning window is still unknown, this could be a background page or
     // and extension popup. Use the last active browser.
-    if (!owner_browser)
+    if (!owner_browser) {
       owner_browser = chrome::FindLastActive();
+    }
     if (owner_browser) {
       *base_window = owner_browser->window();
       *web_contents = owner_browser->tab_strip_model()->GetActiveWebContents();
@@ -163,15 +165,17 @@ void FindRuntimeContext(gfx::NativeWindow owner_window,
   }
 
   // Check for a WebContents used for the Chrome OS WebUI login flow.
-  if (!*web_contents)
+  if (!*web_contents) {
     *web_contents = GetLoginWebContents();
+  }
 }
 
 SelectFileDialogExtension::RoutingID GetRoutingID(
     content::WebContents* web_contents,
     const SelectFileDialogExtension::Owner& owner) {
-  if (owner.android_task_id.has_value())
+  if (owner.android_task_id.has_value()) {
     return base::StringPrintf("android.%d", *owner.android_task_id);
+  }
 
   if (web_contents) {
     return base::StringPrintf(
@@ -303,14 +307,14 @@ void SelectFileDialogExtension::OnSystemDialogWillClose() {
 }
 
 // static
-void SelectFileDialogExtension::OnFileSelected(
-    RoutingID routing_id,
-    const ui::SelectedFileInfo& file,
-    int index) {
+void SelectFileDialogExtension::OnFileSelected(RoutingID routing_id,
+                                               const ui::SelectedFileInfo& file,
+                                               int index) {
   scoped_refptr<SelectFileDialogExtension> dialog =
       PendingDialog::GetInstance()->Find(routing_id);
-  if (!dialog.get())
+  if (!dialog.get()) {
     return;
+  }
   dialog->selection_type_ = SINGLE_FILE;
   dialog->selection_files_.clear();
   dialog->selection_files_.push_back(file);
@@ -323,8 +327,9 @@ void SelectFileDialogExtension::OnMultiFilesSelected(
     const std::vector<ui::SelectedFileInfo>& files) {
   scoped_refptr<SelectFileDialogExtension> dialog =
       PendingDialog::GetInstance()->Find(routing_id);
-  if (!dialog.get())
+  if (!dialog.get()) {
     return;
+  }
   dialog->selection_type_ = MULTIPLE_FILES;
   dialog->selection_files_ = files;
   dialog->selection_index_ = 0;
@@ -334,16 +339,18 @@ void SelectFileDialogExtension::OnMultiFilesSelected(
 void SelectFileDialogExtension::OnFileSelectionCanceled(RoutingID routing_id) {
   scoped_refptr<SelectFileDialogExtension> dialog =
       PendingDialog::GetInstance()->Find(routing_id);
-  if (!dialog.get())
+  if (!dialog.get()) {
     return;
+  }
   dialog->selection_type_ = CANCEL;
   dialog->selection_files_.clear();
   dialog->selection_index_ = 0;
 }
 
 content::RenderFrameHost* SelectFileDialogExtension::GetPrimaryMainFrame() {
-  if (system_files_app_web_contents_)
+  if (system_files_app_web_contents_) {
     return system_files_app_web_contents_->GetPrimaryMainFrame();
+  }
   return nullptr;
 }
 
@@ -455,24 +462,28 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
       !display::Screen::GetScreen()->InTabletMode() && !is_for_capture_mode;
 
   // Obtain BaseWindow and WebContents if the owner window is browser.
-  if (!skip_finding_browser)
+  if (!skip_finding_browser) {
     FindRuntimeContext(owner.window, &base_window, &web_contents);
+  }
 
-  if (web_contents)
+  if (web_contents) {
     profile_ = Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  }
 
   // Handle the cases where |web_contents| is not available or |web_contents| is
   // associated with Default profile.
-  if (!web_contents || ash::ProfileHelper::IsSigninProfile(profile_))
+  if (!web_contents || ash::ProfileHelper::IsSigninProfile(profile_)) {
     profile_ = ProfileManager::GetActiveUserProfile();
+  }
 
   DCHECK(profile_);
 
   // Check if we have another dialog opened for the contents. It's unlikely, but
   // possible. In such situation, discard this request.
   RoutingID routing_id = GetRoutingID(web_contents, owner);
-  if (PendingExists(routing_id))
+  if (PendingExists(routing_id)) {
     return;
+  }
 
   std::vector<std::string> volume_filter;
   if (use_media_store_filter) {
@@ -542,8 +553,9 @@ bool SelectFileDialogExtension::IsResizeable() const {
 
 void SelectFileDialogExtension::ApplyPolicyAndNotifyListener(
     std::optional<policy::DlpFileDestination> dialog_caller) {
-  if (!listener_)
+  if (!listener_) {
     return;
+  }
 
   // The selected files are passed by reference to the listener. Ensure they
   // outlive the dialog if it is immediately deleted by the listener.
@@ -568,8 +580,9 @@ void SelectFileDialogExtension::ApplyPolicyAndNotifyListener(
             [](base::WeakPtr<SelectFileDialogExtension> weak_ptr,
                std::vector<ui::SelectedFileInfo> selection_files,
                bool is_allowed) {
-              if (!is_allowed)
+              if (!is_allowed) {
                 weak_ptr->selection_type_ = SelectionType::CANCEL;
+              }
               weak_ptr->NotifyListener(std::move(selection_files));
             },
             weak_factory_.GetWeakPtr(), std::move(selection_files)));
@@ -580,8 +593,9 @@ void SelectFileDialogExtension::ApplyPolicyAndNotifyListener(
         base::BindOnce(
             [](base::WeakPtr<SelectFileDialogExtension> weak_ptr,
                std::vector<ui::SelectedFileInfo> allowed_files) {
-              if (allowed_files.empty())
+              if (allowed_files.empty()) {
                 weak_ptr->selection_type_ = SelectionType::CANCEL;
+              }
               weak_ptr->NotifyListener(std::move(allowed_files));
             },
             weak_factory_.GetWeakPtr()));
@@ -592,8 +606,9 @@ void SelectFileDialogExtension::ApplyPolicyAndNotifyListener(
 
 void SelectFileDialogExtension::NotifyListener(
     std::vector<ui::SelectedFileInfo> selection_files) {
-  if (!listener_)
+  if (!listener_) {
     return;
+  }
   switch (selection_type_) {
     case CANCEL:
       listener_->FileSelectionCanceled();

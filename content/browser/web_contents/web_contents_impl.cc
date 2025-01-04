@@ -49,7 +49,6 @@
 #include "base/trace_event/optional_trace_event.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/input/browser_controls_offset_tags_info.h"
 #include "components/attribution_reporting/features.h"
 #include "components/download/public/common/download_stats.h"
@@ -74,6 +73,8 @@
 #include "content/browser/device_posture/device_posture_provider_impl.h"
 #include "content/browser/devtools/protocol/page_handler.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
+#include "content/browser/dips/dips_bounce_detector.h"
+#include "content/browser/dips/dips_navigation_flow_detector.h"
 #include "content/browser/display_cutout/display_cutout_host_impl.h"
 #include "content/browser/dom_storage/dom_storage_context_wrapper.h"
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
@@ -120,6 +121,8 @@
 #include "content/browser/screen_orientation/screen_orientation_provider.h"
 #include "content/browser/shared_storage/shared_storage_budget_charger.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/browser/tpcd_heuristics/opener_heuristic_tab_helper.h"
+#include "content/browser/tpcd_heuristics/redirect_heuristic_tab_helper.h"
 #include "content/browser/wake_lock/wake_lock_context_host.h"
 #include "content/browser/web_contents/java_script_dialog_commit_deferring_condition.h"
 #include "content/browser/web_contents/partitioned_popins_controller.h"
@@ -704,13 +707,6 @@ void RecordRendererUnresponsiveMetrics(
       rph_priority);
 }
 
-// Returns a GroupingID used by VizCompositor to allow grouping
-// CompositorFrameSinks from same WebContents.
-uint32_t NextCompositorFrameSinkGroupingId() {
-  static uint32_t grouping_id = 0;
-  return grouping_id++;
-}
-
 }  // namespace
 
 // This is a small helper class created while a JavaScript dialog is showing
@@ -1281,7 +1277,7 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
       is_overlay_content_(false),
       showing_context_menu_(false),
       prerender_host_registry_(std::make_unique<PrerenderHostRegistry>(*this)),
-      compositor_frame_sink_grouping_id_(NextCompositorFrameSinkGroupingId()) {
+      compositor_frame_sink_grouping_id_(base::UnguessableToken::Create()) {
   TRACE_EVENT0("content", "WebContentsImpl::WebContentsImpl");
   WebContentsOfBrowserContext::Attach(*this);
   node_.SetFocusedFrameTree(&primary_frame_tree_);
@@ -1321,7 +1317,8 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
   if (input::IsTransferInputToVizSupported()) {
     GetHostFrameSinkManager()->SetupRenderInputRouterDelegateConnection(
         compositor_frame_sink_grouping_id_,
-        rir_delegate_client_receiver_.BindNewPipeAndPassRemote());
+        rir_delegate_client_receiver_.BindNewPipeAndPassRemote(),
+        rir_delegate_remote_.BindNewPipeAndPassReceiver());
   }
 }
 
@@ -1500,9 +1497,11 @@ std::unique_ptr<WebContentsImpl> WebContentsImpl::CreateWithOpener(
         opener_rfh->active_sandbox_flags();
     if (opener_rfh->IsSandboxed(network::mojom::WebSandboxFlags::
                                     kPropagatesToAuxiliaryBrowsingContexts)) {
-      new_root->SetPendingFramePolicy({opener_flags,
-                                       {} /* container_policy */,
-                                       {} /* required_document_policy */});
+      new_root->SetPendingFramePolicy(
+          {opener_flags,
+           {} /* container_policy */,
+           {} /* required_document_policy */,
+           blink::FramePolicy::DeferredFetchPolicy::kDisabled});
     }
     new_root->SetInitialPopupURL(params.initial_popup_url);
     new_root->SetPopupCreatorOrigin(opener_rfh->GetLastCommittedOrigin());
@@ -2212,6 +2211,14 @@ void WebContentsImpl::NotifyViewportFitChanged(
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::NotifyViewportFitChanged",
                         "value", static_cast<int>(value));
   observers_.NotifyObservers(&WebContentsObserver::ViewportFitChanged, value);
+}
+
+void WebContentsImpl::NotifySafeAreaConstraintChanged(bool has_constraint) {
+  OPTIONAL_TRACE_EVENT1("content",
+                        "WebContentsImpl::NotifySafeAreaConstraintChanged",
+                        "has_constraint", has_constraint);
+  observers_.NotifyObservers(&WebContentsObserver::SafeAreaConstraintChanged,
+                             has_constraint);
 }
 
 FindRequestManager* WebContentsImpl::GetFindRequestManagerForTesting() {
@@ -3146,7 +3153,9 @@ void WebContentsImpl::AttachInnerWebContents(
   // When attaching a GuestView as an inner WebContents, there should already be
   // a live RenderFrame, which has to be swapped.
   if (render_frame_host_impl->IsRenderFrameLive()) {
-    inner_render_manager->SwapOuterDelegateFrame(render_frame_host_impl, proxy);
+    inner_render_manager->SwapOuterDelegateFrame(
+        render_frame_host_impl, proxy,
+        inner_main_frame->devtools_frame_token());
 
     inner_web_contents_impl->ReattachToOuterWebContentsFrame();
   }
@@ -3234,6 +3243,16 @@ void WebContentsImpl::AttachGuestPage(
       inner_main_frame->GetSiteInstance()->group(), inner_render_view_host,
       /*proxy=*/nullptr);
 
+  // If we are reusing the RenderViewHost and it doesn't already have a
+  // RenderWidgetHostView, we need to create one if this is the main frame.
+  if (!inner_render_view_host->GetWidget()->GetView()) {
+    // TODO(crbug.com/40162510): The RenderWidgetHostView should be created
+    // *before* we create the renderer-side objects through InitRenderView().
+    // Then we should remove the null-check for the RenderWidgetHostView in
+    // RenderWidgetHostImpl::RendererWidgetCreated().
+    CreateRenderWidgetHostViewForRenderManager(inner_render_view_host);
+  }
+
   RenderFrameProxyHost* proxy =
       inner_main_frame->browsing_context_state()->CreateOuterDelegateProxy(
           outer_render_frame_host_impl->GetSiteInstance()->group(),
@@ -3245,8 +3264,9 @@ void WebContentsImpl::AttachGuestPage(
   // When attaching a GuestView as an inner frame tree, there should already be
   // a live RenderFrame, which has to be swapped.
   if (outer_render_frame_host_impl->IsRenderFrameLive()) {
-    inner_render_manager->SwapOuterDelegateFrame(outer_render_frame_host_impl,
-                                                 proxy);
+    inner_render_manager->SwapOuterDelegateFrame(
+        outer_render_frame_host_impl, proxy,
+        inner_main_frame->devtools_frame_token());
   }
 
   RenderWidgetHostViewBase* child_rwhvb =
@@ -3426,7 +3446,7 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
   prefs.inverted_colors = inverted_colors_;
 
   if (ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
-          GetRenderViewHost()->GetProcess()->GetID())) {
+          GetRenderViewHost()->GetProcess()->GetDeprecatedID())) {
     prefs.loads_images_automatically = true;
     prefs.javascript_enabled = true;
   }
@@ -3817,6 +3837,12 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,
           attribution_reporting::features::kConversionMeasurement)) {
     AttributionHost::CreateForWebContents(this);
   }
+
+  RedirectChainDetector::CreateForWebContents(this);
+  DIPSWebContentsObserver::MaybeCreateForWebContents(this);
+  DipsNavigationFlowDetector::CreateForWebContents(this);
+  RedirectHeuristicTabHelper::CreateForWebContents(this);
+  OpenerHeuristicTabHelper::CreateForWebContents(this);
 
   // BrowserPluginGuest::Init needs to be called after this WebContents has
   // a RenderWidgetHostViewChildFrame. That is, |view_->CreateView| above.
@@ -4478,23 +4504,7 @@ void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
           },
           page_visibility);
 
-  if (page_visibility == PageVisibilityState::kHidden) {
-    GetController().SetActive(false);
-  } else {
-    // We cannot show a page or capture video unless there is a valid renderer
-    // associated with this web contents. The navigation controller for this
-    // page must be set to active (allowing navigation to complete, a renderer
-    // and its associated views to be created, etc.) if any of these conditions
-    // holds.
-    //
-    // Previously, it was possible for browser-side code to try to capture video
-    // from a restored tab (for a variety of reasons, including the browser
-    // creating preview thumbnails) and the tab would never actually load. By
-    // keying this behavior off of |page_visibility| instead of just
-    // |new_visibility| we avoid this case. See crbug.com/1020782 for more
-    // context.
-    GetController().SetActive(true);
-
+  if (page_visibility != PageVisibilityState::kHidden) {
     // This shows the Page before showing the individual RenderWidgets, as
     // RenderWidgets will work to produce compositor frames and handle input
     // as soon as they are shown. But the Page and other classes do not expect
@@ -4536,20 +4546,6 @@ void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
     // Similar to when showing the page, we only hide the page after
     // hiding the individual RenderWidgets.
     ForEachRenderViewHost(view_mask, update_frame_tree_visibility);
-  } else {
-    for (FrameTreeNode* node :
-         FrameTree::SubtreeAndInnerTreeNodes(GetPrimaryMainFrame())) {
-      RenderFrameProxyHost* proxy_to_parent_or_outer_delegate =
-          node->render_manager()->GetProxyToParentOrOuterDelegate();
-      if (!proxy_to_parent_or_outer_delegate) {
-        continue;
-      }
-
-      // DelegateWasShown keeps track of crash metrics. This is safe to
-      // call for GuestViews, and inner frame trees.
-      proxy_to_parent_or_outer_delegate->cross_process_frame_connector()
-          ->DelegateWasShown();
-    }
   }
 
   if (new_visibility != Visibility::VISIBLE) {
@@ -4566,6 +4562,38 @@ void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
     for (WebContents* inner : GetInnerWebContents()) {
       static_cast<WebContentsImpl*>(inner)
           ->UpdateVisibilityAndNotifyPageAndView(new_visibility, is_activity);
+    }
+  }
+
+  // We cannot show a page or capture video unless there is a valid renderer
+  // associated with this web contents. The navigation controller for this page
+  // must be set to active (allowing navigation to complete, a renderer and its
+  // associated views to be created, etc.) if any of these conditions holds.
+  //
+  // Previously, it was possible for browser-side code to try to capture video
+  // from a restored tab (for a variety of reasons, including the browser
+  // creating preview thumbnails) and the tab would never actually load. By
+  // keying this behavior off of |page_visibility| instead of just
+  // |new_visibility| we avoid this case. See crbug.com/1020782 for more
+  // context.
+  //
+  // SetActive() can immediately begin a navigation, synchronously emitting the
+  // relevant events. Ensure this is done after the WebContents has successfully
+  // transitioned to the visible state. See crbug.com/383189046 for details.
+  GetController().SetActive(page_visibility != PageVisibilityState::kHidden);
+
+  // DelegateWasShown() keeps track of crash metrics. This is safe to call for
+  // GuestViews, and inner frame trees. Call this only after visibility changes
+  // and navigations have been processed to ensure clients have all information
+  // necessary to log the correct crash metrics.
+  if (page_visibility != PageVisibilityState::kHidden) {
+    for (FrameTreeNode* node :
+         FrameTree::SubtreeAndInnerTreeNodes(GetPrimaryMainFrame())) {
+      if (RenderFrameProxyHost* proxy_to_parent_or_outer_delegate =
+              node->render_manager()->GetProxyToParentOrOuterDelegate()) {
+        proxy_to_parent_or_outer_delegate->cross_process_frame_connector()
+            ->DelegateWasShown();
+      }
     }
   }
 }
@@ -4800,7 +4828,7 @@ FrameTree* WebContentsImpl::CreateNewWindow(
     return nullptr;
   }
 
-  int render_process_id = opener->GetProcess()->GetID();
+  int render_process_id = opener->GetProcess()->GetDeprecatedID();
   SiteInstanceImpl* source_site_instance = opener->GetSiteInstance();
   const auto& partition_config =
       source_site_instance->GetStoragePartitionConfig();
@@ -4816,6 +4844,7 @@ FrameTree* WebContentsImpl::CreateNewWindow(
     CHECK(session_storage_namespace_impl->IsFromContext(dom_storage_context));
   }
 
+  // TODO(crbug.com/40202416): Support a way for MPArch guests to support this.
   if (delegate_ && delegate_->IsWebContentsCreationOverridden(
                        source_site_instance, params.window_container_type,
                        opener->GetLastCommittedURL(), params.frame_name,
@@ -4838,10 +4867,13 @@ FrameTree* WebContentsImpl::CreateNewWindow(
   bool renderer_started_hidden =
       params.disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB;
 
+  bool is_guest =
+      base::FeatureList::IsEnabled(features::kGuestViewMPArch)
+          ? opener->GetOutermostMainFrame()->frame_tree()->is_guest()
+          : IsGuest();
   // While some guest types do not have a guest SiteInstance, the ones that
   // don't all override WebContents creation above.
-  CHECK_EQ(source_site_instance->IsGuest(), IsGuest());
-  bool is_guest = IsGuest();
+  CHECK_EQ(source_site_instance->IsGuest(), is_guest);
 
   // We usually create the new window in the same BrowsingInstance (group of
   // script-related windows), by passing in the current SiteInstance.  However,
@@ -4859,6 +4891,16 @@ FrameTree* WebContentsImpl::CreateNewWindow(
     }
   } else {
     site_instance = source_site_instance;
+  }
+
+  if (is_guest && base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    if (auto* guest = GuestPageHolderImpl::FromRenderFrameHost(*opener)) {
+      return guest->CreateNewWindow(
+          params.disposition, params.target_url, params.frame_name,
+          std::move(site_instance),
+          !params.opener_suppressed ? opener : nullptr);
+    }
+    return nullptr;
   }
 
   // Create the new web contents. This will automatically create the new
@@ -5017,7 +5059,7 @@ FrameTree* WebContentsImpl::CreateNewWindow(
         std::make_unique<NavigationController::LoadURLParams>(
             params.target_url);
     load_params->initiator_origin = opener->GetLastCommittedOrigin();
-    load_params->initiator_process_id = opener->GetProcess()->GetID();
+    load_params->initiator_process_id = opener->GetProcess()->GetDeprecatedID();
     load_params->initiator_frame_token = opener->GetFrameToken();
     // Avoiding setting |load_params->source_site_instance| when
     // |opener_suppressed| is true, because in that case we do not want to use
@@ -5093,7 +5135,8 @@ RenderWidgetHostImpl* WebContentsImpl::CreateNewPopupWidget(
 
   // Save the created widget associated with the route so we can show it later.
   pending_widgets_.insert(
-      {GlobalRoutingID(site_instance_group->process()->GetID(), route_id),
+      {GlobalRoutingID(site_instance_group->process()->GetDeprecatedID(),
+                       route_id),
        widget_host});
   AddRenderWidgetHostDestructionObserver(widget_host);
 
@@ -5135,6 +5178,12 @@ void WebContentsImpl::ShowCreatedWindow(
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::ShowCreatedWindow",
                         "opener", opener, "main_frame_widget_route_id",
                         main_frame_widget_route_id);
+
+  if (GuestPageHolderImpl::FromRenderFrameHost(*opener)) {
+    // opened from a guest with MPArch, we don't need to do anything.
+    return;
+  }
+
   // This method is the renderer requesting an existing top level window to
   // show a new top level window that the renderer created. Each top level
   // window is associated with a WebContents. In this case it was created
@@ -5144,7 +5193,7 @@ void WebContentsImpl::ShowCreatedWindow(
   // when it will always do so. What needs to happen in the renderer before we
   // reach here?
   std::optional<CreatedWindow> owned_created = GetCreatedWindow(
-      opener->GetProcess()->GetID(), main_frame_widget_route_id);
+      opener->GetProcess()->GetDeprecatedID(), main_frame_widget_route_id);
 
   // The browser may have rejected the request to make a new window, or the
   // renderer could be requesting to show a previously shown window (occurs when
@@ -5725,7 +5774,8 @@ void WebContentsImpl::MoveCaret(const gfx::Point& extent) {
   input_handler->MoveCaret(extent);
 }
 
-uint32_t WebContentsImpl::GetCompositorFrameSinkGroupingId() const {
+base::UnguessableToken WebContentsImpl::GetCompositorFrameSinkGroupingId()
+    const {
   return compositor_frame_sink_grouping_id_;
 }
 
@@ -5799,8 +5849,9 @@ WebContents* WebContentsImpl::OpenURL(
     return nullptr;
   }
 
-  RenderFrameHost* source_render_frame_host = RenderFrameHost::FromID(
-      params.source_render_process_id, params.source_render_frame_id);
+  RenderFrameHostImpl* source_render_frame_host =
+      RenderFrameHostImpl::FromID(GlobalRenderFrameHostId(
+          params.source_render_process_id, params.source_render_frame_id));
 
   // Prevent frames that are not active (e.g. a prerendering page) from opening
   // new windows, tabs, popups, etc.
@@ -5839,6 +5890,17 @@ WebContents* WebContentsImpl::OpenURL(
     } else {
       // If the node doesn't exist it was probably removed from its frame tree.
       // In that case, abort since continuing would navigate the root frame.
+      return nullptr;
+    }
+  }
+
+  if (source_render_frame_host &&
+      base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    if (auto* guest = GuestPageHolderImpl::FromRenderFrameHost(
+            *source_render_frame_host)) {
+      if (auto* delegate = guest->delegate()) {
+        delegate->GuestOpenURL(params, std::move(navigation_handle_callback));
+      }
       return nullptr;
     }
   }
@@ -6250,7 +6312,8 @@ void WebContentsImpl::SaveFrameWithHeaders(
           policy_exception_justification: "Not implemented."
         })");
   auto params = std::make_unique<download::DownloadUrlParameters>(
-      url, rfh->GetProcess()->GetID(), rfh->GetRoutingID(), traffic_annotation);
+      url, rfh->GetProcess()->GetDeprecatedID(), rfh->GetRoutingID(),
+      traffic_annotation);
   params->set_referrer(referrer.url);
   params->set_referrer_policy(
       Referrer::ReferrerPolicyForUrlRequest(referrer.policy));
@@ -8292,7 +8355,7 @@ void WebContentsImpl::RunJavaScriptDialog(
 
   auto callback = base::BindOnce(
       &WebContentsImpl::OnDialogClosed, weak_factory_.GetWeakPtr(),
-      render_frame_host->GetProcess()->GetID(),
+      render_frame_host->GetProcess()->GetDeprecatedID(),
       render_frame_host->GetRoutingID(), std::move(response_callback),
       std::move(fullscreen_block));
 
@@ -8413,7 +8476,7 @@ void WebContentsImpl::RunBeforeUnloadConfirm(
 
   auto callback = base::BindOnce(
       &WebContentsImpl::OnDialogClosed, weak_factory_.GetWeakPtr(),
-      render_frame_host->GetProcess()->GetID(),
+      render_frame_host->GetProcess()->GetDeprecatedID(),
       render_frame_host->GetRoutingID(), std::move(response_callback),
       std::move(fullscreen_block));
 
@@ -8762,7 +8825,8 @@ void WebContentsImpl::RenderViewTerminated(RenderViewHost* rvh,
   // Cancel any visible dialogs so they are not left dangling over the sad tab.
   CancelActiveAndPendingDialogs();
 
-  audio_stream_monitor_.RenderProcessGone(rvh_impl->GetProcess()->GetID());
+  audio_stream_monitor_.RenderProcessGone(
+      rvh_impl->GetProcess()->GetDeprecatedID());
 
   // Reset the loading progress. TODO(avi): What does it mean to have a
   // "renderer crash" when there is more than one renderer process serving a
@@ -9649,8 +9713,7 @@ void WebContentsImpl::RendererUnresponsive(
   base::UmaHistogramEnumeration(
       "ReportingAndNEL.UnresponsiveRenderer.CrashReportOutcome", outcome);
 
-  if (base::FeatureList::IsEnabled(features::kCrashReporting) &&
-      base::FeatureList::IsEnabled(
+  if (base::FeatureList::IsEnabled(
           blink::features::kDocumentPolicyIncludeJSCallStacksInCrashReports) &&
       this->GetLastCommittedURL().SchemeIsHTTPOrHTTPS()) {
     RenderProcessHost* rph = render_widget_host->GetProcess();
@@ -10085,7 +10148,7 @@ gfx::Size WebContentsImpl::GetSize() {
   return window->bounds().size();
 #elif BUILDFLAG(IS_ANDROID)
   ui::ViewAndroid* view_android = GetNativeView();
-  return view_android->bounds().size();
+  return view_android->GetSize();
 #elif BUILDFLAG(IS_IOS)
   // TODO(crbug.com/40254930): Implement me.
   NOTREACHED();
@@ -11393,6 +11456,14 @@ void WebContentsImpl::OnInputIgnored(const blink::WebInputEvent& event) {
 #endif
 }
 
+input::mojom::RenderInputRouterDelegate*
+WebContentsImpl::GetRenderInputRouterDelegateRemote() {
+  if (!rir_delegate_remote_) {
+    return nullptr;
+  }
+  return rir_delegate_remote_.get();
+}
+
 void WebContentsImpl::StartPrefetch(
     const GURL& prefetch_url,
     bool use_prefetch_proxy,
@@ -11416,7 +11487,7 @@ void WebContentsImpl::StartPrefetch(
 
   auto container = std::make_unique<PrefetchContainer>(
       *this, prefetch_url, prefetch_type, referrer, referring_origin,
-      /*no_vary_search_expected=*/std::nullopt, std::move(attempt),
+      /*no_vary_search_hint=*/std::nullopt, std::move(attempt),
       holdback_status_override);
 
   // TODO(crbug.com/40946257): Update this list when prefetch container is
@@ -11429,7 +11500,8 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
     const GURL& prerendering_url,
     PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix,
-    std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
+    net::HttpRequestHeaders additional_headers,
+    std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
     ui::PageTransition page_transition,
     bool should_warm_up_compositor,
     bool should_prepare_paint_tree,
@@ -11443,12 +11515,18 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
   PrerenderAttributes attributes(
       prerendering_url, trigger_type, embedder_histogram_suffix,
       /*target_hint=*/std::nullopt, content::Referrer(),
-      /*eagerness=*/std::nullopt, std::move(no_vary_search_expected),
+      /*eagerness=*/std::nullopt, std::move(no_vary_search_hint),
       /*initiato_render_frame_host=*/nullptr, GetWeakPtr(), page_transition,
       should_warm_up_compositor, should_prepare_paint_tree,
       std::move(url_match_predicate),
       std::move(prerender_navigation_handle_callback),
       base::MakeRefCounted<PreloadPipelineInfo>());
+#if BUILDFLAG(IS_ANDROID)
+  attributes.additional_headers = std::move(additional_headers);
+#else
+  CHECK(additional_headers.IsEmpty())
+      << "additional_headers is supported only on Android WebView.";
+#endif  // BUILDFLAG(IS_ANDROID)
   attributes.holdback_status_override = holdback_status_override;
 
   FrameTreeNodeId frame_tree_node_id =
@@ -11592,6 +11670,12 @@ void WebContentsImpl::SetLongPressLinkSelectText(bool enabled) {
 
 net::handles::NetworkHandle WebContentsImpl::GetTargetNetwork() {
   return target_network_;
+}
+
+void WebContentsImpl::DisconnectFileSelectListenerIfAny() {
+  if (active_file_chooser_) {
+    active_file_chooser_->FileSelectionCanceled();
+  }
 }
 
 // static

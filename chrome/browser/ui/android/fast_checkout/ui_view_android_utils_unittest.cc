@@ -5,9 +5,9 @@
 #include "chrome/browser/ui/android/fast_checkout/ui_view_android_utils.h"
 
 #include "base/android/jni_android.h"
-#include "components/autofill/core/browser/autofill_data_util.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_quality/autofill_data_util.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

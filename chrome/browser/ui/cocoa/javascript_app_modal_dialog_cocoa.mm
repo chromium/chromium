@@ -111,8 +111,9 @@ void JavaScriptAppModalDialogCocoa::OnAlertFinished(
     case AlertDisposition::SECONDARY_BUTTON:
       // If the user wants to stay on this page, stop quitting (if a quit is in
       // progress).
-      if (controller_->is_before_unload_dialog())
+      if (controller_->is_before_unload_dialog()) {
         chrome_browser_application_mac::CancelTerminate();
+      }
       controller_->OnCancel(check_box_value);
       break;
     case AlertDisposition::CLOSE:

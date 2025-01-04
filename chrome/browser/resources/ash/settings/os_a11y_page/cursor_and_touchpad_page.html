@@ -1,4 +1,4 @@
-<style include="settings-shared">
+<style include="settings-shared cr-icons">
   :host {
     --cr-section-indent-width: 60px;
   }
@@ -19,6 +19,16 @@
 
   .start-padding {
     padding-inline-start: var(--cr-section-padding);
+  }
+
+  .mouse-keys-icon {
+    --iron-icon-fill-color: var(--cros-sys-primary);
+    padding-inline-end: var(--cr-icon-button-margin-start);
+  }
+
+  #mouseKeysSettingsRow:hover {
+    background-color: var(--cr-hover-background-color);
+    cursor: pointer;
   }
 
   settings-toggle-button,
@@ -71,58 +81,39 @@
   </settings-toggle-button>
 </div>
 <template is="dom-if" if="[[isAccessibilityMouseKeysEnabled_]]">
-  <settings-toggle-button
-      id="enableMouseKeys"
-      icon="os-settings:mouse-keys"
-      pref="{{prefs.settings.a11y.mouse_keys.enabled}}"
-      label="$i18n{mouseKeysLabel}"
-      sub-label="$i18n{mouseKeysDescription}"
-      deep-link-focus-id$="[[Setting.kMouseKeysEnabled]]">
-  </settings-toggle-button>
-  <div class="sub-item"
-      hidden$="[[!prefs.settings.a11y.mouse_keys.enabled.value]]">
-    <div class="settings-box continuation">
-      <div class="start settings-box-text" id="mouseKeysAcceleration"
-          aria-hidden="true">
-        $i18n{mouseKeysAcceleration}
+  <div class="settings-box no-padding">
+    <div id="mouseKeysSettingsRow"
+        class="flex layout horizontal center link-wrapper"
+        on-click="onMouseKeysRowClicked_">
+      <iron-icon icon="os-settings:mouse-keys"
+          class="mouse-keys-icon">
+      </iron-icon>
+      <div id="details" aria-hidden="true">
+        <div class="flex settings-box-text">
+          <div id="mouseKeysTitleText">
+            $i18n{mouseKeysLabel}
+          </div>
+          <div id="mouseKeysSublabel" class="cr-secondary-text sub-label">
+            <span class="sub-label-text">$i18n{mouseKeysDescription}</span>
+          </div>
+        </div>
       </div>
-      <settings-slider show-markers
-          pref="{{prefs.settings.a11y.mouse_keys.acceleration}}"
-          ticks="[[mouseKeysAccelerationTicks_()]]"
-          label-aria="$i18n{mouseKeysAcceleration}"
-          label-min="$i18n{mouseKeysAccelerationMinLabel}"
-          label-max="$i18n{mouseKeysAccelerationMaxLabel}">
-      </settings-slider>
+      <cr-icon-button id="mouseKeysRowArrowIcon"
+          class="subpage-arrow"
+          aria-labelledby="mouseKeysTitleText"
+          aria-describedby="mouseKeysSublabel"
+          aria-roledescription="$i18n{subpageArrowRoleDescription}"
+          on-click="onMouseKeysRowClicked_">
+      </cr-icon-button>
     </div>
-    <div class="settings-box continuation">
-      <div class="start settings-box-text" id="mouseKeysMaxSpeed"
-          aria-hidden="true">
-        $i18n{mouseKeysMaxSpeed}
-      </div>
-      <settings-slider show-markers
-          pref="{{prefs.settings.a11y.mouse_keys.max_speed}}"
-          ticks="[[mouseKeysMaxSpeedTicks_()]]"
-          label-aria="$i18n{mouseKeysMaxSpeed}"
-          label-min="$i18n{mouseKeysMaxSpeedMinLabel}"
-          label-max="$i18n{mouseKeysMaxSpeedMaxLabel}">
-      </settings-slider>
-    </div>
-    <settings-toggle-button id="mouseKeysUsePrimaryKeys"
-        class="settings-box hr"
-        pref="{{prefs.settings.a11y.mouse_keys.use_primary_keys}}"
-        label="$i18n{mouseKeysUsePrimaryKeys}">
-    </settings-toggle-button>
-    <div class="settings-box"
-      hidden$="[[!prefs.settings.a11y.mouse_keys.use_primary_keys.value]]">
-      <div class="start settings-box-text" aria-hidden="true">
-        $i18n{mouseKeysDominantHand}
-      </div>
-      <settings-dropdown-menu id="mouseKeysDominantHand"
-          label="$i18n{mouseKeysDominantHand}"
-          pref="{{prefs.settings.a11y.mouse_keys.dominant_hand}}"
-          menu-options="[[mouseKeysDominantHandOptions_]]">
-      </settings-dropdown-menu>
-    </div>
+    <div class="separator"></div>
+    <cr-toggle id="mouseKeysToggle"
+        class="margin-matches-padding"
+        aria-label$="$i18n{mouseKeysLabel}"
+        aria-describedby$="mouseKeysSublabel"
+        checked="[[prefs.settings.a11y.mouse_keys.enabled.value]]"
+        on-change="onMouseKeysToggleClicked_">
+    </cr-toggle>
   </div>
 </template>
 <template is="dom-if" if="[[showFaceGazeRow_]]" restamp>

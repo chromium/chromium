@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">ડાઉનલોડ થોભાવ્યું</translation>
 <translation id="1396327438254055134">સાઇટને V8 ઑપ્ટિમાઇઝરનો ઉપયોગ કરવાની મંજૂરી આપો.</translation>
 <translation id="1415402041810619267">URL ટૂંકી કરી છે</translation>
+<translation id="1415855080660575082">તમારા તાજેતરના ટૅબ તમારી ડિવાઇસની ઍપની સૂચિ અને શોધ પરિણામોમાં દેખાય તે માટે Chromeને તમારા ડિવાઇસ સાથે તે શેર કરવાની મંજૂરી આપો. Chrome સેટિંગમાં તમે આને ચાલુ અથવા બંધ કરી શકો છો.</translation>
 <translation id="1448064542941920355">નાનું-મોટું કરવાની ટકાવારી ઘટાડો</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> સાઇટ}one{<ph name="SITE_COUNT" /> સાઇટ}other{<ph name="SITE_COUNT" /> સાઇટ}}</translation>
 <translation id="1500473259453106018">ટૅબ કાર્ડ પર કિંમતમાં ઘટાડાની સૂચનાઓ છુપાવો</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">તમે આ સાઇટને હંગામી રીતે ત્રીજા પક્ષની કુકીનો ઉપયોગ કરવાની મંજૂરી આપી છે, જેનો અર્થ એ થાય છે કે સાઇટને બ્રાઉઝિંગ સંબંધિત સુરક્ષા ઓછી મળે છે, પરંતુ સાઇટની સુવિધાઓ અપેક્ષા મુજબ કામ કરે એવી સંભાવના વધુ છે. <ph name="BEGIN_LINK" />પ્રતિસાદ મોકલો<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">છૂપા મોડમાં અમુક સાઇટ પર અમુક સુવિધાઓ કદાચ કામ કરી શકશે નહીં</translation>
 <translation id="2442870161001914531">હંમેશાં ડેસ્કટૉપ સાઇટની વિનંતી કરો</translation>
+<translation id="2445311670906052406">Chrome હવે તમારા તાજેતરના ટૅબને તમારા ડિવાઇસ સાથે શેર કરે છે. તમને તે તમારા ડિવાઇસની ઍપની સૂચિ અને શોધ પરિણામોમાં જોવા મળશે. Chrome સેટિંગમાં તમે આને કોઈપણ સમયે બંધ કરી શકો છો.</translation>
 <translation id="2469312991797799607">આ ક્રિયાના પરિણામે <ph name="ORIGIN" /> માટેની અને તેની હેઠળ આવતી બધી સાઇટ માટેનો બધો ડેટા અને કુકી ડિલીટ થઈ જશે</translation>
 <translation id="2482878487686419369">નોટિફિકેશનો</translation>
 <translation id="2485422356828889247">અનઇન્સ્ટૉલ કરો</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">સાઇટ ઓળખ સેવાઓના સાઇન ઇન કરવાના સંકેતો બતાવી શકે છે.</translation>
 <translation id="2787357173144933081">ઑમ્નિબૉક્સની શરૂઆત કરો</translation>
 <translation id="2790501146643349491">ચાલુ હોય ત્યારે, તાજેતરમાં બંધ કરેલી સાઇટ ડેટા મોકલવાનું અને પ્રાપ્ત કરવાનું પૂર્ણ કરી શકે છે. બંધ હોય ત્યારે, તાજેતરમાં બંધ કરેલી સાઇટ ડેટા મોકલવાનું અને પ્રાપ્ત કરવાનું પૂર્ણ કરી શકતી નથી.</translation>
+<translation id="2814830417943086299">Chrome હવે તમારા ડિવાઇસની ઍપની સૂચિ અને શોધ પરિણામોમાં તમારા તાજેતરના ટૅબ બતાવે છે. Chrome સેટિંગમાં તમે આને કોઈપણ સમયે બંધ કરી શકો છો.</translation>
 <translation id="2822354292072154809">શું તમે ખરેખર <ph name="CHOSEN_OBJECT_NAME" />ની બધી સાઇટ પસંદગીઓને રીસેટ કરવા માગો છે?</translation>
 <translation id="2850913818900871965">મોબાઇલ વ્યૂની વિનંતી કરો</translation>
 <translation id="2870560284913253234">સાઇટ</translation>
@@ -335,7 +338,6 @@
 <translation id="5968921426641056619">વેબ ઍડ્રેસ દાખલ કરો</translation>
 <translation id="5975083100439434680">ઝૂમ ઘટાડો</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
-<translation id="6015145568571136419">તમે હવે તમારા ડિવાઇસની ઍપની સૂચિમાંથી અને ડિવાઇસના શોધ પરિણામોમાં સૂચવેલા ટૅબ ઝડપથી ઍક્સેસ કરી શકો છો. Chrome સેટિંગમાં આ ગમે ત્યારે બંધ કરો.</translation>
 <translation id="6015775454662021376">આ સાઇટના તમારા ડિવાઇસના ઍક્સેસનું નિયંત્રણ કરો</translation>
 <translation id="6040143037577758943">બંધ કરો</translation>
 <translation id="6042308850641462728">વધુ</translation>
@@ -558,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં <ph name="APP_NAME" /> માટે પરવાનગીઓ ચાલુ કરો.</translation>
 <translation id="9138217887606523162">નાનું-મોટું કરવાની વર્તમાન ટકાવારી <ph name="ZOOM_LEVEL" /> %% છે</translation>
+<translation id="9156722768168878035">Chromeને તમારા ડિવાઇસની ઍપની સૂચિ અને શોધ પરિણામોમાં તમારા તાજેતરના ટૅબ બતાવવા દો. Chrome સેટિંગમાં તમે આને કોઈપણ સમયે બંધ કરી શકો છો.</translation>
 <translation id="9162462602695099906">આ પેજ જોખમી છે</translation>
 <translation id="947156494302904893">તમે મુલાકાત લો છો એ વિવિધ સાઇટ એ વાતની ચકાસણી કરી શકે છે કે તમે જ અસલી વપરાશકર્તા છો અને બૉટ નથી</translation>
 <translation id="959682366969460160">સંગઠિત રહો</translation>

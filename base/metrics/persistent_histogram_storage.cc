@@ -36,15 +36,17 @@ void* AllocateLocalMemory(size_t size) {
 #if BUILDFLAG(IS_WIN)
   address =
       ::VirtualAlloc(nullptr, size, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
-  if (address)
+  if (address) {
     return address;
+  }
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // MAP_ANON is deprecated on Linux but MAP_ANONYMOUS is not universal on Mac.
   // MAP_SHARED is not available on Linux <2.4 but required on Mac.
   address = ::mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_ANON | MAP_SHARED,
                    -1, 0);
-  if (address != MAP_FAILED)
+  if (address != MAP_FAILED) {
     return address;
+  }
 #else
 #error This architecture is not (yet) supported.
 #endif
@@ -53,8 +55,9 @@ void* AllocateLocalMemory(size_t size) {
   // achieve the same basic result but the acquired memory has to be
   // explicitly zeroed and thus realized immediately (i.e. all pages are
   // added to the process now instead of only when first accessed).
-  if (!base::UncheckedMalloc(size, &address))
+  if (!base::UncheckedMalloc(size, &address)) {
     return nullptr;
+  }
   DCHECK(address);
   memset(address, 0, size);
   return address;
@@ -76,8 +79,9 @@ PersistentHistogramStorage::PersistentHistogramStorage(
   // (no metric persistence) rather that generating a crash that won't be
   // caught/reported.
   void* memory = AllocateLocalMemory(kAllocSize);
-  if (!memory)
+  if (!memory) {
     return;
+  }
 
   GlobalHistogramAllocator::CreateWithPersistentMemory(memory, kAllocSize, 0,
                                                        0,  // No identifier.
@@ -87,13 +91,15 @@ PersistentHistogramStorage::PersistentHistogramStorage(
 
 PersistentHistogramStorage::~PersistentHistogramStorage() {
   PersistentHistogramAllocator* allocator = GlobalHistogramAllocator::Get();
-  if (!allocator)
+  if (!allocator) {
     return;
+  }
 
   allocator->UpdateTrackingHistograms();
 
-  if (disabled_)
+  if (disabled_) {
     return;
+  }
 
   // Stop if the storage base directory has not been properly set.
   if (storage_base_dir_.empty()) {

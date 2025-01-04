@@ -51,7 +51,7 @@ public class DragAndDropLauncherActivityUnitTest {
         MultiWindowTestUtils.enableMultiInstance();
         mContext = ContextUtils.getApplicationContext();
         mLinkUrl = JUnitTestGURLs.HTTP_URL.getSpec();
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
     }
 
     @Test

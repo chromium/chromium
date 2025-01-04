@@ -176,6 +176,8 @@ void DirectLayerTreeFrameSink::DisplayDidReceiveCALayerParams(
     DLOG(WARNING) << "Received frame for non-existent widget.";
   }
 #else
+  // Suppress -Wunused-private-field warning.
+  (void)widget_;
   NOTREACHED();
 #endif
 }

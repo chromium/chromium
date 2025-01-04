@@ -89,7 +89,6 @@ source_set("common") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//components/policy/core/browser:browser",
     "//components/prefs:prefs",
     "//components/safe_browsing:buildflags",
@@ -120,7 +119,6 @@ source_set("features") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//components/safe_browsing:buildflags",
   ]
 }

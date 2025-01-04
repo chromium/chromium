@@ -18,14 +18,14 @@ class WebContents;
 class SidePanelUI {
  public:
   // Open side panel with entry_id.
-  virtual void Show(
-      SidePanelEntryId entry_id,
-      std::optional<SidePanelOpenTrigger> open_trigger = std::nullopt) = 0;
+  virtual void Show(SidePanelEntryId entry_id,
+                    std::optional<SidePanelOpenTrigger> open_trigger) = 0;
+  void Show(SidePanelEntryId entry_id) { Show(entry_id, std::nullopt); }
 
   // Open side panel with entry key.
-  virtual void Show(
-      SidePanelEntryKey entry_key,
-      std::optional<SidePanelOpenTrigger> open_trigger = std::nullopt) = 0;
+  virtual void Show(SidePanelEntryKey entry_key,
+                    std::optional<SidePanelOpenTrigger> open_trigger) = 0;
+  void Show(SidePanelEntryKey entry_key) { Show(entry_key, std::nullopt); }
 
   // Close the side panel.
   virtual void Close() = 0;

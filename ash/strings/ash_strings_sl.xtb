@@ -361,6 +361,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2295777434187870477">Mikrofon je vklopljen; če ga preklopite, bo izklopljen vhodni zvok.</translation>
 <translation id="2302092602801625023">Ta račun upravlja Family Link</translation>
 <translation id="2303600792989757991">Preklop pregleda okna</translation>
+<translation id="2304702218354340897">Ali ste prepričani, da želite izklopiti upravljanje z obrazom?</translation>
 <translation id="2305738328104302723">Seznam Googlovih opravil: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: nedavni zajemi zaslonske slike, prenosi in pripete datoteke</translation>
 <translation id="2318576281648121272">Danes ob <ph name="TODAY_DATE" /></translation>
@@ -387,6 +388,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2370971919968699910">To lahko povzroči stroške prenosa podatkov.
 Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2386292613071805067">Izbira vsega na strani</translation>
+<translation id="2389423187722941333">Preklop Geminija</translation>
 <translation id="2392659840443812875">Ni razpoložljivih dostopnih točk. Poskrbite, da je naprava v bližini in da je Bluetooth vklopljen.</translation>
 <translation id="2397416548179033562">Prikaz Chromovega menija</translation>
 <translation id="240006516586367791">Kontrolniki predstavnosti</translation>
@@ -394,6 +396,7 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2402411679569069051">Če želite odkleniti Chromebook, uporabite prstni odtis ali odklenite telefon.</translation>
 <translation id="240545663114741956">Dvakrat pritisnite bližnjične tipke <ph name="ACCELERATOR" />, da se odjavite.</translation>
 <translation id="2405664212338326887">Ni povezano</translation>
+<translation id="2406710117564540804">Vklop/izklop načina Ne moti</translation>
 <translation id="2408955596600435184">Vnos kode PIN</translation>
 <translation id="2412593942846481727">Na voljo je posodobitev</translation>
 <translation id="2416438829169535743">Želite zapreti pogled?</translation>
@@ -899,6 +902,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="4119928251231465047">Preveč poskusov vnosa kode PIN</translation>
 <translation id="412298498316631026">okno</translation>
 <translation id="4123259114412175274">Če želite odkleniti Chromebook, mora biti vklopljen Bluetooth v telefonu.</translation>
+<translation id="4123868835475902435">To so osnove. Nadaljujte v Raziskovanju, vgrajeni aplikaciji z nasveti in pomočjo. Tam so na voljo nasveti za začetek, posebne ponudbe in najnovejše funkcije naprave <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4125970834901680537">V načinu tabličnega računalnika ni mogoče pretočno predvajati aplikacij. Poskusite znova v načinu prenosnika.</translation>
 <translation id="4131973331381812765">Temperatura: <ph name="TEMPERATURE" /> °C – trenutna hitrost: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="4136724716305260864">Vklopljeno do sončnega vzhoda</translation>
@@ -1019,7 +1023,6 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4481530544597605423">Naprave, za katere je bila preklicana seznanitev</translation>
 <translation id="4485506555414638855">Opustitev nastavitve ogleda nedavnih fotografij, predstavnosti, obvestil in aplikacij telefona</translation>
 <translation id="4491109536499578614">Slika</translation>
-<translation id="4493452241184130939">To so osnove. Nadaljujte v Raziskovanju, vgrajeni aplikaciji z nasveti in pomočjo. Tam so na voljo nasveti za začetek, priporočene aplikacije, posebne ponudbe in najnovejše funkcije naprave <ph name="PRODUCT_NAME" />.</translation>
 <translation id="450584155212756404">Različica za razvijalce</translation>
 <translation id="4513946894732546136">Povratne informacije</translation>
 <translation id="4518404433291145981">Če želite odkleniti Chromebook, najprej odklenite telefon.</translation>
@@ -1082,7 +1085,6 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4708065238214351979">Povečanje osvetlitve tipkovnice</translation>
 <translation id="4708185346211948049"><ph name="DAY_OF_WEEK" /> naslednji teden</translation>
 <translation id="4717575069099566988">Kabel USB-C ne podpira protokola USB4. Delovanje naprave bo morda omejeno.</translation>
-<translation id="4724328513667182700">6 nasvetov za začetek uporabe naprave <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">POGOSTO UPORABLJENE</translation>
 <translation id="4731797938093519117">Starševski dostop</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (leva)</translation>
@@ -1309,7 +1311,6 @@ Nobena naprava ni povezana.</translation>
 <translation id="5409208741270395213">Označevanje opravila kot dokončanega</translation>
 <translation id="5413656666631274079">stran z nastavitvami</translation>
 <translation id="5414198321558177633">Osveževanje seznama profilov. To lahko traja nekaj minut.</translation>
-<translation id="5417965108047245734">V kratki predstavitvi si oglejte, kako uporabljati napravo <ph name="PRODUCT_NAME" />.</translation>
 <translation id="5426063383988017631">Meni z nastavitvami je zaprt</translation>
 <translation id="5428899915242071344">Začni izbiranje</translation>
 <translation id="5429993543155113935">Anonimna okna trenutno niso podprta.</translation>
@@ -1647,6 +1648,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="6539852571005954999">Pregledovanje prenosa: <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Predvajanje v napravi <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emodžiji, GIF-i in drugo</translation>
+<translation id="6543942526104794893">Ali ste prepričani, da želite izklopiti obrazne poteze?</translation>
 <translation id="6545382064335350438">Kode PIN še vedno ni bilo mogoče preveriti. Poskusite znova.</translation>
 <translation id="6555373427270923730">Vnesite spletni naslov v naslovno vrstico, nato pritisnite <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2313,6 +2315,7 @@ Nova namestitev</translation>
 <translation id="8855885154700222542">Tipka za celozaslonski način</translation>
 <translation id="8858369206579825206">Nastavitve zasebnosti</translation>
 <translation id="8860366331836346216">Dodajanje kartice e-SIM</translation>
+<translation id="8869149849311827122">Ali ste prepričani, da želite izklopiti upravljanje s kazalcem miške?</translation>
 <translation id="8870509716567206129">Aplikacija ne podpira načina razdeljenega zaslona.</translation>
 <translation id="8873203135446552888">Potrdite onemogočenje vgrajene sledilne ploščice</translation>
 <translation id="8874184842967597500">Ni povezano</translation>

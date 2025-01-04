@@ -48,15 +48,17 @@ CastDialogAccessCodeCastButton::~CastDialogAccessCodeCastButton() = default;
 
 bool CastDialogAccessCodeCastButton::OnMousePressed(
     const ui::MouseEvent& event) {
-  if (event.IsRightMouseButton())
+  if (event.IsRightMouseButton()) {
     return true;
+  }
   return HoverButton::OnMousePressed(event);
 }
 
 void CastDialogAccessCodeCastButton::OnMouseReleased(
     const ui::MouseEvent& event) {
-  if (event.IsRightMouseButton())
+  if (event.IsRightMouseButton()) {
     return;
+  }
   return HoverButton::OnMouseReleased(event);
 }
 

@@ -35,7 +35,6 @@ class ThemeTrackingNonAccessibleImageView
   ThemeTrackingNonAccessibleImageView& operator=(
       const ThemeTrackingNonAccessibleImageView&) = delete;
   ~ThemeTrackingNonAccessibleImageView() override;
-
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_ACCESSIBILITY_THEME_TRACKING_NON_ACCESSIBLE_IMAGE_VIEW_H_

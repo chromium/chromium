@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <utility>
-
 #include "chrome/services/sharing/nearby/decoder/advertisement_decoder.h"
 
+#include <array>
+#include <utility>
+
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
@@ -67,8 +69,7 @@ std::unique_ptr<sharing::Advertisement> AdvertisementDecoder::FromEndpointInfo(
     return nullptr;
   }
 
-  auto iter = endpoint_info.begin();
-  uint8_t first_byte = *iter++;
+  uint8_t first_byte = endpoint_info.take_first_elem();
 
   int version = ParseVersion(first_byte);
   if (version < 0 || version > kMaxSupportedAdvertisementParsedVersionNumber) {
@@ -81,19 +82,24 @@ std::unique_ptr<sharing::Advertisement> AdvertisementDecoder::FromEndpointInfo(
   nearby_share::mojom::ShareTargetType device_type =
       ParseDeviceType(first_byte);
 
-  std::vector<uint8_t> salt(iter, iter + sharing::Advertisement::kSaltSize);
-  iter += sharing::Advertisement::kSaltSize;
+  std::array<uint8_t, sharing::Advertisement::kSaltSize> salt;
+  base::span(salt).copy_from(
+      endpoint_info.take_first<sharing::Advertisement::kSaltSize>());
 
-  std::vector<uint8_t> encrypted_metadata_key(
-      iter, iter + sharing::Advertisement::kMetadataEncryptionKeyHashByteSize);
-  iter += sharing::Advertisement::kMetadataEncryptionKeyHashByteSize;
+  std::array<uint8_t,
+             sharing::Advertisement::kMetadataEncryptionKeyHashByteSize>
+      encrypted_metadata_key;
+  base::span(encrypted_metadata_key)
+      .copy_from(endpoint_info.take_first<
+                 sharing::Advertisement::kMetadataEncryptionKeyHashByteSize>());
 
-  int device_name_length = 0;
-  if (iter != endpoint_info.end())
-    device_name_length = *iter++ & 0xff;
+  size_t device_name_length = 0;
+  if (!endpoint_info.empty()) {
+    device_name_length = endpoint_info.take_first_elem();
+  }
 
-  if (endpoint_info.end() - iter < device_name_length ||
-      (device_name_length == 0 && has_device_name)) {
+  if ((has_device_name && !device_name_length) ||
+      endpoint_info.size() < device_name_length) {
     LOG(ERROR) << "Failed to parse advertisement because the device name did "
                   "not match the expected length "
                << device_name_length;
@@ -101,9 +107,9 @@ std::unique_ptr<sharing::Advertisement> AdvertisementDecoder::FromEndpointInfo(
   }
 
   std::optional<std::string> optional_device_name;
-  if (device_name_length > 0) {
-    optional_device_name = std::string(iter, iter + device_name_length);
-    iter += device_name_length;
+  if (device_name_length) {
+    optional_device_name = std::string(
+        base::as_string_view(endpoint_info.first(device_name_length)));
 
     if (!base::IsStringUTF8(*optional_device_name)) {
       LOG(ERROR) << "Failed to parse advertisement because the device name was "

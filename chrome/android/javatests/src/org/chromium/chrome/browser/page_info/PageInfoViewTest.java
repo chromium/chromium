@@ -30,6 +30,7 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
 import static org.chromium.components.content_settings.PrefNames.IN_CONTEXT_COOKIE_CONTROLS_OPENED;
+import static org.chromium.ui.test.util.ViewUtils.clickOnClickableSpan;
 import static org.chromium.ui.test.util.ViewUtils.hasBackgroundColor;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -1128,6 +1129,28 @@ public class PageInfoViewTest {
         mRenderTestRule.render(
                 getPageInfoView(),
                 "PageInfo_TrackingProtectionSubpageBlockedDescription_Toggle_On");
+    }
+
+    /** Tests PageInfo on an allowlisted website */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void cookiesSubpageShowsGrantDescriptionForAllowlistedSiteInModeB() throws IOException {
+        enableTrackingProtection();
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        enableTpcdGrantEnforcement();
+        onView(withId(R.id.page_info_cookies_row)).perform(click());
+        onViewWaiting(
+                allOf(
+                        withText(
+                                containsString(
+                                        "Chrome limits most sites from using third-party cookies")),
+                        isDisplayed()));
+        onView(withText(containsString("manage access to third-party cookies")))
+                .perform(clickOnClickableSpan(0));
+        mRenderTestRule.render(
+                getPageInfoView(),
+                "PageInfo_CookiesSubpageTrackingProtectionGrantDescription_AllowlistedSite");
     }
 
     private void launchAndCheckTrackingProtectionLaunchUi() {

@@ -25,8 +25,6 @@ class CSSOMUtils {
 
   static bool IsNoneValue(const CSSValue* value);
 
-  static bool IsAutoValueList(const CSSValue* value);
-
   static bool IsEmptyValueList(const CSSValue* value);
 
   static bool HasGridRepeatValue(const CSSValueList* value_list);

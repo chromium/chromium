@@ -3,7 +3,7 @@ Short Name: OpenXR
 URL: https://github.com/KhronosGroup/OpenXR-SDK
 Version: 1.1.43
 Revision: 781f2eab3698d653c804ecbd11e0aed47eaad1c6
-License: Apache 2.0
+License: Apache-2.0
 License File: src/LICENSE
 Security Critical: yes
 Shipped: yes
@@ -63,7 +63,7 @@ Short Name: android-jni-wrappers
 URL: https://gitlab.freedesktop.org/monado/utilities/android-jni-wrappers
 Version: N/A
 Date: 2023-12-13
-License: Apache 2.0
+License: Apache-2.0
 License File: src/LICENSES/Apache-2.0.txt
 Security Critical: yes
 Shipped: yes

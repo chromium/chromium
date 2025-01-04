@@ -1473,7 +1473,6 @@ class HistoryClustersServiceJourneysDisabledTest
         /*enabled_features=*/{},
         /*disabled_features=*/{
             internal::kJourneys,
-            internal::kPersistContextAnnotationsInHistoryDb,
         });
 
     Config config;

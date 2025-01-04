@@ -47,8 +47,7 @@ void MediaCapturePickerDialogBridge::Show(
   }
 
   Java_MediaCapturePickerDialogBridge_showDialog(
-      env, java_object_, window_android->GetJavaObject(),
-      base::android::ConvertUTF16ToJavaString(env, app_name));
+      env, java_object_, window_android->GetJavaObject(), app_name);
 }
 
 void MediaCapturePickerDialogBridge::OnResult(
@@ -65,7 +64,9 @@ void MediaCapturePickerDialogBridge::OnResult(
         content::DesktopMediaID::TYPE_WEB_CONTENTS,
         content::DesktopMediaID::kNullId,
         content::WebContentsMediaCaptureId(
-            web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+            web_contents->GetPrimaryMainFrame()
+                ->GetProcess()
+                ->GetDeprecatedID(),
             web_contents->GetPrimaryMainFrame()->GetRoutingID()));
   }
   std::move(callback_).Run(desktop_media_id);

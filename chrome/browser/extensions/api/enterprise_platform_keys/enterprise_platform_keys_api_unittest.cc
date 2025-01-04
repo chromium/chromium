@@ -106,7 +106,9 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
   }
 
   // This will be called by BrowserWithTestWindowTest::SetUp();
-  std::string GetDefaultProfileName() override { return kUserEmail; }
+  std::optional<std::string> GetDefaultProfileName() override {
+    return kUserEmail;
+  }
 
   void LogIn(const std::string& email) override {
     const AccountId account_id = AccountId::FromUserEmail(email);

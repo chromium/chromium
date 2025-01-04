@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/android/jni_android.h"
-#include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/input/android/offset_tag_android.h"
@@ -24,6 +23,7 @@ class UIResourceLayer;
 
 namespace android {
 
+class GroupIndicatorLayer;
 class LayerTitleCache;
 class TabHandleLayer;
 
@@ -37,6 +37,13 @@ class TabStripSceneLayer : public SceneLayer {
   TabStripSceneLayer& operator=(const TabStripSceneLayer&) = delete;
 
   ~TabStripSceneLayer() override;
+
+  void SetConstants(JNIEnv* env,
+                    jint reorder_background_top_margin,
+                    jint reorder_background_bottom_margin,
+                    jint reorder_background_padding_start,
+                    jint reorder_background_padding_end,
+                    jint reorder_background_corner_radius);
 
   void SetContentTree(
       JNIEnv* env,
@@ -154,27 +161,34 @@ class TabStripSceneLayer : public SceneLayer {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jobj,
       jboolean incognito,
+      jboolean foreground,
+      jboolean show_reorder_background,
+      jboolean show_bubble,
       jint id,
       jint tint,
+      jint reorder_background_tint,
+      jint bubble_tint,
       jfloat x,
       jfloat y,
       jfloat width,
       jfloat height,
-      jfloat title_text_padding,
+      jfloat title_start_padding,
+      jfloat title_end_padding,
       jfloat corner_radius,
       jfloat bottom_indicator_width,
       jfloat bottom_indicator_height,
+      jfloat bubble_size,
       const base::android::JavaParamRef<jobject>& jlayer_title_cache);
 
   bool ShouldShowBackground() override;
   SkColor GetBackgroundColor() override;
 
  private:
-  scoped_refptr<TabHandleLayer> GetNextLayer(
+  scoped_refptr<TabHandleLayer> GetNextTabLayer(
       LayerTitleCache* layer_title_cache);
 
-  scoped_refptr<cc::slim::SolidColorLayer> GetNextGroupTitleLayer();
-  scoped_refptr<cc::slim::SolidColorLayer> GetNextGroupBottomLayer();
+  scoped_refptr<GroupIndicatorLayer> GetNextGroupIndicatorLayer(
+      LayerTitleCache* layer_title_cache);
 
   void UpdateCompositorButton(
       scoped_refptr<cc::slim::UIResourceLayer> button,
@@ -190,8 +204,9 @@ class TabStripSceneLayer : public SceneLayer {
   typedef std::vector<scoped_refptr<TabHandleLayer>> TabHandleLayerList;
 
   scoped_refptr<cc::slim::SolidColorLayer> tab_strip_layer_;
+  scoped_refptr<cc::slim::Layer> group_ui_parent_layer_;
   scoped_refptr<cc::slim::Layer> scrollable_strip_layer_;
-  scoped_refptr<cc::slim::Layer> group_indicator_layer_;
+  scoped_refptr<cc::slim::Layer> foreground_layer_;
   scoped_refptr<cc::slim::UIResourceLayer> new_tab_button_;
   scoped_refptr<cc::slim::UIResourceLayer> new_tab_button_background_;
   scoped_refptr<cc::slim::UIResourceLayer> left_fade_;
@@ -209,8 +224,7 @@ class TabStripSceneLayer : public SceneLayer {
   unsigned write_index_ = 0;
   TabHandleLayerList tab_handle_layers_;
   unsigned group_write_index_ = 0;
-  std::vector<scoped_refptr<cc::slim::SolidColorLayer>> group_title_layers_;
-  std::vector<scoped_refptr<cc::slim::SolidColorLayer>> group_bottom_layers_;
+  std::vector<scoped_refptr<GroupIndicatorLayer>> group_title_layers_;
   raw_ptr<SceneLayer> content_tree_;
 };
 

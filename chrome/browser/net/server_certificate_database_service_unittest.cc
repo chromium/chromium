@@ -4,20 +4,24 @@
 
 #include "chrome/browser/net/server_certificate_database_service.h"
 
+#include <memory>
+
+#include "base/files/scoped_temp_dir.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/net/server_certificate_database_service.h"
-#include "chrome/browser/net/server_certificate_database_service_factory.h"
 #include "chrome/browser/net/server_certificate_database_test_util.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/pref_names.h"
-#include "chrome/test/base/testing_profile.h"
-#include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/test/cert_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/net/fake_nss_service.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
+#include "crypto/scoped_test_nss_db.h"
 #include "net/cert/nss_cert_database.h"
 #include "net/cert/x509_util_nss.h"
 #endif
@@ -26,28 +30,69 @@ using chrome_browser_server_certificate_database::CertificateTrust;
 using ::testing::UnorderedElementsAre;
 
 namespace net {
+namespace {
+
+#if BUILDFLAG(IS_CHROMEOS)
+net::NSSCertDatabase* NssGetterForIOThread(
+    net::NSSCertDatabase* result,
+    base::OnceCallback<void(net::NSSCertDatabase*)>) {
+  // The check is here because the real NSS getter must also be run on the IO
+  // thread.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  return result;
+}
+#endif
+
+}  // namespace
 
 class ServerCertificateDatabaseServiceTest : public testing::Test {
  public:
   void SetUp() override {
-    profile_ = TestingProfile::Builder().Build();
+    ASSERT_TRUE(temp_profile_dir_.CreateUniqueTempDir());
+#if BUILDFLAG(IS_CHROMEOS)
+    ServerCertificateDatabaseService::RegisterProfilePrefs(
+        pref_service_.registry());
+    test_nss_slot_ = std::make_unique<crypto::ScopedTestNSSDB>();
+    ASSERT_TRUE(test_nss_slot_->is_open());
+    nss_cert_database_ = std::make_unique<NSSCertDatabase>(
+        crypto::ScopedPK11Slot(PK11_ReferenceSlot(test_nss_slot_->slot())),
+        crypto::ScopedPK11Slot(PK11_ReferenceSlot(test_nss_slot_->slot())));
+#endif
   }
 
-  TestingProfile* profile() { return profile_.get(); }
+  std::unique_ptr<net::ServerCertificateDatabaseService> CreateService() {
+#if BUILDFLAG(IS_CHROMEOS)
+    return std::make_unique<ServerCertificateDatabaseService>(
+        temp_profile_dir_.GetPath(), &pref_service_,
+        base::BindOnce(NssGetterForIOThread, nss_cert_database_.get()));
+#else
+    return std::make_unique<ServerCertificateDatabaseService>(
+        temp_profile_dir_.GetPath());
+#endif
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  PrefService* pref_service() { return &pref_service_; }
+  NSSCertDatabase* nss_cert_database() { return nss_cert_database_.get(); }
+#endif
 
  private:
   base::test::ScopedFeatureList feature_list_{
       features::kEnableCertManagementUIV2Write};
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfile> profile_;
+  base::ScopedTempDir temp_profile_dir_;
+#if BUILDFLAG(IS_CHROMEOS)
+  TestingPrefServiceSimple pref_service_;
+  std::unique_ptr<crypto::ScopedTestNSSDB> test_nss_slot_;
+  std::unique_ptr<net::NSSCertDatabase> nss_cert_database_;
+#endif
 };
 
 TEST_F(ServerCertificateDatabaseServiceTest, TestNotifications) {
   auto [leaf, root] = CertBuilder::CreateSimpleChain2();
 
-  net::ServerCertificateDatabaseService* cert_db_service =
-      net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
-          profile());
+  std::unique_ptr<net::ServerCertificateDatabaseService> cert_db_service =
+      CreateService();
 
   base::test::TestFuture<void> update_waiter;
 
@@ -111,41 +156,22 @@ TEST_F(ServerCertificateDatabaseServiceTest, TestNotifications) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-class ServerCertificateDatabaseServiceNSSMigratorTest
-    : public ServerCertificateDatabaseServiceTest {
- public:
-  void SetUp() override {
-    ServerCertificateDatabaseServiceTest::SetUp();
-
-    nss_service_ = FakeNssService::InitializeForBrowserContext(
-        profile(), /*enable_system_slot=*/false);
-  }
-
-  void TearDown() override { nss_service_ = nullptr; }
-
-  FakeNssService* nss_service() { return nss_service_; }
-
- private:
-  raw_ptr<FakeNssService> nss_service_;
-};
+using ServerCertificateDatabaseServiceNSSMigratorTest =
+    ServerCertificateDatabaseServiceTest;
 
 TEST_F(ServerCertificateDatabaseServiceNSSMigratorTest, TestMigration) {
   auto [leaf, root] = CertBuilder::CreateSimpleChain2();
 
   // Import test certificate into NSS user database.
-  base::test::TestFuture<net::NSSCertDatabase*> nss_waiter;
-  nss_service()->UnsafelyGetNSSCertDatabaseForTesting(nss_waiter.GetCallback());
-  net::NSSCertDatabase* nss_db = nss_waiter.Get();
   NSSCertDatabase::ImportCertFailureList not_imported;
-  EXPECT_TRUE(nss_db->ImportCACerts(
+  EXPECT_TRUE(nss_cert_database()->ImportCACerts(
       x509_util::CreateCERTCertificateListFromX509Certificate(
           root->GetX509Certificate().get()),
       NSSCertDatabase::TRUSTED_SSL, &not_imported));
   EXPECT_TRUE(not_imported.empty());
 
-  net::ServerCertificateDatabaseService* cert_db_service =
-      net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
-          profile());
+  std::unique_ptr<net::ServerCertificateDatabaseService> cert_db_service =
+      CreateService();
 
   // Verify that server cert database starts empty and migration pref default
   // is false.
@@ -153,10 +179,10 @@ TEST_F(ServerCertificateDatabaseServiceNSSMigratorTest, TestMigration) {
     base::test::TestFuture<uint32_t> get_certs_count_waiter;
     cert_db_service->GetCertificatesCount(get_certs_count_waiter.GetCallback());
     EXPECT_EQ(0U, get_certs_count_waiter.Get());
-    EXPECT_EQ(profile()->GetPrefs()->GetInteger(
-                  prefs::kNSSCertsMigratedToServerCertDb),
-              static_cast<int>(ServerCertificateDatabaseService::
-                                   NSSMigrationResultPref::kNotMigrated));
+    EXPECT_EQ(
+        pref_service()->GetInteger(prefs::kNSSCertsMigratedToServerCertDb),
+        static_cast<int>(ServerCertificateDatabaseService::
+                             NSSMigrationResultPref::kNotMigrated));
   }
 
   // Call GetAllCertificates to begin the migration.
@@ -178,8 +204,7 @@ TEST_F(ServerCertificateDatabaseServiceNSSMigratorTest, TestMigration) {
         UnorderedElementsAre(CertInfoEquals(std::ref(expected_nss_root_info))));
     // Migration pref should be true now.
     EXPECT_EQ(
-        profile()->GetPrefs()->GetInteger(
-            prefs::kNSSCertsMigratedToServerCertDb),
+        pref_service()->GetInteger(prefs::kNSSCertsMigratedToServerCertDb),
         static_cast<int>(ServerCertificateDatabaseService::
                              NSSMigrationResultPref::kMigratedSuccessfully));
   }
@@ -222,19 +247,15 @@ TEST_F(ServerCertificateDatabaseServiceNSSMigratorTest, SimultaneousCalls) {
   auto [leaf, root] = CertBuilder::CreateSimpleChain2();
 
   // Import test certificate into NSS user database.
-  base::test::TestFuture<net::NSSCertDatabase*> nss_waiter;
-  nss_service()->UnsafelyGetNSSCertDatabaseForTesting(nss_waiter.GetCallback());
-  net::NSSCertDatabase* nss_db = nss_waiter.Get();
   NSSCertDatabase::ImportCertFailureList not_imported;
-  EXPECT_TRUE(nss_db->ImportCACerts(
+  EXPECT_TRUE(nss_cert_database()->ImportCACerts(
       x509_util::CreateCERTCertificateListFromX509Certificate(
           root->GetX509Certificate().get()),
       NSSCertDatabase::TRUSTED_SSL, &not_imported));
   EXPECT_TRUE(not_imported.empty());
 
-  net::ServerCertificateDatabaseService* cert_db_service =
-      net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
-          profile());
+  std::unique_ptr<net::ServerCertificateDatabaseService> cert_db_service =
+      CreateService();
 
   // Call GetAllCertificates multiple times.
   base::test::TestFuture<
@@ -246,10 +267,9 @@ TEST_F(ServerCertificateDatabaseServiceNSSMigratorTest, SimultaneousCalls) {
   cert_db_service->GetAllCertificates(waiter1.GetCallback());
   cert_db_service->GetAllCertificates(waiter2.GetCallback());
   // Migration pref should be false still.
-  EXPECT_EQ(
-      profile()->GetPrefs()->GetInteger(prefs::kNSSCertsMigratedToServerCertDb),
-      static_cast<int>(ServerCertificateDatabaseService::
-                           NSSMigrationResultPref::kNotMigrated));
+  EXPECT_EQ(pref_service()->GetInteger(prefs::kNSSCertsMigratedToServerCertDb),
+            static_cast<int>(ServerCertificateDatabaseService::
+                                 NSSMigrationResultPref::kNotMigrated));
 
   // Both callbacks should get run and both should have the migrated cert.
   ServerCertificateDatabase::CertInformation expected_nss_root_info =
@@ -270,7 +290,7 @@ TEST_F(ServerCertificateDatabaseServiceNSSMigratorTest, SimultaneousCalls) {
 
   // Migration pref should be true now.
   EXPECT_EQ(
-      profile()->GetPrefs()->GetInteger(prefs::kNSSCertsMigratedToServerCertDb),
+      pref_service()->GetInteger(prefs::kNSSCertsMigratedToServerCertDb),
       static_cast<int>(ServerCertificateDatabaseService::
                            NSSMigrationResultPref::kMigratedSuccessfully));
 }

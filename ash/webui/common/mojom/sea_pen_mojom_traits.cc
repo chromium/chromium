@@ -35,6 +35,8 @@ EnumTraits<MojomMantaStatusCode, manta::MantaStatusCode>::ToMojom(
     case manta::MantaStatusCode::kRestrictedCountry:
     case manta::MantaStatusCode::kNoIdentityManager:
       return MojomMantaStatusCode::kGenericError;
+    case manta::MantaStatusCode::kImageHasPerson:
+      return MojomMantaStatusCode::kImageHasPerson;
     default:
       NOTREACHED();
   }
@@ -69,6 +71,9 @@ bool EnumTraits<MojomMantaStatusCode, manta::MantaStatusCode>::FromMojom(
     case MojomMantaStatusCode::kRestrictedCountry:
     case MojomMantaStatusCode::kNoIdentityManager:
       *output = manta::MantaStatusCode::kGenericError;
+      return true;
+    case MojomMantaStatusCode::kImageHasPerson:
+      *output = manta::MantaStatusCode::kImageHasPerson;
       return true;
   }
   NOTREACHED();

@@ -15,6 +15,8 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.view.View;
+
 import androidx.activity.ComponentDialog;
 
 import org.junit.Before;
@@ -54,7 +56,8 @@ public class ModalDialogManagerTest {
     @Mock private ModalDialogManagerObserver mObserver;
 
     @Captor ArgumentCaptor<PropertyModel> mDialogModelCaptor;
-    @Captor ArgumentCaptor<Callback<ComponentDialog>> mOnDialogShownCallbackCaptor;
+    @Captor ArgumentCaptor<Callback<ComponentDialog>> mOnDialogCreatedCallbackCaptor;
+    @Captor ArgumentCaptor<Callback<View>> mOnDialogShownCallbackCaptor;
 
     @Before
     public void setUp() {
@@ -124,9 +127,11 @@ public class ModalDialogManagerTest {
         assertNull(mModalDialogManager.getPendingDialogsForTest(ModalDialogType.TAB));
         verify(mAppModalPresenter, times(1))
                 .addDialogView(
-                        mDialogModelCaptor.capture(), mOnDialogShownCallbackCaptor.capture());
+                        mDialogModelCaptor.capture(),
+                        mOnDialogCreatedCallbackCaptor.capture(),
+                        mOnDialogShownCallbackCaptor.capture());
         assertEquals(mDialogModels.get(0), mDialogModelCaptor.getValue());
-        verify(mTabModalPresenter, times(0)).addDialogView(any(), any());
+        verify(mTabModalPresenter, times(0)).addDialogView(any(), any(), any());
     }
 
     /**
@@ -140,9 +145,11 @@ public class ModalDialogManagerTest {
         assertEquals(mDialogModels.get(0), mModalDialogManager.getCurrentDialogForTest());
         verify(mAppModalPresenter, times(1))
                 .addDialogView(
-                        mDialogModelCaptor.capture(), mOnDialogShownCallbackCaptor.capture());
+                        mDialogModelCaptor.capture(),
+                        mOnDialogCreatedCallbackCaptor.capture(),
+                        any());
         assertEquals(mDialogModels.get(0), mDialogModelCaptor.getValue());
-        verify(mTabModalPresenter, times(0)).addDialogView(any(), any());
+        verify(mTabModalPresenter, times(0)).addDialogView(any(), any(), any());
 
         // Show another app modal dialog and verify that it is queued.
         mModalDialogManager.showDialog(mDialogModels.get(1), ModalDialogType.APP);
@@ -151,9 +158,11 @@ public class ModalDialogManagerTest {
         assertNull(mModalDialogManager.getPendingDialogsForTest(ModalDialogType.TAB));
         verify(mAppModalPresenter, times(1))
                 .addDialogView(
-                        mDialogModelCaptor.capture(), mOnDialogShownCallbackCaptor.capture());
+                        mDialogModelCaptor.capture(),
+                        mOnDialogCreatedCallbackCaptor.capture(),
+                        any());
         assertEquals(mDialogModels.get(0), mDialogModelCaptor.getValue());
-        verify(mTabModalPresenter, times(0)).addDialogView(any(), any());
+        verify(mTabModalPresenter, times(0)).addDialogView(any(), any(), any());
 
         // Show a tab modal dialog and verify that it is queued.
         mModalDialogManager.showDialog(mDialogModels.get(2), ModalDialogType.TAB);
@@ -162,9 +171,11 @@ public class ModalDialogManagerTest {
         assertEquals(1, mModalDialogManager.getPendingDialogsForTest(ModalDialogType.TAB).size());
         verify(mAppModalPresenter, times(1))
                 .addDialogView(
-                        mDialogModelCaptor.capture(), mOnDialogShownCallbackCaptor.capture());
+                        mDialogModelCaptor.capture(),
+                        mOnDialogCreatedCallbackCaptor.capture(),
+                        any());
         assertEquals(mDialogModels.get(0), mDialogModelCaptor.getValue());
-        verify(mTabModalPresenter, times(0)).addDialogView(any(), any());
+        verify(mTabModalPresenter, times(0)).addDialogView(any(), any(), any());
     }
 
     /** Tests showing a dialog when another dialog of lower priority is currently showing. */
@@ -174,10 +185,12 @@ public class ModalDialogManagerTest {
         // Show a tab modal dialog and verify that it is showing.
         mModalDialogManager.showDialog(mDialogModels.get(0), ModalDialogType.TAB);
         assertEquals(mDialogModels.get(0), mModalDialogManager.getCurrentDialogForTest());
-        verify(mAppModalPresenter, times(0)).addDialogView(any(), any());
+        verify(mAppModalPresenter, times(0)).addDialogView(any(), any(), any());
         verify(mTabModalPresenter, times(1))
                 .addDialogView(
-                        mDialogModelCaptor.capture(), mOnDialogShownCallbackCaptor.capture());
+                        mDialogModelCaptor.capture(),
+                        mOnDialogCreatedCallbackCaptor.capture(),
+                        any());
         assertEquals(mDialogModels.get(0), mDialogModelCaptor.getValue());
 
         // Show an app modal dialog, and verify that the app modal dialog is shown, and the tab
@@ -191,9 +204,11 @@ public class ModalDialogManagerTest {
         assertEquals(1, mModalDialogManager.getPendingDialogsForTest(ModalDialogType.TAB).size());
         verify(mAppModalPresenter, times(1))
                 .addDialogView(
-                        mDialogModelCaptor.capture(), mOnDialogShownCallbackCaptor.capture());
+                        mDialogModelCaptor.capture(),
+                        mOnDialogCreatedCallbackCaptor.capture(),
+                        any());
         assertEquals(mDialogModels.get(1), mDialogModelCaptor.getValue());
-        verify(mTabModalPresenter, times(1)).addDialogView(any(), any());
+        verify(mTabModalPresenter, times(1)).addDialogView(any(), any(), any());
     }
 
     /**
@@ -208,9 +223,11 @@ public class ModalDialogManagerTest {
         assertEquals(mDialogModels.get(0), mModalDialogManager.getCurrentDialogForTest());
         verify(mAppModalPresenter, times(1))
                 .addDialogView(
-                        mDialogModelCaptor.capture(), mOnDialogShownCallbackCaptor.capture());
+                        mDialogModelCaptor.capture(),
+                        mOnDialogCreatedCallbackCaptor.capture(),
+                        any());
         assertEquals(mDialogModels.get(0), mDialogModelCaptor.getValue());
-        verify(mTabModalPresenter, times(0)).addDialogView(any(), any());
+        verify(mTabModalPresenter, times(0)).addDialogView(any(), any(), any());
 
         // Show a second and a third app modal dialog and verify that they are queued.
         mModalDialogManager.showDialog(mDialogModels.get(1), ModalDialogType.APP);
@@ -218,8 +235,8 @@ public class ModalDialogManagerTest {
         assertEquals(mDialogModels.get(0), mModalDialogManager.getCurrentDialogForTest());
         assertEquals(2, mModalDialogManager.getPendingDialogsForTest(ModalDialogType.APP).size());
         assertNull(mModalDialogManager.getPendingDialogsForTest(ModalDialogType.TAB));
-        verify(mAppModalPresenter, times(1)).addDialogView(any(), any());
-        verify(mTabModalPresenter, times(0)).addDialogView(any(), any());
+        verify(mAppModalPresenter, times(1)).addDialogView(any(), any(), any());
+        verify(mTabModalPresenter, times(0)).addDialogView(any(), any(), any());
 
         // Dismiss the first dialog and verify that the second dialog is shown.
         mModalDialogManager.dismissDialog(mDialogModels.get(0), DialogDismissalCause.UNKNOWN);
@@ -229,10 +246,12 @@ public class ModalDialogManagerTest {
         assertNull(mModalDialogManager.getPendingDialogsForTest(ModalDialogType.TAB));
         verify(mAppModalPresenter, times(2))
                 .addDialogView(
-                        mDialogModelCaptor.capture(), mOnDialogShownCallbackCaptor.capture());
+                        mDialogModelCaptor.capture(),
+                        mOnDialogCreatedCallbackCaptor.capture(),
+                        any());
         assertEquals(mDialogModels.get(0), mDialogModelCaptor.getAllValues().get(0));
         assertEquals(mDialogModels.get(1), mDialogModelCaptor.getAllValues().get(2));
-        verify(mTabModalPresenter, times(0)).addDialogView(any(), any());
+        verify(mTabModalPresenter, times(0)).addDialogView(any(), any(), any());
     }
 
     /** Tests showing a dialog as the next available dialog in the pending queue. */
@@ -244,25 +263,27 @@ public class ModalDialogManagerTest {
         assertEquals(mDialogModels.get(0), mModalDialogManager.getCurrentDialogForTest());
         verify(mAppModalPresenter, times(1))
                 .addDialogView(
-                        mDialogModelCaptor.capture(), mOnDialogShownCallbackCaptor.capture());
+                        mDialogModelCaptor.capture(),
+                        mOnDialogCreatedCallbackCaptor.capture(),
+                        any());
         assertEquals(mDialogModels.get(0), mDialogModelCaptor.getValue());
-        verify(mTabModalPresenter, times(0)).addDialogView(any(), any());
+        verify(mTabModalPresenter, times(0)).addDialogView(any(), any(), any());
 
         // Show a second app modal dialog and verify that it is queued.
         mModalDialogManager.showDialog(mDialogModels.get(1), ModalDialogType.APP);
         assertEquals(mDialogModels.get(0), mModalDialogManager.getCurrentDialogForTest());
         assertEquals(1, mModalDialogManager.getPendingDialogsForTest(ModalDialogType.APP).size());
         assertNull(mModalDialogManager.getPendingDialogsForTest(ModalDialogType.TAB));
-        verify(mAppModalPresenter, times(1)).addDialogView(any(), any());
-        verify(mTabModalPresenter, times(0)).addDialogView(any(), any());
+        verify(mAppModalPresenter, times(1)).addDialogView(any(), any(), any());
+        verify(mTabModalPresenter, times(0)).addDialogView(any(), any(), any());
 
         // Show a third app modal dialog as next and verify that it is queued.
         mModalDialogManager.showDialog(mDialogModels.get(2), ModalDialogType.APP, true);
         assertEquals(mDialogModels.get(0), mModalDialogManager.getCurrentDialogForTest());
         assertEquals(2, mModalDialogManager.getPendingDialogsForTest(ModalDialogType.APP).size());
         assertNull(mModalDialogManager.getPendingDialogsForTest(ModalDialogType.TAB));
-        verify(mAppModalPresenter, times(1)).addDialogView(any(), any());
-        verify(mTabModalPresenter, times(0)).addDialogView(any(), any());
+        verify(mAppModalPresenter, times(1)).addDialogView(any(), any(), any());
+        verify(mTabModalPresenter, times(0)).addDialogView(any(), any(), any());
 
         // Dismiss the first dialog and verify that the third dialog is shown.
         mModalDialogManager.dismissDialog(mDialogModels.get(0), DialogDismissalCause.UNKNOWN);
@@ -272,10 +293,12 @@ public class ModalDialogManagerTest {
         assertNull(mModalDialogManager.getPendingDialogsForTest(ModalDialogType.TAB));
         verify(mAppModalPresenter, times(2))
                 .addDialogView(
-                        mDialogModelCaptor.capture(), mOnDialogShownCallbackCaptor.capture());
+                        mDialogModelCaptor.capture(),
+                        mOnDialogCreatedCallbackCaptor.capture(),
+                        any());
         assertEquals(mDialogModels.get(0), mDialogModelCaptor.getAllValues().get(0));
         assertEquals(mDialogModels.get(2), mDialogModelCaptor.getAllValues().get(2));
-        verify(mTabModalPresenter, times(0)).addDialogView(any(), any());
+        verify(mTabModalPresenter, times(0)).addDialogView(any(), any(), any());
     }
 
     /** Tests dismissing the current dialog. */
@@ -287,7 +310,9 @@ public class ModalDialogManagerTest {
         assertEquals(mDialogModels.get(0), mModalDialogManager.getCurrentDialogForTest());
         verify(mAppModalPresenter, times(1))
                 .addDialogView(
-                        mDialogModelCaptor.capture(), mOnDialogShownCallbackCaptor.capture());
+                        mDialogModelCaptor.capture(),
+                        mOnDialogCreatedCallbackCaptor.capture(),
+                        any());
         assertEquals(mDialogModels.get(0), mDialogModelCaptor.getValue());
 
         // Show a tab modal dialog then a second app modal dialog and verify that they are queued.
@@ -311,9 +336,11 @@ public class ModalDialogManagerTest {
         assertEquals(1, mModalDialogManager.getPendingDialogsForTest(ModalDialogType.TAB).size());
         verify(mAppModalPresenter, times(2))
                 .addDialogView(
-                        mDialogModelCaptor.capture(), mOnDialogShownCallbackCaptor.capture());
+                        mDialogModelCaptor.capture(),
+                        mOnDialogCreatedCallbackCaptor.capture(),
+                        any());
         assertEquals(mDialogModels.get(2), mDialogModelCaptor.getAllValues().get(2));
-        verify(mTabModalPresenter, times(0)).addDialogView(any(), any());
+        verify(mTabModalPresenter, times(0)).addDialogView(any(), any(), any());
 
         // Dismiss the first dialog again and verify nothing is changed.
         mModalDialogManager.dismissDialog(mDialogModels.get(0), DialogDismissalCause.UNKNOWN);
@@ -536,7 +563,9 @@ public class ModalDialogManagerTest {
         verify(mAppModalPresenter, times(1)).removeDialogView(mDialogModels.get(0));
         verify(mAppModalPresenter, times(2))
                 .addDialogView(
-                        mDialogModelCaptor.capture(), mOnDialogShownCallbackCaptor.capture());
+                        mDialogModelCaptor.capture(),
+                        mOnDialogCreatedCallbackCaptor.capture(),
+                        any());
         assertEquals(mDialogModels.get(1), mDialogModelCaptor.getAllValues().get(1));
     }
 
@@ -552,7 +581,9 @@ public class ModalDialogManagerTest {
         assertTrue(mModalDialogManager.isShowing());
         verify(mAppModalPresenter, times(1))
                 .addDialogView(
-                        mDialogModelCaptor.capture(), mOnDialogShownCallbackCaptor.capture());
+                        mDialogModelCaptor.capture(),
+                        mOnDialogCreatedCallbackCaptor.capture(),
+                        any());
         assertEquals(mDialogModels.get(0), mDialogModelCaptor.getAllValues().get(0));
 
         // Create a new dialog of the same type and with very_high priority as well.

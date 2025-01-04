@@ -189,7 +189,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="AppManagement.AppDetailViews" enum="AppManagementUserAction"
-    expires_after="2025-03-30">
+    expires_after="2025-06-08">
 <!-- Name completed by histogram_suffixes name="AppType" -->
 
   <owner>sharminzaman@google.com</owner>
@@ -269,7 +269,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppDiscovery.{InstallReason}.Install" enum="AppType"
-    expires_after="2025-03-26">
+    expires_after="2025-06-08">
   <owner>joelhockey@chromium.org</owner>
   <owner>crosdev-commerce-eng@google.com</owner>
   <summary>
@@ -287,17 +287,6 @@ chromium-metrics-reviews@google.com.
     Records the result of creating shortcuts for a WebApp, specifically from the
     user clicking on &quot;Create Shortcut&quot; on the chrome://apps page, in
     the right click menu of the respective WebApp icon.
-  </summary>
-</histogram>
-
-<histogram name="Apps.AppInstallParentWindowFound" enum="Boolean"
-    expires_after="2025-01-19">
-  <owner>ovn@google.com</owner>
-  <owner>cros-web-apps-team@google.com</owner>
-  <summary>
-    Records the result of attempting to find a parent window for the spawned
-    AppInstallDialog when attempting to install an app from an almanac:// URL in
-    Lacros.
   </summary>
 </histogram>
 
@@ -896,7 +885,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.NumberOfAppsInNonSystemFolders" units="count"
-    expires_after="2025-04-06">
+    expires_after="2025-06-08">
   <owner>tbarzic@chromium.org</owner>
   <owner>jamescook@chromium.org</owner>
   <owner>mmourgos@chromium.org</owner>
@@ -1086,7 +1075,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.ContinueResultCount.{Type}" units="count"
-    expires_after="2025-03-30">
+    expires_after="2025-06-08">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -1255,7 +1244,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.SearchCategoryFilterMenuOpenedCount"
-    units="count" expires_after="2025-04-13">
+    units="count" expires_after="2025-06-22">
   <owner>wcwang@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
@@ -1333,7 +1322,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.{SearchView}" enum="AppListSearchAction"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -1372,7 +1361,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.{SearchView}.{SearchAction}"
-    enum="AppListSearchResult" expires_after="2025-04-13">
+    enum="AppListSearchResult" expires_after="2025-06-22">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -2072,7 +2061,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListPlayStoreQueryState"
-    enum="AppListPlayStoreQueryState" expires_after="2025-04-13">
+    enum="AppListPlayStoreQueryState" expires_after="2025-06-15">
   <owner>tby@chromium.org</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chrome-knowledge-eng@google.com</owner>
@@ -2175,7 +2164,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppsCount.{AppType}" units="Apps"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>ovn@google.com</owner>
   <owner>cros-web-apps-team@google.com</owner>
   <component>1389907</component>
@@ -2189,7 +2178,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppsCountPerInstallReason.{AppType}.{InstallReason}"
-    units="Apps" expires_after="2025-04-13">
+    units="Apps" expires_after="2025-06-15">
   <owner>ovn@google.com</owner>
   <owner>cros-web-apps-team@google.com</owner>
   <component>1389907</component>
@@ -2251,7 +2240,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.ContextMenuExecuteCommand{ContextMenuFromApp}"
-    enum="ChromeOSUICommands" expires_after="2025-04-06">
+    enum="ChromeOSUICommands" expires_after="2025-06-08">
   <owner>tbarzic@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <owner>mmourgos@chromium.org</owner>
@@ -2270,7 +2259,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.ContextMenuShowSourceV2{AppUIComponent}{TabletOrClamshellMode}"
-    enum="MenuSourceType" expires_after="2025-04-06">
+    enum="MenuSourceType" expires_after="2025-06-08">
   <owner>wcwang@chromium.org</owner>
   <owner>mmourgos@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
@@ -2284,7 +2273,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.ContextMenuUserJourneyTimeV2{AppUIComponent}{TabletOrClamshellMode}"
-    units="ms" expires_after="2025-04-13">
+    units="ms" expires_after="2025-06-22">
   <owner>wcwang@chromium.org</owner>
   <owner>mmourgos@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
@@ -2298,7 +2287,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.CreateShortcutIcon.Linux.Result"
-    enum="WebAppCreateShortcutIconLinuxResult" expires_after="2025-03-09">
+    enum="WebAppCreateShortcutIconLinuxResult" expires_after="2025-06-08">
   <owner>estade@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -2329,7 +2318,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.DefaultAppLaunch{DefaultAppLaunchSource}"
-    enum="DefaultAppName" expires_after="2025-04-13">
+    enum="DefaultAppName" expires_after="2025-06-15">
   <owner>ovn@google.com</owner>
   <owner>cros-web-apps-team@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -2530,7 +2519,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.MediaApp.Load.OtherOpenWindowCount" units="windows"
-    expires_after="2025-04-06">
+    expires_after="2025-06-08">
   <owner>tapted@chromium.org</owner>
   <owner>patricialor@chromium.org</owner>
   <summary>
@@ -2823,7 +2812,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.RunningDuration.{AppType}" units="ms"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>ovn@google.com</owner>
   <owner>cros-web-apps-team@google.com</owner>
   <component>1389907</component>
@@ -2998,7 +2987,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.UsageTime.{AppType}" units="ms"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>ovn@google.com</owner>
   <owner>cros-web-apps-team@google.com</owner>
   <component>1389907</component>
@@ -3010,7 +2999,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.UsageTimeV2.{AppTypeV2}" units="ms"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>ovn@google.com</owner>
   <owner>cros-web-apps-team@google.com</owner>
   <component>1389907</component>

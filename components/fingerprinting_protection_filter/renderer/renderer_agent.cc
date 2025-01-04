@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/stringprintf.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/fingerprinting_protection_filter/mojom/fingerprinting_protection_filter.mojom.h"
@@ -173,11 +174,13 @@ void RendererAgent::DidCreateNewDocument() {
 }
 
 void RendererAgent::DidFailProvisionalLoad() {
-  // We know the document will change (or this agent will be deleted) since a
-  // navigation did not commit - set up to request new activation in
-  // `DidCreateNewDocument()`.
-  activation_state_ = subresource_filter::mojom::ActivationState();
-  pending_activation_ = true;
+  if (IsTopLevelMainFrame()) {
+    // We know the document will change (or this agent will be deleted) since a
+    // navigation did not commit - set up to request new activation in
+    // `DidCreateNewDocument()`.
+    activation_state_ = subresource_filter::mojom::ActivationState();
+    pending_activation_ = true;
+  }
 }
 
 void RendererAgent::DidFinishLoad() {

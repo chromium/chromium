@@ -25,7 +25,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/common/extension_urls.h"
 #endif
 
@@ -121,7 +121,7 @@ TEST_F(ChromeSiteIsolationPolicyTest, IsolatedOriginsContainChromeOrigins) {
     expected_embedder_origins.push_back(GaiaUrls::GetInstance()->gaia_origin());
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   expected_embedder_origins.push_back(
       url::Origin::Create(extension_urls::GetWebstoreLaunchURL()));
   expected_embedder_origins.push_back(

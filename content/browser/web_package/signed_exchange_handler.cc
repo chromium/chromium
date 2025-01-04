@@ -718,7 +718,8 @@ void SignedExchangeHandler::CheckAbsenceOfCookies(base::OnceClosure callback) {
           network::mojom::RestrictedCookieManagerRole::NETWORK,
           inner_url_origin, isolation_info,
           /* is_service_worker = */ false,
-          render_frame_host ? render_frame_host->GetProcess()->GetID() : -1,
+          render_frame_host ? render_frame_host->GetProcess()->GetDeprecatedID()
+                            : -1,
           render_frame_host ? render_frame_host->GetRoutingID()
                             : MSG_ROUTING_NONE,
           render_frame_host ? render_frame_host->GetCookieSettingOverrides()

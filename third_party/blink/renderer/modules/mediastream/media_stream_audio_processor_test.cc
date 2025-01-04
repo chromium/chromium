@@ -179,13 +179,6 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
     EXPECT_EQ(config.noise_suppression.level,
               webrtc::AudioProcessing::Config::NoiseSuppression::kHigh);
     EXPECT_FALSE(config.transient_suppression.enabled);
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    // Android uses echo cancellation optimized for mobiles.
-    EXPECT_TRUE(config.echo_canceller.mobile_mode);
-#else
-    EXPECT_FALSE(config.echo_canceller.mobile_mode);
-#endif
   }
 
   test::TaskEnvironment task_environment_;

@@ -77,8 +77,9 @@ bool IsGooglePhotosUrl(const GURL& url) {
   };
 
   for (const char* const suffix : kGooglePhotosHostSuffixes) {
-    if (base::EndsWith(url.host_piece(), suffix))
+    if (base::EndsWith(url.host_piece(), suffix)) {
       return true;
+    }
   }
   return false;
 }

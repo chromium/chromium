@@ -67,6 +67,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="1786044937610313874">Les raccourcis s'ouvrent dans Chrome</translation>
 <translation id="178701303897325119">Cette extension n'est plus prise en charge. Chrome vous recommande de la retirer.</translation>
 <translation id="1812689907177901597">En désactivant cette option, vous pouvez vous connecter aux sites Google tels que Gmail sans vous connecter à Google Chrome</translation>
+<translation id="1838374766361614909">Effacer les termes de recherche</translation>
 <translation id="1860536484129686729">Chrome a besoin de votre autorisation pour accéder à votre appareil photo pour ce site</translation>
 <translation id="1873233029667955273">Google Chrome n'est pas votre navigateur par défaut</translation>
 <translation id="1874309113135274312">Google Chrome bêta (mDNS-In)</translation>
@@ -95,7 +96,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2137162749895930932">Fermer l'écran de traduction</translation>
 <translation id="2139300032719313227">Redémarrer Chrome OS</translation>
 <translation id="2151406531797534936">Veuillez redémarrer Chrome maintenant</translation>
-<translation id="2163089732491971196">Pour utiliser et enregistrer des données Chrome dans votre compte Google, saisissez votre phrase de passe</translation>
 <translation id="2174917724755363426">L'installation n'est pas terminée. Voulez-vous vraiment annuler?</translation>
 <translation id="2186206192313702726">Lentille Google</translation>
 <translation id="2190166659037789668">Erreur de vérification de la mise à jour : <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -209,6 +209,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="345171907106878721">Ajouter un utilisateur à Google Chrome</translation>
 <translation id="3453763134178591239">Conditions d'utilisation de Chrome OS</translation>
 <translation id="3503306920980160878">Chrome a besoin d'accéder à votre position afin de la partager avec ce site</translation>
+<translation id="3512634283363927263">Ces pages visent à être utilisées par les développeurs Chrome et pourraient ne pas être activement entretenues ou testées. Pour les activer, accédez à <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, cliquez sur le bouton permettant d'activer les pages de débogage, puis accédez de nouveau à cette page.</translation>
 <translation id="3533694711092285624">Aucun mot de passe enregistré. Chrome ne peut vérifier vos mots de passe que si vous les enregistrez.</translation>
 <translation id="3541482654983822893">Chrome ne peut pas vérifier vos mots de passe. Réessayez dans 24 heures.</translation>
 <translation id="3564543103555793392">Lorsque vous vous connectez à Chrome, vous pouvez enregistrer des favoris, des mots de passe et bien plus encore, puis les utiliser sur votre téléphone</translation>
@@ -231,7 +232,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="3716540481907974026">Version de Chrome OS Flex</translation>
 <translation id="3718181793972440140">Cette action entraînera la suppression d'un élément sur cet appareil. Pour récupérer vos données plus tard, connectez-vous à Chrome en tant que <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome vous recommande de la retirer. <ph name="BEGIN_LINK" />En savoir plus sur les extensions prises en charge<ph name="END_LINK" />}one{Chrome vous recommande de la retirer. <ph name="BEGIN_LINK" />En savoir plus sur les extensions prises en charge<ph name="END_LINK" />}other{Chrome vous recommande de les retirer. <ph name="BEGIN_LINK" />En savoir plus sur les extensions prises en charge<ph name="END_LINK" />}}</translation>
-<translation id="3744202345691150878">Obtenir de l'aide pour Chrome OS</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Chrome OS Flex n'a pas pu synchroniser vos données parce qu'une erreur s'est produite lors de la connexion.</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
@@ -244,6 +244,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="3889417619312448367">Désinstaller Google Chrome</translation>
 <translation id="3892148308691398805">Copier le texte</translation>
 <translation id="3941890832296813527">Erreur d'installation : le nom du fichier du programme d'installation n'est pas valide ou n'est pas pris en charge.</translation>
+<translation id="3968962723676998462">Entrez votre phrase de passe pour utiliser et enregistrer les données Chrome dans votre compte, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome souhaite supprimer vos données du gestionnaire de mots de passe Google. Tapez votre mot de passe Windows pour autoriser la suppression.</translation>
 <translation id="398236277091248993">Chrome reste rapide grâce à des fonctionnalités améliorant les performances</translation>
 <translation id="3999683152997576765">Vous pouvez voir et retirer les sujets d'intérêt que les sites utilisent pour vous montrer des annonces. Chrome estime vos centres d'intérêt en fonction de votre historique de navigation récent.</translation>
@@ -261,6 +262,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="4147555960264124640">Vous vous connectez avec un compte géré et rendez son administrateur maître de votre profil Google Chrome. Vos données de Google Chrome, comme vos applications, vos favoris, votre historique, vos mots de passe et vos autres paramètres, vont être associées de manière permanente à <ph name="USER_NAME" />. Vous pourrez supprimer ces données à l'aide du tableau de bord des comptes Google, mais vous ne pourrez pas les associer à un autre compte. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Installation...</translation>
 <translation id="4149882025268051530">Le programme d'installation n'a pas réussi à décompresser l'archive. Veuillez télécharger Google Chrome de nouveau.</translation>
+<translation id="415112847282352845">Pour obtenir vos adresses et bien plus encore sur tous vos appareils, connectez-vous à Chrome. Cette adresse sera enregistrée dans votre compte Google après votre connexion.</translation>
 <translation id="4153934450158521343">Chrome va bientôt se fermer et supprimer des données</translation>
 <translation id="4173512894976930765">Les sites fonctionneront probablement comme prévu. Vous serez déconnecté de la plupart des sites lorsque vous fermez toutes les fenêtres Chrome, à l'exception de votre compte Google si vous êtes connecté à Chrome.</translation>
 <translation id="4175922240926474352">Chrome a bloqué ce téléchargement, car le site n'utilise pas de connexion sécurisée et le fichier a peut-être été altéré</translation>
@@ -294,7 +296,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="4567424176335768812">Vous êtes connecté avec l'adresse de courriel <ph name="USER_EMAIL_ADDRESS" />. Vous pouvez maintenant accéder à vos favoris, à votre historique et à vos paramètres sur tous les appareils sur lesquels vous êtes connecté.</translation>
 <translation id="4571503333518166079">Accéder aux paramètres de notification Chrome</translation>
 <translation id="4575717501879784448">Chrome peut rendre ces onglets inactifs pour améliorer votre expérience de navigation et libérer des ressources.</translation>
-<translation id="4595162648538023956">Vous pouvez vous connecter pour récupérer votre contenu ou utiliser Chrome sans compte</translation>
 <translation id="459622048091363950">Lorsque Chrome y aura accès, les sites Web pourront vous demander l'accès.</translation>
 <translation id="4600710005438004015">Google Chrome n'a pas pu installer la nouvelle version, vous ne pouvez donc pas profiter des nouvelles fonctionnalités ni des correctifs relatifs à la sécurité.</translation>
 <translation id="4601439950572737842">Vos données sont chiffrées avec votre phrase de passe. Saisissez-la pour utiliser et enregistrer les données Chrome dans votre compte Google.</translation>
@@ -302,13 +303,13 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="4627412468266359539">Facultatif : aidez-nous à améliorer les fonctionnalités ainsi que la performance de Chrome OS Flex en envoyant automatiquement des données d'utilisation et de diagnostic à Google.</translation>
 <translation id="4633000520311261472">Afin de rendre Chrome plus sûr, nous avons désactivé certaines extensions qui ne sont pas répertoriées dans la boutique <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> et qui ont pu être ajoutées à votre insu.</translation>
 <translation id="4680828127924988555">Annuler l'installation</translation>
-<translation id="469553575393225953">Les extensions, les applications et les thèmes provenant de sources inconnues peuvent endommager votre appareil. Chrome recommande de les installer uniquement à partir de la boutique en ligne Chrome Web Store</translation>
 <translation id="4710245680469034439">Personnalisez votre navigateur avec des thèmes inspirés de la nature, de collections d'artistes et bien plus encore</translation>
 <translation id="4720851490453439956">Service interne de mise à jour de Google</translation>
 <translation id="4724676981607797757">Échec de l'installation en raison d'une erreur de protocole non pris en charge.</translation>
 <translation id="4728575227883772061">Échec de l'installation suite à une erreur non spécifiée. Si Google Chrome est en cours d'exécution, veuillez le fermer, puis réessayer.</translation>
 <translation id="4741235124132242877">La fonctionnalité a été épinglée! Utilisez à nouveau Lentille Google à partir de la barre d'outils</translation>
 <translation id="4747730611090640388">Chrome peut estimer vos centres d'intérêt.  Ultérieurement, un site que vous visitez peut demander à Chrome de voir vos centres d'intérêt afin de personnaliser les annonces que vous voyez.</translation>
+<translation id="475321580758063259">Mettez à jour Chrome pour continuer à utiliser les données Chrome dans votre compte Google, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="479167709087336770">Cela fait appel au même correcteur orthographique que celui qui est utilisé dans la recherche Google. Le texte que vous tapez dans le navigateur est envoyé à Google. Vous pouvez toujours modifier ce comportement dans les paramètres.</translation>
 <translation id="4793679854893018356">Découvrez comment Chrome assure votre sécurité</translation>
@@ -353,7 +354,6 @@ Certaines fonctionnalités peuvent être inaccessibles. Veuillez spécifier un r
 <translation id="5334309298019785904">Chrome OS n'a pas pu synchroniser vos données parce que cette fonctionnalité n'est pas offerte pour votre domaine.</translation>
 <translation id="5334487786912937552">Chrome requiert l'autorisation d'accéder à l'espace de stockage pour télécharger des fichiers</translation>
 <translation id="5337648990166757586">Facultatif : aidez-nous à améliorer les fonctionnalités ainsi que la performance de Chrome OS en envoyant automatiquement des données d'utilisation et de diagnostic à Google.</translation>
-<translation id="5357889879764279201">Obtenir de l'aide avec Chrome OS Flex</translation>
 <translation id="5368118228313795342">Code supplémentaire : <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Elle règle également la page qui s'affiche lorsque vous démarrez Chrome ou faites une recherche dans l'omnibox.</translation>
 <translation id="5394833366792865639">Partager un onglet de Chrome</translation>
@@ -394,6 +394,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="5941830788786076944">Faire de Google Chrome le navigateur par défaut</translation>
 <translation id="5947104538377036631">Raccourci Chrome</translation>
 <translation id="5953954252731207958">Vous n'êtes pas venu récemment. Chrome a retiré <ph name="PERMISSION" /></translation>
+<translation id="5980111191913430208">Les extensions, les applis et les thèmes provenant de sources inconnues peuvent endommager votre appareil. Chrome recommande de les installer uniquement à partir de la <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Téléchargement en cours… <ph name="HOURS" /> heure(s) restante(s)</translation>
 <translation id="6014316319780893079">Grâce aux <ph name="BEGIN_LINK" />outils de Chrome<ph name="END_LINK" />, vous pouvez naviguer en toute sécurité et garder le contrôle</translation>
 <translation id="6022659036123304283">Appropriez-vous Chrome</translation>
@@ -527,6 +528,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="7572537927358445944">Désactivée • Chrome ne peut pas vérifier l'origine de cette extension</translation>
 <translation id="7583399374488819119">Programme d'installation de <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
+<translation id="7617512710641355143">Chrome est géré</translation>
 <translation id="7626032353295482388">Bienvenue dans Google Chrome</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> exige que vous lisiez et acceptiez les conditions d'utilisation suivantes pour utiliser cet appareil. Ces dernières n'étendent pas, ne modifient pas, ni ne restreignent pas les conditions d'utilisation de Google Chrome OS.</translation>
 <translation id="7629695634924605473">Chrome vous informera si jamais vos mots de passe sont compromis</translation>
@@ -584,6 +586,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="8077579734294125741">Autres profils Chrome</translation>
 <translation id="8086881907087796310">L'installation a échoué, car votre ordinateur ne répond pas aux exigences minimales concernant le matériel.</translation>
 <translation id="8111297389482307122">Chrome doit confirmer votre identité avant que certaines données puissent être enregistrées dans votre compte Google et utilisées sur tous vos appareils. Si vous vous déconnectez, ces données resteront sur cet appareil.</translation>
+<translation id="8113883687556086139">Confirmez votre identité pour utiliser et enregistrer les données Chrome dans votre compte, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8118331347066725040">Envoyer des commentaires sur la recherche avec Lentille</translation>
 <translation id="8129812357326543296">À propos de &amp;Google Chrome</translation>
 <translation id="813913629614996137">Initialisation en cours...</translation>
@@ -611,6 +614,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="842386925677997438">Les outils de sécurité de Chrome</translation>
 <translation id="8425765582779547329">Pour rester en sécurité en ligne avec les choix de tes parents, connecte-toi à Chrome</translation>
 <translation id="8428213095426709021">Paramètres</translation>
+<translation id="8429214465555795676">Pour continuer, vous devez vous connecter à Chrome avec l'adresse courriel <ph name="EMAIL" />. Cela assure le respect des politiques de votre organisation.</translation>
 <translation id="8433638294851456451">Pour envoyer un numéro d'ici vers votre téléphone Android, connectez-vous à Chrome sur vos deux appareils.</translation>
 <translation id="8451192282033883849">Votre compte est géré par <ph name="MANAGER_NAME" />. Votre administrateur peut voir et modifier ce profil de navigateur Chrome ainsi que ses données telles que les favoris, l'historique et les mots de passe.</translation>
 <translation id="8496177819998570653">Gestionnaire de&amp;mots de passe Google</translation>
@@ -636,6 +640,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="8718062187489036808">Se déconnecter de Chrome</translation>
 <translation id="873133009373065397">Google Chrome ne parvient pas à déterminer quel est le navigateur par défaut ou à le définir</translation>
 <translation id="8748735421235723888">Chrome libère de la mémoire à partir des onglets inactifs. Cela donne aux onglets actifs et aux autres applis plus de ressources informatiques et assure la rapidité de Chrome. Vos onglets inactifs redeviennent automatiquement actifs lorsque vous y revenez. <ph name="BEGIN_LINK" />En savoir plus sur l'Économiseur de mémoire<ph name="END_LINK" /></translation>
+<translation id="8753189155654018347">Supprimer les données de cette appli de Chrome</translation>
 <translation id="8765470054473112089">Lorsque vous saisissez du texte dans la barre d'adresse ou le champ de recherche, Chrome achemine la requête saisie à votre moteur de recherche par défaut pour obtenir de meilleures suggestions. Ce paramètre est désactivé en mode de navigation privée.</translation>
 <translation id="8781673607513845160">Pour utiliser votre caméra, accordez l'accès à Chrome dans les <ph name="BEGIN_LINK" />paramètres système<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Erreur d'installation : votre administrateur réseau a appliqué une politique de groupe qui empêche l'installation : <ph name="INSTALL_ERROR" /></translation>

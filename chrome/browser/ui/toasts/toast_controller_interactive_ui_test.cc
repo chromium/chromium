@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -21,11 +22,14 @@
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_dismiss_menu_model.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
+#include "chrome/browser/ui/toasts/toast_metrics.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -43,6 +47,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/interactive_views_test.h"
 #include "ui/views/view.h"
@@ -112,8 +117,9 @@ class ToastControllerInteractiveTest : public InteractiveBrowserTest {
  public:
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        {toast_features::kToastFramework, toast_features::kLinkCopiedToast,
-         toast_features::kImageCopiedToast, toast_features::kReadingListToast,
+        {toast_features::kToastFramework, toast_features::kToastRefinements,
+         toast_features::kLinkCopiedToast, toast_features::kImageCopiedToast,
+         toast_features::kReadingListToast,
          plus_addresses::features::kPlusAddressesEnabled,
          plus_addresses::features::kPlusAddressFullFormFill},
         {});
@@ -353,25 +359,54 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
                   EnsurePresent(toasts::ToastView::kToastViewId),
                   FireToastCloseTimer(),
                   EnsurePresent(toasts::ToastView::kToastViewId),
-                  PressButton(toasts::ToastView::kToastMenuButton),
-                  WaitForHide(toasts::ToastView::kToastViewId));
+                  MoveMouseTo(toasts::ToastView::kToastMenuButton),
+                  ClickMouse(), WaitForHide(toasts::ToastView::kToastViewId));
 }
 
 // Tests that clicking the menu button twice closes the menu, but not the toast.
 IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, TwoClicksOnMenuButton) {
-  ToastParams params(ToastId::kPlusAddressOverride);
-  int counter = 0;
-  params.menu_model = std::make_unique<TestMenuModel>(
-      base::BindLambdaForTesting([&counter]() { ++counter; }));
-  RunTestSequence(ShowToast(std::move(params)),
+  RunTestSequence(
+      ShowToast(ToastParams(ToastId::kLinkCopied)),
+      WaitForShow(toasts::ToastView::kToastViewId),
+      EnsurePresent(toasts::ToastView::kToastMenuButton),
+      PressButton(toasts::ToastView::kToastMenuButton),
+      WaitForShow(ToastDismissMenuModel::kToastDontShowAgainMenuItem),
+      CheckViewProperty(toasts::ToastView::kToastMenuButton,
+                        &views::Button::GetState,
+                        views::Button::ButtonState::STATE_PRESSED),
+      MoveMouseTo(toasts::ToastView::kToastMenuButton), ClickMouse(),
+      WaitForHide(ToastDismissMenuModel::kToastDontShowAgainMenuItem),
+      CheckViewProperty(toasts::ToastView::kToastMenuButton,
+                        &views::Button::GetState,
+                        testing::Ne(views::Button::ButtonState::STATE_PRESSED)),
+      EnsurePresent(toasts::ToastView::kToastMenuButton));
+}
+
+IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
+                       DismissingToastPermanently) {
+  RunTestSequence(
+      ShowToast(ToastParams(ToastId::kLinkCopied)),
+      WaitForShow(toasts::ToastView::kToastViewId),
+      EnsurePresent(toasts::ToastView::kToastMenuButton),
+      PressButton(toasts::ToastView::kToastMenuButton),
+      WaitForShow(ToastDismissMenuModel::kToastDontShowAgainMenuItem),
+      SelectMenuItem(ToastDismissMenuModel::kToastDontShowAgainMenuItem),
+      WaitForHide(toasts::ToastView::kToastViewId),
+      ShowToast(ToastParams(ToastId::kLinkCopied)),
+      EnsureNotPresent(toasts::ToastView::kToastViewId));
+}
+
+IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
+                       DismissingToastTemporarily) {
+  RunTestSequence(ShowToast(ToastParams(ToastId::kLinkCopied)),
                   WaitForShow(toasts::ToastView::kToastViewId),
                   EnsurePresent(toasts::ToastView::kToastMenuButton),
                   PressButton(toasts::ToastView::kToastMenuButton),
-                  WaitForShow(kSampleMenuItem),
-                  PressButton(toasts::ToastView::kToastMenuButton),
-                  WaitForHide(kSampleMenuItem),
-                  EnsurePresent(toasts::ToastView::kToastMenuButton),
-                  Check([&]() { return counter == 0; }));
+                  WaitForShow(ToastDismissMenuModel::kToastDismissMenuItem),
+                  SelectMenuItem(ToastDismissMenuModel::kToastDismissMenuItem),
+                  WaitForHide(toasts::ToastView::kToastViewId),
+                  ShowToast(ToastParams(ToastId::kLinkCopied)),
+                  WaitForShow(toasts::ToastView::kToastViewId));
 }
 
 IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,

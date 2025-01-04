@@ -77,7 +77,6 @@
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{Укладак зменена: <ph name="ONE_CHANGED" />, закрыта: <ph name="ANY_CLOSED" />}one{Укладак зменена: <ph name="MANY_CHANGED" />, закрыта: <ph name="ANY_CLOSED" />}few{Укладак зменена: <ph name="MANY_CHANGED" />, закрыта: <ph name="ANY_CLOSED" />}many{Укладак зменена: <ph name="MANY_CHANGED" />, закрыта: <ph name="ANY_CLOSED" />}other{Укладак зменена: <ph name="MANY_CHANGED" />, закрыта: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="4371591986692297148">неактыўная</translation>
 <translation id="4460014764210899310">Разгрупаваць</translation>
-<translation id="4590027107044272416">Цяпер новую ўкладку можна адкрыць тут</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Закрыць 1 неактыўную ўкладку?}one{Закрыць <ph name="TAB_COUNT_MANY" /> неактыўную ўкладку?}few{Закрыць <ph name="TAB_COUNT_MANY" /> неактыўныя ўкладкі?}many{Закрыць <ph name="TAB_COUNT_MANY" /> неактыўных укладак?}other{Закрыць <ph name="TAB_COUNT_MANY" /> неактыўнай укладкі?}}</translation>
 <translation id="4686942373615810936">Створана толькі што</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Закрываць праз 1 дзень}one{Закрываць праз <ph name="DAY_COUNT_MANY" /> дзень}few{Закрываць праз <ph name="DAY_COUNT_MANY" /> дні}many{Закрываць праз <ph name="DAY_COUNT_MANY" /> дзён}other{Закрываць праз <ph name="DAY_COUNT_MANY" /> дня}}</translation>
@@ -98,7 +97,9 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{Укладак дададзена: <ph name="ONE_ADDED" />}one{Укладак дададзена: <ph name="MANY_ADDED" />}few{Укладак дададзена: <ph name="MANY_ADDED" />}many{Укладак дададзена: <ph name="MANY_ADDED" />}other{Укладак дададзена: <ph name="MANY_ADDED" />}}</translation>
 <translation id="5161254044473106830">Патрабуецца назва</translation>
 <translation id="5339733443032484186">Ваша апошняя ўкладка</translation>
+<translation id="5380159289133845234">Архіваваць паўторныя ўкладкі</translation>
 <translation id="5400836586163650660">Шэры</translation>
+<translation id="5446043142172831860">Выдаліць укладку і выйсці з групы</translation>
 <translation id="5490235265819901748">Група ўкладак разгорнута</translation>
 <translation id="5494920125229734069">Выбраць усё</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Закрыць групу ўкладак з <ph name="TABS_COUNT_ONE" /> укладкай, колер: <ph name="COLOR_NAME" />.}one{Закрыць групу ўкладак з <ph name="TABS_COUNT_MANY" /> укладкай, колер: <ph name="COLOR_NAME" />.}few{Закрыць групу ўкладак з <ph name="TABS_COUNT_MANY" /> укладкамі, колер: <ph name="COLOR_NAME" />.}many{Закрыць групу ўкладак з <ph name="TABS_COUNT_MANY" /> укладкамі, колер: <ph name="COLOR_NAME" />.}other{Закрыць групу ўкладак з <ph name="TABS_COUNT_MANY" /> укладкі, колер: <ph name="COLOR_NAME" />.}}</translation>
@@ -117,6 +118,7 @@
 <translation id="6051432659151380973">Групы ўкладак аўтаматычна захоўваюцца</translation>
 <translation id="6054741997831917303">Цана на гэты тавар нядаўна знізілася з <ph name="PREVIOUS_PRICE" /> да <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Вы адразу страціце доступ да групы ўкладак "<ph name="GROUP_NAME" />"</translation>
+<translation id="6109251075362363230">Цяпер усе паўторныя ўкладкі будуць таксама адпраўляцца ў архіў, за выключэннем той, якая выкарыстоўвалася апошняй.</translation>
 <translation id="6193448654517602979">Выберыце ўкладкі</translation>
 <translation id="6228793724645064692">(ацэнка крамы)</translation>
 <translation id="6271513594716432922">Закрыць усе неактыўныя ўкладкі</translation>

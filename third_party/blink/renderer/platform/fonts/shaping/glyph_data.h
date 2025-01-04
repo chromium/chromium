@@ -275,6 +275,9 @@ struct GlyphOffsetArray::iterator<true> final {
 
   GlyphOffset operator*() const { return *pointer; }
   void operator++() { ++pointer; }
+  void operator+=(ptrdiff_t s) { pointer += s; }
+
+  GlyphOffset operator[](size_t i) const { return pointer[i]; }
 
   const GlyphOffset* pointer;
 };
@@ -288,6 +291,8 @@ struct GlyphOffsetArray::iterator<false> final {
   explicit iterator(const GlyphDataRange& range) { DCHECK(!range.offsets); }
   GlyphOffset operator*() const { return GlyphOffset(); }
   void operator++() {}
+  void operator+=(ptrdiff_t) {}
+  GlyphOffset operator[](size_t) const { return GlyphOffset(); }
 };
 
 }  // namespace blink

@@ -145,7 +145,7 @@ class TestTab {
 
   WebContentsMediaCaptureId GetWebContentsMediaCaptureId() const {
     RenderFrameHost* const rfh = web_contents_->GetPrimaryMainFrame();
-    return WebContentsMediaCaptureId(rfh->GetProcess()->GetID(),
+    return WebContentsMediaCaptureId(rfh->GetProcess()->GetDeprecatedID(),
                                      rfh->GetRoutingID());
   }
 
@@ -461,8 +461,9 @@ TEST_F(CapturedSurfaceControllerZoomEventTest, ZoomEvent) {
 TEST_F(CapturedSurfaceControllerZoomEventTest, ZoomEventUpdateTarget) {
   const RenderFrameHost* const new_main_rfh =
       new_capturee_->web_contents()->GetPrimaryMainFrame();
-  const WebContentsMediaCaptureId new_wc_id(new_main_rfh->GetProcess()->GetID(),
-                                            new_main_rfh->GetRoutingID());
+  const WebContentsMediaCaptureId new_wc_id(
+      new_main_rfh->GetProcess()->GetDeprecatedID(),
+      new_main_rfh->GetRoutingID());
   controller_->UpdateCaptureTarget(new_wc_id);
 
   AwaitWebContentsResolution();

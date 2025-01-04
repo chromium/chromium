@@ -57,4 +57,7 @@ cargo_crate("lib") {
     "//third_party/rust/rustversion/v1:lib",
     "//third_party/rust/syn/v2:lib",
   ]
+  rustflags = [
+    "--cap-lints=allow",  # Suppress all warnings in crates.io crates
+  ]
 }

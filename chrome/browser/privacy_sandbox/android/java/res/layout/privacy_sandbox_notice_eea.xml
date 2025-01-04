@@ -179,6 +179,16 @@ found in the LICENSE file.
                 android:text="@string/privacy_sandbox_m1_notice_eea_ack_button"
                 style="@style/FilledButton" />
 
+            <org.chromium.ui.widget.ButtonCompat
+                android:id="@+id/ack_button_equalized"
+                android:focusable="true"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/privacy_sandbox_consent_button_margin_between"
+                android:text="@string/privacy_sandbox_m1_notice_eea_ack_button"
+                style="@style/OutlinedButton" />
+
         </LinearLayout>
     </org.chromium.components.browser_ui.widget.BoundedLinearLayout>
 </LinearLayout>

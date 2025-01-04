@@ -33,8 +33,6 @@ public class ContentFeatureList {
 
     public static final String INPUT_ON_VIZ = "InputOnViz";
 
-    public static final String OPTIMIZE_IMM_HIDE_CALLS = "OptimizeImmHideCalls";
-
     public static final String ONE_TIME_PERMISSION = "OneTimePermission";
 
     public static final String PROCESS_SHARING_WITH_STRICT_SITE_INSTANCES =
@@ -46,8 +44,6 @@ public class ContentFeatureList {
 
     public static final String WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND =
             "WebBluetoothNewPermissionsBackend";
-
-    public static final String WEB_NFC = "WebNFC";
 
     public static final String WEB_IDENTITY_DIGITAL_CREDENTIALS = "WebIdentityDigitalCredentials";
 

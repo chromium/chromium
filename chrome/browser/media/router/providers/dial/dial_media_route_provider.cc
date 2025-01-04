@@ -62,9 +62,10 @@ void DialMediaRouteProvider::Init(
   media_router_->GetLogger(logger_.BindNewPipeAndPassReceiver());
 
   // |activity_manager_| might have already been set in tests.
-  if (!activity_manager_)
+  if (!activity_manager_) {
     activity_manager_ = std::make_unique<DialActivityManager>(
         media_sink_service_->app_discovery_service());
+  }
 }
 
 DialMediaRouteProvider::~DialMediaRouteProvider() {
@@ -128,8 +129,8 @@ void DialMediaRouteProvider::CreateRoute(const std::string& media_source,
         base::DoNothing());
     logger_->LogInfo(mojom::LogCategory::kRoute, kLoggerComponent,
                      "Existing route terminated successfully.", sink_id,
-                      MediaRoute::GetMediaSourceIdFromMediaRouteId(route_id),
-                      MediaRoute::GetPresentationIdFromMediaRouteId(route_id));
+                     MediaRoute::GetMediaSourceIdFromMediaRouteId(route_id),
+                     MediaRoute::GetPresentationIdFromMediaRouteId(route_id));
   }
 
   activity_manager_->AddActivity(*activity);
@@ -520,19 +521,22 @@ void DialMediaRouteProvider::StartObservingMediaSinks(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (media_source.empty()) {
     std::vector<MediaSinkInternal> sinks;
-    for (const auto& sink_it : media_sink_service_->GetSinks())
+    for (const auto& sink_it : media_sink_service_->GetSinks()) {
       sinks.push_back(sink_it.second);
+    }
     OnSinksDiscovered(sinks);
     return;
   }
 
   MediaSource dial_source(media_source);
-  if (!dial_source.IsDialSource())
+  if (!dial_source.IsDialSource()) {
     return;
+  }
 
   std::string app_name = dial_source.AppNameFromDialSource();
-  if (app_name.empty())
+  if (app_name.empty()) {
     return;
+  }
 
   auto& sink_query = media_sink_queries_[app_name];
   if (!sink_query) {
@@ -557,31 +561,31 @@ void DialMediaRouteProvider::StopObservingMediaSinks(
 
   MediaSource dial_source(media_source);
   std::string app_name = dial_source.AppNameFromDialSource();
-  if (!dial_source.id().empty() && app_name.empty())
+  if (!dial_source.id().empty() && app_name.empty()) {
     return;
+  }
 
   const auto& sink_query_it = media_sink_queries_.find(app_name);
-  if (sink_query_it == media_sink_queries_.end())
+  if (sink_query_it == media_sink_queries_.end()) {
     return;
+  }
 
   auto& media_sources = sink_query_it->second->media_sources;
   media_sources.erase(dial_source);
-  if (media_sources.empty())
+  if (media_sources.empty()) {
     media_sink_queries_.erase(sink_query_it);
+  }
 }
 
 void DialMediaRouteProvider::StartObservingMediaRoutes() {
   // Return current set of routes.
   auto routes = activity_manager_->GetRoutes();
-  if (!routes.empty())
+  if (!routes.empty()) {
     NotifyOnRoutesUpdated(routes);
+  }
 }
 
 void DialMediaRouteProvider::DetachRoute(const std::string& route_id) {
-  NOTIMPLEMENTED();
-}
-
-void DialMediaRouteProvider::EnableMdnsDiscovery() {
   NOTIMPLEMENTED();
 }
 
@@ -628,8 +632,9 @@ void DialMediaRouteProvider::OnAvailableSinksUpdated(
   std::vector<url::Origin> origins = GetOrigins(app_name);
 
   auto sinks = media_sink_service_->GetAvailableSinks(app_name);
-  for (const auto& media_source : media_sources)
+  for (const auto& media_source : media_sources) {
     NotifyOnSinksReceived(media_source.id(), sinks, origins);
+  }
 }
 
 void DialMediaRouteProvider::NotifyOnSinksReceived(
@@ -664,8 +669,9 @@ std::vector<url::Origin> DialMediaRouteProvider::GetOrigins(
            {"com.dailymotion", {CreateOrigin("https://www.dailymotion.com")}}});
 
   auto origins_it = origin_allowlist->find(app_name);
-  if (origins_it == origin_allowlist->end())
+  if (origins_it == origin_allowlist->end()) {
     return std::vector<url::Origin>();
+  }
 
   return origins_it->second;
 }

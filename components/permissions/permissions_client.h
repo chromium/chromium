@@ -10,7 +10,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/permissions/features.h"

@@ -5,7 +5,7 @@ desc: |-
 
   This policy can only be set as a user policy.
 
-  It is recommended to use the favicon (example https://www.google.com/favicon.ico) or an icon no smaller than 24 x 24 px.
+  It is recommended to use the favicon (example https://www.google.com/favicon.ico) or an icon no smaller than 48 x 48 px.
 example_value: https://example.com/image.png
 features:
   dynamic_refresh: true

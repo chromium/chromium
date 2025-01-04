@@ -50,8 +50,9 @@ class TestMockTimeTaskRunner::NonOwningProxyTaskRunner
   // SingleThreadTaskRunner:
   bool RunsTasksInCurrentSequence() const override {
     AutoLock scoped_lock(lock_);
-    if (target_)
+    if (target_) {
       return target_->RunsTasksInCurrentSequence();
+    }
     return thread_checker_.CalledOnValidThread();
   }
 
@@ -59,8 +60,9 @@ class TestMockTimeTaskRunner::NonOwningProxyTaskRunner
                        OnceClosure task,
                        TimeDelta delay) override {
     AutoLock scoped_lock(lock_);
-    if (target_)
+    if (target_) {
       return target_->PostDelayedTask(from_here, std::move(task), delay);
+    }
 
     // The associated TestMockTimeTaskRunner is dead, so fail this PostTask.
     return false;
@@ -118,8 +120,7 @@ struct TestMockTimeTaskRunner::TestOrderedPendingTask
 };
 
 TestMockTimeTaskRunner::TestOrderedPendingTask::TestOrderedPendingTask()
-    : ordinal(0) {
-}
+    : ordinal(0) {}
 
 TestMockTimeTaskRunner::TestOrderedPendingTask::TestOrderedPendingTask(
     TestOrderedPendingTask&&) = default;
@@ -160,8 +161,9 @@ TestMockTimeTaskRunner::ScopedContext::~ScopedContext() = default;
 bool TestMockTimeTaskRunner::TemporalOrder::operator()(
     const TestOrderedPendingTask& first_task,
     const TestOrderedPendingTask& second_task) const {
-  if (first_task.GetTimeToRun() == second_task.GetTimeToRun())
+  if (first_task.GetTimeToRun() == second_task.GetTimeToRun()) {
     return first_task.ordinal > second_task.ordinal;
+  }
   return first_task.GetTimeToRun() > second_task.GetTimeToRun();
 }
 
@@ -238,8 +240,9 @@ void TestMockTimeTaskRunner::ClearPendingTasks() {
     // |NonOwningProxyTaskRunner::lock_| followed by |tasks_lock_|, so it's
     // desirable to avoid the reverse order, for deadlock freedom.
     AutoUnlock scoped_unlock(tasks_lock_);
-    while (!cleanup_tasks.empty())
+    while (!cleanup_tasks.empty()) {
       cleanup_tasks.pop();
+    }
   }
 }
 
@@ -282,8 +285,9 @@ TestMockTimeTaskRunner::TakePendingTasks() {
 bool TestMockTimeTaskRunner::HasPendingTask() {
   DCHECK(thread_checker_.CalledOnValidThread());
   AutoLock scoped_lock(tasks_lock_);
-  while (!tasks_.empty() && tasks_.top().task.IsCancelled())
+  while (!tasks_.empty() && tasks_.top().task.IsCancelled()) {
     tasks_.pop();
+  }
   return !tasks_.empty();
 }
 
@@ -305,8 +309,9 @@ size_t TestMockTimeTaskRunner::GetPendingTaskCount() {
 TimeDelta TestMockTimeTaskRunner::NextPendingTaskDelay() {
   DCHECK(thread_checker_.CalledOnValidThread());
   AutoLock scoped_lock(tasks_lock_);
-  while (!tasks_.empty() && tasks_.top().task.IsCancelled())
+  while (!tasks_.empty() && tasks_.top().task.IsCancelled()) {
     tasks_.pop();
+  }
   return tasks_.empty() ? TimeDelta::Max()
                         : tasks_.top().GetTimeToRun() - now_ticks_;
 }
@@ -381,10 +386,12 @@ void TestMockTimeTaskRunner::ProcessTasksNoLaterThan(TimeDelta max_delta,
   for (int i = 0; !quit_run_loop_ && (limit < 0 || i < limit); i++) {
     OnBeforeSelectingTask();
     TestPendingTask task_info;
-    if (!DequeueNextTask(original_now_ticks, max_delta, &task_info))
+    if (!DequeueNextTask(original_now_ticks, max_delta, &task_info)) {
       break;
-    if (task_info.task.IsCancelled())
+    }
+    if (task_info.task.IsCancelled()) {
       continue;
+    }
     // If tasks were posted with a negative delay, task_info.GetTimeToRun() will
     // be less than |now_ticks_|. ForwardClocksUntilTickTime() takes care of not
     // moving the clock backwards in this case.
@@ -398,8 +405,9 @@ void TestMockTimeTaskRunner::ForwardClocksUntilTickTime(TimeTicks later_ticks) {
   DCHECK(thread_checker_.CalledOnValidThread());
   {
     AutoLock scoped_lock(tasks_lock_);
-    if (later_ticks <= now_ticks_)
+    if (later_ticks <= now_ticks_) {
       return;
+    }
 
     now_ += later_ticks - now_ticks_;
     now_ticks_ = later_ticks;
@@ -439,8 +447,9 @@ void TestMockTimeTaskRunner::Run(bool application_tasks_allowed,
   TimeTicks run_until = now_ticks_ + timeout;
   while (!quit_run_loop_ && now_ticks_ < run_until) {
     RunUntilIdle();
-    if (quit_run_loop_ || ShouldQuitWhenIdle())
+    if (quit_run_loop_ || ShouldQuitWhenIdle()) {
       break;
+    }
 
     // Peek into |tasks_| to perform one of two things:
     //   A) If there are no remaining tasks, wait until one is posted and
@@ -451,8 +460,9 @@ void TestMockTimeTaskRunner::Run(bool application_tasks_allowed,
     {
       AutoLock scoped_lock(tasks_lock_);
       if (tasks_.empty()) {
-        while (tasks_.empty())
+        while (tasks_.empty()) {
           tasks_lock_cv_.Wait();
+        }
         continue;
       }
       auto_fast_forward_by =

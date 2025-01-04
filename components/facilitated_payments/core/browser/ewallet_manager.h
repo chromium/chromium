@@ -12,9 +12,13 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request_details.h"
+#include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
+#include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
+#include "components/facilitated_payments/core/validation/payment_link_validator.h"
 
 class GURL;
 
@@ -66,8 +70,10 @@ class EwalletManager {
 
   // Called after checking whether the facilitated payment API is available. If
   // the API is not available, the user should not be prompted to make a
-  // payment.
-  void OnApiAvailabilityReceived(bool is_api_available);
+  // payment.  The call to check the availability of API was made at
+  // `start_time`.
+  void OnApiAvailabilityReceived(base::TimeTicks start_time,
+                                 bool is_api_available);
 
   // Called after the user interacts with the eWallet payment prompt.
   // `is_prompt_accepted` indicates whether the user selects an eWallet FOP or
@@ -75,12 +81,16 @@ class EwalletManager {
   void OnEwalletPaymentPromptResult(bool is_prompt_accepted,
                                     int64_t selected_instrument_id);
 
-  // Invoked after risk data is fetched. `risk_data` is the fetched risk data.
-  void OnRiskDataLoaded(const std::string& risk_data);
+  // Invoked when risk data is fetched. The call to fetch the risk data was
+  // made at `start_time`. `risk_data` is the fetched risk data.
+  void OnRiskDataLoaded(base::TimeTicks start_time,
+                        const std::string& risk_data);
 
   // Called after retrieving the client token from the facilitated payment API.
   // If not empty, the client token can be used for initiating payment.
-  void OnGetClientToken(std::vector<uint8_t> client_token);
+  // The call was made at `start_time`.
+  void OnGetClientToken(base::TimeTicks start_time,
+                        std::vector<uint8_t> client_token);
 
   // Makes a payment request to the Payments server after the user has selected
   // the eWallet for making the payment.
@@ -88,15 +98,34 @@ class EwalletManager {
 
   // Called after receiving the `result` of the initiate payment call. The
   // `response_details` contains the action token used for payment.
+  // The call was made at `start_time`.
   void OnInitiatePaymentResponseReceived(
+      base::TimeTicks start_time,
       autofill::payments::PaymentsAutofillClient::PaymentsRpcResult result,
       std::unique_ptr<FacilitatedPaymentsInitiatePaymentResponseDetails>
           response_details);
 
   // Called after receiving the `result` of invoking the purchase manager for
   // payment.
-  void OnTransactionResult(
-      FacilitatedPaymentsApiClient::PurchaseActionResult result);
+  void OnTransactionResult(PurchaseActionResult result);
+
+  // Called by the view to communicate UI events.
+  void OnUiEvent(UiEvent ui_event_type);
+
+  // Updates the `ui_state_` value and triggers dismissal.
+  void DismissPrompt();
+
+  // Updates the `ui_state_` value and triggers showing the eWallet payment
+  // prompt.
+  void ShowEwalletPaymentPrompt(
+      base::span<const autofill::Ewallet> ewallet_suggestions,
+      base::OnceCallback<void(bool, int64_t)> on_user_decision_callback);
+
+  // Updates the `ui_state_` value and triggers showing the progress screen.
+  void ShowProgressScreen();
+
+  // Updates the `ui_state_` value and triggers showing the error screen.
+  void ShowErrorScreen();
 
   // A list of eWallets that support the payment link provided in
   // TriggerEwalletPushPayment().
@@ -126,6 +155,9 @@ class EwalletManager {
   const raw_ref<optimization_guide::OptimizationGuideDecider>
       optimization_guide_decider_;
 
+  // The scheme of the detected payment link.
+  PaymentLinkValidator::Scheme scheme_;
+
   // Contains the details required for the `InitiatePayment` request to be sent
   // to the Payments server. Its ownership is transferred to
   // `FacilitatedPaymentsInitiatePaymentRequest` in
@@ -133,6 +165,14 @@ class EwalletManager {
   // creates a new instance.
   std::unique_ptr<FacilitatedPaymentsInitiatePaymentRequestDetails>
       initiate_payment_request_details_;
+
+  // Represents the current state of the UI or the UI state that is intended. In
+  // the latter case, the UI state is always updated to reflect the current
+  // state via a callback.
+  UiState ui_state_ = UiState::kHidden;
+
+  // Stores the time when eWallet payment flow is triggered.
+  base::TimeTicks payment_flow_triggered_timestamp_;
 
   base::WeakPtrFactory<EwalletManager> weak_ptr_factory_{this};
 };

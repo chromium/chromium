@@ -15,7 +15,7 @@
 #import "base/not_fatal_until.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
-#import "components/autofill/core/browser/ui/suggestion_type.h"
+#import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/autofill_util.h"
@@ -273,8 +273,7 @@ bool IsSupportedSuggestion(FormSuggestion* suggestion) {
   self.lastFocusedElementPasswordField = params.field_type == "password";
   DCHECK(frame);
   self.lastFocusedElementFrameIdentifier = frame->GetFrameId();
-  const GURL frameSecureOrigin = frame->GetSecurityOriginDeprecated();
-  if (!frameSecureOrigin.SchemeIsCryptographic()) {
+  if (!GURL::SchemeIsCryptographic(frame->GetSecurityOrigin().scheme())) {
     self.lastFocusedElementSecure = NO;
   }
 }

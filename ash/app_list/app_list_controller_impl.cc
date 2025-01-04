@@ -74,7 +74,9 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/trace_event/trace_event.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -112,6 +114,8 @@ constexpr base::TimeDelta kOverviewFadeAnimationDuration =
 
 // The app id for the settings app used for testing quick app access.
 constexpr char kOsSettingsAppId[] = "odknhmnlageboeamepcngndbggdpaobj";
+
+bool g_sunfish_nudge_disabled_for_test = false;
 
 // Update layer animation settings for launcher scale and opacity animation that
 // runs on overview mode change.
@@ -1800,6 +1804,9 @@ void AppListControllerImpl::UpdateSearchBoxUiVisibilities() {
     return;
   }
 
+  client_->GetAssistantNewEntryPointEligibility(base::BindOnce(
+      &AppListControllerImpl::OnAssistantNewEntryPointEligibilityReady,
+      weak_ptr_factory_.GetWeakPtr()));
   client_->RecalculateWouldTriggerLauncherSearchIph();
 }
 
@@ -2068,6 +2075,11 @@ int AppListControllerImpl::GetFullscreenLauncherContainerId() const {
                                  : kShellWindowId_AppListContainer;
 }
 
+void AppListControllerImpl::OnAssistantNewEntryPointEligibilityReady(
+    bool eligible) {
+  GetSearchModel()->search_box()->SetShowAssistantNewEntryPointButton(eligible);
+}
+
 int AppListControllerImpl::GetPreferredBubbleWidth(
     aura::Window* root_window) const {
   DCHECK(bubble_presenter_);
@@ -2082,8 +2094,17 @@ bool AppListControllerImpl::SetHomeButtonQuickApp(const std::string& app_id) {
   return model_provider_->quick_app_access_model()->SetQuickApp(app_id);
 }
 
+// static
+void AppListControllerImpl::SetSunfishNudgeDisabledForTest(bool is_disabled) {
+  g_sunfish_nudge_disabled_for_test = is_disabled;
+}
+
 void AppListControllerImpl::MaybeShowSunfishLauncherNudge(
     views::View* launcher_button) {
+  if (g_sunfish_nudge_disabled_for_test) {
+    return;
+  }
+
   if (!IsSunfishAllowedAndEnabled()) {
     return;
   }

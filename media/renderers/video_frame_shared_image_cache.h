@@ -54,9 +54,19 @@ class MEDIA_EXPORT VideoFrameSharedImageCache {
   // `shared_image_` in the case of CPU backed VideoFrames. Returns the
   // `shared_image_` along with Status on whether the shared image was created
   // or reused.
-  CachedData GetSharedImage(const VideoFrame* video_frame,
-                            viz::RasterContextProvider* raster_context_provider,
-                            gpu::SharedImageUsageSet usage);
+  CachedData GetOrCreateSharedImage(
+      const VideoFrame* video_frame,
+      viz::RasterContextProvider* raster_context_provider,
+      const gpu::SharedImageUsageSet& usage,
+      const viz::SharedImageFormat& format,
+      const gfx::ColorSpace& color_space);
+
+  // Calls the above method but passes in video frame color space and YUV format
+  // derived from video frame format.
+  CachedData GetOrCreateSharedImage(
+      const VideoFrame* video_frame,
+      viz::RasterContextProvider* raster_context_provider,
+      const gpu::SharedImageUsageSet& usage);
 
   // Update the `sync_token_` to wait for after performing raster/gles tasks.
   void UpdateSyncToken(const gpu::SyncToken& sync_token);

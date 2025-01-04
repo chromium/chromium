@@ -8,7 +8,7 @@ desc: |-
 
   Leaving the policy unset means <ph name="CHROME_CLEANUP_NAME">Chrome Cleanup</ph> may, in line with policy set by <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME">SafeBrowsingExtendedReportingEnabled</ph>, report about scans for detecting unwanted software to Google. <ph name="CHROME_CLEANUP_NAME">Chrome Cleanup</ph> asks users if they want the cleanup and to share the results with Google to help with future unwanted software detection. These results have file metadata, automatically installed extensions, and registry keys, as described by the Chrome Privacy Whitepaper.
 
-  On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, this policy is only available on instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain, joined to <ph name="MS_AAD_NAME">Microsoft® Azure® Active Directory®</ph> or enrolled in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph>.
+  On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, this policy is only available on instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain, joined to <ph name="MS_AAD_NAME">Microsoft® Azure® Active Directory®</ph> or enrolled in <ph name="CHROME_ENTERPRISE_CORE_NAME">Chrome Enterprise Core</ph>.
 example_value: true
 features:
   dynamic_refresh: true

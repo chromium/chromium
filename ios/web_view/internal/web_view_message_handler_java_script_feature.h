@@ -59,6 +59,7 @@ class WebViewMessageHandlerJavaScriptFeature
   void RegisterHandler(std::string& command,
                        WebViewMessageHandlerCallback handler);
   void UnregisterHandler(std::string& command);
+  bool IsHandlerRegistered(std::string& command);
 
  private:
   friend class base::NoDestructor<WebViewMessageHandlerJavaScriptFeature>;

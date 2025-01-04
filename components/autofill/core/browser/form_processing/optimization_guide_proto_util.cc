@@ -99,8 +99,7 @@ optimization_guide::proto::FormData ToFormDataProto(
       form_structure.fields(), {}, [](const auto& field) {
         return std::make_pair(
             field->global_id(),
-            field->field_is_eligible_for_prediction_improvements().value_or(
-                false));
+            field->field_is_eligible_for_autofill_ai().value_or(false));
       });
 
   auto field_value_sensitivity_map =

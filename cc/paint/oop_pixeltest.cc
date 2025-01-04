@@ -2914,5 +2914,51 @@ TEST_F(OopPixelTest, RecordShaderExceedsMaxTextureSize) {
 INSTANTIATE_TEST_SUITE_P(P, OopClearPixelTest, ::testing::Bool());
 INSTANTIATE_TEST_SUITE_P(P, OopPathPixelTest, ::testing::Bool());
 
+TEST_F(OopPixelTest, SkSLCommandShader) {
+  const gfx::Size rect(100, 100);
+  RasterOptions options(rect);
+  options.preclear = true;
+  options.preclear_color = SkColors::kWhite;
+
+  // Draws a red square.
+  const std::string_view kDrawRedRect(R"(
+    const half4 color = half4(1.0, 0.0, 0.0, 1.0);  // <R, G, B, A>
+    const vec2 top_left = vec2(25, 25);             // <X, Y>
+    const vec2 btm_right = vec2(75, 75);            // <X+W, Y+H>
+
+    half4 main(float2 coord) {
+      if (all(greaterThanEqual(coord, top_left)) &&
+          all(lessThan(coord, btm_right))) {
+        // Red if inside the rect.
+        return color;
+      } else {
+        // Transparent elsewhere.
+        return half4(0.0);
+      }
+    }
+  )");
+  auto shader = PaintShader::MakeSkSLCommand(kDrawRedRect);
+  ASSERT_TRUE(shader);
+
+  PaintFlags flags;
+  flags.setShader(std::move(shader));
+  auto display_item_list = base::MakeRefCounted<DisplayItemList>();
+  display_item_list->StartPaint();
+  display_item_list->push<DrawRectOp>(gfx::RectToSkRect(gfx::Rect(rect)),
+                                      flags);
+  display_item_list->EndPaintOfUnpaired(options.full_raster_rect);
+  display_item_list->Finalize();
+
+  auto actual = Raster(display_item_list, options);
+
+  SkBitmap expected = MakeSolidColorBitmap(rect, SkColors::kWhite);
+  SkCanvas canvas(expected, SkSurfaceProps{});
+  SkPaint red;
+  red.setColor(SkColors::kRed);
+  canvas.drawRect(SkRect::MakeXYWH(25, 25, 50, 50), red);
+
+  EXPECT_EQ(GetPNGDataUrl(actual), GetPNGDataUrl(expected));
+}
+
 }  // namespace
 }  // namespace cc

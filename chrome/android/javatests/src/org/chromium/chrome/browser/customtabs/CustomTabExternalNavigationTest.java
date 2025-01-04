@@ -260,8 +260,11 @@ public class CustomTabExternalNavigationTest {
     @SmallTest
     @DisableIf.Build(
             supported_abis_includes = "x86",
-            sdk_is_greater_than = VERSION_CODES.O_MR1,
-            sdk_is_less_than = VERSION_CODES.Q,
+            sdk_equals = VERSION_CODES.P,
+            message = "crbug.com/1188920")
+    @DisableIf.Build(
+            supported_abis_includes = "x86_64",
+            sdk_is_less_than = VERSION_CODES.TIRAMISU,
             message = "crbug.com/1188920")
     public void testIntentPickerNotShownForNormalUrl() throws TimeoutException {
         setUpTwa();

@@ -34,14 +34,16 @@ class CC_EXPORT HeadsUpDisplayLayer : public Layer {
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
 
-  // Layer overrides.
-  void PushPropertiesTo(LayerImpl* layer,
-                        const CommitState& commit_state,
-                        const ThreadUnsafeCommitState& unsafe_state) override;
-
  protected:
   HeadsUpDisplayLayer();
   bool HasDrawableContent() const override;
+
+  // Layer overrides.
+  void PushDirtyPropertiesTo(
+      LayerImpl* layer,
+      uint8_t dirty_flag,
+      const CommitState& commit_state,
+      const ThreadUnsafeCommitState& unsafe_state) override;
 
  private:
   ~HeadsUpDisplayLayer() override;

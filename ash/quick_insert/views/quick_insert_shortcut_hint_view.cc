@@ -70,7 +70,7 @@ QuickInsertShortcutHintView::QuickInsertShortcutHintView(
            l10n_util::GetStringUTF16(IDS_ASH_SHORTCUT_MODIFIER_SEARCH)});
       break;
     }
-    case QuickInsertCapsLockResult::Shortcut::kFnRightAlt: {
+    case QuickInsertCapsLockResult::Shortcut::kFnQuickInsert: {
       // TODO: b/331285414 - Shortcut hint strings and icon should be moved into
       // open source.
       auto* fn_label = AddChildView(

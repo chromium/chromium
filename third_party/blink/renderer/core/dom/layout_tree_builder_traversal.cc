@@ -139,30 +139,30 @@ Node* LayoutTreeBuilderTraversal::NextSibling(const Node& node) {
       }
       [[fallthrough]];
     case kPseudoIdScrollMarker:
-      if (Node* next =
-              parent_element->GetPseudoElement(kPseudoIdScrollUpButton)) {
+      if (Node* next = parent_element->GetPseudoElement(
+              kPseudoIdScrollButtonBlockStart)) {
         return next;
       }
       [[fallthrough]];
-    case kPseudoIdScrollUpButton:
-      if (Node* next =
-              parent_element->GetPseudoElement(kPseudoIdScrollDownButton)) {
+    case kPseudoIdScrollButtonBlockStart:
+      if (Node* next = parent_element->GetPseudoElement(
+              kPseudoIdScrollButtonInlineStart)) {
         return next;
       }
       [[fallthrough]];
-    case kPseudoIdScrollDownButton:
+    case kPseudoIdScrollButtonInlineStart:
       if (Node* next =
-              parent_element->GetPseudoElement(kPseudoIdScrollLeftButton)) {
+              parent_element->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
         return next;
       }
       [[fallthrough]];
-    case kPseudoIdScrollLeftButton:
-      if (Node* next =
-              parent_element->GetPseudoElement(kPseudoIdScrollRightButton)) {
+    case kPseudoIdScrollButtonBlockEnd:
+      if (Node* next = parent_element->GetPseudoElement(
+              kPseudoIdScrollButtonInlineEnd)) {
         return next;
       }
       [[fallthrough]];
-    case kPseudoIdScrollRightButton:
+    case kPseudoIdScrollButtonInlineEnd:
       if (Node* next = parent_element->GetPseudoElement(kPseudoIdCheckMark)) {
         return next;
       }
@@ -274,30 +274,30 @@ Node* LayoutTreeBuilderTraversal::PreviousSibling(const Node& node) {
       }
       [[fallthrough]];
     case kPseudoIdCheckMark:
-      if (Node* previous =
-              parent_element->GetPseudoElement(kPseudoIdScrollRightButton)) {
+      if (Node* previous = parent_element->GetPseudoElement(
+              kPseudoIdScrollButtonInlineEnd)) {
         return previous;
       }
       [[fallthrough]];
-    case kPseudoIdScrollRightButton:
+    case kPseudoIdScrollButtonInlineEnd:
       if (Node* previous =
-              parent_element->GetPseudoElement(kPseudoIdScrollLeftButton)) {
+              parent_element->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
         return previous;
       }
       [[fallthrough]];
-    case kPseudoIdScrollLeftButton:
-      if (Node* previous =
-              parent_element->GetPseudoElement(kPseudoIdScrollDownButton)) {
+    case kPseudoIdScrollButtonBlockEnd:
+      if (Node* previous = parent_element->GetPseudoElement(
+              kPseudoIdScrollButtonInlineStart)) {
         return previous;
       }
       [[fallthrough]];
-    case kPseudoIdScrollDownButton:
-      if (Node* previous =
-              parent_element->GetPseudoElement(kPseudoIdScrollUpButton)) {
+    case kPseudoIdScrollButtonInlineStart:
+      if (Node* previous = parent_element->GetPseudoElement(
+              kPseudoIdScrollButtonBlockStart)) {
         return previous;
       }
       [[fallthrough]];
-    case kPseudoIdScrollUpButton:
+    case kPseudoIdScrollButtonBlockStart:
       if (Node* previous =
               parent_element->GetPseudoElement(kPseudoIdScrollMarker)) {
         return previous;
@@ -364,18 +364,19 @@ Node* LayoutTreeBuilderTraversal::LastChild(const Node& node) {
     }
   }
   if (Node* last =
-          current_element->GetPseudoElement(kPseudoIdScrollRightButton)) {
+          current_element->GetPseudoElement(kPseudoIdScrollButtonInlineEnd)) {
     return last;
   }
   if (Node* last =
-          current_element->GetPseudoElement(kPseudoIdScrollLeftButton)) {
+          current_element->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
     return last;
   }
   if (Node* last =
-          current_element->GetPseudoElement(kPseudoIdScrollDownButton)) {
+          current_element->GetPseudoElement(kPseudoIdScrollButtonInlineStart)) {
     return last;
   }
-  if (Node* last = current_element->GetPseudoElement(kPseudoIdScrollUpButton)) {
+  if (Node* last =
+          current_element->GetPseudoElement(kPseudoIdScrollButtonBlockStart)) {
     return last;
   }
   if (Node* last = current_element->GetPseudoElement(kPseudoIdScrollMarker)) {
@@ -415,19 +416,19 @@ Node* LayoutTreeBuilderTraversal::FirstChild(const Node& node) {
     return first;
   }
   if (Node* first =
-          current_element->GetPseudoElement(kPseudoIdScrollUpButton)) {
+          current_element->GetPseudoElement(kPseudoIdScrollButtonBlockStart)) {
     return first;
   }
   if (Node* first =
-          current_element->GetPseudoElement(kPseudoIdScrollDownButton)) {
+          current_element->GetPseudoElement(kPseudoIdScrollButtonInlineStart)) {
     return first;
   }
   if (Node* first =
-          current_element->GetPseudoElement(kPseudoIdScrollLeftButton)) {
+          current_element->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
     return first;
   }
   if (Node* first =
-          current_element->GetPseudoElement(kPseudoIdScrollRightButton)) {
+          current_element->GetPseudoElement(kPseudoIdScrollButtonInlineEnd)) {
     return first;
   }
   if (const ColumnPseudoElementsVector* columns =
@@ -513,16 +514,16 @@ static inline bool AreBoxTreeOrderSiblings(const Node& current, Node* sibling) {
     if (sibling_element->IsScrollButtonPseudoElement()) {
       return false;
     }
-    if (sibling_element->GetPseudoElement(kPseudoIdScrollUpButton)) {
+    if (sibling_element->GetPseudoElement(kPseudoIdScrollButtonBlockStart)) {
       return false;
     }
-    if (sibling_element->GetPseudoElement(kPseudoIdScrollLeftButton)) {
+    if (sibling_element->GetPseudoElement(kPseudoIdScrollButtonInlineStart)) {
       return false;
     }
-    if (sibling_element->GetPseudoElement(kPseudoIdScrollRightButton)) {
+    if (sibling_element->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
       return false;
     }
-    if (sibling_element->GetPseudoElement(kPseudoIdScrollDownButton)) {
+    if (sibling_element->GetPseudoElement(kPseudoIdScrollButtonInlineEnd)) {
       return false;
     }
   }
@@ -677,16 +678,20 @@ static Node* PreviousLayoutSiblingInBoxTreeOrder(const Node& node) {
   if (element->IsScrollMarkerGroupAfterPseudoElement()) {
     return element->parentNode();
   }
-  if (Element* pseudo = element->GetPseudoElement(kPseudoIdScrollDownButton)) {
+  if (Element* pseudo =
+          element->GetPseudoElement(kPseudoIdScrollButtonInlineEnd)) {
     return pseudo;
   }
-  if (Element* pseudo = element->GetPseudoElement(kPseudoIdScrollRightButton)) {
+  if (Element* pseudo =
+          element->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
     return pseudo;
   }
-  if (Element* pseudo = element->GetPseudoElement(kPseudoIdScrollLeftButton)) {
+  if (Element* pseudo =
+          element->GetPseudoElement(kPseudoIdScrollButtonInlineStart)) {
     return pseudo;
   }
-  if (Element* pseudo = element->GetPseudoElement(kPseudoIdScrollUpButton)) {
+  if (Element* pseudo =
+          element->GetPseudoElement(kPseudoIdScrollButtonBlockStart)) {
     return pseudo;
   }
   if (element->GetComputedStyle() &&

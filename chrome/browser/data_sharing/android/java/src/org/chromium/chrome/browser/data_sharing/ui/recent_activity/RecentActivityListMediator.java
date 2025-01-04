@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.data_sharing.ui.recent_activity;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.text.TextUtils;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
 
@@ -17,7 +15,6 @@ import org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivit
 import org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivityListCoordinator.FaviconProvider;
 import org.chromium.components.collaboration.messaging.ActivityLogItem;
 import org.chromium.components.collaboration.messaging.ActivityLogQueryParams;
-import org.chromium.components.collaboration.messaging.CollaborationEvent;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.collaboration.messaging.RecentActivityAction;
 import org.chromium.components.collaboration.messaging.TabMessageMetadata;
@@ -28,7 +25,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Core business logic for the recent activity UI. Populates a {@link ModelList} from a list of
@@ -102,10 +98,10 @@ class RecentActivityListMediator {
             // Create a property model for the item.
             PropertyModel propertyModel =
                     new PropertyModel.Builder(RecentActivityListProperties.ALL_KEYS)
-                            .with(RecentActivityListProperties.TITLE_TEXT, getTitleText(logItem))
+                            .with(RecentActivityListProperties.TITLE_TEXT, logItem.titleText)
                             .with(
                                     RecentActivityListProperties.DESCRIPTION_TEXT,
-                                    getDescriptionText(logItem))
+                                    logItem.descriptionText)
                             .build();
             propertyModel.set(
                     RecentActivityListProperties.ON_CLICK_LISTENER,
@@ -125,7 +121,7 @@ class RecentActivityListMediator {
             Callback<ImageView> avatarCallback =
                     avatarView -> {
                         mAvatarProvider.getAvatarBitmap(
-                                getTriggeringUser(logItem), avatarView::setImageDrawable);
+                                getUserToDisplay(logItem), avatarView::setImageDrawable);
                     };
             propertyModel.set(RecentActivityListProperties.AVATAR_PROVIDER, avatarCallback);
 
@@ -168,82 +164,13 @@ class RecentActivityListMediator {
         return getTabMetadata(logItem).lastKnownUrl;
     }
 
-    private @NonNull GroupMember getTriggeringUser(ActivityLogItem logItem) {
+    private @NonNull GroupMember getUserToDisplay(ActivityLogItem logItem) {
         assert logItem.activityMetadata != null : "ActivityMetadata is null";
-        assert logItem.activityMetadata.triggeringUser != null : "Triggering user is null";
-        return logItem.activityMetadata.triggeringUser;
-    }
-
-    private @NonNull String getTitleText(ActivityLogItem logItem) {
-        int stringRes = getTitleStringRes(logItem.collaborationEvent);
-        String userNameText =
-                logItem.userIsSelf
-                        ? mContext.getString(R.string.data_sharing_recent_activity_user_self)
-                        : logItem.userDisplayName;
-        return mContext.getString(stringRes, userNameText);
-    }
-
-    private @NonNull String getDescriptionText(ActivityLogItem logItem) {
-        String timeDeltaText = getRecencyString(mContext.getResources(), logItem.timeDeltaMs);
-        if (TextUtils.isEmpty(logItem.description)) {
-            return timeDeltaText;
+        GroupMember member = logItem.activityMetadata.triggeringUser;
+        if (member == null) {
+            member = logItem.activityMetadata.affectedUser;
         }
-        return mContext.getString(
-                R.string.data_sharing_recent_activity_description_full,
-                logItem.description,
-                timeDeltaText);
-    }
-
-    private static int getTitleStringRes(@CollaborationEvent int collaborationEvent) {
-        switch (collaborationEvent) {
-            case CollaborationEvent.TAB_ADDED:
-                return R.string.data_sharing_recent_activity_tab_added;
-            case CollaborationEvent.TAB_REMOVED:
-                return R.string.data_sharing_recent_activity_tab_removed;
-            case CollaborationEvent.TAB_UPDATED:
-                return R.string.data_sharing_recent_activity_tab_updated;
-            case CollaborationEvent.TAB_GROUP_NAME_UPDATED:
-                return R.string.data_sharing_recent_activity_tab_group_name_updated;
-            case CollaborationEvent.TAB_GROUP_COLOR_UPDATED:
-                return R.string.data_sharing_recent_activity_tab_group_color_updated;
-            case CollaborationEvent.COLLABORATION_MEMBER_ADDED:
-                return R.string.data_sharing_recent_activity_user_joined_group;
-            case CollaborationEvent.COLLABORATION_MEMBER_REMOVED:
-                return R.string.data_sharing_recent_activity_user_left_group;
-            case CollaborationEvent.TAB_GROUP_ADDED:
-            case CollaborationEvent.COLLABORATION_ADDED:
-            case CollaborationEvent.COLLABORATION_REMOVED:
-            case CollaborationEvent.UNDEFINED:
-                assert false : "No string res for collaboration event " + collaborationEvent;
-                return 0;
-        }
-        return 0;
-    }
-
-    /**
-     * Computes the string representation of how recent an event was, given the time delta.
-     * TODO(crbug.com/380962101): Can we share a common util method with TabResumptionModuleUtils?
-     *
-     * @param res Resources for string resource retrieval.
-     * @param timeDeltaMs Time delta in milliseconds.
-     */
-    private static String getRecencyString(Resources res, long timeDeltaMs) {
-        if (timeDeltaMs < 0L) timeDeltaMs = 0L;
-
-        long daysElapsed = TimeUnit.MILLISECONDS.toDays(timeDeltaMs);
-        if (daysElapsed > 0L) {
-            return res.getQuantityString(R.plurals.n_days_ago, (int) daysElapsed, daysElapsed);
-        }
-
-        long hoursElapsed = TimeUnit.MILLISECONDS.toHours(timeDeltaMs);
-        if (hoursElapsed > 0L) {
-            return res.getQuantityString(
-                    R.plurals.n_hours_ago_narrow, (int) hoursElapsed, hoursElapsed);
-        }
-
-        // Bound recency to 1 min.
-        long minutesElapsed = Math.max(1L, TimeUnit.MILLISECONDS.toMinutes(timeDeltaMs));
-        return res.getQuantityString(
-                R.plurals.n_minutes_ago_narrow, (int) minutesElapsed, minutesElapsed);
+        assert member != null : "The user is null";
+        return member;
     }
 }

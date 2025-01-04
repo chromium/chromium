@@ -204,6 +204,8 @@ component("gpu") {
   if (is_win) {
     sources += [
       "windows/av1_guids.h",
+      "windows/av1_video_rate_control_wrapper.cc",
+      "windows/av1_video_rate_control_wrapper.h",
       "windows/d3d11_av1_accelerator.cc",
       "windows/d3d11_av1_accelerator.h",
       "windows/d3d11_copying_texture_wrapper.cc",
@@ -262,12 +264,19 @@ component("gpu") {
       "windows/media_foundation_video_encode_accelerator_win.h",
       "windows/mf_audio_encoder.cc",
       "windows/mf_audio_encoder.h",
+      "windows/mf_video_encoder_shared_state.cc",
+      "windows/mf_video_encoder_shared_state.h",
+      "windows/mf_video_encoder_switches.cc",
+      "windows/mf_video_encoder_switches.h",
+      "windows/mf_video_encoder_util.cc",
+      "windows/mf_video_encoder_util.h",
       "windows/mf_video_processor_accelerator.cc",
       "windows/mf_video_processor_accelerator.h",
       "windows/scoped_d3d_buffers.cc",
       "windows/scoped_d3d_buffers.h",
       "windows/supported_profile_helpers.cc",
       "windows/supported_profile_helpers.h",
+      "windows/video_rate_control_wrapper.cc",
       "windows/video_rate_control_wrapper.h",
       "windows/vp9_video_rate_control_wrapper.cc",
       "windows/vp9_video_rate_control_wrapper.h",
@@ -278,17 +287,11 @@ component("gpu") {
         "windows/d3d11_h265_accelerator.h",
       ]
     }
-    if (enable_libaom) {
-      sources += [
-        "windows/av1_video_rate_control_wrapper.cc",
-        "windows/av1_video_rate_control_wrapper.h",
-      ]
-      deps += [ "//third_party/libaom:libaomrc" ]
-    }
     deps += [
       "//gpu/ipc/common:common",
       "//media/base/win:color_space_util_win",
       "//third_party/angle:includes",
+      "//third_party/libaom:libaomrc",
       "//third_party/libvpx:libvpxrc",
       "//ui/display",
     ]

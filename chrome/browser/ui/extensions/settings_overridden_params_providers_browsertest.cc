@@ -79,8 +79,9 @@ class SettingsOverriddenParamsProvidersBrowserTest
     ASSERT_NE(template_urls.end(), iter);
     // iter != template_urls.end());
     template_url_service->SetUserSelectedDefaultSearchProvider(*iter);
-    if (new_turl_out)
+    if (new_turl_out) {
       *new_turl_out = *iter;
+    }
   }
 
   TemplateURLService* GetTemplateURLService() {

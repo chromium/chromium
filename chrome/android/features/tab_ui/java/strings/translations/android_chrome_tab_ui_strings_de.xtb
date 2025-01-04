@@ -77,7 +77,6 @@ Wenn du die Tabgruppe „<ph name="TITLE_OF_GROUP" />“ löschst, verlieren all
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> Tab geändert, <ph name="ANY_CLOSED" /> Tabs geschlossen}other{<ph name="MANY_CHANGED" /> Tabs geändert, <ph name="ANY_CLOSED" /> Tabs geschlossen}}</translation>
 <translation id="4371591986692297148">Inaktiv</translation>
 <translation id="4460014764210899310">Gruppierung aufheben</translation>
-<translation id="4590027107044272416">Du kannst jetzt hier einen neuen Tab öffnen</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{1 inaktiven Tab schließen?}other{<ph name="TAB_COUNT_MANY" /> inaktive Tabs schließen?}}</translation>
 <translation id="4686942373615810936">Gerade eben erstellt</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Nach 1 Tag schließen}other{Nach <ph name="DAY_COUNT_MANY" /> Tagen schließen}}</translation>
@@ -98,7 +97,9 @@ Wenn du die Tabgruppe „<ph name="TITLE_OF_GROUP" />“ löschst, verlieren all
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> Tab hinzugefügt}other{<ph name="MANY_ADDED" /> Tabs hinzugefügt}}</translation>
 <translation id="5161254044473106830">Titel erforderlich</translation>
 <translation id="5339733443032484186">Dein letzter Tab</translation>
+<translation id="5380159289133845234">Tab-Duplikate archivieren</translation>
 <translation id="5400836586163650660">Grau</translation>
+<translation id="5446043142172831860">Tab entfernen und Gruppe verlassen</translation>
 <translation id="5490235265819901748">Tabgruppe maximiert</translation>
 <translation id="5494920125229734069">Alle auswählen</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Tabgruppe mit <ph name="TABS_COUNT_ONE" /> Tab schließen, Farbe: <ph name="COLOR_NAME" />.}other{Tabgruppe mit <ph name="TABS_COUNT_MANY" /> Tabs schließen, Farbe: <ph name="COLOR_NAME" />.}}</translation>
@@ -117,6 +118,7 @@ Wenn du die Tabgruppe „<ph name="TITLE_OF_GROUP" />“ verlässt, verlierst du
 <translation id="6051432659151380973">Deine Tabgruppen werden automatisch gespeichert</translation>
 <translation id="6054741997831917303">Der Preis dieses Artikels ist kürzlich von <ph name="PREVIOUS_PRICE" /> auf <ph name="NEW_PRICE" /> gefallen</translation>
 <translation id="6082313992897617440">Du verlierst dann sofort den Zugriff auf die Tabgruppe „<ph name="GROUP_NAME" />“</translation>
+<translation id="6109251075362363230">Alle doppelten Tabs werden jetzt ebenfalls archiviert, mit Ausnahme der zuletzt verwendeten Kopie.</translation>
 <translation id="6193448654517602979">Tabs auswählen</translation>
 <translation id="6228793724645064692">(Händlerbewertung)</translation>
 <translation id="6271513594716432922">Alle inaktiven Tabs schließen</translation>

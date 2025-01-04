@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 static_library("history_embeddings") {
   sources = [
     "answerer.cc",
@@ -53,10 +51,6 @@ static_library("history_embeddings") {
     "//third_party/zlib/google:compression_utils",
     "//url",
   ]
-
-  if (is_chromeos) {
-    deps += [ "//chromeos/constants:constants" ]
-  }
 }
 
 source_set("test_support") {
@@ -105,10 +99,6 @@ source_set("unit_tests") {
 
   if (is_ios) {
     deps += [ "//components/test:history_embeddings_test_bundle_data" ]
-  }
-
-  if (is_chromeos) {
-    deps += [ "//chromeos/constants:constants" ]
   }
 
   data = [ "//components/test/data/history_embeddings/" ]

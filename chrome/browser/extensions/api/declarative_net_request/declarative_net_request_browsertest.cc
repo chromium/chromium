@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <optional>
 #include <set>
@@ -112,6 +108,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/warning_service.h"
 #include "extensions/browser/warning_set.h"
@@ -1917,8 +1914,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 
     // Verify that the install time of this extension is greater than the last
     // extension.
-    base::Time install_time = ExtensionPrefs::Get(profile())->GetLastUpdateTime(
-        last_loaded_extension_id());
+    base::Time install_time = GetLastUpdateTime(ExtensionPrefs::Get(profile()),
+                                                last_loaded_extension_id());
     EXPECT_GT(install_time, last_extension_install_time);
     last_extension_install_time = install_time;
   }
@@ -3842,14 +3839,15 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, TabIdFiltering) {
       base::StringPrintf(kFetchTemplate, fetch_url.spec().c_str());
 
   GURL new_url = embedded_test_server()->GetURL(kHost, kUrlPath);
-  struct {
+  struct Cases {
     int expected_tab_id;
     std::string expected_host;
-  } cases[] = {
+  };
+  auto cases = std::to_array<Cases>({
       {first_tab_id, "rule1.com"},
       {second_tab_id, kHost},
       {third_tab_id, "rule3.com"},
-  };
+  });
 
   for (size_t i = 0; i < std::size(cases); i++) {
     SCOPED_TRACE(base::StringPrintf("Testing case %zu", i));

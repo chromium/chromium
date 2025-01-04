@@ -40,8 +40,10 @@ namespace {
 // this must be stateless.
 // Example Usage: `CONSTEXPR_LAMBDA((int i, int j) { return i + j; }) lambda;`
 // TODO(crbug.com/40533712): Remove once we have constexpr lambdas for real.
-#define CONSTEXPR_LAMBDA(fun) \
-  constexpr struct { constexpr bool operator() fun }
+#define CONSTEXPR_LAMBDA(fun)     \
+  constexpr struct {              \
+    constexpr bool operator() fun \
+  }
 
 struct Int {
   constexpr Int() = default;
@@ -522,8 +524,9 @@ TEST(RangesTest, Move) {
   EXPECT_TRUE(std::all_of(output, output + 3, equals_six));
   EXPECT_TRUE(std::all_of(output + 3, output + 5, equals_zero));
 
-  for (auto& in : input)
+  for (auto& in : input) {
     in = 6;
+  }
 
   EXPECT_EQ(output + 5, ranges::move(input, output));
   EXPECT_TRUE(ranges::all_of(input, equals_zero));
@@ -542,8 +545,9 @@ TEST(RangesTest, MoveBackward) {
   EXPECT_TRUE(std::all_of(output, output + 2, equals_zero));
   EXPECT_TRUE(std::all_of(output + 2, output + 5, equals_six));
 
-  for (auto& in : input)
+  for (auto& in : input) {
     in = 6;
+  }
 
   EXPECT_EQ(output, ranges::move_backward(input, output + 5));
   EXPECT_TRUE(ranges::all_of(input, equals_zero));

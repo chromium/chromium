@@ -34,10 +34,9 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
@@ -53,6 +52,8 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Unit test for {@link ChromeDragAndDropBrowserDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@Features.EnableFeatures(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)
+@Features.DisableFeatures(ChromeFeatureList.ANIMATED_IMAGE_DRAG_SHADOW)
 public class ChromeDragAndDropBrowserDelegateUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -63,18 +64,12 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
 
     private Context mApplicationContext;
     private ChromeDragAndDropBrowserDelegate mDelegate;
-    private FeatureList.TestValues mTestValues;
 
     @Before
     public void setup() throws NameNotFoundException {
-        mTestValues = new TestValues();
-        mTestValues.addFeatureFlagOverride(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU, true);
-        mTestValues.addFeatureFlagOverride(ChromeFeatureList.ANIMATED_IMAGE_DRAG_SHADOW, false);
-        FeatureList.setTestValues(mTestValues);
-
         mApplicationContext = ContextUtils.getApplicationContext();
         ContextUtils.initApplicationContextForTests(mApplicationContext);
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
 
         when(mActivity.requestDragAndDropPermissions(mDragEvent))
                 .thenReturn(mDragAndDropPermissions);
@@ -90,11 +85,12 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
     }
 
     @Test
+    @Features.EnableFeatures(
+            ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU
+                    + ":"
+                    + ChromeDragAndDropBrowserDelegate.PARAM_DROP_IN_CHROME
+                    + "/true")
     public void testDragAndDropBrowserDelegate_getDragAndDropPermissions() {
-        mTestValues.addFieldTrialParamOverride(
-                ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU,
-                ChromeDragAndDropBrowserDelegate.PARAM_DROP_IN_CHROME,
-                "true");
         mDelegate = new ChromeDragAndDropBrowserDelegate(() -> mActivity);
         assertTrue("SupportDropInChrome should be true.", mDelegate.getSupportDropInChrome());
         assertFalse(
@@ -106,11 +102,12 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
     }
 
     @Test
+    @Features.EnableFeatures(
+            ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU
+                    + ":"
+                    + ChromeDragAndDropBrowserDelegate.PARAM_DROP_IN_CHROME
+                    + "/false")
     public void testDragAndDropBrowserDelegate_NotSupportDropInChrome() {
-        mTestValues.addFieldTrialParamOverride(
-                ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU,
-                ChromeDragAndDropBrowserDelegate.PARAM_DROP_IN_CHROME,
-                "false");
         mDelegate = new ChromeDragAndDropBrowserDelegate(() -> mActivity);
         assertFalse("SupportDropInChrome should be false.", mDelegate.getSupportDropInChrome());
 

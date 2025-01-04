@@ -28,14 +28,16 @@ void SetToggleState(bool toggled, id item) {
     NSControlStateValue old_state = [menuItem state];
     NSControlStateValue new_state =
         toggled ? NSControlStateValueOn : NSControlStateValueOff;
-    if (old_state != new_state)
+    if (old_state != new_state) {
       [menuItem setState:new_state];
+    }
   } else if (buttonItem) {
     NSControlStateValue old_state = [buttonItem state];
     NSControlStateValue new_state =
         toggled ? NSControlStateValueOn : NSControlStateValueOff;
-    if (old_state != new_state)
+    if (old_state != new_state) {
       [buttonItem setState:new_state];
+    }
   }
 }
 
@@ -49,8 +51,9 @@ remote_cocoa::NativeWidgetNSWindowBridge* FindBridgeForSender(
     id sender,
     NSWindow* window) {
   NSWindow* targetWindow = window;
-  if ([sender respondsToSelector:@selector(window)])
+  if ([sender respondsToSelector:@selector(window)]) {
     targetWindow = [sender window];
+  }
   auto* bridge = remote_cocoa::NativeWidgetNSWindowBridge::GetFromNativeWindow(
       targetWindow);
   DCHECK(bridge);
@@ -76,21 +79,26 @@ remote_cocoa::NativeWidgetNSWindowBridge* FindBridgeForSender(
   DCHECK(bridge);
 
   remote_cocoa::mojom::ValidateUserInterfaceItemResultPtr result;
-  if (!bridge->host()->ValidateUserInterfaceItem([item tag], &result))
+  if (!bridge->host()->ValidateUserInterfaceItem([item tag], &result)) {
     return NO;
+  }
 
-  if (result->set_toggle_state)
+  if (result->set_toggle_state) {
     SetToggleState(result->new_toggle_state, item);
+  }
 
   if (NSMenuItem* menuItem = base::apple::ObjCCast<NSMenuItem>(item)) {
-    if (result->disable_if_has_no_key_equivalent)
+    if (result->disable_if_has_no_key_equivalent) {
       result->enable &= !![[menuItem keyEquivalent] length];
+    }
 
-    if (result->set_hidden_state)
+    if (result->set_hidden_state) {
       [menuItem setHidden:result->new_hidden_state];
+    }
 
-    if (result->new_title)
+    if (result->new_title) {
       [menuItem setTitle:base::SysUTF16ToNSString(*result->new_title)];
+    }
   }
 
   return result->enable;

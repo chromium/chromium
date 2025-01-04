@@ -158,8 +158,9 @@ MessageBoxView::MessageBoxView(const std::u16string& message,
 
   // Don't enable text selection if multiple labels are used, since text
   // selection can't span multiple labels.
-  if (message_labels_.size() == 1u)
+  if (message_labels_.size() == 1u) {
     message_labels_[0]->SetSelectable(true);
+  }
 
   ResetLayoutManager();
 }
@@ -186,8 +187,9 @@ bool MessageBoxView::IsCheckBoxSelected() {
 
 void MessageBoxView::SetCheckBoxLabel(const std::u16string& label) {
   DCHECK(checkbox_);
-  if (checkbox_->GetVisible() && checkbox_->GetText() == label)
+  if (checkbox_->GetVisible() && checkbox_->GetText() == label) {
     return;
+  }
 
   checkbox_->SetText(label);
   checkbox_->SetVisible(true);
@@ -196,8 +198,9 @@ void MessageBoxView::SetCheckBoxLabel(const std::u16string& label) {
 
 void MessageBoxView::SetCheckBoxSelected(bool selected) {
   // Only update the checkbox's state after the checkbox is shown.
-  if (!checkbox_->GetVisible())
+  if (!checkbox_->GetVisible()) {
     return;
+  }
   checkbox_->SetChecked(selected);
 }
 
@@ -208,24 +211,27 @@ void MessageBoxView::SetLink(const std::u16string& text,
   DCHECK(link_);
 
   link_->SetCallback(std::move(callback));
-  if (link_->GetVisible() && link_->GetText() == text)
+  if (link_->GetVisible() && link_->GetText() == text) {
     return;
+  }
   link_->SetText(text);
   link_->SetVisible(true);
   ResetLayoutManager();
 }
 
 void MessageBoxView::SetInterRowVerticalSpacing(int spacing) {
-  if (inter_row_vertical_spacing_ == spacing)
+  if (inter_row_vertical_spacing_ == spacing) {
     return;
+  }
 
   inter_row_vertical_spacing_ = spacing;
   ResetLayoutManager();
 }
 
 void MessageBoxView::SetMessageWidth(int width) {
-  if (message_width_ == width)
+  if (message_width_ == width) {
     return;
+  }
 
   message_width_ = width;
   ResetLayoutManager();
@@ -233,8 +239,10 @@ void MessageBoxView::SetMessageWidth(int width) {
 
 void MessageBoxView::SetPromptField(const std::u16string& default_prompt) {
   DCHECK(prompt_field_);
-  if (prompt_field_->GetVisible() && prompt_field_->GetText() == default_prompt)
+  if (prompt_field_->GetVisible() &&
+      prompt_field_->GetText() == default_prompt) {
     return;
+  }
   prompt_field_->SetText(default_prompt);
   prompt_field_->SetVisible(true);
   prompt_field_->GetViewAccessibility().SetIsIgnored(false);
@@ -257,8 +265,9 @@ gfx::Size MessageBoxView::CalculatePreferredSize(
 void MessageBoxView::ViewHierarchyChanged(
     const ViewHierarchyChangedDetails& details) {
   if (details.child == this && details.is_add) {
-    if (prompt_field_ && prompt_field_->GetVisible())
+    if (prompt_field_ && prompt_field_->GetVisible()) {
       prompt_field_->SelectAll(true);
+    }
   }
 }
 
@@ -267,13 +276,15 @@ bool MessageBoxView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   DCHECK(accelerator.key_code() == 'C' && accelerator.IsCtrlDown());
 
   // We must not intercept Ctrl-C when we have a text box and it's focused.
-  if (prompt_field_ && prompt_field_->HasFocus())
+  if (prompt_field_ && prompt_field_->HasFocus()) {
     return false;
+  }
 
   // Don't intercept Ctrl-C if we only use a single message label supporting
   // text selection.
-  if (message_labels_.size() == 1u && message_labels_[0]->GetSelectable())
+  if (message_labels_.size() == 1u && message_labels_[0]->GetSelectable()) {
     return false;
+  }
 
   ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
   scw.WriteText(std::accumulate(message_labels_.cbegin(),
@@ -293,20 +304,23 @@ void MessageBoxView::ResetLayoutManager() {
 
   views::DialogContentType trailing_content_type =
       views::DialogContentType::kText;
-  if (prompt_field_->GetVisible())
+  if (prompt_field_->GetVisible()) {
     trailing_content_type = views::DialogContentType::kControl;
+  }
 
   bool checkbox_is_visible = checkbox_->GetVisible();
-  if (checkbox_is_visible)
+  if (checkbox_is_visible) {
     trailing_content_type = views::DialogContentType::kText;
+  }
 
   // Ignored views are not in the accessibility tree, but their children
   // still can be exposed. Leaf views have no accessible children.
   checkbox_->GetViewAccessibility().SetIsIgnored(!checkbox_is_visible);
   checkbox_->GetViewAccessibility().SetIsLeaf(!checkbox_is_visible);
 
-  if (link_->GetVisible())
+  if (link_->GetVisible()) {
     trailing_content_type = views::DialogContentType::kText;
+  }
 
   const LayoutProvider* provider = LayoutProvider::Get();
   gfx::Insets border_insets = provider->GetDialogInsetsForContentType(

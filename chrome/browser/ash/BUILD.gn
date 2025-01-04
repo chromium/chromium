@@ -325,6 +325,7 @@ group("browser_tests") {
     "//chrome/browser/ash/policy/reporting/metrics_reporting/usb:browser_tests",
     "//chrome/browser/ash/policy/reporting/os_updates:browser_tests",
     "//chrome/browser/ash/policy/reporting/user_added_removed:browser_tests",
+    "//chrome/browser/ash/policy/reporting/user_session_activity:browser_tests",
     "//chrome/browser/ash/policy/skyvault:browser_tests",
     "//chrome/browser/ash/policy/status_collector:browser_tests",
     "//chrome/browser/ash/preferences:browser_tests",
@@ -366,7 +367,6 @@ if (is_chromeos_device) {
     testonly = true
 
     deps = [
-      "//chrome/browser/ash/accessibility/live_caption:interactive_ui_tests",
       "//chrome/browser/ash/app_list:interactive_ui_tests",
       "//chrome/browser/ash/child_accounts:interactive_ui_tests",
       "//chrome/browser/ash/file_manager:interactive_ui_tests",

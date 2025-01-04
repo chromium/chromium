@@ -23,6 +23,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -104,17 +105,14 @@ void AllocateAndRegisterSharedBitmapMemory(
     scoped_refptr<RasterContextProvider> context_provider,
     const gfx::Size& size,
     scoped_refptr<gpu::ClientSharedImage>& shared_image,
-    base::WritableSharedMemoryMapping& mapping,
     gpu::SyncToken& sync_token) {
   DCHECK(context_provider);
   gpu::SharedImageInterface* shared_image_interface =
       context_provider->SharedImageInterface();
-  auto shared_image_mapping = shared_image_interface->CreateSharedImage(
+  shared_image = shared_image_interface->CreateSharedImageForSoftwareCompositor(
       {SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
        gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "PixelTestSharedBitmap"});
 
-  shared_image = std::move(shared_image_mapping.shared_image);
-  mapping = std::move(shared_image_mapping.mapping);
   sync_token = shared_image_interface->GenVerifiedSyncToken();
   CHECK(shared_image);
 }
@@ -313,10 +311,10 @@ void CreateTestTwoColoredTextureDrawQuad(
                           gfx::ColorSpace(), MakePixelSpan(pixels), origin);
   } else {
     scoped_refptr<gpu::ClientSharedImage> shared_image;
-    base::WritableSharedMemoryMapping mapping;
     gpu::SyncToken sync_token;
     AllocateAndRegisterSharedBitmapMemory(child_context_provider, rect.size(),
-                                          shared_image, mapping, sync_token);
+                                          shared_image, sync_token);
+    auto mapping = shared_image->Map();
 
     auto transferable_resource = TransferableResource::MakeSoftwareSharedImage(
         shared_image, sync_token, rect.size(), SinglePlaneFormat::kBGRA_8888,
@@ -328,7 +326,10 @@ void CreateTestTwoColoredTextureDrawQuad(
     resource = child_resource_provider->ImportResource(
         std::move(transferable_resource), std::move(release_callback));
 
-    auto span = mapping.GetMemoryAsSpan<uint32_t>(pixels.size());
+    uint32_t* ptr =
+        reinterpret_cast<uint32_t*>(mapping->GetMemoryForPlane(0).data());
+    base::span<uint32_t> span = UNSAFE_BUFFERS(base::span(ptr, pixels.size()));
+
     base::ranges::copy(pixels, span.begin());
   }
 
@@ -380,10 +381,10 @@ void CreateTestTextureDrawQuad(
                           gfx::ColorSpace(), MakePixelSpan(pixels));
   } else {
     scoped_refptr<gpu::ClientSharedImage> shared_image;
-    base::WritableSharedMemoryMapping mapping;
     gpu::SyncToken sync_token;
     AllocateAndRegisterSharedBitmapMemory(child_context_provider, rect.size(),
-                                          shared_image, mapping, sync_token);
+                                          shared_image, sync_token);
+    auto mapping = shared_image->Map();
 
     auto transferable_resource = TransferableResource::MakeSoftwareSharedImage(
         shared_image, sync_token, rect.size(), SinglePlaneFormat::kBGRA_8888,
@@ -394,7 +395,10 @@ void CreateTestTextureDrawQuad(
     resource = child_resource_provider->ImportResource(
         std::move(transferable_resource), std::move(release_callback));
 
-    auto span = mapping.GetMemoryAsSpan<uint32_t>(pixels.size());
+    uint32_t* ptr =
+        reinterpret_cast<uint32_t*>(mapping->GetMemoryForPlane(0).data());
+    base::span<uint32_t> span = UNSAFE_BUFFERS(base::span(ptr, pixels.size()));
+
     base::ranges::copy(pixels, span.begin());
   }
 
@@ -4243,12 +4247,6 @@ TEST_P(GPURendererPixelTest, BlendingWithoutAntiAliasing) {
 }
 
 TEST_P(GPURendererPixelTest, TrilinearFiltering) {
-  // TODO(crbug.com/40266937): Enable test for Graphite once mipmap issue is
-  // fixed.
-  if (is_skia_graphite()) {
-    GTEST_SKIP();
-  }
-
   gfx::Rect viewport_rect(this->device_viewport_size_);
 
   AggregatedRenderPassId root_pass_id{1};
@@ -4297,13 +4295,13 @@ TEST_P(GPURendererPixelTest, TrilinearFiltering) {
   pass_list.push_back(std::move(child_pass));
   pass_list.push_back(std::move(root_pass));
 
-  // Skia is configured to bias the mipmap LOD by -0.5. However, the GLES 2
-  // implementation that this test runs against doesn't support the bias. So GL
-  // renderer and SkiaGL differ from SkiaVk.
-  if (renderer_type() == RendererType::kSkiaVk) {
+  if (is_skia_graphite()) {
+    // Rendering with Graphite results in a imperceptible, one-unit difference
+    // from the result when rendering with Skia's previous GPU backend.
     EXPECT_TRUE(this->RunPixelTest(
         &pass_list,
-        base::FilePath(FILE_PATH_LITERAL("trilinear_filtering_skia_vk.png")),
+        base::FilePath(
+            FILE_PATH_LITERAL("trilinear_filtering_skia_graphite.png")),
         cc::AlphaDiscardingExactPixelComparator()));
   } else {
     base::FilePath baseline =

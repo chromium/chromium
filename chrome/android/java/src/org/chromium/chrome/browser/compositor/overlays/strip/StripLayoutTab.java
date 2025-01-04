@@ -131,7 +131,7 @@ public class StripLayoutTab extends StripLayoutView {
     private static final int CLOSE_BUTTON_WIDTH_DP = 48;
 
     // Strip Tab Offset Constants
-    private static final float TOP_MARGIN_DP = 2.f;
+    protected static final float TOP_MARGIN_DP = 2.f;
     private static final float FOLIO_CONTENT_OFFSET_Y = 8.f;
     protected static final float FOLIO_FOOT_LENGTH_DP = 16.f;
 
@@ -157,12 +157,12 @@ public class StripLayoutTab extends StripLayoutView {
 
     private boolean mIsDying;
     private boolean mIsClosed;
-    private boolean mIsReordering;
     private boolean mIsDraggedOffStrip;
     private boolean mCanShowCloseButton = true;
     private boolean mFolioAttached = true;
     private boolean mStartDividerVisible;
     private boolean mEndDividerVisible;
+    private boolean mForceHideEndDivider;
     private float mBottomMargin;
     private float mContainerOpacity;
 
@@ -341,15 +341,6 @@ public class StripLayoutTab extends StripLayoutView {
     }
 
     /**
-     * Marks if we are currently reordering this tab.
-     *
-     * @param isReordering Whether the tab is reordering.
-     */
-    public void setIsReordering(boolean isReordering) {
-        mIsReordering = isReordering;
-    }
-
-    /**
      * Marks if the tab has been dragged off the strip for drag and drop.
      *
      * @param isDraggedOffStrip Whether the tab is dragged off the strip.
@@ -433,7 +424,7 @@ public class StripLayoutTab extends StripLayoutView {
         // TODO(crbug.com/40888366): Avoid calculating every time. Instead, store the tab's
         //  color and only re-determine when the color could have changed (i.e. on selection).
         return TabUiThemeUtil.getTabStripContainerColor(
-                mContext, isIncognito(), foreground, mIsReordering, mIsPlaceholder, hovered);
+                mContext, isIncognito(), foreground, mIsPlaceholder, hovered);
     }
 
     /**
@@ -484,6 +475,16 @@ public class StripLayoutTab extends StripLayoutView {
      */
     public boolean isEndDividerVisible() {
         return mEndDividerVisible;
+    }
+
+    /** Sets if the end divider will be forced hidden for group reorder. */
+    void setForceHideEndDivider(boolean forceHide) {
+        mForceHideEndDivider = forceHide;
+    }
+
+    /** Returns {@code true} if the end divider will be forced hidden for group reorder. */
+    boolean shouldForceHideEndDivider() {
+        return mForceHideEndDivider;
     }
 
     @Override

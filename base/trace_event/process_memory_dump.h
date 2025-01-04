@@ -41,7 +41,6 @@ class UnguessableToken;
 
 namespace trace_event {
 
-class TraceEventMemoryOverhead;
 class TracedValue;
 
 // ProcessMemoryDump is as a strongly typed container which holds the dumps
@@ -164,14 +163,6 @@ class BASE_EXPORT ProcessMemoryDump {
   // Only for mojo serialization.
   std::vector<MemoryAllocatorDumpEdge> GetAllEdgesForSerialization() const;
   void SetAllEdgesForSerialization(const std::vector<MemoryAllocatorDumpEdge>&);
-
-  // Dumps heap usage with |allocator_name|.
-  void DumpHeapUsage(
-      const std::unordered_map<base::trace_event::AllocationContext,
-                               base::trace_event::AllocationMetrics>&
-          metrics_by_context,
-      base::trace_event::TraceEventMemoryOverhead& overhead,
-      const char* allocator_name);
 
   // Adds an ownership relationship between two MemoryAllocatorDump(s) with the
   // semantics: |source| owns |target|, and has the effect of attributing

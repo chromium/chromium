@@ -121,17 +121,22 @@ const int kTenFrames = 10;
 bool g_limit_max_frames_to_ten_for_testing = false;
 
 // static
-void SetSafeAreaEnvVariables(LocalFrame* frame, const gfx::Insets& safe_area) {
+void SetSafeAreaEnvVariables(LocalFrame* frame,
+                             const gfx::InsetsF& safe_area_in_physical_px) {
+  gfx::InsetsF safe_area =
+      ScaleInsets(safe_area_in_physical_px, 1.0f / frame->LayoutZoomFactor());
+
   DocumentStyleEnvironmentVariables& vars =
       frame->GetDocument()->GetStyleEngine().EnsureEnvironmentVariables();
   vars.SetVariable(UADefinedVariable::kSafeAreaInsetTop,
-                   StyleEnvironmentVariables::FormatPx(safe_area.top()));
+                   StyleEnvironmentVariables::FormatFloatPx(safe_area.top()));
   vars.SetVariable(UADefinedVariable::kSafeAreaInsetLeft,
-                   StyleEnvironmentVariables::FormatPx(safe_area.left()));
-  vars.SetVariable(UADefinedVariable::kSafeAreaInsetBottom,
-                   StyleEnvironmentVariables::FormatPx(safe_area.bottom()));
+                   StyleEnvironmentVariables::FormatFloatPx(safe_area.left()));
+  vars.SetVariable(
+      UADefinedVariable::kSafeAreaInsetBottom,
+      StyleEnvironmentVariables::FormatFloatPx(safe_area.bottom()));
   vars.SetVariable(UADefinedVariable::kSafeAreaInsetRight,
-                   StyleEnvironmentVariables::FormatPx(safe_area.right()));
+                   StyleEnvironmentVariables::FormatFloatPx(safe_area.right()));
 }
 
 }  // namespace
@@ -959,31 +964,21 @@ void Page::UpdateSafeAreaInsetWithBrowserControls(
 
   if (new_scaled_safe_area != applied_safe_area_insets_ || force_update) {
     applied_safe_area_insets_ = new_scaled_safe_area;
-
-    // TODO: Need to account for the browser zoom factor here. Convert the
-    // safe area to CSS pixels instead of DIPs for SetSafeAreaEnvVariables().
-    float dip_scale = chrome_client_->GetScreenInfo(*DeprecatedLocalMainFrame())
-                          .device_scale_factor;
-    gfx::Insets new_safe_area =
-        ToRoundedInsets(ScaleInsets(new_scaled_safe_area, 1.0f / dip_scale));
-    SetSafeAreaEnvVariables(DeprecatedLocalMainFrame(), new_safe_area);
+    SetSafeAreaEnvVariables(DeprecatedLocalMainFrame(), new_scaled_safe_area);
   }
 }
 
 void Page::SetMaxSafeAreaInsets(LocalFrame* setter, gfx::Insets max_safe_area) {
   // Update |scaled_max_safe_area_insets_| first.
-  if (setter->IsMainFrame()) {
-    float dip_scale =
-        chrome_client_->GetScreenInfo(*setter).device_scale_factor;
-    gfx::InsetsF scaled_max_safe_area_insets =
-        ScaleInsets(gfx::InsetsF(max_safe_area), dip_scale);
+  float dsf = chrome_client_->GetScreenInfo(*setter).device_scale_factor;
+  gfx::InsetsF scaled_max_safe_area_insets =
+      ScaleInsets(gfx::InsetsF(max_safe_area), dsf);
 
-    if (scaled_max_safe_area_insets_ != scaled_max_safe_area_insets) {
-      scaled_max_safe_area_insets_ = scaled_max_safe_area_insets;
+  if (scaled_max_safe_area_insets_ != scaled_max_safe_area_insets) {
+    scaled_max_safe_area_insets_ = scaled_max_safe_area_insets;
 
-      // Update Chrome client CC for MaxSafeAreaInsets change.
-      GetChromeClient().DidUpdateMaxSafeAreaInsets(scaled_max_safe_area_insets);
-    }
+    // Update Chrome client CC for MaxSafeAreaInsets change.
+    GetChromeClient().DidUpdateMaxSafeAreaInsets(scaled_max_safe_area_insets);
   }
 
   // When the SAI is changed when DynamicSafeAreaInsetsEnabled, the SAI for the
@@ -994,7 +989,8 @@ void Page::SetMaxSafeAreaInsets(LocalFrame* setter, gfx::Insets max_safe_area) {
     // UpdateSafeAreaInsetWithBrowserControls() is called.
     UpdateSafeAreaInsetWithBrowserControls(GetBrowserControls(), true);
   } else {
-    SetSafeAreaEnvVariables(setter, max_safe_area);
+    applied_safe_area_insets_ = scaled_max_safe_area_insets_;
+    SetSafeAreaEnvVariables(setter, scaled_max_safe_area_insets_);
   }
 }
 

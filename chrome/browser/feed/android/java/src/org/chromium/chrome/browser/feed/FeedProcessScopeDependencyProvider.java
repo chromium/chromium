@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.BundleUtils;
@@ -20,7 +21,7 @@ import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
 // ProcessScopeDependencyProviderImpl
 @JNINamespace("feed::android")
 public class FeedProcessScopeDependencyProvider implements ProcessScopeDependencyProvider {
-    private static final String FEED_SPLIT_NAME = "feedv2";
+    private static final String FEED_SPLIT_NAME = "google3";
 
     private ImageFetchClient mImageFetchClient;
 
@@ -52,6 +53,7 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
     public interface Natives {
         int[] getExperimentIds();
 
+        @JniType("std::string")
         String getSessionId();
 
         void processViewAction(byte[] actionData, byte[] loggingParameters);

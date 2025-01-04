@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
-import org.chromium.components.payments.InputProtector;
+import org.chromium.components.payments.ui.InputProtector;
 import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.WebContents;
 

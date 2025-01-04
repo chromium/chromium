@@ -7,15 +7,15 @@
 #include "base/base64.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/autofill_form_test_utils.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/metrics/placeholder_metrics.h"
 #include "components/autofill/core/browser/metrics/prediction_quality_metrics.h"
 #include "components/autofill/core/browser/metrics/ukm_metrics_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -159,6 +159,54 @@ TEST_F(QualityMetricsTest, QualityMetrics) {
             histogram_tester.GetAllSamples(
                 "Autofill.FieldPredictionQuality.ByFieldType.Overall"));
 }
+
+struct AlternativeNameFieldValueCharacterSetTestRecord {
+  std::u16string name;
+  AutofillAlternativeNameFieldValueCharacterSet expected_character_set;
+};
+
+class AlternativeNameFieldValueCharacterSetTest
+    : public QualityMetricsTest,
+      public testing::WithParamInterface<
+          AlternativeNameFieldValueCharacterSetTestRecord> {};
+
+// Test that the metric for the alternative name field value character set is
+// recorded correctly.
+TEST_P(AlternativeNameFieldValueCharacterSetTest, LoggedCorrectly) {
+  base::test::ScopedFeatureList features{
+      autofill::features::kAutofillSupportPhoneticNameForJP};
+
+  test::FormDescription form_description = {
+      .fields = {{.role = ALTERNATIVE_FULL_NAME,
+                  .value = GetParam().name,
+                  .is_autofilled = true}},
+      .renderer_id = test::MakeFormRendererId(),
+      .main_frame_origin = url::Origin::Create(autofill_driver_->url())};
+
+  FormData form = GetAndAddSeenForm(form_description);
+
+  base::HistogramTester histogram_tester;
+  SubmitForm(form);
+
+  // Check for the expected enum value in the histogram
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SubmittedAlternativeNameFieldValueCharacterSet",
+      GetParam().expected_character_set, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    LoggedCorrectly,
+    AlternativeNameFieldValueCharacterSetTest,
+    testing::Values(
+        AlternativeNameFieldValueCharacterSetTestRecord{
+            u"ヤマモト アオイ",
+            AutofillAlternativeNameFieldValueCharacterSet::kKatakana},
+        AlternativeNameFieldValueCharacterSetTestRecord{
+            u"やまもと あおい",
+            AutofillAlternativeNameFieldValueCharacterSet::kHiragana},
+        AlternativeNameFieldValueCharacterSetTestRecord{
+            u"Elvis Aaron Presley",
+            AutofillAlternativeNameFieldValueCharacterSet::kOther}));
 
 // Test that we log quality metrics appropriately with fields having
 // only_fill_when_focused and are supposed to log RATIONALIZATION_OK.

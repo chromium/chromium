@@ -82,7 +82,7 @@ suite('shortcutCustomizationAppTest', function() {
     provider.setFakeIsCustomizationAllowedByPolicy(true);
     // The meta key is displayed as the launcher key in this test.
     provider.setFakeMetaKeyToDisplay(MetaKey.kLauncher);
-
+    provider.setHasCustomAccelerators(true);
     setShortcutProviderForTesting(provider);
     setShortcutInputProviderForTesting(shortcutInputProvider);
 

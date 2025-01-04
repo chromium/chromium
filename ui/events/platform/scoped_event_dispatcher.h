@@ -22,7 +22,7 @@ class PlatformEventDispatcher;
 // override-dispatcher, and restores the previous override-dispatcher.
 class EVENTS_EXPORT ScopedEventDispatcher {
  public:
-  ScopedEventDispatcher(PlatformEventDispatcher** scoped_dispatcher,
+  ScopedEventDispatcher(raw_ptr<PlatformEventDispatcher>* scoped_dispatcher,
                         PlatformEventDispatcher* new_dispatcher);
 
   ScopedEventDispatcher(const ScopedEventDispatcher&) = delete;
@@ -34,7 +34,7 @@ class EVENTS_EXPORT ScopedEventDispatcher {
 
  private:
   raw_ptr<PlatformEventDispatcher> original_;
-  base::AutoReset<PlatformEventDispatcher*> restore_;
+  base::AutoReset<raw_ptr<PlatformEventDispatcher>> restore_;
 };
 
 }  // namespace ui

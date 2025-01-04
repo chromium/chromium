@@ -134,16 +134,13 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
   expected_proceed = true;
 
   ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
-  fre_service()->OpenFirstRunIfNeeded(FirstRunService::EntryPoint::kOther,
-                                      proceed_future.GetCallback());
+  fre_service()->OpenFirstRunIfNeeded(proceed_future.GetCallback());
 
   profiles::testing::WaitForPickerWidgetCreated();
   EXPECT_FALSE(GetFirstRunFinishedPrefValue());
 
   histogram_tester.ExpectUniqueSample("ProfilePicker.FirstRun.ServiceCreated",
                                       true, 1);
-  histogram_tester.ExpectUniqueSample("ProfilePicker.FirstRun.EntryPoint",
-                                      FirstRunService::EntryPoint::kOther, 1);
 
   ProfilePicker::Hide();
   EXPECT_EQ(expected_proceed, proceed_future.Get());
@@ -174,13 +171,11 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
   base::HistogramTester histogram_tester;
 
   ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
-  fre_service()->OpenFirstRunIfNeeded(FirstRunService::EntryPoint::kOther,
-                                      first_proceed_future.GetCallback());
+  fre_service()->OpenFirstRunIfNeeded(first_proceed_future.GetCallback());
   profiles::testing::WaitForPickerWidgetCreated();
 
   bool expected_second_proceed = true;
-  fre_service()->OpenFirstRunIfNeeded(FirstRunService::EntryPoint::kOther,
-                                      second_proceed_future.GetCallback());
+  fre_service()->OpenFirstRunIfNeeded(second_proceed_future.GetCallback());
   EXPECT_FALSE(first_proceed_future.Get());
 
   histogram_tester.ExpectBucketCount(
@@ -199,8 +194,7 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest, CloseProceeds) {
 
   ASSERT_TRUE(fre_service());
   EXPECT_TRUE(fre_service()->ShouldOpenFirstRun());
-  fre_service()->OpenFirstRunIfNeeded(FirstRunService::EntryPoint::kOther,
-                                      proceed_future.GetCallback());
+  fre_service()->OpenFirstRunIfNeeded(proceed_future.GetCallback());
 
   profiles::testing::WaitForPickerWidgetCreated();
   EXPECT_FALSE(GetFirstRunFinishedPrefValue());
@@ -293,7 +287,6 @@ IN_PROC_BROWSER_TEST_P(FirstRunServicePolicyBrowserTest, OpenFirstRunIfNeeded) {
 
   base::RunLoop run_loop;
   fre_service()->OpenFirstRunIfNeeded(
-      FirstRunService::EntryPoint::kOther,
       base::IgnoreArgs<bool>(run_loop.QuitClosure()));
   EXPECT_EQ(GetParam().should_open_fre, ProfilePicker::IsOpen());
 

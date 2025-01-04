@@ -61,16 +61,18 @@ void PointerLockController::RequestToLockPointer(WebContents* web_contents,
     if (!user_gesture) {
       web_contents->GotResponseToPointerLockRequest(
           blink::mojom::PointerLockResult::kRequiresUserGesture);
-      if (lock_state_callback_for_test_)
+      if (lock_state_callback_for_test_) {
         std::move(lock_state_callback_for_test_).Run();
+      }
       return;
     }
     if (base::TimeTicks::Now() <
         last_user_escape_time_ + kEffectiveUserEscapeDuration) {
       web_contents->GotResponseToPointerLockRequest(
           blink::mojom::PointerLockResult::kUserRejected);
-      if (lock_state_callback_for_test_)
+      if (lock_state_callback_for_test_) {
         std::move(lock_state_callback_for_test_).Run();
+      }
       return;
     }
   }
@@ -139,8 +141,9 @@ bool PointerLockController::RequiresPressAndHoldEscToExit() const {
 }
 
 void PointerLockController::ExitExclusiveAccessToPreviousState() {
-  if (lock_state_callback_for_test_)
+  if (lock_state_callback_for_test_) {
     std::move(lock_state_callback_for_test_).Run();
+  }
 
   pointer_lock_state_ = POINTERLOCK_UNLOCKED;
   SetTabWithExclusiveAccess(nullptr);
@@ -153,8 +156,9 @@ void PointerLockController::ExitExclusiveAccessToPreviousState() {
 void PointerLockController::UnlockPointer() {
   WebContents* tab = exclusive_access_tab();
 
-  if (!tab)
+  if (!tab) {
     return;
+  }
 
   hosts_waiting_for_pointer_lock_permission_prompt_.erase(
       tab->GetPrimaryMainFrame()->GetGlobalId());
@@ -162,11 +166,13 @@ void PointerLockController::UnlockPointer() {
   content::RenderWidgetHostView* pointer_lock_view = nullptr;
   RenderViewHost* const rvh =
       exclusive_access_tab()->GetPrimaryMainFrame()->GetRenderViewHost();
-  if (rvh)
+  if (rvh) {
     pointer_lock_view = rvh->GetWidget()->GetView();
+  }
 
-  if (pointer_lock_view)
+  if (pointer_lock_view) {
     pointer_lock_view->UnlockPointer();
+  }
 }
 
 void PointerLockController::LockPointer(
@@ -236,8 +242,9 @@ void PointerLockController::RejectRequestToLockPointer(
 void PointerLockController::OnBubbleHidden(
     WebContents* web_contents,
     ExclusiveAccessBubbleHideReason reason) {
-  if (bubble_hide_callback_for_test_)
+  if (bubble_hide_callback_for_test_) {
     bubble_hide_callback_for_test_.Run(reason);
+  }
 
   // Allow silent pointer lock if the bubble has been display for a period of
   // time and dismissed due to timeout.

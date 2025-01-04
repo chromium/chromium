@@ -63,10 +63,6 @@ std::string DumpRegisteredHandlersToTopics(
 
 }  // namespace
 
-BASE_FEATURE(kRestoreInterestingTopicsFeature,
-             "InvalidatorRestoreInterestingTopics",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // static
 void InvalidatorRegistrarWithMemory::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
@@ -95,9 +91,6 @@ InvalidatorRegistrarWithMemory::InvalidatorRegistrarWithMemory(
     update->Set(sender_id_, base::Value::Dict());
     return;
   }
-  // Restore |handler_name_to_subscribed_topics_map_| from prefs.
-  if (!base::FeatureList::IsEnabled(kRestoreInterestingTopicsFeature))
-    return;
   for (auto it : *pref_data) {
     const std::string& topic_name = it.first;
     if (it.second.is_dict()) {

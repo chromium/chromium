@@ -22,14 +22,14 @@
 #include "chrome/common/extensions/api/autofill_private.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/metrics/address_save_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test/mock_mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/user_annotations/test_user_annotations_service.h"
@@ -134,6 +134,16 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddAndUpdateAddress) {
       << "Two tests are being run: addNewAddress and updateExistingAddress. "
          "'Autofill.AddedNewAddress' should be emitted  once for the first "
          "test.";
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddAndUpdateAddressWithName) {
+  base::HistogramTester histogram_tester;
+  EXPECT_TRUE(RunAutofillSubtest("addAndUpdateAddressWithAlternativeName"))
+      << message_;
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.Settings.EditedAlternativeNameContainsASeparator"),
+              base::BucketsAre(base::Bucket(0, 1), base::Bucket(1, 2)));
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddAndUpdateCreditCard) {
@@ -427,7 +437,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddVirtualCard) {
       autofill_client()->GetPersonalDataManager();
   autofill_client()
       ->GetPaymentsAutofillClient()
-      ->set_test_payments_network_interface(
+      ->set_payments_network_interface(
           std::make_unique<autofill::payments::TestPaymentsNetworkInterface>(
               autofill_client()->GetURLLoaderFactory(),
               autofill_client()->GetIdentityManager(), &personal_data_manager));

@@ -103,7 +103,6 @@ class NinePieceImage;
 class ShadowList;
 class ShapeValue;
 class StyleAdjuster;
-class StyleContentAlignmentData;
 class StyleDifference;
 class StyleImage;
 class StyleInheritedVariables;
@@ -398,24 +397,12 @@ class ComputedStyle final : public ComputedStyleBase {
                                       const ComputedStyle* old_style,
                                       const ComputedStyle* new_style);
 
-  ContentPosition ResolvedJustifyContentPosition(
-      const StyleContentAlignmentData& normal_value_behavior) const;
-  ContentDistributionType ResolvedJustifyContentDistribution(
-      const StyleContentAlignmentData& normal_value_behavior) const;
-  ContentPosition ResolvedAlignContentPosition(
-      const StyleContentAlignmentData& normal_value_behavior) const;
-  ContentDistributionType ResolvedAlignContentDistribution(
-      const StyleContentAlignmentData& normal_value_behavior) const;
   StyleSelfAlignmentData ResolvedAlignSelf(
       const StyleSelfAlignmentData& normal_value_behavior,
       const ComputedStyle* parent_style = nullptr) const;
-  StyleContentAlignmentData ResolvedAlignContent(
-      const StyleContentAlignmentData& normal_behaviour) const;
   StyleSelfAlignmentData ResolvedJustifySelf(
       const StyleSelfAlignmentData& normal_value_behavior,
       const ComputedStyle* parent_style = nullptr) const;
-  StyleContentAlignmentData ResolvedJustifyContent(
-      const StyleContentAlignmentData& normal_behaviour) const;
 
   CORE_EXPORT StyleDifference
   VisualInvalidationDiff(const Document&, const ComputedStyle&) const;
@@ -2262,8 +2249,8 @@ class ComputedStyle final : public ComputedStyleBase {
   }
 
   // -webkit-appearance utility functions.
-  static bool HasEffectiveAppearance(ControlPart effective_appearance) {
-    return effective_appearance != kNoControlPart;
+  static bool HasEffectiveAppearance(AppearanceValue effective_appearance) {
+    return effective_appearance != AppearanceValue::kNone;
   }
   bool HasEffectiveAppearance() const {
     return HasEffectiveAppearance(EffectiveAppearance());
@@ -2296,10 +2283,10 @@ class ComputedStyle final : public ComputedStyleBase {
       return ScrollMarkerGroup() == EScrollMarkerGroup::kAfter &&
              IsScrollContainer();
     }
-    if (pseudo == kPseudoIdScrollUpButton ||
-        pseudo == kPseudoIdScrollDownButton ||
-        pseudo == kPseudoIdScrollLeftButton ||
-        pseudo == kPseudoIdScrollRightButton) {
+    if (pseudo == kPseudoIdScrollButtonBlockStart ||
+        pseudo == kPseudoIdScrollButtonInlineStart ||
+        pseudo == kPseudoIdScrollButtonBlockEnd ||
+        pseudo == kPseudoIdScrollButtonInlineEnd) {
       return HasPseudoElementStyle(kPseudoIdScrollButton);
     }
     if (!HasPseudoElementStyle(pseudo)) {
@@ -2502,7 +2489,7 @@ class ComputedStyle final : public ComputedStyleBase {
 
   StyleColor DecorationColorIncludingFallback(bool visited_link) const;
 
-  bool HasAppearance() const { return Appearance() != kNoControlPart; }
+  bool HasAppearance() const { return Appearance() != AppearanceValue::kNone; }
 
   void ApplyMotionPathTransform(float origin_x,
                                 float origin_y,
@@ -2728,7 +2715,7 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     return ComputedStyle::HasEffectiveAppearance(EffectiveAppearance());
   }
   bool HasBaseSelectAppearance() const {
-    return Appearance() == ControlPart::kBaseSelectPart;
+    return Appearance() == AppearanceValue::kBaseSelect;
   }
 
   // backdrop-filter

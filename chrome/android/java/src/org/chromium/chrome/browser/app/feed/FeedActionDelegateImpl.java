@@ -35,7 +35,9 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
@@ -174,7 +176,7 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
     @Override
     public void showSyncConsentActivity(@SigninAccessPoint int signinAccessPoint) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND)) {
-            SyncConsentActivityLauncherImpl.get()
+            SyncConsentActivityLauncherImpl.getForProfile(mProfile)
                     .launchActivityIfAllowed(mActivity, signinAccessPoint);
         }
     }
@@ -188,20 +190,18 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
                 new AccountPickerBottomSheetStrings.Builder(
                                 R.string.signin_account_picker_bottom_sheet_title)
                         .build();
+        BottomSheetSigninAndHistorySyncConfig config =
+                new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                bottomSheetStrings,
+                                NoAccountSigninMode.BOTTOM_SHEET,
+                                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                HistorySyncConfig.OptInMode.NONE)
+                        .build();
         @Nullable
         Intent intent =
                 SigninAndHistorySyncActivityLauncherImpl.get()
                         .createBottomSheetSigninIntentOrShowError(
-                                mActivity,
-                                mProfile,
-                                bottomSheetStrings,
-                                BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
-                                        .BOTTOM_SHEET,
-                                BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                                        .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                HistorySyncConfig.OptInMode.NONE,
-                                signinAccessPoint,
-                                /* selectedCoreAccountId= */ null);
+                                mActivity, mProfile, config, signinAccessPoint);
         if (intent != null) {
             mActivity.startActivity(intent);
         }
@@ -223,20 +223,18 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
                                             .signin_account_picker_bottom_sheet_subtitle_for_back_of_card_menu_signin)
                             .setDismissButtonStringId(R.string.cancel)
                             .build();
+            BottomSheetSigninAndHistorySyncConfig config =
+                    new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                    bottomSheetStrings,
+                                    NoAccountSigninMode.BOTTOM_SHEET,
+                                    WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                    HistorySyncConfig.OptInMode.NONE)
+                            .build();
             @Nullable
             Intent intent =
                     SigninAndHistorySyncActivityLauncherImpl.get()
                             .createBottomSheetSigninIntentOrShowError(
-                                    mActivity,
-                                    mProfile,
-                                    bottomSheetStrings,
-                                    BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
-                                            .BOTTOM_SHEET,
-                                    BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                                            .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                    HistorySyncConfig.OptInMode.NONE,
-                                    signinAccessPoint,
-                                    /* selectedCoreAccountId= */ null);
+                                    mActivity, mProfile, config, signinAccessPoint);
             if (intent != null) {
                 mActivity.startActivity(intent);
             }

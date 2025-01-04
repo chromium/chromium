@@ -35,6 +35,7 @@
 #import "components/send_tab_to_self/pref_names.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
+#import "ios/chrome/browser/ntp/model/features.h"
 #import "ios/chrome/browser/ntp/ui_bundled/home_start_data_source.h"
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
 #import "ios/chrome/browser/parcel_tracking/features.h"
@@ -437,7 +438,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
     inputContext->metadata_args.emplace(
         segmentation_platform::kIsNewUser,
         segmentation_platform::processing::ProcessedValue::FromFloat(
-            IsFirstRunRecent(base::Days(14))));
+            IsFirstRunRecent(set_up_list::SetUpListDurationPastFirstRun())));
   }
 
   if (base::FeatureList::IsEnabled(commerce::kPriceTrackingPromo)) {
@@ -792,14 +793,20 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
     ContentSuggestionsModuleType moduleType =
         (ContentSuggestionsModuleType)[moduleNumber intValue];
     switch (moduleType) {
-      case ContentSuggestionsModuleType::kMostVisited:
-        if (_mostVisitedTilesMediator.mostVisitedConfig.inMagicStack &&
-            [_mostVisitedTilesMediator.mostVisitedConfig
-                    .mostVisitedItems count] > 0) {
+      case ContentSuggestionsModuleType::kMostVisited: {
+        BOOL shouldShowMostVisitedTileInMagicStack =
+            _mostVisitedTilesMediator.mostVisitedConfig.inMagicStack;
+        BOOL isMostVisitedTileVisible = _prefService->GetBoolean(
+            prefs::kHomeCustomizationMostVisitedEnabled);
+        BOOL hasMostVisitedItems = [_mostVisitedTilesMediator.mostVisitedConfig
+                                           .mostVisitedItems count] > 0;
+        if (shouldShowMostVisitedTileInMagicStack && isMostVisitedTileVisible &&
+            hasMostVisitedItems) {
           [magicStackOrder
               addObject:_mostVisitedTilesMediator.mostVisitedConfig];
         }
         break;
+      }
       case ContentSuggestionsModuleType::kTabResumption:
         if (![self shouldShowTabResumption]) {
           break;

@@ -25,7 +25,6 @@ static_library("redaction_tool") {
   public_deps = [ "//base" ]
 
   deps = [
-    "//build:chromeos_buildflags",
     "//components/autofill/core/common:credit_card_number_validation",
     "//third_party/re2",
   ]

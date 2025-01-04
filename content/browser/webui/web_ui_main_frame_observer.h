@@ -55,18 +55,12 @@ class CONTENT_EXPORT WebUIMainFrameObserver : public WebContentsObserver {
 
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
 
-  void DidFirstVisuallyNonEmptyPaint() override;
-
  private:
-  const GURL& GetUrlForLogging() const;
-
   void MaybeEnableWebUIJavaScriptErrorReporting(
       NavigationHandle* navigation_handle);
 
   // Do we report JavaScript errors ?
   bool error_reporting_enabled_ = false;
-
-  bool pending_non_empty_paint_ = false;
 
   raw_ptr<WebUIImpl> web_ui_;
 };

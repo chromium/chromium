@@ -19,6 +19,8 @@ class Browser;
 class EmbeddedPermissionPromptSystemSettingsView
     : public EmbeddedPermissionPromptBaseView {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOpenSettingsId);
+
   EmbeddedPermissionPromptSystemSettingsView(
       Browser* browser,
       base::WeakPtr<EmbeddedPermissionPromptViewDelegate> delegate);

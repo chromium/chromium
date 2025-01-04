@@ -101,13 +101,13 @@ UIImage* ConfirmationAlertImage() {
   [super start];
 
   _confirmationAlert = [[ConfirmationAlertViewController alloc] init];
-  _confirmationAlert.titleString =
-      l10n_util::GetNSString(IDS_IOS_INACTIVE_TABS_USER_EDU_TITLE);
-  _confirmationAlert.titleTextStyle = UIFontTextStyleTitle2;
-  _confirmationAlert.subtitleString = base::SysUTF16ToNSString(
+  _confirmationAlert.titleString = base::SysUTF16ToNSString(
       base::i18n::MessageFormatter::FormatWithNumberedArgs(
-          l10n_util::GetStringUTF16(IDS_IOS_INACTIVE_TABS_USER_EDU_SUBTITLE),
+          l10n_util::GetStringUTF16(IDS_IOS_INACTIVE_TABS_USER_EDU_TITLE),
           InactiveTabsTimeThreshold().InDays()));
+  _confirmationAlert.titleTextStyle = UIFontTextStyleTitle2;
+  _confirmationAlert.subtitleString =
+      l10n_util::GetNSString(IDS_IOS_INACTIVE_TABS_USER_EDU_SUBTITLE);
   _confirmationAlert.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_INACTIVE_TABS_USER_EDU_DONE);
   _confirmationAlert.secondaryActionString =

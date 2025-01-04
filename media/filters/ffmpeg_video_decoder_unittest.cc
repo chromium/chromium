@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/filters/ffmpeg_video_decoder.h"
+
 #include <stdint.h>
 
 #include <list>
@@ -28,7 +30,6 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "media/ffmpeg/ffmpeg_common.h"
-#include "media/filters/ffmpeg_video_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using ::testing::_;
@@ -63,7 +64,6 @@ class FFmpegVideoDecoderTest : public testing::Test {
   FFmpegVideoDecoderTest()
       : decoder_(std::make_unique<FFmpegVideoDecoder>(&media_log_)) {
     // Initialize various test buffers.
-    frame_buffer_ = std::make_unique<uint8_t[]>(kCodedSize.GetArea());
     end_of_stream_buffer_ = DecoderBuffer::CreateEOSBuffer();
     i_frame_buffer_ = ReadTestDataFile("h264-320x180-frame-0");
     corrupt_i_frame_buffer_ = ReadTestDataFile("h264-320x180-frame-0");
@@ -218,7 +218,6 @@ class FFmpegVideoDecoderTest : public testing::Test {
   std::unique_ptr<FFmpegVideoDecoder> decoder_;
 
   // Various buffers for testing.
-  std::unique_ptr<uint8_t[]> frame_buffer_;
   scoped_refptr<DecoderBuffer> end_of_stream_buffer_;
   scoped_refptr<DecoderBuffer> i_frame_buffer_;
   scoped_refptr<DecoderBuffer> corrupt_i_frame_buffer_;

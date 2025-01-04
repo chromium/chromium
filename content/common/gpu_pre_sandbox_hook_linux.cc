@@ -29,7 +29,6 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/common/content_switches.h"
 #include "media/gpu/buildflags.h"
 #include "sandbox/linux/bpf_dsl/policy.h"
@@ -54,9 +53,6 @@ namespace content {
 namespace {
 
 inline bool IsChromeOS() {
-  // TODO(b/206464999): for now, we're making the LaCrOS and Ash GPU sandboxes
-  // behave similarly. However, the LaCrOS GPU sandbox could probably be made
-  // tighter.
 #if BUILDFLAG(IS_CHROMEOS)
   return true;
 #else

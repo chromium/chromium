@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "chrome/common/url_constants.h"
@@ -18,6 +17,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "ui/webui/webui_util.h"
 
 WebAppInternalsUI::WebAppInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {

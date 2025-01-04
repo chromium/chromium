@@ -31,8 +31,6 @@ namespace features {
 // `RuntimeEnabledFeatures)`, they should still be ordered in this section based
 // on the identifier name of the generated feature.
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAdAuctionReportingWithMacroApi);
-
 // Controls the capturing of the Ad-Auction-Signals header, and the maximum
 // allowed Ad-Auction-Signals header value.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAdAuctionSignals);
@@ -107,7 +105,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBFCacheOpenBroadcastChannel);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kBackForwardCacheDWCOnJavaScriptExecution);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBackForwardCacheWithKeepaliveRequest);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBackgroundResourceFetch);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
@@ -430,8 +427,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     EnableLazyLoadImageForInvisiblePageType,
     kEnableLazyLoadImageForInvisiblePageTypeParam);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kExcludeLowEntropyImagesFromLCP);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(double, kMinimumEntropyForLCP);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kEventTimingIgnorePresentationTimeFromUnexpectedFrameSource);
 
 // Controls if the file loaded via the Speculation-Rules header
 // is exempt from CSP checks. See crbug.com/371595744 for context.
@@ -512,8 +509,28 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeConsiderKAnonymity);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeEnforceKAnonymity);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgePassKAnonStatusToReportWin);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgePassRecencyToGenerateBid);
+// Configures a limit on the number of `selectableBuyerAndSellerReportingIds`
+// per ad. This is implemented with two parameters, a hard limit and a soft
+// limit, intended to ensure that interest groups joined or updated before a
+// reduction in the limit don't immediately become unusable. The hard limit is
+// enforced both when an interest group is joined or updated, and also anytime
+// the interest group is deserialized. The soft limit is only enforced when an
+// interest group is joined or updated. To execute a reduction in the limit, the
+// soft limit would first be changed to reflect the new value, and only after
+// the "maximum interest group TTL" amount of time has passed, the hard limit
+// would be lowered to match. Except during such a reduction, the hard limit and
+// soft limits should always match. Increases in the limit can be applied to
+// both the hard and soft limits simultaneously. The hard limit should always be
+// greater than or equal to the soft limit. For each parameter, a negative value
+// indicates that that no limit should be enforced.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kFledgeLimitSelectableBuyerAndSellerReportingIds);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kFledgeSelectableBuyerAndSellerReportingIdsSoftLimit);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kFledgeSelectableBuyerAndSellerReportingIdsHardLimit);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeSampleDebugReports);
 
@@ -616,6 +633,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kFledgeEnforcePermissionPolicyContributeOnEvent);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeNoWasmLazyCompilation);
+
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeEagerJSCompilation);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceWebContentsDarkMode);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(ForceDarkInversionMethod,
@@ -1177,9 +1196,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     int,
     kMemoryCacheStrongReferenceResourceSizeThresholdParam);
-// Whether the ResourceFetcher should store strong references too.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kResourceFetcherStoresStrongReferences);
 
 // Improvements to MHTML for more accurate snapshots.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMHTML_Improvements);
@@ -1450,9 +1466,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kReducedReferrerGranularity);
 
-// Kill-switch for removing Authorization header upon cross origin redirects.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kRemoveAuthroizationOnCrossOriginRedirect);
+    kReleaseResourceDecodedDataOnMemoryPressure);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kReleaseResourceStrongReferencesOnMemoryPressure);
 
 // Makes preloaded fonts render-blocking up to the limits below.
 // See https://crbug.com/1412861
@@ -1481,6 +1498,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kResamplingInputEvents);
 // feature param.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kResamplingScrollEvents);
 
+// Whether the ResourceFetcher should store strong references too.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kResourceFetcherStoresStrongReferences);
+
 // If enabled, IME updates are computed at the end of a lifecycle update rather
 // than the beginning.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRunTextInputUpdatePostLifecycle);
@@ -1497,8 +1518,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSafelistFTPToRegisterProtocolHandler);
 // https://html.spec.whatwg.org/multipage/system-state.html#safelisted-scheme
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kSafelistPaytoToRegisterProtocolHandler);
-
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSaveDataImgSrcset);
 
 // When enabled, only pages that belong to a certain browsing context group are
 // paused instead of all pages.
@@ -1683,9 +1702,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSubSampleWindowProxyUsageMetrics);
 
 // Stylus gestures for editable web content.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kStylusRichGestures);
-// Apply touch adjustment for stylus pointer events. This feature allows
-// enabling functions like writing into a nearby input element.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kStylusPointerAdjustment);
 
 // If enabled, reads and decodes navigation body data off the main thread.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kThreadedBodyLoader);
@@ -1771,6 +1787,7 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAppBorderless);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAppEnableScopeExtensions);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAppManifestLockScreen);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAudioAllowDenormalInProcessing);
 // Parameters are used to control to which latency hints the feature is applied
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
@@ -1794,22 +1811,15 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcH264WithOpenH264FFmpeg);
 #endif  // BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcHideLocalIpsWithMdns);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcIgnoreUnspecifiedColorSpace);
-// If enabled, the WebRTC_* threads in peerconnection module will use
-// kResourceEfficient thread type.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kWebRtcThreadsUseResourceEfficientType);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcUseMinMaxVEADimensions);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebSQLAccess);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebSQLWebViewAccess);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebUSBTransferSizeLimit);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebviewAccelerateSmallCanvases);
-
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kReleaseResourceStrongReferencesOnMemoryPressure);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kReleaseResourceDecodedDataOnMemoryPressure);
 
 // When adding new features or constants for features, please keep the features
 // sorted by identifier name (e.g. `kAwesomeFeature`), and the constants for
@@ -1854,6 +1864,8 @@ BLINK_COMMON_EXPORT bool IsKeepAliveURLLoaderServiceEnabled();
 // Returns true if Link Preview and the given trigger type is enabled.
 BLINK_COMMON_EXPORT bool IsLinkPreviewTriggerTypeEnabled(
     LinkPreviewTriggerType type);
+
+BLINK_COMMON_EXPORT bool IsUpdateComplexSafaAreaConstraintsEnabled();
 
 // DO NOT ADD NEW FEATURES HERE.
 //

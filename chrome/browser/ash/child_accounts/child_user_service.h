@@ -76,11 +76,6 @@ class ChildUserService : public KeyedService,
     kMaxValue = kAppTimeLimit
   };
 
-  // Family Link helper(for child and teens) is an app available to supervised
-  // users and the companion app of Family Link app(for parents).
-  static const char kFamilyLinkHelperAppPackageName[];
-  static const char kFamilyLinkHelperAppPlayStoreURL[];
-
   static const char* GetTimeLimitPolicyTypesHistogramNameForTest();
 
   explicit ChildUserService(content::BrowserContext* context);

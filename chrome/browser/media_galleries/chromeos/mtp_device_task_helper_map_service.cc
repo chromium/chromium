@@ -67,8 +67,6 @@ MTPDeviceTaskHelperMapService::GetMTPDeviceTaskHelperKey(
          storage_name;
 }
 
-MTPDeviceTaskHelperMapService::MTPDeviceTaskHelperMapService() {
-}
+MTPDeviceTaskHelperMapService::MTPDeviceTaskHelperMapService() = default;
 
-MTPDeviceTaskHelperMapService::~MTPDeviceTaskHelperMapService() {
-}
+MTPDeviceTaskHelperMapService::~MTPDeviceTaskHelperMapService() = default;

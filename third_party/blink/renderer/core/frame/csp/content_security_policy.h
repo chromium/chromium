@@ -349,7 +349,7 @@ class CORE_EXPORT ContentSecurityPolicy final
 
   void EnforceSandboxFlags(network::mojom::blink::WebSandboxFlags);
   void RequireTrustedTypes();
-  bool IsRequireTrustedTypes() const { return require_trusted_types_; }
+  bool TrustedTypesRequired() const { return require_trusted_types_; }
   String EvalDisabledErrorMessage() const;
   String WasmEvalDisabledErrorMessage() const;
 
@@ -369,9 +369,6 @@ class CORE_EXPORT ContentSecurityPolicy final
   // strict enough (even if the strictest directives come from different CSP
   // sources).
   bool IsStrictPolicyEnforced() const { return enforces_strict_policy_; }
-
-  // Returns true if trusted types are required.
-  bool RequiresTrustedTypes() const;
 
   // Whether the main world's CSP should be bypassed based on the current
   // javascript world we are in.

@@ -86,8 +86,8 @@ import org.chromium.chrome.browser.auxiliary_search.module.AuxiliarySearchModule
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler.MinimizeAppAndCloseTabType;
-import org.chromium.chrome.browser.backup.BackupSigninProcessor;
 import org.chromium.chrome.browser.base.ColdStartTracker;
+import org.chromium.chrome.browser.bookmarks.BookmarkPane;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -110,16 +110,17 @@ import org.chromium.chrome.browser.dragdrop.ChromeDragAndDropBrowserDelegate;
 import org.chromium.chrome.browser.dragdrop.ChromeDragDropUtils;
 import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDelegate;
 import org.chromium.chrome.browser.educational_tip.EducationalTipModuleBuilder;
+import org.chromium.chrome.browser.educational_tip.EducationalTipModuleUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.FeedSurfaceTracker;
 import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.fonts.FontPreloader;
 import org.chromium.chrome.browser.gesturenav.NavigationSheet;
 import org.chromium.chrome.browser.history.HistoryManager;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
+import org.chromium.chrome.browser.history.HistoryPane;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.hub.DefaultPaneOrderController;
 import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
@@ -232,6 +233,7 @@ import org.chromium.chrome.browser.tasks.tab_management.CloseAllTabsHelper;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUi;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupVisualDataManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabModelNotificationDotManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPaneBase;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabsSettings;
@@ -370,6 +372,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
 
     private ToolbarControlContainer mControlContainer;
 
+    private final TabModelNotificationDotManager mTabModelNotificationDotManager =
+            new TabModelNotificationDotManager();
     private TabbedModeTabModelOrchestrator mTabModelOrchestrator;
     private TabModelSelectorBase mTabModelSelector;
     private TabModelSelectorObserver mTabModelSelectorObserver;
@@ -586,11 +590,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                                         : null);
         mBackPressManager.setFallbackOnBackPressed(
                 () -> {
-                    if (BackPressManager.correctTabNavigationOnFallback()) {
-                        if (getToolbarManager() != null && getToolbarManager().back()) {
-                            return;
-                        }
-                    }
                     minimizeAppAndCloseTabOnBackPress(getActivityTab());
                 });
     }
@@ -706,6 +705,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                                         new TabGroupVisualDataManager(tabModelSelector);
                             }));
 
+            mTabModelNotificationDotManager.initWithNative(mTabModelSelector);
+
             Profile profile = mTabModelSelector.getCurrentModel().getProfile();
             // For saving non-incognito tab closures for Recent Tabs.
             mHistoricalTabModelObserver =
@@ -782,7 +783,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
     private void refreshSignIn() {
         try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity.refreshSignIn")) {
             FirstRunSignInProcessor.openSyncSettingsIfScheduled(this);
-            BackupSigninProcessor.start(this);
         }
     }
 
@@ -893,7 +893,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                         this::getSnackbarManager,
                         getTabModelSelectorSupplier(),
                         () -> getToolbarManager().getOverviewModeMenuButtonCoordinator(),
-                        mEdgeToEdgeControllerSupplier,
                         mHubSearchClient);
         var builder = mHubProvider.getPaneListBuilder();
         builder.registerPane(
@@ -911,6 +910,16 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                     PaneId.CROSS_DEVICE,
                     LazyOneshotSupplier.fromSupplier(this::createCrossDevicePane));
         }
+        if (ChromeFeatureList.sHistoryPaneAndroid.isEnabled()) {
+            builder.registerPane(
+                    PaneId.HISTORY, LazyOneshotSupplier.fromSupplier(this::createHistoryPane));
+        }
+
+        if (ChromeFeatureList.sBookmarkPaneAndroid.isEnabled()) {
+            builder.registerPane(
+                    PaneId.BOOKMARKS, LazyOneshotSupplier.fromSupplier(this::createBookmarkPane));
+        }
+
         mHubProvider
                 .getHubManagerSupplier()
                 .onAvailable(manager -> mHubManagerSupplier.set(manager));
@@ -959,7 +968,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                                 adaptOnToolbarAlphaChange(),
                                 mBackPressManager,
                                 mEdgeToEdgeControllerSupplier,
-                                mRootUiCoordinator.getDesktopWindowStateManager());
+                                mRootUiCoordinator.getDesktopWindowStateManager(),
+                                mTabModelNotificationDotManager
+                                        .getNotificationDotObservableSupplier());
         if (didFinishNativeInitialization()) {
             result.first.initWithNative();
         }
@@ -984,6 +995,24 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                                         .getTabGroupSyncController(),
                         getModalDialogManagerSupplier(),
                         mEdgeToEdgeControllerSupplier);
+    }
+
+    private Pane createHistoryPane() {
+        return new HistoryPane(
+                adaptOnToolbarAlphaChange(),
+                this,
+                getSnackbarManager(),
+                getProfileProviderSupplier(),
+                mRootUiCoordinator::getBottomSheetController,
+                getCurrentTabModel().getCurrentTabSupplier());
+    }
+
+    private Pane createBookmarkPane() {
+        return new BookmarkPane(
+                adaptOnToolbarAlphaChange(),
+                this,
+                getSnackbarManager(),
+                getProfileProviderSupplier());
     }
 
     private Pane createCrossDevicePane() {
@@ -1050,7 +1079,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                             this::onTabSwitcherClicked,
                             bookmarkClickHandler,
                             /* customTabsBackClickHandler= */ null,
-                            archivedTabCountSupplier);
+                            archivedTabCountSupplier,
+                            mTabModelNotificationDotManager.getNotificationDotObservableSupplier());
 
             // TODO(crbug.com/40828084): Fix this assert which is tripping on unrelated
             // tests.
@@ -2247,8 +2277,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
 
         if (isFinishing()) return;
 
-        FontPreloader.getInstance().onPostInflationStartupTabbedActivity();
-
         TabModelSelector tabModelSelector = getTabModelSelector();
         IncognitoProfileDestroyer.observeTabModelSelector(tabModelSelector);
         IncognitoNotificationPresenceController.observeTabModelSelector(tabModelSelector);
@@ -2261,12 +2289,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
 
         mContentContainer = findViewById(android.R.id.content);
         mControlContainer = findViewById(R.id.control_container);
-
-        // Instead of overriding AsyncInitializationActivity#onFirstDrawComplete like the other
-        // activities, we're adding our own draw detector here because this activity's draw can be
-        // blocked by AppLaunchDrawBlocker, and #onFirstDrawComplete doesn't account for that.
-        FirstDrawDetector.waitForFirstDrawStrict(
-                mContentContainer, () -> FontPreloader.getInstance().onFirstDrawTabbedActivity());
 
         Supplier<Boolean> dialogVisibilitySupplier =
                 () -> {
@@ -2379,12 +2401,20 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
         }
 
         if (ChromeFeatureList.sEducationalTipModule.isEnabled()) {
-            EducationalTipModuleBuilder educationalTipModuleBuilder =
-                    new EducationalTipModuleBuilder(createEducationTipModuleActionDelegate());
-            moduleRegistry.registerModule(ModuleType.EDUCATIONAL_TIP, educationalTipModuleBuilder);
+            Set<Integer> tipModuleTypes = EducationalTipModuleUtils.getModuleTypes();
+            for (@ModuleType int tipModule : tipModuleTypes) {
+                EducationalTipModuleBuilder educationalTipModuleBuilder =
+                        new EducationalTipModuleBuilder(
+                                tipModule, createEducationTipModuleActionDelegate());
+                moduleRegistry.registerModule(tipModule, educationalTipModuleBuilder);
+            }
         }
 
         if (ChromeFeatureList.sAndroidAppIntegrationWithFavicon.isEnabled()) {
+            // The AuxiliarySearchControllerFactory#setIsTablet() must be called before using the
+            // builder which checks AuxiliarySearchControllerFactory#isEnabled().
+            AuxiliarySearchControllerFactory.getInstance()
+                    .setIsTablet(DeviceFormFactor.isWindowOnTablet(getWindowAndroid()));
             AuxiliarySearchModuleBuilder auxiliarySearchModuleBuilder =
                     new AuxiliarySearchModuleBuilder(
                             this,
@@ -3389,6 +3419,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
             mTabModelSelectorTabObserver.destroy();
             mTabModelSelectorTabObserver = null;
         }
+
+        mTabModelNotificationDotManager.destroy();
 
         if (mHistoricalTabModelObserver != null) mHistoricalTabModelObserver.destroy();
 

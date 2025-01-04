@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Geolocation.Android.LocationPermissionState"
-    enum="AndroidLocationPermissionState" expires_after="2025-03-30">
+    enum="AndroidLocationPermissionState" expires_after="2025-06-08">
   <owner>mattreynolds@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>
@@ -33,7 +33,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.CoreLocationProvider.Accuracy" units="meter"
-    expires_after="2025-03-30">
+    expires_after="2025-06-08">
   <owner>alvinji@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>
@@ -227,7 +227,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.NetworkLocationProvider.SessionResult"
-    enum="NetworkLocationRequestResult" expires_after="2025-04-17">
+    enum="NetworkLocationRequestResult" expires_after="2025-06-22">
   <owner>alvinji@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>
@@ -241,7 +241,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.NetworkLocationProvider.TimeToFirstPosition"
-    units="ms" expires_after="2025-04-17">
+    units="ms" expires_after="2025-06-22">
   <owner>alvinji@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>
@@ -299,7 +299,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.NetworkLocationRequest.Source"
-    enum="NetworkLocationRequestSource" expires_after="2025-04-27">
+    enum="NetworkLocationRequestSource" expires_after="2025-06-29">
   <owner>mattreynolds@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>

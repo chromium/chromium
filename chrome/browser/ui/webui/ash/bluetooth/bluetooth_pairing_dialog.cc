@@ -15,7 +15,6 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/bluetooth/bluetooth_shared_load_time_data_provider.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/bluetooth_pairing_dialog_resources.h"
@@ -31,6 +30,7 @@
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 #include "ui/wm/core/shadow_types.h"
 
 namespace ash {
@@ -48,8 +48,9 @@ void AddBluetoothStrings(content::WebUIDataSource* html_source) {
       {"cancel", IDS_CANCEL},
       {"close", IDS_CLOSE},
   };
-  for (const auto& entry : localized_strings)
+  for (const auto& entry : localized_strings) {
     html_source->AddLocalizedString(entry.name, entry.id);
+  }
   bluetooth::AddLoadTimeData(html_source);
 }
 

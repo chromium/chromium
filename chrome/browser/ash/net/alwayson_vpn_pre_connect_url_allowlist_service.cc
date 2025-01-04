@@ -28,9 +28,6 @@ AlwaysOnVpnPreConnectUrlAllowlistService::
   PrefService* pref_service =
       user_prefs::UserPrefs::Get(browser_context_.get());
 
-  // TODO(b/188864779, acostinas): After the ARC legacy migration is completed,
-  // monitor the Always-on VPN state from the network profile property instead
-  // of the user pref.
   profile_pref_change_registrar_.Init(pref_service);
   profile_pref_change_registrar_.Add(
       arc::prefs::kAlwaysOnVpnLockdown,

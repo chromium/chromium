@@ -12,7 +12,7 @@
 namespace gfx {
 class Rect;
 class Size;
-}
+}  // namespace gfx
 
 namespace ui {
 

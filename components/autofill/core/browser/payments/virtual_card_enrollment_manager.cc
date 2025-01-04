@@ -6,18 +6,19 @@
 
 #include <string>
 
+#include "base/check_deref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/strike_databases/payments/virtual_card_enrollment_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/strike_database.h"
 #include "components/autofill/core/browser/strike_databases/strike_database_base.h"
@@ -52,13 +53,13 @@ VirtualCardEnrollmentProcessState::~VirtualCardEnrollmentProcessState() =
     default;
 
 VirtualCardEnrollmentManager::VirtualCardEnrollmentManager(
-    PersonalDataManager* personal_data_manager,
+    PaymentsDataManager* payments_data_manager,
     payments::PaymentsNetworkInterface* payments_network_interface,
     AutofillClient* autofill_client)
     : autofill_client_(autofill_client),
-      personal_data_manager_(personal_data_manager),
+      payments_data_manager_(CHECK_DEREF(payments_data_manager)),
       payments_network_interface_(payments_network_interface) {
-  // |autofill_client_| does not exist on Clank settings page where this flow
+  // `autofill_client_` does not exist on Clank settings page where this flow
   // can also be triggered.
   if (autofill_client_ && autofill_client_->GetStrikeDatabase()) {
     virtual_card_enrollment_strike_database_ =
@@ -125,8 +126,8 @@ void VirtualCardEnrollmentManager::Enroll(
       state_.virtual_card_enrollment_fields.virtual_card_enrollment_source;
   request_details.virtual_card_enrollment_request_type =
       VirtualCardEnrollmentRequestType::kEnroll;
-  request_details.billing_customer_number = payments::GetBillingCustomerId(
-      &personal_data_manager_->payments_data_manager());
+  request_details.billing_customer_number =
+      payments::GetBillingCustomerId(*payments_data_manager_);
   request_details.instrument_id =
       state_.virtual_card_enrollment_fields.credit_card.instrument_id();
   request_details.vcn_context_token = state_.vcn_context_token;
@@ -162,8 +163,8 @@ void VirtualCardEnrollmentManager::Unenroll(
 
   request_details.virtual_card_enrollment_request_type =
       VirtualCardEnrollmentRequestType::kUnenroll;
-  request_details.billing_customer_number = payments::GetBillingCustomerId(
-      &personal_data_manager_->payments_data_manager());
+  request_details.billing_customer_number =
+      payments::GetBillingCustomerId(*payments_data_manager_);
   request_details.instrument_id = instrument_id;
 
   virtual_card_enrollment_update_response_callback_ =
@@ -386,10 +387,10 @@ void VirtualCardEnrollmentManager::OnRiskDataLoadedForVirtualCard(
 
 void VirtualCardEnrollmentManager::GetDetailsForEnroll() {
   payments::GetDetailsForEnrollmentRequestDetails request_details;
-  request_details.app_locale = personal_data_manager_->app_locale();
+  request_details.app_locale = payments_data_manager_->app_locale();
   request_details.risk_data = state_.risk_data.value_or("");
-  request_details.billing_customer_number = payments::GetBillingCustomerId(
-      &personal_data_manager_->payments_data_manager());
+  request_details.billing_customer_number =
+      payments::GetBillingCustomerId(*payments_data_manager_);
   request_details.instrument_id =
       state_.virtual_card_enrollment_fields.credit_card.instrument_id();
   request_details.source =
@@ -483,10 +484,9 @@ void VirtualCardEnrollmentManager::EnsureCardArtImageIsSetBeforeShowingUI() {
   // The card art image might not be present in the upstream flow if the
   // chrome sync server has not synced down the card art url yet for the card
   // just uploaded.
-  gfx::Image* cached_card_art_image =
-      personal_data_manager_->payments_data_manager()
-          .GetCachedCardArtImageForUrl(
-              state_.virtual_card_enrollment_fields.credit_card.card_art_url());
+  const gfx::Image* const cached_card_art_image =
+      payments_data_manager_->GetCachedCardArtImageForUrl(
+          state_.virtual_card_enrollment_fields.credit_card.card_art_url());
   if (cached_card_art_image && !cached_card_art_image->IsEmpty()) {
     // We found a card art image in the cache, so set |state_|'s
     // |virtual_card_enrollment_fields|'s |card_art_image| to it.
@@ -526,9 +526,9 @@ void VirtualCardEnrollmentManager::SetInitialVirtualCardEnrollFields(
   // request to sync the |card_art_image|, and before showing the
   // VirtualCardEnrollmentBubble we will try to fetch the |card_art_image|
   // from the local cache.
-  gfx::Image* card_art_image =
-      personal_data_manager_->payments_data_manager()
-          .GetCreditCardArtImageForUrl(credit_card.card_art_url());
+  const gfx::Image* const card_art_image =
+      payments_data_manager_->GetCreditCardArtImageForUrl(
+          credit_card.card_art_url());
   if (card_art_image && !card_art_image->IsEmpty()) {
     state_.virtual_card_enrollment_fields.card_art_image =
         card_art_image->ToImageSkia();

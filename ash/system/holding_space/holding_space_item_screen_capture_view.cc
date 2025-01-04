@@ -134,10 +134,6 @@ HoldingSpaceItemScreenCaptureView::HoldingSpaceItemScreenCaptureView(
       base::BindRepeating(&HoldingSpaceItemScreenCaptureView::UpdateImage,
                           base::Unretained(this)));
 
-  item_deletion_subscription_ = item->AddDeletionCallback(
-      base::BindRepeating(&HoldingSpaceItemScreenCaptureView::UpdateTooltipText,
-                          base::Unretained(this)));
-
   UpdateImage();
   UpdateTooltipText();
 }
@@ -149,14 +145,6 @@ views::View* HoldingSpaceItemScreenCaptureView::GetTooltipHandlerForPoint(
     const gfx::Point& point) {
   // Tooltip events should be handled top level, not by descendents.
   return HitTestPoint(point) ? this : nullptr;
-}
-
-void HoldingSpaceItemScreenCaptureView::UpdateTooltipText() {
-  if (item()) {
-    SetCachedTooltipText(item()->GetText());
-  } else {
-    SetCachedTooltipText(std::u16string());
-  }
 }
 
 void HoldingSpaceItemScreenCaptureView::OnHoldingSpaceItemUpdated(
@@ -185,6 +173,14 @@ void HoldingSpaceItemScreenCaptureView::UpdateImage() {
       /*dark_background=*/DarkLightModeControllerImpl::Get()
           ->IsDarkModeEnabled()));
   SchedulePaint();
+}
+
+void HoldingSpaceItemScreenCaptureView::UpdateTooltipText() {
+  // If the associated `item()` has been deleted then `this` is in the process
+  // of being destroyed and no action needs to be taken.
+  if (const auto* item = this->item()) {
+    SetCachedTooltipText(item->GetText());
+  }
 }
 
 BEGIN_METADATA(HoldingSpaceItemScreenCaptureView)

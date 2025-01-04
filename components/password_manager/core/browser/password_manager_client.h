@@ -411,8 +411,14 @@ class PasswordManagerClient {
   // Use this to filter credentials before handling them in password manager.
   virtual const CredentialsFilter* GetStoreResultFilter() const = 0;
 
-  // Returns a LogManager instance.
-  virtual autofill::LogManager* GetLogManager();
+  // Returns a LogManager instance (for chrome://password-manager-internals).
+  // Note that the return value may change over the lifetime of a
+  // PasswordManagerClient from null to non-null, so callers should not store
+  // the result of this function, but call GetCurrentLogManager() again instead.
+  // - May return null if logging is disabled (but a non null return value does
+  // not guarantee that logging is enabled).
+  // - May return null for platforms that don't support this.
+  virtual autofill::LogManager* GetCurrentLogManager();
 
   // Record that we saw a password field on this page.
   virtual void AnnotateNavigationEntry(bool has_password_field);

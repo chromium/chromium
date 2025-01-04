@@ -11,7 +11,6 @@
 
 #include "base/auto_reset.h"
 #include "base/metrics/field_trial_params.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
@@ -114,7 +113,6 @@ void PointerEventManager::Clear() {
   original_element_under_pointer_removed_.clear();
   pointer_capture_target_.clear();
   pending_pointer_capture_target_.clear();
-  dispatching_pointer_id_ = 0;
   resize_scrollable_area_.Clear();
   offset_from_resize_corner_ = {};
   skip_touch_filter_discrete_ = false;
@@ -164,7 +162,6 @@ WebInputEventResult PointerEventManager::DispatchPointerEvent(
   if (!target)
     return WebInputEventResult::kNotHandled;
 
-  const PointerId pointer_id = pointer_event->pointerId();
   const AtomicString& event_type = pointer_event->type();
   bool should_filter = ShouldFilterEvent(pointer_event);
   // We are about to dispatch this event. It has to be trusted at this point.
@@ -210,18 +207,8 @@ WebInputEventResult PointerEventManager::DispatchPointerEvent(
 
   bool listeners_exist =
       !check_for_listener || target->HasEventListeners(event_type);
-  if (listeners_exist) {
-    UseCounter::Count(frame_->GetDocument(), WebFeature::kPointerEventDispatch);
-    if (event_type == event_type_names::kPointerdown) {
-      UseCounter::Count(frame_->GetDocument(),
-                        WebFeature::kPointerEventDispatchPointerDown);
-    }
-  }
 
   if (!should_filter || listeners_exist) {
-    DCHECK(!dispatching_pointer_id_);
-    base::AutoReset<PointerId> dispatch_holder(&dispatching_pointer_id_,
-                                               pointer_id);
     DispatchEventResult dispatch_result = target->DispatchEvent(*pointer_event);
     return event_handling_util::ToWebInputEventResult(dispatch_result);
   }
@@ -395,12 +382,10 @@ bool PointerEventManager::ShouldAdjustPointerEvent(
 
 bool PointerEventManager::ShouldAdjustStylusPointerEvent(
     const WebPointerEvent& pointer_event) const {
-  return base::FeatureList::IsEnabled(
-             blink::features::kStylusPointerAdjustment) &&
-         (pointer_event.pointer_type ==
-              WebPointerProperties::PointerType::kPen ||
-          pointer_event.pointer_type ==
-              WebPointerProperties::PointerType::kEraser);
+  return pointer_event.pointer_type ==
+             WebPointerProperties::PointerType::kPen ||
+         pointer_event.pointer_type ==
+             WebPointerProperties::PointerType::kEraser;
 }
 
 void PointerEventManager::AdjustPointerEvent(WebPointerEvent& pointer_event) {
@@ -592,8 +577,7 @@ WebInputEventResult PointerEventManager::SendTouchPointerEvent(
 
   // Setting the implicit capture for touch
   if (pointer_event->type() == event_type_names::kPointerdown) {
-    SetPointerCapture(pointer_event->pointerId(), target,
-                      /* explicit_capture */ false);
+    SetPointerCapture(pointer_event->pointerId(), target);
   }
 
   WebInputEventResult result = DispatchPointerEvent(
@@ -1134,50 +1118,54 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
       pointer_event->type() == event_type_names::kPointercancel) {
     ReleasePointerCapture(pointer_event->pointerId());
 
-    // Send got/lostpointercapture rightaway if necessary.
-    if (pointer_event->type() == event_type_names::kPointerup) {
-      // We also send boundary events here rightaway.  To find the new position
-      // under the pointer, we perform a hit-test again if a pointer-capture is
-      // going to be released now; otherwise we use the original hit-test target
-      // (or its ancestor in the event-path if it has been removed from DOM).
-      if (pointer_capture_target_.find(pointer_event->pointerId()) !=
-          pointer_capture_target_.end()) {
-        HitTestRequest::HitTestRequestType hit_type = HitTestRequest::kRelease;
-        HitTestRequest request(hit_type);
-        MouseEventWithHitTestResults mev =
-            event_handling_util::PerformMouseEventHitTest(frame_, request,
-                                                          mouse_event);
-        target = mev.InnerElement();
-      } else if (RuntimeEnabledFeatures::
-                     BoundaryEventDispatchTracksNodeRemovalEnabled()) {
-        target = NonDeletedElementTarget(target, pointer_event);
-      }
-
-      // Dispatch the click event if applicable, when the flag is enabled.
-      if (consider_click_dispatch &&
-          RuntimeEnabledFeatures::ClickToCapturedPointerEnabled()) {
-        ProcessPendingPointerCapture(pointer_event);
-        mouse_event_manager_->DispatchMouseClickIfNeeded(
-            mouse_target, captured_click_target, mouse_event,
-            pointer_event->pointerId(), pointer_event->pointerType());
-        // TODO(https://crbug.com/40851596): The following call to
-        // `ProcessCaptureAndPositionOfPointerEvent()` does not see any pending
-        // capture.  Clean this up after the flag is enabled.
-      }
-
-      ProcessCaptureAndPositionOfPointerEvent(pointer_event, target,
-                                              &mouse_event);
-    } else {
-      // Don't send boundary events in this case as it is a little tricky.
-      // This case happens for the drag operation and currently we don't
-      // let the page know that the pointer left the page while dragging.
-      ProcessPendingPointerCapture(pointer_event);
-    }
-
     if (pointer_event->isPrimary()) {
       prevent_mouse_event_for_pointer_type_[ToPointerTypeIndex(
           mouse_event.pointer_type)] = false;
     }
+  }
+
+  // Update `target` before processing pending pointer capture below.
+  //
+  // To find the new position under the pointer, we perform a hit-test again if
+  // a pointer-capture is going to be released now; otherwise we use the
+  // original hit-test target (or its ancestor in the event-path if it has been
+  // removed from DOM).
+  if (pointer_event->type() == event_type_names::kPointerup) {
+    if (pointer_capture_target_.find(pointer_event->pointerId()) !=
+        pointer_capture_target_.end()) {
+      HitTestRequest::HitTestRequestType hit_type = HitTestRequest::kRelease;
+      HitTestRequest request(hit_type);
+      MouseEventWithHitTestResults mev =
+          event_handling_util::PerformMouseEventHitTest(frame_, request,
+                                                        mouse_event);
+      target = mev.InnerElement();
+    } else if (RuntimeEnabledFeatures::
+                   BoundaryEventDispatchTracksNodeRemovalEnabled()) {
+      target = NonDeletedElementTarget(target, pointer_event);
+    }
+  }
+
+  // Dispatch the click event if applicable, when the flag is enabled.
+  if (consider_click_dispatch &&
+      RuntimeEnabledFeatures::ClickToCapturedPointerEnabled()) {
+    ProcessPendingPointerCapture(pointer_event);
+    mouse_event_manager_->DispatchMouseClickIfNeeded(
+        mouse_target, captured_click_target, mouse_event,
+        pointer_event->pointerId(), pointer_event->pointerType());
+    // TODO(https://crbug.com/40851596): The following call to
+    // `ProcessCaptureAndPositionOfPointerEvent()` does not see any pending
+    // capture.  Clean this up after the flag is enabled.
+  }
+
+  // Send got/lostpointercapture rightaway if necessary.
+  if (pointer_event->type() == event_type_names::kPointerup) {
+    ProcessCaptureAndPositionOfPointerEvent(pointer_event, target,
+                                            &mouse_event);
+  } else if (pointer_event->type() == event_type_names::kPointercancel) {
+    // Don't send boundary events in this case as it is a little tricky.
+    // This case happens for the drag operation and currently we don't
+    // let the page know that the pointer left the page while dragging.
+    ProcessPendingPointerCapture(pointer_event);
   }
 
   if (mouse_event.GetType() == WebInputEvent::Type::kMouseLeave &&
@@ -1304,17 +1292,8 @@ void PointerEventManager::ElementRemoved(Element* target) {
 }
 
 bool PointerEventManager::SetPointerCapture(PointerId pointer_id,
-                                            Element* target,
-                                            bool explicit_capture) {
-  if (explicit_capture) {
-    UseCounter::Count(frame_->GetDocument(),
-                      WebFeature::kPointerEventSetCapture);
-  }
+                                            Element* target) {
   if (pointer_event_factory_.IsActiveButtonsState(pointer_id)) {
-    if (pointer_id != dispatching_pointer_id_) {
-      UseCounter::Count(frame_->GetDocument(),
-                        WebFeature::kPointerEventSetCaptureOutsideDispatch);
-    }
     pending_pointer_capture_target_.Set(pointer_id, target);
     return true;
   }

@@ -62,6 +62,10 @@ you're interested in. Some basic builders you can use are listed below:
   runs basic functional test suites on CrOS VMs running on intel. Use `-B ci -b
   chromeos-amd64-generic-rel-gtest` on the UTR cmd line.
 
+Note that the names of the above builders may change over time and the links
+may eventually break. Navigate the build console to find the current list of
+running builders.
+
 ## Command-line Examples
 
 Below are some example invocations of the UTR:
@@ -99,6 +103,62 @@ with additional test cmd-line flags:
 ```
 vpython3 run.py -B try -b linux-chromeos-rel -t interactive_ui_tests test -- --gtest_filter=TestClass.TestCase --gtest_repeat=100
 ```
+
+## Custom builder configs
+
+For the specified builder, the UTR will reuse its precise configs. This includes
+things like GN args, test targets, and test dimensions. These configs are
+encoded as starlark in the checkout, and are read at UTR invocation-time.
+Consequently, you can make local modifications to these configs and they will be
+reflected in any subsequent UTR invocation for that builder.
+
+Example: at time of writing, the
+[Linux Tests](https://ci.chromium.org/ui/p/chromium/builders/ci/Linux%20Tests)
+builder runs tests on Ubuntu-22.04 (jammy). To test out running its tests on
+Ubuntu-24.04 (noble), you would find its builder config in the
+[infra starlark dir](https://source.chromium.org/chromium/chromium/src/+/main:infra/config/subprojects/)
+in the repo. It should look something like:
+```
+ci.thin_tester(
+    name = "Linux Tests",
+    triggered_by = ["ci/Linux Builder"],
+    ...
+)
+```
+
+Find the line that controls the dimensions its tests target:
+```
+    ...
+    targets = targets.bundle(
+        ...
+        mixins = [
+            "isolate_profile_data",
+            "linux-jammy",
+        ],
+    ...
+```
+
+And change the Jammy mixin to Noble:
+```
+    ...
+    targets = targets.bundle(
+        ...
+        mixins = [
+            "isolate_profile_data",
+            "linux-noble",
+        ],
+    ...
+```
+
+Then regen the infra configs, and re-run the UTR. Within the UTR invocation,
+it should now run base_unittests on Ubuntu-24.04 rather than Ubuntu-22.04:
+```sh
+$ ./infra/config/main.star
+$ vpython3 run.py -B ci -b 'Linux Tests' -t base_unittests compile-and-test
+```
+
+See [here](../../infra/config/targets/README.md) for more info about how a
+builder's tests are configured in starlark.
 
 ## Questions/feedback
 

@@ -170,6 +170,12 @@ bool ShouldUseInactiveTabsTestThreshold();
 // Returns nil is not set.
 NSString* GetTabResumptionDecorationOverride();
 
+// Whether the first party incognito experince should be simulated.
+bool ShouldOpenInIncognitoOverride();
+
+// Whether the a delay should be added to the asynchronous startup.
+bool ShouldDelayAsyncStartup();
+
 }  // namespace experimental_flags
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_SYSTEM_FLAGS_H_

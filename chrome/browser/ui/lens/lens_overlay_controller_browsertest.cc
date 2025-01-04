@@ -75,6 +75,7 @@
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_overlay_permission_utils.h"
+#include "components/lens/lens_overlay_side_panel_result.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "components/prefs/pref_service.h"
@@ -125,6 +126,7 @@ constexpr char kDocumentWithNamedElementWithFragment[] =
 constexpr char kDocumentWithImage[] = "/test_visual.html";
 constexpr char kDocumentWithDynamicColor[] = "/lens/dynamic_color.html";
 constexpr char kPdfDocument[] = "/pdf/test.pdf";
+constexpr char kMultiPagePdf[] = "/pdf/test-bookmarks.pdf";
 constexpr char kPdfDocumentWithForm[] = "/pdf/submit_form.pdf";
 constexpr char kDocumentWithNonAsciiCharacters[] = "/non-ascii.html";
 
@@ -212,14 +214,10 @@ constexpr char kHistoryStateScript[] =
     "(function() {history.replaceState({'test':1}, 'test'); "
     "history.pushState({'test':1}, 'test'); history.back();})();";
 
-// Returns true if the selection elements have bounds and are ready for input
-// events.
-constexpr char kOverlayReadyScript[] =
-    "(function() {const regionLayerBounds "
-    "=document.querySelector('lens-overlay-app').shadowRoot.querySelector('"
-    "lens-selection-overlay').shadowRoot.querySelector('region-selection')."
-    "getBoundingClientRect(); return regionLayerBounds.width > 0 && "
-    "regionLayerBounds.height > 0;})();";
+// `content::ExecJs` can handle promises, so queue a promise that only succeeds
+// after the contents have been rendered.
+constexpr char kPaintWorkaroundFunction[] =
+    "() => new Promise(resolve => requestAnimationFrame(() => resolve(true)))";
 
 constexpr char kTestSuggestSignals[] = "encoded_image_signals";
 
@@ -229,6 +227,36 @@ constexpr char kViewportHeightQueryParamKey[] = "bih";
 constexpr char kTextQueryParamKey[] = "q";
 
 constexpr char kResultsSearchBaseUrl[] = "https://www.google.com/search";
+
+// Opens the given URL in the given browser and waits for the first paint to
+// complete.
+void WaitForPaintImpl(
+    Browser* browser,
+    const GURL& url,
+    WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB,
+    int browser_test_flags = ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser, url, disposition, browser_test_flags));
+  const bool first_paint_completed =
+      browser->tab_strip_model()
+          ->GetActiveTab()
+          ->GetContents()
+          ->CompletedFirstVisuallyNonEmptyPaint();
+
+  // Return early if first paint is already completed.
+  if (first_paint_completed) {
+    return;
+  }
+  // If the first paint was not mark as completed by the WebContents, use a
+  // workaround to request a frame on the WebContents. This function will only
+  // return when the promise is resolved and thus there is content painted on
+  // the WebContents to allow screenshotting. See crbug.com/334747109 for
+  // details on this possible race condition and the workaround used in
+  // interactive tests.
+  ASSERT_TRUE(
+      content::ExecJs(browser->tab_strip_model()->GetActiveTab()->GetContents(),
+                      kPaintWorkaroundFunction));
+}
 
 void ClickBubbleDialogButton(
     views::BubbleDialogDelegate* bubble_widget_delegate,
@@ -358,6 +386,8 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
 
   void TriggerCopyText() override { did_trigger_copy = true; }
 
+  void SuppressGhostLoader() override {}
+
   void Reset() {
     last_received_screenshot_.reset();
     last_received_theme_->reset();
@@ -464,15 +494,6 @@ class LensOverlayControllerFake : public LensOverlayController {
     is_side_panel_loading_set_to_false_++;
   }
 
-  void SetSidePanelShowErrorPage(bool should_show_error_page) override {
-    if (should_show_error_page) {
-      side_panel_set_show_error_page_++;
-      return;
-    }
-
-    side_panel_set_hide_error_page_++;
-  }
-
   bool IsScreenshotPossible(content::RenderWidgetHostView*) override {
     return is_screenshot_possible_;
   }
@@ -484,16 +505,12 @@ class LensOverlayControllerFake : public LensOverlayController {
   }
 
   void ResetSidePanelTracking() {
-    side_panel_set_show_error_page_ = 0;
-    side_panel_set_hide_error_page_ = 0;
     is_side_panel_loading_set_to_true_ = 0;
     is_side_panel_loading_set_to_false_ = 0;
   }
 
   void FlushForTesting() { fake_overlay_page_receiver_.FlushForTesting(); }
 
-  int side_panel_set_show_error_page_ = 0;
-  int side_panel_set_hide_error_page_ = 0;
   int is_side_panel_loading_set_to_true_ = 0;
   int is_side_panel_loading_set_to_false_ = 0;
   LensOverlayPageFake fake_overlay_page_;
@@ -605,23 +622,8 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
     return controller->GetOverlayWebViewForTesting()->GetWebContents();
   }
 
-  // Waits for the WebUI to have the screenshot loaded and is ready for input
-  // events.
-  void WaitForOverlayReady(content::WebContents* overlay_web_contents) {
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return content::EvalJs(overlay_web_contents->GetPrimaryMainFrame(),
-                             kOverlayReadyScript,
-                             content::EXECUTE_SCRIPT_NO_USER_GESTURE)
-          .ExtractBool();
-    }));
-  }
-
   void SimulateLeftClickDrag(gfx::Point from, gfx::Point to) {
     auto* overlay_web_contents = GetOverlayWebContents();
-
-    // We need to wait until the selection overlay has resized and is ready to
-    // receive input events.
-    WaitForOverlayReady(overlay_web_contents);
 
     // We should wait for the main frame's hit-test data to be ready before
     // sending the click event below to avoid flakiness.
@@ -666,15 +668,7 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
       WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB,
       int browser_test_flags = ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP) {
     const GURL url = embedded_test_server()->GetURL(relative_url);
-    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url, disposition, browser_test_flags));
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return browser()
-          ->tab_strip_model()
-          ->GetActiveTab()
-          ->GetContents()
-          ->CompletedFirstVisuallyNonEmptyPaint();
-    }));
+    WaitForPaintImpl(browser(), url, disposition, browser_test_flags);
   }
 
   // Helper to remove the start time and viewport size query params from the
@@ -722,9 +716,9 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
 
   void VerifySearchQueryParameters(const GURL& url_to_process) {
     std::string gsc_value;
-    bool has_hsc_value =
+    bool has_gsc_value =
         net::GetValueForKeyInQuery(url_to_process, "gsc", &gsc_value);
-    EXPECT_TRUE(has_hsc_value);
+    EXPECT_TRUE(has_gsc_value);
 
     std::string hl_value;
     bool has_hl_value =
@@ -1730,7 +1724,12 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        HandleStartQueryResponseError) {
+  base::HistogramTester histogram_tester;
   WaitForPaint();
+
+  // There should be no histograms logged.
+  histogram_tester.ExpectTotalCount("Lens.Overlay.SidePanelResultStatus",
+                                    /*expected_count=*/0);
 
   // State should start in off.
   auto* controller = GetLensOverlayController();
@@ -1750,9 +1749,100 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       [&]() { return controller->state() == State::kOverlay; }));
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
 
-  // Verify the error page was set correctly.
-  EXPECT_EQ(fake_controller->side_panel_set_hide_error_page_, 0);
-  EXPECT_EQ(fake_controller->side_panel_set_show_error_page_, 1);
+  // Verify the error page histogram was not recorded since the result panel is
+  // not open.
+  histogram_tester.ExpectTotalCount("Lens.Overlay.SidePanelResultStatus",
+                                    /*expected_count=*/0);
+
+  // Side panel is not showing at first.
+  auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
+  EXPECT_FALSE(coordinator->IsSidePanelShowing());
+  EXPECT_FALSE(controller->GetSidePanelWebContentsForTesting());
+
+  // Loading a url in the side panel should show the side panel even if we
+  // expect the navigation to fail.
+  const GURL search_url("https://www.google.com/search");
+  controller->LoadURLInResultsFrame(search_url);
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+
+  // Expect the Lens Overlay results panel to open.
+  ASSERT_TRUE(coordinator->IsSidePanelShowing());
+  EXPECT_EQ(coordinator->GetCurrentEntryId(),
+            SidePanelEntry::Id::kLensOverlayResults);
+
+  // The recorded histogram should be the start query error.
+  histogram_tester.ExpectTotalCount("Lens.Overlay.SidePanelResultStatus",
+                                    /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.SidePanelResultStatus",
+      lens::SidePanelResultStatus::kErrorPageShownStartQueryError,
+      /*expected_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       HandleStartQueryResponseError_Offline) {
+  base::HistogramTester histogram_tester;
+  WaitForPaint();
+
+  // There should be no histograms logged.
+  histogram_tester.ExpectTotalCount("Lens.Overlay.SidePanelResultStatus",
+                                    /*expected_count=*/0);
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Set the full image request to return an error.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  fake_controller->SetFullImageRequestShouldReturnError();
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  // When the overlay is bound, it should start the query flow which returns a
+  // response for the full image callback.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  // Verify the error page histogram was not recorded since the result panel is
+  // not open.
+  histogram_tester.ExpectTotalCount("Lens.Overlay.SidePanelResultStatus",
+                                    /*expected_count=*/0);
+
+  // Set the network connection type to being offline.
+  auto scoped_mock_network_change_notifier =
+      std::make_unique<net::test::ScopedMockNetworkChangeNotifier>();
+  scoped_mock_network_change_notifier->mock_network_change_notifier()
+      ->SetConnectionType(net::NetworkChangeNotifier::CONNECTION_NONE);
+
+  // Side panel is not showing at first.
+  auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
+  EXPECT_FALSE(coordinator->IsSidePanelShowing());
+  EXPECT_FALSE(controller->GetSidePanelWebContentsForTesting());
+
+  // Loading a url in the side panel should show the side panel even if we
+  // expect the navigation to fail.
+  const GURL search_url("https://www.google.com/search");
+  controller->LoadURLInResultsFrame(search_url);
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+
+  // Expect the Lens Overlay results panel to open.
+  ASSERT_TRUE(coordinator->IsSidePanelShowing());
+  EXPECT_EQ(coordinator->GetCurrentEntryId(),
+            SidePanelEntry::Id::kLensOverlayResults);
+
+  // The recorded histogram should still be the start query error rather than
+  // the network being offline.
+  histogram_tester.ExpectTotalCount("Lens.Overlay.SidePanelResultStatus",
+                                    /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.SidePanelResultStatus",
+      lens::SidePanelResultStatus::kErrorPageShownStartQueryError,
+      /*expected_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -1889,8 +1979,59 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       OfflineErrorPageInSidePanel) {
+                       SidePanelResultStatusHistogram_ResultShown) {
+  base::HistogramTester histogram_tester;
   WaitForPaint();
+
+  // There should be no histograms logged.
+  histogram_tester.ExpectTotalCount("Lens.Overlay.SidePanelResultStatus",
+                                    /*expected_count=*/0);
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+  EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
+
+  // Side panel is not showing at first.
+  auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
+  EXPECT_FALSE(coordinator->IsSidePanelShowing());
+  EXPECT_FALSE(controller->GetSidePanelWebContentsForTesting());
+
+  // Loading a url in the side panel should show the side panel even if we
+  // expect the navigation to fail.
+  const GURL search_url("https://www.google.com/search");
+  controller->LoadURLInResultsFrame(search_url);
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+
+  // Expect the Lens Overlay results panel to open.
+  ASSERT_TRUE(coordinator->IsSidePanelShowing());
+  EXPECT_EQ(coordinator->GetCurrentEntryId(),
+            SidePanelEntry::Id::kLensOverlayResults);
+
+  // Verify the histogram was set correctly to `kResultShown`.
+  histogram_tester.ExpectTotalCount("Lens.Overlay.SidePanelResultStatus",
+                                    /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("Lens.Overlay.SidePanelResultStatus",
+                                     lens::SidePanelResultStatus::kResultShown,
+                                     /*expected_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       OfflineErrorPageInSidePanel) {
+  base::HistogramTester histogram_tester;
+  WaitForPaint();
+
+  // There should be no histograms logged.
+  histogram_tester.ExpectTotalCount("Lens.Overlay.SidePanelResultStatus",
+                                    /*expected_count=*/0);
 
   // State should start in off.
   auto* controller = GetLensOverlayController();
@@ -1915,12 +2056,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_FALSE(coordinator->IsSidePanelShowing());
   EXPECT_FALSE(controller->GetSidePanelWebContentsForTesting());
 
-  // Reset any side panel tracking values that may have been set by initial
-  // open.
-  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
-  ASSERT_TRUE(fake_controller);
-  fake_controller->ResetSidePanelTracking();
-
   // Loading a url in the side panel should show the side panel even if we
   // expect the navigation to fail.
   const GURL search_url("https://www.google.com/search");
@@ -1933,16 +2068,17 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(coordinator->GetCurrentEntryId(),
             SidePanelEntry::Id::kLensOverlayResults);
 
-  // Verify the error page was set correctly. The error page is set to show
-  // twice because the URL is modified and attempted to reload due to not having
-  // the proper query parameters.
-  EXPECT_EQ(fake_controller->side_panel_set_hide_error_page_, 0);
-  EXPECT_EQ(fake_controller->side_panel_set_show_error_page_, 2);
+  // Verify the error page was set correctly.
+  histogram_tester.ExpectTotalCount("Lens.Overlay.SidePanelResultStatus",
+                                    /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.SidePanelResultStatus",
+      lens::SidePanelResultStatus::kErrorPageShownOffline,
+      /*expected_count=*/1);
 
   // Set the network connection type to being online.
   scoped_mock_network_change_notifier->mock_network_change_notifier()
       ->SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
-  fake_controller->ResetSidePanelTracking();
 
   // Loading a url in the side panel should show the results page.
   content::TestNavigationObserver observer(
@@ -1951,10 +2087,12 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   observer.WaitForNavigationFinished();
 
   // Verify the error page was set correctly. It should be hidden after a
-  // successful navigation. This happens twice because the URL is modified to
-  // add extra search query parameters.
-  EXPECT_EQ(fake_controller->side_panel_set_hide_error_page_, 2);
-  EXPECT_EQ(fake_controller->side_panel_set_show_error_page_, 0);
+  // successful navigation.
+  histogram_tester.ExpectTotalCount("Lens.Overlay.SidePanelResultStatus",
+                                    /*expected_count=*/2);
+  histogram_tester.ExpectBucketCount("Lens.Overlay.SidePanelResultStatus",
+                                     lens::SidePanelResultStatus::kResultShown,
+                                     /*expected_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -1972,16 +2110,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_FALSE(coordinator->IsSidePanelShowing());
 }
 
-// TODO(crbug.com/377033756): Test flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_SidePanel_SameTabSameOriginLinkClick \
-  DISABLED_SidePanel_SameTabSameOriginLinkClick
-#else
-#define MAYBE_SidePanel_SameTabSameOriginLinkClick \
-  SidePanel_SameTabSameOriginLinkClick
-#endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       MAYBE_SidePanel_SameTabSameOriginLinkClick) {
+                       SidePanel_SameTabSameOriginLinkClick) {
   WaitForPaint();
 
   // State should start in off.
@@ -2026,15 +2156,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Simulate a same-origin navigation on the results frame.
   const GURL nav_url("https://www.google.com/search?q=apples");
   content::TestNavigationObserver observer(
-      controller->GetSidePanelWebContentsForTesting());
+      controller->GetSidePanelWebContentsForTesting(),
+      /*expected_number_of_navigations=*/2);
   EXPECT_TRUE(content::ExecJs(
       results_frame, content::JsReplace(kSameTabLinkClickScript, nav_url),
       content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
   // Wait for the navigation to finish and the page to finish loading.
-  observer.WaitForNavigationFinished();
-  EXPECT_TRUE(content::WaitForLoadStop(
-      controller->GetSidePanelWebContentsForTesting()));
+  observer.Wait();
 
   // It should not open a new tab as this is a same-origin navigation.
   EXPECT_EQ(tabs, browser()->tab_strip_model()->count());
@@ -3217,14 +3346,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(controller->get_search_query_history_for_testing().empty());
 }
 
-// TODO(346840584): Disabled due to flakiness on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_RecordHistogramsShowAndClose DISABLED_RecordHistogramsShowAndClose
-#else
-#define MAYBE_RecordHistogramsShowAndClose RecordHistogramsShowAndClose
-#endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       MAYBE_RecordHistogramsShowAndClose) {
+                       RecordHistogramsShowAndClose) {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   base::HistogramTester histogram_tester;
   WaitForPaint();
@@ -3559,16 +3682,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_TRUE(controller->state() == State::kOverlay);
 }
 
-// TODO(b/340886492): Fix and reenable test on MSAN.
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_OverlayClosesSidePanelBeforeOpening \
-  DISABLED_OverlayClosesSidePanelBeforeOpening
-#else
-#define MAYBE_OverlayClosesSidePanelBeforeOpening \
-  OverlayClosesSidePanelBeforeOpening
-#endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       MAYBE_OverlayClosesSidePanelBeforeOpening) {
+                       OverlayClosesSidePanelBeforeOpening) {
   WaitForPaint();
 
   // State should start in off.
@@ -4119,7 +4234,7 @@ class LensOverlayControllerBrowserPDFTest
 
   std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
     auto disabled = PDFExtensionTestBase::GetDisabledFeatures();
-    disabled.push_back({lens::features::kLensOverlayContextualSearchbox});
+    disabled.emplace_back(lens::features::kLensOverlayContextualSearchbox);
     return disabled;
   }
 
@@ -4288,7 +4403,7 @@ class LensOverlayControllerBrowserPDFContextualizationTest
                        {{"use-pdfs-as-context", "true"},
                         {"use-inner-html-as-context", "true"},
                         {"file-upload-limit-bytes",
-                         base::NumberToString(file_size_limit_bytes_)}}});
+                         base::NumberToString(kFileSizeLimitBytes)}}});
     return enabled;
   }
 
@@ -4297,7 +4412,7 @@ class LensOverlayControllerBrowserPDFContextualizationTest
   }
 
  protected:
-  const uint32_t file_size_limit_bytes_ = 10000;
+  static constexpr uint32_t kFileSizeLimitBytes = 10000;
 };
 
 IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
@@ -4332,6 +4447,35 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   ASSERT_TRUE(fake_controller);
   EXPECT_TRUE(fake_controller->fake_overlay_page_
                   .last_received_should_show_contextual_searchbox_);
+}
+
+IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
+                       PartialPdfIncludedInRequest) {
+  // Open the PDF document and wait for it to finish loading.
+  const GURL url = embedded_test_server()->GetURL(kPdfDocument);
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(url);
+  ASSERT_TRUE(extension_host);
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_TRUE(controller);
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Open the overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return controller->state() == State::kOverlay; }));
+
+  // Verify pdf content was included in the query.
+  auto* fake_query_controller =
+      static_cast<lens::TestLensOverlayQueryController*>(
+          controller->get_lens_overlay_query_controller_for_testing());
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return fake_query_controller->last_sent_partial_content().size() == 1;
+  }));
+  ASSERT_EQ(u"this is some text\r\nsome more text",
+            fake_query_controller->last_sent_partial_content()[0]);
 }
 
 IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
@@ -4430,7 +4574,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   // Verify the document is over the size limit.
   auto file_size = GetFileSizeForTestDataFile(kPdfDocument12KbFileName);
   ASSERT_TRUE(file_size.has_value());
-  ASSERT_GT(file_size.value(), file_size_limit_bytes_);
+  ASSERT_GT(file_size.value(), kFileSizeLimitBytes);
 
   // Open the PDF document that is over our size limit and wait for it to finish
   // loading.
@@ -4606,11 +4750,13 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
       static_cast<int64_t>(lens::MimeType::kPdf));
 }
 
-// TODO(crbug.com/378810677): Flaky on all platforms.
-IN_PROC_BROWSER_TEST_P(
-    LensOverlayControllerBrowserPDFContextualizationTest,
-    DISABLED_RecordSearchboxFocusedInSessionNavigationHistograms) {
+IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
+                       RecordSearchboxFocusedInSessionNavigationHistograms) {
   base::HistogramTester histogram_tester;
+
+  // Load a non PDF.
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
+  WaitForPaintImpl(browser(), url);
 
   // State should start in off.
   auto* controller = GetLensOverlayController();
@@ -4640,8 +4786,8 @@ IN_PROC_BROWSER_TEST_P(
   fake_query_controller->ResetTestingState();
 
   // Change page to a PDF.
-  const GURL url = embedded_test_server()->GetURL(kPdfDocumentWithForm);
-  LoadPdfGetExtensionHost(url);
+  const GURL pdf_url = embedded_test_server()->GetURL(kPdfDocumentWithForm);
+  LoadPdfGetExtensionHost(pdf_url);
 
   // Issue a new searchbox query.
   controller->IssueSearchBoxRequestForTesting(
@@ -4666,13 +4812,68 @@ IN_PROC_BROWSER_TEST_P(
       "Lens.Overlay.ContextualSearchBox.FocusedInSession", true,
       /*expected_count=*/1);
   histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ContextualSearchBox.ByPageContentType.PlainText."
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType.Html."
       "FocusedInSession",
       /*expected_count=*/1);
   histogram_tester.ExpectBucketCount(
-      "Lens.Overlay.ContextualSearchBox.ByPageContentType.PlainText."
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType.Html."
       "FocusedInSession",
       true, /*expected_count=*/1);
+}
+
+class LensOverlayControllerBrowserPDFIncreaseLimitTest
+    : public LensOverlayControllerBrowserPDFContextualizationTest {
+ public:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      const override {
+    auto enabled = PDFExtensionTestBase::GetEnabledFeatures();
+    enabled.push_back({lens::features::kLensOverlayContextualSearchbox,
+                       {{"use-pdfs-as-context", "true"},
+                        {"use-inner-html-as-context", "true"},
+                        {"pdf-text-character-limit", "50"},
+                        {"file-upload-limit-bytes",
+                         base::NumberToString(kFileSizeLimitBytes)}}});
+    return enabled;
+  }
+
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
+    return {};
+  }
+
+ protected:
+  static constexpr uint32_t kFileSizeLimitBytes = 200000;
+};
+
+IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFIncreaseLimitTest,
+                       PartialPdfCharacterLimitReached_IncludedInRequest) {
+  // Open the PDF document and wait for it to finish loading.
+  const GURL url = embedded_test_server()->GetURL(kMultiPagePdf);
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(url);
+  ASSERT_TRUE(extension_host);
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_TRUE(controller);
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Open the overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return controller->state() == State::kOverlay; }));
+
+  // Verify the first two pages were sent, excluding the last page of the PDF.
+  auto* fake_query_controller =
+      static_cast<lens::TestLensOverlayQueryController*>(
+          controller->get_lens_overlay_query_controller_for_testing());
+
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return 2u == fake_query_controller->last_sent_partial_content().size();
+  }));
+  ASSERT_EQ(u"1 First Section\r\nThis is the first section.\r\n1",
+            fake_query_controller->last_sent_partial_content()[0]);
+  ASSERT_EQ(u"1.1 First Subsection\r\nThis is the first subsection.\r\n2",
+            fake_query_controller->last_sent_partial_content()[1]);
 }
 
 // TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
@@ -4680,6 +4881,8 @@ IN_PROC_BROWSER_TEST_P(
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(LensOverlayControllerBrowserPDFTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     LensOverlayControllerBrowserPDFContextualizationTest);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    LensOverlayControllerBrowserPDFIncreaseLimitTest);
 
 // Test with --enable-pixel-output-in-tests enabled, required to actually grab
 // screenshots for color extraction.
@@ -4792,9 +4995,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserWithPixelsTest,
   EXPECT_EQ(received_theme->primary, expected_theme->primary);
 }
 
-// TODO(crbug.com/369871247): Deflake and re-enable.
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserWithPixelsTest,
-                       DISABLED_ViewportImageBoundingBoxes) {
+                       ViewportImageBoundingBoxes) {
   WaitForPaint(kDocumentWithImage);
 
   // State should start in off.
@@ -4811,13 +5013,17 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserWithPixelsTest,
   controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
   ASSERT_EQ(controller->state(), State::kScreenshot);
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kStartingWebUI; }));
+      [&]() { return controller->state() == State::kOverlay; }));
 
   // Verify screenshot was captured and stored.
   auto screenshot_bitmap = controller->current_screenshot();
   EXPECT_TRUE(IsNotEmptyAndNotTransparentBlack(screenshot_bitmap));
 
-  auto& boxes = controller->GetSignificantRegionBoxesForTesting();
+  auto* fake_query_controller =
+      static_cast<lens::TestLensOverlayQueryController*>(
+          controller->get_lens_overlay_query_controller_for_testing());
+
+  auto& boxes = fake_query_controller->last_sent_significant_region_boxes();
   EXPECT_EQ(boxes.size(), 1UL);
   EXPECT_GT(boxes[0]->box.x(), 0);
   EXPECT_LT(boxes[0]->box.x(), 1);
@@ -4973,9 +5179,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                         last_sent_underlying_content_bytes.end()));
 }
 
-// TODO(crbug.com/379747618): flaky.
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       DISABLED_InnerTextBytesInFollowUpRequest) {
+                       InnerTextBytesInFollowUpRequest) {
   base::HistogramTester histogram_tester;
   WaitForPaint(kDocumentWithNonAsciiCharacters);
 
@@ -5020,6 +5225,17 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   }));
   ASSERT_EQ(lens::MimeType::kPlainText,
             fake_query_controller->last_sent_underlying_content_type());
+
+  // The size of the PlainText is retrieved when issuing the searchbox query.
+  // Getting the size of the HTML is retrieved afterwards, and therefore is
+  // async at this point. RunUntil the bytes are retrieved and the histogram is
+  // recorded to prevent flakiness. To check if the histogram is recorded, grab
+  // the bucket count for the HTML document size of 0, since the HTML we are
+  // testing on is so small it rounds to 0 KB.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetBucketCount(
+               "Lens.Overlay.ByPageContentType.Html.DocumentSize", 0) == 2;
+  }));
 
   // Verify the size histograms recorded the new bytes.
   histogram_tester.ExpectTotalCount(
@@ -6063,7 +6279,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
 
 // TODO(crbug.com/360161233): This test is flaky.
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
-                       DISABLED_PreselectionToastDisappearsOnSelection) {
+                       PreselectionToastDisappearsOnSelection) {
   WaitForPaint();
 
   // State should start in off.

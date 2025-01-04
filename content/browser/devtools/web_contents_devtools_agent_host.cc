@@ -13,6 +13,7 @@
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/common/content_features.h"
 
 namespace content {
 
@@ -83,10 +84,12 @@ class WebContentsDevToolsAgentHost::AutoAttacher
           web_contents_->GetPrimaryMainFrame());
       web_contents_->ForEachRenderFrameHost(
           [&hosts](RenderFrameHost* rfh) { AddFrame(hosts, rfh); });
-      // In case primary main frame has been filtered out but some criteria
+      // In case the primary main frame has been filtered out by some criteria
       // in AddFrame(), ensure it's added.
-      hosts.insert(
-          RenderFrameDevToolsAgentHost::GetOrCreateFor(rfh->frame_tree_node()));
+      if (!base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+        hosts.insert(RenderFrameDevToolsAgentHost::GetOrCreateFor(
+            rfh->frame_tree_node()));
+      }
     }
     DispatchSetAttachedTargetsOfType(hosts, DevToolsAgentHost::kTypePage);
     return hosts;
@@ -99,8 +102,9 @@ class WebContentsDevToolsAgentHost::AutoAttacher
     if (rfhi->IsInBackForwardCache())
       return;
     FrameTreeNode* ftn = rfhi->frame_tree_node();
-    // We're interested only in main frames, with the expcetion of fenced frames
-    // that are reported as regular subframes via FrameAutoAttacher.
+    // We're interested only in main frames, with the exception of fenced frames
+    // and (MPArch-based) guests that are reported as regular subframes via
+    // FrameAutoAttacher.
     if (!ftn->IsMainFrame())
       return;
     if (ftn->IsFencedFrameRoot())

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "chromeos/ash/services/libassistant/grpc/assistant_client_observer.h"
 #include "chromeos/ash/services/libassistant/network_provider_impl.h"
 #include "chromeos/ash/services/libassistant/public/mojom/audio_output_delegate.mojom.h"
 #include "chromeos/ash/services/libassistant/public/mojom/platform_delegate.mojom.h"
@@ -26,8 +25,7 @@ class SystemProviderImpl;
 // Implementation of the Libassistant PlatformApi.
 // The components that haven't been migrated to this mojom service will still be
 // implemented chromeos/service/assistant/platform (and simply be exposed here).
-class PlatformApi : public assistant_client::PlatformApi,
-                    public AssistantClientObserver {
+class PlatformApi : public assistant_client::PlatformApi {
  public:
   PlatformApi();
   PlatformApi(const PlatformApi&) = delete;
@@ -47,10 +45,6 @@ class PlatformApi : public assistant_client::PlatformApi,
   assistant_client::FileProvider& GetFileProvider() override;
   assistant_client::NetworkProvider& GetNetworkProvider() override;
   assistant_client::SystemProvider& GetSystemProvider() override;
-
-  // AssistantClientObserver:
-  void OnAssistantClientCreated(AssistantClient* assistant_client) override;
-  void OnAssistantClientDestroyed() override;
 
  private:
   // This is owned by |AudioInputController|.

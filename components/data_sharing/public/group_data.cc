@@ -11,6 +11,19 @@ namespace data_sharing {
 
 GroupMember::GroupMember() = default;
 
+GroupMember::GroupMember(GaiaId gaia_id,
+                         std::string display_name,
+                         std::string email,
+                         MemberRole role,
+                         GURL avatar_url,
+                         std::string given_name)
+    : gaia_id(gaia_id),
+      display_name(display_name),
+      email(email),
+      role(role),
+      avatar_url(avatar_url),
+      given_name(given_name) {}
+
 GroupMember::GroupMember(const GroupMember&) = default;
 GroupMember& GroupMember::operator=(const GroupMember&) = default;
 
@@ -27,6 +40,7 @@ GroupMemberPartialData GroupMemberPartialData::FromGroupMember(
   result.display_name = member.display_name;
   result.email = member.email;
   result.avatar_url = member.avatar_url;
+  result.given_name = member.given_name;
   return result;
 }
 
@@ -43,6 +57,16 @@ GroupMemberPartialData& GroupMemberPartialData::operator=(
     GroupMemberPartialData&&) = default;
 
 GroupMemberPartialData::~GroupMemberPartialData() = default;
+
+GroupMember GroupMemberPartialData::ToGroupMember() {
+  GroupMember member;
+  member.gaia_id = gaia_id;
+  member.display_name = display_name;
+  member.email = email;
+  member.avatar_url = avatar_url;
+  member.given_name = given_name;
+  return member;
+}
 
 GroupToken::GroupToken() = default;
 
@@ -86,6 +110,15 @@ GroupEvent& GroupEvent::operator=(const GroupEvent&) = default;
 
 GroupEvent::GroupEvent(GroupEvent&&) = default;
 GroupEvent& GroupEvent::operator=(GroupEvent&&) = default;
+
+GroupEvent::GroupEvent(EventType event_type,
+                       const GroupId& group_id,
+                       const std::optional<GaiaId>& affected_member_gaia_id,
+                       const base::Time& event_time)
+    : event_type(event_type),
+      group_id(group_id),
+      affected_member_gaia_id(affected_member_gaia_id),
+      event_time(event_time) {}
 
 GroupEvent::~GroupEvent() = default;
 

@@ -4,6 +4,7 @@
 
 #include <array>
 #include <cstdint>
+#include <cstring>
 #include <tuple>
 
 // No rewrite expected.
@@ -89,4 +90,12 @@ void sizeof_array_expr() {
   // The following won't be rewritten.
   std::ignore = sizeof *buf;
   std::ignore = sizeof buf[0];
+}
+
+// Test for crbug.com/383424943.
+void crbug_383424943() {
+  // No rewrite expected.
+  int buf[]{1};
+  // Using sizeof was causing buf to be rewritten.
+  memset(buf, 'x', sizeof(buf));
 }

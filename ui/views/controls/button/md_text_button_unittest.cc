@@ -33,8 +33,9 @@ TEST_F(MdTextButtonTest, CustomPadding) {
 TEST_F(MdTextButtonTest, BackgroundColorChangesWithWidgetActivation) {
   // Test whether the button's background color changes when its containing
   // widget's activation changes.
-  if (!PlatformStyle::kInactiveWidgetControlsAppearDisabled)
+  if (!PlatformStyle::kInactiveWidgetControlsAppearDisabled) {
     GTEST_SKIP() << "Button colors do not change with widget activation here.";
+  }
 
   std::unique_ptr<Widget> widget =
       CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);

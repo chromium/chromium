@@ -17,39 +17,25 @@ import '../settings_shared.css.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_settings_page/os_settings_subpage.js';
 import '../os_settings_page/settings_card.js';
-import '../parental_controls_page/parental_controls_page.js';
 import '../parental_controls_page/parental_controls_settings_card.js';
 import './account_manager_settings_card.js';
 import './additional_accounts_settings_card.js';
 import './graduation/graduation_settings_card.js';
 
-import type {ProfileInfo} from '/shared/settings/people_page/profile_info_browser_proxy.js';
-import {ProfileInfoBrowserProxyImpl} from '/shared/settings/people_page/profile_info_browser_proxy.js';
-import type {SyncBrowserProxy, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {SignedInState, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {convertImageSequenceToPng} from 'chrome://resources/ash/common/cr_picture/png.js';
-import {sendWithPromise} from 'chrome://resources/js/cr.js';
-import {getImage} from 'chrome://resources/js/icon.js';
+import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {afterNextRender, flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {isAccountManagerEnabled, isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
-import {RouteOriginMixin} from '../common/route_origin_mixin.js';
-import {LockStateMixin} from '../lock_state_mixin.js';
+import {isAccountManagerEnabled} from '../common/load_time_booleans.js';
 import {type GraduationHandlerInterface, GraduationObserverReceiver} from '../mojom-webui/graduation_handler.mojom-webui.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
-import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import type {Route} from '../router.js';
-import {Router, routes} from '../router.js';
 
-import type {Account} from './account_manager_browser_proxy.js';
 import {AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js';
+import type {Account} from './account_manager_browser_proxy.js';
 import {getGraduationHandlerProvider} from './graduation/mojo_interface_provider.js';
 import {getTemplate} from './os_people_page.html.js';
 
-const OsSettingsPeoplePageElementBase =
-    LockStateMixin(RouteOriginMixin(DeepLinkingMixin(PolymerElement)));
+const OsSettingsPeoplePageElementBase = WebUiListenerMixin(PolymerElement);
 
 export class OsSettingsPeoplePageElement extends
     OsSettingsPeoplePageElementBase {
@@ -74,11 +60,6 @@ export class OsSettingsPeoplePageElement extends
         readOnly: true,
       },
 
-      /**
-       * The current sync status, supplied by SyncBrowserProxy.
-       */
-      syncStatus: Object,
-
       accounts_: {
         type: Array,
         value() {
@@ -93,42 +74,10 @@ export class OsSettingsPeoplePageElement extends
         },
       },
 
-      authTokenInfo_: {
-        type: Object,
-        observer: 'onAuthTokenChanged_',
-      },
-
-      /**
-       * The current profile icon URL. Usually a data:image/png URL.
-       */
-      profileIconUrl_: String,
-
-      profileName_: String,
-
-      profileEmail_: String,
-
-      profileLabel_: String,
-
-      fingerprintUnlockEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('fingerprintUnlockEnabled');
-        },
-        readOnly: true,
-      },
-
       isAccountManagerEnabled_: {
         type: Boolean,
         value() {
           return isAccountManagerEnabled();
-        },
-        readOnly: true,
-      },
-
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value: () => {
-          return isRevampWayfindingEnabled();
         },
         readOnly: true,
       },
@@ -141,11 +90,6 @@ export class OsSettingsPeoplePageElement extends
         },
       },
 
-      showPasswordPromptDialog_: {
-        type: Boolean,
-        value: false,
-      },
-
       showGraduationApp_: {
         type: Boolean,
         value: () => {
@@ -153,71 +97,22 @@ export class OsSettingsPeoplePageElement extends
               loadTimeData.getBoolean('isGraduationAppEnabled');
         },
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kSetUpParentalControls,
-
-          // Perform Sync page deep links here since it's a shared page.
-          Setting.kNonSplitSyncEncryptionOptions,
-          Setting.kImproveSearchSuggestions,
-          Setting.kMakeSearchesAndBrowsingBetter,
-        ]),
-      },
-
-      /**
-       * Whether to show the new UI for OS Sync Settings
-       * which include sublabel and Apps toggle
-       * shared between Ash and Lacros.
-       */
-      showSyncSettingsRevamp_: {
-        type: Boolean,
-        value: loadTimeData.getBoolean('showSyncSettingsRevamp'),
-        readOnly: true,
-      },
-
     };
   }
 
-  syncStatus: SyncStatus;
   private accounts_: Account[];
   private deviceAccount_: Account|null;
-  private authTokenInfo_: chrome.quickUnlockPrivate.TokenInfo|undefined;
-  private profileIconUrl_: string;
-  private profileName_: string;
-  private profileEmail_: string;
-  private profileLabel_: string;
-  private fingerprintUnlockEnabled_: boolean;
   private graduationMojoProvider_: GraduationHandlerInterface;
   private graduationObserverReceiver_: GraduationObserverReceiver|null;
   private isAccountManagerEnabled_: boolean;
-  private readonly isRevampWayfindingEnabled_: boolean;
   private showGraduationApp_: boolean;
   private showParentalControls_: boolean;
   private section_: Section;
-  private showPasswordPromptDialog_: boolean;
-  private showSyncSettingsRevamp_: boolean;
-  private syncBrowserProxy_: SyncBrowserProxy;
-  private clearAccountPasswordTimeoutId_: number|undefined;
 
   constructor() {
     super();
 
-    /** RouteOriginMixin override */
-    this.route = routes.OS_PEOPLE;
-
-    this.syncBrowserProxy_ = SyncBrowserProxyImpl.getInstance();
     this.graduationMojoProvider_ = getGraduationHandlerProvider();
-
-    /**
-     * The timeout ID to pass to clearTimeout() to cancel auth token
-     * invalidation.
-     */
-    this.clearAccountPasswordTimeoutId_ = undefined;
   }
 
   override connectedCallback(): void {
@@ -228,154 +123,11 @@ export class OsSettingsPeoplePageElement extends
       this.addWebUiListener(
           'accounts-changed', this.updateAccounts_.bind(this));
       this.updateAccounts_();
-    } else {
-      // Otherwise use the Profile name and icon.
-      ProfileInfoBrowserProxyImpl.getInstance().getProfileInfo().then(
-          this.handleProfileInfo_.bind(this));
-      this.addWebUiListener(
-          'profile-info-changed', this.handleProfileInfo_.bind(this));
     }
-
-    this.syncBrowserProxy_.getSyncStatus().then(
-        this.handleSyncStatus_.bind(this));
-    this.addWebUiListener(
-        'sync-status-changed', this.handleSyncStatus_.bind(this));
 
     this.graduationObserverReceiver_ = new GraduationObserverReceiver(this);
     this.graduationMojoProvider_.addObserver(
         this.graduationObserverReceiver_.$.bindNewPipeAndPassRemote());
-  }
-
-  override ready(): void {
-    super.ready();
-
-    this.addFocusConfig(routes.SYNC, '#syncSetupRow');
-    this.addFocusConfig(
-        routes.ACCOUNT_MANAGER, '#accountManagerSubpageTrigger');
-  }
-
-  private onPasswordRequested_(): void {
-    this.showPasswordPromptDialog_ = true;
-  }
-
-  // Invalidate the token to trigger a password re-prompt. Used for PIN auto
-  // submit when too many attempts were made when using PrefStore based PIN.
-  private onInvalidateTokenRequested_(): void {
-    this.authTokenInfo_ = undefined;
-  }
-
-  private onPasswordPromptDialogClose_(): void {
-    this.showPasswordPromptDialog_ = false;
-    if (!this.authTokenInfo_) {
-      Router.getInstance().navigateToPreviousRoute();
-    }
-  }
-
-  private getSyncAdvancedTitle_(): string {
-    if (this.showSyncSettingsRevamp_) {
-      return this.i18n('syncAdvancedDevicePageTitle');
-    }
-    return this.i18n('syncAdvancedPageTitle');
-  }
-
-  private afterRenderShowDeepLink_(
-      settingId: Setting,
-      getElementCallback: () => (HTMLElement | null)): void {
-    // Wait for element to load.
-    afterNextRender(this, () => {
-      const deepLinkElement = getElementCallback();
-      if (!deepLinkElement || deepLinkElement.hidden) {
-        console.warn(`Element with deep link id ${settingId} not focusable.`);
-        return;
-      }
-      this.showDeepLinkElement(deepLinkElement);
-    });
-  }
-
-  // TODO(b/302374851) The manual deep linking below can be removed once the
-  // Revamp feature is fully launched.
-  override beforeDeepLinkAttempt(settingId: Setting): boolean {
-    switch (settingId) {
-      // Manually show the deep links for settings nested within elements.
-      case Setting.kSetUpParentalControls:
-        this.afterRenderShowDeepLink_(settingId, () => {
-          const parentalPage =
-              this.shadowRoot!.querySelector('settings-parental-controls-page');
-          return parentalPage && parentalPage.getSetupButton();
-        });
-        // Stop deep link attempt since we completed it manually.
-        return false;
-
-      // Handle the settings within the old sync page since its a shared
-      // component.
-      case Setting.kNonSplitSyncEncryptionOptions:
-        this.afterRenderShowDeepLink_(settingId, () => {
-          const syncPage =
-              this.shadowRoot!.querySelector('os-settings-sync-subpage');
-          // Expand the encryption collapse.
-          syncPage!.forceEncryptionExpanded = true;
-          flush();
-          return syncPage && syncPage.getEncryptionOptions() &&
-              syncPage.getEncryptionOptions()!.getEncryptionsRadioButtons();
-        });
-        return false;
-
-      case Setting.kImproveSearchSuggestions:
-        this.afterRenderShowDeepLink_(settingId, () => {
-          const syncPage =
-              this.shadowRoot!.querySelector('os-settings-sync-subpage');
-          return syncPage && syncPage.getPersonalizationOptions() &&
-              syncPage.getPersonalizationOptions()!.getSearchSuggestToggle();
-        });
-        return false;
-
-      case Setting.kMakeSearchesAndBrowsingBetter:
-        this.afterRenderShowDeepLink_(settingId, () => {
-          const syncPage =
-              this.shadowRoot!.querySelector('os-settings-sync-subpage');
-          return syncPage && syncPage.getPersonalizationOptions() &&
-              syncPage.getPersonalizationOptions()!.getUrlCollectionToggle();
-        });
-        return false;
-
-      default:
-        // Continue with deep linking attempt.
-        return true;
-    }
-  }
-
-  override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
-    super.currentRouteChanged(newRoute, oldRoute);
-
-    // The old sync page is a shared subpage, so we handle deep links for
-    // both this page and the sync page. Not ideal.
-    if (newRoute === routes.SYNC || newRoute === this.route) {
-      this.attemptDeepLink();
-    }
-  }
-
-  private onAuthTokenObtained_(
-      e: CustomEvent<chrome.quickUnlockPrivate.TokenInfo>): void {
-    this.authTokenInfo_ = e.detail;
-  }
-
-  private getSyncAndGoogleServicesSubtext_(): string {
-    if (this.syncStatus && this.syncStatus.hasError &&
-        this.syncStatus.statusText) {
-      return this.syncStatus.statusText;
-    }
-    return '';
-  }
-
-  private handleProfileInfo_(info: ProfileInfo): void {
-    this.profileName_ = info.name;
-    // Extract first frame from image by creating a single frame PNG using
-    // url as input if base64 encoded and potentially animated.
-    if (info.iconUrl.startsWith('data:image/png;base64')) {
-      this.profileIconUrl_ = convertImageSequenceToPng([info.iconUrl]);
-      return;
-    }
-    this.profileIconUrl_ = info.iconUrl;
   }
 
   /**
@@ -396,73 +148,6 @@ export class OsSettingsPeoplePageElement extends
     // Device account is always first per account_manager_ui_handler.cc.
     // TODO(b/325142618) Investigate why `isDeviceAccount` is not always true.
     this.deviceAccount_ = accounts[0];
-    this.profileName_ = this.deviceAccount_.fullName;
-    this.profileEmail_ = this.deviceAccount_.email;
-    this.profileIconUrl_ = this.deviceAccount_.pic;
-
-    // Template: "$1 Google accounts" with correct plural of "account".
-    const labelTemplate = await sendWithPromise(
-        'getPluralString', 'profileLabel', this.accounts_.length);
-    // Final output: "X Google accounts"
-    this.profileLabel_ = loadTimeData.substituteString(
-        labelTemplate, this.profileEmail_, this.accounts_.length);
-  }
-
-  /**
-   * Handler for when the sync state is pushed from the browser.
-   */
-  private handleSyncStatus_(syncStatus: SyncStatus): void {
-    this.syncStatus = syncStatus;
-
-    // When ChromeOSAccountManager is disabled, fall back to using the sync
-    // username ("alice@gmail.com") as the profile label.
-    if (!this.isAccountManagerEnabled_ && syncStatus &&
-        syncStatus.signedInState === SignedInState.SYNCING &&
-        syncStatus.signedInUsername) {
-      this.profileLabel_ = syncStatus.signedInUsername;
-    }
-  }
-
-  private onSyncClick_(): void {
-    // Users can go to sync subpage regardless of sync status.
-    Router.getInstance().navigateTo(routes.SYNC);
-  }
-
-  private onAccountManagerClick_(): void {
-    if (this.isAccountManagerEnabled_) {
-      Router.getInstance().navigateTo(routes.ACCOUNT_MANAGER);
-    }
-  }
-
-  private getIconImageSet_(iconUrl: string): string {
-    return getImage(iconUrl);
-  }
-
-  private getProfileName_(): string {
-    if (this.isAccountManagerEnabled_) {
-      return loadTimeData.getString('osProfileName');
-    }
-    return this.profileName_;
-  }
-
-  private onAuthTokenChanged_(): void {
-    if (this.clearAccountPasswordTimeoutId_) {
-      clearTimeout(this.clearAccountPasswordTimeoutId_);
-    }
-    if (this.authTokenInfo_ === undefined) {
-      return;
-    }
-    // Clear |this.authTokenInfo_| after
-    // |this.authTokenInfo_.tokenInfo.lifetimeSeconds|.
-    // Subtract time from the expiration time to account for IPC delays.
-    // Treat values less than the minimum as 0 for testing.
-    const IPC_SECONDS = 2;
-    const lifetimeMs = this.authTokenInfo_.lifetimeSeconds > IPC_SECONDS ?
-        (this.authTokenInfo_.lifetimeSeconds - IPC_SECONDS) * 1000 :
-        0;
-    this.clearAccountPasswordTimeoutId_ = setTimeout(() => {
-      this.authTokenInfo_ = undefined;
-    }, lifetimeMs);
   }
 
   onGraduationAppUpdated(isAppEnabled: boolean): void {

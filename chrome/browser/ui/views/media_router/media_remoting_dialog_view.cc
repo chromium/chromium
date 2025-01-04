@@ -61,8 +61,9 @@ bool MediaRemotingDialogCoordinatorViews::Show(
 }
 
 void MediaRemotingDialogCoordinatorViews::Hide() {
-  if (IsShowing())
+  if (IsShowing()) {
     tracker_.view()->GetWidget()->Close();
+  }
 }
 
 bool MediaRemotingDialogCoordinatorViews::IsShowing() const {

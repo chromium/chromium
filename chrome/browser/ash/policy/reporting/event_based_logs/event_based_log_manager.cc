@@ -23,7 +23,7 @@ namespace {
 // list of available enum values.
 constexpr ash::reporting::TriggerEventType kAllTriggerEventTypes[] = {
     ash::reporting::TRIGGER_EVENT_TYPE_UNSPECIFIED,
-    ash::reporting::OS_UPDATE_FAILED};
+    ash::reporting::OS_UPDATE_FAILED, ash::reporting::FATAL_CRASH};
 
 }  // namespace
 

@@ -2134,7 +2134,7 @@ BPF_TEST_C(SandboxBPF, Pread64, TrapPread64Policy) {
   BPF_ASSERT(FullPwrite64(
       temp_file.fd(), kTestString, sizeof(kTestString), kLargeOffset));
 
-  char read_test_string[sizeof(kTestString)] = {0};
+  char read_test_string[sizeof(kTestString)] = {};
   BPF_ASSERT(FullPread64(temp_file.fd(),
                          read_test_string,
                          sizeof(read_test_string),

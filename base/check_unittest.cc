@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -257,7 +258,7 @@ TEST(CheckDeathTest, CheckOpStrings) {
 }
 
 TEST(CheckDeathTest, CheckOpPointers) {
-  uint8_t arr[] = {3, 2, 1, 0};
+  auto arr = std::to_array<uint8_t>({3, 2, 1, 0});
   uint8_t* arr_start = &arr[0];
   // Print pointers and not the binary data in `arr`.
 #if BUILDFLAG(IS_WIN)
@@ -409,26 +410,30 @@ TEST(CheckTest, DcheckReleaseBehavior) {
 
 TEST(CheckTest, DCheckEqStatements) {
   bool reached = false;
-  if (false)
+  if (false) {
     DCHECK_EQ(false, true);  // Unreached.
-  else
+  } else {
     DCHECK_EQ(true, reached = true);  // Reached, passed.
+  }
   ASSERT_EQ(DCHECK_IS_ON() ? true : false, reached);
 
-  if (false)
+  if (false) {
     DCHECK_EQ(false, true);  // Unreached.
+  }
 }
 
 TEST(CheckTest, CheckEqStatements) {
   bool reached = false;
-  if (false)
+  if (false) {
     CHECK_EQ(false, true);  // Unreached.
-  else
+  } else {
     CHECK_EQ(true, reached = true);  // Reached, passed.
+  }
   ASSERT_TRUE(reached);
 
-  if (false)
+  if (false) {
     CHECK_EQ(false, true);  // Unreached.
+  }
 }
 
 #if BUILDFLAG(DCHECK_IS_CONFIGURABLE)

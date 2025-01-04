@@ -9,6 +9,19 @@ if (is_android) {
 }
 
 if (is_android) {
+  android_library("internal_java") {
+    srcjar_deps = [ ":internal_jni_headers" ]
+    resources_package = "org.chromium.chrome.browser.collaboration"
+    sources = [ "android/java/src/org/chromium/chrome/browser/collaboration/CollaborationControllerDelegateImpl.java" ]
+
+    deps = [
+      "//base:base_java",
+      "//components/collaboration/public:java",
+      "//components/data_sharing/public:public_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
   android_library("factory_java") {
     srcjar_deps = [ ":jni_headers" ]
     sources = [ "android/java/src/org/chromium/chrome/browser/collaboration/CollaborationServiceFactory.java" ]
@@ -27,6 +40,10 @@ if (is_android) {
     sources = [ "android/java/src/org/chromium/chrome/browser/collaboration/CollaborationServiceFactory.java" ]
   }
 
+  generate_jni("internal_jni_headers") {
+    sources = [ "android/java/src/org/chromium/chrome/browser/collaboration/CollaborationControllerDelegateImpl.java" ]
+  }
+
   android_library("javatests") {
     testonly = true
 
@@ -40,10 +57,12 @@ if (is_android) {
       "//chrome/test/android:chrome_java_integration_test_support",
       "//components/collaboration/public:java",
       "//components/data_sharing/public:public_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/hamcrest:hamcrest_core_java",
       "//third_party/hamcrest:hamcrest_library_java",
       "//third_party/junit:junit",
+      "//url:url_java",
     ]
   }
 

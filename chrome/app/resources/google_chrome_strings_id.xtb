@@ -63,6 +63,7 @@
 <translation id="1786044937610313874">Pintasan terbuka di Chrome</translation>
 <translation id="178701303897325119">Ekstensi ini tidak lagi didukung. Chrome merekomendasikan agar Anda menghapusnya.</translation>
 <translation id="1812689907177901597">Dengan menonaktifkan ini, Anda dapat login ke situs Google seperti Gmail tanpa harus login ke Chrome</translation>
+<translation id="1838374766361614909">Hapus penelusuran</translation>
 <translation id="1860536484129686729">Chrome memerlukan izin akses ke kamera untuk situs ini</translation>
 <translation id="1873233029667955273">Google Chrome bukan browser default</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
@@ -91,7 +92,6 @@
 <translation id="2137162749895930932">Tutup layar terjemahan</translation>
 <translation id="2139300032719313227">Mulai ulang ChromeOS</translation>
 <translation id="2151406531797534936">Mulai ulang Chrome sekarang</translation>
-<translation id="2163089732491971196">Untuk menggunakan dan menyimpan data Chrome di Akun Google Anda, masukkan frasa sandi</translation>
 <translation id="2174917724755363426">Penginstalan tidak selesai. Yakin ingin membatalkan?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">Error pemeriksaan update: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -205,6 +205,7 @@
 <translation id="345171907106878721">Tambahkan diri Anda ke Chrome</translation>
 <translation id="3453763134178591239">Persyaratan ChromeOS</translation>
 <translation id="3503306920980160878">Chrome memerlukan akses ke lokasi Anda untuk berbagi lokasi dengan situs ini</translation>
+<translation id="3512634283363927263">Halaman ini ditujukan untuk digunakan oleh developer Chrome, dan mungkin tidak dikelola atau diuji secara aktif. Untuk mengaktifkannya, buka <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klik tombol untuk mengaktifkan halaman debug, lalu buka lagi halaman ini.</translation>
 <translation id="3533694711092285624">Tidak ada sandi yang tersimpan. Chrome dapat memeriksa sandi Anda saat menyimpannya.</translation>
 <translation id="3541482654983822893">Chrome tidak dapat memeriksa sandi Anda. Coba lagi setelah 24 jam.</translation>
 <translation id="3564543103555793392">Saat login ke Chrome, Anda dapat menyimpan bookmark, sandi, dan data lainnya, lalu menggunakannya di ponsel</translation>
@@ -227,7 +228,6 @@
 <translation id="3716540481907974026">Versi ChromeOS Flex</translation>
 <translation id="3718181793972440140">Tindakan ini akan menghapus 1 item dari perangkat ini. Untuk mengambil data nanti, login ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome merekomendasikan agar Anda menghapusnya. <ph name="BEGIN_LINK" />Pelajari lebih lanjut ekstensi yang didukung<ph name="END_LINK" />}other{Chrome merekomendasikan agar Anda menghapusnya. <ph name="BEGIN_LINK" />Pelajari lebih lanjut ekstensi yang didukung<ph name="END_LINK" />}}</translation>
-<translation id="3744202345691150878">Dapatkan bantuan ChromeOS</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex tidak dapat menyinkronkan data Anda karena terjadi error saat login.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
@@ -241,6 +241,7 @@
 <translation id="3889417619312448367">Hapus Penginstalan Google Chrome</translation>
 <translation id="3892148308691398805">Salin teks</translation>
 <translation id="3941890832296813527">Error penginstalan: Nama file penginstal tidak valid atau tidak didukung.</translation>
+<translation id="3968962723676998462">Masukkan frasa sandi untuk menggunakan dan menyimpan data Chrome di akun Anda, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome ingin menghapus data Pengelola Sandi Google Anda. Ketik sandi Windows Anda untuk mengizinkannya.</translation>
 <translation id="398236277091248993">Chrome tetap cepat dengan fitur peningkatan performa</translation>
 <translation id="3999683152997576765">Anda dapat melihat dan menghapus topik terkait minat yang digunakan situs untuk menampilkan iklan kepada Anda. Chrome memperkirakan minat Anda berdasarkan histori penjelajahan terbaru Anda.</translation>
@@ -258,6 +259,7 @@
 <translation id="4147555960264124640">Anda masuk dengan akun terkelola dan memberikan administratornya kontrol atas profil Google Chrome Anda. Data Chrome Anda, seperti aplikasi, bookmark, histori, sandi, dan setelan lain selamanya akan dikaitkan ke <ph name="USER_NAME" />. Anda dapat menghapus data ini melalui Dasbor Akun Google, namun Anda tidak akan dapat mengaitkan data ini dengan akun yang lain. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Memasang...</translation>
 <translation id="4149882025268051530">Instalatur gagal mendekompresi arsip. Download kembali Google Chrome.</translation>
+<translation id="415112847282352845">Untuk mendapatkan alamat dan info Anda yang lain di semua perangkat Anda, login ke Chrome. Alamat ini akan disimpan di Akun Google Anda setelah Anda login.</translation>
 <translation id="4153934450158521343">Chrome akan segera ditutup serta menghapus data</translation>
 <translation id="4173512894976930765">Situs mungkin akan berfungsi seperti yang diharapkan. Anda akan logout dari sebagian besar situs saat menutup semua jendela Chrome, kecuali Akun Google Anda jika Anda login ke Chrome.</translation>
 <translation id="4175922240926474352">Chrome memblokir download ini karena situs tidak menggunakan koneksi yang aman dan file mungkin telah dimodifikasi</translation>
@@ -291,7 +293,6 @@
 <translation id="4567424176335768812">Anda login sebagai <ph name="USER_EMAIL_ADDRESS" />. Kini Anda dapat mengakses bookmark, histori, dan setelan lainnya pada seluruh perangkat yang Anda masuki.</translation>
 <translation id="4571503333518166079">Buka setelan notifikasi Chrome</translation>
 <translation id="4575717501879784448">Chrome dapat menonaktifkan tab ini untuk meningkatkan pengalaman penjelajahan dan mengosongkan resource.</translation>
-<translation id="4595162648538023956">Anda dapat login untuk mendapatkan data Anda, atau menggunakan Chrome tanpa akun</translation>
 <translation id="459622048091363950">Setelah Chrome memiliki akses, situs dapat meminta akses dari Anda.</translation>
 <translation id="4600710005438004015">Chrome tidak dapat diupdate ke versi terbaru, sehingga Anda tidak mendapatkan perbaikan keamanan dan fitur baru.</translation>
 <translation id="4601439950572737842">Data Anda dienkripsi dengan frasa sandi. Masukkan frasa sandi untuk menggunakan dan menyimpan data Chrome di Akun Google Anda.</translation>
@@ -299,13 +300,13 @@
 <translation id="4627412468266359539">Opsional: Bantu tingkatkan fitur dan performa ChromeOS Flex dengan mengirimkan data penggunaan dan diagnostik secara otomatis ke Google.</translation>
 <translation id="4633000520311261472">Agar Chrome lebih aman, kami menonaktifkan beberapa ekstensi yang tidak tercantum pada <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dan mungkin telah ditambahkan tanpa sepengetahuan Anda.</translation>
 <translation id="4680828127924988555">Batalkan Penginstalan</translation>
-<translation id="469553575393225953">Ekstensi, aplikasi, dan tema dari sumber tidak dikenal dapat membahayakan perangkat Anda. Chrome merekomendasikan hanya menginstal ekstensi, aplikasi, dan tema dari Chrome Web Store</translation>
 <translation id="4710245680469034439">Personalisasi browser Anda dengan tema yang terinspirasi oleh alam, koleksi seniman, dan lainnya</translation>
 <translation id="4720851490453439956">Layanan Internal Google Updater</translation>
 <translation id="4724676981607797757">Penginstalan gagal karena error protokol yang tidak didukung.</translation>
 <translation id="4728575227883772061">Penginstalan gagal karena kesalahan yang tidak diketahui. Jika Google Chrome sedang berjalan; tutup, lalu ulang kembali.</translation>
 <translation id="4741235124132242877">Disematkan. Gunakan Google Lens lagi dari toolbar</translation>
 <translation id="4747730611090640388">Chrome dapat memperkirakan minat Anda.  Kemudian, situs yang Anda buka dapat meminta Chrome untuk melihat minat Anda agar dapat mempersonalisasi iklan yang Anda lihat.</translation>
+<translation id="475321580758063259">Update Chrome untuk terus menggunakan data Chrome di Akun Google Anda, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="479167709087336770">Tindakan ini akan menggunakan pemeriksa ejaan yang sama dengan yang digunakan di penelusuran Google. Teks yang Anda ketikkan di browser dikirim ke Google. Anda dapat mengubah perilaku ini di setelan.</translation>
 <translation id="4793679854893018356">Pelajari cara Chrome menjaga keamanan Anda</translation>
@@ -348,7 +349,6 @@
 <translation id="5334309298019785904">ChromeOS tidak dapat menyinkronkan data Anda karena Sinkronisasi tidak tersedia untuk domain Anda.</translation>
 <translation id="5334487786912937552">Chrome memerlukan izin akses penyimpanan untuk mendownload file</translation>
 <translation id="5337648990166757586">Opsional: Bantu tingkatkan fitur dan performa ChromeOS dengan mengirimkan data penggunaan dan diagnostik secara otomatis ke Google.</translation>
-<translation id="5357889879764279201">Dapatkan bantuan ChromeOS Flex</translation>
 <translation id="5368118228313795342">Kode tambahan: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Juga mengontrol halaman apa yang ditampilkan saat Anda memulai Chrome atau menelusuri dari Omnibox.</translation>
 <translation id="5394833366792865639">Bagikan tab Chrome</translation>
@@ -387,6 +387,7 @@
 <translation id="5941830788786076944">Jadikan Google Chrome sebagai browser default</translation>
 <translation id="5947104538377036631">Pintasan Chrome</translation>
 <translation id="5953954252731207958">Anda tidak membuka situs ini baru-baru ini. Chrome menghapus izin <ph name="PERMISSION" /></translation>
+<translation id="5980111191913430208">Ekstensi, aplikasi, dan tema dari sumber tidak dikenal dapat membahayakan perangkat Anda. Chrome merekomendasikan hanya menginstal ekstensi, aplikasi, dan tema dari <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Mendownload... <ph name="HOURS" /> jam lagi</translation>
 <translation id="6014316319780893079">Dengan <ph name="BEGIN_LINK" />alat dari Chrome<ph name="END_LINK" />, Anda dapat menjelajah dengan aman dan tetap memegang kendali</translation>
 <translation id="6022659036123304283">Sesuaikan Chrome dengan selera Anda</translation>
@@ -520,6 +521,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="7572537927358445944">Nonaktif • Chrome tidak dapat memverifikasi asal ekstensi ini</translation>
 <translation id="7583399374488819119">Penginstal <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
+<translation id="7617512710641355143">Chrome dikelola</translation>
 <translation id="7626032353295482388">Selamat Datang di Chrome</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> mewajibkan Anda membaca dan menyetujui Persyaratan Layanan berikut sebelum menggunakan perangkat ini. Persyaratan ini tidak memperluas, mengubah, atau membatasi Persyaratan Google ChromeOS.</translation>
 <translation id="7629695634924605473">Chrome akan memberi tahu jika sandi Anda disusupi</translation>
@@ -577,6 +579,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="8077579734294125741">Profil Chrome lainnya</translation>
 <translation id="8086881907087796310">Penginstalan gagal karena komputer Anda tidak memenuhi persyaratan hardware minimum.</translation>
 <translation id="8111297389482307122">Chrome perlu memverifikasi diri Anda sebelum beberapa data dapat disimpan di Akun Google Anda dan digunakan di semua perangkat Anda. Jika Anda logout, data ini akan tetap berada di perangkat ini.</translation>
+<translation id="8113883687556086139">Verifikasi diri Anda untuk menggunakan dan menyimpan data Chrome di akun Anda, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8118331347066725040">Kirim masukan untuk penelusuran dengan Lens</translation>
 <translation id="8129812357326543296">Tentang &amp;Google Chrome</translation>
 <translation id="813913629614996137">Memulai...</translation>
@@ -604,6 +607,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="842386925677997438">Alat keamanan Chrome</translation>
 <translation id="8425765582779547329">Agar tetap aman saat online dengan pilihan orang tuamu, login ke Chrome</translation>
 <translation id="8428213095426709021">Setelan</translation>
+<translation id="8429214465555795676">Untuk melanjutkan, Anda harus login ke Chrome dengan <ph name="EMAIL" />. Langkah ini memastikan kepatuhan terhadap kebijakan organisasi Anda.</translation>
 <translation id="8433638294851456451">Untuk mengirimkan nomor dari sini ke ponsel Android Anda, login ke Chrome di kedua perangkat.</translation>
 <translation id="8451192282033883849">Akun Anda dikelola oleh <ph name="MANAGER_NAME" />. Administrator dapat melihat dan mengedit profil browser Chrome ini beserta datanya seperti bookmark, histori, dan sandi.</translation>
 <translation id="8496177819998570653">Pengelola S&amp;andi Google</translation>
@@ -629,6 +633,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="8718062187489036808">Logout dari Chrome</translation>
 <translation id="873133009373065397">Google Chrome tidak dapat menentukan atau menyetel browser default</translation>
 <translation id="8748735421235723888">Chrome akan membebaskan memori dari tab yang tidak aktif. Tindakan ini akan memberikan lebih banyak resource komputer untuk tab aktif dan aplikasi lainnya, serta menjaga Chrome tetap cepat. Tab yang tidak aktif akan otomatis menjadi aktif lagi saat Anda kembali ke tab tersebut. <ph name="BEGIN_LINK" />Pelajari lebih lanjut Penghemat Memori<ph name="END_LINK" /></translation>
+<translation id="8753189155654018347">Hapus data aplikasi ini dari Chrome</translation>
 <translation id="8765470054473112089">Saat Anda mengetik di kolom URL atau kotak penelusuran, Chrome akan mengirimkan hal yang Anda ketik ke mesin telusur default untuk mendapatkan saran yang lebih baik. Fitur ini nonaktif dalam mode Samaran.</translation>
 <translation id="8781673607513845160">Untuk menggunakan kamera, beri Chrome akses di <ph name="BEGIN_LINK" />setelan sistem<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Error penginstalan: Administrator jaringan Anda telah menerapkan Kebijakan Grup yang mencegah penginstalan: <ph name="INSTALL_ERROR" /></translation>

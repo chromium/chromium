@@ -655,7 +655,7 @@ public class SearchActivity extends AsyncInitializationActivity
     }
 
     private void openChromeBrowser(@Nullable OmniboxLoadUrlParams params) {
-        Intent intent = SearchActivityUtils.createIntentForStartActivity(this, params);
+        Intent intent = SearchActivityUtils.createIntentForStartActivity(params);
         if (intent == null) return;
 
         if (mIntentOrigin == IntentOrigin.SEARCH_WIDGET) {
@@ -852,8 +852,8 @@ public class SearchActivity extends AsyncInitializationActivity
     }
 
     private void bringTabToFront(Tab tab) {
-        IntentHandler.bringTabToFront(tab);
         finish(TerminationReason.BRING_TAB_TO_FRONT, /* loadUrlParams= */ null);
+        IntentHandler.bringTabToFront(tab);
     }
 
     /* package */ void setLocationBarCoordinatorForTesting(LocationBarCoordinator coordinator) {

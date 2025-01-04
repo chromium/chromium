@@ -37,10 +37,11 @@ constexpr int kNumColumns = 10;
 
 // Toggles bit |flag| on |flags| based on state of |checkbox|.
 void SetFlagFromCheckbox(Checkbox* checkbox, int* flags, int flag) {
-  if (checkbox->GetChecked())
+  if (checkbox->GetChecked()) {
     *flags |= flag;
-  else
+  } else {
     *flags &= ~flag;
+  }
 }
 
 }  // namespace

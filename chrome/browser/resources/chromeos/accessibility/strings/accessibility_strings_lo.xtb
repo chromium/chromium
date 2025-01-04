@@ -845,6 +845,7 @@
 <translation id="6385591741672306837">ຖັນ</translation>
 <translation id="6387719785439924554">ໄປທາງຂ້າງ</translation>
 <translation id="6393014464788431702">ປິດນຳໃຊ້ທຸກຕົວກັ່ນຕອງເຫດການ</translation>
+<translation id="6406989068857078334">ຫຼຸດຄວາມໄວເມົ້າແລ້ວ, ກະລຸນາ <ph name="GESTURE" /> ອີກຄັ້ງເພື່ອຄລິກ</translation>
 <translation id="6411569524720229058">ລະດູໃບໄມ້ຫຼົ່ນ</translation>
 <translation id="6417265370957905582">ຜູ້ຊ່ວຍ Google</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{ ສອງຈໍ້າ​}other{# ສອງຈໍ້າ}}</translation>
@@ -1098,6 +1099,7 @@
 <translation id="8205922869661890178">ເປີດໜ້າບັນທຶກຜູ້ພັດທະນາ</translation>
 <translation id="8212109599554677485">ປ່ຽນຮູບແບບການສະແດງຜົນເປັນການສະແດງຄູ່ກັນ</translation>
 <translation id="8215202828671303819">​ເລືອກຫຼາຍອັນ</translation>
+<translation id="822316432305106615">ເລີ່ມການຄລິກຢ່າງຖືກຕ້ອງ</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, ຄວາມໂປ່ງແສງ <ph name="OPACITY_PERCENTAGE" />%.</translation>
 <translation id="8261506727792406068">ລຶບ</translation>
 <translation id="826825447994856889">ການນໍາສະເໜີ</translation>

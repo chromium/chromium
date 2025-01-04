@@ -9,12 +9,12 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/webapks/webapks_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/webapks_resources.h"
 #include "chrome/grit/webapks_resources_map.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/webui/webui_util.h"
 
 using content::WebUIDataSource;
 

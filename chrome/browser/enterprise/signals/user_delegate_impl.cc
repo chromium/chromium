@@ -70,7 +70,7 @@ bool UserDelegateImpl::IsManagedUser() const {
   return profile_policy_connector->IsManaged();
 }
 
-bool UserDelegateImpl::IsSameUser(const std::string& gaia_id) const {
+bool UserDelegateImpl::IsSameUser(const GaiaId& gaia_id) const {
   return identity_manager_ &&
          identity_manager_->GetPrimaryAccountId(
              signin::ConsentLevel::kSignin) ==

@@ -176,6 +176,15 @@ class CORE_EXPORT ScriptObject final {
   DISALLOW_NEW();
 
  public:
+  // ScriptObject::From() is restricted to certain types that are unambiguous in
+  // how they are exposed to V8 and that are known to be objects.
+  template <typename T>
+    requires std::derived_from<T, bindings::DictionaryBase> ||
+             std::derived_from<T, ScriptWrappable>
+  static ScriptObject From(ScriptState* script_state, T* value) {
+    return ScriptObject(script_state->GetIsolate(), value->ToV8(script_state));
+  }
+
   ScriptObject() = default;
   ScriptObject(v8::Isolate* isolate, v8::Local<v8::Value> value)
       : object_(isolate, value) {
@@ -191,6 +200,15 @@ class CORE_EXPORT ScriptObject final {
     CHECK(object_.IsObject());
     return object_.V8Value().As<v8::Object>();
   }
+
+  v8::Local<v8::Object> V8ObjectFor(ScriptState* script_state) const {
+    CHECK(object_.IsObject());
+    return object_.V8ValueFor(script_state).As<v8::Object>();
+  }
+
+  bool IsNull() const { return object_.IsNull(); }
+
+  void Clear() { object_.Clear(); }
 
   // NOLINTNEXTLINE(google-explicit-constructor)
   operator const ScriptValue&() const { return object_; }

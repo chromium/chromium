@@ -14,10 +14,6 @@ class NotificationsPermissionRevocationConfig {
   // Whether or not automatically revoking the notification permission from
   // abusive origins is enabled.
   static bool IsAbusiveOriginPermissionRevocationEnabled();
-
-  // Whether or not automatically revoking the notification permission from
-  // sites that may send disruptive notifications is enabled.
-  static bool IsDisruptiveOriginPermissionRevocationEnabled();
 };
 
 #endif  // CHROME_BROWSER_PERMISSIONS_NOTIFICATIONS_PERMISSION_REVOCATION_CONFIG_H_

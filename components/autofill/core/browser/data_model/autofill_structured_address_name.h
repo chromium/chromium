@@ -146,6 +146,12 @@ class AlternativeGivenName : public AddressComponent {
  public:
   AlternativeGivenName();
   ~AlternativeGivenName() override;
+
+ protected:
+  // Returns the value with all Katakana characters converted to Hiragana.
+  std::u16string GetValueForComparison(
+      const std::u16string& value,
+      const AddressComponent& other) const override;
 };
 
 // Atomic component that represents the last part of an alternative name(e.g.
@@ -154,6 +160,12 @@ class AlternativeFamilyName : public AddressComponent {
  public:
   AlternativeFamilyName();
   ~AlternativeFamilyName() override;
+
+ protected:
+  // Returns the value with all Katakana characters converted to Hiragana.
+  std::u16string GetValueForComparison(
+      const std::u16string& value,
+      const AddressComponent& other) const override;
 };
 
 // Compound node that represents an alternative full name (e.g. full phonetic
@@ -186,6 +198,11 @@ class AlternativeFullName : public AddressComponent {
   // Returns the format string to create the full alternative name from its
   // subcomponents.
   std::u16string GetFormatString() const override;
+
+  // Returns the value with all Katakana characters converted to Hiragana.
+  std::u16string GetValueForComparison(
+      const std::u16string& value,
+      const AddressComponent& other) const override;
 
   AlternativeGivenName given_name_;
   AlternativeFamilyName family_name_;

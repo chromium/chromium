@@ -106,13 +106,15 @@ ShippingOptionViewController::ShippingOptionViewController(
 }
 
 ShippingOptionViewController::~ShippingOptionViewController() {
-  if (spec())
+  if (spec()) {
     spec()->RemoveObserver(this);
+  }
 }
 
 void ShippingOptionViewController::OnSpecUpdated() {
-  if (!spec())
+  if (!spec()) {
     return;
+  }
 
   if (spec()->current_update_reason() ==
       PaymentRequestSpec::UpdateReason::SHIPPING_OPTION) {

@@ -292,12 +292,14 @@ View* InteractiveViewsTestApi::FindMatchingView(const View* from,
                                                 ViewMatcher& matcher,
                                                 bool recursive) {
   for (views::View* const child : from->children()) {
-    if (matcher.Run(child))
+    if (matcher.Run(child)) {
       return child;
+    }
     if (recursive) {
       auto* const result = FindMatchingView(child, matcher, true);
-      if (result)
+      if (result) {
         return result;
+      }
     }
   }
   return nullptr;

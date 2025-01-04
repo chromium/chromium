@@ -67,7 +67,7 @@ inline const std::string GetLocaleOrLanguageForServerSideRecognition() {
 
 ash::OnDeviceToServerSpeechRecognitionFallbackReason GetFallbackReason(
     ash::OnDeviceRecognitionAvailability availability) {
-  if (ash::features::ShouldForceEnableServerSideSpeechRecognitionForDev()) {
+  if (ash::features::ShouldForceEnableServerSideSpeechRecognition()) {
     return ash::OnDeviceToServerSpeechRecognitionFallbackReason::
         kEnforcedByFlag;
   }
@@ -143,7 +143,7 @@ ProjectorClientImpl::GetSpeechRecognitionAvailability() const {
           GetServerBasedRecognitionAvailability(
               GetLocaleOrLanguageForServerSideRecognition());
 
-  if (ash::features::ShouldForceEnableServerSideSpeechRecognitionForDev() ||
+  if (ash::features::ShouldForceEnableServerSideSpeechRecognition() ||
       (availability.on_device_availability !=
            ash::OnDeviceRecognitionAvailability::kAvailable &&
        availability.server_based_availability ==

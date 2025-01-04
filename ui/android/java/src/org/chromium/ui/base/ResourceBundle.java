@@ -10,6 +10,8 @@ import org.jni_zero.JNINamespace;
 import org.chromium.base.ApkAssets;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Arrays;
 
@@ -22,9 +24,10 @@ import java.util.Arrays;
  * {@link ResourceBundle#setNoAvailableLocalePaks()} before calling the getters in this class.
  */
 @JNINamespace("ui")
+@NullMarked
 public final class ResourceBundle {
     private static final String TAG = "ResourceBundle";
-    private static String[] sAvailableLocales;
+    private static String @Nullable [] sAvailableLocales;
 
     private ResourceBundle() {}
 
@@ -69,7 +72,7 @@ public final class ResourceBundle {
      * @return Asset path to .pak file, or null if the locale is not supported.
      */
     @CalledByNative
-    private static String getLocalePakResourcePath(
+    private static @Nullable String getLocalePakResourcePath(
             String locale, boolean inBundle, boolean logError) {
         if (sAvailableLocales == null) {
             // Locales may be null in unit tests.

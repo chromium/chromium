@@ -48,16 +48,19 @@ void TestMultiUserWindowManager::ShowWindowForUser(
   // This class is only able to handle one additional window <-> user
   // association beside the creation parameters.
   // If no association has yet been requested remember it now.
-  if (browser_owner_ != account_id)
+  if (browser_owner_ != account_id) {
     DCHECK(!created_window_);
+  }
   created_window_ = window;
   created_window_shown_for_ = account_id;
 
-  if (browser_window_ == window)
+  if (browser_window_ == window) {
     desktop_owner_ = account_id;
+  }
 
-  if (account_id == current_account_id_)
+  if (account_id == current_account_id_) {
     return;
+  }
 
   // Change the visibility of the window to update the view recursively.
   views::Widget* widget = views::Widget::GetWidgetForNativeView(window);
@@ -77,10 +80,12 @@ std::set<AccountId> TestMultiUserWindowManager::GetOwnersOfVisibleWindows()
 
 const AccountId& TestMultiUserWindowManager::GetUserPresentingWindow(
     const aura::Window* window) const {
-  if (window == browser_window_)
+  if (window == browser_window_) {
     return desktop_owner_;
-  if (created_window_ && window == created_window_)
+  }
+  if (created_window_ && window == created_window_) {
     return created_window_shown_for_;
+  }
   // We can come here before the window gets registered.
   return browser_owner_;
 }

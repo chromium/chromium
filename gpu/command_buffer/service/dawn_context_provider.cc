@@ -109,11 +109,10 @@ std::vector<const char*> GetEnabledToggles(
   enabled_toggles.push_back("use_user_defined_labels_in_backend");
 #endif
 
-#if !DCHECK_IS_ON()
   if (features::kSkiaGraphiteDawnSkipValidation.Get()) {
     enabled_toggles.push_back("skip_validation");
   }
-#endif
+
   enabled_toggles.push_back("disable_robustness");
   enabled_toggles.push_back("disable_lazy_clear_for_mapped_at_creation_buffer");
 
@@ -211,6 +210,7 @@ std::vector<wgpu::FeatureName> GetRequiredFeatures(
       wgpu::FeatureName::DawnLoadResolveTexture,
       wgpu::FeatureName::DawnPartialLoadResolveTexture,
       wgpu::FeatureName::DawnTexelCopyBufferRowAlignment,
+      wgpu::FeatureName::FlexibleTextureViews,
   };
 
   for (auto feature : kOptionalFeatures) {
@@ -410,13 +410,29 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
   }
 
   // Provided to wgpu::Device as logging callback.
+#ifdef WGPU_BREAKING_CHANGE_LOGGING_CALLBACK_TYPE
+  static void LogInfo(wgpu::LoggingType type,
+                      wgpu::StringView message,
+                      DawnSharedContext* shared_context) {
+#else
   static void LogInfo(WGPULoggingType type,
                       WGPUStringView message,
-                      void*) {
+                      void* userdata) {
+    auto* shared_context = static_cast<DawnSharedContext*>(userdata);
+#endif
     std::string_view view = {message.data, message.length};
     switch (static_cast<wgpu::LoggingType>(type)) {
       case wgpu::LoggingType::Warning:
         LOG(WARNING) << view;
+        if (shared_context && !shared_context->device_) {
+          // If device hasn't been created yet. This warning message must be
+          // from dawn::native::Instance when we try to enumerate adapters or
+          // when trying to create the device. In that case, saving the message
+          // so that if there is any init failure afterward, we can include the
+          // warnings in the LogInitFailure()'s report.
+          shared_context->init_warning_msgs_.append(view);
+          shared_context->init_warning_msgs_.append("\n");
+        }
         break;
       case wgpu::LoggingType::Error:
         LOG(ERROR) << view;
@@ -440,6 +456,10 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
     }
 
     SCOPED_CRASH_KEY_STRING256("dawn-shared-context", "init-failure", reason);
+    // Also include any warning messages collected during the initialization.
+    SCOPED_CRASH_KEY_STRING1024("dawn-shared-context", "init-warning-msgs",
+                                init_warning_msgs_);
+    init_warning_msgs_.clear();
     base::debug::DumpWithoutCrashing();
   }
 
@@ -456,6 +476,7 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
   wgpu::Adapter adapter_;
   wgpu::Device device_;
   wgpu::BackendType backend_type_;
+  std::string init_warning_msgs_;
   bool is_vulkan_swiftshader_adapter_ = false;
   bool registered_memory_dump_provider_ = false;
 
@@ -470,7 +491,11 @@ DawnSharedContext::~DawnSharedContext() {
       base::trace_event::MemoryDumpManager::GetInstance()
           ->UnregisterDumpProvider(this);
     }
+#ifdef WGPU_BREAKING_CHANGE_LOGGING_CALLBACK_TYPE
+    device_.SetLoggingCallback([](wgpu::LoggingType, wgpu::StringView) {});
+#else
     device_.SetLoggingCallback(nullptr, nullptr);
+#endif
     // Destroy the device now so that the lost callback, which references this
     // class, is fired now before we clean up the rest of this class.
     device_.Destroy();
@@ -492,7 +517,15 @@ bool DawnSharedContext::Initialize(
   // of loading libraries, initializing backend, etc
   instance_ = webgpu::DawnInstance::Create(
       &platform_, gpu_preferences, webgpu::SafetyLevel::kUnsafe,
-      &DawnSharedContext::LogInfo, nullptr);
+#ifdef WGPU_BREAKING_CHANGE_LOGGING_CALLBACK_TYPE
+      // TODO(369445924): fix this code once the new callback type is about to
+      // be landed in dawn.
+      [this](wgpu::LoggingType type, wgpu::StringView message) {
+        DawnSharedContext::LogInfo(type, message, this);
+      });
+#else
+      &DawnSharedContext::LogInfo, this);
+#endif
 
   std::vector<const char*> enabled_toggles =
       GetEnabledToggles(backend_type, force_fallback_adapter, gpu_preferences);
@@ -661,7 +694,16 @@ bool DawnSharedContext::Initialize(
     return false;
   }
 
-  device_.SetLoggingCallback(&DawnSharedContext::LogInfo, nullptr);
+#ifdef WGPU_BREAKING_CHANGE_LOGGING_CALLBACK_TYPE
+  // TODO(369445924): fix this code once the new callback type is about to be
+  // landed in dawn.
+  device_.SetLoggingCallback(
+      [this](wgpu::LoggingType type, wgpu::StringView message) {
+        DawnSharedContext::LogInfo(type, message, this);
+      });
+#else
+  device_.SetLoggingCallback(&DawnSharedContext::LogInfo, this);
+#endif
 
   backend_type_ = backend_type;
   is_vulkan_swiftshader_adapter_ =

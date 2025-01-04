@@ -18,6 +18,7 @@ namespace content {
 class InputTransferHandlerAndroidClient {
  public:
   virtual gpu::SurfaceHandle GetRootSurfaceHandle() = 0;
+  virtual void SendStateOnTouchTransfer(const ui::MotionEvent& event) = 0;
 };
 
 // The class assumes transfer input to viz is supported, so instantiate only

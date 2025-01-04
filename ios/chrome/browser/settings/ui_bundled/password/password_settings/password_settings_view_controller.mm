@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
@@ -47,6 +48,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierGooglePasswordManagerPin,
   SectionIdentifierOnDeviceEncryption,
   SectionIdentifierExportPasswordsButton,
+  SectionIdentifierDeleteCredentialsButton,
 };
 
 // Items within the password settings UI.
@@ -64,6 +66,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeOnDeviceEncryptionOptedInLearnMore,
   ItemTypeOnDeviceEncryptionSetUp,
   ItemTypeExportPasswordsButton,
+  ItemTypeDeleteCredentialsButton,
+  ItemTypeFooter,
 };
 
 // Indicates whether the model has not started loading, is in the process of
@@ -83,6 +87,9 @@ bool IOSPasskeysM2Enabled() {
 }  // namespace
 
 @interface PasswordSettingsViewController () {
+  // The item related to the button for deleting credentials.
+  TableViewTextItem* _deleteCredentialsItem;
+
   // The item related to the button for exporting passwords.
   TableViewTextItem* _exportPasswordsItem;
 
@@ -100,6 +107,9 @@ bool IOSPasskeysM2Enabled() {
 
 // Tracks whether or not the model has loaded.
 @property(nonatomic, assign) ModelLoadStatus modelLoadStatus;
+
+// Whether or not the credential delete button should be enabled.
+@property(nonatomic, assign) BOOL canDeleteAllCredentials;
 
 // Whether or not the exporter should be enabled.
 @property(nonatomic, assign) BOOL canExportPasswords;
@@ -218,6 +228,13 @@ bool IOSPasskeysM2Enabled() {
       .frame;
 }
 
+- (CGRect)sourceRectForCredentialDeleteAlerts {
+  return [self.tableView
+             cellForRowAtIndexPath:[self.tableViewModel
+                                       indexPathForItem:_deleteCredentialsItem]]
+      .frame;
+}
+
 - (CGRect)sourceRectForPasswordExportAlerts {
   return [self.tableView
              cellForRowAtIndexPath:[self.tableViewModel
@@ -282,6 +299,20 @@ bool IOSPasskeysM2Enabled() {
   [model addItem:_exportPasswordsItem
       toSectionWithIdentifier:SectionIdentifierExportPasswordsButton];
 
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kIOSEnableDeleteAllSavedCredentials)) {
+    // Delete credentials button.
+    [model addSectionWithIdentifier:SectionIdentifierDeleteCredentialsButton];
+    _deleteCredentialsItem = [self makeDeleteCredentialsItem];
+    [self updateDeleteAllCredentialsButton];
+    [model addItem:_deleteCredentialsItem
+        toSectionWithIdentifier:SectionIdentifierDeleteCredentialsButton];
+
+    // Add footer for the delete credential section.
+    [model setFooter:[self makeCredentialDeletionFooterItem]
+        forSectionWithIdentifier:SectionIdentifierDeleteCredentialsButton];
+  }
+
   if (self.showBulkMovePasswordsToAccount) {
     [self updateBulkMovePasswordsToAccountSection];
   }
@@ -342,6 +373,13 @@ bool IOSPasskeysM2Enabled() {
       }
       break;
     }
+    case ItemTypeDeleteCredentialsButton: {
+      if (self.canDeleteAllCredentials) {
+        // TODO(crbug.com/383851476): Update this once the deletion function is
+        // implemented.
+      }
+      break;
+    }
     case ItemTypeExportPasswordsButton: {
       if (self.canExportPasswords) {
         [self.presentationDelegate startExportFlow];
@@ -374,6 +412,8 @@ bool IOSPasskeysM2Enabled() {
     shouldHighlightRowAtIndexPath:(NSIndexPath*)indexPath {
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
   switch (itemType) {
+    case ItemTypeDeleteCredentialsButton:
+      return self.canDeleteAllCredentials;
     case ItemTypeExportPasswordsButton:
       return self.canExportPasswords;
     case ItemTypeSavePasswordsSwitch:
@@ -603,6 +643,25 @@ bool IOSPasskeysM2Enabled() {
   return exportPasswordsItem;
 }
 
+// Creates the "Delete all data" button.
+- (TableViewTextItem*)makeDeleteCredentialsItem {
+  TableViewTextItem* deleteCredentialsItem =
+      [[TableViewTextItem alloc] initWithType:ItemTypeDeleteCredentialsButton];
+  deleteCredentialsItem.text = l10n_util::GetNSString(
+      IDS_IOS_PASSWORD_SETTINGS_DELETE_ALL_SAVED_CREDENTIALS);
+  deleteCredentialsItem.accessibilityTraits = UIAccessibilityTraitButton;
+  return deleteCredentialsItem;
+}
+
+// Creates the footer item for "Delete all data" button.
+- (TableViewLinkHeaderFooterItem*)makeCredentialDeletionFooterItem {
+  TableViewLinkHeaderFooterItem* item =
+      [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
+  item.text = l10n_util::GetNSString(
+      IDS_IOS_PASSWORD_SETTINGS_CREDENTIAL_DELETION_TEXT);
+  return item;
+}
+
 #pragma mark - PasswordSettingsConsumer
 
 // The `setCanExportPasswords` method required for the PasswordSettingsConsumer
@@ -692,6 +751,26 @@ bool IOSPasskeysM2Enabled() {
   }
 
   [self updateOnDeviceEncryptionSectionWithOldState:oldState];
+}
+
+- (void)updateDeleteAllCredentialsButton {
+  if (self.modelLoadStatus == ModelNotLoaded ||
+      !base::FeatureList::IsEnabled(
+          password_manager::features::kIOSEnableDeleteAllSavedCredentials)) {
+    return;
+  }
+  if (self.canDeleteAllCredentials) {
+    _deleteCredentialsItem.textColor = [UIColor colorNamed:kRedColor];
+    _deleteCredentialsItem.accessibilityTraits &=
+        ~UIAccessibilityTraitNotEnabled;
+  } else {
+    // Disable, rather than remove, because the button will go back and forth
+    // between enabled/disabled status as the flow progresses.
+    _deleteCredentialsItem.textColor = [UIColor colorNamed:kTextSecondaryColor];
+    _deleteCredentialsItem.accessibilityTraits |=
+        UIAccessibilityTraitNotEnabled;
+  }
+  [self reconfigureCellsForItems:@[ _deleteCredentialsItem ]];
 }
 
 - (void)updateExportPasswordsButton {

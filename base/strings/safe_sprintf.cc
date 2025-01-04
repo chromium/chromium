@@ -43,7 +43,11 @@
 #include "base/check.h"
 #define DEBUG_CHECK RAW_CHECK
 #else
-#define DEBUG_CHECK(x) do { if (x) { } } while (0)
+#define DEBUG_CHECK(x) \
+  do {                 \
+    if (x) {           \
+    }                  \
+  } while (0)
 #endif
 
 namespace base {
@@ -74,9 +78,9 @@ namespace strings {
 namespace {
 const size_t kSSizeMaxConst = ((size_t)(ssize_t)-1) >> 1;
 
-const char kUpCaseHexDigits[]   = "0123456789ABCDEF";
+const char kUpCaseHexDigits[] = "0123456789ABCDEF";
 const char kDownCaseHexDigits[] = "0123456789abcdef";
-}
+}  // namespace
 
 #if defined(NDEBUG)
 // We would like to define kSSizeMax as std::numeric_limits<ssize_t>::max(),
@@ -86,7 +90,7 @@ const char kDownCaseHexDigits[] = "0123456789abcdef";
 namespace {
 const size_t kSSizeMax = kSSizeMaxConst;
 }
-#else  // defined(NDEBUG)
+#else   // defined(NDEBUG)
 // For efficiency, we really need kSSizeMax to be a constant. But for unit
 // tests, it should be adjustable. This allows us to verify edge cases without
 // having to fill the entire available address space. As a compromise, we make
@@ -104,7 +108,7 @@ void SetSafeSPrintfSSizeMaxForTest(size_t max) {
 size_t GetSafeSPrintfSSizeMaxForTest() {
   return kSSizeMax;
 }
-}
+}  // namespace internal
 #endif  // defined(NDEBUG)
 
 namespace {
@@ -190,7 +194,7 @@ class Buffer {
     for (; padding > len; --padding) {
       if (!Out(pad)) {
         if (--padding) {
-          IncrementCount(padding-len);
+          IncrementCount(padding - len);
         }
         return false;
       }
@@ -256,9 +260,7 @@ class Buffer {
   }
 
   // Convenience method for the common case of incrementing |count_| by one.
-  inline bool IncrementCountByOne() {
-    return IncrementCount(1);
-  }
+  inline bool IncrementCountByOne() { return IncrementCount(1); }
 
   // Return the current insertion point into the buffer. This is typically
   // at |buffer_| + |count_|, but could be before that if truncation
@@ -347,8 +349,9 @@ bool Buffer::IToASCII(bool sign,
       for (reverse_prefix = prefix; *reverse_prefix; ++reverse_prefix) {
       }
     }
-  } else
+  } else {
     prefix = nullptr;
+  }
   const size_t prefix_length = static_cast<size_t>(reverse_prefix - prefix);
 
   // Loop until we have converted the entire number. Output at least one
@@ -367,9 +370,8 @@ bool Buffer::IToASCII(bool sign,
         // have to discard digits in the order that we have already emitted
         // them. This is essentially equivalent to:
         //   memmove(buffer_ + start, buffer_ + start + 1, size_ - start - 1)
-        for (char* move = buffer_ + start, *end = buffer_ + size_ - 1;
-             move < end;
-             ++move) {
+        for (char *move = buffer_ + start, *end = buffer_ + size_ - 1;
+             move < end; ++move) {
           *move = move[1];
         }
         ++discarded;
@@ -416,7 +418,7 @@ bool Buffer::IToASCII(bool sign,
       // any further state change can be computed arithmetically; we know that
       // by this time, our entire final output consists of padding characters
       // that have all already been output.
-      if (discarded > 8*sizeof(num) + prefix_length) {
+      if (discarded > 8 * sizeof(num) + prefix_length) {
         IncrementCount(padding);
         padding = 0;
       }
@@ -444,14 +446,18 @@ bool Buffer::IToASCII(bool sign,
 
 namespace internal {
 
-ssize_t SafeSNPrintf(char* buf, size_t sz, const char* fmt, const Arg* args,
+ssize_t SafeSNPrintf(char* buf,
+                     size_t sz,
+                     const char* fmt,
+                     const Arg* args,
                      const size_t max_args) {
   // Make sure that at least one NUL byte can be written, and that the buffer
   // never overflows kSSizeMax. Not only does that use up most or all of the
   // address space, it also would result in a return code that cannot be
   // represented.
-  if (static_cast<ssize_t>(sz) < 1)
+  if (static_cast<ssize_t>(sz) < 1) {
     return -1;
+  }
   sz = std::min(sz, kSSizeMax);
 
   // Iterate over format string and interpret '%' arguments as they are
@@ -459,211 +465,225 @@ ssize_t SafeSNPrintf(char* buf, size_t sz, const char* fmt, const Arg* args,
   Buffer buffer(buf, sz);
   size_t padding;
   char pad;
-  for (unsigned int cur_arg = 0; *fmt && !buffer.OutOfAddressableSpace(); ) {
+  for (unsigned int cur_arg = 0; *fmt && !buffer.OutOfAddressableSpace();) {
     if (*fmt++ == '%') {
       padding = 0;
       pad = ' ';
       char ch = *fmt++;
     format_character_found:
       switch (ch) {
-      case '0': case '1': case '2': case '3': case '4':
-      case '5': case '6': case '7': case '8': case '9':
-        // Found a width parameter. Convert to an integer value and store in
-        // "padding". If the leading digit is a zero, change the padding
-        // character from a space ' ' to a zero '0'.
-        pad = ch == '0' ? '0' : ' ';
-        for (;;) {
-          const size_t digit = static_cast<size_t>(ch - '0');
-          // The maximum allowed padding fills all the available address
-          // space and leaves just enough space to insert the trailing NUL.
-          const size_t max_padding = kSSizeMax - 1;
-          if (padding > max_padding / 10 ||
-              10 * padding > max_padding - digit) {
-            DEBUG_CHECK(padding <= max_padding / 10 &&
-                        10 * padding <= max_padding - digit);
-            // Integer overflow detected. Skip the rest of the width until
-            // we find the format character, then do the normal error handling.
-          padding_overflow:
-            padding = max_padding;
-            while ((ch = *fmt++) >= '0' && ch <= '9') {
+        case '0':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+          // Found a width parameter. Convert to an integer value and store in
+          // "padding". If the leading digit is a zero, change the padding
+          // character from a space ' ' to a zero '0'.
+          pad = ch == '0' ? '0' : ' ';
+          for (;;) {
+            const size_t digit = static_cast<size_t>(ch - '0');
+            // The maximum allowed padding fills all the available address
+            // space and leaves just enough space to insert the trailing NUL.
+            const size_t max_padding = kSSizeMax - 1;
+            if (padding > max_padding / 10 ||
+                10 * padding > max_padding - digit) {
+              DEBUG_CHECK(padding <= max_padding / 10 &&
+                          10 * padding <= max_padding - digit);
+              // Integer overflow detected. Skip the rest of the width until
+              // we find the format character, then do the normal error
+              // handling.
+            padding_overflow:
+              padding = max_padding;
+              while ((ch = *fmt++) >= '0' && ch <= '9') {
+              }
+              if (cur_arg < max_args) {
+                ++cur_arg;
+              }
+              goto fail_to_expand;
             }
-            if (cur_arg < max_args) {
-              ++cur_arg;
+            padding = 10 * padding + digit;
+            if (padding > max_padding) {
+              // This doesn't happen for "sane" values of kSSizeMax. But once
+              // kSSizeMax gets smaller than about 10, our earlier range checks
+              // are incomplete. Unittests do trigger this artificial corner
+              // case.
+              DEBUG_CHECK(padding <= max_padding);
+              goto padding_overflow;
             }
+            ch = *fmt++;
+            if (ch < '0' || ch > '9') {
+              // Reached the end of the width parameter. This is where the
+              // format character is found.
+              goto format_character_found;
+            }
+          }
+        case 'c': {  // Output an ASCII character.
+          // Check that there are arguments left to be inserted.
+          if (cur_arg >= max_args) {
+            DEBUG_CHECK(cur_arg < max_args);
             goto fail_to_expand;
           }
-          padding = 10 * padding + digit;
-          if (padding > max_padding) {
-            // This doesn't happen for "sane" values of kSSizeMax. But once
-            // kSSizeMax gets smaller than about 10, our earlier range checks
-            // are incomplete. Unittests do trigger this artificial corner
-            // case.
-            DEBUG_CHECK(padding <= max_padding);
-            goto padding_overflow;
-          }
-          ch = *fmt++;
-          if (ch < '0' || ch > '9') {
-            // Reached the end of the width parameter. This is where the format
-            // character is found.
-            goto format_character_found;
-          }
-        }
-      case 'c': {  // Output an ASCII character.
-        // Check that there are arguments left to be inserted.
-        if (cur_arg >= max_args) {
-          DEBUG_CHECK(cur_arg < max_args);
-          goto fail_to_expand;
-        }
 
-        // Check that the argument has the expected type.
-        const Arg& arg = args[cur_arg++];
-        if (arg.type != Arg::INT && arg.type != Arg::UINT) {
-          DEBUG_CHECK(arg.type == Arg::INT || arg.type == Arg::UINT);
-          goto fail_to_expand;
-        }
-
-        // Apply padding, if needed.
-        buffer.Pad(' ', padding, 1);
-
-        // Convert the argument to an ASCII character and output it.
-        char as_char = static_cast<char>(arg.integer.i);
-        if (!as_char) {
-          goto end_of_output_buffer;
-        }
-        buffer.Out(as_char);
-        break; }
-      case 'd':    // Output a possibly signed decimal value.
-      case 'o':    // Output an unsigned octal value.
-      case 'x':    // Output an unsigned hexadecimal value.
-      case 'X':
-      case 'p': {  // Output a pointer value.
-        // Check that there are arguments left to be inserted.
-        if (cur_arg >= max_args) {
-          DEBUG_CHECK(cur_arg < max_args);
-          goto fail_to_expand;
-        }
-
-        const Arg& arg = args[cur_arg++];
-        int64_t i;
-        const char* prefix = nullptr;
-        if (ch != 'p') {
           // Check that the argument has the expected type.
+          const Arg& arg = args[cur_arg++];
           if (arg.type != Arg::INT && arg.type != Arg::UINT) {
             DEBUG_CHECK(arg.type == Arg::INT || arg.type == Arg::UINT);
             goto fail_to_expand;
           }
-          i = arg.integer.i;
 
-          if (ch != 'd') {
-            // The Arg() constructor automatically performed sign expansion on
-            // signed parameters. This is great when outputting a %d decimal
-            // number, but can result in unexpected leading 0xFF bytes when
-            // outputting a %x hexadecimal number. Mask bits, if necessary.
-            // We have to do this here, instead of in the Arg() constructor, as
-            // the Arg() constructor cannot tell whether we will output a %d
-            // or a %x. Only the latter should experience masking.
-            if (arg.integer.width < sizeof(int64_t)) {
-              i &= (1LL << (8*arg.integer.width)) - 1;
-            }
+          // Apply padding, if needed.
+          buffer.Pad(' ', padding, 1);
+
+          // Convert the argument to an ASCII character and output it.
+          char as_char = static_cast<char>(arg.integer.i);
+          if (!as_char) {
+            goto end_of_output_buffer;
           }
-        } else {
-          // Pointer values require an actual pointer or a string.
-          if (arg.type == Arg::POINTER) {
-            i = static_cast<int64_t>(reinterpret_cast<uintptr_t>(arg.ptr));
-          } else if (arg.type == Arg::STRING) {
-            i = static_cast<int64_t>(reinterpret_cast<uintptr_t>(arg.str));
-          } else if (arg.type == Arg::INT &&
-                     arg.integer.width == sizeof(NULL) &&
-                     arg.integer.i == 0) {  // Allow C++'s version of NULL
-            i = 0;
-          } else {
-            DEBUG_CHECK(arg.type == Arg::POINTER || arg.type == Arg::STRING);
+          buffer.Out(as_char);
+          break;
+        }
+        case 'd':  // Output a possibly signed decimal value.
+        case 'o':  // Output an unsigned octal value.
+        case 'x':  // Output an unsigned hexadecimal value.
+        case 'X':
+        case 'p': {  // Output a pointer value.
+          // Check that there are arguments left to be inserted.
+          if (cur_arg >= max_args) {
+            DEBUG_CHECK(cur_arg < max_args);
             goto fail_to_expand;
           }
 
-          // Pointers always include the "0x" prefix.
-          prefix = "0x";
-        }
+          const Arg& arg = args[cur_arg++];
+          int64_t i;
+          const char* prefix = nullptr;
+          if (ch != 'p') {
+            // Check that the argument has the expected type.
+            if (arg.type != Arg::INT && arg.type != Arg::UINT) {
+              DEBUG_CHECK(arg.type == Arg::INT || arg.type == Arg::UINT);
+              goto fail_to_expand;
+            }
+            i = arg.integer.i;
 
-        // Use IToASCII() to convert to ASCII representation. For decimal
-        // numbers, optionally print a sign. For hexadecimal numbers,
-        // distinguish between upper and lower case. %p addresses are always
-        // printed as upcase. Supports base 8, 10, and 16. Prints padding
-        // and/or prefixes, if so requested.
-        buffer.IToASCII(ch == 'd' && arg.type == Arg::INT,
-                        ch != 'x', i,
-                        ch == 'o' ? 8 : ch == 'd' ? 10 : 16,
-                        pad, padding, prefix);
-        break; }
-      case 's': {
-        // Check that there are arguments left to be inserted.
-        if (cur_arg >= max_args) {
-          DEBUG_CHECK(cur_arg < max_args);
-          goto fail_to_expand;
-        }
+            if (ch != 'd') {
+              // The Arg() constructor automatically performed sign expansion on
+              // signed parameters. This is great when outputting a %d decimal
+              // number, but can result in unexpected leading 0xFF bytes when
+              // outputting a %x hexadecimal number. Mask bits, if necessary.
+              // We have to do this here, instead of in the Arg() constructor,
+              // as the Arg() constructor cannot tell whether we will output a
+              // %d or a %x. Only the latter should experience masking.
+              if (arg.integer.width < sizeof(int64_t)) {
+                i &= (1LL << (8 * arg.integer.width)) - 1;
+              }
+            }
+          } else {
+            // Pointer values require an actual pointer or a string.
+            if (arg.type == Arg::POINTER) {
+              i = static_cast<int64_t>(reinterpret_cast<uintptr_t>(arg.ptr));
+            } else if (arg.type == Arg::STRING) {
+              i = static_cast<int64_t>(reinterpret_cast<uintptr_t>(arg.str));
+            } else if (arg.type == Arg::INT &&
+                       arg.integer.width == sizeof(NULL) &&
+                       arg.integer.i == 0) {  // Allow C++'s version of NULL
+              i = 0;
+            } else {
+              DEBUG_CHECK(arg.type == Arg::POINTER || arg.type == Arg::STRING);
+              goto fail_to_expand;
+            }
 
-        // Check that the argument has the expected type.
-        const Arg& arg = args[cur_arg++];
-        const char *s;
-        if (arg.type == Arg::STRING) {
-          s = arg.str ? arg.str : "<NULL>";
-        } else if (arg.type == Arg::INT && arg.integer.width == sizeof(NULL) &&
-                   arg.integer.i == 0) {  // Allow C++'s version of NULL
-          s = "<NULL>";
-        } else {
-          DEBUG_CHECK(arg.type == Arg::STRING);
-          goto fail_to_expand;
-        }
-
-        // Apply padding, if needed. This requires us to first check the
-        // length of the string that we are outputting.
-        if (padding) {
-          size_t len = 0;
-          for (const char* src = s; *src++; ) {
-            ++len;
+            // Pointers always include the "0x" prefix.
+            prefix = "0x";
           }
-          buffer.Pad(' ', padding, len);
-        }
 
-        // Printing a string involves nothing more than copying it into the
-        // output buffer and making sure we don't output more bytes than
-        // available space; Out() takes care of doing that.
-        for (const char* src = s; *src; ) {
-          buffer.Out(*src++);
+          // Use IToASCII() to convert to ASCII representation. For decimal
+          // numbers, optionally print a sign. For hexadecimal numbers,
+          // distinguish between upper and lower case. %p addresses are always
+          // printed as upcase. Supports base 8, 10, and 16. Prints padding
+          // and/or prefixes, if so requested.
+          buffer.IToASCII(ch == 'd' && arg.type == Arg::INT, ch != 'x', i,
+                          ch == 'o'   ? 8
+                          : ch == 'd' ? 10
+                                      : 16,
+                          pad, padding, prefix);
+          break;
         }
-        break; }
-      case '%':
-        // Quoted percent '%' character.
-        goto copy_verbatim;
-      fail_to_expand:
-        // C++ gives us tools to do type checking -- something that snprintf()
-        // could never really do. So, whenever we see arguments that don't
-        // match up with the format string, we refuse to output them. But
-        // since we have to be extremely conservative about being async-
-        // signal-safe, we are limited in the type of error handling that we
-        // can do in production builds (in debug builds we can use
-        // DEBUG_CHECK() and hope for the best). So, all we do is pass the
-        // format string unchanged. That should eventually get the user's
-        // attention; and in the meantime, it hopefully doesn't lose too much
-        // data.
-      default:
-        // Unknown or unsupported format character. Just copy verbatim to
-        // output.
-        buffer.Out('%');
-        DEBUG_CHECK(ch);
-        if (!ch) {
-          goto end_of_format_string;
+        case 's': {
+          // Check that there are arguments left to be inserted.
+          if (cur_arg >= max_args) {
+            DEBUG_CHECK(cur_arg < max_args);
+            goto fail_to_expand;
+          }
+
+          // Check that the argument has the expected type.
+          const Arg& arg = args[cur_arg++];
+          const char* s;
+          if (arg.type == Arg::STRING) {
+            s = arg.str ? arg.str : "<NULL>";
+          } else if (arg.type == Arg::INT &&
+                     arg.integer.width == sizeof(NULL) &&
+                     arg.integer.i == 0) {  // Allow C++'s version of NULL
+            s = "<NULL>";
+          } else {
+            DEBUG_CHECK(arg.type == Arg::STRING);
+            goto fail_to_expand;
+          }
+
+          // Apply padding, if needed. This requires us to first check the
+          // length of the string that we are outputting.
+          if (padding) {
+            size_t len = 0;
+            for (const char* src = s; *src++;) {
+              ++len;
+            }
+            buffer.Pad(' ', padding, len);
+          }
+
+          // Printing a string involves nothing more than copying it into the
+          // output buffer and making sure we don't output more bytes than
+          // available space; Out() takes care of doing that.
+          for (const char* src = s; *src;) {
+            buffer.Out(*src++);
+          }
+          break;
         }
-        buffer.Out(ch);
-        break;
+        case '%':
+          // Quoted percent '%' character.
+          goto copy_verbatim;
+        fail_to_expand:
+          // C++ gives us tools to do type checking -- something that snprintf()
+          // could never really do. So, whenever we see arguments that don't
+          // match up with the format string, we refuse to output them. But
+          // since we have to be extremely conservative about being async-
+          // signal-safe, we are limited in the type of error handling that we
+          // can do in production builds (in debug builds we can use
+          // DEBUG_CHECK() and hope for the best). So, all we do is pass the
+          // format string unchanged. That should eventually get the user's
+          // attention; and in the meantime, it hopefully doesn't lose too much
+          // data.
+        default:
+          // Unknown or unsupported format character. Just copy verbatim to
+          // output.
+          buffer.Out('%');
+          DEBUG_CHECK(ch);
+          if (!ch) {
+            goto end_of_format_string;
+          }
+          buffer.Out(ch);
+          break;
       }
     } else {
-  copy_verbatim:
-    buffer.Out(fmt[-1]);
+    copy_verbatim:
+      buffer.Out(fmt[-1]);
     }
   }
- end_of_format_string:
- end_of_output_buffer:
+end_of_format_string:
+end_of_output_buffer:
   return buffer.GetCount();
 }
 
@@ -674,8 +694,9 @@ ssize_t SafeSNPrintf(char* buf, size_t sz, const char* fmt) {
   // never overflows kSSizeMax. Not only does that use up most or all of the
   // address space, it also would result in a return code that cannot be
   // represented.
-  if (static_cast<ssize_t>(sz) < 1)
+  if (static_cast<ssize_t>(sz) < 1) {
     return -1;
+  }
   sz = std::min(sz, kSSizeMax);
 
   Buffer buffer(buf, sz);

@@ -6,14 +6,21 @@
 // https://github.com/explainers-by-googlers/writing-assistance-apis
 
 enum AIRewriterTone { "as-is", "more-formal", "more-casual" };
+enum AIRewriterFormat { "as-is", "plain-text", "markdown" };
 enum AIRewriterLength { "as-is", "shorter", "longer" };
 
-dictionary AIRewriterCreateOptions {
+dictionary AIRewriterCreateCoreOptions {
+  AIRewriterTone tone = "as-is";
+  AIRewriterFormat format = "as-is";
+  AIRewriterLength length = "as-is";
+
+  sequence<DOMString> expectedInputLanguages;
+  DOMString outputLanguage;
+};
+
+dictionary AIRewriterCreateOptions : AIRewriterCreateCoreOptions {
   AbortSignal signal;
   DOMString sharedContext;
-
-  AIRewriterTone tone = "as-is";
-  AIRewriterLength length = "as-is";
 };
 
 [
@@ -22,6 +29,11 @@ dictionary AIRewriterCreateOptions {
   SecureContext
 ]
 interface AIRewriterFactory {
+  [
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<AICapabilityAvailability> availability(optional AIRewriterCreateCoreOptions options = {});
   [
     Measure,
     CallWith=ScriptState,

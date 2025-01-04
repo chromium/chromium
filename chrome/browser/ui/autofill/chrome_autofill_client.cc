@@ -46,7 +46,7 @@
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/credit_card_scanner_controller.h"
-#include "chrome/browser/ui/autofill/payments/view_factory.h"
+#include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -61,25 +61,25 @@
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
-#include "components/autofill/content/browser/autofill_log_router_factory.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill/core/browser/autofill_experiments.h"
-#include "components/autofill/core/browser/autofill_optimization_guide.h"
-#include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/integrators/autofill_optimization_guide.h"
+#include "components/autofill/core/browser/integrators/autofill_plus_address_delegate.h"
+#include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/single_field_fill_router.h"
+#include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
+#include "components/autofill/core/browser/studies/autofill_experiments.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
-#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -151,7 +151,7 @@
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
-#include "components/autofill/core/browser/autofill_ai_delegate.h"
+#include "components/autofill/core/browser/integrators/autofill_ai_delegate.h"
 #include "components/autofill_ai/core/browser/autofill_ai_features.h"  // nogncheck
 #include "components/autofill_ai/core/browser/autofill_ai_manager.h"  // nogncheck
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -180,9 +180,7 @@ AutoselectFirstSuggestion ShouldAutofillPopupAutoselectFirstSuggestion(
 #if !BUILDFLAG(IS_ANDROID)
 const base::Feature& GetFeature(AutofillClient::IphFeature iph_feature) {
   switch (iph_feature) {
-    case AutofillClient::IphFeature::kManualFallback:
-      return feature_engagement::kIPHAutofillManualFallbackFeature;
-    case AutofillClient::IphFeature::kPredictionImprovements:
+    case AutofillClient::IphFeature::kAutofillAi:
       return feature_engagement::kIPHAutofillPredictionImprovementsFeature;
   }
   NOTREACHED();
@@ -190,9 +188,7 @@ const base::Feature& GetFeature(AutofillClient::IphFeature iph_feature) {
 
 ui::ElementIdentifier GetElementId(AutofillClient::IphFeature iph_feature) {
   switch (iph_feature) {
-    case AutofillClient::IphFeature::kManualFallback:
-      return kAutofillManualFallbackElementId;
-    case AutofillClient::IphFeature::kPredictionImprovements:
+    case AutofillClient::IphFeature::kAutofillAi:
       return kAutofillPredictionImprovementsIphElementId;
   }
   NOTREACHED();
@@ -329,8 +325,8 @@ ChromeAutofillClient::GetURLLoaderFactory() {
 AutofillCrowdsourcingManager& ChromeAutofillClient::GetCrowdsourcingManager() {
   if (!crowdsourcing_manager_) {
     // Lazy initialization to avoid virtual function calls in the constructor.
-    crowdsourcing_manager_ = std::make_unique<AutofillCrowdsourcingManager>(
-        this, GetChannel(), GetLogManager());
+    crowdsourcing_manager_ =
+        std::make_unique<AutofillCrowdsourcingManager>(this, GetChannel());
   }
   return *crowdsourcing_manager_;
 }
@@ -840,7 +836,13 @@ bool ChromeAutofillClient::IsContextSecure() const {
          security_level != security_state::DANGEROUS;
 }
 
-LogManager* ChromeAutofillClient::GetLogManager() const {
+LogManager* ChromeAutofillClient::GetCurrentLogManager() {
+  if (!log_manager_ && log_router_ && log_router_->HasReceivers()) {
+    // TODO(crbug.com/40612524): Replace the closure with a callback to
+    // the renderer that indicates if log messages should be sent from the
+    // renderer.
+    log_manager_ = LogManager::Create(log_router_, base::NullCallback());
+  }
   return log_manager_.get();
 }
 
@@ -944,13 +946,6 @@ void ChromeAutofillClient::NotifyIphFeatureUsed(
 ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
     : ContentAutofillClient(web_contents),
       content::WebContentsObserver(web_contents),
-      log_manager_(
-          // TODO(crbug.com/40612524): Replace the closure with a callback to
-          // the renderer that indicates if log messages should be sent from the
-          // renderer.
-          LogManager::Create(AutofillLogRouterFactory::GetForBrowserContext(
-                                 web_contents->GetBrowserContext()),
-                             base::NullCallback())),
       ablation_study_(g_browser_process->local_state()) {
   // Initialize StrikeDatabase so its cache will be loaded and ready to use
   // when requested by other Autofill classes.

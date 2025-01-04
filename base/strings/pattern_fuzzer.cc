@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/pattern.h"
+
+#include <fuzzer/FuzzedDataProvider.h>
 #include <stdint.h>
 
 #include <string>
 #include <tuple>
 
-#include <fuzzer/FuzzedDataProvider.h>
-
-#include "base/strings/pattern.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace {

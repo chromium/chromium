@@ -14,9 +14,11 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/enterprise/connectors/test/uploader_test_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/connector_upload_request.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -46,6 +48,7 @@ class MockResumableUploadRequest : public ResumableUploadRequest {
                                path,
                                123,
                                false,
+                               "DummySuffix",
                                TRAFFIC_ANNOTATION_FOR_TESTS,
                                std::move(callback)) {}
 
@@ -59,6 +62,7 @@ class MockResumableUploadRequest : public ResumableUploadRequest {
                                "metadata",
                                get_data_result,
                                std::move(page_region),
+                               "DummySuffix",
                                TRAFFIC_ANNOTATION_FOR_TESTS,
                                std::move(callback)) {}
 };
@@ -148,7 +152,7 @@ TEST_F(ResumableUploadRequestTest,
   network::ResourceRequest resource_request;
   auto connector_request = ResumableUploadRequest::CreateFileRequest(
       nullptr, GURL(), "metadata", BinaryUploadService::Result::SUCCESS,
-      CreateFile("my_file_name.foo", "file_data"), 9, false,
+      CreateFile("my_file_name.foo", "file_data"), 9, false, "histogram_suffix",
       TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing());
   auto* request = static_cast<ResumableUploadRequest*>(connector_request.get());
   request->SetMetadataRequestHeaders(&resource_request);
@@ -161,7 +165,7 @@ TEST_F(ResumableUploadRequestTest,
   network::ResourceRequest resource_request;
   auto connector_request = ResumableUploadRequest::CreateFileRequest(
       nullptr, GURL(), "metadata", BinaryUploadService::Result::FILE_TOO_LARGE,
-      CreateFile("my_file_name.foo", "file_data"), 9, false,
+      CreateFile("my_file_name.foo", "file_data"), 9, false, "histogram_suffix",
       TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing());
   auto* request = static_cast<ResumableUploadRequest*>(connector_request.get());
   request->SetMetadataRequestHeaders(&resource_request);
@@ -174,7 +178,7 @@ TEST_F(ResumableUploadRequestTest,
   network::ResourceRequest resource_request;
   auto connector_request = ResumableUploadRequest::CreateFileRequest(
       nullptr, GURL(), "metadata", BinaryUploadService::Result::FILE_ENCRYPTED,
-      CreateFile("my_file_name.foo", "file_data"), 9, false,
+      CreateFile("my_file_name.foo", "file_data"), 9, false, "histogram_suffix",
       TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing());
   auto* request = static_cast<ResumableUploadRequest*>(connector_request.get());
   request->SetMetadataRequestHeaders(&resource_request);
@@ -187,8 +191,8 @@ TEST_F(ResumableUploadRequestTest,
   network::ResourceRequest resource_request;
   auto connector_request = ResumableUploadRequest::CreatePageRequest(
       nullptr, GURL(), "metadata", BinaryUploadService::Result::SUCCESS,
-      CreatePage("print_data"), TRAFFIC_ANNOTATION_FOR_TESTS,
-      base::DoNothing());
+      CreatePage("print_data"), "histogram_suffix",
+      TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing());
   auto* request = static_cast<ResumableUploadRequest*>(connector_request.get());
   request->SetMetadataRequestHeaders(&resource_request);
 
@@ -250,6 +254,7 @@ TEST_P(ResumableUploadSendMetadataRequestTest, SendsCorrectRequest) {
 }
 
 TEST_P(ResumableUploadSendMetadataRequestTest, HandlesFailedMetadataScan) {
+  base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   std::string body;
 
@@ -274,10 +279,16 @@ TEST_P(ResumableUploadSendMetadataRequestTest, HandlesFailedMetadataScan) {
 
   run_loop.Run();
   EXPECT_EQ(mock_request->GetUploadInfo(), "Resumable - Metadata only scan");
+
+  histogram_tester.ExpectUniqueSample(
+      /*name=*/"SafeBrowsing.ResumableUploader.NetworkResult.DummySuffix",
+      /*sample=*/net::HTTP_UNAUTHORIZED,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_P(ResumableUploadSendMetadataRequestTest,
        HandlesSuccessfulMetadataOnlyScan) {
+  base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   std::string body;
 
@@ -304,6 +315,11 @@ TEST_P(ResumableUploadSendMetadataRequestTest,
 
   run_loop.Run();
   EXPECT_EQ(mock_request->GetUploadInfo(), "Resumable - Metadata only scan");
+
+  histogram_tester.ExpectUniqueSample(
+      /*name=*/"SafeBrowsing.ResumableUploader.NetworkResult.DummySuffix",
+      /*sample=*/net::HTTP_OK,
+      /*expected_bucket_count=*/1);
 }
 
 class ResumableUploadSendContentRequestTest
@@ -328,6 +344,7 @@ INSTANTIATE_TEST_SUITE_P(,
                          testing::Bool());
 
 TEST_P(ResumableUploadSendContentRequestTest, HandlesSuccessfulContentScan) {
+  base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   std::string content_upload_method;
   std::string content_upload_command;
@@ -385,9 +402,15 @@ TEST_P(ResumableUploadSendContentRequestTest, HandlesSuccessfulContentScan) {
   EXPECT_EQ(content_upload_command, "upload, finalize");
   EXPECT_EQ(content_upload_offset, "0");
   EXPECT_EQ(mock_request->GetUploadInfo(), "Resumable - Full content scan");
+
+  histogram_tester.ExpectUniqueSample(
+      /*name=*/"SafeBrowsing.ResumableUploader.NetworkResult.DummySuffix",
+      /*sample=*/net::HTTP_OK,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_P(ResumableUploadSendContentRequestTest, HandlesFileTooLarge) {
+  base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
 
   auto callback =
@@ -419,9 +442,15 @@ TEST_P(ResumableUploadSendContentRequestTest, HandlesFileTooLarge) {
       }));
   mock_request->Start();
   run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      /*name=*/"SafeBrowsing.ResumableUploader.NetworkResult.DummySuffix",
+      /*sample=*/net::ERR_FAILED,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_P(ResumableUploadSendContentRequestTest, HandlesEncryptedFile) {
+  base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
 
   auto callback =
@@ -453,9 +482,15 @@ TEST_P(ResumableUploadSendContentRequestTest, HandlesEncryptedFile) {
       }));
   mock_request->Start();
   run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      /*name=*/"SafeBrowsing.ResumableUploader.NetworkResult.DummySuffix",
+      /*sample=*/net::ERR_FAILED,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_P(ResumableUploadSendContentRequestTest, HandlesFailedContentScan) {
+  base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   std::string content_upload_method;
   std::string content_upload_command;
@@ -511,6 +546,11 @@ TEST_P(ResumableUploadSendContentRequestTest, HandlesFailedContentScan) {
   EXPECT_EQ(content_upload_command, "upload, finalize");
   EXPECT_EQ(content_upload_offset, "0");
   EXPECT_EQ(mock_request->GetUploadInfo(), "Resumable - Full content scan");
+
+  histogram_tester.ExpectUniqueSample(
+      /*name=*/"SafeBrowsing.ResumableUploader.NetworkResult.DummySuffix",
+      /*sample=*/net::HTTP_UNAUTHORIZED,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace safe_browsing

@@ -38,6 +38,9 @@ void CommandData::Init()
   InclArgs.Reset();
   ArcNames.Reset();
   StoreArgs.Reset();
+#ifdef PROPAGATE_MOTW
+  MotwList.Reset();
+#endif
   Password.Clean();
   NextVolSizes.clear();
 #ifdef RARDLL
@@ -189,7 +192,7 @@ void CommandData::ParseDone()
 #if !defined(SFX_MODULE)
 void CommandData::ParseEnvVar()
 {
-  char *EnvVar=getenv("RAR");
+  char *EnvVar=getenv("RARINISWITCHES");
   if (EnvVar!=NULL)
   {
     std::wstring EnvStr;
@@ -292,6 +295,9 @@ void CommandData::ProcessSwitchesString(const std::wstring &Str)
 #if !defined(SFX_MODULE)
 void CommandData::ProcessSwitch(const wchar *Switch)
 {
+
+  if (LargePageAlloc::ProcessSwitch(this,Switch))
+    return;
 
   switch(toupperw(Switch[0]))
   {
@@ -619,8 +625,6 @@ void CommandData::ProcessSwitch(const wchar *Switch)
               }
             }
           break;
-        case 'M':
-          break;
         case 'D':
           {
             bool SetDictLimit=toupperw(Switch[2])=='X';
@@ -665,33 +669,30 @@ void CommandData::ProcessSwitch(const wchar *Switch)
           if (toupperw(Switch[2])=='S' && Switch[3]==0)
             SkipEncrypted=true;
           break;
-        case 'S':
+        case 'L':
+          if (toupperw(Switch[2])=='P')
           {
-            std::wstring StoreNames=(Switch[2]==0 ? DefaultStoreList:Switch+2);
-            size_t Pos=0;
-            while (Pos<StoreNames.size())
+            UseLargePages=true;
+            if (!LargePageAlloc::IsPrivilegeAssigned() && LargePageAlloc::AssignConfirmation())
             {
-              if (StoreNames[Pos]=='.')
-                Pos++;
-              size_t EndPos=StoreNames.find(';',Pos);
-              std::wstring Mask=StoreNames.substr(Pos,EndPos==std::wstring::npos ? EndPos:EndPos-Pos);
-              if (Mask.find_first_of(L"*?.")==std::wstring::npos)
-                Mask.insert(0,L"*.");
-              StoreArgs.AddString(Mask);
-              if (EndPos==std::wstring::npos)
-                break;
-              Pos=EndPos+1;
+              LargePageAlloc::AssignPrivilege();
+
+              // Quit immediately. We do not want to interrupt the current copy
+              // archive processing with reboot after assigning privilege.
+              SetupComplete=true;
             }
           }
+          break;
+        case 'M':
+          break;
+        case 'S':
+          GetBriefMaskList(Switch[2]==0 ? DefaultStoreList:Switch+2,StoreArgs);
           break;
 #ifdef RAR_SMP
         case 'T':
           Threads=atoiw(Switch+2);
           if (Threads>MaxPoolThreads || Threads<1)
             BadSwitch(Switch);
-          else
-          {
-          }
           break;
 #endif
         default:
@@ -750,6 +751,18 @@ void CommandData::ProcessSwitch(const wchar *Switch)
                 BadSwitch(Switch);
                 break;
             }
+          break;
+#endif
+#ifdef PROPAGATE_MOTW
+        case 'M':
+          {
+            MotwAllFields=Switch[2]=='1';
+            const wchar *Sep=wcschr(Switch+2,'=');
+            if (Switch[2]=='-')
+              MotwList.Reset();
+            else
+              GetBriefMaskList(Sep==nullptr ? L"*":Sep+1,MotwList);
+          }
           break;
 #endif
 #ifdef _WIN_ALL
@@ -1033,6 +1046,11 @@ void CommandData::ProcessCommand()
 #ifndef SFX_MODULE
 
   const wchar *SingleCharCommands=L"FUADPXETK";
+
+  // RAR -mlp command is the legitimate way to assign the required privilege.
+  if (Command.empty() && UseLargePages || SetupComplete)
+    return;
+
   if (Command[0]!=0 && Command[1]!=0 && wcschr(SingleCharCommands,Command[0])!=NULL || ArcName.empty())
     OutHelp(Command.empty() ? RARX_SUCCESS:RARX_USERERROR); // Return 'success' for 'rar' without parameters.
 
@@ -1228,6 +1246,26 @@ int64 CommandData::GetVolSize(const wchar *S,uint DefMultiplier)
   if (FloatingDivider!=0)
     Size/=FloatingDivider;
   return Size;
+}
+
+
+// Treat the list like rar;zip as *.rar;*.zip for -ms and similar switches.
+void CommandData::GetBriefMaskList(const std::wstring &Masks,StringList &Args)
+{
+  size_t Pos=0;
+  while (Pos<Masks.size())
+  {
+    if (Masks[Pos]=='.')
+      Pos++;
+    size_t EndPos=Masks.find(';',Pos);
+    std::wstring Mask=Masks.substr(Pos,EndPos==std::wstring::npos ? EndPos:EndPos-Pos);
+    if (Mask.find_first_of(L"*?.")==std::wstring::npos)
+      Mask.insert(0,L"*.");
+    Args.AddString(Mask);
+    if (EndPos==std::wstring::npos)
+      break;
+    Pos=EndPos+1;
+  }
 }
 
 

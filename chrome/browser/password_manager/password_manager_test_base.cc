@@ -29,7 +29,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/password_store_results_observer.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"

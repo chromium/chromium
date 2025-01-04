@@ -149,6 +149,7 @@ cargo_crate("{{../name}}") {
   rustflags = [
     "--cfg=backtrace_in_libstd",
     "-Zforce-unstable-if-unmarked",
+    "--cap-lints=allow",  # Suppress all warnings in stdlib crates
     {{#if extra_kv.no_link_directives}}
     "-Zlink-directives=false",
     {{/if}}

@@ -4,12 +4,14 @@
 
 package org.chromium.mojo.bindings;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.mojo.system.MojoException;
 
 /**
  * A {@link ConnectionErrorHandler} is notified of an error happening while using the bindings over
  * message pipes.
  */
+@NullMarked
 public interface ConnectionErrorHandler {
     public void onConnectionError(MojoException e);
 }

@@ -17,7 +17,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/audio/audio_output_device.h"
 #include "media/base/audio_renderer_sink.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
@@ -40,6 +39,7 @@ namespace audio {
 
 namespace {
 
+constexpr uint8_t kAudioByteData = 127;
 constexpr float kAudioData = 0.618;
 constexpr base::TimeDelta kDelay = base::Microseconds(123);
 constexpr char kDeviceId[] = "testdeviceid";
@@ -212,7 +212,7 @@ TEST_F(AudioServiceOutputDeviceTest, CreatePlayPause) {
 }
 
 // Flaky on Linux Chromium OS ASan LSan (https://crbug.com/889845)
-#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)
 #define MAYBE_VerifyDataFlow DISABLED_VerifyDataFlow
 #else
 #define MAYBE_VerifyDataFlow VerifyDataFlow
@@ -305,10 +305,9 @@ TEST_F(AudioServiceOutputDeviceTest, CreateBitStreamStream) {
           EXPECT_TRUE(renderer_bus->is_bitstream_format());
           // Place some test data in the bus so that we can check that it was
           // copied to the browser side.
-          std::fill_n(renderer_bus->channel(0),
-                      kBitstreamDataSize / sizeof(float), kAudioData);
           renderer_bus->SetBitstreamFrames(kBitstreamFrames);
-          renderer_bus->SetBitstreamDataSize(kBitstreamDataSize);
+          renderer_bus->SetBitstreamSize(kBitstreamDataSize);
+          std::ranges::fill(renderer_bus->bitstream_data(), kAudioByteData);
           return renderer_bus->frames();
         })));
     env.reader->RequestMoreData(kDelay, env.time_stamp, glitch_info);
@@ -317,12 +316,11 @@ TEST_F(AudioServiceOutputDeviceTest, CreateBitStreamStream) {
     Mock::VerifyAndClear(&env.render_callback);
     EXPECT_TRUE(test_bus->is_bitstream_format());
     EXPECT_EQ(kBitstreamFrames, test_bus->GetBitstreamFrames());
-    EXPECT_EQ(kBitstreamDataSize, test_bus->GetBitstreamDataSize());
-    for (size_t datum = 0; datum < kBitstreamDataSize / sizeof(float);
-         ++datum) {
+    EXPECT_EQ(kBitstreamDataSize, test_bus->bitstream_data().size());
+    for (auto datum : test_bus->bitstream_data()) {
       // Note: if all of these fail, the bots will behave strangely due to the
       // large amount of text output. Assert is used to avoid this.
-      ASSERT_EQ(kAudioData, test_bus->channel(0)[datum]);
+      ASSERT_EQ(kAudioByteData, datum);
     }
   }
 

@@ -57,6 +57,9 @@ bool CanManageProductSpecificationsSets(
 // may still be able to manage their sets.
 bool CanFetchProductSpecificationsData(AccountChecker* account_checker);
 
+// Returns whether we should show the settings UI for product specifications.
+bool IsProductSpecificationsSettingVisible(AccountChecker* account_checker);
+
 }  // namespace commerce
 
 #endif  // COMPONENTS_COMMERCE_CORE_FEATURE_UTILS_H_

@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">බාගැනීම විරාමයි</translation>
 <translation id="1396327438254055134">වෙබ් අඩවියට V8 ප්‍රශස්තකරණය භාවිත කිරීමට ඉඩ දෙන්න.</translation>
 <translation id="1415402041810619267">URL කපන ලදි</translation>
+<translation id="1415855080660575082">ඔබේ උපාංගයේ යෙදුම් ලැයිස්තුවේ සහ සෙවීම් ප්‍රතිඵලවල ඒවා දැකීමට Chrome හට ඔබේ මෑත කාලීන පටිති ඔබේ උපාංගය සමග බෙදා ගැනීමට ඉඩ දෙන්න. ඔබට Chrome සැකසීම් තුළ මෙය ක්‍රියාත්මක හෝ ක්‍රියා විරහිත කළ හැක.</translation>
 <translation id="1448064542941920355">විශාලනය අඩු කරන්න</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> අඩවියක්}one{අඩවි <ph name="SITE_COUNT" /> ක්}other{අඩවි <ph name="SITE_COUNT" /> ක්}}</translation>
 <translation id="1500473259453106018">පටිති කාඩ්පතේ මිල පහත වැටීම් සඟවන්න</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">ඔබ තාවකාලිකව මෙම අඩවියට තෙවන පාර්ශ්ව කුකීස් භාවිතා කිරීමට ඉඩ දී ඇති අතර, එයින් අදහස් වන්නේ අඩු බ්‍රවුස් කිරීමේ ආරක්ෂාවක් ඇති නමුත් අඩවි විශේෂාංග බලාපොරොත්තු වූ පරිදි ක්‍රියා කිරීමට වැඩි ඉඩක් ඇති බවයි. <ph name="BEGIN_LINK" />ප්‍රතිපෝෂණය යවන්න<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">සමහර අඩවිවල විශේෂාංග අප්‍රසිද්ධ ප්‍රකාරයේ ක්‍රියා නොකළ හැක</translation>
 <translation id="2442870161001914531">සැම විට ඩෙස්ක්ටොප් අඩවිය ඉල්ලන්න</translation>
+<translation id="2445311670906052406">Chrome දැන් ඔබේ මෑත කාලීන පටිති ඔබේ උපාංගය සමග බෙදා ගනී. ඔබට ඒවා ඔබේ උපාංගයේ යෙදුම් ලැයිස්තුවේ සහ සෙවීම් ප්‍රතිඵලවල පෙනෙනු ඇත. ඔබට මෙය ඕනෑම වේලාවක Chrome සැකසීම් තුළ ක්‍රියා විරහිත කළ හැක.</translation>
 <translation id="2469312991797799607">මෙම ක්‍රියාව <ph name="ORIGIN" /> සඳහා සියලු දත්ත සහ කුකීස් සහ ඒ යටතේ ඇති සියලු අඩවි මකනු ඇත</translation>
 <translation id="2482878487686419369">දැනුම්දීම්</translation>
 <translation id="2485422356828889247">අස්ථාපනය</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">අඩවිවලට අනන්‍යතා සේවාවලින් පිරීමේ ප්‍රේරක පෙන්විය හැකිය.</translation>
 <translation id="2787357173144933081">Omnibox ඉක්මනින් ආරම්භ කරන්න</translation>
 <translation id="2790501146643349491">සක්‍රීය වූ විට, මෑතදී වසන ලද අඩවිවලට දත්ත යැවීම සහ ලැබීම අවසන් කළ හැක. අක්‍රිය වූ විට, මෑතදී වසන ලද අඩවිවලට දත්ත යැවීම හෝ ලැබීම අවසන් කළ නොහැක.</translation>
+<translation id="2814830417943086299">Chrome දැන් ඔබේ උපාංගයේ යෙදුම් ලැයිස්තුවේ සහ සෙවීම් ප්‍රතිඵලවල ඔබේ මෑත පටිති පෙන්වයි. ඔබට මෙය ඕනෑම වේලාවක Chrome සැකසීම් තුළ ක්‍රියා විරහිත කළ හැක.</translation>
 <translation id="2822354292072154809">ඔබට <ph name="CHOSEN_OBJECT_NAME" /> සඳහා සියලුම වෙබ් අඩවි අවසර යළි සැකසිය යුතු බව ඔබට තහවුරුද?</translation>
 <translation id="2850913818900871965">ජංගම දසුන ඉල්ලන්න</translation>
 <translation id="2870560284913253234">අඩවිය</translation>
@@ -335,7 +338,6 @@
 <translation id="5968921426641056619">වෙබ් ලිපිනය ඇතුළු කරන්න</translation>
 <translation id="5975083100439434680">විශාලනය අඩු කරන්න</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
-<translation id="6015145568571136419">ඔබට දැන් ඔබේ උපාංගයේ යෙදුම් ලැයිස්තුවෙන් සහ උපාංග සෙවීම් ප්‍රතිඵලවලින් යෝජිත පටිති වෙත ඉක්මනින් ප්‍රවේශ විය හැක. Chrome සැකසීම් තුළ ඕනෑම වේලාවක මෙය ක්‍රියා විරහිත කරන්න.</translation>
 <translation id="6015775454662021376">ඔබගේ උපාංගයට මෙම අඩවියෙහි ප්‍රවේශය පාලනය කරන්න</translation>
 <translation id="6040143037577758943">වසන්න</translation>
 <translation id="6042308850641462728">වැඩිදුර</translation>
@@ -558,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> සහ තවත් <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> සහ තවත් <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> සහ තවත් <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289"><ph name="APP_NAME" /> සඳහා අවසර <ph name="BEGIN_LINK" />Android සැකසීම්<ph name="END_LINK" /> තුළ ක්‍රියාත්මක කරන්න.</translation>
 <translation id="9138217887606523162">වත්මන් විශාලනය වන්නේ <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="9156722768168878035">ඔබේ උපාංගයේ යෙදුම් ලැයිස්තුවේ සහ සෙවීම් ප්‍රතිඵලවල ඔබේ මෑත පටිති පෙන්වීමට Chrome හට ඉඩ දෙන්න. ඔබට මෙය ඕනෑම වේලාවක Chrome සැකසීම් තුළ ක්‍රියා විරහිත කළ හැක.</translation>
 <translation id="9162462602695099906">මෙම පිටුව අනතුරුදායකයි</translation>
 <translation id="947156494302904893">ඔබ පිවිසෙන අඩවිවලට ඔබ සැබෑ පුද්ගලයෙක් මිස බොට් කෙනෙක් නොවන බව සත්‍යාපනය කළ හැක</translation>
 <translation id="959682366969460160">සංවිධාන වන්න</translation>

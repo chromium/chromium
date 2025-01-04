@@ -32,7 +32,7 @@
 
 namespace policy {
 
-const size_t kMaxUrlFiltersPerPolicy = 1000;
+const size_t kMaxUrlFiltersPerPolicy = 1500;
 
 // ConfigurationPolicyHandler implementation
 // -----------------------------------

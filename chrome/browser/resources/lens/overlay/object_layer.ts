@@ -270,6 +270,13 @@ export class ObjectLayerElement extends PolymerElement {
       detail: this.getPostSelectionRegion(selectionRegion),
     }));
 
+    // Display selected region context menu if able.
+    this.dispatchEvent(new CustomEvent('detect-text-in-region', {
+      bubbles: true,
+      composed: true,
+      detail: selectionRegion,
+    }));
+
     // Since the selection is made and rendering is being done by the post
     // selection layer, act as the cursor left so the segmentation is no longer
     // highlighted.

@@ -14,8 +14,9 @@ TestSessionController::~TestSessionController() = default;
 
 void TestSessionController::SetScreenLocked(bool locked) {
   is_screen_locked_ = locked;
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnLockStateChanged(locked);
+  }
 }
 
 void TestSessionController::SetClient(ash::SessionControllerClient* client) {}

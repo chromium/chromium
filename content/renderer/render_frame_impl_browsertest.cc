@@ -168,7 +168,8 @@ class RenderFrameImplTest : public RenderViewTest {
         GetMainRenderFrame()->GetWebFrame()->FirstChild())
         ->Unload(false, frame_replication_state->Clone(), remote_child_token,
                  std::move(remote_frame_interfaces),
-                 std::move(remote_main_frame_interfaces));
+                 std::move(remote_main_frame_interfaces),
+                 /*devtools_frame_token=*/std::nullopt);
     MockPolicyContainerHost mock_policy_container_host;
     RenderFrameImpl::CreateFrame(
         *agent_scheduling_group_, child_frame_token_, kSubframeRouteId,

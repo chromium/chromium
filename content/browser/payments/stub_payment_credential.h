@@ -36,6 +36,11 @@ class StubPaymentCredential
                               const std::vector<uint8_t>& user_id,
                               StorePaymentCredentialCallback callback) override;
 
+  // mojom::PaymentCredential:
+  void MakePaymentCredential(
+      blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
+      MakePaymentCredentialCallback callback) override;
+
  private:
   StubPaymentCredential(
       RenderFrameHost& render_frame_host,

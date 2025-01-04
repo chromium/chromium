@@ -50,7 +50,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -77,13 +76,7 @@ constexpr char kAppChildUrl[] = "https://www.google.com/child";
 
 class PreinstalledWebAppManagerTest : public testing::Test {
  public:
-  PreinstalledWebAppManagerTest() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    scoped_feature_list_.InitWithFeatures(
-        {}, /*disabled_features=*/ash::standalone_browser::GetFeatureRefs());
-#endif
-  }
-
+  PreinstalledWebAppManagerTest() = default;
   PreinstalledWebAppManagerTest(const PreinstalledWebAppManagerTest&) = delete;
   PreinstalledWebAppManagerTest& operator=(
       const PreinstalledWebAppManagerTest&) = delete;
@@ -258,7 +251,6 @@ class PreinstalledWebAppManagerTest : public testing::Test {
   raw_ptr<FakeWebAppProvider> provider_ = nullptr;
   std::unique_ptr<Profile> profile_;
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   // To support context of browser threads.
   content::BrowserTaskEnvironment task_environment_;
 };

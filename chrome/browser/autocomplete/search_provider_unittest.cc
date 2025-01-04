@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string>
 
@@ -51,11 +52,11 @@
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/history_url_provider.h"
-#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engine_type.h"
@@ -1087,16 +1088,9 @@ TEST_F(SearchProviderTest, InlineMixedCaseMatches) {
   ASSERT_NO_FATAL_FAILURE(QueryForInputAndSetWYTMatch(u"f", &wyt_match));
   ASSERT_EQ(2u, provider_->matches().size());
   AutocompleteMatch term_match;
-  if (base::FeatureList::IsEnabled(omnibox::kNormalizeSearchSuggestions)) {
-    EXPECT_TRUE(FindMatchWithDestination(
-        GURL(base::ToLowerASCII(term_url.spec())), &term_match));
-    EXPECT_EQ(u"foo", term_match.fill_into_edit);
-    EXPECT_EQ(u"oo", term_match.inline_autocompletion);
-  } else {
-    EXPECT_TRUE(FindMatchWithDestination(term_url, &term_match));
-    EXPECT_EQ(u"FOO", term_match.fill_into_edit);
-    EXPECT_EQ(u"OO", term_match.inline_autocompletion);
-  }
+  EXPECT_TRUE(FindMatchWithDestination(term_url, &term_match));
+  EXPECT_EQ(u"FOO", term_match.fill_into_edit);
+  EXPECT_EQ(u"OO", term_match.inline_autocompletion);
   EXPECT_GT(term_match.relevance, wyt_match.relevance);
   EXPECT_TRUE(term_match.allowed_to_be_default_match);
   // Make sure the case doesn't affect the highlighting.
@@ -1586,11 +1580,12 @@ TEST_F(SearchProviderTest, KeywordFetcherSuggestRelevance) {
     bool allowed_to_be_default_match;
   };
   const KeywordFetcherMatch kEmptyMatch = { kNotApplicable, false, false };
-  struct {
+  struct Cases {
     const std::string json;
     const KeywordFetcherMatch matches[6];
     const std::string inline_autocompletion;
-  } cases[] = {
+  };
+  auto cases = std::to_array<Cases>({
       // clang-format off
     // Ensure that suggest relevance scores reorder matches.
     { "[\"a\",[\"b\", \"c\"],[],[],{\"google:suggestrelevance\":[1, 2]}]",
@@ -1947,7 +1942,7 @@ TEST_F(SearchProviderTest, KeywordFetcherSuggestRelevance) {
         kEmptyMatch, kEmptyMatch },
       "3" },
       // clang-format on
-  };
+  });
 
   for (size_t i = 0; i < std::size(cases); ++i) {
     // Send the query twice in order to have a synchronous pass after the first
@@ -2237,11 +2232,12 @@ TEST_F(SearchProviderTest, DontCacheCalculatorSuggestions) {
   // processing (receiving first asynchronous response, handling new keystroke
   // synchronously) we have the expected matches.  The new keystroke should
   // immediately invalidate old calculator suggestions.
-  struct {
+  struct Cases {
     std::string json;
     ExpectedMatch async_matches[4];
     ExpectedMatch sync_matches[4];
-  } cases[] = {
+  };
+  auto cases = std::to_array<Cases>({
       {"[\"1+2\",[\"= 3\", \"1+2+3+4+5\"],[],[],"
        "{\"google:verbatimrelevance\":1300,"
        "\"google:suggesttype\":[\"CALCULATOR\", \"QUERY\"],"
@@ -2261,7 +2257,7 @@ TEST_F(SearchProviderTest, DontCacheCalculatorSuggestions) {
         {"1+2+3+4+5", false},
         kEmptyExpectedMatch,
         kEmptyExpectedMatch}},
-  };
+  });
 
   // Note: SearchSuggestionParser::ParseSuggestResults swaps the content and
   // answer fields on Desktop. See https://crbug.com/1325124#c1.
@@ -2312,56 +2308,59 @@ TEST_F(SearchProviderTest, LocalAndRemoteRelevances) {
   AddSearchToHistory(default_t_url_, term + u"2", 2);
   profile_->BlockUntilHistoryProcessesPendingRequests();
 
-  struct {
+  struct Cases {
     const std::u16string input;
     const std::string json;
     const std::string matches[6];
-  } cases[] = {
-    // The history results outscore the default verbatim score.  term2 has more
-    // visits so it outscores term1.  The suggestions are still returned since
-    // they're server-scored.
-    { term,
-      "[\"term\",[\"a1\", \"a2\", \"a3\"],[],[],"
-       "{\"google:suggesttype\":[\"QUERY\", \"QUERY\", \"QUERY\"],"
-        "\"google:suggestrelevance\":[1, 2, 3]}]",
-      { "term2", "term1", "term", "a3", "a2", "a1" } },
-    // Because we already have three suggestions by the time we see the history
-    // results, they don't get returned.
-    { term,
-      "[\"term\",[\"a1\", \"a2\", \"a3\"],[],[],"
-       "{\"google:suggesttype\":[\"QUERY\", \"QUERY\", \"QUERY\"],"
-        "\"google:verbatimrelevance\":1450,"
-        "\"google:suggestrelevance\":[1440, 1430, 1420]}]",
-      { "term", "a1", "a2", "a3", kNotApplicable, kNotApplicable } },
-    // If we only have two suggestions, we have room for a history result.
-    { term,
-      "[\"term\",[\"a1\", \"a2\"],[],[],"
-       "{\"google:suggesttype\":[\"QUERY\", \"QUERY\"],"
-        "\"google:verbatimrelevance\":1450,"
-        "\"google:suggestrelevance\":[1430, 1410]}]",
-      { "term", "a1", "a2", "term2", kNotApplicable, kNotApplicable } },
-    // If we have more than three suggestions, they should all be returned as
-    // long as we have enough total space for them.
-    { term,
-      "[\"term\",[\"a1\", \"a2\", \"a3\", \"a4\"],[],[],"
-       "{\"google:suggesttype\":[\"QUERY\", \"QUERY\", \"QUERY\", \"QUERY\"],"
-        "\"google:verbatimrelevance\":1450,"
-        "\"google:suggestrelevance\":[1440, 1430, 1420, 1410]}]",
-      { "term", "a1", "a2", "a3", "a4", kNotApplicable } },
-    { term,
-      "[\"term\",[\"a1\", \"a2\", \"a3\", \"a4\", \"a5\", \"a6\"],[],[],"
-       "{\"google:suggesttype\":[\"QUERY\", \"QUERY\", \"QUERY\", \"QUERY\","
-                                "\"QUERY\", \"QUERY\"],"
-        "\"google:verbatimrelevance\":1450,"
-        "\"google:suggestrelevance\":[1440, 1430, 1420, 1410, 1400, 1390]}]",
-      { "term", "a1", "a2", "a3", "a4", "a5" } },
-    { term,
-      "[\"term\",[\"a1\", \"a2\", \"a3\", \"a4\"],[],[],"
-       "{\"google:suggesttype\":[\"QUERY\", \"QUERY\", \"QUERY\", \"QUERY\"],"
-        "\"google:verbatimrelevance\":1450,"
-        "\"google:suggestrelevance\":[1430, 1410, 1390, 1370]}]",
-      { "term", "a1", "a2", "term2", "a3", "a4" } }
   };
+  auto cases = std::to_array<Cases>({
+      // The history results outscore the default verbatim score.  term2 has
+      // more
+      // visits so it outscores term1.  The suggestions are still returned since
+      // they're server-scored.
+      {term,
+       "[\"term\",[\"a1\", \"a2\", \"a3\"],[],[],"
+       "{\"google:suggesttype\":[\"QUERY\", \"QUERY\", \"QUERY\"],"
+       "\"google:suggestrelevance\":[1, 2, 3]}]",
+       {"term2", "term1", "term", "a3", "a2", "a1"}},
+      // Because we already have three suggestions by the time we see the
+      // history
+      // results, they don't get returned.
+      {term,
+       "[\"term\",[\"a1\", \"a2\", \"a3\"],[],[],"
+       "{\"google:suggesttype\":[\"QUERY\", \"QUERY\", \"QUERY\"],"
+       "\"google:verbatimrelevance\":1450,"
+       "\"google:suggestrelevance\":[1440, 1430, 1420]}]",
+       {"term", "a1", "a2", "a3", kNotApplicable, kNotApplicable}},
+      // If we only have two suggestions, we have room for a history result.
+      {term,
+       "[\"term\",[\"a1\", \"a2\"],[],[],"
+       "{\"google:suggesttype\":[\"QUERY\", \"QUERY\"],"
+       "\"google:verbatimrelevance\":1450,"
+       "\"google:suggestrelevance\":[1430, 1410]}]",
+       {"term", "a1", "a2", "term2", kNotApplicable, kNotApplicable}},
+      // If we have more than three suggestions, they should all be returned as
+      // long as we have enough total space for them.
+      {term,
+       "[\"term\",[\"a1\", \"a2\", \"a3\", \"a4\"],[],[],"
+       "{\"google:suggesttype\":[\"QUERY\", \"QUERY\", \"QUERY\", \"QUERY\"],"
+       "\"google:verbatimrelevance\":1450,"
+       "\"google:suggestrelevance\":[1440, 1430, 1420, 1410]}]",
+       {"term", "a1", "a2", "a3", "a4", kNotApplicable}},
+      {term,
+       "[\"term\",[\"a1\", \"a2\", \"a3\", \"a4\", \"a5\", \"a6\"],[],[],"
+       "{\"google:suggesttype\":[\"QUERY\", \"QUERY\", \"QUERY\", \"QUERY\","
+       "\"QUERY\", \"QUERY\"],"
+       "\"google:verbatimrelevance\":1450,"
+       "\"google:suggestrelevance\":[1440, 1430, 1420, 1410, 1400, 1390]}]",
+       {"term", "a1", "a2", "a3", "a4", "a5"}},
+      {term,
+       "[\"term\",[\"a1\", \"a2\", \"a3\", \"a4\"],[],[],"
+       "{\"google:suggesttype\":[\"QUERY\", \"QUERY\", \"QUERY\", \"QUERY\"],"
+       "\"google:verbatimrelevance\":1450,"
+       "\"google:suggestrelevance\":[1430, 1410, 1390, 1370]}]",
+       {"term", "a1", "a2", "term2", "a3", "a4"}},
+  });
 
   for (size_t i = 0; i < std::size(cases); ++i) {
     QueryForInputAndWaitForFetcherResponses(
@@ -3318,45 +3317,52 @@ TEST_F(SearchProviderTest, XSSIGuardedJSONParsing_ValidResponses) {
       kNotApplicable, AutocompleteMatchType::NUM_TYPES
   };
 
-  struct {
+  struct Cases {
     const std::string input_text;
     const std::string default_provider_response_json;
     const Match matches[4];
-  } cases[] = {
-    // No XSSI guard.
-    { "a",
-      "[\"a\",[\"b\", \"c\"],[],[],"
-      "{\"google:suggesttype\":[\"QUERY\",\"QUERY\"],"
-      "\"google:suggestrelevance\":[1, 2]}]",
-      { { "a", AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED },
-        { "c", AutocompleteMatchType::SEARCH_SUGGEST },
-        { "b", AutocompleteMatchType::SEARCH_SUGGEST },
-        kEmptyMatch,
-      },
-    },
-    // Standard XSSI guard - )]}'\n.
-    { "a",
-      ")]}'\n[\"a\",[\"b\", \"c\"],[],[],"
-      "{\"google:suggesttype\":[\"QUERY\",\"QUERY\"],"
-      "\"google:suggestrelevance\":[1, 2]}]",
-      { { "a", AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED },
-        { "c", AutocompleteMatchType::SEARCH_SUGGEST },
-        { "b", AutocompleteMatchType::SEARCH_SUGGEST },
-        kEmptyMatch,
-      },
-    },
-    // Modified XSSI guard - contains "[".
-    { "a",
-      ")]}'\n[)\"[\"a\",[\"b\", \"c\"],[],[],"
-      "{\"google:suggesttype\":[\"QUERY\",\"QUERY\"],"
-      "\"google:suggestrelevance\":[1, 2]}]",
-      { { "a", AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED },
-        { "c", AutocompleteMatchType::SEARCH_SUGGEST },
-        { "b", AutocompleteMatchType::SEARCH_SUGGEST },
-        kEmptyMatch,
-      },
-    },
   };
+  auto cases = std::to_array<Cases>({
+      // No XSSI guard.
+      {
+          "a",
+          "[\"a\",[\"b\", \"c\"],[],[],"
+          "{\"google:suggesttype\":[\"QUERY\",\"QUERY\"],"
+          "\"google:suggestrelevance\":[1, 2]}]",
+          {
+              {"a", AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED},
+              {"c", AutocompleteMatchType::SEARCH_SUGGEST},
+              {"b", AutocompleteMatchType::SEARCH_SUGGEST},
+              kEmptyMatch,
+          },
+      },
+      // Standard XSSI guard - )]}'\n.
+      {
+          "a",
+          ")]}'\n[\"a\",[\"b\", \"c\"],[],[],"
+          "{\"google:suggesttype\":[\"QUERY\",\"QUERY\"],"
+          "\"google:suggestrelevance\":[1, 2]}]",
+          {
+              {"a", AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED},
+              {"c", AutocompleteMatchType::SEARCH_SUGGEST},
+              {"b", AutocompleteMatchType::SEARCH_SUGGEST},
+              kEmptyMatch,
+          },
+      },
+      // Modified XSSI guard - contains "[".
+      {
+          "a",
+          ")]}'\n[)\"[\"a\",[\"b\", \"c\"],[],[],"
+          "{\"google:suggesttype\":[\"QUERY\",\"QUERY\"],"
+          "\"google:suggestrelevance\":[1, 2]}]",
+          {
+              {"a", AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED},
+              {"c", AutocompleteMatchType::SEARCH_SUGGEST},
+              {"b", AutocompleteMatchType::SEARCH_SUGGEST},
+              kEmptyMatch,
+          },
+      },
+  });
 
   for (size_t i = 0; i < std::size(cases); ++i) {
     ClearAllResults();
@@ -3399,12 +3405,12 @@ TEST_F(SearchProviderTest, ParseDeletionUrl) {
   const Match kEmptyMatch = {kNotApplicable, std::string(),
                              AutocompleteMatchType::NUM_TYPES};
 
-  const char* url[] = {
+  auto url = std::to_array<const char*>({
       "http://defaultturl/complete/deleteitems"
       "?delq=ab&client=chrome&deltok=xsrf124",
       "http://defaultturl/complete/deleteitems"
       "?delq=www.amazon.com&client=chrome&deltok=xsrf123",
-  };
+  });
 
   struct {
     const std::string input_text;

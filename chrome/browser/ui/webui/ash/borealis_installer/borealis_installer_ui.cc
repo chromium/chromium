@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/ash/borealis_installer/borealis_installer_ui.h"
 
 #include "ash/constants/ash_features.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/borealis_installer_resources.h"
 #include "chrome/grit/borealis_installer_resources_map.h"
@@ -17,6 +16,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
+#include "ui/webui/webui_util.h"
 
 namespace ash {
 

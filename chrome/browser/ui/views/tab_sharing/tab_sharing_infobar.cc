@@ -10,11 +10,12 @@
 #include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/tab_sharing/tab_sharing_infobar_delegate.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/button/label_button.h"
@@ -26,45 +27,118 @@
 #include "ui/views/view_class_properties.h"
 
 namespace {
+using TabRole = ::TabSharingInfoBarDelegate::TabRole;
+
 constexpr auto kCapturedSurfaceControlIndicatorButtonInsets =
     gfx::Insets::VH(4, 8);
+
+std::u16string GetMessageTextCastingNoSinkName(
+    bool shared_tab,
+    const std::u16string& shared_tab_name) {
+  if (shared_tab) {
+    return l10n_util::GetStringUTF16(
+        IDS_TAB_CASTING_INFOBAR_CASTING_CURRENT_TAB_NO_DEVICE_NAME_LABEL);
+  }
+  return shared_tab_name.empty()
+             ? l10n_util::GetStringUTF16(
+                   IDS_TAB_CASTING_INFOBAR_CASTING_ANOTHER_UNTITLED_TAB_NO_DEVICE_NAME_LABEL)
+             : l10n_util::GetStringFUTF16(
+                   IDS_TAB_CASTING_INFOBAR_CASTING_ANOTHER_TAB_NO_DEVICE_NAME_LABEL,
+                   shared_tab_name);
+}
+
+std::u16string GetMessageTextCasting(bool shared_tab,
+                                     const std::u16string& shared_tab_name,
+                                     const std::u16string& sink_name) {
+  if (sink_name.empty()) {
+    return GetMessageTextCastingNoSinkName(shared_tab, shared_tab_name);
+  }
+
+  if (shared_tab) {
+    return l10n_util::GetStringFUTF16(
+        IDS_TAB_CASTING_INFOBAR_CASTING_CURRENT_TAB_LABEL, sink_name);
+  }
+  return shared_tab_name.empty()
+             ? l10n_util::GetStringFUTF16(
+                   IDS_TAB_CASTING_INFOBAR_CASTING_ANOTHER_UNTITLED_TAB_LABEL,
+                   sink_name)
+             : l10n_util::GetStringFUTF16(
+                   IDS_TAB_CASTING_INFOBAR_CASTING_ANOTHER_TAB_LABEL,
+                   shared_tab_name, sink_name);
+}
+
+std::u16string GetMessageTextCapturing(bool shared_tab,
+                                       const std::u16string& shared_tab_name,
+                                       const std::u16string& app_name) {
+  if (shared_tab) {
+    return l10n_util::GetStringFUTF16(
+        IDS_TAB_SHARING_INFOBAR_SHARING_CURRENT_TAB_LABEL, app_name);
+  }
+  return !shared_tab_name.empty()
+             ? l10n_util::GetStringFUTF16(
+                   IDS_TAB_SHARING_INFOBAR_SHARING_ANOTHER_TAB_LABEL,
+                   shared_tab_name, app_name)
+             : l10n_util::GetStringFUTF16(
+                   IDS_TAB_SHARING_INFOBAR_SHARING_ANOTHER_UNTITLED_TAB_LABEL,
+                   app_name);
+}
+
+bool IsCapturedTab(TabRole role) {
+  switch (role) {
+    case TabRole::kCapturingTab:
+    case TabRole::kOtherTab:
+      return false;
+    case TabRole::kCapturedTab:
+    case TabRole::kSelfCapturingTab:
+      return true;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 TabSharingInfoBar::TabSharingInfoBar(
-    std::unique_ptr<TabSharingInfoBarDelegate> delegate)
-    : InfoBarView(std::move(delegate)) {
+    std::unique_ptr<TabSharingInfoBarDelegate> delegate,
+    const std::u16string& shared_tab_name,
+    const std::u16string& capturer_name,
+    TabSharingInfoBarDelegate::TabRole role,
+    TabSharingInfoBarDelegate::TabShareType capture_type)
+    : InfoBarView(std::move(delegate)),
+      shared_tab_name_(std::move(shared_tab_name)),
+      capturer_name_(std::move(capturer_name)),
+      role_(role),
+      capture_type_(capture_type) {
   auto* delegate_ptr = GetDelegate();
-  label_ = AddChildView(CreateLabel(delegate_ptr->GetMessageText()));
+  label_ = AddChildView(CreateLabel(GetMessageText()));
   label_->SetElideBehavior(gfx::ELIDE_TAIL);
 
   const int buttons = delegate_ptr->GetButtons();
-  const auto create_button = [&](TabSharingInfoBarDelegate::
-                                     TabSharingInfoBarButton type,
-                                 void (TabSharingInfoBar::*click_function)(),
-                                 int button_context =
-                                     views::style::CONTEXT_BUTTON_MD) {
-    const bool use_text_color_for_icon =
-        type != TabSharingInfoBarDelegate::kCapturedSurfaceControlIndicator;
-    auto* button = AddChildView(std::make_unique<views::MdTextButton>(
-        base::BindRepeating(click_function, base::Unretained(this)),
-        delegate_ptr->GetButtonLabel(type), button_context,
-        use_text_color_for_icon));
-    button->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                            DISTANCE_TOAST_CONTROL_VERTICAL),
-                        0));
+  const auto create_button =
+      [&](TabSharingInfoBarDelegate::TabSharingInfoBarButton type,
+          void (TabSharingInfoBar::*click_function)(),
+          int button_context = views::style::CONTEXT_BUTTON_MD) {
+        const bool use_text_color_for_icon =
+            type != TabSharingInfoBarDelegate::kCapturedSurfaceControlIndicator;
+        auto* button = AddChildView(std::make_unique<views::MdTextButton>(
+            base::BindRepeating(click_function, base::Unretained(this)),
+            delegate_ptr->GetButtonLabel(type), button_context,
+            use_text_color_for_icon));
+        button->SetProperty(
+            views::kMarginsKey,
+            gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
+                                DISTANCE_TOAST_CONTROL_VERTICAL),
+                            0));
 
-    const bool is_default_button =
-        type == buttons || type == TabSharingInfoBarDelegate::kStop;
-    button->SetStyle(is_default_button ? ui::ButtonStyle::kProminent
-                                       : ui::ButtonStyle::kTonal);
-    button->SetImageModel(views::Button::STATE_NORMAL,
-                          delegate_ptr->GetButtonImage(type));
-    button->SetEnabled(delegate_ptr->IsButtonEnabled(type));
-    button->SetTooltipText(delegate_ptr->GetButtonTooltip(type));
-    return button;
-  };
+        const bool is_default_button =
+            type == buttons || type == TabSharingInfoBarDelegate::kStop;
+        button->SetStyle(is_default_button ? ui::ButtonStyle::kProminent
+                                           : ui::ButtonStyle::kTonal);
+        button->SetImageModel(views::Button::STATE_NORMAL,
+                              delegate_ptr->GetButtonImage(type));
+        button->SetEnabled(delegate_ptr->IsButtonEnabled(type));
+        button->SetTooltipText(delegate_ptr->GetButtonTooltip(type));
+        return button;
+      };
 
   if (buttons & TabSharingInfoBarDelegate::kStop) {
     stop_button_ = create_button(TabSharingInfoBarDelegate::kStop,
@@ -201,6 +275,18 @@ TabSharingInfoBarDelegate* TabSharingInfoBar::GetDelegate() {
   return static_cast<TabSharingInfoBarDelegate*>(delegate());
 }
 
+std::u16string TabSharingInfoBar::GetMessageText() const {
+  switch (capture_type_) {
+    case TabSharingInfoBarDelegate::TabShareType::CAST:
+      return GetMessageTextCasting(IsCapturedTab(role_), shared_tab_name_,
+                                   capturer_name_);
+    case TabSharingInfoBarDelegate::TabShareType::CAPTURE:
+      return GetMessageTextCapturing(IsCapturedTab(role_), shared_tab_name_,
+                                     capturer_name_);
+  }
+  NOTREACHED();
+}
+
 int TabSharingInfoBar::GetContentMinimumWidth() const {
   return label_->GetMinimumSize().width() + link_->GetMinimumSize().width() +
          NonLabelWidth();
@@ -234,6 +320,11 @@ int TabSharingInfoBar::NonLabelWidth() const {
 }
 
 std::unique_ptr<infobars::InfoBar> CreateTabSharingInfoBar(
-    std::unique_ptr<TabSharingInfoBarDelegate> delegate) {
-  return std::make_unique<TabSharingInfoBar>(std::move(delegate));
+    std::unique_ptr<TabSharingInfoBarDelegate> delegate,
+    const std::u16string& shared_tab_name,
+    const std::u16string& capturer_name,
+    TabSharingInfoBarDelegate::TabRole role,
+    TabSharingInfoBarDelegate::TabShareType capture_type) {
+  return std::make_unique<TabSharingInfoBar>(
+      std::move(delegate), shared_tab_name, capturer_name, role, capture_type);
 }

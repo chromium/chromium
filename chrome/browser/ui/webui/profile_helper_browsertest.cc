@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/webui/profile_helper.h"
+
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -22,7 +24,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
-#include "chrome/browser/ui/webui/profile_helper.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_deletion_observer.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -57,14 +58,13 @@ class ExpectBrowserActivationForProfile : public BrowserListObserver {
     BrowserList::RemoveObserver(this);
   }
 
-  void Wait() {
-    loop_.Run();
-  }
+  void Wait() { loop_.Run(); }
 
  protected:
   void OnBrowserSetLastActive(Browser* browser) override {
-    if (browser->profile() == profile_)
+    if (browser->profile() == profile_) {
       loop_.Quit();
+    }
   }
 
  private:

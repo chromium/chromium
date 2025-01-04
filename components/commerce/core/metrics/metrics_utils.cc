@@ -138,7 +138,8 @@ void RecordShoppingListIneligibilityReasons(
                                   ShoppingFeatureIneligibilityReason::kSignin);
   }
 
-  if (!account_checker->IsSyncingBookmarks()) {
+  if (!account_checker->IsSyncTypeEnabled(
+          syncer::UserSelectableType::kBookmarks)) {
     base::UmaHistogramEnumeration(kShoppingListIneligibleHistogramName,
                                   ShoppingFeatureIneligibilityReason::kSync);
   }

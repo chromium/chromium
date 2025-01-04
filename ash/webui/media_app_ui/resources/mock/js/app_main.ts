@@ -249,6 +249,8 @@ class BacklightApp extends HTMLElement implements ClientApi {
 
   async hidePdfContextMenu() {}
 
+  reportMantisProgress(_progress: number) {}
+
   setDelegate(delegate: ClientApiDelegate|null) {
     this.delegate = delegate;
   }

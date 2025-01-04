@@ -65,6 +65,9 @@ class ChromiumSystemIdentityManager final : public SystemIdentityManager {
                              id<RefreshAccessTokenError> error,
                              HandleMDMCallback callback) final;
   bool IsMDMError(id<SystemIdentity> identity, NSError* error) final;
+  void FetchTokenAuthURL(id<SystemIdentity> identity,
+                         NSURL* target_url,
+                         AuthenticatedURLCallback callback) final;
 };
 
 ChromiumSystemIdentityManager::ChromiumSystemIdentityManager() = default;
@@ -188,6 +191,13 @@ bool ChromiumSystemIdentityManager::HandleMDMNotification(
 
 bool ChromiumSystemIdentityManager::IsMDMError(id<SystemIdentity> identity,
                                                NSError* error) {
+  NOTREACHED();
+}
+
+void ChromiumSystemIdentityManager::FetchTokenAuthURL(
+    id<SystemIdentity> identity,
+    NSURL* target_url,
+    AuthenticatedURLCallback callback) {
   NOTREACHED();
 }
 

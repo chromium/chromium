@@ -37,7 +37,6 @@
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/attribution_reporting/features.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/services/storage/privileged/cpp/bucket_client_info.h"
@@ -51,7 +50,6 @@
 #include "components/services/storage/storage_service_impl.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
-#include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/background_fetch/background_fetch_context.h"
@@ -145,6 +143,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/url_loader_factory_builder.h"
+#include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/device_bound_sessions.mojom.h"
@@ -920,6 +919,7 @@ class StoragePartitionImpl::DataDeletionHelper {
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
       CdmStorageManager* cdm_storage_manager,
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+      network::mojom::DeviceBoundSessionManager* device_bound_session_manager,
       bool perform_storage_cleanup,
       const base::Time begin,
       const base::Time end);
@@ -954,7 +954,8 @@ class StoragePartitionImpl::DataDeletionHelper {
     kPrivateAggregation = 12,
     kInterestGroups = 13,
     kCdmStorage = 14,
-    kMaxValue = kCdmStorage,
+    kDeviceBoundSessions = 15,
+    kMaxValue = kDeviceBoundSessions,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/history/enums.xml:StoragePartitionRemoverTasks)
 
@@ -1543,10 +1544,8 @@ void StoragePartitionImpl::Initialize(
 
   font_access_manager_ = FontAccessManager::Create();
 
-  if (base::FeatureList::IsEnabled(kPrivacySandboxAggregationService)) {
-    aggregation_service_ =
-        std::make_unique<AggregationServiceImpl>(is_in_memory(), path, this);
-  }
+  aggregation_service_ =
+      std::make_unique<AggregationServiceImpl>(is_in_memory(), path, this);
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   if (is_in_memory()) {
@@ -1886,6 +1885,7 @@ CdmStorageDataModel* StoragePartitionImpl::GetCdmStorageDataModel() {
 network::mojom::DeviceBoundSessionManager*
 StoragePartitionImpl::GetDeviceBoundSessionManager() {
   DCHECK(initialized_);
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   if (!device_bound_session_manager_ ||
       !device_bound_session_manager_.is_connected()) {
     // Reset `device_bound_session_manager_` before binding it again.
@@ -1893,7 +1893,11 @@ StoragePartitionImpl::GetDeviceBoundSessionManager() {
     GetNetworkContext()->GetDeviceBoundSessionManager(
         device_bound_session_manager_.BindNewPipeAndPassReceiver());
   }
+
   return device_bound_session_manager_.get();
+#else
+  return nullptr;
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 }
 
 InterestGroupManager* StoragePartitionImpl::GetInterestGroupManager() {
@@ -2275,7 +2279,7 @@ void StoragePartitionImpl::OnCertificateRequested(
     if (context.navigation_or_document()) {
       auto* render_frame_host = context.navigation_or_document()->GetDocument();
       if (render_frame_host) {
-        process_id = render_frame_host->GetProcess()->GetID();
+        process_id = render_frame_host->GetProcess()->GetDeprecatedID();
       }
     }
   }
@@ -2338,6 +2342,7 @@ void StoragePartitionImpl::OnSharedStorageHeaderReceived(
     const url::Origin& request_origin,
     std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
         methods_with_options,
+    const std::optional<std::string>& with_lock,
     OnSharedStorageHeaderReceivedCallback callback) {
   if (!shared_storage_header_observer_) {
     std::move(callback).Run();
@@ -2357,7 +2362,7 @@ void StoragePartitionImpl::OnSharedStorageHeaderReceived(
 
   shared_storage_header_observer_->HeaderReceived(
       request_origin, url_loader_network_observers_.current_context().type(),
-      navigation_or_document, std::move(methods_with_options),
+      navigation_or_document, std::move(methods_with_options), with_lock,
       std::move(callback), mojo::GetBadMessageCallback(), /*can_defer=*/true);
 }
 
@@ -2581,7 +2586,7 @@ void StoragePartitionImpl::ClearDataImpl(
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
       cdm_storage_manager_.get(),
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
-      perform_storage_cleanup, begin, end);
+      GetDeviceBoundSessionManager(), perform_storage_cleanup, begin, end);
 }
 
 void StoragePartitionImpl::DeletionHelperDone(base::OnceClosure callback) {
@@ -2782,6 +2787,7 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
     CdmStorageManager* cdm_storage_manager,
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+    network::mojom::DeviceBoundSessionManager* device_bound_session_manager,
     bool perform_storage_cleanup,
     const base::Time begin,
     const base::Time end) {
@@ -3014,6 +3020,15 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
     shared_storage_manager->PurgeMatchingOrigins(
         combined_storage_key_matcher, begin, end,
         std::move(shared_storage_purge_callback), perform_storage_cleanup);
+  }
+
+  if (remove_mask_ & REMOVE_DATA_MASK_DEVICE_BOUND_SESSIONS &&
+      device_bound_session_manager) {
+    device_bound_session_manager->DeleteAllSessions(
+        begin, end,
+        filter_builder ? filter_builder->BuildNetworkServiceFilter() : nullptr,
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(CreateTaskCompletionClosure(
+            TracingDataType::kDeviceBoundSessions)));
   }
 }
 
@@ -3367,6 +3382,15 @@ void StoragePartitionImpl::OverridePrivateAggregationManagerForTesting(
         private_aggregation_manager) {
   DCHECK(initialized_);
   private_aggregation_manager_ = std::move(private_aggregation_manager);
+}
+
+void StoragePartitionImpl::OverrideDeviceBoundSessionManagerForTesting(
+    std::unique_ptr<network::mojom::DeviceBoundSessionManager>
+        device_bound_session_manager) {
+  DCHECK(initialized_);
+  mojo::MakeSelfOwnedReceiver(
+      std::move(device_bound_session_manager),
+      device_bound_session_manager_.BindNewPipeAndPassReceiver());
 }
 
 void StoragePartitionImpl::GetQuotaSettings(

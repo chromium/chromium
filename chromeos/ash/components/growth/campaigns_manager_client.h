@@ -93,6 +93,8 @@ class CampaignsManagerClient {
       const std::map<std::string, std::string>& params) = 0;
   // Returns the IdentityManager for the active user profile.
   virtual signin::IdentityManager* GetIdentityManager() const = 0;
+  virtual void RecordImpressionEvents(int campaign_id,
+                                      std::optional<int> group_id) = 0;
 };
 
 }  // namespace growth

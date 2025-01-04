@@ -174,9 +174,12 @@ class TestSyncService : public SyncService {
       base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>
           callback) override;
   void TriggerLocalDataMigration(DataTypeSet types) override;
-  void TriggerLocalDataMigration(
-      std::map<DataType, std::vector<syncer::LocalDataItemModel::DataId>> items)
+  void TriggerLocalDataMigrationForItems(
+      std::map<DataType, std::vector<LocalDataItemModel::DataId>> items)
       override;
+  void SelectTypeAndMigrateLocalDataItemsWhenActive(
+      DataType data_type,
+      std::vector<LocalDataItemModel::DataId> items) override;
 
   // KeyedService implementation.
   void Shutdown() override;

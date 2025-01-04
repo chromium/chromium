@@ -4,6 +4,8 @@
 
 package org.chromium.base.task;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.concurrent.Executor;
 
 /**
@@ -11,6 +13,7 @@ import java.util.concurrent.Executor;
  * be backed by an {@link android.os.Handler} or the java thread pool. The TaskQueue interface
  * provides no guarantee over the order or the thread on which the task will be executed.
  */
+@NullMarked
 public interface TaskRunner extends Executor {
 
     /**

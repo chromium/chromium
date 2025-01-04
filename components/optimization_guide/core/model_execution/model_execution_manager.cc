@@ -4,6 +4,8 @@
 
 #include "components/optimization_guide/core/model_execution/model_execution_manager.h"
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -120,31 +122,6 @@ void NoOpExecuteRemoteFn(
       nullptr);
 }
 
-std::map<ModelBasedCapabilityKey, OnDeviceModelAdaptationLoader>
-GetRequiredModelAdaptationLoaders(
-    OptimizationGuideModelProvider* model_provider,
-    base::WeakPtr<OnDeviceModelComponentStateManager>
-        on_device_component_state_manager,
-    PrefService* local_state,
-    base::WeakPtr<OnDeviceModelServiceController>
-        on_device_model_service_controller) {
-  std::map<ModelBasedCapabilityKey, OnDeviceModelAdaptationLoader> loaders;
-  for (const auto feature : kAllModelBasedCapabilityKeys) {
-    if (!features::internal::GetOptimizationTargetForCapability(feature)) {
-      continue;
-    }
-    loaders.emplace(
-        std::piecewise_construct, std::forward_as_tuple(feature),
-        std::forward_as_tuple(
-            feature, model_provider, on_device_component_state_manager,
-            local_state,
-            base::BindRepeating(
-                &OnDeviceModelServiceController::MaybeUpdateModelAdaptation,
-                on_device_model_service_controller, feature)));
-  }
-  return loaders;
-}
-
 }  // namespace
 
 using ModelExecutionError =
@@ -152,18 +129,13 @@ using ModelExecutionError =
 
 ModelExecutionManager::ModelExecutionManager(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    PrefService* local_state,
     signin::IdentityManager* identity_manager,
     scoped_refptr<OnDeviceModelServiceController>
         on_device_model_service_controller,
-    OptimizationGuideModelProvider* model_provider,
-    base::WeakPtr<OnDeviceModelComponentStateManager>
-        on_device_component_state_manager,
     OptimizationGuideLogger* optimization_guide_logger,
     base::WeakPtr<ModelQualityLogsUploaderService>
         model_quality_uploader_service)
     : model_quality_uploader_service_(model_quality_uploader_service),
-      on_device_component_state_manager_(on_device_component_state_manager),
       optimization_guide_logger_(optimization_guide_logger),
       model_execution_service_url_(net::AppendOrReplaceQueryParameter(
           GetModelExecutionServiceURL(),
@@ -171,47 +143,11 @@ ModelExecutionManager::ModelExecutionManager(
           features::GetOptimizationGuideServiceAPIKey())),
       url_loader_factory_(url_loader_factory),
       identity_manager_(identity_manager),
-      model_adaptation_loaders_(GetRequiredModelAdaptationLoaders(
-          model_provider,
-          on_device_component_state_manager_,
-          local_state,
-          on_device_model_service_controller
-              ? on_device_model_service_controller->GetWeakPtr()
-              : nullptr)),
-      model_provider_(model_provider),
       on_device_model_service_controller_(
           std::move(on_device_model_service_controller)) {
-  if (!model_provider_ && !on_device_model_service_controller_) {
-    return;
-  }
-  if (!features::ShouldUseTextSafetyClassifierModel()) {
-    return;
-  }
-  if (GetGenAILocalFoundationalModelEnterprisePolicySettings(local_state) !=
-      model_execution::prefs::
-          GenAILocalFoundationalModelEnterprisePolicySettings::kAllowed) {
-    return;
-  }
-
-  if (on_device_component_state_manager_) {
-    on_device_component_state_manager_->AddObserver(this);
-    if (on_device_component_state_manager_->IsInstallerRegistered()) {
-      RegisterTextSafetyAndLanguageModels();
-    }
-  }
 }
 
 ModelExecutionManager::~ModelExecutionManager() {
-  if (on_device_component_state_manager_) {
-    on_device_component_state_manager_->RemoveObserver(this);
-  }
-  if (did_register_for_supplementary_on_device_models_) {
-    model_provider_->RemoveObserverForOptimizationTargetModel(
-        proto::OptimizationTarget::OPTIMIZATION_TARGET_TEXT_SAFETY, this);
-    model_provider_->RemoveObserverForOptimizationTargetModel(
-        proto::OptimizationTarget::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
-        this);
-  }
 }
 
 void ModelExecutionManager::Shutdown() {
@@ -292,25 +228,6 @@ void ModelExecutionManager::ExecuteModel(
                      std::move(log_ai_data_request), std::move(callback)));
 }
 
-bool ModelExecutionManager::CanCreateOnDeviceSession(
-    ModelBasedCapabilityKey feature,
-    OnDeviceModelEligibilityReason* on_device_model_eligibility_reason) {
-  if (!on_device_model_service_controller_) {
-    if (on_device_model_eligibility_reason) {
-      *on_device_model_eligibility_reason =
-          OnDeviceModelEligibilityReason::kFeatureNotEnabled;
-    }
-    return false;
-  }
-
-  OnDeviceModelEligibilityReason reason =
-      on_device_model_service_controller_->CanCreateSession(feature);
-  if (on_device_model_eligibility_reason) {
-    *on_device_model_eligibility_reason = reason;
-  }
-  return reason == OnDeviceModelEligibilityReason::kSuccess;
-}
-
 std::unique_ptr<OptimizationGuideModelExecutor::Session>
 ModelExecutionManager::StartSession(
     ModelBasedCapabilityKey feature,
@@ -339,15 +256,8 @@ ModelExecutionManager::StartSession(
   }
 
   RecordSessionUsedRemoteExecutionHistogram(feature, /*is_remote=*/true);
-  return std::make_unique<SessionImpl>(
-      feature, std::nullopt, std::move(execute_fn),
-      optimization_guide_logger_->GetWeakPtr(), model_quality_uploader_service_,
-      config_params);
-}
-
-// Whether the supplementary on-device models are registered.
-bool ModelExecutionManager::IsSupplementaryModelRegistered() {
-  return did_register_for_supplementary_on_device_models_;
+  return std::make_unique<SessionImpl>(feature, std::nullopt,
+                                       std::move(execute_fn), config_params);
 }
 
 void ModelExecutionManager::OnModelExecuteResponse(
@@ -485,45 +395,30 @@ void ModelExecutionManager::OnModelExecuteResponse(
                           std::move(log_entry));
 }
 
-void ModelExecutionManager::RegisterTextSafetyAndLanguageModels() {
-  if (!did_register_for_supplementary_on_device_models_) {
-    did_register_for_supplementary_on_device_models_ = true;
-    model_provider_->AddObserverForOptimizationTargetModel(
-        proto::OptimizationTarget::OPTIMIZATION_TARGET_TEXT_SAFETY,
-        /*model_metadata=*/std::nullopt, this);
-    model_provider_->AddObserverForOptimizationTargetModel(
-        proto::OptimizationTarget::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
-        /*model_metadata=*/std::nullopt, this);
+optimization_guide::OnDeviceModelEligibilityReason
+ModelExecutionManager::GetOnDeviceModelEligibility(
+    optimization_guide::ModelBasedCapabilityKey feature) {
+  if (!on_device_model_service_controller_) {
+    return OnDeviceModelEligibilityReason::kFeatureNotEnabled;
   }
+
+  return on_device_model_service_controller_->CanCreateSession(feature);
 }
 
-void ModelExecutionManager::OnModelUpdated(
-    proto::OptimizationTarget optimization_target,
-    base::optional_ref<const ModelInfo> model_info) {
-  switch (optimization_target) {
-    case proto::OPTIMIZATION_TARGET_TEXT_SAFETY:
-      if (on_device_model_service_controller_) {
-        on_device_model_service_controller_->MaybeUpdateSafetyModel(model_info);
-      }
-      break;
-
-    case proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION:
-      if (on_device_model_service_controller_) {
-        on_device_model_service_controller_->SetLanguageDetectionModel(
-            model_info);
-      }
-      break;
-
-    default:
-      break;
+std::optional<optimization_guide::SamplingParamsConfig>
+ModelExecutionManager::GetSamplingParamsConfig(
+    optimization_guide::ModelBasedCapabilityKey feature) {
+  if (!on_device_model_service_controller_) {
+    return std::nullopt;
   }
-}
 
-void ModelExecutionManager::StateChanged(
-    const OnDeviceModelComponentState* state) {
-  if (state) {
-    RegisterTextSafetyAndLanguageModels();
+  OnDeviceModelAdaptationMetadata* adaptation_metadata =
+      on_device_model_service_controller_->GetFeatureMetadata(feature);
+  if (!adaptation_metadata) {
+    return std::nullopt;
   }
+
+  return adaptation_metadata->adapter()->MaybeSamplingParamsConfig();
 }
 
 }  // namespace optimization_guide

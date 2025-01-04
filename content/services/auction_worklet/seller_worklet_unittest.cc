@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "content/services/auction_worklet/seller_worklet.h"
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>
@@ -94,17 +91,17 @@ const char kTrustedScoringSignalsResponse[] = R"(
   }
 )";
 
-const uint8_t kTestPrivateKey[] = {
+const auto kTestPrivateKey = std::to_array<uint8_t>({
     0xff, 0x1f, 0x47, 0xb1, 0x68, 0xb6, 0xb9, 0xea, 0x65, 0xf7, 0x97,
     0x4f, 0xf2, 0x2e, 0xf2, 0x36, 0x94, 0xe2, 0xf6, 0xb6, 0x8d, 0x66,
     0xf3, 0xa7, 0x64, 0x14, 0x28, 0xd4, 0x45, 0x35, 0x01, 0x8f,
-};
+});
 
-const uint8_t kTestPublicKey[] = {
+const auto kTestPublicKey = std::to_array<uint8_t>({
     0xa1, 0x5f, 0x40, 0x65, 0x86, 0xfa, 0xc4, 0x7b, 0x99, 0x59, 0x70,
     0xf1, 0x85, 0xd9, 0xd8, 0x91, 0xc7, 0x4d, 0xcf, 0x1e, 0xb9, 0x1a,
     0x7d, 0x50, 0xa5, 0x8b, 0x01, 0x68, 0x3e, 0x60, 0x05, 0x2d,
-};
+});
 
 const uint8_t kKeyId = 0xFF;
 
@@ -237,6 +234,8 @@ class SellerWorkletTest : public testing::Test,
       base::test::TaskEnvironment::TimeSource time_mode =
           base::test::TaskEnvironment::TimeSource::MOCK_TIME)
       : task_environment_(time_mode) {
+    feature_list_.InitAndEnableFeature(
+        blink::features::kFledgeTrustedSignalsKVv1CreativeScanning);
     SetDefaultParameters();
   }
 
@@ -291,6 +290,7 @@ class SellerWorkletTest : public testing::Test,
             /*private_aggregation_allowed=*/true,
             /*shared_storage_allowed=*/false);
     experiment_group_id_ = std::nullopt;
+    send_creative_scanning_metadata_ = std::nullopt;
     public_key_ = nullptr;
     browser_signals_other_seller_.reset();
     component_expect_bid_currency_ = std::nullopt;
@@ -813,6 +813,7 @@ class SellerWorkletTest : public testing::Test,
         trusted_signals_kvv2_manager_.get(), decision_logic_url_,
         trusted_scoring_signals_url_, top_window_origin_,
         permissions_policy_state_.Clone(), experiment_group_id_,
+        send_creative_scanning_metadata_,
         public_key_ ? public_key_.Clone() : nullptr,
         base::BindRepeating(&SellerWorkletTest::GetNextThreadIndex,
                             base::Unretained(this)),
@@ -899,6 +900,7 @@ class SellerWorkletTest : public testing::Test,
     }
   }
 
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
 
   // Extra headers to append to replies for JavaScript resources.
@@ -925,6 +927,7 @@ class SellerWorkletTest : public testing::Test,
   url::Origin top_window_origin_;
   mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state_;
   std::optional<uint16_t> experiment_group_id_;
+  std::optional<bool> send_creative_scanning_metadata_;
   mojom::TrustedSignalsPublicKeyPtr public_key_;
   mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller_;
   std::optional<blink::AdCurrency> component_expect_bid_currency_;
@@ -1021,9 +1024,18 @@ INSTANTIATE_TEST_SUITE_P(
 // Test the case the SellerWorklet pipe is closed before any of its methods are
 // invoked. Nothing should happen.
 TEST_F(SellerWorkletTest, PipeClosed) {
-  auto sellet_worklet = CreateWorklet();
-  sellet_worklet.reset();
-  base::RunLoop().RunUntilIdle();
+  base::HistogramTester histogram_tester;
+  auto seller_worklet = CreateWorklet();
+  seller_worklet.reset();
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(seller_worklets_.empty());
+
+  // These metrics should get recorded when a seller worklet is destroyed.
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.Auction.SellerWorkletIsolateUsedHeapSizeKilobytes", 1);
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.Auction.SellerWorkletIsolateTotalHeapSizeKilobytes",
+      1);
 }
 
 TEST_F(SellerWorkletTest, NetworkError) {
@@ -2066,6 +2078,37 @@ TEST_F(SellerWorkletTest, ScoreAdExperimentGroupIdParam) {
                                            954);
 }
 
+TEST_F(SellerWorkletTest, ScoreAdSendCreativeScanParam) {
+  RunScoreAdWithReturnValueExpectingResult(
+      R"("sendCreativeScanningMetadata" in auctionConfig ? 1 : 0)", 0);
+
+  send_creative_scanning_metadata_ = true;
+  RunScoreAdWithReturnValueExpectingResult(
+      "auctionConfig.sendCreativeScanningMetadata ? 1 : 0", 1);
+
+  auto& component_auctions =
+      auction_ad_config_non_shared_params_.component_auctions;
+  component_auctions.emplace_back();
+  component_auctions[0].seller =
+      url::Origin::Create(GURL("https://component1.test"));
+  component_auctions[0].decision_logic_url =
+      GURL("https://component1.test/script.js");
+
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(("sendCreativeScanningMetadata" in
+         auctionConfig.componentAuctions[0]) ? 1 : 0)",
+      0);
+
+  component_auctions[0].send_creative_scanning_metadata = false;
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(("sendCreativeScanningMetadata" in
+         auctionConfig.componentAuctions[0]) ? 1 : 0)",
+      1);
+  RunScoreAdWithReturnValueExpectingResult(
+      "auctionConfig.componentAuctions[0].sendCreativeScanningMetadata ? 1 : 0",
+      0);
+}
+
 // Tests that trusted scoring signals are correctly passed to scoreAd(). Each
 // request is sent individually, without calling SendPendingSignalsRequests() -
 // instead, the test advances the mock clock by
@@ -2774,17 +2817,17 @@ TEST_F(SellerWorkletTest, ScoreAdLoadCompletionOrder) {
     std::string content;
   };
 
-  const Response kResponses[] = {
-      {decision_logic_url_, kJavascriptMimeType, kAllowFledgeHeader,
-       CreateScoreAdScript("1")},
-      {*direct_from_seller_seller_signals_, kJsonMimeType,
-       kDirectFromSellerSignalsHeaders, kJsonResponse},
-      {*direct_from_seller_auction_signals_, kJsonMimeType,
-       kDirectFromSellerSignalsHeaders, kJsonResponse},
-      {GURL(trusted_scoring_signals_url_->spec() +
-            "?hostname=window.test"
-            "&renderUrls=https%3A%2F%2Frender.url.test%2F"),
-       kJsonMimeType, kAllowFledgeHeader, kTrustedScoringSignalsResponse}};
+  const auto kResponses = std::to_array<Response>(
+      {{decision_logic_url_, kJavascriptMimeType, kAllowFledgeHeader,
+        CreateScoreAdScript("1")},
+       {*direct_from_seller_seller_signals_, kJsonMimeType,
+        kDirectFromSellerSignalsHeaders, kJsonResponse},
+       {*direct_from_seller_auction_signals_, kJsonMimeType,
+        kDirectFromSellerSignalsHeaders, kJsonResponse},
+       {GURL(trusted_scoring_signals_url_->spec() +
+             "?hostname=window.test"
+             "&renderUrls=https%3A%2F%2Frender.url.test%2F"),
+        kJsonMimeType, kAllowFledgeHeader, kTrustedScoringSignalsResponse}});
 
   // Cycle such that each response in `kResponses` gets to be the last response,
   // like so:
@@ -4095,15 +4138,15 @@ TEST_F(SellerWorkletTest, ReportResultLoadCompletionOrder) {
     std::string content;
   };
 
-  const Response kResponses[] = {
-      {decision_logic_url_, kJavascriptMimeType, kAllowFledgeHeader,
-       CreateReportToScript(
-           "1",
-           /*extra_code=*/R"(sendReportTo("https://foo.test"))")},
-      {*direct_from_seller_seller_signals_, kJsonMimeType,
-       kDirectFromSellerSignalsHeaders, kJsonResponse},
-      {*direct_from_seller_auction_signals_, kJsonMimeType,
-       kDirectFromSellerSignalsHeaders, kJsonResponse}};
+  const auto kResponses = std::to_array<Response>(
+      {{decision_logic_url_, kJavascriptMimeType, kAllowFledgeHeader,
+        CreateReportToScript(
+            "1",
+            /*extra_code=*/R"(sendReportTo("https://foo.test"))")},
+       {*direct_from_seller_seller_signals_, kJsonMimeType,
+        kDirectFromSellerSignalsHeaders, kJsonResponse},
+       {*direct_from_seller_auction_signals_, kJsonMimeType,
+        kDirectFromSellerSignalsHeaders, kJsonResponse}});
 
   // Cycle such that each response in `kResponses` gets to be the last response,
   // like so:
@@ -6574,7 +6617,7 @@ TEST_F(SellerWorkletKVv2Test,
 
   auto seller_worklet = CreateWorklet();
 
-  base::RunLoop run_loops[2];
+  std::array<base::RunLoop, 2> run_loops;
   for (size_t i = 0; i < 2; ++i) {
     trusted_signals_cache_key_ = trusted_signals_cache_keys[i].Clone();
     RunScoreAdOnWorkletAsync(seller_worklet.get(), /*expected_score=*/1,

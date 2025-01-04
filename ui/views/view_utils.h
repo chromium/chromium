@@ -16,10 +16,11 @@
 #include "ui/base/metadata/metadata_types.h"
 #include "ui/base/metadata/metadata_utils.h"
 #include "ui/views/debug/debugger_utils.h"
-#include "ui/views/view.h"
 #include "ui/views/views_export.h"
 
 namespace views {
+
+class View;
 
 VIEWS_EXPORT extern const ui::ClassProperty<base::debug::StackTrace*>* const
     kViewStackTraceKey;
@@ -61,9 +62,7 @@ const V* AsViewClass(const View* view) {
   return IsViewClass<V>(view) ? static_cast<const V*>(view) : nullptr;
 }
 
-VIEWS_EXPORT void PrintViewHierarchy(View* view,
-                                     bool verbose = false,
-                                     int depth = -1);
+VIEWS_EXPORT std::string PrintViewHierarchy(View* view, bool verbose = false);
 
 VIEWS_EXPORT std::string GetViewDebugInfo(View* view);
 

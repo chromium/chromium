@@ -6,11 +6,14 @@
 
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/webui/internal_webui_config.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/chrome_urls_ui/mojom/chrome_urls.mojom.h"
+#include "content/public/browser/internal_webui_config.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_task_environment.h"
@@ -55,10 +58,10 @@ class TestWebUIConfig : public content::WebUIConfig {
   bool enabled_;
 };
 
-class TestInternalWebUIConfig : public webui::InternalWebUIConfig {
+class TestInternalWebUIConfig : public content::InternalWebUIConfig {
  public:
   TestInternalWebUIConfig(const std::string& host, bool enabled)
-      : webui::InternalWebUIConfig(host), enabled_(enabled) {}
+      : content::InternalWebUIConfig(host), enabled_(enabled) {}
 
   ~TestInternalWebUIConfig() override = default;
 
@@ -95,7 +98,9 @@ class MockPage : public chrome_urls::mojom::Page {
 
 class ChromeUrlsHandlerTest : public testing::Test {
  public:
-  ChromeUrlsHandlerTest() : profile_(std::make_unique<TestingProfile>()) {}
+  ChromeUrlsHandlerTest()
+      : local_state_(TestingBrowserProcess::GetGlobal()),
+        profile_(std::make_unique<TestingProfile>()) {}
 
   void SetUp() override {
     handler_ = std::make_unique<chrome_urls::ChromeUrlsHandler>(
@@ -108,6 +113,7 @@ class ChromeUrlsHandlerTest : public testing::Test {
  protected:
   base::test::ScopedFeatureList feature_list_{features::kInternalOnlyUisPref};
   content::BrowserTaskEnvironment task_environment_;
+  ScopedTestingLocalState local_state_;
   std::unique_ptr<TestingProfile> profile_;
   testing::NiceMock<MockPage> mock_page_;
   std::unique_ptr<chrome_urls::ChromeUrlsHandler> handler_;
@@ -209,6 +215,20 @@ TEST_F(ChromeUrlsHandlerTest, GetUrls) {
   for (const GURL& url : url_data->command_urls) {
     EXPECT_TRUE(base::Contains(expected_urls, url));
   }
+}
+
+TEST_F(ChromeUrlsHandlerTest, SetDebugPagesEnabled) {
+  // Initialize the pref to false.
+  local_state_.Get()->SetUserPref(prefs::kInternalOnlyUisEnabled,
+                                  std::make_unique<base::Value>(false));
+  base::MockCallback<base::RepeatingClosure> callback;
+  EXPECT_CALL(callback, Run).Times(1);
+  handler_->SetDebugPagesEnabled(true, callback.Get());
+
+  // Pref value is true after SetDebugPagesEnabled() is called.
+  const base::Value* pref =
+      local_state_.Get()->GetUserPref(prefs::kInternalOnlyUisEnabled);
+  EXPECT_TRUE(!!pref && pref->GetBool());
 }
 
 }  // namespace chrome_urls

@@ -40,6 +40,15 @@ namespace net {
 // TODO(crbug.com/40093296): The SiteForCookies logic in this class is currently
 // unused, but will eventually replace the logic in URLRequest/RedirectInfo for
 // tracking and updating that value.
+//
+// In addition to sharding, `IsolationInfo::nonce()` is also used to
+// check if a given network request should be disallowed because the
+// initiating fenced frame has revoked network access. More context on
+// network revocation is in network_context.mojom in the comment for
+// `NetworkContext::RevokeNetworkForNonces()`. Not providing the correct
+// `nonce` will therefore lead to sending network requests that should
+//  have been blocked. See `RenderFrameHostImpl::ComputeNonce()` which
+// computes the correct nonce for a given frame.
 class NET_EXPORT IsolationInfo {
  public:
   // The update-on-redirect patterns.
@@ -114,6 +123,7 @@ class NET_EXPORT IsolationInfo {
   //   |frame_origin| must be first party with respect to |site_for_cookies|, or
   //   |site_for_cookies| must be null.
   // * If |nonce| is specified, then |top_frame_origin| must not be null.
+  //   Please see the meta-comment for this class for the |nonce| to provide.
   //
   // Note that the |site_for_cookies| consistency checks are skipped when
   // |site_for_cookies| is not HTTP/HTTPS.

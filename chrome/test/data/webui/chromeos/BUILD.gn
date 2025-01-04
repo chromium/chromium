@@ -9,6 +9,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/typescript/webui_ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+import("../build_webui_tests.gni")
 
 assert(is_chromeos_ash)
 
@@ -146,12 +147,10 @@ group("closure_compile") {
   ]
 }
 
-webui_ts_library("build_ts") {
-  root_dir = "."
-  out_dir = "$target_gen_dir/tsc"
-  composite = true
-  tsconfig_base = "tsconfig_base.json"
-  in_files = [
+build_webui_tests("build") {
+  ts_composite = true
+  ts_tsconfig_base = "tsconfig_base.json"
+  files = [
     "chai_assert.js",
     "cr_focus_row_behavior_test.ts",
     "crostini_installer_app_test.js",
@@ -162,7 +161,7 @@ webui_ts_library("build_ts") {
     "internet_detail_dialog_test.ts",
     "mock_controller.js",
     "mock_controller.m.js",
-    "mojo_webui_test_support.js",
+    "mojo_webui_test_support.ts",
     "test_browser_proxy.js",
     "test_util.js",
 
@@ -211,7 +210,7 @@ webui_ts_library("build_ts") {
     "network/apn_list_item_test.js",
     "network/apn_list_test.ts",
     "network/apn_selection_dialog_list_item_test.js",
-    "network/apn_selection_dialog_test.js",
+    "network/apn_selection_dialog_test.ts",
     "network/cr_policy_network_behavior_mojo_tests.js",
     "network/cr_policy_network_indicator_mojo_tests.js",
     "network/cr_policy_strings.js",
@@ -222,11 +221,11 @@ webui_ts_library("build_ts") {
     "network/network_apnlist_test.js",
     "network/network_choose_mobile_test.ts",
     "network/network_config_element_behavior_test.js",
-    "network/network_config_input_test.js",
+    "network/network_config_input_test.ts",
     "network/network_config_select_test.js",
     "network/network_config_test.ts",
     "network/network_config_toggle_test.js",
-    "network/network_config_vpn_test.js",
+    "network/network_config_vpn_test.ts",
     "network/network_config_wifi_test.ts",
     "network/network_icon_test.js",
     "network/network_ip_config_test.js",
@@ -260,7 +259,10 @@ webui_ts_library("build_ts") {
     "traffic_counters/traffic_counters_test.ts",
   ]
 
-  definitions = [
+  mojo_files = [ "$target_gen_dir/web_ui_test.mojom-webui.ts" ]
+  mojo_files_deps = [ ":web_ui_test_bindings_ts__generator" ]
+
+  ts_definitions = [
     "//chrome/browser/resources/chromeos/arc_account_picker/arc_account_picker_app.d.ts",
     "//chrome/browser/resources/chromeos/arc_account_picker/arc_account_picker_browser_proxy.d.ts",
     "//chrome/test/data/webui/chromeos/arc_account_picker/test_util.d.ts",
@@ -269,7 +271,7 @@ webui_ts_library("build_ts") {
     "//tools/typescript/definitions/pending.d.ts",
   ]
 
-  path_mappings = [
+  ts_path_mappings = [
     "*/strings.m.js|" +
         rebase_path("//tools/typescript/definitions/strings.d.ts",
                     target_gen_dir),
@@ -287,7 +289,7 @@ webui_ts_library("build_ts") {
                     target_gen_dir),
   ]
 
-  deps = [
+  ts_deps = [
     "//ash/webui/common/resources:build_ts",
     "//ash/webui/common/resources/cellular_setup:build_ts",
     "//ash/webui/common/resources/cr_elements:build_ts",
@@ -298,27 +300,16 @@ webui_ts_library("build_ts") {
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
-  extra_deps = [ "//ash/webui/common/resources:generate_definitions" ]
+  ts_extra_deps = [ "//ash/webui/common/resources:generate_definitions" ]
 }
 
 mojom("web_ui_test_bindings") {
   sources = [ "web_ui_test.mojom" ]
   webui_module_path = "/"
 
-  # Used by legacy MojoWebUIBrowserTest.
-  generate_webui_js_bindings = true
-}
-
-generate_grd("build_web_ui_test_mojo_grdp") {
-  testonly = true
-  grd_prefix = "webui_chromeos_test"
-  out_grd = "$target_gen_dir/web_ui_test_mojo_resources.grdp"
-  input_files_base_dir =
-      rebase_path("$root_gen_dir/mojom-webui/chrome/test/data/webui/chromeos/",
-                  root_build_dir)
-  input_files = [ "web_ui_test.mojom-webui.js" ]
-  deps = [ ":web_ui_test_bindings_js__generator" ]
-  resource_path_prefix = "chromeos"
+  # Some tests are still using the old -lite bindings. See
+  # browser_tests_js_mojo_lite_webui target above.
+  generate_legacy_js_bindings = true
 }
 
 generate_grd("build_web_ui_test_mojo_lite_grdp") {
@@ -328,17 +319,5 @@ generate_grd("build_web_ui_test_mojo_lite_grdp") {
   input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
   input_files = [ "web_ui_test.mojom-lite.js" ]
   deps = [ ":web_ui_test_bindings_js__generator" ]
-  resource_path_prefix = "chromeos"
-}
-
-generate_grd("build_grdp") {
-  testonly = true
-  grd_prefix = "webui_test_chromeos"
-  out_grd = "$target_gen_dir/resources.grdp"
-
-  deps = [ ":build_ts" ]
-
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
   resource_path_prefix = "chromeos"
 }

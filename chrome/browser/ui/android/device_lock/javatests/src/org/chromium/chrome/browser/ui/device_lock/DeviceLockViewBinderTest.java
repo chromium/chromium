@@ -37,11 +37,13 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -51,6 +53,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /** Tests for {@link DeviceLockViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
+@Features.EnableFeatures(SigninFeatures.UNO_FOR_AUTO)
 public class DeviceLockViewBinderTest {
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
@@ -168,7 +171,7 @@ public class DeviceLockViewBinderTest {
                 mView.getNoticeText().getText());
         assertEquals(
                 "The continue button should match the version for creating a device lock.",
-                sActivity.getResources().getString(R.string.device_lock_create_lock_button),
+                sActivity.getResources().getString(R.string.history_sync_primary_action),
                 mView.getContinueButton().getText());
         assertEquals(
                 "The continue button should always be visible.",
@@ -227,14 +230,15 @@ public class DeviceLockViewBinderTest {
     @Test
     @UiThreadTest
     @SmallTest
-    public void testDeviceLockView_inSignInFlowWithNoPreExistingLock_dismissButtonHasNotNowText() {
+    public void
+            testDeviceLockView_inSignInFlowWithNoPreExistingLock_dismissButtonHasNoThanksText() {
         mViewModel.set(SOURCE, DeviceLockActivityLauncher.Source.SYNC_CONSENT);
         mViewModel.set(PREEXISTING_DEVICE_LOCK, false);
 
         assertEquals(
                 "The dismiss button should show 'not now' text when in the sign in flow.",
                 mView.getDismissButton().getText(),
-                sActivity.getResources().getString(R.string.dialog_not_now));
+                sActivity.getResources().getString(R.string.history_sync_secondary_action));
     }
 
     @Test

@@ -12,9 +12,9 @@ include_rules = [
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h",
   "+ios/chrome/browser/sync/model",
-  "+ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h",
-  "+ios/chrome/browser/ui/authentication/signin/signin_constants.h",
-  "+ios/chrome/browser/ui/authentication/signin_sync/signin_sync_coordinator.h",
+  "+ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_coordinator.h",
+  "+ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h",
+  "+ios/chrome/browser/authentication/ui_bundled/signin_sync/signin_sync_coordinator.h",
   "+ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h",
   "+ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_coordinator.h",
   "+ios/chrome/browser/settings/ui_bundled/sync/utils/sync_util.h",
@@ -28,7 +28,7 @@ specific_include_rules = {
     "+components/policy/test_support/embedded_policy_test_server.h",
   ],
   "first_run_test_case_base\.mm": [
-    "+ios/chrome/browser/ui/authentication/signin_matchers.h",
-    "+ios/chrome/browser/ui/authentication/signin_earl_grey.h",
+    "+ios/chrome/browser/authentication/ui_bundled/signin_matchers.h",
+    "+ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h",
   ],
 }

@@ -26,6 +26,8 @@
 #include "net/http/http_stream_pool_job.h"
 #include "net/http/http_stream_pool_request_info.h"
 #include "net/http/http_stream_request.h"
+#include "net/log/net_log_event_type.h"
+#include "net/log/net_log_with_source.h"
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/quic/quic_http_stream.h"
 #include "net/socket/next_proto.h"
@@ -114,7 +116,20 @@ HttpStreamPool::JobController::JobController(
       alternative_(CalculateAlternative(pool,
                                         origin_stream_key_,
                                         request_info,
-                                        enable_alternative_services_)) {
+                                        enable_alternative_services_)),
+      net_log_(request_info.factory_job_controller_net_log) {
+  net_log_.BeginEvent(
+      NetLogEventType::HTTP_STREAM_POOL_JOB_CONTROLLER_ALIVE, [&] {
+        base::Value::Dict dict;
+        dict.Set("origin_destination",
+                 origin_stream_key_.destination().Serialize());
+        if (alternative_.has_value()) {
+          dict.Set("alternative_destination",
+                   alternative_->stream_key.destination().Serialize());
+        }
+        return dict;
+      });
+
   CHECK(proxy_info_.is_direct());
   if (!alternative_.has_value() &&
       alternative_service_info_.protocol() == NextProto::kProtoQUIC) {
@@ -122,7 +137,9 @@ HttpStreamPool::JobController::JobController(
   }
 }
 
-HttpStreamPool::JobController::~JobController() = default;
+HttpStreamPool::JobController::~JobController() {
+  net_log_.EndEvent(NetLogEventType::HTTP_STREAM_POOL_JOB_CONTROLLER_ALIVE);
+}
 
 std::unique_ptr<HttpStreamRequest> HttpStreamPool::JobController::RequestStream(
     HttpStreamRequest::Delegate* delegate,
@@ -143,6 +160,9 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::JobController::RequestStream(
   std::unique_ptr<HttpStream> quic_http_stream =
       MaybeCreateStreamFromExistingQuicSession();
   if (quic_http_stream) {
+    net_log_.AddEvent(
+        NetLogEventType::
+            HTTP_STREAM_POOL_JOB_CONTROLLER_FOUND_EXISTING_QUIC_SESSION);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -157,6 +177,9 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::JobController::RequestStream(
   base::WeakPtr<SpdySession> spdy_session = pool_->FindAvailableSpdySession(
       origin_stream_key_, spdy_session_key, enable_ip_based_pooling_, net_log);
   if (spdy_session) {
+    net_log_.AddEvent(
+        NetLogEventType::
+            HTTP_STREAM_POOL_JOB_CONTROLLER_FOUND_EXISTING_SPDY_SESSION);
     auto http_stream = std::make_unique<SpdyHttpStream>(
         spdy_session, net_log.source(),
         spdy_session_pool()->GetDnsAliasesForSessionKey(spdy_session_key));
@@ -204,6 +227,9 @@ int HttpStreamPool::JobController::Preconnect(
   }
 
   if (CanUseExistingQuicSession()) {
+    net_log_.AddEvent(
+        NetLogEventType::
+            HTTP_STREAM_POOL_JOB_CONTROLLER_FOUND_EXISTING_QUIC_SESSION);
     return OK;
   }
 
@@ -213,6 +239,9 @@ int HttpStreamPool::JobController::Preconnect(
       spdy_session_key, /*is_websocket=*/false);
   if (pool_->FindAvailableSpdySession(origin_stream_key_, spdy_session_key,
                                       /*enable_ip_based_pooling=*/true)) {
+    net_log_.AddEvent(
+        NetLogEventType::
+            HTTP_STREAM_POOL_JOB_CONTROLLER_FOUND_EXISTING_SPDY_SESSION);
     return OK;
   }
   if (had_spdy_session) {
@@ -232,7 +261,8 @@ int HttpStreamPool::JobController::Preconnect(
   }
 
   return pool_->GetOrCreateGroup(origin_stream_key_, origin_quic_key_)
-      .Preconnect(num_streams, origin_quic_version_, std::move(callback));
+      .Preconnect(num_streams, origin_quic_version_, net_log_,
+                  std::move(callback));
 }
 
 RequestPriority HttpStreamPool::JobController::priority() const {
@@ -263,6 +293,10 @@ bool HttpStreamPool::JobController::is_http1_allowed() const {
 
 const ProxyInfo& HttpStreamPool::JobController::proxy_info() const {
   return proxy_info_;
+}
+
+const NetLogWithSource& HttpStreamPool::JobController::net_log() const {
+  return net_log_;
 }
 
 void HttpStreamPool::JobController::OnStreamReady(

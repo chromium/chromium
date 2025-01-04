@@ -14,8 +14,7 @@ namespace performance_manager::policies {
 
 // Policies that automatically flush the BFCache of pages when the system is
 // under memory pressure.
-class BFCachePolicy : public GraphOwned,
-                      public SystemNode::ObserverDefaultImpl {
+class BFCachePolicy : public GraphOwned, public SystemNodeObserver {
  public:
   BFCachePolicy() = default;
   BFCachePolicy(const BFCachePolicy&) = delete;

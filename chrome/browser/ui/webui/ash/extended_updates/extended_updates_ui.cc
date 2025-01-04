@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/webui/ash/extended_updates/extended_updates.mojom.h"
 #include "chrome/browser/ui/webui/ash/extended_updates/extended_updates_page_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/extended_updates_resources.h"
@@ -29,6 +28,7 @@
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 
 namespace ash::extended_updates {
 

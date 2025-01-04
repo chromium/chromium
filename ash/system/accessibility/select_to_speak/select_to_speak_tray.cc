@@ -14,7 +14,6 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_utils.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -35,29 +34,21 @@ namespace {
 
 ui::ImageModel GetImageOnCurrentSelectToSpeakStatus(
     const SelectToSpeakState& select_to_speak_state) {
-  const bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
-  // For Jelly: `kSelectToSpeakStateInactive` means the tray is inactive and
+  // `kSelectToSpeakStateInactive` means the tray is inactive and
   // will have a different icon color. `kSelectToSpeakStateSelecting` and
   // `kSelectToSpeakStateSpeaking` means the tray is active.
   switch (select_to_speak_state) {
     case SelectToSpeakState::kSelectToSpeakStateInactive:
-      return ui::ImageModel::FromVectorIcon(
-          kSystemTraySelectToSpeakNewuiIcon,
-          is_jelly_enabled
-              ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-              : kColorAshIconColorPrimary);
+      return ui::ImageModel::FromVectorIcon(kSystemTraySelectToSpeakNewuiIcon,
+                                            cros_tokens::kCrosSysOnSurface);
     case SelectToSpeakState::kSelectToSpeakStateSelecting:
       return ui::ImageModel::FromVectorIcon(
           kSystemTraySelectToSpeakActiveNewuiIcon,
-          is_jelly_enabled ? static_cast<ui::ColorId>(
-                                 cros_tokens::kCrosSysSystemOnPrimaryContainer)
-                           : kColorAshIconColorPrimary);
+          cros_tokens::kCrosSysSystemOnPrimaryContainer);
     case SelectToSpeakState::kSelectToSpeakStateSpeaking:
       return ui::ImageModel::FromVectorIcon(
           kSystemTrayStopNewuiIcon,
-          is_jelly_enabled ? static_cast<ui::ColorId>(
-                                 cros_tokens::kCrosSysSystemOnPrimaryContainer)
-                           : kColorAshIconColorPrimary);
+          cros_tokens::kCrosSysSystemOnPrimaryContainer);
   }
 }
 

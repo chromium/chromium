@@ -112,11 +112,13 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler,
   void OnGetRestoreData(
       std::unique_ptr<::app_restore::RestoreData> restore_data);
 
+  void MaybeNotifyFullRestoreDataLoaded(bool restore_automatically);
+
+  // Schedules `Restore()` if `ShouldRestore() returns true.
   void MaybePostRestore();
 
-  // If there is the restore data, and the restore flag `should_restore_` is
-  // true, launches apps based on the restore data when apps are ready.
-  void MaybeRestore();
+  // Launches browser/apps based on the restore data.
+  void Restore();
 
   // Returns true if the browser can be restored. Otherwise, returns false.
   bool CanLaunchBrowser();
@@ -142,6 +144,9 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler,
   // Returns true if the previous session is reported to have ended with a
   // crash.
   bool IsLastSessionExitTypeCrashed();
+
+  // Whether to perform restore from local restore data.
+  bool ShouldRestore() const;
 
   bool should_restore_ = false;
 

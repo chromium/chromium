@@ -29,6 +29,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/dbus/fake_bluetooth_debug_manager_client.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -146,7 +147,7 @@ class EcheAppManagerTest : public AshTestBase {
         SystemInfo::Builder()
             .SetDeviceName(kFakeDeviceName)
             .SetBoardName(kFakeBoardName)
-            .SetGaiaId(kFakeGaiaId)
+            .SetGaiaId(GaiaId(kFakeGaiaId))
             .SetDeviceType(kFakeDeviceType)
             .Build(),
         fake_phone_hub_manager_.get(), fake_device_sync_client_.get(),

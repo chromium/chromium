@@ -32,9 +32,11 @@ int WebView::GetTaskPrefix() const {
   NOTREACHED();
 }
 
-void WebView::CreateInnerPage(std::unique_ptr<GuestViewBase> owned_this,
-                              const base::Value::Dict& create_params,
-                              GuestPageCreatedCallback callback) {
+void WebView::CreateInnerPage(
+    std::unique_ptr<GuestViewBase> owned_this,
+    scoped_refptr<content::SiteInstance> site_instance,
+    const base::Value::Dict& create_params,
+    GuestPageCreatedCallback callback) {
   content::StoragePartitionConfig partition_config =
       content::StoragePartitionConfig::Create(
           browser_context(), owner_rfh()->GetLastCommittedURL().host(), "",

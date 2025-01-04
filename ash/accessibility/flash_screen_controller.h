@@ -64,9 +64,6 @@ class FlashScreenController : public message_center::MessageCenterObserver,
 
   gfx::ThrobAnimation throb_animation_;
 
-  // How many flashes have elapsed for this timer.
-  int num_completed_flashes_ = 0;
-
   base::ScopedObservation<message_center::MessageCenter, MessageCenterObserver>
       notification_observer_{this};
 };

@@ -206,6 +206,12 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 NetFeatures.OPTIMIZE_PARSING_DATA_URLS, "Enables optimizing parsing data: URLs."),
         Flag.baseFeature(
+                NetFeatures.SIMDUTF_BASE64_SUPPORT,
+                "Use the simdutf library to base64 decode data: URLs."),
+        Flag.baseFeature(
+                NetFeatures.FURTHER_OPTIMIZE_PARSING_DATA_URLS,
+                "Further optimize parsing data: URLs."),
+        Flag.baseFeature(
                 AwFeatures.WEBVIEW_EXTRA_HEADERS_SAME_ORIGIN_ONLY,
                 "Only allow extra headers added via loadUrl() to be sent to the same origin "
                         + "as the original request."),
@@ -281,15 +287,6 @@ public final class ProductionSupportedFlagList {
                 "When enabled, AutofillAgent will store its cached form and fields as renderer ids "
                         + "instead of holding strong references to blink::WebElement objects."),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_USE_AU_ADDRESS_MODEL,
-                "When enabled, Autofill uses a custom address model for Australia."),
-        Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_USE_CA_ADDRESS_MODEL,
-                "When enabled, Autofill uses a custom address model for Canada."),
-        Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_USE_DE_ADDRESS_MODEL,
-                "When enabled, Autofill uses a custom address model for Germany."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_USE_FR_ADDRESS_MODEL,
                 "When enabled, Autofill uses a custom address model for France."),
         Flag.baseFeature(
@@ -304,6 +301,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_USE_PL_ADDRESS_MODEL,
                 "When enabled, Autofill uses a custom address model for Poland."),
+        Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_SUPPORT_LAST_NAME_PREFIX,
+                "When enabled, Autofill uses a custom name hierarchy for parsing last names."),
         Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_USE_SUBMITTED_FORM_IN_HTML_SUBMISSION,
                 "When enabled, Autofill will start falling back to the saved form when HTML"
@@ -328,15 +328,15 @@ public final class ProductionSupportedFlagList {
                         + " match different types. Applied only for parsing of address forms in"
                         + " Turkish."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_SUPPORT_PHONETIC_NAME_FOR_JP,
+                "When enabled, Autofill will support phonetic name for Japan."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_UKM_EXPERIMENTAL_FIELDS,
                 "Enables UKM collection for experimental fields"),
         Flag.baseFeature(
                 FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE,
                 "When enabled, merchant bound virtual cards will be offered in the keyboard "
                         + "accessory."),
-        Flag.baseFeature(
-                NetworkServiceFeatures.PRIVATE_STATE_TOKENS,
-                "Enables the prototype Private State Tokens API."),
         Flag.baseFeature(
                 NetworkServiceFeatures.MASKED_DOMAIN_LIST,
                 "When enabled, the masked domain list required for IP Protection is loaded."),
@@ -482,10 +482,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(CcFeatures.PRESERVE_DISCARDABLE_IMAGE_MAP_QUALITY),
         Flag.baseFeature(BlinkFeatures.SCROLLBAR_COLOR),
         Flag.baseFeature(
-                ContentFeatures.PERSISTENT_ORIGIN_TRIALS,
-                "If enabled, servers will be able to use persistent origin trials "
-                        + "on this device."),
-        Flag.baseFeature(
                 AwFeatures.WEBVIEW_DRAG_DROP_FILES,
                 "If enabled, files can be dropped into WebView"),
         Flag.baseFeature(
@@ -519,27 +515,15 @@ public final class ProductionSupportedFlagList {
                 "When enabled, media::VideoEncoder implementation is used in MediaRecorder API"
                         + " instead of using MediaRecorder own video encoder implementation."),
         Flag.baseFeature(
-                MetricsFeatures.METRICS_SERVICE_ALLOW_EARLY_LOG_CLOSE,
-                "Controls whether a log is allowed to be closed when Chrome"
-                        + " is backgrounded/foregrounded early."),
-        Flag.baseFeature(
                 MetricsFeatures.FLUSH_PERSISTENT_SYSTEM_PROFILE_ON_WRITE,
                 "Controls whether to schedule a flush of persistent histogram memory "
                         + "immediately after writing a system profile to it."),
-        Flag.baseFeature(
-                MetricsFeatures.METRICS_SERVICE_DELTA_SNAPSHOT_IN_BG,
-                "Controls whether to perform histogram delta snapshots in a background "
-                        + "thread (in contrast to snapshotting unlogged samples in the "
-                        + "background, then marking them as logged on the main thread)."),
         Flag.baseFeature(
                 MetricsFeatures.REPORTING_SERVICE_ALWAYS_FLUSH,
                 "Determines whether to always flush Local State immediately after an UMA/UKM "
                         + "log upload."),
         Flag.baseFeature(
                 MetricsFeatures.METRICS_LOG_TRIMMING, "Controls trimming for metrics logs."),
-        Flag.baseFeature(
-                ContentFeatures.MAIN_THREAD_COMPOSITING_PRIORITY,
-                "When enabled runs the main thread at compositing priority."),
         Flag.baseFeature(
                 ContentFeatures.REDUCE_SUBRESOURCE_RESPONSE_STARTED_IPC,
                 "When enabled, reduces SubresourceResponseStarted IPC by sending"
@@ -554,16 +538,6 @@ public final class ProductionSupportedFlagList {
                 "Enables downloading TrustTokenKeyCommitmentsComponent by the component"
                         + " updater downloading service in nonembedded WebView."
                         + " See https://crbug.com/1170468."),
-        Flag.baseFeature(
-                BlinkFeatures.REPORT_VISIBLE_LINE_BOUNDS,
-                "When enabled, WebView reports rectangles which surround each line of"
-                        + " text in the currently focused element to Android. These rectangles "
-                        + "are sent for <input> and <textarea> elements."),
-        Flag.baseFeature(
-                BlinkFeatures.STYLUS_POINTER_ADJUSTMENT,
-                "When enabled, a hover icon is shown over editable HTML elements when"
-                        + " using a stylus and the rectangle to trigger stylus writing on"
-                        + " editable elements is expanded."),
         Flag.baseFeature(
                 BlinkFeatures.STYLUS_RICH_GESTURES,
                 "When enabled, stylus input can be used to draw rich gestures which "
@@ -631,9 +605,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(BaseFeatures.THREAD_POOL_CAP2, "Sets a fixed thread pool cap"),
         Flag.baseFeature("ThreadGroupSemaphore"),
         Flag.baseFeature(
-                BlinkFeatures.CSS_LAZY_PARSING_FAST_PATH,
-                "Enables a fast-path for skipping lazily-parsed CSS declaration blocks"),
-        Flag.baseFeature(
                 ContentFeatures.QUEUE_NAVIGATIONS_WHILE_WAITING_FOR_COMMIT,
                 "If enabled, allows navigations to be queued when there is "
                         + "an existing pending commit navigation in progress."),
@@ -700,23 +671,12 @@ public final class ProductionSupportedFlagList {
                         + "targeting a cross-origin iframe which has moved within its "
                         + "embedding page recently."),
         Flag.baseFeature(
-                ContentFeatures.SERVICE_WORKER_STATIC_ROUTER,
-                "Enables Service Worker static routing API."),
-        Flag.baseFeature(
                 ContentFeatures.BACK_FORWARD_CACHE_MEDIA_SESSION_SERVICE,
                 "Enables media session usage when bfcache is enabled"),
-        Flag.baseFeature(
-                ContentFeatures.SELECTION_MENU_ITEM_MODIFICATION,
-                "Enables text selection menu item modification based on "
-                        + "embedder implementation."),
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_AUTO_SAA,
                 "Enable auto granting storage access API requests. This will be done "
                         + "if a relationship is detected between the app and the website."),
-        Flag.baseFeature(
-                AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_DETECTION,
-                "Enable detection of the loading of mature sites on "
-                        + "WebViews running on supervised user accounts"),
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK,
                 "Enable blocking the loading of mature sites on "
@@ -739,6 +699,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("UseRustJsonParser"),
         Flag.baseFeature("V8BaselineBatchCompilation"),
         Flag.baseFeature("V8ConcurrentSparkplug"),
+        Flag.baseFeature("V8Flag_minor_gc_task_with_lower_priority"),
         Flag.baseFeature("V8FlushCodeBasedOnTabVisibility"),
         Flag.baseFeature("V8FlushCodeBasedOnTime"),
         Flag.baseFeature("V8MemoryReducer"),
@@ -782,8 +743,6 @@ public final class ProductionSupportedFlagList {
                 "Controls if back/forward cache is enabled. Note that it's also possible"
                         + " to enable BFCache through AwSettings as well. If either of"
                         + " the flag / setting is enabled, BFCache will be enabled"),
-        Flag.baseFeature(
-                ContentFeatures.WEBVIEW_SUPPRESS_TAP_DURING_FLING, "Supress tap during fling."),
         Flag.baseFeature(
                 ContentFeatures.ACCESSIBILITY_MANAGE_BROADCAST_RECEIVER_ON_BACKGROUND,
                 "Register, un-register Accessibility broadcast receiver on a background thread."),
@@ -955,8 +914,14 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(ContentFeatures.PWA_NAVIGATION_CAPTURING),
         Flag.baseFeature("TransportSecurityFileWriterSchedule"),
         Flag.commandLine(
-                AwSwitches.WEBVIEW_INTERCEPTED_COOKIE_HEADER,
+                AwFeatures.WEBVIEW_INTERCEPTED_COOKIE_HEADER,
                 "When enabled, the cookie header will be included in the request headers"
+                        + " for shouldInterceptRequest, excepting when "
+                        + AwFeatures.WEBVIEW_INTERCEPTED_COOKIE_HEADER_READ_WRITE
+                        + " is enabled."),
+        Flag.commandLine(
+                AwFeatures.WEBVIEW_INTERCEPTED_COOKIE_HEADER_READ_WRITE,
+                "When enabled, the cookie header will not be included in the request headers"
                         + " for shouldInterceptRequest"),
         Flag.baseFeature(
                 VizFeatures.RENDER_PASS_DRAWN_RECT,
@@ -1025,10 +990,6 @@ public final class ProductionSupportedFlagList {
                 "Use origin calculated in the browser process rather than renderer process for"
                         + " navigations."),
         Flag.baseFeature(
-                AwFeatures.WEBVIEW_AUTO_GRANT_SANITIZED_CLIPBOARD_WRITE,
-                "Auto-grant clipboard sanitized text write permission with user gesture. "
-                        + "Enabled by default."),
-        Flag.baseFeature(
                 "AllowSensorsToEnterBfcache",
                 "Allow pages with sensors to enter back/forward cache."),
         Flag.baseFeature(
@@ -1053,6 +1014,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "SelectParserRelaxation",
                 "Enables new HTML parser behavior for the <select> element."),
+        Flag.baseFeature(
+                "CSSReadingFlow",
+                "Enables new CSS reading-flow property for focus navigation in visual order."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

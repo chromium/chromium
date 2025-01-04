@@ -398,15 +398,27 @@ void AshTestHelper::SetUp(InitParams init_params) {
   session_controller_client_ = std::make_unique<TestSessionControllerClient>(
       shell->session_controller(), prefs_provider_.get());
   session_controller_client_->InitializeAndSetClient();
-  if (init_params.start_session) {
-    session_controller_client_->CreatePredefinedUserSessions(1);
-  }
 
   // Requires the AppListController the Shell creates.
   app_list_test_helper_ = std::make_unique<AppListTestHelper>();
 
   Shell::GetPrimaryRootWindow()->Show();
   Shell::GetPrimaryRootWindow()->GetHost()->Show();
+
+  // Sign-in after UI is shown.
+  if (init_params.start_session) {
+    // TODO(crbug.com/383441831): Remove Reset();
+    session_controller_client_->Reset();
+
+    auto account_id = AccountId::FromUserEmail("user0@tray");
+    // TODO((crbug.com/383441831): Use SimulateUserLogin.
+    session_controller_client_->AddUserSession(
+        account_id, account_id.GetUserEmail(),
+        user_manager::UserType::kRegular);
+    session_controller_client_->SwitchActiveUser(account_id);
+    session_controller_client_->SetSessionState(
+        session_manager::SessionState::ACTIVE);
+  }
 
   // Don't change the display size due to host size resize.
   display::test::DisplayManagerTestApi(shell->display_manager())

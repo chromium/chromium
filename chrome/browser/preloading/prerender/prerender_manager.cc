@@ -243,7 +243,8 @@ PrerenderManager::StartPrerenderBookmark(const GURL& prerendering_url) {
   bookmark_prerender_handle_ = web_contents()->StartPrerendering(
       prerendering_url, content::PreloadingTriggerType::kEmbedder,
       prerender_utils::kBookmarkBarMetricSuffix,
-      /*no_vary_search_expected=*/std::nullopt,
+      /*additional_headers=*/net::HttpRequestHeaders(),
+      /*no_vary_search_hint=*/std::nullopt,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK),
       // Considering the characteristics of triggers (e.g., the duration from
       // trigger to activation), warm-up is not enabled for now on this trigger.
@@ -312,7 +313,8 @@ PrerenderManager::StartPrerenderNewTabPage(
   new_tab_page_prerender_handle_ = web_contents()->StartPrerendering(
       prerendering_url, content::PreloadingTriggerType::kEmbedder,
       prerender_utils::kNewTabPageMetricSuffix,
-      /*no_vary_search_expected=*/std::nullopt,
+      /*additional_headers=*/net::HttpRequestHeaders(),
+      /*no_vary_search_hint=*/std::nullopt,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK),
       // Considering the characteristics of triggers (e.g., the duration from
       // trigger to activation), warm-up is not enabled for now on this trigger.
@@ -377,7 +379,8 @@ PrerenderManager::StartPrerenderDirectUrlInput(
   direct_url_input_prerender_handle_ = web_contents()->StartPrerendering(
       prerendering_url, content::PreloadingTriggerType::kEmbedder,
       prerender_utils::kDirectUrlInputMetricSuffix,
-      /*no_vary_search_expected=*/std::nullopt,
+      /*additional_headers=*/net::HttpRequestHeaders(),
+      /*no_vary_search_hint=*/std::nullopt,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
       /*should_warm_up_compositor=*/true,
@@ -417,7 +420,8 @@ void PrerenderManager::StartPrerenderSearchResult(
       web_contents()->StartPrerendering(
           prerendering_url, content::PreloadingTriggerType::kEmbedder,
           prerender_utils::kDefaultSearchEngineMetricSuffix,
-          /*no_vary_search_expected=*/std::nullopt,
+          /*additional_headers=*/net::HttpRequestHeaders(),
+          /*no_vary_search_hint=*/std::nullopt,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
           /*should_warm_up_compositor=*/true,

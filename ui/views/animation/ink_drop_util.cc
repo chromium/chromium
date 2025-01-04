@@ -42,10 +42,12 @@ gfx::Transform GetTransformSubpixelCorrection(const gfx::Transform& transform,
   gfx::Point3F offset = transform_corrected.MapPoint(gfx::Point3F());
   offset.Scale(device_scale_factor);
 
-  if (!std::isnan(offset.x()))
+  if (!std::isnan(offset.x())) {
     DCHECK_LT(std::abs(std::round(offset.x()) - offset.x()), kEpsilon);
-  if (!std::isnan(offset.y()))
+  }
+  if (!std::isnan(offset.y())) {
     DCHECK_LT(std::abs(std::round(offset.y()) - offset.y()), kEpsilon);
+  }
 #endif
   return subpixel_correction;
 }

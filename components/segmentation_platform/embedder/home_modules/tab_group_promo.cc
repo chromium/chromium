@@ -7,6 +7,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/segmentation_platform/embedder/home_modules/constants.h"
+#include "components/segmentation_platform/embedder/home_modules/ephemeral_module_utils.h"
 #include "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
@@ -17,6 +18,17 @@ namespace {
 // users.
 const int kTabCountLimit = 10;
 
+// The number of times the tab group promo card can be shown to the user in a
+// single day.
+const int kShownCountLimit = 3;
+
+const char kTabGroupPromoHistogramName[] =
+    "MagicStack.Clank.NewTabPage.Module.TopImpressionV2";
+
+// TODO(crbug.com/382803396): The enum id of the tab group promo card. Could be
+// referenced after refactor.
+const int kTabGroupPromoId = 7;
+
 }  // namespace
 
 namespace segmentation_platform::home_modules {
@@ -26,22 +38,38 @@ TabGroupPromo::TabGroupPromo(PrefService* profile_prefs)
 
 std::map<SignalKey, FeatureQuery> TabGroupPromo::GetInputs() {
   std::map<SignalKey, FeatureQuery> map = {
-      {kTabGroupExists,
-       FeatureQuery::FromCustomInput(MetadataWriter::CustomInput{
-           .tensor_length = 1,
-           .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
-           .name = kTabGroupExists})},
       {kNumberOfTabs,
        FeatureQuery::FromCustomInput(MetadataWriter::CustomInput{
            .tensor_length = 1,
            .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
            .name = kNumberOfTabs})},
+      {kTabGroupExists,
+       FeatureQuery::FromCustomInput(MetadataWriter::CustomInput{
+           .tensor_length = 1,
+           .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
+           .name = kTabGroupExists})},
   };
+
+  DEFINE_UMA_FEATURE_ENUM_COUNT(count, kTabGroupPromoHistogramName,
+                                &kTabGroupPromoId, /* enum_size= */ 1,
+                                /* days= */ 1);
+  map.emplace(kTabGroupPromoShownCount, std::move(count));
+
   return map;
 }
 
 CardSelectionInfo::ShowResult TabGroupPromo::ComputeCardResult(
     const CardSelectionSignals& signals) const {
+  // Check for a forced `ShowResult`.
+  std::optional<CardSelectionInfo::ShowResult> forced_result =
+      GetForcedEphemeralModuleShowResult();
+
+  if (forced_result.has_value() &&
+      forced_result.value().result_label.has_value() &&
+      kTabGroupPromo == forced_result.value().result_label.value()) {
+    return forced_result.value();
+  }
+
   CardSelectionInfo::ShowResult result;
   result.result_label = kTabGroupPromo;
 
@@ -55,15 +83,19 @@ CardSelectionInfo::ShowResult TabGroupPromo::ComputeCardResult(
   std::optional<float> resultForTabGroupExists =
       signals.GetSignal(kTabGroupExists);
   std::optional<float> resultForNumberOfTabs = signals.GetSignal(kNumberOfTabs);
+  std::optional<float> resultForTabGroupPromoShownCount =
+      signals.GetSignal(kTabGroupPromoShownCount);
 
   if (!resultForTabGroupExists.has_value() ||
-      !resultForNumberOfTabs.has_value()) {
+      !resultForNumberOfTabs.has_value() ||
+      !resultForTabGroupPromoShownCount.has_value()) {
     result.position = EphemeralHomeModuleRank::kNotShown;
     return result;
   }
 
   if (!*resultForTabGroupExists &&
-      resultForNumberOfTabs.value() > kTabCountLimit) {
+      resultForNumberOfTabs.value() > kTabCountLimit &&
+      resultForTabGroupPromoShownCount.value() < kShownCountLimit) {
     result.position = EphemeralHomeModuleRank::kTop;
     return result;
   }
@@ -73,6 +105,15 @@ CardSelectionInfo::ShowResult TabGroupPromo::ComputeCardResult(
 }
 
 bool TabGroupPromo::IsEnabled(int impression_count) {
+  std::optional<CardSelectionInfo::ShowResult> forced_result =
+      GetForcedEphemeralModuleShowResult();
+
+  if (forced_result.has_value() &&
+      forced_result.value().result_label.has_value() &&
+      kTabGroupPromo == forced_result.value().result_label.value()) {
+    return true;
+  }
+
   if (!base::FeatureList::IsEnabled(features::kEducationalTipModule)) {
     return false;
   }

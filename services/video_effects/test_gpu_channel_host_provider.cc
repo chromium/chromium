@@ -56,6 +56,8 @@ TestGpuChannelHostProvider::GetSharedImageInterface() {
   return nullptr;
 }
 
+TestGpuChannelHostProvider::~TestGpuChannelHostProvider() = default;
+
 scoped_refptr<gpu::GpuChannelHost>
 TestGpuChannelHostProvider::GetGpuChannelHost() {
   return base::MakeRefCounted<TestGpuChannelHost>(gpu_channel_.get());

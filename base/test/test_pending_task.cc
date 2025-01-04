@@ -33,8 +33,9 @@ TimeTicks TestPendingTask::GetTimeToRun() const {
 }
 
 bool TestPendingTask::ShouldRunBefore(const TestPendingTask& other) const {
-  if (nestability != other.nestability)
+  if (nestability != other.nestability) {
     return (nestability == NESTABLE);
+  }
   return GetTimeToRun() < other.GetTimeToRun();
 }
 

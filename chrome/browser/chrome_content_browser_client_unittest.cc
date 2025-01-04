@@ -31,7 +31,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/captive_portal/captive_portal_service_factory.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
@@ -71,13 +70,16 @@
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui_controller.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_web_ui.h"
 #include "content/public/test/web_contents_tester.h"
 #include "crypto/crypto_buildflags.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "media/media_buildflags.h"
 #include "net/base/url_util.h"
 #include "net/ssl/ssl_info.h"
@@ -122,7 +124,7 @@
 #include "services/video_effects/test/fake_video_effects_service.h"
 #endif  // BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "ash/webui/media_app_ui/url_constants.h"
@@ -137,20 +139,13 @@
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h"
 #include "chrome/browser/policy/networking/policy_cert_service.h"
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
+#include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "chromeos/components/kiosk/kiosk_test_utils.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
-#include "chromeos/components/kiosk/kiosk_test_utils.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/web_applications/web_app_utils.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_WIN)
 #include "base/test/mock_entropy_provider.h"
@@ -172,16 +167,16 @@ using ::testing::NotNull;
 class ChromeContentBrowserClientTest : public testing::Test {
  public:
   ChromeContentBrowserClientTest()
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       : test_system_web_app_manager_creator_(base::BindRepeating(
             &ChromeContentBrowserClientTest::CreateSystemWebAppManager,
             base::Unretained(this)))
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   {
   }
 
  protected:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<KeyedService> CreateSystemWebAppManager(Profile* profile) {
     // Unit tests need SWAs from production. Creates real SystemWebAppManager
     // instead of `TestSystemWebAppManager::BuildDefault()` for
@@ -191,7 +186,7 @@ class ChromeContentBrowserClientTest : public testing::Test {
   }
   // The custom manager creator should be constructed before `TestingProfile`.
   ash::TestSystemWebAppManagerCreator test_system_web_app_manager_creator_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
@@ -364,27 +359,21 @@ TEST_F(ChromeContentBrowserClientWindowTest, AutomaticBeaconCredentials) {
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ChromeContentBrowserClientWindowTest,
        BackForwardCacheIsDisallowedForCacheControlNoStorePageWhenInKioskMode) {
-// Enter Kiosk session.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Enter Kiosk session.
   user_manager::ScopedUserManager user_manager(
       std::make_unique<user_manager::FakeUserManager>());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::SetUpFakeKioskSession();
 
   ChromeContentBrowserClient client;
   ASSERT_FALSE(client.ShouldAllowBackForwardCacheForCacheControlNoStorePage(
       browser()->profile()));
 }
-
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(ChromeContentBrowserClientWindowTest,
        QueryInstalledWebAppsByManifestIdFrameUrlInScope) {
   ChromeContentBrowserClient client;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  web_app::test::ScopedSkipMainProfileCheck skip_main_profile_check;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   web_app::test::AwaitStartWebAppProviderAndSubsystems(browser()->profile());
 
   const GURL app_url("http://foo.com");
@@ -416,9 +405,6 @@ TEST_F(ChromeContentBrowserClientWindowTest,
 TEST_F(ChromeContentBrowserClientWindowTest,
        QueryInstalledWebAppsByManifestIdFrameUrlOutOfScope) {
   ChromeContentBrowserClient client;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  web_app::test::ScopedSkipMainProfileCheck skip_main_profile_check;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   web_app::test::AwaitStartWebAppProviderAndSubsystems(browser()->profile());
 
   const GURL app_url("http://foo.com");
@@ -846,7 +832,6 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectSettingsURL) {
   EXPECT_EQ(GURL(chrome::kChromeUIAppDisabledURL), dest_url);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ChromeContentSettingsRedirectTest, RedirectExploreURL) {
   TestChromeContentBrowserClient test_content_browser_client;
   const GURL help_url(ash::kChromeUIHelpAppURL);
@@ -1092,7 +1077,8 @@ class ChromeContentSettingsPolicyTrustAnchor
   void SetUp() override {
     // Add a profile
     auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    AccountId account_id = AccountId::FromUserEmailGaiaId(kEmail, "gaia_id");
+    AccountId account_id =
+        AccountId::FromUserEmailGaiaId(kEmail, GaiaId("gaia_id"));
     user_manager::User* user =
         fake_user_manager->AddUserWithAffiliationAndTypeAndProfile(
             account_id, false /*is_affiliated*/,
@@ -1124,8 +1110,6 @@ TEST_F(ChromeContentSettingsPolicyTrustAnchor, PolicyTrustAnchor) {
   EXPECT_TRUE(policy::PolicyCertServiceFactory::GetForProfile(&profile_)
                   ->UsedPolicyCertificates());
 }
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 class CaptivePortalCheckNetworkContext final
@@ -1243,9 +1227,6 @@ class ChromeContentBrowserClientStoragePartitionTest
  public:
   void SetUp() override {
     content::SiteIsolationPolicy::DisableFlagCachingForTesting();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    web_app::SetSkipMainProfileCheckForTesting(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
  protected:
@@ -1361,7 +1342,7 @@ TEST_F(ChromeContentBrowserClientStoragePartitionTest,
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ChromeContentBrowserClientTest, IsolatedWebAppsDisabledOnSignInScreen) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kIsolatedWebApps);
@@ -1375,9 +1356,7 @@ TEST_F(ChromeContentBrowserClientTest, IsolatedWebAppsDisabledOnSignInScreen) {
   EXPECT_TRUE(client.AreIsolatedWebAppsEnabled(&profile_));
   EXPECT_FALSE(client.AreIsolatedWebAppsEnabled(sign_in_screen_profile.get()));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ChromeContentBrowserClientTest, RequestFileAccessAllow) {
   file_access::MockScopedFileAccessDelegate scoped_file_access;
   base::test::TestFuture<file_access::ScopedFileAccess> continuation_callback;
@@ -1423,7 +1402,8 @@ class ChromeContentBrowserClientSwitchTest
     command_line.AppendSwitchASCII(switches::kProcessType,
                                    switches::kRendererProcess);
 
-    client_.AppendExtraCommandLineSwitches(&command_line, process()->GetID());
+    client_.AppendExtraCommandLineSwitches(&command_line,
+                                           process()->GetDeprecatedID());
     return command_line;
   }
 
@@ -1796,4 +1776,64 @@ TEST_P(GrantCookieAccessDueToHeuristicTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          GrantCookieAccessDueToHeuristicTest,
+                         testing::Bool());
+
+const char kTestWebUIURL[] = "chrome://test";
+
+class ChromeContentBrowserClientOverrideForInternalWebUITest
+    : public ChromeRenderViewHostTestHarness,
+      public testing::WithParamInterface<bool> {
+ protected:
+  ChromeContentBrowserClientOverrideForInternalWebUITest() {
+    testing_local_state_.Get()->SetBoolean(prefs::kInternalOnlyUisEnabled,
+                                           GetParam());
+  }
+
+  ChromeContentBrowserClient& client() { return client_; }
+
+ protected:
+  ScopedTestingLocalState testing_local_state_{
+      TestingBrowserProcess::GetGlobal()};
+
+ private:
+  ChromeContentBrowserClient client_;
+};
+
+TEST_P(ChromeContentBrowserClientOverrideForInternalWebUITest, FeatureOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kInternalOnlyUisPref);
+
+  // When the feature flag is off, OverrideForInternalWebUI should return
+  // null regardless of the state of the pref.
+  std::unique_ptr<TestingProfile> profile = CreateTestingProfile();
+  content::TestWebUI test_webui;
+  auto web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile.get(), nullptr);
+  test_webui.set_web_contents(web_contents.get());
+  std::unique_ptr<content::WebUIController> webui_controller =
+      client().OverrideForInternalWebUI(&test_webui, GURL(kTestWebUIURL));
+
+  EXPECT_EQ(nullptr, webui_controller);
+}
+
+TEST_P(ChromeContentBrowserClientOverrideForInternalWebUITest, FeatureOn) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kInternalOnlyUisPref);
+
+  // When the feature flag is on, OverrideForInternalWebUI should return
+  // non-null if kInternalOnlyUisEnabled pref is turned off, and null
+  // otherwise.
+  std::unique_ptr<TestingProfile> profile = CreateTestingProfile();
+  content::TestWebUI test_webui;
+  auto web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile.get(), nullptr);
+  test_webui.set_web_contents(web_contents.get());
+  std::unique_ptr<content::WebUIController> webui_controller =
+      client().OverrideForInternalWebUI(&test_webui, GURL(kTestWebUIURL));
+
+  EXPECT_EQ(GetParam(), webui_controller == nullptr);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ChromeContentBrowserClientOverrideForInternalWebUITest,
                          testing::Bool());

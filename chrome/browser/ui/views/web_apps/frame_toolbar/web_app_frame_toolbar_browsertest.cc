@@ -2167,6 +2167,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(RunUntil(
       [&]() { return client_view_pos != browser_view->GetBounds().origin(); }));
 
+// TODO(crbug.com/38332688): Allow API resizing for MacOS
+#if !BUILDFLAG(IS_MAC)
   // Maximize window
   EXPECT_TRUE(ExecJs(web_contents, "window.maximize()"));
   EXPECT_TRUE(
@@ -2185,6 +2187,7 @@ IN_PROC_BROWSER_TEST_F(
     return MatchMediaMatches(
         web_contents, "window.matchMedia('(display-state: normal)').matches");
   }));
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(

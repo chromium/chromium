@@ -100,7 +100,8 @@ void DecorationIconTitle::setBounds(const gfx::Size& bounds) {
     }
     layer_icon_->SetIsDrawable(true);
     layer_icon_->SetBounds(icon_size_);
-    layer_icon_->SetPosition(gfx::PointF(icon_x, icon_offset_y));
+    icon_position_ = gfx::PointF(icon_x, icon_offset_y);
+    layer_icon_->SetPosition(icon_position_);
   }
 
   // Place opaque and fade title component.

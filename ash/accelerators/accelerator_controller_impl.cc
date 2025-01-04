@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/accelerators/accelerator_controller_impl.h"
 
 #include <string>
@@ -18,6 +13,7 @@
 #include "ash/accelerators/accelerator_launcher_state_machine.h"
 #include "ash/accelerators/accelerator_notifications.h"
 #include "ash/accelerators/accelerator_shift_disable_capslock_state_machine.h"
+#include "ash/accelerators/accelerator_table.h"
 #include "ash/accelerators/debug_commands.h"
 #include "ash/accelerators/suspend_state_machine.h"
 #include "ash/accelerators/system_shortcut_behavior_policy.h"
@@ -757,52 +753,59 @@ bool AcceleratorControllerImpl::CanHandleAccelerators() const {
 // AcceleratorControllerImpl, private:
 
 void AcceleratorControllerImpl::Init() {
-  for (size_t i = 0; i < kActionsAllowedAtLoginOrLockScreenLength; ++i) {
-    actions_allowed_at_login_screen_.insert(
-        kActionsAllowedAtLoginOrLockScreen[i]);
-    actions_allowed_at_lock_screen_.insert(
-        kActionsAllowedAtLoginOrLockScreen[i]);
+  for (const AcceleratorAction& action : kActionsAllowedAtLoginOrLockScreen) {
+    actions_allowed_at_login_screen_.insert(action);
+    actions_allowed_at_lock_screen_.insert(action);
   }
-  for (size_t i = 0; i < kActionsAllowedAtLockScreenLength; ++i)
-    actions_allowed_at_lock_screen_.insert(kActionsAllowedAtLockScreen[i]);
-  for (size_t i = 0; i < kActionsAllowedAtPowerMenuLength; ++i)
-    actions_allowed_at_power_menu_.insert(kActionsAllowedAtPowerMenu[i]);
-  for (size_t i = 0; i < kActionsAllowedAtModalWindowLength; ++i)
-    actions_allowed_at_modal_window_.insert(kActionsAllowedAtModalWindow[i]);
-  for (size_t i = 0; i < kPreferredActionsLength; ++i)
-    preferred_actions_.insert(kPreferredActions[i]);
-  for (size_t i = 0; i < kReservedActionsLength; ++i)
-    reserved_actions_.insert(kReservedActions[i]);
-  for (size_t i = 0; i < kRepeatableActionsLength; ++i)
-    repeatable_actions_.insert(kRepeatableActions[i]);
-  for (size_t i = 0; i < kActionsAllowedInAppModeOrPinnedModeLength; ++i) {
-    actions_allowed_in_app_mode_.insert(
-        kActionsAllowedInAppModeOrPinnedMode[i]);
-    actions_allowed_in_pinned_mode_.insert(
-        kActionsAllowedInAppModeOrPinnedMode[i]);
+  for (const AcceleratorAction& action : kActionsAllowedAtLockScreen) {
+    actions_allowed_at_lock_screen_.insert(action);
+  }
+  for (const AcceleratorAction& action : kActionsAllowedAtPowerMenu) {
+    actions_allowed_at_power_menu_.insert(action);
+  }
+  for (const AcceleratorAction& action : kActionsAllowedAtModalWindow) {
+    actions_allowed_at_modal_window_.insert(action);
+  }
+  for (const AcceleratorAction& action : kPreferredActions) {
+    preferred_actions_.insert(action);
+  }
+  for (const AcceleratorAction& action : kReservedActions) {
+    reserved_actions_.insert(action);
+  }
+  for (const AcceleratorAction& action : kRepeatableActions) {
+    repeatable_actions_.insert(action);
+  }
+  for (const AcceleratorAction& action : kActionsAllowedInAppModeOrPinnedMode) {
+    actions_allowed_in_app_mode_.insert(action);
+    actions_allowed_in_pinned_mode_.insert(action);
   }
 
-  for (size_t i = 0; i < kActionsAllowedInPinnedModeLength; ++i)
-    actions_allowed_in_pinned_mode_.insert(kActionsAllowedInPinnedMode[i]);
-  for (size_t i = 0; i < kActionsAllowedInAppModeLength; ++i)
-    actions_allowed_in_app_mode_.insert(kActionsAllowedInAppMode[i]);
-  for (size_t i = 0; i < kActionsNeedingWindowLength; ++i)
-    actions_needing_window_.insert(kActionsNeedingWindow[i]);
-  for (size_t i = 0; i < kActionsKeepingMenuOpenLength; ++i)
-    actions_keeping_menu_open_.insert(kActionsKeepingMenuOpen[i]);
-
+  for (const AcceleratorAction& action : kActionsAllowedInPinnedMode) {
+    actions_allowed_in_pinned_mode_.insert(action);
+  }
+  for (const AcceleratorAction& action : kActionsAllowedInAppMode) {
+    actions_allowed_in_app_mode_.insert(action);
+  }
+  for (const AcceleratorAction& action : kActionsNeedingWindow) {
+    actions_needing_window_.insert(action);
+  }
+  for (const AcceleratorAction& action : kActionsKeepingMenuOpen) {
+    actions_keeping_menu_open_.insert(action);
+  }
   RegisterAccelerators(accelerator_configuration_->GetAllAccelerators());
 
   if (debug::DebugAcceleratorsEnabled()) {
     // All debug accelerators are reserved.
-    for (size_t i = 0; i < kDebugAcceleratorDataLength; ++i)
-      reserved_actions_.insert(kDebugAcceleratorData[i].action);
+    for (const AcceleratorData& data : kDebugAcceleratorData) {
+      reserved_actions_.insert(data.action);
+    }
   }
 
   if (debug::DeveloperAcceleratorsEnabled()) {
     // Developer accelerators are also reserved.
-    for (size_t i = 0; i < kDeveloperAcceleratorDataLength; ++i)
-      reserved_actions_.insert(kDeveloperAcceleratorData[i].action);
+    for (const AcceleratorData& data : kDeveloperAcceleratorData) {
+      reserved_actions_.insert(data.action);
+    }
   }
 
   if (features::IsModifierSplitEnabled()) {
@@ -967,6 +970,8 @@ bool AcceleratorControllerImpl::CanPerformAction(
           launcher_state_machine_.get());
     case AcceleratorAction::kToggleCalendar:
       return true;
+    case AcceleratorAction::kToggleCameraAllowed:
+      return features::IsToggleCameraShortcutEnabled();
     case AcceleratorAction::kToggleCapsLock:
       return CanHandleToggleCapsLock(
           accelerator, previous_accelerator,
@@ -974,6 +979,8 @@ bool AcceleratorControllerImpl::CanPerformAction(
           *capslock_state_machine_, notification_controller_.get());
     case AcceleratorAction::kToggleClipboardHistory:
       return true;
+    case AcceleratorAction::kToggleDoNotDisturb:
+      return features::IsDoNotDisturbShortcutEnabled();
     case AcceleratorAction::kEnableSelectToSpeak:
       return true;
     case AcceleratorAction::kEnableOrToggleDictation:
@@ -1536,6 +1543,9 @@ void AcceleratorControllerImpl::PerformAction(
                                   base::TimeTicks());
       break;
     }
+    case AcceleratorAction::kToggleCameraAllowed:
+      accelerators::ToggleCameraAllowed();
+      break;
     case AcceleratorAction::kToggleCalendar:
       accelerators::ToggleCalendar();
       break;
@@ -1545,6 +1555,9 @@ void AcceleratorControllerImpl::PerformAction(
       break;
     case AcceleratorAction::kToggleClipboardHistory:
       accelerators::ToggleClipboardHistory(/*is_plain_text_paste=*/false);
+      break;
+    case AcceleratorAction::kToggleDoNotDisturb:
+      accelerators::ToggleDoNotDisturb();
       break;
     case AcceleratorAction::kEnableSelectToSpeak:
       accelerators::EnableSelectToSpeak();

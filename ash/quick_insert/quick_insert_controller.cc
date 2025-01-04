@@ -46,6 +46,7 @@
 #include "ash/quick_insert/views/quick_insert_view.h"
 #include "ash/quick_insert/views/quick_insert_view_delegate.h"
 #include "ash/quick_insert/views/quick_insert_widget.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/window_util.h"
@@ -222,13 +223,13 @@ std::u16string TransformText(std::u16string_view text,
 }
 
 void OpenLink(const GURL& url) {
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-      url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 void OpenFile(const base::FilePath& path) {
-  ash::NewWindowDelegate::GetPrimary()->OpenFile(path);
+  NewWindowDelegate::GetPrimary()->OpenFile(path);
 }
 
 GURL GetUrlForNewWindow(QuickInsertNewWindowResult::Type type) {
@@ -571,8 +572,7 @@ bool QuickInsertController::IsGifsEnabled() {
 }
 
 PrefService* QuickInsertController::GetPrefs() {
-  CHECK(client_);
-  return client_->GetPrefs();
+  return Shell::Get()->session_controller()->GetLastActiveUserPrefService();
 }
 
 QuickInsertModeType QuickInsertController::GetMode() {

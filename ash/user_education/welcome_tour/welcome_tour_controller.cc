@@ -66,9 +66,8 @@ namespace {
 // The singleton instance owned by the `UserEducationController`.
 WelcomeTourController* g_instance = nullptr;
 
-// Strings.
-constexpr char16_t kTotalStepsV1[] = u"5";
-constexpr char16_t kTotalStepsV2[] = u"6";
+// Strings. V3 adds a Files app step, but removes the status area step.
+constexpr char16_t kTotalSteps[] = u"5";
 
 // Helpers ---------------------------------------------------------------------
 
@@ -184,11 +183,29 @@ ui::ElementContext WelcomeTourController::GetInitialElementContext() const {
       GetMatchingViewInPrimaryRootWindow(kShelfViewElementId));
 }
 
+// There are some difference between V1 and V3. Here are the steps in summary.
+// V1:
+// 0. Optin dialog
+// 1. Shelf
+// 2. Status area
+// 3. Home button
+// 4. Search box
+// 5. Settings app
+// 6. Explore app
+// 7. Explore app window
+//
+// V3:
+// 0. Optin dialog
+// 1. Shelf
+// 2. Home button
+// 3. Search box
+// 4. Files app
+// 5. Settings app
+// 6. Explore app
+// 7. Explore app window
 user_education::TutorialDescription
 WelcomeTourController::GetTutorialDescription() const {
   const std::u16string product_name = ui::GetChromeOSDeviceName();
-  const std::u16string total_steps =
-      features::IsWelcomeTourV2Enabled() ? kTotalStepsV2 : kTotalStepsV1;
   int current_step = 1;
 
   user_education::TutorialDescription tutorial_description;
@@ -219,59 +236,70 @@ WelcomeTourController::GetTutorialDescription() const {
               /*accessible_name=*/
               l10n_util::GetStringFUTF8(
                   IDS_ASH_WELCOME_TOUR_SHELF_BUBBLE_ACCNAME,
-                  base::NumberToString16(current_step++), total_steps),
+                  base::NumberToString16(current_step++), kTotalSteps),
               /*body_text=*/
               l10n_util::GetStringUTF8(
                   IDS_ASH_WELCOME_TOUR_SHELF_BUBBLE_BODY_TEXT)))
-          .AddCustomNextButton(DefaultNextButtonCallback().Then(
-              base::BindRepeating(&WelcomeTourController::SetCurrentStep,
-                                  weak_ptr_factory_.GetMutableWeakPtr(),
-                                  welcome_tour_metrics::Step::kStatusArea))));
+          .AddCustomNextButton(
+              DefaultNextButtonCallback().Then(base::BindRepeating(
+                  &WelcomeTourController::SetCurrentStep,
+                  weak_ptr_factory_.GetMutableWeakPtr(),
+                  features::IsWelcomeTourV3Enabled()
+                      ? welcome_tour_metrics::Step::kHomeButton
+                      : welcome_tour_metrics::Step::kStatusArea))));
 
-  // Wait for "Next" button click before proceeding to the next bubble step.
-  // NOTE: This event step also ensures that the next bubble step will show on
-  // the primary display by naming the primary root window's status area.
-  tutorial_description.steps.emplace_back(
-      user_education::TutorialDescription::EventStep(
-          user_education::kHelpBubbleNextButtonClickedEvent,
-          kShelfViewElementId)
-          .NameElements(NameMatchingElementInPrimaryRootWindowCallback(
-              kUnifiedSystemTrayElementId, kUnifiedSystemTrayElementName))
-          .InSameContext());
+  if (!features::IsWelcomeTourV3Enabled()) {
+    // Wait for "Next" button click before proceeding to the next bubble step.
+    // NOTE: This event step also ensures that the next bubble step will show on
+    // the primary display by naming the primary root window's status area.
+    tutorial_description.steps.emplace_back(
+        user_education::TutorialDescription::EventStep(
+            user_education::kHelpBubbleNextButtonClickedEvent,
+            kShelfViewElementId)
+            .NameElements(NameMatchingElementInPrimaryRootWindowCallback(
+                kUnifiedSystemTrayElementId, kUnifiedSystemTrayElementName))
+            .InSameContext());
 
-  // Step 2: Status area.
-  tutorial_description.steps.emplace_back(
-      user_education::TutorialDescription::BubbleStep(
-          kUnifiedSystemTrayElementName)
-          .SetBubbleArrow(user_education::HelpBubbleArrow::kBottomRight)
-          .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_OVERRIDDEN_BUBBLE_BODY_TEXT)
-          .SetExtendedProperties(CreateHelpBubbleExtendedProperties(
-              HelpBubbleId::kWelcomeTourStatusArea,
-              /*accessible_name=*/
-              l10n_util::GetStringFUTF8(
-                  IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_ACCNAME,
-                  base::NumberToString16(current_step++), total_steps),
-              /*body_text=*/
-              l10n_util::GetStringUTF8(
-                  IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_BODY_TEXT)))
-          .AddCustomNextButton(DefaultNextButtonCallback().Then(
-              base::BindRepeating(&WelcomeTourController::SetCurrentStep,
-                                  weak_ptr_factory_.GetMutableWeakPtr(),
-                                  welcome_tour_metrics::Step::kHomeButton)))
-          .InAnyContext());
+    // Step 2 in V1: Status area.
+    tutorial_description.steps.emplace_back(
+        user_education::TutorialDescription::BubbleStep(
+            kUnifiedSystemTrayElementName)
+            .SetBubbleArrow(user_education::HelpBubbleArrow::kBottomRight)
+            .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_OVERRIDDEN_BUBBLE_BODY_TEXT)
+            .SetExtendedProperties(CreateHelpBubbleExtendedProperties(
+                HelpBubbleId::kWelcomeTourStatusArea,
+                /*accessible_name=*/
+                l10n_util::GetStringFUTF8(
+                    IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_ACCNAME,
+                    base::NumberToString16(current_step++), kTotalSteps),
+                /*body_text=*/
+                l10n_util::GetStringUTF8(
+                    IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_BODY_TEXT)))
+            .AddCustomNextButton(DefaultNextButtonCallback().Then(
+                base::BindRepeating(&WelcomeTourController::SetCurrentStep,
+                                    weak_ptr_factory_.GetMutableWeakPtr(),
+                                    welcome_tour_metrics::Step::kHomeButton)))
+            .InAnyContext());
+  }
 
   // Wait for "Next" button click before proceeding to the next bubble step.
   // NOTE: This event step also ensures that the next bubble step will show on
   // the primary display by naming the primary root window's home button.
+  std::variant<ui::ElementIdentifier, std::string> current_element;
+  if (features::IsWelcomeTourV3Enabled()) {
+    current_element = kShelfViewElementId;
+  } else {
+    current_element = kUnifiedSystemTrayElementName;
+  }
+
   tutorial_description.steps.emplace_back(
       user_education::TutorialDescription::EventStep(
-          user_education::kHelpBubbleNextButtonClickedEvent,
-          kUnifiedSystemTrayElementName)
+          user_education::kHelpBubbleNextButtonClickedEvent, current_element)
           .NameElements(NameMatchingElementInPrimaryRootWindowCallback(
               kHomeButtonElementId, kHomeButtonElementName))
           .InSameContext());
 
-  // Step 3: Home button.
+  // Step 3 in V1 and step 2 in V3: Home button.
   tutorial_description.steps.emplace_back(
       user_education::TutorialDescription::BubbleStep(kHomeButtonElementName)
           .SetBubbleArrow(user_education::HelpBubbleArrow::kBottomLeft)
@@ -281,7 +309,7 @@ WelcomeTourController::GetTutorialDescription() const {
               /*accessible_name=*/
               l10n_util::GetStringFUTF8(
                   IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_ACCNAME,
-                  base::NumberToString16(current_step++), total_steps,
+                  base::NumberToString16(current_step++), kTotalSteps,
                   product_name),
               /*body_text=*/
               l10n_util::GetStringFUTF8(
@@ -303,7 +331,7 @@ WelcomeTourController::GetTutorialDescription() const {
                                        welcome_tour_metrics::Step::kSearch)))
           .InAnyContext());
 
-  // Step 4: Search box.
+  // Step 4 in V1 and step 3 in V3: Search box.
   tutorial_description.steps.emplace_back(
       user_education::TutorialDescription::BubbleStep(kSearchBoxViewElementId)
           .SetBubbleArrow(user_education::HelpBubbleArrow::kTopCenter)
@@ -313,7 +341,7 @@ WelcomeTourController::GetTutorialDescription() const {
               /*accessible_name=*/
               l10n_util::GetStringFUTF8(
                   IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_ACCNAME,
-                  base::NumberToString16(current_step++), total_steps,
+                  base::NumberToString16(current_step++), kTotalSteps,
                   product_name),
               /*body_text=*/
               l10n_util::GetStringFUTF8(
@@ -323,7 +351,7 @@ WelcomeTourController::GetTutorialDescription() const {
               DefaultNextButtonCallback().Then(base::BindRepeating(
                   &WelcomeTourController::SetCurrentStep,
                   weak_ptr_factory_.GetMutableWeakPtr(),
-                  features::IsWelcomeTourV2Enabled()
+                  features::IsWelcomeTourV3Enabled()
                       ? welcome_tour_metrics::Step::kFilesApp
                       : welcome_tour_metrics::Step::kSettingsApp)))
           .InAnyContext());
@@ -335,8 +363,8 @@ WelcomeTourController::GetTutorialDescription() const {
           kSearchBoxViewElementId)
           .InSameContext());
 
-  if (features::IsWelcomeTourV2Enabled()) {
-    // Step 5 in V2: Files app.
+  if (features::IsWelcomeTourV3Enabled()) {
+    // Step 4 in V3: Files app.
     tutorial_description.steps.emplace_back(
         user_education::TutorialDescription::BubbleStep(kFilesAppElementId)
             .SetBubbleArrow(user_education::HelpBubbleArrow::kBottomLeft)
@@ -346,7 +374,7 @@ WelcomeTourController::GetTutorialDescription() const {
                 /*accessible_name=*/
                 l10n_util::GetStringFUTF8(
                     IDS_ASH_WELCOME_TOUR_FILES_APP_BUBBLE_ACCNAME,
-                    base::NumberToString16(current_step++), total_steps),
+                    base::NumberToString16(current_step++), kTotalSteps),
                 /*body_text=*/
                 l10n_util::GetStringUTF8(
                     IDS_ASH_WELCOME_TOUR_FILES_APP_BUBBLE_BODY_TEXT)))
@@ -364,7 +392,7 @@ WelcomeTourController::GetTutorialDescription() const {
             .InSameContext());
   }
 
-  // Step 5 in V1 and step 6 in V2: Settings app.
+  // Step 5: Settings app.
   tutorial_description.steps.emplace_back(
       user_education::TutorialDescription::BubbleStep(kSettingsAppElementId)
           .SetBubbleArrow(user_education::HelpBubbleArrow::kBottomLeft)
@@ -374,7 +402,7 @@ WelcomeTourController::GetTutorialDescription() const {
               /*accessible_name=*/
               l10n_util::GetStringFUTF8(
                   IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_ACCNAME,
-                  base::NumberToString16(current_step++), total_steps,
+                  base::NumberToString16(current_step++), kTotalSteps,
                   product_name),
               /*body_text=*/
               l10n_util::GetStringFUTF8(
@@ -393,7 +421,7 @@ WelcomeTourController::GetTutorialDescription() const {
           kSettingsAppElementId)
           .InSameContext());
 
-  // Step 6 in V1 and step 7 in V2: Explore app.
+  // Step 6: Explore app.
   // NOTE: The accessible name is the same as the body text.
   tutorial_description.steps.emplace_back(
       user_education::TutorialDescription::BubbleStep(kExploreAppElementId)
@@ -406,7 +434,7 @@ WelcomeTourController::GetTutorialDescription() const {
                   product_name)))
           .InSameContext());
 
-  // Step 7 in V1 and step 8 in V2: Explore app window.
+  // Step 7: Explore app window.
   // Implemented in `WelcomeTourController::OnWelcomeTourEnded()`.
 
   return tutorial_description;

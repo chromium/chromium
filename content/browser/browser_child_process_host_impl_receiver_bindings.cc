@@ -25,8 +25,8 @@
 #include "services/metrics/ukm_recorder_factory_impl.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "content/browser/sandbox_support_mac_impl.h"
-#include "content/common/sandbox_support_mac.mojom.h"
+#include "content/browser/sandbox_support_impl.h"
+#include "content/common/sandbox_support.mojom.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -78,8 +78,8 @@ void BrowserChildProcessHostImpl::BindHostReceiver(
   }
 
 #if BUILDFLAG(IS_MAC)
-  if (auto r = receiver.As<mojom::SandboxSupportMac>()) {
-    static base::NoDestructor<SandboxSupportMacImpl> sandbox_support;
+  if (auto r = receiver.As<mojom::SandboxSupport>()) {
+    static base::NoDestructor<SandboxSupportImpl> sandbox_support;
     sandbox_support->BindReceiver(std::move(r));
     return;
   }

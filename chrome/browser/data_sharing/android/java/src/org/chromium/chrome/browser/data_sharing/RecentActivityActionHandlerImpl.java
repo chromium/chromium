@@ -20,7 +20,7 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 public class RecentActivityActionHandlerImpl implements RecentActivityActionHandler {
     private final TabGroupSyncService mTabGroupSyncService;
     private final TabModelSelector mTabModelSelector;
-    private final DataSharingTabSwitcherDelegate mDataSharingTabSwitcherDelegate;
+    private final DataSharingTabGroupsDelegate mDataSharingTabGroupsDelegate;
     private final String mCollaborationId;
     private final String mSyncTabGroupId;
     private final Runnable mManageSharingCallback;
@@ -31,7 +31,7 @@ public class RecentActivityActionHandlerImpl implements RecentActivityActionHand
      * @param tabGroupSyncService The tab group sync backend.
      * @param tabModelSelector The tab model selector to provide access to tab model for focusing
      *     and opening tabs.
-     * @param dataSharingTabSwitcherDelegate Delegate to open the tab group edit dialog.
+     * @param dataSharingTabGroupsDelegate Delegate to open the tab group edit dialog.
      * @param collaborationId The collaboration ID.
      * @param syncTabGroupId The tab group sync ID as referred in {@link TabGroupSyncService}.
      * @param manageSharingCallback The callback to open people group management screen.
@@ -39,13 +39,13 @@ public class RecentActivityActionHandlerImpl implements RecentActivityActionHand
     public RecentActivityActionHandlerImpl(
             TabGroupSyncService tabGroupSyncService,
             TabModelSelector tabModelSelector,
-            DataSharingTabSwitcherDelegate dataSharingTabSwitcherDelegate,
+            DataSharingTabGroupsDelegate dataSharingTabGroupsDelegate,
             String collaborationId,
             String syncTabGroupId,
             Runnable manageSharingCallback) {
         mTabGroupSyncService = tabGroupSyncService;
         mTabModelSelector = tabModelSelector;
-        mDataSharingTabSwitcherDelegate = dataSharingTabSwitcherDelegate;
+        mDataSharingTabGroupsDelegate = dataSharingTabGroupsDelegate;
         mCollaborationId = collaborationId;
         mSyncTabGroupId = syncTabGroupId;
         mManageSharingCallback = manageSharingCallback;
@@ -85,7 +85,7 @@ public class RecentActivityActionHandlerImpl implements RecentActivityActionHand
         assert !savedTabGroup.savedTabs.isEmpty();
         Integer tabId = savedTabGroup.savedTabs.get(0).localId;
         assert tabId != null;
-        mDataSharingTabSwitcherDelegate.openTabGroupWithTabId(tabId);
+        mDataSharingTabGroupsDelegate.openTabGroupWithTabId(tabId);
     }
 
     @Override

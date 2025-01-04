@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.notifications;
 import android.graphics.Bitmap;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 /** Helper class for passing notification action information over the JNI. */
 class ActionInfo {
@@ -24,7 +25,10 @@ class ActionInfo {
 
     @CalledByNative
     private static ActionInfo createActionInfo(
-            String title, Bitmap icon, int type, String placeholder) {
+            @JniType("std::u16string") String title,
+            Bitmap icon,
+            int type,
+            @JniType("std::u16string") String placeholder) {
         return new ActionInfo(title, icon, type, placeholder);
     }
 }

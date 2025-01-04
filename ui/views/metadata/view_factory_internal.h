@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_METADATA_VIEW_FACTORY_INTERNAL_H_
 #define UI_VIEWS_METADATA_VIEW_FACTORY_INTERNAL_H_
 
+#include <concepts>
 #include <functional>
 #include <map>
 #include <memory>
@@ -91,12 +92,10 @@ class ClassPropertyValueSetter : public PropertySetterBase {
 template <typename TClass, typename TValue>
 class ClassPropertyMoveSetter : public PropertySetterBase {
  public:
-  ClassPropertyMoveSetter(const ui::ClassProperty<TValue*>* property,
-                          const TValue& value)
-      : property_(property), value_(value) {}
-  ClassPropertyMoveSetter(const ui::ClassProperty<TValue*>* property,
-                          TValue&& value)
-      : property_(property), value_(std::move(value)) {}
+  template <typename U>
+    requires(std::constructible_from<TValue, U &&>)
+  ClassPropertyMoveSetter(const ui::ClassProperty<TValue*>* property, U&& value)
+      : property_(property), value_(std::forward<U>(value)) {}
   ClassPropertyMoveSetter(const ClassPropertyMoveSetter&) = delete;
   ClassPropertyMoveSetter& operator=(const ClassPropertyMoveSetter&) = delete;
   ~ClassPropertyMoveSetter() override = default;

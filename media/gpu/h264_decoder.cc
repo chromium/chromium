@@ -1478,8 +1478,7 @@ void H264Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
     parser_.SetStream(ptr, size);
     current_decrypt_config_ = nullptr;
   }
-  if (decoder_buffer.has_side_data() &&
-      decoder_buffer.side_data()->secure_handle) {
+  if (decoder_buffer.side_data() && decoder_buffer.side_data()->secure_handle) {
     secure_handle_ = decoder_buffer.side_data()->secure_handle;
   } else {
     secure_handle_ = 0;

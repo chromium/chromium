@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_sync_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/tab_search_resources.h"
 #include "chrome/grit/tab_search_resources_map.h"
@@ -33,6 +32,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 
 TabSearchUIConfig::TabSearchUIConfig()
     : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
@@ -156,12 +156,15 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"declutterDuplicateBody", IDS_DECLUTTER_DUPLICATE_BODY},
       {"declutterDuplicateTitle", IDS_DECLUTTER_DUPLICATE_TITLE},
       {"declutterEmptyBody", IDS_DECLUTTER_EMPTY_BODY},
+      {"declutterEmptyBodyNoDedupe", IDS_DECLUTTER_EMPTY_BODY_NO_DEDUPE},
       {"declutterEmptyTitle", IDS_DECLUTTER_EMPTY_TITLE},
       {"declutterInactiveTitle", IDS_DECLUTTER_INACTIVE_TITLE},
       {"declutterInactiveTitleNoDedupe",
        IDS_DECLUTTER_INACTIVE_TITLE_NO_DEDUPE},
       {"declutterTimestamp", IDS_DECLUTTER_TIMESTAMP},
       {"declutterTitle", IDS_DECLUTTER_TITLE},
+      {"duplicateItemTitleMulti", IDS_DUPLICATE_ITEM_TITLE_MULTI},
+      {"duplicateItemTitleSingle", IDS_DUPLICATE_ITEM_TITLE_SINGLE},
       // Selector UI strings
       {"autoTabGroupsSelectorHeading", IDS_AUTO_TAB_GROUPS_SELECTOR_HEADING},
       {"autoTabGroupsSelectorSubheading",
@@ -225,6 +228,9 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
                    profile, chrome::FaviconUrlFormat::kFavicon2));
 
   auto plural_string_handler = std::make_unique<PluralStringHandler>();
+  plural_string_handler->AddLocalizedString(
+      "declutterSelectorHeadingNoDedupe",
+      IDS_DECLUTTER_SELECTOR_HEADING_NO_DEDUPE);
   plural_string_handler->AddLocalizedString("declutterSelectorHeading",
                                             IDS_DECLUTTER_SELECTOR_HEADING);
   web_ui->AddMessageHandler(std::move(plural_string_handler));

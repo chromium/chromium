@@ -158,8 +158,10 @@ class UserScriptWorldBrowserTest : public ExtensionApiTest {
                                     std::optional<std::string> csp,
                                     bool enable_messaging) {
     RendererStartupHelperFactory::GetForBrowserContext(profile())
-        ->SetUserScriptWorldProperties(extension, std::move(world_id),
-                                       std::move(csp), enable_messaging);
+        ->SetUserScriptWorldProperties(
+            extension,
+            mojom::UserScriptWorldInfo::New(extension.id(), std::move(world_id),
+                                            std::move(csp), enable_messaging));
   }
 
   // Clears associated user script world properties in the renderer(s).

@@ -12,11 +12,23 @@
 #include "base/values.h"
 
 namespace safe_browsing {
-// Features list, in alphabetical order.
+// Features list
+//
+// sticky_prefixes attach to the lines after them, and group_prefixes
+// attach to the lines before them. These prefixes were chosen to sort
+// by feature name. See https://github.com/google/keep-sorted for
+// detailed semantics.
+//
+// keep-sorted start sticky_prefixes=["#if"] group_prefixes=["#else", "#endif", "extern const base::FeatureParam"] newline_separated=yes
 
 // Controls various parameters related to occasionally collecting ad samples,
 // for example to control how often collection should occur.
 BASE_DECLARE_FEATURE(kAdSamplerTriggerFeature);
+
+#if BUILDFLAG(IS_ANDROID)
+// Enables adding an Android app referrer to Protego pings.
+BASE_DECLARE_FEATURE(kAddReferringAppInfoToProtegoPings);
+#endif
 
 // Enables adding warning shown timestamp to client safe browsing report.
 BASE_DECLARE_FEATURE(kAddWarningShownTSToClientSafeBrowsingReport);
@@ -50,6 +62,10 @@ BASE_DECLARE_FEATURE(kClientSideDetectionNotificationPrompt);
 // Send a sample CSPP ping when a URL matches the CSD allowlist and all other
 // preclassification check conditions pass.
 BASE_DECLARE_FEATURE(kClientSideDetectionSamplePing);
+
+// Show a warning to the user that factors in the IntelligentScanVerdict from
+// ClientPhishingResponse.
+BASE_DECLARE_FEATURE(kClientSideDetectionShowScamVerdictWarning);
 
 // Expand CSPP beyond phishing and trigger when vibration API is called on the
 // web page.
@@ -161,20 +177,10 @@ extern const base::FeatureParam<int>
 // tabs.executeScript API call.
 BASE_DECLARE_FEATURE(kExtensionTelemetryTabsExecuteScriptSignal);
 
-// Enables reporting of remote hosts contacted by extensions in telemetry.
-BASE_DECLARE_FEATURE(kExtensionTelemetryReportContactedHosts);
-
-// Enables reporting of remote hosts contacted by extensions via websockets;
-BASE_DECLARE_FEATURE(kExtensionTelemetryReportHostsContactedViaWebSocket);
-
 // Enables intercepting remote hosts contacted by extensions in renderer
 // throttles.
 BASE_DECLARE_FEATURE(
     kExtensionTelemetryInterceptRemoteHostsContactedInRenderer);
-
-// Enables remotely disabling of malicious off-store extensions identified in
-// Extension Telemetry service reports.
-BASE_DECLARE_FEATURE(kExtensionTelemetryDisableOffstoreExtensions);
 
 // Enables reporting of external app redirects
 BASE_DECLARE_FEATURE(kExternalAppRedirectTelemetry);
@@ -210,9 +216,6 @@ extern const base::FeatureParam<int> kHashPrefixRealTimeLookupsSampleRate;
 // lists uses the v5 APIs instead of the v4 Update API. There is no change to
 // how often the checks are triggered (they are still not in real time).
 BASE_DECLARE_FEATURE(kLocalListsUseSBv5);
-
-// Enable logging of the account enhanced protection setting in Protego pings.
-BASE_DECLARE_FEATURE(kLogAccountEnhancedProtectionStateInProtegoPings);
 
 // Killswitch for fetching and executing the notification content detection
 // model. This also gates logging metrics related to this model.
@@ -256,9 +259,6 @@ extern const base::FeatureParam<int> kSafeBrowsingDailyPhishingReportsLimitESB;
 // Enables new ESB specific threshold fields in Visual TF Lite model files
 BASE_DECLARE_FEATURE(kSafeBrowsingPhishingClassificationESBThreshold);
 
-// Enable adding copy/paste navigation to the referrer chain.
-BASE_DECLARE_FEATURE(kSafeBrowsingReferrerChainWithCopyPasteNavigation);
-
 // Controls whether cookies are removed when the access token is present.
 BASE_DECLARE_FEATURE(kSafeBrowsingRemoveCookiesInAuthRequests);
 
@@ -275,24 +275,21 @@ BASE_DECLARE_FEATURE(kSafetyHubAbusiveNotificationRevocation);
 // Enables saving gaia password hash from the Profile Picker sign-in flow.
 BASE_DECLARE_FEATURE(kSavePasswordHashFromProfilePicker);
 
-// Status of the SimplifiedUrlDisplay experiments. This does not control the
-// individual experiments, those are controlled by their own feature flags.
-// The feature is only set by Finch so that we can differentiate between
-// default and control groups of the experiment.
-BASE_DECLARE_FEATURE(kSimplifiedUrlDisplay);
+// Enables replacing notification contents with a Chrome warning when the
+// on-device model returns a sufficiently suspicious verdict.
+BASE_DECLARE_FEATURE(kShowWarningsForSuspiciousNotifications);
+// Determines the minimum "suspicious" score returned from the notification
+// content LiteRT model that warrants showing a warning. If the score is higher
+// than this threshold, then the notification contents will be replaced with a
+// warning. By default, no notifications will be replaced by a warning.
+extern const base::FeatureParam<int>
+    kShowWarningsForSuspiciousNotificationsScoreThreshold;
 
 // Controls the daily quota for the suspicious site trigger.
 BASE_DECLARE_FEATURE(kSuspiciousSiteTriggerQuotaFeature);
 
 // Controls whether the integration of tailored security settings is enabled.
 BASE_DECLARE_FEATURE(kTailoredSecurityIntegration);
-
-#if BUILDFLAG(IS_ANDROID)
-// Enable an observer-based retry mechanism for the tailored security dialogs.
-// When enabled, the tailored security integration will use tab observers to
-// retry the tailored security logic when a WebContents becomes available.
-BASE_DECLARE_FEATURE(kTailoredSecurityObserverRetries);
-#endif
 
 // Specifies which non-resource HTML Elements to collect based on their tag and
 // attributes. It's a single param containing a comma-separated list of pairs.
@@ -306,6 +303,8 @@ BASE_DECLARE_FEATURE(kThreatDomDetailsTagAndAttributeFeature);
 // checked for the final size of the visual features and the minimum size of
 // the screen.
 BASE_DECLARE_FEATURE(kVisualFeaturesSizes);
+
+// keep-sorted end
 
 base::Value::List GetFeatureStatusList();
 

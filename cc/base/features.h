@@ -165,8 +165,8 @@ CC_BASE_EXPORT extern const char
 CC_BASE_EXPORT extern const char
     kScrollEventDispatchModeDispatchScrollEventsUntilDeadline[];
 
-// Enables GPU-side layer trees for content rendering.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kVizLayers);
+// Enables Viz service-side layer trees for content rendering.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kTreesInViz);
 
 // When enabled HTMLImageElement::decode() will initiate the decode task right
 // away rather than piggy-backing on the next BeginMainFrame.
@@ -193,6 +193,15 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kPreventDuplicateImageDecodes);
 // When enabled, fix bug where an image decode cache entry last use timestamp is
 // initialized to 0 instead of now.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kInitImageDecodeLastUseTime);
+
+// The position affected by the safe area inset bottom will be handled by CC in
+// the Render Compositor Thread. The transform metrix y is adjusted for all
+// affected nodes.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kDynamicSafeAreaInsetsSupportedByCC);
+
+// On devices with a high refresh rate, whether to throttle main (not impl)
+// frame production to 60Hz.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kThrottleMainFrameTo60Hz);
 
 }  // namespace features
 

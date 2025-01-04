@@ -29,6 +29,7 @@ source_set("session_api") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chromeos/ash/components/boca/proto",
     "//components/signin/public/identity_manager",
@@ -55,6 +56,7 @@ source_set("unit_tests") {
 
   deps = [
     ":session_api",
+    "//ash/constants",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/boca/proto",

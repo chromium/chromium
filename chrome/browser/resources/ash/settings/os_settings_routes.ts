@@ -13,7 +13,7 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {androidAppsVisible, isAppParentalControlsFeatureAvailable, isArcVmEnabled, isCrostiniSupported, isGuest, isInputDeviceSettingsSplitEnabled, isKerberosEnabled, isPluginVmAvailable, isRevampWayfindingEnabled} from './common/load_time_booleans.js';
+import {androidAppsVisible, isAppParentalControlsFeatureAvailable, isArcVmEnabled, isCrostiniSupported, isGuest, isInputDeviceSettingsSplitEnabled, isKerberosEnabled, isPluginVmAvailable} from './common/load_time_booleans.js';
 import * as routesMojom from './mojom-webui/routes.mojom-webui.js';
 
 /**
@@ -142,7 +142,6 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   ABOUT: Route;
   ABOUT_DETAILED_BUILD_INFO: Route;
   ACCOUNTS: Route;
-  ACCOUNT_MANAGER: Route;
   ADVANCED: Route;
   APN: Route;
   APP_NOTIFICATIONS: Route;
@@ -172,13 +171,10 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   BRUSCHETTA_DETAILS: Route;
   BRUSCHETTA_SHARED_USB_DEVICES: Route;
   BRUSCHETTA_SHARED_PATHS: Route;
-  CHANGE_PICTURE: Route;
   CUSTOMIZE_PEN_BUTTONS: Route;
   CUSTOMIZE_TABLET_BUTTONS: Route;
   CUPS_PRINTERS: Route;
   CUSTOMIZE_MOUSE_BUTTONS: Route;
-  DARK_MODE: Route;
-  DATETIME: Route;
   DATETIME_TIMEZONE_SUBPAGE: Route;
   DEVICE: Route;
   DISPLAY: Route;
@@ -198,6 +194,7 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   MANAGE_ACCESSIBILITY: Route;
   MANAGE_FACEGAZE_SETTINGS: Route;
   MANAGE_ISOLATED_WEB_APPS: Route;
+  MANAGE_MOUSE_KEYS_SETTINGS: Route;
   MANAGE_SWITCH_ACCESS_SETTINGS: Route;
   MANAGE_TTS_SETTINGS: Route;
   MULTIDEVICE: Route;
@@ -205,7 +202,6 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   NEARBY_SHARE: Route;
   NETWORK_DETAIL: Route;
   OFFICE: Route;
-  ON_STARTUP: Route;
   ONE_DRIVE: Route;
   OS_ACCESSIBILITY: Route;
   OS_LANGUAGES: Route;
@@ -233,14 +229,12 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   PRIVACY_HUB_GEOLOCATION: Route;
   PRIVACY_HUB_GEOLOCATION_ADVANCED: Route;
   PRIVACY_HUB_MICROPHONE: Route;
-  SEARCH: Route;
   SEARCH_SUBPAGE: Route;
   SMART_PRIVACY: Route;
   SMB_SHARES: Route;
   STORAGE: Route;
   STYLUS: Route;
   SYNC: Route;
-  SYNC_ADVANCED: Route;
   SYSTEM_PREFERENCES: Route;
 
   // Internal routes
@@ -341,17 +335,6 @@ export function createRoutes(): OsSettingsRoutes {
   if (!isGuest()) {
     r.OS_PEOPLE = createSection(
         r.BASIC, routesMojom.PEOPLE_SECTION_PATH, Section.kPeople);
-
-    if (!isRevampWayfindingEnabled()) {
-      r.ACCOUNT_MANAGER = createSubpage(
-          r.OS_PEOPLE, routesMojom.MY_ACCOUNTS_SUBPAGE_PATH,
-          Subpage.kMyAccounts);
-      // TODO(b/305747266) : Disambiguate the names for OS_SYNC and SYNC.
-      r.OS_SYNC = createSubpage(
-          r.OS_PEOPLE, routesMojom.SYNC_SUBPAGE_PATH, Subpage.kSync);
-      r.SYNC = createSubpage(
-          r.OS_PEOPLE, routesMojom.SYNC_SETUP_SUBPAGE_PATH, Subpage.kSyncSetup);
-    }
   }
 
   // Kerberos section.
@@ -421,11 +404,9 @@ export function createRoutes(): OsSettingsRoutes {
   r.APP_NOTIFICATIONS = createSubpage(
       r.APPS, routesMojom.APP_NOTIFICATIONS_SUBPAGE_PATH,
       Subpage.kAppNotifications);
-  if (isRevampWayfindingEnabled()) {
-    r.APP_NOTIFICATIONS_MANAGER = createSubpage(
-        r.APP_NOTIFICATIONS, routesMojom.APP_NOTIFICATIONS_MANAGER_SUBPAGE_PATH,
-        Subpage.kAppNotificationsManager);
-  }
+  r.APP_NOTIFICATIONS_MANAGER = createSubpage(
+      r.APP_NOTIFICATIONS, routesMojom.APP_NOTIFICATIONS_MANAGER_SUBPAGE_PATH,
+      Subpage.kAppNotificationsManager);
   r.APP_MANAGEMENT = createSubpage(
       r.APPS, routesMojom.APP_MANAGEMENT_SUBPAGE_PATH, Subpage.kAppManagement);
   r.APP_MANAGEMENT_DETAIL = createSubpage(
@@ -499,6 +480,9 @@ export function createRoutes(): OsSettingsRoutes {
   r.MANAGE_FACEGAZE_SETTINGS = createSubpage(
       r.A11Y_CURSOR_AND_TOUCHPAD, routesMojom.FACE_GAZE_SETTINGS_SUBPAGE_PATH,
       Subpage.kFaceGazeSettings);
+  r.MANAGE_MOUSE_KEYS_SETTINGS = createSubpage(
+      r.A11Y_CURSOR_AND_TOUCHPAD, routesMojom.MOUSE_KEYS_SETTINGS_SUBPAGE_PATH,
+      Subpage.kMouseKeysSettings);
 
   // Privacy and Security section.
   r.OS_PRIVACY = createSection(
@@ -545,141 +529,103 @@ export function createRoutes(): OsSettingsRoutes {
       r.ABOUT, routesMojom.INTERNAL_STORYBOOK_SUBPAGE_PATH,
       Subpage.kInternalStorybook);
 
-  if (isRevampWayfindingEnabled()) {
-    // Device section, Input subpages.
-    const inputParentRoute = isInputDeviceSettingsSplitEnabled() ?
-        r.PER_DEVICE_KEYBOARD :
-        r.KEYBOARD;
-    assert(inputParentRoute);
-    r.OS_LANGUAGES_INPUT = createSubpage(
-        inputParentRoute, routesMojom.INPUT_SUBPAGE_PATH, Subpage.kInput);
-    r.OS_LANGUAGES_INPUT_METHOD_OPTIONS = createSubpage(
-        r.OS_LANGUAGES_INPUT, routesMojom.INPUT_METHOD_OPTIONS_SUBPAGE_PATH,
-        Subpage.kInputMethodOptions);
-    r.OS_LANGUAGES_EDIT_DICTIONARY = createSubpage(
-        r.OS_LANGUAGES_INPUT, routesMojom.EDIT_DICTIONARY_SUBPAGE_PATH,
-        Subpage.kEditDictionary);
-    r.OS_LANGUAGES_JAPANESE_MANAGE_USER_DICTIONARY = createSubpage(
-        r.OS_LANGUAGES_INPUT,
-        routesMojom.JAPANESE_MANAGE_USER_DICTIONARY_SUBPAGE_PATH,
-        Subpage.kJapaneseManageUserDictionary);
+  // Device section, Input subpages.
+  const inputParentRoute =
+      isInputDeviceSettingsSplitEnabled() ? r.PER_DEVICE_KEYBOARD : r.KEYBOARD;
+  assert(inputParentRoute);
+  r.OS_LANGUAGES_INPUT = createSubpage(
+      inputParentRoute, routesMojom.INPUT_SUBPAGE_PATH, Subpage.kInput);
+  r.OS_LANGUAGES_INPUT_METHOD_OPTIONS = createSubpage(
+      r.OS_LANGUAGES_INPUT, routesMojom.INPUT_METHOD_OPTIONS_SUBPAGE_PATH,
+      Subpage.kInputMethodOptions);
+  r.OS_LANGUAGES_EDIT_DICTIONARY = createSubpage(
+      r.OS_LANGUAGES_INPUT, routesMojom.EDIT_DICTIONARY_SUBPAGE_PATH,
+      Subpage.kEditDictionary);
+  r.OS_LANGUAGES_JAPANESE_MANAGE_USER_DICTIONARY = createSubpage(
+      r.OS_LANGUAGES_INPUT,
+      routesMojom.JAPANESE_MANAGE_USER_DICTIONARY_SUBPAGE_PATH,
+      Subpage.kJapaneseManageUserDictionary);
 
-    // System Preferences section.
-    r.SYSTEM_PREFERENCES = createSection(
-        r.BASIC, routesMojom.SYSTEM_PREFERENCES_SECTION_PATH,
-        Section.kSystemPreferences);
+  // System Preferences section.
+  r.SYSTEM_PREFERENCES = createSection(
+      r.BASIC, routesMojom.SYSTEM_PREFERENCES_SECTION_PATH,
+      Section.kSystemPreferences);
 
-    // Date and Time subpages.
-    r.DATETIME_TIMEZONE_SUBPAGE = createSubpage(
-        r.SYSTEM_PREFERENCES, routesMojom.TIME_ZONE_SUBPAGE_PATH,
-        Subpage.kTimeZone);
+  // Date and Time subpages.
+  r.DATETIME_TIMEZONE_SUBPAGE = createSubpage(
+      r.SYSTEM_PREFERENCES, routesMojom.TIME_ZONE_SUBPAGE_PATH,
+      Subpage.kTimeZone);
 
-    // Files subpages.
-    if (!isGuest()) {
-      r.GOOGLE_DRIVE = createSubpage(
-          r.SYSTEM_PREFERENCES, routesMojom.GOOGLE_DRIVE_SUBPAGE_PATH,
-          Subpage.kGoogleDrive);
-      if (loadTimeData.getBoolean('showOfficeSettings')) {
-        r.OFFICE = createSubpage(
-            r.SYSTEM_PREFERENCES, routesMojom.OFFICE_FILES_SUBPAGE_PATH,
-            Subpage.kOfficeFiles);
-      }
-      if (loadTimeData.getBoolean('showOneDriveSettings')) {
-        r.ONE_DRIVE = createSubpage(
-            r.SYSTEM_PREFERENCES, routesMojom.ONE_DRIVE_SUBPAGE_PATH,
-            Subpage.kOneDrive);
-      }
-      r.SMB_SHARES = createSubpage(
-          r.SYSTEM_PREFERENCES, routesMojom.NETWORK_FILE_SHARES_SUBPAGE_PATH,
-          Subpage.kNetworkFileShares);
+  // Files subpages.
+  if (!isGuest()) {
+    r.GOOGLE_DRIVE = createSubpage(
+        r.SYSTEM_PREFERENCES, routesMojom.GOOGLE_DRIVE_SUBPAGE_PATH,
+        Subpage.kGoogleDrive);
+    if (loadTimeData.getBoolean('showOfficeSettings')) {
+      r.OFFICE = createSubpage(
+          r.SYSTEM_PREFERENCES, routesMojom.OFFICE_FILES_SUBPAGE_PATH,
+          Subpage.kOfficeFiles);
     }
-
-    // Language subpages.
-    r.OS_LANGUAGES_LANGUAGES = createSubpage(
-        r.SYSTEM_PREFERENCES, routesMojom.LANGUAGES_SUBPAGE_PATH,
-        Subpage.kLanguages);
-    if (loadTimeData.getBoolean('isPerAppLanguageEnabled')) {
-      r.OS_LANGUAGES_APP_LANGUAGES = createSubpage(
-          r.OS_LANGUAGES_LANGUAGES, routesMojom.APP_LANGUAGES_SUBPAGE_PATH,
-          Subpage.kAppLanguages);
+    if (loadTimeData.getBoolean('showOneDriveSettings')) {
+      r.ONE_DRIVE = createSubpage(
+          r.SYSTEM_PREFERENCES, routesMojom.ONE_DRIVE_SUBPAGE_PATH,
+          Subpage.kOneDrive);
     }
+    r.SMB_SHARES = createSubpage(
+        r.SYSTEM_PREFERENCES, routesMojom.NETWORK_FILE_SHARES_SUBPAGE_PATH,
+        Subpage.kNetworkFileShares);
+  }
 
-    // Search and Assistant subpages.
-    r.SEARCH_SUBPAGE = createSubpage(
-        r.SYSTEM_PREFERENCES, routesMojom.SEARCH_SUBPAGE_PATH, Subpage.kSearch);
-    r.GOOGLE_ASSISTANT = createSubpage(
-        r.SYSTEM_PREFERENCES, routesMojom.ASSISTANT_SUBPAGE_PATH,
-        Subpage.kAssistant);
+  // Language subpages.
+  r.OS_LANGUAGES_LANGUAGES = createSubpage(
+      r.SYSTEM_PREFERENCES, routesMojom.LANGUAGES_SUBPAGE_PATH,
+      Subpage.kLanguages);
+  if (loadTimeData.getBoolean('isPerAppLanguageEnabled')) {
+    r.OS_LANGUAGES_APP_LANGUAGES = createSubpage(
+        r.OS_LANGUAGES_LANGUAGES, routesMojom.APP_LANGUAGES_SUBPAGE_PATH,
+        Subpage.kAppLanguages);
+  }
 
-    // Storage and power subpages.
-    r.STORAGE = createSubpage(
-        r.SYSTEM_PREFERENCES, routesMojom.STORAGE_SUBPAGE_PATH,
-        Subpage.kStorage);
-    r.EXTERNAL_STORAGE_PREFERENCES = createSubpage(
-        r.STORAGE, routesMojom.EXTERNAL_STORAGE_SUBPAGE_PATH,
-        Subpage.kExternalStorage);
-    r.POWER = createSubpage(
-        r.SYSTEM_PREFERENCES, routesMojom.POWER_SUBPAGE_PATH, Subpage.kPower);
+  // Search and Assistant subpages.
+  r.SEARCH_SUBPAGE = createSubpage(
+      r.SYSTEM_PREFERENCES, routesMojom.SEARCH_SUBPAGE_PATH, Subpage.kSearch);
+  r.GOOGLE_ASSISTANT = createSubpage(
+      r.SYSTEM_PREFERENCES, routesMojom.ASSISTANT_SUBPAGE_PATH,
+      Subpage.kAssistant);
 
-    // Printing subpage.
-    r.CUPS_PRINTERS = createSubpage(
-        r.DEVICE, routesMojom.PRINTING_DETAILS_SUBPAGE_PATH,
-        Subpage.kPrintingDetails);
+  // Storage and power subpages.
+  r.STORAGE = createSubpage(
+      r.SYSTEM_PREFERENCES, routesMojom.STORAGE_SUBPAGE_PATH, Subpage.kStorage);
+  r.EXTERNAL_STORAGE_PREFERENCES = createSubpage(
+      r.STORAGE, routesMojom.EXTERNAL_STORAGE_SUBPAGE_PATH,
+      Subpage.kExternalStorage);
+  r.POWER = createSubpage(
+      r.SYSTEM_PREFERENCES, routesMojom.POWER_SUBPAGE_PATH, Subpage.kPower);
 
-    // Crostini subpages.
-    if (isCrostiniSupported()) {
-      r.CROSTINI_DETAILS = createSubpage(
-          r.ABOUT, routesMojom.CROSTINI_DETAILS_SUBPAGE_PATH,
-          Subpage.kCrostiniDetails);
+  // Printing subpage.
+  r.CUPS_PRINTERS = createSubpage(
+      r.DEVICE, routesMojom.PRINTING_DETAILS_SUBPAGE_PATH,
+      Subpage.kPrintingDetails);
 
-      r.BRUSCHETTA_DETAILS = createSubpage(
-          r.ABOUT, routesMojom.BRUSCHETTA_DETAILS_SUBPAGE_PATH,
-          Subpage.kBruschettaDetails);
-    }
+  // Crostini subpages.
+  if (isCrostiniSupported()) {
+    r.CROSTINI_DETAILS = createSubpage(
+        r.ABOUT, routesMojom.CROSTINI_DETAILS_SUBPAGE_PATH,
+        Subpage.kCrostiniDetails);
 
-    // Sync subpages.
-    if (!isGuest()) {
-      assert(r.OS_PRIVACY);
-      // TODO(b/305747266) : Disambiguate the names for OS_SYNC and SYNC.
-      r.OS_SYNC = createSubpage(
-          r.OS_PRIVACY, routesMojom.SYNC_SUBPAGE_PATH, Subpage.kSync);
-      r.SYNC = createSubpage(
-          r.OS_PRIVACY, routesMojom.SYNC_SETUP_SUBPAGE_PATH,
-          Subpage.kSyncSetup);
-    }
-  } else {
-    // Device section.
-    r.STORAGE = createSubpage(
-        r.DEVICE, routesMojom.STORAGE_SUBPAGE_PATH, Subpage.kStorage);
-    r.EXTERNAL_STORAGE_PREFERENCES = createSubpage(
-        r.STORAGE, routesMojom.EXTERNAL_STORAGE_SUBPAGE_PATH,
-        Subpage.kExternalStorage);
-    r.POWER =
-        createSubpage(r.DEVICE, routesMojom.POWER_SUBPAGE_PATH, Subpage.kPower);
+    r.BRUSCHETTA_DETAILS = createSubpage(
+        r.ABOUT, routesMojom.BRUSCHETTA_DETAILS_SUBPAGE_PATH,
+        Subpage.kBruschettaDetails);
+  }
 
-    // Languages and Input section.
-    r.OS_LANGUAGES = createSection(
-        r.ADVANCED, routesMojom.LANGUAGES_AND_INPUT_SECTION_PATH,
-        Section.kLanguagesAndInput);
-    r.OS_LANGUAGES_LANGUAGES = createSubpage(
-        r.OS_LANGUAGES, routesMojom.LANGUAGES_SUBPAGE_PATH, Subpage.kLanguages);
-    r.OS_LANGUAGES_INPUT = createSubpage(
-        r.OS_LANGUAGES, routesMojom.INPUT_SUBPAGE_PATH, Subpage.kInput);
-    r.OS_LANGUAGES_INPUT_METHOD_OPTIONS = createSubpage(
-        r.OS_LANGUAGES_INPUT, routesMojom.INPUT_METHOD_OPTIONS_SUBPAGE_PATH,
-        Subpage.kInputMethodOptions);
-    r.OS_LANGUAGES_EDIT_DICTIONARY = createSubpage(
-        r.OS_LANGUAGES_INPUT, routesMojom.EDIT_DICTIONARY_SUBPAGE_PATH,
-        Subpage.kEditDictionary);
-    r.OS_LANGUAGES_JAPANESE_MANAGE_USER_DICTIONARY = createSubpage(
-        r.OS_LANGUAGES_INPUT,
-        routesMojom.JAPANESE_MANAGE_USER_DICTIONARY_SUBPAGE_PATH,
-        Subpage.kJapaneseManageUserDictionary);
-    if (loadTimeData.getBoolean('isPerAppLanguageEnabled')) {
-      r.OS_LANGUAGES_APP_LANGUAGES = createSubpage(
-          r.OS_LANGUAGES_LANGUAGES, routesMojom.APP_LANGUAGES_SUBPAGE_PATH,
-          Subpage.kAppLanguages);
-    }
+  // Sync subpages.
+  if (!isGuest()) {
+    assert(r.OS_PRIVACY);
+    // TODO(b/305747266) : Disambiguate the names for OS_SYNC and SYNC.
+    r.OS_SYNC = createSubpage(
+        r.OS_PRIVACY, routesMojom.SYNC_SUBPAGE_PATH, Subpage.kSync);
+    r.SYNC = createSubpage(
+        r.OS_PRIVACY, routesMojom.SYNC_SETUP_SUBPAGE_PATH, Subpage.kSyncSetup);
   }
 
   // Crostini details subpages.
@@ -730,10 +676,6 @@ export function createRoutes(): OsSettingsRoutes {
 }
 
 const PATH_REDIRECT_PAIRS: Array<[string, string]> = [
-  [
-    routesMojom.MY_ACCOUNTS_SUBPAGE_PATH,
-    routesMojom.PEOPLE_SECTION_PATH,
-  ],
   // TODO(b/309808834) Remove this pair once the Bluetooth L1 page is revamped
   // with up-leveled content.
   [

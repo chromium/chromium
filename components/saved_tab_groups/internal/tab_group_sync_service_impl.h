@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -102,11 +103,21 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void MakeTabGroupSharedForTesting(const LocalTabGroupID& local_group_id,
                                     std::string_view collaboration_id);
 
+  void AboutToUnShareTabGroup(const LocalTabGroupID& local_group_id,
+                              base::OnceClosure on_complete_callback) override;
+  void OnTabGroupUnShareComplete(const LocalTabGroupID& local_group_id,
+                                 bool success) override;
+
   std::vector<SavedTabGroup> GetAllGroups() const override;
   std::optional<SavedTabGroup> GetGroup(const base::Uuid& guid) const override;
   std::optional<SavedTabGroup> GetGroup(
       const LocalTabGroupID& local_id) const override;
+  std::optional<SavedTabGroup> GetGroup(
+      const EitherGroupID& either_id) const override;
   std::vector<LocalTabGroupID> GetDeletedGroupIds() const override;
+  std::optional<std::u16string> GetTitleForPreviouslyExistingSharedTabGroup(
+      const CollaborationId& collaboration_id) const override;
+
   void OpenTabGroup(const base::Uuid& sync_group_id,
                     std::unique_ptr<TabGroupActionContext> context) override;
   void UpdateLocalTabGroupMapping(const base::Uuid& sync_id,
@@ -232,6 +243,14 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
       const LocalTabGroupID& group_id,
       const std::optional<LocalTabID>& tab_id = std::nullopt);
 
+  // Helper method to update shared attributions for a group or tab. When
+  // `tab_id` is provided, the shared attributions are updated for the tab only.
+  // This method updates the shared attributions while UpdateAttributions()
+  // updates attributions for the saved tab groups.
+  void UpdateSharedAttributions(
+      const LocalTabGroupID& group_id,
+      const std::optional<LocalTabID>& tab_id = std::nullopt);
+
   // Helper function to log a tab group event in histograms.
   void LogEvent(TabGroupEvent event,
                 LocalTabGroupID group_id,
@@ -247,6 +266,23 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // was transitioned.
   bool TransitionSavedToSharedTabGroupIfNeeded(
       const SavedTabGroup& shared_group);
+
+  // Transitions the originating shared tab group to the given saved tab group.
+  // Returns true if the group is transitioned.
+  bool TransitionSharedToSavedTabGroupIfNeeded(
+      const SavedTabGroup& saved_group);
+
+  // Transitions a originating tab group to a new tab group. Called when
+  // either a saved tab group is becoming shared, or when a shared tab group is
+  // becoming private. This call will find the orignating tab group from the
+  // `tab_group`'s originating group guid, and replace it with `tab_group`.
+  // `opening_source` is the reason for adding the new group, and
+  // `closing_source` is the reason for removing the originating tab group.
+  // Returns true if the group is transitioned.
+  bool TransitionOriginatingTabGroupToNewGroupIfNeeded(
+      const SavedTabGroup& tab_group,
+      OpeningSource opening_source,
+      ClosingSource closing_source);
 
   // Helper method called by NavigateTab() when UrlRestriction is retrieved.
   void NavigateTabInternal(
@@ -317,6 +353,12 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // updates.
   std::unique_ptr<std::vector<SavedTabGroup>>
       shared_tab_groups_available_at_startup_for_messaging_;
+
+  // Temporary in-memory mapping from collaboration ID to title for tab groups
+  // that we/ have previously known about. This is to facilitate displaying of
+  // tab group titles in the UI when a user is removed from a tab group.
+  std::unordered_map<CollaborationId, std::u16string>
+      titles_for_previously_existing_shared_tab_groups_;
 
   // Keeps track of API calls received before the service is initialized.
   // Once the initialization is complete, these callbacks are run in the order

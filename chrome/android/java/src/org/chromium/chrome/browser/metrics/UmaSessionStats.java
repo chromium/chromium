@@ -12,6 +12,7 @@ import android.view.InputDevice;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ApplicationStatus;
@@ -311,8 +312,8 @@ public class UmaSessionStats {
         void registerExternalExperiment(int[] experimentIds, boolean overrideExistingIds);
 
         void registerSyntheticFieldTrial(
-                String trialName,
-                String groupName,
+                @JniType("std::string") String trialName,
+                @JniType("std::string") String groupName,
                 @SyntheticTrialAnnotationMode int annotationMode);
 
         void recordTabCountPerLoad(int numTabsOpen);

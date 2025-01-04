@@ -11,19 +11,16 @@
 
 namespace metrics {
 
-// Instructs Chrome to record /tmp/stack-sampling-data (or
-// /tmp/stack-sampling-data-lacros) with details of which threads and processes
-// are being successfully stack-sampled.
+// Instructs Chrome to record /tmp/stack-sampling-data with details of which
+// threads and processes are being successfully stack-sampled.
 inline constexpr char kRecordStackSamplingDataSwitch[] =
     "record-stack-sampling-data";
 
-// Regularly writes a file (default: /tmp/stack-sampling-data or
-// /tmp/stack-sampling-data-lacros) listing which threads and processes have
-// been successfully stack sampled.
+// Regularly writes a file (default: /tmp/stack-sampling-data) listing which
+// threads and processes have been successfully stack sampled.
 //
-// Used by a few ChromeOS tast tests (for both ash and Lacros). Not created
-// during normal operations. Creation is controlled by
-// kRecordStackSamplingDataSwitch.
+// Used by a few ChromeOS tast tests. Not created during normal operations.
+// Creation is controlled by kRecordStackSamplingDataSwitch.
 class StackSamplingRecorder
     : public base::RefCountedThreadSafe<StackSamplingRecorder> {
  public:

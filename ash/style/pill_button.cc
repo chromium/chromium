@@ -4,14 +4,12 @@
 
 #include "ash/style/pill_button.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/blurred_background_shield.h"
 #include "ash/style/color_util.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -88,32 +86,21 @@ bool MaybeUpdateColorVariant(PillButton::ColorVariant& target_color_variant,
 std::optional<ui::ColorId> GetDefaultBackgroundColorId(PillButton::Type type) {
   std::optional<ui::ColorId> color_id;
 
-  const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
-
   switch (type & kButtonColorVariant) {
     case PillButton::kDefault:
-      color_id = is_jellyroll_enabled
-                     ? cros_tokens::kCrosSysSystemOnBase
-                     : static_cast<ui::ColorId>(
-                           kColorAshControlBackgroundColorInactive);
+      color_id = cros_tokens::kCrosSysSystemOnBase;
       break;
     case PillButton::kDefaultElevated:
       color_id = cros_tokens::kCrosSysSystemBaseElevated;
       break;
     case PillButton::kPrimary:
-      color_id =
-          is_jellyroll_enabled
-              ? cros_tokens::kCrosSysPrimary
-              : static_cast<ui::ColorId>(kColorAshControlBackgroundColorActive);
+      color_id = cros_tokens::kCrosSysPrimary;
       break;
     case PillButton::kSecondary:
       color_id = kColorAshSecondaryButtonBackgroundColor;
       break;
     case PillButton::kAlert:
-      color_id =
-          is_jellyroll_enabled
-              ? cros_tokens::kCrosSysError
-              : static_cast<ui::ColorId>(kColorAshControlBackgroundColorAlert);
+      color_id = cros_tokens::kCrosSysError;
       break;
     case PillButton::kAccent:
       color_id = kColorAshControlBackgroundColorInactive;
@@ -129,36 +116,24 @@ std::optional<ui::ColorId> GetDefaultButtonTextIconColorId(
     PillButton::Type type) {
   std::optional<ui::ColorId> color_id;
 
-  const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
-
   switch (type & kButtonColorVariant) {
     case PillButton::kDefault:
-      color_id = is_jellyroll_enabled
-                     ? cros_tokens::kCrosSysOnSurface
-                     : static_cast<ui::ColorId>(kColorAshButtonLabelColor);
+      color_id = cros_tokens::kCrosSysOnSurface;
       break;
     case PillButton::kDefaultElevated:
       color_id = cros_tokens::kCrosSysOnSurface;
       break;
     case PillButton::kPrimary:
-      color_id =
-          is_jellyroll_enabled
-              ? cros_tokens::kCrosSysOnPrimary
-              : static_cast<ui::ColorId>(kColorAshButtonLabelColorPrimary);
+      color_id = cros_tokens::kCrosSysOnPrimary;
       break;
     case PillButton::kSecondary:
       color_id = cros_tokens::kCrosSysOnSecondaryContainer;
       break;
     case PillButton::kFloating:
-      color_id = is_jellyroll_enabled
-                     ? cros_tokens::kCrosSysPrimary
-                     : static_cast<ui::ColorId>(kColorAshButtonLabelColor);
+      color_id = cros_tokens::kCrosSysPrimary;
       break;
     case PillButton::kAlert:
-      color_id =
-          is_jellyroll_enabled
-              ? cros_tokens::kCrosSysOnError
-              : static_cast<ui::ColorId>(kColorAshButtonLabelColorPrimary);
+      color_id = cros_tokens::kCrosSysOnError;
       break;
     case PillButton::kAccent:
     case PillButton::kAccent | PillButton::kFloating:
@@ -408,13 +383,10 @@ void PillButton::Init() {
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                 height / 2.f);
 
-  if (chromeos::features::IsJellyrollEnabled() ||
-      (type_ & kButtonColorVariant) == kPrimary) {
-    // Add padding around focus highlight only.
-    views::FocusRing::Get(this)->SetPathGenerator(
-        std::make_unique<views::RoundRectHighlightPathGenerator>(
-            gfx::Insets(-kFocusRingPadding), height / 2.f + kFocusRingPadding));
-  }
+  // Add padding around focus highlight only.
+  views::FocusRing::Get(this)->SetPathGenerator(
+      std::make_unique<views::RoundRectHighlightPathGenerator>(
+          gfx::Insets(-kFocusRingPadding), height / 2.f + kFocusRingPadding));
 
   // TODO(b/290639214): We no longer need this after deprecating
   // SetPillButtonType since the whether using background should be settled on

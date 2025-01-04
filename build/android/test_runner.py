@@ -360,6 +360,12 @@ def AddDeviceOptions(parser):
       'to the id of the main user on device. Only use when the main user is a '
       'secondary user, e.g. Android Automotive OS.')
 
+  parser.add_argument(
+      '--connect-over-ethernet',
+      action='store_true',
+      help='Connect to devices over the network using "adb connect". Only '
+      'supported when running on chromeos-swarming')
+
 
 def AddEmulatorOptions(parser):
   """Adds emulator-specific options to |parser|."""
@@ -665,6 +671,11 @@ def AddInstrumentationTestOptions(parser):
       '-w', '--wait-for-java-debugger', action='store_true',
       help='Wait for java debugger to attach before running any application '
            'code. Also disables test timeouts and sets retries=0.')
+  parser.add_argument(
+      '--webview-rebaseline-mode',
+      action='store_true',
+      help=('Run WebView tests in rebaselining mode, updating on-device '
+            'expectation files.'))
 
   # WPR record mode.
   parser.add_argument('--wpr-enable-record',

@@ -29,6 +29,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/user_manager/user.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -71,7 +72,7 @@ bool IsSameAccount(const ::account_manager::AccountKey& account_key,
   switch (account_key.account_type()) {
     case account_manager::AccountType::kGaia:
       return (account_id.GetAccountType() == AccountType::GOOGLE) &&
-             (account_id.GetGaiaId() == account_key.id());
+             (account_id.GetGaiaId() == GaiaId(account_key.id()));
     case account_manager::AccountType::kActiveDirectory:
       return (account_id.GetAccountType() == AccountType::ACTIVE_DIRECTORY) &&
              (account_id.GetObjGuid() == account_key.id());
@@ -312,7 +313,8 @@ base::Value::List AccountManagerUIHandler::GetSecondaryGaiaAccounts(
     }
 
     AccountInfo maybe_account_info =
-        identity_manager_->FindExtendedAccountInfoByGaiaId(account_key.id());
+        identity_manager_->FindExtendedAccountInfoByGaiaId(
+            GaiaId(account_key.id()));
     if (maybe_account_info.IsEmpty()) {
       // This account hasn't propagated to IdentityManager yet. When this
       // happens, `IdentityManager` will call `OnRefreshTokenUpdatedForAccount`

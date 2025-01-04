@@ -228,8 +228,9 @@ class BoxedValue {
   ~BoxedValue() {
     EXPECT_TRUE(sequence_checker_.CalledOnValidSequence());
     AddEventIfNeeded(StringPrintf("destroyed BoxedValue = %d", value_));
-    if (destruction_callback_)
+    if (destruction_callback_) {
       std::move(destruction_callback_).Run();
+    }
   }
 
   void set_destruction_callback(OnceClosure callback) {

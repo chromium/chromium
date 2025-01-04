@@ -26,6 +26,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
 #include "extensions/browser/api/device_permissions_manager.h"
+#include "extensions/browser/event_router_factory.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -176,6 +177,12 @@ HidDeviceManager::GetFactoryInstance() {
   static base::LazyInstance<BrowserContextKeyedAPIFactory<HidDeviceManager>>::
       DestructorAtExit factory = LAZY_INSTANCE_INITIALIZER;
   return &factory.Get();
+}
+
+template <>
+void BrowserContextKeyedAPIFactory<
+    HidDeviceManager>::DeclareFactoryDependencies() {
+  DependsOn(EventRouterFactory::GetInstance());
 }
 
 void HidDeviceManager::GetApiDevices(

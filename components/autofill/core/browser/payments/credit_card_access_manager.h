@@ -17,9 +17,10 @@
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_driver.h"
-#include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/foundations/autofill_driver.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
@@ -28,7 +29,6 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_window_manager.h"
 #include "components/autofill/core/browser/payments/wait_for_signal_or_timeout.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 
 #if !BUILDFLAG(IS_IOS)
 #include "components/autofill/core/browser/payments/credit_card_fido_authenticator.h"
@@ -162,9 +162,6 @@ class CreditCardAccessManager
   void OnRiskBasedAuthenticationResponseReceived(
       const CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse&
           response) override;
-  void OnVirtualCardRiskBasedAuthenticationResponseReceived(
-      payments::PaymentsAutofillClient::PaymentsRpcResult result,
-      const payments::UnmaskResponseDetails& response_details) override;
 
  private:
   friend class CreditCardAccessManagerTestApi;
@@ -406,11 +403,6 @@ class CreditCardAccessManager
   // populated before an authentication is offered. It includes suggested
   // authentication methods and other information to facilitate card unmasking.
   payments::UnmaskDetails unmask_details_;
-
-  // Structs to store information passed to and fetched from the server for
-  // virtual card unmasking.
-  payments::UnmaskRequestDetails virtual_card_unmask_request_details_;
-  payments::UnmaskResponseDetails virtual_card_unmask_response_details_;
 
   // Struct to store response returned by CreditCardRiskBasedAuthenticator.
   CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse

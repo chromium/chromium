@@ -5,6 +5,7 @@
 #include "components/data_sharing/internal/data_sharing_service_impl.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
@@ -17,7 +18,9 @@
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/data_sharing_ui_delegate.h"
 #include "components/data_sharing/public/features.h"
+#include "components/data_sharing/public/group_data.h"
 #include "components/data_sharing/public/protocol/data_sharing_sdk.pb.h"
+#include "components/data_sharing/public/protocol/group_data.pb.h"
 #include "components/data_sharing/test_support/fake_data_sharing_sdk_delegate.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/model/entity_change.h"
@@ -72,8 +75,7 @@ class DataSharingServiceImplTest : public ::testing::TestWithParam<Variant> {
     }
 
     data_sharing_service_ = std::make_unique<DataSharingServiceImpl>(
-        profile_dir_.GetPath(),
-        std::move(test_url_loader_factory),
+        profile_dir_.GetPath(), std::move(test_url_loader_factory),
         identity_test_env_.identity_manager(),
         syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
         version_info::Channel::UNKNOWN, std::move(sdk_delegate),
@@ -144,7 +146,9 @@ TEST_P(DataSharingServiceImplTest, ShouldDeleteGroup) {
   // TODO(crbug.com/301390275): add a version of this test for unhappy path.
   const GroupId group_id =
       not_owned_sdk_delegate_->AddGroupAndReturnId("display_name");
-  ASSERT_TRUE(not_owned_sdk_delegate_->GetGroup(group_id).has_value());
+  std::optional<data_sharing_pb::GroupData> group_data_pb =
+      not_owned_sdk_delegate_->GetGroup(group_id);
+  ASSERT_TRUE(group_data_pb.has_value());
 
   base::RunLoop run_loop;
   base::MockOnceCallback<void(DataSharingService::PeopleGroupActionOutcome)>
@@ -157,6 +161,20 @@ TEST_P(DataSharingServiceImplTest, ShouldDeleteGroup) {
   run_loop.Run();
 
   EXPECT_FALSE(not_owned_sdk_delegate_->GetGroup(group_id).has_value());
+
+  // The group should still be available for lookup through a specific API.
+  // The GroupDataModel informs the service about deletions, so we invoke that
+  // method here to mimic that behavior.
+  std::optional<GroupData> group_data = std::make_optional<GroupData>();
+  group_data->group_token = GroupToken(group_id, "");
+  group_data->display_name = group_data_pb->display_name();
+  data_sharing_service_->OnGroupDeleted(group_id, group_data, base::Time());
+  std::optional<GroupData> retrieved_group_data =
+      data_sharing_service_->GetPossiblyRemovedGroup(group_id);
+  ASSERT_TRUE(retrieved_group_data.has_value());
+  EXPECT_EQ(retrieved_group_data->group_token.group_id,
+            group_data->group_token.group_id);
+  EXPECT_EQ(retrieved_group_data->display_name, group_data->display_name);
 }
 
 TEST_P(DataSharingServiceImplTest, ShouldReadGroup) {
@@ -205,7 +223,7 @@ TEST_P(DataSharingServiceImplTest, ShouldInviteMember) {
   auto group = not_owned_sdk_delegate_->GetGroup(group_id);
   ASSERT_TRUE(group.has_value());
   ASSERT_THAT(group->members().size(), Eq(1));
-  EXPECT_THAT(group->members(0).gaia_id(), Eq(gaia_id));
+  EXPECT_THAT(group->members(0).gaia_id(), Eq(gaia_id.ToString()));
 }
 
 TEST_P(DataSharingServiceImplTest, ShouldRemoveMember) {
@@ -317,6 +335,39 @@ TEST_P(DataSharingServiceImplTest, GetDataSharingUrl) {
   // Verify invalid group data.
   result_url = data_sharing_service_->GetDataSharingUrl(GroupData());
   EXPECT_FALSE(result_url);
+}
+
+TEST_P(DataSharingServiceImplTest, AddGroupDataForTesting) {
+  data_sharing::GroupId group_id = data_sharing::GroupId(kGroupId);
+
+  const GaiaId gaia_id("gaia_id");
+  const std::string display_name = "Invitee Display Name";
+  const std::string email = "invitee@mail.com";
+  const MemberRole role = MemberRole::kInvitee;
+  const GURL avatar_url = GURL("chrome://newtab");
+  const std::string given_name = "Invitee Given Name";
+  const std::string access_token = "fake_access_token";
+
+  GroupMember group_member =
+      GroupMember(gaia_id, display_name, email, role, avatar_url, given_name);
+  GroupData group_data =
+      GroupData(group_id, display_name, {group_member}, access_token);
+
+  data_sharing_service_->AddGroupDataForTesting(std::move(group_data));
+
+  std::optional<GroupData> returned_group_data =
+      data_sharing_service_->ReadGroup(group_id);
+
+  EXPECT_EQ(returned_group_data->members.size(), 1u);
+  EXPECT_EQ(returned_group_data->display_name, display_name);
+  EXPECT_EQ(returned_group_data->group_token.group_id, group_id);
+  EXPECT_EQ(returned_group_data->group_token.access_token, access_token);
+  EXPECT_EQ(returned_group_data->members[0].gaia_id, gaia_id);
+  EXPECT_EQ(returned_group_data->members[0].display_name, display_name);
+  EXPECT_EQ(returned_group_data->members[0].email, email);
+  EXPECT_EQ(returned_group_data->members[0].role, role);
+  EXPECT_EQ(returned_group_data->members[0].avatar_url, avatar_url);
+  EXPECT_EQ(returned_group_data->members[0].given_name, given_name);
 }
 
 INSTANTIATE_TEST_SUITE_P(DataSharingServiceImplTestInstantiation,

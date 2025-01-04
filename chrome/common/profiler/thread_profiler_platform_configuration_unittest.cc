@@ -79,7 +79,11 @@ TEST_F(ThreadProfilerPlatformConfigurationTest, IsSupported) {
   EXPECT_TRUE(config()->IsSupported(version_info::Channel::CANARY));
   EXPECT_TRUE(config()->IsSupported(version_info::Channel::DEV));
   EXPECT_TRUE(config()->IsSupported(version_info::Channel::BETA));
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(config()->IsSupported(version_info::Channel::STABLE));
+#else   // BUILDFLAG(IS_ANDROID)
+  EXPECT_TRUE(config()->IsSupported(version_info::Channel::STABLE));
+#endif  // BUILDFLAG(IS_ANDROID)
 
   EXPECT_TRUE(config()->IsSupported(std::nullopt));
 #endif
@@ -106,7 +110,8 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
             config()->GetEnableRates(version_info::Channel::DEV));
   EXPECT_EQ((RelativePopulations{90.0, 0.0, 10.0}),
             config()->GetEnableRates(version_info::Channel::BETA));
-  EXPECT_CHECK_DEATH(config()->GetEnableRates(version_info::Channel::STABLE));
+  EXPECT_EQ((RelativePopulations{100.0 - 0.006, 0.0, 0.006}),
+            config()->GetEnableRates(version_info::Channel::STABLE));
 
   EXPECT_EQ((RelativePopulations{0.0, 100.0, 0.0}),
             config()->GetEnableRates(std::nullopt));

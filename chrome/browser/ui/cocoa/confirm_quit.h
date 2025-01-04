@@ -12,14 +12,14 @@ class PrefRegistrySimple;
 namespace confirm_quit {
 
 // How long the user must hold down Cmd+Q to confirm the quit.
-constexpr base::TimeDelta kShowDuration = base::Milliseconds(1500);
+inline constexpr base::TimeDelta kShowDuration = base::Milliseconds(1500);
 
-// Duration of the window fade out animation.
-constexpr base::TimeDelta kWindowFadeOutDuration = base::Milliseconds(200);
+// Duration of the window fade animation.
+inline constexpr base::TimeDelta kWindowFadeDuration = base::Milliseconds(200);
 
 // For metrics recording only: How long the user must hold the keys to
 // differentitate kDoubleTap from kTapHold.
-constexpr base::TimeDelta kDoubleTapTimeDelta = base::Milliseconds(320);
+inline constexpr base::TimeDelta kDoubleTapTimeDelta = base::Milliseconds(320);
 
 // These numeric values are used in UMA logs; do not change them.  New values
 // should be added at the end, above kSampleCount.

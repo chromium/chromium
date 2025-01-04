@@ -198,7 +198,7 @@ class StructuredMetricsService final : public StorageManager::StorageDelegate {
 
 // Access to |recorder_| through |task_runner_| is only needed on Ash Chrome.
 // Other platforms can continue to access |recorder_| directly.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // An IO task runner for creating logs.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 

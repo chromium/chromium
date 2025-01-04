@@ -18,9 +18,9 @@ build_webui("build") {
 
   ts_composite = true
   ts_definitions = [
-    "//tools/typescript/definitions/chrome_send.d.ts",
     "//chrome/browser/resources/gaia_auth_host/authenticator.d.ts",
     "//chrome/browser/resources/gaia_auth_host/saml_password_attributes.d.ts",
+    "//tools/typescript/definitions/chrome_send.d.ts",
   ]
   ts_deps = [
     "//third_party/polymer/v3_0:library",

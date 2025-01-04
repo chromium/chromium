@@ -9,18 +9,28 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/process/kill.h"
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
+#include "ui/base/window_open_disposition.h"
+#include "url/gurl.h"
 
 namespace blink {
 struct RendererPreferences;
 }  // namespace blink
 
+namespace gfx {
+class Size;
+}
+
 namespace content {
 
 struct ContextMenuParams;
+struct OpenURLParams;
 class NavigationController;
+class NavigationHandle;
 class JavaScriptDialogManager;
+class RenderFrameHost;
 class SiteInstance;
 class WebContents;
 
@@ -72,6 +82,19 @@ class GuestPageHolder : public base::SupportsUserData {
     // unattached.
     virtual RenderFrameHost* GetProspectiveOuterDocument() = 0;
 
+    // Create a new window with the disposition and URL.
+    virtual GuestPageHolder* GuestCreateNewWindow(
+        WindowOpenDisposition disposition,
+        const GURL& url,
+        const std::string& main_frame_name,
+        RenderFrameHost* opener,
+        scoped_refptr<SiteInstance> site_instance) = 0;
+
+    // Open an URL from the current GuestPageHolder.
+    virtual void GuestOpenURL(const OpenURLParams& params,
+                              base::OnceCallback<void(NavigationHandle&)>
+                                  navigation_handle_callback) = 0;
+
     // TODO(40202416): Guest implementations need to be informed of several
     // other events that they currently get through primary main frame specific
     // WebContentsObserver methods (e.g.
@@ -82,6 +105,14 @@ class GuestPageHolder : public base::SupportsUserData {
   // attach the guest to its embedder with `WebContents::AttachGuestPage`.
   CONTENT_EXPORT static std::unique_ptr<GuestPageHolder> Create(
       WebContents* owner_web_contents,
+      scoped_refptr<SiteInstance> site_instance,
+      base::WeakPtr<GuestPageHolder::Delegate> delegate);
+
+  // Creates a new guest page with opener arguments.
+  CONTENT_EXPORT static std::unique_ptr<GuestPageHolder> CreateWithOpener(
+      WebContents* owner_web_contents,
+      const std::string& frame_name,
+      RenderFrameHost* opener,
       scoped_refptr<SiteInstance> site_instance,
       base::WeakPtr<GuestPageHolder::Delegate> delegate);
 
@@ -97,6 +128,8 @@ class GuestPageHolder : public base::SupportsUserData {
   // This does not affect audio capture, just local/system output.
   virtual bool IsAudioMuted() = 0;
   virtual void SetAudioMuted(bool mute) = 0;
+
+  virtual RenderFrameHost* GetOpener() = 0;
 
  private:
   // This interface should only be implemented inside content.

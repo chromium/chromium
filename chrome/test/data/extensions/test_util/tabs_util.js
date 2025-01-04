@@ -42,6 +42,17 @@ export function openTab(url) {
 }
 
 /**
+ *  Returns the single tab matching the given `query`.
+ * @param {Object} query
+ * @return {chrome.tabs.Tab}
+ */
+export async function getSingleTab(query) {
+  const tabs = await chrome.tabs.query(query);
+  chrome.test.assertEq(1, tabs.length);
+  return tabs[0];
+}
+
+/**
  * Returns the injected element ids in `tabId`.
  * @param {string} tabId
  * @return {string[]}

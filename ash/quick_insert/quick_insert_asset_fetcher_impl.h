@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/quick_insert/quick_insert_asset_fetcher.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 
 class GURL;
 
@@ -26,6 +27,8 @@ class ASH_EXPORT QuickInsertAssetFetcherImpl : public QuickInsertAssetFetcher {
       delete;
   ~QuickInsertAssetFetcherImpl() override;
 
+  static constexpr size_t kMaxPendingNetworkRequests = 5;
+
   // QuickInsertAssetFetcher:
   void FetchGifFromUrl(const GURL& url,
                        QuickInsertGifFetchedCallback callback) override;
@@ -37,7 +40,11 @@ class ASH_EXPORT QuickInsertAssetFetcherImpl : public QuickInsertAssetFetcher {
                           FetchFileThumbnailCallback callback) override;
 
  private:
+  void OnNetworkRequestCompleted();
+
   raw_ptr<QuickInsertAssetFetcherImplDelegate> delegate_;
+  size_t pending_network_requests_ = 0;
+  base::WeakPtrFactory<QuickInsertAssetFetcherImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

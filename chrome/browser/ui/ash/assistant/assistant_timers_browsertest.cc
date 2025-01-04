@@ -140,8 +140,9 @@ views::Label* FindTitleLabelForNotification(
   std::vector<views::Label*> labels;
   FindDescendentsOfClass(FindViewForNotification(notification), &labels);
   for (auto* label : labels) {
-    if (label->GetText() == notification->title())
+    if (label->GetText() == notification->title()) {
       return label;
+    }
   }
   return nullptr;
 }
@@ -206,8 +207,9 @@ class DISABLED_AssistantTimersBrowserTest
   ~DISABLED_AssistantTimersBrowserTest() override = default;
 
   void ShowAssistantUi() {
-    if (!tester()->IsVisible())
+    if (!tester()->IsVisible()) {
       tester()->PressAssistantKey();
+    }
     AppListTestApi().WaitForBubbleWindow(
         /*wait_for_opening_animation=*/true);
   }

@@ -845,6 +845,7 @@
 <translation id="6385591741672306837">ዓምድ</translation>
 <translation id="6387719785439924554">aside</translation>
 <translation id="6393014464788431702">ሁሉንም የክስተት ማጣሪያዎች አሰናክል</translation>
+<translation id="6406989068857078334">የመዳፊት ፍጥነት ተቀንሷል፣ ጠቅ ለማድረግ እንደገና <ph name="GESTURE" /></translation>
 <translation id="6411569524720229058">መኸር</translation>
 <translation id="6417265370957905582">Google ረዳት</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{ሁለት ነጥብ}one{# ሁለት ነጥቦች}other{# ሁለት ነጥቦች}}</translation>
@@ -1099,6 +1100,7 @@
 <translation id="8205922869661890178">የገንቢ ምዝግብ ገፅ ይክፈቱ</translation>
 <translation id="8212109599554677485">የማሳያ ቅጥ ወደ ጎን ለጎን ቀይር</translation>
 <translation id="8215202828671303819">ብዙ ምርጫ</translation>
+<translation id="822316432305106615">የትክክለኝነት ጠቅታን ጀምር</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />% ብርሃን-ከልነት።</translation>
 <translation id="8261506727792406068">ሰርዝ</translation>
 <translation id="826825447994856889">መግቢያ</translation>

@@ -125,10 +125,11 @@ class TabTest : public ChromeViewsTestBase {
           break;
         case 2:
           EXPECT_TRUE(tab.showing_icon_);
-          if (tab.data_.alert_state.size())
+          if (tab.data_.alert_state.size()) {
             EXPECT_TRUE(tab.showing_alert_indicator_);
-          else
+          } else {
             EXPECT_FALSE(tab.showing_alert_indicator_);
+          }
           break;
         default:
           EXPECT_EQ(3, VisibleIconCount(tab));
@@ -392,10 +393,11 @@ TEST_F(TabTest, LayoutAndVisibilityOfElements) {
 
         data.pinned = is_pinned_tab;
         controller->set_active_tab(is_active_tab ? tab : nullptr);
-        if (alert_state)
+        if (alert_state) {
           data.alert_state = {alert_state.value()};
-        else
+        } else {
           data.alert_state.clear();
+        }
         tab->SetData(data);
         StopFadeAnimationIfNecessary(*tab);
 
@@ -684,13 +686,22 @@ TEST_F(TabTest, TitleTextHasSufficientContrast) {
     SkColor fg_inactive;
   } color_schemes[] = {
       {
-          SK_ColorBLACK, SK_ColorWHITE, SK_ColorBLACK, SK_ColorWHITE,
+          SK_ColorBLACK,
+          SK_ColorWHITE,
+          SK_ColorBLACK,
+          SK_ColorWHITE,
       },
       {
-          SK_ColorBLACK, SK_ColorWHITE, SK_ColorWHITE, SK_ColorBLACK,
+          SK_ColorBLACK,
+          SK_ColorWHITE,
+          SK_ColorWHITE,
+          SK_ColorBLACK,
       },
       {
-          kDarkGray, kLightGray, kDarkGray, kLightGray,
+          kDarkGray,
+          kLightGray,
+          kDarkGray,
+          kLightGray,
       },
   };
 
@@ -771,8 +782,6 @@ TEST_F(AlertIndicatorButtonTest, ShowsAndHidesAlertIndicator) {
 // visible at least for 5 seconds even if a camera/mic stopped being used.
 TEST_F(AlertIndicatorButtonTest, MinHoldDurationTest) {
   base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(
-      content_settings::features::kImprovedSemanticsActivityIndicators);
 
   controller_->AddTab(0, TabActive::kActive);
   Tab* media_tab = tab_strip_->tab_at(0);
@@ -804,8 +813,6 @@ TEST_F(AlertIndicatorButtonTest, MinHoldDurationTest) {
 // 1-second fadeout animation after it was visible for longer than 5 seconds.
 TEST_F(AlertIndicatorButtonTest, 1SecondFadeoutAnimationTest) {
   base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(
-      content_settings::features::kImprovedSemanticsActivityIndicators);
 
   controller_->AddTab(0, TabActive::kActive);
   Tab* media_tab = tab_strip_->tab_at(0);

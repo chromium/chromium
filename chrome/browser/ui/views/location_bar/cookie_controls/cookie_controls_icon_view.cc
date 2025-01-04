@@ -114,6 +114,22 @@ void CookieControlsIconView::UpdateImpl() {
   }
 }
 
+void CookieControlsIconView::UpdateTooltipText() {
+  if (!custom_tooltip_text_.empty()) {
+    SetCachedTooltipText(custom_tooltip_text_);
+  } else {
+    PageActionIconView::UpdateTooltipText();
+  }
+}
+
+std::u16string CookieControlsIconView::GetAlternativeAccessibleName() const {
+  if (!custom_tooltip_text_.empty()) {
+    return custom_tooltip_text_;
+  }
+
+  return PageActionIconView::GetAlternativeAccessibleName();
+}
+
 void CookieControlsIconView::MaybeShowIPH() {
   CHECK(browser_->window());
   user_education::FeaturePromoParams params(
@@ -220,7 +236,10 @@ void CookieControlsIconView::UpdateIcon() {
   if (protections_changed_ || label()->GetText().empty()) {
     SetLabelForStatus();
   }
-  SetTooltipText(l10n_util::GetStringUTF16(GetLabelForStatus()));
+
+  custom_tooltip_text_ = l10n_util::GetStringUTF16(GetLabelForStatus());
+  SetTooltipText(custom_tooltip_text_);
+
   if (protections_on_ && should_highlight_) {
     if (blocking_status_ == CookieBlocking3pcdStatus::kNotIn3pcd) {
       MaybeShowIPH();

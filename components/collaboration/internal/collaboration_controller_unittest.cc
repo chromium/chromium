@@ -15,6 +15,7 @@
 #include "components/data_sharing/test_support/mock_data_sharing_service.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
+#include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #include "components/sync/test/mock_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,6 +30,7 @@ const char kAccessToken[] = "/?-access_token";
 using StateId = CollaborationController::StateId;
 using Outcome = CollaborationControllerDelegate::Outcome;
 using ErrorInfo = CollaborationControllerDelegate::ErrorInfo;
+using Flow = CollaborationController::Flow;
 using base::OnceClosure;
 using base::RunLoop;
 using base::test::IsNotNullCallback;
@@ -58,22 +60,25 @@ class CollaborationControllerTest : public testing::Test {
 
   void TearDown() override {}
 
-  void InitializeController(
-      OnceClosure run_on_flow_exit,
-      const GroupToken& token = GroupToken(data_sharing::GroupId(kGroupId),
-                                           kAccessToken)) {
+  void InitializeController(OnceClosure run_on_flow_exit, const Flow& flow) {
     std::unique_ptr<MockCollaborationControllerDelegate> delegate =
         std::make_unique<MockCollaborationControllerDelegate>();
     delegate_ = delegate.get();
     EXPECT_CALL(*delegate_, PrepareFlowUI(IsNotNullCallback()))
         .WillOnce(MoveArg<0>(&prepare_ui_callback_));
     controller_ = std::make_unique<CollaborationController>(
-        CollaborationController::Flow::kJoin, token,
-        collaboration_service_.get(), data_sharing_service_.get(),
+        flow, collaboration_service_.get(), data_sharing_service_.get(),
         tab_group_sync_service_.get(), sync_service_.get(), std::move(delegate),
         base::BindOnce(&CollaborationControllerTest::FinishFlow,
                        weak_ptr_factory_.GetWeakPtr(),
                        std::move(run_on_flow_exit)));
+  }
+
+  void InitializeJoinController(OnceClosure run_on_flow_exit) {
+    InitializeController(
+        std::move(run_on_flow_exit),
+        Flow(Flow::Type::kJoin,
+             GroupToken(data_sharing::GroupId(kGroupId), kAccessToken)));
   }
 
   void FinishFlow(OnceClosure run_on_flow_exit) {
@@ -82,7 +87,8 @@ class CollaborationControllerTest : public testing::Test {
   }
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::OnceCallback<void(Outcome)> prepare_ui_callback_;
   MockCollaborationControllerDelegate* delegate_;
   std::unique_ptr<MockCollaborationService> collaboration_service_;
@@ -97,7 +103,7 @@ TEST_F(CollaborationControllerTest, FullFlowAllStates) {
   RunLoop run_loop;
 
   // Start Join flow.
-  InitializeController(run_loop.QuitClosure());
+  InitializeJoinController(run_loop.QuitClosure());
 
   // 1. Pending state.
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kPending);
@@ -127,8 +133,7 @@ TEST_F(CollaborationControllerTest, FullFlowAllStates) {
 
   // Simulate that the user is not already in the tab group.
   data_sharing::GroupId group_id(kGroupId);
-  const GroupToken& token =
-      GroupToken(data_sharing::GroupId(kGroupId), kAccessToken);
+  const GroupToken& token = GroupToken(group_id, kAccessToken);
   base::OnceCallback<void(
       const data_sharing::DataSharingService::GroupDataOrFailureOutcome&)>
       group_data_callback;
@@ -148,8 +153,8 @@ TEST_F(CollaborationControllerTest, FullFlowAllStates) {
   GroupData group_data = GroupData(group_id, /*display_name=*/"",
                                    /*members=*/{}, kAccessToken);
   base::OnceCallback<void(Outcome)> join_ui_callback;
-  EXPECT_CALL(*delegate_, ShowJoinDialog(_, IsNotNullCallback()))
-      .WillOnce(MoveArg<1>(&join_ui_callback));
+  EXPECT_CALL(*delegate_, ShowJoinDialog(_, _, IsNotNullCallback()))
+      .WillOnce(MoveArg<2>(&join_ui_callback));
 
   // 4. CheckingFlowRequirements -> AddingUserToGroup state.
   std::move(group_data_callback).Run(group_data);
@@ -189,8 +194,9 @@ TEST_F(CollaborationControllerTest, FullFlowAllStates) {
   base::OnceCallback<void(Outcome)> promote_ui_callback;
   EXPECT_CALL(*collaboration_service_, GetCurrentUserRoleForGroup(group_id))
       .WillOnce(Return(data_sharing::MemberRole::kMember));
-  EXPECT_CALL(*delegate_, PromoteTabGroup(IsNotNullCallback()))
-      .WillOnce(MoveArg<0>(&promote_ui_callback));
+  EXPECT_CALL(*delegate_, PromoteTabGroup(data_sharing::GroupId(kGroupId),
+                                          IsNotNullCallback()))
+      .WillOnce(MoveArg<1>(&promote_ui_callback));
   EXPECT_CALL(*tab_group_sync_service_, RemoveObserver(sync_observer));
   EXPECT_CALL(*data_sharing_service_, RemoveObserver(data_sharing_observer));
 
@@ -208,14 +214,15 @@ TEST_F(CollaborationControllerTest, FullFlowAllStates) {
 TEST_F(CollaborationControllerTest, UrlHandlingError) {
   RunLoop run_loop;
   // Start Join flow.
-  InitializeController(run_loop.QuitClosure(), GroupToken());
+  InitializeController(run_loop.QuitClosure(),
+                       Flow(Flow::Type::kJoin, GroupToken()));
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kPending);
 
   // Simulate an error parsing join URL.
   base::OnceCallback<void(Outcome)> error_ui_callback;
-  EXPECT_CALL(*delegate_, ShowError(IsNotNullCallback(),
-                                    ErrorInfo(ErrorInfo::Type::kGenericError)))
-      .WillOnce(MoveArg<0>(&error_ui_callback));
+  EXPECT_CALL(*delegate_, ShowError(ErrorInfo(ErrorInfo::Type::kGenericError),
+                                    IsNotNullCallback()))
+      .WillOnce(MoveArg<1>(&error_ui_callback));
   std::move(prepare_ui_callback_).Run(Outcome::kSuccess);
 
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kError);
@@ -228,14 +235,14 @@ TEST_F(CollaborationControllerTest, UrlHandlingError) {
 TEST_F(CollaborationControllerTest, DelegateOutcomeError) {
   RunLoop run_loop;
   // Start Join flow.
-  InitializeController(run_loop.QuitClosure());
+  InitializeJoinController(run_loop.QuitClosure());
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kPending);
 
   // Simulate a failure on the UI side.
   base::OnceCallback<void(Outcome)> error_ui_callback;
-  EXPECT_CALL(*delegate_, ShowError(IsNotNullCallback(),
-                                    ErrorInfo(ErrorInfo::Type::kGenericError)))
-      .WillOnce(MoveArg<0>(&error_ui_callback));
+  EXPECT_CALL(*delegate_, ShowError(ErrorInfo(ErrorInfo::Type::kGenericError),
+                                    IsNotNullCallback()))
+      .WillOnce(MoveArg<1>(&error_ui_callback));
   std::move(prepare_ui_callback_).Run(Outcome::kFailure);
 
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kError);
@@ -249,7 +256,7 @@ TEST_F(CollaborationControllerTest, AuthenticationError) {
   RunLoop run_loop;
   // Start Join flow with authenticating screens.
   base::OnceCallback<void(Outcome)> authentication_ui_calback;
-  InitializeController(run_loop.QuitClosure());
+  InitializeJoinController(run_loop.QuitClosure());
   EXPECT_CALL(*delegate_, ShowAuthenticationUi(IsNotNullCallback()))
       .WillOnce(MoveArg<0>(&authentication_ui_calback));
   controller_->SetStateForTesting(StateId::kAuthenticating);
@@ -257,22 +264,103 @@ TEST_F(CollaborationControllerTest, AuthenticationError) {
   // Simulate Authentication finishing successfully on the UI, but getting
   // invalid authentication status in the service.
   base::OnceCallback<void(Outcome)> error_ui_callback;
-  EXPECT_CALL(*delegate_, ShowError(IsNotNullCallback(),
-                                    ErrorInfo(ErrorInfo::Type::kGenericError)))
-      .WillOnce(MoveArg<0>(&error_ui_callback));
+  EXPECT_CALL(*delegate_, ShowError(ErrorInfo(ErrorInfo::Type::kGenericError),
+                                    IsNotNullCallback()))
+      .WillOnce(MoveArg<1>(&error_ui_callback));
   ServiceStatus status;
-  status.signin_status = SigninStatus::kNotSignedIn;
-  status.sync_status = SyncStatus::kSyncEnabled;
+  status.signin_status = SigninStatus::kSignedIn;
+  status.sync_status = SyncStatus::kNotSyncing;
   ASSERT_FALSE(status.IsAuthenticationValid());
   EXPECT_CALL(*collaboration_service_, GetServiceStatus())
       .WillOnce(Return(status));
+  EXPECT_CALL(*collaboration_service_, AddObserver(_));
   std::move(authentication_ui_calback).Run(Outcome::kSuccess);
 
+  EXPECT_EQ(controller_->GetStateForTesting(), StateId::kAuthenticating);
+
+  // Reach time out.
+  task_environment_.FastForwardBy(base::Minutes(30));
   EXPECT_EQ(controller_->GetStateForTesting(), StateId::kError);
 
   //  Simulate exiting the flow.
   std::move(error_ui_callback).Run(Outcome::kSuccess);
   run_loop.Run();
+}
+
+TEST_F(CollaborationControllerTest, AuthenticationSuccessObserved) {
+  RunLoop run_loop;
+  // Start Join flow with authenticating screens.
+  base::OnceCallback<void(Outcome)> authentication_ui_calback;
+  InitializeJoinController(run_loop.QuitClosure());
+  EXPECT_CALL(*delegate_, ShowAuthenticationUi(IsNotNullCallback()))
+      .WillOnce(MoveArg<0>(&authentication_ui_calback));
+  controller_->SetStateForTesting(StateId::kAuthenticating);
+
+  // Simulate Authentication finishing successfully on the UI.
+  ServiceStatus status;
+  status.signin_status = SigninStatus::kSignedIn;
+  status.sync_status = SyncStatus::kNotSyncing;
+  ASSERT_FALSE(status.IsAuthenticationValid());
+  EXPECT_CALL(*collaboration_service_, GetServiceStatus())
+      .WillOnce(Return(status));
+
+  CollaborationService::Observer* observer;
+  EXPECT_CALL(*collaboration_service_, AddObserver(_))
+      .WillOnce(SaveArg<0>(&observer));
+  std::move(authentication_ui_calback).Run(Outcome::kSuccess);
+  EXPECT_EQ(controller_->GetStateForTesting(), StateId::kAuthenticating);
+
+  // Simulate observing the status change.
+  CollaborationService::Observer::ServiceStatusUpdate update;
+  update.old_status = status;
+  update.new_status = status;
+  update.new_status.sync_status = SyncStatus::kSyncEnabled;
+  ASSERT_TRUE(update.new_status.IsAuthenticationValid());
+  EXPECT_CALL(*delegate_, NotifySignInAndSyncStatusChange());
+  EXPECT_CALL(*collaboration_service_, RemoveObserver(observer));
+  EXPECT_CALL(*collaboration_service_,
+              GetCurrentUserRoleForGroup(data_sharing::GroupId(kGroupId)))
+      .WillOnce(Return(data_sharing::MemberRole::kUnknown));
+  EXPECT_CALL(*data_sharing_service_, ReadNewGroup(_, _));
+  observer->OnServiceStatusChanged(update);
+  EXPECT_EQ(controller_->GetStateForTesting(),
+            StateId::kCheckingFlowRequirements);
+
+  // Reach time out won't do anything since state already transitionned.
+  task_environment_.FastForwardBy(base::Minutes(30));
+  EXPECT_EQ(controller_->GetStateForTesting(),
+            StateId::kCheckingFlowRequirements);
+}
+
+TEST_F(CollaborationControllerTest, CheckingFlowRequirementsShareFlow) {
+  // Start Share flow.
+  tab_groups::LocalTabGroupID local_id =
+      tab_groups::test::GenerateRandomTabGroupID();
+  InitializeController(base::DoNothing(),
+                       Flow(Flow::Type::kShareOrManage, local_id));
+  EXPECT_EQ(controller_->GetStateForTesting(), StateId::kPending);
+
+  // Simulate that the tab group exist locally, but is not shared.
+  tab_groups::EitherGroupID either_id = local_id;
+  SavedTabGroup tab_group(std::u16string(u"title"),
+                          tab_groups::TabGroupColorId::kGrey, {});
+  tab_group.SetLocalGroupId(local_id);
+  EXPECT_CALL(*tab_group_sync_service_, GetGroup(either_id))
+      .WillOnce(Return(tab_group));
+  EXPECT_CALL(*delegate_, ShowShareDialog(either_id, IsNotNullCallback()));
+
+  controller_->SetStateForTesting(StateId::kCheckingFlowRequirements);
+  EXPECT_EQ(controller_->GetStateForTesting(), StateId::kShowingShareScreen);
+
+  // Simulate that the tab group exist locally and is a shared tab group.
+  tab_group.SetCollaborationId(
+      tab_groups::CollaborationId(std::string(kGroupId)));
+  EXPECT_CALL(*tab_group_sync_service_, GetGroup(either_id))
+      .WillOnce(Return(tab_group));
+  EXPECT_CALL(*delegate_, ShowManageDialog(either_id, IsNotNullCallback()));
+
+  controller_->SetStateForTesting(StateId::kCheckingFlowRequirements);
+  EXPECT_EQ(controller_->GetStateForTesting(), StateId::kShowingManageScreen);
 }
 
 }  // namespace collaboration

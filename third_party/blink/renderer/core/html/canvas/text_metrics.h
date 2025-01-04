@@ -69,7 +69,7 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
 
   static float GetFontBaseline(const TextBaseline&, const SimpleFontData&);
 
-  unsigned caretPositionFromPoint(double x);
+  unsigned getIndexFromOffset(double x);
 
   const HeapVector<Member<DOMRectReadOnly>> getSelectionRects(
       uint32_t start,

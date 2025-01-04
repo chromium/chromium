@@ -5,14 +5,23 @@
 #ifndef CHROME_BROWSER_OS_CRYPT_APP_BOUND_ENCRYPTION_WIN_H_
 #define CHROME_BROWSER_OS_CRYPT_APP_BOUND_ENCRYPTION_WIN_H_
 
+#include <optional>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/win/windows_types.h"
 #include "chrome/elevation_service/elevation_service_idl.h"
+#include "chrome/elevation_service/elevator.h"
 
 class PrefService;
 
 namespace os_crypt {
+
+namespace features {
+// If enabled, App-Bound encryption will attempt re-encryption of decrypted data
+// if signaled that it should be re-encrypted.
+BASE_DECLARE_FEATURE(kAppBoundDataReencrypt);
+}  // namespace features
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -46,6 +55,9 @@ SupportLevel GetAppBoundEncryptionSupportLevel(PrefService* local_state);
 // `src/chrome/elevation_service/elevation-service_idl.idl` for the definition
 // of available protection levels.
 //
+// If `flags` is supplied, then this can control the behavior of the Encrypt
+// operation. See `EncryptFlags` in `elevator.h` for more details.
+//
 // This returns an HRESULT as defined by src/chrome/elevation_service/elevator.h
 // or S_OK for success. If the call fails then `last_error` will be set to the
 // value returned from the most recent failing Windows API call or
@@ -55,7 +67,8 @@ SupportLevel GetAppBoundEncryptionSupportLevel(PrefService* local_state);
 HRESULT EncryptAppBoundString(ProtectionLevel level,
                               const std::string& plaintext,
                               std::string& ciphertext,
-                              DWORD& last_error);
+                              DWORD& last_error,
+                              elevation_service::EncryptFlags* flags = nullptr);
 
 // Decrypts a string previously encrypted by a call to EncryptAppBoundString.
 //
@@ -64,10 +77,18 @@ HRESULT EncryptAppBoundString(ProtectionLevel level,
 // value returned from the most recent failing Windows API call or
 // ERROR_GEN_FAILURE.
 //
+// App-Bound may recommend re-encryption of the data, for example if the key has
+// been rotated. If so, `new_ciphertext` will contain the re-encrypted data
+// according to the `protection_level` specified with the `flags`, if also
+// specified.
+//
 // This should be called on a COM-enabled thread.
 HRESULT DecryptAppBoundString(const std::string& ciphertext,
                               std::string& plaintext,
-                              DWORD& last_error);
+                              ProtectionLevel protection_level,
+                              std::optional<std::string>& new_ciphertext,
+                              DWORD& last_error,
+                              elevation_service::EncryptFlags* flags = nullptr);
 
 // Allow non-standard user data dir for testing.
 void SetNonStandardUserDataDirSupportedForTesting(bool supported);

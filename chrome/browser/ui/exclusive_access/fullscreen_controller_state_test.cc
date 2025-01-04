@@ -69,10 +69,10 @@ FullscreenControllerStateTest::FullscreenControllerStateTest() {
           STATE_TO_BROWSER_FULLSCREEN,  // Event TOGGLE_FULLSCREEN
                                         // TODO(crbug.com/40951066) Should be a
                                         // route back to TAB
-          STATE_TO_NORMAL,  // Event ENTER_TAB_FULLSCREEN
-          STATE_TO_NORMAL,  // Event EXIT_TAB_FULLSCREEN
-          STATE_TO_NORMAL,  // Event BUBBLE_EXIT_LINK
-          STATE_NORMAL,     // Event WINDOW_CHANGE
+          STATE_TO_NORMAL,              // Event ENTER_TAB_FULLSCREEN
+          STATE_TO_NORMAL,              // Event EXIT_TAB_FULLSCREEN
+          STATE_TO_NORMAL,              // Event BUBBLE_EXIT_LINK
+          STATE_NORMAL,                 // Event WINDOW_CHANGE
       },
       {
           // STATE_TO_BROWSER_FULLSCREEN:
@@ -122,11 +122,11 @@ FullscreenControllerStateTest::FullscreenControllerStateTest() {
          sizeof(transition_table_data));
 
   // Verify that transition_table_ has been completely defined.
-  for (int source = 0; source < NUM_STATES; ++source) {
-    for (int event = 0; event < NUM_EVENTS; ++event) {
-      EXPECT_NE(transition_table_[source][event], STATE_INVALID);
-      EXPECT_GE(transition_table_[source][event], 0);
-      EXPECT_LT(transition_table_[source][event], NUM_STATES);
+  for (auto& source : transition_table_) {
+    for (auto& state : source) {
+      EXPECT_NE(state, STATE_INVALID);
+      EXPECT_GE(state, 0);
+      EXPECT_LT(state, NUM_STATES);
     }
   }
 
@@ -134,8 +134,9 @@ FullscreenControllerStateTest::FullscreenControllerStateTest() {
   for (int source = 0; source < NUM_STATES; ++source) {
     for (int event = 0; event < NUM_EVENTS; ++event) {
       if (ShouldSkipStateAndEventPair(static_cast<State>(source),
-                                      static_cast<Event>(event)))
+                                      static_cast<Event>(event))) {
         continue;
+      }
       State destination = transition_table_[source][event];
       state_transitions_[source][destination].event = static_cast<Event>(event);
       state_transitions_[source][destination].state = destination;
@@ -187,12 +188,15 @@ bool FullscreenControllerStateTest::IsWindowFullscreenStateChangedReentrant() {
 
 void FullscreenControllerStateTest::TransitionToState(State final_state) {
   int max_steps = NUM_STATES;
-  while (max_steps-- && TransitionAStepTowardState(final_state))
+  while (max_steps-- && TransitionAStepTowardState(final_state)) {
     continue;
-  ASSERT_GE(max_steps, 0) << "TransitionToState was unable to achieve desired "
+  }
+  ASSERT_GE(max_steps, 0)
+      << "TransitionToState was unable to achieve desired "
       << "target state. TransitionAStepTowardState iterated too many times."
       << GetAndClearDebugLog();
-  ASSERT_EQ(final_state, state_) << "TransitionToState was unable to achieve "
+  ASSERT_EQ(final_state, state_)
+      << "TransitionToState was unable to achieve "
       << "desired target state. TransitionAStepTowardState returned false."
       << GetAndClearDebugLog();
 }
@@ -200,12 +204,12 @@ void FullscreenControllerStateTest::TransitionToState(State final_state) {
 bool FullscreenControllerStateTest::TransitionAStepTowardState(
     State destination_state) {
   State source_state = state_;
-  if (source_state == destination_state)
+  if (source_state == destination_state) {
     return false;
+  }
 
-  StateTransitionInfo next = NextTransitionInShortestPath(source_state,
-                                                          destination_state,
-                                                          NUM_STATES);
+  StateTransitionInfo next =
+      NextTransitionInShortestPath(source_state, destination_state, NUM_STATES);
   if (next.state == STATE_INVALID) {
     NOTREACHED() << "TransitionAStepTowardState unable to transition. "
                  << "NextTransitionInShortestPath("
@@ -230,8 +234,9 @@ bool FullscreenControllerStateTest::InvokeEvent(Event event) {
 
   // When simulating reentrant window change calls, expect the next state
   // automatically.
-  if (IsWindowFullscreenStateChangedReentrant())
+  if (IsWindowFullscreenStateChangedReentrant()) {
     next_state = transition_table_[next_state][WINDOW_CHANGE];
+  }
 
   // Figure out the fullscreen mode expectation.
   ui_test_utils::FullscreenWaiter::Expectation expectation;
@@ -266,9 +271,9 @@ bool FullscreenControllerStateTest::InvokeEvent(Event event) {
   ui_test_utils::FullscreenWaiter waiter(GetBrowser(), expectation);
 
   debugging_log_ << "  InvokeEvent(" << std::left
-      << std::setw(kMaxStateNameLength) << GetEventString(event)
-      << ") to "
-      << std::setw(kMaxStateNameLength) << GetStateString(next_state);
+                 << std::setw(kMaxStateNameLength) << GetEventString(event)
+                 << ") to " << std::setw(kMaxStateNameLength)
+                 << GetStateString(next_state);
 
   state_ = next_state;
 
@@ -291,8 +296,9 @@ bool FullscreenControllerStateTest::InvokeEvent(Event event) {
 
       // Activating/Deactivating tab fullscreen on a visibly captured tab
       // should not evoke a state change in the browser window.
-      if (active_tab->IsBeingVisiblyCaptured())
+      if (active_tab->IsBeingVisiblyCaptured()) {
         state_ = source_state;
+      }
       break;
     }
 
@@ -309,10 +315,11 @@ bool FullscreenControllerStateTest::InvokeEvent(Event event) {
                    << GetEventString(event) << GetAndClearDebugLog();
   }
 
-  if (GetWindowStateString())
+  if (GetWindowStateString()) {
     debugging_log_ << " Window state now " << GetWindowStateString() << "\n";
-  else
+  } else {
     debugging_log_ << "\n";
+  }
 
   waiter.Wait();
   VerifyWindowState();
@@ -348,7 +355,7 @@ void FullscreenControllerStateTest::VerifyWindowState() {
 #if BUILDFLAG(IS_MAC)
           FULLSCREEN_FOR_BROWSER_TRUE,
 #else
-                                    FULLSCREEN_FOR_BROWSER_FALSE,
+          FULLSCREEN_FOR_BROWSER_FALSE,
 #endif
           FULLSCREEN_FOR_TAB_NO_EXPECTATION);
       break;
@@ -369,8 +376,9 @@ void FullscreenControllerStateTest::TestTransitionsForEachState() {
       Event event1 = static_cast<Event>(event1_int);
 
       // Early out if skipping all tests for this state, reduces log noise.
-      if (ShouldSkipTest(state, event1))
+      if (ShouldSkipTest(state, event1)) {
         continue;
+      }
 
       for (int event2_int = 0; event2_int < NUM_EVENTS; ++event2_int) {
         for (int event3_int = 0; event3_int < NUM_EVENTS; ++event3_int) {
@@ -382,13 +390,15 @@ void FullscreenControllerStateTest::TestTransitionsForEachState() {
               << GetAndClearDebugLog();
 
           // Then, add an additional event to the sequence.
-          if (ShouldSkipStateAndEventPair(state_, event2))
+          if (ShouldSkipStateAndEventPair(state_, event2)) {
             continue;
+          }
           ASSERT_TRUE(InvokeEvent(event2)) << GetAndClearDebugLog();
 
           // Then, add an additional event to the sequence.
-          if (ShouldSkipStateAndEventPair(state_, event3))
+          if (ShouldSkipStateAndEventPair(state_, event3)) {
             continue;
+          }
           ASSERT_TRUE(InvokeEvent(event3)) << GetAndClearDebugLog();
         }
       }
@@ -397,12 +407,12 @@ void FullscreenControllerStateTest::TestTransitionsForEachState() {
 }
 
 FullscreenControllerStateTest::StateTransitionInfo
-    FullscreenControllerStateTest::NextTransitionInShortestPath(
-    State source,
-    State destination,
-    int search_limit) {
-  if (search_limit <= 0)
+FullscreenControllerStateTest::NextTransitionInShortestPath(State source,
+                                                            State destination,
+                                                            int search_limit) {
+  if (search_limit <= 0) {
     return StateTransitionInfo();  // Return a default (invalid) state.
+  }
 
   if (state_transitions_[source][destination].state == STATE_INVALID) {
     // Don't know the next state yet, do a depth first search.
@@ -413,8 +423,9 @@ FullscreenControllerStateTest::StateTransitionInfo
       Event event = static_cast<Event>(event_int);
       State next_state_candidate = transition_table_[source][event];
 
-      if (ShouldSkipStateAndEventPair(source, event))
+      if (ShouldSkipStateAndEventPair(source, event)) {
         continue;
+      }
 
       // Recurse.
       StateTransitionInfo candidate = NextTransitionInShortestPath(
@@ -466,17 +477,16 @@ bool FullscreenControllerStateTest::ShouldSkipTest(State state, Event event) {
   if (IsWindowFullscreenStateChangedReentrant() &&
       (transition_table_[state][WINDOW_CHANGE] != state)) {
     debugging_log_ << "\nSkipping reentrant test for transitory source state "
-        << GetStateString(state) << ".\n";
+                   << GetStateString(state) << ".\n";
     return true;
   }
 
   if (ShouldSkipStateAndEventPair(state, event)) {
     debugging_log_ << "\nSkipping test due to ShouldSkipStateAndEventPair("
-        << GetStateString(state) << ", "
-        << GetEventString(event) << ").\n";
+                   << GetStateString(state) << ", " << GetEventString(event)
+                   << ").\n";
     LOG(INFO) << "Skipping test due to ShouldSkipStateAndEventPair("
-        << GetStateString(state) << ", "
-        << GetEventString(event) << ").";
+              << GetStateString(state) << ", " << GetEventString(event) << ").";
     return true;
   }
 
@@ -485,19 +495,19 @@ bool FullscreenControllerStateTest::ShouldSkipTest(State state, Event event) {
 
 void FullscreenControllerStateTest::TestStateAndEvent(State state,
                                                       Event event) {
-  if (ShouldSkipTest(state, event))
+  if (ShouldSkipTest(state, event)) {
     return;
+  }
 
-  debugging_log_ << "\nTest transition from state "
-      << GetStateString(state)
-      << (IsWindowFullscreenStateChangedReentrant() ?
-          " with reentrant calls.\n" : ".\n");
+  debugging_log_ << "\nTest transition from state " << GetStateString(state)
+                 << (IsWindowFullscreenStateChangedReentrant()
+                         ? " with reentrant calls.\n"
+                         : ".\n");
 
   // Spaced out text to line up with columns printed in InvokeEvent().
   debugging_log_ << "First,                                               from "
-      << GetStateString(state_) << "\n";
-  ASSERT_NO_FATAL_FAILURE(TransitionToState(state))
-      << GetAndClearDebugLog();
+                 << GetStateString(state_) << "\n";
+  ASSERT_NO_FATAL_FAILURE(TransitionToState(state)) << GetAndClearDebugLog();
 
   debugging_log_ << " Then,\n";
   ASSERT_TRUE(InvokeEvent(event)) << GetAndClearDebugLog();
@@ -508,11 +518,13 @@ void FullscreenControllerStateTest::VerifyWindowStateExpectations(
     FullscreenForTabExpectation fullscreen_for_tab) {
   if (fullscreen_for_browser != FULLSCREEN_FOR_BROWSER_NO_EXPECTATION) {
     EXPECT_EQ(GetFullscreenController()->IsFullscreenForBrowser(),
-              !!fullscreen_for_browser) << GetAndClearDebugLog();
+              !!fullscreen_for_browser)
+        << GetAndClearDebugLog();
   }
   if (fullscreen_for_tab != FULLSCREEN_FOR_TAB_NO_EXPECTATION) {
     EXPECT_EQ(GetFullscreenController()->IsWindowFullscreenForTabOrPending(),
-              !!fullscreen_for_tab) << GetAndClearDebugLog();
+              !!fullscreen_for_tab)
+        << GetAndClearDebugLog();
     if (auto* tab = GetFullscreenController()->exclusive_access_tab()) {
       content::FullscreenState state =
           GetFullscreenController()->GetFullscreenState(tab);
@@ -534,18 +546,16 @@ FullscreenController* FullscreenControllerStateTest::GetFullscreenController() {
 std::string FullscreenControllerStateTest::GetTransitionTableAsString() const {
   std::ostringstream output;
   output << "transition_table_[NUM_STATES = " << NUM_STATES
-      << "][NUM_EVENTS = " << NUM_EVENTS
-      << "] =\n";
+         << "][NUM_EVENTS = " << NUM_EVENTS << "] =\n";
   for (int state_int = 0; state_int < NUM_STATES; ++state_int) {
     State state = static_cast<State>(state_int);
     output << "    { // " << GetStateString(state) << ":\n";
     for (int event_int = 0; event_int < NUM_EVENTS; ++event_int) {
       Event event = static_cast<Event>(event_int);
-      output << "      "
-          << std::left << std::setw(kMaxStateNameLength+1)
-          << std::string(GetStateString(transition_table_[state][event])) + ","
-          << "// Event "
-          << GetEventString(event) << "\n";
+      output << "      " << std::left << std::setw(kMaxStateNameLength + 1)
+             << std::string(GetStateString(transition_table_[state][event])) +
+                    ","
+             << "// Event " << GetEventString(event) << "\n";
     }
     output << "    },\n";
   }
@@ -556,22 +566,19 @@ std::string FullscreenControllerStateTest::GetTransitionTableAsString() const {
 std::string FullscreenControllerStateTest::GetStateTransitionsAsString() const {
   std::ostringstream output;
   output << "state_transitions_[NUM_STATES = " << NUM_STATES
-      << "][NUM_STATES = " << NUM_STATES << "] =\n";
+         << "][NUM_STATES = " << NUM_STATES << "] =\n";
   for (int state1_int = 0; state1_int < NUM_STATES; ++state1_int) {
     State state1 = static_cast<State>(state1_int);
     output << "{ // " << GetStateString(state1) << ":\n";
     for (int state2_int = 0; state2_int < NUM_STATES; ++state2_int) {
       State state2 = static_cast<State>(state2_int);
       const StateTransitionInfo& info = state_transitions_[state1][state2];
-      output << "  { "
-        << std::left << std::setw(kMaxStateNameLength+1)
-        << std::string(GetEventString(info.event)) + ","
-        << std::left << std::setw(kMaxStateNameLength+1)
-        << std::string(GetStateString(info.state)) + ","
-        << std::right << std::setw(2)
-        << info.distance
-        << " }, // "
-        << GetStateString(state2) << "\n";
+      output << "  { " << std::left << std::setw(kMaxStateNameLength + 1)
+             << std::string(GetEventString(info.event)) + "," << std::left
+             << std::setw(kMaxStateNameLength + 1)
+             << std::string(GetStateString(info.state)) + "," << std::right
+             << std::setw(2) << info.distance << " }, // "
+             << GetStateString(state2) << "\n";
     }
     output << "},\n";
   }

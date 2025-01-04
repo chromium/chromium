@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.ui.text.EmptyTextWatcher;
@@ -102,10 +103,12 @@ public class PhoneNumberUtil {
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
-        String formatForDisplay(String phoneNumber, String countryCode);
+        @JniType("std::string")
+        String formatForDisplay(@JniType("std::string") String phoneNumber, String countryCode);
 
-        String formatForResponse(String phoneNumber);
+        @JniType("std::string")
+        String formatForResponse(@JniType("std::string") String phoneNumber);
 
-        boolean isPossibleNumber(String phoneNumber, String countryCode);
+        boolean isPossibleNumber(@JniType("std::string") String phoneNumber, String countryCode);
     }
 }

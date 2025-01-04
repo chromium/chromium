@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Inaktivera mörkt tema</translation>
 <translation id="1807246157184219062">Ljust</translation>
 <translation id="1808803439260407870">Klassisk konst</translation>
+<translation id="181434555916624618">Just nu visas inga resultat med personer. Testa en annan prompt.</translation>
 <translation id="1815850098929213707">Tangenten <ph name="KEYS" /> har valts. Tryck på knappen för att redigera kontrollen</translation>
 <translation id="1823120442877418684">Figurer</translation>
 <translation id="1827738518074806965">Konstgalleri</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">Batterinivån för höger hörsnäcka på enheten är <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">inställningar</translation>
 <translation id="3347558044552027859">modernt</translation>
+<translation id="3353477144743332882">Ladda ned modell för sammanfattning och namngivning</translation>
 <translation id="3359218928534347896">aktivera eller inaktivera ljud av för mikrofonen</translation>
 <translation id="3360306038446926262">Fönster</translation>
 <translation id="3361618936611118375">sushi</translation>
@@ -689,6 +691,7 @@
 <translation id="4354430579665871434">tangent</translation>
 <translation id="4356100841225547054">Stäng av ljudet</translation>
 <translation id="4361257691546579041">APN är av typen standard.</translation>
+<translation id="4368101969572512692">Blanda förslag</translation>
 <translation id="437294888293595148">Återställ alla genvägar</translation>
 <translation id="437477383107495720">kaniner</translation>
 <translation id="4376423484621194274">Administratören tillåter inte att <ph name="APP_NAME" /> stängs</translation>
@@ -768,6 +771,7 @@
 <translation id="4731797938093519117">Föräldraåtkomst</translation>
 <translation id="473775607612524610">Uppdatera</translation>
 <translation id="4744944742468440486">Information om det som är markerat</translation>
+<translation id="4750394297954878236">Förslag</translation>
 <translation id="4771607256327216405">öka ljusstyrkan på tangentbordet</translation>
 <translation id="4771923071974529837">i morgon</translation>
 <translation id="4773299976671772492">Har stoppats</translation>
@@ -853,6 +857,7 @@
 <translation id="5121677070210013200">Det gick inte att ladda ned transkriptionsmodellen. Försök igen eller starta om Chromebook.</translation>
 <translation id="5130848777448318809">ponnyer</translation>
 <translation id="5137451382116112100">Helskärm</translation>
+<translation id="5139813694804168398">stör ej</translation>
 <translation id="5140788690559353412">När du förlorar åtkomsten till skolkontot har du inte längre åtkomst till e-post och filer i Google Drive som Gmail, Dokument, Presentationer med mera.</translation>
 <translation id="5142961317498132443">Autentisering</translation>
 <translation id="5144311987923128508">Knappen Bekräfta är nu inaktiverad</translation>
@@ -897,6 +902,7 @@
 <translation id="5302048478445481009">Språk</translation>
 <translation id="5303837385540978511">Exklusiv bakgrund för <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="530883153651464140">Uppdatera <ph name="DEVICE_NAME" /> till version <ph name="VERSION" /></translation>
 <translation id="5315873049536339193">Identitet</translation>
 <translation id="5317780077021120954">Spara</translation>
 <translation id="5318310531701770497">Det går inte att skapa namn. Testa med en längre transkription.</translation>
@@ -973,7 +979,6 @@
 <translation id="5703716265115423771">sänk volymen</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> av <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Redigeringsknapp för <ph name="SHORTCUT_DESCRIPTION" />.</translation>
-<translation id="5733298426544876109">Uppdatera <ph name="DEVICE_NAME" /></translation>
 <translation id="5736820754189340309">Dataanvändningen har återställts</translation>
 <translation id="574392208103952083">Medelstark</translation>
 <translation id="5744175046705638478">Översätt <ph name="QUERY" /></translation>
@@ -998,6 +1003,7 @@
 <translation id="5859969039821714932">Kortkommandot är inte tillgängligt. Tryck på ett nytt kortkommando utan <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Av</translation>
 <translation id="5860491529813859533">Aktivera</translation>
+<translation id="5875913454160982848">Ladda ned transkriptionsmodell</translation>
 <translation id="5876385649737594562">Aktivera för att välja alternativ</translation>
 <translation id="5877503382465267833">Pausa <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Helskärm</translation>
@@ -1037,7 +1043,6 @@
 <translation id="6040143037577758943">Stäng</translation>
 <translation id="6040852767465482106">Anonym identitet</translation>
 <translation id="604124094241169006">Automatisk</translation>
-<translation id="6042308850641462728">Mer</translation>
 <translation id="6048107060512778456">Misslyckades – papperstrassel</translation>
 <translation id="6050189528197190982">Gråskala</translation>
 <translation id="6054711098834486579">expressionism</translation>
@@ -1293,6 +1298,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Namnserver}other{Namnservrar}}</translation>
 <translation id="7135814714616751706">Sök efter kortkommando</translation>
 <translation id="7138614237884624401">Förenklad text</translation>
+<translation id="7138668887584231801">Inte tillräckligt många ord för att sammanfatta</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Ansluter</translation>
 <translation id="7144878232160441200">Försök igen</translation>
@@ -1588,6 +1594,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="8503836310948963452">Bara några minuter kvar …</translation>
 <translation id="8505011850330200833">Gemini-modellen kräver 2 GB lagringsutrymme för att bearbeta transkriptioner och skapa sammanfattningar</translation>
 <translation id="8508640263392900755">APN-information</translation>
+<translation id="8509574872955173831">Läs mer om sammanfattning och namngivning</translation>
 <translation id="8522687886059337719">Nu har du åtkomst till nya <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />bakgrunder<ph name="END_LINK_WALLPAPER_SUBPAGE" /> och <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />skärmsläckare<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">tehus</translation>
@@ -1724,7 +1731,6 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="9133772297793293778">Tryck på 1–4 specialtangenter och en annan tangent på tangentbordet. Avsluta redigeringsläget genom att trycka på Alt + Esc.</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9138630967333032450">Vänster skifttangent</translation>
-<translation id="9147928237330776930">För få ord för att sammanfatta</translation>
 <translation id="9149391708638971077">Kör minnestest</translation>
 <translation id="9159524746324788320">hamburgare</translation>
 <translation id="9161276708550942948">blanksteg</translation>

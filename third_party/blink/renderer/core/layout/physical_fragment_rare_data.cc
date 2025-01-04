@@ -53,6 +53,10 @@ PhysicalFragmentRareData::PhysicalFragmentRareData(
     SetField(FieldId::kFrameSetLayoutData).frame_set_layout_data =
         std::move(builder.frame_set_layout_data_);
   }
+  if (builder.gap_geometry_) {
+    SetField(FieldId::kGapGeometry).gap_geometry =
+        std::move(builder.gap_geometry_);
+  }
   if (builder.table_grid_rect_) {
     SetField(FieldId::kTableGridRect).table_grid_rect =
         *builder.table_grid_rect_;
@@ -112,6 +116,7 @@ PhysicalFragmentRareData::PhysicalFragmentRareData(
   SET_IF_EXISTS(kPadding, padding, other);
   SET_IF_EXISTS(kInflowBounds, inflow_bounds, other);
   CLONE_IF_EXISTS(kFrameSetLayoutData, frame_set_layout_data, other);
+  CLONE_IF_EXISTS(kGapGeometry, gap_geometry, other);
   SET_IF_EXISTS(kTableGridRect, table_grid_rect, other);
   CLONE_IF_EXISTS(kTableCollapsedBordersGeometry,
                   table_collapsed_borders_geometry, other);
@@ -147,6 +152,7 @@ PhysicalFragmentRareData::~PhysicalFragmentRareData() = default;
     FUNC(kTableSectionRowOffsets, table_section_row_offsets);               \
     FUNC(kPageName, page_name);                                             \
     FUNC(kMargins, margins);                                                \
+    FUNC(kGapGeometry, gap_geometry);                                       \
   }
 
 #define CONSTRUCT_UNION_MEMBER(id, name) \

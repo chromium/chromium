@@ -8,7 +8,6 @@
 #include "ash/login/ui/login_constants.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_id.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/logging.h"
 #include "chromeos/constants/chromeos_features.h"

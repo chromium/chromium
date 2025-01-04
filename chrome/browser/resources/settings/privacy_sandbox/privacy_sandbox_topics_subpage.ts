@@ -339,7 +339,8 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
   }
 
   private onPrivacyPolicyLinkClicked_() {
-    // TODO(crbug.com/377977285): Add metrics
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.PrivacySandbox.AdTopics.PrivacyPolicyLinkClicked');
   }
 }
 

@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/token.h"
 #include "base/tracing/trace_time.h"
@@ -477,8 +478,8 @@ bool TracingScenario::OnStartTrigger(
     perfetto::Tracing::SetupStartupTracingOpts opts;
     opts.timeout_ms = kStartupTracingTimeoutMs;
     opts.backend = perfetto::kCustomBackend;
-    tracing::PerfettoTracedProcess::Get()->RequestStartupTracing(trace_config_,
-                                                                 opts);
+    tracing::PerfettoTracedProcess::Get().RequestStartupTracing(trace_config_,
+                                                                opts);
   }
 
   tracing_session_->SetOnStopCallback([task_runner = task_runner_,

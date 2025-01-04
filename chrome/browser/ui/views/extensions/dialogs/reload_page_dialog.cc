@@ -5,6 +5,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
@@ -41,6 +42,7 @@ std::u16string GetTitle(
 namespace extensions {
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kReloadPageDialogOkButtonElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kReloadPageDialogCancelButtonElementId);
 
 void ShowReloadPageDialog(
     Browser* browser,
@@ -80,12 +82,15 @@ void ShowReloadPageDialog(
         IDS_EXTENSION_SITE_RELOAD_PAGE_BUBBLE_HEADING);
   }
 
-  dialog_builder.SetTitle(title).AddOkButton(
-      base::BindOnce(std::move(callback)),
-      ui::DialogModel::Button::Params()
-          .SetLabel(l10n_util::GetStringUTF16(
-              IDS_EXTENSION_RELOAD_PAGE_BUBBLE_OK_BUTTON))
-          .SetId(kReloadPageDialogOkButtonElementId));
+  dialog_builder.SetTitle(title)
+      .AddOkButton(base::BindOnce(std::move(callback)),
+                   ui::DialogModel::Button::Params()
+                       .SetLabel(l10n_util::GetStringUTF16(
+                           IDS_EXTENSION_RELOAD_PAGE_BUBBLE_OK_BUTTON))
+                       .SetId(kReloadPageDialogOkButtonElementId))
+      .AddCancelButton(base::DoNothing(),
+                       ui::DialogModel::Button::Params().SetId(
+                           kReloadPageDialogCancelButtonElementId));
 
   ShowDialog(container, extension_ids, dialog_builder.Build());
 }

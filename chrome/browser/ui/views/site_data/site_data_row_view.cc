@@ -155,8 +155,9 @@ SiteDataRowView::SiteDataRowView(
   const auto favicon = favicon_cache->GetFaviconForPageUrl(
       origin.GetURL(), base::BindOnce(&SiteDataRowView::SetFaviconImage,
                                       base::Unretained(this)));
-  if (!favicon.IsEmpty())
+  if (!favicon.IsEmpty()) {
     SetFaviconImage(favicon);
+  }
 
   std::u16string origin_display_name =
       UrlIdentity::CreateFromUrl(profile, origin.GetURL(),
@@ -276,8 +277,9 @@ void SiteDataRowView::OnDeleteIconClicked() {
 
   // The row is hidden, advance focus to the next row if the delete button was
   // focused.
-  if (delete_button_->HasFocus())
+  if (delete_button_->HasFocus()) {
     GetFocusManager()->AdvanceFocus(/*reverse=*/false);
+  }
 }
 
 void SiteDataRowView::OnBlockMenuItemClicked(int event_flags) {
@@ -295,8 +297,9 @@ void SiteDataRowView::OnClearOnExitMenuItemClicked(int event_flags) {
 void SiteDataRowView::SetContentSettingException(ContentSetting setting) {
   // For partitioned access, it's valid to create an allow exception that
   // matches current effective setting to allow 3PC.
-  if (!is_fully_partitioned_ || setting_ != CONTENT_SETTING_ALLOW)
+  if (!is_fully_partitioned_ || setting_ != CONTENT_SETTING_ALLOW) {
     DCHECK_NE(setting_, setting);
+  }
 
   create_exception_callback_.Run(origin_, setting);
 

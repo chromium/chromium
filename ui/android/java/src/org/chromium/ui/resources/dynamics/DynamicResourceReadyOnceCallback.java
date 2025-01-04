@@ -5,9 +5,11 @@
 package org.chromium.ui.resources.dynamics;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.resources.Resource;
 
 /** A OnceCallback for observing the next {@link ViewResourceAdapter} produced {@link Resource}. */
+@NullMarked
 public class DynamicResourceReadyOnceCallback implements Callback<Resource> {
     private final DynamicResource mDynamicResource;
     private final Callback<Resource> mCallback;

@@ -337,7 +337,7 @@ class IDBRequestTest : public testing::Test {
     auto* execution_context = scope.GetExecutionContext();
 
     db_ = MakeGarbageCollected<IDBDatabase>(
-        execution_context, mojo::NullAssociatedReceiver(), mojo::NullRemote(),
+        execution_context, mojo::NullAssociatedReceiver(),
         mock_database.BindNewEndpointAndPassDedicatedRemote(), /*priority=*/0);
 
     IDBTransaction::TransactionMojoRemote transaction_remote(execution_context);
@@ -664,7 +664,7 @@ TEST_F(IDBRequestTest, ConnectionsAfterStopping) {
     auto* request = MakeGarbageCollected<IDBOpenDBRequest>(
         scope.GetScriptState(), mojo::NullAssociatedReceiver(),
         std::move(transaction_remote), kTransactionId, kVersion,
-        IDBRequest::AsyncTraceState(), mojo::NullRemote());
+        IDBRequest::AsyncTraceState());
     EXPECT_EQ(request->readyState(), V8IDBRequestReadyState::Enum::kPending);
     std::unique_ptr<IDBFactoryClient> factory_client =
         request->CreateFactoryClient();
@@ -692,7 +692,7 @@ TEST_F(IDBRequestTest, ConnectionsAfterStopping) {
     auto* request = MakeGarbageCollected<IDBOpenDBRequest>(
         scope.GetScriptState(), mojo::NullAssociatedReceiver(),
         std::move(transaction_remote), kTransactionId, kVersion,
-        IDBRequest::AsyncTraceState(), mojo::NullRemote());
+        IDBRequest::AsyncTraceState());
     EXPECT_EQ(request->readyState(), V8IDBRequestReadyState::Enum::kPending);
     std::unique_ptr<IDBFactoryClient> factory_client =
         request->CreateFactoryClient();

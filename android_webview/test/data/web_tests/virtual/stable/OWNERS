@@ -1,0 +1,4 @@
+# Allow anyone to approve these changes as the infrastructure is being battle
+# tested. When we are confident that WebView's web exposed tests work as
+# expected, only the Blink API OWNERS will remain in this file. (ETA: 2025Q1)
+*

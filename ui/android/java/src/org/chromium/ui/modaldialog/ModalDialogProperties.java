@@ -10,6 +10,7 @@ import android.view.View;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
@@ -24,6 +25,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** The model properties for a modal dialog. */
+@NullMarked
 public class ModalDialogProperties {
     /** Interface that controls the actions on the modal dialog. */
     public interface Controller {

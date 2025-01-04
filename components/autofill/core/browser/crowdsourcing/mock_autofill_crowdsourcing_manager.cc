@@ -12,8 +12,7 @@ MockAutofillCrowdsourcingManager::MockAutofillCrowdsourcingManager(
     AutofillClient* client,
     LogManager* log_manager)
     : AutofillCrowdsourcingManager(client,
-                                   /*api_key=*/"",
-                                   log_manager) {
+                                   /*api_key=*/"") {
   ON_CALL(*this, StartQueryRequest)
       .WillByDefault(
           [](const auto&, const auto&,

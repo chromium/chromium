@@ -23,25 +23,27 @@
 #include "base/trace_event/base_tracing.h"
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/compose/buildflags.h"
-#include "components/optimization_guide/content/browser/page_content_proto_util.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/optimization_guide/proto/features/forms_predictions.pb.h"
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "pdf/buildflags.h"
-#include "services/service_manager/public/cpp/interface_provider.h"
-#include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/rect.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/autofill_ai/chrome_autofill_ai_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
@@ -62,16 +64,15 @@ constexpr size_t kBytesPerMegabyte = 1'000'000;
 constexpr size_t kPdfUploadLimitBytes = 128 * kBytesPerMegabyte;
 #endif  // BUILDFLAG(ENABLE_PDF)
 
-void OnGotAIPageContentForModelPrototypingForAllFrames(
-    content::GlobalRenderFrameHostToken main_frame_token,
-    std::unique_ptr<optimization_guide::AIPageContentMap> page_content_map,
-    AiDataKeyedService::AiDataCallback continue_callback) {
+void OnGotAIPageContentForModelPrototyping(
+    AiDataKeyedService::AiDataCallback continue_callback,
+    std::optional<optimization_guide::proto::AnnotatedPageContent> proto) {
   TRACE_EVENT("browser", "OnGotAIPageContentForModelPrototyping");
 
   AiDataKeyedService::BrowserData data;
-  if (optimization_guide::ConvertAIPageContentToProto(
-          main_frame_token, *page_content_map,
-          data.mutable_page_context()->mutable_annotated_page_content())) {
+  if (proto) {
+    *data.mutable_page_context()->mutable_annotated_page_content() =
+        std::move(*proto);
     std::move(continue_callback).Run(std::move(data));
     return;
   }
@@ -79,60 +80,14 @@ void OnGotAIPageContentForModelPrototypingForAllFrames(
   std::move(continue_callback).Run(std::nullopt);
 }
 
-void OnGotAIPageContentForModelPrototypingForFrame(
-    content::GlobalRenderFrameHostToken frame_token,
-    mojo::Remote<blink::mojom::AIPageContentAgent> remote_interface,
-    optimization_guide::AIPageContentMap* page_content_map,
-    base::OnceClosure continue_callback,
-    blink::mojom::AIPageContentPtr result) {
-  CHECK(page_content_map->find(frame_token) == page_content_map->end());
-
-  if (result) {
-    (*page_content_map)[frame_token] = std::move(result);
-  }
-  std::move(continue_callback).Run();
-}
-
 void GetAIPageContentForModelPrototyping(
     content::WebContents* web_contents,
     AiDataKeyedService::AiDataCallback continue_callback) {
   TRACE_EVENT("browser", "GetAIPageContentForModelPrototyping");
-  DCHECK(web_contents);
-  DCHECK(web_contents->GetPrimaryMainFrame());
 
-  auto page_content_map =
-      std::make_unique<optimization_guide::AIPageContentMap>();
-  base::ConcurrentClosures concurrent;
-
-  web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
-      [&](content::RenderFrameHost* rfh) {
-        auto* parent_frame = rfh->GetParentOrOuterDocument();
-
-        // Skip dispatching IPCs for non-local root frames. The local root
-        // provides data for itself and all child local frames.
-        const bool is_local_root =
-            !parent_frame ||
-            parent_frame->GetRenderWidgetHost() != rfh->GetRenderWidgetHost();
-        if (!is_local_root) {
-          return;
-        }
-
-        mojo::Remote<blink::mojom::AIPageContentAgent> agent;
-        rfh->GetRemoteInterfaces()->GetInterface(
-            agent.BindNewPipeAndPassReceiver());
-        auto* agent_ptr = agent.get();
-        agent_ptr->GetAIPageContent(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-            base::BindOnce(&OnGotAIPageContentForModelPrototypingForFrame,
-                           rfh->GetGlobalFrameToken(), std::move(agent),
-                           page_content_map.get(), concurrent.CreateClosure()),
-            nullptr));
-      });
-
-  std::move(concurrent)
-      .Done(base::BindOnce(
-          &OnGotAIPageContentForModelPrototypingForAllFrames,
-          web_contents->GetPrimaryMainFrame()->GetGlobalFrameToken(),
-          std::move(page_content_map), std::move(continue_callback)));
+  optimization_guide::OnAIPageContentDone callback = base::BindOnce(
+      &OnGotAIPageContentForModelPrototyping, std::move(continue_callback));
+  optimization_guide::GetAIPageContent(web_contents, std::move(callback));
 }
 
 // Fills an AiData proto with information from GetInnerText. If no result,
@@ -375,6 +330,36 @@ void GetTabDataForModelPrototyping(
   }
   concurrent.CreateCallback().Run(std::move(data));
 }
+
+void GetFormsPredictionsDataForModelPrototyping(
+    content::WebContents* web_contents,
+    AiDataKeyedService::AiDataCallback continue_callback) {
+  AiDataKeyedService::AiData data =
+      std::make_optional<AiDataKeyedService::BrowserData>();
+  tabs::TabInterface* tab = tabs::TabInterface::MaybeGetFromContents(
+      web_contents->GetOutermostWebContents());
+  if (!tab) {
+    std::move(continue_callback).Run(std::move(data));
+    return;
+  }
+  ChromeAutofillAiClient* client =
+      tab->GetTabFeatures()->chrome_autofill_ai_client();
+  if (!client) {
+    std::move(continue_callback).Run(std::move(data));
+    return;
+  }
+  if (std::optional<optimization_guide::proto::FormsPredictionsRequest>
+          request = client->GetModelExecutor()->GetLatestRequest();
+      request) {
+    *data->mutable_forms_predictions_request() = *request;
+  }
+  if (std::optional<optimization_guide::proto::FormsPredictionsResponse>
+          response = client->GetModelExecutor()->GetLatestResponse();
+      response) {
+    *data->mutable_forms_predictions_response() = *response;
+  }
+  std::move(continue_callback).Run(std::move(data));
+}
 #endif
 
 std::string EncodePngOnBackgroundThread(const SkBitmap& bitmap) {
@@ -482,6 +467,8 @@ void GetModelPrototypingAiData(int tabs_for_inner_text,
                                       concurrent.CreateCallback());
 #if !BUILDFLAG(IS_ANDROID)
   GetTabDataForModelPrototyping(tabs_for_inner_text, web_contents, concurrent);
+  GetFormsPredictionsDataForModelPrototyping(web_contents,
+                                             concurrent.CreateCallback());
 #endif
 #if BUILDFLAG(ENABLE_PDF)
   RequestPdfBytesForModelPrototyping(web_contents, concurrent.CreateCallback());
@@ -524,7 +511,7 @@ void AiDataKeyedService::GetAiData(int dom_node_id,
                                    AiDataCallback callback) {
   TRACE_EVENT0("browser", "AiDataKeyedService::GetAiData");
   GetAiDataWithSpecifiers(10, dom_node_id, web_contents, user_input,
-                            std::move(callback));
+                          std::move(callback));
 }
 
 void AiDataKeyedService::GetAiDataWithSpecifiers(
@@ -546,7 +533,9 @@ std::vector<std::string> AiDataKeyedService::GetAllowlistedExtensions() {
       // https://issues.chromium.org/373645534
       "hpkopmikdojpadgmioifjjodbmnjjjca",
       // https://issues.chromium.org/377129777
-      "bgbpcgpcobgjpnpiginpidndjpggappi"};
+      "bgbpcgpcobgjpnpiginpidndjpggappi",
+      // https://issues.chromium.org/376699519
+      "eefninhhiifgcimjkmkongegpoaikmhm"};
   allowlisted_extensions.insert(allowlisted_extensions.end(),
                                 kHardcodedAllowlistedExtensions.begin(),
                                 kHardcodedAllowlistedExtensions.end());

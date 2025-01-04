@@ -1198,8 +1198,7 @@ void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
   // manager. In this case, it will not be bound so we move on.
   OptionalGetCookie get_cookie_header = std::nullopt;
   OptionalSetCookie set_cookie_header = std::nullopt;
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kWebViewInterceptedCookieHeader) &&
+  if (base::FeatureList::IsEnabled(features::kWebViewInterceptedCookieHeader) &&
       cookie_manager_.is_bound()) {
     get_cookie_header = base::BindRepeating(
         &AwProxyingURLLoaderFactory::GetCookieHeader, base::Unretained(this));
@@ -1288,8 +1287,13 @@ void AwProxyingURLLoaderFactory::GetCookieHeader(
               }
             }
 
-            std::move(callback).Run(
-                net::CanonicalCookie::BuildCookieLine(cookies));
+            // TODO(crbug.com/384986095): Provide real cookie values
+            std::string cookie_line = "";
+            if (base::FeatureList::IsEnabled(
+                    features::kWebViewInterceptedCookieHeaderReadWrite)) {
+              cookie_line = net::CanonicalCookie::BuildCookieLine(cookies);
+            }
+            std::move(callback).Run(cookie_line);
           },
           std::move(privacy_setting), std::move(callback)));
 }
@@ -1308,9 +1312,13 @@ void AwProxyingURLLoaderFactory::SetCookieHeader(
       GetPartitionKey(isolation_info, request), net::CookieSourceType::kHTTP,
       &returned_status);
 
-  cookie_manager_->SetCanonicalCookie(*cookie, request.url,
-                                      net::CookieOptions::MakeAllInclusive(),
-                                      base::DoNothing());
+  // TODO(crbug.com/384986095): Provide real cookie values
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewInterceptedCookieHeaderReadWrite)) {
+    cookie_manager_->SetCanonicalCookie(*cookie, request.url,
+                                        net::CookieOptions::MakeAllInclusive(),
+                                        base::DoNothing());
+  }
 }
 
 net::IsolationInfo AwProxyingURLLoaderFactory::GetIsolationInfo(

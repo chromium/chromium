@@ -110,8 +110,9 @@ void DesktopMediaListView::Layout(PassKey) {
   for (int y = 0;; y += (height + item_spacing_)) {
     for (int x = 0, col = 0; col < active_style_->columns;
          ++col, x += (width + item_spacing_)) {
-      if (i == children().end())
+      if (i == children().end()) {
         return;
+      }
       (*i++)->SetBounds(x + horizontal_margins_, y + vertical_margins_, width,
                         height);
     }
@@ -137,8 +138,9 @@ bool DesktopMediaListView::OnKeyPressed(const ui::KeyEvent& event) {
       return false;
   }
 
-  if (position_increment == 0)
+  if (position_increment == 0) {
     return false;
+  }
 
   views::View* selected = GetSelectedView();
   views::View* new_selected = nullptr;
@@ -153,14 +155,16 @@ bool DesktopMediaListView::OnKeyPressed(const ui::KeyEvent& event) {
                (index + position_increment) > (children().size() - 1)) {
       new_index = children().size() - 1;
     }
-    if (index != new_index)
+    if (index != new_index) {
       new_selected = children()[new_index];
+    }
   } else if (!children().empty()) {
     new_selected = children().front();
   }
 
-  if (new_selected)
+  if (new_selected) {
     new_selected->RequestFocus();
+  }
   return true;
 }
 
@@ -186,8 +190,9 @@ void DesktopMediaListView::OnSourceAdded(size_t index) {
   const DesktopMediaList::Source& source = controller_->GetSource(index);
 
   // We are going to have a second item, apply the generic style.
-  if (children().size() == 1)
+  if (children().size() == 1) {
     SetStyle(&generic_style_);
+  }
 
   DesktopMediaSourceView* source_view =
       new DesktopMediaSourceView(this, source.id, *active_style_);
@@ -201,16 +206,18 @@ void DesktopMediaListView::OnSourceAdded(size_t index) {
     // detecting this, we load the default icon from resource.
     if (icon_image.isNull()) {
       aura::Window* window = DesktopMediaID::GetNativeWindowById(source.id);
-      if (window)
+      if (window) {
         icon_image = LoadDefaultIcon(window);
+      }
     }
 #endif
     source_view->SetIcon(icon_image);
   }
   AddChildViewAt(source_view, index);
 
-  if ((children().size() - 1) % active_style_->columns == 0)
+  if ((children().size() - 1) % active_style_->columns == 0) {
     controller_->OnSourceListLayoutChanged();
+  }
 
   PreferredSizeChanged();
 }
@@ -223,15 +230,18 @@ void DesktopMediaListView::OnSourceRemoved(size_t index) {
   RemoveChildView(view);
   delete view;
 
-  if (was_selected)
+  if (was_selected) {
     OnSelectionChanged();
+  }
 
-  if (children().size() % active_style_->columns == 0)
+  if (children().size() % active_style_->columns == 0) {
     controller_->OnSourceListLayoutChanged();
+  }
 
   // Apply single-item styling when the second source is removed.
-  if (children().size() == 1)
+  if (children().size() == 1) {
     SetStyle(&single_style_);
+  }
 
   PreferredSizeChanged();
 }
@@ -261,8 +271,9 @@ void DesktopMediaListView::OnDelegatedSourceListSelection() {
   // If the SourceList is delegated, we will only have one (or zero), sources.
   // As long as we have one source, select it once we get notified that the user
   // made a selection in the delegated source list.
-  if (!children().empty())
+  if (!children().empty()) {
     children().front()->RequestFocus();
+  }
 }
 
 void DesktopMediaListView::SetStyle(DesktopMediaSourceViewStyle* style) {

@@ -32,7 +32,10 @@ class ChromeUrlsHandler : public chrome_urls::mojom::PageHandler {
  private:
   // chrome_urls::mojom::PageHandler
   void GetUrls(GetUrlsCallback callback) override;
+  void SetDebugPagesEnabled(bool enabled,
+                            SetDebugPagesEnabledCallback callback) override;
   FRIEND_TEST_ALL_PREFIXES(ChromeUrlsHandlerTest, GetUrls);
+  FRIEND_TEST_ALL_PREFIXES(ChromeUrlsHandlerTest, SetDebugPagesEnabled);
 
   // These are located at the end of the list of member variables to ensure the
   // WebUI page is disconnected before other members are destroyed.

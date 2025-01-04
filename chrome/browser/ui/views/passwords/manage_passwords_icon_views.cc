@@ -43,6 +43,7 @@ ManagePasswordsIconViews::ManagePasswordsIconViews(
   const std::u16string tooltip_and_accessible_name_text =
       GetTextForTooltipAndAccessibleName();
   GetViewAccessibility().SetName(tooltip_and_accessible_name_text);
+  UpdateTooltipText();
 
   // TODO(b/353777476): Strip out pinned toolbar button code into a shared
   // controller for page action and pinned button.
@@ -68,6 +69,7 @@ void ManagePasswordsIconViews::SetState(password_manager::ui::State state) {
   const std::u16string tooltip_and_accessible_name_text =
       GetTextForTooltipAndAccessibleName();
   GetViewAccessibility().SetName(tooltip_and_accessible_name_text);
+  UpdateTooltipText();
 
   // TODO(b/353777476): Strip out pinned toolbar button code into a shared
   // controller for page action and pinned button.
@@ -143,6 +145,9 @@ std::u16string ManagePasswordsIconViews::GetTextForTooltipAndAccessibleName()
     case password_manager::ui::MANAGE_STATE:
     case password_manager::ui::PASSWORD_UPDATED_SAFE_STATE:
     case password_manager::ui::PASSWORD_UPDATED_MORE_TO_FIX:
+    // TODO(crbug.com/375564659): Add tooltip reflecting password change flow
+    // state.
+    case password_manager::ui::PASSWORD_CHANGE_STATE:
     // TODO(b/345242100): Add correct tooltip for passkey saved.
     case password_manager::ui::PASSKEY_SAVED_CONFIRMATION_STATE:
     case password_manager::ui::PASSKEY_DELETED_CONFIRMATION_STATE:

@@ -346,15 +346,17 @@ SharedImageFactory::~SharedImageFactory() {
   DCHECK(shared_images_.empty());
 }
 
-bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
-                                           viz::SharedImageFormat format,
-                                           const gfx::Size& size,
-                                           const gfx::ColorSpace& color_space,
-                                           GrSurfaceOrigin surface_origin,
-                                           SkAlphaType alpha_type,
-                                           gpu::SurfaceHandle surface_handle,
-                                           SharedImageUsageSet usage,
-                                           std::string debug_label) {
+bool SharedImageFactory::CreateSharedImage(
+    const Mailbox& mailbox,
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    gpu::SurfaceHandle surface_handle,
+    SharedImageUsageSet usage,
+    std::string debug_label,
+    std::optional<SharedImagePoolId> pool_id) {
   auto* factory = GetFactoryByUsage(usage, format, size,
                                     /*pixel_data=*/{}, gfx::EMPTY_BUFFER);
   if (!factory) {
@@ -372,7 +374,7 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
                          << " usage=" << CreateLabelForSharedImageUsage(usage)
                          << " format=" << format.ToString();
 
-  return RegisterBacking(std::move(backing));
+  return RegisterBacking(std::move(backing), std::move(pool_id));
 }
 
 bool SharedImageFactory::IsNativeBufferSupported(gfx::BufferFormat format,
@@ -544,7 +546,8 @@ bool SharedImageFactory::CreateSharedImage(
     SkAlphaType alpha_type,
     SharedImageUsageSet usage,
     std::string debug_label,
-    gfx::GpuMemoryBufferHandle buffer_handle) {
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    std::optional<SharedImagePoolId> pool_id) {
   gfx::GpuMemoryBufferType gmb_type = buffer_handle.type;
 
   bool use_compound = false;
@@ -589,7 +592,7 @@ bool SharedImageFactory::CreateSharedImage(
 
     backing->OnWriteSucceeded();
   }
-  return RegisterBacking(std::move(backing));
+  return RegisterBacking(std::move(backing), std::move(pool_id));
 }
 
 bool SharedImageFactory::UpdateSharedImage(const Mailbox& mailbox) {
@@ -869,7 +872,8 @@ void SharedImageFactory::LogGetFactoryFailed(gpu::SharedImageUsageSet usage,
 }
 
 bool SharedImageFactory::RegisterBacking(
-    std::unique_ptr<SharedImageBacking> backing) {
+    std::unique_ptr<SharedImageBacking> backing,
+    std::optional<SharedImagePoolId> pool_id) {
   if (!backing) {
     LOG(ERROR) << "CreateSharedImage: could not create backing.";
     return false;
@@ -885,6 +889,9 @@ bool SharedImageFactory::RegisterBacking(
   }
 
   shared_image->RegisterImageFactory(this);
+  if (pool_id) {
+    shared_image->SetSharedImagePoolId(pool_id.value());
+  }
 
   shared_images_.emplace(std::move(shared_image));
   return true;

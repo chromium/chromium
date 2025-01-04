@@ -40,8 +40,9 @@ TEST(RandUtilTest, RandInt) {
   // Check that the DCHECKS in RandInt() don't fire due to internal overflow.
   // There was a 50% chance of that happening, so calling it 40 times means
   // the chances of this passing by accident are tiny (9e-13).
-  for (int i = 0; i < 40; ++i)
+  for (int i = 0; i < 40; ++i) {
     base::RandInt(kIntMin, kIntMax);
+  }
 }
 
 TEST(RandUtilTest, RandDouble) {
@@ -163,8 +164,9 @@ TEST(RandUtilTest, RandBytesAsString) {
   random_string = base::RandBytesAsString(145);
   EXPECT_EQ(145U, random_string.size());
   char accumulator = 0;
-  for (auto i : random_string)
+  for (auto i : random_string) {
     accumulator |= i;
+  }
   // In theory this test can fail, but it won't before the universe dies of
   // heat death.
   EXPECT_NE(0, accumulator);
@@ -232,8 +234,9 @@ TEST(RandUtilTest, RandUint64ProducesBothValuesOfAllBits) {
     found_ones |= value;
     found_zeros &= value;
 
-    if (found_zeros == kAllZeros && found_ones == kAllOnes)
+    if (found_zeros == kAllZeros && found_ones == kAllOnes) {
       return;
+    }
   }
 
   FAIL() << "Didn't achieve all bit values in maximum number of tries.";
@@ -285,8 +288,9 @@ TEST(RandUtilTest, InsecureRandomGeneratorProducesBothValuesOfAllBits) {
     found_ones |= value;
     found_zeros &= value;
 
-    if (found_zeros == kAllZeros && found_ones == kAllOnes)
+    if (found_zeros == kAllZeros && found_ones == kAllOnes) {
       return;
+    }
   }
 
   FAIL() << "Didn't achieve all bit values in maximum number of tries.";

@@ -7,10 +7,12 @@ package org.chromium.base.metrics;
 import com.google.errorprone.annotations.DoNotMock;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.List;
 
 /** Common interface for code recording UMA metrics. */
+@NullMarked
 @DoNotMock("Use HistogramWatcher for histograms or UserActionTester for user actions instead.")
 public interface UmaRecorder {
     /** Records a single sample of a boolean histogram. */

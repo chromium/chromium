@@ -95,7 +95,7 @@ bool UnixDomainClientSocket::WasEverUsed() const {
 }
 
 NextProto UnixDomainClientSocket::GetNegotiatedProtocol() const {
-  return kProtoUnknown;
+  return NextProto::kProtoUnknown;
 }
 
 bool UnixDomainClientSocket::GetSSLInfo(SSLInfo* ssl_info) {

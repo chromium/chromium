@@ -245,6 +245,31 @@ void FakeTabGroupSyncService::MakeTabGroupShared(
   NotifyObserversOfTabGroupShared(group);
 }
 
+void FakeTabGroupSyncService::AboutToUnShareTabGroup(
+    const LocalTabGroupID& local_group_id,
+    base::OnceClosure on_complete_callback) {
+  std::optional<int> index = GetIndexOf(local_group_id);
+  CHECK(index.has_value());
+  SavedTabGroup& group = groups_[index.value()];
+  group.SetIsTransitioningToSaved(true);
+  NotifyObserversOfTabGroupUpdated(group);
+  std::move(on_complete_callback).Run();
+}
+
+void FakeTabGroupSyncService::OnTabGroupUnShareComplete(
+    const LocalTabGroupID& local_group_id,
+    bool success) {
+  std::optional<int> index = GetIndexOf(local_group_id);
+  CHECK(index.has_value());
+  SavedTabGroup& group = groups_[index.value()];
+  if (!success) {
+    group.SetIsTransitioningToSaved(false);
+  } else {
+    group.SetCollaborationId(std::nullopt);
+  }
+  NotifyObserversOfTabGroupShared(group);
+}
+
 std::vector<SavedTabGroup> FakeTabGroupSyncService::GetAllGroups() const {
   std::vector<SavedTabGroup> groups;
   for (const SavedTabGroup& group : groups_) {
@@ -271,10 +296,32 @@ std::optional<SavedTabGroup> FakeTabGroupSyncService::GetGroup(
   return std::make_optional(groups_[index.value()]);
 }
 
+std::optional<SavedTabGroup> FakeTabGroupSyncService::GetGroup(
+    const EitherGroupID& either_id) const {
+  std::optional<int> index;
+
+  if (std::holds_alternative<LocalTabGroupID>(either_id)) {
+    index = GetIndexOf(std::get<LocalTabGroupID>(either_id));
+  } else {
+    index = GetIndexOf(std::get<base::Uuid>(either_id));
+  }
+
+  if (!index.has_value()) {
+    return std::nullopt;
+  }
+  return std::make_optional(groups_[index.value()]);
+}
+
 std::vector<LocalTabGroupID> FakeTabGroupSyncService::GetDeletedGroupIds()
     const {
   std::vector<LocalTabGroupID> deleted_group_ids;
   return deleted_group_ids;
+}
+
+std::optional<std::u16string>
+FakeTabGroupSyncService::GetTitleForPreviouslyExistingSharedTabGroup(
+    const CollaborationId& collaboration_id) const {
+  return std::nullopt;
 }
 
 void FakeTabGroupSyncService::OpenTabGroup(

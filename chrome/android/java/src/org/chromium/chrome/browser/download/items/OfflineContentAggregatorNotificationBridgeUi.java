@@ -161,29 +161,33 @@ public class OfflineContentAggregatorNotificationBridgeUi
         // Request notification permission if needed.
         ContextualNotificationPermissionRequester.getInstance().requestPermissionIfNeeded();
 
-        DownloadInfo info = DownloadInfo.fromOfflineItem(item, visuals);
-        switch (item.state) {
-            case OfflineItemState.IN_PROGRESS:
-                mUi.notifyDownloadProgress(info, item.creationTimeMs, item.allowMetered);
-                break;
-            case OfflineItemState.COMPLETE:
-                mUi.notifyDownloadSuccessful(info, -1L, false, item.isOpenable);
-                break;
-            case OfflineItemState.INTERRUPTED:
-                mUi.notifyDownloadInterrupted(
-                        info, !LegacyHelpers.isLegacyDownload(item.id), item.pendingState);
-                break;
-            case OfflineItemState.PAUSED:
-                mUi.notifyDownloadPaused(info);
-                break;
-            case OfflineItemState.FAILED:
-                mUi.notifyDownloadFailed(info);
-                break;
-            case OfflineItemState.PENDING:
-                mUi.notifyDownloadPaused(info);
-                break;
-            default:
-                assert false : "Unexpected OfflineItem state.";
+        try {
+            DownloadInfo info = DownloadInfo.fromOfflineItem(item, visuals);
+            switch (item.state) {
+                case OfflineItemState.IN_PROGRESS:
+                    mUi.notifyDownloadProgress(info, item.creationTimeMs, item.allowMetered);
+                    break;
+                case OfflineItemState.COMPLETE:
+                    mUi.notifyDownloadSuccessful(info, -1L, false, item.isOpenable);
+                    break;
+                case OfflineItemState.INTERRUPTED:
+                    mUi.notifyDownloadInterrupted(
+                            info, !LegacyHelpers.isLegacyDownload(item.id), item.pendingState);
+                    break;
+                case OfflineItemState.PAUSED:
+                    mUi.notifyDownloadPaused(info);
+                    break;
+                case OfflineItemState.FAILED:
+                    mUi.notifyDownloadFailed(info);
+                    break;
+                case OfflineItemState.PENDING:
+                    mUi.notifyDownloadPaused(info);
+                    break;
+                default:
+                    assert false : "Unexpected OfflineItem state.";
+            }
+        } catch (IllegalStateException e) {
+            mUi.notifyDownloadCanceled(item.id);
         }
     }
 

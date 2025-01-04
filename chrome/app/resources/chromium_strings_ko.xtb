@@ -19,7 +19,6 @@
 <translation id="1185134272377778587">Chromium 정보</translation>
 <translation id="1188705220418984327">창을 공유하려면 시스템 환경설정에서 Chromium의 화면 녹화를 허용하세요</translation>
 <translation id="1203500561924088507">설치해 주셔서 감사합니다. <ph name="BUNDLE_NAME" />을(를) 사용하려면 브라우저를 다시 시작해야 합니다.</translation>
-<translation id="1235768345431527125">로그인하여 내 정보를 가져오거나 계정 없이 Chromium을 사용할 수 있습니다.</translation>
 <translation id="1262876892872089030">이 탭이 비활성 상태인 동안 Chromium의 속도를 빠르게 유지하기 위해 메모리를 확보했습니다. 이 사이트가 비활성 상태가 되지 않도록 항상 제외할 수 있습니다.</translation>
 <translation id="1265577313130862557">위험한 파일이므로 Chromium에서 이 다운로드를 차단했습니다.</translation>
 <translation id="126567311906253476"><ph name="USER_EMAIL" /> 계정으로 Gmail 또는 YouTube와 같은 Google 서비스에 로그인하면 동일한 계정으로 Chromium에 자동으로 로그인할 수 있습니다.</translation>
@@ -59,6 +58,7 @@
 <translation id="1779356040007214683">Google에서는 Chromium의 보안을 강화하기 위해 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />에 표시되지 않고 사용자 모르게 추가되었을 수 있는 일부 확장 프로그램의 사용을 중지했습니다.</translation>
 <translation id="1808667845054772817">Chromium 재설치</translation>
 <translation id="1820835682567584003">Chromium에서 <ph name="AUTHENTICATION_PURPOSE" />을(를) 시도하는 중입니다.</translation>
+<translation id="1838374766361614909">검색어 지우기</translation>
 <translation id="18552579716432081">인터넷 사용 기록을 이 기기에서만 삭제하고 Google 계정에서는 유지하려면 <ph name="BEGIN_LINK" />Chromium에서 로그아웃<ph name="END_LINK" />하세요.</translation>
 <translation id="185970820835152459">로그인된 Google 계정을 관리할 수 있습니다. Google 계정은 Chromium 브라우저, Play 스토어, Gmail 등에서 사용됩니다. 가족 구성원 등 다른 사람을 위해 계정을 추가하고 싶다면 대신 <ph name="DEVICE_TYPE" />에 새 사용자를 추가하세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">이미지 검색으로 검색</translation>
@@ -68,6 +68,7 @@
 <translation id="1896836275755235458">Chromium에서 부드러운 스크롤 및 동영상 프레임 속도 같은 시각 효과와 백그라운드 활동을 제한하여 배터리 전원을 절약합니다. <ph name="BEGIN_LINK" />에너지 절약 모드에 관해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium 업데이터 서비스</translation>
 <translation id="1911763535808217981">이 기능을 사용 중지하면 Chromium에 로그인하지 않고도 Gmail 등의 Google 사이트에 로그인할 수 있습니다.</translation>
+<translation id="1916451563296275579">Chromium에서 이 앱 데이터 삭제</translation>
 <translation id="1929939181775079593">Chromium이 응답하지 않습니다. 다시 시작하시겠습니까?</translation>
 <translation id="1933341829955786215">조직(<ph name="MANAGER" />)에서 Chromium에 로그인할 것을 요구합니다</translation>
 <translation id="193439633299369377">업데이트를 적용하려면 ChromiumOS를 다시 시작해야 합니다.</translation>
@@ -94,6 +95,7 @@
 <translation id="2199210295479376551">Chromium에서 계정 삭제</translation>
 <translation id="2210682093923538346">위험한 사이트입니다. Chromium에서 알림을 삭제했습니다.</translation>
 <translation id="2236949375853147973">내 활동</translation>
+<translation id="2238130810669087193">모든 기기에서 내 주소 등을 가져오려면 Chromium에 로그인하세요. 로그인하면 이 주소가 Google 계정에 저장됩니다</translation>
 <translation id="2240214816234246077">최근에 사이트를 방문하지 않았습니다. Chromium에서 <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 권한을 삭제했습니다.</translation>
 <translation id="2241627712206172106">컴퓨터를 공유하는 경우 친구와 가족이 개별적으로 탐색하고 원하는 대로 Chromium을 설정할 수 있습니다.</translation>
 <translation id="2313870531055795960">Chromium에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다. 사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chromium에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
@@ -111,6 +113,7 @@
 <translation id="2483889755041906834">Chromium에서</translation>
 <translation id="2485422356828889247">제거</translation>
 <translation id="2513154137948333830">재부팅 필요: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2522009821193247726">계속하려면 <ph name="EMAIL" /> 계정으로 Chromium에 로그인해야 합니다. 이렇게 하면 조직의 정책을 준수할 수 있습니다.</translation>
 <translation id="2542968102051442371">이미지 검색으로 텍스트 선택</translation>
 <translation id="2554739539410784893">Chromium에서 기존 비밀번호를 바꾸려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="2560420686485554789">파일을 다운로드하려면 Chromium에 저장소 액세스 권한이 있어야 합니다</translation>
@@ -120,6 +123,7 @@
 <translation id="2583187216237139145">북마크, 방문 기록, 비밀번호, 기타 설정 생성 등 이 프로필을 사용하는 동안 생성된 모든 Chromium 데이터는 직장 프로필 관리자가 삭제할 수 있습니다. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Chromium 계속 사용</translation>
 <translation id="259935314519650377">다운로드한 설치 프로그램을 캐시할 수 없습니다. 오류(<ph name="UNPACK_CACHING_ERROR_CODE" />)가 발생했습니다.</translation>
+<translation id="2635452620547538388"><ph name="ACCOUNT_EMAIL" /> 계정에서 Chromium 데이터를 사용하고 저장하려면 본인 인증을 완료하세요</translation>
 <translation id="264613044588233783">Chromium이 더 빠르게 실행되며 JavaScript를 사용하는 기능이 의도한 대로 작동함(권장)</translation>
 <translation id="2648074677641340862">설치 중 운영체제 오류가 발생했습니다. Chromium을 다시 다운로드하세요.</translation>
 <translation id="2661879430930417727">기기를 공유하는 경우 친구와 가족이 개별적으로 탐색하고 원하는 대로 Chromium을 설정할 수 있습니다.</translation>
@@ -205,7 +209,6 @@
 <translation id="3802055581630249637">Chromium은 사용자가 방문할 가능성이 있는 페이지를 미리 로드하여 사용자가 방문할 때 페이지를 더 빠르게 로드합니다.</translation>
 <translation id="3830894615770080216">ChromiumOS 시스템</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
-<translation id="386822487697155367">ChromiumOS 도움말 보기</translation>
 <translation id="3871664619793219264"><ph name="ACCOUNT_EMAIL" /> 계정으로 Chromium 브라우저 기능을 이용해 보세요</translation>
 <translation id="3885770153807205175">언어 선택 도구</translation>
 <translation id="388648406173476553">Chromium을 맞춤설정 및 제어합니다. 확인이 필요한 항목이 있습니다. 클릭하여 세부정보를 보세요.</translation>
@@ -253,7 +256,6 @@
 <translation id="4438870983368648614"><ph name="MANAGER" />에서 Chromium을 관리합니다.</translation>
 <translation id="444069871276811466">Chromium 프로필 추가</translation>
 <translation id="4447409407328223819">Chrome for Testing 정보</translation>
-<translation id="4470974262661801543">Google 계정에서 Chromium 데이터를 사용하고 저장하려면 비밀번호를 입력하세요</translation>
 <translation id="4493028449971051158">시작 오류: 관리자로 설치 프로그램을 실행하세요.</translation>
 <translation id="4501471624619070934">이 국가에서는 액세스가 제한되므로 설치할 수 없습니다.</translation>
 <translation id="4510853178268397146">이 확장 프로그램은 데이터 수집 및 사용 방식과 같은 개인 정보 보호 관행을 게시하지 않았습니다. Chromium에서 삭제할 것을 권장합니다.</translation>
@@ -405,6 +407,7 @@
 <translation id="6455857529632101747">Chromium 프로필에 오신 것을 환영합니다</translation>
 <translation id="6466344609055215035">Chromium에서 계정 삭제</translation>
 <translation id="6475912303565314141">또한 Chromium을 시작할 때 표시되는 페이지를 설정합니다.</translation>
+<translation id="648062525172759633">이 페이지는 Chromium 개발자를 위한 것으로, 적극적으로 유지보수되거나 테스트되지 않을 수 있습니다. 사용 설정하려면 <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />로 이동하여 버튼을 클릭하여 디버그 페이지를 사용 설정한 다음 이 페이지로 다시 이동하세요.</translation>
 <translation id="648319183876919572">향상된 세이프 브라우징은 위험한 웹사이트와 다운로드로부터 사용자를 보호합니다.</translation>
 <translation id="6510925080656968729">Chromium 설치 제거</translation>
 <translation id="651535675648445253">Chromium에서 바로가기가 열립니다</translation>
@@ -448,6 +451,7 @@
 <translation id="6980074797973263542">조직에서 북마크, 방문 기록, 비밀번호와 같은 인터넷 사용 기록을 보고 관리할 수 있습니다. 개인 Chromium 프로필의 인터넷 사용 기록은 확인할 수 없습니다.</translation>
 <translation id="6985329841647292029">ChromiumOS 약관</translation>
 <translation id="6990124437352146030">이 사이트에서 마이크에 액세스하려면 Chromium에 권한이 필요합니다</translation>
+<translation id="7003299027384820442"><ph name="ACCOUNT_EMAIL" /> 계정에서 Chromium 데이터를 사용하고 저장하려면 비밀번호를 입력하세요</translation>
 <translation id="7011190694940573312">이 운영체제 버전은 지원되지 않으므로 설치에 실패했습니다.</translation>
 <translation id="7024536598735240744">압축해제 오류(<ph name="UNPACK_ERROR" />)가 발생했습니다.</translation>
 <translation id="7025789849649390912">설치가 중단되었습니다.</translation>
@@ -513,6 +517,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />데이터 관리 방법:<ph name="END_BOLD" /> 개인 정보를 보호하기 위해 Chrome에서는 4주가 지난 관심분야를 자동 삭제합니다. 인터넷 사용에 따라 특정 관심분야가 목록에 다시 표시될 수 있습니다. Chromium에서 고려하지 않았으면 하는 관심분야가 있으면 직접 삭제하세요.</translation>
 <translation id="7888981273428720788">Chromium을 기본 브라우저로 설정</translation>
 <translation id="7934340546140346950">가능한 경우 Chromium이 비보안 연결을 HTTPS로 자동 업그레이드합니다.</translation>
+<translation id="7935734571048689933">Chromium이 관리됨</translation>
 <translation id="7937630085815544518"><ph name="USER_EMAIL_ADDRESS" />(으)로 Chromium에 로그인되어 있습니다. 같은 계정으로 다시 로그인해 주세요.</translation>
 <translation id="7975919845073681630">Chromium의 보조 설치이며 기본 브라우저로 설정할 수 없습니다.</translation>
 <translation id="7997934263947464652">알 수 없는 소스의 확장 프로그램, 앱, 테마는 기기를 손상시킬 수 있습니다. <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />에서 다운로드한 확장 프로그램, 앱, 테마만 설치하는 것이 좋습니다</translation>
@@ -542,6 +547,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8330519371938183845">로그인하여 모든 기기에서 Chromium을 동기화하고 맞춤설정하세요.</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" />에서 이전에 Chromium을 사용한 적이 있음</translation>
 <translation id="8357820681460164151">모든 기기에서 Chromium 브라우저 데이터에 액세스하려면 로그인한 후 동기화를 사용 설정하세요</translation>
+<translation id="8359544530202147897">Google 계정(<ph name="ACCOUNT_EMAIL" />)의 Chromium 데이터를 계속 사용하려면 Chromium을 업데이트하세요</translation>
 <translation id="8360718212975266891">향후 Chromium 업데이트를 받으려면 Windows 10 이상이 필요합니다. 이 컴퓨터에서는 Windows 8을 사용 중입니다.</translation>
 <translation id="8362914115861174987">도착어</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>

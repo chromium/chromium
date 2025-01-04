@@ -1,0 +1,22 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[
+    Exposed=*
+] interface mixin UniversalGlobalScope {
+    // Secure Contexts
+    [ImplementedAs=isSecureContextForBindings, CallWith=ScriptState] readonly attribute boolean isSecureContext;
+
+    [CallWith=ScriptState] void reportError(any e);
+
+    // base64 utility methods
+    [RaisesException] DOMString btoa(DOMString btoa);
+    [RaisesException] DOMString atob(DOMString atob);
+
+    // microtask queuing
+    void queueMicrotask(VoidFunction callback);
+
+    // structured cloning
+    [RaisesException, CallWith=ScriptState, MeasureAs=StructuredCloneMethod] any structuredClone(any value, optional StructuredSerializeOptions options = {});
+};

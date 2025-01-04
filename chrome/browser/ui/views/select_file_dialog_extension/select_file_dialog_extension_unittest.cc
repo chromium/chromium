@@ -72,8 +72,9 @@ class SelfDeletingClient : public ui::SelectFileDialog::Listener {
   }
 
   ~SelfDeletingClient() override {
-    if (dialog_.get())
+    if (dialog_.get()) {
       dialog_->ListenerDestroyed();
+    }
   }
 
   SelectFileDialogExtension* dialog() const { return dialog_.get(); }

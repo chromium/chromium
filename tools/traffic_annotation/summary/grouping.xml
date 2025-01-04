@@ -361,6 +361,7 @@ after discussions on the right group.
       <annotation id="shared_storage_worklet_host"/>
       <annotation id="webauthn_challenge_fetch"/>
       <annotation id="chromeos_capture_mode"/>
+      <annotation id="outlook_calendar_page_handler"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

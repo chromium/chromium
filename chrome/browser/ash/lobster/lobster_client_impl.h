@@ -42,7 +42,6 @@ class LobsterClientImpl : public ash::LobsterClient {
   void LoadUI(std::optional<std::string> query, ash::LobsterMode mode) override;
   void ShowUI() override;
   void CloseUI() override;
-  bool UserHasAccess() override;
 
  private:
   // Not owned by this class

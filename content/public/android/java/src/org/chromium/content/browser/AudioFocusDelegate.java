@@ -145,9 +145,6 @@ public class AudioFocusDelegate implements AudioManager.OnAudioFocusChangeListen
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
                 mIsDucking = true;
                 AudioFocusDelegateJni.get()
-                        .recordSessionDuck(
-                                mNativeAudioFocusDelegateAndroid, AudioFocusDelegate.this);
-                AudioFocusDelegateJni.get()
                         .onStartDucking(mNativeAudioFocusDelegateAndroid, AudioFocusDelegate.this);
                 break;
             case AudioManager.AUDIOFOCUS_LOSS:
@@ -170,7 +167,5 @@ public class AudioFocusDelegate implements AudioManager.OnAudioFocusChangeListen
         void onStartDucking(long nativeAudioFocusDelegateAndroid, AudioFocusDelegate caller);
 
         void onStopDucking(long nativeAudioFocusDelegateAndroid, AudioFocusDelegate caller);
-
-        void recordSessionDuck(long nativeAudioFocusDelegateAndroid, AudioFocusDelegate caller);
     }
 }

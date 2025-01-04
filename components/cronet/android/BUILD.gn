@@ -520,6 +520,7 @@ cronet_impl_native_java_deps_to_package = [
   ":flags_java_proto",
   ":request_context_config_java_proto",
   "//base:base_java",
+  "//base/version_info/android:version_constants_java",
   "//third_party/jni_zero:jni_zero_java",
   "//net/android:net_java",
   "//url:url_java",
@@ -1301,7 +1302,6 @@ cronet_javatests_deps_to_package = [
   "//base:base_java",
   "//third_party/jni_zero:jni_zero_java",
   "//base:base_java_test_support",
-
   "//net/android:embedded_test_server_aidl_java",
   "//net/android:net_java",
   "//net/android:net_java_test_support",
@@ -2016,7 +2016,10 @@ script_test("generate_build_script_test") {
 
 action("cronet_gn2bp_aosp_feedback_loop") {
   script = "//components/cronet/gn2bp/run_gn2bp.py"
-  sources = GN2BP_SOURCES + LICENSE_SOURCES + [ "$_gclient_path" ]
+  sources = GN2BP_SOURCES + LICENSE_SOURCES + [
+              "$_gclient_path",
+              "//components/cronet/gn2bp/copy.bara.sky",
+            ]
   _stamp_path = "$target_gen_dir/$target_name.stamp"
   args = [
     "--stamp",

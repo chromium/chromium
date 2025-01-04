@@ -90,6 +90,7 @@ source_set("webrtc") {
 
   public_deps = [
     "//base",
+    "//build:android_buildflags",
     "//build:buildflag_header_h",
     "//build:chromeos_buildflags",
     "//chrome/browser:browser_public_dependencies",
@@ -117,7 +118,6 @@ source_set("webrtc") {
 
   deps = [
     "//base:i18n",
-    "//build:android_buildflags",
     "//chrome/app:branded_strings",
     "//chrome/app:branded_strings_grit",
     "//chrome/app:command_ids",

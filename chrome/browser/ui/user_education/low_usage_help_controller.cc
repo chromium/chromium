@@ -18,7 +18,7 @@
 namespace {
 const void* const kLowUsageHelpControllerKey = &kLowUsageHelpControllerKey;
 constexpr base::TimeDelta kRetryDelay = base::Seconds(1);
-}
+}  // namespace
 
 LowUsageHelpController::LowUsageHelpController(Profile* profile)
     : profile_(profile) {

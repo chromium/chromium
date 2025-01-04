@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/intent_helper/arc_intent_helper_observer.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -36,7 +37,6 @@
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
-#include "components/arc/intent_helper/arc_intent_helper_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "extensions/browser/extension_registry_observer.h"

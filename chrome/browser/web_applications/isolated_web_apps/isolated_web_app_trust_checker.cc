@@ -20,11 +20,11 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "content/public/common/content_features.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_trust_check.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_policy_util.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"  // nogncheck
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace web_app {
 
@@ -36,6 +36,20 @@ GetTrustedWebBundleIdsForTesting() {
       trusted_web_bundle_ids_for_testing;
   return *trusted_web_bundle_ids_for_testing;
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Returns `true` if this Web Bundle ID is configured and currently running as
+// a kiosk. Kiosk mode is configured via DeviceLocalAccounts enterprise
+// policy.
+bool IsTrustedAsKiosk(const web_package::SignedWebBundleId& web_bundle_id) {
+  std::optional<ash::KioskIwaPolicyData> kiosk_iwa_policy_data =
+      ash::GetCurrentKioskIwaPolicyData();
+  if (!kiosk_iwa_policy_data) {
+    return false;
+  }
+  return kiosk_iwa_policy_data->web_bundle_id == web_bundle_id;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -56,19 +70,17 @@ IsolatedWebAppTrustChecker::Result IsolatedWebAppTrustChecker::IsTrusted(
     return {.status = Result::Status::kTrusted};
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ash::IsTrustedAsKioskIwa(web_bundle_id)) {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (IsTrustedAsKiosk(web_bundle_id)) {
     return {.status = Result::Status::kTrusted};
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// TODO(b/292227137): Migrate Shimless RMA app to LaCrOS.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(crbug.com/292227137): Migrate Shimless RMA app to LaCrOS.
   if (ash::IsShimlessRmaAppBrowserContext(&*profile_) &&
       chromeos::Is3pDiagnosticsIwaId(web_bundle_id)) {
     return {.status = Result::Status::kTrusted};
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (is_dev_mode_bundle && IsIwaDevModeEnabled(&*profile_)) {
     return {.status = Result::Status::kTrusted};

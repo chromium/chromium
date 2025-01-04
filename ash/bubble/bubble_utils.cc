@@ -14,7 +14,6 @@
 #include "ash/style/typography.h"
 #include "base/check.h"
 #include "base/types/cxx23_to_underlying.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/window.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
@@ -88,55 +87,7 @@ void ApplyStyle(views::Label* label,
   label->SetAutoColorReadabilityEnabled(false);
   label->SetEnabledColorId(text_color_id);
 
-  if (chromeos::features::IsJellyEnabled()) {
-    TypographyProvider::Get()->StyleLabel(style, *label);
-    return;
-  }
-
-  switch (style) {
-    case TypographyToken::kCrosAnnotation1:
-      label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 12,
-                                       gfx::Font::Weight::NORMAL));
-      break;
-    case TypographyToken::kCrosAnnotation2:
-      label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 11,
-                                       gfx::Font::Weight::NORMAL));
-      break;
-    case TypographyToken::kCrosBody1:
-      label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 14,
-                                       gfx::Font::Weight::NORMAL));
-      break;
-    case TypographyToken::kCrosBody2:
-      label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 13,
-                                       gfx::Font::Weight::NORMAL));
-      break;
-    case TypographyToken::kCrosButton1:
-      label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 14,
-                                       gfx::Font::Weight::MEDIUM));
-      break;
-    case TypographyToken::kCrosButton2:
-      label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 13,
-                                       gfx::Font::Weight::MEDIUM));
-      break;
-    case TypographyToken::kCrosDisplay7:
-      label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 18,
-                                       gfx::Font::Weight::MEDIUM));
-      break;
-    case TypographyToken::kCrosHeadline1:
-      label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 15,
-                                       gfx::Font::Weight::MEDIUM));
-      break;
-    case TypographyToken::kCrosLabel1:
-      label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 10,
-                                       gfx::Font::Weight::MEDIUM));
-      break;
-    case TypographyToken::kCrosTitle1:
-      label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 16,
-                                       gfx::Font::Weight::MEDIUM));
-      break;
-    default:
-      NOTREACHED();
-  }
+  TypographyProvider::Get()->StyleLabel(style, *label);
 }
 
 std::unique_ptr<views::Label> CreateLabel(TypographyToken style,

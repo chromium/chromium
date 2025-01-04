@@ -40,7 +40,8 @@ using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
 GlobalRoutingID GetRoutingPair(RenderFrameHost* host) {
   if (!host)
     return GlobalRoutingID(0, 0);
-  return GlobalRoutingID(host->GetProcess()->GetID(), host->GetRoutingID());
+  return GlobalRoutingID(host->GetProcess()->GetDeprecatedID(),
+                         host->GetRoutingID());
 }
 
 }  // namespace
@@ -423,7 +424,7 @@ void WebContentsObserverConsistencyChecker::AssertMainFrameExists() {
 std::string WebContentsObserverConsistencyChecker::Format(
     RenderFrameHost* render_frame_host) {
   return base::StringPrintf(
-      "(%d, %d -> %s)", render_frame_host->GetProcess()->GetID(),
+      "(%d, %d -> %s)", render_frame_host->GetProcess()->GetDeprecatedID(),
       render_frame_host->GetRoutingID(),
       render_frame_host->GetSiteInstance()->GetSiteURL().spec().c_str());
 }

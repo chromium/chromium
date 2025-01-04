@@ -10,7 +10,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/component_export.h"
 #include "components/metrics/dwa/dwa_recorder.h"
 #include "components/metrics/dwa/mojom/dwa_interface.mojom.h"
 
@@ -20,7 +19,7 @@ namespace dwa::internal {
 // DwaEntryBuilder class. DwaEntryBuilder is reserved for the case where it is
 // not appropriate to use the auto-generated class. This class should not be
 // used directly.
-class COMPONENT_EXPORT(DWA) DwaEntryBuilderBase {
+class DwaEntryBuilderBase {
  public:
   DwaEntryBuilderBase(const DwaEntryBuilderBase&) = delete;
   DwaEntryBuilderBase(DwaEntryBuilderBase&&);

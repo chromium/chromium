@@ -28,7 +28,6 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/sync/os_crypt.h"
@@ -47,6 +46,7 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/test/test_helpers.h"
@@ -122,8 +122,10 @@ PasswordForm GenerateExamplePasswordForm() {
   form.icon_url = GURL("https://accounts.google.com/Icon");
   form.skip_zero_click = true;
   form.in_store = PasswordForm::Store::kProfileStore;
-  form.moving_blocked_for_list.push_back(GaiaIdHash::FromGaiaId("user1"));
-  form.moving_blocked_for_list.push_back(GaiaIdHash::FromGaiaId("user2"));
+  form.moving_blocked_for_list.push_back(
+      GaiaIdHash::FromGaiaId(GaiaId("user1")));
+  form.moving_blocked_for_list.push_back(
+      GaiaIdHash::FromGaiaId(GaiaId("user2")));
   form.sender_email = u"sender@gmail.com";
   form.sender_name = u"Cool Sender";
   form.sender_profile_image_url = GURL("http://www.sender.com/profile_image");
@@ -189,7 +191,7 @@ template <>
 template <class T>
 std::vector<T> GetColumnValuesFromDatabase(const base::FilePath& database_path,
                                            const std::string& column_name) {
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   std::vector<T> results;
   CHECK(db.Open(database_path));
 
@@ -206,12 +208,12 @@ std::vector<T> GetColumnValuesFromDatabase(const base::FilePath& database_path,
   return results;
 }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 // Set the new password value for all the rows with the specified username.
 void UpdatePasswordValueForUsername(const base::FilePath& database_path,
                                     const std::u16string& username,
                                     const std::u16string& password) {
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   CHECK(db.Open(database_path));
 
   sql::Statement s(db.GetCachedStatement(
@@ -223,7 +225,7 @@ void UpdatePasswordValueForUsername(const base::FilePath& database_path,
 
   CHECK(s.Run());
 }
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 
 bool AddZeroClickableLogin(LoginDatabase* db,
                            const std::string& unique_string,
@@ -1211,9 +1213,9 @@ TEST_P(LoginDatabaseTest, GaiaIdHashVectorSerialization) {
   EXPECT_THAT(output, Eq(vec));
 
   // Normal data.
-  vec.push_back(GaiaIdHash::FromGaiaId("first"));
-  vec.push_back(GaiaIdHash::FromGaiaId("second"));
-  vec.push_back(GaiaIdHash::FromGaiaId("third"));
+  vec.push_back(GaiaIdHash::FromGaiaId(GaiaId("first")));
+  vec.push_back(GaiaIdHash::FromGaiaId(GaiaId("second")));
+  vec.push_back(GaiaIdHash::FromGaiaId(GaiaId("third")));
 
   temp = SerializeGaiaIdHashVector(vec);
   output = DeserializeGaiaIdHashVector(temp);
@@ -1485,7 +1487,8 @@ TEST_P(LoginDatabaseTest, UpdateLogin) {
   form.federation_origin =
       url::SchemeHostPort(GURL("https://accounts.google.com/"));
   form.skip_zero_click = true;
-  form.moving_blocked_for_list.push_back(GaiaIdHash::FromGaiaId("gaia_id"));
+  form.moving_blocked_for_list.push_back(
+      GaiaIdHash::FromGaiaId(GaiaId("gaia_id")));
 
   PasswordStoreChangeList changes = db().UpdateLogin(form);
   EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/true), changes);
@@ -1523,7 +1526,8 @@ TEST_P(LoginDatabaseTest, UpdateLoginWithoutPassword) {
   form.display_name = u"Mr. Smith";
   form.icon_url = GURL("https://accounts.google.com/Icon");
   form.skip_zero_click = true;
-  form.moving_blocked_for_list.push_back(GaiaIdHash::FromGaiaId("gaia_id"));
+  form.moving_blocked_for_list.push_back(
+      GaiaIdHash::FromGaiaId(GaiaId("gaia_id")));
 
   PasswordStoreChangeList changes = db().UpdateLogin(form);
   EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/false), changes);
@@ -1957,7 +1961,7 @@ TEST_P(LoginDatabaseTest, EncryptionEnabled) {
 }
 #endif  // !BUILDFLAG(IS_IOS)
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 // On Android and ChromeOS there is a mix of plain-text and obfuscated
 // passwords. Verify that they can both be accessed. Obfuscated passwords start
 // with "v10". Some password values also start with "v10". Test that both are
@@ -2010,7 +2014,7 @@ TEST_P(LoginDatabaseTest, HandleObfuscationMix) {
                   Field(&PasswordForm::password_value, k_plain_text_pw116),
                   Field(&PasswordForm::password_value, k_plain_text_pw216)));
 }
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 
 // If the database initialisation fails, the initialisation transaction should
 // roll back without crashing.
@@ -2023,7 +2027,7 @@ TEST_P(LoginDatabaseTest, Init_NoCrashOnFailedRollback) {
   // current version (in reality, this could happen if, e.g., someone opened a
   // Canary-created profile with Chrome Stable.
   {
-    sql::Database connection;
+    sql::Database connection(sql::test::kTestTag);
     sql::MetaTable meta_table;
     ASSERT_TRUE(connection.Open(database_path));
     ASSERT_TRUE(meta_table.Init(&connection, kCurrentVersionNumber + 1,
@@ -2055,7 +2059,7 @@ TEST_P(LoginDatabaseTest, ShouldNotDowngradeDatabaseVersion) {
   }
   {
     // Overwrite the current version to be |kDBFutureVersion|
-    sql::Database connection;
+    sql::Database connection(sql::test::kTestTag);
     sql::MetaTable meta_table;
     ASSERT_TRUE(connection.Open(database_path));
     // Set the DB version to be coming from the future.
@@ -2072,7 +2076,7 @@ TEST_P(LoginDatabaseTest, ShouldNotDowngradeDatabaseVersion) {
   }
   {
     // The DB version should remain the same.
-    sql::Database connection;
+    sql::Database connection(sql::test::kTestTag);
     sql::MetaTable meta_table;
     ASSERT_TRUE(connection.Open(database_path));
     ASSERT_TRUE(meta_table.Init(&connection, kDBFutureVersion,
@@ -2206,7 +2210,7 @@ void LoginDatabaseMigrationTest::MigrationToVCurrent(
   {
     // On versions < 15 |kCompatibleVersionNumber| was set to 1, but
     // the migration should bring it to the correct value.
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     sql::MetaTable meta_table;
     ASSERT_TRUE(db.Open(database_path_));
     ASSERT_TRUE(
@@ -2330,7 +2334,7 @@ PasswordForm LoginDatabaseUndecryptableLoginsTest::AddDummyLogin(
   }
 
   if (should_be_corrupted) {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     EXPECT_TRUE(db.Open(database_path()));
 
     // Change encrypted password in the database if the login should be

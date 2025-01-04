@@ -21,6 +21,7 @@
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_constants.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_cast_pref_updater_impl.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_test_util.h"
 #include "chrome/browser/media/router/discovery/media_sink_discovery_metrics.h"
 #include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
@@ -46,17 +47,7 @@
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/barrier_closure.h"
-#include "base/json/values_util.h"
-#include "base/test/test_future.h"
-#include "chrome/browser/media/router/discovery/access_code/access_code_cast_pref_updater_lacros.h"
-#include "chromeos/crosapi/mojom/prefs.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#else
-#include "chrome/browser/media/router/discovery/access_code/access_code_cast_pref_updater_impl.h"
-#endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/ash/cast_config/cast_config_controller_media_router.h"
 #endif
 
@@ -121,7 +112,7 @@ AccessCodeCastIntegrationBrowserTest::~AccessCodeCastIntegrationBrowserTest() =
 void AccessCodeCastIntegrationBrowserTest::SetUp() {
 // This makes sure CastDeviceCache is not initialized until after the
 // MockMediaRouter is ready. (MockMediaRouter can't be constructed yet.)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   CastConfigControllerMediaRouter::SetMediaRouterForTest(nullptr);
 #endif
   InProcessBrowserTest::SetUp();
@@ -397,23 +388,6 @@ AccessCodeCastIntegrationBrowserTest::GetDeviceAddedTimeFromDict(
 }
 
 void AccessCodeCastIntegrationBrowserTest::TearDownOnMainThread() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Clear the prefs value manually on Lacros because Lacros is querying for
-  // prefs stored in Ash, which doesn't reset after each test finishes.
-  // The prefs value should not be cleared for tests that span a browser restart
-  // because it's intended to keep the user data directory.
-  if (GetTestPreCount() == 0 && IsAccessCodeCastLacrosSyncEnabled()) {
-    auto* pref_updater = GetPrefUpdater();
-    if (pref_updater) {
-      base::RunLoop run_loop;
-      auto barrier_callback = base::BarrierClosure(2, run_loop.QuitClosure());
-      pref_updater->ClearDevicesDict(barrier_callback);
-      pref_updater->ClearDeviceAddedTimeDict(barrier_callback);
-      run_loop.Run();
-    }
-  }
-#endif
-
   url_loader_interceptor_.reset();
 
   base::RunLoop().RunUntilIdle();
@@ -657,17 +631,6 @@ void AccessCodeCastIntegrationBrowserTest::
   if (service) {
     service->SetTaskRunnerForTesting(task_runner_);
   }
-}
-
-bool AccessCodeCastIntegrationBrowserTest::IsAccessCodeCastLacrosSyncEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  base::test::TestFuture<std::optional<base::Value>> future;
-  chromeos::LacrosService::Get()->GetRemote<crosapi::mojom::Prefs>()->GetPref(
-      crosapi::mojom::PrefPath::kAccessCodeCastDevices, future.GetCallback());
-  return future.Take().has_value();
-#else
-  return false;
-#endif
 }
 
 }  // namespace media_router

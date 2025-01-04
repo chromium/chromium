@@ -110,4 +110,12 @@ void LanguageDetectionModelProvider::GetLanguageDetectionModelFile(
 
   PostGetModelCallback(std::move(callback), base::File());
 }
+
+bool LanguageDetectionModelProvider::HasValidModelFile() {
+  if (!has_model_ever_been_set_) {
+    return false;
+  }
+  return language_detection_model_file_.GetFile().IsValid();
+}
+
 }  // namespace language_detection

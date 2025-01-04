@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_NAVIGATION_TIMING_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_NAVIGATION_TIMING_H_
 
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
@@ -84,6 +85,9 @@ class CORE_EXPORT PerformanceNavigationTiming final
 
   NotRestoredReasons* BuildNotRestoredReasons(
       const mojom::blink::BackForwardCacheNotRestoredReasonsPtr& reasons) const;
+
+  const network::mojom::NavigationDeliveryType navigation_delivery_type_;
+  const WebNavigationType navigation_type_;
 
   Member<DocumentTimingValues> document_timing_values_;
   Member<DocumentLoadTimingValues> document_load_timing_values_;

@@ -209,6 +209,58 @@ class WPTManifestUnitTest(unittest.TestCase):
             manifest.file_path_for_test_url('test.any.worker.html'),
             'test.any.js')
 
+    def test_tests_under_path_file(self):
+        raw_manifest = {
+            'items': {
+                'testharness': {
+                    'a': {
+                        'b.html': [
+                            'd23fbb8',
+                            ['a/b.html?c', {}],
+                            ['a/b.html?d', {}],
+                        ],
+                        'e.html': ['f23fbb8', [None, {}]],
+                    },
+                },
+            },
+        }
+        manifest = WPTManifest(raw_manifest, 'external/wpt')
+        self.assertEqual(manifest.tests_under_path('a/b.html'),
+                         {'a/b.html?c', 'a/b.html?d'})
+        self.assertEqual(manifest.tests_under_path('a/e.html'), {'a/e.html'})
+        self.assertEqual(manifest.tests_under_path('a/does-not-exist.html'),
+                         set())
+
+    def test_tests_under_path_directory(self):
+        raw_manifest = {
+            'items': {
+                'testharness': {
+                    'a': {
+                        'b': {
+                            'c.html': [
+                                'd23fbb8',
+                                ['a/b/c.html?d', {}],
+                                ['a/b/c.html?e', {}],
+                            ],
+                        },
+                    },
+                },
+                'crashtest': {
+                    'a': {
+                        'f.html': ['f23fbb8', [None, {}]],
+                    },
+                    'do-not-include': {
+                        'g.html': ['023fbb8', [None, {}]],
+                    },
+                },
+            },
+        }
+        manifest = WPTManifest(raw_manifest, 'external/wpt')
+        self.assertEqual(manifest.tests_under_path('a/b'),
+                         {'a/b/c.html?d', 'a/b/c.html?e'})
+        self.assertEqual(manifest.tests_under_path('a'),
+                         {'a/b/c.html?d', 'a/b/c.html?e', 'a/f.html'})
+
     def test_crash_tests(self):
         # Test that the manifest recognizes crash tests and that is_crash_test
         # correctly identifies only crash tests in the manifest.

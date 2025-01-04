@@ -428,7 +428,7 @@ class ChildThreadImpl::IOThreadState
     content::SetPseudonymizationSalt(salt);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void ReinitializeLogging(mojom::LoggingSettingsPtr settings) override {
     logging::LoggingSettings logging_settings;
     logging_settings.logging_dest = settings->logging_dest;

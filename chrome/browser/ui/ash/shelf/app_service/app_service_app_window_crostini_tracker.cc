@@ -92,13 +92,15 @@ AppServiceAppWindowCrostiniTracker::~AppServiceAppWindowCrostiniTracker() =
 void AppServiceAppWindowCrostiniTracker::OnWindowVisibilityChanged(
     aura::Window* window,
     const std::string& shelf_app_id) {
-  if (ShouldSkipWindow(window))
+  if (ShouldSkipWindow(window)) {
     return;
+  }
 
   // Handle browser windows.
   Browser* browser = chrome::FindBrowserWithWindow(window);
-  if (browser)
+  if (browser) {
     return;
+  }
 
   // Currently Crostini can only be used from the primary profile. In the
   // future, this may be replaced by some way of matching the container that
@@ -113,8 +115,9 @@ void AppServiceAppWindowCrostiniTracker::OnWindowVisibilityChanged(
   const std::string& crostini_shelf_app_id = guest_os::GetGuestOsShelfAppId(
       primary_account_profile, exo::GetShellApplicationId(window),
       exo::GetShellStartupId(window));
-  if (crostini_shelf_app_id.empty())
+  if (crostini_shelf_app_id.empty()) {
     return;
+  }
 
   auto* registry_service =
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(
@@ -154,8 +157,9 @@ void AppServiceAppWindowCrostiniTracker::OnWindowVisibilityChanged(
 
   // Move the Crostini app window to the right display if necessary.
   int64_t display_id = crostini_app_display_.GetDisplayIdForAppId(shelf_app_id);
-  if (display_id == display::kInvalidDisplayId)
+  if (display_id == display::kInvalidDisplayId) {
     return;
+  }
 
   display::Display registered_display;
   if (!display::Screen::GetScreen()->GetDisplayWithDisplayId(
@@ -191,13 +195,15 @@ void AppServiceAppWindowCrostiniTracker::OnAppLaunchRequested(
   crostini_app_display_.Register(app_id, display_id);
   // Remove the old permissions and add a permission for every window the app
   // currently has open.
-  for (aura::Window* window : activation_permissions_)
+  for (aura::Window* window : activation_permissions_) {
     exo::RevokePermissionToActivate(window);
+  }
   activation_permissions_.clear();
   ash::ShelfModel* model = app_service_controller_->owner()->shelf_model();
   int index = model->ItemIndexByAppID(app_id);
-  if (index >= static_cast<int>(model->items().size()) || index < 0)
+  if (index >= static_cast<int>(model->items().size()) || index < 0) {
     return;
+  }
 
   AppWindowShelfItemController* item_controller =
       model->GetAppWindowShelfItemController(model->items()[index].id);
@@ -205,8 +211,9 @@ void AppServiceAppWindowCrostiniTracker::OnAppLaunchRequested(
   // Apps run for the first time won't have a launcher controller yet, return
   // early because they won't have windows either so permissions aren't
   // necessary.
-  if (!item_controller)
+  if (!item_controller) {
     return;
+  }
   for (AppWindowBase* app_window : item_controller->windows()) {
     exo::GrantPermissionToActivate(app_window->GetNativeWindow(),
                                    kSelfActivationTimeout);
@@ -216,13 +223,15 @@ void AppServiceAppWindowCrostiniTracker::OnAppLaunchRequested(
 
 std::string AppServiceAppWindowCrostiniTracker::GetShelfAppId(
     aura::Window* window) const {
-  if (ShouldSkipWindow(window))
+  if (ShouldSkipWindow(window)) {
     return std::string();
+  }
 
   // Handle browser windows.
   Browser* browser = chrome::FindBrowserWithWindow(window);
-  if (browser)
+  if (browser) {
     return std::string();
+  }
 
   // Currently Crostini can only be used from the primary profile. In the
   // future, this may be replaced by some way of matching the container that
@@ -243,8 +252,9 @@ std::string AppServiceAppWindowCrostiniTracker::GetShelfAppId(
   // InstanceRegistry, call MaybeModifyInstance to check the saved app id and
   // the expected shelf_app_id, and if they are not consistent, modify the app
   // id to use `shelf_app_id`.
-  if (!shelf_app_id.empty())
+  if (!shelf_app_id.empty()) {
     MaybeModifyInstance(primary_account_profile, window, shelf_app_id);
+  }
   return shelf_app_id;
 }
 
@@ -252,8 +262,9 @@ void AppServiceAppWindowCrostiniTracker::RegisterCrostiniWindowForForceClose(
     aura::Window* window,
     const std::string& app_name) {
   exo::ShellSurfaceBase* surface = exo::GetShellSurfaceBaseForWindow(window);
-  if (!surface)
+  if (!surface) {
     return;
+  }
   crostini::ForceCloseWatcher::Watch(
       std::make_unique<crostini::ShellSurfaceForceCloseDelegate>(surface,
                                                                  app_name));
@@ -267,8 +278,9 @@ void AppServiceAppWindowCrostiniTracker::MaybeModifyInstance(
   DCHECK(proxy);
   auto& instance_registry = proxy->InstanceRegistry();
   std::string old_app_id = instance_registry.GetShelfId(window).app_id;
-  if (old_app_id.empty() || app_id == old_app_id)
+  if (old_app_id.empty() || app_id == old_app_id) {
     return;
+  }
 
   auto* app_service_instance_helper =
       app_service_controller_->app_service_instance_helper();

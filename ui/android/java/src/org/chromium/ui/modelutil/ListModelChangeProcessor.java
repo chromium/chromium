@@ -4,7 +4,8 @@
 
 package org.chromium.ui.modelutil;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * A model change processor for use with a {@link ListObservable} model. The
@@ -18,6 +19,7 @@ import androidx.annotation.Nullable;
  * @param <V> The view object that is changing.
  * @param <P> The payload for partial updates. Void can be used if a payload is not needed.
  */
+@NullMarked
 public class ListModelChangeProcessor<M extends ListObservable<P>, V, P>
         implements ListObservable.ListObserver<P> {
     /**
@@ -34,7 +36,7 @@ public class ListModelChangeProcessor<M extends ListObservable<P>, V, P>
 
         void onItemsRemoved(M model, V view, int index, int count);
 
-        void onItemsChanged(M model, V view, int index, int count, P payload);
+        void onItemsChanged(M model, V view, int index, int count, @Nullable P payload);
     }
 
     private final V mView;

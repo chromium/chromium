@@ -77,7 +77,6 @@
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{เปลี่ยนแล้ว <ph name="ONE_CHANGED" /> แท็บ ปิดแล้ว <ph name="ANY_CLOSED" /> แท็บ}other{เปลี่ยนแล้ว <ph name="MANY_CHANGED" /> แท็บ ปิดแล้ว <ph name="ANY_CLOSED" /> แท็บ}}</translation>
 <translation id="4371591986692297148">ไม่ได้ใช้งาน</translation>
 <translation id="4460014764210899310">ยกเลิกการจัดกลุ่ม</translation>
-<translation id="4590027107044272416">ตอนนี้คุณเปิดแท็บใหม่ได้ที่นี่</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{ปิด 1 แท็บที่ไม่ได้ใช้งานไหม}other{ปิด <ph name="TAB_COUNT_MANY" /> แท็บที่ไม่ได้ใช้งานไหม}}</translation>
 <translation id="4686942373615810936">สร้างเมื่อสักครู่</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{ปิดหลังจาก 1 วัน}other{ปิดหลังจาก <ph name="DAY_COUNT_MANY" /> วัน}}</translation>
@@ -98,7 +97,9 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{เพิ่มแล้ว <ph name="ONE_ADDED" /> แท็บ}other{เพิ่มแล้ว <ph name="MANY_ADDED" /> แท็บ}}</translation>
 <translation id="5161254044473106830">ต้องระบุชื่อ</translation>
 <translation id="5339733443032484186">แท็บสุดท้าย</translation>
+<translation id="5380159289133845234">เก็บแท็บที่ซ้ำกัน</translation>
 <translation id="5400836586163650660">สีเทา</translation>
+<translation id="5446043142172831860">นำแท็บออกและออกจากกลุ่ม</translation>
 <translation id="5490235265819901748">ขยายกลุ่มแท็บแล้ว</translation>
 <translation id="5494920125229734069">เลือกทั้งหมด</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{ปิดกลุ่มแท็บที่มี <ph name="TABS_COUNT_ONE" /> แท็บ สี<ph name="COLOR_NAME" />}other{ปิดกลุ่มแท็บที่มี <ph name="TABS_COUNT_MANY" /> แท็บ สี<ph name="COLOR_NAME" />}}</translation>
@@ -117,6 +118,7 @@
 <translation id="6051432659151380973">ระบบจะบันทึกกลุ่มแท็บโดยอัตโนมัติ</translation>
 <translation id="6054741997831917303">ราคาสินค้านี้เพิ่งลดลงจาก <ph name="PREVIOUS_PRICE" /> เหลือ <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">คุณจะสูญเสียสิทธิ์เข้าถึงกลุ่มแท็บ <ph name="GROUP_NAME" /> ทันที</translation>
+<translation id="6109251075362363230">ตอนนี้ระบบจะเก็บแท็บที่ซ้ำกันทั้งหมดด้วย ยกเว้นสำเนาที่ใช้ล่าสุด</translation>
 <translation id="6193448654517602979">เลือกแท็บ</translation>
 <translation id="6228793724645064692">(คะแนนร้านค้า)</translation>
 <translation id="6271513594716432922">ปิดแท็บที่ไม่ได้ใช้งานทั้งหมด</translation>

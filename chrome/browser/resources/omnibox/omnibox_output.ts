@@ -8,12 +8,8 @@ import {OmniboxElement} from './omnibox_element.js';
 import type {DisplayInputs} from './omnibox_input.js';
 import {OmniboxInput} from './omnibox_input.js';
 import type {ACMatchClassification, AutocompleteControllerType, AutocompleteMatch, DictionaryEntry, OmniboxResponse, Signals} from './omnibox_internals.mojom-webui.js';
-/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
-// @ts-ignore:next-line
 import outputColumnWidthSheet from './omnibox_output_column_widths.css' with {type : 'css'};
 import {clearChildren, createEl} from './omnibox_util.js';
-/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
-// @ts-ignore:next-line
 import outputResultsGroupSheet from './output_results_group.css' with {type : 'css'};
 
 interface ResultsDetails {

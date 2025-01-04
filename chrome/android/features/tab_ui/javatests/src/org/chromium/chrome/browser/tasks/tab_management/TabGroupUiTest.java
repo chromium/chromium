@@ -55,6 +55,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -374,7 +375,8 @@ public class TabGroupUiTest {
 
     @Test
     @MediumTest
-    public void testStripShownOnGroupTabPage_EdgeToEdge() throws Exception {
+    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
+    public void testStripShownOnGroupTabPage_EdgeToEdgeWithoutBottomChin() throws Exception {
         // Create a tab group with 2 tabs.
         finishActivity(sActivityTestRule.getActivity());
         createThumbnailBitmapAndWriteToFile(0, mBrowserControlsStateProvider);

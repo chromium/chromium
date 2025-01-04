@@ -8,8 +8,15 @@ import android.app.Activity;
 
 import androidx.annotation.Nullable;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableMap;
+
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
+import org.chromium.base.version_info.Channel;
+import org.chromium.base.version_info.VersionConstants;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
@@ -39,7 +46,38 @@ import java.util.Map;
 
 /** Class that controls and manages when and if surveys should be shown. */
 public class PrivacySandboxSurveyController {
-    private static final String SENTIMENT_SURVEY_TRIGGER = "privacy-sandbox-sentiment-survey";
+    private enum PrivacySandboxSurveyType {
+        UNKNOWN,
+        CCT_EEA_ACCEPTED,
+        CCT_EEA_DECLINED,
+        CCT_EEA_CONTROL,
+        CCT_ROW_ACKNOWLEDGED,
+        CCT_ROW_CONTROL,
+        SENTIMENT_SURVEY,
+    }
+
+    private static final Map<PrivacySandboxSurveyType, String> sSurveyTriggers =
+            ImmutableMap.<PrivacySandboxSurveyType, String>builder()
+                    .put(
+                            PrivacySandboxSurveyType.CCT_EEA_ACCEPTED,
+                            "privacy-sandbox-cct-ads-notice-eea-accepted")
+                    .put(
+                            PrivacySandboxSurveyType.CCT_EEA_DECLINED,
+                            "privacy-sandbox-cct-ads-notice-eea-declined")
+                    .put(
+                            PrivacySandboxSurveyType.CCT_EEA_CONTROL,
+                            "privacy-sandbox-cct-ads-notice-eea-control")
+                    .put(
+                            PrivacySandboxSurveyType.CCT_ROW_ACKNOWLEDGED,
+                            "privacy-sandbox-cct-ads-notice-row-acknowledged")
+                    .put(
+                            PrivacySandboxSurveyType.CCT_ROW_CONTROL,
+                            "privacy-sandbox-cct-ads-notice-row-control")
+                    .put(
+                            PrivacySandboxSurveyType.SENTIMENT_SURVEY,
+                            "privacy-sandbox-sentiment-survey")
+                    .build();
+
     private ActivityTabTabObserver mActivityTabTabObserver;
     private Activity mActivity;
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -48,6 +86,8 @@ public class PrivacySandboxSurveyController {
     private MessageDispatcher mMessageDispatcher;
     private Profile mProfile;
     private boolean mHasSeenNtp;
+    private boolean mOverrideChannelForTesting;
+    private int mChannelForTesting;
     private static boolean sEnableForTesting;
 
     PrivacySandboxSurveyController(
@@ -85,8 +125,7 @@ public class PrivacySandboxSurveyController {
         if (BuildConfig.IS_FOR_TEST && !sEnableForTesting) {
             return null;
         }
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SENTIMENT_SURVEY)) {
-            recordSentimentSurveyStatus(PrivacySandboxSentimentSurveyStatus.FEATURE_DISABLED);
+        if (!shouldInitializeForActiveStudy()) {
             return null;
         }
         if (profile.isOffTheRecord()) {
@@ -101,10 +140,94 @@ public class PrivacySandboxSurveyController {
                 profile);
     }
 
-    private SurveyClient constructSentimentSurveyClient() {
-        SurveyConfig sentimentSurveyConfig = SurveyConfig.get(SENTIMENT_SURVEY_TRIGGER);
-        if (sentimentSurveyConfig == null) {
-            recordSentimentSurveyStatus(PrivacySandboxSentimentSurveyStatus.INVALID_SURVEY_CONFIG);
+    private boolean shouldLaunchAdsCctSurvey(String appId) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY)) {
+            // TODO(crbug.com/379930582): Emit a histogram detailing that the feature was disabled.
+            return false;
+        }
+        String paramAdsNoticeAppId =
+                ChromeFeatureList.getFieldTrialParamByFeature(
+                        ChromeFeatureList.PRIVACY_SANDBOX_CCT_ADS_NOTICE_SURVEY, "app-id");
+        if (!paramAdsNoticeAppId.isEmpty() && !paramAdsNoticeAppId.equals(appId)) {
+            // TODO(crbug.com/379930582): Emit a histogram detailing an app-id mismatch.
+            return false;
+        }
+        return true;
+    }
+
+    // Schedules the launch of an Ads CCT Treatment survey.
+    // Should only be invoked after the closure of either the EEA or ROW notice.
+    public void scheduleAdsCctTreatmentSurveyLaunch(String appId) {
+        if (!shouldLaunchAdsCctSurvey(appId)) {
+            return;
+        }
+        PostTask.postDelayedTask(
+                TaskTraits.UI_DEFAULT,
+                () -> maybeLaunchAdsCctTreatmentSurvey(),
+                /*20 seconds*/ 20000);
+    }
+
+    // Determines the appropriate survey to launch based on the user interaction with either the EEA
+    // consent or the ROW notice and launches the survey.
+    private void maybeLaunchAdsCctTreatmentSurvey() {
+        PrivacySandboxSurveyType surveyType = PrivacySandboxSurveyType.UNKNOWN;
+        PrefService prefs = UserPrefs.get(mProfile);
+        // Check if the EEA consent was shown.
+        if (prefs.getBoolean(Pref.PRIVACY_SANDBOX_M1_CONSENT_DECISION_MADE)) {
+            if (prefs.getBoolean(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED)) {
+                surveyType = PrivacySandboxSurveyType.CCT_EEA_ACCEPTED;
+            } else {
+                surveyType = PrivacySandboxSurveyType.CCT_EEA_DECLINED;
+            }
+            // Check if the ROW notice was acknowledged.
+        } else if (prefs.getBoolean(Pref.PRIVACY_SANDBOX_M1_ROW_NOTICE_ACKNOWLEDGED)) {
+            surveyType = PrivacySandboxSurveyType.CCT_ROW_ACKNOWLEDGED;
+        }
+
+        if (surveyType == PrivacySandboxSurveyType.UNKNOWN) {
+            // TODO(crbug.com/379930582): Emit a histogram detailing that somehow the client did not
+            // interact with a consent/notice.
+            return;
+        }
+        showSurvey(surveyType);
+    }
+
+    // Schedules the launch of an Ads CCT control survey.
+    // Clients expected to see a control survey will not see any Ads CCT dialogs.
+    public void scheduleAdsCctControlSurveyLaunch(String appId, @PromptType int promptType) {
+        if (!shouldLaunchAdsCctSurvey(appId)) {
+            return;
+        }
+        PostTask.postDelayedTask(
+                TaskTraits.UI_DEFAULT,
+                () -> maybeLaunchAdsCctControlSurvey(promptType),
+                /*20 seconds*/ 20000);
+    }
+
+    // Determines the appropriate survey to launch based on the prompt type.
+    private void maybeLaunchAdsCctControlSurvey(@PromptType int promptType) {
+        switch (promptType) {
+            case PromptType.M1_CONSENT:
+                // Case where we expected the client to see the EEA consent.
+                showSurvey(PrivacySandboxSurveyType.CCT_EEA_CONTROL);
+                break;
+            case PromptType.M1_NOTICE_ROW:
+                // Case where we expected the client to see the ROW notice.
+                showSurvey(PrivacySandboxSurveyType.CCT_ROW_CONTROL);
+                break;
+            case PromptType.NONE:
+            case PromptType.M1_NOTICE_EEA:
+            case PromptType.M1_NOTICE_RESTRICTED:
+                // TODO(crbug.com/379930582): Emit a histogram detailing that we expected to surface
+                // a survey but we did not encounter a expected case
+                return;
+        }
+    }
+
+    private SurveyClient constructSurveyClient(PrivacySandboxSurveyType survey) {
+        SurveyConfig surveyConfig = SurveyConfig.get(mProfile, sSurveyTriggers.get(survey));
+        if (surveyConfig == null) {
+            emitInvalidSurveyConfigHistogram(survey);
             return null;
         }
         MessageSurveyUiDelegate messageDelegate =
@@ -115,7 +238,7 @@ public class PrivacySandboxSurveyController {
                         SurveyClientFactory.getInstance().getCrashUploadPermissionSupplier());
         SurveyClient surveyClient =
                 SurveyClientFactory.getInstance()
-                        .createClient(sentimentSurveyConfig, messageDelegate, mProfile);
+                        .createClient(surveyConfig, messageDelegate, mProfile);
         return surveyClient;
     }
 
@@ -130,17 +253,16 @@ public class PrivacySandboxSurveyController {
                 mActivity.getResources(), mMessage);
     }
 
-    private void maybeLaunchSurvey() {
-        SurveyClient sentimentSurveyClient = constructSentimentSurveyClient();
-        if (sentimentSurveyClient == null) {
+    private void showSurvey(PrivacySandboxSurveyType surveyType) {
+        SurveyClient surveyClient = constructSurveyClient(surveyType);
+        if (surveyClient == null) {
             return;
         }
-
-        sentimentSurveyClient.showSurvey(
+        surveyClient.showSurvey(
                 mActivity,
                 mActivityLifecycleDispatcher,
-                getSentimentSurveyPsb(),
-                Collections.emptyMap());
+                populateSurveyPsb(surveyType),
+                populateSurveyPsd(surveyType));
     }
 
     private void createTabObserver(ActivityTabProvider activityTabProvider) {
@@ -153,7 +275,7 @@ public class PrivacySandboxSurveyController {
                         }
                         if (UrlUtilities.isNtpUrl(tab.getUrl())) {
                             if (mHasSeenNtp) {
-                                maybeLaunchSurvey();
+                                showSurvey(PrivacySandboxSurveyType.SENTIMENT_SURVEY);
                             }
                             mHasSeenNtp = true;
                         }
@@ -161,6 +283,21 @@ public class PrivacySandboxSurveyController {
                 };
     }
 
+    private Map<String, Boolean> populateSurveyPsb(PrivacySandboxSurveyType surveyType) {
+        if (surveyType == PrivacySandboxSurveyType.SENTIMENT_SURVEY) {
+            return getSentimentSurveyPsb();
+        }
+        return Collections.emptyMap();
+    }
+
+    private Map<String, String> populateSurveyPsd(PrivacySandboxSurveyType surveyType) {
+        if (surveyType == PrivacySandboxSurveyType.SENTIMENT_SURVEY) {
+            return getSentimentSurveyPsd();
+        }
+        return Collections.emptyMap();
+    }
+
+    @VisibleForTesting
     public Map<String, Boolean> getSentimentSurveyPsb() {
         Map<String, Boolean> psb = new HashMap<>();
         PrefService prefs = UserPrefs.get(mProfile);
@@ -179,6 +316,43 @@ public class PrivacySandboxSurveyController {
         return psb;
     }
 
+    @VisibleForTesting
+    public Map<String, String> getSentimentSurveyPsd() {
+        Map<String, String> psd = new HashMap<>();
+        psd.put("Channel", getChannelName());
+        return psd;
+    }
+
+    @VisibleForTesting
+    public String getChannelName() {
+        int channel = VersionConstants.CHANNEL;
+        if (mOverrideChannelForTesting) {
+            channel = mChannelForTesting;
+        }
+        switch (channel) {
+            case Channel.STABLE:
+                return "stable";
+            case Channel.BETA:
+                return "beta";
+            case Channel.DEV:
+                return "dev";
+            case Channel.CANARY:
+                return "canary";
+            default:
+                return "unknown";
+        }
+    }
+
+    private static boolean shouldInitializeForActiveStudy() {
+        // Sentiment survey should be checked last as it should always be on.
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SENTIMENT_SURVEY)) {
+            emitFeatureDisabledHistogram(PrivacySandboxSurveyType.SENTIMENT_SURVEY);
+            return false;
+        }
+
+        return true;
+    }
+
     private static void recordSentimentSurveyStatus(
             @PrivacySandboxSentimentSurveyStatus int status) {
         RecordHistogram.recordEnumeratedHistogram(
@@ -187,9 +361,44 @@ public class PrivacySandboxSurveyController {
                 PrivacySandboxSentimentSurveyStatus.MAX_VALUE + 1);
     }
 
-    /** Set whether to trigger the start up survey in tests. */
+    private static void emitInvalidSurveyConfigHistogram(PrivacySandboxSurveyType survey) {
+        switch (survey) {
+            case SENTIMENT_SURVEY:
+                recordSentimentSurveyStatus(
+                        PrivacySandboxSentimentSurveyStatus.INVALID_SURVEY_CONFIG);
+                return;
+                // TODO(crbug.com/379930582): Add support for CCT survey histograms
+            default:
+                return;
+        }
+    }
+
+    private static void emitFeatureDisabledHistogram(PrivacySandboxSurveyType survey) {
+        switch (survey) {
+            case SENTIMENT_SURVEY:
+                recordSentimentSurveyStatus(PrivacySandboxSentimentSurveyStatus.FEATURE_DISABLED);
+                return;
+                // TODO(crbug.com/379930582): Add support for CCT survey histograms
+            default:
+                return;
+        }
+    }
+
+    // Set whether to trigger the start up survey in tests.
     public static void setEnableForTesting() {
         sEnableForTesting = true;
         ResettersForTesting.register(() -> sEnableForTesting = false);
+    }
+
+    // Set whether we should override the channel for tests.
+    public void overrideChannelForTesting() {
+        mOverrideChannelForTesting = true;
+        ResettersForTesting.register(() -> mOverrideChannelForTesting = false);
+    }
+
+    // Set the channel for testing.
+    public void setChannelForTesting(int channel) {
+        mChannelForTesting = channel;
+        ResettersForTesting.register(() -> mChannelForTesting = Channel.DEFAULT);
     }
 }

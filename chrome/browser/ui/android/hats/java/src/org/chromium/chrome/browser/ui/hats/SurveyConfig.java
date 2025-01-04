@@ -14,9 +14,11 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Java equivalent of C++ survey::SurveyConfig. All member variable are kept package protected, as
@@ -55,6 +57,13 @@ public class SurveyConfig {
     /** Product Specific String Data fields which are sent with the survey response. */
     final String[] mPsdStringDataFields;
 
+    /**
+     * Optional parameter which overrides the default survey cooldown period, see {@link
+     * SurveyThrottler#MIN_DAYS_BETWEEN_ANY_PROMPT_DISPLAYED}. This value is set only if the survey
+     * feature launched for a specific list of users defined by some Google group.
+     */
+    final Optional<Integer> mCooldownPeriodOverride;
+
     /** Not generated from java. */
     @VisibleForTesting
     SurveyConfig(
@@ -63,13 +72,15 @@ public class SurveyConfig {
             double probability,
             boolean userPrompted,
             String[] psdBitDataFields,
-            String[] psdStringDataFields) {
+            String[] psdStringDataFields,
+            Optional<Integer> cooldownPeriodOverride) {
         mTrigger = trigger;
         mTriggerId = triggerId;
         mProbability = probability;
         mUserPrompted = userPrompted;
         mPsdBitDataFields = psdBitDataFields;
         mPsdStringDataFields = psdStringDataFields;
+        mCooldownPeriodOverride = cooldownPeriodOverride;
     }
 
     /**
@@ -80,8 +91,8 @@ public class SurveyConfig {
      * @return SurveyConfig if the survey exists and is enabled.
      */
     @Nullable
-    public static SurveyConfig get(String trigger) {
-        return get(trigger, "");
+    public static SurveyConfig get(Profile profile, String trigger) {
+        return get(profile, trigger, "");
     }
 
     /**
@@ -94,14 +105,14 @@ public class SurveyConfig {
      * @return SurveyConfig if the survey exists and is enabled.
      */
     @Nullable
-    public static SurveyConfig get(String trigger, String suppliedTriggerId) {
+    public static SurveyConfig get(Profile profile, String trigger, String suppliedTriggerId) {
         SurveyConfig config;
         if (sForceUsingTestingConfig) {
             config = sConfigForTesting;
         } else if (sConfigForTesting != null && sConfigForTesting.mTrigger.equals(trigger)) {
             config = sConfigForTesting;
         } else {
-            config = Holder.getInstance().getSurveyConfig(trigger);
+            config = Holder.getInstance(profile).getSurveyConfig(trigger);
         }
         return getConfigWithSuppliedTriggerIdIfPresent(config, suppliedTriggerId);
     }
@@ -145,7 +156,7 @@ public class SurveyConfig {
 
     /** Clear all the initialized configs. */
     static void clearAll() {
-        Holder.getInstance().destroy();
+        Holder.clearAll();
     }
 
     static SurveyConfig getConfigWithSuppliedTriggerIdIfPresent(
@@ -157,7 +168,8 @@ public class SurveyConfig {
                     config.mProbability,
                     config.mUserPrompted,
                     config.mPsdBitDataFields,
-                    config.mPsdStringDataFields);
+                    config.mPsdStringDataFields,
+                    config.mCooldownPeriodOverride);
         }
         return config;
     }
@@ -170,7 +182,8 @@ public class SurveyConfig {
             double probability,
             boolean userPrompted,
             String[] psdBitDataFields,
-            String[] psdStringDataFields) {
+            String[] psdStringDataFields,
+            int cooldownPeriodOverride) {
         holder.mTriggers.put(
                 trigger,
                 new SurveyConfig(
@@ -179,7 +192,10 @@ public class SurveyConfig {
                         probability,
                         userPrompted,
                         psdBitDataFields,
-                        psdStringDataFields));
+                        psdStringDataFields,
+                        cooldownPeriodOverride == 0
+                                ? Optional.empty()
+                                : Optional.of(cooldownPeriodOverride)));
     }
 
     /** Holder that stores all the active surveys for Android. */
@@ -189,16 +205,22 @@ public class SurveyConfig {
         private final Map<String, SurveyConfig> mTriggers;
         private long mNativeInstance;
 
-        private Holder() {
+        private Holder(Profile profile) {
             mTriggers = new HashMap<>();
-            mNativeInstance = SurveyConfigJni.get().initHolder(this);
+            mNativeInstance = SurveyConfigJni.get().initHolder(this, profile);
         }
 
-        static Holder getInstance() {
+        static Holder getInstance(Profile profile) {
             if (sInstance == null) {
-                sInstance = new Holder();
+                sInstance = new Holder(profile);
             }
             return sInstance;
+        }
+
+        static void clearAll() {
+            if (sInstance != null) {
+                sInstance.destroy();
+            }
         }
 
         SurveyConfig getSurveyConfig(String trigger) {
@@ -214,7 +236,7 @@ public class SurveyConfig {
     @NativeMethods
     interface Natives {
 
-        long initHolder(Holder caller);
+        long initHolder(Holder caller, Profile profile);
 
         void destroy(long nativeSurveyConfigHolder);
     }

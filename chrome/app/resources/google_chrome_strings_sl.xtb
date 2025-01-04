@@ -67,6 +67,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1786044937610313874">Bližnjice, odprte v Chromu</translation>
 <translation id="178701303897325119">Ta razširitev ni več podprta. Chrome priporoča, da jo odstranite.</translation>
 <translation id="1812689907177901597">Če to izklopite, se lahko prijavite na Googlovih spletnih mestih, kot je Gmail, ne da bi se morali prijaviti v Chrome</translation>
+<translation id="1838374766361614909">Čiščenje iskanja</translation>
 <translation id="1860536484129686729">Chrome potrebuje dovoljenje za dostop do fotoaparata za to spletno mesto</translation>
 <translation id="1873233029667955273">Google Chrome ni privzeti brskalnik</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
@@ -95,7 +96,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2137162749895930932">Zapiranje zaslona za prevajanje</translation>
 <translation id="2139300032719313227">Vnovičen zagon sistema Chrome OS</translation>
 <translation id="2151406531797534936">Znova zaženite Chrome</translation>
-<translation id="2163089732491971196">Če želite v računu Google uporabljati in shranjevati podatke iz Chroma, vnesite geslo</translation>
 <translation id="2174917724755363426">Namestitev še ni končana. Ali ste prepričani, da jo želite preklicati?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">Napaka pri preverjanju posodobitev: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -209,6 +209,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="345171907106878721">Dodajte se v Chrome</translation>
 <translation id="3453763134178591239">Pogoji za Chrome OS</translation>
 <translation id="3503306920980160878">Chrome potrebuje dostop do vaše lokacije, da jo bo lahko delil s tem spletnim mestom</translation>
+<translation id="3512634283363927263">Te strani so namenjene razvijalcem za Chrome in morda niso aktivno vzdrževane ali preizkušane. Če jih želite omogočiti, odprite <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknite gumb, da omogočite strani za odpravljanje napak, in se znova pomaknite na to stran.</translation>
 <translation id="3533694711092285624">Ni shranjenih gesel. Chrome lahko preveri gesla, če jih shranite.</translation>
 <translation id="3541482654983822893">Chrome ne more preveriti vaših gesel. Poskusite znova čez 24 ur.</translation>
 <translation id="3564543103555793392">Ko se prijavite v Chrome, lahko shranite zaznamke, gesla in drugo, nato pa jih uporabljate v telefonu</translation>
@@ -231,7 +232,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3716540481907974026">Različica sistema ChromeOS Flex</translation>
 <translation id="3718181793972440140">S tem bo iz te naprave izbrisan 1 element. Če želite pozneje prenesti podatke, se v Chrome prijavite kot <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome priporoča, da jo odstranite. <ph name="BEGIN_LINK" />Preberite več o podprtih razširitvah.<ph name="END_LINK" />}one{Chrome priporoča, da jih odstranite. <ph name="BEGIN_LINK" />Preberite več o podprtih razširitvah.<ph name="END_LINK" />}two{Chrome priporoča, da jih odstranite. <ph name="BEGIN_LINK" />Preberite več o podprtih razširitvah.<ph name="END_LINK" />}few{Chrome priporoča, da jih odstranite. <ph name="BEGIN_LINK" />Preberite več o podprtih razširitvah.<ph name="END_LINK" />}other{Chrome priporoča, da jih odstranite. <ph name="BEGIN_LINK" />Preberite več o podprtih razširitvah.<ph name="END_LINK" />}}</translation>
-<translation id="3744202345691150878">Pomoč za Chrome OS</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex ni mogel sinhronizirati podatkov zaradi napake pri prijavi.</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
@@ -245,6 +245,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3889417619312448367">Odstrani Google Chrome</translation>
 <translation id="3892148308691398805">Kopiraj besedilo</translation>
 <translation id="3941890832296813527">Napaka pri namestitvi: Ime datoteke namestitvenega programa je neveljavno ali ni podprto.</translation>
+<translation id="3968962723676998462">Vnesite geslo, če želite podatke iz Chroma uporabljati in shranjevati v računu, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome želi izbrisati vaše podatke v Googlovem upravitelju gesel. Če želite to omogočiti, vnesite geslo za Windows.</translation>
 <translation id="398236277091248993">Chrome ostane hiter s funkcijami za izboljšanje delovanja</translation>
 <translation id="3999683152997576765">Vidite ali odstranite lahko teme zanimanja, ki jih spletna mesta uporabljajo, da vam prikazujejo oglase. Chrome oceni vaša zanimanja glede na nedavno zgodovino brskanja.</translation>
@@ -262,6 +263,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4147555960264124640">Prijavljate se z upravljanim računom in s tem njegovemu skrbniku omogočate nadzor vašega profila v Google Chromu. Vaši podatki v Chromu, kot so aplikacije, zaznamki, zgodovina, gesla in druge nastavitve, bodo postali trajno povezani z uporabnikom <ph name="USER_NAME" />. Te podatke boste lahko izbrisali z nadzorno ploščo za Google Račune, vendar jih ne boste mogli povezati z drugim računom. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Nameščanje ...</translation>
 <translation id="4149882025268051530">Namestitvenemu programu ni uspelo razširiti arhiva. Ponovno prenesite program Google Chrome.</translation>
+<translation id="415112847282352845">Če želite dostopati do naslovov in drugega v vseh napravah, se prijavite v Chrome. Ta naslov bo po prijavi shranjen v računu Google.</translation>
 <translation id="4153934450158521343">Chrome se bo kmalu zaprl in izbrisal bo podatke</translation>
 <translation id="4173512894976930765">Spletna mesta bodo verjetno delovala po pričakovanjih. Ko zaprete vsa Chromova okna, boste odjavljeni z večine spletnih mest z izjemo računa Google, če ste prijavljeni v Chrome.</translation>
 <translation id="4175922240926474352">Chrome je blokiral ta prenos, ker spletno mesto ne uporablja varne povezave in so v datoteko morda posegali</translation>
@@ -295,7 +297,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4567424176335768812">Prijavljeni ste kot <ph name="USER_EMAIL_ADDRESS" />. Zdaj imate dostop do zaznamkov, zgodovine in drugih nastavitev v vseh napravah, v katerih ste prijavljeni.</translation>
 <translation id="4571503333518166079">Odpri nastavitve obvestil v Chromu</translation>
 <translation id="4575717501879784448">Chrome lahko zaradi izboljšanja izkušnje brskanja in sprostitve sredstev te zavihke spremeni v neaktivne.</translation>
-<translation id="4595162648538023956">Prijavite se, če želite do svojih stvari, ali uporabljajte Chrome brez računa</translation>
 <translation id="459622048091363950">Ko bo imel Chrome dostop, vas bodo spletna mesta lahko pozvala k omogočanju dostopa.</translation>
 <translation id="4600710005438004015">Chroma ni bilo mogoče posodobiti na najnovejšo različico, zato nimate novih funkcij in popravkov varnosti.</translation>
 <translation id="4601439950572737842">Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chroma uporabljati in shranjevati v računu Google.</translation>
@@ -303,13 +304,13 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4627412468266359539">Izbirno: Pomagajte izboljšati funkcije sistema ChromeOS Flex ter njegovo delovanje s samodejnim pošiljanjem diagnostičnih podatkov in podatkov o uporabi Googlu.</translation>
 <translation id="4633000520311261472">Zaradi večje varnosti smo v Chromu onemogočili nekatere razširitve, ki niso navedene v storitvi <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> in so bile morda dodane brez vaše vednosti.</translation>
 <translation id="4680828127924988555">Prekliči namestitev</translation>
-<translation id="469553575393225953">Razširitve, aplikacije in teme iz neznanih virov lahko škodijo napravi. Chrome priporoča, da jih namestite samo v Spletni trgovini Chrome.</translation>
 <translation id="4710245680469034439">Osebno prilagodite brskalnik s temami, ki jih je navdihnila narava, zbirkami umetnikov in drugim</translation>
 <translation id="4720851490453439956">Googlova notranja storitev za posodabljanje</translation>
 <translation id="4724676981607797757">Namestitev ni uspela zaradi napake, povezane z nepodprtim protokolom.</translation>
 <translation id="4728575227883772061">Namestitev ni bila izvedena zaradi nedoločene napake. Če je Google Chrome trenutno vklopljen, ga zaprite in poskusite znova.</translation>
 <translation id="4741235124132242877">Pripeto. Google Lens lahko znova uporabite v orodni vrstici.</translation>
 <translation id="4747730611090640388">Chrome lahko oceni vaša zanimanja.  Pozneje lahko stran, ki jo obiščete, od Chroma zahteva ogled vaših zanimanj zaradi osebnega prilagajanja oglasov, ki so vam prikazani.</translation>
+<translation id="475321580758063259">Posodobite Chrome, če želite podatke v Chromu še naprej uporabljati v računu Google, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="479167709087336770">Uporabljeno je isto preverjanje črkovanja kot v Iskanju Google. Besedilo, ki ga vnesete v brskalniku, je poslano Googlu. To lahko kadar koli spremenite v nastavitvah.</translation>
 <translation id="4793679854893018356">Preberite, kako vas Chrome varuje</translation>
@@ -354,7 +355,6 @@ Nekatere funkcije morda ne bodo na voljo. Navedite drug imenik profila ali upora
 <translation id="5334309298019785904">Chrome OS ni mogel sinhronizirati podatkov, ker sinhronizacija ni na voljo za vašo domeno.</translation>
 <translation id="5334487786912937552">Chrome potrebuje dovoljenje za dostop do shrambe za prenos datotek.</translation>
 <translation id="5337648990166757586">Izbirno: Pomagajte izboljšati funkcije sistema Chrome OS in njegovo delovanje s samodejnim pošiljanjem diagnostičnih podatkov in podatkov o uporabi Googlu.</translation>
-<translation id="5357889879764279201">Pomoč za ChromeOS Flex</translation>
 <translation id="5368118228313795342">Dodatna koda: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Določa tudi, katera stran je prikazana, ko zaženete Chrome ali iščete v naslovni vrstici.</translation>
 <translation id="5394833366792865639">Deljenje zavihka v Chromu</translation>
@@ -395,6 +395,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="5941830788786076944">Nastavi Google Chrome kot privzeti brskalnik</translation>
 <translation id="5947104538377036631">Bližnjica za Chrome</translation>
 <translation id="5953954252731207958">Nedavno niste obiskali tega mesta. Chrome je odstranil to dovoljenje: <ph name="PERMISSION" />.</translation>
+<translation id="5980111191913430208">Razširitve, aplikacije in teme iz neznanih virov lahko škodijo napravi. Chrome priporoča, da jih namestite samo tukaj: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="6003112304606738118">Prenašanje … Še <ph name="HOURS" /> h.</translation>
 <translation id="6014316319780893079">S <ph name="BEGIN_LINK" />Chromovimi orodji<ph name="END_LINK" /> lahko varno brskate in imate nadzor</translation>
 <translation id="6022659036123304283">Prilagodite si Chrome</translation>
@@ -528,6 +529,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="7572537927358445944">Izklopljeno • Chrome ne more preveriti, od kod izvira ta razširitev</translation>
 <translation id="7583399374488819119">Namestitveni program za <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
+<translation id="7617512710641355143">Chrome je upravljan</translation>
 <translation id="7626032353295482388">Dobrodošli v Chromu</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> zahteva, da preberete in sprejmete pogoje storitve, preden začnete uporabljati napravo. Ti pogoji ne dopolnjujejo, spreminjajo ali omejujejo pogojev za Google Chrome OS.</translation>
 <translation id="7629695634924605473">Chrome vam sporoči, ali so gesla ogrožena</translation>
@@ -585,6 +587,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="8077579734294125741">Drugi profili v Chromu</translation>
 <translation id="8086881907087796310">Namestitev ni uspela, ker računalnik ne izpolnjuje najnižjih zahtev za strojno opremo.</translation>
 <translation id="8111297389482307122">Chrome mora preveriti vašo identiteto, preden bo mogoče nekatere podatke shraniti v račun Google in jih uporabiti v vseh vaših napravah. Če se odjavite, bodo ti podatki ostali v tej napravi.</translation>
+<translation id="8113883687556086139">Potrdite, da ste to vi, če želite podatke iz Chroma uporabljati in shranjevati v računu, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8118331347066725040">Pošiljanje povratnih informacij za iskanje z Googlom Lens</translation>
 <translation id="8129812357326543296">O &amp;Google Chromu</translation>
 <translation id="813913629614996137">Inicializiranje ...</translation>
@@ -612,6 +615,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="842386925677997438">Varnostna orodja v Chromu</translation>
 <translation id="8425765582779547329">Zaradi večje varnosti v spletu s starševimi izbirami se prijavi v Chrome</translation>
 <translation id="8428213095426709021">Nastavitve</translation>
+<translation id="8429214465555795676">Če želite nadaljevati, se morate prijaviti v Chrome z računom <ph name="EMAIL" />. S tem zagotovite skladnost s pravilniki organizacije.</translation>
 <translation id="8433638294851456451">Če želite poslati telefonsko številko od tukaj v telefon Android, se prijavite v Chrome v obeh napravah.</translation>
 <translation id="8451192282033883849">Vaš račun upravlja <ph name="MANAGER_NAME" />. Vaš skrbnik lahko vidi in upravlja ta profil za brskalnik Chrome s podatki vred, in sicer zaznamki, zgodovino ter gesli.</translation>
 <translation id="8496177819998570653">Googlov upravitelj g&amp;esel</translation>
@@ -637,6 +641,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="8718062187489036808">Sign Out of Chrome</translation>
 <translation id="873133009373065397">Google Chrome ne more določiti ali nastaviti privzetega brskalnika</translation>
 <translation id="8748735421235723888">Chrome sprosti pomnilnik z neaktivnih zavihkov. Tako imajo aktivni zavihki in druge aplikacije več računalniških sredstev, Chrome pa je še naprej hiter. Neaktivni zavihki znova postanejo aktivni, ko se vrnete nanje. <ph name="BEGIN_LINK" />Preberite več o varčevanju s pomnilnikom<ph name="END_LINK" /></translation>
+<translation id="8753189155654018347">Odstrani podatke te aplikacije iz Chroma</translation>
 <translation id="8765470054473112089">Ko tipkate v naslovno vrstico ali iskalno polje, Chrome vaše vnose pošlje v privzeti iskalnik zaradi boljših predlogov. V anonimnem načinu je to izklopljeno.</translation>
 <translation id="8781673607513845160">Če želite uporabljati kamero, omogočite Chromu dostop v <ph name="BEGIN_LINK" />sistemskih nastavitvah<ph name="END_LINK" />.</translation>
 <translation id="878572486461146056">Napaka pri namestitvi: Skrbnik omrežja je uveljavil pravilnik skupine, ki preprečuje namestitev: <ph name="INSTALL_ERROR" /></translation>

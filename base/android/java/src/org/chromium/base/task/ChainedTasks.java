@@ -7,6 +7,7 @@ package org.chromium.base.task;
 import android.util.Pair;
 
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.LinkedList;
 
@@ -24,6 +25,7 @@ import javax.annotation.concurrent.GuardedBy;
  * may run with arbitrary TaskTraits, unless tasks are coalesced, in which case all tasks must run
  * on the same thread.
  */
+@NullMarked
 public class ChainedTasks {
     private final LinkedList<Pair<Integer, Runnable>> mTasks = new LinkedList<>();
 

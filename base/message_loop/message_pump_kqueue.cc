@@ -71,8 +71,9 @@ MessagePumpKqueue::FdWatchController::~FdWatchController() {
 }
 
 bool MessagePumpKqueue::FdWatchController::StopWatchingFileDescriptor() {
-  if (!pump_)
+  if (!pump_) {
     return true;
+  }
   return pump_->StopWatchingFileDescriptor(this);
 }
 
@@ -106,8 +107,9 @@ MessagePumpKqueue::MachPortWatchController::~MachPortWatchController() {
 }
 
 bool MessagePumpKqueue::MachPortWatchController::StopWatchingMachPort() {
-  if (!pump_)
+  if (!pump_) {
     return true;
+  }
   return pump_->StopWatchingMachPort(this);
 }
 
@@ -175,20 +177,24 @@ void MessagePumpKqueue::Run(Delegate* delegate) {
       apple::ScopedNSAutoreleasePool pool;
 
       bool do_more_work = DoInternalWork(delegate, nullptr);
-      if (!keep_running_)
+      if (!keep_running_) {
         break;
+      }
 
       Delegate::NextWorkInfo next_work_info = delegate->DoWork();
       do_more_work |= next_work_info.is_immediate();
-      if (!keep_running_)
+      if (!keep_running_) {
         break;
+      }
 
-      if (do_more_work)
+      if (do_more_work) {
         continue;
+      }
 
       delegate->DoIdleWork();
-      if (!keep_running_)
+      if (!keep_running_) {
         break;
+      }
 
       DoInternalWork(delegate, &next_work_info);
     }
@@ -205,14 +211,16 @@ void MessagePumpKqueue::RunBatched(Delegate* delegate) {
     apple::ScopedNSAutoreleasePool pool;
 
     Delegate::NextWorkInfo next_work_info = delegate->DoWork();
-    if (!keep_running_)
+    if (!keep_running_) {
       break;
+    }
 
     if (!next_work_info.is_immediate()) {
       delegate->DoIdleWork();
     }
-    if (!keep_running_)
+    if (!keep_running_) {
       break;
+    }
 
     int batch_size = 0;
     if (DoInternalWork(delegate, &next_work_info)) {
@@ -409,8 +417,9 @@ bool MessagePumpKqueue::StopWatchingFileDescriptor(
   int mode = controller->mode();
   controller->Reset();
 
-  if (fd < 0)
+  if (fd < 0) {
     return true;
+  }
 
   std::vector<kevent64_s> events;
 
@@ -582,8 +591,9 @@ void MessagePumpKqueue::MaybeUpdateWakeupTimer(
     PCHECK(rv == 0) << "kevent64, set timer";
 
     // Bump the event count if we just added the timer.
-    if (scheduled_wakeup_time_ == base::TimeTicks::Max())
+    if (scheduled_wakeup_time_ == base::TimeTicks::Max()) {
       ++event_count_;
+    }
   }
 
   scheduled_wakeup_time_ = wakeup_time;

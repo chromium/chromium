@@ -45,10 +45,6 @@ BASE_FEATURE(kWinDelaySpellcheckServiceInit,
              "WinDelaySpellcheckServiceInit",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWinRetrieveSuggestionsOnlyOnDemand,
-             "WinRetrieveSuggestionsOnlyOnDemand",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)

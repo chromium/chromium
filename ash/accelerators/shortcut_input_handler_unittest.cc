@@ -7,7 +7,7 @@
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/test/ash_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/accelerators/ash/right_alt_event_property.h"
+#include "ui/base/accelerators/ash/quick_insert_event_property.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -127,15 +127,15 @@ TEST_F(ShortcutInputHandlerTest, ShowAllWindows) {
   EXPECT_EQ(observer_->key_code(), ui::VKEY_MEDIA_LAUNCH_APP1);
 }
 
-TEST_F(ShortcutInputHandlerTest, RightAlt) {
+TEST_F(ShortcutInputHandlerTest, QuickInsert) {
   ui::KeyEvent prerewritten_pressed_event =
       ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_ASSISTANT,
                    ui::DomCode::LAUNCH_ASSISTANT, ui::EF_NONE);
-  ui::SetRightAltProperty(&prerewritten_pressed_event);
+  ui::SetQuickInsertProperty(&prerewritten_pressed_event);
 
   shortcut_input_handler_->OnPrerewriteKeyInputEvent(
       prerewritten_pressed_event);
-  EXPECT_EQ(observer_->key_code(), ui::VKEY_RIGHT_ALT);
+  EXPECT_EQ(observer_->key_code(), ui::VKEY_QUICK_INSERT);
 }
 
 }  // namespace ash

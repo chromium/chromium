@@ -77,15 +77,13 @@ class TabGroupHeader : public TabSlotView,
   // TODO(crbug.com/372296676): Make TabGroupHeader observe the group for
   // changes to cut down on the number of times we recalculate the view.
   void VisualsChanged();
-  void UpdateAccessibleName();
 
   int GetCollapsedHeaderWidth() const;
 
   // Removes {editor_bubble_tracker_} from observing the widget.
   void RemoveObserverFromWidget(views::Widget* widget);
 
-  // Enables or disables attention indicator on a tab group. This
-  // function no-ops if the tab group is currently expanded.
+  // Enables or disables attention indicator on a tab group.
   void SetTabGroupNeedsAttention(bool needs_attention);
 
   // Returns whether the attention indicator should be shown.
@@ -105,17 +103,23 @@ class TabGroupHeader : public TabSlotView,
   // Determines if the sync icon should be shown in the header.
   bool ShouldShowHeaderIcon() const;
 
-  void UpdateIsCollapsed();
+  // Updates the local is_collapsed_ state.
+  void SetCollapsedState();
 
   void UpdateTitleView();
   void UpdateSyncIconView();
   void UpdateAttentionIndicatorView();
+  void UpdateIsCollapsed();
+  void UpdateAccessibleName();
 
   // Creates a squircle (cross between a square and a circle).
   void CreateHeaderWithoutTitle();
   // Creates a round rect, similar to the shape of a tab when hovered but not
   // selected.
   void CreateHeaderWithTitle();
+
+  // Callback for tab group visuals changing.
+  void OnTabGroupVisualsChanged();
 
   const raw_ref<TabSlotController> tab_slot_controller_;
 

@@ -172,7 +172,7 @@ TEST_F(RenderViewHostTest, DragEnteredFileURLsStillBlocked) {
       dropped_data, client_point, screen_point, blink::kDragOperationNone, 0,
       base::DoNothing());
 
-  int id = process()->GetID();
+  int id = process()->GetDeprecatedID();
   ChildProcessSecurityPolicyImpl* policy =
       ChildProcessSecurityPolicyImpl::GetInstance();
 
@@ -194,7 +194,7 @@ TEST_F(RenderViewHostTest, MessageWithBadHistoryItemFiles) {
   EXPECT_EQ(1, process()->bad_msg_count());
 
   ChildProcessSecurityPolicyImpl::GetInstance()->GrantReadFile(
-      process()->GetID(), file_path);
+      process()->GetDeprecatedID(), file_path);
   test_rvh()->TestOnUpdateStateWithFile(file_path);
   EXPECT_EQ(1, process()->bad_msg_count());
 }
@@ -214,7 +214,7 @@ TEST_F(RenderViewHostTest, NavigationWithBadHistoryItemFiles) {
   EXPECT_EQ(1, process()->bad_msg_count());
 
   ChildProcessSecurityPolicyImpl::GetInstance()->GrantReadFile(
-      process()->GetID(), file_path);
+      process()->GetDeprecatedID(), file_path);
   auto navigation2 =
       NavigationSimulatorImpl::CreateRendererInitiated(url, main_test_rfh());
   navigation2->set_page_state(

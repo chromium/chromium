@@ -31,7 +31,6 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/mirroring/service/captured_audio_input.h"
 #include "components/mirroring/service/mirroring_features.h"
 #include "components/mirroring/service/rpc_dispatcher_impl.h"
@@ -69,7 +68,6 @@ using media::cast::FrameSenderConfig;
 using media::cast::OperationalStatus;
 using media::cast::Packet;
 using media::cast::PacketEvent;
-using media::cast::RtpPayloadType;
 using media::mojom::RemotingSinkAudioCapability;
 using media::mojom::RemotingSinkVideoCapability;
 using mirroring::mojom::SessionError;
@@ -220,11 +218,9 @@ void RecordRemotePlaybackSessionStartsBeforeTimeout(bool started) {
 // reportable error, returns nullptr.
 const char* AsErrorMessage(OperationalStatus status) {
   switch (status) {
+    // Not errors.
     case OperationalStatus::STATUS_UNINITIALIZED:
     case OperationalStatus::STATUS_CODEC_REINIT_PENDING:
-    // Not an error.
-    // TODO(crbug.com/40103719): As an optimization, signal the client to pause
-    // sending more frames until the state becomes STATUS_INITIALIZED again.
     case OperationalStatus::STATUS_INITIALIZED:
       return nullptr;
 
@@ -294,8 +290,9 @@ class OpenscreenSessionHost::AudioCapturingCallback final
     std::string error_message = base::StrCat(
         {"AudioCaptureError occurred, code: ",
          base::NumberToString(static_cast<int>(code)), ", message: ", message});
-    if (!error_callback_.is_null())
+    if (!error_callback_.is_null()) {
       std::move(error_callback_).Run(error_message);
+    }
   }
 
   void OnCaptureMuted(bool is_muted) override {
@@ -416,8 +413,9 @@ void OpenscreenSessionHost::OnNegotiated(
     const openscreen::cast::SenderSession* session,
     openscreen::cast::SenderSession::ConfiguredSenders senders,
     Recommendations capture_recommendations) {
-  if (state_ == State::kStopped)
+  if (state_ == State::kStopped) {
     return;
+  }
 
   const media::AudioCodec audio_codec =
       media::cast::ToAudioCodec(senders.audio_config.codec);
@@ -494,33 +492,14 @@ void OpenscreenSessionHost::OnNegotiated(
   if (senders.audio_sender) {
     auto audio_sender = std::make_unique<media::cast::AudioSender>(
         cast_environment_, *audio_config,
-        base::BindOnce(&OpenscreenSessionHost::OnEncoderStatusChange,
+        base::BindOnce(&OpenscreenSessionHost::OnAudioEncoderStatus,
                        // Safe because we own `audio_stream`.
                        weak_factory_.GetWeakPtr(), *audio_config),
         std::move(senders.audio_sender));
     audio_stream_ = std::make_unique<AudioRtpStream>(
         std::move(audio_sender), weak_factory_.GetWeakPtr());
-    DCHECK(!audio_capturing_callback_);
-    // TODO(crbug.com/40103719): Eliminate the thread hops. The audio data is
-    // thread-hopped from the audio thread, and later thread-hopped again to
-    // the encoding thread.
-    audio_capturing_callback_ = std::make_unique<AudioCapturingCallback>(
-        base::BindPostTaskToCurrentDefault(base::BindRepeating(
-            &AudioRtpStream::InsertAudio, audio_stream_->AsWeakPtr())),
-        base::BindPostTaskToCurrentDefault(base::BindOnce(
-            &OpenscreenSessionHost::ReportAndLogError,
-            weak_factory_.GetWeakPtr(), SessionError::AUDIO_CAPTURE_ERROR)),
-        observer_);
-    audio_input_device_ = new media::AudioInputDevice(
-        std::make_unique<CapturedAudioInput>(
-            base::BindRepeating(&OpenscreenSessionHost::CreateAudioStream,
-                                base::Unretained(this)),
-            observer_),
-        media::AudioInputDevice::Purpose::kLoopback,
-        media::AudioInputDevice::DeadStreamDetection::kEnabled);
-    audio_input_device_->Initialize(mirror_settings_.GetAudioCaptureParams(),
-                                    audio_capturing_callback_.get());
-    audio_input_device_->Start();
+    CHECK(!audio_capturing_callback_);
+    StartCapturingAudio();
   }
 
   if (senders.video_sender) {
@@ -530,7 +509,7 @@ void OpenscreenSessionHost::OnNegotiated(
         metrics_provider_pending_remote.InitWithNewPipeAndPassReceiver());
     auto video_sender = std::make_unique<media::cast::VideoSender>(
         cast_environment_, *video_config,
-        base::BindRepeating(&OpenscreenSessionHost::OnEncoderStatusChange,
+        base::BindRepeating(&OpenscreenSessionHost::OnVideoEncoderStatus,
                             weak_factory_.GetWeakPtr(), *video_config),
         base::BindRepeating(
             &OpenscreenSessionHost::CreateVideoEncodeAccelerator,
@@ -558,26 +537,10 @@ void OpenscreenSessionHost::OnNegotiated(
         static_cast<int>(
             mirror_settings_.refresh_interval().InMilliseconds())));
 
-    if (!video_capture_client_) {
-      mojo::PendingRemote<media::mojom::VideoCaptureHost> video_host;
-      resource_provider_->GetVideoCaptureHost(
-          video_host.InitWithNewPipeAndPassReceiver());
-      const media::VideoCaptureParams& capture_params =
-          mirror_settings_.GetVideoCaptureParams();
-      video_capture_client_ = std::make_unique<VideoCaptureClient>(
-          capture_params, std::move(video_host));
-      logger_.LogInfo(base::StrCat({"Starting VideoCaptureHost with params ",
-                                    ToString(capture_params)}));
-      video_capture_client_->Start(
-          base::BindRepeating(&VideoRtpStream::InsertVideoFrame,
-                              video_stream_->AsWeakPtr()),
-          base::BindOnce(&OpenscreenSessionHost::ReportAndLogError,
-                         weak_factory_.GetWeakPtr(),
-                         SessionError::VIDEO_CAPTURE_ERROR,
-                         "VideoCaptureClient reported an error."));
+    if (video_capture_client_ && video_stream_) {
+      ResumeCapturingVideo();
     } else {
-      video_capture_client_->Resume(base::BindRepeating(
-          &VideoRtpStream::InsertVideoFrame, video_stream_->AsWeakPtr()));
+      StartCapturingVideo();
     }
   }
 
@@ -595,8 +558,8 @@ void OpenscreenSessionHost::OnNegotiated(
       InitMediaRemoter(capabilities);
       // Hold off video and audio streaming while waiting for the session to
       // switch to Remoting.
-      video_capture_client_->Pause();
-      audio_input_device_->Stop();
+      PauseCapturingVideo();
+      StopCapturingAudio();
       remote_playback_start_time_ = base::Time::Now();
       remote_playback_start_timer_.Start(
           FROM_HERE, kStartRemotePlaybackTimeOut,
@@ -634,8 +597,9 @@ void OpenscreenSessionHost::OnCapabilitiesDetermined(
   // mojom interface. Generally speaking, receivers do not update their remoting
   // capabilities during a single session.
   DCHECK(!media_remoter_);
-  if (state_ == State::kStopped)
+  if (state_ == State::kStopped) {
     return;
+  }
 
   InitMediaRemoter(capabilities);
 }
@@ -679,15 +643,17 @@ void OpenscreenSessionHost::OnError(const std::string& message) {
 }
 
 void OpenscreenSessionHost::RequestRefreshFrame() {
-  if (video_capture_client_)
+  if (video_capture_client_) {
     video_capture_client_->RequestRefreshFrame();
+  }
 }
 
 void OpenscreenSessionHost::CreateVideoEncodeAccelerator(
     media::cast::ReceiveVideoEncodeAcceleratorCallback callback) {
   DCHECK_NE(state_, State::kInitializing);
-  if (callback.is_null())
+  if (callback.is_null()) {
     return;
+  }
 
   std::unique_ptr<media::VideoEncodeAccelerator> mojo_vea;
   if (gpu_ && !supported_profiles_.empty()) {
@@ -723,16 +689,15 @@ void OpenscreenSessionHost::ConnectToRemotingSource(
 void OpenscreenSessionHost::RequestRemotingStreaming() {
   DCHECK(media_remoter_);
   DCHECK_EQ(State::kMirroring, state_);
-  if (video_capture_client_)
-    video_capture_client_->Pause();
   StopStreaming();
   state_ = State::kRemoting;
   Negotiate();
 }
 
 void OpenscreenSessionHost::RestartMirroringStreaming() {
-  if (state_ != State::kRemoting)
+  if (state_ != State::kRemoting) {
     return;
+  }
 
   // Stop session instead of switching to mirroring when in Remote Playback
   // mode.
@@ -747,8 +712,9 @@ void OpenscreenSessionHost::RestartMirroringStreaming() {
 }
 
 void OpenscreenSessionHost::SwitchSourceTab() {
-  if (observer_)
+  if (observer_) {
     observer_->OnSourceChanged();
+  }
 
   if (state_ == State::kRemoting) {
     switching_tab_source_ = true;
@@ -773,8 +739,9 @@ void OpenscreenSessionHost::SwitchSourceTab() {
     audio_input_device_->Start();
   }
 
-  if (media_remoter_)
+  if (media_remoter_) {
     media_remoter_->OnMirroringResumed(true);
+  }
 }
 
 void OpenscreenSessionHost::OnAsyncInitialized(
@@ -790,8 +757,9 @@ void OpenscreenSessionHost::OnAsyncInitialized(
   state_ = State::kMirroring;
 
   Negotiate();
-  if (!initialized_cb_.is_null())
+  if (!initialized_cb_.is_null()) {
     std::move(initialized_cb_).Run();
+  }
 }
 
 void OpenscreenSessionHost::ReportAndLogError(SessionError error,
@@ -807,8 +775,9 @@ void OpenscreenSessionHost::ReportAndLogError(SessionError error,
   }
 
   // Report the error and stop this session.
-  if (observer_)
+  if (observer_) {
     observer_->OnError(error);
+  }
 
   StopSession();
 }
@@ -817,14 +786,12 @@ void OpenscreenSessionHost::StopStreaming() {
   logger_.LogInfo(
       base::StrCat({"stopped streaming. state=",
                     base::NumberToString(static_cast<int>(state_))}));
-  if (!cast_environment_)
+  if (!cast_environment_) {
     return;
-
-  if (audio_input_device_) {
-    audio_input_device_->Stop();
-    audio_input_device_ = nullptr;
   }
-  audio_capturing_callback_.reset();
+
+  StopCapturingAudio();
+  PauseCapturingVideo();
   audio_stream_.reset();
   video_stream_.reset();
 
@@ -837,8 +804,9 @@ void OpenscreenSessionHost::StopSession() {
   logger_.LogInfo(
       base::StrCat({"stopped session. state=",
                     base::NumberToString(static_cast<int>(state_))}));
-  if (state_ == State::kStopped)
+  if (state_ == State::kStopped) {
     return;
+  }
 
   state_ = State::kStopped;
   StopStreaming();
@@ -902,9 +870,6 @@ void OpenscreenSessionHost::SetConstraints(
     // TODO(crbug.com/1363512): Remove support for sender side letterboxing.
     if (session_params_.force_letterboxing) {
       mirror_settings_.SetSenderSideLetterboxingEnabled(true);
-    } else if (base::FeatureList::IsEnabled(
-                   features::kCastDisableLetterboxing)) {
-      mirror_settings_.SetSenderSideLetterboxingEnabled(false);
     } else {
       // Enable sender-side letterboxing if the receiver specifically does not
       // opt-in to variable aspect ratio video.
@@ -937,30 +902,60 @@ void OpenscreenSessionHost::CreateAudioStream(
                                         shared_memory_count);
 }
 
-void OpenscreenSessionHost::OnEncoderStatusChange(
+void OpenscreenSessionHost::OnAudioEncoderStatus(
     const FrameSenderConfig& config,
     OperationalStatus status) {
+  CHECK(config.is_audio());
   const char* error_message = AsErrorMessage(status);
-  if (!error_message) {
-    return;
+  if (error_message) {
+    ReportAndLogError(SessionError::ENCODING_ERROR, error_message);
   }
+}
 
-  // If we used a hardware video encoder and it failed, denylist it for the rest
-  // of the browsing session and try renegotiating.
-  if (config.use_hardware_encoder && config.is_video()) {
-    CHECK_EQ(state_, State::kMirroring);
+void OpenscreenSessionHost::OnVideoEncoderStatus(
+    const FrameSenderConfig& config,
+    OperationalStatus status) {
+  CHECK(config.is_video());
+  switch (status) {
+    case OperationalStatus::STATUS_UNINITIALIZED:
+      break;
 
-    media::cast::encoding_support::DenyListHardwareCodec(config.video_codec());
-    StopStreaming();
-    Negotiate();
+    case OperationalStatus::STATUS_CODEC_REINIT_PENDING:
+      PauseCapturingVideo();
+      break;
 
-    base::UmaHistogramEnumeration(
-        "MediaRouter.MirroringService.DisabledHardwareCodecAndRenegotiated",
-        config.video_codec());
-    return;
+    case OperationalStatus::STATUS_INITIALIZED: {
+      const bool should_resume = has_video_encoder_been_initialized_ &&
+                                 is_video_capture_paused_ &&
+                                 state_ != State::kStopped;
+      if (should_resume) {
+        ResumeCapturingVideo();
+      }
+      has_video_encoder_been_initialized_ = true;
+      break;
+    }
+
+    default:
+      // If we used a hardware encoder and it failed, denylist it for the rest
+      // of the browsing session and try renegotiating.
+      if (config.use_hardware_encoder) {
+        PauseCapturingVideo();
+        CHECK_EQ(state_, State::kMirroring);
+
+        media::cast::encoding_support::DenyListHardwareCodec(
+            config.video_codec());
+        StopStreaming();
+        Negotiate();
+
+        base::UmaHistogramEnumeration(
+            "MediaRouter.MirroringService.DisabledHardwareCodecAndRenegotiated",
+            config.video_codec());
+        return;
+      }
+
+      ReportAndLogError(SessionError::ENCODING_ERROR, AsErrorMessage(status));
+      break;
   }
-
-  ReportAndLogError(SessionError::ENCODING_ERROR, error_message);
 }
 
 void OpenscreenSessionHost::SetTargetPlayoutDelay(
@@ -1062,8 +1057,8 @@ void OpenscreenSessionHost::NegotiateMirroring() {
   std::vector<openscreen::cast::VideoCaptureConfig> video_configs;
 
   if (session_params_.type != SessionType::VIDEO_ONLY) {
-    last_offered_audio_config_ = MirrorSettings::GetDefaultAudioConfig(
-        RtpPayloadType::AUDIO_OPUS, media::AudioCodec::kOpus);
+    last_offered_audio_config_ =
+        MirrorSettings::GetDefaultAudioConfig(media::AudioCodec::kOpus);
     UpdateConfigUsingSessionParameters(session_params_,
                                        *last_offered_audio_config_);
     UpdateAudioConfigMaxBitrate(*last_offered_audio_config_);
@@ -1083,8 +1078,8 @@ void OpenscreenSessionHost::NegotiateMirroring() {
         media::cast::encoding_support::IsHardwareEnabled(
             media::VideoCodec::kVP8, supported_profiles_);
     if (should_offer_hardware_vp9) {
-      FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
-          RtpPayloadType::VIDEO_VP9, media::VideoCodec::kVP9);
+      FrameSenderConfig config =
+          MirrorSettings::GetDefaultVideoConfig(media::VideoCodec::kVP9);
       UpdateConfigUsingSessionParameters(session_params_, config);
       config.use_hardware_encoder = true;
       last_offered_video_configs_.push_back(config);
@@ -1092,8 +1087,8 @@ void OpenscreenSessionHost::NegotiateMirroring() {
     }
 
     if (should_offer_hardware_h264) {
-      FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
-          RtpPayloadType::VIDEO_H264, media::VideoCodec::kH264);
+      FrameSenderConfig config =
+          MirrorSettings::GetDefaultVideoConfig(media::VideoCodec::kH264);
       UpdateConfigUsingSessionParameters(session_params_, config);
       config.use_hardware_encoder = true;
       last_offered_video_configs_.push_back(config);
@@ -1101,8 +1096,8 @@ void OpenscreenSessionHost::NegotiateMirroring() {
     }
 
     if (should_offer_hardware_vp8) {
-      FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
-          RtpPayloadType::VIDEO_VP8, media::VideoCodec::kVP8);
+      FrameSenderConfig config =
+          MirrorSettings::GetDefaultVideoConfig(media::VideoCodec::kVP8);
       UpdateConfigUsingSessionParameters(session_params_, config);
       config.use_hardware_encoder = true;
       last_offered_video_configs_.push_back(config);
@@ -1112,8 +1107,8 @@ void OpenscreenSessionHost::NegotiateMirroring() {
     // Then add software AV1 if enabled.
     if (media::cast::encoding_support::IsSoftwareEnabled(
             media::VideoCodec::kAV1)) {
-      FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
-          RtpPayloadType::VIDEO_AV1, media::VideoCodec::kAV1);
+      FrameSenderConfig config =
+          MirrorSettings::GetDefaultVideoConfig(media::VideoCodec::kAV1);
       UpdateConfigUsingSessionParameters(session_params_, config);
       last_offered_video_configs_.push_back(config);
       video_configs.push_back(ToOpenscreenVideoConfig(config));
@@ -1124,8 +1119,8 @@ void OpenscreenSessionHost::NegotiateMirroring() {
     if (!should_offer_hardware_vp9 &&
         media::cast::encoding_support::IsSoftwareEnabled(
             media::VideoCodec::kVP9)) {
-      FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
-          RtpPayloadType::VIDEO_VP9, media::VideoCodec::kVP9);
+      FrameSenderConfig config =
+          MirrorSettings::GetDefaultVideoConfig(media::VideoCodec::kVP9);
       UpdateConfigUsingSessionParameters(session_params_, config);
       last_offered_video_configs_.push_back(config);
       video_configs.push_back(ToOpenscreenVideoConfig(config));
@@ -1135,8 +1130,8 @@ void OpenscreenSessionHost::NegotiateMirroring() {
     if (!should_offer_hardware_vp8 &&
         media::cast::encoding_support::IsSoftwareEnabled(
             media::VideoCodec::kVP8)) {
-      FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
-          RtpPayloadType::VIDEO_VP8, media::VideoCodec::kVP8);
+      FrameSenderConfig config =
+          MirrorSettings::GetDefaultVideoConfig(media::VideoCodec::kVP8);
       UpdateConfigUsingSessionParameters(session_params_, config);
       last_offered_video_configs_.push_back(config);
       video_configs.push_back(ToOpenscreenVideoConfig(config));
@@ -1152,13 +1147,13 @@ void OpenscreenSessionHost::NegotiateMirroring() {
 }
 
 void OpenscreenSessionHost::NegotiateRemoting() {
-  FrameSenderConfig audio_config = MirrorSettings::GetDefaultAudioConfig(
-      RtpPayloadType::REMOTE_AUDIO, media::AudioCodec::kUnknown);
+  FrameSenderConfig audio_config =
+      MirrorSettings::GetDefaultAudioConfig(media::AudioCodec::kUnknown);
   UpdateAudioConfigMaxBitrate(audio_config);
   UpdateConfigUsingSessionParameters(session_params_, audio_config);
 
-  FrameSenderConfig video_config = MirrorSettings::GetDefaultVideoConfig(
-      RtpPayloadType::REMOTE_VIDEO, media::VideoCodec::kUnknown);
+  FrameSenderConfig video_config =
+      MirrorSettings::GetDefaultVideoConfig(media::VideoCodec::kUnknown);
   UpdateConfigUsingSessionParameters(session_params_, video_config);
 
   last_offered_audio_config_ = audio_config;
@@ -1189,6 +1184,82 @@ void OpenscreenSessionHost::OnRemotingStartTimeout() {
   }
   StopSession();
   RecordRemotePlaybackSessionStartsBeforeTimeout(false);
+}
+
+void OpenscreenSessionHost::StartCapturingAudio() {
+  CHECK(!audio_capturing_callback_);
+  CHECK(!audio_input_device_);
+
+  // TODO(crbug.com/40103719): Eliminate the thread hops. The audio data is
+  // thread-hopped from the audio thread, and later thread-hopped again to
+  // the encoding thread.
+  audio_capturing_callback_ = std::make_unique<AudioCapturingCallback>(
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
+          &AudioRtpStream::InsertAudio, audio_stream_->AsWeakPtr())),
+      base::BindPostTaskToCurrentDefault(base::BindOnce(
+          &OpenscreenSessionHost::ReportAndLogError, weak_factory_.GetWeakPtr(),
+          SessionError::AUDIO_CAPTURE_ERROR)),
+      observer_);
+
+  audio_input_device_ = new media::AudioInputDevice(
+      std::make_unique<CapturedAudioInput>(
+          base::BindRepeating(&OpenscreenSessionHost::CreateAudioStream,
+                              base::Unretained(this)),
+          observer_),
+      media::AudioInputDevice::Purpose::kLoopback,
+      media::AudioInputDevice::DeadStreamDetection::kEnabled);
+
+  audio_input_device_->Initialize(mirror_settings_.GetAudioCaptureParams(),
+                                  audio_capturing_callback_.get());
+  audio_input_device_->Start();
+}
+
+void OpenscreenSessionHost::StopCapturingAudio() {
+  if (audio_input_device_) {
+    audio_input_device_->Stop();
+    audio_input_device_ = nullptr;
+  }
+  audio_capturing_callback_.reset();
+}
+
+void OpenscreenSessionHost::StartCapturingVideo() {
+  mojo::PendingRemote<media::mojom::VideoCaptureHost> video_host;
+  resource_provider_->GetVideoCaptureHost(
+      video_host.InitWithNewPipeAndPassReceiver());
+  const media::VideoCaptureParams& capture_params =
+      mirror_settings_.GetVideoCaptureParams();
+  video_capture_client_ = std::make_unique<VideoCaptureClient>(
+      capture_params, std::move(video_host));
+  logger_.LogInfo(base::StrCat(
+      {"Starting VideoCaptureHost with params ", ToString(capture_params)}));
+
+  video_capture_client_->Start(
+      base::BindRepeating(&VideoRtpStream::InsertVideoFrame,
+                          video_stream_->AsWeakPtr()),
+      base::BindOnce(&OpenscreenSessionHost::ReportAndLogError,
+                     weak_factory_.GetWeakPtr(),
+                     SessionError::VIDEO_CAPTURE_ERROR,
+                     "VideoCaptureClient reported an error."));
+}
+
+void OpenscreenSessionHost::PauseCapturingVideo() {
+  // It's not an error to request pausing while already paused.
+  if (is_video_capture_paused_) {
+    return;
+  }
+  if (video_capture_client_) {
+    video_capture_client_->Pause();
+  }
+  is_video_capture_paused_ = true;
+}
+
+void OpenscreenSessionHost::ResumeCapturingVideo() {
+  CHECK(is_video_capture_paused_);
+  if (video_capture_client_ && video_stream_) {
+    video_capture_client_->Resume(base::BindRepeating(
+        &VideoRtpStream::InsertVideoFrame, video_stream_->AsWeakPtr()));
+  }
+  is_video_capture_paused_ = false;
 }
 
 network::mojom::NetworkContext* OpenscreenSessionHost::GetNetworkContext() {

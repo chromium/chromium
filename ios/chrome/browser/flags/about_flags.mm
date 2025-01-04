@@ -27,6 +27,7 @@
 #import "components/autofill/ios/common/features.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/browser_sync/browser_sync_switches.h"
+#import "components/collaboration/public/features.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/commerce/core/flag_descriptions.h"
 #import "components/content_settings/core/common/features.h"
@@ -45,8 +46,8 @@
 #import "components/invalidation/impl/invalidation_switches.h"
 #import "components/ntp_tiles/features.h"
 #import "components/ntp_tiles/switches.h"
-#import "components/omnibox/browser/omnibox_feature_configs.h"
 #import "components/omnibox/browser/omnibox_field_trial.h"
+#import "components/omnibox/common/omnibox_feature_configs.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/optimization_guide/core/optimization_guide_switches.h"
@@ -74,12 +75,14 @@
 #import "components/translate/core/browser/translate_prefs.h"
 #import "components/translate/core/common/translate_util.h"
 #import "ios/chrome/app/background_mode_buildflags.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_features.h"
 #import "ios/chrome/browser/crash_report/model/features.h"
 #import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/download/ui_bundled/features.h"
 #import "ios/chrome/browser/find_in_page/model/util.h"
+#import "ios/chrome/browser/first_run/ui_bundled/features.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/flags/ios_chrome_flag_descriptions.h"
 #import "ios/chrome/browser/follow/model/follow_features.h"
@@ -97,13 +100,13 @@
 #import "ios/chrome/browser/screen_time/model/screen_time_buildflags.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/features.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_guide/features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/text_selection/model/text_selection_util.h"
-#import "ios/chrome/browser/ui/authentication/signin/interruptible_chrome_coordinator.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 #import "ios/chrome/browser/web/model/features.h"
@@ -1133,39 +1136,19 @@ const FeatureEntry::FeatureParam kNewFeedPositioningArm2[] = {
     {kNewFeedPositioningCombinedMVTForHighEngaged, "true"},
     {kNewFeedPositioningCombinedMVTForMidEngaged, "false"},
     {kNewFeedPositioningCombinedMVTForLowEngaged, "false"},
-    {kNewFeedPositioningHomestackOnForAll, "true"},
 };
 
 const FeatureEntry::FeatureParam kNewFeedPositioningArm3[] = {
     {kNewFeedPositioningCombinedMVTForHighEngaged, "true"},
     {kNewFeedPositioningCombinedMVTForMidEngaged, "true"},
     {kNewFeedPositioningCombinedMVTForLowEngaged, "false"},
-    {kNewFeedPositioningHomestackOnForAll, "true"},
-};
-
-const FeatureEntry::FeatureParam kNewFeedPositioningArm4[] = {
-    {kNewFeedPositioningCombinedMVTForHighEngaged, "true"},
-    {kNewFeedPositioningCombinedMVTForMidEngaged, "false"},
-    {kNewFeedPositioningCombinedMVTForLowEngaged, "false"},
-    {kNewFeedPositioningHomestackOnForAll, "false"},
-};
-
-const FeatureEntry::FeatureParam kNewFeedPositioningArm5[] = {
-    {kNewFeedPositioningCombinedMVTForHighEngaged, "true"},
-    {kNewFeedPositioningCombinedMVTForMidEngaged, "true"},
-    {kNewFeedPositioningCombinedMVTForLowEngaged, "false"},
-    {kNewFeedPositioningHomestackOnForAll, "false"},
 };
 
 const FeatureEntry::FeatureVariation kNewFeedPositioningVariations[] = {
-    {"- Treatment 2", kNewFeedPositioningArm2,
+    {"- update for high feed engagement", kNewFeedPositioningArm2,
      std::size(kNewFeedPositioningArm2), nullptr},
-    {"- Treatment 3", kNewFeedPositioningArm3,
+    {"- update for high and mid feed engagement", kNewFeedPositioningArm3,
      std::size(kNewFeedPositioningArm3), nullptr},
-    {"- Treatment 4", kNewFeedPositioningArm4,
-     std::size(kNewFeedPositioningArm4), nullptr},
-    {"- Treatment 5", kNewFeedPositioningArm5,
-     std::size(kNewFeedPositioningArm5), nullptr},
 };
 
 const FeatureEntry::FeatureParam
@@ -1202,6 +1185,37 @@ const FeatureEntry::FeatureVariation kSetUpListInFirstRunVariations[] = {
      std::size(kSetUpListInFirstRunArm2), nullptr},
     {" - Variation 3", kSetUpListInFirstRunArm3,
      std::size(kSetUpListInFirstRunArm3), nullptr}};
+
+const FeatureEntry::FeatureParam kSetUpListDuration3Days[] = {
+    {set_up_list::kSetUpListDurationParam, "2"}};
+const FeatureEntry::FeatureParam kSetUpListDuration5Days[] = {
+    {set_up_list::kSetUpListDurationParam, "4"}};
+const FeatureEntry::FeatureParam kSetUpListDuration7Days[] = {
+    {set_up_list::kSetUpListDurationParam, "6"}};
+
+const FeatureEntry::FeatureVariation kSetUpListDurationVariations[] = {
+    {" - 3 Days", kSetUpListDuration3Days, std::size(kSetUpListDuration3Days),
+     nullptr},
+    {" - 5 Days", kSetUpListDuration5Days, std::size(kSetUpListDuration5Days),
+     nullptr},
+    {" - 7 Days", kSetUpListDuration7Days, std::size(kSetUpListDuration7Days),
+     nullptr}};
+
+const FeatureEntry::FeatureParam kUpdatedFirstRunSequenceArm1[] = {
+    {first_run::kUpdatedFirstRunSequenceParam, "1"}};
+const FeatureEntry::FeatureParam kUpdatedFirstRunSequenceArm2[] = {
+    {first_run::kUpdatedFirstRunSequenceParam, "2"}};
+const FeatureEntry::FeatureParam kUpdatedFirstRunSequenceArm3[] = {
+    {first_run::kUpdatedFirstRunSequenceParam, "3"}};
+
+const FeatureEntry::FeatureVariation kUpdatedFirstRunSequenceVariations[] = {
+    {" - Default browser promo first", kUpdatedFirstRunSequenceArm1,
+     std::size(kUpdatedFirstRunSequenceArm1), nullptr},
+    {" - Remove sign in & sync conditionally", kUpdatedFirstRunSequenceArm2,
+     std::size(kUpdatedFirstRunSequenceArm2), nullptr},
+    {" - DB promo first and remove sign in & sync",
+     kUpdatedFirstRunSequenceArm3, std::size(kUpdatedFirstRunSequenceArm3),
+     nullptr}};
 
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
@@ -1321,15 +1335,17 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kModernTabStrip,
                                     kModernTabStripVariations,
                                     "ModernTabStrip")},
+    {"ios-enable-delete-all-saved-credentials",
+     flag_descriptions::kIOSEnableDeleteAllSavedCredentialsName,
+     flag_descriptions::kIOSEnableDeleteAllSavedCredentialsDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kIOSEnableDeleteAllSavedCredentials)},
     {"ios-shared-highlighting-color-change",
      flag_descriptions::kIOSSharedHighlightingColorChangeName,
      flag_descriptions::kIOSSharedHighlightingColorChangeDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kIOSSharedHighlightingColorChange)},
-    {"ios-shared-highlighting-v2",
-     flag_descriptions::kIOSSharedHighlightingV2Name,
-     flag_descriptions::kIOSSharedHighlightingV2Description, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(shared_highlighting::kIOSSharedHighlightingV2)},
     {"ios-tips-notifications", flag_descriptions::kIOSTipsNotificationsName,
      flag_descriptions::kIOSTipsNotificationsDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kIOSTipsNotifications,
@@ -1368,6 +1384,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kContentPushNotifications,
                                     kContentPushNotificationsVariations,
                                     "ContentPushNotifications")},
+    {"enable-lens-context-menu-unified-experience",
+     flag_descriptions::kEnableLensContextMenuUnifiedExperienceName,
+     flag_descriptions::kEnableLensContextMenuUnifiedExperienceDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kEnableLensContextMenuUnifiedExperience)},
     {"enable-lens-in-omnibox-copied-image",
      flag_descriptions::kEnableLensInOmniboxCopiedImageName,
      flag_descriptions::kEnableLensInOmniboxCopiedImageDescription,
@@ -1441,9 +1462,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"intents-on-measurements", flag_descriptions::kMeasurementsName,
      flag_descriptions::kMeasurementsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kEnableMeasurements)},
-    {"intents-on-viewport", flag_descriptions::kEnableViewportIntentsName,
-     flag_descriptions::kEnableViewportIntentsDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(web::features::kEnableViewportIntents)},
     {"improve-parcel-detection",
      flag_descriptions::kEnableNewParcelTrackingNumberDetectionName,
      flag_descriptions::kEnableNewParcelTrackingNumberDetectionDescription,
@@ -1670,10 +1688,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOnlyAccessClipboardAsyncName,
      flag_descriptions::kOnlyAccessClipboardAsyncDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kOnlyAccessClipboardAsync)},
-    {"ios-edit-menu-hide-search-web",
-     flag_descriptions::kIOSEditMenuHideSearchWebName,
-     flag_descriptions::kIOSEditMenuHideSearchWebDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kIOSEditMenuHideSearchWeb)},
     {"autofill-enable-card-art-image",
      flag_descriptions::kAutofillEnableCardArtImageName,
      flag_descriptions::kAutofillEnableCardArtImageDescription,
@@ -1779,12 +1793,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"disable-lens-camera", flag_descriptions::kDisableLensCameraName,
      flag_descriptions::kDisableLensCameraDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDisableLensCamera)},
-    {"enable-color-lens-and-voice-icons-in-home-screen-widget",
-     flag_descriptions::kEnableColorLensAndVoiceIconsInHomeScreenWidgetName,
-     flag_descriptions::
-         kEnableColorLensAndVoiceIconsInHomeScreenWidgetDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kEnableColorLensAndVoiceIconsInHomeScreenWidget)},
     {"autofill-enable-card-benefits-for-american-express",
      flag_descriptions::kAutofillEnableCardBenefitsForAmericanExpressName,
      flag_descriptions::
@@ -1866,11 +1874,17 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
          kIdentityConfirmationSnackbar,
          kIdentityConfirmationSnackbarTestingVariations,
          "IdentityConfirmationSnackbar")},
-    {"ios-interruptible-coordinator-stop-synchronously",
-     flag_descriptions::kIOSInterruptibleChromeStoppedSynchronouslyName,
-     flag_descriptions::kIOSInterruptibleChromeStoppedSynchronouslyDescription,
+    {"ios-interruptible-coordinator-always-dismissed",
+     flag_descriptions::kIOSInterruptibleCoordinatorAlwaysDismissedName,
+     flag_descriptions::kIOSInterruptibleCoordinatorAlwaysDismissedDescription,
      flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kIOSInterruptibleChromeStoppedSynchronously)},
+     FEATURE_VALUE_TYPE(kIOSInterruptibleCoordinatorStoppedSynchronously)},
+    {"ios-interruptible-coordinator-stop-synchronously",
+     flag_descriptions::kIOSInterruptibleCoordinatorStoppedSynchronouslyName,
+     flag_descriptions::
+         kIOSInterruptibleCoordinatorStoppedSynchronouslyDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIOSInterruptibleCoordinatorStoppedSynchronously)},
     {"ios-quick-delete", flag_descriptions::kIOSQuickDeleteName,
      flag_descriptions::kIOSQuickDeleteDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSQuickDelete)},
@@ -2148,10 +2162,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPasswordSuggestionBottomSheetV2Description,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(password_manager::features::kIOSPasswordBottomSheetV2)},
-    {"ios-post-profile-switch-actions",
-     flag_descriptions::kPostProfileSwitchActionsName,
-     flag_descriptions::kPostProfileSwitchActionsDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kPostProfileSwitchActions)},
     {"lens-unary-apis-with-http-transport-enabled",
      flag_descriptions::kLensUnaryApisWithHttpTransportEnabledName,
      flag_descriptions::kLensUnaryApisWithHttpTransportEnabledDescription,
@@ -2232,6 +2242,50 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensUnaryHttpTransportEnabledName,
      flag_descriptions::kLensUnaryHttpTransportEnabledDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLensUnaryHttpTransportEnabled)},
+    {"lens-clearcut-background-upload-enabled",
+     flag_descriptions::kLensClearcutBackgroundUploadEnabledName,
+     flag_descriptions::kLensClearcutBackgroundUploadEnabledDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kLensClearcutBackgroundUploadEnabled)},
+    {"lens-clearcut-logger-fast-qos-enabled",
+     flag_descriptions::kLensClearcutLoggerFastQosEnabledName,
+     flag_descriptions::kLensClearcutLoggerFastQosEnabledDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLensClearcutLoggerFastQosEnabled)},
+    {"set-up-list-shortened-duration",
+     flag_descriptions::kSetUpListShortenedDurationName,
+     flag_descriptions::kSetUpListShortenedDurationDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(set_up_list::kSetUpListShortenedDuration,
+                                    kSetUpListDurationVariations,
+                                    "SetUpListShortenedDuration")},
+    // TODO(crbug.com/359325090): Update value type to include params needed for
+    // the multi-arm experiment.
+    {"ios-new-following-feed-entry-points",
+     flag_descriptions::kIOSNewFollowingFeedEntryPointsName,
+     flag_descriptions::kIOSNewFollowingFeedEntryPointsDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSNewFollowingFeedEntryPoints)},
+    {"enable-lens-overlay-price-insights-counterfactual",
+     flag_descriptions::kLensOverlayPriceInsightsCounterfactualName,
+     flag_descriptions::kLensOverlayPriceInsightsCounterfactualDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kLensOverlayPriceInsightsCounterfactual)},
+    {"collaboration-messaging", flag_descriptions::kCollaborationMessagingName,
+     flag_descriptions::kCollaborationMessagingDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(collaboration::features::kCollaborationMessaging)},
+    {"lens-single-tap-text-selection-disabled",
+     flag_descriptions::kLensSingleTapTextSelectionDisabledName,
+     flag_descriptions::kLensSingleTapTextSelectionDisabledDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLensSingleTapTextSelectionDisabled)},
+    {"lens-overlay-enable-location-bar-entrypoint-on-srp",
+     flag_descriptions::kLensOverlayEnableLocationBarEntrypointOnSRPName,
+     flag_descriptions::kLensOverlayEnableLocationBarEntrypointOnSRPDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kLensOverlayEnableLocationBarEntrypointOnSRP)},
+    {"updated-fre-screens-sequence", flag_descriptions::kUpdatedFRESequenceName,
+     flag_descriptions::kUpdatedFRESequenceDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(first_run::kUpdatedFirstRunSequence,
+                                    kUpdatedFirstRunSequenceVariations,
+                                    "UpdatedFirstRunSequence")},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

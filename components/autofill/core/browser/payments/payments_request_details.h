@@ -414,6 +414,47 @@ struct GetDetailsForCreateBnplPaymentInstrumentRequestDetails {
   std::string_view issuer_id;
 };
 
+// A collection of information required to fetch the BNPL VCN details.
+struct GetBnplPaymentInstrumentForFetchingVcnRequestDetails {
+  GetBnplPaymentInstrumentForFetchingVcnRequestDetails();
+  GetBnplPaymentInstrumentForFetchingVcnRequestDetails(
+      const GetBnplPaymentInstrumentForFetchingVcnRequestDetails& other);
+  GetBnplPaymentInstrumentForFetchingVcnRequestDetails& operator=(
+      const GetBnplPaymentInstrumentForFetchingVcnRequestDetails& other);
+  GetBnplPaymentInstrumentForFetchingVcnRequestDetails(
+      GetBnplPaymentInstrumentForFetchingVcnRequestDetails&&);
+  GetBnplPaymentInstrumentForFetchingVcnRequestDetails& operator=(
+      GetBnplPaymentInstrumentForFetchingVcnRequestDetails&&);
+  ~GetBnplPaymentInstrumentForFetchingVcnRequestDetails();
+
+  // The number for the Google Payments account this request is sent to.
+  std::string_view billing_customer_number;
+  // The fingerprint data for the user and the device.
+  std::string_view risk_data;
+  // The instrument ID is used by the server to identify a specific BNPL issuer.
+  std::string_view instrument_id;
+  // An opaque token used to chain consecutive payments requests together.
+  // Client should not update or modify this token.
+  std::string_view context_token;
+  // The URL the partner redirected the user to after finishing the BNPL flow on
+  // the partner website.
+  GURL redirect_url;
+};
+
+// Information retrieved from a BNPL FetchVcnRequest.
+struct BnplFetchVcnResponseDetails {
+  BnplFetchVcnResponseDetails();
+  BnplFetchVcnResponseDetails(const BnplFetchVcnResponseDetails& other);
+  BnplFetchVcnResponseDetails(BnplFetchVcnResponseDetails&&);
+  BnplFetchVcnResponseDetails& operator=(
+      const BnplFetchVcnResponseDetails& other);
+  BnplFetchVcnResponseDetails& operator=(BnplFetchVcnResponseDetails&&);
+  ~BnplFetchVcnResponseDetails();
+
+  // TODO(crbug.com/378518641): Implement BNPL fetch VCN response details when
+  // implementing the payment server call in payments network interface.
+};
+
 }  // namespace autofill::payments
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_REQUEST_DETAILS_H_

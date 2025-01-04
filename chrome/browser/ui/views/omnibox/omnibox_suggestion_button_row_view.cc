@@ -81,8 +81,9 @@ class OmniboxSuggestionRowChip : public views::MdTextButton {
   ~OmniboxSuggestionRowChip() override = default;
 
   void SetThemeState(OmniboxPartState theme_state) {
-    if (theme_state_ == theme_state)
+    if (theme_state_ == theme_state) {
       return;
+    }
     theme_state_ = theme_state;
     OnThemeChanged();
   }
@@ -163,8 +164,9 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
   ~OmniboxSuggestionRowButton() override = default;
 
   void SetThemeState(OmniboxPartState theme_state) {
-    if (theme_state_ == theme_state)
+    if (theme_state_ == theme_state) {
       return;
+    }
     theme_state_ = theme_state;
     OnThemeChanged();
   }
@@ -260,8 +262,9 @@ void OmniboxSuggestionButtonRowView::BuildViews() {
   RemoveAllChildViews();
 
   // Skip remaining code that depends on `match()`.
-  if (!HasMatch())
+  if (!HasMatch()) {
     return;
+  }
 
   // For all of these buttons, the visibility is set from `UpdateFromModel()`.
   // The Keyword and Pedal buttons also get their text from there, since the
@@ -388,18 +391,21 @@ void OmniboxSuggestionButtonRowView::SelectionStateChanged() {
 
 void OmniboxSuggestionButtonRowView::SetThemeState(
     OmniboxPartState theme_state) {
-  if (embeddings_chip_)
+  if (embeddings_chip_) {
     embeddings_chip_->SetThemeState(theme_state);
-  if (keyword_button_)
+  }
+  if (keyword_button_) {
     keyword_button_->SetThemeState(theme_state);
+  }
   for (const auto& action_button : action_buttons_) {
     action_button->SetThemeState(theme_state);
   }
 }
 
 views::Button* OmniboxSuggestionButtonRowView::GetActiveButton() const {
-  if (!HasMatch())
+  if (!HasMatch()) {
     return nullptr;
+  }
 
   std::vector<OmniboxSuggestionRowButton*> buttons{keyword_button_};
   buttons.insert(buttons.end(), action_buttons_.begin(), action_buttons_.end());

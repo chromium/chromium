@@ -18,10 +18,171 @@
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/hex_utils.h"
 #include "net/socket/socket_test_util.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/null_encrypter.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_crypto_server_config.h"
+#include "net/third_party/quiche/src/quiche/quic/core/http/quic_spdy_session.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_time.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/crypto_test_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/quic_test_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/tools/quic_simple_server_session.h"
+
+namespace quic {
+
+namespace {
+
+class HttpStreamPrinter : public Http3DebugVisitor {
+ public:
+  explicit HttpStreamPrinter(std::ostream* output) : output_(output) {}
+
+  void OnControlStreamCreated(QuicStreamId stream_id) override {
+    if (output_) {
+      *output_ << "OnControlStreamCreated: " << stream_id << "\n";
+    }
+  }
+
+  void OnQpackEncoderStreamCreated(QuicStreamId stream_id) override {
+    if (output_) {
+      *output_ << "OnQpackEncoderStreamCreated: " << stream_id << "\n";
+    }
+  }
+
+  void OnQpackDecoderStreamCreated(QuicStreamId stream_id) override {
+    if (output_) {
+      *output_ << "OnQpackDecoderStreamCreated: " << stream_id << "\n";
+    }
+  }
+
+  void OnPeerControlStreamCreated(QuicStreamId stream_id) override {
+    if (output_) {
+      *output_ << "OnPeerControlStreamCreated: " << stream_id << "\n";
+    }
+  }
+
+  void OnPeerQpackEncoderStreamCreated(QuicStreamId stream_id) override {
+    if (output_) {
+      *output_ << "OnPeerQpackEncoderStreamCreated: " << stream_id << "\n";
+    }
+  }
+
+  void OnPeerQpackDecoderStreamCreated(QuicStreamId stream_id) override {
+    if (output_) {
+      *output_ << "OnPeerQpackDecoderStreamCreated: " << stream_id << "\n";
+    }
+  }
+
+  void OnSettingsFrameReceived(const SettingsFrame& frame) override {
+    if (output_) {
+      *output_ << "OnSettingsFrameReceived: " << frame << "\n";
+    }
+  }
+
+  void OnGoAwayFrameReceived(const GoAwayFrame& frame) override {
+    if (output_) {
+      *output_ << "OnGoAwayFrameReceived" << "\n";
+    }
+  }
+
+  void OnPriorityUpdateFrameReceived(
+      const PriorityUpdateFrame& frame) override {
+    if (output_) {
+      *output_ << "OnPriorityUpdateFrameReceived: " << frame << "\n";
+    }
+  }
+
+  void OnDataFrameReceived(QuicStreamId stream_id,
+                           QuicByteCount payload_length) override {
+    if (output_) {
+      *output_ << "OnDataFrameReceived: " << stream_id << ", "
+               << "received: " << payload_length << " bytes" << "\n";
+    }
+  }
+
+  void OnHeadersFrameReceived(
+      QuicStreamId stream_id,
+      QuicByteCount compressed_headers_length) override {
+    if (output_) {
+      *output_ << "OnHeadersFrameReceived: " << stream_id << ", "
+               << "received: " << compressed_headers_length << " bytes" << "\n";
+    }
+  }
+
+  void OnHeadersDecoded(QuicStreamId stream_id,
+                        QuicHeaderList headers) override {
+    if (output_) {
+      *output_ << "OnHeadersDecoded: " << stream_id << ", "
+               << "received: " << headers.DebugString() << "\n";
+    }
+  }
+
+  void OnUnknownFrameReceived(QuicStreamId stream_id,
+                              uint64_t frame_type,
+                              QuicByteCount payload_length) override {
+    if (output_) {
+      *output_ << "OnUnknownFrameReceived: " << stream_id << ", "
+               << "frame_type: " << frame_type << ","
+               << "received: " << payload_length << "bytes " << "\n ";
+    }
+  }
+
+  void OnSettingsFrameSent(const SettingsFrame& frame) override {
+    if (output_) {
+      *output_ << "OnSettingsFrameSent: " << frame << "\n";
+    }
+  }
+
+  void OnSettingsFrameResumed(const SettingsFrame& frame) override {
+    if (output_) {
+      *output_ << "OnSettingsFrameResumed: " << frame << "\n";
+    }
+  }
+
+  void OnGoAwayFrameSent(QuicStreamId stream_id) override {
+    if (output_) {
+      *output_ << "OnGoAwayFrameSent: " << stream_id << "\n";
+    }
+  }
+
+  void OnPriorityUpdateFrameSent(const PriorityUpdateFrame& frame) override {
+    if (output_) {
+      *output_ << "OnPriorityUpdateFrameSent: " << frame << "\n";
+    }
+  }
+
+  void OnDataFrameSent(QuicStreamId stream_id,
+                       QuicByteCount payload_length) override {
+    if (output_) {
+      *output_ << "OnDataFrameSent: " << stream_id << ", "
+               << "sent: " << payload_length << " bytes" << "\n";
+    }
+  }
+
+  void OnHeadersFrameSent(
+      QuicStreamId stream_id,
+      const quiche::HttpHeaderBlock& header_block) override {
+    if (output_) {
+      *output_ << "OnHeadersFrameSent: " << stream_id << ", "
+               << "sent: " << header_block.DebugString() << "\n";
+    }
+  }
+
+ private:
+  mutable raw_ptr<std::ostream> output_ = nullptr;
+};
+}  // namespace
+
+}  // namespace quic
 
 namespace net::test {
+
+QuicSimpleServerSessionForTest::~QuicSimpleServerSessionForTest() = default;
+
+// Always return true if CryptoStream is created, so that the pending stream can
+// handle initial setting frames for tests.
+bool QuicSimpleServerSessionForTest::IsEncryptionEstablished() const {
+  return GetCryptoStream() != nullptr;
+}
 
 QuicSocketDataProvider::Expectation::Expectation(
     std::string name,
@@ -64,9 +225,48 @@ void QuicSocketDataProvider::Expectation::Consume() {
 }
 
 QuicSocketDataProvider::QuicSocketDataProvider(quic::ParsedQuicVersion version)
-    : printer_(version) {}
+    : printer_(version),
+      crypto_config_(quic::QuicCryptoServerConfig::TESTING,
+                     quic::QuicRandom::GetInstance(),
+                     quic::test::crypto_test_utils::ProofSourceForTesting(),
+                     quic::KeyExchangeSource::Default()),
+      compressed_certs_cache_(
+          quic::QuicCompressedCertsCache::kQuicCompressedCertsCacheSize) {
+  session_for_actual_ = GenSimpleServerSession();
+  session_for_expected_ = GenSimpleServerSession();
+}
 
 QuicSocketDataProvider::~QuicSocketDataProvider() = default;
+
+std::unique_ptr<quic::QuicSimpleServerSession>
+QuicSocketDataProvider::GenSimpleServerSession() {
+  quic::test::MockQuicConnection* connection =
+      new quic::test::MockQuicConnection(  // IN-TEST
+          &helper_, &alarm_factory_, quic::Perspective::IS_SERVER);
+  connection->AdvanceTime(quic::QuicTime::Delta::FromSeconds(1));
+  connection->SetEncrypter(
+      quic::ENCRYPTION_FORWARD_SECURE,
+      std::make_unique<quic::NullEncrypter>(connection->perspective()));
+
+  std::unique_ptr<QuicSimpleServerSessionForTest> session =
+      std::make_unique<QuicSimpleServerSessionForTest>(
+          config_, quic::CurrentSupportedVersions(), connection, &owner_,
+          &stream_helper_, &crypto_config_, &compressed_certs_cache_,
+          &memory_cache_backend_);
+  session->Initialize();
+  return session;
+}
+
+std::string QuicSocketDataProvider::PrintWithQuicSession(
+    quic::QuicSimpleServerSession* session,
+    std::string data) {
+  std::ostringstream output;
+  quic::HttpStreamPrinter printer(&output);
+  session->set_debug_visitor(&printer);
+  std::string res = printer_.PrintWithQuicSession(data, output, session);
+  session->set_debug_visitor(nullptr);
+  return res;
+}
 
 QuicSocketDataProvider::Expectation& QuicSocketDataProvider::AddRead(
     std::string name,
@@ -184,8 +384,8 @@ MockWriteResult QuicSocketDataProvider::OnWrite(const std::string& data) {
   write_pending_ = data;
   std::optional<MockWriteResult> next_write = ConsumeNextWrite();
   if (!next_write.has_value()) {
-    // If Write() was called when no corresponding expectation exists, that's an
-    // error unless execution is currently paused, in which case it's just
+    // If Write() was called when no corresponding expectation exists, that's
+    // an error unless execution is currently paused, in which case it's just
     // pending. This rarely occurs because the only other type of expectation
     // that might be blocking a WRITE is a READ, and QUIC implementations
     // typically eagerly consume READs.
@@ -227,14 +427,14 @@ void QuicSocketDataProvider::Reset() {
                     << " exists.";
   }
 
-  // Calculate `dependencies_` mapping indices in `expectations_` to indices of
-  // the expectations they depend on.
+  // Calculate `dependencies_` mapping indices in `expectations_` to indices
+  // of the expectations they depend on.
   dependencies_.clear();
   for (size_t i = 0; i < expectations_.size(); i++) {
     Expectation& expectation = expectations_[i];
     if (expectation.after().empty()) {
-      // If no other dependencies are given, make the expectation depend on the
-      // previous expectation.
+      // If no other dependencies are given, make the expectation depend on
+      // the previous expectation.
       if (i > 0) {
         dependencies_[i].insert(i - 1);
       }
@@ -311,8 +511,8 @@ std::optional<MockWriteResult> QuicSocketDataProvider::ConsumeNextWrite() {
     return std::nullopt;
   }
 
-  // If there's exactly one matching expectation, check if it matches the write
-  // and return it.
+  // If there's exactly one matching expectation, check if it matches the
+  // write and return it.
   Expectation& ready_expectation = expectations_[*ready];
   if (ready_expectation.packet()) {
     if (!VerifyWriteData(ready_expectation)) {
@@ -374,8 +574,8 @@ void QuicSocketDataProvider::ExpectationConsumed() {
   pending_maybe_consume_expectations_ = true;
 
   // Call `MaybeConsumeExpectations` in a task. That method may trigger
-  // consumption of other expectations, and that consumption must happen _after_
-  // the current call to `Read` or `Write` has finished.
+  // consumption of other expectations, and that consumption must happen
+  // _after_ the current call to `Read` or `Write` has finished.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&QuicSocketDataProvider::MaybeConsumeExpectations,
@@ -387,13 +587,18 @@ bool QuicSocketDataProvider::VerifyWriteData(
   std::string expected_data(expectation.packet()->data(),
                             expectation.packet()->length());
   std::string& actual_data = *write_pending_;
+  actual_log_.append(
+      PrintWithQuicSession(session_for_actual_.get(), actual_data));
+  expected_log_.append(
+      PrintWithQuicSession(session_for_expected_.get(), expected_data));
+
   bool write_matches = actual_data == expected_data;
   EXPECT_TRUE(write_matches)
       << "Expectation '" << expectation.name()
       << "' not met. Actual formatted write data:\n"
-      << printer_.PrintWrite(actual_data) << "But expectation '"
-      << expectation.name() << "' expected formatted write data:\n"
-      << printer_.PrintWrite(expected_data) << "Actual raw write data:\n"
+      << actual_log_ << "But expectation '" << expectation.name()
+      << "' expected formatted write data:\n"
+      << expected_log_ << "Actual raw write data:\n"
       << HexDump(actual_data) << "Expected raw write data:\n"
       << HexDump(expected_data);
   return write_matches;

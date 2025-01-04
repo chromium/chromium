@@ -136,11 +136,7 @@ void PermissionRevocationRequest::CheckAndRevokeIfBlocklisted() {
   DCHECK(callback_);
 
   if (!safe_browsing::IsSafeBrowsingEnabled(*profile_->GetPrefs()) ||
-      IsOriginExemptedFromFutureRevocations(profile_, origin_) ||
-      (!NotificationsPermissionRevocationConfig::
-           IsAbusiveOriginPermissionRevocationEnabled() &&
-       !NotificationsPermissionRevocationConfig::
-           IsDisruptiveOriginPermissionRevocationEnabled())) {
+      IsOriginExemptedFromFutureRevocations(profile_, origin_)){
     NotifyCallback(Outcome::PERMISSION_NOT_REVOKED);
     return;
   }
@@ -174,8 +170,7 @@ void PermissionRevocationRequest::OnSiteReputationReady(
             IsAbusiveOriginPermissionRevocationEnabled();
         break;
       case CrowdDenyPreloadData::SiteReputation::DISRUPTIVE_BEHAVIOR:
-        should_revoke_permission = NotificationsPermissionRevocationConfig::
-            IsDisruptiveOriginPermissionRevocationEnabled();
+        should_revoke_permission = true;
         break;
       default:
         should_revoke_permission = false;

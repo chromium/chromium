@@ -323,7 +323,8 @@ TEST_F(OfflinePageTabHelperTest, OfflinePageIsNotStoredInBackForwardCache) {
   SimulateOfflinePageLoad(kTestUrl, kTestMhtmlCreationTime,
                           MHTMLLoadResult::kSuccess);
 
-  int process_id = web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
+  int process_id =
+      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID();
   int main_frame_id = web_contents()->GetPrimaryMainFrame()->GetRoutingID();
 
   // Navigate away.

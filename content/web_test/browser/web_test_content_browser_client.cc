@@ -21,7 +21,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
-#include "components/origin_trials/common/features.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_child_process_observer.h"
 #include "content/public/browser/browser_context.h"
@@ -40,7 +39,7 @@
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/test/data/mojo_bindings_web_test.test-mojom.h"
-#include "content/test/data/mojo_web_test_helper_test.mojom.h"
+#include "content/test/data/mojo_web_test_helper.test-mojom.h"
 #include "content/test/mock_badge_service.h"
 #include "content/test/mock_clipboard_host.h"
 #include "content/web_test/browser/fake_bluetooth_chooser.h"
@@ -385,7 +384,7 @@ void WebTestContentBrowserClient::
   associated_registry.AddInterface<mojom::WebTestControlHost>(
       base::BindRepeating(&WebTestContentBrowserClient::BindWebTestControlHost,
                           base::Unretained(this),
-                          render_frame_host.GetProcess()->GetID()));
+                          render_frame_host.GetProcess()->GetDeprecatedID()));
 }
 
 void WebTestContentBrowserClient::BindPermissionAutomation(
@@ -414,12 +413,12 @@ WebTestContentBrowserClient::CreateThrottlesForNavigation(
   std::vector<std::unique_ptr<content::NavigationThrottle>> throttles =
       ShellContentBrowserClient::CreateThrottlesForNavigation(
           navigation_handle);
-  if (origin_trials::features::IsPersistentOriginTrialsEnabled()) {
-    throttles.push_back(std::make_unique<WebTestOriginTrialThrottle>(
-        navigation_handle, navigation_handle->GetWebContents()
-                               ->GetBrowserContext()
-                               ->GetOriginTrialsControllerDelegate()));
-  }
+
+  throttles.push_back(std::make_unique<WebTestOriginTrialThrottle>(
+      navigation_handle, navigation_handle->GetWebContents()
+                             ->GetBrowserContext()
+                             ->GetOriginTrialsControllerDelegate()));
+
   return throttles;
 }
 

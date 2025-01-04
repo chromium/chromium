@@ -16,11 +16,9 @@
 #include "ash/test/ash_test_base.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -39,8 +37,7 @@ const char16_t kCellularNetworkGuid16[] = u"cellular_guid";
 
 }  // namespace
 
-class ActiveNetworkIconTest : public AshTestBase,
-                              public testing::WithParamInterface<bool> {
+class ActiveNetworkIconTest : public AshTestBase {
  public:
   ActiveNetworkIconTest() = default;
 
@@ -50,12 +47,6 @@ class ActiveNetworkIconTest : public AshTestBase,
   ~ActiveNetworkIconTest() override = default;
 
   void SetUp() override {
-    if (IsJellyrollEnabled()) {
-      feature_list_.InitAndEnableFeature(chromeos::features::kJellyroll);
-    } else {
-      feature_list_.InitAndDisableFeature(chromeos::features::kJellyroll);
-    }
-
     AshTestBase::SetUp();
     network_state_model_ = std::make_unique<TrayNetworkStateModel>();
     active_network_icon_ =
@@ -143,8 +134,6 @@ class ActiveNetworkIconTest : public AshTestBase,
         false /* show_vpn_badge */);
   }
 
-  bool IsJellyrollEnabled() const { return GetParam(); }
-
   bool AreImagesEqual(const gfx::ImageSkia& image,
                       const gfx::ImageSkia& reference) {
     return gfx::test::AreBitmapsEqual(*image.bitmap(), *reference.bitmap());
@@ -187,7 +176,6 @@ class ActiveNetworkIconTest : public AshTestBase,
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   network_config::CrosNetworkConfigTestHelper network_config_helper_;
   std::unique_ptr<TrayNetworkStateModel> network_state_model_;
   std::unique_ptr<ActiveNetworkIcon> active_network_icon_;
@@ -201,9 +189,7 @@ class ActiveNetworkIconTest : public AshTestBase,
   int reference_count_ = 0;
 };
 
-INSTANTIATE_TEST_SUITE_P(Jellyroll, ActiveNetworkIconTest, testing::Bool());
-
-TEST_P(ActiveNetworkIconTest, GetConnectionStatusStrings) {
+TEST_F(ActiveNetworkIconTest, GetConnectionStatusStrings) {
   // TODO(902409): Test multi icon and improve coverage.
   SetupCellular(shill::kStateOnline);
   std::u16string name, desc, tooltip;
@@ -222,7 +208,7 @@ TEST_P(ActiveNetworkIconTest, GetConnectionStatusStrings) {
       tooltip);
 }
 
-TEST_P(ActiveNetworkIconTest, GetSingleImage) {
+TEST_F(ActiveNetworkIconTest, GetSingleImage) {
   // Cellular only = Cellular icon
   SetupCellular(shill::kStateOnline);
   bool animating;
@@ -280,7 +266,7 @@ TEST_P(ActiveNetworkIconTest, GetSingleImage) {
   EXPECT_FALSE(animating);
 }
 
-TEST_P(ActiveNetworkIconTest, CellularUninitialized) {
+TEST_F(ActiveNetworkIconTest, CellularUninitialized) {
   SetCellularUninitialized(false /* scanning */);
 
   bool animating;
@@ -293,7 +279,7 @@ TEST_P(ActiveNetworkIconTest, CellularUninitialized) {
   EXPECT_TRUE(animating);
 }
 
-TEST_P(ActiveNetworkIconTest, CellularScanning) {
+TEST_F(ActiveNetworkIconTest, CellularScanning) {
   SetCellularUninitialized(true /* scanning */);
 
   ASSERT_TRUE(network_state_handler()->GetScanningByType(
@@ -322,7 +308,7 @@ TEST_P(ActiveNetworkIconTest, CellularScanning) {
   EXPECT_FALSE(animating);
 }
 
-TEST_P(ActiveNetworkIconTest, CellularDisable) {
+TEST_F(ActiveNetworkIconTest, CellularDisable) {
   SetupCellular(shill::kStateOnline);
   bool animating;
   gfx::ImageSkia image = active_network_icon()->GetImage(

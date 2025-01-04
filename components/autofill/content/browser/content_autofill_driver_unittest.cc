@@ -32,11 +32,11 @@
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
-#include "components/autofill/core/browser/autofill_driver_router.h"
-#include "components/autofill/core/browser/autofill_external_delegate.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
-#include "components/autofill/core/browser/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/autofill_driver_router.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/ui/autofill_external_delegate.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -545,6 +545,9 @@ class ContentAutofillDriverWithMultiFrameCreditCardForm
 };
 
 TEST_F(ContentAutofillDriverTest, Lift_Form) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(features::kAutofillIncludeUrlInCrowdsourcing);
+
   NavigateAndCommit(GURL("https://username:password@a.test/path?query#hash"));
   FormData form;
   test_api(form).Append(FormFieldData());
@@ -559,6 +562,20 @@ TEST_F(ContentAutofillDriverTest, Lift_Form) {
             url::Origin::CreateFromNormalizedTuple("https", "a.test", 443));
   ASSERT_EQ(form.fields().size(), 1u);
   EXPECT_EQ(form.fields().front().host_frame(), frame_token());
+}
+
+// Tests that if `kAutofillIncludeUrlInCrowdsourcing` is enabled, the
+// FormData::full_url() returns the current URL stripped of auth parameters.
+TEST_F(ContentAutofillDriverTest, Lift_Form_WithUrlCrowdsourcing) {
+  base::test::ScopedFeatureList features{
+      features::kAutofillIncludeUrlInCrowdsourcing};
+
+  NavigateAndCommit(GURL("https://username:password@a.test/path?query#hash"));
+  FormData form;
+  test_api(form).Append(FormFieldData());
+  test_api(driver()).LiftForTest(form);
+
+  EXPECT_EQ(form.full_url(), GURL("https://a.test/path?query#hash"));
 }
 
 // Test that forms in "about:" without parents have an empty FormData::url.

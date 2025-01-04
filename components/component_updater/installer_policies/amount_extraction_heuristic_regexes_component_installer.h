@@ -30,6 +30,7 @@ class AmountExtractionHeuristicRegexesInstallerPolicy
   ~AmountExtractionHeuristicRegexesInstallerPolicy() override;
 
  private:
+  friend class AmountExtractionHeuristicRegexesInstallerPolicyTest;
   // The following methods override ComponentInstallerPolicy.
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
   bool RequiresNetworkEncryption() const override;

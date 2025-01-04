@@ -180,8 +180,7 @@ ExtensionActionFunction::ExtensionActionFunction()
       contents_(nullptr),
       extension_action_(nullptr) {}
 
-ExtensionActionFunction::~ExtensionActionFunction() {
-}
+ExtensionActionFunction::~ExtensionActionFunction() = default;
 
 ExtensionFunction::ResponseAction ExtensionActionFunction::Run() {
   ExtensionActionManager* manager =

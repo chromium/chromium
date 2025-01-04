@@ -56,8 +56,9 @@ constexpr int kCaptionButtonsLeadingPadding = 20;
 
 FullscreenToolbarStyle GetUserPreferredToolbarStyle(bool always_show) {
   // In Kiosk mode, we don't show top Chrome UI.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kKioskMode))
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kKioskMode)) {
     return FullscreenToolbarStyle::TOOLBAR_NONE;
+  }
   return always_show ? FullscreenToolbarStyle::TOOLBAR_PRESENT
                      : FullscreenToolbarStyle::TOOLBAR_HIDDEN;
 }
@@ -317,8 +318,7 @@ bool BrowserNonClientFrameViewMac::ShouldHideTopUIForFullscreen() const {
   return false;
 }
 
-void BrowserNonClientFrameViewMac::UpdateThrobber(bool running) {
-}
+void BrowserNonClientFrameViewMac::UpdateThrobber(bool running) {}
 
 void BrowserNonClientFrameViewMac::PaintAsActiveChanged() {
   UpdateCaptionButtonPlaceholderContainerBackground();
@@ -355,8 +355,9 @@ gfx::Rect BrowserNonClientFrameViewMac::GetWindowBoundsForClientBounds(
 
 int BrowserNonClientFrameViewMac::NonClientHitTest(const gfx::Point& point) {
   int super_component = BrowserNonClientFrameView::NonClientHitTest(point);
-  if (super_component != HTNOWHERE)
+  if (super_component != HTNOWHERE) {
     return super_component;
+  }
 
   // BrowserView::NonClientHitTest will return HTNOWHERE for points that hit
   // the native title bar. On Mac, we need to explicitly return HTCAPTION for
@@ -385,9 +386,10 @@ void BrowserNonClientFrameViewMac::WindowControlsOverlayEnabledChanged() {
 
 gfx::Size BrowserNonClientFrameViewMac::GetMinimumSize() const {
   gfx::Size client_size = frame()->client_view()->GetMinimumSize();
-  if (browser_view()->browser()->is_type_normal())
+  if (browser_view()->browser()->is_type_normal()) {
     client_size.SetToMax(
         browser_view()->tab_strip_region_view()->GetMinimumSize());
+  }
 
   // macOS apps generally don't allow their windows to get shorter than a
   // certain height, which empirically seems to be related to their *minimum*
@@ -443,13 +445,15 @@ void BrowserNonClientFrameViewMac::OnPaint(gfx::Canvas* canvas) {
 
   auto* theme_service =
       ThemeServiceFactory::GetForProfile(browser_view()->browser()->profile());
-  if (!theme_service->UsingSystemTheme())
+  if (!theme_service->UsingSystemTheme()) {
     PaintThemedFrame(canvas);
+  }
 }
 
 void BrowserNonClientFrameViewMac::Layout(PassKey) {
-  if (browser_view()->IsWindowControlsOverlayEnabled())
+  if (browser_view()->IsWindowControlsOverlayEnabled()) {
     LayoutWindowControlsOverlay();
+  }
   LayoutSuperclass<NonClientFrameView>(this);
 }
 
@@ -499,14 +503,16 @@ int BrowserNonClientFrameViewMac::TopUIFullscreenYOffset() const {
   if (@available(macos 12.0.1, *)) {
     id screen = [GetWidget()->GetNativeWindow().GetNativeNSWindow() screen];
     NSEdgeInsets insets = [screen safeAreaInsets];
-    if (insets.top != 0)
+    if (insets.top != 0) {
       menu_bar_height = 0;
+    }
   }
   CGFloat title_bar_height =
       NSHeight([NSWindow frameRectForContentRect:NSZeroRect
                                        styleMask:NSWindowStyleMaskTitled]);
-  if (browser_view()->UsesImmersiveFullscreenMode())
+  if (browser_view()->UsesImmersiveFullscreenMode()) {
     return menu_bar_height == 0 ? 0 : menu_bar_height + title_bar_height;
+  }
   return [[fullscreen_toolbar_controller_ menubarTracker] menubarFraction] *
          (menu_bar_height + title_bar_height);
 }

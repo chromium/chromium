@@ -15,13 +15,14 @@
 #import "base/metrics/histogram.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/observer_list.h"
-#import "components/autofill/core/browser/autofill_driver_router.h"
 #import "components/autofill/core/browser/filling/form_filler.h"
 #import "components/autofill/core/browser/form_structure.h"
+#import "components/autofill/core/browser/foundations/autofill_driver_router.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/field_data_manager.h"
 #import "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #import "components/autofill/core/common/unique_ids.h"
+#import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_bridge.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
@@ -69,8 +70,10 @@ base::TimeDelta GetFilteredDocumentFormScanPeriod() {
 AutofillDriverIOS* AutofillDriverIOS::FromWebStateAndWebFrame(
     web::WebState* web_state,
     web::WebFrame* web_frame) {
-  return AutofillDriverIOSFactory::FromWebState(web_state)->DriverForFrame(
-      web_frame);
+  if (AutofillClientIOS* client = AutofillClientIOS::FromWebState(web_state)) {
+    return client->GetAutofillDriverFactory().DriverForFrame(web_frame);
+  }
+  return nullptr;
 }
 
 // static
@@ -174,8 +177,8 @@ bool AutofillDriverIOS::HasSharedAutofillPermission() const {
   // frame on the same origin as the main frame.
   if (parent_ && parent_->web_frame() && parent_->IsInAnyMainFrame() &&
       web_frame()) {
-    return parent_->web_frame()->GetSecurityOriginDeprecated() ==
-           web_frame()->GetSecurityOriginDeprecated();
+    return parent_->web_frame()->GetSecurityOrigin() ==
+           web_frame()->GetSecurityOrigin();
   }
 
   // Return false as share-autofill is not allowed.

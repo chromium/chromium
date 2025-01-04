@@ -47,7 +47,6 @@ public class RoundedCornerImageView extends AppCompatImageView {
 
     private final Paint mRoundedBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mRoundedContentPaint;
-    private boolean mRoundCorners;
     // True, if constructor had a chance to run.
     // This is needed, because ImageView's constructor may trigger updates on our end
     // if certain attributes (eg. Drawable) are supplied via layout attributes.
@@ -136,18 +135,19 @@ public class RoundedCornerImageView extends AppCompatImageView {
         refreshState();
     }
 
+    @Override
+    public void setBackgroundColor(@ColorInt int color) {
+        super.setBackgroundColor(color);
+        assert false
+                : "Setting background color on a RoundedCornerImageView results in no rounding of"
+                        + " corners, use setRoundedFillColor instead.";
+    }
+
     public void setRoundedCorners(
             int cornerRadiusTopStart,
             int cornerRadiusTopEnd,
             int cornerRadiusBottomStart,
             int cornerRadiusBottomEnd) {
-        mRoundCorners =
-                (cornerRadiusTopStart != 0
-                        || cornerRadiusTopEnd != 0
-                        || cornerRadiusBottomStart != 0
-                        || cornerRadiusBottomEnd != 0);
-        if (!mRoundCorners) return;
-
         float[] radii;
         if (ViewCompat.getLayoutDirection(this) == ViewCompat.LAYOUT_DIRECTION_LTR) {
             radii =
@@ -207,11 +207,6 @@ public class RoundedCornerImageView extends AppCompatImageView {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (!mRoundCorners) {
-            super.onDraw(canvas);
-            return;
-        }
-
         final int width = getWidth() - getPaddingLeft() - getPaddingRight();
         final int height = getHeight() - getPaddingTop() - getPaddingBottom();
         if (width <= 0 || height <= 0) return;

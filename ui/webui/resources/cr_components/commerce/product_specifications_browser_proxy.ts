@@ -19,6 +19,7 @@ export interface ProductSpecificationsBrowserProxy {
   declineDisclosure(): void;
   showSyncSetupFlow(): void;
   getPageTitleFromHistory(url: Url): Promise<{title: string}>;
+  getComparisonTableUrlForUuid(uuid: Uuid): Promise<{url: Url}>;
 }
 
 export class ProductSpecificationsBrowserProxyImpl implements
@@ -59,6 +60,10 @@ export class ProductSpecificationsBrowserProxyImpl implements
 
   getPageTitleFromHistory(url: Url): Promise<{title: string}> {
     return this.handler.getPageTitleFromHistory(url);
+  }
+
+  getComparisonTableUrlForUuid(uuid: Uuid): Promise<{url: Url}> {
+    return this.handler.getComparisonTableUrlForUuid(uuid);
   }
 
   getCallbackRouter() {

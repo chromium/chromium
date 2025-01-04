@@ -1572,14 +1572,6 @@ _NAMED_TYPE_INFO = {
       'GL_EXCLUSIVE_EXT',
     ],
   },
-  'SwapBuffersFlags': {
-    'type': 'GLbitfield',
-    'is_complete': True,
-    'valid': [
-      '0',
-      'gpu::SwapBuffersFlags::kVSyncParams',
-    ],
-  },
   'SharedImageAccessMode': {
     'type': 'GLenum',
     'is_complete': True,
@@ -3182,15 +3174,6 @@ _FUNCTION_INFO = {
     'no_gl': True,
     'expectation': False,
   },
-  'SwapBuffers': {
-    'impl_func': False,
-    'decoder_func': 'DoSwapBuffers',
-    'client_test': False,
-    'expectation': False,
-    'extension': True,
-    'trace_level': 1,
-    'trace_queueing_flow': True,
-  },
   'TexImage2D': {
     'type': 'Custom',
     'impl_func': False,
@@ -3539,16 +3522,6 @@ _FUNCTION_INFO = {
   'Viewport': {
     'impl_func': False,
     'decoder_func': 'DoViewport',
-  },
-  'ResizeCHROMIUM': {
-    'type': 'Custom',
-    'impl_func': False,
-    'client_test': False,
-    'cmd_args': 'GLint width, GLint height, GLfloat scale_factor, GLboolean '
-                'alpha, GLuint shm_id, GLuint shm_offset, GLsizei '
-                'color_space_size',
-    'extension': True,
-    'trace_level': 1,
   },
   'GetRequestableExtensionsCHROMIUM': {
     'type': 'Custom',

@@ -182,6 +182,7 @@ class HttpHandler {
                            std::unique_ptr<base::Value> result,
                            const std::string& session_id,
                            bool w3c);
+  void OnSessionTerminated(std::string session_id);
   void OnNewBidiSessionOnCmdThread(HttpServerInterface* http_server,
                                    int connection_id,
                                    const std::optional<base::Value>& maybe_id,

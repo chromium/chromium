@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "partition_alloc/partition_alloc_base/thread_annotations.h"
-
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {

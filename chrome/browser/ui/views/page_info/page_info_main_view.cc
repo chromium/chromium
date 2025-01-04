@@ -38,6 +38,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -193,7 +194,8 @@ void PageInfoMainView::SetCookieInfo(const CookiesNewInfo& cookie_info) {
       site_settings_view_->AddChildView(std::make_unique<RichHoverButton>(
           base::BindRepeating(&PageInfoNavigationHandler::OpenCookiesPage,
                               base::Unretained(navigation_handler_)),
-          PageInfoViewFactory::GetCookiesAndSiteDataIcon(),
+          PageInfoViewFactory::GetImageModel(
+              vector_icons::kCookieChromeRefreshIcon),
           l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_HEADER),
           /*subtitle_text=*/std::u16string(),
           PageInfoViewFactory::GetOpenSubpageIcon()));
@@ -402,10 +404,9 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
     }
 
     if (merchant_trust_section_) {
-      // TOOD(crbug.com/378854649): Fetch data from the service.
-      merchant_trust_section_->RemoveAllChildViews();
-      merchant_trust_section_->AddChildView(CreateMerchantTrustButton());
-      extended_site_info_section_->SetVisible(true);
+      ui_delegate_->GetMerchantTrustInfo(
+          base::BindOnce(&PageInfoMainView::OnMerchantTrustDataFetched,
+                         base::Unretained(this)));
     }
   } else {
     security_content_view_ = security_container_view_->AddChildView(
@@ -435,7 +436,8 @@ void PageInfoMainView::SetPageFeatureInfo(const PageFeatureInfo& info) {
       content_view->SetLayoutManager(std::make_unique<views::FlexLayout>());
 
   auto icon = std::make_unique<NonAccessibleImageView>();
-  icon->SetImage(PageInfoViewFactory::GetVrSettingsIcon());
+  icon->SetImage(
+      PageInfoViewFactory::GetImageModel(vector_icons::kVrHeadsetIcon));
   content_view->AddChildView(std::move(icon));
 
   auto label = std::make_unique<views::Label>(
@@ -544,6 +546,20 @@ void PageInfoMainView::HandleMoreInfoRequestAsync(int view_id) {
   }
 }
 
+void PageInfoMainView::OnMerchantTrustDataFetched(
+    const GURL& url,
+    std::optional<page_info::MerchantData> merchant_data) {
+  if (!merchant_data.has_value()) {
+    return;
+  }
+
+  DCHECK(merchant_trust_section_);
+  merchant_trust_section_->RemoveAllChildViews();
+  merchant_trust_section_->AddChildView(
+      CreateMerchantTrustButton(merchant_data.value()));
+  extended_site_info_section_->SetVisible(true);
+}
+
 gfx::Size PageInfoMainView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   if (site_settings_view_ == nullptr && permissions_view_ == nullptr &&
@@ -617,22 +633,21 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteButton(
           : l10n_util::GetStringUTF16(
                 IDS_PAGE_INFO_ABOUT_THIS_PAGE_DESCRIPTION_PLACEHOLDER);
 
-  auto about_this_site_button =
-      std::make_unique<RichHoverButton>(
-          base::BindRepeating(
-              [](PageInfoMainView* view, GURL more_info_url,
-                 bool has_description, const ui::Event& event) {
-                page_info::AboutThisSiteService::OnAboutThisSiteRowClicked(
-                    has_description);
-                view->presenter_->RecordPageInfoAction(
-                    page_info::PAGE_INFO_ABOUT_THIS_SITE_PAGE_OPENED);
-                view->ui_delegate_->OpenMoreAboutThisPageUrl(more_info_url,
-                                                             event);
-                view->GetWidget()->Close();
-              },
-              this, GURL(info.more_about().url()), info.has_description()),
-          PageInfoViewFactory::GetAboutThisSiteIcon(), title, description,
-          PageInfoViewFactory::GetLaunchIcon());
+  auto about_this_site_button = std::make_unique<RichHoverButton>(
+      base::BindRepeating(
+          [](PageInfoMainView* view, GURL more_info_url, bool has_description,
+             const ui::Event& event) {
+            page_info::AboutThisSiteService::OnAboutThisSiteRowClicked(
+                has_description);
+            view->presenter_->RecordPageInfoAction(
+                page_info::PAGE_INFO_ABOUT_THIS_SITE_PAGE_OPENED);
+            view->ui_delegate_->OpenMoreAboutThisPageUrl(more_info_url, event);
+            view->GetWidget()->Close();
+          },
+          this, GURL(info.more_about().url()), info.has_description()),
+      PageInfoViewFactory::GetImageModel(
+          PageInfoViewFactory::GetAboutThisSiteVectorIcon()),
+      title, description, PageInfoViewFactory::GetLaunchIcon());
   about_this_site_button->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON);
   about_this_site_button->SetSubtitleMultiline(false);
@@ -650,7 +665,7 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAdPersonalizationButton() {
   auto ads_personalization_button = std::make_unique<RichHoverButton>(
       base::BindRepeating(&PageInfoNavigationHandler::OpenCookiesPage,
                           base::Unretained(navigation_handler_)),
-      PageInfoViewFactory::GetAdPersonalizationIcon(),
+      PageInfoViewFactory::GetImageModel(vector_icons::kAdsClickIcon),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PRIVACY_HEADER),
       std::u16string(), PageInfoViewFactory::GetOpenSubpageIcon());
   ads_personalization_button->SetID(
@@ -666,22 +681,22 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAdPersonalizationButton() {
   return ads_personalization_button;
 }
 
-std::unique_ptr<views::View> PageInfoMainView::CreateMerchantTrustButton() {
+std::unique_ptr<views::View> PageInfoMainView::CreateMerchantTrustButton(
+    page_info::MerchantData value) {
   // TODO(crbug.com/381215331): Add add actual string.
   auto merchant_trust_button = std::make_unique<RichHoverButton>(
       base::BindRepeating(&PageInfoNavigationHandler::OpenMerchantTrustPage,
                           base::Unretained(navigation_handler_)),
-      PageInfoViewFactory::GetMerchantTrustIcon(),
+      PageInfoViewFactory::GetImageModel(vector_icons::kStorefrontIcon),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_MERCHANT_TRUST_HEADER),
       std::u16string(), PageInfoViewFactory::GetOpenSubpageIcon());
   merchant_trust_button->SetTitleTextStyleAndColor(
       views::style::STYLE_BODY_3_MEDIUM, kColorPageInfoForeground);
   merchant_trust_button->SetProperty(views::kElementIdentifierKey,
                                      kMerchantTrustElementId);
-  // TODO(crbug.com/381215331): Fetch the data from the service.
-  auto* star_rating_view = merchant_trust_button->AddCustomSubtitle(
-      std::make_unique<StarRatingView>());
-  star_rating_view->SetRating(3.5);
+  auto* star_rating_view =
+      merchant_trust_button->SetCustomView(std::make_unique<StarRatingView>());
+  star_rating_view->SetRating(value.star_rating);
   return merchant_trust_button;
 }
 

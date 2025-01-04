@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "components/arc/intent_helper/custom_tab.h"
+#include "ash/components/arc/intent_helper/custom_tab.h"
 #include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -27,8 +27,9 @@ ArcCustomTabModalDialogHost::ArcCustomTabModalDialogHost(
 }
 
 ArcCustomTabModalDialogHost::~ArcCustomTabModalDialogHost() {
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.OnHostDestroying();
+  }
 
   // |web_contents_| is deleted by the base class, so there's no need to call
   // WebContentsModalDialogManager::SetDelegate(nullptr)
@@ -36,8 +37,9 @@ ArcCustomTabModalDialogHost::~ArcCustomTabModalDialogHost() {
 
 void ArcCustomTabModalDialogHost::PrimaryMainFrameWasResized(
     bool width_changed) {
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.OnPositionRequiresUpdate();
+  }
 }
 
 web_modal::WebContentsModalDialogHost*

@@ -148,6 +148,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="NOT_ADDED_EXCEED_MAX_LENGTH"/>
   <int value="4" label="ADDED_WARNING_FIRST_SHOWN"/>
   <int value="5" label="ADDED_WARNING_ACTION"/>
+  <int value="6" label="NOT_ADDED_DOWNLOAD_NOT_DANGEROUS"/>
 </enum>
 
 <enum name="DownloadARModelState">
@@ -721,6 +722,12 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Failed to parse media file"/>
   <int value="8" label="Successfully parsed media file"/>
   <int value="9" label="Timeout and failed"/>
+</enum>
+
+<enum name="NotificationAttachEvent">
+  <int value="0" label="Attached on job start"/>
+  <int value="1" label="Attached after job start"/>
+  <int value="2" label="Never attached before job complete"/>
 </enum>
 
 <enum name="PresentAddPassesDialogResult">

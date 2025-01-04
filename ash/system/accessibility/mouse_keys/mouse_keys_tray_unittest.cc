@@ -5,6 +5,7 @@
 #include "ash/system/accessibility/mouse_keys/mouse_keys_tray.h"
 
 #include "ash/accessibility/accessibility_controller.h"
+#include "ash/accessibility/mouse_keys/mouse_keys_controller.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/status_area_widget.h"
@@ -27,6 +28,10 @@ MouseKeysTray* GetTray() {
 // Returns true if the Mouse keys tray is visible.
 bool IsVisible() {
   return GetTray()->GetVisible();
+}
+
+bool IsActive() {
+  return GetTray()->is_active();
 }
 
 }  // namespace
@@ -82,6 +87,49 @@ TEST_F(MouseKeysTrayTest, AccessibleName) {
   GetTray()->GetViewAccessibility().GetAccessibleNodeData(&tray_data);
   EXPECT_EQ(tray_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             l10n_util::GetStringUTF16(IDS_ASH_MOUSE_KEYS_TRAY_ACCESSIBLE_NAME));
+}
+
+// Tests that the mouse keys icon is activated and deactivated when unpaused
+// and paused respectively.
+TEST_F(MouseKeysTrayTest, MouseKeysIconColorChangesOnPause) {
+  // When mouse keys is initially enabled, it should also be unpaused.
+  Shell::Get()->accessibility_controller()->mouse_keys().SetEnabled(true);
+  EXPECT_FALSE(Shell::Get()->mouse_keys_controller()->paused());
+  EXPECT_TRUE(IsVisible());
+  EXPECT_TRUE(IsActive());
+
+  Shell::Get()->accessibility_controller()->ToggleMouseKeys();
+  EXPECT_TRUE(Shell::Get()->mouse_keys_controller()->paused());
+  EXPECT_FALSE(IsActive());
+
+  Shell::Get()->accessibility_controller()->ToggleMouseKeys();
+  EXPECT_FALSE(Shell::Get()->mouse_keys_controller()->paused());
+  EXPECT_TRUE(IsActive());
+}
+
+// Tests that the mouse keys icon stays active when enabled from a previously
+// paused state
+TEST_F(MouseKeysTrayTest, MouseKeysActiveOnReenable) {
+  // When mouse keys is initially enabled, it should also be unpaused.
+  Shell::Get()->accessibility_controller()->mouse_keys().SetEnabled(true);
+  EXPECT_FALSE(Shell::Get()->mouse_keys_controller()->paused());
+  EXPECT_TRUE(IsVisible());
+  EXPECT_TRUE(IsActive());
+
+  // Pause mouse keys
+  Shell::Get()->accessibility_controller()->ToggleMouseKeys();
+  EXPECT_TRUE(Shell::Get()->mouse_keys_controller()->paused());
+  EXPECT_FALSE(IsActive());
+
+  // Disable mouse keys
+  Shell::Get()->accessibility_controller()->mouse_keys().SetEnabled(false);
+  EXPECT_FALSE(IsVisible());
+
+  // Re-enable mouse keys, though paused before, it should be unpaused now.
+  Shell::Get()->accessibility_controller()->mouse_keys().SetEnabled(true);
+  EXPECT_FALSE(Shell::Get()->mouse_keys_controller()->paused());
+  EXPECT_TRUE(IsVisible());
+  EXPECT_TRUE(IsActive());
 }
 
 using MouseKeysTrayTestFeatureDisabled = AshTestBase;

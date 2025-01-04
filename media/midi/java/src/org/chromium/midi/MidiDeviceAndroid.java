@@ -10,8 +10,12 @@ import android.media.midi.MidiDeviceInfo;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** A class implementing midi::MidiDeviceAndroid functionality. */
 @JNINamespace("midi")
+@NullMarked
 class MidiDeviceAndroid {
     /** The underlying device. */
     private final MidiDevice mDevice;
@@ -73,12 +77,14 @@ class MidiDeviceAndroid {
 
     /** Returns the manufacturer name. */
     @CalledByNative
+    @Nullable
     String getManufacturer() {
         return getProperty(MidiDeviceInfo.PROPERTY_MANUFACTURER);
     }
 
     /** Returns the product name. */
     @CalledByNative
+    @Nullable
     String getProduct() {
         String product = getProperty(MidiDeviceInfo.PROPERTY_PRODUCT);
         // TODO(crbug.com/40480119): Following code to use PROPERTY_NAME is a
@@ -94,6 +100,7 @@ class MidiDeviceAndroid {
 
     /** Returns the version string. */
     @CalledByNative
+    @Nullable
     String getVersion() {
         return getProperty(MidiDeviceInfo.PROPERTY_VERSION);
     }
@@ -110,7 +117,7 @@ class MidiDeviceAndroid {
         return mOutputPorts;
     }
 
-    private String getProperty(String name) {
+    private @Nullable String getProperty(String name) {
         return mDevice.getInfo().getProperties().getString(name);
     }
 }

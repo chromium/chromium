@@ -26,40 +26,6 @@ bool IsFeedBackgroundRefreshEnabledOnly() {
   return base::FeatureList::IsEnabled(kEnableFeedBackgroundRefresh);
 }
 
-// Helper function that returns a vector of two booleans, with vector[0] being
-// the desired state for the combined MVT, and vector[1] being whether homestack
-// should be enabled.
-std::vector<bool> ShouldEnableCombinedMVTAndHomestack(
-    FeedActivityBucket feed_activity_bucket) {
-  if (!base::FeatureList::IsEnabled(kNewFeedPositioning)) {
-    return {false, false};
-  }
-  std::string mvt_state_param_name;
-  switch (feed_activity_bucket) {
-    case FeedActivityBucket::kNoActivity:
-      mvt_state_param_name = kNewFeedPositioningCombinedMVTForLowEngaged;
-      break;
-    case FeedActivityBucket::kLowActivity:
-      mvt_state_param_name = kNewFeedPositioningCombinedMVTForMidEngaged;
-      break;
-    case FeedActivityBucket::kMediumActivity:
-    case FeedActivityBucket::kHighActivity:
-      mvt_state_param_name = kNewFeedPositioningCombinedMVTForHighEngaged;
-      break;
-    default:
-      NOTREACHED() << "Should not reach engagement level: "
-                   << static_cast<int>(feed_activity_bucket);
-  }
-  bool should_combine_mvt = base::GetFieldTrialParamByFeatureAsBool(
-      kNewFeedPositioning, mvt_state_param_name, /*default_value=*/true);
-  bool should_enable_homestack =
-      should_combine_mvt ||
-      base::GetFieldTrialParamByFeatureAsBool(
-          kNewFeedPositioning, kNewFeedPositioningHomestackOnForAll,
-          /*default_value=*/true);
-  return {should_combine_mvt, should_enable_homestack};
-}
-
 }  // namespace
 
 BASE_FEATURE(kSegmentedDefaultBrowserPromo,
@@ -140,6 +106,9 @@ const char kSafetyCheckMagicStackAutorunHoursThreshold[] =
 const char kSafetyCheckNotificationsProvisionalEnabled[] =
     "SafetyCheckNotificationsProvisionalEnabled";
 
+const char kSafetyCheckNotificationsSuppressDelayIfPresent[] =
+    "SafetyCheckNotificationsSuppressDelayIfPresent";
+
 const char kSafetyCheckNotificationsUserInactiveThreshold[] =
     "SafetyCheckNotificationsUserInactiveThreshold";
 
@@ -172,6 +141,13 @@ bool ProvisionalSafetyCheckNotificationsEnabled() {
       kSafetyCheckNotifications, kSafetyCheckNotificationsProvisionalEnabled,
       /*default_value=*/
       true);
+}
+
+const base::TimeDelta SuppressDelayForSafetyCheckNotificationsIfPresent() {
+  return base::GetFieldTrialParamByFeatureAsTimeDelta(
+      kSafetyCheckNotifications,
+      kSafetyCheckNotificationsSuppressDelayIfPresent,
+      /*default_value=*/kSafetyCheckNotificationSuppressDelayIfPresent);
 }
 
 const base::TimeDelta InactiveThresholdForSafetyCheckNotifications() {
@@ -255,14 +231,6 @@ BASE_FEATURE(kIOSDockingPromoPreventDeregistrationKillswitch,
              "IOSDockingPromoPreventDeregistrationKillswitch",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIOSEditMenuHideSearchWeb,
-             "IOSEditMenuHideSearchWeb",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableColorLensAndVoiceIconsInHomeScreenWidget,
-             "kEnableColorLensAndVoiceIconsInHomeScreenWidget",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableLensInOmniboxCopiedImage,
              "EnableLensInOmniboxCopiedImage",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -275,6 +243,10 @@ BASE_FEATURE(kEnableLensViewFinderUnifiedExperience,
              "EnableLensViewFinderUnifiedExperience",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableLensContextMenuUnifiedExperience,
+             "EnableLensContextMenuUnifiedExperience",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Update to the correct milestone after launch.
 // Also update in components/omnibox/browser/autocomplete_result.cc.
 const base::NotFatalUntil kLensOverlayNotFatalUntil = base::NotFatalUntil::M200;
@@ -283,12 +255,20 @@ BASE_FEATURE(kLensOverlayDisablePriceInsights,
              "LensOverlayDisablePriceInsights",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensOverlayPriceInsightsCounterfactual,
+             "LensOverlayPriceInsightsCounterfactual",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kLensOverlayEnableIPadCompatibility,
              "EnableLensOverlayForceIPadSupport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlayEnableLocationBarEntrypoint,
              "LensOverlayEnableLocationBarEntrypoint",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLensOverlayEnableLocationBarEntrypointOnSRP,
+             "LensOverlayEnableLocationBarEntrypointOnSRP",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlayEnableSameTabNavigation,
@@ -430,7 +410,7 @@ SafetyCheckNotificationsExperimentTypeEnabled() {
       base::GetFieldTrialParamByFeatureAsInt(
           kSafetyCheckNotifications, kSafetyCheckNotificationsExperimentType,
           /*default_value=*/
-          (int)SafetyCheckNotificationsExperimentalArm::kVerbose));
+          (int)SafetyCheckNotificationsExperimentalArm::kSuccinct));
 }
 
 SafetyCheckNotificationsImpressionTrigger
@@ -957,9 +937,31 @@ bool IsTabResumptionImagesThumbnailsEnabled() {
 
 bool ShouldPutMostVisitedSitesInMagicStack(
     FeedActivityBucket feed_activity_bucket) {
-  return base::GetFieldTrialParamByFeatureAsBool(
-             kMagicStack, kMagicStackMostVisitedModuleParam, false) ||
-         ShouldEnableCombinedMVTAndHomestack(feed_activity_bucket)[0];
+  if (base::GetFieldTrialParamByFeatureAsBool(
+          kMagicStack, kMagicStackMostVisitedModuleParam, false)) {
+    return true;
+  }
+  if (base::FeatureList::IsEnabled(kNewFeedPositioning)) {
+    std::string mvt_state_param_name;
+    switch (feed_activity_bucket) {
+      case FeedActivityBucket::kNoActivity:
+        mvt_state_param_name = kNewFeedPositioningCombinedMVTForLowEngaged;
+        break;
+      case FeedActivityBucket::kLowActivity:
+        mvt_state_param_name = kNewFeedPositioningCombinedMVTForMidEngaged;
+        break;
+      case FeedActivityBucket::kMediumActivity:
+      case FeedActivityBucket::kHighActivity:
+        mvt_state_param_name = kNewFeedPositioningCombinedMVTForHighEngaged;
+        break;
+      default:
+        NOTREACHED() << "Should not reach engagement level: "
+                     << static_cast<int>(feed_activity_bucket);
+    }
+    return base::GetFieldTrialParamByFeatureAsBool(
+        kNewFeedPositioning, mvt_state_param_name, /*default_value=*/true);
+  }
+  return false;
 }
 
 double ReducedNTPTopMarginSpaceForMagicStack() {
@@ -1145,10 +1147,6 @@ BASE_FEATURE(kOmahaResyncTimerOnForeground,
              "OmahaResyncTimerOnForeground",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPostProfileSwitchActions,
-             "PostProfileSwitchActions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kChromeStartupParametersAsync,
              "ChromeStartupParametersAsync",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1181,12 +1179,6 @@ const char kNewFeedPositioningCombinedMVTForMidEngaged[] =
     "medium_engagement_combined_mvt";
 const char kNewFeedPositioningCombinedMVTForLowEngaged[] =
     "low_engagement_combined_mvt";
-const char kNewFeedPositioningHomestackOnForAll[] = "homestack_on_for_all";
-
-// Returns whether homestack should be enabled.
-bool ShouldEnableHomestack(FeedActivityBucket feed_activity_bucket) {
-  return ShouldEnableCombinedMVTAndHomestack(feed_activity_bucket)[1];
-}
 
 BASE_FEATURE(kDefaultBrowserBannerPromo,
              "DefaultBrowserBannerPromo",
@@ -1194,4 +1186,12 @@ BASE_FEATURE(kDefaultBrowserBannerPromo,
 
 bool IsDefaultBrowserBannerPromoEnabled() {
   return base::FeatureList::IsEnabled(kDefaultBrowserBannerPromo);
+}
+
+BASE_FEATURE(kFRESignInSecondaryActionLabelUpdate,
+             "FRESignInSecondaryActionLabelUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool FRESignInSecondaryActionLabelUpdate() {
+  return base::FeatureList::IsEnabled(kFRESignInSecondaryActionLabelUpdate);
 }

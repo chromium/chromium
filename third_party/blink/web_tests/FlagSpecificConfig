@@ -199,5 +199,14 @@
     "comments": [
       "Used to test Chrome with Skia Graphite."
     ]
+  },
+  {
+    "name": "disable-skia-graphite",
+    "args": [
+      "--disable-skia-graphite"
+    ],
+    "comments": [
+      "Used to test Chrome with Skia Ganesh."
+    ]
   }
 ]

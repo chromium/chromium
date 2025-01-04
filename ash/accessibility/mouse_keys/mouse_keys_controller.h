@@ -48,8 +48,11 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
   // Returns true if the event should be cancelled.
   bool RewriteEvent(const ui::Event& event);
 
-  void set_enabled(bool enabled) { enabled_ = enabled; }
+  void set_enabled(bool enabled);
   bool enabled() { return enabled_; }
+
+  void set_paused(bool paused) { paused_ = paused; }
+  bool paused() { return paused_; }
 
   void set_use_primary_keys(bool use_primary_keys) {
     use_primary_keys_ = use_primary_keys;

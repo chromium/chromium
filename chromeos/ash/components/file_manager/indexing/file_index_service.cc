@@ -30,8 +30,7 @@ base::FilePath MakeDbPath(base::FilePath& profile_path) {
   return profile_path.AppendASCII("file_manager").AppendASCII("file_index.db");
 }
 
-constexpr char kSqlDatabaseUmaTag[] =
-    "FileBrowser.FileIndex.SqlDatabase.Status";
+constexpr char kSqlDatabaseUmaTag[] = "FileIndexService";
 
 }  // namespace
 
@@ -39,8 +38,9 @@ FileIndexService::FileIndexService(base::FilePath profile_path)
     : file_index_(base::ThreadPool::CreateSequencedTaskRunner(
                       {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
                        base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
-                  std::make_unique<SqlStorage>(MakeDbPath(profile_path),
-                                               kSqlDatabaseUmaTag)) {}
+                  std::make_unique<SqlStorage>(
+                      MakeDbPath(profile_path),
+                      sql::Database::Tag(kSqlDatabaseUmaTag))) {}
 FileIndexService::~FileIndexService() = default;
 
 void FileIndexService::Init(IndexingOperationCallback callback) {

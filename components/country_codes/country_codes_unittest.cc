@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/country_codes/country_codes.h"
+
 #include <string>
 #include <vector>
 
-#include "components/country_codes/country_codes.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace country_codes {

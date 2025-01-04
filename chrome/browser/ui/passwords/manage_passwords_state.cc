@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/logging/log_router.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager.h"
@@ -25,14 +26,12 @@ using password_manager_util::GetMatchType;
 
 namespace {
 
-std::vector<std::unique_ptr<PasswordForm>> DeepCopyNonPSLVector(
+std::vector<std::unique_ptr<PasswordForm>> DeepCopyMatchingCredentials(
     base::span<const PasswordForm> password_forms) {
   std::vector<std::unique_ptr<PasswordForm>> result;
   result.reserve(password_forms.size());
   for (const PasswordForm& form : password_forms) {
-    if (GetMatchType(form) != password_manager_util::GetLoginMatchType::kPSL) {
-      result.push_back(std::make_unique<PasswordForm>(form));
-    }
+    result.push_back(std::make_unique<PasswordForm>(form));
   }
   return result;
 }
@@ -87,7 +86,7 @@ void ManagePasswordsState::OnPendingPassword(
   ClearData();
   form_manager_ = std::move(form_manager);
   local_credentials_forms_ =
-      DeepCopyNonPSLVector(form_manager_->GetBestMatches());
+      DeepCopyMatchingCredentials(form_manager_->GetBestMatches());
   AppendDeepCopyVector(form_manager_->GetFederatedMatches(),
                        &local_credentials_forms_);
   origin_ = url::Origin::Create(form_manager_->GetURL());
@@ -107,7 +106,7 @@ void ManagePasswordsState::OnUpdatePassword(
   ClearData();
   form_manager_ = std::move(form_manager);
   local_credentials_forms_ =
-      DeepCopyNonPSLVector(form_manager_->GetBestMatches());
+      DeepCopyMatchingCredentials(form_manager_->GetBestMatches());
   AppendDeepCopyVector(form_manager_->GetFederatedMatches(),
                        &local_credentials_forms_);
   origin_ = url::Origin::Create(form_manager_->GetURL());
@@ -137,13 +136,8 @@ void ManagePasswordsState::OnAutomaticPasswordSave(
     std::unique_ptr<PasswordFormManagerForUI> form_manager) {
   ClearData();
   form_manager_ = std::move(form_manager);
-  for (const password_manager::PasswordForm& form :
-       form_manager_->GetBestMatches()) {
-    if (GetMatchType(form) == password_manager_util::GetLoginMatchType::kPSL) {
-      continue;
-    }
-    local_credentials_forms_.push_back(std::make_unique<PasswordForm>(form));
-  }
+  local_credentials_forms_ =
+      DeepCopyMatchingCredentials(form_manager_->GetBestMatches());
   AppendDeepCopyVector(form_manager_->GetFederatedMatches(),
                        &local_credentials_forms_);
   origin_ = url::Origin::Create(form_manager_->GetURL());
@@ -163,7 +157,7 @@ void ManagePasswordsState::OnSubmittedGeneratedPassword(
   }
 
   local_credentials_forms_ =
-      DeepCopyNonPSLVector(form_manager_->GetBestMatches());
+      DeepCopyMatchingCredentials(form_manager_->GetBestMatches());
   AppendDeepCopyVector(form_manager_->GetFederatedMatches(),
                        &local_credentials_forms_);
 
@@ -201,7 +195,7 @@ void ManagePasswordsState::OnPasswordAutofilled(
     url::Origin origin,
     base::span<const PasswordForm> federated_matches) {
   CHECK(!password_forms.empty() || !federated_matches.empty());
-  auto local_credentials_forms = DeepCopyNonPSLVector(password_forms);
+  auto local_credentials_forms = DeepCopyMatchingCredentials(password_forms);
   AppendDeepCopyVector(federated_matches, &local_credentials_forms);
 
   // Delete |form_manager_| only when the parameters are processed. They may be
@@ -209,8 +203,6 @@ void ManagePasswordsState::OnPasswordAutofilled(
   ClearData();
 
   if (local_credentials_forms.empty()) {
-    // Don't show the UI for PSL matched passwords. They are not stored for this
-    // page and cannot be deleted.
     OnInactive();
   } else {
     origin_ = std::move(origin);
@@ -230,7 +222,7 @@ void ManagePasswordsState::OnPasswordMovable(
   ClearData();
   form_manager_ = std::move(form_to_move);
   local_credentials_forms_ =
-      DeepCopyNonPSLVector(form_manager_->GetBestMatches());
+      DeepCopyMatchingCredentials(form_manager_->GetBestMatches());
   AppendDeepCopyVector(form_manager_->GetFederatedMatches(),
                        &local_credentials_forms_);
   origin_ = url::Origin::Create(form_manager_->GetURL());
@@ -377,9 +369,9 @@ bool ManagePasswordsState::AddForm(const PasswordForm& form) {
 
 void ManagePasswordsState::SetState(password_manager::ui::State state) {
   DCHECK(client_);
-  if (client_->GetLogManager()->IsLoggingActive()) {
-    password_manager::BrowserSavePasswordProgressLogger logger(
-        client_->GetLogManager());
+  autofill::LogManager* log_manager = client_->GetCurrentLogManager();
+  if (log_manager && log_manager->IsLoggingActive()) {
+    password_manager::BrowserSavePasswordProgressLogger logger(log_manager);
     logger.LogNumber(autofill::SavePasswordProgressLogger::STRING_NEW_UI_STATE,
                      state);
   }

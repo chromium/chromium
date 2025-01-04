@@ -14,13 +14,13 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_name.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/data_model/form_group.h"
+#include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -28,6 +28,34 @@
 #include "components/autofill/core/common/autofill_regexes.h"
 
 namespace autofill {
+namespace {
+
+// Finalizes the structure of `component` and returns the result of the
+// finalization. If the `component` could not be completed, it is possible
+// that it contains an invalid structure (e.g. first name
+// is not matching the full name). In this case, the function wipes the invalid
+// structure and tries to complete the structure again.
+bool FinalizeNameAddressComponent(AddressComponent* component) {
+  CHECK(component->GetStorageType() == NAME_FULL ||
+        component->GetStorageType() == ALTERNATIVE_FULL_NAME);
+  // Alternative names are not migrated because they were only recently
+  // introduced.
+  if (component->GetStorageType() == NAME_FULL) {
+    component->MigrateLegacyStructure();
+  }
+
+  bool result = component->CompleteFullTree();
+  if (!result) {
+    if (component->GetVerificationStatus() ==
+            VerificationStatus::kUserVerified &&
+        component->WipeInvalidStructure()) {
+      result = component->CompleteFullTree();
+    }
+  }
+  return result;
+}
+
+}  // namespace
 
 NameInfo::NameInfo()
     : name_(std::make_unique<NameFull>()),
@@ -85,12 +113,13 @@ bool NameInfo::IsStructuredNameMergeable(const NameInfo& newer) const {
 }
 
 bool NameInfo::FinalizeAfterImport() {
-  name_->MigrateLegacyStructure();
+  bool result = FinalizeNameAddressComponent(name_.get());
+
   if (base::FeatureList::IsEnabled(
           features::kAutofillSupportPhoneticNameForJP)) {
-    return name_->CompleteFullTree() && alternative_name_->CompleteFullTree();
+    result &= FinalizeNameAddressComponent(alternative_name_.get());
   }
-  return name_->CompleteFullTree();
+  return result;
 }
 
 bool NameInfo::operator==(const NameInfo& other) const {

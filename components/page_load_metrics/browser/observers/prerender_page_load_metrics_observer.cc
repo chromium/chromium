@@ -5,6 +5,7 @@
 #include "components/page_load_metrics/browser/observers/prerender_page_load_metrics_observer.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
@@ -19,6 +20,33 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+
+namespace {
+
+void RecordShiftedTimeHistogram(const std::string& histogram_name,
+                                base::TimeDelta time) {
+  // Generated with Histogram::InitializeBucketRanges. Firstly generate an array
+  // by `Histogram::InitializeBucketRanges(0, 60000, ranges)`, and then expand
+  // the array to two sides of the axis of 60000.
+  static const std::vector<int> ranges = {
+      0,     11600, 20957, 28505, 34594, 39506, 43468, 46664,  49242, 51322,
+      53000, 54353, 55445, 56326, 57036, 57609, 58071, 58444,  58745, 58988,
+      59184, 59342, 59469, 59572, 59655, 59722, 59776, 59819,  59854, 59882,
+      59905, 59923, 59938, 59950, 59960, 59968, 59974, 59979,  59983, 59986,
+      59989, 59991, 59993, 59994, 59995, 59996, 59997, 59998,  59999, 60000,
+      60001, 60002, 60003, 60004, 60005, 60006, 60007, 60009,  60011, 60014,
+      60017, 60021, 60026, 60032, 60040, 60050, 60062, 60077,  60095, 60118,
+      60146, 60181, 60224, 60278, 60345, 60428, 60531, 60658,  60816, 61012,
+      61255, 61556, 61929, 62391, 62964, 63674, 64555, 65647,  67000, 68678,
+      70758, 73336, 76532, 80494, 85406, 91495, 99043, 108400, 120000};
+  static const std::vector<base::HistogramBase::Sample> samples =
+      base::CustomHistogram::ArrayToCustomEnumRanges(ranges);
+  base::HistogramBase* time_histogram = base::CustomHistogram::FactoryGet(
+      histogram_name, samples, base::HistogramBase::kUmaTargetedHistogramFlag);
+  time_histogram->Add(time.InMilliseconds());
+}
+
+}  // namespace
 
 namespace internal {
 
@@ -61,7 +89,7 @@ const char kPageLoadPrerenderActivatedPageLoaderStatus[] =
 
 // Lead time brought by prerender
 const char kDomContentLoadedToActivation[] =
-    "PageLoad.Internal.Prerender2.DomContentLoadedToActivation";
+    "PageLoad.Internal.Prerender2.DomContentLoadedToActivation2";
 
 }  // namespace internal
 
@@ -259,11 +287,13 @@ void PrerenderPageLoadMetricsObserver::MaybeRecordDocumentLoadMetrics(
   base::TimeDelta dom_content_loaded_event_start =
       main_frame_timing.document_timing->dom_content_loaded_event_start
           .value_or(upper_bound + navigation_to_activation_time_.value());
-
-  base::UmaHistogramCustomTimes(
-      AppendSuffix(internal::kDomContentLoadedToActivation),
-      navigation_to_activation_time_.value() - dom_content_loaded_event_start,
-      -upper_bound, upper_bound, 100);
+  // Shift the duration by the upper bound because UMA cannot handle negative
+  // values.
+  base::TimeDelta shifted_duration = navigation_to_activation_time_.value() -
+                                     dom_content_loaded_event_start +
+                                     upper_bound;
+  RecordShiftedTimeHistogram(
+      AppendSuffix(internal::kDomContentLoadedToActivation), shifted_duration);
 
   // TODO(crbug.com/40240492): Add more metrics to track the loading progress on
   // the renderer side, e.g., loaded the blocking resources, etc.

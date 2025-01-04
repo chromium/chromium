@@ -2291,6 +2291,14 @@ const CSSValue* ColumnRuleColor::CSSValueFromComputedStyleInternal(
       style.ColumnRuleColor(), style, value_phase);
 }
 
+const CSSValue* ColumnRuleStyle::ParseSingleValue(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumeGapDecorationPropertyList(
+      stream, context, CSSGapDecorationPropertyType::kStyle);
+}
+
 const CSSValue* ColumnRuleStyle::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
@@ -6092,6 +6100,22 @@ const CSSValue* MaskType::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.MaskType());
 }
 
+const CSSValue* MasonryDirection::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return CSSIdentifierValue::Create(style.MasonryDirection());
+}
+
+const CSSValue* MasonryFill::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return CSSIdentifierValue::Create(style.MasonryFill());
+}
+
 const CSSValue* MasonrySlack::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
@@ -6381,7 +6405,8 @@ const CSSValue* ObjectViewBox::ParseSingleValue(
     return css_parsing_utils::ConsumeIdent(stream);
   }
   auto* css_value = css_parsing_utils::ConsumeBasicShape(
-      stream, context, css_parsing_utils::AllowPathValue::kForbid);
+      stream, context, css_parsing_utils::AllowPathValue::kForbid,
+      css_parsing_utils::AllowShapeValue::kForbid);
 
   if (!css_value || css_value->IsBasicShapeInsetValue() ||
       css_value->IsBasicShapeRectValue() ||
@@ -7135,6 +7160,11 @@ const CSSValue* ViewTransitionName::ParseSingleValue(
                ? css_parsing_utils::ConsumeIdent(stream)
                : nullptr;
   }
+  if (stream.Peek().Id() == CSSValueID::kMatchElement) {
+    return RuntimeEnabledFeatures::CSSViewTransitionMatchElementEnabled()
+               ? css_parsing_utils::ConsumeIdent(stream)
+               : nullptr;
+  }
   return css_parsing_utils::ConsumeCustomIdent(stream, context);
 }
 
@@ -7148,6 +7178,10 @@ const CSSValue* ViewTransitionName::CSSValueFromComputedStyleInternal(
   }
   if (style.ViewTransitionName()->IsAuto()) {
     CHECK(RuntimeEnabledFeatures::CSSViewTransitionAutoNameEnabled());
+    return CSSIdentifierValue::Create(CSSValueID::kAuto);
+  }
+  if (style.ViewTransitionName()->IsMatchElement()) {
+    CHECK(RuntimeEnabledFeatures::CSSViewTransitionMatchElementEnabled());
     return CSSIdentifierValue::Create(CSSValueID::kAuto);
   }
 
@@ -8245,12 +8279,12 @@ const CSSValue* ScrollStartY::CSSValueFromComputedStyleInternal(
   return ComputedStyleUtils::ValueForScrollStart(style, style.ScrollStartY());
 }
 
-const CSSValue* ScrollStartTarget::CSSValueFromComputedStyleInternal(
+const CSSValue* ScrollInitialTarget::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return CSSIdentifierValue::Create(style.ScrollStartTarget());
+  return CSSIdentifierValue::Create(style.ScrollInitialTarget());
 }
 
 const CSSValue* ScrollTimelineAxis::ParseSingleValue(
@@ -8359,6 +8393,7 @@ const CSSValue* ShapeOutside::ParseSingleValue(
   CSSValue* box_value = css_parsing_utils::ConsumeShapeBox(stream);
   CSSValue* shape_value = css_parsing_utils::ConsumeBasicShape(
       stream, context, css_parsing_utils::AllowPathValue::kForbid,
+      css_parsing_utils::AllowShapeValue::kForbid,
       css_parsing_utils::AllowBasicShapeRectValue::kForbid,
       css_parsing_utils::AllowBasicShapeXYWHValue::kForbid);
   if (shape_value) {

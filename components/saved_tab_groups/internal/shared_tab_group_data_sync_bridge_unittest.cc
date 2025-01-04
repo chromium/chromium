@@ -60,6 +60,7 @@ using tab_groups::test::HasSharedGroupMetadata;
 using tab_groups::test::HasTabMetadata;
 using testing::_;
 using testing::AllOf;
+using testing::Each;
 using testing::ElementsAre;
 using testing::Eq;
 using testing::Invoke;
@@ -89,6 +90,11 @@ MATCHER_P(HasLocalGroupId, local_group_id, "") {
 
 MATCHER_P(HasTabUrl, url, "") {
   return arg.url() == GURL(url);
+}
+
+MATCHER_P2(HasSharedAttribution, created_by, updated_by, "") {
+  return arg.shared_attribution().created_by == GaiaId(created_by) &&
+         arg.shared_attribution().updated_by == GaiaId(updated_by);
 }
 
 MATCHER_P3(HasGroupEntityData, title, color, collaboration_id, "") {
@@ -295,11 +301,18 @@ std::vector<syncer::EntityData> ExtractEntityDataFromBatch(
 
 sync_pb::EntityMetadata CreateMetadata(
     CollaborationId collaboration_id,
+    const SharedAttribution& shared_attribution,
     std::optional<sync_pb::UniquePosition> unique_position) {
   sync_pb::EntityMetadata metadata;
   // Other metadata fields are not used in these tests.
   metadata.mutable_collaboration()->set_collaboration_id(
       std::move(collaboration_id.value()));
+  metadata.mutable_collaboration()
+      ->mutable_creation_attribution()
+      ->set_obfuscated_gaia_id(shared_attribution.created_by.ToString());
+  metadata.mutable_collaboration()
+      ->mutable_last_update_attribution()
+      ->set_obfuscated_gaia_id(shared_attribution.updated_by.ToString());
   if (unique_position) {
     *metadata.mutable_unique_position() = std::move(unique_position.value());
   }
@@ -343,9 +356,9 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
   }
 
   // Cleans up the bridge and the model, used to simulate browser restart.
-  void StoreMetadataAndReset(const CollaborationId& collaboration_id) {
+  void StoreMetadataAndReset() {
     CHECK(saved_tab_group_model_);
-    StoreSharedSyncMetadataBasedOnModel(collaboration_id);
+    StoreSharedSyncMetadataBasedOnModel();
 
     observer_forwarder_.reset();
     mock_model_observer_.Reset();
@@ -455,22 +468,26 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
 
   // Stores sync metadata for the shared tab groups from the current model. This
   // is helpful to verify storing data across browser restarts.
-  void StoreSharedSyncMetadataBasedOnModel(
-      const CollaborationId& collaboration_id) {
+  void StoreSharedSyncMetadataBasedOnModel() {
     std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
         store().CreateWriteBatch();
     syncer::MetadataChangeList* metadata_change_list =
         write_batch->GetMetadataChangeList();
     for (const SavedTabGroup* group : model()->GetSharedTabGroupsOnly()) {
+      CHECK(group->collaboration_id().has_value());
       metadata_change_list->UpdateMetadata(
           group->saved_guid().AsLowercaseString(),
-          CreateMetadata(collaboration_id, /*unique_position=*/std::nullopt));
+          CreateMetadata(group->collaboration_id().value(),
+                         group->shared_attribution(),
+                         /*unique_position=*/std::nullopt));
       syncer::UniquePosition next_unique_position =
           GenerateRandomUniquePosition();
       for (const SavedTabGroupTab& tab : group->saved_tabs()) {
         metadata_change_list->UpdateMetadata(
             tab.saved_tab_guid().AsLowercaseString(),
-            CreateMetadata(collaboration_id, next_unique_position.ToProto()));
+            CreateMetadata(group->collaboration_id().value(),
+                           tab.shared_attribution(),
+                           next_unique_position.ToProto()));
         next_unique_position = syncer::UniquePosition::After(
             next_unique_position, syncer::UniquePosition::RandomSuffix());
       }
@@ -778,7 +795,8 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldCheckValidEntities) {
 
   EXPECT_TRUE(bridge()->IsEntityDataValid(CreateEntityData(
       MakeTabGroupSpecifics("test title", sync_pb::SharedTabGroup::GREEN),
-      kCollaborationId, kDefaultGaiaId, /*updated_by=*/kDefaultGaiaId)));
+      kCollaborationId, GaiaId(kDefaultGaiaId),
+      /*updated_by=*/GaiaId(kDefaultGaiaId))));
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldRemoveLocalGroupsOnDisableSync) {
@@ -924,7 +942,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncNewGroupWithTabs) {
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
   group.SetCollaborationId(CollaborationId("collaboration"));
-  group.SetOriginatingSavedTabGroupGuid(kOriginatingSavedTabGroupGuid);
+  group.SetOriginatingTabGroupGuid(kOriginatingSavedTabGroupGuid);
   SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
       "http://google.com/1", u"tab 1", group.saved_guid(), /*position=*/0);
   SavedTabGroupTab tab2 = test::CreateSavedTabGroupTab(
@@ -1120,10 +1138,13 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReloadDataOnBrowserRestart) {
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
   group.SetCollaborationId(kCollaborationId);
+  group.SetUpdatedByAttribution(GaiaId(kDefaultGaiaId));
   SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
       "http://google.com/1", u"tab 1", group.saved_guid(), /*position=*/0);
+  tab1.SetUpdatedByAttribution(GaiaId(kDefaultGaiaId));
   SavedTabGroupTab tab2 = test::CreateSavedTabGroupTab(
       "http://google.com/2", u"tab 2", group.saved_guid(), /*position=*/1);
+  tab2.SetUpdatedByAttribution(GaiaId(kDefaultGaiaId));
 
   group.AddTabLocally(tab1);
   group.AddTabLocally(tab2);
@@ -1133,7 +1154,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReloadDataOnBrowserRestart) {
   ASSERT_EQ(model()->Get(group.saved_guid())->saved_tabs().size(), 2u);
 
   // Verify that the model is destroyed to simulate browser restart.
-  StoreMetadataAndReset(kCollaborationId);
+  StoreMetadataAndReset();
   ASSERT_EQ(model(), nullptr);
 
   // Note that sync metadata is not checked explicitly because the collaboration
@@ -1143,9 +1164,14 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReloadDataOnBrowserRestart) {
       model()->saved_tab_groups(),
       UnorderedElementsAre(HasSharedGroupMetadata(
           "title", tab_groups::TabGroupColorId::kGrey, kCollaborationId)));
+  EXPECT_THAT(model()->saved_tab_groups(),
+              UnorderedElementsAre(
+                  HasSharedAttribution(kDefaultGaiaId, kDefaultGaiaId)));
   EXPECT_THAT(model()->saved_tab_groups().front().saved_tabs(),
               ElementsAre(HasTabMetadata("tab 1", "http://google.com/1"),
                           HasTabMetadata("tab 2", "http://google.com/2")));
+  EXPECT_THAT(model()->saved_tab_groups().front().saved_tabs(),
+              Each(HasSharedAttribution(kDefaultGaiaId, kDefaultGaiaId)));
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest,
@@ -1633,7 +1659,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldAssignLocalGroupId) {
   }
 
   // Simulate browser restart to verify that the local group ID is persisted.
-  StoreMetadataAndReset(kCollaborationId);
+  StoreMetadataAndReset();
   ASSERT_THAT(model(), IsNull());
   ASSERT_TRUE(InitializeBridgeAndModel());
   ASSERT_THAT(model()->Get(group.saved_guid()), NotNull());
@@ -1643,7 +1669,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldAssignLocalGroupId) {
   // Close the tab group and simulate browser restart.
   model()->OnGroupClosedInTabStrip(local_group_id);
 
-  StoreMetadataAndReset(kCollaborationId);
+  StoreMetadataAndReset();
   ASSERT_THAT(model(), IsNull());
   ASSERT_TRUE(InitializeBridgeAndModel());
   ASSERT_THAT(model()->Get(group.saved_guid()), NotNull());
@@ -1706,7 +1732,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldStoreLocalIdOnRemoteUpdate) {
   testing::Mock::VerifyAndClearExpectations(&mock_model_observer());
 
   // Verify that the model is destroyed to simulate browser restart.
-  StoreMetadataAndReset(kCollaborationId);
+  StoreMetadataAndReset();
   ASSERT_EQ(model(), nullptr);
   ASSERT_TRUE(InitializeBridgeAndModel());
 
@@ -1836,30 +1862,36 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
 TEST_F(SharedTabGroupDataSyncBridgeTest,
        ShouldPropagateAttributionMetadataOnLocalCreation) {
   const CollaborationId kCollaborationId("collaboration");
-  const GaiaId kUpdatedBy("gaia_id");
+  const GaiaId kUpdatedBy1("gaia_id_1");
+  const GaiaId kUpdatedBy2("gaia_id_2");
 
   ASSERT_TRUE(InitializeBridgeAndModel());
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
   group.SetCollaborationId(kCollaborationId);
   group.SetCreatedByAttribution(GaiaId(kDefaultGaiaId));
-  group.SetUpdatedByAttribution(kUpdatedBy);
+  group.SetUpdatedByAttribution(kUpdatedBy1);
 
   SavedTabGroupTab tab = test::CreateSavedTabGroupTab(
       "http://google.com/1", u"tab", group.saved_guid(), /*position=*/0);
   tab.SetCreatedByAttribution(GaiaId(kDefaultGaiaId));
-  tab.SetUpdatedByAttribution(kUpdatedBy);
+  tab.SetUpdatedByAttribution(kUpdatedBy1);
   group.AddTabLocally(tab);
 
   EXPECT_CALL(mock_processor(),
               Put(StorageKeyForGroup(group),
-                  Pointee(HasAttributionMetadata(kUpdatedBy)), _));
+                  Pointee(HasAttributionMetadata(kUpdatedBy1)), _));
   EXPECT_CALL(mock_processor(),
               Put(StorageKeyForTab(tab),
-                  Pointee(HasAttributionMetadata(kUpdatedBy)), _));
+                  Pointee(HasAttributionMetadata(kUpdatedBy1)), _));
   model()->AddedLocally(group);
 
-  // TODO(crbug.com/352214654): verify that the attribution metadata is updated.
+  // Update the tab attribution metadata.
+  tab.SetUpdatedByAttribution(kUpdatedBy2);
+  EXPECT_CALL(mock_processor(),
+              Put(StorageKeyForTab(tab),
+                  Pointee(HasAttributionMetadata(kUpdatedBy2)), _));
+  model()->UpdateTabInGroup(group.saved_guid(), tab, /*notify_observers=*/true);
 }
 
 // The number of tabs to test the correct ordering of remote updates.

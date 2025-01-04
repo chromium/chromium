@@ -35,7 +35,7 @@
 #include "content/test/grit/web_ui_mojo_test_resources_map.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/tests/validation_test_input_parser.h"
-#include "mojo/public/interfaces/bindings/tests/validation_test_interfaces.mojom.h"
+#include "mojo/public/interfaces/bindings/tests/validation_test_interfaces.test-mojom.h"
 #include "ui/base/webui/resource_path.h"
 
 namespace content {

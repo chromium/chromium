@@ -210,6 +210,7 @@ class ClipboardSvgWriter final : public ClipboardWriter {
     String svg_string = String::FromUTF8(svg_data->ByteSpan());
     const Document* doc = dom_parser->parseFromString(
         svg_string, V8SupportedType(V8SupportedType::Enum::kImageSvgXml));
+    promise_->GetExecutionContext()->CountUse(WebFeature::kClipboardSvgWrite);
     Write(CreateMarkup(doc, kIncludeNode, kResolveAllURLs));
   }
 
@@ -234,6 +235,9 @@ class ClipboardCustomFormatWriter final : public ClipboardWriter {
       DOMArrayBuffer* custom_format_data,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    promise_->GetExecutionContext()->CountUse(
+        WebFeature::kClipboardCustomFormatWrite);
     Write(custom_format_data);
   }
 

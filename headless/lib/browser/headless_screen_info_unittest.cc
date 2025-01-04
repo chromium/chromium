@@ -263,5 +263,56 @@ TEST(ScreenInfoTest, MultipleScreens) {
               "Invalid screen info: }");
 }
 
+TEST(ScreenInfoTest, WorkArea) {
+  EXPECT_EQ(HeadlessScreenInfo::FromString("{ workAreaLeft=100 }").value()[0],
+            HeadlessScreenInfo(
+                {.work_area_insets = gfx::Insets::TLBR(0, 100, 0, 0)}));
+
+  EXPECT_EQ(HeadlessScreenInfo::FromString("{ workAreaRight=100 }").value()[0],
+            HeadlessScreenInfo(
+                {.work_area_insets = gfx::Insets::TLBR(0, 0, 0, 100)}));
+
+  EXPECT_EQ(HeadlessScreenInfo::FromString("{ workAreaTop=100 }").value()[0],
+            HeadlessScreenInfo(
+                {.work_area_insets = gfx::Insets::TLBR(100, 0, 0, 0)}));
+
+  EXPECT_EQ(HeadlessScreenInfo::FromString("{ workAreaBottom=100 }").value()[0],
+            HeadlessScreenInfo(
+                {.work_area_insets = gfx::Insets::TLBR(0, 0, 100, 0)}));
+
+  EXPECT_EQ(
+      HeadlessScreenInfo::FromString("{ workAreaLeft=100 workAreaRight=100"
+                                     " workAreaTop=100 workAreaBottom=100 }")
+          .value()[0],
+      HeadlessScreenInfo(
+          {.work_area_insets = gfx::Insets::TLBR(100, 100, 100, 100)}));
+
+  // Malformed.
+  EXPECT_THAT(HeadlessScreenInfo::FromString("{ workAreaLeft=abc }").error(),
+              "Invalid work area inset: abc");
+
+  EXPECT_THAT(HeadlessScreenInfo::FromString("{ workAreaRight=abc }").error(),
+              "Invalid work area inset: abc");
+
+  EXPECT_THAT(HeadlessScreenInfo::FromString("{ workAreaTop=abc }").error(),
+              "Invalid work area inset: abc");
+
+  EXPECT_THAT(HeadlessScreenInfo::FromString("{ workAreaBottom=abc }").error(),
+              "Invalid work area inset: abc");
+
+  // Negative.
+  EXPECT_THAT(HeadlessScreenInfo::FromString("{ workAreaLeft=-42 }").error(),
+              "Invalid work area inset: -42");
+
+  EXPECT_THAT(HeadlessScreenInfo::FromString("{ workAreaRight=-42 }").error(),
+              "Invalid work area inset: -42");
+
+  EXPECT_THAT(HeadlessScreenInfo::FromString("{ workAreaTop=-42 }").error(),
+              "Invalid work area inset: -42");
+
+  EXPECT_THAT(HeadlessScreenInfo::FromString("{ workAreaBottom=-42 }").error(),
+              "Invalid work area inset: -42");
+}
+
 }  // namespace
 }  // namespace headless

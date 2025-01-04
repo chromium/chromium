@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/table/table_layout_algorithm_types.h"
 
 #include "third_party/blink/renderer/core/layout/block_node.h"
@@ -370,8 +365,11 @@ TableGroupedChildrenIterator& TableGroupedChildrenIterator::operator++() {
       break;
     case kBody:
       ++position_;
-      if (body_vector_->begin() + position_ == grouped_children_.bodies.end())
+      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+      if (UNSAFE_TODO(body_vector_->begin() + position_) ==
+          grouped_children_.bodies.end()) {
         AdvanceForwardToNonEmptySection();
+      }
       break;
     case kEnd:
       break;

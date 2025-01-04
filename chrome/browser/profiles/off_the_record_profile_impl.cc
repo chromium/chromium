@@ -169,9 +169,15 @@ OffTheRecordProfileImpl::OffTheRecordProfileImpl(
         profile_, ProfileKeepAliveOrigin::kOffTheRecordProfile);
   }
 
-  prefs_ = CreateIncognitoPrefServiceSyncable(
-      PrefServiceSyncableFromProfile(profile_),
-      CreateExtensionPrefStore(profile_, true));
+  if (otr_profile_id.IsDevTools()) {
+    prefs_ =
+        CreateAutomationPrefService(PrefServiceSyncableFromProfile(profile_),
+                                    CreateExtensionPrefStore(profile_, true));
+  } else {
+    prefs_ = CreateIncognitoPrefServiceSyncable(
+        PrefServiceSyncableFromProfile(profile_),
+        CreateExtensionPrefStore(profile_, true));
+  }
 
   key_->SetPrefs(prefs_.get());
   SimpleKeyMap::GetInstance()->Associate(this, key_.get());

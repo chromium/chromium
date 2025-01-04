@@ -69,6 +69,7 @@ class ContentPasswordManagerDriver final
       const autofill::FormData& form_data,
       autofill::FieldRendererId generation_element_id,
       const std::u16string& password) override;
+  void GeneratedPasswordRejected() override;
   void FocusNextFieldAfterPasswords() override;
   void FillField(
       const std::u16string& value,

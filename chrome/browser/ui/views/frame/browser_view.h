@@ -56,6 +56,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/compositor/compositor_animation_observer.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
@@ -95,6 +96,7 @@ class WebUITabStripContainerView;
 
 namespace ui {
 class NativeTheme;
+class Compositor;
 }  // namespace ui
 
 namespace version_info {
@@ -134,6 +136,7 @@ class BrowserView : public BrowserWindow,
                     public extensions::ExtensionKeybindingRegistry::Delegate,
                     public ImmersiveModeController::Observer,
                     public webapps::AppBannerManager::Observer,
+                    public ui::CompositorAnimationObserver,
                     public views::FocusChangeListener {
   METADATA_HEADER(BrowserView, views::ClientView)
 
@@ -167,7 +170,7 @@ class BrowserView : public BrowserWindow,
   // (and hide immediately).
   static void SetDisableRevealerDelayForTesting(bool disable);
 
-  bool IsLoadingAnimationRunningForTesting() const;
+  bool IsLoadingAnimationRunning() const;
 
   // Returns a Browser instance of this view.
   Browser* browser() { return browser_.get(); }
@@ -412,6 +415,9 @@ class BrowserView : public BrowserWindow,
   // Returns true when an app's effective display mode is
   // window-controls-overlay.
   bool AppUsesWindowControlsOverlay() const;
+
+  // Returns true when an app's effective display mode is tabbed.
+  bool AppUsesTabbed() const;
 
   // Returns true when an app's effective display mode is borderless.
   bool AppUsesBorderlessMode() const;
@@ -785,6 +791,10 @@ class BrowserView : public BrowserWindow,
   void OnWillChangeFocus(View* focused_before, View* focused_now) override;
   void OnDidChangeFocus(View* focused_before, View* focused_now) override;
 
+  // CompositorAnimationObserver:
+  void OnAnimationStep(base::TimeTicks timestamp) override;
+  void OnCompositingShuttingDown(ui::Compositor* compositor) override;
+
   // Creates an accessible tab label for screen readers that includes the tab
   // status for the given tab index. This takes the form of
   // "Page title - Tab state". The optional parameter `is_for_tab` can be set
@@ -811,12 +821,10 @@ class BrowserView : public BrowserWindow,
   std::vector<views::NativeViewHost*> GetNativeViewHostsForTopControlsSlide()
       const;
 
+  using BrowserWindow::CreateTabSearchBubble;
   void CreateTabSearchBubble(
-      tab_search::mojom::TabSearchSection section =
-          tab_search::mojom::TabSearchSection::kSearch,
-      tab_search::mojom::TabOrganizationFeature organization_feature =
-          tab_search::mojom::TabOrganizationFeature::kNone) override;
-  // Closes the tab search bubble if open for the given browser instance.
+      tab_search::mojom::TabSearchSection section,
+      tab_search::mojom::TabOrganizationFeature organization_feature) override;
   void CloseTabSearchBubble() override;
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -912,9 +920,6 @@ class BrowserView : public BrowserWindow,
   // Make sure the WebUI tab strip exists if it should.
   void MaybeInitializeWebUITabStrip();
 
-  // Callback for the loading animation(s) associated with this view.
-  void LoadingAnimationCallback();
-
 #if BUILDFLAG(IS_WIN)
   // Creates the JumpList.
   void CreateJumpList();
@@ -988,8 +993,7 @@ class BrowserView : public BrowserWindow,
   // If the Window Placement experiment is enabled, fullscreen may be requested
   // on a particular display. In that case, |display_id| is the display's id;
   // otherwise, display::kInvalidDisplayId indicates no display is specified.
-  void ProcessFullscreen(bool fullscreen,
-                         int64_t display_id);
+  void ProcessFullscreen(bool fullscreen, int64_t display_id);
 
   // Request the underlying platform to make the window fullscreen.
   void RequestFullscreen(bool fullscreen, int64_t display_id);
@@ -1266,8 +1270,9 @@ class BrowserView : public BrowserWindow,
   // Kiosk session.
   bool force_fullscreen_ = false;
 
-  // The timer used to update frames for tab-loading animations.
-  base::RepeatingTimer loading_animation_timer_;
+  // The observation  used to update frames for tab-loading animations.
+  base::ScopedObservation<ui::Compositor, ui::CompositorAnimationObserver>
+      loading_animation_observation_{this};
 
   // Closure invoked when the state of the loading animation changes.
   base::OnceClosure loading_animation_state_change_closure_;

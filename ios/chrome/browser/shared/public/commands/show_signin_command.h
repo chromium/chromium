@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #include "components/signin/public/base/signin_metrics.h"
-#include "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
+#include "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 
 @protocol SystemIdentity;
 
@@ -44,6 +44,9 @@ enum class AuthenticationOperation {
   // account dialog to sign-in.
   // Once signed in, the history sync opt-in is displayed.
   kSheetSigninAndHistorySync,
+  // Operation to trigger the history sync.
+  // The user must already be signed in but with the history sync turned off.
+  kHistorySync,
 };
 
 // A command to perform a sign in operation.
@@ -76,6 +79,10 @@ enum class AuthenticationOperation {
 // any dialog already presented on the NTP.
 // Default value: NO.
 @property(nonatomic, assign) BOOL skipIfUINotAvailable;
+
+// Whether the history opt in sync should always be shown when the user hasn't
+// approved it before. Default: YES
+@property(nonatomic, assign) BOOL optionalHistorySync;
 
 // The completion to be invoked after the operation is complete.
 @property(nonatomic, copy, readonly)

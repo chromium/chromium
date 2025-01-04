@@ -38,7 +38,7 @@ void NoStatePrefetchProcessorImpl::Create(
     std::unique_ptr<NoStatePrefetchProcessorImplDelegate> delegate) {
   // NoStatePrefetchProcessorImpl is a self-owned object. This deletes itself on
   // the mojo disconnect handler.
-  new NoStatePrefetchProcessorImpl(frame_host->GetProcess()->GetID(),
+  new NoStatePrefetchProcessorImpl(frame_host->GetProcess()->GetDeprecatedID(),
                                    frame_host->GetRoutingID(),
                                    frame_host->GetLastCommittedOrigin(),
                                    std::move(receiver), std::move(delegate));

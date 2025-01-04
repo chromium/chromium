@@ -774,7 +774,7 @@ TEST_F(DedicatedWorkerTest, PostCustomEventWithString) {
   WaitUntilWorkerIsRunning();
 
   base::RunLoop run_loop;
-  HeapVector<ScriptValue> transfer;
+  HeapVector<ScriptObject> transfer;
   CustomEventWithData* event = nullptr;
   String data = "postEventWithDataTesting";
   WorkerObject()->PostCustomEvent(
@@ -804,7 +804,7 @@ TEST_F(DedicatedWorkerTest, PostCustomEventWithNumber) {
   WaitUntilWorkerIsRunning();
 
   base::RunLoop run_loop;
-  HeapVector<ScriptValue> transfer;
+  HeapVector<ScriptObject> transfer;
   CustomEventWithData* event = nullptr;
   const double kNumber = 2.34;
   v8::Local<v8::Value> v8_number =
@@ -837,7 +837,7 @@ TEST_F(DedicatedWorkerTest, PostCustomEventBeforeWorkerStarts) {
   ScriptState* script_state = v8_scope.GetScriptState();
 
   base::RunLoop run_loop;
-  HeapVector<ScriptValue> transfer;
+  HeapVector<ScriptObject> transfer;
   CustomEventWithData* event = nullptr;
   String data = "postEventWithDataTesting";
   WorkerObject()->PostCustomEvent(
@@ -872,16 +872,16 @@ TEST_F(DedicatedWorkerTest, PostCustomEventWithPort) {
 
   MessageChannel* channel =
       MakeGarbageCollected<MessageChannel>(v8_scope.GetExecutionContext());
-  ScriptValue script_value =
-      ScriptValue::From(v8_scope.GetScriptState(), channel->port1());
-  HeapVector<ScriptValue> transfer = {script_value};
+  ScriptObject script_object =
+      ScriptObject::From(v8_scope.GetScriptState(), channel->port1());
+  HeapVector<ScriptObject> transfer = {script_object};
   CustomEventWithData* event = nullptr;
   base::RunLoop run_loop;
 
   WorkerObject()->PostCustomEvent(
       TaskType::kPostedMessage, script_state,
       CustomEventWithPortsFactoryCallback(run_loop.QuitClosure(), &event),
-      CustomEventFactoryErrorCallback(run_loop.QuitClosure()), script_value,
+      CustomEventFactoryErrorCallback(run_loop.QuitClosure()), script_object,
       transfer, v8_scope.GetExceptionState());
   run_loop.Run();
 
@@ -909,7 +909,7 @@ TEST_F(DedicatedWorkerTest, PostCustomEventCannotDeserialize) {
             return false;
           }));
   base::RunLoop run_loop;
-  HeapVector<ScriptValue> transfer;
+  HeapVector<ScriptObject> transfer;
   String data = "postEventWithDataTesting";
   Event* event = nullptr;
   WorkerObject()->PostCustomEvent(
@@ -931,7 +931,7 @@ TEST_F(DedicatedWorkerTest, PostCustomEventNoMessage) {
   WaitUntilWorkerIsRunning();
 
   base::RunLoop run_loop;
-  HeapVector<ScriptValue> transfer;
+  HeapVector<ScriptObject> transfer;
   CustomEventWithData* event = nullptr;
 
   WorkerObject()->PostCustomEvent(

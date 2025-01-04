@@ -61,6 +61,24 @@ enum class UsernameDetectionMethod {
   kMaxValue = kModelPrediction,
 };
 
+// This needs to be in sync with the histogram enumeration
+// PasswordVsOtpFormType, because the values are reported in the
+// "PasswordManager.ParsedFormIsOtpForm" histogram. Don't remove or shift
+// existing values in the enum, only append and mark as obsolete as needed.
+enum class PasswordVsOtpFormType {
+  kNone = 0,
+  kPassword = 1 << 1,
+  kOtp = 1 << 2,
+  kPasswordAndOtp = kPassword | kOtp,
+  kMaxValue = kPasswordAndOtp,
+};
+
+constexpr void operator|=(PasswordVsOtpFormType& lhs,
+                          PasswordVsOtpFormType rhs) {
+  lhs = static_cast<PasswordVsOtpFormType>(static_cast<int>(lhs) |
+                                           static_cast<int>(rhs));
+}
+
 // A wrapper around FormFieldData, carrying some additional data used during
 // parsing.
 struct ProcessedField {

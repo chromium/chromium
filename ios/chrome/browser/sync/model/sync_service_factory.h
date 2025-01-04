@@ -8,9 +8,7 @@
 #import <memory>
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-
-class ProfileIOS;
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace syncer {
 class SyncServiceImpl;
@@ -19,18 +17,14 @@ class SyncService;
 
 // Singleton that owns all SyncServices and associates them with
 // ProfileIOS.
-class SyncServiceFactory : public BrowserStateKeyedServiceFactory {
+class SyncServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static syncer::SyncService* GetForProfile(ProfileIOS* profile);
   static syncer::SyncService* GetForProfileIfExists(ProfileIOS* profile);
-
-  static syncer::SyncServiceImpl* GetAsSyncServiceImplForBrowserStateForTesting(
+  static syncer::SyncServiceImpl* GetForProfileAsSyncServiceImplForTesting(
       ProfileIOS* profile);
 
   static SyncServiceFactory* GetInstance();
-
-  // Returns the default factory, useful in tests where it's null by default.
-  static TestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<SyncServiceFactory>;

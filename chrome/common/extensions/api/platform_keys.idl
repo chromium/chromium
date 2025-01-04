@@ -8,7 +8,7 @@
 // E.g. this allows usage of platform managed certificates in third party VPNs
 // (see $(ref:vpnProvider chrome.vpnProvider)).
 namespace platformKeys {
-  [noinline_doc] dictionary Match {
+  dictionary Match {
      // The DER encoding of a X.509 certificate.
      ArrayBuffer certificate;
 

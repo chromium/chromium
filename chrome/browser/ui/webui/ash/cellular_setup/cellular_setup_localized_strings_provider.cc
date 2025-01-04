@@ -11,12 +11,12 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/values.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/webui/webui_util.h"
 
 namespace ash::cellular_setup {
 namespace {
@@ -133,18 +133,21 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
 }
 
 void AddLocalizedValuesToBuilder(::login::LocalizedValuesBuilder* builder) {
-  for (const auto& entry : kLocalizedStringsWithoutPlaceholders)
+  for (const auto& entry : kLocalizedStringsWithoutPlaceholders) {
     builder->Add(entry.name, entry.id);
+  }
 }
 
 void AddNonStringLoadTimeData(content::WebUIDataSource* html_source) {
-  for (const auto& entry : GetBooleanValues())
+  for (const auto& entry : GetBooleanValues()) {
     html_source->AddBoolean(entry.name, entry.value);
+  }
 }
 
 void AddNonStringLoadTimeDataToDict(base::Value::Dict* dict) {
-  for (const auto& entry : GetBooleanValues())
+  for (const auto& entry : GetBooleanValues()) {
     dict->SetByDottedPath(entry.name, entry.value);
+  }
 }
 
 }  // namespace ash::cellular_setup

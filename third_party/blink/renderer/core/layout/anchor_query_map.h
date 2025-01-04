@@ -27,23 +27,24 @@ class LayoutObject;
 // 2. When the containing block is in block fragmentation context, all OOFs are
 // added to their fragmentainers.
 // In such cases, traversing descendants is needed to compute anchor queries.
-class CORE_EXPORT LogicalAnchorQueryMap {
+class CORE_EXPORT StitchedAnchorQueries {
   STACK_ALLOCATED();
 
  public:
   // This constructor is for when the size of the container is not known yet.
   // This happens when laying out OOFs in a block fragmentation context, and
   // assumes children are fragmentainers.
-  LogicalAnchorQueryMap(const LayoutBox& root_box,
+  StitchedAnchorQueries(const LayoutBox& root_box,
+                        LogicalSize container_size,
                         const LogicalFragmentLinkVector& children,
                         WritingDirectionMode writing_direction);
 
   bool IsEmpty() const { return !has_anchor_queries_; }
 
-  // Get |LogicalAnchorQuery| in the stitched coordinate system for the given
+  // Get |PhysicalAnchorQuery| in the stitched coordinate system for the given
   // containing block. If there is no anchor query for the containing block,
   // returns an empty instance.
-  const LogicalAnchorQuery& AnchorQuery(
+  const PhysicalAnchorQuery* AnchorQuery(
       const LayoutObject& containing_block) const;
 
   // Update |children| when their anchor queries are changed.
@@ -52,13 +53,12 @@ class CORE_EXPORT LogicalAnchorQueryMap {
  private:
   void Update(const LayoutObject& layout_object) const;
 
-  mutable HeapHashMap<Member<const LayoutObject>, Member<LogicalAnchorQuery>>
+  mutable HeapHashMap<Member<const LayoutObject>, Member<PhysicalAnchorQuery>>
       queries_;
   mutable const LayoutObject* computed_for_ = nullptr;
   const LayoutBox& root_box_;
+  const LogicalSize container_size_;
   const LogicalFragmentLinkVector* children_ = nullptr;
-  const FragmentItemsBuilder::ItemWithOffsetList* items_ = nullptr;
-  std::optional<const WritingModeConverter> converter_;
   WritingDirectionMode writing_direction_;
   bool has_anchor_queries_ = false;
 };

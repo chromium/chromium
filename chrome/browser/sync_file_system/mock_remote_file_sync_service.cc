@@ -39,8 +39,7 @@ MockRemoteFileSyncService::MockRemoteFileSyncService()
       .WillByDefault(Invoke(this, &self::GetCurrentStateStub));
 }
 
-MockRemoteFileSyncService::~MockRemoteFileSyncService() {
-}
+MockRemoteFileSyncService::~MockRemoteFileSyncService() = default;
 
 void MockRemoteFileSyncService::SetServiceState(RemoteServiceState state) {
   state_ = state;

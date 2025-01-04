@@ -519,7 +519,7 @@ HeapVector<Member<TextCluster>> TextMetrics::getTextClustersImpl(
   return clusters_for_range;
 }
 
-unsigned TextMetrics::caretPositionFromPoint(double x) {
+unsigned TextMetrics::getIndexFromOffset(double x) {
   if (runs_with_offset_.empty()) {
     return 0;
   }

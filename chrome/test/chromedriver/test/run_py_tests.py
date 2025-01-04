@@ -97,8 +97,6 @@ _NEGATIVE_FILTER = [
     'BidiTest.testOpenMultipleTabsInJavaScript',
     # Flaky crbug.com/350916212
     'BidiTest.testFocusInFirstTab',
-    # Reliably failing due to crbug.com/379049702
-    'BidiTest.testBrowserCrashWhileWaitingForEvents',
     # crbug.com/372153090. The feature is not yet supported.
     'ChromeDriverTest.testCreateWindowFromScript',
 ]
@@ -996,6 +994,8 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
       # scripts are deemed as timed out. Still the code below verifies that the
       # side effect has taken place.
       pass
+    self.WaitForCondition(
+        lambda: len(self._driver.GetWindowHandles()) == len(old_handles))
     with self.assertRaises(chromedriver.NoSuchWindow):
       self._driver.GetTitle()
     with self.assertRaises(chromedriver.NoSuchWindow):
@@ -6426,8 +6426,8 @@ class ChromeExtensionsCapabilityTest(ChromeDriverBaseTestWithWebServer):
     # This test can be removed entirely when support for MV2 extensions is
     # removed.
     driver = self.CreateDriver(
-        # Chrome Extension inspection requires enable_extension_targets = True.
-        enable_extension_targets = True,
+        # Chrome Extension inspection requires enableExtensionTargets = True.
+        experimental_options={'enableExtensionTargets': True},
         chrome_extensions=[self._PackExtension(crx)],
         chrome_switches=['disable-features=ExtensionManifestV2Disabled'])
     handles = driver.GetWindowHandles()
@@ -6439,25 +6439,11 @@ class ChromeExtensionsCapabilityTest(ChromeDriverBaseTestWithWebServer):
         return
     self.fail("couldn't find generated background page for test extension")
 
-  def testCannotInspectExtensionTargetsWithoutSwitch(self):
-    crx = os.path.join(_TEST_DATA_DIR, 'ext_bg_page.crx')
-    # Chrome Extension inspection requires enable_extension_targets = True.
-    # This test exercises inspection of an extension background page, which
-    # is only valid for manifest V2 extensions. Explicitly disable the
-    # experiment that disallows MV2 extensions.
-    driver = self.CreateDriver(
-        chrome_extensions=[self._PackExtension(crx)],
-        chrome_switches=['disable-features=ExtensionManifestV2Disabled'])
-    handles = driver.GetWindowHandles()
-    for handle in handles:
-      driver.SwitchToWindow(handle)
-      self.assertFalse(driver.GetCurrentUrl().startswith("chrome-extension://"))
-
   def testCanInspectExtensionTargetsWithMigratedSwitch(self):
     crx = os.path.join(_TEST_DATA_DIR, 'ext_bg_page.crx')
-    # Chrome Extension inspection requires enable_extension_targets = True.
+    # Chrome Extension inspection requires enableExtensionTargets = True.
     # We migrate experimental_options={'windowTypes': ['background_page']} to
-    # the new switch.
+    # the new chrome option.
     # This test exercises inspection of an extension background page, which
     # is only valid for manifest V2 extensions. Explicitly disable the
     # experiment that disallows MV2 extensions.
@@ -7373,7 +7359,11 @@ class PureBidiTest(ChromeDriverBaseTestWithWebServer):
         pass
     super().tearDown()
 
-  def createSessionNewCommand(self, browser_name=None, chrome_binary=None):
+  def createSessionNewCommand(
+      self,
+      browser_name=None,
+      chrome_binary=None,
+      first_match=None):
     if browser_name is None:
       browser_name = _BROWSER_NAME
     if chrome_binary is None:
@@ -7404,16 +7394,20 @@ class PureBidiTest(ChromeDriverBaseTestWithWebServer):
       options['binary'] = chrome_binary
     if _MINIDUMP_PATH:
       options['minidumpPath'] =  _MINIDUMP_PATH
+    capabilities = {
+      'alwaysMatch': {
+          'browserName': browser_name,
+          'goog:chromeOptions': options,
+          'goog:testName': self.id(),
+      }
+    }
+    if first_match is not None:
+      capabilities['firstMatch'] = [first_match,]
+
     return {
         'method': 'session.new',
         'params': {
-            'capabilities': {
-                'alwaysMatch': {
-                    'browserName': browser_name,
-                    'goog:chromeOptions': options,
-                    'goog:testName': self.id(),
-                }
-            }
+            'capabilities': capabilities,
         }
     }
 
@@ -7424,6 +7418,14 @@ class PureBidiTest(ChromeDriverBaseTestWithWebServer):
     conn.SetTimeout(5 * 60) # 5 minutes
     self._connections.append(conn)
     return conn
+
+  def getContextId(self, conn, idx):
+    response = conn.SendCommand({
+      'method': 'browsingContext.getTree',
+      'params': {
+      }
+    })
+    return response['contexts'][idx]['context']
 
   def testSessionStatus(self):
     conn = self.createWebSocketConnection()
@@ -7476,12 +7478,7 @@ class PureBidiTest(ChromeDriverBaseTestWithWebServer):
   def testAnySessionCommand(self):
     conn = self.createWebSocketConnection()
     conn.SendCommand(self.createSessionNewCommand())
-    response = conn.SendCommand({
-      'method': 'browsingContext.getTree',
-      'params': {
-      }
-    })
-    context = response['contexts'][0]['context']
+    context = self.getContextId(conn, 0)
     self.assertIsNotNone(context)
 
   def testUnknownStaticCommand(self):
@@ -7735,6 +7732,74 @@ class PureBidiTest(ChromeDriverBaseTestWithWebServer):
     # S/A: https://w3c.github.io/webdriver/#dfn-new-sessions
     self.assertEqual('boolean', result['result']['type'])
     self.assertTrue(result['result']['value'])
+
+  def testBeforeUnloadHandling(self):
+    self._http_server.SetDataForPath(
+        '/beforeunload.html',
+        bytes('''
+        <html>
+        <script>
+          window.addEventListener('beforeunload', event => {
+            event.returnValue = 'Leave?';
+            event.preventDefault();
+            });
+        </script>
+        <body>
+        Click this page to activate BeforeUnload event.
+        </body>
+        </html>''', 'utf-8'))
+    conn = self.createWebSocketConnection()
+    conn.SendCommand(self.createSessionNewCommand(
+        first_match={
+            'unhandledPromptBehavior': {
+                'beforeUnload': 'ignore',
+            }}))
+    conn.SendCommand({
+      'method': 'session.subscribe',
+      'params': {
+          'events': [
+              'browsingContext.userPromptOpened']}})
+    context_id = self.getContextId(conn, 0)
+    conn.SendCommand({
+        'method': 'browsingContext.navigate',
+        'params': {
+            'url': self.GetHttpUrlForFile('/beforeunload.html'),
+            'wait': 'complete',
+            'context': context_id,
+        }
+    })
+    # Beforeunload does not show up without any user interaction
+    conn.SendCommand({
+      'method': 'script.evaluate',
+      'params': {
+          'expression': 'document.body.click()',
+          'target': {
+            'context': context_id,
+          },
+          'awaitPromise': False,
+          'userActivation': True,
+      }
+    })
+    command_id = conn.PostCommand({
+      'method': 'browsingContext.close',
+      'params': {
+          'context': context_id,
+          'promptUnload': True,
+      }
+    })
+    conn.WaitForEvent('browsingContext.userPromptOpened')
+    conn.SendCommand({
+      'method': 'browsingContext.handleUserPrompt',
+      'params': {
+          'context': context_id,
+          'acccpt': True,
+      }
+    })
+    conn.WaitForResponse(command_id)
+    with self.assertRaises(chromedriver.WebSocketConnectionClosedException):
+      # BiDi messages cannot have negative "id".
+      # Wait indefinitely until time out.
+      conn.WaitForResponse(-1)
 
 
 class BidiTest(ChromeDriverBaseTestWithWebServer):
@@ -8158,10 +8223,11 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
         'params': {
           'method': 'Browser.crash',
           'params': {}}}
-    conn.SendCommand(command)
+    conn.PostCommand(command)
 
     with self.assertRaises(chromedriver.ChromeDriverException):
-      conn.TakeEvents()
+      # The exception must happen due to session termination on browser crash.
+      conn.WaitForEvent('any-event')
 
   def testElementReference(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/element_ref.html'))

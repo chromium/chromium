@@ -217,9 +217,8 @@ class MediaDevicesDispatcherHostTest
 
     InitializeRenderFrameHost();
     host_ = std::make_unique<MediaDevicesDispatcherHost>(
-        render_frame_host_->GetGlobalId(),
-        render_frame_host_->GetMainFrame()->GetGlobalId(),
-        media_stream_manager_.get());
+        render_frame_host_->GetMainFrame()->GetGlobalFrameToken(),
+        render_frame_host_->GetGlobalId(), media_stream_manager_.get());
     media_stream_manager_->media_devices_manager()
         ->set_get_salt_and_origin_cb_for_testing(base::BindRepeating(
             &MediaDevicesDispatcherHostTest::GetSaltAndOrigin,
@@ -953,9 +952,9 @@ TEST_P(MediaDevicesDispatcherHostTest,
   {
     mojo::Remote<blink::mojom::MediaDevicesDispatcherHost> client;
     MediaDevicesDispatcherHost::Create(
-        render_frame_host_->GetGlobalId(),
-        render_frame_host_->GetMainFrame()->GetGlobalId(),
-        media_stream_manager_.get(), client.BindNewPipeAndPassReceiver());
+        render_frame_host_->GetMainFrame()->GetGlobalFrameToken(),
+        render_frame_host_->GetGlobalId(), media_stream_manager_.get(),
+        client.BindNewPipeAndPassReceiver());
     EXPECT_TRUE(client.is_bound());
     EXPECT_EQ(media_stream_manager_->media_devices_manager()
                   ->num_registered_dispatcher_hosts(),

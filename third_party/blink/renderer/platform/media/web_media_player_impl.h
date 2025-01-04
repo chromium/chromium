@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/cancelable_callback.h"
@@ -324,7 +325,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   bool DidLazyLoad() const override;
   void OnBecameVisible() override;
   bool IsOpaque() const override;
-  int GetDelegateId() override;
+  int GetPlayerId() override { return player_id_; }
   std::optional<viz::SurfaceId> GetSurfaceId() override;
   GURL GetSrcAfterRedirects() override;
   void RequestVideoFrameCallback() override;
@@ -388,7 +389,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // so we won't even compile in strings such as "Media.TimeToPlayReady.All"
   // if it's not specified.
   template <uint32_t Flags, typename... T>
-  void WriteSplitHistogram(void (*UmaFunction)(const std::string&, T...),
+  void WriteSplitHistogram(void (*UmaFunction)(std::string_view, T...),
                            SplitHistogramName key,
                            const T&... value);
 
@@ -863,6 +864,8 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // TODO(sandersd): The delegate should be implementing deduplication.
   DelegateState delegate_state_ = DelegateState::GONE;
   bool delegate_has_audio_ = false;
+
+  const int player_id_;
 
   WebMediaPlayerBuilder::DeferLoadCB defer_load_cb_;
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_TO_V8_TRAITS_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_TO_V8_TRAITS_H_
 
@@ -219,11 +214,8 @@ struct ToV8Traits<IDLObject> {
 
   [[nodiscard]] static v8::Local<v8::Value> ToV8(
       ScriptState* script_state,
-      const ScriptValue& script_value) {
-    DCHECK(!script_value.IsEmpty());
-    v8::Local<v8::Value> v8_value = script_value.V8ValueFor(script_state);
-    DCHECK(v8_value->IsObject());
-    return v8_value;
+      const ScriptObject& script_object) {
+    return script_object.V8ObjectFor(script_state);
   }
 };
 
@@ -318,7 +310,7 @@ namespace bindings {
 
 // Helper function for IDLSequence
 template <typename ElementIDLType, typename ContainerType>
-[[nodiscard]] inline v8::Local<v8::Value> ToV8HelperSequence(
+[[nodiscard]] inline v8::Local<v8::Object> ToV8HelperSequence(
     ScriptState* script_state,
     const ContainerType& sequence) {
   auto current_it = sequence.begin();
@@ -326,16 +318,18 @@ template <typename ElementIDLType, typename ContainerType>
   const auto callback = [&current_it, end_it, script_state]() {
     DCHECK(end_it != current_it);
     std::ignore = end_it;
+    // SAFETY: v8::Array::New ensures the current callback will be called no
+    // more than sequence.size() times, so the current_it++ is safe.
+    auto it = UNSAFE_BUFFERS(current_it++);
     if constexpr (WTF::IsAnyMemberType<decltype(*current_it)>::value) {
-      return ToV8Traits<ElementIDLType>::ToV8(script_state,
-                                              (current_it++)->Get());
+      return ToV8Traits<ElementIDLType>::ToV8(script_state, it->Get());
     } else {
-      return ToV8Traits<ElementIDLType>::ToV8(script_state, *(current_it++));
+      return ToV8Traits<ElementIDLType>::ToV8(script_state, *it);
     }
   };
   return v8::Array::New(script_state->GetContext(),
                         base::checked_cast<size_t>(sequence.size()), callback)
-      .template As<v8::Value>()
+      .template As<v8::Object>()
       .ToLocalChecked();
 }
 
@@ -348,7 +342,7 @@ template <typename ElementIDLType, typename ContainerType>
 //
 // This hack reduces the APK size by 4 Kbytes as of 2021 March.
 template <typename BaseClassOfT, typename T>
-[[nodiscard]] inline v8::Local<v8::Value> ToV8HelperSequenceWithMemberUpcast(
+[[nodiscard]] inline v8::Local<v8::Object> ToV8HelperSequenceWithMemberUpcast(
     ScriptState* script_state,
     const HeapVector<Member<T>>& sequence) {
   static_assert(std::is_base_of_v<BaseClassOfT, T>);
@@ -358,7 +352,7 @@ template <typename BaseClassOfT, typename T>
 }
 
 template <typename BaseClassOfT, typename T>
-[[nodiscard]] inline v8::Local<v8::Value> ToV8HelperSequenceWithMemberUpcast(
+[[nodiscard]] inline v8::Local<v8::Object> ToV8HelperSequenceWithMemberUpcast(
     ScriptState* script_state,
     const HeapDeque<Member<T>>& sequence) {
   static_assert(std::is_base_of_v<BaseClassOfT, T>);
@@ -379,20 +373,17 @@ template <typename ValueIDLType, typename ContainerType>
     object = v8::Object::New(isolate);
   }
   v8::Local<v8::Context> context = script_state->GetContext();
-  typename ContainerType::const_iterator end = record.end();
-  for (typename ContainerType::const_iterator iter = record.begin();
-       iter != end; ++iter) {
+  for (const auto& [key, value] : record) {
     v8::Local<v8::Value> v8_value;
-    if constexpr (WTF::IsAnyMemberType<decltype(iter->second)>::value) {
-      v8_value =
-          ToV8Traits<ValueIDLType>::ToV8(script_state, iter->second.Get());
+    if constexpr (WTF::IsAnyMemberType<decltype(value)>::value) {
+      v8_value = ToV8Traits<ValueIDLType>::ToV8(script_state, value.Get());
     } else {
-      v8_value = ToV8Traits<ValueIDLType>::ToV8(script_state, iter->second);
+      v8_value = ToV8Traits<ValueIDLType>::ToV8(script_state, value);
     }
     // The object was just created so setting the property shouldn't fail.
     CHECK(object
-              ->CreateDataProperty(
-                  context, V8AtomicString(isolate, iter->first), v8_value)
+              ->CreateDataProperty(context, V8AtomicString(isolate, key),
+                                   v8_value)
               .ToChecked());
   }
   return object;
@@ -405,14 +396,14 @@ template <typename T>
 struct ToV8Traits<
     IDLSequence<T>,
     std::enable_if_t<std::is_base_of<bindings::DictionaryBase, T>::value>> {
-  [[nodiscard]] static v8::Local<v8::Value> ToV8(
+  [[nodiscard]] static v8::Local<v8::Object> ToV8(
       ScriptState* script_state,
       const HeapVector<Member<T>>& value) {
     return bindings::ToV8HelperSequenceWithMemberUpcast<
         bindings::DictionaryBase>(script_state, value);
   }
 
-  [[nodiscard]] static v8::Local<v8::Value> ToV8(
+  [[nodiscard]] static v8::Local<v8::Object> ToV8(
       ScriptState* script_state,
       const HeapVector<Member<const T>>& value) {
     return bindings::ToV8HelperSequenceWithMemberUpcast<
@@ -420,7 +411,7 @@ struct ToV8Traits<
   }
 
   // TODO(crbug.com/1185046): Remove this overload.
-  [[nodiscard]] static v8::Local<v8::Value> ToV8(
+  [[nodiscard]] static v8::Local<v8::Object> ToV8(
       ScriptState* script_state,
       const v8::LocalVector<v8::Value>& value) {
     return bindings::ToV8HelperSequence<IDLAny>(script_state, value);
@@ -431,21 +422,21 @@ template <typename T>
 struct ToV8Traits<
     IDLSequence<T>,
     std::enable_if_t<std::is_base_of<ScriptWrappable, T>::value>> {
-  [[nodiscard]] static v8::Local<v8::Value> ToV8(
+  [[nodiscard]] static v8::Local<v8::Object> ToV8(
       ScriptState* script_state,
       const HeapVector<Member<T>>& value) {
     return bindings::ToV8HelperSequenceWithMemberUpcast<ScriptWrappable>(
         script_state, value);
   }
 
-  [[nodiscard]] static v8::Local<v8::Value> ToV8(
+  [[nodiscard]] static v8::Local<v8::Object> ToV8(
       ScriptState* script_state,
       const HeapVector<Member<const T>>& value) {
     return bindings::ToV8HelperSequenceWithMemberUpcast<ScriptWrappable>(
         script_state, value);
   }
 
-  [[nodiscard]] static v8::Local<v8::Value> ToV8(
+  [[nodiscard]] static v8::Local<v8::Object> ToV8(
       ScriptState* script_state,
       const HeapDeque<Member<T>>& value) {
     return bindings::ToV8HelperSequenceWithMemberUpcast<ScriptWrappable>(
@@ -459,8 +450,8 @@ struct ToV8Traits<
     std::enable_if_t<!std::is_base_of<bindings::DictionaryBase, T>::value &&
                      !std::is_base_of<ScriptWrappable, T>::value>> {
   template <typename ContainerType>
-  [[nodiscard]] static v8::Local<v8::Value> ToV8(ScriptState* script_state,
-                                                 const ContainerType& value) {
+  [[nodiscard]] static v8::Local<v8::Object> ToV8(ScriptState* script_state,
+                                                  const ContainerType& value) {
     return bindings::ToV8HelperSequence<T>(script_state, value);
   }
 };
@@ -478,22 +469,22 @@ struct ToV8Traits<IDLArray<T>> {
   template <typename ContainerType>
   [[nodiscard]] static v8::Local<v8::Value> ToV8(ScriptState* script_state,
                                                  const ContainerType& value) {
-    v8::Local<v8::Value> v8_value =
+    v8::Local<v8::Object> v8_object =
         ToV8Traits<IDLSequence<T>>::ToV8(script_state, value);
-    v8_value.As<v8::Object>()->SetIntegrityLevel(script_state->GetContext(),
-                                                 v8::IntegrityLevel::kFrozen);
-    return v8_value;
+    v8_object->SetIntegrityLevel(script_state->GetContext(),
+                                 v8::IntegrityLevel::kFrozen);
+    return v8_object;
   }
 
   // TODO(crbug.com/1185046): Remove this overload.
   [[nodiscard]] static v8::Local<v8::Value> ToV8(
       ScriptState* script_state,
       const v8::LocalVector<v8::Value>& value) {
-    v8::Local<v8::Value> v8_value =
+    v8::Local<v8::Object> v8_object =
         ToV8Traits<IDLSequence<IDLAny>>::ToV8(script_state, value);
-    v8_value.As<v8::Object>()->SetIntegrityLevel(script_state->GetContext(),
-                                                 v8::IntegrityLevel::kFrozen);
-    return v8_value;
+    v8_object->SetIntegrityLevel(script_state->GetContext(),
+                                 v8::IntegrityLevel::kFrozen);
+    return v8_object;
   }
 };
 
@@ -592,11 +583,11 @@ template <>
 struct ToV8Traits<IDLNullable<IDLObject>> {
   [[nodiscard]] static v8::Local<v8::Value> ToV8(
       ScriptState* script_state,
-      const ScriptValue& script_value) {
-    DCHECK(!script_value.IsEmpty());
-    v8::Local<v8::Value> v8_value = script_value.V8ValueFor(script_state);
-    DCHECK(v8_value->IsNull() || v8_value->IsObject());
-    return v8_value;
+      const ScriptObject& script_object) {
+    if (script_object.IsNull()) {
+      return v8::Null(script_state->GetIsolate());
+    }
+    return script_object.V8ObjectFor(script_state);
   }
 };
 
@@ -772,21 +763,6 @@ struct ToV8Traits<IDLNullable<IDLRecord<K, V>>> {
     if (!value)
       return v8::Null(script_state->GetIsolate());
     return ToV8Traits<IDLRecord<K, V>>::ToV8(script_state, *value);
-  }
-};
-
-// Nullable Date
-// IDLDate must be used as IDLNullable<IDLDate>.
-template <>
-struct ToV8Traits<IDLNullable<IDLDate>> {
-  [[nodiscard]] static v8::Local<v8::Value> ToV8(
-      ScriptState* script_state,
-      const std::optional<base::Time> date) {
-    if (!date)
-      return v8::Null(script_state->GetIsolate());
-    return v8::Date::New(script_state->GetContext(),
-                         date->InMillisecondsFSinceUnixEpochIgnoringNull())
-        .ToLocalChecked();
   }
 };
 

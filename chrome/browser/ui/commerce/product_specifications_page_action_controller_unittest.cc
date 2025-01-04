@@ -84,7 +84,7 @@ class ProductSpecificationsPageActionControllerUnittest
     ON_CALL(*mock_product_specifications_service_, GetSetByUuid)
         .WillByDefault(testing::Return(std::move(set)));
 
-    commerce::RegisterCommercePrefs(prefs_->registry());
+    commerce::MockAccountChecker::RegisterCommercePrefs(prefs_->registry());
     commerce::SetTabCompareEnterprisePolicyPref(prefs_.get(), 0);
     controller_ = std::make_unique<ProductSpecificationsPageActionController>(
         std::move(callback), shopping_service_.get());
@@ -151,7 +151,7 @@ TEST_F(ProductSpecificationsPageActionControllerUnittest,
   // Create a set with the max number of URLs.
   std::vector<GURL> urls;
   for (size_t i = 0; i < kMaxTableSize; ++i) {
-    urls.push_back(GURL(base::StringPrintf("http://example.com/%d", i)));
+    urls.emplace_back(base::StringPrintf("http://example.com/%d", i));
   }
   ProductSpecificationsSet set = ProductSpecificationsSet(
       base::Uuid::GenerateRandomV4().AsLowercaseString(), 0, 0, urls, "set1");
@@ -409,14 +409,14 @@ TEST_F(ProductSpecificationsPageActionControllerUnittest,
   // Create a set with close to max size.
   std::vector<GURL> urls;
   for (size_t i = 0; i < kMaxTableSize - 1; ++i) {
-    urls.push_back(GURL(base::StringPrintf("http://example.com/%d", i)));
+    urls.emplace_back(base::StringPrintf("http://example.com/%d", i));
   }
 
   ProductSpecificationsSet set1 = ProductSpecificationsSet(
       product_group->uuid.AsLowercaseString(), 0, 0, urls, "set");
 
   // The "updated" set has max size.
-  urls.push_back(GURL(kTestUrl2));
+  urls.emplace_back(kTestUrl2);
   ProductSpecificationsSet set2 = ProductSpecificationsSet(
       product_group->uuid.AsLowercaseString(), 0, 0, urls, "set");
 

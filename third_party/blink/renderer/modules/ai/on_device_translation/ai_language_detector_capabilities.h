@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/language_detection/language_detection_model.h"
 
 namespace blink {
 
@@ -17,12 +18,18 @@ class AILanguageDetectorCapabilities final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit AILanguageDetectorCapabilities() = default;
+  using LanguageDetectionModelStatus =
+      language_detection::mojom::blink::LanguageDetectionModelStatus;
+  explicit AILanguageDetectorCapabilities(
+      LanguageDetectionModelStatus model_status);
   ~AILanguageDetectorCapabilities() override = default;
 
   V8AICapabilityAvailability available(ScriptState* script_state,
                                        ExceptionState& exception_state) const;
   V8AICapabilityAvailability languageAvailable(const WTF::String& languageTag);
+
+ private:
+  LanguageDetectionModelStatus model_status_;
 };
 
 }  // namespace blink

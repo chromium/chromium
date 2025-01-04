@@ -73,6 +73,7 @@
 <translation id="1577977504532381335">Прегледајте смернице администратора</translation>
 <translation id="158849752021629804">Потребна је матична мрежа</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1601786938618212857">Поштански број</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="162175252992296058">португалски са америчком интернационалном тастатуром</translation>
 <translation id="1629521517399325891">Кориснички сертификат није доступан за потврду идентитета мреже.</translation>
@@ -328,7 +329,7 @@
 <translation id="3603385196401704894">канадска француска</translation>
 <translation id="3606220979431771195">турска F</translation>
 <translation id="3616113530831147358">Аудио</translation>
-<translation id="3619115746895587757">Капучино</translation>
+<translation id="3619115746895587757">Капућино</translation>
 <translation id="3619593063686672873">Нема недавних видеа</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, управља администратор, детаљи</translation>
 <translation id="36451918667380448">Услуга овог мобилног провајдера је закључана. Затражите подршку од њега.</translation>
@@ -394,7 +395,6 @@
 <translation id="4179621117429069925">Ова ставка је у отпаду</translation>
 <translation id="4186579485882418952">Омогући офлајн</translation>
 <translation id="4193154014135846272">Google документ</translation>
-<translation id="4197674956721858839">Избор за додавање у zip датотеку</translation>
 <translation id="4202378258276439759">шпански (Латинска Америка)</translation>
 <translation id="4202977638116331303">грузијски</translation>
 <translation id="421017592316736757">Морате да будете на мрежи да бисте приступили овој датотеци.</translation>

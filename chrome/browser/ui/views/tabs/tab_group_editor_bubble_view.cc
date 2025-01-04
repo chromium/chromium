@@ -25,6 +25,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/collaboration/collaboration_service_factory.h"
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -59,10 +60,13 @@
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/collaboration/public/collaboration_service.h"
 #include "components/data_sharing/public/features.h"
+#include "components/data_sharing/public/group_data.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/types.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -329,7 +333,10 @@ void TabGroupEditorBubbleView::RebuildMenuContents() {
   } else if (tab_groups::IsTabGroupsSaveV2Enabled()) {
     menu_items_.push_back(AddChildView(BuildNewTabInGroupButton()));
     menu_items_.push_back(AddChildView(BuildMoveGroupToNewWindowButton()));
-    menu_items_.push_back(AddChildView(BuildUngroupButton()));
+
+    if (OwnsGroup()) {
+      menu_items_.push_back(AddChildView(BuildUngroupButton()));
+    }
 
     if (CanShareGroups()) {
       menu_items_.push_back(AddChildView(BuildManageSharedGroupButton()));
@@ -380,8 +387,6 @@ void TabGroupEditorBubbleView::UpdateMenuContentsVisibility() {
       case TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW: {
         button->SetVisible(CanMoveGroupToNewWindow());
         break;
-      }
-      default: {
       }
     }
   }
@@ -606,16 +611,46 @@ const std::u16string TabGroupEditorBubbleView::GetSaveToggleAccessibleName()
 }
 
 bool TabGroupEditorBubbleView::CanSaveGroups() const {
-  return (browser_->profile()->IsRegularProfile() &&
-          tab_groups::SavedTabGroupUtils::GetServiceForProfile(
-              browser_->profile()));
+  return browser_->profile()->IsRegularProfile() &&
+         tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+             browser_->profile());
 }
 
 bool TabGroupEditorBubbleView::CanShareGroups() const {
-  return CanSaveGroups() && tab_groups::IsTabGroupsSaveUIUpdateEnabled() &&
-         tab_groups::IsTabGroupsSaveV2Enabled() &&
+  return CanSaveGroups() && tab_groups::IsTabGroupsSaveV2Enabled() &&
          base::FeatureList::IsEnabled(
              data_sharing::features::kDataSharingFeature);
+}
+
+bool TabGroupEditorBubbleView::OwnsGroup() const {
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser_->profile());
+  if (!tab_group_service) {
+    return true;
+  }
+
+  const std::optional<tab_groups::SavedTabGroup> maybe_saved_group =
+      tab_group_service->GetGroup(group_);
+  if (!maybe_saved_group.has_value()) {
+    return true;
+  }
+
+  std::optional<tab_groups::CollaborationId> collaboration_id =
+      maybe_saved_group->collaboration_id();
+  if (!collaboration_id) {
+    return true;
+  }
+
+  collaboration::CollaborationService* collaboration_service =
+      collaboration::CollaborationServiceFactory::GetForProfile(
+          browser_->profile());
+  if (!collaboration_service) {
+    return true;
+  }
+
+  data_sharing::GroupId group_id(collaboration_id->value());
+  return data_sharing::MemberRole::kOwner ==
+         collaboration_service->GetCurrentUserRoleForGroup(group_id);
 }
 
 bool TabGroupEditorBubbleView::IsGroupSaved() const {
@@ -802,8 +837,9 @@ void TabGroupEditorBubbleView::DeleteGroupPressed() {
               kDeleteGroup);
     }
   } else {
+    CHECK(saved_group->local_group_id().has_value());
+    tab_group_service->RemoveGroup(saved_group->local_group_id().value());
     DeleteGroupFromTabstrip();
-    tab_group_service->RemoveGroup(saved_group->saved_guid());
   }
   GetWidget()->Close();
 }

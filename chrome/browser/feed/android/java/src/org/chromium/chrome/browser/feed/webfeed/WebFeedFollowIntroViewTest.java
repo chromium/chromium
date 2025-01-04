@@ -22,7 +22,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.CallbackUtils;
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -32,8 +31,6 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
-
-import java.util.HashMap;
 
 /** Test for the WebFeedFollowIntroView class. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -58,9 +55,6 @@ public final class WebFeedFollowIntroViewTest {
         mMenuButtonAnchorView = new View(mActivity);
         TrackerFactory.setTrackerForTests(mTracker);
 
-        // This empty setTestFeatures call below is needed to enable the field trial param calls.
-        FeatureList.setTestFeatures(new HashMap<String, Boolean>());
-
         // Build the class under test.
         Runnable noOp = CallbackUtils.emptyRunnable();
         mWebFeedFollowIntroView =
@@ -75,9 +69,6 @@ public final class WebFeedFollowIntroViewTest {
     @Test
     @SmallTest
     public void showIphTest() {
-        FeatureList.TestValues baseTestValues = new FeatureList.TestValues();
-        FeatureList.setTestValues(baseTestValues);
-
         mWebFeedFollowIntroView.showIph(
                 mHelper, CallbackUtils.emptyRunnable(), CallbackUtils.emptyRunnable());
         verify(mHelper, times(1)).requestShowIph(any());

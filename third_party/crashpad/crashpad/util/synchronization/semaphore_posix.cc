@@ -15,10 +15,10 @@
 #include "util/synchronization/semaphore.h"
 
 #include <errno.h>
-#include <math.h>
 #include <time.h>
 
 #include <chrono>
+#include <cmath>
 
 #include "base/check_op.h"
 #include "base/logging.h"
@@ -43,7 +43,7 @@ void Semaphore::Wait() {
 bool Semaphore::TimedWait(double seconds) {
   DCHECK_GE(seconds, 0.0);
 
-  if (isinf(seconds)) {
+  if (std::isinf(seconds)) {
     Wait();
     return true;
   }
@@ -81,7 +81,7 @@ void Semaphore::Wait() {
 bool Semaphore::TimedWait(double seconds) {
   DCHECK_GE(seconds, 0.0);
 
-  if (isinf(seconds)) {
+  if (std::isinf(seconds)) {
     Wait();
     return true;
   }

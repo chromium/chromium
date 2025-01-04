@@ -207,6 +207,23 @@ export function getCddTemplateWithAdvancedSettings(
     },
   });
 
+  if (numSettings < 5) {
+    return template;
+  }
+
+  template.capabilities!.printer.vendor_capability.push({
+    display_name: 'Quality',
+    id: 'print-quality',
+    type: 'SELECT',
+    select_cap: {
+      option: [
+        {display_name: 'Draft', value: '3'},
+        {display_name: 'Normal', value: '4', is_default: true},
+        {display_name: 'High', value: '5'},
+      ],
+    },
+  });
+
   return template;
 }
 

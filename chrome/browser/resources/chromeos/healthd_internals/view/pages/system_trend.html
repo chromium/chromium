@@ -35,6 +35,10 @@
     width: 100%;
   }
 </style>
+
+<healthd-internals-chart-category-dialog id="categoryDialog">
+</healthd-internals-chart-category-dialog>
+
 <div class="full-page">
   <div id="pageHeader">
     <h1>System Trend</h1>
@@ -66,6 +70,9 @@
       <b>Time Span: </b>
       [[displayedStartTime]] ~ [[displayedEndTime]]
     </label>
+    <template is="dom-if" if="[[isCustomCategory(selectedCategory)]]">
+      <cr-button on-click="openChartCategoryDialog">Choose category</cr-button>
+    </template>
   </div>
   <healthd-internals-line-chart id="lineChart">
   </healthd-internals-line-chart>

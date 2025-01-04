@@ -130,6 +130,9 @@ class WebAppDatabaseTest : public base::test::WithFeatureOverride,
     run_loop.Run();
   }
 
+  // If `ensure_no_migration_needed` is set to true, it means that migration has
+  // already happened, and the state of the web apps in the registry need to be
+  // updated to show that.
   Registry WriteWebApps(uint32_t num_apps, bool ensure_no_migration_needed) {
     Registry registry;
 
@@ -145,6 +148,7 @@ class WebAppDatabaseTest : public base::test::WithFeatureOverride,
             app->AddSource(WebAppManagement::kUserInstalled);
           }
         }
+        test::MaybeEnsureShortcutAppsTreatedAsDiy(*app);
         proto::DatabaseMetadata metadata;
         metadata.set_version(WebAppDatabase::GetCurrentDatabaseVersion());
         write_batch->WriteData(
@@ -343,6 +347,7 @@ TEST_P(WebAppDatabaseTest, OpenDatabaseAndReadRegistryWithMigration) {
     }
 #endif
     EnsureHasUserDisplayModeForCurrentPlatform(*app);
+    test::MaybeEnsureShortcutAppsTreatedAsDiy(*app);
 
     if (base::FeatureList::IsEnabled(
             features::kWebAppDontAddExistingAppsToSync)) {

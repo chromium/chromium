@@ -16,13 +16,6 @@
 
 namespace user_education::internal {
 
-// Base already has an is_raw_ref, but there is no is_raw_ptr, so implement it
-// here.
-template <typename T>
-struct is_raw_ptr : std::false_type {};
-template <typename T, base::RawPtrTraits Traits>
-struct is_raw_ptr<raw_ptr<T, Traits>> : std::true_type {};
-
 // A value is cacheable if:
 //  - it is moveable
 //  - it is default-constructable
@@ -32,8 +25,8 @@ struct is_raw_ptr<raw_ptr<T, Traits>> : std::true_type {};
 // To hold polymorphic or non-moveable objects, use std::unique_ptr.
 template <typename T>
 concept PreconditionCacheable =
-    std::movable<T> && std::default_initializable<T> && !std::is_pointer_v<T> &&
-    !is_raw_ptr<T>::value && !base::internal::is_raw_ref_v<T>;
+    std::movable<T> && std::default_initializable<T> &&
+    !base::IsPointerOrRawPtr<T> && !base::IsRawRef<T>;
 
 template <typename T>
   requires PreconditionCacheable<T>
@@ -66,11 +59,14 @@ class PreconditionData {
     return it == coll.end() ? nullptr : &it->second->AsTyped(id).data();
   }
 
- private:
   // Retrieves this object as a typed object. The identifier must match.
   template <typename T>
   TypedPreconditionData<T>& AsTyped(TypedIdentifier<T> id);
+  // Retrieves this object as a typed object. The identifier must match.
+  template <typename T>
+  const TypedPreconditionData<T>& AsTyped(TypedIdentifier<T> id) const;
 
+ private:
   const Identifier identifier_;
 };
 
@@ -88,23 +84,31 @@ class TypedPreconditionData : public PreconditionData {
  public:
   using Type = T;
 
-  template <typename U>
+  template <typename U, typename... Args>
     requires std::same_as<T, U>
-  explicit TypedPreconditionData(TypedIdentifier<U> identifier)
-      : PreconditionData(identifier.identifier()) {}
+  explicit TypedPreconditionData(TypedIdentifier<U> identifier, Args&&... args)
+      : PreconditionData(identifier.identifier()),
+        data_(std::forward<Args>(args)...) {}
   ~TypedPreconditionData() override = default;
 
   T& data() { return data_; }
   const T& data() const { return data_; }
 
  private:
-  T data_ = T();
+  T data_;
 };
 
 template <typename T>
 TypedPreconditionData<T>& PreconditionData::AsTyped(TypedIdentifier<T> id) {
   CHECK_EQ(id.identifier(), identifier_);
   return *static_cast<TypedPreconditionData<T>*>(this);
+}
+
+template <typename T>
+const TypedPreconditionData<T>& PreconditionData::AsTyped(
+    TypedIdentifier<T> id) const {
+  CHECK_EQ(id.identifier(), identifier_);
+  return *static_cast<const TypedPreconditionData<T>*>(this);
 }
 
 }  // namespace user_education::internal

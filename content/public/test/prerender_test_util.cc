@@ -652,7 +652,8 @@ PrerenderTestHelper::AddEmbedderTriggeredPrerenderAsync(
 
   return web_contents.StartPrerendering(
       prerendering_url, trigger_type, embedder_histogram_suffix,
-      /*no_vary_search_expected=*/std::nullopt, page_transition,
+      /*additional_headers=*/net::HttpRequestHeaders(),
+      /*no_vary_search_hint=*/std::nullopt, page_transition,
       /*should_warm_up_compositor=*/false,
       /*should_prepare_paint_tree=*/false,
       PreloadingHoldbackStatus::kUnspecified,
@@ -903,7 +904,8 @@ ScopedPrerenderWebContentsDelegate::~ScopedPrerenderWebContentsDelegate() {
 }
 
 PreloadingEligibility ScopedPrerenderWebContentsDelegate::IsPrerender2Supported(
-    WebContents& web_contents) {
+    WebContents& web_contents,
+    PreloadingTriggerType trigger_type) {
   return PreloadingEligibility::kEligible;
 }
 

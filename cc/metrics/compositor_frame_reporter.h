@@ -348,6 +348,9 @@ class CC_EXPORT CompositorFrameReporter {
   // Erase and return all EventMetrics objects from our list.
   EventMetrics::List TakeEventsMetrics();
 
+  void set_normalized_invalidated_area(
+      std::optional<float> normalized_invalidated_area);
+
   size_t stage_history_size_for_testing() const {
     return stage_history_.size();
   }
@@ -413,6 +416,9 @@ class CC_EXPORT CompositorFrameReporter {
   void set_is_backfill(bool is_backfill) { is_backfill_ = is_backfill; }
   void set_created_new_tree(bool new_tree) { created_new_tree_ = new_tree; }
   void set_want_new_tree(bool want_new_tree) { want_new_tree_ = want_new_tree; }
+  void set_invalidate_raster_scroll(bool invalidate_raster_scroll) {
+    invalidate_raster_scroll_ = invalidate_raster_scroll;
+  }
 
   const viz::BeginFrameId& frame_id() const { return args_.frame_id; }
 
@@ -499,6 +505,8 @@ class CC_EXPORT CompositorFrameReporter {
   void ReportEventLatencyTraceEvents() const;
   void ReportScrollJankMetrics() const;
 
+  void ReportPaintMetric() const;
+
   void EnableReportType(FrameReportType report_type) {
     report_types_.set(static_cast<size_t>(report_type));
   }
@@ -549,6 +557,10 @@ class CC_EXPORT CompositorFrameReporter {
 
   // List of metrics for events affecting this frame.
   EventMetrics::List events_metrics_;
+
+  // Total invalidated (repainted) area of a frame, normalized by the frame's
+  // output size.
+  std::optional<float> paint_metric_;
 
   FrameReportTypes report_types_;
 
@@ -621,6 +633,8 @@ class CC_EXPORT CompositorFrameReporter {
   // raster-dependent effect, and whether or not it occurred.
   bool want_new_tree_ = false;
   bool created_new_tree_ = false;
+
+  bool invalidate_raster_scroll_ = false;
 
   const GlobalMetricsTrackers global_trackers_;
 

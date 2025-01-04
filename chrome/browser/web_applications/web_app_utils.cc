@@ -279,13 +279,10 @@ bool AreWebAppsEnabled(Profile* profile) {
     return false;
   }
 
-  const Profile* original_profile = profile->GetOriginalProfile();
-  DCHECK(!original_profile->IsOffTheRecord());
-
 #if BUILDFLAG(IS_CHROMEOS)
   // Web Apps should not be installed to the ChromeOS system profiles except the
   // lock screen app profile.
-  if (!ash::ProfileHelper::IsUserProfile(original_profile) &&
+  if (!ash::ProfileHelper::IsUserProfile(profile) &&
       !ash::IsShimlessRmaAppBrowserContext(profile)) {
     return false;
   }
@@ -298,18 +295,16 @@ bool AreWebAppsEnabled(Profile* profile) {
       return false;
     }
   }
+  // Guest session forces OTR to be turned on.
+  if (profile->IsGuestSession()) {
+    return profile->IsOffTheRecord();
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  return true;
+  return !profile->IsOffTheRecord();
 }
 
 bool AreWebAppsUserInstallable(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS)
-  // With Lacros, web apps are not installed using the Ash browser.
-  if (IsWebAppsCrosapiEnabled()) {
-    return false;
-  }
-#endif
   return AreWebAppsEnabled(profile) && !profile->IsGuestSession() &&
          !profile->IsOffTheRecord();
 }
@@ -321,19 +316,18 @@ content::BrowserContext* GetBrowserContextForWebApps(
   if (!profile) {
     return nullptr;
   }
+
+  if (AreWebAppsEnabled(profile)) {
+    return profile;
+  }
+
   Profile* original_profile = profile->GetOriginalProfile();
-  if (!AreWebAppsEnabled(original_profile)) {
-    return nullptr;
+  CHECK(original_profile);
+  if (AreWebAppsEnabled(original_profile)) {
+    return original_profile;
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // Use OTR profile for Guest Session.
-  if (profile->IsGuestSession()) {
-    return profile->IsOffTheRecord() ? profile : nullptr;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-  return original_profile;
+  return nullptr;
 }
 
 content::BrowserContext* GetBrowserContextForWebAppMetrics(
@@ -406,9 +400,8 @@ bool IsChromeOsDataMandatory() {
 
 bool AreAppsLocallyInstalledBySync() {
 #if BUILDFLAG(IS_CHROMEOS)
-  // With Crosapi, Ash no longer participates in sync.
-  // On Chrome OS before Crosapi, sync always locally installs an app.
-  return !IsWebAppsCrosapiEnabled();
+  // On Chrome OS, sync always locally installs an app.
+  return true;
 #else
   return false;
 #endif

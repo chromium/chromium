@@ -83,8 +83,6 @@ class MockLoaderPolicy : public ComponentLoaderPolicy {
   MockLoaderPolicy()
       : on_loaded_(base::DoNothing()), on_failed_(base::DoNothing()) {}
 
-  ~MockLoaderPolicy() override = default;
-
   MockLoaderPolicy(const MockLoaderPolicy&) = delete;
   MockLoaderPolicy& operator=(const MockLoaderPolicy&) = delete;
 

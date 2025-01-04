@@ -10,11 +10,11 @@
 #include "partition_alloc/buildflags.h"
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC)
-#include "partition_alloc/partition_alloc_hooks.h"
+#include "partition_alloc/partition_alloc_hooks.h"  // nogncheck
 #endif
 
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
-#include "partition_alloc/shim/allocator_shim.h"
+#include "partition_alloc/shim/allocator_shim.h"  // nogncheck
 #endif
 
 namespace base::allocator::dispatcher::internal {

@@ -38,8 +38,9 @@ bool AppTypeInitializedEvent::Post(base::OnceClosure callback) {
 }
 
 void AppTypeInitializedEvent::OnAppTypeInitialized(apps::AppType app_type) {
-  if (!callback_ || app_type != app_type_)
+  if (!callback_ || app_type != app_type_) {
     return;
+  }
   scoped_observation_.Reset();
   std::move(callback_).Run();
 }

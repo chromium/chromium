@@ -1,0 +1,44 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("managed_profile_creation") {
+  sources = [
+    "browsing_data_migration_view_controller.h",
+    "browsing_data_migration_view_controller.mm",
+    "learn_more_coordinator.h",
+    "learn_more_coordinator.mm",
+    "learn_more_table_view_controller.h",
+    "learn_more_table_view_controller.mm",
+    "managed_profile_creation_consumer.h",
+    "managed_profile_creation_coordinator.h",
+    "managed_profile_creation_coordinator.mm",
+    "managed_profile_creation_mediator.h",
+    "managed_profile_creation_mediator.mm",
+    "managed_profile_creation_view_controller.h",
+    "managed_profile_creation_view_controller.mm",
+  ]
+  deps = [
+    "//components/signin/public/base:base",
+    "//components/signin/public/identity_manager:identity_manager",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/keyboard/ui_bundled",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator:chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context:application_context",
+    "//ios/chrome/browser/shared/model/browser:browser",
+    "//ios/chrome/browser/shared/model/profile:profile",
+    "//ios/chrome/browser/shared/public/features:features",
+    "//ios/chrome/browser/shared/ui/elements:elements_internal",
+    "//ios/chrome/browser/shared/ui/list_model:list_model",
+    "//ios/chrome/browser/shared/ui/symbols:symbols",
+    "//ios/chrome/browser/shared/ui/table_view:table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/signin/model:model",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/colors:colors",
+    "//ios/chrome/common/ui/promo_style:promo_style",
+    "//ios/chrome/common/ui/util:util",
+    "//ui/base",
+  ]
+}

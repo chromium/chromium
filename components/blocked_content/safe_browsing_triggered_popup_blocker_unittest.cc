@@ -234,7 +234,7 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerTest,
   params.triggering_event_info =
       blink::mojom::TriggeringEventInfo::kFromUntrustedEvent;
   params.source_render_frame_id = main_rfh()->GetRoutingID();
-  params.source_render_process_id = main_rfh()->GetProcess()->GetID();
+  params.source_render_process_id = main_rfh()->GetProcess()->GetDeprecatedID();
 
   MaybeBlockPopup(web_contents(), nullptr,
                   std::make_unique<TestPopupNavigationDelegate>(

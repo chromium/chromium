@@ -31,6 +31,8 @@ class TargetHandler : public protocol::Target::Backend {
           in_locations) override;
   protocol::Response CreateTarget(
       const std::string& url,
+      std::optional<int> left,
+      std::optional<int> top,
       std::optional<int> width,
       std::optional<int> height,
       std::optional<std::string> browser_context_id,

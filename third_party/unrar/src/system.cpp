@@ -101,19 +101,35 @@ void Wait()
 
 
 
+#ifdef _WIN_ALL
+bool SetPrivilege(LPCTSTR PrivName)
+{
+  bool Success=false;
+
+  HANDLE hToken;
+  if (OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES, &hToken))
+  {
+    TOKEN_PRIVILEGES tp;
+    tp.PrivilegeCount = 1;
+    tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
+
+    if (LookupPrivilegeValue(NULL,PrivName,&tp.Privileges[0].Luid) &&
+        AdjustTokenPrivileges(hToken, FALSE, &tp, 0, NULL, NULL) &&
+        GetLastError() == ERROR_SUCCESS)
+      Success=true;
+
+    CloseHandle(hToken);
+  }
+
+  return Success;
+}
+#endif
+
+
 #if defined(_WIN_ALL) && !defined(SFX_MODULE)
 void Shutdown(POWER_MODE Mode)
 {
-  HANDLE hToken;
-  TOKEN_PRIVILEGES tkp;
-  if (OpenProcessToken(GetCurrentProcess(),TOKEN_ADJUST_PRIVILEGES|TOKEN_QUERY,&hToken))
-  {
-    LookupPrivilegeValue(NULL,SE_SHUTDOWN_NAME,&tkp.Privileges[0].Luid);
-    tkp.PrivilegeCount = 1;
-    tkp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
-
-    AdjustTokenPrivileges(hToken,FALSE,&tkp,0,(PTOKEN_PRIVILEGES)NULL,0);
-  }
+  SetPrivilege(SE_SHUTDOWN_NAME);
   if (Mode==POWERMODE_OFF)
     ExitWindowsEx(EWX_SHUTDOWN|EWX_FORCE,SHTDN_REASON_FLAG_PLANNED);
   if (Mode==POWERMODE_SLEEP)

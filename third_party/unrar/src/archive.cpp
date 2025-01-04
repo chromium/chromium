@@ -67,7 +67,7 @@ void Archive::CheckArc(bool EnableBroken)
     // password is incorrect.
     if (!FailedHeaderDecryption)
       uiMsg(UIERROR_BADARCHIVE,FileName);
-    ErrHandler.Exit(RARX_FATAL);
+    ErrHandler.Exit(RARX_BADARC);
   }
 }
 
@@ -109,9 +109,11 @@ RARFORMAT Archive::IsSignature(const byte *D,size_t Size)
         // We check the last signature byte, so we can return a sensible
         // warning in case we'll want to change the archive format
         // sometimes in the future.
+#ifndef SFX_MODULE
         if (D[6]==0)
           Type=RARFMT15;
         else
+#endif
           if (D[6]==1)
             Type=RARFMT50;
           else

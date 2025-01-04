@@ -12,19 +12,21 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
-#import "components/autofill/core/browser/autocomplete_history_manager.h"
-#import "components/autofill/core/browser/autofill_ablation_study.h"
-#import "components/autofill/core/browser/autofill_client.h"
 #import "components/autofill/core/browser/country_type.h"
 #import "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #import "components/autofill/core/browser/crowdsourcing/votes_uploader.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#import "components/autofill/core/browser/foundations/autofill_client.h"
+#import "components/autofill/core/browser/integrators/password_form_classification.h"
 #import "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
-#import "components/autofill/core/browser/password_form_classification.h"
 #import "components/autofill/core/browser/payments/card_unmask_delegate.h"
-#import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/single_field_fillers/autocomplete/autocomplete_history_manager.h"
 #import "components/autofill/core/browser/strike_databases/strike_database.h"
+#import "components/autofill/core/browser/studies/autofill_ablation_study.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #import "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#import "components/autofill/ios/browser/autofill_agent.h"
+#import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "components/autofill/ios/browser/autofill_client_ios_bridge.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/plus_addresses/plus_address_types.h"
@@ -43,15 +45,26 @@ class WebState;
 
 namespace autofill {
 
+class LogRouter;
+
 enum class SuggestionType;
 
 // Chrome iOS implementation of AutofillClient.
-class ChromeAutofillClientIOS : public AutofillClient {
+//
+// Satisfies the AutofillClientIOS contract for the following reason.
+// ChromeAutofillClientIOS is owned by web::WebStateUserData, so
+// - first ~WebStateImpl() notifies web::WebStateObserver::WebStateDestroyed()
+// - then ~WebStateImpl() invalidates weak_ptr(), and
+// - then ~SupportsUserData() destroys WebStateUserData and thus
+//   ChromeAutofillClientIOS.
+class ChromeAutofillClientIOS : public AutofillClientIOS {
  public:
-  ChromeAutofillClientIOS(ProfileIOS* profile,
-                          web::WebState* web_state,
-                          infobars::InfoBarManager* infobar_manager,
-                          id<AutofillClientIOSBridge> bridge);
+  ChromeAutofillClientIOS(
+      FromWebStateImpl from_web_state_impl,
+      ProfileIOS* profile,
+      web::WebState* web_state,
+      infobars::InfoBarManager* infobar_manager,
+      id<AutofillClientIOSBridge, AutofillDriverIOSBridge> bridge);
 
   ChromeAutofillClientIOS(const ChromeAutofillClientIOS&) = delete;
   ChromeAutofillClientIOS& operator=(const ChromeAutofillClientIOS&) = delete;
@@ -73,7 +86,6 @@ class ChromeAutofillClientIOS : public AutofillClient {
   version_info::Channel GetChannel() const override;
   bool IsOffTheRecord() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
-  AutofillDriverFactory& GetAutofillDriverFactory() override;
   AutofillCrowdsourcingManager& GetCrowdsourcingManager() override;
   VotesUploader& GetVotesUploader() override;
   PersonalDataManager& GetPersonalDataManager() override;
@@ -123,7 +135,7 @@ class ChromeAutofillClientIOS : public AutofillClient {
                    bool is_refill) override;
   bool IsContextSecure() const override;
   FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
-  LogManager* GetLogManager() const override;
+  LogManager* GetCurrentLogManager() override;
   autofill_metrics::FormInteractionsUkmLogger& GetFormInteractionsUkmLogger()
       override;
   const AutofillAblationStudy& GetAblationStudy() const override;
@@ -157,16 +169,16 @@ class ChromeAutofillClientIOS : public AutofillClient {
   raw_ptr<PrefService> pref_service_;
   raw_ptr<syncer::SyncService> sync_service_;
   std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager_;
-  std::unique_ptr<VotesUploader> votes_uploader_;
+  VotesUploader votes_uploader_{this};
   raw_ptr<PersonalDataManager> personal_data_manager_;
   raw_ptr<AutocompleteHistoryManager> autocomplete_history_manager_;
   raw_ptr<ProfileIOS> profile_;
-  raw_ptr<web::WebState> web_state_;
   __weak id<AutofillClientIOSBridge> bridge_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
   scoped_refptr<AutofillWebDataService> autofill_web_data_service_;
   raw_ptr<infobars::InfoBarManager> infobar_manager_;
+  const raw_ptr<LogRouter> log_router_;
   std::unique_ptr<LogManager> log_manager_;
   autofill_metrics::FormInteractionsUkmLogger form_interactions_ukm_logger_{
       this};
@@ -176,7 +188,7 @@ class ChromeAutofillClientIOS : public AutofillClient {
   // after all of the members passed into the constructor of
   // `payments_autofill_client_` are initialized, other than `this`.
   payments::IOSChromePaymentsAutofillClient payments_autofill_client_{
-      this, web_state_, infobar_manager_, pref_service_};
+      this, web_state(), infobar_manager_, pref_service_};
   SingleFieldFillRouter single_field_fill_router_{
       autocomplete_history_manager_, payments_autofill_client_.GetIbanManager(),
       payments_autofill_client_.GetMerchantPromoCodeManager()};

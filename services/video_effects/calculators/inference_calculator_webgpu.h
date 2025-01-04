@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "services/on_device_model/ml/chrome_ml_api.h"
-#include "services/video_effects/calculators/video_effects_graph_config.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 #include "third_party/mediapipe/src/mediapipe/framework/calculator_base.h"
 
@@ -44,13 +43,6 @@ class InferenceCalculatorWebGpu : public mediapipe::CalculatorBase {
   absl::Status Close(mediapipe::CalculatorContext* cc) override;
 
  private:
-  // May be nullopt if we have not yet seen a side packet with static
-  // configuration (set by `Open()`).
-  std::optional<StaticConfig> static_config_;
-  // May be nullopt if we have not yet seen a packet with runtime configuration
-  // arrive in `Process()`. This is a most-recently-set runtime configuration -
-  // every call to `Process()` may bring a new version of runtime config.
-  std::optional<RuntimeConfig> runtime_config_;
   // Handle to the inference engine used for running the model. It will be set
   // in `Open()` and reset in `Close()`.
   ChromeMLInferenceEngine inference_engine_;

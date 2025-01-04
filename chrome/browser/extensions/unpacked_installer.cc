@@ -95,8 +95,7 @@ UnpackedInstaller::UnpackedInstaller(ExtensionService* extension_service)
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
-UnpackedInstaller::~UnpackedInstaller() {
-}
+UnpackedInstaller::~UnpackedInstaller() = default;
 
 void UnpackedInstaller::Load(const base::FilePath& path_in) {
   DCHECK(extension_path_.empty());

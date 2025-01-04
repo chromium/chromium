@@ -123,8 +123,9 @@ class BrowserThemePackTest : public ::testing::Test {
   const BrowserThemePack& theme_pack() const { return *theme_pack_; }
 
   base::FilePath GetTemporaryPakFile(base::FilePath::StringPieceType name) {
-    if (dir_.IsValid() || dir_.CreateUniqueTempDir())
+    if (dir_.IsValid() || dir_.CreateUniqueTempDir()) {
       return dir_.GetPath().Append(name);
+    }
     ADD_FAILURE() << "Couldn't create temp dir";
     return base::FilePath();
   }
@@ -179,8 +180,9 @@ void BrowserThemePackTest::VerifyColorMap(
     const std::map<int, SkColor>& color_map) {
   for (auto it = color_map.begin(); it != color_map.end(); ++it) {
     SkColor color;
-    if (!theme_pack_->GetColor(it->first, &color))
+    if (!theme_pack_->GetColor(it->first, &color)) {
       color = GetDefaultColor(it->first);
+    }
     EXPECT_EQ(it->second, color) << "Color id = " << it->first;
   }
 }
@@ -364,9 +366,8 @@ void BrowserThemePackTest::VerifyStarGazing(BrowserThemePack* pack) {
       pack->GetImageNamed(IDR_THEME_TAB_BACKGROUND_INCOGNITO).IsEmpty());
   EXPECT_FALSE(
       pack->HasCustomImage(IDR_THEME_TAB_BACKGROUND_INCOGNITO_INACTIVE));
-  EXPECT_FALSE(
-      pack->GetImageNamed(IDR_THEME_TAB_BACKGROUND_INCOGNITO_INACTIVE)
-          .IsEmpty());
+  EXPECT_FALSE(pack->GetImageNamed(IDR_THEME_TAB_BACKGROUND_INCOGNITO_INACTIVE)
+                   .IsEmpty());
 
   // Make sure we don't have phantom data.
   EXPECT_FALSE(pack->GetTint(TP::TINT_FRAME, &actual));
@@ -451,12 +452,12 @@ void BrowserThemePackTest::VerifyHiDpiTheme(BrowserThemePack* pack) {
   std::vector<std::pair<int, SkColor>> normal;
   int xy = 0;
   SkColor color = rep3.GetBitmap().getColor(xy, xy);
-  normal.push_back(std::make_pair(xy, color));
+  normal.emplace_back(xy, color);
   for (xy = 0; xy < 40; ++xy) {
     SkColor next_color = rep3.GetBitmap().getColor(xy, xy);
     if (next_color != color) {
       color = next_color;
-      normal.push_back(std::make_pair(xy, color));
+      normal.emplace_back(xy, color);
     }
   }
   EXPECT_EQ(static_cast<size_t>(9), normal.size());
@@ -468,9 +469,9 @@ void BrowserThemePackTest::VerifyHiDpiTheme(BrowserThemePack* pack) {
   EXPECT_EQ(120, rep4.GetBitmap().height());
   // We expect the same colors and at locations scaled by 2
   // since this bitmap was scaled by 2.
-  for (size_t i = 0; i < normal.size(); ++i) {
-    xy = 2 * normal[i].first;
-    color = normal[i].second;
+  for (auto& i : normal) {
+    xy = 2 * i.first;
+    color = i.second;
     EXPECT_EQ(color, rep4.GetBitmap().getColor(xy, xy));
   }
 }
@@ -570,8 +571,9 @@ TEST_F(BrowserThemePackTest, UseSectionColorAsNTPHeader) {
 }
 
 TEST_F(BrowserThemePackTest, ProvideNtpHeaderColor) {
-  std::string color_json = "{ \"ntp_header\": [120, 120, 120], "
-                           "  \"ntp_section\": [190, 190, 190] }";
+  std::string color_json =
+      "{ \"ntp_header\": [120, 120, 120], "
+      "  \"ntp_section\": [190, 190, 190] }";
   LoadColorJSON(color_json);
 
   std::map<int, SkColor> colors = GetDefaultColorMap();
@@ -603,11 +605,12 @@ TEST_F(BrowserThemePackTest, SupportsAlpha) {
 
 TEST_F(BrowserThemePackTest, OutOfRangeColors) {
   // Ensure colors with out-of-range values are simply ignored.
-  std::string color_json = "{ \"toolbar\": [0, 20, 40, -1], "
-                           "  \"tab_text\": [60, 80, 100, 2], "
-                           "  \"tab_background_text\": [120, 140, 160, 47.6], "
-                           "  \"bookmark_text\": [256, 0, 0], "
-                           "  \"ntp_text\": [0, -100, 100] }";
+  std::string color_json =
+      "{ \"toolbar\": [0, 20, 40, -1], "
+      "  \"tab_text\": [60, 80, 100, 2], "
+      "  \"tab_background_text\": [120, 140, 160, 47.6], "
+      "  \"bookmark_text\": [256, 0, 0], "
+      "  \"ntp_text\": [0, -100, 100] }";
   LoadColorJSON(color_json);
 
   VerifyColorMap(GetDefaultColorMap());
@@ -617,8 +620,8 @@ TEST_F(BrowserThemePackTest, CanReadTints) {
   std::string tint_json = "{ \"buttons\": [ 0.5, 0.5, 0.5 ] }";
   LoadTintJSON(tint_json);
 
-  color_utils::HSL expected = { 0.5, 0.5, 0.5 };
-  color_utils::HSL actual = { -1, -1, -1 };
+  color_utils::HSL expected = {0.5, 0.5, 0.5};
+  color_utils::HSL actual = {-1, -1, -1};
   EXPECT_TRUE(theme_pack().GetTint(TP::TINT_BUTTONS, &actual));
   EXPECT_DOUBLE_EQ(expected.h, actual.h);
   EXPECT_DOUBLE_EQ(expected.s, actual.s);
@@ -626,9 +629,10 @@ TEST_F(BrowserThemePackTest, CanReadTints) {
 }
 
 TEST_F(BrowserThemePackTest, CanReadDisplayProperties) {
-  std::string json = "{ \"ntp_background_alignment\": \"bottom\", "
-                     "  \"ntp_background_repeat\": \"repeat-x\", "
-                     "  \"ntp_logo_alternate\": 0 }";
+  std::string json =
+      "{ \"ntp_background_alignment\": \"bottom\", "
+      "  \"ntp_background_repeat\": \"repeat-x\", "
+      "  \"ntp_logo_alternate\": 0 }";
   LoadDisplayPropertiesJSON(json);
 
   int out_val;
@@ -646,8 +650,9 @@ TEST_F(BrowserThemePackTest, CanReadDisplayProperties) {
 }
 
 TEST_F(BrowserThemePackTest, CanParsePaths) {
-  std::string path_json = "{ \"theme_button_background\": \"one\", "
-                          "  \"theme_toolbar\": \"two\" }";
+  std::string path_json =
+      "{ \"theme_button_background\": \"one\", "
+      "  \"theme_toolbar\": \"two\" }";
   TestFilePathMap out_file_paths;
   ParseImageNamesJSON(path_json, &out_file_paths);
 
@@ -666,9 +671,10 @@ TEST_F(BrowserThemePackTest, CanParsePaths) {
 }
 
 TEST_F(BrowserThemePackTest, InvalidPathNames) {
-  std::string path_json = "{ \"wrong\": [1], "
-                          "  \"theme_button_background\": \"one\", "
-                          "  \"not_a_thing\": \"blah\" }";
+  std::string path_json =
+      "{ \"wrong\": [1], "
+      "  \"theme_button_background\": \"one\", "
+      "  \"not_a_thing\": \"blah\" }";
   TestFilePathMap out_file_paths;
   ParseImageNamesJSON(path_json, &out_file_paths);
 
@@ -677,22 +683,24 @@ TEST_F(BrowserThemePackTest, InvalidPathNames) {
 }
 
 TEST_F(BrowserThemePackTest, InvalidColors) {
-  std::string invalid_color = "{ \"toolbar\": [\"dog\", \"cat\", [12]], "
-                              "  \"sound\": \"woof\" }";
+  std::string invalid_color =
+      "{ \"toolbar\": [\"dog\", \"cat\", [12]], "
+      "  \"sound\": \"woof\" }";
   LoadColorJSON(invalid_color);
   std::map<int, SkColor> colors = GetDefaultColorMap();
   VerifyColorMap(colors);
 }
 
 TEST_F(BrowserThemePackTest, InvalidTints) {
-  std::string tints = "{ \"buttons\": [ \"dog\", \"cat\", [\"x\"]], "
-                       " \"frame\": [-2, 2, 3],"
-                       " \"frame_incognito_inactive\": [-1, 2, 0.6],"
-                       " \"invalid\": \"entry\" }";
+  std::string tints =
+      "{ \"buttons\": [ \"dog\", \"cat\", [\"x\"]], "
+      " \"frame\": [-2, 2, 3],"
+      " \"frame_incognito_inactive\": [-1, 2, 0.6],"
+      " \"invalid\": \"entry\" }";
   LoadTintJSON(tints);
 
   // We should ignore completely invalid (non-numeric) tints.
-  color_utils::HSL actual = { -1, -1, -1 };
+  color_utils::HSL actual = {-1, -1, -1};
   EXPECT_FALSE(theme_pack().GetTint(TP::TINT_BUTTONS, &actual));
 
   // We should change invalid numeric HSL tint components to the special -1 "no
@@ -710,8 +718,9 @@ TEST_F(BrowserThemePackTest, InvalidTints) {
 }
 
 TEST_F(BrowserThemePackTest, InvalidDisplayProperties) {
-  std::string invalid_properties = "{ \"ntp_background_alignment\": [15], "
-                                   "  \"junk\": [15.3] }";
+  std::string invalid_properties =
+      "{ \"ntp_background_alignment\": [15], "
+      "  \"junk\": [15.3] }";
   LoadDisplayPropertiesJSON(invalid_properties);
 
   int out_val;
@@ -794,9 +803,8 @@ TEST_F(BrowserThemePackTest, CanBuildAndReadPack) {
 
   // Part 2: Try to read back the data pack that we just wrote to disk.
   {
-    scoped_refptr<BrowserThemePack> pack =
-        BrowserThemePack::BuildFromDataPack(
-            file, "mblmlcbknbnfebdfjnolmcapmdofhmme");
+    scoped_refptr<BrowserThemePack> pack = BrowserThemePack::BuildFromDataPack(
+        file, "mblmlcbknbnfebdfjnolmcapmdofhmme");
     ASSERT_TRUE(pack.get());
     VerifyStarGazing(pack.get());
   }

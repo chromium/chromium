@@ -1587,8 +1587,7 @@ class MetaBuildWrapper:
         rts_command = self.AddFilterFileArg(target, command)
         if rts_command:
           self.Print('Adding RTS filter file to command.')
-          command = rts_command
-      isolate['variables']['rts_command'] = command
+          isolate['variables']['rts_command'] = rts_command
 
     self.WriteFile(isolate_path, json.dumps(isolate, sort_keys=True) + '\n')
 

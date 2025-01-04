@@ -270,6 +270,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest& request) {
     return request.fetch_integrity;
   }
+  static const std::vector<std::string>& expected_signatures(
+      const network::ResourceRequest& request) {
+    return request.expected_signatures;
+  }
   static network::mojom::RequestDestination destination(
       const network::ResourceRequest& request) {
     return request.destination;
@@ -402,6 +406,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static const std::optional<base::UnguessableToken>&
   attribution_reporting_src_token(const network::ResourceRequest& request) {
     return request.attribution_reporting_src_token;
+  }
+  static const std::optional<base::UnguessableToken>& keepalive_token(
+      const network::ResourceRequest& request) {
+    return request.keepalive_token;
   }
   static bool is_ad_tagged(const network::ResourceRequest& request) {
     return request.is_ad_tagged;

@@ -417,9 +417,6 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, WritesValuesToDBIfEnabled) {
 
 TEST_F(BiddingAndAuctionServerKeyFetcherTest,
        MaybePrefetchKeysFailureFailsPendingGetOrFetchKey) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kFledgePrefetchBandAKeys);
-
   content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
 
   // Use the AWS coordinator for this prefetch test since the GCP key URL is
@@ -471,9 +468,6 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest,
 }
 
 TEST_F(BiddingAndAuctionServerKeyFetcherTest, MaybePrefetchKeysCachesValue) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kFledgePrefetchBandAKeys);
-
   content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
 
   // Use the AWS coordinator for this prefetch test since the GCP key URL is
@@ -535,9 +529,6 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, MaybePrefetchKeysCachesValue) {
 
 TEST_F(BiddingAndAuctionServerKeyFetcherTest,
        MaybePrefetchKeysUpdatesExpiredValue) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kFledgePrefetchBandAKeys);
-
   // Use the AWS coordinator for this prefetch test since the GCP key URL is
   // used by two coordinators.
   url::Origin coordinator =
@@ -588,21 +579,6 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest,
         "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAE\u003d",
         "id": "23456789-abcd-ef01-2345-6789abcdef01"
         }]})"));
-}
-
-TEST_F(BiddingAndAuctionServerKeyFetcherTest,
-       MaybePrefetchKeysDoesNotCacheValueIfFeatureDisabled) {
-  // Disable kFledgePrefetchBandAKeys.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kFledgePrefetchBandAKeys);
-
-  content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
-  fetcher.MaybePrefetchKeys();
-  task_environment_.FastForwardBy(base::Seconds(1));
-  EXPECT_FALSE(
-      url_loader_factory_.IsPending(kBiddingAndAuctionGCPCoordinatorKeyURL));
-  EXPECT_FALSE(
-      url_loader_factory_.IsPending(kBiddingAndAuctionAWSCoordinatorKeyURL));
 }
 
 TEST_F(BiddingAndAuctionServerKeyFetcherTest, CoalescesRequests) {

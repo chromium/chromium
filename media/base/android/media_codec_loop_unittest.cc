@@ -33,7 +33,7 @@ namespace media {
 class MockMediaCodecLoopClient : public StrictMock<MediaCodecLoop::Client> {
  public:
   MOCK_CONST_METHOD0(IsAnyInputPending, bool());
-  MOCK_METHOD0(ProvideInputData, MediaCodecLoop::InputData());
+  MOCK_METHOD0(ProvideInputData, scoped_refptr<DecoderBuffer>());
   MOCK_METHOD1(OnInputDataQueued, void(bool));
   MOCK_METHOD1(OnDecodedEos, bool(const MediaCodecLoop::OutputBuffer&));
   MOCK_METHOD1(OnDecodedFrame, bool(const MediaCodecLoop::OutputBuffer&));
@@ -125,22 +125,21 @@ class MediaCodecLoopTest : public testing::Test {
 
   // Expect a call to queue |data| into MC buffer |input_buffer_index|.
   void ExpectQueueInputBuffer(int input_buffer_index,
-                              const MediaCodecLoop::InputData& data,
+                              scoped_refptr<DecoderBuffer> data,
                               MediaCodecResult status = OkStatus()) {
-    EXPECT_CALL(Codec(), QueueInputBuffer(input_buffer_index, data.memory,
-                                          data.presentation_time))
+    EXPECT_CALL(Codec(), QueueInputBuffer(input_buffer_index, data->AsSpan(),
+                                          data->timestamp()))
         .Times(1)
         .WillOnce(Return(status));
   }
 
-  void ExpectProvideInputData(const MediaCodecLoop::InputData& data) {
-    EXPECT_CALL(*client_, ProvideInputData()).WillOnce(Return(data));
+  void ExpectProvideInputData(scoped_refptr<DecoderBuffer> data) {
+    EXPECT_CALL(*client_, ProvideInputData()).WillOnce(Return(std::move(data)));
   }
 
-  MediaCodecLoop::InputData BigBuckBunny() {
-    MediaCodecLoop::InputData data;
-    data.memory = base::as_byte_span("big buck bunny");
-    data.presentation_time = base::Seconds(1);
+  scoped_refptr<DecoderBuffer> BigBuckBunny() {
+    auto data = DecoderBuffer::CopyFrom(base::as_byte_span("big buck bunny"));
+    data->set_timestamp(base::Seconds(1));
     return data;
   }
 
@@ -264,8 +263,7 @@ TEST_F(MediaCodecLoopTest, TestQueueEos) {
     int input_buffer_index = 123;
     ExpectDequeueInputBuffer(input_buffer_index);
 
-    MediaCodecLoop::InputData data;
-    data.is_eos = true;
+    auto data = DecoderBuffer::CreateEOSBuffer();
     ExpectProvideInputData(data);
     EXPECT_CALL(Codec(), QueueEOS(input_buffer_index));
     ExpectInputDataQueued(true);
@@ -295,8 +293,7 @@ TEST_F(MediaCodecLoopTest, TestQueueEosFailure) {
     int input_buffer_index = 123;
     ExpectDequeueInputBuffer(input_buffer_index);
 
-    MediaCodecLoop::InputData data;
-    data.is_eos = true;
+    auto data = DecoderBuffer::CreateEOSBuffer();
     ExpectProvideInputData(data);
     EXPECT_CALL(Codec(), QueueEOS(input_buffer_index));
     ExpectInputDataQueued(true);
@@ -323,7 +320,7 @@ TEST_F(MediaCodecLoopTest, TestQueueInputData) {
     int input_buffer_index = 123;
     ExpectDequeueInputBuffer(input_buffer_index);
 
-    MediaCodecLoop::InputData data = BigBuckBunny();
+    auto data = BigBuckBunny();
     ExpectProvideInputData(data);
 
     // MCL should send the buffer into MediaCodec and notify the client.
@@ -353,7 +350,7 @@ TEST_F(MediaCodecLoopTest, TestQueueInputDataFails) {
     int input_buffer_index = 123;
     ExpectDequeueInputBuffer(input_buffer_index);
 
-    MediaCodecLoop::InputData data = BigBuckBunny();
+    auto data = BigBuckBunny();
     ExpectProvideInputData(data);
 
     // MCL should send the buffer into MediaCodec and notify the client.
@@ -395,7 +392,7 @@ TEST_F(MediaCodecLoopTest, TestSeveralPendingIOBuffers) {
     ExpectIsAnyInputPending(true);
     ExpectDequeueInputBuffer(input_buffer_index);
 
-    MediaCodecLoop::InputData data = BigBuckBunny();
+    auto data = BigBuckBunny();
     ExpectProvideInputData(data);
 
     ExpectQueueInputBuffer(input_buffer_index, data);
@@ -418,7 +415,7 @@ TEST_F(MediaCodecLoopTest, TestOnKeyAdded) {
   ConstructCodecLoop();
 
   int input_buffer_index = 123;
-  MediaCodecLoop::InputData data = BigBuckBunny();
+  auto data = BigBuckBunny();
 
   // First provide input, but have MediaCodecBridge require a key.
   {
@@ -462,8 +459,6 @@ TEST_F(MediaCodecLoopTest, TestOnKeyAdded) {
   // succeed since the key has been added.
   {
     InSequence _s;
-    // MCL should not retain the original pointer.
-    data.memory = {};
     ExpectQueueInputBuffer(input_buffer_index, data);
     ExpectInputDataQueued(true);
     ExpectDequeueOutputBuffer(MediaCodecResult::Codes::kTryAgainLater);

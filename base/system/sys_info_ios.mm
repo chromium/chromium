@@ -122,8 +122,9 @@ uint64_t SysInfo::AmountOfPhysicalMemoryImpl() {
 // static
 uint64_t SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
   SystemMemoryInfoKB info;
-  if (!GetSystemMemoryInfo(&info))
+  if (!GetSystemMemoryInfo(&info)) {
     return 0;
+  }
   // We should add inactive file-backed memory also but there is no such
   // information from iOS unfortunately.
   return checked_cast<uint64_t>(info.free + info.speculative) * 1024;

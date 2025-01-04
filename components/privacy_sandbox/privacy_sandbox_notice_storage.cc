@@ -133,6 +133,7 @@ void PrivacySandboxNoticeStorage::RecordHistogramsOnStartup(
   } else {  // Notice has been shown, action handling below.
     switch (notice_data->notice_action_taken) {
       case NoticeActionTaken::kNotSet:
+      case NoticeActionTaken::kLearnMore:
         startup_state = NoticeStartupState::kPromptWaiting;
         break;
       case NoticeActionTaken::kOptIn:
@@ -153,7 +154,6 @@ void PrivacySandboxNoticeStorage::RecordHistogramsOnStartup(
       case NoticeActionTaken::kAck:
       case NoticeActionTaken::kClosed:
       case NoticeActionTaken::kSettings:
-      case NoticeActionTaken::kLearnMore:
         startup_state = NoticeStartupState::kFlowCompleted;
         break;
     }

@@ -13,13 +13,13 @@
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/browser/ui/views/payments/validating_textfield.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/test_region_data_loader.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
 #include "components/payments/content/payment_request.h"
 #include "components/payments/content/payment_request_spec.h"
 #include "components/payments/core/features.h"
@@ -494,7 +494,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   OpenPaymentMethodScreen();
 
   ResetEventWaiter(DialogEvent::CREDIT_CARD_EDITOR_OPENED);
-  ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
+  ClickOnChildInListViewAndWait(/*child_index=*/0, /*total_num_children=*/1,
                                 DialogViewID::PAYMENT_METHOD_SHEET_LIST_VIEW);
 
   // Proper error shown.
@@ -556,7 +556,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   OpenPaymentMethodScreen();
 
   ResetEventWaiter(DialogEvent::CREDIT_CARD_EDITOR_OPENED);
-  ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
+  ClickOnChildInListViewAndWait(/*child_index=*/0, /*total_num_children=*/1,
                                 DialogViewID::PAYMENT_METHOD_SHEET_LIST_VIEW);
 
   // Proper error shown.
@@ -621,7 +621,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   OpenPaymentMethodScreen();
 
   ResetEventWaiter(DialogEvent::CREDIT_CARD_EDITOR_OPENED);
-  ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
+  ClickOnChildInListViewAndWait(/*child_index=*/0, /*total_num_children=*/1,
                                 DialogViewID::PAYMENT_METHOD_SHEET_LIST_VIEW);
   // Change the name.
   SetEditorTextfieldValue(u"Bob the second", autofill::CREDIT_CARD_NAME_FULL);
@@ -668,7 +668,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   OpenPaymentMethodScreen();
 
   ResetEventWaiter(DialogEvent::CREDIT_CARD_EDITOR_OPENED);
-  ClickOnChildInListViewAndWait(/*child_index=*/0, /*num_children=*/1,
+  ClickOnChildInListViewAndWait(/*child_index=*/0, /*total_num_children=*/1,
                                 DialogViewID::PAYMENT_METHOD_SHEET_LIST_VIEW);
   // Billing address combobox must be disabled since there are no saved address.
   views::View* billing_address_combobox = dialog_view()->GetViewByID(
@@ -681,8 +681,8 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   SetRegionDataLoader(&test_region_data_loader_);
   test_region_data_loader_.set_synchronous_callback(true);
   std::vector<std::pair<std::string, std::string>> regions1;
-  regions1.push_back(std::make_pair("AL", "Alabama"));
-  regions1.push_back(std::make_pair("CA", "California"));
+  regions1.emplace_back("AL", "Alabama");
+  regions1.emplace_back("CA", "California");
   test_region_data_loader_.SetRegionData(regions1);
 
   // Click to open the address editor

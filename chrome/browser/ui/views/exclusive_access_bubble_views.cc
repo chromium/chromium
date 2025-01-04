@@ -192,13 +192,15 @@ void ExclusiveAccessBubbleViews::Update(
 }
 
 void ExclusiveAccessBubbleViews::RepositionIfVisible() {
-  if (IsVisible())
+  if (IsVisible()) {
     UpdateBounds();
+  }
 }
 
 void ExclusiveAccessBubbleViews::HideImmediately() {
-  if (!IsShowing() && !popup_->IsVisible())
+  if (!IsShowing() && !popup_->IsVisible()) {
     return;
+  }
 
   RunHideCallbackIfNeeded(ExclusiveAccessBubbleHideReason::kInterrupted);
 
@@ -280,8 +282,9 @@ void ExclusiveAccessBubbleViews::AnimationProgressed(
 
 void ExclusiveAccessBubbleViews::AnimationEnded(
     const gfx::Animation* animation) {
-  if (animation_->IsShowing())
+  if (animation_->IsShowing()) {
     GetView()->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+  }
   AnimationProgressed(animation);
 }
 
@@ -327,8 +330,9 @@ void ExclusiveAccessBubbleViews::Hide() {
 }
 
 void ExclusiveAccessBubbleViews::Show() {
-  if (animation_->IsShowing())
+  if (animation_->IsShowing()) {
     return;
+  }
   animation_->SetSlideDuration(base::Milliseconds(350));
   animation_->Show();
 }

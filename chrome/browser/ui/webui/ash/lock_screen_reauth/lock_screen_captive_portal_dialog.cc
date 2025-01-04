@@ -73,8 +73,9 @@ bool LockScreenCaptivePortalDialog::IsRunning() const {
 
 bool LockScreenCaptivePortalDialog::IsDialogClosedForTesting(
     base::OnceClosure callback) {
-  if (!is_running_)
+  if (!is_running_) {
     return true;
+  }
   DCHECK(!on_closed_callback_for_testing_);
   on_closed_callback_for_testing_ = std::move(callback);
   return false;
@@ -82,8 +83,9 @@ bool LockScreenCaptivePortalDialog::IsDialogClosedForTesting(
 
 bool LockScreenCaptivePortalDialog::IsDialogShownForTesting(
     base::OnceClosure callback) {
-  if (is_running_)
+  if (is_running_) {
     return true;
+  }
   DCHECK(!on_shown_callback_for_testing_);
   on_shown_callback_for_testing_ = std::move(callback);
   return false;

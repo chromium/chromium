@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {TabData} from '../tab_data.js';
 
@@ -40,11 +40,15 @@ export function getHtml(this: DeclutterPageElement) {
       `}
     </div>
     ${
-      this.staleTabDatas_.length === 0 ?
+      (this.staleTabDatas_.length === 0 &&
+       this.duplicateTabDatas_.length === 0) ?
           html`
       <div class="empty-content">
         <div class="empty-title">$i18n{declutterEmptyTitle}</div>
-        <div class="empty-subheading">$i18n{declutterEmptyBody}</div>
+        <div class="empty-subheading">${
+              this.dedupeEnabled ?
+                  html`$i18n{declutterEmptyBody}` :
+                  html`$i18n{declutterEmptyBodyNoDedupe}`}</div>
       </div>
     ` :
           html`
@@ -110,6 +114,7 @@ function getTabSearchItem(
                                                    this.onDuplicateTabExclude_}"
         @focus="${this.onTabFocus_}"
         @blur="${this.onTabBlur_}"
+        compact=${this.dedupeEnabled || nothing}
         hide-url>
     </tab-search-item>
   `;

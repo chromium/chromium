@@ -1218,6 +1218,7 @@ void PartitionRoot::Init(PartitionOptions opts) {
     if (brp_enabled()) {
       settings.in_slot_metadata_size = internal::kInSlotMetadataSizeAdjustment;
       settings.extras_size += internal::kInSlotMetadataSizeAdjustment;
+      settings.extras_size += opts.backup_ref_ptr_extra_extras_size;
 #if PA_CONFIG(MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK)
       EnableMac11MallocSizeHackIfNeeded();
 #endif

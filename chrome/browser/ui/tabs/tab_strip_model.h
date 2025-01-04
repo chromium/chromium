@@ -353,8 +353,9 @@ class TabStripModel : public TabGroupController {
   // Close all tabs in the given |group| at once.
   void CloseAllTabsInGroup(const tab_groups::TabGroupId& group);
 
-  // Returns true if there are any WebContentses that are currently loading.
-  bool TabsAreLoading() const;
+  // Returns true if there are any WebContentses that are currently loading
+  // and should be shown on the UI.
+  bool TabsNeedLoadingUI() const;
 
   // Returns the WebContents that opened the WebContents at |index|, or NULL if
   // there is no opener on record.
@@ -1030,7 +1031,8 @@ namespace base {
 template <>
 class ScopedObservation<TabStripModel, TabStripModelObserver> {
  public:
-  // Deleting the constructor gives a clear error message traceable back to here.
+  // Deleting the constructor gives a clear error message traceable back to
+  // here.
   explicit ScopedObservation(TabStripModelObserver* observer) = delete;
 };
 

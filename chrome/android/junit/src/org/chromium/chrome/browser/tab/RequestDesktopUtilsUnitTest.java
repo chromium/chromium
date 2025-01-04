@@ -42,7 +42,6 @@ import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
@@ -289,7 +288,6 @@ public class RequestDesktopUtilsUnitTest {
 
     @After
     public void tearDown() {
-        FeatureList.setTestValues(null);
         ShadowDisplayAndroid.setDisplayAndroid(null);
         if (mSharedPreferencesManager != null) {
             mSharedPreferencesManager.removeKey(

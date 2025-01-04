@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-class GURL;
+#import "components/data_sharing/public/group_data.h"
 
 // Configuration object for joining a shared group.
 @interface ShareKitJoinConfiguration : NSObject
@@ -15,8 +15,8 @@ class GURL;
 // The base view controller on which the join flow will be presented.
 @property(nonatomic, weak) UIViewController* baseViewController;
 
-// The URL used to join the group, containing the collab ID and the token.
-@property(nonatomic, assign) GURL URL;
+// The token used to join the group, containing the collab ID and the secret.
+@property(nonatomic, assign) data_sharing::GroupToken token;
 
 // Executed when the join flow ended. The `result` parameter indicates whether
 // the user successfully joined the group.

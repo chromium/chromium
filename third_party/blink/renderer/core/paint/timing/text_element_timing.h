@@ -55,7 +55,7 @@ class CORE_EXPORT TextElementTiming final
 
   // Called when the swap promise queued by TextPaintTimingDetector has been
   // resolved. Dispatches PerformanceElementTiming entries to WindowPerformance.
-  void OnTextObjectPainted(const TextRecord&);
+  void OnTextObjectPainted(const TextRecord&, const DOMPaintTimingInfo&);
 
   void Trace(Visitor* visitor) const override;
 

@@ -439,8 +439,7 @@ class FetchLoaderBase : public GarbageCollectedMixin {
   void PerformNetworkError(
       const String& issue_summary,
       std::optional<base::UnguessableToken> issue_id = std::nullopt);
-  void FileIssueAndPerformNetworkError(RendererCorsIssueCode,
-                                       int64_t identifier);
+  void FileIssueAndPerformNetworkError(RendererCorsIssueCode);
   void PerformHTTPFetch(ExceptionState&);
   void PerformDataFetch();
   bool AddConsoleMessage(const String& message,
@@ -941,8 +940,7 @@ void FetchLoaderBase::Start(ExceptionState& exception_state) {
   // "- |request|'s mode is |same-origin|"
   if (fetch_request_data_->Mode() == RequestMode::kSameOrigin) {
     // This error is so early that there isn't an identifier yet, generate one.
-    FileIssueAndPerformNetworkError(RendererCorsIssueCode::kDisallowedByMode,
-                                    CreateUniqueIdentifier());
+    FileIssueAndPerformNetworkError(RendererCorsIssueCode::kDisallowedByMode);
     return;
   }
 
@@ -954,8 +952,7 @@ void FetchLoaderBase::Start(ExceptionState& exception_state) {
       // This error is so early that there isn't an identifier yet, generate
       // one.
       FileIssueAndPerformNetworkError(
-          RendererCorsIssueCode::kNoCorsRedirectModeNotFollow,
-          CreateUniqueIdentifier());
+          RendererCorsIssueCode::kNoCorsRedirectModeNotFollow);
       return;
     }
 
@@ -974,8 +971,7 @@ void FetchLoaderBase::Start(ExceptionState& exception_state) {
   if (!SchemeRegistry::ShouldTreatURLSchemeAsSupportingFetchAPI(
           fetch_request_data_->Url().Protocol())) {
     // This error is so early that there isn't an identifier yet, generate one.
-    FileIssueAndPerformNetworkError(RendererCorsIssueCode::kCorsDisabledScheme,
-                                    CreateUniqueIdentifier());
+    FileIssueAndPerformNetworkError(RendererCorsIssueCode::kCorsDisabledScheme);
     return;
   }
 
@@ -1047,22 +1043,20 @@ void FetchLoaderBase::PerformSchemeFetch(ExceptionState& exception_state) {
   } else {
     // FIXME: implement other protocols.
     // This error is so early that there isn't an identifier yet, generate one.
-    FileIssueAndPerformNetworkError(RendererCorsIssueCode::kCorsDisabledScheme,
-                                    CreateUniqueIdentifier());
+    FileIssueAndPerformNetworkError(RendererCorsIssueCode::kCorsDisabledScheme);
   }
 }
 
 void FetchLoaderBase::FileIssueAndPerformNetworkError(
-    RendererCorsIssueCode network_error,
-    int64_t identifier) {
+    RendererCorsIssueCode network_error) {
   auto issue_id = base::UnguessableToken::Create();
   switch (network_error) {
     case RendererCorsIssueCode::kCorsDisabledScheme: {
-      AuditsIssue::ReportCorsIssue(
-          execution_context_, identifier, network_error,
-          fetch_request_data_->Url().GetString(),
-          fetch_request_data_->Origin()->ToString(),
-          fetch_request_data_->Url().Protocol(), issue_id);
+      AuditsIssue::ReportCorsIssue(execution_context_, network_error,
+                                   fetch_request_data_->Url().GetString(),
+                                   fetch_request_data_->Origin()->ToString(),
+                                   fetch_request_data_->Url().Protocol(),
+                                   issue_id);
       PerformNetworkError("URL scheme \"" +
                               fetch_request_data_->Url().Protocol() +
                               "\" is not supported.",
@@ -1070,8 +1064,7 @@ void FetchLoaderBase::FileIssueAndPerformNetworkError(
       break;
     }
     case RendererCorsIssueCode::kDisallowedByMode: {
-      AuditsIssue::ReportCorsIssue(execution_context_, identifier,
-                                   network_error,
+      AuditsIssue::ReportCorsIssue(execution_context_, network_error,
                                    fetch_request_data_->Url().GetString(),
                                    fetch_request_data_->Origin()->ToString(),
                                    WTF::g_empty_string, issue_id);
@@ -1084,8 +1077,7 @@ void FetchLoaderBase::FileIssueAndPerformNetworkError(
       break;
     }
     case RendererCorsIssueCode::kNoCorsRedirectModeNotFollow: {
-      AuditsIssue::ReportCorsIssue(execution_context_, identifier,
-                                   network_error,
+      AuditsIssue::ReportCorsIssue(execution_context_, network_error,
                                    fetch_request_data_->Url().GetString(),
                                    fetch_request_data_->Origin()->ToString(),
                                    WTF::g_empty_string, issue_id);
@@ -1156,6 +1148,7 @@ void FetchLoaderBase::PerformHTTPFetch(ExceptionState& exception_state) {
   }
   request.SetCacheMode(fetch_request_data_->CacheMode());
   request.SetRedirectMode(fetch_request_data_->Redirect());
+  request.SetFetchIntegrity(fetch_request_data_->Integrity());
   request.SetFetchPriorityHint(fetch_request_data_->FetchPriorityHint());
   request.SetPriority(fetch_request_data_->Priority());
   request.SetUseStreamOnResponse(true);

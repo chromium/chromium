@@ -39,15 +39,18 @@ void MessagePumpDefault::Run(Delegate* delegate) {
 
     Delegate::NextWorkInfo next_work_info = delegate->DoWork();
     bool has_more_immediate_work = next_work_info.is_immediate();
-    if (!keep_running_)
+    if (!keep_running_) {
       break;
+    }
 
-    if (has_more_immediate_work)
+    if (has_more_immediate_work) {
       continue;
+    }
 
     delegate->DoIdleWork();
-    if (!keep_running_)
+    if (!keep_running_) {
       break;
+    }
 
     if (next_work_info.delayed_run_time.is_max()) {
       event_.Wait();

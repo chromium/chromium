@@ -728,24 +728,60 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         assertEquals(3, sheetItemListView.getAdapter().getItemCount());
 
         View anaRow = sheetItemListView.getChildAt(0);
-        float delta = 0.00001f;
-        assertEquals(anaRow.getAlpha(), 1.f, delta);
+        assertEquals(anaRow.getAlpha(), 1.f, ALPHA_COMPARISON_DELTA);
         TextView textView = anaRow.findViewById(R.id.title);
         assertEquals("Ana Doe", textView.getText());
         textView = anaRow.findViewById(R.id.description);
         assertEquals("ana@email.example", textView.getText());
 
         View nicolasRow = sheetItemListView.getChildAt(1);
-        assertEquals(nicolasRow.getAlpha(), AccountSelectionViewBinder.DISABLED_OPACITY, delta);
+        assertEquals(
+                nicolasRow.getAlpha(),
+                AccountSelectionViewBinder.DISABLED_OPACITY,
+                ALPHA_COMPARISON_DELTA);
         textView = nicolasRow.findViewById(R.id.title);
         assertEquals("nicolas@example.com", textView.getText());
         textView = nicolasRow.findViewById(R.id.description);
         assertEquals("You can’t sign in using this account", textView.getText());
 
         View addAccountButton = sheetItemListView.getChildAt(2);
-        assertEquals(addAccountButton.getAlpha(), 1.f, delta);
+        assertEquals(addAccountButton.getAlpha(), 1.f, ALPHA_COMPARISON_DELTA);
         textView = addAccountButton.findViewById(R.id.title);
         assertEquals("Use a different account", textView.getText());
+    }
+
+    @Test
+    public void testFilteredOutAccountNoContinueButton() {
+        // Show a newly logged in filtered account.
+        mMediator.showAccounts(
+                mTestEtldPlusOne,
+                mTestEtldPlusOne2,
+                Arrays.asList(mFilteredOutAccount),
+                mIdpDataWithUseDifferentAccount,
+                /* isAutoReauthn= */ false,
+                Arrays.asList(mFilteredOutAccount));
+        // Account chooser is shown.
+        assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
+        assertEquals(2, mSheetAccountItems.size());
+        assertNull(mSheetAccountItems.get(0).model.get(AccountProperties.ON_CLICK_LISTENER));
+
+        View sheetContainer = mContentView.findViewById(R.id.sheet_item_list_container);
+        RecyclerView sheetItemListView = sheetContainer.findViewById(R.id.sheet_item_list);
+        View filteredAccountRow = sheetItemListView.getChildAt(0);
+        assertEquals(
+                filteredAccountRow.getAlpha(),
+                AccountSelectionViewBinder.DISABLED_OPACITY,
+                ALPHA_COMPARISON_DELTA);
+        TextView textView = filteredAccountRow.findViewById(R.id.title);
+        assertEquals("nicolas@example.com", textView.getText());
+        textView = filteredAccountRow.findViewById(R.id.description);
+        assertEquals("You can’t sign in using this account", textView.getText());
+
+        View addAccountButton = sheetItemListView.getChildAt(1);
+        assertEquals(addAccountButton.getAlpha(), 1.f, ALPHA_COMPARISON_DELTA);
+        textView = addAccountButton.findViewById(R.id.title);
+        assertEquals("Use a different account", textView.getText());
+        assertFalse(containsItemOfType(mModel, ItemProperties.CONTINUE_BUTTON));
     }
 
     private void pressBack() {

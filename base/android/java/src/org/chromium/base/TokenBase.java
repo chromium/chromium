@@ -4,12 +4,14 @@
 
 package org.chromium.base;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** Base class for Token and UnguessableToken. */
+@NullMarked
 @JNINamespace("base::android")
 public abstract class TokenBase {
     protected final long mHigh;

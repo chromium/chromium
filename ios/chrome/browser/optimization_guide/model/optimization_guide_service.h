@@ -16,6 +16,7 @@
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/optimization_guide_on_device_capability_provider.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
 #import "components/optimization_guide/optimization_guide_buildflags.h"
 #include "components/optimization_guide/proto/hints.pb.h"
@@ -73,6 +74,7 @@ class OptimizationGuideService
       public optimization_guide::OptimizationGuideDecider,
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
       public optimization_guide::OptimizationGuideModelExecutor,
+      public optimization_guide::OptimizationGuideOnDeviceCapabilityProvider,
 #endif
       public optimization_guide::OptimizationGuideModelProvider {
  public:
@@ -117,10 +119,6 @@ class OptimizationGuideService
 
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
   // optimization_guide::OptimizationGuideModelExecutor implementation:
-  bool CanCreateOnDeviceSession(
-      optimization_guide::ModelBasedCapabilityKey feature,
-      optimization_guide::OnDeviceModelEligibilityReason*
-          on_device_model_eligibility_reason) override;
   std::unique_ptr<Session> StartSession(
       optimization_guide::ModelBasedCapabilityKey feature,
       const std::optional<optimization_guide::SessionConfigParams>&
@@ -137,6 +135,15 @@ class OptimizationGuideService
   void RemoveOnDeviceModelAvailabilityChangeObserver(
       optimization_guide::ModelBasedCapabilityKey feature,
       optimization_guide::OnDeviceModelAvailabilityObserver* observer) override;
+
+  // optimization_guide::OptimizationGuideOnDeviceCapabilityProvider
+  // implementation:
+  optimization_guide::OnDeviceModelEligibilityReason
+  GetOnDeviceModelEligibility(
+      optimization_guide::ModelBasedCapabilityKey feature) override;
+  std::optional<optimization_guide::SamplingParamsConfig>
+  GetSamplingParamsConfig(
+      optimization_guide::ModelBasedCapabilityKey feature) override;
 #endif
 
   // optimization_guide::OptimizationGuideModelProvider implementation:

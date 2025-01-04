@@ -92,11 +92,6 @@ const wchar_t* const kTroublesomeDlls[] = {
     L"rpchromebrowserrecordhelper.dll",    // RealPlayer.
 };
 
-// This is for finch. See also crbug.com/464430 for details.
-BASE_FEATURE(kEnableCsrssLockdownFeature,
-             "EnableCsrssLockdown",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Return a mapping between the long and short names for all loaded modules in
 // the current process. The mapping excludes modules which don't have a typical
 // short name, e.g. EXAMPL~1.DLL.
@@ -690,7 +685,7 @@ ResultCode SandboxWin::SetJobLevel(Sandbox sandbox_type,
 void SandboxWin::AddBaseHandleClosePolicy(TargetConfig* config) {
   DCHECK(!config->IsConfigured());
 
-  if (base::FeatureList::IsEnabled(kEnableCsrssLockdownFeature)) {
+  if (base::FeatureList::IsEnabled(features::kEnableCsrssLockdown)) {
     // Close all ALPC ports.
     config->SetDisconnectCsrss();
   }

@@ -420,8 +420,6 @@ class DlpContentManagerReportingBrowserTest
   // Sets an action to execute when an event arrives to the report queue storage
   // module.
   void SetAddRecordCheck(DlpPolicyEvent expectedEvent, int times) {
-    // TODO(1290312): Change to [=, this] when chrome code base is updated to
-    // C++20.
     EXPECT_CALL(*test_storage_module(), AddRecord)
         .Times(times)
         .WillRepeatedly(testing::WithArgs<1, 2>(testing::Invoke(
@@ -644,7 +642,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
       content::DesktopMediaID::TYPE_WEB_CONTENTS,
       content::DesktopMediaID::kNullId,
       content::WebContentsMediaCaptureId(
-          web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
           web_contents->GetPrimaryMainFrame()->GetRoutingID()));
 
   DlpContentManager* manager = helper_->GetContentManager();

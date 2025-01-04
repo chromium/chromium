@@ -19,7 +19,7 @@ namespace {
 // Helper function to divide data in chunks of random sizes.
 void ObfuscateTestDataInChunks(base::span<const uint8_t> test_data,
                                std::vector<uint8_t>& obfuscated_content) {
-  std::vector<uint8_t> derived_key;
+  std::array<uint8_t, kKeySize> derived_key;
   std::vector<uint8_t> nonce_prefix;
   auto header = CreateHeader(&derived_key, &nonce_prefix);
   ASSERT_TRUE(header.has_value());
@@ -81,7 +81,7 @@ TEST_P(ObfuscationUtilsTest, ObfuscateAndDeobfuscateSingleDataChunk) {
   // Obfuscate the data chunk.
   std::vector<uint8_t> test_data = base::RandBytesAsVector(test_data_size());
 
-  std::vector<uint8_t> derived_key;
+  std::array<uint8_t, kKeySize> derived_key;
   std::vector<uint8_t> nonce_prefix;
   auto header = CreateHeader(&derived_key, &nonce_prefix);
   constexpr uint32_t kInitialChunkCounter = 0;

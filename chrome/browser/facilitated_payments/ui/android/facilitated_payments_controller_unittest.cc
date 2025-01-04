@@ -10,8 +10,8 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_bottom_sheet_bridge.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/facilitated_payments/core/ui_utils/facilitated_payments_ui_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

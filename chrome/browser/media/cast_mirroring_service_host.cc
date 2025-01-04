@@ -255,7 +255,7 @@ content::DesktopMediaID CastMirroringServiceHost::BuildMediaIdForWebContents(
   }
   media_id.type = content::DesktopMediaID::TYPE_WEB_CONTENTS;
   media_id.web_contents_id = content::WebContentsMediaCaptureId(
-      contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
       contents->GetPrimaryMainFrame()->GetRoutingID(),
       true /* disable_local_echo */);
   return media_id;
@@ -524,7 +524,8 @@ void CastMirroringServiceHost::ShowCaptureIndicator() {
                          ->GetMediaStreamCaptureIndicator()
                          ->RegisterMediaStream(web_contents(), devices);
   media_stream_ui_->OnStarted(
-      base::RepeatingClosure(), content::MediaStreamUI::SourceCallback(),
+      /*stop_callback=*/base::DoNothing(),
+      content::MediaStreamUI::SourceCallback(),
       /*label=*/std::string(), /*screen_capture_ids=*/{},
       content::MediaStreamUI::StateChangeCallback());
 }

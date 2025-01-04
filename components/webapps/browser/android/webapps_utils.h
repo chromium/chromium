@@ -24,8 +24,7 @@ class WebappsUtils {
   WebappsUtils(const WebappsUtils&) = delete;
 
   // Returns true if there is an installed WebAPK which can handle |url|.
-  static bool IsWebApkInstalled(content::BrowserContext* browser_context,
-                                const GURL& url);
+  static bool IsWebApkInstalled(const GURL& url);
 
   // Returns whether the format of the URLs in the Web Manifest is WebAPK
   // compatible.

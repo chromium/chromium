@@ -12,7 +12,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/autofill/payments/view_factory.h"
+#include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
@@ -59,8 +59,9 @@ void AutofillErrorDialogViewAndroid::Show(content::WebContents* web_contents) {
   ui::ViewAndroid* view_android = web_contents->GetNativeView();
   DCHECK(view_android);
   ui::WindowAndroid* window_android = view_android->GetWindowAndroid();
-  if (!window_android)
+  if (!window_android) {
     return;
+  }
 
   java_object_.Reset(Java_AutofillErrorDialogBridge_create(
       env, reinterpret_cast<intptr_t>(this), window_android->GetJavaObject()));

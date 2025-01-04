@@ -12,11 +12,11 @@
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/content/browser/test_content_autofill_driver.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_driver.h"
-#include "components/autofill/core/browser/test_browser_autofill_manager.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,7 +35,7 @@ class MockBrowserAutofillManager : public autofill::TestBrowserAutofillManager {
 class MockAutofillClient : public autofill::TestContentAutofillClient {
  public:
   using autofill::TestContentAutofillClient::TestContentAutofillClient;
-  MOCK_METHOD(autofill::LogManager*, GetLogManager, (), (const override));
+  MOCK_METHOD(autofill::LogManager*, GetCurrentLogManager, (), (override));
   MOCK_METHOD(bool, IsContextSecure, (), (const override));
   MOCK_METHOD(GeoIpCountryCode,
               GetVariationConfigCountryCode,

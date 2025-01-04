@@ -227,8 +227,10 @@ void FontPrewarmerTabHelper::ReadyToCommitNavigation(
   DCHECK(rfh);
   FontPrewarmerCoordinator& coordinator =
       FontPrewarmerCoordinator::ForProfile(GetProfile());
-  if (expected_render_process_host_id_ != rfh->GetProcess()->GetID())
+  if (expected_render_process_host_id_ !=
+      rfh->GetProcess()->GetDeprecatedID()) {
     coordinator.SendFontsToPrewarm(rfh->GetProcess());
+  }
   coordinator.RequestFonts(rfh);
 }
 

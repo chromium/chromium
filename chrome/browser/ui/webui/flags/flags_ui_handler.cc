@@ -169,8 +169,9 @@ void FlagsUIHandler::HandleEnableExperimentalFeatureMessage(
     const base::Value::List& args) {
   DCHECK(flags_storage_);
   DCHECK_EQ(2u, args.size());
-  if (args.size() != 2)
+  if (args.size() != 2) {
     return;
+  }
 
   if (!args[0].is_string() || !args[1].is_string()) {
     NOTREACHED();

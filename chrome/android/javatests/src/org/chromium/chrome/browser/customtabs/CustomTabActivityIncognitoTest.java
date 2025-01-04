@@ -28,6 +28,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RemoteViews;
@@ -35,7 +36,6 @@ import android.widget.RemoteViews;
 import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
@@ -58,7 +58,9 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils.OnFinishedForTest;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
@@ -423,6 +425,9 @@ public class CustomTabActivityIncognitoTest {
 
     @Test
     @MediumTest
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
+            message = "crbug.com/350394860")
     public void ensureAddCustomTopMenuItemHasNoEffect() throws Exception {
         Bitmap expectedIcon = createVectorDrawableBitmap(R.drawable.ic_credit_card_black, 77, 48);
         Intent intent = createTestCustomTabIntent();
@@ -445,6 +450,9 @@ public class CustomTabActivityIncognitoTest {
 
     @Test
     @MediumTest
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
+            message = "crbug.com/350394860")
     public void ensureAddRemoteViewsHasNoEffect() throws Exception {
         Intent intent = createTestCustomTabIntent();
         Bitmap expectedIcon = createVectorDrawableBitmap(R.drawable.ic_credit_card_black, 77, 48);
@@ -481,12 +489,15 @@ public class CustomTabActivityIncognitoTest {
         // allowed in incognito. (crbug.com/1106757)
         Intent intent = createTestCustomTabIntent();
         final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
-        final CustomTabsSessionToken token =
-                CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        final var token = SessionHolder.getSessionHolderFromIntent(intent);
         // Passes the launch intent to the connection.
         mCustomTabActivityTestRule.buildSessionWithHiddenTab(token);
         Assert.assertFalse(
-                connection.mayLaunchUrl(token, Uri.parse(mTestPage), intent.getExtras(), null));
+                connection.mayLaunchUrl(
+                        token.getSessionAsCustomTab(),
+                        Uri.parse(mTestPage),
+                        intent.getExtras(),
+                        null));
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
@@ -509,11 +520,12 @@ public class CustomTabActivityIncognitoTest {
         // allowed in incognito. (crbug.com/1190971)
         Intent intent = createTestCustomTabIntent();
         final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
-        final CustomTabsSessionToken token =
-                CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        final var token = SessionHolder.getSessionHolderFromIntent(intent);
         // Passes null intent here to mimic not having incognito extra in intent at the connection.
         mCustomTabActivityTestRule.buildSessionWithHiddenTab(token);
-        Assert.assertTrue(connection.mayLaunchUrl(token, Uri.parse(mTestPage), null, null));
+        Assert.assertTrue(
+                connection.mayLaunchUrl(
+                        token.getSessionAsCustomTab(), Uri.parse(mTestPage), null, null));
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
@@ -527,7 +539,7 @@ public class CustomTabActivityIncognitoTest {
                 connection.getSpeculationParamsForTesting().hiddenTab.tab, mTestPage);
         mCustomTabActivityTestRule.setCustomSessionInitiatedForIntent();
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-        connection.cleanUpSession(token);
+        connection.cleanUpSession(token.getSessionAsCustomTab());
     }
 
     /** Regression test for crbug.com/1325331. */

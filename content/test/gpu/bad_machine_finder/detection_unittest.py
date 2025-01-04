@@ -544,6 +544,10 @@ class IndependentEventHelpersUnittest(unittest.TestCase):
     # Equivalent to flipping two coins and getting zero heads.
     self.assertEqual(func(decimal.Decimal(0.5), 2, 0), decimal.Decimal(0.25))
 
+    # Make sure that this is special-cased since Decimal(0)**0 is an error.
+    self.assertEqual(func(decimal.Decimal(0), 2, 1), decimal.Decimal(0))
+    self.assertEqual(func(decimal.Decimal(0), 2, 0), decimal.Decimal(1))
+
   def testChanceOfNOrMoreIndependentEvents(self):
     """Tests behavior of the N+ independent events helper."""
     # pylint: disable=protected-access

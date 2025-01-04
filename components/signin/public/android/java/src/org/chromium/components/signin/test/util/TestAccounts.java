@@ -63,13 +63,15 @@ public class TestAccounts {
             new AccountInfo.Builder(
                             "test.noname@gmail.com",
                             FakeAccountManagerFacade.toGaiaId("test.noname@gmail.com"))
+                    .fullName(null)
+                    .givenName(null)
                     .build();
 
     /**
      * To be used in test cases where we want to test Signin flows for accounts that don't have a
      * displayable email.
      */
-    public static final AccountInfo TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL =
+    public static final AccountInfo CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL =
             new AccountInfo.Builder(
                             generateChildEmail("test@gmail.com"),
                             FakeAccountManagerFacade.toGaiaId("test@gmail.com"))
@@ -136,6 +138,17 @@ public class TestAccounts {
      * determined
      */
     public static final AccountInfo AADC_UNRESOLVED_ACCOUNT = ACCOUNT1;
+
+    /* An enterprise managed account with a hosted domain specified. */
+    public static final AccountInfo MANAGED_ACCOUNT =
+            new AccountInfo.Builder(
+                            "test@example.com",
+                            FakeAccountManagerFacade.toGaiaId("test@example.com"))
+                    .fullName("Managed Full")
+                    .givenName("Managed Given")
+                    .hostedDomain("example.com")
+                    .accountImage(createAvatar())
+                    .build();
 
     /**
      * Creates an email used to identify child accounts in tests. A child-specific prefix will be

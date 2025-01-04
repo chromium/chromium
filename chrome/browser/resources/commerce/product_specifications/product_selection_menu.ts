@@ -193,6 +193,10 @@ export class ProductSelectionMenuElement extends PolymerElement {
       boolean {
     return forNewColumn && isTableFull;
   }
+
+  private isLastSection_(sections: MenuSection[], sectionIndex: number) {
+    return sections && sectionIndex === sections.length - 1;
+  }
 }
 
 declare global {

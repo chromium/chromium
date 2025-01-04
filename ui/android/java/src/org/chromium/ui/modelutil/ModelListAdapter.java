@@ -10,9 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
@@ -37,6 +38,7 @@ import java.util.Collection;
  * Additionally, ModelListAdapter will hook up a {@link PropertyModelChangeProcessor} when binding
  * views to ensure that changes to the PropertyModel for that list item are bound to the view.
  */
+@NullMarked
 public class ModelListAdapter extends BaseAdapter implements MVCListAdapter {
     private final ModelList mModelList;
     private final SparseArray<Pair<ViewBuilder, ViewBinder>> mViewBuilderMap = new SparseArray<>();

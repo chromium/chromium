@@ -7,6 +7,9 @@ package org.chromium.media;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * This class implements a factory of Android Video Capture objects for Chrome. Cameras are
  * identified by |id|. Video Capture objects allocated via createVideoCapture() are explicitly owned
@@ -14,6 +17,7 @@ import org.jni_zero.JNINamespace;
  */
 @JNINamespace("media")
 @SuppressWarnings("deprecation")
+@NullMarked
 class VideoCaptureFactory {
     @CalledByNative
     static boolean isLegacyOrDeprecatedDevice(int id) {
@@ -59,7 +63,7 @@ class VideoCaptureFactory {
     }
 
     @CalledByNative
-    static String getDeviceId(int index) {
+    static @Nullable String getDeviceId(int index) {
         if (isLegacyOrDeprecatedDevice(index)) {
             return VideoCaptureCamera.getDeviceId(index);
         }
@@ -67,7 +71,7 @@ class VideoCaptureFactory {
     }
 
     @CalledByNative
-    static String getDeviceName(int index) {
+    static @Nullable String getDeviceName(int index) {
         if (isLegacyOrDeprecatedDevice(index)) {
             return VideoCaptureCamera.getName(index);
         }
@@ -75,7 +79,7 @@ class VideoCaptureFactory {
     }
 
     @CalledByNative
-    static VideoCaptureFormat[] getDeviceSupportedFormats(int index) {
+    static VideoCaptureFormat @Nullable [] getDeviceSupportedFormats(int index) {
         if (isLegacyOrDeprecatedDevice(index)) {
             return VideoCaptureCamera.getDeviceSupportedFormats(index);
         }

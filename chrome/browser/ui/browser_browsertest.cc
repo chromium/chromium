@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/browser.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <string>
 
@@ -199,8 +195,9 @@ const base::FilePath::CharType* kTitle2File = FILE_PATH_LITERAL("title2.html");
 std::u16string WindowCaptionFromPageTitle(const std::u16string& page_title) {
 #if BUILDFLAG(IS_MAC)
   // On Mac, we don't want to suffix the page title with the application name.
-  if (page_title.empty())
+  if (page_title.empty()) {
     return l10n_util::GetStringUTF16(IDS_BROWSER_WINDOW_MAC_TAB_UNTITLED);
+  }
   return page_title;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   // On Lacros, we don't want to suffix the page title with the application
@@ -210,8 +207,9 @@ std::u16string WindowCaptionFromPageTitle(const std::u16string& page_title) {
   }
   return page_title;
 #else
-  if (page_title.empty())
+  if (page_title.empty()) {
     return l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
+  }
 
   return l10n_util::GetStringFUTF16(IDS_BROWSER_WINDOW_TITLE_FORMAT,
                                     page_title);
@@ -223,8 +221,9 @@ int CountRenderProcessHosts() {
   int result = 0;
   for (content::RenderProcessHost::iterator i(
            content::RenderProcessHost::AllHostsIterator());
-       !i.IsAtEnd(); i.Advance())
+       !i.IsAtEnd(); i.Advance()) {
     ++result;
+  }
   return result;
 }
 
@@ -238,13 +237,16 @@ class TabClosingObserver : public TabStripModelObserver {
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override {
-    if (change.type() != TabStripModelChange::kRemoved)
+    if (change.type() != TabStripModelChange::kRemoved) {
       return;
+    }
 
     auto* remove = change.GetRemove();
     for (const auto& contents : remove->contents) {
-      if (contents.remove_reason == TabStripModelChange::RemoveReason::kDeleted)
+      if (contents.remove_reason ==
+          TabStripModelChange::RemoveReason::kDeleted) {
         closing_count_ += 1;
+      }
     }
   }
 
@@ -310,8 +312,9 @@ class RenderViewSizeObserver : public content::WebContentsObserver {
   }
 
   void Resize() {
-    if (wcv_resize_insets_.IsEmpty())
+    if (wcv_resize_insets_.IsEmpty()) {
       return;
+    }
     // Resizing the main browser window by |wcv_resize_insets_| will
     // automatically resize the WebContentsView by the same amount.
     // Just resizing WebContentsView directly doesn't work on Linux, because the
@@ -395,8 +398,9 @@ class BrowserTest : public extensions::ExtensionBrowserTest,
         extensions::ExtensionRegistry::Get(browser()->profile());
     for (const scoped_refptr<const extensions::Extension>& extension :
          registry->enabled_extensions()) {
-      if (extension->name() == "App Test")
+      if (extension->name() == "App Test") {
         return extension.get();
+      }
     }
     NOTREACHED();
   }
@@ -1104,10 +1108,11 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, OtherRedirectsDontForkProcess) {
   // site-per-process mode is enabled or not.
   content::RenderProcessHost* popup_process =
       newtab->GetPrimaryMainFrame()->GetProcess();
-  if (content::AreAllSitesIsolatedForTesting())
+  if (content::AreAllSitesIsolatedForTesting()) {
     EXPECT_NE(process, popup_process);
-  else
+  } else {
     EXPECT_EQ(process, popup_process);
+  }
 
   // Same thing if the current tab tries to navigate itself.
   std::string navigate_str = "document.location=\"";
@@ -1443,8 +1448,9 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, RestorePinnedTabs) {
 // This test verifies we don't crash when closing the last window and the app
 // menu is showing.
 IN_PROC_BROWSER_TEST_F(BrowserTest, MAYBE_CloseWithAppMenuOpen) {
-  if (browser_defaults::kBrowserAliveWithNoWindows)
+  if (browser_defaults::kBrowserAliveWithNoWindows) {
     return;
+  }
 
   // We need a message loop running for menus on windows.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -1484,8 +1490,9 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, OpenAppWindowLikeNtp) {
   // Find the new browser.
   Browser* new_browser = nullptr;
   for (Browser* b : *BrowserList::GetInstance()) {
-    if (b != browser())
+    if (b != browser()) {
       new_browser = b;
+    }
   }
   ASSERT_TRUE(new_browser);
   ASSERT_TRUE(new_browser != browser());
@@ -1502,7 +1509,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, OpenAppWindowLikeNtp) {
 // Makes sure the browser doesn't crash when
 // set_show_state(ui::mojom::WindowShowState::kMaximized) has been invoked.
 IN_PROC_BROWSER_TEST_F(BrowserTest, StartMaximized) {
-  Browser::CreateParams params[] = {
+  auto params = std::to_array<Browser::CreateParams>({
       Browser::CreateParams(Browser::TYPE_NORMAL, browser()->profile(), true),
       Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true),
       Browser::CreateParams::CreateForApp("app_name", true, gfx::Rect(),
@@ -1512,10 +1519,10 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, StartMaximized) {
                                                browser()->profile(), true),
       Browser::CreateParams(Browser::TYPE_PICTURE_IN_PICTURE,
                             browser()->profile(), true),
-  };
-  for (size_t i = 0; i < std::size(params); ++i) {
-    params[i].initial_show_state = ui::mojom::WindowShowState::kMaximized;
-    AddBlankTabAndShow(Browser::Create(params[i]));
+  });
+  for (auto& param : params) {
+    param.initial_show_state = ui::mojom::WindowShowState::kMaximized;
+    AddBlankTabAndShow(Browser::Create(param));
   }
 }
 
@@ -1528,7 +1535,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, StartMaximized) {
 // Makes sure the browser doesn't crash when
 // set_show_state(ui::mojom::WindowShowState::kMinimized) has been invoked.
 IN_PROC_BROWSER_TEST_F(BrowserTest, MAYBE_StartMinimized) {
-  Browser::CreateParams params[] = {
+  auto params = std::to_array<Browser::CreateParams>({
       Browser::CreateParams(Browser::TYPE_NORMAL, browser()->profile(), true),
       Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true),
       Browser::CreateParams::CreateForApp("app_name", true, gfx::Rect(),
@@ -1538,10 +1545,10 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, MAYBE_StartMinimized) {
                                                browser()->profile(), true),
       Browser::CreateParams(Browser::TYPE_PICTURE_IN_PICTURE,
                             browser()->profile(), true),
-  };
-  for (size_t i = 0; i < std::size(params); ++i) {
-    params[i].initial_show_state = ui::mojom::WindowShowState::kMinimized;
-    AddBlankTabAndShow(Browser::Create(params[i]));
+  });
+  for (auto& param : params) {
+    param.initial_show_state = ui::mojom::WindowShowState::kMinimized;
+    AddBlankTabAndShow(Browser::Create(param));
   }
 }
 
@@ -2944,8 +2951,9 @@ IN_PROC_BROWSER_TEST_F(
   embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
       [&](const net::test_server::HttpRequest& request)
           -> std::unique_ptr<net::test_server::HttpResponse> {
-        if (request.relative_url != "/sometimes-slow")
+        if (request.relative_url != "/sometimes-slow") {
           return nullptr;
+        }
         DCHECK(got_slow_request)
             << "Set `got_slow_request` before each navigation request.";
         return std::make_unique<content::SlowHttpResponse>(
@@ -3021,8 +3029,9 @@ IN_PROC_BROWSER_TEST_F(
   embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
       [&](const net::test_server::HttpRequest& request)
           -> std::unique_ptr<net::test_server::HttpResponse> {
-        if (request.relative_url != "/sometimes-slow")
+        if (request.relative_url != "/sometimes-slow") {
           return nullptr;
+        }
         DCHECK(got_slow_request)
             << "Set `got_slow_request` before each navigation request.";
         return std::make_unique<content::SlowHttpResponse>(

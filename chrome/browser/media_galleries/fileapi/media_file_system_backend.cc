@@ -149,8 +149,7 @@ MediaFileSystemBackend::MediaFileSystemBackend(
 {
 }
 
-MediaFileSystemBackend::~MediaFileSystemBackend() {
-}
+MediaFileSystemBackend::~MediaFileSystemBackend() = default;
 
 // static
 void MediaFileSystemBackend::AssertCurrentlyOnMediaSequence() {

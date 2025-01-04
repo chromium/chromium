@@ -8,6 +8,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/blink_buildflags.h"
@@ -23,7 +24,8 @@
 namespace download {
 
 // Struct that contains information about successfully completed downloads.
-struct CompletionInfo {
+struct COMPONENT_EXPORT(COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE)
+    CompletionInfo {
   // The file path for the download file. In incognito mode, use |blob_handle_|
   // to retrieve data.
   base::FilePath path;
@@ -68,7 +70,8 @@ struct CompletionInfo {
 };
 
 // Struct to describe general download status.
-struct DownloadMetaData {
+struct COMPONENT_EXPORT(COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE)
+    DownloadMetaData {
   // The GUID of the download.
   std::string guid;
 

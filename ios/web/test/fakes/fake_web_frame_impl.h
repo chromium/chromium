@@ -23,15 +23,13 @@ class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
  public:
   FakeWebFrameImpl(const std::string& frame_id,
                    bool is_main_frame,
-                   url::Origin security_origin,
-                   const GURL& security_origin_gurl);
+                   url::Origin security_origin);
 
   // WebFrame:
   WebFrameInternal* GetWebFrameInternal() override;
   std::string GetFrameId() const override;
   bool IsMainFrame() const override;
   url::Origin GetSecurityOrigin() const override;
-  GURL GetSecurityOriginDeprecated() const override;
   BrowserState* GetBrowserState() override;
   bool CallJavaScriptFunction(const std::string& name,
                               const base::Value::List& parameters) override;
@@ -104,7 +102,6 @@ class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
   // Whether or not the receiver represents the main frame.
   bool is_main_frame_ = false;
   // The security origin associated with this frame.
-  GURL security_origin_gurl_;
   url::Origin security_origin_;
   // Vector holding history of all javascript handler calls made in this frame.
   // The calls are sorted with the most recent appended at the end.

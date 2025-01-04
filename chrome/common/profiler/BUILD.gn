@@ -8,10 +8,10 @@ source_set("profiler") {
   public = [
     "chrome_thread_group_profiler_client.h",
     "chrome_thread_profiler_client.h",
+    "core_unwinders.h",
     "main_thread_stack_sampling_profiler.h",
     "process_type.h",
     "thread_profiler_configuration.h",
-    "unwind_util.h",
   ]
 
   sources = [
@@ -22,7 +22,6 @@ source_set("profiler") {
     "thread_profiler_configuration.cc",
     "thread_profiler_platform_configuration.cc",
     "thread_profiler_platform_configuration.h",
-    "unwind_util.cc",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -44,11 +43,17 @@ source_set("profiler") {
 
   if (is_android) {
     deps += [
+      "//base:native_unwinder_android",
       "//chrome/android/features/stack_unwinder/public:native",
       "//chrome/android/modules/stack_unwinder/public:module",
     ]
     public += [ "native_unwinder_android_map_delegate_impl.h" ]
-    sources += [ "native_unwinder_android_map_delegate_impl.cc" ]
+    sources += [
+      "core_unwinders_android.cc",
+      "native_unwinder_android_map_delegate_impl.cc",
+    ]
+  } else {
+    sources += [ "core_unwinders.cc" ]
   }
 
   if (enable_extensions) {
@@ -64,7 +69,6 @@ source_set("unit_tests") {
   sources = [
     "process_type_unittest.cc",
     "thread_profiler_platform_configuration_unittest.cc",
-    "unwind_util_unittest.cc",
   ]
 
   deps = [
@@ -80,6 +84,10 @@ source_set("unit_tests") {
     "//content/public/common",
     "//extensions/buildflags",
   ]
+
+  if (is_android) {
+    sources += [ "core_unwinders_android_unittest.cc" ]
+  }
 
   if (enable_extensions) {
     deps += [ "//extensions/common:common" ]

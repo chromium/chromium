@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/webui/commerce/commerce_internals_ui_config.h"
 #include "chrome/browser/ui/webui/components/components_ui.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
-#include "chrome/browser/ui/webui/crashes_ui.h"
+#include "chrome/browser/ui/webui/crashes/crashes_ui.h"
 #include "chrome/browser/ui/webui/data_sharing_internals/data_sharing_internals_ui.h"
 #include "chrome/browser/ui/webui/device_log/device_log_ui.h"
 #include "chrome/browser/ui/webui/download_internals/download_internals_ui.h"
@@ -83,8 +83,10 @@
 #include "chrome/browser/ui/webui/feedback/feedback_ui.h"
 #include "chrome/browser/ui/webui/history/history_ui.h"
 #include "chrome/browser/ui/webui/identity_internals_ui.h"
-#include "chrome/browser/ui/webui/inspect_ui.h"
+#include "chrome/browser/ui/webui/inspect/inspect_ui.h"
+#if BUILDFLAG(ENABLE_SESSION_SERVICE)
 #include "chrome/browser/ui/webui/internals/internals_ui.h"
+#endif  // BUILDFLAG(ENABLE_SESSION_SERVICE)
 #include "chrome/browser/ui/webui/management/management_ui.h"
 #include "chrome/browser/ui/webui/media_router/media_router_internals_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
@@ -106,12 +108,12 @@
 #include "chrome/browser/ui/webui/support_tool/support_tool_ui.h"
 #include "chrome/browser/ui/webui/system/system_info_ui.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
+#include "chrome/browser/ui/webui/user_education_internals/user_education_internals_ui.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals_ui.h"
 #include "chrome/browser/ui/webui/webui_gallery/webui_gallery_ui.h"
 #include "chrome/browser/ui/webui/webui_js_error/webui_js_error_ui.h"
 #else  // !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/feed_internals/feed_internals_ui.h"
-#include "chrome/browser/ui/webui/offline/offline_internals_ui.h"
 #include "chrome/browser/ui/webui/webapks/webapks_ui.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -272,7 +274,6 @@ void RegisterChromeWebUIConfigs() {
 
 #if BUILDFLAG(IS_ANDROID)
   map.AddWebUIConfig(std::make_unique<FeedInternalsUIConfig>());
-  map.AddWebUIConfig(std::make_unique<OfflineInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<WebApksUIConfig>());
 #else  // BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -292,7 +293,9 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<HistoryClustersSidePanelUIConfig>());
   map.AddWebUIConfig(std::make_unique<IdentityInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<InspectUIConfig>());
+#if BUILDFLAG(ENABLE_SESSION_SERVICE)
   map.AddWebUIConfig(std::make_unique<InternalsUIConfig>());
+#endif  // BUILDFLAG(ENABLE_SESSION_SERVICE)
   map.AddWebUIConfig(std::make_unique<ManagementUIConfig>());
   map.AddWebUIConfig(
       std::make_unique<media_router::MediaRouterInternalsUIConfig>());
@@ -316,6 +319,7 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<SystemInfoUIConfig>());
   map.AddWebUIConfig(std::make_unique<TabSearchUIConfig>());
   map.AddWebUIConfig(std::make_unique<TermsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<UserEducationInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<WebAppInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<WebuiGalleryUIConfig>());
   map.AddWebUIConfig(std::make_unique<WebUIJsErrorUIConfig>());

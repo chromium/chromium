@@ -145,8 +145,9 @@ void ToolbarIconContainerView::AddMainItem(views::View* item) {
   DCHECK(!main_item_);
   main_item_ = item;
   auto* const main_button = views::Button::AsButton(item);
-  if (main_button)
+  if (main_button) {
     ObserveButton(main_button);
+  }
 
   AddChildView(main_item_.get());
 }
@@ -174,28 +175,34 @@ void ToolbarIconContainerView::RemoveObserver(const Observer* obs) {
 }
 
 bool ToolbarIconContainerView::GetHighlighted() const {
-  if (!uses_highlight_)
+  if (!uses_highlight_) {
     return false;
+  }
 
-  if (IsMouseHovered() && (!main_item_ || !main_item_->IsMouseHovered()))
+  if (IsMouseHovered() && (!main_item_ || !main_item_->IsMouseHovered())) {
     return true;
+  }
 
   // Focused, pressed or hovered children should trigger the highlight.
   for (const views::View* child : children()) {
-    if (child == main_item_)
+    if (child == main_item_) {
       continue;
-    if (child->HasFocus())
+    }
+    if (child->HasFocus()) {
       return true;
+    }
     const views::Button* button = views::Button::AsButton(child);
-    if (!button)
+    if (!button) {
       continue;
+    }
     if (button->GetState() == views::Button::ButtonState::STATE_PRESSED ||
         button->GetState() == views::Button::ButtonState::STATE_HOVERED) {
       return true;
     }
     // The container should also be highlighted if a dialog is anchored to.
-    if (base::Contains(highlighted_buttons_, button))
+    if (base::Contains(highlighted_buttons_, button)) {
       return true;
+    }
   }
 
   return false;
@@ -262,17 +269,19 @@ void ToolbarIconContainerView::UpdateHighlight() {
   bool showing_before = border_.layer()->GetTargetOpacity() == 1;
   border_.layer()->SetOpacity(GetHighlighted() ? 1 : 0);
 
-  if (showing_before == (border_.layer()->GetTargetOpacity() == 1))
+  if (showing_before == (border_.layer()->GetTargetOpacity() == 1)) {
     return;
+  }
   observers_.Notify(&Observer::OnHighlightChanged);
 }
 
 void ToolbarIconContainerView::OnButtonHighlightedChanged(
     views::Button* button) {
-  if (views::InkDrop::Get(button)->GetHighlighted())
+  if (views::InkDrop::Get(button)->GetHighlighted()) {
     highlighted_buttons_.insert(button);
-  else
+  } else {
     highlighted_buttons_.erase(button);
+  }
 
   UpdateHighlight();
 }

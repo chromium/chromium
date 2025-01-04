@@ -139,10 +139,10 @@ namespace {
 bool IsPseudoElementWithUAStyle(PseudoId pseudo_id) {
   switch (pseudo_id) {
     case kPseudoIdMarker:
-    case kPseudoIdScrollUpButton:
-    case kPseudoIdScrollDownButton:
-    case kPseudoIdScrollLeftButton:
-    case kPseudoIdScrollRightButton:
+    case kPseudoIdScrollButtonBlockStart:
+    case kPseudoIdScrollButtonBlockEnd:
+    case kPseudoIdScrollButtonInlineStart:
+    case kPseudoIdScrollButtonInlineEnd:
       return true;
     default:
       return false;
@@ -1211,8 +1211,6 @@ const ComputedStyle* StyleResolver::ResolveStyle(
   DCHECK(GetDocument().GetFrame());
   DCHECK(GetDocument().GetSettings());
 
-  SelectorFilterParentScope::EnsureParentStackIsPushed();
-
   // The StyleResolverState is where we actually end up accumulating the
   // computed style. It's just a convenient way of not having to send
   // a lot of input/output variables around between the different functions.
@@ -1319,8 +1317,7 @@ void StyleResolver::InitStyle(Element& element,
     // the element has rules but no matched properties, we currently clone.
     state.SetStyle(*parent_style);
 
-    // Highlight Pseudos do not support custom properties defined on the
-    // pseudo itself. They may use var() references but those must be resolved
+    // Highlight Pseudos may use var() references but those must be resolved
     // against the originating element. Share the variables from the originating
     // style.
     state.StyleBuilder().CopyInheritedVariablesFrom(
@@ -1496,11 +1493,7 @@ bool CanApplyInlineStyleIncrementally(Element* element,
 
   const CSSPropertyValueSet* inline_style = element->InlineStyle();
   if (inline_style) {
-    int num_properties = inline_style->PropertyCount();
-    for (int property_idx = 0; property_idx < num_properties; ++property_idx) {
-      CSSPropertyValueSet::PropertyReference property =
-          inline_style->PropertyAt(property_idx);
-
+    for (const CSSPropertyValue& property : inline_style->Properties()) {
       // If a script mutated inline style properties that are not idempotent,
       // we would not normally even reach this path (we wouldn't get a changed
       // signal saying “inline incremental style modified”, just “style
@@ -1508,7 +1501,7 @@ bool CanApplyInlineStyleIncrementally(Element* element,
       // _before_ this calculation, and their continued existence blocks us from
       // reusing the style (because e.g. the StyleAdjuster is not necessarily
       // idempotent in such cases).
-      if (!CSSProperty::Get(property.Id()).IsIdempotent()) {
+      if (!CSSProperty::Get(property.PropertyID()).IsIdempotent()) {
         return false;
       }
 
@@ -1822,11 +1815,7 @@ void StyleResolver::ApplyBaseStyle(
 
     const CSSPropertyValueSet* inline_style = element->InlineStyle();
     if (inline_style) {
-      int num_properties = inline_style->PropertyCount();
-      for (int property_idx = 0; property_idx < num_properties;
-           ++property_idx) {
-        CSSPropertyValueSet::PropertyReference property =
-            inline_style->PropertyAt(property_idx);
+      for (const CSSPropertyValue& property : inline_style->Properties()) {
         StyleBuilder::ApplyProperty(
             property.Name(), state,
             property.Value().EnsureScopedValue(&GetDocument()));
@@ -1980,17 +1969,17 @@ const ComputedStyle* StyleResolver::StyleForPage(uint32_t page_index,
     return InitialStyleForElement();
   }
   DCHECK(!GetDocument().NeedsLayoutTreeUpdateForNode(*root_element));
-  const ComputedStyle* parent_style = root_element->EnsureComputedStyle();
-  StyleResolverState state(GetDocument(), *root_element,
-                           nullptr /* StyleRecalcContext */,
-                           StyleRequest(parent_style));
-  state.CreateNewStyle(*InitialStyleForElement(), *parent_style);
-
-  if (parent_style->Display() == EDisplay::kNone) {
+  const ComputedStyle* parent_style =
+      ComputedStyle::NullifyEnsured(root_element->GetComputedStyle());
+  if (!parent_style) {
     // The root is display:none. One page box will still be created, but no
     // properties should apply.
     return InitialStyleForElement();
   }
+  StyleResolverState state(GetDocument(), *root_element,
+                           nullptr /* StyleRecalcContext */,
+                           StyleRequest(parent_style));
+  state.CreateNewStyle(*InitialStyleForElement(), *parent_style);
 
   auto& builder = state.StyleBuilder();
   // Page boxes are blocks.

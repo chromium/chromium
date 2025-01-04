@@ -23,6 +23,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {
@@ -52,7 +53,7 @@ class ArcEnterpriseReportingServiceTest : public testing::Test {
     profile_ = profile_manager_->CreateTestingProfile(kTestProfileName);
 
     const auto account_id = AccountId::FromUserEmailGaiaId(
-        profile_->GetProfileUserName(), kTestGaiaId);
+        profile_->GetProfileUserName(), GaiaId(kTestGaiaId));
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
 

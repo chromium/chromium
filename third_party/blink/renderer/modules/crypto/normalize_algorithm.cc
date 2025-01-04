@@ -521,7 +521,7 @@ V8AlgorithmIdentifier* GetAlgorithmIdentifier(v8::Isolate* isolate,
   Dictionary dictionary;
   if (raw.Get(property_name, dictionary) && dictionary.IsObject()) {
     return MakeGarbageCollected<V8AlgorithmIdentifier>(
-        ScriptValue(isolate, dictionary.V8Value()));
+        ScriptObject(isolate, dictionary.V8Value().As<v8::Object>()));
   }
 
   std::optional<String> algorithm_name =
@@ -1158,7 +1158,7 @@ bool ParseAlgorithmIdentifier(v8::Isolate* isolate,
   }
 
   // Get the name of the algorithm from the AlgorithmIdentifier.
-  Dictionary params(isolate, raw.GetAsObject().V8Value(), exception_state);
+  Dictionary params(raw.GetAsObject());
   if (exception_state.HadException()) {
     return false;
   }

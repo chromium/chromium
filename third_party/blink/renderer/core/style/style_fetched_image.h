@@ -104,6 +104,7 @@ class CORE_EXPORT StyleFetchedImage final : public StyleImage,
   // ImageResourceObserver overrides
   void ImageNotifyFinished(ImageResourceContent*) override;
   bool GetImageAnimationPolicy(mojom::blink::ImageAnimationPolicy&) override;
+  bool CanBeSpeculativelyDecoded() const override;
 
   Member<ImageResourceContent> image_;
   Member<const Document> document_;

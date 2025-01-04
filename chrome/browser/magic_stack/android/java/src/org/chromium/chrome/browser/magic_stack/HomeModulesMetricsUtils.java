@@ -5,10 +5,14 @@
 package org.chromium.chrome.browser.magic_stack;
 
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.AUXILIARY_SEARCH;
-import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.EDUCATIONAL_TIP;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEFAULT_BROWSER_PROMO;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEPRECATED_EDUCATIONAL_TIP;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PRICE_CHANGE;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.QUICK_DELETE;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SAFETY_HUB;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SINGLE_TAB;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_SYNC;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_RESUMPTION;
 
 import androidx.annotation.VisibleForTesting;
@@ -19,12 +23,19 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 
-/** The utility class for magic stack. */
+import java.util.HashSet;
+
+/** The utility class for logging the magic stack's metrics. */
 public class HomeModulesMetricsUtils {
-    @VisibleForTesting static final String HISTOGRAM_PREFIX = "MagicStack.Clank.NewTabPage";
+    @VisibleForTesting public static final String HISTOGRAM_PREFIX = "MagicStack.Clank.NewTabPage";
+    @VisibleForTesting public static final String HISTOGRAM_MAGIC_STACK_MODULE = ".Module.";
+
+    @VisibleForTesting
+    public static final String HISTOGRAM_MAGIC_STACK_MODULE_IMPRESSION_WITH_POSITION =
+            ".Impression";
+
     @VisibleForTesting static final String HISTOGRAM_OS_PREFIX = "MagicStack.Clank.";
     @VisibleForTesting static final String HISTOGRAM_MAGIC_STACK_MODULE_CLICK = ".Module.Click";
-    @VisibleForTesting static final String HISTOGRAM_MAGIC_STACK_MODULE = ".Module.";
     @VisibleForTesting static final String HISTOGRAM_MAGIC_STACK_HOST_SURFACE_REGULAR = ".Regular";
     @VisibleForTesting static final String HISTOGRAM_MAGIC_STACK_HOST_SURFACE_STARTUP = ".Startup";
 
@@ -32,7 +43,6 @@ public class HomeModulesMetricsUtils {
     static final String HISTOGRAM_MAGIC_STACK_MODULE_CLICK_WITH_POSITION = ".Click";
 
     @VisibleForTesting static final String HISTOGRAM_MAGIC_STACK_MODULE_BUILD = ".Build";
-    static final String HISTOGRAM_MAGIC_STACK_MODULE_IMPRESSION_WITH_POSITION = ".Impression";
 
     @VisibleForTesting
     static final String HISTOGRAM_MAGIC_STACK_MODULE_IMPRESSION = ".Module.TopImpressionV2";
@@ -85,17 +95,6 @@ public class HomeModulesMetricsUtils {
     @VisibleForTesting
     static final String HISTOGRAM_CONFIGURATION_TURN_OFF_MODULE = "Settings.TurnOffModule";
 
-    private static final String SINGLE_TAB_FRESHNESS_INPUT_CONTEXT = "single_tab_freshness";
-
-    private static final String PRICE_CHANGE_FRESHNESS_INPUT_CONTEXT = "price_change_freshness";
-
-    private static final String TAB_RESUMPTION_FRESHNESS_INPUT_CONTEXT = "tab_resumption_freshness";
-
-    private static final String SAFETY_HUB_FRESHNESS_INPUT_CONTEXT = "safety_hub_freshness";
-
-    private static final String AUXILIARY_SEARCH_FRESHNESS_INPUT_CONTEXT =
-            "auxiliary_search_freshness";
-
     /**
      * Returns a string name of a module. Remember to update the variant ModuleType in
      * tools/metrics/histograms/metadata/magic_stack/histograms.xml when adding a new module type
@@ -110,33 +109,20 @@ public class HomeModulesMetricsUtils {
                 return "TabResumption";
             case SAFETY_HUB:
                 return "SafetyHub";
-            case EDUCATIONAL_TIP:
+                // TODO:check if this is needed before submitting
+            case DEPRECATED_EDUCATIONAL_TIP:
+                assert false;
                 return "EducationalTip";
             case AUXILIARY_SEARCH:
                 return "AuxiliarySearch";
-            default:
-                assert false : "Module type not supported!";
-                return null;
-        }
-    }
-
-    /**
-     * Returns the freshness score key used by InputContext for the given module. Remember to update
-     * the variant ModuleType in tools/metrics/histograms/metadata/magic_stack/histograms.xml when
-     * adding a new module type
-     */
-    public static String getFreshnessInputContextString(@ModuleType int moduleType) {
-        switch (moduleType) {
-            case SINGLE_TAB:
-                return SINGLE_TAB_FRESHNESS_INPUT_CONTEXT;
-            case PRICE_CHANGE:
-                return PRICE_CHANGE_FRESHNESS_INPUT_CONTEXT;
-            case TAB_RESUMPTION:
-                return TAB_RESUMPTION_FRESHNESS_INPUT_CONTEXT;
-            case SAFETY_HUB:
-                return SAFETY_HUB_FRESHNESS_INPUT_CONTEXT;
-            case AUXILIARY_SEARCH:
-                return AUXILIARY_SEARCH_FRESHNESS_INPUT_CONTEXT;
+            case DEFAULT_BROWSER_PROMO:
+                return "DefaultBrowserPromo";
+            case TAB_GROUP:
+                return "TabGroupPromo";
+            case TAB_GROUP_SYNC:
+                return "TabGroupSyncPromo";
+            case QUICK_DELETE:
+                return "QuickDeletePromo";
             default:
                 assert false : "Module type not supported!";
                 return null;
@@ -146,21 +132,39 @@ public class HomeModulesMetricsUtils {
     public static Integer convertLabelToModuleType(String label) {
         switch (label) {
             case "SingleTab":
-                return ModuleType.SINGLE_TAB;
+                return SINGLE_TAB;
             case "PriceChange":
-                return ModuleType.PRICE_CHANGE;
+                return PRICE_CHANGE;
             case "TabResumption":
-                return ModuleType.TAB_RESUMPTION;
+                return TAB_RESUMPTION;
             case "SafetyHub":
-                return ModuleType.SAFETY_HUB;
-            case "EducationalTip":
-                return ModuleType.EDUCATIONAL_TIP;
+                return SAFETY_HUB;
             case "AuxiliarySearch":
                 return AUXILIARY_SEARCH;
+            case "DefaultBrowserPromo":
+                return DEFAULT_BROWSER_PROMO;
+            case "TabGroupPromo":
+                return TAB_GROUP;
+            case "TabGroupSyncPromo":
+                return TAB_GROUP_SYNC;
+            case "QuickDeletePromo":
+                return QUICK_DELETE;
             default:
                 assert false : "Module type not supported!";
                 return ModuleType.NUM_ENTRIES;
         }
+    }
+
+    /** Returns a list of all modules that are not deprecated. */
+    static HashSet<Integer> getAllActiveModulesForTesting() {
+        HashSet<Integer> set = new HashSet<>();
+        for (@ModuleType int moduleType = 0; moduleType < ModuleType.NUM_ENTRIES; moduleType++) {
+            if (moduleType == DEPRECATED_EDUCATIONAL_TIP) {
+                continue;
+            }
+            set.add(moduleType);
+        }
+        return set;
     }
 
     /**

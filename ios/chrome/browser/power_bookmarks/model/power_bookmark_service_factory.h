@@ -5,39 +5,29 @@
 #ifndef IOS_CHROME_BROWSER_POWER_BOOKMARKS_MODEL_POWER_BOOKMARK_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_POWER_BOOKMARKS_MODEL_POWER_BOOKMARK_SERVICE_FACTORY_H_
 
-#import "base/memory/singleton.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-
-class ProfileIOS;
+#import "base/no_destructor.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace power_bookmarks {
 class PowerBookmarkService;
 }
 
 // Factory to create one PowerBookmarkService per profile.
-class PowerBookmarkServiceFactory : public BrowserStateKeyedServiceFactory {
+class PowerBookmarkServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static power_bookmarks::PowerBookmarkService* GetForProfile(
       ProfileIOS* profile);
   static PowerBookmarkServiceFactory* GetInstance();
 
-  PowerBookmarkServiceFactory(const PowerBookmarkServiceFactory&) = delete;
-  PowerBookmarkServiceFactory& operator=(const PowerBookmarkServiceFactory&) =
-      delete;
-
  private:
-  friend struct base::DefaultSingletonTraits<PowerBookmarkServiceFactory>;
+  friend class base::NoDestructor<PowerBookmarkServiceFactory>;
 
   PowerBookmarkServiceFactory();
   ~PowerBookmarkServiceFactory() override;
 
-  // BrowserContextKeyedServiceFactory:
+  // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* state) const override;
-  web::BrowserState* GetBrowserStateToUse(
-      web::BrowserState* state) const override;
-  bool ServiceIsCreatedWithBrowserState() const override;
-  bool ServiceIsNULLWhileTesting() const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_POWER_BOOKMARKS_MODEL_POWER_BOOKMARK_SERVICE_FACTORY_H_

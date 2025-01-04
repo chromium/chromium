@@ -7,7 +7,6 @@
 
 #include <string>
 
-
 namespace version_utils {
 namespace win {
 

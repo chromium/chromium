@@ -66,8 +66,10 @@ std::unique_ptr<views::View> CreateListItemView(size_t pos_in_set) {
 
 }  // namespace
 
-QuickInsertImageItemGridView::QuickInsertImageItemGridView(int grid_width)
-    : grid_width_(grid_width),
+QuickInsertImageItemGridView::QuickInsertImageItemGridView(int grid_width,
+                                                           bool has_top_margin)
+    : column_width_(
+          (grid_width - kImageGridPadding - kImageGridMargin.width()) / 2),
       focus_search_(std::make_unique<FocusSearch>(
           this,
           base::BindRepeating(&QuickInsertImageItemGridView::GetFocusableItems,
@@ -89,7 +91,11 @@ QuickInsertImageItemGridView::QuickInsertImageItemGridView(int grid_width)
       .AddRows(1, /*vertical_resize=*/views::TableLayout::kFixedSize,
                /*height=*/0);
 
-  SetProperty(views::kMarginsKey, kImageGridMargin);
+  gfx::Insets margins = kImageGridMargin;
+  if (!has_top_margin) {
+    margins.set_top(0);
+  }
+  SetProperty(views::kMarginsKey, margins);
 
   AddChildView(CreateImageGridColumn());
   AddChildView(CreateImageGridColumn());
@@ -189,6 +195,7 @@ QuickInsertImageItemView* QuickInsertImageItemGridView::AddImageItem(
       shortest_column
           ->AddChildView(CreateListItemView(focusable_items_.size() + 1))
           ->AddChildView(std::move(image_item));
+  new_item->FitToWidth(column_width_);
   focusable_items_.push_back(new_item);
 
   // Update the SetSize for all items.

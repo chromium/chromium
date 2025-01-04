@@ -15,10 +15,11 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_experiments.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/local_card_migration_metrics.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
@@ -26,8 +27,7 @@
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -161,7 +161,7 @@ void LocalCardMigrationManager::AttemptToOfferLocalCardMigration(
       base::BindOnce(&LocalCardMigrationManager::OnDidGetUploadDetails,
                      weak_ptr_factory_.GetWeakPtr(), is_from_settings_page),
       payments::kMigrateCardsBillableServiceNumber,
-      payments::GetBillingCustomerId(&payments_data_manager()),
+      payments::GetBillingCustomerId(payments_data_manager()),
       is_from_settings_page
           ? payments::UploadCardSource::LOCAL_CARD_MIGRATION_SETTINGS_PAGE
           : payments::UploadCardSource::LOCAL_CARD_MIGRATION_CHECKOUT_FLOW);
@@ -211,9 +211,8 @@ void LocalCardMigrationManager::OnUserDeletedLocalCardViaMigrationDialog(
 
 bool LocalCardMigrationManager::IsCreditCardMigrationEnabled() {
   return ::autofill::IsCreditCardMigrationEnabled(
-      client_->GetPersonalDataManager(), client_->GetSyncService(),
-      *client_->GetPrefs(),
-      /*is_test_mode=*/observer_for_testing_, client_->GetLogManager());
+      payments_data_manager(), client_->GetSyncService(), *client_->GetPrefs(),
+      /*is_test_mode=*/observer_for_testing_, client_->GetCurrentLogManager());
 }
 
 void LocalCardMigrationManager::OnDidGetUploadDetails(
@@ -370,7 +369,7 @@ void LocalCardMigrationManager::SendMigrateLocalCardsRequest() {
 
   migration_request_.app_locale = client_->GetAppLocale();
   migration_request_.billing_customer_number =
-      payments::GetBillingCustomerId(&payments_data_manager());
+      payments::GetBillingCustomerId(payments_data_manager());
   client_->GetPaymentsAutofillClient()
       ->GetPaymentsNetworkInterface()
       ->MigrateCards(
@@ -424,7 +423,7 @@ int LocalCardMigrationManager::GetDetectedValues() const {
 
   // Local card migration should ONLY be offered when the user already has a
   // Google Payments account.
-  DCHECK_NE(0, payments::GetBillingCustomerId(&payments_data_manager()));
+  DCHECK(payments::HasGooglePaymentsAccount(payments_data_manager()));
   detected_values |=
       CreditCardSaveManager::DetectedValue::HAS_GOOGLE_PAYMENTS_ACCOUNT;
 
@@ -432,14 +431,11 @@ int LocalCardMigrationManager::GetDetectedValues() const {
 }
 
 void LocalCardMigrationManager::GetMigratableCreditCards() {
-  std::vector<CreditCard*> local_credit_cards =
-      payments_data_manager().GetLocalCreditCards();
-
   // Empty previous state.
   migratable_credit_cards_.clear();
-
   // Initialize the local credit card list and queue for showing and uploading.
-  for (const CreditCard* credit_card : local_credit_cards) {
+  for (const CreditCard* credit_card :
+       payments_data_manager().GetLocalCreditCards()) {
     // If the card is valid (has a valid card number, expiration date, and is
     // not expired) and is not a server card, add it to the list of migratable
     // cards.

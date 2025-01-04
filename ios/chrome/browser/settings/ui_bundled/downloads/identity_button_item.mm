@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/downloads/identity_button_item.h"
 
+#import "ios/chrome/browser/authentication/ui_bundled/views/identity_button_control.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/identity_button_cell.h"
-#import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
 
 namespace {
 

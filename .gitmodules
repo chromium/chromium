@@ -212,10 +212,6 @@
 [submodule "third_party/devtools-frontend/src"]
 	path = third_party/devtools-frontend/src
 	url = https://chromium.googlesource.com/devtools/devtools-frontend
-[submodule "third_party/devtools-frontend-internal"]
-	path = third_party/devtools-frontend-internal
-	url = https://chrome-internal.googlesource.com/devtools/devtools-internal
-	gclient-condition = checkout_src_internal
 [submodule "third_party/dom_distiller_js/dist"]
 	path = third_party/dom_distiller_js/dist
 	url = https://chromium.googlesource.com/chromium/dom-distiller/dist
@@ -567,6 +563,9 @@
 [submodule "third_party/vulkan_memory_allocator"]
 	path = third_party/vulkan_memory_allocator
 	url = https://chromium.googlesource.com/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator
+[submodule "third_party/wasm_tts_engine/src"]
+	path = third_party/wasm_tts_engine/src
+	url = https://chromium.googlesource.com/chromium/wasm-tts-engine
 [submodule "third_party/wayland/src"]
 	path = third_party/wayland/src
 	url = https://chromium.googlesource.com/external/anongit.freedesktop.org/git/wayland/wayland
@@ -616,9 +615,6 @@
 [submodule "third_party/xnnpack/src"]
 	path = third_party/xnnpack/src
 	url = https://chromium.googlesource.com/external/github.com/google/XNNPACK
-[submodule "tools/page_cycler/acid3"]
-	path = tools/page_cycler/acid3
-	url = https://chromium.googlesource.com/chromium/deps/acid3
 [submodule "third_party/zstd/src"]
 	path = third_party/zstd/src
 	url = https://chromium.googlesource.com/external/github.com/facebook/zstd
@@ -837,10 +833,6 @@
 	path = skia/tools/clusterfuzz-data
 	url = https://chrome-internal.googlesource.com/chrome/tools/clusterfuzz-data
 	gclient-condition = checkout_clusterfuzz_data and checkout_src_internal
-[submodule "third_party/amd"]
-	path = third_party/amd
-	url = https://chrome-internal.googlesource.com/chrome/deps/amd
-	gclient-condition = checkout_win and checkout_src_internal
 [submodule "third_party/android_tools_internal"]
 	path = third_party/android_tools_internal
 	url = https://chrome-internal.googlesource.com/clank/third_party/android_tools

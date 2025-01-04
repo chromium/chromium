@@ -540,7 +540,7 @@ static Node getNodeFromSizeOfArrayExpr(
   clang::SourceManager& source_manager = *result.SourceManager;
 
   const auto* array_variable =
-      result.Nodes.getNodeAs<clang::VarDecl>("array_variable");
+      result.Nodes.getNodeAs<clang::VarDecl>("array_variable_rhs");
   const std::string& array_variable_as_string =
       array_variable->getNameAsString();
 
@@ -572,6 +572,7 @@ static Node getNodeFromSizeOfArrayExpr(
 
   Node n;
   n.replacement = replacement_directive;
+  n.is_deref_expr = true;
   return n;
 }
 
@@ -911,11 +912,13 @@ void InsertTrailingComma(const clang::InitListExpr* init_list_expr,
 // complexes, but they can be conservatively summarized by the need for extra
 // braces when the elements themselves are initialized with braces.
 bool CanElideBracesForStdArrayInitialization(
-    clang::QualType element_type,
-    const clang::InitListExpr* init_list_expr) {
-  for (unsigned int index = 0; index < init_list_expr->getNumInits(); ++index) {
-    const clang::Expr* expr = init_list_expr->getInit(index);
-    if (clang::dyn_cast_or_null<clang::InitListExpr>(expr)) {
+    const clang::InitListExpr* init_list_expr,
+    const clang::SourceManager& source_manager) {
+  // If the init list contains brace-enclosed elements, we can't always elide
+  // the braces.
+  for (const clang::Expr* expr : init_list_expr->inits()) {
+    const clang::SourceLocation& begin_loc = expr->getBeginLoc();
+    if (source_manager.getCharacterData(begin_loc)[0] == '{') {
       return false;
     }
   }
@@ -956,8 +959,8 @@ std::string RewriteStdArrayWithInitList(
     }
   }
 
-  const bool elide_braces = CanElideBracesForStdArrayInitialization(
-      array_type->getElementType(), init_list_expr);
+  const bool elide_braces =
+      CanElideBracesForStdArrayInitialization(init_list_expr, source_manager);
 
   return llvm::formatv(elide_braces ? "std::array<{0}, {1}> {2} = {3}"
                                     : "std::array<{0}, {1}> {2} = {{{3}}",
@@ -1150,6 +1153,12 @@ class PotentialNodes : public MatchFinder::MatchCallback {
       return getNodeFromCallToExternalFunction(result);
     }
 
+    if (const auto* sizeof_array_expr =
+            result.Nodes.getNodeAs<clang::UnaryExprOrTypeTraitExpr>(
+                "sizeof_array_expr")) {
+      return getNodeFromSizeOfArrayExpr(sizeof_array_expr, result);
+    }
+
     if (result.Nodes.getNodeAs<clang::VarDecl>("array_variable")) {
       return getNodeFromArrayType(result);
     }
@@ -1163,12 +1172,6 @@ class PotentialNodes : public MatchFinder::MatchCallback {
     if (auto* type_loc =
             result.Nodes.getNodeAs<clang::PointerTypeLoc>("rhs_type_loc")) {
       return getNodeFromPointerTypeLoc(type_loc, result);
-    }
-
-    if (const auto* sizeof_array_expr =
-            result.Nodes.getNodeAs<clang::UnaryExprOrTypeTraitExpr>(
-                "sizeof_array_expr")) {
-      return getNodeFromSizeOfArrayExpr(sizeof_array_expr, result);
     }
 
     if (auto* rhs_array_var =
@@ -1582,12 +1585,16 @@ class Spanifier {
             arraySubscriptExpr(hasLHS(declRefExpr(to(array_variable)))))));
     match_finder_.addMatcher(buffer_expr2, &potential_nodes_);
 
+    auto c_style_array_var = varDecl(hasType(arrayType()), unless(exclusions),
+                                     unless(hasExternalFormalLinkage()));
+
     // `sizeof(c_array)` is rewritten to
     // `std_array.size() * sizeof(element_size)`.
-    auto sizeof_array_expr =
-        traverse(clang::TK_IgnoreUnlessSpelledInSource,
-                 sizeOfExpr(has(declRefExpr(to(array_variable))))
-                     .bind("sizeof_array_expr"));
+    auto sizeof_array_expr = traverse(
+        clang::TK_IgnoreUnlessSpelledInSource,
+        sizeOfExpr(
+            has(declRefExpr(to(c_style_array_var.bind("array_variable_rhs")))))
+            .bind("sizeof_array_expr"));
     match_finder_.addMatcher(sizeof_array_expr, &potential_nodes_);
 
     auto deref_expression = traverse(
@@ -1633,8 +1640,7 @@ class Spanifier {
 
     // When passing c-style arrays to third_party functions as parameters, we
     // need to add `.data()` to extract the pointer and keep things compiling.
-    auto c_style_array_var = varDecl(hasType(arrayType()), unless(exclusions),
-                                     unless(hasExternalFormalLinkage()));
+    //
     // Functions that are annotated with UNSAFE_BUFFER_USAGE also get this
     // treatment because the annotation means it was left there intentionally.
     // And since they emit warnings we can easily find and spanify them later.

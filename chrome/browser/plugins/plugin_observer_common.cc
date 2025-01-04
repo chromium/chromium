@@ -14,7 +14,7 @@ bool CanOpenPdfUrl(content::RenderFrameHost* render_frame_host,
                    const GURL& last_committed_url,
                    content::Referrer* referrer) {
   if (!content::ChildProcessSecurityPolicy::GetInstance()->CanRequestURL(
-          render_frame_host->GetProcess()->GetID(), url)) {
+          render_frame_host->GetProcess()->GetDeprecatedID(), url)) {
     return false;
   }
 

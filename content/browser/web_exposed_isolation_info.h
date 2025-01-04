@@ -7,7 +7,9 @@
 
 #include <optional>
 
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "content/common/content_export.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
 #include "url/origin.h"
 
 namespace content {
@@ -91,6 +93,9 @@ class CONTENT_EXPORT WebExposedIsolationInfo {
   //
   // Origin comparisons determine ordering of isolated contexts.
   bool operator<(const WebExposedIsolationInfo& b) const;
+
+  using TraceProto = perfetto::protos::pbzero::WebExposedIsolationInfo;
+  void WriteIntoTrace(perfetto::TracedProto<TraceProto> proto) const;
 
  private:
   WebExposedIsolationInfo(const std::optional<url::Origin>& origin,

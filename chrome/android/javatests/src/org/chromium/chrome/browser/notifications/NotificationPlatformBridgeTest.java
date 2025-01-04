@@ -1071,6 +1071,125 @@ public class NotificationPlatformBridgeTest {
     }
 
     /**
+     * Verifies that when `SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS` is enabled, suspicious
+     * notifications are replaced by a warning and tapping the "Unsubscribe" button performs the
+     * unsubscribe behaviour.
+     */
+    @Test
+    @LargeTest
+    @Feature({"Browser", "Notifications"})
+    @Features.EnableFeatures({
+        ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE,
+        ChromeFeatureList.SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS
+    })
+    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
+    public void testNotificationShowWarningNotificationThenUnsubscribe() throws Exception {
+        mNotificationTestRule.setNotificationContentSettingForOrigin(
+                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+        Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
+
+        NotificationPlatformBridge notificationBridge =
+                NotificationPlatformBridge.getInstanceForTests();
+        Assert.assertNotNull(notificationBridge);
+        notificationBridge.setIsSuspiciousParameterForTesting(true);
+
+        Notification notification1 =
+                showAndGetNotification(
+                        "MyNotification",
+                        "{ actions: [{action: 'myAction', title: 'reply', type: 'text'}] }");
+        showNotification("Notification2", "{}");
+        mNotificationTestRule.waitForNotificationCount(2);
+
+        // Check notification contents were replaced by a warning.
+        Notification warningNotification =
+                mNotificationTestRule.getNotificationEntries().get(0).getNotification();
+        String expectedOrigin =
+                UrlFormatter.formatUrlForSecurityDisplay(
+                        mPermissionTestRule.getOrigin(), SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+        // Validate the contents of the notification.
+        Assert.assertEquals(
+                "Possible spam", NotificationTestUtil.getExtraTitle(warningNotification));
+        Assert.assertTrue(
+                NotificationTestUtil.getExtraText(warningNotification)
+                        .contains("Chrome detected possible spam from " + expectedOrigin));
+        Assert.assertEquals(
+                expectedOrigin, NotificationTestUtil.getExtraSubText(warningNotification));
+
+        // Check expected buttons.
+        Assert.assertEquals(2, notification1.actions.length);
+        PendingIntent unsubscribeIntent = notification1.actions[0].actionIntent;
+        PendingIntent showNotificationIntent = notification1.actions[1].actionIntent;
+        Assert.assertNotNull(unsubscribeIntent);
+        Assert.assertNotNull(showNotificationIntent);
+
+        // Click the "Unsubscribe" button.
+        unsubscribeIntent.send();
+
+        // Wait for the provisionally unsubscribe button to replace the warning notification.
+        mNotificationTestRule.waitForNotificationCount(1);
+        Notification provisionallyUnsubscribedNotification =
+                mNotificationTestRule.getNotificationEntries().get(0).getNotification();
+        Assert.assertEquals(2, provisionallyUnsubscribedNotification.actions.length);
+        Assert.assertEquals(
+                "Unsubscribed from notifications",
+                NotificationTestUtil.getExtraTitle(provisionallyUnsubscribedNotification));
+        Assert.assertTrue(
+                NotificationTestUtil.getExtraText(provisionallyUnsubscribedNotification)
+                        .contains("You'll no longer receive notifications from " + expectedOrigin));
+        Assert.assertEquals(
+                expectedOrigin, NotificationTestUtil.getExtraSubText(warningNotification));
+    }
+
+    /**
+     * Verifies that when `SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS` is enabled, non-suspicious
+     * notifications stay the same and are not replaced by the warning.
+     */
+    @Test
+    @LargeTest
+    @Feature({"Browser", "Notifications"})
+    @Features.EnableFeatures({
+        ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE,
+        ChromeFeatureList.SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS
+    })
+    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
+    public void testShowWarningFeatureDoesNotWarnForUnsuspiciousNotification() throws Exception {
+        mNotificationTestRule.setNotificationContentSettingForOrigin(
+                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+        Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
+
+        NotificationPlatformBridge notificationBridge =
+                NotificationPlatformBridge.getInstanceForTests();
+        Assert.assertNotNull(notificationBridge);
+        notificationBridge.setIsSuspiciousParameterForTesting(false);
+
+        showAndGetNotification(
+                "MyNotification",
+                "{ "
+                        + " body: 'Hello' ,"
+                        + " actions: [{action: 'myAction', title: 'reply', type: 'text'}]}");
+        showNotification("Notification2", "{}");
+        mNotificationTestRule.waitForNotificationCount(2);
+
+        // Check notification contents were not replaced by a warning.
+        Notification sentNotification =
+                mNotificationTestRule.getNotificationEntries().get(0).getNotification();
+        String expectedOrigin =
+                UrlFormatter.formatUrlForSecurityDisplay(
+                        mPermissionTestRule.getOrigin(), SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+        // Validate the contents of the notification.
+        Assert.assertEquals("MyNotification", NotificationTestUtil.getExtraTitle(sentNotification));
+        Assert.assertEquals("Hello", NotificationTestUtil.getExtraText(sentNotification));
+        Assert.assertEquals(expectedOrigin, NotificationTestUtil.getExtraSubText(sentNotification));
+
+        // The specified action should also be present.
+        Assert.assertEquals(2, sentNotification.actions.length);
+        Notification.Action action = sentNotification.actions[0];
+        Assert.assertEquals("reply", action.title);
+        Assert.assertNotNull(sentNotification.actions[0].getRemoteInputs());
+        Assert.assertEquals(1, action.getRemoteInputs().length);
+    }
+
+    /**
      * Shows a notification with |title| and |options|, waits until it has been displayed and then
      * returns the Notification object to the caller. Requires that only a single notification is
      * being displayed in the notification manager.

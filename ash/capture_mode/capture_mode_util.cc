@@ -606,12 +606,20 @@ void AddActionButton(views::Button::PressedCallback callback,
   }
 }
 
-void AnimateToOpacity(ui::Layer* layer,
+void AnimateToOpacity(views::Widget* widget,
                       const float opacity,
                       const base::TimeDelta duration) {
+  ui::Layer* layer = widget->GetLayer();
   if (layer->GetTargetOpacity() == opacity) {
     return;
   }
+
+  // If the target opacity is 0.f, disable events on the widget.
+  const bool visible = opacity != 0.f;
+  widget->GetContentsView()->SetCanProcessEventsWithinSubtree(visible);
+  widget->GetNativeWindow()->SetEventTargetingPolicy(
+      visible ? aura::EventTargetingPolicy::kTargetAndDescendants
+              : aura::EventTargetingPolicy::kNone);
 
   views::AnimationBuilder()
       .SetPreemptionStrategy(

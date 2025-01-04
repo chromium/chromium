@@ -109,11 +109,7 @@ class BASE_EXPORT File {
   };
 
   // This explicit mapping matches both FILE_ on Windows and SEEK_ on Linux.
-  enum Whence {
-    FROM_BEGIN   = 0,
-    FROM_CURRENT = 1,
-    FROM_END     = 2
-  };
+  enum Whence { FROM_BEGIN = 0, FROM_CURRENT = 1, FROM_END = 2 };
 
   // Used to hold information about a given file.
   // If you add more fields to this structure (platform-specific fields are OK),

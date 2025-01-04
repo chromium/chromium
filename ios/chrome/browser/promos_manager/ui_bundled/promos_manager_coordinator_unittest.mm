@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
-#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
@@ -45,8 +44,6 @@ class PromosManagerCoordinatorTest : public PlatformTest {
  public:
   void SetUp() override {
     TestProfileIOS::Builder builder;
-    builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              SyncServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetFactoryWithDelegate(

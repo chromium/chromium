@@ -23,5 +23,5 @@ enum ModifierKey {
   // `kCapsLock` in ChromeOS.
   kIsoLevel5ShiftMod3 = 8,
   kFunction = 9,
-  kRightAlt = 10,
+  kQuickInsert = 10,
 };

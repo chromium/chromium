@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<title>Test that Private Aggregation works after network cutoff.</title>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="/wpt_internal/fenced_frame/resources/utils.js"></script>
+<script src="../aggregation-service/support/aggregation-service.js"></script>
+<script src="/wpt_internal/private-aggregation/resources/utils.js"></script>
+
+<body>
+<script>
+"use strict";
+
+const reportPoller = new ReportPoller(
+    '/.well-known/private-aggregation/report-protected-audience',
+    '/.well-known/private-aggregation/debug/report-protected-audience',
+    /*fullTimeoutMs=*/ 5000,
+);
+
+private_aggregation_promise_test(async t => {
+  const fencedframe = await attachFencedFrameContext({
+    generator_api: 'fledge',
+    register_beacon: true,
+  });
+  // The "aggregate" beacon type is registered and associated with a Private
+  // Aggregation event during the auction.
+  await fencedframe.execute(async () => {
+    await window.fence.disableUntrustedNetwork();
+    window.fence.reportEvent("aggregate");
+  });
+
+  await reportPoller.pollReportsAndAssert(
+      /*expectedNumReports=*/ 1, /*expectedNumDebugReports=*/ 0);
+}, 'Private Aggregation events should send after network cutoff.');
+
+</script>
+</body>
+</html>

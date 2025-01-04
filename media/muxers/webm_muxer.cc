@@ -435,8 +435,7 @@ bool WebmMuxer::WriteWebmFrame(EncodedFrame frame,
   uint8_t track_index = absl::get_if<AudioParameters>(&frame.params)
                             ? audio_track_index_
                             : video_track_index_;
-  return frame.data->has_side_data() &&
-                 !frame.data->side_data()->alpha_data.empty()
+  return frame.data->side_data() && !frame.data->side_data()->alpha_data.empty()
              ? segment_.AddFrameWithAdditional(
                    frame.data->data(), frame.data->size(),
                    frame.data->side_data()->alpha_data.data(),

@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.incognito;
 
 import static org.junit.Assert.assertEquals;
 
+import android.os.Build;
+
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
 
@@ -25,6 +27,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils.ActivityType;
@@ -110,6 +113,7 @@ public class IncognitoCookieLeakageTest {
     @Test
     @LargeTest
     @UseMethodParameter(TestParams.IncognitoToIncognito.class)
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/41484832")
     public void testCookiesDoNotLeakFromIncognitoToIncognito(
             String incognitoActivityType1, String incognitoActivityType2) throws TimeoutException {
         ActivityType incognitoActivity1 = ActivityType.valueOf(incognitoActivityType1);

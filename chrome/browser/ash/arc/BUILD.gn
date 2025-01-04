@@ -12,6 +12,8 @@ static_library("arc") {
   sources = [
     "arc_demo_mode_delegate_impl.cc",
     "arc_demo_mode_delegate_impl.h",
+    "arc_dlc_install_notification_delegate_impl.cc",
+    "arc_dlc_install_notification_delegate_impl.h",
     "arc_migration_constants.h",
     "arc_migration_guide_notification.cc",
     "arc_migration_guide_notification.h",
@@ -164,7 +166,6 @@ source_set("unit_tests") {
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/test:test_support",
     "//chromeos/ash/components/install_attributes",
-    "//components/arc:arc_test_support",
     "//components/sync_preferences:test_support",
     "//components/user_manager",
     "//content/test:test_support",

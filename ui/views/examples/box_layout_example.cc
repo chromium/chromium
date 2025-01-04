@@ -129,10 +129,11 @@ void BoxLayoutExample::UpdateLayoutManager() {
 
   for (View* child : panel->children()) {
     const int flex = static_cast<ChildPanel*>(child)->GetFlex();
-    if (flex < 0)
+    if (flex < 0) {
       layout_->ClearFlexForView(child);
-    else
+    } else {
       layout_->SetFlexForView(child, flex);
+    }
   }
 }
 

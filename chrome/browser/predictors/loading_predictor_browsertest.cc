@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/predictors/loading_predictor.h"
 
+#include <array>
 #include <map>
 #include <memory>
 #include <set>
@@ -1314,10 +1310,10 @@ class LoadingPredictorNetworkIsolationKeyBrowserTest
 
   void RunCorsTest(bool use_cors_for_preconnect,
                    bool use_cors_for_resource_request) {
-    const char* kCrossOriginValue[]{
+    auto kCrossOriginValue = std::to_array<const char*>({
         "anonymous",
         "use-credentials",
-    };
+    });
 
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), preconnecting_test_server()->GetURL("/title1.html")));

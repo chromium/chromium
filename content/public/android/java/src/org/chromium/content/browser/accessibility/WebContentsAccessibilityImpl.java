@@ -64,7 +64,7 @@ import android.content.ReceiverCallNotAllowedException;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Bundle;
-import android.os.SystemClock;
+import android.util.Pair;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
@@ -91,7 +91,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UserData;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
@@ -111,8 +110,6 @@ import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.WebContentsObserver;
-import org.chromium.ui.accessibility.AccessibilityFeatures;
-import org.chromium.ui.accessibility.AccessibilityFeaturesMap;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
@@ -580,6 +577,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         mHistogramRecorder.recordAccessibilityUsageHistograms();
     }
 
+    public void forceRecordCreateAccessibilityNodeInfoTotalTimeHistogramsForTesting() {
+        mHistogramRecorder.recordTotalTimeCreateAccessibilityNodeInfoHistogram();
+    }
+
     public boolean hasFinishedLatestAccessibilitySnapshotForTesting() {
         return mHasFinishedLatestAccessibilitySnapshot;
     }
@@ -945,6 +946,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         if (!isAccessibilityEnabled()) {
             return null;
         }
+
+        mHistogramRecorder.beginAccessibilityNodeInfoConstruction();
+
         if (mCurrentRootId == View.NO_ID) {
             mCurrentRootId = WebContentsAccessibilityImplJni.get().getRootId(mNativeObj);
         }
@@ -954,6 +958,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         }
 
         if (!isFrameInfoInitialized()) {
+            mHistogramRecorder.endAccessibilityNodeInfoConstruction();
             return null;
         }
 
@@ -983,11 +988,13 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 }
 
                 mHistogramRecorder.incrementNodeWasReturnedFromCache();
+                mHistogramRecorder.endAccessibilityNodeInfoConstruction();
                 return cachedNode;
             } else {
                 // If the node is no longer valid, wipe it from the cache and return null
                 mNodeInfoCache.get(virtualViewId).recycle();
                 mNodeInfoCache.remove(virtualViewId);
+                mHistogramRecorder.endAccessibilityNodeInfoConstruction();
                 return null;
             }
 
@@ -1006,9 +1013,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 // After successfully populating this node, add it to our cache then return.
                 mNodeInfoCache.put(virtualViewId, AccessibilityNodeInfoCompat.obtain(info));
                 mHistogramRecorder.incrementNodeWasCreatedFromScratch();
+                mHistogramRecorder.endAccessibilityNodeInfoConstruction();
                 return info;
             } else {
                 info.recycle();
+                mHistogramRecorder.endAccessibilityNodeInfoConstruction();
                 return null;
             }
         }
@@ -1091,8 +1100,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         }
 
         mHasFinishedLatestAccessibilitySnapshot = false;
-        long beforeSnapshotTimeMs = SystemClock.elapsedRealtime();
-
         if (ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_UNIFIED_SNAPSHOTS)) {
             mNativeAssistDataObj =
                     WebContentsAccessibilityImplJni.get()
@@ -1107,28 +1114,16 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                             viewRoot,
                             mDelegate.getAccessibilityCoordinates(),
                             mView,
-                            () -> onSnapshotDoneCallback(viewRoot, beforeSnapshotTimeMs));
+                            () -> onSnapshotDoneCallback(viewRoot));
         } else {
             mDelegate.requestAccessibilitySnapshot(
-                    viewRoot, () -> onSnapshotDoneCallback(viewRoot, beforeSnapshotTimeMs));
+                    viewRoot, () -> onSnapshotDoneCallback(viewRoot));
         }
     }
 
-    private void onSnapshotDoneCallback(ViewStructure viewRoot, long beforeSnapshotTimeMs) {
+    private void onSnapshotDoneCallback(ViewStructure viewRoot) {
         viewRoot.asyncCommit();
         mHasFinishedLatestAccessibilitySnapshot = true;
-
-        if (AccessibilityFeaturesMap.isEnabled(
-                AccessibilityFeatures.ACCESSIBILITY_SNAPSHOT_STRESS_TESTS)) {
-            long snapshotRuntimeMs = SystemClock.elapsedRealtime() - beforeSnapshotTimeMs;
-            RecordHistogram.recordLinearCountHistogram(
-                    "Accessibility.AXTreeSnapshotter.Snapshot.EndToEndRuntime",
-                    (int) snapshotRuntimeMs,
-                    1,
-                    5 * 1000,
-                    100);
-        }
-
         if (ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_UNIFIED_SNAPSHOTS)) {
             // In some cases (e.g. testing) the full engine may also be running, so don't delete.
             if (!isNativeInitialized()) {
@@ -1466,6 +1461,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             boolean forwards,
             boolean canWrap,
             boolean setSequentialFocus) {
+        Pair<Boolean, Boolean> talkbackEnabledState = AccessibilityState.getTalkBackEnabledState();
         int id =
                 WebContentsAccessibilityImplJni.get()
                         .findElementType(
@@ -1474,7 +1470,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                                 elementType,
                                 forwards,
                                 canWrap,
-                                elementType.isEmpty());
+                                elementType.isEmpty(),
+                                talkbackEnabledState.first,
+                                talkbackEnabledState.second);
         if (id == 0) return false;
 
         if (setSequentialFocus) {
@@ -1772,6 +1770,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         // The container view is indicated by a virtualViewId of NO_ID; post these events directly
         // since there's no web-specific information to attach.
         if (virtualViewId == View.NO_ID) {
+            if (eventType == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED) {
+                mHistogramRecorder.recordTimeToFirstAccessibilityFocus();
+            }
             mView.sendAccessibilityEvent(eventType);
             return;
         }
@@ -1844,6 +1845,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             result.addChild(mView, rootId);
         }
 
+        mHistogramRecorder.endAccessibilityNodeInfoConstruction();
         return result;
     }
 
@@ -2043,6 +2045,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         // accessibility is still enabled, throttling may result in events sent late.
         if (mView.getParent() != null && isAccessibilityEnabled()) {
             mHistogramRecorder.incrementDispatchedEvents();
+            if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED) {
+                mHistogramRecorder.recordTimeToFirstAccessibilityFocus();
+            }
             if (mTracker != null) mTracker.addEvent(event);
             try {
                 mView.getParent().requestSendAccessibilityEvent(mView, event);
@@ -2275,7 +2280,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 String elementType,
                 boolean forwards,
                 boolean canWrapToLastElement,
-                boolean useDefaultPredicate);
+                boolean useDefaultPredicate,
+                boolean isTalkbackEnabled,
+                boolean isOnlyTalkbackEnabled);
 
         void setTextFieldValue(long nativeWebContentsAccessibilityAndroid, int id, String newValue);
 

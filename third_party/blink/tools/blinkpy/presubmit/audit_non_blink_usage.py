@@ -59,6 +59,7 @@ _CONFIG = [
             # //base constructs that are allowed everywhere
             'base::(byte_)?span_from_ref',
             'base::AdoptRef',
+            'base::allow_nonunique_obj',
             'base::ApplyMetadataToPastSamples',
             'base::as_byte_span',
             'base::as_byte_span',
@@ -87,6 +88,7 @@ _CONFIG = [
             'base::File',
             'base::FileErrorOr',
             'base::FilePath',
+            'base::FindOrNull',
             'base::FunctionRef',
             'base::GetUniqueIdForProcess',
             'base::HashingLRUCache',
@@ -281,6 +283,9 @@ _CONFIG = [
             'base::StrAppend',
             'base::StrCat',
 
+            # //base/strings/string_split.h.
+            'base::SplitStringOnce',
+
             # Debugging helpers from //base/debug are allowed everywhere.
             'base::debug::.+',
 
@@ -336,6 +341,9 @@ _CONFIG = [
             'base::UnsafeSharedMemoryRegion',
             'base::WritableSharedMemoryMapping',
             'base::subtle::SharedAtomic',
+
+            # tracing
+            'perfetto::.+',
         ]
     },
     {
@@ -417,6 +425,14 @@ _CONFIG = [
         ],
     },
     {
+        'paths': [
+            'third_party/blink/common/shared_storage/module_script_downloader.cc',
+        ],
+        'allowed': [
+            'net::SiteForCookies',
+        ],
+    },
+    {
         'paths': ['third_party/blink/renderer/'],
         'allowed': [
             # TODO(dcheng): Should these be in a more specific config?
@@ -444,6 +460,7 @@ _CONFIG = [
             'cc::AuxImage',
             'cc::CategorizedWorkerPool',
             'cc::ColorFilter',
+            'cc::DrawImage',
             'cc::DrawLooper',
             'cc::InspectablePaintRecorder',
             'cc::InspectableRecordPaintCanvas',
@@ -716,7 +733,6 @@ _CONFIG = [
             # are OK.
             'icu::.+',
             'inspector_protocol_encoding::.+',
-            'perfetto::.+',  # tracing
             'snappy::.+',
             'testing::.+',  # googlemock / googletest
             'v8::.+',
@@ -955,11 +971,18 @@ _CONFIG = [
     {
         'paths': [
             'third_party/blink/renderer/core/animation_frame',
+            'third_party/blink/renderer/core/exported/test_web_frame_content_dumper.cc',
+            'third_party/blink/renderer/core/exported/web_page_popup_impl',
+            'third_party/blink/renderer/core/frame/animation_frame_timing_monitor',
+            'third_party/blink/renderer/core/frame/web_frame_widget_impl',
+            'third_party/blink/renderer/core/html/canvas',
             'third_party/blink/renderer/core/offscreencanvas',
-            'third_party/blink/renderer/core/html/canvas'
+            'third_party/blink/renderer/core/timing/animation_frame_timing_info.h',
+            'third_party/blink/renderer/core/timing/window_performance',
         ],
         'allowed': [
             'viz::BeginFrameArgs',
+            'viz::BeginFrameId',
         ],
     },
     {

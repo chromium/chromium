@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_pool_id.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/vulkan/buildflags.h"
@@ -175,6 +176,10 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   // SharedImageRepresentationFactoryRef.
   void RegisterImageFactory(SharedImageFactory* factory);
   void UnregisterImageFactory();
+
+  // Sets the SharedImagePoolId on the backing.
+  void SetSharedImagePoolId(SharedImagePoolId pool_id);
+  SharedImagePoolId pool_id() const { return pool_id_.value(); }
 
   // Returns string corresponding to GetType() for logging purposes.
   const char* GetName() const;
@@ -418,6 +423,12 @@ class GPU_GLES2_EXPORT SharedImageBacking {
 
   // Note that this will be eventually removed and merged into SharedImageUsage.
   const std::optional<gfx::BufferUsage> buffer_usage_;
+
+  // An optional SharedImagePoolId if the backing was created via a client side
+  // SharedImagePool. It will be null for backings which are not created via a
+  // SharedImagePool. This pool_id_ will be set by SharedImageFactory while
+  // registering the backing.
+  std::optional<SharedImagePoolId> pool_id_;
 
   bool is_ref_counted_ = true;
 

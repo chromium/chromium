@@ -178,7 +178,7 @@ TEST_F(PasswordFormFillingTest, Autofill) {
   PasswordFormFillData fill_data;
   EXPECT_CALL(driver_, SetPasswordFillData(_)).WillOnce(SaveArg<0>(&fill_data));
   EXPECT_CALL(client_, PasswordWasAutofilled);
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   EXPECT_CALL(feature_manager_, IsBiometricAuthenticationBeforeFillingEnabled)
       .WillOnce(Return(true));
 #endif
@@ -259,7 +259,7 @@ TEST_F(PasswordFormFillingTest, TestFillOnLoadSuggestion) {
     EXPECT_CALL(driver_, SetPasswordFillData(_))
         .WillOnce(SaveArg<0>(&fill_data));
     EXPECT_CALL(client_, PasswordWasAutofilled);
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
     EXPECT_CALL(feature_manager_, IsBiometricAuthenticationBeforeFillingEnabled)
         .WillOnce(Return(true));
 #endif
@@ -277,7 +277,7 @@ TEST_F(PasswordFormFillingTest, TestFillOnLoadSuggestion) {
       // On Android, Mac and Win authentication will prevent autofilling
       // credentials on page load. On iOS Reauth is always required.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
       EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
 #else
       EXPECT_EQ(LikelyFormFilling::kFillOnPageLoad, likely_form_filling);
@@ -535,6 +535,25 @@ TEST_F(PasswordFormFillingTest, NoFillOnPageloadInCrossOriginIframe) {
       PasswordFormMetricsRecorder::WaitForUsernameReason::kCrossOriginIframe,
       1);
 }
+
+TEST_F(PasswordFormFillingTest, NoFillOnPageloadForSingleUsernameForm) {
+  base::HistogramTester histogram_tester;
+  // Remove the password element from the observed form.
+  observed_form_.password_element_renderer_id = FieldRendererId();
+
+  std::vector<PasswordForm> best_matches = {saved_match_};
+  LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
+      &client_, &driver_, observed_form_, best_matches, federated_matches_,
+      &saved_match_, metrics_recorder_.get(),
+      /*webauthn_suggestions_available=*/false,
+      /*suggestion_banned_fields=*/{});
+  EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.FirstWaitForUsernameReason",
+      PasswordFormMetricsRecorder::WaitForUsernameReason::kSingleUsernameForm,
+      1);
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Tests that the when there is a single preferred match, and no extra

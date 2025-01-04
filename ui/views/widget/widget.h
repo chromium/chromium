@@ -441,6 +441,12 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // types that do not appear in the taskbar by default (popup and bubble).
     bool force_show_in_taskbar = false;
 
+#if BUILDFLAG(IS_WIN)
+    // If true, force the window not to be shown in the taskbar, even for
+    // window types that do appear in the taskbar by default.
+    bool dont_show_in_taskbar = false;
+#endif  //  BUILDFLAG(IS_WIN)
+
     // Only used by X11, for root level windows. Specifies the res_name and
     // res_class fields, respectively, of the WM_CLASS window property. Controls
     // window grouping and desktop file matching in Linux window managers.
@@ -679,6 +685,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // NOTE: This may not be the same view as WidgetDelegate::GetContentsView().
   // See RootView::GetContentsView().
   View* GetContentsView();
+
+  // This returns the client content view that corresponds to the view returned
+  // from WidgetDelegate::GetContentsView(). Alternatively, if
+  // Widget::SetContentView() was explicitly called, this will return that view.
+  View* GetClientContentsView();
 
   // Returns the bounds of the Widget in screen coordinates.
   gfx::Rect GetWindowBoundsInScreen() const;

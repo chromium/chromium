@@ -93,6 +93,20 @@ TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValuePinnedVersion) {
   EXPECT_EQ(options.allow_downgrades(), false);
 }
 
+// Verify that invalid version throws an error.
+TEST(IsolatedWebAppExternalInstallOptionsTest,
+     FromPolicyValueInvalidPinnedVersion) {
+  const base::Value::Dict policy_entry = test::CreateForceInstallIwaPolicyEntry(
+      kEd25519SignedWebBundleId, kCorrectUpdateManifestUrl, kCustomChannelId,
+      kIncorrectPinnedVersion, /*allow_downgrades=*/false);
+
+  const auto options =
+      IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(policy_entry);
+
+  EXPECT_FALSE(options.has_value());
+  EXPECT_EQ(options.error(), "Pinned version has invalid format");
+}
+
 // Verify if allow_downgrades field is correctly set.
 TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValueAllowDowngrades) {
   const base::Value::Dict policy_entry = test::CreateForceInstallIwaPolicyEntry(

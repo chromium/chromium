@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
+
+#include <array>
 
 #include "build/build_config.h"
 #include "cc/layers/content_layer_client.h"
@@ -821,11 +818,12 @@ class LayerTreeHostMaskAsBlendingPixelTest
     // Creates a layer consists of solid grids. The grids are in a mix of
     // different transparency and colors (1 transparent, 3 semi-transparent,
     // and 3 opaque).
-    static SkColor test_colors[7] = {
+    static std::array<SkColor, 7> test_colors = {
         SkColorSetARGB(128, 255, 0, 0), SkColorSetARGB(255, 0, 0, 255),
         SkColorSetARGB(128, 0, 255, 0), SkColorSetARGB(128, 0, 0, 255),
         SkColorSetARGB(255, 0, 255, 0), SkColorSetARGB(0, 0, 0, 0),
-        SkColorSetARGB(255, 255, 0, 0)};
+        SkColorSetARGB(255, 255, 0, 0),
+    };
 
     auto display_list = base::MakeRefCounted<DisplayItemList>();
     display_list->StartPaint();

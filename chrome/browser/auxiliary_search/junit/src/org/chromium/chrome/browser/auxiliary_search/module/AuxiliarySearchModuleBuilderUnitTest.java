@@ -32,16 +32,23 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFactory;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchHooks;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils;
 import org.chromium.chrome.browser.auxiliary_search.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.magic_stack.HomeModulesUtils;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.components.segmentation_platform.InputContext;
 
 /** Unit tests for {@link AuxiliarySearchModuleBuilder}. */
+@EnableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION_MODULE})
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class AuxiliarySearchModuleBuilderUnitTest {
@@ -91,6 +98,16 @@ public class AuxiliarySearchModuleBuilderUnitTest {
 
     @Test
     @SmallTest
+    @DisableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION_MODULE})
+    public void testIsDisabled() {
+        assertFalse(ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_APP_INTEGRATION_MODULE));
+
+        assertTrue(mFactory.isEnabled());
+        assertFalse(mBuilder.isEligible());
+    }
+
+    @Test
+    @SmallTest
     public void testBuild() {
         assertTrue(mBuilder.build(mModuleDelegate, mOnModuleBuiltCallback));
         verify(mOnModuleBuiltCallback).onResult(any(AuxiliarySearchModuleCoordinator.class));
@@ -110,5 +127,19 @@ public class AuxiliarySearchModuleBuilderUnitTest {
         assertFalse(mBuilder.build(mModuleDelegate, mOnModuleBuiltCallback));
 
         AuxiliarySearchUtils.resetSharedPreferenceForTesting();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2})
+    public void testCreateInputContext() {
+        InputContext inputContext = mBuilder.createInputContext();
+        assertEquals(
+                0f,
+                inputContext.getEntryForTesting(
+                                HomeModulesUtils.getFreshnessInputContextString(
+                                        ModuleType.AUXILIARY_SEARCH))
+                        .floatValue,
+                0.01);
     }
 }

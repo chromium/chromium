@@ -4,11 +4,8 @@
 
 package org.chromium.chrome.test.transit;
 
-import android.app.Activity;
-
 import androidx.test.espresso.Espresso;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
@@ -16,19 +13,26 @@ import org.chromium.ui.test.transit.SoftKeyboardElement;
 
 /** Represents the soft keyboard shown, expecting it to hide after exiting the Facility. */
 public class SoftKeyboardFacility extends Facility<Station<?>> {
-    private final Supplier<? extends Activity> mActivitySupplier;
-
-    // TODO(crbug.com/374366760): Use mHostStation.getActivitySupplier().
-    public SoftKeyboardFacility(Supplier<? extends Activity> activitySupplier) {
-        mActivitySupplier = activitySupplier;
-    }
+    private SoftKeyboardElement mSoftKeyboardElement;
 
     @Override
     public void declareElements(Elements.Builder elements) {
-        elements.declareElement(new SoftKeyboardElement(mActivitySupplier));
+        mSoftKeyboardElement =
+                elements.declareElement(new SoftKeyboardElement(mHostStation.getActivityElement()));
     }
 
     public void close() {
-        mHostStation.exitFacilitySync(this, Espresso::pressBack);
+        assertSuppliersCanBeUsed();
+
+        if (mSoftKeyboardElement.get()) {
+            // Keyboard was expected to be shown
+
+            // If this fails, the keyboard was closed before, but not by this facility.
+            recheckActiveConditions();
+            mHostStation.exitFacilitySync(this, Espresso::pressBack);
+        } else {
+            // Keyboard was not expected to be shown
+            mHostStation.exitFacilitySync(this, /* trigger= */ null);
+        }
     }
 }

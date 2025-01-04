@@ -17,6 +17,7 @@ test("ash_components_unittests") {
 
   deps = [
     "//ash/components/arc:unit_tests",
+    "//ash/components/arc/intent_helper:unit_tests",
     "//ash/components/arc/mojom:unit_tests",
     "//ash/components/arc/session:unit_tests",
     "//base/test:test_support",

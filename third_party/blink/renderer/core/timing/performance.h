@@ -37,7 +37,6 @@
 #include "base/time/time.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_function.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_performance_entry_filter_options.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
@@ -139,9 +138,6 @@ class CORE_EXPORT Performance : public EventTarget {
   // exposing to web.
   DOMHighResTimeStamp MonotonicTimeToDOMHighResTimeStamp(base::TimeTicks) const;
 
-  // This does the same as MonotonicTimeToDOMHighResTimeStamp, but applies a
-  // coarser resolution for render times.
-  DOMHighResTimeStamp RenderTimeToDOMHighResTimeStamp(base::TimeTicks) const;
   DOMHighResTimeStamp now() const;
 
   // High Resolution Time Level 3 timeOrigin.
@@ -154,10 +150,6 @@ class CORE_EXPORT Performance : public EventTarget {
   // Get all performance entries of the main frame. This is kept until the one
   // with optional filtering options is enabled by default.
   PerformanceEntryVector getEntries();
-
-  // Get performance entries with optional filtering options.
-  PerformanceEntryVector getEntries(ScriptState* script_state,
-                                    PerformanceEntryFilterOptions* options);
 
   // This getBufferedEntriesByType method will return all entries in the buffer
   // regardless of whether they are exposed in the Performance Timeline.
@@ -334,6 +326,8 @@ class CORE_EXPORT Performance : public EventTarget {
   // partitioned.
   bool softNavPaintMetricsSupported() const;
 
+  base::SingleThreadTaskRunner& GetTaskRunner() { return *task_runner_; }
+
  private:
   PerformanceMeasure* MeasureInternal(
       ScriptState* script_state,
@@ -365,13 +359,6 @@ class CORE_EXPORT Performance : public EventTarget {
   // filter.
   PerformanceEntryVector GetEntriesByTypeForCurrentFrame(
       const AtomicString& entry_type,
-      const AtomicString& maybe_name = g_null_atom);
-
-  // Get performance entries of nested same-origin iframes, with an optional
-  // type and optional name filter.
-  PerformanceEntryVector GetEntriesWithChildFrames(
-      ScriptState* script_state,
-      const AtomicString& maybe_type = g_null_atom,
       const AtomicString& maybe_name = g_null_atom);
 
   void ProcessUserFeatureMark(const PerformanceMarkOptions* mark_options);

@@ -10,6 +10,7 @@ import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {UserAnnotationsManagerProxyImpl} from '../autofill_page/user_annotations_manager_proxy.js';
+import {BaseMixin} from '../base_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {AiPageInteractions, MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
@@ -25,7 +26,9 @@ export interface SettingsAiPageElement {
   };
 }
 
-const SettingsAiPageElementBase = PrefsMixin(PolymerElement);
+// BaseMixin is needed to populate the associatedControl field for search in
+// subpages, see crbug.com/378927854.
+const SettingsAiPageElementBase = PrefsMixin(BaseMixin(PolymerElement));
 export class SettingsAiPageElement extends SettingsAiPageElementBase {
   static get is() {
     return 'settings-ai-page';
@@ -93,10 +96,8 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
             map.set(routes.AI_TAB_ORGANIZATION.path, '#tabOrganizationRowV2');
           }
 
-          if (routes.AUTOFILL_PREDICTION_IMPROVEMENTS) {
-            map.set(
-                routes.AUTOFILL_PREDICTION_IMPROVEMENTS.path,
-                '#autofillAiRowV2');
+          if (routes.AUTOFILL_AI) {
+            map.set(routes.AUTOFILL_AI.path, '#autofillAiRowV2');
           }
 
           return map;
@@ -160,10 +161,20 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   }
 
   private async setShowAutofillAiControl_() {
+    if (loadTimeData.valueExists('showAiSettingsForTesting') &&
+        loadTimeData.getBoolean('showAiSettingsForTesting')) {
+      this.showAutofillAIControl_ = true;
+      return;
+    }
+
+    if (!loadTimeData.getBoolean('autofillAiEnabled')) {
+      this.showAutofillAIControl_ = false;
+      return;
+    }
+
     this.showAutofillAIControl_ =
-        loadTimeData.getBoolean('autofillPredictionImprovementsEnabled') &&
-        (await UserAnnotationsManagerProxyImpl.getInstance().isUserEligible() ||
-         await UserAnnotationsManagerProxyImpl.getInstance().hasEntries());
+        await UserAnnotationsManagerProxyImpl.getInstance().isUserEligible() ||
+        await UserAnnotationsManagerProxyImpl.getInstance().hasEntries();
   }
 
   private onHistorySearchRowClick_() {
@@ -183,7 +194,7 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
         'Settings.AiPage.AutofillAIEntryPointClick');
 
     const router = Router.getInstance();
-    router.navigateTo(router.getRoutes().AUTOFILL_PREDICTION_IMPROVEMENTS);
+    router.navigateTo(router.getRoutes().AUTOFILL_AI);
   }
 
   private onCompareRowClick_() {

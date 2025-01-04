@@ -6,20 +6,21 @@
 
 #include <memory>
 
-#include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/address_data_manager_test_api.h"
-#include "components/autofill/core/browser/autofill_form_test_utils.h"
-#include "components/autofill/core/browser/autofill_manager_test_api.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager_test_api.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
+#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager_test_api.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
+#include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/iban_save_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
+#include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
@@ -78,15 +79,15 @@ void AutofillMetricsBaseTest::SetUpHelper() {
       new payments::TestPaymentsNetworkInterface(
           autofill_client_->GetURLLoaderFactory(),
           autofill_client_->GetIdentityManager(), &personal_data());
-  autofill_client_->GetPaymentsAutofillClient()
-      ->set_test_payments_network_interface(
-          std::unique_ptr<payments::TestPaymentsNetworkInterface>(
-              payments_network_interface));
+  payments_autofill_client().set_payments_network_interface(
+      std::unique_ptr<payments::TestPaymentsNetworkInterface>(
+          payments_network_interface));
   test_api(*autofill_client_->GetFormDataImporter())
       .set_credit_card_save_manager(
           std::make_unique<TestCreditCardSaveManager>(autofill_client_.get()));
-  autofill_client_->GetPaymentsAutofillClient()->set_autofill_offer_manager(
-      std::make_unique<AutofillOfferManager>(&personal_data()));
+  payments_autofill_client().set_autofill_offer_manager(
+      std::make_unique<AutofillOfferManager>(
+          &personal_data().payments_data_manager()));
 
   auto browser_autofill_manager =
       std::make_unique<TestBrowserAutofillManager>(autofill_driver_.get());
@@ -108,8 +109,8 @@ void AutofillMetricsBaseTest::SetUpHelper() {
   // Mandatory re-auth is required for credit card autofill on automotive, so
   // the authenticator response needs to be properly mocked.
 #if BUILDFLAG(IS_ANDROID)
-  autofill_client_->GetPaymentsAutofillClient()
-      ->SetUpDeviceBiometricAuthenticatorSuccessOnAutomotive();
+  payments_autofill_client()
+      .SetUpDeviceBiometricAuthenticatorSuccessOnAutomotive();
 #endif
 }
 
@@ -153,8 +154,8 @@ void AutofillMetricsBaseTest::SetFidoEligibility(bool is_verifiable) {
       access_manager.GetOrCreateFidoAuthenticator())
       ->SetUserVerifiable(is_verifiable);
 #endif
-  autofill_client_->GetPaymentsAutofillClient()
-      ->GetPaymentsNetworkInterface()
+  static_cast<payments::TestPaymentsNetworkInterface*>(
+      payments_autofill_client().GetPaymentsNetworkInterface())
       ->AllowFidoRegistration(true);
   test_api(access_manager).set_is_authentication_in_progress(false);
   test_api(access_manager).set_can_fetch_unmask_details(true);
@@ -165,6 +166,22 @@ void AutofillMetricsBaseTest::OnDidGetRealPan(
     payments::PaymentsAutofillClient::PaymentsRpcResult result,
     const std::string& real_pan,
     bool is_virtual_card) {
+  // FPAN risk-based authentication is implemented in some platforms. If
+  // risk-based authentication is available, simulate a CVC authentication
+  // challenge is required.
+  if (autofill_manager()
+          .GetCreditCardAccessManager()
+          .IsMaskedServerCardRiskBasedAuthAvailable()) {
+    autofill_manager()
+        .GetCreditCardAccessManager()
+        .OnRiskBasedAuthenticationResponseReceived(
+            CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse()
+                .with_result(CreditCardRiskBasedAuthenticator::
+                                 RiskBasedAuthenticationResponse::Result::
+                                     kAuthenticationRequired)
+                .with_context_token("fake context token"));
+  }
+
   payments::FullCardRequest* full_card_request =
       autofill_manager()
           .client()

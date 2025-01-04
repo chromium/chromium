@@ -14,7 +14,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -501,9 +500,8 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
 }
 
 // This test calls getUserMedia and checks for aspect ratio behavior.
-// TODO(crbug.com/40229233): Flaky for tsan, mac, lacros.
-#if defined(THREAD_SANITIZER) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/40229233): Flaky for tsan, mac.
+#if defined(THREAD_SANITIZER) || BUILDFLAG(IS_MAC)
 #define MAYBE_TestGetUserMediaAspectRatio4To3 \
   DISABLED_TestGetUserMediaAspectRatio4To3
 #else
@@ -538,9 +536,8 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
 }
 
 // This test calls getUserMedia and checks for aspect ratio behavior.
-// TODO(crbug.com/40229233): Flaky for tsan, mac, lacros.
-#if defined(THREAD_SANITIZER) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/40229233): Flaky for tsan, mac.
+#if defined(THREAD_SANITIZER) || BUILDFLAG(IS_MAC)
 #define MAYBE_TestGetUserMediaAspectRatio1To1 \
   DISABLED_TestGetUserMediaAspectRatio1To1
 #else
@@ -589,8 +586,8 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
 
 // This test calls getUserMedia in an iframe and immediately close the iframe
 // in the scope of the failure callback.
-// Flaky on lacros-chrome and mac bots. http://crbug.com/1196389
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
+// Flaky on mac bots. http://crbug.com/1196389
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_VideoWithBadConstraintsInIFrameAndCloseInFailureCb \
   DISABLED_VideoWithBadConstraintsInIFrameAndCloseInFailureCb
 #else

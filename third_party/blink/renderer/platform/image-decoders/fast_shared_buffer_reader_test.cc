@@ -53,7 +53,7 @@ TEST(FastSharedBufferReaderTest, nonSequentialReads) {
   char reference_data[kDefaultTestSize];
   PrepareReferenceData(reference_data);
   scoped_refptr<SharedBuffer> data = SharedBuffer::Create();
-  data->Append(reference_data, sizeof(reference_data));
+  data->Append(reference_data);
 
   SegmentReaders reader_struct(data);
   for (auto segment_reader : reader_struct.segment_readers) {
@@ -76,7 +76,7 @@ TEST(FastSharedBufferReaderTest, readBackwards) {
   char reference_data[kDefaultTestSize];
   PrepareReferenceData(reference_data);
   scoped_refptr<SharedBuffer> data = SharedBuffer::Create();
-  data->Append(reference_data, sizeof(reference_data));
+  data->Append(reference_data);
 
   SegmentReaders reader_struct(data);
   for (auto segment_reader : reader_struct.segment_readers) {
@@ -101,7 +101,7 @@ TEST(FastSharedBufferReaderTest, byteByByte) {
   char reference_data[kDefaultTestSize];
   PrepareReferenceData(reference_data);
   scoped_refptr<SharedBuffer> data = SharedBuffer::Create();
-  data->Append(reference_data, sizeof(reference_data));
+  data->Append(reference_data);
 
   SegmentReaders reader_struct(data);
   for (auto segment_reader : reader_struct.segment_readers) {
@@ -119,7 +119,7 @@ TEST(FastSharedBufferReaderTest, readAllOverlappingLastSegmentBoundary) {
   char reference_data[kDataSize];
   PrepareReferenceData(reference_data);
   scoped_refptr<SharedBuffer> data = SharedBuffer::Create();
-  data->Append(reference_data, kDataSize);
+  data->Append(reference_data);
 
   SegmentReaders reader_struct(data);
   for (auto segment_reader : reader_struct.segment_readers) {

@@ -4,11 +4,6 @@
 
 #include "pdf/pdf_view_web_plugin.h"
 
-#if defined(UNSAFE_BUFFERS_BUILD)
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
@@ -21,6 +16,7 @@
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/queue.h"
 #include "base/debug/crash_logging.h"
@@ -402,15 +398,6 @@ std::unique_ptr<PDFiumEngine> PdfViewWebPlugin::Client::CreateEngine(
   return std::make_unique<PDFiumEngine>(client, script_option);
 }
 
-std::unique_ptr<PdfAccessibilityDataHandler>
-PdfViewWebPlugin::Client::CreateAccessibilityDataHandler(
-    PdfAccessibilityActionHandler* action_handler,
-    PdfAccessibilityImageFetcher* image_fetcher,
-    blink::WebPluginContainer* plugin_container,
-    bool print_preview) {
-  return nullptr;
-}
-
 PdfViewWebPlugin::PdfViewWebPlugin(
     std::unique_ptr<Client> client,
     mojo::AssociatedRemote<pdf::mojom::PdfHost> pdf_host,
@@ -491,6 +478,7 @@ bool PdfViewWebPlugin::InitializeCommon() {
 
   pdf_accessibility_data_handler_ = client_->CreateAccessibilityDataHandler(
       this, this, client_->PluginContainer(), IsPrintPreview());
+  CHECK(pdf_accessibility_data_handler_);
 
   // Skip the remaining initialization when in Print Preview mode. Loading will
   // continue after the plugin receives a "resetPrintPreviewMode" message.
@@ -1509,6 +1497,7 @@ void PdfViewWebPlugin::OnHasSearchifyText() {
   base::Value::Dict message;
   message.Set("type", "setHasSearchifyText");
   client_->PostMessage(std::move(message));
+  pdf_accessibility_data_handler_->OnHasSearchifyText();
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
@@ -1537,6 +1526,15 @@ void PdfViewWebPlugin::GetPdfBytes(uint32_t size_limit,
 
   std::move(callback).Run(GetPdfBytesStatus::kSuccess, engine_->GetSaveData(),
                           page_count);
+}
+
+void PdfViewWebPlugin::GetPageText(int32_t page_index,
+                                   GetPageTextCallback callback) {
+  if (page_index < 0 || page_index >= engine_->GetNumberOfPages()) {
+    std::move(callback).Run(std::u16string());
+    return;
+  }
+  std::move(callback).Run(engine_->GetPageText(page_index));
 }
 
 bool PdfViewWebPlugin::IsValid() const {
@@ -1631,8 +1629,11 @@ void PdfViewWebPlugin::HandleGetNamedDestinationMessage(
     std::ostringstream view_stream;
     view_stream << named_destination->view;
     if (named_destination->xyz_params.empty()) {
-      for (unsigned long i = 0; i < named_destination->num_params; ++i)
-        view_stream << "," << named_destination->params[i];
+      UNSAFE_TODO({
+        for (unsigned long i = 0; i < named_destination->num_params; ++i) {
+          view_stream << "," << named_destination->params[i];
+        }
+      });
     } else {
       view_stream << "," << named_destination->xyz_params;
     }
@@ -1770,7 +1771,12 @@ void PdfViewWebPlugin::HandleSetBackgroundColorMessage(
 
 void PdfViewWebPlugin::HandleSetPresentationModeMessage(
     const base::Value::Dict& message) {
-  engine_->SetReadOnly(message.FindBool("enablePresentationMode").value());
+  const bool presentation_mode =
+      message.FindBool("enablePresentationMode").value();
+  engine_->SetReadOnly(presentation_mode);
+  if (presentation_mode) {
+    cursor_ = ui::mojom::CursorType::kPointer;
+  }
 }
 
 void PdfViewWebPlugin::HandleSetTwoUpViewMessage(

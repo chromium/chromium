@@ -238,7 +238,7 @@ bool BrowsingTopicsSiteDataStorage::LazyInit() {
 
   db_ = std::make_unique<sql::Database>(
       sql::DatabaseOptions{.page_size = 4096, .cache_size = 32},
-      /*tag=*/"BrowsingTopics");
+      sql::Database::Tag("BrowsingTopics"));
 
   // base::Unretained is safe here because this BrowsingTopicsSiteDataStorage
   // owns the sql::Database instance that stores and uses the callback. So,

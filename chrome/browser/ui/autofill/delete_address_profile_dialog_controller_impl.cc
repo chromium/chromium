@@ -11,7 +11,7 @@
 #include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/ui/autofill/delete_address_profile_dialog_view.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"

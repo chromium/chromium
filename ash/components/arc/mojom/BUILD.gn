@@ -248,6 +248,16 @@ mojom("mojom") {
         "//ash/components/arc/volume_mounter/volume_mounter_mojom_traits.cc",
       ]
     },
+    {
+      types = [
+        {
+          mojom = "arc.mojom.AudioDeviceType"
+          cpp = "::ash::AudioDeviceType"
+        },
+      ]
+      traits_headers = [ "//ash/components/arc/audio/audio_mojom_traits.h" ]
+      traits_sources = [ "//ash/components/arc/audio/audio_mojom_traits.cc" ]
+    },
   ]
 }
 
@@ -420,7 +430,7 @@ source_set("unit_tests") {
 
   deps = [
     ":mojom",
-    "//components/arc",
+    "//ash/components/arc/intent_helper",
     "//media",
     "//mojo/public/cpp/test_support:test_utils",
     "//testing/gtest",

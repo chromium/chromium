@@ -91,10 +91,11 @@ HTMLFormControlElement* ButtonToActivate(const HTMLFormElement& form) {
 // selected state.
 bool IsSelectInDefaultState(const HTMLSelectElement& select) {
   if (select.IsMultiple() || select.size() > 1) {
-    for (auto* const option_element : select.GetOptionList()) {
-      if (option_element->Selected() !=
-          option_element->FastHasAttribute(html_names::kSelectedAttr))
+    for (auto& option_element : select.GetOptionList()) {
+      if (option_element.Selected() !=
+          option_element.FastHasAttribute(html_names::kSelectedAttr)) {
         return false;
+      }
     }
     return true;
   }
@@ -102,14 +103,15 @@ bool IsSelectInDefaultState(const HTMLSelectElement& select) {
   // The select is rendered as a combobox (called menulist in WebKit). At
   // least one item is selected, determine which one.
   HTMLOptionElement* initial_selected = nullptr;
-  for (auto* const option_element : select.GetOptionList()) {
-    if (option_element->FastHasAttribute(html_names::kSelectedAttr)) {
+  for (auto& option_element : select.GetOptionList()) {
+    if (option_element.FastHasAttribute(html_names::kSelectedAttr)) {
       // The page specified the option to select.
-      initial_selected = option_element;
+      initial_selected = &option_element;
       break;
     }
-    if (!initial_selected)
-      initial_selected = option_element;
+    if (!initial_selected) {
+      initial_selected = &option_element;
+    }
   }
   return !initial_selected || initial_selected->Selected();
 }

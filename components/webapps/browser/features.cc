@@ -10,29 +10,16 @@ namespace webapps {
 namespace features {
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kAddToHomescreenMessaging,
-             "AddToHomescreenMessaging",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables WebAPK Install Failure Notification.
 BASE_FEATURE(kWebApkInstallFailureNotification,
              "WebApkInstallFailureNotification",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#endif  // BUILDFLAG(IS_ANDROID)
-
-// Keys to use when querying the variations params.
-BASE_FEATURE(kAppBannerTriggering,
-             "AppBannerTriggering",
+// Enables installable message throttle.
+BASE_FEATURE(kInstallMessageThrottle,
+             "InstallMessageThrottle",
              base::FEATURE_DISABLED_BY_DEFAULT);
-extern const base::FeatureParam<double> kBannerParamsEngagementTotalKey{
-    &kAppBannerTriggering, "site_engagement_total",
-    kDefaultTotalEngagementToTrigger};
-extern const base::FeatureParam<int> kBannerParamsDaysAfterBannerDismissedKey{
-    &kAppBannerTriggering, "days_after_dismiss",
-    kMinimumBannerBlockedToBannerShown};
-extern const base::FeatureParam<int> kBannerParamsDaysAfterBannerIgnoredKey{
-    &kAppBannerTriggering, "days_after_ignore", kMinimumDaysBetweenBannerShows};
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Do not remove this feature flag, since it serves as a kill-switch for the ML
 // promotion model. Kill switches are required for all ML model-backed features.
@@ -56,9 +43,11 @@ extern const base::FeatureParam<int> kMaxDaysForMLPromotionGuardrailStorage(
     "max_days_to_store_guardrails",
     kTotalDaysToStoreMLGuardrails);
 
-BASE_FEATURE(kBypassAppBannerEngagementChecks,
-             "BypassAppBannerEngagementChecks",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
+// Checking if a web app is installed in Chrome Android ultimately leads to a
+// long, UI-thread Binder call. Enabling this flag makes the web app
+// installation check on Clank async.
+BASE_FEATURE(kCheckWebAppExistenceAsync,
+             "CheckWebAppExistenceAsync",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features
 }  // namespace webapps

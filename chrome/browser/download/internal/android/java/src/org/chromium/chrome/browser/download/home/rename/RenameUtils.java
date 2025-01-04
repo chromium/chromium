@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.download.home.rename;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FileUtils;
@@ -33,6 +34,7 @@ public class RenameUtils {
 
     @NativeMethods
     interface Natives {
-        String getFileExtension(String fileName);
+        @JniType("std::string")
+        String getFileExtension(@JniType("std::string") String fileName);
     }
 }

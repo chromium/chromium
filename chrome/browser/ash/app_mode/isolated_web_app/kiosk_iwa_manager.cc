@@ -139,6 +139,13 @@ void KioskIwaManager::StartObservingAppUpdate(Profile* profile,
                           weak_ptr_factory_.GetWeakPtr()));
 }
 
+void KioskIwaManager::AddAppForTesting(
+    const policy::DeviceLocalAccount& account) {
+  KioskIwaDataMap dummy;
+  ProcessDeviceLocalAccount(account, dummy);
+  NotifyKioskAppsChanged();
+}
+
 void KioskIwaManager::UpdateAppsFromPolicy() {
   if (!ash::features::IsIsolatedWebAppKioskEnabled()) {
     // keeps KioskIwaManager empty if the feature is disabled.

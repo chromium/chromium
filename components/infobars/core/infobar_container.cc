@@ -17,8 +17,7 @@
 
 namespace infobars {
 
-InfoBarContainer::Delegate::~Delegate() {
-}
+InfoBarContainer::Delegate::~Delegate() = default;
 
 InfoBarContainer::InfoBarContainer(Delegate* delegate)
     : delegate_(delegate),
@@ -28,13 +27,15 @@ InfoBarContainer::InfoBarContainer(Delegate* delegate)
 InfoBarContainer::~InfoBarContainer() {
   // RemoveAllInfoBarsForDestruction() should have already cleared our infobars.
   DCHECK(infobars_.empty());
-  if (infobar_manager_)
+  if (infobar_manager_) {
     infobar_manager_->RemoveObserver(this);
+  }
 }
 
 void InfoBarContainer::ChangeInfoBarManager(InfoBarManager* infobar_manager) {
-  if (infobar_manager_)
+  if (infobar_manager_) {
     infobar_manager_->RemoveObserver(this);
+  }
 
   bool state_changed = false;
   {
@@ -64,15 +65,18 @@ void InfoBarContainer::ChangeInfoBarManager(InfoBarManager* infobar_manager) {
   }
 
   // Now that everything is up to date, signal the delegate to re-layout.
-  if (state_changed)
+  if (state_changed) {
     OnInfoBarStateChanged(false);
+  }
 }
 
 void InfoBarContainer::OnInfoBarStateChanged(bool is_animating) {
-  if (ignore_infobar_state_changed_)
+  if (ignore_infobar_state_changed_) {
     return;
-  if (delegate_)
+  }
+  if (delegate_) {
     delegate_->InfoBarContainerStateChanged(is_animating);
+  }
   PlatformSpecificInfoBarStateChanged(is_animating);
 }
 

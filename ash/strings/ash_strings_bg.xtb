@@ -361,6 +361,7 @@
 <translation id="2295777434187870477">Микрофонът е включен. Превключването ще го заглуши.</translation>
 <translation id="2302092602801625023">Този профил се управлява от Family Link</translation>
 <translation id="2303600792989757991">Превключване на общия преглед на прозорците</translation>
+<translation id="2304702218354340897">Наистина ли искате да изключите функцията за управление с лице?</translation>
 <translation id="2305738328104302723">Списък със задачи в Google: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: скорошни екранни снимки, изтегляния и фиксирани файлове</translation>
 <translation id="2318576281648121272">Днес, <ph name="TODAY_DATE" /></translation>
@@ -387,6 +388,7 @@
 <translation id="2370971919968699910">Това може да доведе до разходи за данни.
 <ph name="DEVICECOUNT" /> устройства са свързани.</translation>
 <translation id="2386292613071805067">Избиране на всичко на страницата</translation>
+<translation id="2389423187722941333">Превключване на Gemini</translation>
 <translation id="2392659840443812875">Няма точки за достъп. Уверете се, че устройството ви е в близост и функцията за Bluetooth е включена.</translation>
 <translation id="2397416548179033562">Показване на менюто на Chrome</translation>
 <translation id="240006516586367791">Контроли за мултимедия</translation>
@@ -394,6 +396,7 @@
 <translation id="2402411679569069051">За да отключите своя Chromebook, използвайте отпечатъка си или отключете телефона си</translation>
 <translation id="240545663114741956">Натиснете два пъти <ph name="ACCELERATOR" /> за изход.</translation>
 <translation id="2405664212338326887">Няма връзка</translation>
+<translation id="2406710117564540804">Включване/изключване на режима „Не безпокойте“</translation>
 <translation id="2408955596600435184">Въведете своя ПИН</translation>
 <translation id="2412593942846481727">Налице е актуализация</translation>
 <translation id="2416438829169535743">Искате ли да излезете от изгледа?</translation>
@@ -899,6 +902,7 @@
 <translation id="4119928251231465047">Твърде много опити за въвеждане на ПИН кода</translation>
 <translation id="412298498316631026">прозорец</translation>
 <translation id="4123259114412175274">За да отключите своя Chromebook, функцията за Bluetooth на телефона ви трябва да е включена</translation>
+<translation id="4123868835475902435">Това бяха основните неща! Продължете в Explore – вграденото ни приложение за съвети и помощ. Ще намерите съвети за това, как да започнете, специални оферти и най-новите функции на <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4125970834901680537">Поточното предаване на приложения не е възможно в режим на таблет. Опитайте отново в режим на лаптоп.</translation>
 <translation id="4131973331381812765">Температура: <ph name="TEMPERATURE" />°C – Текуща скорост: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="4136724716305260864">Включено до изгрев</translation>
@@ -1019,7 +1023,6 @@
 <translation id="4481530544597605423">Несдвоени устройства</translation>
 <translation id="4485506555414638855">Отхвърляне на настройването на прегледа на скорошните снимки, мултимедийни файлове, известия и приложения на телефона ви</translation>
 <translation id="4491109536499578614">Изображение</translation>
-<translation id="4493452241184130939">Това бяха основните неща! Продължете в Explore – вграденото ни приложение за съвети и помощ. Ще намерите съвети за това как да започнете, препоръчани приложения, специални оферти и най-новите функции на <ph name="PRODUCT_NAME" />.</translation>
 <translation id="450584155212756404">Канал за програмисти</translation>
 <translation id="4513946894732546136">Отзиви</translation>
 <translation id="4518404433291145981">За да отключите своя Chromebook, първо отключете телефона си</translation>
@@ -1082,7 +1085,6 @@
 <translation id="4708065238214351979">Увеличаване на яркостта на клавиатурата</translation>
 <translation id="4708185346211948049"><ph name="DAY_OF_WEEK" /> следващата седмица</translation>
 <translation id="4717575069099566988">USB-C кабелът ви не поддържа USB4. Ефективността на устройството може да е ограничена.</translation>
-<translation id="4724328513667182700">6 съвета как да започнете да използвате <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">ЧЕСТО ИЗПОЛЗВАНИ</translation>
 <translation id="4731797938093519117">Достъп на родител</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (лява)</translation>
@@ -1309,7 +1311,6 @@
 <translation id="5409208741270395213">Означаване на задачата като завършена</translation>
 <translation id="5413656666631274079">Страница за настройки</translation>
 <translation id="5414198321558177633">Списъкът с профили за мобилни мрежи се опреснява. Това може да отнеме няколко минути.</translation>
-<translation id="5417965108047245734">Направете бърза обиколка, за да научите как да се придвижвате в своя <ph name="PRODUCT_NAME" /></translation>
 <translation id="5426063383988017631">Менюто за настройки е затворено</translation>
 <translation id="5428899915242071344">Стартиране на избирането</translation>
 <translation id="5429993543155113935">Понастоящем не се поддържат прозорци в режим „инкогнито“</translation>
@@ -1647,6 +1648,7 @@
 <translation id="6539852571005954999">Изтегляният файл <ph name="FILENAME" /> се сканира</translation>
 <translation id="6542521951477560771">Предава се към „<ph name="RECEIVER_NAME" />“</translation>
 <translation id="6542891623636520977">Емоджи, GIF файлове и др.</translation>
+<translation id="6543942526104794893">Наистина ли искате да изключите мимиките?</translation>
 <translation id="6545382064335350438">ПИН кодът ви пак не бе потвърден. Опитайте отново.</translation>
 <translation id="6555373427270923730">Въведете уеб адрес в адресната лента, след което натиснете <ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2313,6 +2315,7 @@
 <translation id="8855885154700222542">Клавиш за цял екран</translation>
 <translation id="8858369206579825206">Контроли за поверителност</translation>
 <translation id="8860366331836346216">Добавяне на електронна SIM карта</translation>
+<translation id="8869149849311827122">Наистина ли искате да изключите управлението с курсора на мишката?</translation>
 <translation id="8870509716567206129">Приложението не поддържа разделен екран.</translation>
 <translation id="8873203135446552888">Потвърдете, че искате да деактивирате вградения сензорен панел</translation>
 <translation id="8874184842967597500">Няма връзка</translation>

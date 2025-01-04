@@ -11,7 +11,7 @@
 
 namespace content {
 
-std::string Base64UrlEncodeChallenge(
+std::string Base64UrlEncodeOmitPadding(
     const base::span<const uint8_t> challenge) {
   std::string ret;
   base::Base64UrlEncode(challenge, base::Base64UrlEncodePolicy::OMIT_PADDING,

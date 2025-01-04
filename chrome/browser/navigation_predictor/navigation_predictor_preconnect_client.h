@@ -39,6 +39,10 @@ class NavigationPredictorPreconnectClient
         enable_preconnects_for_local_ips;
   }
 
+  static void SetPreconnectIntervalForTesting(int interval) {
+    preconnect_interval_for_testing_ = interval;
+  }
+
  private:
   friend class content::WebContentsUserData<
       NavigationPredictorPreconnectClient>;
@@ -67,12 +71,17 @@ class NavigationPredictorPreconnectClient
   std::optional<bool> IsPubliclyRoutable(
       content::NavigationHandle* navigation_handle) const;
 
+  int GetPreconnectInterval() const;
+
   // Used to get keyed services.
   const raw_ptr<content::BrowserContext> browser_context_;
 
   // Set to true only if preconnects are allowed to local IPs. Defaulted to
   // false. Set to true only for testing.
   static bool enable_preconnects_for_local_ips_for_testing_;
+
+  // Set preconnct interval for testing.
+  static std::optional<int> preconnect_interval_for_testing_;
 
   // Current visibility state of the web contents.
   content::Visibility current_visibility_;

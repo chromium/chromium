@@ -52,7 +52,7 @@ class SavedTabGroupWebContentsListener : public content::WebContentsObserver {
 
   content::WebContents* contents() const;
 
-  void OnTabDiscarded(tabs::TabInterface* interface,
+  void OnTabDiscarded(tabs::TabInterface* tab_interface,
                       content::WebContents* old_content,
                       content::WebContents* new_content);
 

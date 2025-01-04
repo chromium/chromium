@@ -10,7 +10,6 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 build_webui("build") {
   static_files = [
     "app_icon_192.png",
-    "index.html",
     "illustrations/base_on_flat_surface.svg",
     "illustrations/downloading.svg",
     "illustrations/error.svg",
@@ -19,6 +18,7 @@ build_webui("build") {
     "illustrations/repair_start.svg",
     "illustrations/success.svg",
     "illustrations/update_os.svg",
+    "index.html",
   ]
 
   css_files = [ "shimless_rma_shared.css" ]
@@ -40,8 +40,8 @@ build_webui("build") {
     "critical_error_page.ts",
     "hardware_error_page.ts",
     "onboarding_choose_destination_page.ts",
-    "onboarding_choose_wp_disable_method_page.ts",
     "onboarding_choose_wipe_device_page.ts",
+    "onboarding_choose_wp_disable_method_page.ts",
     "onboarding_enter_rsu_wp_disable_code_page.ts",
     "onboarding_landing_page.ts",
     "onboarding_network_page.ts",

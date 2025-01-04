@@ -301,17 +301,27 @@ bool IsTabGroupShared(const TabGroup* tab_group,
   return shared;
 }
 
-NSString* GetTabGroupCollabID(const TabGroup* tab_group,
-                              TabGroupSyncService* sync_service) {
-  if (sync_service && tab_group) {
+CollaborationId GetTabGroupCollabID(
+    const TabGroup* tab_group,
+    TabGroupSyncService* tab_group_sync_service) {
+  if (!tab_group) {
+    return CollaborationId();
+  }
+  return GetTabGroupCollabID(tab_group->tab_group_id(), tab_group_sync_service);
+}
+
+CollaborationId GetTabGroupCollabID(
+    const tab_groups::EitherGroupID& tab_group_id,
+    TabGroupSyncService* tab_group_sync_service) {
+  if (tab_group_sync_service) {
     std::optional<tab_groups::SavedTabGroup> saved_group =
-        sync_service->GetGroup(tab_group->tab_group_id());
+        tab_group_sync_service->GetGroup(tab_group_id);
     if (saved_group.has_value() &&
         saved_group->collaboration_id().has_value()) {
-      return base::SysUTF8ToNSString(saved_group->collaboration_id()->value());
+      return saved_group->collaboration_id().value();
     }
   }
-  return nil;
+  return CollaborationId();
 }
 
 }  // namespace utils

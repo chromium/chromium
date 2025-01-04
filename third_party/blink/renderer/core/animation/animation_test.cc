@@ -2090,11 +2090,13 @@ TEST_P(AnimationAnimationTestNoCompositing,
   SimulateFrame(2000);
   EXPECT_TRUE(animation->HasPendingActivity());
   // Cancel rejects the finished promise and creates a new pending finished
-  // promise.
-  // TODO(crbug.com/960944): Investigate if this should return false to prevent
-  // holding onto the animation indefinitely.
+  // promise. Though the new finished promise is not resolved, it should not
+  // indicate that we have pending activity as a canceled animation will never
+  // finish. Playing or pausing the cancelled animation will trigger having
+  // pending activity. If cancel were to trigger pending activity we would
+  // have a memory leak.
   animation->cancel();
-  EXPECT_TRUE(animation->HasPendingActivity());
+  EXPECT_FALSE(animation->HasPendingActivity());
 }
 
 class MockEventListener final : public NativeEventListener {

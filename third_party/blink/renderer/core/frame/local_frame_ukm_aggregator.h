@@ -290,7 +290,6 @@ class CORE_EXPORT LocalFrameUkmAggregator
     bool avoid_unnecessary_forced_layout_measurements_;
     bool should_report_uma_this_frame_;
     bool is_pre_fcp_;
-    bool record_ukm_for_current_frame_;
   };
 
   LocalFrameUkmAggregator();

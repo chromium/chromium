@@ -70,7 +70,8 @@ GetRestrictedCookieManagerForContext(
           network::mojom::RestrictedCookieManagerRole::NETWORK, request_origin,
           std::move(isolation_info),
           /* is_service_worker = */ false,
-          render_frame_host ? render_frame_host->GetProcess()->GetID() : -1,
+          render_frame_host ? render_frame_host->GetProcess()->GetDeprecatedID()
+                            : -1,
           render_frame_host ? render_frame_host->GetRoutingID()
                             : MSG_ROUTING_NONE,
           render_frame_host ? render_frame_host->GetCookieSettingOverrides()

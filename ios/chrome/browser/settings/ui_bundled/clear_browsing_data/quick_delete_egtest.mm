@@ -13,6 +13,8 @@
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/command_line_switches.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_constants.h"
@@ -26,8 +28,6 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_constants.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -241,7 +241,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   [ChromeEarlGrey setBoolValue:false
                    forUserPref:browsing_data::prefs::kCloseTabs];
 
-  if (![self isRunningTest:@selector(DISABLED_testInactiveTabsForDeletion)]) {
+  if (![self isRunningTest:@selector(testInactiveTabsForDeletion)]) {
     GREYAssertNil([MetricsAppInterface setupHistogramTester],
                   @"Cannot setup histogram tester.");
     [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
@@ -266,7 +266,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   [ChromeEarlGrey setBoolValue:true
                    forUserPref:browsing_data::prefs::kCloseTabs];
 
-  if (![self isRunningTest:@selector(DISABLED_testInactiveTabsForDeletion)]) {
+  if (![self isRunningTest:@selector(testInactiveTabsForDeletion)]) {
     [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
     GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                   @"Cannot reset histogram tester.");
@@ -296,6 +296,8 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.features_enabled.push_back(kIOSQuickDelete);
   config.features_enabled.push_back(kInactiveTabsIPadFeature);
+  config.additional_args.push_back("-InactiveTabsTestMode");
+  config.additional_args.push_back("true");
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 }
 
@@ -964,12 +966,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 // browsing data row when tabs are selected as a data type for deletion. It also
 // tests that the inactive tabs get closed when the deletion of tabs is
 // selected.
-// TODO(crbug.com/374048360): Re-enable test.
-- (void)DISABLED_testInactiveTabsForDeletion {
-  // Set pref to close tabs.
-  [ChromeEarlGrey setBoolValue:true
-                   forUserPref:browsing_data::prefs::kCloseTabs];
-
+- (void)testInactiveTabsForDeletion {
   // Load page in tab.
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
@@ -980,6 +977,20 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   // Relaunch the app to create the inactive tab. Relaunces also creates a new
   // NTP tab.
   [self relaunchAppWithInactiveTabsEnabled];
+
+  // Set to close tabs, but nothing else.
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kDeleteBrowsingHistory];
+  [ChromeEarlGrey setBoolValue:true
+                   forUserPref:browsing_data::prefs::kCloseTabs];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kDeleteCookies];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kDeleteCache];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kDeletePasswords];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kDeleteFormData];
 
   // Load a url in the NTP tab.
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];

@@ -39,6 +39,7 @@
 #include "base/win/object_watcher.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
+#include "content/browser/file_system_access/features.h"
 #include "content/browser/file_system_access/file_path_watcher/file_path_watcher_change_tracker.h"
 #include "content/browser/file_system_access/file_path_watcher/file_path_watcher_histogram.h"
 
@@ -792,5 +793,10 @@ void FilePathWatcherImpl::RunCallbackOnPendingDelete() {
 
 FilePathWatcher::FilePathWatcher()
     : FilePathWatcher(std::make_unique<FilePathWatcherImpl>()) {}
+
+// static
+size_t FilePathWatcher::GetQuotaLimitImpl() {
+  return features::kFileSystemObserverQuotaLimitWindows.Get();
+}
 
 }  // namespace content

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] layerNormalization float32 4D tensor options.bias and options.axes=[3, 1, 2]
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Axes must be ordered for layerNormalization."
+[FAIL] layerNormalization float32 4D tensor all options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Axes must be ordered for layerNormalization."
+Harness: the test ran to completion.
+

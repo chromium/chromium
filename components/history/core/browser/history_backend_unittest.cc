@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <iterator>
 #include <limits>
 #include <memory>
@@ -58,6 +59,7 @@
 #include "components/history/core/test/visit_annotations_test_utils.h"
 #include "components/sync/base/features.h"
 #include "sql/sqlite_result_code_values.h"
+#include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -2505,7 +2507,7 @@ TEST_F(HistoryBackendTest, MigrationVisitSource) {
   // Now the database should already be migrated.
   // Check version first.
   int cur_version = HistoryDatabase::GetCurrentVersion();
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   ASSERT_TRUE(db.Open(new_history_file));
   sql::Statement s(
       db.GetUniqueStatement("SELECT value FROM meta WHERE key='version'"));
@@ -3077,7 +3079,7 @@ TEST_F(HistoryBackendTest, MigrationVisitDuration) {
 
   // Check version in history database first.
   int cur_version = HistoryDatabase::GetCurrentVersion();
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   ASSERT_TRUE(db.Open(new_history_file));
   sql::Statement s(db.GetUniqueStatement(
       "SELECT value FROM meta WHERE key = 'version'"));
@@ -3172,14 +3174,14 @@ TEST_F(HistoryBackendTest, ExpireHistory) {
       base::Time::UnixEpoch().LocalMidnight() + base::Hours(12);
 
   // Insert 4 entries into the database.
-  HistoryAddPageArgs args[4];
+  std::array<HistoryAddPageArgs, 4> args;
   for (size_t i = 0; i < std::size(args); ++i) {
     args[i].url = GURL("http://example" + base::NumberToString(i) + ".com");
     args[i].time = reference_time + base::Days(i);
     backend_->AddPage(args[i]);
   }
 
-  URLRow url_rows[4];
+  std::array<URLRow, 4> url_rows;
   for (unsigned int i = 0; i < std::size(args); ++i)
     ASSERT_TRUE(backend_->GetURL(args[i].url, &url_rows[i]));
 
@@ -4863,6 +4865,34 @@ TEST_F(HistoryBackendTest, AddSyncedVisitWritesIsKnownToSync) {
   EXPECT_TRUE(added_visit.is_known_to_sync);
 }
 
+TEST_F(HistoryBackendTest, GetIsUrlKnownToSync) {
+  // Visit a url multiple times for setup.
+  GURL url("http://www.google.com");
+  std::vector<VisitInfo> visits_info;
+  visits_info.emplace_back(base::Time::Now() - base::Days(5),
+                           ui::PAGE_TRANSITION_LINK);
+  visits_info.emplace_back(base::Time::Now() - base::Days(1),
+                           ui::PAGE_TRANSITION_LINK);
+  visits_info.emplace_back(base::Time::Now(), ui::PAGE_TRANSITION_LINK);
+  AddVisits(url, visits_info, SOURCE_BROWSED);
+
+  // Get visit and row info from database.
+  VisitVector visit_vector;
+  URLRow row;
+  URLID url_id = backend_->db()->GetRowForURL(url, &row);
+  ASSERT_TRUE(backend_->db()->GetVisitsForURL(url_id, &visit_vector));
+
+  // Verify that none of the visits are yet known to sync.
+  bool is_url_known_to_sync;
+  ASSERT_TRUE(backend_->GetIsUrlKnownToSync(url_id, &is_url_known_to_sync));
+  EXPECT_FALSE(is_url_known_to_sync);
+
+  // Mark the 2nd visit as known to sync and verify.
+  backend_->MarkVisitAsKnownToSync(visit_vector[1].visit_id);
+  ASSERT_TRUE(backend_->GetIsUrlKnownToSync(url_id, &is_url_known_to_sync));
+  EXPECT_TRUE(is_url_known_to_sync);
+}
+
 #if BUILDFLAG(IS_IOS)
 TEST_F(HistoryBackendTest,
        UpdateVisitReferrerOpenerIDs_DoesNotDoubleCountVisitInSegments) {
@@ -5728,6 +5758,7 @@ class HistoryBackendTestForVisitedLinks
                        /*consider_for_ntp_most_visited=*/true, is_ephemeral,
                        /*local_navigation_id=*/std::nullopt,
                        /*title=*/std::nullopt, top_level_url, frame_url,
+                       /*opener_url=*/std::nullopt,
                        /*app_id=*/std::nullopt,
                        /*visit_duration=*/std::nullopt,
                        /*originator_cache_guid=*/std::nullopt,

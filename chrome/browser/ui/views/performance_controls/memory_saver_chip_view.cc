@@ -154,8 +154,10 @@ void MemorySaverChipView::OnExecuting(
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
 
   // Open the dialog bubble.
-  View* anchor_view = browser_view->toolbar_button_provider()->GetAnchorView(
-      PageActionIconType::kMemorySaver);
+  // TODO(crbug.com/376283619): An action ID should be created and used here
+  // when Memory Saver is migrated to the new page actions framework.
+  View* anchor_view =
+      browser_view->toolbar_button_provider()->GetAnchorView(std::nullopt);
   bubble_ = MemorySaverBubbleView::ShowBubble(browser_, anchor_view, this);
 }
 

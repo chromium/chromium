@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string_view>
+#include <unordered_set>
 #include <vector>
 
 #include "base/trace_event/memory_usage_estimator.h"
@@ -54,21 +55,20 @@ class UrlMatcherWithBypass {
       const std::optional<net::SchemefulSite>& top_frame_site,
       bool skip_bypass_check = false) const;
 
-  // Builds a pair of matcher and bypass rules for the each partition needed for
-  // the set of domains. If a ResourceOwner is not provided then no bypass rules
-  // will be created.
-  void AddMaskedDomainListRules(
-      const std::set<std::string>& domains,
-      base::optional_ref<const masked_domain_list::ResourceOwner>
-          resource_owner);
-
   // Builds a matcher to match to the public suffix list domains.
   void AddPublicSuffixListRules(const std::set<std::string>& domains);
 
-  // Builds a matcher for each partition needed that does not have any bypass
-  // rules.
-  void AddRulesWithoutBypass(const std::set<std::string>& domains);
+  // Builds a matcher for each partition (per resource owner).
+  //
+  // `excluded_domains` is the set of domains that will be excluded from the
+  // bypass matcher.
+  // A bypass matcher will be created and paired to the partition if and only
+  // if `create_bypass_matcher` is true.
+  void AddRules(const masked_domain_list::ResourceOwner& resource_owner,
+                const std::unordered_set<std::string>& excluded_domains,
+                bool create_bypass_matcher);
 
+  // Clears all url matchers within the object.
   void Clear();
 
   // Estimates dynamic memory usage.
@@ -81,6 +81,11 @@ class UrlMatcherWithBypass {
   // Determine the partition of the `match_list_with_bypass_map_` that contains
   // the given domain.
   static std::string PartitionMapKey(std::string_view domain);
+
+  // Returns the set of domains that are eligible for the experiment group.
+  static std::set<std::string> GetEligibleDomains(
+      const masked_domain_list::ResourceOwner& resource_owner,
+      std::unordered_set<std::string> excluded_domains);
 
  private:
   struct PartitionMatcher {

@@ -47,6 +47,12 @@ constexpr char kEntraLoginHost[] = "https://login.microsoftonline.com";
 // Valid redirection from MSFT Cloud App Security portal.
 constexpr char kEntraMcasHost[] = "https://mcas.ms";
 
+// Chrome Enterprise page that handles OIDC authentication redirection, this
+// page should receive the proper payload in its auth header to start OIDC
+// profile creation/registration.
+constexpr char kEnterpriseOidcRegisterUrl[] =
+    "https://chromeenterprise.google/profile-enrollment/register-handler";
+
 constexpr char kRegistrationHeaderField[] = "X-Profile-Registration-Payload";
 
 constexpr char kQuerySeparator[] = "&";
@@ -78,7 +84,7 @@ base::flat_map<std::string, std::string> SplitUrl(const std::string& url) {
 
 std::unique_ptr<URLMatcher> CreateEnrollmentRedirectUrlMatcher() {
   auto matcher = std::make_unique<URLMatcher>();
-  url_matcher::util::AddAllowFilters(
+  url_matcher::util::AddAllowFiltersWithLimit(
       matcher.get(), std::vector<std::string>({kEnrollmentFallbackUrl}));
   return matcher;
 }
@@ -96,7 +102,7 @@ bool IsEnrollmentUrl(GURL& url) {
 std::unique_ptr<URLMatcher> CreateEnrollmentHeaderUrlMatcher() {
   auto matcher = std::make_unique<URLMatcher>();
 
-  std::vector<std::string> allowed_urls({});
+  std::vector<std::string> allowed_urls({kEnterpriseOidcRegisterUrl});
 
   // Inserting more supported URLs should be only available on Canary and Dev
   // for security.
@@ -112,7 +118,7 @@ std::unique_ptr<URLMatcher> CreateEnrollmentHeaderUrlMatcher() {
     }
   }
 
-  url_matcher::util::AddAllowFilters(matcher.get(), allowed_urls);
+  url_matcher::util::AddAllowFiltersWithLimit(matcher.get(), allowed_urls);
   return matcher;
 }
 
@@ -146,7 +152,7 @@ std::unique_ptr<URLMatcher> CreateOidcEnrollmentUrlMatcher() {
     }
   }
 
-  url_matcher::util::AddAllowFilters(matcher.get(), allowed_hosts);
+  url_matcher::util::AddAllowFiltersWithLimit(matcher.get(), allowed_hosts);
   return matcher;
 }
 

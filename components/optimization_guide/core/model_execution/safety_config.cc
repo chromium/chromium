@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "components/optimization_guide/core/model_execution/substitution.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "components/optimization_guide/proto/substitution.pb.h"
@@ -47,11 +48,13 @@ bool HasUnsafeScores(
 }
 
 template <class T>
-double GetLanguageReliabilityThreshold(const T& check, bool is_complete) {
+double GetLanguageReliabilityThreshold(const T& check,
+                                       ResponseCompleteness completeness) {
   if (!check.has_language_check()) {
     return features::GetOnDeviceModelLanguageDetectionMinimumReliability();
   }
-  if (is_complete || !check.language_check().has_partial_threshold()) {
+  if (completeness == ResponseCompleteness::kComplete ||
+      !check.language_check().has_partial_threshold()) {
     return check.language_check().confidence_threshold();
   }
   return check.language_check().partial_threshold();
@@ -88,6 +91,7 @@ SafetyConfig::SafetyConfig() = default;
 SafetyConfig::SafetyConfig(
     std::optional<proto::FeatureTextSafetyConfiguration> proto)
     : proto_(proto) {}
+SafetyConfig::SafetyConfig(const SafetyConfig&) = default;
 SafetyConfig::SafetyConfig(SafetyConfig&&) = default;
 SafetyConfig::~SafetyConfig() = default;
 SafetyConfig& SafetyConfig::operator=(SafetyConfig&&) = default;
@@ -101,7 +105,10 @@ bool SafetyConfig::CanCheckPartialOutput(
     return true;
   }
   if (!proto_->has_partial_output_checks()) {
-    return false;
+    // TODO(crbug.com/379429927): Temporary fix before rolling out the partial
+    // output checks. Change the return value to false after fully landing the
+    // new configs.
+    return true;
   }
   if (num_output_tokens < proto_->partial_output_checks().minimum_tokens()) {
     return false;
@@ -183,7 +190,7 @@ bool SafetyConfig::IsRequestUnsupportedLanguage(
     return false;
   }
   double threshold =
-      GetLanguageReliabilityThreshold(check, /*is_complete*/ true);
+      GetLanguageReliabilityThreshold(check, ResponseCompleteness::kComplete);
   return IsTextInUnsupportedOrUndeterminedLanguage(safety_info, threshold);
 }
 
@@ -209,10 +216,10 @@ bool SafetyConfig::IsRawOutputUnsafe(
 }
 
 bool SafetyConfig::IsRawOutputUnsupportedLanguage(
-    bool is_complete,
+    ResponseCompleteness completeness,
     const on_device_model::mojom::SafetyInfoPtr& safety_info) const {
   const auto& check = proto_->raw_output_check();
-  double threshold = GetLanguageReliabilityThreshold(check, is_complete);
+  double threshold = GetLanguageReliabilityThreshold(check, completeness);
   return IsTextInUnsupportedOrUndeterminedLanguage(safety_info, threshold);
 }
 
@@ -232,13 +239,13 @@ bool SafetyConfig::IsResponseUnsafe(
 
 bool SafetyConfig::IsResponseUnsupportedLanguage(
     int check_idx,
-    bool is_complete,
+    ResponseCompleteness completeness,
     const on_device_model::mojom::SafetyInfoPtr& safety_info) const {
   const auto& check = proto_->response_check(check_idx);
   if (check.ignore_language_result()) {
     return false;
   }
-  double threshold = GetLanguageReliabilityThreshold(check, is_complete);
+  double threshold = GetLanguageReliabilityThreshold(check, completeness);
   return IsTextInUnsupportedOrUndeterminedLanguage(safety_info, threshold);
 }
 

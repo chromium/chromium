@@ -37,6 +37,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
@@ -333,9 +335,13 @@ bool DeleteExcept(std::optional<base::FilePath> except) {
       .ForEach([&](const base::FilePath& item) {
         if (item != *except) {
           VLOG(2) << "DeleteExcept deleting: " << item;
-          if (!base::DeletePathRecursively(item)) {
+          for (size_t i = 0; i <= 2; ++i) {
+            if (delete_success = base::DeletePathRecursively(item);
+                delete_success) {
+              break;
+            }
             VPLOG(1) << "DeleteExcept failed to delete: " << item;
-            delete_success = false;
+            base::PlatformThread::Sleep(base::Milliseconds(100));
           }
         }
       });

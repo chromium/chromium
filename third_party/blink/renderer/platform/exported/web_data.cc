@@ -44,15 +44,16 @@ void WebData::Assign(const WebData& other) {
   private_ = other.private_;
 }
 
-void WebData::Assign(const char* data, size_t size) {
-  private_ = SharedBuffer::Create(data, size);
+void WebData::Assign(base::span<const uint8_t> data) {
+  private_ = SharedBuffer::Create(data);
 }
 
-void WebData::Append(const char* data, size_t size) {
-  if (private_.IsNull())
-    private_ = SharedBuffer::Create(data, size);
-  else
-    private_->Append(data, size);
+void WebData::Append(base::span<const uint8_t> data) {
+  if (private_.IsNull()) {
+    private_ = SharedBuffer::Create(data);
+  } else {
+    private_->Append(data);
+  }
 }
 
 size_t WebData::size() const {
@@ -61,15 +62,15 @@ size_t WebData::size() const {
   return private_->size();
 }
 
-size_t WebData::GetSomeData(const char*& data, size_t position) const {
-  data = nullptr;
-  if (private_.IsNull())
-    return 0;
+base::span<const uint8_t> WebData::GetSomeData(size_t position) const {
+  if (private_.IsNull()) {
+    return {};
+  }
   const auto it = private_->GetIteratorAt(position);
-  if (it == private_->cend())
-    return 0;
-  data = it->data();
-  return it->size();
+  if (it == private_->cend()) {
+    return {};
+  }
+  return base::as_bytes(*it);
 }
 
 WebVector<uint8_t> WebData::Copy() const {

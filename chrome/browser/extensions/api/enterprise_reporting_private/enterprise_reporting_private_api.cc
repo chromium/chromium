@@ -31,6 +31,7 @@
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "google_apis/gaia/gaia_id.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -182,7 +183,7 @@ device_signals::SignalsAggregationRequest CreateAggregationRequest(
 }
 
 void StartSignalCollection(
-    const std::string& user_id,
+    const GaiaId& user_id,
     device_signals::SignalsAggregationRequest request,
     content::BrowserContext* browser_context,
     base::OnceCallback<void(device_signals::SignalsAggregationResponse)>
@@ -714,7 +715,7 @@ EnterpriseReportingPrivateGetFileSystemInfoFunction::Run() {
   LogSignalCollectionRequestedWithItems(signal_name(), number_of_items);
 
   StartSignalCollection(
-      params->request.user_context.user_id, aggregation_request,
+      GaiaId(params->request.user_context.user_id), aggregation_request,
       browser_context(),
       base::BindOnce(&EnterpriseReportingPrivateGetFileSystemInfoFunction::
                          OnSignalRetrieved,
@@ -792,7 +793,7 @@ EnterpriseReportingPrivateGetSettingsFunction::Run() {
   LogSignalCollectionRequestedWithItems(signal_name(), number_of_items);
 
   StartSignalCollection(
-      params->request.user_context.user_id, aggregation_request,
+      GaiaId(params->request.user_context.user_id), aggregation_request,
       browser_context(),
       base::BindOnce(
           &EnterpriseReportingPrivateGetSettingsFunction::OnSignalRetrieved,
@@ -851,8 +852,8 @@ EnterpriseReportingPrivateGetAvInfoFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   StartSignalCollection(
-      params->user_context.user_id, CreateAggregationRequest(signal_name()),
-      browser_context(),
+      GaiaId(params->user_context.user_id),
+      CreateAggregationRequest(signal_name()), browser_context(),
       base::BindOnce(
           &EnterpriseReportingPrivateGetAvInfoFunction::OnSignalRetrieved, this,
           base::TimeTicks::Now()));
@@ -903,8 +904,8 @@ EnterpriseReportingPrivateGetHotfixesFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   StartSignalCollection(
-      params->user_context.user_id, CreateAggregationRequest(signal_name()),
-      browser_context(),
+      GaiaId(params->user_context.user_id),
+      CreateAggregationRequest(signal_name()), browser_context(),
       base::BindOnce(
           &EnterpriseReportingPrivateGetHotfixesFunction::OnSignalRetrieved,
           this, base::TimeTicks::Now()));

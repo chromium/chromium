@@ -50,11 +50,11 @@ TEST(SmallMap, General) {
   m[1234] = 90;
   m[-5] = 6;
 
-  EXPECT_EQ(m[   9],  2);
-  EXPECT_EQ(m[   0],  5);
+  EXPECT_EQ(m[9], 2);
+  EXPECT_EQ(m[0], 5);
   EXPECT_EQ(m[1234], 90);
-  EXPECT_EQ(m[   8], 23);
-  EXPECT_EQ(m[  -5],  6);
+  EXPECT_EQ(m[8], 23);
+  EXPECT_EQ(m[-5], 6);
   EXPECT_EQ(m.size(), 5u);
   EXPECT_FALSE(m.empty());
   EXPECT_TRUE(m.UsingFullMap());
@@ -126,11 +126,11 @@ TEST(SmallMap, CopyConstructor) {
 
   {
     small_map<std::unordered_map<int, int>> m(src);
-    EXPECT_EQ(m[   9],  2);
-    EXPECT_EQ(m[   0],  5);
+    EXPECT_EQ(m[9], 2);
+    EXPECT_EQ(m[0], 5);
     EXPECT_EQ(m[1234], 90);
-    EXPECT_EQ(m[   8], 23);
-    EXPECT_EQ(m[  -5],  6);
+    EXPECT_EQ(m[8], 23);
+    EXPECT_EQ(m[-5], 6);
     EXPECT_EQ(m.size(), 5u);
     EXPECT_FALSE(m.empty());
     EXPECT_TRUE(m.UsingFullMap());
@@ -143,8 +143,9 @@ static bool SmallMapIsSubset(small_map<inner> const& a,
   typename small_map<inner>::const_iterator it;
   for (it = a.begin(); it != a.end(); ++it) {
     typename small_map<inner>::const_iterator it_in_b = b.find(it->first);
-    if (it_in_b == b.end() || it_in_b->second != it->second)
+    if (it_in_b == b.end() || it_in_b->second != it->second) {
       return false;
+    }
   }
   return true;
 }
@@ -176,25 +177,21 @@ TEST(SmallMap, AssignmentOperator) {
   small_map<std::unordered_map<int, int>> dest_small;
   dest_small = src_small;
   EXPECT_TRUE(SmallMapEqual(dest_small, src_small));
-  EXPECT_EQ(dest_small.UsingFullMap(),
-            src_small.UsingFullMap());
+  EXPECT_EQ(dest_small.UsingFullMap(), src_small.UsingFullMap());
 
   small_map<std::unordered_map<int, int>> dest_large;
   dest_large = src_large;
   EXPECT_TRUE(SmallMapEqual(dest_large, src_large));
-  EXPECT_EQ(dest_large.UsingFullMap(),
-            src_large.UsingFullMap());
+  EXPECT_EQ(dest_large.UsingFullMap(), src_large.UsingFullMap());
 
   // Assignments which assign from full to small, and vice versa.
   dest_small = src_large;
   EXPECT_TRUE(SmallMapEqual(dest_small, src_large));
-  EXPECT_EQ(dest_small.UsingFullMap(),
-            src_large.UsingFullMap());
+  EXPECT_EQ(dest_small.UsingFullMap(), src_large.UsingFullMap());
 
   dest_large = src_small;
   EXPECT_TRUE(SmallMapEqual(dest_large, src_small));
-  EXPECT_EQ(dest_large.UsingFullMap(),
-            src_small.UsingFullMap());
+  EXPECT_EQ(dest_large.UsingFullMap(), src_small.UsingFullMap());
 
   // Double check that SmallMapEqual works:
   dest_large[42] = 666;
@@ -209,11 +206,11 @@ TEST(SmallMap, Insert) {
     VLOG(1) << "Iteration " << i;
     // insert an element
     std::pair<small_map<std::unordered_map<int, int>>::iterator, bool> ret;
-    ret = sm.insert(std::make_pair(i, 100*i));
+    ret = sm.insert(std::make_pair(i, 100 * i));
     EXPECT_TRUE(ret.second);
     EXPECT_TRUE(ret.first == sm.find(i));
     EXPECT_EQ(ret.first->first, i);
-    EXPECT_EQ(ret.first->second, 100*i);
+    EXPECT_EQ(ret.first->second, 100 * i);
 
     // try to insert it again with different value, fails, but we still get an
     // iterator back with the original value.
@@ -221,7 +218,7 @@ TEST(SmallMap, Insert) {
     EXPECT_FALSE(ret.second);
     EXPECT_TRUE(ret.first == sm.find(i));
     EXPECT_EQ(ret.first->first, i);
-    EXPECT_EQ(ret.first->second, 100*i);
+    EXPECT_EQ(ret.first->second, 100 * i);
 
     // check the state of the map.
     for (int j = 1; j <= i; ++j) {
@@ -241,7 +238,7 @@ TEST(SmallMap, InsertRange) {
     VLOG(1) << "Elements " << elements;
     std::unordered_map<int, int> normal_map;
     for (int i = 1; i <= elements; ++i) {
-      normal_map.insert(std::make_pair(i, 100*i));
+      normal_map.insert(std::make_pair(i, 100 * i));
     }
 
     small_map<std::unordered_map<int, int>> sm;
@@ -251,7 +248,7 @@ TEST(SmallMap, InsertRange) {
       VLOG(1) << "Iteration " << i;
       EXPECT_TRUE(sm.find(i) != sm.end());
       EXPECT_EQ(sm.find(i)->first, i);
-      EXPECT_EQ(sm.find(i)->second, 100*i);
+      EXPECT_EQ(sm.find(i)->second, 100 * i);
     }
   }
 }
@@ -264,8 +261,8 @@ TEST(SmallMap, Erase) {
   m["tuesday"] = 2;
   m["wednesday"] = 3;
 
-  EXPECT_EQ(m["monday"   ], 1);
-  EXPECT_EQ(m["tuesday"  ], 2);
+  EXPECT_EQ(m["monday"], 1);
+  EXPECT_EQ(m["tuesday"], 2);
   EXPECT_EQ(m["wednesday"], 3);
   EXPECT_EQ(m.count("tuesday"), 1u);
   EXPECT_FALSE(m.UsingFullMap());
@@ -287,7 +284,7 @@ TEST(SmallMap, Erase) {
 
   EXPECT_EQ(m.erase("tuesday"), 1u);
 
-  EXPECT_EQ(m["monday"   ], 1);
+  EXPECT_EQ(m["monday"], 1);
   EXPECT_EQ(m["wednesday"], 3);
   EXPECT_EQ(m.count("tuesday"), 0u);
   EXPECT_EQ(m.erase("tuesday"), 0u);
@@ -389,11 +386,11 @@ TEST(SmallMap, NonHashMap) {
   m[1234] = 90;
   m[-5] = 6;
 
-  EXPECT_EQ(m[   9],  2);
-  EXPECT_EQ(m[   0],  5);
+  EXPECT_EQ(m[9], 2);
+  EXPECT_EQ(m[0], 5);
   EXPECT_EQ(m[1234], 90);
-  EXPECT_EQ(m[   8], 23);
-  EXPECT_EQ(m[  -5],  6);
+  EXPECT_EQ(m[8], 23);
+  EXPECT_EQ(m[-5], 6);
   EXPECT_EQ(m.size(), 5u);
   EXPECT_FALSE(m.empty());
   EXPECT_TRUE(m.UsingFullMap());
@@ -511,9 +508,7 @@ class MoveOnlyType {
   MoveOnlyType() : value_(0) {}
   explicit MoveOnlyType(V value) : value_(value) {}
 
-  MoveOnlyType(MoveOnlyType&& other) {
-    *this = std::move(other);
-  }
+  MoveOnlyType(MoveOnlyType&& other) { *this = std::move(other); }
 
   MoveOnlyType& operator=(MoveOnlyType&& other) {
     value_ = other.value_;

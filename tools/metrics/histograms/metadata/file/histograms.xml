@@ -1719,6 +1719,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FileBrowser.TrashAutoCleanup.Errors"
+    enum="TrashAutoCleanupError" expires_after="2025-07-01">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Records individual errors encountered during a Trash auto cleanup iteration.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.TrashAutoCleanup.FileCount" units="Files"
+    expires_after="2025-07-01">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Records the number of files involved in an iteration of the Trash auto
+    cleanup.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.TrashAutoCleanup.Time" units="ms"
+    expires_after="2025-07-01">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Records the time taken by a successful, non-empty iteration of the Trash
+    auto cleanup.
+  </summary>
+</histogram>
+
 <histogram name="FileBrowser.TrashFiles.{RootType}" units="units"
     expires_after="2025-07-01">
   <owner>simmonsjosh@google.com</owner>

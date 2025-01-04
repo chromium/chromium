@@ -198,11 +198,14 @@ class WorkerThreadDelegate : public WorkerThread::Delegate {
     if (sequence_should_be_queued) {
       task_source = task_tracker_->RegisterTaskSource(sequence);
       // We shouldn't push |task| if we're not allowed to queue |task_source|.
-      if (!task_source)
+      if (!task_source) {
         return false;
+      }
     }
-    if (!task_tracker_->WillPostTaskNow(task, transaction.traits().priority()))
+    if (!task_tracker_->WillPostTaskNow(task,
+                                        transaction.traits().priority())) {
       return false;
+    }
     transaction.PushImmediateTask(std::move(task));
     if (task_source) {
       bool should_wakeup;
@@ -235,8 +238,9 @@ class WorkerThreadDelegate : public WorkerThread::Delegate {
         worker_awake_ = true;
       }
     }
-    if (should_wakeup)
+    if (should_wakeup) {
       worker_->WakeUp();
+    }
   }
 
   void EnableFlushPriorityQueueTaskSourcesOnDestroyForTesting() {
@@ -374,15 +378,17 @@ class WorkerThreadCOMDelegate : public WorkerThreadDelegate {
     RegisteredTaskSource task_source;
     if (get_work_first_) {
       task_source = WorkerThreadDelegate::GetWorkLockRequired(worker);
-      if (task_source)
+      if (task_source) {
         get_work_first_ = false;
+      }
     }
 
     if (!task_source) {
       CheckedAutoUnlock auto_unlock(lock_);
       task_source = GetWorkFromWindowsMessageQueue();
-      if (task_source)
+      if (task_source) {
         get_work_first_ = true;
+      }
     }
 
     if (!task_source && !get_work_first_) {
@@ -437,8 +443,9 @@ class WorkerThreadCOMDelegate : public WorkerThreadDelegate {
                "queueing of pump tasks.";
         auto registered_task_source = task_tracker_->RegisterTaskSource(
             std::move(message_pump_sequence_));
-        if (!registered_task_source)
+        if (!registered_task_source) {
           return nullptr;
+        }
         transaction.PushImmediateTask(std::move(pump_message_task));
         return registered_task_source;
       } else {
@@ -491,8 +498,9 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
   bool PostDelayedTask(const Location& from_here,
                        OnceClosure closure,
                        TimeDelta delay) override {
-    if (!g_manager_is_alive)
+    if (!g_manager_is_alive) {
       return false;
+    }
 
     Task task(from_here, std::move(closure), TimeTicks::Now(), delay,
               MessagePump::GetLeewayIgnoringThreadOverride());
@@ -504,8 +512,9 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
                          OnceClosure closure,
                          TimeTicks delayed_run_time,
                          subtle::DelayPolicy delay_policy) override {
-    if (!g_manager_is_alive)
+    if (!g_manager_is_alive) {
       return false;
+    }
 
     Task task(from_here, std::move(closure), TimeTicks::Now(), delayed_run_time,
               MessagePump::GetLeewayIgnoringThreadOverride(), delay_policy);
@@ -520,8 +529,9 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
   }
 
   bool RunsTasksInCurrentSequence() const override {
-    if (!g_manager_is_alive)
+    if (!g_manager_is_alive) {
       return false;
+    }
     return GetDelegate()->RunsTasksInCurrentSequence();
   }
 
@@ -562,8 +572,9 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
       return false;
     }
 
-    if (task.delayed_run_time.is_null())
+    if (task.delayed_run_time.is_null()) {
       return GetDelegate()->PostTaskNow(sequence_, nullptr, std::move(task));
+    }
 
     // Unretained(GetDelegate()) is safe because this TaskRunner and its
     // worker are kept alive as long as there are pending Tasks.
@@ -654,8 +665,9 @@ void PooledSingleThreadTaskRunnerManager::DidUpdateCanRunPolicy() {
 
   {
     CheckedAutoLock auto_lock(lock_);
-    if (!started_)
+    if (!started_) {
       return;
+    }
     workers_to_update = workers_;
   }
   // Any worker created after the lock is released will see the latest
@@ -687,8 +699,10 @@ PooledSingleThreadTaskRunnerManager::CreateCOMSTATaskRunner(
 PooledSingleThreadTaskRunnerManager::ContinueOnShutdown
 PooledSingleThreadTaskRunnerManager::TraitsToContinueOnShutdown(
     const TaskTraits& traits) {
-  if (traits.shutdown_behavior() == TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN)
+  if (traits.shutdown_behavior() ==
+      TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN) {
     return IS_CONTINUE_ON_SHUTDOWN;
+  }
   return IS_NOT_CONTINUE_ON_SHUTDOWN;
 }
 
@@ -721,8 +735,9 @@ PooledSingleThreadTaskRunnerManager::CreateTaskRunnerImpl(
       const auto& environment_params =
           kEnvironmentParams[GetEnvironmentIndexForTraits(traits)];
       std::string worker_name;
-      if (thread_mode == SingleThreadTaskRunnerThreadMode::SHARED)
+      if (thread_mode == SingleThreadTaskRunnerThreadMode::SHARED) {
         worker_name += "Shared";
+      }
       worker_name += environment_params.name_suffix;
       worker = CreateAndRegisterWorkerThread<DelegateType>(
           worker_name, thread_mode, environment_params.thread_type_hint);
@@ -731,8 +746,9 @@ PooledSingleThreadTaskRunnerManager::CreateTaskRunnerImpl(
     started = started_;
   }
 
-  if (new_worker && started)
+  if (new_worker && started) {
     worker->Start(io_thread_task_runner_, worker_thread_observer_);
+  }
 
   return MakeRefCounted<PooledSingleThreadTaskRunner>(this, traits, worker,
                                                       thread_mode);
@@ -837,8 +853,9 @@ void PooledSingleThreadTaskRunnerManager::UnregisterWorkerThread(
     CheckedAutoLock auto_lock(lock_);
 
     // Skip when joining (the join logic takes care of the rest).
-    if (workers_.empty())
+    if (workers_.empty()) {
       return;
+    }
 
     auto worker_iter = ranges::find(workers_, worker);
     CHECK(worker_iter != workers_.end(), base::NotFatalUntil::M125);
@@ -870,11 +887,13 @@ void PooledSingleThreadTaskRunnerManager::ReleaseSharedWorkerThreads() {
 
   for (size_t i = 0; i < std::size(local_shared_worker_threads); ++i) {
     for (size_t j = 0; j < std::size(local_shared_worker_threads[i]); ++j) {
-      if (local_shared_worker_threads[i][j])
+      if (local_shared_worker_threads[i][j]) {
         UnregisterWorkerThread(local_shared_worker_threads[i][j]);
+      }
 #if BUILDFLAG(IS_WIN)
-      if (local_shared_com_worker_threads[i][j])
+      if (local_shared_com_worker_threads[i][j]) {
         UnregisterWorkerThread(local_shared_com_worker_threads[i][j]);
+      }
 #endif
     }
   }

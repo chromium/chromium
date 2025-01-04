@@ -845,6 +845,7 @@
 <translation id="6385591741672306837">kolumn</translation>
 <translation id="6387719785439924554">sidoruta</translation>
 <translation id="6393014464788431702">Inaktivera alla händelsefilter</translation>
+<translation id="6406989068857078334">Mushastigheten har minskats. <ph name="GESTURE" /> igen för att klicka</translation>
 <translation id="6411569524720229058">Höst</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{kolon}other{# kolon}}</translation>
@@ -1099,6 +1100,7 @@
 <translation id="8205922869661890178">Öppna utvecklarloggen</translation>
 <translation id="8212109599554677485">Ändra visningsformatet till sida vid sida</translation>
 <translation id="8215202828671303819">Flerval</translation>
+<translation id="822316432305106615">Starta precisionsklick</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" /> % genomskinlighet.</translation>
 <translation id="8261506727792406068">Radera</translation>
 <translation id="826825447994856889">Inledning</translation>

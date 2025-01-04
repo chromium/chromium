@@ -103,11 +103,6 @@
 
 namespace ash {
 
-const constexpr char kIconHealthMetricName[] =
-    "Webapp.SystemApps.IconsAreHealthyInSession";
-const constexpr char kIconsFixedOnReinstallMetricName[] =
-    "Webapp.SystemApps.IconsFixedOnReinstall";
-
 namespace {
 
 SystemWebAppDelegateMap CreateSystemWebApps(Profile* profile) {
@@ -220,10 +215,6 @@ web_app::ExternalInstallOptions CreateInstallOptionsForSystemApp(
 }
 
 }  // namespace
-
-// static
-const char SystemWebAppManager::kInstallResultHistogramName[];
-const char SystemWebAppManager::kInstallDurationHistogramName[];
 
 SystemWebAppManager::SystemWebAppManager(Profile* profile)
     : profile_(profile),
@@ -658,7 +649,7 @@ void SystemWebAppManager::RecordSystemWebAppInstallDuration(
   DCHECK_GE(install_duration.InMilliseconds(), 0);
 
   if (!shutting_down_) {
-    base::UmaHistogramMediumTimes(kInstallDurationHistogramName,
+    base::UmaHistogramMediumTimes(kFreshInstallDurationHistogramName,
                                   install_duration);
   }
 }
@@ -786,17 +777,17 @@ void SystemWebAppManager::OnIconCheckResult(
     case SystemWebAppIconChecker::IconState::kNoAppInstalled:
       break;
     case SystemWebAppIconChecker::IconState::kBroken:
-      base::UmaHistogramBoolean(kIconHealthMetricName, false);
+      base::UmaHistogramBoolean(kIconsAreHealthyInSessionHistorgramName, false);
       if (PreviousSessionHadBrokenIcons()) {
-        base::UmaHistogramBoolean(kIconsFixedOnReinstallMetricName, false);
+        base::UmaHistogramBoolean(kIconsFixedOnReinstallHistogramName, false);
       }
       pref_service_->SetBoolean(kSystemWebAppSessionHasBrokenIconsPrefName,
                                 true);
       break;
     case SystemWebAppIconChecker::IconState::kOk:
-      base::UmaHistogramBoolean(kIconHealthMetricName, true);
+      base::UmaHistogramBoolean(kIconsAreHealthyInSessionHistorgramName, true);
       if (PreviousSessionHadBrokenIcons()) {
-        base::UmaHistogramBoolean(kIconsFixedOnReinstallMetricName, true);
+        base::UmaHistogramBoolean(kIconsFixedOnReinstallHistogramName, true);
       }
       pref_service_->ClearPref(kSystemWebAppSessionHasBrokenIconsPrefName);
       pref_service_->ClearPref(prefs::kSystemWebAppInstallFailureCount);

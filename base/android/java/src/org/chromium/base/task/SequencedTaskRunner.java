@@ -4,6 +4,8 @@
 
 package org.chromium.base.task;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Tasks posted will be run in order with respect to this sequence, but they may be executed
  * on arbitrary threads. Unless specified otherwise by the provider of a given
@@ -11,4 +13,5 @@ package org.chromium.base.task;
  * guarantees w.r.t. other SequencedTaskRunners. They have destroy() automatically called whenever
  * they go empty, so calling destroy() on them is not needed.
  */
+@NullMarked
 public interface SequencedTaskRunner extends TaskRunner {}

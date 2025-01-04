@@ -40,9 +40,11 @@ void RegisteredFrameConverter::ConvertFrameImpl(
     return OnError(FROM_HERE, "Failed to create VideoFrame.");
   }
 
-  // Merges the metadata from the frame. Use of MergeMetadataFrom() avoids
-  // overwriting |video_frame->metadata()->tracking_token|.
-  video_frame->metadata().MergeMetadataFrom(frame->metadata());
+  // It is fine to use set_metadata() to replace `video_frame`'s metadata with
+  // that of `frame`. The `tracking_token` field of each are the same.
+  video_frame->set_metadata(frame->metadata());
+  video_frame->set_color_space(frame->ColorSpace());
+  video_frame->set_hdr_metadata(frame->hdr_metadata());
 
   // A reference to |frame| is stored in |registry_|. Next, a reference to
   // |registry_| is stored in the destruction observer of the generated

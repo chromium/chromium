@@ -144,7 +144,7 @@ bool IsArcPlayStoreEnabledPreferenceManagedForProfile(const Profile* profile);
 bool SetArcPlayStoreEnabledForProfile(Profile* profile, bool enabled);
 
 // Returns whether all ARC related OptIn preferences (i.e.
-// ArcBackupRestoreEnabled and ArcLocationServiceEnabled) are managed.
+// ArcBackupRestoreEnabled) are managed.
 bool AreArcAllOptInPreferencesIgnorableForProfile(const Profile* profile);
 
 // Returns true if ChromeOS OOBE opt-in window is currently showing.

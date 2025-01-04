@@ -9,6 +9,11 @@
 
 namespace task_manager {
 
+// %s represents the ith process being ended.
+// i.e. FirstProcessEnded, SecondProcessEnded, ... up to (and including) the
+// Fifth process. Any process after the fifth one is discarded and not recorded.
+inline constexpr char kTimeToEndProcessHistogram[] =
+    "TaskManager.%sProcessEnded.ElapsedTime";
 inline constexpr char kClosedElapsedTimeHistogram[] =
     "TaskManager.Closed.ElapsedTime";
 inline constexpr char kStartActionHistogram[] = "TaskManager.Opened";
@@ -31,6 +36,9 @@ enum class StartAction {
 void RecordNewOpenEvent(StartAction action);
 void RecordCloseEvent(const base::TimeTicks& start_time,
                       const base::TimeTicks& end_time);
+void RecordEndProcessEvent(const base::TimeTicks& start_time,
+                           const base::TimeTicks& end_time,
+                           size_t end_process_count);
 
 }  // namespace task_manager
 

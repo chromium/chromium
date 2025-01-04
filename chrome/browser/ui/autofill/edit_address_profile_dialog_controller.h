@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_EDIT_ADDRESS_PROFILE_DIALOG_CONTROLLER_H_
 #define CHROME_BROWSER_UI_AUTOFILL_EDIT_ADDRESS_PROFILE_DIALOG_CONTROLLER_H_
 
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 
 namespace autofill {
 

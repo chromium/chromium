@@ -8,7 +8,7 @@ import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 import type {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {fakeTouchDevices} from 'chrome://diagnostics/fake_data.js';
 import {FakeInputDataProvider} from 'chrome://diagnostics/fake_input_data_provider.js';
-import {ConnectionType, KeyboardInfo, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey} from 'chrome://diagnostics/input.mojom-webui.js';
+import {BottomLeftLayout, BottomRightLayout, ConnectionType, KeyboardInfo, MechanicalLayout, NumberPadPresence, NumpadLayout, PhysicalLayout, TopRightKey, TopRowKey} from 'chrome://diagnostics/input.mojom-webui.js';
 import {InputCardElement, InputCardType} from 'chrome://diagnostics/input_card.js';
 import {TouchDeviceInfo} from 'chrome://diagnostics/input_data_provider.mojom-webui.js';
 import {setInputDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
@@ -43,6 +43,9 @@ const keyboards: KeyboardInfo[] = [
     ],
     topRightKey: TopRightKey.kLock,
     regionCode: 'US',
+    bottomLeftLayout: BottomLeftLayout.kUnknown,
+    bottomRightLayout: BottomRightLayout.kUnknown,
+    numpadLayout: NumpadLayout.kUnknown,
   },
   {
     id: 10,
@@ -55,6 +58,10 @@ const keyboards: KeyboardInfo[] = [
     topRowKeys: [],
     topRightKey: TopRightKey.kUnknown,
     regionCode: 'US',
+    bottomLeftLayout: BottomLeftLayout.kUnknown,
+    bottomRightLayout: BottomRightLayout.kUnknown,
+    numpadLayout: NumpadLayout.kUnknown,
+
   },
 ];
 

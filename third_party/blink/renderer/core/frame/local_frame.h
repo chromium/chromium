@@ -79,6 +79,7 @@
 #include "third_party/blink/renderer/core/frame/ad_script_identifier.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/frame_types.h"
+#include "third_party/blink/renderer/core/frame/frame_visibility_observer.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/loader/back_forward_cache_loader_helper_impl.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
@@ -961,6 +962,13 @@ class CORE_EXPORT LocalFrame final
   bool AllowStorageAccessSyncAndNotify(
       blink::WebContentSettingsClient::StorageType storage_type);
 
+  void NotifyFrameVisibilityChanged(mojom::blink::FrameVisibility visibility);
+
+  HeapHashSet<WeakMember<FrameVisibilityObserver>>&
+  GetFrameVisibilityObserverSet() {
+    return frame_visibility_observers_;
+  }
+
  private:
   friend class FrameNavigationDisabler;
   // LocalFrameMojoHandler is a part of LocalFrame.
@@ -1233,6 +1241,8 @@ class CORE_EXPORT LocalFrame final
   // initialization.
   bool is_link_preivew_triggerer_initialized_ = false;
   std::unique_ptr<WebLinkPreviewTriggerer> link_preview_triggerer_;
+
+  HeapHashSet<WeakMember<FrameVisibilityObserver>> frame_visibility_observers_;
 
   void OnStorageAccessCallback(base::OnceCallback<void(bool)> callback,
                                mojom::blink::StorageTypeAccessed storage_type,

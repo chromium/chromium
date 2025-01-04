@@ -90,8 +90,8 @@ void HistogramTester::ExpectBucketCount(std::string_view name,
   } else {
     // No histogram means there were zero samples.
     EXPECT_EQ(0, expected_count)
-        << "Histogram \"" << name << "\" does not exist. "
-        << "(expected at " << location.ToString() << ")";
+        << "Histogram \"" << name << "\" does not exist. " << "(expected at "
+        << location.ToString() << ")";
   }
 }
 
@@ -111,8 +111,8 @@ void HistogramTester::ExpectTotalCount(std::string_view name,
   } else {
     // No histogram means there were zero samples.
     EXPECT_EQ(0, expected_count)
-        << "Histogram \"" << name << "\" does not exist. "
-        << "(expected at " << location.ToString() << ")";
+        << "Histogram \"" << name << "\" does not exist. " << "(expected at "
+        << location.ToString() << ")";
   }
 }
 
@@ -125,13 +125,15 @@ void HistogramTester::ExpectTimeBucketCount(std::string_view name,
 
 int64_t HistogramTester::GetTotalSum(std::string_view name) const {
   HistogramBase* histogram = StatisticsRecorder::FindHistogram(name);
-  if (!histogram)
+  if (!histogram) {
     return 0;
+  }
 
   int64_t original_sum = 0;
   auto original_samples_it = histograms_snapshot_.find(name);
-  if (original_samples_it != histograms_snapshot_.end())
+  if (original_samples_it != histograms_snapshot_.end()) {
     original_sum = original_samples_it->second->sum();
+  }
 
   std::unique_ptr<HistogramSamples> samples = histogram->SnapshotSamples();
   return samples->sum() - original_sum;
@@ -173,13 +175,15 @@ void HistogramTester::GetBucketCountForSamples(
     HistogramBase::Count* total_count) const {
   std::unique_ptr<HistogramSamples> samples = histogram.SnapshotSamples();
   *count = samples->GetCount(sample);
-  if (total_count)
+  if (total_count) {
     *total_count = samples->TotalCount();
+  }
   auto histogram_data = histograms_snapshot_.find(histogram.histogram_name());
   if (histogram_data != histograms_snapshot_.end()) {
     *count -= histogram_data->second->GetCount(sample);
-    if (total_count)
+    if (total_count) {
       *total_count -= histogram_data->second->TotalCount();
+    }
   }
 }
 
@@ -224,8 +228,9 @@ HistogramTester::GetHistogramSamplesSinceCreation(
   std::unique_ptr<HistogramSamples> named_samples =
       histogram->SnapshotSamples();
   auto original_samples_it = histograms_snapshot_.find(histogram_name);
-  if (original_samples_it != histograms_snapshot_.end())
+  if (original_samples_it != histograms_snapshot_.end()) {
     named_samples->Subtract(*original_samples_it->second.get());
+  }
   return named_samples;
 }
 
@@ -237,8 +242,9 @@ std::string HistogramTester::GetAllHistogramsRecorded() const {
         histogram->SnapshotSamples();
 
     for (const auto& histogram_data : histograms_snapshot_) {
-      if (histogram_data.first == histogram->histogram_name())
+      if (histogram_data.first == histogram->histogram_name()) {
         named_samples->Subtract(*histogram_data.second);
+      }
     }
 
     if (named_samples->TotalCount()) {
@@ -263,8 +269,9 @@ int HistogramTester::GetTotalCountForSamples(
   std::unique_ptr<HistogramSamples> samples = histogram.SnapshotSamples();
   int actual_count = samples->TotalCount();
   auto histogram_data = histograms_snapshot_.find(histogram.histogram_name());
-  if (histogram_data != histograms_snapshot_.end())
+  if (histogram_data != histograms_snapshot_.end()) {
     actual_count -= histogram_data->second->TotalCount();
+  }
   return actual_count;
 }
 

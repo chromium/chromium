@@ -65,8 +65,9 @@ void UpdateJobFileInfo(std::unique_ptr<extensions::PrinterProviderPrintJob> job,
                        base::ReadOnlySharedMemoryRegion pwg_region) {
   auto data =
       base::RefCountedSharedMemoryMapping::CreateFromWholeRegion(pwg_region);
-  if (data)
+  if (data) {
     job->document_bytes = data;
+  }
   std::move(callback).Run(std::move(job));
 }
 
@@ -94,8 +95,9 @@ std::optional<ProvisionalUsbPrinter> ParseProvisionalUsbPrinterId(
     const std::string& printer_id) {
   std::vector<std::string> components = base::SplitString(
       printer_id, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  if (components.size() != 3 || components[0] != kProvisionalUsbLabel)
+  if (components.size() != 3 || components[0] != kProvisionalUsbLabel) {
     return std::nullopt;
+  }
   return ProvisionalUsbPrinter{.extension_id = std::move(components[1]),
                                .device_guid = std::move(components[2])};
 }
@@ -141,8 +143,7 @@ ExtensionPrinterSettings ParseExtensionPrinterSettings(
 ExtensionPrinterHandler::ExtensionPrinterHandler(Profile* profile)
     : profile_(profile) {}
 
-ExtensionPrinterHandler::~ExtensionPrinterHandler() {
-}
+ExtensionPrinterHandler::~ExtensionPrinterHandler() = default;
 
 void ExtensionPrinterHandler::Reset() {
   // TODO(tbarzic): Keep track of pending request ids issued by |this| and
@@ -278,8 +279,9 @@ void ExtensionPrinterHandler::ConvertToPWGRaster(
     const gfx::Size& page_size,
     std::unique_ptr<extensions::PrinterProviderPrintJob> job,
     PrintJobCallback callback) {
-  if (!pwg_raster_converter_)
+  if (!pwg_raster_converter_) {
     pwg_raster_converter_ = PwgRasterConverter::CreateDefault();
+  }
 
   PwgRasterSettings bitmap_settings =
       PwgRasterConverter::GetBitmapSettings(printer_description, print_ticket);
@@ -322,13 +324,16 @@ void ExtensionPrinterHandler::WrapGetPrintersCallback(
   PRINTER_LOG(EVENT) << "ExtensionPrinterHandler::WrapGetPrintersCallback(): "
                      << "printers.size()=" << printers.size()
                      << " done=" << done;
-  if (!printers.empty())
+  if (!printers.empty()) {
     callback.Run(std::move(printers));
+  }
 
-  if (done)
+  if (done) {
     pending_enumeration_count_--;
-  if (pending_enumeration_count_ == 0)
+  }
+  if (pending_enumeration_count_ == 0) {
     std::move(done_callback_).Run();
+  }
 }
 
 void ExtensionPrinterHandler::WrapGetCapabilityCallback(
@@ -370,8 +375,9 @@ void ExtensionPrinterHandler::OnUsbDevicesEnumerated(
   for (const auto& extension : registry->enabled_extensions()) {
     const UsbPrinterManifestData* manifest_data =
         UsbPrinterManifestData::Get(extension.get());
-    if (!manifest_data || !HasUsbPrinterProviderPermissions(extension.get()))
+    if (!manifest_data || !HasUsbPrinterProviderPermissions(extension.get())) {
       continue;
+    }
 
     const extensions::DevicePermissions* device_permissions =
         permissions_manager->GetForExtension(extension->id());
@@ -407,10 +413,12 @@ void ExtensionPrinterHandler::OnUsbDevicesEnumerated(
   DCHECK_GT(pending_enumeration_count_, 0);
   pending_enumeration_count_--;
   base::Value::List list = std::move(printer_list);
-  if (!list.empty())
+  if (!list.empty()) {
     callback.Run(std::move(list));
-  if (pending_enumeration_count_ == 0)
+  }
+  if (pending_enumeration_count_ == 0) {
     std::move(done_callback_).Run();
+  }
 }
 
 }  // namespace printing

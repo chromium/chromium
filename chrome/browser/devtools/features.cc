@@ -117,4 +117,9 @@ BASE_FEATURE(kDevToolsVeLogging,
 const base::FeatureParam<bool> kDevToolsVeLoggingTesting{
     &kDevToolsVeLogging, "testing", /*default_value=*/false};
 
+// Whether showing animation styles in the styles tab is enabled.
+BASE_FEATURE(kDevToolsAnimationStylesInStylesTab,
+             "DevToolsAnimationStylesInStylesTab",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

@@ -478,7 +478,7 @@ class DocumentLoader::EncodedBodyData : public BodyData {
   }
 
   void Buffer(DocumentLoader* loader) override {
-    loader->data_buffer_->Append(data_.data(), data_.size());
+    loader->data_buffer_->Append(data_);
   }
 
   base::SpanOrSize<const char> EncodedData() const override {
@@ -991,7 +991,8 @@ void DocumentLoader::RunURLAndHistoryUpdateSteps(
       type, fire_popstate, frame_->DomWindow()->GetSecurityOrigin(),
       is_browser_initiated, is_synchronously_committed,
       soft_navigation_heuristics_task_id,
-      LocalFrame::HasTransientUserActivation(frame_));
+      LocalFrame::HasTransientUserActivation(frame_),
+      /*has_ua_visual_transition*/ false);
 }
 
 void DocumentLoader::UpdateForSameDocumentNavigation(
@@ -1006,7 +1007,8 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
     bool is_synchronously_committed,
     std::optional<scheduler::TaskAttributionId>
         soft_navigation_heuristics_task_id,
-    bool has_transient_user_activation) {
+    bool has_transient_user_activation,
+    bool has_ua_visual_transition) {
   CHECK_EQ(IsBackForwardOrRestore(type), !!history_item);
   TRACE_EVENT1("blink", "FrameLoader::updateForSameDocumentNavigation", "url",
                new_url.GetString().Ascii());
@@ -1118,7 +1120,7 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
       soft_navigation_event_scope;
   SoftNavigationHeuristics* heuristics =
       SoftNavigationHeuristics::From(*frame_->DomWindow());
-  if (heuristics && is_browser_initiated) {
+  if (heuristics && is_browser_initiated && !is_prerendering_) {
     if (auto* script_state = ToScriptStateForMainWorld(frame_->DomWindow())) {
       // For browser-initiated navigations, we never started the soft
       // navigation (as this is the first we hear of it in the renderer). We
@@ -1172,7 +1174,8 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
           history_item ? history_item->StateObject()
                        : SerializedScriptValue::NullValue();
       frame_->DomWindow()->DispatchPopstateEvent(std::move(state_object),
-                                                 navigation_task_state);
+                                                 navigation_task_state,
+                                                 has_ua_visual_transition);
     }
   }
 
@@ -1804,7 +1807,8 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
       url, history_item, same_document_navigation_type, nullptr,
       frame_load_type, FirePopstate::kYes, initiator_origin,
       is_browser_initiated, is_synchronously_committed,
-      soft_navigation_heuristics_task_id, has_transient_user_activation);
+      soft_navigation_heuristics_task_id, has_transient_user_activation,
+      has_ua_visual_transition);
   if (!frame_)
     return;
 
@@ -2204,6 +2208,10 @@ void DocumentLoader::DidCommitNavigation() {
       "Navigation.DocumentLoader.DidCommitNavigation");
   if (commit_reason_ != CommitReason::kRegular)
     return;
+
+  if (auto* owner = DynamicTo<HTMLFrameOwnerElement>(frame_->Owner()); owner) {
+    owner->UpdateDeferredFetchPolicy();
+  }
 
   // When committing a new document, the FrameScheduler might need to carry over
   // the previous document's FrameScheduler's `UnreportedTaskTime()`, as that

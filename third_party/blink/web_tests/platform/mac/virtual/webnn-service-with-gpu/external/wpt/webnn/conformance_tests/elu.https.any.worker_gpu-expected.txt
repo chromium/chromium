@@ -18,6 +18,6 @@ This is a testharness.js-based test.
 [FAIL] elu float32 4D tensor positive options.alpha
   assert_true: assert_array_approx_equals_ulp: test elu float32 actual 4.71875 should be close enough to expected 4.721739768981934 by the acceptable 18 ULP distance, but they have 6270 ULP distance expected true got false
 [FAIL] elu float32 4D tensor negative options.alpha
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'elu' on 'MLGraphBuilder': The value of alpha must be greater than 0."
+  assert_true: assert_array_approx_equals_ulp: test elu float32 actual 4.71875 should be close enough to expected 4.721739768981934 by the acceptable 18 ULP distance, but they have 6270 ULP distance expected true got false
 Harness: the test ran to completion.
 

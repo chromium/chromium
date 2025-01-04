@@ -21,6 +21,7 @@
 #include "net/http/http_stream_pool_job.h"
 #include "net/http/http_stream_pool_request_info.h"
 #include "net/http/http_stream_request.h"
+#include "net/log/net_log.h"
 #include "net/quic/quic_session_alias_key.h"
 #include "net/socket/next_proto.h"
 #include "net/ssl/ssl_config.h"
@@ -67,6 +68,7 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
   bool enable_alternative_services() const override;
   bool is_http1_allowed() const override;
   const ProxyInfo& proxy_info() const override;
+  const NetLogWithSource& net_log() const override;
   void OnStreamReady(Job* job,
                      std::unique_ptr<HttpStream> stream,
                      NextProto negotiated_protocol) override;
@@ -163,6 +165,8 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
       quic::ParsedQuicVersion::Unsupported();
 
   const std::optional<Alternative> alternative_;
+
+  const NetLogWithSource net_log_;
 
   raw_ptr<HttpStreamRequest::Delegate> delegate_;
   raw_ptr<HttpStreamRequest> stream_request_;

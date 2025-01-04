@@ -187,7 +187,7 @@ std::optional<RTCVideoDecoderFallbackReason> NeedSoftwareFallback(
   // Fall back to software decoding if there's no support for VP9 spatial
   // layers. See https://crbug.com/webrtc/9304.
   const bool is_spatial_layer_buffer =
-      buffer.has_side_data() && !buffer.side_data()->spatial_layers.empty();
+      buffer.side_data() && !buffer.side_data()->spatial_layers.empty();
   if (codec == media::VideoCodec::kVP9 && is_spatial_layer_buffer &&
       !media::IsVp9kSVCHWDecodingEnabled()) {
     return RTCVideoDecoderFallbackReason::kSpatialLayers;

@@ -118,10 +118,13 @@ void RevokeAndroidFilesMountPoint() {
 }
 
 bool RegisterShareCacheMountPoint(Profile* profile) {
+  const std::string mount_point_name =
+      file_manager::util::GetShareCacheMountPointName(profile);
   storage::ExternalMountPoints* const mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
+  mount_points->RevokeFileSystem(mount_point_name);
   return mount_points->RegisterFileSystem(
-      util::kShareCacheMountPointName, storage::kFileSystemTypeLocal,
+      mount_point_name, storage::kFileSystemTypeLocal,
       storage::FileSystemMountOption(), util::GetShareCacheFilePath(profile));
 }
 

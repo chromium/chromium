@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/spdy/spdy_session_pool.h"
 
+#include <array>
 #include <cstddef>
 #include <tuple>
 #include <utility>
@@ -552,14 +548,15 @@ void SpdySessionPoolTest::RunIPPoolingTest(
     std::string name;
     std::string iplist;
     SpdySessionKey key;
-  } test_hosts[] = {
+  };
+  auto test_hosts = std::to_array<TestHosts>({
       {"http://www.example.org", "www.example.org",
        "192.0.2.33,192.168.0.1,192.168.0.5"},
       {"http://mail.example.org", "mail.example.org",
        "192.168.0.2,192.168.0.3,192.168.0.5,192.0.2.33"},
       {"http://mail.example.com", "mail.example.com",
        "192.168.0.4,192.168.0.3"},
-  };
+  });
 
   for (auto& test_host : test_hosts) {
     session_deps_.host_resolver->rules()->AddIPLiteralRule(
@@ -741,10 +738,11 @@ void SpdySessionPoolTest::RunIPPoolingDisabledTest(SSLSocketDataProvider* ssl) {
     std::string name;
     std::string iplist;
     SpdySessionKey key;
-  } test_hosts[] = {
+  };
+  auto test_hosts = std::to_array<TestHosts>({
       {"www.webkit.org", "192.0.2.33,192.168.0.1,192.168.0.5"},
       {"js.webkit.com", "192.168.0.4,192.168.0.1,192.0.2.33"},
-  };
+  });
 
   session_deps_.host_resolver->set_synchronous_mode(true);
   for (auto& test_host : test_hosts) {
@@ -799,10 +797,11 @@ TEST_F(SpdySessionPoolTest, IPPoolingNetLog) {
     std::string name;
     std::string iplist;
     SpdySessionKey key;
-  } test_hosts[] = {
+  };
+  auto test_hosts = std::to_array<TestHosts>({
       {"www.example.org", "192.168.0.1"},
       {"mail.example.org", "192.168.0.1"},
-  };
+  });
 
   // Populate the HostResolver cache.
   session_deps_.host_resolver->set_synchronous_mode(true);
@@ -869,10 +868,13 @@ TEST_F(SpdySessionPoolTest, IPPoolingDnsAlpn) {
     std::string name;
     std::vector<HostResolverEndpointResult> endpoints;
     SpdySessionKey key;
-  } test_hosts[] = {{"www.example.org"},
-                    {"mail.example.org"},
-                    {"mail.example.com"},
-                    {"example.test"}};
+  };
+  auto test_hosts = std::to_array<TestHosts>({
+      {"www.example.org"},
+      {"mail.example.org"},
+      {"mail.example.com"},
+      {"example.test"},
+  });
 
   const IPEndPoint kRightIP(*IPAddress::FromIPLiteral("192.168.0.1"),
                             kTestPort);
@@ -965,10 +967,11 @@ TEST_F(SpdySessionPoolTest, IPPoolingDisabled) {
     std::string name;
     std::string iplist;
     SpdySessionKey key;
-  } test_hosts[] = {
+  };
+  auto test_hosts = std::to_array<TestHosts>({
       {"www.example.org", "192.168.0.1"},
       {"mail.example.org", "192.168.0.1"},
-  };
+  });
 
   // Populate the HostResolver cache.
   session_deps_.host_resolver->set_synchronous_mode(true);
@@ -1035,7 +1038,7 @@ TEST_F(SpdySessionPoolTest, IPPoolingClientCert) {
   ssl.ssl_info.cert = X509Certificate::CreateFromBytes(webkit_der);
   ASSERT_TRUE(ssl.ssl_info.cert);
   ssl.ssl_info.client_cert_sent = true;
-  ssl.next_proto = kProtoHTTP2;
+  ssl.next_proto = NextProto::kProtoHTTP2;
   RunIPPoolingDisabledTest(&ssl);
 }
 
@@ -1463,10 +1466,11 @@ TEST_F(SpdySessionPoolTest, IPConnectionPoolingWithWebSockets) {
     std::string name;
     std::string iplist;
     SpdySessionKey key;
-  } test_hosts[] = {
+  };
+  auto test_hosts = std::to_array<TestHosts>({
       {"www.example.org", "192.168.0.1"},
       {"mail.example.org", "192.168.0.1"},
-  };
+  });
 
   // Populate the HostResolver cache.
   session_deps_.host_resolver->set_synchronous_mode(true);
@@ -1782,11 +1786,12 @@ TEST_F(SpdySessionPoolTest, RequestSessionDuringNotification) {
 
 static const char kSSLServerTestHost[] = "config-changed.test";
 
-static const struct {
+struct SSLServerTests {
   const char* url;
   const char* proxy_pac_string;
   bool expect_invalidated;
-} kSSLServerTests[] = {
+};
+const auto kSSLServerTests = std::to_array<SSLServerTests>({
     // If the host and port match, the session should be invalidated.
     {"https://config-changed.test", "DIRECT", true},
     // If host and port do not match, the session should not be invalidated.
@@ -1806,7 +1811,7 @@ static const struct {
      false},
     {"https://mail.config-changed.test", "HTTPS config-changed.test:444",
      false},
-};
+});
 
 // Tests the OnSSLConfigForServersChanged() method matches SpdySessions as
 // expected.

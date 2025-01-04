@@ -60,6 +60,14 @@ namespace chrome_pdf {
 
 namespace {
 
+// Some commonly used points with InitializeSimpleSinglePageBasicLayout().
+constexpr gfx::PointF kLeftVerticalStrokePoint1(10.0f, 15.0f);
+constexpr gfx::PointF kLeftVerticalStrokePoint2(10.0f, 35.0f);
+constexpr gfx::PointF kMiddleVerticalStrokePoint1(25.0f, 15.0f);
+constexpr gfx::PointF kMiddleVerticalStrokePoint2(25.0f, 35.0f);
+constexpr gfx::PointF kRightVerticalStrokePoint1(40.0f, 15.0f);
+constexpr gfx::PointF kRightVerticalStrokePoint2(40.0f, 35.0f);
+
 // Constants to support a layout of 2 pages, arranged vertically with a small
 // gap between them.
 constexpr gfx::RectF kVerticalLayout2Pages[] = {
@@ -139,6 +147,36 @@ MATCHER_P(InkStrokeEq, expected_brush, "") {
   const auto input_matcher = ink::StrokeInputBatchEq(expected_inputs);
   return testing::Matches(brush_matcher)(actual_stroke->GetBrush()) &&
          testing::Matches(input_matcher)(actual_stroke->GetInputs());
+}
+
+// Matcher for ink::Stroke objects against an expected brush color.
+MATCHER_P(InkStrokeBrushColorEq, expected_color, "") {
+  return chrome_pdf::GetSkColorFromInkBrush(arg.GetBrush()) == expected_color;
+}
+
+// Matcher for ink::Stroke objects against an expected brush size.
+MATCHER_P(InkStrokeBrushSizeEq, expected_size, "") {
+  return arg.GetBrush().GetSize() == expected_size;
+}
+
+// Matcher for ink::Stroke objects against an expected drawing brush type.
+// A pen is opaque while a highlighter has transparency, so a drawing
+// brush type can be deduced from the ink::Stroke's brush coat.
+MATCHER_P(InkStrokeDrawingBrushTypeEq, expected_type, "") {
+  const ink::Brush& ink_brush = arg.GetBrush();
+  const ink::BrushCoat& coat = ink_brush.GetCoats()[0];
+  float opacity = coat.tips[0].opacity_multiplier;
+  if (expected_type == PdfInkBrush::Type::kPen) {
+    return opacity == 1.0f;
+  }
+
+  CHECK(expected_type == PdfInkBrush::Type::kHighlighter);
+  return opacity == 0.4f;
+}
+
+// Matcher for bitmap against expected dimensions.
+MATCHER_P(BitmapImageSizeEq, dimensions, "") {
+  return arg.dimensions() == dimensions;
 }
 
 std::map<int, std::vector<raw_ref<const ink::Stroke>>> CollectVisibleStrokes(
@@ -555,11 +593,11 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationModeMessage) {
       .WillOnce(Return(PdfInkModuleClient::DocumentV2InkPathShapesMap{
           {0,
            PdfInkModuleClient::PageV2InkPathShapesMap{
-               {InkModeledShapeId(0), ink::ModeledShape()},
-               {InkModeledShapeId(1), ink::ModeledShape()}}},
+               {InkModeledShapeId(0), ink::PartitionedMesh()},
+               {InkModeledShapeId(1), ink::PartitionedMesh()}}},
           {3,
            PdfInkModuleClient::PageV2InkPathShapesMap{
-               {InkModeledShapeId(2), ink::ModeledShape()}}},
+               {InkModeledShapeId(2), ink::PartitionedMesh()}}},
       }));
 
   const auto kShapeMapMatcher = ElementsAre(
@@ -1509,6 +1547,423 @@ TEST_F(PdfInkModuleStrokeTest, RunStrokeMissedEndEventDuringErasing) {
   RunStrokeMissedEndEventCheckTest();
 }
 
+TEST_F(PdfInkModuleStrokeTest, ChangeBrushColorDuringDrawing) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  // Start drawing a stroke with a black pen.  The stroke will not finish
+  // until the mouse-up event.
+  EXPECT_CALL(client(), StrokeAdded(_, _, _)).Times(0);
+  TestAnnotationBrushMessageParams black_pen_message_params{/*color_r=*/0,
+                                                            /*color_g=*/0,
+                                                            /*color_b=*/0};
+  static constexpr float kPenSize = 3.0f;
+  SelectBrushTool(PdfInkBrush::Type::kPen, kPenSize, black_pen_message_params);
+
+  blink::WebMouseEvent mouse_down_event =
+      MouseEventBuilder()
+          .CreateLeftClickAtPosition(kLeftVerticalStrokePoint1)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+
+  // While the stroke is still in progress, change the pen color.
+  TestAnnotationBrushMessageParams red_pen_message_params{/*color_r=*/242,
+                                                          /*color_g=*/139,
+                                                          /*color_b=*/130};
+  SelectBrushTool(PdfInkBrush::Type::kPen, kPenSize, red_pen_message_params);
+  VerifyAndClearExpectations();
+
+  // Continue with mouse movement and then mouse up at a new location.  Notice
+  // that the events are handled and the new stroke is added.
+  // TODO(crbug.com/381908888): The in-progress stroke is affected by the
+  // color change.  Update the expectation to show the in-progress stroke is
+  // still black once the brush management in PdfInkModule protects against
+  // such changes.
+  static constexpr int kPageIndex = 0;
+  EXPECT_CALL(client(),
+              StrokeAdded(kPageIndex, InkStrokeId(0),
+                          InkStrokeBrushColorEq(SkColorSetRGB(242, 139, 130))));
+  blink::WebMouseEvent mouse_move_event =
+      MouseEventBuilder()
+          .SetType(blink::WebInputEvent::Type::kMouseMove)
+          .SetPosition(kLeftVerticalStrokePoint2)
+          .SetButton(blink::WebPointerProperties::Button::kLeft)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
+  blink::WebMouseEvent mouse_up_event =
+      MouseEventBuilder()
+          .CreateLeftMouseUpAtPosition(kLeftVerticalStrokePoint2)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
+  VerifyAndClearExpectations();
+
+  // Do another stroke.  Notice that the changed pen color is in effect for
+  // the new stroke that is added.
+  EXPECT_CALL(client(),
+              StrokeAdded(kPageIndex, InkStrokeId(1),
+                          InkStrokeBrushColorEq(SkColorSetRGB(242, 139, 130))));
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
+}
+
+TEST_F(PdfInkModuleStrokeTest, ChangeBrushSizeDuringDrawing) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  // Start drawing a stroke with a black pen.  The stroke will not finish
+  // until the mouse-up event.  The cursor image will be updated immediately
+  // each time the brush tool is changed, regardless of whether a stroke is
+  // in progress.
+  EXPECT_CALL(client(), StrokeAdded(_, _, _)).Times(0);
+  {
+    InSequence seq;
+    EXPECT_CALL(client(),
+                UpdateInkCursorImage(BitmapImageSizeEq(SkISize(6, 6))));
+    EXPECT_CALL(client(),
+                UpdateInkCursorImage(BitmapImageSizeEq(SkISize(8, 8))));
+  }
+  TestAnnotationBrushMessageParams message_params{/*color_r=*/0,
+                                                  /*color_g=*/0,
+                                                  /*color_b=*/0};
+  SelectBrushTool(PdfInkBrush::Type::kPen, 2.0f, message_params);
+
+  blink::WebMouseEvent mouse_down_event =
+      MouseEventBuilder()
+          .CreateLeftClickAtPosition(kLeftVerticalStrokePoint1)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+
+  // While the stroke is still in progress, change the pen size.
+  SelectBrushTool(PdfInkBrush::Type::kPen, 6.0f, message_params);
+  VerifyAndClearExpectations();
+
+  // Continue with mouse movement and then mouse up at a new location.  Notice
+  // that the events are handled and the new stroke is added.
+  // TODO(crbug.com/381908888): The in-progress stroke and cursor image are
+  // affected by the size change.  Update the expectation to show the
+  // in-progress stroke is still thin once the brush management in
+  // PdfInkModule protects against such changes.
+  static constexpr int kPageIndex = 0;
+  EXPECT_CALL(client(), StrokeAdded(kPageIndex, InkStrokeId(0),
+                                    InkStrokeBrushSizeEq(6.0f)));
+  blink::WebMouseEvent mouse_move_event =
+      MouseEventBuilder()
+          .SetType(blink::WebInputEvent::Type::kMouseMove)
+          .SetPosition(kLeftVerticalStrokePoint2)
+          .SetButton(blink::WebPointerProperties::Button::kLeft)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
+  blink::WebMouseEvent mouse_up_event =
+      MouseEventBuilder()
+          .CreateLeftMouseUpAtPosition(kLeftVerticalStrokePoint2)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
+  VerifyAndClearExpectations();
+
+  // Do another stroke.  Notice that the changed pen color has now taken
+  // effect for the new stroke that is added.
+  EXPECT_CALL(client(), StrokeAdded(kPageIndex, InkStrokeId(1),
+                                    InkStrokeBrushSizeEq(6.0f)));
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
+}
+
+TEST_F(PdfInkModuleStrokeTest, ChangeSizeDuringErasing) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  // Initialize to have three strokes, so there is something to erase.
+  static constexpr int kPageIndex = 0;
+  EXPECT_CALL(client(), StrokeAdded(kPageIndex, _, _)).Times(3);
+  EXPECT_CALL(client(), UpdateStrokeActive(_, _, _)).Times(0);
+
+  ApplyStrokeWithMouseAtPoints(kLeftVerticalStrokePoint1,
+                               base::span_from_ref(kLeftVerticalStrokePoint2),
+                               kLeftVerticalStrokePoint2);
+
+  ApplyStrokeWithMouseAtPoints(kMiddleVerticalStrokePoint1,
+                               base::span_from_ref(kMiddleVerticalStrokePoint2),
+                               kMiddleVerticalStrokePoint2);
+
+  ApplyStrokeWithMouseAtPoints(kRightVerticalStrokePoint1,
+                               base::span_from_ref(kRightVerticalStrokePoint2),
+                               kRightVerticalStrokePoint2);
+
+  // Set up for erasing.
+  SelectEraserToolOfSize(2.0f);
+  VerifyAndClearExpectations();
+
+  // Apply erase strokes at positions nearby the second and third strokes.
+  // They are not close enough for an eraser with a thin size to erase them.
+  EXPECT_CALL(client(), UpdateStrokeActive(_, _, _)).Times(0);
+
+  static constexpr gfx::PointF kNearbyPointAboveMiddleVerticalStroke(25.0f,
+                                                                     10.0f);
+  ApplyStrokeWithMouseAtPoints(
+      kNearbyPointAboveMiddleVerticalStroke,
+      base::span_from_ref(kNearbyPointAboveMiddleVerticalStroke),
+      kNearbyPointAboveMiddleVerticalStroke);
+
+  static constexpr gfx::PointF kNearbyPointAboveRightVerticalStroke(40.0f,
+                                                                    10.0f);
+  ApplyStrokeWithMouseAtPoints(
+      kNearbyPointAboveRightVerticalStroke,
+      base::span_from_ref(kNearbyPointAboveRightVerticalStroke),
+      kNearbyPointAboveRightVerticalStroke);
+
+  VerifyAndClearExpectations();
+
+  // Start erasing from where the first stroke was added.
+  EXPECT_CALL(client(),
+              UpdateStrokeActive(kPageIndex, InkStrokeId(0), /*active=*/false));
+
+  blink::WebMouseEvent mouse_down_event =
+      MouseEventBuilder()
+          .CreateLeftClickAtPosition(kLeftVerticalStrokePoint1)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+
+  // While the stroke is still in progress, change the eraser size.
+  SelectEraserToolOfSize(6.0f);
+  VerifyAndClearExpectations();
+
+  // Continue the stroke, moving to the nearby-point above the second stroke.
+  // Since the eraser has immediately updated to the thick eraser size, it is
+  // now close enough that the stroke gets erased.
+  //
+  // Eraser stroke movement is like below, from the mouse down position D
+  // moving through position M before finishing at mouse up position U:
+  //
+  //           M............U
+  //           .
+  //           .
+  //    left   D            |  middle
+  //  stroke   |            |  stroke
+  //           |            |
+  //
+  // TODO(crbug.com/381908888): The in-progress stroke is affected by the
+  // size change.  Update the expectation to show the in-progress stroke is
+  // unchanged once the brush management in PdfInkModule protects against
+  // such changes.
+  EXPECT_CALL(client(),
+              UpdateStrokeActive(kPageIndex, InkStrokeId(1), /*active=*/false));
+
+  static constexpr gfx::PointF kNearbyPointAboveLeftVerticalStroke(10.0f,
+                                                                   10.0f);
+  blink::WebMouseEvent mouse_move_event =
+      MouseEventBuilder()
+          .SetType(blink::WebInputEvent::Type::kMouseMove)
+          .SetPosition(kNearbyPointAboveLeftVerticalStroke)
+          .SetButton(blink::WebPointerProperties::Button::kLeft)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
+
+  blink::WebMouseEvent mouse_up_event =
+      MouseEventBuilder()
+          .CreateLeftMouseUpAtPosition(kNearbyPointAboveMiddleVerticalStroke)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
+
+  VerifyAndClearExpectations();
+
+  // Do another eraser stroke at the nearby-point above the third stroke.
+  // This point is close enough to be deleted with the thick eraser size
+  // that is now in effect.
+  EXPECT_CALL(client(),
+              UpdateStrokeActive(kPageIndex, InkStrokeId(2), /*active=*/false));
+
+  ApplyStrokeWithMouseAtPoints(
+      kNearbyPointAboveRightVerticalStroke,
+      base::span_from_ref(kNearbyPointAboveRightVerticalStroke),
+      kNearbyPointAboveRightVerticalStroke);
+}
+
+TEST_F(PdfInkModuleStrokeTest, ChangeToEraserDuringDrawing) {
+  InitializeSimpleSinglePageBasicLayout();
+
+  // Draw an initial stroke.
+  RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
+
+  // Start drawing another stroke.
+  static constexpr int kPageIndex = 0;
+  EXPECT_CALL(client(), StrokeAdded(kPageIndex, InkStrokeId(1), _));
+  EXPECT_CALL(client(), UpdateStrokeActive(_, _, _)).Times(0);
+  blink::WebMouseEvent mouse_down_event =
+      MouseEventBuilder()
+          .CreateLeftClickAtPosition(kRightVerticalStrokePoint1)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+
+  // While the stroke is still in progress, change to the eraser tool.  This
+  // causes the in-progress stroke to finish even before the mouse-up event.
+  SelectEraserToolOfSize(2.0f);
+  VerifyAndClearExpectations();
+
+  // Continue with mouse movement and then mouse up at a new location.  Notice
+  // that the events are not handled and there is no further effect for adding
+  // or erasing strokes, since the prior stroke was already finished.
+  EXPECT_CALL(client(), StrokeAdded(_, _, _)).Times(0);
+  EXPECT_CALL(client(), UpdateStrokeActive(_, _, _)).Times(0);
+  blink::WebMouseEvent mouse_move_event =
+      MouseEventBuilder()
+          .SetType(blink::WebInputEvent::Type::kMouseMove)
+          .SetPosition(kRightVerticalStrokePoint2)
+          .SetButton(blink::WebPointerProperties::Button::kLeft)
+          .Build();
+  EXPECT_FALSE(ink_module().HandleInputEvent(mouse_move_event));
+  blink::WebMouseEvent mouse_up_event =
+      MouseEventBuilder()
+          .CreateLeftMouseUpAtPosition(kRightVerticalStrokePoint2)
+          .Build();
+  EXPECT_FALSE(ink_module().HandleInputEvent(mouse_up_event));
+  VerifyAndClearExpectations();
+
+  // Do a simple stroke in the same place where the last stroke was added.
+  // Notice that the changed tool type has taken effect and the recently added
+  // stroke is erased.
+  EXPECT_CALL(client(), StrokeAdded(_, _, _)).Times(0);
+  EXPECT_CALL(client(),
+              UpdateStrokeActive(kPageIndex, InkStrokeId(1), /*active=*/false));
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
+}
+
+TEST_F(PdfInkModuleStrokeTest, ChangeToDrawingDuringErasing) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  // Initialize to have two strokes, so there is something to erase.
+  static constexpr int kPageIndex = 0;
+  EXPECT_CALL(client(), StrokeAdded(kPageIndex, InkStrokeId(0), _));
+  EXPECT_CALL(client(), StrokeAdded(kPageIndex, InkStrokeId(1), _));
+  EXPECT_CALL(client(), UpdateStrokeActive(_, _, _)).Times(0);
+
+  ApplyStrokeWithMouseAtPoints(kLeftVerticalStrokePoint1,
+                               base::span_from_ref(kLeftVerticalStrokePoint2),
+                               kLeftVerticalStrokePoint2);
+
+  ApplyStrokeWithMouseAtPoints(kRightVerticalStrokePoint1,
+                               base::span_from_ref(kRightVerticalStrokePoint2),
+                               kRightVerticalStrokePoint2);
+
+  // Set up for erasing.
+  SelectEraserToolOfSize(2.0f);
+  VerifyAndClearExpectations();
+
+  // Start erasing from where the first stroke was added.
+  EXPECT_CALL(client(), StrokeAdded(_, _, _)).Times(0);
+  EXPECT_CALL(client(), UpdateStrokeActive(kPageIndex, InkStrokeId(0), _));
+  blink::WebMouseEvent mouse_down_event =
+      MouseEventBuilder()
+          .CreateLeftClickAtPosition(kLeftVerticalStrokePoint1)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+
+  // While the stroke is still in progress, change the input tool type to a
+  // pen.  Note that this causes the in-progress erase stroke to finish even
+  // before the mouse-up event.
+  TestAnnotationBrushMessageParams message_params{/*color_r=*/0,
+                                                  /*color_g=*/0,
+                                                  /*color_b=*/0};
+  SelectBrushTool(PdfInkBrush::Type::kPen, 8.0f, message_params);
+  VerifyAndClearExpectations();
+
+  // Continue with mouse movement and then mouse up at a new location.  Notice
+  // that the events are not handled and there is no further effect for adding
+  // or erasing strokes, since the prior stroke was already finished.
+  EXPECT_CALL(client(), StrokeAdded(_, _, _)).Times(0);
+  EXPECT_CALL(client(), UpdateStrokeActive(_, _, _)).Times(0);
+  blink::WebMouseEvent mouse_move_event =
+      MouseEventBuilder()
+          .SetType(blink::WebInputEvent::Type::kMouseMove)
+          .SetPosition(kRightVerticalStrokePoint2)
+          .SetButton(blink::WebPointerProperties::Button::kLeft)
+          .Build();
+  EXPECT_FALSE(ink_module().HandleInputEvent(mouse_move_event));
+  blink::WebMouseEvent mouse_up_event =
+      MouseEventBuilder()
+          .CreateLeftMouseUpAtPosition(kRightVerticalStrokePoint1)
+          .Build();
+  EXPECT_FALSE(ink_module().HandleInputEvent(mouse_up_event));
+  VerifyAndClearExpectations();
+
+  // Do another stroke.  Notice that the changed tool type has taken effect
+  // and a new stroke is added.
+  EXPECT_CALL(client(), StrokeAdded(kPageIndex, InkStrokeId(2), _));
+  EXPECT_CALL(client(), UpdateStrokeActive(_, _, _)).Times(0);
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
+}
+
+TEST_F(PdfInkModuleStrokeTest, ChangeDrawingBrushTypeDuringDrawing) {
+  EnableAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  // Start drawing a stroke with a black pen.  The stroke will not finish
+  // until the mouse-up event.  The cursor image will be updated immediately
+  // each time the brush tool is changed, regardless of whether a stroke is
+  // in progress.
+  EXPECT_CALL(client(), StrokeAdded(_, _, _)).Times(0);
+  {
+    InSequence seq;
+    EXPECT_CALL(client(),
+                UpdateInkCursorImage(BitmapImageSizeEq(SkISize(6, 6))));
+    EXPECT_CALL(client(),
+                UpdateInkCursorImage(BitmapImageSizeEq(SkISize(10, 10))));
+  }
+  TestAnnotationBrushMessageParams pen_message_params{/*color_r=*/0,
+                                                      /*color_g=*/0,
+                                                      /*color_b=*/0};
+  SelectBrushTool(PdfInkBrush::Type::kPen, 2.0f, pen_message_params);
+
+  blink::WebMouseEvent mouse_down_event =
+      MouseEventBuilder()
+          .CreateLeftClickAtPosition(kLeftVerticalStrokePoint1)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+
+  // While the stroke is still in progress, change the input tool type to a
+  // highlighter.  The entire stroke changes to this new type.
+  TestAnnotationBrushMessageParams highlighter_message_params{/*color_r=*/221,
+                                                              /*color_g=*/243,
+                                                              /*color_b=*/0};
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, 8.0f,
+                  highlighter_message_params);
+  VerifyAndClearExpectations();
+
+  // Continue with mouse movement and then mouse up at a new location.  Notice
+  // that the events are handled and the new stroke is added.
+  // TODO(crbug.com/381908888): The in-progress stroke and cursor image are
+  // affected by the brush type change.  Update the expectation to show the
+  // in-progress stroke is still a pen once the brush management in
+  // PdfInkModule protects against such changes.
+  static constexpr int kPageIndex = 0;
+  EXPECT_CALL(client(), StrokeAdded(kPageIndex, InkStrokeId(0),
+                                    InkStrokeDrawingBrushTypeEq(
+                                        PdfInkBrush::Type::kHighlighter)));
+  blink::WebMouseEvent mouse_move_event =
+      MouseEventBuilder()
+          .SetType(blink::WebInputEvent::Type::kMouseMove)
+          .SetPosition(kLeftVerticalStrokePoint2)
+          .SetButton(blink::WebPointerProperties::Button::kLeft)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
+  blink::WebMouseEvent mouse_up_event =
+      MouseEventBuilder()
+          .CreateLeftMouseUpAtPosition(kLeftVerticalStrokePoint2)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
+  VerifyAndClearExpectations();
+
+  // Do another stroke.  Notice that the changed input tool type has taken
+  // effect for the new stroke that is added.
+  EXPECT_CALL(client(), StrokeAdded(kPageIndex, InkStrokeId(1),
+                                    InkStrokeDrawingBrushTypeEq(
+                                        PdfInkBrush::Type::kHighlighter)));
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
+}
+
 class PdfInkModuleUndoRedoTest : public PdfInkModuleStrokeTest {
  protected:
   void PerformUndo() {
@@ -1882,7 +2337,7 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoEraseLoadedV2Shapes) {
       CreateInkMeshFromPolylineForTesting(ink_points);
   ASSERT_TRUE(mesh0.has_value());
   auto shape0 =
-      ink::ModeledShape::FromMeshes(base::span_from_ref(mesh0.value()));
+      ink::PartitionedMesh::FromMeshes(base::span_from_ref(mesh0.value()));
   ASSERT_TRUE(shape0.ok());
 
   constexpr ink::Point kCornerPoints[] = {
@@ -1894,7 +2349,7 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoEraseLoadedV2Shapes) {
       CreateInkMeshFromPolylineForTesting(kCornerPoints);
   ASSERT_TRUE(mesh1.has_value());
   auto shape1 =
-      ink::ModeledShape::FromMeshes(base::span_from_ref(mesh1.value()));
+      ink::PartitionedMesh::FromMeshes(base::span_from_ref(mesh1.value()));
   ASSERT_TRUE(shape1.ok());
 
   EXPECT_CALL(client(), LoadV2InkPathsFromPdf())

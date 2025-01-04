@@ -284,15 +284,14 @@ void ShortcutInfo::UpdateBestSplashIcon(
   minimum_splash_image_size_in_px =
       WebappsIconUtils::GetMinimumSplashImageSizeInPx();
 
-  if (WebappsIconUtils::DoesAndroidSupportMaskableIcons()) {
-    splash_image_url = blink::ManifestIconSelector::FindBestMatchingSquareIcon(
-        manifest.icons, ideal_splash_image_size_in_px,
-        minimum_splash_image_size_in_px,
-        blink::mojom::ManifestImageResource_Purpose::MASKABLE);
-    is_splash_image_maskable = true;
-  }
-  // If did not fetch maskable icon for splash image, or can not find a best
+  // Try fetcing maskable icon for splash image first, if can not find a best
   // match, fallback to ANY icon.
+  splash_image_url = blink::ManifestIconSelector::FindBestMatchingSquareIcon(
+      manifest.icons, ideal_splash_image_size_in_px,
+      minimum_splash_image_size_in_px,
+      blink::mojom::ManifestImageResource_Purpose::MASKABLE);
+  is_splash_image_maskable = true;
+
   if (!splash_image_url.is_valid()) {
     splash_image_url = blink::ManifestIconSelector::FindBestMatchingSquareIcon(
         manifest.icons, ideal_splash_image_size_in_px,

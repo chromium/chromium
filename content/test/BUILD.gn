@@ -92,6 +92,8 @@ static_library("test_support") {
     "../browser/browsing_topics/test_util.cc",
     "../browser/browsing_topics/test_util.h",
     "../browser/cookie_deprecation_label/cookie_deprecation_label_test_utils.h",
+    "../browser/dips/dips_test_utils.cc",
+    "../browser/dips/dips_test_utils.h",
     "../browser/file_system_access/mock_file_system_access_permission_context.cc",
     "../browser/file_system_access/mock_file_system_access_permission_context.h",
     "../browser/file_system_access/mock_file_system_access_permission_grant.cc",
@@ -194,6 +196,8 @@ static_library("test_support") {
     "../public/test/context_menu_interceptor.h",
     "../public/test/cursor_utils.cc",
     "../public/test/cursor_utils.h",
+    "../public/test/dips_service_test_utils.cc",
+    "../public/test/dips_service_test_utils.h",
     "../public/test/download_test_observer.cc",
     "../public/test/download_test_observer.h",
     "../public/test/embedded_worker_instance_test_harness.cc",
@@ -541,8 +545,8 @@ static_library("test_support") {
   deps = [
     ":content_test_mojo_bindings",
     ":web_ui_mojo_test_resources",
-    "//build:chromeos_buildflags",
     "//cc:test_support",
+    "//cc/slim",
     "//components/attribution_reporting:data_host_mojom",
     "//components/attribution_reporting:mojom",
     "//components/attribution_reporting:source_type_mojom",
@@ -659,6 +663,7 @@ static_library("test_support") {
       "//content/shell:android_shell_descriptors",
       "//mojo/public/java/system:native_support",
       "//testing/android/native_test:native_browser_test_support",
+      "//ui/android:android",
     ]
   } else {
     sources += [
@@ -684,10 +689,6 @@ static_library("test_support") {
         "../browser/renderer_host/input/stylus_handwriting_win_test_helper.h",
       ]
     }
-  }
-
-  if (is_chromeos_ash) {
-    deps += [ ":web_ui_test_mojo_bindings" ]
   }
 
   # HID support is not available without udev.
@@ -819,17 +820,6 @@ static_library("test_support") {
     sources += [
       "../public/test/xr_test_utils.cc",
       "../public/test/xr_test_utils.h",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/crosapi/cpp",
-      "//chromeos/crosapi/cpp:crosapi_constants",
-      "//chromeos/lacros",
-      "//chromeos/lacros:test_support",
-      "//chromeos/startup",
-      "//chromeos/startup:constants",
     ]
   }
 
@@ -1039,6 +1029,8 @@ static_library("browsertest_support") {
     "../browser/browsing_data/shared_storage_clear_site_data_tester.h",
     "../browser/browsing_data/storage_bucket_clear_site_data_tester.cc",
     "../browser/browsing_data/storage_bucket_clear_site_data_tester.h",
+    "../browser/dips/dips_browsertest_utils.cc",
+    "../browser/dips/dips_browsertest_utils.h",
     "../public/test/content_browser_test.cc",
     "../public/test/content_browser_test.h",
     "../public/test/content_browser_test_content_browser_client.cc",
@@ -1070,7 +1062,6 @@ static_library("browsertest_support") {
     "//base/test:test_config",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
-    "//cc/slim",
     "//components/input",
     "//components/network_session_configurator/common:common",
     "//components/services/storage:storage",
@@ -1089,10 +1080,7 @@ static_library("browsertest_support") {
   ]
 
   if (is_android) {
-    deps += [
-      "//content/public/app",
-      "//ui/android:android",
-    ]
+    deps += [ "//content/public/app" ]
   } else {
     deps += [ "//content/public/browser" ]
   }
@@ -1113,10 +1101,6 @@ static_library("browsertest_support") {
     deps += [ "//ui/base/mojom" ]
   }
 
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros:lacros" ]
-  }
-
   configs += [ "//v8:external_startup_data" ]
 }
 
@@ -1132,46 +1116,11 @@ mojom("content_test_mojo_bindings") {
   ]
 }
 
-# Testing JS bindings only on Ash, since they are primarily used there and
-# because this test relies on the URL WebUI mojo bindings, which are
-# TypeScript only on other platforms.
-if (is_chromeos_ash) {
-  mojom("web_ui_test_mojo_bindings") {
-    testonly = true
-    sources = [
-      "data/web_ui_test.test-mojom",
-      "data/web_ui_test_types.test-mojom",
-    ]
-    public_deps = [ "//url/mojom:url_mojom_gurl" ]
-    webui_module_path = "/content/test/data"
-
-    # Generate WebUI bindings in JavaScript instead of TypeScript. This is
-    # necessary since this target is intentionally testing JS WebUI bindings.
-    generate_webui_js_bindings = true
-  }
-}
-
 mojom("web_ui_managed_interface_tests_bindings") {
   testonly = true
   sources = [ "data/web_ui_managed_interface_test.test-mojom" ]
 
   webui_module_path = "/content/test/data"
-}
-
-# Closure compilation is only used on Ash. See below for TypeScript targets
-# which are used across platforms.
-if (is_chromeos_ash) {
-  js_library("web_ui_mojo_test_js") {
-    sources = [ "data/web_ui_mojo_test.js" ]
-    deps = [ ":web_ui_test_mojo_bindings_webui_js" ]
-  }
-
-  # NOTE: Building this target serves as a compile test for type-checking of
-  # WebUI JS that consumes generated Mojom JS bindings.
-  js_type_check("web_ui_mojo_test_js_type_check") {
-    deps = [ ":web_ui_mojo_test_js" ]
-    closure_flags = default_closure_args + mojom_js_args
-  }
 }
 
 # Test cross target mojo typemapping.
@@ -1250,7 +1199,7 @@ preprocess_if_expr("preprocess_mojo_webui_test") {
 preprocess_if_expr("preprocess_mojo_webui_test_deps") {
   in_folder = "$root_gen_dir/mojo/public/interfaces/bindings/tests"
   out_folder = "$target_gen_dir/data"
-  in_files = [ "validation_test_interfaces.mojom-webui.ts" ]
+  in_files = [ "validation_test_interfaces.test-mojom-webui.ts" ]
   deps = [
     "//mojo/public/interfaces/bindings/tests:test_interfaces_ts__generator",
   ]
@@ -1260,7 +1209,7 @@ webui_ts_library("web_ui_mojo_test_build_ts") {
   root_dir = "$target_gen_dir/data"
   out_dir = "$target_gen_dir/data/tsc"
   in_files = [
-    "validation_test_interfaces.mojom-webui.ts",
+    "validation_test_interfaces.test-mojom-webui.ts",
     "web_ui_mojo_conformance_test.ts",
     "web_ui_mojo_ts_test.ts",
     "web_ui_mojo_ts_test_converters.ts",
@@ -1287,8 +1236,8 @@ webui_ts_library("web_ui_mojo_test_build_ts") {
 mojom("mojo_web_test_bindings") {
   testonly = true
   sources = [
-    "data/lite_js_test.mojom",
-    "data/mojo_web_test_helper_test.mojom",
+    "data/lite_js_test.test-mojom",
+    "data/mojo_web_test_helper.test-mojom",
   ]
 
   # This mojom interface is exposed publicly to web tests which use
@@ -1486,6 +1435,8 @@ test("content_browsertests") {
     "../browser/devtools/protocol/devtools_protocol_test_support.h",
     "../browser/devtools/render_frame_devtools_agent_host_browsertest.cc",
     "../browser/devtools/site_per_process_devtools_browsertest.cc",
+    "../browser/dips/dips_bounce_detector_browsertest.cc",
+    "../browser/dips/dips_helper_browsertest.cc",
     "../browser/direct_sockets/direct_sockets_test_utils.cc",
     "../browser/direct_sockets/direct_sockets_test_utils.h",
     "../browser/display_cutout/display_cutout_browsertest.cc",
@@ -1520,7 +1471,7 @@ test("content_browsertests") {
     "../browser/gpu/peak_gpu_memory_tracker_impl_browsertest.cc",
     "../browser/host_zoom_map_impl_browsertest.cc",
     "../browser/indexed_db/indexed_db_browsertest.cc",
-    "../browser/indexed_db/indexed_db_feature_observer_browsertest.cc",
+    "../browser/indexed_db/indexed_db_transaction_feature_observer_browsertest.cc",
     "../browser/interest_group/interest_group_browsertest.cc",
     "../browser/isolated_origin_browsertest.cc",
     "../browser/keyboard_lock_browsertest.cc",
@@ -1579,7 +1530,6 @@ test("content_browsertests") {
     "../browser/network/transferable_socket_browsertest.cc",
     "../browser/network/trust_token_browsertest.cc",
     "../browser/network/trust_token_browsertest.h",
-    "../browser/network/trust_token_origin_trial_browsertest.cc",
     "../browser/network/trust_token_parameters_browsertest.cc",
     "../browser/network_service_browsertest.cc",
     "../browser/network_service_restart_browsertest.cc",
@@ -1694,6 +1644,7 @@ test("content_browsertests") {
     "../browser/storage_partition_impl_browsertest.cc",
     "../browser/system_dns_resolution/system_dns_resolver_browsertest.cc",
     "../browser/text_fragment_browsertest.cc",
+    "../browser/tpcd_heuristics/opener_heuristic_browsertest.cc",
     "../browser/tracing/background_tracing_manager_browsertest.cc",
     "../browser/tracing/memory_instrumentation_browsertest.cc",
     "../browser/tracing/memory_tracing_browsertest.cc",
@@ -1710,6 +1661,7 @@ test("content_browsertests") {
     "../browser/web_contents/web_contents_observer_browsertest.cc",
     "../browser/web_package/signed_exchange_request_handler_browsertest.cc",
     "../browser/web_package/signed_exchange_subresource_prefetch_browsertest.cc",
+    "../browser/webid/jwt_signer_browsertest.cc",
     "../browser/webid/test/mock_digital_identity_provider.cc",
     "../browser/webid/test/mock_digital_identity_provider.h",
     "../browser/webid/test/mock_identity_request_dialog_controller.cc",
@@ -1780,6 +1732,7 @@ test("content_browsertests") {
       "../browser/gpu/gpu_background_kill_android_browsertest.cc",
       "../browser/navigation_transitions/back_forward_transition_animation_manager_android_browsertest.cc",
       "../browser/network/quic_connection_migration_android_browsertest.cc",
+      "../browser/renderer_host/render_widget_host_view_android_browsertest.cc",
 
       # TODO(crbug.com/40267166): move out of Android once we can capture
       # for other platforms.
@@ -1821,7 +1774,6 @@ test("content_browsertests") {
     "//base/test:proto_test_support",
     "//base/test:test_support",
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
     "//cc/slim",
     "//components/attribution_reporting:mojom",
     "//components/cbor",
@@ -1842,6 +1794,7 @@ test("content_browsertests") {
     "//components/services/storage/public/cpp",
     "//components/services/storage/public/mojom:test_api",
     "//components/ukm:test_support",
+    "//components/ukm/content",
     "//components/url_formatter:url_formatter",
     "//components/viz/host",
     "//components/viz/test:test_support",
@@ -1868,8 +1821,11 @@ test("content_browsertests") {
     "//content/shell:pak",
     "//content/test:mojo_web_test_bindings",
     "//content/test:test_support",
+    "//device/base",
     "//device/base/synchronization",
     "//device/bluetooth:mocks",
+    "//device/fido",
+    "//device/fido:test_support",
     "//gin",
     "//gpu",
     "//gpu/ipc/host",
@@ -1954,7 +1910,7 @@ test("content_browsertests") {
     "//ui/webui:test_support",
   ]
 
-  if (!(is_chromeos_ash && target_cpu == "arm64" && current_cpu == "arm")) {
+  if (!(is_chromeos && target_cpu == "arm64" && current_cpu == "arm")) {
     deps += [ "//components/variations" ]
   }
 
@@ -1987,10 +1943,6 @@ test("content_browsertests") {
       "//testing/buildbot/filters:content_browsertests_filters",
       "//third_party/perfetto/protos/perfetto/config/chrome:scenario_descriptor",
     ]
-  }
-
-  if (is_chromeos_ash) {
-    deps += [ ":web_ui_test_mojo_bindings" ]
   }
 
   if (enable_plugins) {
@@ -2063,7 +2015,7 @@ test("content_browsertests") {
         sources += [ "../browser/media/capture/aura_window_video_capture_device_browsertest.cc" ]
       }
 
-      if (is_chromeos_ash) {
+      if (is_chromeos) {
         deps += [ "//ui/wm" ]
       }
     }
@@ -2077,7 +2029,7 @@ test("content_browsertests") {
     ]
   }
 
-  if (!is_chromeos_ash) {
+  if (!is_chromeos) {
     sources +=
         [ "../browser/media/media_keys_listener_manager_impl_browsertest.cc" ]
   }
@@ -2145,11 +2097,8 @@ test("content_browsertests") {
     }
   }
 
-  if (is_chromeos_ash) {
-    deps += [
-      ":web_ui_mojo_test_js_type_check",
-      "//chromeos/ash/components/assistant:buildflags",
-    ]
+  if (is_chromeos) {
+    deps += [ "//chromeos/ash/components/assistant:buildflags" ]
   }
 
   if (is_android) {
@@ -2214,6 +2163,7 @@ test("content_browsertests") {
     deps += [
       "//components/soda:utils",
       "//content/public/browser:proto",
+      "//device/fido:mocks",
       "//media/mojo/mojom:web_speech_recognition",
     ]
 
@@ -2222,8 +2172,8 @@ test("content_browsertests") {
           [ "../browser/compute_pressure/pressure_service_browsertest.cc" ]
     }
 
-    if (is_chromeos_ash) {
-      deps += [ "//ash/constants:constants" ]
+    if (is_chromeos) {
+      deps += [ "//ash/constants" ]
     }
 
     if (!is_ios) {
@@ -2244,12 +2194,6 @@ test("content_browsertests") {
     sources += [
       "../browser/hid/hid_browsertest.cc",
       "../browser/webauth/webauth_browsertest.cc",
-    ]
-    deps += [
-      "//device/base",
-      "//device/fido:fido",
-      "//device/fido:mocks",
-      "//device/fido:test_support",
     ]
   }
 
@@ -2282,7 +2226,7 @@ test("content_browsertests") {
     bundle_deps += [ ":content_shell_pak_bundle_data" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//chromeos/ash/components/audio",
       "//chromeos/ash/components/dbus/audio",
@@ -2392,7 +2336,7 @@ test("content_browsertests") {
     deps += [ "//ui/ozone" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//chromeos/dbus/constants" ]
   }
 
@@ -2420,10 +2364,6 @@ grit("web_ui_mojo_test_resources") {
     "web_ui_mojo_test_resources.pak",
   ]
   deps = [ ":web_ui_mojo_test_build_ts" ]
-
-  if (is_chromeos_ash) {
-    deps += [ ":web_ui_test_mojo_bindings_js__generator" ]
-  }
 }
 
 static_library("run_all_unittests") {
@@ -2536,7 +2476,7 @@ test("content_unittests") {
     "../browser/content_index/content_index_database_unittest.cc",
     "../browser/content_index/content_index_service_impl_unittest.cc",
     "../browser/cookie_deprecation_label/cookie_deprecation_label_manager_impl_unittest.cc",
-    "../browser/cookie_insight_list/cookie_insight_list_handler_unittest.cc",
+    "../browser/cookie_insight_list/cookie_insight_list_handler_impl_unittest.cc",
     "../browser/cookie_insight_list/cookie_insight_list_unittest.cc",
     "../browser/cookie_insight_list/cookie_readiness_list/cookie_readiness_list_parser_unittest.cc",
     "../browser/cookie_store/cookie_store_manager_unittest.cc",
@@ -2599,6 +2539,7 @@ test("content_unittests") {
     "../browser/interest_group/interest_group_auction_reporter_unittest.cc",
     "../browser/interest_group/interest_group_caching_storage_unittest.cc",
     "../browser/interest_group/interest_group_k_anonymity_manager_unittest.cc",
+    "../browser/interest_group/interest_group_manager_impl_unittest.cc",
     "../browser/interest_group/interest_group_pa_report_util_unittest.cc",
     "../browser/interest_group/interest_group_permissions_cache_unittest.cc",
     "../browser/interest_group/interest_group_permissions_checker_unittest.cc",
@@ -2877,6 +2818,8 @@ test("content_unittests") {
     "../browser/webid/federated_provider_fetcher_unittest.cc",
     "../browser/webid/identity_registry_unittest.cc",
     "../browser/webid/idp_network_request_manager_unittest.cc",
+    "../browser/webid/jwt_signer_unittest.cc",
+    "../browser/webid/sd_jwt_unittest.cc",
     "../browser/webid/test/delegated_idp_network_request_manager.cc",
     "../browser/webid/test/delegated_idp_network_request_manager.h",
     "../browser/webid/test/federated_auth_request_request_token_callback_helper.cc",
@@ -2900,6 +2843,7 @@ test("content_unittests") {
     "../browser/webrtc/webrtc_internals_message_handler_unittest.cc",
     "../browser/webrtc/webrtc_internals_unittest.cc",
     "../browser/webtransport/web_transport_throttle_context_unittest.cc",
+    "../browser/webui/internal_webui_config_unittest.cc",
     "../browser/webui/url_data_manager_backend_unittest.cc",
     "../browser/webui/web_ui_data_source_unittest.cc",
     "../browser/webui/web_ui_impl_unittest.cc",
@@ -2953,7 +2897,6 @@ test("content_unittests") {
     "../renderer/accessibility/annotations/ax_image_stopwords_unittest.cc",
     "../renderer/content_security_policy_util_unittest.cc",
     "../renderer/media/batching_media_log_unittest.cc",
-    "../renderer/media/gpu/gpu_video_accelerator_factories_impl_unittest.cc",
     "../renderer/media/inspector_media_event_handler_unittest.cc",
     "../renderer/media/renderer_webaudiodevice_impl_unittest.cc",
     "../renderer/render_thread_impl_unittest.cc",
@@ -3091,7 +3034,6 @@ test("content_unittests") {
     "//build:android_buildflags",
     "//build:buildflag_header_h",
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
     "//cc",
     "//cc:test_support",
     "//cc/mojom",
@@ -3131,11 +3073,13 @@ test("content_unittests") {
     "//content/browser/background_fetch:background_fetch_proto",
     "//content/browser/cache_storage:cache_storage_proto",
     "//content/browser/devtools:devtools_background_services_proto",
+    "//content/browser/dips:unit_tests",
     "//content/browser/download:proto",
     "//content/browser/indexed_db:unit_tests",
     "//content/browser/notifications:notification_proto",
     "//content/browser/private_aggregation:for_content_tests",
     "//content/browser/private_aggregation/proto:private_aggregation_budgets_proto",
+    "//content/browser/tpcd_heuristics:unit_tests",
     "//content/browser/tracing/trace_report:mojo_bindings",
     "//content/child:for_content_tests",
     "//content/common:for_content_tests",
@@ -3189,6 +3133,7 @@ test("content_unittests") {
     "//services/network/public/cpp:test_support",
     "//services/network/public/mojom",
     "//services/service_manager/public/cpp/test:test_support",
+    "//services/tracing:test_utils",
     "//services/video_capture/public/cpp:mocks",
     "//services/video_capture/public/mojom",
     "//services/video_capture/public/mojom:constants",
@@ -3265,13 +3210,6 @@ test("content_unittests") {
   if (is_win || is_mac || is_linux || is_chromeos) {
     sources += [ "../browser/attribution_reporting/attribution_storage_sql_query_plans_unittest.cc" ]
     deps += [ "../browser/attribution_reporting:sqlite_test_utils" ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros:test_support",
-    ]
   }
 
   if (is_mac) {
@@ -3406,22 +3344,14 @@ test("content_unittests") {
     ]
     weak_frameworks = [ "ScreenCaptureKit.framework" ]  # macOS 12.3
   }
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [ "../browser/handwriting/handwriting_recognition_service_impl_cros_unittest.cc" ]
     deps += [
-      "//ash/constants:constants",
+      "//ash/constants",
       "//chromeos/ash/components/audio",
       "//chromeos/ash/components/dbus/audio",
       "//chromeos/services/machine_learning/public/cpp:stub",
       "//chromeos/services/machine_learning/public/mojom",
-      "//chromeos/services/machine_learning/public/mojom",
-    ]
-  }
-  if (is_chromeos_lacros) {
-    sources += [ "../browser/screenlock_monitor/screenlock_monitor_device_source_lacros_unittest.cc" ]
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros:test_support",
     ]
   }
   if (is_android) {
@@ -3493,10 +3423,6 @@ test("content_unittests") {
         "//content/test:test_support",
         "//media/mojo/mojom:speech_recognition",
       ]
-
-      if (is_chromeos_ash) {
-        deps += [ "//ash/constants:constants" ]
-      }
     }
   }
 

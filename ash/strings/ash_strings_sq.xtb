@@ -361,6 +361,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2295777434187870477">Mikrofoni është aktiv. Ndryshimi i tij do ta çaktivizojë hyrjen.</translation>
 <translation id="2302092602801625023">Kjo llogari menaxhohet nga Family Link</translation>
 <translation id="2303600792989757991">Ndrysho përmbledhjen e dritares</translation>
+<translation id="2304702218354340897">E konfirmon që dëshiron ta çaktivizosh kontrollin me anë të fytyrës?</translation>
 <translation id="2305738328104302723">Lista e detyrave të Google: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: regjistrimet e fundit të ekranit, shkarkimet dhe skedarët e gozhduar</translation>
 <translation id="2318576281648121272">Sot <ph name="TODAY_DATE" /></translation>
@@ -387,6 +388,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2370971919968699910">Kjo mund të sjellë kosto për të dhënat.
 <ph name="DEVICECOUNT" /> pajisje të lidhura.</translation>
 <translation id="2386292613071805067">Zgjidh gjithçka në faqe</translation>
+<translation id="2389423187722941333">Aktivizo/çaktivizo Gemini</translation>
 <translation id="2392659840443812875">Nuk ka zona të disponueshme të qasjes për internet. Sigurohu që pajisja të jetë në afërsi dhe Bluetooth-i të jetë i aktivizuar.</translation>
 <translation id="2397416548179033562">Shfaq menynë e Chrome</translation>
 <translation id="240006516586367791">Kontrollet e medias</translation>
@@ -394,6 +396,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2402411679569069051">Për të shkyçur Chromebook-un tënd, përdor gjurmën e gishtit ose shkyç telefonin</translation>
 <translation id="240545663114741956">Shtyp dy herë <ph name="ACCELERATOR" /> për të dalë.</translation>
 <translation id="2405664212338326887">Nuk është i lidhur</translation>
+<translation id="2406710117564540804">Aktivizo/çaktivizo modalitetin "Mos shqetëso"</translation>
 <translation id="2408955596600435184">Fut kodin PIN</translation>
 <translation id="2412593942846481727">Ka përditësim</translation>
 <translation id="2416438829169535743">Dëshiron të dalësh nga pamja?</translation>
@@ -899,6 +902,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="4119928251231465047">Shumë përpjekje me kodin PIN</translation>
 <translation id="412298498316631026">dritare</translation>
 <translation id="4123259114412175274">Për të shkyçur Chromebook-un tënd, sigurohu që Bluetooth-i i telefonit të jetë aktiv.</translation>
+<translation id="4123868835475902435">Këto ishin bazat! Vazhdo tek "Eksploro", aplikacioni ynë i integruar për këshilla dhe ndihmë. Do të gjesh këshilla për fillimin, oferta speciale dhe veçoritë më të reja të <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4125970834901680537">Aplikacionet nuk mund të transmetohen në modalitetin e tabletit. Provo përsëri në modalitetin e laptopit.</translation>
 <translation id="4131973331381812765">Temperatura: <ph name="TEMPERATURE" />°C - Shpejtësia aktuale: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="4136724716305260864">Aktive deri në agim</translation>
@@ -1019,7 +1023,6 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="4481530544597605423">Pajisjet e paçiftuara</translation>
 <translation id="4485506555414638855">Hiq konfigurimin e shikimit të njoftimeve, aplikacioneve, medias dhe fotografive më të fundit të telefonit tënd</translation>
 <translation id="4491109536499578614">Imazh</translation>
-<translation id="4493452241184130939">Këto ishin bazat! Vazhdo tek "Eksploro", aplikacioni ynë i integruar për këshilla dhe ndihmë. Do të gjesh këshilla për fillimin, aplikacione të rekomanduara, oferta speciale dhe veçoritë më të reja të <ph name="PRODUCT_NAME" />.</translation>
 <translation id="450584155212756404">Kanali i zhvilluesve</translation>
 <translation id="4513946894732546136">Komente</translation>
 <translation id="4518404433291145981">Për të shkyçur Chromebook-un tënd, shkyç fillimisht telefonin</translation>
@@ -1082,7 +1085,6 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="4708065238214351979">Rrit ndriçimin për tastierën</translation>
 <translation id="4708185346211948049">Ditën <ph name="DAY_OF_WEEK" /> javën tjetër</translation>
 <translation id="4717575069099566988">Kablloja USB-C nuk mbështet USB4. Cilësia e funksionimit të pajisjes mund të jetë e kufizuar.</translation>
-<translation id="4724328513667182700">6 këshilla për të filluar në <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">TË PËRDORURA SHPESH</translation>
 <translation id="4731797938093519117">Qasja e prindit</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (majtas)</translation>
@@ -1309,7 +1311,6 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="5409208741270395213">Shëno detyrën si të përfunduar</translation>
 <translation id="5413656666631274079">Faqja e cilësimeve</translation>
 <translation id="5414198321558177633">Lista e profilit po rifreskohet. Kjo mund të zgjasë disa minuta.</translation>
-<translation id="5417965108047245734">Kryej një turne të shpejtë për të mësuar se si të lëvizësh nëpër <ph name="PRODUCT_NAME" /></translation>
 <translation id="5426063383988017631">Menyja e "Cilësimeve" është e mbyllur</translation>
 <translation id="5428899915242071344">Fillo përzgjedhjen</translation>
 <translation id="5429993543155113935">Dritaret "E fshehta" nuk mbështeten për momentin</translation>
@@ -1647,6 +1648,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="6539852571005954999">Po skanohet shkarkimi: <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Po transmeton <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emoji, imazhe GIF etj.</translation>
+<translation id="6543942526104794893">E konfirmon që dëshiron t'i çaktivizosh gjestet e fytyrës?</translation>
 <translation id="6545382064335350438">Kodi PIN nuk mund të verifikohej ende. Provo përsëri.</translation>
 <translation id="6555373427270923730">Shkruaj një adresë uebi në shiritin e adresës dhe më pas shtyp <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2313,6 +2315,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8855885154700222542">Tasti i ekranit të plotë</translation>
 <translation id="8858369206579825206">Kontrollet e privatësisë</translation>
 <translation id="8860366331836346216">Shto kartë eSIM</translation>
+<translation id="8869149849311827122">E konfirmon që dëshiron ta çaktivizosh kontrollin me kursorin e miut?</translation>
 <translation id="8870509716567206129">Aplikacioni nuk e mbështet ekranin e ndarë.</translation>
 <translation id="8873203135446552888">Konfirmo që dëshiron ta çaktivizosh bllokun e integruar me prekje</translation>
 <translation id="8874184842967597500">Nuk u lidh</translation>

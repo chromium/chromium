@@ -120,18 +120,6 @@ class UI_ANDROID_EXPORT EventForwarder {
       jlong event_time_ns,
       jlong down_time_ms);
 
-  void OnMouseWheelEvent(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& obj,
-                         jlong time_ns,
-                         jfloat x,
-                         jfloat y,
-                         jfloat raw_x,
-                         jfloat raw_y,
-                         jfloat delta_x,
-                         jfloat delta_y,
-                         jint meta_state,
-                         jint source);
-
   jboolean OnKeyUp(JNIEnv* env,
                    const base::android::JavaParamRef<jobject>& obj,
                    const base::android::JavaParamRef<jobject>& key_event,

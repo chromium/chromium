@@ -18,6 +18,10 @@ namespace {
 constexpr char kFifoDelay[] = "WebAudio.AudioDestination.FIFODelay";
 constexpr char kTotalPlayoutDelay[] =
     "WebAudio.AudioDestination.TotalPlayoutDelay";
+constexpr char kFifoUnderrunCountShort[] =
+    "WebAudio.AudioDestination.FIFOUnderrunCount.Short";
+constexpr char kFifoUnderrunCountIntervals[] =
+    "WebAudio.AudioDestination.FIFOUnderrunCount.Intervals";
 }  // namespace
 
 class AudioDestinationUmaReporterTest
@@ -65,6 +69,52 @@ TEST_P(AudioDestinationUmaReporterTest, BasicTest) {
                                       50, 500);
 
   uma_reporter_.reset();
+}
+
+TEST_P(AudioDestinationUmaReporterTest, ShortStreamTest) {
+  for (int i = 0; i < 100; i++) {
+    if (i % 2 == 0) {
+      uma_reporter_->IncreaseFifoUnderrunCount();
+    }
+    uma_reporter_->Report();
+  }
+
+  // Needs destruction to report a premature run.
+  uma_reporter_.reset();
+
+  histogram_tester_.ExpectBucketCount(kFifoUnderrunCountShort, 50, 1);
+  histogram_tester_.ExpectBucketCount(kFifoUnderrunCountShort + latency_tag_,
+                                      50, 1);
+  histogram_tester_.ExpectTotalCount(kFifoUnderrunCountIntervals, 0);
+}
+
+TEST_P(AudioDestinationUmaReporterTest, LongStreamTest) {
+  // A complete interval (1000 callbacks) experiencing FIFO underruns for
+  // half of the interval.
+  for (int i = 0; i < 1000; i++) {
+    if (i % 2 == 0) {
+      uma_reporter_->IncreaseFifoUnderrunCount();
+    }
+    uma_reporter_->Report();
+  }
+  // A complete interval (1000 callbacks) experiencing FIFO underruns for
+  // a quarter of the interval.
+  for (int i = 0; i < 1000; i++) {
+    if (i % 4 == 0) {
+      uma_reporter_->IncreaseFifoUnderrunCount();
+    }
+    uma_reporter_->Report();
+  }
+
+  histogram_tester_.ExpectBucketCount(kFifoUnderrunCountIntervals, 500, 1);
+  histogram_tester_.ExpectBucketCount(
+      kFifoUnderrunCountIntervals + latency_tag_, 500, 1);
+  histogram_tester_.ExpectBucketCount(kFifoUnderrunCountIntervals, 250, 1);
+  histogram_tester_.ExpectBucketCount(
+      kFifoUnderrunCountIntervals + latency_tag_, 250, 1);
+
+  uma_reporter_.reset();
+  histogram_tester_.ExpectTotalCount(kFifoUnderrunCountShort, 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(

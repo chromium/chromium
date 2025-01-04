@@ -166,7 +166,7 @@ TEST_F(TopSitesDatabaseTest, Recovery1) {
 
   // Database is unusable at the SQLite level.
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     {
       sql::test::ScopedErrorExpecter expecter;
       expecter.ExpectError(sql::SqliteResultCode::kCorrupt);
@@ -199,7 +199,7 @@ TEST_F(TopSitesDatabaseTest, Recovery2) {
 
   // Database is unusable at the SQLite level.
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     {
       sql::test::ScopedErrorExpecter expecter;
       expecter.ExpectError(sql::SqliteResultCode::kCorrupt);
@@ -230,7 +230,7 @@ TEST_F(TopSitesDatabaseTest, Recovery4_CorruptHeader) {
 
   // Database is unusable at the SQLite level.
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     {
       sql::test::ScopedErrorExpecter expecter;
       expecter.ExpectError(sql::SqliteResultCode::kCorrupt);
@@ -257,7 +257,7 @@ TEST_F(TopSitesDatabaseTest, Recovery4_CorruptHeader) {
 
   // Double-check database integrity.
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     ASSERT_TRUE(raw_db.Open(file_name_));
     EXPECT_EQ("ok", sql::test::IntegrityCheck(raw_db));
   }
@@ -274,7 +274,7 @@ TEST_F(TopSitesDatabaseTest, Recovery5_CorruptIndex) {
   // SQLite can operate on the database, but notices the corruption in integrity
   // check.
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     ASSERT_TRUE(raw_db.Open(file_name_));
     EXPECT_NE("ok", sql::test::IntegrityCheck(raw_db));
   }
@@ -298,7 +298,7 @@ TEST_F(TopSitesDatabaseTest, Recovery5_CorruptIndex) {
 
   // Check that the database is recovered at the SQLite level.
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     ASSERT_TRUE(raw_db.Open(file_name_));
     ASSERT_EQ("ok", sql::test::IntegrityCheck(raw_db));
   }
@@ -328,7 +328,7 @@ TEST_F(TopSitesDatabaseTest, Recovery5_CorruptIndexAndLostRow) {
 
   // Delete a row.
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     ASSERT_TRUE(raw_db.Open(file_name_));
     EXPECT_TRUE(
         raw_db.Execute("DELETE FROM top_sites WHERE url = "
@@ -341,7 +341,7 @@ TEST_F(TopSitesDatabaseTest, Recovery5_CorruptIndexAndLostRow) {
   // SQLite can operate on the database, but notices the corruption in integrity
   // check.
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     ASSERT_TRUE(raw_db.Open(file_name_));
     EXPECT_NE("ok", sql::test::IntegrityCheck(raw_db));
   }
@@ -365,7 +365,7 @@ TEST_F(TopSitesDatabaseTest, Recovery5_CorruptIndexAndLostRow) {
 
   // Check that the database is recovered at the SQLite level.
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     ASSERT_TRUE(raw_db.Open(file_name_));
     ASSERT_EQ("ok", sql::test::IntegrityCheck(raw_db));
   }

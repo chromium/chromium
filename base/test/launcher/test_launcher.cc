@@ -97,6 +97,7 @@
 #include <lib/fdio/namespace.h>
 #include <lib/zx/job.h>
 #include <lib/zx/time.h>
+
 #include "base/atomic_sequence_num.h"
 #include "base/fuchsia/default_job.h"
 #include "base/fuchsia/file_utils.h"
@@ -264,8 +265,9 @@ zx_status_t WaitForJobExit(const zx::job& job) {
   while (to_wait_for) {
     zx_signals_t observed = 0;
     zx_status_t status = job.wait_one(to_wait_for, deadline, &observed);
-    if (status != ZX_OK)
+    if (status != ZX_OK) {
       return status;
+    }
     to_wait_for &= ~observed;
   }
   return ZX_OK;
@@ -275,7 +277,7 @@ zx_status_t WaitForJobExit(const zx::job& job) {
 #if BUILDFLAG(IS_POSIX)
 // Self-pipe that makes it possible to do complex shutdown handling
 // outside of the signal handler.
-int g_shutdown_pipe[2] = { -1, -1 };
+int g_shutdown_pipe[2] = {-1, -1};
 
 void ShutdownPipeSignalHandler(int signal) {
   HANDLE_EINTR(write(g_shutdown_pipe[1], "q", 1));
@@ -295,8 +297,7 @@ void KillSpawnedTestProcesses() {
     kill((-1) * (pair.first), SIGTERM);
   }
 
-  fprintf(stdout,
-          "done.\nGiving processes a chance to terminate cleanly... ");
+  fprintf(stdout, "done.\nGiving processes a chance to terminate cleanly... ");
   fflush(stdout);
 
   PlatformThread::Sleep(Milliseconds(500));
@@ -325,8 +326,9 @@ bool TakeInt32FromEnvironment(const char* const var, int32_t* result) {
   std::unique_ptr<Environment> env(Environment::Create());
   std::string str_val;
 
-  if (!env->GetVar(var, &str_val))
+  if (!env->GetVar(var, &str_val)) {
     return true;
+  }
 
   if (!env->UnSetVar(var)) {
     LOG(ERROR) << "Invalid environment: we could not unset " << var << ".\n";
@@ -346,8 +348,9 @@ bool TakeInt32FromEnvironment(const char* const var, int32_t* result) {
 bool UnsetEnvironmentVariableIfExists(const std::string& name) {
   std::unique_ptr<Environment> env(Environment::Create());
   std::string str_val;
-  if (!env->GetVar(name, &str_val))
+  if (!env->GetVar(name, &str_val)) {
     return true;
+  }
   return env->UnSetVar(name);
 }
 
@@ -543,12 +546,14 @@ int LaunchChildTestProcessWithOptions(const CommandLine& command_line,
     // Revoke inheritance so that the handle isn't leaked into other children.
     // Note that this is done under GetLiveProcessesLock() to ensure that only
     // the desired child receives the handle.
-    if (new_options.stdout_handle)
+    if (new_options.stdout_handle) {
       ::SetHandleInformation(new_options.stdout_handle, HANDLE_FLAG_INHERIT, 0);
+    }
 #endif
 
-    if (!process.IsValid())
+    if (!process.IsValid()) {
       return -1;
+    }
 
     // TODO(rvargas) crbug.com/417532: Don't store process handles.
     GetLiveProcesses()->insert(std::make_pair(process.Handle(), command_line));
@@ -569,8 +574,9 @@ int LaunchChildTestProcessWithOptions(const CommandLine& command_line,
   }
 
   if (!did_exit) {
-    if (delegate)
+    if (delegate) {
       delegate->OnTestTimedOut(command_line);
+    }
 
     *was_timeout = true;
     exit_code = -1;  // Set a non-zero exit code to signal a failure.
@@ -643,8 +649,9 @@ struct ChildProcessResults {
 // dirs are not supported.
 FilePath CreateChildTempDirIfSupported(const FilePath& task_temp_dir,
                                        int child_index) {
-  if (!TestLauncher::SupportsPerChildTempDirs())
+  if (!TestLauncher::SupportsPerChildTempDirs()) {
     return FilePath();
+  }
   FilePath child_temp = task_temp_dir.AppendASCII(NumberToString(child_index));
   CHECK(CreateDirectoryAndGetError(child_temp, nullptr));
   return child_temp;
@@ -701,8 +708,9 @@ ChildProcessResults DoLaunchChildTestProcess(
   options.environment.emplace("XPC_FLAGS", "1");
 #endif
   // Tell the child process to use its designated temporary directory.
-  if (!process_temp_dir.empty())
+  if (!process_temp_dir.empty()) {
     SetTemporaryDirectory(process_temp_dir, &options.environment);
+  }
 #if BUILDFLAG(IS_WIN)
 
   options.inherit_mode = test_launch_options.inherit_mode;
@@ -761,8 +769,9 @@ ChildProcessResults DoLaunchChildTestProcess(
     // On Windows, the reset() above is enough to delete the file since it was
     // painted for such after being opened. Lesser platforms require an explicit
     // delete now.
-    if (!DeleteFile(output_filename))
+    if (!DeleteFile(output_filename)) {
       LOG(WARNING) << "Failed to delete " << output_filename.AsUTF8Unsafe();
+    }
 #endif
   }
   result.elapsed_time = TimeTicks::Now() - start_time;
@@ -948,8 +957,9 @@ void TestRunner::CleanupTask(base::ScopedTempDir task_temp_dir, bool done) {
 
 // Returns the number of files and directories in |dir|, or 0 if |dir| is empty.
 int CountItemsInDirectory(const FilePath& dir) {
-  if (dir.empty())
+  if (dir.empty()) {
     return 0;
+  }
   int items = 0;
   FileEnumerator file_enumerator(
       dir, /*recursive=*/false,
@@ -985,7 +995,7 @@ std::string TruncateSnippet(std::string_view snippet, size_t byte_limit) {
 const char kGTestBreakOnFailure[] = "gtest_break_on_failure";
 const char kGTestFilterFlag[] = "gtest_filter";
 const char kGTestFlagfileFlag[] = "gtest_flagfile";
-const char kGTestHelpFlag[]   = "gtest_help";
+const char kGTestHelpFlag[] = "gtest_help";
 const char kGTestListTestsFlag[] = "gtest_list_tests";
 const char kGTestRepeatFlag[] = "gtest_repeat";
 const char kGTestRunDisabledTestsFlag[] = "gtest_also_run_disabled_tests";
@@ -1120,8 +1130,9 @@ bool TestLauncher::Run(CommandLine* command_line) {
   base::PlatformThread::SetName("TestLauncherMain");
 
   if (!Init((command_line == nullptr) ? CommandLine::ForCurrentProcess()
-                                      : command_line))
+                                      : command_line)) {
     return false;
+  }
 
 #if BUILDFLAG(IS_POSIX)
   CHECK_EQ(0, pipe(g_shutdown_pipe));
@@ -1177,8 +1188,9 @@ bool TestLauncher::Run(CommandLine* command_line) {
     iterations = (iterations == -1) ? iterations : iterations - 1;
   }
 
-  if (cycles_ != 1)
+  if (cycles_ != 1) {
     results_tracker_.PrintSummaryOfAllIterations();
+  }
 
   MaybeSaveSummaryAsJSON(std::vector<std::string>());
 
@@ -1226,15 +1238,18 @@ TestResult::Status MissingResultStatus(size_t tests_to_run_count,
                                        bool was_timeout,
                                        bool exit_code) {
   // There is more than one test, cannot assess status.
-  if (tests_to_run_count > 1u)
+  if (tests_to_run_count > 1u) {
     return TestResult::TEST_SKIPPED;
+  }
 
   // There is only one test and no results.
   // Try to determine status by timeout or exit code.
-  if (was_timeout)
+  if (was_timeout) {
     return TestResult::TEST_TIMEOUT;
-  if (exit_code != 0)
+  }
+  if (exit_code != 0) {
     return TestResult::TEST_FAILURE;
+  }
 
   // It's strange case when test executed successfully,
   // but we failed to read machine-readable report for it.
@@ -1274,8 +1289,9 @@ void TestLauncher::ProcessTestResults(
   // TODO(phajdan.jr): Check for duplicates and mismatches between
   // the results we got from XML file and tests we intended to run.
   std::map<std::string, TestResult> results_map;
-  for (const auto& i : test_results)
+  for (const auto& i : test_results) {
     results_map[i.full_name] = i;
+  }
 
   // Results to be reported back to the test launcher.
   std::vector<TestResult> final_results;
@@ -1322,8 +1338,9 @@ void TestLauncher::ProcessTestResults(
     // but the exit code was not zero. This can happen e.g. under memory
     // tools that report leaks this way. Mark all tests as a failure on exit,
     // and for more precise info they'd need to be retried serially.
-    for (auto& i : final_results)
+    for (auto& i : final_results) {
       i.status = TestResult::TEST_FAILURE_ON_EXIT;
+    }
   }
 
   for (auto& i : final_results) {
@@ -1336,13 +1353,15 @@ void TestLauncher::ProcessTestResults(
     i.process_num = process_num;
   }
 
-  if (leaked_items)
+  if (leaked_items) {
     results_tracker_.AddLeakedItems(leaked_items, test_names);
+  }
 
   launcher_delegate_->ProcessTestResults(final_results, elapsed_time);
 
-  for (const auto& result : final_results)
+  for (const auto& result : final_results) {
     OnTestFinished(result);
+  }
 }
 
 void TestLauncher::OnTestFinished(const TestResult& original_result) {
@@ -1351,8 +1370,9 @@ void TestLauncher::OnTestFinished(const TestResult& original_result) {
   TestResult result(original_result);
 
   if (result.output_snippet.length() > output_bytes_limit_) {
-    if (result.status == TestResult::TEST_SUCCESS)
+    if (result.status == TestResult::TEST_SUCCESS) {
       result.status = TestResult::TEST_EXCESSIVE_OUTPUT;
+    }
 
     result.output_snippet =
         TruncateSnippetFocused(result.output_snippet, output_bytes_limit_);
@@ -1372,9 +1392,8 @@ void TestLauncher::OnTestFinished(const TestResult& original_result) {
                          base::SPLIT_WANT_ALL);
     if (snippet_lines.size() > kOutputSnippetLinesLimit) {
       size_t truncated_size = snippet_lines.size() - kOutputSnippetLinesLimit;
-      snippet_lines.erase(
-          snippet_lines.begin(),
-          snippet_lines.begin() + truncated_size);
+      snippet_lines.erase(snippet_lines.begin(),
+                          snippet_lines.begin() + truncated_size);
       snippet_lines.insert(snippet_lines.begin(), "<truncated>");
     }
     fprintf(stdout, "%s", base::JoinString(snippet_lines, "\n").c_str());
@@ -1394,16 +1413,17 @@ void TestLauncher::OnTestFinished(const TestResult& original_result) {
 
   // There are no results for this tests,
   // most likley due to another test failing in the same batch.
-  if (result.status != TestResult::TEST_SKIPPED)
+  if (result.status != TestResult::TEST_SKIPPED) {
     results_tracker_.AddTestResult(result);
+  }
 
   // TODO(phajdan.jr): Align counter (padding).
   std::string status_line(StringPrintf("[%zu/%zu] %s ", test_finished_count_,
                                        test_started_count_,
                                        result.full_name.c_str()));
   if (result.completed()) {
-    status_line.append(StringPrintf("(%" PRId64 " ms)",
-                                    result.elapsed_time.InMilliseconds()));
+    status_line.append(
+        StringPrintf("(%" PRId64 " ms)", result.elapsed_time.InMilliseconds()));
   } else if (result.status == TestResult::TEST_TIMEOUT) {
     status_line.append("(TIMED OUT)");
   } else if (result.status == TestResult::TEST_CRASH) {
@@ -1486,13 +1506,15 @@ bool LoadFilterFile(const FilePath& file_path,
     }
 
     // Treat a line starting with '//' as a comment.
-    if (trimmed_line.empty())
+    if (trimmed_line.empty()) {
       continue;
+    }
 
-    if (trimmed_line[0] == '-')
+    if (trimmed_line[0] == '-') {
       negative_filter->push_back(trimmed_line.substr(1));
-    else
+    } else {
       positive_filter->push_back(trimmed_line);
+    }
   }
 
   return true;
@@ -1522,17 +1544,15 @@ bool TestLauncher::Init(CommandLine* command_line) {
   // variables.
   if (command_line->HasSwitch(switches::kTestLauncherTotalShards) &&
       command_line->HasSwitch(switches::kTestLauncherShardIndex)) {
-    if (!StringToInt(
-            command_line->GetSwitchValueASCII(
-                switches::kTestLauncherTotalShards),
-            &total_shards_)) {
+    if (!StringToInt(command_line->GetSwitchValueASCII(
+                         switches::kTestLauncherTotalShards),
+                     &total_shards_)) {
       LOG(ERROR) << "Invalid value for " << switches::kTestLauncherTotalShards;
       return false;
     }
-    if (!StringToInt(
-            command_line->GetSwitchValueASCII(
-                switches::kTestLauncherShardIndex),
-            &shard_index_)) {
+    if (!StringToInt(command_line->GetSwitchValueASCII(
+                         switches::kTestLauncherShardIndex),
+                     &shard_index_)) {
       LOG(ERROR) << "Invalid value for " << switches::kTestLauncherShardIndex;
       return false;
     }
@@ -1541,18 +1561,18 @@ bool TestLauncher::Init(CommandLine* command_line) {
             shard_index_, total_shards_);
     fflush(stdout);
   } else {
-    if (!TakeInt32FromEnvironment(kTestTotalShards, &total_shards_))
+    if (!TakeInt32FromEnvironment(kTestTotalShards, &total_shards_)) {
       return false;
-    if (!TakeInt32FromEnvironment(kTestShardIndex, &shard_index_))
+    }
+    if (!TakeInt32FromEnvironment(kTestShardIndex, &shard_index_)) {
       return false;
+    }
     fprintf(stdout,
             "Using sharding settings from environment. This is shard %d/%d\n",
             shard_index_, total_shards_);
     fflush(stdout);
   }
-  if (shard_index_ < 0 ||
-      total_shards_ < 0 ||
-      shard_index_ >= total_shards_) {
+  if (shard_index_ < 0 || total_shards_ < 0 || shard_index_ >= total_shards_) {
     LOG(ERROR) << "Invalid sharding settings: we require 0 <= "
                << kTestShardIndex << " < " << kTestTotalShards
                << ", but you have " << kTestShardIndex << "=" << shard_index_
@@ -1582,7 +1602,8 @@ bool TestLauncher::Init(CommandLine* command_line) {
   if (command_line->HasSwitch(switches::kTestLauncherRetryLimit)) {
     int retry_limit = -1;
     if (!StringToInt(command_line->GetSwitchValueASCII(
-                         switches::kTestLauncherRetryLimit), &retry_limit) ||
+                         switches::kTestLauncherRetryLimit),
+                     &retry_limit) ||
         retry_limit < 0) {
       LOG(ERROR) << "Invalid value for " << switches::kTestLauncherRetryLimit;
       return false;
@@ -1658,8 +1679,9 @@ bool TestLauncher::Init(CommandLine* command_line) {
 #endif  // BUILDFLAG(IS_IOS)
 
       if (!LoadFilterFile(filter_file_path, &positive_file_filter,
-                          &negative_test_filter_))
+                          &negative_test_filter_)) {
         return false;
+      }
     }
   }
 
@@ -1707,14 +1729,17 @@ bool TestLauncher::Init(CommandLine* command_line) {
       !command_line->HasSwitch(kGTestRunDisabledTestsFlag) &&
       !command_line->HasSwitch(kIsolatedScriptRunDisabledTestsFlag);
 
-  if (!InitTests())
+  if (!InitTests()) {
     return false;
+  }
 
-  if (!ShuffleTests(command_line))
+  if (!ShuffleTests(command_line)) {
     return false;
+  }
 
-  if (!ProcessAndValidateTests())
+  if (!ProcessAndValidateTests()) {
     return false;
+  }
 
   if (command_line->HasSwitch(switches::kTestLauncherPrintTestStdio)) {
     std::string print_test_stdio = command_line->GetSwitchValueASCII(
@@ -1868,14 +1893,16 @@ bool TestLauncher::InitTests() {
     }
     // TODO(isamsonov): crbug.com/1004417 remove when windows builders
     // stop flaking on MANAUAL_ tests.
-    if (launcher_delegate_->ShouldRunTest(test_id))
+    if (launcher_delegate_->ShouldRunTest(test_id)) {
       tests_.push_back(test_info);
+    }
   }
   if (!uninstantiated_tests.empty()) {
     LOG(ERROR) << "Found uninstantiated parameterized tests. These test suites "
                   "will not run:";
-    for (const std::string& name : uninstantiated_tests)
+    for (const std::string& name : uninstantiated_tests) {
       LOG(ERROR) << "  " << name;
+    }
     LOG(ERROR) << "Please use INSTANTIATE_TEST_SUITE_P to instantiate the "
                   "tests, or GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST if "
                   "the parameter list can be intentionally empty. See "
@@ -1934,8 +1961,9 @@ bool TestLauncher::ProcessAndValidateTests() {
       disabled_tests.insert(test_info.GetDisabledStrippedName());
       results_tracker_.AddDisabledTest(test_name);
     }
-    if (test_info.pre_test())
+    if (test_info.pre_test()) {
       pre_tests[test_info.GetDisabledStrippedName()] = test_info;
+    }
   }
 
   std::vector<TestInfo> tests_to_run;
@@ -1948,8 +1976,9 @@ bool TestLauncher::ProcessAndValidateTests() {
     }
 
     // Passes on PRE tests, those will append when final test is found.
-    if (test_info.pre_test())
+    if (test_info.pre_test()) {
       continue;
+    }
 
     std::vector<TestInfo> test_sequence;
     test_sequence.push_back(test_info);
@@ -1959,9 +1988,10 @@ bool TestLauncher::ProcessAndValidateTests() {
       pre_tests.erase(test_sequence.back().GetDisabledStrippedName());
     }
     // Skip disabled tests unless explicitly requested.
-    if (!test_info.disabled() || !skip_disabled_tests_)
+    if (!test_info.disabled() || !skip_disabled_tests_) {
       tests_to_run.insert(tests_to_run.end(), test_sequence.rbegin(),
                           test_sequence.rend());
+    }
   }
   tests_ = std::move(tests_to_run);
 
@@ -2069,8 +2099,9 @@ std::vector<std::string> TestLauncher::CollectTests() {
         }
       }
 
-      if (!found)
+      if (!found) {
         continue;
+      }
     }
 
     if (negative_exact_filter.find(test_name) != negative_exact_filter.end() ||
@@ -2087,8 +2118,9 @@ std::vector<std::string> TestLauncher::CollectTests() {
         break;
       }
     }
-    if (excluded)
+    if (excluded) {
       continue;
+    }
 
     // Tests with the name XYZ will cause tests with the name PRE_XYZ to run. We
     // should bucket all of these tests together.
@@ -2172,14 +2204,17 @@ void TestLauncher::RunTests() {
 
 void TestLauncher::PrintFuzzyMatchingTestNames() {
   for (auto filter : positive_test_filter_) {
-    if (filter.empty())
+    if (filter.empty()) {
       continue;
+    }
     std::string almost_filter;
-    if (filter.front() != '*')
+    if (filter.front() != '*') {
       almost_filter += '*';
+    }
     almost_filter += filter;
-    if (filter.back() != '*')
+    if (filter.back() != '*') {
       almost_filter += '*';
+    }
 
     for (const TestInfo& test_info : tests_) {
       std::string test_name = test_info.GetFullName();
@@ -2199,8 +2234,9 @@ bool TestLauncher::RunRetryTests() {
     // Retry all tests that depend on a failing test.
     std::vector<std::string> test_names;
     for (const TestInfo& test_info : tests_) {
-      if (base::Contains(tests_to_retry_, test_info.GetPrefixStrippedName()))
+      if (base::Contains(tests_to_retry_, test_info.GetPrefixStrippedName())) {
         test_names.push_back(test_info.GetFullName());
+      }
     }
     tests_to_retry_.clear();
 
@@ -2208,8 +2244,9 @@ bool TestLauncher::RunRetryTests() {
     test_started_count_ += retry_started_count;
 
     // Only invoke RunLoop if there are any tasks to run.
-    if (retry_started_count == 0)
+    if (retry_started_count == 0) {
       return false;
+    }
 
     fprintf(stdout, "Retrying %zu test%s (retry #%zu)\n", retry_started_count,
             retry_started_count > 1 ? "s" : "", retry_limit_ - retries_left_);
@@ -2264,8 +2301,9 @@ void TestLauncher::MaybeSaveSummaryAsJSON(
 void TestLauncher::OnTestIterationFinished() {
   TestResultsTracker::TestStatusMap tests_by_status(
       results_tracker_.GetTestStatusMapForCurrentIteration());
-  if (!tests_by_status[TestResult::TEST_UNKNOWN].empty())
+  if (!tests_by_status[TestResult::TEST_UNKNOWN].empty()) {
     results_tracker_.AddGlobalTag(kUnreliableResultsTag);
+  }
 
   results_tracker_.PrintSummaryOfCurrentIteration();
 }
@@ -2346,44 +2384,47 @@ size_t NumParallelJobs(unsigned int cores_per_job) {
 
 std::string GetTestOutputSnippet(const TestResult& result,
                                  const std::string& full_output) {
-  size_t run_pos = full_output.find(std::string("[ RUN      ] ") +
-                                    result.full_name);
-  if (run_pos == std::string::npos)
+  size_t run_pos =
+      full_output.find(std::string("[ RUN      ] ") + result.full_name);
+  if (run_pos == std::string::npos) {
     return std::string();
+  }
 
-  size_t end_pos = full_output.find(std::string("[  FAILED  ] ") +
-                                    result.full_name,
-                                    run_pos);
+  size_t end_pos = full_output.find(
+      std::string("[  FAILED  ] ") + result.full_name, run_pos);
   // Only clip the snippet to the "OK" message if the test really
   // succeeded or was skipped. It still might have e.g. crashed
   // after printing it.
   if (end_pos == std::string::npos) {
     if (result.status == TestResult::TEST_SUCCESS) {
-      end_pos = full_output.find(std::string("[       OK ] ") +
-                                result.full_name,
-                                run_pos);
+      end_pos = full_output.find(
+          std::string("[       OK ] ") + result.full_name, run_pos);
 
       // Also handle SKIPPED next to SUCCESS because the GTest XML output
       // doesn't make a difference between SKIPPED and SUCCESS
-      if (end_pos == std::string::npos)
+      if (end_pos == std::string::npos) {
         end_pos = full_output.find(
             std::string("[  SKIPPED ] ") + result.full_name, run_pos);
+      }
     } else {
       // If test is not successful, include all output until subsequent test.
       end_pos = full_output.find(std::string("[ RUN      ]"), run_pos + 1);
-      if (end_pos != std::string::npos)
+      if (end_pos != std::string::npos) {
         end_pos--;
+      }
     }
   }
   if (end_pos != std::string::npos) {
     size_t newline_pos = full_output.find("\n", end_pos);
-    if (newline_pos != std::string::npos)
+    if (newline_pos != std::string::npos) {
       end_pos = newline_pos + 1;
+    }
   }
 
   std::string snippet(full_output.substr(run_pos));
-  if (end_pos != std::string::npos)
+  if (end_pos != std::string::npos) {
     snippet = full_output.substr(run_pos, end_pos - run_pos);
+  }
 
   return snippet;
 }

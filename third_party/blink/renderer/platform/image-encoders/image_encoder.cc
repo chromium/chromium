@@ -6,14 +6,14 @@
 
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "skia/rusty_png_feature.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <basetsd.h>  // Included before jpeglib.h because of INT32 clash
 #endif
-#include <stdio.h>    // Needed by jpeglib.h
+#include <stdio.h>  // Needed by jpeglib.h
 
 #include "jpeglib.h"  // for JPEG_MAX_DIMENSION
-
 #include "third_party/libwebp/src/src/webp/encode.h"  // for WEBP_MAX_DIMENSION
 
 namespace blink {
@@ -29,7 +29,7 @@ bool ImageEncoder::Encode(Vector<unsigned char>* dst,
                           const SkPixmap& src,
                           const SkPngEncoder::Options& options) {
   VectorWStream dst_stream(dst);
-  return SkPngEncoder::Encode(&dst_stream, src, options);
+  return skia::EncodePng(&dst_stream, src, options);
 }
 
 bool ImageEncoder::Encode(Vector<unsigned char>* dst,
@@ -59,7 +59,7 @@ std::unique_ptr<ImageEncoder> ImageEncoder::Create(
     const SkPngEncoder::Options& options) {
   std::unique_ptr<ImageEncoder> image_encoder(new ImageEncoder(dst));
   image_encoder->encoder_ =
-      SkPngEncoder::Make(&image_encoder->dst_, src, options);
+      skia::MakePngEncoder(&image_encoder->dst_, src, options);
   if (!image_encoder->encoder_) {
     return nullptr;
   }

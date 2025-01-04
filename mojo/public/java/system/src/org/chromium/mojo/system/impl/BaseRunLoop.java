@@ -8,10 +8,12 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.mojo.system.RunLoop;
 
 /** Implementation of {@link RunLoop} suitable for the base:: message loop implementation. */
 @JNINamespace("mojo::android")
+@NullMarked
 class BaseRunLoop implements RunLoop {
     /** Pointer to the C run loop. */
     private long mRunLoopID;

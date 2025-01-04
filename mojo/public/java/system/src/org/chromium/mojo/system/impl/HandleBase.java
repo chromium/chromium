@@ -5,12 +5,14 @@
 package org.chromium.mojo.system.impl;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.mojo.system.Core;
 import org.chromium.mojo.system.Core.HandleSignalsState;
 import org.chromium.mojo.system.Handle;
 import org.chromium.mojo.system.UntypedHandle;
 
 /** Implementation of {@link Handle}. */
+@NullMarked
 abstract class HandleBase implements Handle {
     private static final String TAG = "HandleImpl";
 

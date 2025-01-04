@@ -7,10 +7,10 @@
 #include <cstddef>
 #include <vector>
 
+#include "ash/components/arc/intent_helper/intent_constants.h"
+#include "ash/components/arc/intent_helper/intent_filter.h"
 #include "ash/components/arc/mojom/intent_helper.mojom-shared.h"
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
-#include "components/arc/intent_helper/intent_constants.h"
-#include "components/arc/intent_helper/intent_filter.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

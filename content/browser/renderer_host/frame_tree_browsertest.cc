@@ -577,6 +577,47 @@ IN_PROC_BROWSER_TEST_P(FrameTreeDiscardPendingNavigationTest,
   EXPECT_EQ(new_url, root->current_url());
 }
 
+// Asserts that a process pinned with a keep-alive ref hosting only discarded
+// frames is successfully shutdown after the keep-alive timeout.
+IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest,
+                       DiscardedFrameRendererShutdownAfterKeepAliveTimeout) {
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTree& frame_tree = wc->GetPrimaryFrameTree();
+
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+
+  // Ensure the view, frame and process are reported alive.
+  RenderFrameHostImpl* rfh =
+      static_cast<RenderFrameHostImpl*>(wc->GetPrimaryMainFrame());
+  RenderViewHostImpl* rvh = rfh->render_view_host();
+  RenderProcessHostImpl* rph =
+      static_cast<RenderProcessHostImpl*>(rfh->GetProcess());
+  EXPECT_TRUE(rvh->IsRenderViewLive());
+  EXPECT_TRUE(rfh->IsRenderFrameLive());
+  EXPECT_TRUE(rph->IsInitializedAndNotDead());
+
+  // Set a keep-alive on the renderer process.
+  rph->IncrementKeepAliveRefCount(0);
+
+  // Discard the frame tree. The process should remain alive.
+  frame_tree.Discard();
+  EXPECT_TRUE(rvh->IsRenderViewLive());
+  EXPECT_TRUE(rfh->IsRenderFrameLive());
+  EXPECT_TRUE(rph->IsInitializedAndNotDead());
+
+  // Simulate a keep-alive timeout, the process should be promptly shutdown.
+  rfh->SimulateDiscardShutdownKeepAliveTimeoutForTesting();
+  RenderProcessHostWatcher process_exit_observer(
+      wc, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  process_exit_observer.Wait();
+
+  // Ensure the process has been successfully shutdown.
+  EXPECT_FALSE(rvh->IsRenderViewLive());
+  EXPECT_FALSE(rfh->IsRenderFrameLive());
+  EXPECT_FALSE(rph->IsInitializedAndNotDead());
+}
+
 class DedicatedWorkerObserver : public DedicatedWorkerService::Observer {
  public:
   explicit DedicatedWorkerObserver(DedicatedWorkerService* worker_service) {

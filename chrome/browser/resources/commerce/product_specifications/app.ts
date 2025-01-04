@@ -9,6 +9,7 @@ import './new_column_selector.js';
 import './product_selector.js';
 import './table.js';
 import './horizontal_carousel.js';
+import './comparison_table_list.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
@@ -35,6 +36,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './app.html.js';
 import type {BuyingOptions} from './buying_options_section.js';
+import type {ComparisonTableDetails, ComparisonTableListElement} from './comparison_table_list.js';
+import type {ComparisonTableListItemClickEvent} from './comparison_table_list_item.js';
 import type {ProductDescription} from './description_section.js';
 import type {HeaderElement} from './header.js';
 import type {NewColumnSelectorElement} from './new_column_selector.js';
@@ -70,11 +73,13 @@ export interface TableColumn {
 
 export interface ProductSpecificationsElement {
   $: {
+    comparisonTableList: ComparisonTableListElement,
     empty: HTMLElement,
     error: HTMLElement,
     errorToast: CrToastElement,
     header: HeaderElement,
     loading: HTMLElement,
+    managementContainer: HTMLElement,
     newColumnSelector: NewColumnSelectorElement,
     offlineToast: CrToastElement,
     productSelector: ProductSelectorElement,
@@ -99,8 +104,20 @@ export enum CompareTableColumnAction {
   MAX_VALUE = 6,
 }
 
+// This enum is used for metrics and should be kept in sync with the enum of
+// the same name in enums.xml.
+export enum CompareTableLoadStatus {
+  SUCCESS = 0,
+  FAILURE = 1,
+  // Must be last:
+  MAX_VALUE = 2,
+}
+
 export const COLUMN_MODIFICATION_HISTOGRAM_NAME: string =
     'Commerce.Compare.Table.ColumnModification';
+
+export const TABLE_LOAD_HISTOGRAM_NAME: string =
+    'Commerce.Compare.Table.LoadStatus';
 
 enum AppState {
   ERROR = 0,
@@ -214,8 +231,14 @@ export class ProductSpecificationsElement extends PolymerElement {
         computed: 'computeAppState_(productSpecificationsFeatureState_.*,' +
             ' loadingState_.loading, showEmptyState_)',
       },
+      comparisonTableDetails_: Array,
       loadingState_: Object,
       setName_: String,
+      showComparisonTableList_: {
+        type: Boolean,
+        computed: 'computeShowComparisonTableList_(showEmptyState_,' +
+            ' comparisonTableDetails_)',
+      },
       showTableDataUnavailableContainer_: {
         type: Boolean,
         computed: 'computeShowTableDataUnavailableContainer_(appState_)',
@@ -226,8 +249,10 @@ export class ProductSpecificationsElement extends PolymerElement {
   }
 
   private appState_: AppState = AppState.NO_CONTENT;
+  private comparisonTableDetails_: ComparisonTableDetails[] = [];
   private loadingState_: LoadingState = {loading: false, urlCount: 0};
   private setName_: string|null = null;
+  private showComparisonTableList_: boolean = false;
   private showTableDataUnavailableContainer_: boolean;
   private tableColumns_: TableColumn[] = [];
 
@@ -254,10 +279,16 @@ export class ProductSpecificationsElement extends PolymerElement {
     super.connectedCallback();
 
     this.listenerIds_.push(
+        this.callbackRouter_.onProductSpecificationsSetAdded.addListener(
+            (set: ProductSpecificationsSet) => this.onSetAdded_(set)),
         this.callbackRouter_.onProductSpecificationsSetRemoved.addListener(
             (uuid: Uuid) => this.onSetRemoved_(uuid)),
         this.callbackRouter_.onProductSpecificationsSetUpdated.addListener(
             (set: ProductSpecificationsSet) => this.onSetUpdated_(set)));
+
+    this.addEventListener(
+        'comparison-table-list-item-click',
+        this.onComparisonTableListItemClickEvent_);
 
     // TODO: b/358131415 - use listeners to update. Temporary workaround uses
     // window focus to update the feature state, to check signin.
@@ -332,28 +363,14 @@ export class ProductSpecificationsElement extends PolymerElement {
     const params = new URLSearchParams(router.getCurrentQuery());
     const idParam = params.get('id');
     if (idParam && isValidLowercaseUuid(idParam)) {
-      this.id_ = {value: idParam};
-      const {set} = await this.shoppingApi_.getProductSpecificationsSetByUuid(
-          {value: idParam});
-      if (set) {
-        const {disclosureShown} =
-            await this.productSpecificationsProxy_.maybeShowDisclosure(
-                /* urls= */[], /* name= */ '', idParam);
-        if (disclosureShown) {
-          this.showEmptyState_ = true;
-          this.id_ = null;
-          return;
-        }
-        document.title = set.name;
-        this.setName_ = set.name;
-        this.populateTable_(set.urls.map(url => (url.url)));
+      if (await this.loadSet_({value: idParam})) {
         return;
       }
     }
 
     const urlsParam = params.get('urls');
     if (!urlsParam) {
-      this.showEmptyState_ = true;
+      this.updateEmptyState_(true);
       return;
     }
 
@@ -424,6 +441,15 @@ export class ProductSpecificationsElement extends PolymerElement {
         this.appState_ === AppState.SYNC_SCREEN;
   }
 
+  private computeShowComparisonTableList_() {
+    if (!loadTimeData.getBoolean('comparisonTableListEnabled')) {
+      return false;
+    }
+
+    return this.showEmptyState_ && this.id_ === null &&
+        this.comparisonTableDetails_.length > 0;
+  }
+
   private canShowFooter_(
       showTableDataUnavailableContainer: boolean, appState: AppState) {
     return !(
@@ -459,14 +485,14 @@ export class ProductSpecificationsElement extends PolymerElement {
     // Transition directly to the empty state if there are no URLs.
     if (urls.length === 0) {
       this.tableColumns_ = [];
-      this.showEmptyState_ = true;
+      this.updateEmptyState_(true);
       return;
     }
 
     await this.enterLoadingState_(urls.length);
 
     const start = Date.now();
-    this.showEmptyState_ = false;
+    this.updateEmptyState_(false);
 
     const tableColumns: TableColumn[] = [];
     if (urls.length) {
@@ -500,6 +526,13 @@ export class ProductSpecificationsElement extends PolymerElement {
       // the URLs in the comparison will still be displayed as columns.
       if (productSpecs.productDimensionMap.size === 0 && urls.length > 1) {
         this.$.errorToast.show();
+        chrome.metricsPrivate.recordEnumerationValue(
+            TABLE_LOAD_HISTOGRAM_NAME, CompareTableLoadStatus.FAILURE,
+            CompareTableLoadStatus.MAX_VALUE);
+      } else {
+        chrome.metricsPrivate.recordEnumerationValue(
+            TABLE_LOAD_HISTOGRAM_NAME, CompareTableLoadStatus.SUCCESS,
+            CompareTableLoadStatus.MAX_VALUE);
       }
     }
 
@@ -512,7 +545,7 @@ export class ProductSpecificationsElement extends PolymerElement {
     }
 
     this.tableColumns_ = tableColumns;
-    this.showEmptyState_ = this.tableColumns_.length === 0;
+    this.updateEmptyState_(this.tableColumns_.length === 0);
     this.exitLoadingState_();
   }
 
@@ -578,6 +611,39 @@ export class ProductSpecificationsElement extends PolymerElement {
       this.shoppingApi_.setNameForProductSpecificationsSet(
           this.id_, e.detail.name);
     }
+  }
+
+  private async fetchComparisonTableDetails_() {
+    const {sets} = await this.shoppingApi_.getAllProductSpecificationsSets();
+
+    if (sets.length === 0 && this.comparisonTableDetails_.length === 0) {
+      return;
+    }
+
+    this.comparisonTableDetails_ = await Promise.all(
+        sets.map(async set => this.createTableDetailsFromSet_(set)));
+  }
+
+  private async createTableDetailsFromSet_(set: ProductSpecificationsSet):
+      Promise<ComparisonTableDetails> {
+    // Find the first product with an image to use as the list item image.
+    let imageUrl = null;
+    for (let i = 0; i < set.urls.length; i++) {
+      const {productInfo} =
+          await this.shoppingApi_.getProductInfoForUrl(set.urls[i]);
+
+      if (productInfo.imageUrl.url) {
+        imageUrl = productInfo.imageUrl;
+        break;
+      }
+    }
+
+    return {
+      name: set.name,
+      uuid: set.uuid,
+      numUrls: set.urls.length,
+      imageUrl,
+    };
   }
 
   private seeAllSets_() {
@@ -715,7 +781,16 @@ export class ProductSpecificationsElement extends PolymerElement {
     return columnCount >= loadTimeData.getInteger('maxTableSize');
   }
 
-  private onSetUpdated_(set: ProductSpecificationsSet) {
+  private async onSetUpdated_(set: ProductSpecificationsSet) {
+    if (this.showEmptyState_) {
+      const tableIndex = this.comparisonTableDetails_.findIndex(
+          table => table.uuid.value === set.uuid.value);
+      if (tableIndex !== -1) {
+        this.comparisonTableDetails_ = this.comparisonTableDetails_.toSpliced(
+            tableIndex, 1, await this.createTableDetailsFromSet_(set));
+      }
+    }
+
     // If the page does not have focus, schedule the update for later in case a
     // newer update is received before the tab is focused. This prevents all
     // updates from triggering at the same time, which may cause a flicker.
@@ -773,6 +848,11 @@ export class ProductSpecificationsElement extends PolymerElement {
     if (id.value === this.id_?.value) {
       window.location.replace(window.location.origin);
     }
+
+    if (this.showEmptyState_) {
+      this.comparisonTableDetails_ = this.comparisonTableDetails_.filter(
+          table => table.uuid.value !== id.value);
+    }
   }
 
   private onFeedbackSelectedOptionChanged_(
@@ -793,13 +873,21 @@ export class ProductSpecificationsElement extends PolymerElement {
     }
   }
 
+  private async onSetAdded_(set: ProductSpecificationsSet) {
+    if (this.showEmptyState_) {
+      this.comparisonTableDetails_ =
+          [await this.createTableDetailsFromSet_(set)].concat(
+              this.comparisonTableDetails_);
+    }
+  }
+
   private getDisclaimerText_(): string {
     return loadTimeData.getStringF(
         'experimentalFeatureDisclaimer', loadTimeData.getString('userEmail'));
   }
 
-  private async fadeAndSlideOutSummaryContainer_() {
-    await this.$.summaryContainer
+  private async fadeAndSlideOutManagementContainer_() {
+    await this.$.managementContainer
         .animate(
             [
               {opacity: 1, transform: 'translateY(0px)'},
@@ -816,8 +904,8 @@ export class ProductSpecificationsElement extends PolymerElement {
         .finished;
   }
 
-  private async fadeAndSlideInSummaryContainer_() {
-    await this.$.summaryContainer
+  private async fadeAndSlideInManagementContainer_() {
+    await this.$.managementContainer
         .animate(
             [
               {
@@ -848,18 +936,18 @@ export class ProductSpecificationsElement extends PolymerElement {
     }
 
     return new Promise<void>(async resolve => {
-      await this.fadeAndSlideOutSummaryContainer_();
+      await this.fadeAndSlideOutManagementContainer_();
       this.loadingState_ = {loading: true, urlCount};
       resolve();
-      await this.fadeAndSlideInSummaryContainer_();
+      await this.fadeAndSlideInManagementContainer_();
       this.dispatchLoadingStartEvent_();
     });
   }
 
   private async exitLoadingState_() {
-    await this.fadeAndSlideOutSummaryContainer_();
+    await this.fadeAndSlideOutManagementContainer_();
     this.loadingState_ = {loading: false, urlCount: 0};
-    await this.fadeAndSlideInSummaryContainer_();
+    await this.fadeAndSlideInManagementContainer_();
     this.dispatchLoadingEndEvent_();
   }
 
@@ -871,6 +959,53 @@ export class ProductSpecificationsElement extends PolymerElement {
   private dispatchLoadingEndEvent_() {
     this.dispatchEvent(new CustomEvent(
         LOADING_END_EVENT_TYPE, {bubbles: true, composed: true}));
+  }
+
+  private updateEmptyState_(shouldShow: boolean) {
+    this.showEmptyState_ = shouldShow;
+
+    // If we show the empty state and there are no comparison tables, try to
+    // fetch them.
+    if (this.showEmptyState_ && this.comparisonTableDetails_.length === 0) {
+      this.fetchComparisonTableDetails_();
+    }
+  }
+
+  private onComparisonTableListItemClickEvent_(
+      event: ComparisonTableListItemClickEvent) {
+    window.history.replaceState(
+        undefined, '', `?id=${event.detail.uuid.value}`);
+    this.loadSet_(event.detail.uuid);
+  }
+
+  private async loadSet_(uuid: Uuid): Promise<boolean> {
+    const {set} =
+        await this.shoppingApi_.getProductSpecificationsSetByUuid(uuid);
+    if (set) {
+      const {disclosureShown} =
+          await this.productSpecificationsProxy_.maybeShowDisclosure(
+              /* urls= */[], /* name= */ '', uuid.value);
+      if (disclosureShown) {
+        this.updateEmptyState_(true);
+        this.id_ = null;
+        return false;
+      }
+      this.id_ = set.uuid;
+      document.title = set.name;
+      this.setName_ = set.name;
+      this.populateTable_(set.urls.map(url => (url.url)));
+      return true;
+    }
+
+    this.updateEmptyState_(true);
+    this.id_ = null;
+    return false;
+  }
+}
+
+declare global {
+  interface HTMLElementEventMap {
+    'comparison-table-list-item-click': ComparisonTableListItemClickEvent;
   }
 }
 

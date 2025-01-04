@@ -19,9 +19,9 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
@@ -358,9 +358,7 @@ void IbanBubbleControllerImpl::OnBubbleClosed(
 IbanBubbleControllerImpl::IbanBubbleControllerImpl(
     content::WebContents* web_contents)
     : AutofillBubbleControllerBase(web_contents),
-      content::WebContentsUserData<IbanBubbleControllerImpl>(*web_contents),
-      personal_data_manager_(PersonalDataManagerFactory::GetForBrowserContext(
-          web_contents->GetBrowserContext())) {}
+      content::WebContentsUserData<IbanBubbleControllerImpl>(*web_contents) {}
 
 IbanBubbleType IbanBubbleControllerImpl::GetBubbleType() const {
   return current_bubble_type_;

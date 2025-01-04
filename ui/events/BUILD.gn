@@ -720,10 +720,12 @@ if (use_blink) {
 
     if (use_ozone) {
       deps += [
-        "//ui/events/devices:unittests",
         "//ui/events/ozone:unittests",
         "//ui/events/ozone/layout",
       ]
+    }
+    if (use_ozone || (is_ios && use_blink)) {
+      deps += [ "//ui/events/devices:unittests" ]
     }
 
     if (use_aura) {

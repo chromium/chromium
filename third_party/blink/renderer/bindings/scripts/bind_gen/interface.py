@@ -399,9 +399,8 @@ def bind_callback_local_vars(code_node, cg_context):
 
         init_args = ["${isolate}"]
         if cg_context.is_return_type_promise_type:
-            init_args.append("${exception_context_type}")
-            init_args.append("${class_like_name}")
-            init_args.append("${property_name}")
+            init_args.append("ExceptionContext(${exception_context_type}, "
+                             "${class_like_name}, ${property_name})")
         node.append(
             F("ExceptionState ${exception_state}({init_args});",
               init_args=", ".join(init_args)))
@@ -2016,6 +2015,107 @@ def make_attribute_get_callback_def(cg_context, function_name):
     return func_def
 
 
+def nadc_parameter_v8_type_and_symbol_node(cg_context, argument, v8_arg_name,
+                                           blink_arg_name):
+    assert isinstance(cg_context, CodeGenContext)
+    assert isinstance(v8_arg_name, str)
+    assert isinstance(blink_arg_name, str)
+    assert isinstance(argument, web_idl.Argument) or isinstance(
+        argument, web_idl.Attribute)
+
+    unwrapped_idl_type = argument.idl_type.unwrap()
+    if "PassAsSpan" in argument.idl_type.effective_annotations:
+        return ("v8::Local<v8::Value>",
+                make_v8_to_blink_value(blink_arg_name,
+                                       "${{{}}}".format(v8_arg_name),
+                                       argument.idl_type,
+                                       argument=argument,
+                                       error_exit_return_statement="return;",
+                                       cg_context=cg_context))
+    if unwrapped_idl_type.is_interface or unwrapped_idl_type.is_sequence:
+        return ("v8::Local<v8::Value>"
+                if unwrapped_idl_type.is_interface else "v8::Local<v8::Array>",
+                make_v8_to_blink_value(blink_arg_name,
+                                       "${{{}}}".format(v8_arg_name),
+                                       argument.idl_type,
+                                       argument=argument,
+                                       error_exit_return_statement="return;",
+                                       cg_context=cg_context))
+    else:
+        return ("v8::Local<v8::Value>" if unwrapped_idl_type.is_any else
+                blink_type_info(argument.idl_type).value_t,
+                SymbolNode(
+                    blink_arg_name,
+                    "auto&& {} = {};".format(blink_arg_name, v8_arg_name)))
+
+
+def make_attribute_set_nadc_callback_def(cg_context):
+    assert isinstance(cg_context, CodeGenContext)
+
+    if not "NoAllocDirectCall" in cg_context.attribute.extended_attributes:
+        return None, None
+    if not "Setter" in cg_context.attribute.extended_attributes.get(
+            "NoAllocDirectCall").values:
+        return None, None
+
+    param_type, param_symbol = nadc_parameter_v8_type_and_symbol_node(
+        cg_context=cg_context,
+        argument=cg_context.attribute,
+        v8_arg_name="value",
+        blink_arg_name="blink_value")
+
+    func_name = callback_function_name(cg_context)
+    func_def = CxxFuncDefNode(
+        name=func_name,
+        arg_decls=[
+            "v8::Local<v8::Object> v8_arg0_receiver",
+            "{} value".format(param_type),
+            "v8::FastApiCallbackOptions& v8_arg_callback_options"
+        ],
+        return_type="void")
+    func_def.set_base_template_vars(cg_context.template_bindings())
+    body = func_def.body
+
+    body.register_code_symbols([
+        SymbolNode(
+            "isolate",
+            "v8::Isolate* ${isolate} = v8_arg_callback_options.isolate;"),
+        SymbolNode("blink_receiver", (_format(
+            "{}* ${blink_receiver} = "
+            "${class_name}::ToWrappableUnsafe(${isolate}, v8_arg0_receiver);",
+            blink_class_name(cg_context.interface)))), param_symbol,
+        SymbolNode("handle_scope", "v8::HandleScope handle_scope(${isolate});")
+    ])
+
+    bind_callback_local_vars(body, cg_context)
+
+    # If [CallWith=Isolate] is specified, make sure ${isolate} is passed first.
+    blink_arguments = list()
+    if "Isolate" in cg_context.attribute.extended_attributes.values_of(
+            "SetterCallWith"):
+        blink_arguments.append("${isolate}")
+
+    # If the value is of type Local<>, then open a HandleScope.
+    u = cg_context.attribute.idl_type.unwrap()
+    if (not u.is_numeric) and (not u.is_boolean):
+        body.append(TextNode("<% handle_scope.request_symbol_definition() %>"))
+
+    # Append the method arguments next.
+    blink_arguments.append("${blink_value}")
+
+    # Pass ${exception_state} after the method arguments.
+    if cg_context.may_throw_exception:
+        body.append(TextNode("<% handle_scope.request_symbol_definition() %>"))
+        blink_arguments.append("${exception_state}")
+
+    body.append(
+        FormatNode("${blink_receiver}->{member_func}({blink_arguments});",
+                   member_func=name_style.api_func(
+                       "set", cg_context.attribute.identifier),
+                   blink_arguments=", ".join(blink_arguments)))
+    return func_name, func_def
+
+
 def make_attribute_set_callback_def(cg_context, function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
@@ -2491,7 +2591,6 @@ def list_no_alloc_direct_call_callbacks(cg_context):
             entries.append(Entry(operation, 0))
     return entries
 
-
 def make_no_alloc_direct_call_callback_def(cg_context, function_name,
                                            argument_count):
     """
@@ -2519,32 +2618,6 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name,
             self.blink_arg_name = blink_arg_name
             self.symbol_node = symbol_node
 
-    def v8_type_and_symbol_node(argument, v8_arg_name, blink_arg_name):
-        unwrapped_idl_type = argument.idl_type.unwrap()
-        if "PassAsSpan" in argument.idl_type.effective_annotations:
-            return ("v8::Local<v8::Value>",
-                    make_v8_to_blink_value(
-                        blink_arg_name,
-                        "${{{}}}".format(v8_arg_name),
-                        argument.idl_type,
-                        argument=argument,
-                        error_exit_return_statement="return;",
-                        cg_context=cg_context))
-        if unwrapped_idl_type.is_interface or unwrapped_idl_type.is_sequence:
-            return ("v8::Local<v8::Value>" if unwrapped_idl_type.is_interface
-                    else "v8::Local<v8::Array>",
-                    make_v8_to_blink_value(
-                        blink_arg_name,
-                        "${{{}}}".format(v8_arg_name),
-                        argument.idl_type,
-                        argument=argument,
-                        error_exit_return_statement="return;",
-                        cg_context=cg_context))
-        else:
-            return (blink_type_info(argument.idl_type).value_t,
-                    S(blink_arg_name,
-                      "auto&& {} = {};".format(blink_arg_name, v8_arg_name)))
-
     arg_list = []
     for argument in function_like.arguments:
         if not (argument.index < argument_count):
@@ -2553,8 +2626,8 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name,
                                           argument.identifier)
         v8_arg_name = name_style.arg_f("v8_arg{}_{}", argument.index + 1,
                                        argument.identifier)
-        v8_type, symbol_node = v8_type_and_symbol_node(argument, v8_arg_name,
-                                                       blink_arg_name)
+        v8_type, symbol_node = nadc_parameter_v8_type_and_symbol_node(
+            cg_context, argument, v8_arg_name, blink_arg_name)
 
         arg_list.append(
             ArgumentInfo(v8_type, v8_arg_name, blink_arg_name, symbol_node))
@@ -4514,10 +4587,17 @@ def _make_attribute_registration_table(table_name, attribute_entries):
 
     T = TextNode
 
+    no_alloc_direct_call_count = sum(
+        map(lambda entry: bool(entry.attr_set_nadc_callback_name),
+            attribute_entries))
+    assert (no_alloc_direct_call_count == 0
+            or no_alloc_direct_call_count == len(attribute_entries))
+    no_alloc_direct_call_enabled = bool(no_alloc_direct_call_count)
+
     entry_nodes = []
+    attr_set_cfunctions = []
     pattern = ("{{"
                "\"{property_name}\", "
-               "\"${{class_like.identifier}}\", "
                "{attribute_get_callback}, "
                "{attribute_set_callback}, "
                "{v8_property_attribute}, "
@@ -4529,7 +4609,20 @@ def _make_attribute_registration_table(table_name, attribute_entries):
                "{v8_side_effect}, "
                "{v8_cached_accessor}"
                "}},")
+    if no_alloc_direct_call_enabled:
+        pattern = "{{" + pattern + "{attr_set_nadc_callback_name}}},"
     for entry in attribute_entries:
+        # If no fast call callback exists for this function, we just pass "nullptr".
+        attr_set_nadc_callback_name = ""
+        if no_alloc_direct_call_enabled:
+            attr_set_nadc_callback_name = "k" + entry.attr_set_nadc_callback_name
+            attr_set_cfunctions.append(
+                FormatNode(
+                    "static const v8::CFunction {array_name}[] = "
+                    "{{v8::CFunctionBuilder().Fn({function_name}).Build()}};",
+                    function_name=entry.attr_set_nadc_callback_name,
+                    array_name=attr_set_nadc_callback_name))
+
         text = _format(
             pattern,
             property_name=entry.property_.identifier,
@@ -4550,12 +4643,17 @@ def _make_attribute_registration_table(table_name, attribute_entries):
             v8_side_effect=_make_property_entry_v8_side_effect(
                 entry.property_),
             v8_cached_accessor=_make_property_entry_v8_cached_accessor(
-                entry.property_))
+                entry.property_),
+            attr_set_nadc_callback_name=attr_set_nadc_callback_name)
         entry_nodes.append(T(text))
 
     return ListNode([
-        T("static const IDLMemberInstaller::AttributeConfig " + table_name +
-          "[] = {"),
+        ListNode(attr_set_cfunctions),
+        FormatNode(
+            "static const IDLMemberInstaller::{config_name} {table_name}[] = {{",
+            config_name="NoAllocDirectCallAttributeConfig"
+            if no_alloc_direct_call_enabled else "AttributeConfig",
+            table_name=table_name),
         ListNode(entry_nodes),
         T("};"),
     ])
@@ -4660,10 +4758,9 @@ def _make_operation_registration_table(table_name, operation_entries):
     T = TextNode
     F = FormatNode
 
-    no_alloc_direct_call_count = len(
-        list(
-            filter(lambda entry: entry.no_alloc_direct_call_callbacks,
-                   operation_entries)))
+    no_alloc_direct_call_count = sum(
+        map(lambda entry: bool(entry.no_alloc_direct_call_callbacks),
+            operation_entries))
     assert (no_alloc_direct_call_count == 0
             or no_alloc_direct_call_count == len(operation_entries))
     no_alloc_direct_call_enabled = bool(no_alloc_direct_call_count)
@@ -4673,7 +4770,6 @@ def _make_operation_registration_table(table_name, operation_entries):
     nadc_overload_nodes = ListNode()
     pattern = ("{{"
                "\"{property_name}\", "
-               "\"${{class_like.identifier}}\", "
                "{operation_callback}, "
                "{function_length}, "
                "{v8_property_attribute}, "
@@ -4806,14 +4902,17 @@ class _PropEntryBase(object):
 
 class _PropEntryAttribute(_PropEntryBase):
     def __init__(self, is_context_dependent, exposure_conditional, world,
-                 attribute, attr_get_callback_name, attr_set_callback_name):
+                 attribute, attr_get_callback_name, attr_set_callback_name,
+                 attr_set_nadc_callback_name):
         assert isinstance(attr_get_callback_name, str)
         assert _is_none_or_str(attr_set_callback_name)
+        assert _is_none_or_str(attr_set_nadc_callback_name)
 
         _PropEntryBase.__init__(self, is_context_dependent,
                                 exposure_conditional, world, attribute)
         self.attr_get_callback_name = attr_get_callback_name
         self.attr_set_callback_name = attr_set_callback_name
+        self.attr_set_nadc_callback_name = attr_set_nadc_callback_name
 
 
 class _PropEntryConstant(_PropEntryBase):
@@ -4936,11 +5035,18 @@ def make_property_entries_and_callback_defs(cg_context, attribute_entries,
     def process_attribute(attribute, is_context_dependent,
                           exposure_conditional, world):
         cgc_attr = cg_context.make_copy(attribute=attribute, for_world=world)
+        cgc = cgc_attr.make_copy(no_alloc_direct_call=True, attribute_set=True)
+
+        attr_set_nadc_callback_name, attr_set_nadc_callback_node = make_attribute_set_nadc_callback_def(
+            cgc)
+
         cgc = cgc_attr.make_copy(attribute_get=True)
         attr_get_callback_name = callback_function_name(cgc)
+
         attr_get_callback_node = make_attribute_get_callback_def(
             cgc, attr_get_callback_name)
         cgc = cgc_attr.make_copy(attribute_set=True)
+
         attr_set_callback_name = callback_function_name(cgc)
         attr_set_callback_node = make_attribute_set_callback_def(
             cgc, attr_set_callback_name)
@@ -4948,6 +5054,8 @@ def make_property_entries_and_callback_defs(cg_context, attribute_entries,
             attr_set_callback_name = None
 
         callback_def_nodes.extend([
+            attr_set_nadc_callback_node,
+            EmptyNode(),
             attr_get_callback_node,
             EmptyNode(),
             attr_set_callback_node,
@@ -4961,7 +5069,8 @@ def make_property_entries_and_callback_defs(cg_context, attribute_entries,
                 world=world,
                 attribute=attribute,
                 attr_get_callback_name=attr_get_callback_name,
-                attr_set_callback_name=attr_set_callback_name))
+                attr_set_callback_name=attr_set_callback_name,
+                attr_set_nadc_callback_name=attr_set_nadc_callback_name))
 
     def process_constant(constant, is_context_dependent, exposure_conditional,
                          world):
@@ -5800,31 +5909,61 @@ ${instance_object} = ${v8_context}->Global()->GetPrototype().As<v8::Object>();\
         body.append(EmptyNode())
 
     if is_per_context_install:
-        pattern = ("{install_func}("
-                   "${isolate}, ${world}, "
-                   "${instance_object}, "
-                   "${prototype_object}, "
-                   "${interface_object}, "
-                   "${signature}, {table_name});")
+        pattern_without_interface_name = ("{install_func}("
+                                          "${isolate}, ${world}, "
+                                          "${instance_object}, "
+                                          "${prototype_object}, "
+                                          "${interface_object}, "
+                                          "${signature}, "
+                                          "{table_name});")
+        pattern_with_interface_name = ("{install_func}("
+                                       "${isolate}, ${world}, "
+                                       "${instance_object}, "
+                                       "${prototype_object}, "
+                                       "${interface_object}, "
+                                       "${signature}, "
+                                       "\"${{class_like.identifier}}\", "
+                                       "{table_name});")
     else:
-        pattern = ("{install_func}("
-                   "${isolate}, ${world}, "
-                   "${instance_template}, "
-                   "${prototype_template}, "
-                   "${interface_template}, "
-                   "${signature}, {table_name});")
+        pattern_without_interface_name = ("{install_func}("
+                                          "${isolate}, ${world}, "
+                                          "${instance_template}, "
+                                          "${prototype_template}, "
+                                          "${interface_template}, "
+                                          "${signature}, "
+                                          "{table_name});")
+        pattern_with_interface_name = ("{install_func}("
+                                       "${isolate}, ${world}, "
+                                       "${instance_template}, "
+                                       "${prototype_template}, "
+                                       "${interface_template}, "
+                                       "${signature}, "
+                                       "\"${{class_like.identifier}}\", "
+                                       "{table_name});")
 
     table_name = "kAttributeTable"
     installer_call_text = _format(
-        pattern,
+        pattern_with_interface_name,
         install_func="IDLMemberInstaller::InstallAttributes",
         table_name=table_name)
-    install_properties(table_name, attribute_entries,
-                       _make_attribute_registration_table, installer_call_text)
+
+    entries = list(
+        filter(lambda entry: not entry.attr_set_nadc_callback_name,
+               attribute_entries))
+
+    install_properties(table_name, entries, _make_attribute_registration_table,
+                       installer_call_text)
+
+    entries = list(
+        filter(lambda entry: entry.attr_set_nadc_callback_name,
+               attribute_entries))
+
+    install_properties(table_name, entries, _make_attribute_registration_table,
+                       installer_call_text)
 
     table_name = "kConstantCallbackTable"
     installer_call_text = _format(
-        pattern,
+        pattern_without_interface_name,
         install_func="IDLMemberInstaller::InstallConstants",
         table_name=table_name)
     constant_callback_entries = list(
@@ -5835,7 +5974,7 @@ ${instance_object} = ${v8_context}->Global()->GetPrototype().As<v8::Object>();\
 
     table_name = "kConstantValueTable"
     installer_call_text = _format(
-        pattern,
+        pattern_without_interface_name,
         install_func="IDLMemberInstaller::InstallConstants",
         table_name=table_name)
     constant_value_entries = list(
@@ -5846,7 +5985,7 @@ ${instance_object} = ${v8_context}->Global()->GetPrototype().As<v8::Object>();\
 
     table_name = "kExposedConstructTable"
     installer_call_text = _format(
-        pattern,
+        pattern_without_interface_name,
         install_func="IDLMemberInstaller::InstallExposedConstructs",
         table_name=table_name)
     install_properties(table_name, exposed_construct_entries,
@@ -5855,7 +5994,7 @@ ${instance_object} = ${v8_context}->Global()->GetPrototype().As<v8::Object>();\
 
     table_name = "kOperationTable"
     installer_call_text = _format(
-        pattern,
+        pattern_with_interface_name,
         install_func="IDLMemberInstaller::InstallOperations",
         table_name=table_name)
     entries = list(

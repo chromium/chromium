@@ -1,0 +1,7 @@
+<html><head><title>cross-site iframe test</title></head>
+<body>
+<!-- This only works if the CrossSiteRedirector is running on the embedded test
+     server, and the host_resolver is set up to handle b.com. -->
+<iframe src="/cross-site/b.com/title1.html" id="frame1"></iframe>
+<iframe src="/cross-site/c.com/title1.html" id="frame2"></iframe>
+</body></html>

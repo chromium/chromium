@@ -348,11 +348,9 @@ static void JNI_UmaSessionStats_RegisterExternalExperiment(
 
 static void JNI_UmaSessionStats_RegisterSyntheticFieldTrial(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jtrial_name,
-    const JavaParamRef<jstring>& jgroup_name,
+    std::string& trial_name,
+    std::string& group_name,
     int annotation_mode) {
-  std::string trial_name(ConvertJavaStringToUTF8(env, jtrial_name));
-  std::string group_name(ConvertJavaStringToUTF8(env, jgroup_name));
   UmaSessionStats::RegisterSyntheticFieldTrial(
       trial_name, group_name,
       static_cast<variations::SyntheticTrialAnnotationMode>(annotation_mode));

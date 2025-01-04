@@ -26,7 +26,7 @@
 
 namespace cc {
 
-// Viz-side counterpart to a client-side PictureLayerImpl when VizLayers is
+// Viz-side counterpart to a client-side PictureLayerImpl when TreesInViz is
 // enabled. Clients push tiling information and tile contents from a picture
 // layer down to Viz, and this layer uses that information to draw tile quads.
 class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {

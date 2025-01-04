@@ -21,18 +21,15 @@ namespace media_router {
 class MediaRouter;
 class LoggerImpl;
 
-// TODO(crbug.com/376495209): Add comments for methods and members of this class.
-// Controller for the Cast toolbar icon. There should be one instance of this
-// class per browser.
-class CastBrowserController :
-                          public IssuesObserver,
-                          public MediaRoutesObserver,
-                          public MirroringMediaControllerHost::Observer {
-
+// TODO(crbug.com/376495209): Add comments for methods and members of this
+// class. Controller for the Cast toolbar icon. There should be one instance of
+// this class per browser.
+class CastBrowserController : public IssuesObserver,
+                              public MediaRoutesObserver,
+                              public MirroringMediaControllerHost::Observer {
  public:
   explicit CastBrowserController(Browser* browser);
-  CastBrowserController(Browser* browser,
-                    MediaRouter* media_router);
+  CastBrowserController(Browser* browser, MediaRouter* media_router);
   CastBrowserController(const CastBrowserController&) = delete;
   CastBrowserController& operator=(const CastBrowserController&) = delete;
   ~CastBrowserController() override;

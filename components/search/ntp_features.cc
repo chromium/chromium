@@ -29,12 +29,6 @@ BASE_FEATURE(kConfirmSuggestionRemovals,
              "ConfirmNtpSuggestionRemovals",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, Chrome theme color will be set to match the NTP background
-// on NTP Customize Chrome background change.
-BASE_FEATURE(kCustomizeChromeColorExtraction,
-             "CustomizeChromeColorExtraction",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, shows an extension card within the Customize Chrome Side
 // Panel for access to the Chrome Web Store extensions.
 BASE_FEATURE(kCustomizeChromeSidePanelExtensionsCard,
@@ -247,6 +241,11 @@ BASE_FEATURE(kNtpMostRelevantTabResumptionModuleDeviceIcon,
              "NtpMostRelevantTabResumptionModuleDeviceIcon",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the Tab Resumption module will use the synced fallback icon.
+BASE_FEATURE(kNtpMostRelevantTabResumptionUseIsKnownToSync,
+             "NtpMostRelevantTabResumptionUseIsKnownToSync",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kNtpTabResumptionModuleCategories,
              "NtpTabResumptionModuleCategories",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -383,6 +382,21 @@ const base::FeatureParam<int> kNtpMobilePromoImpressionLimit(
     &ntp_features::kNtpMobilePromo,
     "kNtpMobilePromoImpressionLimit",
     10);
+
+const base::FeatureParam<NtpSharepointModuleDataType>::Option
+    kNtpSharepointModuleDataTypeOptions[] = {
+        {NtpSharepointModuleDataType::kTrendingInsights, "trending-insights"},
+        {NtpSharepointModuleDataType::kNonInsights, "non-insights"},
+        {NtpSharepointModuleDataType::kTrendingInsightsFakeData,
+         "fake-trending"},
+        {NtpSharepointModuleDataType::kNonInsightsFakeData,
+         "fake-non-insights"}};
+
+const base::FeatureParam<NtpSharepointModuleDataType>
+    kNtpSharepointModuleDataParam{
+        &ntp_features::kNtpSharepointModule, "NtpSharepointModuleDataParam",
+        NtpSharepointModuleDataType::kTrendingInsights,
+        &kNtpSharepointModuleDataTypeOptions};
 
 base::TimeDelta GetModulesLoadTimeout() {
   std::string param_value = base::GetFieldTrialParamValueByFeature(

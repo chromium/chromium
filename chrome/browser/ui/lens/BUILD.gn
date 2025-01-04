@@ -28,63 +28,82 @@ source_set("lens") {
     "//chrome/browser/ui/ash/capture_mode",
   ]
   sources = [
-    "lens_overlay_blur_layer_delegate.cc",
     "lens_overlay_blur_layer_delegate.h",
     "lens_overlay_colors.h",
-    "lens_overlay_controller.cc",
-    "lens_overlay_entry_point_controller.cc",
-    "lens_overlay_event_handler.cc",
     "lens_overlay_event_handler.h",
-    "lens_overlay_gen204_controller.cc",
-    "lens_overlay_image_helper.cc",
     "lens_overlay_image_helper.h",
-    "lens_overlay_languages_controller.cc",
     "lens_overlay_languages_controller.h",
-    "lens_overlay_proto_converter.cc",
     "lens_overlay_proto_converter.h",
-    "lens_overlay_query_controller.cc",
     "lens_overlay_query_controller.h",
-    "lens_overlay_request_id_generator.cc",
     "lens_overlay_request_id_generator.h",
-    "lens_overlay_side_panel_coordinator.cc",
     "lens_overlay_side_panel_coordinator.h",
-    "lens_overlay_side_panel_navigation_throttle.cc",
-    "lens_overlay_side_panel_web_view.cc",
     "lens_overlay_side_panel_web_view.h",
-    "lens_overlay_theme_utils.cc",
     "lens_overlay_theme_utils.h",
-    "lens_overlay_untrusted_ui.cc",
-    "lens_overlay_url_builder.cc",
     "lens_overlay_url_builder.h",
-    "lens_permission_bubble_controller.cc",
     "lens_permission_bubble_controller.h",
-    "lens_preselection_bubble.cc",
     "lens_preselection_bubble.h",
-    "lens_side_panel_untrusted_ui.cc",
     "ref_counted_lens_overlay_client_logs.h",
   ]
 
   public_deps = [
+    "//base",
+    "//chrome/browser/content_extraction",
     "//chrome/browser/lens/core/mojom:mojo_bindings",
+    "//chrome/browser/search_engines:search_engines",
     "//chrome/browser/themes",
+    "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/omnibox",
+    "//chrome/browser/ui/views/side_panel",
+    "//chrome/browser/ui/webui/searchbox",
     "//chrome/browser/ui/webui/top_chrome",
+    "//components/endpoint_fetcher",
     "//components/find_in_page",
     "//components/lens",
+    "//components/user_education/webui",
     "//content/public/browser",
     "//third_party/lens_server_proto:lens_overlay_proto",
     "//ui/base/mojom:ui_base_types",
+    "//ui/views",
   ]
 
+  if (enable_pdf) {
+    public_deps += [ "//pdf/mojom" ]
+  }
+}
+
+source_set("impl") {
+  public = []
+  sources = [
+    "lens_overlay_blur_layer_delegate.cc",
+    "lens_overlay_controller.cc",
+    "lens_overlay_entry_point_controller.cc",
+    "lens_overlay_event_handler.cc",
+    "lens_overlay_gen204_controller.cc",
+    "lens_overlay_image_helper.cc",
+    "lens_overlay_languages_controller.cc",
+    "lens_overlay_proto_converter.cc",
+    "lens_overlay_query_controller.cc",
+    "lens_overlay_request_id_generator.cc",
+    "lens_overlay_side_panel_coordinator.cc",
+    "lens_overlay_side_panel_navigation_throttle.cc",
+    "lens_overlay_side_panel_web_view.cc",
+    "lens_overlay_theme_utils.cc",
+    "lens_overlay_untrusted_ui.cc",
+    "lens_overlay_url_builder.cc",
+    "lens_permission_bubble_controller.cc",
+    "lens_preselection_bubble.cc",
+    "lens_side_panel_untrusted_ui.cc",
+  ]
+
+  public_deps = []
   deps = [
-    "//base",
+    ":lens",
     "//build:branding_buildflags",
     "//chrome/app:generated_resources_grit",
     "//chrome/app/theme:theme_resources_grit",
     "//chrome/app/vector_icons",
     "//chrome/browser:browser_process",
     "//chrome/browser:primitives",
-    "//chrome/browser/content_extraction",
     "//chrome/browser/feedback",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/profiles",
@@ -93,25 +112,21 @@ source_set("lens") {
     "//chrome/browser/resources/lens/shared:resources",
     "//chrome/browser/resources/lens/shared:resources_grit",
     "//chrome/browser/search",
-    "//chrome/browser/search_engines:search_engines",
     "//chrome/browser/task_manager",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/color:color_headers",
-    "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/hats",
     "//chrome/browser/ui/views/bubble",
-    "//chrome/browser/ui/views/side_panel",
+    "//chrome/browser/ui/views/page_action",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui:webui_util",
-    "//chrome/browser/ui/webui/searchbox",
     "//chrome/browser/ui/webui/util",
     "//chrome/common",
     "//chrome/common:channel_info",
     "//components/base32",
     "//components/constrained_window",
-    "//components/endpoint_fetcher",
     "//components/feature_engagement/public",
     "//components/input",
     "//components/language/core/common",
@@ -126,7 +141,6 @@ source_set("lens") {
     "//components/sync/service",
     "//components/sync_preferences",
     "//components/unified_consent",
-    "//components/user_education/webui",
     "//components/variations",
     "//components/variations:variations_mojom",
     "//components/version_info:channel",
@@ -150,14 +164,12 @@ source_set("lens") {
     "//ui/gfx/codec:codec",
     "//ui/gfx/geometry:geometry",
     "//ui/menus",
-    "//ui/views",
     "//ui/webui",
     "//url",
   ]
 
   if (enable_pdf) {
     deps += [ "//components/pdf/browser" ]
-    public_deps += [ "//pdf/mojom" ]
   }
 }
 

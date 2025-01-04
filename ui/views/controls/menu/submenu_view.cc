@@ -171,8 +171,9 @@ void SubmenuView::UpdateMenuPartSizes() {
 }
 
 void SubmenuView::ChildPreferredSizeChanged(View* child) {
-  if (!resize_open_menu_)
+  if (!resize_open_menu_) {
     return;
+  }
 
   MenuItemView* item = parent_menu_item_;
   MenuController* controller = item->GetMenuController();
@@ -375,38 +376,44 @@ bool SubmenuView::OnMouseWheel(const ui::MouseWheelEvent& e) {
 
   auto i = base::ranges::lower_bound(menu_items, vis_bounds.y(), {},
                                      &MenuItemView::y);
-  if (i == menu_items.cend())
+  if (i == menu_items.cend()) {
     return true;
+  }
 
   // If the first item isn't entirely visible, make it visible, otherwise make
   // the next/previous one entirely visible. If enough wasn't scrolled to show
   // any new rows, then just scroll the amount so that smooth scrolling using
   // the trackpad is possible.
   int delta = abs(e.y_offset() / ui::MouseWheelEvent::kWheelDelta);
-  if (delta == 0)
+  if (delta == 0) {
     return OnScroll(0, e.y_offset());
+  }
 
   const auto scrolled_to_top = [&vis_bounds](const MenuItemView* item) {
     return item->y() == vis_bounds.y();
   };
-  if (i != menu_items.cbegin() && !scrolled_to_top(*i))
+  if (i != menu_items.cbegin() && !scrolled_to_top(*i)) {
     --i;
+  }
   for (bool scroll_up = (e.y_offset() > 0); delta != 0; --delta) {
     int scroll_target;
     if (scroll_up) {
       if (scrolled_to_top(*i)) {
-        if (i == menu_items.cbegin())
+        if (i == menu_items.cbegin()) {
           break;
+        }
         --i;
       }
       scroll_target = (*i)->y();
     } else {
       const auto next_iter = std::next(i);
-      if (next_iter == menu_items.cend())
+      if (next_iter == menu_items.cend()) {
         break;
+      }
       scroll_target = (*next_iter)->y();
-      if (scrolled_to_top(*i))
+      if (scrolled_to_top(*i)) {
         i = next_iter;
+      }
     }
     ScrollRectToVisible(
         gfx::Rect(gfx::Point(0, scroll_target), vis_bounds.size()));
@@ -428,22 +435,25 @@ void SubmenuView::OnGestureEvent(ui::GestureEvent* event) {
     case ui::EventType::kGestureScrollEnd:
       break;
     case ui::EventType::kScrollFlingStart:
-      if (event->details().velocity_y() != 0.0f)
+      if (event->details().velocity_y() != 0.0f) {
         scroll_animator_->Start(0, event->details().velocity_y());
+      }
       break;
     case ui::EventType::kGestureTapDown:
     case ui::EventType::kScrollFlingCancel:
-      if (scroll_animator_->is_scrolling())
+      if (scroll_animator_->is_scrolling()) {
         scroll_animator_->Stop();
-      else
+      } else {
         handled = false;
+      }
       break;
     default:
       handled = false;
       break;
   }
-  if (handled)
+  if (handled) {
     event->SetHandled();
+  }
 }
 
 size_t SubmenuView::GetRowCount() {
@@ -541,20 +551,23 @@ void SubmenuView::Hide() {
       GetViewAccessibility().EndPopupFocusOverride();
     }
     // Fire these kMenuPopupEnd for each menu/submenu that closes/hides.
-    if (host_->IsVisible())
+    if (host_->IsVisible()) {
       NotifyAccessibilityEvent(ax::mojom::Event::kMenuPopupEnd, true);
+    }
 
     host_->HideMenuHost();
     GetMenuItem()->UpdateAccessibleExpandedCollapsedState();
   }
 
-  if (scroll_animator_->is_scrolling())
+  if (scroll_animator_->is_scrolling()) {
     scroll_animator_->Stop();
+  }
 }
 
 void SubmenuView::ReleaseCapture() {
-  if (host_)
+  if (host_) {
     host_->ReleaseMenuHostCapture();
+  }
 }
 
 bool SubmenuView::SkipDefaultKeyEventProcessing(const ui::KeyEvent& e) {
@@ -567,8 +580,9 @@ const MenuItemView* SubmenuView::GetMenuItem() const {
 
 void SubmenuView::SetDropMenuItem(MenuItemView* item,
                                   MenuDelegate::DropPosition position) {
-  if (drop_item_ == item && drop_position_ == position)
+  if (drop_item_ == item && drop_position_ == position) {
     return;
+  }
   SchedulePaintForDropIndicator(drop_item_, drop_position_);
   MenuItemView* old_drop_item = std::exchange(drop_item_, item);
   drop_position_ = position;
@@ -588,10 +602,12 @@ void SubmenuView::SetDropMenuItem(MenuItemView* item,
       }
     }
   } else {
-    if (old_drop_item && old_drop_item != drop_item_)
+    if (old_drop_item && old_drop_item != drop_item_) {
       old_drop_item->OnDropOrSelectionStatusMayHaveChanged();
-    if (drop_item_)
+    }
+    if (drop_item_) {
       drop_item_->OnDropOrSelectionStatusMayHaveChanged();
+    }
   }
   SchedulePaintForDropIndicator(drop_item_, drop_position_);
 }
@@ -627,8 +643,9 @@ MenuItemView* SubmenuView::GetLastItem() {
 void SubmenuView::MenuHostDestroyed() {
   host_ = nullptr;
   MenuController* controller = parent_menu_item_->GetMenuController();
-  if (controller)
+  if (controller) {
     controller->Cancel(MenuController::ExitType::kDestroyed);
+  }
 }
 
 void SubmenuView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
@@ -638,8 +655,9 @@ void SubmenuView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
 void SubmenuView::SchedulePaintForDropIndicator(
     MenuItemView* item,
     MenuDelegate::DropPosition position) {
-  if (item == nullptr)
+  if (item == nullptr) {
     return;
+  }
 
   if (position == MenuDelegate::DropPosition::kOn) {
     item->SchedulePaint();

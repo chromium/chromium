@@ -122,13 +122,14 @@ void ReloadButton::SetMenuEnabled(bool enable) {
 
 void ReloadButton::OnMouseExited(const ui::MouseEvent& event) {
   ToolbarButton::OnMouseExited(event);
-  if (!IsMenuShowing())
+  if (!IsMenuShowing()) {
     ChangeMode(intended_mode_, true);
+  }
 }
 
 void ReloadButton::UpdateCachedTooltipText() {
-  int reload_tooltip = menu_enabled_ ?
-      IDS_TOOLTIP_RELOAD_WITH_MENU : IDS_TOOLTIP_RELOAD;
+  int reload_tooltip =
+      menu_enabled_ ? IDS_TOOLTIP_RELOAD_WITH_MENU : IDS_TOOLTIP_RELOAD;
   SetCachedTooltipText(l10n_util::GetStringUTF16(
       visible_mode_ == Mode::kReload ? reload_tooltip : IDS_TOOLTIP_STOP));
 }
@@ -239,15 +240,17 @@ void ReloadButton::ButtonPressed(const ui::Event& event) {
 }
 
 void ReloadButton::ExecuteBrowserCommand(int command, int event_flags) {
-  if (!command_updater_)
+  if (!command_updater_) {
     return;
+  }
   command_updater_->ExecuteCommandWithDisposition(
       command, ui::DispositionFromEventFlags(event_flags));
 }
 
 void ReloadButton::OnDoubleClickTimer() {
-  if (!IsMenuShowing())
+  if (!IsMenuShowing()) {
     ChangeMode(intended_mode_, false);
+  }
 }
 
 void ReloadButton::OnStopToReloadTimer() {

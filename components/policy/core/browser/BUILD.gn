@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 
 group("browser") {
@@ -66,7 +65,7 @@ source_set("internal") {
     "webui/statistics_collector.h",
   ]
 
-  if (!is_chromeos_ash) {
+  if (!is_chromeos) {
     sources += [
       "cloud/user_policy_signin_service_base.cc",
       "cloud/user_policy_signin_service_base.h",
@@ -80,7 +79,6 @@ source_set("internal") {
   public_deps = [ "//base" ]
   deps = [
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//components/google/core/common",
     "//components/invalidation/impl",
     "//components/keyed_service/core",

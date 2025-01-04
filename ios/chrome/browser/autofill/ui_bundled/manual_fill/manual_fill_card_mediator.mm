@@ -10,9 +10,9 @@
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
-#import "components/autofill/core/browser/browser_autofill_manager.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
-#import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_consumer.h"
@@ -296,9 +296,9 @@ std::vector<CreditCard> FetchCards(
       _personalDataManager->payments_data_manager().GetCardArtURL(creditCard);
   if (IsKeyboardAccessoryUpgradeEnabled() && !cardArtURL.is_empty() &&
       cardArtURL.is_valid()) {
-    gfx::Image* image = _personalDataManager->payments_data_manager()
-                            .GetCachedCardArtImageForUrl(cardArtURL);
-    if (image) {
+    if (const gfx::Image* const image =
+            _personalDataManager->payments_data_manager()
+                .GetCachedCardArtImageForUrl(cardArtURL)) {
       return image->ToUIImage();
     }
   }

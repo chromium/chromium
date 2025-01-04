@@ -14,7 +14,7 @@ PasswordCheckupLauncherHelperImpl::~PasswordCheckupLauncherHelperImpl() =
 
 void PasswordCheckupLauncherHelperImpl::LaunchCheckupOnlineWithWindowAndroid(
     JNIEnv* env,
-    const base::android::JavaRef<jstring>& checkupUrl,
+    std::string& checkupUrl,
     const base::android::JavaRef<jobject>& windowAndroid) {
   Java_PasswordCheckupLauncher_launchCheckupOnlineWithWindowAndroid(
       env, checkupUrl, windowAndroid);
@@ -39,7 +39,7 @@ void PasswordCheckupLauncherHelperImpl::LaunchCheckupOnDevice(
 
 void PasswordCheckupLauncherHelperImpl::LaunchCheckupOnlineWithActivity(
     JNIEnv* env,
-    const base::android::JavaRef<jstring>& checkupUrl,
+    std::string& checkupUrl,
     const base::android::JavaRef<jobject>& activity) {
   Java_PasswordCheckupLauncher_launchCheckupOnlineWithActivity(env, checkupUrl,
                                                                activity);

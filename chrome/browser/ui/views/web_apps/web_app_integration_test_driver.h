@@ -275,10 +275,10 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void EnableFileHandling(Site site);
   void DisableWindowControlsOverlay(Site site);
   void EnableWindowControlsOverlay(Site site);
+#if BUILDFLAG(IS_CHROMEOS)
   void CreateShortcut(Site site, WindowOptions window_options);
-  // TODO(crbug.com/346323629): Remove InstallableSite and convert callsites to
-  // Site since universal install is available now.
-  void InstallMenuOption(InstallableSite site);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  void InstallMenuOption(Site site);
   void InstallLocally(Site site);
   void InstallOmniboxIcon(InstallableSite site);
   void InstallPolicyApp(Site site,
@@ -307,9 +307,14 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void LaunchFromChromeApps(Site site);
   void LaunchFromLaunchIcon(Site site);
   void LaunchFromMenuOption(Site site);
-  void LaunchFromPlatformShortcut(Site site);
 #if BUILDFLAG(IS_MAC)
   void LaunchFromAppShimFallback(Site site);
+  // If `allow_shim_failure` is set to true, this won't assert that the initial
+  // app shim launch was successful. The step will still verify that the launch
+  // was eventually successful.
+  void LaunchFromPlatformShortcut(Site site, bool allow_shim_failure = false);
+#else
+  void LaunchFromPlatformShortcut(Site site);
 #endif
   void OpenAppSettingsFromChromeApps(Site site);
   void OpenAppSettingsFromAppMenu(Site site);

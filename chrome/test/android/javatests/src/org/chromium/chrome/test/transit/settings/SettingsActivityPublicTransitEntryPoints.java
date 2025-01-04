@@ -32,11 +32,11 @@ public class SettingsActivityPublicTransitEntryPoints {
      *
      * @return the active entry {@link SettingsStation}
      */
-    public SettingsStation startMainSettingsNonBatched() {
+    public SettingsStation<MainSettings> startMainSettingsNonBatched() {
         EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
         sentinel.setAsEntryPoint();
 
-        SettingsStation entryPageStation = new SettingsStation();
+        SettingsStation<MainSettings> entryPageStation = new SettingsStation<>(MainSettings.class);
         return sentinel.travelToSync(
                 entryPageStation, mSettingsActivityTestRule::startSettingsActivity);
     }
@@ -46,16 +46,16 @@ public class SettingsActivityPublicTransitEntryPoints {
      *
      * @return the active entry {@link SettingsStation}
      */
-    public SettingsStation startMainSettings(
-            BatchedPublicTransitRule<SettingsStation> batchedRule) {
+    public SettingsStation<MainSettings> startMainSettings(
+            BatchedPublicTransitRule<SettingsStation<MainSettings>> batchedRule) {
         return startBatched(batchedRule, this::startMainSettingsNonBatched);
     }
 
-    private SettingsStation startBatched(
-            BatchedPublicTransitRule<SettingsStation> batchedRule,
-            Callable<SettingsStation> entryPointCallable) {
+    private SettingsStation<MainSettings> startBatched(
+            BatchedPublicTransitRule<SettingsStation<MainSettings>> batchedRule,
+            Callable<SettingsStation<MainSettings>> entryPointCallable) {
         mSettingsActivityTestRule.setFinishActivity(false);
-        SettingsStation station = batchedRule.getHomeStation();
+        SettingsStation<MainSettings> station = batchedRule.getHomeStation();
         if (station == null) {
             try {
                 station = entryPointCallable.call();

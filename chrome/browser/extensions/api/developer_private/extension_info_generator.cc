@@ -25,6 +25,7 @@
 #include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_safety_check_utils.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
@@ -41,7 +42,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/pref_names.h"
-#include "components/sync/base/features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/blocklist_state.h"
@@ -72,6 +72,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/grit/extensions_browser_resources.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/accelerators/command.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -193,7 +194,7 @@ developer::RuntimeError ConstructRuntimeError(const RuntimeError& error) {
 void ConstructCommands(CommandService* command_service,
                        const ExtensionId& extension_id,
                        std::vector<developer::Command>* commands) {
-  auto construct_command = [](const Command& command, bool active,
+  auto construct_command = [](const ui::Command& command, bool active,
                               bool is_extension_action) {
     developer::Command command_value;
     command_value.description =
@@ -223,13 +224,13 @@ void ConstructCommands(CommandService* command_service,
     }
   }
 
-  CommandMap named_commands;
+  ui::CommandMap named_commands;
   if (command_service->GetNamedCommands(extension_id,
                                         CommandService::ALL,
                                         CommandService::ANY_SCOPE,
                                         &named_commands)) {
     for (auto& pair : named_commands) {
-      Command& command_to_use = pair.second;
+      ui::Command& command_to_use = pair.second;
       // TODO(devlin): For some reason beyond my knowledge, FindCommandByName
       // returns different data than GetNamedCommands, including the
       // accelerators, but not the descriptions - and even then, only if the
@@ -415,8 +416,7 @@ ExtensionInfoGenerator::ExtensionInfoGenerator(
       pending_image_loads_(0u) {
 }
 
-ExtensionInfoGenerator::~ExtensionInfoGenerator() {
-}
+ExtensionInfoGenerator::~ExtensionInfoGenerator() = default;
 
 void ExtensionInfoGenerator::CreateExtensionInfo(
     const ExtensionId& id,
@@ -837,8 +837,7 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
   // `CanUploadAsAccountExtension` should already check for the feature flag
   // somewhere but add another guard for it here just in case.
   info->can_upload_as_account_extension =
-      base::FeatureList::IsEnabled(
-          syncer::kSyncEnableExtensionsInTransportMode) &&
+      sync_util::IsExtensionsExplicitSigninEnabled() &&
       AccountExtensionTracker::Get(profile)->CanUploadAsAccountExtension(
           extension);
 

@@ -84,10 +84,11 @@ class TaskAnnotatorBacktraceIntegrationTest
     EXPECT_EQ(posted_from, last_posted_from_);
     for (size_t i = 0; i < last_task_backtrace_.size(); i++) {
       SCOPED_TRACE(StringPrintf("Trace frame: %zu", i));
-      if (i < expected_trace.size())
+      if (i < expected_trace.size()) {
         EXPECT_EQ(expected_trace[i], last_task_backtrace_[i]);
-      else
+      } else {
         EXPECT_EQ(nullptr, last_task_backtrace_[i]);
+      }
     }
     EXPECT_EQ(expected_ipc_hash, last_ipc_hash_);
 

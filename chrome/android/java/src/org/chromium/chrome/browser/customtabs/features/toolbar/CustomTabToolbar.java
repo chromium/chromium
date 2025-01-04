@@ -441,9 +441,11 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     /** Remove maximize button from side sheet CCT toolbar. */
     public void removeSideSheetMaximizeButton() {
         ImageButton maximizeButton = findViewById(R.id.custom_tabs_sidepanel_maximize);
+        mMaximizeButtonEnabled = false;
+        if (maximizeButton == null) return; // Toolbar could be already destroyed.
+
         maximizeButton.setOnClickListener(null);
         maximizeButton.setVisibility(View.GONE);
-        mMaximizeButtonEnabled = false;
     }
 
     @VisibleForTesting

@@ -9,8 +9,11 @@
 #include <unordered_map>
 
 #include "base/containers/flat_set.h"
-#include "base/values.h"
 #include "url/origin.h"
+
+namespace base {
+class Value;
+}  // namespace base
 
 namespace web_app {
 

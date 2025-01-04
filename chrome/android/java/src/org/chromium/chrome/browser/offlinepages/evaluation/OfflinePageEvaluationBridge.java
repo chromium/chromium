@@ -201,7 +201,8 @@ public class OfflinePageEvaluationBridge {
     }
 
     @CalledByNative
-    public void log(String sourceTag, String message) {
+    public void log(
+            @JniType("std::string") String sourceTag, @JniType("std::string") String message) {
         Date date = new Date(System.currentTimeMillis());
         SimpleDateFormat formatter =
                 new SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.getDefault());
@@ -295,7 +296,11 @@ public class OfflinePageEvaluationBridge {
     // used to create SavePageRequest on the native side.
     @CalledByNative
     private static SavePageRequest createSavePageRequest(
-            int state, long requestId, String url, String clientIdNamespace, String clientIdId) {
+            int state,
+            long requestId,
+            @JniType("std::string") String url,
+            @JniType("std::string") String clientIdNamespace,
+            @JniType("std::string") String clientIdId) {
         return SavePageRequest.create(state, requestId, url, clientIdNamespace, clientIdId);
     }
 
@@ -343,9 +348,9 @@ public class OfflinePageEvaluationBridge {
         void savePageLater(
                 long nativeOfflinePageEvaluationBridge,
                 OfflinePageEvaluationBridge caller,
-                String url,
-                String clientNamespace,
-                String clientId,
+                @JniType("std::string") String url,
+                @JniType("std::string") String clientNamespace,
+                @JniType("std::string") String clientId,
                 boolean userRequested);
 
         boolean pushRequestProcessing(

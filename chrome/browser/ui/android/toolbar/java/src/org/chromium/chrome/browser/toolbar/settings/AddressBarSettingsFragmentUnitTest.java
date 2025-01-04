@@ -9,8 +9,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
+import android.content.pm.PackageManager;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle.State;
@@ -22,7 +24,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.Shadows;
+import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowPackageManager;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
@@ -43,6 +49,7 @@ public class AddressBarSettingsFragmentUnitTest {
     private AddressBarSettingsFragment mSettings;
     private RadioButtonWithDescription mTopButton;
     private RadioButtonWithDescription mBottomButton;
+    private TextView mDescription;
     private ImageView mToolbarOnTopImage;
     private ImageView mToolbarOnBottomImage;
 
@@ -83,6 +90,7 @@ public class AddressBarSettingsFragmentUnitTest {
                                 AddressBarSettingsFragment.PREF_ADDRESS_BAR_PREFERENCE);
         mTopButton = (RadioButtonWithDescription) addressBarPreference.getTopRadioButton();
         mBottomButton = (RadioButtonWithDescription) addressBarPreference.getBottomRadioButton();
+        mDescription = addressBarPreference.getDescription();
 
         AddressBarHeaderPreference addressBarHeaderPreference =
                 (AddressBarHeaderPreference)
@@ -98,6 +106,9 @@ public class AddressBarSettingsFragmentUnitTest {
         mSharedPreferencesManager.writeBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, true);
 
         launchFragment();
+        assertEquals(
+                mActivity.getString(R.string.address_bar_settings_description),
+                mDescription.getText());
         assertTrue(mTopButton.isChecked());
         assertFalse(mBottomButton.isChecked());
         assertEquals(View.VISIBLE, mToolbarOnTopImage.getVisibility());
@@ -134,5 +145,20 @@ public class AddressBarSettingsFragmentUnitTest {
                         ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, false));
         assertEquals(View.VISIBLE, mToolbarOnTopImage.getVisibility());
         assertEquals(View.GONE, mToolbarOnBottomImage.getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    @Config(minSdk = android.os.Build.VERSION_CODES.R)
+    public void testFoldable() {
+        ShadowPackageManager shadowPackageManager =
+                Shadows.shadowOf(ContextUtils.getApplicationContext().getPackageManager());
+        shadowPackageManager.setSystemFeature(PackageManager.FEATURE_SENSOR_HINGE_ANGLE, true);
+        mSharedPreferencesManager.writeBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, true);
+
+        launchFragment();
+        assertEquals(
+                mActivity.getString(R.string.address_bar_settings_description_foldable),
+                mDescription.getText());
     }
 }

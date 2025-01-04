@@ -9,6 +9,7 @@
 #include <string>
 
 #include "components/optimization_guide/core/model_execution/substitution.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
@@ -18,6 +19,7 @@ class SafetyConfig final {
  public:
   SafetyConfig();
   explicit SafetyConfig(std::optional<proto::FeatureTextSafetyConfiguration>);
+  SafetyConfig(const SafetyConfig&);
   SafetyConfig(SafetyConfig&&);
   SafetyConfig& operator=(SafetyConfig&&);
   ~SafetyConfig();
@@ -63,7 +65,7 @@ class SafetyConfig final {
 
   // Evaluates language requirements of the raw output check.
   bool IsRawOutputUnsupportedLanguage(
-      bool is_complete,
+      ResponseCompleteness completeness,
       const on_device_model::mojom::SafetyInfoPtr& safety_info) const;
 
   // The number of request safety checks to perform.
@@ -84,7 +86,7 @@ class SafetyConfig final {
   // `check_idx` must be < `NumResponseChecks()`.
   bool IsResponseUnsupportedLanguage(
       int check_idx,
-      bool is_complete,
+      ResponseCompleteness completeness,
       const on_device_model::mojom::SafetyInfoPtr& safety_info) const;
 
  private:

@@ -7,8 +7,8 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/ref_counted.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
-#import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
@@ -131,10 +131,10 @@
   }];
 }
 
-- (void)openAllPlusAddressList {
+- (void)openAllPlusAddressList:(BOOL)isAddressManualFallback {
   __weak __typeof(self) weakSelf = self;
   [self dismissIfNecessaryThenDoCompletion:^{
-    [weakSelf.delegate openAllPlusAddressesPicker];
+    [weakSelf.delegate openAllPlusAddressesPicker:isAddressManualFallback];
   }];
 }
 

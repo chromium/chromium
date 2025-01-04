@@ -68,9 +68,6 @@ void MultitaskingSection::AddLoadTimeData(
        IDS_OS_SETTINGS_SYSTEM_PREFERENCES_MULTITASKING_SNAP_WINDOW_DESCRIPTION},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
-  html_source->AddBoolean("shouldShowMultitasking", ShouldShowMultitasking());
-  html_source->AddBoolean("shouldShowMultitaskingInPersonalization",
-                          ShouldShowMultitaskingInPersonalization());
 }
 
 void MultitaskingSection::AddHandlers(content::WebUI* web_ui) {

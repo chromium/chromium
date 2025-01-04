@@ -12,6 +12,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "absl_hardening_tests",
@@ -28,6 +29,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "accessibility_unittests",
@@ -44,6 +46,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "angle_unittests",
@@ -61,6 +64,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "app_shell_unittests",
@@ -77,6 +81,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "aura_unittests",
@@ -93,6 +98,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "base_unittests",
@@ -109,6 +115,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "blink_common_unittests",
@@ -125,6 +132,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "blink_fuzzer_unittests",
@@ -141,6 +149,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "blink_heap_unittests",
@@ -165,6 +174,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "blink_platform_unittests",
@@ -181,6 +191,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "boringssl_crypto_tests",
@@ -197,6 +208,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "boringssl_ssl_tests",
@@ -216,6 +228,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "capture_unittests",
@@ -232,6 +245,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "cast_unittests",
@@ -248,6 +262,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "cc_unittests",
@@ -264,6 +279,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chrome_app_unittests",
@@ -280,6 +296,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chrome_elf_unittests",
@@ -296,6 +313,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chromedriver_unittests",
@@ -312,6 +330,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "components_browsertests",
@@ -328,6 +347,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
         },
@@ -345,6 +365,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "compositor_unittests",
@@ -361,6 +382,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 16
         },
@@ -378,6 +400,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_unittests",
@@ -394,6 +417,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "crashpad_tests",
@@ -410,6 +434,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "cronet_tests",
@@ -426,6 +451,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "cronet_unittests",
@@ -442,6 +468,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "crypto_unittests",
@@ -458,6 +485,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "delayloads_unittests",
@@ -474,6 +502,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "device_unittests",
@@ -490,6 +519,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "display_unittests",
@@ -506,6 +536,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "elevated_tracing_service_unittests",
@@ -522,6 +553,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "elevation_service_unittests",
@@ -539,6 +571,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "env_chromium_unittests",
@@ -555,6 +588,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "events_unittests",
@@ -571,6 +605,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "extensions_browsertests",
@@ -587,6 +622,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "extensions_unittests",
@@ -603,6 +639,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "filesystem_service_unittests",
@@ -619,6 +656,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "fuzzing_unittests",
@@ -635,6 +673,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gcm_unit_tests",
@@ -651,6 +690,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gcp_unittests",
@@ -667,6 +707,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gfx_unittests",
@@ -683,6 +724,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gin_unittests",
@@ -699,6 +741,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "google_apis_unittests",
@@ -715,6 +758,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gpu_unittests",
@@ -731,6 +775,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gwp_asan_unittests",
@@ -747,6 +792,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "headless_browsertests",
@@ -763,6 +809,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "headless_unittests",
@@ -779,6 +826,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "install_static_unittests",
@@ -796,6 +844,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "installer_util_unittests",
@@ -812,6 +861,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 9
         },
@@ -829,6 +879,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ipc_tests",
@@ -845,6 +896,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "latency_unittests",
@@ -865,6 +917,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "leveldb_unittests",
@@ -881,6 +934,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "libjingle_xmpp_unittests",
@@ -897,6 +951,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "liburlpattern_unittests",
@@ -913,6 +968,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "media_unittests",
@@ -929,6 +985,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "message_center_unittests",
@@ -945,6 +1002,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "midi_unittests",
@@ -961,6 +1019,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "mojo_unittests",
@@ -977,6 +1036,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "native_theme_unittests",
@@ -993,6 +1053,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "net_unittests",
@@ -1009,6 +1070,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "notification_helper_unittests",
@@ -1025,6 +1087,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "pdf_unittests",
@@ -1041,6 +1104,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "perfetto_unittests",
@@ -1057,6 +1121,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "printing_unittests",
@@ -1074,6 +1139,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "pthreadpool_unittests",
@@ -1090,6 +1156,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "remoting_unittests",
@@ -1107,6 +1174,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "sbox_integration_tests",
@@ -1123,6 +1191,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "sbox_unittests",
@@ -1139,6 +1208,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "sbox_validation_tests",
@@ -1155,6 +1225,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "services_unittests",
@@ -1172,6 +1243,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "setup_unittests",
@@ -1188,6 +1260,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "shell_dialogs_unittests",
@@ -1204,6 +1277,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "skia_unittests",
@@ -1220,6 +1294,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "snapshot_unittests",
@@ -1236,6 +1311,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "sql_unittests",
@@ -1252,6 +1328,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "storage_unittests",
@@ -1268,6 +1345,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
         },
@@ -1285,6 +1363,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ui_base_unittests",
@@ -1301,6 +1380,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ui_touch_selection_unittests",
@@ -1317,6 +1397,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ui_unittests",
@@ -1333,6 +1414,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "unit_tests",
@@ -1349,6 +1431,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "updater_tests",
@@ -1365,6 +1448,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
@@ -1383,6 +1467,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "url_unittests",
@@ -1399,6 +1484,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "views_unittests",
@@ -1415,6 +1501,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "viz_unittests",
@@ -1431,6 +1518,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "vr_common_unittests",
@@ -1447,6 +1535,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "blink_unittests",
@@ -1463,6 +1552,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "wm_unittests",
@@ -1479,6 +1569,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "wtf_unittests",
@@ -1495,6 +1586,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "zlib_unittests",
@@ -1511,6 +1603,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "zucchini_unittests",
@@ -1532,6 +1625,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "blink_python_tests",
@@ -1554,6 +1648,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chromedriver_py_tests",
@@ -1576,6 +1671,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chromedriver_py_tests_headless_shell",
@@ -1592,6 +1688,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chromedriver_replay_unittests",
@@ -1614,6 +1711,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "components_perftests",
@@ -1634,6 +1732,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_shell_crash_test",
@@ -1654,6 +1753,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "flatbuffers_unittests",
@@ -1673,6 +1773,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "grit_python_unittests",
@@ -1699,6 +1800,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "hard_timeout": 960,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
@@ -1720,6 +1822,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1743,6 +1846,7 @@
             "os": "Windows-11",
             "screen_scaling_percent": "100"
           },
+          "expiration": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "views_perftests",

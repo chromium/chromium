@@ -16,7 +16,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/ink/src/ink/geometry/affine_transform.h"
 #include "third_party/ink/src/ink/geometry/intersects.h"
-#include "third_party/ink/src/ink/geometry/modeled_shape.h"
+#include "third_party/ink/src/ink/geometry/partitioned_mesh.h"
 #include "third_party/ink/src/ink/geometry/point.h"
 
 namespace chrome_pdf {

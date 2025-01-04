@@ -12,11 +12,14 @@
 #include <string>
 #include <vector>
 
+#include "base/test/test_future.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
 #include "net/base/request_priority.h"
 #include "net/dns/host_resolver.h"
 #include "net/http/http_stream_key.h"
+#include "net/http/http_stream_pool.h"
+#include "net/http/http_stream_pool_job.h"
 #include "net/socket/socket_test_util.h"
 #include "net/socket/stream_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -191,6 +194,120 @@ class FakeStreamSocket : public MockClientSocket {
   bool is_idle_ = true;
   bool was_ever_used_ = false;
   std::optional<SSLInfo> ssl_info_;
+};
+
+// A helper to create an HttpStreamKey.
+class StreamKeyBuilder {
+ public:
+  explicit StreamKeyBuilder(std::string_view destination = "http://a.test")
+      : destination_(url::SchemeHostPort(GURL(destination))) {}
+
+  StreamKeyBuilder(const StreamKeyBuilder&) = delete;
+  StreamKeyBuilder& operator=(const StreamKeyBuilder&) = delete;
+
+  ~StreamKeyBuilder() = default;
+
+  StreamKeyBuilder& from_key(const HttpStreamKey& key);
+
+  const url::SchemeHostPort& destination() const { return destination_; }
+
+  StreamKeyBuilder& set_destination(std::string_view destination) {
+    set_destination(url::SchemeHostPort(GURL(destination)));
+    return *this;
+  }
+
+  StreamKeyBuilder& set_destination(url::SchemeHostPort destination) {
+    destination_ = std::move(destination);
+    return *this;
+  }
+
+  StreamKeyBuilder& set_privacy_mode(PrivacyMode privacy_mode) {
+    privacy_mode_ = privacy_mode;
+    return *this;
+  }
+
+  HttpStreamKey Build() const;
+
+ private:
+  url::SchemeHostPort destination_;
+  PrivacyMode privacy_mode_ = PRIVACY_MODE_DISABLED;
+  SecureDnsPolicy secure_dns_policy_ = SecureDnsPolicy::kAllow;
+  bool disable_cert_network_fetches_ = true;
+};
+
+// An HttpStreamPool::Job::Delegate implementation for tests.
+class TestJobDelegate : public HttpStreamPool::Job::Delegate {
+ public:
+  static inline constexpr std::string_view kDefaultDestination =
+      "https://www.example.org";
+
+  explicit TestJobDelegate(
+      std::optional<HttpStreamKey> stream_key = std::nullopt);
+
+  TestJobDelegate(const TestJobDelegate&) = delete;
+  TestJobDelegate& operator=(const TestJobDelegate&) = delete;
+
+  ~TestJobDelegate() override;
+
+  TestJobDelegate& set_expected_protocol(NextProto expected_protocol) {
+    expected_protocol_ = expected_protocol;
+    return *this;
+  }
+
+  TestJobDelegate& set_quic_version(quic::ParsedQuicVersion quic_version) {
+    quic_version_ = quic_version;
+    return *this;
+  }
+
+  void CreateAndStartJob(HttpStreamPool& pool);
+
+  void CancelJob() { job_.reset(); }
+
+  int GetResult() { return result_future_.Get(); }
+
+  // HttpStreamPool::Job::Delegate implementations:
+  void OnStreamReady(HttpStreamPool::Job* job,
+                     std::unique_ptr<HttpStream> stream,
+                     NextProto negotiated_protocol) override;
+  RequestPriority priority() const override;
+  HttpStreamPool::RespectLimits respect_limits() const override;
+  const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs()
+      const override;
+  bool enable_ip_based_pooling() const override;
+  bool enable_alternative_services() const override;
+  bool is_http1_allowed() const override;
+  const ProxyInfo& proxy_info() const override;
+  const NetLogWithSource& net_log() const override;
+  void OnStreamFailed(HttpStreamPool::Job* job,
+                      int status,
+                      const NetErrorDetails& net_error_details,
+                      ResolveErrorInfo resolve_error_info) override;
+  void OnCertificateError(HttpStreamPool::Job* job,
+                          int status,
+                          const SSLInfo& ssl_info) override;
+  void OnNeedsClientAuth(HttpStreamPool::Job* job,
+                         SSLCertRequestInfo* cert_info) override;
+
+  HttpStreamKey GetStreamKey() const { return key_builder_.Build(); }
+
+  NextProto negotiated_protocol() const { return negotiated_protocol_; }
+
+ private:
+  void SetResult(int result) { result_future_.SetValue(result); }
+
+  StreamKeyBuilder key_builder_;
+
+  NextProto expected_protocol_ = NextProto::kProtoUnknown;
+  quic::ParsedQuicVersion quic_version_ =
+      quic::ParsedQuicVersion::Unsupported();
+  std::vector<SSLConfig::CertAndStatus> allowed_bad_certs_;
+  ProxyInfo proxy_info_ = ProxyInfo::Direct();
+  NetLogWithSource net_log_;
+
+  std::unique_ptr<HttpStreamPool::Job> job_;
+
+  base::test::TestFuture<int> result_future_;
+  NextProto negotiated_protocol_ = NextProto::kProtoUnknown;
 };
 
 // Convert a ClientSocketPool::GroupId to an HttpStreamKey.

@@ -53,8 +53,7 @@ static NetErrorTabHelper::TestingState testing_state_ =
 
 }  // namespace
 
-NetErrorTabHelper::~NetErrorTabHelper() {
-}
+NetErrorTabHelper::~NetErrorTabHelper() = default;
 
 // static
 void NetErrorTabHelper::BindNetErrorPageSupport(

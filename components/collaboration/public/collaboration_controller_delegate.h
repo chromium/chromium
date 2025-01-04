@@ -7,6 +7,11 @@
 
 #include "base/functional/callback.h"
 #include "components/data_sharing/public/group_data.h"
+#include "components/saved_tab_groups/public/types.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace collaboration {
 
@@ -15,10 +20,12 @@ namespace collaboration {
 class CollaborationControllerDelegate {
  public:
   struct ErrorInfo {
+    // GENERATED_JAVA_ENUM_PACKAGE: (
+    //   org.chromium.components.collaboration)
     enum class Type {
-      kUnknown,
+      kUnknown = 0,
       // Show the generic error dialog.
-      kGenericError,
+      kGenericError = 1,
     };
 
     explicit ErrorInfo(Type type) : type(type) {}
@@ -28,10 +35,12 @@ class CollaborationControllerDelegate {
     bool operator==(const ErrorInfo& other) const { return type == other.type; }
   };
 
+  // GENERATED_JAVA_ENUM_PACKAGE: (
+  //   org.chromium.components.collaboration)
   enum class Outcome {
-    kSuccess,
-    kFailure,
-    kCancel,
+    kSuccess = 0,
+    kFailure = 1,
+    kCancel = 2,
   };
 
   CollaborationControllerDelegate() = default;
@@ -51,7 +60,7 @@ class CollaborationControllerDelegate {
   virtual void PrepareFlowUI(ResultCallback result) = 0;
 
   // Request to show the error page/dialog.
-  virtual void ShowError(ResultCallback result, const ErrorInfo& error) = 0;
+  virtual void ShowError(const ErrorInfo& error, ResultCallback result) = 0;
 
   // Request to cancel and close the current UI screen.
   virtual void Cancel(ResultCallback result) = 0;
@@ -64,17 +73,30 @@ class CollaborationControllerDelegate {
   virtual void NotifySignInAndSyncStatusChange() = 0;
 
   // Request to show the invitation dialog with preview data.
-  virtual void ShowJoinDialog(data_sharing::SharedDataPreview preview_data,
-                              ResultCallback result) = 0;
+  virtual void ShowJoinDialog(
+      const data_sharing::GroupToken& token,
+      const data_sharing::SharedDataPreview& preview_data,
+      ResultCallback result) = 0;
 
   // Request to show the share dialog.
-  virtual void ShowShareDialog(ResultCallback result) = 0;
+  virtual void ShowShareDialog(const tab_groups::EitherGroupID& either_id,
+                               ResultCallback result) = 0;
 
-  // Open the local tab group in UI.
-  virtual void PromoteTabGroup(ResultCallback result) = 0;
+  // Request to show the manage dialog.
+  virtual void ShowManageDialog(const tab_groups::EitherGroupID& either_id,
+                                ResultCallback result) = 0;
+
+  // Open the local tab group associated with `group_id` in UI.
+  virtual void PromoteTabGroup(const data_sharing::GroupId& group_id,
+                               ResultCallback result) = 0;
 
   // Focus the UI screen associated with the current delegate instance.
   virtual void PromoteCurrentScreen() = 0;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Returns the Java object of the CollaborationControllerDelegate.
+  virtual base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace collaboration

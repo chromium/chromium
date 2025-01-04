@@ -48,8 +48,6 @@ BASE_DECLARE_FEATURE(kSplitAuthCacheByNetworkIsolationKey);
 COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kDnsOverHttpsUpgrade);
 COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kMaskedDomainList);
 COMPONENT_EXPORT(NETWORK_CPP)
-BASE_DECLARE_FEATURE_PARAM(int, kMaskedDomainListExperimentGroup);
-COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE_PARAM(std::string, kMaskedDomainListExperimentalVersion);
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kMdnsResponderGeneratedNameListing);
@@ -59,26 +57,6 @@ BASE_DECLARE_FEATURE(kOpaqueResponseBlockingErrorsForAllFetches);
 
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kAttributionReportingCrossAppWeb);
-
-// Both flags need to be checked for required PST components as they are being
-// used in different experiments.
-//
-// kFledgePst is the original flag used in the OT and respects
-// the TrustTrialOriginTrialSpec. It will be deprecated in favor of
-// kPrivateStateTokens when the experiment is over.
-COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kPrivateStateTokens);
-COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kFledgePst);
-
-enum class TrustTokenOriginTrialSpec {
-  // See the .cc file for definitions.
-  kAllOperationsRequireOriginTrial,
-  kOnlyIssuanceRequiresOriginTrial,
-  kOriginTrialNotRequired,
-};
-COMPONENT_EXPORT(NETWORK_CPP)
-BASE_DECLARE_FEATURE_PARAM(TrustTokenOriginTrialSpec,
-                           kTrustTokenOperationsRequiringOriginTrial);
-COMPONENT_EXPORT(NETWORK_CPP)
 
 COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kAcceptCHFrame);
 

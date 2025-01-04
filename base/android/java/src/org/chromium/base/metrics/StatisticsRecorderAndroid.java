@@ -8,7 +8,10 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Java API which exposes the registered histograms on the native side as JSON test. */
+@NullMarked
 @JNINamespace("base::android")
 public final class StatisticsRecorderAndroid {
     private StatisticsRecorderAndroid() {}

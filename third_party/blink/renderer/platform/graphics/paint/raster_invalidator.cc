@@ -317,6 +317,9 @@ void RasterInvalidator::TrackRasterInvalidation(const gfx::Rect& rect,
                                                 DisplayItemClientId client_id,
                                                 PaintInvalidationReason reason,
                                                 ClientIsOldOrNew old_or_new) {
+  if (rect.IsEmpty()) {
+    return;
+  }
   DCHECK(tracking_);
   String debug_name = old_or_new == kClientIsOld
                           ? old_paint_artifact_->ClientDebugName(client_id)

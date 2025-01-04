@@ -7,7 +7,6 @@
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/views/clipboard_history_view_constants.h"
 #include "ash/style/typography.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/style/typography.h"
@@ -29,25 +28,19 @@ ClipboardHistoryLabel::ClipboardHistoryLabel(const std::u16string& text,
   const int contents_width =
       clipboard_history_util::GetPreferredItemViewWidth() -
       ClipboardHistoryViews::kContentsInsets.width();
-  if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
-    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2, *this);
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2, *this);
 
-    // Reduce width to accommodate an icon when the refresh is enabled.
-    const int label_width = contents_width -
-                            ClipboardHistoryViews::kIconSize.width() -
-                            ClipboardHistoryViews::kIconMargins.width();
+  // Reduce width to accommodate an icon when the refresh is enabled.
+  const int label_width = contents_width -
+                          ClipboardHistoryViews::kIconSize.width() -
+                          ClipboardHistoryViews::kIconMargins.width();
 
-    if (max_lines != 1u) {
-      SetMultiLine(true);
-      SizeToFit(label_width);
-    } else {
-      SetPreferredSize(
-          gfx::Size(label_width, ClipboardHistoryViews::kLabelPreferredHeight));
-    }
+  if (max_lines != 1u) {
+    SetMultiLine(true);
+    SizeToFit(label_width);
   } else {
-    SetPreferredSize(gfx::Size(contents_width,
-                               ClipboardHistoryViews::kLabelPreferredHeight));
-    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody1, *this);
+    SetPreferredSize(
+        gfx::Size(label_width, ClipboardHistoryViews::kLabelPreferredHeight));
   }
 }
 

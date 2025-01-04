@@ -36,8 +36,9 @@ class TestCertificateSelector : public CertificateSelector {
   TestCertificateSelector& operator=(const TestCertificateSelector&) = delete;
 
   ~TestCertificateSelector() override {
-    if (!on_destroy_.is_null())
+    if (!on_destroy_.is_null()) {
       std::move(on_destroy_).Run();
+    }
   }
 
   void Init() {
@@ -46,13 +47,15 @@ class TestCertificateSelector : public CertificateSelector {
 
   void AcceptCertificate(
       std::unique_ptr<net::ClientCertIdentity> identity) override {
-    if (accepted_)
+    if (accepted_) {
       *accepted_ = true;
+    }
   }
 
   bool Cancel() override {
-    if (canceled_)
+    if (canceled_) {
       *canceled_ = true;
+    }
     return CertificateSelector::Cancel();
   }
 

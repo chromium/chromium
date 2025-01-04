@@ -81,11 +81,14 @@ class OnDeviceModelServiceTest : public testing::Test {
   mojo::Remote<mojom::OnDeviceModelService>& service() { return service_; }
 
   mojo::Remote<mojom::OnDeviceModel> LoadModel(
-      mojom::ModelBackendType backend_type = mojom::ModelBackendType::kGpu) {
+      ml::ModelBackendType backend_type = ml::ModelBackendType::kGpuBackend,
+      ml::ModelPerformanceHint performance_hint =
+          ml::ModelPerformanceHint::kHighestQuality) {
     base::RunLoop run_loop;
     mojo::Remote<mojom::OnDeviceModel> remote;
     auto params = mojom::LoadModelParams::New();
     params->backend_type = backend_type;
+    params->performance_hint = performance_hint;
     params->max_tokens = 8000;
     service()->LoadModel(
         std::move(params), remote.BindNewPipeAndPassReceiver(),
@@ -452,7 +455,7 @@ TEST_F(OnDeviceModelServiceTest, DestroysAdaptationSession) {
 TEST_F(OnDeviceModelServiceTest, LoadsAdaptationWithPath) {
   FakeFile weights1("Adapt1");
   FakeFile weights2("Adapt2");
-  auto model = LoadModel(mojom::ModelBackendType::kApu);
+  auto model = LoadModel(ml::ModelBackendType::kApuBackend);
   auto adaptation1 = LoadAdaptation(*model, weights1.Path());
   EXPECT_THAT(GetResponses(*model, "foo"), ElementsAre("Input: foo\n"));
   EXPECT_THAT(GetResponses(*adaptation1, "foo"),
@@ -631,6 +634,13 @@ TEST_F(OnDeviceModelServiceTest, ClassifyTextSafety) {
   EXPECT_THAT(resp1->class_scores, ElementsAre(0.8, 0.8));
   ASSERT_TRUE(resp2);
   EXPECT_THAT(resp2->class_scores, ElementsAre(0.2, 0.2));
+}
+
+TEST_F(OnDeviceModelServiceTest, PerformanceHint) {
+  auto model = LoadModel(ml::ModelBackendType::kGpuBackend,
+                         ml::ModelPerformanceHint::kFastestInference);
+  EXPECT_THAT(GetResponses(*model, "foo"),
+              ElementsAre("Fastest inference\n", "Input: foo\n"));
 }
 
 }  // namespace

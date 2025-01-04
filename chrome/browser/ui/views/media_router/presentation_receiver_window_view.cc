@@ -32,7 +32,7 @@
 #include "chrome/browser/ui/views/media_router/presentation_receiver_window_frame.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/blocked_content/popup_blocker_tab_helper.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -397,19 +397,22 @@ void PresentationReceiverWindowView::DestroyAnyExclusiveAccessBubble() {
 bool PresentationReceiverWindowView::GetAcceleratorForCommandId(
     int command_id,
     ui::Accelerator* accelerator) const {
-  if (command_id != IDC_FULLSCREEN)
+  if (command_id != IDC_FULLSCREEN) {
     return false;
+  }
   *accelerator = fullscreen_accelerator_;
   return true;
 }
 
 void PresentationReceiverWindowView::OnFullscreenChanged() {
   const bool fullscreen = IsFullscreen();
-  if (!fullscreen)
+  if (!fullscreen) {
     exclusive_access_bubble_.reset();
+  }
   location_bar_view_->SetVisible(!fullscreen);
-  if (fullscreen == (location_bar_view_->height() > 0))
+  if (fullscreen == (location_bar_view_->height() > 0)) {
     DeprecatedLayoutImmediately();
+  }
 }
 
 BEGIN_METADATA(PresentationReceiverWindowView)

@@ -10,18 +10,17 @@
 #include "chrome/browser/ui/webui/discards/discards.mojom-forward.h"
 #include "chrome/browser/ui/webui/discards/site_data.mojom-forward.h"
 #include "chrome/common/webui_url_constants.h"
-#include "content/public/browser/webui_config.h"
-#include "content/public/common/url_constants.h"
+#include "content/public/browser/internal_webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 class DiscardsUI;
 
-class DiscardsUIConfig : public content::DefaultWebUIConfig<DiscardsUI> {
+class DiscardsUIConfig
+    : public content::DefaultInternalWebUIConfig<DiscardsUI> {
  public:
   DiscardsUIConfig()
-      : DefaultWebUIConfig(content::kChromeUIScheme,
-                           chrome::kChromeUIDiscardsHost) {}
+      : DefaultInternalWebUIConfig(chrome::kChromeUIDiscardsHost) {}
 };
 
 // Controller for chrome://discards. Corresponding resources are in

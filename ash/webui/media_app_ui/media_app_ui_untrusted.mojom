@@ -41,7 +41,8 @@ interface UntrustedServiceFactory {
   // closed. Therefore, it should be called once per WebUIController lifetime or
   // previous connection should be closed manually before calling this method
   // the second time (e.g. when opening new file in the same window).
-  CreateMantisUntrustedService() => (MantisUntrustedServiceResult result);
+  CreateMantisUntrustedService(pending_remote<MantisUntrustedPage> page)
+      => (MantisUntrustedServiceResult result);
 };
 
 struct PageMetadata {
@@ -190,4 +191,15 @@ interface MantisUntrustedService {
   // TODO(http://crbug.com/370820145): change the opaque `array<uint8>` type.
   ClassifyImageSafety(array<uint8> image)
       => (mantis.mojom.SafetyClassifierVerdict verdict);
+};
+
+// Interface implemented in JavaScript by the chrome-untrusted:// page for Media
+// App and called by browser process code.
+interface MantisUntrustedPage {
+  // Reports Mantis creation progress between 0.0 and 1.0 (inclusive), primarily
+  // to monitor first-time DLC download. The associated
+  // `MantisUntrustedServiceResult` is returned only upon completion
+  // (1.0 progress) or if an error occurs. If the DLC has been previously
+  // downloaded, the progress will immediately be reported as `1.0`.
+  ReportMantisProgress(double progress);
 };

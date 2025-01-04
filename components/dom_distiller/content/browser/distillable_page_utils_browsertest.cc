@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "components/dom_distiller/content/browser/distiller_javascript_utils.h"
+#include "components/dom_distiller/content/browser/test/test_util.h"
 #include "components/dom_distiller/core/distillable_page_detector.h"
 #include "components/dom_distiller/core/page_features.h"
 #include "content/public/browser/browser_context.h"
@@ -22,7 +23,6 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "ui/base/resource/resource_bundle.h"
 
 namespace dom_distiller {
 namespace {
@@ -55,23 +55,6 @@ class DomDistillerDistillablePageUtilsTest : public content::ContentBrowserTest,
   }
 
  private:
-  void AddComponentsResources() {
-    base::FilePath pak_file;
-    base::FilePath pak_dir;
-#if BUILDFLAG(IS_ANDROID)
-    CHECK(base::PathService::Get(base::DIR_ANDROID_APP_DATA, &pak_dir));
-    pak_dir = pak_dir.Append(FILE_PATH_LITERAL("paks"));
-#elif BUILDFLAG(IS_MAC)
-    base::PathService::Get(base::DIR_MODULE, &pak_dir);
-#else
-    base::PathService::Get(base::DIR_ASSETS, &pak_dir);
-#endif  // BUILDFLAG(IS_ANDROID)
-    pak_file =
-        pak_dir.Append(FILE_PATH_LITERAL("components_tests_resources.pak"));
-    ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-        pak_file, ui::kScaleFactorNone);
-  }
-
   void SetUpTestServer() {
     base::FilePath path;
     base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);

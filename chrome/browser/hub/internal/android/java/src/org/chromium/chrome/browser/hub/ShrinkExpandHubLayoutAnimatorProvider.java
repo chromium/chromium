@@ -9,7 +9,9 @@ import static org.chromium.chrome.browser.hub.HubAnimationConstants.HUB_LAYOUT_F
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.RectEvaluator;
+import android.animation.ValueAnimator;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.os.SystemClock;
 import android.view.View;
 import android.view.animation.Interpolator;
@@ -108,6 +110,42 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
             @ColorInt int backgroundColor,
             long durationMs,
             DoubleConsumer onAlphaChange) {
+        this(
+                animationType,
+                needsBitmap,
+                hubContainerView,
+                new ShrinkExpandImageView(hubContainerView.getContext()),
+                animationDataSupplier,
+                backgroundColor,
+                durationMs,
+                onAlphaChange);
+    }
+
+    /**
+     * Creates a shrink, expand, or new tab animation with injected {@link ShrinkExpandImageView}
+     * for testing purposes.
+     *
+     * @param animationType The {@link HubLayoutAnimationType} of this animation.
+     * @param needsBitmap Whether this animation will require a bitmap callback.
+     * @param hubContainerView The {@link HubContainerView} to animate.
+     * @param shrinkExpandImageView The {@link ShrinkExpandImageView} to use for the animation. This
+     *     constructor allows to inject the Image View created in testing.
+     * @param animationDataSupplier The supplier for {@link ShrinkExpandAnimationData} to use for
+     *     the animation.
+     * @param backgroundColor The background color to use for new tab animations or if the thumbnail
+     *     doesn't cover the animating area.
+     * @param durationMs The duration in milliseconds of the animation.
+     * @param onAlphaChange Observer to notify when alpha changes during animations.
+     */
+    public ShrinkExpandHubLayoutAnimatorProvider(
+            @HubLayoutAnimationType int animationType,
+            boolean needsBitmap,
+            @NonNull HubContainerView hubContainerView,
+            @NonNull ShrinkExpandImageView shrinkExpandImageView,
+            @NonNull SyncOneshotSupplier<ShrinkExpandAnimationData> animationDataSupplier,
+            @ColorInt int backgroundColor,
+            long durationMs,
+            DoubleConsumer onAlphaChange) {
         assert animationType == HubLayoutAnimationType.EXPAND_NEW_TAB
                         || animationType == HubLayoutAnimationType.EXPAND_TAB
                         || animationType == HubLayoutAnimationType.SHRINK_TAB
@@ -119,9 +157,9 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
         mDurationMs = durationMs;
         mOnAlphaChange = onAlphaChange;
 
-        mShrinkExpandImageView = new ShrinkExpandImageView(hubContainerView.getContext());
+        mShrinkExpandImageView = shrinkExpandImageView;
         mShrinkExpandImageView.setVisibility(View.INVISIBLE);
-        mShrinkExpandImageView.setBackgroundColor(backgroundColor);
+        mShrinkExpandImageView.setRoundedFillColor(backgroundColor);
         mHubContainerView.addView(mShrinkExpandImageView);
 
         mBitmapCallback =
@@ -249,37 +287,52 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
                                 mHubContainerView, R.id.hub_toolbar, R.id.toolbar_action_container)
                         : 0;
         ShrinkExpandAnimationData animationData = mAnimationDataSupplier.get();
+        Rect initialRect = animationData.getInitialRect();
+        Rect finalRect = animationData.getFinalRect();
         mShrinkExpandAnimator =
                 new ShrinkExpandAnimator(
-                        mShrinkExpandImageView,
-                        animationData.getInitialRect(),
-                        animationData.getFinalRect(),
-                        searchBoxHeight);
+                        mShrinkExpandImageView, initialRect, finalRect, searchBoxHeight);
         mShrinkExpandAnimator.setThumbnailSizeForOffset(animationData.getThumbnailSize());
-        mShrinkExpandAnimator.setRect(animationData.getInitialRect());
+        mShrinkExpandAnimator.setRect(initialRect);
 
         ObjectAnimator shrinkExpandAnimator =
                 ObjectAnimator.ofObject(
                         mShrinkExpandAnimator,
                         ShrinkExpandAnimator.RECT,
                         new RectEvaluator(),
-                        animationData.getInitialRect(),
-                        animationData.getFinalRect());
-        shrinkExpandAnimator.setInterpolator(getInterpolator(mAnimationType));
+                        initialRect,
+                        finalRect);
+        Interpolator interpolator = getInterpolator(mAnimationType);
+        shrinkExpandAnimator.setInterpolator(interpolator);
         if (mAnimationTracker != null) {
             shrinkExpandAnimator.addUpdateListener(ignored -> mAnimationTracker.onUpdate());
         }
 
-        // TODO(crbug.com/40285429): Add the ability to change corner radii of the
-        // ShrinkExpandImageView
-        // via ShrinkExpandAnimator as part of the animation. For radii use data supplied through
-        // ShrinkExpandAnimationData.
-        // * Near circular -> 0 for new tab.
-        // * 0 -> TabThumbnailView radii for shrink.
-        // * TabThumbnailView radii -> 0 for expand.
+        int initialTopRadius = Math.round(animationData.getInitialTopCornerRadius());
+        int initialBottomRadius = Math.round(animationData.getInitialBottomCornerRadius());
+        int initialRectWidth = initialRect.width();
+        int finalRectWidth = finalRect.width();
+        float scaleFactor = (float) initialRectWidth / finalRectWidth;
+        int finalTopRadius = Math.round(animationData.getFinalTopCornerRadius() * scaleFactor);
+        int finalBottomRadius =
+                Math.round(animationData.getFinalBottomCornerRadius() * scaleFactor);
+        mShrinkExpandImageView.setRoundedCorners(
+                initialTopRadius, initialTopRadius, initialBottomRadius, initialBottomRadius);
+        ValueAnimator cornerAnimator = ValueAnimator.ofFloat(0f, 1f);
+        cornerAnimator.setInterpolator(interpolator);
+        int deltaTop = finalTopRadius - initialTopRadius;
+        int deltaBottom = finalBottomRadius - initialBottomRadius;
+        cornerAnimator.addUpdateListener(
+                animation -> {
+                    float fraction = animation.getAnimatedFraction();
+                    int top = initialTopRadius + Math.round(deltaTop * fraction);
+                    int bottom = initialBottomRadius + Math.round(deltaBottom * fraction);
+                    mShrinkExpandImageView.setRoundedCorners(top, top, bottom, bottom);
+                    mShrinkExpandImageView.invalidate();
+                });
 
         AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playTogether(shrinkExpandAnimator, fadeAnimator);
+        animatorSet.playTogether(shrinkExpandAnimator, fadeAnimator, cornerAnimator);
         animatorSet.setDuration(mDurationMs);
 
         HubLayoutAnimationListener listener =

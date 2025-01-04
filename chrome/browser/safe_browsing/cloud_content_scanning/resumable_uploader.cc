@@ -65,6 +65,7 @@ ResumableUploadRequest::ResumableUploadRequest(
     const base::FilePath& path,
     uint64_t file_size,
     bool is_obfuscated,
+    const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     Callback callback)
     : ConnectorUploadRequest(std::move(url_loader_factory),
@@ -73,6 +74,7 @@ ResumableUploadRequest::ResumableUploadRequest(
                              path,
                              file_size,
                              is_obfuscated,
+                             histogram_suffix,
                              traffic_annotation,
                              std::move(callback)),
       get_data_result_(get_data_result),
@@ -86,12 +88,14 @@ ResumableUploadRequest::ResumableUploadRequest(
     const std::string& metadata,
     BinaryUploadService::Result get_data_result,
     base::ReadOnlySharedMemoryRegion page_region,
+    const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     Callback callback)
     : ConnectorUploadRequest(std::move(url_loader_factory),
                              base_url,
                              metadata,
                              std::move(page_region),
+                             histogram_suffix,
                              traffic_annotation,
                              std::move(callback)),
       get_data_result_(get_data_result) {
@@ -153,17 +157,19 @@ ResumableUploadRequest::CreateFileRequest(
     const base::FilePath& path,
     uint64_t file_size,
     bool is_obfuscated,
+    const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     ResumableUploadRequest::Callback callback) {
   if (!factory_) {
     return std::make_unique<ResumableUploadRequest>(
         url_loader_factory, base_url, metadata, get_data_result, path,
-        file_size, is_obfuscated, traffic_annotation, std::move(callback));
+        file_size, is_obfuscated, histogram_suffix, traffic_annotation,
+        std::move(callback));
   }
 
   return factory_->CreateFileRequest(
       url_loader_factory, base_url, metadata, get_data_result, path, file_size,
-      is_obfuscated, traffic_annotation, std::move(callback));
+      is_obfuscated, histogram_suffix, traffic_annotation, std::move(callback));
 }
 
 // static
@@ -174,17 +180,20 @@ ResumableUploadRequest::CreatePageRequest(
     const std::string& metadata,
     BinaryUploadService::Result get_data_result,
     base::ReadOnlySharedMemoryRegion page_region,
+    const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     ResumableUploadRequest::Callback callback) {
   if (!factory_) {
     return std::make_unique<ResumableUploadRequest>(
         url_loader_factory, base_url, metadata, get_data_result,
-        std::move(page_region), traffic_annotation, std::move(callback));
+        std::move(page_region), histogram_suffix, traffic_annotation,
+        std::move(callback));
   }
 
   return factory_->CreatePageRequest(url_loader_factory, base_url, metadata,
                                      get_data_result, std::move(page_region),
-                                     traffic_annotation, std::move(callback));
+                                     histogram_suffix, traffic_annotation,
+                                     std::move(callback));
 }
 
 void ResumableUploadRequest::SendMetadataRequest() {
@@ -354,6 +363,11 @@ bool ResumableUploadRequest::CanUploadContent(
 void ResumableUploadRequest::Finish(int net_error,
                                     int response_code,
                                     std::optional<std::string> response_body) {
+  if (!histogram_suffix_.empty()) {
+    std::string histogram = base::StrCat(
+        {"SafeBrowsing.ResumableUploader.NetworkResult.", histogram_suffix_});
+    RecordHttpResponseOrErrorCode(histogram.c_str(), net_error, response_code);
+  }
   // TODO(b/322005992): Add retry logics and consider sharing them with
   // MultipartUploadRequest.
   std::move(callback_).Run(

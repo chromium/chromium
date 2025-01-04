@@ -145,7 +145,8 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
     HashRealTimeSelection hash_realtime_selection,
     bool is_async_check,
     bool check_allowlist_before_hash_database,
-    SessionID tab_id)
+    SessionID tab_id,
+    std::optional<internal::ReferringAppInfo> referring_app_info)
     : headers_(headers),
       load_flags_(load_flags),
       has_user_gesture_(has_user_gesture),
@@ -168,7 +169,8 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
       is_async_check_(is_async_check),
       check_allowlist_before_hash_database_(
           check_allowlist_before_hash_database),
-      tab_id_(tab_id) {
+      tab_id_(tab_id),
+      referring_app_info_(referring_app_info) {
   DCHECK(url_real_time_lookup_enabled_ || can_check_db_);
 }
 
@@ -496,7 +498,8 @@ SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(const GURL& url) {
             ? GetHashRealTimeLookupMechanism(
                   url, can_use_hash_real_time_service_background_only,
                   can_use_hash_real_time_db_manager_background_only)
-            : nullptr);
+            : nullptr,
+        referring_app_info_);
   } else if (!can_check_db_) {
     return KickOffLookupMechanismResult(
         SafeBrowsingLookupMechanism::StartCheckResult(

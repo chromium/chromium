@@ -12,8 +12,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/debug/alias.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -59,14 +57,7 @@ Component::Component(const UpdateContext& update_context, const std::string& id)
     : id_(id),
       state_(std::make_unique<StateNew>(this)),
       update_context_(update_context) {
-  // TODO(crbug.com/345250525) - remove when the bug is fixed. We are
-  // seeing dumps where the app id is empty in the state change
-  // callbacks. This code verifies the invariant that the component
-  // instance always has an id.
-  if (id_.empty()) {
-    DEBUG_ALIAS_FOR_CSTR(dbg_id, id_.c_str(), 64);
-    base::debug::DumpWithoutCrashing();
-  }
+  CHECK(!id_.empty());
 }
 
 Component::~Component() = default;
@@ -109,13 +100,7 @@ void Component::ChangeState(std::unique_ptr<State> next_state) {
 CrxUpdateItem Component::GetCrxUpdateItem() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/345250525) - remove when the bug is fixed. We are seeing
-  // dumps where the app id is empty in the state change callbacks. This code
-  // verifies the invariant that the id is always valid.
-  if (id_.empty()) {
-    DEBUG_ALIAS_FOR_CSTR(dbg_id, id_.c_str(), 64);
-    base::debug::DumpWithoutCrashing();
-  }
+  CHECK(!id_.empty());
 
   CrxUpdateItem crx_update_item;
   crx_update_item.state = state_->state();

@@ -33,7 +33,9 @@ inline constexpr base::FilePath::CharType kHistoryEmbeddingsName[] =
 class SqlDatabase : public VectorDatabase {
  public:
   // `storage_dir` will generally be the Profile directory.
-  explicit SqlDatabase(const base::FilePath& storage_dir);
+  SqlDatabase(const base::FilePath& storage_dir,
+              bool erase_non_ascii_characters,
+              bool delete_embeddings);
   SqlDatabase(const SqlDatabase&) = delete;
   SqlDatabase& operator=(const SqlDatabase&) = delete;
   ~SqlDatabase() override;
@@ -119,6 +121,18 @@ class SqlDatabase : public VectorDatabase {
 
   // The directory storing the database.
   const base::FilePath storage_dir_;
+
+  // This holds a snapshot of
+  // `GetFeatureParameters().erase_non_ascii_characters` to affect database
+  // initialization without racing for global state. Parameters are immutable in
+  // production but mutable in tests, so this avoids access off main thread.
+  const bool erase_non_ascii_characters_;
+
+  // This holds a snapshot of
+  // `GetFeatureParameters().delete_embeddings` to affect database
+  // initialization without racing for global state. Parameters are immutable in
+  // production but mutable in tests, so this avoids access off main thread.
+  const bool delete_embeddings_;
 
   // Metadata of the embeddings model.
   std::optional<passage_embeddings::EmbedderMetadata> embedder_metadata_;

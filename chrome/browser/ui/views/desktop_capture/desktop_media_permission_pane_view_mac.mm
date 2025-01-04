@@ -97,7 +97,8 @@ std::unique_ptr<views::View> MakeToggleAnimation() {
 
   views::ImageView* logo_image_view =
       animation_container->AddChildView(std::make_unique<views::ImageView>());
-  logo_image_view->SetImage(gfx::ImageSkiaFromNSImage(app_icon));
+  logo_image_view->SetImage(
+      ui::ImageModel::FromImageSkia(gfx::ImageSkiaFromNSImage(app_icon)));
   logo_image_view->SetImageSize(gfx::Size(55, 55));
   // Adds a margin on the left side of the logo to balance the right margin that
   // is included in the toggle animation. This visually centers the content of
@@ -156,14 +157,13 @@ DesktopMediaPermissionPaneViewMac::DesktopMediaPermissionPaneViewMac(
   button_layout->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kCenter);
   // Unretained safe because button is (transitively) owned by `this`.
-  button_ =
-      button_container->AddChildView(std::make_unique<views::MdTextButton>(
-          base::BindRepeating(
-              &DesktopMediaPermissionPaneViewMac::
-                  OpenScreenRecordingSettingsPane,
-              base::Unretained(this)),
-          l10n_util::GetStringUTF16(
-              IDS_DESKTOP_MEDIA_PICKER_PERMISSION_BUTTON_MAC)));
+  button_ = button_container->AddChildView(std::make_unique<
+                                           views::MdTextButton>(
+      base::BindRepeating(
+          &DesktopMediaPermissionPaneViewMac::OpenScreenRecordingSettingsPane,
+          base::Unretained(this)),
+      l10n_util::GetStringUTF16(
+          IDS_DESKTOP_MEDIA_PICKER_PERMISSION_BUTTON_MAC)));
   button_->SetStyle(ui::ButtonStyle::kProminent);
 }
 

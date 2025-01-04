@@ -128,7 +128,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
       },
       showRelativeTimes: {type: Boolean, value: false},
       otherHistoryResultClicked: {type: Boolean, value: false},
-      inSidePanel: {type: Boolean, value: false},
+      inSidePanel: {type: Boolean, value: false, reflectToAttribute: true},
     };
   }
 

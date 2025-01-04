@@ -4563,6 +4563,9 @@ TEST_F(
   InitializeWithAndProcessNodes({static_text1, static_text2, static_text3});
   PreprocessTextForSpeech();
 
+  // Wait till all async calculations complete.
+  task_environment_.RunUntilIdle();
+
   std::vector<ui::AXNodeID> node_ids = GetCurrentText();
   EXPECT_EQ((int)node_ids.size(), 3);
 

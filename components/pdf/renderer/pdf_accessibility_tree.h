@@ -96,6 +96,9 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
       std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs,
       std::vector<chrome_pdf::AccessibilityCharInfo> chars,
       chrome_pdf::AccessibilityPageObjects page_objects) override;
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  void OnHasSearchifyText() override;
+#endif
 
   void HandleAction(const chrome_pdf::AccessibilityActionData& action_data);
   std::optional<AnnotationInfo> GetPdfAnnotationInfoFromAXNode(

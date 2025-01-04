@@ -122,30 +122,16 @@ class MessageSender : public ExtensionHostRegistry::Observer {
 
 class MessagingApiTest : public ExtensionApiTest {
  public:
-  explicit MessagingApiTest(
-      bool enable_back_forward_cache = true,
-      bool disconnect_extension_port_when_page_enters_bfcache = true) {
+  explicit MessagingApiTest(bool enable_back_forward_cache = true) {
     if (!enable_back_forward_cache) {
       feature_list_.InitWithFeaturesAndParameters(
           {}, {features::kBackForwardCache});
       return;
     }
 
-    std::vector<base::test::FeatureRefAndParams> enabled_features =
-        content::GetBasicBackForwardCacheFeatureForTesting();
-    std::vector<base::test::FeatureRef> disabled_features =
-        content::GetDefaultDisabledBackForwardCacheFeaturesForTesting();
-
-    if (disconnect_extension_port_when_page_enters_bfcache) {
-      enabled_features.push_back(
-          {features::kDisconnectExtensionMessagePortWhenPageEntersBFCache, {}});
-    } else {
-      disabled_features.push_back(
-          features::kDisconnectExtensionMessagePortWhenPageEntersBFCache);
-    }
-
-    feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                disabled_features);
+    feature_list_.InitWithFeaturesAndParameters(
+        content::GetBasicBackForwardCacheFeatureForTesting(),
+        content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
   }
 
   MessagingApiTest(const MessagingApiTest&) = delete;
@@ -163,13 +149,11 @@ class MessagingApiTest : public ExtensionApiTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-class MessagingApiWithoutDisconnectExtensionMessagePortWhenPageEntersBFCacheTest
-    : public MessagingApiTest {
+class MessagingApiWithBackForwardCacheTest : public MessagingApiTest {
  public:
-  MessagingApiWithoutDisconnectExtensionMessagePortWhenPageEntersBFCacheTest()
+  MessagingApiWithBackForwardCacheTest()
       : MessagingApiTest(
-            /*enable_back_forward_cache=*/true,
-            /*disconnect_extension_port_when_page_enters_bfcache=*/false) {}
+            /*enable_back_forward_cache=*/true) {}
 };
 
 class MessagingApiWithoutBackForwardCacheTest : public MessagingApiTest {
@@ -180,14 +164,6 @@ class MessagingApiWithoutBackForwardCacheTest : public MessagingApiTest {
 
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, Messaging) {
   ASSERT_TRUE(RunExtensionTest("messaging/connect", {.custom_arg = "bfcache"}))
-      << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(
-    MessagingApiWithoutDisconnectExtensionMessagePortWhenPageEntersBFCacheTest,
-    Messaging) {
-  ASSERT_TRUE(RunExtensionTest("messaging/connect",
-                               {.custom_arg = "bfcache/without_disconnection"}))
       << message_;
 }
 

@@ -22,6 +22,7 @@ class AvatarToolbarButtonDelegate;
 class Browser;
 class BrowserView;
 struct AccountInfo;
+class GaiaId;
 
 // Enum used for testing. It allows overriding different delay values based on
 // their usage in the `AvatarToolbarButton` through helper testing functions.
@@ -92,7 +93,7 @@ class AvatarToolbarButton : public ToolbarButton {
       const AccountInfo& account_info);
 
   // Attempts showing the In-Produce-Help for web sign out.
-  void MaybeShowWebSignoutIPH(const std::string& gaia_id);
+  void MaybeShowWebSignoutIPH(const GaiaId& gaia_id);
 
   // Returns true if a text is set and is visible.
   bool IsLabelPresentAndVisible() const;

@@ -49,12 +49,9 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.device_lock.DeviceLockDialogMetrics;
@@ -65,7 +62,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Unit tests for the {@link DeviceLockMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Features.EnableFeatures({ChromeFeatureList.ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW})
 public class DeviceLockMediatorUnitTest {
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
@@ -142,12 +138,6 @@ public class DeviceLockMediatorUnitTest {
         doReturn(mKeyguardManager).when(mActivity).getSystemService(eq(Context.KEYGUARD_SERVICE));
         doReturn(mPackageManager).when(mActivity).getPackageManager();
 
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW,
-                DeviceLockMediator.ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW_PARAM,
-                "10");
-        FeatureList.setTestValues(testValues);
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
         prefs.edit().remove(DEVICE_LOCK_PAGE_HAS_BEEN_PASSED).apply();
     }

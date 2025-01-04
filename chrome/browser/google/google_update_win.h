@@ -95,11 +95,10 @@ class UpdateCheckDelegate {
 // which should own any necessary elevation UI. Methods on |delegate| will be
 // invoked on the caller's thread to provide feedback on the operation, with
 // messages localized to |locale| if possible.
-void BeginUpdateCheck(
-    const std::string& locale,
-    bool install_update_if_possible,
-    gfx::AcceleratedWidget elevation_window,
-    const base::WeakPtr<UpdateCheckDelegate>& delegate);
+void BeginUpdateCheck(const std::string& locale,
+                      bool install_update_if_possible,
+                      gfx::AcceleratedWidget elevation_window,
+                      const base::WeakPtr<UpdateCheckDelegate>& delegate);
 
 // The state from a completed update check.
 struct UpdateState {

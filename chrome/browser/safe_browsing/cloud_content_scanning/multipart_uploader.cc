@@ -72,12 +72,14 @@ MultipartUploadRequest::MultipartUploadRequest(
     const GURL& base_url,
     const std::string& metadata,
     const std::string& data,
+    const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     Callback callback)
     : ConnectorUploadRequest(std::move(url_loader_factory),
                              base_url,
                              metadata,
                              data,
+                             histogram_suffix,
                              traffic_annotation,
                              std::move(callback)),
       boundary_(net::GenerateMimeMultipartBoundary()),
@@ -93,6 +95,7 @@ MultipartUploadRequest::MultipartUploadRequest(
     const base::FilePath& path,
     uint64_t file_size,
     bool is_obfuscated,
+    const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     Callback callback)
     : ConnectorUploadRequest(std::move(url_loader_factory),
@@ -101,6 +104,7 @@ MultipartUploadRequest::MultipartUploadRequest(
                              path,
                              file_size,
                              is_obfuscated,
+                             histogram_suffix,
                              traffic_annotation,
                              std::move(callback)),
       boundary_(net::GenerateMimeMultipartBoundary()),
@@ -114,12 +118,14 @@ MultipartUploadRequest::MultipartUploadRequest(
     const GURL& base_url,
     const std::string& metadata,
     base::ReadOnlySharedMemoryRegion page_region,
+    const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     Callback callback)
     : ConnectorUploadRequest(std::move(url_loader_factory),
                              base_url,
                              metadata,
                              std::move(page_region),
+                             histogram_suffix,
                              traffic_annotation,
                              std::move(callback)),
       boundary_(net::GenerateMimeMultipartBoundary()),
@@ -303,6 +309,12 @@ void MultipartUploadRequest::OnURLLoaderComplete(
   int response_code = 0;
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers)
     response_code = url_loader_->ResponseInfo()->headers->response_code();
+  if (!histogram_suffix_.empty()) {
+    std::string histogram = base::StrCat(
+        {"SafeBrowsing.MultipartUploader.NetworkResult.", histogram_suffix_});
+    RecordHttpResponseOrErrorCode(histogram.c_str(), url_loader_->NetError(),
+                                  response_code);
+  }
 
   RetryOrFinish(url_loader_->NetError(), response_code,
                 std::move(response_body));
@@ -339,17 +351,18 @@ MultipartUploadRequest::CreateStringRequest(
     const GURL& base_url,
     const std::string& metadata,
     const std::string& data,
+    const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     MultipartUploadRequest::Callback callback) {
   if (!factory_) {
     return std::make_unique<MultipartUploadRequest>(
-        url_loader_factory, base_url, metadata, data, traffic_annotation,
-        std::move(callback));
+        url_loader_factory, base_url, metadata, data, histogram_suffix,
+        traffic_annotation, std::move(callback));
   }
 
   return factory_->CreateStringRequest(url_loader_factory, base_url, metadata,
-                                       data, traffic_annotation,
-                                       std::move(callback));
+                                       data, histogram_suffix,
+                                       traffic_annotation, std::move(callback));
 }
 
 // static
@@ -361,12 +374,13 @@ MultipartUploadRequest::CreateFileRequest(
     const base::FilePath& path,
     uint64_t file_size,
     bool is_obfuscated,
+    const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     MultipartUploadRequest::Callback callback) {
   if (!factory_) {
     return std::make_unique<MultipartUploadRequest>(
         url_loader_factory, base_url, metadata, path, file_size, is_obfuscated,
-        traffic_annotation, std::move(callback));
+        histogram_suffix, traffic_annotation, std::move(callback));
   }
 
   // Note that multipart uploads only handle data that is less than
@@ -374,7 +388,7 @@ MultipartUploadRequest::CreateFileRequest(
   // passed as the `get_data_result` argument.
   return factory_->CreateFileRequest(url_loader_factory, base_url, metadata,
                                      BinaryUploadService::Result::SUCCESS, path,
-                                     file_size, is_obfuscated,
+                                     file_size, is_obfuscated, histogram_suffix,
                                      traffic_annotation, std::move(callback));
 }
 
@@ -385,17 +399,18 @@ MultipartUploadRequest::CreatePageRequest(
     const GURL& base_url,
     const std::string& metadata,
     base::ReadOnlySharedMemoryRegion page_region,
+    const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     MultipartUploadRequest::Callback callback) {
   if (!factory_) {
     return std::make_unique<MultipartUploadRequest>(
         url_loader_factory, base_url, metadata, std::move(page_region),
-        traffic_annotation, std::move(callback));
+        histogram_suffix, traffic_annotation, std::move(callback));
   }
 
   return factory_->CreatePageRequest(url_loader_factory, base_url, metadata,
                                      BinaryUploadService::Result::SUCCESS,
-                                     std::move(page_region), traffic_annotation,
-                                     std::move(callback));
+                                     std::move(page_region), histogram_suffix,
+                                     traffic_annotation, std::move(callback));
 }
 }  // namespace safe_browsing

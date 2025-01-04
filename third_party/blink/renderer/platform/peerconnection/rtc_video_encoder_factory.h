@@ -30,6 +30,14 @@ class PLATFORM_EXPORT RTCVideoEncoderFactory
       media::GpuVideoAcceleratorFactories* gpu_factories,
       scoped_refptr<media::MojoVideoEncoderMetricsProviderFactory>
           encoder_metrics_provider_factory);
+  // Temporary constructor that is used to log codecs that potentially can be HW
+  // accelerated regardless of the state of feature flags. Please note that this
+  // constructor must only be used for the purpose of logging.
+  RTCVideoEncoderFactory(
+      media::GpuVideoAcceleratorFactories* gpu_factories,
+      scoped_refptr<media::MojoVideoEncoderMetricsProviderFactory>
+          encoder_metrics_provider_factory,
+      bool override_disabled_profiles);
   RTCVideoEncoderFactory(const RTCVideoEncoderFactory&) = delete;
   RTCVideoEncoderFactory& operator=(const RTCVideoEncoderFactory&) = delete;
   ~RTCVideoEncoderFactory() override;

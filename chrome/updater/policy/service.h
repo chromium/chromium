@@ -149,6 +149,9 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   // Enterprise Core (formerly Chrome Enterprise Cloud Management).
   void IsCloudManaged(base::OnceCallback<void(bool)> callback) const;
 
+  // Returns the last policy fetch result.
+  std::optional<int> LastFetchResult() const { return last_fetch_result_; }
+
  protected:
   virtual ~PolicyService();
 
@@ -186,6 +189,9 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   // Also contains a named map indexed by `source()` for all the policy
   // managers.
   PolicyManagers policy_managers_;
+
+  // Holds the last policy fetch result.
+  std::optional<int> last_fetch_result_;
 
   const scoped_refptr<ExternalConstants> external_constants_;
 

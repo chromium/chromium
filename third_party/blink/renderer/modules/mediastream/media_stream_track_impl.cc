@@ -1033,6 +1033,11 @@ void MediaStreamTrackImpl::UnregisterMediaStream(MediaStream* media_stream) {
   registered_media_streams_.erase(iter);
 }
 
+void MediaStreamTrackImpl::RegisterSink(
+    SpeechRecognitionMediaStreamAudioSink* sink) {
+  registered_sinks_.insert(sink);
+}
+
 const AtomicString& MediaStreamTrackImpl::InterfaceName() const {
   return event_target_names::kMediaStreamTrack;
 }
@@ -1051,6 +1056,7 @@ void MediaStreamTrackImpl::AddedEventListener(
 
 void MediaStreamTrackImpl::Trace(Visitor* visitor) const {
   visitor->Trace(registered_media_streams_);
+  visitor->Trace(registered_sinks_);
   visitor->Trace(component_);
   visitor->Trace(image_capture_);
   visitor->Trace(execution_context_);

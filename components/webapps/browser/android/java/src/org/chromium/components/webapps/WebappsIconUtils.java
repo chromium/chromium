@@ -15,9 +15,6 @@ import android.graphics.drawable.AdaptiveIconDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
 
 import org.jni_zero.CalledByNative;
 
@@ -69,7 +66,6 @@ public class WebappsIconUtils {
 
     private static final float SHORTCUT_ICON_IDEAL_SIZE_DP = 48;
 
-    @RequiresApi(Build.VERSION_CODES.O)
     @CalledByNative
     public static Bitmap generateAdaptiveIconBitmap(Bitmap bitmap) {
         Bitmap padded = createHomeScreenIconFromWebIcon(bitmap, true);
@@ -214,11 +210,6 @@ public class WebappsIconUtils {
     public static int getIdealIconCornerRadiusPxForPromptUi() {
         Context context = ContextUtils.getApplicationContext();
         return context.getResources().getDimensionPixelSize(R.dimen.webapk_prompt_ui_icon_radius);
-    }
-
-    /** Check the running Android version supports adaptive icon (i.e. API level >= 26) */
-    public static boolean doesAndroidSupportMaskableIcons() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
     }
 
     /**

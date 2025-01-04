@@ -280,8 +280,7 @@ void BookmarkContextMenuController::BuildMenu() {
     AddCheckboxItem(IDC_BOOKMARK_BAR_SHOW_APPS_SHORTCUT,
                     IDS_BOOKMARK_BAR_SHOW_APPS_SHORTCUT);
   }
-  if (tab_groups::SavedTabGroupUtils::IsEnabledForProfile(profile_) &&
-      tab_groups::IsTabGroupsSaveUIUpdateEnabled()) {
+  if (tab_groups::SavedTabGroupUtils::IsEnabledForProfile(profile_)) {
     AddCheckboxItem(IDC_BOOKMARK_BAR_TOGGLE_SHOW_TAB_GROUPS,
                     IDS_BOOKMARK_BAR_SHOW_TAB_GROUPS);
   }

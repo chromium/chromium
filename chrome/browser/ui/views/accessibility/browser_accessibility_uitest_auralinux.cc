@@ -123,8 +123,9 @@ IN_PROC_BROWSER_TEST_F(AuraLinuxAccessibilityInProcessBrowserTest,
 
 static AtkObject* FindParentFrame(AtkObject* object) {
   while (object) {
-    if (atk_object_get_role(object) == ATK_ROLE_FRAME)
+    if (atk_object_get_role(object) == ATK_ROLE_FRAME) {
       return object;
+    }
     object = atk_object_get_parent(object);
   }
 

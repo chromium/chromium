@@ -14,7 +14,7 @@
 #include "partition_alloc/buildflags.h"
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC)
-#include "partition_alloc/page_allocator.h"
+#include "partition_alloc/page_allocator.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -39,8 +39,9 @@ bool UncheckedCalloc(size_t num_items, size_t size, void** result) {
     return false;
   }
 
-  if (!UncheckedMalloc(alloc_size, result))
+  if (!UncheckedMalloc(alloc_size, result)) {
     return false;
+  }
 
   memset(*result, 0, alloc_size);
   return true;

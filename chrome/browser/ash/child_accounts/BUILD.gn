@@ -103,9 +103,6 @@ static_library("child_accounts") {
     "//ui/chromeos",
     "//ui/message_center",
   ]
-
-  allow_circular_includes_from =
-      [ "//chrome/browser/ash/child_accounts/time_limits" ]
 }
 
 static_library("test_support") {

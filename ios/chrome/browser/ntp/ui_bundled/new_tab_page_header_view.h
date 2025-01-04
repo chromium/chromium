@@ -91,12 +91,6 @@
 // Highlights the fake omnibox.
 - (void)setFakeboxHighlighted:(BOOL)highlighted;
 
-// Hides the buttons within the fakebox.
-- (void)hideFakeboxButtons;
-
-// Shows the buttons within the fakebox.
-- (void)showFakeboxButtons;
-
 // Shows account disc particle error badge.
 - (void)setIdentityDiscErrorBadge;
 
@@ -114,6 +108,10 @@
 // Updates the `tabGroupIndicatorView` availability.
 // `offset` represents the scroll view's y `offset`.
 - (void)updateTabGroupIndicatorAvailabilityWithOffset:(CGFloat)offset;
+
+// Returns a snapshot view of the fakebox's buttons to be used during focus
+// and defocus animations.
+- (UIView*)fakeboxButtonsSnapshot;
 
 @end
 

@@ -210,27 +210,6 @@ chromium-metrics-reviews@google.com.
   <int value="40" label="WARM_UP"/>
 </enum>
 
-<enum name="ServiceWorkerRaceNetworkRequestDataTransferMojoResult">
-  <int value="0" label="MOJO_RESULT_OK"/>
-  <int value="1" label="MOJO_RESULT_CANCELLED"/>
-  <int value="2" label="MOJO_RESULT_UNKNOWN"/>
-  <int value="3" label="MOJO_RESULT_INVALID_ARGUMENT"/>
-  <int value="4" label="MOJO_RESULT_DEADLINE_EXCEEDED"/>
-  <int value="5" label="MOJO_RESULT_NOT_FOUND"/>
-  <int value="6" label="MOJO_RESULT_ALREADY_EXISTS"/>
-  <int value="7" label="MOJO_RESULT_PERMISSION_DENIED"/>
-  <int value="8" label="MOJO_RESULT_RESOURCE_EXHAUSTED"/>
-  <int value="9" label="MOJO_RESULT_FAILED_PRECONDITION"/>
-  <int value="10" label="MOJO_RESULT_ABORTED"/>
-  <int value="11" label="MOJO_RESULT_OUT_OF_RANGE"/>
-  <int value="12" label="MOJO_RESULT_UNIMPLEMENTED"/>
-  <int value="13" label="MOJO_RESULT_INTERNAL"/>
-  <int value="14" label="MOJO_RESULT_UNAVAILABLE"/>
-  <int value="15" label="MOJO_RESULT_DATA_LOSS"/>
-  <int value="16" label="MOJO_RESULT_BUSY"/>
-  <int value="17" label="MOJO_RESULT_SHOULD_WAIT"/>
-</enum>
-
 <enum name="ServiceWorkerReadResponseResult">
   <int value="0" label="OK"/>
   <int value="1" label="Read headers error"/>

@@ -200,13 +200,12 @@ class ABSL_ATTRIBUTE_VIEW string_view {
       absl::Nonnull<const char*> str)
       : ptr_(str), length_(str ? StrlenInternal(str) : 0) {}
 
-  // Implicit constructor of a `string_view` from a `const char*` and length.
+  // Constructor of a `string_view` from a `const char*` and length.
   constexpr string_view(absl::Nullable<const char*> data, size_type len)
       : ptr_(data), length_(CheckLengthInternal(len)) {}
 
-  // NOTE: Harmlessly omitted to work around gdb bug.
-  //   constexpr string_view(const string_view&) noexcept = default;
-  //   string_view& operator=(const string_view&) noexcept = default;
+  constexpr string_view(const string_view&) noexcept = default;
+  string_view& operator=(const string_view&) noexcept = default;
 
   // Iterators
 

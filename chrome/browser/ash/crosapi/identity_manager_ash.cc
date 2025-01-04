@@ -85,7 +85,8 @@ void IdentityManagerAsh::GetAccountEmail(const std::string& gaia_id,
 void IdentityManagerAsh::HasAccountWithPersistentError(
     const std::string& gaia_id,
     HasAccountWithPersistentErrorCallback callback) {
-  signin::IdentityManager* identity_manager = GetIdentityManager(gaia_id);
+  signin::IdentityManager* identity_manager =
+      GetIdentityManager(GaiaId(gaia_id));
   AccountInfo account_info = GetAccountInfo(GaiaId(gaia_id));
   if (!identity_manager || account_info.IsEmpty()) {
     std::move(callback).Run(false);

@@ -59,14 +59,16 @@ bool PathProvider(int key, FilePath* result) {
 
   switch (key) {
     case DIR_EXE:
-      if (!PathService::Get(FILE_EXE, result))
+      if (!PathService::Get(FILE_EXE, result)) {
         return false;
+      }
       *result = result->DirName();
       return true;
 #if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_IOS)
     case DIR_MODULE:
-      if (!PathService::Get(FILE_MODULE, result))
+      if (!PathService::Get(FILE_MODULE, result)) {
         return false;
+      }
       *result = result->DirName();
       return true;
     case DIR_ASSETS:
@@ -100,8 +102,9 @@ bool PathProvider(int key, FilePath* result) {
       test_data_path = test_data_path.Append(FILE_PATH_LITERAL("base"));
       test_data_path = test_data_path.Append(FILE_PATH_LITERAL("test"));
       test_data_path = test_data_path.Append(FILE_PATH_LITERAL("data"));
-      if (!PathExists(test_data_path))  // We don't want to create this.
+      if (!PathExists(test_data_path)) {  // We don't want to create this.
         return false;
+      }
       *result = test_data_path;
       return true;
     }

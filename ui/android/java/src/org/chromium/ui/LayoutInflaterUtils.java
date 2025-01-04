@@ -10,9 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.StrictModeContext;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * {@link LayoutInflater} wrapper class which suppresses strict mode violations. A helper class is
@@ -21,6 +21,7 @@ import org.chromium.base.StrictModeContext;
  * because we only want to suppress strict mode violations caused by Chromium usage of
  * LayoutInflater and not usage by embedders of Web Layer or Web View.
  */
+@NullMarked
 public class LayoutInflaterUtils {
     public static View inflate(Context context, int resource, @Nullable ViewGroup root) {
         return inflate(context, resource, root, root != null);
@@ -46,7 +47,7 @@ public class LayoutInflaterUtils {
     }
 
     private static View inflateImpl(
-            LayoutInflater inflater, int resource, ViewGroup root, boolean attachToRoot) {
+            LayoutInflater inflater, int resource, @Nullable ViewGroup root, boolean attachToRoot) {
         // LayoutInflater may trigger accessing disk.
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             return inflater.inflate(resource, root, attachToRoot);

@@ -24,7 +24,6 @@
 #include "base/system/sys_info.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
 #include "components/viz/common/features.h"
 #include "content/browser/compositor/image_transport_factory.h"
@@ -479,8 +478,6 @@ bool IsGpuMemoryBufferCompositorResourcesEnabled() {
 
 #if BUILDFLAG(IS_APPLE)
   return true;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return features::IsDelegatedCompositingEnabled();
 #elif BUILDFLAG(IS_WIN)
   return features::IsDelegatedCompositingEnabled() &&
          features::kDelegatedCompositingModeParam.Get() ==

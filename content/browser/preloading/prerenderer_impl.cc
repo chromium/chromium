@@ -167,11 +167,29 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
     started_it = equal_prerender_end;
   }
 
+  std::vector<GURL> urls;
+  for (auto ftn_id : removed_prerender_rules) {
+    if (PrerenderHost* prerender_host =
+            registry_->FindNonReservedHostById(ftn_id)) {
+      urls.push_back(prerender_host->GetInitialUrl());
+    }
+  }
   std::set<FrameTreeNodeId> canceled_prerender_rules_set =
       registry_->CancelHosts(
           removed_prerender_rules,
           PrerenderCancellationReason(
               PrerenderFinalStatus::kSpeculationRuleRemoved));
+  if (base::FeatureList::IsEnabled(
+          features::kPrerender2FallbackPrefetchSpecRules)) {
+    WebContents* web_contents =
+        WebContents::FromRenderFrameHost(&render_frame_host_.get());
+    auto* prefetch_document_manager =
+        content::PrefetchDocumentManager::GetOrCreateForCurrentDocument(
+            web_contents->GetPrimaryMainFrame());
+    for (const auto& url : urls) {
+      prefetch_document_manager->ResetPrefetchAheadOfPrerenderIfExist(url);
+    }
+  }
 
   // Canceled prerenders by kSpeculationRuleRemoved should have already been
   // removed from `started_prerenders_` via `OnCancel`.
@@ -269,12 +287,11 @@ bool PrerendererImpl::MaybePrerender(
             url::Origin::Create(candidate->url).Serialize().c_str()));
   }
 
-  std::optional<net::HttpNoVarySearchData> no_vary_search_expected;
+  std::optional<net::HttpNoVarySearchData> no_vary_search_hint;
   if (base::FeatureList::IsEnabled(blink::features::kPrerender2NoVarySearch) &&
       candidate->no_vary_search_hint) {
-    no_vary_search_expected =
-        no_vary_search::ParseHttpNoVarySearchDataFromMojom(
-            candidate->no_vary_search_hint);
+    no_vary_search_hint = no_vary_search::ParseHttpNoVarySearchDataFromMojom(
+        candidate->no_vary_search_hint);
   }
 
   PrerenderAttributes attributes(
@@ -283,9 +300,8 @@ bool PrerendererImpl::MaybePrerender(
           candidate->injection_type),
       /*embedder_histogram_suffix=*/"",
       candidate->target_browsing_context_name_hint,
-      Referrer{*candidate->referrer}, candidate->eagerness,
-      no_vary_search_expected, &rfhi, web_contents->GetWeakPtr(),
-      ui::PAGE_TRANSITION_LINK,
+      Referrer{*candidate->referrer}, candidate->eagerness, no_vary_search_hint,
+      &rfhi, web_contents->GetWeakPtr(), ui::PAGE_TRANSITION_LINK,
       /*should_warm_up_compositor=*/false,
       /*should_prepare_paint_tree=*/false,
       /*url_match_predicate=*/{},

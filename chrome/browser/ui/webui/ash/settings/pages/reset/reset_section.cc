@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/reset_settings_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/locale_settings.h"
@@ -22,6 +21,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/webui/webui_util.h"
 
 namespace ash::settings {
 
@@ -63,7 +63,7 @@ ResetSection::~ResetSection() = default;
 
 void ResetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"resetPageTitle", IDS_OS_SETTINGS_REVAMP_RESET_TITLE},
+      {"resetPageTitle", IDS_OS_SETTINGS_RESET_TITLE},
       {"powerwashTitle", IDS_SETTINGS_FACTORY_RESET},
       {"powerwashDialogTitle", IDS_SETTINGS_FACTORY_RESET_HEADING},
       {"powerwashDialogButton", IDS_SETTINGS_RESTART},
@@ -103,9 +103,9 @@ void ResetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       ::settings::ResetSettingsHandler::ShouldShowResetProfileBanner(
           profile()));
 
-  html_source->AddString("powerwashDescription",
-                         l10n_util::GetStringUTF16(
-                             IDS_OS_SETTINGS_REVAMP_FACTORY_RESET_DESCRIPTION));
+  html_source->AddString(
+      "powerwashDescription",
+      l10n_util::GetStringUTF16(IDS_OS_SETTINGS_FACTORY_RESET_DESCRIPTION));
 }
 
 void ResetSection::AddHandlers(content::WebUI* web_ui) {

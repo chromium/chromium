@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <dlfcn.h>
+#include <malloc.h>
+
 #include <limits>
 
 #include "partition_alloc/oom.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/numerics/checked_math.h"
 #include "partition_alloc/shim/allocator_shim.h"
-
-#include <dlfcn.h>
-#include <malloc.h>
 
 // This translation unit defines a default dispatch for the allocator shim which
 // routes allocations to libc functions.

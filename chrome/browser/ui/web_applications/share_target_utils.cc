@@ -46,19 +46,22 @@ std::vector<SharedField> ExtractSharedFields(
         {.name = share_target.params.title, .value = *intent.share_title});
   }
 
-  if (!intent.share_text.has_value())
+  if (!intent.share_text.has_value()) {
     return result;
+  }
 
   apps_util::SharedText extracted_text =
       apps_util::ExtractSharedText(*intent.share_text);
 
-  if (!share_target.params.text.empty() && !extracted_text.text.empty())
+  if (!share_target.params.text.empty() && !extracted_text.text.empty()) {
     result.push_back(
         {.name = share_target.params.text, .value = extracted_text.text});
+  }
 
-  if (!share_target.params.url.empty() && !extracted_text.url.is_empty())
+  if (!share_target.params.url.empty() && !extracted_text.url.is_empty()) {
     result.push_back(
         {.name = share_target.params.url, .value = extracted_text.url.spec()});
+  }
 
   return result;
 }
@@ -105,8 +108,9 @@ NavigateParams NavigateParamsForShareTarget(
           break;
         }
       }
-      if (name.empty())
+      if (name.empty()) {
         continue;
+      }
 
       storage::FileSystemURL file_system_url;
 

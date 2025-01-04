@@ -148,8 +148,9 @@ void TailoredSecurityUnconsentedModal::AddedToWidget() {
       IdentityManagerFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
   if (!identity_manager ||
-      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin))
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return;
+  }
 
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
   gfx::ImageSkia header_image =

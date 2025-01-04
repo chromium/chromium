@@ -293,7 +293,7 @@ FYI_BUILDERS = {
             'pool': 'chrome.tests.perf',
             'os': 'Windows-11',
             'cpu': 'arm64-64-Snapdragon(R)_X_Elite_-_X1E80100_-_Qualcomm(R)_Oryon(TM)_CPU',
-            'synthetic_product_name': 'Inspiron 14 Plus 7441 (Dell Inc.)'
+            'synthetic_product_name': 'Latitude 7455 (Dell Inc.)'
         },
     },
     'chromeos-kevin-builder-perf-fyi': {

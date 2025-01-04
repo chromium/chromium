@@ -12,6 +12,7 @@ import androidx.test.filters.MediumTest;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -161,7 +162,7 @@ public class EmbeddedComponentLoaderTest extends AwParameterizedTest {
     }
 
     @CalledByNative
-    private static void fail(String error) {
+    private static void fail(@JniType("std::string") String error) {
         sNativeErrors.add(error);
     }
 

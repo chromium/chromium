@@ -180,6 +180,9 @@ public class MockTabModel extends EmptyTabModel {
 
     @Override
     public Tab getTabAt(int position) {
+        // Mimic the index safety of TabModelImpl.
+        if (position < 0 || position > mTabs.size()) return null;
+
         return mTabs.get(position);
     }
 

@@ -136,14 +136,14 @@ class RTree {
   };
 
   template <typename ResultFunctor>
-  void SearchRecursive(const Node<T>* root,
+  void SearchRecursive(const Node<T>& node,
                        const gfx::Rect& query,
                        const ResultFunctor& result_handler) const;
 
   // The following two functions are slow fallback versions of SearchRecursive
   // and SearchRefsRecursive for when !has_valid_bounds().
   template <typename ResultFunctor>
-  void SearchRecursiveFallback(const Node<T>* root,
+  void SearchRecursiveFallback(const Node<T>& node,
                                const gfx::Rect& query,
                                const ResultFunctor& result_handler) const;
 
@@ -151,7 +151,7 @@ class RTree {
   Branch<T> BuildRecursive(std::vector<Branch<T>>* branches, uint16_t level);
   Node<T>* AllocateNodeAtLevel(uint16_t level);
 
-  void GetAllBoundsRecursive(const Node<T>* root,
+  void GetAllBoundsRecursive(const Node<T>& node,
                              std::map<T, gfx::Rect>* results) const;
 
   // This is the count of data elements (rather than total nodes in the tree)
@@ -323,10 +323,11 @@ void RTree<T>::Search(const gfx::Rect& query,
   if (num_data_elements_ == 0) {
     return;
   }
+  CHECK(root_.subtree);
   if (!has_valid_bounds_) {
-    SearchRecursiveFallback(root_.subtree, query, result_handler);
+    SearchRecursiveFallback(*root_.subtree, query, result_handler);
   } else if (query.Intersects(root_.bounds)) {
-    SearchRecursive(root_.subtree, query, result_handler);
+    SearchRecursive(*root_.subtree, query, result_handler);
   }
 }
 
@@ -357,15 +358,16 @@ void RTree<T>::SearchRefs(const gfx::Rect& query,
 
 template <typename T>
 template <typename ResultFunctor>
-void RTree<T>::SearchRecursive(const Node<T>* node,
+void RTree<T>::SearchRecursive(const Node<T>& node,
                                const gfx::Rect& query,
                                const ResultFunctor& result_handler) const {
-  for (uint16_t i = 0; i < node->num_children; ++i) {
-    if (query.Intersects(node->children[i].bounds)) {
-      if (node->level == 0) {
-        result_handler(node->children[i].payload, node->children[i].bounds);
+  for (uint16_t i = 0; i < node.num_children; ++i) {
+    if (query.Intersects(node.children[i].bounds)) {
+      if (node.level == 0) {
+        result_handler(node.children[i].payload, node.children[i].bounds);
       } else {
-        SearchRecursive(node->children[i].subtree, query, result_handler);
+        CHECK(node.children[i].subtree);
+        SearchRecursive(*node.children[i].subtree, query, result_handler);
       }
     }
   }
@@ -376,16 +378,17 @@ void RTree<T>::SearchRecursive(const Node<T>* node,
 template <typename T>
 template <typename ResultFunctor>
 void RTree<T>::SearchRecursiveFallback(
-    const Node<T>* node,
+    const Node<T>& node,
     const gfx::Rect& query,
     const ResultFunctor& result_handler) const {
-  for (uint16_t i = 0; i < node->num_children; ++i) {
-    if (node->level == 0) {
-      if (query.Intersects(node->children[i].bounds)) {
-        result_handler(node->children[i].payload, node->children[i].bounds);
+  for (uint16_t i = 0; i < node.num_children; ++i) {
+    if (node.level == 0) {
+      if (query.Intersects(node.children[i].bounds)) {
+        result_handler(node.children[i].payload, node.children[i].bounds);
       }
     } else {
-      SearchRecursive(node->children[i].subtree, query, result_handler);
+      CHECK(node.children[i].subtree);
+      SearchRecursive(*node.children[i].subtree, query, result_handler);
     }
   }
 }
@@ -402,19 +405,21 @@ template <typename T>
 std::map<T, gfx::Rect> RTree<T>::GetAllBoundsForTracing() const {
   std::map<T, gfx::Rect> results;
   if (num_data_elements_ > 0) {
-    GetAllBoundsRecursive(root_.subtree, &results);
+    CHECK(root_.subtree);
+    GetAllBoundsRecursive(*root_.subtree, &results);
   }
   return results;
 }
 
 template <typename T>
-void RTree<T>::GetAllBoundsRecursive(const Node<T>* node,
+void RTree<T>::GetAllBoundsRecursive(const Node<T>& node,
                                      std::map<T, gfx::Rect>* results) const {
-  for (uint16_t i = 0; i < node->num_children; ++i) {
-    if (node->level == 0) {
-      (*results)[node->children[i].payload] = node->children[i].bounds;
+  for (uint16_t i = 0; i < node.num_children; ++i) {
+    if (node.level == 0) {
+      (*results)[node.children[i].payload] = node.children[i].bounds;
     } else {
-      GetAllBoundsRecursive(node->children[i].subtree, results);
+      CHECK(node.children[i].subtree);
+      GetAllBoundsRecursive(*node.children[i].subtree, results);
     }
   }
 }

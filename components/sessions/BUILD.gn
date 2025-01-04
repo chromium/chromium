@@ -136,7 +136,6 @@ source_set("shared") {
 
   public_deps = [
     ":session_id",
-    "//build:chromeos_buildflags",
     "//components/keyed_service/core",
     "//skia",
   ]

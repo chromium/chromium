@@ -14,6 +14,8 @@ namespace toast_features {
 // Base feature
 BASE_DECLARE_FEATURE(kToastFramework);
 
+BASE_DECLARE_FEATURE(kToastRefinements);
+
 // Enables all toast features queried through `toast_features::IsEnabled` which
 // is used for demo mode.
 extern const base::FeatureParam<bool> kToastDemoMode;

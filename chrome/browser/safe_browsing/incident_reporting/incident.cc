@@ -12,8 +12,7 @@
 
 namespace safe_browsing {
 
-Incident::~Incident() {
-}
+Incident::~Incident() = default;
 
 std::unique_ptr<ClientIncidentReport_IncidentData> Incident::TakePayload() {
   return std::move(payload_);

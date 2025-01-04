@@ -34,12 +34,26 @@ ScriptPromise<IDLSequence<ClipboardItem>> Clipboard::read(
     ScriptState* script_state,
     ClipboardUnsanitizedFormats* formats,
     ExceptionState& exception_state) {
+  LocalDOMWindow* window = GetSupplementable()->DomWindow();
+  LocalFrame* local_frame = window ? window->GetFrame() : nullptr;
+  if (local_frame && local_frame->IsAdScriptInStack()) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kAdScriptInStackOnClipboardRead);
+  }
+
   return ClipboardPromise::CreateForRead(GetExecutionContext(), script_state,
                                          formats, exception_state);
 }
 
 ScriptPromise<IDLString> Clipboard::readText(ScriptState* script_state,
                                              ExceptionState& exception_state) {
+  LocalDOMWindow* window = GetSupplementable()->DomWindow();
+  LocalFrame* local_frame = window ? window->GetFrame() : nullptr;
+  if (local_frame && local_frame->IsAdScriptInStack()) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kAdScriptInStackOnClipboardRead);
+  }
+
   return ClipboardPromise::CreateForReadText(GetExecutionContext(),
                                              script_state, exception_state);
 }

@@ -187,14 +187,16 @@ bool IsAmbientAuthAllowedForProfile(Profile* profile) {
   // Ambient authentication is always enabled for regular and system profiles.
   // System profiles (used in profile picker) may require authentication to
   // let user login.
-  if (profile->IsRegularProfile() || profile->IsSystemProfile())
+  if (profile->IsRegularProfile() || profile->IsSystemProfile()) {
     return true;
+  }
 
   // Non-primary OTR profiles are not used to create browser windows and are
   // only technical means for a task that does not need to leave state after
   // it's completed.
-  if (profile->IsOffTheRecord() && !profile->IsPrimaryOTRProfile())
+  if (profile->IsOffTheRecord() && !profile->IsPrimaryOTRProfile()) {
     return true;
+  }
 
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
@@ -523,10 +525,7 @@ void ProfileNetworkContextService::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kCAPlatformIntegrationEnabled, true);
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
-  registry->RegisterIntegerPref(
-      prefs::kNSSCertsMigratedToServerCertDb,
-      static_cast<int>(net::ServerCertificateDatabaseService::
-                           NSSMigrationResultPref::kNotMigrated));
+  net::ServerCertificateDatabaseService::RegisterProfilePrefs(registry);
 #endif
 }
 
@@ -543,12 +542,14 @@ void ProfileNetworkContextService::RegisterLocalStatePrefs(
 }
 
 void ProfileNetworkContextService::DisableQuicIfNotAllowed() {
-  if (!quic_allowed_.IsManaged())
+  if (!quic_allowed_.IsManaged()) {
     return;
+  }
 
   // If QUIC is allowed, do nothing (re-enabling QUIC is not supported).
-  if (quic_allowed_.GetValue())
+  if (quic_allowed_.GetValue()) {
     return;
+  }
 
   g_browser_process->system_network_context_manager()->DisableQuic();
 }
@@ -841,62 +842,59 @@ void ProfileNetworkContextService::
     UpdateAdditionalCertificatesWithUserAddedCerts(
         std::vector<net::ServerCertificateDatabase::CertInformation>
             cert_infos) {
-  profile_->ForEachLoadedStoragePartition(
-      [&](content::StoragePartition* storage_partition) {
-        cert_verifier::mojom::AdditionalCertificatesPtr additional_certs =
-            GetCertificatePolicy(storage_partition->GetPath());
+  profile_->ForEachLoadedStoragePartition([&](content::StoragePartition*
+                                                  storage_partition) {
+    cert_verifier::mojom::AdditionalCertificatesPtr additional_certs =
+        GetCertificatePolicy(storage_partition->GetPath());
 
-        for (const auto& cert_info : cert_infos) {
-          std::optional<bssl::CertificateTrustType> trust =
-              net::ServerCertificateDatabase::GetUserCertificateTrust(
-                  cert_info);
-          if (!trust) {
-            continue;
+    for (const auto& cert_info : cert_infos) {
+      std::optional<bssl::CertificateTrustType> trust =
+          net::ServerCertificateDatabase::GetUserCertificateTrust(cert_info);
+      if (!trust) {
+        continue;
+      }
+      switch (trust.value()) {
+        case bssl::CertificateTrustType::UNSPECIFIED:
+          additional_certs->all_certificates.push_back(cert_info.der_cert);
+          break;
+
+        case bssl::CertificateTrustType::DISTRUSTED: {
+          std::string_view spki_piece;
+          bool success = net::asn1::ExtractSPKIFromDERCert(
+              base::as_string_view(cert_info.der_cert), &spki_piece);
+          if (success) {
+            additional_certs->distrusted_spkis.push_back(
+                base::ToVector(base::as_byte_span(spki_piece)));
           }
-          switch (trust.value()) {
-            case bssl::CertificateTrustType::UNSPECIFIED:
-              additional_certs->all_certificates.push_back(cert_info.der_cert);
-              break;
-
-            case bssl::CertificateTrustType::DISTRUSTED: {
-              std::string_view spki_piece;
-              bool success = net::asn1::ExtractSPKIFromDERCert(
-                  base::as_string_view(cert_info.der_cert), &spki_piece);
-              if (success) {
-                additional_certs->distrusted_spkis.push_back(
-                    base::ToVector(base::as_byte_span(spki_piece)));
-              }
-              break;
-            }
-
-            case bssl::CertificateTrustType::TRUSTED_ANCHOR:
-              if (!cert_info.cert_metadata.has_constraints() ||
-                  (cert_info.cert_metadata.constraints().dns_names_size() ==
-                       0 &&
-                   cert_info.cert_metadata.constraints().cidrs_size() == 0)) {
-                additional_certs->trust_anchors_with_enforced_constraints
-                    .push_back(cert_info.der_cert);
-              } else {
-                MaybeAddCertWithConstraints(
-                    cert_info,
-                    &additional_certs
-                         ->trust_anchors_with_additional_constraints);
-              }
-              break;
-
-            case bssl::CertificateTrustType::TRUSTED_ANCHOR_OR_LEAF:
-              MaybeAddCertWithConstraints(
-                  cert_info, &additional_certs->trust_anchors_and_leafs);
-              break;
-            case bssl::CertificateTrustType::TRUSTED_LEAF:
-              MaybeAddCertWithConstraints(cert_info,
-                                          &additional_certs->trust_leafs);
-              break;
-          }
+          break;
         }
-        storage_partition->GetCertVerifierServiceUpdater()
-            ->UpdateAdditionalCertificates(std::move(additional_certs));
-      });
+
+        case bssl::CertificateTrustType::TRUSTED_ANCHOR:
+          if (!cert_info.cert_metadata.has_constraints() ||
+              (cert_info.cert_metadata.constraints().dns_names_size() == 0 &&
+               cert_info.cert_metadata.constraints().cidrs_size() == 0)) {
+            additional_certs->trust_anchors_with_enforced_constraints.push_back(
+                cert_info.der_cert);
+          } else {
+            MaybeAddCertWithConstraints(
+                cert_info,
+                &additional_certs->trust_anchors_with_additional_constraints);
+          }
+          break;
+
+        case bssl::CertificateTrustType::TRUSTED_ANCHOR_OR_LEAF:
+          MaybeAddCertWithConstraints(
+              cert_info, &additional_certs->trust_anchors_and_leafs);
+          break;
+        case bssl::CertificateTrustType::TRUSTED_LEAF:
+          MaybeAddCertWithConstraints(cert_info,
+                                      &additional_certs->trust_leafs);
+          break;
+      }
+    }
+    storage_partition->GetCertVerifierServiceUpdater()
+        ->UpdateAdditionalCertificates(std::move(additional_certs));
+  });
 }
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
@@ -944,8 +942,9 @@ ProfileNetworkContextService::GetCertificatePolicyForView() {
 bool ProfileNetworkContextService::ShouldSplitAuthCacheByNetworkIsolationKey()
     const {
   if (profile_->GetPrefs()->GetBoolean(
-          prefs::kGloballyScopeHTTPAuthCacheEnabled))
+          prefs::kGloballyScopeHTTPAuthCacheEnabled)) {
     return false;
+  }
   return base::FeatureList::IsEnabled(
       network::features::kSplitAuthCacheByNetworkIsolationKey);
 }
@@ -1076,15 +1075,6 @@ void ProfileNetworkContextService::FlushCachedClientCertIfNeeded(
       });
 }
 
-void ProfileNetworkContextService::FlushMatchingCachedClientCert(
-    const scoped_refptr<net::X509Certificate>& certificate) {
-  profile_->ForEachLoadedStoragePartition(
-      [&](content::StoragePartition* storage_partition) {
-        storage_partition->GetNetworkContext()->FlushMatchingCachedClientCert(
-            certificate);
-      });
-}
-
 void ProfileNetworkContextService::FlushProxyConfigMonitorForTesting() {
   proxy_config_monitor_.FlushForTesting();
 }
@@ -1161,8 +1151,9 @@ ProfileNetworkContextService::GetClientCertIssuerSourceFactory() {
 
 std::unique_ptr<net::ClientCertStore>
 ProfileNetworkContextService::CreateClientCertStore() {
-  if (!client_cert_store_factory_.is_null())
+  if (!client_cert_store_factory_.is_null()) {
     return client_cert_store_factory_.Run();
+  }
 
 #if BUILDFLAG(IS_CHROMEOS)
   chromeos::CertificateProviderService* cert_provider_service =
@@ -1319,8 +1310,9 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   TRACE_EVENT0(
       "startup",
       "ProfileNetworkContextService::ConfigureNetworkContextParamsInternal");
-  if (profile_->IsOffTheRecord())
+  if (profile_->IsOffTheRecord()) {
     in_memory = true;
+  }
   base::FilePath path(GetPartitionPath(relative_partition_path));
 
   g_browser_process->system_network_context_manager()
@@ -1366,8 +1358,9 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
     chrome::GetUserCacheDirectory(path, &base_cache_path);
     base::FilePath disk_cache_dir =
         local_state->GetFilePath(prefs::kDiskCacheDir);
-    if (!disk_cache_dir.empty())
+    if (!disk_cache_dir.empty()) {
       base_cache_path = disk_cache_dir.Append(base_cache_path.BaseName());
+    }
     const int disk_cache_size = local_state->GetInteger(prefs::kDiskCacheSize);
     network_context_params->http_cache_max_size = disk_cache_size;
     network_context_params->shared_dictionary_cache_max_size = disk_cache_size;
@@ -1438,8 +1431,9 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
       profile_->GetPrefs()->GetList(prefs::kHSTSPolicyBypassList);
   for (const auto& value : hsts_policy_bypass_list) {
     const std::string* string_value = value.GetIfString();
-    if (!string_value)
+    if (!string_value) {
       continue;
+    }
     network_context_params->hsts_policy_bypass_list.push_back(*string_value);
   }
 
@@ -1623,8 +1617,9 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
 base::FilePath ProfileNetworkContextService::GetPartitionPath(
     const base::FilePath& relative_partition_path) {
   base::FilePath path = profile_->GetPath();
-  if (!relative_partition_path.empty())
+  if (!relative_partition_path.empty()) {
     path = path.Append(relative_partition_path);
+  }
   return path;
 }
 

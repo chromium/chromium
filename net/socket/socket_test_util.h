@@ -570,7 +570,7 @@ struct SSLSocketDataProvider {
   base::RepeatingClosure confirm_callback;
 
   // Result for GetNegotiatedProtocol().
-  NextProto next_proto = kProtoUnknown;
+  NextProto next_proto = NextProto::kProtoUnknown;
 
   // Result for GetPeerApplicationSettings().
   std::optional<std::string> peer_application_settings;

@@ -7,8 +7,6 @@
 
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/views/glic/glic_web_view.h"
-#include "components/keep_alive_registry/keep_alive_types.h"
-#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -22,10 +20,7 @@ class WebView;
 }  // namespace views
 
 class Profile;
-
-namespace {
-class WindowEventObserver;
-}
+class BrowserFrameBoundsChangeAnimation;
 
 namespace glic {
 
@@ -38,32 +33,34 @@ class GlicView : public views::View {
 
   // Creates a menu widget that contains a `GlicView`, configured with the
   // given `initial_bounds`.
-  static std::pair<views::UniqueWidgetPtr, GlicView*> CreateWidget(
-      Profile* profile,
-      const gfx::Rect& initial_bounds);
+  static views::UniqueWidgetPtr CreateWidget(Profile* profile,
+                                             const gfx::Rect& initial_bounds);
+  // Returns the `GlicView` from the widget returned by
+  // `GlicView::CreateWidget()`.
+  static GlicView* FromWidget(views::Widget& widget);
 
-  // views::View
-  void AddedToWidget() override;
+  void SetDraggableAreas(const std::vector<gfx::Rect>& draggable_areas);
 
-  void DragFromPoint(gfx::Vector2d mouse_location);
+  bool IsPointWithinDraggableArea(const gfx::Point& point);
 
   views::WebView* web_view() { return web_view_; }
 
+  // Sets the bounds of the widget with animation
+  void AnimateFrameBounds(const gfx::Rect& bounds);
+
  private:
-  // Used to monitor key and mouse events from native window.
-  std::unique_ptr<WindowEventObserver> window_event_observer_;
-  // True while RunMoveLoop() has been called on a widget.
-  bool in_move_loop_ = false;
   raw_ptr<GlicWebView> web_view_;
+  // Defines the areas of the view from which it can be dragged. These areas can
+  // be updated by the glic web client.
+  std::vector<gfx::Rect> draggable_areas_;
+
+  // Animates programmatic changes to bounds (e.g. via `resizeTo()`
+  // `resizeBy()` and `setContentsSize()` calls).
+  std::unique_ptr<BrowserFrameBoundsChangeAnimation> bounds_change_animation_;
 
   // Ensures that the profile associated with this view isn't destroyed while
-  // it is visible, and nor is the browser process.
+  // it is visible.
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
-  std::unique_ptr<ScopedKeepAlive> keep_alive_;
-
-  // If the mouse is in snapping distance of a browser's glic button, it snaps
-  // glic to the top right of the browser's glic button.
-  void SnapToBrowserIfInBounds(gfx::Vector2d mouse_location);
 };
 
 }  // namespace glic

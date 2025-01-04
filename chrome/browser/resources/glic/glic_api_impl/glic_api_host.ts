@@ -9,17 +9,21 @@
 // TODO(crbug.com/379677413): Add tests for the API host.
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
+import type {BitmapN32} from '//resources/mojo/skia/public/mojom/bitmap.mojom-webui.js';
+import {AlphaType} from '//resources/mojo/skia/public/mojom/image_info.mojom-webui.js';
 import type {Origin} from '//resources/mojo/url/mojom/origin.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {BrowserProxy} from '../browser_proxy.js';
-import type {WebClientHandlerInterface, WebClientInterface} from '../glic.mojom-webui.js';
-import {WebClientHandlerRemote, WebClientReceiver} from '../glic.mojom-webui.js';
-import type {Screenshot, WebPageData} from '../glic_api/glic_api.js';
+import type {PanelState as PanelStateMojo, WebClientHandlerInterface, WebClientInterface} from '../glic.mojom-webui.js';
+import {GetTabContextErrorReason as MojoGetTabContextErrorReason, WebClientHandlerRemote, WebClientReceiver} from '../glic.mojom-webui.js';
+import type {DraggableArea, PanelState, Screenshot, WebPageData} from '../glic_api/glic_api.js';
+import {GetTabContextErrorReason} from '../glic_api/glic_api.js';
 import type {PostMessageRequestHandler} from '../glic_api/post_message_transport.js';
 import {PostMessageRequestReceiver, PostMessageRequestSender} from '../glic_api/post_message_transport.js';
-import type {HostRequestTypes} from '../glic_api/request_types.js';
-
+import type {HostRequestTypes, RgbaImage, UserProfileInfoPrivate} from '../glic_api/request_types.js';
+import {ImageAlphaType, ImageColorType} from '../glic_api/request_types.js';
 
 // Turn everything except void into a promise.
 type Promisify<T> = T extends void ? void : Promise<T>;
@@ -48,6 +52,33 @@ class WebClientImpl implements WebClientInterface {
 
   async notifyPanelClosed(): Promise<void> {
     await this.sender.requestWithResponse('glicWebClientNotifyPanelClosed', {});
+  }
+
+  notifyPanelStateChange(panelState: PanelStateMojo) {
+    this.sender.requestNoResponse('glicWebClientPanelStateChanged', {
+      panelState: panelStateToClient(panelState),
+    });
+  }
+
+  notifyMicrophonePermissionStateChanged(enabled: boolean): void {
+    this.sender.requestNoResponse(
+        'glicWebClientNotifyMicrophonePermissionStateChanged', {
+          enabled: enabled,
+        });
+  }
+
+  notifyLocationPermissionStateChanged(enabled: boolean): void {
+    this.sender.requestNoResponse(
+        'glicWebClientNotifyLocationPermissionStateChanged', {
+          enabled: enabled,
+        });
+  }
+
+  notifyTabContextPermissionStateChanged(enabled: boolean): void {
+    this.sender.requestNoResponse(
+        'glicWebClientNotifyTabContextPermissionStateChanged', {
+          enabled: enabled,
+        });
   }
 }
 
@@ -115,27 +146,37 @@ class HostMessageHandler implements HostMessageHandlerInterface {
         options: {innerText?: boolean, viewportScreenshot?: boolean},
       },
       transfer: Transferable[]) {
-    const response = await this.handler.getContextFromFocusedTab(
-        request.options.innerText || false,
-        // Note: viewportScreenshot was previously an empty object to imply
-        // true, this code works for either. Can be replaced with
-        // "request.options.viewportScreenshot || false" after 2025/01/05.
-        request.options.viewportScreenshot ? true : false);
-    const tabContextResult = response.tabContextResult;
-    if (!tabContextResult) {
-      return {};
+    const {result: {errorReason, tabContext}} =
+        await this.handler.getContextFromFocusedTab(
+            request.options.innerText || false,
+            // Note: viewportScreenshot was previously an empty object to imply
+            // true, this code works for either. Can be replaced with
+            // "request.options.viewportScreenshot || false" after 2025/01/05.
+            request.options.viewportScreenshot ? true : false);
+    if (!tabContext) {
+      let error = GetTabContextErrorReason.UNKNOWN;
+      if (errorReason === MojoGetTabContextErrorReason.kWebContentsChanged) {
+        error = GetTabContextErrorReason.WEB_CONTENTS_CHANGED;
+      }
+      return {error};
     }
-    const tabData = tabContextResult.tabData;
-    if (!tabData) {
-      return {};
+    const tabData = tabContext.tabData;
+    let rawFavicon: RgbaImage|undefined = undefined;
+    if (tabData.favicon) {
+      rawFavicon = bitmapN32ToRGBAImage(tabData.favicon);
+      if (rawFavicon) {
+        transfer.push(rawFavicon.dataRGBA);
+      }
     }
+
     const tabDataResult = {
       tabId: tabIdToClient(tabData.tabId),
       windowId: windowIdToClient(tabData.windowId),
       url: urlToClient(tabData.url),
       title: optionalToClient(tabData.title),
+      rawFavicon,
     };
-    const webPageData = tabContextResult.webPageData;
+    const webPageData = tabContext.webPageData;
     let webPageDataResult: WebPageData|undefined = undefined;
     if (webPageData) {
       webPageDataResult = {
@@ -145,7 +186,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
         },
       };
     }
-    const viewportScreenshot = tabContextResult.viewportScreenshot;
+    const viewportScreenshot = tabContext.viewportScreenshot;
     let viewportScreenshotResult: Screenshot|undefined = undefined;
     if (viewportScreenshot) {
       const screenshotArray = new Uint8Array(viewportScreenshot.data);
@@ -168,17 +209,48 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     };
   }
 
-  async glicBrowserResizeWindow(
-      resizeDimensions:
-          HostRequestTypes['glicBrowserResizeWindow']['request']) {
-    const response = await this.handler.resizeWidget(resizeDimensions);
+  async glicBrowserResizeWindow(request: {width: number, height: number}) {
+    const response = await this.handler.resizeWidget(request);
     if (!response.actualSize) {
-      throw new Error('Can\'t resize the widget while it\'s closed');
+      return {};
     }
     return {
       actualWidth: response.actualSize.width,
       actualHeight: response.actualSize.height,
     };
+  }
+
+  glicBrowserSetWindowDraggableAreas(request: {areas: DraggableArea[]}) {
+    return this.handler.setPanelDraggableAreas(request.areas);
+  }
+
+  glicBrowserSetMicrophonePermissionState(request: {enabled: boolean}) {
+    return this.handler.setMicrophonePermissionState(request.enabled);
+  }
+
+  glicBrowserSetLocationPermissionState(request: {enabled: boolean}) {
+    return this.handler.setLocationPermissionState(request.enabled);
+  }
+
+  glicBrowserSetTabContextPermissionState(request: {enabled: boolean}) {
+    return this.handler.setTabContextPermissionState(request.enabled);
+  }
+
+  async glicBrowserGetUserProfileInfo(_request: {}, transfer: Transferable[]) {
+    const {profileInfo: mojoProfileInfo} =
+        await this.handler.getUserProfileInfo();
+    if (!mojoProfileInfo) {
+      return {};
+    }
+    const {displayName, email, avatarIcon} = mojoProfileInfo;
+    const profileInfo: UserProfileInfoPrivate = {displayName, email};
+    if (avatarIcon) {
+      profileInfo.avatarIconImage = bitmapN32ToRGBAImage(avatarIcon);
+      if (profileInfo.avatarIconImage) {
+        transfer.push(profileInfo.avatarIconImage.dataRGBA);
+      }
+    }
+    return {profileInfo};
   }
 }
 
@@ -326,4 +398,42 @@ function originToClient(origin: Origin): string {
     return `${originBase}:${origin.port}`;
   }
   return originBase;
+}
+
+function getArrayBufferFromBigBuffer(bigBuffer: BigBuffer): ArrayBuffer|
+    undefined {
+  if (bigBuffer.bytes !== undefined) {
+    return new Uint8Array(bigBuffer.bytes).buffer;
+  }
+  return bigBuffer.sharedMemory?.bufferHandle
+      .mapBuffer(0, bigBuffer.sharedMemory.size)
+      .buffer;
+}
+
+function bitmapN32ToRGBAImage(bitmap: BitmapN32): RgbaImage|undefined {
+  const bytes = getArrayBufferFromBigBuffer(bitmap.pixelData);
+  if (!bytes) {
+    return undefined;
+  }
+  // We don't transmit ColorType over mojo, because it's determined by the
+  // endianness of the platform. Chromium only supports little endian, which
+  // maps to BGRA. See third_party/skia/include/core/SkColorType.h.
+  const colorType = ImageColorType.BGRA;
+
+  return {
+    width: bitmap.imageInfo.width,
+    height: bitmap.imageInfo.height,
+    dataRGBA: bytes,
+    alphaType: bitmap.imageInfo.alphaType === AlphaType.PREMUL ?
+        ImageAlphaType.PREMUL :
+        ImageAlphaType.UNPREMUL,
+    colorType,
+  };
+}
+
+function panelStateToClient(panelState: PanelStateMojo): PanelState {
+  return {
+    kind: panelState.kind as number,
+    windowId: optionalWindowIdToClient(panelState.windowId),
+  };
 }

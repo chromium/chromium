@@ -7,7 +7,6 @@
 
 #include <atlcomcli.h>
 #include <iwscapi.h>
-#include <wbemidl.h>
 
 #include <iterator>
 #include <map>
@@ -18,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
+#include "base/win/wbemidl_shim.h"
 
 namespace device_signals {
 

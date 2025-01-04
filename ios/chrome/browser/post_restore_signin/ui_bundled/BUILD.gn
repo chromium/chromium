@@ -4,8 +4,6 @@ source_set("ui_bundled") {
     "metrics.mm",
     "post_restore_signin_provider.h",
     "post_restore_signin_provider.mm",
-    "post_restore_signin_view_controller.h",
-    "post_restore_signin_view_controller.mm",
   ]
   public_deps = [
     "//ios/chrome/browser/promos_manager/model:types",
@@ -17,6 +15,9 @@ source_set("ui_bundled") {
     "//base",
     "//components/feature_engagement/public",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/ui_bundled:authentication_constants",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/authentication/ui_bundled/views",
     "//ios/chrome/browser/promos_manager/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
@@ -28,9 +29,6 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:signin_util",
     "//ios/chrome/browser/sync/model",
-    "//ios/chrome/browser/ui/authentication:authentication_constants",
-    "//ios/chrome/browser/ui/authentication/signin:constants",
-    "//ios/chrome/browser/ui/authentication/views",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/promo_style:promo_style",
     "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
@@ -41,10 +39,7 @@ source_set("ui_bundled") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "post_restore_signin_provider_unittest.mm",
-    "post_restore_signin_view_controller_unittest.mm",
-  ]
+  sources = [ "post_restore_signin_provider_unittest.mm" ]
   deps = [
     ":ui_bundled",
     "//base",
@@ -61,7 +56,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model:fake_system_identity_manager",
     "//ios/chrome/browser/signin/model:signin_util",
     "//ios/chrome/browser/signin/model:test_support",
-    "//ios/chrome/browser/sync/model",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//third_party/ocmock",

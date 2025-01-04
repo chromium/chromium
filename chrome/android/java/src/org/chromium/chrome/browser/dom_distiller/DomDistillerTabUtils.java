@@ -5,10 +5,10 @@
 package org.chromium.chrome.browser.dom_distiller;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.navigation_interception.InterceptNavigationDelegate;
@@ -128,15 +128,6 @@ public class DomDistillerTabUtils {
     }
 
     /**
-     * Check if the distilled content should be shown in a Chrome Custom Tab (CCT).
-     *
-     * @return True if it should.
-     */
-    public static boolean isCctMode() {
-        return ChromeFeatureList.sReaderModeCct.isEnabled();
-    }
-
-    /**
      * Set an InterceptNavigationDelegate on a WebContents.
      * @param delegate The navigation delegate.
      * @param webContents The WebContents to bind the delegate to.
@@ -154,6 +145,7 @@ public class DomDistillerTabUtils {
 
         void distillAndView(WebContents sourceWebContents, WebContents destinationWebContents);
 
+        @JniType("std::u16string")
         String getFormattedUrlFromOriginalDistillerUrl(GURL url);
 
         int getDistillerHeuristics();

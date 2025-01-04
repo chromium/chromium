@@ -236,7 +236,10 @@
     </template>
     <div class="list-item">
       <cr-button id="addInputMethod" on-click="onAddInputMethodClick_"
-          deep-link-focus-id$="[[Setting.kAddInputMethod]]">
+          deep-link-focus-id$="[[Setting.kAddInputMethod]]"
+          disabled$="[[inputMethodsEnabledByPolicy_(
+              prefs.settings.language.allowed_input_methods_force_enabled.value
+              )]]">
         <iron-icon icon="cr:add" slot="prefix-icon"></iron-icon>
         $i18n{addInputMethodLabel}
       </cr-button>

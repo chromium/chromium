@@ -16,11 +16,13 @@ source_set("metrics_private") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
+  public_deps = [
+    "//base",
+    "//extensions/browser:browser_sources",
+  ]
+
   deps = [
-    "//components/variations",
     "//content/public/browser",
     "//extensions/common/api",
   ]
-
-  public_deps = [ "//extensions/browser:browser_sources" ]
 }

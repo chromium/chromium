@@ -1,0 +1,53 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("unit_tests") {
+  testonly = true
+
+  # See content_unittests for justification.
+  if (is_component_build) {
+    check_includes = false
+  }
+
+  sources = [
+    "cookie_access_filter_unittest.cc",
+    "dips_bounce_detector_unittest.cc",
+    "dips_database_migrator_unittest.cc",
+    "dips_database_unittest.cc",
+    "dips_service_unittest.cc",
+    "dips_storage_unittest.cc",
+    "dips_utils_unittest.cc",
+    "persistent_repeating_timer_unittest.cc",
+  ]
+
+  deps = [
+    ":golden_dbs_bundle_data",
+    "//base",
+    "//base/test:test_support",
+    "//components/site_engagement/content",
+    "//components/ukm:test_support",
+    "//content/browser:for_content_tests",
+    "//content/test:browsertest_support",
+    "//content/test:test_support",
+    "//sql:test_support",
+    "//testing/gtest",
+    "//url",
+  ]
+
+  data = [ "//content/test/data/dips/v1.sql" ]
+}
+
+bundle_data("golden_dbs_bundle_data") {
+  visibility = [ ":unit_tests" ]
+  testonly = true
+  sources = [
+    "//content/test/data/dips/v1.sql",
+    "//content/test/data/dips/v2.sql",
+    "//content/test/data/dips/v3.sql",
+    "//content/test/data/dips/v4.sql",
+    "//content/test/data/dips/v5.sql",
+  ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
+}

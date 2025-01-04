@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <cstddef>
 #include <iterator>
 
 #include "sandbox/sandbox_export.h"

@@ -4,8 +4,10 @@
 
 #include "ui/events/ozone/evdev/keyboard_evdev.h"
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -62,8 +64,7 @@ KeyboardEvdev::KeyboardEvdev(
       keyboard_layout_engine_(keyboard_layout_engine),
       auto_repeat_handler_(this) {}
 
-KeyboardEvdev::~KeyboardEvdev() {
-}
+KeyboardEvdev::~KeyboardEvdev() = default;
 
 void KeyboardEvdev::OnKeyChange(unsigned int key,
                                 unsigned int scan_code,
@@ -74,6 +75,16 @@ void KeyboardEvdev::OnKeyChange(unsigned int key,
                                 int flags) {
   if (key > KEY_MAX)
     return;
+
+  if (slow_keys_handler_.IsEnabled() && !suppress_auto_repeat &&
+      !slow_keys_handler_.UpdateKeyStateAndShouldDispatch(
+          key, down, timestamp, device_id,
+          base::BindOnce(&KeyboardEvdev::OnKeyChangeCallbackAdapter,
+                         weak_ptr_factory_.GetWeakPtr(), key, scan_code, down,
+                         suppress_auto_repeat, device_id, flags))) {
+    // The SlowKeysHandler keeps track of recursion to prevent infinite loop.
+    return;
+  }
 
   bool was_down = key_state_.test(key);
   bool is_repeat = down && was_down;
@@ -120,6 +131,18 @@ void KeyboardEvdev::SetAutoRepeatRate(const base::TimeDelta& delay,
 void KeyboardEvdev::GetAutoRepeatRate(base::TimeDelta* delay,
                                       base::TimeDelta* interval) {
   auto_repeat_handler_.GetAutoRepeatRate(delay, interval);
+}
+
+void KeyboardEvdev::SetSlowKeysEnabled(bool enabled) {
+  slow_keys_handler_.SetEnabled(enabled);
+}
+
+bool KeyboardEvdev::IsSlowKeysEnabled() const {
+  return slow_keys_handler_.IsEnabled();
+}
+
+void KeyboardEvdev::SetSlowKeysDelay(base::TimeDelta delay) {
+  slow_keys_handler_.SetDelay(delay);
 }
 
 void KeyboardEvdev::SetCurrentLayoutByName(
@@ -217,6 +240,17 @@ void KeyboardEvdev::DispatchKey(unsigned int key,
   event.set_scan_code(scan_code);
   event.set_source_device_id(device_id);
   callback_.Run(&event);
+}
+
+void KeyboardEvdev::OnKeyChangeCallbackAdapter(unsigned int key,
+                                               unsigned int scan_code,
+                                               bool down,
+                                               bool suppress_auto_repeat,
+                                               int device_id,
+                                               int flags,
+                                               base::TimeTicks timestamp) {
+  OnKeyChange(key, scan_code, down, suppress_auto_repeat, timestamp, device_id,
+              flags);
 }
 
 }  // namespace ui

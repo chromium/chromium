@@ -36,8 +36,10 @@
 #include <algorithm>
 #include <array>
 #include <bitset>
+#include <cassert>
 #include <cmath>
 #include <cstddef>
+#include <cstdint>
 #include <cstring>
 #include <deque>
 #include <forward_list>
@@ -56,7 +58,9 @@
 #include <utility>
 #include <vector>
 
+#include "absl/base/attributes.h"
 #include "absl/base/internal/unaligned_access.h"
+#include "absl/base/optimization.h"
 #include "absl/base/port.h"
 #include "absl/container/fixed_array.h"
 #include "absl/hash/internal/city.h"
@@ -339,7 +343,7 @@ struct is_uniquely_represented<
 template <>
 struct is_uniquely_represented<bool> : std::false_type {};
 
-#if ABSL_HAVE_INTRINSIC_INT128
+#ifdef ABSL_HAVE_INTRINSIC_INT128
 // Specialize the trait for GNU extension types.
 template <>
 struct is_uniquely_represented<__int128> : std::true_type {};

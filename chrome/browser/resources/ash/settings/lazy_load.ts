@@ -47,7 +47,6 @@ import './os_apps_page/app_parental_controls/app_parental_controls_subpage.js';
 import './os_apps_page/app_parental_controls/block_app_item.js';
 import './os_search_page/google_assistant_subpage.js';
 import './os_search_page/search_subpage.js';
-import './os_people_page/account_manager_subpage.js';
 import './os_people_page/fingerprint_list_subpage.js';
 import './os_people_page/lock_screen_subpage.js';
 import './os_people_page/os_sync_controls_subpage.js';
@@ -233,6 +232,7 @@ export {SettingsFaceGazeSubpageElement} from './os_a11y_page/facegaze_subpage.js
 export {SettingsKeyboardAndTextInputPageElement} from './os_a11y_page/keyboard_and_text_input_page.js';
 export {SettingsLiveCaptionElement} from './os_a11y_page/live_caption_section.js';
 export {SettingsLiveTranslateElement} from './os_a11y_page/live_translate_section.js';
+export {SettingsMouseKeysSubpageElement} from './os_a11y_page/mouse_keys_subpage.js';
 export {HandlerVoice, SettingsSelectToSpeakSubpageElement} from './os_a11y_page/select_to_speak_subpage.js';
 export {SettingsSwitchAccessActionAssignmentDialogElement} from './os_a11y_page/switch_access_action_assignment_dialog.js';
 export {SettingsSwitchAccessActionAssignmentPaneElement} from './os_a11y_page/switch_access_action_assignment_pane.js';
@@ -304,7 +304,6 @@ export {OsSettingsEditDictionaryPageElement} from './os_languages_page/os_edit_d
 export {OsSettingsClearPersonalizedDataDialogElement} from './os_languages_page/os_japanese_clear_ime_data_dialog.js';
 export {OsSettingsLanguagesPageV2Element} from './os_languages_page/os_languages_page_v2.js';
 export {Account, AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from './os_people_page/account_manager_browser_proxy.js';
-export {SettingsAccountManagerSubpageElement} from './os_people_page/account_manager_subpage.js';
 export {SettingsUsersAddUserDialogElement} from './os_people_page/add_user_dialog.js';
 export {FingerprintBrowserProxy, FingerprintBrowserProxyImpl, FingerprintInfo, FingerprintResultType} from './os_people_page/fingerprint_browser_proxy.js';
 export {SettingsFingerprintListSubpageElement} from './os_people_page/fingerprint_list_subpage.js';

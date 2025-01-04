@@ -8,9 +8,11 @@ source_set("glic") {
     "glic_keyed_service.h",
     "glic_keyed_service_factory.h",
     "glic_page_context_fetcher.h",
-    "glic_profile.h",
+    "glic_pref_names.h",
+    "glic_profile_configuration.h",
+    "glic_profile_manager.h",
+    "glic_tab_indicator_helper.h",
     "glic_window_controller.h",
-    "glic_window_manager.h",
     "guest_util.h",
   ]
   public_deps = [
@@ -20,6 +22,7 @@ source_set("glic") {
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/browser/ui/webui/glic:mojo_bindings",
+    "//components/prefs",
     "//content/public/browser",
     "//ui/views:views",
   ]
@@ -31,9 +34,10 @@ source_set("impl") {
     "glic_keyed_service.cc",
     "glic_keyed_service_factory.cc",
     "glic_page_context_fetcher.cc",
-    "glic_profile.cc",
+    "glic_profile_configuration.cc",
+    "glic_profile_manager.cc",
+    "glic_tab_indicator_helper.cc",
     "glic_window_controller.cc",
-    "glic_window_manager.cc",
     "guest_util.cc",
   ]
   public_deps = [
@@ -41,10 +45,17 @@ source_set("impl") {
     "//chrome/browser/ui:ui",
   ]
   deps = [
+    ":enabling",
     ":glic",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/browser_window:browser_window",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/user_education",
     "//chrome/common",
+    "//components/favicon/content:content",
     "//components/guest_view/browser",
     "//components/sessions",
     "//url",
@@ -56,8 +67,49 @@ source_set("enabling") {
     "glic_enabling.cc",
     "glic_enabling.h",
   ]
+  deps = [ "//chrome/browser/profiles:profile" ]
   public_deps = [
     "//base",
     "//chrome/common:chrome_features",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "glic_enabling_unittest.cc",
+    "glic_profile_manager_unittest.cc",
+  ]
+  deps = [
+    ":enabling",
+    ":glic",
+    "//base/test:test_support",
+    "//chrome/browser/ui",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [
+    "glic_browsertest.cc",
+    "guest_util_browsertest.cc",
+  ]
+  deps = [
+    ":glic",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/extensions:extensions",
+    "//chrome/browser/ui",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//ui/events:test_support",
   ]
 }

@@ -12,6 +12,7 @@
 #include <va/va.h>
 
 #include <algorithm>
+#include <bitset>
 #include <memory>
 #include <numeric>
 #include <optional>

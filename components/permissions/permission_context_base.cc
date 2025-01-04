@@ -120,7 +120,6 @@ PermissionContextBase::PermissionContextBase(
       content_settings_type_(content_settings_type),
       permissions_policy_feature_(permissions_policy_feature) {
   CHECK(permissions::PermissionUtil::IsPermission(content_settings_type_));
-  PermissionDecisionAutoBlocker::UpdateFromVariations();
 }
 
 PermissionContextBase::~PermissionContextBase() {

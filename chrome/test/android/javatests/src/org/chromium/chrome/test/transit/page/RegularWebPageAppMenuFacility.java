@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.test.transit.page;
 
+
 /** The app menu shown when pressing ("...") in a regular Tab showing a web page. */
 public class RegularWebPageAppMenuFacility extends PageAppMenuFacility<WebPageStation> {
+    public Item<Void> mQuickDelete;
+
     @Override
     protected void declareItems(ItemsBuilder items) {
         mNewTab = declareMenuItemToStation(items, NEW_TAB_ID, this::createNewTabPageStation);
@@ -14,7 +17,7 @@ public class RegularWebPageAppMenuFacility extends PageAppMenuFacility<WebPageSt
                         items, NEW_INCOGNITO_TAB_ID, this::createIncognitoNewTabPageStation);
 
         declareStubMenuItem(items, HISTORY_ID);
-        declareStubMenuItem(items, DELETE_BROWSING_DATA_ID);
+        mQuickDelete = declareStubMenuItem(items, DELETE_BROWSING_DATA_ID);
         declareStubMenuItem(items, DOWNLOADS_ID);
         declareStubMenuItem(items, BOOKMARKS_ID);
         declareStubMenuItem(items, RECENT_TABS_ID);

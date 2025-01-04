@@ -46,8 +46,6 @@ constexpr base::TimeDelta kMaxDisplayedNotificationAge = base::Days(7);
 
 // Checks if this notification can trigger in the future.
 bool CanTrigger(const NotificationDatabaseData& data) {
-  if (!base::FeatureList::IsEnabled(features::kNotificationTriggers))
-    return false;
   return data.notification_data.show_trigger_timestamp && !data.has_triggered;
 }
 

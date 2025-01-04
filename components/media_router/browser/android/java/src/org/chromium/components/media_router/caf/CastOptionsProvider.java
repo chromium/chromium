@@ -11,9 +11,13 @@ import com.google.android.gms.cast.framework.CastOptions;
 import com.google.android.gms.cast.framework.OptionsProvider;
 import com.google.android.gms.cast.framework.SessionProvider;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.util.List;
 
 /** {@link OptionsProvider} implementation for Chrome MR. */
+@NullMarked
 public class CastOptionsProvider implements OptionsProvider {
     @Override
     public CastOptions getCastOptions(Context context) {
@@ -27,7 +31,7 @@ public class CastOptionsProvider implements OptionsProvider {
     }
 
     @Override
-    public List<SessionProvider> getAdditionalSessionProviders(Context context) {
+    public @Nullable List<SessionProvider> getAdditionalSessionProviders(Context context) {
         return null;
     }
 }

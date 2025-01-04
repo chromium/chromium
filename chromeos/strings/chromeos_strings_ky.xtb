@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Караңгы теманы өчүрүү</translation>
 <translation id="1807246157184219062">Ачык</translation>
 <translation id="1808803439260407870">Классикалык көркөм өнөр</translation>
+<translation id="181434555916624618">Азырынча адамдар бар сүрөттөр түзүлбөйт. Башка кеңешти колдонуп көрүңүз.</translation>
 <translation id="1815850098929213707">Тандалган баскыч: <ph name="KEYS" />. Башкарууну түзөтүү үчүн баскычты басыңыз</translation>
 <translation id="1823120442877418684">Символдор</translation>
 <translation id="1827738518074806965">Көркөм галерея</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">Түзмөктүн оң кулакчынынын батареясынын деңгээли: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">жөндөөлөр</translation>
 <translation id="3347558044552027859">заманбап</translation>
+<translation id="3353477144743332882">Корутунду жана аталыш түзүү үлгүсүн жүктөп алуу</translation>
 <translation id="3359218928534347896">микрофондун үнүн өчүрүү/күйгүзүү</translation>
 <translation id="3360306038446926262">Терезелер</translation>
 <translation id="3361618936611118375">суши</translation>
@@ -689,6 +691,7 @@
 <translation id="4354430579665871434">баскыч</translation>
 <translation id="4356100841225547054">Үнүн өчүрүү</translation>
 <translation id="4361257691546579041">APN түрү – default.</translation>
+<translation id="4368101969572512692">Cунуштарды аралаштыруу</translation>
 <translation id="437294888293595148">Бардык ыкчам баскычтарды баштапкы абалга келтирүү</translation>
 <translation id="437477383107495720">коёндор</translation>
 <translation id="4376423484621194274">Администраторуңуз <ph name="APP_NAME" /> колдонмосун жабууга тыюу салган</translation>
@@ -768,6 +771,7 @@
 <translation id="4731797938093519117">Ата-эненин кирүү уруксаты</translation>
 <translation id="473775607612524610">Жаңыртуу</translation>
 <translation id="4744944742468440486">Тандаган нерсеңизге тиешелүү маалымат</translation>
+<translation id="4750394297954878236">Сунуштар</translation>
 <translation id="4771607256327216405">баскычтопту жарыгыраак кылуу</translation>
 <translation id="4771923071974529837">эртең</translation>
 <translation id="4773299976671772492">Токтотулду</translation>
@@ -853,6 +857,7 @@
 <translation id="5121677070210013200">Транскрипциянын үлгүсүн жүктөп алуу мүмкүн эмес. Кайталап көрүңүз же Chromebook түзмөгүңүздү өчүрүп күйгүзүңүз.</translation>
 <translation id="5130848777448318809">понилер</translation>
 <translation id="5137451382116112100">Толук</translation>
+<translation id="5139813694804168398">тынчымды алба</translation>
 <translation id="5140788690559353412">Мектеп аккаунтуңузга кирүү мүмкүнчүлүгүнөн айрылганда, Gmail, Документтер, Слайддар жана башкалар сыяктуу электрондук почтага жана Google Drive файлдарына кире албай каласыз.</translation>
 <translation id="5142961317498132443">Аныктыгын текшерүү</translation>
 <translation id="5144311987923128508">Ырастоо баскычы эми өчүрүлдү</translation>
@@ -897,6 +902,7 @@
 <translation id="5302048478445481009">Тил</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> өзгөчө тушкагазы</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="530883153651464140"><ph name="DEVICE_NAME" /> түзмөгүнүн версиясын төмөнкүгө жаңыртуу: <ph name="VERSION" /></translation>
 <translation id="5315873049536339193">Идентификация</translation>
 <translation id="5317780077021120954">Сактоо</translation>
 <translation id="5318310531701770497">Аталыштар түзүлбөй жатат. Узунураак транскрипцияны колдонуп көрүңүз.</translation>
@@ -973,7 +979,6 @@
 <translation id="5703716265115423771">акырындатуу</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" /> ичинен <ph name="CURRENT_PAGE" /></translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> үчүн Түзөтүү баскычы.</translation>
-<translation id="5733298426544876109"><ph name="DEVICE_NAME" /> түзмөгүн жаңыртыңыз</translation>
 <translation id="5736820754189340309">Дайын-даректердин өткөрүлүшү калыбына келтирилди</translation>
 <translation id="574392208103952083">Орточо</translation>
 <translation id="5744175046705638478">"<ph name="QUERY" />" которуу</translation>
@@ -998,6 +1003,7 @@
 <translation id="5859969039821714932">Ыкчам баскыч жеткиликсиз. <ph name="KEY" /> баскычын кошпой жаңы ыкчам баскычын басыңыз.</translation>
 <translation id="5860033963881614850">Өчүк</translation>
 <translation id="5860491529813859533">Күйгүзүү</translation>
+<translation id="5875913454160982848">Транскрипция үлгүсүн жүктөп алуу</translation>
 <translation id="5876385649737594562">Параметрлерди тандоо үчүн күйгүзүңүз</translation>
 <translation id="5877503382465267833"><ph name="RECORDING_NAME" /> тындыруу</translation>
 <translation id="588258955323874662">Толук экран</translation>
@@ -1037,7 +1043,6 @@
 <translation id="6040143037577758943">Жабуу</translation>
 <translation id="6040852767465482106">Аноним</translation>
 <translation id="604124094241169006">Автоматтык</translation>
-<translation id="6042308850641462728">Дагы</translation>
 <translation id="6048107060512778456">Басылып чыгарылган жок - Кагаз чайналып калды</translation>
 <translation id="6050189528197190982">Боз шкала</translation>
 <translation id="6054711098834486579">экспрессионизм</translation>
@@ -1293,6 +1298,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Ысым сервери}other{Ысым серверлери}}</translation>
 <translation id="7135814714616751706">Ыкчам баскычтарды издөө</translation>
 <translation id="7138614237884624401">Жөнөкөйлөштүрүлгөн текст</translation>
+<translation id="7138668887584231801">Сөздөр аз болгондуктан, корутундусун түзүү мүмкүн эмес</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Туташууда</translation>
 <translation id="7144878232160441200">Дагы аракет кылып көрүү</translation>
@@ -1588,6 +1594,7 @@
 <translation id="8503836310948963452">Дагы бир нече мүнөт калды...</translation>
 <translation id="8505011850330200833">Gemini үлгүсү транскрипция иштеп чыгуу жана корутундуларды түзүү үчүн 2 Гб сактагычты талап кылат</translation>
 <translation id="8508640263392900755">APN тууралуу маалымат</translation>
+<translation id="8509574872955173831">Корутунду жана аталыш түзүү тууралуу кеңири маалымат</translation>
 <translation id="8522687886059337719">Эми жаңы <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />тушкагаздарды<ph name="END_LINK_WALLPAPER_SUBPAGE" /> жана <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />көшөгөнү<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> колдоно аласыз</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">чайкана</translation>
@@ -1724,7 +1731,6 @@
 <translation id="9133772297793293778">Баскычтоптон 1-4 өзгөрткүчтөрүн жана башка 1 баскычты басыңыз. Түзөтүү режиминен чыгуу үчүн alt + esc баскычтарын бирге басыңыз.</translation>
 <translation id="9137526406337347448">Google кызматтары</translation>
 <translation id="9138630967333032450">Сол жактагы Shift баскычы</translation>
-<translation id="9147928237330776930">Сөздөр өтө аз болгондуктан, корутундусун түзүү мүмкүн эмес</translation>
 <translation id="9149391708638971077">Эстутумду сыноо</translation>
 <translation id="9159524746324788320">гамбургер</translation>
 <translation id="9161276708550942948">боштук</translation>

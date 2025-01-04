@@ -124,12 +124,14 @@ ExampleMenuModel::ExampleMenuModel() : ui::SimpleMenuModel(this) {
 
 bool ExampleMenuModel::IsCommandIdChecked(int command_id) const {
   // Radio items.
-  if (command_id == current_encoding_command_id_)
+  if (command_id == current_encoding_command_id_) {
     return true;
+  }
 
   // Check items.
-  if (checked_fruits_.find(command_id) != checked_fruits_.end())
+  if (checked_fruits_.find(command_id) != checked_fruits_.end()) {
     return true;
+  }
 
   return false;
 }
@@ -169,12 +171,13 @@ void ExampleMenuModel::ExecuteCommand(int command_id, int event_flags) {
     case COMMAND_CHECK_KIWI: {
       // Print what fruit is checked.
       const char* checked_fruit = "";
-      if (command_id == COMMAND_CHECK_APPLE)
+      if (command_id == COMMAND_CHECK_APPLE) {
         checked_fruit = "Apple";
-      else if (command_id == COMMAND_CHECK_ORANGE)
+      } else if (command_id == COMMAND_CHECK_ORANGE) {
         checked_fruit = "Orange";
-      else if (command_id == COMMAND_CHECK_KIWI)
+      } else if (command_id == COMMAND_CHECK_KIWI) {
         checked_fruit = "Kiwi";
+      }
 
       // Update the check status.
       auto iter = checked_fruits_.find(command_id);
@@ -213,8 +216,9 @@ void ExampleMenuButton::ButtonPressed() {
 }
 
 ui::SimpleMenuModel* ExampleMenuButton::GetMenuModel() {
-  if (!menu_model_)
+  if (!menu_model_) {
     menu_model_ = std::make_unique<ExampleMenuModel>();
+  }
   return menu_model_.get();
 }
 

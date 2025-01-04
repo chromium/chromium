@@ -392,6 +392,7 @@
     <activity  # DIFF-ANCHOR: 6e34d703
         android:name="org.chromium.chrome.browser.task_manager.ui.TaskManagerActivity"
         android:exported="false"
+        android:launchMode="singleInstance"
         android:theme="@style/Theme.Chromium.Activity">
     </activity>  # DIFF-ANCHOR: 6e34d703
     <activity  # DIFF-ANCHOR: 43bfa5de

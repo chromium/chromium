@@ -71,7 +71,7 @@ constexpr SharedImageUsageSet kSupportedUsage =
     SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU | SHARED_IMAGE_USAGE_CPU_UPLOAD |
     SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
     SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE |
-    SHARED_IMAGE_USAGE_PROTECTED_VIDEO;
+    SHARED_IMAGE_USAGE_PROTECTED_VIDEO | SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE;
 
 }  // namespace
 
@@ -194,14 +194,21 @@ std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(
     gfx::GpuMemoryBufferHandle handle) {
   DCHECK_EQ(handle.type, gfx::NATIVE_PIXMAP);
 
-  ui::SurfaceFactoryOzone* surface_factory =
-      ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
-  scoped_refptr<gfx::NativePixmap> pixmap =
-      surface_factory->CreateNativePixmapFromHandle(
-          kNullSurfaceHandle, size, ToBufferFormat(format),
-          std::move(handle.native_pixmap_handle));
-  if (!pixmap) {
-    return nullptr;
+  scoped_refptr<gfx::NativePixmap> pixmap;
+
+  // We do not create a native pixmap if the backing will be used only by the
+  // CPU. This is usually used for cases where clients needs MappableSI with a
+  // certain format which is not texturable but client wants to map the shared
+  // image in CPU for read/writes.
+  if (!usage.Has(SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE)) {
+    ui::SurfaceFactoryOzone* surface_factory =
+        ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
+    pixmap = surface_factory->CreateNativePixmapFromHandle(
+        kNullSurfaceHandle, size, ToBufferFormat(format),
+        std::move(handle.native_pixmap_handle));
+    if (!pixmap) {
+      return nullptr;
+    }
   }
 
   auto backing = std::make_unique<OzoneImageBacking>(

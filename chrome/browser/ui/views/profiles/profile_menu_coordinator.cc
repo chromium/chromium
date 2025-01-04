@@ -26,8 +26,9 @@
 ProfileMenuCoordinator::~ProfileMenuCoordinator() {
   // Forcefully close the Widget if it hasn't been closed by the time the
   // browser is torn down to avoid dangling references.
-  if (IsShowing())
+  if (IsShowing()) {
     bubble_tracker_.view()->GetWidget()->CloseNow();
+  }
 }
 
 void ProfileMenuCoordinator::Show(bool is_source_accelerator) {
@@ -48,6 +49,9 @@ void ProfileMenuCoordinator::Show(bool is_source_accelerator) {
   // Close any existing IPH bubble for the profile menu.
   browser.window()->NotifyFeaturePromoFeatureUsed(
       feature_engagement::kIPHProfileSwitchFeature,
+      FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+  browser.window()->NotifyFeaturePromoFeatureUsed(
+      feature_engagement::kIPHSupervisedUserProfileSigninFeature,
       FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
 
   std::unique_ptr<ProfileMenuViewBase> bubble;
@@ -74,8 +78,9 @@ void ProfileMenuCoordinator::Show(bool is_source_accelerator) {
       views::BubbleDialogDelegateView::CreateBubble(std::move(bubble));
   bubble_ptr->CreateAXWidgetObserver(widget);
   widget->Show();
-  if (is_source_accelerator)
+  if (is_source_accelerator) {
     bubble_ptr->FocusFirstProfileButton();
+  }
 }
 
 bool ProfileMenuCoordinator::IsShowing() const {

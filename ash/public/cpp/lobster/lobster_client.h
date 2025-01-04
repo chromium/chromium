@@ -38,7 +38,6 @@ class ASH_PUBLIC_EXPORT LobsterClient {
   virtual void LoadUI(std::optional<std::string> query, LobsterMode mode) = 0;
   virtual void ShowUI() = 0;
   virtual void CloseUI() = 0;
-  virtual bool UserHasAccess() = 0;
 };
 
 }  // namespace ash

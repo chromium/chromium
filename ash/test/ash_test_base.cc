@@ -427,13 +427,11 @@ AmbientAshTestHelper* AshTestBase::GetAmbientAshTestHelper() {
   return ash_test_helper_->ambient_ash_test_helper();
 }
 
-void AshTestBase::CreateUserSessions(int n) {
-  GetSessionControllerClient()->CreatePredefinedUserSessions(n);
-}
-
-void AshTestBase::SimulateUserLogin(const std::string& user_email,
-                                    user_manager::UserType user_type) {
-  SimulateUserLogin(AccountId::FromUserEmail(user_email), user_type);
+AccountId AshTestBase::SimulateUserLogin(const std::string& user_email,
+                                         user_manager::UserType user_type) {
+  auto account_id = AccountId::FromUserEmail(user_email);
+  SimulateUserLogin(account_id, user_type);
+  return account_id;
 }
 
 void AshTestBase::SimulateUserLogin(const AccountId& account_id,
@@ -441,10 +439,13 @@ void AshTestBase::SimulateUserLogin(const AccountId& account_id,
   ash_test_helper_->SimulateUserLogin(account_id, user_type);
 }
 
-void AshTestBase::SimulateNewUserFirstLogin(const std::string& user_email) {
-  ash_test_helper_->SimulateUserLogin(AccountId::FromUserEmail(user_email),
+AccountId AshTestBase::SimulateNewUserFirstLogin(
+    const std::string& user_email) {
+  auto account_id = AccountId::FromUserEmail(user_email);
+  ash_test_helper_->SimulateUserLogin(account_id,
                                       user_manager::UserType::kRegular,
                                       /*is_new_profile=*/true);
+  return account_id;
 }
 
 void AshTestBase::SimulateGuestLogin() {
@@ -458,6 +459,14 @@ void AshTestBase::SimulateKioskMode(user_manager::UserType user_type) {
 
   GetSessionControllerClient()->SetIsRunningInAppMode(true);
   SimulateUserLogin(AccountId::FromUserEmail(kKioskUserEmail), user_type);
+}
+
+void AshTestBase::SwitchActiveUser(const AccountId& account_id) {
+  Shell::Get()->session_controller()->SwitchActiveUser(account_id);
+}
+
+bool AshTestBase::IsInSessionState(session_manager::SessionState state) const {
+  return Shell::Get()->session_controller()->GetSessionState() == state;
 }
 
 void AshTestBase::SetAccessibilityPanelHeight(int panel_height) {
@@ -488,7 +497,6 @@ void AshTestBase::SetUserAddingScreenRunning(bool user_adding_screen_running) {
 void AshTestBase::BlockUserSession(UserSessionBlockReason block_reason) {
   switch (block_reason) {
     case BLOCKED_BY_LOCK_SCREEN:
-      CreateUserSessions(1);
       GetSessionControllerClient()->LockScreen();
       break;
     case BLOCKED_BY_LOGIN_SCREEN:
@@ -503,7 +511,6 @@ void AshTestBase::BlockUserSession(UserSessionBlockReason block_reason) {
 }
 
 void AshTestBase::UnblockUserSession() {
-  CreateUserSessions(1);
   GetSessionControllerClient()->UnlockScreen();
 }
 

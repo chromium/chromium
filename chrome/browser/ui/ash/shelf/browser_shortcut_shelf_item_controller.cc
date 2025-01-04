@@ -57,8 +57,9 @@ BrowserList::BrowserVector GetListOfActiveBrowsers(
   BrowserList::BrowserVector active_browsers;
   for (Browser* browser : *BrowserList::GetInstance()) {
     // Only include browsers for the active user.
-    if (!multi_user_util::IsProfileFromActiveUser(browser->profile()))
+    if (!multi_user_util::IsProfileFromActiveUser(browser->profile())) {
       continue;
+    }
 
     // Exclude invisible non-minimized browser windows on the active desk.
     aura::Window* native_window = browser->window()->GetNativeWindow();
@@ -218,8 +219,9 @@ BrowserShortcutShelfItemController::GetAppMenuItems(
     }
 
     TabStripModel* tab_strip = browser->tab_strip_model();
-    if (browser->is_type_normal())
+    if (browser->is_type_normal()) {
       found_tabbed_browser = true;
+    }
     if (!(event_flags & ui::EF_SHIFT_DOWN)) {
       base::RecordAction(base::UserMetricsAction(
           "Shelf_BrowserShortcutShelfItem_ShowWindows"));
@@ -255,8 +257,9 @@ BrowserShortcutShelfItemController::GetAppMenuItems(
   }
   // If only windowed applications are open, we return an empty list to
   // enforce the creation of a new browser.
-  if (!found_tabbed_browser)
+  if (!found_tabbed_browser) {
     return AppMenuItems();
+  }
   app_menu_items_ = std::move(app_menu_items);
   return items;
 }
@@ -294,8 +297,9 @@ void BrowserShortcutShelfItemController::ExecuteCommand(bool from_context_menu,
     } else {
       multi_user_util::MoveWindowToCurrentDesktop(
           browser->window()->GetNativeWindow());
-      if (tab_index != kNoTab && tab_strip->ContainsIndex(tab_index))
+      if (tab_index != kNoTab && tab_strip->ContainsIndex(tab_index)) {
         tab_strip->ActivateTabAt(tab_index);
+      }
       browser->window()->Show();
       browser->window()->Activate();
     }
@@ -325,8 +329,9 @@ BrowserShortcutShelfItemController::ActivateOrAdvanceToNextBrowser() {
   const BrowserList* browser_list = BrowserList::GetInstance();
   for (BrowserList::const_iterator it = browser_list->begin();
        it != browser_list->end(); ++it) {
-    if (IsBrowserRepresentedInBrowserList(*it, shelf_model_))
+    if (IsBrowserRepresentedInBrowserList(*it, shelf_model_)) {
       items.push_back(*it);
+    }
   }
   // If there are no suitable browsers we create a new one.
   if (items.empty()) {
@@ -350,13 +355,16 @@ BrowserShortcutShelfItemController::ActivateOrAdvanceToNextBrowser() {
     // be used.
     std::vector<Browser*>::iterator i = base::ranges::find(items, browser);
     if (i != items.end()) {
-      if (browser->window()->IsActive())
+      if (browser->window()->IsActive()) {
         browser = (++i == items.end()) ? items[0] : *i;
+      }
     } else {
       browser = chrome::FindTabbedBrowser(
           ChromeShelfController::instance()->profile(), true);
-      if (!browser || !IsBrowserRepresentedInBrowserList(browser, shelf_model_))
+      if (!browser ||
+          !IsBrowserRepresentedInBrowserList(browser, shelf_model_)) {
         browser = items[0];
+      }
     }
   }
   DCHECK(browser);
@@ -366,16 +374,19 @@ BrowserShortcutShelfItemController::ActivateOrAdvanceToNextBrowser() {
 }
 
 void BrowserShortcutShelfItemController::OnBrowserAdded(Browser* browser) {
-  if (!ShouldRecordLaunchTime(browser, shelf_model_))
+  if (!ShouldRecordLaunchTime(browser, shelf_model_)) {
     return;
+  }
 
   const BrowserList* browser_list = BrowserList::GetInstance();
   for (BrowserList::const_iterator it = browser_list->begin();
        it != browser_list->end(); ++it) {
-    if (*it == browser)
+    if (*it == browser) {
       continue;
-    if (ShouldRecordLaunchTime(*it, shelf_model_))
+    }
+    if (ShouldRecordLaunchTime(*it, shelf_model_)) {
       return;
+    }
   }
 
   extensions::ExtensionPrefs::Get(browser->profile())
@@ -386,7 +397,8 @@ void BrowserShortcutShelfItemController::OnBrowserClosing(Browser* browser) {
   DCHECK(browser);
   // Reset pointers to the closed browser, but leave menu indices intact.
   for (auto& it : app_menu_items_) {
-    if (it.first == browser)
+    if (it.first == browser) {
       it.first = nullptr;
+    }
   }
 }

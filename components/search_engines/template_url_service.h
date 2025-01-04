@@ -24,7 +24,6 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/country_codes/country_codes.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -143,12 +142,7 @@ class TemplateURLService final : public WebDataServiceConsumer,
       std::unique_ptr<SearchTermsData> search_terms_data,
       const scoped_refptr<KeywordWebDataService>& web_data_service,
       std::unique_ptr<TemplateURLServiceClient> client,
-      const base::RepeatingClosure& dsp_change_callback
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      ,
-      bool for_lacros_main_profile
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  );
+      const base::RepeatingClosure& dsp_change_callback);
 
   // For testing only. `initializers` will be used to simulate having loaded
   // some template URL data.
@@ -200,7 +194,7 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // Returns true if `template_url` corresponds to a featured Enterprise site
   // search engine (e.g. with keyword "@work") that hides the corresponding
   // non-featured engine (e.g. with keyword "work") in the Settings page.
-  bool FeaturedOverridesNonFeatured(const TemplateURL* template_url) const;
+  bool BothPolicySetKeywordsNotOverriden(const TemplateURL* template_url) const;
 
   // Adds to |matches| all TemplateURLs whose keywords begin with |prefix|,
   // sorted shortest-keyword-first. If |supports_replacement_only| is true, only
@@ -281,11 +275,24 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // Adds a TemplateURL for an extension with an omnibox keyword.
   // Only 1 keyword is allowed for a given extension. If a keyword
   // already exists for this extension, does nothing.
-  void RegisterOmniboxKeyword(const std::string& extension_id,
-                              const std::string& extension_name,
-                              const std::string& keyword,
-                              const std::string& template_url_string,
-                              const base::Time& extension_install_time);
+  void RegisterExtensionControlledTURL(const std::string& extension_id,
+                                       const std::string& extension_name,
+                                       const std::string& keyword,
+                                       const std::string& template_url_string,
+                                       const base::Time& extension_install_time,
+                                       const bool unscoped_mode_allowed);
+
+  // Adds extension_id to the list of extensions that are allowed to add
+  // unscoped keywords.
+  void AddToUnscopedModeExtensionIds(const std::string& extension_id);
+
+  // Removes extension_id from the list of extensions if it was present.
+  void RemoveFromUnscopedModeExtensionIdsIfPresent(
+      const std::string& extension_id);
+
+  // Returns extensions that can run in unscoped mode (without keyword mode).
+  // It's OK to return a copy since we expect this set to be very small.
+  std::set<std::string> GetUnscopedModeExtensionIds() const;
 
   // Returns the set of URLs describing the keywords. The elements are owned
   // by TemplateURLService and should not be deleted.
@@ -931,6 +938,10 @@ class TemplateURLService final : public WebDataServiceConsumer,
   OwnedTemplateURLVector template_urls_;
 
   base::ObserverList<TemplateURLServiceObserver> model_observers_;
+
+  // The IDs of the extensions that can receive Omnibox events without requiring
+  // scoped mode.
+  std::set<std::string> unscoped_mode_extension_ids_;
 
   // Maps from host to set of TemplateURLs whose search url host is host.
   std::unique_ptr<SearchHostToURLsMap> provider_map_ =

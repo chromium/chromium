@@ -52,8 +52,6 @@
 #include "chrome/browser/device_api/managed_configuration_api_factory.h"
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "chrome/browser/dips/dips_browser_signin_detector_factory.h"
-#include "chrome/browser/dips/dips_cleanup_service_factory.h"
-#include "chrome/browser/dips/dips_service_factory.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/domain_reliability/service_factory.h"
 #include "chrome/browser/download/background_download_service_factory.h"
@@ -78,6 +76,7 @@
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/omnibox/autocomplete_controller_emitter_factory.h"
+#include "chrome/browser/passage_embeddings/embedder_service_factory.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_factory.h"
 #include "components/services/on_device_translation/buildflags/buildflags.h"
 
@@ -134,7 +133,6 @@
 #include "chrome/browser/permissions/one_time_permissions_tracker_factory.h"
 #include "chrome/browser/permissions/origin_keyed_permission_action_service_factory.h"
 #include "chrome/browser/permissions/permission_actions_history_factory.h"
-#include "chrome/browser/permissions/permission_auditing_service_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/permissions/prediction_service_factory.h"
 #include "chrome/browser/persisted_state_db/session_proto_db_factory.h"
@@ -560,6 +558,13 @@
 #include "chrome/browser/net/server_certificate_database_service_factory.h"
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+#include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_observer_factory.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_WIN)
+
 namespace chrome {
 
 void AddProfilesExtraParts(ChromeBrowserMainParts* main_parts) {
@@ -807,8 +812,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   DiceWebSigninInterceptorFactory::GetInstance();
 #endif
   DIPSBrowserSigninDetectorFactory::GetInstance();
-  DIPSCleanupServiceFactory::GetInstance();
-  DIPSServiceFactory::GetInstance();
   DocumentSuggestionsServiceFactory::GetInstance();
   dom_distiller::DomDistillerServiceFactory::GetInstance();
   DomainDiversityReporterFactory::GetInstance();
@@ -1056,6 +1059,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if !BUILDFLAG(IS_ANDROID)
   PageColorsFactory::GetInstance();
 #endif
+  passage_embeddings::EmbedderServiceFactory::GetInstance();
   password_manager::PasswordManagerLogRouterFactory::GetInstance();
   password_manager::PasswordRequirementsServiceFactory::GetInstance();
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -1074,7 +1078,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   PerformanceControlsHatsServiceFactory::GetInstance();
 #endif
   PermissionActionsHistoryFactory::GetInstance();
-  PermissionAuditingServiceFactory::GetInstance();
   PermissionDecisionAutoBlockerFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   PinnedTabServiceFactory::GetInstance();
@@ -1351,6 +1354,13 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   WebDataServiceFactory::GetInstance();
   webrtc_event_logging::WebRtcEventLogManagerKeyedServiceFactory::GetInstance();
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+  if (tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {
+    tab_groups::CollaborationMessagingObserverFactory::GetInstance();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_WIN)
 }
 
 void ChromeBrowserMainExtraPartsProfiles::PreProfileInit() {

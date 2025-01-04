@@ -19,6 +19,7 @@
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -302,10 +303,10 @@ TEST_P(UserPermissionServiceImplTest,
   SetDeviceAsCloudManaged();
 
   UserContext user_context;
-  user_context.user_id = kUserGaiaId;
+  user_context.user_id = GaiaId(kUserGaiaId);
 
   // Mock that it is not the same user.
-  EXPECT_CALL(*mock_user_delegate_, IsSameUser(kUserGaiaId))
+  EXPECT_CALL(*mock_user_delegate_, IsSameUser(GaiaId(kUserGaiaId)))
       .WillOnce(Return(false));
 
   EXPECT_EQ(permission_service_->CanUserCollectSignals(user_context),
@@ -318,9 +319,9 @@ TEST_P(UserPermissionServiceImplTest, CanUserCollectSignals_User_NotManaged) {
   SetDeviceAsCloudManaged();
 
   UserContext user_context;
-  user_context.user_id = kUserGaiaId;
+  user_context.user_id = GaiaId(kUserGaiaId);
 
-  EXPECT_CALL(*mock_user_delegate_, IsSameUser(kUserGaiaId))
+  EXPECT_CALL(*mock_user_delegate_, IsSameUser(GaiaId(kUserGaiaId)))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_user_delegate_, IsManagedUser()).WillOnce(Return(false));
 
@@ -335,9 +336,9 @@ TEST_P(UserPermissionServiceImplTest,
   SetUserAsCloudManaged();
 
   UserContext user_context;
-  user_context.user_id = kUserGaiaId;
+  user_context.user_id = GaiaId(kUserGaiaId);
 
-  EXPECT_CALL(*mock_user_delegate_, IsSameUser(kUserGaiaId))
+  EXPECT_CALL(*mock_user_delegate_, IsSameUser(GaiaId(kUserGaiaId)))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_user_delegate_, IsManagedUser()).WillOnce(Return(true));
 
@@ -353,9 +354,9 @@ TEST_P(UserPermissionServiceImplTest,
   SetUserConsentGiven();
 
   UserContext user_context;
-  user_context.user_id = kUserGaiaId;
+  user_context.user_id = GaiaId(kUserGaiaId);
 
-  EXPECT_CALL(*mock_user_delegate_, IsSameUser(kUserGaiaId))
+  EXPECT_CALL(*mock_user_delegate_, IsSameUser(GaiaId(kUserGaiaId)))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_user_delegate_, IsManagedUser()).WillOnce(Return(true));
 
@@ -371,9 +372,9 @@ TEST_P(UserPermissionServiceImplTest,
   SetDeviceAsCloudManaged();
 
   UserContext user_context;
-  user_context.user_id = kUserGaiaId;
+  user_context.user_id = GaiaId(kUserGaiaId);
 
-  EXPECT_CALL(*mock_user_delegate_, IsSameUser(kUserGaiaId))
+  EXPECT_CALL(*mock_user_delegate_, IsSameUser(GaiaId(kUserGaiaId)))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_user_delegate_, IsManagedUser()).WillOnce(Return(true));
   EXPECT_CALL(*mock_user_delegate_, IsAffiliated()).WillOnce(Return(false));
@@ -390,9 +391,9 @@ TEST_P(UserPermissionServiceImplTest,
   SetDeviceAsCloudManaged();
 
   UserContext user_context;
-  user_context.user_id = kUserGaiaId;
+  user_context.user_id = GaiaId(kUserGaiaId);
 
-  EXPECT_CALL(*mock_user_delegate_, IsSameUser(kUserGaiaId))
+  EXPECT_CALL(*mock_user_delegate_, IsSameUser(GaiaId(kUserGaiaId)))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_user_delegate_, IsManagedUser()).WillOnce(Return(true));
   EXPECT_CALL(*mock_user_delegate_, IsAffiliated()).WillOnce(Return(true));

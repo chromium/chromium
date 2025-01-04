@@ -94,6 +94,7 @@ constexpr wgpu::TextureUsage kAllowedReadableMailboxTextureUsages =
 constexpr wgpu::TextureUsage kAllowedMailboxTextureUsages =
     kAllowedWritableMailboxTextureUsages | kAllowedReadableMailboxTextureUsages;
 
+#ifndef WGPU_BREAKING_CHANGE_FUTURE_CALLBACK_TYPES
 template <typename T1, typename T2>
 struct AssignIfSameElseCrashFnImpl;
 
@@ -120,6 +121,7 @@ template <typename T1, typename T2>
 void AssignIfSameElseCrashFn(T1* out, T2 in) {
   AssignIfSameElseCrashFnImpl<T1, T2>{}(out, in);
 }
+#endif
 
 template <typename T1, typename T2>
 void ChainStruct(T1& head, T2* struct_to_chain) {
@@ -362,7 +364,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
 
   wgpu::Adapter CreatePreferredAdapter(wgpu::PowerPreference power_preference,
                                        bool force_fallback,
-                                       bool compatibility_mode) const;
+                                       wgpu::FeatureLevel feature_level) const;
 
   // Decide if a device feature is exposed to render process.
   bool IsFeatureExposed(wgpu::FeatureName feature) const;
@@ -1144,9 +1146,13 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
   if (gpu_preferences.enable_unsafe_webgpu) {
     safety_level_ = webgpu::SafetyLevel::kUnsafe;
   }
-  dawn_instance_ = DawnInstance::Create(
-      dawn_platform_.get(), gpu_preferences, safety_level_,
+  dawn_instance_ =
+      DawnInstance::Create(dawn_platform_.get(), gpu_preferences, safety_level_,
+#ifdef WGPU_BREAKING_CHANGE_LOGGING_CALLBACK_TYPE
+                           [](wgpu::LoggingType, wgpu::StringView) {});
+#else
       /*logging_callback=*/nullptr, /*logging_callback_userdata=*/nullptr);
+#endif
 
   use_webgpu_adapter_ = gpu_preferences.use_webgpu_adapter;
   use_webgpu_power_preference_ = gpu_preferences.use_webgpu_power_preference;
@@ -1167,6 +1173,13 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
   DawnProcTable wire_procs = dawn::native::GetProcs();
   wire_procs.createInstance =
       [](const WGPUInstanceDescriptor*) -> WGPUInstance { NOTREACHED(); };
+#ifdef WGPU_BREAKING_CHANGE_FUTURE_CALLBACK_TYPES
+  wire_procs.instanceRequestAdapter = [](auto... args) {
+    DCHECK(parent_decoder);
+    return parent_decoder->RequestAdapterImpl(
+        std::forward<decltype(args)>(args)...);
+  };
+#else
   wire_procs.instanceRequestAdapter2 = [](auto... args) {
     DCHECK(parent_decoder);
     return parent_decoder->RequestAdapterImpl(
@@ -1176,6 +1189,7 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
                           wire_procs.instanceRequestAdapter2);
   AssignIfSameElseCrashFn(&wire_procs.instanceRequestAdapterF,
                           wire_procs.instanceRequestAdapter2);
+#endif
   wire_procs.adapterHasFeature = [](auto... args) {
     DCHECK(parent_decoder);
     return parent_decoder->AdapterHasFeatureImpl(
@@ -1192,6 +1206,13 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
     // immediately.
     delete[] supported_features.features;
   };
+#ifdef WGPU_BREAKING_CHANGE_FUTURE_CALLBACK_TYPES
+  wire_procs.adapterRequestDevice = [](auto... args) {
+    DCHECK(parent_decoder);
+    return parent_decoder->RequestDeviceImpl(
+        std::forward<decltype(args)>(args)...);
+  };
+#else
   wire_procs.adapterRequestDevice2 = [](auto... args) {
     DCHECK(parent_decoder);
     return parent_decoder->RequestDeviceImpl(
@@ -1201,6 +1222,7 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
                           wire_procs.adapterRequestDevice2);
   AssignIfSameElseCrashFn(&wire_procs.adapterRequestDeviceF,
                           wire_procs.adapterRequestDevice2);
+#endif
 
   wire_server_ = DawnWireServer::Create(
       this, wire_serializer_.get(), memory_transfer_service_.get(), wire_procs);
@@ -1357,10 +1379,18 @@ WGPUFuture WebGPUDecoderImpl::RequestAdapterImpl(
   }
 #endif  // BUILDFLAG(IS_LINUX)
 
+  wgpu::FeatureLevel feature_level = wgpu::FeatureLevel::Core;
+  if (force_webgpu_compat_ ||
+      (static_cast<wgpu::FeatureLevel>(options->featureLevel) ==
+           wgpu::FeatureLevel::Compatibility &&
+       (safety_level_ == webgpu::SafetyLevel::kUnsafe ||
+        safety_level_ == webgpu::SafetyLevel::kSafeExperimental))) {
+    feature_level = wgpu::FeatureLevel::Compatibility;
+  }
+
   wgpu::Adapter adapter = CreatePreferredAdapter(
       static_cast<wgpu::PowerPreference>(options->powerPreference),
-      options->forceFallbackAdapter || force_fallback_adapter,
-      options->compatibilityMode || force_webgpu_compat_);
+      options->forceFallbackAdapter || force_fallback_adapter, feature_level);
 
   if (adapter == nullptr) {
     // There are no adapters to return since webgpu is not supported here
@@ -1673,7 +1703,7 @@ bool WebGPUDecoderImpl::use_blocklist() const {
 wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
     wgpu::PowerPreference power_preference,
     bool force_fallback,
-    bool compatibility_mode) const {
+    wgpu::FeatureLevel feature_level) const {
   // Update power_preference based on command-line flag
   // use_webgpu_power_preference_.
   switch (use_webgpu_power_preference_) {
@@ -1709,7 +1739,7 @@ wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
 
   // Prepare wgpu::RequestAdapterOptions.
   wgpu::RequestAdapterOptions adapter_options;
-  adapter_options.compatibilityMode = compatibility_mode;
+  adapter_options.featureLevel = feature_level;
   adapter_options.forceFallbackAdapter = force_fallback;
   adapter_options.powerPreference = power_preference;
 

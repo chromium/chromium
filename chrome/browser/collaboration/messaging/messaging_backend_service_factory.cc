@@ -14,9 +14,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/feature_utils.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
+#include "components/collaboration/internal/messaging/configuration.h"
+#include "components/collaboration/internal/messaging/data_sharing_change_notifier_impl.h"
 #include "components/collaboration/internal/messaging/empty_messaging_backend_service.h"
 #include "components/collaboration/internal/messaging/messaging_backend_service_impl.h"
+#include "components/collaboration/internal/messaging/storage/messaging_backend_store_impl.h"
 #include "components/collaboration/internal/messaging/tab_group_change_notifier_impl.h"
+#include "components/collaboration/public/features.h"
 #include "components/data_sharing/public/features.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -60,7 +64,9 @@ MessagingBackendServiceFactory::BuildServiceInstanceForBrowserContext(
   // to be enabled.
   if (!base::FeatureList::IsEnabled(
           data_sharing::features::kDataSharingFeature) ||
-      !tab_groups::IsTabGroupSyncEnabled(profile->GetPrefs())) {
+      !tab_groups::IsTabGroupSyncEnabled(profile->GetPrefs()) ||
+      !base::FeatureList::IsEnabled(
+          collaboration::features::kCollaborationMessaging)) {
     return std::make_unique<EmptyMessagingBackendService>();
   }
 
@@ -70,9 +76,21 @@ MessagingBackendServiceFactory::BuildServiceInstanceForBrowserContext(
       data_sharing::DataSharingServiceFactory::GetForProfile(profile);
   auto tab_group_change_notifier =
       std::make_unique<TabGroupChangeNotifierImpl>(tab_group_sync_service);
+  auto data_sharing_change_notifier =
+      std::make_unique<DataSharingChangeNotifierImpl>(data_sharing_service);
+  auto messaging_backend_store = std::make_unique<MessagingBackendStoreImpl>();
+
+  // This configuration object allows us to control platform specific behavior.
+  MessagingBackendConfiguration configuration;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  configuration.clear_chip_on_tab_selection = false;
+#endif
 
   auto service = std::make_unique<MessagingBackendServiceImpl>(
-      std::move(tab_group_change_notifier), tab_group_sync_service,
+      configuration, std::move(tab_group_change_notifier),
+      std::move(data_sharing_change_notifier),
+      std::move(messaging_backend_store), tab_group_sync_service,
       data_sharing_service);
 
   return std::move(service);

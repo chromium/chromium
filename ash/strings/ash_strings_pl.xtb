@@ -361,6 +361,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2295777434187870477">Mikrofon jest włączony. Przełączając go, wyciszysz odbierane dźwięki.</translation>
 <translation id="2302092602801625023">To konto jest zarządzane przez Family Link</translation>
 <translation id="2303600792989757991">Przełącz widok ogólny okna</translation>
+<translation id="2304702218354340897">Czy na pewno chcesz wyłączyć sterowanie za pomocą twarzy?</translation>
 <translation id="2305738328104302723">Lista zadań Google: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: ostatnie zrzuty ekranu, pobrane rzeczy i przypięte pliki</translation>
 <translation id="2318576281648121272">Dzisiaj, <ph name="TODAY_DATE" /></translation>
@@ -387,6 +388,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2370971919968699910">Może to spowodować koszty związane z przesyłaniem danych.
 Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2386292613071805067">Zaznacz wszystko na stronie</translation>
+<translation id="2389423187722941333">Przełącz Gemini</translation>
 <translation id="2392659840443812875">Brak dostępnego hotspota. Upewnij się, że urządzenie jest w pobliżu i ma włączony Bluetooth.</translation>
 <translation id="2397416548179033562">Pokaż menu Chrome</translation>
 <translation id="240006516586367791">Sterowanie multimediami</translation>
@@ -394,6 +396,7 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2402411679569069051">Aby odblokować Chromebooka, użyj odcisku palca lub odblokuj swój telefon</translation>
 <translation id="240545663114741956">Aby się wylogować, naciśnij dwukrotnie <ph name="ACCELERATOR" />.</translation>
 <translation id="2405664212338326887">Brak połączenia</translation>
+<translation id="2406710117564540804">Włącz/wyłącz tryb Nie przeszkadzać</translation>
 <translation id="2408955596600435184">Wpisz kod PIN</translation>
 <translation id="2412593942846481727">Dostępna aktualizacja</translation>
 <translation id="2416438829169535743">Zamknąć widok?</translation>
@@ -899,6 +902,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4119928251231465047">Zbyt wiele prób podania kodu PIN</translation>
 <translation id="412298498316631026">okno</translation>
 <translation id="4123259114412175274">Aby odblokować Chromebooka, sprawdź, czy na telefonie jest włączony Bluetooth</translation>
+<translation id="4123868835475902435">To były podstawy. Jeśli potrzebujesz bardziej szczegółowych wskazówek i instrukcji, skorzystaj z wbudowanej aplikacji Odkrywaj. Znajdziesz w niej porady na początek, oferty specjalne oraz opis najnowszych funkcji urządzenia <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4125970834901680537">W trybie tabletu nie można strumieniować aplikacji. Spróbuj ponownie w trybie laptopa.</translation>
 <translation id="4131973331381812765">Temperatura: <ph name="TEMPERATURE" />°C – aktualna szybkość: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="4136724716305260864">Włączone do wschodu słońca</translation>
@@ -1019,7 +1023,6 @@ Połączono 1 urządzenie.</translation>
 <translation id="4481530544597605423">Niesparowane urządzenia</translation>
 <translation id="4485506555414638855">Zamknij konfigurację wyświetlania najnowszych zdjęć, plików multimedialnych, powiadomień i aplikacji z telefonu</translation>
 <translation id="4491109536499578614">Obraz</translation>
-<translation id="4493452241184130939">To były podstawy. Jeśli potrzebujesz bardziej szczegółowych wskazówek i instrukcji, skorzystaj z wbudowanej aplikacji Odkrywaj. Znajdziesz w niej porady na początek, listę polecanych aplikacji, oferty specjalne oraz opis najnowszych funkcji urządzenia <ph name="PRODUCT_NAME" />.</translation>
 <translation id="450584155212756404">Wersja deweloperska</translation>
 <translation id="4513946894732546136">Twoja opinia</translation>
 <translation id="4518404433291145981">Aby odblokować Chromebooka, najpierw odblokuj swój telefon</translation>
@@ -1082,7 +1085,6 @@ Połączono 1 urządzenie.</translation>
 <translation id="4708065238214351979">Rozjaśnij klawiaturę</translation>
 <translation id="4708185346211948049"><ph name="DAY_OF_WEEK" /> w przyszłym tygodniu</translation>
 <translation id="4717575069099566988">Twój kabel USB-C nie obsługuje standardu USB4. Wydajność urządzenia może być ograniczona.</translation>
-<translation id="4724328513667182700">6 wskazówek, jak zacząć korzystać z urządzenia <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">CZĘSTO UŻYWANE</translation>
 <translation id="4731797938093519117">Dostęp rodzica</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (lewa)</translation>
@@ -1309,7 +1311,6 @@ Brak połączonych urządzeń.</translation>
 <translation id="5409208741270395213">Oznacz zadanie jako ukończone</translation>
 <translation id="5413656666631274079">Strona ustawień</translation>
 <translation id="5414198321558177633">Odświeżam listę profili. Może to potrwać kilka minut.</translation>
-<translation id="5417965108047245734">Obejrzyj krótką prezentację, aby dowiedzieć się, jak korzystać z urządzenia <ph name="PRODUCT_NAME" />.</translation>
 <translation id="5426063383988017631">Zamknięto menu ustawień</translation>
 <translation id="5428899915242071344">Rozpocznij zaznaczanie</translation>
 <translation id="5429993543155113935">Okna incognito nie są obecnie obsługiwane</translation>
@@ -1647,6 +1648,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="6539852571005954999">Skanuję pobierany plik <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Przesyłam do: <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emotikony, GIF-y i inne elementy</translation>
+<translation id="6543942526104794893">Czy na pewno chcesz wyłączyć gesty z wykorzystaniem twarzy?</translation>
 <translation id="6545382064335350438">Nadal nie udało się zweryfikować kodu PIN. Spróbuj ponownie.</translation>
 <translation id="6555373427270923730">Wpisz adres internetowy w pasku adresu i naciśnij <ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" /> – nowa instalacja</translation>
@@ -2312,6 +2314,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8855885154700222542">Klawisz trybu pełnoekranowego</translation>
 <translation id="8858369206579825206">Ustawienia prywatności</translation>
 <translation id="8860366331836346216">Dodaj eSIM</translation>
+<translation id="8869149849311827122">Czy na pewno chcesz wyłączyć sterowanie kursorem myszy?</translation>
 <translation id="8870509716567206129">Aplikacja nie obsługuje dzielonego ekranu.</translation>
 <translation id="8873203135446552888">Potwierdź, że chcesz wyłączyć wbudowany touchpad</translation>
 <translation id="8874184842967597500">Nie połączono</translation>

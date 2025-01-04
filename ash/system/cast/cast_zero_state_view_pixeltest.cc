@@ -11,17 +11,13 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
-#include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 
 namespace ash {
 
 // Pixel tests for the quick settings cast zero-state view.
 class CastZeroStateViewPixelTest : public AshTestBase {
  public:
-  CastZeroStateViewPixelTest() {
-    feature_list_.InitWithFeatures({chromeos::features::kJelly}, {});
-  }
+  CastZeroStateViewPixelTest() = default;
 
   // AshTestBase:
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
@@ -29,7 +25,6 @@ class CastZeroStateViewPixelTest : public AshTestBase {
     return pixel_test::InitParams();
   }
 
-  base::test::ScopedFeatureList feature_list_;
   TestCastConfigController cast_config_;
 };
 

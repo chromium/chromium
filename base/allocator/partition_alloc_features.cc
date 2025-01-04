@@ -109,7 +109,7 @@ MIRACLE_PARAMETER_FOR_INT(
 
 BASE_FEATURE(kPartitionAllocLargeEmptySlotSpanRing,
              "PartitionAllocLargeEmptySlotSpanRing",
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
              FEATURE_ENABLED_BY_DEFAULT);
 #else
              FEATURE_DISABLED_BY_DEFAULT);
@@ -187,6 +187,8 @@ constexpr FeatureParam<BackupRefPtrMode>::Option kBackupRefPtrModeOptions[] = {
 const base::FeatureParam<BackupRefPtrMode> kBackupRefPtrModeParam{
     &kPartitionAllocBackupRefPtr, "brp-mode", BackupRefPtrMode::kEnabled,
     &kBackupRefPtrModeOptions};
+const base::FeatureParam<int> kBackupRefPtrExtraExtrasSizeParam{
+    &kPartitionAllocBackupRefPtr, "brp-extra-extras-size", 0};
 
 BASE_FEATURE(kPartitionAllocMemoryTagging,
              "PartitionAllocMemoryTagging",
@@ -276,15 +278,14 @@ const base::FeatureParam<BucketDistributionMode>::Option
         {BucketDistributionMode::kDenser, "denser"},
 };
 const base::FeatureParam<BucketDistributionMode>
-    kPartitionAllocBucketDistributionParam {
-  &kPartitionAllocUseDenserDistribution, "mode",
+    kPartitionAllocBucketDistributionParam{
+        &kPartitionAllocUseDenserDistribution, "mode",
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_32_BITS)
-      BucketDistributionMode::kDefault,
+        BucketDistributionMode::kDefault,
 #else
-      BucketDistributionMode::kDenser,
+        BucketDistributionMode::kDenser,
 #endif  // BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_32_BITS)
-      &kPartitionAllocBucketDistributionOption
-};
+        &kPartitionAllocBucketDistributionOption};
 
 BASE_FEATURE(kPartitionAllocMemoryReclaimer,
              "PartitionAllocMemoryReclaimer",
@@ -439,17 +440,12 @@ BASE_FEATURE(kPartitionAllocDisableBRPInBufferPartition,
 #if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
 BASE_FEATURE(kUsePoolOffsetFreelists,
              "PartitionAllocUsePoolOffsetFreelists",
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kPartitionAllocAdjustSizeWhenInForeground,
              "PartitionAllocAdjustSizeWhenInForeground",
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
              FEATURE_ENABLED_BY_DEFAULT);
 #else
              FEATURE_DISABLED_BY_DEFAULT);
@@ -457,7 +453,7 @@ BASE_FEATURE(kPartitionAllocAdjustSizeWhenInForeground,
 
 BASE_FEATURE(kPartitionAllocUseSmallSingleSlotSpans,
              "PartitionAllocUseSmallSingleSlotSpans",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
 BASE_FEATURE(kPartitionAllocShadowMetadata,

@@ -36,6 +36,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/loader/referrer.mojom-forward.h"
 
 namespace blink {
 class URLLoaderThrottle;
@@ -374,6 +375,29 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
 
   base::WeakPtrFactory<NavigationURLLoaderImpl> weak_factory_{this};
 };
+
+// Creates a `ResourceRequest` and sets fields common to navigation and
+// prefetch.
+// This roughly corresponds to:
+// - Step 3 of
+// https://html.spec.whatwg.org/multipage/browsing-the-web.html#create-navigation-params-by-fetching
+// - Step 2 of
+// https://wicg.github.io/nav-speculation/prefetch.html#create-a-navigation-request
+// and their surrounding steps.
+//
+// This helper method is used to create consistent navigational
+// `ResourceRequest`s (exposed to the network service and ServiceWorker fetch
+// handlers) and make them look similar, regardless of whether they are created
+// for prefetches or non-prefetch navigations.
+std::unique_ptr<network::ResourceRequest> CreateResourceRequestForNavigation(
+    const std::string& method,
+    const GURL& url,
+    network::mojom::RequestDestination destination,
+    const blink::mojom::Referrer& referrer,
+    const net::IsolationInfo& isolation_info,
+    mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
+    net::RequestPriority priority,
+    bool is_main_frame);
 
 }  // namespace content
 

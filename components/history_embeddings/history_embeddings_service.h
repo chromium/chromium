@@ -19,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/history_types.h"
@@ -86,6 +87,7 @@ struct ScoredUrlRow {
   // Basic scoring and history data for this URL.
   ScoredUrl scored_url;
   history::URLRow row;
+  bool is_url_known_to_sync = false;
 
   // All passages and embeddings for this URL (i.e. not a partial set).
   UrlData passages_embeddings;
@@ -123,6 +125,7 @@ struct SearchResult {
   std::string query;
   std::optional<base::Time> time_range_start;
   size_t count = 0;
+  SearchParams search_params;
 
   // The actual search result data. Note that the size of this vector will
   // not necessarily match the above requested `count`.
@@ -170,9 +173,13 @@ class HistoryEmbeddingsService : public KeyedService,
   bool IsEligible(const GURL& url);
 
   // Called by `HistoryEmbeddingsTabHelper` when passage extraction completes.
-  void OnPassagesRetrieved(std::optional<UrlData> existing_url_data,
-                           UrlData url_passages,
-                           std::vector<std::string> passages);
+  // Retrieves existing passages and embeddings for `url_id` from the database
+  // before calling
+  // `ComputeAndStorePassageEmbeddingsWithExistingData()`.
+  void ComputeAndStorePassageEmbeddings(history::URLID url_id,
+                                        history::VisitID visit_id,
+                                        base::Time visit_time,
+                                        std::vector<std::string> passages);
 
   // Find top `count` URL visit info entries nearest given `query`. Pass results
   // to given `callback` when search completes. Search will be narrowed to a
@@ -180,17 +187,19 @@ class HistoryEmbeddingsService : public KeyedService,
   // the time range is inclusive and the end is unbounded. Practically, this can
   // be thought of as [start, now) but now isn't fixed. Virtual for testing.
   // The `callback` may be called back later with another search result
-  // containing an answer. This two-phase result callback scheme lets callers
-  // receive initial search results without having to wait longer for answers.
-  // The `previous_search_result` may be nullptr to signal the beginning of a
-  // completely new search session; if it is non-null and the session_id was
-  // set, the new session_id is set based on the previous to indicate a
-  // continuing search session. Returns a stub result that can be used to detect
-  // if a later published SearchResult instance is related to this search.
+  // containing an answer, only if `skip_answering` is false.  This two-phase
+  // result callback scheme lets callers receive initial search results without
+  // having to wait longer for answers.  The `previous_search_result` may be
+  // nullptr to signal the beginning of a completely new search session; if it
+  // is non-null and the session_id was set, the new session_id is set based on
+  // the previous to indicate a continuing search session. Returns a stub result
+  // that can be used to detect if a later published SearchResult instance is
+  // related to this search.
   virtual SearchResult Search(SearchResult* previous_search_result,
                               std::string query,
                               std::optional<base::Time> time_range_start,
                               size_t count,
+                              bool skip_answering,
                               SearchResultCallback callback);
 
   // Weak `this` provider method.
@@ -244,7 +253,9 @@ class HistoryEmbeddingsService : public KeyedService,
   // A utility container to wrap anything that should be accessed on
   // the separate storage worker sequence.
   struct Storage {
-    explicit Storage(const base::FilePath& storage_dir);
+    Storage(const base::FilePath& storage_dir,
+            bool erase_non_ascii_characters,
+            bool delete_embeddings);
 
     // Associate the given metadata with this Storage instance. The storage is
     // not considered initialized until this metadata is supplied.
@@ -306,7 +317,17 @@ class HistoryEmbeddingsService : public KeyedService,
   // with data and sent on destruction. Default implementation returns null.
   virtual QualityLogEntry PrepareQualityLogEntry();
 
-  // Invoked after the embeddings for `passages` has been computed.
+  // Called by `ComputeAndStorePassageEmbeddings()` after retrieving existing
+  // passages and embeddings for `url_data.url_id` from the database.
+  // `existing_url_data` may be nullopt if no existing data was found.
+  void ComputeAndStorePassageEmbeddingsWithExistingData(
+      UrlData url_data,
+      std::vector<std::string> passages,
+      std::optional<base::ElapsedTimer> database_access_timer,
+      std::optional<UrlData> existing_url_data);
+
+  // Invoked after the embeddings for `passages` has been computed. Stores the
+  // passages along with their embeddings in the database.
   void OnPassagesEmbeddingsComputed(
       std::unordered_map<std::string, Embedding> embedding_cache,
       UrlData url_passages,
@@ -318,7 +339,6 @@ class HistoryEmbeddingsService : public KeyedService,
   // computed.
   void OnQueryEmbeddingComputed(
       SearchResultCallback callback,
-      SearchParams search_params,
       SearchResult result,
       std::vector<std::string> query_passages,
       std::vector<Embedding> query_embedding,

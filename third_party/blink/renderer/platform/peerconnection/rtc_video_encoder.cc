@@ -2834,7 +2834,7 @@ void RTCVideoEncoder::UpdateEncoderInfo(
             media_enc_info.fps_allocation[i].begin(),
             media_enc_info.fps_allocation[i].end());
   }
-  for (const auto& limit : media_enc_info.resolution_bitrate_limits) {
+  for (const auto& limit : media_enc_info.resolution_rate_limits) {
     encoder_info_.resolution_bitrate_limits.emplace_back(
         limit.frame_size.GetArea(), limit.min_start_bitrate_bps,
         limit.min_bitrate_bps, limit.max_bitrate_bps);

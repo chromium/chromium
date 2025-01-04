@@ -25,6 +25,12 @@
 
 // https://w3c.github.io/speech-api/#speechrecognition
 
+enum SpeechRecognitionMode {
+    "ondevice-preferred", // On-device speech recognition if available, otherwise use Cloud speech recognition as a fallback.
+    "ondevice-only", // On-device speech recognition only. Returns an error if on-device speech recognition is not available.
+    "cloud-only", // Cloud speech recognition only.
+};
+
 [
     ActiveScriptWrappable,
     LegacyWindowAlias=webkitSpeechRecognition,
@@ -39,8 +45,7 @@
     attribute boolean continuous;
     attribute boolean interimResults;
     attribute unsigned long maxAlternatives;
-    [RuntimeEnabled=MediaStreamTrackWebSpeech] attribute boolean localService;
-    [RuntimeEnabled=MediaStreamTrackWebSpeech] attribute boolean allowCloudFallback;
+    [RuntimeEnabled=MediaStreamTrackWebSpeech] attribute SpeechRecognitionMode mode;
 
     // methods to drive the speech interaction
     [RaisesException, Measure] void start();

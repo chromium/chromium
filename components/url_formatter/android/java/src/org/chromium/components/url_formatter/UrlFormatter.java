@@ -11,20 +11,25 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 /** Wrapper for utilities in url_formatter. */
 @JNINamespace("url_formatter::android")
+@NullMarked
 public final class UrlFormatter {
     /**
      * Refer to url_formatter::FixupURL.
      *
+     * <pre>
      * Given a URL-like string, returns a possibly-invalid GURL. For example:
      *  - "google.com" -> "http://google.com/"
      *  - "about:" -> "chrome://version/"
      *  - "//mail.google.com:/" -> "file:///mail.google.com:/"
      *  - "0x100.0" -> "http://0x100.0/" (invalid)
+     * </pre>
      */
     public static GURL fixupUrl(String uri) {
         if (TextUtils.isEmpty(uri)) return GURL.emptyGURL();
@@ -227,7 +232,7 @@ public final class UrlFormatter {
      * @deprecated Please use {@link #formatUrlForSecurityDisplay(GURL, int)} instead.
      */
     @Deprecated
-    public static String formatUrlForSecurityDisplay(String uri, @SchemeDisplay int schemeDisplay) {
+    public static String formatUrlForSecurityDisplay(@Nullable String uri, @SchemeDisplay int schemeDisplay) {
         return UrlFormatterJni.get().formatStringUrlForSecurityDisplay(uri, schemeDisplay);
     }
 
@@ -252,6 +257,6 @@ public final class UrlFormatter {
 
         String formatOriginForSecurityDisplay(Origin origin, @SchemeDisplay int schemeDisplay);
 
-        String formatStringUrlForSecurityDisplay(String url, @SchemeDisplay int schemeDisplay);
+        String formatStringUrlForSecurityDisplay(@Nullable String url, @SchemeDisplay int schemeDisplay);
     }
 }

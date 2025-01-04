@@ -39,8 +39,8 @@
 #include "chrome/common/pepper_permission_util.h"
 #include "chrome/common/ppapi_utils.h"
 #include "chrome/common/profiler/chrome_thread_profiler_client.h"
+#include "chrome/common/profiler/core_unwinders.h"
 #include "chrome/common/profiler/thread_profiler_configuration.h"
-#include "chrome/common/profiler/unwind_util.h"
 #include "chrome/common/secure_origin_allowlist.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -1720,10 +1720,7 @@ void ChromeContentRendererClient::
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // WebHID and WebUSB on service workers is only available in extensions.
   if (IsStandaloneContentExtensionProcess()) {
-    if (base::FeatureList::IsEnabled(
-            features::kEnableWebUsbOnExtensionServiceWorker)) {
-      blink::WebRuntimeFeatures::EnableWebUSBOnServiceWorkers(true);
-    }
+    blink::WebRuntimeFeatures::EnableWebUSBOnServiceWorkers(true);
 #if !BUILDFLAG(IS_ANDROID)
     blink::WebRuntimeFeatures::EnableWebHIDOnServiceWorkers(true);
 #endif  // !BUILDFLAG(IS_ANDROID)

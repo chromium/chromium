@@ -62,7 +62,6 @@ source_set("model") {
     "//components/content_settings/core/browser",
     "//components/image_fetcher/core",
     "//components/image_fetcher/ios",
-    "//components/keyed_service/ios",
     "//components/metrics",
     "//components/policy/core/common:common_constants",
     "//components/pref_registry",
@@ -106,7 +105,7 @@ source_set("model") {
     # TODO(crbug.com/325587123): This should depend on
     # //ios/chrome/browser/sync/model but doing so creates a circular
     # dependency.
-    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
   ]
   public_deps = [
     ":constants",
@@ -131,7 +130,6 @@ source_set("authentication_service") {
     ":system_identity_util",
     "//base",
     "//components/browser_sync",
-    "//components/keyed_service/core",
     "//components/pref_registry",
     "//components/prefs",
     "//components/signin/ios/browser:features",
@@ -141,6 +139,7 @@ source_set("authentication_service") {
     "//components/sync/base",
     "//components/sync/service",
     "//google_apis",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/bookmarks/model:model_utils",
     "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/policy/model:policy_util",
@@ -148,7 +147,7 @@ source_set("authentication_service") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
-    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
+    "//ios/chrome/common/app_group",
   ]
 }
 
@@ -296,7 +295,7 @@ source_set("fake_system_identity_manager") {
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
     "//google_apis",
-    "//ios/chrome/browser/ui/authentication/signin:interruptible_chrome_coordinator",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:interruptible_chrome_coordinator",
     "//ios/public/provider/chrome/browser/signin:signin_error_api",
   ]
   frameworks = [ "Foundation.framework" ]
@@ -355,7 +354,6 @@ source_set("trusted_vault") {
   ]
   deps = [
     "//base",
-    "//components/keyed_service/core",
     "//components/trusted_vault",
     "//ios/public/provider/chrome/browser/signin:signin_sso_api",
   ]
@@ -406,7 +404,6 @@ source_set("test_support") {
     ":trusted_vault",
     "//base",
     "//components/image_fetcher/core:test_support",
-    "//components/keyed_service/core",
     "//components/signin/public/base:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//ios/chrome/browser/shared/model/profile",
@@ -504,7 +501,7 @@ source_set("eg2_tests") {
   deps = [
     ":fake_system_identity",
     "//base",
-    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ui/base",

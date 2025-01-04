@@ -118,9 +118,8 @@ const std::string& HoldingSpaceClientImpl::AddItemOfType(
   return GetHoldingSpaceKeyedService(profile_)->AddItemOfType(type, file_path);
 }
 
-void HoldingSpaceClientImpl::CopyImageToClipboard(
-    const HoldingSpaceItem& item,
-    SuccessCallback callback) {
+void HoldingSpaceClientImpl::CopyImageToClipboard(const HoldingSpaceItem& item,
+                                                  SuccessCallback callback) {
   holding_space_metrics::RecordItemAction(
       {&item}, holding_space_metrics::ItemAction::kCopy);
 
@@ -334,9 +333,8 @@ void HoldingSpaceClientImpl::RemoveSuggestions(
   GetHoldingSpaceKeyedService(profile_)->RemoveSuggestions(absolute_file_paths);
 }
 
-void HoldingSpaceClientImpl::ShowItemInFolder(
-    const HoldingSpaceItem& item,
-    SuccessCallback callback) {
+void HoldingSpaceClientImpl::ShowItemInFolder(const HoldingSpaceItem& item,
+                                              SuccessCallback callback) {
   holding_space_metrics::RecordItemAction(
       {&item}, holding_space_metrics::ItemAction::kShowInFolder);
 

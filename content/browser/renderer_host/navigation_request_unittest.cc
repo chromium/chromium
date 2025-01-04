@@ -1226,8 +1226,6 @@ TEST_F(PersistentOriginTrialNavigationRequestTest,
       "SI"
       "6ICJGcm9idWxhdGVQZXJzaXN0ZW50IiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9";
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kPersistentOriginTrials);
   blink::ScopedTestOriginTrialPolicy origin_trial_policy_;
 
   const GURL kUrl = GURL("https://example.com");

@@ -16,13 +16,6 @@ morlovich@chromium.org
 reillyg@chromium.org
 toyoshim@chromium.org
 
-# Files and features related to component:Internals>Sandbox>SiteIsolation:
-per-file cross_origin_read_blocking*=creis@chromium.org
-per-file cross_origin_read_blocking*=lukasza@chromium.org
-per-file sec_header_helpers*=creis@chromium.org
-per-file sec_header_helpers*=lukasza@chromium.org
-per-file sec_header_helpers*=mkwst@chromium.org
-
 per-file cert_verifier_with_trust_anchors*=file://chromeos/ash/components/policy/OWNERS
 
 per-file *_type_converter*.*=set noparent
@@ -34,16 +27,14 @@ per-file network_sandbox_hook_linux.*=file://sandbox/linux/OWNERS
 per-file BUILD.gn=file://services/network/resource_scheduler/OWNERS
 per-file BUILD.gn=file://services/network/sct_auditing/OWNERS
 
-# Content Security Policy
-per-file content_security_policy*=arthursonzogni@chromium.org
-per-file content_security_policy*=nasko@chromium.org
-
 # Cookies
 per-file *cookie*=file://net/cookies/OWNERS
 
-# Private Network Access
-per-file private_network_access*=titouan@chromium.org
-per-file private_network_access*=lyf@chromium.org
+# Web-facing security features
+per-file content_security_policy*=file://third_party/blink/SECURITY_OWNERS
+per-file cross_origin_read_blocking*=file://third_party/blink/SECURITY_OWNERS
+per-file private_network_access*=file://third_party/blink/SECURITY_OWNERS
+per-file sec_header_helpers*=file://third_party/blink/SECURITY_OWNERS
 
 # WebTransport
 per-file web_transport*=file://net/OWNERS

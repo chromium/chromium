@@ -408,6 +408,21 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest,
                        UserSelectedOptionsOverridePolicyDefaults) {
   RunTestCase("UserSelectedOptionsOverridePolicyDefaults");
 }
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest,
+                       ManagedPrintOptionsDisabledViaExperiment) {
+  RunTestCase("ManagedPrintOptionsDisabledViaExperiment");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest,
+                       ManagedPrintOptionsSupportedDefaultValues) {
+  RunTestCase("ManagedPrintOptionsSupportedDefaultValues");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest,
+                       ManagedPrintOptionsUnsupportedDefaultValues) {
+  RunTestCase("ManagedPrintOptionsUnsupportedDefaultValues");
+}
 #endif
 
 class PrintPreviewPreviewGenerationTest : public PrintPreviewBrowserTest {

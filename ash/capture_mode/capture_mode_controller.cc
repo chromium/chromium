@@ -356,6 +356,14 @@ void ShowVideoRecordingStoppedByHdcpNotification() {
       kCaptureModeIcon);
 }
 
+// Shows a toast informing the user that text has been copied to clipboard.
+void ShowTextCopiedToast() {
+  // TODO(crbug.com/375967525): Finalize and translate the toast string.
+  ToastManager::Get()->Show(ToastData(kCaptureModeTextCopiedToastId,
+                                      ToastCatalogName::kCaptureModeTextCopied,
+                                      u"Text copied to clipboard"));
+}
+
 // Copies the bitmap representation of the given |image| to the clipboard.
 void CopyImageToClipboard(const gfx::Image& image) {
   ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
@@ -524,7 +532,7 @@ bool ShouldFetchScannerActions(PerformCaptureType capture_type) {
 // Returns true if region search should be performed on a captured image with
 // the given `capture_type`.
 bool ShouldSendRegionSearch(PerformCaptureType capture_type) {
-  return IsSunfishFeatureEnabledWithFeatureKey() &&
+  return features::IsSunfishFeatureEnabled() &&
          (capture_type == PerformCaptureType::kSunfish ||
           capture_type == PerformCaptureType::kSearch);
 }
@@ -672,14 +680,6 @@ void CaptureModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 /*default_value=*/false);
 }
 
-// static
-void CaptureModeController::ShowTextCopiedToast() {
-  // TODO(crbug.com/375967525): Finalize and translate the toast string.
-  ToastManager::Get()->Show(ToastData(kCaptureModeTextCopiedToastId,
-                                      ToastCatalogName::kCaptureModeTextCopied,
-                                      u"Text copied to clipboard"));
-}
-
 SearchResultsPanel* CaptureModeController::GetSearchResultsPanel() const {
   return search_results_panel_widget_
              ? views::AsViewClass<SearchResultsPanel>(
@@ -689,7 +689,7 @@ SearchResultsPanel* CaptureModeController::GetSearchResultsPanel() const {
 
 void CaptureModeController::ShowSearchResultsPanel(const gfx::ImageSkia& image,
                                                    GURL url) {
-  DCHECK(IsSunfishFeatureEnabledWithFeatureKey());
+  DCHECK(features::IsSunfishFeatureEnabled());
   const bool is_active = IsActive();
   if (!search_results_panel_widget_) {
     // A session must be active when the panel is first loaded, because it is
@@ -699,8 +699,8 @@ void CaptureModeController::ShowSearchResultsPanel(const gfx::ImageSkia& image,
       return;
     }
 
-    search_results_panel_widget_ =
-        SearchResultsPanel::CreateWidget(capture_mode_session_->current_root());
+    search_results_panel_widget_ = SearchResultsPanel::CreateWidget(
+        capture_mode_session_->current_root(), is_active);
 
     RecordSearchResultsPanelEntryType(capture_mode_session_->active_behavior());
 
@@ -729,12 +729,16 @@ void CaptureModeController::ShowSearchResultsPanel(const gfx::ImageSkia& image,
   }
 }
 
+void CaptureModeController::CloseSearchResultsPanel() {
+  search_results_panel_widget_.reset();
+}
+
 void CaptureModeController::MaybeUpdateSearchResultsPanelBounds() {
   if (!search_results_panel_widget_) {
     return;
   }
 
-  CHECK(IsSunfishFeatureEnabledWithFeatureKey());
+  CHECK(features::IsSunfishFeatureEnabled());
 
   // TODO: crbug.com/364718783 - Ensure this works with multi-display.
   const gfx::Rect work_area =
@@ -755,6 +759,13 @@ void CaptureModeController::OnLocatedEventDragged() {
     // re-opened with those.
     GetSearchResultsPanel()->SetSearchBoxText(std::u16string());
     search_results_panel_widget_->Hide();
+  }
+}
+
+void CaptureModeController::RefreshSearchResultsPanel(bool is_active) {
+  // Note we re-stack the panel even if it's not currently visible.
+  if (auto* panel = GetSearchResultsPanel()) {
+    panel->RefreshStackingOrder(is_active);
   }
 }
 
@@ -911,6 +922,7 @@ void CaptureModeController::Stop() {
   capture_mode_session_->ReportSessionHistograms();
   capture_mode_session_->Shutdown();
   capture_mode_session_.reset();
+  RefreshSearchResultsPanel(/*is_active=*/false);
 
   delegate_->OnSessionStateChanged(/*started=*/false);
 }
@@ -1566,7 +1578,7 @@ void CaptureModeController::EndSessionOrRecording(EndRecordingReason reason) {
     // finished yet.
     Stop();
   }
-  search_results_panel_widget_.reset();
+  CloseSearchResultsPanel();
 
   if (!is_recording_in_progress())
     return;
@@ -1906,7 +1918,8 @@ void CaptureModeController::OnImageCapturedForSearch(
     scoped_refptr<base::RefCountedMemory> jpeg_bytes) {
   absl::Cleanup run_test_callback_on_return = [this, capture_type] {
     if (on_image_captured_for_search_callback_for_test_) {
-      on_image_captured_for_search_callback_for_test_.Run(capture_type);
+      std::move(on_image_captured_for_search_callback_for_test_)
+          .Run(capture_type);
     }
   };
   // From here on, no matter where the function exits, the cursor must be
@@ -2565,7 +2578,7 @@ void CaptureModeController::OnDlpRestrictionCheckedAtSessionInit(
 
   // Close any previously opened panel to ensure a clean slate.
   // TODO(b/377370403): Revisit this decision.
-  search_results_panel_widget_.reset();
+  CloseSearchResultsPanel();
 
   // Before we start the session, if video recording is in progress, we need to
   // set the current type to image (except if the new behavior type is sunfish),

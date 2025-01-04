@@ -67,7 +67,7 @@ class ASH_EXPORT QuickInsertSearchRequest {
                                  bool has_more_results);
 
   void HandleActionSearchResults(std::vector<QuickInsertSearchResult> results);
-  void HandleCrosSearchResults(ash::AppListSearchResultType type,
+  void HandleCrosSearchResults(AppListSearchResultType type,
                                std::vector<QuickInsertSearchResult> results);
   void HandleDateSearchResults(std::vector<QuickInsertSearchResult> results);
   void HandleMathSearchResults(std::optional<QuickInsertSearchResult> result);

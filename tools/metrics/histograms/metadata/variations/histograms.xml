@@ -76,7 +76,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.ExtendedSafeMode.BeaconFileDeserializationError"
-    enum="JsonDeserializationError" expires_after="2025-03-30">
+    enum="JsonDeserializationError" expires_after="2025-06-08">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <component>1456342</component>
@@ -178,7 +178,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.FirstRun.SeedFetchTime" units="ms"
-    expires_after="2025-04-06">
+    expires_after="2025-06-08">
   <owner>asvitkine@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -201,7 +201,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.ForcedFieldTrialsAtStartupForInternalsPage"
-    enum="Boolean" expires_after="2025-03-30">
+    enum="Boolean" expires_after="2025-06-08">
   <owner>harringtond@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -288,7 +288,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.InvalidStudyReason"
-    enum="VariationsInvalidStudyReason" expires_after="2025-04-20">
+    enum="VariationsInvalidStudyReason" expires_after="2025-06-22">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -299,7 +299,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Variations.LimitedEntropy.SeedRejectionReason"
     enum="VariationsLimitedEntropySeedRejectionReason"
-    expires_after="2025-03-23">
+    expires_after="2025-06-22">
   <owner>yulunz@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -343,7 +343,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.LoadSeedSignature" enum="VariationSeedSignature"
-    expires_after="2025-04-20">
+    expires_after="2025-06-22">
   <owner>asvitkine@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -712,7 +712,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.StoreSeed.DataSize" units="KiB"
-    expires_after="2025-04-27">
+    expires_after="2025-06-29">
   <owner>asvitkine@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -763,6 +763,15 @@ chromium-metrics-reviews@google.com.
   <summary>
     Log the user channel assigned at browser startup used for evaluating the
     variations seeds.
+  </summary>
+</histogram>
+
+<histogram name="Variations.VariationsStateEncryptionStatus"
+    enum="VariationsStateEncryptionStatus" expires_after="2025-12-01">
+  <owner>svenzheng@google.com</owner>
+  <owner>vivianz@google.com</owner>
+  <summary>
+    Capture the status of variations state encryption in Chrome feedback report.
   </summary>
 </histogram>
 

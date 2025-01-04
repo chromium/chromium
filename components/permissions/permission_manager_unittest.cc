@@ -11,7 +11,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_context_base.h"

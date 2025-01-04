@@ -34,6 +34,19 @@ CreateWebrtcVideoDecoderFactory(
     const gfx::ColorSpace& render_color_space,
     StatsCollector::StoreProcessingStatsCB stats_callback);
 
+// Temporary factory functions that are used to enable logging of codecs that
+// are potentially HW accelerated. Some codec profiles are only enabled if
+// certain features are enabled. The factories that are created by the functions
+// below override these. Please note that they must only be used for logging
+// purpose.
+PLATFORM_EXPORT std::unique_ptr<webrtc::VideoEncoderFactory>
+CreateWebrtcVideoEncoderFactoryForUmaLogging(
+    media::GpuVideoAcceleratorFactories* gpu_factories);
+PLATFORM_EXPORT std::unique_ptr<webrtc::VideoDecoderFactory>
+CreateWebrtcVideoDecoderFactoryForUmaLogging(
+    media::GpuVideoAcceleratorFactories* gpu_factories,
+    const gfx::ColorSpace& render_color_space);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_VIDEO_CODEC_FACTORY_H_

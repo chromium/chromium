@@ -16,7 +16,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
@@ -27,7 +26,6 @@
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/page_not_available_for_guest/page_not_available_for_guest_ui.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -53,10 +51,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#endif
+#include "ui/webui/webui_util.h"
 
 namespace extensions {
 
@@ -257,6 +252,13 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
        IDS_EXTENSIONS_SAFE_BROWSING_CRX_ALLOWLIST_WARNING_LEARN_MORE},
       {"itemRepair", IDS_EXTENSIONS_REPAIR_CORRUPTED},
       {"itemReload", IDS_EXTENSIONS_RELOAD_TERMINATED},
+      {"itemUpload", IDS_EXTENSIONS_MOVE_TO_ACCOUNT_ICON_TOOLTIP},
+      {"itemUnsupportedDeveloperMode",
+       IDS_EXTENSIONS_DISABLED_UNSUPPORTED_DEVELOPER_MODE},
+      {"itemUnsupportedDeveloperModeDetails",
+       IDS_EXTENSIONS_DISABLED_UNSUPPORTED_DEVELOPER_MODE_DETAILS},
+      {"itemUnsupportedDeveloperModeToast",
+       IDS_EXTENSIONS_DISABLED_UNSUPPORTED_DEVELOPER_MODE_TOAST},
       {"loadErrorCouldNotLoadManifest",
        IDS_EXTENSIONS_LOAD_ERROR_COULD_NOT_LOAD_MANIFEST},
       {"loadErrorHeading", IDS_EXTENSIONS_LOAD_ERROR_HEADING},
@@ -392,7 +394,7 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
        IDS_EXTENSIONS_SC_REMOVE_BUTTON_A11Y_LABEL},
       {"safetyCheckOptionMenuA11yLabel",
        IDS_EXTENSIONS_SC_OPTION_MENU_A11Y_LABEL},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       {"manageKioskApp", IDS_EXTENSIONS_MANAGE_KIOSK_APP},
       {"kioskAddApp", IDS_EXTENSIONS_KIOSK_ADD_APP},
       {"kioskAddAppHint", IDS_EXTENSIONS_KIOSK_ADD_APP_HINT},
@@ -471,15 +473,12 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
       "MV2DeprecationNoticeDismissed",
       mv2_experiment_manager->DidUserAcknowledgeNoticeGlobally());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   source->AddString(
       "kioskDisableBailoutWarningBody",
       l10n_util::GetStringFUTF16(
           IDS_EXTENSIONS_KIOSK_DISABLE_BAILOUT_SHORTCUT_WARNING_BODY,
           l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_OS_NAME)));
-
-  source->AddBoolean("isLacrosEnabled",
-                     crosapi::browser_util::IsLacrosEnabled());
 #endif
 
   return source;

@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/vr/openxr/android/openxr_depth_sensor_android.h"
 
 #include <array>
+#include <concepts>
 #include <memory>
 #include <set>
 
@@ -149,7 +145,15 @@ inline size_t buffer_location(size_t col, size_t row, size_t row_size) {
 
 template <typename T>
 inline void WriteToSpanStart(base::span<uint8_t> output, T val) {
-  output.first<sizeof(T)>().copy_from(base::byte_span_from_ref(val));
+  base::span<const uint8_t> val_span;
+  if constexpr (std::floating_point<T>) {
+    // Floating point types do not have unique object representations, but this
+    // code does not appear to be hashing them, so allow it.
+    val_span = base::byte_span_from_ref(base::allow_nonunique_obj, val);
+  } else {
+    val_span = base::byte_span_from_ref(val);
+  }
+  output.first<sizeof(T)>().copy_from(val_span);
 }
 
 // Helper function to copy depth data on the CPU. This expects to receive the
@@ -195,15 +199,18 @@ void CopyDepthData(base::span<const float> input,
     for (size_t x = 0; x < width; x++) {
       // Assign a z value of 1 to convert from cartesian (screen) coordinates to
       // a homogeneous Euclidean (2D) coordinate space.
+      // Add a negative to the y coordinate because y=0 corresponds to the top
+      // of the image, i.e. 1 in clip space.
       const gfx::Point3F eye_screen_clip_coord{
-          ToClipSpace(ToTexCoord(x, width)), ToClipSpace(ToTexCoord(y, height)),
-          1};
+          ToClipSpace(ToTexCoord(x, width)),
+          -ToClipSpace(ToTexCoord(y, height)), 1};
       const gfx::Point3F depth_screen_clip_coord =
           depth_screen_from_eye_screen.MapPoint(eye_screen_clip_coord);
 
+      // Revert the -y to sample into the OpenXR depth texture.
       const gfx::PointF depth_screen_texture_coord(
           FromClipSpace(depth_screen_clip_coord.x()),
-          FromClipSpace(depth_screen_clip_coord.y()));
+          FromClipSpace(-depth_screen_clip_coord.y()));
 
       // If x or y is less than 0 it's out of bounds and we should ignore it.
       // We'll convert back to whole buffer coordinates before checking the
@@ -467,20 +474,31 @@ mojom::XRDepthDataPtr OpenXrDepthSensorAndroid::GetDepthDataForEye(
     return nullptr;
   }
 
-  XrDepthViewANDROID depth_view = acquire_result.views[GetDepthViewIndex(eye)];
+  auto depth_views = base::span(acquire_result.views);
+  XrDepthViewANDROID depth_view = depth_views[GetDepthViewIndex(eye)];
+
   size_t pixel_offset = GetDepthImageOffset(eye, num_pixels);
   auto* depth_image_ptr =
       base::FeatureList::IsEnabled(features::kOpenXrAndroidSmoothDepth)
           ? depth_image.smoothDepthImage
           : depth_image.rawDepthImage;
-  base::span<const float> depth_image_span =
-      base::span(depth_image_ptr + pixel_offset, num_pixels);
 
+  // SAFETY: `num_pixels` is calculated above using checked multiplication
+  // based on the resolution that the Depth API was created with
+  // (`depth_camera_resolution_`). Per specification, the depth API returns a
+  // single array of two images (one for each eye), starting at the pointer for
+  // that data.
+  UNSAFE_BUFFERS(base::span<const float> full_depth_image_span =
+                     base::span(depth_image_ptr, 2 * num_pixels));
+
+  base::span<const float> depth_image_span =
+      full_depth_image_span.subspan(pixel_offset, num_pixels);
   mojom::XRDepthDataUpdatedPtr result = mojom::XRDepthDataUpdated::New();
   mojo_base::BigBuffer pixels(buffer_size);
   switch (depth_config_->depth_data_format) {
     case mojom::XRDepthDataFormat::kFloat32:
       // Results are already in meters.
+      result->raw_value_to_meters = 1;
       CHECK(GetByteSize(data_format) == sizeof(float));
       CopyDepthData<float>(depth_image_span, pixels, image_size, depth_view,
                            view, [](float val) { return val; });

@@ -4,13 +4,18 @@
 
 #import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/omnibox_position_choice_coordinator.h"
 
+#import "base/ios/block_types.h"
 #import "base/time/time.h"
 #import "base/timer/elapsed_timer.h"
+#import "components/prefs/pref_service.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
 #import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/metrics.h"
 #import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/omnibox_position_choice_mediator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/omnibox_position_choice_view_controller.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -30,6 +35,8 @@
   OmniboxPositionChoiceMediator* _mediator;
   /// Time when the choice screen was shown.
   base::ElapsedTimer _startTime;
+  /// Whether or not the Set Up List Item should be marked complete.
+  BOOL _markItemComplete;
 }
 
 - (void)start {
@@ -63,8 +70,18 @@
 }
 
 - (void)stop {
-  [_viewController.presentingViewController dismissViewControllerAnimated:YES
-                                                               completion:nil];
+  ProceduralBlock completion = nil;
+  if (_markItemComplete) {
+    PrefService* localState = GetApplicationContext()->GetLocalState();
+    completion = ^{
+      set_up_list_prefs::MarkItemComplete(localState,
+                                          SetUpListItemType::kAddressBar);
+    };
+  }
+
+  [_viewController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:completion];
 
   _viewController = nil;
   _mediator = nil;
@@ -74,11 +91,13 @@
 #pragma mark - PromoStyleViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
+  _markItemComplete = YES;
   [_mediator saveSelectedPosition];
   [self dismissScreen];
 }
 
 - (void)didTapSecondaryActionButton {
+  _markItemComplete = YES;
   [_mediator discardSelectedPosition];
   [self dismissScreen];
 }

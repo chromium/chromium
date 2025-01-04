@@ -232,8 +232,9 @@ ExtensionsToolbarUnitTest::GetPinnedExtensionViews() {
 #else
       const bool is_visible = action->GetVisible();
 #endif
-      if (is_visible)
+      if (is_visible) {
         result.push_back(action);
+      }
     }
   }
   return result;

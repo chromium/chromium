@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/payments/secure_payment_confirmation_browsertest.h"
-#include "components/autofill/core/browser/test_event_waiter.h"
+#include "components/autofill/core/browser/test_utils/test_event_waiter.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/secure_payment_confirmation_app.h"
 #include "components/payments/core/secure_payment_confirmation_credential.h"

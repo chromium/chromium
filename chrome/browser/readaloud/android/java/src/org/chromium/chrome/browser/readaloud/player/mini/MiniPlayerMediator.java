@@ -304,7 +304,7 @@ public class MiniPlayerMediator implements BottomControlsLayer {
     }
 
     @Override
-    public void onBrowserControlsOffsetUpdate(int layerYOffset) {
+    public void onBrowserControlsOffsetUpdate(int layerYOffset, boolean didMinHeightChange) {
         assert BottomControlsStacker.isDispatchingYOffset();
 
         // yOffset for the mini player is a negative number if it has to move up. This value *can*

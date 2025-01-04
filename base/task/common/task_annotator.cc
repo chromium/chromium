@@ -133,8 +133,9 @@ void TaskAnnotator::WillQueueTask(perfetto::StaticString trace_event_name,
 
   DCHECK(!pending_task->task_backtrace[0])
       << "Task backtrace was already set, task posted twice??";
-  if (pending_task->task_backtrace[0])
+  if (pending_task->task_backtrace[0]) {
     return;
+  }
 
   DCHECK(!pending_task->ipc_interface_name);
   DCHECK(!pending_task->ipc_hash);
@@ -145,8 +146,9 @@ void TaskAnnotator::WillQueueTask(perfetto::StaticString trace_event_name,
   }
 
   const auto* parent_task = CurrentTaskForThread();
-  if (!parent_task)
+  if (!parent_task) {
     return;
+  }
 
   pending_task->task_backtrace[0] = parent_task->posted_from.program_counter();
   std::copy(parent_task->task_backtrace.begin(),
@@ -250,8 +252,9 @@ void TaskAnnotator::MaybeEmitIncomingTaskFlow(perfetto::EventContext& ctx,
                                               const PendingTask& task) const {
   static const uint8_t* flow_enabled =
       TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("toplevel.flow");
-  if (!*flow_enabled)
+  if (!*flow_enabled) {
     return;
+  }
 
   perfetto::Flow::ProcessScoped(GetTaskTraceID(task))(ctx);
 }
@@ -310,8 +313,9 @@ void TaskAnnotator::MaybeEmitIPCHash(perfetto::EventContext& ctx,
   static const uint8_t* toplevel_ipc_enabled =
       TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
           TRACE_DISABLED_BY_DEFAULT("toplevel.ipc"));
-  if (!*toplevel_ipc_enabled)
+  if (!*toplevel_ipc_enabled) {
     return;
+  }
 
   auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
   auto* annotator = event->set_chrome_task_annotator();
@@ -387,8 +391,9 @@ void TaskAnnotator::LongTaskTracker::SetIpcDetails(const char* interface_name,
   ipc_interface_name_ = interface_name;
   is_response_ = is_response;
 
-  if (!method_info)
+  if (!method_info) {
     return;
+  }
 
   ipc_hash_ = (*method_info)();
   ipc_method_info_ = method_info;
@@ -396,8 +401,9 @@ void TaskAnnotator::LongTaskTracker::SetIpcDetails(const char* interface_name,
 
 void TaskAnnotator::LongTaskTracker::EmitReceivedIPCDetails(
     perfetto::EventContext& ctx) {
-  if (!ipc_interface_name_ || !ipc_hash_ || !ipc_method_info_)
+  if (!ipc_interface_name_ || !ipc_hash_ || !ipc_method_info_) {
     return;
+  }
 #if BUILDFLAG(ENABLE_BASE_TRACING) && !BUILDFLAG(IS_NACL)
   // Emit all of the IPC hash information if this task
   // comes from a mojo interface.

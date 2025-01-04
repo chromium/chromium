@@ -206,7 +206,7 @@ class SSLServerContextImpl::SocketImpl : public SSLServerSocket,
   State next_handshake_state_ = STATE_NONE;
   bool completed_handshake_ = false;
 
-  NextProto negotiated_protocol_ = kProtoUnknown;
+  NextProto negotiated_protocol_ = NextProto::kProtoUnknown;
 
   base::WeakPtrFactory<SocketImpl> weak_factory_{this};
 };

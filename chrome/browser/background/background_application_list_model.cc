@@ -122,11 +122,9 @@ void BackgroundApplicationListModel::Observer::OnApplicationDataChanged() {}
 void BackgroundApplicationListModel::Observer::OnApplicationListChanged(
     const Profile* profile) {}
 
-BackgroundApplicationListModel::Observer::~Observer() {
-}
+BackgroundApplicationListModel::Observer::~Observer() = default;
 
-BackgroundApplicationListModel::Application::~Application() {
-}
+BackgroundApplicationListModel::Application::~Application() = default;
 
 BackgroundApplicationListModel::Application::Application(
     BackgroundApplicationListModel* model,

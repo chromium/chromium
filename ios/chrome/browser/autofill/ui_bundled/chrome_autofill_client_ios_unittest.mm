@@ -13,9 +13,9 @@
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/time/time.h"
-#import "components/autofill/core/browser/browser_autofill_manager.h"
-#import "components/autofill/core/browser/password_form_classification.h"
-#import "components/autofill/core/browser/test_autofill_manager_waiter.h"
+#import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#import "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
+#import "components/autofill/core/browser/integrators/password_form_classification.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_test_utils.h"
 #import "components/autofill/core/common/form_data.h"
@@ -23,6 +23,7 @@
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
+#import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/autofill/ios/browser/test_autofill_manager_injector.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
@@ -97,11 +98,10 @@ class ChromeAutofillClientIOSTest : public PlatformTest {
 
     autofill_agent.snackbarHandler = mock_snackbar_handler_;
     InfoBarManagerImpl::CreateForWebState(web_state_.get());
-    autofill_client_ = std::make_unique<ChromeAutofillClientIOS>(
-        profile_.get(), web_state_.get(),
-        InfoBarManagerImpl::FromWebState(web_state_.get()), autofill_agent);
-    autofill::AutofillDriverIOSFactory::CreateForWebState(
-        web_state_.get(), autofill_client_.get(), autofill_agent);
+    autofill_client_ =
+        std::make_unique<WithFakedFromWebState<ChromeAutofillClientIOS>>(
+            profile_.get(), web_state_.get(),
+            InfoBarManagerImpl::FromWebState(web_state_.get()), autofill_agent);
     autofill_manager_injector_ =
         std::make_unique<TestAutofillManagerInjector<TestAutofillManager>>(
             web_state_.get());

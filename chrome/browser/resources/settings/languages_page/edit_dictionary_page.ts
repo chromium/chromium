@@ -11,7 +11,6 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '/shared/settings/prefs/prefs.js';
 import '../settings_shared.css.js';
@@ -19,7 +18,6 @@ import '../settings_vars.css.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import type {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
@@ -37,7 +35,6 @@ const MAX_CUSTOM_DICTIONARY_WORD_BYTES = 99;
 export interface SettingsEditDictionaryPageElement {
   $: {
     addWord: CrButtonElement,
-    keys: IronA11yKeysElement,
     newWord: CrInputElement,
     noWordsLabel: HTMLElement,
   };
@@ -106,9 +103,6 @@ export class SettingsEditDictionaryPageElement extends
 
     this.languageSettingsPrivate_!.onCustomDictionaryChanged.addListener(
         this.onCustomDictionaryChanged_.bind(this));
-
-    // Add a key handler for the new-word input.
-    this.$.keys.target = this.$.newWord;
   }
 
   /**
@@ -213,12 +207,11 @@ export class SettingsEditDictionaryPageElement extends
   /**
    * Handles Enter and Escape key presses for the new-word input.
    */
-  private onKeysPress_(
-      e: CustomEvent<{key: string, keyboardEvent: KeyboardEvent}>) {
-    if (e.detail.key === 'enter' && !this.disableAddButton_()) {
+  private onKeysPress_(e: KeyboardEvent) {
+    if (e.key === 'Enter' && !this.disableAddButton_()) {
       this.addWordFromInput_();
-    } else if (e.detail.key === 'esc') {
-      (e.detail.keyboardEvent.target as CrInputElement).value = '';
+    } else if (e.key === 'Escape') {
+      (e.target as CrInputElement).value = '';
     }
   }
 

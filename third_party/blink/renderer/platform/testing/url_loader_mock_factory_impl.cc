@@ -288,7 +288,7 @@ bool URLLoaderMockFactoryImpl::ReadFile(const base::FilePath& file_path,
     return false;
   }
 
-  data = SharedBuffer::Create(buffer.data(), buffer.size());
+  data = SharedBuffer::Create(buffer);
   return true;
 }
 

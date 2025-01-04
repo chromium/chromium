@@ -157,9 +157,46 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTest, ObjectSelection) {
   RunOverlayTest("lens/overlay/object_selection_test.js", "mocha.run()");
 }
 
-// TODO(crbug.com/358172758): Test is failing on Linux bot.
-IN_PROC_BROWSER_TEST_F(LensOverlayTest, DISABLED_SelectionOverlay) {
-  RunOverlayTest("lens/overlay/selection_overlay_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(LensOverlayTest,
+                       SelectionOverlayWithoutWordsOrObjects) {
+  RunOverlayTest(
+      "lens/overlay/selection_overlay_test.js",
+      "runMochaSuite('SelectionOverlay WithoutWordsOrObjects')");
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayTest,
+                       SelectionOverlayWithWords) {
+  RunOverlayTest(
+      "lens/overlay/selection_overlay_test.js",
+      "runMochaSuite('SelectionOverlay WithWords')");
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayTest,
+                       SelectionOverlayWithObjects) {
+  RunOverlayTest(
+      "lens/overlay/selection_overlay_test.js",
+      "runMochaSuite('SelectionOverlay WithObjects')");
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayTest,
+                       SelectionOverlayWithTranslatedWords) {
+  RunOverlayTest(
+      "lens/overlay/selection_overlay_test.js",
+      "runMochaSuite('SelectionOverlay WithTranslatedWords')");
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayTest,
+                       SelectionOverlayWithObjectsAndWords) {
+  RunOverlayTest(
+      "lens/overlay/selection_overlay_test.js",
+      "runMochaSuite('SelectionOverlay WithObjectsAndWords')");
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayTest,
+                       SelectionOverlayInvocationSourceContextMenuImage) {
+  RunOverlayTest(
+      "lens/overlay/selection_overlay_test.js",
+      "runMochaSuite('SelectionOverlay InvocationSourceContextMenuImage')");
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayTest, PostSelectionRenderer) {

@@ -43,8 +43,9 @@ class StatsEventSubscriberTest : public ::testing::Test {
   }
 
   ~StatsEventSubscriberTest() override {
-    if (subscriber_.get())
+    if (subscriber_.get()) {
       cast_environment_->logger()->Unsubscribe(subscriber_.get());
+    }
     cast_environment_->logger()->Unsubscribe(&fake_offset_estimator_);
   }
 
@@ -253,8 +254,9 @@ TEST_F(StatsEventSubscriberTest, PlayoutDelay) {
   int late_frames = 0;
   for (int i = 0, delay_ms = -50; i < num_frames; i++, delay_ms += 10) {
     base::TimeDelta delay = base::Milliseconds(delay_ms);
-    if (delay_ms > 0)
+    if (delay_ms > 0) {
       late_frames++;
+    }
     std::unique_ptr<FrameEvent> playout_event(new FrameEvent());
     playout_event->timestamp = receiver_clock_.NowTicks();
     playout_event->type = FRAME_PLAYOUT;

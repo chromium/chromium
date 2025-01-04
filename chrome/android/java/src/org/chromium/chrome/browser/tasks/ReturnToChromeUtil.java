@@ -33,7 +33,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
-import org.chromium.components.cached_flags.IntCachedFieldTrialParameter;
+import org.chromium.components.cached_flags.IntCachedFeatureParam;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -112,7 +112,7 @@ public final class ReturnToChromeUtil {
      *
      * @param returnTime The return time parameter based on form factor, either phones or tablets.
      */
-    private static long getReturnTime(IntCachedFieldTrialParameter returnTime) {
+    private static long getReturnTime(IntCachedFeatureParam returnTime) {
         return returnTime.getValue() * DateUtils.SECOND_IN_MILLIS;
     }
 

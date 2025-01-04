@@ -20,6 +20,7 @@ namespace blink {
 
 class BigInt;
 class EventListener;
+class ScriptObject;
 template <typename T>
 class MemberScriptPromise;
 template <typename T>
@@ -202,7 +203,7 @@ using IDLUSVStringStringContextTrustedScriptURL =
         bindings::IDLStringConvMode::kDefault>;
 
 // object
-struct IDLObject final : public IDLBaseHelper<ScriptValue> {};
+struct IDLObject final : public IDLBaseHelper<ScriptObject> {};
 
 // Promise types
 template <typename T>
@@ -268,9 +269,6 @@ struct IDLNullable final : public IDLBase {
       typename NativeValueTraits<T>::ImplType,
       std::optional<typename NativeValueTraits<T>::ImplType>>;
 };
-
-// Date
-struct IDLDate final : public IDLBaseHelper<base::Time> {};
 
 // EventHandler types
 struct IDLEventHandler final : public IDLBaseHelper<EventListener*> {};

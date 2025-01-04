@@ -490,6 +490,16 @@ void AddressTrackerLinux::HandleMessage(const char* buffer,
           return;
         if (IsInterfaceIgnored(msg->ifa_index))
           break;
+        // To improve privacy, IPv6 permits each device to create a new IP
+        // address for itself, on the same subnet but with the lower 64 bits
+        // randomized, as frequently as once every two seconds (RFC 8981). In
+        // addition to these short-lived, randomly created addresses, each
+        // device always has at least one permanent IPv6 address, from which the
+        // temporary addresses are derived. Avoid false network change events by
+        // watching only the permanent IP addresses for changes and ignoring the
+        // temporary addresses.  https://crbug.com/373461934
+        if (msg->ifa_family == AF_INET6 && msg->ifa_flags & IFA_F_TEMPORARY)
+          break;
         if (GetAddress(header, length, &address, &really_deprecated)) {
           struct ifaddrmsg msg_copy = *msg;
           AddressTrackerAutoLock lock(*this, address_map_lock_);
@@ -524,6 +534,9 @@ void AddressTrackerLinux::HandleMessage(const char* buffer,
         if (msg == nullptr)
           return;
         if (IsInterfaceIgnored(msg->ifa_index))
+          break;
+        // Ignore IPv6 temporary addresses like above.
+        if (msg->ifa_family == AF_INET6 && msg->ifa_flags & IFA_F_TEMPORARY)
           break;
         if (GetAddress(header, length, &address, nullptr)) {
           AddressTrackerAutoLock lock(*this, address_map_lock_);

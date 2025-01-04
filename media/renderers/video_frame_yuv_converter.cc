@@ -129,8 +129,8 @@ void ConvertYuvVideoFrameToRgbSharedImage(
   // For pure software pixel upload path with video frame that does not have
   // textures.
   auto [src_shared_image, si_sync_token, status] =
-      shared_image_cache->GetSharedImage(video_frame, raster_context_provider,
-                                         src_usage);
+      shared_image_cache->GetOrCreateSharedImage(
+          video_frame, raster_context_provider, src_usage);
   CHECK(src_shared_image);
   if (status == VideoFrameSharedImageCache::Status::kMatchedVideoFrameId) {
     // Since the video frame id matches, no need to upload pixels or copy shared
@@ -144,8 +144,7 @@ void ConvertYuvVideoFrameToRgbSharedImage(
   SkPixmap pixmaps[SkYUVAInfo::kMaxPlanes] = {};
 
   for (int plane = 0; plane < si_format.NumberOfPlanes(); ++plane) {
-    SkColorType color_type =
-        viz::ToClosestSkColorType(/*gpu_compositing=*/true, si_format, plane);
+    SkColorType color_type = viz::ToClosestSkColorType(si_format, plane);
     gfx::Size plane_size =
         si_format.GetPlaneSize(plane, video_frame->coded_size());
     SkImageInfo info = SkImageInfo::Make(gfx::SizeToSkISize(plane_size),

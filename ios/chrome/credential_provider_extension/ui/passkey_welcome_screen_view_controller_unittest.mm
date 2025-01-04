@@ -4,6 +4,7 @@
 
 #import "ios/chrome/credential_provider_extension/ui/passkey_welcome_screen_view_controller.h"
 
+#import "base/test/task_environment.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -20,6 +21,9 @@ class PasskeyWelcomeScreenViewControllerTest : public PlatformTest {
                        delegate:nil
             primaryButtonAction:nil];
   }
+
+ private:
+  base::test::TaskEnvironment task_environment_;
 };
 
 // Tests that the view's content for the `kEnroll` purpose is as expected.

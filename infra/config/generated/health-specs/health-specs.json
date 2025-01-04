@@ -153,6 +153,27 @@
           }
         ]
       },
+      "ASAN Release V8 Sandbox Testing": {
+        "contact_team_email": "v8-infra@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
       "ASan Debug (32-bit x86 with V8-ARM)": {
         "contact_team_email": "v8-infra@google.com",
         "problem_specs": [
@@ -3341,26 +3362,6 @@
           }
         ]
       },
-      "Linux Builder (reclient compare)": {
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
       "Linux CFI": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
         "problem_specs": [
@@ -4080,26 +4081,6 @@
       },
       "Mac Builder (dbg)": {
         "contact_team_email": "bling-engprod@google.com",
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
-      "Mac Builder (reclient compare)": {
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -5956,26 +5937,6 @@
       },
       "Win x64 Builder (dbg)": {
         "contact_team_email": "chrome-desktop-engprod@google.com",
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
-      "Win x64 Builder (reclient compare)": {
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -9362,27 +9323,6 @@
           }
         ]
       },
-      "ios-m1-simulator": {
-        "contact_team_email": "bling-engprod@google.com",
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
       "ios-simulator": {
         "problem_specs": [
           {
@@ -10340,6 +10280,27 @@
         ]
       },
       "linux-js-code-coverage": {
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
+      "linux-modules-compile-fyi-rel": {
+        "contact_team_email": "chrome-build-team@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",

@@ -60,12 +60,12 @@ void UUID::InitializeToZero() {
 void UUID::InitializeFromBytes(const uint8_t* bytes_ptr) {
   // TODO(crbug.com/40284755): This span construction is unsound. The caller
   // should provide a span instead of an unbounded pointer.
-  base::span<const uint8_t, sizeof(UUID)> bytes(bytes_ptr, sizeof(UUID));
+  base::span bytes(bytes_ptr, base::fixed_extent<sizeof(UUID)>());
   data_1 = base::numerics::U32FromBigEndian(bytes.subspan<0u, 4u>());
   data_2 = base::numerics::U16FromBigEndian(bytes.subspan<4u, 2u>());
   data_3 = base::numerics::U16FromBigEndian(bytes.subspan<6u, 2u>());
-  std::ranges::copy(bytes.subspan<8u, 2u>(), data_4);
-  std::ranges::copy(bytes.subspan<10u, 6u>(), data_5);
+  std::ranges::copy(bytes.subspan<8, 2>(), data_4);
+  std::ranges::copy(bytes.subspan<10, 6>(), data_5);
 }
 
 bool UUID::InitializeFromString(std::string_view string) {

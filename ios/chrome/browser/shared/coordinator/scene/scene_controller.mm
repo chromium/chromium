@@ -53,6 +53,11 @@
 #import "ios/chrome/browser/app_store_rating/ui_bundled/app_store_rating_scene_agent.h"
 #import "ios/chrome/browser/app_store_rating/ui_bundled/features.h"
 #import "ios/chrome/browser/appearance/ui_bundled/appearance_customization.h"
+#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_notification_infobar_delegate.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover.h"
@@ -167,10 +172,6 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_coordinator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_coordinator_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
-#import "ios/chrome/browser/ui/authentication/account_menu/account_menu_coordinator.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
-#import "ios/chrome/browser/ui/authentication/signin_notification_infobar_delegate.h"
 #import "ios/chrome/browser/ui/whats_new/promo/whats_new_scene_agent.h"
 #import "ios/chrome/browser/url_loading/model/scene_url_loading_service.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -1236,9 +1237,8 @@ void OnListFamilyMembersResponse(
   // The UI should be stopped before the models they observe are stopped.
   // SigninCoordinator teardown is performed by the `signinCompletion` on
   // termination of async events, do not add additional teardown here.
-  [self.signinCoordinator
-      interruptWithAction:SigninCoordinatorInterrupt::UIShutdownNoDismiss
-               completion:nil];
+  [self.signinCoordinator interruptWithAction:SynchronousStopAction()
+                                   completion:nil];
   // `self.signinCoordinator.signinCompletion()` was called in the interrupt
   // method. Therefore now `self.signinCoordinator` is now stopped, and
   // `self.signinCoordinator` is now nil.
@@ -1889,8 +1889,17 @@ using UserFeedbackDataCallback =
                                                          accessPoint:
                                                              command.accessPoint
                                                          promoAction:
-                                                             command
-                                                                 .promoAction];
+                                                             command.promoAction
+                                                 optionalHistorySync:
+                                                     command
+                                                         .optionalHistorySync];
+      break;
+    case AuthenticationOperation::kHistorySync:
+      self.signinCoordinator = [SigninCoordinator
+          historySyncCoordinatorWithBaseViewController:baseViewController
+                                               browser:mainBrowser
+                                           accessPoint:command.accessPoint
+                                           promoAction:command.promoAction];
       break;
   }
   [self startSigninCoordinatorWithCompletion:command.completion];

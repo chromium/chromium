@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_manager.h"
@@ -27,7 +28,7 @@ enum class RequestType;
 // actual UI.
 // See example usage in
 // chrome/browser/permissions/permission_request_manager_unittest.cc
-class MockPermissionPromptFactory {
+class MockPermissionPromptFactory : PermissionRequestManager::Observer {
  public:
   explicit MockPermissionPromptFactory(PermissionRequestManager* manager);
 
@@ -35,7 +36,7 @@ class MockPermissionPromptFactory {
   MockPermissionPromptFactory& operator=(const MockPermissionPromptFactory&) =
       delete;
 
-  ~MockPermissionPromptFactory();
+  ~MockPermissionPromptFactory() override;
 
   // Create method called by the PBM to show a bubble.
   std::unique_ptr<PermissionPrompt> Create(
@@ -80,6 +81,9 @@ class MockPermissionPromptFactory {
 
   void HideView(MockPermissionPrompt* view);
 
+  // PermissionRequestManager::Observer
+  void OnPermissionRequestManagerDestructed() override;
+
   int show_count_;
   int requests_count_;
   std::vector<RequestType> request_types_seen_;
@@ -89,6 +93,10 @@ class MockPermissionPromptFactory {
   PermissionRequestManager::AutoResponseType response_type_;
 
   base::RepeatingClosure show_bubble_quit_closure_;
+
+  base::ScopedObservation<PermissionRequestManager,
+                          PermissionRequestManager::Observer>
+      observation_{this};
 
   // The bubble manager that will be associated with this factory.
   raw_ptr<PermissionRequestManager> manager_;

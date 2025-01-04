@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_theme_utils.h"
 #include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/lens_shared_resources.h"
@@ -29,6 +28,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 
 namespace lens {
 
@@ -73,6 +73,8 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "showContextualSearchboxLoadingState",
       lens::features::ShowContextualSearchboxGhostLoaderLoadingState());
+  html_source->AddLocalizedString("searchBoxHintContextual",
+                                  IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_CONTEXTUAL);
 
   // Allow FrameSrc from all Google subdomains as redirects can occur.
   GURL results_side_panel_url =

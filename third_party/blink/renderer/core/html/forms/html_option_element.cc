@@ -130,7 +130,8 @@ FocusableState HTMLOptionElement::SupportsFocus(
     UpdateBehavior update_behavior) const {
   HTMLSelectElement* select = OwnerSelectElement();
   if (select && select->UsesMenuList()) {
-    if (select->IsAppearanceBasePicker()) {
+    auto* popover = select->PopoverForAppearanceBase();
+    if (popover && popover->popoverOpen()) {
       // If this option is being rendered as regular web content inside a
       // base-select <select> popover, then we need this element to be
       // focusable.
@@ -197,7 +198,7 @@ int HTMLOptionElement::index() const {
     return 0;
 
   int option_index = 0;
-  for (auto* const option : select_element->GetOptionList()) {
+  for (const auto& option : select_element->GetOptionList()) {
     if (option == this)
       return option_index;
     ++option_index;
@@ -451,13 +452,15 @@ void HTMLOptionElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
 }
 
 void HTMLOptionElement::UpdateLabel() {
-  // For appearance:base-select <select> we also need to render all children. We
-  // only check UsesMenuList and not computed style because we don't want to
-  // change DOM content based on computed style and because appearance:auto/none
-  // don't render the UA shadowroot when UsesMenuList is true.
+  // For appearance:base-select <select> without a label attribute we also
+  // need to render all children. We only check UsesMenuList and not computed
+  // style because we don't want to change DOM content based on computed style
+  // and because appearance:auto/none don't render the UA shadowroot when
+  // UsesMenuList is true.
   if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
     if (auto* select = OwnerSelectElement()) {
-      if (select->UsesMenuList()) {
+      if (select->UsesMenuList() &&
+          FastGetAttribute(html_names::kLabelAttr).empty()) {
         return;
       }
     }
@@ -655,103 +658,89 @@ void HTMLOptionElement::DefaultEventHandler(Event& event) {
 
 void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
   auto* select = OwnerSelectElement();
-  if (select && !select->IsAppearanceBasePicker()) {
+  if (!select || !select->IsAppearanceBasePicker()) {
     // We only want to apply mouse/keyboard behavior for appearance:base-select
     // select pickers.
-    select = nullptr;
+    return;
   }
-
-  if (select) {
-    // This logic to determine if we should select the option is copied from
-    // ListBoxSelectType::DefaultEventHandler. It will likely change when we try
-    // to spec it.
-    const auto* mouse_event = DynamicTo<MouseEvent>(event);
-    const auto* gesture_event = DynamicTo<GestureEvent>(event);
-    if ((event.type() == event_type_names::kGesturetap && gesture_event) ||
-        (event.type() == event_type_names::kMousedown && mouse_event &&
-         mouse_event->button() ==
-             static_cast<int16_t>(WebPointerProperties::Button::kLeft))) {
-      select->SelectOptionByPopup(this);
-      select->HidePopup();
-      event.SetDefaultHandled();
-      return;
-    }
+  const auto* mouse_event = DynamicTo<MouseEvent>(event);
+  if (mouse_event && event.type() == event_type_names::kMouseup &&
+      mouse_event->button() ==
+          static_cast<int16_t>(WebPointerProperties::Button::kLeft)) {
+    select->SelectOptionByPopup(this);
+    select->HidePopup();
+    event.SetDefaultHandled();
+    return;
   }
 
   auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
   int tab_ignore_modifiers = WebInputEvent::kControlKey |
                              WebInputEvent::kAltKey | WebInputEvent::kMetaKey;
   int ignore_modifiers = WebInputEvent::kShiftKey | tab_ignore_modifiers;
+  FocusParams focus_params(FocusTrigger::kUserGesture);
 
   if (keyboard_event && event.type() == event_type_names::kKeydown) {
     const AtomicString key(keyboard_event->key());
-
     if (!(keyboard_event->GetModifiers() & ignore_modifiers)) {
-      if (key == keywords::kArrowUp && select) {
-        OptionListIterator option_list_iterator =
-            select->GetOptionList().begin();
-        while (*option_list_iterator && *option_list_iterator != this) {
-          ++option_list_iterator;
-        }
-
-        if (*option_list_iterator) {
-          CHECK_EQ(*option_list_iterator, this);
-
-          HTMLOptionElement* previous_option = nullptr;
-          do {
-            --option_list_iterator;
-            previous_option = *option_list_iterator;
-
-            if (previous_option && previous_option->IsFocusable()) {
-              previous_option->Focus(FocusParams(FocusTrigger::kUserGesture));
-              break;
-            }
-          } while (previous_option);
-
-          event.SetDefaultHandled();
-          return;
-        }
-      } else if (key == keywords::kArrowDown && select) {
-        OptionListIterator option_list_iterator =
-            select->GetOptionList().begin();
-        while (*option_list_iterator && *option_list_iterator != this) {
-          ++option_list_iterator;
-        }
-
-        if (*option_list_iterator) {
-          CHECK_EQ(*option_list_iterator, this);
-
-          HTMLOptionElement* next_option = nullptr;
-          do {
-            ++option_list_iterator;
-            next_option = *option_list_iterator;
-
-            if (next_option && next_option->IsFocusable()) {
-              next_option->Focus(FocusParams(FocusTrigger::kUserGesture));
-              break;
-            }
-          } while (next_option);
-
-          event.SetDefaultHandled();
-          return;
-        }
-      } else if ((key == " " || key == keywords::kCapitalEnter) && select) {
+      if ((key == " " || key == keywords::kCapitalEnter)) {
         select->SelectOptionByPopup(this);
         select->HidePopup();
         event.SetDefaultHandled();
         return;
       }
+      OptionList options = select->GetOptionList();
+      if (options.Empty()) {
+        // Nothing below can do anything, if the options list is empty.
+        return;
+      }
+      if (key == keywords::kArrowUp) {
+        if (auto* previous_option = options.NextMatchingOption(
+                *this, [](auto& option) { return option.IsFocusable(); },
+                /*forward*/ false)) {
+          previous_option->Focus(focus_params);
+        }
+        event.SetDefaultHandled();
+        return;
+      } else if (key == keywords::kArrowDown) {
+        if (auto* next_option = options.NextMatchingOption(
+                *this, [](auto& option) { return option.IsFocusable(); },
+                /*forward*/ true)) {
+          next_option->Focus(focus_params);
+        }
+        event.SetDefaultHandled();
+        return;
+      } else if (key == keywords::kHome) {
+        if (auto* first_option = options.NextMatchingOption(
+                *options.begin(),
+                [](auto& option) { return option.IsFocusable(); },
+                /*forward*/ true, /*inclusive*/ true)) {
+          first_option->Focus(focus_params);
+          event.SetDefaultHandled();
+          return;
+        }
+      } else if (key == keywords::kEnd) {
+        if (auto* last_option = options.NextMatchingOption(
+                *options.last(),
+                [](auto& option) { return option.IsFocusable(); },
+                /*forward*/ false, /*inclusive*/ true)) {
+          last_option->Focus(focus_params);
+          event.SetDefaultHandled();
+          return;
+        }
+      } else if (key == keywords::kPageDown) {
+        // TODO(382101095): Need to implement page down behavior.
+      } else if (key == keywords::kPageUp) {
+        // TODO(382101095): Need to implement page up behavior.
+      }
     }
 
     if (key == keywords::kTab &&
         !(keyboard_event->GetModifiers() & tab_ignore_modifiers)) {
-      if (select) {
-        // TODO(http://crbug.com/1511354): Consider focusing something in this
-        // case. https://github.com/openui/open-ui/issues/1016
-        select->HidePopup();
-        event.SetDefaultHandled();
-        return;
-      }
+      // TODO(http://crbug.com/1511354): Consider focusing something in this
+      // case. https://github.com/openui/open-ui/issues/1016
+      select->HidePopup();
+      event.SetDefaultHandled();
+      return;
     }
   }
 }
@@ -760,9 +749,8 @@ void HTMLOptionElement::FinishParsingChildren() {
   HTMLElement::FinishParsingChildren();
   if (RuntimeEnabledFeatures::CustomizableSelectEnabled() && Selected()) {
     auto* select = OwnerSelectElement();
-    if (select && select->UsesMenuList() && !select->IsMultiple()) {
-      CHECK_EQ(this, select->SelectedOption());
-      select->UpdateAllSelectedcontents();
+    if (select && !select->IsMultiple()) {
+      select->UpdateAllSelectedcontents(this);
     }
   }
 }

@@ -30,16 +30,17 @@
 namespace {
 
 enum class HttpsUpgradesTestType {
-  // Neither HTTPS-Only Mode or HTTPS-Upgrades is enabled.
+  // HTTPS-Upgrades is disabled. HTTPS-Only Mode feature is enabled, but the
+  // pref is disabled.
   kNone,
   // HTTPS-Only Mode is enabled (both the feature and the UI preference).
   kHttpsOnlyMode,
-  // HTTPS-Upgrades is enabled.
+  // HTTPS-Upgrades is enabled. HTTPS-Only Mode feature is enabled, but the pref
+  // is disabled.
   kHttpsUpgrades,
   // Both HTTPS-Only Mode and HTTPS-Upgrades are enabled.
   kBoth
 };
-
 }
 
 std::unique_ptr<KeyedService> BuildFakePrerenderService(
@@ -68,38 +69,36 @@ class HttpsOnlyModeUpgradeTabHelperTest
 
     switch (GetParam()) {
       case HttpsUpgradesTestType::kNone:
+        profile_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, false);
         scoped_feature_list_.InitWithFeatures(
             /*enabled_features=*/{},
             /*disabled_features=*/
-            {security_interstitials::features::kHttpsOnlyMode,
-             security_interstitials::features::kHttpsUpgrades});
+            {security_interstitials::features::kHttpsUpgrades});
         break;
 
       case HttpsUpgradesTestType::kHttpsOnlyMode:
         profile_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, true);
         scoped_feature_list_.InitWithFeatures(
-            /*enabled_features=*/{security_interstitials::features::
-                                      kHttpsOnlyMode},
+            /*enabled_features=*/{},
             /*disabled_features=*/{
                 security_interstitials::features::kHttpsUpgrades});
         break;
 
       case HttpsUpgradesTestType::kHttpsUpgrades:
+        profile_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, false);
+
         scoped_feature_list_.InitWithFeatures(
             /*enabled_features=*/{security_interstitials::features::
                                       kHttpsUpgrades},
-            /*disabled_features=*/{
-                security_interstitials::features::kHttpsOnlyMode});
+            /*disabled_features=*/{});
         break;
 
       case HttpsUpgradesTestType::kBoth:
         profile_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, true);
-        scoped_feature_list_
-            .InitWithFeatures(/*enabled_features=*/
-                              {security_interstitials::features::kHttpsOnlyMode,
-                               security_interstitials::features::
-                                   kHttpsUpgrades},
-                              /*disabled_features=*/{});
+        scoped_feature_list_.InitWithFeatures(/*enabled_features=*/
+                                              {security_interstitials::
+                                                   features::kHttpsUpgrades},
+                                              /*disabled_features=*/{});
         break;
     }
 

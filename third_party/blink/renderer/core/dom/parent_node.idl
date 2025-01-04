@@ -38,6 +38,7 @@ interface mixin ParentNode {
   [Unscopable, RaisesException, CEReactions] void prepend((Node or DOMString or TrustedScript)... nodes);
   [Unscopable, RaisesException, CEReactions] void append((Node or DOMString or TrustedScript)... nodes);
   [Unscopable, RaisesException, CEReactions] void replaceChildren((Node or DOMString or TrustedScript)... nodes);
+  [CEReactions, PerWorldBindings, RaisesException, RuntimeEnabled=AtomicMoveAPI, MeasureAs="WebDXFeature::kMoveBeforeAPI"] void moveBefore(Node node, Node? child);
 
   [Affects=Nothing, RaisesException] Element? querySelector(DOMString selectors);
   [Affects=Nothing, NewObject, RaisesException] NodeList querySelectorAll(DOMString selectors);

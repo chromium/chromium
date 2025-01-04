@@ -16,10 +16,10 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "partition_alloc/buildflags.h"
-#include "partition_alloc/shim/allocator_shim.h"
 
-#if !PA_BUILDFLAG(USE_ALLOCATOR_SHIM) && \
-    !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) && defined(LIBC_GLIBC)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+#include "partition_alloc/shim/allocator_shim.h"  // nogncheck
+#elif !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) && defined(LIBC_GLIBC)
 extern "C" {
 void* __libc_malloc(size_t);
 void __libc_free(void*);
@@ -31,8 +31,9 @@ namespace base {
 namespace {
 
 void ReleaseReservationOrTerminate() {
-  if (internal::ReleaseAddressSpaceReservation())
+  if (internal::ReleaseAddressSpaceReservation()) {
     return;
+  }
   TerminateBecauseOutOfMemory(0);
 }
 
@@ -70,8 +71,9 @@ class AdjustOOMScoreHelper {
 
 // static.
 bool AdjustOOMScoreHelper::AdjustOOMScore(ProcessId process, int score) {
-  if (score < 0 || score > kMaxOomScore)
+  if (score < 0 || score > kMaxOomScore) {
     return false;
+  }
 
   FilePath oom_path(internal::GetProcPidDir(process));
 
@@ -82,8 +84,7 @@ bool AdjustOOMScoreHelper::AdjustOOMScore(ProcessId process, int score) {
   FilePath oom_file = oom_path.AppendASCII("oom_score_adj");
   if (PathExists(oom_file)) {
     std::string score_str = NumberToString(score);
-    DVLOG(1) << "Adjusting oom_score_adj of " << process << " to "
-             << score_str;
+    DVLOG(1) << "Adjusting oom_score_adj of " << process << " to " << score_str;
     return WriteFile(oom_file, as_byte_span(score_str));
   }
 

@@ -55,7 +55,7 @@ ToSerializedAcceleratedImage(
       blink::mojom::blink::SerializedStaticBitmapImage::NewAcceleratedImage(
           blink::AcceleratedImageInfo{
               shared_image->Export(), cloned_image->GetSyncToken(),
-              cloned_image->GetSkImageInfo(), cloned_image->IsOriginTopLeft(),
+              cloned_image->GetSkImageInfo(),
               cloned_image->SupportsDisplayCompositing(),
               cloned_image->IsOverlayCandidate(),
               WTF::BindOnce(&blink::StaticBitmapImage::UpdateSyncToken,

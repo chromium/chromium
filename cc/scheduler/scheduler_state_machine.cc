@@ -7,6 +7,7 @@
 #include "base/check_op.h"
 #include "base/format_macros.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
@@ -670,6 +671,14 @@ bool SchedulerStateMachine::ShouldSendBeginMainFrame() const {
     return false;
   }
 
+  // This comes last, because we only want to throttle main frame that would
+  // otherwise actually be sent, and we do not want to throttle forced redraws.
+  if (main_frame_throttled_interval_.is_positive() &&
+      Now() - last_sent_begin_main_frame_time_ <
+          main_frame_throttled_interval_) {
+    TRACE_EVENT0("cc", "ThrottleMainFrame");
+    return false;
+  }
   return true;
 }
 
@@ -930,6 +939,7 @@ void SchedulerStateMachine::WillSendBeginMainFrame() {
   did_send_begin_main_frame_for_current_frame_ = true;
   // TODO(szager): Make sure this doesn't break perfetto
   last_frame_number_begin_main_frame_sent_ = current_frame_number_;
+  last_sent_begin_main_frame_time_ = Now();
 }
 
 void SchedulerStateMachine::WillNotifyBeginMainFrameNotExpectedUntil() {
@@ -1517,6 +1527,10 @@ bool SchedulerStateMachine::ShouldBlockDeadlineIndefinitely() const {
   return false;
 }
 
+void SchedulerStateMachine::SetThrottleMainFrames(base::TimeDelta interval) {
+  main_frame_throttled_interval_ = interval;
+}
+
 bool SchedulerStateMachine::IsDrawThrottled() const {
   return pending_submit_frames_ >= kMaxPendingSubmitFrames &&
          !settings_.disable_frame_rate_limit;
@@ -1792,6 +1806,10 @@ bool SchedulerStateMachine::HasInitializedLayerTreeFrameSink() const {
       return true;
   }
   NOTREACHED();
+}
+
+base::TimeTicks SchedulerStateMachine::Now() const {
+  return base::TimeTicks::Now();
 }
 
 }  // namespace cc

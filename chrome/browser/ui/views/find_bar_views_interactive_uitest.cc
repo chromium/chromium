@@ -184,8 +184,9 @@ class LegacyFindInPageTest : public InProcessBrowserTest {
   find_in_page::FindNotificationDetails WaitForFinalFindResult() {
     while (true) {
       auto details = WaitForFindResult();
-      if (details.final_update())
+      if (details.final_update()) {
         return details;
+      }
     }
   }
 };
@@ -651,22 +652,22 @@ IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, PrepopulateRespectBlank) {
   browser()->GetFindBarController()->Show();
 
   // Search for "a".
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_A, false, false, false, false));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_A, false,
+                                              false, false, false));
 
   // We should find "a" here.
   EXPECT_EQ(u"a", GetFindBarText());
 
   // Delete "a".
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_BACK, false, false, false, false));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_BACK, false,
+                                              false, false, false));
 
   // Validate we have cleared the text.
   EXPECT_EQ(std::u16string(), GetFindBarText());
 
   // Close the Find box.
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_ESCAPE, false, false, false, false));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_ESCAPE, false,
+                                              false, false, false));
 
   // Show the Find bar.
   browser()->GetFindBarController()->Show();
@@ -676,12 +677,12 @@ IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, PrepopulateRespectBlank) {
   EXPECT_EQ(std::u16string(), GetFindBarText());
 
   // Close the Find box.
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_ESCAPE, false, false, false, false));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_ESCAPE, false,
+                                              false, false, false));
 
   // Press F3 to trigger FindNext.
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_F3, false, false, false, false));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_F3, false,
+                                              false, false, false));
 
   // After the Find box has been reopened, it should still have no prepopulate
   // value.
@@ -756,14 +757,14 @@ IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, MAYBE_CtrlEnter) {
   browser()->GetFindBarController()->Show();
 
   // Search for "link".
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_L, false, false, false, false));
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_I, false, false, false, false));
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_N, false, false, false, false));
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_K, false, false, false, false));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_L, false,
+                                              false, false, false));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_I, false,
+                                              false, false, false));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_N, false,
+                                              false, false, false));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_K, false,
+                                              false, false, false));
   content::RunUntilInputProcessed(host);
 
   EXPECT_EQ(u"link", GetFindBarText());
@@ -771,8 +772,8 @@ IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, MAYBE_CtrlEnter) {
   ui_test_utils::UrlLoadObserver observer(GURL("about:blank"));
 
   // Send Ctrl-Enter, should cause navigation to about:blank.
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_RETURN, true, false, false, false));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_RETURN, true,
+                                              false, false, false));
 
   observer.Wait();
 }
@@ -797,18 +798,18 @@ IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, ActiveMatchAfterNoResults) {
   // sending keystrokes like this is required. Also note that the text must
   // contain a space.
   browser()->GetFindBarController()->Show();
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_A, false, false, false, false));
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_SPACE, false, false, false, false));
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_L, false, false, false, false));
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_I, false, false, false, false));
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_N, false, false, false, false));
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_K, false, false, false, false));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_A, false,
+                                              false, false, false));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_SPACE, false,
+                                              false, false, false));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_L, false,
+                                              false, false, false));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_I, false,
+                                              false, false, false));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_N, false,
+                                              false, false, false));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_K, false,
+                                              false, false, false));
   EXPECT_EQ(u"a link", GetFindBarText());
 
   browser()->GetFindBarController()->EndFindSession(

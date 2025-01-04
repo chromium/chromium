@@ -45,8 +45,6 @@ mojom("mojom") {
     "emoji_picker.mojom",
     "extension_info_private.mojom",
     "extension_keeplist.mojom",
-    "eye_dropper.mojom",
-    "field_trial.mojom",
     "file_change_service_bridge.mojom",
     "file_system_access_cloud_identifier.mojom",
     "file_system_provider.mojom",
@@ -73,7 +71,6 @@ mojom("mojom") {
     "mahi.mojom",
     "media_app.mojom",
     "media_ui.mojom",
-    "metrics.mojom",
     "multi_capture_service.mojom",
     "native_theme.mojom",
     "network_change.mojom",
@@ -88,7 +85,6 @@ mojom("mojom") {
     "policy_namespace.mojom",
     "policy_service.mojom",
     "power.mojom",
-    "prefs.mojom",
     "print_preview_cros.mojom",
     "printing_metrics.mojom",
     "probe_service.mojom",
@@ -96,7 +92,6 @@ mojom("mojom") {
     "resource_manager.mojom",
     "screen_ai_downloader.mojom",
     "screen_manager.mojom",
-    "sharesheet.mojom",
     "smart_reader.mojom",
     "suggestion_service.mojom",
     "sync.mojom",
@@ -117,7 +112,6 @@ mojom("mojom") {
     "volume_manager.mojom",
     "vpn_extension_observer.mojom",
     "vpn_service.mojom",
-    "wallpaper.mojom",
     "web_app_service.mojom",
     "web_app_types.mojom",
     "web_kiosk_service.mojom",
@@ -129,7 +123,6 @@ mojom("mojom") {
   public_deps = [
     ":structured_metrics_service",
     ":video_capture",
-    "//chromeos/components/drivefs/mojom",
     "//chromeos/components/in_session_auth/mojom",
     "//chromeos/components/payments/mojom",
     "//chromeos/components/remote_apps/mojom",
@@ -297,7 +290,6 @@ mojom("mojom") {
         "//chromeos/crosapi/mojom/desk_template_mojom_traits.h",
         "//chromeos/crosapi/mojom/policy_domain_mojom_traits.h",
         "//chromeos/crosapi/mojom/policy_namespace_mojom_traits.h",
-        "//chromeos/crosapi/mojom/sharesheet_mojom_traits.h",
         "//chromeos/crosapi/mojom/ui_constants_mojom_traits.h",
         "//chromeos/crosapi/mojom/web_app_types_mojom_traits.h",
         "//components/services/app_service/public/cpp/app_launch_util.h",
@@ -317,7 +309,6 @@ mojom("mojom") {
         "//chromeos/crosapi/mojom/desk_template_mojom_traits.cc",
         "//chromeos/crosapi/mojom/policy_domain_mojom_traits.cc",
         "//chromeos/crosapi/mojom/policy_namespace_mojom_traits.cc",
-        "//chromeos/crosapi/mojom/sharesheet_mojom_traits.cc",
         "//chromeos/crosapi/mojom/ui_constants_mojom_traits.cc",
         "//chromeos/crosapi/mojom/web_app_types_mojom_traits.cc",
       ]
@@ -364,10 +355,7 @@ mojom("structured_metrics_service") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "app_service_types_mojom_traits_unittest.cc",
-    "sharesheet_mojom_traits_unittest.cc",
-  ]
+  sources = [ "app_service_types_mojom_traits_unittest.cc" ]
 
   deps = [
     ":mojom",

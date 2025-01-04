@@ -22,11 +22,6 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 
 #include <algorithm>
@@ -74,6 +69,7 @@
 #include "third_party/blink/renderer/platform/text/hyphenation.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_offset_map.h"
@@ -724,21 +720,11 @@ PhysicalRect LayoutText::LocalCaretRect(int caret_offset) const {
 
 bool LayoutText::IsAllCollapsibleWhitespace() const {
   NOT_DESTROYED();
-  unsigned length = text_.length();
-  if (text_.Is8Bit()) {
-    for (unsigned i = 0; i < length; ++i) {
-      if (!StyleRef().IsCollapsibleWhiteSpace(text_.Characters8()[i])) {
-        return false;
-      }
-    }
-    return true;
-  }
-  for (unsigned i = 0; i < length; ++i) {
-    if (!StyleRef().IsCollapsibleWhiteSpace(text_.Characters16()[i])) {
-      return false;
-    }
-  }
-  return true;
+  const ComputedStyle& style = StyleRef();
+  return WTF::VisitCharacters(text_, [&style](auto chars) {
+    return base::ranges::all_of(
+        chars, [&style](auto ch) { return style.IsCollapsibleWhiteSpace(ch); });
+  });
 }
 
 UChar32 LayoutText::FirstCharacterAfterWhitespaceCollapsing() const {

@@ -829,6 +829,7 @@ Document* LocalDOMWindow::InstallNewDocument(const DocumentInit& init) {
   document_->GetViewportData().UpdateViewportDescription();
 
   auto* frame_scheduler = GetFrame()->GetFrameScheduler();
+  frame_scheduler->OnDidInstallNewDocument();
   frame_scheduler->TraceUrlChange(document_->Url().GetString());
   frame_scheduler->SetCrossOriginToNearestMainFrame(
       GetFrame()->IsCrossOriginToNearestMainFrame());
@@ -938,7 +939,8 @@ void LocalDOMWindow::EnqueueHashchangeEvent(const String& old_url,
 
 void LocalDOMWindow::DispatchPopstateEvent(
     scoped_refptr<SerializedScriptValue> state_object,
-    scheduler::TaskAttributionInfo* parent_task) {
+    scheduler::TaskAttributionInfo* parent_task,
+    bool has_ua_visual_transition) {
   DCHECK(GetFrame());
   std::optional<scheduler::TaskAttributionTracker::TaskScope>
       task_attribution_scope;
@@ -951,7 +953,8 @@ void LocalDOMWindow::DispatchPopstateEvent(
           scheduler::TaskAttributionTracker::TaskScopeType::kPopState);
     }
   }
-  DispatchEvent(*PopStateEvent::Create(std::move(state_object), history()));
+  DispatchEvent(*PopStateEvent::Create(std::move(state_object), history(),
+                                       has_ua_visual_transition));
 }
 
 LocalDOMWindow::~LocalDOMWindow() = default;
@@ -1971,12 +1974,6 @@ void LocalDOMWindow::cancelAnimationFrame(int id) {
   document()->CancelAnimationFrame(id);
 }
 
-void LocalDOMWindow::queueMicrotask(V8VoidFunction* callback) {
-  GetAgent()->event_loop()->EnqueueMicrotask(
-      WTF::BindOnce(&V8VoidFunction::InvokeAndReportException,
-                    WrapPersistent(callback), nullptr));
-}
-
 bool LocalDOMWindow::originAgentCluster() const {
   return GetAgent()->IsOriginKeyed();
 }
@@ -2004,11 +2001,6 @@ External* LocalDOMWindow::external() {
   if (!external_)
     external_ = MakeGarbageCollected<External>();
   return external_.Get();
-}
-
-// NOLINTNEXTLINE(bugprone-virtual-near-miss)
-bool LocalDOMWindow::isSecureContext() const {
-  return IsSecureContext();
 }
 
 void LocalDOMWindow::ClearIsolatedWorldCSPForTesting(int32_t world_id) {
@@ -2377,7 +2369,7 @@ DOMWindow* LocalDOMWindow::openPictureInPictureWindow(
     v8::Isolate* isolate,
     const WebPictureInPictureWindowOptions& options) {
   LocalDOMWindow* entered_window = EnteredDOMWindow(isolate);
-  DCHECK(isSecureContext());
+  DCHECK(IsSecureContext());
 
   if (!IsCurrentlyDisplayedInFrame() || !entered_window->GetFrame()) {
     return nullptr;
@@ -2454,6 +2446,7 @@ void LocalDOMWindow::Trace(Visitor* visitor) const {
   visitor->Trace(network_state_observer_);
   visitor->Trace(fence_);
   visitor->Trace(closewatcher_stack_);
+  UniversalGlobalScope::Trace(visitor);
   DOMWindow::Trace(visitor);
   ExecutionContext::Trace(visitor);
   Supplementable<LocalDOMWindow>::Trace(visitor);

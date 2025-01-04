@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_INLINE_ITEM_SEGMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_INLINE_ITEM_SEGMENT_H_
 
@@ -208,7 +203,8 @@ inline void InlineItemSegments::Iterator::operator++() {
     return;
   }
   start_offset_ = range_.end;
-  ++segment_;
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+  UNSAFE_TODO(++segment_);
   range_ = segment_->ToRunSegmenterRange(start_offset_, end_offset_);
 }
 

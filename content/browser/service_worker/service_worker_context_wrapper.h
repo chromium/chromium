@@ -220,10 +220,11 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
                              CheckHasServiceWorkerCallback callback) override;
 
   void ClearAllServiceWorkersForTest(base::OnceClosure callback) override;
-  void StartWorkerForScope(const GURL& scope,
-                           const blink::StorageKey& key,
-                           StartWorkerCallback info_callback,
-                           StatusCodeCallback failure_callback) override;
+  void StartWorkerForScope(
+      const GURL& scope,
+      const blink::StorageKey& key,
+      StartWorkerCallback info_callback,
+      StatusCodeResponseCallback failure_callback) override;
   void StartServiceWorkerAndDispatchMessage(
       const GURL& scope,
       const blink::StorageKey& key,

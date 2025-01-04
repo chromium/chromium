@@ -55,7 +55,7 @@ ExtensionPopup* g_last_popup_for_testing = nullptr;
 // for this object's lifetime.
 class ExtensionPopup::ScopedDevToolsAgentHostObservation {
  public:
-  ScopedDevToolsAgentHostObservation(
+  explicit ScopedDevToolsAgentHostObservation(
       content::DevToolsAgentHostObserver* observer)
       : observer_(observer) {
     content::DevToolsAgentHost::AddObserver(observer_);
@@ -106,11 +106,13 @@ void ExtensionPopup::ShowPopup(
 ExtensionPopup::~ExtensionPopup() {
   // The ExtensionPopup may close before it was ever shown. If so, indicate such
   // through the callback.
-  if (shown_callback_)
+  if (shown_callback_) {
     std::move(shown_callback_).Run(nullptr);
+  }
 
-  if (g_last_popup_for_testing == this)
+  if (g_last_popup_for_testing == this) {
     g_last_popup_for_testing = nullptr;
+  }
 }
 
 gfx::Size ExtensionPopup::CalculatePreferredSize(
@@ -219,22 +221,25 @@ void ExtensionPopup::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  if (!tab_strip_model->empty() && selection.active_tab_changed())
+  if (!tab_strip_model->empty() && selection.active_tab_changed()) {
     CloseDeferredIfNecessary();
+  }
 }
 
 void ExtensionPopup::DevToolsAgentHostAttached(
     content::DevToolsAgentHost* agent_host) {
   DCHECK(host_);
-  if (host_->host_contents() == agent_host->GetWebContents())
+  if (host_->host_contents() == agent_host->GetWebContents()) {
     show_action_ = PopupShowAction::kShowAndInspect;
+  }
 }
 
 void ExtensionPopup::DevToolsAgentHostDetached(
     content::DevToolsAgentHost* agent_host) {
   DCHECK(host_);
-  if (host_->host_contents() == agent_host->GetWebContents())
+  if (host_->host_contents() == agent_host->GetWebContents()) {
     show_action_ = PopupShowAction::kShow;
+  }
 }
 
 ExtensionPopup::ExtensionPopup(
@@ -316,8 +321,9 @@ void ExtensionPopup::ShowBubble() {
         DevToolsOpenedByAction::kContextMenuInspect);
   }
 
-  if (shown_callback_)
+  if (shown_callback_) {
     std::move(shown_callback_).Run(host_.get());
+  }
 }
 
 void ExtensionPopup::CloseUnlessBlockedByInspectionOrJSDialog() {

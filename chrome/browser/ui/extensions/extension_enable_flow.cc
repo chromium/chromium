@@ -20,9 +20,9 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/profiles/profile_picker.h"
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 using extensions::Extension;
 
@@ -62,8 +62,9 @@ void ExtensionEnableFlow::Run() {
     extension = registry->terminated_extensions().GetByID(extension_id_);
     // It's possible (though unlikely) the app could have been uninstalled since
     // the user clicked on it.
-    if (!extension)
+    if (!extension) {
       return;
+    }
     // If the app was terminated, reload it first.
     service->ReloadExtension(extension_id_);
 
@@ -125,11 +126,11 @@ void ExtensionEnableFlow::CheckPermissionAndMaybePromptUser() {
   }
 
   if (profiles::IsProfileLocked(profile_->GetPath())) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
         ProfilePicker::EntryPoint::kProfileLocked));
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
     return;
   }
 
@@ -247,7 +248,8 @@ void ExtensionEnableFlow::EnableExtension() {
                 ->GetSupervisedUserExtensionsDelegate();
     CHECK(supervised_user_extensions_delegate);
     supervised_user_extensions_delegate->AddExtensionApproval(*extension);
-    supervised_user_extensions_delegate->MaybeRecordPermissionsIncreaseMetrics(*extension);
+    supervised_user_extensions_delegate->MaybeRecordPermissionsIncreaseMetrics(
+        *extension);
     supervised_user_extensions_delegate->RecordExtensionEnablementUmaMetrics(
         /*enabled=*/true);
   }

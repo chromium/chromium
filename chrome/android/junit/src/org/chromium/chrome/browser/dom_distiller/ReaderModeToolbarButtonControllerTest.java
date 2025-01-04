@@ -18,8 +18,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureList.TestValues;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -36,7 +35,6 @@ public class ReaderModeToolbarButtonControllerTest {
     @Mock private Supplier<Tab> mMockTabSupplier;
     @Mock private ModalDialogManager mMockModalDialogManager;
     private UserDataHost mUserDataHost;
-    private TestValues mTestValues;
 
     @Before
     public void setUp() throws Exception {
@@ -52,11 +50,7 @@ public class ReaderModeToolbarButtonControllerTest {
         doReturn(mUserDataHost).when(mMockTab).getUserDataHost();
         mUserDataHost.setUserData(ReaderModeManager.USER_DATA_KEY, mMockReaderModeManager);
 
-        mTestValues = new TestValues();
-        mTestValues.addFeatureFlagOverride(
-                ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2, true);
-
-        FeatureList.setTestValues(mTestValues);
+        FeatureOverrides.enable(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2);
     }
 
     private ReaderModeToolbarButtonController createController() {

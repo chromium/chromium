@@ -42,8 +42,6 @@ import "chromeos/crosapi/mojom/echo_private.mojom";
 import "chromeos/crosapi/mojom/editor_panel.mojom";
 import "chromeos/crosapi/mojom/emoji_picker.mojom";
 import "chromeos/crosapi/mojom/extension_info_private.mojom";
-import "chromeos/crosapi/mojom/eye_dropper.mojom";
-import "chromeos/crosapi/mojom/field_trial.mojom";
 import "chromeos/crosapi/mojom/file_change_service_bridge.mojom";
 import "chromeos/crosapi/mojom/file_system_access_cloud_identifier.mojom";
 import "chromeos/crosapi/mojom/file_system_provider.mojom";
@@ -67,7 +65,6 @@ import "chromeos/crosapi/mojom/policy_service.mojom";
 import "chromeos/crosapi/mojom/magic_boost.mojom";
 import "chromeos/crosapi/mojom/mahi.mojom";
 import "chromeos/crosapi/mojom/media_app.mojom";
-import "chromeos/crosapi/mojom/metrics.mojom";
 import "chromeos/crosapi/mojom/multi_capture_service.mojom";
 import "chromeos/crosapi/mojom/native_theme.mojom";
 import "chromeos/crosapi/mojom/network_change.mojom";
@@ -78,7 +75,6 @@ import "chromeos/crosapi/mojom/one_drive_integration_service.mojom";
 import "chromeos/crosapi/mojom/power.mojom";
 import "chromeos/crosapi/mojom/parent_access.mojom";
 import "chromeos/crosapi/mojom/passkeys.mojom";
-import "chromeos/crosapi/mojom/prefs.mojom";
 import "chromeos/crosapi/mojom/nonclosable_app_toast_service.mojom";
 import "chromeos/crosapi/mojom/print_preview_cros.mojom";
 import "chromeos/crosapi/mojom/printing_metrics.mojom";
@@ -87,7 +83,6 @@ import "chromeos/crosapi/mojom/remoting.mojom";
 import "chromeos/crosapi/mojom/resource_manager.mojom";
 import "chromeos/crosapi/mojom/screen_ai_downloader.mojom";
 import "chromeos/crosapi/mojom/screen_manager.mojom";
-import "chromeos/crosapi/mojom/sharesheet.mojom";
 import "chromeos/crosapi/mojom/smart_reader.mojom";
 import "chromeos/crosapi/mojom/structured_metrics_service.mojom";
 import "chromeos/crosapi/mojom/suggestion_service.mojom";
@@ -109,7 +104,6 @@ import "chromeos/crosapi/mojom/kiosk_session_service.mojom";
 import "chromeos/crosapi/mojom/virtual_keyboard.mojom";
 import "chromeos/crosapi/mojom/volume_manager.mojom";
 import "chromeos/crosapi/mojom/vpn_extension_observer.mojom";
-import "chromeos/crosapi/mojom/wallpaper.mojom";
 import "chromeos/crosapi/mojom/web_app_service.mojom";
 import "chromeos/crosapi/mojom/web_kiosk_service.mojom";
 import "chromeos/crosapi/mojom/media_ui.mojom";
@@ -122,26 +116,6 @@ import "services/device/public/mojom/hid.mojom";
 import "services/media_session/public/mojom/audio_focus.mojom";
 import "services/media_session/public/mojom/media_controller.mojom";
 import "chromeos/crosapi/mojom/embedded_accessibility_helper.mojom";
-
-// BrowserInfo is a set of parameters passed to ash from browser (such as
-// lacros-chrome) upon its startup, which contains the browser information
-// such as version, etc.
-[RenamedFrom="crosapi.mojom.LacrosInfo"]
-struct BrowserInfo {
-  // Version of the browser displayed to user in feedback report, etc.
-  // It includes both browser version and channel in the format of:
-  // {browser version} {channel}
-  // For example, "87.0.0.1 dev", "86.0.4240.38 beta".
-  string browser_version@0;
-
-  // Lacros publishes the set of workarounds it has implemented. This is needed
-  // to cherry-picks of lacros bug fixes to older branches. See
-  // `ash_workarounds` for more details.
-  [MinVersion=1]
-  array<string>? lacros_workarounds@1;
-
-  // TODO(crbug.com/40145693): Add more parameters later.
-};
 
 // Crosapi defines the APIs that live in ash-chrome and are accessed from
 // client applications (such as lacros-chrome). When adding a major new API
@@ -478,11 +452,7 @@ interface Crosapi {
   [MinVersion=33]
   BindNativeThemeService@38(pending_receiver<NativeThemeService> receiver);
 
-  // Binds the Metrics interface for fetching metadata needed by the
-  // metrics subsystem.
-  // Added in M110.
-  [MinVersion=102]
-  BindMetrics@106(pending_receiver<Metrics> receiver);
+  // BindMetrics@106 was removed.
 
   // Binds the MultiCaptureService interface that handles multi capture related
   // usage indicators and notifications.
@@ -531,9 +501,7 @@ interface Crosapi {
   [MinVersion=56] BindPolicyService@60(
       pending_receiver<PolicyService> receiver);
 
-  // Binds the prefs service which allows get, set, and notify update of prefs.
-  // Added in M89.
-  [MinVersion=11] BindPrefs@16(pending_receiver<Prefs> receiver);
+  // BindPrefs@16 was removed.
 
   // Binds the prevent close service which can be used to provide user feedback
   // about nonclosable web apps.
@@ -568,11 +536,7 @@ interface Crosapi {
   BindSensorHalClient@19(
       pending_remote<chromeos.sensors.mojom.SensorHalClient> receiver);
 
-  // Binds the Sharesheet interface.
-  // Added in M99.
-  [MinVersion=66]
-  BindSharesheet@70(
-      pending_receiver<Sharesheet> receiver);
+  // BindSharesheet@70 was removed.
 
   // Binds the Smart Reader manager to the Smart Reader client.
   [MinVersion=103]
@@ -624,16 +588,11 @@ interface Crosapi {
   // Added in M87.
   BindHidManager@4(pending_receiver<device.mojom.HidManager> receiver);
 
-  // Binds the EyeDropper interface for showing EyeDropper UI.
-  // Added in M120.
-  [MinVersion=120] BindEyeDropper@122(pending_receiver<EyeDropper> receiver);
+  // BindEyeDropper@122 was removed.
 
   // BindFeedback@5 was removed.
 
-  // Binds the FieldTrial interface for reading active trial field group.
-  // Added in M95.
-  [MinVersion=46]
-  BindFieldTrialService@51(pending_receiver<FieldTrialService> receiver);
+  // BindFieldTrialService@51 was removed.
 
   // Binds the Media App interface for special functions of Media App
   // Added in M128.
@@ -800,8 +759,7 @@ interface Crosapi {
   [MinVersion=69]
   BindWebAppService@72(pending_receiver<WebAppService> receiver);
 
-  // Binds the service to allow lacros-chrome to set the chromeos wallpaper.
-  [MinVersion=84] BindWallpaper@87(pending_receiver<Wallpaper> receiver);
+  // BindWallpaper@87 was removed.
 
   // Binds the GuestOS security key forwarding service.
   // Added in M120.

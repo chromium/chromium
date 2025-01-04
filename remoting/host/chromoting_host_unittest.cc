@@ -9,6 +9,7 @@
 
 #include "remoting/host/chromoting_host.h"
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -415,7 +416,7 @@ TEST_F(ChromotingHostTest, IncomingSessionAccepted) {
   host_->OnIncomingSession(session_unowned1_.release(), &response);
   EXPECT_EQ(protocol::SessionManager::ACCEPT, response);
 
-  EXPECT_CALL(*session, Close(_))
+  EXPECT_CALL(*session, Close(_, _, _))
       .WillOnce(InvokeWithoutArgs(
           this, &ChromotingHostTest::NotifyConnectionClosed1));
   ShutdownHost();
@@ -426,8 +427,8 @@ TEST_F(ChromotingHostTest, LoginBackOffTriggersIfClientsDoNotAuthenticate) {
 
   protocol::SessionManager::IncomingSessionResponse response =
       protocol::SessionManager::DECLINE;
-  protocol::Session::EventHandler*
-      session_event_handlers[kNumFailuresIgnored + 1];
+  std::array<protocol::Session::EventHandler*, kNumFailuresIgnored + 1>
+      session_event_handlers;
   for (size_t i = 0; i < kNumFailuresIgnored + 1; ++i) {
     // Set expectations and responses for the new session.
     auto session = std::make_unique<MockSession>();
@@ -437,7 +438,7 @@ TEST_F(ChromotingHostTest, LoginBackOffTriggersIfClientsDoNotAuthenticate) {
     EXPECT_CALL(*session, SetEventHandler(_))
         .Times(AnyNumber())
         .WillRepeatedly(SaveArg<0>(&session_event_handlers[i]));
-    EXPECT_CALL(*session, Close(_))
+    EXPECT_CALL(*session, Close(_, _, _))
         .WillOnce(InvokeWithoutArgs([&session_event_handlers, i]() {
           session_event_handlers[i]->OnSessionStateChange(Session::CLOSED);
         }));
@@ -465,8 +466,8 @@ TEST_F(ChromotingHostTest, LoginBackOffResetsIfClientsAuthenticate) {
 
   protocol::SessionManager::IncomingSessionResponse response =
       protocol::SessionManager::DECLINE;
-  protocol::Session::EventHandler*
-      session_event_handlers[kNumFailuresIgnored + 1];
+  std::array<protocol::Session::EventHandler*, kNumFailuresIgnored + 1>
+      session_event_handlers;
   for (size_t i = 0; i < kNumFailuresIgnored + 1; ++i) {
     // Set expectations and responses for the new session.
     auto session = std::make_unique<MockSession>();
@@ -476,7 +477,7 @@ TEST_F(ChromotingHostTest, LoginBackOffResetsIfClientsAuthenticate) {
     EXPECT_CALL(*session, SetEventHandler(_))
         .Times(AnyNumber())
         .WillRepeatedly(SaveArg<0>(&session_event_handlers[i]));
-    EXPECT_CALL(*session, Close(_))
+    EXPECT_CALL(*session, Close(_, _, _))
         .WillOnce(InvokeWithoutArgs([&session_event_handlers, i]() {
           session_event_handlers[i]->OnSessionStateChange(Session::CLOSED);
         }));
@@ -503,7 +504,7 @@ TEST_F(ChromotingHostTest, LoginBackOffResetsIfClientsAuthenticate) {
   EXPECT_CALL(*session, SetEventHandler(_))
       .Times(AnyNumber())
       .WillRepeatedly(SaveArg<0>(&session_event_handler));
-  EXPECT_CALL(*session, Close(_))
+  EXPECT_CALL(*session, Close(_, _, _))
       .WillOnce(InvokeWithoutArgs([&session_event_handler]() {
         session_event_handler->OnSessionStateChange(Session::CLOSED);
       }));

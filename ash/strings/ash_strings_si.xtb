@@ -361,6 +361,7 @@
 <translation id="2295777434187870477">මයිකය ක්‍රියාත්මකයි, ටොගල කිරීම ආදානය නිහඬ කරනු ඇත.</translation>
 <translation id="2302092602801625023">මෙම ගිණුම Family Link විසින් කළමනා කෙරේ</translation>
 <translation id="2303600792989757991">ටොගල් කවුළු සමාලෝචනය</translation>
+<translation id="2304702218354340897">ඔබට මුහුණු පාලනය ක්‍රියාවිරහිත කිරීමට අවශ්‍ය බව විශ්වාස ද?</translation>
 <translation id="2305738328104302723">Google කාර්ය ලැයිස්තුව: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: මෑත තිර ග්‍රහණ, බාගැනීම්, සහ ඇමිණූ ගොනු</translation>
 <translation id="2318576281648121272">අද <ph name="TODAY_DATE" /></translation>
@@ -387,6 +388,7 @@
 <translation id="2370971919968699910">මෙයට දත්ත පිරිවැයක් දැරීමට සිදු වේ.
 උපාංග <ph name="DEVICECOUNT" />ක් සම්බන්ධ කර ඇත.</translation>
 <translation id="2386292613071805067">පිටුවෙහි ඇති සියල්ල තෝරන්න</translation>
+<translation id="2389423187722941333">Gemini ටොගල් කරන්න</translation>
 <translation id="2392659840443812875">ලබා ගත හැකි හොට්ස්පොට් නැත. ඔබේ උපාංගය අවට ඇති බවත් බ්ලූටූත් ක්‍රියාත්මක කර ඇති බවත් සහතික කර ගන්න.</translation>
 <translation id="2397416548179033562">Chrome මෙනුව පෙන්වන්න</translation>
 <translation id="240006516586367791">මාධ්‍ය පාලන</translation>
@@ -394,6 +396,7 @@
 <translation id="2402411679569069051">ඔබගේ Chromebook අගුලු හැරීමට, ඔබගේ ඇඟිලි සලකුණ භාවිත කරන්න හෝ ඔබගේ දුරකථනය අගුලු හරින්න</translation>
 <translation id="240545663114741956">වරනය වීමට <ph name="ACCELERATOR" /> දෙවරක් ඔබන්න.</translation>
 <translation id="2405664212338326887">සම්බන්ධ නැත</translation>
+<translation id="2406710117564540804">බාධා නොකරන්න ක්‍රියාත්මක/ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="2408955596600435184">ඔබගේ PIN එක ඇතුළු කරන්න</translation>
 <translation id="2412593942846481727">යාවත්කාලීනයක් ඇත</translation>
 <translation id="2416438829169535743">දසුනින් පිටවන්න ද?</translation>
@@ -899,6 +902,7 @@
 <translation id="4119928251231465047">PIN උත්සාහයන් ගණන වැඩියි</translation>
 <translation id="412298498316631026">කවුළුව</translation>
 <translation id="4123259114412175274">ඔබගේ Chromebook අගුලු හැරීමට, ඔබගේ දුරකථනයේ බ්ලූටූත් ක්‍රියාත්මක බව සහතික කර ගන්න</translation>
+<translation id="4123868835475902435">ඒවා මූලික කරුණු විය! ඉඟි සහ උපකාර සඳහා අපගේ තිළැලි යෙදුම වන ගවේෂණය තුළ ඉදිරියට යන්න. ඔබ ආරම්භ කිරීම සඳහා ඉඟි, විශේෂ දීමනා, සහ නවතම <ph name="PRODUCT_NAME" /> විශේෂාංග සොයා ගනියි.</translation>
 <translation id="4125970834901680537">ටැබ්ලට් ප්‍රකාරය තුළ යෙදුම් ප්‍රවාහ කළ නොහැකිය. ලැප්ටොප් ප්‍රකාරය තුළ නැවත උත්සාහ කරන්න.</translation>
 <translation id="4131973331381812765">උෂ්ණත්වය: <ph name="TEMPERATURE" />°C - වත්මන් වේගය: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="4136724716305260864">හිරු නැග එන තෙක් ක්‍රියාත්මකයි</translation>
@@ -1019,7 +1023,6 @@
 <translation id="4481530544597605423">යුගලනය නොවූ උපාංග</translation>
 <translation id="4485506555414638855">ඔබේ දුරකථනයේ මෑත ඡායාරූප, මාධ්‍ය, දැනුම්දීම්, සහ යෙදුම් බැලීම පිහිටුවීම ඉවතලන්න</translation>
 <translation id="4491109536499578614">රූපය</translation>
-<translation id="4493452241184130939">ඒවා මූලික කරුණු විය! ඉඟි සහ උපකාර සඳහා අපගේ තිළැලි යෙදුම වන ගවේෂණය තුළ ඉදිරියට යන්න. ඔබ ආරම්භ කිරීම සඳහා ඉඟි, නිර්දේශිත යෙදුම්, විශේෂ දීමනා, සහ නවතම <ph name="PRODUCT_NAME" /> විශේෂාංග සොයා ගනියි.</translation>
 <translation id="450584155212756404">සංවර්ධක නාලිකාව</translation>
 <translation id="4513946894732546136">ප්‍රතිපෝෂණ</translation>
 <translation id="4518404433291145981">ඔබගේ Chromebook අගුලු හැරීමට, පළමුව ඔබගේ දුරකථනය අගුලු හරින්න</translation>
@@ -1082,7 +1085,6 @@
 <translation id="4708065238214351979">යතුරු පුවරුව දීප්තිමත් කරන්න</translation>
 <translation id="4708185346211948049"><ph name="DAY_OF_WEEK" /> මීළඟ සතිය</translation>
 <translation id="4717575069099566988">ඔබගේ USB-C කේබලය USB4 සඳහා සහාය නොදක්වයි. උපාංග කාර්ය සාධනය සීමා විය හැකිය.</translation>
-<translation id="4724328513667182700"><ph name="PRODUCT_NAME" /> මත ආරම්භ කිරීමට උපදෙස් 6ක්</translation>
 <translation id="4730374152663651037">නිතරම භාවිතා කළ</translation>
 <translation id="4731797938093519117">මාපිය ප්‍රවේශය</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (වම)</translation>
@@ -1309,7 +1311,6 @@
 <translation id="5409208741270395213">පාඨය සම්පූර්ණ කළ බවට සලකුණු කරන්න</translation>
 <translation id="5413656666631274079">සැකසුම් පිටුව</translation>
 <translation id="5414198321558177633">පැතිකඩ ලැයිස්තුව නැවුම් කරමින්. මෙයට මිනිත්තු කිහිපයක් ගත විය හැකිය.</translation>
-<translation id="5417965108047245734">ඔබේ <ph name="PRODUCT_NAME" /> වටා යන ආකාරය දැන ගැනීමට ඉක්මන් සංචාරයක් කරන්න</translation>
 <translation id="5426063383988017631">සැකසීම් මෙනුව වසන ලදි</translation>
 <translation id="5428899915242071344">තේරීම අරඹන්න</translation>
 <translation id="5429993543155113935">අප්‍රසිද්ධ කවුළු දැනට සහාය නොදක්වයි</translation>
@@ -1647,6 +1648,7 @@
 <translation id="6539852571005954999">ස්කෑන් කරන <ph name="FILENAME" /> බාගන්න</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> වෙත විකාශය කරමින්</translation>
 <translation id="6542891623636520977">ඉමෝජි, GIFs, සහ තවත්</translation>
+<translation id="6543942526104794893">මුහුණේ අභිනයන් ක්‍රියා විරහිත කිරීමට ඔබට අවශ්‍ය බව ඔබට විශ්වාස ද?</translation>
 <translation id="6545382064335350438">ඔබේ PIN තවමත් සත්‍යාපනය කළ නොහැකි විය. නැවත උත්සාහ කරන්න.</translation>
 <translation id="6555373427270923730">ලිපින තීරුවෙහි වෙබ් ලිපිනයක් ටයිප් කර, අනතුරුව <ph name="MODIFIER" /><ph name="KEY" /> ඔබන්න</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2313,6 +2315,7 @@
 <translation id="8855885154700222542">සම්පූර්ණ තිරයේ යතුර</translation>
 <translation id="8858369206579825206">පෞද්ගලිකත්ව පාලන</translation>
 <translation id="8860366331836346216">eSIM එක් කරන්න</translation>
+<translation id="8869149849311827122">ඔබට මූසික කර්සර පාලනය ක්‍රියා විරහිත කිරීමට අවශ්‍ය බව ඔබට විශ්වාස ද?</translation>
 <translation id="8870509716567206129">යෙදුම බෙදුණු-තිරයට සහාය නොදක්වයි.</translation>
 <translation id="8873203135446552888">ඔබට තිළැලි ස්පර්ශ පුවරු අබල කිරීමට අවශ්‍ය බව තහවුරු කරන්න</translation>
 <translation id="8874184842967597500">සබඳවී නොමැත</translation>

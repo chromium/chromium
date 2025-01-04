@@ -77,7 +77,6 @@ Ak ju odstránite, všetci okamžite stratia prístup k skupine kariet <ph name
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> karta bola zmenená, zavreté: <ph name="ANY_CLOSED" />}few{<ph name="MANY_CHANGED" /> karty boli zmenené, zavreté: <ph name="ANY_CLOSED" />}many{<ph name="MANY_CHANGED" /> tabs changed, <ph name="ANY_CLOSED" /> closed}other{<ph name="MANY_CHANGED" /> kariet bolo zmenených, zavreté: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="4371591986692297148">Neaktívne</translation>
 <translation id="4460014764210899310">Zrušiť zoskupenie</translation>
-<translation id="4590027107044272416">Tu môžete teraz otvoriť novú kartu</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Chcete zavrieť 1 neaktívnu kartu?}few{Chcete zavrieť <ph name="TAB_COUNT_MANY" /> neaktívne karty?}many{Close <ph name="TAB_COUNT_MANY" /> inactive tabs?}other{Chcete zavrieť <ph name="TAB_COUNT_MANY" /> neaktívnych kariet?}}</translation>
 <translation id="4686942373615810936">Vytvorená práve teraz</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Zavrieť po 1 dni}few{Zavrieť po <ph name="DAY_COUNT_MANY" /> dňoch}many{Zavrieť po <ph name="DAY_COUNT_MANY" /> dňa}other{Zavrieť po <ph name="DAY_COUNT_MANY" /> dňoch}}</translation>
@@ -98,7 +97,9 @@ Ak ju odstránite, všetci okamžite stratia prístup k skupine kariet <ph name
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> karta bola pridaná}few{<ph name="MANY_ADDED" /> karty boli pridané}many{<ph name="MANY_ADDED" /> tabs added}other{<ph name="MANY_ADDED" /> kariet bolo pridaných}}</translation>
 <translation id="5161254044473106830">Musíte zadať názov</translation>
 <translation id="5339733443032484186">Vaša posledná karta</translation>
+<translation id="5380159289133845234">Archivovať duplicitné karty</translation>
 <translation id="5400836586163650660">Sivá</translation>
+<translation id="5446043142172831860">Odstrániť kartu a opustiť skupinu</translation>
 <translation id="5490235265819901748">Skupina kariet bola rozbalená</translation>
 <translation id="5494920125229734069">Vybrať všetko</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Zavrite skupinu kariet vo farbe <ph name="COLOR_NAME" /> s <ph name="TABS_COUNT_ONE" /> kartou.}few{Zavrite skupinu kariet vo farbe <ph name="COLOR_NAME" /> s <ph name="TABS_COUNT_MANY" /> kartami.}many{Close tab group with <ph name="TABS_COUNT_MANY" /> tabs, color <ph name="COLOR_NAME" />.}other{Zavrite skupinu kariet vo farbe <ph name="COLOR_NAME" /> s <ph name="TABS_COUNT_MANY" /> kartami.}}</translation>
@@ -117,6 +118,7 @@ Ak ju opustíte, okamžite stratíte prístup k skupine kariet <ph name="TITLE_
 <translation id="6051432659151380973">Skupiny kariet sa ukladajú automaticky</translation>
 <translation id="6054741997831917303">Cena tejto položky nedávno klesla z <ph name="PREVIOUS_PRICE" /> na <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Okamžite stratíte prístup k skupine kariet <ph name="GROUP_NAME" /></translation>
+<translation id="6109251075362363230">Všetky duplicitné karty s výnimkou naposledy použitej kópie budú odteraz archivované.</translation>
 <translation id="6193448654517602979">Vyberte karty</translation>
 <translation id="6228793724645064692">(hodnotenie obchodu)</translation>
 <translation id="6271513594716432922">Zavrieť všetky neaktívne karty</translation>

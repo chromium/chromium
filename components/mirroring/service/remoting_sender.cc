@@ -162,8 +162,7 @@ RemotingSender::RemotingSender(
                               base::Unretained(this)),
           std::move(pipe))),
       stream_sender_(this, std::move(stream_sender)),
-      is_audio_(config.rtp_payload_type <=
-                media::cast::RtpPayloadType::REMOTE_AUDIO),
+      is_audio_(config.is_audio()),
       frame_factory_(
           std::make_unique<SenderEncodedFrameFactory>(config.rtp_timebase,
                                                       *frame_sender_,
@@ -324,8 +323,9 @@ void RemotingSender::OnRemotingDataStreamError() {
   // NOTE: This method must be idemptotent as it may be called more than once.
   decoder_buffer_reader_.reset();
   stream_sender_.reset();
-  if (!error_callback_.is_null())
+  if (!error_callback_.is_null()) {
     std::move(error_callback_).Run();
+  }
 }
 
 void RemotingSender::ClearCurrentFrame() {

@@ -37,8 +37,9 @@ constexpr base::TimeDelta kTappedBannerAnimationDuration =
 const CGFloat kSelectedBannerViewYShadowOffset = 8.0;
 
 // Button constants.
-const CGFloat kButtonWidth = 100.0;
+const CGFloat kButtonWidth = 75.0;
 const CGFloat kButtonSeparatorWidth = 1.0;
+const CGFloat kButtonSeparatorPadding = 8.0;
 const CGFloat kButtonMaxFontSize = 45;
 
 // Container Stack constants.
@@ -231,7 +232,6 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
   UIView* buttonSeparator = [[UIView alloc] init];
   buttonSeparator.translatesAutoresizingMaskIntoConstraints = NO;
   buttonSeparator.backgroundColor = [UIColor colorNamed:kSeparatorColor];
-  [self.infobarButton addSubview:buttonSeparator];
 
   // Container Stack setup.
   UIStackView* containerStack = [[UIStackView alloc] init];
@@ -273,6 +273,7 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
       CreateDefaultEffectCirclePointerStyleProvider();
 
   // Add accept button.
+  [containerStack addArrangedSubview:buttonSeparator];
   [containerStack addArrangedSubview:self.infobarButton];
   // Configure it.
   containerStack.axis = UILayoutConstraintAxisHorizontal;
@@ -290,7 +291,8 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
         constraintEqualToAnchor:self.view.leadingAnchor
                        constant:kContainerStackHorizontalPadding],
     [containerStack.trailingAnchor
-        constraintEqualToAnchor:self.view.trailingAnchor],
+        constraintEqualToAnchor:self.view.trailingAnchor
+                       constant:-kContainerStackHorizontalPadding],
     [containerStack.topAnchor constraintEqualToAnchor:self.view.topAnchor],
     [containerStack.bottomAnchor
         constraintEqualToAnchor:self.view.bottomAnchor],
@@ -301,11 +303,12 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
         constraintEqualToAnchor:self.view.bottomAnchor],
     [buttonSeparator.widthAnchor
         constraintEqualToConstant:kButtonSeparatorWidth],
-    [buttonSeparator.leadingAnchor
-        constraintEqualToAnchor:self.infobarButton.leadingAnchor],
-    [buttonSeparator.topAnchor constraintEqualToAnchor:self.view.topAnchor],
+    [buttonSeparator.topAnchor
+        constraintEqualToAnchor:self.infobarButton.topAnchor
+                       constant:kButtonSeparatorPadding],
     [buttonSeparator.bottomAnchor
-        constraintEqualToAnchor:self.view.bottomAnchor],
+        constraintEqualToAnchor:self.infobarButton.bottomAnchor
+                       constant:-kButtonSeparatorPadding],
     // Open modal button.
     [NSLayoutConstraint constraintWithItem:self.openModalButton
                                  attribute:NSLayoutAttributeHeight

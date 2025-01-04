@@ -17,8 +17,7 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-large_variation_key_size_enabled =
-    is_castos || is_cast_android || is_chromeos_lacros
+large_variation_key_size_enabled = is_castos || is_cast_android
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
@@ -123,7 +122,7 @@ component("variations") {
     ]
   }
 
-  if (is_chromeos_ash || is_chromeos_lacros) {
+  if (is_chromeos) {
     sources += [
       "variations_crash_keys_chromeos.cc",
       "variations_crash_keys_chromeos.h",
@@ -140,7 +139,6 @@ component("variations") {
     ":buildflags",
     ":variations_mojom",
     "proto",
-    "//build:chromeos_buildflags",
     "//components/crash/core/common:crash_key",
     "//components/prefs",
     "//components/version_info",
@@ -153,7 +151,7 @@ component("variations") {
     deps += [ "//components/variations/android:variations_jni" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//chromeos/ash/components/dbus/featured",
       "//chromeos/ash/components/dbus/featured:proto",
@@ -251,7 +249,7 @@ source_set("unit_tests") {
     sources += [ "variations_request_scheduler_mobile_unittest.cc" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [ "variations_crash_keys_chromeos_unittest.cc" ]
   }
 
@@ -285,7 +283,7 @@ source_set("unit_tests") {
     "//url",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//chromeos/ash/components/dbus/featured",
       "//chromeos/ash/components/dbus/featured:proto",

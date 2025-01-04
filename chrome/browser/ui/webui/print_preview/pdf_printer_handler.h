@@ -18,7 +18,7 @@
 namespace base {
 class FilePath;
 class RefCountedMemory;
-}
+}  // namespace base
 
 namespace content {
 class WebContents;

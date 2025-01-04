@@ -55,6 +55,9 @@ class Element;
 class LocalFrameView;
 class Text;
 
+struct xmlSAX2Attributes;
+struct xmlSAX2Namespace;
+
 class XMLParserContext : public RefCounted<XMLParserContext> {
   USING_FAST_MALLOC(XMLParserContext);
 
@@ -157,13 +160,11 @@ class XMLDocumentParser final : public ScriptableDocumentParser,
   void StartElementNs(const AtomicString& local_name,
                       const AtomicString& prefix,
                       const AtomicString& uri,
-                      int namespace_count,
-                      const xmlChar** namespaces,
-                      int attribute_count,
-                      int defaulted_count,
-                      const xmlChar** libxml_attributes);
+                      base::span<const xmlSAX2Namespace> namespaces,
+                      base::span<const xmlSAX2Attributes> attributes,
+                      int defaulted_count);
   void EndElementNs();
-  void Characters(const xmlChar* chars, int length);
+  void Characters(base::span<const xmlChar> chars);
   void GetProcessingInstruction(const String& target, const String& data);
   void CdataBlock(const String&);
   void Comment(const String&);

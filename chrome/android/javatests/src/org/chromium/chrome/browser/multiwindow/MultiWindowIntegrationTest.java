@@ -104,7 +104,7 @@ public class MultiWindowIntegrationTest {
     @Test
     @MediumTest
     @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/338976206
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.S_V2) // https://crbug.com/1297370
+    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.R) // https://crbug.com/1297370
     @Feature("MultiWindow")
     @CommandLineFlags.Add({
         ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING,

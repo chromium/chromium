@@ -718,7 +718,6 @@ LocalExtensionCache::CacheItemInfo::CacheItemInfo(
 LocalExtensionCache::CacheItemInfo::CacheItemInfo(const CacheItemInfo& other) =
     default;
 
-LocalExtensionCache::CacheItemInfo::~CacheItemInfo() {
-}
+LocalExtensionCache::CacheItemInfo::~CacheItemInfo() = default;
 
 }  // namespace extensions

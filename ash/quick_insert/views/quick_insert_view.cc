@@ -453,7 +453,7 @@ void QuickInsertView::SelectMoreResults(QuickInsertSectionType type) {
 }
 
 void QuickInsertView::ToggleGifs(bool is_checked) {
-  if (base::FeatureList::IsEnabled(ash::features::kPickerGifs)) {
+  if (base::FeatureList::IsEnabled(features::kPickerGifs)) {
     is_gif_toggle_checked_ = is_checked;
     if (is_gif_toggle_checked_) {
       SelectCategoryWithQuery(QuickInsertCategory::kGifs,
@@ -592,7 +592,7 @@ void QuickInsertView::OnPreviewBubbleVisibilityChanged(bool visible) {
     // If the cursor hides on Esc, the preview bubble is closed due to its
     // OnMouseExit event handler, before QuickInsertView has a chance to handle
     // the Esc key.
-    widget->GetNativeWindow()->SetProperty(ash::kShowCursorOnKeypress, visible);
+    widget->GetNativeWindow()->SetProperty(kShowCursorOnKeypress, visible);
   }
 }
 

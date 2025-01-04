@@ -46,6 +46,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     this.methods.register('getAccelerators');
     this.methods.register('getAcceleratorLayoutInfos');
     this.methods.register('isMutable');
+    this.methods.register('hasCustomAccelerators');
     this.methods.register('isCustomizationAllowedByPolicy');
     this.methods.register('getMetaKeyToDisplay');
     this.methods.register('addAccelerator');
@@ -90,6 +91,10 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
 
   getAccelerators(): Promise<{config: MojoAcceleratorConfig}> {
     return this.methods.resolveMethod('getAccelerators');
+  }
+
+  hasCustomAccelerators(): Promise<{hasCustomAccelerators: boolean}> {
+    return this.methods.resolveMethod('hasCustomAccelerators');
   }
 
   isMutable(source: AcceleratorSource): Promise<{isMutable: boolean}> {
@@ -266,6 +271,11 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
    */
   setFakeAcceleratorLayoutInfos(layoutInfos: MojoLayoutInfo[]): void {
     this.methods.setResult('getAcceleratorLayoutInfos', {layoutInfos});
+  }
+
+  setHasCustomAccelerators(enabled: boolean): void {
+    this.methods.setResult(
+        'hasCustomAccelerators', {hasCustomAccelerators: enabled});
   }
 
   getRestoreDefaultCallCount(): number {

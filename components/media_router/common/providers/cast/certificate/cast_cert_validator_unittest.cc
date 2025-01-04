@@ -138,8 +138,9 @@ void RunTest(CastCertError expected_result,
       trust_store.get());
 
   ASSERT_EQ(expected_result, result);
-  if (expected_result != CastCertError::OK)
+  if (expected_result != CastCertError::OK) {
     return;
+  }
 
   EXPECT_EQ(expected_policy, policy);
   ASSERT_TRUE(context.get());

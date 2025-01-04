@@ -16,8 +16,9 @@ constexpr float kDefaultAcceleration = -1500.0f;  // in pixels per second^2
 // Assumes that d0 == 0.0f
 float GetPosition(float v0, float a, float t) {
   float max_t = -v0 / a;
-  if (t > max_t)
+  if (t > max_t) {
     t = max_t;
+  }
   return t * (v0 + 0.5f * a * t);
 }
 
@@ -39,8 +40,9 @@ ScrollAnimator::~ScrollAnimator() {
 }
 
 void ScrollAnimator::Start(float velocity_x, float velocity_y) {
-  if (acceleration_ >= 0.0f)
+  if (acceleration_ >= 0.0f) {
     acceleration_ = kDefaultAcceleration;
+  }
   float v = std::max(fabs(velocity_x), fabs(velocity_y));
   last_t_ = 0.0f;
   velocity_x_ = velocity_x * velocity_multiplier_;

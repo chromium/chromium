@@ -68,9 +68,14 @@ ExtensionsRequestAccessButton::ExtensionsRequestAccessButton(
   // Set button for IPH.
   SetProperty(views::kElementIdentifierKey,
               kExtensionsRequestAccessButtonElementId);
+
+  UpdateTooltipText();
+  browser_->tab_strip_model()->AddObserver(this);
 }
 
-ExtensionsRequestAccessButton::~ExtensionsRequestAccessButton() = default;
+ExtensionsRequestAccessButton::~ExtensionsRequestAccessButton() {
+  browser_->tab_strip_model()->RemoveObserver(this);
+}
 
 void ExtensionsRequestAccessButton::Update(
     std::vector<extensions::ExtensionId>& extension_ids) {
@@ -78,6 +83,7 @@ void ExtensionsRequestAccessButton::Update(
 
   extension_ids_ = extension_ids;
   SetVisible(!extension_ids_.empty());
+  UpdateTooltipText();
 
   if (extension_ids_.empty()) {
     return;
@@ -136,15 +142,37 @@ bool ExtensionsRequestAccessButton::IsShowingConfirmationFor(
   return confirmation_origin_ == origin;
 }
 
-std::u16string ExtensionsRequestAccessButton::GetTooltipText(
-    const gfx::Point& p) const {
+bool ExtensionsRequestAccessButton::ShouldShowInkdropAfterIphInteraction() {
+  return false;
+}
+
+void ExtensionsRequestAccessButton::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (selection.active_tab_changed()) {
+    UpdateTooltipText();
+  }
+}
+
+void ExtensionsRequestAccessButton::TabChangedAt(content::WebContents* contents,
+                                                 int index,
+                                                 TabChangeType change_type) {
+  if (contents == GetActiveWebContents()) {
+    UpdateTooltipText();
+  }
+}
+
+void ExtensionsRequestAccessButton::UpdateTooltipText() {
   std::vector<std::u16string> tooltip_parts;
   content::WebContents* active_contents = GetActiveWebContents();
 
   // Active contents can be null if the window is closing.
   if (!active_contents) {
-    return std::u16string();
+    SetCachedTooltipText(std::u16string());
+    return;
   }
+
   tooltip_parts.push_back(l10n_util::GetStringFUTF16(
       IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_TOOLTIP_MULTIPLE_EXTENSIONS,
       GetCurrentHost(active_contents)));
@@ -153,11 +181,7 @@ std::u16string ExtensionsRequestAccessButton::GetTooltipText(
         extensions_container_->GetActionForId(extension_id);
     tooltip_parts.push_back(action->GetActionName());
   }
-  return base::JoinString(tooltip_parts, u"\n");
-}
-
-bool ExtensionsRequestAccessButton::ShouldShowInkdropAfterIphInteraction() {
-  return false;
+  SetCachedTooltipText(base::JoinString(tooltip_parts, u"\n"));
 }
 
 void ExtensionsRequestAccessButton::OnButtonPressed() {

@@ -21,7 +21,7 @@
 // users to do SSA-style usage of TemplateURL: construct a TemplateURLData with
 // whatever fields are desired, then create an immutable TemplateURL from it.
 struct TemplateURLData {
-  enum class CreatedByPolicy {
+  enum class PolicyOrigin {
     kNoPolicy = 0,
     kDefaultSearchProvider = 1,
     kSiteSearch = 2,
@@ -84,6 +84,9 @@ struct TemplateURLData {
   void SetURL(const std::string& url);
   const std::string& url() const { return url_; }
 
+  // Generate the deterministic hash of data within this TemplateURL.
+  std::vector<uint8_t> GenerateHash() const;
+
   // Recomputes |sync_guid| using the same logic as in the constructor. This
   // means a random GUID is generated, except for built-in search engines,
   // which generate GUIDs deterministically based on |prepopulate_id| or
@@ -93,6 +96,15 @@ struct TemplateURLData {
   // Estimates dynamic memory usage.
   // See base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const;
+
+  // Returns whether this search engine was created by an Enterprise policy.
+  bool CreatedByPolicy() const;
+  // Returns whether this search engine was created by the Default Search
+  // Provider Enterprise policy.
+  bool CreatedByDefaultSearchProviderPolicy() const;
+  // Returns whether this search engine was created by an Enterprise policy that
+  // doesn't define the Default Search Provider.
+  bool CreatedByNonDefaultSearchProviderPolicy() const;
 
   // Optional additional raw URLs.
   std::string suggestions_url;
@@ -177,7 +189,7 @@ struct TemplateURLData {
 
   // True if this TemplateURL was automatically created by the administrator via
   // group policy.
-  CreatedByPolicy created_by_policy;
+  PolicyOrigin policy_origin;
 
   // True if this TemplateURL is forced to be the default search engine via
   // policy. This prevents the user from setting another search engine as

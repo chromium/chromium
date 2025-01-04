@@ -19,26 +19,36 @@ class MockResourceBundleDelegate : public ResourceBundle::Delegate {
   MockResourceBundleDelegate();
   ~MockResourceBundleDelegate() override;
 
-  MOCK_METHOD2(GetPathForResourcePack,
-               base::FilePath(const base::FilePath& pack_path,
-                              ResourceScaleFactor scale_factor));
-  MOCK_METHOD2(GetPathForLocalePack,
-               base::FilePath(const base::FilePath& pack_path,
-                              const std::string& locale));
-  MOCK_METHOD1(GetImageNamed, gfx::Image(int resource_id));
-  MOCK_METHOD1(GetNativeImageNamed, gfx::Image(int resource_id));
-  MOCK_CONST_METHOD1(HasDataResource, bool(int resource_id));
-  MOCK_METHOD2(LoadDataResourceBytes,
-               base::RefCountedMemory*(int resource_id,
-                                       ResourceScaleFactor scale_factor));
-  MOCK_METHOD1(LoadDataResourceString,
-               std::optional<std::string>(int resource_id));
-  MOCK_CONST_METHOD3(GetRawDataResource,
-                     bool(int resource_id,
-                          ResourceScaleFactor scale_factor,
-                          std::string_view* value));
-  MOCK_CONST_METHOD2(GetLocalizedString,
-                     bool(int message_id, std::u16string* value));
+  MOCK_METHOD(base::FilePath,
+              GetPathForResourcePack,
+              (const base::FilePath& pack_path,
+               ResourceScaleFactor scale_factor),
+              (override));
+  MOCK_METHOD(base::FilePath,
+              GetPathForLocalePack,
+              (const base::FilePath& pack_path, const std::string& locale),
+              (override));
+  MOCK_METHOD(gfx::Image, GetImageNamed, (int resource_id), (override));
+  MOCK_METHOD(gfx::Image, GetNativeImageNamed, (int resource_id), (override));
+  MOCK_METHOD(bool, HasDataResource, (int resource_id), (const override));
+  MOCK_METHOD(base::RefCountedMemory*,
+              LoadDataResourceBytes,
+              (int resource_id, ResourceScaleFactor scale_factor),
+              (override));
+  MOCK_METHOD(std::optional<std::string>,
+              LoadDataResourceString,
+              (int resource_id),
+              (override));
+  MOCK_METHOD(bool,
+              GetRawDataResource,
+              (int resource_id,
+               ResourceScaleFactor scale_factor,
+               std::string_view* value),
+              (const override));
+  MOCK_METHOD(bool,
+              GetLocalizedString,
+              (int message_id, std::u16string* value),
+              (const override));
 };
 
 }  // namespace ui

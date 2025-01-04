@@ -36,7 +36,7 @@ class RenderProcessHostProxy {
   bool is_valid() const { return !render_process_host_id_.is_null(); }
 
   // Returns the routing id of the render process (from
-  // RenderProcessHost::GetID).
+  // RenderProcessHost::GetDeprecatedID()).
   RenderProcessHostId render_process_host_id() const {
     return render_process_host_id_;
   }

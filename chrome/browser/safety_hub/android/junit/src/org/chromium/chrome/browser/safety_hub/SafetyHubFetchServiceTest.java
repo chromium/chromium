@@ -93,7 +93,10 @@ public class SafetyHubFetchServiceTest {
     }
 
     @Test
-    @Features.DisableFeatures(ChromeFeatureList.SAFETY_HUB)
+    @Features.DisableFeatures({
+        ChromeFeatureList.SAFETY_HUB,
+        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS
+    })
     public void testTaskCancelled_WhenConditionsNotMet() {
         new SafetyHubFetchService(mProfile).onForegroundSessionStart();
 
@@ -149,7 +152,10 @@ public class SafetyHubFetchServiceTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.SAFETY_HUB)
+    @Features.EnableFeatures({
+        ChromeFeatureList.SAFETY_HUB,
+        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS
+    })
     public void testTaskRescheduled_whenFetchFails() {
         mPasswordCheckupClientHelper.setError(new Exception());
 
@@ -162,7 +168,10 @@ public class SafetyHubFetchServiceTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.SAFETY_HUB)
+    @Features.EnableFeatures({
+        ChromeFeatureList.SAFETY_HUB,
+        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS
+    })
     public void testTaskRescheduled_whenFetchFailsForOneCredentialType() {
         mPasswordCheckupClientHelper.setWeakCredentialsError(new Exception());
         int breachedCredentialsCount = 5;
@@ -181,7 +190,10 @@ public class SafetyHubFetchServiceTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.SAFETY_HUB)
+    @Features.EnableFeatures({
+        ChromeFeatureList.SAFETY_HUB,
+        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS
+    })
     public void testNextTaskScheduled_WhenFetchSucceeds() {
         int breachedCredentialsCount = 5;
         int weakCredentialsCount = 4;

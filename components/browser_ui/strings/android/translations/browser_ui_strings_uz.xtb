@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">Yuklab olish pauza qilindi.</translation>
 <translation id="1396327438254055134">Sayt V8 optimizer ishlatishiga ruxsat berish.</translation>
 <translation id="1415402041810619267">URL manzil qisqartirildi</translation>
+<translation id="1415855080660575082">Qurilmadagi ilovalar roʻyxati va qidiruv natijalarida oxirgi varaqlar chiqishi uchun Chrome ularni qurilmaga ulashishiga ruxsat bering. Buni Chrome sozlamalarida faolsizlantirish mumkin.</translation>
 <translation id="1448064542941920355">Kichiklashtirish</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> ta sayt}other{<ph name="SITE_COUNT" /> ta sayt}}</translation>
 <translation id="1500473259453106018">Varaqlarda narx pasayishi bildirgisini berkitish</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">Siz bu saytga tashqi cookie fayllaridan foydalanishga vaqtincha ruxsat berdingiz, bu esa kuzatuvdan himoyani kamaytiradi, lekin sayt funksiyalari kutilganidek ishlaydi. <ph name="BEGIN_LINK" />Fikr-mulohaza<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Ayrim saytlardagi funksiyalar Inkognito rejimida ishlamasligi mumkin</translation>
 <translation id="2442870161001914531">Har doim kompyuter versiyasi ochilsin</translation>
+<translation id="2445311670906052406">Endi Chrome qurilmangizga oxirgi varaqlarni ulashadi. Ular qurilmadagi ilovalar roʻyxati va qidiruv natijalarida chiqadi. Buni istalgan vaqt Chrome sozlamalarida faolsizlantirishingiz mumkin.</translation>
 <translation id="2469312991797799607"><ph name="ORIGIN" /> sayti va unga aloqador saytlar tomonidan saqlangan barcha maʼlumotlar va cookie fayllari oʻchirib tashlanadi.</translation>
 <translation id="2482878487686419369">Bildirishnomalar</translation>
 <translation id="2485422356828889247">O‘chirib tashlash</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">Saytlar shaxsni tasdiqlash xizmatlariga kirish oynalarini chiqarishi mumkin</translation>
 <translation id="2787357173144933081">Omniboksdan boshlash</translation>
 <translation id="2790501146643349491">Yoqilsa, yaqinda yopilgan saytlar axborot yuborish va qabul qilishni toʻxtatishi mumkin. Oʻchirilsa, toʻxtata olmaydi.</translation>
+<translation id="2814830417943086299">Chrome endi oxirgi varaqlarni qurilmadagi ilovalar roʻyxati va qidiruv natijalarida chiqaradi. Buni istalgan vaqt Chrome sozlamalarida faolsizlantirishingiz mumkin.</translation>
 <translation id="2822354292072154809"><ph name="CHOSEN_OBJECT_NAME" /> uchun barcha sayt ruxsatnomalari ilk holatga qaytarilsinmi?</translation>
 <translation id="2850913818900871965">Mobil versiyani ochish</translation>
 <translation id="2870560284913253234">Sayt</translation>
@@ -335,7 +338,6 @@
 <translation id="5968921426641056619">Veb-manzilni kiriting</translation>
 <translation id="5975083100439434680">Kichiklashtirish</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
-<translation id="6015145568571136419">Endi qurilmadagi ilovalar roʻyxati va qidiruv natijalari orqali tavsiya etilgan varaqlarga tezkor kirish mumkin. Buni istalgan vaqt Chrome sozlamalari orqali faolsizlantirish mumkin.</translation>
 <translation id="6015775454662021376">Bu saytning qurilmangizni boshqarish ruxsatlarini boshqaring</translation>
 <translation id="6040143037577758943">Yopish</translation>
 <translation id="6042308850641462728">Yana</translation>
@@ -558,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> va yana <ph name="NUM_MORE" /> ta}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> va yana <ph name="NUM_MORE" /> ta}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android sozlamalari<ph name="END_LINK" /> orqali <ph name="APP_NAME" /> uchun ruxsatnomalarni yoqing.</translation>
 <translation id="9138217887606523162">Joriy zum: <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="9156722768168878035">Chrome oxirgi varaqlarni qurilmadagi ilovalar roʻyxati va qidiruv natijalarida chiqarishiga ruxsat bering. Buni istalgan vaqt Chrome sozlamalarida faolsizlantirishingiz mumkin.</translation>
 <translation id="9162462602695099906">Bu sahifa xavfli</translation>
 <translation id="947156494302904893">Siz ochadigan va real odam ekaningiz haqidagi axborotni tekshirishi mumkin saytlar</translation>
 <translation id="959682366969460160">Ishni tashkillash</translation>

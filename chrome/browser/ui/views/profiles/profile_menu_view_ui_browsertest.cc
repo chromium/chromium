@@ -2,13 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
@@ -18,6 +23,7 @@
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -60,12 +66,19 @@ enum class ProfileMenuDesignVersion {
   kExplicitSigninImproved,
 };
 
+enum class ManagementStatus {
+  kNonManaged,
+  kAccountManaged,
+  kBrowserManaged,
+};
+
 struct ProfileMenuViewPixelTestParam {
   PixelTestParam pixel_test_param;
   ProfileTypePixelTestParam profile_type_param =
       ProfileTypePixelTestParam::kRegular;
   SigninStatusPixelTestParam signin_status =
       SigninStatusPixelTestParam::kSignedOut;
+  ManagementStatus management_status = ManagementStatus::kNonManaged;
   // param to be removed when `switches::kExplicitBrowserSigninUIOnDesktop` is
   // enabled by default. Also remove duplicated tests (with "_WithoutUnoDesign"
   // appended to their name) that test the old design without the feature.
@@ -252,6 +265,18 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
      .signin_status = SigninStatusPixelTestParam::kSignInPendingNoSync,
      .profile_menu_uno_redesign =
          ProfileMenuDesignVersion::kExplicitSigninImproved},
+    {.pixel_test_param = {.test_suffix = "SignedIn_AccountManaged_Improved"},
+     .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+     .management_status = ManagementStatus::kAccountManaged,
+     .profile_menu_uno_redesign =
+         ProfileMenuDesignVersion::kExplicitSigninImproved},
+    {.pixel_test_param = {.test_suffix = "SignedIn_BrowserManaged_Improved",
+                          .use_dark_theme = true},
+     .signin_status = SigninStatusPixelTestParam::kSignedOut,
+     .management_status = ManagementStatus::kBrowserManaged,
+     .profile_menu_uno_redesign =
+         ProfileMenuDesignVersion::kExplicitSigninImproved,
+     .outline_silhouette_icon = true},
 };
 
 }  // namespace
@@ -269,15 +294,19 @@ class ProfileMenuViewPixelTest
         GetParam().profile_menu_uno_redesign !=
             ProfileMenuDesignVersion::kImplicitSignin;
 
-    bool should_enabled_improved_design =
+    bool should_enable_improved_design =
         should_enable_uno &&
         GetParam().profile_menu_uno_redesign ==
             ProfileMenuDesignVersion::kExplicitSigninImproved;
 
     feature_list_.InitWithFeatureStates(
         {{switches::kExplicitBrowserSigninUIOnDesktop, should_enable_uno},
-         {switches::kImprovedSigninUIOnDesktop, should_enabled_improved_design},
-         {kOutlineSilhouetteIcon, GetParam().outline_silhouette_icon}});
+         {switches::kImprovedSigninUIOnDesktop, should_enable_improved_design},
+         {kOutlineSilhouetteIcon, GetParam().outline_silhouette_icon},
+         {features::kEnterpriseProfileBadgingForMenu,
+          should_enable_improved_design},
+         {features::kEnterpriseProfileBadgingPolicies,
+          should_enable_improved_design}});
 
     // The Profile menu view seems not to be resizied properly on changes which
     // causes the view to go out of bounds. This should not happen and needs to
@@ -292,6 +321,11 @@ class ProfileMenuViewPixelTest
 
   ~ProfileMenuViewPixelTest() override = default;
 
+  void TearDownOnMainThread() override {
+    scoped_browser_management_.reset();
+    ProfilesPixelTestBaseT<DialogBrowserTest>::TearDownOnMainThread();
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ProfilesPixelTestBaseT<DialogBrowserTest>::SetUpCommandLine(command_line);
     if (GetSigninStatus() == SigninStatusPixelTestParam::kSigninDisallowed) {
@@ -305,6 +339,17 @@ class ProfileMenuViewPixelTest
 
   SigninStatusPixelTestParam GetSigninStatus() const {
     return GetParam().signin_status;
+  }
+
+  ManagementStatus GetManagementStatus() const {
+    return GetParam().management_status;
+  }
+
+  AccountManagementStatus GetAccountManagementStatus() const {
+    const bool account_managed =
+        GetManagementStatus() == ManagementStatus::kAccountManaged;
+    return account_managed ? AccountManagementStatus::kManaged
+                           : AccountManagementStatus::kNonManaged;
   }
 
   bool ShouldUseMultipleProfiles() const {
@@ -366,6 +411,25 @@ class ProfileMenuViewPixelTest
       ASSERT_EQ(new_browser, browser());
     }
 
+    switch (GetManagementStatus()) {
+      case ManagementStatus::kNonManaged:
+        break;
+      case ManagementStatus::kAccountManaged:
+        enterprise_util::SetUserAcceptedAccountManagement(GetProfile(), true);
+        scoped_browser_management_ =
+            std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
+                policy::ManagementServiceFactory::GetForProfile(GetProfile()),
+                policy::EnterpriseManagementAuthority::CLOUD);
+        break;
+      case ManagementStatus::kBrowserManaged:
+        enterprise_util::SetUserAcceptedAccountManagement(GetProfile(), true);
+        scoped_browser_management_ =
+            std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
+                policy::ManagementServiceFactory::GetForProfile(GetProfile()),
+                policy::EnterpriseManagementAuthority::COMPUTER_LOCAL);
+        break;
+    }
+
     // Configures browser according to desired signin status.
     switch (GetSigninStatus()) {
       case SigninStatusPixelTestParam::kSignedOut:
@@ -373,6 +437,7 @@ class ProfileMenuViewPixelTest
         // Nothing to do.
         break;
       case SigninStatusPixelTestParam::kWebSignedIn:
+        // Account management is not applied with `kWebSignedIn`.
         SignInWithAccount(AccountManagementStatus::kNonManaged, std::nullopt);
         break;
       case SigninStatusPixelTestParam::kSignedInNoSync:
@@ -383,7 +448,7 @@ class ProfileMenuViewPixelTest
         identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
         break;
       case SigninStatusPixelTestParam::kSignedInWithSync: {
-        SignInWithAccount(AccountManagementStatus::kNonManaged,
+        SignInWithAccount(GetAccountManagementStatus(),
                           signin::ConsentLevel::kSync);
 
         // Enable sync.
@@ -395,7 +460,7 @@ class ProfileMenuViewPixelTest
         break;
       }
       case SigninStatusPixelTestParam::kSignedInSyncPaused: {
-        SignInWithAccount(AccountManagementStatus::kNonManaged,
+        SignInWithAccount(GetAccountManagementStatus(),
                           signin::ConsentLevel::kSync);
 
         // Enable sync.
@@ -409,7 +474,7 @@ class ProfileMenuViewPixelTest
         break;
       }
       case SigninStatusPixelTestParam::kSignedInSyncNotWorking:
-        SignInWithAccount(AccountManagementStatus::kNonManaged,
+        SignInWithAccount(GetAccountManagementStatus(),
                           signin::ConsentLevel::kSync);
         break;
     }
@@ -512,6 +577,8 @@ class ProfileMenuViewPixelTest
   }
 
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
+      scoped_browser_management_;
 };
 
 IN_PROC_BROWSER_TEST_P(ProfileMenuViewPixelTest, InvokeUi_default) {

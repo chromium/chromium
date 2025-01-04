@@ -33,6 +33,7 @@
 #include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/data_type_manager.h"
 #include "components/sync/service/data_type_manager_observer.h"
+#include "components/sync/service/local_data_migration_item_queue.h"
 #include "components/sync/service/sync_client.h"
 #include "components/sync/service/sync_prefs.h"
 #include "components/sync/service/sync_service.h"
@@ -159,9 +160,12 @@ class SyncServiceImpl : public SyncService,
       base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>
           callback) override;
   void TriggerLocalDataMigration(DataTypeSet types) override;
-  void TriggerLocalDataMigration(
-      std::map<DataType, std::vector<syncer::LocalDataItemModel::DataId>> items)
+  void TriggerLocalDataMigrationForItems(
+      std::map<DataType, std::vector<LocalDataItemModel::DataId>> items)
       override;
+  void SelectTypeAndMigrateLocalDataItemsWhenActive(
+      DataType data_type,
+      std::vector<LocalDataItemModel::DataId> items) override;
 
   // SyncEngineHost implementation.
   void OnEngineInitialized(bool success,
@@ -213,10 +217,10 @@ class SyncServiceImpl : public SyncService,
 
   // SyncPrefObserver implementation.
   void OnSyncManagedPrefChange(bool is_sync_managed) override;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   void OnFirstSetupCompletePrefChange(
       bool is_initial_sync_feature_setup_complete) override;
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   void OnSelectedTypesPrefChange() override;
 
   // KeyedService implementation.  This must be called exactly
@@ -497,6 +501,8 @@ class SyncServiceImpl : public SyncService,
   base::Time deferring_first_start_since_;
 
   std::unique_ptr<SyncFeatureStatusForMigrationsRecorder> sync_status_recorder_;
+
+  std::unique_ptr<LocalDataMigrationItemQueue> local_data_migration_item_queue_;
 
   base::ScopedObservation<SyncPrefs, SyncPrefObserver> sync_prefs_observation_{
       this};

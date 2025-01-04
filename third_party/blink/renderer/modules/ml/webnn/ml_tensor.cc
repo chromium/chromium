@@ -131,7 +131,7 @@ ScriptPromise<DOMArrayBuffer> MLTensor::ReadTensorImpl(
 ScriptPromise<IDLUndefined> MLTensor::ReadTensorImpl(
     ScopedMLTrace scoped_trace,
     ScriptState* script_state,
-    DOMArrayBufferBase* dst_data,
+    AllowSharedBufferSource* dst_data,
     ExceptionState& exception_state) {
   // Remote context gets automatically unbound when the execution context
   // destructs.
@@ -141,7 +141,8 @@ ScriptPromise<IDLUndefined> MLTensor::ReadTensorImpl(
     return EmptyPromise();
   }
 
-  if (dst_data->ByteLength() < PackedByteLength()) {
+  base::span<uint8_t> bytes = AsByteSpan(*dst_data);
+  if (bytes.size() < PackedByteLength()) {
     exception_state.ThrowTypeError("The destination tensor is too small.");
     return EmptyPromise();
   }
@@ -153,36 +154,6 @@ ScriptPromise<IDLUndefined> MLTensor::ReadTensorImpl(
   base::ElapsedTimer read_tensor_timer;
   remote_tensor_->ReadTensor(
       WTF::BindOnce(&MLTensor::OnDidReadTensorByob, WrapPersistent(this),
-                    std::move(scoped_trace), WrapPersistent(resolver),
-                    WrapPersistent(dst_data), std::move(read_tensor_timer)));
-  return resolver->Promise();
-}
-
-ScriptPromise<IDLUndefined> MLTensor::ReadTensorImpl(
-    ScopedMLTrace scoped_trace,
-    ScriptState* script_state,
-    DOMArrayBufferView* dst_data,
-    ExceptionState& exception_state) {
-  // Remote context gets automatically unbound when the execution context
-  // destructs.
-  if (!remote_tensor_.is_bound()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Invalid tensor state");
-    return EmptyPromise();
-  }
-
-  if (dst_data->byteLength() < PackedByteLength()) {
-    exception_state.ThrowTypeError("The destination tensor is too small.");
-    return EmptyPromise();
-  }
-
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
-      script_state, exception_state.GetContext());
-  pending_byob_resolvers_.insert(resolver);
-
-  base::ElapsedTimer read_tensor_timer;
-  remote_tensor_->ReadTensor(
-      WTF::BindOnce(&MLTensor::OnDidReadTensorByobView, WrapPersistent(this),
                     std::move(scoped_trace), WrapPersistent(resolver),
                     WrapPersistent(dst_data), std::move(read_tensor_timer)));
   return resolver->Promise();
@@ -202,6 +173,9 @@ void MLTensor::OnDidReadTensor(
         read_tensor_error.message);
     return;
   }
+
+  CHECK_EQ(result->get_buffer().size(), descriptor_.PackedByteLength());
+
   resolver->Resolve(DOMArrayBuffer::Create(result->get_buffer()));
 
   RecordReadTensorTime(std::move(read_tensor_timer));
@@ -210,7 +184,7 @@ void MLTensor::OnDidReadTensor(
 void MLTensor::OnDidReadTensorByob(
     ScopedMLTrace scoped_trace,
     ScriptPromiseResolver<IDLUndefined>* resolver,
-    DOMArrayBufferBase* dst_data,
+    AllowSharedBufferSource* dst_data,
     base::ElapsedTimer read_tensor_timer,
     webnn::mojom::blink::ReadTensorResultPtr result) {
   pending_byob_resolvers_.erase(resolver);
@@ -223,47 +197,19 @@ void MLTensor::OnDidReadTensorByob(
     return;
   }
 
-  if (dst_data->IsDetached()) {
+  base::span<uint8_t> bytes = AsByteSpan(*dst_data);
+  if (bytes.size() == 0) {
     resolver->RejectWithTypeError("Buffer was detached.");
     return;
   }
+
+  CHECK_EQ(result->get_buffer().size(), descriptor_.PackedByteLength());
 
   // It is safe to write into `dst_data` even though it was not transferred
   // because this method is called in a task which runs on same thread where
   // script executes, so script can't observe a partially written state (unless
   // `dst_data` is a SharedArrayBuffer).
-  dst_data->ByteSpanMaybeShared().copy_prefix_from(result->get_buffer());
-  resolver->Resolve();
-
-  RecordReadTensorTime(std::move(read_tensor_timer));
-}
-
-void MLTensor::OnDidReadTensorByobView(
-    ScopedMLTrace scoped_trace,
-    ScriptPromiseResolver<IDLUndefined>* resolver,
-    DOMArrayBufferView* dst_data,
-    base::ElapsedTimer read_tensor_timer,
-    webnn::mojom::blink::ReadTensorResultPtr result) {
-  pending_byob_resolvers_.erase(resolver);
-
-  if (result->is_error()) {
-    const webnn::mojom::blink::Error& read_tensor_error = *result->get_error();
-    resolver->RejectWithDOMException(
-        WebNNErrorCodeToDOMExceptionCode(read_tensor_error.code),
-        read_tensor_error.message);
-    return;
-  }
-
-  if (dst_data->IsDetached()) {
-    resolver->RejectWithTypeError("Buffer was detached.");
-    return;
-  }
-
-  // It is safe to write into `dst_data` even though it was not transferred
-  // because this method is called in a task which runs on same thread where
-  // script executes, so script can't observe a partially written state (unless
-  // `dst_data` is a SharedArrayBuffer).
-  dst_data->ByteSpanMaybeShared().copy_prefix_from(result->get_buffer());
+  bytes.copy_prefix_from(result->get_buffer());
   resolver->Resolve();
 
   RecordReadTensorTime(std::move(read_tensor_timer));

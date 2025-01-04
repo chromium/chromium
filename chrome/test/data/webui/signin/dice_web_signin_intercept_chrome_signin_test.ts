@@ -49,10 +49,10 @@ suite('DiceWebSigninInterceptChromeSigninTest', function() {
     assertEquals(expectedUrl, img.src);
   }
 
-  function checkAriaLabel(elementId: string, expectedAriaLabel: string) {
-    const badge = app.shadowRoot!.querySelector<HTMLElement>(elementId);
+  function checkAltText(elementId: string, expectedAltText: string) {
+    const badge = app.shadowRoot!.querySelector<HTMLImageElement>(elementId);
     assertTrue(badge != null);
-    assertEquals(expectedAriaLabel, badge.ariaLabel);
+    assertEquals(expectedAltText, badge.alt);
   }
 
   test('ClickAccept', function() {
@@ -103,7 +103,6 @@ suite('DiceWebSigninInterceptChromeSigninTest', function() {
   test('AccountIconsAndManagedBadges', async function() {
     const iconSelector = '#accountIconContainer > img';
     const badgeSelector = '#accountIconContainer > .managed-user-badge';
-    const badgeAriaLabelSelector = '#accountIconContainer > div > cr-icon';
 
     // Regular (non-supervised) user avatars.
     checkImageUrl(iconSelector, PARAMETERS.pictureUrl);
@@ -120,7 +119,7 @@ suite('DiceWebSigninInterceptChromeSigninTest', function() {
     await microtasksFinished();
     checkImageUrl(iconSelector, PARAMETERS.pictureUrl);
     assertTrue(isChildVisible(app, badgeSelector));
-    checkAriaLabel(badgeAriaLabelSelector, newParams.userBadgeAltText);
+    checkAltText(iconSelector, newParams.userBadgeAltText);
 
     // Un-set Supervised user badge source. The badge becomes hidden.
     newParams = {
@@ -132,7 +131,7 @@ suite('DiceWebSigninInterceptChromeSigninTest', function() {
         'interception-chrome-signin-parameters-changed', newParams);
     await microtasksFinished();
     assertFalse(isChildVisible(app, badgeSelector));
-    checkAriaLabel(badgeAriaLabelSelector, newParams.userBadgeAltText);
+    checkAltText(iconSelector, newParams.userBadgeAltText);
   });
 
 });

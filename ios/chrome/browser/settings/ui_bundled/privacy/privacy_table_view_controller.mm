@@ -252,12 +252,9 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   }
   [model addSectionWithIdentifier:SectionIdentifierSafeBrowsing];
 
-  if (base::FeatureList::IsEnabled(
-          security_interstitials::features::kHttpsOnlyMode)) {
-    [model addSectionWithIdentifier:SectionIdentifierHTTPSOnlyMode];
-    [model addItem:self.HTTPSOnlyModeItem
-        toSectionWithIdentifier:SectionIdentifierHTTPSOnlyMode];
-  }
+  [model addSectionWithIdentifier:SectionIdentifierHTTPSOnlyMode];
+  [model addItem:self.HTTPSOnlyModeItem
+      toSectionWithIdentifier:SectionIdentifierHTTPSOnlyMode];
 
   [model addSectionWithIdentifier:SectionIdentifierWebServices];
   [model addSectionWithIdentifier:SectionIdentifierIncognitoAuth];

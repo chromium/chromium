@@ -52,6 +52,8 @@ class FederatedIdentityApiPermissionContext
       const GURL& provider_url,
       const url::Origin& relying_party_embedder) const override;
 
+  bool AreThirdPartyCookiesEnabledInSettings() const override;
+
  private:
   const raw_ptr<HostContentSettingsMap> host_content_settings_map_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;

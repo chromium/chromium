@@ -9,7 +9,7 @@
 
 #include "chrome/browser/resource_coordinator/decision_details.h"
 
-#include "services/metrics/public/cpp/ukm_builders.h"
+#include "base/check.h"
 
 namespace resource_coordinator {
 
@@ -57,112 +57,6 @@ const char* kDecisionSuccessReasonStrings[] = {
 static_assert(std::size(kDecisionSuccessReasonStrings) ==
                   static_cast<size_t>(DecisionSuccessReason::MAX),
               "kDecisionSuccessReasonStrings not up to date with enum");
-
-void PopulateSuccessReason(
-    DecisionSuccessReason success_reason,
-    ukm::builders::TabManager_LifecycleStateChange* ukm) {
-  switch (success_reason) {
-    case DecisionSuccessReason::INVALID:
-      break;
-    case DecisionSuccessReason::ORIGIN_TRIAL_OPT_IN:
-      ukm->SetSuccessOriginTrialOptIn(1);
-      break;
-    case DecisionSuccessReason::GLOBAL_ALLOWLIST:
-      ukm->SetSuccessGlobalAllowlist(1);
-      break;
-    case DecisionSuccessReason::HEURISTIC_OBSERVED_TO_BE_SAFE:
-      ukm->SetSuccessHeuristic(1);
-      break;
-    case DecisionSuccessReason::MAX:
-      NOTREACHED();
-  }
-}
-
-void PopulateFailureReason(
-    DecisionFailureReason failure_reason,
-    ukm::builders::TabManager_LifecycleStateChange* ukm) {
-  switch (failure_reason) {
-    case DecisionFailureReason::INVALID:
-      break;
-    case DecisionFailureReason::LIFECYCLES_ENTERPRISE_POLICY_OPT_OUT:
-      ukm->SetFailureLifecyclesEnterprisePolicyOptOut(1);
-      break;
-    case DecisionFailureReason::ORIGIN_TRIAL_OPT_OUT:
-      ukm->SetFailureOriginTrialOptOut(1);
-      break;
-    case DecisionFailureReason::GLOBAL_DISALLOWLIST:
-      ukm->SetFailureGlobalDisallowlist(1);
-      break;
-    case DecisionFailureReason::HEURISTIC_AUDIO:
-      ukm->SetFailureHeuristicAudio(1);
-      break;
-    case DecisionFailureReason::HEURISTIC_FAVICON:
-      ukm->SetFailureHeuristicFavicon(1);
-      break;
-    case DecisionFailureReason::HEURISTIC_INSUFFICIENT_OBSERVATION:
-      ukm->SetFailureHeuristicInsufficientObservation(1);
-      break;
-    case DecisionFailureReason::HEURISTIC_TITLE:
-      ukm->SetFailureHeuristicTitle(1);
-      break;
-    case DecisionFailureReason::LIVE_STATE_CAPTURING:
-      ukm->SetFailureLiveStateCapturing(1);
-      break;
-    case DecisionFailureReason::LIVE_STATE_EXTENSION_DISALLOWED:
-      ukm->SetFailureLiveStateExtensionDisallowed(1);
-      break;
-    case DecisionFailureReason::LIVE_STATE_FORM_ENTRY:
-      ukm->SetFailureLiveStateFormEntry(1);
-      break;
-    case DecisionFailureReason::LIVE_STATE_IS_PDF:
-      ukm->SetFailureLiveStateIsPDF(1);
-      break;
-    case DecisionFailureReason::LIVE_STATE_MIRRORING:
-      ukm->SetFailureLiveStateMirroring(1);
-      break;
-    case DecisionFailureReason::LIVE_STATE_PLAYING_AUDIO:
-      ukm->SetFailureLiveStatePlayingAudio(1);
-      break;
-    case DecisionFailureReason::LIVE_STATE_USING_WEB_SOCKETS:
-      ukm->SetFailureLiveStateUsingWebSockets(1);
-      break;
-    case DecisionFailureReason::LIVE_STATE_USING_WEB_USB:
-      ukm->SetFailureLiveStateUsingWebUSB(1);
-      break;
-    case DecisionFailureReason::LIVE_STATE_VISIBLE:
-      ukm->SetFailureLiveStateVisible(1);
-      break;
-    case DecisionFailureReason::LIVE_STATE_DEVTOOLS_OPEN:
-      ukm->SetFailureLiveStateDevToolsOpen(1);
-      break;
-    case DecisionFailureReason::LIVE_STATE_DESKTOP_CAPTURE:
-      ukm->SetFailureLiveStateDesktopCapture(1);
-      break;
-    case DecisionFailureReason::LIVE_STATE_SHARING_BROWSING_INSTANCE:
-      ukm->SetFailureLiveStateSharingBrowsingInstance(1);
-      break;
-    case DecisionFailureReason::LIVE_STATE_USING_BLUETOOTH:
-      ukm->SetFailureLiveStateUsingBluetooth(1);
-      break;
-    case DecisionFailureReason::LIVE_STATE_USING_WEBLOCK:
-      ukm->SetFailureLiveStateUsingWebLock(1);
-      break;
-    case DecisionFailureReason::LIVE_STATE_USING_INDEXEDDB_LOCK:
-      ukm->SetFailureLiveStateUsingIndexedDBLock(1);
-      break;
-    case DecisionFailureReason::LIVE_STATE_HAS_NOTIFICATIONS_PERMISSION:
-      ukm->SetFailureLiveStateHasNotificationsPermission(1);
-      break;
-    case DecisionFailureReason::LIVE_WEB_APP:
-      ukm->SetFailureLiveWebApp(1);
-      break;
-    case DecisionFailureReason::LIVE_PICTURE_IN_PICTURE:
-      ukm->SetFailureLivePictureInPicture(1);
-      break;
-    case DecisionFailureReason::MAX:
-      NOTREACHED();
-  }
-}
 
 }  // namespace
 
@@ -291,25 +185,6 @@ DecisionSuccessReason DecisionDetails::SuccessReason() const {
 DecisionFailureReason DecisionDetails::FailureReason() const {
   DCHECK(!reasons_.empty());
   return reasons_.front().failure_reason();
-}
-
-void DecisionDetails::Populate(
-    ukm::builders::TabManager_LifecycleStateChange* ukm) const {
-  DCHECK(!reasons_.empty());
-  bool positive = IsPositive();
-  ukm->SetOutcome(positive);
-  for (const auto& reason : reasons_) {
-    // Stop adding reasons once all of the initial reasons of the same type
-    // have been added.
-    bool success = reason.IsSuccess();
-    if (success != positive)
-      break;
-    if (success) {
-      PopulateSuccessReason(reason.success_reason(), ukm);
-    } else {
-      PopulateFailureReason(reason.failure_reason(), ukm);
-    }
-  }
 }
 
 std::vector<std::string> DecisionDetails::GetFailureReasonStrings() const {

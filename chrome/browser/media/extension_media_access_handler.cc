@@ -42,11 +42,9 @@ bool IsMediaRequestAllowedForExtension(const extensions::Extension* extension) {
 
 }  // namespace
 
-ExtensionMediaAccessHandler::ExtensionMediaAccessHandler() {
-}
+ExtensionMediaAccessHandler::ExtensionMediaAccessHandler() = default;
 
-ExtensionMediaAccessHandler::~ExtensionMediaAccessHandler() {
-}
+ExtensionMediaAccessHandler::~ExtensionMediaAccessHandler() = default;
 
 bool ExtensionMediaAccessHandler::SupportsStreamType(
     content::WebContents* web_contents,

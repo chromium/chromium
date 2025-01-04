@@ -15,9 +15,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
-import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.firstrun.MobileFreProgress;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -39,6 +36,7 @@ import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.sync.SyncService;
@@ -99,6 +97,8 @@ public class FullscreenSigninMediator
     private boolean mInitialLoadCompleted;
 
     private AccountPickerDialogCoordinator mDialogCoordinator;
+    // TODO(crbug.com/40921927): Replace with CoreAccountInfo.
+    private @Nullable String mAddedAccountEmail;
     // TODO(crbug.com/40921927): Replace with CoreAccountInfo.
     private @Nullable String mSelectedAccountEmail;
     // TODO(crbug.com/40921927): Replace with CoreAccountInfo.
@@ -209,9 +209,7 @@ public class FullscreenSigninMediator
             mInitialLoadCompleted = true;
             onInitialLoadCompleted(mDelegate.getPolicyLoadListener().get());
             // TODO(crbug.com/40235150): Rename this method and the corresponding histogram.
-            mDelegate.recordNativePolicyAndChildStatusLoadedHistogram();
-            RecordHistogram.recordEnumeratedHistogram(
-                    "MobileFre.SlowestLoadPoint", slowestLoadPoint, LoadPoint.MAX);
+            mDelegate.recordLoadCompletedHistograms(slowestLoadPoint);
         }
     }
 
@@ -255,26 +253,27 @@ public class FullscreenSigninMediator
         mModel.set(FullscreenSigninProperties.IS_SIGNIN_SUPPORTED, isSigninSupported);
         mModel.set(FullscreenSigninProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER, false);
 
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            if (isSigninSupported) {
-                mModel.set(FullscreenSigninProperties.TITLE_STRING_ID, mConfig.titleId);
-            }
-            SyncService syncService = SyncServiceFactory.getForProfile(profile);
-            boolean isSyncDataManaged =
-                    IntStream.range(UserSelectableType.FIRST_TYPE, UserSelectableType.LAST_TYPE + 1)
-                            .anyMatch(syncService::isTypeManagedByPolicy);
-            mModel.set(
-                    FullscreenSigninProperties.SUBTITLE_STRING_ID,
-                    isSyncDataManaged
-                            ? R.string.signin_fre_subtitle_without_sync
-                            : mConfig.subtitleId);
+        if (isSigninSupported) {
+            mModel.set(FullscreenSigninProperties.TITLE_STRING_ID, mConfig.titleId);
         }
+        SyncService syncService = SyncServiceFactory.getForProfile(profile);
+        boolean isSyncDataManaged =
+                IntStream.range(UserSelectableType.FIRST_TYPE, UserSelectableType.LAST_TYPE + 1)
+                        .anyMatch(syncService::isTypeManagedByPolicy);
+        mModel.set(
+                FullscreenSigninProperties.SUBTITLE_STRING_ID,
+                isSyncDataManaged ? R.string.signin_fre_subtitle_without_sync : mConfig.subtitleId);
 
         mAllowMetricsAndCrashUploading = !isMetricsReportingDisabledByPolicy;
         mModel.set(
                 FullscreenSigninProperties.FOOTER_STRING,
                 getFooterString(isMetricsReportingDisabledByPolicy));
+    }
+
+    void onAccountAdded(String accountEmail) {
+        mAddedAccountEmail = accountEmail;
+        setSelectedAccountEmail(accountEmail);
+        if (mDialogCoordinator != null) mDialogCoordinator.dismissDialog();
     }
 
     /** Implements {@link ProfileDataCache.Observer}. */
@@ -350,16 +349,7 @@ public class FullscreenSigninMediator
     void proceedWithSignIn() {
         // This is needed to get metrics/crash reports from the sign-in flow itself.
         mDelegate.acceptTermsOfService(mAllowMetricsAndCrashUploading);
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                && mModel.get(FullscreenSigninProperties.IS_SELECTED_ACCOUNT_SUPERVISED)) {
-            // Don't perform the sign-in here, as it will be handled by SigninChecker.
-            mDelegate.advanceToNextPage();
-            return;
-        }
-        mDelegate.recordFreProgressHistogram(
-                TextUtils.equals(mDefaultAccountEmail, mSelectedAccountEmail)
-                        ? MobileFreProgress.WELCOME_SIGNIN_WITH_DEFAULT_ACCOUNT
-                        : MobileFreProgress.WELCOME_SIGNIN_WITH_NON_DEFAULT_ACCOUNT);
+        mDelegate.recordUserSignInHistograms(getSigninPromoAction());
         // If the user signs into an account on the FRE, goes to the next page and presses
         // back to come back to the welcome screen, then there will already be an account signed in.
         @Nullable
@@ -409,14 +399,50 @@ public class FullscreenSigninMediator
                     mModel.get(FullscreenSigninProperties.IS_SELECTED_ACCOUNT_SUPERVISED)
                             ? SigninAccessPoint.FORCED_SIGNIN
                             : mAccessPoint;
-            FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
-                    selectedAccount,
-                    signinManager,
-                    accessPoint,
-                    signInCallback,
-                    mContext,
-                    mModalDialogManager);
+            if (signedInAccount != null) {
+                // If there already exists another signed-in account, first sign-out and then
+                // sign-in with the selected account.
+                signOutThenSignInWithSelectedAccount(
+                        selectedAccount, signinManager, accessPoint, signInCallback);
+            } else {
+                FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
+                        selectedAccount,
+                        signinManager,
+                        accessPoint,
+                        signInCallback,
+                        mContext,
+                        mModalDialogManager);
+            }
         }
+    }
+
+    private void signOutThenSignInWithSelectedAccount(
+            CoreAccountInfo selectedAccount,
+            SigninManager signinManager,
+            @SigninAccessPoint int accessPoint,
+            @Nullable SignInCallback signInCallback) {
+        SignOutCallback signOutCallback =
+                () ->
+                        FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
+                                selectedAccount,
+                                signinManager,
+                                accessPoint,
+                                signInCallback,
+                                mContext,
+                                mModalDialogManager);
+        signinManager.signOut(
+                SignoutReason.ABORT_SIGNIN, signOutCallback, /* forceWipeData= */ false);
+    }
+
+    private @AccountConsistencyPromoAction int getSigninPromoAction() {
+        assert mSelectedAccountEmail != null;
+        if (TextUtils.equals(mSelectedAccountEmail, mDefaultAccountEmail)) {
+            return AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT;
+        } else if (mAddedAccountEmail != null
+                && TextUtils.equals(mSelectedAccountEmail, mAddedAccountEmail)) {
+            return AccountConsistencyPromoAction.SIGNED_IN_WITH_ADDED_ACCOUNT;
+        }
+        return AccountConsistencyPromoAction.SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT;
     }
 
     /** Callback for the PropertyKey {@link FullscreenSigninProperties#ON_DISMISS_CLICKED}. */
@@ -432,7 +458,7 @@ public class FullscreenSigninMediator
 
     /** Dismisses the sign-in page and continues without a signed-in account. */
     void dismiss() {
-        mDelegate.recordFreProgressHistogram(MobileFreProgress.WELCOME_DISMISS);
+        mDelegate.recordSigninDismissedHistograms();
         mDelegate.acceptTermsOfService(mAllowMetricsAndCrashUploading);
         SigninPreferencesManager.getInstance().temporarilySuppressNewTabPagePromos();
         if (IdentityServicesProvider.get()

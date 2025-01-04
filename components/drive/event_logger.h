@@ -15,16 +15,17 @@
 #include "base/logging.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
+#include "components/drive/drive_export.h"
 
 namespace drive {
 
 // The default history size used by EventLogger.
-const int kDefaultHistorySize = 1000;
+inline constexpr int kDefaultHistorySize = 1000;
 
 // EventLogger is used to collect and expose text messages for diagnosing
 // behaviors of Google APIs stuff. For instance, the collected messages are
 // exposed to chrome:drive-internals.
-class EventLogger {
+class COMPONENTS_DRIVE_EXPORT EventLogger {
  public:
   // Represents a single event log.
   struct Event {

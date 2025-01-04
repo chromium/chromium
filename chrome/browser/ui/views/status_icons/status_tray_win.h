@@ -38,8 +38,10 @@ class StatusTrayWin : public StatusTray {
   void UpdateIconVisibilityInBackground(StatusIconWin* status_icon);
 
   // Exposed for testing.
-  LRESULT CALLBACK
-      WndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
+  LRESULT CALLBACK WndProc(HWND hwnd,
+                           UINT message,
+                           WPARAM wparam,
+                           LPARAM lparam);
 
  protected:
   // Overriden from StatusTray:
@@ -52,8 +54,10 @@ class StatusTrayWin : public StatusTray {
   FRIEND_TEST_ALL_PREFIXES(StatusTrayWinTest, EnsureVisibleTest);
 
   // Static callback invoked when a message comes in to our messaging window.
-  static LRESULT CALLBACK
-      WndProcStatic(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
+  static LRESULT CALLBACK WndProcStatic(HWND hwnd,
+                                        UINT message,
+                                        WPARAM wparam,
+                                        LPARAM lparam);
 
   UINT NextIconId();
 

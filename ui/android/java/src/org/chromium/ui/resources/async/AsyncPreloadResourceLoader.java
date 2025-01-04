@@ -11,12 +11,16 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.resources.Resource;
 import org.chromium.ui.resources.ResourceLoader;
 
 import java.util.concurrent.ExecutionException;
 
 /** Handles loading Android resources from disk asynchronously and synchronously. */
+@NullMarked
 public class AsyncPreloadResourceLoader extends ResourceLoader {
     /** Responsible for actually creating a {@link Resource} from a specific resource id. */
     public interface ResourceCreator {
@@ -28,6 +32,7 @@ public class AsyncPreloadResourceLoader extends ResourceLoader {
          * @return      A {@link Resource} instance that represents {@code resId} or {@code null} if
          *              none can be loaded.
          */
+        @Nullable
         Resource create(int resId);
     }
 
@@ -91,7 +96,7 @@ public class AsyncPreloadResourceLoader extends ResourceLoader {
         mOutstandingLoads.put(resId, task);
     }
 
-    private Resource createResource(int resId) {
+    private @Nullable Resource createResource(int resId) {
         try {
             TraceEvent.begin("AsyncPreloadResourceLoader.createResource");
             return mCreator.create(resId);
@@ -100,7 +105,7 @@ public class AsyncPreloadResourceLoader extends ResourceLoader {
         }
     }
 
-    private void registerResource(Resource resource, int resourceId) {
+    private void registerResource(@Nullable Resource resource, int resourceId) {
         notifyLoadFinished(resourceId, resource);
         mOutstandingLoads.remove(resourceId);
     }
@@ -112,13 +117,14 @@ public class AsyncPreloadResourceLoader extends ResourceLoader {
             mResourceId = resourceId;
         }
 
+        @NullUnmarked
         @Override
-        protected Resource doInBackground() {
+        protected @Nullable Resource doInBackground() {
             return createResource(mResourceId);
         }
 
         @Override
-        protected void onPostExecute(Resource resource) {
+        protected void onPostExecute(@Nullable Resource resource) {
             // If we've been removed from the list of outstanding load tasks, don't broadcast the
             // callback.
             if (mOutstandingLoads.get(mResourceId) == null) return;

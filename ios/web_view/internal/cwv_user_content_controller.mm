@@ -107,4 +107,11 @@ NSDictionary* NSDictionaryFromDictValue(const base::Value::Dict& value) {
       ->UnregisterHandler(command);
 }
 
+- (BOOL)isMessageHandlerRegisteredForCommand:(NSString*)nsCommand {
+  std::string command = base::SysNSStringToUTF8(nsCommand);
+  return WebViewMessageHandlerJavaScriptFeature::FromBrowserState(
+             _configuration.browserState)
+      ->IsHandlerRegistered(command);
+}
+
 @end

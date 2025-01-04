@@ -67,6 +67,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="1786044937610313874">Prečice se otvaraju u Chrome-u</translation>
 <translation id="178701303897325119">Ovaj dodatak više nije podržan. Chrome preporučuje da ga uklonite.</translation>
 <translation id="1812689907177901597">Kada to uključite, možete da se prijavljujete na Google sajtove, kao što je Gmail, ali se ne prijavljujete u Chrome</translation>
+<translation id="1838374766361614909">Obrišite pretragu</translation>
 <translation id="1860536484129686729">Chrome traži dozvolu da pristupi kameri za ovaj sajt</translation>
 <translation id="1873233029667955273">Google Chrome nije podrazumevani pregledač</translation>
 <translation id="1874309113135274312">Google Chrome beta (mDNS-In)</translation>
@@ -95,7 +96,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2137162749895930932">Zatvorite ekran za prevođenje</translation>
 <translation id="2139300032719313227">Restartujte Chrome OS</translation>
 <translation id="2151406531797534936">Ponovo pokrenite Chrome</translation>
-<translation id="2163089732491971196">Da biste koristili i čuvali Chrome podatke na Google nalogu, unesite pristupnu frazu</translation>
 <translation id="2174917724755363426">Instalacija nije dovršena. Želite stvarno da je otkažete?</translation>
 <translation id="2186206192313702726">Google objektiv</translation>
 <translation id="2190166659037789668">Greška sa proverom ažuriranja: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -209,6 +209,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="345171907106878721">Dodajte sebe u Chrome</translation>
 <translation id="3453763134178591239">Chrome OS uslovi</translation>
 <translation id="3503306920980160878">Chrome traži pristup vašoj lokaciji da biste je delili sa ovim sajtom</translation>
+<translation id="3512634283363927263">Ove stranice su namenjene programerima Chrome-a i možda se ne održavaju niti testiraju aktivno. Da biste ih omogućili, idite na <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknite na dugme da biste omogućili stranice za otklanjanje grešaka, pa ponovo idite na ovu stranicu.</translation>
 <translation id="3533694711092285624">Nema sačuvanih lozinki. Chrome može da proverava lozinke kada ih sačuvate.</translation>
 <translation id="3541482654983822893">Chrome ne može da vam proverava lozinke. Probajte ponovo za 24 sata.</translation>
 <translation id="3564543103555793392">Kada se prijavite u Chrome, možete da sačuvate obeleživače, lozinke i drugo, pa da ih koristite na telefonu</translation>
@@ -231,7 +232,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="3716540481907974026">Verzija Chrome OS Flex-a</translation>
 <translation id="3718181793972440140">Ovim ćete izbrisati 1 stavku sa ovog uređaja. Da biste kasnije vratili podatke, prijavite se u Chrome kao <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome preporučuje da ga uklonite. <ph name="BEGIN_LINK" />Saznajte više o podržanim dodacima<ph name="END_LINK" />}one{Chrome preporučuje da ih uklonite. <ph name="BEGIN_LINK" />Saznajte više o podržanim dodacima<ph name="END_LINK" />}few{Chrome preporučuje da ih uklonite. <ph name="BEGIN_LINK" />Saznajte više o podržanim dodacima<ph name="END_LINK" />}other{Chrome preporučuje da ih uklonite. <ph name="BEGIN_LINK" />Saznajte više o podržanim dodacima<ph name="END_LINK" />}}</translation>
-<translation id="3744202345691150878">Pronađite pomoć za Chrome OS</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Chrome OS Flex nije uspeo da sinhronizuje podatke zbog greške pri prijavljivanju.</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
@@ -245,6 +245,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="3889417619312448367">Deinstaliraj Google Chrome</translation>
 <translation id="3892148308691398805">Kopiraj tekst</translation>
 <translation id="3941890832296813527">Greška pri instalaciji: Naziv fajla programa za instalaciju je nevažeći ili nije podržan.</translation>
+<translation id="3968962723676998462">Unesite pristupnu frazu da biste koristili i sačuvali Chrome podatke na nalogu, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome želi da izbriše podatke iz Google menadžera lozinki. Unesite lozinku za Windows da biste to omogućili.</translation>
 <translation id="398236277091248993">Chrome ostaje brz uz funkcije za poboljšanje performansi</translation>
 <translation id="3999683152997576765">Možete da vidite i uklonite teme interesovanja koje sajtovi koriste da bi vam prikazivali oglase. Chrome procenjuje vaša interesovanja na osnovu nedavne istorije pregledanja.</translation>
@@ -262,6 +263,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="4147555960264124640">Prijavljujete se pomoću naloga kojim se upravlja i dajete njegovom administratoru kontrolu nad Google Chrome profilom. Chrome podaci, kao što su aplikacije, obeleživači, istorija, lozinke i druga podešavanja, biće trajno povezani sa nalogom <ph name="USER_NAME" />. Moći ćete da izbrišete te podatke preko Kontrolne table Google naloga, ali nećete moći da ih povežete sa nekim drugim nalogom. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Instaliranje...</translation>
 <translation id="4149882025268051530">Program za instalaciju nije uspeo da dekomprimuje arhivu. Preuzmite Google Chrome ponovo.</translation>
+<translation id="415112847282352845">Da bi vam adrese i drugi sadržaj bili dostupni na svim uređajima, prijavite se u Chrome. Ova adresa će biti sačuvana na Google nalogu kada se prijavite.</translation>
 <translation id="4153934450158521343">Chrome će se uskoro zatvoriti i izbrisati podatke</translation>
 <translation id="4173512894976930765">Sajtovi će verovatno raditi na očekivani način. Bićete odjavljeni sa većine sajtova kada zatvorite sve Chrome prozore, osim sa Google naloga ako ste prijavljeni u Chrome.</translation>
 <translation id="4175922240926474352">Chrome je blokirao ovo preuzimanje jer ovaj sajt ne koristi bezbednu vezu, pa je fajl možda neovlašćeno menjan</translation>
@@ -295,7 +297,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="4567424176335768812">Prijavljeni ste kao <ph name="USER_EMAIL_ADDRESS" />. Sada možete da pristupate obeleživačima, istoriji i drugim podešavanjima na svim uređajima na kojima ste prijavljeni.</translation>
 <translation id="4571503333518166079">Idi na podešavanja obaveštenja za Chrome</translation>
 <translation id="4575717501879784448">Chrome može da učini ove kartice neaktivnim da bi poboljšao doživljaj pregledanja i oslobodio resurse.</translation>
-<translation id="4595162648538023956">Možete da se prijavite da biste dobili svoje stavke ili da koristite Chrome bez naloga</translation>
 <translation id="459622048091363950">Kada Chrome dobije pristup, veb-sajtovi će moći da zatraže pristup.</translation>
 <translation id="4600710005438004015">Chrome nije uspeo da se ažurira na najnoviju verziju, pa propuštate nove funkcije i bezbednosne ispravke.</translation>
 <translation id="4601439950572737842">Podaci se šifruju pomoću pristupne fraze. Unesite je da biste koristili i sačuvali Chrome podatke na Google nalogu.</translation>
@@ -303,13 +304,13 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="4627412468266359539">Opcionalno: Automatski šaljite Google-u dijagnostiku i podatke o korišćenju da biste nam pomogli da poboljšamo funkcije i učinak Chrome OS Flex-a.</translation>
 <translation id="4633000520311261472">Da bismo učinili Chrome bezbednijim, onemogućili smo neke dodatke koje ne navodi <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i koji su možda dodati bez vašeg znanja.</translation>
 <translation id="4680828127924988555">Otkaži instalaciju</translation>
-<translation id="469553575393225953">Dodaci, aplikacije i teme iz nepoznatih izvora mogu da naškode uređaju. Chrome preporučuje da ih instalirate samo iz Chrome veb-prodavnice</translation>
 <translation id="4710245680469034439">Personalizujte pregledač pomoću tema inspirisanih prirodom, kolekcijama umetnika i drugim motivima</translation>
 <translation id="4720851490453439956">Interna usluga ažuriranja Google-a</translation>
 <translation id="4724676981607797757">Instalacija nije uspela zbog nepodržane greške protokola.</translation>
 <translation id="4728575227883772061">Instalacija nije uspela zbog neodređene greške. Ako je Google Chrome trenutno otvoren, zatvorite ga i pokušajte ponovo.</translation>
 <translation id="4741235124132242877">Zakačeno je. Ponovo koristite Google objektiv sa trake s alatkama</translation>
 <translation id="4747730611090640388">Chrome može da proceni vaša interesovanja.  Sajt koji kasnije posetite može da zatraži od Chrome-a pristup vašim interesovanjima da bi personalizovao oglase koji vam se prikazuju.</translation>
+<translation id="475321580758063259">Ažurirajte Chrome da biste nastavili da koristite Chrome podatke na Google nalogu, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="479167709087336770">Koristi istu proveru pravopisa kao Google pretraga. Tekst koji unesete u pregledač se šalje Google-u. To uvek možete da promenite u podešavanjima.</translation>
 <translation id="4793679854893018356">Saznajte kako vas Chrome štiti</translation>
@@ -354,7 +355,6 @@ Neke funkcije su možda nedostupne. Navedite drugi direktorijum profila ili kori
 <translation id="5334309298019785904">Chrome OS ne može da sinhronizuje podatke jer Sinhronizacija nije dostupna za domen.</translation>
 <translation id="5334487786912937552">Chrome-u treba pristup memorijskom prostoru da bi preuzimao fajlove</translation>
 <translation id="5337648990166757586">Opcionalno: Automatski šaljite Google-u dijagnostiku i podatke o korišćenju da biste nam pomogli da poboljšamo funkcije i učinak Chrome OS-a.</translation>
-<translation id="5357889879764279201">Dobijte pomoć za Chrome OS Flex</translation>
 <translation id="5368118228313795342">Dodatni kôd: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Kontroliše i stranicu koja se prikazuje kada pokrenete Chrome ili pretražujete iz omniboksa.</translation>
 <translation id="5394833366792865639">Delite Chrome karticu</translation>
@@ -395,6 +395,7 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="5941830788786076944">Podesite Google Chrome kao podrazumevani pregledač</translation>
 <translation id="5947104538377036631">Chrome prečica</translation>
 <translation id="5953954252731207958">Niste skoro posećivali sajt. Chrome je uklonio dozvolu <ph name="PERMISSION" /></translation>
+<translation id="5980111191913430208">Dodaci, aplikacije i teme iz nepoznatih izvora mogu da naškode uređaju. Chrome preporučuje da ih instalirate samo iz: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Preuzima se... Još <ph name="HOURS" /> č</translation>
 <translation id="6014316319780893079">Pomoću <ph name="BEGIN_LINK" />Chrome alatki<ph name="END_LINK" /> možete bezbedno da pregledate i zadržite kontrolu</translation>
 <translation id="6022659036123304283">Prilagodite Chrome sebi</translation>
@@ -528,6 +529,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="7572537927358445944">Isključeno • Chrome ne može da proveri odakle potiče ovaj dodatak</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> program za instalaciju</translation>
 <translation id="7606334485649076285">Google Chrome OS Flex</translation>
+<translation id="7617512710641355143">Chrome-om se upravlja</translation>
 <translation id="7626032353295482388">Dobro došli u Chrome</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> zahteva da pročitate i prihvatite sledeće Uslove korišćenja usluge pre korišćenja ovog uređaja. Ovi uslovi ne proširuju, menjaju niti ograničavaju Uslove za Google Chrome OS.</translation>
 <translation id="7629695634924605473">Chrome vas obaveštava ako su lozinke ugrožene</translation>
@@ -585,6 +587,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="8077579734294125741">Drugi Chrome profili</translation>
 <translation id="8086881907087796310">Instaliranje nije uspelo zato što računar ne ispunjava minimalne zahteve za hardver.</translation>
 <translation id="8111297389482307122">Chrome mora da verifikuje da ste to vi da bi neki podaci mogli da se čuvaju na Google nalogu i koriste na svim uređajima. Ako se odjavite, ti podaci će ostati na ovom uređaju.</translation>
+<translation id="8113883687556086139">Potvrdite identitet da biste koristili i sačuvali Chrome podatke na nalogu, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8118331347066725040">Pošaljite povratne informacije za pretragu pomoću Objektiva</translation>
 <translation id="8129812357326543296">O &amp;Google Chrome-u</translation>
 <translation id="813913629614996137">Pokreće se…</translation>
@@ -612,6 +615,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="842386925677997438">Chrome alatke za bezbednost</translation>
 <translation id="8425765582779547329">Ako želiš veću bezbednost onlajn uz izbore roditelja, prijavi se u Chrome</translation>
 <translation id="8428213095426709021">Podešavanja</translation>
+<translation id="8429214465555795676">Da biste nastavili, morate da se prijavite u Chrome pomoću naloga <ph name="EMAIL" />. Ovo obezbeđuje usklađenost sa smernicama organizacije.</translation>
 <translation id="8433638294851456451">Da biste poslali broj sa ovog uređaja na Android telefon, prijavite se u Chrome na oba uređaja.</translation>
 <translation id="8451192282033883849">Vašim nalogom upravlja <ph name="MANAGER_NAME" />. Administrator može da vidi i menja ovaj profil u Chrome pregledaču i njegove podatke, poput obeleživača, istorije i lozinki.</translation>
 <translation id="8496177819998570653">Google menadžer lozinki</translation>
@@ -637,6 +641,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="8718062187489036808">Odjavi me iz Chrome-a</translation>
 <translation id="873133009373065397">Google Chrome ne može da odredi ni da podesi podrazumevani pregledač</translation>
 <translation id="8748735421235723888">Chrome oslobađa memoriju sa neaktivnih kartica. To aktivnim karticama i drugim aplikacijama pruža više računarskih resursa i održava Chrome brzim. Neaktivne kartice se automatski ponovo aktiviraju kada se vratite na njih. <ph name="BEGIN_LINK" />Saznajte više o Uštedi memorije<ph name="END_LINK" /></translation>
+<translation id="8753189155654018347">Ukloni podatke ove aplikacije iz Chrome-a</translation>
 <translation id="8765470054473112089">Kada kucate u traci za adresu ili u okviru za pretragu, Chrome šalje tekst koji unosite podrazumevanom pretraživaču da biste dobijali bolje predloge. Ovo je isključeno u režimu bez arhiviranja.</translation>
 <translation id="8781673607513845160">Da biste koristili kameru, odobrite Chrome-u pristup u <ph name="BEGIN_LINK" />podešavanjima sistema<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Greška pri instalaciji: Administrator mreže je primenio smernice za grupu koje sprečavaju instalaciju: <ph name="INSTALL_ERROR" /></translation>

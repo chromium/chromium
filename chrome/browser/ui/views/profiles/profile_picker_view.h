@@ -62,12 +62,10 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // ProfilePickerWebContentsHost:
   void ShowScreen(content::WebContents* contents,
                   const GURL& url,
-                  base::OnceClosure navigation_finished_closure =
-                      base::OnceClosure()) override;
+                  base::OnceClosure navigation_finished_closure) override;
   void ShowScreenInPickerContents(
       const GURL& url,
-      base::OnceClosure navigation_finished_closure =
-          base::OnceClosure()) override;
+      base::OnceClosure navigation_finished_closure) override;
   bool ShouldUseDarkColors() const override;
   content::WebContents* GetPickerContents() const override;
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
@@ -255,7 +253,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // Called when the user selects an account on the Lacros-specific account
   // selection screen. Only called for existing profiles, not as part of profile
   // creation.
-  void NotifyAccountSelected(const std::string& gaia_id);
+  void NotifyAccountSelected(const GaiaId& gaia_id);
 #endif
 
   void UpdateAccessibleNameForRootView(views::WebView*);

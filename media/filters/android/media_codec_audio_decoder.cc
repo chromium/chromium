@@ -336,31 +336,9 @@ bool MediaCodecAudioDecoder::IsAnyInputPending() const {
   return !input_queue_.empty();
 }
 
-MediaCodecLoop::InputData MediaCodecAudioDecoder::ProvideInputData() {
+scoped_refptr<DecoderBuffer> MediaCodecAudioDecoder::ProvideInputData() {
   DVLOG(3) << __func__;
-
-  const auto& decoder_buffer = input_queue_.front().first;
-
-  MediaCodecLoop::InputData input_data;
-  if (decoder_buffer->end_of_stream()) {
-    input_data.is_eos = true;
-  } else {
-    input_data.memory = *decoder_buffer;
-    const DecryptConfig* decrypt_config = decoder_buffer->decrypt_config();
-    if (decrypt_config) {
-      input_data.key_id = decrypt_config->key_id();
-      input_data.iv = decrypt_config->iv();
-      input_data.subsamples = decrypt_config->subsamples();
-      input_data.encryption_scheme = decrypt_config->encryption_scheme();
-      input_data.encryption_pattern = decrypt_config->encryption_pattern();
-    }
-    input_data.presentation_time = decoder_buffer->timestamp();
-  }
-
-  // We do not pop |input_queue_| here.  MediaCodecLoop may refer to data that
-  // it owns until OnInputDataQueued is called.
-
-  return input_data;
+  return input_queue_.front().first;
 }
 
 void MediaCodecAudioDecoder::OnInputDataQueued(bool success) {

@@ -26,7 +26,6 @@ class CommerceHeuristicsInstallerPolicy : public ComponentInstallerPolicy {
       delete;
   CommerceHeuristicsInstallerPolicy& operator=(
       const CommerceHeuristicsInstallerPolicy& other) = delete;
-  ~CommerceHeuristicsInstallerPolicy() override = default;
 
  private:
   // The following methods override ComponentInstallerPolicy.

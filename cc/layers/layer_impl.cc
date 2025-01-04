@@ -956,64 +956,6 @@ bool LayerImpl::is_surface_layer() const {
   return false;
 }
 
-static float TranslationFromActiveTreeLayerScreenSpaceTransform(
-    LayerImpl* pending_tree_layer) {
-  LayerTreeImpl* layer_tree_impl = pending_tree_layer->layer_tree_impl();
-  if (layer_tree_impl) {
-    LayerImpl* active_tree_layer =
-        layer_tree_impl->FindActiveTreeLayerById(pending_tree_layer->id());
-    if (active_tree_layer) {
-      gfx::Transform active_tree_screen_space_transform =
-          active_tree_layer->draw_properties().screen_space_transform;
-      if (active_tree_screen_space_transform.IsIdentity())
-        return 0.f;
-      if (active_tree_screen_space_transform.ApproximatelyEqual(
-              pending_tree_layer->draw_properties().screen_space_transform))
-        return 0.f;
-      return (active_tree_layer->draw_properties()
-                  .screen_space_transform.To2dTranslation() -
-              pending_tree_layer->draw_properties()
-                  .screen_space_transform.To2dTranslation())
-          .Length();
-    }
-  }
-  return 0.f;
-}
-
-// A layer jitters if its screen space transform is same on two successive
-// commits, but has changed in between the commits. CalculateLayerJitter
-// computes the jitter for the layer.
-int LayerImpl::CalculateJitter() {
-  float jitter = 0.f;
-  performance_properties().translation_from_last_frame = 0.f;
-  performance_properties().last_commit_screen_space_transform =
-      draw_properties().screen_space_transform;
-
-  if (!visible_layer_rect().IsEmpty()) {
-    if (draw_properties().screen_space_transform.ApproximatelyEqual(
-            performance_properties().last_commit_screen_space_transform)) {
-      float translation_from_last_commit =
-          TranslationFromActiveTreeLayerScreenSpaceTransform(this);
-      if (translation_from_last_commit > 0.f) {
-        performance_properties().num_fixed_point_hits++;
-        performance_properties().translation_from_last_frame =
-            translation_from_last_commit;
-        if (performance_properties().num_fixed_point_hits >
-            LayerTreeImpl::kFixedPointHitsThreshold) {
-          // Jitter = Translation from fixed point * sqrt(Area of the layer).
-          // The square root of the area is used instead of the area to match
-          // the dimensions of both terms on the rhs.
-          jitter += translation_from_last_commit *
-                    sqrt(visible_layer_rect().size().GetArea());
-        }
-      } else {
-        performance_properties().num_fixed_point_hits = 0;
-      }
-    }
-  }
-  return jitter;
-}
-
 std::string LayerImpl::DebugName() const {
   return debug_info_ ? debug_info_->name : "";
 }

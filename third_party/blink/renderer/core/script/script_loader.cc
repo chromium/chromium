@@ -794,9 +794,7 @@ PendingScript* ScriptLoader::PrepareScript(
     // TODO(apaseltiner): Propagate the element instead of passing nullptr.
     if (element_->HasAttributionsrcAttribute() &&
         context_window->GetFrame()->GetAttributionSrcLoader()->CanRegister(
-            url,
-            /*element=*/nullptr,
-            /*request_id=*/std::nullopt)) {
+            url, /*element=*/nullptr)) {
       options.SetAttributionReportingEligibility(
           ScriptFetchOptions::AttributionReportingEligibility::kEligible);
     }

@@ -38,19 +38,19 @@ TEST_F(MessageEventTest, AccountForStringMemory) {
   // Afterwards we trigger a blocking GC to deallocated the |MessageEvent|
   // again. After that the |AmountOfExternalAllocatedMemory| should be reduced
   // by at least the string size again.
-  int64_t initial =
-      scope.GetIsolate()->AdjustAmountOfExternalAllocatedMemory(0);
+  int64_t initial = V8ExternalMemoryAccounterBase::
+      GetTotalAmountOfExternalAllocatedMemoryForTesting(scope.GetIsolate());
   MessageEvent::Create(data);
 
-  int64_t size_with_event =
-      scope.GetIsolate()->AdjustAmountOfExternalAllocatedMemory(0);
+  int64_t size_with_event = V8ExternalMemoryAccounterBase::
+      GetTotalAmountOfExternalAllocatedMemoryForTesting(scope.GetIsolate());
   ASSERT_LE(initial + string_size, size_with_event);
 
   ThreadState::Current()->CollectAllGarbageForTesting(
       ThreadState::StackState::kNoHeapPointers);
 
-  int64_t size_after_gc =
-      scope.GetIsolate()->AdjustAmountOfExternalAllocatedMemory(0);
+  int64_t size_after_gc = V8ExternalMemoryAccounterBase::
+      GetTotalAmountOfExternalAllocatedMemoryForTesting(scope.GetIsolate());
   ASSERT_LE(size_after_gc + string_size, size_with_event);
 
   scope.GetIsolate()->Exit();
@@ -82,21 +82,21 @@ TEST_F(MessageEventTest, AccountForArrayBufferMemory) {
   // Afterwards we trigger a blocking GC to deallocated the |MessageEvent|
   // again. After that the |AmountOfExternalAllocatedMemory| should be reduced
   // by at least the buffer size again.
-  int64_t initial =
-      scope.GetIsolate()->AdjustAmountOfExternalAllocatedMemory(0);
+  int64_t initial = V8ExternalMemoryAccounterBase::
+      GetTotalAmountOfExternalAllocatedMemoryForTesting(scope.GetIsolate());
 
   MessagePortArray* ports = MakeGarbageCollected<MessagePortArray>(0);
   MessageEvent::Create(ports, serialized_script_value);
 
-  int64_t size_with_event =
-      scope.GetIsolate()->AdjustAmountOfExternalAllocatedMemory(0);
+  int64_t size_with_event = V8ExternalMemoryAccounterBase::
+      GetTotalAmountOfExternalAllocatedMemoryForTesting(scope.GetIsolate());
   ASSERT_LE(initial + buffer_size, size_with_event);
 
   ThreadState::Current()->CollectAllGarbageForTesting(
       ThreadState::StackState::kNoHeapPointers);
 
-  int64_t size_after_gc =
-      scope.GetIsolate()->AdjustAmountOfExternalAllocatedMemory(0);
+  int64_t size_after_gc = V8ExternalMemoryAccounterBase::
+      GetTotalAmountOfExternalAllocatedMemoryForTesting(scope.GetIsolate());
   ASSERT_LE(size_after_gc + buffer_size, size_with_event);
 
   scope.GetIsolate()->Exit();

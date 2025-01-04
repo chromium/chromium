@@ -11,6 +11,7 @@ import '//resources/ash/common/cr_elements/md_select.css.js';
 import '//resources/polymer/v3_0/iron-location/iron-location.js';
 import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './healthd_internals_shared.css.js';
+import './view/pages/info.js';
 import './view/pages/system_trend.js';
 import './view/pages/process.js';
 import './view/pages/telemetry.js';
@@ -23,6 +24,7 @@ import {getTemplate} from './app.html.js';
 import {DataManager} from './model/data_manager.js';
 import type {HealthdInternalsFeatureFlagResult} from './utils/externs.js';
 import {HealthdInternalsPage} from './utils/page_interface.js';
+import type {HealthdInternalsInfoElement} from './view/pages/info.js';
 import type {HealthdInternalsProcessElement} from './view/pages/process.js';
 import type {HealthdInternalsSystemTrendElement} from './view/pages/system_trend.js';
 import type {HealthdInternalsTelemetryElement} from './view/pages/telemetry.js';
@@ -34,6 +36,7 @@ import type {HealthdInternalsSettingsDialogElement} from './view/settings/settin
 export enum PagePath {
   // Only used when menu tabs are not displayed. No page should be displayed.
   NONE = '/',
+  INFO = '/info',
   TELEMETRY = '/telemetry',
   PROCESS = '/process',
   SYSTEM_TREND = '/system_trend'
@@ -48,11 +51,11 @@ interface Page {
 
 export interface HealthdInternalsAppElement {
   $: {
+    infoPage: HealthdInternalsInfoElement,
     telemetryPage: HealthdInternalsTelemetryElement,
     processPage: HealthdInternalsProcessElement,
     systemTrendPage: HealthdInternalsSystemTrendElement,
     settingsDialog: HealthdInternalsSettingsDialogElement,
-    appContainer: HTMLElement,
     sidebar: HTMLElement,
     sidebarToggleButton: HTMLElement,
   };
@@ -85,8 +88,8 @@ export class HealthdInternalsAppElement extends PolymerElement {
     super.connectedCallback();
 
     this.dataManager = new DataManager(
-        this.$.settingsDialog.getDataRetentionDuration(), this.$.telemetryPage,
-        this.$.systemTrendPage.getController());
+        this.$.settingsDialog.getDataRetentionDuration(), this.$.infoPage,
+        this.$.telemetryPage, this.$.systemTrendPage.getController());
 
     this.$.settingsDialog.addEventListener('ui-update-interval-updated', () => {
       this.updateUiUpdateInterval();
@@ -108,6 +111,11 @@ export class HealthdInternalsAppElement extends PolymerElement {
           }
 
           this.pageList = [
+            {
+              name: 'Info',
+              path: PagePath.INFO,
+              obj: this.$.infoPage,
+            },
             {
               name: 'Telemetry',
               path: PagePath.TELEMETRY,
@@ -225,10 +233,9 @@ export class HealthdInternalsAppElement extends PolymerElement {
   }
 
   private toggleSidebar() {
-    this.$.sidebar.hidden = !this.$.sidebar.hidden;
-    this.$.sidebarToggleButton.innerText = this.$.sidebar.hidden ? '>' : '<';
-    this.$.appContainer.style.setProperty(
-        '--sidebar-width', this.$.sidebar.hidden ? '0px' : '220px');
+    this.$.sidebar.classList.toggle('collapsed');
+    this.$.sidebarToggleButton.innerText =
+        this.$.sidebar.classList.contains('collapsed') ? '>' : '<';
   }
 }
 

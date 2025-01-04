@@ -26,7 +26,7 @@ PrerenderAttributes::PrerenderAttributes(
     std::optional<blink::mojom::SpeculationTargetHint> target_hint,
     Referrer referrer,
     std::optional<blink::mojom::SpeculationEagerness> eagerness,
-    std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
+    std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
     RenderFrameHost* initiator_render_frame_host,
     base::WeakPtr<WebContents> initiator_web_contents,
     ui::PageTransition transition_type,
@@ -44,7 +44,7 @@ PrerenderAttributes::PrerenderAttributes(
       target_hint(target_hint),
       referrer(std::move(referrer)),
       eagerness(eagerness),
-      no_vary_search_expected(std::move(no_vary_search_expected)),
+      no_vary_search_hint(std::move(no_vary_search_hint)),
       initiator_web_contents(std::move(initiator_web_contents)),
       transition_type(transition_type),
       should_warm_up_compositor(should_warm_up_compositor),
@@ -55,7 +55,8 @@ PrerenderAttributes::PrerenderAttributes(
       preload_pipeline_info(std::move(preload_pipeline_info)) {
   if (initiator_render_frame_host) {
     initiator_origin = initiator_render_frame_host->GetLastCommittedOrigin();
-    initiator_process_id = initiator_render_frame_host->GetProcess()->GetID();
+    initiator_process_id =
+        initiator_render_frame_host->GetProcess()->GetDeprecatedID();
     initiator_frame_token = initiator_render_frame_host->GetFrameToken();
     initiator_frame_tree_node_id =
         initiator_render_frame_host->GetFrameTreeNodeId();

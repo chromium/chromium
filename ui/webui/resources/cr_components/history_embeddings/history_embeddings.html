@@ -144,14 +144,40 @@ cr-url-list-item:hover + hr {
   text-decoration: none;
 }
 
+:host([enable-answers_][in-side-panel]) .result-item {
+  padding: 4px 16px;
+}
+
 :host([enable-answers_]) .result-image {
+  align-items: center;
   background: var(--color-history-embeddings-image-background,
       var(--cr-fallback-color-neutral-container));
   border-radius: 8px;
+  display: flex;
   flex-shrink: 0;
+  justify-content: center;
   height: 58px;
   overflow: hidden;
   width: 104px;
+}
+
+:host([enable-answers_][in-side-panel]) .result-image {
+  height: 40px;
+  width: 40px;
+}
+
+:host([enable-answers_][in-side-panel])
+    cr-history-embeddings-result-image:not([has-image]) {
+  display: none;
+}
+
+:host([enable-answers_]:not([in-side-panel])) .result-image .favicon {
+  display: none;
+}
+
+:host([enable-answers_][in-side-panel])
+    cr-history-embeddings-result-image[has-image] ~ .favicon {
+  display: none;
 }
 
 :host([enable-answers_]) .result-metadata {
@@ -193,6 +219,10 @@ cr-url-list-item:hover + hr {
   flex-shrink: 0;
   height: 16px;
   width: 16px;
+}
+
+:host([enable-answers_][in-side-panel]) .result-url-and-favicon .favicon {
+  display: none;
 }
 
 .time {
@@ -366,8 +396,12 @@ cr-url-list-item:hover + hr {
               on-click="onResultClick_" on-auxclick="onResultClick_"
               on-contextmenu="onResultContextMenu_">
             <div class="result-image">
-              <cr-history-embeddings-result-image search-result="[[item]]">
+              <cr-history-embeddings-result-image
+                  in-side-panel="[[inSidePanel]]"
+                  search-result="[[item]]">
               </cr-history-embeddings-result-image>
+              <div class="favicon"
+                  style$="background-image: [[getFavicon_(item)]]"></div>
             </div>
             <div class="result-metadata">
               <div class="result-title">[[item.title]]</div>

@@ -96,11 +96,6 @@ void WebTestTtsPlatform::FinalizeVoiceOrdering(
 
 void WebTestTtsPlatform::RefreshVoices() {}
 
-content::ExternalPlatformDelegate*
-WebTestTtsPlatform::GetExternalPlatformDelegate() {
-  return nullptr;
-}
-
 WebTestTtsPlatform::WebTestTtsPlatform() = default;
 
 WebTestTtsPlatform::~WebTestTtsPlatform() = default;

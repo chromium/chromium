@@ -10,12 +10,13 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
@@ -32,8 +33,32 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** Class responsible for managing the position (top, bottom) of the browsing mode toolbar. */
 public class ToolbarPositionController implements OnSharedPreferenceChangeListener {
+
+    @IntDef({
+        ToolbarPositionController.StateTransition.NONE,
+        ToolbarPositionController.StateTransition.SNAP_TO_TOP,
+        ToolbarPositionController.StateTransition.SNAP_TO_BOTTOM,
+        ToolbarPositionController.StateTransition.ANIMATE_TO_TOP,
+        ToolbarPositionController.StateTransition.ANIMATE_TO_BOTTOM,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface StateTransition {
+        // Don't transition at all.
+        int NONE = 0;
+        // Snap (instantly transition) the controls to the top.
+        int SNAP_TO_TOP = 1;
+        // Snap (instantly transition) the controls to the bottom.
+        int SNAP_TO_BOTTOM = 2;
+        // Animate the controls to the top.
+        int ANIMATE_TO_TOP = 3;
+        // Animate the controls to the bottom.
+        int ANIMATE_TO_BOTTOM = 4;
+    }
 
     private final BrowserControlsSizer mBrowserControlsSizer;
     private final SharedPreferences mSharedPreferences;
@@ -101,10 +126,11 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mIsNtpShowingSupplier.addObserver((showing) -> updateCurrentPosition());
         mIsTabSwitcherShowingSupplier.addObserver((showing) -> updateCurrentPosition());
         mIsOmniboxFocusedSupplier.addObserver((focused) -> updateCurrentPosition());
-        mIsFormFieldFocusedSupplier.addObserver((focused) -> updateCurrentPosition());
+        mIsFormFieldFocusedSupplier.addObserver(
+                (focused) -> updateCurrentPosition(/* formFieldStateChanged= */ true, false));
         mIsFindInPageShowingSupplier.addObserver((showing) -> updateCurrentPosition());
         mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(
-                (showing) -> updateCurrentPosition());
+                (showing) -> updateCurrentPosition(/* formFieldStateChanged= */ true, false));
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
         mLayerVisibility = LayerVisibility.HIDDEN;
@@ -131,7 +157,8 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                     }
 
                     @Override
-                    public void onBrowserControlsOffsetUpdate(int layerYOffset) {
+                    public void onBrowserControlsOffsetUpdate(
+                            int layerYOffset, boolean didMinHeightChange) {
                         if (mLayerVisibility == LayerVisibility.VISIBLE) {
                             mBrowserControlsOffsetSupplier.set(layerYOffset);
                             mControlContainer.getView().setTranslationY(layerYOffset);
@@ -167,7 +194,8 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                     }
 
                     @Override
-                    public void onBrowserControlsOffsetUpdate(int layerYOffset) {
+                    public void onBrowserControlsOffsetUpdate(
+                            int layerYOffset, boolean didMinHeightChange) {
                         mToolbarProgressBarContainer.setTranslationY(layerYOffset);
                     }
 
@@ -191,11 +219,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             Context context, boolean isCustomTab) {
         return !isCustomTab
                 && ChromeFeatureList.sAndroidBottomToolbar.isEnabled()
-                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                // Some emulators erroneously report that they have a hinge sensor (and thus are
-                // foldables). To make the feature testable on these "devices", skip the foldable
-                // check for debug builds.
-                && (!BuildInfo.getInstance().isFoldable || BuildInfo.isDebugApp());
+                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 
     /**
@@ -219,11 +243,15 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     public void onSharedPreferenceChanged(
             SharedPreferences sharedPreferences, @Nullable String key) {
         if (ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED.equals(key)) {
-            updateCurrentPosition();
+            updateCurrentPosition(false, /* prefStateChanged= */ true);
         }
     }
 
     private void updateCurrentPosition() {
+        updateCurrentPosition(false, false);
+    }
+
+    private void updateCurrentPosition(boolean formFieldStateChanged, boolean prefStateChanged) {
         boolean ntpShowing = mIsNtpShowingSupplier.get();
         boolean tabSwitcherShowing = mIsTabSwitcherShowingSupplier.get();
         boolean isOmniboxFocused = mIsOmniboxFocusedSupplier.get();
@@ -234,18 +262,29 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                                 mContext, mControlContainer.getView());
         boolean doesUserPreferTopToolbar =
                 mSharedPreferences.getBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, true);
+        @StateTransition
+        int stateTransition =
+                calculateStateTransition(
+                        formFieldStateChanged,
+                        prefStateChanged,
+                        ntpShowing,
+                        tabSwitcherShowing,
+                        isOmniboxFocused,
+                        isFindInPageShowing,
+                        isFormFieldFocusedWithKeyboardVisible,
+                        doesUserPreferTopToolbar,
+                        mCurrentPosition);
+        @ControlsPosition
+        int newControlsPosition =
+                switch (stateTransition) {
+                    case StateTransition.SNAP_TO_BOTTOM,
+                            StateTransition.ANIMATE_TO_BOTTOM -> ControlsPosition.BOTTOM;
+                    case StateTransition.SNAP_TO_TOP,
+                            StateTransition.ANIMATE_TO_TOP -> ControlsPosition.TOP;
+                    case StateTransition.NONE -> mCurrentPosition;
+                    default -> mCurrentPosition;
+                };
 
-        @ControlsPosition int newControlsPosition;
-        if (ntpShowing
-                || tabSwitcherShowing
-                || isOmniboxFocused
-                || isFindInPageShowing
-                || isFormFieldFocusedWithKeyboardVisible
-                || doesUserPreferTopToolbar) {
-            newControlsPosition = ControlsPosition.TOP;
-        } else {
-            newControlsPosition = ControlsPosition.BOTTOM;
-        }
         if (newControlsPosition == mCurrentPosition) return;
 
         int newTopHeight;
@@ -289,5 +328,44 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         int verticalGravity =
                 mCurrentPosition == ControlsPosition.TOP ? Gravity.TOP : Gravity.BOTTOM;
         layoutParams.gravity = Gravity.START | verticalGravity;
+    }
+
+    @VisibleForTesting
+    static @StateTransition int calculateStateTransition(
+            boolean formFieldStateChanged,
+            boolean prefStateChanged,
+            boolean ntpShowing,
+            boolean tabSwitcherShowing,
+            boolean isOmniboxFocused,
+            boolean isFindInPageShowing,
+            boolean isFormFieldFocusedWithKeyboardVisible,
+            boolean doesUserPreferTopToolbar,
+            @ControlsPosition int currentPosition) {
+        @ControlsPosition int newControlsPosition;
+        if (ntpShowing
+                || tabSwitcherShowing
+                || isOmniboxFocused
+                || isFindInPageShowing
+                || isFormFieldFocusedWithKeyboardVisible
+                || doesUserPreferTopToolbar) {
+            newControlsPosition = ControlsPosition.TOP;
+        } else {
+            newControlsPosition = ControlsPosition.BOTTOM;
+        }
+
+        boolean switchingToBottom = newControlsPosition == ControlsPosition.BOTTOM;
+        if (newControlsPosition == currentPosition) {
+            // Don't do anything for non-transitions.
+            return StateTransition.NONE;
+        } else if (formFieldStateChanged || prefStateChanged) {
+            // Animate when the pref changes (i.e. the long press menu is invoked) or the keyboard
+            // shows/hides.
+            return switchingToBottom
+                    ? StateTransition.ANIMATE_TO_BOTTOM
+                    : StateTransition.ANIMATE_TO_TOP;
+        }
+
+        // For all other state transitions, just snap to the correct position immediately.
+        return switchingToBottom ? StateTransition.SNAP_TO_BOTTOM : StateTransition.SNAP_TO_TOP;
     }
 }

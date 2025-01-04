@@ -8,14 +8,7 @@
 #include <memory>
 #include <optional>
 
-#include "build/chromeos_buildflags.h"
 #include "content/shell/app/shell_main_delegate.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(erikchen): Move #include to .cc file and forward declare
-// chromeos::LacrosService to resolve crbug.com/1195401.
-#include "chromeos/lacros/lacros_service.h"
-#endif
 
 namespace content {
 
@@ -26,17 +19,10 @@ class ContentBrowserTestShellMainDelegate : public ShellMainDelegate {
   ~ContentBrowserTestShellMainDelegate() override;
 
   // ContentMainDelegate implementation:
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::optional<int> PostEarlyInitialization(InvokedIn invoked_in) override;
-#endif
   void CreateThreadPool(std::string_view name) override;
+
   // ShellMainDelegate overrides.
   content::ContentBrowserClient* CreateContentBrowserClient() override;
-
- private:
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<chromeos::LacrosService> lacros_service_;
-#endif
 };
 
 }  // namespace content

@@ -19,7 +19,6 @@ enum class KeepAliveOrigin {
   BROWSER,
   BROWSER_PROCESS_CHROMEOS,
   BROWSER_PROCESS_FUCHSIA,
-  BROWSER_PROCESS_LACROS,
   SESSION_RESTORE,
   HEADLESS_COMMAND,
 
@@ -40,7 +39,6 @@ enum class KeepAliveOrigin {
   // c/b/chromeos
   LOGIN_DISPLAY_HOST_WEBUI,
   PIN_MIGRATION,
-  DRIVEFS_NATIVE_MESSAGE_HOST_LACROS,
 
   // c/b/devtools
   REMOTE_DEBUGGING,
@@ -51,7 +49,6 @@ enum class KeepAliveOrigin {
 
   // c/b/glic
   GLIC_LAUNCHER,
-  GLIC_VIEW,
 
   // c/b/notifications
   NOTIFICATION,

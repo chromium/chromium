@@ -14,7 +14,7 @@ namespace apps {
 class PackageId;
 class PromiseAppUpdate;
 class ShortcutUpdate;
-}
+}  // namespace apps
 
 namespace content {
 class BrowserContext;

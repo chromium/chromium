@@ -33,6 +33,7 @@
 namespace plus_addresses {
 namespace {
 
+using AllocationMode = PlusAddressAllocator::AllocationMode;
 using base::test::RunOnceCallback;
 using test::CreatePreallocatedPlusAddress;
 using ::testing::_;
@@ -235,6 +236,44 @@ TEST_F(PlusAddressPreallocatorTest, SynchronousAllocationValidPlusAddresses) {
                 url::Origin::Create(GURL("https://foo.com")),
                 PlusAddressAllocator::AllocationMode::kAny),
             std::nullopt);
+}
+
+// Tests synchronous allocation is possible and that options are refreshed when
+// the corresponding allocation mode is used.
+TEST_F(PlusAddressPreallocatorTest, SynchronousAllocationRefreshPlusAddresses) {
+  const base::Time kFuture = base::Time::Now() + base::Days(1);
+  const std::string kPlusAddress1 = "plus1@plus.com";
+  const std::string kPlusAddress2 = "plus2@plus.com";
+  SetPreallocatedAddresses(
+      base::Value::List()
+          .Append(CreatePreallocatedPlusAddress(kFuture, kPlusAddress1))
+          .Append(CreatePreallocatedPlusAddress(kFuture, kPlusAddress2)));
+
+  PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
+                                    &http_client(), AlwaysEnabled());
+  std::optional<PlusProfile> allocated_profile1 =
+      allocator.AllocatePlusAddressSynchronously(
+          url::Origin::Create(GURL("https://foo.com")),
+          PlusAddressAllocator::AllocationMode::kAny);
+  std::optional<PlusProfile> allocated_profile2 =
+      allocator.AllocatePlusAddressSynchronously(
+          url::Origin::Create(GURL("https://foo.com")),
+          PlusAddressAllocator::AllocationMode::kNewPlusAddress);
+  std::optional<PlusProfile> allocated_profile3 =
+      allocator.AllocatePlusAddressSynchronously(
+          url::Origin::Create(GURL("https://foo.com")),
+          PlusAddressAllocator::AllocationMode::kNewPlusAddress);
+
+  EXPECT_THAT(allocated_profile1,
+              testing::Optional(testing::Field(&PlusProfile::plus_address,
+                                               PlusAddress(kPlusAddress1))));
+  EXPECT_THAT(allocated_profile2,
+              testing::Optional(testing::Field(&PlusProfile::plus_address,
+                                               PlusAddress(kPlusAddress2))));
+  // Circles back to the beginning.
+  EXPECT_THAT(allocated_profile3,
+              testing::Optional(testing::Field(&PlusProfile::plus_address,
+                                               PlusAddress(kPlusAddress1))));
 }
 
 // Tests that no synchronous allocation is possible if plus addresses are not
@@ -573,29 +612,45 @@ TEST_F(PlusAddressPreallocatorTest, AllocatePlusAddress) {
       url::Origin::Create(GURL("https://foo.com"));
   const url::Origin kValidOrigin2 =
       url::Origin::Create(GURL("https://bar.com"));
-  constexpr auto kMode = PlusAddressAllocator::AllocationMode::kAny;
   base::MockCallback<PlusAddressRequestCallback> callback1;
   base::MockCallback<PlusAddressRequestCallback> callback2;
   base::MockCallback<PlusAddressRequestCallback> callback3;
   base::MockCallback<PlusAddressRequestCallback> callback4;
+  base::MockCallback<PlusAddressRequestCallback> callback5;
+  base::MockCallback<PlusAddressRequestCallback> callback6;
   {
     InSequence s;
     EXPECT_CALL(callback1, Run(PlusProfileFromPreallocatedAddress(
                                kValidOrigin1, kPlusAddress1)));
     EXPECT_CALL(callback2, Run(PlusProfileFromPreallocatedAddress(
-                               kValidOrigin2, kPlusAddress2)));
-    EXPECT_CALL(callback3, Run(PlusProfileFromPreallocatedAddress(
                                kValidOrigin2, kPlusAddress1)));
+    // Next offered plus address was refreshed.
+    EXPECT_CALL(callback3, Run(PlusProfileFromPreallocatedAddress(
+                               kValidOrigin2, kPlusAddress2)));
     EXPECT_CALL(callback4, Run(PlusProfileFromPreallocatedAddress(
                                kValidOrigin1, kPlusAddress2)));
+    // Next offered plus address was refreshed.
+    EXPECT_CALL(callback5, Run(PlusProfileFromPreallocatedAddress(
+                               kValidOrigin1, kPlusAddress1)));
+    // Next offered plus address was refreshed.
+    EXPECT_CALL(callback6, Run(PlusProfileFromPreallocatedAddress(
+                               kValidOrigin2, kPlusAddress2)));
   }
 
   PlusAddressPreallocator allocator(&pref_service(), &setting_service(),
                                     &http_client(), AlwaysEnabled());
-  allocator.AllocatePlusAddress(kValidOrigin1, kMode, callback1.Get());
-  allocator.AllocatePlusAddress(kValidOrigin2, kMode, callback2.Get());
-  allocator.AllocatePlusAddress(kValidOrigin2, kMode, callback3.Get());
-  allocator.AllocatePlusAddress(kValidOrigin1, kMode, callback4.Get());
+  allocator.AllocatePlusAddress(kValidOrigin1, AllocationMode::kAny,
+                                callback1.Get());
+  allocator.AllocatePlusAddress(kValidOrigin2, AllocationMode::kAny,
+                                callback2.Get());
+  allocator.AllocatePlusAddress(kValidOrigin2, AllocationMode::kNewPlusAddress,
+                                callback3.Get());
+  allocator.AllocatePlusAddress(kValidOrigin1, AllocationMode::kAny,
+                                callback4.Get());
+  allocator.AllocatePlusAddress(kValidOrigin1, AllocationMode::kNewPlusAddress,
+                                callback5.Get());
+  allocator.AllocatePlusAddress(kValidOrigin2, AllocationMode::kNewPlusAddress,
+                                callback6.Get());
 }
 
 // Tests that calling `AllocatePlusAddress` removes outdated pre-allocated
@@ -635,7 +690,6 @@ TEST_F(PlusAddressPreallocatorTest,
   base::MockCallback<PlusAddressRequestCallback> callback4;
   base::MockCallback<PlusAddressRequestCallback> callback5;
   const url::Origin kValidOrigin = url::Origin::Create(GURL("https://bar.com"));
-  constexpr auto kMode = PlusAddressAllocator::AllocationMode::kAny;
   PlusAddressHttpClient::PreallocatePlusAddressesCallback preallocate_callback;
   {
     InSequence s;
@@ -650,21 +704,23 @@ TEST_F(PlusAddressPreallocatorTest,
                                kValidOrigin, kPlusAddress3)));
     EXPECT_CALL(check, Call("Server response received."));
     EXPECT_CALL(callback3, Run(PlusProfileFromPreallocatedAddress(
-                               kValidOrigin, kPlusAddress1)));
-    EXPECT_CALL(callback4, Run(PlusProfileFromPreallocatedAddress(
-                               kValidOrigin, kPlusAddress3)));
-    EXPECT_CALL(callback5, Run(PlusProfileFromPreallocatedAddress(
                                kValidOrigin, kPlusAddress4)));
+    EXPECT_CALL(callback4, Run(PlusProfileFromPreallocatedAddress(
+                               kValidOrigin, kPlusAddress1)));
+    EXPECT_CALL(callback5, Run(PlusProfileFromPreallocatedAddress(
+                               kValidOrigin, kPlusAddress3)));
   }
 
   // The allocation prunes the cache and requests more pre-allocated addresses.
-  allocator.AllocatePlusAddress(kValidOrigin, kMode, callback1.Get());
+  allocator.AllocatePlusAddress(kValidOrigin, AllocationMode::kAny,
+                                callback1.Get());
   EXPECT_THAT(GetPreallocatedAddresses(), SizeIs(2));
   task_environment().RunUntilIdle();
   check.Call("Allocation requested.");
   ASSERT_TRUE(preallocate_callback);
 
-  allocator.AllocatePlusAddress(kValidOrigin, kMode, callback2.Get());
+  allocator.AllocatePlusAddress(kValidOrigin, AllocationMode::kNewPlusAddress,
+                                callback2.Get());
   std::move(preallocate_callback)
       .Run(PlusAddressHttpClient::PreallocatePlusAddressesResult(
           {PreallocatedPlusAddress(PlusAddress(kPlusAddress4),
@@ -673,9 +729,12 @@ TEST_F(PlusAddressPreallocatorTest,
   EXPECT_THAT(GetPreallocatedAddresses(), SizeIs(3));
 
   // Now the callbacks cycle through the remaining addresses.
-  allocator.AllocatePlusAddress(kValidOrigin, kMode, callback3.Get());
-  allocator.AllocatePlusAddress(kValidOrigin, kMode, callback4.Get());
-  allocator.AllocatePlusAddress(kValidOrigin, kMode, callback5.Get());
+  allocator.AllocatePlusAddress(kValidOrigin, AllocationMode::kNewPlusAddress,
+                                callback3.Get());
+  allocator.AllocatePlusAddress(kValidOrigin, AllocationMode::kNewPlusAddress,
+                                callback4.Get());
+  allocator.AllocatePlusAddress(kValidOrigin, AllocationMode::kNewPlusAddress,
+                                callback5.Get());
 }
 
 TEST_F(PlusAddressPreallocatorTest,
@@ -705,7 +764,6 @@ TEST_F(PlusAddressPreallocatorTest,
   base::MockCallback<PlusAddressRequestCallback> callback2;
   base::MockCallback<PlusAddressRequestCallback> callback3;
   const url::Origin kValidOrigin = url::Origin::Create(GURL("https://bar.com"));
-  constexpr auto kMode = PlusAddressAllocator::AllocationMode::kAny;
   PlusAddressHttpClient::PreallocatePlusAddressesCallback preallocate_callback;
   {
     InSequence s;
@@ -723,10 +781,12 @@ TEST_F(PlusAddressPreallocatorTest,
                                kValidOrigin, kPlusAddress3)));
   }
 
-  allocator.AllocatePlusAddress(kValidOrigin, kMode, callback1.Get());
+  allocator.AllocatePlusAddress(kValidOrigin, AllocationMode::kAny,
+                                callback1.Get());
   task_environment().RunUntilIdle();
   ASSERT_TRUE(preallocate_callback);
-  allocator.AllocatePlusAddress(kValidOrigin, kMode, callback2.Get());
+  allocator.AllocatePlusAddress(kValidOrigin, AllocationMode::kNewPlusAddress,
+                                callback2.Get());
 
   check.Call("About to send server response.");
   std::move(preallocate_callback)
@@ -738,7 +798,8 @@ TEST_F(PlusAddressPreallocatorTest,
   check.Call("Server response sent.");
 
   // Subsequent allocation requests are fulfilled directly.
-  allocator.AllocatePlusAddress(kValidOrigin, kMode, callback3.Get());
+  allocator.AllocatePlusAddress(kValidOrigin, AllocationMode::kNewPlusAddress,
+                                callback3.Get());
 }
 
 // Tests that removing plus addresses works correctly.

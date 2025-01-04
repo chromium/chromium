@@ -43,19 +43,19 @@ CaptionBubbleControllerViews::CaptionBubbleControllerViews(
       views::BubbleDialogDelegateView::CreateBubble(caption_bubble_);
   caption_bubble_->SetCaptionBubbleStyle();
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
   if (soda_installer) {
     soda_installer->AddObserver(this);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 CaptionBubbleControllerViews::~CaptionBubbleControllerViews() {
   if (caption_widget_)
     caption_widget_->CloseNow();
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
   // `soda_installer` is not guaranteed to be valid, since it's possible for
   // this class to out-live it. This means that this class cannot use
@@ -63,7 +63,7 @@ CaptionBubbleControllerViews::~CaptionBubbleControllerViews() {
   if (soda_installer) {
     soda_installer->RemoveObserver(this);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void CaptionBubbleControllerViews::OnCaptionBubbleDestroyed() {

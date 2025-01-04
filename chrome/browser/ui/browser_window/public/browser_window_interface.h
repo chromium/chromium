@@ -199,12 +199,6 @@ class BrowserWindowInterface : public content::PageNavigator {
   // migrating a large chunk of code to BrowserWindowInterface, to allow
   // incremental migration.
   virtual Browser* GetBrowserForMigrationOnly() = 0;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Ensure there is an active tab, or fail.
-  // TODO(crbug.com/378020140): Remove this once the root cause is identified.
-  virtual void EnsureActiveTab() {}
-#endif
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_INTERFACE_H_

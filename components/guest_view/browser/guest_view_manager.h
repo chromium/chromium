@@ -15,7 +15,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "content/public/browser/browser_plugin_guest_manager.h"
+#include "content/public/browser/child_process_id.h"
 #include "content/public/browser/frame_tree_node_id.h"
+#include "content/public/browser/guest_page_holder.h"
 #include "content/public/browser/web_contents.h"
 
 namespace content {
@@ -61,12 +63,23 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
   // If the embedder is not allowed access, the embedder will be killed, and
   // this method will return NULL. If no guest exists with the given
   // instance ID, then NULL will also be returned.
+  GuestViewBase* GetGuestByInstanceIDSafely(
+      int guest_instance_id,
+      content::ChildProcessId embedder_render_process_id);
+  // TODO(crbug.com/379869738): Deprecated, please use the ChildProcessId
+  // version above.
   GuestViewBase* GetGuestByInstanceIDSafely(int guest_instance_id,
                                             int embedder_render_process_id);
 
   // Associates the Browser Plugin with |element_instance_id| to a
   // guest that has ID of |guest_instance_id| and sets initialization
   // parameters, |params| for it.
+  virtual void AttachGuest(content::ChildProcessId embedder_process_id,
+                           int element_instance_id,
+                           int guest_instance_id,
+                           const base::Value::Dict& attach_params);
+  // TODO(crbug.com/379869738): Deprecated, please use the ChildProcessId
+  // version above.
   virtual void AttachGuest(int embedder_process_id,
                            int element_instance_id,
                            int guest_instance_id,
@@ -87,7 +100,7 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
           content::RenderFrameHost* owner_rfh)>;
   using GuestViewCleanUpFunction =
       base::RepeatingCallback<void(content::BrowserContext*,
-                                   int embedder_process_id,
+                                   content::ChildProcessId embedder_process_id,
                                    int view_instance_id)>;
   void RegisterGuestViewType(const std::string& type,
                              GuestViewCreateFunction create_function,
@@ -96,6 +109,12 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
   // Registers a callback to be called when the view identified by
   // |embedder_process_id| and |view_instance_id| is destroyed.
   // Note that multiple callbacks can be registered for one view.
+  void RegisterViewDestructionCallback(
+      content::ChildProcessId embedder_process_id,
+      int view_instance_id,
+      base::OnceClosure callback);
+  // TODO(crbug.com/379869738): Deprecated, please use the ChildProcessId
+  // version above.
   void RegisterViewDestructionCallback(int embedder_process_id,
                                        int view_instance_id,
                                        base::OnceClosure callback);
@@ -109,10 +128,12 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
                    const base::Value::Dict& create_params,
                    UnownedGuestCreatedCallback callback);
   // Creates a guest which the caller will own.
-  void CreateGuestAndTransferOwnership(const std::string& view_type,
-                                       content::RenderFrameHost* owner_rfh,
-                                       const base::Value::Dict& create_params,
-                                       OwnedGuestCreatedCallback callback);
+  int CreateGuestAndTransferOwnership(
+      const std::string& view_type,
+      content::RenderFrameHost* owner_rfh,
+      scoped_refptr<content::SiteInstance> site_instance,
+      const base::Value::Dict& create_params,
+      OwnedGuestCreatedCallback callback);
 
   // Transfers ownership of `guest` to the caller.
   std::unique_ptr<GuestViewBase> TransferOwnership(GuestViewBase* guest);
@@ -168,25 +189,27 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
 
   // This method is called when the embedder process with ID
   // |embedder_process_id| has been destroyed.
-  virtual void EmbedderProcessDestroyed(int embedder_process_id);
+  virtual void EmbedderProcessDestroyed(
+      content::ChildProcessId embedder_process_id);
 
   // Called when a GuestView has been created in JavaScript.
-  virtual void ViewCreated(int embedder_process_id,
+  virtual void ViewCreated(content::ChildProcessId embedder_process_id,
                            int view_instance_id,
                            const std::string& view_type);
 
   // Called when a GuestView has been garbage collected in JavaScript.
-  virtual void ViewGarbageCollected(int embedder_process_id,
+  virtual void ViewGarbageCollected(content::ChildProcessId embedder_process_id,
                                     int view_instance_id);
 
   // Calls all destruction callbacks registered for the GuestView identified by
   // |embedder_process_id| and |view_instance_id|.
-  void CallViewDestructionCallbacks(int embedder_process_id,
+  void CallViewDestructionCallbacks(content::ChildProcessId embedder_process_id,
                                     int view_instance_id);
 
   // Calls all destruction callbacks registered for GuestViews in the embedder
   // with ID |embedder_process_id|.
-  void CallViewDestructionCallbacks(int embedder_process_id);
+  void CallViewDestructionCallbacks(
+      content::ChildProcessId embedder_process_id);
 
   // Creates a guest of the provided |view_type|.
   std::unique_ptr<GuestViewBase> CreateGuestInternal(
@@ -213,11 +236,12 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
   GuestViewBase* GetGuestByInstanceID(int guest_instance_id);
 
   bool CanEmbedderAccessInstanceIDMaybeKill(
-      int embedder_render_process_id,
+      content::ChildProcessId embedder_render_process_id,
       int guest_instance_id);
 
-  bool CanEmbedderAccessInstanceID(int embedder_render_process_id,
-                                   int guest_instance_id);
+  bool CanEmbedderAccessInstanceID(
+      content::ChildProcessId embedder_render_process_id,
+      int guest_instance_id);
 
   // Returns true if |guest_instance_id| can be used to add a new guest to this
   // manager.
@@ -240,11 +264,11 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
       guest_page_frame_id_guestview_map_;
 
   struct ElementInstanceKey {
-    int embedder_process_id;
+    content::ChildProcessId embedder_process_id;
     int element_instance_id;
 
     ElementInstanceKey();
-    ElementInstanceKey(int embedder_process_id,
+    ElementInstanceKey(content::ChildProcessId embedder_process_id,
                        int element_instance_id);
 
     bool operator<(const ElementInstanceKey& other) const;
@@ -284,20 +308,22 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
   std::unique_ptr<GuestViewManagerDelegate> delegate_;
 
   // This tracks which GuestView embedders are currently being observed.
-  std::set<int> embedders_observed_;
+  std::set<content::ChildProcessId> embedders_observed_;
 
   // Maps embedder process ids to unattached guests whose lifetimes are being
   // managed by this GuestViewManager. An unattached guest's lifetime is scoped
   // to the process that created it by this manager. Ownership is taken from
   // this manager via `TransferOwnership` upon guest attachment, or for cases
   // where an unattached guest needs to be destroyed earlier.
-  std::multimap<int, std::unique_ptr<GuestViewBase>> owned_guests_;
+  std::multimap<content::ChildProcessId, std::unique_ptr<GuestViewBase>>
+      owned_guests_;
 
   // |view_destruction_callback_map_| maps from embedder process ID to view ID
   // to a vector of callback functions to be called when that view is destroyed.
   using Callbacks = std::vector<base::OnceClosure>;
   using CallbacksForEachViewID = std::map<int, Callbacks>;
-  using CallbacksForEachEmbedderID = std::map<int, CallbacksForEachViewID>;
+  using CallbacksForEachEmbedderID =
+      std::map<content::ChildProcessId, CallbacksForEachViewID>;
   CallbacksForEachEmbedderID view_destruction_callback_map_;
 
   base::WeakPtrFactory<GuestViewManager> weak_ptr_factory_{this};

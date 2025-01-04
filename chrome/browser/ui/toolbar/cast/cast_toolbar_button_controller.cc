@@ -9,8 +9,8 @@
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/media_router/cast_browser_controller.h"
@@ -40,8 +40,9 @@ bool CastToolbarButtonController::IsActionShownByPolicy(Profile* profile) {
   const PrefService::Preference* pref =
       profile->GetPrefs()->FindPreference(prefs::kShowCastIconInToolbar);
   bool show = false;
-  if (pref->IsManaged() && pref->GetValue()->is_bool())
+  if (pref->IsManaged() && pref->GetValue()->is_bool()) {
     show = pref->GetValue()->GetBool();
+  }
   return show;
 }
 
@@ -93,17 +94,20 @@ void CastToolbarButtonController::OnRoutesUpdated(
 void CastToolbarButtonController::OnDialogShown() {
   dialog_count_++;
   MaybeToggleIconVisibility();
-  for (Observer& observer : observers_)
+  for (Observer& observer : observers_) {
     observer.ActivateIcon();
+  }
 }
 
 void CastToolbarButtonController::OnDialogHidden() {
   DCHECK_GT(dialog_count_, 0u);
-  if (dialog_count_)
+  if (dialog_count_) {
     dialog_count_--;
+  }
   if (dialog_count_ == 0) {
-    for (Observer& observer : observers_)
+    for (Observer& observer : observers_) {
       observer.DeactivateIcon();
+    }
     // Call MaybeToggleIconVisibility() asynchronously, so that the action icon
     // doesn't get hidden until we have a chance to show a context menu.
     content::GetUIThreadTaskRunner({})->PostTask(
@@ -198,10 +202,12 @@ void CastToolbarButtonController::MaybeToggleIconVisibility() {
   }
 
   if (ShouldEnableAction()) {
-    for (Observer& observer : observers_)
+    for (Observer& observer : observers_) {
       observer.ShowIcon();
+    }
   } else {
-    for (Observer& observer : observers_)
+    for (Observer& observer : observers_) {
       observer.HideIcon();
+    }
   }
 }

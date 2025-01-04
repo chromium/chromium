@@ -255,29 +255,6 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.TABLET_TOOLBAR_REORDERING})
-    public void testButtonPosition_TSR() {
-        mToolbarTablet.onFinishInflate();
-        assertEquals(
-                "Back button position is not as expected for Tab Strip Redesign",
-                mBackButton,
-                mToolbarTabletLayout.getChildAt(0));
-        assertEquals(
-                "Forward button position is not as expected for Tab Strip Redesign",
-                mForwardButton,
-                mToolbarTabletLayout.getChildAt(1));
-        assertEquals(
-                "Reloading button position is not as expected for Tab Strip Redesign",
-                mReloadingButton,
-                mToolbarTabletLayout.getChildAt(2));
-        assertEquals(
-                "Home button position is not as expected for Tab Strip Redesign",
-                mHomeButton,
-                mToolbarTabletLayout.getChildAt(3));
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.TABLET_TOOLBAR_REORDERING)
     public void testButtonPosition_ShutoffToolbarReordering() {
         mToolbarTablet.onFinishInflate();
 
@@ -506,7 +483,8 @@ public final class ToolbarTabletUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.DATA_SHARING)
     public void testHoverTooltipText() {
-        mTabSwitcherButton.setTabCountSupplier(mTabCountSupplier, () -> true);
+        mTabSwitcherButton.setSuppliers(
+                mTabCountSupplier, new ObservableSupplierImpl<Boolean>(false), () -> true);
         mTabSwitcherButton.onDrawableStateChanged();
 
         // verify tooltip texts for tablet toolbar button are set.

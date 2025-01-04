@@ -34,6 +34,12 @@ class GuestView : public GuestViewBase {
         GuestViewBase::FromInstanceID(embedder_process_id, guest_instance_id));
   }
 
+  static T* FromInstanceID(content::ChildProcessId embedder_process_id,
+                           int guest_instance_id) {
+    return AsDerivedGuest(
+        GuestViewBase::FromInstanceID(embedder_process_id, guest_instance_id));
+  }
+
   // Prefer using FromRenderFrameHost. See https://crbug.com/1362569.
   static T* FromWebContents(content::WebContents* contents) {
     return AsDerivedGuest(GuestViewBase::FromWebContents(contents));

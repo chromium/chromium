@@ -95,9 +95,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
                     std::unique_ptr<NewTabPageFeaturePromoHelper>
                         customize_chrome_feature_promo_helper,
                     const base::Time& ntp_navigation_start_time,
-                    const std::vector<ntp::ModuleIdDetail>* module_id_details,
-                    customize_chrome::SidePanelController*
-                        customize_chrome_side_panel_controller);
+                    const std::vector<ntp::ModuleIdDetail>* module_id_details);
 
   NewTabPageHandler(const NewTabPageHandler&) = delete;
   NewTabPageHandler& operator=(const NewTabPageHandler&) = delete;
@@ -175,6 +173,9 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
                       const std::optional<std::string>& share_id) override;
   void OnPromoLinkClicked() override;
 
+  void SetCustomizeChromeSidePanelControllerForTesting(
+      customize_chrome::SidePanelController* side_panel_controller);
+
  private:
   // ui::NativeThemeObserver:
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
@@ -201,6 +202,11 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   // SelectFileDialog::Listener:
   void FileSelected(const ui::SelectedFileInfo& file, int index) override;
   void FileSelectionCanceled() override;
+
+  // Called when the embedding TabInterface has changed.
+  // TODO(crbug.com/378475391): This can be removed once the NTP has been
+  // restricted from loading in app windows.
+  void OnTabInterfaceChanged();
 
   void OnLogoAvailable(
       GetDoodleCallback callback,
@@ -249,6 +255,9 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
       base::Time request_start_time,
       const segmentation_platform::ClassificationResult& result);
 
+  void SetCustomizeChromeSidePanelController(
+      customize_chrome::SidePanelController* side_panel_controller);
+
   ChooseLocalCustomBackgroundCallback choose_local_custom_background_callback_;
   raw_ptr<NtpBackgroundService> ntp_background_service_;
   raw_ptr<NtpCustomBackgroundService> ntp_custom_background_service_;
@@ -289,8 +298,13 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
       promo_service_observation_{this};
   std::optional<base::TimeTicks> promo_load_start_time_;
   base::Value::Dict interaction_module_id_trigger_dict_;
+
+  // TODO(crbug.com/378475391): Make this const once the TabModel is guaranteed
+  // to be present during load and fixed for the NTP's lifetime.
   raw_ptr<customize_chrome::SidePanelController>
       customize_chrome_side_panel_controller_;
+
+  base::CallbackListSubscription tab_changed_subscription_;
 
   // These are located at the end of the list of member variables to ensure the
   // WebUI page is disconnected before other members are destroyed.

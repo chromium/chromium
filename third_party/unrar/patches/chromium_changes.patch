@@ -1,8 +1,8 @@
 diff --git a/third_party/unrar/src/archive.cpp b/third_party/unrar/src/archive.cpp
-index c2293de7ccae6..8106c3ace34f5 100644
+index f90b6199b1787..e6d77d228b3b0 100644
 --- a/third_party/unrar/src/archive.cpp
 +++ b/third_party/unrar/src/archive.cpp
-@@ -355,3 +355,13 @@ uint64 Archive::GetWinSize(uint64 Size,uint &Flags)
+@@ -357,3 +357,13 @@ uint64 Archive::GetWinSize(uint64 Size,uint &Flags)
    Flags+=(uint)Fraction*FCI_DICT_FRACT0;
    return Pow2+Fraction*(Pow2/32);
  }
@@ -17,7 +17,7 @@ index c2293de7ccae6..8106c3ace34f5 100644
 +}
 +#endif
 diff --git a/third_party/unrar/src/archive.hpp b/third_party/unrar/src/archive.hpp
-index 58bdafaa10cc8..d6849e7564eb5 100644
+index 895f853b57680..dc5dfee08b646 100644
 --- a/third_party/unrar/src/archive.hpp
 +++ b/third_party/unrar/src/archive.hpp
 @@ -57,6 +57,13 @@ class Archive:public File
@@ -32,7 +32,7 @@ index 58bdafaa10cc8..d6849e7564eb5 100644
 +#endif
 +
    public:
-     Archive(CommandData *InitCmd=NULL);
+     Archive(CommandData *InitCmd=nullptr);
      ~Archive();
 @@ -92,6 +99,10 @@ class Archive:public File
      int64 Tell() override;
@@ -45,33 +45,6 @@ index 58bdafaa10cc8..d6849e7564eb5 100644
  #endif
      static uint64 GetWinSize(uint64 Size,uint &Flags);
  
-diff --git a/third_party/unrar/src/blake2s.cpp b/third_party/unrar/src/blake2s.cpp
-index ae9d4e02a0de2..d4cf6fab6ae24 100644
---- a/third_party/unrar/src/blake2s.cpp
-+++ b/third_party/unrar/src/blake2s.cpp
-@@ -176,4 +176,3 @@ void blake2s_final( blake2s_state *S, byte *digest )
-   for( int i = 0; i < 8; ++i ) /* Output full hash  */
-     RawPut4( S->h[i], digest + 4 * i );
- }
--
-diff --git a/third_party/unrar/src/blake2s.hpp b/third_party/unrar/src/blake2s.hpp
-index 06e396a77ba49..13969e1695a11 100644
---- a/third_party/unrar/src/blake2s.hpp
-+++ b/third_party/unrar/src/blake2s.hpp
-@@ -5,11 +5,8 @@
- #define BLAKE2_DIGEST_SIZE 32
- #define BLAKE2_THREADS_NUMBER 8
- 
--enum blake2s_constant
--{
--  BLAKE2S_BLOCKBYTES = 64,
--  BLAKE2S_OUTBYTES   = 32
--};
-+constexpr size_t BLAKE2S_BLOCKBYTES = 64;
-+constexpr size_t BLAKE2S_OUTBYTES = 32;
- 
- 
- // Alignment to 64 improves performance of both SSE and non-SSE versions.
 diff --git a/third_party/unrar/src/crc.cpp b/third_party/unrar/src/crc.cpp
 index 61c616289ae47..6ec67f2b8a78f 100644
 --- a/third_party/unrar/src/crc.cpp
@@ -101,7 +74,7 @@ index 61c616289ae47..6ec67f2b8a78f 100644
  
  #ifdef USE_NEON_CRC32
 diff --git a/third_party/unrar/src/errhnd.cpp b/third_party/unrar/src/errhnd.cpp
-index b07e2f6646de9..aff79ff100ecc 100644
+index b07e2f6646de9..a202e90944cf1 100644
 --- a/third_party/unrar/src/errhnd.cpp
 +++ b/third_party/unrar/src/errhnd.cpp
 @@ -1,10 +1,12 @@
@@ -135,10 +108,10 @@ index b07e2f6646de9..aff79ff100ecc 100644
  
  
 diff --git a/third_party/unrar/src/errhnd.hpp b/third_party/unrar/src/errhnd.hpp
-index 3b558b102acaa..236ad7849186f 100644
+index 065350f94af55..5c539faf0d82a 100644
 --- a/third_party/unrar/src/errhnd.hpp
 +++ b/third_party/unrar/src/errhnd.hpp
-@@ -23,14 +23,13 @@ enum RAR_EXIT // RAR exit code.
+@@ -24,14 +24,13 @@ enum RAR_EXIT // RAR exit code.
  class ErrorHandler
  {
    private:
@@ -159,7 +132,7 @@ index 3b558b102acaa..236ad7849186f 100644
      void Clean();
      void MemoryError();
      void OpenError(const std::wstring &FileName);
-@@ -67,8 +66,8 @@ class ErrorHandler
+@@ -68,8 +67,8 @@ class ErrorHandler
      void SetDisableShutdown() {DisableShutdown=true;}
      bool IsShutdownEnabled() {return !DisableShutdown;}
  
@@ -171,10 +144,10 @@ index 3b558b102acaa..236ad7849186f 100644
  
  
 diff --git a/third_party/unrar/src/extract.cpp b/third_party/unrar/src/extract.cpp
-index f799e6a3e0d31..358b229201cfc 100644
+index d9f37c418063b..6331c35a3f690 100644
 --- a/third_party/unrar/src/extract.cpp
 +++ b/third_party/unrar/src/extract.cpp
-@@ -650,6 +650,11 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
+@@ -665,6 +665,11 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
        ExtrFile=LinksToDirs(DestFileName,Cmd->ExtrPath,LastCheckedSymlink);
  
      File CurFile;
@@ -186,7 +159,7 @@ index f799e6a3e0d31..358b229201cfc 100644
  
      bool LinkEntry=Arc.FileHead.RedirType!=FSREDIR_NONE;
      if (LinkEntry && (Arc.FileHead.RedirType!=FSREDIR_FILECOPY))
-@@ -856,6 +861,9 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
+@@ -893,6 +898,9 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
              UnstoreFile(DataIO,Arc.FileHead.UnpSize);
            else
            {
@@ -196,7 +169,7 @@ index f799e6a3e0d31..358b229201cfc 100644
              try
              {
                Unp->Init(Arc.FileHead.WinSize,Arc.FileHead.Solid);
-@@ -866,6 +874,7 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
+@@ -903,6 +911,7 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
                  uiMsg(UIERROR_EXTRDICTOUTMEM,Arc.FileName,uint(Arc.FileHead.WinSize/0x40000000+(Arc.FileHead.WinSize%0x40000000!=0 ? 1 : 0)));
                throw;
              }
@@ -205,7 +178,7 @@ index f799e6a3e0d31..358b229201cfc 100644
              Unp->SetDestSize(Arc.FileHead.UnpSize);
  #ifndef SFX_MODULE
 diff --git a/third_party/unrar/src/extract.hpp b/third_party/unrar/src/extract.hpp
-index 4400057aee4b4..48cff661ef624 100644
+index 18d8f8c9cb776..570475ec6560c 100644
 --- a/third_party/unrar/src/extract.hpp
 +++ b/third_party/unrar/src/extract.hpp
 @@ -57,8 +57,8 @@ class CmdExtract
@@ -424,10 +397,10 @@ index 69d9267f7c428..e3ef5b7a8c90d 100644
    {
      MinContext->U.Stats[i].Symbol=i;      
 diff --git a/third_party/unrar/src/os.hpp b/third_party/unrar/src/os.hpp
-index b6718462e0b3f..278e3c923f327 100644
+index f7e841b098b41..18b755c394ecb 100644
 --- a/third_party/unrar/src/os.hpp
 +++ b/third_party/unrar/src/os.hpp
-@@ -29,6 +29,7 @@
+@@ -30,6 +30,7 @@
  #define STRICT 1
  #endif
  
@@ -435,7 +408,7 @@ index b6718462e0b3f..278e3c923f327 100644
  // 'ifndef' check here is needed for unrar.dll header to avoid macro
  // re-definition warnings in third party projects.
  #ifndef UNICODE
-@@ -38,12 +39,15 @@
+@@ -39,12 +40,15 @@
  
  #define WINVER _WIN32_WINNT_WINXP
  #define _WIN32_WINNT _WIN32_WINNT_WINXP
@@ -452,7 +425,7 @@ index b6718462e0b3f..278e3c923f327 100644
  
  #include <windows.h>
  #include <prsht.h>
-@@ -60,7 +64,7 @@
+@@ -64,7 +68,7 @@
  
  // For WMI requests.
  #include <comdef.h>
@@ -461,7 +434,7 @@ index b6718462e0b3f..278e3c923f327 100644
  #pragma comment(lib, "wbemuuid.lib")
  
  
-@@ -70,11 +74,13 @@
+@@ -74,11 +78,13 @@
  #include <direct.h>
  #include <intrin.h>
  
@@ -475,7 +448,7 @@ index b6718462e0b3f..278e3c923f327 100644
  
  #include <stdio.h>
  #include <stdlib.h>
-@@ -143,6 +149,7 @@
+@@ -147,6 +153,7 @@
  #include <utime.h>
  #include <locale.h>
  
@@ -483,7 +456,7 @@ index b6718462e0b3f..278e3c923f327 100644
  #ifdef __GNUC__
    #if defined(__i386__) || defined(__x86_64__)
      #include <x86intrin.h>
-@@ -151,6 +158,7 @@
+@@ -155,6 +162,7 @@
      #define SSE_ALIGNMENT 16
    #endif
  #endif
@@ -491,7 +464,7 @@ index b6718462e0b3f..278e3c923f327 100644
  
  #if defined(__aarch64__) && (defined(__ARM_FEATURE_CRYPTO) || defined(__ARM_FEATURE_CRC32))
  #include <arm_neon.h>
-@@ -259,9 +267,16 @@
+@@ -263,9 +271,16 @@
    #endif
  #endif
  
@@ -579,10 +552,10 @@ index 3fdaca59b1504..61d3e200e6158 100644
  #elif defined(_UNIX)
    ThSep=*localeconv()->thousands_sep;
 diff --git a/third_party/unrar/src/unicode.cpp b/third_party/unrar/src/unicode.cpp
-index 812e35ba88be2..2755be47c2608 100644
+index e6d4977b565ff..2bff1bf3f7f67 100644
 --- a/third_party/unrar/src/unicode.cpp
 +++ b/third_party/unrar/src/unicode.cpp
-@@ -728,9 +728,18 @@ std::wstring::size_type wcscasestr(const std::wstring &str, const std::wstring &
+@@ -732,9 +732,18 @@ std::wstring::size_type wcscasestr(const std::wstring &str, const std::wstring &
  wchar* wcslower(wchar *s)
  {
  #ifdef _WIN_ALL
@@ -601,7 +574,7 @@ index 812e35ba88be2..2755be47c2608 100644
  #else
    for (wchar *c=s;*c!=0;c++)
      *c=towlower(*c);
-@@ -748,9 +757,18 @@ void wcslower(std::wstring &s)
+@@ -752,9 +761,18 @@ void wcslower(std::wstring &s)
  wchar* wcsupper(wchar *s)
  {
  #ifdef _WIN_ALL
@@ -620,7 +593,7 @@ index 812e35ba88be2..2755be47c2608 100644
  #else
    for (wchar *c=s;*c!=0;c++)
      *c=towupper(*c);
-@@ -771,11 +789,20 @@ void wcsupper(std::wstring &s)
+@@ -775,11 +793,20 @@ void wcsupper(std::wstring &s)
  int toupperw(int ch)
  {
  #if defined(_WIN_ALL)
@@ -641,7 +614,7 @@ index 812e35ba88be2..2755be47c2608 100644
  #else
    return towupper(ch);
  #endif
-@@ -785,10 +812,19 @@ int toupperw(int ch)
+@@ -789,10 +816,19 @@ int toupperw(int ch)
  int tolowerw(int ch)
  {
  #if defined(_WIN_ALL)
@@ -661,7 +634,7 @@ index 812e35ba88be2..2755be47c2608 100644
  #else
    return towlower(ch);
  #endif
-@@ -825,7 +861,6 @@ int64 atoilw(const std::wstring &s)
+@@ -829,7 +865,6 @@ int64 atoilw(const std::wstring &s)
  
  
  #ifdef DBCS_SUPPORTED
@@ -669,7 +642,7 @@ index 812e35ba88be2..2755be47c2608 100644
  
  SupportDBCS::SupportDBCS()
  {
-@@ -842,6 +877,11 @@ void SupportDBCS::Init()
+@@ -846,6 +881,11 @@ void SupportDBCS::Init()
      IsLeadByte[I]=IsDBCSLeadByte(I)!=0;
  }
  
@@ -704,7 +677,7 @@ index 2d867b3aefef0..81cf99e380896 100644
  #else
  #define charnext(s) ((s)+1)
 diff --git a/third_party/unrar/src/unpack.cpp b/third_party/unrar/src/unpack.cpp
-index 99c6f15db5851..fdc8877e01eab 100644
+index 1b132937e8925..79a9a0c80d63a 100644
 --- a/third_party/unrar/src/unpack.cpp
 +++ b/third_party/unrar/src/unpack.cpp
 @@ -1,3 +1,9 @@
@@ -748,19 +721,30 @@ index 99c6f15db5851..fdc8877e01eab 100644
  
    // Solid block shall use the same window size for all files.
    // But if Window isn't initialized when Solid is set, it means that
-@@ -121,15 +133,16 @@ void Unpack::Init(uint64 WinSize,bool Solid)
+@@ -121,23 +133,27 @@ void Unpack::Init(uint64 WinSize,bool Solid)
    // or increasing the size of non-solid window. So we could safely reject
    // current window data without copying them to a new window.
    if (Solid && (Window!=NULL || Fragmented && WinSize>FragWindow.GetWinSize()))
 -    throw std::bad_alloc();
 +    UNRAR_FATAL_BAD_ALLOC(WinSize);
  
-   free(Window);
+   Alloc.delete_l<byte>(Window); // delete Window;
+   Window=nullptr;
    
-   Window=Fragmented ? NULL : (byte *)malloc((size_t)WinSize);
++#if !defined(UNRAR_NO_EXCEPTIONS)
+   try
+   {
++#endif  // UNRAR_NO_EXCEPTIONS
+     if (!Fragmented)
+       Window=Alloc.new_l<byte>((size_t)WinSize,false); // Window=new byte[(size_t)WinSize];
++#if !defined(UNRAR_NO_EXCEPTIONS)
+   }
+   catch (std::bad_alloc) // Use the fragmented window in this case.
+   {
+   }
++#endif  // UNRAR_NO_EXCEPTIONS
  
-   if (Window==NULL)
-+    // Exclude RAR4, small dictionaries and 64-bit.
+   if (Window==nullptr)
      if (WinSize<0x1000000 || sizeof(size_t)>4)
 -      throw std::bad_alloc(); // Exclude RAR4, small dictionaries and 64-bit.
 +      UNRAR_FATAL_BAD_ALLOC(WinSize);

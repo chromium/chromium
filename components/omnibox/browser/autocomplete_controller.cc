@@ -65,7 +65,6 @@
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/local_history_zero_suggest_provider.h"
 #include "components/omnibox/browser/most_visited_sites_provider.h"
-#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/on_device_head_provider.h"
 #include "components/omnibox/browser/open_tab_provider.h"
@@ -73,10 +72,12 @@
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/search_scoring_signals_annotator.h"
 #include "components/omnibox/browser/shortcuts_provider.h"
+#include "components/omnibox/browser/unscoped_extension_provider.h"
 #include "components/omnibox/browser/url_scoring_signals_annotator.h"
 #include "components/omnibox/browser/voice_suggest_provider.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
 #include "components/omnibox/browser/zero_suggest_verbatim_match_provider.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
@@ -956,9 +957,9 @@ void AutocompleteController::UpdateSearchTermsArgsWithAdditionalSearchboxStats(
   // can stop logging this deprecated field.
   search_terms_args.searchbox_stats.set_experiment_stats(experiment_stats);
 
-  // Append the ExperimentStatsV2 to the searchbox stats parameter to be logged
-  // in searchbox_stats.proto's experiment_stats_v2 field.
   if (zero_suggest_provider_) {
+    // Append the ExperimentStatsV2 to the searchbox stats parameter to be
+    // logged in searchbox_stats.proto's `experiment_stats_v2` field.
     for (const auto& experiment_stat_v2 :
          zero_suggest_provider_->experiment_stats_v2s()) {
       // The string value consists of suggestion type/subtype pairs delimited
@@ -1200,6 +1201,11 @@ void AutocompleteController::InitializeAsyncProviders(int provider_types) {
         new HistoryEmbeddingsProvider(provider_client_.get(), this));
   }
 #endif
+  if (provider_types & AutocompleteProvider::TYPE_UNSCOPED_EXTENSION) {
+    unscoped_extension_provider_ =
+        new UnscopedExtensionProvider(provider_client_.get(), this);
+    providers_.push_back(unscoped_extension_provider_.get());
+  }
 }
 
 void AutocompleteController::InitializeSyncProviders(int provider_types) {
@@ -1640,7 +1646,7 @@ void AutocompleteController::UpdateAssociatedKeywords(
       // Only add the keyword if the match does not have a duplicate keyword
       // with a more relevant match.
       if (!keywords.count(keyword) ||
-          (kIsDesktop && match.type == AutocompleteMatchType::STARTER_PACK)) {
+          (kIsDesktop && AutocompleteMatch::IsFeaturedSearchType(match.type))) {
         keywords.insert(keyword);
         match.associated_keyword = std::make_unique<AutocompleteMatch>(
             keyword_provider_->CreateVerbatimMatch(match.fill_into_edit,
@@ -1796,13 +1802,22 @@ void AutocompleteController::UpdateSearchboxStats(AutocompleteResult* result) {
         num_zero_prefix_suggestions_shown);
   }
   searchbox_stats.set_num_zero_prefix_suggestions_shown(
-      omnibox_feature_configs::ReportNumZPSInSession::Get().enabled
-          ? result->num_zero_prefix_suggestions_shown_in_session()
-          : num_zero_prefix_suggestions_shown);
+      result->num_zero_prefix_suggestions_shown_in_session());
   searchbox_stats.set_zero_prefix_enabled(
-      omnibox_feature_configs::ReportNumZPSInSession::Get().enabled
-          ? result->zero_prefix_enabled_in_session()
-          : searchbox_stats.num_zero_prefix_suggestions_shown() > 0);
+      result->zero_prefix_enabled_in_session());
+
+  // Append the GWS event ID hashes to the searchbox stats parameter to be
+  // logged in searchbox_stats.proto's `gws_event_id_hash` field.
+  if (zero_suggest_provider_) {
+    for (const auto& gws_event_id_hash :
+         zero_suggest_provider_->gws_event_id_hashes()) {
+      result->add_gws_event_id_hash_in_session(gws_event_id_hash);
+    }
+  }
+  for (const auto& gws_event_id_hash :
+       result->gws_event_id_hashes_in_session()) {
+    searchbox_stats.add_gws_event_id_hash(gws_event_id_hash);
+  }
 
   // Go over all matches and set searchbox stats if the match supports it.
   for (size_t index = 0; index < result->size(); ++index) {
@@ -2475,36 +2490,35 @@ void AutocompleteController::MaybeRemoveCompanyEntityImages(
 void AutocompleteController::MaybeCleanSuggestionsForKeywordMode(
     const AutocompleteInput& input,
     AutocompleteResult* result) {
-  if (input.current_page_classification() ==
-      metrics::OmniboxEventProto::NTP_REALBOX) {
+  if (!kIsDesktop || input.current_page_classification() ==
+                         metrics::OmniboxEventProto::NTP_REALBOX) {
     // Realbox doesn't support keyword mode yet, so keep original list intact.
     return;
   }
-  if (kIsDesktop && input.text().starts_with(u'@')) {
-    // When the input is '@' exactly, some special filtering rules are applied.
-    // Note: the rule preserving other matches with `associated_keyword` is
-    // not currently necessary, but is intended to make it easy to coexist
-    // with enterprise configured scopes when that feature is implemented.
-    if (input.text() == u"@") {
-      result->EraseMatchesWhere([](const AutocompleteMatch& match) {
-        return !(match.type == AutocompleteMatchType::STARTER_PACK ||
-                 match.contents == u"@" || match.associated_keyword);
-      });
-      // Simple sort is needed to restore verbatim '@' search as top/default
-      // match because a different default, e.g. "@hill", might have previously
-      // occupied the top spot while '@' was demoted below others.
-      std::sort(result->begin(), result->end(),
-                AutocompleteMatch::MoreRelevant);
-      // Put first defaultable match in top position since relevance
-      // ranking alone doesn't guarantee it.
-      auto default_match = std::find_if(
-          result->begin(), result->end(),
-          [](const auto& m) { return m.allowed_to_be_default_match; });
-      if (default_match != result->begin() && default_match != result->end()) {
-        std::rotate(result->begin(), default_match, default_match + 1);
-      }
-    }
 
+  if (input.GetFeaturedKeywordMode() ==
+      AutocompleteInput::FeaturedKeywordMode::kExact) {
+    result->EraseMatchesWhere([](const AutocompleteMatch& match) {
+      // When the input is '@' exactly, keep only the trivial search, starter
+      // pack, and featured enterprise suggestions.
+      return match.contents != u"@" && !match.associated_keyword;
+    });
+    // Simple sort is needed to restore verbatim '@' search as top/default
+    // match because a different default, e.g. "@hill", might have previously
+    // occupied the top spot while '@' was demoted below others.
+    std::sort(result->begin(), result->end(), AutocompleteMatch::MoreRelevant);
+    // Put first defaultable match in top position since relevance
+    // ranking alone doesn't guarantee it.
+    auto default_match = std::find_if(
+        result->begin(), result->end(),
+        [](const auto& m) { return m.allowed_to_be_default_match; });
+    if (default_match != result->begin() && default_match != result->end()) {
+      std::rotate(result->begin(), default_match, default_match + 1);
+    }
+  }
+
+  if (input.GetFeaturedKeywordMode() !=
+      AutocompleteInput::FeaturedKeywordMode::kFalse) {
     // Intentionally avoid actions and remove button on first suggestion
     // which may interfere with keyword mode refresh.
     if (result->size() > 1 &&

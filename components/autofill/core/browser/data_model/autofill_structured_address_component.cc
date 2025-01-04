@@ -880,9 +880,13 @@ int AddressComponent::
             ->MaximumNumberOfAssignedAddressComponentsOnNodeToLeafPaths());
   }
 
-  // Only count non-empty nodes.
-  if (!GetValue().empty())
+  // Only count non-empty nodes, unless they were user verified.
+  if (!GetValue().empty() ||
+      (base::FeatureList::IsEnabled(
+           features::kAutofillSupportPhoneticNameForJP) &&
+       GetVerificationStatus() == VerificationStatus::kUserVerified)) {
     ++result;
+  }
 
   return result;
 }
@@ -955,7 +959,6 @@ bool AddressComponent::IsMergeableWithComponent(
       GetValueForComparison(newer_component);
   const std::u16string newer_comparison_value =
       newer_component.GetValueForComparison(*this);
-
   // If both components are the same, there is nothing to do.
   if (SameAs(newer_component))
     return true;

@@ -5,8 +5,11 @@
 #ifndef CC_INPUT_MAIN_THREAD_SCROLLING_REASON_H_
 #define CC_INPUT_MAIN_THREAD_SCROLLING_REASON_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
+
 #include "cc/cc_export.h"
 
 namespace base {

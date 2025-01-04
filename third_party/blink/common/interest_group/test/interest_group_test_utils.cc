@@ -224,6 +224,8 @@ void InterestGroupCompare(const blink::InterestGroup& actual,
     };
     IG_COMPARE_VEC(actual.allowed_reporting_origins,
                    expected.allowed_reporting_origins, compare_origins);
+    IG_COMPARE(actual.creative_scanning_metadata,
+               expected.creative_scanning_metadata);
   };
   IG_COMPARE_VEC(actual.ads, expected.ads, compare_ads);
   IG_COMPARE_VEC(actual.ad_components, expected.ad_components, compare_ads);

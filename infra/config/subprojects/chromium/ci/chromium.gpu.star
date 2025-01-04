@@ -376,7 +376,6 @@ ci.gpu.windows_builder(
         category = "Windows",
     ),
     cq_mirrors_console_view = "mirrors",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
 ci.gpu.windows_builder(
@@ -410,7 +409,6 @@ ci.gpu.windows_builder(
     console_view_entry = consoles.console_view_entry(
         category = "Windows",
     ),
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
 ci.thin_tester(
@@ -705,6 +703,23 @@ ci.thin_tester(
             "win10_nvidia_gtx_1660_stable",
             "puppet_production",
         ],
+        per_test_modifications = {
+            "pixel_skia_gold_passthrough_test": targets.per_test_modification(
+                mixins = targets.mixin(
+                    args = [
+                        # TODO(crbug.com/382422293): Remove when fixed
+                        "--jobs=1",
+                    ],
+                ),
+                replacements = targets.replacements(
+                    args = {
+                        # Magic substitution happens after regular replacement, so remove it
+                        # now since we are manually applying the number of jobs above.
+                        targets.magic_args.GPU_PARALLEL_JOBS: None,
+                    },
+                ),
+            ),
+        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.DEBUG_X64,
@@ -748,6 +763,23 @@ ci.thin_tester(
             "win10_nvidia_gtx_1660_stable",
             "puppet_production",
         ],
+        per_test_modifications = {
+            "pixel_skia_gold_passthrough_test": targets.per_test_modification(
+                mixins = targets.mixin(
+                    args = [
+                        # TODO(crbug.com/382422293): Remove when fixed
+                        "--jobs=1",
+                    ],
+                ),
+                replacements = targets.replacements(
+                    args = {
+                        # Magic substitution happens after regular replacement, so remove it
+                        # now since we are manually applying the number of jobs above.
+                        targets.magic_args.GPU_PARALLEL_JOBS: None,
+                    },
+                ),
+            ),
+        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE_X64,

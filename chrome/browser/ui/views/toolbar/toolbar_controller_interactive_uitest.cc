@@ -554,21 +554,21 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
 
 IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
                        ActionItemsShowInMenuAndActivateFromMenu) {
-  RunTestSequence(
-      PinBookmarkToToolbar(),
-      AddDummyButtonsToToolbarTillElementOverflows(
-          ChromeActionIds::kActionSidePanelShowBookmarks),
-      PressButton(kToolbarOverflowButtonElementId),
-      CheckMenuMatchesOverflowedElements(),
+  RunTestSequence(PinBookmarkToToolbar(),
+                  AddDummyButtonsToToolbarTillElementOverflows(
+                      ChromeActionIds::kActionSidePanelShowBookmarks),
+                  PressButton(kToolbarOverflowButtonElementId),
+                  CheckMenuMatchesOverflowedElements(),
 
-      // Check bookmark menu item is activated correctly.
-      ActivateMenuItemWithElementId(
-          ChromeActionIds::kActionSidePanelShowBookmarks),
-      WaitForShow(kSidePanelElementId), Check([this]() {
-        auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
-        return coordinator->IsSidePanelEntryShowing(
-            SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks));
-      }));
+                  // Check bookmark menu item is activated correctly.
+                  ActivateMenuItemWithElementId(
+                      ChromeActionIds::kActionSidePanelShowBookmarks),
+                  WaitForShow(kSidePanelElementId), Check([this]() {
+                    auto* coordinator =
+                        browser()->GetFeatures().side_panel_coordinator();
+                    return coordinator->IsSidePanelEntryShowing(
+                        SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks));
+                  }));
 }
 
 IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,

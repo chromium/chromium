@@ -16,10 +16,10 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/tpm/tpm_firmware_update.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
+#include "ui/webui/webui_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -127,8 +127,9 @@ void BrowserLifetimeHandler::HandleFactoryReset(const base::Value::List& args) {
       !user_manager::UserManager::Get()->IsLoggedInAsGuest() &&
       !user_manager::UserManager::Get()->IsLoggedInAsChildUser();
 
-  if (!allow_powerwash)
+  if (!allow_powerwash) {
     return;
+  }
 
   PrefService* prefs = g_browser_process->local_state();
   prefs->SetBoolean(prefs::kFactoryResetRequested, true);

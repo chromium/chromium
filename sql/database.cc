@@ -319,13 +319,13 @@ void DatabaseDiagnostics::WriteIntoTrace(
   context->set_error_message(error_message);
 }
 
-Database::Database(std::string_view tag) : Database(DatabaseOptions{}, tag) {}
+Database::Database(Database::Tag tag) : Database(DatabaseOptions{}, tag) {}
 
-Database::Database(DatabaseOptions options, std::string_view tag)
+Database::Database(DatabaseOptions options, Database::Tag tag)
     : options_(options),
       mmap_disabled_(!enable_mmap_by_default_),
-      histogram_tag_(tag),
-      tracing_track_name_(base::StrCat({"Database: ", tag})) {
+      histogram_tag_(tag.value),
+      tracing_track_name_(base::StrCat({"Database: ", histogram_tag_})) {
   DCHECK_GE(options.page_size, 512);
   DCHECK_LE(options.page_size, 65536);
   DCHECK(!(options.page_size & (options.page_size - 1)))
@@ -1071,12 +1071,14 @@ bool Database::Raze() {
     return false;
   }
 
-  sql::Database null_db(sql::DatabaseOptions{
-      .exclusive_locking = true,
-      .page_size = options_.page_size,
-      .cache_size = 0,
-      .enable_views_discouraged = options_.enable_views_discouraged,
-  });
+  sql::Database null_db(
+      sql::DatabaseOptions{
+          .exclusive_locking = true,
+          .page_size = options_.page_size,
+          .cache_size = 0,
+          .enable_views_discouraged = options_.enable_views_discouraged,
+      },
+      "RazeNullDB");
   if (!null_db.OpenInMemory()) {
     DLOG(FATAL) << "Unable to open in-memory database.";
     return false;

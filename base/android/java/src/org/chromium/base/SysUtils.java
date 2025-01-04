@@ -14,6 +14,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -21,14 +23,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /** Exposes system related information about the current device. */
+@NullMarked
 @JNINamespace("base::android")
 public class SysUtils {
     // A device reporting strictly more total memory in megabytes cannot be considered 'low-end'.
     private static final int LOW_MEMORY_DEVICE_THRESHOLD_MB = 1024;
     private static final String TAG = "SysUtils";
 
-    private static Boolean sLowEndDevice;
-    private static Integer sAmountOfPhysicalMemoryKB;
+    private static @Nullable Boolean sLowEndDevice;
+    private static @Nullable Integer sAmountOfPhysicalMemoryKB;
 
     private SysUtils() {}
 

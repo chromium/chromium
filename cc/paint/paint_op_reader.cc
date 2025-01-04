@@ -20,11 +20,12 @@
 #include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/numerics/safe_conversions.h"
+#include "base/numerics/safe_math.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/optional_util.h"
@@ -55,6 +56,7 @@
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/mojom/hdr_metadata.mojom.h"
 #include "ui/gfx/mojom/hdr_metadata_mojom_traits.h"
+#include "ui/gfx/skia_span_util.h"
 
 namespace cc {
 namespace {
@@ -529,7 +531,8 @@ void PaintOpReader::Read(sk_sp<SkData>* data) {
   }
 
   // This is safe to cast away the volatile as it is just a memcpy internally.
-  *data = SkData::MakeWithCopy(const_cast<const uint8_t*>(memory_), bytes);
+  *data = gfx::MakeSkDataFromSpanWithCopy(
+      base::span(const_cast<const uint8_t*>(memory_), bytes));
   DidRead(bytes);
 }
 
@@ -654,6 +657,11 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
     SetInvalid(DeserializationError::kPaintRecordForbidden);
     return;
   }
+  if (!options_.is_privileged &&
+      shader_type == PaintShader::Type::kSkSLCommand) {
+    valid_ = false;
+    return;
+  }
 
   *shader = sk_sp<PaintShader>(new PaintShader(shader_type));
   PaintShader& ref = **shader;
@@ -709,7 +717,12 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
   ReadSize(&colors_size);
 
   // If there are too many colors, abort.
-  size_t colors_bytes = colors_size * sizeof(decltype(ref.colors_)::value_type);
+  size_t colors_bytes;
+  if (!base::CheckMul(colors_size, sizeof(decltype(ref.colors_)::value_type))
+           .AssignIfValid(&colors_bytes)) {
+    SetInvalid(DeserializationError::
+                   kInsufficientRemainingBytes_Read_PaintShader_ColorSize);
+  }
   if (colors_bytes > remaining_bytes_) {
     SetInvalid(DeserializationError::
                    kInsufficientRemainingBytes_Read_PaintShader_ColorBytes);
@@ -731,6 +744,8 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
     return;
   }
   ReadVectorContent(positions_size, ref.positions_);
+
+  Read(&ref.sksl_command_);
 
   // We don't write the cached shader, so don't attempt to read it either.
 
@@ -901,6 +916,22 @@ void PaintOpReader::Read(scoped_refptr<SkottieWrapper>* skottie) {
     return;
   }
   DidRead(bytes_to_skip);
+}
+
+void PaintOpReader::Read(SkString* sk_string) {
+  static_assert(std::is_same_v<unsigned char, uint8_t>);
+  size_t size = 0;
+  // We always serialize the empty string's size (0u).
+  ReadSize(&size);
+  if (remaining_bytes_ < size) {
+    valid_ = false;
+  }
+  if (!valid_ || size == 0) {
+    return;
+  }
+  uint8_t* scratch = CopyScratchSpace(size);
+  *sk_string = SkString(reinterpret_cast<char*>(scratch), size);
+  DidRead(size);
 }
 
 void PaintOpReader::AlignMemory(size_t alignment) {

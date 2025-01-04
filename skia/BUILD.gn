@@ -36,18 +36,6 @@ buildflag_header("buildflags") {
   ]
 }
 
-component("rusty_png_feature_detection") {
-  defines = [ "IS_SKIA_RUSTY_PNG_FEATURE_DETECTION_IMPL" ]
-  sources = [
-    "rusty_png_feature.cc",
-    "rusty_png_feature.h",
-  ]
-  public_deps = [
-    ":buildflags",
-    "//base",
-  ]
-}
-
 source_set("path_bridge") {
   sources = skia_fontations_path_bridge_sources
 }
@@ -256,6 +244,7 @@ component("skia") {
   public = [
     "ext/benchmarking_canvas.h",
     "ext/cicp.h",
+    "ext/codec_utils.h",
     "ext/convolver.h",
     "ext/draw_gainmap_image.h",
     "ext/event_tracer_impl.h",
@@ -271,6 +260,7 @@ component("skia") {
     "ext/skia_memory_dump_provider.h",
     "ext/skia_trace_memory_dump_impl.h",
     "ext/skia_utils_base.h",
+    "rusty_png_feature.h",
   ]
   sources = [
     # Chrome sources.
@@ -282,6 +272,7 @@ component("skia") {
     "ext/SkMemory_new_handler.cpp",
     "ext/benchmarking_canvas.cc",
     "ext/cicp.cc",
+    "ext/codec_utils.cc",
     "ext/convolver.cc",
     "ext/draw_gainmap_image.cc",
     "ext/event_tracer_impl.cc",
@@ -300,6 +291,7 @@ component("skia") {
     "ext/skia_memory_dump_provider.cc",
     "ext/skia_trace_memory_dump_impl.cc",
     "ext/skia_utils_base.cc",
+    "rusty_png_feature.cc",
   ]
   if (is_ios) {
     public += [ "ext/skia_utils_ios.h" ]
@@ -367,11 +359,13 @@ component("skia") {
   sources += skia_sksl_core_sources
   sources += skia_sksl_core_module_sources
   sources += skia_codec_shared
-  sources += skia_codec_png
+  sources += skia_codec_png_base
+  sources += skia_codec_libpng_srcs
   sources += skia_utils_private
   sources += skia_xps_sources
   sources += skia_encode_srcs
-  sources += skia_encode_png_srcs
+  sources += skia_encode_png_base
+  sources += skia_encode_libpng_srcs
   sources += skia_encode_webp_srcs
   sources += [
     "//third_party/skia/src/sfnt/SkOTTable_name.cpp",
@@ -402,12 +396,16 @@ component("skia") {
     sources += skia_xml_sources
     sources += skia_codec_xmp
     sources += skia_codec_jpeg_xmp
+    sources += [
+      "//third_party/skia/src/svg/SkSVGCanvas.cpp",
+      "//third_party/skia/src/svg/SkSVGDevice.cpp",
+    ]
     deps += [ "//third_party/expat" ]
     defines += [ "SK_CODEC_DECODES_JPEG_GAINMAPS" ]
+  } else {
+    # Remove unused util sources.
+    sources -= [ "//third_party/skia/src/utils/SkParsePath.cpp" ]
   }
-
-  # Remove unused util sources.
-  sources -= [ "//third_party/skia/src/utils/SkParsePath.cpp" ]
 
   if (is_win) {
     libs = [ "fontsub.lib" ]
@@ -600,15 +598,17 @@ component("skia") {
   }
 
   if (skia_support_skottie) {
+    import("//third_party/skia/modules/jsonreader/jsonreader.gni")
     import("//third_party/skia/modules/skottie/skottie.gni")
     import("//third_party/skia/modules/skresources/skresources.gni")
     import("//third_party/skia/modules/sksg/sksg.gni")
     import("//third_party/skia/modules/skshaper/skshaper.gni")
     public += skia_skottie_public
+    sources += skia_jsonreader_sources
+    sources += skia_shaper_primitive_sources
     sources += skia_skottie_sources
     sources += skia_skresources_sources
     sources += skia_sksg_sources
-    sources += skia_shaper_primitive_sources
     defines += [
       "SK_SHAPER_PRIMITIVE_AVAILABLE",
       "SKOTTIE_TRIVIAL_FONTRUN_ITER",
@@ -619,6 +619,8 @@ component("skia") {
     deps += [ ":rust_png_ffi" ]
     public += skia_codec_rust_png_public
     sources += skia_codec_rust_png
+    public += skia_encode_rust_png_public
+    sources += skia_encode_rust_png_srcs
   }
 }
 
@@ -646,7 +648,7 @@ if (enable_rust_png) {
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [
       ":skia_config",
-      ":skia_library_config",
+      "//build/config/compiler:no_chromium_code",
     ]
   }
 
@@ -656,7 +658,7 @@ if (enable_rust_png) {
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [
       ":skia_config",
-      ":skia_library_config",
+      "//build/config/compiler:no_chromium_code",
     ]
   }
 }
@@ -1026,6 +1028,7 @@ source_set("test_fonts") {
 
 test("skia_unittests") {
   sources = [
+    "ext/codec_utils_unittest.cc",
     "ext/convolver_unittest.cc",
     "ext/geometry_unittest.cc",
     "ext/image_operations_unittest.cc",

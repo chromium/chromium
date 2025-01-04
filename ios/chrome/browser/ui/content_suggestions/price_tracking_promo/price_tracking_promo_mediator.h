@@ -28,6 +28,10 @@ class PushNotificationService;
 @protocol SnackbarCommands;
 @protocol SystemIdentity;
 
+@protocol PriceTrackingPromoFaviconConsumer
+- (void)priceTrackingPromoFaviconCompleted:(UIImage*)faviconImage;
+@end
+
 class AuthenticationService;
 
 // Delegate used to communicate events back to the owner of

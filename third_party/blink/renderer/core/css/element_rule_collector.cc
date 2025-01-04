@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/page/scrolling/fragment_anchor.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
@@ -197,11 +198,9 @@ bool EvaluateAndAddContainerQueries(
 }
 
 bool AffectsAnimations(const RuleData& rule_data) {
-  const CSSPropertyValueSet& properties = rule_data.Rule()->Properties();
-  unsigned count = properties.PropertyCount();
-  for (unsigned i = 0; i < count; ++i) {
-    auto reference = properties.PropertyAt(i);
-    CSSPropertyID id = reference.Id();
+  for (const CSSPropertyValue& property :
+       rule_data.Rule()->Properties().Properties()) {
+    CSSPropertyID id = property.PropertyID();
     if (id == CSSPropertyID::kAll) {
       return true;
     }
@@ -486,8 +485,12 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
     int style_sheet_index,
     const SelectorChecker& checker,
     SelectorChecker::SelectorCheckingContext& context) {
-  bool reject_starting_styles = style_recalc_context_.is_ensuring_style ||
-                                style_recalc_context_.old_style;
+  bool force_starting_style = false;
+  probe::ForceStartingStyle(context.element, &force_starting_style);
+  bool reject_starting_styles = (style_recalc_context_.is_ensuring_style ||
+                                 style_recalc_context_.old_style ||
+                                 mode_ != SelectorChecker::kResolvingStyle) &&
+                                !force_starting_style;
 
   CascadeLayerSeeker layer_seeker(stop_at_first_match ? nullptr : context.scope,
                                   context.vtt_originating_element,

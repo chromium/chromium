@@ -86,8 +86,7 @@ export function getHtml(this: ItemElement) {
               class="cr-secondary-text"
               ?hidden="${!this.data.disableReasons.
             unsupportedDeveloperExtension}">
-            <!--TODO(crbug.com/362756477) Replace after string is finalized.-->
-            <span>This extension is only supported in developer mode.</span>
+            $i18n{itemUnsupportedDeveloperMode}
           </span>
         </div>` : ''}
       ${this.showMv2DeprecationWarning_() ? html`
@@ -155,7 +154,9 @@ export function getHtml(this: ItemElement) {
     </div>
     ${this.showAccountUploadButton_() ? html`
       <cr-icon-button id="account-upload-button" class="no-overlap"
-          iron-icon="extensions-icons:extension_cloud_upload">
+          title="$i18n{itemUpload}" aria-label="$i18n{itemUpload}"
+          iron-icon="extensions-icons:extension_cloud_upload"
+          aria-describedby="a11yAssociation" @click="${this.onUploadClick_}">
       </cr-icon-button>` : ''}
     ${this.showDevReloadButton_() ? html`
       <cr-icon-button id="dev-reload-button" class="icon-refresh no-overlap"

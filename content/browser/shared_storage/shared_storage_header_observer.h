@@ -96,6 +96,7 @@ class CONTENT_EXPORT SharedStorageHeaderObserver {
                       ContextType context_type,
                       NavigationOrDocumentHandle* navigation_or_document_handle,
                       std::vector<MethodWithOptionsPtr> methods_with_options,
+                      const std::optional<std::string>& with_lock,
                       base::OnceClosure callback,
                       mojo::ReportBadMessageCallback bad_message_callback,
                       bool can_defer);
@@ -106,6 +107,7 @@ class CONTENT_EXPORT SharedStorageHeaderObserver {
   virtual void OnBatchUpdateFinished(
       const url::Origin& request_origin,
       std::vector<MethodWithOptionsPtr> methods_with_options,
+      const std::optional<std::string>& with_lock,
       const std::string& error_message) {}
 
  private:

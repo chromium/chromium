@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/gif/gif_image_decoder.h"
 
 #include <memory>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
@@ -119,7 +120,7 @@ TEST(GIFImageDecoderTest, parseByteByByte) {
   // Pass data to decoder byte by byte.
   for (size_t length = 1; length <= data.size(); ++length) {
     scoped_refptr<SharedBuffer> temp_data =
-        SharedBuffer::Create(data.data(), length);
+        SharedBuffer::Create(base::span(data).first(length));
     decoder->SetData(temp_data.get(), length == data.size());
 
     EXPECT_LE(frame_count, decoder->FrameCount());
@@ -164,7 +165,7 @@ TEST(GIFImageDecoderTest, allDataReceivedTruncation) {
 
   ASSERT_GE(data.size(), 10u);
   scoped_refptr<SharedBuffer> temp_data =
-      SharedBuffer::Create(data.data(), data.size() - 10);
+      SharedBuffer::Create(base::span(data).first(data.size() - 10));
   decoder->SetData(temp_data.get(), true);
 
   EXPECT_EQ(2u, decoder->FrameCount());
@@ -199,7 +200,7 @@ TEST(GIFImageDecoderTest, frameIsCompleteLoading) {
 
   ASSERT_GE(data.size(), 10u);
   scoped_refptr<SharedBuffer> temp_data =
-      SharedBuffer::Create(data.data(), data.size() - 10);
+      SharedBuffer::Create(base::span(data).first(data.size() - 10));
   decoder->SetData(temp_data.get(), false);
 
   EXPECT_EQ(2u, decoder->FrameCount());
@@ -324,7 +325,7 @@ TEST(GIFImageDecoderTest, firstFrameHasGreaterSizeThanScreenSize) {
   for (size_t i = 1; i <= full_data.size(); ++i) {
     decoder = CreateDecoder();
     scoped_refptr<SharedBuffer> data =
-        SharedBuffer::Create(full_data.data(), i);
+        SharedBuffer::Create(base::span(full_data).first(i));
     decoder->SetData(data.get(), i == full_data.size());
 
     if (decoder->IsSizeAvailable() && !frame_size.width() &&
@@ -360,7 +361,7 @@ TEST(GIFImageDecoderTest, repetitionCountChangesWhenSeen) {
   const size_t kTruncatedSize = 60;
   ASSERT_TRUE(kTruncatedSize < full_data.size());
   scoped_refptr<SharedBuffer> partial_data =
-      SharedBuffer::Create(full_data.data(), kTruncatedSize);
+      SharedBuffer::Create(base::span(full_data).first(kTruncatedSize));
 
   std::unique_ptr<ImageDecoder> decoder = std::make_unique<GIFImageDecoder>(
       ImageDecoder::kAlphaPremultiplied, ColorBehavior::kTransformToSRGB,
@@ -383,7 +384,7 @@ TEST(GIFImageDecoderTest, bitmapAlphaType) {
   const size_t kTruncateSize = 800;
   ASSERT_TRUE(kTruncateSize < full_data.size());
   scoped_refptr<SharedBuffer> partial_data =
-      SharedBuffer::Create(full_data.data(), kTruncateSize);
+      SharedBuffer::Create(base::span(full_data).first(kTruncateSize));
 
   std::unique_ptr<ImageDecoder> premul_decoder =
       std::make_unique<GIFImageDecoder>(ImageDecoder::kAlphaPremultiplied,
@@ -470,10 +471,9 @@ TEST(GIFImageDecoderTest, recursiveDecodeFailure) {
   // Modify data to have an error in frame 2.
   const size_t kErrorOffset = 15302u;
   scoped_refptr<SharedBuffer> modified_data =
-      SharedBuffer::Create(data.data(), kErrorOffset);
-  modified_data->Append("A", 1u);
-  modified_data->Append(data.data() + kErrorOffset + 1,
-                        data.size() - kErrorOffset - 1);
+      SharedBuffer::Create(base::span(data).first(kErrorOffset));
+  modified_data->Append(base::span_from_cstring("A"));
+  modified_data->Append(base::span(data).subspan(kErrorOffset + 1));
   {
     auto decoder = CreateDecoder();
     decoder->SetData(modified_data.get(), true);

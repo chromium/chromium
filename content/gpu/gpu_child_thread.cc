@@ -21,7 +21,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/child/child_process.h"
 #include "content/common/process_visibility_tracker.h"
 #include "content/gpu/browser_exposed_gpu_interfaces.h"
@@ -51,7 +50,7 @@
 #include "media/mojo/clients/mojo_android_overlay.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/services/font/public/cpp/font_loader.h"  // nogncheck
 #include "components/services/font/public/mojom/font_service.mojom.h"  // nogncheck
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -161,7 +160,7 @@ void GpuChildThread::Init(const base::TimeTicks& process_start_time) {
   }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!in_process_gpu()) {
     mojo::PendingRemote<font_service::mojom::FontService> font_service;
     BindHostReceiver(font_service.InitWithNewPipeAndPassReceiver());

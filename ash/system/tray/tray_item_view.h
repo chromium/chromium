@@ -84,6 +84,11 @@ class ASH_EXPORT TrayItemView : public views::View,
     // yet changed. `target_visibility` is the visibility the tray item is going
     // to have.
     virtual void OnTrayItemVisibilityAboutToChange(bool target_visibility) = 0;
+
+    // Update observers that have dependencies on the presence of the
+    // `image_view_` or the `label_`. Since the TrayItem can only have an image
+    // view or a label, combine this into one function.
+    virtual void OnTrayItemChildViewChanged() = 0;
   };
 
   explicit TrayItemView(Shelf* shelf);
@@ -216,9 +221,8 @@ class ASH_EXPORT TrayItemView : public views::View,
   // Use scale in animating in the item to the tray.
   bool use_scale_in_animation_ = true;
 
-  // For Material Next: if this view is active or not in `UnifiedSystemTray`.
+  // If this view is active or not in `UnifiedSystemTray`.
   // This is used for coloring and is set in `UpdateLabelOrImageViewColor()`.
-  // Note: the value is only accurate when the Jelly flag is set.
   bool is_active_ = false;
 
   // Only one of |label_| and |image_view_| should be non-null.

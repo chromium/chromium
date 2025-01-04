@@ -10,6 +10,7 @@ import android.graphics.RectF;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.IntDef;
 
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -291,8 +292,9 @@ public abstract class Layout {
     /**
      * Called when the context and size of the view has changed.
      *
-     * @param context     The current Android's context.
+     * @param context The current Android's context.
      */
+    @CallSuper
     public void contextChanged(Context context) {
         mContext = context;
         LayoutTab.resetDimensionConstants(context);
@@ -312,16 +314,20 @@ public abstract class Layout {
 
     /**
      * Sets the the {@link TabModelSelector} for the layout.
+     *
      * @param modelSelector The {@link TabModelSelector} to be set on the layout.
      */
+    @CallSuper
     public void setTabModelSelector(TabModelSelector modelSelector) {
         mTabModelSelector = modelSelector;
     }
 
     /**
      * Sets the {@link TabContentManager} needed for the layout to get thumbnails.
+     *
      * @param manager The {@link TabContentManager} to get tab display content.
      */
+    @CallSuper
     protected void setTabContentManager(TabContentManager manager) {
         if (manager == null) return;
 
@@ -371,14 +377,8 @@ public abstract class Layout {
         return mLayoutState == LayoutState.STARTING_TO_SHOW;
     }
 
-    /**
-     * @return The incognito state of the layout.
-     */
-    public boolean isIncognito() {
-        return mTabModelSelector.isIncognitoSelected();
-    }
-
     /** To be called when the transition into the layout is done. */
+    @CallSuper
     public void doneShowing() {
         if (mLayoutState != LayoutState.STARTING_TO_SHOW) return;
 
@@ -387,9 +387,10 @@ public abstract class Layout {
     }
 
     /**
-     * To be called when the transition out of the view mode is done.
-     * This is currently called by the renderer when all the animation are done while hiding.
+     * To be called when the transition out of the view mode is done. This is currently called by
+     * the renderer when all the animation are done while hiding.
      */
+    @CallSuper
     public void doneHiding() {
         if (mLayoutState != LayoutState.STARTING_TO_HIDE) return;
 
@@ -408,6 +409,7 @@ public abstract class Layout {
      * @param time The current time of the app in ms.
      * @param animate Whether to play an entry animation.
      */
+    @CallSuper
     public void show(long time, boolean animate) {
         // TODO(crbug.com/40141330): Remove after LayoutManager explicitly hide the old layout.
         mLayoutState = LayoutState.STARTING_TO_SHOW;

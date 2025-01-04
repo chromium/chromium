@@ -37,7 +37,8 @@ bool IsRtpTimestampLessThan(const ProtoPtr& lhs, const ProtoPtr& rhs) {
 }
 
 BasePacketEvent* GetNewBasePacketEvent(AggregatedPacketEvent* event_proto,
-    int packet_id, int size) {
+                                       int packet_id,
+                                       int size) {
   BasePacketEvent* base = event_proto->add_base_packet_event();
   base->set_packet_id(packet_id);
   base->set_size(size);
@@ -64,8 +65,9 @@ void EncodingEventSubscriber::OnReceiveFrameEvent(
     const FrameEvent& frame_event) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  if (event_media_type_ != frame_event.media_type)
+  if (event_media_type_ != frame_event.media_type) {
     return;
+  }
 
   const RtpTimeDelta relative_rtp_timestamp =
       GetRelativeRtpTimestamp(frame_event.rtp_timestamp);
@@ -75,8 +77,9 @@ void EncodingEventSubscriber::OnReceiveFrameEvent(
   // Look up existing entry. If not found, create a new entry and add to map.
   auto it = frame_event_map_.find(relative_rtp_timestamp);
   if (it == frame_event_map_.end()) {
-    if (!ShouldCreateNewProto(lower_32_bits))
+    if (!ShouldCreateNewProto(lower_32_bits)) {
       return;
+    }
 
     IncrementStoredProtoCount(lower_32_bits);
     auto event_proto = std::make_unique<AggregatedFrameEvent>();
@@ -106,8 +109,8 @@ void EncodingEventSubscriber::OnReceiveFrameEvent(
       (frame_event.timestamp - base::TimeTicks()).InMilliseconds());
 
   if (frame_event.type == FRAME_CAPTURE_END) {
-    if (frame_event.media_type == VIDEO_EVENT &&
-        frame_event.width > 0 && frame_event.height > 0) {
+    if (frame_event.media_type == VIDEO_EVENT && frame_event.width > 0 &&
+        frame_event.height > 0) {
       event_proto_ptr->set_width(frame_event.width);
       event_proto_ptr->set_height(frame_event.height);
     }
@@ -131,8 +134,9 @@ void EncodingEventSubscriber::OnReceiveFrameEvent(
     event_proto_ptr->set_delay_millis(frame_event.delay_delta.InMilliseconds());
   }
 
-  if (frame_event_map_.size() > kMaxMapSize)
+  if (frame_event_map_.size() > kMaxMapSize) {
     TransferFrameEvents(kNumMapEntriesToTransfer);
+  }
 
   DCHECK(frame_event_map_.size() <= kMaxMapSize);
   DCHECK(frame_event_storage_.size() <= max_frames_);
@@ -142,8 +146,9 @@ void EncodingEventSubscriber::OnReceivePacketEvent(
     const PacketEvent& packet_event) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  if (event_media_type_ != packet_event.media_type)
+  if (event_media_type_ != packet_event.media_type) {
     return;
+  }
 
   const RtpTimeDelta relative_rtp_timestamp =
       GetRelativeRtpTimestamp(packet_event.rtp_timestamp);
@@ -153,8 +158,9 @@ void EncodingEventSubscriber::OnReceivePacketEvent(
 
   // Look up existing entry. If not found, create a new entry and add to map.
   if (it == packet_event_map_.end()) {
-    if (!ShouldCreateNewProto(lower_32_bits))
+    if (!ShouldCreateNewProto(lower_32_bits)) {
       return;
+    }
 
     IncrementStoredProtoCount(lower_32_bits);
     auto event_proto = std::make_unique<AggregatedPacketEvent>();
@@ -170,8 +176,7 @@ void EncodingEventSubscriber::OnReceivePacketEvent(
         it->second->mutable_base_packet_event();
     for (RepeatedPtrField<BasePacketEvent>::pointer_iterator base_it =
              field->pointer_begin();
-         base_it != field->pointer_end();
-         ++base_it) {
+         base_it != field->pointer_end(); ++base_it) {
       if ((*base_it)->packet_id() == packet_event.packet_id) {
         base_packet_event_proto = *base_it;
         break;
@@ -197,9 +202,9 @@ void EncodingEventSubscriber::OnReceivePacketEvent(
           it->second.get(), packet_event.packet_id, packet_event.size);
     } else if (base_packet_event_proto->event_type_size() >=
                kMaxEventsPerProto) {
-      DVLOG(3) << "Too many events in packet "
-               << packet_event.rtp_timestamp << ", "
-               << packet_event.packet_id << ". Using new packet event proto.";
+      DVLOG(3) << "Too many events in packet " << packet_event.rtp_timestamp
+               << ", " << packet_event.packet_id
+               << ". Using new packet event proto.";
       AddPacketEventToStorage(std::move(it->second));
       if (!ShouldCreateNewProto(lower_32_bits)) {
         packet_event_map_.erase(it);
@@ -214,8 +219,7 @@ void EncodingEventSubscriber::OnReceivePacketEvent(
     }
   }
 
-  base_packet_event_proto->add_event_type(
-      ToProtoEventType(packet_event.type));
+  base_packet_event_proto->add_event_type(ToProtoEventType(packet_event.type));
   base_packet_event_proto->add_event_timestamp_ms(
       (packet_event.timestamp - base::TimeTicks()).InMilliseconds());
 
@@ -226,15 +230,18 @@ void EncodingEventSubscriber::OnReceivePacketEvent(
     base_packet_event_proto->set_size(packet_event.size);
   }
 
-  if (packet_event_map_.size() > kMaxMapSize)
+  if (packet_event_map_.size() > kMaxMapSize) {
     TransferPacketEvents(kNumMapEntriesToTransfer);
+  }
 
   DCHECK(packet_event_map_.size() <= kMaxMapSize);
   DCHECK(packet_event_storage_.size() <= max_frames_);
 }
 
-void EncodingEventSubscriber::GetEventsAndReset(LogMetadata* metadata,
-    FrameEventList* frame_events, PacketEventList* packet_events) {
+void EncodingEventSubscriber::GetEventsAndReset(
+    LogMetadata* metadata,
+    FrameEventList* frame_events,
+    PacketEventList* packet_events) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   // Flush all events.
@@ -260,8 +267,7 @@ void EncodingEventSubscriber::TransferFrameEvents(size_t max_num_entries) {
   DCHECK(frame_event_map_.size() >= max_num_entries);
 
   auto it = frame_event_map_.begin();
-  for (size_t i = 0;
-       i < max_num_entries && it != frame_event_map_.end();
+  for (size_t i = 0; i < max_num_entries && it != frame_event_map_.end();
        i++, ++it) {
     AddFrameEventToStorage(std::move(it->second));
   }
@@ -271,8 +277,7 @@ void EncodingEventSubscriber::TransferFrameEvents(size_t max_num_entries) {
 
 void EncodingEventSubscriber::TransferPacketEvents(size_t max_num_entries) {
   auto it = packet_event_map_.begin();
-  for (size_t i = 0;
-       i < max_num_entries && it != packet_event_map_.end();
+  for (size_t i = 0; i < max_num_entries && it != packet_event_map_.end();
        i++, ++it) {
     AddPacketEventToStorage(std::move(it->second));
   }
@@ -330,10 +335,11 @@ void EncodingEventSubscriber::DecrementStoredProtoCount(
   auto it = stored_proto_counts_.find(relative_rtp_timestamp_lower_32_bits);
   CHECK(it != stored_proto_counts_.end(), base::NotFatalUntil::M130)
       << "no event protos for " << relative_rtp_timestamp_lower_32_bits;
-  if (it->second > 1)
+  if (it->second > 1) {
     it->second--;
-  else
+  } else {
     stored_proto_counts_.erase(it);
+  }
 }
 
 RtpTimeDelta EncodingEventSubscriber::GetRelativeRtpTimestamp(

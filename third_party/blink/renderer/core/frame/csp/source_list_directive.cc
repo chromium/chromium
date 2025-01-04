@@ -75,11 +75,6 @@ CSPCheckResult CSPSourceListAllows(
     if (url.ProtocolIs("ws") || url.ProtocolIs("wss")) {
       return CSPCheckResult::AllowedOnlyIfWildcardMatchesWs();
     }
-    if (url.ProtocolIs("ftp") &&
-        !base::FeatureList::IsEnabled(
-            network::features::kCspStopMatchingWildcardDirectivesToFtp)) {
-      return CSPCheckResult::AllowedOnlyIfWildcardMatchesFtp();
-    }
   }
 
   return CSPCheckResult::Blocked();

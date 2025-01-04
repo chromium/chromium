@@ -26,7 +26,8 @@ class ASH_EXPORT QuickInsertImageItemGridView
   METADATA_HEADER(QuickInsertImageItemGridView, views::View)
 
  public:
-  explicit QuickInsertImageItemGridView(int grid_width);
+  explicit QuickInsertImageItemGridView(int grid_width,
+                                        bool has_top_margin = true);
   QuickInsertImageItemGridView(const QuickInsertImageItemGridView&) = delete;
   QuickInsertImageItemGridView& operator=(const QuickInsertImageItemGridView&) =
       delete;
@@ -86,7 +87,7 @@ class ASH_EXPORT QuickInsertImageItemGridView
   // Returns items in this grid in focus traversal order.
   const views::View::Views& GetFocusableItems() const;
 
-  int grid_width_ = 0;
+  int column_width_;
   views::View::Views focusable_items_;
   std::unique_ptr<FocusSearch> focus_search_;
 };

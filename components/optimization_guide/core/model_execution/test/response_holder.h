@@ -25,8 +25,8 @@ class ResponseHolder {
   bool GetFinalStatus() { return final_status_future_.Get(); }
 
   const std::optional<std::string>& value() const { return response_received_; }
-  const std::vector<std::string>& streamed() const {
-    return streamed_responses_;
+  const std::vector<std::string>& partials() const {
+    return partial_responses_;
   }
   const std::optional<
       OptimizationGuideModelExecutionError::ModelExecutionError>&
@@ -61,7 +61,7 @@ class ResponseHolder {
       OptimizationGuideModelStreamingExecutionResult result);
 
   base::test::TestFuture<bool> final_status_future_;
-  std::vector<std::string> streamed_responses_;
+  std::vector<std::string> partial_responses_;
   std::optional<std::string> response_received_;
   std::optional<bool> provided_by_on_device_;
   std::unique_ptr<ModelQualityLogEntry> log_entry_received_;

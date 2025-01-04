@@ -59,6 +59,7 @@
 <translation id="1099928364755383720">pantaila txiki gainjarri automatikoa</translation>
 <translation id="1100782917270858593">Bilaketa-ibilbideari berrekiteko botoia: sakatu "Sartu" tekla bilaketa-ibilbideari berrekiteko eta Chrome-ko historian dauden erlazionatutako jarduerak ikusteko</translation>
 <translation id="1101672080107056897">Errore-ekintza</translation>
+<translation id="1101902632743388185">Konparazio-taulak</translation>
 <translation id="1104409666019087579">Nahitaezko eremu batzuk hutsik daude. Bete itzazu gorde aurretik.</translation>
 <translation id="1104860668737945357">Pasahitzak kudeatzeko botoia: aktiba ezazu pasahitzak ikusi eta kudeatzeko Chrome-ren ezarpenetan</translation>
 <translation id="1108464073729874771">A3x4</translation>
@@ -108,6 +109,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1186201132766001848">Egiaztatu pasahitzak</translation>
 <translation id="1187430513518041110">Autoak eta ibilgailuak</translation>
 <translation id="1190491977647722791">Papera (astuna)</translation>
+<translation id="1194278116501666615">ARCko makina birtualak aurrez kargatzearen garapenari buruzko informazio eguneratua</translation>
 <translation id="1195073053842921378">Helbidea gailutik ezabatuko da</translation>
 <translation id="1195558154361252544">Webgune guztien jakinarazpenak automatikoki blokeatzen dira, zuk baimentzen dituzunenak izan ezik</translation>
 <translation id="1197088940767939838">Laranja</translation>
@@ -169,6 +171,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="129553762522093515">Itxitako azkenak</translation>
 <translation id="1296930489679394997">Salmentak</translation>
 <translation id="1297814096526086484">Teklatua eta sagua blokeatu nahi dituzu?</translation>
+<translation id="1297832388362139384">Berde argia</translation>
 <translation id="1301227606947843452">Lege-kontuetarako (handiagoa)</translation>
 <translation id="1301324364792935241">Egiaztatu DNS ezarpen seguruak</translation>
 <translation id="1302418742166945866"><ph name="URL" /> webguneak zure MIDI gailuak kontrolatu eta berriro programatu behar ditu</translation>
@@ -228,6 +231,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1384725838384960382">Ordainketa seguruetarako kredentzialak autentifikatzeko orria</translation>
 <translation id="1386623374109090026">Oharpenak</translation>
 <translation id="138810468159004008">Eman baimena webgunea bisitatu bitartean</translation>
+<translation id="139161720020179799">Gris argia</translation>
 <translation id="1391625539203220400">IBANa gailu honetan gorde nahi duzu?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> webguneak ez du bidali daturik.</translation>
 <translation id="1393071644879491291">Baliteke bisitatu nahi duzun webguneko erasotzaileak zu iruzurtzen saiatzea softwarea instala dezazun, edo informazioa eman dezazun, hala nola pasahitzak, telefono-zenbakia edo kreditu-txartelen zenbakiak. Chrome-k atzera egitea gomendatzen dizu, zeure burua babesteko. <ph name="BEGIN_LEARN_MORE_LINK" />Lortu abisu honi buruzko informazio gehiago<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -360,6 +364,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1615402009686901181">Administratzailearen gidalerroek pantaila-kapturak ateratzea eragozten dute isilpeko edukia ikusgai dagoenean</translation>
 <translation id="1617276713587758852">Crossover ibilgailuak</translation>
 <translation id="1619007254056372606">Kudeatu gailuan gordetako webguneetako datuak</translation>
+<translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> erabiltzaileak fitxa bat kendu du</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622966923835127638">Enpresa-finantzak</translation>
 <translation id="1623104350909869708">Ez utzi orri honi elkarrizketa-koadroa gehigarriak sortzea</translation>
@@ -367,6 +372,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1633137413609266904">{0,plural, =1{Administratzailearen gidalerroek ez dute uzten fitxategia irekitzen}other{Administratzailearen gidalerroek ez dute uzten # fitxategi irekitzen}}</translation>
 <translation id="1633941398432788136">Gertaera-plangintza</translation>
 <translation id="1634828734222219955">Guztira</translation>
+<translation id="1637407510758033366"><ph name="USER_DISPLAY_NAME" /> taldean sartu da</translation>
 <translation id="163826442096818926">Laburtu</translation>
 <translation id="1639239467298939599">Kargatzen</translation>
 <translation id="1640180200866533862">Erabiltzaile-gidalerroak</translation>
@@ -448,7 +454,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1756555787993603971">Orain, txartel birtual bat erabil dezakezu modu seguruago batean ordaintzeko betetze automatikoarekin.</translation>
 <translation id="175656076281618225">Magia</translation>
 <translation id="1757773103848038814">Monospace letra</translation>
-<translation id="1757935267918149452">Google-ko pasahitza aldatzeko botoia: aktiba ezazu Google-ko kontuaren pasahitza aldatzeko</translation>
+<translation id="1757935267918149452">Google-ko pasahitza aldatzeko botoia: aktiba ezazu Google-ko kontuko pasahitza aldatzeko</translation>
 <translation id="1762779605905950734">Kalearen izena</translation>
 <translation id="1763864636252898013">Zerbitzari honek ezin izan du egiaztatu <ph name="DOMAIN" /> domeinua denik. Zure gailuaren sistema eragilea ez da bere segurtasun-ziurtagiriaz fidatzen. Baliteke gaizki konfiguratuta dagoelako izatea edo erasotzaile batek zure konexioa atzeman duelako izatea.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Exekutatu Windows-en sare-diagnostikoak<ph name="END_LINK" />.</translation>
@@ -456,6 +462,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1777422078676229054">Argazkia (artxibistikoa)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1785118555253503473">Sareko aplikazioak instalatu nahi dituzu?</translation>
+<translation id="1791415068765905273">Erakutsi konparazio-taula guztiak</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, "Sartu" Google-ko kontuko informazioa, pribatutasuna eta segurtasuna kudeatzeko</translation>
 <translation id="1793631236004319016">Duela <ph name="NUM_HOURS_MINUTES_SECONDS" /> erabili zen azken aldiz</translation>
@@ -579,6 +586,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2025186561304664664">Proxya automatikoki konfiguratzeko ezarrita dago.</translation>
 <translation id="2025891858974379949">Segurua ez den edukia</translation>
 <translation id="2027465737841872819">Plastikoa</translation>
+<translation id="2027707238798802149">Txartela ez dago erabilgarri</translation>
 <translation id="2029735183873159415">Jatorria eta genealogia</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Proxya eta suebakia egiaztatu<ph name="END_LINK" />.</translation>
 <translation id="2033900728810589426">Lasterbidea ezin da bat etorri <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> gidalerroak definitutako bilaketa-hornitzaile lehenetsiaren gako-hitzarekin: <ph name="SHORTCUT_NAME" /></translation>
@@ -703,6 +711,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2227758700723188171">Ikasteko laguntzak eta bekak</translation>
 <translation id="2228057197024893428">Helbide hau Chrome-n gordeta dago une honetan. Google-ren beste produktuetan ere erabiltzeko, gorde ezazu Google-ko kontuan (<ph name="ACCOUNT" />).</translation>
 <translation id="2229456043301340598">Bikoiztutako lasterbide bati ez ikusi egin zaio: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="222962001646502673">Grisa</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 fitxa}other{# fitxa}}</translation>
 <translation id="2233745931693710080">Disko trinkoa</translation>
 <translation id="2235344399760031203">Hirugarrenen cookieak blokeatu dira</translation>
@@ -804,7 +813,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2399868464369312507">Google Chrome-k ordainketa-metodoak editatu behar ditu.</translation>
 <translation id="2400600116338235695">Serieko ataketara konektatzea eska dezake</translation>
 <translation id="2404884497378469141">Saiatu berriro fitxategiak kopiatzen</translation>
-<translation id="2412310121876768057">Hurrengoan txartelaren eremua automatikoki bete nahi duzu?</translation>
 <translation id="2413155254802890957">Zaharrak</translation>
 <translation id="2413528052993050574">Zerbitzari honek ezin izan du egiaztatu <ph name="DOMAIN" /> domeinua denik. Bere segurtasun-ziurtagiria baliogabetuta egon liteke. Baliteke gaizki konfiguratuta dagoelako izatea edo erasotzaile batek zure konexioa atzeman duelako izatea.</translation>
 <translation id="2414886740292270097">Iluna</translation>
@@ -862,6 +870,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2514548229949738417">Etxea eta lorategia</translation>
 <translation id="2515629240566999685">Seinalea egiaztatu.</translation>
 <translation id="2515761554693942801"><ph name="PROVIDER_ORIGIN" /> darabilten webguneetan Touch ID-rekin egiaztatzea aukeratu duzu. Baliteke hornitzaile horrek zure ordainketa-metodoari buruzko informazioa gorde izatea, baina <ph name="LINK_TEXT" />.</translation>
+<translation id="2518584823165598232">Txartel hau ez dago erabilgarri. Jarri txartelaren hornitzailearekin harremanetan.</translation>
 <translation id="2521385132275182522">Grapa bat behean, eskuinetara</translation>
 <translation id="2521736961081452453">Sortu inprimaki bat</translation>
 <translation id="2523886232349826891">Gailu honetan soilik gordeko da</translation>
@@ -902,6 +911,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2571488850200220306">Segurtasuna bermatzeko, gailuaren sistema eragilea, arakatzailearen bertsioa eta instalatutako softwarea ikus ditzake</translation>
 <translation id="2573170131138724450">Telebistak</translation>
 <translation id="257674075312929031">Taldekatu</translation>
+<translation id="258135245577667916"><ph name="USER_DISPLAY_NAME" /> erabiltzaileak fitxa bat gehitu du</translation>
 <translation id="2586657967955657006">Arbela</translation>
 <translation id="2587841377698384444">Direktorioko APIarenidentifikatzailea:</translation>
 <translation id="2594318783181750337">Web-ikuspegi bizkorra:</translation>
@@ -924,6 +934,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2628224721443278970">Hasi saioa Microsoft OneDrive-n</translation>
 <translation id="2634124572758952069">Ezin izan da aurkitu <ph name="HOST_NAME" /> ostalariaren IP helbidea.</translation>
 <translation id="2639739919103226564">Egoera:</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Ehuna (erdidistiratsua)</translation>
 <translation id="264810637653812429">Ez da aurkitu gailu bateragarririk.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
@@ -952,6 +963,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2688969097326701645">Bai, egin aurrera</translation>
 <translation id="2690699652723742414">Azken 30 egunak</translation>
 <translation id="2691924980723297736">Segurtasun-abisua</translation>
+<translation id="2697248912349197812">Galdetu <ph name="KEYWORD_SHORT_NAME" /> zerbitzuari</translation>
 <translation id="2699273987028089219">Azpimenu bat dago erabilgarri, erabili <ph name="SHORTCUT" /> beste aukera batzuetara nabigatzeko.</translation>
 <translation id="2701514975700770343">Ahuspez</translation>
 <translation id="2702592986366989640">Aukera merkea</translation>
@@ -1135,9 +1147,11 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3061707000357573562">Adabaki-zerbitzua</translation>
 <translation id="306198082577913404">Aktibatu aurreikuspenen hobekuntzak</translation>
 <translation id="3062655045399308513">Ezabatu arakatze-datuak…</translation>
+<translation id="3063453392496098461">Ezin izan da gauzatu VPNaren atzeko planoko zerbitzuen instalazioa.</translation>
 <translation id="306573536155379004">Hasi da jokoa.</translation>
 <translation id="3067505415088964188">Prezioa baxua da</translation>
 <translation id="3068118691172921711">Fitxategiak <ph name="CLOUD_PROVIDER" /> zerbitzura kargatzeko prozesua minutu bat barru hasiko da</translation>
+<translation id="3074671422612537810">{ITEMS,plural, =1{{ITEMS} elementu}other{{ITEMS} elementu}}</translation>
 <translation id="3076865167425975822">Sistema eragileak</translation>
 <translation id="3080254622891793721">Grafikoa</translation>
 <translation id="3082007635241601060">Utzi Google-ri saskiak erabiltzen bertako produktuen deskontu pertsonalizatuak bilatzeko</translation>
@@ -1184,7 +1198,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3150653042067488994">Aldi baterako zerbitzariko errorea</translation>
 <translation id="3150889484970506196">Kalkulu-orri bat sortzeko botoia: aktiba ezazu Google-ko kalkulu-orri bat bizkor sortzeko</translation>
 <translation id="3154506275960390542">Orri honetan dagoen inprimaki bat agian ez da bidaliko segurtasunez. Datuak bidean dauden bitartean beste pertsona batzuek ikus ditzakete eta erasotzaileek aldatu egin ditzakete zerbitzariak beste zerbait jaso dezan.</translation>
-<translation id="3154987252551138431">Arazo bat izan da Nearby Share erabiltzean</translation>
+<translation id="3154987252551138431">Arazoren bat izan da Nearby Share erabiltzean</translation>
 <translation id="315504272643575312"><ph name="MANAGER" /> domeinuak kudeatzen du kontua.</translation>
 <translation id="3155163173539279776">Berrabiarazi Chromium</translation>
 <translation id="3156511682997763015">Aurreratu 10 segundo</translation>
@@ -1299,7 +1313,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3354508510846323339"><ph name="MAX_CITATIONS" /> aipamenetatik <ph name="CURRENT_CITATION" />garrena, <ph name="PRODUCT_NAME" />, <ph name="URL" /></translation>
 <translation id="3355823806454867987">Aldatu proxy-ezarpenak…</translation>
 <translation id="335809815767823">Esportatu dira</translation>
-<translation id="3359387651158939842">Bete txartelaren eremua automatikoki etorkizuneko erosketetan Google Pay-rekin erabiltzeko gordetzen duzunean</translation>
 <translation id="3359565626472459400">Ezkontzak</translation>
 <translation id="3360103848165129075">Ordainketa kudeatzeko orria</translation>
 <translation id="3360306038446926262">Leihoak</translation>
@@ -1394,6 +1407,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="351522771072578657">Menu batean zaude</translation>
 <translation id="3517264445792388751">Administratzaileak fitxategi-sistema desgaitu du</translation>
 <translation id="3518941727116570328">Objektu bat baino gehiago kudeatzea</translation>
+<translation id="3519670528214225835">Galdetu <ph name="KEYWORD_SUFFIX" /> zerbitzuari</translation>
 <translation id="3525130752944427905">25,4 × 35,56 cm (10 × 14 in)</translation>
 <translation id="3525435918300186947">MIDI gailuak kontrolatu eta berriro programatu nahi dituzu?</translation>
 <translation id="3527181387426738155">Musika eta audioa</translation>
@@ -1432,7 +1446,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Kalearen aukera hautatu da</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> webguneko orri kapsulatu batek hau dio:</translation>
-<translation id="3577473026931028326">Arazo bat izan da. Saiatu berriro.</translation>
+<translation id="3577473026931028326">Arazoren bat izan da. Saiatu berriro.</translation>
 <translation id="3577902790357386792">Gimnastika</translation>
 <translation id="3581089476000296252">Orria prest dagoenean, horren berri emango dizu Chrome-k. &lt;a&gt;Utzi&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Gehitu izena</translation>
@@ -1451,7 +1465,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3605899229568538311">12,7 × 12,7 cm (5 × 5 in)</translation>
 <translation id="3606917451836803637">Saioak eta programak</translation>
 <translation id="3608932978122581043">Papera sartzeko orientazioa</translation>
-<translation id="3610142117915544498">Hurrengoan bizkorrago ordaintzeko, gorde txartela, izena eta fakturazio-helbidea Google-ko kontuan</translation>
 <translation id="3612660594051121194">Distantzia luzeko autobusak eta trenak</translation>
 <translation id="3614001939154393113">Baliteke erasotzaileak <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> webguneko zure informazioa (besteak beste, pasahitzak, mezuak edo kreditu-txartelak) lapurtzen saiatzea. <ph name="BEGIN_LEARN_MORE_LINK" />Lortu abisu honi buruzko informazio gehiago<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">Tamaina: 2</translation>
@@ -1726,6 +1739,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4084219288110917128">C1 gutun-azala</translation>
 <translation id="4085326869263783566">Idazteko laguntza. Irekitzeko, sakatu tabuladorea eta Sartu.</translation>
 <translation id="4085769736382018559">Konparatu produktuak</translation>
+<translation id="4085778582400064057">Urdina</translation>
 <translation id="4088981014127559358">1. aldeko irudia Y ardatzaren arabera aldatuta</translation>
 <translation id="4089152113577680600">14. erretilua</translation>
 <translation id="4092349052316400070">Bete helbidea</translation>
@@ -1739,6 +1753,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4103592298805904008">Kartoia (horma bakarrekoa)</translation>
 <translation id="4104702906064390950">IBANaren informazioa gordetzen</translation>
 <translation id="4106887816571530227">Ukatu da eduki kapsulatua erabiltzeko baimena</translation>
+<translation id="4107047499377819067">Hasi da VPNaren atzeko planoko zerbitzuen instalazioa. Minutu batzuk beharko dira instalatzeko.</translation>
 <translation id="4110652170750985508">Berrikusi ordainketa</translation>
 <translation id="4111546256784973544">Paintballa</translation>
 <translation id="4112140312785995938">Atzeratu</translation>
@@ -1948,6 +1963,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4451684391620232683">Erabiltzaileari aurkeztutako testua:</translation>
 <translation id="4452328064229197696">Erabili berri duzun pasahitza datuen isilpekotasunaren urratze batean aurkitu da. Kontuak babesteko, Google-ren Pasahitz-kudeatzailea zerbitzuak gordeta dauzkazun pasahitzak seguruak direla egiaztatzea gomendatzen du.</translation>
 <translation id="4456937135469235202">Abenturazko bidaiak</translation>
+<translation id="4458013283022578512">Idatzi galdera bat</translation>
 <translation id="4464826014807964867">Zure erakundeari buruzko informazioa duten webguneak</translation>
 <translation id="4466576951214254884">Ikasleentzako maileguak eta unibertsitaterako finantzaketa</translation>
 <translation id="4467821340016922962">Pantaila osotik irten eta deskarga ikusteko, sakatu |<ph name="ACCELERATOR" />|</translation>
@@ -1969,6 +1985,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu Sartu orri hau Google Translate-rekin itzultzeko</translation>
 <translation id="4515275063822566619">Chrome-tik eta zure Google-ko kontutik (<ph name="ACCOUNT_EMAIL" />) hartu dira txartelak eta helbideak. Kudeatu nahi badituzu, joan <ph name="BEGIN_LINK" />Ezarpenak<ph name="END_LINK" /> atalera.</translation>
 <translation id="4515847625438516456">Mikroautoak eta azpikonpaktuak</translation>
+<translation id="451601984112574365">Berde iluna</translation>
 <translation id="4519245469315452746">Gailua eten da eguneratze-prozesuan.</translation>
 <translation id="4520048001084013693">Administratzailearen gidalerroek ez dute uzten fitxategia deskargatzen</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
@@ -2049,6 +2066,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="469028408546145398">Ezkutuko moduko leihoak ixteko botoia: aktiba ezazu irekita dauden ezkutuko moduko leiho guztiak ixteko</translation>
 <translation id="4691093235373904540">Teilatuen mantentze-lanak</translation>
 <translation id="4692623383562244444">Bilatzaileak</translation>
+<translation id="4695702626068620848"><ph name="KEYWORD" /> - Galdetu <ph name="KEYWORD_SHORT_NAME" /> zerbitzuari</translation>
 <translation id="4698692901173737941">Borroka-kirolak</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Aldea</translation>
@@ -2060,7 +2078,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="471880041731876836">Ez daukazu webgunean sartzeko baimenik</translation>
 <translation id="4718897478554657123">600 × 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows-en sare-diagnostikoak exekutatzen<ph name="END_LINK" /></translation>
-<translation id="4722735765955348426"><ph name="USERNAME" /> kontuaren pasahitza</translation>
+<translation id="4722735765955348426"><ph name="USERNAME" /> kontuko pasahitza</translation>
 <translation id="4724144314178270921">Arbeleko testua eta irudiak ikustea eska dezake</translation>
 <translation id="4726672564094551039">Kargatu berriro gidalerroak</translation>
 <translation id="4728558894243024398">Plataforma</translation>
@@ -2159,7 +2177,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4881695831933465202">Ireki</translation>
 <translation id="4881808915112408168">60,96 × 80,01 cm (24 × 31,5 in)</translation>
 <translation id="4882314601499260499">Ez da aplikatu erabiltzaile-gidalerrorik. Erabiltzaile-gidalerroak gehitzeko, erakundeak <ph name="LINK_BEGIN" />domeinua egiaztatu<ph name="LINK_END" /> behar du.</translation>
-<translation id="4883911187498618061">Idatzi galdera edo eskaera-mezu bat</translation>
 <translation id="4885030148564729407">Eztei-bidaiak eta oporraldi erromantikoak</translation>
 <translation id="4885256590493466218">Ordaintzerakoan, erabili <ph name="CARD_DETAIL" /> txartela</translation>
 <translation id="4887406273302438710">Babestu pasahitzak Windows Hello erabilita</translation>
@@ -2169,7 +2186,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olinpiar Jokoak</translation>
 <translation id="4898742041545089450">Gai hau desblokeatuta dago, eta baliteke zure arakatze-historiaren arabera aktibatzea</translation>
-<translation id="4899379435492347481">Gorde txartel hau Google Pay-rekin sarean erabiltzeko, gailu guztiekin erosketak egiteko</translation>
 <translation id="4900217275619098670">Bederatzigarren arrabola</translation>
 <translation id="4901052769830245369">Etiketak (erdidistiratsuak)</translation>
 <translation id="4901162432287938633">Higienea eta kosmetika</translation>
@@ -2177,11 +2193,13 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4901952598169637881">Eguneroko oinetakoak</translation>
 <translation id="4905659621780993806">Egun honetan, administratzaileak automatikoki berrabiaraziko du gailua: <ph name="DATE" /> (<ph name="TIME" />). Gorde irekita dauzkazun elementuak gailua berrabiarazi aurretik.</translation>
 <translation id="4913987521957242411">Zulo bat goian, ezkerretara</translation>
+<translation id="4914727764832832057">Urdin argia</translation>
 <translation id="4916389289686916969">Telebistako reality-ak</translation>
 <translation id="4917064667437236721">Irudi-zilindroa</translation>
 <translation id="4918221908152712722">Instalatu <ph name="APP_NAME" /> (ez da deskargatu behar)</translation>
 <translation id="4920457992177678649">Oporraldi eta epe laburretarako alokairuak</translation>
 <translation id="4920710383559189047">Zorroa</translation>
+<translation id="4920921410507315601">Konparazio-taulak</translation>
 <translation id="4922104989726031751">Pasahitz-kudeatzailea zure sistema eragilearekin erabiltzeko, exekutatu berriro Chromium eta eman ordenagailuaren pasahitz-kudeatzailea erabiltzeko baimena. Berriro exekutatu ondoren, berriro irekiko dira fitxak.</translation>
 <translation id="4923459931733593730">Ordainketa</translation>
 <translation id="4926049483395192435">Nahitaez zehaztu behar da.</translation>
@@ -2191,7 +2209,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4930153903256238152">Edukiera handia</translation>
 <translation id="4930714375720679147">Aktibatu</translation>
 <translation id="4932035752129140860">Itsasten edo eransten dituzun testuak Google Cloud-i edo hirugarrenei bidaltzen zaizkie, azter ditzaten. Adibidez, baliteke testuetan kontuzko datuak edo malwarea bilatzea, eta agian enpresaren gidalerroen arabera gordeko dira baita zure administratzailearentzat ikusgai egon ere.</translation>
-<translation id="4933468175699107356">Egin klik eskuineko botoiarekin gordetako informazioa (adibidez, zure izena edo helbidea) betetzeko automatikoki edozein inprimakitan</translation>
 <translation id="4933788293078559286">Ordaindu Pix erabilita</translation>
 <translation id="4934780484581617878">Leihoen kudeaketa</translation>
 <translation id="4936134414789135531">Ezin izan da aurkitu sartutako <ph name="VALUE_NAME" />.</translation>
@@ -2250,6 +2267,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5039804452771397117">Baimendu</translation>
 <translation id="5040262127954254034">Pribatutasuna</translation>
 <translation id="5043480802608081735">Kopiatu duzun esteka</translation>
+<translation id="5043753287208271200">Hori iluna</translation>
 <translation id="5045550434625856497">Pasahitz okerra</translation>
 <translation id="5048293684454354469">Iragarkien gaiak webgune batek iragarkiak pertsonalizatzeko erabil ditzakeen gauza ugarietako bat da. Iragarkien gairik gabe ere, webguneek iragarkiak erakutsi ahal izango dizkizute, baina baliteke hain pertsonalizatuta ez egotea. Lortu informazio gehiago <ph name="BEGIN_LINK" />iragarkien pribatutasuna kudeatzeari<ph name="LINK_END" /> buruz.</translation>
 <translation id="5052517576853118371">Gai aktiboak</translation>
@@ -2375,6 +2393,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5278778426231952189">Kargatu</translation>
 <translation id="5279286380302340275">Kudeatu deskargak</translation>
 <translation id="5280963125494874678">sareko aplikazioak erabiltzeko</translation>
+<translation id="5282008206326321696">{count,plural, =0{# laster-marka}=1{# laster-marka}other{# laster-marka}}</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Dokumentuaren propietateak</translation>
 <translation id="528468243742722775">Amaitu</translation>
@@ -2393,6 +2412,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5300589172476337783">Erakutsi</translation>
 <translation id="5305716236436927587">Publizitatea eta marketina</translation>
 <translation id="5306593769196050043">Bi orriak</translation>
+<translation id="5307109011461144709"><ph name="USER_DISPLAY_NAME" /> erabiltzaileak taldearen kolorea aldatu du</translation>
 <translation id="5307166000025436103">Ados</translation>
 <translation id="5308380583665731573">Konektatu</translation>
 <translation id="5308689395849655368">Hutsegite-txostenak bidaltzeko aukera desgaituta dago.</translation>
@@ -2424,6 +2444,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5363309033720083897">Administratzaileak onartu duen serieko ataka</translation>
 <translation id="5363532265530011914">Galtzerdiak eta galtzeteria</translation>
 <translation id="5371425731340848620">Eguneratu txartela</translation>
+<translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> erabiltzaileak fitxa bat aldatu du</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Erlojua atzeratuta duzu", "Erlojua aurreratuta duzu" edo "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Pasahitza zure gailu guztietan lortzeko, egiaztatu zeu zarela</translation>
@@ -2438,6 +2459,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5392506727170022660">Metala (erdidistiratsua)</translation>
 <translation id="5394069166371280357">Familientzako saioak</translation>
 <translation id="5396631636586785122">Eskuineko ertza josita</translation>
+<translation id="5397794290049113714">Zu</translation>
 <translation id="5398772614898833570">Blokeatu egin dira iragarkiak</translation>
 <translation id="5400836586163650660">Grisa</translation>
 <translation id="5401344472773249513">Pertsona famatuei eta aisiari buruzko albisteak</translation>
@@ -2457,6 +2479,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5425082381151187189">Etxea eta barne-dekorazioa</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> webguneak jakinarazpenak bidali nahi dizkizu</translation>
 <translation id="5430298929874300616">Kendu laster-marka</translation>
+<translation id="5431318178759467895">Kolorez</translation>
 <translation id="5433756542371550806">Agindu-lerroaren aldaerak</translation>
 <translation id="5434798570900738152">Chromium-ek <ph name="BEGIN_EMPHASIS" />ez ditu gordeko<ph name="END_EMPHASIS" /> hauek:
         <ph name="BEGIN_LIST" />
@@ -2556,6 +2579,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5593640815048812868">Ordenagailu eramangarriak eta poltsikoko ordenagailuak</translation>
 <translation id="5595485650161345191">Editatu helbidea</translation>
 <translation id="5596939519753369075">5,08 × 8,89 cm (2 × 3,5 in)</translation>
+<translation id="5597254438174353289">Urdin iluna</translation>
 <translation id="560412284261940334">Ez da onartzen kudeaketarik</translation>
 <translation id="5605249000617390290">Lortu prezioen jarraipenari buruzko informazio gehiago</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -2565,6 +2589,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="561165882404867731">Itzuli orria Google Translate-rekin</translation>
 <translation id="5612720917913232150"><ph name="URL" /> webguneak ordenagailuaren kokapena erabili nahi du</translation>
 <translation id="5614520971155863709">Karta-jokoak</translation>
+<translation id="5617785978844309968">Erakutsi konparazio-taula guztiak</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> webguneak gehiegitan birbideratu zaitu.</translation>
 <translation id="5619721953841297650">Aurrezarpena</translation>
 <translation id="5624120631404540903">Kudeatu pasahitzak</translation>
@@ -2611,6 +2636,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5701381305118179107">Erdiratu</translation>
 <translation id="5707154300732650394">Berrekin bilaketa-ibilbideari</translation>
 <translation id="57094364128775171">Iradoki pasahitz konplexu bat…</translation>
+<translation id="570953204696852961">Gorri iluna</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Albaitariak</translation>
 <translation id="5715150588940290235">Gordetako segurtasun-kodeak ezabatu nahi dituzu?</translation>
@@ -2757,6 +2783,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6001839398155993679">Has gaitezen</translation>
 <translation id="6002122790816966947">Zure gailuak</translation>
 <translation id="6002968396561884726">Duela gutxi ikusia</translation>
+<translation id="6005188329423473970">Osatu da VPNaren atzeko planoko zerbitzuen instalazioa. VPNko aplikaziorik ikusten ez baduzu, amaitu saioa eta has ezazu berriro.</translation>
 <translation id="6005659677094197001">Etengabea</translation>
 <translation id="6005765687956866568">Garbitu da inprimakian automatikoki betetako informazioa</translation>
 <translation id="6006365096047131769">7,62 × 12,7 cm (3 × 5 in)</translation>
@@ -2811,6 +2838,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6085149458302186532">Etiketak (koloretakoak)</translation>
 <translation id="6087312102907839798">Erlazionatutako bilaketak</translation>
 <translation id="6089505343295765444">Chrome-ko historiatik ezabatzen dituzun fitxak konparazio-tauletan agertuko dira halere</translation>
+<translation id="6093599771645355227">Hori argia</translation>
 <translation id="6093795393556121384">Txartela egiaztatu da</translation>
 <translation id="6094273045989040137">Egin oharpen bat</translation>
 <translation id="6094290315941448991">Administratzailearen gidalerroek pantaila-grabaketa bat egitea eragozten dute isilpeko edukia ikusgai dagoenean</translation>
@@ -2820,7 +2848,9 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6105460996796456817">Sortu webgune bat</translation>
 <translation id="6106989379647458772">Baliteke <ph name="PAGE" /> helbideko web-orria ez funtzionatzea edo beste web-helbide batera betiko aldatu izatea.</translation>
 <translation id="6107012941649240045">Nori jaulkia:</translation>
+<translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> erabiltzaileak taldearen izena aldatu du</translation>
 <translation id="6107924765192360631">Idazteko iradokizunak jasotzeko, hasi hitz batzuk edo lehenengo zirriborroa idazten.</translation>
+<translation id="6108508372809181847">Konparatu <ph name="TABLE_NAME" /></translation>
 <translation id="6108580855199168381">Ziurtagiriaren xehetasunak</translation>
 <translation id="6108702513636120202">Chromium-eko bilatzailea</translation>
 <translation id="6108849843016142864">Narrastiak eta anfibioak</translation>
@@ -3227,7 +3257,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6831043979455480757">Itzuli</translation>
 <translation id="683108308100148227">Ezkutatu elementua</translation>
 <translation id="6832753933931306326">Bete da inprimakia</translation>
-<translation id="6837361937093656245">Saioa hasi behar duzu</translation>
 <translation id="6841864657731852591">Sakongrabatzeko zilindroa</translation>
 <translation id="6842196666980060516">184 × 260 mm</translation>
 <translation id="6844998850832008753">Eskuen jarraipena erabil daiteke oraingoan</translation>
@@ -3271,6 +3300,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6925267999184670015">B+ iparramerikarra</translation>
 <translation id="6926216138694948720">Gorputz-artea</translation>
 <translation id="692638818576287323">Merkataritza-ibilgailuak</translation>
+<translation id="6933282894115597956">Saioa hastea eskatzen du erakundeak</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Bilatzaile lehenetsiari esker, sareko bilaketak egin ditzakezu, baita Chrome-ren eginbideak erabili ere,<ph name="END_BOLD" /> hala nola helbide-barraren eta web-orrietako irudien bidez bilaketak egiteko eginbideak. Baliteke eginbideren bat erabili ezin izatea, bilatzaileak onartzen ez badu.</translation>
 <translation id="6934672428414710184">Izen hori Google-ko kontukoa da</translation>
 <translation id="6935082727755903526">Kontabilitate- eta finantza-lanpostuak</translation>
@@ -3322,6 +3352,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="7003322000677139268">Ibilgailuen piezak eta osagarriak</translation>
 <translation id="7004499039102548441">Azkenaldiko fitxak</translation>
 <translation id="7006930604109697472">Bidali hala ere</translation>
+<translation id="7009364359744329733">Txartel hau ez dago erabilgarri une honetan. Saiatu berriro geroago.</translation>
 <translation id="7010658264061801199">Jan-edanak</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">Sagua blokeatzeko eta erabiltzeko baimena eska dezake</translation>
@@ -3348,6 +3379,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="7058774143982824355">Pasahitzen CSV formatuko fitxategiak analizatzeko zerbitzua</translation>
 <translation id="7062635574500127092">Anila</translation>
 <translation id="706295145388601875">Gehitu eta kudeatu helbideak Chrome-ren ezarpenetan</translation>
+<translation id="7063157783216323487">Berdea</translation>
 <translation id="7064443976734085921">Auto konpaktuak</translation>
 <translation id="7064851114919012435">Harremanetarako informazioa</translation>
 <translation id="7067633076996245366">Soula eta R&amp;B-a</translation>
@@ -3470,7 +3502,7 @@ Xehetasun gehiago:
 <translation id="7273111226200291353">Deskargatu dituzun fitxategiak Google Cloud-i edo hirugarrenei bidaltzen zaizkie, azter ditzaten. Adibidez, baliteke haietan kontuzko datuak edo malwarea bilatzea, eta agian enpresaren gidalerroen arabera gordeko dira baita zure administratzailearentzat ikusgai egon ere.</translation>
 <translation id="7275334191706090484">Kudeatutako laster-markak</translation>
 <translation id="7275808129217605899">Osasuntsu jatea</translation>
-<translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, "Sartu" Google-ko kontuaren pasahitza aldatzeko</translation>
+<translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, "Sartu" Google-ko kontuko pasahitza aldatzeko</translation>
 <translation id="7292031607255951991">Hartzailearen izena</translation>
 <translation id="7298195798382681320">Gomendatua</translation>
 <translation id="7299471494012161875">erantsitako bistaratze-gailu periferikoak</translation>
@@ -3478,6 +3510,7 @@ Xehetasun gehiago:
 <translation id="7304030187361489308">Altua</translation>
 <translation id="7304562222803846232">Kudeatu Google-ko kontuaren pribatutasun-ezarpenak</translation>
 <translation id="7305756307268530424">Hasi motelago</translation>
+<translation id="7307063504147610123">Gorde da helbidea gailu honetan</translation>
 <translation id="7308436126008021607">atzeko planoko sinkronizazioa</translation>
 <translation id="7309058266849426521">Lortu informazio gehiago Chrome-n iragarkien pribatutasuna kudeatzeari buruz.</translation>
 <translation id="7310392214323165548">Gailua laster berrabiaraziko da</translation>
@@ -3527,6 +3560,7 @@ Xehetasun gehiago:
 <translation id="7388594495505979117">{0,plural, =1{1 minutu barru berrabiaraziko da gailua}other{# minutu barru berrabiaraziko da gailua}}</translation>
 <translation id="7393161616326137353">Abentura-jokoak</translation>
 <translation id="7393475648162498734">Ikusi zer sari edo abantaila dauden erabilgarri zure txarteletarako ordainketa-prozesuan</translation>
+<translation id="7393971683644170444">Txartelaren hornitzailera konektatzen…</translation>
 <translation id="739728382607845710">Ordainketen kudeatzailearen ikonoa</translation>
 <translation id="7399616692258236448">Kokapena jakiteko eskaerak automatikoki blokeatzen dira webgune guztietan, zuk baimentzen dituzunenak izan ezik</translation>
 <translation id="7400418766976504921">URLa</translation>
@@ -3700,6 +3734,7 @@ Xehetasun gehiago:
 <translation id="7660456820368115565">Jokalari bat baino gehiagoko joko masiboak</translation>
 <translation id="7661591871037163355">Konparazio-taula beteta dago. Zutabeak gehitzeko, kendu lehendik dauden batzuk.</translation>
 <translation id="7662298039739062396">Luzapen batek kontrolatzen du ezarpena</translation>
+<translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> taldetik irten da</translation>
 <translation id="7663736086183791259">Ziurtagiria <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Baimenik gabe ezkutuko moduan</translation>
 <translation id="7667346355482952095">Itzuli den gidalerro-tokena hutsik dago edo ez dator bat oraingo tokenarekin</translation>
@@ -3759,7 +3794,6 @@ Xehetasun gehiago:
 <translation id="7751019142333897329"><ph name="FIRST_STRING" /> <ph name="SECOND_STRING" /></translation>
 <translation id="7751971323486164747">Kudeatu letra-tamaina eta -tipoa Chrome-n</translation>
 <translation id="7752995774971033316">Kudeatu gabe</translation>
-<translation id="7753769899818674547"><ph name="KEYWORD" /> - Txateatu <ph name="KEYWORD_SHORT_NAME" /> zerbitzuarekin</translation>
 <translation id="7754587126786572336">Eguneratzen hastean, Chrome-ko fitxak eta aplikazioak itxi egingo dira</translation>
 <translation id="7755287808199759310">Gurasoek desblokea diezazukete</translation>
 <translation id="7755624218968747854">Arrabola nagusia</translation>
@@ -3816,7 +3850,7 @@ Xehetasun gehiago:
 <translation id="7862185352068345852">Webgunetik irten nahi duzu?</translation>
 <translation id="7865448901209910068">Abiadurarik onena</translation>
 <translation id="7870281855125116701">Deskontu bat aurkitu da</translation>
-<translation id="7871445724586827387">Aldatu Google-ko kontuaren pasahitza</translation>
+<translation id="7871445724586827387">Aldatu Google-ko kontuko pasahitza</translation>
 <translation id="7877007680666472091">eduki babestuaren IDak</translation>
 <translation id="7878562273885520351">Baliteke pasahitza arriskuan egotea</translation>
 <translation id="7882421473871500483">Marroia</translation>
@@ -3899,6 +3933,8 @@ Xehetasun gehiago:
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, "Sartu", Google Inprimakiak zerbitzuan inprimaki bat bizkor sortzeko</translation>
 <translation id="8028892419725165118">Casual jokoak</translation>
 <translation id="8028960012888758725">Moztu lanaren amaieran</translation>
+<translation id="8028993641010258682">Tamaina</translation>
+<translation id="8029829038322015001">Gorri argia</translation>
 <translation id="8030729864112325446">Lanbide-heziketa eta etengabeko heziketa</translation>
 <translation id="8032546467100845887">Gardentasuna</translation>
 <translation id="8035152190676905274">Bolaluma</translation>
@@ -3906,6 +3942,7 @@ Xehetasun gehiago:
 <translation id="8037117624646282037">Gailua duela gutxi erabili dutenak</translation>
 <translation id="8037357227543935929">Galdetu (lehenetsia)</translation>
 <translation id="803771048473350947">Fitxategia</translation>
+<translation id="8038182528865038593">Gorria</translation>
 <translation id="8041089156583427627">Bidali oharrak</translation>
 <translation id="8041940743680923270">Erabili balio lehenetsi orokorra (galdetzea)</translation>
 <translation id="8043255123207491407">Ikusi saltzailearen zehaztapenak eta baldintzak</translation>
@@ -3952,7 +3989,6 @@ Xehetasun gehiago:
 <translation id="8116925261070264013">Audioa desaktibatuta</translation>
 <translation id="8118489163946903409">Ordainketa-metodoa</translation>
 <translation id="8118506371121007279">Eman iritzia</translation>
-<translation id="8124085000247609808">Txateatu <ph name="KEYWORD_SHORT_NAME" /> zerbitzuarekin</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" ez dago behar bezala instalatuta ordenagailuan edo sarean. Eskatu arazoa konpontzeko IKT saileko administratzaileari.</translation>
 <translation id="8131740175452115882">Berretsi</translation>
 <translation id="8133495915926741232">Hautatu zein gai-kategoria zabal erabil daitezkeen iragarkiak pertsonalizatzeko. Kategoria zabalago bat desaktibatuz gero, erlazionatutako gaiak ere blokeatuko dira. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
@@ -4067,7 +4103,7 @@ Xehetasun gehiago:
 <translation id="8321448084834652864">Bilatzailea aldatzeko, joan Chromium-en ezarpenetara.</translation>
 <translation id="8321476692217554900">jakinarazpenak</translation>
 <translation id="8322402665880479974">Oheak eta oheburuak</translation>
-<translation id="8323505966575306467">Areagotu zure pasahitzen babesa</translation>
+<translation id="8323505966575306467">Hobetu zure pasahitzen babesa</translation>
 <translation id="832567874344484841">Gosarirako janaria</translation>
 <translation id="8329068931308448247">Gutun-azala 14</translation>
 <translation id="8332188693563227489">Ukatu egin da <ph name="HOST_NAME" /> webgunerako sarbidea</translation>
@@ -4153,6 +4189,7 @@ Xehetasun gehiago:
 <translation id="8473626140772740486">300 × 450 mm</translation>
 <translation id="8473863474539038330">Helbideak eta beste</translation>
 <translation id="8474910779563686872">Erakutsi garatzailearen xehetasunak</translation>
+<translation id="8476959635632921417">Helbidea gordetzeko eta zure gailu guztietan erabiltzeko, egiaztatu zeu zarela</translation>
 <translation id="8479754468255770962">Grapa bat behean, ezkerretara</translation>
 <translation id="8483229036294884935">Helbidea zure Google-ko kontutik (<ph name="ACCOUNT" />) ezabatuko da</translation>
 <translation id="8488350697529856933">Honi aplikatzen zaio:</translation>
@@ -4305,6 +4342,7 @@ Xehetasun gehiago:
 <translation id="8767881944435256294">{COUNT,plural, =1{1 ordainketa-metodo}other{# ordainketa-metodo}}</translation>
 <translation id="8768225988514678921">Aurkezpen bat sortzeko botoia: aktiba ezazu Aurkezpenak zerbitzuan Google-ko aurkezpen bat bizkor sortzeko</translation>
 <translation id="8769662576926275897">Txartelaren xehetasunak</translation>
+<translation id="8769858749286369844">Marroia</translation>
 <translation id="8770286973007342895">Belarra mozteko makinak</translation>
 <translation id="8772387130037509473">Yoga eta pilatesa</translation>
 <translation id="877348612833018844">{0,plural, =1{Isilpeko fitxategia mugitu nahi duzu?}other{Isilpeko fitxategiak mugitu nahi dituzu?}}</translation>
@@ -4396,6 +4434,7 @@ Xehetasun gehiago:
 <translation id="8956124158020778855">Ezarpena aktibatu ondoren, itzuli fitxa honetara idazten hasteko.</translation>
 <translation id="8957210676456822347">Atari gatibuetako baimena</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
+<translation id="8959288490306482616">Marroi iluna</translation>
 <translation id="8963117664422609631">Joan webgunearen ezarpenetara</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Iradokizunak:<ph name="MARKUP_2" />Ziurtatu datu-konexioa duzula.<ph name="MARKUP_3" />Kargatu web-orria berriro geroago<ph name="MARKUP_4" />Egiaztatu idatzitako helbidea zuzena dela.<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Gorde txartela</translation>
@@ -4458,6 +4497,7 @@ Xehetasun gehiago:
 <translation id="90695670378604968">Plastikoa (matea)</translation>
 <translation id="9069693763241529744">Luzapen batek blokeatu du</translation>
 <translation id="9073799351042754113">Webgune honi buruzko segurtasun-abisuak desaktibatzea aukeratu duzu.</translation>
+<translation id="9075717835386447447">Marroi argia</translation>
 <translation id="9076283476770535406">Helduentzako edukia izan dezake</translation>
 <translation id="9078912659001679888">Irabiagailuak eta zuku-makinak</translation>
 <translation id="9078964945751709336">Informazio gehiago behar da</translation>
@@ -4527,6 +4567,7 @@ Xehetasun gehiago:
 <translation id="9183425211371246419">Onartzen ez den protokolo bat darabil <ph name="HOST_NAME" /> webguneak.</translation>
 <translation id="918454845714257218">Begiratu <ph name="SIDE_OF_CARD" />n dagoen kodeari eta saiatu berriro</translation>
 <translation id="9186203289258525843">Chrome arakatzaile lehenetsi gisa ezartzeko botoia: aktiba ezazu Chrome sistemaren arakatzaile lehenetsi gisa ezartzeko</translation>
+<translation id="9189789270972826888">Txartela bete ez bada, sakatu beheko txartelaren xehetasunak, haiek kopiatu eta itsasteko. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="9190557999028587593">4 aste baino zaharragoak diren gaiak automatikoki ezabatuko dira</translation>
 <translation id="9191834167571392248">Zulo bat behean, ezkerretara</translation>
 <translation id="9192361865877479444">Metala (matea)</translation>
@@ -4565,6 +4606,7 @@ Xehetasun gehiago:
 <translation id="949314938206378263">Webgune hau bisitatzeko baimena eskatu duzu. Zure gurasoak Family Link-en erantzun dezake.</translation>
 <translation id="950736567201356821">Hiru zulo goian</translation>
 <translation id="950926967802086924">Sarbide-gakoa • Google Password Manager</translation>
+<translation id="95721182352849470">Horia</translation>
 <translation id="961663415146723894">Koadernatu behetik</translation>
 <translation id="961856697154696964">Ezabatu arakatze-datuak</translation>
 <translation id="961930410699694996">Kokapena erabil daiteke une honetan</translation>

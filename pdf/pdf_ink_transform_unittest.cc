@@ -287,6 +287,130 @@ TEST(PdfInkTransformTest, RenderTransformOffsetZoomScrolledClockwise90) {
               InkAffineTransformEq(0.0f, -2.0f, 137.0f, 2.0f, 0.0f, -4.0f));
 }
 
+TEST(PdfInkTransformTest, ThumbnailTransformNoZoom) {
+  {
+    ink::AffineTransform transform = GetInkThumbnailTransform(
+        /*canvas_size=*/{50, 60}, PageOrientation::kOriginal,
+        kPageContentAreaPortraitNoOffset, kScaleFactor1x);
+    EXPECT_THAT(transform,
+                InkAffineTransformEq(1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f));
+  }
+  {
+    ink::AffineTransform transform = GetInkThumbnailTransform(
+        /*canvas_size=*/{120, 100}, PageOrientation::kOriginal,
+        kPageContentAreaPortraitNoOffset, kScaleFactor1x);
+    EXPECT_THAT(transform, InkAffineTransformEq(1.6666666f, 0.0f, 0.0f, 0.0f,
+                                                1.6666666f, 0.0f));
+  }
+}
+
+TEST(PdfInkTransformTest, ThumbnailTransformZoom) {
+  {
+    ink::AffineTransform transform = GetInkThumbnailTransform(
+        /*canvas_size=*/{50, 60}, PageOrientation::kOriginal,
+        kPageContentAreaPortraitNoOffset, kScaleFactor2x);
+    EXPECT_THAT(transform,
+                InkAffineTransformEq(2.0f, 0.0f, 0.0f, 0.0f, 2.0f, 0.0f));
+  }
+  {
+    ink::AffineTransform transform = GetInkThumbnailTransform(
+        /*canvas_size=*/{120, 100}, PageOrientation::kOriginal,
+        kPageContentAreaPortraitNoOffset, kScaleFactor2x);
+    EXPECT_THAT(transform, InkAffineTransformEq(3.333333f, 0.0f, 0.0f, 0.0f,
+                                                3.333333f, 0.0f));
+  }
+}
+
+TEST(PdfInkTransformTest, ThumbnailTransformRotate) {
+  {
+    ink::AffineTransform transform = GetInkThumbnailTransform(
+        /*canvas_size=*/{50, 60}, PageOrientation::kClockwise90,
+        kPageContentAreaPortraitNoOffset, kScaleFactor1x);
+    EXPECT_THAT(transform, InkAffineTransformEq(0.8333333f, 0.0f, 0.0f, 0.0f,
+                                                0.8333333f, 0.0f));
+  }
+  {
+    ink::AffineTransform transform = GetInkThumbnailTransform(
+        /*canvas_size=*/{120, 100}, PageOrientation::kClockwise90,
+        kPageContentAreaPortraitNoOffset, kScaleFactor1x);
+    EXPECT_THAT(transform,
+                InkAffineTransformEq(2.0f, 0.0f, 0.0f, 0.0f, 2.0f, 0.0f));
+  }
+  {
+    ink::AffineTransform transform = GetInkThumbnailTransform(
+        /*canvas_size=*/{50, 60}, PageOrientation::kClockwise180,
+        kPageContentAreaPortraitNoOffset, kScaleFactor1x);
+    EXPECT_THAT(transform,
+                InkAffineTransformEq(1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f));
+  }
+  {
+    ink::AffineTransform transform = GetInkThumbnailTransform(
+        /*canvas_size=*/{120, 100}, PageOrientation::kClockwise180,
+        kPageContentAreaPortraitNoOffset, kScaleFactor1x);
+    EXPECT_THAT(transform, InkAffineTransformEq(1.6666666f, 0.0f, 0.0f, 0.0f,
+                                                1.6666666f, 0.0f));
+  }
+  {
+    ink::AffineTransform transform = GetInkThumbnailTransform(
+        /*canvas_size=*/{50, 60}, PageOrientation::kClockwise270,
+        kPageContentAreaPortraitNoOffset, kScaleFactor1x);
+    EXPECT_THAT(transform, InkAffineTransformEq(0.8333333f, 0.0f, 0.0f, 0.0f,
+                                                0.8333333f, 0.0f));
+  }
+  {
+    ink::AffineTransform transform = GetInkThumbnailTransform(
+        /*canvas_size=*/{120, 100}, PageOrientation::kClockwise270,
+        kPageContentAreaPortraitNoOffset, kScaleFactor1x);
+    EXPECT_THAT(transform,
+                InkAffineTransformEq(2.0f, 0.0f, 0.0f, 0.0f, 2.0f, 0.0f));
+  }
+}
+
+TEST(PdfInkTransformTest, ThumbnailTransformRotateAndZoom) {
+  {
+    ink::AffineTransform transform = GetInkThumbnailTransform(
+        /*canvas_size=*/{50, 60}, PageOrientation::kClockwise90,
+        kPageContentAreaPortraitNoOffset, kScaleFactor2x);
+    EXPECT_THAT(transform, InkAffineTransformEq(1.6666666f, 0.0f, 0.0f, 0.0f,
+                                                1.6666666f, 0.0f));
+  }
+  {
+    ink::AffineTransform transform = GetInkThumbnailTransform(
+        /*canvas_size=*/{120, 100}, PageOrientation::kClockwise90,
+        kPageContentAreaPortraitNoOffset, kScaleFactor2x);
+    EXPECT_THAT(transform,
+                InkAffineTransformEq(4.0f, 0.0f, 0.0f, 0.0f, 4.0f, 0.0f));
+  }
+  {
+    ink::AffineTransform transform = GetInkThumbnailTransform(
+        /*canvas_size=*/{50, 60}, PageOrientation::kClockwise180,
+        kPageContentAreaPortraitNoOffset, kScaleFactor2x);
+    EXPECT_THAT(transform,
+                InkAffineTransformEq(2.0f, 0.0f, 0.0f, 0.0f, 2.0f, 0.0f));
+  }
+  {
+    ink::AffineTransform transform = GetInkThumbnailTransform(
+        /*canvas_size=*/{120, 100}, PageOrientation::kClockwise180,
+        kPageContentAreaPortraitNoOffset, kScaleFactor2x);
+    EXPECT_THAT(transform, InkAffineTransformEq(3.333333f, 0.0f, 0.0f, 0.0f,
+                                                3.333333f, 0.0f));
+  }
+  {
+    ink::AffineTransform transform = GetInkThumbnailTransform(
+        /*canvas_size=*/{50, 60}, PageOrientation::kClockwise270,
+        kPageContentAreaPortraitNoOffset, kScaleFactor2x);
+    EXPECT_THAT(transform, InkAffineTransformEq(1.6666666f, 0.0f, 0.0f, 0.0f,
+                                                1.6666666f, 0.0f));
+  }
+  {
+    ink::AffineTransform transform = GetInkThumbnailTransform(
+        /*canvas_size=*/{120, 100}, PageOrientation::kClockwise270,
+        kPageContentAreaPortraitNoOffset, kScaleFactor2x);
+    EXPECT_THAT(transform,
+                InkAffineTransformEq(4.0f, 0.0f, 0.0f, 0.0f, 4.0f, 0.0f));
+  }
+}
+
 TEST(PdfInkTransformTest,
      CanonicalInkEnvelopeToInvalidationScreenRectIdentity) {
   // Representation of page contents in screen coordinates without scale or

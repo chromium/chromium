@@ -86,7 +86,7 @@ class AttributionStorageSqlMigrationsTest : public testing::Test {
     LoadDatabase(
         GetVersionFilePath(AttributionStorageSql::kCurrentVersionNumber),
         current_version_path);
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     EXPECT_TRUE(db.Open(current_version_path));
     return db.GetSchema();
   }
@@ -127,7 +127,7 @@ class AttributionStorageSqlMigrationsTest : public testing::Test {
     std::string contents;
     ASSERT_TRUE(GetDatabaseData(file, &contents));
 
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(db_path));
     ASSERT_TRUE(db.Execute(contents));
   }
@@ -150,7 +150,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateEmptyToCurrent) {
 
   // Verify schema is current.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(DbPath()));
 
     CheckVersionNumbers(&db);
@@ -176,7 +176,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateLatestDeprecatedToCurrent) {
 
   // Verify pre-conditions.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(DbPath()));
 
     sql::Statement s(db.GetUniqueStatement("SELECT COUNT(*) FROM rate_limits"));
@@ -189,7 +189,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateLatestDeprecatedToCurrent) {
 
   // Verify schema is current.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(DbPath()));
 
     CheckVersionNumbers(&db);
@@ -215,7 +215,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion54ToCurrent) {
 
   // Verify pre-conditions.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(DbPath()));
 
     sql::Statement s(
@@ -227,7 +227,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion54ToCurrent) {
 
   // Verify schema is current.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(DbPath()));
 
     CheckVersionNumbers(&db);
@@ -260,7 +260,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion55ToCurrent) {
 
   // Verify pre-conditions.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(DbPath()));
     ASSERT_FALSE(db.DoesColumnExist("sources", "read_only_source_data"));
   }
@@ -268,7 +268,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion55ToCurrent) {
 
   // Verify schema is current.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(DbPath()));
 
     CheckVersionNumbers(&db);
@@ -306,7 +306,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion56ToCurrent) {
 
   {
     // Verify pre-conditions.
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(DbPath()));
   }
   {
@@ -324,7 +324,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion56ToCurrent) {
 
   // Verify schema is current.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(DbPath()));
 
     CheckVersionNumbers(&db);
@@ -362,7 +362,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion58ToCurrent) {
 
   // Verify pre-conditions.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(DbPath()));
 
     sql::Statement s(db.GetUniqueStatement(
@@ -379,7 +379,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion58ToCurrent) {
 
   // Verify schema is current.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(DbPath()));
 
     CheckVersionNumbers(&db);
@@ -418,7 +418,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion59ToCurrent) {
 
   // Verify pre-conditions.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(DbPath()));
 
     sql::Statement s(
@@ -433,7 +433,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion59ToCurrent) {
 
   // Verify schema is current.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(DbPath()));
 
     CheckVersionNumbers(&db);
@@ -463,7 +463,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion60ToCurrent) {
 
   // Verify pre-conditions.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(DbPath()));
     ASSERT_FALSE(
         db.DoesColumnExist("sources", "remaining_aggregatable_debug_budget"));
@@ -474,7 +474,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion60ToCurrent) {
 
   // Verify schema is current.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(DbPath()));
 
     CheckVersionNumbers(&db);
@@ -504,7 +504,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion61ToCurrent) {
 
   // Verify pre-conditions.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(DbPath()));
     ASSERT_FALSE(db.DoesTableExist("aggregatable_debug_rate_limits"));
   }
@@ -512,7 +512,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion61ToCurrent) {
 
   // Verify schema is current.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(DbPath()));
 
     CheckVersionNumbers(&db);
@@ -540,7 +540,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion62ToCurrent) {
 
   // Verify pre-conditions.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(DbPath()));
     ASSERT_FALSE(db.DoesColumnExist(
         "rate_limits", "deactivated_for_source_destination_limit"));
@@ -551,7 +551,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion62ToCurrent) {
 
   // Verify schema is current.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(DbPath()));
 
     CheckVersionNumbers(&db);
@@ -581,7 +581,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion63ToCurrent) {
 
   // Verify pre-conditions.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(DbPath()));
     ASSERT_FALSE(db.DoesColumnExist("sources", "attribution_scopes_data"));
   }
@@ -589,7 +589,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion63ToCurrent) {
 
   // Verify schema is current.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(DbPath()));
 
     CheckVersionNumbers(&db);
@@ -615,7 +615,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion64ToCurrent) {
 
   // Verify pre-conditions.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(DbPath()));
     ASSERT_FALSE(db.DoesIndexExist(
         "rate_limit_attribution_destination_reporting_site_idx"));
@@ -624,7 +624,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion64ToCurrent) {
 
   // Verify schema is current.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(DbPath()));
 
     CheckVersionNumbers(&db);
@@ -647,7 +647,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion65ToCurrent) {
 
   // Verify pre-conditions.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(DbPath()));
     ASSERT_FALSE(db.DoesColumnExist("sources", "aggregatable_named_budgets"));
   }
@@ -655,7 +655,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion65ToCurrent) {
 
   // Verify schema is current.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(DbPath()));
 
     CheckVersionNumbers(&db);
@@ -682,7 +682,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion66ToCurrent) {
   // Test Setup. This is done here to avoid corrupted fields within the inserted
   // report, which would result in being deleted otherwise.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(DbPath()));
 
     sql::Statement insert_source(db.GetUniqueStatement(
@@ -717,7 +717,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion66ToCurrent) {
 
   // Verify pre-conditions.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(DbPath()));
     sql::Statement s(
         db.GetUniqueStatement("SELECT context_origin FROM reports"));
@@ -728,7 +728,7 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion66ToCurrent) {
 
   // Verify schema is current.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(DbPath()));
 
     CheckVersionNumbers(&db);

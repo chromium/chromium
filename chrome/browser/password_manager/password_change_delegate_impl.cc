@@ -121,7 +121,7 @@ bool PasswordChangeDelegateImpl::IsPasswordChangeOngoing(
 
 PasswordChangeDelegate::State PasswordChangeDelegateImpl::GetCurrentState()
     const {
-  return State::kWaitingForChangePasswordForm;
+  return current_state_;
 }
 
 void PasswordChangeDelegateImpl::Stop() {
@@ -136,8 +136,7 @@ void PasswordChangeDelegateImpl::SuccessfulSubmissionDetected(
     // update.
     form_manager_->OnUpdateUsernameFromPrompt(username_);
     form_manager_->Save();
-    // TODO(crbug.com/375565171): Transition to a password successfully updated
-    // state.
+    UpdateState(State::kPasswordSuccessfullyChanged);
   }
 }
 
@@ -147,6 +146,10 @@ void PasswordChangeDelegateImpl::AddObserver(Observer* observer) {
 
 void PasswordChangeDelegateImpl::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+const GURL& PasswordChangeDelegateImpl::GetChangePasswordUrl() const {
+  return change_password_url_;
 }
 
 void PasswordChangeDelegateImpl::UpdateState(
@@ -188,4 +191,8 @@ void PasswordChangeDelegateImpl::FillChangePasswordForm(
 
   form_manager_->PresaveGeneratedPassword(form.form_data, generated_password_);
   UpdateState(PasswordChangeDelegate::State::kChangingPassword);
+}
+
+base::WeakPtr<PasswordChangeDelegate> PasswordChangeDelegateImpl::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }

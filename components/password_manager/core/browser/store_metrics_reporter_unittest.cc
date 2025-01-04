@@ -183,6 +183,10 @@ class StoreMetricsReporterTest : public SyncUsernameTestBase {
         prefs::kPasswordRemovalReasonForAccount, 0);
     prefs_.registry()->RegisterIntegerPref(
         prefs::kPasswordRemovalReasonForProfile, 0);
+    prefs_.registry()->RegisterBooleanPref(
+        prefs::kProfileStoreMigratedToOSCryptAsync, false);
+    prefs_.registry()->RegisterBooleanPref(
+        prefs::kAccountStoreMigratedToOSCryptAsync, false);
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
     prefs_.registry()->RegisterDictionaryPref(
         prefs::kAccountStoragePerAccountSettings);
@@ -1652,5 +1656,21 @@ TEST_F(StoreMetricsReporterTest, ReportPasswordInsecureCredentialMetrics) {
   RunUntilIdle();
 }
 
+TEST_F(StoreMetricsReporterTest, ReportReencryptedWithAsyncOSCrypt) {
+  prefs_.SetBoolean(prefs::kProfileStoreMigratedToOSCryptAsync, true);
+  prefs_.SetBoolean(prefs::kAccountStoreMigratedToOSCryptAsync, true);
+  base::HistogramTester histogram_tester;
+
+  StoreMetricsReporter reporter(
+      /*profile_store=*/nullptr,
+      /*account_store=*/nullptr, sync_service(), &prefs_,
+      /*password_reuse_manager=*/nullptr, &settings_service(),
+      /*done_callback*/ base::DoNothing());
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ProfileStore.ReencryptedWithAsyncOSCrypt", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.AccountStore.ReencryptedWithAsyncOSCrypt", true, 1);
+}
 }  // namespace
 }  // namespace password_manager

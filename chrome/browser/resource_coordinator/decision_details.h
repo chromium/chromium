@@ -5,22 +5,17 @@
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_DECISION_DETAILS_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_DECISION_DETAILS_H_
 
+#include <stdint.h>
+
 #include <string>
 #include <vector>
-
-namespace ukm {
-namespace builders {
-class TabManager_LifecycleStateChange;
-}
-}  // namespace ukm
 
 namespace resource_coordinator {
 
 // An enumeration of reasons why a particular intervention or lifecycle state
 // changes can be denied. This is a superset of all failure reasons that can
 // apply for any particular intervention. New reasons can freely be added to
-// this enum as necessary, but UKM plumbing and string conversion needs to be
-// maintained as well.
+// this enum as necessary, but string conversion needs to be maintained as well.
 enum class DecisionFailureReason : int32_t {
   // An invalid failure reason. This must remain first.
   INVALID = -1,
@@ -116,9 +111,8 @@ const char* ToString(DecisionSuccessReason success_reason);
 // Describes the detailed reasons why a particular intervention decision was
 // made. This is populated by the various policy bits of policy logic that
 // decide whether a particular intervention or lifecycle state transition can be
-// performed. It can populate various related UKM builders and also be converted
-// to a collection of user readable strings for the purposes of displaying in
-// in web UI.
+// performed. It can be converted to a collection of user readable strings for
+// the purposes of displaying in in web UI.
 //
 // A decision can contain multiple reasons for success or failure, and policy
 // allows some success reasons to override some failure reasons and vice versa.
@@ -208,10 +202,6 @@ class DecisionDetails {
 
   // Returns whether or not the chain of reasons has toggled.
   bool toggled() const { return toggled_; }
-
-  // Populates the provided "TabManager.LifecycleStateChange" UKM builder with
-  // information from this object.
-  void Populate(ukm::builders::TabManager_LifecycleStateChange* ukm) const;
 
   // Returns a collection of failure reason strings, from most important failure
   // reason to least important. This is empty if the outcome is positive, and

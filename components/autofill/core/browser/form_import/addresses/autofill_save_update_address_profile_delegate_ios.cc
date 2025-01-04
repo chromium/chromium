@@ -10,7 +10,7 @@
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
-#include "components/autofill/core/browser/autofill_address_util.h"
+#include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/ios/common/features.h"
 #include "components/grit/components_scaled_resources.h"

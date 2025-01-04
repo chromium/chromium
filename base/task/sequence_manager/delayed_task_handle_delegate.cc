@@ -30,14 +30,16 @@ bool DelayedTaskHandleDelegate::IsValid() const {
 
 void DelayedTaskHandleDelegate::CancelTask() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsValid())
+  if (!IsValid()) {
     return;
+  }
 
   weak_ptr_factory_.InvalidateWeakPtrs();
 
   // If the task is still inside the heap, then it can be removed directly.
-  if (heap_handle_.IsValid())
+  if (heap_handle_.IsValid()) {
     outer_->RemoveCancelableTask(heap_handle_);
+  }
 }
 
 void DelayedTaskHandleDelegate::SetHeapHandle(HeapHandle heap_handle) {

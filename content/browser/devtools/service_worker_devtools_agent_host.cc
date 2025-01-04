@@ -389,7 +389,7 @@ ServiceWorkerDevToolsAgentHost::CreateNetworkFactoryParamsForDevTools() {
       rph, origin, version->key().ToPartialNetIsolationInfo(),
       /*coep_reporter=*/mojo::NullRemote(),
       static_cast<StoragePartitionImpl*>(rph->GetStoragePartition())
-          ->CreateAuthCertObserverForServiceWorker(rph->GetID()),
+          ->CreateAuthCertObserverForServiceWorker(rph->GetDeprecatedID()),
       NetworkServiceDevToolsObserver::MakeSelfOwned(GetId()),
       /*client_security_state=*/nullptr,
       /*debug_tag=*/"SWDTAH::CreateNetworkFactoryParamsForDevTools",

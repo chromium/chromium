@@ -52,7 +52,7 @@ public class RecentActivityActionHandlerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private DataSharingTabSwitcherDelegate mDataSharingTabSwitcherDelegate;
+    @Mock private DataSharingTabGroupsDelegate mDataSharingTabGroupsDelegate;
     @Mock private Runnable mManageSharingCallback;
     @Mock private TabModel mTabModel;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
@@ -97,7 +97,7 @@ public class RecentActivityActionHandlerUnitTest {
                 new RecentActivityActionHandlerImpl(
                         mTabGroupSyncService,
                         mTabModelSelector,
-                        mDataSharingTabSwitcherDelegate,
+                        mDataSharingTabGroupsDelegate,
                         COLLABORATION_ID,
                         SYNC_TAB_GROUP_ID,
                         mManageSharingCallback);
@@ -120,7 +120,7 @@ public class RecentActivityActionHandlerUnitTest {
     @Test
     public void testOpenTabGroupEditDialog() {
         mRecentActivityActionHandler.openTabGroupEditDialog();
-        verify(mDataSharingTabSwitcherDelegate, times(1)).openTabGroupWithTabId(TAB_ID_1);
+        verify(mDataSharingTabGroupsDelegate, times(1)).openTabGroupWithTabId(TAB_ID_1);
     }
 
     @Test

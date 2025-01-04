@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/exclusions/exclusion_area.h"
 
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -31,7 +26,7 @@ struct PrintableEFloat {
 };
 
 std::ostream& operator<<(std::ostream& os, const PrintableEFloat& printable) {
-  const char* kStrings[] = {
+  std::array<const char*, 5> kStrings = {
       "kNone", "kLeft", "kRight", "kInlineStart", "kInlineEnd",
   };
   const unsigned index = static_cast<unsigned>(printable.value);
@@ -46,7 +41,7 @@ struct PrintableKind {
 };
 
 std::ostream& operator<<(std::ostream& os, const PrintableKind& printable) {
-  const char* kStrings[] = {
+  std::array<const char*, 2> kStrings = {
       "kFloat",
       "kInitialLetterBox",
   };

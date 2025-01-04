@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.metrics;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.blink.mojom.DisplayMode;
@@ -139,7 +140,7 @@ public class LaunchMetrics {
     interface Natives {
         void recordLaunch(
                 boolean isShortcut,
-                String url,
+                @JniType("std::string") String url,
                 int source,
                 @DisplayMode.EnumType int displayMode,
                 WebContents webContents);

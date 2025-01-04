@@ -76,7 +76,6 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Build;
-import android.os.Build.VERSION_CODES;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -203,7 +202,7 @@ public class TabGridDialogTest {
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(
                             ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_TAB_SWITCHER_GRID)
-                    .setRevision(15)
+                    .setRevision(16)
                     .build();
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -963,6 +962,7 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @RequiresRestart("Share sheet is sometimes persistent when calling pressBack to retract")
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/40263769")
     public void testDialogSelectionEditor_ShareActionView() {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         createTabs(cta, false, 2);
@@ -1013,6 +1013,7 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @RequiresRestart("Share sheet is sometimes persistent when calling pressBack to retract")
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/40263769")
     public void testDialogSelectionEditor_ShareActionTabs() {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
 
@@ -1198,6 +1199,10 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @EnableFeatures({TAB_GROUP_SYNC_ANDROID, TAB_GROUP_PANE_ANDROID})
+    @DisableIf.Build(
+            sdk_is_less_than = Build.VERSION_CODES.TIRAMISU,
+            supported_abis_includes = "x86_64",
+            message = "crbug.com/40122331")
     public void testSwipeToDismiss_Dialog() {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         // Create 2 tabs and merge them into one group.
@@ -1233,6 +1238,7 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/40263769
     public void testSelectionEditorPosition() {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
 
@@ -1425,6 +1431,7 @@ public class TabGridDialogTest {
     // Regression test for https://crbug.com/1378226.
     @Test
     @MediumTest
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/40263769")
     public void testTabGroupNaming_afterMergeWithSelectionEditor() throws ExecutionException {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         createTabs(cta, false, 4);
@@ -1485,11 +1492,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(
-            sdk_is_greater_than = VERSION_CODES.N_MR1,
-            message = "https://crbug.com/1124336")
-    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1124336")
-    @DisableIf.Device(DeviceFormFactor.TABLET)
+    @DisabledTest(message = "https://crbug.com/1124336")
     public void testDialogInitialShowFromStrip() throws Exception {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         prepareTabsWithThumbnail(sActivityTestRule, 2, 0, "about:blank");
@@ -1565,6 +1568,7 @@ public class TabGridDialogTest {
     @Feature({"RenderTest"})
     @RequiresRestart("Group creation modal dialog is sometimes persistent when dismissing")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/40263769")
     public void testRenderDialog_5Tabs_InitialScroll(boolean nightModeEnabled) throws Exception {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         prepareTabsWithThumbnail(sActivityTestRule, 5, 0, "about:blank");
@@ -1596,6 +1600,7 @@ public class TabGridDialogTest {
     @DisableFeatures({ChromeFeatureList.LOGO_POLISH})
     @RequiresRestart("Group creation modal dialog is sometimes persistent when dismissing")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    @DisabledTest(message = "crbug.com/385205037, flaky due to thumbnails")
     public void testRenderDialog_TabGroupColorChange(boolean nightModeEnabled) throws Exception {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
 

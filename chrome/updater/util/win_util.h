@@ -103,10 +103,10 @@ class ProcessFilterName : public base::ProcessFilter {
 
 namespace internal {
 
-template <typename T>
+template <typename... T>
 using WrlRuntimeClass = Microsoft::WRL::RuntimeClass<
     Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
-    T>;
+    T...>;
 
 }  // namespace internal
 
@@ -139,6 +139,26 @@ class DynamicIIDsImpl : public internal::WrlRuntimeClass<Interface> {
 #define DYNAMICIIDSIMPL(interface)                      \
   DynamicIIDsImpl<interface, __uuidof(interface##User), \
                   __uuidof(interface##System)>
+
+// Implements `DynamicIIDs` for multiple interfaces `Interface`, taking
+// `iid_user` and `iid_system` as maps.
+template <typename... Interface>
+class DynamicIIDsMultImpl : public internal::WrlRuntimeClass<Interface...> {
+ public:
+  DynamicIIDsMultImpl(
+      const base::flat_map<IID, IID, IidComparator>& user_iid_map,
+      const base::flat_map<IID, IID, IidComparator>& system_iid_map)
+      : iid_map_(IsSystemInstall() ? system_iid_map : user_iid_map) {}
+
+  IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override {
+    const auto find_iid = iid_map_.find(riid);
+    return internal::WrlRuntimeClass<Interface...>::QueryInterface(
+        find_iid != iid_map_.end() ? find_iid->second : riid, object);
+  }
+
+ private:
+  const base::flat_map<IID, IID, IidComparator> iid_map_;
+};
 
 // Macros that makes it easier to call the `IDispatchImpl` constructor.
 #define IID_MAP_ENTRY_USER(interface) \

@@ -13,7 +13,6 @@
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/policy/core/browser/policy_conversions.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/policy_export.h"
@@ -97,7 +96,7 @@ class POLICY_EXPORT PolicyConversionsClient {
   virtual base::Value::List GetExtensionPolicies(
       PolicyDomain policy_domain) = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Returns policies for ChromeOS device.
   virtual base::Value::List GetDeviceLocalAccountPolicies() = 0;
   // Returns device specific information if this device is enterprise managed.
@@ -193,11 +192,6 @@ class POLICY_EXPORT PolicyConversionsClient {
   bool user_policies_enabled_ = true;
   bool drop_default_values_enabled_ = false;
   bool show_machine_values_ = true;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void PopulatePerProfileMap();
-  std::unique_ptr<std::map<std::string, bool>> per_profile_map_;
-#endif
 };
 
 }  // namespace policy

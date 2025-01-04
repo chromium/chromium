@@ -13,7 +13,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
 
 import android.app.Activity;
 import android.app.SearchManager;
@@ -472,7 +471,7 @@ public class SearchActivityUtilsUnitTest {
 
     @Test
     public void createLoadUrlIntent_nullParams() {
-        Intent intent = SearchActivityUtils.createLoadUrlIntent(mActivity, COMPONENT_TRUSTED, null);
+        Intent intent = SearchActivityUtils.createLoadUrlIntent(COMPONENT_TRUSTED, null);
         assertNotNull(intent);
         assertNull(intent.getData());
     }
@@ -481,7 +480,7 @@ public class SearchActivityUtilsUnitTest {
     public void createLoadUrlIntent_nullUrl() {
         Intent intent =
                 SearchActivityUtils.createLoadUrlIntent(
-                        mActivity, COMPONENT_TRUSTED, LOAD_URL_PARAMS_NULL_URL);
+                        COMPONENT_TRUSTED, LOAD_URL_PARAMS_NULL_URL);
         assertNotNull(intent);
         assertNull(intent.getData());
     }
@@ -490,7 +489,7 @@ public class SearchActivityUtilsUnitTest {
     public void createLoadUrlIntent_invalidUrl() {
         Intent intent =
                 SearchActivityUtils.createLoadUrlIntent(
-                        mActivity, COMPONENT_TRUSTED, LOAD_URL_PARAMS_INVALID_URL);
+                        COMPONENT_TRUSTED, LOAD_URL_PARAMS_INVALID_URL);
         assertNotNull(intent);
         assertNull(intent.getData());
     }
@@ -500,7 +499,7 @@ public class SearchActivityUtilsUnitTest {
         doReturn(null).when(mFormatter).fixupUrl(any());
         Intent intent =
                 SearchActivityUtils.createLoadUrlIntent(
-                        mActivity, COMPONENT_TRUSTED, getLoadUrlParamsBuilder().build());
+                        COMPONENT_TRUSTED, getLoadUrlParamsBuilder().build());
         assertNotNull(intent);
         assertNull(intent.getData());
     }
@@ -509,7 +508,7 @@ public class SearchActivityUtilsUnitTest {
     public void createLoadUrlIntent_untrustedRecipient() {
         Intent intent =
                 SearchActivityUtils.createLoadUrlIntent(
-                        mActivity, COMPONENT_UNTRUSTED, getLoadUrlParamsBuilder().build());
+                        COMPONENT_UNTRUSTED, getLoadUrlParamsBuilder().build());
         assertNull(intent);
     }
 
@@ -517,7 +516,7 @@ public class SearchActivityUtilsUnitTest {
     public void createLoadUrlIntent_simpleParams() {
         Intent intent =
                 SearchActivityUtils.createLoadUrlIntent(
-                        mActivity, COMPONENT_TRUSTED, getLoadUrlParamsBuilder().build());
+                        COMPONENT_TRUSTED, getLoadUrlParamsBuilder().build());
         assertNotNull(intent);
 
         assertEquals(Uri.parse("https://abc.xyz/"), intent.getData());
@@ -531,8 +530,7 @@ public class SearchActivityUtilsUnitTest {
     @Test
     public void createLoadUrlIntent_paramsWithNullPostData() {
         var params = getLoadUrlParamsBuilder().setpostDataAndType(null, "abc").build();
-        Intent intent =
-                SearchActivityUtils.createLoadUrlIntent(mActivity, COMPONENT_TRUSTED, params);
+        Intent intent = SearchActivityUtils.createLoadUrlIntent(COMPONENT_TRUSTED, params);
         assertNotNull(intent);
 
         assertEquals(Uri.parse("https://abc.xyz/"), intent.getData());
@@ -546,8 +544,7 @@ public class SearchActivityUtilsUnitTest {
     @Test
     public void createLoadUrlIntent_paramsWithEmptyPostData() {
         var params = getLoadUrlParamsBuilder().setpostDataAndType(new byte[] {}, "abc").build();
-        Intent intent =
-                SearchActivityUtils.createLoadUrlIntent(mActivity, COMPONENT_TRUSTED, params);
+        Intent intent = SearchActivityUtils.createLoadUrlIntent(COMPONENT_TRUSTED, params);
         assertNotNull(intent);
 
         assertEquals(Uri.parse("https://abc.xyz/"), intent.getData());
@@ -562,8 +559,7 @@ public class SearchActivityUtilsUnitTest {
     public void createLoadUrlIntent_paramsWithNullPostDataType() {
         var params =
                 getLoadUrlParamsBuilder().setpostDataAndType(new byte[] {1, 2, 3}, null).build();
-        Intent intent =
-                SearchActivityUtils.createLoadUrlIntent(mActivity, COMPONENT_TRUSTED, params);
+        Intent intent = SearchActivityUtils.createLoadUrlIntent(COMPONENT_TRUSTED, params);
         assertNotNull(intent);
 
         assertEquals(Uri.parse("https://abc.xyz/"), intent.getData());
@@ -577,8 +573,7 @@ public class SearchActivityUtilsUnitTest {
     @Test
     public void createLoadUrlIntent_paramsWithEmptyPostDataType() {
         var params = getLoadUrlParamsBuilder().setpostDataAndType(new byte[] {1, 2, 3}, "").build();
-        Intent intent =
-                SearchActivityUtils.createLoadUrlIntent(mActivity, COMPONENT_TRUSTED, params);
+        Intent intent = SearchActivityUtils.createLoadUrlIntent(COMPONENT_TRUSTED, params);
         assertNotNull(intent);
 
         assertEquals(Uri.parse("https://abc.xyz/"), intent.getData());
@@ -593,8 +588,7 @@ public class SearchActivityUtilsUnitTest {
     public void createLoadUrlIntent_paramsWithValidPostDataType() {
         var params =
                 getLoadUrlParamsBuilder().setpostDataAndType(new byte[] {1, 2, 3}, "test").build();
-        Intent intent =
-                SearchActivityUtils.createLoadUrlIntent(mActivity, COMPONENT_TRUSTED, params);
+        Intent intent = SearchActivityUtils.createLoadUrlIntent(COMPONENT_TRUSTED, params);
         assertNotNull(intent);
 
         assertEquals(Uri.parse("https://abc.xyz/"), intent.getData());
@@ -607,20 +601,9 @@ public class SearchActivityUtilsUnitTest {
     }
 
     @Test
-    public void createIntentForStartActivity_fromUntrustedSource() {
-        Activity untrustedActivity = spy(Robolectric.buildActivity(Activity.class).setup().get());
-        doReturn("com.some.app").when(untrustedActivity).getPackageName();
-        var intent =
-                SearchActivityUtils.createIntentForStartActivity(
-                        untrustedActivity, getLoadUrlParamsBuilder().build());
-        assertNull(intent);
-    }
-
-    @Test
     public void createIntentForStartActivity_fromSelf() {
         var intent =
-                SearchActivityUtils.createIntentForStartActivity(
-                        mActivity, getLoadUrlParamsBuilder().build());
+                SearchActivityUtils.createIntentForStartActivity(getLoadUrlParamsBuilder().build());
 
         assertEquals(Intent.ACTION_VIEW, intent.getAction());
         assertEquals(

@@ -116,8 +116,8 @@
 #include "chrome/common/media/media_resource_provider.h"
 #include "chrome/common/net/net_resource_provider.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/profiler/core_unwinders.h"
 #include "chrome/common/profiler/thread_profiler_configuration.h"
-#include "chrome/common/profiler/unwind_util.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/installer/util/google_update_settings.h"
@@ -275,7 +275,6 @@
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
-#include "base/trace_event/trace_event_etw_export_win.h"
 #include "base/win/win_util.h"
 #include "chrome/browser/chrome_browser_main_win.h"
 #include "chrome/browser/first_run/upgrade_util_win.h"

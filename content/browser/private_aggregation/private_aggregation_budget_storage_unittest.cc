@@ -26,6 +26,7 @@
 #include "content/browser/private_aggregation/proto/private_aggregation_budgets.pb.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
+#include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -309,7 +310,7 @@ TEST_F(PrivateAggregationBudgetStorageTest,
   task_environment().RunUntilIdle();
 
   {
-    sql::Database raw_db;
+    sql::Database raw_db(sql::test::kTestTag);
     EXPECT_TRUE(raw_db.Open(db_path()));
 
     sql::MetaTable meta;

@@ -112,7 +112,7 @@ void DispatchOnCommitted(events::HistogramValue histogram_value,
            ExtensionTabUtil::GetTabId(web_contents));
   dict.Set(web_navigation_api_constants::kUrlKey, url.spec());
   dict.Set(web_navigation_api_constants::kProcessIdKey,
-           frame_host->GetProcess()->GetID());
+           frame_host->GetProcess()->GetDeprecatedID());
   dict.Set(web_navigation_api_constants::kFrameIdKey,
            ExtensionApiFrameIdMap::GetFrameId(frame_host));
   dict.Set(web_navigation_api_constants::kParentFrameIdKey,
@@ -174,7 +174,7 @@ void DispatchOnDOMContentLoaded(content::WebContents* web_contents,
   web_navigation::OnDOMContentLoaded::Details details;
   details.tab_id = ExtensionTabUtil::GetTabId(web_contents);
   details.url = url.spec();
-  details.process_id = frame_host->GetProcess()->GetID();
+  details.process_id = frame_host->GetProcess()->GetDeprecatedID();
   details.frame_id = ExtensionApiFrameIdMap::GetFrameId(frame_host);
   details.parent_frame_id =
       ExtensionApiFrameIdMap::GetParentFrameId(frame_host);
@@ -206,7 +206,7 @@ void DispatchOnCompleted(content::WebContents* web_contents,
   web_navigation::OnCompleted::Details details;
   details.tab_id = ExtensionTabUtil::GetTabId(web_contents);
   details.url = url.spec();
-  details.process_id = frame_host->GetProcess()->GetID();
+  details.process_id = frame_host->GetProcess()->GetDeprecatedID();
   details.frame_id = ExtensionApiFrameIdMap::GetFrameId(frame_host);
   details.parent_frame_id =
       ExtensionApiFrameIdMap::GetParentFrameId(frame_host);
@@ -276,7 +276,7 @@ void DispatchOnErrorOccurred(content::WebContents* web_contents,
   web_navigation::OnErrorOccurred::Details details;
   details.tab_id = ExtensionTabUtil::GetTabId(web_contents);
   details.url = url.spec();
-  details.process_id = frame_host->GetProcess()->GetID();
+  details.process_id = frame_host->GetProcess()->GetDeprecatedID();
   details.frame_id = ExtensionApiFrameIdMap::GetFrameId(frame_host);
   details.parent_frame_id =
       ExtensionApiFrameIdMap::GetParentFrameId(frame_host);

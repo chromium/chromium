@@ -21,12 +21,21 @@
 namespace user_education {
 
 DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
+    kFeatureEnabledPrecondition);
+DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
     kFeatureEngagementTrackerInitializedPrecondition);
 DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
     kMeetsFeatureEngagementCriteriaPrecondition);
 DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kAnchorElementPrecondition);
 DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kLifecyclePrecondition);
 DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kSessionPolicyPrecondition);
+
+// Represents a precondition requiring a promo's feature to be enabled.
+class FeatureEnabledPrecondition : public CachingFeaturePromoPrecondition {
+ public:
+  explicit FeatureEnabledPrecondition(const base::Feature& iph_feature);
+  ~FeatureEnabledPrecondition() override;
+};
 
 // Represents a precondition requiring the Feature Engagement Tracker to be
 // initialized.
@@ -50,6 +59,11 @@ class FeatureEngagementTrackerInitializedPrecondition
 
 // Represents the requirement that a feature is not excluded by the Feature
 // Engagement Tracker based on event counts.
+//
+// For example, if the FET config has:
+//   "button_clicked_event": LESS_THAN_OR_EQUAL, 3
+// ...then if "button_clicked_event" has happened 4 times this precondition
+// will fail, but if it has happened three or fewer times it will succeed.
 class MeetsFeatureEngagementCriteriaPrecondition
     : public FeaturePromoPreconditionBase {
  public:
@@ -59,7 +73,7 @@ class MeetsFeatureEngagementCriteriaPrecondition
   ~MeetsFeatureEngagementCriteriaPrecondition() override;
 
   // FeaturePromoPrecondition:
-  FeaturePromoResult CheckPrecondition() const override;
+  FeaturePromoResult CheckPrecondition(ComputedData& data) const override;
 
  private:
   const raw_ref<const base::Feature> feature_;
@@ -77,7 +91,7 @@ class AnchorElementPrecondition : public FeaturePromoPreconditionBase {
   ~AnchorElementPrecondition() override;
 
   // FeaturePromoPrecondition:
-  FeaturePromoResult CheckPrecondition() const override;
+  FeaturePromoResult CheckPrecondition(ComputedData& data) const override;
 
  private:
   const raw_ref<const AnchorElementProvider> provider_;
@@ -93,7 +107,7 @@ class LifecyclePrecondition : public FeaturePromoPreconditionBase {
   ~LifecyclePrecondition() override;
 
   // FeaturePromoPrecondition:
-  FeaturePromoResult CheckPrecondition() const override;
+  FeaturePromoResult CheckPrecondition(ComputedData& data) const override;
 
  private:
   const bool for_demo_;
@@ -112,7 +126,7 @@ class SessionPolicyPrecondition : public FeaturePromoPreconditionBase {
   ~SessionPolicyPrecondition() override;
 
   // FeaturePromoPrecondition:
-  FeaturePromoResult CheckPrecondition() const override;
+  FeaturePromoResult CheckPrecondition(ComputedData& data) const override;
 
  private:
   const raw_ref<FeaturePromoSessionPolicy> session_policy_;

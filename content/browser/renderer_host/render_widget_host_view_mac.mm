@@ -876,29 +876,9 @@ void RenderWidgetHostViewMac::UpdateScreenInfo() {
     new_screen_infos_from_shim_.reset();
   }
 
-  if (base::FeatureList::IsEnabled(media::kWebContentsCaptureHiDpi)) {
-    // If HiDPI capture mode is active, adjust the device scale factor to
-    // increase the rendered pixel count. |new_screen_infos| always contains
-    // the unmodified original values for the display, and a copy of it is
-    // saved in |screen_infos_|, with a modification applied if applicable.
-    // When HiDPI mode is turned off (the scale override is 1.0), the original
-    // |new_screen_infos| value gets copied unchanged to |screen_infos_|.
-    display::ScreenInfos new_screen_infos = original_screen_infos_;
-    const float old_device_scale_factor =
-        new_screen_infos.current().device_scale_factor;
-    new_screen_infos.mutable_current().device_scale_factor =
-        old_device_scale_factor * scale_override_for_capture_;
-    if (screen_infos_ != new_screen_infos) {
-      DVLOG(1) << __func__ << ": Overriding device_scale_factor from "
-               << old_device_scale_factor << " to "
-               << new_screen_infos.current().device_scale_factor
-               << " for capture.";
-      any_display_changed = true;
-      current_display_changed |=
-          new_screen_infos.current() != screen_infos_.current();
-      screen_infos_ = new_screen_infos;
-    }
-  }
+  std::pair<bool, bool> was_updated = MaybeUpdateScreenInfosForHiDPI();
+  any_display_changed |= was_updated.first;
+  current_display_changed |= was_updated.second;
 
   bool dip_size_changed = view_bounds_in_window_dip_.size() !=
                           browser_compositor_->GetRendererSize();
@@ -1787,7 +1767,8 @@ void RenderWidgetHostViewMac::BeginKeyboardEvent() {
         widget_host->delegate()->GetFocusedRenderWidgetHost(widget_host);
   }
   if (widget_host) {
-    keyboard_event_widget_process_id_ = widget_host->GetProcess()->GetID();
+    keyboard_event_widget_process_id_ =
+        widget_host->GetProcess()->GetDeprecatedID();
     keyboard_event_widget_routing_id_ = widget_host->GetRoutingID();
   }
 }
@@ -1990,7 +1971,8 @@ void RenderWidgetHostViewMac::LookUpDictionaryOverlayFromRange(
   if (!widget_host)
     return;
 
-  int32_t target_widget_process_id = widget_host->GetProcess()->GetID();
+  int32_t target_widget_process_id =
+      widget_host->GetProcess()->GetDeprecatedID();
   int32_t target_widget_routing_id = widget_host->GetRoutingID();
   TextInputClientMac::GetInstance()->GetStringFromRange(
       widget_host, range,
@@ -2029,7 +2011,8 @@ void RenderWidgetHostViewMac::LookUpDictionaryOverlayAtPoint(
   if (popup_parent_host_view_)
     return;
 
-  int32_t target_widget_process_id = widget_host->GetProcess()->GetID();
+  int32_t target_widget_process_id =
+      widget_host->GetProcess()->GetDeprecatedID();
   int32_t target_widget_routing_id = widget_host->GetRoutingID();
   TextInputClientMac::GetInstance()->GetStringAtPoint(
       widget_host, gfx::ToFlooredPoint(transformed_point),
@@ -2423,6 +2406,32 @@ void RenderWidgetHostViewMac::SetTooltipText(
 
 void RenderWidgetHostViewMac::UpdateWindowsNow() {
   [NSApp updateWindows];
+}
+
+std::pair<bool, bool>
+RenderWidgetHostViewMac::MaybeUpdateScreenInfosForHiDPI() {
+  // For HiDPI capture mode, adjust the device scale factor to
+  // increase the rendered pixel count. |new_screen_infos| always contains
+  // the unmodified original values for the display, and a copy of it is
+  // saved in |screen_infos_|, with a modification applied if applicable.
+  // When HiDPI mode is turned off (the scale override is 1.0), the original
+  // |new_screen_infos| value gets copied unchanged to |screen_infos_|.
+  display::ScreenInfos new_screen_infos = original_screen_infos_;
+  const float old_device_scale_factor =
+      new_screen_infos.current().device_scale_factor;
+  new_screen_infos.mutable_current().device_scale_factor =
+      old_device_scale_factor * scale_override_for_capture_;
+  if (screen_infos_ != new_screen_infos) {
+    DVLOG(1) << __func__ << ": Overriding device_scale_factor from "
+             << old_device_scale_factor << " to "
+             << new_screen_infos.current().device_scale_factor
+             << " for capture.";
+    const bool current_display_changed =
+        new_screen_infos.current() != screen_infos_.current();
+    screen_infos_ = new_screen_infos;
+    return {true, current_display_changed};
+  }
+  return {false, false};
 }
 
 Class GetRenderWidgetHostViewCocoaClassForTesting() {

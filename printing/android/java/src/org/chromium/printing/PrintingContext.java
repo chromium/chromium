@@ -11,6 +11,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -19,6 +21,7 @@ import org.chromium.ui.base.WindowAndroid;
  * to talk to the framework.
  */
 @JNINamespace("printing")
+@NullMarked
 public class PrintingContext {
     private static final String TAG = "Printing";
 
@@ -92,7 +95,7 @@ public class PrintingContext {
     }
 
     @CalledByNative
-    public int[] getPages() {
+    public int @Nullable [] getPages() {
         ThreadUtils.assertOnUiThread();
         return mController.getPageNumbers();
     }

@@ -3731,6 +3731,106 @@ TEST_F(FormParserTest, ModelPredictions_ClearTextPasswordFields) {
   });
 }
 
+TEST_F(FormParserTest, PasswordVsOtpMetric) {
+  {
+    base::HistogramTester histogram_tester;
+    CheckTestData({{
+        .fields =
+            {
+                {.role = ElementRole::CURRENT_PASSWORD,
+                 .value = u"password",
+                 .form_control_type = FormControlType::kInputPassword,
+                 .model_predicted_type = autofill::PASSWORD},
+            },
+    }});
+    histogram_tester.ExpectUniqueSample("PasswordManager.ParsedFormIsOtpForm",
+                                        PasswordVsOtpFormType::kPassword, 1);
+  }
+  {
+    base::HistogramTester histogram_tester;
+    CheckTestData({{
+        .fields =
+            {
+                {.value = u"whatever",
+                 .form_control_type = FormControlType::kInputText,
+                 .model_predicted_type = autofill::ONE_TIME_CODE},
+            },
+    }});
+    histogram_tester.ExpectUniqueSample("PasswordManager.ParsedFormIsOtpForm",
+                                        PasswordVsOtpFormType::kOtp, 1);
+  }
+}
+
+TEST_F(FormParserTest, PasswordFieldIsMaskedMetric_Recorded) {
+  base::HistogramTester histogram_tester;
+  CheckTestData({{
+      .fields =
+          {
+              {.role = ElementRole::CURRENT_PASSWORD,
+               .value = u"password",
+               .form_control_type = FormControlType::kInputPassword,
+               .model_predicted_type = autofill::PASSWORD},
+          },
+  }});
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.Parsing.PasswordField.IsMasked", true, 1);
+}
+
+TEST_F(FormParserTest, PasswordFieldIsMaskedMetric_NotRecorded) {
+  base::HistogramTester histogram_tester;
+  CheckTestData({{
+      .fields =
+          {
+              {.value = u"maybe_password_idk",
+               .form_control_type = FormControlType::kInputPassword,
+               .model_predicted_type = autofill::UNKNOWN_TYPE},
+          },
+  }});
+  // No password field prediction, no metric.
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.Parsing.PasswordField.IsMasked", 0);
+}
+
+TEST_F(FormParserTest, UnrelatedFieldsAnyFieldIsMaskedMetric_Recorded) {
+  base::HistogramTester histogram_tester;
+  CheckTestData({{
+      .fields =
+          {
+              {.value = u"whatever1",
+               .form_control_type = FormControlType::kInputText,
+               .model_predicted_type = autofill::UNKNOWN_TYPE},
+              {.value = u"whatever2",
+               .form_control_type = FormControlType::kInputPassword,
+               .model_predicted_type = autofill::UNKNOWN_TYPE},
+              {.value = u"whatever3",
+               .form_control_type = FormControlType::kInputText,
+               .model_predicted_type = autofill::UNKNOWN_TYPE},
+          },
+  }});
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.Parsing.UnrelatedFields.AnyFieldIsMasked", true, 1);
+}
+
+TEST_F(FormParserTest, UnrelatedFieldsAnyFieldIsMaskedMetric_NotRecorded) {
+  base::HistogramTester histogram_tester;
+  CheckTestData({{
+      .fields =
+          {
+              {.role = ElementRole::USERNAME,
+               .value = u"username",
+               .form_control_type = FormControlType::kInputText,
+               .model_predicted_type = autofill::USERNAME},
+              {.role = ElementRole::CURRENT_PASSWORD,
+               .value = u"password",
+               .form_control_type = FormControlType::kInputPassword,
+               .model_predicted_type = autofill::PASSWORD},
+          },
+  }});
+  // No unrelated fields - no metric.
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.Parsing.UnrelatedFields.AnyFieldIsMasked", 0);
+}
+
 }  // namespace
 
 }  // namespace password_manager

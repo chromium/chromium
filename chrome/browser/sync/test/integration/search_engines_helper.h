@@ -11,9 +11,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
+#include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
+#include "components/sync/protocol/search_engine_specifics.pb.h"
 
 class TemplateURL;
 
@@ -77,6 +79,15 @@ bool HasSearchEngine(int profile_index, const std::string& keyword);
 // Returns the keyword for the default search engine at |profile_index|.
 std::string GetDefaultSearchEngineKeyword(int profile_index);
 
+// Return true if the fake server has a search engine matching `keyword`.
+bool HasSearchEngineInFakeServer(const std::string& keyword,
+                                 fake_server::FakeServer* fake_server);
+
+// Returns the first search engine matching `keyword` in the fake server.
+std::optional<sync_pb::SearchEngineSpecifics>
+GetSearchEngineInFakeServerWithKeyword(const std::string& keyword,
+                                       fake_server::FakeServer* fake_server);
+
 // Checker that blocks until all services have the same search engine data.
 class SearchEnginesMatchChecker : public StatusChangeChecker,
                                   public TemplateURLServiceObserver {
@@ -116,6 +127,20 @@ class HasSearchEngineChecker : public StatusChangeChecker,
   base::ScopedMultiSourceObservation<TemplateURLService,
                                      TemplateURLServiceObserver>
       observations_{this};
+};
+
+// Waits until the fake server has an expected search engine.
+class FakeServerHasSearchEngineChecker
+    : public fake_server::FakeServerMatchStatusChecker {
+ public:
+  explicit FakeServerHasSearchEngineChecker(const std::string& keyword);
+
+ protected:
+  // StatusChangeChecker overrides.
+  bool IsExitConditionSatisfied(std::ostream* os) override;
+
+ private:
+  const std::string keyword_;
 };
 
 }  // namespace search_engines_helper

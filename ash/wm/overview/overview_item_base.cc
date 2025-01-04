@@ -338,6 +338,8 @@ views::Widget::InitParams OverviewItemBase::CreateOverviewItemWidgetParams(
   params.parent = parent_window;
   params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
   params.init_properties_container.SetProperty(kOverviewUiKey, true);
+  params.layer_type = ui::LAYER_NOT_DRAWN;
+
   return params;
 }
 

@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
+#include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/uuid.h"
@@ -78,7 +79,8 @@ void UpdateTabTitleIfNeeded(
     if (page_entities_metadata.has_value() &&
         !page_entities_metadata->alternative_title().empty()) {
       use_url_as_title = false;
-      title = base::ASCIIToUTF16(page_entities_metadata->alternative_title());
+      title = base::UnescapeForHTML(
+          base::UTF8ToUTF16(page_entities_metadata->alternative_title()));
     }
   }
   stats::RecordSharedGroupTitleSanitization(use_url_as_title, type);
@@ -297,7 +299,10 @@ void TabGroupSyncServiceImpl::AddGroup(SavedTabGroup group) {
     std::optional<GaiaId> account_id =
         sync_bridge_mediator_->GetTrackingAccountIdForSharedBridge();
     if (account_id.has_value()) {
-      group.SetUpdatedByAttribution(std::move(account_id.value()));
+      group.SetUpdatedByAttribution(account_id.value());
+      for (SavedTabGroupTab& tab : group.saved_tabs()) {
+        tab.SetUpdatedByAttribution(account_id.value());
+      }
     }
   }
 
@@ -336,6 +341,7 @@ void TabGroupSyncServiceImpl::UpdateVisualData(
   VLOG(2) << __func__;
   model_->UpdateVisualDataLocally(local_group_id, visual_data);
   UpdateAttributions(local_group_id);
+  UpdateSharedAttributions(local_group_id);
   LogEvent(TabGroupEvent::kTabGroupVisualsChanged, local_group_id,
            std::nullopt);
   stats::RecordTabGroupVisualsMetrics(visual_data);
@@ -387,6 +393,13 @@ void TabGroupSyncServiceImpl::AddTab(const LocalTabGroupID& group_id,
                          stats::TitleSanitizationType::kAddTab);
 
   UpdateAttributions(group_id);
+  if (group->is_shared_tab_group()) {
+    std::optional<GaiaId> account_id =
+        sync_bridge_mediator_->GetTrackingAccountIdForSharedBridge();
+    if (account_id.has_value()) {
+      new_tab.SetUpdatedByAttribution(std::move(account_id.value()));
+    }
+  }
   model_->UpdateLastUserInteractionTimeLocally(group_id);
   model_->AddTabToGroupLocally(group->saved_guid(), std::move(new_tab));
   LogEvent(TabGroupEvent::kTabAdded, group_id, std::nullopt);
@@ -554,21 +567,54 @@ void TabGroupSyncServiceImpl::MakeTabGroupShared(
   CHECK(saved_group);
   CHECK(!saved_group->is_shared_tab_group());
 
+  // TODO(crbug.com/380088920): add CHECK to verify that the bridge is syncing.
+  std::optional<GaiaId> account_id =
+      sync_bridge_mediator_->GetTrackingAccountIdForSharedBridge();
+  if (!account_id.has_value()) {
+    // Do not share the group if the bridge is not syncing. This should not
+    // happen in practice but it's safer to early return in this case.
+    return;
+  }
+
   // Make a deep copy of the group without fields which are not used in shared
   // tab groups, and without migration of local IDs.
   SavedTabGroup shared_group = saved_group->CloneAsSharedTabGroup(
       CollaborationId(std::string(collaboration_id)));
-  std::optional<std::string> account_id =
-      sync_bridge_mediator_->GetTrackingAccountIdForSharedBridge();
-  if (account_id.has_value()) {
-    shared_group.SetUpdatedByAttribution(std::move(account_id.value()));
-  }
+  shared_group.SetUpdatedByAttribution(account_id.value());
   for (SavedTabGroupTab& tab : shared_group.saved_tabs()) {
     UpdateTabTitleIfNeeded(shared_group, tab, opt_guide_,
                            stats::TitleSanitizationType::kShareTabGroup);
+    tab.SetUpdatedByAttribution(account_id.value());
   }
 
   model_->AddedLocally(std::move(shared_group));
+}
+
+void TabGroupSyncServiceImpl::AboutToUnShareTabGroup(
+    const LocalTabGroupID& local_group_id,
+    base::OnceClosure on_complete_callback) {
+  model_->SetIsTransitioningToSaved(local_group_id, true);
+  std::move(on_complete_callback).Run();
+}
+
+void TabGroupSyncServiceImpl::OnTabGroupUnShareComplete(
+    const LocalTabGroupID& local_group_id,
+    bool success) {
+  const SavedTabGroup* saved_group = model_->Get(local_group_id);
+  CHECK(saved_group);
+  CHECK(saved_group->is_transitioning_to_saved());
+
+  if (!success) {
+    return;
+  }
+
+  // Make a deep copy of shared tab group.
+  SavedTabGroup cloned_group = saved_group->CloneAsSavedTabGroup();
+  cloned_group.SetCreatedBeforeSyncingTabGroups(
+      !sync_bridge_mediator_->IsSavedBridgeSyncing());
+  cloned_group.SetCreatorCacheGuid(
+      sync_bridge_mediator_->GetLocalCacheGuidForSavedBridge());
+  model_->AddedLocally(std::move(cloned_group));
 }
 
 void TabGroupSyncServiceImpl::MakeTabGroupSharedForTesting(
@@ -616,9 +662,33 @@ std::optional<SavedTabGroup> TabGroupSyncServiceImpl::GetGroup(
                    : std::nullopt;
 }
 
+std::optional<SavedTabGroup> TabGroupSyncServiceImpl::GetGroup(
+    const EitherGroupID& either_id) const {
+  const SavedTabGroup* tab_group = nullptr;
+  if (std::holds_alternative<LocalTabGroupID>(either_id)) {
+    tab_group = model_->Get(std::get<LocalTabGroupID>(either_id));
+  } else {
+    tab_group = model_->Get(std::get<base::Uuid>(either_id));
+  }
+
+  return tab_group ? std::make_optional<SavedTabGroup>(*tab_group)
+                   : std::nullopt;
+}
+
 std::vector<LocalTabGroupID> TabGroupSyncServiceImpl::GetDeletedGroupIds()
     const {
   return GetDeletedGroupIdsFromPref();
+}
+
+std::optional<std::u16string>
+TabGroupSyncServiceImpl::GetTitleForPreviouslyExistingSharedTabGroup(
+    const CollaborationId& collaboration_id) const {
+  if (titles_for_previously_existing_shared_tab_groups_.find(
+          collaboration_id) ==
+      titles_for_previously_existing_shared_tab_groups_.end()) {
+    return std::nullopt;
+  }
+  return titles_for_previously_existing_shared_tab_groups_.at(collaboration_id);
 }
 
 void TabGroupSyncServiceImpl::OpenTabGroup(
@@ -809,6 +879,14 @@ void TabGroupSyncServiceImpl::SavedTabGroupRemovedFromSync(
   id_pair.first = removed_group.saved_guid();
   id_pair.second = removed_group.local_group_id();
 
+  // For shared tab groups, we need to be able to know that a group has been
+  // removed and inform a user about it through a message. To facilitate this,
+  // we store the last known tab group title before removal.
+  if (removed_group.is_shared_tab_group()) {
+    titles_for_previously_existing_shared_tab_groups_.emplace(
+        removed_group.collaboration_id().value(), removed_group.title());
+  }
+
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&TabGroupSyncServiceImpl::HandleTabGroupRemoved,
                                 weak_ptr_factory_.GetWeakPtr(),
@@ -928,7 +1006,7 @@ void TabGroupSyncServiceImpl::NotifyTabGroupAdded(const base::Uuid& guid,
 
   // Saved tab group should be transitions to shared before notifying observers
   // because the new group may be opened automatically on some platforms.
-  bool group_migrated =
+  bool group_migrated_to_shared =
       TransitionSavedToSharedTabGroupIfNeeded(*saved_tab_group);
 
   // Update the list even if the group wasn't transitioned. This is needed if
@@ -936,7 +1014,10 @@ void TabGroupSyncServiceImpl::NotifyTabGroupAdded(const base::Uuid& guid,
   // version).
   UpdateTransitionedSavedTabGroupsList();
 
-  if (group_migrated) {
+  bool group_migrated_to_saved =
+      TransitionSharedToSavedTabGroupIfNeeded(*saved_tab_group);
+
+  if (group_migrated_to_shared || group_migrated_to_saved) {
     NotifyTabGroupMigrated(saved_tab_group->saved_guid(), source);
 
     // Simulate tab group update after the transition to notify observers which
@@ -971,11 +1052,10 @@ void TabGroupSyncServiceImpl::NotifyTabGroupMigrated(
   const SavedTabGroup* new_group = model_->Get(new_group_guid);
   CHECK(new_group);
   // Originating saved tab group must exist if it was transitioned.
-  CHECK(new_group->originating_saved_tab_group_guid().has_value());
+  CHECK(new_group->originating_tab_group_guid().has_value());
   for (TabGroupSyncService::Observer& observer : observers_) {
     observer.OnTabGroupMigrated(
-        *new_group, new_group->originating_saved_tab_group_guid().value(),
-        source);
+        *new_group, new_group->originating_tab_group_guid().value(), source);
   }
 }
 
@@ -1180,6 +1260,24 @@ void TabGroupSyncServiceImpl::UpdateAttributions(
       tab_id);
 }
 
+void TabGroupSyncServiceImpl::UpdateSharedAttributions(
+    const LocalTabGroupID& group_id,
+    const std::optional<LocalTabID>& tab_id) {
+  const SavedTabGroup* group = model_->Get(group_id);
+  if (!group || !group->is_shared_tab_group()) {
+    return;
+  }
+
+  std::optional<GaiaId> account_id =
+      sync_bridge_mediator_->GetTrackingAccountIdForSharedBridge();
+  if (!account_id) {
+    return;
+  }
+
+  model_->UpdateSharedAttribution(group_id, tab_id,
+                                  std::move(account_id.value()));
+}
+
 void TabGroupSyncServiceImpl::
     StoreSharedTabGroupsAvailableAtStartupForMessaging() {
   shared_tab_groups_available_at_startup_for_messaging_ =
@@ -1252,39 +1350,56 @@ void TabGroupSyncServiceImpl::LogEvent(
 
 bool TabGroupSyncServiceImpl::TransitionSavedToSharedTabGroupIfNeeded(
     const SavedTabGroup& shared_group) {
-  if (!shared_group.originating_saved_tab_group_guid().has_value()) {
+  return TransitionOriginatingTabGroupToNewGroupIfNeeded(
+      shared_group, OpeningSource::kConnectOnGroupShare,
+      ClosingSource::kDisconnectOnGroupShared);
+}
+
+bool TabGroupSyncServiceImpl::TransitionSharedToSavedTabGroupIfNeeded(
+    const SavedTabGroup& saved_group) {
+  // TODO(crbug.com/370746008): After replacing the originating group here,
+  // it needs to be deleted.
+  return TransitionOriginatingTabGroupToNewGroupIfNeeded(
+      saved_group, OpeningSource::kConnectOnGroupUnShare,
+      ClosingSource::kDisconnectOnGroupUnShared);
+}
+
+bool TabGroupSyncServiceImpl::TransitionOriginatingTabGroupToNewGroupIfNeeded(
+    const SavedTabGroup& tab_group,
+    OpeningSource opening_source,
+    ClosingSource closing_source) {
+  if (!tab_group.originating_tab_group_guid().has_value()) {
     return false;
   }
 
-  const SavedTabGroup* originating_saved_group =
-      model_->Get(shared_group.originating_saved_tab_group_guid().value());
-  if (!originating_saved_group) {
+  const SavedTabGroup* originating_tab_group =
+      model_->Get(tab_group.originating_tab_group_guid().value());
+  if (!originating_tab_group) {
     // Originating group doesn't exist in the model and hence it wasn't
     // transitioned. The group may not exist if it was deleted from the current
     // device before the remote shared tab group was downloaded.
     return false;
   }
 
-  if (originating_saved_group->local_group_id().has_value()) {
+  if (originating_tab_group->local_group_id().has_value()) {
     // The group is open in the tab strip and needs to be transitioned with all
     // local IDs.
 
     // Make a copy because both groups will be updated.
     const LocalTabGroupID local_group_id =
-        originating_saved_group->local_group_id().value();
+        originating_tab_group->local_group_id().value();
 
     // First, remove the local tab group mapping and then disconnect the local
     // tab group. Note that on some platforms the coordinator may call
     // RemoveLocalTabGroupMapping() but it should be a no-op.
-    RemoveLocalTabGroupMapping(local_group_id,
-                               ClosingSource::kDisconnectOnGroupShared);
+    RemoveLocalTabGroupMapping(local_group_id, closing_source);
     coordinator_->DisconnectLocalTabGroup(local_group_id);
 
     // Connect the shared tab group to the local group: update the local tab
     // group mapping on all platforms, and update the mapping for session
     // restore.
-    ConnectLocalTabGroup(shared_group.saved_guid(), local_group_id,
-                         OpeningSource::kConnectOnGroupShare);
+    ConnectLocalTabGroup(tab_group.saved_guid(), local_group_id,
+                         opening_source);
   }
 
   return true;
@@ -1322,6 +1437,7 @@ void TabGroupSyncServiceImpl::NavigateTabInternal(
 
   // Update attributions for the tab first.
   UpdateAttributions(group_id, tab_id);
+  UpdateSharedAttributions(group_id, tab_id);
 
   // Use the builder to create the updated tab.
   bool will_update_url = url.SchemeIsHTTPOrHTTPS() && url != tab->url();
@@ -1347,9 +1463,9 @@ void TabGroupSyncServiceImpl::UpdateTransitionedSavedTabGroupsList() {
   // collaboration. For such groups, the originating saved tab group should
   // still be accessible, so they need to be excluded.
   for (const SavedTabGroup& group : GetAllGroups()) {
-    if (group.originating_saved_tab_group_guid().has_value()) {
+    if (group.originating_tab_group_guid().has_value()) {
       transitioned_saved_tab_groups_.insert(
-          group.originating_saved_tab_group_guid().value());
+          group.originating_tab_group_guid().value());
     }
   }
 }

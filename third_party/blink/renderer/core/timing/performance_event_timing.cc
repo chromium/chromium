@@ -122,6 +122,10 @@ bool PerformanceEventTiming::HasKnownEndTime() const {
          !reporting_info_.fallback_time.is_null();
 }
 
+bool PerformanceEventTiming::IsReadyForReporting() const {
+  return !reporting_info_.processing_end_time.is_null() && HasKnownEndTime();
+}
+
 base::TimeTicks PerformanceEventTiming::GetEndTime() const {
   CHECK(HasKnownEndTime());
   if (!reporting_info_.fallback_time.is_null()) {

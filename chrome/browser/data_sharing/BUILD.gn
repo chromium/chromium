@@ -68,8 +68,8 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingMetrics.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingTabGroupUtils.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingTabGroupsDelegate.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingTabManager.java",
-      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingTabSwitcherDelegate.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/RecentActivityActionHandlerImpl.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/TabGridDialogShareBottomSheetContent.java",
     ]
@@ -136,11 +136,15 @@ if (is_android) {
 
   android_library("favicon_java") {
     resources_package = "org.chromium.chrome.browser.data_sharing"
-    sources = [ "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingFaviconProvider.java" ]
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/data_sharing/BulkFaviconUtil.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingFaviconProvider.java",
+    ]
 
     deps = [
       "//base:callback_java",
       "//base:supplier_java",
+      "//base:tasks_java",
       "//chrome/browser/data_sharing:recent_activity_java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/ui/android/favicon:java",
@@ -349,6 +353,7 @@ if (is_android) {
     deps = [
       ":recent_activity_java",
       "//base:base_java",
+      "//base:base_java_test_support",
       "//base:base_junit_test_support",
       "//chrome/browser/tab:java",
       "//chrome/test/android:chrome_java_unit_test_support",

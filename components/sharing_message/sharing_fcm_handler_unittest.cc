@@ -67,7 +67,8 @@ class MockSharingFCMSender : public SharingFCMSender {
             /*gcm_driver=*/nullptr,
             /*device_info_tracker=*/nullptr,
             /*local_device_info_provider=*/nullptr,
-            /*sync_service=*/nullptr) {}
+            /*sync_service=*/nullptr,
+            /*start_sync_flare=*/base::DoNothing()) {}
   ~MockSharingFCMSender() override = default;
 
   MOCK_METHOD4(SendMessageToFcmTarget,

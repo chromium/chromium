@@ -3407,11 +3407,8 @@ function runNewWindowCrossWindowAttachTest(noopener) {
   let webview = document.createElement('webview');
   webview.src = firstWebviewUrl;
 
-  async function checkOpenerRelationships(secondWebview) {
-    let hasOpenerResult =
-        await executeScriptP(secondWebview, {code: '!!window.opener;'});
-    embedder.test.assertEq(1, hasOpenerResult.length);
-    embedder.test.assertEq(!noopener, hasOpenerResult[0]);
+  async function checkOpenerRelationships(secondWebview, hasOpener) {
+    embedder.test.assertEq(!noopener, hasOpener);
 
     if (!noopener) {
       let openerUsageResult = await executeScriptP(
@@ -3446,9 +3443,21 @@ function runNewWindowCrossWindowAttachTest(noopener) {
       let new_window = app_new_window.contentWindow;
       new_window.onload = () => {
         let new_webview = new_window.document.createElement('webview');
-        new_webview.addEventListener('loadstop', () => {
-          if (new_webview.src == embedder.emptyGuestURL) {
-            checkOpenerRelationships(new_webview);
+        new_webview.addEventListener('loadstop', async () => {
+          let hasOpenerResult =
+            await executeScriptP(new_webview, { code: '!!window.opener;' });
+          embedder.test.assertEq(1, hasOpenerResult.length);
+          // Note: hasOpenerResult[0] can be null in a scenario where we end
+          // up dispatching a loadstop event for `new_webview` after the
+          // initial WebContents created (e.window) finishes loading; but this
+          // WebContents is destroyed when new_webview is attached and a new
+          // WebContents is loaded. In this short interval, where there is a
+          // new WebContents that hasn't finished its initial navigation;
+          // new_webview.executeScript() fails and returns null.
+          // TODO(crbug.com/40254126): We should be able to remove this check
+          // after we stop eagerly creating a WebContents.
+          if (hasOpenerResult[0] !== null) {
+            checkOpenerRelationships(new_webview, hasOpenerResult[0]);
           }
         });
         // Be sure to do the attach before appending to document.

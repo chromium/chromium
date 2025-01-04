@@ -144,13 +144,9 @@ class LinkNode : public internal::LinkNodeBase {
   LinkNode<T>* next() const { return static_cast<LinkNode<T>*>(next_base()); }
 
   // Cast from the node-type to the value type.
-  const T* value() const {
-    return static_cast<const T*>(this);
-  }
+  const T* value() const { return static_cast<const T*>(this); }
 
-  T* value() {
-    return static_cast<T*>(this);
-  }
+  T* value() { return static_cast<T*>(this); }
 };
 
 template <typename T>
@@ -164,21 +160,13 @@ class LinkedList {
   LinkedList& operator=(const LinkedList&) = delete;
 
   // Appends |e| to the end of the linked list.
-  void Append(LinkNode<T>* e) {
-    e->InsertBefore(&root_);
-  }
+  void Append(LinkNode<T>* e) { e->InsertBefore(&root_); }
 
-  LinkNode<T>* head() const {
-    return root_.next();
-  }
+  LinkNode<T>* head() const { return root_.next(); }
 
-  LinkNode<T>* tail() const {
-    return root_.previous();
-  }
+  LinkNode<T>* tail() const { return root_.previous(); }
 
-  const LinkNode<T>* end() const {
-    return &root_;
-  }
+  const LinkNode<T>* end() const { return &root_; }
 
   bool empty() const { return head() == end(); }
 

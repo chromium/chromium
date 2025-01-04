@@ -68,8 +68,8 @@ TEST(WebVectorTest, Swap) {
   const size_t kFirstDataLength = std::size(kFirstData);
   const size_t kSecondDataLength = std::size(kSecondData);
 
-  WebVector<int> first(kFirstData, kFirstDataLength);
-  WebVector<int> second(kSecondData, kSecondDataLength);
+  WebVector<int> first(base::span{kFirstData});
+  WebVector<int> second(base::span{kSecondData});
   ASSERT_EQ(kFirstDataLength, first.size());
   ASSERT_EQ(kSecondDataLength, second.size());
   first.swap(second);
@@ -79,16 +79,6 @@ TEST(WebVectorTest, Swap) {
     EXPECT_EQ(kSecondData[i], first[i]);
   for (size_t i = 0; i < second.size(); ++i)
     EXPECT_EQ(kFirstData[i], second[i]);
-}
-
-TEST(WebVectorTest, CreateFromPointer) {
-  const int kValues[] = {1, 2, 3, 4, 5};
-
-  WebVector<int> vector(kValues, 3);
-  ASSERT_EQ(3u, vector.size());
-  ASSERT_EQ(1, vector[0]);
-  ASSERT_EQ(2, vector[1]);
-  ASSERT_EQ(3, vector[2]);
 }
 
 TEST(WebVectorTest, CreateFromWtfVector) {

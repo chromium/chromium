@@ -15,6 +15,10 @@ public class ShrinkExpandAnimationData {
     private final @NonNull Rect mInitialRect;
     private final @NonNull Rect mFinalRect;
     private final @Nullable Size mThumbnailSize;
+    private final float mInitialTopCornerRadius;
+    private final float mInitialBottomCornerRadius;
+    private final float mFinalTopCornerRadius;
+    private final float mFinalBottomCornerRadius;
     private final boolean mUseFallbackAnimation;
 
     /**
@@ -32,10 +36,18 @@ public class ShrinkExpandAnimationData {
     public ShrinkExpandAnimationData(
             @NonNull Rect initialRect,
             @NonNull Rect finalRect,
+            float initialTopCornerRadius,
+            float initialBottomCornerRadius,
+            float finalTopCornerRadius,
+            float finalBottomCornerRadius,
             @Nullable Size thumbnailSize,
             boolean useFallbackAnimation) {
         mInitialRect = initialRect;
         mFinalRect = finalRect;
+        mInitialTopCornerRadius = initialTopCornerRadius;
+        mInitialBottomCornerRadius = initialBottomCornerRadius;
+        mFinalTopCornerRadius = finalTopCornerRadius;
+        mFinalBottomCornerRadius = finalBottomCornerRadius;
         mThumbnailSize = thumbnailSize;
         mUseFallbackAnimation = useFallbackAnimation;
     }
@@ -48,6 +60,22 @@ public class ShrinkExpandAnimationData {
     /** Returns the final rect of the animation. */
     public @NonNull Rect getFinalRect() {
         return mFinalRect;
+    }
+
+    public float getInitialTopCornerRadius() {
+        return mInitialTopCornerRadius;
+    }
+
+    public float getInitialBottomCornerRadius() {
+        return mInitialBottomCornerRadius;
+    }
+
+    public float getFinalTopCornerRadius() {
+        return mFinalTopCornerRadius;
+    }
+
+    public float getFinalBottomCornerRadius() {
+        return mFinalBottomCornerRadius;
     }
 
     /** Returns the thumbnail size. */

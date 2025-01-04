@@ -48,7 +48,11 @@
   X(maxComputeWorkgroupSizeX)                  \
   X(maxComputeWorkgroupSizeY)                  \
   X(maxComputeWorkgroupSizeZ)                  \
-  X(maxComputeWorkgroupsPerDimension)
+  X(maxComputeWorkgroupsPerDimension)          \
+  X(maxStorageBuffersInFragmentStage)          \
+  X(maxStorageTexturesInFragmentStage)         \
+  X(maxStorageBuffersInVertexStage)            \
+  X(maxStorageTexturesInVertexStage)
 
 namespace blink {
 

@@ -189,7 +189,7 @@ int PageLoadInProcessFuzzer::Fuzz(
         test_url = https_test_server2_.GetURL(path);
         break;
       default:
-        LOG(FATAL) << "Unexpected proto value for which server";
+        return -1;
     }
   }
 

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/bindings/core/v8/serialization/v8_script_value_deserializer.h"
 
+#include <array>
 #include <limits>
 #include <optional>
 
@@ -97,10 +93,10 @@ const uint32_t kMinVersionForSeparateEnvelope = 16;
 // returned.
 size_t ReadVersionEnvelope(SerializedScriptValue* serialized_script_value,
                            uint32_t* out_version) {
-  const uint8_t* raw_data = serialized_script_value->Data();
-  const size_t length = serialized_script_value->DataLengthInBytes();
-  if (!length || raw_data[0] != kVersionTag)
+  auto data = serialized_script_value->GetWireData();
+  if (data.empty() || data[0] != kVersionTag) {
     return 0;
+  }
 
   // Read a 32-bit unsigned integer from varint encoding.
   uint32_t version = 0;
@@ -108,9 +104,10 @@ size_t ReadVersionEnvelope(SerializedScriptValue* serialized_script_value,
   unsigned shift = 0;
   bool has_another_byte;
   do {
-    if (i >= length)
+    if (i >= data.size()) {
       return 0;
-    uint8_t byte = raw_data[i];
+    }
+    uint8_t byte = data[i];
     if (shift < 32) [[likely]] {
       version |= static_cast<uint32_t>(byte & 0x7f) << shift;
       shift += 7;
@@ -130,8 +127,9 @@ size_t ReadVersionEnvelope(SerializedScriptValue* serialized_script_value,
         1 + sizeof(uint64_t) + sizeof(uint32_t);
     DCHECK_LT(i, std::numeric_limits<size_t>::max() - kTrailerOffsetDataSize);
     i += kTrailerOffsetDataSize;
-    if (i >= length)
+    if (i >= data.size()) {
       return 0;
+    }
   }
 
   // Otherwise, we did read the envelope. Hurray!
@@ -529,7 +527,7 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
       return ReadDOMRectReadOnly();
     }
     case kDOMQuadTag: {
-      DOMPointInit* point_inits[4];
+      std::array<DOMPointInit*, 4> point_inits;
       for (int i = 0; i < 4; ++i) {
         auto* init = DOMPointInit::Create();
         double x = 0, y = 0, z = 0, w = 0;

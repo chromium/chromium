@@ -21,12 +21,12 @@ build_webui("build") {
     "//chrome/browser/ui/webui/ash/add_supervision:mojo_bindings_ts__generator",
   ]
   ts_definitions = [
-    "//tools/typescript/definitions/webview_tag.d.ts",
-    "//tools/typescript/definitions/web_request.d.ts",
     "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/context_menus.d.ts",
-    "//tools/typescript/definitions/tabs.d.ts",
     "//tools/typescript/definitions/extension_types.d.ts",
+    "//tools/typescript/definitions/tabs.d.ts",
+    "//tools/typescript/definitions/web_request.d.ts",
+    "//tools/typescript/definitions/webview_tag.d.ts",
   ]
 
   ts_deps = [

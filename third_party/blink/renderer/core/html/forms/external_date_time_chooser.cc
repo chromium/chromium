@@ -160,4 +160,8 @@ AXObject* ExternalDateTimeChooser::RootAXObject(Element* popup_owner) {
   return nullptr;
 }
 
+bool ExternalDateTimeChooser::IsPickerVisible() const {
+  return date_time_chooser_.is_bound() && date_time_chooser_.is_connected();
+}
+
 }  // namespace blink

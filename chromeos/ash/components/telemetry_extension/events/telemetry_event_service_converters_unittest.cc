@@ -182,6 +182,12 @@ TEST(TelemetryEventServiceConvertersTest, ConvertKeyboardTopRowKey) {
 
   EXPECT_EQ(Convert(diagnostics::mojom::TopRowKey::kDelete),
             crosapi::mojom::TelemetryKeyboardTopRowKey::kDelete);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::TopRowKey::kAccessibility),
+            crosapi::mojom::TelemetryKeyboardTopRowKey::kUnknown);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::TopRowKey::kDictation),
+            crosapi::mojom::TelemetryKeyboardTopRowKey::kUnknown);
 }
 
 TEST(TelemetryEventServiceConvertersTest, ConvertKeyboardTopRightKey) {

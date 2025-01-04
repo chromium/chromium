@@ -251,7 +251,7 @@ class PopupViewViews : public PopupBaseView,
   // suggestion with a special type in this case. This method makes sure
   // the suggestion's message is being announced to the user by focusing the row
   // view (which must be selectable). Currently, `PopupWarningView` and
-  // `PredictionImprovementsLoadingStateView` are supported.
+  // `AutofillAiLoadingStateView` are supported.
   void MaybeA11yFocusInformationalSuggestion();
 
   // Controller for this view.

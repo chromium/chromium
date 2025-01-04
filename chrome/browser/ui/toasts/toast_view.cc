@@ -250,14 +250,19 @@ void ToastView::Init() {
 
   if (menu_model_) {
     menu_button_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
-        base::BindRepeating(&ToastView::OnMenuButtonClicked,
-                            base::Unretained(this)),
-        kBrowserToolsChromeRefreshIcon,
+        base::RepeatingClosure(), kBrowserToolsChromeRefreshIcon,
         /*dip_size=*/
         lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_MENU_ICON_SIZE),
         ui::kColorToastForeground));
     views::InstallCircleHighlightPathGenerator(menu_button_);
     menu_button_->SetProperty(views::kElementIdentifierKey, kToastMenuButton);
+    menu_button_->SetButtonController(
+        std::make_unique<views::MenuButtonController>(
+            menu_button_,
+            base::BindRepeating(&ToastView::OnMenuButtonClicked,
+                                base::Unretained(this)),
+            std::make_unique<views::Button::DefaultButtonControllerDelegate>(
+                menu_button_)));
     menu_button_->SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_TOAST_MENU_BUTTON_NAME));
     const gfx::Insets insets = menu_button_->GetInsets();
@@ -266,6 +271,9 @@ void ToastView::Init() {
             DISTANCE_TOAST_BUBBLE_BETWEEN_LABEL_MENU_BUTTON_SPACING) -
         insets.left();
     menu_button_->SetProperty(views::kMarginsKey, GetLeftMargin(left_margin));
+    if (!HasConfiguredInitiallyFocusedView()) {
+      SetInitiallyFocusedView(menu_button_);
+    }
     max_child_height =
         std::max(max_child_height,
                  lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_MENU_ICON_SIZE) +
@@ -296,7 +304,7 @@ void ToastView::Init() {
       top_margin, lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_MARGIN_LEFT),
       total_vertical_margins - top_margin, right_margin));
 
-  if (has_action_button_ || has_close_button_) {
+  if (has_action_button_ || has_close_button_ || menu_model_) {
     SetFocusTraversesOut(true);
   } else {
     set_focus_traversable_from_anchor_view(false);
@@ -432,6 +440,10 @@ void ToastView::AnimateOut(base::OnceClosure callback,
   }
 
   views::View* const bubble_frame_view = GetBubbleFrameView();
+  if (!bubble_frame_view->layer()) {
+    bubble_frame_view->SetPaintToLayer();
+    bubble_frame_view->layer()->SetFillsBoundsOpaquely(false);
+  }
 
   if (show_height_animation) {
     starting_widget_bounds_ = GetWidget()->GetWindowBoundsInScreen();
@@ -460,15 +472,11 @@ void ToastView::AnimateOut(base::OnceClosure callback,
 }
 
 void ToastView::OnMenuButtonClicked() {
-  if (menu_runner_) {
-    menu_runner_->Cancel();
-    return;
-  }
-  menu_button_highlight_ = menu_button_->AddAnchorHighlight();
-  menu_button_->SetState(views::Button::ButtonState::STATE_PRESSED);
   menu_runner_ = std::make_unique<views::MenuRunner>(
       menu_model_adapter_->CreateMenu(), views::MenuRunner::FIXED_ANCHOR);
-  menu_runner_->RunMenuAt(GetWidget(), /*button_controller=*/nullptr,
+  menu_runner_->RunMenuAt(GetWidget(),
+                          static_cast<views::MenuButtonController*>(
+                              menu_button_->button_controller()),
                           menu_button_->GetBoundsInScreen(),
                           views::MenuAnchorPosition::kTopRight,
                           ui::mojom::MenuSourceType::kNone);
@@ -476,8 +484,6 @@ void ToastView::OnMenuButtonClicked() {
 
 void ToastView::OnMenuClosed() {
   menu_runner_.reset();
-  menu_button_highlight_.reset();
-  menu_button_->SetState(views::Button::ButtonState::STATE_NORMAL);
   if (pending_close_reason_) {
     Close(pending_close_reason_.value());
   }

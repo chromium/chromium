@@ -194,7 +194,7 @@ void BidirectionalStreamSpdyImpl::PopulateNetErrorDetails(
 void BidirectionalStreamSpdyImpl::OnHeadersSent() {
   DCHECK(stream_);
 
-  negotiated_protocol_ = kProtoHTTP2;
+  negotiated_protocol_ = NextProto::kProtoHTTP2;
   if (delegate_)
     delegate_->OnStreamReady(/*request_headers_sent=*/true);
 }

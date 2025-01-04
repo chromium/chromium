@@ -17,7 +17,7 @@ std::optional<std::vector<uint8_t>> ReencodeFavicon(
     base::span<const uint8_t> src) {
   // Decode the favicon using WebKit's image decoder.
   SkBitmap decoded = content::DecodeImage(
-      src.data(), gfx::Size(gfx::kFaviconSize, gfx::kFaviconSize), src.size());
+      src, gfx::Size(gfx::kFaviconSize, gfx::kFaviconSize));
   if (decoded.empty()) {
     return std::nullopt;  // Unable to decode.
   }

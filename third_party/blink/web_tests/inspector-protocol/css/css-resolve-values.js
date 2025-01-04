@@ -32,9 +32,21 @@
     print(values, response);
   }
 
+  async function testResolveValuesWithoutProperty(querySelector, values) {
+    var nodeId = await cssHelper.requestNodeId(documentNodeId, querySelector);
+    var response = await dp.CSS.resolveValues({values: values, nodeId: nodeId});
+    print(values, response);
+  }
+
   async function testResolveValuesForPseudoElement(querySelector, values, propertyName, pseudoType) {
     var nodeId = await cssHelper.requestNodeId(documentNodeId, querySelector);
     var response = await dp.CSS.resolveValues({values: values, nodeId: nodeId, propertyName: propertyName, pseudoType: pseudoType});
+    print(values, response);
+  }
+
+  async function testResolveValuesForPseudoElementWithoutProperty(querySelector, values, pseudoType) {
+    var nodeId = await cssHelper.requestNodeId(documentNodeId, querySelector);
+    var response = await dp.CSS.resolveValues({values: values, nodeId: nodeId, pseudoType: pseudoType});
     print(values, response);
   }
 
@@ -51,15 +63,29 @@
       testRunner.log('Test resolveValues for width property');
       await testResolveValues('.inner', testValues, "width");
     },
+    async function testResolveValuesSimpleNoProperty() {
+      testRunner.log('Test resolveValues no property specified');
+      await testResolveValuesWithoutProperty('.inner', testValues);
+    },
     async function testRelativeUnits() {
       testRunner.log('Relative length units to absolute test');
       var relativeValues = relativeLengthUnits.map((x) => "1" + x);
       await testResolveValues('.inner', relativeValues, "width");
     },
+    async function testRelativeUnitsNoProperty() {
+      testRunner.log('Relative length units to absolute no property specified test');
+      var relativeValues = relativeLengthUnits.map((x) => "1" + x);
+      await testResolveValuesWithoutProperty('.inner', relativeValues);
+    },
     async function testRelativeUnitsOuter() {
       testRunner.log('Relative length units to absolute for parent element test');
       var relativeValues = relativeLengthUnits.map((x) => "1" + x);
       await testResolveValues('.outer', relativeValues, "width");
+    },
+    async function testRelativeUnitsOuterNoProperty() {
+      testRunner.log('Relative length units to absolute for parent element no property specified test');
+      var relativeValues = relativeLengthUnits.map((x) => "1" + x);
+      await testResolveValuesWithoutProperty('.outer', relativeValues);
     },
     async function testRelativeUnitsFontSize() {
       testRunner.log('Relative length units to absolute font-size property test');
@@ -70,13 +96,25 @@
       testRunner.log('Evaluate expression test');
       await testResolveValues('.inner', lengthExpressions, "height");
     },
+    async function testExpressionsEvaluationNoProperty() {
+      testRunner.log('Evaluate expression with no property specified test');
+      await testResolveValuesWithoutProperty('.inner', lengthExpressions);
+    },
     async function testCSSWideKeywords() {
       testRunner.log('Test CSS-wide keywords');
       await testResolveValues('.inner', cssWideKeywords, "font-size");
     },
-    async function testColorVaslues() {
+    async function testCSSWideKeywordsNoProperty() {
+      testRunner.log('Test CSS-wide keywords with no property specified');
+      await testResolveValues('.inner', cssWideKeywords);
+    },
+    async function testColorValues() {
       testRunner.log('Test <color> values');
       await testResolveValues('.inner', validColorValues, "background-color");
+    },
+    async function testColorValuesNoProperty() {
+      testRunner.log('Test <color> values with no property specified');
+      await testResolveValuesWithoutProperty('.inner', validColorValues);
     },
     async function testOnlyInvalidValues() {
       testRunner.log('Invalid values test');
@@ -93,6 +131,10 @@
     async function testPseudoElement() {
       testRunner.log('Pseudo element test');
       await testResolveValuesForPseudoElement('div', testValues, "height", 'after');
+    },
+    async function testPseudoElementNoProperty() {
+      testRunner.log('Pseudo element with no property specified test');
+      await testResolveValuesForPseudoElementWithoutProperty('div', testValues, 'after');
     },
     async function testNonExistentPseudoElement() {
       testRunner.log('Non existent pseudo element test');

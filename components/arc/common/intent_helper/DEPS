@@ -1,9 +1,0 @@
-include_rules = [
-  "+ash/components/arc/arc_util.h",
-  "+ash/components/arc/metrics",
-  "+ash/components/arc/mojom",
-  "+ash/components/arc/session",
-  "+components/google/core/common/google_util.h",
-  "+ui/base",
-  "+ui/gfx",
-]

@@ -9,6 +9,7 @@
 
 #include "components/bookmarks/browser/titled_url_index.h"
 
+#include <array>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -625,12 +626,13 @@ TEST_F(TitledUrlIndexTest, GetResultsSortedByTypedCount) {
     const GURL url;
     const char* title;
     const int typed_count;
-  } data[] = {
+  };
+  auto data = std::to_array<TestData>({
       {GURL("http://www.google.com/"), "Google", 100},
       {GURL("http://maps.google.com/"), "Google Maps", 40},
       {GURL("http://docs.google.com/"), "Google Docs", 50},
       {GURL("http://reader.google.com/"), "Google Reader", 80},
-  };
+  });
 
   std::map<GURL, int> typed_count_map;
   for (const TestData& test_data : data)

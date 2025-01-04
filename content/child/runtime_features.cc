@@ -16,7 +16,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/base/features.h"
 #include "components/attribution_reporting/features.h"
 #include "content/common/content_navigation_policy.h"
@@ -74,7 +73,7 @@ void SetRuntimeFeatureDefaultsForPlatform(
   WebRuntimeFeatures::EnableCompositedSelectionUpdate(true);
 #endif
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_APPLE)
   const bool enable_canvas_2d_image_chromium =
       command_line.HasSwitch(
           blink::switches::kEnableGpuMemoryBufferCompositorResources) &&
@@ -214,6 +213,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            kSetOnlyIfOverridden},
           {wf::EnableFedCmAuthz, raw_ref(features::kFedCmAuthz),
            kSetOnlyIfOverridden},
+          {wf::EnableFedCmDelegation, raw_ref(features::kFedCmDelegation),
+           kDefault},
           {wf::EnableFedCmIdPRegistration,
            raw_ref(features::kFedCmIdPRegistration), kDefault},
           {wf::EnableFedCmIdpSigninStatus,
@@ -255,8 +256,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            raw_ref(media::kMediaCastOverlayButton)},
           {wf::EnableMediaEngagementBypassAutoplayPolicies,
            raw_ref(media::kMediaEngagementBypassAutoplayPolicies)},
-          {wf::EnableNotificationContentImage,
-           raw_ref(features::kNotificationContentImage), kSetOnlyIfOverridden},
           {wf::EnablePaymentApp, raw_ref(features::kServiceWorkerPaymentApps)},
           {wf::EnablePaymentRequest, raw_ref(features::kWebPayments)},
           {wf::EnablePeriodicBackgroundSync,
@@ -275,8 +274,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
 #endif
           {wf::EnableTouchDragAndContextMenu,
            raw_ref(features::kTouchDragAndContextMenu)},
-          {wf::EnableUserActivationSameOriginVisibility,
-           raw_ref(features::kUserActivationSameOriginVisibility)},
           {wf::EnableWebAuthenticationAmbient,
            raw_ref(device::kWebAuthnAmbientSignin)},
           {wf::EnableWebAuthenticationConditionalCreate,
@@ -289,9 +286,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {wf::EnableWebBluetoothWatchAdvertisements,
            raw_ref(features::kWebBluetoothNewPermissionsBackend),
            kSetOnlyIfOverridden},
-#if BUILDFLAG(IS_ANDROID)
-          {wf::EnableWebNFC, raw_ref(features::kWebNfc), kSetOnlyIfOverridden},
-#endif
           {wf::EnableWebIdentityDigitalCredentials,
            raw_ref(features::kWebIdentityDigitalCredentials),
            kSetOnlyIfOverridden},
@@ -323,8 +317,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {wf::EnableWebXRSpecParity,
            raw_ref(device::features::kWebXrIncubations)},
 #endif
-          {wf::EnableServiceWorkerStaticRouter,
-           raw_ref(features::kServiceWorkerStaticRouter)},
           {wf::EnablePermissions, raw_ref(features::kWebPermissionsApi),
            kSetOnlyIfOverridden},
       };
@@ -549,37 +541,6 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
 
   WebRuntimeFeatures::EnableBackForwardCache(
       content::IsBackForwardCacheEnabled());
-
-  if (base::FeatureList::IsEnabled(network::features::kPrivateStateTokens)) {
-    WebRuntimeFeatures::EnablePrivateStateTokens(true);
-    WebRuntimeFeatures::EnablePrivateStateTokensAlwaysAllowIssuance(true);
-  } else if (base::FeatureList::IsEnabled(network::features::kFledgePst)) {
-    // See https://bit.ly/configuring-trust-tokens.
-    using network::features::TrustTokenOriginTrialSpec;
-    switch (
-        network::features::kTrustTokenOperationsRequiringOriginTrial.Get()) {
-      case TrustTokenOriginTrialSpec::kOriginTrialNotRequired:
-        // Setting PrivateStateTokens=true enables the Trust Tokens interface;
-        // PrivateStateTokensAlwaysAllowIssuance disables a runtime check
-        // during issuance that the origin trial is active (see
-        // blink/.../trust_token_issuance_authorization.h).
-        WebRuntimeFeatures::EnablePrivateStateTokens(true);
-        WebRuntimeFeatures::EnablePrivateStateTokensAlwaysAllowIssuance(true);
-        break;
-      case TrustTokenOriginTrialSpec::kAllOperationsRequireOriginTrial:
-        // The origin trial itself will be responsible for enabling the
-        // PrivateStateTokens RuntimeEnabledFeature.
-        WebRuntimeFeatures::EnablePrivateStateTokens(false);
-        WebRuntimeFeatures::EnablePrivateStateTokensAlwaysAllowIssuance(false);
-        break;
-      case TrustTokenOriginTrialSpec::kOnlyIssuanceRequiresOriginTrial:
-        // At issuance, a runtime check will be responsible for checking that
-        // the origin trial is present.
-        WebRuntimeFeatures::EnablePrivateStateTokens(true);
-        WebRuntimeFeatures::EnablePrivateStateTokensAlwaysAllowIssuance(false);
-        break;
-    }
-  }
 }
 
 // Ensures that the various ways of enabling/disabling features do not produce

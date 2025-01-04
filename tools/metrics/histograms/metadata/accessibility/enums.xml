@@ -177,6 +177,60 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/browser_ui/accessibility/android/java/src/org/chromium/components/browser_ui/accessibility/PageZoomUma.java:AccessibilityPageZoomUsageType) -->
 
+<!-- LINT.IfChange(AccessibilityPredicateType)-->
+
+<enum name="AccessibilityPredicateType">
+  <summary>
+    Tracks the type of predicate used during next html element navigation on
+    Android.
+  </summary>
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="DEFAULT"/>
+  <int value="2" label="Article"/>
+  <int value="3" label="BlockQuote"/>
+  <int value="4" label="Button"/>
+  <int value="5" label="Checkbox"/>
+  <int value="6" label="Combobox"/>
+  <int value="7" label="Control"/>
+  <int value="8" label="Focusable"/>
+  <int value="9" label="Frame"/>
+  <int value="10" label="Graphic"/>
+  <int value="11" label="H1"/>
+  <int value="12" label="H2"/>
+  <int value="13" label="H3"/>
+  <int value="14" label="H4"/>
+  <int value="15" label="H5"/>
+  <int value="16" label="H6"/>
+  <int value="17" label="Heading"/>
+  <int value="18" label="Heading Same"/>
+  <int value="19" label="Landmark"/>
+  <int value="20" label="Link"/>
+  <int value="21" label="List"/>
+  <int value="22" label="ListItem"/>
+  <int value="23" label="Live"/>
+  <int value="24" label="Main"/>
+  <int value="25" label="Media"/>
+  <int value="26" label="Paragraph"/>
+  <int value="27" label="Radio"/>
+  <int value="28" label="RadioGroup"/>
+  <int value="29" label="Section"/>
+  <int value="30" label="Table"/>
+  <int value="31" label="TextField"/>
+  <int value="32" label="Text Bold"/>
+  <int value="33" label="Text Italic"/>
+  <int value="34" label="Text Underline"/>
+  <int value="35" label="Tree"/>
+  <int value="36" label="Unvisited Link"/>
+  <int value="37" label="Visited Link"/>
+  <int value="38" label="Row"/>
+  <int value="39" label="Column"/>
+  <int value="40" label="Row Bounds"/>
+  <int value="41" label="Column Bounds"/>
+  <int value="42" label="Table Bounds"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/accessibility/web_contents_accessibility_android.cc:AccessibilityPredicateType) -->
+
 <!-- LINT.IfChange(AccessibilityTreeUnserializeError) -->
 
 <enum name="AccessibilityTreeUnserializeError">
@@ -902,6 +956,11 @@ Unknown properties are collapsed to zero. -->
   <int value="30174" label="IsDialog"/>
 </enum>
 
+<enum name="AudioPlayback">
+  <int value="0" label="Can play through"/>
+  <int value="1" label="Ended"/>
+</enum>
+
 <!-- LINT.IfChange(AutoclickActionType) -->
 
 <enum name="AutoclickActionType">
@@ -1309,6 +1368,16 @@ Unknown properties are collapsed to zero. -->
   <int value="22" label="Zoom in"/>
   <int value="23" label="Zoom out"/>
   <int value="24" label="Zoom reset"/>
+  <int value="25" label="NOT_IMPLEMENTED_FOCUS_SEARCH"/>
+  <int value="26" label="NOT_IMPLEMENTED_RELOAD_BYPASSING_CACHE"/>
+  <int value="27" label="NOT_IMPLEMENTED_SHOW_DOWNLOADS"/>
+  <int value="28" label="NOT_IMPLEMENTED_TOGGLE_CARET_BROWSING"/>
+  <int value="29" label="NOT_IMPLEMENTED_MOVE_TO_SPECIFIC_TAB_VIA_NUMPAD"/>
+  <int value="30" label="NOT_IMPLEMENTED_MOVE_TO_LAST_TAB_VIA_NUMPAD"/>
+  <int value="31" label="NOT_IMPLEMENTED_HELP"/>
+  <int value="32" label="NOT_IMPLEMENTED_CLEAR_BROWSING_DATA"/>
+  <int value="33" label="NOT_IMPLEMENTED_CLOSE_WINDOW"/>
+  <int value="34" label="NOT_IMPLEMENTED_HOME"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/KeyboardShortcuts.java:KeyboardShortcutsSemanticMeaning) -->
@@ -1705,12 +1774,13 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/metrics_browser_proxy.ts:ReadAloudSettingsChange) -->
 
-<!-- LINT.IfChange(ReadAnythingReadAloudVoice) -->
+<!-- LINT.IfChange(ReadAnythingReadAloudVoice2) -->
 
-<enum name="ReadAnythingReadAloudVoice">
+<enum name="ReadAnythingReadAloudVoice2">
   <int value="0" label="Natural voice"/>
   <int value="1" label="eSpeak voice"/>
   <int value="2" label="ChromeOS voice"/>
+  <int value="3" label="System voice"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/metrics_browser_proxy.ts:ReadAnythingVoiceType) -->
@@ -1764,23 +1834,6 @@ Unknown properties are collapsed to zero. -->
 </enum>
 
 <!-- LINT.ThenChange(//components/dom_distiller/content/browser/uma_helper.h:ReaderModeEntryPoint) -->
-
-<!-- LINT.IfChange(ReaderModeMessageDismissalCondition) -->
-
-<enum name="ReaderModeMessageDismissalCondition">
-  <int value="0"
-      label="Message was accepted with accessibility setting selected"/>
-  <int value="1"
-      label="Message was accepted with accessibility setting deselected"/>
-  <int value="2"
-      label="Message was ignored or dismissed with accessibility setting
-             selected"/>
-  <int value="3"
-      label="Message was ignored or dismissed with accessibility setting
-             deselected"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeManager.java:MessageDismissalCondition) -->
 
 <!-- LINT.IfChange(SodaLanguageCode) -->
 

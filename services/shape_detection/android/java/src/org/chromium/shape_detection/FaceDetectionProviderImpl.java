@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.shape_detection;
+import org.chromium.build.annotations.NullMarked;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.gms.ChromiumPlayServicesAvailability;
@@ -13,6 +14,7 @@ import org.chromium.shape_detection.mojom.FaceDetectionProvider;
 import org.chromium.shape_detection.mojom.FaceDetectorOptions;
 
 /** Service provider to create FaceDetection services */
+@NullMarked
 public class FaceDetectionProviderImpl implements FaceDetectionProvider {
     public FaceDetectionProviderImpl() {}
 

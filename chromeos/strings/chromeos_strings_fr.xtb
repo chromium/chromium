@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Désactiver le thème sombre</translation>
 <translation id="1807246157184219062">Clair</translation>
 <translation id="1808803439260407870">Art classique</translation>
+<translation id="181434555916624618">Pour le moment, les résultats contenant des personnes ne sont pas affichés. Essayez une autre requête.</translation>
 <translation id="1815850098929213707">La touche <ph name="KEYS" /> est sélectionnée. Appuyez sur le bouton pour modifier la commande.</translation>
 <translation id="1823120442877418684">Caractères</translation>
 <translation id="1827738518074806965">Galerie d'art</translation>
@@ -412,7 +413,7 @@
 <translation id="2890557891229184386">île tropicale</translation>
 <translation id="2895772081848316509">sombre</translation>
 <translation id="2915996080311180594">Redémarrer plus tard</translation>
-<translation id="2926057806159140518">Saisissez votre nom d'utilisateur et votre mot de passe ou scannez votre code QR</translation>
+<translation id="2926057806159140518">Saisissez votre nom d'utilisateur et votre mot de passe ou scannez votre QR code</translation>
 <translation id="2940811910881150316">Impossible de tester l'appareil. Rouvrez l'écran pour tester.</translation>
 <translation id="2941112035454246133">Faible</translation>
 <translation id="2956070106555335453">Résumé</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">L'écouteur droit de l'appareil a <ph name="BATTERY_PERCENTAGE" /> % de batterie.</translation>
 <translation id="3340978935015468852">paramètres</translation>
 <translation id="3347558044552027859">moderne</translation>
+<translation id="3353477144743332882">Télécharger le résumé et le modèle de création de nom</translation>
 <translation id="3359218928534347896">activer/désactiver le son du micro</translation>
 <translation id="3360306038446926262">Fenêtres</translation>
 <translation id="3361618936611118375">sushi</translation>
@@ -689,6 +691,7 @@
 <translation id="4354430579665871434">touche</translation>
 <translation id="4356100841225547054">Désactiver le volume</translation>
 <translation id="4361257691546579041">Le type d'APN est "par défaut".</translation>
+<translation id="4368101969572512692">Mélanger les suggestions</translation>
 <translation id="437294888293595148">Réinitialiser tous les raccourcis</translation>
 <translation id="437477383107495720">lapereaux</translation>
 <translation id="4376423484621194274">Votre administrateur n'autorise pas la fermeture de <ph name="APP_NAME" /></translation>
@@ -768,6 +771,7 @@
 <translation id="4731797938093519117">Accès parental</translation>
 <translation id="473775607612524610">Mettre à jour</translation>
 <translation id="4744944742468440486">Informations sur le texte sélectionné</translation>
+<translation id="4750394297954878236">Suggestions</translation>
 <translation id="4771607256327216405">augmentation de la luminosité du clavier</translation>
 <translation id="4771923071974529837">demain</translation>
 <translation id="4773299976671772492">Interrompu</translation>
@@ -853,6 +857,7 @@
 <translation id="5121677070210013200">Impossible de télécharger le modèle de transcription. Réessayez ou redémarrez votre Chromebook.</translation>
 <translation id="5130848777448318809">poneys</translation>
 <translation id="5137451382116112100">Plein écran</translation>
+<translation id="5139813694804168398">Ne pas déranger</translation>
 <translation id="5140788690559353412">En perdant l'accès à votre compte scolaire, vous ne pourrez plus accéder à la messagerie ni aux fichiers Google Drive associés (Gmail, Docs, Slides, etc.).</translation>
 <translation id="5142961317498132443">Authentification</translation>
 <translation id="5144311987923128508">Le bouton "Confirmer" est désormais désactivé</translation>
@@ -897,6 +902,7 @@
 <translation id="5302048478445481009">Langue</translation>
 <translation id="5303837385540978511">Fond d'écran exclusif <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EvDo</translation>
+<translation id="530883153651464140">Mettre à jour <ph name="DEVICE_NAME" /> vers la version <ph name="VERSION" /></translation>
 <translation id="5315873049536339193">Identité</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5318310531701770497">Impossible de créer des noms. Essayez avec une transcription plus longue.</translation>
@@ -973,7 +979,6 @@
 <translation id="5703716265115423771">baisser le volume</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> sur <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Bouton Modifier pour <ph name="SHORTCUT_DESCRIPTION" /></translation>
-<translation id="5733298426544876109">Mettre à jour <ph name="DEVICE_NAME" /></translation>
 <translation id="5736820754189340309">La consommation de données a été réinitialisée</translation>
 <translation id="574392208103952083">Moyen</translation>
 <translation id="5744175046705638478">Traduire "<ph name="QUERY" />"</translation>
@@ -998,6 +1003,7 @@
 <translation id="5859969039821714932">Raccourci non disponible. Appuyez sur un nouveau raccourci sans <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Désactivé</translation>
 <translation id="5860491529813859533">Activer</translation>
+<translation id="5875913454160982848">Télécharger le modèle de transcription</translation>
 <translation id="5876385649737594562">Activez pour sélectionner des options</translation>
 <translation id="5877503382465267833">Mettre en pause <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Plein écran</translation>
@@ -1037,7 +1043,6 @@
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6040852767465482106">Authentification anonyme</translation>
 <translation id="604124094241169006">Automatique</translation>
-<translation id="6042308850641462728">Plus</translation>
 <translation id="6048107060512778456">Échec – Bourrage papier</translation>
 <translation id="6050189528197190982">Niveaux de gris</translation>
 <translation id="6054711098834486579">expressionniste</translation>
@@ -1293,6 +1298,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Serveur de noms}one{Serveur de noms}other{Serveurs de noms}}</translation>
 <translation id="7135814714616751706">Rechercher des raccourcis</translation>
 <translation id="7138614237884624401">Texte simplifié</translation>
+<translation id="7138668887584231801">Pas assez de mots pour résumer</translation>
 <translation id="7141470099673912333">Transfert de contenus</translation>
 <translation id="7143207342074048698">Connexion</translation>
 <translation id="7144878232160441200">Réessayer</translation>
@@ -1588,6 +1594,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8503836310948963452">Plus que quelques minutes…</translation>
 <translation id="8505011850330200833">Le modèle Gemini nécessite 2 Go d'espace de stockage pour traiter les transcriptions et créer des résumés</translation>
 <translation id="8508640263392900755">Informations sur l'APN</translation>
+<translation id="8509574872955173831">En savoir plus sur le résumé et la création de nom</translation>
 <translation id="8522687886059337719">Vous avez désormais accès à de nouveaux <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fonds d'écran<ph name="END_LINK_WALLPAPER_SUBPAGE" /> et <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />économiseurs d'écran<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">salon de thé</translation>
@@ -1724,7 +1731,6 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="9133772297793293778">Appuyez sur 1 à 4 modificateurs et sur 1 autre touche du clavier. Pour quitter le mode Édition, appuyez sur Alt+Échap.</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9138630967333032450">Maj gauche</translation>
-<translation id="9147928237330776930">Pas assez de mots pour résumer</translation>
 <translation id="9149391708638971077">Lancer le test de mémoire</translation>
 <translation id="9159524746324788320">burgers</translation>
 <translation id="9161276708550942948">espace</translation>

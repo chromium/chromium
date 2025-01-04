@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/page_info/chosen_object_view_observer.h"
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view_observer.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/page_info/core/page_info_types.h"
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "components/page_info/page_info_ui.h"
 #include "device/vr/buildflags/buildflags.h"
@@ -128,6 +129,10 @@ class PageInfoMainView : public views::View,
   // the label depending on the number of visible permissions.
   void UpdateResetButton(const PermissionInfoList& permission_info_list);
 
+  void OnMerchantTrustDataFetched(
+      const GURL& url,
+      std::optional<page_info::MerchantData> merchant_data);
+
   // Creates 'About this site' button that opens a subpage.
   [[nodiscard]] std::unique_ptr<views::View> CreateAboutThisSiteButton(
       const page_info::proto::SiteInfo& info);
@@ -136,7 +141,8 @@ class PageInfoMainView : public views::View,
   [[nodiscard]] std::unique_ptr<views::View> CreateAdPersonalizationButton();
 
   // Creates 'Merchant trust' button that opens a subpage.
-  [[nodiscard]] std::unique_ptr<views::View> CreateMerchantTrustButton();
+  [[nodiscard]] std::unique_ptr<views::View> CreateMerchantTrustButton(
+      page_info::MerchantData value);
 
   raw_ptr<PageInfo, AcrossTasksDanglingUntriaged> presenter_;
 

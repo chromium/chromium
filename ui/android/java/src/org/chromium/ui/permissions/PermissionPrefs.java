@@ -10,12 +10,14 @@ import android.text.TextUtils;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.TimeUtils;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.List;
 
 /**
  * Provides helper methods for shared preference access to store permission request related info.
  */
+@NullMarked
 public class PermissionPrefs {
     /**
      * Shared preference key prefix for remembering Android permissions denied by the user.

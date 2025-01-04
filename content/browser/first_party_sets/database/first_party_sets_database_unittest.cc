@@ -166,7 +166,7 @@ TEST_F(FirstPartySetsDatabaseTest, CreateDB_TablesAndIndexesLazilyInitialized) {
   CloseDatabase();
 
   // Create a db handle to the existing db file to verify schemas.
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   EXPECT_TRUE(db.Open(db_path()));
   // [public_sets], [browser_context_sets_version], [policy_configurations],
   // [manual_configurations], [browser_context_sites_to_clear],
@@ -206,7 +206,7 @@ TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_CurrentVersion_Success) {
   EXPECT_TRUE(db()->InsertSitesToClear("b", {}));
   CloseDatabase();
 
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   EXPECT_TRUE(db.Open(db_path()));
   EXPECT_EQ(kTableCount, sql::test::CountSQLTables(&db));
   EXPECT_EQ(2u, CountPublicSetsEntries(&db));
@@ -235,7 +235,7 @@ TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_RecreateOnTooOld) {
 
   // Expect that the original database was razed and the initialization is
   // successful with newly inserted data.
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   EXPECT_TRUE(db.Open(db_path()));
   EXPECT_EQ(kTableCount, sql::test::CountSQLTables(&db));
   EXPECT_EQ(kCurrentVersionNumber, VersionFromMetaTable(db));
@@ -264,7 +264,7 @@ TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_RecreateOnTooNew) {
 
   // Expect that the original database was razed and the initialization is
   // successful with newly inserted data.
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   EXPECT_TRUE(db.Open(db_path()));
   EXPECT_EQ(kTableCount, sql::test::CountSQLTables(&db));
   EXPECT_EQ(kCurrentVersionNumber, VersionFromMetaTable(db));
@@ -292,7 +292,7 @@ TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_InvalidRunCount_Fail) {
   CloseDatabase();
 
   // The original database was destroyed.
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   EXPECT_TRUE(db.Open(db_path()));
   EXPECT_EQ(0u, sql::test::CountSQLTables(&db));
   histograms.ExpectUniqueSample("FirstPartySets.Database.InitStatus",
@@ -345,7 +345,7 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_NoPreExistingDB) {
   EXPECT_TRUE(db()->PersistSets(browser_context_id, global_sets, config));
   CloseDatabase();
 
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   EXPECT_TRUE(db.Open(db_path()));
   EXPECT_EQ(2u, CountPublicSetsEntries(&db));
   EXPECT_EQ(2u, CountManualConfigurationsEntries(&db));
@@ -460,7 +460,7 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_NoPreExistingDB_NoPublicSets) {
   EXPECT_TRUE(db()->PersistSets(browser_context_id, global_sets, config));
   CloseDatabase();
 
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   EXPECT_TRUE(db.Open(db_path()));
   EXPECT_EQ(0u, CountPublicSetsEntries(&db));
   EXPECT_EQ(2u, CountManualConfigurationsEntries(&db));
@@ -506,7 +506,7 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingDB) {
   const std::string browser_context_id = "b2";
   // Verify data in the pre-existing DB.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(db_path()));
     ASSERT_EQ(kTableCount, sql::test::CountSQLTables(&db));
     ASSERT_EQ(2u, CountPublicSetsEntries(&db));
@@ -608,7 +608,7 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingDB) {
   CloseDatabase();
 
   // Verify data is inserted.
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   EXPECT_TRUE(db.Open(db_path()));
   EXPECT_EQ(4u, CountPublicSetsEntries(&db));
   EXPECT_EQ(2u, CountPolicyConfigurationsEntries(&db));
@@ -687,7 +687,7 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingVersion) {
   const std::string bbb = "https://bbb.test";
   // Verify data in the pre-existing DB.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(db_path()));
     ASSERT_EQ(kTableCount, sql::test::CountSQLTables(&db));
     ASSERT_EQ(2u, CountPublicSetsEntries(&db));
@@ -721,7 +721,7 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingVersion) {
   CloseDatabase();
 
   // Verify data is not overwritten with the same version.
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   ASSERT_TRUE(db.Open(db_path()));
   EXPECT_EQ(2u, CountPublicSetsEntries(&db));
 
@@ -755,7 +755,7 @@ TEST_F(FirstPartySetsDatabaseTest, InsertSitesToClear_NoPreExistingDB) {
   EXPECT_TRUE(db()->InsertSitesToClear("b", input));
   CloseDatabase();
 
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   EXPECT_TRUE(db.Open(db_path()));
   EXPECT_EQ(2u, CountBrowserContextSitesToClearEntries(&db));
 
@@ -785,7 +785,7 @@ TEST_F(FirstPartySetsDatabaseTest, InsertSitesToClear_PreExistingDB) {
   int64_t pre_run_count = 0;
   // Verify data in the pre-existing DB, and set `pre_run_count`.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     EXPECT_TRUE(db.Open(db_path()));
     EXPECT_EQ(kTableCount, sql::test::CountSQLTables(&db));
     EXPECT_EQ(2u, CountBrowserContextSitesToClearEntries(&db));
@@ -813,7 +813,7 @@ TEST_F(FirstPartySetsDatabaseTest, InsertSitesToClear_PreExistingDB) {
 
   int64_t expected_run_count = 2;
   // Verify the inserted data.
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   EXPECT_TRUE(db.Open(db_path()));
   EXPECT_EQ(4u, CountBrowserContextSitesToClearEntries(&db));
 
@@ -846,7 +846,7 @@ TEST_F(FirstPartySetsDatabaseTest,
   EXPECT_TRUE(db()->InsertBrowserContextCleared(browser_context_id));
   CloseDatabase();
 
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   EXPECT_TRUE(db.Open(db_path()));
   EXPECT_EQ(1u, CountBrowserContextsClearedEntries(&db));
 
@@ -866,7 +866,7 @@ TEST_F(FirstPartySetsDatabaseTest, InsertBrowserContextCleared_PreExistingDB) {
   int64_t pre_run_count = 0;
   // Verify data in the pre-existing DB, and set `pre_run_count`.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     EXPECT_TRUE(db.Open(db_path()));
     EXPECT_EQ(kTableCount, sql::test::CountSQLTables(&db));
     EXPECT_EQ(1u, CountBrowserContextsClearedEntries(&db));
@@ -888,7 +888,7 @@ TEST_F(FirstPartySetsDatabaseTest, InsertBrowserContextCleared_PreExistingDB) {
   CloseDatabase();
 
   // Verify the inserted data has the updated `cleared_at_run` value.
-  sql::Database db;
+  sql::Database db(sql::test::kTestTag);
   EXPECT_TRUE(db.Open(db_path()));
   EXPECT_EQ(2u, CountBrowserContextsClearedEntries(&db));
 
@@ -922,7 +922,7 @@ TEST_F(FirstPartySetsDatabaseTest, GetSitesToClearFilters) {
 
   // Verify data in the pre-existing DB.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(db_path()));
 
     const char kSelectSql[] =
@@ -1023,7 +1023,7 @@ TEST_F(FirstPartySetsDatabaseTest, GetSets_PublicSetsHaveSingleton) {
 
   // Verify data in the pre-existing DB.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     EXPECT_TRUE(db.Open(db_path()));
     EXPECT_EQ(4u, CountPublicSetsEntries(&db));
     EXPECT_EQ(1u, CountBrowserContextSetsVersionEntries(&db));
@@ -1056,7 +1056,7 @@ TEST_F(FirstPartySetsDatabaseTest, GetSets_PublicSetsHaveOrphan) {
 
   // Verify data in the pre-existing DB.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     EXPECT_TRUE(db.Open(db_path()));
     EXPECT_EQ(4u, CountPublicSetsEntries(&db));
     EXPECT_EQ(1u, CountBrowserContextSetsVersionEntries(&db));
@@ -1089,7 +1089,7 @@ TEST_F(FirstPartySetsDatabaseTest, GetSets) {
 
   // Verify data in the pre-existing DB.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     EXPECT_TRUE(db.Open(db_path()));
     EXPECT_EQ(2u, CountPublicSetsEntries(&db));
     EXPECT_EQ(3u, CountBrowserContextSetsVersionEntries(&db));
@@ -1131,7 +1131,7 @@ TEST_F(FirstPartySetsDatabaseTest, HasEntryInBrowserContextsClearedForTesting) {
 
   // Verify data in the pre-existing DB.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     EXPECT_TRUE(db.Open(db_path()));
     EXPECT_EQ(1u, CountBrowserContextsClearedEntries(&db));
   }
@@ -1217,7 +1217,7 @@ TEST_F(FirstPartySetsDatabaseMigrationsTest, MigrateEmptyToCurrent) {
 
   // Verify schema is current.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(db_path()));
 
     // Check version.
@@ -1235,7 +1235,7 @@ TEST_F(FirstPartySetsDatabaseMigrationsTest, MigrateVersion2ToCurrent) {
 
   // Verify pre-conditions.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(db_path()));
 
     ASSERT_EQ(2, VersionFromMetaTable(db));
@@ -1245,7 +1245,7 @@ TEST_F(FirstPartySetsDatabaseMigrationsTest, MigrateVersion2ToCurrent) {
 
   // Verify schema is current.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(db_path()));
 
     // Check version.
@@ -1270,7 +1270,7 @@ TEST_F(FirstPartySetsDatabaseMigrationsTest, MigrateVersion3ToCurrent) {
 
   // Verify pre-conditions.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(db_path()));
 
     ASSERT_EQ(3, VersionFromMetaTable(db));
@@ -1280,7 +1280,7 @@ TEST_F(FirstPartySetsDatabaseMigrationsTest, MigrateVersion3ToCurrent) {
 
   // Verify schema is current.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(db_path()));
 
     // Check version.
@@ -1302,7 +1302,7 @@ TEST_F(FirstPartySetsDatabaseMigrationsTest, MigrateVersion4ToCurrent) {
 
   // Verify pre-conditions.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(db_path()));
 
     ASSERT_EQ(4, VersionFromMetaTable(db));
@@ -1312,7 +1312,7 @@ TEST_F(FirstPartySetsDatabaseMigrationsTest, MigrateVersion4ToCurrent) {
 
   // Verify schema is current.
   {
-    sql::Database db;
+    sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(db_path()));
 
     // Check version.

@@ -16,6 +16,7 @@ import androidx.annotation.WorkerThread;
 import dalvik.system.DexFile;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -79,7 +80,7 @@ public class DexFixer {
             Log.w(TAG, "Triggering dex compile. Reason=%d", reason);
             try {
                 String cmd = "/system/bin/cmd package compile -r shared ";
-                if (reason == DexFixerReason.NOT_READABLE && BuildConfig.IS_BUNDLE) {
+                if (reason == DexFixerReason.NOT_READABLE && BundleUtils.isBundle()) {
                     // Isolated processes need only access the base split.
                     String apkBaseName = new File(appInfo.sourceDir).getName();
                     cmd += String.format("--split %s ", apkBaseName);

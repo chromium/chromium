@@ -20,10 +20,6 @@ class KioskSystemWebAppTestDisabled : public WebKioskBaseTest {
   KioskSystemWebAppTestDisabled& operator=(
       const KioskSystemWebAppTestDisabled&) = delete;
 
-  Profile* GetProfile() {
-    return BrowserList::GetInstance()->get(0)->profile();
-  }
-
  protected:
   void SetUpSystemWebApps() {
     installation_ =
@@ -51,21 +47,21 @@ class KioskSystemWebAppTestEnabled : public KioskSystemWebAppTestDisabled {
 IN_PROC_BROWSER_TEST_F(KioskSystemWebAppTestDisabled,
                        ShouldNotLaunchSystemWebApp) {
   InitializeRegularOnlineKiosk();
-  EXPECT_EQ(SystemWebAppManager::Get(GetProfile()), nullptr);
+  EXPECT_EQ(SystemWebAppManager::Get(profile()), nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(KioskSystemWebAppTestEnabled, LaunchSystemWebApp) {
   InitializeRegularOnlineKiosk();
-  ASSERT_TRUE(SystemWebAppManager::Get(GetProfile()));
+  ASSERT_TRUE(SystemWebAppManager::Get(profile()));
   installation_->WaitForAppInstall();
 
   content::TestNavigationObserver navigation_observer(
       installation_->GetAppUrl());
   navigation_observer.StartWatchingNewWebContents();
-  LaunchSystemWebAppAsync(GetProfile(), installation_->GetType());
+  LaunchSystemWebAppAsync(profile(), installation_->GetType());
   navigation_observer.Wait();
   Browser* swa_browser =
-      FindSystemWebAppBrowser(GetProfile(), installation_->GetType());
+      FindSystemWebAppBrowser(profile(), installation_->GetType());
   EXPECT_NE(swa_browser, nullptr);
 }
 

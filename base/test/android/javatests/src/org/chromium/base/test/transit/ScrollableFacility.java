@@ -425,6 +425,7 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
     public class ItemOnScreenFacility<SelectReturnT> extends Facility<HostStationT> {
 
         protected final Item<SelectReturnT> mItem;
+        private ViewElement mViewElement;
 
         protected ItemOnScreenFacility(Item<SelectReturnT> item) {
             mItem = item;
@@ -432,7 +433,7 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
 
         @Override
         public void declareElements(Elements.Builder elements) {
-            elements.declareView(mItem.getViewSpec(), mItem.getViewElementOptions());
+            mViewElement = elements.declareView(mItem.getViewSpec(), mItem.getViewElementOptions());
         }
 
         /** Select the item and trigger its |selectHandler|. */
@@ -461,6 +462,12 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
         /** Returns a {@link Transition.Trigger} to click the item. */
         public Transition.Trigger clickTrigger() {
             return getItem().getViewSpec()::click;
+        }
+
+        /** Returns the item rendered to an Android View. */
+        public View getView() {
+            assertSuppliersCanBeUsed();
+            return mViewElement.get();
         }
     }
 }

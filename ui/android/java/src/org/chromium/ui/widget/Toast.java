@@ -23,6 +23,8 @@ import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 
 import org.chromium.base.SysUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.display.DisplayAndroid;
 
@@ -39,6 +41,7 @@ import java.lang.annotation.RetentionPolicy;
  * that the toast be shown sooner than those of priority {@code NORMAL} queued for their turn.
  * See {@link ToastManager} for more details.
  */
+@NullMarked
 public class Toast {
 
     public static final int LENGTH_SHORT = android.widget.Toast.LENGTH_SHORT;
@@ -55,9 +58,9 @@ public class Toast {
     }
 
     private android.widget.Toast mToast;
-    private ViewGroup mSWLayout;
+    private @Nullable ViewGroup mSWLayout;
     private @ToastPriority int mPriority;
-    private CharSequence mText;
+    private @Nullable CharSequence mText;
 
     public Toast(Context context, View toastView) {
         if (SysUtils.isLowEndDevice()) {
@@ -110,7 +113,7 @@ public class Toast {
         }
     }
 
-    public View getView() {
+    public @Nullable View getView() {
         if (mToast.getView() == null) {
             return null;
         }
@@ -138,10 +141,11 @@ public class Toast {
         return mPriority;
     }
 
-    void setText(CharSequence text) {
+    void setText(@Nullable CharSequence text) {
         mText = text;
     }
 
+    @Nullable
     CharSequence getText() {
         return mText;
     }
@@ -259,10 +263,10 @@ public class Toast {
     /** Builder pattern class to construct {@link Toast} with various arguments. */
     public static class Builder {
         private final Context mContext;
-        private CharSequence mText;
-        private View mAnchoredView;
-        private Integer mBackgroundColor;
-        private Integer mTextAppearance;
+        private @Nullable CharSequence mText;
+        private @Nullable View mAnchoredView;
+        private @Nullable Integer mBackgroundColor;
+        private @Nullable Integer mTextAppearance;
         private int mDuration = LENGTH_SHORT;
         private @ToastPriority int mPriority = ToastPriority.NORMAL;
 

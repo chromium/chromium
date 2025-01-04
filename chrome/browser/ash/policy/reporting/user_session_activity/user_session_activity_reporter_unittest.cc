@@ -106,6 +106,10 @@ class UserSessionActivityReporterTest : public ::testing::Test {
 
   void OnLocked(UserSessionActivityReporter* reporter) { reporter->OnLocked(); }
 
+  void OnUnlocked(UserSessionActivityReporter* reporter) {
+    reporter->OnUnlocked();
+  }
+
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
 
@@ -193,7 +197,7 @@ TEST_F(UserSessionActivityReporterTest, StartAndEndSession) {
   OnLocked(reporter.get());
 
   // Start session by unlocking device.
-  ActiveUserChanged(reporter.get(), user);
+  OnUnlocked(reporter.get());
 
   // End session by logging out.
   OnSessionTerminationStarted(reporter.get(), user);

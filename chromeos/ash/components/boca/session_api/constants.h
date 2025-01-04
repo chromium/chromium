@@ -41,8 +41,11 @@ inline constexpr char kJoinTachyonGroupUrlTemplate[] =
 
 inline constexpr char kJoinSessionUrlTemplate[] = "v1/students/$1/session:join";
 
-inline constexpr char kVewScreenUrlTemplate[] =
+inline constexpr char kViewScreenUrlTemplate[] =
     "v1/sessions/$1/viewScreen:initiate";
+
+inline constexpr char kRegisterScreenUrlTemplate[] =
+    "v1/sessions/$1/viewScreen:register";
 
 inline constexpr char kSessionId[] = "sessionId";
 inline constexpr char kTeacher[] = "teacher";
@@ -93,9 +96,14 @@ inline constexpr char kStudent[] = "student";
 inline constexpr char kGroupSource[] = "groupSource";
 inline constexpr char kTeacherClientDevice[] = "teacherClientDevice";
 inline constexpr char kHostDevice[] = "hostDevice";
+inline constexpr char kSpotlightConnectionCode[] = "connectionCode";
+inline constexpr char kSpotlightConnectionParam[] = "connectionParam";
+inline constexpr char kStudentGroupId[] = "studentGroupId";
+inline constexpr char kViewScreenConfig[] = "viewScreenConfig";
+inline constexpr char kViewScreenState[] = "viewScreenState";
 
 inline constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("boca_classroom_integration", R"(
+    net::DefineNetworkTrafficAnnotation("boca_server_integration", R"(
           semantics: {
             sender: "Boca"
             description: "Provide ChromeOS access to school tools server"

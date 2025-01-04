@@ -5,10 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_EXTERNAL_FILES_MODEL_EXTERNAL_FILE_REMOVER_FACTORY_H_
 #define IOS_CHROME_BROWSER_EXTERNAL_FILES_MODEL_EXTERNAL_FILE_REMOVER_FACTORY_H_
 
-#import <memory>
-
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ExternalFileRemover;
 class ProfileIOS;
@@ -16,14 +14,10 @@ class ProfileIOS;
 // Singleton that owns all `ExternalFileRemover` and associates them with
 // profiles. Listens for the `ProfileIOS`'s destruction notification and
 // cleans up the associated `ExternalFileRemover`.
-class ExternalFileRemoverFactory : public BrowserStateKeyedServiceFactory {
+class ExternalFileRemoverFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static ExternalFileRemover* GetForProfile(ProfileIOS* profile);
   static ExternalFileRemoverFactory* GetInstance();
-
-  ExternalFileRemoverFactory(const ExternalFileRemoverFactory&) = delete;
-  ExternalFileRemoverFactory& operator=(const ExternalFileRemoverFactory&) =
-      delete;
 
  private:
   friend class base::NoDestructor<ExternalFileRemoverFactory>;

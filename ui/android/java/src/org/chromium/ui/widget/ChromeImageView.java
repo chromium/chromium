@@ -11,16 +11,18 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 // TODO(crbug.com/40883889): This class has no use now, so we can get rid of it.
 /**
  * A subclass of AppCompatImageView to add workarounds for bugs in Android Framework and Support
  * Library.
  */
+@NullMarked
 public class ChromeImageView extends AppCompatImageView {
     private static final String TAG = "CIV";
 

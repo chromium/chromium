@@ -121,6 +121,11 @@ void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
   source->AddBoolean("isDevChannel", channel == version_info::Channel::DEV);
 }
 
+PrefService* ChromeMediaAppGuestUIDelegate::GetPrefService(
+    content::WebUI* web_ui) {
+  return Profile::FromWebUI(web_ui)->GetPrefs();
+}
+
 void ChromeMediaAppGuestUIDelegate::CreateAndBindOcrUntrustedService(
     content::BrowserContext& context,
     gfx::NativeWindow native_window,

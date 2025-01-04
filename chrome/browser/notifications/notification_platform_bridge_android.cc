@@ -88,13 +88,11 @@ ScopedJavaLocalRef<jobjectArray> ConvertToJavaActionInfos(
 
   for (size_t i = 0; i < buttons.size(); ++i) {
     const auto& button = buttons[i];
-    ScopedJavaLocalRef<jstring> title =
-        base::android::ConvertUTF16ToJavaString(env, button.title);
+    std::u16string title = button.title;
     int type = GetNotificationActionType(button);
-    ScopedJavaLocalRef<jstring> placeholder;
+    std::u16string placeholder;
     if (button.placeholder) {
-      placeholder =
-          base::android::ConvertUTF16ToJavaString(env, *button.placeholder);
+      placeholder = *button.placeholder;
     }
     ScopedJavaLocalRef<jobject> icon =
         JNI_NotificationPlatformBridge_ConvertToJavaBitmap(env, button.icon);
@@ -266,6 +264,14 @@ void NotificationPlatformBridgeAndroid::OnNotificationDisablePermission(
                      std::nullopt /* by_user */, base::DoNothing()));
 }
 
+void NotificationPlatformBridgeAndroid::SetIsSuspiciousParameterForTesting(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& java_object,
+    bool is_suspicious) {
+  should_use_test_is_suspicious_value_ = true;
+  test_is_suspicious_value_ = is_suspicious;
+}
+
 void NotificationPlatformBridgeAndroid::Display(
     NotificationHandler::Type notification_type,
     Profile* profile,
@@ -311,7 +317,12 @@ void NotificationPlatformBridgeAndroid::Display(
       image_bitmap, *notification_icon_bitmap, badge_bitmap,
       notification.vibration_pattern(),
       notification.timestamp().InMillisecondsSinceUnixEpoch(),
-      notification.renotify(), notification.silent(), actions);
+      notification.renotify(), notification.silent(), actions,
+      should_use_test_is_suspicious_value_
+          ? test_is_suspicious_value_
+          : (persistent_notification_metadata
+                 ? persistent_notification_metadata->is_suspicious
+                 : false));
 
   regenerated_notification_infos_[notification.id()] =
       RegeneratedNotificationInfo(scope_url, std::nullopt);
@@ -328,26 +339,20 @@ void NotificationPlatformBridgeAndroid::Close(
 
   JNIEnv* env = AttachCurrentThread();
 
-  ScopedJavaLocalRef<jstring> j_notification_id =
-      ConvertUTF8ToJavaString(env, notification_id);
-
   GURL scope_url(
       notification_info.service_worker_scope.possibly_invalid_spec());
-  ScopedJavaLocalRef<jstring> j_scope_url =
-      ConvertUTF8ToJavaString(env, scope_url.spec());
+  std::string scope_url_spec = scope_url.spec();
 
   bool has_queried_webapk_package =
       notification_info.webapk_package.has_value();
   std::string webapk_package =
       has_queried_webapk_package ? *notification_info.webapk_package : "";
-  ScopedJavaLocalRef<jstring> j_webapk_package =
-      ConvertUTF8ToJavaString(env, webapk_package);
 
   regenerated_notification_infos_.erase(iterator);
 
   Java_NotificationPlatformBridge_closeNotification(
-      env, java_object_, j_notification_id, j_scope_url,
-      has_queried_webapk_package, j_webapk_package);
+      env, java_object_, notification_id, scope_url_spec,
+      has_queried_webapk_package, webapk_package);
 }
 
 void NotificationPlatformBridgeAndroid::DisplayServiceShutDown(
@@ -383,10 +388,8 @@ void NotificationPlatformBridgeAndroid::OnNotificationProcessed(
     const std::string& notification_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> j_notification_id =
-      ConvertUTF8ToJavaString(env, notification_id);
   Java_NotificationPlatformBridge_onNotificationProcessed(env, java_object_,
-                                                          j_notification_id);
+                                                          notification_id);
 }
 
 // static

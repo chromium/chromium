@@ -44,8 +44,9 @@ MediaRouterAndroid::PresentationConnectionProxy::Init() {
 
 void MediaRouterAndroid::PresentationConnectionProxy::OnMessage(
     blink::mojom::PresentationConnectionMessagePtr message) {
-  if (message->is_message())
+  if (message->is_message()) {
     media_router_android_->SendRouteMessage(route_id_, message->get_message());
+  }
 }
 
 void MediaRouterAndroid::PresentationConnectionProxy::Terminate() {
@@ -98,8 +99,9 @@ MediaRouterAndroid::~MediaRouterAndroid() = default;
 const MediaRoute* MediaRouterAndroid::FindRouteBySource(
     const MediaSource::Id& source_id) const {
   for (const auto& route : active_routes_) {
-    if (route.media_source().id() == source_id)
+    if (route.media_source().id() == source_id) {
       return &route;
+    }
   }
   return nullptr;
 }
@@ -187,8 +189,9 @@ void MediaRouterAndroid::UnregisterMediaSinksObserver(
     MediaSinksObserver* observer) {
   const std::string& source_id = observer->source()->id();
   auto it = sinks_observers_.find(source_id);
-  if (it == sinks_observers_.end() || !it->second->HasObserver(observer))
+  if (it == sinks_observers_.end() || !it->second->HasObserver(observer)) {
     return;
+  }
 
   // If we are removing the final observer for the source, then stop
   // observing sinks for it.
@@ -207,8 +210,9 @@ void MediaRouterAndroid::RegisterMediaRoutesObserver(
 
 void MediaRouterAndroid::UnregisterMediaRoutesObserver(
     MediaRoutesObserver* observer) {
-  if (!routes_observers_.HasObserver(observer))
+  if (!routes_observers_.HasObserver(observer)) {
     return;
+  }
   routes_observers_.RemoveObserver(observer);
 }
 
@@ -227,8 +231,9 @@ void MediaRouterAndroid::OnSinksReceived(const std::string& source_urn,
   auto it = sinks_observers_.find(source_urn);
   if (it != sinks_observers_.end()) {
     // TODO(imcheng): Pass origins to OnSinksUpdated (crbug.com/594858).
-    for (auto& observer : *it->second)
+    for (auto& observer : *it->second) {
       observer.OnSinksUpdated(sinks, std::vector<url::Origin>());
+    }
   }
 }
 
@@ -237,8 +242,9 @@ void MediaRouterAndroid::OnRouteCreated(const MediaRoute::Id& route_id,
                                         int route_request_id,
                                         bool is_local) {
   MediaRouteRequest* request = route_requests_.Lookup(route_request_id);
-  if (!request)
+  if (!request) {
     return;
+  }
 
   MediaRoute route(route_id, request->media_source, sink_id, std::string(),
                    is_local);
@@ -254,8 +260,9 @@ void MediaRouterAndroid::OnRouteCreated(const MediaRoute::Id& route_id,
   route_requests_.Remove(route_request_id);
 
   active_routes_.push_back(route);
-  for (auto& observer : routes_observers_)
+  for (auto& observer : routes_observers_) {
     observer.OnRoutesUpdated(active_routes_);
+  }
   if (is_local) {
     MediaRouterMetrics::RecordCreateRouteResultCode(
         result->result_code(), mojom::MediaRouteProviderId::ANDROID_CAF);
@@ -351,14 +358,16 @@ void MediaRouterAndroid::OnMessage(const MediaRoute::Id& route_id,
 
 void MediaRouterAndroid::RemoveRoute(const MediaRoute::Id& route_id) {
   presentation_connections_.erase(route_id);
-  for (auto it = active_routes_.begin(); it != active_routes_.end(); ++it)
+  for (auto it = active_routes_.begin(); it != active_routes_.end(); ++it) {
     if (it->media_route_id() == route_id) {
       active_routes_.erase(it);
       break;
     }
+  }
 
-  for (auto& observer : routes_observers_)
+  for (auto& observer : routes_observers_) {
     observer.OnRoutesUpdated(active_routes_);
+  }
 }
 
 std::unique_ptr<media::FlingingController>
@@ -378,8 +387,9 @@ void MediaRouterAndroid::OnRouteRequestError(
                             std::optional<mojom::MediaRouteProviderId>)>
         callback) {
   MediaRouteRequest* request = route_requests_.Lookup(route_request_id);
-  if (!request)
+  if (!request) {
     return;
+  }
 
   // TODO: Provide a more specific result code.
   std::unique_ptr<RouteRequestResult> result = RouteRequestResult::FromError(

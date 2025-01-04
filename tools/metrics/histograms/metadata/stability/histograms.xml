@@ -83,7 +83,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChildProcess.Launched.UtilityProcessHash"
-    enum="UtilityProcessNameHash" expires_after="2025-04-13">
+    enum="UtilityProcessNameHash" expires_after="2025-06-22">
   <owner>wfh@chromium.org</owner>
   <summary>
     Count of child utility process launches, bucketed by the hash of their
@@ -181,7 +181,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.Android.RendererCrash" enum="Boolean"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>wnwen@chromium.org</owner>
   <summary>
     Counts renderer crashes including OOMs. Android only. Mirrors old stability
@@ -298,7 +298,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.ChildFrameCrash.ShownAfterCrashingReason"
-    enum="ShownAfterCrashingReason" expires_after="2025-04-20">
+    enum="ShownAfterCrashingReason" expires_after="2025-06-22">
   <owner>alexmos@chromium.org</owner>
   <owner>boliu@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
@@ -331,7 +331,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.ChildFrameCrash.Visibility" enum="CrashVisibility"
-    expires_after="2025-04-20">
+    expires_after="2025-06-22">
   <owner>alexmos@chromium.org</owner>
   <owner>boliu@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
@@ -389,7 +389,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.Experimental.PageLoads" enum="StabilityPageLoadType"
-    expires_after="2025-04-27">
+    expires_after="2025-06-29">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -465,7 +465,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.IOS.PostCrashAction" enum="IOSPostCrashAction"
-    expires_after="2025-04-06">
+    expires_after="2025-06-08">
   <owner>justincohen@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -475,7 +475,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.iOS.TabCountBefore{Event}" units="tabs"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>justincohen@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -504,19 +504,6 @@ chromium-metrics-reviews@google.com.
     Recorded on iOS when applicationWillTerminate callback is called when app is
     in the foreground. When this happens the app will not write clean exit
     beacon and shutdown will not be clean.
-  </summary>
-</histogram>
-
-<histogram name="Stability.iOS.UTE.BatteryCharge" units="%"
-    expires_after="2024-11-03">
-  <owner>michaeldo@chromium.org</owner>
-  <owner>olivierrobin@chromium.org</owner>
-  <summary>
-    The last known battery charge before a crash occurred. This will only be
-    logged for devices which were last known to be in the &quot;unplugged&quot;
-    state because the intention is to identify devices which may have died
-    leading to unexpected terminations. Logged on application launch if the last
-    session terminated in an unclean state.
   </summary>
 </histogram>
 
@@ -673,7 +660,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.MobileSessionShutdownType2"
-    enum="MobileSessionShutdownType" expires_after="2025-04-13">
+    enum="MobileSessionShutdownType" expires_after="2025-06-22">
   <owner>justincohen@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>

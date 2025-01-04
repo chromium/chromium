@@ -10,7 +10,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/password_form_classification.h"
+#include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/password_manager/content/browser/password_form_classification_util.h"
 #include "components/sensitive_content/features.h"
 #include "components/sensitive_content/sensitive_content_client.h"

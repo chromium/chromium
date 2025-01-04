@@ -7,12 +7,16 @@
 #include <vector>
 
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/picture_in_picture/document_picture_in_picture_mixin_test_base.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/views/web_apps/web_app_dialog_test_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -207,6 +211,78 @@ IN_PROC_BROWSER_TEST_F(WebAppDetailedInstallDialogBrowserTest,
   views::test::CancelDialog(widget);
   destroy_waiter.Wait();
   ASSERT_FALSE(dialog_accepted().value());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppDetailedInstallDialogBrowserTest,
+                       WindowSizeLoweringClosesDialog) {
+  auto popup_value =
+      OpenPopupOfSize(browser()->tab_strip_model()->GetActiveWebContents(),
+                      GURL("https://www.example.com"),
+                      /*width=*/500, /*height=*/500);
+  EXPECT_TRUE(popup_value.has_value());
+  content::WebContents* popup_contents = popup_value.value();
+  Browser* popup_browser = chrome::FindBrowserWithTab(popup_contents);
+
+  std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
+      GetMLInstallTracker(popup_browser);
+
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{}, "WebAppDetailedInstallDialog");
+  base::test::TestFuture<bool, std::unique_ptr<WebAppInstallInfo>> test_future;
+  ShowWebAppDetailedInstallDialog(
+      popup_browser->tab_strip_model()->GetActiveWebContents(),
+      GetInstallInfo(), std::move(install_tracker), test_future.GetCallback(),
+      GetScreenshots(base::EmptyString()), PwaInProductHelpState::kNotShown);
+
+  views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
+  ASSERT_NE(widget, nullptr);
+  EXPECT_FALSE(test_future.IsReady());
+
+  base::HistogramTester histograms;
+  views::test::WidgetDestroyedWaiter destroy_waiter(widget);
+  // Make the size of the popup window to be too small for the dialog.
+  ui_test_utils::SetAndWaitForBounds(*popup_browser, gfx::Rect(100, 100));
+  destroy_waiter.Wait();
+
+  ASSERT_TRUE(test_future.Wait());
+  EXPECT_FALSE(test_future.Get<bool>());
+
+  histograms.ExpectUniqueSample(
+      "WebApp.InstallConfirmation.CloseReason",
+      views::Widget::ClosedReason::kCloseButtonClicked, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppDetailedInstallDialogBrowserTest,
+                       SmallPopupClosesWindowAutomatically) {
+  auto popup_value =
+      OpenPopupOfSize(browser()->tab_strip_model()->GetActiveWebContents(),
+                      GURL("https://www.example.com"));
+  EXPECT_TRUE(popup_value.has_value());
+  content::WebContents* popup_contents = popup_value.value();
+  Browser* popup_browser = chrome::FindBrowserWithTab(popup_contents);
+
+  std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
+      GetMLInstallTracker(popup_browser);
+
+  base::HistogramTester histograms;
+  views::AnyWidgetObserver widget_observer(views::test::AnyWidgetTestPasskey{});
+
+  base::RunLoop run_loop;
+  widget_observer.set_closing_callback(
+      base::BindLambdaForTesting([&](views::Widget* widget) {
+        if (widget->GetName() == "WebAppDetailedInstallDialog") {
+          run_loop.Quit();
+        }
+      }));
+  ShowWebAppDetailedInstallDialog(popup_contents, GetInstallInfo(),
+                                  std::move(install_tracker), base::DoNothing(),
+                                  GetScreenshots(base::EmptyString()),
+                                  PwaInProductHelpState::kNotShown);
+  run_loop.Run();
+
+  histograms.ExpectUniqueSample(
+      "WebApp.InstallConfirmation.CloseReason",
+      views::Widget::ClosedReason::kCloseButtonClicked, 1);
 }
 
 class PictureInPictureDetailedInstallDialogOcclusionTest

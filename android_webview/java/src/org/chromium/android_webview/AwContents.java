@@ -69,7 +69,6 @@ import org.chromium.android_webview.metrics.BackForwardCacheNotRestoredReason;
 import org.chromium.android_webview.permission.AwGeolocationCallback;
 import org.chromium.android_webview.permission.AwPermissionRequest;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
-import org.chromium.android_webview.selection.SamsungSelectionActionMenuDelegate;
 import org.chromium.android_webview.selection.SelectionActionMenuDelegateProvider;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
@@ -125,7 +124,6 @@ import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.WebContentsInternals;
 import org.chromium.content_public.browser.navigation_controller.LoadURLType;
 import org.chromium.content_public.browser.navigation_controller.UserAgentOverrideOption;
-import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.device.gamepad.GamepadList;
@@ -1887,6 +1885,9 @@ public class AwContents implements SmartClipProvider {
             @Nullable AwPrefetchParameters prefetchParameters,
             @Nullable Callback<Void> activationCallback) {
         if (isDestroyed(NO_WARN)) return;
+        if (prefetchParameters != null) {
+            validateHeaders(prefetchParameters.getAdditionalHeaders());
+        }
         AwContentsJni.get()
                 .startPrerendering(
                         mNativeAwContents,
@@ -2256,23 +2257,7 @@ public class AwContents implements SmartClipProvider {
 
         LoadUrlParams params = new LoadUrlParams(url, PageTransition.TYPED);
         if (additionalHttpHeaders != null) {
-            for (Map.Entry<String, String> header : additionalHttpHeaders.entrySet()) {
-                String headerName = header.getKey();
-                String headerValue = header.getValue();
-                if (headerName != null && BAD_HEADER_CHAR.matcher(headerName).find()) {
-                    throw new IllegalArgumentException(
-                            BAD_HEADER_MSG + "Invalid header name '" + headerName + "'.");
-                }
-                if (headerValue != null && BAD_HEADER_CHAR.matcher(headerValue).find()) {
-                    throw new IllegalArgumentException(
-                            BAD_HEADER_MSG
-                                    + "Header '"
-                                    + headerName
-                                    + "' has invalid value '"
-                                    + headerValue
-                                    + "'");
-                }
-            }
+            validateHeaders(additionalHttpHeaders);
             params.setExtraHeaders(new HashMap<String, String>(additionalHttpHeaders));
         }
 
@@ -3342,18 +3327,6 @@ public class AwContents implements SmartClipProvider {
             selectionPopupController.handleTextReplacementAction(result);
             return;
         }
-        SelectionActionMenuDelegate selectionActionMenuDelegate =
-                selectionPopupController.getSelectionActionMenuDelegate();
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU
-                && selectionActionMenuDelegate
-                        instanceof SamsungSelectionActionMenuDelegate delegate) {
-            String additionalActivityResult =
-                    delegate.getTextFromAdditionalActivityResult(requestCode, resultCode, data);
-            if (additionalActivityResult != null) {
-                selectionPopupController.handleTextReplacementAction(additionalActivityResult);
-                return;
-            }
-        }
         Log.e(TAG, "Received activity result for an unknown request code %d", requestCode);
     }
 
@@ -4319,6 +4292,28 @@ public class AwContents implements SmartClipProvider {
 
     public static void resetRecordMemoryForTesting() {
         sLastCollectionTime = -MEMORY_COLLECTION_INTERVAL_MS;
+    }
+
+    // Check if the headers contains invalid characters.
+    private static void validateHeaders(Map<String, String> headers) {
+        if (headers == null) return;
+        for (Map.Entry<String, String> header : headers.entrySet()) {
+            String headerName = header.getKey();
+            String headerValue = header.getValue();
+            if (headerName != null && BAD_HEADER_CHAR.matcher(headerName).find()) {
+                throw new IllegalArgumentException(
+                        BAD_HEADER_MSG + "Invalid header name '" + headerName + "'.");
+            }
+            if (headerValue != null && BAD_HEADER_CHAR.matcher(headerValue).find()) {
+                throw new IllegalArgumentException(
+                        BAD_HEADER_MSG
+                                + "Header '"
+                                + headerName
+                                + "' has invalid value '"
+                                + headerValue
+                                + "'");
+            }
+        }
     }
 
     // --------------------------------------------------------------------------------------------

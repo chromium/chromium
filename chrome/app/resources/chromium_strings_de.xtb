@@ -17,7 +17,6 @@
 <translation id="1185134272377778587">Über Chromium</translation>
 <translation id="1188705220418984327">Wenn du dein Fenster teilen möchtest, musst du in den Systemeinstellungen die Bildschirmaufzeichnung für Chromium zulassen.</translation>
 <translation id="1203500561924088507">Vielen Dank für die Installation. Du musst deinen Browser neu starten, bevor du <ph name="BUNDLE_NAME" /> verwenden kannst.</translation>
-<translation id="1235768345431527125">Du kannst dich anmelden, um deine Inhalte abzurufen, oder Chromium ohne Konto verwenden</translation>
 <translation id="1262876892872089030">Während dieser Tab inaktiv war, wurde Arbeitsspeicher freigegeben, damit Chromium schnell bleibt. Du kannst festlegen, dass diese Website nie inaktiv sein soll.</translation>
 <translation id="1265577313130862557">Chromium hat diesen Download blockiert, weil die Datei gefährlich ist</translation>
 <translation id="126567311906253476">Wenn du dich mit <ph name="USER_EMAIL" /> in Google-Diensten wie Gmail oder YouTube anmeldest, kannst du dich mit demselben Konto automatisch in Chromium anmelden</translation>
@@ -57,6 +56,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="1779356040007214683">Um Chromium sicherer zu machen, haben wir einige Erweiterungen deaktiviert, die nicht im <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> aufgeführt sind und möglicherweise ohne dein Wissen hinzugefügt wurden.</translation>
 <translation id="1808667845054772817">Chromium neu installieren</translation>
 <translation id="1820835682567584003">Chromium versucht, <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1838374766361614909">Suche löschen</translation>
 <translation id="18552579716432081">Wenn du Browserdaten nur von diesem Gerät, aber nicht aus deinem Google-Konto löschen möchtest, <ph name="BEGIN_LINK" />melde dich in Chromium ab<ph name="END_LINK" />.</translation>
 <translation id="185970820835152459">Du kannst deine angemeldeten Google-Konten verwalten. Deine Google-Konten werden für den Chromium-Browser, den Play Store, Gmail und mehr verwendet. Wenn du ein Konto für jemand anderen hinzufügen möchtest, z. B. ein Familienmitglied, ordne bitte stattdessen deinem Gerät (<ph name="DEVICE_TYPE" />) eine neue Person zu. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Mit der Bildersuche suchen</translation>
@@ -66,6 +66,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="1896836275755235458">In Chromium wird der Akkuverbrauch reduziert, indem Hintergrundaktivitäten und visuelle Effekte wie optimiertes Scrollen und Video-Framerates eingeschränkt werden. <ph name="BEGIN_LINK" />Weitere Informationen zum Energiesparmodus<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium Updater Service</translation>
 <translation id="1911763535808217981">Wenn du diese Einstellung deaktivierst, kannst du dich auf Websites von Google wie beispielsweise Gmail anmelden, ohne dich auch in Chromium anmelden zu müssen</translation>
+<translation id="1916451563296275579">Daten dieser App aus Chromium entfernen</translation>
 <translation id="1929939181775079593">Chromium reagiert nicht. Jetzt neu starten?</translation>
 <translation id="1933341829955786215">Deine Organisation (<ph name="MANAGER" />) verlangt, dass du dich in Chromium anmeldest</translation>
 <translation id="193439633299369377">Chromium OS muss neu gestartet werden, um das Update zu installieren.</translation>
@@ -92,6 +93,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="2199210295479376551">Konto aus Chromium entfernen</translation>
 <translation id="2210682093923538346">Gefährliche Website. Chromium hat Berechtigungen für Benachrichtigungen entfernt.</translation>
 <translation id="2236949375853147973">Meine Aktivitäten</translation>
+<translation id="2238130810669087193">Wenn du auf allen deinen Geräten auf deine Adressen und andere Daten zugreifen möchtest, melde dich in Chromium an. Diese Adresse wird in deinem Google-Konto gespeichert, nachdem du dich angemeldet hast.</translation>
 <translation id="2240214816234246077">Du hast diese Website in letzter Zeit nicht besucht. Chromium hat „<ph name="PERMISSION_1" />“ und „<ph name="PERMISSION_2" />“ entfernt.</translation>
 <translation id="2241627712206172106">Bei gemeinsam genutzten Computern können die verschiedenen Personen separat surfen und Chromium jeweils nach ihren Wünschen einrichten.</translation>
 <translation id="2313870531055795960">Prüft URLs anhand einer Liste unsicherer Websites, die in Chromium gespeichert ist. Wenn eine Website versucht, dein Passwort zu stehlen, oder wenn du eine schädliche Datei herunterlädst, kann Chromium auch URLs, einschließlich Teile von Seiteninhalten, an Safe Browsing senden.</translation>
@@ -109,6 +111,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="2483889755041906834">In Chromium</translation>
 <translation id="2485422356828889247">Deinstallieren</translation>
 <translation id="2513154137948333830">Neustart erforderlich: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2522009821193247726">Du musst dich mit <ph name="EMAIL" /> in Chromium anmelden, um fortzufahren. So wird die Einhaltung der Richtlinien deiner Organisation sichergestellt.</translation>
 <translation id="2542968102051442371">Text mit der Bildersuche auswählen</translation>
 <translation id="2554739539410784893">Chromium versucht, vorhandene Passwörter zu ersetzen. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="2560420686485554789">Chromium benötigt Speicherzugriff, um Dateien herunterladen zu können</translation>
@@ -118,6 +121,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="2583187216237139145">Alle Chromium-Daten, die während der Nutzung dieses Profils erstellt werden, wie Lesezeichen, Verlauf, Passwörter und andere Einstellungen, können vom Administrator des Arbeitsprofils entfernt werden. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Chromium weiterhin verwenden</translation>
 <translation id="259935314519650377">Die heruntergeladene Installationsdatei konnte nicht im Cache gespeichert werden. Fehler: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2635452620547538388">Bestätige deine Identität, um Chromium-Daten in deinem Konto <ph name="ACCOUNT_EMAIL" /> zu verwenden und zu speichern</translation>
 <translation id="264613044588233783">Chromium wird schneller ausgeführt und Funktionen, die JavaScript verwenden, sollten wie vorgesehen funktionieren (empfohlen)</translation>
 <translation id="2648074677641340862">Während der Installation ist ein Fehler im Betriebssystem aufgetreten. Bitte lade Chromium erneut herunter.</translation>
 <translation id="2661879430930417727">Auf gemeinsam genutzten Geräten können die verschiedenen Nutzer separat surfen und Chromium jeweils nach ihren Wünschen einrichten</translation>
@@ -203,7 +207,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="3802055581630249637">Chromium lädt Seiten vorab, die du wahrscheinlich besuchen wirst, sodass sie dann schneller zur Verfügung stehen</translation>
 <translation id="3830894615770080216">Chromium OS-System</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
-<translation id="386822487697155367">Chromium OS-Hilfe</translation>
 <translation id="3871664619793219264">Über <ph name="ACCOUNT_EMAIL" /> auf deine Chromium-Browserinhalte zugreifen</translation>
 <translation id="3885770153807205175">Sprachauswahl</translation>
 <translation id="388648406173476553">Du kannst Chromium anpassen und Einstellungen festlegen. Etwas erfordert deine Aufmerksamkeit – klicke hier, um mehr zu erfahren.</translation>
@@ -251,7 +254,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="4438870983368648614">Chromium wird von <ph name="MANAGER" /> verwaltet</translation>
 <translation id="444069871276811466">Chromium-Profil hinzufügen</translation>
 <translation id="4447409407328223819">Über Chrome for Testing</translation>
-<translation id="4470974262661801543">Gib deine Passphrase ein, um Chromium-Daten in deinem Google-Konto zu verwenden und zu speichern</translation>
 <translation id="4493028449971051158">Fehler beim Starten: Bitte führe das Installationsprogramm als Administrator aus.</translation>
 <translation id="4501471624619070934">Fehler bei der Installation. Der Zugriff ist in diesem Land eingeschränkt.</translation>
 <translation id="4510853178268397146">Für diese Erweiterung wurden keine Informationen zum Umgang mit dem Datenschutz veröffentlicht, wie z. B. Informationen darüber, wie Daten erhoben und verwendet werden. Chromium empfiehlt daher, sie zu entfernen.</translation>
@@ -403,6 +405,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6455857529632101747">Willkommen bei den Chromium-Profilen</translation>
 <translation id="6466344609055215035">Konto aus Chromium entfernen</translation>
 <translation id="6475912303565314141">Die Erweiterung legt auch die Seite fest, die beim Start von Chromium angezeigt wird.</translation>
+<translation id="648062525172759633">Diese Seiten sind für Chromium-Entwickler gedacht und werden möglicherweise nicht aktiv gepflegt oder getestet. Wenn du sie aktivieren möchtest, gehe zu <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> und klicke auf die Schaltfläche zum Aktivieren von Debugging-Seiten. Rufe diese Seite dann noch einmal auf.</translation>
 <translation id="648319183876919572">Erweitertes Safe Browsing schützt dich besser vor gefährlichen Websites und Downloads</translation>
 <translation id="6510925080656968729">Chromium deinstallieren</translation>
 <translation id="651535675648445253">Verknüpfungen werden in Chromium geöffnet</translation>
@@ -446,6 +449,7 @@ Einige Funktionen stehen möglicherweise nicht zur Verfügung. Gib bitte ein and
 <translation id="6980074797973263542">Deine Organisation kann Browserdaten sehen und verwalten, wie z. B. deine Lesezeichen, den Verlauf und deine Passwörter. Browserdaten in privaten Chromium-Profilen sind nicht sichtbar.</translation>
 <translation id="6985329841647292029">Chromium OS-Nutzungsbedingungen</translation>
 <translation id="6990124437352146030">Chromium benötigt für diese Website die Berechtigung, auf dein Mikrofon zuzugreifen</translation>
+<translation id="7003299027384820442">Gib deine Passphrase ein, um Chromium-Daten in deinem Konto <ph name="ACCOUNT_EMAIL" /> zu verwenden und zu speichern</translation>
 <translation id="7011190694940573312">Die Installation ist fehlgeschlagen, da diese Version des Betriebssystems nicht unterstützt wird.</translation>
 <translation id="7024536598735240744">Fehler beim Entpacken: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Installation angehalten.</translation>
@@ -511,6 +515,7 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />So kannst du deine Daten verwalten<ph name="END_BOLD" />: Zum Schutz deiner Daten löschen wir automatisch deine Interessen, die älter als vier Wochen sind. Je nach deinen Browsingaktivitäten können die Interessen wieder in der Liste erscheinen. Du kannst jedoch Interessen entfernen, die Chromium nicht berücksichtigen soll.</translation>
 <translation id="7888981273428720788">Chromium als Standardbrowser festlegen</translation>
 <translation id="7934340546140346950">Chromium stellt unsichere Verbindungen nach Möglichkeit automatisch auf HTTPS um</translation>
+<translation id="7935734571048689933">Chromium wird verwaltet</translation>
 <translation id="7937630085815544518">Du warst in Chromium als <ph name="USER_EMAIL_ADDRESS" /> angemeldet. Melde dich bitte wieder mit demselben Konto an.</translation>
 <translation id="7975919845073681630">Dies ist eine Zweitinstallation, daher kann Chromium nicht als Standardbrowser festgelegt werden.</translation>
 <translation id="7997934263947464652">Erweiterungen, Apps und Designs aus unbekannten Quellen können Schäden auf deinem Gerät verursachen. Chromium empfiehlt, sie nur über den <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> zu installieren.</translation>
@@ -540,6 +545,7 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="8330519371938183845">Wenn du dich anmeldest, wird Chromium auf allen deinen Geräten synchronisiert und personalisiert</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> hat zuvor Chromium verwendet</translation>
 <translation id="8357820681460164151">Wenn du auf allen deinen Geräten auf deine Chromium-Browserinhalte zugreifen möchtest, melde dich an und aktiviere die Synchronisierung</translation>
+<translation id="8359544530202147897">Aktualisiere Chromium, um weiterhin Chromium-Daten in deinem Google-Konto <ph name="ACCOUNT_EMAIL" /> zu verwenden</translation>
 <translation id="8360718212975266891">Du benötigst Windows 10 oder höher, um zukünftige Chromium-Updates zu erhalten. Auf diesem Computer wird Windows 8 ausgeführt.</translation>
 <translation id="8362914115861174987">Übersetzen in Sprache:</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle Rechte vorbehalten.</translation>

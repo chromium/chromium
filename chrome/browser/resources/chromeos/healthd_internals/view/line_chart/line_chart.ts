@@ -102,57 +102,74 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
     return this.$.summaryTable;
   }
 
-  // Update to display the latest data.
-  update() {
+  /**
+   * Sets up the data source for controller, menu and summary table.
+   *
+   * @param category - The current displayed category.
+   * @param dataSeriesLists - List of `DataSeriesList` objects, which is used to
+   *                          store data from different source. The Data shared
+   *                          with the same scale with be stored into one
+   *                          `DataSeriesList`.
+   */
+  setupDataSeries(
+      category: CategoryTypeEnum, dataSeriesLists: DataSeriesList[]) {
+    this.controller.setupDataSeries(category, dataSeriesLists);
+
+    const flatDataList = dataSeriesLists.reduce(
+        (acc, val) => acc.concat(val.dataList), [] as DataSeries[]);
+    const isCustomCategory = category === CategoryTypeEnum.CUSTOM;
+    this.$.chartMenu.setupDataSeries(flatDataList, isCustomCategory);
+    this.$.summaryTable.setIsCustomCategory(isCustomCategory);
+
+    this.resizeCanvas();
+  }
+
+  /**
+   * Uses the latest data in controller to refresh the line chart content,
+   * including scrollbar and canvas.
+   */
+  refreshLineChart() {
     this.controller.updateDataTime();
     this.updateScrollBar();
     this.updateCanvas();
   }
 
   /**
-   * Set up the list of `DataSeriesList` object, which is used to store data
-   * from different source.
-   *
-   * @param category - The current displayed category.
-   * @param dataSeriesLists - List of `DataSeriesList` objects. The Data shared
-   *                          with the same scale with be stored into one
-   *                          `DataSeriesList`.
+   * Updates the visibility of line chart. We don't need to render the chart
+   * when the chart is not visible.
    */
-  setupDataSeriesLists(
-      category: CategoryTypeEnum, dataSeriesLists: DataSeriesList[]) {
-    this.controller.setupDataSeriesLists(category, dataSeriesLists);
-
-    const flatDataList = dataSeriesLists.reduce(
-        (acc, val) => acc.concat(val.dataList), [] as DataSeries[]);
-    const isCustomCategory = category === CategoryTypeEnum.CUSTOM;
-    this.$.chartMenu.setupDataSeriesList(flatDataList, isCustomCategory);
-    this.$.summaryTable.setIsCustomCategory(isCustomCategory);
-
-    this.resizeCanvas();
-    this.update();
-  }
-
-  // Update the visibility of line chart. We don't need to render the chart when
-  // the chart is not visible.
   updateVisibility(isVisible: boolean) {
     this.isVisible = isVisible;
     if (isVisible) {
-      this.update();
+      this.refreshLineChart();
     }
   }
 
-  renderChartSummaryTable(isVisible: boolean) {
+  /**
+   * Updates the visibility for the chart summary table.
+   */
+  toggleChartSummaryTable(isVisible: boolean) {
     this.$.chartContainer.style.setProperty(
         '--summary-table-height', isVisible ? '200px' : '0px');
   }
 
-  sendTimeRange(visibleStartTime: number, visibleEndTime: number) {
+  /**
+   * Updates the visible time span and emits a custom event to notify the
+   * `HealthdInternalsSystemTrendElement` component to update displayed info.
+   *
+   * @param visibleStartTime The new start time.
+   * @param visibleEndTime The new end time.
+   */
+  updateVisibleTimeSpan(visibleStartTime: number, visibleEndTime: number) {
     this.visibleStartTime = visibleStartTime;
     this.visibleEndTime = visibleEndTime;
     this.dispatchEvent(
         new CustomEvent('time-range-changed', {bubbles: true, composed: true}));
   }
 
+  /**
+   * Returns the current visible time span as a tuple [startTime, endTime].
+   */
   getVisibleTimeSpan(): [number, number] {
     return [this.visibleStartTime, this.visibleEndTime];
   }

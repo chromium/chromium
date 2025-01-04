@@ -30,10 +30,12 @@ bool RecentlyAudibleHelper::IsCurrentlyAudible() const {
 }
 
 bool RecentlyAudibleHelper::WasRecentlyAudible() const {
-  if (last_audible_time_.is_max())
+  if (last_audible_time_.is_max()) {
     return true;
-  if (last_audible_time_.is_null())
+  }
+  if (last_audible_time_.is_null()) {
     return false;
+  }
   base::TimeTicks recently_audible_time_limit =
       last_audible_time_ + kRecentlyAudibleTimeout;
   return tick_clock_->NowTicks() < recently_audible_time_limit;
@@ -48,8 +50,9 @@ RecentlyAudibleHelper::RecentlyAudibleHelper(content::WebContents* contents)
     : content::WebContentsObserver(contents),
       content::WebContentsUserData<RecentlyAudibleHelper>(*contents),
       tick_clock_(GetDefaultTickClock()) {
-  if (contents->IsCurrentlyAudible())
+  if (contents->IsCurrentlyAudible()) {
     last_audible_time_ = base::TimeTicks::Max();
+  }
 }
 
 void RecentlyAudibleHelper::OnAudioStateChanged(bool audible) {
@@ -69,8 +72,9 @@ void RecentlyAudibleHelper::OnAudioStateChanged(bool audible) {
   bool was_recently_audible = WasRecentlyAudible();
   last_audible_time_ = base::TimeTicks::Max();
   recently_audible_timer_.Stop();
-  if (!was_recently_audible)
+  if (!was_recently_audible) {
     callback_list_.Notify(true);
+  }
 }
 
 void RecentlyAudibleHelper::OnRecentlyAudibleTimerFired() {

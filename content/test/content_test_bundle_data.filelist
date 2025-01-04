@@ -174,6 +174,8 @@ data/accessibility/accname/name-file-spinbutton-valuenow-in-label-expected-blink
 data/accessibility/accname/name-file-spinbutton-valuenow-in-label.html
 data/accessibility/accname/name-file-title-expected-blink.txt
 data/accessibility/accname/name-file-title.html
+data/accessibility/accname/name-from-content-dfn-expected-blink.txt
+data/accessibility/accname/name-from-content-dfn.html
 data/accessibility/accname/name-from-content-expected-blink.txt
 data/accessibility/accname/name-from-content-of-label-expected-blink.txt
 data/accessibility/accname/name-from-content-of-label.html
@@ -181,6 +183,8 @@ data/accessibility/accname/name-from-content-of-labelledby-element-expected-blin
 data/accessibility/accname/name-from-content-of-labelledby-element.html
 data/accessibility/accname/name-from-content-of-labelledby-elements-one-of-which-is-hidden-expected-blink.txt
 data/accessibility/accname/name-from-content-of-labelledby-elements-one-of-which-is-hidden.html
+data/accessibility/accname/name-from-content-term-role-expected-blink.txt
+data/accessibility/accname/name-from-content-term-role.html
 data/accessibility/accname/name-from-content-whitespace-block-children-collapses-extra-whitespace-expected-blink.txt
 data/accessibility/accname/name-from-content-whitespace-block-children-collapses-extra-whitespace.html
 data/accessibility/accname/name-from-content-whitespace-block-children-expected-blink.txt
@@ -223,7 +227,6 @@ data/accessibility/accname/name-img-label-alt-title.html
 data/accessibility/accname/name-img-label-expected-blink.txt
 data/accessibility/accname/name-img-label.html
 data/accessibility/accname/name-img-labelledby-inputs-expected-blink.txt
-data/accessibility/accname/name-img-labelledby-inputs-tree-expected-blink.txt
 data/accessibility/accname/name-img-labelledby-inputs.html
 data/accessibility/accname/name-img-labelledby-self-and-input-expected-blink.txt
 data/accessibility/accname/name-img-labelledby-self-and-input.html
@@ -1872,9 +1875,6 @@ data/accessibility/aria/label-with-selected-option-expected-blink.txt
 data/accessibility/aria/label-with-selected-option.html
 data/accessibility/aria/missing-relation-targets-added-later-expected-blink.txt
 data/accessibility/aria/missing-relation-targets-added-later.html
-data/accessibility/aria/option-label-expected-blink.txt
-data/accessibility/aria/option-label-expected-mac.txt
-data/accessibility/aria/option-label.html
 data/accessibility/aria/presentational-expected-android-assist-data.txt
 data/accessibility/aria/presentational-expected-android-external.txt
 data/accessibility/aria/presentational-expected-android.txt
@@ -2076,18 +2076,18 @@ data/accessibility/css/pseudo-element-check-mark-override-content.html
 data/accessibility/css/pseudo-element-check-mark.html
 data/accessibility/css/pseudo-element-highlight-expected-blink.txt
 data/accessibility/css/pseudo-element-highlight.html
-data/accessibility/css/pseudo-element-positioned-expected-android-assist-data.txt
-data/accessibility/css/pseudo-element-positioned-expected-android-external.txt
-data/accessibility/css/pseudo-element-positioned-expected-android.txt
-data/accessibility/css/pseudo-element-positioned-expected-blink.txt
-data/accessibility/css/pseudo-element-positioned-expected-mac.txt
-data/accessibility/css/pseudo-element-positioned.html
 data/accessibility/css/pseudo-element-picker-icon-expected-blink.txt
 data/accessibility/css/pseudo-element-picker-icon-override-content-alternative-text-expected-blink.txt
 data/accessibility/css/pseudo-element-picker-icon-override-content-alternative-text.html
 data/accessibility/css/pseudo-element-picker-icon-override-content-expected-blink.txt
 data/accessibility/css/pseudo-element-picker-icon-override-content.html
 data/accessibility/css/pseudo-element-picker-icon.html
+data/accessibility/css/pseudo-element-positioned-expected-android-assist-data.txt
+data/accessibility/css/pseudo-element-positioned-expected-android-external.txt
+data/accessibility/css/pseudo-element-positioned-expected-android.txt
+data/accessibility/css/pseudo-element-positioned-expected-blink.txt
+data/accessibility/css/pseudo-element-positioned-expected-mac.txt
+data/accessibility/css/pseudo-element-positioned.html
 data/accessibility/css/pseudo-elements-expected-android-assist-data.txt
 data/accessibility/css/pseudo-elements-expected-android-external.txt
 data/accessibility/css/pseudo-elements-expected-android.txt
@@ -3344,6 +3344,11 @@ data/accessibility/html/custom-select-expected-blink.txt
 data/accessibility/html/custom-select-expected-mac.txt
 data/accessibility/html/custom-select-expected-uia-win.txt
 data/accessibility/html/custom-select-expected-win.txt
+data/accessibility/html/custom-select-label-element-expected-blink.txt
+data/accessibility/html/custom-select-label-element.html
+data/accessibility/html/custom-select-mixed-options-expected-auralinux.txt
+data/accessibility/html/custom-select-mixed-options-expected-blink.txt
+data/accessibility/html/custom-select-mixed-options.html
 data/accessibility/html/custom-select-open-expected-android-assist-data.txt
 data/accessibility/html/custom-select-open-expected-android-external.txt
 data/accessibility/html/custom-select-open-expected-android.txt
@@ -4582,6 +4587,8 @@ data/accessibility/html/move-child-hypertext-expected-win.txt
 data/accessibility/html/move-child-hypertext.html
 data/accessibility/html/name-calc-focusable-expected-blink.txt
 data/accessibility/html/name-calc-focusable.html
+data/accessibility/html/name-img-labelledby-inputs-tree-expected-blink.txt
+data/accessibility/html/name-img-labelledby-inputs-tree.html
 data/accessibility/html/navigation-expected-android-assist-data.txt
 data/accessibility/html/navigation-expected-android-external.txt
 data/accessibility/html/navigation-expected-android.txt
@@ -5592,6 +5599,8 @@ data/accessibility/mac/methods/accessibility-is-ignored-expected.txt
 data/accessibility/mac/methods/accessibility-is-ignored.html
 data/accessibility/mac/methods/accessibility-label-expected.txt
 data/accessibility/mac/methods/accessibility-label.html
+data/accessibility/mac/methods/accessibility-linked-ui-elements-expected.txt
+data/accessibility/mac/methods/accessibility-linked-ui-elements.html
 data/accessibility/mac/methods/accessibility-number-of-characters-expected.txt
 data/accessibility/mac/methods/accessibility-number-of-characters.html
 data/accessibility/mac/methods/accessibility-placeholder-value-expected.txt
@@ -6086,6 +6095,7 @@ data/attribution_reporting/interop/dedup_key_report_window_ordering.json
 data/attribution_reporting/interop/deduplication_sequence.json
 data/attribution_reporting/interop/default_config.json
 data/attribution_reporting/interop/destination_limit.json
+data/attribution_reporting/interop/destination_public_suffix.json
 data/attribution_reporting/interop/destination_rate_limit.json
 data/attribution_reporting/interop/destination_validation.json
 data/attribution_reporting/interop/event_level_attribution_rate_limit_replacement.json
@@ -6358,6 +6368,8 @@ data/coreferencingframe_1.html
 data/coreferencingframe_2.html
 data/corp-cross-origin.html
 data/corp-cross-origin.html.mock-http-headers
+data/cors-ok.txt
+data/cors-ok.txt.mock-http-headers
 data/counter.html
 data/cross-origin-isolated-credentialless.html
 data/cross-origin-isolated-credentialless.html.mock-http-headers
@@ -6429,6 +6441,13 @@ data/devtools/test.jpg
 data/devtools/worker_imported_classic.js
 data/devtools/worker_imported_module.js
 data/devtools/zoom.html
+data/dips/v1.sql
+data/dips/v2.sql
+data/dips/v3.sql
+data/dips/v4.sql
+data/dips/v5.sql
+data/dips/v6.sql
+data/dips/v7.sql
 data/direct_sockets/open.html
 data/direct_sockets/open.html.mock-http-headers
 data/direct_sockets/open.js
@@ -6500,6 +6519,7 @@ data/fedcm/accounts_endpoint.json
 data/fedcm/client_metadata_endpoint.json
 data/fedcm/eval_worker.js
 data/fedcm/id_assertion_endpoint.json
+data/fedcm/sd_jwt.html
 data/fenced_frames/ad_that_leaves_interest_group.html
 data/fenced_frames/ad_that_leaves_interest_group.html.mock-http-headers
 data/fenced_frames/ad_with_3pat_macro_reporting.html
@@ -6549,6 +6569,8 @@ data/fenced_frames/report1.html
 data/fenced_frames/report2.html
 data/fenced_frames/sandbox_flags.html
 data/fenced_frames/sandbox_flags.html.mock-http-headers
+data/fenced_frames/set_cookie_header.html
+data/fenced_frames/set_cookie_header.html.mock-http-headers
 data/fenced_frames/title0.html
 data/fenced_frames/title0.html.mock-http-headers
 data/fenced_frames/title1.html
@@ -7011,7 +7033,6 @@ data/gtk_key_bindings_test_gtkrc
 data/gzip-content.svgz
 data/gzip-content.svgz.mock-http-headers
 data/hang_before_unload.html
-data/has-ua-visual-transition.html
 data/hello.html
 data/hello.html.mock-http-headers
 data/https_upgrade_cross_site.html
@@ -7173,6 +7194,7 @@ data/interest_group/auction_only_new_name.wbn.mock-http-headers
 data/interest_group/autogenSchemaV28.sql
 data/interest_group/autogenSchemaV29.sql
 data/interest_group/autogenSchemaV30.sql
+data/interest_group/autogenSchemaV31.sql
 data/interest_group/bidding_argument_validator.js
 data/interest_group/bidding_argument_validator.js.mock-http-headers
 data/interest_group/bidding_logic.js
@@ -7291,7 +7313,7 @@ data/link_rel_prefetch_disable_network.html
 data/link_rel_prefetch_disable_network.html.mock-http-headers
 data/link_rel_prefetch_referrer_policy.html
 data/links.html
-data/lite_js_test.mojom
+data/lite_js_test.test-mojom
 data/loader/async_resource_handler.html
 data/loader/blank.html
 data/loader/change_title.js
@@ -7459,7 +7481,8 @@ data/mixed-content/non-redundant-cert-error-in-iframe.html
 data/mixed-content/redundant-cert-error-in-iframe.html
 data/mojo_bindings_web_test.test-mojom
 data/mojo_bindings_web_test_types.test-mojom
-data/mojo_web_test_helper_test.mojom
+data/mojo_web_test_helper.test-mojom
+data/navigate-has-ua-visual-transition.html
 data/navigate_on_load.html
 data/navigate_opener.html
 data/navigation_controller/beforeunload_dialog.html
@@ -7497,6 +7520,7 @@ data/nested_page_with_subresources.html
 data/net/cache/file_enumerator/dir/another.txt
 data/net/cache/file_enumerator/test.txt
 data/net_info.html
+data/no-favicon.html
 data/no_color_scheme_meta_slow.html
 data/no_vary_search_a.html
 data/no_vary_search_a.html.mock-http-headers
@@ -7600,6 +7624,7 @@ data/permissions-policy4.html
 data/plain.txt
 data/plain.txt.mock-http-headers
 data/pointerlock_on_dropped_elem.html
+data/popstate-has-ua-visual-transition.html
 data/popup.html
 data/post_message.html
 data/post_message2.html
@@ -8179,16 +8204,12 @@ data/web_ui_mojo_conformance_test.html
 data/web_ui_mojo_conformance_test.ts
 data/web_ui_mojo_native.html
 data/web_ui_mojo_native.js
-data/web_ui_mojo_test.html
-data/web_ui_mojo_test.js
 data/web_ui_mojo_ts_test.html
 data/web_ui_mojo_ts_test.ts
 data/web_ui_mojo_ts_test_converters.ts
 data/web_ui_mojo_ts_test_mapped_types.ts
 data/web_ui_mojo_ts_test_other_mapped_types.ts
 data/web_ui_shared_worker.js
-data/web_ui_test.test-mojom
-data/web_ui_test_types.test-mojom
 data/web_ui_ts_test.test-mojom
 data/web_ui_ts_test_other_types.test-mojom
 data/web_ui_ts_test_types.test-mojom
@@ -8210,6 +8231,8 @@ data/workers/fetch_from_shared_worker.html
 data/workers/fetch_from_shared_worker.js
 data/workers/fetch_from_worker.html
 data/workers/fetch_from_worker.js
+data/workers/fetcher_treat_as_public.js
+data/workers/fetcher_treat_as_public.js.mock-http-headers
 data/workers/frame_factory.html
 data/workers/iframe_basic_auth.html
 data/workers/incognito_worker.html
@@ -8231,6 +8254,8 @@ data/workers/queued_shared_worker_shutdown.html
 data/workers/send-beacon.html
 data/workers/service_worker.js
 data/workers/service_worker_setup.html
+data/workers/shared_fetcher_treat_as_public.js
+data/workers/shared_fetcher_treat_as_public.js.mock-http-headers
 data/workers/shared_post_ready.js
 data/workers/shared_post_ready_with_pna_headers.js
 data/workers/shared_post_ready_with_pna_headers.js.mock-http-headers

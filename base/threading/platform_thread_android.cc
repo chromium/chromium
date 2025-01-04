@@ -27,9 +27,9 @@ namespace internal {
 
 // - kRealtimeAudio corresponds to Android's PRIORITY_AUDIO = -16 value.
 // - kDisplay corresponds to Android's PRIORITY_DISPLAY = -4 value.
-// - kBackground corresponds to Android's PRIORITY_BACKGROUND = 10 value and can
-// result in heavy throttling and force the thread onto a little core on
-// big.LITTLE devices.
+// - kBackground corresponds to Android's PRIORITY_BACKGROUND = 10
+//   value. Contrary to the matching Java APi in Android <13, this does not
+//   restrict the thread to (subset of) little cores.
 const ThreadPriorityToNiceValuePairForTest
     kThreadPriorityToNiceValueMapForTest[7] = {
         {ThreadPriorityForTest::kRealtimeAudio, -16},
@@ -79,8 +79,8 @@ bool SetCurrentThreadTypeForPlatform(ThreadType thread_type,
 std::optional<ThreadPriorityForTest>
 GetCurrentThreadPriorityForPlatformForTest() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  if (Java_ThreadUtils_isThreadPriorityAudio(
-      env, PlatformThread::CurrentId())) {
+  if (Java_ThreadUtils_isThreadPriorityAudio(env,
+                                             PlatformThread::CurrentId())) {
     return std::make_optional(ThreadPriorityForTest::kRealtimeAudio);
   }
   return std::nullopt;
@@ -95,18 +95,18 @@ void PlatformThread::SetName(const std::string& name) {
   // debugger by setting the process name for the LWP.
   // We don't want to do this for the main thread because that would rename
   // the process, causing tools like killall to stop working.
-  if (PlatformThread::CurrentId() == getpid())
+  if (PlatformThread::CurrentId() == getpid()) {
     return;
+  }
 
   // Set the name for the LWP (which gets truncated to 15 characters).
   int err = prctl(PR_SET_NAME, name.c_str());
-  if (err < 0 && errno != EPERM)
+  if (err < 0 && errno != EPERM) {
     DPLOG(ERROR) << "prctl(PR_SET_NAME)";
+  }
 }
 
-
-void InitThreading() {
-}
+void InitThreading() {}
 
 void TerminateOnThread() {
   base::android::DetachFromVM();

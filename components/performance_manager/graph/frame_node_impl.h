@@ -86,6 +86,7 @@ class FrameNodeImpl
   void OnWebMemoryMeasurementRequested(
       mojom::WebMemoryMeasurement::Mode mode,
       OnWebMemoryMeasurementRequestedCallback callback) override;
+  void OnFreezingOriginTrialOptOut() override;
 
   // Partial FrameNode implementation:
   const blink::LocalFrameToken& GetFrameToken() const override;
@@ -102,13 +103,14 @@ class FrameNodeImpl
   bool GetNetworkAlmostIdle() const override;
   bool IsAdFrame() const override;
   bool IsHoldingWebLock() const override;
-  bool IsHoldingIndexedDBLock() const override;
+  bool IsHoldingBlockingIndexedDBLock() const override;
   bool UsesWebRTC() const override;
   bool HadUserActivation() const override;
   bool HadFormInteraction() const override;
   bool HadUserEdits() const override;
   bool IsAudible() const override;
   bool IsCapturingMediaStream() const override;
+  bool HasFreezingOriginTrialOptOut() const override;
   std::optional<ViewportIntersection> GetViewportIntersection() const override;
   Visibility GetVisibility() const override;
   bool IsImportant() const override;
@@ -137,7 +139,8 @@ class FrameNodeImpl
                                  GraphImpl* graph);
   void SetHadUserActivation();
   void SetIsHoldingWebLock(bool is_holding_weblock);
-  void SetIsHoldingIndexedDBLock(bool is_holding_indexeddb_lock);
+  void SetIsHoldingBlockingIndexedDBLock(
+      bool is_holding_blocking_indexeddb_lock);
   void SetIsAudible(bool is_audible);
   void SetIsCapturingMediaStream(bool is_capturing_media_stream);
   void SetViewportIntersection(const blink::mojom::ViewportIntersectionState&
@@ -207,6 +210,7 @@ class FrameNodeImpl
 
   // Properties associated with a Document, which are reset when a
   // different-document navigation is committed in the frame.
+  // LINT.IfChange(document_prop)
   struct DocumentProperties {
     DocumentProperties();
     ~DocumentProperties();
@@ -249,17 +253,25 @@ class FrameNodeImpl
         bool,
         &FrameNodeObserver::OnFrameUsesWebRTCChanged>
         uses_web_rtc{false};
+
+    // Whether the document is opted-out from freezing via origin trial.
+    ObservedProperty::NotifiesOnlyOnChanges<
+        bool,
+        &FrameNodeObserver::OnFrameHasFreezingOriginTrialOptOutChanged>
+        has_freezing_origin_trial_opt_out{false};
   };
+  // LINT.ThenChange(//components/performance_manager/graph/frame_node_impl.cc:document_prop_reset)
 
   // Invoked by subframes on joining/leaving the graph.
   void AddChildFrame(FrameNodeImpl* frame_node);
   void RemoveChildFrame(FrameNodeImpl* frame_node);
 
   // NodeBase:
-  void OnJoiningGraph() override;
+  void OnInitializingProperties() override;
+  void OnInitializingEdges() override;
   void OnBeforeLeavingGraph() override;
-  void OnUninitializing() override;
-  void RemoveNodeAttachedData() override;
+  void OnUninitializingEdges() override;
+  void CleanUpNodeState() override;
 
   // Helper function to sever all opened/embedded page relationships. This is
   // called before destroying the frame node in "OnBeforeLeavingGraph". Note
@@ -360,8 +372,8 @@ class FrameNodeImpl
       is_holding_weblock_{false};
   ObservedProperty::NotifiesOnlyOnChanges<
       bool,
-      &FrameNodeObserver::OnFrameIsHoldingIndexedDBLockChanged>
-      is_holding_indexeddb_lock_{false};
+      &FrameNodeObserver::OnFrameIsHoldingBlockingIndexedDBLockChanged>
+      is_holding_blocking_indexeddb_lock_{false};
 
   bool is_current_{false};
 

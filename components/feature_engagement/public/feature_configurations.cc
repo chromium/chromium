@@ -503,7 +503,10 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
   if (kIPHDownloadEsbPromoFeature.name == feature->name) {
     std::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
-    config->availability = Comparator(ANY, 0);
+    // Because this is a custom configuration being used in desktop user ed, use
+    // a non-default availability so the configurator doesn't try to write its
+    // own.
+    config->availability = Comparator(GREATER_THAN_OR_EQUAL, 0);
     config->session_rate = Comparator(ANY, 0);
     // Don't show if user has already seen an IPH this session.
     // Show the promo max once a year if the user hasn't interacted with
@@ -529,7 +532,10 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     // c/b/ui/webui/downloads/downloads_dom_handler.cc
     std::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
-    config->availability = Comparator(ANY, 0);
+    // Because this is a custom configuration being used in desktop user ed, use
+    // a non-default availability so the configurator doesn't try to write its
+    // own.
+    config->availability = Comparator(GREATER_THAN_OR_EQUAL, 0);
     config->session_rate = Comparator(ANY, 0);
 
     // This isn't an IPH so we don't suppress other engagement features.
@@ -1098,26 +1104,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                                Comparator(EQUAL, 0), 14, 90);
     config->snooze_params.snooze_interval = 7;
     config->snooze_params.max_limit = 3;
-    return config;
-  }
-  if (kIPHTabSwitcherFloatingActionButtonFeature.name == feature->name) {
-    // Allows an IPH for the tab groups surface through hub toolbar when:
-    // * Only once per week.
-    // * Up to 3 times per year.
-    // * And only as long as the user has never manually pressed the
-    // floating new tab button.
-    std::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(LESS_THAN, 1);
-    config->trigger =
-        EventConfig("tab_switcher_floating_action_button_iph_triggered",
-                    Comparator(EQUAL, 0), 7, 7);
-    config->event_configs.insert(
-        EventConfig("tab_switcher_floating_action_button_iph_triggered",
-                    Comparator(LESS_THAN, 3), 360, 360));
-    config->used = EventConfig("tab_switcher_floating_action_button_clicked",
-                               Comparator(EQUAL, 0), 360, 360);
     return config;
   }
   if (kIPHWebFeedFollowFeature.name == feature->name) {
@@ -1705,24 +1691,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                     Comparator(EQUAL, 0), 14, k10YearsInDays));
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    return config;
-  }
-
-  if (kIPHAutofillManualFallbackFeature.name == feature->name) {
-    // Autofill Manual Fallback IPH is shown if all of the following are true:
-    // * it has not been shown before in the last 90 days;
-    // * the user has never used the autofill manual fallback.
-    std::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(ANY, 0);
-    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
-    config->trigger = EventConfig("autofill_manual_fallback_trigger",
-                                  Comparator(LESS_THAN, 1), 90, 360);
-    config->used =
-        EventConfig("autofill_manual_fallback_accepted", Comparator(EQUAL, 0),
-                    feature_engagement::kMaxStoragePeriod,
-                    feature_engagement::kMaxStoragePeriod);
     return config;
   }
 

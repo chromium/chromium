@@ -7,14 +7,13 @@ package org.chromium.ui.base;
 import android.app.Activity;
 import android.content.Context;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.permissions.ActivityAndroidPermissionDelegate;
 
@@ -24,13 +23,14 @@ import java.lang.ref.WeakReference;
  * The class provides the WindowAndroid's implementation which requires Activity Instance. Only
  * instantiate this class when you need the implemented features.
  */
+@NullMarked
 public class ActivityWindowAndroid extends WindowAndroid
         implements ApplicationStatus.ActivityStateListener,
                 ApplicationStatus.WindowFocusChangedListener {
     private final boolean mListenToActivityState;
 
     // Just create one ImmutableWeakReference object to avoid gc churn.
-    private ImmutableWeakReference<Activity> mActivityWeakRefHolder;
+    private @Nullable ImmutableWeakReference<Activity> mActivityWeakRefHolder;
 
     /**
      * Creates an Activity-specific WindowAndroid with associated intent functionality.
@@ -70,7 +70,7 @@ public class ActivityWindowAndroid extends WindowAndroid
     public ActivityWindowAndroid(
             Context context,
             boolean listenToActivityState,
-            @NonNull ActivityKeyboardVisibilityDelegate keyboardVisibilityDelegate,
+            ActivityKeyboardVisibilityDelegate keyboardVisibilityDelegate,
             IntentRequestTracker intentRequestTracker,
             InsetObserver insetObserver,
             boolean trackOcclusion) {
@@ -100,7 +100,7 @@ public class ActivityWindowAndroid extends WindowAndroid
             ActivityAndroidPermissionDelegate activityAndroidPermissionDelegate,
             ActivityKeyboardVisibilityDelegate activityKeyboardVisibilityDelegate,
             IntentRequestTracker intentRequestTracker,
-            InsetObserver insetObserver,
+            @Nullable InsetObserver insetObserver,
             boolean trackOcclusion) {
         super(context, intentRequestTracker, insetObserver, trackOcclusion);
         Activity activity = ContextUtils.activityFromContext(context);
@@ -116,7 +116,7 @@ public class ActivityWindowAndroid extends WindowAndroid
         activityKeyboardVisibilityDelegate.setLazyKeyboardInsetSupplier(
                 LazyOneshotSupplier.fromSupplier(
                         () -> {
-                            if (getInsetObserver() == null) {
+                            if (insetObserver == null) {
                                 // An InsetObserver can no longer be created. Stub this out so
                                 // calls continue to succeed.
                                 return new ObservableSupplierImpl<Integer>();

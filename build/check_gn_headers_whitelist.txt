@@ -17,7 +17,6 @@ cc/cc_export.h
 cc/input/browser_controls_state.h
 cc/input/event_listener_properties.h
 cc/input/scrollbar.h
-cc/layers/performance_properties.h
 chrome/browser/android/android_theme_resources.h
 chrome/browser/android/resource_id.h
 chrome/browser/ash/login/signin/oauth2_login_manager.h

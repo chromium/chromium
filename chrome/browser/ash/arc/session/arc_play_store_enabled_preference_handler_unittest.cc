@@ -39,6 +39,7 @@
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -91,7 +92,7 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
         std::make_unique<ArcPlayStoreEnabledPreferenceHandler>(
             profile_.get(), arc_session_manager_.get());
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
-        profile()->GetProfileUserName(), kTestGaiaId));
+        profile()->GetProfileUserName(), GaiaId(kTestGaiaId)));
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
 
@@ -210,10 +211,9 @@ TEST_F(ArcPlayStoreEnabledPreferenceHandlerTest, PrefChangeRevokesConsent) {
 
   ArcPlayTermsOfServiceConsent play_consent;
   play_consent.set_status(UserConsentTypes::NOT_GIVEN);
-  play_consent.set_confirmation_grd_id(
-      IDS_SETTINGS_ANDROID_APPS_DISABLE_DIALOG_REMOVE);
+  play_consent.set_confirmation_grd_id(IDS_SETTINGS_ANDROID_APPS_REMOVE_BUTTON);
   play_consent.add_description_grd_ids(
-      IDS_SETTINGS_ANDROID_APPS_DISABLE_DIALOG_MESSAGE);
+      IDS_OS_SETTINGS_ANDROID_APPS_DISABLE_DIALOG_MESSAGE);
   play_consent.set_consent_flow(
       UserConsentTypes::ArcPlayTermsOfServiceConsent::SETTING_CHANGE);
   EXPECT_CALL(*auditor, RecordArcPlayConsent(

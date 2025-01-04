@@ -361,6 +361,7 @@
 <translation id="2295777434187870477">A mikrofon be van kapcsolva, a gombra kattintva elnémítja.</translation>
 <translation id="2302092602801625023">Ezt a fiókot a Family Linkkel kezelik</translation>
 <translation id="2303600792989757991">Ablakáttekintési mód váltása</translation>
+<translation id="2304702218354340897">Biztosan kikapcsolja az arcalapú vezérlést?</translation>
 <translation id="2305738328104302723">Google-feladatlista: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: nemrég készült képernyőfelvételek, letöltések és kitűzött fájlok</translation>
 <translation id="2318576281648121272">Ma <ph name="TODAY_DATE" /></translation>
@@ -387,6 +388,7 @@
 <translation id="2370971919968699910">Ez adatforgalmi költségekkel járhat.
 <ph name="DEVICECOUNT" /> eszköz van csatlakoztatva.</translation>
 <translation id="2386292613071805067">Az oldalon lévő összes elem kijelölése</translation>
+<translation id="2389423187722941333">A Gemini be- vagy kikapcsolása</translation>
 <translation id="2392659840443812875">Nincs rendelkezésre álló hotspot. Győződjön meg arról, hogy az eszköze a közelben van, és be van kapcsolva rajta a Bluetooth.</translation>
 <translation id="2397416548179033562">A Chrome-menü megjelenítése</translation>
 <translation id="240006516586367791">Médiaelemek vezérlője</translation>
@@ -394,6 +396,7 @@
 <translation id="2402411679569069051">A Chromebook zárolásának feloldásához használja ujjlenyomatát, vagy oldja fel telefonja zárolását.</translation>
 <translation id="240545663114741956">A kijelentkezéshez nyomja meg kétszer a <ph name="ACCELERATOR" /> billentyűkombinációt.</translation>
 <translation id="2405664212338326887">Nincs kapcsolat</translation>
+<translation id="2406710117564540804">A Ne zavarjanak funkció be-/kikapcsolása</translation>
 <translation id="2408955596600435184">PIN-kód megadása</translation>
 <translation id="2412593942846481727">Rendelkezésre áll frissítés</translation>
 <translation id="2416438829169535743">Kilép a nézetből?</translation>
@@ -900,6 +903,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4119928251231465047">Túl sokszor próbálkozott a PIN-kód megadásával</translation>
 <translation id="412298498316631026">ablak</translation>
 <translation id="4123259114412175274">A Chromebook zárolásának feloldása előtt győződjön meg arról, hogy be van kapcsolva a Bluetooth a telefonon.</translation>
+<translation id="4123868835475902435">Ezek voltak az alapok. További tippeket és segítséget a Felfedezésben, beépített alkalmazásunkban találhat. Itt találja meg a kezdésben segítő tippeket, az akciós ajánlatokat és a legújabb <ph name="PRODUCT_NAME" />-funkciókat.</translation>
 <translation id="4125970834901680537">Táblagép módban nem streamelhetők az alkalmazások. Próbálja újra laptop módban.</translation>
 <translation id="4131973331381812765">Hőmérséklet: <ph name="TEMPERATURE" /> °C – Aktuális sebesség: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="4136724716305260864">Bekapcsolva napkeltéig</translation>
@@ -1020,7 +1024,6 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4481530544597605423">Párosítatlan eszközök</translation>
 <translation id="4485506555414638855">A telefonján lévő legutóbbi fotók, médiatartalmak, értesítések és alkalmazások megtekintésére vonatkozó beállítás elvetése</translation>
 <translation id="4491109536499578614">Kép</translation>
-<translation id="4493452241184130939">Ezek voltak az alapok. További tippeket és segítséget a Felfedezésben, beépített alkalmazásunkban találhat. Itt találja meg a kezdésben segítő tippeket, az ajánlott alkalmazásokat, az akciós ajánlatokat és a legújabb <ph name="PRODUCT_NAME" />-funkciókat.</translation>
 <translation id="450584155212756404">Fejlesztői csatorna</translation>
 <translation id="4513946894732546136">Visszajelzés</translation>
 <translation id="4518404433291145981">A Chromebook zárolásának feloldásához először oldja fel a telefonja zárolását.</translation>
@@ -1083,7 +1086,6 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4708065238214351979">A billentyűzet fényerejének növelése</translation>
 <translation id="4708185346211948049">Jövő hét <ph name="DAY_OF_WEEK" /></translation>
 <translation id="4717575069099566988">Az USB-C kábel nem támogatja az USB4 szabványt. Ez korlátozhatja az eszköz teljesítményét.</translation>
-<translation id="4724328513667182700">Hat tipp a(z) <ph name="PRODUCT_NAME" /> használatának megkezdéséhez</translation>
 <translation id="4730374152663651037">GYAKRAN HASZNÁLT</translation>
 <translation id="4731797938093519117">Szülői hozzáférés</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (bal)</translation>
@@ -1310,7 +1312,6 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="5409208741270395213">Feladat megjelölése teljesítettként</translation>
 <translation id="5413656666631274079">Beállítások oldal</translation>
 <translation id="5414198321558177633">Profillista frissítése. Ez eltarthat néhány percig.</translation>
-<translation id="5417965108047245734">Tekintse át gyorsan, hogy hogyan navigálhat <ph name="PRODUCT_NAME" /> eszközén.</translation>
 <translation id="5426063383988017631">Beállítások menü bezárva</translation>
 <translation id="5428899915242071344">Kijelölés indítása</translation>
 <translation id="5429993543155113935">Az inkognitó ablakok jelenleg nem támogatottak.</translation>
@@ -1648,6 +1649,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="6539852571005954999">Folyamatban van a következő letöltés ellenőrzése: <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Küldés ide: <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emojik, GIF-ek és egyebek</translation>
+<translation id="6543942526104794893">Biztosan kikapcsolja az arckifejezéseket?</translation>
 <translation id="6545382064335350438">PIN-kódjának ellenőrzése még mindig nem sikerült. Próbálkozzon újra.</translation>
 <translation id="6555373427270923730">Gépelje be a címsávba az internetcímet, majd nyomja le a(z) <ph name="MODIFIER" /><ph name="KEY" /> billentyűkombinációt</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2314,6 +2316,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8855885154700222542">Teljes képernyő billentyű</translation>
 <translation id="8858369206579825206">Adatvédelmi beállítások</translation>
 <translation id="8860366331836346216">eSIM hozzáadása</translation>
+<translation id="8869149849311827122">Biztosan kikapcsolja az egérkurzor vezérlését?</translation>
 <translation id="8870509716567206129">Az alkalmazás nem támogatja az osztott képernyős nézetet.</translation>
 <translation id="8873203135446552888">Annak megerősítése, hogy le szeretné tiltani a beépített érintőpadot</translation>
 <translation id="8874184842967597500">Nincs csatl.</translation>

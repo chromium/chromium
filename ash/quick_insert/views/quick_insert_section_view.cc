@@ -442,8 +442,8 @@ void QuickInsertSectionView::AddTitleTrailingLink(
       views::Builder<views::Link>()
           .SetText(link_text)
           .SetCallback(link_callback)
-          .SetFontList(ash::TypographyProvider::Get()->ResolveTypographyToken(
-              ash::TypographyToken::kCrosAnnotation2))
+          .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
+              TypographyToken::kCrosAnnotation2))
           .SetEnabledColorId(cros_tokens::kCrosSysPrimary)
           .SetForceUnderline(false)
           .SetProperty(views::kMarginsKey, kSectionTitleTrailingLinkMargins)
@@ -612,8 +612,10 @@ QuickInsertSectionView::GetOrCreateListItemContainer() {
 QuickInsertImageItemGridView*
 QuickInsertSectionView::GetOrCreateImageItemGrid() {
   if (image_item_grid_ == nullptr) {
-    image_item_grid_ = AddChildView(
-        std::make_unique<QuickInsertImageItemGridView>(section_width_));
+    image_item_grid_ =
+        AddChildView(std::make_unique<QuickInsertImageItemGridView>(
+            section_width_,
+            /*has_top_margin=*/title_container_->children().empty()));
     item_containers_.push_back(image_item_grid_);
   }
   return image_item_grid_;

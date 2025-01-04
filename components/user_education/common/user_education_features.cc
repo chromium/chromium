@@ -76,7 +76,7 @@ inline constexpr base::TimeDelta kDefaultPollingInterval =
 
 BASE_FEATURE(kUserEducationExperienceVersion2,
              "UserEducationExperienceVersion2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUserEducationExperienceVersion2Point5,
              "kUserEducationExperienceVersion2Point5",
@@ -86,10 +86,6 @@ BASE_FEATURE(kNewBadgeTestFeature,
              "NewBadgeTestFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWhatsNewVersion2,
-             "WhatsNewVersion2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool IsUserEducationV2() {
   return base::FeatureList::IsEnabled(kUserEducationExperienceVersion2);
 }
@@ -97,10 +93,6 @@ bool IsUserEducationV2() {
 bool IsUserEducationV25() {
   return IsUserEducationV2() &&
          base::FeatureList::IsEnabled(kUserEducationExperienceVersion2Point5);
-}
-
-bool IsWhatsNewV2() {
-  return base::FeatureList::IsEnabled(kWhatsNewVersion2);
 }
 
 bool IsRateLimitingDisabled() {

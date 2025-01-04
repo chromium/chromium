@@ -4,7 +4,10 @@
 
 package org.chromium.mojo.bindings;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Error when deserializing a mojo message. */
+@NullMarked
 public class DeserializationException extends RuntimeException {
 
     /** Constructs a new deserialization exception with the specified detail message. */

@@ -77,8 +77,8 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/js_injection/browser/js_communication_host.h"
@@ -1505,12 +1505,9 @@ void AwContents::StartPrerendering(
   // sequentially.
   prerender_handle_.reset();
 
-  // TODO(https://crbug.com/41490450): Set the additional headers in a
-  // prerendering navigation request.
   net::HttpRequestHeaders additional_headers =
       GetAdditionalHeadersFromPrefetchParameters(env, prefetch_params);
-
-  std::optional<net::HttpNoVarySearchData> no_vary_search_expected =
+  std::optional<net::HttpNoVarySearchData> no_vary_search_hint =
       GetExpectedNoVarySearchFromPrefetchParameters(env, prefetch_params);
 
   // This is the same as the page transition of WebView.loadUrl().
@@ -1522,7 +1519,8 @@ void AwContents::StartPrerendering(
   // - Pass a valid navigation handle callback.
   prerender_handle_ = web_contents_->StartPrerendering(
       GURL(prerendering_url), content::PreloadingTriggerType::kEmbedder,
-      "WebView", std::move(no_vary_search_expected), page_transition,
+      "WebView", std::move(additional_headers), std::move(no_vary_search_hint),
+      page_transition,
       /*should_warm_up_compositor=*/false,
       /*should_prepare_paint_tree=*/false,
       content::PreloadingHoldbackStatus::kUnspecified,
@@ -1593,7 +1591,7 @@ void AwContents::TrimMemory(JNIEnv* env, jint level, jboolean visible) {
 
 void AwContents::GrantFileSchemeAccesstoChildProcess(JNIEnv* env) {
   content::ChildProcessSecurityPolicy::GetInstance()->GrantRequestScheme(
-      web_contents_->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      web_contents_->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
       url::kFileScheme);
 }
 

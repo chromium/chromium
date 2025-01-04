@@ -18,6 +18,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "build/buildflag.h"
@@ -31,6 +32,7 @@
 #include "components/signin/public/identity_manager/set_accounts_in_cookie_result.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/gaia_features.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/cookies/canonical_cookie.h"
@@ -947,6 +949,67 @@ TEST_F(GaiaCookieManagerServiceTest, GaiaCookieLastListAccountsDataSaved) {
                     ->GetPrefs()
                     ->GetString(prefs::kGaiaCookieLastListAccountsData)
                     .empty());
+  }
+}
+
+TEST_F(GaiaCookieManagerServiceTest, ListAccountsEncodingMigration) {
+  gaia::ListedAccount account;
+  account.gaia_id = GaiaId("8");
+  account.id = CoreAccountId::FromGaiaId(account.gaia_id);
+  account.email = "a@b.com";
+  account.raw_email = "a@b.com";
+  signin::AccountsInCookieJarInfo cookies_expected_fresh(true, {account});
+  signin::AccountsInCookieJarInfo cookies_expected_stale(false, {account});
+  // ListAccounts data as jspb.
+  std::string data_jspb =
+      "[\"f\", [[\"b\", 0, \"n\", \"a@b.com\", \"p\", 0, 0, 0, 0, 1, \"8\"]]]";
+  // ListAccounts data as base64-encoded protobuf.
+  std::string data_binary = "Cg4aB2FAYi5jb21IAVIBOA==";
+  {
+    InstrumentedGaiaCookieManagerService helper(
+        account_tracker_service(), token_service(), signin_client());
+    MockObserver observer(&helper);
+    EXPECT_EQ(helper.ListAccounts(), kCookiesEmptyStale);
+
+    // Default behaviour: return and store ListAccounts data encoded in jspb.
+    SimulateListAccountsSuccess(&helper, data_jspb);
+    ASSERT_EQ(helper.ListAccounts(), cookies_expected_fresh);
+    EXPECT_EQ(signin_client()->GetPrefs()->GetString(
+                  prefs::kGaiaCookieLastListAccountsData),
+              data_jspb);
+    EXPECT_TRUE(signin_client()
+                    ->GetPrefs()
+                    ->GetString(prefs::kGaiaCookieLastListAccountsBinaryData)
+                    .empty());
+  }
+
+  {
+    // Enable the feature before reading prefs.
+    base::test::ScopedFeatureList feature_list(
+        gaia::features::kListAccountsUsesBinaryFormat);
+    InstrumentedGaiaCookieManagerService helper(
+        account_tracker_service(), token_service(), signin_client());
+    MockObserver observer(&helper);
+    // Verify that the jspb pref was read correctly.
+    EXPECT_EQ(helper.ListAccounts(), cookies_expected_stale);
+
+    // Set and verify binary ListAccounts.
+    SimulateListAccountsSuccess(&helper, data_binary);
+    ASSERT_EQ(helper.ListAccounts(), cookies_expected_fresh);
+    EXPECT_TRUE(signin_client()
+                    ->GetPrefs()
+                    ->GetString(prefs::kGaiaCookieLastListAccountsData)
+                    .empty());
+    EXPECT_EQ(signin_client()->GetPrefs()->GetString(
+                  prefs::kGaiaCookieLastListAccountsBinaryData),
+              data_binary);
+  }
+
+  {
+    InstrumentedGaiaCookieManagerService helper(
+        account_tracker_service(), token_service(), signin_client());
+    // Verify that the binary pref was read correctly.
+    EXPECT_EQ(helper.ListAccounts(), cookies_expected_stale);
   }
 }
 

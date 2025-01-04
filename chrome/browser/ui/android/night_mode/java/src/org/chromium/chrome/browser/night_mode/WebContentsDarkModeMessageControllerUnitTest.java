@@ -18,7 +18,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,8 +30,7 @@ import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureList.TestValues;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
@@ -189,20 +187,13 @@ public class WebContentsDarkModeMessageControllerUnitTest {
         ShadowWebContentsDarkModeController.sIsFeatureEnabled = true;
     }
 
-    @After
-    public void tearDown() {
-        FeatureList.setTestValues(null);
-    }
-
     private void setOptOut(boolean optOut) {
         ShadowWebContentsDarkModeController.sIsFeatureEnabled = optOut;
         if (!optOut) {
-            FeatureList.TestValues testValues = new TestValues();
-            testValues.addFieldTrialParamOverride(
+            FeatureOverrides.overrideParam(
                     ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING,
                     WebContentsDarkModeMessageController.OPT_OUT_PARAM,
-                    Boolean.toString(optOut));
-            FeatureList.setTestValues(testValues);
+                    optOut);
         }
     }
 
@@ -400,12 +391,10 @@ public class WebContentsDarkModeMessageControllerUnitTest {
     @Test
     public void testDialogController_ClickPositiveButton_FeedbackEnabled() {
         // Enable feedback.
-        FeatureList.TestValues testValues = new TestValues();
-        testValues.addFieldTrialParamOverride(
+        FeatureOverrides.overrideParam(
                 ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING,
                 WebContentsDarkModeMessageController.FEEDBACK_DIALOG_PARAM,
-                Boolean.toString(true));
-        FeatureList.setTestValues(testValues);
+                true);
 
         // Click on positive button.
         WebContentsDarkModeMessageController.attemptToShowDialog(
@@ -424,12 +413,10 @@ public class WebContentsDarkModeMessageControllerUnitTest {
     @Test
     public void testDialogController_ClickPositiveButton_FeedbackDisabled() {
         // Disable feedback.
-        FeatureList.TestValues testValues = new TestValues();
-        testValues.addFieldTrialParamOverride(
+        FeatureOverrides.overrideParam(
                 ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING,
                 WebContentsDarkModeMessageController.FEEDBACK_DIALOG_PARAM,
-                Boolean.toString(false));
-        FeatureList.setTestValues(testValues);
+                false);
 
         // Click on positive button.
         WebContentsDarkModeMessageController.attemptToShowDialog(

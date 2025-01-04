@@ -48,7 +48,7 @@ std::optional<BlinkCloneableMessage> Serialize(
   scoped_refptr<SerializedScriptValue> serialized_value =
       options->hasData()
           ? SerializedScriptValue::Serialize(
-                options->data().GetIsolate(), options->data().V8Value(),
+                execution_context.GetIsolate(), options->data().V8Object(),
                 SerializedScriptValue::SerializeOptions(), exception_state)
           : SerializedScriptValue::UndefinedValue();
   if (exception_state.HadException()) {
@@ -393,10 +393,8 @@ ScriptPromise<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
     HashMap<String, KURL> converted_reporting_metadata;
 
     if (url_with_metadata->hasReportingMetadata()) {
-      DCHECK(url_with_metadata->reportingMetadata().V8Value()->IsObject());
-
       v8::Local<v8::Object> obj =
-          url_with_metadata->reportingMetadata().V8Value().As<v8::Object>();
+          url_with_metadata->reportingMetadata().V8Object();
 
       v8::MaybeLocal<v8::Array> maybe_fields =
           obj->GetOwnPropertyNames(v8_context);

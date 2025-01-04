@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_util.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "components/autofill/core/browser/autofill_test_utils.h"
+#import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 

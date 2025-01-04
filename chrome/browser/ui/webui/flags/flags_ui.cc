@@ -18,7 +18,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/flags/flags_ui_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
 #include "components/flags_ui/flags_ui_constants.h"
 #include "components/flags_ui/flags_ui_pref_names.h"
@@ -37,7 +36,8 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/resources/grit/webui_resources.h"
+#include "ui/webui/resources/grit/webui_resources.h"
+#include "ui/webui/webui_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
@@ -105,8 +105,9 @@ void FinishInitialization(base::WeakPtr<FlagsUI> flags_ui,
                           std::unique_ptr<flags_ui::FlagsStorage> storage,
                           flags_ui::FlagAccess access) {
   // If the flags_ui has gone away, there's nothing to do.
-  if (!flags_ui)
+  if (!flags_ui) {
     return;
+  }
 
   // Note that |dom_handler| is owned by the web ui that owns |flags_ui|, so
   // it is still alive if |flags_ui| is.

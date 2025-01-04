@@ -97,8 +97,12 @@ public class DisplayAndroidTest {
 
     private void updateDisplayWithSupportedModes(@Nullable List<Display.Mode> supportedModes) {
         mDisplay.update(
-                /* size= */ null,
+                /* name= */ null,
+                /* bounds= */ null,
+                /* insets= */ null,
                 /* dipScale= */ null,
+                /* xdpi= */ null,
+                /* ydpi= */ null,
                 /* bitsPerPixel= */ null,
                 /* bitsPerComponent= */ null,
                 /* rotation= */ null,
@@ -106,6 +110,9 @@ public class DisplayAndroidTest {
                 /* isDisplayServerWideColorGamut= */ null,
                 /* refreshRate= */ null,
                 /* currentMode= */ null,
-                supportedModes);
+                supportedModes,
+                /* isHdr= */ null,
+                /* hdrMaxLuminanceRatio= */ null,
+                /* isInternal= */ null);
     }
 }

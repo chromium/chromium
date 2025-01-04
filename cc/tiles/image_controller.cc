@@ -30,6 +30,12 @@ ImageController::ImageController(
       notify_external_dependent_(std::move(notify_external_dependent)) {
   worker_state_ = std::make_unique<WorkerState>(std::move(origin_task_runner),
                                                 weak_ptr_factory_.GetWeakPtr());
+  // base::Unretained is safe because `worker_state_` is guaranteed to be
+  // deleted from a task posted to `worker_task_runner_` after any scheduled
+  // invocation of worker_task_ is finished (see ~ImageController).
+  worker_task_ = base::BindRepeating(
+      &ImageController::ProcessNextImageDecodeOnWorkerThread,
+      base::Unretained(worker_state_.get()));
 }
 
 ImageController::~ImageController() {
@@ -63,14 +69,13 @@ void ImageController::StopWorkerTasks() {
 
     // If a worker task is running, post a task and wait for its completion to
     // "flush" the queue.
-    if (worker_state_->task_state == WorkerTaskState::kRunningTask) {
+    while (worker_state_->task_state == WorkerTaskState::kRunningTask) {
       base::AutoUnlock release(worker_state_->lock);
       CompletionEvent completion_event;
       worker_task_runner_->PostTask(
           FROM_HERE, base::BindOnce(&CompletionEvent::Signal,
                                     base::Unretained(&completion_event)));
       completion_event.Wait();
-      CHECK_NE(worker_state_->task_state, WorkerTaskState::kRunningTask);
     }
 
     // Now, begin cleanup.
@@ -166,6 +171,46 @@ bool ImageController::HasReadyToRunTask() const {
 bool ImageController::HasReadyToRunTaskForTesting() const {
   base::AutoLock hold(worker_state_->lock);
   return HasReadyToRunTask();
+}
+
+void ImageController::FlushDecodeTasksForTesting() {
+  TileTask::Vector external_dependents;
+  std::vector<base::OnceClosure> callbacks;
+  {
+    base::AutoLock hold(worker_state_->lock);
+    // If a worker task is running, post a task and wait for its completion to
+    // "flush" the queue.
+    while (worker_state_->task_state != WorkerTaskState::kNoTask) {
+      base::AutoUnlock release(worker_state_->lock);
+      CompletionEvent completion_event;
+      worker_task_runner_->PostTask(
+          FROM_HERE, base::BindOnce(&CompletionEvent::Signal,
+                                    base::Unretained(&completion_event)));
+      completion_event.Wait();
+    }
+    while (HasReadyToRunTask()) {
+      ImageController::ProcessNextImageDecodeWithLock(worker_state_.get());
+    }
+    for (auto& request_to_complete :
+         worker_state_->requests_needing_completion) {
+      ImageDecodeRequest& request = request_to_complete.second;
+      ImageDecodeResult result = CompleteTaskForRequest(request);
+      if (request.task && request.task->external_dependent()) {
+        external_dependents.emplace_back(
+            std::move(request.task->external_dependent()));
+      }
+      callbacks.emplace_back(
+          base::BindOnce(std::move(request.callback), request.id, result));
+    }
+    worker_state_->requests_needing_completion.clear();
+  }
+  for (auto& dependent : external_dependents) {
+    dependent->ExternalDependencyCompleted();
+    notify_external_dependent_.Run(dependent);
+  }
+  for (auto& callback : callbacks) {
+    std::move(callback).Run();
+  }
 }
 
 void ImageController::SetImageDecodeCache(ImageDecodeCache* cache) {
@@ -283,10 +328,9 @@ ImageController::ImageDecodeRequestId ImageController::QueueImageDecode(
       /*can_do_hardware_accelerated_decode=*/false);
   if (is_image_lazy) {
     if (!cache_) {
-      // This should only happen in tests
-      worker_state_->origin_task_runner->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(callback), id, ImageDecodeResult::FAILURE));
+      orphaned_decode_requests_.emplace_back(
+          id, draw_image, std::move(callback), /*task=*/nullptr,
+          /*need_unref=*/false, /*has_external_dependency=*/false);
       return id;
     }
     result = cache_->GetOutOfRasterDecodeTaskForImageAndRef(
@@ -345,11 +389,16 @@ void ImageController::ProcessNextImageDecodeOnWorkerThread(
 
   base::AutoLock hold(worker_state->lock);
   DCHECK_EQ(worker_state->task_state, WorkerTaskState::kQueuedTask);
-  worker_state->task_state = WorkerTaskState::kRunningTask;
+  ImageController::ProcessNextImageDecodeWithLock(worker_state);
+  worker_state->task_state = WorkerTaskState::kNoTask;
+}
+
+void ImageController::ProcessNextImageDecodeWithLock(
+    WorkerState* worker_state) {
+  worker_state->lock.AssertAcquired();
 
   // If we don't have any work, abort.
   if (worker_state->image_decode_queue.empty()) {
-    worker_state->task_state = WorkerTaskState::kNoTask;
     return;
   }
 
@@ -363,11 +412,8 @@ void ImageController::ProcessNextImageDecodeOnWorkerThread(
     decode_it++;
   }
   if (decode_it == worker_state->image_decode_queue.end()) {
-    worker_state->task_state = WorkerTaskState::kNoTask;
     return;
   }
-  scoped_refptr<TileTask> decode_task = decode_it->second.task;
-  ImageDecodeRequestId decode_id = decode_it->second.id;
 
   // Notify that the task will need completion. Note that there are two cases
   // where we process this. First, we might complete this task as a response to
@@ -376,6 +422,8 @@ void ImageController::ProcessNextImageDecodeOnWorkerThread(
   // after running, or the thread was already joined which means the task ran).
   // This means that we can put the decode into |requests_needing_completion_|
   // here before actually running the task.
+  scoped_refptr<TileTask> decode_task = decode_it->second.task;
+  ImageDecodeRequestId decode_id = decode_it->second.id;
   worker_state->requests_needing_completion[decode_id] =
       std::move(decode_it->second);
 
@@ -391,6 +439,8 @@ void ImageController::ProcessNextImageDecodeOnWorkerThread(
     decode_task->state().DidSchedule();
     decode_task->state().DidStart();
     {
+      base::AutoReset<WorkerTaskState> reset_state(
+          &worker_state->task_state, WorkerTaskState::kRunningTask);
       base::AutoUnlock release(worker_state->lock);
       decode_task->RunOnWorkerThread();
     }
@@ -400,14 +450,11 @@ void ImageController::ProcessNextImageDecodeOnWorkerThread(
   worker_state->origin_task_runner->PostTask(
       FROM_HERE, base::BindOnce(&ImageController::ImageDecodeCompleted,
                                 worker_state->weak_ptr, decode_id));
-
-  DCHECK_EQ(worker_state->task_state, WorkerTaskState::kRunningTask);
-  worker_state->task_state = WorkerTaskState::kNoTask;
 }
 
 void ImageController::ImageDecodeCompleted(ImageDecodeRequestId id) {
   ImageDecodedCallback callback;
-  ImageDecodeResult result = ImageDecodeResult::SUCCESS;
+  ImageDecodeResult result;
   scoped_refptr<TileTask> external_dependent;
   {
     base::AutoLock hold(worker_state_->lock);
@@ -418,31 +465,8 @@ void ImageController::ImageDecodeCompleted(ImageDecodeRequestId id) {
       return;
     id = request_it->first;
     ImageDecodeRequest& request = request_it->second;
-
-    // First, Determine the status of the decode. This has to happen here, since
-    // we conditionally move from the draw image below.
-    // Also note that if we don't need an unref for a lazy decoded images, it
-    // implies that we never attempted the decode. Some of the reasons for this
-    // would be that the image is of an empty size, or if the image doesn't fit
-    // into memory. In all cases, this implies that the decode was a failure.
-    if (!request.draw_image.paint_image().IsLazyGenerated())
-      result = ImageDecodeResult::DECODE_NOT_REQUIRED;
-    else if (!request.need_unref)
-      result = ImageDecodeResult::FAILURE;
-    else
-      result = ImageDecodeResult::SUCCESS;
-
-    // If we need to unref this decode, then we have to put it into the locked
-    // images vector.
-    if (request.need_unref)
-      requested_locked_images_[id] = std::move(request.draw_image);
-
-    // If we have a task that isn't completed yet, we need to complete it.
+    result = CompleteTaskForRequest(request);
     if (request.task) {
-      if (!request.task->HasCompleted()) {
-        request.task->OnTaskCompleted();
-        request.task->DidComplete();
-      }
       external_dependent = std::move(request.task->external_dependent());
     }
 
@@ -463,6 +487,40 @@ void ImageController::ImageDecodeCompleted(ImageDecodeRequestId id) {
   std::move(callback).Run(id, result);
 }
 
+ImageController::ImageDecodeResult ImageController::CompleteTaskForRequest(
+    ImageDecodeRequest& request) {
+  worker_state_->lock.AssertAcquired();
+  // First, Determine the status of the decode. This has to happen here, since
+  // we conditionally move from the draw image below.
+  // Also note that if we don't need an unref for a lazy decoded images, it
+  // implies that we never attempted the decode. Some of the reasons for this
+  // would be that the image is of an empty size, or if the image doesn't fit
+  // into memory. In all cases, this implies that the decode was a failure.
+  ImageDecodeResult result;
+  if (!request.draw_image.paint_image().IsLazyGenerated()) {
+    result = ImageDecodeResult::DECODE_NOT_REQUIRED;
+  } else if (!request.need_unref) {
+    result = ImageDecodeResult::FAILURE;
+  } else {
+    result = ImageDecodeResult::SUCCESS;
+  }
+
+  // If we need to unref this decode, then we have to put it into the locked
+  // images vector.
+  if (request.need_unref) {
+    requested_locked_images_[request.id] = std::move(request.draw_image);
+  }
+
+  // If we have a task that isn't completed yet, we need to complete it.
+  if (request.task) {
+    if (!request.task->HasCompleted()) {
+      request.task->OnTaskCompleted();
+      request.task->DidComplete();
+    }
+  }
+  return result;
+}
+
 void ImageController::GenerateTasksForOrphanedRequests() {
   base::AutoLock hold(worker_state_->lock);
   DCHECK_EQ(0u, worker_state_->image_decode_queue.size());
@@ -479,6 +537,8 @@ void ImageController::GenerateTasksForOrphanedRequests() {
                                                          request.draw_image);
       request.need_unref = result.need_unref;
       request.task = result.task;
+      request.has_external_dependency =
+          result.task && !result.task->dependencies().empty();
     }
     worker_state_->image_decode_queue[request.id] = std::move(request);
   }
@@ -491,13 +551,7 @@ void ImageController::ScheduleImageDecodeOnWorkerIfNeeded() {
   if (worker_state_->task_state == WorkerTaskState::kNoTask &&
       HasReadyToRunTask()) {
     worker_state_->task_state = WorkerTaskState::kQueuedTask;
-    // base::Unretained is safe because `worker_state_` is guaranteed to be
-    // deleted from a task posted to `worker_task_runner_` after this (see
-    // ~ImageController).
-    worker_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ImageController::ProcessNextImageDecodeOnWorkerThread,
-                       base::Unretained(worker_state_.get())));
+    worker_task_runner_->PostTask(FROM_HERE, worker_task_);
   }
 }
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/inline/inline_box_state.h"
 
 #include "base/containers/adapters.h"
@@ -1198,11 +1193,14 @@ InlineLayoutStateStack::ApplyBaselineShift(InlineBoxState* box,
   // Because |box| is an item in |stack_|, |box[-1]| is its parent box.
   // If this box doesn't have a parent; i.e., this box is a line box,
   // 'vertical-align' has no effect.
-  DCHECK(box >= stack_.data() && box < stack_.data() + stack_.size());
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+  DCHECK(box >= stack_.data() &&
+         box < UNSAFE_TODO(stack_.data() + stack_.size()));
   if (box == stack_.data()) {
     return kPositionNotPending;
   }
-  InlineBoxState& parent_box = box[-1];
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+  InlineBoxState& parent_box = UNSAFE_TODO(box[-1]);
 
   switch (vertical_align) {
     case EVerticalAlign::kSub:
@@ -1237,7 +1235,8 @@ InlineLayoutStateStack::ApplyBaselineShift(InlineBoxState* box,
       // 'top' and 'bottom' require the layout size of the nearest ancestor that
       // has 'top' or 'bottom', or the line box if none.
       InlineBoxState* ancestor = &parent_box;
-      for (; ancestor != stack_.data(); --ancestor) {
+      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+      for (; ancestor != stack_.data(); UNSAFE_TODO(--ancestor)) {
         if (ancestor->style->VerticalAlign() == EVerticalAlign::kTop ||
             ancestor->style->VerticalAlign() == EVerticalAlign::kBottom)
           break;
@@ -1271,10 +1270,12 @@ LayoutUnit InlineLayoutStateStack::ComputeAlignmentBaselineShift(
   if (box == stack_.data()) {
     return result;
   }
-  if (const auto* font_data = box[-1].font->PrimaryFont()) {
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+  if (const auto* font_data = UNSAFE_TODO(box[-1]).font->PrimaryFont()) {
     const FontMetrics& parent_metrics = font_data->GetFontMetrics();
-    result -= parent_metrics.FixedAscent(box[-1].style->GetFontBaseline()) -
-              parent_metrics.FixedAscent(box[-1].alignment_type);
+    result -= parent_metrics.FixedAscent(
+                  UNSAFE_TODO(box[-1]).style->GetFontBaseline()) -
+              parent_metrics.FixedAscent(UNSAFE_TODO(box[-1]).alignment_type);
   }
 
   return result;

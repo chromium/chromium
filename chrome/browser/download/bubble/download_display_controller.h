@@ -72,17 +72,6 @@ class DownloadDisplayController : public FullscreenObserver,
   // details are already hidden.
   void HideBubble();
 
-  // Opens the primary dialog to the item and scrolls to the item, and opens
-  // the security dialog if the item has a security warning. Returns whether
-  // bubble was opened to the requested item.
-  // Note: This method is currently used only for Lacros download notifications.
-  // It does not explicitly handle fullscreen conditions. See comment in
-  // implementation. In the future if there are other entry points to this
-  // method, non-immersive fullscreen (i.e. exclusive access bubble) will have
-  // to be handled explicitly.
-  bool OpenMostSpecificDialog(
-      const offline_items_collection::ContentId& content_id);
-
   // Start listening to full screen changes. This is separate from the
   // constructor as the exclusive access manager is constructed after
   // BrowserWindow.

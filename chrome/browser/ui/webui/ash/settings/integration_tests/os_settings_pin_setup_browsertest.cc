@@ -174,6 +174,8 @@ class OSSettingsPinSetupTest : public OSSettingsLockScreenBrowserTestBase,
     provider_.UpdateChromePolicy(policies);
   }
 
+  bool HasPinOnlySupport() const { return pin_type_ == PinType::kCryptohome; }
+
  private:
   PinType pin_type_;
   mojo::Remote<mojom::PinSettingsApi> pin_settings_remote_;
@@ -209,7 +211,7 @@ IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, AddPin) {
   pin_settings.SetPin(kFirstPin);
 
   pin_settings.AssertHasPin(true);
-  password_settings.AssertCanRemovePassword(true);
+  password_settings.AssertCanRemovePassword(HasPinOnlySupport());
   EXPECT_EQ(true, IsPinConfigured());
 }
 
@@ -226,7 +228,7 @@ IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, ChangePin) {
   pin_settings.SetPin(kSecondPin);
 
   pin_settings.AssertHasPin(true);
-  password_settings.AssertCanRemovePassword(true);
+  password_settings.AssertCanRemovePassword(HasPinOnlySupport());
   EXPECT_EQ(true, IsPinConfigured());
 }
 
@@ -239,7 +241,7 @@ IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, RemovePin) {
 
   pin_settings.SetPin(kFirstPin);
   pin_settings.AssertHasPin(true);
-  password_settings.AssertCanRemovePassword(true);
+  password_settings.AssertCanRemovePassword(HasPinOnlySupport());
   EXPECT_EQ(true, IsPinConfigured());
 
   pin_settings.RemovePin();

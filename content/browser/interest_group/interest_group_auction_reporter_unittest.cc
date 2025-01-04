@@ -2442,20 +2442,7 @@ TEST(InterestGroupAuctionReporterStochasticRounding, ApproximatesTrueSum) {
   EXPECT_LT(total, 1.1 * kInput * kIterations);
 }
 
-class InterestGroupAuctionReporterAdMacroReportingEnabledTest
-    : public InterestGroupAuctionReporterTest {
- public:
-  InterestGroupAuctionReporterAdMacroReportingEnabledTest() {
-    feature_list_.InitAndEnableFeature(
-        blink::features::kAdAuctionReportingWithMacroApi);
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(InterestGroupAuctionReporterAdMacroReportingEnabledTest,
-       SingleSellerReportMacros) {
+TEST_F(InterestGroupAuctionReporterTest, SingleSellerReportMacros) {
   SetUpAndStartSingleSellerAuction();
   // The macros should be empty from the start.
   EXPECT_THAT(interest_group_auction_reporter_->fenced_frame_reporter()
@@ -2488,8 +2475,7 @@ TEST_F(InterestGroupAuctionReporterAdMacroReportingEnabledTest,
                   testing::UnorderedElementsAreArray(kAdMacros))));
 }
 
-TEST_F(InterestGroupAuctionReporterAdMacroReportingEnabledTest,
-       ComponentAuctionReportMacros) {
+TEST_F(InterestGroupAuctionReporterTest, ComponentAuctionReportMacros) {
   SetUpAndStartComponentAuction();
   EXPECT_THAT(interest_group_auction_reporter_->fenced_frame_reporter()
                   ->GetAdMacrosForTesting(),

@@ -667,7 +667,7 @@ void MediaInternals::SaveEvent(int process_id,
 void MediaInternals::EraseSavedEvents(RenderProcessHost* host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // TODO(sandersd): Send a termination event before clearing the log.
-  saved_events_by_process_.erase(host->GetID());
+  saved_events_by_process_.erase(host->GetDeprecatedID());
 }
 
 void MediaInternals::UpdateAudioLog(AudioLogUpdateType type,

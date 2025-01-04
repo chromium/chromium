@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -27,6 +28,7 @@
 #include "chrome/common/extensions/api/tabs.h"
 #include "chrome/common/extensions/api/windows.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -343,6 +345,19 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
 
     if (!IndexSupportsGroupMove(target_tab_strip, new_index, error)) {
       return false;
+    }
+
+    // When moving a group between windows, Saved Tab Groups must pause
+    // listening since the group is in an invalid state. Since Extensions
+    // implements it's own bulk move action, pausing must be performed here.
+    tab_groups::TabGroupSyncService* tab_group_sync_service =
+        tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+            target_window->profile());
+    std::unique_ptr<tab_groups::ScopedLocalObservationPauser>
+        tab_groups_sync_movement_obseration;
+    if (tab_group_sync_service) {
+      tab_groups_sync_movement_obseration =
+          tab_group_sync_service->CreateScopedLocalObserverPauser();
     }
 
     target_tab_strip->group_model()->AddTabGroup(*group, *visual_data);

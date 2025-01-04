@@ -32,11 +32,11 @@ class FakeToastManager : public ash::ToastManager {
   // ToastManager overrides:
   void Show(ash::ToastData data) override { called_show_ = true; }
   void Cancel(std::string_view id) override { called_cancel_ = true; }
-  bool RequestFocusOnActiveToastDismissButton(std::string_view id) override {
+  bool RequestFocusOnActiveToastButton(std::string_view id) override {
     return false;
   }
   bool IsToastShown(std::string_view id) const override { return false; }
-  bool IsToastDismissButtonFocused(std::string_view id) const override {
+  bool IsToastButtonFocused(std::string_view id) const override {
     return false;
   }
   std::unique_ptr<ash::ScopedToastPause> CreateScopedPause() override {

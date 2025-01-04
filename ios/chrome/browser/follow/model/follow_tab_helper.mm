@@ -268,7 +268,7 @@ void FollowTabHelper::UpdateFollowMenuItemWithURL(WebPageURLs* web_page_urls) {
             ProfileIOS::FromBrowserState(web_state_->GetBrowserState()))
             ->IsWebSiteFollowed(web_page_urls);
 
-    std::string domain_name = web_frame->GetSecurityOriginDeprecated().host();
+    std::string domain_name = web_frame->GetSecurityOrigin().host();
     if (base::StartsWith(domain_name, kRemovablePrefix)) {
       domain_name = domain_name.substr(strlen(kRemovablePrefix));
     }

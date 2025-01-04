@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/sms/webotp_constants.h"
 #include "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom-blink.h"
 #include "third_party/blink/public/mojom/credentialmanagement/credential_type_flags.mojom-blink.h"
@@ -652,6 +653,13 @@ void OnMakePublicKeyCredentialComplete(
     extension_outputs->setSupplementalPubKeys(
         ConvertTo<AuthenticationExtensionsSupplementalPubKeysOutputs*>(
             credential->supplemental_pub_keys));
+  }
+  if (credential->payment) {
+    CHECK(base::FeatureList::IsEnabled(
+        blink::features::kSecurePaymentConfirmationBrowserBoundKeys));
+    extension_outputs->setPayment(
+        ConvertTo<blink::AuthenticationExtensionsPaymentOutputs*>(
+            credential->payment));
   }
   if (credential->echo_prf) {
     auto* prf_outputs = AuthenticationExtensionsPRFOutputs::Create();
@@ -1945,13 +1953,27 @@ AuthenticationCredentialsContainer::create(
   if (mojo_options->is_payment_credential_creation) {
     String rp_id_for_payment_extension = mojo_options->relying_party->id;
     WTF::Vector<uint8_t> user_id_for_payment_extension = mojo_options->user->id;
-    authenticator->MakeCredential(
-        std::move(mojo_options),
-        WTF::BindOnce(&OnMakePublicKeyCredentialWithPaymentExtensionComplete,
-                      std::make_unique<ScopedPromiseResolver>(resolver),
-                      std::move(scoped_abort_state),
-                      rp_id_for_payment_extension,
-                      std::move(user_id_for_payment_extension)));
+    if (base::FeatureList::IsEnabled(
+            blink::features::kSecurePaymentConfirmationBrowserBoundKeys)) {
+      auto* payment_credential_remote =
+          CredentialManagerProxy::From(resolver->GetScriptState())
+              ->PaymentCredential();
+      payment_credential_remote->MakePaymentCredential(
+          std::move(mojo_options),
+          WTF::BindOnce(&OnMakePublicKeyCredentialWithPaymentExtensionComplete,
+                        std::make_unique<ScopedPromiseResolver>(resolver),
+                        std::move(scoped_abort_state),
+                        rp_id_for_payment_extension,
+                        std::move(user_id_for_payment_extension)));
+    } else {
+      authenticator->MakeCredential(
+          std::move(mojo_options),
+          WTF::BindOnce(&OnMakePublicKeyCredentialWithPaymentExtensionComplete,
+                        std::make_unique<ScopedPromiseResolver>(resolver),
+                        std::move(scoped_abort_state),
+                        rp_id_for_payment_extension,
+                        std::move(user_id_for_payment_extension)));
+    }
   } else {
     if (RuntimeEnabledFeatures::WebAuthenticationConditionalCreateEnabled()) {
       mojo_options->is_conditional = options->mediation() == "conditional";

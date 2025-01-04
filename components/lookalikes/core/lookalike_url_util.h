@@ -130,8 +130,12 @@ struct TopBucketDomainsParams {
   // Skeletons of top bucket domains. This is the top 500 or 1000 most popular
   // domains (though, there can be fewer than 500 or 1000 skeletons in this
   // array).
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #global-scope
+  // This field is not a raw_ptr<> because it only ever points to statically-
+  // allocated memory which is never freed, so it cannot dangle.
+  // Spanification note: unlike the raw_spans below, the pointed-to arrays
+  // are defined in generated files, so their size isn't exposed in the header.
+  // To get compile-time safety guarantees, the header itself would have to be
+  // generated as well.
   RAW_PTR_EXCLUSION const char* const* edit_distance_skeletons;
   // Number of skeletons in `edit_distance_skeletons`.
   size_t num_edit_distance_skeletons;

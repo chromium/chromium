@@ -10,14 +10,10 @@
 
 namespace quick_answers {
 
-// TODO(b/340629098): remove this once a dependency from lacros being removed.
-const gfx::FontList& GetCrosAnnotation1FontList();
-int GetCrosAnnotation1LineHeight();
-
-const gfx::FontList& GetFirstLineFontList(Design design);
+const gfx::FontList GetFirstLineFontList(Design design);
 int GetFirstLineHeight(Design design);
 
-const gfx::FontList& GetSecondLineFontList(Design design);
+const gfx::FontList GetSecondLineFontList(Design design);
 int GetSecondLineHeight(Design design);
 
 }  // namespace quick_answers

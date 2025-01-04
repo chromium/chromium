@@ -65,7 +65,7 @@ public class ChromeSurveyController {
             return null;
         }
 
-        SurveyConfig config = SurveyConfig.get(TRIGGER_STARTUP_SURVEY);
+        SurveyConfig config = SurveyConfig.get(profile, TRIGGER_STARTUP_SURVEY);
         if (config == null) return null;
 
         assert SurveyClientFactory.getInstance() != null;

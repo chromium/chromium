@@ -84,6 +84,7 @@ class FakeClientAuthenticator : public Authenticator {
   State state() const override;
   bool started() const override;
   RejectionReason rejection_reason() const override;
+  RejectionDetails rejection_details() const override;
   void ProcessMessage(const jingle_xmpp::XmlElement* message,
                       base::OnceClosure resume_callback) override;
   std::unique_ptr<jingle_xmpp::XmlElement> GetNextMessage() override;
@@ -155,6 +156,14 @@ Authenticator::RejectionReason FakeClientAuthenticator::rejection_reason()
   return session_authz_state_ == SessionAuthzState::FAILED
              ? session_authz_rejection_reason_
              : underlying_->rejection_reason();
+}
+
+Authenticator::RejectionDetails FakeClientAuthenticator::rejection_details()
+    const {
+  if (underlying_ && underlying_->state() == State::REJECTED) {
+    return underlying_->rejection_details();
+  }
+  return {};
 }
 
 void FakeClientAuthenticator::ProcessMessage(

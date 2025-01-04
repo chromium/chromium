@@ -979,7 +979,8 @@ class CONTENT_EXPORT WebContentsImpl
       const GURL& prerendering_url,
       PreloadingTriggerType trigger_type,
       const std::string& embedder_histogram_suffix,
-      std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
+      net::HttpRequestHeaders additional_headers,
+      std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
       ui::PageTransition page_transition,
       bool should_warm_up_compositor,
       bool should_prepare_paint_tree,
@@ -1001,6 +1002,7 @@ class CONTENT_EXPORT WebContentsImpl
   BackForwardTransitionAnimationManager*
   GetBackForwardTransitionAnimationManager() override;
   net::handles::NetworkHandle GetTargetNetwork() override;
+  void DisconnectFileSelectListenerIfAny() override;
 
   void GetMediaCaptureRawDeviceIdsOpened(
       blink::mojom::MediaStreamType type,
@@ -1097,7 +1099,7 @@ class CONTENT_EXPORT WebContentsImpl
                          bool should_show_handle,
                          bool should_show_context_menu) override;
   void MoveCaret(const gfx::Point& extent) override;
-  uint32_t GetCompositorFrameSinkGroupingId() const override;
+  base::UnguessableToken GetCompositorFrameSinkGroupingId() const override;
   void AdjustSelectionByCharacterOffset(int start_adjust,
                                         int end_adjust,
                                         bool show_selection_menu) override;
@@ -1150,6 +1152,8 @@ class CONTENT_EXPORT WebContentsImpl
   gfx::mojom::DelegatedInkPointRenderer* GetDelegatedInkRenderer(
       ui::Compositor* compositor) override;
   void OnInputIgnored(const blink::WebInputEvent& event) override;
+  input::mojom::RenderInputRouterDelegate* GetRenderInputRouterDelegateRemote()
+      override;
 
   // RenderFrameHostManager::Delegate ------------------------------------------
 
@@ -1433,8 +1437,11 @@ class CONTENT_EXPORT WebContentsImpl
 #endif
 
   // Notify observers that the viewport fit value changed. This is called by
-  // |DisplayCutoutHostImpl|.
+  // |SafeAreaInsetsHost|.
   void NotifyViewportFitChanged(blink::mojom::ViewportFit value);
+  // Notify observers that safe area constraint has changed. This is called by
+  // |SafeAreaInsetsHost|.
+  void NotifySafeAreaConstraintChanged(bool has_constraint);
 
   // Returns the current FindRequestManager associated with the WebContents;
   // this won't create one if none exists.
@@ -2628,10 +2635,12 @@ class CONTENT_EXPORT WebContentsImpl
   // This id is used by Viz to create RenderWidgetHostInputEventRouter per
   // WebContents(concept in browser) to allow grouping CompositorFrameSinks for
   // input event routing with InputVizard.
-  const uint32_t compositor_frame_sink_grouping_id_;
+  const base::UnguessableToken compositor_frame_sink_grouping_id_;
 
   mojo::Receiver<input::mojom::RenderInputRouterDelegateClient>
       rir_delegate_client_receiver_{this};
+
+  mojo::Remote<input::mojom::RenderInputRouterDelegate> rir_delegate_remote_;
 
   // Indicates if the instance is hosted in a preview window.
   // This will be set in Init() and will be reset in WillActivatePreviewPage().

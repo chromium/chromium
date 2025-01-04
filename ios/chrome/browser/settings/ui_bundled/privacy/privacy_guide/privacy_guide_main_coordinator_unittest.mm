@@ -9,6 +9,7 @@
 #import <memory>
 
 #import "base/apple/foundation_util.h"
+#import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -32,7 +33,13 @@ class PrivacyGuideMainCoordinatorTest : public PlatformTest {
     [coordinator_ start];
   }
 
-  ~PrivacyGuideMainCoordinatorTest() override { [coordinator_ stop]; }
+  ~PrivacyGuideMainCoordinatorTest() override {
+    [coordinator_ stop];
+    EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+        base::test::ios::kWaitForUIElementTimeout, ^{
+          return !root_view_controller_.presentedViewController;
+        }));
+  }
 
   bool IsPrivacyGuidePresented() {
     return [root_view_controller_.presentedViewController

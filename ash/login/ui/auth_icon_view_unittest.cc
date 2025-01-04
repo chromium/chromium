@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/login/ui/auth_icon_view.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/test/ash_test_base.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/canvas.h"

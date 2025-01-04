@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">어두운 테마 사용 안함</translation>
 <translation id="1807246157184219062">밝게</translation>
 <translation id="1808803439260407870">클래식 아트</translation>
+<translation id="181434555916624618">현재는 인물이 포함된 결과가 표시되지 않습니다. 다른 프롬프트를 사용해 보세요.</translation>
 <translation id="1815850098929213707">선택한 키는 <ph name="KEYS" />입니다. 컨트롤을 수정하려면 버튼을 탭하세요.</translation>
 <translation id="1823120442877418684">캐릭터</translation>
 <translation id="1827738518074806965">아트 갤러리</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">기기의 오른쪽 이어폰 배터리 잔량이 <ph name="BATTERY_PERCENTAGE" />%입니다.</translation>
 <translation id="3340978935015468852">설정</translation>
 <translation id="3347558044552027859">현대적</translation>
+<translation id="3353477144743332882">요약 및 이름 생성 모델 다운로드</translation>
 <translation id="3359218928534347896">마이크 음소거를 전환합니다</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">초밥</translation>
@@ -505,7 +507,7 @@
 <translation id="345898999683440380"><ph name="PAGE_NUM" />페이지를 스캔 중입니다. <ph name="PERCENTAGE_VALUE" />% 완료되었습니다.</translation>
 <translation id="3459509316159669723">인쇄</translation>
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> 업데이트 중</translation>
-<translation id="346423161771747987">현재</translation>
+<translation id="346423161771747987">전류</translation>
 <translation id="346539236881580388">다시 촬영</translation>
 <translation id="3484914941826596830">펌웨어 업데이트 도중에 외부 기기를 분리하거나 컴퓨터를 종료하지 마세요. 이 창을 최소화할 수 있습니다. 업데이트되는 데 몇 분 정도 걸릴 수 있으며 이 시간 동안 외부 기기가 작동하지 않을 수도 있습니다.</translation>
 <translation id="3486220673238053218">정의</translation>
@@ -689,6 +691,7 @@
 <translation id="4354430579665871434">키</translation>
 <translation id="4356100841225547054">볼륨 끄기</translation>
 <translation id="4361257691546579041">APN은 기본값 유형입니다.</translation>
+<translation id="4368101969572512692">추천 셔플</translation>
 <translation id="437294888293595148">모든 바로가기 재설정</translation>
 <translation id="437477383107495720">토끼</translation>
 <translation id="4376423484621194274">관리자가 <ph name="APP_NAME" /> 종료를 허용하지 않습니다.</translation>
@@ -768,6 +771,7 @@
 <translation id="4731797938093519117">부모 액세스</translation>
 <translation id="473775607612524610">업데이트</translation>
 <translation id="4744944742468440486">선택 항목 관련 정보</translation>
+<translation id="4750394297954878236">추천</translation>
 <translation id="4771607256327216405">키보드 밝게</translation>
 <translation id="4771923071974529837">내일</translation>
 <translation id="4773299976671772492">중지됨</translation>
@@ -853,6 +857,7 @@
 <translation id="5121677070210013200">스크립트 작성 모델을 다운로드할 수 없습니다. 다시 시도하거나 Chromebook을 다시 시작하세요.</translation>
 <translation id="5130848777448318809">조랑말</translation>
 <translation id="5137451382116112100">전체</translation>
+<translation id="5139813694804168398">방해 금지 모드</translation>
 <translation id="5140788690559353412">학교 계정 액세스 권한을 상실하면 Gmail, Docs, Slides 등 연결된 이메일 및 Google Drive 파일에 더 이상 액세스할 수 없게 됩니다.</translation>
 <translation id="5142961317498132443">인증</translation>
 <translation id="5144311987923128508">확인 버튼이 사용 중지되었습니다.</translation>
@@ -897,6 +902,7 @@
 <translation id="5302048478445481009">언어</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> 전용 배경화면</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="530883153651464140"><ph name="DEVICE_NAME" /> 기기를 <ph name="VERSION" /> 버전으로 업데이트</translation>
 <translation id="5315873049536339193">주소</translation>
 <translation id="5317780077021120954">저장</translation>
 <translation id="5318310531701770497">이름을 만들 수 없습니다. 더 긴 스크립트를 사용해 보세요.</translation>
@@ -973,7 +979,6 @@
 <translation id="5703716265115423771">볼륨 작게</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" />의 수정 버튼입니다.</translation>
-<translation id="5733298426544876109"><ph name="DEVICE_NAME" /> 업데이트</translation>
 <translation id="5736820754189340309">데이터 사용량이 재설정되었습니다</translation>
 <translation id="574392208103952083">보통</translation>
 <translation id="5744175046705638478">"<ph name="QUERY" />" 번역</translation>
@@ -998,6 +1003,7 @@
 <translation id="5859969039821714932">단축키를 사용할 수 없습니다. <ph name="KEY" />을 누르지 않은 상태로 새 단축키를 누르세요.</translation>
 <translation id="5860033963881614850">사용 안함</translation>
 <translation id="5860491529813859533">사용</translation>
+<translation id="5875913454160982848">스크립트 작성 모델 다운로드</translation>
 <translation id="5876385649737594562">옵션을 선택하려면 사용 설정하세요.</translation>
 <translation id="5877503382465267833"><ph name="RECORDING_NAME" /> 일시중지</translation>
 <translation id="588258955323874662">전체화면</translation>
@@ -1037,7 +1043,6 @@
 <translation id="6040143037577758943">닫기</translation>
 <translation id="6040852767465482106">익명 ID</translation>
 <translation id="604124094241169006">자동</translation>
-<translation id="6042308850641462728">자세히</translation>
 <translation id="6048107060512778456">실패 - 용지 걸림</translation>
 <translation id="6050189528197190982">회색조</translation>
 <translation id="6054711098834486579">표현주의</translation>
@@ -1293,6 +1298,7 @@
 <translation id="7134436342991564651">{0,plural, =1{네임서버}other{네임서버}}</translation>
 <translation id="7135814714616751706">바로가기 검색</translation>
 <translation id="7138614237884624401">간략한 텍스트</translation>
+<translation id="7138668887584231801">단어가 너무 적어 요약할 수 없음</translation>
 <translation id="7141470099673912333">콘텐츠 전송</translation>
 <translation id="7143207342074048698">연결 중</translation>
 <translation id="7144878232160441200">다시 시도</translation>
@@ -1588,6 +1594,7 @@
 <translation id="8503836310948963452">몇 분 정도밖에 남지 않았습니다...</translation>
 <translation id="8505011850330200833">Gemini 모델이 스크립트를 처리하고 요약을 생성하려면 2GB의 저장용량이 필요합니다.</translation>
 <translation id="8508640263392900755">APN 세부정보</translation>
+<translation id="8509574872955173831">요약 및 이름 생성에 관해 자세히 알아보기</translation>
 <translation id="8522687886059337719">이제 새로운 <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />배경화면<ph name="END_LINK_WALLPAPER_SUBPAGE" /> 및 <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />화면 보호기<ph name="END_LINK_SCREENSAVER_SUBPAGE" />에 액세스할 수 있습니다.</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">찻집</translation>
@@ -1724,7 +1731,6 @@
 <translation id="9133772297793293778">키보드에서 특수키 1~4개와 다른 키 1개를 누릅니다. 수정 모드를 종료하려면 Alt + Esc를 누르세요.</translation>
 <translation id="9137526406337347448">Google 서비스</translation>
 <translation id="9138630967333032450">왼쪽 시프트</translation>
-<translation id="9147928237330776930">단어가 너무 적어 요약할 수 없습니다.</translation>
 <translation id="9149391708638971077">메모리 테스트 실행</translation>
 <translation id="9159524746324788320">햄버거</translation>
 <translation id="9161276708550942948">스페이스</translation>

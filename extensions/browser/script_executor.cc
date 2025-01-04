@@ -271,7 +271,7 @@ class Handler : public content::WebContentsObserver {
         .ExecuteCode(std::move(params),
                      base::BindOnce(&Handler::OnExecuteCodeFinished,
                                     weak_ptr_factory_.GetWeakPtr(),
-                                    frame->GetProcess()->GetID(),
+                                    frame->GetProcess()->GetDeprecatedID(),
                                     frame->GetRoutingID()));
   }
 

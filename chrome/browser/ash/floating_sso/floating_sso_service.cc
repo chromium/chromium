@@ -106,14 +106,15 @@ void FloatingSsoService::UpdateUrlMatchers() {
 
   if (!blocklist.empty()) {
     base::MatcherStringPattern::ID block_id = 0;
-    url_matcher::util::AddFilters(block_url_matcher_.get(), /*allow=*/false,
-                                  &block_id, blocklist);
+    url_matcher::util::AddFiltersWithLimit(
+        block_url_matcher_.get(), /*allow=*/false, &block_id, blocklist);
   }
 
   if (!blocklist_exceptions.empty()) {
     base::MatcherStringPattern::ID except_id = 0;
-    url_matcher::util::AddFilters(except_url_matcher_.get(), /*allow=*/true,
-                                  &except_id, blocklist_exceptions);
+    url_matcher::util::AddFiltersWithLimit(except_url_matcher_.get(),
+                                           /*allow=*/true, &except_id,
+                                           blocklist_exceptions);
   }
 }
 

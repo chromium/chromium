@@ -47,15 +47,17 @@ void ThemeTrackingImageView::OnThemeChanged() {
 void ThemeTrackingImageView::SetLightImage(
     const ui::ImageModel& light_image_model) {
   light_image_model_ = light_image_model;
-  if (!color_utils::IsDark(get_background_color_callback_.Run()))
+  if (!color_utils::IsDark(get_background_color_callback_.Run())) {
     SetImage(light_image_model_);
+  }
 }
 
 void ThemeTrackingImageView::SetDarkImage(
     const ui::ImageModel& dark_image_model) {
   dark_image_model_ = dark_image_model;
-  if (color_utils::IsDark(get_background_color_callback_.Run()))
+  if (color_utils::IsDark(get_background_color_callback_.Run())) {
     SetImage(dark_image_model_);
+  }
 }
 
 BEGIN_METADATA(ThemeTrackingImageView)

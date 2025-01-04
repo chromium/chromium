@@ -21,6 +21,8 @@
 #import "ios/web/public/web_state_user_data.h"
 #import "url/gurl.h"
 
+@protocol ParentAccessCommands;
+
 namespace web {
 class WebState;
 }
@@ -92,6 +94,10 @@ class SupervisedUserErrorContainer
   // SupervisedUserServiceObserver override:
   void OnURLFilterChanged() override;
 
+  // Sets the parent access bottom sheet CommandDispatcher.
+  void SetParentAccessBottomSheetHandler(
+      id<ParentAccessCommands> commands_handler);
+
  private:
   friend class web::WebStateUserData<SupervisedUserErrorContainer>;
 
@@ -101,12 +107,12 @@ class SupervisedUserErrorContainer
                         const GURL& url,
                         bool successfully_created_request);
   void MaybeUpdatePendingApprovals();
-  void URLFilterCheckCallback(const GURL& url,
-                              supervised_user::FilteringBehavior behavior,
-                              supervised_user::FilteringBehaviorReason reason,
-                              bool uncertain);
+  void URLFilterCheckCallback(
+      supervised_user::SupervisedUserURLFilter::Result result);
   WEB_STATE_USER_DATA_KEY_DECL();
 
+  // Handler used to request showing the parent access bottom sheet.
+  __weak id<ParentAccessCommands> commands_handler_;
   std::unique_ptr<SupervisedUserErrorInfo> supervised_user_error_info_;
   raw_ref<supervised_user::SupervisedUserService> supervised_user_service_;
   raw_ptr<web::WebState> web_state_;

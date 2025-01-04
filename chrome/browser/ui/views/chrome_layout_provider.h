@@ -21,6 +21,10 @@ enum ChromeInsetsMetric {
   INSETS_OMNIBOX_PILL_BUTTON,
   // Padding used in an page info hover button.
   INSETS_PAGE_INFO_HOVER_BUTTON,
+  // Margins for the avatars in the Recent Activity dialog.
+  INSETS_RECENT_ACTIVITY_IMAGE_MARGIN,
+  // Margins for rows within the Recent Activity dialog.
+  INSETS_RECENT_ACTIVITY_ROW_MARGIN,
 };
 
 enum ChromeDistanceMetric {
@@ -104,6 +108,11 @@ enum ChromeDistanceMetric {
   DISTANCE_TASK_MANAGER_HEADER_HORIZONTAL_SPACING,
   // Vertical spacing between the header components and the header separator.
   DISTANCE_TASK_MANAGER_HEADER_VERTICAL_SPACING,
+  // Width and height of the vector icons shown in the search bar of the task
+  // manager.
+  DISTANCE_TASK_MANAGER_SEARCH_ICON_SIZE,
+  // Horizontal spacing between each category tab (e.g. Tabs, System, ...)
+  DISTANCE_TASK_MANAGER_TAB_SPACING,
   // Distance between most child elements inside the toast.
   DISTANCE_TOAST_BUBBLE_BETWEEN_CHILD_SPACING,
   // Distance between the toast label and action button.
@@ -140,7 +149,8 @@ enum ChromeDistanceMetric {
   // Minimum distance between the horizontal edges of the toast and the browser
   // window. Relevant if the toast is wide relative to the browser.
   DISTANCE_TOAST_BUBBLE_BROWSER_WINDOW_MARGIN,
-
+  // Size to use for avatars in the Recent Activity dialog.
+  DISTANCE_RECENT_ACTIVITY_AVATAR_SIZE,
 };
 
 class ChromeLayoutProvider : public views::LayoutProvider {

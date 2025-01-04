@@ -7,6 +7,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test.pb.h"
 #include "base/test/test_future.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/optimization_guide/proto/parser_kind.pb.h"
@@ -254,8 +255,8 @@ TEST(OnDeviceModelFeatureAdapterTest, ShouldParseResponseCompleteOnly) {
   auto adapter =
       base::MakeRefCounted<OnDeviceModelFeatureAdapter>(std::move(config));
 
-  EXPECT_FALSE(adapter->ShouldParseResponse(/*is_complete=*/false));
-  EXPECT_TRUE(adapter->ShouldParseResponse(/*is_complete=*/true));
+  EXPECT_FALSE(adapter->ShouldParseResponse(ResponseCompleteness::kPartial));
+  EXPECT_TRUE(adapter->ShouldParseResponse(ResponseCompleteness::kComplete));
 }
 
 TEST(OnDeviceModelFeatureAdapterTest, ShouldParseResponseAlways) {
@@ -265,8 +266,8 @@ TEST(OnDeviceModelFeatureAdapterTest, ShouldParseResponseAlways) {
   auto adapter =
       base::MakeRefCounted<OnDeviceModelFeatureAdapter>(std::move(config));
 
-  EXPECT_TRUE(adapter->ShouldParseResponse(/*is_complete=*/false));
-  EXPECT_TRUE(adapter->ShouldParseResponse(/*is_complete=*/true));
+  EXPECT_TRUE(adapter->ShouldParseResponse(ResponseCompleteness::kPartial));
+  EXPECT_TRUE(adapter->ShouldParseResponse(ResponseCompleteness::kComplete));
 }
 
 }  // namespace optimization_guide

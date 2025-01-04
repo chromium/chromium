@@ -180,7 +180,7 @@ class TestCascade {
         ParseDeclarationBlock(name + ":" + value, kHTMLStandardMode);
     DCHECK(set);
     DCHECK(set->PropertyCount());
-    CSSPropertyValueSet::PropertyReference reference = set->PropertyAt(0);
+    const CSSPropertyValue& reference = set->PropertyAt(0);
     return StyleCascade::Resolve(state, reference.Name(), reference.Value());
   }
 
@@ -4439,6 +4439,32 @@ TEST_F(StyleCascadeTest, CSSFunctionDoesNotExistInShorthand) {
 
     EXPECT_EQ("rgba(0, 0, 0, 0)", cascade.ComputedValue("background-color"));
   }
+}
+
+TEST_F(StyleCascadeTest, VarFallbackValidationCounter) {
+  RegisterProperty(GetDocument(), "--registered", "<length>", "0px",
+                   /*inherited=*/false);
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kVarFallbackValidation));
+
+  {
+    TestCascade cascade(GetDocument());
+    cascade.Add("--unregistered:green");
+    cascade.Add("color:var(--unregistered)");
+    cascade.Add("top:var(--unregistered, 100px)");
+    cascade.Add("right:var(--unregistered, auto)");
+    cascade.Add("bottom:var(--registered)");
+    cascade.Add("left:var(--registered, 100px)");
+    cascade.Apply();
+  }
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kVarFallbackValidation));
+
+  {
+    TestCascade cascade(GetDocument());
+    cascade.Add("left:var(--registered, green)");
+    cascade.Apply();
+  }
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kVarFallbackValidation));
 }
 
 }  // namespace blink

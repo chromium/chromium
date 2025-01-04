@@ -50,8 +50,7 @@ export function getHtml(this: OnDeviceInternalsModelStatusElement) {
                }
              </tbody>
            </table>
-         </div>
-       `
+         </div>`
   }
   <h3>Supplementary Models</h3>
   <div>

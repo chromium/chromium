@@ -342,7 +342,8 @@ export class MouseController {
     if (new Date().getTime() - this.lastMouseMovedTime_ >
         IGNORE_UPDATES_AFTER_MOUSE_MOVE_MS) {
       EventGenerator.sendMouseMove(
-          this.mouseLocation_.x, this.mouseLocation_.y, {useRewriters: true});
+          this.mouseLocation_.x, this.mouseLocation_.y,
+          {useRewriters: true, forceNotSynthetic: true});
       chrome.accessibilityPrivate.setCursorPosition(this.mouseLocation_);
     }
   }
@@ -387,7 +388,8 @@ export class MouseController {
       // Release the existing long click action when the mouse controller is
       // stopped to ensure we do not leave the user in a permanent "drag" state.
       EventGenerator.sendMouseRelease(
-          this.mouseLocation_.x, this.mouseLocation_.y);
+          this.mouseLocation_.x, this.mouseLocation_.y,
+          {forceNotSynthetic: true});
       this.longClickActive_ = false;
     }
 
@@ -432,13 +434,14 @@ export class MouseController {
     if (this.longClickActive_) {
       EventGenerator.sendMousePress(
           this.mouseLocation_.x, this.mouseLocation_.y,
-          SyntheticMouseEventButton.LEFT);
+          SyntheticMouseEventButton.LEFT, {forceNotSynthetic: true});
       // Enable the DragEventRewriter so that mouse moved events get rewritten
       // into mouse dragged events.
       chrome.accessibilityPrivate.enableDragEventRewriter(true);
     } else {
       EventGenerator.sendMouseRelease(
-          this.mouseLocation_.x, this.mouseLocation_.y);
+          this.mouseLocation_.x, this.mouseLocation_.y,
+          {forceNotSynthetic: true});
       chrome.accessibilityPrivate.enableDragEventRewriter(false);
     }
 
@@ -462,11 +465,12 @@ export class MouseController {
       }
 
       if (this.longClickActive_) {
-        // Send a synthetic drag event from the user's mouse move event.
-        // FaceGaze cursor control should already have sent a synthetic drag
+        // Send a drag event from the user's mouse move event.
+        // FaceGaze cursor control should already have sent a drag
         // event, so this only needs to occur on user mouse movements.
         EventGenerator.sendMouseMove(
-            event.mouseX, event.mouseY, {useRewriters: true});
+            event.mouseX, event.mouseY,
+            {useRewriters: true, forceNotSynthetic: true});
       }
     }
   }

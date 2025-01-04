@@ -251,6 +251,14 @@ class TabStatsTracker::UmaStatsReportingDelegate {
   static const char kTabDuplicateCountAllProfileWindowsHistogramName[];
   static const char kTabDuplicatePercentageSingleWindowHistogramName[];
   static const char kTabDuplicatePercentageAllProfileWindowsHistogramName[];
+  static const char
+      kTabDuplicateExcludingFragmentsCountSingleWindowHistogramName[];
+  static const char
+      kTabDuplicateExcludingFragmentsCountAllProfileWindowsHistogramName[];
+  static const char
+      kTabDuplicateExcludingFragmentsPercentageSingleWindowHistogramName[];
+  static const char
+      kTabDuplicateExcludingFragmentsPercentageAllProfileWindowsHistogramName[];
 
   UmaStatsReportingDelegate() = default;
 
@@ -271,8 +279,10 @@ class TabStatsTracker::UmaStatsReportingDelegate {
 
   // Calculate and report the metrics related to tab duplicates, which are
   // re-calculated each time rather than cached like the other metrics due to
-  // their complexity.
-  void ReportTabDuplicateMetrics();
+  // their complexity. |exclude_fragments| will treat two tabs with the same
+  // URL apart from trailing fragments as duplicates, otherwise will only treat
+  // exact URL matches as duplicates.
+  void ReportTabDuplicateMetrics(bool exclude_fragments);
 
  protected:
   // Checks if Chrome is running in background with no visible windows, virtual

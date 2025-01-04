@@ -86,6 +86,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -356,8 +357,7 @@ StringKeyframeVector ProcessKeyframesRule(
   StringKeyframeVector keyframes;
   const HeapVector<Member<StyleRuleKeyframe>>& style_keyframes =
       keyframes_rule->Keyframes();
-  for (wtf_size_t i = 0; i < style_keyframes.size(); ++i) {
-    const StyleRuleKeyframe* style_keyframe = style_keyframes[i].Get();
+  for (const StyleRuleKeyframe* style_keyframe : style_keyframes) {
     auto* keyframe = MakeGarbageCollected<StringKeyframe>(tree_scope);
     const Vector<KeyframeOffset>& offsets = style_keyframe->Keys();
     DCHECK(!offsets.empty());
@@ -365,9 +365,7 @@ StringKeyframeVector ProcessKeyframesRule(
     has_named_range_keyframes |= SetOffsets(*keyframe, offsets[0]);
     keyframe->SetEasing(default_timing_function);
     const CSSPropertyValueSet& properties = style_keyframe->Properties();
-    for (unsigned j = 0; j < properties.PropertyCount(); j++) {
-      CSSPropertyValueSet::PropertyReference property_reference =
-          properties.PropertyAt(j);
+    for (const CSSPropertyValue& property_reference : properties.Properties()) {
       CSSPropertyRef ref(property_reference.Name(), document);
       const CSSProperty& property = ref.GetProperty();
       if (property.PropertyID() == CSSPropertyID::kAnimationComposition) {
@@ -1555,15 +1553,23 @@ void CSSAnimations::CalculateCompositorAnimationUpdate(
     return false;
   };
 
+  Animation::NativePaintWorkletReasons properties_for_force_update = 0;
+
   for (auto& entry : element_animations->Animations()) {
     Animation& animation = *entry.key;
     if (snapshot(animation.effect())) {
       update.UpdateCompositorKeyframes(&animation);
-    } else if (NativePaintImageGenerator::
-                   NativePaintWorkletAnimationsEnabled()) {
-      element_animations->RecalcCompositedStatusForKeyframeChange(
-          element, animation.effect());
     }
+    if (force_update) {
+      properties_for_force_update |= animation.GetNativePaintWorkletReasons();
+    }
+  }
+
+  if (properties_for_force_update !=
+      Animation::NativePaintWorkletProperties::kNoPaintWorklet) {
+    CHECK(NativePaintImageGenerator::NativePaintWorkletAnimationsEnabled());
+    element_animations->RecalcCompositedStatusForKeyframeChange(
+        element, properties_for_force_update);
   }
 
   for (auto& entry : element_animations->GetWorkletAnimations()) {
@@ -2583,8 +2589,12 @@ void CSSAnimations::CalculateTransitionUpdate(
       << "Should always pass nullptr instead of ensured styles";
   const ComputedStyle* scope_old_style =
       PostStyleUpdateScope::GetOldStyle(animating_element);
+
+  bool force_starting_style = false;
+  probe::ForceStartingStyle(&animating_element, &force_starting_style);
   bool is_starting_style = old_style && old_style->IsStartingStyle();
-  DCHECK(old_style == scope_old_style || !scope_old_style && is_starting_style)
+  DCHECK(old_style == scope_old_style ||
+         !scope_old_style && is_starting_style || force_starting_style)
       << "The old_style passed in should be the style for the element at the "
          "beginning of the lifecycle update, or a style based on the "
          "@starting-style style";

@@ -10,8 +10,10 @@ import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.os.Build;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -25,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** This class provides package checking related methods. */
+@NullMarked
 public class PackageUtils {
     private static final String TAG = "PackageUtils";
     private static final char[] HEX_CHAR_LOOKUP = "0123456789ABCDEF".toCharArray();
@@ -109,7 +112,8 @@ public class PackageUtils {
      */
     @SuppressLint("PackageManagerGetSignatures")
     // https://stackoverflow.com/questions/39192844/android-studio-warning-when-using-packagemanager-get-signatures
-    public static List<String> getCertificateSHA256FingerprintForPackage(String packageName) {
+    public static @Nullable List<String> getCertificateSHA256FingerprintForPackage(
+            String packageName) {
         PackageInfo packageInfo = getPackageInfo(packageName, PackageManager.GET_SIGNATURES);
 
         if (packageInfo == null) return null;

@@ -52,8 +52,6 @@ class GlobalConstantsImpl : public GlobalConstants {
 #endif
   }
 
-  ~GlobalConstantsImpl() override = default;
-
   GURL CrashUploadURL() const override { return crash_upload_url_; }
 
   GURL DeviceManagementEncryptedReportingURL() const override {

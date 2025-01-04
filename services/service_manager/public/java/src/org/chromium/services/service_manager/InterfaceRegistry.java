@@ -4,6 +4,7 @@
 
 package org.chromium.services.service_manager;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.mojo.bindings.Interface;
 import org.chromium.mojo.system.MessagePipeHandle;
 import org.chromium.mojo.system.MojoException;
@@ -15,12 +16,13 @@ import java.util.Map;
 /**
  * A registry where interfaces may be registered to be exposed to another application.
  *
- * To use, define a class that implements your specific interface. Then
- * implement an InterfaceFactory that creates instances of your implementation
- * and register that on the registry with a Manager for the interface like this:
+ * <p>To use, define a class that implements your specific interface. Then implement an
+ * InterfaceFactory that creates instances of your implementation and register that on the registry
+ * with a Manager for the interface like this:
  *
- *   registry.addInterface(InterfaceType.MANAGER, factory);
+ * <p>registry.addInterface(InterfaceType.MANAGER, factory);
  */
+@NullMarked
 public class InterfaceRegistry implements InterfaceProvider {
     private final Map<String, InterfaceBinder> mBinders = new HashMap<String, InterfaceBinder>();
 

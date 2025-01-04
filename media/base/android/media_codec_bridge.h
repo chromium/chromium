@@ -16,6 +16,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
 #include "base/time/time.h"
+#include "media/base/decrypt_config.h"
 #include "media/base/encryption_pattern.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/media_export.h"
@@ -24,8 +25,6 @@
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
-
-struct SubsampleEntry;
 
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.media
 enum class CodecType {
@@ -67,6 +66,7 @@ enum MediaCodecStatus {
   MEDIA_CODEC_UNKNOWN_CRYPTO_EXCEPTION = 25,
   MEDIA_CODEC_UNKNOWN_MEDIADRM_EXCEPTION = 26,
   MEDIA_CODEC_UNKNOWN_CODEC_EXCEPTION = 27,
+  MEDIA_CODEC_LINEAR_BLOCK_EXCEPTION = 28,
   MEDIA_CODEC_MAX = MEDIA_CODEC_UNKNOWN_CODEC_EXCEPTION,
 };
 
@@ -153,26 +153,16 @@ class MEDIA_EXPORT MediaCodecBridge {
       size_t data_size,
       base::TimeDelta presentation_time) = 0;
 
-  // Submits a byte array to the given input buffer, using LinearBlock.
-  virtual MediaCodecResult QueueInputBlock(int index,
-                                           base::span<const uint8_t> data,
-                                           base::TimeDelta presentation_time,
-                                           bool is_eos) = 0;
-
   // As above but for encrypted buffers. NULL |subsamples| indicates the
   // whole buffer is encrypted.
   virtual MediaCodecResult QueueSecureInputBuffer(
       int index,
       base::span<const uint8_t> data,
-      const std::string& key_id,
-      const std::string& iv,
-      const std::vector<SubsampleEntry>& subsamples,
-      EncryptionScheme encryption_scheme,
-      std::optional<EncryptionPattern> encryption_pattern,
-      base::TimeDelta presentation_time) = 0;
+      base::TimeDelta presentation_time,
+      const DecryptConfig& decrypt_config) = 0;
 
   // Submits an empty buffer with the END_OF_STREAM flag set.
-  virtual void QueueEOS(int input_buffer_index) = 0;
+  virtual MediaCodecResult QueueEOS(int input_buffer_index) = 0;
 
   // Returns:
   // kOk if an input buffer is ready to be filled with valid data,

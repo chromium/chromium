@@ -177,15 +177,7 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
       [self.consumer showProgressWithUploadCompleted:YES];
 
       // Auto close modal after showing successful card save confirmation.
-      __weak __typeof(self) weakSelf = self;
-      _autoCloseConfirmationTimer.Start(
-          FROM_HERE,
-          UIAccessibilityIsVoiceOverRunning()
-              ? kConfirmationStateDurationIfVoiceOverRunning
-              : kConfirmationStateDuration,
-          base::BindOnce(^{
-            [weakSelf dimissConfirmationStateOnTimeout];
-          }));
+      [self closeModalAfterDelay];
     } else {
       // On card save failure, this modal is dimissed and user is shown an error
       // dialog triggered from IOSChromePaymentsAutofillClient.
@@ -222,16 +214,26 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
       base::SysNSStringToUTF16(cardholderName), base::SysNSStringToUTF16(month),
       base::SysNSStringToUTF16(year)));
 
-  if (base::FeatureList::IsEnabled(
+  if (!base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
+    autofill::autofill_metrics::LogCreditCardUploadLoadingViewShownMetric(
+        /*is_shown=*/false);
+    [self dismissOverlay];
+    return;
+  }
+
+  if (delegate->is_for_upload()) {
     autofill::autofill_metrics::LogCreditCardUploadLoadingViewShownMetric(
         /*is_shown=*/true);
     _creditCardUploadCompleted = NO;
     [self.consumer showProgressWithUploadCompleted:NO];
   } else {
-    autofill::autofill_metrics::LogCreditCardUploadLoadingViewShownMetric(
-        /*is_shown=*/false);
-    [self dismissOverlay];
+    // Show progress as completed immediately when saving the card locally,
+    // then close the modal after a delay.
+    [self.consumer showProgressWithUploadCompleted:YES];
+    autofill::autofill_metrics::LogCreditCardUploadConfirmationViewShownMetric(
+        /*is_shown=*/true, /*is_card_uploaded=*/false);
+    [self closeModalAfterDelay];
   }
 }
 
@@ -294,6 +296,19 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
     return;
   }
   self.saveCardDelegate->OnConfirmationClosed();
+}
+
+- (void)closeModalAfterDelay {
+  // Auto close modal after showing successful card save confirmation.
+  __weak __typeof(self) weakSelf = self;
+  _autoCloseConfirmationTimer.Start(
+      FROM_HERE,
+      UIAccessibilityIsVoiceOverRunning()
+          ? kConfirmationStateDurationIfVoiceOverRunning
+          : kConfirmationStateDuration,
+      base::BindOnce(^{
+        [weakSelf dimissConfirmationStateOnTimeout];
+      }));
 }
 
 @end

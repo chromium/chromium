@@ -731,7 +731,7 @@ ci.builder(
     ),
     gn_args = gn_args.config(
         configs = [
-            "lacros_on_linux",
+            "chromeos_on_linux",
             "release",
             "clang_tot",
             "x64",
@@ -770,7 +770,7 @@ ci.builder(
     ),
     gn_args = gn_args.config(
         configs = [
-            "lacros_on_linux",
+            "chromeos_on_linux",
             "debug",
             "clang_tot",
             "x64",
@@ -1764,6 +1764,7 @@ ci.builder(
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
             target_platform = builder_config.target_platform.WIN,
+            host_platform = builder_config.host_platform.LINUX,
         ),
         build_gs_bucket = "chromium-clang-archive",
     ),

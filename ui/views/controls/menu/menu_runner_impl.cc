@@ -80,8 +80,9 @@ bool MenuRunnerImpl::IsRunning() const {
 
 void MenuRunnerImpl::Release() {
   if (running_) {
-    if (delete_after_run_)
+    if (delete_after_run_) {
       return;  // We already canceled.
+    }
 
     // The menu is running a nested run loop, we can't delete it now
     // otherwise the stack would be in a really bad state (many frames would
@@ -91,8 +92,9 @@ void MenuRunnerImpl::Release() {
 
     // Swap in a different delegate. That way we know the original MenuDelegate
     // won't be notified later on (when it's likely already been deleted).
-    if (!empty_delegate_.get())
+    if (!empty_delegate_.get()) {
       empty_delegate_ = std::make_unique<MenuDelegate>();
+    }
     menu_->set_delegate(empty_delegate_.get());
 
     // Verify that the MenuController is still active. It may have been
@@ -167,12 +169,13 @@ void MenuRunnerImpl::RunMenuAt(
   DCHECK((run_types & MenuRunner::COMBOBOX) == 0 ||
          (run_types & MenuRunner::EDITABLE_COMBOBOX) == 0);
   using ComboboxType = MenuController::ComboboxType;
-  if (run_types & MenuRunner::COMBOBOX)
+  if (run_types & MenuRunner::COMBOBOX) {
     controller->set_combobox_type(ComboboxType::kReadonly);
-  else if (run_types & MenuRunner::EDITABLE_COMBOBOX)
+  } else if (run_types & MenuRunner::EDITABLE_COMBOBOX) {
     controller->set_combobox_type(ComboboxType::kEditable);
-  else
+  } else {
     controller->set_combobox_type(ComboboxType::kNone);
+  }
   controller->set_send_gesture_events_to_owner(
       (run_types & MenuRunner::SEND_GESTURE_EVENTS_TO_OWNER) != 0);
   controller->set_use_ash_system_ui_layout(
@@ -194,8 +197,9 @@ void MenuRunnerImpl::RunMenuAt(
 }
 
 void MenuRunnerImpl::Cancel() {
-  if (running_)
+  if (running_) {
     controller_->Cancel(MenuController::ExitType::kAll);
+  }
 }
 
 base::TimeTicks MenuRunnerImpl::GetClosingEventTime() const {
@@ -209,8 +213,9 @@ void MenuRunnerImpl::OnMenuClosed(NotifyType type,
   if (controller_) {
     closing_event_time_ = controller_->closing_event_time();
     // Get a pointer to the parent widget before destroying the menu.
-    if (controller_->owner())
+    if (controller_->owner()) {
       parent_widget = controller_->owner()->GetWeakPtr();
+    }
   }
 
   menu_->set_controller(nullptr);
@@ -239,8 +244,9 @@ void MenuRunnerImpl::OnMenuClosed(NotifyType type,
                                            mouse_event_flags);
     }
     // Only notify the delegate if it did not delete this.
-    if (ref && type == NOTIFY_DELEGATE)
+    if (ref && type == NOTIFY_DELEGATE) {
       menu_->GetDelegate()->OnMenuClosed(menu);
+    }
   }
   FireFocusAfterMenuClose(parent_widget);
 }

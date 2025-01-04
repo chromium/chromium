@@ -5,6 +5,7 @@
 #include <cassert>
 #include <string>
 
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/shelf_model.h"
@@ -226,6 +227,9 @@ class CampaignsManagerInteractiveUiTest : public InteractiveAshTest {
     CHECK(temp_dir_.CreateUniqueTempDir());
 
     base::WriteFile(GetCampaignsFilePath(temp_dir_), kEmptyCampaigns);
+    // Disable the Sunfish system nudges, as they also use `SystemNudgeView` and
+    // will interfere with this test.
+    ash::AppListControllerImpl::SetSunfishNudgeDisabledForTest(true);
   }
 
   // InteractiveBrowserTest:

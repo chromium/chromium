@@ -54,8 +54,9 @@ gfx::Insets GetToolbarInkDropInsets(const views::View* host_view) {
   gfx::Insets margin_insets;
   gfx::Insets* const internal_padding =
       host_view->GetProperty(views::kInternalPaddingKey);
-  if (internal_padding)
+  if (internal_padding) {
     margin_insets = *internal_padding;
+  }
 
   // Inset the inkdrop insets so that the end result matches the target inkdrop
   // dimensions.

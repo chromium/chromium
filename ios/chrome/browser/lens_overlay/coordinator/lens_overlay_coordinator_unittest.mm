@@ -11,6 +11,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/lens/lens_overlay_permission_utils.h"
 #import "components/variations/scoped_variations_ids_provider.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_consent_view_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_position_browser_agent.h"
@@ -23,6 +24,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -33,7 +35,6 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/snapshots/model/fake_snapshot_generator_delegate.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -102,6 +103,11 @@ class LensOverlayCoordinatorTest : public PlatformTest {
 
     [dispatcher_ startDispatchingToTarget:coordinator_
                               forProtocol:@protocol(LensOverlayCommands)];
+
+    lens_commands_handler_ = OCMProtocolMock(@protocol(LensCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:lens_commands_handler_
+                     forProtocol:@protocol(LensCommands)];
 
     application_handler_ = OCMProtocolMock(@protocol(ApplicationCommands));
     [browser_->GetCommandDispatcher()
@@ -196,6 +202,7 @@ class LensOverlayCoordinatorTest : public PlatformTest {
   raw_ptr<LensOverlayTabHelper> tab_helper_;
   id<ApplicationCommands> application_handler_;
   id<LoadQueryCommands> load_query_handler_;
+  id<LensCommands> lens_commands_handler_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 

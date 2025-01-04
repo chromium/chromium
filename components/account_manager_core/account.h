@@ -10,6 +10,8 @@
 
 #include "base/component_export.h"
 
+class GaiaId;
+
 namespace account_manager {
 
 // Type of an account, based on the authentication backend of the account.
@@ -25,6 +27,10 @@ enum class AccountType : int {
 // Uniquely identifies an account.
 class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountKey {
  public:
+  // Convenience factory function to create an instance for
+  // `AccountType::kGaia`.
+  static AccountKey FromGaiaId(const GaiaId& gaia_id);
+
   // `id` cannot be empty.
   AccountKey(const std::string& id, AccountType type);
 

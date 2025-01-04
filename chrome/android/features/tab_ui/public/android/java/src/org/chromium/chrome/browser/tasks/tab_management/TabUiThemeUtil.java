@@ -8,6 +8,7 @@ import android.content.Context;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
+import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Px;
 import androidx.core.content.res.ResourcesCompat;
@@ -83,7 +84,6 @@ public class TabUiThemeUtil {
      * @param context {@link Context} used to retrieve color.
      * @param isIncognito Whether the color is used for incognito mode.
      * @param foreground Whether the tab is in the foreground.
-     * @param isReordering Whether the tab is being reordered.
      * @param isPlaceholder Whether the tab is a placeholder "ghost" tab.
      * @param isHovered Whether the tab is hovered on.
      * @return The color for the tab container.
@@ -93,7 +93,6 @@ public class TabUiThemeUtil {
             Context context,
             boolean isIncognito,
             boolean foreground,
-            boolean isReordering,
             boolean isPlaceholder,
             boolean isHovered) {
         if (foreground) {
@@ -105,6 +104,27 @@ public class TabUiThemeUtil {
         } else {
             return getSurfaceColorElev0(context, isIncognito);
         }
+    }
+
+    /**
+     * Returns the color used for the shared group notification bubble.
+     *
+     * @param context {@link Context} used to retrieve color.
+     * @return The color for the notification bubble.
+     */
+    public static @ColorInt int getGroupTitleBubbleColor(Context context) {
+        return getSurfaceColorElev0(context, /* isIncognito= */ false);
+    }
+
+    public static @ColorInt int getReorderBackgroundColor(Context context, boolean isIncognito) {
+        if (isIncognito) return context.getColor(R.color.default_bg_color_dark_elev_4_baseline);
+
+        @DimenRes
+        int elevationRes =
+                ColorUtils.inNightMode(context)
+                        ? R.dimen.default_elevation_4
+                        : R.dimen.default_elevation_1;
+        return ChromeColors.getSurfaceColor(context, elevationRes);
     }
 
     /** Returns the color for the hovered tab container. */

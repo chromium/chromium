@@ -15,12 +15,14 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/config_holder.h"
+#include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/post_processor/post_processor.h"
 #include "components/segmentation_platform/internal/selection/request_handler.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/prediction_options.h"
+#include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/result.h"
 
@@ -322,6 +324,34 @@ void RequestDispatcher::GetAnnotatedNumericResult(
       std::move(callback));
   GetModelResult(segmentation_key, options, input_context,
                  std::move(wrapped_callback));
+}
+
+void RequestDispatcher::GetInputKeysForModel(
+    const std::string& segmentation_key,
+    InputContextKeysCallback callback) {
+  Config* config =
+      storage_service_->config_holder()->GetConfigForSegmentationKey(
+          segmentation_key);
+  CHECK(config);
+  CHECK_EQ(config->segments.size(), 1u);
+
+  const SegmentInfo* default_info =
+      storage_service_->segment_info_database()->GetCachedSegmentInfo(
+          config->segments.begin()->first, ModelSource::DEFAULT_MODEL_SOURCE);
+  const SegmentInfo* server_info =
+      storage_service_->segment_info_database()->GetCachedSegmentInfo(
+          config->segments.begin()->first, ModelSource::SERVER_MODEL_SOURCE);
+
+  std::set<std::string> inputs;
+  if (default_info) {
+    inputs.merge(metadata_utils::GetInputKeysForMetadata(
+        default_info->model_metadata()));
+  }
+  if (server_info) {
+    inputs.merge(
+        metadata_utils::GetInputKeysForMetadata(server_info->model_metadata()));
+  }
+  std::move(callback).Run(std::move(inputs));
 }
 
 int RequestDispatcher::GetPendingActionCountForTesting() {

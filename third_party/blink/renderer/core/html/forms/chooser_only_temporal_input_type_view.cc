@@ -75,8 +75,8 @@ void ChooserOnlyTemporalInputTypeView::HandleDOMActivateEvent(Event& event) {
   OpenPopupView();
 }
 
-ControlPart ChooserOnlyTemporalInputTypeView::AutoAppearance() const {
-  return kMenulistPart;
+AppearanceValue ChooserOnlyTemporalInputTypeView::AutoAppearance() const {
+  return AppearanceValue::kMenulist;
 }
 
 void ChooserOnlyTemporalInputTypeView::OpenPopupView() {
@@ -87,6 +87,11 @@ void ChooserOnlyTemporalInputTypeView::OpenPopupView() {
         document.GetPage()->GetChromeClient().OpenDateTimeChooser(
             document.GetFrame(), this, parameters);
   }
+  GetElement().PseudoStateChanged(CSSSelector::kPseudoOpen);
+}
+
+bool ChooserOnlyTemporalInputTypeView::IsPickerVisible() const {
+  return date_time_chooser_ && date_time_chooser_->IsPickerVisible();
 }
 
 void ChooserOnlyTemporalInputTypeView::CreateShadowSubtree() {
@@ -141,6 +146,7 @@ void ChooserOnlyTemporalInputTypeView::DidChooseValue(const String& value) {
     return;
   GetElement().SetValue(value,
                         TextFieldEventBehavior::kDispatchInputAndChangeEvent);
+  GetElement().PseudoStateChanged(CSSSelector::kPseudoOpen);
 }
 
 void ChooserOnlyTemporalInputTypeView::DidChooseValue(double value) {
@@ -155,15 +161,18 @@ void ChooserOnlyTemporalInputTypeView::DidChooseValue(double value) {
         value, ASSERT_NO_EXCEPTION,
         TextFieldEventBehavior::kDispatchInputAndChangeEvent);
   }
+  GetElement().PseudoStateChanged(CSSSelector::kPseudoOpen);
 }
 
 void ChooserOnlyTemporalInputTypeView::DidEndChooser() {
   date_time_chooser_.Clear();
+  GetElement().PseudoStateChanged(CSSSelector::kPseudoOpen);
 }
 
 void ChooserOnlyTemporalInputTypeView::CloseDateTimeChooser() {
   if (date_time_chooser_)
     date_time_chooser_->EndChooser();
+  GetElement().PseudoStateChanged(CSSSelector::kPseudoOpen);
 }
 
 void ChooserOnlyTemporalInputTypeView::Blur() {

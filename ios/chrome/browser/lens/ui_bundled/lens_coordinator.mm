@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
+#import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
@@ -62,6 +63,11 @@ namespace {
 // Lens results web page loading progress threshold to transition from LVF to
 // results page.
 static const double kLensWebPageTransitionLoadingProgressThreshold = 0.5;
+
+// The key of a preference containing whether the home screen widget should show
+// the color Lens and voice icons if Lens is shown. Usage removed in v133.
+NSString* const kLensEnableColorLensAndVoiceIconsInWidgetKey =
+    @"enableColorLensAndVoiceIconsInWidget";
 
 }  // namespace
 
@@ -187,6 +193,15 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
 #pragma mark - Commands
 
 - (void)searchImageWithLens:(SearchImageWithLensCommand*)command {
+  if (lens_availability::IsLensContextMenuUnifiedExperienceEnabled()) {
+    id<LensOverlayCommands> handler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), LensOverlayCommands);
+    [handler searchImageWithLens:command.image
+                      entrypoint:LensOverlayEntrypoint::kSearchImageContextMenu
+                      completion:nil];
+    return;
+  }
+
   const bool isIncognito = self.browser->GetProfile()->IsOffTheRecord();
   __weak LensCoordinator* weakSelf = self;
 
@@ -204,6 +219,10 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   if (IsSegmentationTipsManagerEnabled()) {
     [self recordLensUsage];
   }
+}
+
+- (void)lensOverlayDismissed {
+  // NO-OP
 }
 
 - (void)openLensInputSelection:(OpenLensInputSelectionCommand*)command {
@@ -551,16 +570,9 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
       ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET;
   [sharedDefaults setBool:enableLensInWidget forKey:enableLensInWidgetKey];
 
-  // If the Lens entrypoint is shown, determine whether to show the color or
-  // monochrome icons.
-  NSString* enableColorLensAndVoiceIconsInHomeScreenWidgetKey =
-      base::SysUTF8ToNSString(
-          app_group::kChromeAppGroupEnableColorLensAndVoiceIconsInWidget);
-  const bool enableColorLensAndVoiceIconsInHomeScreenWidget =
-      base::FeatureList::IsEnabled(
-          kEnableColorLensAndVoiceIconsInHomeScreenWidget);
-  [sharedDefaults setBool:enableColorLensAndVoiceIconsInHomeScreenWidget
-                   forKey:enableColorLensAndVoiceIconsInHomeScreenWidgetKey];
+  // TODO(crbug.com/383167907): Clean up old key. Usage removed in v133.
+  [sharedDefaults
+      removeObjectForKey:kLensEnableColorLensAndVoiceIconsInWidgetKey];
 }
 
 // Sets the app shortcut item for either the QR code scanner or Lens.

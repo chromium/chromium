@@ -19,6 +19,7 @@ namespace views {
 class Button;
 }
 class NewTabButton;
+class TabStripActionContainer;
 class TabSearchButton;
 class TabStrip;
 class TabStripComboButton;
@@ -62,15 +63,15 @@ class TabStripRegionView final : public views::AccessiblePaneView {
 
   TabSearchContainer* GetTabSearchContainer();
 
+  TabStripActionContainer* GetTabStripActionContainer();
+
   TabStripComboButton* tab_strip_combo_button() {
     return tab_strip_combo_button_;
   }
 
-  ProductSpecificationsButton* product_specifications_button() {
-    return product_specifications_button_;
-  }
+  ProductSpecificationsButton* GetProductSpecificationsButton();
 
-  glic::GlicButton* glic_button() { return glic_button_; }
+  glic::GlicButton* GetGlicButton();
 
   // May be nullptr if combo button is enabled. |Use GetNewTabButton()| to
   // access the new tab button inside the combo button.
@@ -141,6 +142,7 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   void AdjustViewBoundsRect(View* view, int offset);
 
   raw_ptr<const Profile> profile_ = nullptr;
+  raw_ptr<TabStripActionContainer> tab_strip_action_container_ = nullptr;
   raw_ptr<views::View> tab_strip_container_ = nullptr;
   raw_ptr<views::View> reserved_grab_handle_space_ = nullptr;
   raw_ptr<TabStrip> tab_strip_ = nullptr;
@@ -149,7 +151,6 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   raw_ptr<TabSearchContainer> tab_search_container_ = nullptr;
   raw_ptr<TabStripComboButton> tab_strip_combo_button_ = nullptr;
   raw_ptr<ProductSpecificationsButton> product_specifications_button_ = nullptr;
-  raw_ptr<glic::GlicButton> glic_button_ = nullptr;
 
   // On some platforms for Chrome Refresh, the TabSearchButton should be
   // laid out before the TabStrip. Storing this configuration prevents

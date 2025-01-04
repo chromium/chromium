@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -157,12 +158,11 @@ class AutofillAgentTest : public test::AutofillRendererTest {
  public:
   void SetUp() override {
     test::AutofillRendererTest::SetUp();
-    std::unique_ptr<MockFormTracker> form_tracker =
-        std::make_unique<MockFormTracker>(
-            GetMainRenderFrame(), FormTracker::UserGestureRequired(true),
-            autofill_agent());
-    form_tracker->AddObserver(&autofill_agent());
-    test_api(autofill_agent()).set_form_tracker(std::move(form_tracker));
+    std::unique_ptr<MockFormTracker> tracker =
+        std::make_unique<MockFormTracker>(GetMainRenderFrame(),
+                                          autofill_agent());
+    tracker->SetUserGestureRequired(FormTracker::UserGestureRequired(true));
+    test_api(autofill_agent()).set_form_tracker(std::move(tracker));
   }
 
   FormRendererId GetFormRendererIdById(std::string_view id) {
@@ -778,9 +778,9 @@ class AutofillAgentSubmissionTest : public AutofillAgentTest,
   AutofillAgentSubmissionTest() {
     EXPECT_LE(GetParam(), 5);
     std::vector<base::test::FeatureRef> features = {
-        features::kAutofillFixFormTracking,
         features::kAutofillUseSubmittedFormInHtmlSubmission,
         features::kAutofillPreferSavedFormAsSubmittedForm,
+        features::kAutofillFixFormTracking,
         features::kAutofillReplaceCachedWebElementsByRendererIds,
         features::kAutofillReplaceFormElementObserver};
 
@@ -1030,8 +1030,8 @@ TEST_P(AutofillAgentSubmissionTest,
   // removed after an AJAX call.
   ExecuteJavaScriptForTests(
       R"(document.getElementById('shipping').innerHTML = '')");
-  autofill_agent().OnInferredFormSubmission(
-      mojom::SubmissionSource::XHR_SUCCEEDED);
+  autofill_agent().OnFormSubmission(mojom::SubmissionSource::XHR_SUCCEEDED,
+                                    /*submitted_form_element=*/std::nullopt);
 }
 
 // Tests that an inferred form submission as a result of a page deleting ALL of
@@ -1061,8 +1061,8 @@ TEST_P(AutofillAgentSubmissionTest,
   // Simulate inferred form submission as a result the focused field being
   // removed after an AJAX call.
   ExecuteJavaScriptForTests(R"(document.getElementById('shipping').remove();)");
-  autofill_agent().OnInferredFormSubmission(
-      mojom::SubmissionSource::XHR_SUCCEEDED);
+  autofill_agent().OnFormSubmission(mojom::SubmissionSource::XHR_SUCCEEDED,
+                                    /*submitted_form_element=*/std::nullopt);
 }
 
 // Test scenario WHERE:
@@ -1100,7 +1100,9 @@ TEST_P(AutofillAgentSubmissionTest,
   // Remove element that the user did not interact with last.
   ExecuteJavaScriptForTests(R"(document.getElementById('name').remove();)");
   // Simulate page navigation.
-  autofill_agent().OnProbablyFormSubmitted();
+  autofill_agent().OnFormSubmission(
+      mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED,
+      /*submitted_form_element=*/std::nullopt);
 }
 
 // Test that in the scenario that:
@@ -1159,8 +1161,8 @@ TEST_P(AutofillAgentSubmissionTest,
                                   FieldsAre(HasValue(u"input2 autofilled"))),
                             _));
   ExecuteJavaScriptForTests(R"(document.getElementById('form').remove();)");
-  autofill_agent().OnInferredFormSubmission(
-      mojom::SubmissionSource::XHR_SUCCEEDED);
+  autofill_agent().OnFormSubmission(mojom::SubmissionSource::XHR_SUCCEEDED,
+                                    /*submitted_form_element=*/std::nullopt);
 }
 
 class AutofillAgentTestNavigationReset : public AutofillAgentTest {

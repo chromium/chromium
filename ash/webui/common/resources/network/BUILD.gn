@@ -13,19 +13,16 @@ js_type_check("closure_compile_module") {
   deps = [
     ":apn_detail_dialog",
     ":apn_list_item",
-    ":apn_selection_dialog",
     ":apn_selection_dialog_list_item",
     ":cellular_utils",
     ":cr_policy_network_behavior_mojo",
     ":cr_policy_network_indicator_mojo",
     ":mojo_interface_provider",
     ":network_config_element_behavior",
-    ":network_config_input",
     ":network_config_select",
     ":network_config_toggle",
     ":network_icon",
     ":network_ip_config",
-    ":network_list",
     ":network_list_item",
     ":network_list_types",
     ":network_listener_behavior",
@@ -90,20 +87,6 @@ js_library("apn_detail_dialog") {
   ]
 }
 
-js_library("apn_selection_dialog") {
-  deps = [
-    ":apn_selection_dialog_list_item",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//chromeos/services/network_config/public/mojom:mojom_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [
-    "//ash/webui/common/resources/cr_elements/cr_button/cr_button_externs.js",
-    "//ash/webui/common/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
-  ]
-}
-
 js_library("apn_selection_dialog_list_item") {
   deps = [
     "//ash/webui/common/resources:i18n_behavior",
@@ -115,18 +98,6 @@ js_library("apn_selection_dialog_list_item") {
 }
 
 js_library("network_config_element_behavior") {
-}
-
-js_library("network_config_input") {
-  deps = [
-    ":cr_policy_network_behavior_mojo",
-    ":cr_policy_network_indicator_mojo",
-    ":network_config_element_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [
-    "//ash/webui/common/resources/cr_elements/cr_input/cr_input_externs.js",
-  ]
 }
 
 js_library("network_config_select") {
@@ -171,18 +142,6 @@ js_library("network_ip_config") {
   externs_list = [
     "//ash/webui/common/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
     "//ash/webui/common/resources/cr_elements/policy/cr_policy_indicator_externs.js",
-  ]
-}
-
-js_library("network_list") {
-  deps = [
-    ":network_list_item",
-    ":network_list_types",
-    ":onc_mojo",
-    "//ash/webui/common/resources:cr_scrollable_behavior",
-    "//ash/webui/common/resources:list_property_update_behavior",
-    "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 

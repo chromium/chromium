@@ -9,12 +9,14 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/i18n/char_iterator.h"
 #include "base/metrics/histogram_functions.h"
-#include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/data_quality/autofill_data_util.h"
+#include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
@@ -24,9 +26,9 @@
 #include "components/autofill/core/browser/metrics/prediction_quality_metrics.h"
 #include "components/autofill/core/browser/metrics/quality_metrics_filling.h"
 #include "components/autofill/core/browser/metrics/shadow_prediction_metrics.h"
-#include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
+#include "third_party/icu/source/common/unicode/uscript.h"
 
 namespace autofill::autofill_metrics {
 
@@ -143,6 +145,40 @@ void LogDurationMetrics(const FormStructure& form,
   }
 }
 
+// Returns the character set of the submitted value for the alternative name
+// field.
+AutofillAlternativeNameFieldValueCharacterSet
+GetAlternativeNameFieldValueCharacterSet(
+    const std::u16string& submitted_value) {
+  UErrorCode error = U_ZERO_ERROR;
+  for (base::i18n::UTF16CharIterator iter(submitted_value); !iter.end();
+       iter.Advance()) {
+    if (uscript_getScript(iter.get(), &error) == USCRIPT_KATAKANA) {
+      return AutofillAlternativeNameFieldValueCharacterSet::kKatakana;
+    } else if (uscript_getScript(iter.get(), &error) == USCRIPT_HIRAGANA) {
+      return AutofillAlternativeNameFieldValueCharacterSet::kHiragana;
+    }
+  }
+  return AutofillAlternativeNameFieldValueCharacterSet::kOther;
+}
+
+// Records the character set of the submitted value for each alternative name
+// field in the form.
+void LogSubmittedAlternativeNameCharacterSetValues(const FormStructure& form) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillSupportPhoneticNameForJP)) {
+    return;
+  }
+  for (const std::unique_ptr<AutofillField>& field : form) {
+    if (IsAlternativeNameType(field->Type().GetStorableType())) {
+      base::UmaHistogramEnumeration(
+          "Autofill.SubmittedAlternativeNameFieldValueCharacterSet",
+          GetAlternativeNameFieldValueCharacterSet(
+              field->value(ValueSemantics::kCurrent)));
+    }
+  }
+}
+
 void LogExtractionMetrics(const FormStructure& form) {
   for (const std::unique_ptr<AutofillField>& field : form) {
     CHECK(!field->possible_types().empty());
@@ -236,6 +272,9 @@ void LogQualityMetrics(const FormStructure& form_structure,
   LogFillingMetrics(form_structure, form_interactions_ukm_logger, source_id,
                     observed_submission);
   if (observed_submission) {
+    // TODO(crbug.com/359768803): Remove this metric once the feature is
+    // launched.
+    LogSubmittedAlternativeNameCharacterSetValues(form_structure);
     LogExtractionMetrics(form_structure);
     LogDurationMetrics(form_structure, load_time, interaction_time,
                        submission_time);

@@ -16,7 +16,8 @@
 #include "base/values.h"
 #include "components/crash/core/browser/crashes_ui_util.h"
 #include "components/crash/core/common/reporter_running_ios.h"
-#include "components/grit/dev_ui_components_resources.h"
+#include "components/grit/crashes_resources.h"
+#include "components/grit/crashes_resources_map.h"
 #include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/version_info/version_info.h"
@@ -44,13 +45,8 @@ web::WebUIIOSDataSource* CreateCrashesUIHTMLSource() {
                              IDS_IOS_SHORT_PRODUCT_NAME);
 
   source->UseStringsJs();
-  source->AddResourcePath(crash_reporter::kCrashesUICrashesJS,
-                          IDR_CRASH_CRASHES_JS);
-  source->AddResourcePath(crash_reporter::kCrashesUICrashesCSS,
-                          IDR_CRASH_CRASHES_CSS);
-  source->AddResourcePath(crash_reporter::kCrashesUISadTabSVG,
-                          IDR_CRASH_SADTAB_SVG);
-  source->SetDefaultResource(IDR_CRASH_CRASHES_HTML);
+  source->AddResourcePaths(kCrashesResources);
+  source->AddResourcePath("", IDR_CRASHES_CRASHES_HTML);
   return source;
 }
 

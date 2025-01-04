@@ -247,9 +247,7 @@ class DownloadBubbleInteractiveUiTest
 
 #if BUILDFLAG(IS_MAC)
   auto EnterImmersiveFullscreen() {
-    return [&]() {
-      ui_test_utils::ToggleFullscreenModeAndWait(browser());
-    };
+    return [&]() { ui_test_utils::ToggleFullscreenModeAndWait(browser()); };
   }
 
   auto IsInImmersiveFullscreen() {

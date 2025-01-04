@@ -61,6 +61,7 @@ class UpdateServiceImplInactive : public UpdateService {
       const std::string& /*app_id*/,
       Priority /*priority*/,
       PolicySameVersionUpdate /*policy_same_version_update*/,
+      const std::string& /*language*/,
       base::RepeatingCallback<void(const UpdateState&)> /*state_update*/,
       base::OnceCallback<void(Result)> callback) override {
     VLOG(1) << __func__ << " (Inactive)";
@@ -74,6 +75,7 @@ class UpdateServiceImplInactive : public UpdateService {
       const std::string& /*install_data_index*/,
       Priority /*priority*/,
       PolicySameVersionUpdate /*policy_same_version_update*/,
+      const std::string& /*language*/,
       base::RepeatingCallback<void(const UpdateState&)> /*state_update*/,
       base::OnceCallback<void(Result)> callback) override {
     VLOG(1) << __func__ << " (Inactive)";
@@ -96,6 +98,7 @@ class UpdateServiceImplInactive : public UpdateService {
       const std::string& /*client_install_data*/,
       const std::string& /*install_data_index*/,
       Priority /*priority*/,
+      const std::string& /*language*/,
       base::RepeatingCallback<void(const UpdateState&)> /*state_update*/,
       base::OnceCallback<void(Result)> callback) override {
     VLOG(1) << __func__ << " (Inactive)";
@@ -114,6 +117,7 @@ class UpdateServiceImplInactive : public UpdateService {
       const std::string& /*install_args*/,
       const std::string& /*install_data*/,
       const std::string& /*install_settings*/,
+      const std::string& /*language*/,
       base::RepeatingCallback<void(const UpdateState&)> /*state_update*/,
       base::OnceCallback<void(Result)> callback) override {
     VLOG(1) << __func__ << " (Inactive)";

@@ -50,6 +50,8 @@ class MockLocationObserver {
 
   const mojom::GeopositionResult* last_result() { return last_result_.get(); }
 
+  void ResetLastResult() { last_result_.reset(); }
+
  private:
   mojom::GeopositionResultPtr last_result_;
 };
@@ -381,9 +383,9 @@ TEST_F(GeolocationLocationProviderManagerTest, SetObserverOptions) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
-// This test fallback mechanism by simulating a `kWifiDisabled` error code
-// reported from platform location provider. Fallback is currently only
-// supported on macOS.
+// For `kHybridPlatform` mode, the fallback mechanism should only be initiated
+// by `kWifiDisabled` error code. When any other error code reported from
+// platform location provider, the error should be reported directly.
 TEST_F(GeolocationLocationProviderManagerTest, HybridPlatformFallback) {
   ASSERT_TRUE(
       SetExperimentMode(mojom::LocationProviderManagerMode::kHybridPlatform));
@@ -401,6 +403,19 @@ TEST_F(GeolocationLocationProviderManagerTest, HybridPlatformFallback) {
             platform_location_provider()->state());
   EXPECT_FALSE(observer_->last_result());
 
+  // Simulate a `kPositionUnavailable` error which will NOT initiate fallback
+  // mode.
+  SetErrorPosition(platform_location_provider(),
+                   mojom::GeopositionErrorCode::kPositionUnavailable);
+  EXPECT_EQ(mojom::LocationProviderManagerMode::kHybridPlatform,
+            location_provider_manager_->provider_manager_mode_);
+  ASSERT_TRUE(observer_->last_result()->is_error());
+  EXPECT_TRUE(platform_location_provider());
+  EXPECT_FALSE(network_location_provider());
+  EXPECT_EQ(mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy,
+            platform_location_provider()->state());
+  observer_->ResetLastResult();
+
   // Simulate a `kWifiDisabled` error which will initiate fallback mode.
   SetErrorPosition(platform_location_provider(),
                    mojom::GeopositionErrorCode::kWifiDisabled);
@@ -416,6 +431,45 @@ TEST_F(GeolocationLocationProviderManagerTest, HybridPlatformFallback) {
   // Stop provider and ensure that provider manager mode is reset.
   location_provider_manager_->StopProvider();
   EXPECT_EQ(mojom::LocationProviderManagerMode::kHybridPlatform,
+            location_provider_manager_->provider_manager_mode_);
+}
+
+// For `kHybridPlatform2` mode, the fallback mechanism should be initiated by
+// any error code report from platform location provider. This test simulates a
+// `kPositionUnavailable` error code reported from platform location provider to
+// initiate the fallback mechanism.
+TEST_F(GeolocationLocationProviderManagerTest, HybridPlatformFallback2) {
+  ASSERT_TRUE(
+      SetExperimentMode(mojom::LocationProviderManagerMode::kHybridPlatform2));
+  InitializeLocationProviderManager(base::BindRepeating(&NullLocationProvider),
+                                    url_loader_factory_);
+  ASSERT_TRUE(location_provider_manager_);
+
+  EXPECT_FALSE(network_location_provider());
+  EXPECT_FALSE(platform_location_provider());
+  location_provider_manager_->StartProvider(false);
+
+  EXPECT_FALSE(network_location_provider());
+  ASSERT_TRUE(platform_location_provider());
+  EXPECT_EQ(mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy,
+            platform_location_provider()->state());
+  EXPECT_FALSE(observer_->last_result());
+
+  // Simulate a `kPositionUnavailable` error which will initiate fallback mode.
+  SetErrorPosition(platform_location_provider(),
+                   mojom::GeopositionErrorCode::kPositionUnavailable);
+
+  EXPECT_EQ(mojom::LocationProviderManagerMode::kHybridFallbackNetwork,
+            location_provider_manager_->provider_manager_mode_);
+  ASSERT_FALSE(observer_->last_result());
+  EXPECT_FALSE(platform_location_provider());
+  EXPECT_TRUE(network_location_provider());
+  EXPECT_EQ(mojom::GeolocationDiagnostics::ProviderState::kLowAccuracy,
+            network_location_provider()->state());
+
+  // Stop provider and ensure that provider manager mode is reset.
+  location_provider_manager_->StopProvider();
+  EXPECT_EQ(mojom::LocationProviderManagerMode::kHybridPlatform2,
             location_provider_manager_->provider_manager_mode_);
 }
 

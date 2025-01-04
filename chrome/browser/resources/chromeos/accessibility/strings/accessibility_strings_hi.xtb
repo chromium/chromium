@@ -845,6 +845,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="6385591741672306837">कॉलम</translation>
 <translation id="6387719785439924554">aside</translation>
 <translation id="6393014464788431702">सभी इवेंट फ़िल्टर बंद करें</translation>
+<translation id="6406989068857078334">माउस की स्पीड कम हो गई है. क्लिक करने के लिए फिर से <ph name="GESTURE" /></translation>
 <translation id="6411569524720229058">पतझड़</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{विरामचिह्न}one{# विरामचिह्न}other{# विरामचिह्न}}</translation>
@@ -1098,6 +1099,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="8205922869661890178">डेवलपर लॉग पेज खोलें</translation>
 <translation id="8212109599554677485">डिसप्ले शैली को बदलकर 'आमने-सामने' करें</translation>
 <translation id="8215202828671303819">एक से ज़्यादा चुनें</translation>
+<translation id="822316432305106615">प्रिसिजन क्लिक की सुविधा चालू करें</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />% ओपैसिटी.</translation>
 <translation id="8261506727792406068">मिटाएं</translation>
 <translation id="826825447994856889">परिचय</translation>

@@ -11,9 +11,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace content {
 
@@ -44,9 +44,9 @@ SpeechRecognitionManagerImplTest::SpeechRecognitionManagerImplTest() {
       /*enabled_features=*/
       {
           media::kOnDeviceWebSpeech,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
           ash::features::kOnDeviceSpeechRecognition,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
       },
       /*disabled_features=*/{});
 }

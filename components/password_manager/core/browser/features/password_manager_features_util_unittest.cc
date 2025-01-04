@@ -20,6 +20,7 @@
 #include "components/sync/service/sync_prefs.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/test_sync_service.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace password_manager::features_util {
@@ -108,7 +109,7 @@ TEST_F(PasswordManagerFeaturesUtilWithoutAccountStorageTest,
        AccountStorageOptIn) {
   CoreAccountInfo account;
   account.email = "foo@account.com";
-  account.gaia = "foo";
+  account.gaia = GaiaId("foo");
   account.account_id = CoreAccountId::FromGaiaId(account.gaia);
 
   // SyncService is running in transport mode with |account| and the opt-in
@@ -143,7 +144,7 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
        AccountStorageOptIn) {
   CoreAccountInfo account;
   account.email = "foo@account.com";
-  account.gaia = "foo";
+  account.gaia = GaiaId("foo");
   account.account_id = CoreAccountId::FromGaiaId(account.gaia);
 
   sync_service_.SetSignedOut();
@@ -196,12 +197,12 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
        AccountStorageKeepSettingsOnlyForUsers) {
   CoreAccountInfo first_account;
   first_account.email = "first@account.com";
-  first_account.gaia = "first";
+  first_account.gaia = GaiaId("first");
   first_account.account_id = CoreAccountId::FromGaiaId(first_account.gaia);
 
   CoreAccountInfo second_account;
   second_account.email = "second@account.com";
-  second_account.gaia = "second";
+  second_account.gaia = GaiaId("second");
   second_account.account_id = CoreAccountId::FromGaiaId(second_account.gaia);
 
   // Let SyncService run in transport mode with |first_account|, opt in and
@@ -226,8 +227,8 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
   ASSERT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
 
   // Keep the settings only for |first_account| (and some unknown other user).
-  KeepAccountStorageSettingsOnlyForUsers(&pref_service_,
-                                         {first_account.gaia, "other_gaia_id"});
+  KeepAccountStorageSettingsOnlyForUsers(
+      &pref_service_, {first_account.gaia, GaiaId("other_gaia_id")});
 
   // The first account should still have kProfileStore as the default store,
   // but not the second.
@@ -244,7 +245,7 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
        SyncSuppressesAccountStorageOptIn) {
   CoreAccountInfo account;
   account.email = "name@account.com";
-  account.gaia = "name";
+  account.gaia = GaiaId("name");
   account.account_id = CoreAccountId::FromGaiaId(account.gaia);
 
   // Initially, the user is signed in but doesn't have Sync-the-feature enabled,
@@ -274,7 +275,7 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
   pref_service_.SetBoolean(::prefs::kExplicitBrowserSignin, true);
   CoreAccountInfo account;
   account.email = "foo@account.com";
-  account.gaia = "foo";
+  account.gaia = GaiaId("foo");
   account.account_id = CoreAccountId::FromGaiaId(account.gaia);
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account);
   OptOutOfAccountStorage(&pref_service_, &sync_service_);
@@ -301,7 +302,7 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
        AccountStorageOptInOnMobile) {
   CoreAccountInfo account;
   account.email = "name@account.com";
-  account.gaia = "name";
+  account.gaia = GaiaId("name");
   account.account_id = CoreAccountId::FromGaiaId(account.gaia);
 
   // Initial state: Not signed in.
@@ -332,7 +333,7 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
        SyncDisablesAccountStorage) {
   CoreAccountInfo account;
   account.email = "name@account.com";
-  account.gaia = "name";
+  account.gaia = GaiaId("name");
   account.account_id = CoreAccountId::FromGaiaId(account.gaia);
 
   ASSERT_FALSE(IsOptedInForAccountStorage(&pref_service_, &sync_service_));
@@ -378,7 +379,7 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
        LocalSyncDisablesAccountStorage) {
   CoreAccountInfo account;
   account.email = "name@account.com";
-  account.gaia = "name";
+  account.gaia = GaiaId("name");
   account.account_id = CoreAccountId::FromGaiaId(account.gaia);
 
   // The SyncService is running in local-sync mode.
@@ -415,7 +416,7 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
 
   CoreAccountInfo account;
   account.email = "name@account.com";
-  account.gaia = "name";
+  account.gaia = GaiaId("name");
   account.account_id = CoreAccountId::FromGaiaId(account.gaia);
 
   // The SyncService is running in transport mode.
@@ -446,7 +447,7 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
        OptOutSetsProfileStorePreference) {
   CoreAccountInfo account;
   account.email = "name@account.com";
-  account.gaia = "name";
+  account.gaia = GaiaId("name");
   account.account_id = CoreAccountId::FromGaiaId(account.gaia);
 
   // The SyncService is running in transport mode.
@@ -471,7 +472,7 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForSyncingUsersTest,
        OptedInIfSyncingAndPasswordsSelected) {
   CoreAccountInfo account;
   account.email = "foo@account.com";
-  account.gaia = "foo";
+  account.gaia = GaiaId("foo");
   account.account_id = CoreAccountId::FromGaiaId(account.gaia);
   sync_service_.SetSignedIn(signin::ConsentLevel::kSync, account);
   sync_service_.GetUserSettings()->SetSelectedType(

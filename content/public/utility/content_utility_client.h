@@ -49,10 +49,10 @@ class CONTENT_EXPORT ContentUtilityClient {
   // Only called from the main thread.
   virtual void RegisterMainThreadServices(mojo::ServiceFactory& services) {}
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Initialize the endpoint of mojo service manager.
   virtual mojo::GenericPendingReceiver InitMojoServiceManager();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 }  // namespace content

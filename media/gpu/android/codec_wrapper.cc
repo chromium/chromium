@@ -31,8 +31,7 @@ class CodecWrapperImpl : public base::RefCountedThreadSafe<CodecWrapperImpl> {
                    CodecWrapper::OutputReleasedCB output_buffer_release_cb,
                    const gfx::Size& initial_expected_size,
                    const gfx::ColorSpace& config_color_space,
-                   std::optional<gfx::Size> coded_size_alignment,
-                   bool use_block_model);
+                   std::optional<gfx::Size> coded_size_alignment);
 
   CodecWrapperImpl(const CodecWrapperImpl&) = delete;
   CodecWrapperImpl& operator=(const CodecWrapperImpl&) = delete;
@@ -117,9 +116,6 @@ class CodecWrapperImpl : public base::RefCountedThreadSafe<CodecWrapperImpl> {
 
   // Used when the color space can't be retrieved from the codec.
   const gfx::ColorSpace config_color_space_;
-
-  // Enables Block Model (LinearBlock).
-  const bool use_block_model_;
 };
 
 CodecOutputBuffer::CodecOutputBuffer(
@@ -181,15 +177,13 @@ CodecWrapperImpl::CodecWrapperImpl(
     CodecWrapper::OutputReleasedCB output_buffer_release_cb,
     const gfx::Size& initial_expected_size,
     const gfx::ColorSpace& config_color_space,
-    std::optional<gfx::Size> coded_size_alignment,
-    bool use_block_model)
+    std::optional<gfx::Size> coded_size_alignment)
     : codec_(std::move(codec_surface_pair.first)),
       surface_bundle_(std::move(codec_surface_pair.second)),
       size_(initial_expected_size),
       output_buffer_release_cb_(std::move(output_buffer_release_cb)),
       coded_size_alignment_(coded_size_alignment),
-      config_color_space_(config_color_space),
-      use_block_model_(use_block_model) {
+      config_color_space_(config_color_space) {
   CHECK(codec_);
   DVLOG(2) << __func__;
 }
@@ -294,11 +288,10 @@ CodecWrapperImpl::QueueStatus CodecWrapperImpl::QueueInputBuffer(
     if (state_ == State::kFlushed || state_ == State::kDrained) {
       elided_eos_pending_ = true;
     } else {
-      if (use_block_model_) {
-        codec_->QueueInputBlock(input_buffer, base::span<const uint8_t>(),
-                                base::TimeDelta(), true);
-      } else {
-        codec_->QueueEOS(input_buffer);
+      auto result = codec_->QueueEOS(input_buffer);
+      if (result == MediaCodecResult::Codes::kError) {
+        state_ = State::kError;
+        return {QueueStatus::Codes::kError, std::move(result)};
       }
     }
     state_ = State::kDraining;
@@ -310,17 +303,9 @@ CodecWrapperImpl::QueueStatus CodecWrapperImpl::QueueInputBuffer(
   MediaCodecResult result;
   if (decrypt_config) {
     result = codec_->QueueSecureInputBuffer(
-        input_buffer, buffer, decrypt_config->key_id(), decrypt_config->iv(),
-        decrypt_config->subsamples(), decrypt_config->encryption_scheme(),
-        decrypt_config->encryption_pattern(), buffer.timestamp());
+        input_buffer, buffer, buffer.timestamp(), *decrypt_config);
   } else {
-    if (use_block_model_) {
-      result = codec_->QueueInputBlock(input_buffer, buffer, buffer.timestamp(),
-                                       false);
-    } else {
-      result =
-          codec_->QueueInputBuffer(input_buffer, buffer, buffer.timestamp());
-    }
+    result = codec_->QueueInputBuffer(input_buffer, buffer, buffer.timestamp());
   }
 
   switch (result.code()) {
@@ -488,19 +473,16 @@ bool CodecWrapperImpl::ReleaseCodecOutputBuffer(int64_t id, bool render) {
   return true;
 }
 
-CodecWrapper::CodecWrapper(
-    CodecSurfacePair codec_surface_pair,
-    OutputReleasedCB output_buffer_release_cb,
-    const gfx::Size& initial_expected_size,
-    const gfx::ColorSpace& config_color_space,
-    std::optional<gfx::Size> coded_size_alignment,
-    bool use_block_model)
+CodecWrapper::CodecWrapper(CodecSurfacePair codec_surface_pair,
+                           OutputReleasedCB output_buffer_release_cb,
+                           const gfx::Size& initial_expected_size,
+                           const gfx::ColorSpace& config_color_space,
+                           std::optional<gfx::Size> coded_size_alignment)
     : impl_(new CodecWrapperImpl(std::move(codec_surface_pair),
                                  std::move(output_buffer_release_cb),
                                  initial_expected_size,
                                  config_color_space,
-                                 coded_size_alignment,
-                                 use_block_model)) {}
+                                 coded_size_alignment)) {}
 
 CodecWrapper::~CodecWrapper() {
   // The codec must have already been taken.

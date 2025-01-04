@@ -4,7 +4,7 @@ This document describes how to write client code to collect UKM data. Before
 you add new metrics, you should file a proposal. See [go/ukm](http://go/ukm)
 for more information.
 
-Last proofread and updated on 2024/07/17.
+Last proofread and updated on 2024/12/18.
 
 [TOC]
 
@@ -36,6 +36,7 @@ Any events and metrics you collect need to be defined in
   undefined which one will be kept.
 
 ### Example
+
 ```xml
 <event name="Goat.Teleported">
   <owner>teleporter@chromium.org</owner>
@@ -58,13 +59,23 @@ Any events and metrics you collect need to be defined in
 
 ### Controlling the Aggregation of Metrics
 
-Control of which metrics are included in the
-[History](http://go/aggregated-ukm#history-table) table (the table behind the
-main UKM dashboard) is done via the same
+Aggregation of metrics is an optional setting for making them available in the
+[History](http://go/aggregated-ukm#history-table) table and consequently
+viewable on the [UKM dashboard](http://go/ukm-dash).
+
+To have a metric aggregated, `<history>`, `<aggregation>` and `<statistics>`
+tags need to be added along with the type of statistic to be generated in the
+event definition
 [`tools/metrics/ukm/ukm.xml`](https://cs.chromium.org/chromium/src/tools/metrics/ukm/ukm.xml)
-file in the Chromium codebase. To have a metric aggregated, `<history>`,
-`<aggregation>` and `<statistics>` tags need to be added along with the type of
-statistic to be generated.
+file in the Chromium codebase.
+
+Adding the `<aggregation>` tag does not change how the events and metrics are
+stored unaggregated in reports and logs.
+
+However, it increases the workload for UKM data processing pipelines. The
+computation can be especially costly for frequently emitted events. Therefore,
+please only add aggregations when necessary. This tag can be added to an
+existing metric later or removed any time.
 
 ```xml
 <event name="Goat.Teleported">
@@ -86,7 +97,7 @@ statistic to be generated.
 Supported statistic types are:
 
 *   `<quantiles type="std-percentiles"/>`: Calculates the "standard percentiles"
-    for the values which are 1, 5, 10, 25, 50, 75, 90, 95, and 99%ile.
+    for the values which are 1, 5, 10, 25, 50, 75, 90, 95, and 99 percentiles.
 *   `<enumeration/>`: Calculates the proportions of all values individually. The
     proportions indicate the relative frequency of each bucket and are
     calculated independently for each metric over each aggregation. (Details
@@ -386,12 +397,11 @@ The full metrics will not be keyed off the subframe URL. Rather, the subframe UR
 
 ### Example
 
-
 ```xml
 <event name="WebFrameworkPerformance">
   <owner>owner@chromium.org</owner>
   <summary>
-    Recorded when a page uses on of a list of known web frameworks. This records various performance measurements.
+    Recorded when a page uses one of the known web frameworks. This records various performance measurements.
   </summary>
   <metric name="WebFramework" enum="WebFrameworkName">
     <summary>
@@ -417,4 +427,4 @@ And in the UKM enum.xml:
 </enum>
 ```
 
-In this example, if a known framework was loaded with a time of 150ms, we could record the framework name and the load time, tied together with the main frame URL. Note that there will need to be custom logic to map the provider to the enum. It’s possible this logic may be reusable across UKM clients, please verify if some similar recording is being done elsewhere.
+In this example, if a known framework was loaded with a time of 150ms, we could record the framework name and the load time, tied together with the main frame URL. Note that there will need to be custom logic to map the provider to the enum. It's possible this logic may be reusable across UKM clients, please verify if some similar recording is being done elsewhere.

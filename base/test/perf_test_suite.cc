@@ -49,8 +49,9 @@ void PerfTestSuite::Initialize() {
 
   // Raise to high priority to have more precise measurements. Since we don't
   // aim at 1% precision, it is not necessary to run at realtime level.
-  if (!debug::BeingDebugged())
+  if (!debug::BeingDebugged()) {
     RaiseProcessToHighPriority();
+  }
 }
 
 void PerfTestSuite::InitializeFromCommandLine(int* argc, char** argv) {

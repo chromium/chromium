@@ -53,6 +53,8 @@ class CORE_EXPORT ColorChooser : public GarbageCollectedMixin {
   virtual void EndChooser() {}
   // Returns a root AXObject in the ColorChooser if it's available.
   virtual AXObject* RootAXObject(Element* popup_owner) = 0;
+  // Returns true if the UI is showing.
+  virtual bool IsPickerVisible() const = 0;
 };
 
 }  // namespace blink

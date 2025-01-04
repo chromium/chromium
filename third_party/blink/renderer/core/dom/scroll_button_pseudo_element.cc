@@ -47,13 +47,19 @@ void ScrollButtonPseudoElement::DefaultEventHandler(Event& event) {
         PageSizePercent * scroller->GetLayoutBox()->Size().width.ToDouble();
     double dy =
         PageSizePercent * scroller->GetLayoutBox()->Size().height.ToDouble();
-    if (GetPseudoId() == kPseudoIdScrollUpButton) {
+    LogicalToPhysical<bool> mapping(
+        scroller->GetComputedStyle()->GetWritingDirection(),
+        GetPseudoId() == kPseudoIdScrollButtonInlineStart,
+        GetPseudoId() == kPseudoIdScrollButtonInlineEnd,
+        GetPseudoId() == kPseudoIdScrollButtonBlockStart,
+        GetPseudoId() == kPseudoIdScrollButtonBlockEnd);
+    if (mapping.Top()) {
       scroller->scrollBy(0, -dy);
-    } else if (GetPseudoId() == kPseudoIdScrollDownButton) {
+    } else if (mapping.Bottom()) {
       scroller->scrollBy(0, dy);
-    } else if (GetPseudoId() == kPseudoIdScrollLeftButton) {
+    } else if (mapping.Left()) {
       scroller->scrollBy(-dx, 0);
-    } else if (GetPseudoId() == kPseudoIdScrollRightButton) {
+    } else if (mapping.Right()) {
       scroller->scrollBy(dx, 0);
     }
     GetDocument().SetFocusedElement(this,
@@ -80,34 +86,28 @@ bool ScrollButtonPseudoElement::UpdateSnapshotInternal() {
   ScrollableArea* scrollable_area = scroller->GetScrollableArea();
   Scrollbar* horizontal = scrollable_area->HorizontalScrollbar();
   Scrollbar* vertical = scrollable_area->VerticalScrollbar();
+  LogicalToPhysical<bool> mapping(
+      scroller->StyleRef().GetWritingDirection(),
+      GetPseudoId() == kPseudoIdScrollButtonInlineStart,
+      GetPseudoId() == kPseudoIdScrollButtonInlineEnd,
+      GetPseudoId() == kPseudoIdScrollButtonBlockStart,
+      GetPseudoId() == kPseudoIdScrollButtonBlockEnd);
   bool enabled = enabled_;
-  switch (GetPseudoId()) {
-    case kPseudoIdScrollUpButton: {
-      if (vertical) {
-        enabled_ = vertical->CurrentPos() != 0.0f;
-      }
-      break;
+  if (vertical) {
+    if (mapping.Top()) {
+      enabled_ = vertical->CurrentPos() != 0.0f;
     }
-    case kPseudoIdScrollDownButton: {
-      if (vertical) {
-        enabled_ = vertical->CurrentPos() != vertical->Maximum();
-      }
-      break;
+    if (mapping.Bottom()) {
+      enabled_ = vertical->CurrentPos() != vertical->Maximum();
     }
-    case kPseudoIdScrollLeftButton: {
-      if (horizontal) {
-        enabled_ = horizontal->CurrentPos() != 0.0f;
-      }
-      break;
+  }
+  if (horizontal) {
+    if (mapping.Left()) {
+      enabled_ = horizontal->CurrentPos() != 0.0f;
     }
-    case kPseudoIdScrollRightButton: {
-      if (horizontal) {
-        enabled_ = horizontal->CurrentPos() != horizontal->Maximum();
-      }
-      break;
+    if (mapping.Right()) {
+      enabled_ = horizontal->CurrentPos() != horizontal->Maximum();
     }
-    default:
-      break;
   }
   if (enabled != enabled_) {
     PseudoStateChanged(CSSSelector::kPseudoDisabled);

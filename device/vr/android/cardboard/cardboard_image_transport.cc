@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/vr/android/cardboard/cardboard_image_transport.h"
 
 #include <memory>
@@ -142,8 +137,9 @@ void CardboardImageTransport::Render(WebXrPresentationState* webxr,
 }
 
 mojom::VRFieldOfViewPtr CardboardImageTransport::GetFOV(CardboardEye eye) {
-  float fov[4];
-  CardboardLensDistortion_getFieldOfView(lens_distortion_.get(), eye, fov);
+  std::array<float, 4> fov;
+  CardboardLensDistortion_getFieldOfView(lens_distortion_.get(), eye,
+                                         fov.data());
 
   return mojom::VRFieldOfView::New(
       fov[kFovTop] * kRadToDeg, fov[kFovBottom] * kRadToDeg,

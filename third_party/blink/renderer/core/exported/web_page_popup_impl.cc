@@ -709,7 +709,7 @@ void WebPagePopupImpl::OnCommitRequested() {
   }
 }
 
-void WebPagePopupImpl::BeginMainFrame(base::TimeTicks last_frame_time) {
+void WebPagePopupImpl::BeginMainFrame(const viz::BeginFrameArgs& args) {
   if (!page_)
     return;
   // FIXME: This should use lastFrameTimeMonotonic but doing so

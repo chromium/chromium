@@ -34,7 +34,6 @@
 #include "base/trace_event/trace_config.h"
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/tracing/common/trace_to_console.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "content/app/content_main_runner_impl.h"
@@ -200,11 +199,6 @@ NO_STACK_PROTECTOR int RunContentProcess(
     ContentMainParams params,
     ContentMainRunner* content_main_runner) {
   base::FeatureList::FailOnFeatureAccessWithoutFeatureList();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Lacros is launched with inherited priority. Revert to normal priority
-  // before spawning more processes.
-  base::PlatformThread::SetCurrentThreadType(base::ThreadType::kDefault);
-#endif
   int exit_code = -1;
 #if BUILDFLAG(IS_MAC)
   base::apple::ScopedNSAutoreleasePool autorelease_pool;
@@ -307,7 +301,6 @@ NO_STACK_PROTECTOR int RunContentProcess(
 #endif
 
 #if BUILDFLAG(IS_IOS)
-    base::ConditionVariable::InitializeFeatures();
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     command_line->AppendSwitch(switches::kEnableViewport);
     command_line->AppendSwitch(switches::kUseMobileUserAgent);
@@ -346,8 +339,7 @@ NO_STACK_PROTECTOR int RunContentProcess(
             ::switches::kTraceToConsole)) {
       base::trace_event::TraceConfig trace_config =
           tracing::GetConfigForTraceToConsole();
-      base::trace_event::TraceLog::GetInstance()->SetEnabled(
-          trace_config, base::trace_event::TraceLog::RECORDING_MODE);
+      base::trace_event::TraceLog::GetInstance()->SetEnabled(trace_config);
     }
   }
 

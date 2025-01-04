@@ -35,6 +35,7 @@
 #include "content/public/browser/gpu_service_registry.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/common/content_switches.h"
+#include "mojo/core/configuration.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -307,6 +308,9 @@ void GpuArcVideoServiceHost::OnBootstrapVideoAcceleratorFactory(
   std::string pipe_name = base::NumberToString(base::RandUint64());
   mojo::ScopedMessagePipeHandle server_pipe =
       invitation.AttachMessagePipe(pipe_name);
+  if (!mojo::core::GetConfiguration().is_broker_process) {
+    invitation.set_extra_flags(MOJO_SEND_INVITATION_FLAG_SHARE_BROKER);
+  }
   mojo::OutgoingInvitation::Send(std::move(invitation),
                                  kUnusedChildProcessHandle,
                                  channel.TakeLocalEndpoint());

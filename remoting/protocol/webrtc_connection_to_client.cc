@@ -84,6 +84,7 @@ void WebrtcConnectionToClient::Disconnect(ErrorCode error) {
 
   // This should trigger OnConnectionClosed() event and this object
   // may be destroyed as the result.
+  // TODO: crbug.com/382334458 - Pass WebRTC error details to Close().
   session_->Close(error);
 }
 

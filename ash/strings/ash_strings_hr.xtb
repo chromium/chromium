@@ -361,6 +361,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2295777434187870477">Mikrofon je uključen, pomicanjem klizača ulijevo isključit će se zvuk.</translation>
 <translation id="2302092602801625023">Tim računom upravlja Family Link</translation>
 <translation id="2303600792989757991">Prebaci na prozor pregleda</translation>
+<translation id="2304702218354340897">Jeste li sigurni da želite isključiti upravljanje licem?</translation>
 <translation id="2305738328104302723">Popis Googleovih zadataka: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: najnovije snimke zaslona, preuzimanja i prikvačene datoteke</translation>
 <translation id="2318576281648121272">Danas, <ph name="TODAY_DATE" /></translation>
@@ -387,6 +388,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2370971919968699910">To može uzrokovati troškove za prijenos podataka.
 Povezan je sljedeći broj uređaja: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2386292613071805067">Odabir svega na stranici</translation>
+<translation id="2389423187722941333">Uključivanje/isključivanje Geminija</translation>
 <translation id="2392659840443812875">Nije dostupna nijedna žarišna točka. Provjerite je li uređaj u blizini i je li Bluetooth uključen.</translation>
 <translation id="2397416548179033562">Prikaži izbornik Chrome</translation>
 <translation id="240006516586367791">Medijske kontrole</translation>
@@ -394,6 +396,7 @@ Povezan je sljedeći broj uređaja: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2402411679569069051">Da biste otključali Chromebook, upotrijebite otisak prsta ili otključajte telefon</translation>
 <translation id="240545663114741956">Dvaput pritisnite <ph name="ACCELERATOR" /> da biste se odjavili.</translation>
 <translation id="2405664212338326887">Nije povezano</translation>
+<translation id="2406710117564540804">Uključivanje/isključivanje značajke "Ne uznemiravaj"</translation>
 <translation id="2408955596600435184">Unesite PIN</translation>
 <translation id="2412593942846481727">Dostupno je ažuriranje</translation>
 <translation id="2416438829169535743">Napustiti prikaz?</translation>
@@ -899,6 +902,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="4119928251231465047">Previše pokušaja unosa PIN-a</translation>
 <translation id="412298498316631026">prozor</translation>
 <translation id="4123259114412175274">Da biste otključali Chromebook, provjerite je li na telefonu uključen Bluetooth</translation>
+<translation id="4123868835475902435">To su osnove! Za savjete i pomoć nastavite u ugrađenoj aplikaciji Istražite. Pronaći ćete savjete za početak rada, posebne ponude i najnovije značajke za <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4125970834901680537">Aplikacije se ne mogu streamati u načinu rada tableta. Pokušajte u načinu prijenosnog računala.</translation>
 <translation id="4131973331381812765">Temperatura: <ph name="TEMPERATURE" />°C – trenutačna brzina: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="4136724716305260864">Uključeno do izlaska sunca</translation>
@@ -1019,7 +1023,6 @@ Jedan uređaj je povezan.</translation>
 <translation id="4481530544597605423">Neupareni uređaji</translation>
 <translation id="4485506555414638855">Odbacite postavljanje prikaza nedavnih fotografija, medijskih sadržaja, obavijesti i aplikacija na telefonu</translation>
 <translation id="4491109536499578614">Slika</translation>
-<translation id="4493452241184130939">To su osnove! Za savjete i pomoć nastavite u ugrađenoj aplikaciji Istražite. Pronaći ćete savjete za početak rada, preporučene aplikacije, posebne ponude i najnovije značajke uređaja <ph name="PRODUCT_NAME" />.</translation>
 <translation id="450584155212756404">Razvojni kanal</translation>
 <translation id="4513946894732546136">Povratne informacije</translation>
 <translation id="4518404433291145981">Da biste otključali Chromebook, najprije otključajte telefon</translation>
@@ -1082,7 +1085,6 @@ Jedan uređaj je povezan.</translation>
 <translation id="4708065238214351979">Pojačavanje osvjetljenja tipkovnice</translation>
 <translation id="4708185346211948049"><ph name="DAY_OF_WEEK" />, sljedeći tjedan</translation>
 <translation id="4717575069099566988">Vaš kabel USB-C ne podržava USB4. Izvedba uređaja može biti ograničena.</translation>
-<translation id="4724328513667182700">Šest savjeta za uređaju <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">ČESTO KORIŠTENO</translation>
 <translation id="4731797938093519117">Roditeljski pristup</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (preostalo)</translation>
@@ -1309,7 +1311,6 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="5409208741270395213">Označite zadatak kao izvršen</translation>
 <translation id="5413656666631274079">Stranica postavki</translation>
 <translation id="5414198321558177633">Osvježava se popis profila. To može potrajati nekoliko minuta.</translation>
-<translation id="5417965108047245734">Krenite u kratki obilazak i naučite upotrebljavati značajke svojeg uređaja <ph name="PRODUCT_NAME" /></translation>
 <translation id="5426063383988017631">Izbornik postavki je zatvoren</translation>
 <translation id="5428899915242071344">Započni s odabirom</translation>
 <translation id="5429993543155113935">Anonimni prozori trenutačno nisu podržani</translation>
@@ -1647,6 +1648,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="6539852571005954999">Pregled preuzimanja datoteke <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Emitiranje na uređaj <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emojiji, GIF-ovi i drugo</translation>
+<translation id="6543942526104794893">Jeste li sigurni da želite isključiti pokrete licem?</translation>
 <translation id="6545382064335350438">Potvrda PIN-a opet nije uspjela. Pokušajte ponovo.</translation>
 <translation id="6555373427270923730">Unesite web-adresu u adresnu traku i pritisnite <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2313,6 +2315,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="8855885154700222542">tipka cijelog zaslona</translation>
 <translation id="8858369206579825206">Kontrole privatnosti</translation>
 <translation id="8860366331836346216">Dodajte eSIM</translation>
+<translation id="8869149849311827122">Jeste li sigurni da želite isključiti upravljanje pokazivačem miša?</translation>
 <translation id="8870509716567206129">Aplikacija ne podržava podijeljeni zaslon.</translation>
 <translation id="8873203135446552888">Potvrdite da želite onemogućiti ugrađenu dodirnu podlogu</translation>
 <translation id="8874184842967597500">Niste povezani</translation>

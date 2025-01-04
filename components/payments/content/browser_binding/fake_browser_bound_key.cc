@@ -1,0 +1,48 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/payments/content/browser_binding/fake_browser_bound_key.h"
+
+#include <cstdint>
+#include <utility>
+#include <vector>
+
+namespace payments {
+
+FakeBrowserBoundKey::FakeBrowserBoundKey(
+    std::vector<uint8_t> public_key_as_cose_key,
+    std::vector<uint8_t> signature,
+    std::vector<uint8_t> expected_client_data)
+    : public_key_as_cose_key_(std::move(public_key_as_cose_key)),
+      signature_(std::move(signature)),
+      expected_client_data_(std::move(expected_client_data)) {}
+
+FakeBrowserBoundKey::FakeBrowserBoundKey(const FakeBrowserBoundKey& other)
+    : public_key_as_cose_key_(other.public_key_as_cose_key_),
+      signature_(other.signature_),
+      expected_client_data_(other.expected_client_data_) {}
+
+FakeBrowserBoundKey& FakeBrowserBoundKey::operator=(
+    const FakeBrowserBoundKey& other) {
+  public_key_as_cose_key_ = other.public_key_as_cose_key_;
+  signature_ = other.signature_;
+  expected_client_data_ = other.expected_client_data_;
+  return *this;
+}
+
+FakeBrowserBoundKey::~FakeBrowserBoundKey() = default;
+
+std::vector<uint8_t> FakeBrowserBoundKey::Sign(
+    const std::vector<uint8_t>& client_data) {
+  if (client_data == expected_client_data_) {
+    return signature_;
+  }
+  return {};
+}
+
+std::vector<uint8_t> FakeBrowserBoundKey::GetPublicKeyAsCoseKey() {
+  return public_key_as_cose_key_;
+}
+
+}  // namespace payments

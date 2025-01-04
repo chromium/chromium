@@ -2628,7 +2628,7 @@ Called by update_extension_histograms.py.-->
       label="DELETED_SMARTCARDPROVIDERPRIVATE_REPORTDISCONNECTRESULT"/>
   <int value="1770" label="WMDESKSPRIVATE_GETDESKBYID"/>
   <int value="1771" label="AUTOFILLPRIVATE_ISVALIDIBAN"/>
-  <int value="1772" label="ACCESSIBILITY_PRIVATE_ISLACROSPRIMARY"/>
+  <int value="1772" label="DELETED_ACCESSIBILITY_PRIVATE_ISLACROSPRIMARY"/>
   <int value="1773" label="POWER_REPORTACTIVITY"/>
   <int value="1774" label="PASSWORDSPRIVATE_CONTINUEIMPORT"/>
   <int value="1775" label="PASSWORDSPRIVATE_RESETIMPORTER"/>
@@ -2689,7 +2689,7 @@ Called by update_extension_histograms.py.-->
   <int value="1828" label="OS_DIAGNOSTICS_CANCELROUTINE"/>
   <int value="1829" label="OS_DIAGNOSTICS_ISMEMORYROUTINEARGUMENTSUPPORTED"/>
   <int value="1830"
-      label="ACCESSIBILITY_PRIVATE_CLIPBOARDCOPYINACTIVELACROSGOOGLEDOC"/>
+      label="DELETED_ACCESSIBILITY_PRIVATE_CLIPBOARDCOPYINACTIVELACROSGOOGLEDOC"/>
   <int value="1831" label="USERSCRIPTS_UPDATE"/>
   <int value="1832" label="INPUTMETHODPRIVATE_GETLANGUAGEPACKSTATUS"/>
   <int value="1833" label="OS_DIAGNOSTICS_RUNFANROUTINE"/>
@@ -2783,6 +2783,8 @@ Called by update_extension_histograms.py.-->
   <int value="1913" label="ODFSCONFIGPRIVATE_OPENINOFFICEAPP"/>
   <int value="1914" label="COOKIES_GETPARTITIONKEY"/>
   <int value="1915" label="CONTROLLEDFRAMEINTERNAL_SETCLIENTHINTSENABLED"/>
+  <int value="1916" label="DEVELOPERPRIVATE_UPLOADEXTENSIONTOACCOUNT"/>
+  <int value="1917" label="USERSCRIPTS_EXECUTE"/>
 </enum>
 
 <enum name="ExtensionInstallationCrxInstallError">
@@ -3389,6 +3391,19 @@ Called by update_extension_permission.py.-->
   <int value="10" label="Open channel acked"/>
   <int value="11" label="Port disconnected before response"/>
   <int value="12" label="Channel closed before response"/>
+  <int value="13"
+      label="Channel not opened (source endpoint invalid/doesn't exist)"/>
+  <int value="14"
+      label="Channel not opened (opener port invalid/doesn't exist)"/>
+  <int value="15"
+      label="Channel not opened (source endpoint closed while channel open
+             in-flight)"/>
+  <int value="16"
+      label="Channel not opened (opener port closed while channel open
+             in-flight)"/>
+  <int value="17"
+      label="Channel not opened (extension uninstalled/disabled while channel
+             open in-flight)"/>
 </enum>
 
 <enum name="ReadDynamicRulesJSONStatus">
@@ -3487,6 +3502,18 @@ Called by update_extension_permission.py.-->
   <int value="6" label="Misc Js File"/>
   <int value="7" label="Misc File"/>
 </enum>
+
+<!-- LINT.IfChange(WebRequestProxyDecision) -->
+
+<enum name="WebRequest.ProxyDecision">
+  <int value="0" label="kWillNotProxy"/>
+  <int value="1" label="kWillProxyForExtension"/>
+  <int value="2" label="kWillProxyForWebUI"/>
+  <int value="3" label="kWillProxyForEmbedderWebView"/>
+  <int value="4" label="kWillProxyForTelemetry"/>
+</enum>
+
+<!-- LINT.ThenChange(/extensions/browser/api/web_request/web_request_api.h:ProxyDecision) -->
 
 <enum name="WebRequest.RequestHeader">
   <int value="0" label="kNone"/>

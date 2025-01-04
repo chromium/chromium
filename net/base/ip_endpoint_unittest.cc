@@ -164,22 +164,22 @@ TEST_F(IPEndPointTest, ToFromSockAddr) {
 
     // Convert to a sockaddr.
     SockaddrStorage storage;
-    EXPECT_TRUE(ip_endpoint.ToSockAddr(storage.addr, &storage.addr_len));
+    EXPECT_TRUE(ip_endpoint.ToSockAddr(storage.addr(), &storage.addr_len));
 
     // Basic verification.
     socklen_t expected_size =
         test.ipv6 ? sizeof(struct sockaddr_in6) : sizeof(struct sockaddr_in);
     EXPECT_EQ(expected_size, storage.addr_len);
     EXPECT_EQ(ip_endpoint.port(),
-              GetPortFromSockaddr(storage.addr, storage.addr_len));
+              GetPortFromSockaddr(storage.addr(), storage.addr_len));
     if (test.ipv6) {
       uint32_t scope_id =
-          reinterpret_cast<struct sockaddr_in6*>(storage.addr)->sin6_scope_id;
+          reinterpret_cast<struct sockaddr_in6*>(storage.addr())->sin6_scope_id;
       EXPECT_EQ(scope_id, test.scope_id.value_or(0));
     }
     // And convert back to an IPEndPoint.
     IPEndPoint ip_endpoint2;
-    EXPECT_TRUE(ip_endpoint2.FromSockAddr(storage.addr, storage.addr_len));
+    EXPECT_TRUE(ip_endpoint2.FromSockAddr(storage.addr(), storage.addr_len));
     EXPECT_EQ(ip_endpoint.port(), ip_endpoint2.port());
     EXPECT_EQ(ip_endpoint.address(), ip_endpoint2.address());
     EXPECT_EQ(ip_endpoint.scope_id(), ip_endpoint2.scope_id());
@@ -193,7 +193,7 @@ TEST_F(IPEndPointTest, ToSockAddrBufTooSmall) {
 
     SockaddrStorage storage;
     storage.addr_len = 3;  // size is too small!
-    EXPECT_FALSE(ip_endpoint.ToSockAddr(storage.addr, &storage.addr_len));
+    EXPECT_FALSE(ip_endpoint.ToSockAddr(storage.addr(), &storage.addr_len));
   }
 }
 
@@ -246,7 +246,7 @@ TEST_F(IPEndPointTest, WinBluetoothSockAddrCompareWithSelf) {
   EXPECT_DCHECK_DEATH(bt_endpoint.port());
   SockaddrStorage storage;
   EXPECT_DCHECK_DEATH(
-      std::ignore = bt_endpoint.ToSockAddr(storage.addr, &storage.addr_len));
+      std::ignore = bt_endpoint.ToSockAddr(storage.addr(), &storage.addr_len));
   EXPECT_DCHECK_DEATH(bt_endpoint.ToString());
   EXPECT_DCHECK_DEATH(bt_endpoint.ToStringWithoutPort());
 }
@@ -291,7 +291,7 @@ TEST_F(IPEndPointTest, WinBluetoothSockAddrCompareWithCopy) {
   EXPECT_DCHECK_DEATH(bt_endpoint_other.port());
   SockaddrStorage storage;
   EXPECT_DCHECK_DEATH(std::ignore = bt_endpoint_other.ToSockAddr(
-                          storage.addr, &storage.addr_len));
+                          storage.addr(), &storage.addr_len));
   EXPECT_DCHECK_DEATH(bt_endpoint_other.ToString());
   EXPECT_DCHECK_DEATH(bt_endpoint_other.ToStringWithoutPort());
 }
@@ -322,7 +322,7 @@ TEST_F(IPEndPointTest, WinBluetoothSockAddrCompareWithDifferentPort) {
   EXPECT_DCHECK_DEATH(bt_endpoint_other.port());
   SockaddrStorage storage;
   EXPECT_DCHECK_DEATH(std::ignore = bt_endpoint_other.ToSockAddr(
-                          storage.addr, &storage.addr_len));
+                          storage.addr(), &storage.addr_len));
   EXPECT_DCHECK_DEATH(bt_endpoint_other.ToString());
   EXPECT_DCHECK_DEATH(bt_endpoint_other.ToStringWithoutPort());
 }
@@ -352,7 +352,7 @@ TEST_F(IPEndPointTest, WinBluetoothSockAddrCompareWithDifferentAddress) {
   EXPECT_DCHECK_DEATH(bt_endpoint_other.port());
   SockaddrStorage storage;
   EXPECT_DCHECK_DEATH(std::ignore = bt_endpoint_other.ToSockAddr(
-                          storage.addr, &storage.addr_len));
+                          storage.addr(), &storage.addr_len));
   EXPECT_DCHECK_DEATH(bt_endpoint_other.ToString());
   EXPECT_DCHECK_DEATH(bt_endpoint_other.ToStringWithoutPort());
 }

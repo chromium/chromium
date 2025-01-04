@@ -8,7 +8,7 @@
 #include "headless/lib/browser/headless_browser_context_impl.h"
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
-#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace headless {
 namespace protocol {
@@ -28,6 +28,8 @@ Response TargetHandler::Disable() {
 
 Response TargetHandler::CreateTarget(
     const std::string& url,
+    std::optional<int> left,
+    std::optional<int> top,
     std::optional<int> width,
     std::optional<int> height,
     std::optional<std::string> context_id,
@@ -66,7 +68,8 @@ Response TargetHandler::CreateTarget(
   HeadlessWebContentsImpl* web_contents_impl = HeadlessWebContentsImpl::From(
       context->CreateWebContentsBuilder()
           .SetInitialURL(gurl)
-          .SetWindowSize(gfx::Size(
+          .SetWindowBounds(gfx::Rect(
+              left.value_or(0), top.value_or(0),
               width.value_or(browser_->options()->window_size.width()),
               height.value_or(browser_->options()->window_size.height())))
           .SetEnableBeginFrameControl(

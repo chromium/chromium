@@ -150,7 +150,6 @@ suite('SettingsSecureDns', () => {
       secureDnsOsSettingsDescription: defaultDescription,
       secureDnsDisabledForManagedEnvironment: managedEnvironmentDescription,
       secureDnsDisabledForParentalControl: parentalControlDescription,
-      isRevampWayfindingEnabled: false,
     });
   });
 
@@ -489,8 +488,6 @@ suite('SecureDnsDialog', () => {
   let secureDnsToggleDialog: SettingsSecureDnsDialogElement;
   const isDeprecateDnsDialogEnabled =
       loadTimeData.getBoolean('isDeprecateDnsDialogEnabled');
-  const isRevampWayfindingEnabled =
-      loadTimeData.getBoolean('isRevampWayfindingEnabled');
 
   /**
    * Checks that the select menu is shown and the toggle is properly
@@ -549,7 +546,7 @@ suite('SecureDnsDialog', () => {
         SecureDnsResolverType.AUTOMATIC, testElement.$.resolverSelect.value);
   });
 
-  if (isDeprecateDnsDialogEnabled || !isRevampWayfindingEnabled) {
+  if (isDeprecateDnsDialogEnabled) {
     test(
         'No warning dialog appears when secure DNS is toggled off',
         async () => {

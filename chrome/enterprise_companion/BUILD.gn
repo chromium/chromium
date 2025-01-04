@@ -70,6 +70,8 @@ source_set("base") {
     "enterprise_companion_service.h",
     "enterprise_companion_service_stub.cc",
     "enterprise_companion_service_stub.h",
+    "enterprise_companion_status.cc",
+    "enterprise_companion_status.h",
     "event_logger.cc",
     "event_logger.h",
     "global_constants.h",
@@ -301,16 +303,14 @@ test("enterprise_companion_integration_tests") {
 
 static_library("client") {
   sources = [
+    "constants.h",
     "enterprise_companion_client.cc",
     "enterprise_companion_client.h",
-    "enterprise_companion_status.cc",
-    "enterprise_companion_status.h",
   ]
   deps = [
     ":branding_header",
     ":installer_paths",
     "//components/named_mojo_ipc_server",
-    "//components/policy/core/common",
     "//components/policy/core/common:common_constants",
     "//mojo/public/cpp/platform",
   ]

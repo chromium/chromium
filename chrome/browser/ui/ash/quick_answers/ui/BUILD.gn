@@ -68,6 +68,7 @@ source_set("typography") {
   ]
 
   deps = [
+    "//ash",
     "//base",
     "//chromeos/components/quick_answers/public/cpp:constants",
     "//ui/gfx",

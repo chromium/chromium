@@ -72,6 +72,7 @@ const InstallConstants kInstallModes[] = {
             false,  // Does not support system-level installs.
         .supports_set_as_default_browser =
             false,  // Does not support in-product set as default browser UX.
+        .registers_tracing_service = false,  // Does not register the service.
         .app_icon_resource_index =
             icon_resources::kApplicationIndex,  // App icon resource index.
         .app_icon_resource_id = IDR_MAINFRAME,  // App icon resource id.

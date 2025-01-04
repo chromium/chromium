@@ -80,7 +80,7 @@ TEST_F(ChromePluginServiceFilterTest, IsPluginAvailableForDisabledPlugin) {
 }
 
 TEST_F(ChromePluginServiceFilterTest, AuthorizePlugin) {
-  const int render_process_id = process()->GetID();
+  const int render_process_id = process()->GetDeprecatedID();
   const base::FilePath path(ChromeContentClient::kPDFExtensionPluginPath);
   RenderProcessHostObserverAddedWaiter waiter(filter_);
 

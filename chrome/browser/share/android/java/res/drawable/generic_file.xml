@@ -15,7 +15,7 @@ found in the LICENSE file.
     <path
         android:pathData="M0,0h24v24h-24z"
         android:strokeWidth="1"
-        android:fillColor="@color/modern_grey_700"
+        android:fillColor="@color/baseline_neutral_30"
         android:fillType="evenOdd"/>
   </group>
 </vector>

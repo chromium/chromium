@@ -52,12 +52,15 @@ constexpr char kEventIdParameter[] = "rcid";
 constexpr char kFullPageObjectsFetchLatencyId[] = "fpof";
 constexpr char kFullPageTranslateFetchLatencyId[] = "fptf";
 constexpr char kPageContentUploadLatencyId[] = "pcu";
+constexpr char kPartialPageContentUploadLatencyId[] = "ppcu";
 constexpr char kInteractionFetchLatencyId[] = "lif";
 constexpr char kFetchStickyClusterInfoLatencyId[] = "sct";
 constexpr char kInvocationToInitialClusterInfoRequestLatencyId[] = "cstcirs";
 constexpr char kInvocationToInitialFullObjectsRequestLatencyId[] = "cstiors";
 constexpr char kInvocationToInitialInteractionRequestLatencyId[] = "cstiirs";
 constexpr char kInvocationToInitialPageContentRequestLatencyId[] = "cstipcurs";
+constexpr char kInvocationToInitialPartialPageContentRequestLatencyId[] =
+    "cstippcurs";
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
     net::DefineNetworkTrafficAnnotation("lens_overlay_gen204", R"(
@@ -118,6 +121,8 @@ std::string LatencyIdForType(LatencyType latency_type) {
       return kInvocationToInitialInteractionRequestLatencyId;
     case LatencyType::kInvocationToInitialPageContentRequestSent:
       return kInvocationToInitialPageContentRequestLatencyId;
+    case LatencyType::kInvocationToInitialPartialPageContentRequestSent:
+      return kInvocationToInitialPartialPageContentRequestLatencyId;
     case LatencyType::kFullPageObjectsRequestFetchLatency:
       return kFullPageObjectsFetchLatencyId;
     case LatencyType::kFullPageTranslateRequestFetchLatency:
@@ -126,6 +131,8 @@ std::string LatencyIdForType(LatencyType latency_type) {
       return kInteractionFetchLatencyId;
     case LatencyType::kPageContentUploadLatency:
       return kPageContentUploadLatencyId;
+    case LatencyType::kPartialPageContentUploadLatency:
+      return kPartialPageContentUploadLatencyId;
   }
 }
 

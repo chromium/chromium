@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/navigation_handle.h"
@@ -39,6 +40,7 @@ void WebAppTabHelper::Create(tabs::TabInterface* tab,
   // window, or vise versa, we want to keep the state on WebAppTabHelper.
   auto* tab_helper = WebAppTabHelper::FromWebContents(contents);
   if (tab->GetContents() == contents && tab_helper) {
+    tab_helper->SubscribeToTabState(tab);
     return;
   }
 
@@ -79,8 +81,8 @@ WebAppTabHelper::GetAppIdForNotificationAttribution(
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   WebAppProvider* web_app_provider = WebAppProvider::GetForWebApps(profile);
   if (!web_app_provider ||
-      !web_app_provider->registrar_unsafe().IsInstallState(
-          *app_id, {proto::INSTALLED_WITH_OS_INTEGRATION})) {
+      web_app_provider->registrar_unsafe().GetInstallState(*app_id) !=
+          proto::INSTALLED_WITH_OS_INTEGRATION) {
     return std::nullopt;
   }
   // Default apps are locally installed but unless an app shim has been created
@@ -154,10 +156,6 @@ void WebAppTabHelper::OnTabBackgrounded(tabs::TabInterface*) {
 void WebAppTabHelper::OnTabDetached(tabs::TabInterface* tab_interface,
                                     tabs::TabInterface::DetachReason) {
   MaybeNotifyTabChanged();
-
-  // The subscriptions need to be updaed if the tab gets detached, in case it
-  // gets attached to a new window.
-  SubscribeToTabState(tab_interface);
 }
 
 void WebAppTabHelper::ReadyToCommitNavigation(
@@ -220,9 +218,11 @@ void WebAppTabHelper::FlushLaunchQueueForTesting() const {
 WebAppTabHelper::WebAppTabHelper(tabs::TabInterface* tab,
                                  content::WebContents* contents)
     : content::WebContentsUserData<WebAppTabHelper>(*contents),
-      content::WebContentsObserver(contents),
-      provider_(WebAppProvider::GetForLocalAppsUnchecked(
-          tab->GetBrowserWindowInterface()->GetProfile())) {
+      content::WebContentsObserver(contents) {
+  CHECK(AreWebAppsEnabled(tab->GetBrowserWindowInterface()->GetProfile()));
+  provider_ = WebAppProvider::GetForLocalAppsUnchecked(
+      tab->GetBrowserWindowInterface()->GetProfile());
+  CHECK(provider_);
   observation_.Observe(&provider_->install_manager());
   // TODO(crbug.com/379827962): Evaluate call sites of FindBestAppWithUrlInScope
   // for correctness.
@@ -326,7 +326,7 @@ void WebAppTabHelper::SubscribeToTabState(tabs::TabInterface* tab_interface) {
   tab_subscriptions_.clear();
   CHECK(tab_interface);
   tab_subscriptions_.push_back(
-      tab_interface->RegisterWillEnterBackground(base::BindRepeating(
+      tab_interface->RegisterWillDeactivate(base::BindRepeating(
           &WebAppTabHelper::OnTabBackgrounded, weak_factory_.GetWeakPtr())));
   tab_subscriptions_.push_back(
       tab_interface->RegisterWillDetach(base::BindRepeating(

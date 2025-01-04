@@ -29,8 +29,6 @@ class BASE_EXPORT LogMessage : public ConvertableToTraceFormat {
   void AppendAsTraceFormat(std::string* out) const override;
   bool AppendToProto(ProtoAppender* appender) const override;
 
-  void EstimateTraceMemoryOverhead(TraceEventMemoryOverhead* overhead) override;
-
   const char* file() const { return file_; }
   const std::string& message() const LIFETIME_BOUND { return message_; }
   int line_number() const { return line_number_; }

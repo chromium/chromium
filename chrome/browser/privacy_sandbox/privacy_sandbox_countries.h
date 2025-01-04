@@ -14,8 +14,9 @@ class PrivacySandboxCountries {
   // Determines if the user is in a ROW (Rest of World) country.
   virtual bool IsRestOfWorldCountry() = 0;
 
-  // Determines if the user is in China.
-  virtual bool IsChina() = 0;
+  // Determines if the user's latest country from the variation service is
+  // China.
+  virtual bool IsLatestCountryChina() = 0;
 };
 
 #endif  // CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_COUNTRIES_H_

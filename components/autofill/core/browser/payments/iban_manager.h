@@ -9,16 +9,15 @@
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/single_field_fill_router.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 
 namespace autofill {
 
 class AutofillClient;
-class PersonalDataManager;
+class PaymentsDataManager;
 
 // Per-profile IBAN Manager. This class handles IBAN-related functionality
 // such as retrieving IBAN data from PersonalDataManager, managing IBAN
@@ -26,10 +25,10 @@ class PersonalDataManager;
 // there is an IBAN field present.
 class IbanManager : public KeyedService {
  public:
-  // Initializes the instance with the given parameters. `personal_data_manager`
+  // Initializes the instance with the given parameters. `payments_data_manager`
   // is a profile-scope data manager used to retrieve IBAN data from the
   // local autofill table.
-  explicit IbanManager(PersonalDataManager* personal_data_manager);
+  explicit IbanManager(PaymentsDataManager* payments_data_manager);
 
   IbanManager(const IbanManager&) = delete;
   IbanManager& operator=(const IbanManager&) = delete;
@@ -77,7 +76,7 @@ class IbanManager : public KeyedService {
   void FilterIbansToSuggest(const std::u16string& field_value,
                             std::vector<Iban>& ibans);
 
-  const raw_ptr<PersonalDataManager> personal_data_manager_;
+  const raw_ptr<PaymentsDataManager> payments_data_manager_;
 
   UmaRecorder uma_recorder_;
 };

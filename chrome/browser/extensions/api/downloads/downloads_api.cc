@@ -69,6 +69,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/warning_service.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/context_type.mojom.h"
@@ -1027,7 +1028,7 @@ bool OnDeterminingFilenameWillDispatchCallback(
     mojom::EventFilteringInfoPtr& event_filtering_info_out) {
   *any_determiners = true;
   base::Time installed =
-      ExtensionPrefs::Get(browser_context)->GetLastUpdateTime(extension->id());
+      GetLastUpdateTime(ExtensionPrefs::Get(browser_context), extension->id());
   data->AddPendingDeterminer(extension->id(), installed);
   return true;
 }

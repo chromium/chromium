@@ -22,16 +22,10 @@ namespace {
 std::optional<bool> g_force_network_service_process_in_or_out;
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kNetworkServiceOutOfProcessMemoryThreshold,
-             "NetworkServiceOutOfProcessMemoryThreshold",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Using 1077 rather than 1024 because it helps ensure that devices with
 // exactly 1GB of RAM won't get included because of inaccuracies or off-by-one
 // errors.
-constexpr base::FeatureParam<int> kNetworkServiceOutOfProcessThresholdMb{
-    &kNetworkServiceOutOfProcessMemoryThreshold,
-    "network_service_oop_threshold_mb", 1077};
+constexpr int kNetworkServiceOutOfProcessThresholdMb = 1077;
 #endif
 
 }  // namespace
@@ -61,7 +55,7 @@ bool IsInProcessNetworkServiceImpl() {
   // Check RAM size before looking at kNetworkServiceInProcess flag
   // so that we can throttle the finch groups including control.
   if (base::SysInfo::AmountOfPhysicalMemoryMB() <=
-      kNetworkServiceOutOfProcessThresholdMb.Get()) {
+      kNetworkServiceOutOfProcessThresholdMb) {
     return true;
   }
 #endif

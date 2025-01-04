@@ -55,8 +55,9 @@ void InkDropEventHandler::AnimateToState(InkDropState state,
   // state the transition have no visual effect. The call to GetInkDrop() will
   // lazily create the ink drop when called. Avoid creating the ink drop in
   // these cases to prevent the creation of unnecessary layers.
-  if (delegate_->HasInkDrop() || InkDropStateIsVisible(state))
+  if (delegate_->HasInkDrop() || InkDropStateIsVisible(state)) {
     delegate_->GetInkDrop()->AnimateToState(state);
+  }
 }
 
 ui::LocatedEvent* InkDropEventHandler::GetLastRippleTriggeringEvent() const {
@@ -64,8 +65,9 @@ ui::LocatedEvent* InkDropEventHandler::GetLastRippleTriggeringEvent() const {
 }
 
 void InkDropEventHandler::OnGestureEvent(ui::GestureEvent* event) {
-  if (!host_view_->GetEnabled() || !delegate_->SupportsGestureEvents())
+  if (!host_view_->GetEnabled() || !delegate_->SupportsGestureEvents()) {
     return;
+  }
 
   InkDropState current_ink_drop_state =
       delegate_->GetInkDrop()->GetTargetInkDropState();
@@ -73,13 +75,15 @@ void InkDropEventHandler::OnGestureEvent(ui::GestureEvent* event) {
   InkDropState ink_drop_state = InkDropState::HIDDEN;
   switch (event->type()) {
     case ui::EventType::kGestureTapDown:
-      if (current_ink_drop_state == InkDropState::ACTIVATED)
+      if (current_ink_drop_state == InkDropState::ACTIVATED) {
         return;
+      }
       ink_drop_state = InkDropState::ACTION_PENDING;
       break;
     case ui::EventType::kGestureLongPress:
-      if (current_ink_drop_state == InkDropState::ACTIVATED)
+      if (current_ink_drop_state == InkDropState::ACTIVATED) {
         return;
+      }
       ink_drop_state = InkDropState::ALTERNATE_ACTION_PENDING;
       break;
     case ui::EventType::kGestureLongTap:
@@ -88,8 +92,9 @@ void InkDropEventHandler::OnGestureEvent(ui::GestureEvent* event) {
     case ui::EventType::kGestureEnd:
     case ui::EventType::kGestureScrollBegin:
     case ui::EventType::kGestureTapCancel:
-      if (current_ink_drop_state == InkDropState::ACTIVATED)
+      if (current_ink_drop_state == InkDropState::ACTIVATED) {
         return;
+      }
       ink_drop_state = InkDropState::HIDDEN;
       break;
     default:
@@ -159,8 +164,9 @@ void InkDropEventHandler::OnViewHierarchyChanged(
 
 void InkDropEventHandler::OnViewBoundsChanged(View* observed_view) {
   DCHECK_EQ(host_view_, observed_view);
-  if (delegate_->HasInkDrop())
+  if (delegate_->HasInkDrop()) {
     delegate_->GetInkDrop()->HostSizeChanged(host_view_->size());
+  }
 }
 
 void InkDropEventHandler::OnViewFocused(View* observed_view) {

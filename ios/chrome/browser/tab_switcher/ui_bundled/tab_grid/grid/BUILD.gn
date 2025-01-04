@@ -316,7 +316,10 @@ source_set("activity_label_view") {
     "activity_label_view.h",
     "activity_label_view.mm",
   ]
-  deps = [ "//ios/chrome/common/ui/colors" ]
+  deps = [
+    "//base",
+    "//ios/chrome/common/ui/colors",
+  ]
 }
 
 source_set("unit_tests") {
@@ -338,15 +341,18 @@ source_set("unit_tests") {
     ":test_fixture",
     "//base",
     "//base/test:test_support",
+    "//components/collaboration:test_support",
     "//components/commerce/core:feature_list",
     "//components/saved_tab_groups/public",
     "//components/saved_tab_groups/test_support",
     "//components/tab_groups",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/collaboration/model",
     "//ios/chrome/browser/commerce/model",
     "//ios/chrome/browser/drag_and_drop/model",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/saved_tab_groups/model",
+    "//ios/chrome/browser/share_kit/model:test_support",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",

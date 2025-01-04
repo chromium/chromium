@@ -453,12 +453,16 @@ interface Frame {
   // RenderFrameProxy. `is_loading` mirrors the loading state of the
   // FrameTreeNode's current RenderFrameHost and determines whether
   // the newly-constructed RenderFrameProxy is marked as loading or not.
+  // `devtools_frame_token` is optional and only set when Unload is called for
+  // the placeholder frame when attaching a guest (it is the guest's main
+  // frame's devtools_frame_token and is created in the browser process).
   Unload(
       bool is_loading,
       blink.mojom.FrameReplicationState new_remote_frame_replication_state,
       blink.mojom.RemoteFrameToken new_remote_frame_token,
       blink.mojom.RemoteFrameInterfacesFromBrowser new_remote_frame_interfaces,
-      blink.mojom.RemoteMainFrameInterfaces new_remote_main_frame_interfaces);
+      blink.mojom.RemoteMainFrameInterfaces new_remote_main_frame_interfaces,
+      mojo_base.mojom.UnguessableToken? devtools_frame_token);
 
   // Delete the frame. This is only called for child frames that the browser
   // wants to detach, or for speculative main frames which are owned by the

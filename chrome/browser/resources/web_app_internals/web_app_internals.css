@@ -12,19 +12,12 @@ pre {
   margin-left: 4px;
 }
 
+button {
+  padding: 4px;
+}
+
 .iwa-dev-switch-channel-button {
   margin-left: 4px;
-}
-
-dialog#iwa-update-manifest-dialog {
-  border: 0;
-  border-radius: 8px 8px 8px 8px;
-}
-
-dialog[open]#iwa-update-manifest-dialog {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
 }
 
 div#iwa-update-manifest-version {
@@ -40,26 +33,42 @@ div#iwa-update-manifest-dialog-buttons {
   gap: 8px;
 }
 
-dialog#iwa-switch-channel-input-dialog {
+dialog {
   border: 0;
   border-radius: 8px 8px 8px 8px;
+  >* {
+      margin: 8px 0px;
+    }
 }
 
-dialog[open]#iwa-switch-channel-input-dialog {
+dialog[open] {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  border-radius: 8px;
+
 }
 
-div#iwa-switch-channel {
+div .dialog-buttons {
   display: flex;
-  flex-direction: row;
-  gap: 8px;
+  flex-direction: flex-start;
+  gap: 4px;
 }
 
-div#iwa-switch-channel-dialog-buttons {
+.iwa-dev-mode-list-item {
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.iwa-dev-mode-list-item>* {
+  margin: 4px;
+}
+
+.dev-iwa-buttons {
   display: flex;
   flex-direction: row;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 8px;
+  >* {
+      padding: 4px;
+    }
 }

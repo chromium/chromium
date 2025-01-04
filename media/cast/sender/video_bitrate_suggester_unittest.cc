@@ -32,7 +32,6 @@ static const FrameSenderConfig kVideoConfig{
     kFirstSsrc + 3,
     base::Milliseconds(100),
     kDefaultTargetPlayoutDelay,
-    RtpPayloadType::VIDEO_VP8,
     /* use_hardware_encoder= */ false,
     kRtpTimebase,
     /* channels = */ 1,

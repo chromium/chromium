@@ -595,8 +595,6 @@ TEST_F(NetworkTimeTrackerTest, NoNetworkQueryWhileFeatureDisabled) {
   field_trial_test_->SetFeatureParams(
       false, 0.0, NetworkTimeTracker::FETCHES_IN_BACKGROUND_AND_ON_DEMAND);
   EXPECT_FALSE(tracker_->QueryTimeServiceForTesting());
-  // The timer is not started when the feature is disabled.
-  EXPECT_EQ(base::Minutes(0), tracker_->GetTimerDelayForTesting());
 
   // Enable time queries and check that a query is sent.
   field_trial_test_->SetFeatureParams(

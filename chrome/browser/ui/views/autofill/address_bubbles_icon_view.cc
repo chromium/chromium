@@ -30,12 +30,12 @@ AddressBubblesIconView::AddressBubblesIconView(
                          "SaveAutofillAddress",
                          kActionShowAddressesBubbleOrPage) {
   GetViewAccessibility().SetName(GetTextForTooltipAndAccessibleName());
+  UpdateTooltipText();
 }
 
 AddressBubblesIconView::~AddressBubblesIconView() = default;
 
-views::BubbleDialogDelegate* AddressBubblesIconView::GetBubble()
-    const {
+views::BubbleDialogDelegate* AddressBubblesIconView::GetBubble() const {
   AddressBubblesIconController* controller = GetController();
   if (!controller) {
     return nullptr;
@@ -58,10 +58,11 @@ void AddressBubblesIconView::UpdateImpl() {
 
   SetVisible(should_show);
   GetViewAccessibility().SetName(GetTextForTooltipAndAccessibleName());
+  UpdateTooltipText();
 }
 
-std::u16string
-AddressBubblesIconView::GetTextForTooltipAndAccessibleName() const {
+std::u16string AddressBubblesIconView::GetTextForTooltipAndAccessibleName()
+    const {
   AddressBubblesIconController* controller = GetController();
   if (!controller) {
     // If the controller is nullptr, the tab has been closed already, and the
@@ -80,8 +81,7 @@ const gfx::VectorIcon& AddressBubblesIconView::GetVectorIcon() const {
   return vector_icons::kLocationOnChromeRefreshIcon;
 }
 
-AddressBubblesIconController*
-AddressBubblesIconView::GetController() const {
+AddressBubblesIconController* AddressBubblesIconView::GetController() const {
   return AddressBubblesIconController::Get(GetWebContents());
 }
 

@@ -845,6 +845,7 @@
 <translation id="6385591741672306837">sloupec</translation>
 <translation id="6387719785439924554">stranou</translation>
 <translation id="6393014464788431702">Vypnout všechny filtry událostí</translation>
+<translation id="6406989068857078334">Rychlost myši snížena – pokud chcete kliknout, <ph name="GESTURE" /> znova</translation>
 <translation id="6411569524720229058">Podzim</translation>
 <translation id="6417265370957905582">Asistent Google</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{dvojtečka}few{# dvojtečky}many{# colons}other{# dvojteček}}</translation>
@@ -1098,6 +1099,7 @@
 <translation id="8205922869661890178">Otevřít stránku s protokolem pro vývojáře</translation>
 <translation id="8212109599554677485">Změnit styl zobrazení na vedle sebe</translation>
 <translation id="8215202828671303819">Vícenásobný výběr</translation>
+<translation id="822316432305106615">Zahájit přesné kliknutí</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />% krytí</translation>
 <translation id="8261506727792406068">Smazat</translation>
 <translation id="826825447994856889">Úvod</translation>

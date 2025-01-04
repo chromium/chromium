@@ -61,7 +61,8 @@ RenderWidgetHostDelegate::GetOrCreateRootBrowserAccessibilityManager() {
   return nullptr;
 }
 
-uint32_t RenderWidgetHostDelegate::GetCompositorFrameSinkGroupingId() const {
+base::UnguessableToken
+RenderWidgetHostDelegate::GetCompositorFrameSinkGroupingId() const {
   NOTREACHED();  // Not implemented.
 }
 
@@ -178,6 +179,11 @@ int RenderWidgetHostDelegate::GetVirtualKeyboardResizeHeight() {
 
 bool RenderWidgetHostDelegate::ShouldDoLearning() {
   return true;
+}
+
+input::mojom::RenderInputRouterDelegate*
+RenderWidgetHostDelegate::GetRenderInputRouterDelegateRemote() {
+  return nullptr;
 }
 
 }  // namespace content

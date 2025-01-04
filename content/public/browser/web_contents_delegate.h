@@ -23,6 +23,7 @@
 #include "content/public/browser/fullscreen_types.h"
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/media_stream_request.h"
+#include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/preview_cancel_reason.h"
 #include "content/public/browser/select_audio_output_request.h"
 #include "content/public/browser/serial_chooser.h"
@@ -750,7 +751,8 @@ class CONTENT_EXPORT WebContentsDelegate {
   // content/browser/preloading/prerender/README.md for details) is supported.
   // If it is not supported, returns the reason.
   virtual PreloadingEligibility IsPrerender2Supported(
-      WebContents& web_contents);
+      WebContents& web_contents,
+      PreloadingTriggerType trigger_type);
 
   // Returns whether to override user agent for prerendering navigation.
   virtual NavigationController::UserAgentOverrideOption

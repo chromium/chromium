@@ -15,6 +15,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/numerics/safe_conversions.h"
 #include "media/base/audio_bus.h"
 
 namespace media {
@@ -44,7 +45,7 @@ MultiChannelResampler::MultiChannelResampler(int channels,
     resampler_audio_bus_ = AudioBus::Create(channels - 1, request_size);
     for (int i = 0; i < resampler_audio_bus_->channels(); ++i) {
       wrapped_resampler_audio_bus_->SetChannelData(
-          i + 1, resampler_audio_bus_->channel(i));
+          i + 1, resampler_audio_bus_->channel_span(i));
     }
   }
 }
@@ -94,7 +95,8 @@ void MultiChannelResampler::ProvideInput(int channel,
   // for it.  For subsequent channels, we can just dish out the channel data
   // from that (stored in |resampler_audio_bus_|).
   if (channel == 0) {
-    wrapped_resampler_audio_bus_->SetChannelData(0, destination);
+    wrapped_resampler_audio_bus_->SetChannelData(
+        0, base::span(destination, base::checked_cast<size_t>(frames)));
     read_cb_.Run(output_frames_ready_, wrapped_resampler_audio_bus_.get());
   } else {
     // All channels must ask for the same amount.  This should always be the

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] SpeechRecognition basics
-  SpeechRecognition is not defined
-Harness: the test ran to completion.
-

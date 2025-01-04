@@ -69,8 +69,9 @@ void FileSystemAccessIconView::UpdateImpl() {
 
   SetVisible(has_write_access_ || show_read_indicator);
 
-  if (has_write_access_ != had_write_access)
+  if (has_write_access_ != had_write_access) {
     UpdateIconImage();
+  }
 
   GetViewAccessibility().SetName(
       has_write_access_ ? l10n_util::GetStringUTF16(
@@ -80,8 +81,9 @@ void FileSystemAccessIconView::UpdateImpl() {
 
   // If icon isn't visible, a bubble shouldn't be shown either. Close it if
   // it was still open.
-  if (!GetVisible())
+  if (!GetVisible()) {
     FileSystemAccessUsageBubbleView::CloseCurrentBubble();
+  }
 }
 
 void FileSystemAccessIconView::OnExecuting(ExecuteSource execute_source) {
@@ -111,8 +113,8 @@ void FileSystemAccessIconView::OnExecuting(ExecuteSource execute_source) {
 }
 
 const gfx::VectorIcon& FileSystemAccessIconView::GetVectorIcon() const {
-    return has_write_access_ ? kFileSaveChromeRefreshIcon
-                             : vector_icons::kInsertDriveFileOutlineIcon;
+  return has_write_access_ ? kFileSaveChromeRefreshIcon
+                           : vector_icons::kInsertDriveFileOutlineIcon;
 }
 
 BEGIN_METADATA(FileSystemAccessIconView)

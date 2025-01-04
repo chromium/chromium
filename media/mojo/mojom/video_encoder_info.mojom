@@ -8,11 +8,21 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // The following mojom classes are the corresponding classes in webrtc project.
 // See third_party/webrtc/api/video_codecs/video_encoder.h for details.
-struct ResolutionBitrateLimit {
+// TODO(crbug.com/382015342): Add missing max_framerate_numerator and
+// max_framerate_denominator as member to the corresponding class in webrtc.
+struct ResolutionRateLimit {
+  // Maximum frame size in width and height.
   gfx.mojom.Size frame_size;
+  // Minimum allowed start encoding bitrate in bps.
   int32 min_start_bitrate_bps;
+  // Minimum allowed encoding bitrate in bps.
   int32 min_bitrate_bps;
+  // Maximum allowed encoding bitrate in bps.
   int32 max_bitrate_bps;
+  // Maximum allowed encoding frame rate's numerator.
+  uint32 max_framerate_numerator;
+  // Maximum allowed encoding frame rate's denominator.
+  uint32 max_framerate_denominator;
 };
 
 // TODO(crbug.com/40489779): Remove |has_*| values and use nullable types.
@@ -37,5 +47,5 @@ struct VideoEncoderInfo {
 
   // This array size is equal to media::VideoEncoderInfo::kMaxSpatialLayers.
   array<array<uint8>, 5> fps_allocation;
-  array<ResolutionBitrateLimit> resolution_bitrate_limits;
+  array<ResolutionRateLimit> resolution_rate_limits;
 };

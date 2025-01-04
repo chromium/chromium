@@ -288,11 +288,8 @@ jboolean JNI_ManagedBrowserUtils_IsProfileManaged(JNIEnv* env,
 }
 
 // static
-base::android::ScopedJavaLocalRef<jstring> JNI_ManagedBrowserUtils_GetTitle(
-    JNIEnv* env,
-    Profile* profile) {
-  return base::android::ConvertUTF16ToJavaString(
-      env, chrome::GetManagementPageSubtitle(profile));
+std::u16string JNI_ManagedBrowserUtils_GetTitle(JNIEnv* env, Profile* profile) {
+  return chrome::GetManagementPageSubtitle(profile);
 }
 
 // static

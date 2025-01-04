@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/sandboxed_unpacker.h"
 
 #include <stddef.h>
@@ -19,6 +14,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -459,8 +455,7 @@ void SandboxedUnpacker::OnVerifiedContentsUncompressed(
   }
   // Make a copy, since |result| may store data in shared memory, accessible by
   // some other processes.
-  std::vector<uint8_t> verified_contents(result->data(),
-                                         result->data() + result->size());
+  std::vector<uint8_t> verified_contents = base::ToVector(*result);
 
   client_->GetContentVerifierKey(
       base::BindOnce(&SandboxedUnpacker::StoreVerifiedContentsInExtensionDir,

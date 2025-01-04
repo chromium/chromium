@@ -158,6 +158,7 @@ function showNativeUILaunchButton(enabled) {
 }
 
 function setHostVersion(version) {
+  version = version.split('.').map(s => Number(s) || 0);
   HOST_CHROME_VERSION = version;
 }
 
@@ -363,7 +364,12 @@ function populateRemoteTargets(devices) {
         const browserName = document.createElement('div');
         browserName.className = 'browser-name';
         browserHeader.appendChild(browserName);
-        browserName.textContent = browser.adbBrowserName;
+        // Localhost targets are always named "Target".
+        // Let's use the ID instead as it's more expressive.
+        browserName.textContent = browser.adbBrowserName === 'Target' ?
+            browser.id :
+            browser.adbBrowserName;
+
         if (browser.adbBrowserVersion) {
           browserName.textContent += ' (' + browser.adbBrowserVersion + ')';
         }

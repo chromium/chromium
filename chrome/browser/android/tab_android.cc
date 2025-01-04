@@ -212,10 +212,7 @@ bool TabAndroid::IsNativePage() const {
 
 std::u16string TabAndroid::GetTitle() const {
   JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> java_title =
-      Java_TabImpl_getTitle(env, weak_java_tab_.get(env));
-  return java_title ? base::android::ConvertJavaStringToUTF16(java_title)
-                    : std::u16string();
+  return Java_TabImpl_getTitle(env, weak_java_tab_.get(env));
 }
 
 GURL TabAndroid::GetURL() const {
@@ -469,19 +466,10 @@ void TabAndroid::OnPhysicalBackingSizeChanged(
   web_contents->GetNativeView()->OnPhysicalBackingSizeChanged(size);
 }
 
-void TabAndroid::SetActiveNavigationEntryTitleForUrl(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& jurl,
-    const JavaParamRef<jstring>& jtitle) {
+void TabAndroid::SetActiveNavigationEntryTitleForUrl(JNIEnv* env,
+                                                     std::string& url,
+                                                     std::u16string& title) {
   DCHECK(web_contents());
-
-  std::u16string title;
-  if (jtitle)
-    title = base::android::ConvertJavaStringToUTF16(env, jtitle);
-
-  std::string url;
-  if (jurl)
-    url = base::android::ConvertJavaStringToUTF8(env, jurl);
 
   content::NavigationEntry* entry =
       web_contents()->GetController().GetVisibleEntry();

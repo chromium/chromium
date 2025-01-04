@@ -12,10 +12,15 @@
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/collaboration/public/collaboration_service.h"
+#import "components/collaboration/public/messaging/message.h"
+#import "components/collaboration/public/messaging/messaging_backend_service.h"
+#import "components/data_sharing/public/group_data.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
+#import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_bridge.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_avatar_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_face_pile_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -29,6 +34,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_drag_drop_metrics.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/activity_label_data.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_utils.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_idle_status_handler.h"
@@ -38,8 +44,10 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 using ScopedTabGroupSyncObservation =
     base::ScopedObservation<tab_groups::TabGroupSyncService,
@@ -48,9 +56,12 @@ using ScopedTabGroupSyncObservation =
 namespace {
 // The preferred size in points for the avatar icons.
 constexpr CGFloat kFacePileAvatarSize = 24;
+// The preferred size in points for the avatar icon in the activity label.
+constexpr CGFloat kActivityLabelAvatarSize = 16;
 }  // namespace
 
-@interface TabGroupMediator () <TabGroupSyncServiceObserverDelegate>
+@interface TabGroupMediator () <MessagingBackendServiceObserving,
+                                TabGroupSyncServiceObserverDelegate>
 @end
 
 @implementation TabGroupMediator {
@@ -67,18 +78,29 @@ constexpr CGFloat kFacePileAvatarSize = 24;
   __weak id<TabGroupConsumer> _groupConsumer;
   // Current group.
   base::WeakPtr<const TabGroup> _tabGroup;
+  // A service to get activity messages for a shared tab group.
+  raw_ptr<collaboration::messaging::MessagingBackendService> _messagingService;
+  // A map of a tab ID and a message to indicate that a tab should display a
+  // chip on its cell.
+  std::map<tab_groups::LocalTabID, collaboration::messaging::PersistentMessage>
+      _dirtyTabs;
+  // The bridge between the C++ MessagingBackendService observer and this
+  // Objective-C class.
+  std::unique_ptr<MessagingBackendServiceBridge> _messagingBackendServiceBridge;
 }
 
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                 tabGroupSyncService:
-                     (tab_groups::TabGroupSyncService*)tabGroupSyncService
-                     shareKitService:(ShareKitService*)shareKitService
-                collaborationService:
-                    (collaboration::CollaborationService*)collaborationService
-                            tabGroup:(base::WeakPtr<const TabGroup>)tabGroup
-                            consumer:(id<TabGroupConsumer>)groupConsumer
-                        gridConsumer:(id<TabCollectionConsumer>)gridConsumer
-                          modeHolder:(TabGridModeHolder*)modeHolder {
+- (instancetype)
+    initWithWebStateList:(WebStateList*)webStateList
+     tabGroupSyncService:(tab_groups::TabGroupSyncService*)tabGroupSyncService
+         shareKitService:(ShareKitService*)shareKitService
+    collaborationService:
+        (collaboration::CollaborationService*)collaborationService
+                tabGroup:(base::WeakPtr<const TabGroup>)tabGroup
+                consumer:(id<TabGroupConsumer>)groupConsumer
+            gridConsumer:(id<TabCollectionConsumer>)gridConsumer
+              modeHolder:(TabGridModeHolder*)modeHolder
+        messagingService:(collaboration::messaging::MessagingBackendService*)
+                             messagingService {
   CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to create a tab group mediator outside the "
          "Tab Groups experiment.";
@@ -108,6 +130,15 @@ constexpr CGFloat kFacePileAvatarSize = 24;
 
     [_groupConsumer setGroupTitle:tabGroup->GetTitle()];
     [_groupConsumer setGroupColor:tabGroup->GetColor()];
+
+    _messagingService = messagingService;
+    if (_messagingService) {
+      _messagingBackendServiceBridge =
+          std::make_unique<MessagingBackendServiceBridge>(self);
+      _messagingService->AddPersistentMessageObserver(
+          _messagingBackendServiceBridge.get());
+      [self fetchMessagesForChip];
+    }
 
     [self updateFacePileUI];
     [self populateConsumerItems];
@@ -164,6 +195,11 @@ constexpr CGFloat kFacePileAvatarSize = 24;
 #pragma mark - Parent's functions
 
 - (void)disconnect {
+  if (_messagingService) {
+    _messagingService->RemovePersistentMessageObserver(
+        _messagingBackendServiceBridge.get());
+    _messagingBackendServiceBridge.reset();
+  }
   _scopedSyncServiceObservation.reset();
   _syncServiceObserver.reset();
   _tabGroupSyncService = nullptr;
@@ -295,9 +331,50 @@ constexpr CGFloat kFacePileAvatarSize = 24;
 // Overrides the parent to return the data if there is a new message for a tab
 // in a group.
 - (ActivityLabelData*)activityLabelDataForTab:(web::WebStateID)webStateID {
-  // TODO(crbug.com/375594458): return ActivityLabelData with the string "Added"
-  // or "Changed" and the user icon view.
-  return nil;
+  if (!_dirtyTabs.contains(webStateID.identifier())) {
+    return nil;
+  }
+
+  ActivityLabelData* data = [[ActivityLabelData alloc] init];
+
+  collaboration::messaging::PersistentMessage message =
+      _dirtyTabs[webStateID.identifier()];
+  switch (message.collaboration_event) {
+    case collaboration::messaging::CollaborationEvent::TAB_ADDED:
+      data.labelString = l10n_util::GetNSString(
+          IDS_IOS_TAB_GROUP_ACTIVITY_LABEL_USER_ADDED_TEXT);
+      break;
+    case collaboration::messaging::CollaborationEvent::TAB_UPDATED:
+      data.labelString = l10n_util::GetNSString(
+          IDS_IOS_TAB_GROUP_ACTIVITY_LABEL_USER_CHANGED_TEXT);
+      break;
+    default:
+      // Do not show any labels for other activities.
+      return nil;
+  }
+
+  if (!_shareKitService->IsSupported() ||
+      !message.attribution.triggering_user.has_value()) {
+    // TODO(crbug.com/385090658): Now, `triggering_user` doesn't have a value in
+    // any cases (a tab is added / updated) and the label isn't created. Confirm
+    // why `triggering_user` is nil.
+    return nil;
+  }
+
+  ShareKitAvatarConfiguration* config =
+      [[ShareKitAvatarConfiguration alloc] init];
+  data_sharing::GroupMember user = message.attribution.triggering_user.value();
+  config.avatarUrl =
+      [NSURL URLWithString:base::SysUTF8ToNSString(user.avatar_url.spec())];
+  // Use email intead when the display name is empty.
+  config.displayName = user.display_name.empty()
+                           ? base::SysUTF8ToNSString(user.email)
+                           : base::SysUTF8ToNSString(user.display_name);
+  config.avatarSize =
+      CGSizeMake(kActivityLabelAvatarSize, kActivityLabelAvatarSize);
+  data.avatarPrimitive = _shareKitService->AvatarImage(config);
+
+  return data;
 }
 
 #pragma mark - TabCollectionDragDropHandler override
@@ -530,9 +607,10 @@ constexpr CGFloat kFacePileAvatarSize = 24;
     return;
   }
 
-  NSString* savedCollabID = tab_groups::utils::GetTabGroupCollabID(
-      _tabGroup.get(), _tabGroupSyncService);
-  BOOL isShared = savedCollabID != nil;
+  tab_groups::CollaborationId savedCollabID =
+      tab_groups::utils::GetTabGroupCollabID(_tabGroup.get(),
+                                             _tabGroupSyncService);
+  BOOL isShared = !savedCollabID.value().empty();
   [_groupConsumer setGroupShared:isShared];
 
   // Prevent the face pile from being set up for tab groups that are not shared
@@ -545,7 +623,7 @@ constexpr CGFloat kFacePileAvatarSize = 24;
   // Configure the face pile.
   ShareKitFacePileConfiguration* config =
       [[ShareKitFacePileConfiguration alloc] init];
-  config.collabID = savedCollabID;
+  config.collabID = base::SysUTF8ToNSString(savedCollabID.value());
   config.showsEmptyState = YES;
   config.avatarSize = kFacePileAvatarSize;
   [_groupConsumer setFacePileViewController:_shareKitService->FacePile(config)];
@@ -565,6 +643,90 @@ constexpr CGFloat kFacePileAvatarSize = 24;
   [self.consumer insertItem:newItem
                 beforeItemID:nextItemIdentifier
       selectedItemIdentifier:[self activeIdentifier]];
+}
+
+// Gets messages to indicate that a tab should display a chip on its cell.
+- (void)fetchMessagesForChip {
+  if (!_tabGroup || !_messagingService || !_messagingService->IsInitialized()) {
+    return;
+  }
+
+  std::vector<collaboration::messaging::PersistentMessage> messages =
+      _messagingService->GetMessagesForGroup(
+          _tabGroup->tab_group_id(),
+          collaboration::messaging::PersistentNotificationType::CHIP);
+
+  for (auto& message : messages) {
+    if (!message.attribution.tab_metadata.has_value()) {
+      continue;
+    }
+    collaboration::messaging::TabMessageMetadata tab_data =
+        message.attribution.tab_metadata.value();
+    if (!tab_data.local_tab_id.has_value()) {
+      continue;
+    }
+    _dirtyTabs[tab_data.local_tab_id.value()] = message;
+  }
+}
+
+// Reconfigures a tab cell specified by `localTabID`.
+- (void)reconfigureTab:(tab_groups::LocalTabID)localTabID {
+  for (int index = 0; index < self.webStateList->count(); ++index) {
+    web::WebState* webState = self.webStateList->GetWebStateAt(index);
+    if (localTabID == webState->GetUniqueIdentifier().identifier()) {
+      GridItemIdentifier* item = [GridItemIdentifier tabIdentifier:webState];
+      [self.consumer replaceItem:item withReplacementItem:item];
+      return;
+    }
+  }
+}
+
+#pragma mark - MessagingBackendServiceObserving
+
+- (void)onMessagingBackendServiceInitialized {
+  [self fetchMessagesForChip];
+}
+
+- (void)displayPersistentMessage:
+    (collaboration::messaging::PersistentMessage)message {
+  CHECK(_messagingService);
+  CHECK(_messagingService->IsInitialized());
+
+  if (message.type !=
+      collaboration::messaging::PersistentNotificationType::CHIP) {
+    return;
+  }
+  if (!message.attribution.tab_metadata.has_value()) {
+    return;
+  }
+  collaboration::messaging::TabMessageMetadata tab_data =
+      message.attribution.tab_metadata.value();
+  if (!tab_data.local_tab_id.has_value()) {
+    return;
+  }
+  tab_groups::LocalTabID localTabID = tab_data.local_tab_id.value();
+  _dirtyTabs[localTabID] = message;
+
+  [self reconfigureTab:localTabID];
+}
+
+- (void)hidePersistentMessage:
+    (collaboration::messaging::PersistentMessage)message {
+  CHECK(_messagingService);
+  CHECK(_messagingService->IsInitialized());
+
+  if (!message.attribution.tab_metadata.has_value()) {
+    return;
+  }
+  collaboration::messaging::TabMessageMetadata tab_data =
+      message.attribution.tab_metadata.value();
+  if (!tab_data.local_tab_id.has_value()) {
+    return;
+  }
+  tab_groups::LocalTabID localTabID = tab_data.local_tab_id.value();
+  _dirtyTabs.erase(localTabID);
+
+  [self reconfigureTab:localTabID];
 }
 
 @end

@@ -143,6 +143,11 @@ class RendererAgent
   virtual void SendDocumentLoadStatistics(
       const subresource_filter::mojom::DocumentLoadStatistics& statistics);
 
+  // The activation state for the current page, received from the browser.
+  // Note that the `RendererAgent` covers a single RenderFrame at a time, which
+  // may be the main frame or a subframe within a larger page.
+  subresource_filter::mojom::ActivationState activation_state_;
+
  private:
   // Initializes `filter_`. Assumes that activation has been computed.
   void MaybeCreateNewFilter();
@@ -153,8 +158,6 @@ class RendererAgent
   // Remote used to pass messages to the browser-side `ThrottleManager`.
   mojo::AssociatedRemote<mojom::FingerprintingProtectionHost>
       fingerprinting_protection_host_;
-
-  subresource_filter::mojom::ActivationState activation_state_;
 
   bool pending_activation_ = true;
 

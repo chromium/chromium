@@ -163,7 +163,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.ContextMenu.{EntryPoint}.Actions" enum="IOSMenuAction"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@chromium.org</owner>
   <summary>
@@ -381,7 +381,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Mobile.Messages.Passwords.Modal.Dismiss"
-    enum="MobileMessagesPasswordsModalDismiss" expires_after="2025-01-05">
+    enum="MobileMessagesPasswordsModalDismiss" expires_after="2026-01-05">
 <!-- Name completed by histogram_suffixes name="Mobile.Messages.Password.Type" -->
 
   <owner>thegreenfrog@chromium.org</owner>
@@ -425,7 +425,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Translate.Modal.Event"
-    enum="MobileMessagesTranslateModalEvent" expires_after="2025-03-30">
+    enum="MobileMessagesTranslateModalEvent" expires_after="2025-06-08">
   <owner>ginnyhuang@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>
@@ -478,7 +478,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Share.EntryPoints" enum="IOSActivityScenario"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>dimich@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <owner>chrome-with-friends-robots@google.com</owner>
@@ -491,7 +491,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Share.{EntryPoint}.Actions" enum="IOSShareAction"
-    expires_after="2025-03-30">
+    expires_after="2025-06-08">
   <owner>dimich@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <owner>chrome-with-friends-robots@google.com</owner>
@@ -648,7 +648,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.SystemNotification.Permission.Change"
-    enum="BooleanEnabled" expires_after="2025-03-30">
+    enum="BooleanEnabled" expires_after="2025-06-08">
   <owner>salg@google.com</owner>
   <owner>shaktisahu@chromium.org</owner>
   <summary>
@@ -660,7 +660,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Mobile.SystemNotification.Permission.OneTapUnsubscribe.DuplicatePreUnsubscribeRealDelay"
-    units="ms" expires_after="2025-03-30">
+    units="ms" expires_after="2025-06-08">
   <owner>engedy@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -677,7 +677,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Mobile.SystemNotification.Permission.OneTapUnsubscribe.IsDuplicatePreUnsubscribe"
-    enum="Boolean" expires_after="2025-03-30">
+    enum="Boolean" expires_after="2025-06-08">
   <owner>engedy@chromium.org</owner>
   <summary>
     Records whether the origin was already in the provisionally unsubscribed
@@ -689,7 +689,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Mobile.SystemNotification.Permission.OneTapUnsubscribe.PreUnsubscribePreNativeDuration"
-    units="ms" expires_after="2025-03-30">
+    units="ms" expires_after="2025-06-08">
   <owner>engedy@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -707,7 +707,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Mobile.SystemNotification.Permission.OneTapUnsubscribe.PreUnsubscribePreNativeRealDuration"
-    units="ms" expires_after="2025-03-30">
+    units="ms" expires_after="2025-06-08">
   <owner>engedy@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -725,7 +725,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Mobile.SystemNotification.Permission.OneTapUnsubscribe.SuspendedNotificationCount"
-    units="notifications" expires_after="2025-03-30">
+    units="notifications" expires_after="2025-06-08">
   <owner>engedy@chromium.org</owner>
   <summary>
     Records the number of notifications that were suspended, each time the user
@@ -736,7 +736,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Mobile.SystemNotification.Permission.OneTapUnsubscribe.WasGlobalStatePreserved.{ForAction}"
-    enum="Boolean" expires_after="2025-03-30">
+    enum="Boolean" expires_after="2025-06-08">
   <owner>engedy@chromium.org</owner>
   <summary>
     Records whether the Java global state was preserved between the
@@ -999,7 +999,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileFre.NativeInitialized" units="ms"
-    expires_after="2025-03-30">
+    expires_after="2025-06-08">
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>
@@ -1251,7 +1251,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileStartup.DailyLaunchCount" units="units"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>tedchoc@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -1296,7 +1296,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileStartup.LaunchCause" enum="LaunchCause"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>mthiesse@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>

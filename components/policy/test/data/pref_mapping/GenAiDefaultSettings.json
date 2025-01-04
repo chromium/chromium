@@ -193,6 +193,9 @@
           },
           "settings.managed.help_me_read": {
             "value": 0
+          },
+          "ash.gen_ai_photo_editing_settings": {
+            "value": 0
           }
         }
       },
@@ -228,6 +231,9 @@
           },
           "settings.managed.help_me_read": {
             "value": 1
+          },
+          "ash.gen_ai_photo_editing_settings": {
+            "value": 1
           }
         }
       },
@@ -243,7 +249,8 @@
           "TabCompareSettings": 2,
           "GenAIWallpaperSettings": 2,
           "GenAIVcBackgroundSettings": 2,
-          "HelpMeReadSettings": 2
+          "HelpMeReadSettings": 2,
+          "GenAIPhotoEditingSettings": 2
         },
         "prefs": {
           "optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed": {
@@ -274,6 +281,9 @@
             "value": 2
           },
           "settings.managed.help_me_read": {
+            "value": 2
+          },
+          "ash.gen_ai_photo_editing_settings": {
             "value": 2
           }
         }

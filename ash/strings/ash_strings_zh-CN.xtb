@@ -361,6 +361,7 @@
 <translation id="2295777434187870477">麦克风已开启，使用切换开关可将麦克风静音。</translation>
 <translation id="2302092602801625023">该账号由 Family Link 管理</translation>
 <translation id="2303600792989757991">“切换窗口”概述</translation>
+<translation id="2304702218354340897">确定要关闭人脸操控功能吗？</translation>
 <translation id="2305738328104302723">Google 任务列表：<ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />：近期的屏幕截图、下载内容和已固定的文件</translation>
 <translation id="2318576281648121272">今天 <ph name="TODAY_DATE" /></translation>
@@ -387,6 +388,7 @@
 <translation id="2370971919968699910">这可能会产生流量费用。
 已连接 <ph name="DEVICECOUNT" /> 部设备。</translation>
 <translation id="2386292613071805067">选择网页上的全部内容</translation>
+<translation id="2389423187722941333">切换 Gemini</translation>
 <translation id="2392659840443812875">没有可用的热点。确保您的设备就在附近且已开启蓝牙。</translation>
 <translation id="2397416548179033562">显示 Chrome 菜单</translation>
 <translation id="240006516586367791">媒体控件</translation>
@@ -394,6 +396,7 @@
 <translation id="2402411679569069051">若要解锁 Chromebook，请使用指纹或解锁您的手机</translation>
 <translation id="240545663114741956">按两次 <ph name="ACCELERATOR" /> 即可退出。</translation>
 <translation id="2405664212338326887">未连接</translation>
+<translation id="2406710117564540804">开启/关闭勿扰模式</translation>
 <translation id="2408955596600435184">输入您的 PIN 码</translation>
 <translation id="2412593942846481727">有可用的更新</translation>
 <translation id="2416438829169535743">退出视图？</translation>
@@ -899,6 +902,7 @@
 <translation id="4119928251231465047">尝试输入 PIN 码的次数过多</translation>
 <translation id="412298498316631026">窗口</translation>
 <translation id="4123259114412175274">如需解锁 Chromebook，请确保手机的蓝牙已开启</translation>
+<translation id="4123868835475902435">您刚才看到的只是基本操作！您可继续使用内置的“探索”应用来获取各种提示和帮助：入门提示、特别优惠以及最新的 <ph name="PRODUCT_NAME" /> 功能，一应俱全。</translation>
 <translation id="4125970834901680537">无法在平板电脑模式下流式传输应用。请在笔记本电脑模式下重试。</translation>
 <translation id="4131973331381812765">温度：<ph name="TEMPERATURE" />°C - 当前速度：<ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="4136724716305260864">保持开启状态，直到日出</translation>
@@ -1018,7 +1022,6 @@
 <translation id="4481530544597605423">未配对的设备</translation>
 <translation id="4485506555414638855">取消设置查看手机中的近期照片、媒体内容、通知和应用</translation>
 <translation id="4491109536499578614">图片</translation>
-<translation id="4493452241184130939">您刚才看到的只是基本操作！您可继续使用内置的“探索”应用来获取各种提示和帮助：入门提示、推荐的应用、特别优惠以及最新的 <ph name="PRODUCT_NAME" /> 功能，一应俱全。</translation>
 <translation id="450584155212756404">开发渠道</translation>
 <translation id="4513946894732546136">反馈</translation>
 <translation id="4518404433291145981">若要解锁 Chromebook，请先解锁您的手机</translation>
@@ -1081,7 +1084,6 @@
 <translation id="4708065238214351979">调亮键盘</translation>
 <translation id="4708185346211948049">下周的<ph name="DAY_OF_WEEK" /></translation>
 <translation id="4717575069099566988">USB-C 数据线不支持 USB4。设备性能可能会受到限制。</translation>
-<translation id="4724328513667182700">6 条 <ph name="PRODUCT_NAME" /> 使用入门提示</translation>
 <translation id="4730374152663651037">常用应用</translation>
 <translation id="4731797938093519117">家长访问</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />%（左侧）</translation>
@@ -1307,7 +1309,6 @@
 <translation id="5409208741270395213">将任务标记为已完成</translation>
 <translation id="5413656666631274079">“设置”页面</translation>
 <translation id="5414198321558177633">正在刷新配置文件列表。这可能需要几分钟的时间。</translation>
-<translation id="5417965108047245734">不妨观看快速导览，了解如何玩转 <ph name="PRODUCT_NAME" /></translation>
 <translation id="5426063383988017631">已关闭“设置”菜单</translation>
 <translation id="5428899915242071344">开始选择</translation>
 <translation id="5429993543155113935">尚不支持无痕式窗口</translation>
@@ -1645,6 +1646,7 @@
 <translation id="6539852571005954999">正在扫描要下载的文件“<ph name="FILENAME" />”</translation>
 <translation id="6542521951477560771">正在投放到<ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">表情符号、GIF 等</translation>
+<translation id="6543942526104794893">确定要关闭面部动作吗？</translation>
 <translation id="6545382064335350438">仍然无法验证您的 PIN 码。请重试。</translation>
 <translation id="6555373427270923730">在地址栏中输入网址，然后按 <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2311,6 +2313,7 @@
 <translation id="8855885154700222542">全屏键</translation>
 <translation id="8858369206579825206">隐私控制</translation>
 <translation id="8860366331836346216">添加 eSIM 卡</translation>
+<translation id="8869149849311827122">确定要关闭光标控制功能吗？</translation>
 <translation id="8870509716567206129">应用不支持分屏。</translation>
 <translation id="8873203135446552888">确认您要停用内置触控板</translation>
 <translation id="8874184842967597500">未连接</translation>

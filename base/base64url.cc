@@ -47,8 +47,9 @@ std::optional<StringViewOrString> Base64UrlToBase64(
     Base64UrlDecodePolicy policy) {
   // Characters outside of the base64url alphabet are disallowed, which includes
   // the {+, /} characters found in the conventional base64 alphabet.
-  if (input.find_first_of(kBase64Chars) != std::string::npos)
+  if (input.find_first_of(kBase64Chars) != std::string::npos) {
     return std::nullopt;
+  }
 
   const size_t required_padding_characters = input.size() % 4;
   const bool needs_replacement =
@@ -57,16 +58,18 @@ std::optional<StringViewOrString> Base64UrlToBase64(
   switch (policy) {
     case Base64UrlDecodePolicy::REQUIRE_PADDING:
       // Fail if the required padding is not included in |input|.
-      if (required_padding_characters > 0)
+      if (required_padding_characters > 0) {
         return std::nullopt;
+      }
       break;
     case Base64UrlDecodePolicy::IGNORE_PADDING:
       // Missing padding will be silently appended.
       break;
     case Base64UrlDecodePolicy::DISALLOW_PADDING:
       // Fail if padding characters are included in |input|.
-      if (input.find_first_of(kPaddingChar) != std::string::npos)
+      if (input.find_first_of(kPaddingChar) != std::string::npos) {
         return std::nullopt;
+      }
       break;
   }
 

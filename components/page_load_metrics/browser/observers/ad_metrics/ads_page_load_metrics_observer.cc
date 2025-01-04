@@ -860,7 +860,7 @@ int AdsPageLoadMetricsObserver::GetUnaccountedAdBytes(
 void AdsPageLoadMetricsObserver::ProcessResourceForPage(
     content::RenderFrameHost* render_frame_host,
     const mojom::ResourceDataUpdatePtr& resource) {
-  int process_id = render_frame_host->GetProcess()->GetID();
+  int process_id = render_frame_host->GetProcess()->GetDeprecatedID();
   auto mime_type = ResourceLoadAggregator::GetResourceMimeType(resource);
   int unaccounted_ad_bytes = GetUnaccountedAdBytes(process_id, resource);
   bool is_outermost_main_frame = !render_frame_host->GetParentOrOuterDocument();
@@ -907,12 +907,12 @@ void AdsPageLoadMetricsObserver::ProcessResourceForFrame(
     return;
 
   auto mime_type = ResourceLoadAggregator::GetResourceMimeType(resource);
-  int unaccounted_ad_bytes =
-      GetUnaccountedAdBytes(render_frame_host->GetProcess()->GetID(), resource);
+  int unaccounted_ad_bytes = GetUnaccountedAdBytes(
+      render_frame_host->GetProcess()->GetDeprecatedID(), resource);
   if (unaccounted_ad_bytes)
     ancestor_data->AdjustAdBytes(unaccounted_ad_bytes, mime_type);
   ancestor_data->ProcessResourceLoadInFrame(
-      resource, render_frame_host->GetProcess()->GetID(),
+      resource, render_frame_host->GetProcess()->GetDeprecatedID(),
       GetDelegate().GetResourceTracker());
   MaybeTriggerHeavyAdIntervention(render_frame_host, ancestor_data);
 }

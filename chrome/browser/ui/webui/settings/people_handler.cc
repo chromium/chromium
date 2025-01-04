@@ -10,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
@@ -21,10 +22,14 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_pref_names.h"
@@ -129,7 +134,7 @@ struct SyncConfigInfo {
   SyncConfigInfo();
   ~SyncConfigInfo();
 
-  bool sync_everything;
+  bool sync_everything = false;
   syncer::UserSelectableTypeSet selected_types;
 };
 
@@ -137,7 +142,7 @@ bool IsSyncSubpage(const GURL& current_url) {
   return current_url == chrome::GetSettingsUrl(chrome::kSyncSetupSubPage);
 }
 
-SyncConfigInfo::SyncConfigInfo() : sync_everything(false) {}
+SyncConfigInfo::SyncConfigInfo() = default;
 
 SyncConfigInfo::~SyncConfigInfo() = default;
 
@@ -366,6 +371,11 @@ void PeopleHandler::RegisterMessages() {
       base::BindRepeating(&PeopleHandler::HandleGetStoredAccounts,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
+      "SyncSetupGetProfileAvatar",
+      base::BindRepeating(&PeopleHandler::HandleGetProfileAvatar,
+                          base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
       "SyncSetupStartSyncingWithEmail",
       base::BindRepeating(&PeopleHandler::HandleStartSyncingWithEmail,
                           base::Unretained(this)));
@@ -413,12 +423,17 @@ void PeopleHandler::OnJavascriptAllowed() {
   if (sync_service) {
     sync_service_observation_.Observe(sync_service);
   }
+  if (g_browser_process->profile_manager()) {
+    profile_attributes_observation_.Observe(
+        &g_browser_process->profile_manager()->GetProfileAttributesStorage());
+  }
 }
 
 void PeopleHandler::OnJavascriptDisallowed() {
   profile_pref_registrar_.reset();
   identity_manager_observation_.Reset();
   sync_service_observation_.Reset();
+  profile_attributes_observation_.Reset();
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -513,18 +528,28 @@ void PeopleHandler::HandleGetStoredAccounts(const base::Value::List& args) {
   ResolveJavascriptCallback(callback_id, GetStoredAccountsList());
 }
 
+void PeopleHandler::HandleGetProfileAvatar(const base::Value::List& args) {
+  AllowJavascript();
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
+  ResolveJavascriptCallback(callback_id, GetProfileAvatar());
+}
+
 void PeopleHandler::OnExtendedAccountInfoUpdated(const AccountInfo& info) {
   UpdateStoredAccounts();
+  UpdateProfileAvatar();
 }
 
 void PeopleHandler::OnExtendedAccountInfoRemoved(const AccountInfo& info) {
   UpdateStoredAccounts();
+  UpdateProfileAvatar();
 }
 
 void PeopleHandler::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   UpdateChromeSigninUserChoiceInfo();
+  UpdateSyncStatus();
 #endif
 }
 
@@ -549,12 +574,46 @@ void PeopleHandler::OnErrorStateOfRefreshTokenUpdatedForAccount(
   }
 }
 
+void PeopleHandler::OnProfileAvatarChanged(const base::FilePath& profile_path) {
+  if (!switches::IsImprovedSettingsUIOnDesktopEnabled()) {
+    return;
+  }
+
+  if (profile_path != profile_->GetPath()) {
+    return;
+  }
+
+  UpdateProfileAvatar();
+}
+
+base::Value PeopleHandler::GetProfileAvatar() {
+  // Can be null in tests
+  if (!g_browser_process->profile_manager()) {
+    return base::Value();
+  }
+
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_->GetPath());
+
+  if (!entry) {
+    // This may happen if the profile is being deleted.
+    return base::Value();
+  }
+
+  return base::Value(webui::GetBitmapDataUrl(
+      entry
+          ->GetAvatarIcon(profiles::kAvatarIconSize,
+                          /*use_high_res_file=*/true, {.has_padding = false})
+          .AsBitmap()));
+}
+
 base::Value::List PeopleHandler::GetStoredAccountsList() {
   base::Value::List accounts;
   bool populate_accounts_list = false;
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   populate_accounts_list =
       AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_);
@@ -996,6 +1055,7 @@ void PeopleHandler::OnPrimaryAccountChanged(
       UpdateChromeSigninUserChoiceInfo();
       UpdateStoredAccounts();
       UpdateSyncStatus();
+      UpdateProfileAvatar();
       break;
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       break;
@@ -1204,6 +1264,10 @@ void PeopleHandler::UpdateSyncStatus() {
 
 void PeopleHandler::UpdateStoredAccounts() {
   FireWebUIListener("stored-accounts-updated", GetStoredAccountsList());
+}
+
+void PeopleHandler::UpdateProfileAvatar() {
+  FireWebUIListener("profile-avatar-changed", GetProfileAvatar());
 }
 
 void PeopleHandler::MarkFirstSetupComplete() {

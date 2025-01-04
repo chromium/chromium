@@ -55,7 +55,6 @@
 #include "chrome/browser/ash/arc/icon_decode_request.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/services/app_service/public/cpp/icon_loader.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"

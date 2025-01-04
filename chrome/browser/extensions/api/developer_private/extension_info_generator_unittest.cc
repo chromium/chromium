@@ -48,6 +48,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/crx_file/id_util.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/supervised_user/core/common/features.h"
@@ -1274,8 +1275,9 @@ TEST_F(ExtensionInfoGeneratorUnitTest, UploadAsAccountExtension_FullSync) {
 TEST_F(ExtensionInfoGeneratorUnitTest, UploadAsAccountExtension_TransportMode) {
   // Allow extensions to sync in transport mode.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      syncer::kSyncEnableExtensionsInTransportMode);
+  feature_list.InitWithFeatures({switches::kExplicitBrowserSigninUIOnDesktop,
+                                 syncer::kSyncEnableExtensionsInTransportMode},
+                                /*disabled_features=*/{});
 
   // Sign the user in without full sync.
   auto identity_test_env_profile_adaptor =

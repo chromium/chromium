@@ -262,6 +262,7 @@ void BruschettaNetworkContext::OnSharedStorageHeaderReceived(
     const url::Origin& request_origin,
     std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
         methods_with_options,
+    const std::optional<std::string>& with_lock,
     OnSharedStorageHeaderReceivedCallback callback) {
   std::move(callback).Run();
 }

@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] layerNormalization float32 0D tensor default options
+  assert_array_approx_equals: test layerNormalization float32 property 0, expected 0 +/- 0.0009765625, expected 0 but got NaN
+[FAIL] layerNormalization float32 2D tensor axes=[] and options.bias
+  assert_array_approx_equals: test layerNormalization float32 property 0, expected 7.862982749938965 +/- 0.0009765625, expected 7.862982749938965 but got NaN
+[FAIL] layerNormalization float32 2D tensor axes=[]
+  assert_array_approx_equals: test layerNormalization float32 property 0, expected 0 +/- 0.0009765625, expected 0 but got NaN
+Harness: the test ran to completion.
+

@@ -28,6 +28,13 @@ suite('CompareSubpage', function() {
     return CrSettingsPrefs.initialized;
   });
 
+  teardown(function() {
+    // Reset pref policy to ALLOW.
+    settingsPrefs.set(
+        `prefs.${AiEnterpriseFeaturePrefName.COMPARE}.value`,
+        ModelExecutionEnterprisePolicyValue.ALLOW);
+  });
+
   function createPage() {
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
@@ -61,6 +68,21 @@ suite('CompareSubpage', function() {
     assertEquals(url, loadTimeData.getString('compareDataHomeUrl'));
   });
 
+  test('compareLinkoutDisabled', async function() {
+    settingsPrefs.set(
+        `prefs.${AiEnterpriseFeaturePrefName.COMPARE}.value`,
+        ModelExecutionEnterprisePolicyValue.DISABLE);
+    await createPage();
+
+    const linkout = subpage.shadowRoot!.querySelector('cr-link-row');
+    assertTrue(!!linkout);
+
+    assertTrue(linkout.disabled);
+    linkout.click();
+    assertEquals(
+        0, metricsBrowserProxy.getCallCount('recordAiPageCompareInteractions'));
+  });
+
   test('compareLearnMore', async () => {
     await createPage();
 
@@ -86,5 +108,15 @@ suite('CompareSubpage', function() {
     assertEquals(
         learnMoreLink.href,
         loadTimeData.getString('compareLearnMoreManagedUrl'));
+  });
+
+  test('comparePolicyIndicatorPref', async () => {
+    await createPage();
+
+    const indicator =
+        subpage.shadowRoot!.querySelector('settings-ai-policy-indicator');
+    assertTrue(!!indicator);
+    assertTrue(!!indicator.pref);
+    assertEquals(AiEnterpriseFeaturePrefName.COMPARE, indicator.pref.key);
   });
 });

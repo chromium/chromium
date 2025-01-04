@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ENTERPRISE_OBFUSCATION_CORE_UTILS_H_
 #define COMPONENTS_ENTERPRISE_OBFUSCATION_CORE_UTILS_H_
 
+#include <array>
 #include <vector>
 
 #include "base/component_export.h"
@@ -62,7 +63,7 @@ enum class Error {
 // The header structure is: size of header (1 byte) | salt | noncePrefix.
 COMPONENT_EXPORT(ENTERPRISE_OBFUSCATION)
 base::expected<std::vector<uint8_t>, Error> CreateHeader(
-    std::vector<uint8_t>* derived_key,
+    std::array<uint8_t, kKeySize>* derived_key,
     std::vector<uint8_t>* nonce_prefix);
 
 // Obfuscate data chunk using crypto::Aead
@@ -88,7 +89,8 @@ base::expected<size_t, Error> GetObfuscatedChunkSize(
 // header.
 struct COMPONENT_EXPORT(ENTERPRISE_OBFUSCATION) HeaderData {
   HeaderData();
-  HeaderData(std::vector<uint8_t> key, std::vector<uint8_t> prefix);
+  HeaderData(base::span<const uint8_t, kKeySize> key,
+             std::vector<uint8_t> prefix);
 
   HeaderData(const HeaderData& other);
   HeaderData& operator=(const HeaderData& other);
@@ -98,7 +100,7 @@ struct COMPONENT_EXPORT(ENTERPRISE_OBFUSCATION) HeaderData {
 
   ~HeaderData();
 
-  std::vector<uint8_t> derived_key;
+  std::array<uint8_t, kKeySize> derived_key;
   std::vector<uint8_t> nonce_prefix;
 };
 

@@ -12,7 +12,6 @@
 #include "base/observer_list.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -20,10 +19,10 @@
 #include "components/soda/pref_names.h"
 #include "media/base/media_switches.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -41,10 +40,10 @@ SodaInstaller* g_instance = nullptr;
 
 // static
 SodaInstaller* SodaInstaller::GetInstance() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   DCHECK(
       base::FeatureList::IsEnabled(ash::features::kOnDeviceSpeechRecognition));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   return g_instance;
 }
 
@@ -63,7 +62,7 @@ void SodaInstaller::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(prefs::kSodaScheduledDeletionTime, base::Time());
   SodaInstaller::RegisterRegisteredLanguagePackPref(registry);
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Handle non-Chrome-OS logic here. We need to keep the implementation of this
   // method in the parent class to avoid duplicate declaration build errors
   // (specifically on Windows).
@@ -74,16 +73,16 @@ void SodaInstaller::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
        kLanguageComponentConfigs) {
     registry->RegisterFilePathPref(config.config_path_pref, base::FilePath());
   }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 void SodaInstaller::Init(PrefService* profile_prefs,
                          PrefService* global_prefs) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!base::FeatureList::IsEnabled(
           ash::features::kOnDeviceSpeechRecognition) ||
       soda_installer_initialized_) {
-#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#else  // !BUILDFLAG(IS_CHROMEOS)
   if (soda_installer_initialized_) {
 #endif
     return;
@@ -301,13 +300,13 @@ std::optional<SodaInstaller::ErrorCode> SodaInstaller::GetSodaInstallErrorCode(
 }
 
 bool SodaInstaller::IsAnyFeatureUsingSodaEnabled(PrefService* prefs) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return prefs->GetBoolean(prefs::kLiveCaptionEnabled) ||
          prefs->GetBoolean(ash::prefs::kAccessibilityDictationEnabled) ||
          prefs->GetBoolean(ash::prefs::kProjectorCreationFlowEnabled) ||
          prefs->GetString(
              ash::prefs::kClassManagementToolsAvailabilitySetting) == "teacher";
-#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#else  // !BUILDFLAG(IS_CHROMEOS)
   return prefs->GetBoolean(prefs::kLiveCaptionEnabled);
 #endif
 }

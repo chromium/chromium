@@ -10,6 +10,8 @@
 #import "components/sync/base/command_line_switches.h"
 #import "components/sync/base/data_type.h"
 #import "components/sync/base/features.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
@@ -21,8 +23,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -1081,9 +1081,9 @@ void ClearRelevantData() {
       performAction:grey_tap()];
 
   // Confirm "Sign Out" when alert dialog that data will be cleared is shown.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON)]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ButtonWithAccessibilityLabelId(
+                     IDS_IOS_SIGNOUT_AND_DELETE_DIALOG_SIGN_OUT_BUTTON)]
       performAction:grey_tap()];
 
   // Wait until the user is signed out. Use a longer timeout to give time for
@@ -1181,9 +1181,9 @@ void ClearRelevantData() {
       performAction:grey_tap()];
 
   // Confirm "Sign Out" when alert dialog that data will be cleared is shown.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON)]
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ButtonWithAccessibilityLabelId(
+                     IDS_IOS_SIGNOUT_AND_DELETE_DIALOG_SIGN_OUT_BUTTON)]
       performAction:grey_tap()];
 
   // Wait until the user is signed out. Use a longer timeout to give time for

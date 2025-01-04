@@ -44,17 +44,6 @@ Questo criterio verrà rimosso in futuro, una volta completata l'implementazione
 <translation id="1020006815010587263">Il Cestino non è attivo per l'utente.</translation>
 <translation id="1021462144002396313">Criteri di <ph name="PRIVACY_SANDBOX_NAME" /></translation>
 <translation id="1022361784792428773">ID delle estensioni (oppure * per tutte le estensioni) per cui non è consentita l'installazione</translation>
-<translation id="1023465280109914543">Se questo criterio viene attivato, si consiglia di attivare per impostazione predefinita la segnalazione anonima a Google dei dati sull'utilizzo e sugli arresti anomali di <ph name="PRODUCT_NAME" />. Gli utenti potranno comunque modificare questa impostazione.
-
-Se questo criterio viene disattivato, viene disattivata la segnalazione anonima e non vengono inviati a Google dati sull'utilizzo o sugli arresti anomali. Gli utenti non possono modificare questa impostazione.
-
-Se questo criterio non viene configurato, gli utenti possono scegliere il comportamento di segnalazione anonima al momento dell'installazione o della prima esecuzione e possono modificare questa impostazione in un secondo momento.
-
-Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-Per <ph name="PRODUCT_OS_NAME" />, vedi <ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME" />.</translation>
 <translation id="102492767056134033">Impostazione stato predefinito della tastiera sullo schermo nella schermata di accesso</translation>
 <translation id="1026335125982730097">Consente di impostare un elenco di pattern URL che specificano i siti nei quali è consentito impostare i cookie.
 
@@ -95,35 +84,6 @@ Se questo criterio viene attivato o se non viene configurato, la funzionalità d
 Se viene disattivato, la funzionalità di correzione automatica sulla tastiera fisica non sarà consentita.</translation>
 <translation id="1038725366103635282">Consenti il rilevamento condivisioni NetBIOS</translation>
 <translation id="1040446814317236570">Attiva la rimozione per gli URL PAC (https://)</translation>
-<translation id="1043965859599437362">Questo criterio fornisce un modo per eseguire l'override dell'elenco di insiemi che il browser utilizza per le funzionalità degli insiemi proprietari.
-
-Ogni insieme nell'elenco di insiemi proprietari del browser deve soddisfare i requisiti di un insieme proprietario.
-Un insieme proprietario deve contenere un sito principale e uno o più siti membri.
-Un insieme può anche contenere un elenco di siti di servizi di sua proprietà, nonché una mappa di un sito a tutte le sue varianti ccTLD.
-Visita la pagina https://github.com/WICG/first-party-sets per avere maggiori informazioni sugli insiemi proprietari che vengono utilizzati da <ph name="PRODUCT_NAME" />.
-
-Tutti i siti di un insieme proprietario devono avere un dominio registrabile pubblicato su HTTPS. Ciascun sito di un insieme proprietario deve anche essere univoco, ovvero non può essere elencato più di una volta in un insieme proprietario.
-
-Quando a questo criterio viene dato un dizionario vuoto, il browser utilizza l'elenco pubblico di insiemi proprietari.
-
-Per tutti i siti in un insieme proprietario dell'elenco <ph name="REPLACEMENTS" />, se un sito è presente anche in un insieme proprietario nell'elenco del browser, quel sito verrà rimosso dall'insieme proprietario del browser.
-Dopodiché, l'insieme proprietario del criterio verrà aggiunto all'elenco di insiemi proprietari del browser.
-
-Per tutti i siti in un insieme proprietario dell'elenco <ph name="ADDITIONS" />, se un sito è presente anche in un insieme proprietario nell'elenco del browser, l'insieme proprietario del browser verrà aggiornato in modo che il nuovo insieme proprietario possa essere aggiunto all'elenco del browser. Una volta aggiornato l'elenco del browser, l'insieme proprietario del criterio verrà aggiunto all'elenco di insiemi proprietari del browser.
-
-L'elenco di insiemi proprietari del browser richiede che nessuno dei siti al suo interno sia presente in più di un insieme. Questo requisito è valido anche per gli elenchi <ph name="REPLACEMENTS" /> e <ph name="ADDITIONS" />. In modo simile, un sito non può essere presente in entrambi gli elenchi <ph name="REPLACEMENTS" /> e <ph name="ADDITIONS" />.
-
-I caratteri jolly (*) non sono supportati come valore del criterio, neppure all'interno di un insieme proprietario in questi elenchi.
-
-Tutti gli insiemi forniti da questo criterio devono essere insiemi proprietari validi. Qualora non lo fossero, verrà segnalato un errore adeguato.
-
-Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-Equivale al criterio <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" />.
-È possibile utilizzare entrambi i criteri, ma a breve questo verrà ritirato, quindi è preferibile usare il criterio <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" />.
-Entrambi hanno lo stesso effetto sul comportamento del browser.</translation>
 <translation id="1046484220783400299">Consente di attivare le funzioni della piattaforma web obsolete per un periodo di tempo limitato</translation>
 <translation id="1047128214168693844">Non consentire ad alcun sito di monitorare la posizione fisica degli utenti</translation>
 <translation id="1049138910114524876">Consente di configurare la lingua da utilizzare per la schermata di accesso di <ph name="PRODUCT_OS_NAME" />.
@@ -266,6 +226,7 @@ Se il criterio viene impostato su Attivato, gli utenti possono utilizzare l'hard
 <translation id="117080706484659953">Consenti il rilevamento dell'ambito dei criteri su <ph name="MAC_OS_NAME" /></translation>
 <translation id="1171106901454883937">Attiva i report sulle informazioni relative alla versione del dispositivo</translation>
 <translation id="1173493742686115032">Attiva <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> in tutte le pagine web</translation>
+<translation id="1176740714945046981">Abilita la funzionalità di downgrade per le IWA. Per impostazione predefinita, vengono installate solo le versioni più recenti delle IWA. Se il criterio è impostato su <ph name="TRUE" />, puoi installare anche le versioni precedenti. Per consentire il downgrade, il valore della versione che vuoi deve essere specificato utilizzando il campo "pinned_version". Se il valore di "allow_downgrades" non viene specificato o è impostato su <ph name="FALSE" />, il downgrade è disabilitato per l'AIW.</translation>
 <translation id="1177624681620856105"> Questo criterio consente di stabilire se mostrare o meno la casella di controllo "Apri sempre" nei messaggi di conferma di avvio di protocolli esterni.
 
       Se questo criterio viene impostato su True o non viene impostato, quando viene mostrato un messaggio di conferma di protocollo esterno, l'utente può selezionare "Consenti sempre" per ignorare i futuri messaggi di conferma per il protocollo su questo sito.
@@ -288,6 +249,7 @@ Se il criterio viene impostato su Attivato, gli utenti possono utilizzare l'hard
       Se il criterio è impostato su false o non viene configurato, le pagine web possono usare l'API WebGL e i plug-in possono usare l'API Pepper 3D, ma le impostazioni predefinite del browser potrebbero comunque richiedere argomenti della riga di comando per usare queste API.</translation>
 <translation id="1198458955128279215">Utilizza il comportamento predefinito del piano di implementazione delle funzionalità.</translation>
 <translation id="1202216683470826356">Mostra schede nella pagina Nuova scheda</translation>
+<translation id="1203676252390737801">Gestione dell'IP di WebRTC per URL</translation>
 <translation id="1204263402976895730">Stampanti aziendali attive</translation>
 <translation id="1207301487141109411">Impedisci la selezione degli avatar degli utenti da file system locale, fotocamera e profilo Google</translation>
 <translation id="1209096923317019235">Assegna le app come gestori predefiniti per le estensioni dei file specificate</translation>
@@ -701,12 +663,20 @@ Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cl
       Se il criterio non viene configurato, <ph name="PRODUCT_NAME" /> prova a rilevare se un server è presente sulla Intranet. Solo allora risponderà alle richieste IWA. Se viene rilevato un server su Internet, <ph name="PRODUCT_NAME" /> ignora le richieste IWA provenienti da tale server.
 
       Nota: se ci sono più server, separane i nomi utilizzando virgole. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.</translation>
+<translation id="1488008594883876680">Attiva il precaricamento dell'immagine <ph name="ARC_VM" /></translation>
 <translation id="1488724823347505879">Attiva la condivisione dalle app Android alle app web</translation>
 <translation id="1490962807364514840">Il tempo di esecuzione della CPU conta la velocità di raccolta dei dati di telemetria in millisecondi.</translation>
 <translation id="1492223733885011596">Questo criterio consente di attivare il supporto delle GIF per il selettore di emoji su <ph name="PRODUCT_OS_NAME" />.
 Se questo criterio viene attivato, il selettore di emoji supporterà le emoji in formato GIF.
 Se viene disattivato o se non viene configurato, il selettore di emoji non supporterà le emoji in formato GIF.
 Se non viene configurato, il selettore di emoji verrà attivato per gli utenti normali, ma sarà disattivato per gli utenti gestiti.</translation>
+<translation id="1493245040983394029">Questa policy consente di controllare le impostazioni della funzionalità di editing di foto con AI generativa per <ph name="PRODUCT_OS_NAME" />.
+
+0 = Attiva la funzionalità per gli utenti e invia i dati pertinenti a Google per contribuire ad addestrare o migliorare i modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output e materiali originali. Possono essere esaminati da persone al solo scopo di migliorare i modelli di AI. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
+
+1 = Attiva la funzionalità per gli utenti, ma non invia dati a Google per addestrare o migliorare i modelli di AI. 1 è il valore predefinito per gli utenti aziendali gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Disattiva la funzionalità.</translation>
 <translation id="1494138678487405397">Disattiva l'alto contrasto nella schermata di accesso</translation>
 <translation id="1497797462580613666">Gestione dei download avrà un'opzione per salvare i file su <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="1498640472634891941">Questo criterio consente di elencare i pattern URL che specificano i siti a cui viene automaticamente negata l'autorizzazione di accesso alle stampanti locali tramite l'API WebPrinting.
@@ -760,6 +730,44 @@ Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cl
 <translation id="1542491165152947087">Consenti agli utenti di attivare o disattivare sul loro dispositivo l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa agli argomenti degli annunci.</translation>
 <translation id="1542958897137600427">Attiva il provisioning dei certificati client</translation>
 <translation id="1548431234399786388">Controlla le impostazioni di Reporting sugli eventi del browser.</translation>
+<translation id="155018731031610976">Questa policy fornisce un modo per eseguire l'override dell'elenco di insiemi che il browser utilizza per le funzionalità degli insiemi proprietari.
+
+Ogni insieme nell'elenco di insiemi proprietari del browser deve soddisfare i requisiti di un insieme proprietario.
+Un insieme proprietario deve contenere un sito principale e uno o più siti membri.
+Un insieme può anche contenere un elenco di siti di servizi di sua proprietà, nonché una mappa di un sito a tutte le sue varianti ccTLD.
+Visita la pagina https://github.com/WICG/first-party-sets per avere maggiori informazioni sugli insiemi proprietari che vengono utilizzati da <ph name="PRODUCT_NAME" />.
+
+Tutti i siti di un insieme proprietario devono avere un dominio registrabile pubblicato su HTTPS. Ciascun sito di un insieme proprietario deve anche essere univoco,
+ovvero non può essere elencato più di una volta in un insieme proprietario.
+
+Quando a questa policy viene dato un dizionario vuoto, il browser utilizza l'elenco pubblico di insiemi proprietari.
+
+Per tutti i siti in un insieme proprietario dell'elenco <ph name="REPLACEMENTS" />, se un sito è presente
+anche in un insieme proprietario nell'elenco del browser, quel sito verrà rimosso dall'insieme proprietario del browser.
+Dopodiché, l'insieme proprietario della policy verrà aggiunto all'elenco di insiemi proprietari del browser.
+
+Per tutti i siti in un insieme proprietario dell'elenco <ph name="ADDITIONS" />, se un sito è presente
+anche in un insieme proprietario nell'elenco del browser, l'insieme proprietario del browser verrà aggiornato in modo che
+il nuovo insieme proprietario possa essere aggiunto all'elenco del browser. Una volta aggiornato l'elenco del browser,
+l'insieme proprietario della policy verrà aggiunto all'elenco di insiemi proprietari del browser.
+
+L'elenco di insiemi proprietari del browser richiede che nessuno dei siti al suo interno sia presente in
+più di un insieme. Questo requisito è valido anche per gli elenchi
+<ph name="REPLACEMENTS" /> e <ph name="ADDITIONS" />. In modo simile, un sito non può essere presente in entrambi gli elenchi
+<ph name="REPLACEMENTS" /> e <ph name="ADDITIONS" />.
+
+I caratteri jolly (*) non sono supportati come valore della policy, neppure all'interno di un insieme proprietario in questi elenchi.
+
+Tutti gli insiemi forniti da questa policy devono essere insiemi proprietari validi. Qualora non lo fossero,
+verrà segnalato un errore adeguato.
+
+Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Equivale alla policy <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" />.
+È possibile utilizzare entrambe le policy, ma a breve questa verrà ritirata, quindi è preferibile usare la policy <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" />.
+Entrambe hanno lo stesso effetto sul comportamento del browser.</translation>
 <translation id="1550295162561011575">L'impostazione di questo criterio consente agli amministratori di configurare l'automazione per il lancio di app sui dispositivi <ph name="PRODUCT_NAME" />. Queste app possono essere lanciate al momento dell'accesso dell'utente oppure insieme da Avvio app.</translation>
 <translation id="1551782388466447648">Attiva la tastiera virtuale touch nella schermata di accesso</translation>
 <translation id="1552418937045050762">Se questa impostazione viene attivata, gli utenti possono scegliere di utilizzare la funzionalità Condivisione nelle vicinanze, che consente di inviare e ricevere file dalle persone nelle vicinanze.
@@ -778,6 +786,17 @@ Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cl
 <translation id="1561424797596341174">La norma sostituisce le build di debug dell'host di accesso remoto</translation>
 <translation id="1561967320164410511">U2F più estensioni per singola attestazione</translation>
 <translation id="1562846754315919408">Mostra notifiche quando vengono rilevati dispositivi USB</translation>
+<translation id="1563745847791078494">Questa policy consente di impostare l'URL predefinito della home page in <ph name="PRODUCT_NAME" />. È possibile aprire la home page usando il pulsante Home. Sui computer, le policy <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> consentono di stabilire le pagine da aprire all'avvio.
+
+Se come home page viene impostata la pagina Nuova scheda, dall'utente o in base alla policy <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" />, questa policy non ha effetto.
+
+L'URL deve avere uno schema standard, ad esempio http://example.com o https://example.com. Se questa policy viene impostata, gli utenti non possono modificare l'URL della loro home page in <ph name="PRODUCT_NAME" />.
+
+Se entrambe le policy <ph name="HOMEPAGE_LOCATION_POLICY_NAME" /> e <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" /> non vengono impostate, gli utenti possono scegliere la home page che preferiscono.
+
+Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="1567718448549957373">Se il criterio viene impostato su Attivato o se non viene configurato, le richieste di autenticazione <ph name="BASIC_AUTH" /> ricevute tramite connessioni HTTP non sicure sono consentite.
 
       Se il criterio viene impostato su Disattivato, per le richieste HTTP non sicure non è consentito usare lo schema di autenticazione <ph name="BASIC_AUTH" />; sono consentite soltanto le connessioni HTTPS sicure.
@@ -972,6 +991,13 @@ Se il criterio non viene configurato, <ph name="PRODUCT_OS_NAME" /> può selezio
 
 Se questa policy viene disattivata, <ph name="PRODUCT_NAME" /> non consentirà l'avvio dei profili ospite.</translation>
 <translation id="1666001345366986837">Impostazioni per la funzionalità Sfondo AI generativa per videoconferenze</translation>
+<translation id="166702014436078732">La configurazione della policy consente di impostare l'URL per gli utenti per la modifica delle proprie password dopo aver visualizzato un avviso nel browser. Il servizio di protezione tramite password reindirizza gli utenti all'URL (solo protocolli HTTP e HTTPS) indicato tramite questa policy. Per consentire a <ph name="PRODUCT_NAME" /> di acquisire correttamente l'hash con salt della nuova password in questa pagina di modifica della password, segui queste linee guida (https://www.chromium.org/developers/design-documents/create-amazing-password-forms).
+
+      Se la policy viene disattivata o se non viene configurata, il servizio reindirizza gli utenti al sito https://myaccount.google.com per la modifica della password.
+
+Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="1670638264428789878">Attiva insiemi di siti web correlati</translation>
 <translation id="1671405606278443620">Impostazioni per la ricerca nella cronologia basata sull'AI</translation>
 <translation id="1673097259557436886">Comunica sempre ai siti web che non è stato salvato alcun metodo di pagamento</translation>
@@ -1052,41 +1078,7 @@ criterio era la versione 121. È stato rimosso nella versione 122.</translation>
       Nota: i valori del criterio devono essere specificati in percentuali da 0 a 100.</translation>
 <translation id="1733092875104864334">Non consentire la raccolta di log di testo WebRTC dai servizi Google</translation>
 <translation id="1733768596873041559">Reindirizza all'IdP SAML per impostazione predefinita (prima della versione 99 di <ph name="PRODUCT_NAME" /> è necessaria la conferma dell'utente)</translation>
-<translation id="173503685261877709">Questo criterio fornisce un modo per eseguire l'override dell'elenco di insiemi che il browser utilizza per le funzionalità degli insiemi di siti web correlati.
-
-Questo criterio esegue l'override di<ph name="FIRST_PARTY_SETS_OVERRIDES_POLICY_NAME" />.
-
-Ogni insieme nell'elenco di insiemi di siti web correlati del browser deve soddisfare i requisiti di un insieme di siti web correlati.
-Un insieme di siti web correlati deve contenere un sito principale e uno o più siti membri.
-Un insieme può anche contenere un elenco di siti di servizi di sua proprietà, nonché una mappa di un sito a tutte le sue varianti ccTLD.
-Visita la pagina https://github.com/WICG/first-party-sets per maggiori informazioni su come <ph name="PRODUCT_NAME" /> utilizza gli insiemi di siti web correlati.
-
-
-Tutti i siti di un insieme di siti web correlati devono avere un dominio registrabile pubblicato tramite HTTPS. Inoltre, ogni sito di un insieme di siti web correlati deve essere univoco, ovvero non può essere elencato più di una volta in un insieme di siti web correlati.
-
-Quando a questo criterio viene dato un dizionario vuoto, il browser utilizza l'elenco pubblico di insiemi di siti web correlati.
-
-Per tutti i siti in un insieme di siti web correlati dell'elenco <ph name="REPLACEMENTS" />, se un sito è presente anche in un insieme di siti web correlati nell'elenco del browser, quel sito verrà rimosso dall'insieme di siti web correlati del browser.
-Dopodiché, l'insieme di siti web correlati del criterio verrà aggiunto all'elenco di insiemi di siti web correlati del browser.
-
-Per tutti i siti in un insieme di siti web correlati dell'elenco <ph name="ADDITIONS" />, se un sito è presente anche in un insieme di siti web correlati nell'elenco del browser, l'insieme di siti web correlati del browser verrà aggiornato in modo che
- il nuovo insieme di siti web correlati possa essere aggiunto all'elenco del browser. Una volta aggiornato l'elenco del browser, l'insieme di siti web correlati del criterio verrà aggiunto all'elenco di insiemi di siti web correlati del browser.
-
-L'elenco di insiemi di siti web correlati del browser richiede che nessuno dei siti al suo interno sia presente in più di un insieme. Questo requisito è valido anche per gli elenchi <ph name="REPLACEMENTS" /> e <ph name="ADDITIONS" />. In modo simile, un sito non può essere presente in entrambi gli elenchi <ph name="REPLACEMENTS" /> e <ph name="ADDITIONS" />.
-
-I caratteri jolly (*) non sono supportati come valore del criterio, né all'interno di alcun insieme di siti web correlati in questi elenchi.
-
-Tutti gli insiemi forniti dal criterio devono essere insiemi di siti web correlati validi. Qualora non lo fossero, verrà segnalato un errore appropriato.
-
-Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="1736269219679256369">Consenti di proseguire dalla pagina di avviso SSL</translation>
-<translation id="1736319469723030923">Se il criterio viene attivato o se non viene configurato, Chrome Software Cleaner analizza periodicamente il sistema per individuare eventuale software indesiderato e, qualora fosse presente, chiede all'utente se vuole rimuoverlo. L'attivazione manuale di Chrome Software Cleaner da chrome://settings è consentita.
-
-Se il criterio viene disattivato, Chrome Software Cleaner non esegue alcuna analisi periodica e l'attivazione manuale è disattivata.
-
-Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="1736990730683753958">La pagina della cronologia di Chrome organizzata in gruppi non sarà visibile all'indirizzo chrome://history/grouped.</translation>
 <translation id="1740724790865999129">Se questo criterio viene impostato su un elenco di tipi di dispositivi, i dati di debug di basso livello dei tipi di dispositivi menzionati possono essere inclusi nel feedback degli utenti.
 
@@ -1264,13 +1256,6 @@ Questo criterio viene sempre applicato per <ph name="PRODUCT_OS_NAME" />.</trans
 <translation id="1883274744253492031">Attiva l'upgrade automatico del contenuto misto</translation>
 <translation id="1885782360784839335">Attiva la visualizzazione di contenuti promozionali a scheda intera</translation>
 <translation id="1888871729456797026">Il token di registrazione della norma relativa al cloud su desktop</translation>
-<translation id="1889913120568244368">Quando il criterio viene attivato, se <ph name="CHROME_CLEANUP_NAME" /> rileva software indesiderato potrebbe segnalare l'analisi a Google, in linea con il criterio impostato da <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. <ph name="CHROME_CLEANUP_NAME" /> chiede agli utenti se vogliono ripulire il software indesiderato. I risultati vengono inviati a Google.
-
-Quando il criterio viene disattivato, se <ph name="CHROME_CLEANUP_NAME" /> rileva software indesiderato, l'analisi non viene segnalata a Google, a prescindere dal valore di <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. <ph name="CHROME_CLEANUP_NAME" /> chiede agli utenti se vogliono ripulire il software indesiderato. I risultati non vengono inviati a Google.
-
-Se il criterio non viene configurato, <ph name="CHROME_CLEANUP_NAME" /> potrebbe segnalare a Google le analisi per il rilevamento di software indesiderato, in linea con il criterio impostato da <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. <ph name="CHROME_CLEANUP_NAME" /> chiede agli utenti se vogliono ripulire il software indesiderato e di condividere i risultati con Google per semplificarne il rilevamento in futuro. Questi risultati includono metadati di file, estensioni installate automaticamente e chiavi del Registro di sistema, come spiegato nel white paper sulla privacy di Chrome.
-
-Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="1890850749633603276">Ripristina il comportamento permissivo dell'elemento <ph name="WEBVIEW_TAG_NAME" /> delle app di Chrome</translation>
 <translation id="1893271062894546361">Se questo criterio viene attivato, l'UI dei controlli per la riproduzione di contenuti multimediali è disponibile per le sessioni <ph name="PRODUCT_NAME" /> avviate da altri dispositivi sulla rete locale.
 
@@ -1283,11 +1268,6 @@ Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le ist
 Se questo criterio viene impostato, non sarà necessario creare un nuovo profilo separato per gli accessi agli account dai domini elencati.
 
 Questo criterio può essere impostato su una stringa vuota in modo che tutti gli accessi all'account debbano creare un nuovo profilo separato.</translation>
-<translation id="1895052641245790471">Se il criterio <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> viene impostato su RestoreOnStartupIsURLs e per il criterio <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> viene impostato un elenco di URL, è possibile specificare quali URL aprire.
-
-Se non viene configurato, all'avvio viene aperta la pagina Nuova scheda.
-
-Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="1897095538209040086">Se il criterio viene attivato o se non viene configurato, <ph name="PRODUCT_NAME" /> tiene aperta almeno una scheda dopo il passaggio a un browser alternativo.
 
 Se il criterio viene disattivato, <ph name="PRODUCT_NAME" /> chiude la scheda dopo il passaggio a un browser alternativo, anche se era l'ultima scheda. Questo causa l'uscita da <ph name="PRODUCT_NAME" />.</translation>
@@ -1301,6 +1281,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_NAME" /> chiude la scheda do
 <translation id="1905061765326052857">Non consentire agli utenti non affiliati di usare le macchine virtuali necessarie per supportare le app Linux</translation>
 <translation id="1906871416501278476">Disattiva il servizio <ph name="PRODUCT_NAME" /> e non avviare la scrivania remota all'accesso</translation>
 <translation id="1907696459350079081">Non attivare il salvaschermo nella schermata di accesso.</translation>
+<translation id="1909567037176216409">Carica la batteria in modo adattivo tramite il machine learning per prevedere il momento in cui scolleghi il caricabatterie e ritarda la ricarica al 100% per prolungare la durata della batteria.</translation>
 <translation id="1910704279188129272">Consente di impostare limiti di utilizzo per app.
         I limiti di utilizzo possono essere applicati alle app installate su <ph name="PRODUCT_OS_NAME" /> per l'utente in questione.
         I limiti devono essere impostati tramite un elenco |app_limits|. È consentita una sola voce per app. Le app non incluse nell'elenco non hanno limiti.
@@ -1446,7 +1427,6 @@ Nota: questo criterio non si applica agli URL JavaScript in-page con caricamento
 <translation id="2005506794355327448">L'azione da compiere quando lo schermo è abbassato.</translation>
 <translation id="2006530844219044261">Gestione dell'alimentazione</translation>
 <translation id="2006954055163088863">Considera l'utente inattivo quando viene riprodotto il video</translation>
-<translation id="2008514891623783266">Criteri di gestione dell'IP di WebRTC</translation>
 <translation id="201153120366509312">Se questo criterio viene consentito o se non viene configurato, la raccolta di metriche con chiave URL è consentita.
 Se il criterio viene consentito e la raccolta di metriche con chiave URL viene attivata dall'utente, la raccolta di metriche con chiave URL invia a Google gli URL delle pagine visitate dagli utenti per migliorare le ricerche e la navigazione, nonché le statistiche sull'utilizzo di ogni singola pagina.
 Le metriche con chiave URL includono anche gli identificatori e le statistiche sull'utilizzo di altri componenti del browser che possono modificare o fornire contenuti, come le estensioni.
@@ -1617,6 +1597,17 @@ Se questa policy non viene configurata, inizialmente Traduzione dal Vivo sarà d
 <translation id="2157842368188031417">Il criterio viene applicato soltanto alle sessioni ospite gestite. Deve essere attivato per consentire il cambio di utente all'interno della sessione nella modalità di workstation condivisa di Imprivata.
       Se il criterio viene impostato su Vero, vengono sostituiti forzatamente alcuni criteri per le funzionalità, che memorizzano dati utente sensibili e non vengono gestite tramite il meccanismo di pulizia usato per il cambio di utente all'interno della sessione con la modalità di workstation condivisa di Imprivata.
       Se il criterio viene impostato su Falso o se non viene configurato, i criteri non vengono sostituiti.</translation>
+<translation id="2158028663273824412">Consente di controllare la modalità del resolver di DNS over HTTPS. Tieni presente che questo criterio imposta solo la modalità predefinita per ciascuna query. La modalità può essere ignorata per tipi speciali di query, ad esempio le richieste di risoluzione del nome host del server DNS over HTTPS.
+
+La modalità <ph name="SECURE_DNS_MODE_OFF" /> disattiverà DNS over HTTPS.
+
+La modalità <ph name="SECURE_DNS_MODE_AUTOMATIC" /> invierà prima le query DNS over HTTPS se è disponibile un server DNS over HTTPS e potrebbe eseguire il fallback inviando query non sicure in caso di errore.
+
+La modalità <ph name="SECURE_DNS_MODE_SECURE" /> invierà solo query DNS over HTTPS e non sarà in grado fornire una risoluzione in caso di errore.
+
+Su <ph name="ANDROID_VERSION" /> e versioni successive, se DNS over TLS è attivo, <ph name="PRODUCT_NAME" /> non invierà richieste DNS non sicure.
+
+Se questo criterio non viene configurato, le query DNS over HTTPS non verranno inviate per i dispositivi gestiti. In caso contrario, il browser potrebbe inviare richieste DNS over HTTPS a un resolver associato al resolver di sistema configurato dall'utente.</translation>
 <translation id="2158741059065130266">Se il criterio viene impostato su True, gli utenti dell'app File di <ph name="PRODUCT_OS_NAME" /> possono vedere un Cestino e i file nelle cartelle I miei file e Download (inclusi i discendenti creati dall'utente) verranno inviati al Cestino quando verranno eliminati.
 
       Se il criterio viene impostato su False, i file che si trovavano nel cestino continueranno a essere disponibili visualizzando i file nascosti e cercando la directory .Trash nella cartella I miei file o Download.</translation>
@@ -1722,8 +1713,14 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
 <translation id="2202787915587511214">Attiva NTLMv2</translation>
 <translation id="2204379573346866896">I minuti trascorsi nell'ora corrente.</translation>
 <translation id="2204753382813641270">Controlla la visualizzazione automatica della barra delle app</translation>
+<translation id="2208092773610663977">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_NAME" /> controlla se nomi utente e password inseriti dagli utenti sono stati resi noti.
+
+Se viene impostato disattivato, gli utenti non possono utilizzare questa funzionalità.
+
+      Se il criterio viene configurato, gli utenti non possono modificarlo in <ph name="PRODUCT_NAME" />. Se non viene configurato, è consentito il controllo della divulgazione delle credenziali, ma l'utente può disattivarlo.</translation>
 <translation id="2208976000652006649">Parametri per l'URL di ricerca che utilizza POST</translation>
 <translation id="2212011154693551439">La pagina della cronologia di Chrome organizzata in gruppi sarà visibile all'indirizzo chrome://history/grouped per impostazione predefinita.</translation>
+<translation id="2212207215880394506">Non consentire l'editing di foto con AI generativa.</translation>
 <translation id="221287948061571053">Nascondi badge aziendale espanso nella barra degli strumenti</translation>
 <translation id="2213059592185933570">Attiva la creazione di profili di roaming</translation>
 <translation id="2213342458177721585">Attiva il layout Hindi Inscript a livello di dispositivo.</translation>
@@ -1828,25 +1825,6 @@ Se il criterio viene disattivato o se non viene configurato, gli utenti potranno
 <translation id="2269319728625047531">Abilita la visualizzazione del consenso alla sincronizzazione durante l'accesso</translation>
 <translation id="2269837888511509900">Attiva la condivisione delle credenziali utente</translation>
 <translation id="2270747976331889601">Attiva una funzionalità di sicurezza TLS 1.3 per i trust anchor locali</translation>
-<translation id="2273993844348404990">Questo criterio fornisce un elenco di siti che gli utenti possono cercare rapidamente utilizzando le scorciatoie nella barra degli indirizzi. Gli utenti possono avviare una ricerca digitando nella barra degli indirizzi la scorciatoia o @scorciatoia (ad esempio @lavoro) e premendo la barra spaziatrice o il tasto Tab.
-
-I seguenti campi sono obbligatori per ogni sito: <ph name="NAME_SITE_SEARCH_SETTINGS_FIELD" />, <ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD" />, <ph name="URL_SITE_SEARCH_SETTINGS_FIELD" />.
-
-Il campo <ph name="NAME_SITE_SEARCH_SETTINGS_FIELD" /> corrisponde al nome del sito o del motore di ricerca da mostrare all'utente nella barra degli indirizzi.
-
-<ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD" /> può includere parole e caratteri semplici, ma non può includere spazi o iniziare con il simbolo @. Anche le scorciatoie devono essere univoche.
-
-Per ogni voce, il campo <ph name="URL_SITE_SEARCH_SETTINGS_FIELD" /> consente di specificare l'URL del motore di ricerca utilizzato durante una ricerca con la parola chiave corrispondente. L'URL deve includere la stringa <ph name="SEARCH_TERM_MARKER" />, sostituita nella query dai termini di ricerca dell'utente. Le voci non valide e quelle con scorciatoie duplicate vengono ignorate.
-
-Le voci di ricerca sui siti configurate come in primo piano vengono visualizzate nella barra degli indirizzi quando l'utente digita "@". È possibile selezionare fino a tre voci in primo piano.
-
-Gli utenti non possono modificare o disattivare le voci di ricerca sui siti impostate dal criterio, ma possono aggiungere nuove scorciatoie per lo stesso URL. Inoltre, gli utenti non possono creare nuove voci di ricerca sui siti con una scorciatoia creata in precedenza tramite questo criterio.
-
-In caso di conflitto con una scorciatoia creata in precedenza dall'utente, l'impostazione dell'utente ha la precedenza. Tuttavia, gli utenti possono comunque attivare l'opzione creata tramite il criterio digitando "@" nella barra di ricerca. Ad esempio, se l'utente ha già definito "lavoro" come scorciatoia per URL1 e il criterio definisce "lavoro" come scorciatoia per URL2, quando nella barra di ricerca si digita "lavoro" verrà attivata una ricerca su URL1, ma quando si digita "@lavoro" verrà attivata una ricerca su URL2.
-
-Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="22754818344448444">Gli utenti possono selezionare un layout di modelli di scrivanie da caricare</translation>
 <translation id="2277117728011250860">Non consentire l'uso del filtro delle prestazioni di accessibilità.</translation>
 <translation id="2279381650184876122">Disattiva il supporto degli URL di dati in SVGUseElement.</translation>
@@ -1905,6 +1883,13 @@ Se il criterio non viene configurato, gli utenti possono modificare l'elenco di 
 <translation id="2309284543927494965">Blocca aggiornamenti</translation>
 <translation id="2309341709647905294">Non segnalare informazioni sulle periferiche collegate al dispositivo</translation>
 <translation id="2309390639296060546">Impostazione di geolocalizzazione predefinita</translation>
+<translation id="2315759015564614266">Se la policy viene attivata, viene eseguita una ricerca predefinita quando un utente inserisce nella barra degli indirizzi un testo che non è un URL. Per specificare il motore di ricerca predefinito, imposta le altre policy relative alla ricerca predefinita. Se non configuri queste policy, l'utente può scegliere il motore predefinito. Se la policy viene disattivata, non viene eseguita alcuna ricerca quando l'utente inserisce nella barra degli indirizzi un testo che non è un URL. La disattivazione non è supportata da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Se la policy viene configurata, gli utenti non possono modificarla in <ph name="PRODUCT_NAME" />. Se non viene configurata, il motore di ricercaa predefinito è attivo e gli utenti possono impostare l'elenco dei motori di ricerca.
+
+Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="2316700579410680894">La configurazione del criterio consente di elencare i pattern URL che specificano i siti a cui viene concessa automaticamente l'autorizzazione di accesso a un dispositivo USB con gli ID fornitore e prodotto indicati. Perché il criterio sia valido, ogni elemento nell'elenco richiede entrambi i campi <ph name="DEVICES_FIELD_NAME" /> e <ph name="URLS_FIELD_NAME" />. Ogni elemento nel campo <ph name="DEVICES_FIELD_NAME" /> può avere un campo <ph name="VENDOR_ID_FIELD_NAME" /> e un campo <ph name="PRODUCT_ID_FIELD_NAME" />. Se il campo <ph name="VENDOR_ID_FIELD_NAME" /> non viene specificato, il criterio può corrispondere a qualsiasi dispositivo. Se il campo <ph name="PRODUCT_ID_FIELD_NAME" /> non viene specificato, il criterio può corrispondere a qualsiasi dispositivo con l'ID fornitore specificato. Un criterio con un campo <ph name="PRODUCT_ID_FIELD_NAME" /> senza un campo <ph name="VENDOR_ID_FIELD_NAME" /> non è valido.
 
       Il modello di autorizzazioni USB consentirà all'URL specificato di accedere al dispositivo USB come origine di primo livello. Se i frame incorporati devono accedere ai dispositivi USB, per concedere l'accesso è necessario usare l'intestazione "usb" del criterio <ph name="FEATURE_POLICY_HEADER_NAME" />. Se l'URL non è valido, il criterio viene ignorato.
@@ -2270,6 +2255,7 @@ Se il criterio viene disattivato o se non viene configurato, i log non possono e
 
       Se il criterio viene impostato su "UserOnly" (valore 1), gli utenti possono gestire i certificati a livello di utente, ma non quelli a livello di dispositivo.</translation>
 <translation id="2593762551209145088">Navigazione sicura non è mai attiva.</translation>
+<translation id="2594773358911436070">Impostazioni WebRTC</translation>
 <translation id="26023406105317310">Configura account Kerberos</translation>
 <translation id="2603237557651009842">Blocca l'API WebPrinting su questi siti</translation>
 <translation id="2603382859270873566">Attiva il supporto dell'API PPB_VideoDecoder(Dev).</translation>
@@ -2332,6 +2318,23 @@ Il sistema eseguirà una query sui record AAAA soltanto quando può essere conne
 <translation id="264771271300359481">Non consentire ai siti di usare l'autorizzazione di accesso dei siti agli appunti</translation>
 <translation id="2649537800219643135">Origine immagine schermata di blocco schermo utente.</translation>
 <translation id="2649896281375932517">Consenti agli utenti di decidere</translation>
+<translation id="2649948251789347405">Questa policy consente agli amministratori di impostare un aggregatore di ricerca aziendale designato che fornirà consigli e risultati di ricerca nella barra degli indirizzi quando viene attivato da una parola chiave specifica. Gli utenti possono avviare una ricerca digitando nella barra degli indirizzi la parola chiave specificata nel campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> con o senza il prefisso @ (ad es. <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />) e premendo la barra spaziatrice o il tasto Tab.
+
+I seguenti campi sono obbligatori: <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
+
+Il campo <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> corrisponde al nome del motore di ricerca mostrato all'utente nella barra degli indirizzi.
+
+Il campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> corrisponde alla parola chiave inserita dall'utente per attivare la ricerca. La scorciatoia può includere parole e caratteri semplici, ma non può includere spazi o iniziare con il simbolo @. Le scorciatoie devono essere univoche.
+
+Il campo <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> specifica l'URL in cui cercare. Inserisci l'indirizzo web della pagina dei risultati del motore di ricerca e usa <ph name="SEARCH_TERM_MARKER" /> al posto della query.
+
+Il campo <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> specifica l'URL che fornisce suggerimenti di ricerca. Se <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> contiene <ph name="SEARCH_TERM_MARKER" />, Chrome otterrà i suggerimenti di ricerca tramite una richiesta GET all'URL sostituendo <ph name="SEARCH_TERM_MARKER" /> con la query di ricerca dell'utente. In caso contrario, verrà eseguita una richiesta POST e la query dell'utente verrà inserita nei parametri POST sotto la chiave <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />.
+
+Il campo <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> specifica l'URL di un'immagine che verrà utilizzata nei suggerimenti di ricerca. Se questo campo non viene impostato, verrà utilizzata un'icona predefinita. È consigliabile utilizzare un favicon (ad esempio <ph name="ICON_URL_EXAMPLE" />).
+
+Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="2650049181907741121">Azione da compiere quando l'utente chiude lo schermo</translation>
 <translation id="2656559539624760733">Non utilizzare Chrome Root Store.</translation>
 <translation id="2658653824183107970">Usa l'implementazione <ph name="CORS" /> legacy anziché la nuova implementazione <ph name="CORS" /></translation>
@@ -2374,6 +2377,7 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI ge
       Se imposti il criterio e attivi l'accesso automatico (vedi i criteri <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> e <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_DELAY_POLICY_NAME" />), per la sessione gestita vengono usati la prima lingua consigliata e il layout della tastiera corrispondente più usato.
 
       Il layout della tastiera preselezionato è sempre il layout più usato corrispondente alla lingua preselezionata. Gli utenti possono scegliere in qualsiasi momento qualsiasi lingua supportata da <ph name="PRODUCT_OS_NAME" /> per la loro sessione.</translation>
+<translation id="269274821351405808">Impostazioni per la funzionalità di editing di foto con AI generativa</translation>
 <translation id="2693108589792503178">Configura l'URL di modifica della password.</translation>
 <translation id="2694143893026486692">Lente d'ingrandimento ancorata attivata</translation>
 <translation id="2696077732471707315">
@@ -2491,6 +2495,12 @@ Se questo criterio viene disattivato, gli utenti non possono aggiungere account 
 L'impostazione del valore "command_line" impedirà il caricamento delle estensioni dalla riga di comando.</translation>
 <translation id="2780840673734667062">Disattiva l'accesso con Account Google aggiuntivi</translation>
 <translation id="2784880732336446591">Cancella dati di navigazione all'uscita</translation>
+<translation id="2785422026482376078">Consente di specificare se un modello di ricarica adattiva può sospendere la procedura di ricarica per prolungare la durata della batteria.
+
+      Quando per il dispositivo viene usata l'alimentazione CA, il modello di ricarica adattiva valuta se sospendere o meno la procedura di ricarica per prolungare la durata della batteria. Se il modello di ricarica adattiva sospende la procedura di ricarica, mantiene la batteria a un determinato livello (ossia 80%), dopodiché ricarica il dispositivo fino al 100% quando l'utente ne ha bisogno.
+      Se questa policy viene impostata su True, il modello di ricarica adattiva viene attivato e può sospendere la procedura di ricarica per prolungare la durata della batteria. Se questa policy viene impostata su False o se non viene configurata, il modello di ricarica adattiva non influisce sulla procedura di ricarica.
+
+      Nota: questa policy non ha effetto se viene configurata DevicePowerBatteryChargingOptimization.</translation>
 <translation id="2787173078141616821">Segnala informazioni sullo stato di Android</translation>
 <translation id="2787774054174244402">L'impostazione del criterio su True impedisce agli utenti di scrivere su dispositivi di archiviazione esterni.
 
@@ -2539,6 +2549,7 @@ Il rapporto include informazioni sull'utilizzo e sullo stato del profilo, inclus
 Questo criterio può essere impostato soltanto come criterio relativo agli utenti cloud.</translation>
 <translation id="2846689894646472396">Velocità di controllo degli eventi di rete in millisecondi.</translation>
 <translation id="2847788524147474533">I criteri relativi al computer della piattaforma hanno la precedenza sui criteri relativi al cloud in ambito computer</translation>
+<translation id="2849051159985119151">Consenti l'editing di foto con AI generativa senza migliorare i modelli di AI.</translation>
 <translation id="2849275596224278787">Nascondi opzioni di accessibilità nel menu della barra delle applicazioni della schermata di accesso</translation>
 <translation id="2853649500575897584">Non vengono bloccati i punti di estensioni precedenti nel processo del browser</translation>
 <translation id="2853757230661166968">Consente alle applicazioni di acquisire le scorciatoie di sistema predefinite e di eseguirne l'override.</translation>
@@ -3019,13 +3030,6 @@ Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cl
       Questo criterio può essere utilizzato dagli amministratori che hanno bisogno di più tempo per aggiornare i siti web interni interessati da questa nuova limitazione. Questo criterio aziendale è temporaneo ed è destinato a essere rimosso dopo la versione 117 di <ph name="PRODUCT_NAME" />.
       </translation>
 <translation id="3185009703220253572">a partire dalla versione <ph name="SINCE_VERSION" /></translation>
-<translation id="3185146554126007874">Questo criterio consente di impostare l'URL per permettere agli utenti di cambiare la loro password dopo aver visto un avviso nel browser. Il servizio di protezione tramite password reindirizza gli utenti all'URL (solo protocolli HTTP e HTTPS) indicato tramite questo criterio. Per consentire a <ph name="PRODUCT_NAME" /> di acquisire correttamente l'hash con salt della nuova password in questa pagina di modifica della password, segui queste linee guida (https://www.chromium.org/developers/design-documents/create-amazing-password-forms).
-
-      Se il criterio viene disattivato o se non viene configurato, il servizio reindirizza gli utenti al sito https://myaccount.google.com per la modifica della password.
-
-Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="3192902750888034827">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'assegnazione di un valore al criterio <ph name="DEFAULT_SEARCH_PROVIDER_NEW_TAB_URL_POLICY_NAME" /> specifica l'URL utilizzato dal motore di ricerca per fornire una pagina Nuova scheda.
 
       Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_NEW_TAB_URL_POLICY_NAME" /> non viene configurato, non è fornita alcuna pagina Nuova scheda.</translation>
@@ -3181,13 +3185,6 @@ Se il criterio viene impostato su true o non viene configurato, le app web verra
       Nota: per i dispositivi <ph name="MS_AD_NAME" /> gestiti, questo criterio supporta l'espansione di <ph name="MACHINE_NAME_VARIABLE" /> al nome della macchina <ph name="MS_AD_NAME" /> oppure a una sua sottostringa. Ad esempio, se il nome della macchina è <ph name="MACHINE_NAME_EXAMPLE" />, la variabile <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> viene sostituita dai quattro caratteri che iniziano dopo la sesta posizione, ad esempio <ph name="MACHINE_NAME_PART_EXAMPLE" />. La posizione è in base zero.
 
       Questo criterio è deprecato. Usa il criterio <ph name="PRINTERS_POLICY_NAME" />.</translation>
-<translation id="3294852060412792476">Se il criterio viene attivato o se non viene configurato, i file scaricati vengono inviati per essere analizzati da Navigazione sicura, anche se provengono da una fonte attendibile.
-
-Se il criterio viene disattivato, i file scaricati non vengono inviati per essere analizzati da Navigazione sicura se provengono da una fonte attendibile.
-
-Queste limitazioni vengono applicate ai download attivati dai contenuti delle pagine web, nonché all'opzione di menu Link di download. Queste limitazioni non vengono applicate al salvataggio o al download della pagina attualmente visualizzata né alle opzioni di stampa relative al salvataggio come file PDF.
-
-Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="3296560797994110772">Le scorciatoie con il tasto Ricerca vengono inviate all'app prima di essere gestite dal sistema operativo.</translation>
 <translation id="3300441638895109781">Ricarica automaticamente il flusso di autenticazione su ChromeOS</translation>
 <translation id="3300784749135986828">Attiva o disattiva la funzionalità <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
@@ -3219,6 +3216,8 @@ Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le ist
       Se viene impostato su Disattivato, la sicurezza e la stabilità di <ph name="PRODUCT_NAME" /> diminuiranno, poiché verrà ridotta la sandbox usata dai processi del renderer. Disattivalo solo se si verificano dei problemi di compatibilità con software di terze parti che devono essere eseguiti all'interno dei processi del renderer.
 
       Nota: scopri di più sui criteri relativi alla mitigazione dei processi (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies).</translation>
+<translation id="3338041636115991551">Se ArcEnabled è impostato su True, ARC viene attivato per l'utente, a meno che la modalità temporanea o l'accesso simultaneo siano attivi durante la sessione utente. Se la policy è impostata su False o non è configurata, gli utenti aziendali non possono utilizzare ARC.
+Questa policy consente di controllare soltanto <ph name="ARC_VM" /> su <ph name="PRODUCT_NAME" />. Per <ph name="PRODUCT_OS_FLEX_NAME" />, consulta la policy <ph name="DEVICE_FLEX_ARC_PRELOAD_ENABLED_POLICY_NAME" /> per ulteriori dettagli.</translation>
 <translation id="3338431256935927407">Consente di gestire le impostazioni relative alla funzionalità Cloud Upload.</translation>
 <translation id="3339271789059866414">Consente di configurare la disponibilità del servizio proxy di sistema e le credenziali proxy dei servizi di sistema.
       Se il criterio non viene impostato, il servizio proxy di sistema non sarà disponibile.</translation>
@@ -3274,6 +3273,17 @@ Se viene disattivato, la funzionalità di scrittura predittiva sulla tastiera fi
 <translation id="3387211681524224831">Se il criterio viene impostato su Attivato, la cronologia di navigazione non viene salvata, la sincronizzazione delle schede viene disattivata e gli utenti non possono modificare questa impostazione.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, la cronologia di navigazione viene salvata.</translation>
+<translation id="3387875422525138489">La configurazione del criterio consente di specificare un elenco di app web isolate (IWA) che vengono installate automaticamente.
+      Le IWA sono applicazioni che presentano proprietà di sicurezza utili non disponibili per le normali pagine web, che vengono pacchettizzati in un bundle web firmato. La chiave pubblica del bundle web firmato viene utilizzata per creare l'ID pacchetto web che identifica l'IWA.
+      Finora questo criterio funziona solo per la sessione Ospite gestita.
+
+      Ogni elemento nell'elenco del criterio è un oggetto con due campi obbligatori: il manifest di aggiornamento <ph name="URL_LABEL" /> e l'ID pacchetto web dell'app web isolata.
+
+      Ogni elemento può anche includere questi campi facoltativi:
+
+        * <ph name="UPDATE_CHANNEL_OPTION" />: il nome del canale di rilascio/aggiornamento dell'IWA. Se questo criterio non viene impostato, viene utilizzata la modalità "predefinita".
+        * <ph name="PINNED_VERSION_OPTION" />:  una versione specifica da installare. Il sistema tenterà di installare questa versione, se disponibile sul canale di aggiornamento specificato. Per impostazione predefinita, se blocchi un'IWA a una versione specifica, impedirà l'aggiornamento oltre quella versione. Per sbloccare la versione, rimuovi questo campo.
+        * <ph name="ALLOW_DOWNGRADES_OPTION" />:: consente di installare versioni precedenti dell'IWA. Per farlo, è necessario impostare il campo "pinned_version". Se il criterio non viene specificato o se viene impostato su <ph name="FALSE" />, il downgrade è disabilitato per l'IWA.</translation>
 <translation id="3387999258705169775">Comportamento predefinito per il blocco nidificato della funzione setTimeout().</translation>
 <translation id="3388628790024977864">Non consentire il flusso <ph name="CLOUD_UPLOAD_NAME" /> per <ph name="GOOGLE_DRIVE_NAME" /> e <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3389088527709746815">Attiva l'autenticazione Gnubby per l'host di accesso remoto</translation>
@@ -3301,6 +3311,7 @@ Se il criterio non viene impostato, non è possibile navigare nel browser se è 
       Se il criterio viene impostato su "hidden", le funzionalità disattivate saranno inutilizzabili e non visibili per gli utenti.
 
       Se il criterio non viene configurato o presenta un valore non valido, la modalità di disattivazione delle funzionalità di sistema sarà "blocked".</translation>
+<translation id="3411947169047929182">Controlla la configurazione correlata a WebRTC</translation>
 <translation id="341285788698114069">Questo criterio consente di stabilire la priorità del processo audio su Windows.
       Se il criterio viene attivato, il processo audio verrà eseguito con priorità sopra la norma.
       Se il criterio viene disattivato, il processo audio verrà eseguito con priorità normale.
@@ -3444,8 +3455,10 @@ Se questo criterio viene configurato, <ph name="DEVELOPER_TOOLS_AVAILABILITY_POL
       contattare Quirks Server per scaricare i file di configurazione.
 
       Se questa norma è impostata su true o non è configurata, allora <ph name="PRODUCT_OS_NAME" /> contatterà automaticamente Quirks Server e scaricherà i file di configurazione, se disponibili, e li archivierà sul dispositivo.  Questi file potrebbero essere usati, ad esempio, per migliorare la qualità del display dei monitor collegati.</translation>
+<translation id="3513864752694608929">Non imporre i metodi di immissione abilitati</translation>
 <translation id="3515196503924273265">Consente di attivare la funzionalità NewBaseUrlInheritanceBehavior</translation>
 <translation id="351654132746710200">Dopo la disattivazione di <ph name="LACROS_NAME" />, la migrazione dei dati non viene eseguita. La cartella <ph name="LACROS_NAME" /> viene rimossa e gli utenti continuano a utilizzare i dati rimanenti.</translation>
+<translation id="3518293344797498431">Carica la batteria fino a circa l'80% per massimizzarne l'autonomia.</translation>
 <translation id="3518512927469906365">Disattiva il partizionamento dello spazio di archiviazione di terze parti per origini di primo livello specifiche</translation>
 <translation id="3522257170445891912">Se questo criterio viene impostato, il flusso di autenticazione dell'accesso avrà uno dei seguenti metodi a seconda del valore dell'impostazione:
 
@@ -3535,6 +3548,7 @@ La configurazione di questo criterio impedisce che la protezione del rollback ve
 Se imposti un valore più basso per questo criterio, l'effetto è permanente: il dispositivo POTREBBE non essere in grado di eseguire il rollback alle versioni precedenti anche dopo aver reimpostato un valore maggiore del criterio.
 
 Le possibilità effettive di eseguire il rollback potrebbero dipendere anche dalla scheda e dalle patch di vulnerabilità critiche.</translation>
+<translation id="3565284547329101236">Precarica l'immagine <ph name="ARC_VM" /> su Flex</translation>
 <translation id="35668690622495904">
           Le chiamate non sono rifiutate se provengono da contesti non aggiunti alla lista consentita. (Le chiamate potrebbero comunque essere rifiutate per altri motivi.)</translation>
 <translation id="3568762199045490351">La funzione JavaScript setTimeout() con timeout di 0 ms verrà impostata su 1 ms.</translation>
@@ -3815,17 +3829,6 @@ Se viene impostata su 2, le origini delle app web isolate non possono usare Dire
 
       Se questa norma non viene impostata, per impostazione predefinita la funzione non è consentita per gli utenti gestiti dall'azienda ed è consentita per gli utenti non gestiti.</translation>
 <translation id="3791179836066841809">Documentazione per le norme</translation>
-<translation id="3792144912556572267">Questo criterio consente di impostare l'URL predefinito della pagina iniziale in <ph name="PRODUCT_NAME" />. È possibile aprire la pagina iniziale usando il pulsante omonimo. Sui computer, i criteri <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> consentono di stabilire le pagine da aprire all'avvio.
-
-Se come pagina iniziale viene impostata la pagina Nuova scheda, dall'utente o in base al criterio <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" />, questo criterio non ha effetto.
-
-L'URL deve avere uno schema standard, ad esempio http://example.com o https://example.com. Se questo criterio viene impostato, gli utenti non possono modificare l'URL della loro pagina iniziale in <ph name="PRODUCT_NAME" />.
-
-Se entrambi i criteri <ph name="HOMEPAGE_LOCATION_POLICY_NAME" /> e <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" /> non vengono impostati, gli utenti possono scegliere la pagina iniziale che preferiscono.
-
-Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="379318040165550702">Consenti agli utenti di scegliere</translation>
 <translation id="3793244042614155322">Aiutami a scrivere è un assistente di scrittura basato sull'AI per creare contenuti brevi sul web. I contenuti suggeriti si basano sui prompt inseriti dall'utente e sui contenuti della pagina web.
 
@@ -3886,6 +3889,19 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI ge
 
       Gli utenti non possono rimuovere un gestore di protocollo registrato tramite il criterio. Se però installano un nuovo gestore predefinito, possono cambiare i gestori di protocolli installati in base al criterio.</translation>
 <translation id="3842619997238271109">Non consente all'host di accesso remoto di usare le autenticazioni con PIN e accoppiamento quando le connessioni client vengono accettate</translation>
+<translation id="3844931982362586388">Questa policy consente di configurare l'URL predefinito della pagina Nuova scheda e impedisce agli utenti di modificarlo.
+
+La pagina Nuova scheda si apre con nuove schede e finestre.
+
+Questa policy non consente di stabilire quali pagine aprire all'avvio. Queste pagine dipendono dalle policy <ph name="RESTORE_ON_STARTUP_POLICY_NAME" />. Questa policy influisce tuttavia sulla home page e sulla pagina iniziale, se sono impostate per l'apertura della pagina Nuova scheda.
+
+Una best practice consiste nello specificare l'URL canonicalizzato completo; in caso contrario, <ph name="PRODUCT_NAME" /> utilizzerà https:// per impostazione predefinita.
+
+Se la policy non viene configurata o viene lasciata vuota, viene usata la pagina Nuova scheda predefinita.
+
+Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="3845318141474759319">Consenti Sfondo AI generativa senza migliorare i modelli di AI</translation>
 <translation id="3851443303439635700">Controlla la soglia di nidificazione prima della quale la funzione JavaScript setTimeout() inizia a essere bloccata</translation>
 <translation id="3854609566862485607">Questa policy consente di controllare un'etichetta personalizzata utilizzata per identificare i profili gestiti. Per i profili gestiti, questa etichetta viene mostrata accanto all'avatar nella barra degli strumenti. L'etichetta personalizzata non viene tradotta.
@@ -3958,6 +3974,13 @@ Tieni presente che questa policy non ha alcun effetto se <ph name="ENTERPRISE_PR
  Se il criterio non viene configurato oppure se viene impostato un valore vuoto o non valido, non verrà aggiunto un ulteriore valore <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> alle richieste di processi di stampa.
 </translation>
 <translation id="3896591584655529057">Attiva il salvataggio delle passkey utilizzando Gestore delle password</translation>
+<translation id="3896751141670591496">Se la policy viene attivata o se non viene configurata, vengono mostrati avvisi di sicurezza quando flag della riga di comando potenzialmente pericolosi vengono utilizzati per avviare Chrome.
+
+Se la policy viene disattivata, viene impedita la visualizzazione degli avvisi di sicurezza quando Chrome viene avviato con flag della riga di comando potenzialmente pericolosi.
+
+Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="3897218615484393758">Limita il tempo per cui un utente autenticato tramite SAML può accedere offline nella schermata di blocco</translation>
 <translation id="3897860452756794695">Verrà utilizzato il nuovo comportamento offsetParent.</translation>
 <translation id="3898345958122666461">Disattiva NTLMv2</translation>
@@ -4437,6 +4460,11 @@ Questo criterio è stato utilizzato per disattivare l'upgrade automatico dei con
 
       Tieni presente che questa funzionalità è supportata soltanto nell'ambiente di rete interno di Google.</translation>
 <translation id="4269859918103560644">Consenti all'utente di decidere</translation>
+<translation id="4271245613154024710">La configurazione della policy consente di specificare quali app web isolate (IWA) possono connettersi alle smart card utilizzando l'API web Smart Card senza richiedere all'utente l'autorizzazione. Questa policy non accetta caratteri jolly.
+
+Viene eseguito l'override di questa policy da <ph name="POLICY_NAME" />; in particolare, se il valore di una lista bloccata è <ph name="ALL_ISOLATED_WEB_APPS" />, nessuna IWA potrà connettersi ai lettori di smart card (non verrà nemmeno chiesto agli utenti di concedere l'autorizzazione), ad eccezione di quelle elencate in questa policy.
+
+Per impostazione predefinita, le IWA che specificano le autorizzazioni per le smart card all'interno del manifest possono connettersi alle smart card a condizione che l'utente conceda l'autorizzazione in modo interattivo per ogni lettore.</translation>
 <translation id="4274691295133617461">Se il criterio viene impostato su 3, i siti web possono richiedere l'accesso di lettura di file e directory nel file system del sistema operativo host tramite l'API file system. Se il criterio viene impostato su 2, l'accesso viene negato.
 
       Se non viene configurato, i siti web possono richiedere l'accesso, ma gli utenti possono modificare l'impostazione.</translation>
@@ -4444,6 +4472,11 @@ Questo criterio è stato utilizzato per disattivare l'upgrade automatico dei con
 <translation id="4278656834593750050">Attiva i suoni di ricarica</translation>
 <translation id="4282243913059705499">Mostra sempre l'icona <ph name="PRODUCT_NAME" /> nella barra degli strumenti</translation>
 <translation id="4285674129118156176">Consenti agli utenti non affiliati di usare ARC</translation>
+<translation id="4287004822156577027">Se la policy viene attivata o se non viene configurata, Chrome Software Cleaner analizza periodicamente il sistema per individuare eventuale software indesiderato e, qualora fosse presente, chiede all'utente se vuole rimuoverlo. L'attivazione manuale di Chrome Software Cleaner da chrome://settings è consentita.
+
+Se la policy viene disattivata, Chrome Software Cleaner non esegue alcuna analisi periodica e l'attivazione manuale è disattivata.
+
+Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="428948795004445932">La velocità di campionamento e raccolta dei dati di rete. Il valore minimo consentito è 1 minuto.
 
       Se il criterio non è impostato, viene applicata la velocità predefinita di 10 minuti.</translation>
@@ -4491,13 +4524,6 @@ Se il criterio viene configurato, gli utenti non possono modificarlo in <ph name
 <translation id="4322842393287974810">Consenti all'app kiosk avviata automaticamente senza ritardo di controllare la versione di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="4323412353642577604">Attiva l'attestazione da remoto per la protezione dei contenuti</translation>
 <translation id="4325690621216251241">Aggiungi un pulsante di disconnessione all'area di notifica</translation>
-<translation id="4326070401554882952">Questo criterio consente di impostare un elenco di URL di accesso aziendale (solo protocolli HTTP e HTTPS). Il servizio di protezione tramite password acquisisce gli hash con salt delle password in questi URL e li utilizza per il rilevamento del riutilizzo delle password. Per consentire a <ph name="PRODUCT_NAME" /> di acquisire correttamente gli hash con salt della password, assicurati che le pagine di accesso seguano queste linee guida (https://www.chromium.org/developers/design-documents/create-amazing-password-forms).
-
-Se l'impostazione viene disattivata o se non viene configurata, il servizio di protezione tramite password acquisisce solo gli hash con salt della password all'indirizzo https://accounts.google.com.
-
-Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="4329095223358818804">Consenti a Risposte rapide di accedere ai contenuti selezionati</translation>
 <translation id="4330908525441222205">Viene usato il comportamento AppCache predefinito</translation>
 <translation id="4331357743227845302">Questo criterio consente agli amministratori di configurare i servizi Bluetooth a cui <ph name="PRODUCT_OS_NAME" /> si può connettere.
@@ -4664,19 +4690,6 @@ Questo criterio viene sempre applicato per <ph name="PRODUCT_OS_NAME" />.</trans
       Se il criterio viene attivato, i dispositivi registrati segnalano periodicamente la loro posizione.
 
       Se viene disattivato o se non viene configurato, i dispositivi registrati non segnalano la loro posizione.</translation>
-<translation id="445993724309045747">Questo criterio consente di configurare l'URL predefinito della pagina Nuova scheda e impedisce agli utenti di modificarlo.
-
-La pagina Nuova scheda si apre con nuove schede e finestre.
-
-Questo criterio non consente di stabilire quali pagine aprire all'avvio. Queste pagine dipendono dai criteri <ph name="RESTORE_ON_STARTUP_POLICY_NAME" />. Questo criterio influisce tuttavia sulla home page e sulla pagina iniziale, se sono impostate per l'apertura della pagina Nuova scheda.
-
-Una best practice consiste nello specificare l'URL canonicalizzato completo; in caso contrario, <ph name="PRODUCT_NAME" /> utilizzerà https:// per impostazione predefinita.
-
-Se il criterio non viene configurato o se viene lasciato vuoto, viene usata la pagina Nuova scheda predefinita.
-
-Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="4461400898496433231">Non sostituire il controllo della connettività IPv6. Esegui una query sul record AAAA per la risoluzione dei nomi host soltanto quando il dispositivo può essere connesso a un host IPv6 globale.</translation>
 <translation id="4463467966408770621">Non consentire le funzionalità di AI generativa di DevTools.</translation>
 <translation id="4463675333222095358">Attiva conversione unità di Risposte rapide</translation>
@@ -4684,6 +4697,7 @@ Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le ist
 <translation id="4467952432486360968">Blocca cookie di terze parti</translation>
 <translation id="4472740647327683596">La larghezza della pagina in micron.</translation>
 <translation id="4474167089968829729">Attiva il salvataggio delle password in Gestione password</translation>
+<translation id="447692108909279121">Gestione dell'IP di WebRTC</translation>
 <translation id="4478248026668918517">Blocca il rilevamento dell'ambito dei criteri.</translation>
 <translation id="4479671363221255277">La configurazione del criterio consente di elencare pattern URL che specificano quali siti possono richiedere agli utenti l'accesso di lettura di file o directory nel file system del sistema operativo host tramite l'API file system.
 
@@ -4848,6 +4862,13 @@ Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cl
 un valore accettato per questo criterio.
 
 Se questo criterio non viene configurato, tutte le origini richiederanno un gesto precedente dell'utente per chiamare questa API.</translation>
+<translation id="4584427961967778141">La configurazione della policy permette di controllare le impostazioni di gestione delle estensioni per <ph name="PRODUCT_NAME" />, incluse quelle controllate da policy relative alle estensioni esistenti. La policy prevale su tutte le policy precedenti che potrebbero essere state impostate.
+
+Questa policy consente di mappare un ID estensione o un URL di aggiornamento soltanto alla relativa impostazione specifica. È possibile impostare una configurazione predefinita per l'ID speciale <ph name="DEFAULT_SCOPE" />, che verrà applicata a tutte le estensioni senza una configurazione personalizzata in questa policy. Con un URL di aggiornamento, la configurazione verrà applicata alle estensioni con l'esatto URL di aggiornamento indicato nel file manifest dell'estensione (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Se il flag "override_update_url" viene impostato su true, l'estensione verrà installata e aggiornata usando l'URL di aggiornamento ("update") specificato nella policy <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o nel campo "update_url" di questa policy. Il flag "override_update_url" viene ignorato se il valore "update_url" è un URL del Chrome Web Store.
+
+Sulle istanze di <ph name="MS_WIN_NAME" /> è possibile forzare l'installazione di app ed estensioni che non fanno parte del Chrome Web Store soltanto se l'istanza è aggiunta a un dominio <ph name="MS_AD_NAME" />, aggiunta a <ph name="MS_AAD_NAME" /> o registrata in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Sulle istanze di <ph name="MAC_OS_NAME" /> è possibile forzare l'installazione di app ed estensioni che non fanno parte del Chrome Web Store soltanto se l'istanza è gestita tramite MDM, aggiunta a un dominio tramite MCX o registrata in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="4591366717022345234">Fornisce agli utenti una build di correzione rapida</translation>
 <translation id="4593391169954484940">L'hash SHA-256 del file.</translation>
 <translation id="4594027034164195984">Consenti la visualizzazione di immagini di terze parti in un prompt di autenticazione</translation>
@@ -4869,6 +4890,13 @@ Se questo criterio non viene configurato, tutte le origini richiederanno un gest
 <translation id="4599810650416623373">Blocca le ottimizzazioni di JavaScript su questi siti</translation>
 <translation id="4600786265870346112">Attivazione del puntatore grande</translation>
 <translation id="4602988345256038309">Consenti le connessioni di assistenza da remoto a questo computer</translation>
+<translation id="4605677392792989397">La configurazione della policy consente di impostare un elenco di URL di accesso aziendale (solo protocolli HTTP e HTTPS). Il servizio di protezione tramite password acquisisce gli hash con salt delle password in questi URL e li utilizza per il rilevamento del riutilizzo delle password. Per consentire a <ph name="PRODUCT_NAME" /> di acquisire correttamente gli hash con salt della password, assicurati che le pagine di accesso seguano queste linee guida (https://www.chromium.org/developers/design-documents/create-amazing-password-forms).
+
+Se l'impostazione viene disattivata o se non viene configurata, il servizio di protezione tramite password acquisisce solo gli hash con salt della password all'indirizzo https://accounts.google.com.
+
+Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="4607416370554533118">La configurazione del criterio consente di creare un elenco di pattern URL che specifica i siti per cui Chrome può selezionare automaticamente un certificato client. Il valore è un array di dizionari JSON sotto forma di stringa, ognuno nel formato <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, dove <ph name="URL_PATTERN_PLACEHOLDER" /> rappresenta un pattern di impostazioni contenuti. <ph name="FILTER_PLACEHOLDER" /> consente di limitare i certificati client che il browser può selezionare automaticamente. Indipendentemente dal filtro, vengono selezionati solo certificati che soddisfano la richiesta di certificato del server.
 
       Esempi di utilizzo della sezione <ph name="FILTER_PLACEHOLDER" />:
@@ -5041,13 +5069,6 @@ Questo criterio non avrà alcun effetto se il criterio <ph name="DEVICE_SCREENSA
 <translation id="4726895359147376813">Mappatura di ID permanenti a configurazioni delle VM</translation>
 <translation id="4732069502693984686">Attiva l'acquisizione automatica di più schermate</translation>
 <translation id="4733471537137819387">Norme relative all'autenticazione HTTP integrata.</translation>
-<translation id="473673197014866318">Questo criterio consente di stabilire le impostazioni di gestione delle estensioni per <ph name="PRODUCT_NAME" />, incluse quelle controllate da criteri relativi alle estensioni esistenti. Il criterio prevale su tutti i criteri precedenti che potrebbero essere stati impostati.
-
-Questo criterio consente di mappare un ID estensione o un URL di aggiornamento soltanto alla relativa impostazione specifica. È possibile impostare una configurazione predefinita per l'ID speciale <ph name="DEFAULT_SCOPE" />, che verrà applicata a tutte le estensioni senza una configurazione personalizzata in questo criterio. Con un URL di aggiornamento, la configurazione verrà applicata alle estensioni con l'esatto URL di aggiornamento indicato nel file manifest dell'estensione (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Se il flag "override_update_url" viene impostato su true, l'estensione verrà installata e aggiornata usando l'URL di aggiornamento ("update") specificato nel criterio <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o nel campo "update_url" di questo criterio. Il flag "override_update_url" viene ignorato se il valore "update_url" è un URL del Chrome Web Store.
-
-Sulle istanze di <ph name="MS_WIN_NAME" /> è possibile forzare l'installazione di app ed estensioni che non fanno parte del Chrome Web Store soltanto se l'istanza è aggiunta a un dominio <ph name="MS_AD_NAME" />, aggiunta a <ph name="MS_AAD_NAME" /> o registrata in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-Sulle istanze di <ph name="MAC_OS_NAME" /> è possibile forzare l'installazione di app ed estensioni che non fanno parte del Chrome Web Store soltanto se l'istanza è gestita tramite MDM, aggiunta a un dominio tramite MCX o registrata in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="4737832614429402441">Utilizza il valore predefinito per l'accordo chiave post-quantistico per TLS</translation>
 <translation id="4739596156184678950">Consenti il salvataggio dei file direttamente su <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="4742973303930120836">Limita la modalità di stampa delle immagini di sfondo</translation>
@@ -5104,15 +5125,6 @@ Se viene disattivato, all'utente non viene mostrata la promozione dell'estension
       Se viene disattivata, gli utenti non possono attivare Phone Hub.
 
       Se il criterio non viene configurato, per impostazione predefinita, la funzionalità non è consentita per gli utenti gestiti a livello aziendale ed è consentita per gli utenti non gestiti.</translation>
-<translation id="4775667151768335538">Se il criterio viene attivato, Navigazione sicura considera attendibili i domini indicati. Non esegue alcun controllo su questi domini per risorse pericolose come phishing, malware o software indesiderato. Il servizio di protezione dei download di Navigazione sicura non esegue alcun controllo sui download ospitati su questi domini. Il servizio di protezione tramite password non esegue alcun controllo per il riutilizzo delle password.
-
-Se il criterio non viene configurato, a tutte le risorse viene applicata la protezione predefinita di Navigazione sicura.
-
-Questo criterio non supporta espressioni regolari, ma i sottodomini di un determinato dominio sono inseriti nella lista consentita. I nomi di dominio completi non sono obbligatori.
-
-Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="4777573685807338095">Questo criterio consente di stabilire se mostrare o meno all'utente la schermata introduttiva per Gemini durante il primo flusso di accesso.
 
       Se impostato su Disattivato, la schermata introduttiva di Gemini non verrà mostrata.
@@ -5225,6 +5237,7 @@ Se non viene configurato, <ph name="PRODUCT_NAME" /> seguirà la procedura di im
       I pattern URL non devono essere in conflitto con <ph name="FILE_SYSTEM_WRITE_BLOCKED_FOR_URLS_POLICY_NAME" />. Nessun criterio ha la precedenza se un URL presenta corrispondenze con entrambi.
 
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
+<translation id="4891286600098289814">Ottimizzazione della ricarica della batteria</translation>
 <translation id="4892647988357350237">Per impostazione predefinita, i Termini di servizio vengono mostrati alla prima esecuzione di CCT. Se questo criterio viene impostato su <ph name="SKIP_TOS_DIALOG" />, la finestra di dialogo dei Termini di servizio non viene visualizzata né alla prima esecuzione né a quelle successive. Se questo criterio viene impostato su <ph name="STANDARD_TOS_DIALOG" /> o se non viene configurato, la finestra di dialogo dei Termini di servizio viene visualizzata alla prima esecuzione. Altre condizioni:
 
       - Questo criterio funziona solo su dispositivi Android completamente gestiti che possono essere configurati da fornitori dell'Unified Endpoint Management.
@@ -5454,6 +5467,17 @@ Questo criterio viene applicato soltanto se la macchina viene registrata con <ph
 <translation id="5033070732967197381">Consenti le richieste API WebAuthn su siti con certificati TLS inaccessibili.</translation>
 <translation id="5034504101537897433">Attiva i report relativi alle informazioni sul report sugli arresti anomali del dispositivo</translation>
 <translation id="5036013147560568855">Versione del protocollo di provisioning del certificato. Il valore predefinito è 1. 1 significa che il protocollo è "statico". 2 significa che il protocollo è "dinamico".</translation>
+<translation id="5036559232677914717">Questa policy consente di specificare il comportamento del sistema all'avvio. Disattivare questa impostazione equivale a non impostarla, perché per <ph name="PRODUCT_NAME" /> è necessario specificare un comportamento da adottare all'avvio.
+
+Se la policy viene configurata, gli utenti non possono modificarla in <ph name="PRODUCT_NAME" />. Se non viene configurata, gli utenti possono modificarla.
+
+Se questa policy viene impostata su <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" /> o <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" />, vengono disattivate alcune impostazioni basate sulle sessioni o che compiono azioni all'uscita, ad esempio la cancellazione dei dati di navigazione alla chiusura o dei cookie della sessione.
+
+Se questa policy viene impostata su <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" />, il browser ripristinerà la sessione precedente e aprirà una finestra separata per mostrare gli URL impostati nella policy <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" />. Tieni presente che gli utenti possono decidere di tenere aperti questi URL, che verranno ripristinati nella sessione futura.
+
+Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="5037749623252479780">Le impostazioni di Pagina su/Pagina giù sono disattivate</translation>
 <translation id="5039110755072335605">Supporto delle intestazioni delle richieste CORS senza caratteri jolly</translation>
 <translation id="504116558738617678">Mostra gli avvisi relativi allo spazio su disco in esaurimento soltanto se il dispositivo non è gestito o se esiste 1 solo utente</translation>
@@ -5770,8 +5794,10 @@ Nota: questa funzionalità non è ancora disponibile per tutti gli utenti, quind
 Se non viene configurato, il valore predefinito è 0 e gli utenti sono liberi di modificarlo. In questo caso, il valore predefinito non viene applicato nuovamente al riavvio.</translation>
 <translation id="5257395339965216304">Dati app ospitate</translation>
 <translation id="5258445772095084618">Consenti agli utenti non affiliati di usare le macchine virtuali necessarie per supportare le app Linux</translation>
+<translation id="5258651513421638932">Consenti la connessione della smart card da parte delle app isolate</translation>
 <translation id="5262320080678421295">Disattiva attendibilità nei certificati emessi dall'Infrastruttura a chiave pubblica precedente di Symantec Corporation</translation>
 <translation id="5265613843467285323">Mostra un'opzione di attivazione/disattivazione dell'interfaccia utente per escludere un display in modalità Specchio.</translation>
+<translation id="5270408671043421978">Disattiva il precaricamento dell'immagine <ph name="ARC_VM" /></translation>
 <translation id="5272332743749468542">Rendi disponibile per l'utente l'opzione Escludi questo display in modalità Specchio</translation>
 <translation id="5273744932022326215">Consente di attivare la funzione di accessibilità di evidenziazione del cursore nella schermata di accesso.
 
@@ -5808,6 +5834,23 @@ Se non viene configurato, il valore predefinito è 0 e gli utenti sono liberi di
 
       Se la norma non viene impostata oppure è impostata sulla stringa vuota o su un intervallo di porte non valido, WebRTC è autorizzato a utilizzare qualsiasi porta UDP locale disponibile.</translation>
 <translation id="5288776487100096897">Consenti ai criteri relativi al cloud degli utenti di eseguire l'override dei criteri <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="5289330879750533981">Questa policy permette di applicare restrizioni agli indirizzi IP e alle interfacce che WebRTC utilizza quando prova a trovare la migliore connessione disponibile ogni pattern URL specifico.
+
+Accetta un elenco di pattern URL e coppie di tipi di gestione. I pattern URL vengono controllati in ordine e la prima corrispondenza configurerà il tipo di gestione utilizzato da WebRTC per il dominio. Quando l'URL del documento corrente non corrisponde a nessuna voce, viene usata la configurazione impostata dalla policy <ph name="WEB_RTC_IP_HANDLING_POLICY_NAME" />.
+
+Per informazioni dettagliate sui pattern di input validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti. Questa policy ha corrispondenze basate soltanto sull'origine, pertanto qualsiasi percorso nel pattern URL viene ignorato.
+
+Valori di gestione validi:
+
+* valore predefinito: WebRTC utilizza tutte le interfacce di rete.
+
+* default_public_and_private_interfaces: WebRTC utilizza tutte le interfacce pubbliche e private.
+
+* default_public_interface_only: WebRTC utilizza tutte le interfacce pubbliche, ma non quelle private.
+
+* disable_non_proxied_udp: WebRTC utilizza il proxy UDP SOCKS o passa al proxy TCP.
+
+Per una descrizione dettagliata di tutti i valori di gestione, consulta la sezione 5.2 del documento RFC 8828 (https://tools.ietf.org/html/rfc8828.html#section-5.2).</translation>
 <translation id="5290940294294002042">Specifica un elenco di plug-in che l'utente può attivare o disattivare</translation>
 <translation id="5293285950307241933">Cancella tutti i dati utente locali</translation>
 <translation id="5293619885162445352">Consenti a <ph name="PEPPER_NAME" /> di usare il nuovo decodificatore video.</translation>
@@ -5860,6 +5903,7 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito Secure Contexts: 
 <translation id="5321624917465764266">Se il criterio viene impostato su Attivato o se non viene configurato, la cronologia di navigazione e quella dei download possono essere eliminate in Chrome e gli utenti non possono modificare questa impostazione.
 
 Se il criterio viene impostato su Disattivato, la cronologia di navigazione e quella dei download non possono essere eliminate. Non è garantita la memorizzazione della cronologia di navigazione e di quella dei download, anche se questo criterio viene disattivato. Gli utenti potrebbero essere in grado di modificare o eliminare direttamente i file dei database delle cronologie e il browser stesso potrebbe far scadere o archiviare una o tutte le voci delle cronologie in qualsiasi momento.</translation>
+<translation id="5322649594584715998">Carica completamente la batteria con la modalità standard. Questa modalità disattiva le ricariche adattiva e limitata.</translation>
 <translation id="5323200200131319468">Attiva la funzione di lettura vocale nella schermata di accesso</translation>
 <translation id="5323271643727095577">Non mostrare la finestra di dialogo di annullamento quando viene chiamato event.preventDefault() per l'evento beforeunload. Mostra la finestra di dialogo di annullamento quando event.returnValue è la stringa vuota dell'evento beforeunload.</translation>
 <translation id="5324430722441910403">Impostazioni ricerca sui siti</translation>
@@ -5935,6 +5979,25 @@ A partire dalla versione 92 di <ph name="PRODUCT_NAME" />, questo criterio è su
 
       Se viene impostata su false, <ph name="PRODUCT_NAME" /> e <ph name="LACROS_NAME" /> non consentono l'aggiunta di una nuova persona da Gestione utenti.</translation>
 <translation id="5377606826822211923">Controlla l'utilizzo delle app Android di fonti non attendibili per l'utente</translation>
+<translation id="5377826248281933035">Questa policy fornisce un elenco di siti che gli utenti possono cercare rapidamente utilizzando le scorciatoie nella barra degli indirizzi. Gli utenti possono avviare una ricerca digitando nella barra degli indirizzi la scorciatoia o @scorciatoia (ad esempio @lavoro) e premendo la barra spaziatrice o il tasto Tab.
+
+I seguenti campi sono obbligatori per ogni sito: <ph name="NAME_SITE_SEARCH_SETTINGS_FIELD" />, <ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD" />, <ph name="URL_SITE_SEARCH_SETTINGS_FIELD" />.
+
+Il campo <ph name="NAME_SITE_SEARCH_SETTINGS_FIELD" /> corrisponde al nome del sito o del motore di ricerca da mostrare all'utente nella barra degli indirizzi.
+
+<ph name="SHORTCUT_SITE_SEARCH_SETTINGS_FIELD" /> può includere parole e caratteri semplici, ma non può includere spazi o iniziare con il simbolo @. Anche le scorciatoie devono essere univoche.
+
+Per ogni voce, il campo <ph name="URL_SITE_SEARCH_SETTINGS_FIELD" /> consente di specificare l'URL del motore di ricerca utilizzato durante una ricerca con la parola chiave corrispondente. L'URL deve includere la stringa <ph name="SEARCH_TERM_MARKER" />, sostituita nella query dai termini di ricerca dell'utente. Le voci non valide e quelle con scorciatoie duplicate vengono ignorate.
+
+Le voci di ricerca sui siti configurate come in primo piano vengono visualizzate nella barra degli indirizzi quando l'utente digita "@". È possibile selezionare fino a tre voci in primo piano.
+
+Gli utenti non possono modificare o disattivare le voci di ricerca sui siti impostate dalla policy, ma possono aggiungere nuove scorciatoie per lo stesso URL. Inoltre, gli utenti non possono creare nuove voci di ricerca sui siti con una scorciatoia creata in precedenza tramite questa policy.
+
+In caso di conflitto con una scorciatoia creata in precedenza dall'utente, l'impostazione dell'utente ha la precedenza. Tuttavia, gli utenti possono comunque attivare l'opzione creata tramite la policy digitando "@" nella barra di ricerca. Ad esempio, se l'utente ha già definito "lavoro" come scorciatoia per URL1 e la policy definisce "lavoro" come scorciatoia per URL2, quando nella barra di ricerca si digita "lavoro" verrà attivata una ricerca su URL1, ma quando si digita "@lavoro" verrà attivata una ricerca su URL2.
+
+Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="537786648513450280">Controlla l'utilizzo delle app Android di fonti non attendibili per il dispositivo</translation>
 <translation id="5378885577701865339">Disattiva la funzionalità Appunti condivisi</translation>
 <translation id="538108065117008131">Consenti a <ph name="PRODUCT_FRAME_NAME" /> di gestire i seguenti tipi di contenuto.</translation>
@@ -6044,6 +6107,11 @@ le scorciatoie basate sul tasto Ricerca saranno quelle predefinite.</translation
       </translation>
 <translation id="5448022937220253000">Scegli cosa fare con i dati utente dopo la disattivazione di <ph name="LACROS_NAME" /></translation>
 <translation id="5449690328792750354">L'API Event.path sarà disponibile.</translation>
+<translation id="5450507908812118425">La configurazione della policy consente di specificare quali app web isolate (IWA) non potranno connettersi ai lettori di smart card (non verrà nemmeno chiesto agli utenti di concedere l'autorizzazione). Questa policy accetta i caratteri jolly. Ad esempio, <ph name="ALL_ISOLATED_WEB_APPS" /> bloccherà l'accesso per tutte le IWA.
+
+Viene eseguito l'override di questa policy da <ph name="POLICY_NAME" />; in particolare, se il valore di una lista bloccata è <ph name="ALL_ISOLATED_WEB_APPS" />, nessuna IWA potrà connettersi ai lettori di smart card (non verrà nemmeno chiesto agli utenti di concedere l'autorizzazione), ad eccezione di quelle elencate in <ph name="POLICY_NAME" />.
+
+Per impostazione predefinita, le IWA che specificano le autorizzazioni per le smart card all'interno del manifest possono connettersi alle smart card a condizione che l'utente conceda l'autorizzazione in modo interattivo per ogni lettore.</translation>
 <translation id="5452024130413254050">Consente di stabilire se le VM che utilizzano questa configurazione hanno accesso a un vTPM; il valore predefinito è false e, se il criterio non viene configurato, viene usato il valore <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" />.</translation>
 <translation id="5454128917282602937">Quando un utente passa da un dispositivo <ph name="PRODUCT_OS_NAME" /> a un altro dello stesso tipo, il servizio <ph name="PRODUCT_NAME" /> V2 avvia le finestre del browser e delle app del dispositivo precedente su quello nuovo.
 Se il criterio viene impostato su Enabled, le finestre del browser e delle app verranno avviate automaticamente al momento dell'accesso dall'ultimo dispositivo <ph name="PRODUCT_OS_NAME" /> utilizzato dall'utente corrente.
@@ -6067,6 +6135,13 @@ Se il criterio viene impostato su Disabled o se non viene configurato, gli eleme
 <translation id="545817252640069915">Attiva l'intercettazione dell'accesso</translation>
 <translation id="5460797984317417682">Attiva avviso schermo intero</translation>
 <translation id="5462898272514237681">Controlla l'accesso di <ph name="PRODUCT_OS_NAME" /> ai Servizi di geolocalizzazione di Google</translation>
+<translation id="5464786290880338716">Un criterio per controllare se la funzionalità di protezione IP di <ph name="PRIVACY_SANDBOX_NAME" /> deve essere attivata o meno.
+
+Se il criterio viene disattivato, la funzionalità di protezione IP verrà disattivata e gli utenti non potranno attivarla tramite le impostazioni della UI.
+Se il criterio viene attivato, la funzionalità di protezione IP verrà attivata e gli utenti non potranno disattivarla tramite le impostazioni della UI.
+Se il criterio non viene configurato, la funzionalità di protezione IP verrà disattivata per gli utenti il cui browser o dispositivo viene gestito e non potranno attivare la funzionalità tramite le impostazioni della UI. Gli utenti su browser e dispositivi non gestiti potranno attivare o disattivare la funzionalità di protezione IP sul proprio dispositivo tramite le impostazioni della UI.
+
+Nota: il comportamento della funzionalità di protezione IP per gli utenti aziendali potrebbe variare nel tempo se il criterio viene attivato o se non viene configurato e la funzionalità viene attivata tramite le impostazioni della UI.</translation>
 <translation id="5464816904705580310">Configurazione delle impostazioni per gli utenti gestiti.</translation>
 <translation id="5466596281866046569">Segnala informazioni sulle applicazioni</translation>
 <translation id="5467175549232776406">La pagina di test dei criteri è accessibile</translation>
@@ -6082,6 +6157,17 @@ Se il criterio viene impostato su Disabled o se non viene configurato, gli eleme
 <translation id="5480380613778757009">Se questo criterio viene disattivato o se non viene configurato, tutte le impostazioni di visualizzazione configurate nella sessione Ospite gestita verranno reimpostate al termine della sessione. Se questo criterio viene impostato su Vero, le proprietà di visualizzazione verranno memorizzate dopo la chiusura della sessione Ospite gestita.</translation>
 <translation id="5483012943408894695">Origini o pattern di nomi host a cui non dovrebbero essere applicate limitazioni previste per le origini non sicure.</translation>
 <translation id="5483065054530244863">Consenti i certificati SHA-1 firmati emessi dai trust anchor locali</translation>
+<translation id="5486352219019836984">Se questa policy viene attivata, si consiglia di attivare per impostazione predefinita la segnalazione anonima a Google dei dati sull'utilizzo e sugli arresti anomali di <ph name="PRODUCT_NAME" />. Gli utenti potranno comunque modificare questa impostazione.
+
+Se questa policy viene disattivata, viene disattivata la segnalazione anonima e non vengono inviati a Google dati sull'utilizzo o sugli arresti anomali. Gli utenti non potranno modificare questa impostazione.
+
+Se questa policy non viene configurata, gli utenti possono scegliere il comportamento di segnalazione anonima al momento dell'installazione o della prima esecuzione e possono modificare questa impostazione in un secondo momento.
+
+Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Per <ph name="PRODUCT_OS_NAME" />, vedi <ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME" />.</translation>
 <translation id="5486917900445838803">Se il criterio viene impostato su Attivato o se non viene configurato, viene abilitata l'accelerazione grafica, se disponibile.
 
       Se il criterio viene impostato su Disattivato, l'accelerazione grafica viene disabilitata.</translation>
@@ -6223,7 +6309,6 @@ Nota: questo criterio non viene applicato alle modalità ospite o di navigazione
       Se questa norma non viene impostata, o viene impostata su false, i certificati server privi di estensione subjectAlternativeName e contenenti un nome DNS o un indirizzo IP non verranno considerati attendibili.</translation>
 <translation id="5576377426850850084">Utilizza l'autenticazione NTLM</translation>
 <translation id="5577475143148445339">Contiene il numero di giorni e la percentuale del parco di dispositivi che dovrebbe essere aggiornata una volta trascorso il periodo indicato.</translation>
-<translation id="5579179012798142131">Se ArcEnabled è impostato su True, ARC viene attivato per l'utente, a meno che la modalità temporanea o l'accesso simultaneo siano attivi durante la sessione utente. Se il criterio è impostato su False o non è configurato, gli utenti aziendali non possono utilizzare ARC.</translation>
 <translation id="5582429816116769246">Consente di controllare se gli utenti possono accedere alle stampanti non aziendali.
 
       Se il criterio viene impostato su Vero o se non viene configurato, gli utenti possono aggiungere, configurare e utilizzare le proprie stampanti native.
@@ -6232,19 +6317,6 @@ Nota: questo criterio non viene applicato alle modalità ospite o di navigazione
 
       Questo criterio è deprecato. Usa il criterio <ph name="USER_PRINTERS_ALLOWED" />.
       </translation>
-<translation id="5583556212159295911">Questo criterio è deprecato in <ph name="PRODUCT_NAME" /> 83. Usa il criterio <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />.
-
-Se il criterio viene attivato, la funzionalità Navigazione sicura di Chrome rimane attiva. Se il criterio viene disattivato, Navigazione sicura rimane disattivata.
-
-Se il criterio viene configurato, gli utenti non possono modificarlo o eseguire l'override dell'impostazione "Attiva protezione contro phishing e malware" in Chrome. Se non viene configurato, l'impostazione "Attiva protezione contro phishing e malware" viene impostata su True, ma l'utente può modificarla.
-
-Scopri di più su Navigazione sicura (https://developers.google.com/safe-browsing).
-
-Se il criterio <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> viene configurato, il valore del criterio <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> viene ignorato.
-
-Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="5583806683960333345">Se questa impostazione viene attivata, gli utenti potranno utilizzare il tethering istantaneo, che consente al loro telefono Google di condividere i dati mobili con il dispositivo.
 
       Se questa impostazione viene disattivata, gli utenti non potranno utilizzare il tethering istantaneo.
@@ -6272,7 +6344,11 @@ Se il criterio non viene configurato o se viene impostato un elenco vuoto, all'u
 
       Se questo criterio non viene configurato, <ph name="PRODUCT_NAME" /> segue la procedura di implementazione predefinita per non consentire gli hash non sicuri. Se il criterio viene attivato, <ph name="PRODUCT_NAME" /> consente l'uso di hash non sicuri da parte di un server durante la negoziazione di un TLS handshake. Se viene disattivato, <ph name="PRODUCT_NAME" /> non consente l'uso di hash non sicuri da parte di un server durante la negoziazione di un TLS handshake.</translation>
 <translation id="5611869109049836323">Forza l'applicazione di vincoli nei trust anchor aggiunti localmente</translation>
-<translation id="5612770822986069057">Consenti agli utenti di attivare o disattivare l'impostazione Protezione IP di <ph name="PRIVACY_SANDBOX_NAME" /> sul proprio dispositivo.</translation>
+<translation id="561480358503796257">L'URL di un'immagine che verrà utilizzata come badge aziendale per un profilo gestito. L'URL deve indirizzare a un'immagine.
+
+Questa policy può essere impostata soltanto come policy per gli utenti.
+
+Si consiglia di utilizzare la favicon (ad esempio https://www.google.com/favicon.ico) o un'icona di dimensioni non inferiori a 48 x 48 px.</translation>
 <translation id="5614865701790130558">Registra eventi per le installazioni di estensioni basate sul criterio</translation>
 <translation id="561493980641967737">Se il criterio viene attivato, la raccolta di dati anonimizzati con chiave URL, che invia a Google gli URL delle pagine visitate dagli utenti per migliorare le ricerche e la navigazione, è sempre attiva.
 
@@ -6447,6 +6523,11 @@ Il criterio riguarda i flussi di autenticazione di accesso e della schermata di 
 <translation id="5708969689202733975">Configura le modalità di sblocco rapido consentite</translation>
 <translation id="5714563837055244378">Attiva la condivisione da Android alle app web.</translation>
 <translation id="5715739768416614900">Attiva gli strumenti per la risoluzione dei problemi relativi a Kiosk.</translation>
+<translation id="5716156630400143265">Se la policy <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> viene impostata su RestoreOnStartupIsURLs e per la policy <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> viene impostato un elenco di URL, è possibile specificare quali URL aprire.
+
+Se non viene configurata, all'avvio viene aperta la pagina Nuova scheda.
+
+Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="5717973246079053225">Disattiva reporting su cloud tramite profilo gestito</translation>
 <translation id="572155275267014074">Impostazioni di Android</translation>
 <translation id="5722577409367087850">Carica l'estensione</translation>
@@ -6677,6 +6758,15 @@ Se il criterio viene disattivato, l'audio verrà disattivato in modalità Niente
 <translation id="5899751601113377553">Impedisci agli utenti di usare <ph name="LACROS_NAME" /></translation>
 <translation id="5900919753933009463">Segnala la configurazione di rete</translation>
 <translation id="5901427587865226597">Solo stampa fronte/retro</translation>
+<translation id="5903484826174648217">Se la policy viene attivata, Navigazione sicura considera attendibili i domini indicati. Non esegue alcun controllo su questi domini per risorse pericolose come phishing, malware o software indesiderato. Il servizio di protezione dei download di Navigazione sicura non esegue alcun controllo sui download ospitati su questi domini. Il servizio di protezione tramite password di Navigazione sicura non esegue alcun controllo per il riutilizzo delle password.
+
+Se la policy non viene configurata, la protezione predefinita di Navigazione sicura viene applicata a tutte le risorse.
+
+Questa policy non supporta espressioni regolari, ma i sottodomini di un determinato dominio sono consentiti. I nomi di dominio completi non sono obbligatori.
+
+Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="5905114360004248993">Consenti popup su questi siti</translation>
 <translation id="5905473632148429217">Attiva controlli OCSP/CRL online</translation>
 <translation id="5908808391744484238">Se viene attivato o se non viene configurato, il filtro del parametro URL potrebbe rimuovere alcuni parametri quando un utente seleziona "Apri link in finestra di navigazione in incognito" dal menu contestuale.
@@ -6726,6 +6816,7 @@ Se viene impostata su <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VALUE" /> (va
 <translation id="5945312246863177268">Non consente agli utenti di fare clic sulla notifica di Phone Hub per avviare l'applicazione Eche.</translation>
 <translation id="5946082169633555022">Canale Beta</translation>
 <translation id="5946329690214660966">Imposta una pianificazione personalizzata per verificare la presenza di aggiornamenti</translation>
+<translation id="5946401994049024050">Impostazioni di connessione alle smart card</translation>
 <translation id="5950069117106131681">Se il criterio viene impostato su Attivato, vengono attivati intestazioni e piè di pagina nell'anteprima di stampa. Se il criterio viene impostato su Disattivato, questi elementi vengono disattivati nell'anteprima di stampa.
 
       Se il criterio viene configurato, gli utenti non possono modificarlo. In caso contrario, gli utenti possono decidere se visualizzare o meno intestazioni e piè di pagina.</translation>
@@ -6888,11 +6979,25 @@ NOTA: le modifiche apportate a questo criterio verranno applicate soltanto ai pr
 <translation id="6092073071805297119">Consenti l'uso del filtro delle prestazioni di accessibilità.</translation>
 <translation id="60925735895026302">Non consentire a nessun sito di richiedere l'autorizzazione di accesso alle stampanti locali tramite l'API WebPrinting</translation>
 <translation id="6093156968240188330">Consente agli utenti remoti di interagire con finestre con privilegi più elevati nelle sessioni di assistenza remota</translation>
+<translation id="6093551397728373988">Imponi l'abilitazione di tutti i metodi di immissione consentiti in una sessione utente</translation>
 <translation id="6094314311474620462">Viene disattivata la stampa</translation>
 <translation id="6097601282776163274">Attiva la raccolta di dati anonimizzati con chiave URL</translation>
 <translation id="6099853574908182288">Modalità di stampa a colori predefinita</translation>
 <translation id="6102342563050263313">Attiva scorrimento al testo specificato in frammenti di URL</translation>
 <translation id="6102449843040973938">È consentita l'esecuzione di <ph name="BOREALIS_NAME" /> su un dispositivo</translation>
+<translation id="6103130052818694000">Questa policy è deprecata in <ph name="PRODUCT_NAME" /> 83. Usa <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />.
+
+Se la policy viene attivata, la funzionalità Navigazione sicura di Chrome rimane attiva. Se la policy viene disattivata, Navigazione sicura rimane disattivata.
+
+Se la policy viene configurata, gli utenti non possono modificarla o eseguire l'override dell'impostazione "Attiva protezione contro phishing e malware" in Chrome. Se non viene configurata, l'impostazione "Attiva protezione contro phishing e malware" viene impostata su True, ma l'utente può modificarla.
+
+Scopri di più su Navigazione sicura (https://developers.google.com/safe-browsing).
+
+Se la policy <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> viene configurata, il valore della policy <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> viene ignorato.
+
+Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="610892566190435199">Attiva i report sullo stato di alimentazione del dispositivo</translation>
 <translation id="6111936128861357925">Attiva il gioco del dinosauro</translation>
 <translation id="6118226055960302400">Ripristina il comportamento permissivo.</translation>
@@ -6901,6 +7006,7 @@ NOTA: le modifiche apportate a questo criterio verranno applicate soltanto ai pr
       Se questo criterio non viene configurato, <ph name="PRODUCT_NAME" /> utilizza la versione massima predefinita.
 
       In caso contrario, il criterio potrebbe essere impostato su uno dei seguenti valori: "tls1.2" o "tls1.3". Se viene impostato, <ph name="PRODUCT_NAME" /> non utilizzerà versioni di SSL/TLS successive alla versione specificata. Un valore non riconosciuto verrà ignorato.</translation>
+<translation id="6120909112796019291">Consenti l'editing di foto con AI generativa e migliora i modelli di AI.</translation>
 <translation id="6123052603197028610">Non consentire query ai server Google per recuperare i timestamp</translation>
 <translation id="6130360423841559818">Gestisci il nuovo comportamento della finestra di dialogo di annullamento generata dall'evento beforeunload</translation>
 <translation id="6131803221304830537">Disattiva l'integrità del codice del renderer</translation>
@@ -7086,6 +7192,11 @@ Dalla versione 114 in poi, questo criterio è facoltativo se viene configurato i
       Se viene disattivato, gli utenti non possono eseguire Chrome for Testing. Gli utenti potranno comunque installare Chrome for Testing, ma non verrà eseguito con i profili per cui questo criterio è disattivato.</translation>
 <translation id="6258658183356534534">Controlla la funzionalità di aggiornamento User-Agent Client Hints GREASE.</translation>
 <translation id="6261643884958898336">Segnala informazioni di identificazione dei computer</translation>
+<translation id="6262668203803408414">Se la policy viene impostata su true, tutti i metodi di immissione della policy <ph name="ALLOWED_INPUT_METHODS_POLICY_NAME" /> vengono abilitati nelle sessioni <ph name="PRODUCT_OS_NAME" />.
+Non è possibile abilitare altri metodi di immissione nelle sessioni utente.
+Se la policy viene impostata su false o se non viene configurata, non vengono imposti i metodi di immissione abilitati e la policy <ph name="ALLOWED_INPUT_METHODS_POLICY_NAME" /> configura solo i metodi di immissione disponibili per l'utente.
+
+Se la policy <ph name="ALLOWED_INPUT_METHODS_POLICY_NAME" /> non viene configurata o se viene impostata su un elenco vuoto, questa policy viene ignorata e gli utenti possono abilitare qualsiasi metodo di immissione.</translation>
 <translation id="6264247808139384018">Se il criterio viene impostato su Attivato o se non viene configurato, gli utenti che hanno effettuato l'autenticazione con una password possono bloccare lo schermo.
 
 Se viene impostato su Disattivato, gli utenti non possono bloccare lo schermo e possono soltanto uscire dalla sessione utente.</translation>
@@ -7146,6 +7257,13 @@ Questo criterio è stato rimosso nella versione 126 di <ph name="PRODUCT_NAME" /
 <translation id="627672037430076089">Impedisci le connessioni di assistenza da remoto a questo computer</translation>
 <translation id="6277314550042130537">Utilizza l'approvazione del criterio KDC durante l'autenticazione HTTP</translation>
 <translation id="6278428485366576908">Tema</translation>
+<translation id="6279010879606347019">Se la policy viene attivata, la pagina Nuova scheda viene impostata come home page dell'utente e l'eventuale URL della home page specificato viene ignorato. Se viene disattivata, la home page dell'utente non sarà mai la pagina Nuova scheda, a meno che chrome://newtab venga impostato come URL della home page dell'utente.
+
+Se la policy viene impostata, gli utenti non possono cambiare il tipo di home page in <ph name="PRODUCT_NAME" />. Se non viene configurata, l'utente può decidere se impostare o meno la pagina Nuova scheda come home page.
+
+Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="628084107912717806">Consente di specificare se i moduli WebAssembly possono essere inviati tra origini</translation>
 <translation id="6280973140313576289">Selettore profilo forzato all'avvio</translation>
 <translation id="6282524907402492171">Mostra avvisi ritiro di <ph name="CLOUD_PRINT_NAME" /></translation>
@@ -7308,6 +7426,7 @@ verrà usata soltanto la risoluzione della posizione basata sull'<ph name="IP" /
       Se il criterio viene impostato su False, i contenuti pubblicati con la tecnologia Signed HTTP Exchange non vengono caricati.</translation>
 <translation id="6368011194414932347">Configura l'URL della pagina iniziale</translation>
 <translation id="6368403635025849609">Consenti JavaScript su questi siti</translation>
+<translation id="6368671810229507360">WebRTC</translation>
 <translation id="6371005337713685988">Impostazioni di insiemi di siti web correlati</translation>
 <translation id="6371561334154580937">Mostra finestra di dialogo di disconnessione nell'ultima finestra chiusa.</translation>
 <translation id="6372105930898423193">Consente di riattivare la funzionalità AppCache anche se è disattivata per impostazione predefinita.</translation>
@@ -7347,10 +7466,6 @@ Se il criterio non viene configurato, significa che <ph name="PRODUCT_OS_NAME" /
 <translation id="6383774771168138899">Configura il flusso <ph name="CLOUD_UPLOAD_NAME" /> per <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e <ph name="MICROSOFT_365_NAME" /></translation>
 <translation id="6384542789059421431">Attiva la visualizzazione delle pagine di risultati del motore di ricerca predefinito in un riquadro laterale del browser.</translation>
 <translation id="6394350458541421998">La norma non è più supportata a partire dalla versione 29 di <ph name="PRODUCT_OS_NAME" />. Utilizza la norma PresentationScreenDimDelayScale.</translation>
-<translation id="6396956366662970339">Consente di specificare se un modello di ricarica adattiva può sospendere la procedura di ricarica per prolungare la durata della batteria.
-
-      Quando per il dispositivo viene usata l'alimentazione CA, il modello di ricarica adattiva valuta se sospendere o meno la procedura di ricarica per prolungare la durata della batteria. Se il modello di ricarica adattiva sospende la procedura di ricarica, mantiene la batteria a un determinato livello (ossia 80%), dopodiché ricarica il dispositivo fino al 100% quando l'utente ne ha bisogno.
-      Se questo criterio viene impostato su True, il modello di ricarica adattiva viene attivato e può sospendere la procedura di ricarica per prolungare la durata della batteria. Se questo criterio viene impostato su False o se non viene configurato, il modello di ricarica adattiva non influisce sulla procedura di ricarica.</translation>
 <translation id="6397588391180665797">Consente di segnalare eventi di configurazione di rete degli utenti su dispositivi registrati.
 
       Se il criterio viene impostato su Falso, le informazioni non vengono segnalate.
@@ -7434,13 +7549,6 @@ Se il criterio non viene configurato, gli utenti potranno attivare o disattivare
 <translation id="6453641799812499182">Attiva le mitigazioni dei controlli <ph name="CORS" /> nella nuova implementazione <ph name="CORS" /></translation>
 <translation id="645425387487868471">Attiva l'accesso forzato per <ph name="PRODUCT_NAME" /></translation>
 <translation id="6454450724849956537">Attiva le barre di scorrimento attivabili da tastiera</translation>
-<translation id="645467061280066516">Se il criterio viene attivato, la pagina Nuova scheda viene impostata come pagina iniziale dell'utente e l'eventuale URL della pagina iniziale specificato viene ignorato. Se viene disattivato, la pagina iniziale dell'utente non sarà mai la pagina Nuova scheda, a meno che chrome://newtab non venga impostato come URL della pagina iniziale dell'utente.
-
-Se il criterio viene configurato, gli utenti non possono cambiare il tipo di pagina iniziale in <ph name="PRODUCT_NAME" />. Se non viene configurato, l'utente può decidere se impostare o meno la pagina Nuova scheda come pagina iniziale.
-
-Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="6455842857207956758">Consente di attivare la sincronizzazione delle password SAML tra più dispositivi Chrome monitorando il valore del token di sincronizzazione delle password e facendo svolgere all'utente la procedura di riautenticazione online se la password è stata aggiornata e deve essere sincronizzata.
 
       Consente di attivare all'indirizzo chrome://password-change una pagina che permette agli utenti SAML di cambiare le loro password SAML all'interno della sessione, il che assicura che le password SAML e quelle per la schermata di blocco del dispositivo rimangano sincronizzate.
@@ -7952,6 +8060,13 @@ Fino a Chrome 114, questo criterio richiedeva l'impostazione del criterio <ph na
 <translation id="6766216162565713893">Consenti ai siti di chiedere all'utente di concedere l'accesso a un dispositivo Bluetooth nelle vicinanze.</translation>
 <translation id="6770454900105963262">Segnala informazioni sulle sessioni kiosk attive</translation>
 <translation id="6774132787348495175">Non consentire agli utenti di usare le macchine virtuali necessarie per supportare le app Linux</translation>
+<translation id="678121785914414680">Elenco dei tipi di file che dovrebbero essere aperti automaticamente al termine del download. Il separatore iniziale non deve essere incluso nell'elenco dei tipi di file, quindi usa "txt" anziché ".txt".
+
+I tipi di file che dovrebbero essere aperti automaticamente saranno comunque soggetti ai controlli attivi di Navigazione sicura e non verranno aperti se non superano questi controlli.
+
+Se questa policy non viene configurata, al termine del download verranno aperti automaticamente soltanto i tipi di file per cui l'utente ha già specificato questo tipo di apertura.
+
+Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="6782331708811245959">Attiva report sulla modalità di avvio dispositivo</translation>
 <translation id="6783578496154221347">Utilizza WeeklyTimeIntervalChecked nel nuovo codice.</translation>
 <translation id="6785201942412171878">Controlla la scorciatoia usata per attivare i tasti Pagina su/Pagina giù del "pacchetto da sei"</translation>
@@ -7977,6 +8092,21 @@ Fino a Chrome 114, questo criterio richiedeva l'impostazione del criterio <ph na
       Se viene impostato su Disattivato, l'icona delle funzionalità sperimentali del browser viene rimossa dalla barra degli strumenti.
 
       chrome://flags e qualsiasi altro metodo per attivare e disattivare le funzionalità del browser continueranno a comportarsi come previsto a prescindere dall'attivazione o meno di questo criterio.</translation>
+<translation id="67952585272033079">L'integrità della batteria può essere influenzata da fattori quali ricariche complete frequenti e ricariche prolungate. Questa policy offre tre opzioni per ottimizzare il comportamento di ricarica e attenuare questi fattori, prolungando così la durata della batteria.
+
+Se la policy viene impostata su Standard, la batteria viene caricata normalmente fino al 100%. Questa operazione disattiva le ricariche adattiva e limitata.
+
+Se la policy viene impostata su Adaptive, il dispositivo apprende le tue abitudini di ricarica e ritarda la ricarica al 100% fino a quando non è necessario. Questo aiuta a prolungare l'integrità della batteria.
+
+Se la policy viene impostata su Limited, la batteria si ricarica solo fino a circa l'80% per massimizzare la durata.
+
+Se la policy non viene configurata, viene applicata l'opzione Standard (se supportata).
+
+La policy DevicePowerBatteryChargingOptimization sostituisce la policy DevicePowerAdaptiveChargingEnabled.
+
+Se DevicePowerBatteryChargingOptimization non viene impostata, DevicePowerAdaptiveChargingEnabled controlla la ricarica adattiva.
+
+Le policy DevicePowerBatteryChargingOptimization e DevicePowerAdaptiveChargingEnabled hanno sempre la precedenza sulle impostazioni utente.</translation>
 <translation id="6795485990775913659">Consenti la stampa solo senza PIN</translation>
 <translation id="6796215185873669533">Usa per impostazione predefinita le impostazioni del browser per la versione della stringa user agent.</translation>
 <translation id="6800181452282128474">Non inviare query a Quirks Server</translation>
@@ -8004,11 +8134,6 @@ Se il criterio viene impostato su Disabled, il browser utilizzerà la vecchia im
 Se devi usare il criterio, invia una segnalazione di bug su crbug.com spiegando il tuo caso d'uso e aggiungendo in copia per conoscenza {blundell, vasilyt}@chromium.org. Il criterio sarà valido fino alla versione 114 di <ph name="PRODUCT_NAME" />, dopodiché la vecchia implementazione verrà rimossa.
 
 NOTA: le modifiche apportate a questo criterio verranno applicate soltanto ai processi del renderer appena avviati mentre il browser è in esecuzione.</translation>
-<translation id="6831322012298364374">L'URL di un'immagine che verrà utilizzata come badge aziendale per un profilo gestito. L'URL deve indirizzare a un'immagine.
-
-Questa policy può essere impostata soltanto come policy per gli utenti.
-
-Si consiglia di utilizzare la favicon (ad esempio https://www.google.com/favicon.ico) o un'icona di dimensioni non inferiori a 24 x 24 px.</translation>
 <translation id="6833023569065717572">Se il criterio viene impostato su Vero, nella schermata di accesso del dispositivo viene usato il formato dell'orologio di 24 ore.
 
       Se il criterio viene impostato su Falso, nella schermata di accesso del dispositivo viene usato il formato dell'orologio di 12 ore.
@@ -8212,13 +8337,6 @@ Se impostato su "read-only" o se non viene impostato, i file locali rimangono in
 <translation id="6972540544240464302">Seleziona configurazione programma di pianificazione attività</translation>
 <translation id="6975533677426693807">Apri sempre i file PDF utilizzando un visualizzatore PDF interno</translation>
 <translation id="6986172482189158664">Impostazioni del periodo di validità dei dati di navigazione</translation>
-<translation id="6986838929449128437">Questo criterio è deprecato. Usa il criterio <ph name="SAFE_BROWSING_ALLOWLIST_DOMAINS_POLICY_NAME" />.
-
-      Se il criterio viene impostato su Attivato, Navigazione sicura considera attendibili i domini indicati. Non esegue alcun controllo su questi domini per risorse pericolose come phishing, malware o software indesiderato. Il servizio di protezione dei download di Navigazione sicura non esegue alcun controllo sui download ospitati su questi domini. Il servizio di protezione tramite password di Navigazione sicura non esegue alcun controllo per il riutilizzo delle password.
-
-      Se il criterio viene impostato su Disattivato o se non viene configurato, la protezione predefinita di Navigazione sicura viene applicata a tutte le risorse.
-
-       Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="6988791975283483023">Disattiva Wi-Fi</translation>
 <translation id="6990546578776912554">Specifica i domini da escludere dalla risoluzione tramite DNS over HTTPS</translation>
 <translation id="6990736882800900101">Consenti a tutti i popup aperti con una destinazione <ph name="BLANK_PAGE_NAME" /> di interagire con la pagina che ha richiesto l'apertura del popup se la pagina di apertura non disattiva esplicitamente questa interazione </translation>
@@ -8336,13 +8454,6 @@ Se questo criterio viene impostato su <ph name="PROVISION_MANAGED_CLIENT_CERTIFI
 <translation id="7075847434649667522">Utilizza i certificati TLS aggiunti dagli utenti da archivi di attendibilità della piattaforma per autenticare il server</translation>
 <translation id="7077471517869658421">Gli utenti possono modificare liberamente il valore dell'impostazione "Usa l'Avvio app/il tasto Ricerca per modificare il comportamento dei tasti funzione".</translation>
 <translation id="707988220162760379">Apri sempre i file PDF utilizzando un visualizzatore PDF esterno</translation>
-<translation id="7081401546407362463">Elenco dei tipi di file che dovrebbero essere aperti automaticamente al termine del download. Il separatore iniziale non deve essere incluso nell'elenco dei tipi di file, quindi usa "txt" anziché ".txt".
-
-I tipi di file che dovrebbero essere aperti automaticamente saranno comunque soggetti ai controlli attivi di Navigazione sicura e non verranno aperti se non superano questi controlli.
-
-Se questo criterio non viene configurato, al termine del download verranno aperti automaticamente soltanto i tipi di file per cui l'utente ha già specificato questo tipo di apertura.
-
-Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="7081699207881888532">Attiva i suggerimenti di emoji durante la digitazione</translation>
 <translation id="7081784525008938771">Se il criterio viene impostato su Attivato o se non viene configurato, l'utente non viene considerato inattivo durante la riproduzione di video. In questo modo non viene raggiunto il ritardo di inattività, oscuramento dello schermo, spegnimento dello schermo e blocco dello schermo e non vengono compiute le azioni corrispondenti.
 
@@ -8486,17 +8597,6 @@ Se il criterio viene disattivato, le password non vengono mai memorizzate e tutt
       Gli identificatori dei tipi di connessione riconosciuti sono <ph name="CONNECTION_TYPE_ETHERNET_NAME" />, <ph name="CONNECTION_TYPE_WIFI_NAME" /> e <ph name="CONNECTION_TYPE_CELLULAR_NAME" />.</translation>
 <translation id="7150722575502017208">Non richiede la corrispondenza tra utente locale e proprietario dell'host di accesso remoto</translation>
 <translation id="7151366515472588710">Il client non dovrebbe interpretare questi dati e dovrebbe inoltrarli esattamente come sono. DMServer usa policy_version per verificare che la visualizzazione dei criteri di DMServer corrisponda a quella del dispositivo ChromeOS.</translation>
-<translation id="7152605873936173525">Consente di controllare la modalità del resolver di DNS over HTTPS. Tieni presente che questo criterio imposta solo la modalità predefinita per ciascuna query. La modalità può essere ignorata per tipi speciali di query, ad esempio le richieste di risoluzione del nome host del server DNS over HTTPS.
-
-      La modalità <ph name="SECURE_DNS_MODE_OFF" /> disattiverà DNS over HTTPS.
-
-      La modalità <ph name="SECURE_DNS_MODE_AUTOMATIC" /> invierà prima le query DNS over HTTPS se è disponibile un server DNS over HTTPS e potrebbe eseguire il fallback inviando query non sicure in caso di errore.
-
-      La modalità <ph name="SECURE_DNS_MODE_SECURE" /> invierà solo query DNS over HTTPS e non sarà in grado fornire una risoluzione in caso di errore.
-
-      Su <ph name="ANDROID_VERSION" /> e versioni successive, se DNS over TLS è attivo, <ph name="PRODUCT_NAME" /> non invierà richieste DNS non sicure.
-
-      Se questo criterio non viene impostato, il browser potrebbe inviare richieste DNS over HTTPS a un resolver associato al resolver di sistema configurato dall'utente.</translation>
 <translation id="7152640356717355643">Attiva i report sull'interfaccia di rete del dispositivo</translation>
 <translation id="7153786895642570081">Questo criterio consente di controllare l'attivazione della funzionalità EphemeralNetworkPolicies.
 Se questo criterio viene impostato su true, le voci di DeviceOpenNetworkConfiguration RecommendedValuesAreEphemeral e UserCreatedNetworkConfigurationsAreEphemeral verranno rispettate.
@@ -8527,6 +8627,7 @@ certificato con un SPKI (SubjectPublicKeyInfo) corrispondente sarà ritenuto att
 <translation id="7177293255621000064">L'impostazione del criterio su True rende tutti i tipi di supporti di archiviazione esterni (unità flash USB, dischi rigidi esterni, schede di memoria SD e di altro tipo, memorie ottiche) non disponibili nel browser di file. L'impostazione del criterio su False o la mancata impostazione implica che gli utenti possano utilizzare spazi di archiviazione esterni sul loro dispositivo.
 
       Nota: il criterio non interessa Google Drive e la memoria interna. Gli utenti possono comunque accedere ai file salvati nella cartella Download.</translation>
+<translation id="7177645313697913767">Consenti agli utenti di attivare o disattivare l'impostazione Protezione IP di <ph name="PRIVACY_SANDBOX_NAME" /> sul proprio dispositivo se il browser e il dispositivo non sono gestiti.</translation>
 <translation id="7177857088692019405">Sblocco rapido</translation>
 <translation id="7179157174254421614">Se il criterio <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> non disattiva il rilevamento automatico del fuso orario, questo criterio consente di definire il metodo di rilevamento automatico del fuso orario, che non può essere cambiato dagli utenti.
 
@@ -8689,17 +8790,6 @@ Se questo criterio viene disattivato o se non viene configurato, le impostazioni
       Questo criterio si applica solo ai dispositivi ARM che eseguono la migrazione ad ARC VM.</translation>
 <translation id="731208205557053914">Segnala informazioni sui VPD</translation>
 <translation id="7313672174502374994">L'hash SHA-256 dell'immagine di sfondo.</translation>
-<translation id="7313681786668291607">Questo criterio consente di specificare il comportamento del sistema all'avvio. Disattivare questa impostazione equivale a non configurarla, perché per <ph name="PRODUCT_NAME" /> è necessario specificare un comportamento da adottare all'avvio.
-
-Se il criterio viene configurato, gli utenti non possono modificarlo in <ph name="PRODUCT_NAME" />. Se non viene configurato, gli utenti possono modificarlo.
-
-Se questo criterio viene impostato su <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" /> o <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" />, vengono disattivate alcune impostazioni basate sulle sessioni o che compiono azioni all'uscita, ad esempio la cancellazione dei dati di navigazione alla chiusura o dei cookie della sessione.
-
-Se questo criterio viene impostato su <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" />, il browser ripristinerà la sessione precedente e aprirà una finestra separata per mostrare gli URL impostati nel criterio <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" />. Tieni presente che gli utenti possono decidere di tenere aperti questi URL, che verranno ripristinati nella sessione futura.
-
-Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="7317472245305274219">Specifica se la creazione della passkey verrà utilizzata per impostazione predefinita sul portachiavi iCloud.</translation>
 <translation id="7318503436349210241">Attivato: lo zoom CSS è conforme alla specifica standard.</translation>
 <translation id="7322825363493984512">La password per l'autenticazione dei servizi di sistema per il proxy web remoto.</translation>
@@ -8790,15 +8880,9 @@ Se questo criterio viene impostato su False, viene attivato il comportamento pre
       Se il criterio viene impostato su Disattivato o se non viene configurato, i dispositivi registrati non registrano o non segnalano lo stato di sicurezza TPM.
       Eccezione: le informazioni relative a TPM vengono controllate tramite il criterio <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> per M95 e versioni precedenti.</translation>
 <translation id="739556497251174388">Consenti il riutilizzo delle credenziali di accesso di <ph name="PRODUCT_OS_NAME" /> per l'autenticazione della rete</translation>
+<translation id="7395790871181951311">Blocca la connessione della smart card da parte delle app isolate</translation>
 <translation id="7400208209734208176">Apri i link nel browser Chrome per impostazione predefinita</translation>
 <translation id="7402257017733669351">Impedisci al processo del browser di creare codice dinamico</translation>
-<translation id="7402772023599097052">Se il criterio viene attivato o se non viene configurato, vengono mostrati avvisi di sicurezza quando flag della riga di comando potenzialmente pericolosi vengono utilizzati per avviare Chrome.
-
-Se il criterio viene disattivato, viene impedita la visualizzazione degli avvisi di sicurezza quando Chrome viene avviato con flag della riga di comando potenzialmente pericolosi.
-
-Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="7406039009275722824">Se disattivi <ph name="CHROME_SYNC_NAME" />, il servizio di backup e ripristino di Android non funzionerà correttamente.</translation>
 <translation id="7406276857470642718">Consente di gestire le impostazioni degli utenti autenticati tramite SAML con un IdP esterno</translation>
 <translation id="7407441173422042771">Questo criterio consente di controllare la previsione di rete in <ph name="PRODUCT_NAME" />, il precaricamento DNS, le preconnessioni TCP e SSL e il prerendering delle pagine web.
@@ -9113,23 +9197,6 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
           Il valore del criterio deve essere specificato in millisecondi. I valori devono essere inferiori o uguali al ritardo di disattivazione dello schermo (se impostato) e al ritardo di inattività.</translation>
 <translation id="7680437377926096177">Impedisci la visualizzazione della finestra di dialogo di disconnessione nell'ultima finestra chiusa.</translation>
 <translation id="7683777542468165012">Aggiornamento dinamico delle norme</translation>
-<translation id="7685309118897567488">Questa policy consente agli amministratori di impostare un aggregatore di ricerca aziendale designato che fornirà consigli e risultati di ricerca nella barra degli indirizzi quando viene attivato da una parola chiave specifica. Gli utenti possono avviare una ricerca digitando nella barra degli indirizzi la parola chiave specificata nel campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> con o senza il prefisso @ (ad es. <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />) e premendo la barra spaziatrice o il tasto Tab.
-
-I seguenti campi sono obbligatori: <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
-
-Il campo <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> corrisponde al nome del motore di ricerca mostrato all'utente nella barra degli indirizzi.
-
-Il campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> corrisponde alla parola chiave inserita dall'utente per attivare la ricerca. La scorciatoia può includere parole e caratteri semplici, ma non può includere spazi o iniziare con il simbolo @. Le scorciatoie devono essere univoche.
-
-Il campo <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> specifica l'URL in cui cercare. Inserisci l'indirizzo web della pagina dei risultati del motore di ricerca e usa <ph name="SEARCH_TERM_MARKER" /> al posto della query.
-
-Il campo <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> specifica l'URL che fornisce suggerimenti di ricerca. Se <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> contiene <ph name="SEARCH_TERM_MARKER" />, Chrome otterrà i suggerimenti di ricerca tramite una richiesta GET all'URL sostituendo <ph name="SEARCH_TERM_MARKER" /> con la query di ricerca dell'utente. In caso contrario, verrà eseguita una richiesta POST e la query dell'utente verrà inserita nei parametri POST sotto la chiave <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY" />.
-
-Il campo <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> specifica l'URL di un'immagine che verrà utilizzata nei suggerimenti di ricerca. Se questo campo non viene impostato, verrà utilizzata un'icona predefinita. È consigliabile utilizzare un favicon (ad esempio <ph name="ICON_URL_EXAMPLE" />).
-
-Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="7687943045976362719">Se questa norma viene impostata, i tipi di contenuto specificati vengono gestiti da <ph name="PRODUCT_FRAME_NAME" />.
 
           Se la norma non viene impostata, verrà utilizzato per tutti i siti il renderer predefinito. (È possibile utilizzare la norma <ph name="CHROME_FRAME_RENDERER_SETTINGS_POLICY_NAME" /> per configurare il renderer predefinito).</translation>
@@ -9207,6 +9274,7 @@ Se questo criterio non viene impostato, il renderer del PDF viene scelto dal bro
 
       Questo criterio era stato pensato per essere temporaneo ed è stato rimosso dopo l'avvio completo della nuova interfaccia utente del fumetto dei download.</translation>
 <translation id="7736521021425189418">Terminale (supportata dalla versione 117)</translation>
+<translation id="7736846524371077454">Imponi l'abilitazione di tutti i metodi di immissione consentiti</translation>
 <translation id="7740644123648617252">Abilita l'importazione dei dati di compilazione automatica dei moduli alla prima esecuzione</translation>
 <translation id="7744253761377202223">La percentuale di luminosità dello schermo quando viene usata l'alimentazione CA.</translation>
 <translation id="7747447585227954402">Consenti ai dispositivi di usare <ph name="PLUGIN_VM_NAME" /> su <ph name="PRODUCT_OS_NAME" /></translation>
@@ -9267,23 +9335,7 @@ Se questo criterio non viene impostato, il renderer del PDF viene scelto dal bro
           Se questo criterio non viene impostato, le scorciatoie delle funzioni di accessibilità saranno attive per impostazione predefinita nella schermata di accesso.</translation>
 <translation id="7777535871204167559">Considera i dispositivi di archiviazione esterni come di sola lettura</translation>
 <translation id="7781452670568828399">Modifica la configurazione di <ph name="PRODUCT_OS_NAME" /> consigliata.</translation>
-<translation id="7782770795171480507">La configurazione del criterio consente di specificare un elenco di app web isolate (IWA) che vengono installate automaticamente.
-      Le IWA sono applicazioni che presentano proprietà di sicurezza utili non disponibili per le normali pagine web, che vengono pacchettizzati in un bundle web firmato. La chiave pubblica del bundle web firmato viene utilizzata per creare l'ID pacchetto web che identifica l'IWA.
-      Finora questo criterio funziona solo per la sessione Ospite gestita.
-
-      Ogni elemento nell'elenco del criterio è un oggetto con due campi obbligatori: il manifest di aggiornamento <ph name="URL_LABEL" /> e l'ID pacchetto web dell'app web isolata.
-
-      Ogni elemento può anche avere campi facoltativi: un nome del canale di rilascio/aggiornamento dell'IWA (update_channel) e una versione specifica da bloccare (pinned_version).
-      Se il criterio "update_channel" non viene configurato, verrà utilizzato il valore "default". Quando viene specificato pinned_version, il sistema tenta di installare quella versione specifica (se disponibile sul canale di aggiornamento corrente).
-      Per impostazione predefinita, il blocco della versione non consente di tornare alle versioni precedenti. Se blocchi un'IWA a una versione specifica, non può essere aggiornato oltre quella versione. Per sbloccare la versione, rimuovi questo campo.</translation>
 <translation id="7784062550705119230">Se per il criterio <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> viene selezionata l'opzione <ph name="PRINTERS_ALLOWLIST" />, la configurazione del criterio <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> consente di specificare le stampanti che possono essere utilizzate dagli utenti. Soltanto le stampanti con ID corrispondenti ai valori specificati in questo criterio saranno a disposizione degli utenti. Gli ID devono corrispondere ai campi <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del file specificato nel criterio <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
-<translation id="7785199109546027763">Un criterio per controllare se la funzionalità di protezione IP di <ph name="PRIVACY_SANDBOX_NAME" /> deve essere attivata o meno.
-
-Se il criterio viene disattivato, la funzionalità di protezione IP verrà disattivata e gli utenti non potranno attivarla tramite le impostazioni della UI.
-Se il criterio viene attivato, la funzionalità di protezione IP verrà attivata e gli utenti non potranno disattivarla tramite le impostazioni della UI.
-Se il criterio non viene configurato, gli utenti potranno attivare o disattivare la funzionalità di protezione IP sul proprio dispositivo tramite le impostazioni della UI.
-
-Nota: il comportamento della funzionalità di protezione IP per gli utenti aziendali potrebbe variare nel tempo se il criterio viene attivato o se non viene configurato e la funzionalità viene attivata tramite le impostazioni della UI.</translation>
 <translation id="7788511847830146438">Per profilo</translation>
 <translation id="7790221177424764797">Questo criterio consente di stabilire se caricare o meno le regole del criterio SiteList di <ph name="IE_PRODUCT_NAME" />.
 
@@ -9597,11 +9649,6 @@ In questo tipo di scenari non è garantita la corretta migrazione dei dati.
 <translation id="8030228699677851043">Allinea il comportamento dell'URL blob di SharedWorker alle specifiche</translation>
 <translation id="8031651557770840616">Non consentire Sfondo AI generativa</translation>
 <translation id="8035570672225663428">Consenti al modello di ricarica adattiva di sospendere la procedura di ricarica per prolungare la durata della batteria</translation>
-<translation id="8036284429246268475">Se il criterio viene attivato, gli utenti possono impostare <ph name="PRODUCT_NAME" /> in modo che controlli se nomi utente e password inseriti sono stati resi noti nell'ambito di una fuga di dati.
-
-      Se il criterio viene configurato, gli utenti non possono modificarlo in <ph name="PRODUCT_NAME" />. Se non viene configurato, è consentito il controllo di fughe di credenziali, ma l'utente può disattivarlo.
-
-      Questo comportamento non viene attivato se la Navigazione sicura viene disattivata (tramite il criterio o dall'utente). Per forzare l'attivazione della Navigazione sicura, utilizza il criterio <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> o <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" />.</translation>
 <translation id="8038007682032315784">Disattiva <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> in tutte le pagine web</translation>
 <translation id="8044493735196713914">Indicazione modalità di avvio dispositivo</translation>
 <translation id="80453040817068401">Rendi disponibile il browser <ph name="LACROS_NAME" /></translation>
@@ -9613,7 +9660,6 @@ In questo tipo di scenari non è garantita la corretta migrazione dei dati.
 <translation id="8056800559672904373">Un account gestito deve essere un account principale e non deve avere account secondari. L'importazione dei dati di navigazione esistenti è consentita al momento della creazione del profilo</translation>
 <translation id="8059164285174960932">URL su cui i client di accesso remoto dovrebbero ottenere il token di autenticazione</translation>
 <translation id="8059352177830050556">Attiva i report sulle informazioni relative alla retroilluminazione del dispositivo</translation>
-<translation id="8062375903420954294">Questo criterio permette di applicare restrizioni agli indirizzi IP e alle interfacce che WebRTC utilizza quando prova a trovare la migliore connessione disponibile. Consulta la sezione 5.2 del documento RFC 8828 (https://tools.ietf.org/html/rfc8828.html#section-5.2). Se il criterio non viene configurato, per impostazione predefinita vengono usate tutte le interfacce disponibili.</translation>
 <translation id="8062485064082966327">Usa un servizio Google anonimo per fornire descrizioni automatiche alle immagini senza etichetta</translation>
 <translation id="8066428282805800713">Invia dati hardware aggiuntivi su ChromeOS Flex</translation>
 <translation id="8066532561081127944">Per motivi di sicurezza,
@@ -9656,6 +9702,13 @@ Avviso: è consigliabile mantenere attivati gli aggiornamenti automatici per con
 <translation id="8089200718228084417">Attiva stampa Privet deprecata</translation>
 <translation id="8091982561085048989">Un flag booleano che indica se deve essere usato o meno IPP Everywhere per configurare la stampante. Questo flag è supportato su <ph name="PRODUCT_OS_NAME" /> 76 e versioni successive.</translation>
 <translation id="8094095107731619070">Attiva la correzione automatica sulla tastiera fisica durante la digitazione da parte degli utenti</translation>
+<translation id="8098760437853291958">Se la policy viene attivata o se non viene configurata, i file scaricati vengono inviati per essere analizzati da Navigazione sicura, anche se provengono da una fonte attendibile.
+
+Se la policy viene disattivata, i file scaricati non vengono inviati per essere analizzati da Navigazione sicura se provengono da una fonte attendibile.
+
+Queste limitazioni vengono applicate ai download attivati dai contenuti delle pagine web, nonché all'opzione del menu Link di download. Queste limitazioni non vengono applicate al salvataggio o al download della pagina attualmente visualizzata né alle opzioni di stampa relative al salvataggio come file PDF.
+
+Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="8099833343914898016">Un elenco predeterminato di scorciatoie con il tasto Avvio app non eseguirà mai un'azione mentre la modalità solo a schermo intero è attiva.</translation>
 <translation id="8099880303030573137">Ritardo inattività in caso di utilizzo della batteria</translation>
 <translation id="8101381354936029836">Gruppo atomico di criteri:</translation>
@@ -9789,6 +9842,43 @@ Se questo criterio non viene impostato, verrà applicato il comportamento predef
       Ulteriori informazioni su Navigazione sicura (https://developers.google.com/safe-browsing).</translation>
 <translation id="8199823751103472868">Se il criterio viene impostato, viene attivato il layout Hindi Inscript su <ph name="PRODUCT_OS_NAME" />. Se viene impostato su False o se non viene configurato, il layout non è disponibile.</translation>
 <translation id="8202834945144737726">Attiva il flusso di attestazione <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> per un elenco di URL nella schermata di accesso</translation>
+<translation id="8210117014924235250">Questa policy fornisce un modo per eseguire l'override dell'elenco di insiemi che il browser utilizza per le funzionalità degli insiemi di siti web correlati.
+
+Questa policy esegue l'override della policy <ph name="FIRST_PARTY_SETS_OVERRIDES_POLICY_NAME" />.
+
+Ogni insieme nell'elenco di insiemi di siti web correlati del browser deve soddisfare i requisiti di un insieme di siti web correlati.
+Un insieme di siti web correlati deve contenere un sito principale e uno o più siti membri.
+Un insieme può anche contenere un elenco di siti di servizi di sua proprietà, nonché una mappa di un sito a tutte le sue varianti ccTLD.
+Visita la pagina https://github.com/WICG/first-party-sets per maggiori informazioni su come <ph name="PRODUCT_NAME" /> utilizza gli insiemi di siti web correlati.
+
+
+Tutti i siti di un insieme di siti web correlati devono avere un dominio registrabile pubblicato tramite HTTPS. Inoltre, ogni sito di un insieme di siti web correlati deve essere univoco,
+ovvero non può essere elencato più di una volta in un insieme di siti web correlati.
+
+Quando a questa policy viene dato un dizionario vuoto, il browser utilizza l'elenco pubblico di insiemi di siti web correlati.
+
+Per tutti i siti in un insieme di siti web correlati dell'elenco <ph name="REPLACEMENTS" />, se un sito è presente
+anche in un insieme di siti web correlati nell'elenco del browser, quel sito verrà rimosso dall'insieme di siti web correlati del browser.
+Dopodiché, l'insieme di siti web correlati della policy verrà aggiunto all'elenco di insiemi di siti web correlati del browser.
+
+Per tutti i siti in un insieme di siti web correlati dell'elenco <ph name="ADDITIONS" />, se un sito è presente
+anche in un insieme di siti web correlati nell'elenco del browser, l'insieme di siti web correlati del browser verrà aggiornato in modo che
+il nuovo insieme di siti web correlati possa essere aggiunto all'elenco del browser. Una volta aggiornato l'elenco del browser,
+l'insieme di siti web correlati della policy verrà aggiunto all'elenco di insiemi di siti web correlati del browser.
+
+L'elenco di insiemi di siti web correlati del browser richiede che nessuno dei siti al suo
+interno sia presente in più di un insieme. Questo requisito è valido anche per gli elenchi
+<ph name="REPLACEMENTS" /> e <ph name="ADDITIONS" />. In modo simile, un sito non può essere presente in entrambi gli elenchi
+<ph name="REPLACEMENTS" /> e <ph name="ADDITIONS" />.
+
+I caratteri jolly (*) non sono supportati come valore della policy, né all'interno di alcun insieme di siti web correlati in questi elenchi.
+
+Tutti gli insiemi forniti dalla policy devono essere insiemi di siti web correlati validi. Qualora non lo fossero,
+verrà segnalato un errore appropriato.
+
+Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="8213475033260328041">Scegli di archiviare i dati coperti da <ph name="PRODUCT_NAME" /> in una posizione geografica specifica.
 
 Se questo criterio non viene configurato o se viene impostato su <ph name="DATA_REGION_SETTING_NO_PREFERENCE_OPTION_NAME" /> (valore 0), i dati coperti potrebbero essere archiviati in qualsiasi posizione geografica.
@@ -9821,6 +9911,21 @@ Questo criterio viene applicato alla modalità di navigazione in incognito. Ciò
 <translation id="8238421250255592181">Un flag booleano che indica se la tastiera sullo schermo può offrire la funzionalità di completamento automatico.</translation>
 <translation id="8239109177194627162">Disattiva la compilazione automatica per le carte di credito</translation>
 <translation id="8239143983379015783">Forza l'attivazione della quota permanente</translation>
+<translation id="8240976615241583524">Questa policy permette di applicare restrizioni agli indirizzi IP e alle interfacce che WebRTC utilizza quando prova a trovare la migliore connessione disponibile.
+
+Valori validi:
+
+* valore predefinito: WebRTC utilizza tutte le interfacce di rete disponibili.
+
+* default_public_and_private_interfaces: WebRTC utilizza tutte le interfacce pubbliche e private.
+
+* default_public_interface_only: WebRTC utilizza tutte le interfacce pubbliche, ma non quelle private.
+
+* disable_non_proxied_udp: WebRTC utilizza il proxy UDP SOCKS o passa al proxy TCP.
+
+Se la policy non viene configurata, per impostazione predefinita vengono usate tutte le interfacce di rete disponibili.
+
+Per una descrizione dettagliata di tutti i valori di gestione, consulta la sezione 5.2 del documento RFC 8828 (https://tools.ietf.org/html/rfc8828.html#section-5.2).</translation>
 <translation id="8244171102276095471">Attiva i pacchetti di crittografia RC4 in TLS</translation>
 <translation id="8244525275280476362">Ritardo di recupero massimo dopo l'invalidazione di una norma</translation>
 <translation id="8244828501034607035">Questo criterio consente di stabilire la visibilità della scheda Outlook nella pagina Nuova scheda. La scheda verrà visualizzata nella pagina Nuova scheda solo se il criterio è abilitato e la tua organizzazione ha autorizzato l'utilizzo dei dati del calendario di Outlook nel browser.
@@ -9873,6 +9978,23 @@ Se il criterio viene disattivato, la pagina verrà bloccata.</translation>
       Se non viene configurato, i siti web possono richiedere l'accesso, ma gli utenti possono modificare l'impostazione.</translation>
 <translation id="8267520984570984190">Il comportamento di ridimensionamento predefinito della tastiera virtuale non viene modificato</translation>
 <translation id="8269238942896230153">Un account gestito deve essere un account principale. L'importazione dei dati di navigazione esistenti è consentita al momento della creazione del profilo</translation>
+<translation id="827020625039819798">Questa policy consente di specificare un elenco di app ed estensioni installate automaticamente, senza interazione dell'utente, e che non possono essere disinstallate o disattivate dagli utenti tramite l'interfaccia <ph name="PRODUCT_NAME" />. Le autorizzazioni vengono concesse implicitamente, anche quelle relative alle API delle estensioni enterprise.deviceAttributes ed enterprise.platformKeys. Queste due API non sono disponibili per le app e le estensioni senza installazione forzata.
+
+Sebbene <ph name="PRODUCT_NAME" /> abbia l'obiettivo di impedire agli utenti di disinstallare queste estensioni, alcuni sistemi operativi non consentono a <ph name="PRODUCT_NAME" /> di difendersi in modo efficace contro la modifica esterna delle estensioni, quindi questa è la soluzione migliore.
+
+Se la policy non viene configurata, nessuna app o estensione viene installata automaticamente e gli utenti possono disinstallare qualsiasi app o estensione in <ph name="PRODUCT_NAME" />.
+
+Questa policy prevale sulla policy <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />. Se un'app o un'estensione di cui è stata precedentemente forzata l'installazione viene rimossa da questo elenco, questa app o estensione viene disinstallata automaticamente da <ph name="PRODUCT_NAME" />.
+
+Il codice sorgente di qualsiasi estensione può essere modificato dagli utenti tramite gli strumenti per sviluppatori, causando potenzialmente il malfunzionamento dell'estensione. Per evitare un problema di questo tipo, imposta la policy <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.
+
+Ogni elemento nell'elenco della policy è una stringa contenente un ID estensione e, facoltativamente, un URL di aggiornamento separati da punto e virgola (;). L'ID estensione è la stringa di 32 lettere che si trova, ad esempio, all'indirizzo chrome://extensions quando è attiva la modalità sviluppatore. Se specificato, l'URL di aggiornamento deve indirizzare a un documento XML manifest di aggiornamento (https://developer.chrome.com/extensions/autoupdate). L'URL di aggiornamento deve utilizzare uno dei seguenti schemi: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> o <ph name="FILE_SCHEME" />. Per impostazione predefinita, viene utilizzato l'URL di aggiornamento del Chrome Web Store. L'URL di aggiornamento impostato in questa policy viene utilizzato esclusivamente per l'installazione iniziale; per i successivi aggiornamenti dell'estensione viene utilizzato l'URL di aggiornamento nel file manifest dell'estensione. È possibile eseguire l'override dell'URL di aggiornamento per gli aggiornamenti successivi utilizzando la policy <ph name="EXTENSION_SETTINGS_POLICY_NAME" />; vedi http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy.
+
+Sulle istanze di <ph name="MS_WIN_NAME" /> è possibile forzare l'installazione di app ed estensioni che non fanno parte del Chrome Web Store soltanto se l'istanza è aggiunta a un dominio <ph name="MS_AD_NAME" />, aggiunta a <ph name="MS_AAD_NAME" /> o registrata in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Sulle istanze di <ph name="MAC_OS_NAME" /> è possibile forzare l'installazione di app ed estensioni che non fanno parte del Chrome Web Store soltanto se l'istanza è gestita tramite MDM, aggiunta a un dominio tramite MCX o registrata in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Nota: questa policy non viene applicata alla modalità di navigazione in incognito. Leggi maggiori informazioni sull'hosting delle estensioni (https://developer.chrome.com/extensions/hosting).</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="827054846390793641">Attiva l'interfaccia utente relativa alla connessione sul computer desktop host quando è attiva una connessione</translation>
 <translation id="8272422063636310696">Consente di controllare se una pagina che utilizza tecnologie precedenti verrà inclusa nel report in base al relativo URL.
@@ -10076,23 +10198,6 @@ Se il criterio non viene impostato o viene impostato su 0 e si passa a un URL de
 
       Se il criterio viene disattivato o non viene impostato, saranno utilizzati solo i normali profili locali.</translation>
 <translation id="8417305981081876834">Imposta la lunghezza massima del PIN per la schermata di blocco</translation>
-<translation id="8418020431103978663">Questo criterio consente di specificare un elenco di app ed estensioni installate automaticamente, senza interazione dell'utente, e che non possono essere disinstallate o disattivate dagli utenti tramite l'interfaccia <ph name="PRODUCT_NAME" />. Le autorizzazioni vengono concesse implicitamente, anche quelle relative alle API delle estensioni enterprise.deviceAttributes ed enterprise.platformKeys. Queste due API non sono disponibili per le app e le estensioni senza installazione forzata.
-
-Sebbene <ph name="PRODUCT_NAME" /> abbia l'obiettivo di impedire agli utenti di disinstallare queste estensioni, alcuni sistemi operativi non consentono a <ph name="PRODUCT_NAME" /> di difendersi in modo efficace contro la modifica esterna delle estensioni, quindi questa è la soluzione migliore.
-
-Se il criterio non viene configurato, nessuna app o estensione viene installata automaticamente e gli utenti possono disinstallare qualsiasi app o estensione in <ph name="PRODUCT_NAME" />.
-
-Questo criterio prevale sul criterio <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />. Se un'app o un'estensione di cui è stata precedentemente forzata l'installazione viene rimossa da questo elenco, questa app o estensione viene disinstallata automaticamente da <ph name="PRODUCT_NAME" />.
-
-Il codice sorgente di qualsiasi estensione può essere modificato dagli utenti tramite gli strumenti per sviluppatori, causando potenzialmente il malfunzionamento dell'estensione. Per evitare un problema di questo tipo, imposta il criterio <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.
-
-Ogni elemento nell'elenco del criterio è una stringa contenente un ID estensione e, facoltativamente, un URL di aggiornamento separati da punto e virgola (;). L'ID estensione è la stringa di 32 lettere che si trova, ad esempio, all'indirizzo chrome://extensions quando è attiva la modalità sviluppatore. Se specificato, l'URL di aggiornamento deve indirizzare a un documento XML manifest di aggiornamento (https://developer.chrome.com/extensions/autoupdate). L'URL di aggiornamento deve utilizzare uno dei seguenti schemi: <ph name="HTTP_SCHEME" />, <ph name="HTTPS_SCHEME" /> o <ph name="FILE_SCHEME" />. Per impostazione predefinita, viene utilizzato l'URL di aggiornamento del Chrome Web Store. L'URL di aggiornamento impostato in questo criterio viene utilizzato esclusivamente per l'installazione iniziale; per i successivi aggiornamenti dell'estensione viene utilizzato l'URL di aggiornamento nel file manifest dell'estensione. È possibile eseguire l'override dell'URL di aggiornamento per gli aggiornamenti successivi utilizzando il criterio <ph name="EXTENSION_SETTINGS_POLICY_NAME" />; vedi http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy.
-
-Sulle istanze di <ph name="MS_WIN_NAME" /> è possibile forzare l'installazione di app ed estensioni che non fanno parte del Chrome Web Store soltanto se l'istanza è aggiunta a un dominio <ph name="MS_AD_NAME" />, aggiunta a <ph name="MS_AAD_NAME" /> o registrata in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-Sulle istanze di <ph name="MAC_OS_NAME" /> è possibile forzare l'installazione di app ed estensioni che non fanno parte del Chrome Web Store soltanto se l'istanza è gestita tramite MDM, aggiunta a un dominio tramite MCX o registrata in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-Nota: questo criterio non viene applicato alla modalità di navigazione in incognito. Leggi maggiori informazioni sull'hosting delle estensioni (https://developer.chrome.com/extensions/hosting).</translation>
 <translation id="841977920223099909">Attivazione dell'avviso di protezione tramite password</translation>
 <translation id="8419965165591256432">La frequenza del rilevamento dello stato dell'attività del dispositivo su dispositivi registrati di utenti affiliati. Il valore minimo consentito è 1 minuto.
 
@@ -10136,6 +10241,13 @@ la configurazione.</translation>
 <translation id="8452787853105404870">Invia dati hardware a Google per supportare miglioramenti a ChromeOS Flex</translation>
 <translation id="8453218444172088993">Disattiva l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa agli argomenti degli annunci per i tuoi utenti.</translation>
 <translation id="8455529558077979314">Impostazioni Schermata sulla privacy</translation>
+<translation id="8459662059679040042">Quando la policy viene attivata, se <ph name="CHROME_CLEANUP_NAME" /> rileva software indesiderato potrebbe segnalare l'analisi a Google, in linea con la policy impostata da <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. <ph name="CHROME_CLEANUP_NAME" /> chiede agli utenti se vogliono ripulire il software indesiderato. I risultati vengono inviati a Google.
+
+Quando la policy viene disattivata, se <ph name="CHROME_CLEANUP_NAME" /> rileva software indesiderato, l'analisi non viene segnalata a Google, a prescindere dal valore di <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. <ph name="CHROME_CLEANUP_NAME" /> chiede agli utenti se vogliono ripulire il software indesiderato. I risultati non vengono inviati a Google.
+
+Se la policy non viene configurata, <ph name="CHROME_CLEANUP_NAME" /> potrebbe segnalare a Google le analisi per il rilevamento di software indesiderato, in linea con la policy impostata da <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. <ph name="CHROME_CLEANUP_NAME" /> chiede agli utenti se vogliono ripulire il software indesiderato e di condividere i risultati con Google per semplificarne l'identificazione in futuro. Questi risultati includono metadati di file, estensioni installate automaticamente e chiavi del registry, come spiegato nel white paper sulla privacy di Chrome.
+
+Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8465065632133292531">Parametri per l'URL istantaneo che utilizza POST</translation>
 <translation id="8466326735698755782">Consenti Confronta schede senza migliorare i modelli di AI.</translation>
@@ -10592,6 +10704,13 @@ Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cl
 </translation>
 <translation id="8802800226877198994">Attiva il supporto delle GIF.</translation>
 <translation id="8804685015028424497">Viene disattivata la modalità di navigazione in incognito</translation>
+<translation id="8806417793261941339">Questa policy è deprecata. Usa la policy <ph name="SAFE_BROWSING_ALLOWLIST_DOMAINS_POLICY_NAME" />.
+
+      Se la policy viene attivata, Navigazione sicura considera attendibili i domini indicati. Non esegue alcun controllo su questi domini per risorse pericolose come phishing, malware o software indesiderato. Il servizio di protezione dei download di Navigazione sicura non esegue alcun controllo sui download ospitati su questi domini. Il servizio di protezione tramite password di Navigazione sicura non esegue alcun controllo per il riutilizzo delle password.
+
+      Se la policy viene disattivata o se non viene configurata, la protezione predefinita di Navigazione sicura viene applicata a tutte le risorse.
+
+       Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="8806478127647484805">Impedisci agli utenti di terminare i processi con il Task Manager di Chrome</translation>
 <translation id="8807274441692477185">Non visualizzare la schermata della direzione di scorrimento sul touchpad durante l'accesso</translation>
 <translation id="8807313206348471682">Mostra la finestra di dialogo di conferma di disconnessione</translation>
@@ -10662,13 +10781,6 @@ Questo è utile quando l'amministratore sa che probabilmente gli utenti del disp
 <translation id="8865404058177794289">Utilizza l'impostazione predefinita per il controllo dell'utilizzo delle chiavi RSA</translation>
 <translation id="8866430022832109569">Generazione di report sull'inventario per app</translation>
 <translation id="886645881209114007">Consenti agli utenti di usare un <ph name="PLUGIN_VM_NAME" /> su <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="8867166356020504023">Se il criterio viene attivato, viene eseguita una ricerca predefinita quando un utente inserisce nella barra degli indirizzi un testo che non è un URL. Per specificare il provider di ricerca predefinito, imposta gli altri criteri relativi alla ricerca predefinita. Se non configuri questi criteri, l'utente può scegliere il provider predefinito. Se il criterio viene disattivato, non viene eseguita alcuna ricerca quando l'utente inserisce nella barra degli indirizzi un testo che non è un URL. Il valore Disabled non è supportato da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-Se il criterio viene configurato, gli utenti non possono modificarlo in <ph name="PRODUCT_NAME" />. Se non viene configurato, il provider di ricerca predefinito è attivo e gli utenti possono impostare l'elenco dei provider di ricerca.
-
-Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="8867894831390233044">Consente di stabilire se gli utenti possono o meno usare il debug remoto.
 
       Se questo criterio è impostato su Attivato o non viene configurato, gli utenti possono usare il debug remoto specificando le opzioni di riga di comando --remote-debugging-port e --remote-debugging-pipe.
@@ -10737,6 +10849,15 @@ Se viene disattivato, vengono inviati solo i dati hardware standard.</translatio
 <translation id="8897796778265450949">Limita il tempo per cui un utente autenticato tramite GAIA senza SAML può accedere offline</translation>
 <translation id="889814528399907891">Consenti agli utenti di attivare <ph name="LACROS_NAME" /> e impostarlo come browser principale</translation>
 <translation id="8900312706328930425">Frequenza del reporting su cloud in ore</translation>
+<translation id="8902938589482529940">Questa policy consente di precaricare l'immagine <ph name="ARC_VM" /> sul dispositivo su cui è installato <ph name="PRODUCT_OS_FLEX_NAME" />.
+
+Se la policy viene attivata, l'immagine <ph name="ARC_VM" /> verrà precaricata separatamente su <ph name="PRODUCT_OS_FLEX_NAME" />.
+
+Se la policy viene disattivata o se non viene configurata, il precaricamento dell'immagine <ph name="ARC_VM" /> su <ph name="PRODUCT_OS_FLEX_NAME" /> verrà impedito separatamente.
+
+Se un'immagine è già stata scaricata e la policy viene successivamente aggiornata, l'immagine verrà rimossa soltanto dopo che l'utente si è disconnesso o ha riavviato il dispositivo.
+
+Questa policy consente di controllare <ph name="ARC_VM" /> soltanto su <ph name="PRODUCT_OS_FLEX_NAME" />. Per <ph name="PRODUCT_NAME" />, consulta la policy <ph name="ARC_ENABLED_POLICY_NAME" /> per ulteriori dettagli.</translation>
 <translation id="8903283771634816230">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_NAME" /> usa la stampante predefinita del sistema operativo come destinazione predefinita per l'anteprima di stampa.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, <ph name="PRODUCT_NAME" /> usa la stampante utilizzata più di recente come destinazione predefinita per l'anteprima di stampa.</translation>

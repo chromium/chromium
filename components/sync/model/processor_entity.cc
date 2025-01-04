@@ -12,7 +12,6 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/deletion_origin.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/protocol/collaboration_metadata.h"
@@ -21,6 +20,7 @@
 #include "components/sync/protocol/proto_memory_estimations.h"
 #include "components/sync/protocol/unique_position.pb.h"
 #include "components/version_info/version_info.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace syncer {
 
@@ -186,13 +186,14 @@ void ProcessorEntity::RecordAcceptedRemoteUpdate(
       metadata_.mutable_collaboration()
           ->mutable_creation_attribution()
           ->set_obfuscated_gaia_id(
-              update.entity.collaboration_metadata->created_by());
+              update.entity.collaboration_metadata->created_by().ToString());
     }
     if (!update.entity.collaboration_metadata->last_updated_by().empty()) {
       metadata_.mutable_collaboration()
           ->mutable_last_update_attribution()
           ->set_obfuscated_gaia_id(
-              update.entity.collaboration_metadata->last_updated_by());
+              update.entity.collaboration_metadata->last_updated_by()
+                  .ToString());
     }
   }
   UpdateSpecificsHash(update.entity.specifics);
@@ -247,13 +248,14 @@ void ProcessorEntity::RecordLocalUpdate(
         data->collaboration_metadata->collaboration_id());
     metadata_.mutable_collaboration()
         ->mutable_creation_attribution()
-        ->set_obfuscated_gaia_id(data->collaboration_metadata->created_by());
+        ->set_obfuscated_gaia_id(
+            data->collaboration_metadata->created_by().ToString());
   }
   if (data->collaboration_metadata.has_value()) {
     metadata_.mutable_collaboration()
         ->mutable_last_update_attribution()
         ->set_obfuscated_gaia_id(
-            data->collaboration_metadata->last_updated_by());
+            data->collaboration_metadata->last_updated_by().ToString());
 
     // Collaboration ID must never change.
     CHECK_EQ(metadata_.collaboration().collaboration_id(),
@@ -285,11 +287,8 @@ bool ProcessorEntity::RecordLocalDeletion(const DeletionOrigin& origin) {
         origin.ToProto(version_info::GetVersionNumber());
   }
 
-  if (base::FeatureList::IsEnabled(
-          syncer::kSyncEntityMetadataRecordDeletedByVersionOnLocalDeletion)) {
-    metadata_.set_deleted_by_version(
-        std::string(version_info::GetVersionNumber()));
-  }
+  metadata_.set_deleted_by_version(
+      std::string(version_info::GetVersionNumber()));
 
   // Clear any cached pending commit data.
   commit_data_.reset();

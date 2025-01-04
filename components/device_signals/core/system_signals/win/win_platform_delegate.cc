@@ -9,8 +9,6 @@
 // clang-format on
 
 #include <softpub.h>
-#include <wincrypt.h>
-#include <wintrust.h>
 
 #include <memory>
 #include <optional>
@@ -22,6 +20,8 @@
 #include "base/files/file_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_util_win.h"
+#include "base/win/wincrypt_shim.h"
+#include "base/win/wintrust_shim.h"
 #include "components/device_signals/core/common/common_types.h"
 #include "components/device_signals/core/common/platform_utils.h"
 #include "crypto/scoped_capi_types.h"

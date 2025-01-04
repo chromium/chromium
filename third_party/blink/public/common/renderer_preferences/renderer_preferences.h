@@ -14,7 +14,9 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_url_entry.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
+#include "third_party/blink/public/mojom/peerconnection/webrtc_ip_handling_policy.mojom.h"
 #include "ui/gfx/font_render_params.h"
 
 namespace blink {
@@ -61,7 +63,9 @@ struct BLINK_COMMON_EXPORT RendererPreferences {
 #if BUILDFLAG(IS_CHROMEOS)
   bool use_overlay_scrollbar{false};
 #endif
-  std::string webrtc_ip_handling_policy;
+  blink::mojom::WebRtcIpHandlingPolicy webrtc_ip_handling_policy =
+      blink::mojom::WebRtcIpHandlingPolicy::kDefault;
+  std::vector<WebRtcIpHandlingUrlEntry> webrtc_ip_handling_urls;
   uint16_t webrtc_udp_min_port{0};
   uint16_t webrtc_udp_max_port{0};
   std::vector<std::string> webrtc_local_ips_allowed_urls;

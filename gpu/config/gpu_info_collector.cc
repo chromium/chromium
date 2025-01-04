@@ -41,6 +41,7 @@
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/init/create_gr_gl_interface.h"
 #include "ui/gl/init/gl_factory.h"
+#include "ui/gl/startup_trace.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/bundle_locations.h"
@@ -89,6 +90,7 @@ scoped_refptr<gl::GLSurface> InitializeGLSurface(gl::GLDisplay* display) {
 }
 
 scoped_refptr<gl::GLContext> InitializeGLContext(gl::GLSurface* surface) {
+  GPU_STARTUP_TRACE_EVENT("gpu_info_collector::InitializeGLContext");
   gl::GLContextAttribs attribs;
   attribs.client_major_es_version = 2;
   scoped_refptr<gl::GLContext> context(
@@ -416,7 +418,7 @@ void ReportWebGPUSupportMetrics(dawn::native::Instance* instance) {
 #if BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
   // Check for compat adapters on GLES.
   adapter_options.backendType = wgpu::BackendType::OpenGLES;
-  adapter_options.compatibilityMode = true;
+  adapter_options.featureLevel = wgpu::FeatureLevel::Compatibility;
 
   dawn::native::opengl::RequestAdapterOptionsGetGLProc
       adapter_options_get_gl_proc = {};
@@ -530,6 +532,7 @@ bool CollectGraphicsDeviceInfoFromCommandLine(
 
 bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
                               GPUInfo* gpu_info) {
+  GPU_STARTUP_TRACE_EVENT("gpu_info_collector::CollectBasicGraphicsInfo");
   // In the info-collection GPU process on Windows, we get the device info from
   // the browser.
   if (CollectGraphicsDeviceInfoFromCommandLine(command_line, gpu_info)) {
@@ -578,7 +581,7 @@ bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
 }
 
 bool CollectGraphicsInfoGL(GPUInfo* gpu_info, gl::GLDisplay* display) {
-  TRACE_EVENT0("startup", "gpu_info_collector::CollectGraphicsInfoGL");
+  GPU_STARTUP_TRACE_EVENT("gpu_info_collector::CollectGraphicsInfoGL");
   DCHECK_NE(gl::GetGLImplementationParts(), gl::kGLImplementationNone);
   gl::GLDisplayEGL* egl_display = display->GetAs<gl::GLDisplayEGL>();
 
@@ -804,6 +807,7 @@ void CollectGraphicsInfoForTesting(GPUInfo* gpu_info) {
 
 bool CollectGpuExtraInfo(gfx::GpuExtraInfo* gpu_extra_info,
                          const GpuPreferences& prefs) {
+  GPU_STARTUP_TRACE_EVENT("gpu_info_collector::CollectGpuExtraInfo");
   // Populate the list of ANGLE features by querying the functions exposed by
   // EGL_ANGLE_feature_control if it's available.
   if (gl::g_driver_egl.client_ext.b_EGL_ANGLE_feature_control) {
@@ -836,6 +840,7 @@ bool CollectGpuExtraInfo(gfx::GpuExtraInfo* gpu_extra_info,
 void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
                      bool collect_metrics,
                      std::vector<std::string>* dawn_info_list) {
+  GPU_STARTUP_TRACE_EVENT("gpu_info_collector::CollectDawnInfo");
 #if BUILDFLAG(USE_DAWN)
   DawnProcTable procs = dawn::native::GetProcs();
   dawnProcSetProcs(&procs);
@@ -922,15 +927,16 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
   };
 #endif
 
-  for (bool compatibilityMode : {false, true}) {
-    adapter_options.compatibilityMode = compatibilityMode;
+  for (wgpu::FeatureLevel featureLevel :
+       {wgpu::FeatureLevel::Compatibility, wgpu::FeatureLevel::Core}) {
+    adapter_options.featureLevel = featureLevel;
     std::vector<dawn::native::Adapter> adapters = instance->EnumerateAdapters(
         reinterpret_cast<const WGPURequestAdapterOptions*>(&adapter_options));
     for (dawn::native::Adapter& native_adapter : adapters) {
       wgpu::Adapter adapter(native_adapter.Get());
       wgpu::AdapterInfo info = {};
       adapter.GetInfo(&info);
-      if (compatibilityMode &&
+      if (featureLevel == wgpu::FeatureLevel::Compatibility &&
           info.backendType != wgpu::BackendType::OpenGLES) {
         continue;
       }
@@ -941,7 +947,7 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
         std::string gpu_str = GetDawnAdapterTypeString(info.adapterType);
         gpu_str += " " + GetDawnBackendTypeString(info.backendType);
         gpu_str += " - " + std::string(info.device);
-        if (compatibilityMode) {
+        if (featureLevel == wgpu::FeatureLevel::Compatibility) {
           gpu_str += " (Compatibility Mode)";
         }
         dawn_info_list->push_back(gpu_str);

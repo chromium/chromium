@@ -19,8 +19,9 @@ std::optional<ui::ColorId> ThemedLabel::GetEnabledColorId() const {
 
 void ThemedLabel::SetEnabledColorId(
     std::optional<ui::ColorId> enabled_color_id) {
-  if (enabled_color_id == enabled_color_id_)
+  if (enabled_color_id == enabled_color_id_) {
     return;
+  }
   enabled_color_id_ = enabled_color_id;
   OnPropertyChanged(&enabled_color_id_, kPropertyEffectsPaint);
 }
@@ -28,8 +29,9 @@ void ThemedLabel::SetEnabledColorId(
 // View:
 void ThemedLabel::OnThemeChanged() {
   Label::OnThemeChanged();
-  if (enabled_color_id_)
+  if (enabled_color_id_) {
     SetEnabledColor(GetColorProvider()->GetColor(enabled_color_id_.value()));
+  }
 }
 
 BEGIN_METADATA(ThemedLabel)

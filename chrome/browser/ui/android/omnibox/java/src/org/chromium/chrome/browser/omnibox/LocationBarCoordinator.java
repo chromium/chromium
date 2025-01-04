@@ -704,6 +704,15 @@ public class LocationBarCoordinator
     }
 
     /**
+     * Whether the omnibox focus animation should be completed immediately. This is used to put it
+     * in a fully expanded state when focusing a bottom-anchored toolbar, avoiding a combination of
+     * horizontal and vertical movement in the animation.
+     */
+    public boolean shouldShortCircuitFocusAnimation(boolean gainingFocus) {
+        return gainingFocus && isToolbarBottomAnchored();
+    }
+
+    /**
      * Toggles the mic button being shown when the location bar is not focused. By default the mic
      * button is not shown.
      */

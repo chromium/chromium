@@ -42,6 +42,7 @@ static_library("media_app_ui") {
     "//chromeos/ash/components/mantis/media_app",
     "//chromeos/constants",
     "//chromeos/strings",
+    "//components/prefs",
     "//content/public/browser",
     "//content/public/common",
     "//mojo/public/cpp/bindings",

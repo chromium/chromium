@@ -35,6 +35,8 @@ import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher.AccessPoint;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
@@ -214,15 +216,15 @@ public class SyncPromoController {
         switch (accessPoint) {
             case SigninAccessPoint.BOOKMARK_MANAGER:
                 return ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
-                        SigninPreferencesManager.SyncPromoAccessPointId.BOOKMARKS);
+                        SigninPreferencesManager.SigninPromoAccessPointId.BOOKMARKS);
             case SigninAccessPoint.NTP_FEED_TOP_PROMO:
                 // This preference may get reset while the other ones are never reset unless device
                 // data is wiped.
                 return ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
-                        SigninPreferencesManager.SyncPromoAccessPointId.NTP);
+                        SigninPreferencesManager.SigninPromoAccessPointId.NTP);
             case SigninAccessPoint.SETTINGS:
                 return ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
-                        SigninPreferencesManager.SyncPromoAccessPointId.SETTINGS);
+                        SigninPreferencesManager.SigninPromoAccessPointId.SETTINGS);
             default:
                 throw new IllegalArgumentException(
                         "Unexpected value for access point: " + accessPoint);
@@ -254,14 +256,8 @@ public class SyncPromoController {
                 mImpressionUserActionName = "Signin_Impression_FromBookmarkManager";
                 mSyncPromoDismissedPreferenceTracker =
                         ChromePreferenceKeys.SIGNIN_PROMO_BOOKMARKS_DECLINED;
-                if (ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-                    mTitleStringId = R.string.signin_promo_title_bookmarks;
-                    mDescriptionStringId = R.string.signin_promo_description_bookmarks;
-                } else {
-                    mTitleStringId = R.string.sync_promo_title_bookmarks;
-                    mDescriptionStringId = R.string.sync_promo_description_bookmarks;
-                }
+                mTitleStringId = R.string.signin_promo_title_bookmarks;
+                mDescriptionStringId = R.string.signin_promo_description_bookmarks;
                 mShouldSuppressSecondaryButton = false;
                 mHistoryOptInMode = HistorySyncConfig.OptInMode.NONE;
                 // TODO(b/332704829): Move delegate creation outside of this constructor.
@@ -663,19 +659,17 @@ public class SyncPromoController {
     private void signinWithNewAccount(Context context, boolean launchSigninFlow) {
         recordShowCountHistogram(UserAction.CONTINUED);
         if (launchSigninFlow) {
+            BottomSheetSigninAndHistorySyncConfig config =
+                    new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                    mBottomSheetStrings,
+                                    NoAccountSigninMode.BOTTOM_SHEET,
+                                    WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                    mHistoryOptInMode)
+                            .build();
             @Nullable
             Intent intent =
                     mSigninAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
-                            context,
-                            mProfile,
-                            mBottomSheetStrings,
-                            BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
-                                    .BOTTOM_SHEET,
-                            BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                                    .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                            mHistoryOptInMode,
-                            mAccessPoint,
-                            /* selectedCoreAccountId= */ null);
+                            context, mProfile, config, mAccessPoint);
             if (intent != null) {
                 context.startActivity(intent);
             }
@@ -688,19 +682,17 @@ public class SyncPromoController {
     private void signinWithDefaultAccount(Context context, boolean launchSigninFlow) {
         recordShowCountHistogram(UserAction.CONTINUED);
         if (launchSigninFlow) {
+            BottomSheetSigninAndHistorySyncConfig config =
+                    new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                    mBottomSheetStrings,
+                                    NoAccountSigninMode.BOTTOM_SHEET,
+                                    WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                    mHistoryOptInMode)
+                            .build();
             @Nullable
             Intent intent =
                     mSigninAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
-                            context,
-                            mProfile,
-                            mBottomSheetStrings,
-                            BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
-                                    .BOTTOM_SHEET,
-                            BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                                    .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                            mHistoryOptInMode,
-                            mAccessPoint,
-                            /* selectedCoreAccountId= */ null);
+                            context, mProfile, config, mAccessPoint);
             if (intent != null) {
                 context.startActivity(intent);
             }
@@ -713,19 +705,17 @@ public class SyncPromoController {
     private void signinWithNotDefaultAccount(Context context, boolean launchSigninFlow) {
         recordShowCountHistogram(UserAction.CONTINUED);
         if (launchSigninFlow) {
+            BottomSheetSigninAndHistorySyncConfig config =
+                    new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                    mBottomSheetStrings,
+                                    NoAccountSigninMode.BOTTOM_SHEET,
+                                    WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET,
+                                    mHistoryOptInMode)
+                            .build();
             @Nullable
             Intent intent =
                     mSigninAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
-                            context,
-                            mProfile,
-                            mBottomSheetStrings,
-                            BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
-                                    .BOTTOM_SHEET,
-                            BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                                    .CHOOSE_ACCOUNT_BOTTOM_SHEET,
-                            mHistoryOptInMode,
-                            mAccessPoint,
-                            /* selectedCoreAccountId= */ null);
+                            context, mProfile, config, mAccessPoint);
             if (intent != null) {
                 context.startActivity(intent);
             }
@@ -739,16 +729,16 @@ public class SyncPromoController {
         final String accessPoint;
         switch (mAccessPoint) {
             case SigninAccessPoint.BOOKMARK_MANAGER:
-                accessPoint = SigninPreferencesManager.SyncPromoAccessPointId.BOOKMARKS;
+                accessPoint = SigninPreferencesManager.SigninPromoAccessPointId.BOOKMARKS;
                 break;
             case SigninAccessPoint.NTP_FEED_TOP_PROMO:
-                accessPoint = SigninPreferencesManager.SyncPromoAccessPointId.NTP;
+                accessPoint = SigninPreferencesManager.SigninPromoAccessPointId.NTP;
                 break;
             case SigninAccessPoint.RECENT_TABS:
-                accessPoint = SigninPreferencesManager.SyncPromoAccessPointId.RECENT_TABS;
+                accessPoint = SigninPreferencesManager.SigninPromoAccessPointId.RECENT_TABS;
                 break;
             case SigninAccessPoint.SETTINGS:
-                accessPoint = SigninPreferencesManager.SyncPromoAccessPointId.SETTINGS;
+                accessPoint = SigninPreferencesManager.SigninPromoAccessPointId.SETTINGS;
                 break;
             default:
                 throw new IllegalArgumentException(

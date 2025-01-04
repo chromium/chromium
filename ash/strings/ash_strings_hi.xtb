@@ -361,6 +361,7 @@
 <translation id="2295777434187870477">माइक चालू है, टॉगल करने से यह बंद हो जाएगा.</translation>
 <translation id="2302092602801625023">यह खाता Family Link के ज़रिए प्रबंधित किया जाता है</translation>
 <translation id="2303600792989757991">टॉगल विंडो का संक्षिप्त विवरण</translation>
+<translation id="2304702218354340897">क्या आपको वाकई फ़ेस कंट्रोल की सुविधा बंद करनी है?</translation>
 <translation id="2305738328104302723">Google टास्क की सूची: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: यहां हाल ही के स्क्रीन कैप्चर, डाउनलोड, और पिन की गई फ़ाइलें दिखती हैं</translation>
 <translation id="2318576281648121272">आज <ph name="TODAY_DATE" /></translation>
@@ -387,6 +388,7 @@
 <translation id="2370971919968699910">इससे डेटा खर्च हो सकता है.
 <ph name="DEVICECOUNT" /> डिवाइस कनेक्ट हैं.</translation>
 <translation id="2386292613071805067">पेज पर मौजूद सब कुछ चुनें</translation>
+<translation id="2389423187722941333">Gemini पर स्विच करें</translation>
 <translation id="2392659840443812875">कोई हॉटस्पॉट उपलब्ध नहीं है. पक्का करें कि आपका डिवाइस आस-पास हो और उसका ब्लूटूथ चालू हो.</translation>
 <translation id="2397416548179033562">Chrome मेन्यू दिखाएं</translation>
 <translation id="240006516586367791">मीडिया कंट्रोल</translation>
@@ -394,6 +396,7 @@
 <translation id="2402411679569069051">Chromebook अनलॉक करने के लिए, अपना फ़िंगरप्रिंट इस्तेमाल करें या अपना फ़ोन अनलॉक करें</translation>
 <translation id="240545663114741956">साइन आउट करने के लिए <ph name="ACCELERATOR" /> को दो बार दबाएं.</translation>
 <translation id="2405664212338326887">कनेक्ट नहीं है</translation>
+<translation id="2406710117564540804">परेशान न करें मोड को चालू या बंद करें</translation>
 <translation id="2408955596600435184">अपना पिन डालें</translation>
 <translation id="2412593942846481727">अपडेट मौजूद है</translation>
 <translation id="2416438829169535743">क्या आपको व्यू से बाहर निकलना है?</translation>
@@ -900,6 +903,7 @@
 <translation id="4119928251231465047">आपने पिन डालने की कोशिश कई बार कर ली है</translation>
 <translation id="412298498316631026">विंडो</translation>
 <translation id="4123259114412175274">अपना Chromebook अनलॉक करने के लिए, पक्का करें कि आपके फ़ोन का ब्लूटूथ चालू है</translation>
+<translation id="4123868835475902435">यह बुनियादी जानकारी थी! अन्य सहायता और जानकारी पाने के लिए, पहले से उपलब्ध Explore ऐप्लिकेशन का इस्तेमाल करें. यहां आपको <ph name="PRODUCT_NAME" /> का इस्तेमाल करने से जुड़ी जानकारी मिलेगी. इसके अलावा, खास ऑफ़र और इसकी नई सुविधाओं की जानकारी भी मिलेगी.</translation>
 <translation id="4125970834901680537">टैबलेट मोड में ऐप्लिकेशन का कॉन्टेंट स्ट्रीम नहीं किया जा सकता. लैपटॉप मोड में फिर से कोशिश करें.</translation>
 <translation id="4131973331381812765">तापमान: <ph name="TEMPERATURE" />°C - मौजूदा रफ़्तार: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> गीगाहर्ट्ज़</translation>
 <translation id="4136724716305260864">यह सुविधा सूरज उगने तक चालू रहेगी</translation>
@@ -1020,7 +1024,6 @@
 <translation id="4481530544597605423">अयुग्मित किए गए डिवाइस</translation>
 <translation id="4485506555414638855">अपने फ़ोन में मौजूद हाल ही की फ़ोटो, कॉन्टेंट, सूचनाओं, और ऐप्लिकेशन को देखने की सुविधा सेट अप करने की प्रक्रिया रद्द करें</translation>
 <translation id="4491109536499578614">इमेज</translation>
-<translation id="4493452241184130939">यह बुनियादी जानकारी थी! अन्य सहायता और जानकारी पाने के लिए, पहले से उपलब्ध Explore ऐप्लिकेशन का इस्तेमाल करें. यहां आपको <ph name="PRODUCT_NAME" /> का इस्तेमाल करने से जुड़ी जानकारी मिलेगी. साथ ही, सुझाए गए ऐप्लिकेशन, खास ऑफ़र, और इसकी नई सुविधाओं की जानकारी भी मिलेगी.</translation>
 <translation id="450584155212756404">डेव चैनल</translation>
 <translation id="4513946894732546136">सुझाव/राय दें</translation>
 <translation id="4518404433291145981">Chromebook अनलॉक करने के लिए, पहले अपना फ़ोन अनलॉक करें</translation>
@@ -1083,7 +1086,6 @@
 <translation id="4708065238214351979">कीबोर्ड की बैकलाइट बढ़ाएं</translation>
 <translation id="4708185346211948049">अगले हफ़्ते का <ph name="DAY_OF_WEEK" /></translation>
 <translation id="4717575069099566988">आपकी यूएसबी-सी केबल USB4 पर काम नहीं करती है. डिवाइस की परफ़ॉर्मेंस पर बुरा असर पड़ सकता है.</translation>
-<translation id="4724328513667182700"><ph name="PRODUCT_NAME" /> का इस्तेमाल शुरू करने के लिए छह सलाह</translation>
 <translation id="4730374152663651037">अक्सर उपयोग किए गए</translation>
 <translation id="4731797938093519117">अभिभावक ऐक्सेस</translation>
 <translation id="4733161265940833579">बाएं वायरलेस बड में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है</translation>
@@ -1310,7 +1312,6 @@
 <translation id="5409208741270395213">टास्क को 'पूरा हुआ' के तौर पर मार्क करें</translation>
 <translation id="5413656666631274079">सेटिंग पेज</translation>
 <translation id="5414198321558177633">प्रोफ़ाइल की सूची रीफ़्रेश की जा रही है. इसमें कुछ मिनट लग सकते हैं.</translation>
-<translation id="5417965108047245734"><ph name="PRODUCT_NAME" /> इस्तेमाल करने का तरीका फटाफट देखें</translation>
 <translation id="5426063383988017631">सेटिंग मेन्यू को बंद किया गया</translation>
 <translation id="5428899915242071344">टेक्स्ट चुनना शुरू करें</translation>
 <translation id="5429993543155113935">फ़िलहाल, गुप्त विंडो के लिए यह सुविधा उपलब्ध नहीं है</translation>
@@ -1648,6 +1649,7 @@
 <translation id="6539852571005954999">डाउनलोड हो रही फ़ाइल <ph name="FILENAME" /> को स्कैन किया जा रहा है</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> पर कास्ट किया जा रहा है</translation>
 <translation id="6542891623636520977">इमोजी, GIF वगैरह</translation>
+<translation id="6543942526104794893">क्या आपको वाकई में चेहरे के जेस्चर की सुविधा बंद करनी है?</translation>
 <translation id="6545382064335350438">आपके पिन की अब भी पुष्टि नहीं की जा सकी. फिर से कोशिश करें.</translation>
 <translation id="6555373427270923730">पता बार में कोई वेब पता लिखें और <ph name="MODIFIER" /><ph name="KEY" /> दबाएं</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2314,6 +2316,7 @@
 <translation id="8855885154700222542">फ़ुलस्क्रीन कुंजी</translation>
 <translation id="8858369206579825206">निजता सेटिंग</translation>
 <translation id="8860366331836346216">ई-सिम जोड़ें</translation>
+<translation id="8869149849311827122">क्या आपको वाकई में माउस कर्सर को कंट्रोल करने की सुविधा बंद करनी है?</translation>
 <translation id="8870509716567206129">ऐप्लिकेशन दो-स्क्रीन मोड में काम नहीं करता है.</translation>
 <translation id="8873203135446552888">इस बात की पुष्टि करें कि आपको डिवाइस में पहले से मौजूद टचपैड को बंद करना है</translation>
 <translation id="8874184842967597500">कनेक्ट नहीं है</translation>

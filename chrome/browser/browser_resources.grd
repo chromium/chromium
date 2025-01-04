@@ -102,10 +102,6 @@
         <include type="BINDATA" compress="gzip" name="IDR_FINGERPRINT_TABLET_ANIMATION" file="resources\chromeos\quick_unlock\fingerprint_tablet.json"/>
         <include type="BINDATA" compress="gzip" name="IDR_FINGERPRINT_DEFAULT_ANIMATION" file="resources\chromeos\quick_unlock\fingerprint_default.json"/>
 
-        <include name="IDR_VM_INDEX_HTML" file="resources\chromeos\vm\index.html" type="BINDATA" />
-        <include name="IDR_VM_APP_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\vm\app.js" type="BINDATA" use_base_dir="false" />
-        <include name="IDR_VM_MOJOM_WEBUI_JS" file="${root_gen_dir}\mojom-webui\chrome\browser\ui\webui\ash\vm\vm.mojom-webui.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_GUEST_OS_DIAGNOSTICS_MOJOM_WEBUI_JS" file="${root_gen_dir}\mojom-webui\chrome\browser\ash\guest_os\guest_os_diagnostics.mojom-webui.js" use_base_dir="false" type="BINDATA" />
         <if expr="_google_chrome">
           <then>
             <include name="IDR_HELP_MANIFEST" file="resources\help_app\manifest.json" type="BINDATA" />
@@ -199,10 +195,6 @@
       </if>
       <if expr="is_android">
         <include name="IDR_DEV_UI_LOADER_ERROR_HTML" file="resources/dev_ui/dev_ui_loader_error.html" type="BINDATA" />
-        <include name="IDR_OFFLINE_INTERNALS_HTML" file="resources\offline_pages\offline_internals.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
-        <include name="IDR_OFFLINE_INTERNALS_CSS" file="resources\offline_pages\offline_internals.css" type="BINDATA" />
-        <include name="IDR_OFFLINE_INTERNALS_JS" file="${root_gen_dir}\chrome\browser\resources\offline_pages\tsc\offline_internals.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_OFFLINE_INTERNALS_BROWSER_PROXY_JS" file="${root_gen_dir}\chrome\browser\resources\offline_pages\tsc\offline_internals_browser_proxy.js" use_base_dir="false" type="BINDATA" />
       </if>
 
       <if expr="enable_hangout_services_extension">
@@ -216,11 +208,8 @@
         <include name="IDR_DESK_API_MANIFEST" file="resources\chromeos\desk_api\manifest.json" type="BINDATA" />
       </if>
 
-      <include name="IDR_INSPECT_CSS" file="resources\inspect\inspect.css" flattenhtml="true" type="BINDATA" />
-      <include name="IDR_INSPECT_HTML" file="resources\inspect\inspect.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
-      <include name="IDR_INSPECT_JS" file="resources\inspect\inspect.js" type="BINDATA" />
-
       <include name="IDR_NETWORK_SPEECH_SYNTHESIS_MANIFEST" file="resources\network_speech_synthesis\manifest.json" type="BINDATA" />
+      <include name="IDR_NETWORK_SPEECH_SYNTHESIS_MANIFEST_MV3" file="resources\network_speech_synthesis\mv3\manifest.json" type="BINDATA" />
       <include name="IDR_READING_MODE_GDOCS_HELPER_MANIFEST" file="resources\reading_mode_gdocs_helper\manifest.json" type="BINDATA" />
       <if expr="not is_chromeos">
         <include name="IDR_TTS_ENGINE_MANIFEST" file="resources\tts_engine\manifest.json" type="BINDATA" />

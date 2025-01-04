@@ -9,11 +9,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/net/nss_service.h"
-#include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/net/server_certificate_database_service.h"
-#include "chrome/browser/net/server_certificate_database_service_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/scoped_nss_types.h"
 #include "crypto/sha2.h"
@@ -45,10 +41,8 @@ void MigrateCertsOnBackgroundThread(
   result.cert_count = certs_to_migrate.size();
   for (net::PlatformTrustStore::CertWithTrust& cert_to_migrate :
        certs_to_migrate) {
-    net::ServerCertificateDatabase::CertInformation cert_info;
-    cert_info.sha256hash_hex =
-        base::HexEncode(crypto::SHA256Hash(cert_to_migrate.cert_bytes));
-    cert_info.der_cert = std::move(cert_to_migrate.cert_bytes);
+    net::ServerCertificateDatabase::CertInformation cert_info(
+        cert_to_migrate.cert_bytes);
     cert_info.cert_metadata.mutable_trust()->set_trust_type(
         MapTrust(cert_to_migrate.trust));
 
@@ -87,7 +81,7 @@ void GotNSSCertDatabaseOnIOThread(
 }
 
 void GetNSSCertDatabaseOnIOThread(
-    NssCertDatabaseGetter database_getter,
+    ServerCertificateDatabaseNSSMigrator::NssCertDatabaseGetter database_getter,
     base::OnceCallback<
         void(std::vector<net::PlatformTrustStore::CertWithTrust>)> callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
@@ -107,8 +101,10 @@ void GetNSSCertDatabaseOnIOThread(
 }  // namespace
 
 ServerCertificateDatabaseNSSMigrator::ServerCertificateDatabaseNSSMigrator(
-    Profile* profile)
-    : profile_(profile) {}
+    net::ServerCertificateDatabaseService* cert_db_service,
+    NssCertDatabaseGetter nss_cert_db_getter)
+    : cert_db_service_(cert_db_service),
+      nss_cert_db_getter_(std::move(nss_cert_db_getter)) {}
 
 ServerCertificateDatabaseNSSMigrator::~ServerCertificateDatabaseNSSMigrator() =
     default;
@@ -119,9 +115,7 @@ void ServerCertificateDatabaseNSSMigrator::MigrateCerts(
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &GetNSSCertDatabaseOnIOThread,
-          NssServiceFactory::GetForContext(profile_)
-              ->CreateNSSCertDatabaseGetterForIOThread(),
+          &GetNSSCertDatabaseOnIOThread, std::move(nss_cert_db_getter_),
           base::BindPostTaskToCurrentDefault(base::BindOnce(
               &ServerCertificateDatabaseNSSMigrator::GotCertsFromNSS,
               weak_ptr_factory_.GetWeakPtr(), std::move(callback)))));
@@ -132,11 +126,7 @@ void ServerCertificateDatabaseNSSMigrator::GotCertsFromNSS(
     std::vector<net::PlatformTrustStore::CertWithTrust> certs_to_migrate) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  net::ServerCertificateDatabaseService* cert_db_service =
-      net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
-          profile_);
-
-  cert_db_service->PostTaskWithDatabase(base::BindOnce(
+  cert_db_service_->PostTaskWithDatabase(base::BindOnce(
       &MigrateCertsOnBackgroundThread, std::move(certs_to_migrate),
       base::BindPostTaskToCurrentDefault(base::BindOnce(
           &ServerCertificateDatabaseNSSMigrator::FinishedMigration,

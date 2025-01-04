@@ -9,7 +9,7 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
-#include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 
 namespace autofill::autofill_metrics {
@@ -59,8 +59,7 @@ void LogSuggestionsCount(size_t num_suggestions,
     case FillingProduct::kPassword:
     case FillingProduct::kCompose:
     case FillingProduct::kPlusAddresses:
-    case FillingProduct::kPredictionImprovements:
-    case FillingProduct::kStandaloneCvc:
+    case FillingProduct::kAutofillAi:
       NOTREACHED();
   }
 }
@@ -73,7 +72,6 @@ void LogSuggestionAcceptedIndex(int index,
 
   switch (filling_product) {
     case FillingProduct::kCreditCard:
-    case FillingProduct::kStandaloneCvc:
       base::UmaHistogramSparse("Autofill.SuggestionAcceptedIndex.CreditCard",
                                uma_index);
       break;
@@ -93,7 +91,7 @@ void LogSuggestionAcceptedIndex(int index,
     case FillingProduct::kIban:
     case FillingProduct::kCompose:
     case FillingProduct::kPlusAddresses:
-    case FillingProduct::kPredictionImprovements:
+    case FillingProduct::kAutofillAi:
     case FillingProduct::kMerchantPromoCode:
       // It is NOTREACHED because all other types should be handled separately.
       NOTREACHED();

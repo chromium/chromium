@@ -4,16 +4,18 @@
 
 #include "chrome/browser/net/server_certificate_database_nss_migrator.h"
 
+#include "base/files/scoped_temp_dir.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/net/fake_nss_service.h"
 #include "chrome/browser/net/server_certificate_database.h"
 #include "chrome/browser/net/server_certificate_database.pb.h"
 #include "chrome/browser/net/server_certificate_database_service.h"
-#include "chrome/browser/net/server_certificate_database_service_factory.h"
 #include "chrome/browser/net/server_certificate_database_test_util.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/test/base/testing_profile.h"
+#include "components/prefs/testing_pref_service.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
+#include "crypto/scoped_test_nss_db.h"
 #include "net/cert/nss_cert_database.h"
 #include "net/cert/x509_util_nss.h"
 #include "net/test/cert_builder.h"
@@ -26,31 +28,58 @@ using ::testing::UnorderedElementsAre;
 
 namespace net {
 
+namespace {
+
+net::NSSCertDatabase* NssGetterForIOThread(
+    net::NSSCertDatabase* result,
+    base::OnceCallback<void(net::NSSCertDatabase*)>) {
+  // The check is here because the real NSS getter must also be run on the IO
+  // thread.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  return result;
+}
+
+}  // namespace
+
 class ServerCertificateDatabaseNSSMigratorTest : public testing::Test {
  public:
   void SetUp() override {
-    profile_ = TestingProfile::Builder().Build();
-
-    nss_service_ = FakeNssService::InitializeForBrowserContext(
-        profile_.get(),
-        /*enable_system_slot=*/false);
+    ServerCertificateDatabaseService::RegisterProfilePrefs(
+        pref_service_.registry());
+    ASSERT_TRUE(temp_profile_dir_.CreateUniqueTempDir());
+    test_nss_slot_ = std::make_unique<crypto::ScopedTestNSSDB>();
+    ASSERT_TRUE(test_nss_slot_->is_open());
+    nss_cert_database_ = std::make_unique<NSSCertDatabase>(
+        crypto::ScopedPK11Slot(PK11_ReferenceSlot(test_nss_slot_->slot())),
+        crypto::ScopedPK11Slot(PK11_ReferenceSlot(test_nss_slot_->slot())));
   }
 
-  void TearDown() override { nss_service_ = nullptr; }
+  std::unique_ptr<net::ServerCertificateDatabaseService> CreateService() {
+    return std::make_unique<ServerCertificateDatabaseService>(
+        temp_profile_dir_.GetPath(), &pref_service_,
+        base::BindOnce(NssGetterForIOThread, nss_cert_database_.get()));
+  }
 
-  TestingProfile* profile() { return profile_.get(); }
-  FakeNssService* nss_service() { return nss_service_; }
+  PrefService* pref_service() { return &pref_service_; }
+  NSSCertDatabase* nss_cert_database() { return nss_cert_database_.get(); }
 
  private:
   base::test::ScopedFeatureList feature_list_{
       features::kEnableCertManagementUIV2Write};
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<FakeNssService> nss_service_;
+  base::ScopedTempDir temp_profile_dir_;
+  TestingPrefServiceSimple pref_service_;
+  std::unique_ptr<crypto::ScopedTestNSSDB> test_nss_slot_;
+  std::unique_ptr<net::NSSCertDatabase> nss_cert_database_;
 };
 
 TEST_F(ServerCertificateDatabaseNSSMigratorTest, MigrateEmptyNssDb) {
-  ServerCertificateDatabaseNSSMigrator migrator(profile());
+  std::unique_ptr<net::ServerCertificateDatabaseService> cert_db_service =
+      CreateService();
+  ServerCertificateDatabaseNSSMigrator migrator(
+      cert_db_service.get(),
+      base::BindOnce(NssGetterForIOThread, nss_cert_database()));
+
   base::test::TestFuture<ServerCertificateDatabaseNSSMigrator::MigrationResult>
       migrate_certs_waiter;
   migrator.MigrateCerts(migrate_certs_waiter.GetCallback());
@@ -59,9 +88,6 @@ TEST_F(ServerCertificateDatabaseNSSMigratorTest, MigrateEmptyNssDb) {
   EXPECT_EQ(0, result.cert_count);
   EXPECT_EQ(0, result.error_count);
 
-  net::ServerCertificateDatabaseService* cert_db_service =
-      net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
-          profile());
   base::test::TestFuture<
       std::vector<net::ServerCertificateDatabase::CertInformation>>
       get_certs_waiter;
@@ -76,24 +102,20 @@ TEST_F(ServerCertificateDatabaseNSSMigratorTest, MigrateCerts) {
   auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
 
   // Import test certificates into NSS user database.
-  base::test::TestFuture<net::NSSCertDatabase*> nss_waiter;
-  nss_service()->UnsafelyGetNSSCertDatabaseForTesting(nss_waiter.GetCallback());
-  net::NSSCertDatabase* nss_db = nss_waiter.Get();
-
   NSSCertDatabase::ImportCertFailureList not_imported;
-  EXPECT_TRUE(nss_db->ImportServerCert(
+  EXPECT_TRUE(nss_cert_database()->ImportServerCert(
       x509_util::CreateCERTCertificateListFromX509Certificate(
           leaf->GetX509Certificate().get()),
       NSSCertDatabase::DISTRUSTED_SSL, &not_imported));
   EXPECT_TRUE(not_imported.empty());
 
-  EXPECT_TRUE(nss_db->ImportCACerts(
+  EXPECT_TRUE(nss_cert_database()->ImportCACerts(
       x509_util::CreateCERTCertificateListFromX509Certificate(
           intermediate->GetX509Certificate().get()),
       NSSCertDatabase::TRUST_DEFAULT, &not_imported));
   EXPECT_TRUE(not_imported.empty());
 
-  EXPECT_TRUE(nss_db->ImportCACerts(
+  EXPECT_TRUE(nss_cert_database()->ImportCACerts(
       x509_util::CreateCERTCertificateListFromX509Certificate(
           root->GetX509Certificate().get()),
       NSSCertDatabase::TRUSTED_SSL, &not_imported));
@@ -102,11 +124,15 @@ TEST_F(ServerCertificateDatabaseNSSMigratorTest, MigrateCerts) {
   // Import a client cert to NSS also. It shouldn't be migrated.
   EXPECT_TRUE(net::ImportClientCertAndKeyFromFile(
       net::GetTestCertsDirectory(), "client_1.pem", "client_1.pk8",
-      nss_db->GetPublicSlot().get()));
+      nss_cert_database()->GetPublicSlot().get()));
 
+  std::unique_ptr<net::ServerCertificateDatabaseService> cert_db_service =
+      CreateService();
   // Do the migration from NSS to ServerCertificateDatabase.
   {
-    ServerCertificateDatabaseNSSMigrator migrator(profile());
+    ServerCertificateDatabaseNSSMigrator migrator(
+        cert_db_service.get(),
+        base::BindOnce(NssGetterForIOThread, nss_cert_database()));
     base::test::TestFuture<
         ServerCertificateDatabaseNSSMigrator::MigrationResult>
         migrate_certs_waiter;
@@ -128,9 +154,6 @@ TEST_F(ServerCertificateDatabaseNSSMigratorTest, MigrateCerts) {
   const ServerCertificateDatabase::CertInformation expected_root_info =
       MakeCertInfo(root->GetDER(),
                    CertificateTrust::CERTIFICATE_TRUST_TYPE_TRUSTED);
-  net::ServerCertificateDatabaseService* cert_db_service =
-      net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
-          profile());
   {
     base::test::TestFuture<
         std::vector<net::ServerCertificateDatabase::CertInformation>>
@@ -151,7 +174,9 @@ TEST_F(ServerCertificateDatabaseNSSMigratorTest, MigrateCerts) {
   // replacing the entries in the ServerCertificateDatabase with exactly the
   // same value, so the end result should not change.
   {
-    ServerCertificateDatabaseNSSMigrator migrator(profile());
+    ServerCertificateDatabaseNSSMigrator migrator(
+        cert_db_service.get(),
+        base::BindOnce(NssGetterForIOThread, nss_cert_database()));
     base::test::TestFuture<
         ServerCertificateDatabaseNSSMigrator::MigrationResult>
         migrate_certs_waiter;

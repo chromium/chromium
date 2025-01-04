@@ -32,7 +32,6 @@ class ConnectJobFactory;
 class HttpAuthController;
 class HttpResponseInfo;
 class HttpNetworkSession;
-class NetworkAnonymizationKey;
 class ProxyResolutionRequest;
 }  // namespace net
 

@@ -19,14 +19,14 @@
 #include "chrome/browser/user_annotations/user_annotations_service_factory.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/prefs/pref_service.h"
@@ -337,9 +337,8 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest,
       base::BindRepeating(&NotifyIphMockCallback::Call,
                           base::Unretained(&mock_callback)));
 
-  EXPECT_CALL(
-      mock_callback,
-      Call(autofill::AutofillClient::IphFeature::kPredictionImprovements));
+  EXPECT_CALL(mock_callback,
+              Call(autofill::AutofillClient::IphFeature::kAutofillAi));
 
   RunAutofillSubtest("predictionImprovementsIphFeatureUsed");
   EXPECT_TRUE(GetAllUserAnnotationsEntries().empty());
@@ -354,12 +353,13 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, LogServerCardLinkClicked) {
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, RemoveVirtualCard) {
+  using autofill::payments::TestPaymentsNetworkInterface;
   autofill::TestPersonalDataManager& personal_data_manager =
       autofill_client()->GetPersonalDataManager();
   autofill_client()
       ->GetPaymentsAutofillClient()
-      ->set_test_payments_network_interface(
-          std::make_unique<autofill::payments::TestPaymentsNetworkInterface>(
+      ->set_payments_network_interface(
+          std::make_unique<TestPaymentsNetworkInterface>(
               autofill_client()->GetURLLoaderFactory(),
               autofill_client()->GetIdentityManager(), &personal_data_manager));
   // Required for adding the server card.
@@ -372,9 +372,10 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiUnitTest, RemoveVirtualCard) {
       virtual_card);
   EXPECT_TRUE(RunAutofillSubtest("removeVirtualCard"));
   EXPECT_THAT(
-      autofill_client()
-          ->GetPaymentsAutofillClient()
-          ->GetPaymentsNetworkInterface()
+      static_cast<TestPaymentsNetworkInterface*>(
+          autofill_client()
+              ->GetPaymentsAutofillClient()
+              ->GetPaymentsNetworkInterface())
           ->update_virtual_card_enrollment_request_details(),
       ::testing::AllOf(
           ::testing::Field(

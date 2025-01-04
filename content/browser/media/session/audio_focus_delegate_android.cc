@@ -111,12 +111,6 @@ void AudioFocusDelegateAndroid::OnStopDucking(JNIEnv*, jobject) {
   media_session_->StopDucking();
 }
 
-void AudioFocusDelegateAndroid::RecordSessionDuck(
-    JNIEnv*,
-    const JavaParamRef<jobject>&) {
-  media_session_->RecordSessionDuck();
-}
-
 void AudioFocusDelegateAndroid::OnAudioStateChanged(bool is_audible) {
   if (!is_deferred_gain_pending_ || !is_audible) {
     return;

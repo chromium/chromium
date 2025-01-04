@@ -175,8 +175,9 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
   }
 
   void CloseAppInfo() {
-    if (widget_)
+    if (widget_) {
       widget_->CloseNow();
+    }
     base::RunLoop().RunUntilIdle();
     DCHECK(!widget_);
   }
@@ -236,6 +237,10 @@ TEST_F(AppInfoDialogViewsTest, UninstallingOtherAppDoesNotCloseDialog) {
   EXPECT_TRUE(widget_);
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+// Exclude the test from ChromeOS because profile destruction does not happen
+// on ChromeOS in production.
+//
 // Tests that the dialog closes when the current profile is destroyed.
 TEST_F(AppInfoDialogViewsTest, DestroyedProfileClosesDialog) {
   ShowAppInfo(kTestExtensionId);
@@ -260,15 +265,6 @@ TEST_F(AppInfoDialogViewsTest, DestroyedProfileClosesDialog) {
     // tearing down arc_test user_manager.
     base::RunLoop().RunUntilIdle();
 
-#if BUILDFLAG(IS_CHROMEOS)
-    // Avoid a race condition when tearing down arc_test_ and deleting the user
-    // manager.
-    chrome_shelf_controller_.reset();
-    shelf_model_.reset();
-    arc_test_->TearDown();
-    arc_test_.reset();
-#endif
-
     ASSERT_TRUE(widget_);
     EXPECT_FALSE(widget_->IsClosed());
   }
@@ -283,11 +279,12 @@ TEST_F(AppInfoDialogViewsTest, DestroyedProfileClosesDialog) {
   // profile. On ChromeOS (i.e. Ash-Chrome), profile won't be delete by that
   // because even if all browsers are closed Profile is expected to be kept
   // for system. Explicitly delete it here.
-  DeleteProfile(GetDefaultProfileName());
+  DeleteProfile(*GetDefaultProfileName());
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(widget_);
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Tests that the dialog does not close when a different profile is destroyed.
 TEST_F(AppInfoDialogViewsTest, DestroyedOtherProfileDoesNotCloseDialog) {

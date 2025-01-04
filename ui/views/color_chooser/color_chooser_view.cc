@@ -60,14 +60,16 @@ std::u16string GetColorText(SkColor color) {
 }
 
 bool GetColorFromText(const std::u16string& text, SkColor* result) {
-  if (text.size() != 6 && !(text.size() == 7 && text[0] == '#'))
+  if (text.size() != 6 && !(text.size() == 7 && text[0] == '#')) {
     return false;
+  }
 
   std::string input =
       base::UTF16ToUTF8((text.size() == 6) ? text : text.substr(1));
   std::array<uint8_t, 3> hex;
-  if (!base::HexStringToSpan(input, hex))
+  if (!base::HexStringToSpan(input, hex)) {
     return false;
+  }
 
   *result = SkColorSetRGB(hex[0], hex[1], hex[2]);
   return true;
@@ -123,10 +125,11 @@ void DrawGradientRect(const gfx::Rect& rect,
                          SkColor4f::FromColor(end_color)};
   SkPoint points[2];
   points[0].iset(0, 0);
-  if (is_horizontal)
+  if (is_horizontal) {
     points[1].iset(rect.width() + 1, 0);
-  else
+  } else {
     points[1].iset(0, rect.height() + 1);
+  }
   cc::PaintFlags flags;
   flags.setShader(cc::PaintShader::MakeLinearGradient(points, colors, nullptr,
                                                       2, SkTileMode::kClamp));
@@ -324,16 +327,18 @@ void SaturationValueView::OnHueChanged(SkScalar hue) {
 
 void SaturationValueView::OnSaturationValueChanged(SkScalar saturation,
                                                    SkScalar value) {
-  if (saturation_ == saturation && value_ == value)
+  if (saturation_ == saturation && value_ == value) {
     return;
+  }
 
   saturation_ = saturation;
   value_ = value;
   SkScalar scalar_size = SkIntToScalar(kSaturationValueSize - 1);
   int x = SkScalarFloorToInt(saturation * scalar_size) + kBorderWidth;
   int y = SkScalarFloorToInt((SK_Scalar1 - value) * scalar_size) + kBorderWidth;
-  if (gfx::Point(x, y) == marker_position_)
+  if (gfx::Point(x, y) == marker_position_) {
     return;
+  }
 
   marker_position_.set_x(x);
   marker_position_.set_y(y);
@@ -420,10 +425,11 @@ SelectedColorPatchView::SelectedColorPatchView() {
 }
 
 void SelectedColorPatchView::SetColor(SkColor color) {
-  if (!background())
+  if (!background()) {
     SetBackground(CreateSolidBackground(color));
-  else
+  } else {
     background()->SetNativeControlColor(color);
+  }
   SchedulePaint();
 }
 

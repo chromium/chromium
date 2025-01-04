@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">गडद थीम बंद करा</translation>
 <translation id="1807246157184219062">फिकट</translation>
 <translation id="1808803439260407870">क्लासिक आर्ट</translation>
+<translation id="181434555916624618">सध्यासाठी, लोक असलेले परिणाम दाखवले जाणार नाहीत. दुसरा प्रॉम्प्ट वापरून पहा.</translation>
 <translation id="1815850098929213707"><ph name="KEYS" /> की निवडलेली आहे. नियंत्रण संपादित करण्यासाठी बटणावर टॅप करा</translation>
 <translation id="1823120442877418684">पात्रे</translation>
 <translation id="1827738518074806965">आर्ट गॅलरी</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">डिव्हाइसच्या उजव्या बडच्या बॅटरीची पातळी <ph name="BATTERY_PERCENTAGE" />% आहे.</translation>
 <translation id="3340978935015468852">सेटिंग्ज</translation>
 <translation id="3347558044552027859">मॉडर्न</translation>
+<translation id="3353477144743332882">सारांश आणि नाव निर्मिती मॉडेल डाउनलोड करा</translation>
 <translation id="3359218928534347896">मायक्रोफोन म्यूट टॉगल करा</translation>
 <translation id="3360306038446926262">विंडो</translation>
 <translation id="3361618936611118375">सुशी</translation>
@@ -689,6 +691,7 @@
 <translation id="4354430579665871434">की</translation>
 <translation id="4356100841225547054">व्हॉल्यूम बंद करा</translation>
 <translation id="4361257691546579041">APN हे डीफॉल्ट या प्रकारचे आहे.</translation>
+<translation id="4368101969572512692">शफल करण्यासंबंधित सूचना</translation>
 <translation id="437294888293595148">सर्व शॉर्टकट रीसेट करा</translation>
 <translation id="437477383107495720">ससे</translation>
 <translation id="4376423484621194274">तुमचा अ‍ॅडमिनिस्ट्रेटर <ph name="APP_NAME" /> बंद करण्याची अनुमती देत नाही</translation>
@@ -768,6 +771,7 @@
 <translation id="4731797938093519117">पालक अ‍ॅक्सेस</translation>
 <translation id="473775607612524610">अपडेट करा</translation>
 <translation id="4744944742468440486">तुमच्या निवडीशी संबंधित माहिती</translation>
+<translation id="4750394297954878236">सूचना</translation>
 <translation id="4771607256327216405">कीबोर्ड उजळणे</translation>
 <translation id="4771923071974529837">उद्या</translation>
 <translation id="4773299976671772492">थांबविले</translation>
@@ -853,6 +857,7 @@
 <translation id="5121677070210013200">ट्रान्स्क्रिप्शन मॉडेल डाउनलोड करू शकत नाही. पुन्हा प्रयत्न करा किंवा तुमचे Chromebook रीस्टार्ट करा.</translation>
 <translation id="5130848777448318809">पोनी</translation>
 <translation id="5137451382116112100">फुलस्क्रीन करा</translation>
+<translation id="5139813694804168398">व्यत्यय आणू नका</translation>
 <translation id="5140788690559353412">तुम्ही तुमच्या शाळेच्या खात्याचा ॲक्सेस गमवल्यावर, तुम्हाला यापुढे संबंधित ईमेल आणि Google Drive फाइल, जसे की Gmail, Docs, Slides व आणखी बऱ्याच गोष्टींचा ॲक्सेस नसेल.</translation>
 <translation id="5142961317498132443">ऑथेंटिकेशन</translation>
 <translation id="5144311987923128508">कन्फर्म करा बटण आता बंद केले आहे</translation>
@@ -897,6 +902,7 @@
 <translation id="5302048478445481009">भाषा</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> चा विशेष वॉलपेपर</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="530883153651464140"><ph name="DEVICE_NAME" /> हे <ph name="VERSION" /> या आवृत्तीवर अपडेट करा</translation>
 <translation id="5315873049536339193">ओळख</translation>
 <translation id="5317780077021120954">सेव्ह करा</translation>
 <translation id="5318310531701770497">नावे तयार करू शकत नाही. आणखी मोठे ट्रान्स्क्रिप्ट वापरून पहा.</translation>
@@ -973,7 +979,6 @@
 <translation id="5703716265115423771">आवाज कमी करा</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" /> पैकी <ph name="CURRENT_PAGE" /></translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> साठी संपादित करा बटण.</translation>
-<translation id="5733298426544876109"><ph name="DEVICE_NAME" /> अपडेट करा</translation>
 <translation id="5736820754189340309">डेटा वापर रीसेट केला गेला आहे</translation>
 <translation id="574392208103952083">मध्यम</translation>
 <translation id="5744175046705638478">"<ph name="QUERY" />" चे भाषांतर करा</translation>
@@ -998,6 +1003,7 @@
 <translation id="5859969039821714932">शॉर्टकट उपलब्ध नाही. <ph name="KEY" /> शिवाय नवीन शॉर्टकट प्रेस करा.</translation>
 <translation id="5860033963881614850">बंद</translation>
 <translation id="5860491529813859533">सुरू करा</translation>
+<translation id="5875913454160982848">ट्रान्स्क्रिप्शन मॉडेल डाउनलोड करा</translation>
 <translation id="5876385649737594562">पर्याय निवडण्यासाठी सुरू करा</translation>
 <translation id="5877503382465267833"><ph name="RECORDING_NAME" /> थांबवा</translation>
 <translation id="588258955323874662">क्षेत्रे</translation>
@@ -1037,7 +1043,6 @@
 <translation id="6040143037577758943">बंद करा</translation>
 <translation id="6040852767465482106">निनावी ओळख</translation>
 <translation id="604124094241169006">स्वयंचलित</translation>
-<translation id="6042308850641462728">अधिक</translation>
 <translation id="6048107060512778456">अयशस्वी झाले - कागद अडकला</translation>
 <translation id="6050189528197190982">ग्रेस्केल</translation>
 <translation id="6054711098834486579">एक्सप्रेशनिस्ट</translation>
@@ -1293,6 +1298,7 @@
 <translation id="7134436342991564651">{0,plural, =1{नेम सर्व्हर}other{नेम सर्व्हर}}</translation>
 <translation id="7135814714616751706">शॉर्टकट शोधा</translation>
 <translation id="7138614237884624401">सुलभ केलेला मजकूर</translation>
+<translation id="7138668887584231801">सारांश देण्यासाठी पुरेसे शब्द नाहीत</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">कनेक्ट करत आहे</translation>
 <translation id="7144878232160441200">पुन्हा प्रयत्न करा</translation>
@@ -1588,6 +1594,7 @@
 <translation id="8503836310948963452">फक्त आणखी काही मिनिटे...</translation>
 <translation id="8505011850330200833">ट्रान्स्क्रिप्टवर प्रक्रिया करण्यासाठी आणि सारांश तयार करण्यासाठी Gemini मॉडेलला २GB स्टोरेज आवश्यक आहे</translation>
 <translation id="8508640263392900755">APN शी संबंधित तपशील</translation>
+<translation id="8509574872955173831">सारांश आणि नाव निर्मितीबद्दल अधिक जाणून घ्या</translation>
 <translation id="8522687886059337719">तुमच्याकडे आता नवीन <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />वॉलपेपर<ph name="END_LINK_WALLPAPER_SUBPAGE" /> आणि <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />स्क्रीन सेव्हर<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> चा अ‍ॅक्सेस आहे</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">टी हाउस</translation>
@@ -1724,7 +1731,6 @@
 <translation id="9133772297793293778">१-४ मॉडिफायर आणि तुमच्या कीबोर्डवरील इतर १ की प्रेस करा. संपादन मोडमधून बाहेर पडण्यासाठी, alt + esc प्रेस करा.</translation>
 <translation id="9137526406337347448">Google सेवा</translation>
 <translation id="9138630967333032450">डावीकडे शिफ्ट करा</translation>
-<translation id="9147928237330776930">सारांश देण्यासाठी खूप कमी शब्द</translation>
 <translation id="9149391708638971077">मेमरी चाचणी रन करा</translation>
 <translation id="9159524746324788320">हॅम्बर्गर</translation>
 <translation id="9161276708550942948">स्पेस</translation>

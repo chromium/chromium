@@ -430,7 +430,7 @@ void UseCounterCallback(v8::Isolate* isolate,
       webdx_feature = WebDXFeature::kAtomicsWaitAsync;
       break;
     case v8::Isolate::kLocaleInfoObsoletedGetters:
-      webdx_feature = WebDXFeature::kLocaleInfoObsoletedGetters;
+      blink_feature = WebFeature::kLocaleInfoObsoletedGetters;
       break;
     case v8::Isolate::kLocaleInfoFunctions:
       webdx_feature = WebDXFeature::kLocaleInfoFunctions;
@@ -449,6 +449,9 @@ void UseCounterCallback(v8::Isolate* isolate,
       break;
     case v8::Isolate::kWeakReferences:
       webdx_feature = WebDXFeature::kWeakReferences;
+      break;
+    case v8::Isolate::kErrorIsError:
+      webdx_feature = WebDXFeature::kDRAFT_ErrorIsError;
       break;
     default:
       // This can happen if V8 has added counters that this version of Blink

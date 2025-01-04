@@ -80,8 +80,9 @@ void TooltipStateManager::Show(aura::Window* window,
 
   // If the string consists entirely of whitespace, then don't both showing it
   // (an empty tooltip is useless).
-  if (trimmed_text.empty())
+  if (trimmed_text.empty()) {
     return;
+  }
 
   // Initialize the one-shot timer to show the tooltip after a delay. Any
   // running timers have already been canceled by calling HideAndReset above.
@@ -99,16 +100,18 @@ void TooltipStateManager::UpdatePositionIfNeeded(const gfx::Point& position,
   // the first place. Otherwise, for example, the position of a keyboard
   // triggered tooltip could be updated by an unrelated mouse exited event. The
   // tooltip would then show up at the wrong location.
-  if (!will_show_tooltip_timer_.IsRunning() || trigger != tooltip_trigger_)
+  if (!will_show_tooltip_timer_.IsRunning() || trigger != tooltip_trigger_) {
     return;
+  }
 
   position_ = position;
 }
 
 void TooltipStateManager::ShowNow(const std::u16string& trimmed_text,
                                   const base::TimeDelta hide_delay) {
-  if (!tooltip_parent_window_)
+  if (!tooltip_parent_window_) {
     return;
+  }
 
   if (!tooltip_parent_window_->GetRootWindow()) {
     // This can happen if the window is in the process of closing.

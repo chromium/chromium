@@ -10,6 +10,7 @@
 #import "base/memory/scoped_refptr.h"
 #import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_mediator_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_service_delegate.h"
+#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 
 // Webpage with safe browsing toggle.
 extern const char kSafeBrowsingStringURL[];
@@ -28,6 +29,30 @@ class PrefService;
 @protocol SafetyCheckNavigationCommands;
 
 @class SafetyCheckTableViewController;
+
+// Enum representing the different item types used in the Safety Check UI.
+// These item types correspond to various sections and functionalities
+// displayed within the Safety Check feature, including update checks,
+// password checks, Safe Browsing status, and notifications opt-in settings.
+//
+// The values are grouped as follows:
+// - CheckTypes section: Items related to checking updates, passwords, and Safe
+// Browsing status.
+// - CheckStart section: Items related to starting or stopping the Safety Check
+// process.
+// - Notifications opt-in section: Items for managing notifications preferences.
+typedef NS_ENUM(NSInteger, SafetyCheckItemType) {
+  // CheckTypes section.
+  UpdateItemType = kItemTypeEnumZero,
+  PasswordItemType,
+  SafeBrowsingItemType,
+  HeaderItem,
+  // CheckStart section.
+  CheckStartItemType,
+  TimestampFooterItem,
+  // Notifications opt-in section.
+  NotificationsOptInItemType,
+};
 
 // The mediator is pushing the data for the safety check to the consumer.
 @interface SafetyCheckMediator : NSObject <SafetyCheckServiceDelegate>

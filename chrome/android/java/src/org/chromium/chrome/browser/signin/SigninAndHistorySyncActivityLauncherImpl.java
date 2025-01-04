@@ -18,14 +18,11 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
-import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
-import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
-import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 /**
@@ -53,30 +50,6 @@ public final class SigninAndHistorySyncActivityLauncherImpl
     }
 
     private SigninAndHistorySyncActivityLauncherImpl() {}
-
-    @Override
-    public @Nullable Intent createBottomSheetSigninIntentOrShowError(
-            @NonNull Context context,
-            @NonNull Profile profile,
-            @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
-            @BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode int noAccountSigninMode,
-            @BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
-                    int withAccountSigninMode,
-            @HistorySyncConfig.OptInMode int historyOptInMode,
-            @AccessPoint int accessPoint,
-            @Nullable CoreAccountId selectedCoreAccountId) {
-
-        BottomSheetSigninAndHistorySyncConfig config =
-                new BottomSheetSigninAndHistorySyncConfig.Builder(
-                                bottomSheetStrings,
-                                noAccountSigninMode,
-                                withAccountSigninMode,
-                                historyOptInMode)
-                        .selectedCoreAccountId(selectedCoreAccountId)
-                        .build();
-
-        return createBottomSheetSigninIntentOrShowError(context, profile, config, accessPoint);
-    }
 
     @Override
     public @Nullable Intent createBottomSheetSigninIntentOrShowError(

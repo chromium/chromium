@@ -42,9 +42,8 @@
 // Helper for logging data with remote host IP and authentication state.
 // Assumes |ip_endpoint_| of type net::IPEndPoint and |channel_auth_| of enum
 // type ChannelAuthType are available in the current scope.
-#define CONNECTION_INFO()                                             \
-  "[" << open_params_.ip_endpoint.ToString() << ", auth=SSL_VERIFIED" \
-      << "] "
+#define CONNECTION_INFO() \
+  "[" << open_params_.ip_endpoint.ToString() << ", auth=SSL_VERIFIED" << "] "
 #define VLOG_WITH_CONNECTION(level) VLOG(level) << CONNECTION_INFO()
 #define LOG_WITH_CONNECTION(level) LOG(level) << CONNECTION_INFO()
 
@@ -128,8 +127,9 @@ CastSocketImpl::~CastSocketImpl() {
   CloseInternal();
 
   error_state_ = ChannelError::UNKNOWN;
-  for (auto& connect_callback : connect_callbacks_)
+  for (auto& connect_callback : connect_callbacks_) {
     std::move(connect_callback).Run(this);
+  }
   connect_callbacks_.clear();
 }
 
@@ -254,8 +254,9 @@ CastTransport* CastSocketImpl::transport() const {
 
 void CastSocketImpl::AddObserver(Observer* observer) {
   DCHECK(observer);
-  if (!observers_.HasObserver(observer))
+  if (!observers_.HasObserver(observer)) {
     observers_.AddObserver(observer);
+  }
 }
 
 void CastSocketImpl::RemoveObserver(Observer* observer) {
@@ -575,8 +576,9 @@ void CastSocketImpl::OnUpgradeToTLS(
     mojo_data_pump_ = std::make_unique<MojoDataPump>(std::move(receive_stream),
                                                      std::move(send_stream));
   }
-  if (ssl_info.has_value() && ssl_info->cert)
+  if (ssl_info.has_value() && ssl_info->cert) {
     peer_cert_ = ssl_info->cert;
+  }
   DoConnectLoop(result);
 }
 
@@ -601,8 +603,9 @@ void CastSocketImpl::DoConnectCallback() {
     CloseInternal();
   }
 
-  for (auto& connect_callback : connect_callbacks_)
+  for (auto& connect_callback : connect_callbacks_) {
     std::move(connect_callback).Run(this);
+  }
   connect_callbacks_.clear();
 }
 
@@ -625,6 +628,7 @@ void CastSocketImpl::CloseInternal() {
                           << ReadyStateToString(ready_state_);
   observers_.Clear();
   delegate_.reset();
+  auth_delegate_ = nullptr;
   transport_.reset();
   mojo_data_pump_.reset();
   socket_.reset();
@@ -653,8 +657,9 @@ void CastSocketImpl::SetConnectState(ConnectionState connect_state) {
 void CastSocketImpl::SetReadyState(ReadyState ready_state) {
   if (ready_state_ != ready_state) {
     ready_state_ = ready_state;
-    for (auto& observer : observers_)
+    for (auto& observer : observers_) {
       observer.OnReadyStateChanged(*this);
+    }
   }
 }
 
@@ -678,14 +683,16 @@ CastSocketImpl::CastSocketMessageDelegate::~CastSocketMessageDelegate() =
 // CastTransport::Delegate implementation.
 void CastSocketImpl::CastSocketMessageDelegate::OnError(
     ChannelError error_state) {
-  for (auto& observer : socket_->observers_)
+  for (auto& observer : socket_->observers_) {
     observer.OnError(*socket_, error_state);
+  }
 }
 
 void CastSocketImpl::CastSocketMessageDelegate::OnMessage(
     const CastMessage& message) {
-  for (auto& observer : socket_->observers_)
+  for (auto& observer : socket_->observers_) {
     observer.OnMessage(*socket_, message);
+  }
 }
 
 void CastSocketImpl::CastSocketMessageDelegate::Start() {}

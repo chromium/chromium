@@ -203,8 +203,6 @@ def make_check_assignment_value(cg_context, union_member, assignment_value):
     assert isinstance(union_member, _UnionMember)
     assert isinstance(assignment_value, str)
 
-    if union_member.idl_type and union_member.idl_type.is_object:
-        return TextNode("DCHECK({}.IsObject());".format(assignment_value))
     if union_member.type_info.is_gc_type:
         return TextNode("DCHECK({});".format(assignment_value))
 
@@ -481,7 +479,7 @@ def make_factory_methods(cg_context):
             # Shortcut to reduce the binary size
             S("blink_value",
               (_format("auto&& ${blink_value} = "
-                       "ScriptValue(${isolate}, ${v8_value});"))))
+                       "ScriptObject(${isolate}, ${v8_value});"))))
 
     # 11. If Type(V) is Boolean, then:
     # 11.1. If types includes boolean, ...

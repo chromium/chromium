@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 
+#include <array>
 #include <map>
 #include <memory>
 
@@ -383,8 +379,9 @@ TEST_F(WebContentsModalDialogManagerTest, CloseDialogs) {
 // Test that CloseAllDialogs does what it says.
 TEST_F(WebContentsModalDialogManagerTest, CloseAllDialogs) {
   const int kWindowCount = 4;
-  NativeManagerTracker trackers[kWindowCount];
-  TestNativeWebContentsModalDialogManager* native_managers[kWindowCount];
+  std::array<NativeManagerTracker, kWindowCount> trackers;
+  std::array<TestNativeWebContentsModalDialogManager*, kWindowCount>
+      native_managers;
   for (int i = 0; i < kWindowCount; i++) {
     const gfx::NativeWindow dialog = MakeFakeDialog();
     native_managers[i] =

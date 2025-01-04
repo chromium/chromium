@@ -26,17 +26,10 @@
 
 namespace ui {
 
-MotionEventAndroidNative::~MotionEventAndroidNative() {
-  CHECK(base::android::BuildInfo::GetInstance()->sdk_int() >=
-        base::android::SDK_VERSION_S);
-  // If check to suppress the compiler warning.
-  if (__builtin_available(android 31, *)) {
-    AInputEvent_release(native_event_);
-  }
-}
+MotionEventAndroidNative::~MotionEventAndroidNative() = default;
 
 MotionEventAndroidNative::MotionEventAndroidNative(
-    const AInputEvent* event,
+    base::android::ScopedInputEvent input_event,
     float pix_to_dip,
     float ticks_x,
     float ticks_y,
@@ -80,20 +73,20 @@ MotionEventAndroidNative::MotionEventAndroidNative(
                          for_touch_handle,
                          pointer0,
                          pointer1),
-      native_event_(event),
-      y_offset_pix_(y_offset_pix) {}
+      native_event_(std::move(input_event)),
+      y_offset_pix_(y_offset_pix) {
+  CHECK(native_event_);
+}
 
 // static
 std::unique_ptr<MotionEventAndroid> MotionEventAndroidNative::Create(
-    const AInputEvent* event,
+    base::android::ScopedInputEvent input_event,
     float pix_to_dip,
     int y_offset_pix) {
-  // We need to call release on AInputEvent_release on destruction which was
-  // introduced in API level 31 - Android S.
-  CHECK(base::android::BuildInfo::GetInstance()->sdk_int() >=
-        base::android::SDK_VERSION_S);
-  CHECK(AInputEvent_getType(event) == AINPUT_EVENT_TYPE_MOTION);
+  const AInputEvent* event = input_event.a_input_event();
+
   CHECK(event != nullptr);
+  CHECK(AInputEvent_getType(event) == AINPUT_EVENT_TYPE_MOTION);
 
   const size_t history_size = AMotionEvent_getHistorySize(event);
   // AMotionEvent_getEventTime and AMotionEvent_getHistoricalEventTime returns
@@ -152,7 +145,7 @@ std::unique_ptr<MotionEventAndroid> MotionEventAndroidNative::Create(
   }
 
   return base::WrapUnique<MotionEventAndroid>(new MotionEventAndroidNative(
-      event, pix_to_dip,
+      std::move(input_event), pix_to_dip,
       /* ticks_x= */ 0.f,
       /* ticks_y= */ 0.f,
       /* tick_multiplier= */ 0.f, oldest_event_time, latest_event_time,
@@ -170,7 +163,8 @@ int MotionEventAndroidNative::GetPointerId(size_t pointer_index) const {
   if (pointer_index < MAX_POINTERS_TO_CACHE) {
     return cached_pointers_[pointer_index].id;
   }
-  return AMotionEvent_getPointerId(native_event_, pointer_index);
+  return AMotionEvent_getPointerId(native_event_.a_input_event(),
+                                   pointer_index);
 }
 
 float MotionEventAndroidNative::GetX(size_t pointer_index) const {
@@ -178,15 +172,17 @@ float MotionEventAndroidNative::GetX(size_t pointer_index) const {
   if (pointer_index < MAX_POINTERS_TO_CACHE) {
     return cached_pointers_[pointer_index].position.x();
   }
-  return ToDips(AMotionEvent_getX(native_event_, pointer_index));
+  return ToDips(
+      AMotionEvent_getX(native_event_.a_input_event(), pointer_index));
 }
 float MotionEventAndroidNative::GetY(size_t pointer_index) const {
   DCHECK_LT(pointer_index, GetPointerCount());
   if (pointer_index < MAX_POINTERS_TO_CACHE) {
     return cached_pointers_[pointer_index].position.y();
   }
-  return ToDips(AMotionEvent_getY(native_event_, pointer_index) +
-                y_offset_pix_);
+  return ToDips(
+      AMotionEvent_getY(native_event_.a_input_event(), pointer_index) +
+      y_offset_pix_);
 }
 
 float MotionEventAndroidNative::GetTouchMajor(size_t pointer_index) const {
@@ -194,7 +190,8 @@ float MotionEventAndroidNative::GetTouchMajor(size_t pointer_index) const {
   if (pointer_index < MAX_POINTERS_TO_CACHE) {
     return cached_pointers_[pointer_index].touch_major;
   }
-  return ToDips(AMotionEvent_getTouchMajor(native_event_, pointer_index));
+  return ToDips(
+      AMotionEvent_getTouchMajor(native_event_.a_input_event(), pointer_index));
 }
 
 float MotionEventAndroidNative::GetTouchMinor(size_t pointer_index) const {
@@ -202,7 +199,8 @@ float MotionEventAndroidNative::GetTouchMinor(size_t pointer_index) const {
   if (pointer_index < MAX_POINTERS_TO_CACHE) {
     return cached_pointers_[pointer_index].touch_minor;
   }
-  return ToDips(AMotionEvent_getTouchMajor(native_event_, pointer_index));
+  return ToDips(
+      AMotionEvent_getTouchMajor(native_event_.a_input_event(), pointer_index));
 }
 
 float MotionEventAndroidNative::GetOrientation(size_t pointer_index) const {
@@ -210,15 +208,15 @@ float MotionEventAndroidNative::GetOrientation(size_t pointer_index) const {
   if (pointer_index < MAX_POINTERS_TO_CACHE) {
     return cached_pointers_[pointer_index].orientation;
   }
-  return ToValidFloat(
-      AMotionEvent_getOrientation(native_event_, pointer_index));
+  return ToValidFloat(AMotionEvent_getOrientation(native_event_.a_input_event(),
+                                                  pointer_index));
 }
 
 float MotionEventAndroidNative::GetPressure(size_t pointer_index) const {
   if (GetAction() == MotionEvent::Action::UP) {
     return 0.f;
   }
-  return AMotionEvent_getPressure(native_event_, pointer_index);
+  return AMotionEvent_getPressure(native_event_.a_input_event(), pointer_index);
 }
 
 float MotionEventAndroidNative::GetTiltX(size_t pointer_index) const {
@@ -228,9 +226,9 @@ float MotionEventAndroidNative::GetTiltX(size_t pointer_index) const {
   }
   float tilt_x, tilt_y;
   float tilt_rad = ToValidFloat(AMotionEvent_getAxisValue(
-      native_event_, AMOTION_EVENT_AXIS_TILT, pointer_index));
-  float orientation_rad =
-      ToValidFloat(AMotionEvent_getOrientation(native_event_, pointer_index));
+      native_event_.a_input_event(), AMOTION_EVENT_AXIS_TILT, pointer_index));
+  float orientation_rad = ToValidFloat(AMotionEvent_getOrientation(
+      native_event_.a_input_event(), pointer_index));
   ConvertTiltOrientationToTiltXY(tilt_rad, orientation_rad, &tilt_x, &tilt_y);
   return tilt_x;
 }
@@ -241,9 +239,9 @@ float MotionEventAndroidNative::GetTiltY(size_t pointer_index) const {
   }
   float tilt_x, tilt_y;
   float tilt_rad = ToValidFloat(AMotionEvent_getAxisValue(
-      native_event_, AMOTION_EVENT_AXIS_TILT, pointer_index));
-  float orientation_rad =
-      ToValidFloat(AMotionEvent_getOrientation(native_event_, pointer_index));
+      native_event_.a_input_event(), AMOTION_EVENT_AXIS_TILT, pointer_index));
+  float orientation_rad = ToValidFloat(AMotionEvent_getOrientation(
+      native_event_.a_input_event(), pointer_index));
   ConvertTiltOrientationToTiltXY(tilt_rad, orientation_rad, &tilt_x, &tilt_y);
   return tilt_y;
 }
@@ -251,8 +249,8 @@ float MotionEventAndroidNative::GetTiltY(size_t pointer_index) const {
 base::TimeTicks MotionEventAndroidNative::GetHistoricalEventTime(
     size_t historical_index) const {
   DCHECK_LT(historical_index, GetHistorySize());
-  return base::TimeTicks::FromJavaNanoTime(
-      AMotionEvent_getHistoricalEventTime(native_event_, historical_index));
+  return base::TimeTicks::FromJavaNanoTime(AMotionEvent_getHistoricalEventTime(
+      native_event_.a_input_event(), historical_index));
 }
 
 float MotionEventAndroidNative::GetHistoricalTouchMajor(
@@ -261,23 +259,23 @@ float MotionEventAndroidNative::GetHistoricalTouchMajor(
   DCHECK_LT(pointer_index, GetPointerCount());
   DCHECK_LT(historical_index, GetHistorySize());
   return ToDips(AMotionEvent_getHistoricalTouchMajor(
-      native_event_, pointer_index, historical_index));
+      native_event_.a_input_event(), pointer_index, historical_index));
 }
 
 float MotionEventAndroidNative::GetHistoricalX(size_t pointer_index,
                                                size_t historical_index) const {
   DCHECK_LT(pointer_index, GetPointerCount());
   DCHECK_LT(historical_index, GetHistorySize());
-  return ToDips(AMotionEvent_getHistoricalX(native_event_, pointer_index,
-                                            historical_index));
+  return ToDips(AMotionEvent_getHistoricalX(native_event_.a_input_event(),
+                                            pointer_index, historical_index));
 }
 
 float MotionEventAndroidNative::GetHistoricalY(size_t pointer_index,
                                                size_t historical_index) const {
   DCHECK_LT(pointer_index, GetPointerCount());
   DCHECK_LT(historical_index, GetHistorySize());
-  return ToDips(AMotionEvent_getHistoricalY(native_event_, pointer_index,
-                                            historical_index) +
+  return ToDips(AMotionEvent_getHistoricalY(native_event_.a_input_event(),
+                                            pointer_index, historical_index) +
                 y_offset_pix_);
 }
 
@@ -288,7 +286,7 @@ ui::MotionEvent::ToolType MotionEventAndroidNative::GetToolType(
     return cached_pointers_[pointer_index].tool_type;
   }
   return FromAndroidToolType(
-      AMotionEvent_getToolType(native_event_, pointer_index));
+      AMotionEvent_getToolType(native_event_.a_input_event(), pointer_index));
 }
 
 float MotionEventAndroidNative::GetXPix(size_t pointer_index) const {

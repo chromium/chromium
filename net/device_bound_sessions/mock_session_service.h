@@ -27,7 +27,8 @@ class SessionServiceMock : public SessionService {
               RegisterBoundSession,
               (OnAccessCallback on_access_callback,
                RegistrationFetcherParam registration_params,
-               const IsolationInfo& isolation_info),
+               const IsolationInfo& isolation_info,
+               const NetLogWithSource& net_log),
               (override));
   MOCK_METHOD(std::optional<Session::Id>,
               GetAnySessionRequiringDeferral,
@@ -55,6 +56,14 @@ class SessionServiceMock : public SessionService {
               DeleteSession,
               (const SchemefulSite& site, const Session::Id& id),
               (override));
+  MOCK_METHOD(
+      void,
+      DeleteAllSessions,
+      (std::optional<base::Time> created_after_time,
+       std::optional<base::Time> created_before_time,
+       base::RepeatingCallback<bool(const net::SchemefulSite&)> site_matcher,
+       base::OnceClosure completion_callback),
+      (override));
 };
 
 }  // namespace net::device_bound_sessions

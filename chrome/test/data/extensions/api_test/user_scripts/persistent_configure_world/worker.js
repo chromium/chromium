@@ -94,8 +94,8 @@ async function runSecondSession() {
   // Verify user script still uses the customized csp.
   chrome.test.assertEq(['customized_csp'], await getInjectedElementIds(tab.id));
 
-  // Disable messaging and csp (by omitting its entry).
-  chrome.userScripts.configureWorld({messaging: false});
+  // Reset to defaults.
+  chrome.userScripts.resetWorldConfiguration();
   chrome.test.succeed();
 }
 

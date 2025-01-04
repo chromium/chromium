@@ -63,8 +63,9 @@ class BackGestureEventRecorder : public ui::EventHandler {
   void Reset() {
     received_event_types_.clear();
     wait_for_event_ = ui::EventType::kUnknown;
-    if (run_loop_)
+    if (run_loop_) {
       run_loop_->Quit();
+    }
   }
 
  private:

@@ -23,9 +23,12 @@ class VIZ_SERVICE_EXPORT OcclusionCuller {
 
   ~OcclusionCuller();
 
-  void RemoveOverdrawQuads(AggregatedFrame* frame, float device_scale_factor);
+  void UpdateDeviceScaleFactor(float device_scale_factor);
+  void RemoveOverdrawQuads(AggregatedFrame* frame);
 
  private:
+  float device_scale_factor_ = 1.0f;
+
   const raw_ptr<OverlayProcessorInterface> overlay_processor_;
   const RendererSettings::OcclusionCullerSettings settings_;
 };

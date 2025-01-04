@@ -21,9 +21,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
@@ -525,6 +527,8 @@ void TrustedSignalsRequestManager::StartBatchedTrustedSignalsRequest() {
     return;
   }
 
+  base::ElapsedTimer compute_batch_cost;
+
   std::unique_ptr<TrustedSignalsUrlBuilder> url_builder;
   bool split_fetch = base::FeatureList::IsEnabled(
       blink::features::kFledgeSplitTrustedSignalsFetchingURL);
@@ -549,6 +553,12 @@ void TrustedSignalsRequestManager::StartBatchedTrustedSignalsRequest() {
 
   IssueRequests(*url_builder.get());
   queued_requests_.clear();
+
+  base::UmaHistogramMicrosecondsTimes(
+      type_ == Type::kBiddingSignals
+          ? "Ads.InterestGroup.Auction.TrustedBidderBatchCompute"
+          : "Ads.InterestGroup.Auction.TrustedSellerBatchCompute",
+      compute_batch_cost.Elapsed());
 
   return;
 }

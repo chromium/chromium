@@ -17,6 +17,7 @@
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/ui/affiliated_group.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#include "components/password_manager/core/browser/ui/passwords_provider.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
 
@@ -46,7 +47,8 @@ class PasswordsGrouper;
 // Chrome) should not trigger a check.
 class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
                                 public webauthn::PasskeyModel::Observer,
-                                public PasswordStoreConsumer {
+                                public PasswordStoreConsumer,
+                                public PasswordsProvider {
  public:
   // Observer interface. Clients can implement this to get notified about
   // changes to the list of saved passwords or if a given password was edited
@@ -180,7 +182,7 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   // single entity. Uniqueness is determined using site name, username,
   // password. For Android credentials package name is also taken into account
   // and for Federated credentials federation origin.
-  std::vector<CredentialUIEntry> GetSavedCredentials() const;
+  std::vector<CredentialUIEntry> GetSavedCredentials() const override;
 
   // Returns a list of affiliated groups for the Password Manager.
   std::vector<AffiliatedGroup> GetAffiliatedGroups();

@@ -151,8 +151,9 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, BrowserFullscreenShowTopView) {
 #else
   // In immersive fullscreen mode, the top view should show up; otherwise, it
   // always hides.
-  if (browser_view->immersive_mode_controller()->IsEnabled())
+  if (browser_view->immersive_mode_controller()->IsEnabled()) {
     top_view_in_browser_fullscreen = true;
+  }
 #endif
   EXPECT_EQ(top_view_in_browser_fullscreen, browser_view->GetTabStripVisible());
   // The 'Always Show Bookmarks Bar' should be enabled if top view is shown.
@@ -229,8 +230,9 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, FullscreenShowBookmarkBar) {
 
   // If the bookmark bar is not showing, enable showing it so that we can check
   // its state.
-  if (!browser_view->IsBookmarkBarVisible())
+  if (!browser_view->IsBookmarkBarVisible()) {
     chrome::ToggleBookmarkBar(browser());
+  }
 #if BUILDFLAG(IS_MAC)
   // Disable showing toolbar in fullscreen mode to make its behavior similar to
   // other platforms.
@@ -287,16 +289,18 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, WindowActivatedAccessibleEvent) {
   // This event is asynchronous, it is emitted as a response to a system window
   // event. It is possible that we haven't received it yet when we run this test
   // and we need to explicitly wait for it.
-  if (ax_observer_.GetCount(ax::mojom::Event::kWindowActivated) == 0)
+  if (ax_observer_.GetCount(ax::mojom::Event::kWindowActivated) == 0) {
     ax_observer_.WaitForEvent(ax::mojom::Event::kWindowActivated);
+  }
   ASSERT_EQ(1, ax_observer_.GetCount(ax::mojom::Event::kWindowActivated));
 
   // Create a new browser window and wait for event again.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::NEW_WINDOW,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
-  if (ax_observer_.GetCount(ax::mojom::Event::kWindowActivated) == 1)
+  if (ax_observer_.GetCount(ax::mojom::Event::kWindowActivated) == 1) {
     ax_observer_.WaitForEvent(ax::mojom::Event::kWindowActivated);
+  }
   ASSERT_EQ(2, ax_observer_.GetCount(ax::mojom::Event::kWindowActivated));
 }
 #endif
@@ -356,31 +360,6 @@ IN_PROC_BROWSER_TEST_F(BrowserViewFullscreenTest, MAYBE_Fullscreen) {
   }
 }
 
-// Class for BrowserView unit tests for the loading animation feature.
-// Creates a Browser with a |features_list| where
-// kStopLoadingAnimationForHiddenWindow is enabled before setting GPU thread.
-class BrowserViewTestWithStopLoadingAnimationForHiddenWindow
-    : public BrowserViewTest {
- public:
-  BrowserViewTestWithStopLoadingAnimationForHiddenWindow() {
-    feature_list_.InitAndEnableFeature(
-        features::kStopLoadingAnimationForHiddenWindow);
-  }
-
-  BrowserViewTestWithStopLoadingAnimationForHiddenWindow(
-      const BrowserViewTestWithStopLoadingAnimationForHiddenWindow&) = delete;
-  BrowserViewTestWithStopLoadingAnimationForHiddenWindow& operator=(
-      const BrowserViewTestWithStopLoadingAnimationForHiddenWindow&) = delete;
-
- protected:
-  BrowserView* browser_view() {
-    return BrowserView::GetBrowserViewForBrowser(browser());
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // TODO(b/342017720): Re-enable on Mac
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_LoadingAnimationChangeOnMinimizeAndRestore \
@@ -389,7 +368,7 @@ class BrowserViewTestWithStopLoadingAnimationForHiddenWindow
 #define MAYBE_LoadingAnimationChangeOnMinimizeAndRestore \
   LoadingAnimationChangeOnMinimizeAndRestore
 #endif  // BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(BrowserViewTestWithStopLoadingAnimationForHiddenWindow,
+IN_PROC_BROWSER_TEST_F(BrowserViewTest,
                        MAYBE_LoadingAnimationChangeOnMinimizeAndRestore) {
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver navigation_watcher(
@@ -411,8 +390,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTestWithStopLoadingAnimationForHiddenWindow,
     run_loop.Run();
   }
 
-  EXPECT_TRUE(browser()->tab_strip_model()->TabsAreLoading());
-  EXPECT_FALSE(browser_view()->IsLoadingAnimationRunningForTesting());
+  EXPECT_TRUE(browser()->tab_strip_model()->TabsNeedLoadingUI());
+  EXPECT_FALSE(browser_view()->IsLoadingAnimationRunning());
 
   {
     base::RunLoop run_loop;
@@ -424,12 +403,12 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTestWithStopLoadingAnimationForHiddenWindow,
     run_loop.Run();
   }
 
-  EXPECT_TRUE(browser()->tab_strip_model()->TabsAreLoading());
-  EXPECT_TRUE(browser_view()->IsLoadingAnimationRunningForTesting());
+  EXPECT_TRUE(browser()->tab_strip_model()->TabsNeedLoadingUI());
+  EXPECT_TRUE(browser_view()->IsLoadingAnimationRunning());
 
   // Now block for the navigation to complete.
   navigation_watcher.Wait();
-  EXPECT_FALSE(browser()->tab_strip_model()->TabsAreLoading());
+  EXPECT_FALSE(browser()->tab_strip_model()->TabsNeedLoadingUI());
 }
 
 // On Mac, voiceover treats tab modal dialogs as native windows, so setting an

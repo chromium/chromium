@@ -179,7 +179,6 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
 
     @Override
     public void onFinishNativeInitialization() {
-        super.onFinishNativeInitialization();
         ensureSceneLayersExist();
     }
 
@@ -193,7 +192,6 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
 
     @Override
     public void destroy() {
-        super.destroy();
         if (mTabSceneLayer != null) {
             mTabSceneLayer.destroy();
             mTabSceneLayer = null;
@@ -212,7 +210,6 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     @Override
     protected void updateLayout(long time, long dt) {
         ensureSceneLayersExist();
-        super.updateLayout(time, dt);
         if (!hasLayoutTab()) return;
 
         boolean needUpdate = updateSnap(dt, getLayoutTab());
@@ -456,9 +453,6 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
             boolean background,
             float originX,
             float originY) {
-        super.onTabCreated(
-                time, tabId, tabIndex, sourceTabId, newIsIncognito, background, originX, originY);
-
         // Background tab creation or creation while hiding does not trigger a Hub layout
         // transition.
         if (background || isStartingToHide()) return;
@@ -526,6 +520,10 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
                 new ShrinkExpandAnimationData(
                         initialRect,
                         finalRect,
+                        /* initialTopCornerRadius= */ 0,
+                        /* initialBottomCornerRadius= */ 0,
+                        /* finalTopCornerRadius= */ 0,
+                        /* finalBottomCornerRadius= */ 0,
                         /* thumbnailSize= */ null,
                         /* useFallbackAnimation= */ false));
 
@@ -586,8 +584,6 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
             ResourceManager resourceManager,
             BrowserControlsStateProvider browserControls) {
         ensureSceneLayersExist();
-        super.updateSceneLayer(
-                viewport, contentViewport, tabContentManager, resourceManager, browserControls);
 
         if (mCurrentSceneLayer != mTabSceneLayer) return;
 

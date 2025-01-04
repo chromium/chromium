@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/boca/babelorca/live_caption_controller_wrapper.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 
 namespace captions {
 class CaptionBubbleContext;
@@ -34,6 +35,9 @@ class LiveCaptionControllerWrapperImpl : public LiveCaptionControllerWrapper {
       const media::SpeechRecognitionResult& result) override;
 
   void ToggleLiveCaptionForBabelOrca(bool enabled) override;
+
+  void OnLanguageIdentificationEvent(
+      const media::mojom::LanguageIdentificationEventPtr& event) override;
 
   void OnAudioStreamEnd() override;
 

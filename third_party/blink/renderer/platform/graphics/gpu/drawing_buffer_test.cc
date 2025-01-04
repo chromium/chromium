@@ -35,6 +35,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer.h"
 
+#include <array>
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
@@ -45,8 +46,8 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer_test_helpers.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/test/test_webgraphics_shared_image_interface_provider.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "ui/gl/gpu_preference.h"
@@ -87,10 +88,10 @@ class DrawingBufferTest : public Test {
   void SetAndSaveRestoreState(bool invert) {
     GLES2InterfaceForTests* gl_ = drawing_buffer_->ContextGLForTests();
     GLboolean scissor_enabled = !invert;
-    GLfloat clear_color[4] = {0.1, 0.2, 0.3, 0.4};
+    std::array<GLfloat, 4> clear_color = {0.1, 0.2, 0.3, 0.4};
     GLfloat clear_depth = 0.8;
     GLint clear_stencil = 37;
-    GLboolean color_mask[4] = {invert, !invert, !invert, invert};
+    std::array<GLboolean, 4> color_mask = {invert, !invert, !invert, invert};
     GLboolean depth_mask = invert;
     GLboolean stencil_mask = invert;
     GLint pack_alignment = 7;
@@ -597,12 +598,12 @@ struct DepthStencilTestCase {
 // desktop OpenGL drivers that support this extension do not consider a
 // framebuffer with only a depth or a stencil buffer attached to be complete.
 TEST(DrawingBufferDepthStencilTest, packedDepthStencilSupported) {
-  DepthStencilTestCase cases[] = {
+  auto cases = std::to_array<DepthStencilTestCase>({
       DepthStencilTestCase(false, false, 0, "neither"),
       DepthStencilTestCase(true, false, 1, "stencil only"),
       DepthStencilTestCase(false, true, 1, "depth only"),
       DepthStencilTestCase(true, true, 1, "both"),
-  };
+  });
 
   for (size_t i = 0; i < std::size(cases); i++) {
     SCOPED_TRACE(cases[i].test_case_name);

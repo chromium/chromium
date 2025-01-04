@@ -248,7 +248,7 @@ using base::UserMetricsAction;
           l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_EDIT_BOOKMARK);
     }
   }
-  return [super validateCommand:command];
+  [super validateCommand:command];
 }
 
 #pragma mark - Key Command Actions

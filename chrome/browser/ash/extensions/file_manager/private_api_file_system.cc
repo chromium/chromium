@@ -312,7 +312,8 @@ void OnImageSearchDone(
 ExtensionFunction::ResponseAction
 FileManagerPrivateEnableExternalFileSchemeFunction::Run() {
   ChildProcessSecurityPolicy::GetInstance()->GrantRequestScheme(
-      render_frame_host()->GetProcess()->GetID(), content::kExternalFileScheme);
+      render_frame_host()->GetProcess()->GetDeprecatedID(),
+      content::kExternalFileScheme);
   return RespondNow(NoArguments());
 }
 
@@ -352,8 +353,9 @@ ExtensionFunction::ResponseAction FileManagerPrivateGrantAccessFunction::Run() {
       backend->GrantFileAccessToOrigin(url::Origin::Create(source_url()),
                                        file_system_url.virtual_path());
       content::ChildProcessSecurityPolicy::GetInstance()
-          ->GrantCreateReadWriteFile(render_frame_host()->GetProcess()->GetID(),
-                                     file_system_url.path());
+          ->GrantCreateReadWriteFile(
+              render_frame_host()->GetProcess()->GetDeprecatedID(),
+              file_system_url.path());
     }
   }
   return RespondNow(NoArguments());

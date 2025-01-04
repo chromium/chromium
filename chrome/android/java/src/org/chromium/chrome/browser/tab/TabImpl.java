@@ -105,7 +105,7 @@ import java.util.Objects;
  * Implementation of the interface {@link Tab}. Contains and manages a {@link ContentView}. This
  * class is not intended to be extended.
  */
-class TabImpl implements Tab, SensitiveContentClient.Observer {
+class TabImpl implements Tab {
     /** Used for logging. */
     private static final String TAG = "Tab";
 
@@ -290,6 +290,12 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
     private String mPendingNativePageHost;
 
     private SmoothTransitionDelegate mNativePageSmoothTransitionDelegate;
+
+    /**
+     * Notified when the content sensitivity changes, and sets the content sensitivity property on
+     * the {@link TabState}.
+     */
+    private SensitiveContentClient.Observer mSensitiveContentClientObserver;
 
     /** Tracks the origin of a background color change. */
     @IntDef({
@@ -502,7 +508,7 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
 
     @CalledByNative
     @Override
-    public String getTitle() {
+    public @JniType("std::u16string") String getTitle() {
         if (TextUtils.isEmpty(mTitle)) updateTitle();
         return mTitle;
     }
@@ -1013,6 +1019,21 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
     public final void hide(@TabHidingType int type) {
         try {
             TraceEvent.begin("Tab.hide");
+
+            if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList
+                            .ANDROID_DISCONNECT_FILE_CHOOSER_ON_TAB_DEACTIVATE_KILL_SWITCH)) {
+                WebContents webContents = getWebContents();
+                // File select related dialogs typical does not have indication on which origin or
+                // tab made the request. So to avoid security issues from user confusion, if a tab
+                // changes makes this no longer the active tab, then disconnect any file select
+                // dialogs. Notably only want to do this for tab change, but not (as an example)
+                // for hiding the activity.
+                if (type == TabHidingType.CHANGED_TABS && webContents != null) {
+                    webContents.disconnectFileSelectListenerIfAny();
+                }
+            }
+
             if (isHidden()) return;
             mIsHidden = true;
             updateInteractableState();
@@ -1911,11 +1932,12 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
                     && ChromeFeatureList.isEnabled(SensitiveContentFeatures.SENSITIVE_CONTENT)
                     && ChromeFeatureList.isEnabled(
                             SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)) {
+                mSensitiveContentClientObserver = this::setTabHasSensitiveContent;
                 // Adding the observation has to happen after the native `initWebContents`, so that
                 // the {@link SensitiveContentClient} is properly initialized.
                 SensitiveContentClient sensitiveContentClient =
                         SensitiveContentClient.fromWebContents(webContents);
-                sensitiveContentClient.addObserver(this);
+                sensitiveContentClient.addObserver(mSensitiveContentClientObserver);
                 sensitiveContentClient.restoreContentSensitivityFromTabState(
                         getTabHasSensitiveContent());
             }
@@ -2372,7 +2394,8 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
                 && ChromeFeatureList.isEnabled(SensitiveContentFeatures.SENSITIVE_CONTENT)
                 && ChromeFeatureList.isEnabled(
                         SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)) {
-            SensitiveContentClient.fromWebContents(mWebContents).removeObserver(this);
+            SensitiveContentClient.fromWebContents(mWebContents)
+                    .removeObserver(mSensitiveContentClientObserver);
         }
 
         if (mAutofillProvider != null) {
@@ -2537,12 +2560,6 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
         }
     }
 
-    // SensitiveContentClient.Observer
-    @Override
-    public void onContentSensitivityChanged(boolean contentIsSensitive) {
-        setTabHasSensitiveContent(contentIsSensitive);
-    }
-
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
@@ -2576,12 +2593,21 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
         void onPhysicalBackingSizeChanged(
                 long nativeTabAndroid, WebContents webContents, int width, int height);
 
-        void setActiveNavigationEntryTitleForUrl(long nativeTabAndroid, String url, String title);
+        void setActiveNavigationEntryTitleForUrl(
+                long nativeTabAndroid,
+                @JniType("std::string") String url,
+                @JniType("std::u16string") String title);
 
         void loadOriginalImage(long nativeTabAndroid);
 
         boolean handleNonNavigationAboutURL(GURL url);
 
         void onShow(long nativeTabAndroid);
+    }
+
+    @VisibleForTesting
+    @ChildProcessImportance
+    int getImportance() {
+        return mImportance;
     }
 }

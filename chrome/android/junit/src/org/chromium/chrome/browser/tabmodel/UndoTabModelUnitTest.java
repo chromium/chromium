@@ -94,7 +94,7 @@ public class UndoTabModelUnitTest {
 
         when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
 
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
 
         TabModelJniBridgeJni.setInstanceForTesting(mTabModelJniBridge);
         when(mTabModelJniBridge.init(any(), any(), anyInt(), anyBoolean()))

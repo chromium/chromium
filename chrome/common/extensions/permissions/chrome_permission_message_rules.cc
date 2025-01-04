@@ -319,8 +319,7 @@ ChromePermissionMessageRule::ChromePermissionMessageRule(
 ChromePermissionMessageRule& ChromePermissionMessageRule::operator=(
     ChromePermissionMessageRule&& other) = default;
 
-ChromePermissionMessageRule::~ChromePermissionMessageRule() {
-}
+ChromePermissionMessageRule::~ChromePermissionMessageRule() = default;
 
 std::set<APIPermissionID> ChromePermissionMessageRule::required_permissions()
     const {

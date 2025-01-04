@@ -543,40 +543,111 @@ void StyleRule::TraceAfterDispatch(blink::Visitor* visitor) const {
   StyleRuleBase::TraceAfterDispatch(visitor);
 }
 
-void StyleRuleBase::Reparent(StyleRule* new_parent) {
+namespace {
+
+bool RenestRules(const HeapVector<Member<StyleRuleBase>>& old_rules,
+                 StyleRule* new_parent,
+                 HeapVector<Member<StyleRuleBase>>& result) {
+  bool renested_any = false;
+  for (StyleRuleBase* old_rule : old_rules) {
+    StyleRuleBase* renested = old_rule->Renest(new_parent);
+    renested_any |= (old_rule != renested);
+    result.push_back(renested);
+  }
+  return renested_any;
+}
+
+template <typename T>
+StyleRuleBase* RenestGroupRule(T* group_rule, StyleRule* new_parent) {
+  HeapVector<Member<StyleRuleBase>> new_child_rules;
+  if (!RenestRules(group_rule->ChildRules(), new_parent, new_child_rules)) {
+    return group_rule;
+  }
+  return MakeGarbageCollected<T>(*group_rule, std::move(new_child_rules));
+}
+
+}  // namespace
+
+StyleRuleBase* StyleRuleBase::Renest(StyleRule* new_parent) {
   switch (GetType()) {
-    case kStyle:
-      CSSSelectorList::Reparent(To<StyleRule>(this)->SelectorArray(),
-                                new_parent);
-      break;
-    case kScope:
+    case kStyle: {
+      HeapVector<CSSSelector> selectors;
+      if (!CSSSelectorList::Renest(To<StyleRule>(this)->FirstSelector(),
+                                   new_parent, selectors)) {
+        return this;
+      }
+      auto* new_rule = StyleRule::Create(
+          selectors, To<StyleRule>(this)->Properties().ImmutableCopyIfNeeded());
+      if (HeapVector<Member<StyleRuleBase>>* child_rules =
+              To<StyleRule>(this)->ChildRules()) {
+        for (StyleRuleBase* child_rule : *child_rules) {
+          new_rule->AddChildRule(child_rule->Renest(new_rule));
+        }
+      }
+      return new_rule;
+    }
+    case kScope: {
+      const StyleScope* old_style_scope =
+          &To<StyleRuleScope>(this)->GetStyleScope();
+      const StyleScope* new_style_scope = old_style_scope->Renest(new_parent);
+      if (old_style_scope == new_style_scope) {
+        return this;
+      }
+      CHECK(new_style_scope);
+      HeapVector<Member<StyleRuleBase>> new_child_rules;
+      RenestRules(To<StyleRuleScope>(this)->ChildRules(),
+                  new_style_scope->RuleForNesting(), new_child_rules);
+      // Note that `new_child_rules` is usable here even if `RenestRules`
+      // returned false.
+      return MakeGarbageCollected<StyleRuleScope>(*new_style_scope,
+                                                  std::move(new_child_rules));
+    }
     case kLayerBlock:
+      return RenestGroupRule(To<StyleRuleLayerBlock>(this), new_parent);
     case kContainer:
+      return RenestGroupRule(To<StyleRuleContainer>(this), new_parent);
     case kMedia:
+      return RenestGroupRule(To<StyleRuleMedia>(this), new_parent);
     case kSupports:
-    case kStartingStyle:
-      for (StyleRuleBase* child :
-           DynamicTo<StyleRuleGroup>(this)->ChildRules()) {
-        child->Reparent(new_parent);
+      return RenestGroupRule(To<StyleRuleSupports>(this), new_parent);
+    case kStartingStyle: {
+      HeapVector<Member<StyleRuleBase>> result;
+      if (!RenestRules(To<StyleRuleStartingStyle>(this)->ChildRules(),
+                       new_parent, result)) {
+        return this;
       }
-      break;
+      return MakeGarbageCollected<StyleRuleStartingStyle>(std::move(result));
+    }
     case kPage:
-      for (StyleRuleBase* child :
-           DynamicTo<StyleRulePage>(this)->ChildRules()) {
-        child->Reparent(new_parent);
-      }
-      break;
+      // Can not contain style rules.
+      return this;
     case kMixin:
     case kApplyMixin:
       // The parent pointers in mixins don't really matter;
       // they are always replaced during application anyway.
-      break;
-    case kNestedDeclarations:
-      // CSSNestedDeclarations rules hold a *copy* of their parent
-      // selector instead of just referencing them with '&'.
-      DynamicTo<StyleRuleNestedDeclarations>(this)->ReplaceSelectorList(
-          new_parent->SelectorArray());
-      break;
+      return this;
+    case kNestedDeclarations: {
+      auto* nested_declarations_rule = To<StyleRuleNestedDeclarations>(this);
+      // Nested declaration rules are different from regular nested style rules,
+      // since they don't refer to their parent rule with any '&' selector.
+      // Instead the outer selector list is *copied* parse-time. Now that we're
+      // being re-nested, we need to create a new StyleRuleNestedDeclarations
+      // rule, again with a copy of the new parent rule's selector list.
+      //
+      // The copying behavior does not apply to nested declaration rules held
+      // by @scope rules, however, since they always just behave like
+      // :where(:scope).
+      if (nested_declarations_rule->NestingType() == CSSNestingType::kScope) {
+        return this;
+      }
+      StyleRule* old_inner_rule = nested_declarations_rule->InnerStyleRule();
+      HeapVector<CSSSelector> selectors =
+          CSSSelectorList::Copy(new_parent->FirstSelector());
+      auto* new_inner_rule = StyleRule::Create(
+          selectors, old_inner_rule->Properties().ImmutableCopyIfNeeded());
+      return MakeGarbageCollected<StyleRuleNestedDeclarations>(
+          nested_declarations_rule->NestingType(), new_inner_rule);
+    }
     case kPageMargin:
     case kProperty:
     case kFontFace:
@@ -594,7 +665,7 @@ void StyleRuleBase::Reparent(StyleRule* new_parent) {
     case kFunction:
     case kPositionTry:
       // Cannot have any child rules.
-      break;
+      return this;
   }
 }
 
@@ -676,25 +747,6 @@ void StyleRuleScope::TraceAfterDispatch(blink::Visitor* visitor) const {
   StyleRuleGroup::TraceAfterDispatch(visitor);
 }
 
-void StyleRuleScope::SetPreludeText(const ExecutionContext* execution_context,
-                                    String value,
-                                    CSSNestingType nesting_type,
-                                    StyleRule* parent_rule_for_nesting,
-                                    StyleSheetContents* style_sheet) {
-  auto* parser_context =
-      MakeGarbageCollected<CSSParserContext>(*execution_context);
-  CSSParserTokenStream stream(value);
-
-  style_scope_ = StyleScope::Parse(stream, parser_context, nesting_type,
-                                   parent_rule_for_nesting, style_sheet);
-  if (!stream.AtEnd()) {
-    style_scope_ = nullptr;
-  }
-
-  // Reparent rules within the @scope's body.
-  Reparent(style_scope_->RuleForNesting());
-}
-
 StyleRuleGroup::StyleRuleGroup(RuleType type,
                                HeapVector<Member<StyleRuleBase>> rules)
     : StyleRuleBase(type), child_rules_(std::move(rules)) {}
@@ -742,12 +794,17 @@ String StyleRuleBase::LayerNameAsString(
 }
 
 StyleRuleLayerBlock::StyleRuleLayerBlock(
-    LayerName&& name,
+    LayerName name,
     HeapVector<Member<StyleRuleBase>> rules)
     : StyleRuleGroup(kLayerBlock, std::move(rules)), name_(std::move(name)) {}
 
 StyleRuleLayerBlock::StyleRuleLayerBlock(const StyleRuleLayerBlock& other) =
     default;
+
+StyleRuleLayerBlock::StyleRuleLayerBlock(
+    const StyleRuleLayerBlock& other,
+    HeapVector<Member<StyleRuleBase>> rules)
+    : StyleRuleLayerBlock(other.name_, std::move(rules)) {}
 
 void StyleRuleLayerBlock::TraceAfterDispatch(blink::Visitor* visitor) const {
   StyleRuleGroup::TraceAfterDispatch(visitor);
@@ -839,6 +896,10 @@ StyleRuleMedia::StyleRuleMedia(const MediaQuerySet* media,
                                HeapVector<Member<StyleRuleBase>> rules)
     : StyleRuleCondition(kMedia, std::move(rules)), media_queries_(media) {}
 
+StyleRuleMedia::StyleRuleMedia(const StyleRuleMedia& other,
+                               HeapVector<Member<StyleRuleBase>> rules)
+    : StyleRuleMedia(other.media_queries_, std::move(rules)) {}
+
 void StyleRuleMedia::TraceAfterDispatch(blink::Visitor* visitor) const {
   StyleRuleCondition::TraceAfterDispatch(visitor);
   visitor->Trace(media_queries_);
@@ -853,6 +914,12 @@ StyleRuleSupports::StyleRuleSupports(const String& condition_text,
 StyleRuleSupports::StyleRuleSupports(const StyleRuleSupports& supports_rule)
     : StyleRuleCondition(supports_rule),
       condition_is_supported_(supports_rule.condition_is_supported_) {}
+
+StyleRuleSupports::StyleRuleSupports(const StyleRuleSupports& other,
+                                     HeapVector<Member<StyleRuleBase>> rules)
+    : StyleRuleSupports(other.condition_text_,
+                        other.condition_is_supported_,
+                        std::move(rules)) {}
 
 void StyleRuleSupports::SetConditionText(
     const ExecutionContext* execution_context,
@@ -880,6 +947,10 @@ StyleRuleContainer::StyleRuleContainer(const StyleRuleContainer& container_rule)
   container_query_ =
       MakeGarbageCollected<ContainerQuery>(*container_rule.container_query_);
 }
+
+StyleRuleContainer::StyleRuleContainer(const StyleRuleContainer& other,
+                                       HeapVector<Member<StyleRuleBase>> rules)
+    : StyleRuleContainer(*other.container_query_, std::move(rules)) {}
 
 void StyleRuleContainer::SetConditionText(
     const ExecutionContext* execution_context,

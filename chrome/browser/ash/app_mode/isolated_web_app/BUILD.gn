@@ -30,10 +30,10 @@ static_library("isolated_web_app") {
 
 # A separate library is needed to avoid circular dependency between
 # //c/b/web_applications and //c/b/ash/app_mode/isolated_web_app.
-static_library("trust_check") {
+static_library("policy_util") {
   sources = [
-    "kiosk_iwa_trust_check.cc",
-    "kiosk_iwa_trust_check.h",
+    "kiosk_iwa_policy_util.cc",
+    "kiosk_iwa_policy_util.h",
   ]
   public_deps = []
   deps = [

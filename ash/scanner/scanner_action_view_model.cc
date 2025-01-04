@@ -14,6 +14,7 @@
 #include "ash/scanner/scanner_command_delegate.h"
 #include "ash/scanner/scanner_metrics.h"
 #include "ash/scanner/scanner_unpopulated_action.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -22,6 +23,7 @@
 #include "base/time/time.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/manta/proto/scanner.pb.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 
@@ -205,19 +207,20 @@ ScannerActionViewModel& ScannerActionViewModel::operator=(
 ScannerActionViewModel::~ScannerActionViewModel() = default;
 
 std::u16string ScannerActionViewModel::GetText() const {
-  // TODO(b/375967525): Replace this with finalised translated strings.
-
   switch (unpopulated_action_.action_case()) {
     case manta::proto::ScannerAction::kNewEvent:
-      return u"New event";
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SCANNER_ACTION_CREATE_EVENT_LABEL);
     case manta::proto::ScannerAction::kNewContact:
-      return u"New contact";
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SCANNER_ACTION_CREATE_CONTACT_LABEL);
     case manta::proto::ScannerAction::kNewGoogleDoc:
-      return u"New Google Doc";
+      return l10n_util::GetStringUTF16(IDS_ASH_SCANNER_ACTION_CREATE_DOC);
     case manta::proto::ScannerAction::kNewGoogleSheet:
-      return u"New Google Sheet";
+      return l10n_util::GetStringUTF16(IDS_ASH_SCANNER_ACTION_CREATE_SHEET);
     case manta::proto::ScannerAction::kCopyToClipboard:
-      return u"Copy to clipboard";
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SCANNER_ACTION_COPY_TEXT_AND_FORMAT);
     case manta::proto::ScannerAction::ACTION_NOT_SET:
       // This should only be possible if `unpopulated_action_` has been
       // previously moved.
@@ -247,6 +250,11 @@ const gfx::VectorIcon& ScannerActionViewModel::GetIcon() const {
       // previously moved.
       NOTREACHED();
   }
+}
+
+manta::proto::ScannerAction::ActionCase ScannerActionViewModel::GetActionCase()
+    const {
+  return unpopulated_action_.action_case();
 }
 
 void ScannerActionViewModel::ExecuteAction(

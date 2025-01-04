@@ -89,7 +89,7 @@ public class OmniboxActionDelegateImpl implements OmniboxActionDelegate {
     @Override
     public boolean startActivity(@NonNull Intent intent) {
         try {
-            if (IntentUtils.intentTargetsSelf(mContext, intent)) {
+            if (IntentUtils.intentTargetsSelf(intent)) {
                 IntentUtils.addTrustedIntentExtras(intent);
             }
             mContext.startActivity(intent);

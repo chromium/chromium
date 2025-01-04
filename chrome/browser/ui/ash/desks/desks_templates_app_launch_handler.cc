@@ -50,8 +50,9 @@ std::string GetBrowserAppName(
     const std::string& app_id) {
   const bool app_type_browser =
       app_restore_data->browser_extra_info.app_type_browser.value_or(false);
-  if (!app_type_browser)
+  if (!app_type_browser) {
     return std::string();
+  }
 
   const std::optional<std::string>& maybe_app_name =
       app_restore_data->browser_extra_info.app_name;
@@ -182,8 +183,9 @@ bool DesksTemplatesAppLaunchHandler::ShouldLaunchSystemWebAppOrChromeApp(
 
   // Do not try sending an existing window to the active desk and launch a new
   // instance.
-  if (is_multi_instance_window)
+  if (is_multi_instance_window) {
     return true;
+  }
 
   const bool should_launch =
       ash::DesksController::Get()->OnSingleInstanceAppLaunchingFromSavedDesk(
@@ -191,8 +193,9 @@ bool DesksTemplatesAppLaunchHandler::ShouldLaunchSystemWebAppOrChromeApp(
 
   // Notify performance tracker that some tracked windows will be moving.
   if (!should_launch) {
-    for (const auto& window : launch_list)
+    for (const auto& window : launch_list) {
       NotifyMovedSingleInstanceApp(window.first);
+    }
   }
 
   return should_launch;
@@ -254,8 +257,9 @@ void DesksTemplatesAppLaunchHandler::LaunchBrowsers() {
             chromeos::ToWindowShowState(*window_state_type);
       }
 
-      if (!current_bounds.IsEmpty())
+      if (!current_bounds.IsEmpty()) {
         create_params.initial_bounds = current_bounds;
+      }
 
       if (type_ == Type::kCoral) {
         create_params.should_trigger_session_restore = false;
@@ -338,8 +342,9 @@ void DesksTemplatesAppLaunchHandler::MaybeLaunchArcApps() {
   auto* arc_task_handler =
       ash::app_restore::AppRestoreArcTaskHandlerFactory::GetForProfile(
           profile());
-  if (!arc_task_handler)
+  if (!arc_task_handler) {
     return;
+  }
 
   if (auto* launch_handler =
           arc_task_handler->GetDeskTemplateArcAppQueueRestoreHandler(

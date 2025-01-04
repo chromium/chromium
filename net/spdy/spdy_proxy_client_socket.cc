@@ -157,7 +157,7 @@ NextProto SpdyProxyClientSocket::GetNegotiatedProtocol() const {
   // Do not delegate to `spdy_stream_`. While `spdy_stream_` negotiated ALPN
   // with the proxy, this object represents the tunneled TCP connection to the
   // origin.
-  return kProtoUnknown;
+  return NextProto::kProtoUnknown;
 }
 
 bool SpdyProxyClientSocket::GetSSLInfo(SSLInfo* ssl_info) {

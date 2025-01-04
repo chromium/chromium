@@ -9,6 +9,7 @@
 #include "base/time/time_override.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -96,7 +97,7 @@ class CookieControlsBubbleCoordinatorTest : public TestWithBrowserView {
     controller_ = std::make_unique<content_settings::CookieControlsController>(
         CookieSettingsFactory::GetForProfile(browser()->profile()), nullptr,
         HostContentSettingsMapFactory::GetForProfile(browser()->profile()),
-        /*tracking_protection_settings*/ nullptr);
+        TrackingProtectionSettingsFactory::GetForProfile(browser()->profile()));
 
     coordinator_ = std::make_unique<CookieControlsBubbleCoordinator>();
 
@@ -107,6 +108,7 @@ class CookieControlsBubbleCoordinatorTest : public TestWithBrowserView {
     // Clean up the coordinator before the browser is destroyed to avoid
     // dangling pointers.
     coordinator_ = nullptr;
+    controller_ = nullptr;
     TestWithBrowserView::TearDown();
   }
 
@@ -157,7 +159,7 @@ class CookieControlsBubbleViewControllerTest : public TestWithBrowserView {
     controller_ = std::make_unique<content_settings::CookieControlsController>(
         CookieSettingsFactory::GetForProfile(browser()->profile()), nullptr,
         HostContentSettingsMapFactory::GetForProfile(browser()->profile()),
-        /*tracking_protection_settings=*/nullptr);
+        TrackingProtectionSettingsFactory::GetForProfile(browser()->profile()));
 
     ON_CALL(*mock_bubble_view(), GetContentView())
         .WillByDefault(testing::Return(mock_content_view()));
@@ -559,7 +561,7 @@ class CookieControlsBubbleViewImplTest : public TestWithBrowserView {
     controller_ = std::make_unique<content_settings::CookieControlsController>(
         CookieSettingsFactory::GetForProfile(browser()->profile()), nullptr,
         HostContentSettingsMapFactory::GetForProfile(browser()->profile()),
-        /*tracking_protection_settings=*/nullptr);
+        TrackingProtectionSettingsFactory::GetForProfile(browser()->profile()));
 
     coordinator_ = std::make_unique<CookieControlsBubbleCoordinator>();
     coordinator_->ShowBubble(web_contents, controller_.get());
@@ -574,6 +576,7 @@ class CookieControlsBubbleViewImplTest : public TestWithBrowserView {
     EXPECT_EQ(coordinator_->GetBubble(), nullptr);
 
     coordinator_ = nullptr;
+    controller_ = nullptr;
     TestWithBrowserView::TearDown();
   }
 

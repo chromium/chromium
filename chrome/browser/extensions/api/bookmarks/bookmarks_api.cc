@@ -196,8 +196,7 @@ BookmarksAPI::BookmarksAPI(BrowserContext* context)
                                  api::bookmarks::OnImportEnded::kEventName);
 }
 
-BookmarksAPI::~BookmarksAPI() {
-}
+BookmarksAPI::~BookmarksAPI() = default;
 
 void BookmarksAPI::Shutdown() {
   EventRouter::Get(browser_context_)->UnregisterObserver(this);

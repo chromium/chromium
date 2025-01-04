@@ -89,6 +89,11 @@ class TestSystemIdentityManager : public SystemIdentityManager {
   bool IsMDMError(id<SystemIdentity> identity, NSError* error) final {
     NOTREACHED();
   }
+  void FetchTokenAuthURL(id<SystemIdentity> identity,
+                         NSURL* target_url,
+                         AuthenticatedURLCallback callback) final {
+    NOTREACHED();
+  }
   DismissViewCallback PresentAccountDetailsController(
       PresentDialogConfiguration configuration) final {
     NOTREACHED();

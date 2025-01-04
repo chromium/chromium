@@ -22,9 +22,6 @@
 #include "third_party/khronos/GLES2/gl2.h"
 
 namespace gpu {
-namespace gles2 {
-class GLES2Interface;
-}
 namespace raster {
 class RasterInterface;
 }
@@ -79,7 +76,6 @@ class VIZ_CLIENT_EXPORT ClientResourceProvider {
 
   ~ClientResourceProvider();
 
-  static gpu::SyncToken GenerateSyncTokenHelper(gpu::gles2::GLES2Interface* gl);
   static gpu::SyncToken GenerateSyncTokenHelper(
       gpu::raster::RasterInterface* ri);
 

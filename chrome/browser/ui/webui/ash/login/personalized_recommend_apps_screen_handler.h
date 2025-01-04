@@ -11,8 +11,8 @@
 
 namespace ash {
 
-// Interface for dependency injection between PersonalizedRecommendAppsScreen and
-// its WebUI representation.
+// Interface for dependency injection between PersonalizedRecommendAppsScreen
+// and its WebUI representation.
 class PersonalizedRecommendAppsScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{

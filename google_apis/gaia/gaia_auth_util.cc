@@ -9,6 +9,7 @@
 #include <memory>
 #include <string_view>
 
+#include "base/base64.h"
 #include "base/base64url.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -21,6 +22,7 @@
 #include "google_apis/gaia/bound_oauth_token.pb.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "google_apis/gaia/list_accounts_response.pb.h"
 #include "google_apis/gaia/oauth2_mint_token_consent_result.pb.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -197,6 +199,54 @@ bool ParseListAccountsData(std::string_view data,
           }
         }
       }
+    }
+  }
+
+  return true;
+}
+
+bool ParseBinaryListAccountsData(const std::string& data,
+                                 std::vector<ListedAccount>* accounts) {
+  // Clear and rebuild our accounts list if one is given.
+  if (accounts) {
+    accounts->clear();
+  }
+
+  // The input is expected to be base64-encoded.
+  std::string decoded_data;
+  if (!base::Base64Decode(data, &decoded_data,
+                          base::Base64DecodePolicy::kForgiving)) {
+    VLOG(1) << "Failed to decode ListAccounts data as a Base64 String";
+    return false;
+  }
+
+  // Parse our binary proto response.
+  ListAccountsResponse parsed_result;
+  if (!parsed_result.ParseFromString(decoded_data)) {
+    VLOG(1) << "malformed ListAccountsResponse";
+    return false;
+  }
+
+  // Build a vector of accounts from the cookie. Order is important: the first
+  // account in the list is the primary account.
+  for (const auto& account : parsed_result.account()) {
+    if (account.display_email().empty() || account.obfuscated_id().empty()) {
+      continue;
+    }
+
+    ListedAccount listed_account;
+    listed_account.email = CanonicalizeEmail(account.display_email());
+    listed_account.gaia_id = GaiaId(account.obfuscated_id());
+    listed_account.valid = (
+        // Assume the account is valid if unspecified for backcompat.
+        account.has_valid_session() ? account.valid_session() : true);
+    listed_account.signed_out =
+        (account.has_signed_out() ? account.signed_out() : false);
+    listed_account.verified =
+        (account.has_is_verified() ? account.is_verified() : true);
+    listed_account.raw_email = account.display_email();
+    if (accounts) {
+      accounts->push_back(std::move(listed_account));
     }
   }
 

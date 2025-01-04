@@ -36,7 +36,6 @@
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/keyword_provider.h"
-#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/page_classification_functions.h"
@@ -44,6 +43,7 @@
 #include "components/omnibox/browser/search_scoring_signals_annotator.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/url_prefix.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search/search.h"
 #include "components/search_engines/template_url_service.h"
@@ -466,9 +466,6 @@ void SearchProvider::UpdateMatchContentsClass(
     const std::u16string& input_text,
     SearchSuggestionParser::Results* results) {
   std::u16string trimmed_input = base::CollapseWhitespace(input_text, false);
-  if (base::FeatureList::IsEnabled(omnibox::kNormalizeSearchSuggestions)) {
-    trimmed_input = base::i18n::ToLower(trimmed_input);
-  }
   for (auto& suggest_result : results->suggest_results)
     suggest_result.ClassifyMatchContents(false, trimmed_input);
   for (auto& navigation_result : results->navigation_results)
@@ -1188,14 +1185,9 @@ SearchProvider::ScoreHistoryResultsHelper(const HistoryResults& results,
   // True if the user has asked this exact query previously.
   bool found_what_you_typed_match = false;
   std::u16string trimmed_input = base::CollapseWhitespace(input_text, false);
-  if (base::FeatureList::IsEnabled(omnibox::kNormalizeSearchSuggestions)) {
-    trimmed_input = base::i18n::ToLower(trimmed_input);
-  }
   for (const auto& result : results) {
     const std::u16string& trimmed_suggestion =
-        base::FeatureList::IsEnabled(omnibox::kNormalizeSearchSuggestions)
-            ? result->normalized_term
-            : base::CollapseWhitespace(result->term, false);
+        base::CollapseWhitespace(result->term, false);
 
     // Don't autocomplete multi-word queries that have only been seen once
     // unless the user has typed more than one word.

@@ -206,8 +206,9 @@ class AccessTokenFetcherTest
       const CoreAccountId& account_id,
       const std::string& consumer_id,
       const OAuth2AccessTokenManager::ScopeSet& scopes) override {
-    if (on_access_token_request_callback_)
+    if (on_access_token_request_callback_) {
       std::move(on_access_token_request_callback_).Run();
+    }
   }
 
   base::test::TaskEnvironment task_environment_;

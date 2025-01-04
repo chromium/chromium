@@ -126,8 +126,7 @@ class SearchIPCRouterTest : public BrowserWithTestWindowTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  SearchTabHelper* GetSearchTabHelper(
-      content::WebContents* web_contents) {
+  SearchTabHelper* GetSearchTabHelper(content::WebContents* web_contents) {
     EXPECT_NE(nullptr, web_contents);
     return SearchTabHelper::FromWebContents(web_contents);
   }

@@ -60,8 +60,12 @@ class AutoPipSettingHelper {
   // when the content setting is ASK.  This view will call back to us, so we
   // should outlive it.  Will return nullptr if no UI is needed, and will
   // optionally call `close_pip_cb_` if AutoPiP is blocked.
+  //
+  // `histogram_name_for_autopip_reason` is the histogram name for the automatic
+  // enter picture in picture reason. Used for recording metrics.
   std::unique_ptr<AutoPipSettingOverlayView> CreateOverlayViewIfNeeded(
       base::OnceClosure close_pip_cb,
+      std::string histogram_name_for_autopip_reason,
       views::View* anchor_view,
       views::BubbleBorder::Arrow arrow);
 
@@ -118,14 +122,25 @@ class AutoPipSettingHelper {
   // Notify us that the user has interacted with the content settings UI that's
   // displayed in the pip window.  `close_pip_cb` will be called if the result
   // is 'block'.
+  //
+  // `histogram_name_for_autopip_reason` is used for recording tab helper
+  // related metrics.
   void OnUiResult(base::OnceClosure close_pip_cb,
+                  std::string histogram_name_for_autopip_reason,
                   AutoPipSettingView::UiResult result);
 
   // Return a new ResultCb, and invalidate any previous ones.
-  ResultCb CreateResultCb(base::OnceClosure close_pip_cb);
+  ResultCb CreateResultCb(base::OnceClosure close_pip_cb,
+                          std::string histogram_name_for_autopip_reason);
 
   // Record metrics for the result of the prompt.
   void RecordResult(PromptResult result);
+
+  // Record `AutoPictureInPictureTabHelper` metrics, specifically the prompt
+  // result for `metric_name`. If `metric_name` is empty, no metrics will be
+  // recorded.
+  void RecorTabHelperdMetric(std::string metric_name,
+                             PromptResult result) const;
 
   GURL origin_;
   const raw_ptr<HostContentSettingsMap> settings_map_ = nullptr;

@@ -5,10 +5,13 @@
 #ifndef ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_ITEM_CHIP_VIEW_H_
 #define ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_ITEM_CHIP_VIEW_H_
 
+#include <vector>
+
 #include "ash/ash_export.h"
 #include "ash/system/holding_space/holding_space_animation_registry.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "base/memory/raw_ptr.h"
+#include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
 
@@ -37,10 +40,6 @@ class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView {
   ~HoldingSpaceItemChipView() override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(HoldingSpaceItemViewsSectionTest,
-                           HoldingSpaceItemChipViewTooltipText);
-  FRIEND_TEST_ALL_PREFIXES(HoldingSpaceItemViewsSectionTest,
-                           HoldingSpaceItemChipViewTooltipTextAccessibility);
   // HoldingSpaceItemView:
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
   void OnHoldingSpaceItemUpdated(
@@ -51,8 +50,6 @@ class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView {
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnThemeChanged() override;
 
-  void UpdateTooltipText();
-
   // Invoked during `label`'s paint sequence to paint its optional mask. Note
   // that `label` is only masked when the `primary_action_container()` is
   // visible to avoid overlapping.
@@ -62,11 +59,15 @@ class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView {
   // `secondary_action_pause_` or `secondary_action_resume_`.
   void OnSecondaryActionPressed();
 
+  // Posts a task to invoke `UpdateTooltipText()` iff one is not already posted.
+  void ScheduleUpdateTooltipText();
+
   void UpdateImage();
   void UpdateImageAndProgressIndicatorVisibility();
   void UpdateImageTransform();
   void UpdateLabels();
   void UpdateSecondaryAction();
+  void UpdateTooltipText();
 
   // Owned by view hierarchy.
   raw_ptr<RoundedImageView> image_ = nullptr;
@@ -79,12 +80,11 @@ class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView {
 
   base::CallbackListSubscription image_skia_changed_subscription_;
   base::CallbackListSubscription progress_ring_animation_changed_subscription_;
-  base::CallbackListSubscription primary_label_text_changed_subscription_;
-  base::CallbackListSubscription secondary_label_text_changed_subscription_;
-  base::CallbackListSubscription
-      primary_label_tooltiptext_changed_subscription_;
-  base::CallbackListSubscription
-      secondary_label_tooltiptext_changed_subscription_;
+  std::vector<base::CallbackListSubscription>
+      tooltip_text_dependency_changed_subscriptions_;
+
+  // Used to post a task to `UpdateTooltipText()` iff one is not already posted.
+  base::OneShotTimer update_tooltip_text_scheduler_;
 
   base::WeakPtrFactory<HoldingSpaceItemChipView> weak_ptr_factory_{this};
 };

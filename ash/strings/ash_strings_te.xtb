@@ -361,6 +361,7 @@
 <translation id="2295777434187870477">మైక్ ఆన్‌లో ఉంది, టోగుల్ చేయడం వలన ఇన్‌పుట్ మ్యూట్ అవుతుంది.</translation>
 <translation id="2302092602801625023">ఈ ఖాతా Family Link ద్వారా నిర్వహించబడుతుంది</translation>
 <translation id="2303600792989757991">విండో స్థూలదృష్టిని టోగుల్ చేయి</translation>
+<translation id="2304702218354340897">మీరు ఖచ్చితంగా ఫేస్ కంట్రోల్‌ను ఆఫ్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="2305738328104302723">Google టాస్క్ లిస్ట్: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: ఇటీవలి స్క్రీన్ క్యాప్చర్‌లు, డౌన్‌లోడ్‌లు, ఇంకా పిన్ చేయబడిన ఫైళ్లు</translation>
 <translation id="2318576281648121272">ఈ రోజు <ph name="TODAY_DATE" /></translation>
@@ -387,6 +388,7 @@
 <translation id="2370971919968699910">దీనికి డేటా ఖర్చు అవ్వచ్చు.
 <ph name="DEVICECOUNT" /> పరికరాలు కనెక్ట్ అయ్యాయి.</translation>
 <translation id="2386292613071805067">పేజీలో ఉన్న మొత్తాన్ని ఎంచుకోండి</translation>
+<translation id="2389423187722941333">Geminiని టోగుల్ చేయండి</translation>
 <translation id="2392659840443812875">అందుబాటులో ఉన్న హాట్‌స్పాట్ ఏదీ లేదు. మీ పరికరం సమీపంలో ఉందని, బ్లూటూత్ ఆన్ చేసి ఉందని నిర్ధారించుకోండి.</translation>
 <translation id="2397416548179033562">Chrome మెనూను చూపు</translation>
 <translation id="240006516586367791">మీడియా నియంత్రణలు</translation>
@@ -394,6 +396,7 @@
 <translation id="2402411679569069051">మీ Chromebookను అన్‌లాక్ చేయడానికి, మీ వేలిముద్రను ఉపయోగించండి లేదా మీ ఫోన్‌ను అన్‌లాక్ చేయండి</translation>
 <translation id="240545663114741956">సైన్ అవుట్ చేయడానికి <ph name="ACCELERATOR" />‌ను రెండుసార్లు నొక్కండి.</translation>
 <translation id="2405664212338326887">కనెక్ట్ చేయబడలేదు</translation>
+<translation id="2406710117564540804">'అంతరాయం కలిగించవద్దు'ను ఆన్/ఆఫ్ చేయండి</translation>
 <translation id="2408955596600435184">మీ PINని నమోదు చేయండి</translation>
 <translation id="2412593942846481727">అప్‌డేట్ అందుబాటులో ఉంది</translation>
 <translation id="2416438829169535743">వీక్షణ నుండి ఎగ్జిట్ అవ్వాలా?</translation>
@@ -900,6 +903,7 @@
 <translation id="4119928251231465047">చాలా ఎక్కువ సార్లు PINను ఎంటర్ చేసే ప్రయత్నం చేశారు</translation>
 <translation id="412298498316631026">విండో</translation>
 <translation id="4123259114412175274">మీ Chromebookను అన్‌లాక్ చేయడానికి, మీ ఫోన్ బ్లూటూత్ ఆన్‌లో ఉందని నిర్ధారించుకోండి</translation>
+<translation id="4123868835475902435">అవే ప్రాథమిక అంశాలు! చిట్కాలు, సహాయం కోసం మా బిల్ట్-ఇన్ యాప్‌ను అన్వేషించడం కొనసాగించండి. మీరు ప్రారంభించడానికి చిట్కాలు, ప్రత్యేక ఆఫర్‌లు, అలాగే సరికొత్త <ph name="PRODUCT_NAME" /> ఫీచర్‌లను కనుగొంటారు.</translation>
 <translation id="4125970834901680537">టాబ్లెట్ మోడ్‌లో యాప్‌లను స్ట్రీమ్ చేయడం సాధ్యం కాదు. ల్యాప్‌టాప్ మోడ్‌లో మళ్లీ ట్రై చేయండి.</translation>
 <translation id="4131973331381812765">ఉష్ణోగ్రత: <ph name="TEMPERATURE" />°C - ప్రస్తుత వేగం: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="4136724716305260864">సూర్యోదయం వరకు ఆన్‌లో ఉంటుంది</translation>
@@ -1020,7 +1024,6 @@
 <translation id="4481530544597605423">జతను తీసివేసిన పరికరాలు</translation>
 <translation id="4485506555414638855">మీ ఫోన్‌లోని తాజా ఫోటోలను, మీడియాను, నోటిఫికేషన్‌లను, యాప్‌లను చూసే సదుపాయాన్ని సెటప్ చేయడాన్ని విస్మరించండి</translation>
 <translation id="4491109536499578614">చిత్రం</translation>
-<translation id="4493452241184130939">అవే ప్రాథమిక అంశాలు! చిట్కాలు, సహాయం కోసం మా బిల్ట్-ఇన్ యాప్‌ను అన్వేషించడం కొనసాగించండి. మీరు ప్రారంభించడానికి చిట్కాలు, సిఫార్సు చేసిన యాప్‌లు, ప్రత్యేక ఆఫర్‌లు, అలాగే సరికొత్త <ph name="PRODUCT_NAME" /> ఫీచర్‌లను కనుగొంటారు.</translation>
 <translation id="450584155212756404">డెవలపర్ ఛానెల్</translation>
 <translation id="4513946894732546136">ఫీడ్‌బ్యాక్</translation>
 <translation id="4518404433291145981">మీ Chromebookను అన్‌లాక్ చేయడానికి, ముందుగా మీ ఫోన్‌ను అన్‌లాక్ చేయండి</translation>
@@ -1083,7 +1086,6 @@
 <translation id="4708065238214351979">కీబోర్డ్‌ను మరింత ప్రకాశవంతంగా చేయండి</translation>
 <translation id="4708185346211948049">వచ్చే <ph name="DAY_OF_WEEK" /></translation>
 <translation id="4717575069099566988">మీ USB-C కేబుల్ USB4ను సపోర్ట్ చేయదు. పరికర పనితీరు పరిమితంగా ఉండవచ్చు.</translation>
-<translation id="4724328513667182700"><ph name="PRODUCT_NAME" />లో ప్రారంభించడానికి 6 చిట్కాలు</translation>
 <translation id="4730374152663651037">తరచుగా ఉపయోగించేవి</translation>
 <translation id="4731797938093519117">తల్లి/తండ్రి యాక్సెస్</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ఎడమ)</translation>
@@ -1310,7 +1312,6 @@
 <translation id="5409208741270395213">టాస్క్ పూర్తయినట్లు మార్క్ చేయండి</translation>
 <translation id="5413656666631274079">సెట్టింగ్‌ల పేజీ</translation>
 <translation id="5414198321558177633">ప్రొఫైల్ లిస్ట్‌ను రిఫ్రెష్ చేస్తోంది. దీనికి కొన్ని నిమిషాలు పట్టవచ్చు.</translation>
-<translation id="5417965108047245734"><ph name="PRODUCT_NAME" />ను ఎలా ఉపయోగించాలో తెలుసుకోవడానికి ఒక క్విక్ టూర్ చేయండి</translation>
 <translation id="5426063383988017631">సెట్టింగ్‌ల మెనూ మూసివేయబడింది</translation>
 <translation id="5428899915242071344">ఎంచుకోవడం ప్రారంభించండి</translation>
 <translation id="5429993543155113935">అజ్ఞాత విండోలు ప్రస్తుత సపోర్ట్ చేయవు</translation>
@@ -1648,6 +1649,7 @@
 <translation id="6539852571005954999">డౌన్‌లోడ్ చేయడానికి <ph name="FILENAME" />ను స్కాన్ చేస్తోంది</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" />కు ప్రసారం చేస్తున్నారు</translation>
 <translation id="6542891623636520977">ఎమోజీలు, GIFలు, మరెన్నో</translation>
+<translation id="6543942526104794893">మీరు ఖచ్చితంగా ముఖ సంజ్ఞలను ఆఫ్ చేయాలని అనుకుంటున్నారా?</translation>
 <translation id="6545382064335350438">మీ PINను వెరిఫై చేయడం ఇంకా సాధ్యం కాలేదు. మళ్లీ ట్రై చేయండి.</translation>
 <translation id="6555373427270923730">అడ్ర‌స్ బార్‌లో వెబ్ అడ్రస్‌ను టైప్ చేసి, <ph name="MODIFIER" /><ph name="KEY" />‌ను నొక్కండి</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2314,6 +2316,7 @@
 <translation id="8855885154700222542">పూర్తిస్క్రీన్ కీ</translation>
 <translation id="8858369206579825206">గోప్యతా కంట్రోల్స్</translation>
 <translation id="8860366331836346216">eSIMను జోడించండి</translation>
+<translation id="8869149849311827122">మీరు ఖచ్చితంగా మౌస్ కర్సర్ కంట్రోల్‌ను ఆఫ్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="8870509716567206129">యాప్‌లో విభజన స్క్రీన్‌కు మద్దతు లేదు.</translation>
 <translation id="8873203135446552888">మీరు బిల్ట్-ఇన్ టచ్‌ప్యాడ్‌ను డిజేబుల్ చేయాలనుకుంటున్నారని నిర్ధారించండి</translation>
 <translation id="8874184842967597500">కనెక్ట్ కాలేదు</translation>

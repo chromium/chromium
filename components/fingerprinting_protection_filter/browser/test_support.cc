@@ -7,6 +7,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/fingerprinting_protection_filter/common/prefs.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 
 namespace fingerprinting_protection_filter {
@@ -16,12 +17,14 @@ scoped_refptr<HostContentSettingsMap> TestSupport::InitializePrefs() {
   privacy_sandbox::tracking_protection::RegisterProfilePrefs(
       prefs()->registry());
   content_settings::CookieSettings::RegisterProfilePrefs(prefs()->registry());
+  fingerprinting_protection_filter::prefs::RegisterProfilePrefs(
+      prefs()->registry());
 
   // Always set this pref to true as the ThrottleManager unit tests
   // are not testing this functionality.
-  prefs()->SetBoolean(prefs::kFingerprintingProtectionEnabled, true);
+  prefs()->SetBoolean(::prefs::kFingerprintingProtectionEnabled, true);
   prefs()->SetInteger(
-      prefs::kCookieControlsMode,
+      ::prefs::kCookieControlsMode,
       static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
 
   return base::MakeRefCounted<HostContentSettingsMap>(

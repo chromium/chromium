@@ -48,8 +48,7 @@ ImageSource::ImageSource() {
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 }
 
-ImageSource::~ImageSource() {
-}
+ImageSource::~ImageSource() = default;
 
 std::string ImageSource::GetSource() {
   return chrome::kChromeOSAssetHost;

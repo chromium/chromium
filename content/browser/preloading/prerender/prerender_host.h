@@ -169,6 +169,9 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
 
   static bool AreHttpRequestHeadersCompatible(
       const std::string& potential_activation_headers_str,
+#if BUILDFLAG(IS_ANDROID)
+      const std::string& potential_activation_additional_headers_str,
+#endif  // BUILDFLAG(IS_ANDROID)
       const std::string& prerender_headers_str,
       PreloadingTriggerType trigger_type,
       const std::string& histogram_suffix,
@@ -319,7 +322,7 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   std::optional<UrlMatchType> IsUrlMatch(const GURL& url) const;
 
   // Returns true if the given `url` might indicate the same destination to the
-  // initial_url based on `no_vary_search_expected`. Note that this returns
+  // initial_url based on `no_vary_search_hint`. Note that this returns
   // false if the given `url` exactly matches the initial_url, or matches it
   // with `attributes_.url_match_predicate` or the No-Vary-Search header that is
   // already received. These cases should be checked by `IsUrlMatch()`.
@@ -387,9 +390,8 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
     return no_vary_search_parse_error_;
   }
 
-  const std::optional<net::HttpNoVarySearchData>& no_vary_search_expected()
-      const {
-    return attributes_.no_vary_search_expected;
+  const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint() const {
+    return attributes_.no_vary_search_hint;
   }
 
   bool should_warm_up_compositor() const {
@@ -438,6 +440,7 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
 
   ActivationNavigationParamsMatch
   AreBeginNavigationParamsCompatibleWithNavigation(
+      const GURL& potential_activation_url,
       const blink::mojom::BeginNavigationParams& potential_activation,
       bool allow_initiator_and_transition_mismatch,
       PrerenderCancellationReason& reason);

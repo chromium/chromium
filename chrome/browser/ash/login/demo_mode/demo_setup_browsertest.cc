@@ -25,6 +25,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_timeouts.h"
@@ -321,6 +322,7 @@ class DemoSetupTestBase : public OobeBaseTest {
  protected:
   test::EnrollmentHelperMixin enrollment_helper_{&mixin_host_};
   base::HistogramTester histogram_tester_;
+  base::UserActionTester user_action_tester_;
 
  private:
   // TODO(agawronska): Maybe create a separate test fixture for offline setup.
@@ -1058,6 +1060,54 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, MAYBE_RetryOnErrorScreen) {
       "DemoMode.Setup.Error",
       DemoSetupController::DemoSetupError::ErrorCode::kSuccess, 2);
   histogram_tester_.ExpectTotalCount("DemoMode.Setup.Error", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, ClickRetryOnErrorScreen) {
+  // Simulate online setup failure.
+  enrollment_helper_.ExpectEnrollmentMode(
+      policy::EnrollmentConfig::MODE_ATTESTATION);
+  enrollment_helper_.ExpectAttestationEnrollmentError(
+      policy::EnrollmentStatus::ForRegistrationError(
+          policy::DeviceManagementStatus::DM_STATUS_TEMPORARY_UNAVAILABLE));
+  SimulateNetworkConnected();
+
+  TriggerDemoModeOnWelcomeScreen();
+
+  UseOnlineModeOnNetworkScreen();
+
+  ProceedThroughDemoPreferencesScreen();
+
+  // policy::DeviceManagementStatus::DM_STATUS_TEMPORARY_UNAVAILABLE matching to
+  // DemoSetupController::DemoSetupError::ErrorCode::kTemporaryUnavailable in
+  // DemoSetupController::CreateFromClientStatus().
+  AcceptTermsAndExpectDemoSetupFailure(
+      DemoSetupController::DemoSetupError::ErrorCode::kTemporaryUnavailable);
+
+  // Default error returned by MockDemoModeOnlineEnrollmentHelperCreator.
+  ExpectErrorMessage(IDS_DEMO_SETUP_TEMPORARY_ERROR,
+                     IDS_DEMO_SETUP_RECOVERY_RETRY);
+
+  test::OobeJS().ExpectVisiblePath(kDemoSetupErrorDialogRetry);
+  test::OobeJS().ExpectHiddenPath(kDemoSetupErrorDialogPowerwash);
+  test::OobeJS().ExpectEnabledPath(kDemoSetupErrorDialogBack);
+
+  EXPECT_FALSE(StartupUtils::IsOobeCompleted());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+
+  test::LockDemoDeviceInstallAttributes();
+
+  // We need to create another mock after showing error dialog.
+  enrollment_helper_.ResetMock();
+  // Simulate successful online setup on retry.
+  enrollment_helper_.ExpectEnrollmentMode(
+      policy::EnrollmentConfig::MODE_ATTESTATION);
+  enrollment_helper_.ExpectAttestationEnrollmentSuccess();
+
+  EXPECT_EQ(0, user_action_tester_.GetActionCount(
+                   "DemoMode.Setup.RetryButtonClicked"));
+  test::OobeJS().ClickOnPath(kDemoSetupErrorDialogRetry);
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "DemoMode.Setup.RetryButtonClicked"));
 }
 
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,

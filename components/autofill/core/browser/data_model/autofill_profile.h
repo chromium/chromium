@@ -24,7 +24,7 @@
 #include "components/autofill/core/browser/data_model/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/contact_info.h"
 #include "components/autofill/core/browser/data_model/phone_number.h"
-#include "components/autofill/core/browser/profile_token_quality.h"
+#include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
@@ -142,6 +142,12 @@ class AutofillProfile : public AutofillDataModel {
   // This function returns the storable type of the given `type`.
   FieldType GetStorableTypeOf(FieldType type) const;
 
+  // The values corresponding to those types are visible in the address editor
+  // UI. The fields come from the addressinput library, with addition of the
+  // autofill extensions. The exact set of fields depends on the profile's
+  // country code. If data for it is missing it will default to the US.
+  FieldTypeSet GetUserVisibleTypes() const;
+
   // Returns true if there are no values (field types) set.
   bool IsEmpty(const std::string& app_locale) const;
 
@@ -207,11 +213,10 @@ class AutofillProfile : public AutofillDataModel {
   // 3. E-mail.
   // 4. Phone.
   // 5. Company name.
-  static void CreateDifferentiatingLabels(
+  static std::vector<std::u16string> CreateDifferentiatingLabels(
       const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
           profiles,
-      const std::string& app_locale,
-      std::vector<std::u16string>* labels);
+      const std::string& app_locale);
 
   // Creates inferred labels for `profiles`, according to the rules above and
   // stores them in `labels`. The inferred labels both provide a way to
@@ -230,7 +235,7 @@ class AutofillProfile : public AutofillDataModel {
   // `minimal_fields_shown` fields, if possible.
   // TODO(crbug.com/380273791): Possibly make `suggested_fields` non-optional
   // after launch.
-  static void CreateInferredLabels(
+  static std::vector<std::u16string> CreateInferredLabels(
       const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
           profiles,
       const std::optional<FieldTypeSet> suggested_fields,
@@ -238,7 +243,6 @@ class AutofillProfile : public AutofillDataModel {
       FieldTypeSet excluded_fields,
       size_t minimal_fields_shown,
       const std::string& app_locale,
-      std::vector<std::u16string>* labels,
       bool use_improved_labels_order = false);
 
   // Builds inferred label from the first |num_fields_to_include| non-empty
@@ -354,7 +358,7 @@ class AutofillProfile : public AutofillDataModel {
   // |indices|, and stores the results to the corresponding elements of
   // |labels|. These labels include enough fields to differentiate among the
   // profiles, if possible; and also at least |num_fields_to_include| fields, if
-  // possible. The label fields are drawn from |fields|.
+  // possible. The label fields are drawn from |field_types|.
   static void CreateInferredLabelsHelper(
       const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
           profiles,
@@ -362,7 +366,8 @@ class AutofillProfile : public AutofillDataModel {
       const std::vector<FieldType>& field_types,
       size_t num_fields_to_include,
       const std::string& app_locale,
-      std::vector<std::u16string>* labels);
+      bool force_differentiating_label_in_front,
+      std::vector<std::u16string>& labels);
 
   // Utilities for listing and lookup of the data members that constitute
   // user-visible profile information.

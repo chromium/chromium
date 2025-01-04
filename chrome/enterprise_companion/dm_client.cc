@@ -60,9 +60,6 @@ device_management_storage::DMPolicyMap ToDMPolicyMap(
 
 class DMConfiguration : public policy::DeviceManagementService::Configuration {
  public:
-  DMConfiguration() = default;
-  ~DMConfiguration() override = default;
-
   std::string GetDMServerUrl() const override {
     return GetGlobalConstants()->DeviceManagementServerURL().spec();
   }
@@ -90,9 +87,6 @@ class DMConfiguration : public policy::DeviceManagementService::Configuration {
 
 class ClientDataDelegate : public policy::ClientDataDelegate {
  public:
-  ClientDataDelegate() = default;
-  ~ClientDataDelegate() override = default;
-
   void FillRegisterBrowserRequest(
       enterprise_management::RegisterBrowserRequest* request,
       base::OnceClosure callback) const override {

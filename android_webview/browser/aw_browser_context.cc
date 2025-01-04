@@ -54,7 +54,6 @@
 #include "components/keyed_service/core/simple_key_map.h"
 #include "components/origin_trials/browser/leveldb_persistence_provider.h"
 #include "components/origin_trials/browser/origin_trials.h"
-#include "components/origin_trials/common/features.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
 #include "components/policy/core/browser/configuration_policy_pref_store.h"
 #include "components/policy/core/browser/url_blocklist_manager.h"
@@ -541,9 +540,6 @@ AwBrowserContext::RetrieveInProgressDownloadManager() {
 
 content::OriginTrialsControllerDelegate*
 AwBrowserContext::GetOriginTrialsControllerDelegate() {
-  if (!origin_trials::features::IsPersistentOriginTrialsEnabled())
-    return nullptr;
-
   if (!origin_trials_controller_delegate_) {
     origin_trials_controller_delegate_ =
         std::make_unique<origin_trials::OriginTrials>(
@@ -559,6 +555,16 @@ std::unique_ptr<content::ZoomLevelDelegate>
 AwBrowserContext::CreateZoomLevelDelegate(
     const base::FilePath& partition_path) {
   return nullptr;
+}
+
+std::string AwBrowserContext::GetExtraHeadersForUrl(const GURL& url) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!url.is_valid()) {
+    return std::string();
+  }
+  std::map<std::string, std::string>::iterator iter =
+      extra_headers_.find(url.spec());
+  return iter != extra_headers_.end() ? iter->second : std::string();
 }
 
 void AwBrowserContext::RebuildTable(
@@ -663,16 +669,12 @@ base::android::ScopedJavaLocalRef<jobject> JNI_AwBrowserContext_GetDefaultJava(
   return default_context->GetJavaBrowserContext();
 }
 
-base::android::ScopedJavaLocalRef<jstring>
-JNI_AwBrowserContext_GetDefaultContextName(JNIEnv* env) {
-  return base::android::ConvertUTF8ToJavaString(
-      env, AwBrowserContextStore::kDefaultContextName);
+std::string JNI_AwBrowserContext_GetDefaultContextName(JNIEnv* env) {
+  return AwBrowserContextStore::kDefaultContextName;
 }
 
-base::android::ScopedJavaLocalRef<jstring>
-JNI_AwBrowserContext_GetDefaultContextRelativePath(JNIEnv* env) {
-  return base::android::ConvertUTF8ToJavaString(
-      env, AwBrowserContextStore::kDefaultContextPath);
+std::string JNI_AwBrowserContext_GetDefaultContextRelativePath(JNIEnv* env) {
+  return AwBrowserContextStore::kDefaultContextPath;
 }
 
 void AwBrowserContext::ClearPersistentOriginTrialStorageForTesting(
@@ -696,9 +698,7 @@ AwBrowserContext::GetJavaBrowserContext() {
   if (!obj_) {
     JNIEnv* env = base::android::AttachCurrentThread();
     obj_ = Java_AwBrowserContext_create(
-        env, reinterpret_cast<intptr_t>(this),
-        base::android::ConvertUTF8ToJavaString(env, name_),
-        base::android::ConvertUTF8ToJavaString(env, relative_path_.value()),
+        env, reinterpret_cast<intptr_t>(this), name_, relative_path_.value(),
         GetCookieManager()->GetJavaCookieManager(), IsDefaultBrowserContext());
   }
   return base::android::ScopedJavaLocalRef<jobject>(obj_);
@@ -726,16 +726,6 @@ void AwBrowserContext::SetExtraHeaders(const GURL& url,
   }
 }
 
-std::string AwBrowserContext::GetExtraHeaders(const GURL& url) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!url.is_valid()) {
-    return std::string();
-  }
-  std::map<std::string, std::string>::iterator iter =
-      extra_headers_.find(url.spec());
-  return iter != extra_headers_.end() ? iter->second : std::string();
-}
-
 void AwBrowserContext::SetServiceWorkerIoThreadClient(
     JNIEnv* const env,
     const base::android::JavaParamRef<jobject>& io_thread_client) {
@@ -750,6 +740,7 @@ void AwBrowserContext::StartPrefetchRequest(
     const base::android::JavaParamRef<jobject>& callback,
     const base::android::JavaParamRef<jobject>& callback_executor) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  TRACE_EVENT0("android_webview", "AwBrowserContext::StartPrefetchRequest");
 
   GURL pf_url = GURL(url);
   net::HttpRequestHeaders additional_headers =
@@ -817,8 +808,7 @@ void AwBrowserContext::DeleteContext(const base::FilePath& relative_path) {
   CHECK(cache_deleted);
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_AwBrowserContext_deleteSharedPreferences(
-      env, base::android::ConvertUTF8ToJavaString(env, relative_path.value()));
+  Java_AwBrowserContext_deleteSharedPreferences(env, relative_path.value());
 }
 blink::mojom::PermissionStatus AwBrowserContext::GetGeolocationPermission(
     const GURL& origin) const {
@@ -828,10 +818,8 @@ blink::mojom::PermissionStatus AwBrowserContext::GetGeolocationPermission(
     return blink::mojom::PermissionStatus::ASK;
   }
 
-  base::android::ScopedJavaLocalRef<jstring> j_origin(
-      base::android::ConvertUTF8ToJavaString(env, origin.spec()));
   return static_cast<blink::mojom::PermissionStatus>(
-      Java_AwBrowserContext_getGeolocationPermission(env, obj_, j_origin));
+      Java_AwBrowserContext_getGeolocationPermission(env, obj_, origin.spec()));
 }
 
 mojo::PendingRemote<network::mojom::URLLoaderFactory>

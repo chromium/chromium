@@ -26,10 +26,10 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -116,7 +116,7 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
     case Suggestion::Icon::kCardGeneric:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_GENERIC);
 
-    case Suggestion::Icon::kAutofillPredictionImprovements:
+    case Suggestion::Icon::kAutofillAi:
 
     case Suggestion::Icon::kAccount:
     case Suggestion::Icon::kClear:
@@ -360,7 +360,7 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(icon_id));
     }
     // A special case handled in `GetIconImageView()`.
-    case Suggestion::Icon::kAutofillPredictionImprovements:
+    case Suggestion::Icon::kAutofillAi:
       NOTREACHED();
   }
   NOTREACHED();
@@ -407,7 +407,7 @@ std::unique_ptr<views::ImageView> GetIconImageView(
                                    suggestion.HasDeactivatedStyle());
   }
   std::unique_ptr<views::ImageView> icon_image_view =
-      (suggestion.icon == Suggestion::Icon::kAutofillPredictionImprovements)
+      (suggestion.icon == Suggestion::Icon::kAutofillAi)
           ? autofill_ai::CreateSmallAutofillAiIconImageView()
           : ConvertModelToImageView(GetIconImageModelFromIcon(suggestion.icon),
                                     suggestion.HasDeactivatedStyle());

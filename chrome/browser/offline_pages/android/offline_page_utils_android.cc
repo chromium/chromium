@@ -10,7 +10,6 @@
 #include "chrome/browser/download/android/duplicate_download_dialog_bridge.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/offline_pages/android/downloads/offline_page_download_bridge.h"
-#include "chrome/browser/offline_pages/android/downloads/offline_page_infobar_delegate.h"
 #include "content/public/browser/web_contents.h"
 
 // Android-specific part of OfflinePageUtils.

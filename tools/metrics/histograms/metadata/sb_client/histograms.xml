@@ -170,7 +170,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.DownloadExtensions"
-    enum="SBClientDownloadExtensions" expires_after="2025-04-13">
+    enum="SBClientDownloadExtensions" expires_after="2025-06-22">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
@@ -180,24 +180,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientDownload.DownloadRequestDuration" units="ms"
-    expires_after="2025-05-11">
-  <owner>vakh@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <owner>mattm@chromium.org</owner>
-  <summary>
-    Records the total time it takes for the SafeBrowsing download service to
-    check whether the content of a download is malicious or not, including file
-    feature extraction, allowlist checking, and server ping. This histogram only
-    includes checks that sent a ping to the SafeBrowsing server. It does not
-    include requests that were cancelled, but does include requests that
-    received a bad response.
-  </summary>
-</histogram>
-
-<histogram name="SBClientDownload.DownloadRequestDuration.{Analysis}"
-    units="ms" expires_after="2024-12-30">
-  <owner>drubery@chromium.org</owner>
+<histogram name="SBClientDownload.DownloadRequestDuration{Analysis}" units="ms"
+    expires_after="2025-12-10">
+  <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the total time it takes for the SafeBrowsing download service to
@@ -208,36 +193,12 @@ chromium-metrics-reviews@google.com.
     does include requests that received a bad response.
   </summary>
   <token key="Analysis">
-    <variant name="Dmg"/>
-    <variant name="None" summary="executable"/>
-    <variant name="Rar"/>
-    <variant name="SevenZip"/>
-    <variant name="Zip"/>
-  </token>
-</histogram>
-
-<histogram name="SBClientDownload.DownloadRequestDurationMedium.{Analysis}"
-    units="ms" expires_after="2025-03-16">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the total time it takes for the SafeBrowsing download service to
-    check whether the content of a download is malicious or not, including file
-    feature extraction, allowlist checking, and server ping. This histogram only
-    includes checks that sent a ping to the SafeBrowsing server. It does not
-    include requests that were cancelled, but does include requests that
-    received a bad response.
-
-    This histogram is a &quot;medium&quot; version of
-    SBClientDownload.DownloadRequestDuration. It has a maximum of 3 minutes to
-    help investigate long-tail downloads.
-  </summary>
-  <token key="Analysis">
-    <variant name="Dmg"/>
-    <variant name="None" summary="executable"/>
-    <variant name="Rar"/>
-    <variant name="SevenZip"/>
-    <variant name="Zip"/>
+    <variant name="" summary="any"/>
+    <variant name=".Dmg" summary="DMG archive"/>
+    <variant name=".None" summary="executable"/>
+    <variant name=".Rar" summary="RAR archive"/>
+    <variant name=".SevenZip" summary="7Z archive"/>
+    <variant name=".Zip" summary="ZIP archive"/>
   </token>
 </histogram>
 
@@ -264,8 +225,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SBClientDownload.DownloadRequestNetworkResult"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-06-13">
+  <owner>chlily@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the net error or HTTP response code after sending a
+    CheckClientDownloadRequest.
+  </summary>
+</histogram>
+
 <histogram name="SBClientDownload.DownloadRequestResponseCode"
-    enum="HttpResponseCode" expires_after="2025-03-17">
+    enum="HttpResponseCode" expires_after="2025-06-08">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
@@ -303,6 +274,16 @@ chromium-metrics-reviews@google.com.
     Records events related to user interaction with local decryption prompts.
     This includes when the prompt is shown, when it is accepted or rejected, and
     when the provided password is incorrect.
+  </summary>
+</histogram>
+
+<histogram name="SBClientDownload.PPAPIDownloadRequest.NetworkResult"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-06-13">
+  <owner>chlily@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the net error or HTTP response code after sending PPAPI download
+    request.
   </summary>
 </histogram>
 
@@ -408,7 +389,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SBClientDownload.Warning.DownloadHasUserGesture.{DangerType}.{Action}"
-    enum="BooleanHasUserGesture" expires_after="2025-01-26">
+    enum="BooleanHasUserGesture" expires_after="2025-06-08">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -445,7 +426,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.Warning.FileType.{DangerType}.{Action}"
-    enum="SBClientDownloadExtensions" expires_after="2025-03-30">
+    enum="SBClientDownloadExtensions" expires_after="2025-06-08">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -462,7 +443,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.{ArchiveType}ArchiveAnalysisResult"
-    enum="ArchiveAnalysisResult" expires_after="2025-04-13">
+    enum="ArchiveAnalysisResult" expires_after="2025-06-22">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -478,7 +459,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.{Encryption}DeepScanEvent3"
-    enum="SBDeepScanEvent" expires_after="2025-04-13">
+    enum="SBDeepScanEvent" expires_after="2025-06-15">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -538,7 +519,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.ApplyTfliteTime.Classify" units="ms"
-    expires_after="2025-03-30">
+    expires_after="2025-06-08">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -572,8 +553,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.Classifier.Event"
-    enum="SBPhishingClassifierEvent" expires_after="2025-04-20">
-  <owner>drubery@chromium.org</owner>
+    enum="SBPhishingClassifierEvent" expires_after="2025-06-22">
+  <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records events in the phishing classifier including reasons that prevents
@@ -603,7 +584,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SBClientPhishing.ClientSideDetection.AsyncCheckTriggerForceRequestResult"
-    enum="AsyncCheckTriggerForceRequestResult" expires_after="2025-04-13">
+    enum="AsyncCheckTriggerForceRequestResult" expires_after="2025-06-22">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -616,7 +597,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.ClientSideDetectionTypeRequest"
-    enum="ClientSideDetectionType" expires_after="2025-03-30">
+    enum="ClientSideDetectionType" expires_after="2025-06-08">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -627,7 +608,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.CSDPhishingCachedDataAvailable"
-    enum="BooleanAvailable" expires_after="2025-02-10">
+    enum="BooleanAvailable" expires_after="2026-02-10">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -690,7 +671,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.ImageEmbeddingModelLoadTime.FlatbufferScorer"
-    units="ms" expires_after="2025-04-27">
+    units="ms" expires_after="2025-06-29">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -708,6 +689,28 @@ chromium-metrics-reviews@google.com.
     Logs whether the image embedding model version is matched or not so that the
     correctly paired trigger and image embedidng model are sent together to the
     renderer process
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.IntelligentScanVerdict"
+    enum="IntelligentScanVerdict" expires_after="2025-12-13">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@Google.com</owner>
+  <summary>
+    Logs what the IntelligentScanVerdict from ClientPhishingResponse was. This
+    is only logged in Client Side Phishing Protection after the server response
+    comes back and the field IntelligentScanVerdict is populated.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime"
+    enum="BooleanSuccess" expires_after="2025-12-30">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the on device model is available at the time of inquiry.
+    This is logged in the service class at the start of the inquiry function
+    call.
   </summary>
 </histogram>
 
@@ -737,7 +740,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.ModelDynamicUpdateSuccess"
-    enum="BooleanSuccess" expires_after="2025-04-20">
+    enum="BooleanSuccess" expires_after="2025-06-22">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -767,9 +770,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientPhishing.NetworkResult"
+<histogram name="SBClientPhishing.NetworkResult2"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-05-11">
-  <owner>drubery@chromium.org</owner>
+  <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the net error or HTTP response code after sending a network request
@@ -787,6 +790,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.OnDeviceModelExecutionDuration" units="ms"
+    expires_after="2025-12-02">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the duration it took to execute the on-device model. This happens
+    for Enhanced Safe Browsing enabled users when a keyboard lock occurs on the
+    page they are on and the on-device model session creation is available.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.OnDeviceModelExecutionSuccess"
+    enum="BooleanSuccess" expires_after="2025-12-02">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the on-device model execution is successful or not. This
+    happens for Enhanced Safe Browsing enabled users who called to execute the
+    on-device model when inquiring for scam detection.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.OnDeviceModelFetchTime" units="ms"
     expires_after="2025-11-25">
   <owner>andysjlim@chromium.org</owner>
@@ -797,8 +822,54 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.OnDeviceModelHasSuccessfulResponse"
+    enum="BooleanSuccess" expires_after="2025-12-30">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the on device model inquiry has a successful response. This
+    is logged in the callback after the inquiry call in the host class.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.OnDeviceModelResponseParseSuccess"
+    enum="BooleanSuccess" expires_after="2025-12-02">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the on-device model execution result's response parsing is
+    successful or not. This is only logged when the model execution is
+    successful.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.OnDeviceModelSessionCreationSuccess"
+    enum="BooleanSuccess" expires_after="2025-12-11">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the on-device model session creation is successful. This is
+    logged when the host class calls the inquire on device model function in the
+    service class and the on device model is available. This is expected to be
+    overwhelmingly &quot;success&quot; since we have passed the on device model
+    availability check by the time this is logged.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.OnDeviceModelSessionCreationTime" units="ms"
+    expires_after="2025-12-02">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the duration it took to create an on-device model session. This
+    happens for Enhanced Safe Browsing enabled users when a keyboard lock occurs
+    on the page they are on and the on-device model session creation is
+    available.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.OptimizationGuide.ModelFetchTime" units="ms"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -808,8 +879,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.PhishingDetectionDuration{RequestType}"
-    units="ms" expires_after="2025-04-13">
-  <owner>drubery@chromium.org</owner>
+    units="ms" expires_after="2025-06-22">
+  <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the duration it takes for client side phishing detection requested
@@ -820,7 +891,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.PhishingDetectorResult{RequestType}"
-    enum="ClientSidePhishingResult" expires_after="2025-04-20">
+    enum="ClientSidePhishingResult" expires_after="2025-06-22">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -835,7 +906,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.PhishingImageEmbeddingResult"
-    enum="ClientSidePhishingImageEmbeddingResult" expires_after="2025-04-13">
+    enum="ClientSidePhishingImageEmbeddingResult" expires_after="2025-06-15">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -849,7 +920,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="SBClientPhishing.PreClassificationCheckResult"
     enum="SBClientDetectionPreClassificationCheckResult"
     expires_after="2025-06-01">
-  <owner>drubery@chromium.org</owner>
+  <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the result of phishing pre-classification checks. This is recorded
@@ -861,7 +932,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.RTLookupForceRequest"
-    enum="BooleanForceRequest" expires_after="2025-04-13">
+    enum="BooleanForceRequest" expires_after="2025-06-22">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -874,8 +945,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.ServerModelDetectsPhishing{RequestType}"
-    enum="BooleanIsPhishing" expires_after="2025-04-23">
-  <owner>drubery@chromium.org</owner>
+    enum="BooleanIsPhishing" expires_after="2025-06-22">
+  <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records whether the server-side phishing detection model detects phishing
@@ -896,7 +967,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.VerdictParseSuccessful" enum="BooleanSuccess"
-    expires_after="2024-12-21">
+    expires_after="2025-12-21">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

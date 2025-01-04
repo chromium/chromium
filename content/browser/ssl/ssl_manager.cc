@@ -264,7 +264,7 @@ void SSLManager::DidRunMixedContent(const GURL& security_origin) {
 
   if (ssl_host_state_delegate_) {
     ssl_host_state_delegate_->HostRanInsecureContent(
-        security_origin.host(), site_instance->GetProcess()->GetID(),
+        security_origin.host(), site_instance->GetProcess()->GetDeprecatedID(),
         SSLHostStateDelegate::MIXED_CONTENT);
   }
   // TODO(crbug.com/40223471): Ensure proper notify_changes is passed to
@@ -284,7 +284,7 @@ void SSLManager::DidRunContentWithCertErrors(const GURL& security_origin) {
 
   if (ssl_host_state_delegate_) {
     ssl_host_state_delegate_->HostRanInsecureContent(
-        security_origin.host(), site_instance->GetProcess()->GetID(),
+        security_origin.host(), site_instance->GetProcess()->GetDeprecatedID(),
         SSLHostStateDelegate::CERT_ERRORS_CONTENT);
   }
   // TODO(crbug.com/40223471): Ensure proper notify_changes is passed to
@@ -331,14 +331,14 @@ bool SSLManager::HasAllowExceptionForAnyHost() {
       controller_->frame_tree().GetMainFrame()->GetStoragePartition());
 }
 
-bool SSLManager::DidStartResourceResponse(
+void SSLManager::DidStartResourceResponse(
     const url::SchemeHostPort& final_response_url,
     bool has_certificate_errors) {
   const std::string& scheme = final_response_url.scheme();
   const std::string& host = final_response_url.host();
 
   if (!GURL::SchemeIsCryptographic(scheme) || has_certificate_errors) {
-    return false;
+    return;
   }
   // If the scheme is https: or wss and the cert did not have any errors, revoke
   // any previous decisions that have occurred.
@@ -346,7 +346,7 @@ bool SSLManager::DidStartResourceResponse(
       !ssl_host_state_delegate_->HasAllowException(
           host,
           controller_->frame_tree().GetMainFrame()->GetStoragePartition())) {
-    return false;
+    return;
   }
 
   // If there's no certificate error, a good certificate has been seen, so
@@ -354,7 +354,6 @@ bool SSLManager::DidStartResourceResponse(
   // certificates. This intentionally does not apply to cached resources
   // (see https://crbug.com/634553 for an explanation).
   ssl_host_state_delegate_->RevokeUserAllowExceptions(host);
-  return true;
 }
 
 void SSLManager::OnCertErrorInternal(std::unique_ptr<SSLErrorHandler> handler) {
@@ -409,7 +408,7 @@ bool SSLManager::UpdateEntry(NavigationEntryImpl* entry,
     // those cases.
     if (entry_origin.has_value()) {
       const std::string& host = entry_origin->host();
-      int process_id = site_instance->GetProcess()->GetID();
+      int process_id = site_instance->GetProcess()->GetDeprecatedID();
       if (ssl_host_state_delegate_->DidHostRunInsecureContent(
               host, process_id, SSLHostStateDelegate::MIXED_CONTENT)) {
         entry->GetSSL().content_status |= SSLStatus::RAN_INSECURE_CONTENT;

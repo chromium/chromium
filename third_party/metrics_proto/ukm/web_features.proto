@@ -9,18 +9,20 @@ option java_package = "org.chromium.components.metrics";
 
 package ukm;
 
-// Tracks what high-level web features are used on a web page.
+// Tracks what WebDX features are used on a webpage load.
+//
+// What we call "high level" web feature here is known as "WebDX feature" or
+// "web feature" for short in the Chromium codebase and rest of the UKM
+// implementation. These terms refer to the exact same concept. This proto was
+// landed before the term "WebDX" was decided upon and became widely accepted.
+// Since the proto name is persisted in the table schema and can't be easily
+// changed, we're keeping this name as is.
+//
 // Next tag: 5
 message HighLevelWebFeatures {
   // Encoding of a subset of web features used on a webpage, as a bit
   // vector to save storage space.
   optional bytes bit_vector = 1;
-
-  // The max value in blink::mojom::WebDxFeature when the bit vector is encoded.
-  // This is used to distinguish between the case where a feature at an index
-  // existed but is unused by the client and the case where a feature wasn't
-  // yet defined for a Chrome client running an older binary.
-  optional int32 max_index = 4;
 
   // The id of the Source that these web feature usage data is associated with.
   optional int64 source_id = 2;
@@ -29,4 +31,8 @@ message HighLevelWebFeatures {
   // been renumbered, the version number should be incremented. This is for
   // supporting parsing of different encoding versions server-side.
   optional uint32 encoding_version = 3 [default = 0];
+
+  // Deprecated fields.
+  reserved "max_index";
+  reserved 4;
 }

@@ -255,12 +255,9 @@ void NavigationThrottleRunner::RegisterNavigationThrottles() {
   // Defer subframe navigation in bfcached page if it hasn't sent a network
   // request.
   // This must be the last throttle to run. See https://crrev.com/c/5316738.
-  if (base::FeatureList::IsEnabled(
-          features::kEnableBackForwardCacheForOngoingSubframeNavigation)) {
-    AddThrottle(
-        BackForwardCacheSubframeNavigationThrottle::MaybeCreateThrottleFor(
-            request));
-  }
+  AddThrottle(
+      BackForwardCacheSubframeNavigationThrottle::MaybeCreateThrottleFor(
+          request));
 
   // Add a throttle to manage top-frame navigations from a partitioned popin.
   // See https://explainers-by-googlers.github.io/partitioned-popins/
@@ -307,12 +304,9 @@ void NavigationThrottleRunner::
       PrerenderSubframeNavigationThrottle::MaybeCreateThrottleFor(request));
 
   // Defer subframe navigation in bfcached page.
-  if (base::FeatureList::IsEnabled(
-          features::kEnableBackForwardCacheForOngoingSubframeNavigation)) {
-    AddThrottle(
-        BackForwardCacheSubframeNavigationThrottle::MaybeCreateThrottleFor(
-            request));
-  }
+  AddThrottle(
+      BackForwardCacheSubframeNavigationThrottle::MaybeCreateThrottleFor(
+          request));
 
   AddThrottle(RendererCancellationThrottle::MaybeCreateThrottleFor(request));
 

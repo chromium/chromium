@@ -361,6 +361,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2295777434187870477">Mic is on, toggling will mute input.</translation>
 <translation id="2302092602801625023">This account is managed by Family Link</translation>
 <translation id="2303600792989757991">Toggle window overview</translation>
+<translation id="2304702218354340897">Are you sure that you want to turn off face control?</translation>
 <translation id="2305738328104302723">Google tasks list: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: recent screen captures, downloads and pinned files</translation>
 <translation id="2318576281648121272">Today <ph name="TODAY_DATE" /></translation>
@@ -387,6 +388,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2370971919968699910">This may incur data cost.
 <ph name="DEVICECOUNT" /> devices connected</translation>
 <translation id="2386292613071805067">Select everything on page</translation>
+<translation id="2389423187722941333">Toggle Gemini</translation>
 <translation id="2392659840443812875">No available hotspot. Make sure that your device is nearby and Bluetooth is turned on.</translation>
 <translation id="2397416548179033562">Show Chrome menu</translation>
 <translation id="240006516586367791">Media controls</translation>
@@ -394,6 +396,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2402411679569069051">To unlock your Chromebook, use your fingerprint or unlock your phone</translation>
 <translation id="240545663114741956">Press <ph name="ACCELERATOR" /> twice to sign out.</translation>
 <translation id="2405664212338326887">Not connected</translation>
+<translation id="2406710117564540804">Turn on/off do not disturb</translation>
 <translation id="2408955596600435184">Enter your PIN</translation>
 <translation id="2412593942846481727">Update available</translation>
 <translation id="2416438829169535743">Exit view?</translation>
@@ -899,6 +902,7 @@ Connect your device to power.</translation>
 <translation id="4119928251231465047">Too many PIN attempts</translation>
 <translation id="412298498316631026">window</translation>
 <translation id="4123259114412175274">To unlock your Chromebook, make sure that your phone's Bluetooth is on</translation>
+<translation id="4123868835475902435">Those were the basics! Continue in Explore, our built-in app for tips and help. You'll find tips for getting started, special offers and the newest <ph name="PRODUCT_NAME" /> features.</translation>
 <translation id="4125970834901680537">Can't stream apps in tablet mode. Try again in laptop mode.</translation>
 <translation id="4131973331381812765">Temperature: <ph name="TEMPERATURE" />°C – Current speed: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="4136724716305260864">On until sunrise</translation>
@@ -1019,7 +1023,6 @@ One device connected.</translation>
 <translation id="4481530544597605423">Unpaired devices</translation>
 <translation id="4485506555414638855">Dismiss setting up viewing your phone's recent photos, media, notifications and apps</translation>
 <translation id="4491109536499578614">Image</translation>
-<translation id="4493452241184130939">Those were the basics! Continue in Explore, our built-in app for tips and help. You'll find tips for getting started, recommended apps, special offers and the newest <ph name="PRODUCT_NAME" /> features.</translation>
 <translation id="450584155212756404">Dev channel</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4518404433291145981">To unlock your Chromebook, first unlock your phone</translation>
@@ -1082,7 +1085,6 @@ One device connected.</translation>
 <translation id="4708065238214351979">Make keyboard brighter</translation>
 <translation id="4708185346211948049"><ph name="DAY_OF_WEEK" /> next week</translation>
 <translation id="4717575069099566988">Your USB-C cable does not support USB4. Device performance may be limited.</translation>
-<translation id="4724328513667182700">Six tips to get started on <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">FREQUENTLY USED</translation>
 <translation id="4731797938093519117">Parent access</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (left)</translation>
@@ -1309,7 +1311,6 @@ No devices connected.</translation>
 <translation id="5409208741270395213">Mark task as completed</translation>
 <translation id="5413656666631274079">Settings page</translation>
 <translation id="5414198321558177633">Refreshing profile list. This may take a few minutes.</translation>
-<translation id="5417965108047245734">Take a quick tour to learn how to get around your <ph name="PRODUCT_NAME" /></translation>
 <translation id="5426063383988017631">Settings menu closed</translation>
 <translation id="5428899915242071344">Start selecting</translation>
 <translation id="5429993543155113935">Incognito windows aren’t currently supported</translation>
@@ -1647,6 +1648,7 @@ No devices connected.</translation>
 <translation id="6539852571005954999">Download scanning <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Casting to <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emojis, GIFs and more</translation>
+<translation id="6543942526104794893">Are you sure that you want to turn off facial gestures?</translation>
 <translation id="6545382064335350438">Your PIN still couldn't be verified. Try again.</translation>
 <translation id="6555373427270923730">Type a web address in the address bar, then press <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2313,6 +2315,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8855885154700222542">Full-screen key</translation>
 <translation id="8858369206579825206">Privacy controls</translation>
 <translation id="8860366331836346216">Add eSIM</translation>
+<translation id="8869149849311827122">Are you sure that you want to turn off mouse cursor control?</translation>
 <translation id="8870509716567206129">App does not support split-screen.</translation>
 <translation id="8873203135446552888">Confirm that you want to disable the built-in touchpad</translation>
 <translation id="8874184842967597500">Not connected</translation>

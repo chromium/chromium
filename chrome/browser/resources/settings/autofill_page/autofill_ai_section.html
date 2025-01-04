@@ -1,0 +1,128 @@
+<style include="cr-shared-style settings-shared settings-columned-section">
+  .flex {
+    flex: 1;
+  }
+
+  .item-label {
+    font-size: 11px;
+    line-height: 11px;
+  }
+
+  #entries {
+    margin-block-end: 0;
+    margin-block-start: 0;
+  }
+
+  :host([disabled]) #topSection {
+    opacity: 50%;
+  }
+</style>
+<div id="topSection">
+   <!-- 'label=" "'' is intentional here to avoid dropping the sub-label. -->
+   <settings-toggle-button
+       id="prefToggle" disabled$="[[disabled]]"
+       no-extension-indicator label=" "
+       sub-label-with-link="$i18n{autofillAiToggleSubLabel}"
+       on-sub-label-link-clicked="onToggleSubLabelLinkClick_"
+       on-settings-boolean-control-change="onPrefToggleChanged_"
+       pref="{{prefs.autofill.prediction_improvements.enabled}}">
+   </settings-toggle-button>
+   <div class="settings-columned-section">
+     <div class="column">
+       <h3 class="description-header">$i18n{columnHeadingWhenOn}</h3>
+       <ul class="icon-bulleted-list">
+         <li>
+           <cr-icon icon="settings20:sync-saved-locally"></cr-icon>
+           <div class="cr-secondary-text">
+             $i18n{autofillAiWhenOnSavedInfo}
+           </div>
+         </li>
+         <li>
+           <cr-icon icon="settings20:text-analysis"></cr-icon>
+           <div class="cr-secondary-text">
+             $i18n{autofillAiUseToFill}
+           </div>
+         </li>
+       </ul>
+     </div>
+     <div class="column">
+       <h3 class="description-header">
+         $i18n{columnHeadingConsider}
+       </h3>
+       <ul class="icon-bulleted-list">
+         <li>
+           <cr-icon icon="settings20:psychiatry"></cr-icon>
+           <div class="cr-secondary-text">
+             $i18n{autofillAiNewFeature}
+           </div>
+         </li>
+         <li>
+           <cr-icon icon="settings20:googleg"></cr-icon>
+           <div class="cr-secondary-text">
+             $i18n{autofillAiToConsiderDataUsage}
+           </div>
+         </li>
+         <li>
+           <cr-icon icon="settings20:file-save"></cr-icon>
+           <div class="cr-secondary-text">
+             $i18n{autofillAiToConsiderDataStorage}
+           </div>
+         </li>
+         <li>
+           <cr-icon icon="settings20:account-box"></cr-icon>
+           <div class="cr-secondary-text">
+             $i18n{autofillAiToConsiderDataImprovement}
+           </div>
+         </li>
+       </ul>
+     </div>
+   </div>
+ </div>
+
+<div id="entriesHeader" class="cr-row">
+  <h2 class="flex">
+    <span id="entriesHeaderTitle">
+      $i18n{autofillAiUserAnnotationsHeader}</span>
+  </h2>
+  <cr-button id="deleteAllEntries" class="header-aligned-button"
+      on-click="onDeleteAllEntriesClick_"
+      disabled="[[!userAnnotationsEntries_.length]]">
+    $i18n{autofillAiDeleteAllEntriesButtonLabel}
+  </cr-button>
+</div>
+<ul id="entries" class="list-frame vertical-list">
+  <template is="dom-repeat" items="[[userAnnotationsEntries_]]">
+    <li class="list-item">
+      <div class="start">
+        <div class="cr-secondary-text item-label">[[item.key]]</div>
+        [[item.value]]
+      </div>
+      <cr-icon-button iron-icon="cr20:delete" on-click="onDeleteEntryCick_"
+          title="$i18n{autofillAiDeleteEntryDialogTitle}">
+      </cr-icon-button>
+    </li>
+  </template>
+  <template is="dom-if" if="[[!userAnnotationsEntries_.length]]" restamp>
+    <li id="entriesNone" class="list-item">
+      $i18n{autofillAiUserAnnotationsNone}
+    </li>
+  </template>
+</ul>
+
+<template is="dom-if" if="[[entryToDelete_]]" restamp>
+  <settings-simple-confirmation-dialog id="deleteEntryDialog"
+      title-text="$i18n{autofillAiDeleteEntryDialogTitle}"
+      body-text="[[deleteEntryConfirmationText_]]"
+      confirm-text="$i18n{delete}"
+      on-close="onDeleteEntryDialogClose_">
+  </settings-simple-confirmation-dialog>
+</template>
+
+<template is="dom-if" if="[[deleteAllEntriesConfirmationShown_]]" restamp>
+  <settings-simple-confirmation-dialog id="deleteAllEntriesDialog"
+      title-text="$i18n{autofillAiDeleteAllEntriesDialogTitle}"
+      body-text="$i18n{autofillAiDeleteAllEntriesDialogText}"
+      confirm-text="$i18n{delete}"
+      on-close="onDeleteAllEntriesDialogClose_">
+  </settings-simple-confirmation-dialog>
+</template>

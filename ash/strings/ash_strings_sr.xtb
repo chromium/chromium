@@ -361,6 +361,7 @@
 <translation id="2295777434187870477">Микрофон је укључен. Можете да га искључите померањем прекидача.</translation>
 <translation id="2302092602801625023">Овим налогом управља Family Link</translation>
 <translation id="2303600792989757991">Укључи/искључи преглед прозора</translation>
+<translation id="2304702218354340897">Желите ли стварно да искључите управљање лицем?</translation>
 <translation id="2305738328104302723">Листа Google задатака: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: недавни снимци екрана, преузимања и закачени фајлови</translation>
 <translation id="2318576281648121272">Данас <ph name="TODAY_DATE" /></translation>
@@ -387,6 +388,7 @@
 <translation id="2370971919968699910">То може да доведе до трошкова за пренос података.
 Број повезаних уређаја је <ph name="DEVICECOUNT" />.</translation>
 <translation id="2386292613071805067">Изабери све на страници</translation>
+<translation id="2389423187722941333">Укључи/искључи Gemini</translation>
 <translation id="2392659840443812875">Нема доступног хотспота. Уверите се да је уређај у близини и да је Bluetooth укључен.</translation>
 <translation id="2397416548179033562">Приказ Chrome менија</translation>
 <translation id="240006516586367791">Контроле медија</translation>
@@ -394,6 +396,7 @@
 <translation id="2402411679569069051">Да бисте откључали Chromebook, користите отисак прста или откључајте телефон</translation>
 <translation id="240545663114741956">Притисните <ph name="ACCELERATOR" /> двапут да бисте се одјавили.</translation>
 <translation id="2405664212338326887">Није повезано</translation>
+<translation id="2406710117564540804">Укључите или искључите режим Не узнемиравај</translation>
 <translation id="2408955596600435184">Унесите PIN</translation>
 <translation id="2412593942846481727">Доступно је ажурирање</translation>
 <translation id="2416438829169535743">Желите да изађете из приказа?</translation>
@@ -899,6 +902,7 @@
 <translation id="4119928251231465047">Превише покушаја уноса PIN-а</translation>
 <translation id="412298498316631026">прозор</translation>
 <translation id="4123259114412175274">Да бисте откључали Chromebook, уверите се да је Bluetooth на телефону укључен</translation>
+<translation id="4123868835475902435">То су биле основне ствари! Наставите у апликацији Истражите, уграђеној апликацији за савете и помоћ. Пронаћи ћете савете за почетне кораке, специјалне понуде и најновије функције <ph name="PRODUCT_NAME" />-а.</translation>
 <translation id="4125970834901680537">Не можете да стримујете апликације у режиму таблета. 
 Пробајте поново у режиму лаптопа.</translation>
 <translation id="4131973331381812765">Температура: <ph name="TEMPERATURE" />°C – Тренутна брзина: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
@@ -1020,7 +1024,6 @@
 <translation id="4481530544597605423">Уређаји чије је упаривање опозвано</translation>
 <translation id="4485506555414638855">Одбаците подешавање прегледа недавних слика, медија, обавештења и апликација на телефону</translation>
 <translation id="4491109536499578614">Слика</translation>
-<translation id="4493452241184130939">То су биле основне ствари! Наставите у апликацији Истражите, уграђеној апликацији за савете и помоћ. Пронаћи ћете савете за почетне кораке, препоручене апликације, специјалне понуде и најновије функције <ph name="PRODUCT_NAME" />-а.</translation>
 <translation id="450584155212756404">Програмерски канал</translation>
 <translation id="4513946894732546136">Повратне информације</translation>
 <translation id="4518404433291145981">Да бисте откључали Chromebook, прво откључајте телефон</translation>
@@ -1083,7 +1086,6 @@
 <translation id="4708065238214351979">Посветли тастатуру</translation>
 <translation id="4708185346211948049"><ph name="DAY_OF_WEEK" />, следеће недеље</translation>
 <translation id="4717575069099566988">USB-C кабл не подржава USB4. Учинак уређаја ће можда бити ограничен.</translation>
-<translation id="4724328513667182700">6 савета да бисте почели да користите <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">ЧЕСТО КОРИШЋЕНЕ</translation>
 <translation id="4731797938093519117">Родитељски приступ</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (лева)</translation>
@@ -1310,7 +1312,6 @@
 <translation id="5409208741270395213">Означите задатак као довршен</translation>
 <translation id="5413656666631274079">Страница подешавања</translation>
 <translation id="5414198321558177633">Листа профила се освежава. То може да потраје неколико минута.</translation>
-<translation id="5417965108047245734">Крените у кратак обилазак да бисте сазнали како да се крећете по <ph name="PRODUCT_NAME" />-у</translation>
 <translation id="5426063383988017631">Мени Подешавања је затворен</translation>
 <translation id="5428899915242071344">Покрени бирање</translation>
 <translation id="5429993543155113935">Прозори без архивирања тренутно нису подржани</translation>
@@ -1648,6 +1649,7 @@
 <translation id="6539852571005954999">Скенира се фајл <ph name="FILENAME" /> који се преузима</translation>
 <translation id="6542521951477560771">Пребацује се на <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Емоџији, GIF-ови и друго</translation>
+<translation id="6543942526104794893">Желите ли стварно да искључите покрете лицем?</translation>
 <translation id="6545382064335350438">Верификација лозинке још није успела. Пробајте поново.</translation>
 <translation id="6555373427270923730">Унесите веб-адресу у траку за адресу, па притисните <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2315,6 +2317,7 @@
 <translation id="8855885154700222542">Тастер за цео екран</translation>
 <translation id="8858369206579825206">Контроле приватности</translation>
 <translation id="8860366331836346216">Додај eSIM</translation>
+<translation id="8869149849311827122">Желите ли стварно да искључите контролу курсора миша?</translation>
 <translation id="8870509716567206129">Апликација не подржава подељени екран.</translation>
 <translation id="8873203135446552888">Потврдите да желите да онемогућите уграђени тачпед</translation>
 <translation id="8874184842967597500">Није повезано</translation>

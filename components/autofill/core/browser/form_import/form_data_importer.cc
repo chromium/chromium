@@ -22,13 +22,12 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
@@ -37,14 +36,19 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/data_model/phone_number.h"
+#include "components/autofill/core/browser/data_quality/addresses/profile_requirement_utils.h"
+#include "components/autofill/core/browser/data_quality/autofill_data_util.h"
+#include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_import/addresses/address_profile_save_manager.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
+#include "components/autofill/core/browser/integrators/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/profile_import_metrics.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
@@ -54,10 +58,6 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/profile_requirement_utils.h"
-#include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
@@ -340,7 +340,7 @@ size_t FormDataImporter::ExtractAddressProfiles(
     std::vector<FormDataImporter::AddressProfileImportCandidate>*
         address_profile_import_candidates) {
   // Create a buffer to collect logging output for the autofill-internals.
-  LogManager* log_manager = client_->GetLogManager();
+  LogManager* log_manager = client_->GetCurrentLogManager();
   LogBuffer import_log_buffer(IsLoggingActive(log_manager));
   LOG_AF(import_log_buffer) << LoggingScope::kAddressProfileFormImport;
   // Print the full form into the logging scope.
@@ -498,7 +498,8 @@ FormDataImporter::GetAddressObservedFieldValues(
     // When the experimental plus addresses feature is enabled, and the value is
     // a plus address, exclude it from the resulting address profile.
     if (plus_address_delegate &&
-        plus_address_delegate->IsPlusAddress(base::UTF16ToUTF8(value))) {
+        (plus_address_delegate->IsPlusAddress(base::UTF16ToUTF8(value)) ||
+         plus_address_delegate->MatchesPlusAddressFormat(value))) {
       continue;
     }
     // Don't import from ac=unrecognized fields.
@@ -882,7 +883,8 @@ std::optional<CreditCard> FormDataImporter::TryMatchingExistingServerCard(
   // `candidate`, and we treat it as a new card.
   bool same_last_four_but_different_expiration_date = false;
 
-  for (auto* server_card : payments_data_manager().GetServerCreditCards()) {
+  for (const CreditCard* server_card :
+       payments_data_manager().GetServerCreditCards()) {
     if (!server_card->HasSameNumberAs(candidate)) {
       continue;
     }

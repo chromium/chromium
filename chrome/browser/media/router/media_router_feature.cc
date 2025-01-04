@@ -112,8 +112,9 @@ void ClearMediaRouterStoredPrefsForTesting() {
 
 bool MediaRouterEnabled(content::BrowserContext* context) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(kMediaRouter))
+  if (!base::FeatureList::IsEnabled(kMediaRouter)) {
     return false;
+  }
 #endif  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(crbug.com/1380828): Make the Media Router feature configurable via a
@@ -129,8 +130,9 @@ bool MediaRouterEnabled(content::BrowserContext* context) {
   base::flat_map<content::BrowserContext*, bool>& pref_values =
       GetStoredPrefValues();
   auto const it = pref_values.find(context);
-  if (it != pref_values.end())
+  if (it != pref_values.end()) {
     return it->second;
+  }
 
   // Check the enterprise policy.
   const PrefService::Preference* pref = GetMediaRouterPref(context);

@@ -438,6 +438,7 @@ public class PhotoPickerDialogTest
 
     @Test
     @LargeTest
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/1360427")
     public void testNoSelection() throws Throwable {
         setupTestFiles();
         createDialog(false, Arrays.asList("image/*")); // Multi-select = false.
@@ -454,6 +455,7 @@ public class PhotoPickerDialogTest
 
     @Test
     @LargeTest
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/1360427")
     public void testSingleSelectionPhoto() throws Throwable {
         setupTestFiles();
         createDialog(false, Arrays.asList("image/*")); // Multi-select = false.
@@ -482,6 +484,7 @@ public class PhotoPickerDialogTest
 
     @Test
     @LargeTest
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/1360427")
     public void testBackPressDismiss() throws Throwable {
         setupTestFiles();
         createDialog(false, Arrays.asList("image/*")); // Multi-select = false.
@@ -513,6 +516,7 @@ public class PhotoPickerDialogTest
 
     @Test
     @LargeTest
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/1360427")
     public void testMultiSelectionPhoto() throws Throwable {
         setupTestFiles();
         createDialog(true, Arrays.asList("image/*")); // Multi-select = true.
@@ -826,6 +830,7 @@ public class PhotoPickerDialogTest
     @Test
     @LargeTest
     @Feature("RenderTest")
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/1360427")
     public void testBorderPersistence() throws Exception {
         setupTestFilesWith80ColoredSquares();
         createDialog(false, Arrays.asList("image/*")); // Multi-select = false.

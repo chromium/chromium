@@ -18,6 +18,7 @@
 #include "third_party/skia/include/codec/SkCodec.h"
 #include "third_party/skia/include/codec/SkPngDecoder.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/skia_span_util.h"
 
 #if VIZ_DEBUGGER_IS_ON()
 
@@ -224,10 +225,10 @@ void VisualDebuggerTestBase::GetFrameData(bool clear_cache) {
           base::Base64Decode(image_base64_encoded);
       EXPECT_TRUE(image_bytes.has_value());
 
-      // |MakeWithoutCopy| is safe because we expect to be done decoding |data|
-      // into |buff.bitmap| before we release |image_bytes|.
-      sk_sp<SkData> data =
-          SkData::MakeWithoutCopy(image_bytes->data(), image_bytes->size());
+      // Safe for `data` to be a span over `image_bytes` because this code will
+      // be done decoding `data` into `buff.bitmap` before releasing
+      // `image_bytes`.
+      sk_sp<SkData> data = gfx::MakeSkDataFromSpanWithoutCopy(*image_bytes);
       SkCodec::Result decode_result;
       std::unique_ptr<SkCodec> codec =
           SkPngDecoder::Decode(data, &decode_result);

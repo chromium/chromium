@@ -58,7 +58,8 @@ class GraphBuilderTflite final {
   struct Result {
     Result(flatbuffers::DetachedBuffer buffer,
            base::flat_map<std::string, int> input_name_to_index,
-           base::flat_map<std::string, int> output_name_to_index);
+           base::flat_map<std::string, int> output_name_to_index,
+           std::vector<uint8_t> buffer_data);
     Result(const Result&) = delete;
     Result& operator=(const Result&) = delete;
     Result(Result&&);
@@ -68,6 +69,7 @@ class GraphBuilderTflite final {
     flatbuffers::DetachedBuffer buffer;
     base::flat_map<std::string, int> input_name_to_index;
     base::flat_map<std::string, int> output_name_to_index;
+    std::vector<uint8_t> buffer_data;
   };
 
   GraphBuilderTflite(const GraphBuilderTflite&) = delete;
@@ -721,6 +723,12 @@ class GraphBuilderTflite final {
   // and `SubGraph`.
   std::vector<BufferOffset> buffers_;
   std::vector<TensorOffset> tensors_;
+
+  // Rather than serializing buffer contents into the Flatbuffer we store an
+  // offset into this vector, which avoids the 2GB size limit.
+  // TODO(https://crbug.com/383999372): Write this to a file instead of holding
+  // it in memory.
+  std::vector<uint8_t> buffer_data_;
 
   // The following std::vector<Offset<tflite:XXX>>> stores all operator
   // information including operator type, the index of input output tensor to

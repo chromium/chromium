@@ -185,12 +185,12 @@ void ModelValidatorKeyedService::PerformOnDeviceModelExecutionValidation(
       std::make_unique<optimization_guide::proto::ExecuteRequest>(request);
   auto capability_key = ToModelBasedCapabilityKey(request.feature());
 
-  OnDeviceModelEligibilityReason reason;
-  if (!opt_guide_service->CanCreateOnDeviceSession(
-      capability_key, &reason)) {
+  auto eligibility =
+      opt_guide_service->GetOnDeviceModelEligibility(capability_key);
+  if (eligibility != OnDeviceModelEligibilityReason::kSuccess) {
     LOG(FATAL) << "Failed to create on-device session for validation with "
                << "OnDeviceModelEligibilityReason: "
-               << static_cast<int>(reason);
+               << static_cast<int>(eligibility);
   }
 
   using optimization_guide::SessionConfigParams;

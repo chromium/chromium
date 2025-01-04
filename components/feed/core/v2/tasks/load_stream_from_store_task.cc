@@ -71,7 +71,7 @@ void LoadStreamFromStoreTask::LoadStreamDone(
   if (!ignore_account_) {
     if (result.stream_data.signed_in()) {
       const AccountInfo& account_info = feed_stream_->GetAccountInfo();
-      if (result.stream_data.gaia() != account_info.gaia ||
+      if (result.stream_data.gaia() != account_info.gaia.ToString() ||
           result.stream_data.email() != account_info.email) {
         Complete(LoadStreamStatus::kDataInStoreIsForAnotherUser,
                  feedwire::DiscoverCardReadCacheResult::FAILED);

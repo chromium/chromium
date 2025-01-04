@@ -185,6 +185,10 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
       int frame_feedback_id);
 
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+  std::optional<VideoCaptureDevice::Client::Buffer> ReserveEffectsOutputBuffer(
+      const VideoCaptureFormat& format,
+      const int frame_feedback_id);
+
   void OnPostProcessDone(base::expected<PostProcessDoneInfo,
                                         video_effects::mojom::PostProcessError>
                              post_process_info_or_error);

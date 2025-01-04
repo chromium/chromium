@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {TabContextResult, TabData} from '../glic_api/glic_api.js';
+import type {DraggableArea, GetTabContextErrorReason, PanelState, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -49,7 +49,7 @@ export declare interface HostRequestTypes {
     },
     response: {
       // Undefined on failure.
-      tabData?: TabData,
+      tabData?: TabDataPrivate,
     },
   };
   glicBrowserClosePanel: {
@@ -65,8 +65,11 @@ export declare interface HostRequestTypes {
       },
     },
     response: {
-      // Undefined on failure.
-      tabContextResult?: TabContextResult,
+      // Present on success.
+      tabContextResult?: TabContextResultPrivate,
+      // The error reason. Should be present when `tabContextResult` is not, but
+      // might still be undefined for some older chrome versions.
+      error?: GetTabContextErrorReason,
     },
   };
   glicBrowserResizeWindow: {
@@ -75,8 +78,39 @@ export declare interface HostRequestTypes {
       height: number,
     },
     response: {
-      actualWidth: number,
-      actualHeight: number,
+      // Not set on error.
+      actualWidth?: number,
+      actualHeight?: number,
+    },
+  };
+  glicBrowserSetWindowDraggableAreas: {
+    request: {
+      areas: DraggableArea[],
+    },
+    response: void,
+  };
+  glicBrowserSetMicrophonePermissionState: {
+    request: {
+      enabled: boolean,
+    },
+    response: void,
+  };
+  glicBrowserSetLocationPermissionState: {
+    request: {
+      enabled: boolean,
+    },
+    response: void,
+  };
+  glicBrowserSetTabContextPermissionState: {
+    request: {
+      enabled: boolean,
+    },
+    response: void,
+  };
+  glicBrowserGetUserProfileInfo: {
+    request: {},
+    response: {
+      profileInfo?: UserProfileInfoPrivate,
     },
   };
 }
@@ -93,4 +127,73 @@ export declare interface WebClientRequestTypes {
     request: {},
     response: void,
   };
+  glicWebClientPanelStateChanged: {
+    request: {
+      panelState: PanelState,
+    },
+    response: void,
+  };
+  glicWebClientNotifyMicrophonePermissionStateChanged: {
+    request: {
+      enabled: boolean,
+    },
+    response: void,
+  };
+  glicWebClientNotifyLocationPermissionStateChanged: {
+    request: {
+      enabled: boolean,
+    },
+    response: void,
+  };
+  glicWebClientNotifyTabContextPermissionStateChanged: {
+    request: {
+      enabled: boolean,
+    },
+    response: void,
+  };
+}
+
+export declare interface WebClientInitialState {
+  panelState?: PanelState;
+}
+
+//
+// Types used in messages that are not exposed directly to the API.
+//
+
+// TabData format for postMessage transport.
+export declare interface TabDataPrivate extends Omit<TabData, 'favicon'> {
+  rawFavicon?: RgbaImage;
+}
+
+// A bitmap, used to store data from a BitmapN32 without conversion.
+export declare interface RgbaImage {
+  dataRGBA: ArrayBuffer;
+  width: number;
+  height: number;
+  alphaType: ImageAlphaType;
+  colorType: ImageColorType;
+}
+
+export enum ImageAlphaType {
+  // RGB values are unmodified.
+  UNPREMUL = 0,
+  // RGB values have been premultiplied by alpha.
+  PREMUL = 1,
+}
+
+// Chromium currently only uses a single color type for BitmapN32.
+export enum ImageColorType {
+  BGRA = 0,
+}
+
+// TabContextResult data for postMessage transport.
+export declare interface TabContextResultPrivate extends
+    Omit<TabContextResult, 'tabData'> {
+  tabData: TabDataPrivate;
+}
+
+export declare interface UserProfileInfoPrivate extends
+    Omit<UserProfileInfo, 'avatarIcon'> {
+  avatarIconImage?: RgbaImage;
 }

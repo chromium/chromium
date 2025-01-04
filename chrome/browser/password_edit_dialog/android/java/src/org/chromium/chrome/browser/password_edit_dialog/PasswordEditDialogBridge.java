@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.ui.base.WindowAndroid;
@@ -34,11 +35,12 @@ public class PasswordEditDialogBridge implements PasswordEditDialogCoordinator.D
     @CalledByNative
     void showPasswordEditDialog(
             @NonNull String[] savedUsernames,
-            @NonNull String username,
-            @NonNull String password,
+            @NonNull @JniType("std::u16string") String username,
+            @NonNull @JniType("std::u16string") String password,
             @Nullable String account) {
         mDialogCoordinator.showPasswordEditDialog(savedUsernames, username, password, account);
     }
+
     @CalledByNative
     void dismiss() {
         mDialogCoordinator.dismiss();
@@ -66,10 +68,13 @@ public class PasswordEditDialogBridge implements PasswordEditDialogCoordinator.D
     @NativeMethods
     interface Natives {
         void onDialogAccepted(
-                long nativePasswordEditDialogBridge, String username, String password);
+                long nativePasswordEditDialogBridge,
+                @JniType("std::u16string") String username,
+                @JniType("std::u16string") String password);
 
         void onDialogDismissed(long nativePasswordEditDialogBridge, boolean dialogAccepted);
 
-        boolean isUsingAccountStorage(long nativePasswordEditDialogBridge, String username);
+        boolean isUsingAccountStorage(
+                long nativePasswordEditDialogBridge, @JniType("std::u16string") String username);
     }
 }

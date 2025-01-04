@@ -10,12 +10,15 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.mojo.system.Core;
 import org.chromium.mojo.system.DataPipe;
 import org.chromium.mojo.system.DataPipe.ConsumerHandle;
 import org.chromium.mojo.system.DataPipe.ProducerHandle;
 import org.chromium.mojo.system.Handle;
 import org.chromium.mojo.system.MessagePipeHandle;
+import org.chromium.mojo.system.MessagePipeHandle.CreateOptions;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.mojo.system.MojoResult;
 import org.chromium.mojo.system.Pair;
@@ -34,6 +37,7 @@ import java.util.List;
 
 /** Implementation of {@link Core}. */
 @JNINamespace("mojo::android")
+@NullMarked
 public class CoreImpl implements Core {
     /** Discard flag for the |MojoReadData| operation. */
     private static final int MOJO_READ_DATA_FLAG_DISCARD = 1 << 1;
@@ -83,7 +87,7 @@ public class CoreImpl implements Core {
      */
     @Override
     public Pair<MessagePipeHandle, MessagePipeHandle> createMessagePipe(
-            MessagePipeHandle.CreateOptions options) {
+            @Nullable CreateOptions options) {
         ByteBuffer optionsBuffer = null;
         if (options != null) {
             optionsBuffer = allocateDirectBuffer(8);
@@ -218,8 +222,8 @@ public class CoreImpl implements Core {
      */
     void writeMessage(
             MessagePipeHandleImpl pipeHandle,
-            ByteBuffer bytes,
-            List<? extends Handle> handles,
+            @Nullable ByteBuffer bytes,
+            @Nullable List<? extends Handle> handles,
             MessagePipeHandle.WriteFlags flags) {
         ByteBuffer handlesBuffer = null;
         if (handles != null && !handles.isEmpty()) {
@@ -483,12 +487,14 @@ public class CoreImpl implements Core {
     interface Natives {
         long getTimeTicksNow(CoreImpl caller);
 
-        ResultAnd<RawHandlePair> createMessagePipe(CoreImpl caller, ByteBuffer optionsBuffer);
+        ResultAnd<RawHandlePair> createMessagePipe(
+                CoreImpl caller, @Nullable ByteBuffer optionsBuffer);
 
-        ResultAnd<RawHandlePair> createDataPipe(CoreImpl caller, ByteBuffer optionsBuffer);
+        ResultAnd<RawHandlePair> createDataPipe(
+                CoreImpl caller, @Nullable ByteBuffer optionsBuffer);
 
         ResultAnd<Long> createSharedBuffer(
-                CoreImpl caller, ByteBuffer optionsBuffer, long numBytes);
+                CoreImpl caller, @Nullable ByteBuffer optionsBuffer, long numBytes);
 
         int close(CoreImpl caller, long mojoHandle);
 
@@ -498,16 +504,20 @@ public class CoreImpl implements Core {
         int writeMessage(
                 CoreImpl caller,
                 long mojoHandle,
-                ByteBuffer bytes,
+                @Nullable ByteBuffer bytes,
                 int numBytes,
-                ByteBuffer handlesBuffer,
+                @Nullable ByteBuffer handlesBuffer,
                 int flags);
 
         ResultAnd<MessagePipeHandle.ReadMessageResult> readMessage(
                 CoreImpl caller, long mojoHandle, int flags);
 
         ResultAnd<Integer> readData(
-                CoreImpl caller, long mojoHandle, ByteBuffer elements, int elementsSize, int flags);
+                CoreImpl caller,
+                long mojoHandle,
+                @Nullable ByteBuffer elements,
+                int elementsSize,
+                int flags);
 
         ResultAnd<ByteBuffer> beginReadData(
                 CoreImpl caller, long mojoHandle, int numBytes, int flags);
@@ -522,7 +532,8 @@ public class CoreImpl implements Core {
 
         int endWriteData(CoreImpl caller, long mojoHandle, int numBytesWritten);
 
-        ResultAnd<Long> duplicate(CoreImpl caller, long mojoHandle, ByteBuffer optionsBuffer);
+        ResultAnd<Long> duplicate(
+                CoreImpl caller, long mojoHandle, @Nullable ByteBuffer optionsBuffer);
 
         ResultAnd<ByteBuffer> map(
                 CoreImpl caller, long mojoHandle, long offset, long numBytes, int flags);

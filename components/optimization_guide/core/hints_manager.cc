@@ -438,20 +438,6 @@ void HintsManager::OnHintsComponentAvailable(const HintsComponentInfo& info) {
     return;
   }
 
-  if (features::ShouldCheckFailedComponentVersionPref() &&
-      failed_component_version_ &&
-      failed_component_version_->CompareTo(info.version) >= 0) {
-    OPTIMIZATION_GUIDE_LOGGER(
-        optimization_guide_common::mojom::LogSource::HINTS,
-        optimization_guide_logger_)
-        << "Skipping processing OptimizationHints component version: "
-        << info.version.GetString()
-        << " as it had failed in a previous session";
-    RecordProcessHintsComponentResult(
-        ProcessHintsComponentResult::kFailedFinishProcessing);
-    MaybeRunUpdateClosure(std::move(next_update_closure_));
-    return;
-  }
   // Write version that we are currently processing to prefs.
   pref_service_->SetString(prefs::kPendingHintsProcessingVersion,
                            info.version.GetString());

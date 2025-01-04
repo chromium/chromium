@@ -151,7 +151,8 @@ void SpeechRecognitionDispatcherHost::StartRequestOnUI(
       embedder_frame = outer_web_contents->GetPrimaryMainFrame();
     }
 
-    embedder_render_process_id = embedder_frame->GetProcess()->GetID();
+    embedder_render_process_id =
+        embedder_frame->GetProcess()->GetDeprecatedID();
     DCHECK_NE(embedder_render_process_id, 0);
     embedder_render_frame_id = embedder_frame->GetRoutingID();
     DCHECK_NE(embedder_render_frame_id, MSG_ROUTING_NONE);
@@ -201,6 +202,7 @@ void SpeechRecognitionDispatcherHost::StartSessionOnIO(
   config.interim_results = params->interim_results;
   config.on_device = params->on_device;
   config.allow_cloud_fallback = params->allow_cloud_fallback;
+  config.recognition_context = params->recognition_context;
 
   for (media::mojom::SpeechRecognitionGrammarPtr& grammar_ptr :
        params->grammars) {

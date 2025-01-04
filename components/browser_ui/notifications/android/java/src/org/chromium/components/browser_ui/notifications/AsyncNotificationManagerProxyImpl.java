@@ -25,7 +25,7 @@ import java.util.function.Function;
  * Default implementation of the AsyncNotificationManagerProxy, which passes through all calls to
  * the normal Android Notification Manager.
  */
-/* package */ class AsyncNotificationManagerProxyImpl implements AsyncNotificationManagerProxy {
+/* package */ class AsyncNotificationManagerProxyImpl implements BaseNotificationManagerProxy {
     private static final String TAG = "AsyncNotifManager";
     private final NotificationManagerCompat mNotificationManager;
 
@@ -184,15 +184,13 @@ import java.util.function.Function;
             @Override
             protected T doInBackground() {
                 try (TraceEvent te = TraceEvent.scoped(eventName)) {
-                    try {
-                        NotificationProxyUtils.recordNotificationEventHistogram(
-                                NotificationEvent.HAS_CALLBACK_START);
-                        return callable.call();
-                    } catch (Exception e) {
-                        Log.e(TAG, "Unable to call method.", e);
-                        mSuccess = false;
-                        return null;
-                    }
+                    NotificationProxyUtils.recordNotificationEventHistogram(
+                            NotificationEvent.HAS_CALLBACK_START);
+                    return callable.call();
+                } catch (Exception e) {
+                    Log.e(TAG, "Unable to call method.", e);
+                    mSuccess = false;
+                    return null;
                 }
             }
 

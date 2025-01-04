@@ -87,8 +87,9 @@ class TestWallpaperController : public ash::WallpaperController {
     return update_current_wallpaper_layout_layout_;
   }
   void add_dedup_key_to_wallpaper_info(const std::string& dedup_key) {
-    if (wallpaper_info_.has_value())
+    if (wallpaper_info_.has_value()) {
       wallpaper_info_->dedup_key = dedup_key;
+    }
   }
 
   // ash::WallpaperController:

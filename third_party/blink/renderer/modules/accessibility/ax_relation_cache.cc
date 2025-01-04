@@ -1183,56 +1183,46 @@ void AXRelationCache::UpdateRegisteredIdAttribute(Element& element,
 void AXRelationCache::UpdateRelatedText(Node* node) {
   // Shortcut: used cached value to determine whether this node contributes to
   // a name or description. Return early if not.
-  if (AXObject* obj = Get(node)) {
-    if (!obj->IsUsedForLabelOrDescription()) {
-      // Nothing to do, as this node is not part of a label or description.
-      return;
-    }
+  AXObject* obj = Get(node);
+  if (!obj || !obj->IsUsedForLabelOrDescription()) {
+    // Nothing to do, as this node is not part of a label or description.
+    return;
   }
 
   // Walk up ancestor chain from node and refresh text of any related content.
-  // TODO(crbug.com/1109265): It's very likely this loop should only walk the
-  // unignored AXObject chain, but doing so breaks a number of tests related to
-  // name or description computation / invalidation.
-  int count = 0;
-  constexpr int kMaxAncestorsForNameChangeCheck = 8;
-  for (Node* current_node = node;
-       ++count < kMaxAncestorsForNameChangeCheck && current_node &&
-       !IsA<HTMLBodyElement>(current_node);
-       current_node = current_node->parentNode()) {
-    if (Element* element = DynamicTo<Element>(current_node)) {
-      // Reverse relations via aria-labelledby, aria-describedby, aria-owns.
-      HeapVector<Member<AXObject>> related_sources;
-      GetRelationSourcesById(element->GetIdAttribute(),
-                             aria_text_relations_id_map_, related_sources);
-      GetRelationSourcesByElementReference(element->GetDomNodeId(),
-                                           aria_text_relations_node_map_,
-                                           related_sources);
-      for (AXObject* related : related_sources) {
-        if (related && related->IsIncludedInTree() &&
-            !related->NeedsToUpdateChildren()) {
-          object_cache_->MarkAXObjectDirtyWithCleanLayout(related);
-        }
+  while ((obj = obj->ParentObjectIncludedInTree()) != nullptr &&
+         obj->IsUsedForLabelOrDescription()) {
+    Element* ancestor_element = obj->GetElement();
+    if (!ancestor_element) {
+      // Can occur in the CSS column case.
+      continue;
+    }
+    // Reverse relations via aria-labelledby, aria-describedby, aria-owns.
+    HeapVector<Member<AXObject>> related_sources;
+    GetRelationSourcesById(ancestor_element->GetIdAttribute(),
+                           aria_text_relations_id_map_, related_sources);
+    GetRelationSourcesByElementReference(ancestor_element->GetDomNodeId(),
+                                         aria_text_relations_node_map_,
+                                         related_sources);
+    for (AXObject* related : related_sources) {
+      if (related && related->IsIncludedInTree() &&
+          !related->NeedsToUpdateChildren()) {
+        object_cache_->MarkAXObjectDirtyWithCleanLayout(related);
       }
     }
 
     // Ancestors that may derive their accessible name from descendant content
     // should also handle text changed events when descendant content changes.
-    if (current_node != node) {
-      AXObject* obj = Get(current_node);
-      if (obj &&
-          (!obj->IsIgnored() || obj->CanSetFocusAttribute()) &&
-          obj->SupportsNameFromContents(/*recursive=*/false) &&
-          !obj->NeedsToUpdateChildren()) {
-        object_cache_->MarkAXObjectDirtyWithCleanLayout(obj);
-        break;  // Unlikely/unusual to need multiple name/description changes.
-      }
+    if ((!obj->IsIgnored() || obj->CanSetFocusAttribute()) &&
+        obj->SupportsNameFromContents(/*recursive=*/false) &&
+        !obj->NeedsToUpdateChildren()) {
+      object_cache_->MarkAXObjectDirtyWithCleanLayout(obj);
     }
 
     // Forward relation via <label for="[id]">.
-    if (HTMLLabelElement* label = DynamicTo<HTMLLabelElement>(current_node)) {
+    if (HTMLLabelElement* label =
+            DynamicTo<HTMLLabelElement>(ancestor_element)) {
       object_cache_->MarkElementDirtyWithCleanLayout(LabelChanged(*label));
-      break;  // Unlikely/unusual to need multiple name/description changes.
     }
   }
 }

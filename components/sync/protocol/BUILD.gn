@@ -35,6 +35,7 @@ static_library("util") {
   public_deps = [
     "//base",
     "//components/sync/base",
+    "//google_apis",
   ]
 }
 

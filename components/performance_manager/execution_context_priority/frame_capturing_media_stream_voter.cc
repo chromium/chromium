@@ -41,20 +41,24 @@ FrameCapturingMediaStreamVoter::FrameCapturingMediaStreamVoter(
 FrameCapturingMediaStreamVoter::~FrameCapturingMediaStreamVoter() = default;
 
 void FrameCapturingMediaStreamVoter::InitializeOnGraph(Graph* graph) {
-  graph->AddInitializingFrameNodeObserver(this);
+  graph->AddFrameNodeObserver(this);
 }
 
 void FrameCapturingMediaStreamVoter::TearDownOnGraph(Graph* graph) {
-  graph->RemoveInitializingFrameNodeObserver(this);
+  graph->RemoveFrameNodeObserver(this);
 }
 
-void FrameCapturingMediaStreamVoter::OnFrameNodeInitializing(
-    const FrameNode* frame_node) {
+void FrameCapturingMediaStreamVoter::OnBeforeFrameNodeAdded(
+    const FrameNode* frame_node,
+    const FrameNode* pending_parent_frame_node,
+    const PageNode* pending_page_node,
+    const ProcessNode* pending_process_node,
+    const FrameNode* pending_parent_or_outer_document_or_embedder) {
   const Vote vote = GetVote(frame_node->IsCapturingMediaStream());
   voting_channel_.SubmitVote(GetExecutionContext(frame_node), vote);
 }
 
-void FrameCapturingMediaStreamVoter::OnFrameNodeTearingDown(
+void FrameCapturingMediaStreamVoter::OnBeforeFrameNodeRemoved(
     const FrameNode* frame_node) {
   voting_channel_.InvalidateVote(GetExecutionContext(frame_node));
 }

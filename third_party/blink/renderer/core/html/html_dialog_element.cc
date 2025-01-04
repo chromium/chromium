@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -208,15 +209,10 @@ void HTMLDialogElement::requestClose(const String& return_value,
   if (!IsOpen()) {
     return;
   }
-  if (ClosedBy() == ClosedByState::kNone) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "To use requestClose, the dialog's closedBy state must not be 'none'.");
-    return;
-  }
   CHECK(close_watcher_);
+  close_watcher_->setEnabled(true);
   request_close_return_value_ = return_value;
-  close_watcher_->requestClose();
+  close_watcher_->RequestClose(CloseWatcher::AllowCancel::kAlways);
   SetCloseWatcherEnabledState();
 }
 
@@ -483,10 +479,9 @@ void HTMLDialogElement::CreateCloseWatcher() {
     return;
   }
   CHECK(IsOpen());
+  CHECK(window->GetFrame());
   close_watcher_ = CloseWatcher::Create(*window);
-  if (!close_watcher_) {
-    return;
-  }
+  CHECK(close_watcher_);
   if (RuntimeEnabledFeatures::HTMLDialogLightDismissEnabled()) {
     SetCloseWatcherEnabledState();
   }

@@ -51,7 +51,6 @@
 #include "url/gurl.h"
 
 namespace {
-static constexpr int kOldIconSize = 20;
 static constexpr int kUIUpdateIconSize = 16;
 }  // namespace
 
@@ -185,11 +184,12 @@ void SavedTabGroupUtils::DeleteSavedGroup(const Browser* browser,
         }
 
         if (group->local_group_id().has_value()) {
+          tab_group_service->RemoveGroup(group->local_group_id().value());
           SavedTabGroupUtils::RemoveGroupFromTabstrip(
               nullptr, group->local_group_id().value());
+        } else {
+          tab_group_service->RemoveGroup(group->saved_guid());
         }
-
-        tab_group_service->RemoveGroup(group->saved_guid());
       },
       browser, saved_group_guid);
 
@@ -344,11 +344,9 @@ SavedTabGroupUtils::CreateSavedTabGroupContextMenuModel(
                                         ->tab_count();
   }
 
-  bool is_ui_update = tab_groups::IsTabGroupsSaveUIUpdateEnabled();
   dialog_model.AddMenuItem(
-      ui::ImageModel::FromVectorIcon(
-          kMoveGroupToNewWindowRefreshIcon, ui::kColorMenuIcon,
-          is_ui_update ? kUIUpdateIconSize : kOldIconSize),
+      ui::ImageModel::FromVectorIcon(kMoveGroupToNewWindowRefreshIcon,
+                                     ui::kColorMenuIcon, kUIUpdateIconSize),
       move_or_open_group_text,
       base::BindRepeating(
           [](Browser* browser, const base::Uuid& saved_group_guid,
@@ -361,30 +359,25 @@ SavedTabGroupUtils::CreateSavedTabGroupContextMenuModel(
           .SetId(kMoveGroupToNewWindowMenuItem)
           .SetIsEnabled(should_enable_move_menu_item));
 
-  if (is_ui_update) {
-    dialog_model.AddMenuItem(
-        ui::ImageModel::FromVectorIcon(
-            saved_group->is_pinned() ? kKeepFilledIcon : kKeepIcon,
-            ui::kColorMenuIcon,
-            is_ui_update ? kUIUpdateIconSize : kOldIconSize),
-        l10n_util::GetStringUTF16(saved_group->is_pinned()
-                                      ? IDS_TAB_GROUP_HEADER_CXMENU_UNPIN_GROUP
-                                      : IDS_TAB_GROUP_HEADER_CXMENU_PIN_GROUP),
-        base::BindRepeating(
-            [](Browser* browser, const base::Uuid& saved_group_guid,
-               int event_flags) {
-              SavedTabGroupUtils::ToggleGroupPinState(browser,
-                                                      saved_group_guid);
-            },
-            browser, saved_group->saved_guid()),
-        ui::DialogModelMenuItem::Params().SetId(kToggleGroupPinStateMenuItem));
-  }
+  dialog_model.AddMenuItem(
+      ui::ImageModel::FromVectorIcon(
+          saved_group->is_pinned() ? kKeepFilledIcon : kKeepIcon,
+          ui::kColorMenuIcon, kUIUpdateIconSize),
+      l10n_util::GetStringUTF16(saved_group->is_pinned()
+                                    ? IDS_TAB_GROUP_HEADER_CXMENU_UNPIN_GROUP
+                                    : IDS_TAB_GROUP_HEADER_CXMENU_PIN_GROUP),
+      base::BindRepeating(
+          [](Browser* browser, const base::Uuid& saved_group_guid,
+             int event_flags) {
+            SavedTabGroupUtils::ToggleGroupPinState(browser, saved_group_guid);
+          },
+          browser, saved_group->saved_guid()),
+      ui::DialogModelMenuItem::Params().SetId(kToggleGroupPinStateMenuItem));
 
   dialog_model
       .AddMenuItem(
-          ui::ImageModel::FromVectorIcon(
-              kCloseGroupRefreshIcon, ui::kColorMenuIcon,
-              is_ui_update ? kUIUpdateIconSize : kOldIconSize),
+          ui::ImageModel::FromVectorIcon(kCloseGroupRefreshIcon,
+                                         ui::kColorMenuIcon, kUIUpdateIconSize),
           l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP),
           base::BindRepeating(
               [](const Browser* browser, const base::Uuid& saved_group_guid,
@@ -395,10 +388,8 @@ SavedTabGroupUtils::CreateSavedTabGroupContextMenuModel(
           ui::DialogModelMenuItem::Params().SetId(kDeleteGroupMenuItem))
       .AddSeparator();
 
-  if (is_ui_update) {
-    dialog_model.AddTitleItem(l10n_util::GetStringUTF16(IDS_TABS_TITLE_CXMENU),
-                              kTabsTitleItem);
-  }
+  dialog_model.AddTitleItem(l10n_util::GetStringUTF16(IDS_TABS_TITLE_CXMENU),
+                            kTabsTitleItem);
 
   for (const SavedTabGroupTab& tab : saved_group->saved_tabs()) {
     const ui::ImageModel& image =
@@ -677,9 +668,8 @@ ui::TrackedElement* SavedTabGroupUtils::GetAnchorElementForTabGroupsV2IPH(
 }
 
 bool SavedTabGroupUtils::ShouldAutoPinNewTabGroups(Profile* profile) {
-  return tab_groups::IsTabGroupsSaveUIUpdateEnabled() &&
-         profile->GetPrefs()->GetBoolean(
-             tab_groups::prefs::kAutoPinNewTabGroups);
+  return profile->GetPrefs()->GetBoolean(
+      tab_groups::prefs::kAutoPinNewTabGroups);
 }
 
 bool SavedTabGroupUtils::AreSavedTabGroupsSyncedForProfile(Profile* profile) {

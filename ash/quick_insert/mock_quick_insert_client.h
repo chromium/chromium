@@ -15,8 +15,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-class PrefService;
-
 namespace ash {
 
 struct QuickInsertWebPasteTarget;
@@ -56,21 +54,18 @@ class ASH_EXPORT MockQuickInsertClient : public QuickInsertClient {
               (size_t, RecentFilesCallback),
               (override));
   MOCK_METHOD(void,
-              GetSuggestedLinkResults,
-              (size_t, SuggestedLinksCallback),
-              (override));
-  MOCK_METHOD(void,
               FetchFileThumbnail,
               (const base::FilePath& path,
                const gfx::Size& size,
                FetchFileThumbnailCallback callback),
               (override));
-  MOCK_METHOD(PrefService*, GetPrefs, (), (override));
   MOCK_METHOD(std::optional<QuickInsertWebPasteTarget>,
               GetWebPasteTarget,
               (),
               (override));
   MOCK_METHOD(void, Announce, (std::u16string_view message), (override));
+  MOCK_METHOD(history::HistoryService*, GetHistoryService, (), (override));
+  MOCK_METHOD(favicon::FaviconService*, GetFaviconService, (), (override));
 };
 
 }  // namespace ash

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <stddef.h>
-
 #include "chrome/browser/ui/tabs/pinned_tab_test_utils.h"
+
+#include <stddef.h>
 
 namespace {
 
@@ -30,8 +30,9 @@ std::string PinnedTabTestUtils::TabsToString(
     const std::vector<StartupTab>& values) {
   std::string result;
   for (size_t i = 0; i < values.size(); ++i) {
-    if (i != 0)
+    if (i != 0) {
       result += " ";
+    }
     result += TabToString(values[i]);
   }
   return result;

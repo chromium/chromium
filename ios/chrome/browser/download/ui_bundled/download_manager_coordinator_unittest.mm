@@ -90,6 +90,7 @@ class DownloadManagerCoordinatorTest : public PlatformTest {
     OverlayRequestQueue::CreateForWebState(web_state_.get());
     DownloadManagerTabHelper::CreateForWebState(web_state_.get());
     DocumentDownloadTabHelper::CreateForWebState(web_state_.get());
+    web_state_->SetBrowserState(profile_.get());
     coordinator_ = [[DownloadManagerCoordinator alloc]
         initWithBaseViewController:base_view_controller_
                            browser:browser_.get()];

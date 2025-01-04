@@ -27,7 +27,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
@@ -72,11 +72,9 @@ public class PriceMessageServiceUnitTest {
         doNothing().when(mMessageObserver).messageReady(anyInt(), any());
         doNothing().when(mMessageObserver).messageInvalidate(anyInt());
 
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(ChromeFeatureList.PRICE_ANNOTATIONS, true);
-        FeatureList.setTestValues(testValues);
+        FeatureOverrides.enable(ChromeFeatureList.PRICE_ANNOTATIONS);
 
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(true);
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
         PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
                 PriceTrackingUtilities.PRICE_WELCOME_MESSAGE_CARD, true);

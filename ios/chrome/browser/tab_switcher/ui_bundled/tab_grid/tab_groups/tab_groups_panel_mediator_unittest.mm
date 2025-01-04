@@ -5,11 +5,13 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_panel_mediator.h"
 
 #import "base/test/metrics/user_action_tester.h"
+#import "components/collaboration/test_support/mock_collaboration_service.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/public/types.h"
 #import "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
 #import "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #import "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
+#import "ios/chrome/browser/share_kit/model/test_share_kit_service.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -71,6 +73,10 @@ class TabGroupsPanelMediatorTest : public PlatformTest {
     browser_list_ = BrowserListFactory::GetForProfile(profile_.get());
     browser_list_->AddBrowser(browser_.get());
     mode_holder_ = [[TabGridModeHolder alloc] init];
+    share_kit_service_ =
+        std::make_unique<TestShareKitService>(nullptr, nullptr, nullptr);
+    collaboration_service_ =
+        std::make_unique<collaboration::MockCollaborationService>();
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -82,6 +88,9 @@ class TabGroupsPanelMediatorTest : public PlatformTest {
   ::testing::NiceMock<tab_groups::MockTabGroupSyncService>
       tab_group_sync_service_;
   TabGridModeHolder* mode_holder_;
+  std::unique_ptr<ShareKitService> share_kit_service_;
+  std::unique_ptr<collaboration::MockCollaborationService>
+      collaboration_service_;
 };
 
 // Tests that the service observation starts and stops when the mediator is
@@ -93,6 +102,8 @@ TEST_F(TabGroupsPanelMediatorTest, StartStopObserving_Released) {
   EXPECT_CALL(strict_tab_group_sync_service, AddObserver(_)).Times(1);
   __unused TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:&strict_tab_group_sync_service
+                  shareKitService:share_kit_service_.get()
+             collaborationService:collaboration_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:NO
@@ -112,6 +123,8 @@ TEST_F(TabGroupsPanelMediatorTest, StartStopObserving_Disconnect) {
   EXPECT_CALL(strict_tab_group_sync_service, AddObserver(_)).Times(1);
   TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:&strict_tab_group_sync_service
+                  shareKitService:share_kit_service_.get()
+             collaborationService:collaboration_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:NO
@@ -128,6 +141,8 @@ TEST_F(TabGroupsPanelMediatorTest, RecordUMAWhenSelected) {
   base::UserActionTester user_action_tester;
   TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:&tab_group_sync_service_
+                  shareKitService:share_kit_service_.get()
+             collaborationService:collaboration_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:NO
@@ -153,6 +168,8 @@ TEST_F(TabGroupsPanelMediatorTest, RecordUMAWhenSelected) {
 TEST_F(TabGroupsPanelMediatorTest, NotSelected_NoToolbarsDelegateOrConfig) {
   TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:&tab_group_sync_service_
+                  shareKitService:share_kit_service_.get()
+             collaborationService:collaboration_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:NO
@@ -172,6 +189,8 @@ TEST_F(TabGroupsPanelMediatorTest, NotSelected_NoToolbarsDelegateOrConfig) {
 TEST_F(TabGroupsPanelMediatorTest, DisabledByPolicy_DisabledToolbarsConfig) {
   TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:&tab_group_sync_service_
+                  shareKitService:share_kit_service_.get()
+             collaborationService:collaboration_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:YES
@@ -212,6 +231,8 @@ TEST_F(TabGroupsPanelMediatorTest,
        EnabledByPolicyAndSelectedButNoRegularTab_DoneButtonDisabled) {
   TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:&tab_group_sync_service_
+                  shareKitService:share_kit_service_.get()
+             collaborationService:collaboration_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:NO
@@ -259,6 +280,8 @@ TEST_F(TabGroupsPanelMediatorTest,
   }
   TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:&tab_group_sync_service_
+                  shareKitService:share_kit_service_.get()
+             collaborationService:collaboration_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:NO
@@ -299,6 +322,8 @@ TEST_F(TabGroupsPanelMediatorTest,
        SetConsumerDoesntPopulatesFromUninitializedService) {
   TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:&tab_group_sync_service_
+                  shareKitService:share_kit_service_.get()
+             collaborationService:collaboration_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:NO
@@ -329,6 +354,8 @@ TEST_F(TabGroupsPanelMediatorTest,
       .WillOnce(SaveArg<0>(&observer));
   TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:&tab_group_sync_service_
+                  shareKitService:share_kit_service_.get()
+             collaborationService:collaboration_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:NO
@@ -363,6 +390,8 @@ TEST_F(TabGroupsPanelMediatorTest,
       .WillOnce(SaveArg<0>(&observer));
   TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:&tab_group_sync_service_
+                  shareKitService:share_kit_service_.get()
+             collaborationService:collaboration_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:NO
@@ -396,6 +425,8 @@ TEST_F(TabGroupsPanelMediatorTest,
       .WillOnce(SaveArg<0>(&observer));
   TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:&tab_group_sync_service_
+                  shareKitService:share_kit_service_.get()
+             collaborationService:collaboration_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:NO
@@ -431,6 +462,8 @@ TEST_F(TabGroupsPanelMediatorTest, PopulatesSortedGroups) {
       .WillOnce(SaveArg<0>(&observer));
   TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:&tab_group_sync_service_
+                  shareKitService:share_kit_service_.get()
+             collaborationService:collaboration_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:NO
@@ -463,6 +496,8 @@ TEST_F(TabGroupsPanelMediatorTest, UpdateGroup) {
       .WillOnce(SaveArg<0>(&observer));
   TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:&tab_group_sync_service_
+                  shareKitService:share_kit_service_.get()
+             collaborationService:collaboration_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:NO
@@ -493,6 +528,8 @@ TEST_F(TabGroupsPanelMediatorTest, DeleteRemoteGroup) {
   auto sync_service = std::make_unique<tab_groups::FakeTabGroupSyncService>();
   TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:sync_service.get()
+                  shareKitService:share_kit_service_.get()
+             collaborationService:collaboration_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:NO
@@ -516,6 +553,8 @@ TEST_F(TabGroupsPanelMediatorTest, DeleteLocalGroup) {
   auto sync_service = std::make_unique<tab_groups::FakeTabGroupSyncService>();
   TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:sync_service.get()
+                  shareKitService:share_kit_service_.get()
+             collaborationService:collaboration_service_.get()
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
                  disabledByPolicy:NO
@@ -548,4 +587,34 @@ TEST_F(TabGroupsPanelMediatorTest, DeleteLocalGroup) {
   // Check if the number of groups and tabs is 0.
   EXPECT_EQ(0u, browser_->GetWebStateList()->GetGroups().size());
   EXPECT_EQ(0, browser_->GetWebStateList()->count());
+}
+
+// Tests that `facePileViewControllerForItem` returns an UIViewController when
+// the group is shared.
+TEST_F(TabGroupsPanelMediatorTest, FacePileViewControllerForItem) {
+  auto sync_service = std::make_unique<tab_groups::FakeTabGroupSyncService>();
+  TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
+      initWithTabGroupSyncService:sync_service.get()
+                  shareKitService:share_kit_service_.get()
+             collaborationService:collaboration_service_.get()
+              regularWebStateList:&web_state_list_
+                    faviconLoader:nullptr
+                 disabledByPolicy:NO
+                      browserList:browser_list_];
+
+  // Set a saved tab group.
+  tab_groups::SavedTabGroup group = tab_groups::test::CreateTestSavedTabGroup();
+  group.SetLocalGroupId(tab_groups::TabGroupId::GenerateNew());
+  sync_service->AddGroup(group);
+  EXPECT_TRUE(sync_service->GetGroup(group.saved_guid()).has_value());
+  TabGroupsPanelItem* item = [[TabGroupsPanelItem alloc] init];
+  item.savedTabGroupID = group.saved_guid();
+
+  EXPECT_FALSE([mediator facePileViewControllerForItem:item]);
+
+  // Share the group.
+  sync_service->MakeTabGroupShared(group.local_group_id().value(),
+                                   "collaboration");
+
+  EXPECT_TRUE([mediator facePileViewControllerForItem:item]);
 }

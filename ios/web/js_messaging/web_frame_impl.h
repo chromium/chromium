@@ -35,7 +35,6 @@ class WebFrameImpl final : public WebFrame,
                const std::string& frame_id,
                bool is_main_frame,
                url::Origin security_origin,
-               GURL security_origin_gurl,
                web::WebState* web_state,
                ContentWorld content_world);
 
@@ -52,7 +51,6 @@ class WebFrameImpl final : public WebFrame,
   std::string GetFrameId() const override;
   bool IsMainFrame() const override;
   url::Origin GetSecurityOrigin() const override;
-  GURL GetSecurityOriginDeprecated() const override;
   BrowserState* GetBrowserState() override;
 
   bool CallJavaScriptFunction(const std::string& name,
@@ -168,7 +166,6 @@ class WebFrameImpl final : public WebFrame,
   bool is_main_frame_ = false;
   // The security origin associated with this frame.
   url::Origin security_origin_;
-  GURL security_origin_gurl_;
   // The associated web state.
   raw_ptr<web::WebState> web_state_ = nullptr;
   // The frame's content world.

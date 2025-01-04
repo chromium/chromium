@@ -102,7 +102,8 @@ class WaylandEventSource : public PlatformEventSource,
                               base::TimeTicks timestamp,
                               int device_id,
                               WaylandKeyboard::KeyEventKind kind) override;
-  void OnSynthesizedKeyPressEvent(DomCode dom_code,
+  void OnSynthesizedKeyPressEvent(WaylandWindow* window,
+                                  DomCode dom_code,
                                   base::TimeTicks timestamp) override;
 
   // WaylandPointer::Delegate

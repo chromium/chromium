@@ -78,8 +78,8 @@ class TestDownloadsListTracker : public DownloadsListTracker {
                              base::BindRepeating(&ShouldShowItem)) {}
   ~TestDownloadsListTracker() override = default;
 
-  using DownloadsListTracker::IsIncognito;
   using DownloadsListTracker::GetItemForTesting;
+  using DownloadsListTracker::IsIncognito;
   using DownloadsListTracker::SetChunkSizeForTesting;
 
  protected:
@@ -97,15 +97,17 @@ class DownloadsListTrackerTest : public testing::Test {
   DownloadsListTrackerTest() = default;
 
   ~DownloadsListTrackerTest() override {
-    for (const auto& mock_item : mock_items_)
+    for (const auto& mock_item : mock_items_) {
       testing::Mock::VerifyAndClear(mock_item.get());
+    }
   }
 
   // testing::Test:
   void SetUp() override {
     ON_CALL(manager_, GetBrowserContext()).WillByDefault(Return(&profile_));
-    ON_CALL(manager_, GetAllDownloads(_)).WillByDefault(
-        testing::Invoke(this, &DownloadsListTrackerTest::GetAllDownloads));
+    ON_CALL(manager_, GetAllDownloads(_))
+        .WillByDefault(
+            testing::Invoke(this, &DownloadsListTrackerTest::GetAllDownloads));
   }
 
   MockDownloadItem* CreateMock(uint64_t id, const base::Time& started) {
@@ -149,8 +151,9 @@ class DownloadsListTrackerTest : public testing::Test {
 
  private:
   void GetAllDownloads(DownloadVector* result) {
-    for (const auto& mock_item : mock_items_)
+    for (const auto& mock_item : mock_items_) {
       result->push_back(mock_item.get());
+    }
   }
 
   // NOTE: The initialization order of these members matters.
@@ -181,12 +184,14 @@ TEST_F(DownloadsListTrackerTest, SetSearchTerms) {
 }
 
 MATCHER_P(MatchIds, expected, "") {
-  if (arg.size() != expected.size())
+  if (arg.size() != expected.size()) {
     return false;
+  }
 
   for (size_t i = 0; i < arg.size(); ++i) {
-    if (arg[i]->id != base::NumberToString(expected[i]))
+    if (arg[i]->id != base::NumberToString(expected[i])) {
       return false;
+    }
   }
   return true;
 }
@@ -271,8 +276,9 @@ TEST_F(DownloadsListTrackerTest, StartExcludesHiddenItems) {
 
 TEST_F(DownloadsListTrackerTest, Incognito) {
   testing::NiceMock<content::MockDownloadManager> incognito_manager;
-  ON_CALL(incognito_manager, GetBrowserContext()).WillByDefault(Return(
-      TestingProfile::Builder().BuildIncognito(profile())));
+  ON_CALL(incognito_manager, GetBrowserContext())
+      .WillByDefault(
+          Return(TestingProfile::Builder().BuildIncognito(profile())));
 
   MockDownloadItem item;
   EXPECT_CALL(item, GetId()).WillRepeatedly(Return(0));

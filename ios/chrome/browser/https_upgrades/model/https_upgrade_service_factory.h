@@ -5,24 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_HTTPS_UPGRADES_MODEL_HTTPS_UPGRADE_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_HTTPS_UPGRADES_MODEL_HTTPS_UPGRADE_SERVICE_FACTORY_H_
 
-#include <memory>
-
 #include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #include "ios/chrome/browser/https_upgrades/model/https_upgrade_service_impl.h"
+#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ProfileIOS;
 
 // Singleton that owns all HttpsUpgradeService and associates them with
 // ProfileIOS.
-class HttpsUpgradeServiceFactory : public BrowserStateKeyedServiceFactory {
+class HttpsUpgradeServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static HttpsUpgradeService* GetForProfile(ProfileIOS* profile);
   static HttpsUpgradeServiceFactory* GetInstance();
-
-  HttpsUpgradeServiceFactory(const HttpsUpgradeServiceFactory&) = delete;
-  HttpsUpgradeServiceFactory& operator=(const HttpsUpgradeServiceFactory&) =
-      delete;
 
  private:
   friend class base::NoDestructor<HttpsUpgradeServiceFactory>;
@@ -33,10 +27,6 @@ class HttpsUpgradeServiceFactory : public BrowserStateKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
-      web::BrowserState* context) const override;
-
-  bool ServiceIsNULLWhileTesting() const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_HTTPS_UPGRADES_MODEL_HTTPS_UPGRADE_SERVICE_FACTORY_H_

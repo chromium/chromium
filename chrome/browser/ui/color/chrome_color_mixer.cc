@@ -385,10 +385,6 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorShareThisTabAudioToggleBackground] = {
       ui::kColorSubtleEmphasisBackground};
   mixer[kColorShareThisTabSourceViewBorder] = {ui::kColorMidground};
-  mixer[kColorShoppingPageActionIconBackgroundVariant] = {
-      ui::kColorSysSecondary};
-  mixer[kColorShoppingPageActionIconForegroundVariant] = {
-      ui::kColorSysOnSecondary};
   mixer[kColorSidePanelBackground] = {kColorToolbar};
   mixer[kColorSidePanelContentAreaSeparator] = {ui::kColorSeparator};
   mixer[kColorSidePanelComboboxEntryIcon] = {ui::kColorIcon};
@@ -648,6 +644,13 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)) {
     mixer[kColorTaskManagerBackground] = {ui::kColorSysSurface2};
+    mixer[kColorTaskManagerSearchBarBackground] = {
+        ui::kColorSysBaseContainerElevated};
+    mixer[kColorTaskManagerSearchBarHoverOn] = {
+        ui::kColorSysStateHoverOnSubtle};
+    mixer[kColorTaskManagerSearchBarTransparent] = {SK_ColorTRANSPARENT};
+    mixer[kColorTaskManagerSearchBarPlaceholderText] = {
+        ui::kColorTextfieldForeground};
   }
 #endif  // BUILDFLAG(IS_ANDROID)
   mixer[kColorThumbnailTabBackground] =

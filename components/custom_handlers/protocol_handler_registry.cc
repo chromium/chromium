@@ -18,7 +18,6 @@
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/custom_handlers/pref_names.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/pref_registry/pref_registry_syncable.h"

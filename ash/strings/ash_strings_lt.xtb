@@ -361,6 +361,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2295777434187870477">Mikrofonas įjungtas; perjungiant įvestis bus nutildyta.</translation>
 <translation id="2302092602801625023">Ši paskyra tvarkoma naudojant „Family Link“</translation>
 <translation id="2303600792989757991">Perjungti lango apžvalgą</translation>
+<translation id="2304702218354340897">Ar tikrai norite išjungti valdymą veidu?</translation>
 <translation id="2305738328104302723">„Google“ užduočių sąrašas: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: pastarieji ekrano fiksavimai, atsisiuntimai ir prisegti failai</translation>
 <translation id="2318576281648121272">Šiandien <ph name="TODAY_DATE" /></translation>
@@ -387,6 +388,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2370971919968699910">Dėl to gali būti taikomas duomenų mokestis.
 Prijungtų įrenginių: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2386292613071805067">Pasirinkti viską puslapyje</translation>
+<translation id="2389423187722941333">Perjungti „Gemini“</translation>
 <translation id="2392659840443812875">Nėra pasiekiamo viešosios interneto prieigos taško. Įsitikinkite, kad įrenginys yra netoliese ir įjungtas „Bluetooth“.</translation>
 <translation id="2397416548179033562">Rodyti „Chrome“ meniu</translation>
 <translation id="240006516586367791">Medijos valdikliai</translation>
@@ -394,6 +396,7 @@ Prijungtų įrenginių: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2402411679569069051">Kad atrakintumėte „Chromebook“, naudokite kontrolinį kodą arba atrakinkite telefoną</translation>
 <translation id="240545663114741956">Dukart paspauskite <ph name="ACCELERATOR" />, kad atsijungtumėte.</translation>
 <translation id="2405664212338326887">Neprijungta</translation>
+<translation id="2406710117564540804">Įjungti / išjungti netrukdymo režimą</translation>
 <translation id="2408955596600435184">Įveskite PIN kodą</translation>
 <translation id="2412593942846481727">Pasiekiamas naujinys</translation>
 <translation id="2416438829169535743">Išeiti iš rodinio?</translation>
@@ -899,6 +902,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="4119928251231465047">Per daug bandymų įvesti PIN kodą</translation>
 <translation id="412298498316631026">langas</translation>
 <translation id="4123259114412175274">Jei norite atrakinti „Chromebook“, įsitikinkite, kad įjungtas telefono „Bluetooth“ ryšys</translation>
+<translation id="4123868835475902435">Susipažinote su pagrindine informacija. Jei norite gauti daugiau patarimų ir pagalbos, toliau naudokite „Explore“ – mūsų integruotą programą. Rasite patarimų, kaip pradėti, specialių pasiūlymų ir naujausių „<ph name="PRODUCT_NAME" />“ funkcijų.</translation>
 <translation id="4125970834901680537">Nepavyksta perduoti programų srautu planšetinio kompiuterio režimu. Bandykite dar kartą nešiojamojo kompiuterio režimu.</translation>
 <translation id="4131973331381812765">Temperatūra: <ph name="TEMPERATURE" /> °C – dabartinė sparta: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="4136724716305260864">Įjungta iki saulėtekio</translation>
@@ -1019,7 +1023,6 @@ Prijungtas vienas įrenginys.</translation>
 <translation id="4481530544597605423">Atsieti įrenginiai</translation>
 <translation id="4485506555414638855">Atsisakyti nustatyti naujausių telefono nuotraukų, medijos, pranešimų ir programų peržiūrą</translation>
 <translation id="4491109536499578614">Vaizdas</translation>
-<translation id="4493452241184130939">Susipažinote su pagrindine informacija. Jei norite gauti daugiau patarimų ir pagalbos, toliau naudokite „Explore“ – mūsų integruotą programą. Rasite patarimų, kaip pradėti, rekomenduojamų programų, specialių pasiūlymų ir naujausių „<ph name="PRODUCT_NAME" />“ funkcijų.</translation>
 <translation id="450584155212756404">Kuriamas kanalas</translation>
 <translation id="4513946894732546136">Atsiliepimai</translation>
 <translation id="4518404433291145981">Kad atrakintumėte „Chromebook“, pirmiausia atrakinkite telefoną</translation>
@@ -1082,7 +1085,6 @@ Prijungtas vienas įrenginys.</translation>
 <translation id="4708065238214351979">Šviesinti klaviatūrą</translation>
 <translation id="4708185346211948049"><ph name="DAY_OF_WEEK" />, kita savaitė</translation>
 <translation id="4717575069099566988">USB-C laidas nepalaiko USB4. Įrenginio našumas gali būti apribotas.</translation>
-<translation id="4724328513667182700">Šeši patarimai, kaip pradėti naudoti „<ph name="PRODUCT_NAME" />“</translation>
 <translation id="4730374152663651037">DAŽNAI NAUDOJAMOS PROGRAMOS</translation>
 <translation id="4731797938093519117">Tėvų prieiga</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (kairioji)</translation>
@@ -1309,7 +1311,6 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="5409208741270395213">Žymėti užduotį kaip baigtą</translation>
 <translation id="5413656666631274079">Nustatymų puslapis</translation>
 <translation id="5414198321558177633">Atnaujinamas profilių sąrašas. Tai gali užtrukti kelias minutes.</translation>
-<translation id="5417965108047245734">Peržiūrėkite trumpą apžvalgą, kad žinotumėte, kaip naudoti „<ph name="PRODUCT_NAME" />“</translation>
 <translation id="5426063383988017631">Nustatymų meniu uždarytas</translation>
 <translation id="5428899915242071344">Pradėti rinktis</translation>
 <translation id="5429993543155113935">Inkognito langai šiuo metu nepalaikomi</translation>
@@ -1647,6 +1648,7 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="6539852571005954999">Atsisiųsti nuskaitomą „<ph name="FILENAME" />“</translation>
 <translation id="6542521951477560771">Perduodama į „<ph name="RECEIVER_NAME" />“</translation>
 <translation id="6542891623636520977">Jaustukai, GIF ir daugiau</translation>
+<translation id="6543942526104794893">Ar tikrai norite išjungti veido gestus?</translation>
 <translation id="6545382064335350438">Vis tiek nepavyko patvirtinti PIN kodo. Bandykite dar kartą.</translation>
 <translation id="6555373427270923730">Įveskite žiniatinklio adresą adreso juostoje, tada paspauskite <ph name="MODIFIER" /> <ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2313,6 +2315,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8855885154700222542">Viso ekrano klavišas</translation>
 <translation id="8858369206579825206">Privatumo valdikliai</translation>
 <translation id="8860366331836346216">Pridėti „eSIM“ kortelę</translation>
+<translation id="8869149849311827122">Ar tikrai norite išjungti pelės žymeklio valdymą?</translation>
 <translation id="8870509716567206129">Programoje nepalaikomas skaidytas ekranas.</translation>
 <translation id="8873203135446552888">Patvirtinkite, kad norite išjungti įtaisytąją jutiklinę dalį</translation>
 <translation id="8874184842967597500">Neprisijungta</translation>

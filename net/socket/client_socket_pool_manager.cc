@@ -207,9 +207,8 @@ void ClientSocketPoolManager::set_max_sockets_per_proxy_chain(
 // static
 base::TimeDelta ClientSocketPoolManager::unused_idle_socket_timeout(
     HttpNetworkSession::SocketPoolType pool_type) {
-  return base::Seconds(base::GetFieldTrialParamByFeatureAsInt(
-      net::features::kNetUnusedIdleSocketTimeout,
-      "unused_idle_socket_timeout_seconds", 60));
+  constexpr int kPreconnectIntervalSec = 60;
+  return base::Seconds(kPreconnectIntervalSec);
 }
 
 int InitSocketHandleForHttpRequest(

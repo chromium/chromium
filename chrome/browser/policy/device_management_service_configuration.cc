@@ -38,8 +38,8 @@ DeviceManagementServiceConfiguration::DeviceManagementServiceConfiguration(
       realtime_reporting_server_url_(realtime_reporting_server_url),
       encrypted_reporting_server_url_(encrypted_reporting_server_url) {}
 
-DeviceManagementServiceConfiguration::~DeviceManagementServiceConfiguration() {
-}
+DeviceManagementServiceConfiguration::~DeviceManagementServiceConfiguration() =
+    default;
 
 std::string DeviceManagementServiceConfiguration::GetDMServerUrl() const {
   return dm_server_url_;

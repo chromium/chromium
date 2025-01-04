@@ -159,6 +159,10 @@ class FakeProfileManagerIOS : public ProfileManagerIOS {
     return profile_name;
   }
 
+  bool CanDeleteProfileWithName(std::string_view name) const override {
+    return false;
+  }
+
   bool LoadProfileAsync(std::string_view name,
                         ProfileLoadedCallback initialized_callback,
                         ProfileLoadedCallback created_callback) override {
@@ -189,6 +193,8 @@ class FakeProfileManagerIOS : public ProfileManagerIOS {
 
   void UnloadProfile(std::string_view name) override { NOTREACHED(); }
   void UnloadAllProfiles() override { NOTREACHED(); }
+
+  void MarkProfileForDeletion(std::string_view name) override { NOTREACHED(); }
 
   ProfileAttributesStorageIOS* GetProfileAttributesStorage() override {
     return &profile_attributes_storage_;
@@ -818,8 +824,11 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   // Simulate that the user signs in with the managed account, and chooses to
   // take existing local data along, i.e. convert the personal profile into a
   // managed profile.
+  base::test::TestFuture<void> conversion_done;
   account_profile_mapper_->MakePersonalProfileManagedWithGaiaID(
-      base::SysNSStringToUTF8(google_identity.gaiaID));
+      base::SysNSStringToUTF8(google_identity.gaiaID),
+      conversion_done.GetCallback());
+  ASSERT_TRUE(conversion_done.Wait());
 
   // What should have happened:
   // * The original personal profile should have become managed.

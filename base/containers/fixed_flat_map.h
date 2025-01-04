@@ -102,7 +102,7 @@ using fixed_flat_map = base::
 // Example usage:
 //   constexpr auto kMap = base::MakeFixedFlatMap<std::string_view, int>(
 //       {{"foo", 1}, {"bar", 2}, {"baz", 3}});
-template <class Key, class Mapped, size_t N, class Compare = std::less<>>
+template <class Key, class Mapped, class Compare = std::less<>, size_t N>
 consteval fixed_flat_map<Key, Mapped, N, Compare> MakeFixedFlatMap(
     std::pair<Key, Mapped> (&&data)[N],
     const Compare& comp = Compare()) {

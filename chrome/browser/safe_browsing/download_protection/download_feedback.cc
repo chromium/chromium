@@ -19,20 +19,6 @@ namespace safe_browsing {
 
 namespace {
 
-// This enum is used by histograms.  Do not change the ordering or remove items.
-enum UploadResultType {
-  UPLOAD_SUCCESS = 0,
-  UPLOAD_CANCELLED = 1,
-  UPLOAD_METADATA_NET_ERROR = 2,
-  UPLOAD_METADATA_RESPONSE_ERROR = 3,
-  UPLOAD_FILE_NET_ERROR = 4,
-  UPLOAD_FILE_RESPONSE_ERROR = 5,
-  UPLOAD_COMPLETE_RESPONSE_ERROR = 6,
-  // Memory space for histograms is determined by the max.
-  // ALWAYS ADD NEW VALUES BEFORE THIS ONE.
-  UPLOAD_RESULT_MAX = 7
-};
-
 // Handles the uploading of a single downloaded binary to the safebrowsing
 // download feedback service.
 class DownloadFeedbackImpl : public DownloadFeedback {
@@ -167,7 +153,7 @@ void DownloadFeedbackImpl::Start(base::OnceClosure finish_callback) {
 
   uploader_ = MultipartUploadRequest::CreateFileRequest(
       url_loader_factory_, GURL(kSbFeedbackURL), metadata_string, file_path_,
-      file_size_, false, traffic_annotation,
+      file_size_, false, "DownloadFeedback", traffic_annotation,
       base::BindOnce(&DownloadFeedbackImpl::FinishedUpload,
                      base::Unretained(this), std::move(finish_callback)));
   uploader_->Start();

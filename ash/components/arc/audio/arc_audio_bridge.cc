@@ -72,6 +72,9 @@ ArcAudioBridge::~ArcAudioBridge() {
 void ArcAudioBridge::OnConnectionReady() {
   // TODO(hidehiko): Replace with ConnectionHolder::IsConnected().
   available_ = true;
+
+  SendAudioNodesState();
+  SendSpatialAudioState();
 }
 
 void ArcAudioBridge::OnConnectionClosed() {
@@ -94,6 +97,10 @@ void ArcAudioBridge::OnSystemVolumeUpdateRequest(int32_t percent) {
 }
 
 void ArcAudioBridge::OnAudioNodesChanged() {
+  SendAudioNodesState();
+}
+
+void ArcAudioBridge::SendAudioNodesState() {
   uint64_t output_id = cras_audio_handler_->GetPrimaryActiveOutputNode();
   const ash::AudioDevice* output_device =
       cras_audio_handler_->GetDeviceFromId(output_id);
@@ -112,6 +119,10 @@ void ArcAudioBridge::OnAudioNodesChanged() {
   DVLOG(1) << "HEADPHONE " << headphone_inserted << " MICROPHONE "
            << microphone_inserted;
   SendSwitchState(headphone_inserted, microphone_inserted);
+
+  if (output_device) {
+    SendOutputDeviceType(output_device->type);
+  }
 }
 
 void ArcAudioBridge::OnOutputNodeVolumeChanged(uint64_t node_id, int volume) {
@@ -124,6 +135,10 @@ void ArcAudioBridge::OnOutputMuteChanged(bool mute_on) {
   DVLOG(1) << "Output mute " << mute_on;
   muted_ = mute_on;
   SendVolumeState();
+}
+
+void ArcAudioBridge::OnSpatialAudioStateChanged() {
+  SendSpatialAudioState();
 }
 
 void ArcAudioBridge::SendSwitchState(bool headphone_inserted,
@@ -155,6 +170,32 @@ void ArcAudioBridge::SendVolumeState() {
       arc_bridge_service_->audio(), NotifyVolumeState);
   if (audio_instance)
     audio_instance->NotifyVolumeState(volume_, muted_);
+}
+
+void ArcAudioBridge::SendSpatialAudioState() {
+  const bool enabled = cras_audio_handler_->GetSpatialAudioState();
+  DVLOG(1) << "Send spatial audio state " << enabled;
+  if (!available_) {
+    return;
+  }
+  mojom::AudioInstance* audio_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->audio(), NotifySpatialAudioState);
+  if (audio_instance) {
+    audio_instance->NotifySpatialAudioState(enabled);
+  }
+}
+
+void ArcAudioBridge::SendOutputDeviceType(AudioDeviceType device_type) {
+  DVLOG(1) << "Send output device type "
+           << AudioDevice::GetTypeString(device_type);
+  if (!available_) {
+    return;
+  }
+  mojom::AudioInstance* audio_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->audio(), NotifyOutputDeviceInfo);
+  if (audio_instance) {
+    audio_instance->NotifyOutputDeviceInfo(device_type);
+  }
 }
 
 // static

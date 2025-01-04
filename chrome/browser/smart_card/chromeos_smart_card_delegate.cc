@@ -31,7 +31,8 @@ bool ChromeOsSmartCardDelegate::IsPermissionBlocked(
   const url::Origin& origin =
       render_frame_host.GetMainFrame()->GetLastCommittedOrigin();
 
-  return !permission_context.CanRequestObjectPermission(origin);
+  return !permission_context.CanRequestObjectPermission(origin) &&
+         !permission_context.IsAllowlistedByPolicy(origin);
 }
 
 bool ChromeOsSmartCardDelegate::HasReaderPermission(
@@ -59,4 +60,3 @@ void ChromeOsSmartCardDelegate::RequestReaderPermission(
   permission_context.RequestReaderPermisssion(render_frame_host, reader_name,
                                               std::move(callback));
 }
-

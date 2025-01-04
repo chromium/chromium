@@ -137,8 +137,7 @@ class ProfileSigninConfirmationHelperTest : public testing::Test {
         new sync_preferences::TestingPrefServiceSyncable(
             /*managed_prefs=*/new TestingPrefStore(),
             /*supervised_user_prefs=*/new TestingPrefStore(),
-            /*extension_prefs=*/new TestingPrefStore(),
-            /*standalone_browser_prefs=*/new TestingPrefStore(), user_prefs_,
+            /*extension_prefs=*/new TestingPrefStore(), user_prefs_,
             /*recommended_prefs=*/new TestingPrefStore(),
             new user_prefs::PrefRegistrySyncable(),
             std::make_unique<PrefNotifierImpl>());

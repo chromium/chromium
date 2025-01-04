@@ -16,12 +16,15 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/shortcuts/shortcut_icon_generator.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
+#include "chrome/browser/web_applications/test/command_metrics_test_helper.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -66,9 +69,9 @@
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_app_instance.h"
+#include "ash/components/arc/test/fake_intent_helper_host.h"
+#include "ash/components/arc/test/fake_intent_helper_instance.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
-#include "components/arc/test/fake_intent_helper_host.h"
-#include "components/arc/test/fake_intent_helper_instance.h"
 #endif
 
 namespace web_app {
@@ -86,6 +89,8 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
 
   void SetUp() override {
     WebAppTest::SetUp();
+
+    FakeWebAppProvider::Get(profile())->UseRealOsIntegrationManager();
 
     test::AwaitStartWebAppProviderAndSubsystems(profile());
 
@@ -950,6 +955,23 @@ class UniversalInstallComboTest
 
     page_state.valid_manifest_for_web_app = IsInstallableOtherThanDisplay();
   }
+
+  SkBitmap GetExpectedPlatformIconAtSize(int width) {
+    // Note: These should be static test images instead of dynamically
+    // generating these using the same production code.
+    if (GetIcon().has_value() &&
+        !base::Contains(GetIcon()->src.spec(), "not_found")) {
+      return CreateSquareIcon(width, kIconColor);
+    }
+    if (GetFaviconColor()) {
+      return CreateSquareIcon(width, *GetFaviconColor());
+    }
+    // If no icon is provided, then an icon is generated using the first letter
+    // of the app name or page title.
+    const std::u16string name = GetAppName().value_or(u"P");
+    return shortcuts::GenerateBitmap(
+        width, shortcuts::GenerateIconLetterFromName(name));
+  }
 };
 
 TEST_P(UniversalInstallComboTest, InstallStateValid) {
@@ -1000,8 +1022,52 @@ TEST_P(UniversalInstallComboTest, InstallStateValid) {
 
   EXPECT_EQ(IsDiyApp(), provider()->registrar_unsafe().IsDiyApp(app_id));
 
+  // TODO(https://crbug.com/385198125): Improve GetShortcutIcon to take a size
+  // that is actually respected across all platforms.
+  auto bitmap = fake_os_integration().GetShortcutIcon(
+      profile(), std::nullopt, app_id, name, icon_size::k128);
+  ASSERT_TRUE(bitmap.has_value());
+
+  // TODO(https://crbug.com/385218415): Check icons here against static test
+  // data, and on all platforms.
+#if BUILDFLAG(IS_LINUX)
+  EXPECT_THAT(*bitmap,
+              gfx::test::EqualsBitmap(GetExpectedPlatformIconAtSize(128)))
+      << bitmap->width() << "x" << bitmap->height() << ", with center color "
+      << ui::SkColorName(
+             bitmap->getColor(bitmap->width() / 2, bitmap->height() / 2));
+#elif BUILDFLAG(IS_MAC)
+  // Use the bitmap's size instead of a static one, as the os integration
+  // reading code above is not consistent.
+  // TODO(https://crbug.com/372688523): Implement icon checks for masked DIY app
+  // icons.
+  if (!IsDiyApp()) {
+    EXPECT_THAT(*bitmap, gfx::test::EqualsBitmap(
+                             GetExpectedPlatformIconAtSize(bitmap->width())))
+        << bitmap->width() << "x" << bitmap->height() << ", with center color "
+        << ui::SkColorName(
+               bitmap->getColor(bitmap->width() / 2, bitmap->height() / 2));
+  }
+#endif
+
   EXPECT_THAT(histogram_tester.GetAllSamples(GetBucketName()),
               base::BucketsAre(base::Bucket(/*true=*/1, 1)));
+
+  std::string_view app_type_str = IsDiyApp() ? ".Diy" : ".Crafted";
+
+  EXPECT_THAT(histogram_tester,
+              test::ForAllGetAllSamples(
+                  test::GetInstallCommandResultHistogramNames(
+                      ".FetchManifestAndInstall", app_type_str),
+                  base::BucketsAre(base::Bucket(
+                      webapps::InstallResultCode::kSuccessNewInstall, 1))));
+
+  EXPECT_THAT(histogram_tester,
+              test::ForAllGetAllSamples(
+                  test::GetInstallCommandSourceHistogramNames(
+                      ".FetchManifestAndInstall", app_type_str),
+                  base::BucketsAre(base::Bucket(
+                      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, 1))));
 }
 
 INSTANTIATE_TEST_SUITE_P(

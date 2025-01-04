@@ -33,6 +33,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/color/color_id.h"
@@ -139,6 +140,48 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameViewWinTest,
   EXPECT_TRUE(maximize_button->GetEnabled());
 }
 
+class CaptionButtonContainerTest : public BrowserFrameViewWinTest,
+                                   public ::testing::WithParamInterface<bool> {
+ public:
+  CaptionButtonContainerTest() = default;
+  CaptionButtonContainerTest(const CaptionButtonContainerTest&) = delete;
+  CaptionButtonContainerTest& operator=(const CaptionButtonContainerTest&) =
+      delete;
+  ~CaptionButtonContainerTest() override = default;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CaptionButtonContainerTest,
+                         ::testing::Values(false, true));
+
+// Test that the caption button hit tests returns the correct non-client
+// hit test result in LTR/RTL mode.
+IN_PROC_BROWSER_TEST_P(CaptionButtonContainerTest,
+                       VerifyCaptionButtonHitTestResults) {
+  const bool is_rtl = GetParam();
+  base::i18n::SetRTLForTesting(is_rtl);
+
+  auto* frame_view = GetBrowserFrameViewWin();
+  auto* maximize_button = GetMaximizeButton();
+
+  // Hit test maximize button.
+  const gfx::Point maximize_button_center =
+      maximize_button->GetBoundsInScreen().CenterPoint();
+  EXPECT_EQ(frame_view->NonClientHitTest(maximize_button_center), HTMAXBUTTON);
+
+  const int button_width = maximize_button->width();
+
+  EXPECT_EQ(frame_view->NonClientHitTest(
+                gfx::Point(maximize_button_center.x() + button_width,
+                           maximize_button_center.y())),
+            is_rtl ? HTMINBUTTON : HTCLOSE);
+
+  EXPECT_EQ(frame_view->NonClientHitTest(
+                gfx::Point(maximize_button_center.x() - button_width,
+                           maximize_button_center.y())),
+            is_rtl ? HTCLOSE : HTMINBUTTON);
+}
+
 class WebAppBrowserFrameViewWinTest : public InProcessBrowserTest {
  public:
   WebAppBrowserFrameViewWinTest() = default;
@@ -163,6 +206,11 @@ class WebAppBrowserFrameViewWinTest : public InProcessBrowserTest {
     if (theme_color_) {
       web_app_info->theme_color = *theme_color_;
     }
+    if (!display_override_.empty()) {
+      web_app_info->user_display_mode =
+          web_app::mojom::UserDisplayMode::kStandalone;
+      web_app_info->display_override = display_override_;
+    }
 
     webapps::AppId app_id = web_app::test::InstallWebApp(
         browser()->profile(), std::move(web_app_info));
@@ -183,6 +231,7 @@ class WebAppBrowserFrameViewWinTest : public InProcessBrowserTest {
   }
 
   std::optional<SkColor> theme_color_ = SK_ColorBLUE;
+  std::vector<blink::mojom::DisplayMode> display_override_ = {};
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> app_browser_ = nullptr;
   raw_ptr<BrowserView, AcrossTasksDanglingUntriaged> browser_view_ = nullptr;
   raw_ptr<BrowserFrameViewWin, AcrossTasksDanglingUntriaged> frame_view_ =
@@ -264,6 +313,31 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinTest, ContainerHeight) {
 IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinTest, WebAppIconInTitlebar) {
   InstallAndLaunchWebApp();
   ASSERT_EQ(true, frame_view_->window_icon_for_testing()->GetVisible());
+}
+
+class TabbedWebAppBrowserFrameViewWinTest
+    : public WebAppBrowserFrameViewWinTest {
+ public:
+  TabbedWebAppBrowserFrameViewWinTest() = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      blink::features::kDesktopPWAsTabStrip};
+};
+
+IN_PROC_BROWSER_TEST_F(TabbedWebAppBrowserFrameViewWinTest,
+                       TabbedWebAppIconInTitlebar) {
+  display_override_ = {blink::mojom::DisplayMode::kTabbed};
+  InstallAndLaunchWebApp();
+
+  ASSERT_FALSE(frame_view_->window_icon_for_testing()->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(TabbedWebAppBrowserFrameViewWinTest,
+                       NonTabbedWebAppIconInTitlebar) {
+  InstallAndLaunchWebApp();
+
+  ASSERT_TRUE(frame_view_->window_icon_for_testing()->GetVisible());
 }
 
 class WebAppBrowserFrameViewWinWindowControlsOverlayTest

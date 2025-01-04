@@ -29,10 +29,10 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
-#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/omnibox/browser/url_prefix.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_fixer.h"
@@ -680,6 +680,14 @@ bool SearchSuggestionParser::ParseSuggestResults(
     if (std::optional<int> relevance =
             extras.FindInt("google:verbatimrelevance")) {
       results->verbatim_relevance = *relevance;
+    }
+
+    if (const std::string* gws_event_id_hash_str =
+            extras.FindString("google:suggesteventid")) {
+      int64_t gws_event_id_hash;
+      if (base::StringToInt64(*gws_event_id_hash_str, &gws_event_id_hash)) {
+        results->gws_event_id_hashes.push_back(gws_event_id_hash);
+      }
     }
 
     // Check if the active suggest field trial (if any) has triggered either

@@ -290,7 +290,7 @@ void AutomationEventRouter::RenderProcessHostDestroyed(
 
 void AutomationEventRouter::RemoveAutomationListener(
     content::RenderProcessHost* host) {
-  RenderProcessHostId rph_id = host->GetID();
+  RenderProcessHostId rph_id = host->GetDeprecatedID();
   ExtensionId extension_id;
   for (auto listener = listeners_.begin(); listener != listeners_.end();) {
     if ((*listener)->render_process_host_id == rph_id) {

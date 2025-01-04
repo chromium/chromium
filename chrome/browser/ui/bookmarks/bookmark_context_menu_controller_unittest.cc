@@ -59,9 +59,7 @@ class BookmarkContextMenuControllerTest : public testing::Test {
  public:
   BookmarkContextMenuControllerTest() : model_(nullptr) {
     feature_list_.InitWithFeatures(
-        {tab_groups::kTabGroupsSaveUIUpdate,
-         syncer::kSyncEnableBookmarksInTransportMode},
-        {});
+        {syncer::kSyncEnableBookmarksInTransportMode}, {});
   }
 
   void SetUp() override {

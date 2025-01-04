@@ -764,6 +764,8 @@ const AttributeTriggers* HTMLElement::TriggersForAttributeName(
 
       {html_names::kAutocapitalizeAttr, WebFeature::kAutocapitalizeAttribute,
        kNoEvent, nullptr},
+      {html_names::kWritingsuggestionsAttr,
+       WebFeature::kHTMLElementWritingSuggestions, kNoEvent, nullptr},
   });
 
   using AttributeToTriggerIndexMap = HashMap<QualifiedName, uint32_t>;

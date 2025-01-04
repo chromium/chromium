@@ -30,7 +30,7 @@
 #import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/public/web_state_delegate.h"
 #import "ios/web/public/web_state_observer.h"
-#import "ios/web/web_view/content_type_util.h"
+#import "ios/web/util/content_type_util.h"
 #import "net/cert/x509_util.h"
 #import "net/cert/x509_util_apple.h"
 #import "services/network/public/mojom/referrer_policy.mojom-shared.h"

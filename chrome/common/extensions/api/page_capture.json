@@ -30,7 +30,8 @@
           "parameters": [
             {
               "name": "mhtmlData",
-              "type": "binary",
+              "type": "object",
+              "isInstanceOf": "Blob",
               "optional": true,
               "description": "The MHTML data as a Blob."
             }

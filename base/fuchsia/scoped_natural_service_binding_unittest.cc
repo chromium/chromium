@@ -73,10 +73,9 @@ TEST_F(ScopedNaturalServiceBindingTest, ConnectDebugService) {
       fidl::CreateEndpoints<fuchsia_io::Directory>();
   ASSERT_TRUE(debug_directory_endpoints.is_ok())
       << debug_directory_endpoints.status_string();
-  debug_dir->Serve(
-      fuchsia_io::wire::kPermReadable | fuchsia_io::wire::kPermWritable,
-      fidl::ServerEnd<fuchsia_io::Directory>(
-          debug_directory_endpoints->server.TakeChannel()));
+  debug_dir->Serve(fuchsia_io::wire::kPermReadable,
+                   fidl::ServerEnd<fuchsia_io::Directory>(
+                       debug_directory_endpoints->server.TakeChannel()));
 
   // Attempt to connect via the "debug" directory.
   auto debug_stub =

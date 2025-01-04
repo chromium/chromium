@@ -56,8 +56,9 @@ std::optional<gfx::RRectF> HighlightPathGenerator::GetRoundRect(
   gfx::Rect bounds =
       use_contents_bounds_ ? view->GetContentsBounds() : view->GetLocalBounds();
   bounds.Inset(insets_);
-  if (use_mirrored_rect_)
+  if (use_mirrored_rect_) {
     bounds = view->GetMirroredRect(bounds);
+  }
   return GetRoundRect(gfx::RectF(bounds));
 }
 

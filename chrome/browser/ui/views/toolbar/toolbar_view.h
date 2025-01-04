@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/views/toolbar/overflow_button.h"
 #include "components/prefs/pref_member.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/views/accessible_pane_view.h"
@@ -34,8 +35,8 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "ash/components/arc/mojom/intent_helper.mojom-forward.h"  // nogncheck https://crbug.com/784179
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 class AppMenuButton;
@@ -91,6 +92,9 @@ class ToolbarView : public views::AccessiblePaneView,
     CUSTOM_TAB  // Custom tab bar, used in PWAs when a location
                 // needs to be displayed.
   };
+
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToolbarElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToolbarContainerElementId);
 
   ToolbarView(Browser* browser, BrowserView* browser_view);
   ToolbarView(const ToolbarView&) = delete;
@@ -249,7 +253,8 @@ class ToolbarView : public views::AccessiblePaneView,
   gfx::Rect GetFindBarBoundingBox(int contents_bottom) override;
   void FocusToolbar() override;
   views::AccessiblePaneView* GetAsAccessiblePaneView() override;
-  views::View* GetAnchorView(std::optional<PageActionIconType> type) override;
+  views::View* GetAnchorView(
+      std::optional<actions::ActionId> action_id) override;
   void ZoomChangedForActiveTab(bool can_show_bubble) override;
   AvatarToolbarButton* GetAvatarToolbarButton() override;
   ToolbarButton* GetBackButton() override;

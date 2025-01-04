@@ -5,13 +5,16 @@
 #ifndef IOS_CHROME_BROWSER_SHARE_KIT_MODEL_SHARE_KIT_FACE_PILE_CONFIGURATION_H_
 #define IOS_CHROME_BROWSER_SHARE_KIT_MODEL_SHARE_KIT_FACE_PILE_CONFIGURATION_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 // Configuration object for the ShareKit FacePile API.
 @interface ShareKitFacePileConfiguration : NSObject
 
 // Shared group ID.
 @property(nonatomic, copy) NSString* collabID;
+
+// The background color for the face pile when it is not empty.
+@property(nonatomic, strong) UIColor* backgroundColor;
 
 // Whether the face pile should be visible when the group is empty (not shared
 // or shared with no members).

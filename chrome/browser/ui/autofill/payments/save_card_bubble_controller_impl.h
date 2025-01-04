@@ -29,6 +29,8 @@ namespace autofill {
 
 enum class BubbleType;
 
+class PaymentsDataManager;
+
 // Implementation of per-tab class to control the local/server save credit card
 // bubble, the local/server save CVC bubble, and Omnibox icon.
 // TODO(crbug.com/40934022): Refactor SaveCardBubbleControllerImpl to split the
@@ -191,11 +193,9 @@ class SaveCardBubbleControllerImpl
   // inactive, effectively ending the save card flow.
   void EndSaveCardPromptFlow();
 
-  // Should outlive this object.
-  raw_ptr<PersonalDataManager> personal_data_manager_;
-
-  // Should outlive this object.
-  raw_ptr<syncer::SyncService> sync_service_;
+  // Tied to the profile and outlive this object.
+  const raw_ref<PaymentsDataManager> payments_data_manager_;
+  const raw_ptr<syncer::SyncService> sync_service_;
 
   // Is true only if the [Card saved] label animation should be shown.
   bool should_show_card_saved_label_animation_ = false;

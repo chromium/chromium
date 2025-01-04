@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "third_party/skia/include/core/SkRRect.h"
@@ -105,7 +106,7 @@ class TabStyleViewsImpl : public TabStyleViews {
   // tab. Only active tabs may have a stroke, and not in all cases. If there
   // is no stroke, returns 0. If |should_paint_as_active| is true, the tab is
   // treated as an active tab regardless of its true current state.
-  virtual int GetStrokeThickness(bool should_paint_as_active = false) const;
+  virtual int GetStrokeThickness(bool should_paint_as_active) const;
 
   virtual bool ShouldPaintTabBackgroundColor(
       TabStyle::TabSelectionState selection_state,
@@ -482,7 +483,7 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
 }
 
 gfx::Insets TabStyleViewsImpl::GetContentsInsets() const {
-  const int stroke_thickness = GetStrokeThickness();
+  const int stroke_thickness = GetStrokeThickness(false);
   gfx::Insets base_style_insets = tab_style()->GetContentsInsets();
   return gfx::Insets::TLBR(
              stroke_thickness, 0,
@@ -513,8 +514,9 @@ float TabStyleViewsImpl::GetZValue() const {
   // This function doesn't handle active tabs, as they are normally painted by a
   // different code path (with z-value infinity).
   float sort_value = GetHoverAnimationValue();
-  if (tab_->IsSelected())
+  if (tab_->IsSelected()) {
     sort_value += 4.f;
+  }
   if (IsHovering()) {
     sort_value += 2.f;
   }
@@ -634,13 +636,15 @@ void TabStyleViewsImpl::SetHoverLocation(const gfx::Point& location) {
   // There's a "glow" that gets drawn over inactive tabs based on the mouse's
   // location. There is no glow for the active tab so don't update the hover
   // controller and incur a redraw.
-  if (hover_controller_ && !tab_->IsActive())
+  if (hover_controller_ && !tab_->IsActive()) {
     hover_controller_->SetLocation(location);
+  }
 }
 
 void TabStyleViewsImpl::ShowHover(TabStyle::ShowHoverStyle style) {
-  if (!hover_controller_)
+  if (!hover_controller_) {
     return;
+  }
 
   if (style == TabStyle::ShowHoverStyle::kSubtle) {
     hover_controller_->SetSubtleOpacityScale(
@@ -650,14 +654,20 @@ void TabStyleViewsImpl::ShowHover(TabStyle::ShowHoverStyle style) {
 }
 
 void TabStyleViewsImpl::HideHover(TabStyle::HideHoverStyle style) {
-  if (hover_controller_)
+  if (hover_controller_) {
     hover_controller_->Hide(style);
+  }
 }
 
 TabStyle::SeparatorBounds TabStyleViewsImpl::GetSeparatorBounds(
     float scale) const {
+  const gfx::Rect original_bounds = tab_->bounds();
+  // Factor out the amount of the tab strip that is overlapped by the toolbar.
+  const gfx::Rect visible_bounds = gfx::Rect(
+      original_bounds.x(), original_bounds.y(), original_bounds.width(),
+      original_bounds.height() - GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP));
   const gfx::RectF aligned_bounds =
-      ScaleAndAlignBounds(tab_->bounds(), scale, GetStrokeThickness());
+      ScaleAndAlignBounds(visible_bounds, scale, GetStrokeThickness(false));
   const int corner_radius = tab_style()->GetBottomCornerRadius() * scale;
   gfx::SizeF separator_size(tab_style()->GetSeparatorSize());
   separator_size.Scale(scale);
@@ -710,8 +720,9 @@ TabStyle::SeparatorOpacities TabStyleViewsImpl::GetSeparatorOpacities(
   float trailing_opacity = GetSeparatorOpacity(for_layout, false);
 
   // Return the opacities in physical order, rather than logical.
-  if (base::i18n::IsRTL())
+  if (base::i18n::IsRTL()) {
     std::swap(leading_opacity, trailing_opacity);
+  }
   return {leading_opacity, trailing_opacity};
 }
 
@@ -748,11 +759,15 @@ float TabStyleViewsImpl::GetSeparatorOpacity(bool for_layout,
   }
 
   // If there isn't an adjacent tab, the tab is at the beginning or end of the
-  // tab strip. for the first tab, we shouldn't not show the leading separator,
-  // for the last tab, we should show the separator between the new tab button
-  // and the tab strip IF the tab isn't selected, hovered, or active.
+  // tab strip. For the first tab, we shouldn't show the leading separator, for
+  // the last tab, we should show the separator between the new tab button and
+  // the tab strip IF the tab isn't selected, hovered, or active. If there is a
+  // combo button with a non-transparent background in place of the new tab
+  // button, we should not show the trailing separator.
   if (!adjacent_tab) {
-    return leading ? 0.0f : shown_separator_opacity;
+    return (leading || features::HasTabstripComboButtonWithBackground())
+               ? 0.0f
+               : shown_separator_opacity;
   }
 
   // Do not show when the adjacent tab is displaying a visible shape.
@@ -818,11 +833,13 @@ float TabStyleViewsImpl::GetHoverOpacity() const {
 
 int TabStyleViewsImpl::GetStrokeThickness(bool should_paint_as_active) const {
   std::optional<tab_groups::TabGroupId> group = tab_->group();
-  if (group.has_value() && tab_->IsActive())
+  if (group.has_value() && tab_->IsActive()) {
     return TabGroupUnderline::kStrokeThickness;
+  }
 
-  if (tab_->IsActive() || should_paint_as_active)
+  if (tab_->IsActive() || should_paint_as_active) {
     return tab_->controller()->GetStrokeThickness();
+  }
 
   return 0;
 }
@@ -905,8 +922,9 @@ ShapeModifier TabStyleViewsImpl::GetShapeModifier(
                                  ShapeModifier modifier) {
       const Tab* adjacent_tab = tab->controller()->GetAdjacentTab(tab, offset);
       if (adjacent_tab && adjacent_tab->IsSelected() &&
-          !adjacent_tab->IsMouseHovered())
+          !adjacent_tab->IsMouseHovered()) {
         return modifier;
+      }
       return kNone;
     };
     shape_modifier |= check_adjacent_tab(tab_, -1, kNoLowerLeftArc);
@@ -1009,8 +1027,9 @@ void TabStyleViewsImpl::PaintBackgroundStroke(
   const bool is_active =
       selection_state == TabStyle::TabSelectionState::kActive;
   const int stroke_thickness = GetStrokeThickness(is_active);
-  if (!stroke_thickness)
+  if (!stroke_thickness) {
     return;
+  }
 
   SkPath outer_path =
       GetPath(TabStyle::PathType::kBorder, canvas->image_scale(), is_active,
@@ -1027,8 +1046,9 @@ void TabStyleViewsImpl::PaintBackgroundStroke(
 
 void TabStyleViewsImpl::PaintSeparators(gfx::Canvas* canvas) const {
   const auto separator_opacities = GetSeparatorOpacities(false);
-  if (!separator_opacities.left && !separator_opacities.right)
+  if (!separator_opacities.left && !separator_opacities.right) {
     return;
+  }
 
   gfx::ScopedCanvas scoped_canvas(canvas);
   const float scale = canvas->UndoDeviceScaleFactor();

@@ -11,7 +11,6 @@
 #include "base/trace_event/trace_config.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/protos/perfetto/config/data_source_config.gen.h"
 
@@ -218,7 +217,7 @@ TEST_F(AdaptPerfettoConfigForChromeTest, ProcessFilter) {
             PrintConfigToText(perfetto_config));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CASTOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_CASTOS)
 TEST_F(AdaptPerfettoConfigForChromeTest, Systrace) {
   auto perfetto_config = ParsePerfettoConfigFromText(R"pb(
     data_sources: { config: { name: "org.chromium.trace_system" } }
@@ -233,6 +232,6 @@ TEST_F(AdaptPerfettoConfigForChromeTest, Systrace) {
             PrintConfigToText(GetDataSourceConfig(
                 perfetto_config, "org.chromium.trace_system")));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CASTOS)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_CASTOS)
 
 }  // namespace tracing

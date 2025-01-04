@@ -24,10 +24,6 @@
 #include "services/viz/public/mojom/gpu.mojom-forward.h"
 #include "third_party/dawn/include/dawn/webgpu_cpp.h"
 
-namespace viz {
-class ContextProviderCommandBuffer;
-}
-
 namespace video_effects {
 
 class VideoEffectsProcessorImpl;
@@ -59,8 +55,7 @@ class VideoEffectsServiceImpl : public mojom::VideoEffectsService {
  private:
   // Creates `webgpu_device_` and initializes it asynchronously.  On completion,
   // invokes `FinishCreatingEffectsProcessors()`.
-  void CreateWebGpuDeviceAndEffectsProcessors(
-      scoped_refptr<viz::ContextProviderCommandBuffer> context_provider);
+  void CreateWebGpuDeviceAndEffectsProcessors();
 
   // Callback functions for WebGpuDevice.
   void OnDeviceCreated(wgpu::Device device);
@@ -75,8 +70,7 @@ class VideoEffectsServiceImpl : public mojom::VideoEffectsService {
   void FinishCreatingEffectsProcessor(
       const std::string& device_id,
       mojo::PendingRemote<media::mojom::VideoEffectsManager> manager_remote,
-      mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor_receiver,
-      std::unique_ptr<GpuChannelHostProvider> gpu_channel_host_provider);
+      mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor_receiver);
 
   // Helper - used to clean up instances of `VideoEffectsProcessor`s that are
   // no longer functional.
@@ -109,11 +103,13 @@ class VideoEffectsServiceImpl : public mojom::VideoEffectsService {
 
     mojo::PendingRemote<media::mojom::VideoEffectsManager> manager_remote;
     mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor_receiver;
-    std::unique_ptr<GpuChannelHostProvider> gpu_channel_host_provider;
   };
 
   // Mapping of device ID to pending requests to create effects processors.
   base::flat_map<std::string, PendingEffectsProcessor> pending_processors_;
+
+  // Provides GPU context objects as needed and monitors context lost events.
+  scoped_refptr<GpuChannelHostProvider> gpu_channel_host_provider_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -31,13 +31,6 @@ class FakeScrollbarLayer : public BaseLayer {
     return updated;
   }
 
-  void PushPropertiesTo(LayerImpl* layer,
-                        const CommitState& commit_state,
-                        const ThreadUnsafeCommitState& unsafe_state) override {
-    BaseLayer::PushPropertiesTo(layer, commit_state, unsafe_state);
-    ++push_properties_count_;
-  }
-
   using BaseLayer::IgnoreSetNeedsCommitForTest;
 
   size_t push_properties_count() const { return push_properties_count_; }
@@ -58,6 +51,16 @@ class FakeScrollbarLayer : public BaseLayer {
   }
 
   ~FakeScrollbarLayer() override = default;
+
+  void PushDirtyPropertiesTo(
+      LayerImpl* layer,
+      uint8_t dirty_flag,
+      const CommitState& commit_state,
+      const ThreadUnsafeCommitState& unsafe_state) override {
+    BaseLayer::PushDirtyPropertiesTo(layer, dirty_flag, commit_state,
+                                     unsafe_state);
+    ++push_properties_count_;
+  }
 
  private:
   int update_count_;

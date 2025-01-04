@@ -156,6 +156,7 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabSearchImageWindowFrame] = {ui::kColorSysInversePrimary};
   mixer[kColorTabSearchMediaIcon] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorTabSearchMediaRecordingIcon] = {ui::kColorSysError};
+  mixer[kColorTabSearchMediaGlicActiveIcon] = {ui::kColorSysPrimary};
   mixer[kColorTabSearchPrimaryForeground] = {ui::kColorSysOnSurface};
   mixer[kColorTabSearchSecondaryForeground] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorTabSearchSelected] = {ui::kColorSysPrimary};

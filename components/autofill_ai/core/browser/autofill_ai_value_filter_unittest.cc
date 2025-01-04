@@ -38,10 +38,10 @@ struct FieldFilterTestCase {
   bool is_password_field = false;
 };
 
-class PredictionImprovementsFieldFilterTest
+class AutofillAiFieldFilterTest
     : public testing::TestWithParam<FieldFilterTestCase> {};
 
-TEST_P(PredictionImprovementsFieldFilterTest, TestFilter) {
+TEST_P(AutofillAiFieldFilterTest, TestFilter) {
   FieldFilterTestCase test_case = GetParam();
 
   // Creates a test form with a single field.
@@ -79,7 +79,7 @@ TEST_P(PredictionImprovementsFieldFilterTest, TestFilter) {
 
 INSTANTIATE_TEST_SUITE_P(
     FilterByInputElementTypeTest,
-    PredictionImprovementsFieldFilterTest,
+    AutofillAiFieldFilterTest,
     testing::Values(FieldFilterTestCase{.should_be_filtered = false,
                                         .is_password_field = false},
                     FieldFilterTestCase{.should_be_filtered = true,
@@ -87,7 +87,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 INSTANTIATE_TEST_SUITE_P(
     FilterByFieldTypeTest,
-    PredictionImprovementsFieldFilterTest,
+    AutofillAiFieldFilterTest,
     testing::Values(FieldFilterTestCase{.should_be_filtered = false,
                                         .field_type = autofill::UNKNOWN_TYPE},
                     FieldFilterTestCase{.should_be_filtered = false,
@@ -102,7 +102,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 INSTANTIATE_TEST_SUITE_P(
     FilterByFilledTypeTest,
-    PredictionImprovementsFieldFilterTest,
+    AutofillAiFieldFilterTest,
     testing::Values(
         FieldFilterTestCase{.should_be_filtered = false,
                             .autofilled_type = autofill::UNKNOWN_TYPE},
@@ -117,7 +117,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 INSTANTIATE_TEST_SUITE_P(
     FilterByPossibleValueTest,
-    PredictionImprovementsFieldFilterTest,
+    AutofillAiFieldFilterTest,
     testing::Values(
         FieldFilterTestCase{.should_be_filtered = false,
                             .possible_value_type = autofill::UNKNOWN_TYPE},

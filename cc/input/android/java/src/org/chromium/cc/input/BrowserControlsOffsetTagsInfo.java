@@ -8,8 +8,11 @@ import com.google.errorprone.annotations.DoNotMock;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Java counterpart to the native cc::BrowserControlsOffsetTagsInfo. */
 @DoNotMock("This is a simple value object.")
+@NullMarked
 public final class BrowserControlsOffsetTagsInfo {
     public OffsetTag mBottomControlsOffsetTag;
     public OffsetTag mContentOffsetTag;

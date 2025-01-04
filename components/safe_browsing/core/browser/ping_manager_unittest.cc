@@ -219,8 +219,10 @@ void PingManagerTest::RunReportThreatDetailsTest(
 
   std::string access_token = "testing_access_token";
   network::TestURLLoaderFactory test_url_loader_factory;
+  bool interceptor_called = false;
   test_url_loader_factory.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        interceptor_called = true;
         EXPECT_EQ(GetUploadData(request), expected_report_content);
         EXPECT_THAT(
             request.headers.GetHeader(net::HttpRequestHeaders::kAuthorization),
@@ -239,14 +241,40 @@ void PingManagerTest::RunReportThreatDetailsTest(
   ping_manager()->SetURLLoaderFactoryForTesting(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory));
-
+  test_url_loader_factory.AddResponse(
+      "https://safebrowsing.google.com/safebrowsing/clientreport/"
+      "malware?client=unittest&appver=1.0&pver=4.0" +
+          key_param_,
+      "");
   EXPECT_CALL(*webui_delegate_.get(), AddToCSBRRsSent(_)).Times(1);
+  base::RunLoop run_loop;
+  ping_manager()->SetOnURLLoaderCompleteCallbackForTesting(
+      run_loop.QuitClosure());
   PingManager::ReportThreatDetailsResult result =
       ping_manager()->ReportThreatDetails(std::move(report));
   EXPECT_EQ(result, PingManager::ReportThreatDetailsResult::SUCCESS);
   EXPECT_EQ(raw_token_fetcher->WasStartCalled(), expect_access_token);
   if (expect_access_token) {
     raw_token_fetcher->RunAccessTokenCallback(access_token);
+  }
+  run_loop.Run();
+  EXPECT_TRUE(interceptor_called);
+  histogram_tester.ExpectUniqueSample(
+      /*name=*/"SafeBrowsing.ClientSafeBrowsingReport.NetworkResult",
+      /*sample=*/200,
+      /*expected_bucket_count=*/1);
+  if (expect_access_token) {
+    histogram_tester.ExpectUniqueSample(
+        /*name=*/
+        "SafeBrowsing.ClientSafeBrowsingReport.NetworkResult.YesAccessToken",
+        /*sample=*/200,
+        /*expected_bucket_count=*/1);
+  } else {
+    histogram_tester.ExpectUniqueSample(
+        /*name=*/
+        "SafeBrowsing.ClientSafeBrowsingReport.NetworkResult.NoAccessToken",
+        /*sample=*/200,
+        /*expected_bucket_count=*/1);
   }
 }
 
@@ -736,6 +764,7 @@ TEST_F(PingManagerTest,
 }
 
 TEST_F(PingManagerTest, ReportSafeBrowsingHit) {
+  base::HistogramTester histogram_tester;
   std::unique_ptr<HitReport> hit_report = std::make_unique<HitReport>();
   std::string post_data = "testing_hit_report_post_data";
   hit_report->post_data = post_data;
@@ -749,16 +778,32 @@ TEST_F(PingManagerTest, ReportSafeBrowsingHit) {
   hit_report->is_enhanced_protection = false;
 
   network::TestURLLoaderFactory test_url_loader_factory;
+  bool interceptor_called = false;
   test_url_loader_factory.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        interceptor_called = true;
         EXPECT_EQ(GetUploadData(request), post_data);
       }));
   ping_manager()->SetURLLoaderFactoryForTesting(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory));
-
+  test_url_loader_factory.AddResponse(
+      "https://safebrowsing.google.com/safebrowsing/"
+      "report?client=unittest&appver=1.0&pver=4.0" +
+          key_param_ +
+          "&ext=2&evts=phishblhit&evtd=&evtr=&evhr=&evtb=0&src=l4&m=0",
+      "");
   EXPECT_CALL(*webui_delegate_.get(), AddToHitReportsSent(_)).Times(1);
+  base::RunLoop run_loop;
+  ping_manager()->SetOnURLLoaderCompleteCallbackForTesting(
+      run_loop.QuitClosure());
   ping_manager()->ReportSafeBrowsingHit(std::move(hit_report));
+  run_loop.Run();
+  EXPECT_TRUE(interceptor_called);
+  histogram_tester.ExpectUniqueSample(
+      /*name=*/"SafeBrowsing.HitReport.NetworkResult",
+      /*sample=*/200,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(PingManagerTest, AttachThreatDetailsAndLaunchSurvey) {

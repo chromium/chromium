@@ -14,6 +14,10 @@
 #include "services/network/public/mojom/sri_message_signature.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
+namespace net {
+class URLRequest;
+}
+
 namespace network {
 
 // Parses the HTTP Message Signature response headers relevant to SRI.
@@ -35,6 +39,7 @@ std::vector<mojom::SRIMessageSignaturePtr> ParseSRIMessageSignaturesFromHeaders(
 COMPONENT_EXPORT(NETWORK_CPP)
 std::optional<std::string> ConstructSignatureBase(
     const mojom::SRIMessageSignaturePtr& signature,
+    const GURL& request_url,
     const net::HttpResponseHeaders& headers);
 
 // Validates a response's SRI-relevant HTTP Message Signatures.
@@ -45,6 +50,7 @@ std::optional<std::string> ConstructSignatureBase(
 COMPONENT_EXPORT(NETWORK_CPP)
 bool ValidateSRIMessageSignaturesOverHeaders(
     const std::vector<mojom::SRIMessageSignaturePtr>& signatures,
+    const GURL& request_url,
     const net::HttpResponseHeaders& headers);
 
 // Returns `BlockedByResponseReason::kSRIMessageSignatureMismatch` if a response
@@ -55,7 +61,15 @@ bool ValidateSRIMessageSignaturesOverHeaders(
 COMPONENT_EXPORT(NETWORK_CPP)
 std::optional<mojom::BlockedByResponseReason>
 MaybeBlockResponseForSRIMessageSignature(
+    const GURL& request_url,
     const network::mojom::URLResponseHead& response);
+
+// Adds an `Accept-Signature` header to outgoing requests if the request's
+// initiator asserted signature-based integrity expectations.
+COMPONENT_EXPORT(NETWORK_CPP)
+void MaybeSetAcceptSignatureHeader(
+    net::URLRequest*,
+    const std::vector<std::string>& expected_signatures);
 
 }  // namespace network
 

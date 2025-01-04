@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 component("common") {
   sources = [
     "user_type.cc",
@@ -41,7 +39,7 @@ component("user_manager") {
 
   defines = [ "USER_MANAGER_IMPLEMENTATION" ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "account_id_util.cc",
       "account_id_util.h",
@@ -82,7 +80,7 @@ component("user_manager") {
   }
 }
 
-if (is_chromeos_ash) {
+if (is_chromeos) {
   source_set("test_support") {
     testonly = true
     sources = [

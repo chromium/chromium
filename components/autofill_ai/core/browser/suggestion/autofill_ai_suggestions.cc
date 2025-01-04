@@ -8,7 +8,7 @@
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill_ai/core/browser/autofill_ai_client.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -82,7 +82,7 @@ base::flat_map<autofill::FieldGlobalId, std::u16string> GetValuesToFill(
 // Creates a full form filling suggestion that will be displayed first in the
 // sub popup.
 autofill::Suggestion CreateFillAllSuggestion(
-    const autofill::Suggestion::PredictionImprovementsPayload& payload) {
+    const autofill::Suggestion::AutofillAiPayload& payload) {
   autofill::Suggestion fill_all_suggestion(
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FILL_ALL_MAIN_TEXT),
@@ -158,7 +158,7 @@ void AddLabelToFillingSuggestion(autofill::Suggestion& suggestion) {
   suggestion.labels = {{autofill::Suggestion::Text(label)}};
 }
 
-autofill::Suggestion CreateEditPredictionImprovementsInformation() {
+autofill::Suggestion CreateEditAutofillAiData() {
   autofill::Suggestion edit_suggestion;
   edit_suggestion.type = autofill::SuggestionType::kEditAutofillAiData;
   edit_suggestion.icon = autofill::Suggestion::Icon::kEdit;
@@ -244,16 +244,14 @@ std::vector<autofill::Suggestion> CreateTriggerSuggestions() {
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_TRIGGER_SUGGESTION_MAIN_TEXT),
       autofill::SuggestionType::kRetrieveAutofillAi);
-  retrieve_suggestion.icon =
-      autofill::Suggestion::Icon::kAutofillPredictionImprovements;
+  retrieve_suggestion.icon = autofill::Suggestion::Icon::kAutofillAi;
   return {retrieve_suggestion};
 }
 
 std::vector<autofill::Suggestion> CreateLoadingSuggestions() {
   autofill::Suggestion loading_suggestion(
       autofill::SuggestionType::kAutofillAiLoadingState);
-  loading_suggestion.trailing_icon =
-      autofill::Suggestion::Icon::kAutofillPredictionImprovements;
+  loading_suggestion.trailing_icon = autofill::Suggestion::Icon::kAutofillAi;
   loading_suggestion.acceptability =
       autofill::Suggestion::Acceptability::kUnacceptable;
   return {loading_suggestion};
@@ -270,12 +268,12 @@ std::vector<autofill::Suggestion> CreateFillingSuggestions(
       cache.at(field.global_id());
   autofill::Suggestion suggestion(prediction.value,
                                   autofill::SuggestionType::kFillAutofillAi);
-  auto payload = autofill::Suggestion::PredictionImprovementsPayload(
-      GetValuesToFill(cache), kIgnorableSkipReasons);
+  auto payload = autofill::Suggestion::AutofillAiPayload(GetValuesToFill(cache),
+                                                         kIgnorableSkipReasons);
   suggestion.payload = payload;
-  suggestion.icon = autofill::Suggestion::Icon::kAutofillPredictionImprovements;
+  suggestion.icon = autofill::Suggestion::Icon::kAutofillAi;
 
-  // Add a `kFillPredictionImprovements` suggestion with a separator to
+  // Add a `kFillAutofillAi` suggestion with a separator to
   // `suggestion.children` before the field-by-field filling entries.
   suggestion.children.emplace_back(CreateFillAllSuggestion(payload));
   suggestion.children.emplace_back(autofill::SuggestionType::kSeparator);
@@ -294,8 +292,7 @@ std::vector<autofill::Suggestion> CreateFillingSuggestions(
   AddLabelToFillingSuggestion(suggestion);
 
   suggestion.children.emplace_back(autofill::SuggestionType::kSeparator);
-  suggestion.children.emplace_back(
-      CreateEditPredictionImprovementsInformation());
+  suggestion.children.emplace_back(CreateEditAutofillAiData());
 
   // TODO(crbug.com/365512352): Figure out how to handle Undo suggestion.
   std::vector<autofill::Suggestion> filling_suggestions = {suggestion};

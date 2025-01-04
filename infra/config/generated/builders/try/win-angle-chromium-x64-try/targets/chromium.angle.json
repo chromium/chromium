@@ -216,8 +216,8 @@
           "containment_type": "AUTO",
           "dimensions": {
             "display_attached": "1",
-            "gpu": "10de:2184-27.21.14.5638",
-            "os": "Windows-10-18363",
+            "gpu": "10de:2184-31.0.15.4601",
+            "os": "Windows-10-19045",
             "pool": "chromium.tests.gpu"
           },
           "idempotent": false,
@@ -252,8 +252,8 @@
           "containment_type": "AUTO",
           "dimensions": {
             "display_attached": "1",
-            "gpu": "10de:2184-27.21.14.5638",
-            "os": "Windows-10-18363",
+            "gpu": "10de:2184-31.0.15.4601",
+            "os": "Windows-10-19045",
             "pool": "chromium.tests.gpu"
           },
           "idempotent": false,
@@ -288,8 +288,8 @@
           "containment_type": "AUTO",
           "dimensions": {
             "display_attached": "1",
-            "gpu": "10de:2184-27.21.14.5638",
-            "os": "Windows-10-18363",
+            "gpu": "10de:2184-31.0.15.4601",
+            "os": "Windows-10-19045",
             "pool": "chromium.tests.gpu"
           },
           "idempotent": false,
@@ -324,43 +324,8 @@
           "containment_type": "AUTO",
           "dimensions": {
             "display_attached": "1",
-            "gpu": "10de:2184-27.21.14.5638",
-            "os": "Windows-10-18363",
-            "pool": "chromium.tests.gpu"
-          },
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test": "telemetry_gpu_integration_test",
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
-          "webgl1_conformance",
-          "--show-stdout",
-          "--browser=release_x64",
-          "--passthrough",
-          "-v",
-          "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-angle=vulkan --use-cmd-decoder=passthrough --force_high_performance_gpu",
-          "--enforce-browser-version",
-          "--jobs=4"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "webgl_conformance_vulkan_passthrough_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "containment_type": "AUTO",
-          "dimensions": {
-            "display_attached": "1",
-            "gpu": "10de:2184-27.21.14.5638",
-            "os": "Windows-10-18363",
+            "gpu": "10de:2184-31.0.15.4601",
+            "os": "Windows-10-19045",
             "pool": "chromium.tests.gpu"
           },
           "idempotent": false,

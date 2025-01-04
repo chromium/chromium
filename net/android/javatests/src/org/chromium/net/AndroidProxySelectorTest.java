@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 
 import java.net.Proxy;
@@ -36,6 +37,9 @@ import java.util.Properties;
 
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
+@DisableIf.Build(
+        sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
+        message = "crbug.com/343821809")
 public class AndroidProxySelectorTest {
     Properties mProperties;
 

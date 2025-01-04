@@ -301,6 +301,12 @@ CellularDetailsAllowDataRoamingToggle() {
   return InternetDetailsSubpage() + "cellular-roaming-toggle-button";
 }
 
+WebContentsInteractionTestUtil::DeepQuery
+CellularDetailsAllowDataRoamingTogglePolicyIcon() {
+  return InternetDetailsSubpage() + "cellular-roaming-toggle-button" +
+         "network-config-toggle" + "cr-policy-network-indicator-mojo";
+}
+
 WebContentsInteractionTestUtil::DeepQuery CellularDetailsNetworkOperator() {
   return InternetDetailsSubpage() + "network-property-list-mojo#infoFields" +
          "div#cellular\\.servingOperator\\.name";

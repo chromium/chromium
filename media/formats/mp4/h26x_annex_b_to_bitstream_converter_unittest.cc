@@ -32,14 +32,17 @@ TEST(H26xAnnexBToBitstreamConverterTest, ConvertH264KeyframeChunk) {
   first_chunk.insert(first_chunk.end(), first_frame_idr.begin(),
                      first_frame_idr.end());
 
-  H26xAnnexBToBitstreamConverter converter(VideoCodec::kH264);
-  scoped_refptr<DecoderBuffer> output = converter.Convert(first_chunk);
+  for (bool add_parameter_sets_in_bitstream : {false, true}) {
+    H26xAnnexBToBitstreamConverter converter(VideoCodec::kH264,
+                                             add_parameter_sets_in_bitstream);
+    scoped_refptr<DecoderBuffer> output = converter.Convert(first_chunk);
 
-  auto codec_profile_level = converter.GetCodecProfileLevel();
-  EXPECT_EQ(codec_profile_level.codec, VideoCodec::kH264);
-  EXPECT_EQ(codec_profile_level.profile,
-            VideoCodecProfile::H264PROFILE_BASELINE);
-  EXPECT_EQ(codec_profile_level.level, 30u);
+    auto codec_profile_level = converter.GetCodecProfileLevel();
+    EXPECT_EQ(codec_profile_level.codec, VideoCodec::kH264);
+    EXPECT_EQ(codec_profile_level.profile,
+              VideoCodecProfile::H264PROFILE_BASELINE);
+    EXPECT_EQ(codec_profile_level.level, 30u);
+  }
 }
 
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
@@ -95,13 +98,17 @@ TEST(H26xAnnexBToBitstreamConverterTest, ConvertH265KeyframeChunk) {
   first_chunk.insert(first_chunk.end(), first_frame_idr.begin(),
                      first_frame_idr.end());
 
-  H26xAnnexBToBitstreamConverter converter(VideoCodec::kHEVC);
-  scoped_refptr<DecoderBuffer> output = converter.Convert(first_chunk);
+  for (bool add_parameter_sets_in_bitstream : {false, true}) {
+    H26xAnnexBToBitstreamConverter converter(VideoCodec::kHEVC,
+                                             add_parameter_sets_in_bitstream);
+    scoped_refptr<DecoderBuffer> output = converter.Convert(first_chunk);
 
-  auto codec_profile_level = converter.GetCodecProfileLevel();
-  EXPECT_EQ(codec_profile_level.codec, VideoCodec::kHEVC);
-  EXPECT_EQ(codec_profile_level.profile, VideoCodecProfile::HEVCPROFILE_MAIN10);
-  EXPECT_EQ(codec_profile_level.level, 153u);
+    auto codec_profile_level = converter.GetCodecProfileLevel();
+    EXPECT_EQ(codec_profile_level.codec, VideoCodec::kHEVC);
+    EXPECT_EQ(codec_profile_level.profile,
+              VideoCodecProfile::HEVCPROFILE_MAIN10);
+    EXPECT_EQ(codec_profile_level.level, 153u);
+  }
 }
 #endif
 

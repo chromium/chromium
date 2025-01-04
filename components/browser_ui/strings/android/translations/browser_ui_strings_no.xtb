@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">Nedlastingen er satt på pause</translation>
 <translation id="1396327438254055134">Tillat nettstedet å bruke V8-optimalisering.</translation>
 <translation id="1415402041810619267">Nettadressen er avkortet</translation>
+<translation id="1415855080660575082">La Chrome dele de nylige fanene dine med enheten din, slik at du kan se dem på applisten og i søkeresultater på enheten. Du kan slå dette på eller av i Chrome-innstillingene.</translation>
 <translation id="1448064542941920355">Zoom ut</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> nettsted}other{<ph name="SITE_COUNT" /> nettsteder}}</translation>
 <translation id="1500473259453106018">Skjul kortet Avslag på faner</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">Du har midlertidig tillatt dette nettstedet å bruke informasjonskapsler fra tredjeparter, noe som innebærer mindre beskyttelse under surfing, men øker sannsynligheten for at nettstedsfunksjoner virker som forventet. <ph name="BEGIN_LINK" />Send tilbakemelding<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Det kan hende at funksjoner på enkelte nettsteder ikke fungerer i Inkognitomodus</translation>
 <translation id="2442870161001914531">Be alltid om nettstedet for datamaskiner</translation>
+<translation id="2445311670906052406">Nå deler Chrome nylige faner med enheten din. Du ser dem på applisten og i søkeresultater på enheten. Du kan slå dette av når som helst i Chrome-innstillingene.</translation>
 <translation id="2469312991797799607">Denne handlingen sletter alle data og informasjonskapsler for <ph name="ORIGIN" /> og alle undernettsteder</translation>
 <translation id="2482878487686419369">Varsler</translation>
 <translation id="2485422356828889247">Avinstaller</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">Nettsteder kan vise påloggingsforespørsler fra identitetstjenester.</translation>
 <translation id="2787357173144933081">Start multifunksjonsfeltet</translation>
 <translation id="2790501146643349491">Når dette er på, kan nylig lukkede nettsteder fullføre sending og mottak av data. Når dette er av, kan ikke nylig lukkede nettsteder fullføre sending eller mottak av data.</translation>
+<translation id="2814830417943086299">Chrome viser nå de nylige fanene dine på applisten og i søkeresultater på enheten. Du kan slå dette av når som helst i Chrome-innstillingene.</translation>
 <translation id="2822354292072154809">Er du sikker på at du vil tilbakestille alle nettstedstillatelser for <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Be om mobilvisning</translation>
 <translation id="2870560284913253234">Nettsted</translation>
@@ -124,7 +127,6 @@
 <translation id="2903493209154104877">Adresser</translation>
 <translation id="2910701580606108292">Spør før nettsteder kan spille av beskyttet innhold</translation>
 <translation id="2918484639460781603">Gå til Innstillinger</translation>
-<translation id="2927133898344569563">Få rask tilgang til foreslåtte faner fra enhetens appliste og i søkeresultatene på enheten. Du kan slå dette på eller av når som helst i Chrome-innstillingene.</translation>
 <translation id="2932883381142163287">Rapporter uriktig bruk</translation>
 <translation id="2939338015096024043">Når dette er på, kan nettsteder be om å få spore kameraposisjonen din og finne ut mer om omgivelsene dine. Når dette er av, kan ikke nettsteder spore kameraposisjonen din eller finne ut mer om omgivelsene dine.</translation>
 <translation id="2968755619301702150">Visningsprogram for sertifikater</translation>
@@ -336,7 +338,6 @@
 <translation id="5968921426641056619">Skriv inn en nettadresse</translation>
 <translation id="5975083100439434680">Zoom ut</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
-<translation id="6015145568571136419">Nå kan du raskt få tilgang til foreslåtte faner fra enhetens appliste og i søkeresultater på enheten. Slå dette av når som helst i Chrome-innstillingene.</translation>
 <translation id="6015775454662021376">Kontroller dette nettstedets tilgang til enheten din</translation>
 <translation id="6040143037577758943">Lukk</translation>
 <translation id="6042308850641462728">Mer</translation>
@@ -559,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> til}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> til}}</translation>
 <translation id="913657688200966289">Slå på tillatelser for <ph name="APP_NAME" /> i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Gjeldende zoom er <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="9156722768168878035">La Chrome vise de nylige fanene dine på applisten og i søkeresultater på enheten. Du kan slå dette av når som helst i Chrome-innstillingene.</translation>
 <translation id="9162462602695099906">Denne siden er farlig</translation>
 <translation id="947156494302904893">Nettsteder du besøker, kan bekrefte at du er en ekte person og ikke en robot</translation>
 <translation id="959682366969460160">Få orden på ting</translation>

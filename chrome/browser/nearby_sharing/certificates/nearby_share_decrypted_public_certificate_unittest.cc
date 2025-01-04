@@ -4,6 +4,7 @@
 
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_decrypted_public_certificate.h"
 
+#include <array>
 #include <optional>
 
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
@@ -51,10 +52,8 @@ TEST(NearbyShareDecryptedPublicCertificateTest, Decrypt_IncorrectKeyFailure) {
   EXPECT_FALSE(NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
       GetNearbyShareTestPublicCertificate(kTestPublicCertificateVisibility),
       NearbyShareEncryptedMetadataKey(
-          std::vector<uint8_t>(kNearbyShareNumBytesMetadataEncryptionKeySalt,
-                               0x00),
-          std::vector<uint8_t>(kNearbyShareNumBytesMetadataEncryptionKey,
-                               0x00))));
+          std::array<uint8_t, kNearbyShareNumBytesMetadataEncryptionKeySalt>(),
+          std::array<uint8_t, kNearbyShareNumBytesMetadataEncryptionKey>())));
 }
 
 TEST(NearbyShareDecryptedPublicCertificateTest,

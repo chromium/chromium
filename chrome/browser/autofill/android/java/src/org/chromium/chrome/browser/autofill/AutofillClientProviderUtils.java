@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.autofill;
 
 import android.content.ComponentName;
+import android.content.Context;
+import android.content.SharedPreferences.Editor;
 import android.os.Build;
 import android.view.autofill.AutofillManager;
 
@@ -22,6 +24,9 @@ import org.chromium.components.prefs.PrefService;
 public class AutofillClientProviderUtils {
     private static final String AWG_COMPONENT_NAME =
             "com.google.android.gms/com.google.android.gms.autofill.service.AutofillService";
+    private static final String AUTOFILL_THIRD_PARTY_MODE_SHARED_PREFS_FILE =
+            "autofill_third_party_mode_shared_prefs_file";
+    private static final String AUTOFILL_THIRD_PARTY_MODE_KEY = "AUTOFILL_THIRD_PARTY_MODE_KEY";
     private static Integer sAndroidAutofillFrameworkAvailabilityForTesting;
 
     /**
@@ -84,6 +89,17 @@ public class AutofillClientProviderUtils {
             return AndroidAutofillAvailabilityStatus.SETTING_TURNED_OFF;
         }
         return AndroidAutofillAvailabilityStatus.AVAILABLE;
+    }
+
+    @CalledByNative
+    public static void setThirdPartyModePref(boolean usesPlatformAutofill) {
+        Editor editor =
+                ContextUtils.getApplicationContext()
+                        .getSharedPreferences(
+                                AUTOFILL_THIRD_PARTY_MODE_SHARED_PREFS_FILE, Context.MODE_PRIVATE)
+                        .edit();
+        editor.putBoolean(AUTOFILL_THIRD_PARTY_MODE_KEY, usesPlatformAutofill);
+        editor.apply();
     }
 
     private AutofillClientProviderUtils() {}

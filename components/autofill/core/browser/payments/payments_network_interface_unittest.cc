@@ -22,8 +22,7 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_experiments.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
@@ -32,7 +31,8 @@
 #include "components/autofill/core/browser/payments/payments_network_interface_test_base.h"
 #include "components/autofill/core/browser/payments/test/autofill_payments_test_utils.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/studies/autofill_experiments.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -106,6 +106,11 @@ struct CardUnmaskOptions {
     return *this;
   }
 
+  CardUnmaskOptions& with_card_info_retrieval() {
+    card_info_retrieval = true;
+    return *this;
+  }
+
   // By default, use cvc authentication.
   bool use_cvc = true;
   // If true, use FIDO authentication.
@@ -125,6 +130,8 @@ struct CardUnmaskOptions {
   bool use_only_non_legacy_id = false;
   // If true, use only legacy instrument id.
   bool use_only_legacy_id = false;
+  // If true, enroll the card in card info retrieval.
+  bool card_info_retrieval = false;
 };
 
 class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
@@ -271,6 +278,10 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
       request_details.context_token = "fake context token";
     if (options.use_otp)
       request_details.otp = base::ASCIIToUTF16(options.otp);
+    if (options.card_info_retrieval) {
+      request_details.card.set_card_info_retrieval_enrollment_state(
+          CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
+    }
     payments_network_interface_->UnmaskCard(
         request_details,
         base::BindOnce(&PaymentsNetworkInterfaceTest::OnDidGetRealPan, GetWeakPtr()));
@@ -1375,6 +1386,26 @@ TEST_F(PaymentsNetworkInterfaceTest, UnmaskPermanentFailureWhenVcnMissingCvv) {
                  "\"month\":12, \"year\":2099 } }");
 
   EXPECT_EQ("4111111111111111", unmask_response_details()->real_pan);
+  EXPECT_EQ(PaymentsRpcResult::kPermanentFailure, result_);
+}
+
+TEST_F(PaymentsNetworkInterfaceTest, CardInfoRetrievalTryAgainFailure) {
+  StartUnmasking(CardUnmaskOptions().with_card_info_retrieval());
+  IssueOAuthToken();
+  ReturnResponse(
+      payments_network_interface_.get(), net::HTTP_OK,
+      "{ \"error\": { \"code\": \"ANYTHING_ELSE\", "
+      "\"api_error_reason\": \"card_from_vendor_temporary_error\" } }");
+  EXPECT_EQ(PaymentsRpcResult::kTryAgainFailure, result_);
+}
+
+TEST_F(PaymentsNetworkInterfaceTest, CardInfoRetrievalPermanentFailure) {
+  StartUnmasking(CardUnmaskOptions().with_card_info_retrieval());
+  IssueOAuthToken();
+  ReturnResponse(
+      payments_network_interface_.get(), net::HTTP_OK,
+      "{ \"error\": { \"code\": \"ANYTHING_ELSE\", "
+      "\"api_error_reason\": \"card_from_vendor_permanent_error\"} }");
   EXPECT_EQ(PaymentsRpcResult::kPermanentFailure, result_);
 }
 

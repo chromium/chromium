@@ -12,7 +12,7 @@
 - (void)openCreatePlusAddressSheet;
 
 // Opens the all plus addresses picker.
-- (void)openAllPlusAddressesPicker;
+- (void)openAllPlusAddressesPicker:(BOOL)isAddressManualFallback;
 
 // Opens the manage page address page in a new tab.
 - (void)openManagePlusAddress;

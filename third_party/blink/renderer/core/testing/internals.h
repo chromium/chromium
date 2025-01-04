@@ -72,6 +72,7 @@ class InternalsUkmRecorder;
 class LocalDOMWindow;
 class LocalFrame;
 class Location;
+class NADCAttributeTest;
 class Node;
 class OriginTrialsTest;
 class Page;
@@ -415,6 +416,7 @@ class Internals final : public ScriptWrappable {
   UnionTypesTest* unionTypesTest() const;
   OriginTrialsTest* originTrialsTest() const;
   CallbackFunctionTest* callbackFunctionTest() const;
+  NADCAttributeTest* nadcAttributeTest() const;
 
   Vector<String> getReferencedFilePaths() const;
   void disableReferencedFilePathsVerification() const;

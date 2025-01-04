@@ -44,6 +44,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.ActivityFinisher;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -68,6 +69,7 @@ import java.util.concurrent.ExecutionException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
+@DisabledTest(message = "https://crbug.com/382536935")
 public class TabSwitcherSearchTest {
     private static final int SERVER_PORT = 13245;
     private static final String URL_PREFIX = "127.0.0.1:" + SERVER_PORT;

@@ -45,6 +45,7 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/app/profile/search_engine_choice_profile_agent.h"
+#import "ios/chrome/app/profile/session_metrics_profile_agent.h"
 #import "ios/chrome/app/spotlight/spotlight_manager.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h"
@@ -589,6 +590,7 @@ ProfileAttributesIOS RemoveSessionsFromSessionsToDiscard(
   [_state addAgent:[[ProfileActivityProfileAgent alloc] init]];
   [_state addAgent:[[PostRestoreProfileAgent alloc] init]];
   [_state addAgent:[[SearchEngineChoiceProfileAgent alloc] init]];
+  [_state addAgent:[[SessionMetricsProfileAgent alloc] init]];
 
   if (IsDockingPromoEnabled()) {
     switch (DockingPromoExperimentTypeEnabled()) {

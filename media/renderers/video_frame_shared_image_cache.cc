@@ -65,14 +65,24 @@ void VideoFrameSharedImageCache::ReleaseCachedData() {
 }
 
 VideoFrameSharedImageCache::CachedData
-VideoFrameSharedImageCache::GetSharedImage(
+VideoFrameSharedImageCache::GetOrCreateSharedImage(
     const VideoFrame* video_frame,
     viz::RasterContextProvider* raster_context_provider,
-    gpu::SharedImageUsageSet usage) {
+    const gpu::SharedImageUsageSet& usage) {
   viz::SharedImageFormat format =
       VideoPixelFormatToSharedImageFormat(video_frame->format());
   CHECK(format.is_multi_plane());
+  return GetOrCreateSharedImage(video_frame, raster_context_provider, usage,
+                                format, video_frame->ColorSpace());
+}
 
+VideoFrameSharedImageCache::CachedData
+VideoFrameSharedImageCache::GetOrCreateSharedImage(
+    const VideoFrame* video_frame,
+    viz::RasterContextProvider* raster_context_provider,
+    const gpu::SharedImageUsageSet& usage,
+    const viz::SharedImageFormat& format,
+    const gfx::ColorSpace& color_space) {
   if (shared_image_ && provider_ == raster_context_provider) {
     // Return the cached shared image if it is the same video frame.
     if (video_frame_id_ == video_frame->unique_id()) {
@@ -81,7 +91,7 @@ VideoFrameSharedImageCache::GetSharedImage(
     // Return the cached shared image if the video frame data matches the shared
     // image data.
     if (video_frame->coded_size() == shared_image_->size() &&
-        video_frame->ColorSpace() == shared_image_->color_space() &&
+        color_space == shared_image_->color_space() &&
         format == shared_image_->format() && usage == shared_image_->usage()) {
       return {shared_image_, sync_token_, Status::kMatchedSharedImageMetaData};
     }
@@ -97,8 +107,8 @@ VideoFrameSharedImageCache::GetSharedImage(
 
   // Create a multiplanar shared image to upload the data to.
   shared_image_ = sii->CreateSharedImage(
-      {format, video_frame->coded_size(), video_frame->ColorSpace(),
-       kTopLeft_GrSurfaceOrigin, kUnpremul_SkAlphaType, usage, "VideoFrameYUV"},
+      {format, video_frame->coded_size(), color_space, kTopLeft_GrSurfaceOrigin,
+       kUnpremul_SkAlphaType, usage, "VideoFrameYUV"},
       gpu::kNullSurfaceHandle);
   CHECK(shared_image_);
   video_frame_id_ = video_frame->unique_id();

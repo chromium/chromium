@@ -65,12 +65,6 @@ BASE_FEATURE(kHidePastePopupOnGSB,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// The fix to crbug.com/1248529 will be behind this default-enabled flag, in
-// case it breaks any applications in the wild.
-BASE_FEATURE(kHistoryInterventionSameDocumentFix,
-             "HistoryInterventionSameDocumentFix",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, keyboard user activation will be verified by the browser side.
 BASE_FEATURE(kBrowserVerifiedUserActivationKeyboard,
              "BrowserVerifiedUserActivationKeyboard",
@@ -87,7 +81,7 @@ BASE_FEATURE(kCapturedSurfaceControlTemporaryZoom,
 // enabled.
 BASE_FEATURE(kCanvas2DImageChromium,
              "Canvas2DImageChromium",
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_APPLE)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -124,18 +118,6 @@ BASE_FEATURE(kCriticalClientHint,
              "CriticalClientHint",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable changing source dynamically for desktop capture.
-BASE_FEATURE(kDesktopCaptureChangeSource,
-             "DesktopCaptureChangeSource",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables caching of media devices for the purpose of enumerating them.
-#if BUILDFLAG(IS_MAC)
-BASE_FEATURE(kDeviceMonitorMac,
-             "DeviceMonitorMac",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 // Enable document policy negotiation mechanism.
 BASE_FEATURE(kDocumentPolicyNegotiation,
              "DocumentPolicyNegotiation",
@@ -146,14 +128,6 @@ BASE_FEATURE(kDocumentPolicyNegotiation,
 BASE_FEATURE(kEmbeddingRequiresOptIn,
              "EmbeddingRequiresOptIn",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enable back/forward cache when a page which has subframe(s) with ongoing
-// navigation(s) is navigated. Currently, this is only for navigations which
-// don't need URLLoaders or haven't yet sent network requests. This flag should
-// be removed once the https://crbug.com/1511153 is resolved.
-BASE_FEATURE(kEnableBackForwardCacheForOngoingSubframeNavigation,
-             "EnableBackForwardCacheForOngoingSubframeNavigation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables error reporting for JS errors inside DevTools frontend host
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -204,11 +178,6 @@ BASE_FEATURE(kFledgeLimitNumAuctions,
 const base::FeatureParam<int> kFledgeLimitNumAuctionsParam{
     &kFledgeLimitNumAuctions, "max_auctions_per_page", 8};
 
-// Enables caching when loading interest groups for a bidder in an auction.
-BASE_FEATURE(kFledgeUseInterestGroupCache,
-             "FledgeUseInterestGroupCache",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables a delay for the post-auction interest group update to avoid
 // immediately invalidating cached values.
 BASE_FEATURE(kFledgeDelayPostAuctionInterestGroupUpdate,
@@ -251,14 +220,6 @@ BASE_FEATURE(kFontSrcLocalMatching,
              "FontSrcLocalMatching",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Feature controlling whether or not memory pressure signals will be forwarded
-// to the GPU process.
-#if !BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kForwardMemoryPressureEventsToGpuProcess,
-             "ForwardMemoryPressureEventsToGpuProcess",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 // Whether to use the Frame Routing Cache to avoid synchronous IPCs from the
 // renderer side for iframe creation.
 BASE_FEATURE(kFrameRoutingCache,
@@ -267,31 +228,12 @@ BASE_FEATURE(kFrameRoutingCache,
 const base::FeatureParam<int> kFrameRoutingCacheResponseSize{
     &kFrameRoutingCache, "responseSize", 4};
 
-// Adds "/prefetch:8" (which is the "other" category of process - i.e. not
-// browser, gpu, crashpad, etc.) to the info collection GPU process' command
-// line, in order to keep from polluting the GPU prefetch history.
-#if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kGpuInfoCollectionSeparatePrefetch,
-             "GpuInfoCollectionSeparatePrefetch",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 // Group network isolation key(NIK) by storage interest group joining origin to
 // improve privacy and performance -- IGs of the same joining origin can reuse
 // sockets, so we don't need to renegotiate those connections.
 BASE_FEATURE(kGroupNIKByJoiningOrigin,
              "GroupNIKByJoiningOrigin",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Supports proxying thread type changes of renderer processes to browser
-// process and having browser process handle adjusting thread properties (nice
-// value, c-group, latency sensitivity...) for children which have sandbox
-// restrictions.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kHandleChildThreadTypeChangesInBrowser,
-             "HandleChildThreadTypeChangesInBrowser",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 
 // A feature to experiment with removing the soft process limit. See
 // https://crbug.com/369342694.
@@ -303,14 +245,6 @@ BASE_FEATURE(kRemoveRendererProcessLimit,
 BASE_FEATURE(kInMemoryCodeCache,
              "InMemoryCodeCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// During compositor frame eviction, collect not only the surfaces that are
-// reachable from the main frame tree, but also recurse into inner
-// frames. Otherwise only toplevel frames and OOPIF are handled, and other
-// cases, e.g. PDF tiles are ignored. See https://crbug.com/1360351 for details.
-BASE_FEATURE(kInnerFrameCompositorSurfaceEviction,
-             "InnerFrameCompositorSurfaceEviction",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the ability to use the updateIfOlderThanMs field in the trusted
 // bidding response to trigger a post-auction update if the group has been
@@ -324,14 +258,6 @@ BASE_FEATURE(kInterestGroupUpdateIfOlderThan,
 #if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kIOSurfaceCapturer,
              "IOSurfaceCapturer",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
-// Feature that controls whether WebContentsOcclusionChecker should handle
-// occlusion notifications.
-#if BUILDFLAG(IS_MAC)
-BASE_FEATURE(kMacWebContentsOcclusion,
-             "MacWebContentsOcclusion",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
@@ -369,14 +295,6 @@ BASE_FEATURE_PARAM(size_t,
                    &kMultipleSpareRPHs,
                    "count",
                    1u);
-
-// Enables skipping of calls to hideSoftInputFromWindow when there is not a
-// keyboard currently visible.
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kOptimizeImmHideCalls,
-             "OptimizeImmHideCalls",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
 
 // This feature enables Permissions Policy verification in the Browser process
 // in content/. Additionally only for //chrome Permissions Policy verification
@@ -419,12 +337,6 @@ BASE_FEATURE(kContinueGestureOnLosingFocus,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Enables reporting ResourceTiming entries for document, who initiated a
-// cancelled navigation in one of their <iframe>.
-BASE_FEATURE(kResourceTimingForCancelledNavigationInFrame,
-             "ResourceTimingForCancelledNavigationInFrame",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 
 // Make sendBeacon throw for a Blob with a non simple type.
 BASE_FEATURE(kSendBeaconThrowForBlobWithNonSimpleType,
@@ -442,16 +354,6 @@ BASE_FEATURE(kProcessReuseOnPrerenderCOOPSwap,
              base::FEATURE_ENABLED_BY_DEFAULT
 #endif
 );
-
-// Enables process sharing for sites that do not require a dedicated process
-// by using a default SiteInstance. Default SiteInstances will only be used
-// on platforms that do not use full site isolation.
-// Note: This feature is mutally exclusive with
-// kProcessSharingWithStrictSiteInstances. Only one of these should be enabled
-// at a time.
-BASE_FEATURE(kProcessSharingWithDefaultSiteInstances,
-             "ProcessSharingWithDefaultSiteInstances",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether cross-site frames should get their own SiteInstance even when
 // strict site isolation is disabled. These SiteInstances will still be
@@ -472,21 +374,6 @@ BASE_FEATURE(kReloadHiddenTabsWithCrashedSubframes,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
-
-// When enabled, allow reusing an initial RenderFrameHost with an unused process
-// for a subsequent WebUI navigation.  WebUI navigations typically trigger a
-// BrowsingInstance swap, but the swap is not necessary in that case: see
-// https://crbug.com/1485586.  This is intended to be used as a kill switch.
-BASE_FEATURE(kReuseInitialRenderFrameHostForWebUI,
-             "ReuseInitialRenderFrameHostForWebUI",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Run StableVideoDecoderFactoryProcessService and StableVideoDecoderService on
-// the IO thread in the video decoder process. If it is disabled, they run on
-// the main thread in the process.
-BASE_FEATURE(kRunStableVideoDecoderFactoryProcessServiceOnIOThread,
-             "RunStableVideoDecoderFactoryProcessServiceOnIOThread",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kServiceWorkerAvoidMainThreadForInitialization,
              "ServiceWorkerAvoidMainThreadForInitialization",
@@ -540,7 +427,7 @@ const base::FeatureParam<base::TimeDelta> kTextInputClientIPCTimeout{
 #endif
 
 // Allows swipe left/right from touchpad change browser navigation. Currently
-// only enabled by default on CrOS, LaCrOS and Windows.
+// only enabled by default on CrOS and Windows.
 BASE_FEATURE(kTouchpadOverscrollHistoryNavigation,
              "TouchpadOverscrollHistoryNavigation",
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
@@ -573,11 +460,6 @@ BASE_FEATURE(kWarmUpNetworkProcess,
 // Enable WebAssembly dynamic tiering (only tier up hot functions).
 BASE_FEATURE(kWebAssemblyDynamicTiering,
              "WebAssemblyDynamicTiering",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Use GpuMemoryBuffer backed VideoFrames in media streams.
-BASE_FEATURE(kWebRtcUseGpuMemoryBufferVideoFrames,
-             "WebRTC-UseGpuMemoryBufferVideoFrames",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables WebOTP calls in cross-origin iframes if allowed by Permissions

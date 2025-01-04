@@ -4,7 +4,6 @@
 
 #include "components/sync/test/test_sync_user_settings.h"
 
-#include "build/chromeos_buildflags.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/engine/nigori/nigori.h"

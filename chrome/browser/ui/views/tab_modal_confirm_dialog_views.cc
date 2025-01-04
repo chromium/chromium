@@ -50,8 +50,9 @@ TabModalConfirmDialogViews::TabModalConfirmDialogViews(
   SetOwnedByWidget(true);
 
   std::optional<int> default_button = delegate_->GetDefaultDialogButton();
-  if (bool(default_button))
+  if (bool(default_button)) {
     SetDefaultButton(*default_button);
+  }
 
   message_box_view_ = new views::MessageBoxView(delegate_->GetDialogMessage());
   message_box_view_->SetInterRowVerticalSpacing(

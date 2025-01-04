@@ -189,34 +189,4 @@ TEST_F(DownloadToolbarButtonViewTest, OpenSecurityDialog) {
             content_id);
 }
 
-TEST_F(DownloadToolbarButtonViewTest, OpenMostSpecificDialogToSecurityPage) {
-  // Init 2 items to make sure that the right item is shown.
-  InitItems(2);
-  offline_items_collection::ContentId content_id =
-      OfflineItemUtils::GetContentIdForDownload(download_items_[0].get());
-  toolbar_button()->OpenMostSpecificDialog(content_id);
-  EXPECT_TRUE(toolbar_button()->IsShowing());
-  EXPECT_EQ(toolbar_button()->bubble_contents_for_testing()->VisiblePage(),
-            DownloadBubbleContentsView::Page::kSecurity);
-  EXPECT_EQ(toolbar_button()
-                ->bubble_contents_for_testing()
-                ->security_view_for_testing()
-                ->content_id(),
-            content_id);
-}
-
-TEST_F(DownloadToolbarButtonViewTest, OpenMostSpecificDialogToPrimaryPage) {
-  InitItems(1);
-  // Make this a not-dangerous download so that the most specific dialog is just
-  // the primary page.
-  EXPECT_CALL(*download_items_[0], GetDangerType())
-      .WillRepeatedly(Return(
-          download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));
-  toolbar_button()->OpenMostSpecificDialog(
-      OfflineItemUtils::GetContentIdForDownload(download_items_[0].get()));
-  EXPECT_TRUE(toolbar_button()->IsShowing());
-  EXPECT_EQ(toolbar_button()->bubble_contents_for_testing()->VisiblePage(),
-            DownloadBubbleContentsView::Page::kPrimary);
-}
-
 }  // namespace

@@ -18,6 +18,8 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -25,11 +27,12 @@ import org.chromium.ui.base.WindowAndroid;
  *
  * This class should be used only on the UI thread.
  */
+@NullMarked
 public class LocationUtils {
     // Used to construct sInstance if that's null.
-    private static Factory sFactory;
+    private static @Nullable Factory sFactory;
 
-    private static LocationUtils sInstance;
+    private static @Nullable LocationUtils sInstance;
 
     protected LocationUtils() {}
 

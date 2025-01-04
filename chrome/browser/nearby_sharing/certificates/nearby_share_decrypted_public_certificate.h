@@ -5,12 +5,14 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_CERTIFICATES_NEARBY_SHARE_DECRYPTED_PUBLIC_CERTIFICATE_H_
 #define CHROME_BROWSER_NEARBY_SHARING_CERTIFICATES_NEARBY_SHARE_DECRYPTED_PUBLIC_CERTIFICATE_H_
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/time/time.h"
+#include "chrome/browser/nearby_sharing/certificates/constants.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_encrypted_metadata_key.h"
 #include "crypto/symmetric_key.h"
 #include "third_party/nearby/sharing/proto/encrypted_metadata.pb.h"
@@ -60,8 +62,8 @@ class NearbyShareDecryptedPublicCertificate {
   // Creates a hash of the |authentication_token|, using |secret_key_|. The use
   // of HKDF and the output vector size is part of the Nearby Share protocol and
   // conforms with the GmsCore implementation.
-  std::vector<uint8_t> HashAuthenticationToken(
-      base::span<const uint8_t> authentication_token) const;
+  std::array<uint8_t, kNearbyShareNumBytesAuthenticationTokenHash>
+  HashAuthenticationToken(base::span<const uint8_t> authentication_token) const;
 
  private:
   NearbyShareDecryptedPublicCertificate(

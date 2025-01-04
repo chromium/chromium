@@ -338,6 +338,7 @@ ProfileIOSImpl::ProfileIOSImpl(
 }
 
 ProfileIOSImpl::~ProfileIOSImpl() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BrowserStateDependencyManager::GetInstance()->DestroyBrowserStateServices(
       this);
   // Warning: the order for shutting down the BrowserState objects is important
@@ -361,10 +362,12 @@ ProfileIOSImpl::~ProfileIOSImpl() {
 }
 
 ProfileIOS* ProfileIOSImpl::GetOriginalProfile() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return this;
 }
 
 ProfileIOS* ProfileIOSImpl::GetOffTheRecordProfile() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!otr_state_) {
     otr_state_.reset(new OffTheRecordProfileIOSImpl(
         GetIOTaskRunner(), this, GetOffTheRecordStatePath()));
@@ -374,48 +377,58 @@ ProfileIOS* ProfileIOSImpl::GetOffTheRecordProfile() {
 }
 
 bool ProfileIOSImpl::HasOffTheRecordProfile() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return !!otr_state_;
 }
 
 void ProfileIOSImpl::DestroyOffTheRecordProfile() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Tear down OTR Profile with which it is associated.
   otr_state_.reset();
 }
 
 ProfilePolicyConnector* ProfileIOSImpl::GetPolicyConnector() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return policy_connector_.get();
 }
 
 policy::UserCloudPolicyManager* ProfileIOSImpl::GetUserCloudPolicyManager() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return user_cloud_policy_manager_.get();
 }
 
 sync_preferences::PrefServiceSyncable* ProfileIOSImpl::GetSyncablePrefs() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(prefs_);  // Should explicitly be initialized.
   return prefs_.get();
 }
 
 const sync_preferences::PrefServiceSyncable* ProfileIOSImpl::GetSyncablePrefs()
     const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(prefs_);  // Should explicitly be initialized.
   return prefs_.get();
 }
 
 bool ProfileIOSImpl::IsOffTheRecord() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return false;
 }
 
 const base::Uuid& ProfileIOSImpl::GetWebKitStorageID() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return storage_uuid_;
 }
 
 void ProfileIOSImpl::SetOffTheRecordProfileIOS(
     std::unique_ptr<ProfileIOS> otr_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!otr_state_);
   otr_state_ = std::move(otr_state);
 }
 
 void ProfileIOSImpl::PrefsInitStage1(InitInfo init_info, bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Early return in case of failure to load the preferences.
   if (!success) {
     if (delegate_) {
@@ -449,6 +462,7 @@ void ProfileIOSImpl::PrefsInitStage1(InitInfo init_info, bool success) {
 }
 
 void ProfileIOSImpl::PrefsInitStage2(InitInfo init_info, bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(success);
 
   // Migrate the preferences, unless the profile has just been created.
@@ -478,6 +492,7 @@ void ProfileIOSImpl::PrefsInitStage2(InitInfo init_info, bool success) {
 }
 
 void ProfileIOSImpl::PrefsInitStage3(InitInfo init_info, bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(success);
 
   // Initialize the WebKit storage identifier.
@@ -499,11 +514,13 @@ void ProfileIOSImpl::PrefsInitStage3(InitInfo init_info, bool success) {
 }
 
 ProfileIOSIOData* ProfileIOSImpl::GetIOData() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return io_data_->io_data();
 }
 
 net::URLRequestContextGetter* ProfileIOSImpl::CreateRequestContext(
     ProtocolHandlerMap* protocol_handlers) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ApplicationContext* application_context = GetApplicationContext();
   return io_data_
       ->CreateMainRequestContextGetter(
@@ -513,15 +530,18 @@ net::URLRequestContextGetter* ProfileIOSImpl::CreateRequestContext(
 }
 
 base::WeakPtr<ProfileIOS> ProfileIOSImpl::AsWeakPtr() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return weak_ptr_factory_.GetWeakPtr();
 }
 
 void ProfileIOSImpl::ClearNetworkingHistorySince(base::Time time,
                                                  base::OnceClosure completion) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   io_data_->ClearNetworkingHistorySince(time, std::move(completion));
 }
 
 PrefProxyConfigTracker* ProfileIOSImpl::GetProxyConfigTracker() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!pref_proxy_config_tracker_) {
     pref_proxy_config_tracker_ =
         ProxyServiceFactory::CreatePrefProxyConfigTrackerOfProfile(

@@ -34,8 +34,7 @@ std::vector<std::string> GetOfflinePageInfoJava(
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobjectArray> java_result =
       Java_WebApkDataProvider_getOfflinePageInfo(
-          env, base::android::ToJavaIntArray(env, requested_fields),
-          base::android::ConvertUTF8ToJavaString(env, url),
+          env, base::android::ToJavaIntArray(env, requested_fields), url,
           web_contents->GetJavaWebContents());
   std::vector<std::string> resource_strings;
   base::android::AppendJavaStringArrayToStringVector(env, java_result,

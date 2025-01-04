@@ -44,9 +44,6 @@ PageContentAnnotationsModelManager::~PageContentAnnotationsModelManager() =
 void PageContentAnnotationsModelManager::SetUpPageVisibilityModel(
     optimization_guide::OptimizationGuideModelProvider*
         optimization_guide_model_provider) {
-  if (!features::PageVisibilityBatchAnnotationsEnabled())
-    return;
-
   if (page_visibility_model_handler_)
     return;
 

@@ -8,9 +8,11 @@ import static org.chromium.chrome.browser.download.DownloadSnackbarController.IN
 
 import android.app.Notification;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.background_task_scheduler.BackgroundTask.TaskFinishedCallback;
 
 import java.util.HashMap;
@@ -24,6 +26,24 @@ import java.util.Map;
  */
 public class DownloadUserInitiatedTaskManager extends DownloadContinuityManager {
     private static final String TAG = "DownloadUitm";
+
+    /**
+     * Events related to attaching a notification to a download job, used for UMA reporting. These
+     * values are persisted to logs. Entries should not be renumbered and numeric values should
+     * never be reused.
+     */
+    @IntDef({
+        NotificationAttachEvent.ATTACHED_ON_JOB_START,
+        NotificationAttachEvent.ATTACHED_AFTER_JOB_START,
+        NotificationAttachEvent.NEVER_ATTACHED_BEFORE_JOB_COMPLETE
+    })
+    public @interface NotificationAttachEvent {
+        int ATTACHED_ON_JOB_START = 0;
+        int ATTACHED_AFTER_JOB_START = 1;
+        int NEVER_ATTACHED_BEFORE_JOB_COMPLETE = 2;
+
+        int COUNT = 3;
+    }
 
     /**
      * Notification callbacks for background jobs in progress. One callback for each type of Job.
@@ -46,6 +66,12 @@ public class DownloadUserInitiatedTaskManager extends DownloadContinuityManager 
      */
     private boolean mHasUnseenCallbacks;
 
+    /**
+     * Whether the job is just created. This happens when setTaskNotificationCallback() is called
+     * with a non-null callback.
+     */
+    private boolean mIsJobStarted;
+
     /** Constructor. */
     public DownloadUserInitiatedTaskManager() {}
 
@@ -59,9 +85,19 @@ public class DownloadUserInitiatedTaskManager extends DownloadContinuityManager 
             int taskId, TaskFinishedCallback taskNotificationCallback) {
         if (taskNotificationCallback == null) {
             mTaskNotificationCallbacks.remove(taskId);
+            if (mHasUnseenCallbacks) {
+                recordNotificationAttachEevent(
+                        NotificationAttachEvent.NEVER_ATTACHED_BEFORE_JOB_COMPLETE);
+            }
         } else {
             mHasUnseenCallbacks = true;
+            mIsJobStarted = true;
             mTaskNotificationCallbacks.put(taskId, taskNotificationCallback);
+            processDownloadUpdateQueue(/* isProcessingPending= */ false);
+            if (!mHasUnseenCallbacks) {
+                recordNotificationAttachEevent(NotificationAttachEvent.ATTACHED_ON_JOB_START);
+            }
+            mIsJobStarted = false;
         }
     }
 
@@ -120,8 +156,16 @@ public class DownloadUserInitiatedTaskManager extends DownloadContinuityManager 
             taskFinishedCallback.setNotification(notificationId, notification);
         }
 
+        if (mHasUnseenCallbacks && !mIsJobStarted) {
+            recordNotificationAttachEevent(NotificationAttachEvent.ATTACHED_AFTER_JOB_START);
+        }
         mHasUnseenCallbacks = false;
 
         mPinnedNotificationId = notificationId;
+    }
+
+    private static void recordNotificationAttachEevent(@NotificationAttachEvent int event) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Download.Android.NotificationAttachEvent", event, NotificationAttachEvent.COUNT);
     }
 }

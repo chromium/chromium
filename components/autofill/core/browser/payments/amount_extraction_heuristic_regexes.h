@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_AMOUNT_EXTRACTION_HEURISTIC_REGEXES_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_AMOUNT_EXTRACTION_HEURISTIC_REGEXES_H_
 
+#include <stdint.h>
+
 #include <string>
 
 namespace autofill::payments {
@@ -36,6 +38,12 @@ class AmountExtractionHeuristicRegexes final {
 
   // See comment for `number_of_ancestor_levels_to_search_`.
   uint32_t number_of_ancestor_levels_to_search() const;
+
+  void ResetRegexStringPatternsForTesting() {
+    keyword_pattern_.clear();
+    amount_pattern_.clear();
+    number_of_ancestor_levels_to_search_ = 0;
+  }
 
  private:
   // A keyword pattern string used for amount extraction from DOM search

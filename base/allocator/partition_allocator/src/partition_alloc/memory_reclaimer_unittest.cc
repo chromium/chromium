@@ -123,6 +123,9 @@ TEST_F(MemoryReclaimerTest, DoNotAlwaysPurgeThreadCache) {
 
   auto* tcache = ThreadCache::Get();
   ASSERT_TRUE(tcache);
+  // ThreadCache must not be tomestone. If so, tcache->CacheMemory() will
+  // cause memory access violation.
+  ASSERT_TRUE(!ThreadCache::IsTombstone(tcache));
   size_t cached_size = tcache->CachedMemory();
 
   Reclaim();

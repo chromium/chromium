@@ -24,20 +24,24 @@ source_set("messaging") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
+  public_deps = [
     ":native_messaging",
     "//base",
-    "//components/back_forward_cache",
-    "//components/crx_file:crx_file",
-    "//components/keyed_service/content:content",
     "//content/public/browser",
-    "//content/public/common",
-    "//extensions/buildflags",
+    "//extensions/browser:browser_sources",
     "//extensions/common",
-    "//extensions/common/api",
+    "//extensions/common:mojom",
+    "//mojo/public/cpp/bindings",
+    "//url",
   ]
 
-  public_deps = [ "//extensions/browser:browser_sources" ]
+  deps = [
+    "//components/back_forward_cache",
+    "//content/public/common",
+    "//extensions/common:common_constants",
+    "//extensions/common:mojom_shared",
+    "//extensions/common:mojom_shared_cpp_sources",
+  ]
 }
 
 # Split up from messaging to avoid circular dependency.
@@ -50,7 +54,7 @@ source_set("native_messaging") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
+  public_deps = [
     "//base",
     "//ui/gfx:native_widget_types",
   ]

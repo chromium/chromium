@@ -58,8 +58,8 @@ using content::WebUIMessageHandler;
 namespace {
 
 // May only be accessed on the UI thread
-base::LazyInstance<base::FilePath>::Leaky
-    last_save_dir = LAZY_INSTANCE_INITIALIZER;
+base::LazyInstance<base::FilePath>::Leaky last_save_dir =
+    LAZY_INSTANCE_INITIALIZER;
 
 void CreateAndAddNetExportHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
@@ -160,8 +160,9 @@ NetExportMessageHandler::NetExportMessageHandler()
 NetExportMessageHandler::~NetExportMessageHandler() {
   // There may be a pending file dialog, it needs to be told that the user
   // has gone away so that it doesn't try to call back.
-  if (select_file_dialog_)
+  if (select_file_dialog_) {
     select_file_dialog_->ListenerDestroyed();
+  }
 
   file_writer_->StopNetLog();
 }
@@ -223,10 +224,12 @@ void NetExportMessageHandler::OnStartNetLog(const base::Value::List& params) {
   if (UsingMobileUI()) {
     StartNetLog(base::FilePath());
   } else {
-    base::FilePath initial_dir = last_save_dir.Pointer()->empty() ?
-        DownloadPrefs::FromBrowserContext(
-            web_ui()->GetWebContents()->GetBrowserContext())->DownloadPath() :
-        *last_save_dir.Pointer();
+    base::FilePath initial_dir =
+        last_save_dir.Pointer()->empty()
+            ? DownloadPrefs::FromBrowserContext(
+                  web_ui()->GetWebContents()->GetBrowserContext())
+                  ->DownloadPath()
+            : *last_save_dir.Pointer();
     base::FilePath initial_path =
         initial_dir.Append(FILE_PATH_LITERAL("chrome-net-export-log.json"));
     ShowSelectFileDialog(initial_path);
@@ -290,8 +293,9 @@ void NetExportMessageHandler::OnNewState(const base::Value::Dict& state) {
 void NetExportMessageHandler::SendEmail(const base::FilePath& file_to_send) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 #if BUILDFLAG(IS_ANDROID)
-  if (file_to_send.empty())
+  if (file_to_send.empty()) {
     return;
+  }
   std::string email;
   std::string subject = "net_internals_log";
   std::string title = "Issue number: ";
@@ -318,8 +322,9 @@ void NetExportMessageHandler::StartNetLog(const base::FilePath& path) {
 
 void NetExportMessageHandler::ShowFileInShell(const base::FilePath& path) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (path.empty())
+  if (path.empty()) {
     return;
+  }
 
   // (The |profile| parameter is relevant for Chrome OS)
   Profile* profile = Profile::FromWebUI(web_ui());
@@ -347,8 +352,9 @@ void NetExportMessageHandler::ShowSelectFileDialog(
     const base::FilePath& default_path) {
   // User may have clicked more than once before the save dialog appears.
   // This prevents creating more than one save dialog.
-  if (select_file_dialog_)
+  if (select_file_dialog_) {
     return;
+  }
 
   WebContents* webcontents = web_ui()->GetWebContents();
 

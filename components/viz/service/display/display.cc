@@ -20,6 +20,7 @@
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/common/task_annotator.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
@@ -352,6 +353,7 @@ void Display::SetLocalSurfaceId(const LocalSurfaceId& id,
   current_surface_id_ = SurfaceId(frame_sink_id_, id);
   device_scale_factor_ = device_scale_factor;
 
+  occlusion_culler_->UpdateDeviceScaleFactor(device_scale_factor_);
   damage_tracker_->SetNewRootSurface(current_surface_id_);
 }
 
@@ -1010,7 +1012,7 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
                                  "Graphics.Pipeline.DrawAndSwap",
                                  swapped_trace_id_, "Draw");
     base::ElapsedTimer draw_occlusion_timer;
-    occlusion_culler_->RemoveOverdrawQuads(&frame, device_scale_factor_);
+    occlusion_culler_->RemoveOverdrawQuads(&frame);
     DebugDrawFrameVisible(frame);
     UMA_HISTOGRAM_COUNTS_1000(
         "Compositing.Display.Draw.Occlusion.Calculation.Time",

@@ -32,6 +32,7 @@
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -240,7 +241,7 @@ void AmbientClientImpl::OnGetAccessToken(
                             access_token_info.expiration_time);
   } else {
     LOG(ERROR) << "Failed to retrieve token, error: " << error.ToString();
-    std::move(callback).Run(/*gaia_id=*/std::string(),
+    std::move(callback).Run(/*gaia_id=*/GaiaId(),
                             /*access_token=*/std::string(),
                             /*expiration_time=*/base::Time::Now());
   }

@@ -143,14 +143,16 @@ enum FilteredReason {
   TEXT_SAFETY = 2;
   TEXT_LOW_QUALITY = 3;
   TEXT_BLOCKLIST = 4;
+  IMAGE_SAFETY_PERSON = 8;
 
   reserved 5, 6, 7;
 }
 
 message FilteredData {
-  reserved 1;
+  reserved 1, 4;
   optional bool is_output_data = 2;
   optional FilteredReason reason = 3;
+  repeated FilteredReason additional_reasons = 5;
 }
 
 message Response {

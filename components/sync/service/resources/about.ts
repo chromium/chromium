@@ -2,25 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/js/jstemplate_compiled.js';
-
 import {assert} from 'chrome://resources/js/assert.js';
 import type {WebUiListener} from 'chrome://resources/js/cr.js';
 import {addWebUiListener, removeWebUiListener} from 'chrome://resources/js/cr.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
+import {html, render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {requestDataAndRegisterForUpdates, requestStart, setIncludeSpecifics, triggerRefresh} from './chrome_sync.js';
 import type {ProtocolEvent} from './traffic_log.js';
 
 // Contains the latest snapshot of sync about info.
 interface TypeStatus {
+  message: number;
   name: string;
   num_entries: number;
   num_live: number;
+  state: string;
+  status: string;
 }
 
 interface Detail {
+  title: string;
   is_sensitive: boolean;
-  data?: Data[];
+  data: Data[];
 }
 
 interface Data {
@@ -30,11 +34,24 @@ interface Data {
 }
 
 interface AboutInfo {
-  details?: Detail[];
+  details: Detail[];
   type_status?: TypeStatus[];
+
+  actionable_error_detected: boolean;
+  actionable_error?: Data[];
+
+  unrecoverable_error_detected: boolean;
+  unrecoverable_error_message?: string;
 }
 
-export let aboutInfo: AboutInfo = {};
+export let aboutInfo: AboutInfo = {
+  details: [],
+  actionable_error_detected: false,
+  unrecoverable_error_detected: false,
+};
+
+// Snapshot of the previous aboutInfo, used for highlighting rows that changed.
+let previousAboutInfo: AboutInfo = aboutInfo;
 
 // For tests
 export function getAboutInfoForTest(): AboutInfo {
@@ -44,25 +61,115 @@ export function getAboutInfoForTest(): AboutInfo {
 let aboutInfoListener: WebUiListener|null = null;
 let entityCountsUpdatedListener: WebUiListener|null = null;
 
-function highlightIfChanged(node: HTMLElement, oldVal: number, newVal: number) {
-  const oldStr = oldVal.toString();
-  const newStr = newVal.toString();
-  if (oldStr !== '' && oldStr !== newStr) {
-    // Note the addListener function does not end up creating duplicate
-    // listeners.  There can be only one listener per event at a time.
-    // Reference: https://developer.mozilla.org/en/DOM/element.addEventListener
-    node.addEventListener('webkitAnimationEnd', function() {
-      node.removeAttribute('highlighted');
-    }, false);
-    node.setAttribute('highlighted', '');
-  }
+function refreshAboutInfo(newAboutInfo: AboutInfo) {
+  previousAboutInfo = aboutInfo;
+  aboutInfo = newAboutInfo;
+  renderAboutInfo();
 }
 
-function refreshAboutInfo(newAboutInfo: AboutInfo) {
-  aboutInfo = newAboutInfo;
-  const aboutInfoDiv = document.querySelector<HTMLElement>('#about-info');
-  assert(aboutInfoDiv);
-  jstProcess(new JsEvalContext(aboutInfo), aboutInfoDiv);
+function renderAboutInfo() {
+  render(getAboutInfoHtml(), getRequiredElement('about-info'));
+}
+
+function shouldHighlightDetail(
+    detailsIndex: number, dataIndex: number): boolean {
+  if (previousAboutInfo.details.length <= detailsIndex) {
+    return false;
+  }
+
+  const previous =
+      previousAboutInfo.details[detailsIndex]!.data[dataIndex]!.stat_value;
+  const current = aboutInfo.details[detailsIndex]!.data[dataIndex]!.stat_value;
+  return previous !== current;
+}
+
+function getAboutInfoHtml() {
+  // clang-format off
+  return html`
+    ${aboutInfo.details.map((detail, i) => html`
+      <div class="section">
+        <h2>${detail.title}</h2>
+        <table class="about-details">
+          ${detail.data.map((item, j) => html`
+            <tr class="${item.stat_status}"
+                ?highlighted="${shouldHighlightDetail(i, j)}">
+              <td class="detail" width="50%">${item.stat_name}</td>
+              <td class="value" width="50%">${item.stat_value}</td>
+            </tr>
+          `)}
+        </table>
+      </div>
+    `)}
+
+    <div id="request-start-stop-wrapper">
+      <button id="request-start" @click="${requestStart}">
+        Enable Sync-The-Feature
+      </button>
+    </div>
+
+    <div id="traffic-event-container-wrapper">
+      <h2 style="display:inline-block">Sync Protocol Log</h2>
+      <input type="checkbox" id="capture-specifics"
+          @change="${onCaptureSpecificsChange}">
+      <label for="capture-specifics">Capture Specifics</label>
+      <button id="trigger-refresh" @click="${triggerRefresh}">
+        Trigger GetUpdates
+      </button>
+      <div id="traffic-event-container">
+        ${protocolEvents.map(item => html`
+          <div class="traffic-event-entry" @click="${onTrafficEventEntryClick}">
+            <span class="time">${(new Date(item.time)).toLocaleString()}</span>
+            <span class="type">${item.type}</span>
+            <pre class="details">${item.details}</pre>
+            <pre class="proto">${JSON.stringify(item.proto, null, 2)}</pre>
+          </div>
+        `)}
+      </div>
+    </div>
+
+    <div class="section" style="overflow-x: auto">
+      <h2>Type Info</h2>
+      <table id="typeInfo">
+        ${aboutInfo.type_status ? html`
+          ${aboutInfo.type_status.map(item => html`
+            <tr class="${item.status}">
+              <td width="30%">${item.name}</td>
+              <td width="10%">${item.num_entries}</td>
+              <td width="10%">${item.num_live}</td>
+              <td width="40%" class="message">${item.message}</td>
+              <td width="10%">${item.state}</td>
+            </tr>
+          `)}
+        ` : ''}
+      </table>
+    </div>
+
+    ${aboutInfo.unrecoverable_error_detected ? html`
+      <div class="section">
+        <p>
+          <span class="err">${aboutInfo.unrecoverable_error_message}</span>
+        </p>
+      </div>
+    ` : ''}
+
+    ${aboutInfo.actionable_error_detected ? html`
+      <div class="section">
+        <p>
+          <h2>Actionable Error</h2>
+          <table id="actionableError">
+            ${aboutInfo.actionable_error!.map(item => html`
+              <tr>
+                <td>${item.stat_name}</td>
+                <td>${item.stat_value}</td>
+              </tr>
+            `)}
+          </table>
+        </p>
+      </div>
+    ` : ''}
+
+    `;
+  // clang-format on
 }
 
 interface EntityCount {
@@ -72,14 +179,6 @@ interface EntityCount {
 }
 
 let updateEntityCountsTimeoutID = -1;
-
-function updateEntityCounts() {
-  updateEntityCountsTimeoutID = -1;
-
-  const typeInfo = document.querySelector<HTMLElement>('#typeInfo');
-  assert(typeInfo);
-  jstProcess(new JsEvalContext({type_status: aboutInfo.type_status}), typeInfo);
-}
 
 function onEntityCountsUpdatedEvent(response: {entityCounts: EntityCount}) {
   if (!aboutInfo.type_status) {
@@ -95,10 +194,12 @@ function onEntityCountsUpdatedEvent(response: {entityCounts: EntityCount}) {
 
   // onEntityCountsUpdatedEvent() typically gets called multiple times in quick
   // succession (once for each data type). To avoid lots of almost-simultaneous
-  // updates to the HTML table (which would result in UI jank), delay updating
-  // just a bit.
+  // updates to the HTML table, delay updating just a bit.
   if (updateEntityCountsTimeoutID === -1) {
-    updateEntityCountsTimeoutID = setTimeout(updateEntityCounts, 10);
+    updateEntityCountsTimeoutID = setTimeout(() => {
+      updateEntityCountsTimeoutID = -1;
+      renderAboutInfo();
+    }, 10);
   }
 }
 
@@ -137,48 +238,20 @@ function onReceivedProtocolEvent(response: ProtocolEvent) {
 
   knownEventTimestamps[response.time] = true;
   protocolEvents.push(response);
+  renderAboutInfo();
 
-  const trafficContainer =
-      document.querySelector<HTMLElement>('#traffic-event-container');
-  assert(trafficContainer);
+  const trafficContainer = getRequiredElement('traffic-event-container');
 
   // Scroll to the bottom if we were already at the bottom.  Otherwise, leave
   // the scrollbar alone.
   const shouldScrollDown = isScrolledToBottom(trafficContainer);
-
-  const context = new JsEvalContext({events: protocolEvents});
-  jstProcess(context, trafficContainer);
-
   if (shouldScrollDown) {
     scrollToBottom(trafficContainer);
   }
 }
 
-/**
- * Initializes state and callbacks for the protocol event log UI.
- */
-function initProtocolEventLog() {
-  const includeSpecificsCheckbox =
-      document.querySelector<HTMLInputElement>('#capture-specifics');
-  assert(includeSpecificsCheckbox);
-  includeSpecificsCheckbox.addEventListener('change', () => {
-    setIncludeSpecifics(includeSpecificsCheckbox.checked);
-  });
-
-  addWebUiListener('onProtocolEvent', onReceivedProtocolEvent);
-
-  // Make the prototype jscontent element disappear.
-  const container =
-      document.querySelector<HTMLElement>('#traffic-event-container');
-  assert(container);
-  jstProcess({}, container);
-
-  const triggerRefreshButton =
-      document.querySelector<HTMLElement>('#trigger-refresh');
-  assert(triggerRefreshButton);
-  triggerRefreshButton.addEventListener('click', () => {
-    triggerRefresh();
-  });
+function onCaptureSpecificsChange(e: Event) {
+  setIncludeSpecifics((e.target as HTMLInputElement).checked);
 }
 
 /**
@@ -265,7 +338,7 @@ function initStatusDumpButton() {
  * Toggles the given traffic event entry div's "expanded" state.
  * @param e the click event that triggered the toggle.
  */
-function expandListener(e: MouseEvent) {
+function onTrafficEventEntryClick(e: Event) {
   if ((e.target as HTMLElement).classList.contains('proto')) {
     // We ignore proto clicks to keep it copyable.
     return;
@@ -278,32 +351,18 @@ function expandListener(e: MouseEvent) {
   trafficEventDiv.classList.toggle('traffic-event-entry-expanded');
 }
 
-/**
- * Attaches a listener to the given traffic event entry div.
- * @param element the element to attach the listener to.
- */
-function addAboutExpandListener(element: HTMLElement) {
-  element.addEventListener('click', expandListener, false);
-}
-
 function onLoad() {
   initStatusDumpButton();
-  initProtocolEventLog();
+
+  addWebUiListener('onProtocolEvent', onReceivedProtocolEvent);
 
   aboutInfoListener = addWebUiListener('onAboutInfoUpdated', refreshAboutInfo);
 
   entityCountsUpdatedListener =
       addWebUiListener('onEntityCountsUpdated', onEntityCountsUpdatedEvent);
 
-  const requestStartEl = document.querySelector<HTMLElement>('#request-start');
-  assert(requestStartEl);
-  requestStartEl.addEventListener('click', requestStart);
-
   // Request initial data for the page and listen to updates.
   requestDataAndRegisterForUpdates();
 }
 
-// For JS eval.
-Object.assign(window, {addAboutExpandListener, highlightIfChanged});
-
-document.addEventListener('DOMContentLoaded', onLoad, false);
+document.addEventListener('DOMContentLoaded', onLoad);

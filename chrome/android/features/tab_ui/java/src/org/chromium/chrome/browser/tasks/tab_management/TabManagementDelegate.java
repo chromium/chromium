@@ -103,6 +103,8 @@ public interface TabManagementDelegate {
      * @param backPressManager Manages different back press handlers throughout the app.
      * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
      * @param desktopWindowStateManager Manager to get desktop window and app header state.
+     * @param tabModelNotificationDotSupplier Supplier for whether the notification dot should show
+     *     on the tab switcher drawable.
      */
     Pair<TabSwitcher, Pane> createTabSwitcherPane(
             @NonNull Activity activity,
@@ -124,7 +126,8 @@ public interface TabManagementDelegate {
             @NonNull DoubleConsumer onToolbarAlphaChange,
             @NonNull BackPressManager backPressManager,
             @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
-            @Nullable DesktopWindowStateManager desktopWindowStateManager);
+            @Nullable DesktopWindowStateManager desktopWindowStateManager,
+            @NonNull ObservableSupplier<Boolean> tabModelNotificationDotSupplier);
 
     /**
      * Create a {@link TabGroupsPane} for the Hub.

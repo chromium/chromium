@@ -100,9 +100,7 @@ class RendererStartupHelper : public KeyedService,
   // Sets properties for the user script world of the given `world_id` for
   // the given `extension` in all applicable renderers.
   void SetUserScriptWorldProperties(const Extension& extension,
-                                    std::optional<std::string> world_id,
-                                    std::optional<std::string> csp,
-                                    bool enable_messaging);
+                                    mojom::UserScriptWorldInfoPtr world_info);
 
   // Notifies renderers to clear any properties for the user script world
   // associated with the given `extension` and `world_id`.

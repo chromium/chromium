@@ -6,11 +6,10 @@
 #define COMPONENTS_UNIFIED_CONSENT_PREF_NAMES_H_
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace unified_consent::prefs {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Integer indicating the migration state of unified consent, defined in
 // unified_consent::MigrationState.
 //
@@ -27,9 +26,6 @@ extern const char kUnifiedConsentMigrationState[];
 // UrlKeyedDataCollectionConsentHelper::
 //     NewAnonymizedDataCollectionConsentHelper.
 extern const char kUrlKeyedAnonymizedDataCollectionEnabled[];
-
-// Whether the user has enabled sharing page content.
-extern const char kPageContentCollectionEnabled[];
 
 }  // namespace unified_consent::prefs
 

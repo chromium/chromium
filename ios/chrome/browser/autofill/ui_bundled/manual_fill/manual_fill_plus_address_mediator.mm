@@ -224,7 +224,8 @@
                 initWithPlusAddress:plusAddresses[i]
                     contentInjector:self
                         menuActions:menuActions
-        cellIndexAccessibilityLabel:cellIndexAccessibilityLabel];
+        cellIndexAccessibilityLabel:cellIndexAccessibilityLabel
+          isAddressManualFallbackUI:_isAddressManualFallbackUI];
     [items addObject:item];
   }
 
@@ -267,6 +268,20 @@
                  siteName:plusAddressSiteName
                      host:plusAddressHost
                       URL:URL];
+}
+
+// Records the select option user action and opens the list of plus addresses.
+- (void)openAllPlusAddressList {
+  if (_isAddressManualFallbackUI) {
+    base::RecordAction(base::UserMetricsAction("PlusAddresses."
+                                               "SelectPlusAddressOptionOnAddres"
+                                               "sManualFallbackSelected"));
+  } else {
+    base::RecordAction(base::UserMetricsAction("PlusAddresses."
+                                               "SelectPlusAddressOptionOnPasswo"
+                                               "rdManualFallbackSelected"));
+  }
+  [self.navigator openAllPlusAddressList:_isAddressManualFallbackUI];
 }
 
 // Sends actions to the consumer.
@@ -346,22 +361,7 @@
     ManualFillActionItem* selectPlusAddressItem = [[ManualFillActionItem alloc]
         initWithTitle:selectPlusAddressesTitle
                action:^{
-                 ManualFillPlusAddressMediator* strongSelf = weakSelf;
-                 if (!strongSelf) {
-                   return;
-                 }
-                 if (strongSelf->_isAddressManualFallbackUI) {
-                   base::RecordAction(
-                       base::UserMetricsAction("PlusAddresses."
-                                               "SelectPlusAddressOptionOnAddres"
-                                               "sManualFallbackSelected"));
-                 } else {
-                   base::RecordAction(
-                       base::UserMetricsAction("PlusAddresses."
-                                               "SelectPlusAddressOptionOnPasswo"
-                                               "rdManualFallbackSelected"));
-                 }
-                 [weakSelf.navigator openAllPlusAddressList];
+                 [weakSelf openAllPlusAddressList];
                }];
     selectPlusAddressItem.accessibilityIdentifier =
         manual_fill::kSelectPlusAddressAccessibilityIdentifier;

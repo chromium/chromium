@@ -14,8 +14,8 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ui/webui/ash/settings/calculator/size_calculator.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
+#include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
-#include "third_party/re2/src/re2/re2.h"
 
 class Profile;
 
@@ -99,9 +99,9 @@ class StorageHandler : public ::settings::SettingsPageUIHandler,
   // Updates list of external storages.
   void UpdateExternalStorages();
 
-  // Returns true if the volume from |source_path| can be used as Android
+  // Returns true if the volume from |mount_point| can be used as Android
   // storage.
-  bool IsEligibleForAndroidStorage(std::string source_path);
+  bool IsEligibleForAndroidStorage(const MountPoint& mount_point);
 
   // Update encryption type whenever it is fetched.
   void OnGetVaultProperties(
@@ -130,7 +130,6 @@ class StorageHandler : public ::settings::SettingsPageUIHandler,
   base::ScopedObservation<arc::ArcSessionManager,
                           arc::ArcSessionManagerObserver>
       arc_observation_{this};
-  const re2::RE2 special_volume_path_pattern_;
 
   base::WeakPtrFactory<StorageHandler> weak_ptr_factory_{this};
 };

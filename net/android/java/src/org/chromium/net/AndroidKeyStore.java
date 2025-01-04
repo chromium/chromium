@@ -8,6 +8,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -19,6 +21,7 @@ import javax.crypto.NoSuchPaddingException;
 
 /** Specifies all the dependencies from the native OpenSSL engine on an Android KeyStore. */
 @JNINamespace("net::android")
+@NullMarked
 public class AndroidKeyStore {
     private static final String TAG = "AndroidKeyStore";
 
@@ -78,7 +81,7 @@ public class AndroidKeyStore {
      * @return signature as a byte buffer.
      */
     @CalledByNative
-    private static byte[] signWithPrivateKey(
+    private static byte @Nullable [] signWithPrivateKey(
             PrivateKey privateKey, String algorithm, byte[] message) {
         // Hint: Algorithm names come from:
         // http://docs.oracle.com/javase/6/docs/technotes/guides/security/StandardNames.html
@@ -118,7 +121,7 @@ public class AndroidKeyStore {
      * @return ciphertext as a byte buffer.
      */
     @CalledByNative
-    private static byte[] encryptWithPrivateKey(
+    private static byte @Nullable [] encryptWithPrivateKey(
             PrivateKey privateKey, String algorithm, byte[] message) {
         Cipher cipher = null;
         try {

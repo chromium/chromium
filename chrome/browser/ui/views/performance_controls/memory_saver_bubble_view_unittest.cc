@@ -50,7 +50,6 @@ class MemorySaverBubbleViewTest
       public testing::WithParamInterface<std::tuple<int, int>> {
  public:
   void SetUp() override {
-
     MemorySaverUnitTestMixin::SetUp();
 
     AddNewTab(kMemorySavingsKilobytes,

@@ -21,6 +21,7 @@ EXTRA_PATHS_COMPONENTS = [
     ('third_party', 'catapult', 'devil'),
     ('third_party', 'catapult', 'telemetry'),
     ('third_party', 'catapult', 'third_party', 'typ'),
+    ('third_party', 'catapult', 'tracing'),
     ('tools', 'perf'),
 ]
 

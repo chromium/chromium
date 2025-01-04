@@ -72,12 +72,9 @@ bool GetIsItemComplete(SetUpListItemType type,
       }
     }
     case SetUpListItemType::kDocking:
-      // TODO(crbug.com/379305809): Check if user has seen Docking promo.
-      return true;
+      return false;
     case SetUpListItemType::kAddressBar:
-      // TODO(crbug.com/379305809): Check if user has seen Show Address Bar
-      // promo.
-      return true;
+      return local_state->GetUserPrefValue(prefs::kBottomOmnibox);
     case SetUpListItemType::kFollow:
     case SetUpListItemType::kAllSet:
       NOTREACHED();
@@ -276,6 +273,10 @@ std::vector<SetUpListItemType> GetSetUpListItemTypeOrder(
         set_up_list_prefs::kFollowItemState, &_prefChangeRegistrar);
     _prefObserverBridge->ObserveChangesForPreference(
         set_up_list_prefs::kNotificationsItemState, &_prefChangeRegistrar);
+    _prefObserverBridge->ObserveChangesForPreference(
+        set_up_list_prefs::kDockingItemState, &_prefChangeRegistrar);
+    _prefObserverBridge->ObserveChangesForPreference(
+        set_up_list_prefs::kAddressBarItemState, &_prefChangeRegistrar);
     _shouldIncludeNotificationItem =
         IsIOSTipsNotificationsEnabled() || isContentNotificationEnabled;
   }

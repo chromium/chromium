@@ -161,9 +161,12 @@ void MagicBoostStateAsh::OnMagicBoostEnabledUpdated() {
 
   UpdateMagicBoostEnabled(enabled);
 
-  // Update both HMR and Orca accordingly when `kMagicBoostEnabled` is changed.
+  // Update both HMR, Orca and Lobster accordingly when `kMagicBoostEnabled` is
+  // changed.
   AsyncWriteHMREnabled(enabled);
   pref_change_registrar_->prefs()->SetBoolean(ash::prefs::kOrcaEnabled,
+                                              enabled);
+  pref_change_registrar_->prefs()->SetBoolean(ash::prefs::kLobsterEnabled,
                                               enabled);
 }
 

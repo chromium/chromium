@@ -16,30 +16,30 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_benefit.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
+#include "components/autofill/core/browser/integrators/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
-#include "components/autofill/core/browser/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/payments/constants.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_driver.h"
-#include "components/autofill/core/browser/test_browser_autofill_manager.h"
-#include "components/autofill/core/browser/test_payments_data_manager.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_test_helpers.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -211,7 +211,8 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
     payments_data().SetSyncServiceForTest(&sync_service_);
     autofill_client_.GetPaymentsAutofillClient()->set_autofill_offer_manager(
         std::make_unique<AutofillOfferManager>(
-            &autofill_client_.GetPersonalDataManager()));
+            &autofill_client_.GetPersonalDataManager()
+                 .payments_data_manager()));
     credit_card_form_event_logger_ =
         std::make_unique<NiceMock<MockCreditCardFormEventLogger>>(
             &autofill_manager_);
@@ -1058,6 +1059,31 @@ TEST_F(PaymentsSuggestionGeneratorTest, GetCardSuggestionsWithCvc) {
 
   ASSERT_EQ(suggestions.size(), 3U);
   EXPECT_TRUE(summary.with_cvc);
+  EXPECT_THAT(suggestions,
+              ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/true));
+}
+
+// Ensures we appropriately generate suggestions for card info retrieval
+// enrolled card.
+TEST_F(PaymentsSuggestionGeneratorTest,
+       GetCardSuggestionsWithCardInfoRetrievalEnrolled) {
+  CreditCard card = test::GetMaskedServerCardEnrolledIntoRuntimeRetrieval();
+  payments_data().AddServerCreditCard(card);
+
+  CreditCardSuggestionSummary summary;
+  std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
+      *autofill_client(), FormFieldData(),
+      /*four_digit_combinations_in_dom=*/{},
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"",
+      CREDIT_CARD_NUMBER,
+      /*should_show_scan_credit_card=*/false,
+      /*should_show_cards_from_account=*/false, summary);
+
+  // There are 3 suggestions, 1 for card info retrieval enrolled card
+  // suggestions, followed by a separator, and followed by "Manage payment
+  // methods..." which redirects to the Chrome payment methods settings page.
+  ASSERT_EQ(suggestions.size(), 3U);
+  EXPECT_TRUE(summary.with_card_info_retrieval_enrolled);
   EXPECT_THAT(suggestions,
               ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/true));
 }

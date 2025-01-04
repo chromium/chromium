@@ -200,10 +200,11 @@ void TabDesktopMediaList::Refresh(bool update_thumnails) {
       continue;
     content::RenderFrameHost* main_frame = contents->GetPrimaryMainFrame();
     DCHECK(main_frame);
-    DesktopMediaID media_id(
-        DesktopMediaID::TYPE_WEB_CONTENTS, DesktopMediaID::kNullId,
-        content::WebContentsMediaCaptureId(main_frame->GetProcess()->GetID(),
-                                           main_frame->GetRoutingID()));
+    DesktopMediaID media_id(DesktopMediaID::TYPE_WEB_CONTENTS,
+                            DesktopMediaID::kNullId,
+                            content::WebContentsMediaCaptureId(
+                                main_frame->GetProcess()->GetDeprecatedID(),
+                                main_frame->GetRoutingID()));
 
     // Get tab's last active time stamp.
     const base::TimeTicks t = contents->GetLastActiveTimeTicks();

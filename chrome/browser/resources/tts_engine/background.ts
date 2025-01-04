@@ -10,10 +10,36 @@
 // engine.
 console.info('TTS engine extension installed!');
 
+const DOWNLOAD_BASE_URL = 'https://dl.google.com/android/tts/wasm/';
+
 // This should be incremented each time there's a new upload of the TTS engine.
-const CURRENT_VERSION = 'v1';
-const DOWNLOAD_URL =
-    'https://dl.google.com/android/tts/wasm/' + CURRENT_VERSION;
+let CURRENT_VERSION_NUMBER = 1;
+
+fetch(DOWNLOAD_BASE_URL + 'version.json')
+    .then(response => response.json())
+    .then(data => {
+      const version = data.versionNumber;
+      if (version && typeof version === 'number') {
+        // If the version is valid and less than the current version number,
+        // rollback.
+        if (version < CURRENT_VERSION_NUMBER) {
+          // If the version is valid, update the download version.
+          CURRENT_VERSION_NUMBER = version;
+        } else {
+          if (!version) {
+            console.info(
+                'Found invalid version in version.json: ' +
+                'versionNumber undefined');
+          } else {
+            console.info('Found invalid version in version.json: ' + version);
+          }
+        }
+      }
+    });
+
+const CURRENT_VERSION = 'v' + CURRENT_VERSION_NUMBER;
+
+const DOWNLOAD_URL = DOWNLOAD_BASE_URL + CURRENT_VERSION;
 
 
 // TODO(crbug.com/353972727): Use of remotely fetched code is a temporary

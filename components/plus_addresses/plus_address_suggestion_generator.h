@@ -9,7 +9,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/stack_allocated.h"
-#include "components/autofill/core/browser/password_form_classification.h"
+#include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "url/origin.h"
 
@@ -86,8 +86,11 @@ class PlusAddressSuggestionGenerator final {
   // Returns a suggestion to generate a new plus address inline. If there are
   // pre-allocated plus addresses, it adds the next suggested plus address as
   // payload. Otherwise, the payload is left empty (and the UI will need to
-  // request a suggested plus address on showing the suggestion).
-  autofill::Suggestion CreateNewPlusAddressInlineSuggestion();
+  // request a suggested plus address on showing the suggestion). If
+  // `refreshed_suggestion` is true, the function will return a plus address
+  // that's different to the last one that was offered.
+  autofill::Suggestion CreateNewPlusAddressInlineSuggestion(
+      bool refreshed_suggestion);
 
   const raw_ref<const PlusAddressSettingService> setting_service_;
   const raw_ref<PlusAddressAllocator> allocator_;

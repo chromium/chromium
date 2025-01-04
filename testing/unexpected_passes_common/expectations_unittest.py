@@ -9,8 +9,10 @@ import tempfile
 import unittest
 from unittest import mock
 
-from pyfakefs import fake_filesystem_unittest
+# vpython-provided modules.
+from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
 
+# //testing imports.
 from unexpected_passes_common import data_types
 from unexpected_passes_common import expectations
 from unexpected_passes_common import unittest_utils as uu
@@ -84,8 +86,8 @@ class CreateTestExpectationMapUnittest(unittest.TestCase):
     self.instance = expectations.Expectations()
 
     self._expectation_content = {}
-    self._content_patcher = mock.patch.object(
-        self.instance, '_GetNonRecentExpectationContent')
+    self._content_patcher = mock.patch(
+        'unexpected_passes_common.expectations._GetNonRecentExpectationContent')
     self._content_mock = self._content_patcher.start()
     self.addCleanup(self._content_patcher.stop)
 
@@ -187,8 +189,8 @@ class CreateTestExpectationMapUnittest(unittest.TestCase):
 
 
 class GetNonRecentExpectationContentUnittest(unittest.TestCase):
+
   def setUp(self) -> None:
-    self.instance = uu.CreateGenericExpectations()
     self._output_patcher = mock.patch(
         'unexpected_passes_common.expectations.subprocess.check_output')
     self._output_mock = self._output_patcher.start()
@@ -227,7 +229,7 @@ class GetNonRecentExpectationContentUnittest(unittest.TestCase):
 [ tag1 ] othertest [ Failure ]
 crbug.com/3456 othertest [ Failure ]"""
     self.assertEqual(
-        self.instance._GetNonRecentExpectationContent(
+        expectations._GetNonRecentExpectationContent(
             '', datetime.timedelta(days=1)), expected_content)
 
   def testNegativeGracePeriod(self) -> None:
@@ -262,7 +264,7 @@ crbug.com/1234 [ tag1 ] testname [ Failure ]
 [ tag2 ] testname [ Failure ] # Comment
 [ tag1 ] othertest [ Failure ]"""
     self.assertEqual(
-        self.instance._GetNonRecentExpectationContent(
+        expectations._GetNonRecentExpectationContent(
             '', datetime.timedelta(days=-1)), expected_content)
 
 

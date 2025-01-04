@@ -57,12 +57,6 @@ namespace content {
 
 namespace {
 
-// If on, worklet assignment/failure callbacks will be executed in chunks rather
-// than all at once.
-BASE_FEATURE(kFledgeSplitUpWorkletAssignment,
-             "FledgeSplitUpWorkletAssignment",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // We use sequence numbers with handles to make sure they are assigned in FIFO
 // order.
 using HandleKey = std::pair<uint64_t, AuctionWorkletManager::WorkletHandle*>;
@@ -242,8 +236,6 @@ class AuctionWorkletManager::WorkletOwner
   // a raw pointer to it.
   std::vector<std::unique_ptr<DebuggableAuctionWorklet>> worklet_debugs_;
 
-  // If true, we will split callback notifications into small batches.
-  bool split_up_notifications_;
   // True if any notifications are pending - that is, there's either a
   // notification task posted, or one is currently running (at which point,
   // WorkletOwner methods may be recursively invoked).
@@ -298,9 +290,7 @@ AuctionWorkletManager::WorkletOwner::WorkletOwner(
     WorkletKey worklet_info,
     size_t number_of_bidder_threads)
     : worklet_manager_(worklet_manager),
-      worklet_info_(std::move(worklet_info)),
-      split_up_notifications_(
-          base::FeatureList::IsEnabled(kFledgeSplitUpWorkletAssignment)) {
+      worklet_info_(std::move(worklet_info)) {
   // If `trusted_signals_coordinator` in `worklet_info_` has a value and
   // `kFledgeTrustedSignalsKVv2Support` is enabled, call
   // `GetBiddingAndAuctionServerKey` to fetch `trusted_signals_kvv2_public_key_`
@@ -441,10 +431,7 @@ void AuctionWorkletManager::WorkletOwner::DispatchSomeNotifications() {
   // drop all the handles.
   scoped_refptr<WorkletOwner> guard(this);
 
-  size_t max_notifications = std::numeric_limits<size_t>::max();
-  if (split_up_notifications_) {
-    max_notifications = kBatchSize;
-  }
+  size_t max_notifications = kBatchSize;
 
   // Note that this logic needs to be kept in sync with the code in
   // MaybeQueueNotifications() to figure out if any notifications need to be
@@ -576,7 +563,8 @@ void AuctionWorkletManager::WorkletOwner::LoadWorkletIfReady(
       worklet_manager_->top_window_origin(), worklet_manager_->frame_origin(),
       // NOTE: `rfh` can be null in tests.
       /*renderer_process_id=*/
-      rfh ? std::optional<int>(rfh->GetProcess()->GetID()) : std::nullopt,
+      rfh ? std::optional<int>(rfh->GetProcess()->GetDeprecatedID())
+          : std::nullopt,
       /*is_for_seller_=*/worklet_info_.type == WorkletType::kSeller,
       delegate->GetClientSecurityState(), worklet_info_.script_url,
       worklet_info_.wasm_url, worklet_info_.signals_url,
@@ -701,6 +689,7 @@ void AuctionWorkletManager::WorkletOwner::LoadWorkletIfReady(
           GetAuctionWorkletPermissionsPolicyState(delegate->GetFrame(),
                                                   worklet_info_.script_url),
           worklet_info_.experiment_group_id,
+          worklet_info_.send_creative_scanning_metadata,
           std::move(trusted_signals_kvv2_public_key_),
           std::move(load_seller_worklet_client_remote));
       seller_worklet_.set_disconnect_with_reason_handler(base::BindOnce(
@@ -795,6 +784,7 @@ AuctionWorkletManager::WorkletKey::WorkletKey(
     const std::optional<GURL>& wasm_url,
     const std::optional<GURL>& signals_url,
     bool needs_cors_for_additional_bid,
+    std::optional<bool> send_creative_scanning_metadata,
     std::optional<uint16_t> experiment_group_id,
     const std::string& trusted_bidding_signals_slot_size_param,
     const std::optional<url::Origin>& trusted_signals_coordinator)
@@ -803,6 +793,7 @@ AuctionWorkletManager::WorkletKey::WorkletKey(
       wasm_url(wasm_url),
       signals_url(signals_url),
       needs_cors_for_additional_bid(needs_cors_for_additional_bid),
+      send_creative_scanning_metadata(send_creative_scanning_metadata),
       experiment_group_id(experiment_group_id),
       trusted_bidding_signals_slot_size_param(
           trusted_bidding_signals_slot_size_param),
@@ -837,6 +828,10 @@ size_t AuctionWorkletManager::WorkletKey::GetHash() const {
       hash, trusted_signals_coordinator
                 ? FastHash(trusted_signals_coordinator->GetURL().spec())
                 : 0xf3a287b1);
+  hash = CombineHash(
+      hash, send_creative_scanning_metadata.has_value()
+                ? (*send_creative_scanning_metadata ? 0x4b9dff24u : 0x2af93982u)
+                : 0x5f0d73ebu);
   return hash;
 }
 
@@ -845,12 +840,14 @@ bool AuctionWorkletManager::WorkletKey::WorkletKey::operator<(
   return std::tie(type, script_url, wasm_url, signals_url,
                   needs_cors_for_additional_bid, experiment_group_id,
                   trusted_bidding_signals_slot_size_param,
-                  trusted_signals_coordinator) <
+                  trusted_signals_coordinator,
+                  send_creative_scanning_metadata) <
          std::tie(other.type, other.script_url, other.wasm_url,
                   other.signals_url, other.needs_cors_for_additional_bid,
                   other.experiment_group_id,
                   other.trusted_bidding_signals_slot_size_param,
-                  other.trusted_signals_coordinator);
+                  other.trusted_signals_coordinator,
+                  other.send_creative_scanning_metadata);
 }
 
 AuctionWorkletManager::WorkletHandle::~WorkletHandle() {
@@ -1010,6 +1007,7 @@ AuctionWorkletManager::WorkletKey AuctionWorkletManager::BidderWorkletKey(
                     /*script_url=*/bidding_logic_url, wasm_url,
                     /*signals_url=*/trusted_bidding_signals_url,
                     needs_cors_for_additional_bid,
+                    /*send_creative_scanning_metadata=*/std::nullopt,
                     trusted_bidding_signals_url.has_value()
                         ? experiment_group_id
                         : std::nullopt,
@@ -1053,6 +1051,7 @@ void AuctionWorkletManager::RequestSellerWorklet(
     const std::optional<GURL>& trusted_scoring_signals_url,
     std::optional<uint16_t> experiment_group_id,
     const std::optional<url::Origin>& trusted_scoring_signals_coordinator,
+    std::optional<bool> send_creative_scanning_metadata,
     base::OnceClosure process_assigned_callback,
     base::OnceClosure worklet_available_callback,
     FatalErrorCallback fatal_error_callback,
@@ -1063,7 +1062,7 @@ void AuctionWorkletManager::RequestSellerWorklet(
                           /*wasm_url=*/std::nullopt,
                           /*signals_url=*/trusted_scoring_signals_url,
                           /*needs_cors_for_additional_bid=*/false,
-                          experiment_group_id,
+                          send_creative_scanning_metadata, experiment_group_id,
                           /*trusted_bidding_signals_slot_size_param=*/"",
                           trusted_scoring_signals_coordinator);
   RequestWorkletByKey(std::move(worklet_info), std::move(devtools_auction_id),

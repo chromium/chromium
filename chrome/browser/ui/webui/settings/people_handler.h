@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -45,7 +46,8 @@ class PeopleHandler : public SettingsPageUIHandler,
                       public signin::IdentityManager::Observer,
                       public LoginUIService::LoginUI,
                       public syncer::SyncServiceObserver,
-                      public content::WebContentsObserver {
+                      public content::WebContentsObserver,
+                      public ProfileAttributesStorage::Observer {
  public:
   // TODO(tommycli): Remove these strings and instead use WebUIListener events.
   // These string constants are used from JavaScript (sync_browser_proxy.js).
@@ -167,6 +169,9 @@ class PeopleHandler : public SettingsPageUIHandler,
       signin_metrics::SourceForRefreshTokenOperation token_operation_source)
       override;
 
+  // ProfileAttributesStorage::Observer:
+  void OnProfileAvatarChanged(const base::FilePath& profile_path) override;
+
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync_service) override;
 
@@ -226,7 +231,9 @@ class PeopleHandler : public SettingsPageUIHandler,
 
   void HandleGetStoredAccounts(const base::Value::List& args);
   void HandleStartSyncingWithEmail(const base::Value::List& args);
+  void HandleGetProfileAvatar(const base::Value::List& args);
   base::Value::List GetStoredAccountsList();
+  base::Value GetProfileAvatar();
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Sends the updated chrome signin user choice info to UI.
@@ -245,6 +252,9 @@ class PeopleHandler : public SettingsPageUIHandler,
 
   // Sends the computed stored accounts to the JavaScript WebUI code.
   void UpdateStoredAccounts();
+
+  // Sends the computed profile avatar to the JavaScript WebUI code.
+  void UpdateProfileAvatar();
 
   // Suppresses any further signin promos, since the user has signed in once.
   void MarkFirstSetupComplete();
@@ -295,6 +305,9 @@ class PeopleHandler : public SettingsPageUIHandler,
       identity_manager_observation_{this};
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observation_{this};
+  base::ScopedObservation<ProfileAttributesStorage,
+                          ProfileAttributesStorage::Observer>
+      profile_attributes_observation_{this};
 
   base::WeakPtrFactory<PeopleHandler> weak_factory_{this};
 };

@@ -129,6 +129,8 @@ void SetDirTime(const std::wstring &Name,RarTime *ftm,RarTime *ftc,RarTime *fta)
 }
 
 
+
+
 bool IsRemovable(const std::wstring &Name)
 {
 #if defined(_WIN_ALL)
@@ -320,10 +322,10 @@ bool SetFileAttr(const std::wstring &Name,uint Attr)
 }
 
 
-wchar* MkTemp(wchar *Name,size_t MaxSize)
+// Ext is the extension with the leading dot, like L".bat", or nullptr to use
+// the default extension.
+bool MkTemp(std::wstring &Name,const wchar *Ext)
 {
-  size_t Length=wcslen(Name);
-
   RarTime CurTime;
   CurTime.SetCurrentTime();
 
@@ -342,47 +344,20 @@ wchar* MkTemp(wchar *Name,size_t MaxSize)
 
   for (uint Attempt=0;;Attempt++)
   {
-    uint Ext=Random%50000+Attempt;
-    wchar RndText[50];
+    uint RandomExt=Random%50000+Attempt;
+    if (Attempt==1000)
+      return false;
+
     // User asked to specify the single extension for all temporary files,
     // so it can be added to server ransomware protection exceptions.
     // He wrote, this protection blocks temporary files when adding
-    // a file to RAR archive with drag and drop.
-    swprintf(RndText,ASIZE(RndText),L"%u.%03u.rartemp",PID,Ext);
-    if (Length+wcslen(RndText)>=MaxSize || Attempt==1000)
-      return NULL;
-    wcsncpyz(Name+Length,RndText,MaxSize-Length);
-    if (!FileExist(Name))
-      break;
-  }
-  return Name;
-}
+    // a file to RAR archive with drag and drop. So unless a calling code
+    // requires a specific extension, like .bat file when uninstalling,
+    // we set the uniform extension here.
+    if (Ext==nullptr)
+      Ext=L".rartemp";
 
-
-bool MkTemp(std::wstring &Name)
-{
-  RarTime CurTime;
-  CurTime.SetCurrentTime();
-
-  // We cannot use CurTime.GetWin() as is, because its lowest bits can
-  // have low informational value, like being a zero or few fixed numbers.
-  uint Random=(uint)(CurTime.GetWin()/100000);
-
-  // Using PID we guarantee that different RAR copies use different temp names
-  // even if started in exactly the same time.
-  uint PID=0;
-#ifdef _WIN_ALL
-  PID=(uint)GetCurrentProcessId();
-#elif defined(_UNIX)
-  PID=(uint)getpid();
-#endif
-
-  for (uint Attempt=0;;Attempt++)
-  {
-    uint Ext=Random%50000+Attempt;
-    if (Attempt==1000)
-      return false;
-    std::wstring NewName=Name + std::to_wstring(PID) + L"." + std::to_wstring(Ext) + L".rartemp";
+    std::wstring NewName=Name + std::to_wstring(PID) + L"." + std::to_wstring(RandomExt) + Ext;
     if (!FileExist(NewName))
     {
       Name=NewName;
@@ -545,14 +520,21 @@ bool SetFileCompression(const std::wstring &Name,bool State)
       hFile=CreateFile(LongName.c_str(),FILE_READ_DATA|FILE_WRITE_DATA,
                  FILE_SHARE_READ|FILE_SHARE_WRITE,NULL,OPEN_EXISTING,
                  FILE_FLAG_BACKUP_SEMANTICS|FILE_FLAG_SEQUENTIAL_SCAN,NULL);
+    if (hFile==INVALID_HANDLE_VALUE)
+      return false;
   }
-  if (hFile==INVALID_HANDLE_VALUE)
-    return false;
+  bool Success=SetFileCompression(hFile,State);
+  CloseHandle(hFile);
+  return Success;
+}
+
+
+bool SetFileCompression(HANDLE hFile,bool State)
+{
   SHORT NewState=State ? COMPRESSION_FORMAT_DEFAULT:COMPRESSION_FORMAT_NONE;
   DWORD Result;
   int RetCode=DeviceIoControl(hFile,FSCTL_SET_COMPRESSION,&NewState,
                               sizeof(NewState),NULL,0,&Result,NULL);
-  CloseHandle(hFile);
   return RetCode!=0;
 }
 

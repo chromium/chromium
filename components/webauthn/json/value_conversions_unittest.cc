@@ -334,7 +334,8 @@ TEST(WebAuthenticationJSONConversionTest,
       /*supports_large_blob=*/true,
       /*supplemental_pub_keys=*/
       blink::mojom::SupplementalPubKeysResponse::New(
-          std::vector<std::vector<uint8_t>>({{0, 16, 131}, {16, 81, 135}})));
+          std::vector<std::vector<uint8_t>>({{0, 16, 131}, {16, 81, 135}})),
+      /*payment=*/nullptr);
 
   EXPECT_EQ(response->info, expected->info);
   EXPECT_EQ(response->authenticator_attachment,

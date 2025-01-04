@@ -63,7 +63,3 @@
   line-height: var(--ntp-module-line-height);
   margin: 0;
 }
-
-#signInButton {
-  width: 165px;
-}

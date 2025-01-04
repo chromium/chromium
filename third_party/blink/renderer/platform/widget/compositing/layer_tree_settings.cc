@@ -598,6 +598,9 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   std::tie(settings.tiling_interest_area_padding,
            settings.skewport_extrapolation_limit_in_screen_pixels) =
       GetTilingInterestAreaSizes();
+
+  settings.dynamic_safe_area_insets_on_scroll_enabled =
+      RuntimeEnabledFeatures::DynamicSafeAreaInsetsOnScrollEnabled();
   return settings;
 }
 

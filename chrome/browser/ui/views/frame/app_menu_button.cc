@@ -47,8 +47,9 @@ void AppMenuButton::RemoveObserver(AppMenuButtonObserver* observer) {
 }
 
 void AppMenuButton::CloseMenu() {
-  if (menu_)
+  if (menu_) {
     menu_->CloseMenu();
+  }
   menu_.reset();
 }
 

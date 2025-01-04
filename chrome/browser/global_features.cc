@@ -13,15 +13,19 @@
 #include "chrome/browser/permissions/system/platform_handle.h"
 #include "chrome/common/chrome_features.h"
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(ENABLE_GLIC)
+// This causes a gn error on Android builds, because gn does not understand
+// buildflags, so we include it only on platforms where it is used.
+#include "chrome/browser/glic/glic_enabling.h"         // nogncheck
+#include "chrome/browser/glic/glic_profile_manager.h"  // nogncheck
 #include "chrome/browser/glic/launcher/glic_background_mode_manager.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // This causes a gn error on Android builds, because gn does not understand
 // buildflags, so we include it only on platforms where it is used.
-#include "components/user_education/common/user_education_features.h"  // nogncheck
 #include "chrome/browser/ui/webui/whats_new/whats_new_registrar.h"
+#include "components/user_education/common/user_education_features.h"  // nogncheck
 #endif
 
 namespace {
@@ -57,13 +61,12 @@ void GlobalFeatures::ReplaceGlobalFeaturesForTesting(
 void GlobalFeatures::Init() {
   system_permissions_platform_handle_ = CreateSystemPermissionsPlatformHandle();
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (user_education::features::IsWhatsNewV2()) {
-    whats_new_registry_ = CreateWhatsNewRegistry();
-  }
+  whats_new_registry_ = CreateWhatsNewRegistry();
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(features::kGlic)) {
+#if BUILDFLAG(ENABLE_GLIC)
+  if (GlicEnabling::IsEnabledByFlags()) {
+    glic_profile_manager_ = std::make_unique<glic::GlicProfileManager>();
     glic_background_mode_manager_ =
         std::make_unique<glic::GlicBackgroundModeManager>(
             g_browser_process->status_tray());

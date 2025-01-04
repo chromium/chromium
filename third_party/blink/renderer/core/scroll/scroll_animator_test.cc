@@ -123,7 +123,8 @@ class MockScrollableAreaForAnimatorTest
                        mojom::blink::ScrollType type,
                        mojom::blink::ScrollBehavior behavior =
                            mojom::blink::ScrollBehavior::kInstant,
-                       ScrollCallback on_finish = ScrollCallback()) override {
+                       ScrollCallback on_finish = ScrollCallback(),
+                       bool targeted_scroll = false) override {
     if (animator)
       animator->SetCurrentOffset(offset);
     return ScrollableArea::SetScrollOffset(offset, type, behavior,

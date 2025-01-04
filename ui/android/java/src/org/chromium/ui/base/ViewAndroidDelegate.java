@@ -19,7 +19,6 @@ import android.view.autofill.AutofillValue;
 import android.view.inputmethod.InputConnection;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.MarginLayoutParamsCompat;
 
@@ -29,6 +28,8 @@ import org.jni_zero.JNINamespace;
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragAndDropDelegateImpl;
 import org.chromium.ui.dragdrop.DragStateTracker;
@@ -37,8 +38,9 @@ import org.chromium.ui.mojom.CursorType;
 
 /** Class to acquire, position, and remove anchor views from the implementing View. */
 @JNINamespace("ui")
+@NullMarked
 public class ViewAndroidDelegate {
-    private static DragAndDropDelegate sDragAndDropDelegateForTesting;
+    private static @Nullable DragAndDropDelegate sDragAndDropDelegateForTesting;
     private final DragAndDropDelegateImpl mDragAndDropDelegateImpl;
 
     /**
@@ -70,7 +72,7 @@ public class ViewAndroidDelegate {
     private final ObserverList<VerticalScrollDirectionChangeListener>
             mVerticalScrollDirectionChangeListeners = new ObserverList<>();
 
-    private Callback<Boolean> mUpdateShouldShowStylusHoverIcon;
+    private @Nullable Callback<Boolean> mUpdateShouldShowStylusHoverIcon;
 
     /**
      * Sets a callback which should be called with the latest value of whether the element being
@@ -185,7 +187,7 @@ public class ViewAndroidDelegate {
      * @return An anchor view that can be used to anchor decoration views like Autofill popup.
      */
     @CalledByNative
-    public View acquireView() {
+    public @Nullable View acquireView() {
         ViewGroup containerView = getContainerViewGroup();
         if (containerView == null || containerView.getParent() == null) return null;
         View anchorView = new View(containerView.getContext());

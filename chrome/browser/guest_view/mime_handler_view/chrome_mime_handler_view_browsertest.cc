@@ -680,7 +680,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, FrameIterationBeforeAttach) {
   base::OnceClosure resume_attach;
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   auto* mime_handler_view_helper = extensions::MimeHandlerViewAttachHelper::Get(
-      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID());
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID());
   mime_handler_view_helper->set_resume_attach_callback_for_testing(
       base::BindLambdaForTesting([&](base::OnceClosure resume_closure) {
         resume_attach = std::move(resume_closure);

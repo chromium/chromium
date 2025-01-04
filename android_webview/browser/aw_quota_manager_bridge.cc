@@ -264,13 +264,11 @@ void AwQuotaManagerBridge::DeleteBrowsingData(
                                kDataRemovalOriginProtectionTypes, observer);
 }
 
-base::android::ScopedJavaLocalRef<jstring>
-AwQuotaManagerBridge::DeleteBrowsingDataForSite(
+std::string AwQuotaManagerBridge::DeleteBrowsingDataForSite(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jdomain,
+    std::string& domain,
     const base::android::JavaParamRef<jobject>& jcallback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::string domain = base::android::ConvertJavaStringToUTF8(jdomain);
 
   std::unique_ptr<content::BrowsingDataFilterBuilder> filter_builder =
       content::BrowsingDataFilterBuilder::Create(
@@ -289,7 +287,7 @@ AwQuotaManagerBridge::DeleteBrowsingDataForSite(
       base::Time(), base::Time::Max(), kDataRemovalMask,
       kDataRemovalOriginProtectionTypes, std::move(filter_builder), observer);
 
-  return base::android::ConvertUTF8ToJavaString(env, site);
+  return site;
 }
 
 void AwQuotaManagerBridge::DeleteAllDataFramework(JNIEnv* env) {

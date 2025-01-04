@@ -633,7 +633,6 @@ void AddLinkedSuggestionToList(const int error_code,
 
   base::Value::Dict suggestion_list_item;
   suggestion_list_item.Set("summary", suggestion_string);
-  suggestion_list_item.Set("learnMoreUrl", learn_more_url_with_locale.spec());
   suggestions_summary_list.Append(std::move(suggestion_list_item));
 }
 
@@ -716,7 +715,6 @@ void GetSuggestionsSummaryList(int error_code,
         l10n_util::GetStringFUTF16(
             IDS_ERRORPAGES_SUGGESTION_NAVIGATE_TO_ORIGIN,
             base::UTF8ToUTF16(base::EscapeForHTML(failed_origin_string))));
-    suggestion.Set("originURL", failed_origin_string);
     suggestions_summary_list.Append(std::move(suggestion));
     return;
   }
@@ -890,17 +888,6 @@ void AddSuggestionsDetails(int error_code,
             l10n_util::GetStringUTF16(IDS_SETTINGS_SHOW_ADVANCED_SETTINGS),
             l10n_util::GetStringUTF16(
                 IDS_NETWORK_PREDICTION_ENABLED_DESCRIPTION)));
-
-    // TODO(crbug.com/378692755): Remove once backwards compatibility with
-    // jstemplate is not needed.
-    suggestions_details.back().GetDict().Set(
-        "settingsTitle", l10n_util::GetStringUTF16(IDS_SETTINGS_TITLE));
-    suggestions_details.back().GetDict().Set(
-        "advancedTitle",
-        l10n_util::GetStringUTF16(IDS_SETTINGS_SHOW_ADVANCED_SETTINGS));
-    suggestions_details.back().GetDict().Set(
-        "noNetworkPredictionTitle",
-        l10n_util::GetStringUTF16(IDS_NETWORK_PREDICTION_ENABLED_DESCRIPTION));
   }
 
   if (suggestions & SUGGEST_FIREWALL_CONFIG) {
@@ -930,17 +917,6 @@ void AddSuggestionsDetails(int error_code,
         l10n_util::GetStringUTF16(
             IDS_ERRORPAGES_SUGGESTION_PROXY_CONFIG_HEADER),
         inner);
-
-    // TODO(crbug.com/378692755): Remove once backwards compatibility with
-    // jstemplate is not needed.
-    suggestions_details.back().GetDict().Set(
-        "settingsTitle", l10n_util::GetStringUTF16(IDS_SETTINGS_TITLE));
-    suggestions_details.back().GetDict().Set(
-        "advancedTitle",
-        l10n_util::GetStringUTF16(IDS_SETTINGS_SHOW_ADVANCED_SETTINGS));
-    suggestions_details.back().GetDict().Set(
-        "proxyTitle",
-        l10n_util::GetStringUTF16(IDS_OPTIONS_PROXIES_CONFIGURE_BUTTON));
   }
 #endif  //  !BUILDFLAG(IS_FUCHSIA)
 #endif
@@ -1095,7 +1071,6 @@ LocalizedError::PageState LocalizedError::GetPageState(
                                       : options.heading_resource_id;
   heading.Set("msg",
               GetStringWithPlaceholder(msg_id, host_name, failed_url_string));
-  heading.Set("hostName", host_name);
   result.strings.Set("heading", std::move(heading));
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -1130,9 +1105,6 @@ LocalizedError::PageState LocalizedError::GetPageState(
   }
 
   summary.Set("msg", std::move(message));
-
-  summary.Set("failedUrl", failed_url_string);
-  summary.Set("hostName", host_name);
 
   result.strings.Set(
       "details", l10n_util::GetStringUTF16(IDS_ERRORPAGE_NET_BUTTON_DETAILS));

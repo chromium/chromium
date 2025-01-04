@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">Pobieranie wstrzymane</translation>
 <translation id="1396327438254055134">Zezwalaj witrynie na korzystanie z optymalizatora V8.</translation>
 <translation id="1415402041810619267">URL obcięty</translation>
+<translation id="1415855080660575082">Pozwól Chrome udostępniać ostatnie karty swojemu urządzeniu, aby były one widoczne na nim na liście aplikacji i w wynikach wyszukiwania. Tę funkcję możesz w każdej chwili włączyć lub wyłączyć w ustawieniach Chrome.</translation>
 <translation id="1448064542941920355">Zmniejsz powiększenie</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> witryna}few{<ph name="SITE_COUNT" /> witryny}many{<ph name="SITE_COUNT" /> witryn}other{<ph name="SITE_COUNT" /> witryny}}</translation>
 <translation id="1500473259453106018">Ukryj kartę Obniżki cen na kartach</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">Tymczasowo zezwalasz tej witrynie na używanie plików cookie innych firm. Oznacza to słabszą ochronę przeglądania, ale jest większa szansa na to, że funkcje witryny będą działać zgodnie z oczekiwaniami. <ph name="BEGIN_LINK" />Prześlij opinię<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">W niektórych witrynach funkcje mogą nie działać w trybie incognito</translation>
 <translation id="2442870161001914531">Zawsze żądaj strony na komputery</translation>
+<translation id="2445311670906052406">Chrome udostępnia teraz ostatnie karty Twojemu urządzeniu. Zobaczysz je na liście aplikacji na urządzeniu i w wynikach wyszukiwania. Tę funkcję możesz w każdej chwili wyłączyć w ustawieniach Chrome.</translation>
 <translation id="2469312991797799607">Spowoduje to usunięcie wszystkich danych i plików cookie powiązanych z grupą <ph name="ORIGIN" /> i znajdującymi się w niej stronami</translation>
 <translation id="2482878487686419369">Powiadomienia</translation>
 <translation id="2485422356828889247">Odinstaluj</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">Witryny mogą wyświetlać prośby o zalogowanie się pochodzące od usług tożsamości.</translation>
 <translation id="2787357173144933081">Szybki start omniboksa</translation>
 <translation id="2790501146643349491">Gdy ta opcja jest włączona, ostatnio zamknięte strony internetowe mogą dokończyć wysyłanie i odbieranie danych. Gdy jest wyłączona, nie mogą tego zrobić.</translation>
+<translation id="2814830417943086299">Chrome wyświetla teraz ostatnie karty na liście aplikacji i w wynikach wyszukiwania na urządzeniu. Tę funkcję możesz w każdej chwili wyłączyć w ustawieniach Chrome.</translation>
 <translation id="2822354292072154809">Czy na pewno chcesz zresetować wszystkie uprawnienia witryny dla obiektu <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Żądaj wersji na urządzenia mobilne</translation>
 <translation id="2870560284913253234">Witryna</translation>
@@ -335,7 +338,6 @@
 <translation id="5968921426641056619">Podaj adres internetowy</translation>
 <translation id="5975083100439434680">Pomniejsz</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
-<translation id="6015145568571136419">Teraz możesz szybko uzyskać dostęp do sugerowanych kart poziomu z listy aplikacji na urządzeniu i wyników wyszukiwania na urządzeniu. W dowolnej chwili możesz to wyłączyć w ustawieniach Chrome.</translation>
 <translation id="6015775454662021376">Zarządzaj dostępem tej strony do Twojego urządzenia</translation>
 <translation id="6040143037577758943">Zamknij</translation>
 <translation id="6042308850641462728">Więcej</translation>
@@ -558,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Przyznaj aplikacji <ph name="APP_NAME" /> uprawnienia w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Obecne powiększenie: <ph name="ZOOM_LEVEL" />%%</translation>
+<translation id="9156722768168878035">Pozwól Chrome wyświetlać ostatnie karty na liście aplikacji i w wynikach wyszukiwania na urządzeniu. Tę funkcję możesz w każdej chwili wyłączyć w ustawieniach Chrome.</translation>
 <translation id="9162462602695099906">Ten pakiet jest niebezpieczny</translation>
 <translation id="947156494302904893">Witryny, które odwiedzasz, mogą sprawdzać, czy jesteś prawdziwą osobą, a nie botem</translation>
 <translation id="959682366969460160">Większy porządek</translation>

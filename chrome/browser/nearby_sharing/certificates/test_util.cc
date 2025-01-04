@@ -9,6 +9,7 @@
 
 #include "chrome/browser/nearby_sharing/certificates/test_util.h"
 
+#include <array>
 #include <set>
 
 #include "base/no_destructor.h"
@@ -67,20 +68,10 @@ const uint8_t kTestCertificateId[] = {
     0x05, 0xf8, 0x0d, 0x63, 0x59, 0x18, 0xf9, 0x1b, 0xc2, 0x2b, 0x14,
     0xd7, 0xed, 0x05, 0x71, 0x4d, 0x58, 0xf9, 0x67, 0x02, 0xdd};
 
-const uint8_t kTestMetadataEncryptionKey[] = {0x60, 0x1e, 0xc3, 0x13, 0x77,
-                                              0x57, 0x89, 0xa5, 0xb7, 0xa7,
-                                              0xf5, 0x04, 0xbb, 0xf3};
-
 const uint8_t kTestMetadataEncryptionKeyTag[] = {
     0x51, 0x9b, 0x16, 0xd8, 0x91, 0xb4, 0x0d, 0x81, 0x11, 0x21, 0xe3,
     0x70, 0x42, 0x80, 0x8f, 0x87, 0x23, 0x6a, 0x84, 0x9b, 0xcd, 0xac,
     0xbc, 0xe3, 0x54, 0xd7, 0xff, 0x53, 0xdf, 0x5d, 0x8a, 0xda};
-
-const uint8_t kTestSalt[] = {0xf0, 0xf1};
-
-const uint8_t kTestEncryptedMetadataKey[] = {0x52, 0x0e, 0x7e, 0x6b, 0x8e,
-                                             0xb5, 0x40, 0xe8, 0xe2, 0xbd,
-                                             0xa0, 0xee, 0x9d, 0x7b};
 
 // TODO fix
 const uint8_t kTestEncryptedMetadata[] = {
@@ -94,32 +85,6 @@ const uint8_t kTestEncryptedMetadata[] = {
 
 // Plaintext "sample" (from RFC 6979 A.2.5).
 const uint8_t kTestPayloadToSign[] = {0x73, 0x61, 0x6d, 0x70, 0x6c, 0x65};
-
-// One possible signature (from RFC 6979 A.2.5).
-const uint8_t kTestSampleSignature[] = {
-    0x30,
-    0x46,  // length of remaining data
-    0x02,
-    0x21,  // length of r
-    // begin r (note 0x00 padding since leading bit of 0xEF is 1)
-    0x00, 0xEF, 0xD4, 0x8B, 0x2A, 0xAC, 0xB6, 0xA8, 0xFD, 0x11, 0x40, 0xDD,
-    0x9C, 0xD4, 0x5E, 0x81, 0xD6, 0x9D, 0x2C, 0x87, 0x7B, 0x56, 0xAA, 0xF9,
-    0x91, 0xC3, 0x4D, 0x0E, 0xA8, 0x4E, 0xAF, 0x37, 0x16,
-    // end r
-    0x02,
-    0x21,  // length of s
-    // begin s (note 0x00 padding since leading bit of 0xF7 is 1)
-    0x00, 0xF7, 0xCB, 0x1C, 0x94, 0x2D, 0x65, 0x7C, 0x41, 0xD4, 0x36, 0xC7,
-    0xA1, 0xB6, 0xE2, 0x9F, 0x65, 0xF3, 0xE9, 0x00, 0xDB, 0xB9, 0xAF, 0xF4,
-    0x06, 0x4D, 0xC4, 0xAB, 0x2F, 0x84, 0x3A, 0xCD, 0xA8
-    // end s
-};
-
-// The result of HKDF of kTestPayloadToSign, using kTestSecretKey as salt. A
-// trivial info parameter is used, and the output length is fixed to be
-// kNearbyShareNumBytesAuthenticationTokenHash.
-const uint8_t kTestPayloadHashUsingSecretKey[] = {0xE2, 0xCB, 0x90,
-                                                  0x58, 0xDE, 0x3A};
 
 const int64_t kTestNotBeforeMillis = 1881702000000;
 
@@ -157,11 +122,13 @@ const std::vector<uint8_t>& GetNearbyShareTestCertificateId() {
   return *id;
 }
 
-const std::vector<uint8_t>& GetNearbyShareTestMetadataEncryptionKey() {
-  static const base::NoDestructor<std::vector<uint8_t>> metadata_encryption_key(
-      kTestMetadataEncryptionKey,
-      kTestMetadataEncryptionKey + kNearbyShareNumBytesMetadataEncryptionKey);
-  return *metadata_encryption_key;
+const std::array<uint8_t, kNearbyShareNumBytesMetadataEncryptionKey>&
+GetNearbyShareTestMetadataEncryptionKey() {
+  static constexpr std::array<uint8_t,
+                              kNearbyShareNumBytesMetadataEncryptionKey>
+      kMetadataEncryptionKey = {0x60, 0x1e, 0xc3, 0x13, 0x77, 0x57, 0x89,
+                                0xa5, 0xb7, 0xa7, 0xf5, 0x04, 0xbb, 0xf3};
+  return kMetadataEncryptionKey;
 }
 
 const std::vector<uint8_t>& GetNearbyShareTestMetadataEncryptionKeyTag() {
@@ -171,10 +138,12 @@ const std::vector<uint8_t>& GetNearbyShareTestMetadataEncryptionKeyTag() {
   return *tag;
 }
 
-const std::vector<uint8_t>& GetNearbyShareTestSalt() {
-  static const base::NoDestructor<std::vector<uint8_t>> salt(
-      std::begin(kTestSalt), std::end(kTestSalt));
-  return *salt;
+const std::array<uint8_t, kNearbyShareNumBytesMetadataEncryptionKeySalt>&
+GetNearbyShareTestSalt() {
+  static constexpr std::array<uint8_t,
+                              kNearbyShareNumBytesMetadataEncryptionKeySalt>
+      kTestSalt = {0xf0, 0xf1};
+  return kTestSalt;
 }
 
 const NearbyShareEncryptedMetadataKey&
@@ -182,8 +151,8 @@ GetNearbyShareTestEncryptedMetadataKey() {
   static const base::NoDestructor<NearbyShareEncryptedMetadataKey>
       encrypted_metadata_key(
           GetNearbyShareTestSalt(),
-          std::vector<uint8_t>(std::begin(kTestEncryptedMetadataKey),
-                               std::end(kTestEncryptedMetadataKey)));
+          std::to_array<uint8_t>({0x52, 0x0e, 0x7e, 0x6b, 0x8e, 0xb5, 0x40,
+                                  0xe8, 0xe2, 0xbd, 0xa0, 0xee, 0x9d, 0x7b}));
   return *encrypted_metadata_key;
 }
 
@@ -228,17 +197,40 @@ const std::vector<uint8_t>& GetNearbyShareTestPayloadToSign() {
   return *payload;
 }
 
-const std::vector<uint8_t>& GetNearbyShareTestSampleSignature() {
-  static const base::NoDestructor<std::vector<uint8_t>> signature(
-      std::begin(kTestSampleSignature), std::end(kTestSampleSignature));
-  return *signature;
+const std::array<uint8_t, kNearbyShareNumBytesRandomSignature>&
+GetNearbyShareTestSampleSignature() {
+  // One possible signature (from RFC 6979 A.2.5).
+  static constexpr std::array<uint8_t, kNearbyShareNumBytesRandomSignature>
+      kSignature = {
+          0x30,
+          0x46,  // length of remaining data
+          0x02,
+          0x21,  // length of r
+          // begin r (note 0x00 padding since leading bit of 0xEF is 1)
+          0x00, 0xEF, 0xD4, 0x8B, 0x2A, 0xAC, 0xB6, 0xA8, 0xFD, 0x11, 0x40,
+          0xDD, 0x9C, 0xD4, 0x5E, 0x81, 0xD6, 0x9D, 0x2C, 0x87, 0x7B, 0x56,
+          0xAA, 0xF9, 0x91, 0xC3, 0x4D, 0x0E, 0xA8, 0x4E, 0xAF, 0x37, 0x16,
+          // end r
+          0x02,
+          0x21,  // length of s
+          // begin s (note 0x00 padding since leading bit of 0xF7 is 1)
+          0x00, 0xF7, 0xCB, 0x1C, 0x94, 0x2D, 0x65, 0x7C, 0x41, 0xD4, 0x36,
+          0xC7, 0xA1, 0xB6, 0xE2, 0x9F, 0x65, 0xF3, 0xE9, 0x00, 0xDB, 0xB9,
+          0xAF, 0xF4, 0x06, 0x4D, 0xC4, 0xAB, 0x2F, 0x84, 0x3A, 0xCD, 0xA8
+          // end s
+      };
+  return kSignature;
 }
 
-const std::vector<uint8_t>& GetNearbyShareTestPayloadHashUsingSecretKey() {
-  static const base::NoDestructor<std::vector<uint8_t>> hash(
-      std::begin(kTestPayloadHashUsingSecretKey),
-      std::end(kTestPayloadHashUsingSecretKey));
-  return *hash;
+const std::array<uint8_t, kNearbyShareNumBytesAuthenticationTokenHash>&
+GetNearbyShareTestPayloadHashUsingSecretKey() {
+  // The result of HKDF of kTestPayloadToSign, using kTestSecretKey as salt. A
+  // trivial info parameter is used, and the output length is fixed to be
+  // kNearbyShareNumBytesAuthenticationTokenHash.
+  static constexpr std::array<uint8_t,
+                              kNearbyShareNumBytesAuthenticationTokenHash>
+      kHash = {0xE2, 0xCB, 0x90, 0x58, 0xDE, 0x3A};
+  return kHash;
 }
 
 NearbySharePrivateCertificate GetNearbyShareTestPrivateCertificate(
@@ -250,7 +242,7 @@ NearbySharePrivateCertificate GetNearbyShareTestPrivateCertificate(
       GetNearbyShareTestP256KeyPair(), GetNearbyShareTestSecretKey(),
       GetNearbyShareTestMetadataEncryptionKey(),
       GetNearbyShareTestCertificateId(), GetNearbyShareTestMetadata(),
-      /*consumed_salts=*/std::set<std::vector<uint8_t>>());
+      /*consumed_salts=*/{});
   cert.next_salts_for_testing().push(GetNearbyShareTestSalt());
   return cert;
 }

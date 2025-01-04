@@ -956,6 +956,10 @@ void WebContentsAndroid::NotifyControlsConstraintsChanged(
   offset_tag_mediator_->SetOffsetTagsInfo(tags_info);
 }
 
+void WebContentsAndroid::DisconnectFileSelectListenerIfAny(JNIEnv* env) {
+  web_contents_->DisconnectFileSelectListenerIfAny();
+}
+
 WebContentsAndroid::BrowserControlsOffsetTagMediator::
     BrowserControlsOffsetTagMediator(WebContents* web_contents)
     : RenderWidgetHostConnector(web_contents) {}

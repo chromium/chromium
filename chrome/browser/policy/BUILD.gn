@@ -284,8 +284,8 @@ source_set("policy_specific_browser_tests") {
 
   if (!is_android) {
     sources += [
+      "test/autofill_ai_policy_browsertest.cc",
       "test/autofill_policy_browsertest.cc",
-      "test/autofill_prediction_improvements_policy_browsertest.cc",
       "test/automatic_fullscreen_policy_browsertest.cc",
       "test/autoplay_policy_browsertest.cc",
       "test/bookmark_bar_enabled_browsertest.cc",

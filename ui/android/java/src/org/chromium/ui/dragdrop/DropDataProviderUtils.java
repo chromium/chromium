@@ -11,14 +11,16 @@ import static org.chromium.ui.dragdrop.DropDataProviderImpl.SET_INTERVAL_METHOD_
 import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * This class wraps all the calls to ContentResolver#call.
  *
  */
+@NullMarked
 public class DropDataProviderUtils {
     /**
      * Wraps the call to onDragEnd in the provider, we call it to clear the cached image data after
@@ -57,8 +59,8 @@ public class DropDataProviderUtils {
      * Wraps the call to cache in the provider and returns the cached Uri or null if it failed to
      * call the content provider.
      */
-    @Nullable
-    static Uri cacheImageData(DropDataAndroid dropData) {
+    @NullUnmarked
+    static @Nullable Uri cacheImageData(DropDataAndroid dropData) {
         Bundle bundle = new Bundle();
         bundle.putSerializable(DropDataProviderImpl.BYTES_PARAM, dropData.imageContent);
         bundle.putString(

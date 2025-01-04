@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
+
+#include <array>
 
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
@@ -334,9 +331,11 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, TabsRememberFocus) {
   }
 
   // Alternate focus for the tab.
-  const bool kFocusPage[3][5] = {{true, true, true, true, false},
-                                 {false, false, false, false, false},
-                                 {false, true, false, true, false}};
+  const std::array<std::array<const bool, 5>, 3> kFocusPage = {{
+      {true, true, true, true, false},
+      {false, false, false, false, false},
+      {false, true, false, true, false},
+  }};
 
   for (int i = 0; i < 3; i++) {
     for (int j = 0; j < 5; j++) {

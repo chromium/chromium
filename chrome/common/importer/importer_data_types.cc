@@ -14,17 +14,14 @@ SourceProfile::SourceProfile()
 
 SourceProfile::SourceProfile(const SourceProfile& other) = default;
 
-SourceProfile::~SourceProfile() {
-}
+SourceProfile::~SourceProfile() = default;
 
-ImporterIE7PasswordInfo::ImporterIE7PasswordInfo() {
-}
+ImporterIE7PasswordInfo::ImporterIE7PasswordInfo() = default;
 
 ImporterIE7PasswordInfo::ImporterIE7PasswordInfo(
     const ImporterIE7PasswordInfo& other) = default;
 
-ImporterIE7PasswordInfo::~ImporterIE7PasswordInfo() {
-}
+ImporterIE7PasswordInfo::~ImporterIE7PasswordInfo() = default;
 
 ImporterIE7PasswordInfo& ImporterIE7PasswordInfo::operator=(
     const ImporterIE7PasswordInfo& other) = default;

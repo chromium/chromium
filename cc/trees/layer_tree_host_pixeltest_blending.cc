@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stdint.h>
+
+#include <array>
 
 #include "build/build_config.h"
 #include "cc/layers/solid_color_layer.h"
@@ -39,7 +36,7 @@ SkBlendMode const kBlendModes[] = {
     SkBlendMode::kHue,       SkBlendMode::kSaturation,
     SkBlendMode::kColor,     SkBlendMode::kLuminosity};
 
-SkColor kCSSTestColors[] = {
+auto kCSSTestColors = std::to_array<SkColor>({
     0xffff0000,  // red
     0xff00ff00,  // lime
     0xff0000ff,  // blue
@@ -59,8 +56,8 @@ SkColor kCSSTestColors[] = {
     0x80000000,  // black with transparency
     0xffffffff,  // white
     0x80ffffff,  // white with transparency
-    0x00000000   // transparent
-};
+    0x00000000,  // transparent
+});
 
 const int kCSSTestColorsCount = std::size(kCSSTestColors);
 

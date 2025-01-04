@@ -48,13 +48,13 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_warning_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/studies/autofill_experiments.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -691,11 +691,11 @@ void PopupViewViews::OnSuggestionsChanged(bool prefer_prev_arrow_side) {
     return;
   }
 
-  // TODO(crbug.com/374715256): Prediction improvements suggestions are
-  // generated asynchronously, after showing the "loading" popup. Testing on
-  // the `kPredictionImprovementsFeedback` suggestion is a way to understand
-  // that the suggestions are generated successfully and announce it. This
-  // approach should be reconsidered in favor of something more reliable.
+  // TODO(crbug.com/374715256): Autofill Ai suggestions are generated
+  // asynchronously, after showing the "loading" popup. Testing for the
+  // `kAutofillAiFeedback` suggestion is a way to understand that the
+  // suggestions are generated successfully and announce it. This approach
+  // should be reconsidered in favor of something more reliable.
   CHECK(controller(), base::NotFatalUntil::M134);
   if (controller() &&
       base::Contains(controller()->GetSuggestions(),
@@ -1056,18 +1056,16 @@ void PopupViewViews::CreateSuggestionViews() {
           // Set element identifiers for tests.
           if (suggestions[current_line_number].type ==
               SuggestionType::kRetrieveAutofillAi) {
-            row_view->SetProperty(
-                views::kElementIdentifierKey,
-                kAutofillPredictionImprovementsTriggerElementId);
+            row_view->SetProperty(views::kElementIdentifierKey,
+                                  kAutofillAiTriggerElementId);
           } else if (suggestions[current_line_number].type ==
                      SuggestionType::kFillAutofillAi) {
             row_view->SetProperty(views::kElementIdentifierKey,
-                                  kAutofillPredictionImprovementsFillElementId);
+                                  kAutofillAiFillElementId);
           } else if (suggestions[current_line_number].type ==
                      SuggestionType::kAutofillAiError) {
-            row_view->SetProperty(
-                views::kElementIdentifierKey,
-                kAutofillPredictionImprovementsErrorElementId);
+            row_view->SetProperty(views::kElementIdentifierKey,
+                                  kAutofillAiErrorElementId);
           }
 
           const base::Feature* const feature =

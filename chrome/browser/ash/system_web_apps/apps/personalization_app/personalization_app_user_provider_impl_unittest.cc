@@ -42,6 +42,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -213,7 +214,7 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
 
     // Add a User then log in.
     const AccountId account_id =
-        AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId);
+        AccountId::FromUserEmailGaiaId(kFakeTestEmail, GaiaId(kTestGaiaId));
     user_manager_->AddUser(account_id);
     user_manager_->SaveUserDisplayName(
         account_id, base::UTF8ToUTF16(std::string(kFakeTestName)));
@@ -241,7 +242,7 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
 
   void TearDown() override {
     user_manager_->OnUserProfileWillBeDestroyed(
-        AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId));
+        AccountId::FromUserEmailGaiaId(kFakeTestEmail, GaiaId(kTestGaiaId)));
   }
 
   TestingProfile* profile() { return profile_; }

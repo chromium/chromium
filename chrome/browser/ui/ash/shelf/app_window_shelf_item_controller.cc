@@ -45,10 +45,11 @@ ash::ShelfAction ActivateOrAdvanceToNextAppWindow(
 
   auto i = base::ranges::find(windows, window_to_show);
   if (i != windows.end()) {
-    if (++i != windows.end())
+    if (++i != windows.end()) {
       window_to_show = *i;
-    else
+    } else {
       window_to_show = windows.front();
+    }
   }
   if (window_to_show->IsActive()) {
     // Coming here, only a single window is active. For keyboard activations
@@ -79,12 +80,14 @@ AppWindowShelfItemController::~AppWindowShelfItemController() {
 
 void AppWindowShelfItemController::AddWindow(AppWindowBase* app_window) {
   aura::Window* window = app_window->GetNativeWindow();
-  if (window && !observed_windows_.IsObservingSource(window))
+  if (window && !observed_windows_.IsObservingSource(window)) {
     observed_windows_.AddObservation(window);
-  if (window && window->GetProperty(ash::kHideInShelfKey))
+  }
+  if (window && window->GetProperty(ash::kHideInShelfKey)) {
     hidden_windows_.push_front(app_window);
-  else
+  } else {
     windows_.push_front(app_window);
+  }
   UpdateShelfItemIcon();
 }
 
@@ -97,17 +100,20 @@ AppWindowShelfItemController::GetFromNativeWindow(aura::Window* window,
 void AppWindowShelfItemController::RemoveWindow(AppWindowBase* app_window) {
   DCHECK(app_window);
   aura::Window* window = app_window->GetNativeWindow();
-  if (window && observed_windows_.IsObservingSource(window))
+  if (window && observed_windows_.IsObservingSource(window)) {
     observed_windows_.RemoveObservation(window);
-  if (app_window == last_active_window_)
+  }
+  if (app_window == last_active_window_) {
     last_active_window_ = nullptr;
+  }
   auto iter = base::ranges::find(windows_, app_window);
   if (iter != windows_.end()) {
     windows_.erase(iter);
   } else {
     iter = base::ranges::find(hidden_windows_, app_window);
-    if (iter == hidden_windows_.end())
+    if (iter == hidden_windows_.end()) {
       return;
+    }
     hidden_windows_.erase(iter);
   }
   UpdateShelfItemIcon();
@@ -116,12 +122,14 @@ void AppWindowShelfItemController::RemoveWindow(AppWindowBase* app_window) {
 AppWindowBase* AppWindowShelfItemController::GetAppWindow(aura::Window* window,
                                                           bool include_hidden) {
   auto iter = GetFromNativeWindow(window, windows_);
-  if (iter != windows_.end())
+  if (iter != windows_.end()) {
     return *iter;
+  }
   if (include_hidden) {
     iter = GetFromNativeWindow(window, hidden_windows_);
-    if (iter != hidden_windows_.end())
+    if (iter != hidden_windows_.end()) {
       return *iter;
+    }
   }
   return nullptr;
 }
@@ -129,8 +137,9 @@ AppWindowBase* AppWindowShelfItemController::GetAppWindow(aura::Window* window,
 void AppWindowShelfItemController::SetActiveWindow(aura::Window* window) {
   // If the window is hidden, do not set it as last_active_window
   AppWindowBase* app_window = GetAppWindow(window, false);
-  if (app_window)
+  if (app_window) {
     last_active_window_ = app_window;
+  }
   UpdateShelfItemIcon();
 }
 
@@ -198,8 +207,9 @@ AppWindowShelfItemController::GetAppMenuItems(
     ++command_id;
     aura::Window* window = it->GetNativeWindow();
     // Can window be null?
-    if (!filter_predicate.is_null() && !filter_predicate.Run(window))
+    if (!filter_predicate.is_null() && !filter_predicate.Run(window)) {
       continue;
+    }
 
     auto title = (window && !window->GetTitle().empty()) ? window->GetTitle()
                                                          : app_title;
@@ -212,8 +222,9 @@ AppWindowShelfItemController::GetAppMenuItems(
         // Fall back to the larger app icon.
         icon = window->GetProperty(aura::client::kAppIconKey);
       }
-      if (icon && !icon->isNull())
+      if (icon && !icon->isNull()) {
         image = *icon;
+      }
     }
     items.push_back({command_id, title, image});
   }
@@ -239,8 +250,9 @@ void AppWindowShelfItemController::Close() {
 }
 
 void AppWindowShelfItemController::ActivateIndexedApp(size_t index) {
-  if (index >= windows_.size())
+  if (index >= windows_.size()) {
     return;
+  }
   auto it = windows_.begin();
   std::advance(it, index);
   ShowAndActivateOrMinimize(*it, /*allow_minimize=*/windows_.size() == 1);
@@ -267,10 +279,12 @@ void AppWindowShelfItemController::OnWindowPropertyChanged(aura::Window* window,
 }
 
 AppWindowBase* AppWindowShelfItemController::GetLastActiveWindow() {
-  if (last_active_window_)
+  if (last_active_window_) {
     return last_active_window_;
-  if (windows_.empty())
+  }
+  if (windows_.empty()) {
     return nullptr;
+  }
   return windows_.front();
 }
 

@@ -280,9 +280,7 @@ StreamingSearchPrefetchURLLoader::StreamingSearchPrefetchURLLoader(
       report_error_callback_(std::move(report_error_callback)),
       network_traffic_annotation_(network_traffic_annotation),
       navigation_prefetch_(navigation_prefetch) {
-  DCHECK(streaming_prefetch_request_);
-  MarkPrefetchAsServable();
-  prefetch_url_ = resource_request->url;
+  CHECK(streaming_prefetch_request_);
 
   // Maybe proxies the prefetch URL loader via the Extension Web Request API, so
   // that extensions can be informed of any prefetches.
@@ -360,15 +358,6 @@ StreamingSearchPrefetchURLLoader::GetServingResponseHandler(
       std::move(loader));
 }
 
-void StreamingSearchPrefetchURLLoader::MarkPrefetchAsServable() {
-  if (marked_as_servable_) {
-    return;
-  }
-  DCHECK(streaming_prefetch_request_);
-  marked_as_servable_ = true;
-  streaming_prefetch_request_->MarkPrefetchAsServable();
-}
-
 void StreamingSearchPrefetchURLLoader::OnServableResponseCodeReceived() {
   // This means that the navigation stack is already running for the navigation
   // to this term, and chrome does not need to prerender.
@@ -376,15 +365,6 @@ void StreamingSearchPrefetchURLLoader::OnServableResponseCodeReceived() {
     return;
   }
   streaming_prefetch_request_->OnServableResponseCodeReceived();
-}
-
-void StreamingSearchPrefetchURLLoader::RecordNavigationURLHistogram(
-    const GURL& navigation_url) {
-  if (navigation_prefetch_) {
-    UMA_HISTOGRAM_BOOLEAN(
-        "Omnibox.SearchPrefetch.NavigationURLMatches.NavigationPrefetch",
-        (prefetch_url_ == navigation_url));
-  }
 }
 
 void StreamingSearchPrefetchURLLoader::SetUpForwardingClient(
@@ -405,8 +385,6 @@ void StreamingSearchPrefetchURLLoader::SetUpForwardingClient(
   // Copy the navigation request for fallback.
   resource_request_ =
       std::make_unique<network::ResourceRequest>(resource_request);
-
-  RecordNavigationURLHistogram(resource_request_->url);
 
   // Let `this` own itself, so that it can manage its lifetime properly.
   self_pointer_ = WrapRefCounted(this);
@@ -537,8 +515,6 @@ void StreamingSearchPrefetchURLLoader::OnReceiveResponse(
                                           std::nullopt);
     return;
   }
-
-  MarkPrefetchAsServable();
 
   // Store head and pause new messages until the forwarding client is set up.
   resource_response_ = std::move(head);

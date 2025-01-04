@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Lumpuhkan tema gelap</translation>
 <translation id="1807246157184219062">Cahaya</translation>
 <translation id="1808803439260407870">Seni klasik</translation>
+<translation id="181434555916624618">Pada masa ini, hasil janaan orang tidak akan dipaparkan. Cuba gesaan lain.</translation>
 <translation id="1815850098929213707">Kunci yang dipilih ialah <ph name="KEYS" />. Ketik butang untuk mengedit kawalan</translation>
 <translation id="1823120442877418684">Aksara</translation>
 <translation id="1827738518074806965">Galeri seni</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">Peranti mempunyai <ph name="BATTERY_PERCENTAGE" />% paras bateri kanan.</translation>
 <translation id="3340978935015468852">tetapan</translation>
 <translation id="3347558044552027859">moden</translation>
+<translation id="3353477144743332882">Muat turun model ringkasan dan ciptaan nama</translation>
 <translation id="3359218928534347896">togol redam mikrofon</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">susyi</translation>
@@ -689,6 +691,7 @@
 <translation id="4354430579665871434">kekunci</translation>
 <translation id="4356100841225547054">Matikan kelantangan</translation>
 <translation id="4361257691546579041">APN merupakan jenis lalai.</translation>
+<translation id="4368101969572512692">Rombak cadangan</translation>
 <translation id="437294888293595148">Tetapkan semula semua pintasan</translation>
 <translation id="437477383107495720">arnab</translation>
 <translation id="4376423484621194274">Pentadbir anda tidak membenarkan penutupan <ph name="APP_NAME" /></translation>
@@ -768,6 +771,7 @@
 <translation id="4731797938093519117">Akses ibu bapa</translation>
 <translation id="473775607612524610">Kemas kini</translation>
 <translation id="4744944742468440486">Maklumat yang berkaitan dengan pilihan anda</translation>
+<translation id="4750394297954878236">Cadangan</translation>
 <translation id="4771607256327216405">cerahkan papan kekunci</translation>
 <translation id="4771923071974529837">esok</translation>
 <translation id="4773299976671772492">Dihentikan</translation>
@@ -853,6 +857,7 @@
 <translation id="5121677070210013200">Tidak dapat memuat turun model transkrip. Cuba lagi atau mulakan semula Chromebook anda.</translation>
 <translation id="5130848777448318809">kuda padi</translation>
 <translation id="5137451382116112100">Penuh</translation>
+<translation id="5139813694804168398">jangan ganggu</translation>
 <translation id="5140788690559353412">Apabila anda kehilangan akses kepada akaun sekolah anda, anda tidak akan dapat mengakses e-mel dan fail Google Drive yang dikaitkan lagi seperti Gmail, Docs, Slides dan pelbagai lagi.</translation>
 <translation id="5142961317498132443">Pengesahan</translation>
 <translation id="5144311987923128508">Butang sahkan kini dilumpuhkan</translation>
@@ -897,6 +902,7 @@
 <translation id="5302048478445481009">Bahasa</translation>
 <translation id="5303837385540978511">Hiasan latar eksklusif <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="530883153651464140">Kemas kinikan <ph name="DEVICE_NAME" /> kepada versi <ph name="VERSION" /></translation>
 <translation id="5315873049536339193">Identiti</translation>
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5318310531701770497">Tidak dapat membuat nama. Cuba transkrip yang lebih panjang.</translation>
@@ -973,7 +979,6 @@
 <translation id="5703716265115423771">kurangkan kelantangan</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> daripada <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Edit butang untuk <ph name="SHORTCUT_DESCRIPTION" />.</translation>
-<translation id="5733298426544876109">Kemas kini <ph name="DEVICE_NAME" /></translation>
 <translation id="5736820754189340309">Penggunaan data telah ditetapkan semula</translation>
 <translation id="574392208103952083">Sederhana</translation>
 <translation id="5744175046705638478">Terjemahkan "<ph name="QUERY" />"</translation>
@@ -998,6 +1003,7 @@
 <translation id="5859969039821714932">Pintasan tidak tersedia. Tekan pintasan baharu tanpa <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Dimatikan</translation>
 <translation id="5860491529813859533">Hidupkan</translation>
+<translation id="5875913454160982848">Muat turun model transkripsi</translation>
 <translation id="5876385649737594562">Hidupkan untuk membuat pilihan</translation>
 <translation id="5877503382465267833">Jeda <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Skrin penuh</translation>
@@ -1037,7 +1043,6 @@
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="6040852767465482106">Identiti Tanpa Nama</translation>
 <translation id="604124094241169006">Automatik</translation>
-<translation id="6042308850641462728">Lagi</translation>
 <translation id="6048107060512778456">Gagal - Kertas tersangkut</translation>
 <translation id="6050189528197190982">Skala Kelabu</translation>
 <translation id="6054711098834486579">ekspresionis</translation>
@@ -1293,6 +1298,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Pelayan nama}other{Pelayan nama}}</translation>
 <translation id="7135814714616751706">Pintasan carian</translation>
 <translation id="7138614237884624401">Teks ringkas</translation>
+<translation id="7138668887584231801">Perkataan tidak mencukupi untuk diringkaskan</translation>
 <translation id="7141470099673912333">Pemindahan Kandungan</translation>
 <translation id="7143207342074048698">Menyambung</translation>
 <translation id="7144878232160441200">Cuba semula</translation>
@@ -1588,6 +1594,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="8503836310948963452">Hanya beberapa minit lagi…</translation>
 <translation id="8505011850330200833">Model Gemini memerlukan 2GB storan untuk memproses transkrip dan membuat ringkasan</translation>
 <translation id="8508640263392900755">Butiran APN</translation>
+<translation id="8509574872955173831">Ketahui lebih lanjut tentang ringkasan dan penciptaan nama</translation>
 <translation id="8522687886059337719">Kini anda mempunyai akses kepada <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />hiasan latar<ph name="END_LINK_WALLPAPER_SUBPAGE" /> dan <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />penyelamat skrin<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> yang baharu</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">restoran teh</translation>
@@ -1724,7 +1731,6 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="9133772297793293778">Tekan pengubah suai 1-4 dan 1 kunci lain pada papan kekunci anda. Untuk keluar daripada mod pengeditan, tekan Alt + Esc.</translation>
 <translation id="9137526406337347448">Perkhidmatan Google</translation>
 <translation id="9138630967333032450">Shift kiri</translation>
-<translation id="9147928237330776930">Terlalu sedikit perkataan untuk diringkaskan</translation>
 <translation id="9149391708638971077">Jalankan Ujian memori</translation>
 <translation id="9159524746324788320">hamburger</translation>
 <translation id="9161276708550942948">ruang</translation>

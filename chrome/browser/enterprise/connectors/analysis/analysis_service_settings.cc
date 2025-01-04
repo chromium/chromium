@@ -350,7 +350,8 @@ void AnalysisServiceSettings::AddUrlPatternSettings(
     return;
   }
   base::MatcherStringPattern::ID previous_id = *id;
-  url_matcher::util::AddFilters(matcher_.get(), enabled, id, *url_list);
+  url_matcher::util::AddFiltersWithLimit(matcher_.get(), enabled, id,
+                                         *url_list);
 
   if (previous_id == *id) {
     // No rules were added, so don't save settings, as they would override other

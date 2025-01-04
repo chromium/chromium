@@ -23,11 +23,20 @@
   height: 100%;
   justify-content: center;
   overflow: hidden;
+  position: relative;
   width: 100%;
 }
 
 #illustrationPath {
   fill: var(--illustration-color_);
+}
+
+#image {
+  height: 100%;
+  inset: 0;
+  object-fit: cover;
+  position: absolute;
+  width: 100%;
 }
 
 @media (prefers-color-scheme: dark) {

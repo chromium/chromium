@@ -64,26 +64,26 @@ mojom("test_interfaces") {
   generate_legacy_js_bindings = true
 
   sources = [
-    "math_calculator.mojom",
-    "no_module.mojom",
-    "nullable_value_types.mojom",
-    "ping_service.mojom",
-    "rect.mojom",
-    "regression_tests.mojom",
-    "sample_factory.mojom",
-    "sample_interfaces.mojom",
-    "sample_service.mojom",
-    "scoping.mojom",
-    "serialization_test_structs.mojom",
-    "test_bad_messages.mojom",
-    "test_constants.mojom",
-    "test_data_view.mojom",
-    "test_name_generator.mojom",
-    "test_native_types.mojom",
-    "test_structs.mojom",
-    "test_sync_methods.mojom",
-    "test_unions.mojom",
-    "validation_test_interfaces.mojom",
+    "math_calculator.test-mojom",
+    "no_module.test-mojom",
+    "nullable_value_types.test-mojom",
+    "ping_service.test-mojom",
+    "rect.test-mojom",
+    "regression_tests.test-mojom",
+    "sample_factory.test-mojom",
+    "sample_interfaces.test-mojom",
+    "sample_service.test-mojom",
+    "scoping.test-mojom",
+    "serialization_test_structs.test-mojom",
+    "test_bad_messages.test-mojom",
+    "test_constants.test-mojom",
+    "test_data_view.test-mojom",
+    "test_name_generator.test-mojom",
+    "test_native_types.test-mojom",
+    "test_structs.test-mojom",
+    "test_sync_methods.test-mojom",
+    "test_unions.test-mojom",
+    "validation_test_interfaces.test-mojom",
   ]
   public_deps = [
     ":echo",
@@ -202,7 +202,7 @@ mojom("test_interfaces") {
 mojom("test_interfaces_for_containers_of_optionals") {
   testonly = true
   generate_java = false
-  sources = [ "containers_of_nullable_types.mojom" ]
+  sources = [ "containers_of_nullable_types.test-mojom" ]
   cpp_typemaps = [
     {
       types = [
@@ -232,7 +232,7 @@ if (use_blink) {
 
 mojom("test_export") {
   testonly = true
-  sources = [ "test_export.mojom" ]
+  sources = [ "test_export.test-mojom" ]
   export_class_attribute = "MOJO_TEST_EXPORT"
   export_define = "MOJO_TEST_IMPLEMENTATION=1"
   export_header = "mojo/public/cpp/bindings/tests/mojo_test_export.h"
@@ -250,7 +250,7 @@ mojom("test_export") {
 
 mojom("test_exported_import") {
   testonly = true
-  sources = [ "test_import.mojom" ]
+  sources = [ "test_import.test-mojom" ]
   public_deps = [ ":test_export" ]
 
   overridden_deps = [ ":test_export" ]
@@ -275,7 +275,7 @@ component("test_export_component2") {
 
 mojom("test_export2") {
   testonly = true
-  sources = [ "test_export2.mojom" ]
+  sources = [ "test_export2.test-mojom" ]
   export_class_attribute = "MOJO_TEST_EXPORT"
   export_define = "MOJO_TEST_IMPLEMENTATION=1"
   export_header = "mojo/public/cpp/bindings/tests/mojo_test_export.h"
@@ -288,7 +288,7 @@ mojom("test_mojom_import") {
   generate_rust = true
   webui_module_path = "/"
   generate_legacy_js_bindings = true
-  sources = [ "sample_import.mojom" ]
+  sources = [ "sample_import.test-mojom" ]
 }
 
 mojom("test_mojom_import_wrapper") {
@@ -311,7 +311,7 @@ mojom("test_mojom_import2") {
   generate_rust = true
   webui_module_path = "/"
   generate_legacy_js_bindings = true
-  sources = [ "sample_import2.mojom" ]
+  sources = [ "sample_import2.test-mojom" ]
   public_deps = [
     ":test_mojom_import",
     ":test_mojom_import_wrapper_wrapper",
@@ -320,7 +320,7 @@ mojom("test_mojom_import2") {
 
 mojom("test_struct_traits_interfaces") {
   testonly = true
-  sources = [ "struct_with_traits.mojom" ]
+  sources = [ "struct_with_traits.test-mojom" ]
 
   cpp_typemaps = [
     {
@@ -390,8 +390,8 @@ mojom("test_associated_interfaces") {
   # associated interfaces are not supported by all bindings languages yet.
   testonly = true
   sources = [
-    "test_associated_interfaces.mojom",
-    "validation_test_associated_interfaces.mojom",
+    "test_associated_interfaces.test-mojom",
+    "validation_test_associated_interfaces.test-mojom",
   ]
 
   public_deps = [ ":test_interfaces" ]
@@ -404,7 +404,7 @@ mojom("test_associated_interfaces") {
 mojom("test_wtf_types") {
   testonly = true
 
-  sources = [ "test_wtf_types.mojom" ]
+  sources = [ "test_wtf_types.test-mojom" ]
 }
 
 mojom("test_no_sources") {
@@ -418,8 +418,8 @@ mojom("echo") {
   generate_java = true
   generate_rust = true
   sources = [
-    "echo.mojom",
-    "echo_import/echo_import.mojom",
+    "echo.test-mojom",
+    "echo_import/echo_import.test-mojom",
   ]
 }
 

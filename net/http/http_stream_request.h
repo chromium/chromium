@@ -215,7 +215,7 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
 
   bool completed_ = false;
   // Protocol negotiated with the server.
-  NextProto negotiated_protocol_ = kProtoUnknown;
+  NextProto negotiated_protocol_ = NextProto::kProtoUnknown;
   // The reason why Chrome uses a specific transport protocol for HTTP
   // semantics.
   AlternateProtocolUsage alternate_protocol_usage_ =

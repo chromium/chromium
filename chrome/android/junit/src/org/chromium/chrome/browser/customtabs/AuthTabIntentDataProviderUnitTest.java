@@ -11,7 +11,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.customtabs.CustomTabsFeatureUsage.CUSTOM_TABS_FEATURE_USAGE_HISTOGRAM;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.CCT_FEATURE_USAGE;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -42,7 +41,6 @@ import org.chromium.ui.base.TestActivity;
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 @Config(manifest = Config.NONE)
-@Features.EnableFeatures(CCT_FEATURE_USAGE)
 public class AuthTabIntentDataProviderUnitTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenario =

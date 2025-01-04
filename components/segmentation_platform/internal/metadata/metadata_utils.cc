@@ -588,6 +588,40 @@ proto::ClientResult CreateClientResultFromPredResult(
   return client_result;
 }
 
+std::string GetInputKeyForInputContextCustomInput(
+    const proto::CustomInput& custom_input) {
+  std::string input_name = custom_input.name();
+  DCHECK_EQ(custom_input.fill_policy(),
+            proto::CustomInput::FILL_FROM_INPUT_CONTEXT);
+  auto custom_input_iter = custom_input.additional_args().find("name");
+  if (custom_input_iter != custom_input.additional_args().end()) {
+    input_name = custom_input_iter->second;
+  }
+  return input_name;
+}
+
+std::set<std::string> GetInputKeysForMetadata(
+    const proto::SegmentationModelMetadata& metadata) {
+  std::set<std::string> input_keys;
+  for (const auto& feature : metadata.input_features()) {
+    if (feature.has_custom_input()) {
+      // This only gets keys needed for FILL_FROM_INPUT_CONTEXT, consider adding
+      // other data sources keys.
+      if (feature.custom_input().fill_policy() ==
+          proto::CustomInput::FILL_FROM_INPUT_CONTEXT) {
+        input_keys.insert(
+            GetInputKeyForInputContextCustomInput(feature.custom_input()));
+      }
+    } else if (feature.has_sql_feature()) {
+      for (const auto& bind_value : feature.sql_feature().bind_values()) {
+        input_keys.insert(
+            GetInputKeyForInputContextCustomInput(bind_value.value()));
+      }
+    }
+  }
+  return input_keys;
+}
+
 bool ConfigUsesLegacyOutput(const Config* config) {
   return (config->segments.size() >= 1 &&
           SegmentUsesLegacyOutput(config->segments.begin()->first));

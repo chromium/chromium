@@ -4,7 +4,7 @@
 This file contains definitions of resources that will be translated for each
 locale.  The variables is_win, is_macosx, is_linux, and is_posix are available
 for making strings OS specific.  Other platform defines such as use_titlecase
-are declared in tools/grit/grit_rule.gni.
+are declared in tools/grit/grit_args.gni.
 -->
 
 <grit base_dir="." latest_public_release="0" current_release="1"
@@ -564,9 +564,6 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_CONTENT_CONTEXT_LIVE_CAPTION_DISABLE" desc="The name of the Live Caption command in the content area context menu to disable Live Caption">
           &amp;Disable Live Caption
         </message>
-        <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS" desc="This is a context menu entry. Upon clicking, it triggers the password selection bubble (for non-syncing users) or a submenu with more entries (for syncing users).">
-          Passwords
-        </message>
         <if expr="not use_titlecase">
           <message name="IDS_CONTENT_CONTEXT_BACK" desc="The name of the Back command in the content area context menu">
             &amp;Back
@@ -840,9 +837,6 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_CONTENT_CONTEXT_SEARCHLENSFORIMAGE" desc="The name of the Search Lens for Image command in the content area context menu">
             Search image with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
           </message>
-          <message name="IDS_CONTENT_CONTEXT_TRANSLATEIMAGE" desc="The name of the Translate Image command in the content area context menu">
-            Translate text in image with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google</ex></ph>
-          </message>
           <message name="IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1" desc="The name of the Lens Region Search command in the content area context menu">
             Search page with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
           </message>
@@ -867,15 +861,9 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK" desc="The name of the Autofill Feedback command in the content area context menu">
             Help improve autofill
           </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_TITLE" desc="The title of the Autofill manual fallback for showing the Autofill suggestions in the content area context menu.">
-            Fill in form
-          </message>
           <!-- TODO(359570730): remove non translateable flag  -->
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS" desc="The name of the Autofill context menu entry that will initiate filling using improved predictions." translateable="false">
             Autocomplete
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORD_AND_PASSKEYS" desc="This is a context menu entry. Upon clicking, it opens a submenu with more entries where the user can select a password or use a passkey from another device.">
-            Passwords and passkeys
           </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD" desc="This is a context menu entry in the passwords submenu. It triggers the password selection bubble.">
             Select password
@@ -885,9 +873,6 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD" desc="This is a context menu entry in the passwords submenu. It triggers password generation.">
             Suggest password...
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS" desc="This is a context menu entry in the passwords submenu which is not selectable. It informs the user that they have no saved passwords.">
-            No saved passwords
           </message>
         </if>
         <if expr="use_titlecase">
@@ -1177,9 +1162,6 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_CONTENT_CONTEXT_SEARCHLENSFORIMAGE" desc="In Title Case: The name of the Search Lens for Image command in the content area context menu">
             Search Image with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
           </message>
-          <message name="IDS_CONTENT_CONTEXT_TRANSLATEIMAGE" desc="In Title Case: The name of the Translate Image command in the content area context menu">
-            Translate Text in Image with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google</ex></ph>
-          </message>
           <message name="IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1" desc="In Title Case: The name of the Lens Region Search command in the content area context menu">
             Search Page with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google</ex></ph>
           </message>
@@ -1198,15 +1180,9 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK" desc="In Title Case: The name of the Autofill Feedback command in the content area context menu">
             Help Improve Autofill
           </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_TITLE" desc="In Title Case: The title of the Autofill manual fallback for showing the Autofill suggestions in the content area context menu.">
-            Fill in Form
-          </message>
           <!-- TODO(359570730): remove non translateable flag  -->
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS" desc="In Title Case: The name of the Autofill manual fallback for payment methods attribute command in the content area context menu." translateable="false">
             Autocomplete
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORD_AND_PASSKEYS" desc="This is a context menu entry. Upon clicking, it opens a submenu with more entries where the user can select a password or use a passkey from another device.">
-            Passwords and Passkeys
           </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD" desc="In Title Case: This is a context menu entry in the passwords submenu. It triggers the password selection bubble.">
             Select Password
@@ -1216,9 +1192,6 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD" desc="In Title Case: This is a context menu entry in the passwords submenu. It triggers password generation.">
             Suggest Password...
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS" desc="In Title Case: This is a context menu entry in the passwords submenu which is not selectable. It informs the user that they have no saved passwords.">
-            No Saved Passwords
           </message>
         </if>
 
@@ -4253,6 +4226,24 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_CERT_INFO_CONSTRAINTS_LABEL" desc="Label of the section displaying constraints restricting the usage of the certificate.">
           Constraints
         </message>
+        <message name="IDS_CERT_INFO_ADD_CONSTRAINTS_LABEL" desc="Label of the section allowing users to add constraints restricting the usage of the certificate.">
+          Add Constraints
+        </message>
+        <message name="IDS_CERT_INFO_ADD_CONSTRAINTS_BUTTON_LABEL" desc="Label of the button users click to add a constraint restricting the usage of the certificate.">
+          Add
+        </message>
+        <message name="IDS_CERT_INFO_ADD_CONSTRAINTS_PLACEHOLDER" desc="Placeholder text for the Add constraint input field informing users what they can enter as a constraint.">
+          DNS or CIDR constraint
+        </message>
+        <message name="IDS_CERT_INFO_ADD_CONSTRAINT_ERROR_MESSAGE" desc="Error text when an error has prevented a constraint from being added to the certificate.">
+          There was an error adding the constraint
+        </message>
+        <message name="IDS_CERT_INFO_DELETE_CONSTRAINT_ERROR_MESSAGE" desc="Error text when an error has prevented a constraint from being deleted to the certificate.">
+          There was an error deleting the constraint
+        </message>
+        <message name="IDS_CERT_INFO_TRUST_STATE_ERROR_MESSAGE" desc="Error text when an error has prevented a change to the trust state for a certificate.">
+          There was an error saving the trust state change
+        </message>
         <message name="IDS_CERT_USAGE_SSL_CLIENT" desc="The description of a certificate that is verified for use as an SSL client">
           SSL Client Certificate
         </message>
@@ -4862,7 +4853,7 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_TASK_MANAGER_NACL_DEBUG_STUB_PORT_COLUMN" desc="The text of the NativeClient debug stub port column">
           NaCl debug port
         </message>
-        <message name="IDS_TASK_MANAGER_NET_COLUMN" desc="The text of the network usage column">
+        <message name="IDS_TASK_MANAGER_NET_COLUMN" desc="The text of the network usage column" formatter_data="android_java">
           Network
         </message>
         <message name="IDS_TASK_MANAGER_CPU_COLUMN" desc="The text of the CPU usage column" formatter_data="android_java">
@@ -4904,7 +4895,7 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_TASK_MANAGER_WEBCORE_CSS_CACHE_COLUMN" desc="Task manager WebCore CSS cache size column.">
           CSS cache
         </message>
-        <message name="IDS_TASK_MANAGER_VIDEO_MEMORY_COLUMN" desc="The text of the video memory usage column">
+        <message name="IDS_TASK_MANAGER_VIDEO_MEMORY_COLUMN" desc="The text of the video memory usage column" formatter_data="android_java">
           GPU memory
         </message>
         <message name="IDS_TASK_MANAGER_SQLITE_MEMORY_USED_COLUMN" desc="Amount of memory used by SQLite.">
@@ -4936,7 +4927,7 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_TASK_MANAGER_TASK_COLUMN" desc="The text of the task column" formatter_data="android_java">
           Task
         </message>
-        <message name="IDS_TASK_MANAGER_NET_COLUMN" desc="The text of the network usage column">
+        <message name="IDS_TASK_MANAGER_NET_COLUMN" desc="The text of the network usage column" formatter_data="android_java">
           Network
         </message>
         <message name="IDS_TASK_MANAGER_CPU_COLUMN" desc="The text of the CPU usage column" formatter_data="android_java">
@@ -4978,7 +4969,7 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_TASK_MANAGER_WEBCORE_CSS_CACHE_COLUMN" desc="Task manager WebCore CSS cache size column.">
           CSS Cache
         </message>
-        <message name="IDS_TASK_MANAGER_VIDEO_MEMORY_COLUMN" desc="The text of the video memory usage column">
+        <message name="IDS_TASK_MANAGER_VIDEO_MEMORY_COLUMN" desc="The text of the video memory usage column" formatter_data="android_java">
           GPU Memory
         </message>
         <message name="IDS_TASK_MANAGER_SQLITE_MEMORY_USED_COLUMN" desc="Amount of memory used by SQLite.">
@@ -5767,7 +5758,7 @@ are declared in tools/grit/grit_rule.gni.
             Read ChromeOS network information
           </message>
           <message name="IDS_EXTENSION_PROMPT_WARNING_OMNIBOX_DIRECT_INPUT" desc="Permission string for omnibox labs.">
-            Always read keyboard input in the address bar
+            Read and save keyboard input from the address bar
         </message>
         </if>
       </if>
@@ -7642,7 +7633,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         You can also ask things like “summarize”
       </message>
       <message name="IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_ERROR_TEXT" desc="The error text displayed in the overlay contextual searchbox ghost loader. It is meant to inform the user that they can still ask questions about the page even though suggestions were failed to be generated.">
-        No suggestions available. Try asking things like “summarize this page” or your own question.
+        No suggested questions available
       </message>
       <message name="IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_NO_SUGGEST_TEXT" desc="The hint text displayed in the overlay contextual searchbox ghost loader. It is meant to inform the user that they can ask questions about the page.">
         Try asking things like “summarize this page” or your own question.
@@ -7790,6 +7781,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_NTP_CUSTOMIZE_MENU_TOOLBAR_LABEL" desc="The label for the option to customize toolbar icons in the customization menu on the New Tab Page. This is a button which opens a panel for customizing toolbar icons when clicked.">
         Toolbar
+      </message>
+      <message name="IDS_NTP_CUSTOMIZE_MENU_EXTENSIONS_LABEL" desc="The label for the option to customize extensions in the customization menu in the customize chrome menu.">
+        Extensions
       </message>
       <message name="IDS_NTP_CUSTOMIZE_MENU_MODULES_LABEL" desc="The label for the modules option in the customization menu on the New Tab Page.">
         Cards
@@ -8738,8 +8732,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <ph name="BREAK">&lt;br&gt;</ph>
         You can manage settings from the card menu or see more options in Customize Chrome.
       </message>
-      <message name="IDS_NTP_MODULES_TAB_RESUMPTION_SENTENCE" desc="Name of the tabs in the Tab Resumption module in sentence case shown in various UIs.">
-        Tabs
+      <message name="IDS_NTP_MODULES_TAB_RESUMPTION_MULTI_DISMISS" desc="String text for module dismissal in the Tab Resumption module.">
+        Tabs hidden
+      </message>
+      <message name="IDS_NTP_MODULES_TAB_RESUMPTION_SINGLE_DISMISS" desc="String text for single tab dismissal in the Tab Resumption module.">
+        Tab hidden
       </message>
       <message name="IDS_NTP_MODULES_TAB_RESUMPTION_RECENTLY_OPENED" desc="Default string text for when a tab was opened less than 60 seconds ago.">
         Recently opened
@@ -9049,6 +9046,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_BOOKMARKS_ALL_BOOKMARKS_OPEN_SIDE_PANEL" desc="The bookmarks bar menu item which opens the side panel">
         Open Side Panel to see All Bookmarks
+      </message>
+      <message name="IDS_BOOKMARKS_ACCOUNT_BOOKMARKS" desc="The header used for account bookmarks">
+        In your Google Account
+      </message>
+      <message name="IDS_BOOKMARKS_DEVICE_BOOKMARKS" desc="The header used for device bookmarks">
+        Only on this device
       </message>
       <message name="IDS_BOOKMARKS_LABEL_TRACKED_PRODUCTS" desc="Label on a button within the bookmarks side panel for filtering bookmarks by price tracking data.">
         Tracked products
@@ -9668,11 +9671,17 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
 
       <!-- Strings for tab declutter -->
-      <message name="IDS_DECLUTTER_SELECTOR_HEADING" desc="Heading for the declutter button in the tab organization selector.">
+      <message name="IDS_DECLUTTER_SELECTOR_HEADING_NO_DEDUPE" desc="Heading for the declutter button in the tab organization selector when dedupe is disabled.">
         {NUM_TABS, plural,
           =0 {No inactive tabs}
           =1 {Review 1 inactive tab}
           other {Review # inactive tabs}}
+      </message>
+      <message name="IDS_DECLUTTER_SELECTOR_HEADING" desc="Heading for the declutter button in the tab organization selector.">
+        {NUM_TABS, plural,
+          =0 {No unused tabs}
+          =1 {Review 1 unused tab}
+          other {Review # unused tabs}}
       </message>
       <message name="IDS_DECLUTTER_SELECTOR_SUBHEADING" desc="Subheading for the declutter button in the tab organization selector.">
         Keep your tabs clutter-free
@@ -9698,25 +9707,34 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_DECLUTTER_EMPTY_TITLE" desc="The header text for the declutter empty state UI">
         Things look neat!
       </message>
-      <message name="IDS_DECLUTTER_EMPTY_BODY" desc="The body text for the declutter empty state UI">
+      <message name="IDS_DECLUTTER_EMPTY_BODY_NO_DEDUPE" desc="The body text for the declutter empty state UI when dedupe is disabled">
         No inactive tabs right now
       </message>
-      <message name="IDS_TOOLTIP_TAB_DECLUTTER" desc="The tooltip for the Tab Declutter button.">
+      <message name="IDS_DECLUTTER_EMPTY_BODY" desc="The body text for the declutter empty state UI">
+        No unused tabs right now
+      </message>
+      <message name="IDS_DUPLICATE_ITEM_TITLE_SINGLE" desc="The title for an item in the duplicate tabs list with 1 duplicate">
+        <ph name="URL">$1<ex>google.com</ex></ph> • 1 duplicate
+      </message>
+      <message name="IDS_DUPLICATE_ITEM_TITLE_MULTI" desc="The title for an item in the duplicate tabs list with multiple duplicates">
+        <ph name="URL">$1<ex>google.com</ex></ph> • <ph name="DUPLICATE_COUNT">$2<ex>2</ex></ph> duplicates
+      </message>
+      <message name="IDS_TOOLTIP_TAB_DECLUTTER_NO_DEDUPE" desc="The tooltip for the Tab Declutter button when dedupe is disabled.">
         Review inactive tabs?
       </message>
-      <message name="IDS_TAB_DECLUTTER" desc="The text label of the Tab Declutter button.">
+      <message name="IDS_TAB_DECLUTTER_NO_DEDUPE" desc="The text label of the Tab Declutter button when dedupe is disabled.">
         Review inactive tabs?
       </message>
-      <message name="IDS_ACCNAME_TAB_DECLUTTER" desc="The accessible name for the Tab Declutter button." is_accessibility_with_no_ui="true">
+      <message name="IDS_ACCNAME_TAB_DECLUTTER_NO_DEDUPE" desc="The accessible name for the Tab Declutter button when dedupe is disabled." is_accessibility_with_no_ui="true">
         Review inactive tabs
       </message>
-      <message name="IDS_TOOLTIP_TAB_DECLUTTER_WITH_DEDUPE" desc="The tooltip for the Tab Declutter button.">
+      <message name="IDS_TOOLTIP_TAB_DECLUTTER" desc="The tooltip for the Tab Declutter button.">
         Clean up unused tabs?
       </message>
-      <message name="IDS_TAB_DECLUTTER_WITH_DEDUPE" desc="The text label of the Tab Declutter button.">
+      <message name="IDS_TAB_DECLUTTER" desc="The text label of the Tab Declutter button.">
         Clean up unused tabs?
       </message>
-      <message name="IDS_ACCNAME_TAB_DECLUTTER_WITH_DEDUPE" desc="The accessible name for the Tab Declutter button." is_accessibility_with_no_ui="true">
+      <message name="IDS_ACCNAME_TAB_DECLUTTER" desc="The accessible name for the Tab Declutter button." is_accessibility_with_no_ui="true">
         Clean up unused tabs
       </message>
       <message name="IDS_DECLUTTER_TIMESTAMP" desc="The description of when a tab was last accessed, for use in a declutter row.">
@@ -9727,13 +9745,19 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <if expr="use_titlecase">
         <then>
-          <message name="IDS_DECLUTTER_MENU" desc="In Title Case: The text label for the declutter app menu item.">
+          <message name="IDS_DECLUTTER_MENU_NO_DEDUPE" desc="In Title Case: The text label for the declutter app menu item when dedupe is disabled.">
             Review Inactive Tabs
+          </message>
+          <message name="IDS_DECLUTTER_MENU" desc="In Title Case: The text label for the declutter app menu item.">
+            Clean Up Unused Tabs
           </message>
         </then>
         <else>
-          <message name="IDS_DECLUTTER_MENU" desc="The text label for the declutter app menu item.">
+          <message name="IDS_DECLUTTER_MENU_NO_DEDUPE" desc="The text label for the declutter app menu item when dedupe is disabled.">
             Review inactive tabs
+          </message>
+          <message name="IDS_DECLUTTER_MENU" desc="The text label for the declutter app menu item.">
+            Clean up unused tabs
           </message>
         </else>
       </if>
@@ -10232,11 +10256,27 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_TAB_GROUPS_NAMED_GROUP_TOOLTIP" desc="Dynamic tooltip to display on hover over named tab group.">
         <ph name="GROUP_NAME">$1<ex>New Group</ex></ph> - <ph name="GROUP_CONTENT_STRING">$2<ex>"New Tab" and one other</ex></ph>
       </message>
-      <message name="IDS_TAB_AUDIO_MUTING_PROMO" desc="Text shown on the promotional UI appearing next to the tab alert indicator.">
-        Click the speaker icon to mute this tab
+      <message name="IDS_GLIC_PROMO_TITLE" desc="Glic promo title.">
+        [placeholder text]
       </message>
+      <message name="IDS_GLIC_PROMO_BODY" desc="Glic promo body text.">
+        [placeholder text]
+      </message>
+      <if expr="use_titlecase">
+        <message name="IDS_GLIC_PROMO_CUSTOM_ACTION" desc="Glic promo custom action button caption.">
+          Try It Out
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_GLIC_PROMO_CUSTOM_ACTION" desc="Glic promo custom action button caption.">
+          Try it out
+        </message>
+      </if>
       <message name="IDS_SHARED_HIGHLIGHTING_PROMO" desc="The title of in-product-help message encouraging users to interact with the highlight">
         To create a highlight like this one, select any text and right-click.
+      </message>
+      <message name="IDS_TAB_AUDIO_MUTING_PROMO" desc="Text shown on the promotional UI appearing next to the tab alert indicator.">
+        Click the speaker icon to mute this tab
       </message>
       <if expr="use_titlecase">
         <message name="IDS_BATTERY_SAVER_MODE_PROMO_TITLE" desc="In Title Case: The title for the battery saver mode in-product promo bubble.">
@@ -11947,6 +11987,15 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
                 other {Join Tab Group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and # Others}
               }
             </message>
+            <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE_ZERO" desc="The title for the dialog that shows a preview of a tab group with 0 other member.">
+              Join Tab Group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph>
+            </message>
+            <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE_SINGULAR" desc="The title for the dialog that shows a preview of a tab group with 1 other member.">
+              Join Tab Group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and <ph name="NUM_OTHER_MEMBERS">$1<ex>1</ex></ph> Other
+            </message>
+            <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE_PLURAL" desc="The title for the dialog that shows a preview of a tab group with >1 other members.">
+              Join Tab Group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and <ph name="NUM_OTHER_MEMBERS">$1<ex>2</ex></ph> Others
+            </message>
             <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_CONFIRM" desc="A button that allows a user to join a shared group.">
               Join and Open
             </message>
@@ -12087,6 +12136,15 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
                 other {Join tab group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and # others}
               }
             </message>
+            <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE_ZERO" desc="The title for the dialog that shows a preview of a tab group with 0 other member.">
+              Join tab group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph>
+            </message>
+            <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE_SINGULAR" desc="The title for the dialog that shows a preview of a tab group with 1 other member.">
+              Join tab group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and <ph name="NUM_OTHER_MEMBERS">$1<ex>1</ex></ph> other
+            </message>
+            <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_TITLE_PLURAL" desc="The title for the dialog that shows a preview of a tab group with >1 other members.">
+              Join tab group with <ph name="OWNER_FIRST_NAME">$1<ex>Ali</ex></ph> and <ph name="NUM_OTHER_MEMBERS">$1<ex>2</ex></ph> others
+            </message>
             <message name="IDS_DATA_SHARING_PREVIEW_DIALOG_CONFIRM" desc="A button that allows a user to join a shared group.">
               Join and open
             </message>
@@ -12222,6 +12280,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_DATA_SHARING_LINK_FAILED_BODY" desc="The body for the link failed dialog.">
           Contact the sender to ask for a new link
         </message>
+        <message name ="IDS_DATA_SHARING_JOIN_GROUP_JOIN_AS" desc="A sublabel showing which profile the shared group is being joined as.">
+          Join as <ph name="OWNER_FULL_NAME">$1<ex>John Doe</ex></ph>
+        </message>
       <!-- /Data Sharing Preview Dialog -->
 
       <!-- Data Sharing Leave Dialog -->
@@ -12232,6 +12293,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           Leave
         </message>
       <!-- /Data Sharing Leave Dialog -->
+
+      <!-- Data Sharing Block Dialog -->
+        <message name ="IDS_DATA_SHARING_BLOCK_DIALOG_TITLE" desc="The title of the block dialog.">
+          Block <ph name="MEMBER_FULL_NAME">$1<ex>John Doe</ex></ph>?
+        </message>
+      <!-- /Data Sharing Block Dialog -->
 
       <!-- Data Sharing Block and Leave Dialog -->
         <message name="IDS_DATA_SHARING_BLOCK_LEAVE_DIALOG_BODY" desc="The body for the block and leave group dialog.">
@@ -12303,34 +12370,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <!-- /Delete Last Tab Dialog -->
 
       <!-- Recent Activity -->
-        <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_TIME" desc="A display of time since for a row in the recent activity dialog.">
-          {TIME_DIMENSION, plural,
-            =0 {<ph name="TIME_COUNT">$1<ex>2</ex></ph>m ago}
-            =1 {<ph name="TIME_COUNT">$1<ex>2</ex></ph>h ago}
-            other {<ph name="TIME_COUNT">$1<ex>2</ex></ph>d ago}
-          }
-        </message>
-        <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_CHANGED_TAB" desc="A description of the user changing the tab for the recent activity dialog.">
-          <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> changed a tab
-        </message>
-        <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_REMOVED_TAB" desc="A description of the user removing the tab for the recent activity dialog.">
-          <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> removed a tab
-        </message>
-        <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_ADDED_TAB" desc="A description of the user adding the tab for the recent activity dialog.">
-          <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> added a tab
-        </message>
-        <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_JOINED_GROUP" desc="A description of the user joining the group for the recent activity dialog.">
-          <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> joined the group
-        </message>
-        <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_LEFT_GROUP" desc="A description of the user leaving the group for the recent activity dialog.">
-          <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> left the group
-        </message>
-        <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_CHANGED_GROUP_NAME" desc="A description of the user changing the group name for the recent activity dialog.">
-          <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> changed the group name
-        </message>
-        <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_CHANGED_GROUP_COLOR" desc="A description of the user changing the group color for the recent activity dialog.">
-          <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> changed the group color
-        </message>
         <message name="IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_ADDED_THIS_TAB" desc="A description of the user adding the current tab for the recent activity dialog.">
           <ph name="MEMBER_FIRST_NAME">$1<ex>Ali</ex></ph> added this tab
         </message>
@@ -12387,6 +12426,57 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name ="IDS_DATA_SHARING_CANCEL" desc="The label for buttons that cancel any dialogs in data sharing.">
           Cancel
+        </message>
+        <message name ="IDS_DATA_SHARING_CLOSE" desc="Alt text of the close button for the data sharing dialog.">
+          Close
+        </message>
+        <message name ="IDS_DATA_SHARING_BACK" desc="Alt text of the back button for the data sharing dialog.">
+          Back
+        </message>
+        <message name ="IDS_DATA_SHARING_BLOCK" desc="Label of the block button for the data sharing dialog.">
+          Block
+        </message>
+        <message name ="IDS_DATA_SHARING_REMOVE" desc="Label of the remove button for the data sharing dialog.">
+          Remove
+        </message>
+        <message name ="IDS_DATA_SHARING_LEAVE_GROUP" desc="Text of menu item to leave the group">
+          Leave group
+        </message>
+        <message name ="IDS_DATA_SHARING_LOADING" desc="Alt text of the loading indicator for the data sharing dialog.">
+          Loading
+        </message>
+        <message name ="IDS_DATA_SHARING_COPY_LINK" desc="Label of the copy link button for the data sharing dialog.">
+          Copy link
+        </message>
+        <message name ="IDS_DATA_SHARING_COPY_LINK_SUCCESS" desc="Label of the copy link button for the data sharing dialog after copy link succeeds.">
+          Link copied
+        </message>
+        <message name ="IDS_DATA_SHARING_COPY_LINK_FAILED" desc="Label of the copy link button for the data sharing dialog after copy link fails.">
+          Failed to copy link
+        </message>
+        <message name ="IDS_DATA_SHARING_YOU" desc="Text to indicate the current user">
+          You
+        </message>
+        <message name ="IDS_DATA_SHARING_OWNER" desc="Text to indicate the owner of the group">
+          Owner
+        </message>
+        <message name="IDS_DATA_SHARING_MEMBER_COUNT_SINGULAR" desc="Singular form of number of members in a shared tab group.">
+          <ph name="NUM">$1<ex>1</ex></ph> member
+        </message>
+        <message name="IDS_DATA_SHARING_MEMBER_COUNT_PLURAL" desc="Plural form of number of members in a shared tab group.">
+          <ph name="NUM">$1<ex>2</ex></ph> members
+        </message>
+        <message name="IDS_DATA_SHARING_TAB_COUNT_SINGULAR" desc="Singular form of number of tabs in a shared tab group.">
+          <ph name="NUM">$1<ex>1</ex></ph> tab
+        </message>
+        <message name="IDS_DATA_SHARING_TAB_COUNT_PLURAL" desc="Plural form of number of tabs in a shared tab group.">
+          <ph name="NUM">$1<ex>2</ex></ph> tabs
+        </message>
+        <message name="IDS_DATA_SHARING_MORE_OPTIONS" desc="Aria label for the more options button">
+          More options
+        </message>
+        <message name="IDS_DATA_SHARING_MORE_OPTIONS_DESCRIPTION" desc="Aria description for the more options button">
+          Press enter or space for more options.
         </message>
       <!-- /Misc -->
 
@@ -12682,6 +12772,17 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name="IDS_EXTENSIONS_ACCESS_REQUESTS_LEARN_MORE" desc="Text read by screen readers for a link labeled 'Learn more' that links to a Help article about Extensions' access requests.">
           Learn more about access requests.
+        </message>
+
+        <!-- Extension upload to account dialog -->
+        <message name="IDS_EXTENSIONS_MOVE_TO_ACCOUNT_DIALOG_TITLE" desc="Title of the dialog triggers the upload of a local extension to the signed in user's account.">
+          Save this extension in your Google Account?
+        </message>
+        <message name="IDS_EXTENSIONS_MOVE_TO_ACCOUNT_DIALOG_SUBTITLE" desc="Subtitle of the dialog triggers the upload of a local extension to the signed in user's account.">
+          "<ph name="NAME">$1<ex>Google Cast</ex></ph>" is saved only to this device. To use it on your other devices, save it in your account.
+        </message>
+        <message name="IDS_EXTENSIONS_MOVE_TO_ACCOUNT_DIALOG_OK_BUTTON_LABEL" desc="Text of the button that triggers the upload of a local extension to the signed in user's account in the extension upload dialog.">
+          Save in account
         </message>
 
         <!-- Reset Profile Settings strings -->
@@ -13042,10 +13143,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       </if>
 
       <!-- Clipboard History Menu feature. -->
-      <message name="IDS_CONTEXT_MENU_SHOW_CLIPBOARD_HISTORY_MENU"
-          desc="Show the clipboard history menu.">
-          Clipboard
-      </message>
       <message name="IDS_CONTEXT_MENU_PASTE_FROM_CLIPBOARD"
           desc="Open the context menu submenu that shows clipboard history items the user can paste.">
           Paste from clipboard
@@ -14270,11 +14367,17 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_SYNC_ERROR_PASSWORDS_USER_MENU_TITLE" desc="Title of the sync/signin error header of desktop user menu for the case where the error only affects sync-ed passwords..">
         Password sync isn't working
       </message>
+      <message name="IDS_SYNC_ERROR_PASSWORDS_USER_MENU_ERROR_DESCRIPTION" desc="Error description of the sync/signin error header of desktop user menu.">
+        Verify it's you to use and save passwords in your account, <ph name="ACCOUNT_EMAIL">$1<ex>elisa.beckett@gmail.com</ex></ph>
+      </message>
       <message name="IDS_SYNC_ERROR_PASSWORDS_USER_MENU_TITLE_SIGNED_IN_ONLY" desc="Title of the sync/signin error header of desktop user menu. Shown for users who are signed-in but not syncing.">
         To continue saving passwords in your Google Account, verify it’s you
       </message>
       <message name="IDS_SYNC_ERROR_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_USER_MENU_TITLE" desc="Title of a sync error header of desktop user menu that prompts the user to add recovery options.">
         Make sure you can always access your sync data
+      </message>
+      <message name="IDS_SYNC_ERROR_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_USER_MENU_ERROR_DESCRIPTION" desc="Error description of a sync error header of desktop user menu that prompts the user to add recovery options.">
+        Verify it's you to make sure you can always use the passwords in your account, <ph name="ACCOUNT_EMAIL">$1<ex>elisa.beckett@gmail.com</ex></ph>
       </message>
       <message name="IDS_SYNC_ERROR_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_USER_MENU_TITLE" desc="Title of a sync error header of desktop user menu that prompts the user to add recovery options.">
         Make sure you can always access your saved passwords
@@ -17366,6 +17469,14 @@ Please help our engineers fix this problem. Tell us what happened right before y
         QR code
       </message>
 
+      <message name="IDS_WEB_DIGITAL_CREDENTIALS_CABLEV2_CONNECTING_TITLE" desc="The title of a dialog that is shown when the computer is connecting to a phone or tablet." translateable="false">
+        Connecting to your device
+      </message>
+
+      <message name="IDS_WEB_DIGITAL_CREDENTIALS_CABLEV2_CONNECTED_TITLE" desc="The title of a dialog that shows once the computer has successfully connected to the user's phone or tablet. That phone/tablet will be showing instructions for what to do next and the user should follow those instructions." translateable="false">
+        Follow the steps on your device
+      </message>
+
     <!-- Interstitial shown prior to making digital identity request to wallet -->
     <!-- Android strings are declared in android_chrome_strings.grd. -->
     <message name="IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_DIALOG_TITLE" translateable="false">
@@ -18421,6 +18532,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_TOAST_CLOSE_TOOLTIP" desc="Tooltip for the X button on a toast notification that closes the toast.">
         Close
       </message>
+      <message name="IDS_TOAST_MENU_ITEM_DISMISS" desc="Menu item that allows a user to dismiss a toast.">
+        Dismiss
+      </message>
+      <message name="IDS_TOAST_MENU_ITEM_DONT_SHOW_AGAIN" desc="Menu item that allows a user to turn off similar toast messages in the future.">
+        Don't show this message again
+      </message>
     </if>
 
     <message name="IDS_ACCNAME_SIDEBAR_WEBVIEW_LOCATION_BAR" desc="The accessible name of the sidebar webview's location bar.">
@@ -18665,7 +18782,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </message>
 
     <!-- Glic status tray icon strings -->
-    <if expr="is_win or is_macosx">
+    <if expr="enable_glic">
       <!-- TODO(https://crbug.com/382287104): Replace with finalized strings -->
       <message name="IDS_GLIC_STATUS_ICON_TOOLTIP" translateable="false" desc="This is the tooltip that is shown when the glic status icon is hovered.">
         Open

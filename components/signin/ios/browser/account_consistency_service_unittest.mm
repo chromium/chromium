@@ -74,8 +74,9 @@ bool ContainsCookie(const std::vector<net::CanonicalCookie>& cookies,
                     const std::string& domain) {
   for (const auto& cookie : cookies) {
     if (cookie.Name() == name) {
-      if (domain.empty() || cookie.Domain() == domain)
+      if (domain.empty() || cookie.Domain() == domain) {
         return true;
+      }
     }
   }
   return false;
@@ -133,8 +134,9 @@ class FakeWebState : public web::FakeWebState {
     decider_ = nullptr;
   }
   bool ShouldAllowResponse(NSURLResponse* response, bool for_main_frame) {
-    if (!decider_)
+    if (!decider_) {
       return true;
+    }
 
     __block web::WebStatePolicyDecider::PolicyDecision policyDecision =
         web::WebStatePolicyDecider::PolicyDecision::Allow();
@@ -147,8 +149,9 @@ class FakeWebState : public web::FakeWebState {
     return policyDecision.ShouldAllowNavigation();
   }
   void WebStateDestroyed() {
-    if (!decider_)
+    if (!decider_) {
       return;
+    }
     decider_->WebStateDestroyed();
   }
 
@@ -313,8 +316,9 @@ class AccountConsistencyServiceTest : public PlatformTest {
     // If we have already added the |web_state_| with a previous |delegate|,
     // remove it to enforce a one-to-one mapping between web state handler and
     // web state.
-    if (has_set_web_state_handler_)
+    if (has_set_web_state_handler_) {
       account_consistency_service_->RemoveWebStateHandler(&web_state_);
+    }
 
     account_consistency_service_->SetWebStateHandler(&web_state_, delegate);
     has_set_web_state_handler_ = true;

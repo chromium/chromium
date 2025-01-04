@@ -221,7 +221,16 @@ void FileInputType::OpenPopupView() {
                       ? WebFeature::kInputTypeFileSecureOriginOpenChooser
                       : WebFeature::kInputTypeFileInsecureOriginOpenChooser);
     chrome_client->OpenFileChooser(document.GetFrame(), NewFileChooser(params));
+
+    input.PseudoStateChanged(CSSSelector::kPseudoOpen);
   }
+}
+
+bool FileInputType::IsPickerVisible() const {
+  if (FileChooser* chooser = FileChooserOrNull()) {
+    return chooser->FrameOrNull();
+  }
+  return false;
 }
 
 void FileInputType::AdjustStyle(ComputedStyleBuilder& builder) {
@@ -400,8 +409,6 @@ Node* FileInputType::FileStatusElement() const {
 }
 
 void FileInputType::DisabledAttributeChanged() {
-  DCHECK(RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled() ||
-         IsShadowHost(GetElement()));
   if (Element* button = UploadButton()) {
     button->SetBooleanAttribute(html_names::kDisabledAttr,
                                 GetElement().IsDisabledFormControl());
@@ -409,8 +416,6 @@ void FileInputType::DisabledAttributeChanged() {
 }
 
 void FileInputType::MultipleAttributeChanged() {
-  DCHECK(RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled() ||
-         IsShadowHost(GetElement()));
   if (Element* button = UploadButton()) {
     button->setAttribute(
         html_names::kValueAttr,
@@ -478,6 +483,8 @@ void FileInputType::FilesChosen(FileChooserFileInfoList files,
   }
   if (HasConnectedFileChooser())
     DisconnectFileChooser();
+
+  GetElement().PseudoStateChanged(CSSSelector::kPseudoOpen);
 }
 
 LocalFrame* FileInputType::FrameOrNull() const {

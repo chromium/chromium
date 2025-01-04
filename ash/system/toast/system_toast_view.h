@@ -13,8 +13,8 @@
 #include "ui/views/layout/flex_layout_view.h"
 
 namespace views {
+class Button;
 class Label;
-class LabelButton;
 }  // namespace views
 
 namespace ash {
@@ -24,22 +24,31 @@ class SystemShadow;
 // The System Toast view. (go/toast-style-spec)
 // This view supports different configurations depending on the provided
 // toast data parameters. It will always have a body text, and may have a
-// leading icon and a trailing button.
+// leading icon and a button containing text or an icon.
 class ASH_EXPORT SystemToastView : public views::FlexLayoutView {
   METADATA_HEADER(SystemToastView, views::FlexLayoutView)
 
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSystemToastViewElementId);
 
+  // Type of button to show next to the toast's body text.
+  enum class ButtonType {
+    kNone,
+    kTextButton,
+    kIconButton,
+  };
+
   SystemToastView(const std::u16string& text,
-                  const std::u16string& dismiss_text = std::u16string(),
-                  base::RepeatingClosure dismiss_callback = base::DoNothing(),
+                  ButtonType button_type = ButtonType::kNone,
+                  const std::u16string& button_text = std::u16string(),
+                  const gfx::VectorIcon* button_icon = &gfx::kNoneIcon,
+                  base::RepeatingClosure button_callback = base::DoNothing(),
                   const gfx::VectorIcon* leading_icon = &gfx::kNoneIcon);
   SystemToastView(const SystemToastView&) = delete;
   SystemToastView& operator=(const SystemToastView&) = delete;
   ~SystemToastView() override;
 
-  views::LabelButton* dismiss_button() { return dismiss_button_; }
+  views::Button* button() { return button_; }
 
   // Updates the toast label text.
   void SetText(const std::u16string& text);
@@ -52,7 +61,9 @@ class ASH_EXPORT SystemToastView : public views::FlexLayoutView {
 
   // Owned by the views hierarchy.
   raw_ptr<views::Label> label_ = nullptr;
-  raw_ptr<views::LabelButton> dismiss_button_ = nullptr;
+  // Button which either contains text or an icon depending on the toast's
+  // `ButtonType`.
+  raw_ptr<views::Button> button_ = nullptr;
 
   std::unique_ptr<SystemShadow> shadow_;
 };

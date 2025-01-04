@@ -15,6 +15,7 @@
 #include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_base/files/platform_file.h"
 #include "partition_alloc/partition_alloc_base/notreached.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_alloc_config.h"
@@ -221,15 +222,15 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
   PA_ALWAYS_INLINE static bool IsShadowMetadataEnabledOnRegularPool() {
-    return regular_pool_fd_ != -1;
+    return regular_pool_fd_ != base::kInvalidPlatformFile;
   }
 
   PA_ALWAYS_INLINE static bool IsShadowMetadataEnabledOnBRPPool() {
-    return brp_pool_fd_ != -1;
+    return brp_pool_fd_ != base::kInvalidPlatformFile;
   }
 
   PA_ALWAYS_INLINE static bool IsShadowMetadataEnabledOnConfigurablePool() {
-    return configurable_pool_fd_ != -1;
+    return configurable_pool_fd_ != base::kInvalidPlatformFile;
   }
 
   PA_ALWAYS_INLINE static bool IsShadowMetadataEnabled(pool_handle pool) {
@@ -454,10 +455,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   static std::ptrdiff_t regular_pool_shadow_offset_;
   static std::ptrdiff_t brp_pool_shadow_offset_;
   static std::ptrdiff_t configurable_pool_shadow_offset_;
-  // TODO(crbug.com/40238514): Use platform file handles instead of |int|.
-  static int regular_pool_fd_;
-  static int brp_pool_fd_;
-  static int configurable_pool_fd_;
+  static base::PlatformFile regular_pool_fd_;
+  static base::PlatformFile brp_pool_fd_;
+  static base::PlatformFile configurable_pool_fd_;
   static uintptr_t pool_shadow_address_;
 #endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 

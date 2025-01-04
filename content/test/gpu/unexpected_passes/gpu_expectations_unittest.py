@@ -21,8 +21,8 @@ class CreateTestExpectationMapUnittest(unittest.TestCase):
     self.instance = gpu_expectations.GpuExpectations()
 
     self._expectation_content: Dict[str, str] = {}
-    self._content_patcher = mock.patch.object(
-        self.instance, '_GetNonRecentExpectationContent')
+    self._content_patcher = mock.patch(
+        'unexpected_passes_common.expectations._GetNonRecentExpectationContent')
     self._content_mock = self._content_patcher.start()
     self.addCleanup(self._content_patcher.stop)
 

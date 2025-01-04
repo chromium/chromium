@@ -94,6 +94,8 @@ class ChromeConfigurator : public update_client::Configurator {
  private:
   friend class base::RefCountedThreadSafe<ChromeConfigurator>;
 
+  ~ChromeConfigurator() override = default;
+
   std::optional<base::FilePath> GetBackgroundDownloaderCache() const;
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -104,8 +106,6 @@ class ChromeConfigurator : public update_client::Configurator {
   scoped_refptr<update_client::CrxDownloaderFactory> crx_downloader_factory_;
   scoped_refptr<update_client::UnzipperFactory> unzip_factory_;
   scoped_refptr<update_client::PatcherFactory> patch_factory_;
-
-  ~ChromeConfigurator() override = default;
 };
 
 // Allows the component updater to use non-encrypted communication with the

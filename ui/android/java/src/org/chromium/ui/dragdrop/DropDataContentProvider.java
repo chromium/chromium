@@ -12,9 +12,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.FileNotFoundException;
 
@@ -26,6 +27,7 @@ import java.io.FileNotFoundException;
  * the feature from different platforms as other platform won't be able to access the impl
  * class directly as it lives in other classloader than the app's one (Chromium classloader).
  */
+@NullMarked
 public class DropDataContentProvider extends ContentProvider {
     private DropDataProviderImpl mDropDataProviderImpl;
 
@@ -41,54 +43,58 @@ public class DropDataContentProvider extends ContentProvider {
     }
 
     @Override
-    public String getType(Uri uri) {
+    public @Nullable String getType(Uri uri) {
         return mDropDataProviderImpl.getType(uri);
     }
 
     @Override
-    public String[] getStreamTypes(Uri uri, String mimeTypeFilter) {
+    public String @Nullable [] getStreamTypes(Uri uri, String mimeTypeFilter) {
         return mDropDataProviderImpl.getStreamTypes(uri, mimeTypeFilter);
     }
 
     @Override
-    public AssetFileDescriptor openAssetFile(Uri uri, String mode)
+    public @Nullable AssetFileDescriptor openAssetFile(Uri uri, String mode)
             throws FileNotFoundException, SecurityException {
         return mDropDataProviderImpl.openAssetFile(this, uri, mode);
     }
 
     @Override
-    public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
+    public @Nullable ParcelFileDescriptor openFile(Uri uri, String mode)
+            throws FileNotFoundException {
         return mDropDataProviderImpl.openFile(this, uri);
     }
 
     @Override
     public Cursor query(
             Uri uri,
-            String[] projection,
-            String selection,
-            String[] selectionArgs,
-            String sortOrder) {
+            String @Nullable [] projection,
+            @Nullable String selection,
+            String @Nullable [] selectionArgs,
+            @Nullable String sortOrder) {
         return mDropDataProviderImpl.query(uri, projection);
     }
 
     @Override
-    public int update(Uri uri, ContentValues values, String where, String[] whereArgs) {
+    public int update(
+            Uri uri,
+            @Nullable ContentValues values,
+            @Nullable String where,
+            String @Nullable [] whereArgs) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
+    public int delete(Uri uri, @Nullable String selection, String @Nullable [] selectionArgs) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Uri insert(Uri uri, ContentValues values) {
+    public Uri insert(Uri uri, @Nullable ContentValues values) {
         throw new UnsupportedOperationException();
     }
 
-    @Nullable
     @Override
-    public Bundle call(@NonNull String method, @Nullable String arg, @Nullable Bundle extras) {
+    public @Nullable Bundle call(String method, @Nullable String arg, @Nullable Bundle extras) {
         return mDropDataProviderImpl.call(method, arg, extras);
     }
 

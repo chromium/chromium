@@ -10,6 +10,23 @@
 
 namespace supervised_user {
 
+// The result of local web approval flow.
+// Used for metrics. Those values are logged to UMA. Entries should not be
+// renumbered and numeric values should never be reused.
+// Matches the enum "FamilyLinkUserLocalWebApprovalResult" in
+// src/tools/metrics/histograms/enums.xml.
+// LINT.IfChange
+enum class LocalApprovalResult {
+  kApproved = 0,
+  kDeclined = 1,
+  kCanceled = 2,
+  kError = 3,
+  kMaxValue = kError
+};
+// LINT.ThenChange(
+//     //tools/metrics/histograms/enums.xml
+// )
+
 // This enum describes the filter types of Chrome, which is
 // set by Family Link App or at families.google.com/families. These values
 // are logged to UMA. Entries should not be renumbered and numeric values
@@ -63,10 +80,26 @@ enum SupervisedUserSafetyFilterResult {
   FILTERING_BEHAVIOR_MAX = FILTERING_BEHAVIOR_ALLOW_ALLOWLIST
 };
 
-// These enum values describe the result of filtering and are logged to UMA.
-// Please keep in sync with "SupervisedUserFilterTopLevelResult" in
-// tools/metrics/histograms/enums.xml.
-enum class SupervisedUserFilterTopLevelResult {
+// Indicates why the filtering was issued.
+// LINT.IfChange(top_level_filtering_context)
+enum class FilteringContext : int {
+  // Default setting used if filtering context is not explicitly specified
+  // (eg. for tools in chrome:// internal pages).
+  kDefault = 0,
+  // Use for filtering triggered by content::NavigationThrottle events.
+  kNavigationThrottle = 1,
+  // Use for filtering triggered by content::WebContentsObserver events.
+  kNavigationObserver = 2,
+  // Use for filtering triggered by changes to Family Link.
+  kFamilyLinkSettingsUpdated = 3
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/families/histograms.xml:top_level_filtering_context)
+
+// LINT.IfChange(top_level_filtering_result)
+// This enum, together with `::FilteringContext`, constitutes value for the
+// `ManagedUser.TopLevelFilteringResult` histogram: value = context * spacing +
+// result (spacing is 100).
+enum class SupervisedUserFilterTopLevelResult : int {
   // A parent has explicitly allowed the domain on the allowlist or all sites
   // are allowed through parental controls.
   kAllow = 0,
@@ -78,6 +111,7 @@ enum class SupervisedUserFilterTopLevelResult {
   // enabled for the supervised user. Sites on the allowlist are not blocked.
   kBlockNotInAllowlist = 3,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:top_level_filtering_result)
 
 // Constants used by SupervisedUserURLFilter::RecordFilterResultEvent.
 extern const int kHistogramFilteringBehaviorSpacing;
@@ -133,8 +167,12 @@ extern const char kSkipParentApprovalToInstallExtensionsHistogramName[];
 // transition.
 extern const char kSupervisedUserURLFilteringResultHistogramName[];
 
-// Histogram name to log top level URL filtering results with reason for filter.
+// Histogram name to log top level URL filtering results with reason for filter
 extern const char kSupervisedUserTopLevelURLFilteringResultHistogramName[];
+
+// Histogram name to log top level URL filtering results with reason for filter,
+// for use in the navigation throttle context.
+extern const char kSupervisedUserTopLevelURLFilteringResult2HistogramName[];
 
 // The URL which the "Managed by your parent" UI links to.
 extern const char kManagedByParentUiMoreInfoUrl[];

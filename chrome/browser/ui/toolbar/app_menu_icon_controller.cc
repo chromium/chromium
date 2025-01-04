@@ -120,8 +120,9 @@ AppMenuIconController::GetTypeAndSeverity() const {
     // update. This can happen for beta and stable channels once the VERY_LOW
     // annoyance level is reached.
     auto severity = SeverityFromUpgradeLevel(is_unstable_channel_, level);
-    if (severity != Severity::NONE)
+    if (severity != Severity::NONE) {
       return {IconType::UPGRADE_NOTIFICATION, severity};
+    }
   }
 
   if (GlobalErrorServiceFactory::GetForProfile(profile_)

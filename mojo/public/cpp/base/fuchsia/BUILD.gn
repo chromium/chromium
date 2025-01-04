@@ -8,7 +8,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("example_interfaces") {
   testonly = true
-  sources = [ "example.mojom" ]
+  sources = [ "example.test-mojom" ]
   cpp_typemaps = [
     {
       types = [

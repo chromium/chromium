@@ -505,6 +505,9 @@ TEST_P(ThrottleManagerEnabledTest,
         entry, ukm::builders::FingerprintingProtection::kActivationDecisionName,
         static_cast<int64_t>(
             subresource_filter::ActivationDecision::ACTIVATED));
+    // DryRun metric is a boolean recorded iff the filter was activated in
+    // dry_run mode. With the filter activated in enabled mode, this metric is
+    // not expected to be recorded here.
     EXPECT_FALSE(test_ukm_recorder.EntryHasMetric(
         entry, ukm::builders::FingerprintingProtection::kDryRunName));
   }
@@ -531,8 +534,10 @@ TEST_P(ThrottleManagerEnabledTest, NoPageActivation) {
                         ukm::builders::FingerprintingProtection::kEntryName)
                     .size());
 }
-
 TEST_P(ThrottleManagerEnabledTest, ActivateMainFrameAndDoNotFilterDryRun) {
+  // Set up test ukm recorder.
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+
   // Commit a navigation that triggers page level activation.
   NavigateAndCommitMainFrame(GURL(kTestURLWithDryRun));
   CreateAgentForHost(main_rfh());
@@ -549,6 +554,21 @@ TEST_P(ThrottleManagerEnabledTest, ActivateMainFrameAndDoNotFilterDryRun) {
       navigation_simulator()->GetFinalRenderFrameHost();
   // But they should still be activated.
   ExpectActivationSignalForFrame(child, /*expect_activation=*/true);
+
+  // Check test ukm recorder contains event with expected metrics.
+  const auto& entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::FingerprintingProtection::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  for (const ukm::mojom::UkmEntry* entry : entries) {
+    test_ukm_recorder.ExpectEntryMetric(
+        entry, ukm::builders::FingerprintingProtection::kActivationDecisionName,
+        static_cast<int64_t>(
+            subresource_filter::ActivationDecision::ACTIVATED));
+    // DryRun metric is a boolean recorded iff the filter was activated in
+    // dry_run mode, so expect it to be recorded in this case.
+    EXPECT_TRUE(test_ukm_recorder.EntryHasMetric(
+        entry, ukm::builders::FingerprintingProtection::kDryRunName));
+  }
 }
 
 TEST_P(ThrottleManagerEnabledTest,

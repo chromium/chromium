@@ -11,6 +11,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include <array>
 #include <locale>
 #include <memory>
 #include <string>
@@ -322,7 +323,7 @@ int main(int argc, char *argv[]) {
   std::string url_base;
   if (cmd_line->HasSwitch("h") || cmd_line->HasSwitch("help")) {
     std::string options;
-    const char* const kOptionAndDescriptions[] = {
+    const auto kOptionAndDescriptions = std::to_array<const char*>({
         "port=PORT",
         "port to listen on",
         "adb-port=PORT",
@@ -364,7 +365,7 @@ int main(int argc, char *argv[]) {
         "ignore-explicit-port",
         "(experimental) ignore the port specified explicitly, "
         "find a free port instead",
-    };
+    });
     for (size_t i = 0; i < std::size(kOptionAndDescriptions) - 1; i += 2) {
       options += base::StringPrintf(
           "  --%-30s%s\n",

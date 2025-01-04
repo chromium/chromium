@@ -654,13 +654,6 @@ public class TabListCoordinator
     }
 
     /**
-     * @return The editor {@link TabGroupTitleEditor} that is used to update tab group title.
-     */
-    TabGroupTitleEditor getTabGroupTitleEditor() {
-        return mMediator.getTabGroupTitleEditor();
-    }
-
-    /**
      * @see TabListMediator#resetWithListOfTabs(List, boolean)
      */
     boolean resetWithListOfTabs(@Nullable List<Tab> tabs, boolean quickMode) {
@@ -669,10 +662,6 @@ public class TabListCoordinator
 
     void softCleanup() {
         mMediator.softCleanup();
-    }
-
-    void hardCleanup() {
-        mMediator.hardCleanup();
     }
 
     private void registerLayoutChangeListener() {
@@ -699,7 +688,6 @@ public class TabListCoordinator
     void prepareTabSwitcherPaneView() {
         registerLayoutChangeListener();
         mRecyclerView.setupCustomItemAnimator();
-        mMediator.registerOnScrolledListener(mRecyclerView);
     }
 
     private void initializeEmptyStateView() {

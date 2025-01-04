@@ -20,7 +20,6 @@ source_set("model") {
   ]
   deps = [
     "//components/feed/core/v2/public/ios:feed_ios_public",
-    "//components/keyed_service/core",
     "//components/search_engines",
     "//components/variations:variations",
     "//ios/chrome/browser/metrics/model:accessor",
@@ -47,12 +46,12 @@ source_set("discover_feed_factory") {
   deps = [
     ":model",
     "//base",
-    "//components/keyed_service/ios",
     "//components/signin/public/identity_manager",
     "//ios/chrome/browser/ntp/shared/metrics",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/sync/model",

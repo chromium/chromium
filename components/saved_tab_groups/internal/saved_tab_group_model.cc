@@ -22,6 +22,7 @@
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
+#include "components/saved_tab_groups/public/types.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -40,6 +41,10 @@ void RecordGroupDeletedMetric(const SavedTabGroup& removed_group) {
 
   base::RecordAction(
       base::UserMetricsAction("TabGroups_SavedTabGroups_Deleted"));
+
+  if (removed_group.is_shared_tab_group()) {
+    base::UmaHistogramBoolean("TabGroups.Shared.GroupDeleted", true);
+  }
 }
 
 // Compare function for 2 SavedTabGroup.
@@ -149,15 +154,6 @@ void SavedTabGroupModel::AddedLocally(SavedTabGroup saved_group) {
   base::Uuid group_guid = saved_group.saved_guid();
   CHECK(!Contains(group_guid));
 
-  // In V1, give a default position to groups if it is not already set.
-  // In V2, do nothing because unpinned saved tab groups don't have position
-  // set.
-  // Shared tab groups don't support positions.
-  if (!IsTabGroupsSaveUIUpdateEnabled() && !saved_group.is_shared_tab_group() &&
-      !saved_group.position().has_value()) {
-    saved_group.SetPosition(Count());
-  }
-
   stats::RecordEmptyGroupsMetricsOnGroupAddedLocally(saved_group, is_loaded_);
 
   InsertGroupImpl(std::move(saved_group));
@@ -220,6 +216,17 @@ void SavedTabGroupModel::MakeTabGroupSharedForTesting(
     CollaborationId collaboration_id) {
   SavedTabGroup* const group = GetMutableGroup(local_group_id);
   group->SetCollaborationId(std::move(collaboration_id));
+}
+
+void SavedTabGroupModel::SetIsTransitioningToSaved(
+    const LocalTabGroupID& local_group_id,
+    bool is_transitioning_to_saved) {
+  SavedTabGroup* const group = GetMutableGroup(local_group_id);
+  group->SetIsTransitioningToSaved(is_transitioning_to_saved);
+  for (auto& observer : observers_) {
+    observer.SavedTabGroupUpdatedLocally(group->saved_guid(),
+                                         /*tab_guid=*/std::nullopt);
+  }
 }
 
 void SavedTabGroupModel::AddedFromSync(SavedTabGroup saved_group) {
@@ -409,6 +416,7 @@ void SavedTabGroupModel::RemoveTabFromGroupLocally(const base::Uuid& group_id,
 
   // Remove the group from the model if the last tab will be removed from it.
   if (group.saved_tabs().size() == 1) {
+    base::UmaHistogramBoolean("TabGroups.Shared.LastTabClosed", true);
     RemovedLocally(group_id);
     return;
   }
@@ -509,6 +517,27 @@ void SavedTabGroupModel::UpdateLastUpdaterCacheGuidForGroup(
   if (tab) {
     tab->SetLastUpdaterCacheGuid(cache_guid);
   }
+}
+
+void SavedTabGroupModel::UpdateSharedAttribution(
+    const LocalTabGroupID& group_id,
+    const std::optional<LocalTabID>& tab_id,
+    GaiaId updated_by) {
+  SavedTabGroup* group = GetMutableGroup(group_id);
+  CHECK(group);
+  if (!tab_id.has_value()) {
+    group->SetUpdatedByAttribution(std::move(updated_by));
+    return;
+  }
+
+  SavedTabGroupTab* tab = group->GetTab(tab_id.value());
+  if (tab) {
+    tab->SetUpdatedByAttribution(std::move(updated_by));
+  }
+
+  // Do not notify observers to avoid having too many updates because this
+  // method is called quite extensively and in most cases duplicates the other
+  // updates.
 }
 
 const SavedTabGroup* SavedTabGroupModel::MergeRemoteGroupMetadata(
@@ -723,7 +752,6 @@ void SavedTabGroupModel::RemoveObserver(SavedTabGroupModelObserver* observer) {
 }
 
 void SavedTabGroupModel::MigrateTabGroupSavesUIUpdate() {
-  CHECK(IsTabGroupsSaveUIUpdateEnabled());
   constexpr size_t kMaxNumberOfGroupToPin = 4;
   // Pin the first 4 saved tab groups from V1.
   for (size_t i = 0;
@@ -807,7 +835,6 @@ void SavedTabGroupModel::UpdateVisualDataImpl(
 }
 
 void SavedTabGroupModel::TogglePinState(base::Uuid id) {
-  CHECK(IsTabGroupsSaveUIUpdateEnabled());
   if (!Contains(id)) {
     return;
   }

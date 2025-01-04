@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">Allalaadimine peatatud</translation>
 <translation id="1396327438254055134">Lubage saidil V8 optimeerijat kasutada.</translation>
 <translation id="1415402041810619267">Lühendatud URL</translation>
+<translation id="1415855080660575082">Lubage Chrome’il jagada teie hiljutisi vahelehti teie seadmega, et näha neid seadme rakenduste loendis ja otsingutulemustes. Saate selle Chrome’i seadetes sisse või välja lülitada.</translation>
 <translation id="1448064542941920355">Suumi vähendamine</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sait}other{<ph name="SITE_COUNT" /> saiti}}</translation>
 <translation id="1500473259453106018">Peida hinnaalandused vahelehtede kaardil</translation>
@@ -91,13 +92,14 @@
 <translation id="2438120137003069591">Lubasite sellel saidil ajutiselt kasutada kolmanda osapoole küpsisefaile, mis tähendab väiksemat sirvimiskaitset, kuid saidi funktsioonid töötavad tõenäolisemalt ootuspäraselt. <ph name="BEGIN_LINK" />Tagasiside saatmine<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Mõne saidi funktsioonid ei pruugi inkognito režiimis toimida</translation>
 <translation id="2442870161001914531">Alati taotletakse arvutisaiti</translation>
+<translation id="2445311670906052406">Chrome jagab nüüd teie hiljutisi vahelehti teie seadmega. Näete neid oma seadme rakenduste loendis ja otsingutulemustes. Saate selle Chrome’i seadetes igal ajal välja lülitada.</translation>
 <translation id="2469312991797799607">See toiming kustutab kõik saidigrupi <ph name="ORIGIN" /> ning selle all olevate kõigi saitide andmed ja küpsised</translation>
 <translation id="2482878487686419369">Märguanded</translation>
 <translation id="2485422356828889247">Desinstalli</translation>
 <translation id="2490684707762498678">Haldab <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Abi ja tagasiside</translation>
 <translation id="2501278716633472235">Mine tagasi</translation>
-<translation id="2546283357679194313">Küpsised ja saidiandmed</translation>
+<translation id="2546283357679194313">Küpsised ja saidi andmed</translation>
 <translation id="2570922361219980984">Ka juurdepääs asukohale on selle seadme puhul välja lülitatud. Lülitage see sisse <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Laiendatud – ahendamiseks klõpsake.</translation>
 <translation id="2586657967955657006">Lõikelaud</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">Saidid saavad kuvada identiteedihaldusteenuste sisselogimisviipasid.</translation>
 <translation id="2787357173144933081">Omnikastikese kiirkäivitamine</translation>
 <translation id="2790501146643349491">Kui see on sisse lülitatud, saavad hiljuti suletud saidid andmete saatmise ja vastuvõtmise lõpetada. Kui see on välja lülitatud, ei saa hiljuti suletud saidid andmete saatmist ega vastuvõtmist lõpetada.</translation>
+<translation id="2814830417943086299">Chrome kuvab nüüd teie hiljutisi vahelehti teie seadme rakenduste loendis ja otsingutulemustes. Saate selle Chrome’i seadetes igal ajal välja lülitada.</translation>
 <translation id="2822354292072154809">Kas soovite objekti <ph name="CHOSEN_OBJECT_NAME" /> jaoks kindlasti lähtestada kõik saidi load?</translation>
 <translation id="2850913818900871965">Mobiilivaate taotlemine</translation>
 <translation id="2870560284913253234">Sait</translation>
@@ -124,7 +127,6 @@
 <translation id="2903493209154104877">Aadressid</translation>
 <translation id="2910701580606108292">Küsi enne saitidel kaitstud sisu esitamise lubamist</translation>
 <translation id="2918484639460781603">Ava seaded</translation>
-<translation id="2927133898344569563">Saate soovitatud vahelehtedele oma seadmes rakenduste loendi ja otsingutulemuste kaudu kiiresti juurde pääseda. Võite selle Chrome'i seadetes igal ajal sisse või välja lülitada.</translation>
 <translation id="2932883381142163287">Teata väärkasutusest</translation>
 <translation id="2939338015096024043">Kui see on sisse lülitatud, võivad saidid küsida luba teie kaamera asendi jälgimiseks ja teie ümbruse kohta teabe saamiseks. Kui see on välja lülitatud, ei saa saidid teie kaamera asendit jälgida ega teie ümbruse kohta teavet saada.</translation>
 <translation id="2968755619301702150">Sertifikaadikuvaja</translation>
@@ -336,7 +338,6 @@
 <translation id="5968921426641056619">Sisestage veebiaadress</translation>
 <translation id="5975083100439434680">Suumib välja</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
-<translation id="6015145568571136419">Nüüd pääsete soovitatud vahelehtedele kiiresti juurde oma seadme rakenduste loendist ja otsingutulemustest. Võite selle Chrome’i seadetes igal ajal välja lülitada.</translation>
 <translation id="6015775454662021376">Selle saidi juurdepääsu muutmine teie seadmele</translation>
 <translation id="6040143037577758943">Sulge</translation>
 <translation id="6042308850641462728">Rohkem</translation>
@@ -559,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja veel <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja veel <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Lülitage <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" /> sisse load rakendusele <ph name="APP_NAME" />.</translation>
 <translation id="9138217887606523162">Praegune suumitase on <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="9156722768168878035">Laske Chrome'il kuvada teie hiljutisi vahelehti teie seadme rakenduste loendis ja otsingutulemustes. Saate selle Chrome’i seadetes igal ajal välja lülitada.</translation>
 <translation id="9162462602695099906">See leht on ohtlik</translation>
 <translation id="947156494302904893">Külastatavad saidid saavad kinnitada, et olete päris inimene, mitte robot</translation>
 <translation id="959682366969460160">Lööge kord majja</translation>

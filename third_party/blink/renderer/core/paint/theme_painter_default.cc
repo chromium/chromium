@@ -393,11 +393,11 @@ bool ThemePainterDefault::PaintTextField(const Element& element,
   if (style.HasBorderRadius() || style.HasBackgroundImage())
     return true;
 
-  ControlPart part = style.EffectiveAppearance();
+  AppearanceValue appearance = style.EffectiveAppearance();
 
   WebThemeEngine::TextFieldExtraParams text_field;
-  text_field.is_text_area = part == kTextAreaPart;
-  text_field.is_listbox = part == kListboxPart;
+  text_field.is_text_area = appearance == AppearanceValue::kTextArea;
+  text_field.is_listbox = appearance == AppearanceValue::kListbox;
   text_field.has_border = true;
   text_field.zoom = style.EffectiveZoom();
 
@@ -558,7 +558,7 @@ bool ThemePainterDefault::PaintSliderTrack(const Element& element,
   bool is_slider_vertical =
       RuntimeEnabledFeatures::
           NonStandardAppearanceValueSliderVerticalEnabled() &&
-      style.EffectiveAppearance() == kSliderVerticalPart;
+      style.EffectiveAppearance() == AppearanceValue::kSliderVertical;
   const WritingMode writing_mode = style.GetWritingMode();
   bool is_writing_mode_vertical = !IsHorizontalWritingMode(writing_mode);
   slider.vertical = is_writing_mode_vertical || is_slider_vertical;
@@ -628,10 +628,11 @@ bool ThemePainterDefault::PaintSliderThumb(const Element& element,
                                            const PaintInfo& paint_info,
                                            const gfx::Rect& rect) {
   WebThemeEngine::SliderExtraParams slider;
-  slider.vertical = !style.IsHorizontalWritingMode() ||
-                    (RuntimeEnabledFeatures::
-                         NonStandardAppearanceValueSliderVerticalEnabled() &&
-                     style.EffectiveAppearance() == kSliderThumbVerticalPart);
+  slider.vertical =
+      !style.IsHorizontalWritingMode() ||
+      (RuntimeEnabledFeatures::
+           NonStandardAppearanceValueSliderVerticalEnabled() &&
+       style.EffectiveAppearance() == AppearanceValue::kSliderThumbVertical);
   slider.in_drag = element.IsActive();
   slider.zoom = style.EffectiveZoom();
 

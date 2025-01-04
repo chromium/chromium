@@ -31,13 +31,13 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/autofill/core/browser/autofill_experiments.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/manage_cards_prompt_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 #include "components/autofill/core/browser/ui/payments/save_payment_method_and_virtual_card_enroll_confirmation_ui_params.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -55,67 +55,26 @@
 
 namespace autofill {
 
-namespace {
-
-std::u16string GetWindowTitleForUploadSave() {
-  switch (GetUpdatedDesktopUiTreatmentArm()) {
-    case UpdatedDesktopUiTreatmentArm::kSecurityFocus:
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY);
-    case UpdatedDesktopUiTreatmentArm::kConvenienceFocus:
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_CONVENIENCE);
-    case UpdatedDesktopUiTreatmentArm::kEducationFocus:
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_EDUCATION);
-    case UpdatedDesktopUiTreatmentArm::kDefault:
-      return features::ShouldShowImprovedUserConsentForCreditCardSave()
-                 ? l10n_util::GetStringUTF16(
-                       IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V4)
-                 : l10n_util::GetStringUTF16(
-                       IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V3);
-  }
-}
-
-std::optional<std::u16string> GetUpdatedExplanatoryMessageForUploadSave() {
-  switch (GetUpdatedDesktopUiTreatmentArm()) {
-    case UpdatedDesktopUiTreatmentArm::kSecurityFocus:
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY);
-    case UpdatedDesktopUiTreatmentArm::kConvenienceFocus:
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_CONVENIENCE);
-    case UpdatedDesktopUiTreatmentArm::kEducationFocus:
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_EDUCATION);
-    case UpdatedDesktopUiTreatmentArm::kDefault:
-      return std::nullopt;
-  }
-}
-
-}  // namespace
-
 static bool g_ignore_window_activation_for_testing = false;
 
 SaveCardBubbleControllerImpl::SaveCardBubbleControllerImpl(
     content::WebContents* web_contents)
     : AutofillBubbleControllerBase(web_contents),
-      content::WebContentsUserData<SaveCardBubbleControllerImpl>(
-          *web_contents) {
-  personal_data_manager_ = PersonalDataManagerFactory::GetForBrowserContext(
-      web_contents->GetBrowserContext());
-
-  sync_service_ = SyncServiceFactory::GetForProfile(
-      Profile::FromBrowserContext(web_contents->GetBrowserContext()));
-}
+      content::WebContentsUserData<SaveCardBubbleControllerImpl>(*web_contents),
+      payments_data_manager_(PersonalDataManagerFactory::GetForBrowserContext(
+                                 web_contents->GetBrowserContext())
+                                 ->payments_data_manager()),
+      sync_service_(SyncServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {}
 
 SaveCardBubbleControllerImpl::~SaveCardBubbleControllerImpl() = default;
 
 // static
 SaveCardBubbleController* SaveCardBubbleController::GetOrCreate(
     content::WebContents* web_contents) {
-  if (!web_contents)
+  if (!web_contents) {
     return nullptr;
+  }
 
   SaveCardBubbleControllerImpl::CreateForWebContents(web_contents);
   return SaveCardBubbleControllerImpl::FromWebContents(web_contents);
@@ -124,8 +83,9 @@ SaveCardBubbleController* SaveCardBubbleController::GetOrCreate(
 // static
 SaveCardBubbleController* SaveCardBubbleController::Get(
     content::WebContents* web_contents) {
-  if (!web_contents)
+  if (!web_contents) {
     return nullptr;
+  }
 
   return SaveCardBubbleControllerImpl::FromWebContents(web_contents);
 }
@@ -142,8 +102,9 @@ void SaveCardBubbleControllerImpl::OfferLocalSave(
   }
 
   // Don't show the bubble if it's already visible.
-  if (bubble_view())
+  if (bubble_view()) {
     return;
+  }
 
   is_upload_save_ = false;
   is_reshow_ = false;
@@ -158,10 +119,11 @@ void SaveCardBubbleControllerImpl::OfferLocalSave(
           ? BubbleType::LOCAL_CVC_SAVE
           : BubbleType::LOCAL_SAVE;
 
-  if (options.show_prompt)
+  if (options.show_prompt) {
     ShowBubble();
-  else
+  } else {
     ShowIconOnly();
+  }
 }
 
 void SaveCardBubbleControllerImpl::OfferUploadSave(
@@ -177,8 +139,9 @@ void SaveCardBubbleControllerImpl::OfferUploadSave(
   }
 
   // Don't show the bubble if it's already visible.
-  if (bubble_view())
+  if (bubble_view()) {
     return;
+  }
 
   is_upload_save_ = true;
   is_reshow_ = false;
@@ -202,10 +165,11 @@ void SaveCardBubbleControllerImpl::OfferUploadSave(
     legal_message_lines_ = legal_message_lines;
   }
 
-  if (options_.show_prompt)
+  if (options_.show_prompt) {
     ShowBubble();
-  else
+  } else {
     ShowIconOnly();
+  }
 }
 
 // Exists for testing purposes only.
@@ -219,8 +183,9 @@ void SaveCardBubbleControllerImpl::ShowBubbleForManageCardsForTesting(
 void SaveCardBubbleControllerImpl::ReshowBubble(
     bool is_triggered_by_user_gesture) {
   // Don't show the bubble if it's already visible.
-  if (bubble_view())
+  if (bubble_view()) {
     return;
+  }
 
   is_reshow_ = true;
   is_triggered_by_user_gesture_ = is_triggered_by_user_gesture;
@@ -280,7 +245,8 @@ std::u16string SaveCardBubbleControllerImpl::GetWindowTitle() const {
           IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_LOCAL);
     case BubbleType::UPLOAD_SAVE:
     case BubbleType::UPLOAD_IN_PROGRESS:
-      return GetWindowTitleForUploadSave();
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY);
     case BubbleType::UPLOAD_CVC_SAVE:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_TO_CLOUD);
@@ -324,26 +290,8 @@ std::u16string SaveCardBubbleControllerImpl::GetExplanatoryMessage() const {
     return std::u16string();
   }
 
-  if (std::optional<std::u16string> updated_ui_explanatory_message =
-          GetUpdatedExplanatoryMessageForUploadSave()) {
-    return updated_ui_explanatory_message.value();
-  }
-
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableCvcStorageAndFilling) &&
-      options_.card_save_type ==
-          payments::PaymentsAutofillClient::CardSaveType::kCardSaveWithCvc) {
-    return l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_SAVE_CARD_WITH_CVC_PROMPT_EXPLANATION_UPLOAD);
-  }
-
-  if (options_.should_request_name_from_user) {
-    return l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3_WITH_NAME);
-  }
-
   return l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3);
+      IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY);
 }
 
 std::u16string SaveCardBubbleControllerImpl::GetAcceptButtonText() const {
@@ -395,20 +343,15 @@ AccountInfo SaveCardBubbleControllerImpl::GetAccountInfo() {
   if (!identity_manager) {
     return AccountInfo();
   }
-  PersonalDataManager* personal_data_manager =
-      PersonalDataManagerFactory::GetForBrowserContext(profile);
-  if (!personal_data_manager) {
-    return AccountInfo();
-  }
 
   return identity_manager->FindExtendedAccountInfo(
-      personal_data_manager->payments_data_manager()
-          .GetAccountInfoForPaymentsServer());
+      payments_data_manager_->GetAccountInfoForPaymentsServer());
 }
 
 Profile* SaveCardBubbleControllerImpl::GetProfile() const {
-  if (!web_contents())
+  if (!web_contents()) {
     return nullptr;
+  }
   return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 }
 
@@ -437,9 +380,8 @@ bool SaveCardBubbleControllerImpl::ShouldRequestExpirationDateFromUser() const {
 }
 
 ui::ImageModel SaveCardBubbleControllerImpl::GetCreditCardImage() const {
-  gfx::Image* card_art_image =
-      personal_data_manager_->payments_data_manager()
-          .GetCachedCardArtImageForUrl(card_.card_art_url());
+  const gfx::Image* const card_art_image =
+      payments_data_manager_->GetCachedCardArtImageForUrl(card_.card_art_url());
   return ui::ImageModel::FromImage(
       card_art_image ? *card_art_image
                      : ui::ResourceBundle::GetSharedInstance().GetImageNamed(
@@ -477,12 +419,9 @@ void SaveCardBubbleControllerImpl::OnSaveButton(
       autofill_metrics::LogSaveCardPromptResultMetric(
           autofill_metrics::SaveCardPromptResult::kAccepted, is_upload_save_,
           is_reshow_, options_,
-          personal_data_manager_->payments_data_manager()
-              .GetPaymentsSigninStateForMetrics(),
+          payments_data_manager_->GetPaymentsSigninStateForMetrics(),
           /*has_saved_cards=*/
-          !personal_data_manager_->payments_data_manager()
-               .GetCreditCards()
-               .empty());
+          !payments_data_manager_->GetCreditCards().empty());
       autofill_metrics::LogCreditCardUploadLoadingViewShownMetric(
           /*is_shown=*/true);
       current_bubble_type_ = BubbleType::UPLOAD_IN_PROGRESS;
@@ -589,12 +528,9 @@ void SaveCardBubbleControllerImpl::OnBubbleClosed(
     case BubbleType::UPLOAD_SAVE:
       autofill_metrics::LogSaveCardPromptResultMetric(
           get_metric(closed_reason), is_upload_save_, is_reshow_, options_,
-          personal_data_manager_->payments_data_manager()
-              .GetPaymentsSigninStateForMetrics(),
+          payments_data_manager_->GetPaymentsSigninStateForMetrics(),
           /*has_saved_cards=*/
-          !personal_data_manager_->payments_data_manager()
-               .GetCreditCards()
-               .empty());
+          !payments_data_manager_->GetCreditCards().empty());
       break;
     case BubbleType::UPLOAD_IN_PROGRESS:
       autofill_metrics::LogCreditCardUploadLoadingViewResultMetric(
@@ -698,8 +634,7 @@ bool SaveCardBubbleControllerImpl::
     IsPaymentsSyncTransportEnabledWithoutSyncFeature() const {
   // TODO(crbug.com/40067296): Migrate away from IsSyncFeatureEnabled() when the
   // API returns false on desktop.
-  return personal_data_manager_->payments_data_manager()
-             .IsPaymentsDownloadActive() &&
+  return payments_data_manager_->IsPaymentsDownloadActive() &&
          !sync_service_->IsSyncFeatureEnabled();
 }
 
@@ -818,8 +753,7 @@ void SaveCardBubbleControllerImpl::DoShowBubble() {
       autofill_metrics::LogSaveCardPromptOfferMetric(
           autofill_metrics::SaveCardPromptOffer::kShown, is_upload_save_,
           is_reshow_, options_,
-          personal_data_manager_->payments_data_manager()
-              .GetPaymentsSigninStateForMetrics());
+          payments_data_manager_->GetPaymentsSigninStateForMetrics());
       break;
     case BubbleType::UPLOAD_CVC_SAVE:
     case BubbleType::LOCAL_CVC_SAVE:
@@ -882,8 +816,7 @@ void SaveCardBubbleControllerImpl::ShowIconOnly() {
       autofill_metrics::LogSaveCardPromptOfferMetric(
           autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached,
           is_upload_save_, is_reshow_, options_,
-          personal_data_manager_->payments_data_manager()
-              .GetPaymentsSigninStateForMetrics());
+          payments_data_manager_->GetPaymentsSigninStateForMetrics());
       break;
     case BubbleType::UPLOAD_CVC_SAVE:
     case BubbleType::LOCAL_CVC_SAVE:

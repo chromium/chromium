@@ -9,14 +9,16 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/autofill/core/browser/autofill_form_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill_ai/core/browser/autofill_ai_test_utils.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/features/forms_predictions.pb.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/user_annotations/test_user_annotations_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -60,10 +62,19 @@ auto HasPrediction(Prediction expected_prediction) {
 class AutofillAiModelExecutorImplTest : public testing::Test {
  public:
   void SetUp() override {
+    logs_uploader_ = std::make_unique<
+        optimization_guide::TestModelQualityLogsUploaderService>(&local_state_);
     user_annotations_service_ =
         std::make_unique<user_annotations::TestUserAnnotationsService>();
     engine_ = std::make_unique<AutofillAiModelExecutorImpl>(
-        &model_executor_, user_annotations_service_.get());
+        &model_executor_, logs_uploader_.get(),
+        user_annotations_service_.get());
+  }
+
+  void TearDown() override {
+    // Reset the logs uploader to avoid keeping a dangling pointer to the local
+    // state during destruction.
+    logs_uploader_ = nullptr;
   }
 
   AutofillAiModelExecutorImpl* engine() { return engine_.get(); }
@@ -84,6 +95,9 @@ class AutofillAiModelExecutorImplTest : public testing::Test {
   std::unique_ptr<user_annotations::TestUserAnnotationsService>
       user_annotations_service_;
   std::unique_ptr<AutofillAiModelExecutorImpl> engine_;
+  std::unique_ptr<optimization_guide::TestModelQualityLogsUploaderService>
+      logs_uploader_;
+  TestingPrefServiceSimple local_state_;
 };
 
 TEST_F(AutofillAiModelExecutorImplTest, EndToEnd) {

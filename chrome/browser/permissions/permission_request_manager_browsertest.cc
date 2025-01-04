@@ -102,8 +102,7 @@ class PermissionRequestManagerBrowserTest : public InProcessBrowserTest {
  public:
   PermissionRequestManagerBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {permissions::features::kBlockRepeatedNotificationPermissionPrompts},
-        {permissions::features::kBackForwardCacheUnblockPermissionRequest});
+        {}, {permissions::features::kBackForwardCacheUnblockPermissionRequest});
   }
 
   PermissionRequestManagerBrowserTest(
@@ -721,7 +720,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
   bubble_factory()->WaitForPermissionBubble();
 
   content::RenderFrameHost* main_frame = GetActiveMainFrame();
-  int main_frame_process_id = main_frame->GetProcess()->GetID();
+  int main_frame_process_id = main_frame->GetProcess()->GetDeprecatedID();
   int main_frame_routing_id = main_frame->GetRoutingID();
 
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
@@ -1348,7 +1347,7 @@ IN_PROC_BROWSER_TEST_F(
   bubble_factory()->WaitForPermissionBubble();
   content::RenderFrameHostWrapper rfh_a(GetActiveMainFrame());
   content::RenderFrameHost* main_frame = GetActiveMainFrame();
-  int main_frame_process_id = main_frame->GetProcess()->GetID();
+  int main_frame_process_id = main_frame->GetProcess()->GetDeprecatedID();
   int main_frame_routing_id = main_frame->GetRoutingID();
 
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
@@ -1379,7 +1378,7 @@ IN_PROC_BROWSER_TEST_F(
 
   content::RenderFrameHostWrapper rfh_a(GetActiveMainFrame());
   content::RenderFrameHost* main_frame = GetActiveMainFrame();
-  int main_frame_process_id = main_frame->GetProcess()->GetID();
+  int main_frame_process_id = main_frame->GetProcess()->GetDeprecatedID();
   int main_frame_routing_id = main_frame->GetRoutingID();
   // Request is not cancelled.
   EXPECT_FALSE(request_1.cancelled());

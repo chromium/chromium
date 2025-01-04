@@ -77,7 +77,6 @@
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> ትር ተለውጧል፣ <ph name="ANY_CLOSED" /> ተዘግቷል}one{<ph name="MANY_CHANGED" /> ትር ተለውጧል፣ <ph name="ANY_CLOSED" /> ተዘግቷል}other{<ph name="MANY_CHANGED" /> ትሮች ተለውጠዋል፣ <ph name="ANY_CLOSED" /> ተዘግተዋል}}</translation>
 <translation id="4371591986692297148">ያልነቃ</translation>
 <translation id="4460014764210899310">ነጥል</translation>
-<translation id="4590027107044272416">አሁን እዚህ አዲስ ትር መክፈት ይችላሉ</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{1 ገቢር ያልሆነ ትር ይዘጋ?}one{<ph name="TAB_COUNT_MANY" /> ገቢር ያልሆነ ትር ይዘጋ?}other{<ph name="TAB_COUNT_MANY" /> ገቢር ያልሆኑ ትሮች ይዘጉ?}}</translation>
 <translation id="4686942373615810936">አሁን የተፈጠረ</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{ከ1 ቀን በኋላ ዝጋ}one{ከ<ph name="DAY_COUNT_MANY" /> ቀን በኋላ ዝጋ}other{ከ<ph name="DAY_COUNT_MANY" /> ቀናት በኋላ ዝጋ}}</translation>
@@ -98,7 +97,9 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ትር ታክሏል}one{<ph name="MANY_ADDED" /> ትር ታክሏል}other{<ph name="MANY_ADDED" /> ትሮች ታክለዋል}}</translation>
 <translation id="5161254044473106830">ርዕስ ያስፈልጋል</translation>
 <translation id="5339733443032484186">የእርስዎ የመጨረሻ ትር</translation>
+<translation id="5380159289133845234">የተባዙ ትሮችን በማህደር ያስቀምጡ</translation>
 <translation id="5400836586163650660">ግራጫ</translation>
+<translation id="5446043142172831860">ትርን ያስወግዱ እና ከቡድን ይውጡ</translation>
 <translation id="5490235265819901748">የትር ቡድን ተዘርግቷል</translation>
 <translation id="5494920125229734069">ሁሉንም ይመርጣል</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{የትር ቡድንን በ<ph name="TABS_COUNT_ONE" /> ትር፣ በ<ph name="COLOR_NAME" /> ቀለም ዝጋ።}one{የትር ቡድንን በ<ph name="TABS_COUNT_MANY" /> ትር፣ በ<ph name="COLOR_NAME" /> ቀለም ዝጋ።}other{የትር ቡድንን በ<ph name="TABS_COUNT_MANY" /> ትሮች፣ በ<ph name="COLOR_NAME" /> ቀለም ዝጋ።}}</translation>
@@ -117,6 +118,7 @@
 <translation id="6051432659151380973">የእርስዎ የትር ቡድኖች በራስ-ሰር ያስቀምጣሉ</translation>
 <translation id="6054741997831917303">የዚህ ንጥል ዋጋ በቅርቡ ከ<ph name="PREVIOUS_PRICE" /> ወደ <ph name="NEW_PRICE" /> ቀንሷል</translation>
 <translation id="6082313992897617440">እርስዎ ወዲያውኑ የ<ph name="GROUP_NAME" /> ትር ቡድን መዳረሻን ያጣሉ</translation>
+<translation id="6109251075362363230">በጣም በቅርብ ጊዜ ጥቅም ላይ ከዋለው ቅጂ በስተቀር ሁሉም የተባዙ ትሮች አሁን በማህደር ይቀመጣሉ።</translation>
 <translation id="6193448654517602979">ትሮችን ምረጥ</translation>
 <translation id="6228793724645064692">(የተሰጠ ደረጃ)</translation>
 <translation id="6271513594716432922">ሁሉንም የቦዘኑ ትሮች ዝጋ</translation>

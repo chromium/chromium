@@ -31,6 +31,13 @@ class ScopedTabModalUI {
   virtual ~ScopedTabModalUI() = default;
 };
 
+// See documentation for ShouldAcceptMouseEventsWhileWindowInactive.
+class ScopedAcceptMouseEventsWhileWindowInactive {
+ public:
+  ScopedAcceptMouseEventsWhileWindowInactive() = default;
+  virtual ~ScopedAcceptMouseEventsWhileWindowInactive() = default;
+};
+
 // This is the public interface for tabs in a desktop browser. Most features in
 // //chrome/browser depend on this interface, and thus to prevent circular
 // dependencies this interface should not depend on anything else in //chrome.
@@ -69,24 +76,39 @@ class TabInterface : public SupportsHandles<TabInterface> {
   virtual base::CallbackListSubscription RegisterWillDiscardContents(
       WillDiscardContentsCallback callback) = 0;
 
-  // Whether the tab is in the foreground. When a tab is in the foreground, this
-  // class guarantees that GetContents() will return a non-nullptr WebContents,
-  // and this WebContents will not change. If a tab is dragged out of a window
-  // (creating a new window), it will briefly enter the background, and then
-  // re-enter the foreground. To see if this is happened, check the
-  // BrowserWindowInterface's session id.
-  virtual bool IsInForeground() const = 0;
+  // Whether the tab is the Active Tab in its browser window (see
+  // TabStripModel's SelectionModel's active index for more details about the
+  // active state). When a tab is in the foreground, this class guarantees that
+  // GetContents() will return a non-nullptr WebContents, and this WebContents
+  // will not change. If a tab is dragged out of a window (creating a new
+  // window), it will briefly be deactivated, and then reactivate. To see if
+  // this is happened, check the BrowserWindowInterface's session id.
+  virtual bool IsActivated() const = 0;
 
-  // Register for these two callbacks to detect changes to IsInForeground().
-  using DidEnterForegroundCallback =
-      base::RepeatingCallback<void(TabInterface*)>;
-  virtual base::CallbackListSubscription RegisterDidEnterForeground(
-      DidEnterForegroundCallback callback) = 0;
+  // Register for these two callbacks to detect changes to IsActivated().
+  using DidActivateCallback = base::RepeatingCallback<void(TabInterface*)>;
+  virtual base::CallbackListSubscription RegisterDidActivate(
+      DidActivateCallback callback) = 0;
 
-  using WillEnterBackgroundCallback =
-      base::RepeatingCallback<void(TabInterface*)>;
-  virtual base::CallbackListSubscription RegisterWillEnterBackground(
-      WillEnterBackgroundCallback callback) = 0;
+  using WillDeactivateCallback = base::RepeatingCallback<void(TabInterface*)>;
+  virtual base::CallbackListSubscription RegisterWillDeactivate(
+      WillDeactivateCallback callback) = 0;
+
+  // ONLY USE THIS IF YOURE FEATURE NEEDS MORE SPECIFICITY THAN IsActivated().
+  // Whether the tab is visible in the contents area of the browser window.
+  // This will directly match the attached state until there are features that
+  // provide multiple visible tabs per window. This state is not related to
+  // widget visibility or occlusion of the window.
+  virtual bool IsVisible() const = 0;
+
+  // Register for these two callbacks to detect changes to IsVisible().
+  using DidBecomeVisibleCallback = base::RepeatingCallback<void(TabInterface*)>;
+  virtual base::CallbackListSubscription RegisterDidBecomeVisible(
+      DidBecomeVisibleCallback callback) = 0;
+
+  using WillBecomeHiddenCallback = base::RepeatingCallback<void(TabInterface*)>;
+  virtual base::CallbackListSubscription RegisterWillBecomeHidden(
+      WillBecomeHiddenCallback callback) = 0;
 
   // Register for this callback to detect when a tab will be detached from a
   // window.
@@ -129,6 +151,11 @@ class TabInterface : public SupportsHandles<TabInterface> {
   virtual bool CanShowModalUI() const = 0;
   virtual std::unique_ptr<ScopedTabModalUI> ShowModalUI() = 0;
 
+  // Register for this callback to detect when a modal is shown or hidden.
+  using TabInterfaceCallback = base::RepeatingCallback<void(TabInterface*)>;
+  virtual base::CallbackListSubscription RegisterModalUIChanged(
+      TabInterfaceCallback callback) = 0;
+
   // A normal browser window has a tab strip and an omnibox. The returned value
   // never changes.
   virtual bool IsInNormalWindow() const = 0;
@@ -168,6 +195,14 @@ class TabInterface : public SupportsHandles<TabInterface> {
   // Returns the id of the tab group this tab belongs to, or nullopt if the tab
   // is not grouped.
   virtual std::optional<tab_groups::TabGroupId> GetGroup() const = 0;
+
+  // On macOS, tabs do not accept mouse events if the window is not active, even
+  // if it's a child window that is active. Calling this method overrides that
+  // behavior until the unique_ptr is destroyed. This is only relevant if the
+  // tab is in the foreground.
+  virtual bool ShouldAcceptMouseEventsWhileWindowInactive() const = 0;
+  virtual std::unique_ptr<ScopedAcceptMouseEventsWhileWindowInactive>
+  AcceptMouseEventsWhileWindowInactive() = 0;
 };
 
 using TabHandle = TabInterface::Handle;

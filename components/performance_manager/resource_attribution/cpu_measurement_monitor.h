@@ -7,7 +7,7 @@
 
 #include <map>
 #include <optional>
-#include <vector>
+#include <set>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -20,7 +20,6 @@
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/graph/worker_node.h"
-#include "components/performance_manager/public/resource_attribution/attribution_helpers.h"
 #include "components/performance_manager/public/resource_attribution/cpu_measurement_delegate.h"
 #include "components/performance_manager/public/resource_attribution/origin_in_browsing_instance_context.h"
 #include "components/performance_manager/public/resource_attribution/query_results.h"
@@ -38,10 +37,10 @@ namespace resource_attribution {
 // graph. So this is not a decorator as defined in
 // components/performance_manager/README.md
 class CPUMeasurementMonitor
-    : public FrameNode::ObserverDefaultImpl,
-      public PageNode::ObserverDefaultImpl,
-      public ProcessNode::ObserverDefaultImpl,
-      public WorkerNode::ObserverDefaultImpl,
+    : public FrameNodeObserver,
+      public PageNodeObserver,
+      public ProcessNodeObserver,
+      public WorkerNodeObserver,
       public performance_manager::NodeDataDescriberDefaultImpl {
  public:
   CPUMeasurementMonitor();
@@ -98,7 +97,12 @@ class CPUMeasurementMonitor
   void RecordMemoryMetrics();
 
   // FrameNode::Observer:
-  void OnFrameNodeAdded(const FrameNode* frame_node) override;
+  void OnBeforeFrameNodeAdded(
+      const FrameNode* frame_node,
+      const FrameNode* pending_parent_frame_node,
+      const PageNode* pending_page_node,
+      const ProcessNode* pending_process_node,
+      const FrameNode* pending_parent_or_outer_document_or_embedder) override;
   void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override;
   void OnOriginChanged(
       const FrameNode* frame_node,
@@ -114,7 +118,9 @@ class CPUMeasurementMonitor
                          base::TaskPriority previous_value) override;
 
   // WorkerNode::Observer:
-  void OnWorkerNodeAdded(const WorkerNode* worker_node) override;
+  void OnBeforeWorkerNodeAdded(
+      const WorkerNode* worker_node,
+      const ProcessNode* pending_process_node) override;
   void OnBeforeWorkerNodeRemoved(const WorkerNode* worker_node) override;
   void OnBeforeClientFrameAdded(const WorkerNode* worker_node,
                                 const FrameNode* client_frame_node) override;
@@ -141,9 +147,8 @@ class CPUMeasurementMonitor
   //
   // If the context is an `OriginInBrowsingInstanceContext`, the
   // constructor/destructor maintain a non-owning pointer to `this` in
-  // `origin_in_browsing_instance_weak_results_`, allowing
-  // `GetOrCreateResultForContext()` to reuse a result that is still referenced
-  // by `dead_context_results_`.
+  // `weak_origin_results_`, allowing `GetResultPtr()` to reuse a result that is
+  // still referenced by `dead_context_results_`.
   class ScopedCPUTimeResult : public base::RefCounted<ScopedCPUTimeResult> {
    public:
     ScopedCPUTimeResult(CPUMeasurementMonitor* monitor,
@@ -182,22 +187,18 @@ class CPUMeasurementMonitor
   // MeasureAndDistributeCPUUsage(). Adds the estimated CPU usage of each frame
   // and worker since the last time the process was measured to
   // `measurement_results_`. `graph_change` is the event that triggered the
-  // measurement or NoGraphChange if it wasn't triggered due to a graph topology
-  // change.
+  // measurement or NoGraphChange if it wasn't triggered due to a graph change.
   void UpdateCPUMeasurements(const ProcessNode* process_node,
                              GraphChange graph_change = NoGraphChange());
 
-  // Retrieves the existing `CPUTimeResult` for `context`, or creates one if it
-  // doesn't exist. If a new result is created, it is initialized with
-  // `init_result` and the second element of the returned pair is true.
-  std::pair<CPUTimeResult&, bool> GetOrCreateResultForContext(
-      const ResourceContext& context,
-      const CPUTimeResult& init_result);
+  // Retrieves the `CPUTimeResult` for `context` from `measurement_results_`. If
+  // no result exists, creates an empty map entry and returns a reference to a
+  // null pointer, which the caller must initialize.
+  ScopedCPUTimeResultPtr& GetResultPtr(const ResourceContext& context);
 
   // Adds the new measurements in `measurement_deltas` to
   // `measurement_results_`. `graph_change` is the event that triggered the
-  // measurement or NoGraphChange if it wasn't triggered due to a graph topology
-  // change.
+  // measurement or NoGraphChange if it wasn't triggered due to a graph change.
   void ApplyMeasurementDeltas(
       const std::map<ResourceContext, CPUTimeResult>& measurement_deltas,
       GraphChange graph_change = NoGraphChange());
@@ -218,9 +219,12 @@ class CPUMeasurementMonitor
   void ApplyOverlappingDelta(const ResourceContext& context,
                              const CPUTimeResult& delta);
 
-  // Moves the measurements for `contexts` from `measurement_results_` to
-  // `dead_context_results_`.
-  void SaveFinalMeasurements(const std::vector<ResourceContext>& contexts);
+  // Moves the measurements for `context` into `dead_context_results_`.
+  void SaveFinalMeasurement(const ResourceContext& context);
+
+  // Moves `result_ptr` into `dead_context_results_`. `result_ptr` is passed by
+  // move to ensure the caller drops its reference to the live result.
+  void SaveFinalMeasurement(ScopedCPUTimeResultPtr&& result_ptr);
 
   // Returns all `OriginInBrowsingInstanceContext`s associated with live frame
   // or worker contexts.
@@ -251,8 +255,7 @@ class CPUMeasurementMonitor
   // A map of non-owning pointers to all `ScopedCPUTimeResult` instances
   // associated with `OriginInBrowsingInstanceContext`.
   std::map<OriginInBrowsingInstanceContext, raw_ptr<ScopedCPUTimeResult>>
-      origin_in_browsing_instance_weak_results_
-          GUARDED_BY_CONTEXT(sequence_checker_);
+      weak_origin_results_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // CPU time results for dead contexts retained by ScopedResourceUsageQuery.
   //
@@ -277,8 +280,8 @@ class CPUMeasurementMonitor
 
     // Results kept alive until the next measurement for this query, in case the
     // associated context is revived. If a context is revived while this set has
-    // a reference to its last result, `GetOrCreateResultForContext()` will
-    // retrieve it instead of creating a new one.
+    // a reference to its last result, GetResultPtr() will retrieve it instead
+    // of creating a new one.
     //
     // When a measurement for a query contains a result for a dead
     // `OriginInBrowsingInstanceContext`, the result is kept in the `kept_alive`

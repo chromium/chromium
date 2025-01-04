@@ -62,6 +62,9 @@ const CGFloat kContentViewBottomInset = 4;
 // Selected border background view constants.
 const CGFloat kSelectedBorderBackgroundViewWidth = 8;
 
+// Size of a blue dot on icon view.
+const CGFloat kBlueDotSize = 6;
+
 // Returns the default favicon image.
 UIImage* DefaultFavicon() {
   return DefaultSymbolWithPointSize(kGlobeAmericasSymbol, 14);
@@ -140,6 +143,9 @@ UIImage* DefaultFavicon() {
   // View used to provide accessibility labels/values while letting the close
   // button selectable by VoiceOver.
   UIView* _accessibilityContainerView;
+
+  // View used to display the blue dot at right bottom corner of the favicon.
+  UIView* _blueDotView;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -447,6 +453,20 @@ UIImage* DefaultFavicon() {
   _selectedBackgroundOutline.alpha = visibility;
 }
 
+- (void)setHasBlueDot:(BOOL)hasBlueDot {
+  if (_hasBlueDot == hasBlueDot) {
+    return;
+  }
+
+  _hasBlueDot = hasBlueDot;
+
+  if (hasBlueDot) {
+    [self showBlueDotView];
+  } else {
+    [self hideBlueDotView];
+  }
+}
+
 #pragma mark - UICollectionViewCell
 
 - (void)applyLayoutAttributes:
@@ -473,6 +493,7 @@ UIImage* DefaultFavicon() {
   self.trailingSelectedBorderBackgroundViewHidden = NO;
   self.isFirstTabInGroup = NO;
   self.isLastTabInGroup = NO;
+  self.hasBlueDot = NO;
 }
 
 - (void)setHighlighted:(BOOL)highlighted {
@@ -1168,6 +1189,37 @@ UIImage* DefaultFavicon() {
               : IDS_IOS_TAB_STRIP_TAB_CELL_VOICE_OVER_VALUE,
       base::NumberToString16(self.tabIndex),
       base::NumberToString16(self.numberOfTabs));
+}
+
+// Shows the blue dot view. Adds the view to the cell if there is none yet.
+- (void)showBlueDotView {
+  if (_blueDotView) {
+    _blueDotView.hidden = NO;
+    return;
+  }
+
+  _blueDotView = [[UIView alloc] init];
+  _blueDotView.translatesAutoresizingMaskIntoConstraints = NO;
+  _blueDotView.layer.cornerRadius = kBlueDotSize / 2;
+  _blueDotView.backgroundColor = [UIColor colorNamed:kBlue600Color];
+  [_accessibilityContainerView addSubview:_blueDotView];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_blueDotView.widthAnchor constraintEqualToConstant:kBlueDotSize],
+    [_blueDotView.heightAnchor constraintEqualToConstant:kBlueDotSize],
+    // Position the blue dot at right bottom corner of the favicon image.
+    [_blueDotView.centerXAnchor
+        constraintEqualToAnchor:_faviconView.centerXAnchor
+                       constant:kFaviconSize / 2],
+    [_blueDotView.centerYAnchor
+        constraintEqualToAnchor:_faviconView.centerYAnchor
+                       constant:kFaviconSize / 2],
+  ]];
+}
+
+// Hides the blue dot view.
+- (void)hideBlueDotView {
+  _blueDotView.hidden = YES;
 }
 
 @end

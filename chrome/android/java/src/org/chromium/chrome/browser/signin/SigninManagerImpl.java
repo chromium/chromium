@@ -114,8 +114,8 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
     @VisibleForTesting
     static SigninManager create(
             long nativeSigninManagerAndroid,
-            Profile profile,
-            IdentityManager identityManager,
+            @JniType("Profile*") Profile profile,
+            @JniType("signin::IdentityManager*") IdentityManager identityManager,
             IdentityMutator identityMutator,
             SyncService syncService) {
         assert nativeSigninManagerAndroid != 0;
@@ -219,14 +219,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
      * to null in case the user is signed out.
      */
     private void maybeUpdateLegacyPrimaryAccountEmail() {
-        @ConsentLevel
-        int consentLevel =
-                SigninFeatureMap.isEnabled(
-                                SigninFeatures
-                                        .USE_CONSENT_LEVEL_SIGNIN_FOR_LEGACY_ACCOUNT_EMAIL_PREF)
-                        ? ConsentLevel.SIGNIN
-                        : ConsentLevel.SYNC;
-        CoreAccountInfo accountInfo = mIdentityManager.getPrimaryAccountInfo(consentLevel);
+        CoreAccountInfo accountInfo = mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         if (Objects.equals(
                 CoreAccountInfo.getEmailFrom(accountInfo),
                 SigninPreferencesManager.getInstance().getLegacyPrimaryAccountEmail())) {
@@ -627,7 +620,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
         ChromeSharedPreferences.getInstance()
                 .writeInt(
                         ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
-                                SigninPreferencesManager.SyncPromoAccessPointId.NTP),
+                                SigninPreferencesManager.SigninPromoAccessPointId.NTP),
                         0);
         SignOutCallback signOutCallback = mSignOutState.mSignOutCallback;
         if (mAccountManagerFacade.getCoreAccountInfos().isFulfilled()) {
@@ -676,13 +669,12 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
     }
 
     private void seedThenReloadAllAccountsFromSystem(@Nullable CoreAccountId primaryAccountId) {
-        if (!mAccountManagerFacade.getCoreAccountInfos().isFulfilled()) {
+        if (!mAccountManagerFacade.getAccounts().isFulfilled()) {
             throw new IllegalStateException("Account information should be available when seeding");
         }
         mIdentityMutator.seedAccountsThenReloadAllAccountsWithPrimaryAccount(
-                mAccountManagerFacade.getCoreAccountInfos().getResult(), primaryAccountId);
-        mIdentityManager.refreshAccountInfoIfStale(
-                mAccountManagerFacade.getCoreAccountInfos().getResult());
+                mAccountManagerFacade.getAccounts().getResult(), primaryAccountId);
+        mIdentityManager.refreshAccountInfoIfStale(mAccountManagerFacade.getAccounts().getResult());
         // Should be called after re-seeding accounts to make sure that we get the new email.
         maybeUpdateLegacyPrimaryAccountEmail();
     }

@@ -376,6 +376,46 @@ void VideoCaptureDeviceClient::OnCaptureConfigurationChanged() {
 }
 
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+std::optional<VideoCaptureDevice::Client::Buffer>
+VideoCaptureDeviceClient::ReserveEffectsOutputBuffer(
+    const VideoCaptureFormat& format,
+    const int frame_feedback_id) {
+  CHECK(base::FeatureList::IsEnabled(media::kCameraMicEffects));
+  // We need to allocate the output buffer since the post-processor cannot
+  // operate in-place. This new `out_buffer`, along with original `buffer`,
+  // will be considered as held for producer until the post-processor has
+  // finished processing their contents, after which the `buffer` should be
+  // marked as unused (`RelinquishProducerReservation()`) and `out_buffer`
+  // will be marked as held for consumer.
+  // Note that this means we're allocating 2x as many buffers as we'd have
+  // allocated without the video effects. It may be possible to hold on to
+  // the input buffer for less time than what is needed to post-process it
+  // - it could be released once the processor has imported it into the
+  // graphical API it uses to run the post-processing logic.
+  // TODO(https://crbug.com/339141106): Consider having an additional pool
+  // for post-processing output buffers, separate from the pool used to
+  // allocate the original buffers.
+  Buffer out_buffer;
+  const VideoCaptureDevice::Client::ReserveResult reserve_result =
+      ReserveOutputBuffer(format.frame_size, format.pixel_format,
+                          frame_feedback_id, &out_buffer,
+                          /*require_new_buffer_id=*/nullptr,
+                          /*retire_old_buffer_id=*/nullptr);
+
+  if (reserve_result == VideoCaptureDevice::Client::ReserveResult::kSucceeded) {
+    return std::move(out_buffer);
+  } else {
+    // We weren't able to reserve the buffer for the post-processor's
+    // result. We could either drop the frame or deliver the unprocessed
+    // buffer to the consumer, but since post-processing can apply
+    // privacy-preserving effects, we should not deliver unprocessed frames
+    // without user intervention, hence we report failure.
+    receiver_->OnFrameDropped(
+        ConvertReservationFailureToFrameDropReason(reserve_result));
+    return std::nullopt;
+  }
+}
+
 void VideoCaptureDeviceClient::OnPostProcessDone(
     base::expected<PostProcessDoneInfo, video_effects::mojom::PostProcessError>
         post_process_info_or_error) {
@@ -694,60 +734,37 @@ void VideoCaptureDeviceClient::OnIncomingCapturedExternalBuffer(
         reference_time, timestamp, capture_begin_timestamp, buffer.format,
         metadata, visible_rect, /*is_premapped=*/false, buffer.color_space);
 
-    // We need to allocate the output buffer since the post-processor cannot
-    // operate in-place. This new `out_buffer`, along with original `buffer`,
-    // will be considered as held for producer until the post-processor has
-    // finished processing their contents, after which the `buffer` should be
-    // marked as unused (`RelinquishProducerReservation()`) and `out_buffer`
-    // will be marked as held for consumer.
-    // Note that this means we're allocating 2x as many buffers as we'd have
-    // allocated without the video effects. It may be possible to hold on to
-    // the input buffer for less time than what is needed to post-process it
-    // - it could be released once the processor has imported it into the
-    // graphical API it uses to run the post-processing logic.
-    // TODO(https://crbug.com/339141106): Consider having an additional pool
-    // for post-processing output buffers, separate from the pool used to
-    // allocate the original buffers.
-    Buffer out_buffer;
-    const VideoCaptureDevice::Client::ReserveResult reserve_result =
-        ReserveOutputBuffer(
-            buffer.format.frame_size, buffer.format.pixel_format,
-            /*frame_feedback_id=*/0, &out_buffer, nullptr, nullptr);
+    const auto format = buffer.format;
+    auto out_buffer_optional =
+        ReserveEffectsOutputBuffer(format, /*frame_feedback_id=*/0);
+    if (!out_buffer_optional) {
+      return;
+    }
+    Buffer out_buffer = std::move(out_buffer_optional).value();
 
-    if (reserve_result ==
-        VideoCaptureDevice::Client::ReserveResult::kSucceeded) {
-      // Must happen here since we move out of `out_buffer` in the call to
-      // post-processor:
-      const VideoCaptureBufferType out_buffer_type =
-          buffer_pool_->GetBufferType(out_buffer.id);
-      const auto format = buffer.format;
+    // Must happen here since we move out of `out_buffer` in the call to
+    // post-processor:
+    const VideoCaptureBufferType out_buffer_type =
+        buffer_pool_->GetBufferType(out_buffer.id);
 
-      // The buffers were reserved but has not yet been reported as ready to the
-      // `receiver_`. Once the post-processor has completed, we will call
-      // `OnPostProcessDone()` & thus notify the receiver from there.
-      // TODO(https://crbug.com/345688428): drop the frame if we're already
-      // waiting for processing to finish for too many. Maybe if pool
-      // utilization is approaching 70%?
-      auto post_process_data = base::BindOnce(
-          &VideoCaptureEffectsProcessor::PostProcessExternalBuffer,
-          effects_processor_->GetWeakPtr(), std::move(buffer), std::move(info),
-          std::move(out_buffer), format, out_buffer_type,
-          base::BindOnce(&VideoCaptureDeviceClient::OnPostProcessDone,
-                         weak_ptr_factory_.GetWeakPtr()));
-      if (!effects_processor_task_runner_->RunsTasksInCurrentSequence()) {
-        effects_processor_task_runner_->PostTask(FROM_HERE,
-                                                 std::move(post_process_data));
-        return;
-      }
+    // The buffers were reserved but has not yet been reported as ready to the
+    // `receiver_`. Once the post-processor has completed, we will call
+    // `OnPostProcessDone()` & thus notify the receiver from there.
+
+    // TODO(https://crbug.com/345688428): drop the frame if we're already
+    // waiting for processing to finish for too many. Maybe if pool
+    // utilization is approaching 70%?
+    auto post_process_data = base::BindOnce(
+        &VideoCaptureEffectsProcessor::PostProcessExternalBuffer,
+        effects_processor_->GetWeakPtr(), std::move(buffer), std::move(info),
+        std::move(out_buffer), format, out_buffer_type,
+        base::BindOnce(&VideoCaptureDeviceClient::OnPostProcessDone,
+                       weak_ptr_factory_.GetWeakPtr()));
+    if (effects_processor_task_runner_->RunsTasksInCurrentSequence()) {
       std::move(post_process_data).Run();
     } else {
-      // We weren't able to reserve the buffer for the post-processor's
-      // result. We could either drop the frame or deliver the unprocessed
-      // buffer to the consumer, but since post-processing can apply
-      // privacy-preserving effects, we should not deliver unprocessed frames
-      // without user intervention, hence we report failure.
-      receiver_->OnFrameDropped(
-          ConvertReservationFailureToFrameDropReason(reserve_result));
+      effects_processor_task_runner_->PostTask(FROM_HERE,
+                                               std::move(post_process_data));
     }
     return;
   }
@@ -950,63 +967,34 @@ void VideoCaptureDeviceClient::OnIncomingCapturedBufferExt(
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
   if (base::FeatureList::IsEnabled(media::kCameraMicEffects) &&
       effects_processor_) {
-    // We need to allocate the output buffer since the post-processor cannot
-    // operate in-place. This new `out_buffer`, along with original `buffer`,
-    // will be considered as held for producer until the post-processor has
-    // finished processing their contents, after which the `buffer` should be
-    // marked as unused (`RelinquishProducerReservation()`) and `out_buffer`
-    // will be marked as held for consumer.
-    // Note that this means we're allocating 2x as many buffers as we'd have
-    // allocated without the video effects. It may be possible to hold on to
-    // the input buffer for less time than what is needed to post-process it
-    // - it could be released once the processor has imported it into the
-    // graphical API it uses to run the post-processing logic.
-    // TODO(https://crbug.com/339141106): Consider having an additional pool
-    // for post-processing output buffers, separate from the pool used to
-    // allocate the original buffers.
-
-    Buffer out_buffer;
-    const VideoCaptureDevice::Client::ReserveResult reserve_result =
-        ReserveOutputBuffer(format.frame_size, format.pixel_format,
-                            buffer.frame_feedback_id, &out_buffer, nullptr,
-                            nullptr);
-
-    const bool reserve_succeeded =
-        reserve_result == VideoCaptureDevice::Client::ReserveResult::kSucceeded;
-
-    if (reserve_succeeded) {
-      // Must happen here since we move out of `buffer` & `out_buffer` in the
-      // call to post-processor:
-      const VideoCaptureBufferType in_buffer_type =
-          buffer_pool_->GetBufferType(buffer.id);
-
-      const VideoCaptureBufferType out_buffer_type =
-          buffer_pool_->GetBufferType(out_buffer.id);
-
-      // The buffers were reserved but has not yet been reported as ready to the
-      // `receiver_`. Once the post-processor has completed, we will call
-      // `OnPostProcessDone()` & thus notify the receiver from there.
-
-      // TODO(https://crbug.com/345688428): drop the frame if we're already
-      // waiting for processing to finish for too many. Maybe if pool
-      // utilization is approaching 70%?
-      effects_processor_->PostProcessBuffer(
-          std::move(buffer), std::move(info), in_buffer_type,
-          std::move(out_buffer), format, out_buffer_type,
-          base::BindOnce(&VideoCaptureDeviceClient::OnPostProcessDone,
-                         weak_ptr_factory_.GetWeakPtr()));
-      return;
-    } else {
-      // We weren't able to reserve the buffer for the post-processor's
-      // result. We could either drop the frame or deliver the unprocessed
-      // buffer to the consumer, but since post-processing can apply
-      // privacy-preserving effects, we should not deliver unprocessed frames
-      // without user intervention, hence we report failure.
-
-      receiver_->OnFrameDropped(
-          ConvertReservationFailureToFrameDropReason(reserve_result));
+    auto out_buffer_optional =
+        ReserveEffectsOutputBuffer(format, /*frame_feedback_id=*/0);
+    if (!out_buffer_optional) {
       return;
     }
+    Buffer out_buffer = std::move(out_buffer_optional).value();
+
+    // Must happen here since we move out of `buffer` & `out_buffer` in the
+    // call to post-processor:
+    const VideoCaptureBufferType in_buffer_type =
+        buffer_pool_->GetBufferType(buffer.id);
+
+    const VideoCaptureBufferType out_buffer_type =
+        buffer_pool_->GetBufferType(out_buffer.id);
+
+    // The buffers were reserved but has not yet been reported as ready to the
+    // `receiver_`. Once the post-processor has completed, we will call
+    // `OnPostProcessDone()` & thus notify the receiver from there.
+
+    // TODO(https://crbug.com/345688428): drop the frame if we're already
+    // waiting for processing to finish for too many. Maybe if pool
+    // utilization is approaching 70%?
+    effects_processor_->PostProcessBuffer(
+        std::move(buffer), std::move(info), in_buffer_type,
+        std::move(out_buffer), format, out_buffer_type,
+        base::BindOnce(&VideoCaptureDeviceClient::OnPostProcessDone,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
   }
 #endif
 

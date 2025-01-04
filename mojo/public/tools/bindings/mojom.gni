@@ -678,13 +678,18 @@ template("mojom") {
         [ string_replace(path, rebase_path(root_gen_dir, "//") + "/", "") ]
   }
 
-  # Sanity check that either all input files have a .mojom extension, or
-  # all input files have a .test-mojom extension AND |testonly| is |true|.
+  # Sanity check that either all input files have a .mojom extension, or, for
+  # testonly targets, that all input files have a .test-mojom extension.
   sources_list_filenames =
       process_file_template(sources_list, "{{source_file_part}}")
   sources_list_filenames_with_mojom_extension =
       process_file_template(sources_list, "{{source_name_part}}.mojom")
-  if (sources_list_filenames != sources_list_filenames_with_mojom_extension) {
+  if (sources_list_filenames == sources_list_filenames_with_mojom_extension) {
+    if (defined(invoker.sources)) {
+      assert(!defined(invoker.testonly) || !invoker.testonly,
+             "testonly mojom target has non- .test-mojom files")
+    }
+  } else {
     sources_list_filenames_with_test_mojom_extension =
         process_file_template(sources_list, "{{source_name_part}}.test-mojom")
     if (sources_list_filenames ==
@@ -2069,6 +2074,7 @@ template("mojom") {
       android_library(java_target_name) {
         forward_variables_from(invoker, [ "enable_bytecode_checks" ])
         deps = [
+          "//build/android:build_java",
           "//mojo/public/java:bindings_java",
           "//mojo/public/java:system_java",
           "//third_party/androidx:androidx_annotation_annotation_java",

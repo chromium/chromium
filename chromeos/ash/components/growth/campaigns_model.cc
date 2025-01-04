@@ -14,11 +14,13 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/webui/grit/ash_mall_cros_app_resources.h"
 #include "ash/webui/grit/ash_print_management_resources.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "build/branding_buildflags.h"
@@ -246,7 +248,11 @@ std::optional<int> GetBuiltInImageResourceId(
     case BuiltInImage::kPlayStoreIcon:
       return IDR_PRODUCT_LOGO_128;
 #endif  // BUILDFLAG(ENABLE_CROS_SCALABLE_IPH)
+    case growth::BuiltInImage::kMallAppIcon:
+      return IDR_ASH_MALL_CROS_APP_IMAGES_MALL_ICON_192_PNG;
   }
+
+  return std::nullopt;
 }
 
 std::optional<BuiltInImage> GetBuiltInImageType(

@@ -92,8 +92,8 @@ class SiteInstanceTestBrowserClient : public TestContentBrowserClient {
  public:
   bool IsSuitableHost(RenderProcessHost* process_host,
                       const GURL& site_url) override {
-    return (privileged_process_id_ == process_host->GetID()) ==
-        site_url.SchemeIs(kPrivilegedScheme);
+    return (privileged_process_id_ == process_host->GetDeprecatedID()) ==
+           site_url.SchemeIs(kPrivilegedScheme);
   }
 
   void set_privileged_process_id(int process_id) {
@@ -609,10 +609,8 @@ TEST_F(SiteInstanceTest, DefaultSiteInstanceProperties) {
   // default SiteInstance creation on all platforms.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /* enable */ {features::kProcessSharingWithDefaultSiteInstances},
+      /* enable */ {},
       /* disable */ {features::kProcessSharingWithStrictSiteInstances});
-  EXPECT_TRUE(base::FeatureList::IsEnabled(
-      features::kProcessSharingWithDefaultSiteInstances));
   EXPECT_FALSE(base::FeatureList::IsEnabled(
       features::kProcessSharingWithStrictSiteInstances));
 
@@ -1224,7 +1222,8 @@ TEST_F(SiteInstanceTest, IsSuitableForUrlInfo) {
 
   // Simulate granting WebUI bindings for the process.
   ChildProcessSecurityPolicyImpl::GetInstance()->GrantWebUIBindings(
-      webui_host->GetID(), BindingsPolicySet({BindingsPolicyValue::kWebUi}));
+      webui_host->GetDeprecatedID(),
+      BindingsPolicySet({BindingsPolicyValue::kWebUi}));
 
   EXPECT_TRUE(webui_instance->HasProcess());
   EXPECT_TRUE(webui_instance->IsSuitableForUrlInfo(

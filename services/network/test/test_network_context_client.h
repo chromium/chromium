@@ -6,7 +6,6 @@
 #define SERVICES_NETWORK_TEST_TEST_NETWORK_CONTEXT_CLIENT_H_
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/cpp/network_service_buildflags.h"

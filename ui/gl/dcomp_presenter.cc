@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -112,8 +114,15 @@ void DCompPresenter::Present(SwapCompletionCallback completion_callback,
   // Callback will be dequeued on next vsync.
   EnqueuePendingFrame(std::move(presentation_callback));
 
-  if (!layer_tree_->CommitAndClearPendingOverlays(
-          std::move(pending_overlays_))) {
+  base::expected<void, CommitError> result =
+      layer_tree_->CommitAndClearPendingOverlays(std::move(pending_overlays_));
+  if (!result.has_value()) {
+    SCOPED_CRASH_KEY_NUMBER("gpu", "DCompPresenter.SWAP_FAILED.reason",
+                            static_cast<int>(result.error().reason));
+    SCOPED_CRASH_KEY_NUMBER("gpu", "DCompPresenter.SWAP_FAILED.hr?",
+                            static_cast<int>(result.error().hr.value_or(S_OK)));
+    base::debug::DumpWithoutCrashing();
+
     std::move(completion_callback)
         .Run(gfx::SwapCompletionResult(gfx::SwapResult::SWAP_FAILED));
     return;

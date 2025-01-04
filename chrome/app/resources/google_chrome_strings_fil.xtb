@@ -67,6 +67,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1786044937610313874">Magbubukas ang mga shortcut sa Chrome</translation>
 <translation id="178701303897325119">Hindi na sinusuportahan ang extension na ito. Inirerekomenda ng Chrome na alisin mo na lang ito.</translation>
 <translation id="1812689907177901597">Kapag na-off ito, maaari kang mag-sign in sa mga site ng Google tulad ng Gmail nang hindi nagsa-sign in sa Chrome</translation>
+<translation id="1838374766361614909">I-clear ang paghahanap</translation>
 <translation id="1860536484129686729">Kailangan ng Chrome ng pahintulot na i-access ang iyong camera para sa site na ito</translation>
 <translation id="1873233029667955273">Hindi Google Chrome ang iyong default na browser</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
@@ -95,7 +96,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2137162749895930932">Isara ang isalin ang screen</translation>
 <translation id="2139300032719313227">I-restart ang ChromeOS</translation>
 <translation id="2151406531797534936">Paki-restart ang Chrome ngayon</translation>
-<translation id="2163089732491971196">Para magamit at ma-save ang data sa Chrome sa iyong Google Account, ilagay ang passphrase mo</translation>
 <translation id="2174917724755363426">Hindi nakumpleto ang pag-install. Sigurado ka bang gusto mong kanselahin?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">Error sa pagtingin kung may update: <ph name="UPDATE_CHECK_ERROR" />.</translation>
@@ -209,6 +209,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="345171907106878721">Idagdag ang iyong sarili sa Chrome</translation>
 <translation id="3453763134178591239">Mga tuntunin ng ChromeOS</translation>
 <translation id="3503306920980160878">Kailangan ng Chrome ng access sa iyong lokasyon upang ibahagi ang lokasyon mo sa site na ito</translation>
+<translation id="3512634283363927263">Nakalaan ang mga page na ito para sa paggamit ng mga developer ng Chrome, at posibleng hindi ito aktibong pinapanatili o sinusubukan. Para i-enable ang mga ito, mag-navigate papunta sa <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, i-click ang button para i-enable ang mga page sa pag-debug, at pagkatapos ay mag-navigate ulit papunta sa page na ito.</translation>
 <translation id="3533694711092285624">Walang naka-save na password. Masusuri ng Chrome ang iyong mga password kapag na-save mo ang mga ito.</translation>
 <translation id="3541482654983822893">Hindi masuri ng Chrome ang iyong mga password. Subukan ulit pagkalipas ng 24 na oras.</translation>
 <translation id="3564543103555793392">Kapag nag-sign in ka sa Chrome, puwede kang mag-save ng mga bookmark, password at higit pa, at pagkatapos ay gamitin ang mga ito sa iyong telepono</translation>
@@ -231,7 +232,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="3716540481907974026">Bersyon ng ChromeOS Flex</translation>
 <translation id="3718181793972440140">Magde-delete ito ng 1 item sa device na ito. Upang makuha ang iyong data sa ibang pagkakataon, mag-sign in sa Chrome bilang <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Inirerekomenda ng Chrome na alisin mo ito. <ph name="BEGIN_LINK" />Matuto pa tungkol sa mga sinusuportahang extension<ph name="END_LINK" />}one{Inirerekomenda ng Chrome na alisin mo ang mga ito. <ph name="BEGIN_LINK" />Matuto pa tungkol sa mga sinusuportahang extension<ph name="END_LINK" />}other{Inirerekomenda ng Chrome na alisin mo ang mga ito. <ph name="BEGIN_LINK" />Matuto pa tungkol sa mga sinusuportahang extension<ph name="END_LINK" />}}</translation>
-<translation id="3744202345691150878">Humingi ng tulong sa ChromeOS</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Hindi ma-sync ng ChromeOS Flex ang iyong data dahil sa error sa pag-sign in.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
@@ -245,6 +245,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="3889417619312448367">I-uninstall ang Google Chrome</translation>
 <translation id="3892148308691398805">Kopyahin ang text</translation>
 <translation id="3941890832296813527">Error sa pag-install: Invalid o hindi sinusuportahan ang filename ng installer.</translation>
+<translation id="3968962723676998462">Ilagay ang iyong passphrase para magamit at ma-save ang data sa Chrome sa account mo, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Gustong i-delete ng Google Chrome ang iyong data sa Google Password Manager. I-type ang iyong password sa Windows para payagan ito.</translation>
 <translation id="398236277091248993">Nananatiling mabilis ang Chrome gamit ang mga feature na nagbu-boost ng performance</translation>
 <translation id="3999683152997576765">Makikita at maaalis mo ang mga paksa ng interes na ginagamit ng mga site para magpakita sa iyo ng mga ad. Tinataya ng Chrome ang iyong mga interes batay sa iyong kamakailang history ng pag-browse.</translation>
@@ -262,6 +263,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4147555960264124640">Nagsa-sign in ka gamit ang isang pinamamahalaang account at nagbibigay sa administrator nito ng kontrol sa iyong profile sa Google Chrome. Permanenteng mauugnay ang iyong data sa Chrome, gaya ng iyong apps, mga bookmark, kasaysayan, password, at iba pang setting sa <ph name="USER_NAME" />. Matatanggal mo ang data na ito sa Google Accounts Dashboard, ngunit hindi mo maiuugnay ang data na ito sa isa pang account. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Ini-install...</translation>
 <translation id="4149882025268051530">Nabigo ang installer sa pag-uncompress ng archive. Paki-download muli ang Google Chrome.</translation>
+<translation id="415112847282352845">Para makuha ang iyong mga address at higit pa sa lahat ng device mo, mag-sign in sa Chrome. Mase-save ang address na ito sa iyong Google Account pagkatapos mong mag-sign in.</translation>
 <translation id="4153934450158521343">Magsasara at magde-delete na ng data ang Chrome sa ilang saglit</translation>
 <translation id="4173512894976930765">Malamang na gagana ang mga site na gaya ng inaasahan. Masa-sign out ka sa karamihan ng mga site kapag isinara mo ang lahat ng window ng Chrome, maliban sa iyong Google Account kung naka-sign in ka sa Chrome.</translation>
 <translation id="4175922240926474352">Na-block ng Chrome ang pag-download na ito dahil hindi gumagamit ng secure na koneksyon ang site at posibleng na-tamper ang file</translation>
@@ -295,7 +297,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4567424176335768812">Naka-sign in ka bilang <ph name="USER_EMAIL_ADDRESS" />. Maaari mo na ngayong i-access ang iyong mga bookmark, kasaysayan, at iba pang setting sa lahat ng iyong device na naka-sign in.</translation>
 <translation id="4571503333518166079">Pumunta sa mga setting ng notification ng Chrome</translation>
 <translation id="4575717501879784448">Magagawa ng Chrome na gawing hindi aktibo ang mga tab na ito para pagandahin ang iyong experience sa pag-browse at bakantehin ang mga resource.</translation>
-<translation id="4595162648538023956">Puwede kang mag-sign in para makuha ang kailangan mo, o gamitin ang Chrome nang walang account</translation>
 <translation id="459622048091363950">Kapag mayroon nang access ang Chrome, makakahingi na ang mga website ng access sa iyo.</translation>
 <translation id="4600710005438004015">Hindi ma-update ang Chrome sa pinakabagong bersyon, kaya hindi mo magagamit ang mga bagong feature at pag-aayos sa seguridad.</translation>
 <translation id="4601439950572737842">Naka-encrypt ang iyong data gamit ang passphrase mo. Ilagay ito para magamit at ma-save ang data sa Chrome sa iyong Google account.</translation>
@@ -303,13 +304,13 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4627412468266359539">Opsyonal: Tumulong na pahusayin ang mga feature at performance ng ChromeOS Flex sa pamamagitan ng awtomatikong pagpapadala sa Google ng data ng diagnostic at paggamit.</translation>
 <translation id="4633000520311261472">Upang gawing mas ligtas ang Chrome, nag-disable kami ng ilang extension na hindi nakalista sa <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> at maaaring naidagdag nang hindi mo nalalaman.</translation>
 <translation id="4680828127924988555">Kanselahin ang Pag-install</translation>
-<translation id="469553575393225953">Puwedeng mapinsala ng mga extension, app, at tema mula sa mga hindi kilalang source ang iyong device. Inirerekomenda ng Chrome na i-install lang ang mga ito mula sa Chrome Web Store</translation>
 <translation id="4710245680469034439">I-personalize ang iyong browser gamit ang mga temang nakakuha ng inspirasyon sa kalikasan, mga koleksyon ng mga artist, at higit pa</translation>
 <translation id="4720851490453439956">Google Updater Internal Service</translation>
 <translation id="4724676981607797757">Hindi na-install dahil sa error na hindi sinusuportahang protocol.</translation>
 <translation id="4728575227883772061">Nabigo ang pag-install dahil sa hindi natukoy na error. Kung kasalukuyang tumatakbo ang Google Chrome, paki-sara ito at subukan ulit.</translation>
 <translation id="4741235124132242877">Na-pin na! Gamitin ulit ang Google Lens mula sa toolbar</translation>
 <translation id="4747730611090640388">Puwedeng tantyahin ng Chrome ang iyong mga interes.  Sa ibang pagkakataon, puwedeng hilingin ng site na binibisita mo sa Chrome na makita ang iyong mga interes para ma-personalize ang mga ad na nakikita mo.</translation>
+<translation id="475321580758063259">I-update ang Chrome para patuloy na magamit ang data sa Chrome sa iyong Google Account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="479167709087336770">Ginagamit nito ang parehong spellchecker na ginagamit sa paghahanap sa Google. Ipinapadala sa Google ang text na tina-type mo sa browser. Puwede mong baguhin ang gawing ito sa mga setting sa lahat ng oras.</translation>
 <translation id="4793679854893018356">Alamin kung paano ka pinapanatiling ligtas ng Chrome</translation>
@@ -354,7 +355,6 @@ Maaaring hindi available ang ilang tampok. Mangyaring tumukoy ng ibang direktory
 <translation id="5334309298019785904">Hindi ma-sync ng ChromeOS ang iyong data dahil hindi available ang Pag-sync para sa iyong domain.</translation>
 <translation id="5334487786912937552">Kailangan ng Chrome ng pahintulot sa access sa storage para makapag-download ng mga file</translation>
 <translation id="5337648990166757586">Opsyonal: Tumulong na pahusayin ang mga feature at performance ng ChromeOS sa pamamagitan ng awtomatikong pagpapadala sa Google ng data ng diagnostic at paggamit.</translation>
-<translation id="5357889879764279201">Humingi ng tulong gamit ang ChromeOS Flex</translation>
 <translation id="5368118228313795342">Dagdag na code: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Kinokontrol din nito kung anong pahina ang ipinapakita kapag sinimulan mo ang Chrome o naghanap mula sa Omnibox.</translation>
 <translation id="5394833366792865639">Magbahagi ng tab ng Chrome</translation>
@@ -395,6 +395,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="5941830788786076944">Gawin ang Google Chrome na default browser</translation>
 <translation id="5947104538377036631">Shortcut ng Chrome</translation>
 <translation id="5953954252731207958">Hindi mo ito binisita kamakailan. Inalis ng Chrome ang <ph name="PERMISSION" /></translation>
+<translation id="5980111191913430208">Puwedeng mapinsala ng mga extension, app, at tema mula sa mga hindi kilalang source ang iyong device. Inirerekomenda ng Chrome na i-install lang ang mga ito mula sa <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Nagda-download... <ph name="HOURS" /> (na) oras na lang ang natitira</translation>
 <translation id="6014316319780893079">Gamit ang <ph name="BEGIN_LINK" />mga tool mula sa Chrome<ph name="END_LINK" />, makakapag-browse ka nang ligtas at mananatili kang may kontrol</translation>
 <translation id="6022659036123304283">Gawing iyo ang Chrome</translation>
@@ -528,6 +529,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="7572537927358445944">Naka-off • Hindi ma-verify ng Chrome kung saan galing ang extension na ito</translation>
 <translation id="7583399374488819119">Installer ng <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
+<translation id="7617512710641355143">Pinapamahalaan ang Chrome</translation>
 <translation id="7626032353295482388">Welcome sa Chrome</translation>
 <translation id="7626072681686626474">Kinakailangan ng <ph name="MANAGER" /> na basahin mo at tanggapin ang sumusunod na Mga Tuntunin ng Serbisyo bago gamitin ang device na ito. Hindi pinapalawak, binabago o nililimitahan ng mga tuntuning ito ang Mga Tuntunin ng Google ChromeOS.</translation>
 <translation id="7629695634924605473">Ipinapaalam sa iyo ng Chrome kung nakompromiso ang mga password mo</translation>
@@ -585,6 +587,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="8077579734294125741">Iba pang Profile sa Chrome</translation>
 <translation id="8086881907087796310">Hindi na-install dahil hindi natutugunan ng iyong computer ang mga minimum na requirement sa hardware.</translation>
 <translation id="8111297389482307122">Kailangang i-verify ng Chrome na ikaw ito bago ma-save ang ilang data sa iyong Google Account at magamit ito sa lahat ng device mo. Kung magsa-sign out ka, mananatili ang data sa device na ito.</translation>
+<translation id="8113883687556086139">I-verify na ikaw ito para magamit at ma-save ang data sa Chrome sa iyong account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8118331347066725040">Magpadala ng feedback para sa paghahanap gamit ang Lens</translation>
 <translation id="8129812357326543296">Tungkol sa &amp;Google Chrome</translation>
 <translation id="813913629614996137">Sinisimulan...</translation>
@@ -612,6 +615,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="842386925677997438">Mga tool sa kaligtasan ng Chrome</translation>
 <translation id="8425765582779547329">Para manatiling mas ligtas online sa pamamagitan ng mga pinili ng iyong magulang, mag-sign in sa Chrome</translation>
 <translation id="8428213095426709021">Mga Setting</translation>
+<translation id="8429214465555795676">Para magpatuloy, kakailanganin mong mag-sign in sa Chrome gamit ang <ph name="EMAIL" />. Tinitiyak nito ang pagsunod sa mga patakaran ng iyong organisasyon.</translation>
 <translation id="8433638294851456451">Para magpadala ng numero sa iyong Android phone mula rito, mag-sign in sa Chrome sa parehong device.</translation>
 <translation id="8451192282033883849">Pinapamahalaan ng <ph name="MANAGER_NAME" /> ang iyong account. Makikita at mae-edit ng iyong administrator ang profile na ito sa Chrome browser at ang data nito gaya ng mga bookmark, history, at mga password.</translation>
 <translation id="8496177819998570653">Google P&amp;assword Manager</translation>
@@ -637,6 +641,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="8718062187489036808">Mag-sign Out sa Chrome</translation>
 <translation id="873133009373065397">Hindi matukoy o maitakda ng Google Chrome ang default na browser</translation>
 <translation id="8748735421235723888">Nagbabakante ng memory ang Chrome mula sa mga hindi aktibong tab. Binibigyan nito ang mga aktibong tab at iba pang app ng higit pang resource ng computer at pinapanatili nitong mabilis ang Chrome. Awtomatikong nagiging aktibo ulit ang iyong mga hindi aktibong tab kapag bumalik ka sa mga ito. <ph name="BEGIN_LINK" />Matuto pa tungkol sa Memory Saver<ph name="END_LINK" /></translation>
+<translation id="8753189155654018347">Alisin ang data ng app na ito sa Chrome</translation>
 <translation id="8765470054473112089">Kapag nag-type ka sa address bar o sa box para sa paghahanap, ipapadala ng Chrome kung ano ang tina-type mo sa iyong default na search engine para makakuha ng mas magagandang suhestyon. Naka-off ito sa Incognito.</translation>
 <translation id="8781673607513845160">Para magamit ang iyong camera, bigyan ng access ang Chrome sa <ph name="BEGIN_LINK" />mga setting ng system<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Error sa pag-install: Nag-apply ang administrator ng network mo ng Group Policy na pumipigil sa pag-install: <ph name="INSTALL_ERROR" /></translation>

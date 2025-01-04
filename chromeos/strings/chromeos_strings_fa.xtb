@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">غیرفعال کردن زمینه تاریک</translation>
 <translation id="1807246157184219062">روشن</translation>
 <translation id="1808803439260407870">هنر کلاسیک</translation>
+<translation id="181434555916624618">فعلاً نتایج حاوی افراد نمایش داده نخواهد شد. پیام‌واره دیگری را امتحان کنید.</translation>
 <translation id="1815850098929213707">کلید انتخاب‌شده <ph name="KEYS" /> است. برای ویرایش کنترل، روی دکمه تک‌ضرب بزنید</translation>
 <translation id="1823120442877418684">شخصیت‌ها</translation>
 <translation id="1827738518074806965">گالری هنری</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">باتری هدفون توگوشی سمت راست دستگاه <ph name="BATTERY_PERCENTAGE" />٪ شارژ دارد.</translation>
 <translation id="3340978935015468852">تنظیمات</translation>
 <translation id="3347558044552027859">مدرن</translation>
+<translation id="3353477144743332882">بارگیری مدل ایجاد خلاصه و نام</translation>
 <translation id="3359218928534347896">تغییر وضعیت بی‌صدا بودن میکروفون</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">سوشی</translation>
@@ -689,6 +691,7 @@
 <translation id="4354430579665871434">کلید</translation>
 <translation id="4356100841225547054">خاموش کردن صدا</translation>
 <translation id="4361257691546579041">‏«نام نقطه دستیابی» از نوع پیش‌فرض است.</translation>
+<translation id="4368101969572512692">درهم کردن پیشنهادها</translation>
 <translation id="437294888293595148">بازنشانی همه میان‌برها</translation>
 <translation id="437477383107495720">خرگوش</translation>
 <translation id="4376423484621194274">سرپرست شما بستن <ph name="APP_NAME" /> را غیرمجاز کرده است</translation>
@@ -768,6 +771,7 @@
 <translation id="4731797938093519117">دسترسی ولی</translation>
 <translation id="473775607612524610">به‌روزرسانی</translation>
 <translation id="4744944742468440486">اطلاعات مرتبط با انتخاب شما</translation>
+<translation id="4750394297954878236">پیشنهادات</translation>
 <translation id="4771607256327216405">صفحه‌کلید روشن‌تر</translation>
 <translation id="4771923071974529837">فردا</translation>
 <translation id="4773299976671772492">متوقف شد</translation>
@@ -853,6 +857,7 @@
 <translation id="5121677070210013200">‏مدل ترانویسی بارگیری نشد. دوباره امتحان کنید یا Chromebook را بازراه‌اندازی کنید.</translation>
 <translation id="5130848777448318809">اسبچه</translation>
 <translation id="5137451382116112100">تمام‌صفحه</translation>
+<translation id="5139813694804168398">مزاحم نشوید</translation>
 <translation id="5140788690559353412">‏وقتی دسترسی به حساب تحصیلی خود را ازدست بدهید، دیگر به ایمیل منسوب و فایل‌های Google Drive مثل Gmail، «سندنگار»، «اسلایدنگار»، و غیره دسترسی نخواهید داشت.</translation>
 <translation id="5142961317498132443">اصالت‌سنجی</translation>
 <translation id="5144311987923128508">کلید تأیید اکنون غیرفعال است</translation>
@@ -871,7 +876,7 @@
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5220549459260334974">‫<ph name="PROGRESS_PERCENTAGE" />٪ بارگیری شده است</translation>
 <translation id="5222676887888702881">خروج از سیستم</translation>
-<translation id="522307662484862935">نشانی ایمیل لحاظ نشود</translation>
+<translation id="522307662484862935">بدون درج نشانی ایمیل</translation>
 <translation id="5223226274641517059">«ترانویسی هم‌زمان» درحین ضبط نمایش داده خواهد شد. هروقت بخواهید می‌توانید این گزینه را در «تنظیمات» خاموش کنید.</translation>
 <translation id="5226879510707344687">صادر کردن ترانویسی</translation>
 <translation id="5227902338748591677">زمان‌بندی زمینه تاریک</translation>
@@ -897,6 +902,7 @@
 <translation id="5302048478445481009">زبان</translation>
 <translation id="5303837385540978511">کاغذدیواری انحصاری <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="530883153651464140">به‌روزرسانی <ph name="DEVICE_NAME" /> به نسخه <ph name="VERSION" /></translation>
 <translation id="5315873049536339193">هویت</translation>
 <translation id="5317780077021120954">ذخیره</translation>
 <translation id="5318310531701770497">ایجاد کردن نام امکان‌پذیر نیست. ترانویسی طولانی‌تری را امتحان کنید.</translation>
@@ -973,7 +979,6 @@
 <translation id="5703716265115423771">پایین آوردن صدا</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> از <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">ویرایش دکمه <ph name="SHORTCUT_DESCRIPTION" />.</translation>
-<translation id="5733298426544876109">به‌روزرسانی <ph name="DEVICE_NAME" /></translation>
 <translation id="5736820754189340309">مصرف داده بازنشانی شده است</translation>
 <translation id="574392208103952083">متوسط</translation>
 <translation id="5744175046705638478">ترجمه کردن «<ph name="QUERY" />»</translation>
@@ -998,6 +1003,7 @@
 <translation id="5859969039821714932">میان‌بر دردسترس نیست. لطفاً میان‌بر جدیدی بدون استفاده از <ph name="KEY" /> اختصاص دهید.</translation>
 <translation id="5860033963881614850">خاموش</translation>
 <translation id="5860491529813859533">روشن کردن</translation>
+<translation id="5875913454160982848">بارگیری مدل ترانویسی</translation>
 <translation id="5876385649737594562">برای انتخاب گزینه‌ها، این حالت را روشن کنید</translation>
 <translation id="5877503382465267833">موقتاً متوقف کردن <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">تمام صفحه</translation>
@@ -1037,7 +1043,6 @@
 <translation id="6040143037577758943">بستن</translation>
 <translation id="6040852767465482106">شناسه ناشناس</translation>
 <translation id="604124094241169006">خودکار</translation>
-<translation id="6042308850641462728">بیشتر</translation>
 <translation id="6048107060512778456">انجام نشد - کاغذ گیر کرده است</translation>
 <translation id="6050189528197190982">سیاه‌وسفید</translation>
 <translation id="6054711098834486579">اکسپرسیونیست</translation>
@@ -1293,6 +1298,7 @@
 <translation id="7134436342991564651">{0,plural, =1{سرور نام}one{سرور نام}other{سرورهای نام}}</translation>
 <translation id="7135814714616751706">جستجوی میان‌برها</translation>
 <translation id="7138614237884624401">نوشتار ساده‌شده</translation>
+<translation id="7138668887584231801">تعداد کلمات برای خلاصه کردن کافی نیست</translation>
 <translation id="7141470099673912333">انتقال محتوا</translation>
 <translation id="7143207342074048698">در حال اتصال</translation>
 <translation id="7144878232160441200">سعی مجدد</translation>
@@ -1588,6 +1594,7 @@
 <translation id="8503836310948963452">فقط چند دقیقه دیگر…</translation>
 <translation id="8505011850330200833">‏مدل Gemini برای پردازش ترانویسی‌ها و ایجاد خلاصه از قطعه‌های ضبط‌شده به ۲ گیگابایت فضای ذخیره‌سازی نیاز دارد</translation>
 <translation id="8508640263392900755">جزئیات «نام نقطه دستیابی»</translation>
+<translation id="8509574872955173831">درباره ایجاد خلاصه و نام بیشتر بدانید</translation>
 <translation id="8522687886059337719">اکنون به <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />کاغذدیواری‌ها<ph name="END_LINK_WALLPAPER_SUBPAGE" /> و <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />محافظ صفحه<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> جدید دسترسی دارید</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">چای‌خانه</translation>
@@ -1724,7 +1731,6 @@
 <translation id="9133772297793293778">کلیدهای توصیف‌گر ۱ تا ۴ و یک کلید دیگر را روی صفحه‌کلید فشار دهید. برای خروج از حالت ویرایش، دگرساز + گریز را فشار دهید.</translation>
 <translation id="9137526406337347448">‏سرویس‌های Google</translation>
 <translation id="9138630967333032450">کلید تبدیل چپ</translation>
-<translation id="9147928237330776930">تعداد کلمات برای خلاصه کردن خیلی کم است</translation>
 <translation id="9149391708638971077">اجرای آزمایش حافظه</translation>
 <translation id="9159524746324788320">همبرگر</translation>
 <translation id="9161276708550942948">فاصله</translation>

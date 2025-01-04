@@ -10,11 +10,14 @@ import android.util.AttributeSet;
 
 import androidx.appcompat.widget.AppCompatImageButton;
 
+import org.chromium.build.annotations.NullMarked;
+
 // TODO(crbug.com/40883889): See if we still need this class.
 /**
  * A subclass of AppCompatImageButton to add workarounds for bugs in Android Framework and Support
  * Library.
  */
+@NullMarked
 public class ChromeImageButton extends AppCompatImageButton {
     public ChromeImageButton(Context context) {
         super(context);

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_VIZ_COMMON_RESOURCES_PEAK_GPU_MEMORY_TRACKER_UTIL_H_
 #define COMPONENTS_VIZ_COMMON_RESOURCES_PEAK_GPU_MEMORY_TRACKER_UTIL_H_
 
+#include <stdint.h>
+
 #include <utility>
 
 #include "components/viz/common/viz_common_export.h"

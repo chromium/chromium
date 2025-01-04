@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "ui/accessibility/ax_node_position.h"
 
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
@@ -23,7 +21,6 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
-#include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_range.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_tree.h"
@@ -50,7 +47,7 @@ constexpr AXNodeID STATIC_TEXT2_ID = 8;
 constexpr AXNodeID INLINE_BOX2_ID = 9;
 
 // A group of basic and extended characters.
-constexpr const wchar_t* kGraphemeClusters[] = {
+constexpr const auto kGraphemeClusters = std::to_array<const wchar_t*>({
     // The English word "hey" consisting of four ASCII characters.
     L"h",
     L"e",
@@ -64,7 +61,7 @@ constexpr const wchar_t* kGraphemeClusters[] = {
     L"\x0E23\x0E39\x0E49",
     L"\x0E2A\x0E36",
     L"\x0E01",
-};
+});
 
 class AXPositionTest : public ::testing::Test, public TestSingleAXTreeManager {
  public:

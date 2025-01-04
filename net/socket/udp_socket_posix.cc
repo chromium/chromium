@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "net/socket/udp_socket_posix.h"
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
@@ -15,13 +17,12 @@
 #define __APPLE_USE_RFC_3542
 #endif  // BUILDFLAG(IS_APPLE)
 
-#include "net/socket/udp_socket_posix.h"
-
 #include <errno.h>
 #include <fcntl.h>
 #include <net/if.h>
 #include <netdb.h>
 #include <netinet/in.h>
+#include <stdint.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 
@@ -238,11 +239,13 @@ int UDPSocketPosix::GetPeerAddress(IPEndPoint* address) const {
 
   if (!remote_address_.get()) {
     SockaddrStorage storage;
-    if (getpeername(socket_, storage.addr, &storage.addr_len))
+    if (getpeername(socket_, storage.addr(), &storage.addr_len)) {
       return MapSystemError(errno);
+    }
     auto endpoint = std::make_unique<IPEndPoint>();
-    if (!endpoint->FromSockAddr(storage.addr, storage.addr_len))
+    if (!endpoint->FromSockAddr(storage.addr(), storage.addr_len)) {
       return ERR_ADDRESS_INVALID;
+    }
     remote_address_ = std::move(endpoint);
   }
 
@@ -258,11 +261,13 @@ int UDPSocketPosix::GetLocalAddress(IPEndPoint* address) const {
 
   if (!local_address_.get()) {
     SockaddrStorage storage;
-    if (getsockname(socket_, storage.addr, &storage.addr_len))
+    if (getsockname(socket_, storage.addr(), &storage.addr_len)) {
       return MapSystemError(errno);
+    }
     auto endpoint = std::make_unique<IPEndPoint>();
-    if (!endpoint->FromSockAddr(storage.addr, storage.addr_len))
+    if (!endpoint->FromSockAddr(storage.addr(), storage.addr_len)) {
       return ERR_ADDRESS_INVALID;
+    }
     local_address_ = std::move(endpoint);
     net_log_.AddEvent(NetLogEventType::UDP_LOCAL_ADDRESS, [&] {
       return CreateNetLogUDPConnectParams(*local_address_, bound_network_);
@@ -396,10 +401,11 @@ int UDPSocketPosix::InternalConnect(const IPEndPoint& address) {
   }
 
   SockaddrStorage storage;
-  if (!address.ToSockAddr(storage.addr, &storage.addr_len))
+  if (!address.ToSockAddr(storage.addr(), &storage.addr_len)) {
     return ERR_ADDRESS_INVALID;
+  }
 
-  rv = HANDLE_EINTR(connect(socket_, storage.addr, storage.addr_len));
+  rv = HANDLE_EINTR(connect(socket_, storage.addr(), storage.addr_len));
   if (rv < 0)
     return MapSystemError(errno);
 
@@ -499,7 +505,7 @@ int UDPSocketPosix::SetRecvTos() {
   DCHECK_NE(socket_, kInvalidSocket);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  unsigned int ecn = 1;
+  uint32_t ecn = 1;
   if (addr_family_ == AF_INET6) {
     if (setsockopt(socket_, IPPROTO_IPV6, IPV6_RECVTCLASS, &ecn, sizeof(ecn)) !=
         0) {
@@ -723,9 +729,9 @@ int UDPSocketPosix::InternalRecvFromConnectedSocket(IOBuffer* buf,
 
   SockaddrStorage sock_addr;
   bool success =
-        remote_address_->ToSockAddr(sock_addr.addr, &sock_addr.addr_len);
-    DCHECK(success);
-    LogRead(result, buf->data(), sock_addr.addr_len, sock_addr.addr);
+      remote_address_->ToSockAddr(sock_addr.addr(), &sock_addr.addr_len);
+  DCHECK(success);
+  LogRead(result, buf->data(), sock_addr.addr_len, sock_addr.addr());
   return result;
 }
 
@@ -742,7 +748,7 @@ int UDPSocketPosix::InternalRecvFromNonConnectedSocket(IOBuffer* buf,
   // 512 Bytes, re-used here.
   char control_buffer[512];
   struct msghdr msg = {
-      .msg_name = storage.addr,
+      .msg_name = storage.addr(),
       .msg_namelen = storage.addr_len,
       .msg_iov = &iov,
       .msg_iovlen = 1,
@@ -763,7 +769,7 @@ int UDPSocketPosix::InternalRecvFromNonConnectedSocket(IOBuffer* buf,
       // Linux, but isn't supported by POSIX.
       result = ERR_MSG_TOO_BIG;
     } else if (address &&
-               !address->FromSockAddr(storage.addr, storage.addr_len)) {
+               !address->FromSockAddr(storage.addr(), storage.addr_len)) {
       result = ERR_ADDRESS_INVALID;
     } else {
       result = bytes_transferred;
@@ -787,7 +793,7 @@ int UDPSocketPosix::InternalRecvFromNonConnectedSocket(IOBuffer* buf,
     }
   }
 
-  LogRead(result, buf->data(), storage.addr_len, storage.addr);
+  LogRead(result, buf->data(), storage.addr_len, storage.addr());
   return result;
 }
 
@@ -795,12 +801,12 @@ int UDPSocketPosix::InternalSendTo(IOBuffer* buf,
                                    int buf_len,
                                    const IPEndPoint* address) {
   SockaddrStorage storage;
-  struct sockaddr* addr = storage.addr;
+  struct sockaddr* addr = storage.addr();
   if (!address) {
     addr = nullptr;
     storage.addr_len = 0;
   } else {
-    if (!address->ToSockAddr(storage.addr, &storage.addr_len)) {
+    if (!address->ToSockAddr(storage.addr(), &storage.addr_len)) {
       int result = ERR_ADDRESS_INVALID;
       LogWrite(result, nullptr, nullptr);
       return result;
@@ -876,9 +882,10 @@ int UDPSocketPosix::SetMulticastOptions() {
 
 int UDPSocketPosix::DoBind(const IPEndPoint& address) {
   SockaddrStorage storage;
-  if (!address.ToSockAddr(storage.addr, &storage.addr_len))
+  if (!address.ToSockAddr(storage.addr(), &storage.addr_len)) {
     return ERR_ADDRESS_INVALID;
-  int rv = bind(socket_, storage.addr, storage.addr_len);
+  }
+  int rv = bind(socket_, storage.addr(), storage.addr_len);
   if (rv == 0)
     return OK;
   int last_error = errno;

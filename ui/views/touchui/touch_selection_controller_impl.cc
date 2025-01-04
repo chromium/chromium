@@ -313,14 +313,16 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
       // or right handle image. If selection handles are dragged to be located
       // at the same spot, the |bound|'s type here will be CENTER for both of
       // them. In this case do not update the type of the |selection_bound_|.
-      if (bound.type() != gfx::SelectionBound::CENTER || is_cursor_handle_)
+      if (bound.type() != gfx::SelectionBound::CENTER || is_cursor_handle_) {
         update_bound_type = true;
+      }
     }
     if (update_bound_type) {
       selection_bound_.set_type(bound.type());
       handle_image_ = GetHandleVectorIcon(bound.type());
-      if (is_visible)
+      if (is_visible) {
         SchedulePaint();
+      }
     }
 
     if (is_visible) {
@@ -381,8 +383,9 @@ TouchSelectionControllerImpl::TouchSelectionControllerImpl(
   aura::Window* client_window = client_view_->GetNativeView();
   client_widget_ = Widget::GetTopLevelWidgetForNativeView(client_window);
   // Observe client widget moves and resizes to update the selection handles.
-  if (client_widget_)
+  if (client_widget_) {
     client_widget_->AddObserver(this);
+  }
 
   // Observe certain event types sent to any event target, to hide this ui.
   aura::Env* env = aura::Env::GetInstance();
@@ -582,8 +585,9 @@ void TouchSelectionControllerImpl::SetHandleBound(
 
 bool TouchSelectionControllerImpl::ShouldShowHandleFor(
     const gfx::SelectionBound& bound) const {
-  if (bound.GetHeight() < kSelectionHandleBarMinHeight)
+  if (bound.GetHeight() < kSelectionHandleBarMinHeight) {
     return false;
+  }
   gfx::Rect client_bounds = client_view_->GetBounds();
   client_bounds.Inset(
       gfx::Insets::TLBR(0, 0, -kSelectionHandleBarBottomAllowance, 0));
@@ -632,8 +636,9 @@ void TouchSelectionControllerImpl::OnEvent(const ui::Event& event) {
   if (event.IsMouseEvent()) {
     auto* cursor = aura::client::GetCursorClient(
         client_view_->GetNativeView()->GetRootWindow());
-    if (cursor && !cursor->IsMouseEventsEnabled())
+    if (cursor && !cursor->IsMouseEventsEnabled()) {
       return;
+    }
 
     // Windows OS unhandled WM_POINTER* may be redispatched as WM_MOUSE*.
     // Avoid adjusting the handles on synthesized events or events generated
@@ -655,8 +660,9 @@ void TouchSelectionControllerImpl::QuickMenuTimerFired() {
   }
 
   gfx::Rect menu_anchor = GetQuickMenuAnchorRect();
-  if (menu_anchor == gfx::Rect())
+  if (menu_anchor == gfx::Rect()) {
     return;
+  }
 
   gfx::Size handle_image_size;
   if (selection_handle_1_widget_->IsClosed() ||
@@ -673,8 +679,9 @@ void TouchSelectionControllerImpl::QuickMenuTimerFired() {
 }
 
 void TouchSelectionControllerImpl::StartQuickMenuTimer() {
-  if (quick_menu_timer_.IsRunning())
+  if (quick_menu_timer_.IsRunning()) {
     return;
+  }
   quick_menu_timer_.Start(FROM_HERE, base::Milliseconds(kQuickMenuDelayInMs),
                           this,
                           &TouchSelectionControllerImpl::QuickMenuTimerFired);
@@ -711,14 +718,15 @@ gfx::Rect TouchSelectionControllerImpl::GetQuickMenuAnchorRect() const {
   // the middle of the end points on the top. Else, we show it above the visible
   // handle. If no handle is visible, we do not show the menu.
   gfx::Rect menu_anchor;
-  if (ShouldShowHandleFor(b1) && ShouldShowHandleFor(b2))
+  if (ShouldShowHandleFor(b1) && ShouldShowHandleFor(b2)) {
     menu_anchor = gfx::RectBetweenSelectionBounds(b1_in_screen, b2_in_screen);
-  else if (ShouldShowHandleFor(b1))
+  } else if (ShouldShowHandleFor(b1)) {
     menu_anchor = BoundToRect(b1_in_screen);
-  else if (ShouldShowHandleFor(b2))
+  } else if (ShouldShowHandleFor(b2)) {
     menu_anchor = BoundToRect(b2_in_screen);
-  else
+  } else {
     return menu_anchor;
+  }
 
   // Enlarge the anchor rect so that the menu is offset from the text at least
   // by the same distance the handles are offset from the text.

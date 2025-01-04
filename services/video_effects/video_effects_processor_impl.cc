@@ -36,19 +36,22 @@ VideoEffectsProcessorImpl::VideoEffectsProcessorImpl(
     wgpu::Device device,
     mojo::PendingRemote<media::mojom::VideoEffectsManager> manager_remote,
     mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor_receiver,
-    std::unique_ptr<GpuChannelHostProvider> gpu_channel_host_provider,
+    scoped_refptr<GpuChannelHostProvider> gpu_channel_host_provider,
     base::OnceClosure on_unrecoverable_error)
     : device_(device),
       manager_remote_(std::move(manager_remote)),
       processor_receiver_(this, std::move(processor_receiver)),
-      gpu_channel_host_provider_(std::move(gpu_channel_host_provider)),
+      gpu_channel_host_provider_(gpu_channel_host_provider),
       on_unrecoverable_error_(std::move(on_unrecoverable_error)) {
+  CHECK(gpu_channel_host_provider_);
   processor_receiver_.set_disconnect_handler(
       base::BindOnce(&VideoEffectsProcessorImpl::OnMojoDisconnected,
                      weak_ptr_factory_.GetWeakPtr()));
   manager_remote_.set_disconnect_handler(
       base::BindOnce(&VideoEffectsProcessorImpl::OnMojoDisconnected,
                      weak_ptr_factory_.GetWeakPtr()));
+  manager_remote_->AddObserver(
+      configuration_observer_.BindNewPipeAndPassRemote());
 }
 
 VideoEffectsProcessorImpl::~VideoEffectsProcessorImpl() {
@@ -149,6 +152,12 @@ void VideoEffectsProcessorImpl::OnContextLost() {
   }
 }
 
+void VideoEffectsProcessorImpl::OnConfigurationChanged(
+    media::mojom::VideoEffectsConfigurationPtr configuration) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(b/374149033): save configuration, to be passed to `processor_webgpu_`.
+}
+
 void VideoEffectsProcessorImpl::OnMojoDisconnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -156,6 +165,7 @@ void VideoEffectsProcessorImpl::OnMojoDisconnected() {
   // `on_unrecoverable_error_` since the owner of this processor instance may
   // want to tear us down (the processor is no longer usable).
   processor_receiver_.reset();
+  configuration_observer_.reset();
   manager_remote_.reset();
 
   MaybeCallOnUnrecoverableError();

@@ -121,6 +121,8 @@ void ExpectAllContainers() {
   EXPECT_TRUE(Shell::GetContainer(root_window,
                                   kShellWindowId_LockSystemModalContainer));
   EXPECT_TRUE(Shell::GetContainer(root_window, kShellWindowId_MenuContainer));
+  EXPECT_TRUE(Shell::GetContainer(
+      root_window, kShellWindowId_CaptureModeSearchResultsPanel));
   EXPECT_TRUE(Shell::GetContainer(root_window,
                                   kShellWindowId_DragImageAndTooltipContainer));
   EXPECT_TRUE(

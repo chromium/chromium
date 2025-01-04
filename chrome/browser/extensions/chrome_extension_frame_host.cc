@@ -90,7 +90,7 @@ void ChromeExtensionFrameHost::DetailedConsoleMessageAdded(
           stack_trace, web_contents_->GetLastCommittedURL(),
           blink::ConsoleMessageLevelToLogSeverity(level),
           render_frame_host->GetRoutingID(),
-          render_frame_host->GetProcess()->GetID())));
+          render_frame_host->GetProcess()->GetDeprecatedID())));
 }
 
 void ChromeExtensionFrameHost::ContentScriptsExecuting(

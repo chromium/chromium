@@ -27,7 +27,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -40,14 +39,13 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
-import org.chromium.chrome.browser.backup.BackupSigninProcessor;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.features.CustomTabNavigationBarController;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabHistoryIphController;
 import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.fonts.FontPreloader;
 import org.chromium.chrome.browser.history.HistoryManager;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.history.HistoryTabHelper;
@@ -67,7 +65,7 @@ import org.chromium.ui.util.ColorUtils;
 
 /** The activity for custom tabs. It will be launched on top of a client's task. */
 public class CustomTabActivity extends BaseCustomTabActivity {
-    private CustomTabsSessionToken mSession;
+    private SessionHolder<?> mSession;
 
     private final CustomTabsConnection mConnection = CustomTabsConnection.getInstance();
     private int mNumOmniboxNavigationEventsPerSession;
@@ -164,8 +162,6 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     public void performPostInflationStartup() {
         super.performPostInflationStartup();
 
-        FontPreloader.getInstance().onPostInflationStartupCustomTabActivity();
-
         mRootUiCoordinator.getStatusBarColorController().updateStatusBarColor();
 
         // Properly attach tab's InfoBarContainer to the view hierarchy if the tab is already
@@ -198,17 +194,9 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     }
 
     @Override
-    protected void onFirstDrawComplete() {
-        super.onFirstDrawComplete();
-
-        FontPreloader.getInstance().onFirstDrawCustomTabActivity();
-    }
-
-    @Override
     public void finishNativeInitialization() {
         if (!getIntentDataProvider().isInfoPage()) {
             FirstRunSignInProcessor.openSyncSettingsIfScheduled(this);
-            BackupSigninProcessor.start(this);
         }
 
         mConnection.showSignInToastIfNecessary(mSession, getIntent(), getProfileProviderSupplier());

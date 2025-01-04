@@ -184,8 +184,9 @@ void ClearBrowsingDataHandlerUnitTest::VerifySearchHistoryWebUIUpdate(
       continue;
     }
     const std::string* event = data.arg1()->GetIfString();
-    if (!event || *event != "update-sync-state")
+    if (!event || *event != "update-sync-state") {
       continue;
+    }
     const base::Value::Dict* arg2_dict = data.arg2()->GetIfDict();
     if (!arg2_dict) {
       continue;
@@ -217,8 +218,9 @@ TemplateURL* ClearBrowsingDataHandlerUnitTest::AddSearchEngine(
   data.prepopulate_id = prepopulate_id;
   TemplateURL* url =
       template_url_service->Add(std::make_unique<TemplateURL>(data));
-  if (set_default)
+  if (set_default) {
     template_url_service->SetUserSelectedDefaultSearchProvider(url);
+  }
   return url;
 }
 

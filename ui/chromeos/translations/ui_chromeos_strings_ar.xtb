@@ -73,10 +73,11 @@
 <translation id="1577977504532381335">مراجعة سياسة المشرف</translation>
 <translation id="158849752021629804">يلزم توفر الشبكة الرئيسية</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> بيتابايت</translation>
+<translation id="1601786938618212857">‏إنشاء أرشيف ZIP</translation>
 <translation id="1620510694547887537">الكاميرا</translation>
 <translation id="162175252992296058">البرتغالية باستخدام لوحة المفاتيح الأمريكية الدولية</translation>
 <translation id="1629521517399325891">شهادة المستخدم غير متاحة لعملية مصادقة الشبكة.</translation>
-<translation id="1641780993263690097">‏الصينية باستخدام لوحة مفاتيح Pinyin</translation>
+<translation id="1641780993263690097">الصينية باستخدام لوحة مفاتيح بنيين</translation>
 <translation id="164969095109328410">‏جهاز Chrome</translation>
 <translation id="1661207570040737402">‏لقد استهلكت كل مساحة التخزين السحابي المشتركة في Google Workspace.</translation>
 <translation id="1661867754829461514">رقم التعريف الشخصي غير موجود</translation>
@@ -394,7 +395,6 @@
 <translation id="4179621117429069925">هذا العنصر موضوع في "المهملات"</translation>
 <translation id="4186579485882418952">‏تفعيل "مستندات Google بلا إنترنت"</translation>
 <translation id="4193154014135846272">‏مستند Google</translation>
-<translation id="4197674956721858839">‏ضغط الملفات المختارة بتنسيق Zip</translation>
 <translation id="4202378258276439759">الإسبانية (أمريكا اللاتينية)</translation>
 <translation id="4202977638116331303">الجورجية</translation>
 <translation id="421017592316736757">يجب أن تكون متصلاً بالإنترنت للدخول إلى هذا الملف.</translation>
@@ -1052,7 +1052,7 @@
 <translation id="8965697826696209160">ليست هناك مساحة كافية.</translation>
 <translation id="8970887620466824814">حدث خطأ.</translation>
 <translation id="8971742885766657349">جارٍ المزامنة - ‫%<ph name="PERCENT" /></translation>
-<translation id="8997962250644902079">‏الصينية (التقليدية) باستخدام لوحة مفاتيح Pinyin</translation>
+<translation id="8997962250644902079">الصينية (التقليدية) باستخدام لوحة مفاتيح بنيين</translation>
 <translation id="8998871447376656508">‏لا تتوفّر مساحة كافية في Google Drive لإكمال التحميل.</translation>
 <translation id="9003940392834790328">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، يديرها المشرف، التفاصيل</translation>
 <translation id="9007990314804111233">‏سجِّل الدخول إلى حسابك على Microsoft</translation>

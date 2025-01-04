@@ -1,0 +1,12 @@
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "border_view_browsertest.cc" ]
+  deps = [
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+  ]
+}

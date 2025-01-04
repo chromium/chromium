@@ -59,7 +59,7 @@ namespace blink {
 
 namespace {
 
-constexpr bool kExpandPseudoParent = true;
+constexpr bool kExpandPseudoReferences = true;
 
 unsigned MaximumSpecificity(const CSSSelectorList* list) {
   if (!list) {
@@ -512,12 +512,29 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
   NOTREACHED();
 }
 
-void CSSSelector::Reparent(StyleRule* new_parent) {
-  if (GetPseudoType() == CSSSelector::kPseudoParent) {
-    data_.parent_rule_ = new_parent;
-  } else if (HasRareData() && data_.rare_data_->selector_list_) {
-    data_.rare_data_->selector_list_->Reparent(new_parent);
+std::optional<CSSSelector> CSSSelector::Renest(StyleRule* new_parent) const {
+  if (GetPseudoType() == CSSSelector::kPseudoParent &&
+      data_.parent_rule_ != new_parent) {
+    CSSSelector selector(*this);
+    selector.data_.parent_rule_ = new_parent;
+    return selector;
+  } else if (HasRareData()) {
+    // Handles cases where simple selectors hold an inner selector list,
+    // e.g. :is(), :where(), :not().
+    RareData* old_rare_data = data_.rare_data_;
+    RareData* new_rare_data = old_rare_data->Renest(new_parent);
+    if (old_rare_data != new_rare_data) {
+      CSSSelector selector(*this);
+      selector.data_.rare_data_ = new_rare_data;
+      return selector;
+    }
   }
+  // Note that :scope (which isn't handled by any of the branches above)
+  // does not need re-nesting, because it does not contain any reference
+  // to a parent rule. The relationship between :scope, and the elements
+  // matched by it, are instead handled dynamically at selector-matching time.
+
+  return std::nullopt;
 }
 
 // Could be made smaller and faster by replacing pointer with an
@@ -1080,29 +1097,35 @@ static void SerializeNamespacePrefixIfNeeded(const AtomicString& prefix,
 }
 
 // static
-template <bool expand_pseudo_parent>
+template <bool expand_pseudo_references>
 void CSSSelector::SerializeSelectorList(const CSSSelectorList* selector_list,
-                                        StringBuilder& builder) {
+                                        StringBuilder& builder,
+                                        uintptr_t scope_id) {
   const CSSSelector* first_sub_selector = selector_list->First();
   for (const CSSSelector* sub_selector = first_sub_selector; sub_selector;
        sub_selector = CSSSelectorList::Next(*sub_selector)) {
     if (sub_selector != first_sub_selector) {
       builder.Append(", ");
     }
-    builder.Append(sub_selector->SelectorTextInternal<expand_pseudo_parent>());
+    builder.Append(
+        sub_selector->SelectorTextInternal<expand_pseudo_references>(scope_id));
   }
 }
 
 String CSSSelector::SelectorText() const {
-  return SelectorTextInternal<!kExpandPseudoParent>();
+  // The value of `scope_id` does not matter when
+  // `expand_pseudo_references` is `false`.
+  return SelectorTextInternal<!kExpandPseudoReferences>(/*scope_id=*/0);
 }
 
-String CSSSelector::SelectorTextExpandingPseudoParent() const {
-  return SelectorTextInternal<kExpandPseudoParent>();
+String CSSSelector::SelectorTextExpandingPseudoReferences(
+    uintptr_t scope_id) const {
+  return SelectorTextInternal<kExpandPseudoReferences>(scope_id);
 }
 
-template <bool expand_pseudo_parent>
-bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder) const {
+template <bool expand_pseudo_references>
+bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder,
+                                          uintptr_t scope_id) const {
   bool suppress_selector_list = false;
   if (Match() == kId) {
     builder.Append('#');
@@ -1113,7 +1136,8 @@ bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder) const {
   } else if (Match() == kPseudoClass || Match() == kPagePseudoClass) {
     if (GetPseudoType() == kPseudoUnparsed) {
       builder.Append(Value());
-    } else if (GetPseudoType() != kPseudoParent) {
+    } else if (GetPseudoType() != kPseudoParent &&
+               GetPseudoType() != kPseudoScope) {
       builder.Append(':');
       builder.Append(SerializingValue());
     }
@@ -1149,8 +1173,8 @@ bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder) const {
         // Only relevant for :nth-child, not :nth-of-type.
         if (data_.rare_data_->selector_list_ != nullptr) {
           builder.Append(" of ");
-          SerializeSelectorList<expand_pseudo_parent>(
-              data_.rare_data_->selector_list_, builder);
+          SerializeSelectorList<expand_pseudo_references>(
+              data_.rare_data_->selector_list_, builder, scope_id);
           suppress_selector_list = true;
         }
 
@@ -1175,16 +1199,26 @@ bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder) const {
       case kPseudoWhere:
         break;
       case kPseudoParent:
-        if constexpr (expand_pseudo_parent) {
+        if constexpr (expand_pseudo_references) {
           // Replace parent pseudo with equivalent :is() pseudo.
           builder.Append(":is");
           if (auto* parent = SelectorListOrParent()) {
             builder.Append('(');
-            builder.Append(parent->SelectorTextExpandingPseudoParent());
+            builder.Append(
+                parent->SelectorTextExpandingPseudoReferences(scope_id));
             builder.Append(')');
           }
         } else {
           builder.Append('&');
+        }
+        break;
+      case kPseudoScope:
+        if constexpr (expand_pseudo_references) {
+          builder.Append(":-internal-scope-");
+          builder.AppendNumber(scope_id);
+        } else {
+          builder.Append(':');
+          builder.Append(SerializingValue());
         }
         break;
       case kPseudoRelativeAnchor:
@@ -1302,15 +1336,16 @@ bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder) const {
 
   if (SelectorList() && !suppress_selector_list) {
     builder.Append('(');
-    SerializeSelectorList<expand_pseudo_parent>(SelectorList(), builder);
+    SerializeSelectorList<expand_pseudo_references>(SelectorList(), builder,
+                                                    scope_id);
     builder.Append(')');
   }
   return true;
 }
 
-template <bool expand_pseudo_parent>
-const CSSSelector* CSSSelector::SerializeCompound(
-    StringBuilder& builder) const {
+template <bool expand_pseudo_references>
+const CSSSelector* CSSSelector::SerializeCompound(StringBuilder& builder,
+                                                  uintptr_t scope_id) const {
   if (Match() == kTag && !IsImplicit()) {
     SerializeNamespacePrefixIfNeeded(TagQName().Prefix(), g_star_atom, builder,
                                      IsAttributeSelector());
@@ -1320,8 +1355,8 @@ const CSSSelector* CSSSelector::SerializeCompound(
 
   for (const CSSSelector* simple_selector = this; simple_selector;
        simple_selector = simple_selector->NextSimpleSelector()) {
-    if (!simple_selector->SerializeSimpleSelector<expand_pseudo_parent>(
-            builder)) {
+    if (!simple_selector->SerializeSimpleSelector<expand_pseudo_references>(
+            builder, scope_id)) {
       return nullptr;
     }
     if (simple_selector->Relation() != kSubSelector) {
@@ -1331,13 +1366,14 @@ const CSSSelector* CSSSelector::SerializeCompound(
   return nullptr;
 }
 
-template <bool expand_pseudo_parent>
-String CSSSelector::SelectorTextInternal() const {
+template <bool expand_pseudo_references>
+String CSSSelector::SelectorTextInternal(uintptr_t scope_id) const {
   String result;
   for (const CSSSelector* compound = this; compound;
        compound = compound->NextSimpleSelector()) {
     StringBuilder builder;
-    compound = compound->SerializeCompound<expand_pseudo_parent>(builder);
+    compound = compound->SerializeCompound<expand_pseudo_references>(builder,
+                                                                     scope_id);
     if (!compound) {
       return builder.ReleaseString() + result;
     }
@@ -1349,10 +1385,13 @@ String CSSSelector::SelectorTextInternal() const {
     DCHECK(next_compound);
 
     // If we are combining with an implicit :scope, it is as if we
-    // used a relative combinator.
-    if (!next_compound || (next_compound->Match() == kPseudoClass &&
-                           next_compound->GetPseudoType() == kPseudoScope &&
-                           next_compound->IsImplicit())) {
+    // used a relative combinator. However, when expand_pseudo_references=true,
+    // we must serialize the implicit compound anyway, since the :has() cache
+    // needs this to be a part of the key.
+    bool implicit = next_compound->IsImplicit() && !expand_pseudo_references;
+    if (!next_compound ||
+        (next_compound->Match() == kPseudoClass &&
+         next_compound->GetPseudoType() == kPseudoScope && implicit)) {
       relation = ConvertRelationToRelative(relation);
     }
 
@@ -1396,7 +1435,8 @@ String CSSSelector::SimpleSelectorTextForDebug() const {
     SerializeIdentifierOrAny(TagQName().LocalName(), UniversalSelectorAtom(),
                              builder);
   } else {
-    SerializeSimpleSelector<!kExpandPseudoParent>(builder);
+    // `scope_id` is ignored when `expand_pseudo_references` is false.
+    SerializeSimpleSelector<!kExpandPseudoReferences>(builder, /*scope_id=*/0);
   }
   return builder.ToString();
 }
@@ -1876,6 +1916,17 @@ CSSSelector::RareData::RareData(const AtomicString& value)
       attribute_(AnyQName()),
       argument_(g_null_atom) {}
 
+CSSSelector::RareData::RareData(const RareData& other)
+    : matching_value_(other.matching_value_),
+      serializing_value_(other.serializing_value_),
+      bits_(other.bits_),
+      attribute_(other.attribute_),
+      argument_(other.argument_),
+      selector_list_(other.selector_list_),
+      ident_list_(other.ident_list_ ? std::make_unique<Vector<AtomicString>>(
+                                          *other.ident_list_)
+                                    : nullptr) {}
+
 CSSSelector::RareData::~RareData() = default;
 
 // a helper function for checking nth-arguments
@@ -1904,6 +1955,17 @@ bool CSSSelector::RareData::MatchNth(unsigned unsigned_count) {
     return false;
   }
   return (NthBValue() - count) % (-NthAValue()) == 0;
+}
+
+CSSSelector::RareData* CSSSelector::RareData::Renest(StyleRule* new_parent) {
+  CSSSelectorList* old_list = selector_list_.Get();
+  CSSSelectorList* new_list = old_list ? old_list->Renest(new_parent) : nullptr;
+  if (old_list == new_list) {
+    return this;
+  }
+  auto* rare_data = MakeGarbageCollected<RareData>(*this);
+  rare_data->selector_list_ = new_list;
+  return rare_data;
 }
 
 void CSSSelector::SetIdentList(

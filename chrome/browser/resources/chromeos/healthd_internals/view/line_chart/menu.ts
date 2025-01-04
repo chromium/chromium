@@ -61,22 +61,29 @@ export class HealthdInternalsLineChartMenuElement extends PolymerElement {
   }
 
   /**
-   * Set up the list of data series for the menu.
+   * Sets up the list of data series for the menu.
    */
-  setupDataSeriesList(dataSeriesList: DataSeries[], isCustomCategory: boolean) {
+  setupDataSeries(dataSeriesList: DataSeries[], isCustomCategory: boolean) {
     this.isCustomCategory = isCustomCategory;
+
+    this.cleanUpButtons();
+    for (const [index, dataSeries] of dataSeriesList.entries()) {
+      const color = getLineChartColor(index)
+      const button = this.createButton(dataSeries, color);
+      this.$.dataButtonsContainer.appendChild(button);
+      this.buttons.push({data: dataSeries, color: color, element: button});
+    }
+  }
+
+  /**
+   * Cleans up the buttons in both button container and `buttons` list.
+   */
+  private cleanUpButtons() {
     const buttonContainer = this.$.dataButtonsContainer;
     while (buttonContainer.lastElementChild) {
       buttonContainer.removeChild(buttonContainer.lastElementChild);
     }
     this.buttons = [];
-
-    for (const [index, dataSeries] of dataSeriesList.entries()) {
-      const color = getLineChartColor(index)
-      const button = this.createButton(dataSeries, color);
-      buttonContainer.appendChild(button);
-      this.buttons.push({data: dataSeries, color: color, element: button});
-    }
   }
 
   private fireMenuButtonsUpdatedEvent() {
@@ -85,7 +92,7 @@ export class HealthdInternalsLineChartMenuElement extends PolymerElement {
   }
 
   /**
-   * Create a button to control the data series.
+   * Creates a button to control the data series.
    */
   private createButton(dataSeries: DataSeries, color: string): HTMLElement {
     const buttonInner: HTMLElement =
@@ -102,7 +109,7 @@ export class HealthdInternalsLineChartMenuElement extends PolymerElement {
   }
 
   /**
-   * Add a onclick handler to the button.
+   * Adds a onclick handler to the button.
    */
   private setupButtonOnClickHandler(
       button: HTMLElement, dataSeries: DataSeries, color: string) {
@@ -114,7 +121,7 @@ export class HealthdInternalsLineChartMenuElement extends PolymerElement {
   }
 
   /**
-   * Update the button style with the visibility and color from data series.
+   * Updates the button style with the visibility and color from data series.
    */
   private updateButtonStyle(
       button: HTMLElement, dataSeries: DataSeries, color: string) {

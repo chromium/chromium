@@ -174,9 +174,11 @@ RenderFrameHost* CreateFencedFrame(RenderFrameHost* root,
 SharedStorageWriteOperationAndResult::SharedStorageWriteOperationAndResult(
     const url::Origin& request_origin,
     std::vector<MethodWithOptionsPtr> methods_with_options,
+    const std::optional<std::string>& with_lock,
     bool success)
     : request_origin(request_origin),
       methods_with_options(std::move(methods_with_options)),
+      with_lock(with_lock),
       success(success) {}
 
 SharedStorageWriteOperationAndResult::SharedStorageWriteOperationAndResult(
@@ -228,6 +230,11 @@ std::ostream& operator<<(std::ostream& os,
     }
   }
 
+  const std::optional<std::string>& with_lock = op.with_lock;
+  if (with_lock) {
+    os << "; WithLock (batch): " << with_lock.value();
+  }
+
   os << "; Result: " << (op.success ? "Success" : "Failure");
 
   return os;
@@ -236,8 +243,10 @@ std::ostream& operator<<(std::ostream& os,
 SharedStorageWriteOperationAndResult HeaderOperationSuccess(
     const url::Origin& request_origin,
     std::vector<MethodWithOptionsPtr> methods_with_options) {
-  return SharedStorageWriteOperationAndResult(
-      request_origin, std::move(methods_with_options), /*success=*/true);
+  return SharedStorageWriteOperationAndResult(request_origin,
+                                              std::move(methods_with_options),
+                                              /*with_lock=*/std::nullopt,
+                                              /*success=*/true);
 }
 
 PrivateAggregationHost::PipeResult

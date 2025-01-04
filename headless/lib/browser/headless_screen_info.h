@@ -11,12 +11,14 @@
 
 #include "base/types/expected.h"
 #include "headless/public/headless_export.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace headless {
 
 struct HEADLESS_EXPORT HeadlessScreenInfo {
   gfx::Rect bounds = gfx::Rect(800, 600);
+  gfx::Insets work_area_insets;
   int color_depth = 24;
   float device_pixel_ratio = 1.0f;
   bool is_internal = false;
@@ -37,6 +39,10 @@ struct HEADLESS_EXPORT HeadlessScreenInfo {
   //  devicePixelRatio=1
   //  isInternal=true
   //  label='primary monitor'
+  //  workAreaLeft=0
+  //  workAreaRight=0
+  //  workAreaTop=0
+  //  workAreaBottom=0
   //
   // The first screen specified is assumed to be the primary screen. If origin
   // is omitted for a secondary screen it will be automatically calculated to

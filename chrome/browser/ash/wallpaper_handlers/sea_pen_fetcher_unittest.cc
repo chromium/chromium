@@ -132,11 +132,12 @@ std::unique_ptr<manta::proto::Response> CreateMantaResponse(
   return response;
 }
 
-std::unique_ptr<manta::proto::Response> CreateMantaResponseWithFilteredReason(
-    manta::proto::FilteredReason filteredReason) {
+std::unique_ptr<manta::proto::Response> CreateMantaResponseWithPersonError() {
   auto response = CreateMantaResponse(0);
   auto* filtered_data = response->add_filtered_data();
-  filtered_data->set_reason(filteredReason);
+  filtered_data->set_reason(manta::proto::FilteredReason::IMAGE_SAFETY);
+  filtered_data->add_additional_reasons(
+      manta::proto::FilteredReason::IMAGE_SAFETY_PERSON);
   return response;
 }
 
@@ -384,7 +385,12 @@ TEST_F(SeaPenFetcherTest, ThumbnailsEmptyReturnsError) {
   histogram_tester().ExpectUniqueSample(kThumbnailsTimeoutMetric, false, 1);
 }
 
-TEST_F(SeaPenFetcherTest, FreeformThumbnailsEmptyReturnsError) {
+TEST_F(SeaPenFetcherTest, FreeformThumbnailsEmptyReturnsBlockedError) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      {ash::features::kSeaPen, ash::features::kFeatureManagementSeaPen,
+       manta::features::kMantaService, ash::features::kSeaPenTextInput},
+      {});
   EXPECT_CALL(snapper_provider(), Call(testing::_, testing::_, testing::_))
       .WillOnce([](const manta::proto::Request& request,
                    net::NetworkTrafficAnnotationTag traffic_annotation,
@@ -408,52 +414,6 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnailsEmptyReturnsError) {
       manta::proto::FeatureName::CHROMEOS_WALLPAPER, MakeFreeformQuery(),
       fetch_thumbnails_future.GetCallback());
 
-  EXPECT_EQ(manta::MantaStatusCode::kGenericError,
-            fetch_thumbnails_future.Get<manta::MantaStatusCode>());
-  EXPECT_EQ(std::nullopt,
-            fetch_thumbnails_future
-                .Get<std::optional<std::vector<ash::SeaPenImage>>>());
-
-  // Recorded an entry in the "0" thumbnail count bucket 1 time.
-  histogram_tester().ExpectUniqueSample(kFreeformThumbnailsCountMetric, 0, 1);
-  histogram_tester().ExpectUniqueSample(kFreeformThumbnailsStatusCodeMetric,
-                                        manta::MantaStatusCode::kOk, 1);
-  histogram_tester().ExpectTotalCount(kFreeformThumbnailsLatencyMetric, 1);
-  histogram_tester().ExpectUniqueSample(kFreeformThumbnailsTimeoutMetric, false,
-                                        1);
-}
-
-TEST_F(SeaPenFetcherTest,
-       FreeformThumbnailsEmptyReturnsErrorDueToTextBlocklist) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      {ash::features::kSeaPen, ash::features::kFeatureManagementSeaPen,
-       manta::features::kMantaService, ash::features::kSeaPenTextInput},
-      {});
-  EXPECT_CALL(snapper_provider(), Call(testing::_, testing::_, testing::_))
-      .WillOnce([](const manta::proto::Request& request,
-                   net::NetworkTrafficAnnotationTag traffic_annotation,
-                   manta::MantaProtoResponseCallback done_callback) {
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE,
-            base::BindOnce(
-                [](manta::MantaProtoResponseCallback delayed_callback) {
-                  std::move(delayed_callback)
-                      .Run(CreateMantaResponseWithFilteredReason(
-                               manta::proto::FilteredReason::TEXT_BLOCKLIST),
-                           {.status_code = manta::MantaStatusCode::kOk,
-                            .message = std::string()});
-                },
-                std::move(done_callback)));
-      });
-
-  base::test::TestFuture<std::optional<std::vector<ash::SeaPenImage>>,
-                         manta::MantaStatusCode>
-      fetch_thumbnails_future;
-  sea_pen_fetcher()->FetchThumbnails(
-      manta::proto::FeatureName::CHROMEOS_WALLPAPER, MakeFreeformQuery(),
-      fetch_thumbnails_future.GetCallback());
-
   EXPECT_EQ(manta::MantaStatusCode::kBlockedOutputs,
             fetch_thumbnails_future.Get<manta::MantaStatusCode>());
   EXPECT_EQ(std::nullopt,
@@ -469,13 +429,12 @@ TEST_F(SeaPenFetcherTest,
                                         1);
 }
 
-TEST_F(SeaPenFetcherTest, FreeformThumbnailsEmptyReturnsErrorDueToImageSafety) {
+TEST_F(SeaPenFetcherTest, FreeformThumbnailsEmptyReturnsErrorDueToPerson) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
       {ash::features::kSeaPen, ash::features::kFeatureManagementSeaPen,
        manta::features::kMantaService, ash::features::kSeaPenTextInput},
       {});
-
   EXPECT_CALL(snapper_provider(), Call(testing::_, testing::_, testing::_))
       .WillOnce([](const manta::proto::Request& request,
                    net::NetworkTrafficAnnotationTag traffic_annotation,
@@ -485,8 +444,7 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnailsEmptyReturnsErrorDueToImageSafety) {
             base::BindOnce(
                 [](manta::MantaProtoResponseCallback delayed_callback) {
                   std::move(delayed_callback)
-                      .Run(CreateMantaResponseWithFilteredReason(
-                               manta::proto::FilteredReason::IMAGE_SAFETY),
+                      .Run(CreateMantaResponseWithPersonError(),
                            {.status_code = manta::MantaStatusCode::kOk,
                             .message = std::string()});
                 },
@@ -500,54 +458,7 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnailsEmptyReturnsErrorDueToImageSafety) {
       manta::proto::FeatureName::CHROMEOS_WALLPAPER, MakeFreeformQuery(),
       fetch_thumbnails_future.GetCallback());
 
-  EXPECT_EQ(manta::MantaStatusCode::kBlockedOutputs,
-            fetch_thumbnails_future.Get<manta::MantaStatusCode>());
-  EXPECT_EQ(std::nullopt,
-            fetch_thumbnails_future
-                .Get<std::optional<std::vector<ash::SeaPenImage>>>());
-
-  // Recorded an entry in the "0" thumbnail count bucket 1 time.
-  histogram_tester().ExpectUniqueSample(kFreeformThumbnailsCountMetric, 0, 1);
-  histogram_tester().ExpectUniqueSample(kFreeformThumbnailsStatusCodeMetric,
-                                        manta::MantaStatusCode::kOk, 1);
-  histogram_tester().ExpectTotalCount(kFreeformThumbnailsLatencyMetric, 1);
-  histogram_tester().ExpectUniqueSample(kFreeformThumbnailsTimeoutMetric, false,
-                                        1);
-}
-
-TEST_F(SeaPenFetcherTest,
-       FreeformThumbnailsEmptyReturnsGenericErrorDueToOtherFilterReason) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      {ash::features::kSeaPen, ash::features::kFeatureManagementSeaPen,
-       manta::features::kMantaService, ash::features::kSeaPenTextInput},
-      {});
-
-  EXPECT_CALL(snapper_provider(), Call(testing::_, testing::_, testing::_))
-      .WillOnce([](const manta::proto::Request& request,
-                   net::NetworkTrafficAnnotationTag traffic_annotation,
-                   manta::MantaProtoResponseCallback done_callback) {
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE,
-            base::BindOnce(
-                [](manta::MantaProtoResponseCallback delayed_callback) {
-                  std::move(delayed_callback)
-                      .Run(CreateMantaResponseWithFilteredReason(
-                               manta::proto::FilteredReason::TEXT_LOW_QUALITY),
-                           {.status_code = manta::MantaStatusCode::kOk,
-                            .message = std::string()});
-                },
-                std::move(done_callback)));
-      });
-
-  base::test::TestFuture<std::optional<std::vector<ash::SeaPenImage>>,
-                         manta::MantaStatusCode>
-      fetch_thumbnails_future;
-  sea_pen_fetcher()->FetchThumbnails(
-      manta::proto::FeatureName::CHROMEOS_WALLPAPER, MakeFreeformQuery(),
-      fetch_thumbnails_future.GetCallback());
-
-  EXPECT_EQ(manta::MantaStatusCode::kGenericError,
+  EXPECT_EQ(manta::MantaStatusCode::kImageHasPerson,
             fetch_thumbnails_future.Get<manta::MantaStatusCode>());
   EXPECT_EQ(std::nullopt,
             fetch_thumbnails_future

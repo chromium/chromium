@@ -7,10 +7,8 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 
@@ -139,10 +137,6 @@ TEST_F(AcceleratorTestMac, ModifierFlagsShortFormRepresentation) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 TEST(AcceleratorTest, ConversionFromKeyEvent_Ash) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      ::features::kImprovedKeyboardShortcuts);
-
   ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_F,
                          ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN);
   Accelerator accelerator(key_event);

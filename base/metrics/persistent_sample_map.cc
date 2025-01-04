@@ -231,10 +231,12 @@ bool PersistentSampleMap::AddSubtractImpl(SampleCountIterator* iter,
   Count count;
   for (; !iter->Done(); iter->Next()) {
     iter->Get(&min, &max, &count);
-    if (count == 0)
+    if (count == 0) {
       continue;
-    if (strict_cast<int64_t>(min) + 1 != max)
+    }
+    if (strict_cast<int64_t>(min) + 1 != max) {
       return false;  // SparseHistogram only supports bucket with size 1.
+    }
 
     // We have to do the following atomically, because even if the caller is
     // using a lock, a separate process (that is not aware of this lock) may
@@ -249,8 +251,9 @@ bool PersistentSampleMap::AddSubtractImpl(SampleCountIterator* iter,
 Count* PersistentSampleMap::GetSampleCountStorage(Sample value) {
   // If |value| is already in the map, just return that.
   auto it = sample_counts_.find(value);
-  if (it != sample_counts_.end())
+  if (it != sample_counts_.end()) {
     return it->second;
+  }
 
   // Import any new samples from persistent memory looking for the value.
   return ImportSamples(/*until_value=*/value);
@@ -259,8 +262,9 @@ Count* PersistentSampleMap::GetSampleCountStorage(Sample value) {
 Count* PersistentSampleMap::GetOrCreateSampleCountStorage(Sample value) {
   // Get any existing count storage.
   Count* count_pointer = GetSampleCountStorage(value);
-  if (count_pointer)
+  if (count_pointer) {
     return count_pointer;
+  }
 
   // Create a new record in persistent memory for the value. |records_| will
   // have been initialized by the GetSampleCountStorage() call above.

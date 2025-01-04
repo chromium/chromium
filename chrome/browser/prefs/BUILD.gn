@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//components/services/on_device_translation/buildflags/features.gni")
@@ -226,7 +227,6 @@ source_set("impl") {
       "//chromeos/ash/components/network",
       "//chromeos/ash/components/policy",
       "//chromeos/ash/components/report",
-      "//chromeos/ash/components/standalone_browser",
       "//chromeos/ash/components/timezone",
       "//chromeos/ash/services/assistant/public/cpp",
       "//chromeos/ash/services/auth_factor_config",
@@ -253,9 +253,9 @@ source_set("impl") {
 
   if (is_android) {
     deps += [
-      "//chrome/browser/android/bookmarks",
       "//chrome/browser/notifications",
       "//chrome/browser/notifications:notifications_java_enum_srcjar",
+      "//chrome/browser/partnerbookmarks:android",
       "//chrome/browser/password_manager/android:utils",
       "//chrome/browser/readaloud/android:native",
       "//chrome/browser/search_engines",
@@ -311,8 +311,11 @@ source_set("impl") {
     deps += [ "//chrome/browser/web_applications" ]
   }
 
-  if (is_win || is_mac) {
-    deps += [ "//chrome/browser/glic/launcher" ]
+  if (enable_glic) {
+    deps += [
+      "//chrome/browser/glic",
+      "//chrome/browser/glic/launcher",
+    ]
   }
 }
 
@@ -417,10 +420,6 @@ source_set("unit_tests") {
     "//ui/base",
     "//url",
   ]
-
-  if (is_chromeos) {
-    sources += [ "chrome_pref_service_factory_ash_unittest.cc" ]
-  }
 }
 
 if (!is_android) {

@@ -29,8 +29,10 @@ std::unique_ptr<views::View> CreateSpacerView() {
   auto spacer_view = std::make_unique<views::View>();
   spacer_view->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded));
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded)
+          .WithWeight(1));
   return spacer_view;
 }
 
@@ -130,13 +132,7 @@ void SoundSectionView::CreatePlaylistViewsContainer(
     // Before appending a new `PlaylistView`, we add a spacer view to make the
     // spacing between each of the `PlaylistView` equal.
     if (i > 0) {
-      auto* spacer_view =
-          playlist_views_container_->AddChildView(CreateSpacerView());
-      spacer_view->SetProperty(
-          views::kFlexBehaviorKey,
-          views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                                   views::MaximumFlexSizeRule::kUnbounded)
-              .WithWeight(1));
+      playlist_views_container_->AddChildView(CreateSpacerView());
     }
 
     // `FocusModeSoundsController` is owned by `FocusModeController` which

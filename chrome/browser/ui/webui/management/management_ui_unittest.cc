@@ -11,7 +11,7 @@
 
 class ManagementUITest : public testing::Test {};
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // If the link containing strings will appear as a disclosure add here.
 TEST_F(ManagementUITest, VerifyLinksHaveRemovedVersion) {
   static const std::unordered_set<int> kHasNoLinkVersionOrNotApplicable{
@@ -44,4 +44,4 @@ TEST_F(ManagementUITest, VerifyLinksRemoved) {
     }
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)

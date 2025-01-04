@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/system_web_apps/apps/mall_system_web_app_info.h"
 
+#include "ash/constants/ash_switches.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/webui/grit/ash_mall_cros_app_resources.h"
 #include "ash/webui/mall/url_constants.h"
@@ -56,6 +57,10 @@ bool MallSystemAppDelegate::IsAppEnabled() const {
       !base::FeatureList::IsEnabled(chromeos::features::kCrosMallManaged)) {
     return false;
   }
+  // Do not enable Mall on Flex devices, which do  not support apps on ARC.
+  if (ash::switches::IsRevenBranding()) {
+    return false;
+  }
   return chromeos::features::IsCrosMallSwaEnabled();
 }
 
@@ -74,4 +79,9 @@ std::vector<std::string> MallSystemAppDelegate::GetAppIdsToUninstallAndReplace()
 
 bool MallSystemAppDelegate::ShouldCaptureNavigations() const {
   return true;
+}
+
+gfx::Size MallSystemAppDelegate::GetMinimumWindowSize() const {
+  // 688px is the minimum width of the Mall website.
+  return gfx::Size(/*width=*/688, /*height=*/300);
 }

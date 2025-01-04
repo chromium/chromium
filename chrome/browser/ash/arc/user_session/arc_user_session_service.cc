@@ -5,11 +5,11 @@
 #include "chrome/browser/ash/arc/user_session/arc_user_session_service.h"
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "ash/components/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "ash/components/arc/intent_helper/arc_intent_helper_package.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/memory/singleton.h"
 #include "base/trace_event/trace_event.h"
-#include "components/arc/common/intent_helper/arc_intent_helper_package.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/session_manager/core/session_manager.h"
 
 namespace arc {

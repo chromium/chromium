@@ -43,7 +43,6 @@ static_library("multidevice_setup") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos:multidevice_setup_resources",
     "//chrome/browser/ui/ash/login",
-    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/browser/ui/webui/ash/user_image",
     "//chromeos/ash/services/multidevice_setup",

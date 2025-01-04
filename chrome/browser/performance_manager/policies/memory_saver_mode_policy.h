@@ -20,15 +20,15 @@ namespace performance_manager::policies {
 // backgrounded for a certain amount of time, when Memory Saver Mode is
 // enabled by the user.
 class MemorySaverModePolicy : public GraphOwned,
-                                 public PageNode::ObserverDefaultImpl,
-                                 public TabPageObserverDefaultImpl {
+                              public PageNodeObserver,
+                              public TabPageObserverDefaultImpl {
  public:
   MemorySaverModePolicy();
   ~MemorySaverModePolicy() override;
 
   static MemorySaverModePolicy* GetInstance();
 
-  // PageNode::ObserverDefaultImpl:
+  // PageNodeObserver:
   void OnIsVisibleChanged(const PageNode* page_node) override;
 
   // TabPageObserverDefaultImpl:

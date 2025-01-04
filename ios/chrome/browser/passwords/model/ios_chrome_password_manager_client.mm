@@ -62,12 +62,11 @@ IOSChromePasswordManagerClient::IOSChromePasswordManagerClient(
           GetLocalStatePrefs(),
           SyncServiceFactory::GetForProfileIfExists(bridge_.profile)),
       credentials_filter_(this),
+      log_router_(
+          ios::PasswordManagerLogRouterFactory::GetForProfile(bridge_.profile)),
       helper_(this) {
   saving_passwords_enabled_.Init(
       password_manager::prefs::kCredentialsEnableService, GetPrefs());
-  log_manager_ = autofill::LogManager::Create(
-      ios::PasswordManagerLogRouterFactory::GetForProfile(bridge_.profile),
-      base::RepeatingClosure());
 }
 
 IOSChromePasswordManagerClient::~IOSChromePasswordManagerClient() = default;
@@ -265,7 +264,11 @@ IOSChromePasswordManagerClient::GetStoreResultFilter() const {
   return &credentials_filter_;
 }
 
-autofill::LogManager* IOSChromePasswordManagerClient::GetLogManager() {
+autofill::LogManager* IOSChromePasswordManagerClient::GetCurrentLogManager() {
+  if (!log_manager_ && log_router_ && log_router_->HasReceivers()) {
+    log_manager_ =
+        autofill::LogManager::Create(log_router_, base::RepeatingClosure());
+  }
   return log_manager_.get();
 }
 
@@ -294,8 +297,7 @@ IOSChromePasswordManagerClient::GetURLLoaderFactory() {
 
 password_manager::PasswordRequirementsService*
 IOSChromePasswordManagerClient::GetPasswordRequirementsService() {
-  return IOSPasswordRequirementsServiceFactory::GetForProfile(
-      bridge_.profile, ServiceAccessType::EXPLICIT_ACCESS);
+  return IOSPasswordRequirementsServiceFactory::GetForProfile(bridge_.profile);
 }
 
 void IOSChromePasswordManagerClient::UpdateFormManagers() {

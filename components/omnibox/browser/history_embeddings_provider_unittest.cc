@@ -32,6 +32,8 @@
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/optimization_guide/proto/features/history_answer.pb.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/search_engines/template_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -57,7 +59,7 @@ history_embeddings::ScoredUrlRow CreateScoredUrlRow(
     const std::string& url,
     const std::u16string& title) {
   history_embeddings::ScoredUrlRow scored_url_row(
-      history_embeddings::ScoredUrl(0, 0, {}, score));
+      history_embeddings::ScoredUrl(0, 0, {}, score, 0));
   scored_url_row.row = history::URLRow{GURL{url}};
   scored_url_row.row.set_title(title);
   scored_url_row.passages_embeddings.passages.add_passages("passage");
@@ -107,6 +109,13 @@ class HistoryEmbeddingsProviderTest : public testing::Test,
   void SetUp() override {
     testing::Test::SetUp();
 
+    os_crypt_ = os_crypt_async::GetTestOSCryptAsyncForTesting(
+        /*is_sync_for_unittests=*/true);
+
+    auto feature_parameters = history_embeddings::GetFeatureParameters();
+    feature_parameters.use_ml_answerer = false;
+    history_embeddings::SetFeatureParametersForTesting(feature_parameters);
+
     CHECK(history_dir_.CreateUniqueTempDir());
     client_ = std::make_unique<FakeAutocompleteProviderClient>();
     client_->set_history_service(
@@ -114,7 +123,7 @@ class HistoryEmbeddingsProviderTest : public testing::Test,
     client_->set_history_embeddings_service(
         std::make_unique<testing::NiceMock<
             history_embeddings::MockHistoryEmbeddingsService>>(
-            client_->GetHistoryService()));
+            os_crypt_.get(), client_->GetHistoryService()));
     history_embeddings_service_ = static_cast<
         testing::NiceMock<history_embeddings::MockHistoryEmbeddingsService>*>(
         client_->GetHistoryEmbeddingsService());
@@ -124,11 +133,12 @@ class HistoryEmbeddingsProviderTest : public testing::Test,
     // When `Search()` is called, pushes a callback to `search_callbacks_` that
     // can be ran to simulate `Search()` responding asyncly.
     ON_CALL(*history_embeddings_service_,
-            Search(testing::_, testing::_, testing::_, testing::_, testing::_))
+            Search(testing::_, testing::_, testing::_, testing::_, testing::_,
+                   testing::_))
         .WillByDefault(
             [&](history_embeddings::SearchResult* previous_search_result,
                 std::string query, std::optional<base::Time> time_range_start,
-                size_t count,
+                size_t count, bool skip_answering,
                 history_embeddings::SearchResultCallback callback) {
               search_callbacks_.push_back(base::BindOnce(
                   [](history_embeddings::SearchResultCallback callback,
@@ -148,6 +158,7 @@ class HistoryEmbeddingsProviderTest : public testing::Test,
   }
 
   base::ScopedTempDir history_dir_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<FakeAutocompleteProviderClient> client_;
   raw_ptr<testing::NiceMock<history_embeddings::MockHistoryEmbeddingsService>>
@@ -177,9 +188,9 @@ TEST_F(HistoryEmbeddingsProviderTest, Start) {
   // When the feature is disabled, should early exit.
   EXPECT_CALL(*client_, IsHistoryEmbeddingsEnabled())
       .WillOnce(testing::Return(false));
-  EXPECT_CALL(
-      *history_embeddings_service_,
-      Search(testing::_, testing::_, testing::_, testing::_, testing::_))
+  EXPECT_CALL(*history_embeddings_service_,
+              Search(testing::_, testing::_, testing::_, testing::_, testing::_,
+                     testing::_))
       .Times(0);
   history_embeddings_provider_->Start(long_input, false);
   EXPECT_FALSE(trigger_service->GetFeatureTriggeredInSession(trigger_feature));
@@ -199,18 +210,18 @@ TEST_F(HistoryEmbeddingsProviderTest, Start) {
   EXPECT_CALL(*client_, IsHistoryEmbeddingsEnabled())
       .WillRepeatedly(testing::Return(true));
 
-  EXPECT_CALL(
-      *history_embeddings_service_,
-      Search(testing::_, testing::_, testing::_, testing::_, testing::_))
+  EXPECT_CALL(*history_embeddings_service_,
+              Search(testing::_, testing::_, testing::_, testing::_, testing::_,
+                     testing::_))
       .Times(0);
   history_embeddings_provider_->Start(short_input, false);
   EXPECT_FALSE(trigger_service->GetFeatureTriggeredInSession(trigger_feature));
   trigger_service->ResetSession();
 
   // Sync queries should be blocked.
-  EXPECT_CALL(
-      *history_embeddings_service_,
-      Search(testing::_, testing::_, testing::_, testing::_, testing::_))
+  EXPECT_CALL(*history_embeddings_service_,
+              Search(testing::_, testing::_, testing::_, testing::_, testing::_,
+                     testing::_))
       .Times(0);
   history_embeddings_provider_->Start(sync_long_input, false);
   EXPECT_FALSE(trigger_service->GetFeatureTriggeredInSession(trigger_feature));
@@ -219,7 +230,7 @@ TEST_F(HistoryEmbeddingsProviderTest, Start) {
   // Long queries should pass.
   EXPECT_CALL(*history_embeddings_service_,
               Search(testing::_, "query query query",
-                     std::optional<base::Time>{}, 3u, testing::_))
+                     std::optional<base::Time>{}, 3u, false, testing::_))
       .Times(1);
   history_embeddings_provider_->Start(long_input, false);
   EXPECT_TRUE(trigger_service->GetFeatureTriggeredInSession(trigger_feature));

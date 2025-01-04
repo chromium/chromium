@@ -18,9 +18,7 @@ namespace chrome::android {
 
 bool IsJavaDrivenFeatureEnabled(const base::Feature& feature) {
   JNIEnv* env = jni_zero::AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> j_feature_name(
-      ConvertUTF8ToJavaString(env, feature.name));
-  return Java_ChromeCachedFlags_isEnabled(env, j_feature_name);
+  return Java_ChromeCachedFlags_isEnabled(env, feature.name);
 }
 
 }  // namespace chrome::android

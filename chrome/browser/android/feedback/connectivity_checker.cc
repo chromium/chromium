@@ -172,7 +172,7 @@ void ConnectivityChecker::OnTimeout() {
 void JNI_ConnectivityChecker_CheckConnectivity(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jstring>& j_url,
+    std::string& j_url,
     jlong j_timeout_ms,
     const JavaParamRef<jobject>& j_callback,
     jint j_network_annotation_hash_code) {
@@ -181,7 +181,7 @@ void JNI_ConnectivityChecker_CheckConnectivity(
                                          CONNECTIVITY_CHECK_RESULT_ERROR);
     return;
   }
-  GURL url(base::android::ConvertJavaStringToUTF8(env, j_url));
+  GURL url(j_url);
   if (!url.is_valid()) {
     JNI_ConnectivityChecker_PostCallback(env, j_callback,
                                          CONNECTIVITY_CHECK_RESULT_ERROR);
@@ -196,10 +196,8 @@ void JNI_ConnectivityChecker_CheckConnectivity(
   connectivity_checker->StartAsyncCheck();
 }
 
-jboolean JNI_ConnectivityChecker_IsUrlValid(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& j_url) {
-  GURL url(base::android::ConvertJavaStringToUTF8(env, j_url));
+jboolean JNI_ConnectivityChecker_IsUrlValid(JNIEnv* env, std::string& j_url) {
+  GURL url(j_url);
   return url.is_valid();
 }
 

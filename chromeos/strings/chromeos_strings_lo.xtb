@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">ປິດການນຳໃຊ້ຮູບແບບສີສັນມືດ</translation>
 <translation id="1807246157184219062">ແສງ​</translation>
 <translation id="1808803439260407870">ສິນລະປະຄລາດສິກ</translation>
+<translation id="181434555916624618">ໃນຕອນນີ້, ລະບົບຈະບໍ່ສະແດງຜົນການຊອກຫາທີ່ມີຜູ້ຄົນ. ກະລຸນາລອງໃຊ້ prompt ອື່ນ.</translation>
 <translation id="1815850098929213707">ປຸ່ມທີ່ເລືອກແມ່ນ <ph name="KEYS" />. ແຕະປຸ່ມເພື່ອແກ້ໄຂຕົວຄວບຄຸມ</translation>
 <translation id="1823120442877418684">ຕົວອັກສອນ</translation>
 <translation id="1827738518074806965">ຫ້ອງສະແດງງານສິນລະປະ</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">ອຸປະກອນມີແບັດເຕີຣີຫູຟັງຂ້າງຂວາເຫຼືອ <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">ການຕັ້ງຄ່າ</translation>
 <translation id="3347558044552027859">ທັນສະໄໝ</translation>
+<translation id="3353477144743332882">ດາວໂຫຼດສະຫຼຸບ ແລະ ໂມເດວການສ້າງຊື່</translation>
 <translation id="3359218928534347896">ສະຫຼັບການປິດສຽງໄມໂຄຣໂຟນ</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">ຊູຊິ</translation>
@@ -689,6 +691,7 @@
 <translation id="4354430579665871434">ປຸ່ມ</translation>
 <translation id="4356100841225547054">ປິດລະດັບສຽງ</translation>
 <translation id="4361257691546579041">APN ເປັນປະເພດຄ່າເລີ່ມຕົ້ນ.</translation>
+<translation id="4368101969572512692">ການແນະນຳແບບສຸ່ມ</translation>
 <translation id="437294888293595148">ຣີເຊັດທາງລັດທັງໝົດ</translation>
 <translation id="437477383107495720">ກະຕ່າຍນ້ອຍ</translation>
 <translation id="4376423484621194274">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານບໍ່ອະນຸຍາດໃຫ້ປິດ <ph name="APP_NAME" /></translation>
@@ -768,6 +771,7 @@
 <translation id="4731797938093519117">ສິດເຂົ້າເຖິງຂອງພໍ່ແມ່</translation>
 <translation id="473775607612524610">ອັບເດດ</translation>
 <translation id="4744944742468440486">ຂໍ້ມູນທີ່ກ່ຽວຂ້ອງກັບການເລືອກຂອງທ່ານ</translation>
+<translation id="4750394297954878236">ຄໍາ​ແນະ​ນໍາ</translation>
 <translation id="4771607256327216405">ແປ້ນພິມແຈ້ງ</translation>
 <translation id="4771923071974529837">ມື້ອື່ນ</translation>
 <translation id="4773299976671772492">ຢຸດ​ແລ້ວ</translation>
@@ -853,6 +857,7 @@
 <translation id="5121677070210013200">ບໍ່ສາມາດດາວໂຫຼດໂມເດວການຖອດຖ່າຍຂໍ້ຄວາມໄດ້. ກະລຸນາລອງໃໝ່ ຫຼື ຣີສະຕາດ Chromebook ຂອງທ່ານ.</translation>
 <translation id="5130848777448318809">ມ້າແຄະ</translation>
 <translation id="5137451382116112100">ເຕັມໜ້າຈໍ</translation>
+<translation id="5139813694804168398">ຫ້າມລົບກວນ</translation>
 <translation id="5140788690559353412">ເມື່ອທ່ານສູນເສຍສິດເຂົ້າເຖິງບັນຊີໂຮງຮຽນຂອງທ່ານ, ທ່ານຈະບໍ່ສາມາດເຂົ້າເຖິງອີເມວ ແລະ ໄຟລ໌ໃນ Google Drive ທີ່ເຊື່ອມໂຍງ ເຊັ່ນ: Gmail, Docs, Slides ແລະ ອື່ນໆໄດ້ອີກຕໍ່ໄປ.</translation>
 <translation id="5142961317498132443">ການຮັບຮອງຄວາມຖືກຕ້ອງ</translation>
 <translation id="5144311987923128508">ປິດການນຳໃຊ້ປຸ່ມຢືນຢັນແລ້ວ</translation>
@@ -897,6 +902,7 @@
 <translation id="5302048478445481009">ພາ​ສາ</translation>
 <translation id="5303837385540978511">ຮູບພື້ນຫຼັງແບບພິເສດຈາກ <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="530883153651464140">ອັບເດດ <ph name="DEVICE_NAME" /> ເປັນເວີຊັນ <ph name="VERSION" /></translation>
 <translation id="5315873049536339193">ລະບຸຕົວຕົນ</translation>
 <translation id="5317780077021120954">ບັນທຶກ</translation>
 <translation id="5318310531701770497">ສ້າງຊື່ບໍ່ໄດ້. ລອງຖອດຂໍ້ຄວາມຈາກສຽງໃຫ້ຍາວຂຶ້ນ.</translation>
@@ -973,7 +979,6 @@
 <translation id="5703716265115423771">ສຽງ​ລົງ</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> ຈາກທັງໝົດ <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">ແກ້ໄຂປຸ່ມສຳລັບ <ph name="SHORTCUT_DESCRIPTION" />.</translation>
-<translation id="5733298426544876109">ອັບເດດ <ph name="DEVICE_NAME" /></translation>
 <translation id="5736820754189340309">ຣີເຊັດການນຳໃຊ້ອິນເຕີເນັດແລ້ວ</translation>
 <translation id="574392208103952083">ສື່ກາງ</translation>
 <translation id="5744175046705638478">ແປ "<ph name="QUERY" />"</translation>
@@ -998,6 +1003,7 @@
 <translation id="5859969039821714932">ບໍ່ສາມາດໃຊ້ທາງລັດໄດ້. ກົດປຸ່ມທາງລັດໃໝ່ໂດຍບໍ່ມີ <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">ປິດ</translation>
 <translation id="5860491529813859533">ເປີດ</translation>
+<translation id="5875913454160982848">ດາວໂຫຼດໂມເດວການຖອດຖ່າຍຂໍ້ຄວາມ</translation>
 <translation id="5876385649737594562">ເປີດໃຊ້ເພື່ອເລືອກຕົວເລືອກ</translation>
 <translation id="5877503382465267833">ຢຸດ <ph name="RECORDING_NAME" /> ຊົ່ວຄາວ</translation>
 <translation id="588258955323874662">ເຕັມໜ້າຈໍ</translation>
@@ -1037,7 +1043,6 @@
 <translation id="6040143037577758943">ປິດ</translation>
 <translation id="6040852767465482106">ຕົວຕົນທີ່ບໍ່ເປີດເຜີຍຊື່</translation>
 <translation id="604124094241169006">ອັດ​ຕະ​ໂນ​ມັດ</translation>
-<translation id="6042308850641462728">ເພີ່ມເຕີມ</translation>
 <translation id="6048107060512778456">ບໍ່ສຳເລັດ, ເຈ້ຍຕິດ</translation>
 <translation id="6050189528197190982">ໂທນສີເທົາ</translation>
 <translation id="6054711098834486579">ເອັກສ໌ເພຣສຊັນນິສຕ໌</translation>
@@ -1294,6 +1299,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Name server}other{Name servers}}</translation>
 <translation id="7135814714616751706">ຊອກຫາທາງລັດ</translation>
 <translation id="7138614237884624401">ຂໍ້ຄວາມແບບງ່າຍ</translation>
+<translation id="7138668887584231801">ບໍ່ມີຄຳພຽງພໍທີ່ຈະສະຫຼຸບ</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">ກຳ​ລັງ​ເຊື່ອມ​ຕໍ່</translation>
 <translation id="7144878232160441200">ລອງໃໝ່ອີກ</translation>
@@ -1589,6 +1595,7 @@
 <translation id="8503836310948963452">ອີກສອງສາມນາທີ...</translation>
 <translation id="8505011850330200833">ໂມເດວ Gemini ຕ້ອງໃຊ້ບ່ອນຈັດເກັບຂໍ້ມູນ 2GB ໃນການປະມວນຜົນການຖອດຂໍ້ຄວາມຈາກສຽງ ແລະ ສ້າງຂໍ້ມູນສະຫຼຸບ</translation>
 <translation id="8508640263392900755">ລາຍລະອຽດ APN</translation>
+<translation id="8509574872955173831">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບສະຫຼຸບ ແລະ ການສ້າງຊື່</translation>
 <translation id="8522687886059337719">ຕອນນີ້ທ່ານມີສິດເຂົ້າເຖິງ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ຮູບພື້ນຫຼັງ<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ແລະ <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ພາບພັກໜ້າຈໍ<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> ໃໝ່ໄດ້ແລ້ວ</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">ຮ້ານນ້ຳຊາ</translation>
@@ -1725,7 +1732,6 @@
 <translation id="9133772297793293778">ກົດຕົວຂະຫຍາຍ 1-4 ລາຍການ ແລະ ກະແຈອື່ນໆອີກ 1 ລາຍການຢູ່ແປ້ນພິມຂອງທ່ານ. ເພື່ອອອກຈາກໂໝດແກ້ໄຂ, ໃຫ້ກົດ alt + esc.</translation>
 <translation id="9137526406337347448">ການບໍລິການ Google</translation>
 <translation id="9138630967333032450">Shift ຊ້າຍ</translation>
-<translation id="9147928237330776930">ມີຄໍາສັບໜ້ອຍເກີນໄປທີ່ຈະສະຫຼຸບ</translation>
 <translation id="9149391708638971077">ດຳເນີນການທົດສອບຄວາມຈຳ</translation>
 <translation id="9159524746324788320">ແຮັມເບີເກີ</translation>
 <translation id="9161276708550942948">ຍະຫວ່າງ</translation>

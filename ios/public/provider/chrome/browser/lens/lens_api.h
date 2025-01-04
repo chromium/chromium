@@ -15,6 +15,7 @@
 
 @class LensConfiguration;
 @class UIViewController;
+@class UIImage;
 class GURL;
 enum class LensEntrypoint;
 
@@ -55,6 +56,42 @@ enum class LensEntrypoint;
 
 @end
 
+#pragma mark - Lens View Finder
+
+@protocol ChromeLensViewFinderController;
+
+// A delegate that can receive Lens events forwarded by a
+// `ChromeLensViewFinderController`.
+@protocol ChromeLensViewFinderDelegate <NSObject>
+
+// Called when the Lens view controller's dimiss button has been tapped.
+- (void)lensControllerDidTapDismissButton:
+    (id<ChromeLensViewFinderController>)lensController;
+
+// Called when the user selects a URL in Lens.
+- (void)lensController:(id<ChromeLensViewFinderController>)lensController
+          didSelectURL:(GURL)url;
+
+// Called when the user picked or captured an image.
+- (void)lensController:(id<ChromeLensViewFinderController>)lensController
+             didSelectImage:(UIImage*)image
+    serializedViewportState:(NSString*)viewportState
+              isCameraImage:(BOOL)isCameraImage;
+
+@end
+
+// A controller that can facilitate communication with the downstream LVF
+// controller.
+@protocol ChromeLensViewFinderController <NSObject>
+
+// Sets the delegate for LVF.
+- (void)setLensViewFinderDelegate:(id<ChromeLensViewFinderDelegate>)delegate;
+
+// Tears down the live camera preview and destroys the UI.
+- (void)tearDownCaptureInfrastructure;
+
+@end
+
 namespace ios {
 namespace provider {
 
@@ -66,6 +103,11 @@ using LensWebParamsCallback =
 // Returns a controller for the given configuration that can facilitate
 // communication with the downstream Lens controller.
 id<ChromeLensController> NewChromeLensController(LensConfiguration* config);
+
+// Returns a controller for the given configuration that can facilitate
+// communication with the downstream Lens View Finder controller.
+UIViewController<ChromeLensViewFinderController>*
+NewChromeLensViewFinderController(LensConfiguration* config);
 
 // Returns whether Lens is supported for the current build.
 bool IsLensSupported();

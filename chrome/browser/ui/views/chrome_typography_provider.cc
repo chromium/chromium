@@ -157,8 +157,9 @@ ui::ColorId ChromeTypographyProvider::GetColorIdImpl(int context,
                                                      int style) const {
   // Body text styles are the same as for labels.
   if (context == views::style::CONTEXT_DIALOG_BODY_TEXT ||
-      context == CONTEXT_DIALOG_BODY_TEXT_SMALL)
+      context == CONTEXT_DIALOG_BODY_TEXT_SMALL) {
     context = views::style::CONTEXT_LABEL;
+  }
 
   // Monospaced styles have the same colors as their normal counterparts.
   if (style == views::style::STYLE_PRIMARY_MONOSPACED) {

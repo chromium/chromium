@@ -72,23 +72,27 @@ bool UIResourceLayer::HasDrawableContent() const {
   return resource_id_.Read(*this) && Layer::HasDrawableContent();
 }
 
-void UIResourceLayer::PushPropertiesTo(
+void UIResourceLayer::PushDirtyPropertiesTo(
     LayerImpl* layer,
+    uint8_t dirty_flag,
     const CommitState& commit_state,
     const ThreadUnsafeCommitState& unsafe_state) {
-  Layer::PushPropertiesTo(layer, commit_state, unsafe_state);
-  TRACE_EVENT0("cc", "UIResourceLayer::PushPropertiesTo");
-  UIResourceLayerImpl* layer_impl = static_cast<UIResourceLayerImpl*>(layer);
+  Layer::PushDirtyPropertiesTo(layer, dirty_flag, commit_state, unsafe_state);
 
-  UIResourceId resource_id = resource_id_.Read(*this);
-  layer_impl->SetUIResourceId(resource_id);
-  if (resource_id) {
-    auto iter = commit_state.ui_resource_sizes.find(resource_id);
-    gfx::Size image_bounds = (iter == commit_state.ui_resource_sizes.end())
-                                 ? gfx::Size()
-                                 : iter->second;
-    layer_impl->SetImageBounds(image_bounds);
-    layer_impl->SetUV(uv_top_left_.Read(*this), uv_bottom_right_.Read(*this));
+  if (dirty_flag & kChangedGeneralProperty) {
+    TRACE_EVENT0("cc", "UIResourceLayer::PushPropertiesTo");
+    UIResourceLayerImpl* layer_impl = static_cast<UIResourceLayerImpl*>(layer);
+
+    UIResourceId resource_id = resource_id_.Read(*this);
+    layer_impl->SetUIResourceId(resource_id);
+    if (resource_id) {
+      auto iter = commit_state.ui_resource_sizes.find(resource_id);
+      gfx::Size image_bounds = (iter == commit_state.ui_resource_sizes.end())
+                                   ? gfx::Size()
+                                   : iter->second;
+      layer_impl->SetImageBounds(image_bounds);
+      layer_impl->SetUV(uv_top_left_.Read(*this), uv_bottom_right_.Read(*this));
+    }
   }
 }
 

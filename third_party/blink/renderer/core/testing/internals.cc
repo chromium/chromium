@@ -172,6 +172,7 @@
 #include "third_party/blink/renderer/core/testing/internal_settings.h"
 #include "third_party/blink/renderer/core/testing/internals_ukm_recorder.h"
 #include "third_party/blink/renderer/core/testing/mock_hyphenation.h"
+#include "third_party/blink/renderer/core/testing/nadc_attribute_test.h"
 #include "third_party/blink/renderer/core/testing/origin_trials_test.h"
 #include "third_party/blink/renderer/core/testing/record_test.h"
 #include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
@@ -2849,6 +2850,10 @@ OriginTrialsTest* Internals::originTrialsTest() const {
 
 CallbackFunctionTest* Internals::callbackFunctionTest() const {
   return MakeGarbageCollected<CallbackFunctionTest>();
+}
+
+NADCAttributeTest* Internals::nadcAttributeTest() const {
+  return MakeGarbageCollected<NADCAttributeTest>();
 }
 
 Vector<String> Internals::getReferencedFilePaths() const {

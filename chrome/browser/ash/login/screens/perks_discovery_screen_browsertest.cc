@@ -26,6 +26,7 @@
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash {
 
@@ -289,7 +290,7 @@ IN_PROC_BROWSER_TEST_F(PerksDiscoveryScreenNoOobeSlotTest,
 class PerksDiscoveryScreenManagedTest : public PerksDiscoveryScreenTest {
  protected:
   const LoginManagerMixin::TestUserInfo test_user_{
-      AccountId::FromUserEmailGaiaId("user@example.com", "1111")};
+      AccountId::FromUserEmailGaiaId("user@example.com", GaiaId("1111"))};
   UserPolicyMixin user_policy_mixin_{&mixin_host_, test_user_.account_id};
 };
 

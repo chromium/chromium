@@ -15,6 +15,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/sub_apps_install_dialog_controller.h"

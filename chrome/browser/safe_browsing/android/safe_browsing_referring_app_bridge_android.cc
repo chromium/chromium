@@ -43,10 +43,8 @@ internal::ReferringAppInfo GetReferringAppInfo(
           env, window_android->GetJavaObject());
   ReferringAppSource source =
       IntToReferringAppSource(Java_ReferringAppInfo_getSource(env, j_info));
-  std::string name =
-      ConvertJavaStringToUTF8(Java_ReferringAppInfo_getName(env, j_info));
-  GURL url = GURL(
-      ConvertJavaStringToUTF8(Java_ReferringAppInfo_getTargetUrl(env, j_info)));
+  std::string name = Java_ReferringAppInfo_getName(env, j_info);
+  GURL url = GURL(Java_ReferringAppInfo_getTargetUrl(env, j_info));
   base::UmaHistogramTimes("SafeBrowsing.GetReferringAppInfo.Duration",
                           base::TimeTicks::Now() - start_time);
   return internal::ReferringAppInfo{source, name, url};

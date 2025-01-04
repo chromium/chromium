@@ -897,23 +897,6 @@ CSSSelector::PseudoType CSSSelectorParser::ParsePseudoType(
   if (name.StartsWith("-internal-")) {
     return CSSSelector::PseudoType::kPseudoBlinkInternalElement;
   }
-  if (name.StartsWith("--")) {
-    String custom_name = name.GetString().Substring(2);
-    if (ExecutionContext* context =
-            document ? document->GetExecutionContext() : nullptr) {
-      Deprecation::CountDeprecation(
-          context, WebFeature::kCSSCustomStateDeprecatedSyntax);
-    }
-    if (document) {
-      document->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::ConsoleMessageSource::kDeprecation,
-          mojom::ConsoleMessageLevel::kError,
-          "Custom state pseudo classes have been changed from \":--" +
-              custom_name + "\" to \":state(" + custom_name +
-              ")\". See more here: "
-              "https://github.com/w3c/csswg-drafts/issues/4805"));
-    }
-  }
 
   return CSSSelector::PseudoType::kPseudoUnknown;
 }
@@ -2541,6 +2524,9 @@ static void RecordUsageAndDeprecationsOneSelector(
       break;
     case CSSSelector::kPseudoActiveViewTransition:
       feature = WebFeature::kActiveViewTransitionPseudo;
+      break;
+    case CSSSelector::kPseudoOpen:
+      feature = WebFeature::kCSSPseudoOpen;
       break;
     default:
       break;

@@ -40,6 +40,12 @@ OrcaBindService(const MojoSystemThunks2* mojo_thunks,
                 uint32_t receiver_handle,
                 OrcaLogger* logger);
 
+// Returns whether the receiver was successfully bound.
+OrcaBindServiceStatus __attribute__((visibility("default")))
+OrcaBindServiceV2(const MojoSystemThunks2* mojo_thunks,
+                  uintptr_t receiver_handle,
+                  OrcaLogger* logger);
+
 // Resets the OrcaService.
 // If `OrcaBindService` was called, this function must be called to clean up
 // resources before calling OrcaBindService again or unloading the shared

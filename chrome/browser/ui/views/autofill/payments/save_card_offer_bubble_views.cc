@@ -24,12 +24,12 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
-#include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
-#include "components/autofill/core/browser/validation.h"
+#include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -60,36 +60,6 @@
 #include "ui/views/style/typography_provider.h"
 
 namespace autofill {
-
-namespace {
-
-int GetLightModeBannerIdForSaveCard() {
-  switch (autofill::GetUpdatedDesktopUiTreatmentArm()) {
-    case autofill::UpdatedDesktopUiTreatmentArm::kSecurityFocus:
-      return IDR_SAVE_CARD_SECURITY;
-    case autofill::UpdatedDesktopUiTreatmentArm::kConvenienceFocus:
-      return IDR_SAVE_CARD_CONVENIENCE;
-    case autofill::UpdatedDesktopUiTreatmentArm::kEducationFocus:
-      return IDR_SAVE_CARD_EDUCATION;
-    case autofill::UpdatedDesktopUiTreatmentArm::kDefault:
-      return IDR_SAVE_CARD;
-  }
-}
-
-int GetDarkModeBannerIdForSaveCard() {
-  switch (autofill::GetUpdatedDesktopUiTreatmentArm()) {
-    case autofill::UpdatedDesktopUiTreatmentArm::kSecurityFocus:
-      return IDR_SAVE_CARD_SECURITY_DARK;
-    case autofill::UpdatedDesktopUiTreatmentArm::kConvenienceFocus:
-      return IDR_SAVE_CARD_CONVENIENCE_DARK;
-    case autofill::UpdatedDesktopUiTreatmentArm::kEducationFocus:
-      return IDR_SAVE_CARD_EDUCATION_DARK;
-    case autofill::UpdatedDesktopUiTreatmentArm::kDefault:
-      return IDR_SAVE_CARD_DARK;
-  }
-}
-
-}  // namespace
 
 SaveCardOfferBubbleViews::SaveCardOfferBubbleViews(
     views::View* anchor_view,
@@ -203,8 +173,8 @@ void SaveCardOfferBubbleViews::AddedToWidget() {
     case BubbleType::UPLOAD_IN_PROGRESS:
     case BubbleType::UPLOAD_COMPLETED:
       // Updated banner/text pairs are for upload save only.
-      light_mode_banner_id = GetLightModeBannerIdForSaveCard();
-      dark_mode_banner_id = GetDarkModeBannerIdForSaveCard();
+      light_mode_banner_id = IDR_SAVE_CARD_SECURITY;
+      dark_mode_banner_id = IDR_SAVE_CARD_SECURITY_DARK;
       break;
     case BubbleType::LOCAL_CVC_SAVE:
     case BubbleType::UPLOAD_CVC_SAVE:
@@ -318,7 +288,8 @@ std::unique_ptr<views::View> SaveCardOfferBubbleViews::CreateMainContentView() {
     view->AddChildView(CreateRequestExpirationDateView());
   }
 
-  if (std::unique_ptr<views::View> legal_message_view = CreateLegalMessageView()) {
+  if (std::unique_ptr<views::View> legal_message_view =
+          CreateLegalMessageView()) {
     legal_message_view->SetID(DialogViewId::LEGAL_MESSAGE_VIEW);
     view->AddChildView(std::move(legal_message_view));
   }
@@ -444,8 +415,9 @@ std::unique_ptr<views::View> SaveCardOfferBubbleViews::CreateLoadingRow() {
 }
 
 void SaveCardOfferBubbleViews::LinkClicked(const GURL& url) {
-  if (controller())
+  if (controller()) {
     controller()->OnLegalMessageLinkClicked(url);
+  }
 }
 
 void SaveCardOfferBubbleViews::ShowThrobber() {

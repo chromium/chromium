@@ -11,7 +11,6 @@
 
 #include "base/scoped_observation.h"
 #include "base/test/task_environment.h"
-#include "build/chromeos_buildflags.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -170,8 +169,9 @@ TEST(SigninErrorControllerTest, AuthStatusEnumerateAllErrors) {
   for (GoogleServiceAuthError::State state : table) {
     GoogleServiceAuthError error(state);
 
-    if (error.IsTransientError() || error.IsScopePersistentError())
+    if (error.IsTransientError() || error.IsScopePersistentError()) {
       continue;  // Only non scope persistent errors or non-errors are reported.
+    }
 
     identity_test_env.UpdatePersistentErrorOfRefreshTokenForAccount(
         test_account_id, error);

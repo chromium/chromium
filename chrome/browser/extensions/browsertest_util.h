@@ -60,7 +60,7 @@ class BlockedActionWaiter : public ExtensionActionRunner::TestObserver {
   explicit BlockedActionWaiter(ExtensionActionRunner* runner);
   BlockedActionWaiter(const BlockedActionWaiter&) = delete;
   BlockedActionWaiter& operator=(const BlockedActionWaiter&) = delete;
-  ~BlockedActionWaiter();
+  ~BlockedActionWaiter() override;
 
   // Wait for the blocked action until the observer is called with the blocked
   // action being added.
@@ -70,7 +70,9 @@ class BlockedActionWaiter : public ExtensionActionRunner::TestObserver {
   // ExtensionActionRunner::TestObserver:
   void OnBlockedActionAdded() override;
 
-  const raw_ptr<ExtensionActionRunner> runner_;
+  base::ScopedObservation<ExtensionActionRunner,
+                          ExtensionActionRunner::TestObserver>
+      action_runner_observation_{this};
   base::RunLoop run_loop_;
 };
 

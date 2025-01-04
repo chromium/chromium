@@ -248,10 +248,6 @@ class MockTtsPlatformImpl : public content::TtsPlatform {
 
   void RefreshVoices() override {}
 
-  content::ExternalPlatformDelegate* GetExternalPlatformDelegate() override {
-    return nullptr;
-  }
-
   // Methods for testing.
   void SendEvent(content::TtsEventType event_type,
                  int char_index,

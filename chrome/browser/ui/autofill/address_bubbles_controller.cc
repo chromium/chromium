@@ -22,7 +22,6 @@
 #include "chrome/browser/promos/promos_types.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo_util.h"
-#include "chrome/browser/ui/autofill/add_new_address_bubble_controller.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/save_address_bubble_controller.h"
@@ -35,11 +34,11 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
-#include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/autofill_address_util.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
@@ -78,19 +77,6 @@ AutofillBubbleBase* ShowUpdateBubble(
       ->GetAutofillBubbleHandler()
       ->ShowUpdateAddressProfileBubble(
           web_contents, std::move(update_controller), shown_by_user_gesture);
-}
-
-AutofillBubbleBase* ShowAddNewAddressBubble(
-    content::WebContents* web_contents,
-    bool shown_by_user_gesture,
-    base::WeakPtr<AddressBubbleControllerDelegate> delegate) {
-  auto controller =
-      std::make_unique<AddNewAddressBubbleController>(web_contents, delegate);
-  return chrome::FindBrowserWithTab(web_contents)
-      ->window()
-      ->GetAutofillBubbleHandler()
-      ->ShowAddNewAddressProfileBubble(web_contents, std::move(controller),
-                                       shown_by_user_gesture);
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -149,20 +135,6 @@ void AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
   controller->SetUpAndShowBubble(std::move(show_bubble_view_impl),
                                  std::move(page_action_icon_tootip),
                                  is_migration_to_account, std::move(callback));
-}
-
-// static
-void AddressBubblesController::SetUpAndShowAddNewAddressBubble(
-    content::WebContents* web_contents,
-    AutofillClient::AddressProfileSavePromptCallback callback) {
-  AddressBubblesController::CreateForWebContents(web_contents);
-  auto* controller = AddressBubblesController::FromWebContents(web_contents);
-  std::u16string page_action_icon_tootip =
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_ADD_NEW_ADDRESS_PROMPT_TITLE);
-
-  controller->SetUpAndShowBubble(base::BindRepeating(ShowAddNewAddressBubble),
-                                 std::move(page_action_icon_tootip), {},
-                                 std::move(callback));
 }
 
 void AddressBubblesController::ShowEditor(

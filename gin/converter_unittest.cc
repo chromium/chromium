@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gin/converter.h"
 
 #include <limits.h>
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <string>
 
 #include "base/compiler_specific.h"
@@ -55,10 +51,11 @@ TEST_F(ConverterTest, Bool) {
   EXPECT_TRUE(Converter<bool>::ToV8(instance_->isolate(), false)->StrictEquals(
       Boolean::New(instance_->isolate(), false)));
 
-  struct {
+  struct TestData {
     Local<Value> input;
     bool expected;
-  } test_data[] = {
+  };
+  auto test_data = std::to_array<TestData>({
       {Boolean::New(instance_->isolate(), false).As<Value>(), false},
       {Boolean::New(instance_->isolate(), true).As<Value>(), true},
       {Number::New(instance_->isolate(), 0).As<Value>(), false},
@@ -77,7 +74,7 @@ TEST_F(ConverterTest, Bool) {
       {Object::New(instance_->isolate()).As<Value>(), true},
       {Null(instance_->isolate()).As<Value>(), false},
       {Undefined(instance_->isolate()).As<Value>(), false},
-  };
+  });
 
   for (size_t i = 0; i < std::size(test_data); ++i) {
     bool result = false;
@@ -119,18 +116,19 @@ TEST_F(ConverterTest, String16) {
 TEST_F(ConverterTest, Int32) {
   HandleScope handle_scope(instance_->isolate());
 
-  int test_data_to[] = {-1, 0, 1};
+  auto test_data_to = std::to_array<int>({-1, 0, 1});
   for (size_t i = 0; i < std::size(test_data_to); ++i) {
     EXPECT_TRUE(Converter<int32_t>::ToV8(instance_->isolate(), test_data_to[i])
                     ->StrictEquals(
                           Integer::New(instance_->isolate(), test_data_to[i])));
   }
 
-  struct {
+  struct TestDataFrom {
     v8::Local<v8::Value> input;
     bool expect_success;
     int expected_result;
-  } test_data_from[] = {
+  };
+  auto test_data_from = std::to_array<TestDataFrom>({
       {Boolean::New(instance_->isolate(), false).As<Value>(), false, 0},
       {Boolean::New(instance_->isolate(), true).As<Value>(), false, 0},
       {Integer::New(instance_->isolate(), -1).As<Value>(), true, -1},
@@ -152,7 +150,7 @@ TEST_F(ConverterTest, Int32) {
       {Array::New(instance_->isolate()).As<Value>(), false, 0},
       {v8::Null(instance_->isolate()).As<Value>(), false, 0},
       {v8::Undefined(instance_->isolate()).As<Value>(), false, 0},
-  };
+  });
 
   for (size_t i = 0; i < std::size(test_data_from); ++i) {
     int32_t result = std::numeric_limits<int32_t>::min();

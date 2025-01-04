@@ -3879,7 +3879,7 @@ ci.builder(
     ),
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
-        category = "on_cq|x64",
+        category = "builder_tester|x64",
         short_name = "13",
     ),
     contact_team_email = "clank-engprod@google.com",
@@ -3924,6 +3924,7 @@ ci.builder(
     ),
     targets = targets.bundle(
         targets = [
+            "android_14_device_ci_only_gtests",
             "android_14_device_gtests",
             "chromium_android_scripts",
         ],
@@ -4278,9 +4279,8 @@ ci.builder(
 
 ci.builder(
     name = "android-15-x64-rel",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = "Run chromium tests on Android 15 emulators.",
-    # TODO(crbug.com/40286106): Enable on branches once stable
-    #branch_selector = branches.selector.ANDROID_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -4353,18 +4353,12 @@ ci.builder(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.chrome_public_test_apk.filter",
                 ],
                 swarming = targets.swarming(
-                    shards = 40,
+                    shards = 50,
                 ),
             ),
             "chrome_public_unit_test_apk": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.chrome_public_unit_test_apk.filter",
-                ],
-            ),
-            "components_browsertests": targets.mixin(
-                args = [
-                    # TODO(crbug.com/366037904): Fix the test failure
-                    "--gtest_filter=-All/AndroidInputBrowserTest.*/InputOnViz_Enabled",
                 ],
             ),
             "content_browsertests": targets.mixin(
@@ -4431,11 +4425,6 @@ ci.builder(
                     shards = 12,
                 ),
             ),
-            "viz_unittests": targets.mixin(
-                args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.viz_unittests.filter",
-                ],
-            ),
         },
     ),
     targets_settings = targets.settings(
@@ -4443,7 +4432,7 @@ ci.builder(
     ),
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
-        category = "builder_tester|x64",
+        category = "on_cq|x64",
         short_name = "15",
     ),
     contact_team_email = "clank-engprod@google.com",

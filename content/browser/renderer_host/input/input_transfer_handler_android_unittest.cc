@@ -25,9 +25,15 @@ namespace {
 
 class FakeInputTransferHandlerClient final
     : public InputTransferHandlerAndroidClient {
+ public:
   gpu::SurfaceHandle GetRootSurfaceHandle() override {
     return gpu::kNullSurfaceHandle;
   }
+
+  MOCK_METHOD((void),
+              SendStateOnTouchTransfer,
+              (const ui::MotionEvent&),
+              (override));
 };
 
 class MockJniDelegate : public InputTransferHandlerAndroid::JniDelegate {
@@ -68,11 +74,11 @@ class InputTransferHandlerTest : public testing::Test {
  protected:
   std::unique_ptr<InputTransferHandlerAndroid> transfer_handler_;
   raw_ptr<MockJniDelegate> mock_;
+  std::unique_ptr<FakeInputTransferHandlerClient>
+      input_transfer_handler_client_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<FakeInputTransferHandlerClient>
-      input_transfer_handler_client_;
 };
 
 TEST_F(InputTransferHandlerTest, ConsumeEventsIfSequenceTransferred) {
@@ -81,6 +87,8 @@ TEST_F(InputTransferHandlerTest, ConsumeEventsIfSequenceTransferred) {
                                     ui::PointerProperties());
 
   EXPECT_CALL(*mock_, MaybeTransferInputToViz(_)).WillOnce(Return(true));
+  EXPECT_CALL(*input_transfer_handler_client_, SendStateOnTouchTransfer(_))
+      .Times(1);
   EXPECT_TRUE(transfer_handler_->OnTouchEvent(down_event));
 
   ui::MotionEventGeneric move_event(ui::MotionEvent::Action::MOVE, event_time,

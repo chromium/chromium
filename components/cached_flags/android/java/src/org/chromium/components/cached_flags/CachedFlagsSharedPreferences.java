@@ -17,9 +17,9 @@ public class CachedFlagsSharedPreferences {
     /** CachedFlags store flag values for the next run with this prefix. */
     public static final KeyPrefix FLAGS_CACHED = new KeyPrefix("Chrome.Flags.CachedFlag.*");
 
-    /** CachedFieldTrialParameters store parameter values for the next run with this prefix. */
-    public static final KeyPrefix FLAGS_FIELD_TRIAL_PARAM_CACHED =
-            new KeyPrefix("Chrome.Flags.FieldTrialParamCached.*");
+    /** CachedFeatureParams store parameter values for the next run with this prefix. */
+    public static final KeyPrefix FLAGS_FEATURE_PARAM_CACHED =
+            new KeyPrefix("Chrome.Flags.FeatureParamCached.*");
 
     /**
      * Streak of crashes before caching flags from native. This controls Safe Mode for Cached Flags.
@@ -37,7 +37,7 @@ public class CachedFlagsSharedPreferences {
                             /* keysInUse= */ List.of(
                                     FLAGS_CACHED.pattern(),
                                     FLAGS_CRASH_STREAK_BEFORE_CACHE,
-                                    FLAGS_FIELD_TRIAL_PARAM_CACHED.pattern(),
+                                    FLAGS_FEATURE_PARAM_CACHED.pattern(),
                                     FLAGS_SAFE_MODE_RUNS_LEFT),
                             /* legacyKeys= */ Collections.EMPTY_LIST,
                             /* legacyPrefixes= */ Collections.EMPTY_LIST)

@@ -2,7 +2,7 @@ include_rules = [
   "+components/lens",
   "+ios/chrome/browser/ntp/model",
   "+ios/chrome/browser/snapshots/model",
-  "+ios/chrome/browser/ui/fullscreen",
+  "+ios/chrome/browser/fullscreen/ui_bundled",
   "+ios/chrome/browser/menu/ui_bundled",
   "+ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h",
   "+ios/chrome/browser/signin/model/authentication_service.h",

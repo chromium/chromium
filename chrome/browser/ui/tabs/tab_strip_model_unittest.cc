@@ -10,8 +10,6 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-
 #include <stddef.h>
 
 #include <algorithm>
@@ -42,6 +40,7 @@
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
@@ -225,7 +224,7 @@ class MockTabStripModelObserver : public TabStripModelObserver {
 
   void PushDeactivateState(WebContents* contents,
                            const ui::ListSelectionModel& old_model) {
-    states_.push_back(State(contents, old_model.active(), DEACTIVATE));
+    states_.emplace_back(contents, old_model.active(), DEACTIVATE);
   }
 
   void PushSelectState(content::WebContents* new_contents,
@@ -239,8 +238,9 @@ class MockTabStripModelObserver : public TabStripModelObserver {
   void PushMoveState(WebContents* contents, int from_index, int to_index) {
     const auto tab_index_to_selection_model_index =
         [](int tab_index) -> std::optional<size_t> {
-      if (tab_index == TabStripModel::kNoTab)
+      if (tab_index == TabStripModel::kNoTab) {
         return std::nullopt;
+      }
       DCHECK_GE(tab_index, 0);
       return static_cast<size_t>(tab_index);
     };
@@ -250,11 +250,11 @@ class MockTabStripModelObserver : public TabStripModelObserver {
   }
 
   void PushCloseState(WebContents* contents, int index) {
-    states_.push_back(State(contents, index, CLOSE));
+    states_.emplace_back(contents, index, CLOSE);
   }
 
   void PushDetachState(WebContents* contents, int index, bool was_active) {
-    states_.push_back(State(contents, index, DETACH));
+    states_.emplace_back(contents, index, DETACH);
   }
 
   void PushReplaceState(WebContents* old_contents,
@@ -323,8 +323,9 @@ class MockTabStripModelObserver : public TabStripModelObserver {
     }
 
     if (selection.active_tab_changed()) {
-      if (selection.old_contents && selection.selection_changed())
+      if (selection.old_contents && selection.selection_changed()) {
         PushDeactivateState(selection.old_contents, selection.old_model);
+      }
 
       PushActivateState(selection.old_contents, selection.new_contents,
                         selection.new_model.active(), selection.reason);
@@ -492,20 +493,23 @@ class TabStripModelTest : public testing::Test,
   std::string GetTabStripStateString(const TabStripModel& model) {
     std::string actual;
     for (int i = 0; i < model.count(); ++i) {
-      if (i > 0)
+      if (i > 0) {
         actual += " ";
+      }
 
       actual += base::NumberToString(GetID(model.GetWebContentsAt(i)));
 
-      if (model.IsTabPinned(i))
+      if (model.IsTabPinned(i)) {
         actual += "p";
+      }
     }
     return actual;
   }
 
   void PrepareTabs(TabStripModel* model, int tab_count) {
-    for (int i = 0; i < tab_count; ++i)
+    for (int i = 0; i < tab_count; ++i) {
       model->AppendWebContents(CreateWebContentsWithID(i), true);
+    }
   }
 
   void PrepareTabstripForSelectionTest(TabStripModel* model,
@@ -513,8 +517,9 @@ class TabStripModelTest : public testing::Test,
                                        int pinned_count,
                                        const std::string& selected_tabs) {
     PrepareTabs(model, tab_count);
-    for (int i = 0; i < pinned_count; ++i)
+    for (int i = 0; i < pinned_count; ++i) {
       model->SetTabPinned(i, true);
+    }
 
     ui::ListSelectionModel selection_model;
     for (std::string_view sel : base::SplitStringPiece(
@@ -1774,15 +1779,17 @@ TEST_P(TabStripModelTest, GetIndicesClosedByCommand) {
             tabstrip.GetIndicesClosedByCommand(index, id);
         std::string result;
         for (size_t i = 0; i < indices.size(); ++i) {
-          if (i != 0)
+          if (i != 0) {
             result += " ";
+          }
           result += base::NumberToString(indices[i]);
         }
         return result;
       };
 
-  for (int i = 0; i < 5; ++i)
+  for (int i = 0; i < 5; ++i) {
     tabstrip.AppendWebContents(CreateWebContents(), true);
+  }
 
   EXPECT_EQ("4 3 2 1",
             indicesClosedAsString(0, TabStripModel::CommandCloseTabsToRight));
@@ -3103,8 +3110,9 @@ TEST_P(TabStripModelTest, MoveSelectedTabsTo_ForgetOpeners) {
 TEST_P(TabStripModelTest, CloseSelectedTabs) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
-  for (int i = 0; i < 3; ++i)
+  for (int i = 0; i < 3; ++i) {
     strip.AppendWebContents(CreateWebContents(), true);
+  }
   strip.ToggleSelectionAt(1);
   strip.CloseSelectedTabs();
   EXPECT_EQ(1, strip.count());
@@ -3279,15 +3287,17 @@ class TabBlockedStateTestBrowser
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override {
-    if (change.type() != TabStripModelChange::kInserted)
+    if (change.type() != TabStripModelChange::kInserted) {
       return;
+    }
 
     for (const auto& contents : change.GetInsert()->contents) {
       web_modal::WebContentsModalDialogManager* manager =
           web_modal::WebContentsModalDialogManager::FromWebContents(
               contents.contents);
-      if (manager)
+      if (manager) {
         manager->SetDelegate(this);
+      }
     }
   }
 
@@ -3299,8 +3309,9 @@ class TabBlockedStateTestBrowser
     // Removal of tabs from the TabStripModel can cause observer callbacks to
     // invoke this method. The WebContents may no longer exist in the
     // TabStripModel.
-    if (index == TabStripModel::kNoTab)
+    if (index == TabStripModel::kNoTab) {
       return;
+    }
 
     tab_strip_model_->SetTabBlocked(index, blocked);
   }
@@ -4483,14 +4494,16 @@ TEST_P(TabStripModelTest, DanglingOpener) {
 class TabToWindowTestTabStripModelDelegate : public TestTabStripModelDelegate {
  public:
   bool CanMoveTabsToWindow(const std::vector<int>& indices) override {
-    for (int index : indices)
+    for (int index : indices) {
       can_move_calls_.push_back(index);
+    }
     return true;
   }
 
   void MoveTabsToNewWindow(const std::vector<int>& indices) override {
-    for (int index : indices)
+    for (int index : indices) {
       move_calls_.push_back(index);
+    }
   }
 
   void MoveGroupToNewWindow(const tab_groups::TabGroupId& group) override {}

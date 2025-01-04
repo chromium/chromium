@@ -247,7 +247,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/accessibility/accessibility_prefs/android/accessibility_prefs_controller.h"
-#include "chrome/browser/android/bookmarks/partner_bookmarks_shim.h"
 #include "chrome/browser/android/ntp/recent_tabs_page_prefs.h"
 #include "chrome/browser/android/oom_intervention/oom_intervention_decider.h"
 #include "chrome/browser/android/preferences/browser_prefs_android.h"
@@ -257,6 +256,7 @@
 #include "chrome/browser/lens/android/lens_prefs.h"
 #include "chrome/browser/media/android/cdm/media_drm_origin_id_manager.h"
 #include "chrome/browser/notifications/notification_channels_provider_android.h"
+#include "chrome/browser/partnerbookmarks/partner_bookmarks_shim.h"
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "chrome/browser/readaloud/android/prefs.h"
 #include "chrome/browser/ssl/known_interception_disclosure_infobar_delegate.h"
@@ -277,7 +277,9 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/drive_service.h"
 #include "chrome/browser/new_tab_page/modules/safe_browsing/safe_browsing_handler.h"
+#include "chrome/browser/new_tab_page/modules/v2/authentication/microsoft_auth_page_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar_page_handler.h"
+#include "chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar_page_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_page_handler.h"
 #include "chrome/browser/new_tab_page/promos/promo_service.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
@@ -545,8 +547,9 @@
 #include "components/enterprise/data_controls/core/browser/prefs.h"
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#include "chrome/browser/glic/launcher/glic_configuration.h"
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_profile_configuration.h"
+#include "chrome/browser/glic/launcher/glic_launcher_configuration.h"
 #endif
 
 namespace {
@@ -1167,7 +1170,14 @@ const char kCryptAuthEnrollmentUserPublicKey[] =
     "cryptauth.enrollment.user_public_key";
 const char kCryptAuthEnrollmentUserPrivateKey[] =
     "cryptauth.enrollment.user_private_key";
+const char kLacrosLaunchOnLogin[] = "lacros.launch_on_login";
+const char kLacrosLaunchSwitch[] = "lacros_launch_switch";
+const char kLacrosSelection[] = "lacros_selection";
 #endif
+
+// Deprecated 12/2024.
+inline constexpr char kPageContentCollectionEnabled[] =
+    "page_content_collection.enabled";
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -1278,6 +1288,12 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 
   // Deprecated 11/2024.
   registry->RegisterIntegerPref(kOnDeviceModelTimeoutCount, 0);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Deprecated 12/2024.
+  registry->RegisterIntegerPref(kLacrosLaunchSwitch, 0);
+  registry->RegisterIntegerPref(kLacrosSelection, 0);
+#endif
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1659,7 +1675,11 @@ void RegisterProfilePrefsForMigration(
                                std::string());
   registry->RegisterStringPref(kCryptAuthEnrollmentUserPrivateKey,
                                std::string());
+  registry->RegisterBooleanPref(kLacrosLaunchOnLogin, false);
 #endif
+
+  // Deprecated 12/2024.
+  registry->RegisterBooleanPref(kPageContentCollectionEnabled, false);
 }
 
 }  // namespace
@@ -1982,9 +2002,11 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
 
   registry->RegisterIntegerPref(prefs::kChromeDataRegionSetting, 0);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  glic::GlicConfiguration::RegisterPrefs(registry);
+#if BUILDFLAG(ENABLE_GLIC)
+  glic::GlicLauncherConfiguration::RegisterLocalStatePrefs(registry);
 #endif
+
+  registry->RegisterIntegerPref(prefs::kToastAlertLevel, 0);
 
   // This is intentionally last.
   RegisterLocalStatePrefsForMigration(registry);
@@ -2017,6 +2039,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   dom_distiller::DistilledPagePrefs::RegisterProfilePrefs(registry);
   DownloadPrefs::RegisterProfilePrefs(registry);
   fingerprinting_protection_filter::prefs::RegisterProfilePrefs(registry);
+#if BUILDFLAG(ENABLE_GLIC)
+  glic::GlicProfileConfiguration::RegisterProfilePrefs(registry);
+#endif
   permissions::PermissionHatsTriggerHelper::RegisterProfilePrefs(registry);
   history_clusters::prefs::RegisterProfilePrefs(registry);
   HostContentSettingsMap::RegisterProfilePrefs(registry);
@@ -2156,6 +2181,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   bookmarks_webui::RegisterProfilePrefs(registry);
   browser_sync::ForeignSessionHandler::RegisterProfilePrefs(registry);
   BrowserUserEducationStorageService::RegisterProfilePrefs(registry);
+  captions::LiveCaptionController::RegisterProfilePrefs(registry);
   captions::LiveTranslateController::RegisterProfilePrefs(registry);
   ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(registry);
   commerce::CommerceUiTabHelper::RegisterProfilePrefs(registry);
@@ -2172,10 +2198,12 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   NtpCustomBackgroundService::RegisterProfilePrefs(registry);
   media_router::RegisterAccessCodeProfilePrefs(registry);
   media_router::RegisterProfilePrefs(registry);
+  MicrosoftAuthPageHandler::RegisterProfilePrefs(registry);
   NewTabPageHandler::RegisterProfilePrefs(registry);
   NewTabPageUI::RegisterProfilePrefs(registry);
   ntp::SafeBrowsingHandler::RegisterProfilePrefs(registry);
   ntp_tiles::CustomLinksManagerImpl::RegisterProfilePrefs(registry);
+  OutlookCalendarPageHandler::RegisterProfilePrefs(registry);
   PinnedTabCodec::RegisterProfilePrefs(registry);
   policy::DeveloperToolsPolicyHandler::RegisterProfilePrefs(registry);
   promos_utils::RegisterProfilePrefs(registry);
@@ -2193,10 +2221,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   toolbar::RegisterProfilePrefs(registry);
   UnifiedAutoplayConfig::RegisterProfilePrefs(registry);
   user_notes::RegisterProfilePrefs(registry);
-
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-  captions::LiveCaptionController::RegisterProfilePrefs(registry);
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -2575,6 +2599,12 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // Added 11/2024
   optimization_guide::model_execution::prefs::MigrateLegacyUsagePrefs(
       local_state);
+
+  // Added 12/2024
+#if BUILDFLAG(IS_CHROMEOS)
+  local_state->ClearPref(kLacrosLaunchSwitch);
+  local_state->ClearPref(kLacrosSelection);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
@@ -2991,7 +3021,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kCryptAuthEnrollmentReason);
   profile_prefs->ClearPref(kCryptAuthEnrollmentUserPublicKey);
   profile_prefs->ClearPref(kCryptAuthEnrollmentUserPrivateKey);
+  profile_prefs->ClearPref(kLacrosLaunchOnLogin);
 #endif
+
+  // Added 12/2024.
+  profile_prefs->ClearPref(kPageContentCollectionEnabled);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

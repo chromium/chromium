@@ -13,10 +13,12 @@ found in the LICENSE file.
         app:allowDividerBelow="false" />
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="fledge_learn_more_bullet_1"
         android:summary="@string/settings_fledge_page_learn_more_bullet_1"
         app:allowDividerBelow="false" />
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="fledge_learn_more_bullet_2"
         android:summary="@string/settings_fledge_page_learn_more_bullet_2"
         app:allowDividerBelow="false" />
 

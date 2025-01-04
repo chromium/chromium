@@ -49,33 +49,28 @@ build_webui("build") {
 
   if (is_chromeos) {
     web_component_files += [
+      "ui/destination_dialog_cros.ts",
       "ui/destination_dropdown_cros.ts",
       "ui/destination_list_item_cros.ts",
       "ui/destination_select_cros.ts",
       "ui/pin_settings.ts",
       "ui/printer_setup_info_cros.ts",
       "ui/provisional_destination_resolver.ts",
-      "ui/destination_dialog_cros.ts",
       "ui/searchable_drop_down_cros.ts",
     ]
   } else {
     web_component_files += [
-      "ui/destination_select.ts",
-      "ui/link_container.ts",
       "ui/destination_dialog.ts",
       "ui/destination_list_item.ts",
+      "ui/destination_select.ts",
+      "ui/link_container.ts",
     ]
   }
 
   non_web_component_files = [
     "dark_mode_mixin.ts",
-    "metrics.ts",
-    "native_layer.ts",
-    "print_preview.ts",
-    "print_preview_utils.ts",
     "data/cdd.ts",
     "data/coordinate2d.ts",
-    "data/destination.ts",
     "data/destination_match.ts",
     "data/destination_store.ts",
     "data/document_info.ts",
@@ -87,6 +82,10 @@ build_webui("build") {
     "data/scaling.ts",
     "data/size.ts",
     "data/state.ts",
+    "metrics.ts",
+    "native_layer.ts",
+    "print_preview.ts",
+    "print_preview_utils.ts",
     "ui/highlight_utils.ts",
     "ui/input_mixin.ts",
     "ui/plugin_proxy.ts",
@@ -96,11 +95,14 @@ build_webui("build") {
 
   if (is_chromeos) {
     non_web_component_files += [
+      "data/destination_cros.ts",
       "data/managed_print_options_cros.ts",
       "data/print_server_store.ts",
       "data/printer_status_cros.ts",
       "native_layer_cros.ts",
     ]
+  } else {
+    non_web_component_files += [ "data/destination.ts" ]
   }
 
   # Files that are passed as input to css_to_wrapper().

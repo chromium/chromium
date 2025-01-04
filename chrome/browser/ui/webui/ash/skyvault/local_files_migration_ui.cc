@@ -12,7 +12,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_dialog.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_page_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/skyvault_resources.h"
@@ -21,6 +20,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 
 namespace policy::local_user_files {
 

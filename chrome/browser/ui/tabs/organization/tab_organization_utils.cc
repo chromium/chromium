@@ -21,7 +21,7 @@ TabOrganizationUtils* TabOrganizationUtils::GetInstance() {
 }
 
 bool TabOrganizationUtils::IsEnabled(Profile* profile) {
-  bool feature_is_enabled = features::IsTabOrganization();
+  const bool feature_is_enabled = features::IsTabOrganization();
   if (ignore_opt_guide_for_testing_) {
     return feature_is_enabled;
   }
@@ -29,6 +29,19 @@ bool TabOrganizationUtils::IsEnabled(Profile* profile) {
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   return opt_guide_keyed_service != nullptr &&
          opt_guide_keyed_service->ShouldFeatureBeCurrentlyEnabledForUser(
+             optimization_guide::UserVisibleFeatureKey::kTabOrganization) &&
+         feature_is_enabled;
+}
+
+bool TabOrganizationUtils::IsSettingVisible(Profile* profile) {
+  const bool feature_is_enabled = features::IsTabOrganization();
+  if (ignore_opt_guide_for_testing_) {
+    return feature_is_enabled;
+  }
+  const OptimizationGuideKeyedService* const opt_guide_keyed_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  return opt_guide_keyed_service != nullptr &&
+         opt_guide_keyed_service->IsSettingVisible(
              optimization_guide::UserVisibleFeatureKey::kTabOrganization) &&
          feature_is_enabled;
 }

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.signin;
 
 import android.accounts.Account;
 import android.app.Activity;
+import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import android.widget.FrameLayout;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Promise;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
@@ -23,6 +25,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninCoordinator;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninMediator;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninView;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncCoordinator;
@@ -35,6 +38,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
+import org.chromium.components.signin.metrics.SyncButtonClicked;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.lang.annotation.Retention;
@@ -93,6 +97,7 @@ public final class FullscreenSigninAndHistorySyncCoordinator
     private final @SigninAccessPoint int mSigninAccessPoint;
     private final Delegate mDelegate;
     private final boolean mDidShowSignin;
+    private final long mActivityStartTime;
     private @ChildView int mCurrentView;
     private FullscreenSigninView mFullscreenSigninView;
     private View mHistorySyncView;
@@ -107,7 +112,8 @@ public final class FullscreenSigninAndHistorySyncCoordinator
             PrivacyPreferencesManager privacyPreferencesManager,
             FullscreenSigninAndHistorySyncConfig config,
             @SigninAccessPoint int signinAccessPoint,
-            Delegate delegate) {
+            Delegate delegate,
+            long activityStartTime) {
         mActivity = activity;
         mCurrentView = ChildView.SIGNIN;
         mViewHolder = new FrameLayout(activity);
@@ -118,6 +124,7 @@ public final class FullscreenSigninAndHistorySyncCoordinator
         mConfig = config;
         mSigninAccessPoint = signinAccessPoint;
         mDelegate = delegate;
+        mActivityStartTime = activityStartTime;
         inflateViewBundle();
         if (isSignedIn()) {
             advanceToNextPage();
@@ -162,7 +169,7 @@ public final class FullscreenSigninAndHistorySyncCoordinator
     /** Implements {@link SigninAndHistorySyncCoordinator}. */
     @Override
     public void onAccountAdded(String accountName) {
-        mSigninCoordinator.onAccountSelected(accountName);
+        mSigninCoordinator.onAccountAdded(accountName);
     }
 
     /** Implements {@link SigninAndHistorySyncCoordinator}. */
@@ -241,28 +248,36 @@ public final class FullscreenSigninAndHistorySyncCoordinator
         // TODO(b/41496906): Maybe implement this method.
     }
 
+    @Override
+    public void recordUserSignInHistograms(@AccountConsistencyPromoAction int promoAction) {
+        SigninMetricsUtils.logAccountConsistencyPromoAction(promoAction, mSigninAccessPoint);
+    }
+
+    @Override
+    public void recordSigninDismissedHistograms() {
+        SigninMetricsUtils.logAccountConsistencyPromoAction(
+                AccountConsistencyPromoAction.DISMISSED_BUTTON, mSigninAccessPoint);
+    }
+
+    @Override
+    public void recordLoadCompletedHistograms(
+            @FullscreenSigninMediator.LoadPoint int slowestLoadPoint) {
+        RecordHistogram.recordTimesHistogram(
+                "Signin.Timestamps.Android.Fullscreen.LoadCompleted",
+                SystemClock.elapsedRealtime() - mActivityStartTime);
+    }
+
+    @Override
+    public void recordNativeInitializedHistogram() {
+        RecordHistogram.recordTimesHistogram(
+                "Signin.Timestamps.Android.Fullscreen.NativeInitialized",
+                SystemClock.elapsedRealtime() - mActivityStartTime);
+    }
+
     /** Implements {@link FullscreenSigninCoordinator.Delegate} */
     @Override
     public OneshotSupplier<ProfileProvider> getProfileSupplier() {
         return mProfileSupplier;
-    }
-
-    /** Implements {@link FullscreenSigninCoordinator.Delegate} */
-    @Override
-    public OneshotSupplier<Boolean> getPolicyLoadListener() {
-        return mDelegate.getPolicyLoadListener();
-    }
-
-    /** Implements {@link FullscreenSigninCoordinator.Delegate} */
-    @Override
-    public OneshotSupplier<Boolean> getChildAccountStatusSupplier() {
-        return mDelegate.getChildAccountStatusSupplier();
-    }
-
-    /** Implements {@link FullscreenSigninCoordinator.Delegate} */
-    @Override
-    public Promise<Void> getNativeInitializationPromise() {
-        return mDelegate.getNativeInitializationPromise();
     }
 
     /** Implements {@link FullscreenSigninCoordinator.Delegate}. */
@@ -278,7 +293,22 @@ public final class FullscreenSigninAndHistorySyncCoordinator
         return false;
     }
 
-    /** Implements {@link HistorySyncDelegate} */
+    @Override
+    public OneshotSupplier<Boolean> getPolicyLoadListener() {
+        return mDelegate.getPolicyLoadListener();
+    }
+
+    @Override
+    public OneshotSupplier<Boolean> getChildAccountStatusSupplier() {
+        return mDelegate.getChildAccountStatusSupplier();
+    }
+
+    @Override
+    public Promise<Void> getNativeInitializationPromise() {
+        return mDelegate.getNativeInitializationPromise();
+    }
+
+    /** Implements {@link HistorySyncCoordinator.HistorySyncDelegate} */
     @Override
     public void dismissHistorySync(boolean isHistorySyncAccepted) {
         mViewHolder.removeAllViews();
@@ -292,6 +322,26 @@ public final class FullscreenSigninAndHistorySyncCoordinator
                         ? SigninAndHistorySyncCoordinator.Result.COMPLETED
                         : SigninAndHistorySyncCoordinator.Result.INTERRUPTED;
         mDelegate.onFlowComplete(flowResult);
+    }
+
+    /** Implements {@link HistorySyncDelegate} */
+    @Override
+    public void recordHistorySyncOptIn(
+            @SigninAccessPoint int accessPoint, @SyncButtonClicked int syncButtonClicked) {
+        switch (syncButtonClicked) {
+            case SyncButtonClicked.HISTORY_SYNC_OPT_IN_EQUAL_WEIGHTED:
+            case SyncButtonClicked.HISTORY_SYNC_OPT_IN_NOT_EQUAL_WEIGHTED:
+                SigninMetricsUtils.logHistorySyncAcceptButtonClicked(
+                        accessPoint, syncButtonClicked);
+                break;
+            case SyncButtonClicked.HISTORY_SYNC_CANCEL_EQUAL_WEIGHTED:
+            case SyncButtonClicked.HISTORY_SYNC_CANCEL_NOT_EQUAL_WEIGHTED:
+                SigninMetricsUtils.logHistorySyncDeclineButtonClicked(
+                        accessPoint, syncButtonClicked);
+                break;
+            default:
+                throw new IllegalStateException("Unrecognized sync button type");
+        }
     }
 
     private void inflateViewBundle() {

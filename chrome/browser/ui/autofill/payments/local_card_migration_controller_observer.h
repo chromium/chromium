@@ -9,7 +9,7 @@
 
 // The observer interface that listens for events in local card migration
 // related controllers.
-class LocalCardMigrationControllerObserver: public base::CheckedObserver {
+class LocalCardMigrationControllerObserver : public base::CheckedObserver {
  public:
   // Called when the user declined the offer dialog, navigated away with
   // feedback credit card icon or finished with the feedback dialog.

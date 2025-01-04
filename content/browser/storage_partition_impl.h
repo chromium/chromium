@@ -163,6 +163,9 @@ class CONTENT_EXPORT StoragePartitionImpl
   void OverridePrivateAggregationManagerForTesting(
       std::unique_ptr<PrivateAggregationManagerImpl>
           private_aggregation_manager);
+  void OverrideDeviceBoundSessionManagerForTesting(
+      std::unique_ptr<network::mojom::DeviceBoundSessionManager>
+          device_bound_session_manager);
 
   // StoragePartition interface.
   const StoragePartitionConfig& GetConfig() const override;
@@ -395,6 +398,7 @@ class CONTENT_EXPORT StoragePartitionImpl
       const url::Origin& request_origin,
       std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
           methods_with_options,
+      const std::optional<std::string>& with_lock,
       OnSharedStorageHeaderReceivedCallback callback) override;
 
   SharedStorageHeaderObserver* shared_storage_header_observer() {

@@ -66,6 +66,13 @@ source_set("editor_menu") {
     "//ui/gfx",
     "//ui/views",
   ]
+
+  if (is_chrome_branded) {
+    deps += [
+      "//chromeos/ash/resources/internal/strings:strings",
+      "//chromeos/ash/resources/internal/strings:strings_grit",
+    ]
+  }
 }
 
 source_set("views") {

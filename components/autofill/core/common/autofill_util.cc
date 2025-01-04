@@ -137,6 +137,13 @@ SubmissionIndicatorEvent ToSubmissionIndicatorEvent(SubmissionSource source) {
   NOTREACHED();
 }
 
+GURL StripAuth(const GURL& gurl) {
+  GURL::Replacements rep;
+  rep.ClearUsername();
+  rep.ClearPassword();
+  return gurl.ReplaceComponents(rep);
+}
+
 GURL StripAuthAndParams(const GURL& gurl) {
   GURL::Replacements rep;
   rep.ClearUsername();
@@ -148,14 +155,7 @@ GURL StripAuthAndParams(const GURL& gurl) {
 
 bool IsAutofillManuallyTriggered(
     AutofillSuggestionTriggerSource trigger_source) {
-  return IsPaymentsAutofillManuallyTriggered(trigger_source) ||
-         IsPasswordsAutofillManuallyTriggered(trigger_source);
-}
-
-bool IsPaymentsAutofillManuallyTriggered(
-    AutofillSuggestionTriggerSource trigger_source) {
-  return trigger_source ==
-         AutofillSuggestionTriggerSource::kManualFallbackPayments;
+  return IsPasswordsAutofillManuallyTriggered(trigger_source);
 }
 
 bool IsPasswordsAutofillManuallyTriggered(

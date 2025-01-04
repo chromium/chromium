@@ -33,7 +33,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ui/base/accelerators/ash/right_alt_event_property.h"
+#include "ui/base/accelerators/ash/quick_insert_event_property.h"
 #include "ui/base/ui_base_features.h"
 #endif
 
@@ -70,10 +70,10 @@ Accelerator::Accelerator(const KeyEvent& key_event)
     code_ = key_event.code();
   }
 
-  // Rewrite to Right Alt based on the presence of the property.
+  // Rewrite to Quick Insert based on the presence of the property.
   if (key_event.key_code() == VKEY_ASSISTANT &&
-      HasRightAltProperty(key_event)) {
-    key_code_ = VKEY_RIGHT_ALT;
+      HasQuickInsertProperty(key_event)) {
+    key_code_ = VKEY_QUICK_INSERT;
   }
 #endif
 }

@@ -18,6 +18,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -48,6 +50,7 @@ import javax.security.auth.x500.X500Principal;
 
 /** Utility functions for interacting with Android's X.509 certificates. */
 @JNINamespace("net")
+@NullUnmarked
 public class X509Util {
     private static final String TAG = "X509Util";
 
@@ -105,7 +108,7 @@ public class X509Util {
         }
     }
 
-    private static CertificateFactory sCertificateFactory;
+    private static @Nullable CertificateFactory sCertificateFactory;
 
     private static final String OID_TLS_SERVER_AUTH = "1.3.6.1.5.5.7.3.1";
     private static final String OID_ANY_EKU = "2.5.29.37.0";
@@ -116,27 +119,27 @@ public class X509Util {
     private static final String OID_SERVER_GATED_MICROSOFT = "1.3.6.1.4.1.311.10.3.3";
 
     /** Trust manager backed up by the read-only system certificate store. */
-    private static X509TrustManagerExtensions sDefaultTrustManager;
+    private static @Nullable X509TrustManagerExtensions sDefaultTrustManager;
 
     /**
      * BroadcastReceiver that listens to change in the system keystore to invalidate certificate
      * caches.
      */
-    private static TrustStorageListener sTrustStorageListener;
+    private static @Nullable TrustStorageListener sTrustStorageListener;
 
     /**
      * Trust manager backed up by a custom certificate store. We need such manager to plant test
      * root CA to the trust store in testing.
      */
-    private static X509TrustManagerExtensions sTestTrustManager;
+    private static @Nullable X509TrustManagerExtensions sTestTrustManager;
 
-    private static KeyStore sTestKeyStore;
+    private static @Nullable KeyStore sTestKeyStore;
 
     /**
      * The system key store. This is used to determine whether a trust anchor is a system trust
      * anchor or user-installed.
      */
-    private static KeyStore sSystemKeyStore;
+    private static @Nullable KeyStore sSystemKeyStore;
 
     /**
      * The directory where system certificates are stored. This is used to determine whether a
@@ -144,14 +147,14 @@ public class X509Util {
      * sufficient to efficiently query whether a given X500Principal, PublicKey pair is a trust
      * anchor.
      */
-    private static File sSystemCertificateDirectory;
+    private static @Nullable File sSystemCertificateDirectory;
 
     /**
      * An in-memory cache of which trust anchors are system trust roots. This avoids reading and
      * decoding the root from disk on every verification. Mirrors a similar in-memory cache in
      * Conscrypt's X509TrustManager implementation.
      */
-    private static Set<Pair<X500Principal, PublicKey>> sSystemTrustAnchorCache;
+    private static @Nullable Set<Pair<X500Principal, PublicKey>> sSystemTrustAnchorCache;
 
     /**
      * True if the system key store has been loaded. If the "AndroidCAStore" KeyStore instance
@@ -160,7 +163,7 @@ public class X509Util {
     private static boolean sLoadedSystemKeyStore;
 
     /** A root that will be installed as a user-trusted root for testing purposes. */
-    private static X509Certificate sTestRoot;
+    private static @Nullable X509Certificate sTestRoot;
 
     /** Lock object used to synchronize all calls that modify or depend on the trust managers. */
     private static final Object sLock = new Object();
@@ -251,8 +254,8 @@ public class X509Util {
      * used. Returns null if no created TrustManager was suitable.
      * @throws KeyStoreException, NoSuchAlgorithmException on error initializing the TrustManager.
      */
-    private static X509TrustManagerExtensions createTrustManager(KeyStore keyStore)
-            throws KeyStoreException, NoSuchAlgorithmException {
+    private static @Nullable X509TrustManagerExtensions createTrustManager(
+            @Nullable KeyStore keyStore) throws KeyStoreException, NoSuchAlgorithmException {
         String algorithm = TrustManagerFactory.getDefaultAlgorithm();
         TrustManagerFactory tmf = TrustManagerFactory.getInstance(algorithm);
         tmf.init(keyStore);

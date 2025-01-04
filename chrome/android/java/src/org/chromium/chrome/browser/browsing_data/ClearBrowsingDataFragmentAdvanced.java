@@ -50,7 +50,7 @@ public class ClearBrowsingDataFragmentAdvanced extends ClearBrowsingDataFragment
                 fragmentArgs.getString(
                         ClearBrowsingDataFragment.CLEAR_BROWSING_DATA_REFERRER, null);
 
-        if (QuickDeleteController.isQuickDeleteFollowupEnabledWithTabClosure()
+        if (QuickDeleteController.isQuickDeleteFollowupEnabled()
                 && !TextUtils.equals(referrer, SearchActivity.class.getName())) {
             return Arrays.asList(
                     DialogOption.CLEAR_HISTORY,

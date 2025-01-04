@@ -70,6 +70,7 @@ class AppInstallControllerImpl : public AppInstallController {
     update_service_->Install(request, GetDecodedInstallDataFromAppArgs(app_id),
                              GetInstallDataIndexFromAppArgs(app_id),
                              UpdateService::Priority::kForeground,
+                             tag_args ? tag_args->language : "",
                              base::DoNothing(),
                              base::BindOnce([](UpdateService::Result result) {
                                return static_cast<int>(result);
@@ -224,7 +225,17 @@ void AppInstall::GetVersionDone(const base::Version& version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG_IF(1, version.IsValid()) << "Active version: " << version.GetString();
   if (version.IsValid() && version >= base::Version(kUpdaterVersion)) {
-    MaybeInstallApp();
+    update_service_->FetchPolicies(base::BindOnce(
+        [](scoped_refptr<AppInstall> app_install, int result) {
+          if (result != kErrorOk) {
+            LOG(ERROR) << "FetchPolicies failed: " << result;
+            app_install->PingAndShutdown(result);
+            return;
+          }
+
+          app_install->MaybeInstallApp();
+        },
+        base::WrapRefCounted(this)));
     return;
   }
   InstallCandidate(updater_scope(),

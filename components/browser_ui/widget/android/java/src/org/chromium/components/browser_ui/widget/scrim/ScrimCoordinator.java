@@ -9,7 +9,6 @@ import android.view.MotionEvent;
 import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.Supplier;
@@ -116,7 +115,7 @@ public class ScrimCoordinator {
                         systemUiScrimDelegate);
         mScrimViewBuilder =
                 () -> {
-                    ScrimView view = new ScrimView(context, parent, defaultColor, mMediator);
+                    ScrimView view = new ScrimView(context, parent, defaultColor);
                     return view;
                 };
     }
@@ -216,12 +215,7 @@ public class ScrimCoordinator {
         return mView;
     }
 
-    ScrimMediator getMediatorForTesting() {
-        return mMediator;
-    }
-
-    @VisibleForTesting
-    boolean areAnimationsRunning() {
+    /* package */ boolean areAnimationsRunningForTesting() {
         return mMediator.areAnimationsRunning();
     }
 }

@@ -10,21 +10,8 @@
 
 #include <optional>
 
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/extensions/api/accessibility_private.h"
 #include "extensions/browser/extension_function.h"
-
-// API function that is called when the Select-to-Speak wants to perform a
-// clipboard copy in a Lacros Google Doc.
-class AccessibilityPrivateClipboardCopyInActiveLacrosGoogleDocFunction
-    : public ExtensionFunction {
-  ~AccessibilityPrivateClipboardCopyInActiveLacrosGoogleDocFunction() override {
-  }
-  ResponseAction Run() override;
-  DECLARE_EXTENSION_FUNCTION(
-      "accessibilityPrivate.clipboardCopyInActiveLacrosGoogleDoc",
-      ACCESSIBILITY_PRIVATE_CLIPBOARDCOPYINACTIVELACROSGOOGLEDOC)
-};
 
 // API function that darkens or undarkens the screen.
 class AccessibilityPrivateDarkenScreenFunction : public ExtensionFunction {
@@ -416,13 +403,6 @@ class AccessibilityPrivateUpdateSwitchAccessBubbleFunction
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.updateSwitchAccessBubble",
                              ACCESSIBILITY_PRIVATE_UPDATESWITCHACCESSBUBBLE)
-};
-
-class AccessibilityPrivateIsLacrosPrimaryFunction : public ExtensionFunction {
-  ~AccessibilityPrivateIsLacrosPrimaryFunction() override = default;
-  ResponseAction Run() override;
-  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.isLacrosPrimary",
-                             ACCESSIBILITY_PRIVATE_ISLACROSPRIMARY)
 };
 
 #endif  // CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EXTENSION_API_ASH_H_

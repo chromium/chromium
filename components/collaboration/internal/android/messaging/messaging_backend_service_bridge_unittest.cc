@@ -22,6 +22,7 @@
 #include "components/saved_tab_groups/public/android/tab_group_sync_conversions_utils.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/tab_groups/tab_group_color.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -204,9 +205,9 @@ InstantMessage CreateInstantMessage() {
   message.attribution.collaboration_id = data_sharing::GroupId("my group");
   // GroupMember has its own conversion utils, so only check a single field.
   message.attribution.affected_user = data_sharing::GroupMember();
-  message.attribution.affected_user->gaia_id = "affected";
+  message.attribution.affected_user->gaia_id = GaiaId("affected");
   message.attribution.triggering_user = data_sharing::GroupMember();
-  message.attribution.triggering_user->gaia_id = "triggering";
+  message.attribution.triggering_user->gaia_id = GaiaId("triggering");
 
   // TabGroupMessageMetadata.
   message.attribution.tab_group_metadata = TabGroupMessageMetadata();
@@ -451,20 +452,18 @@ TEST_F(MessagingBackendServiceBridgeTest, TestGetActivityLog) {
   // Create two activity log items.
   ActivityLogItem activity_log_item1;
   activity_log_item1.collaboration_event = CollaborationEvent::TAB_UPDATED;
-  activity_log_item1.user_display_name = "User 1";
-  activity_log_item1.user_is_self = true;
-  activity_log_item1.description = u"https://google.com";
-  activity_log_item1.time_delta = base::Hours(2);
+  activity_log_item1.title_text = u"User 1";
+  activity_log_item1.description_text = u"https://google.com";
+  activity_log_item1.time_delta_text = u"2 hours ago";
   activity_log_item1.show_favicon = true;
   activity_log_item1.action = RecentActivityAction::kReopenTab;
 
   ActivityLogItem activity_log_item2;
   activity_log_item2.collaboration_event =
       CollaborationEvent::COLLABORATION_MEMBER_ADDED;
-  activity_log_item2.user_display_name = "User 2";
-  activity_log_item2.user_is_self = false;
-  activity_log_item2.description = u"foo@gmail.com";
-  activity_log_item2.time_delta = base::Days(3);
+  activity_log_item2.title_text = u"User 2";
+  activity_log_item2.description_text = u"foo@gmail.com";
+  activity_log_item2.time_delta_text = u"3 days ago";
   activity_log_item2.show_favicon = false;
   activity_log_item2.action = RecentActivityAction::kManageSharing;
 

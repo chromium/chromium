@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
+#include "cc/metrics/frame_info.h"
 #include "cc/metrics/frame_sequence_tracker.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 
@@ -52,9 +53,9 @@ bool ShouldReportForInteraction(
   // report. For pinch-zoom, it's the compositor-thread.
   if (sequence_type == FrameSequenceTrackerType::kScrollbarScroll ||
       sequence_type == FrameSequenceTrackerType::kTouchScroll ||
-      sequence_type == FrameSequenceTrackerType::kWheelScroll)
+      sequence_type == FrameSequenceTrackerType::kWheelScroll) {
     return reporting_thread_type == metrics_effective_thread_type;
-
+  }
   if (sequence_type == FrameSequenceTrackerType::kPinchZoom)
     return reporting_thread_type == SmoothEffectDrivingThread::kCompositor;
 
@@ -71,6 +72,8 @@ const char* GetThreadTypeName(SmoothEffectDrivingThread type) {
       return "CompositorThread";
     case SmoothEffectDrivingThread::kMain:
       return "MainThread";
+    case SmoothEffectDrivingThread::kRaster:
+      return "RasterThread";
     default:
       NOTREACHED();
   }
@@ -82,16 +85,16 @@ constexpr int kMinFramesForThroughputMetric = 100;
 
 constexpr int kBuiltinSequenceNum =
     static_cast<int>(FrameSequenceTrackerType::kMaxType) + 1;
-constexpr int kMaximumHistogramIndex = 3 * kBuiltinSequenceNum;
-constexpr int kMaximumJankV3HistogramIndex = 2 * kBuiltinSequenceNum;
+constexpr int kMaximumHistogramIndex =
+    (static_cast<int>(SmoothEffectDrivingThread::kMaxValue) + 1) *
+    kBuiltinSequenceNum;
+constexpr int kMaximumJankV3HistogramIndex = 3 * kBuiltinSequenceNum;
 
 int GetIndexForMetric(SmoothEffectDrivingThread thread_type,
                       FrameSequenceTrackerType type) {
-  if (thread_type == SmoothEffectDrivingThread::kMain)
-    return static_cast<int>(type);
-  if (thread_type == SmoothEffectDrivingThread::kCompositor)
-    return static_cast<int>(type) + kBuiltinSequenceNum;
-  return static_cast<int>(type) + 2 * kBuiltinSequenceNum;
+  CHECK_LE(thread_type, SmoothEffectDrivingThread::kMaxValue);
+  return static_cast<int>(type) +
+         (static_cast<int>(thread_type) * kBuiltinSequenceNum);
 }
 
 int GetIndexForJankV3Metric(SmoothEffectDrivingThread thread_type,
@@ -99,8 +102,10 @@ int GetIndexForJankV3Metric(SmoothEffectDrivingThread thread_type,
   if (thread_type == SmoothEffectDrivingThread::kMain) {
     return static_cast<int>(type);
   }
-  DCHECK_EQ(thread_type, SmoothEffectDrivingThread::kCompositor);
-  return static_cast<int>(type) + kBuiltinSequenceNum;
+  if (thread_type == SmoothEffectDrivingThread::kCompositor) {
+    return static_cast<int>(type) + kBuiltinSequenceNum;
+  }
+  return static_cast<int>(type) + 2 * kBuiltinSequenceNum;
 }
 
 std::string GetCheckerboardingV3HistogramName(FrameSequenceTrackerType type) {
@@ -320,7 +325,8 @@ void FrameSequenceMetrics::ReportMetrics() {
     const int percent_missing_content = get_percent(v3_.frames_missing_content);
     const int percent_dropped = get_percent(v3_.frames_dropped);
     const int percent_dropped_v4 =
-        (type() == FrameSequenceTrackerType::kCompositorRasterAnimation)
+        ((type() == FrameSequenceTrackerType::kCompositorRasterAnimation) ||
+         thread_type == SmoothEffectDrivingThread::kRaster)
             ? get_percent(v4_.frames_dropped)
             : percent_dropped;
     const int percent_jank = get_percent(v3_.jank_count);
@@ -402,6 +408,14 @@ void FrameSequenceMetrics::ReportMetrics() {
           GetThroughputV4HistogramName(type(), thread_name),
           GetIndexForMetric(thread_type, type_), kMaximumHistogramIndex,
           Add(percent_dropped),
+          base::LinearHistogram::FactoryGet(
+              GetThroughputV4HistogramName(type(), thread_name), 1, 100, 101,
+              base::HistogramBase::kUmaTargetedHistogramFlag));
+    } else if (thread_type == FrameInfo::SmoothEffectDrivingThread::kRaster) {
+      STATIC_HISTOGRAM_POINTER_GROUP(
+          GetThroughputV4HistogramName(type(), thread_name),
+          GetIndexForMetric(thread_type, type_), kMaximumHistogramIndex,
+          Add(percent_dropped_v4),
           base::LinearHistogram::FactoryGet(
               GetThroughputV4HistogramName(type(), thread_name), 1, 100, 101,
               base::HistogramBase::kUmaTargetedHistogramFlag));
@@ -591,6 +605,13 @@ void FrameSequenceMetrics::AddSortedFrame(const viz::BeginFrameArgs& args,
         IncrementJankIdleTimeV3(last_presented_termination_time,
                                 termination_time);
       }
+      break;
+    case SmoothEffectDrivingThread::kRaster:
+      if (frame_info.final_state_raster_scroll ==
+          FrameInfo::FrameFinalState::kDropped) {
+        ++v4_.frames_dropped;
+      }
+      ++v3_.frames_expected;
       break;
     case SmoothEffectDrivingThread::kUnknown:
       NOTREACHED();

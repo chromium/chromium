@@ -50,13 +50,8 @@ NSInteger SystemCookieStore::CompareCookies(NSHTTPCookie* cookie_a,
       static_cast<CookieCreationTimeManager*>(context);
   base::Time created_a = manager->GetCreationTime(cookie_a);
   base::Time created_b = manager->GetCreationTime(cookie_b);
-#if !BUILDFLAG(CRONET_BUILD)
-  // CookieCreationTimeManager is returning creation times that are null.
-  // Since in Cronet, the cookie store is recreated on startup, let's suppress
-  // this warning for now.
   DLOG_IF(ERROR, created_a.is_null() || created_b.is_null())
       << "Cookie without creation date";
-#endif
   if (created_a < created_b)
     return NSOrderedAscending;
   if (created_a > created_b)

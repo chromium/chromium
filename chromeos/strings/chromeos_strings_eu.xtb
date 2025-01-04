@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Desgaitu gai iluna</translation>
 <translation id="1807246157184219062">Argia</translation>
 <translation id="1808803439260407870">arte klasikoa</translation>
+<translation id="181434555916624618">Oraingoz, jendea duten emaitzak ez dira erakutsiko. Probatu beste eskaera-mezu batekin.</translation>
 <translation id="1815850098929213707"><ph name="KEYS" /> tekla dago hautatuta. Sakatu botoia kontrolatzeko aukera editatzeko</translation>
 <translation id="1823120442877418684">Elementuak</translation>
 <translation id="1827738518074806965">Arte-galeria</translation>
@@ -273,7 +274,7 @@
 <translation id="2161656808144014275">testua</translation>
 <translation id="2163937499206714165">Aktibatu modu iluna</translation>
 <translation id="2173302385160625112">Egiaztatu Internetera konektatuta zaudela</translation>
-<translation id="2180197493692062006">Arazo bat izan da. Ireki berriro aplikazioa.</translation>
+<translation id="2180197493692062006">Arazoren bat izan da. Ireki berriro aplikazioa.</translation>
 <translation id="2189104374785738357">Editatu APNaren xehetasunak</translation>
 <translation id="2195732836444333448">Zerbitzua lanpetuta dago. Itzuli hemendik gutxira.</translation>
 <translation id="2197185031095816179">Nahi ez dituzun leiho gainerakorrak kentzeko, sarearen arazoak konpontzeko eta ustekabeko beste arazo batzuei aurre egiteko balio du segurtasun-egiaztapenak.</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">Bateriaren ehuneko <ph name="BATTERY_PERCENTAGE" /> geratzen zaio gailuaren eskuineko aurikularrari.</translation>
 <translation id="3340978935015468852">ezarpenak</translation>
 <translation id="3347558044552027859">modernoa</translation>
+<translation id="3353477144743332882">Deskargatu laburbiltzeko eta izenak sortzeko eredua</translation>
 <translation id="3359218928534347896">aktibatu edo desaktibatu mikrofonoa</translation>
 <translation id="3360306038446926262">Leihoak</translation>
 <translation id="3361618936611118375">sushia</translation>
@@ -527,7 +529,7 @@
 <translation id="3565064564551103223">Baimena duten IPak</translation>
 <translation id="3569407787324516067">Pantaila-babeslea</translation>
 <translation id="3571184524500629183">Itxi bilaketa</translation>
-<translation id="3577473026931028326">Arazo bat izan da. Saiatu berriro.</translation>
+<translation id="3577473026931028326">Arazoren bat izan da. Saiatu berriro.</translation>
 <translation id="357889014807611375">wifi neurtua</translation>
 <translation id="3583278742022654445">Seinalearen indarra ahula da. Saiatu wifi-seinalearen iturburura hurbiltzen.</translation>
 <translation id="3588034708467091142">Ziurtatu Internetera konektatuta zaudela eta saiatu berriro.</translation>
@@ -689,6 +691,7 @@
 <translation id="4354430579665871434">tekla</translation>
 <translation id="4356100841225547054">Desaktibatu bolumena</translation>
 <translation id="4361257691546579041">APNa mota lehenetsikoa da.</translation>
+<translation id="4368101969572512692">Nahastu iradokizunak</translation>
 <translation id="437294888293595148">Berrezarri lasterbide guztiak</translation>
 <translation id="437477383107495720">untxitxoak</translation>
 <translation id="4376423484621194274">Administratzaileak ez du eman <ph name="APP_NAME" /> ixteko baimenik</translation>
@@ -768,6 +771,7 @@
 <translation id="4731797938093519117">Gurasoen sarbidea</translation>
 <translation id="473775607612524610">Eguneratu</translation>
 <translation id="4744944742468440486">Zure hautapenarekin erlazionatutako informazioa</translation>
+<translation id="4750394297954878236">Iradokizunak</translation>
 <translation id="4771607256327216405">teklatua argitu</translation>
 <translation id="4771923071974529837">bihar</translation>
 <translation id="4773299976671772492">Gelditu egin da</translation>
@@ -853,6 +857,7 @@
 <translation id="5121677070210013200">Ezin da deskargatu transkripzio-eredua. Saiatu berriro edo berrabiarazi Chromebook-a.</translation>
 <translation id="5130848777448318809">poneyak</translation>
 <translation id="5137451382116112100">Osoa</translation>
+<translation id="5139813694804168398">ez molestatzeko modua</translation>
 <translation id="5140788690559353412">Ikastetxeko kontua erabiltzeko baimena galdu ondoren, ezin izango dituzu erabili harekin lotutako helbide elektronikoa eta Google Drive-ko fitxategiak, hala nola Gmail, Dokumentuak, Aurkezpenak eta beste zerbitzu batzuetakoak.</translation>
 <translation id="5142961317498132443">Autentifikazioa</translation>
 <translation id="5144311987923128508">Berretsi botoia desgaituta dago orain</translation>
@@ -897,6 +902,7 @@
 <translation id="5302048478445481009">Hizkuntza</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> gailuko horma-paper esklusiboa</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="530883153651464140">Eguneratu <ph name="DEVICE_NAME" /> <ph name="VERSION" /> bertsiora</translation>
 <translation id="5315873049536339193">Identitatea</translation>
 <translation id="5317780077021120954">Gorde</translation>
 <translation id="5318310531701770497">Ezin da sortu izenik. Probatu transkripzio luzeago batekin.</translation>
@@ -909,7 +915,7 @@
 <translation id="5335373365677455232">arrosa-koloreko</translation>
 <translation id="5344619683981067131">Hautatutako testua iradokizunarekin ordezten</translation>
 <translation id="5346687412805619883">Tokiko sarea</translation>
-<translation id="5358174242040570474">Arazo bat izan da. Saiatu berriro horma-papera aukeratzen edo ireki berriro aplikazioa.</translation>
+<translation id="5358174242040570474">Arazoren bat izan da. Saiatu berriro horma-papera aukeratzen edo ireki berriro aplikazioa.</translation>
 <translation id="5372659122375744710">Wifi-sarea ez da segurua</translation>
 <translation id="5376354385557966694">Gai argi automatikoa</translation>
 <translation id="5378184552853359930">IP mota</translation>
@@ -973,7 +979,6 @@
 <translation id="5703716265115423771">jaitsi bolumena</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> editatzeko botoia.</translation>
-<translation id="5733298426544876109">Eguneratu <ph name="DEVICE_NAME" /></translation>
 <translation id="5736820754189340309">Berrezarri da datu-erabilera</translation>
 <translation id="574392208103952083">Ertaina</translation>
 <translation id="5744175046705638478">Itzuli "<ph name="QUERY" />"</translation>
@@ -998,6 +1003,7 @@
 <translation id="5859969039821714932">Lasterbidea ez dago erabilgarri. Sakatu beste lasterbide bat <ph name="KEY" /> erabili gabe.</translation>
 <translation id="5860033963881614850">Desaktibatuta</translation>
 <translation id="5860491529813859533">Aktibatu</translation>
+<translation id="5875913454160982848">Deskargatu transkribatzeko eredua</translation>
 <translation id="5876385649737594562">Aukerak hautatzeko, aktiba ezazu</translation>
 <translation id="5877503382465267833">Pausatu <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Pantaila osoa</translation>
@@ -1037,7 +1043,6 @@
 <translation id="6040143037577758943">Itxi</translation>
 <translation id="6040852767465482106">Identitate anonimoa</translation>
 <translation id="604124094241169006">Automatikoa</translation>
-<translation id="6042308850641462728">Gehiago</translation>
 <translation id="6048107060512778456">Hutsegitea - Papera trabatuta dago</translation>
 <translation id="6050189528197190982">Gris-eskala</translation>
 <translation id="6054711098834486579">espresionista</translation>
@@ -1293,6 +1298,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Izenen zerbitzaria}other{Izenen zerbitzariak}}</translation>
 <translation id="7135814714616751706">Bilatu lasterbideak</translation>
 <translation id="7138614237884624401">Testu sinplifikatua</translation>
+<translation id="7138668887584231801">Ez daude nahikoa hitzik laburbiltzeko</translation>
 <translation id="7141470099673912333">Eduki-transferentzia</translation>
 <translation id="7143207342074048698">Konektatzen</translation>
 <translation id="7144878232160441200">Saiatu berriro</translation>
@@ -1588,6 +1594,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="8503836310948963452">Minutu gutxi batzuk baino ez…</translation>
 <translation id="8505011850330200833">Gemini-ren ereduak 2 GB behar ditu transkripzioak prozesatu eta laburpenak sortu ahal izateko</translation>
 <translation id="8508640263392900755">APNaren xehetasunak</translation>
+<translation id="8509574872955173831">Lortu laburbiltzeari eta izenak sortzeari buruzko informazio gehiago</translation>
 <translation id="8522687886059337719">Orain, <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />horma-paper<ph name="END_LINK_WALLPAPER_SUBPAGE" /> eta <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />pantaila-babesle<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> berriak erabil ditzakezu</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">te-etxe estiloko</translation>
@@ -1724,7 +1731,6 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="9133772297793293778">Sakatu 1-4 aldatzaileak eta teklatuko beste tekla bat. Editatzeko modutik irteteko, sakatu Alt + Ihes.</translation>
 <translation id="9137526406337347448">Google-ren zerbitzuak</translation>
 <translation id="9138630967333032450">Ezkerreko Maius tekla</translation>
-<translation id="9147928237330776930">Hitz gutxiegi daude laburbiltzeko</translation>
 <translation id="9149391708638971077">Egin memoriaren proba</translation>
 <translation id="9159524746324788320">hanburgesak</translation>
 <translation id="9161276708550942948">zuriune-barra</translation>
@@ -1756,5 +1762,5 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="98515147261107953">Horizontala</translation>
 <translation id="987264212798334818">Orokorra</translation>
 <translation id="994473081369871639">Desaktibatu mikrofonoa</translation>
-<translation id="995062385528875723">Ezin dira erabili azentuak dituzten hizkiak, alfabeto latindarrekoak ez diren hizkiak edo sinboloak</translation>
+<translation id="995062385528875723">Ezin dira erabili azentuak dituzten hizkiak, alfabeto latindarrekoak ez diren hizkiak edo ikurrak</translation>
 </translationbundle>

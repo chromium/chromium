@@ -9,6 +9,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/time/time.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/test/cert_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -152,7 +153,7 @@ void ProfileHelperForTesting::Init(bool user_is_affiliated) {
   ASSERT_TRUE(testing_profile_);
 
   auto test_account =
-      AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
+      AccountId::FromUserEmailGaiaId(kTestUserEmail, GaiaId(kTestUserGaiaId));
   user_ = fake_user_manager_->AddUserWithAffiliation(test_account,
                                                      user_is_affiliated);
 }

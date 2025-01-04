@@ -9,7 +9,7 @@
 #         win win8 win10 win11 ]
 # Devices
 # tags: [ android-nexus-5x android-pixel-2 android-pixel-4
-#             android-pixel-6 android-shield-android-tv android-sm-a135m
+#             android-pixel-6 android-shield-android-tv android-sm-a137f
 #             android-sm-a235m android-sm-s911u1
 #         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
 #             chromeos-board-octopus chromeos-board-volteer
@@ -25,7 +25,6 @@
 #         release release-x64
 #         fuchsia-chrome
 #         web-engine-shell
-#         lacros-chrome
 #         cros-chrome ]
 # GPU
 # tags: [ amd amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821 amd-0x7340
@@ -110,11 +109,8 @@ crbug.com/1417006 [ fuchsia web-engine-shell ] ExpectedColor_MediaRecorderFromVi
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
 # Fails on GL, Metal, Graphite and Ganesh, AMD and Intel
-crbug.com/377724727 [ mac amd-0x67ef passthrough ] ExpectedColor_MediaRecorderFrom2DCanvas [ Failure ]
-crbug.com/377724727 [ mac amd-0x67ef passthrough ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]
-crbug.com/377724727 [ amd-0x67ef mac-x86_64 no-asan no-clang-coverage passthrough release sonoma ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 crbug.com/377724727 [ angle-opengl asan graphite-disabled intel-0x3e9b mac-x86_64 no-clang-coverage passthrough release sonoma ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
-crbug.com/377724727 [ angle-opengl debug graphite-disabled intel-0x3e9b mac-x86_64 no-asan no-clang-coverage passthrough sonoma ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
+crbug.com/377724727 [ amd-0x7340 angle-opengl debug graphite-disabled mac-x86_64 no-asan no-clang-coverage passthrough sonoma ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 
 # Longstanding flaking test - page reported failure
 crbug.com/40877266 [ android android-shield-android-tv ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]

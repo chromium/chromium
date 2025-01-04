@@ -7,6 +7,7 @@
 #include "base/lazy_instance.h"
 #include "base/types/expected_macros.h"
 #include "chrome/browser/web_applications/callback_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_downloader.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
@@ -305,21 +306,26 @@ IwaInstallerFactory::GetIwaInstallerFactory() {
   static base::LazyInstance<IwaInstallerFactoryCallback>::Leaky
       iwa_installer_factory = LAZY_INSTANCE_INITIALIZER;
   if (!iwa_installer_factory.Get()) {
-    iwa_installer_factory.Get() = base::BindRepeating(
-        [](IsolatedWebAppExternalInstallOptions install_options,
-           IwaInstaller::InstallSourceType install_source_type,
-           scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-           base::Value::List& log, WebAppProvider* provider,
-           IwaInstaller::ResultCallback callback) {
-          return std::make_unique<IwaInstaller>(
-              std::move(install_options), install_source_type,
-              std::move(url_loader_factory),
-              std::make_unique<IwaInstaller::IwaInstallCommandWrapperImpl>(
-                  provider),
-              log, std::move(callback));
-        });
+    iwa_installer_factory.Get() = GetDefaultIwaInstallerFactory();
   }
   return iwa_installer_factory.Get();
+}
+
+IwaInstallerFactory::IwaInstallerFactoryCallback
+IwaInstallerFactory::GetDefaultIwaInstallerFactory() {
+  return base::BindRepeating(
+      [](IsolatedWebAppExternalInstallOptions install_options,
+         IwaInstaller::InstallSourceType install_source_type,
+         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+         base::Value::List& log, WebAppProvider* provider,
+         IwaInstaller::ResultCallback callback) {
+        return std::make_unique<IwaInstaller>(
+            std::move(install_options), install_source_type,
+            std::move(url_loader_factory),
+            std::make_unique<IwaInstaller::IwaInstallCommandWrapperImpl>(
+                provider),
+            log, std::move(callback));
+      });
 }
 
 std::ostream& operator<<(std::ostream& os,

@@ -221,8 +221,8 @@ class ShortcutIntegrationInteractionTestPrivate::ShortcutTracker {
   base::WeakPtrFactory<ShortcutTracker> weak_ptr_factory_{this};
 };
 
-ShortcutIntegrationInteractionTestPrivate
-    ::ShortcutIntegrationInteractionTestPrivate()
+ShortcutIntegrationInteractionTestPrivate ::
+    ShortcutIntegrationInteractionTestPrivate()
     : internal::InteractiveBrowserTestPrivate(
           std::make_unique<InteractionTestUtilBrowser>()) {}
 

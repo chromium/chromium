@@ -40,6 +40,7 @@ static_library("graduation") {
     "//content/public/browser",
     "//ui/base",
     "//ui/webui",
+    "//ui/webui/resources",
   ]
 }
 

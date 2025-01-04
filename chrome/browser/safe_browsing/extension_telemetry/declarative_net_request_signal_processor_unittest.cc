@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/safe_browsing/extension_telemetry/declarative_net_request_signal_processor.h"
+
+#include <array>
+
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/declarative_net_request_signal.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -21,9 +24,9 @@ using DeclarativeNetRequestInfo =
     ExtensionTelemetryReportRequest_SignalInfo_DeclarativeNetRequestInfo;
 using TestRule = extensions::declarative_net_request::TestRule;
 
-constexpr const char* kExtensionId[] = {"aaaaaaaabbbbbbbbccccccccdddddddd",
-                                        "eeeeeeeeffffffffgggggggghhhhhhhh"};
-constexpr const int kRuleId[] = {0, 1, 2, 3, 4, 5};
+constexpr const auto kExtensionId = std::to_array<const char*>(
+    {"aaaaaaaabbbbbbbbccccccccdddddddd", "eeeeeeeeffffffffgggggggghhhhhhhh"});
+constexpr const auto kRuleId = std::to_array<int>({0, 1, 2, 3, 4, 5});
 constexpr const char* kRedirectRuleActionType = "redirect";
 constexpr const char* kModifyHeadersRuleActionType = "modifyHeaders";
 constexpr const char* kBlockRuleActionType = "block";

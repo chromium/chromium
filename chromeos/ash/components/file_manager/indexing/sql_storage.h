@@ -43,7 +43,7 @@ namespace ash::file_manager {
 // class.
 class COMPONENT_EXPORT(FILE_MANAGER) SqlStorage : public IndexStorage {
  public:
-  SqlStorage(base::FilePath db_path, const std::string& uma_tag);
+  SqlStorage(base::FilePath db_path, sql::Database::Tag uma_tag);
   ~SqlStorage() override;
 
   SqlStorage(const SqlStorage&) = delete;

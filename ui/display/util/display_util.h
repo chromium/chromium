@@ -62,10 +62,15 @@ DISPLAY_UTIL_EXPORT bool IsInternalDisplayId(int64_t display_id);
 // Returns true if the system has at least one internal display.
 DISPLAY_UTIL_EXPORT bool HasInternalDisplay();
 
-// Gets/Sets an id of display corresponding to internal panel.
+// Gets/Sets the set of ids of displays corresponding to internal panel.
 DISPLAY_UTIL_EXPORT const base::flat_set<int64_t>& GetInternalDisplayIds();
+// This overwrites anything that was previously added to this set.
 DISPLAY_UTIL_EXPORT void SetInternalDisplayIds(
     base::flat_set<int64_t> display_ids);
+
+// Adds/removes the display_id corresponding to internal panel.
+DISPLAY_UTIL_EXPORT void AddInternalDisplayId(int64_t display_id);
+DISPLAY_UTIL_EXPORT void RemoveInternalDisplayId(int64_t display_id);
 
 // Converts the color string name into a gfx::ColorSpace profile.
 DISPLAY_UTIL_EXPORT gfx::ColorSpace ForcedColorProfileStringToColorSpace(

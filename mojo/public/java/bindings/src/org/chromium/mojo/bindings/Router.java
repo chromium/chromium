@@ -4,6 +4,7 @@
 
 package org.chromium.mojo.bindings;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.mojo.system.MessagePipeHandle;
 
 /**
@@ -11,6 +12,7 @@ import org.chromium.mojo.system.MessagePipeHandle;
  * parsing of headers and adding of request ids in order to be able to match a response to a
  * request.
  */
+@NullMarked
 public interface Router extends MessageReceiverWithResponder, HandleOwner<MessagePipeHandle> {
 
     /** Start listening for incoming messages. */

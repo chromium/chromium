@@ -361,6 +361,7 @@
 <translation id="2295777434187870477">開咗咪高風，切換將會靜音。</translation>
 <translation id="2302092602801625023">此帳戶由 Family Link 管理</translation>
 <translation id="2303600792989757991">切換視窗總覽</translation>
+<translation id="2304702218354340897">確定要關閉人臉操控嗎？</translation>
 <translation id="2305738328104302723">Google Tasks 清單：<ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />：最近嘅螢幕截圖、下載檔案同埋固定咗嘅檔案</translation>
 <translation id="2318576281648121272">今日 <ph name="TODAY_DATE" /></translation>
@@ -387,6 +388,7 @@
 <translation id="2370971919968699910">這種情況可能需要支付數據費用。
 已連接 <ph name="DEVICECOUNT" /> 部裝置。</translation>
 <translation id="2386292613071805067">選取頁面上所有內容</translation>
+<translation id="2389423187722941333">切換 Gemini</translation>
 <translation id="2392659840443812875">沒有可用的熱點。請確認裝置在附近且已開啟藍牙。</translation>
 <translation id="2397416548179033562">顯示 Chrome 選單</translation>
 <translation id="240006516586367791">媒體控制項</translation>
@@ -394,6 +396,7 @@
 <translation id="2402411679569069051">如要解鎖 Chromebook，請使用指紋或解鎖手機</translation>
 <translation id="240545663114741956">按兩次 <ph name="ACCELERATOR" /> 即可登出。</translation>
 <translation id="2405664212338326887">未連線</translation>
+<translation id="2406710117564540804">開啟/關閉「請勿騷擾」功能</translation>
 <translation id="2408955596600435184">請輸入您的 PIN</translation>
 <translation id="2412593942846481727">有可用的更新</translation>
 <translation id="2416438829169535743">要結束檢視畫面嗎？</translation>
@@ -899,6 +902,7 @@
 <translation id="4119928251231465047">嘗試輸入 PIN 的次數過多</translation>
 <translation id="412298498316631026">視窗</translation>
 <translation id="4123259114412175274">如要解鎖 Chromebook，請確保手機的藍牙已開啟</translation>
+<translation id="4123868835475902435">這些都是基本概念！如需其他使用提示和說明，歡迎使用內置的「探索」應用程式，瞭解新手入門提示、特別優惠和最新的 <ph name="PRODUCT_NAME" /> 功能。</translation>
 <translation id="4125970834901680537">無法在平板電腦模式中串流應用程式。請使用手提電腦模式再試一次。</translation>
 <translation id="4131973331381812765">溫度：<ph name="TEMPERATURE" />°C - 目前速度：<ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="4136724716305260864">開啟，直到日出</translation>
@@ -1019,7 +1023,6 @@
 <translation id="4481530544597605423">未配對的裝置</translation>
 <translation id="4485506555414638855">取消設定睇手機最近嘅相、媒體、通知同應用程式</translation>
 <translation id="4491109536499578614">圖片</translation>
-<translation id="4493452241184130939">這些都是基本概念！如需其他使用提示和說明，歡迎使用內置的「探索」應用程式，瞭解新手入門提示、建議的應用程式、特別優惠和最新的 <ph name="PRODUCT_NAME" /> 功能。</translation>
 <translation id="450584155212756404">開發人員版</translation>
 <translation id="4513946894732546136">意見反映</translation>
 <translation id="4518404433291145981">如要解鎖 Chromebook，請先解鎖手機</translation>
@@ -1082,7 +1085,6 @@
 <translation id="4708065238214351979">校光鍵盤</translation>
 <translation id="4708185346211948049">下個<ph name="DAY_OF_WEEK" /></translation>
 <translation id="4717575069099566988">USB-C 連接線不支援 USB4。裝置效能可能受到限制。</translation>
-<translation id="4724328513667182700">6 個 <ph name="PRODUCT_NAME" /> 入門提示</translation>
 <translation id="4730374152663651037">常用的應用程式</translation>
 <translation id="4731797938093519117">家長存取</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (左邊)</translation>
@@ -1308,7 +1310,6 @@
 <translation id="5409208741270395213">將工作標示做已經完成</translation>
 <translation id="5413656666631274079">設定頁面</translation>
 <translation id="5414198321558177633">正在重新整理設定檔清單。這項操作可能需時數分鐘。</translation>
-<translation id="5417965108047245734">請觀看快速導覽，瞭解如何操作 <ph name="PRODUCT_NAME" /></translation>
 <translation id="5426063383988017631">閂咗設定選單</translation>
 <translation id="5428899915242071344">開始選取</translation>
 <translation id="5429993543155113935">目前不支援無痕式視窗</translation>
@@ -1646,6 +1647,7 @@
 <translation id="6539852571005954999">掃瞄緊下載項目 <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">正在投放至<ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emoji、GIF 等</translation>
+<translation id="6543942526104794893">確定要停止使用面部表情操作嗎？</translation>
 <translation id="6545382064335350438">系統仍然無法驗證你的 PIN，請再試一次。</translation>
 <translation id="6555373427270923730">在網址列中輸入網址，然後按 <ph name="MODIFIER" /><ph name="KEY" /> 鍵</translation>
 <translation id="655633303491376835">新安裝的「<ph name="APP_NAME" />」</translation>
@@ -2311,6 +2313,7 @@
 <translation id="8855885154700222542">全螢幕鍵</translation>
 <translation id="8858369206579825206">私隱權設定</translation>
 <translation id="8860366331836346216">新增 eSIM 卡</translation>
+<translation id="8869149849311827122">確定要停用滑鼠游標控制嗎？</translation>
 <translation id="8870509716567206129">應用程式不支援分割畫面。</translation>
 <translation id="8873203135446552888">確認要停用內置觸控板</translation>
 <translation id="8874184842967597500">未連線</translation>

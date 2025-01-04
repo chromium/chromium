@@ -30,7 +30,7 @@ class WebDatabaseBackend;
 namespace base {
 class Location;
 class SequencedTaskRunner;
-}
+}  // namespace base
 
 namespace os_crypt_async {
 class OSCryptAsync;

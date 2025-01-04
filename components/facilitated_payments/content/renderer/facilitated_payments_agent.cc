@@ -10,7 +10,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "components/facilitated_payments/core/util/pix_code_validator.h"
+#include "components/facilitated_payments/core/validation/pix_code_validator.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/platform/web_string.h"

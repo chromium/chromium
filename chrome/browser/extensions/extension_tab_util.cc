@@ -78,6 +78,7 @@
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 #endif
 
 using content::NavigationEntry;
@@ -1051,6 +1052,12 @@ base::expected<GURL, std::string> ExtensionTabUtil::PrepareURLForNavigation(
     content::BrowserContext* browser_context) {
   GURL url =
       ExtensionTabUtil::ResolvePossiblyRelativeURL(url_string, extension);
+  // TODO(crbug.com/385086924): url_formatter::FixupURL transforms a URL
+  // with a 'mailto' scheme into a URL with an HTTP scheme. This is a
+  // mitigation pending a fix for the bug.
+  if (url.SchemeIs(url::kMailToScheme)) {
+    return url;
+  }
 
   // Ideally, the URL would only be "fixed" for user input (e.g. for URLs
   // entered into the Omnibox), but some extensions rely on the legacy behavior

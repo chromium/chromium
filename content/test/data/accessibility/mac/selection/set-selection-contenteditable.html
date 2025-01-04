@@ -8,6 +8,7 @@
   ce1.AXSelectedTextMarkerRange = target_selected_marker_range
   wait for AXSelectedTextChanged on AXTextArea
   ce1.AXSelectedText
+  ce1.accessibilitySelectedText
 
 @SCRIPT:
   // Select the 2nd word via the marker associated with AXStaticText.
@@ -22,6 +23,7 @@
   ce1.AXSelectedTextMarkerRange = target_selected_marker_range
   wait for AXSelectedTextChanged on AXTextArea
   ce1.AXSelectedText
+  ce1.accessibilitySelectedText
 
 @SCRIPT:
   // Select text inside a span.
@@ -35,6 +37,7 @@
   ce1.AXSelectedTextMarkerRange = target_selected_marker_range
   wait for AXSelectedTextChanged on AXTextArea
   ce1.AXSelectedText
+  ce1.accessibilitySelectedText
 
 @SCRIPT:
   // Select the text inside the block with incorrect grammar.
@@ -44,6 +47,7 @@
   ce1.AXSelectedTextMarkerRange = text_range
   wait for AXSelectedTextChanged on AXTextArea
   ce1.AXSelectedText
+  ce1.accessibilitySelectedText
 
 @SCRIPT:
   // Select the text after a forced break.
@@ -56,6 +60,7 @@
   ce2.AXSelectedTextMarkerRange = target_selected_marker_range
   wait for AXSelectedTextChanged on AXTextArea
   ce2.AXSelectedText
+  ce2.accessibilitySelectedText
 -->
 <!DOCTYPE html>
 <html>

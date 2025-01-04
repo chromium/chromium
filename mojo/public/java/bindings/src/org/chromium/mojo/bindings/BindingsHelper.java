@@ -4,10 +4,13 @@
 
 package org.chromium.mojo.bindings;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.mojo.system.Handle;
 import org.chromium.mojo.system.Watcher;
 
 /** Helper functions. */
+@NullMarked
 public class BindingsHelper {
     /** Alignment in bytes for mojo serialization. */
     public static final int ALIGNMENT = 8;
@@ -160,11 +163,16 @@ public class BindingsHelper {
     /**
      * Returns an {@link AsyncWaiter} to use with the given handle, or |null| if none if available.
      */
-    static Watcher getWatcherForHandle(Handle handle) {
+    static @Nullable Watcher getWatcherForHandle(Handle handle) {
         if (handle.getCore() != null) {
             return handle.getCore().getWatcher();
         } else {
             return null;
         }
+    }
+
+    static Watcher getWatcherForHandleNonNull(Handle handle) {
+        assert handle.getCore() != null;
+        return handle.getCore().getWatcher();
     }
 }

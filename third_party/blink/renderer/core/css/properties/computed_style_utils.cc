@@ -2308,11 +2308,19 @@ CSSValue* ComputedStyleUtils::ValueForTextDecorationSkipInk(
 CSSValue* ComputedStyleUtils::TouchActionFlagsToCSSValue(
     TouchAction touch_action) {
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  if (touch_action == TouchAction::kAuto) {
+  // Until handwriting is a web exposed feature, the combination of
+  // non-handwriting bits should result in values of auto / manipulation in the
+  // exposed CSS value.
+  // TODO(crbug.com/382525574): Launch or clean up kHandwriting.
+  touch_action &= ~TouchAction::kInternalHandwriting;
+
+  if (touch_action ==
+      (TouchAction::kAuto & ~TouchAction::kInternalHandwriting)) {
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kAuto));
   } else if (touch_action == TouchAction::kNone) {
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kNone));
-  } else if (touch_action == TouchAction::kManipulation) {
+  } else if (touch_action == (TouchAction::kManipulation &
+                              ~TouchAction::kInternalHandwriting)) {
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kManipulation));
   } else {
     if ((touch_action & TouchAction::kPanX) == TouchAction::kPanX) {

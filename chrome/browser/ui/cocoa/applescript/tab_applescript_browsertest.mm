@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "chrome/browser/ui/cocoa/applescript/tab_applescript.h"
+
 #import <Foundation/Foundation.h>
 
 #include "base/strings/sys_string_conversions.h"
@@ -9,7 +11,6 @@
 #include "chrome/browser/ui/browser.h"
 #import "chrome/browser/ui/cocoa/applescript/bookmark_applescript_test_utils.h"
 #import "chrome/browser/ui/cocoa/applescript/error_applescript.h"
-#import "chrome/browser/ui/cocoa/applescript/tab_applescript.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"

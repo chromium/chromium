@@ -8,7 +8,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -37,7 +36,6 @@ import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.base.process_launcher.FileDescriptorInfo;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
@@ -55,7 +53,7 @@ public class ChildProcessLauncherHelperTest {
     // Allowing the process to continue would lead to a crash when attempting to initialize IPC
     // channels that are not being set up in this test.
     private static final String[] sProcessWaitArguments = {
-        "_", "--" + BaseSwitches.RENDERER_WAIT_FOR_JAVA_DEBUGGER
+        "_", "--" + BaseSwitches.ANDROID_SKIP_CHILD_SERVICE_INIT_FOR_TESTING
     };
     private static final String DEFAULT_SANDBOXED_PROCESS_SERVICE =
             "org.chromium.content.app.SandboxedProcessService";
@@ -234,19 +232,19 @@ public class ChildProcessLauncherHelperTest {
                 0, ChildProcessLauncherTestUtils.getConnectionServiceNumber(connection));
     }
 
-    private static void warmUpOnUiThreadBlocking(final Context context, boolean sandboxed) {
+    private static void warmUpOnUiThreadBlocking(final Context context) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ChildProcessLauncherHelperImpl.warmUpOnAnyThread(context, sandboxed);
+                    ChildProcessLauncherHelperImpl.warmUpOnAnyThread(context);
                 });
-        ChildProcessConnection connection = getWarmUpConnection(sandboxed);
+        ChildProcessConnection connection = getWarmUpConnection();
         Assert.assertNotNull(connection);
         blockUntilConnected(connection);
     }
 
     private void testWarmUpImpl() {
         Context context = InstrumentationRegistry.getTargetContext();
-        warmUpOnUiThreadBlocking(context, /* sandboxed= */ true);
+        warmUpOnUiThreadBlocking(context);
 
         Assert.assertEquals(1, getConnectedSandboxedServicesCount());
 
@@ -267,9 +265,6 @@ public class ChildProcessLauncherHelperTest {
     @Test
     @MediumTest
     @Feature({"ProcessManagement"})
-    @DisableIf.Build(
-            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
-            message = "Broken in 14+, crbug.com/354765949")
     public void testWarmUp() {
         // Use the default creation parameters.
         testWarmUpImpl();
@@ -278,9 +273,6 @@ public class ChildProcessLauncherHelperTest {
     @Test
     @MediumTest
     @Feature({"ProcessManagement"})
-    @DisableIf.Build(
-            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
-            message = "Broken in 14+, crbug.com/354765949")
     public void testWarmUpWithBindToCaller() {
         Context context = InstrumentationRegistry.getTargetContext();
         ChildProcessCreationParamsImpl.set(
@@ -299,19 +291,16 @@ public class ChildProcessLauncherHelperTest {
     @Test
     @MediumTest
     @Feature({"ProcessManagement"})
-    @DisableIf.Build(
-            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
-            message = "Broken in 14+, crbug.com/354765949")
     public void testWarmUpProcessCrashBeforeUse() {
         Assert.assertEquals(0, getConnectedSandboxedServicesCount());
 
         Context context = InstrumentationRegistry.getTargetContext();
-        warmUpOnUiThreadBlocking(context, /* sandboxed= */ true);
+        warmUpOnUiThreadBlocking(context);
 
         Assert.assertEquals(1, getConnectedSandboxedServicesCount());
 
         // Crash the warm-up connection before it gets used.
-        ChildProcessConnection connection = getWarmUpConnection(/* sandboxed= */ true);
+        ChildProcessConnection connection = getWarmUpConnection();
         Assert.assertNotNull(connection);
         connection.crashServiceForTesting();
 
@@ -329,12 +318,9 @@ public class ChildProcessLauncherHelperTest {
     @Test
     @MediumTest
     @Feature({"ProcessManagement"})
-    @DisableIf.Build(
-            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
-            message = "Broken in 14+, crbug.com/354765949")
     public void testWarmUpProcessCrashAfterUse() {
         Context context = InstrumentationRegistry.getTargetContext();
-        warmUpOnUiThreadBlocking(context, /* sandboxed= */ true);
+        warmUpOnUiThreadBlocking(context);
 
         Assert.assertEquals(1, getConnectedSandboxedServicesCount());
 
@@ -353,41 +339,9 @@ public class ChildProcessLauncherHelperTest {
         waitForConnectedSandboxedServicesCount(0);
     }
 
-    // Tests that the warm-up the previleged process connection.
     @Test
     @MediumTest
     @Feature({"ProcessManagement"})
-    @DisableIf.Build(
-            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
-            message = "Broken in 14+, crbug.com/354765949")
-    public void testWarmUpPrivilegedProcess() {
-        Assert.assertEquals(0, getConnectedServicesCount());
-
-        Context context = InstrumentationRegistry.getTargetContext();
-        warmUpOnUiThreadBlocking(context, /* sandboxed= */ false);
-
-        Assert.assertEquals(0, getConnectedSandboxedServicesCount());
-        Assert.assertEquals(1, getConnectedServicesCount());
-
-        // And subsequent process launches should work.
-        ChildProcessLauncherHelperImpl launcher =
-                startChildProcess(
-                        BLOCK_UNTIL_SETUP,
-                        /* doSetupConnection= */ true,
-                        /* sandboxed= */ false,
-                        /* reducePriorityOnBackground= */ false,
-                        /* canUseWarmUpConnection= */ true);
-        Assert.assertEquals(1, getConnectedServicesCount());
-        Assert.assertEquals(0, getConnectedSandboxedServicesCount());
-        Assert.assertNotNull(ChildProcessLauncherTestUtils.getConnection(launcher));
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"ProcessManagement"})
-    @DisableIf.Build(
-            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
-            message = "Broken in 14+, crbug.com/354765949")
     public void testLauncherCleanup() {
         ChildProcessLauncherHelperImpl launcher =
                 startSandboxedChildProcess(BLOCK_UNTIL_SETUP, /* doSetupConnection= */ true);
@@ -534,17 +488,6 @@ public class ChildProcessLauncherHelperTest {
                 });
     }
 
-    // Returns the number of all connection currently connected.
-    private static int getConnectedServicesCount() {
-        return ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
-                new Callable<Integer>() {
-                    @Override
-                    public Integer call() {
-                        return ChildProcessLauncherHelperImpl.getConnectedServicesCountForTesting();
-                    }
-                });
-    }
-
     // Returns the number of sandboxed connection currently connected,
     private static int getConnectedSandboxedServicesCount() {
         return ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
@@ -599,13 +542,12 @@ public class ChildProcessLauncherHelperTest {
                 });
     }
 
-    private static ChildProcessConnection getWarmUpConnection(boolean sandboxed) {
+    private static ChildProcessConnection getWarmUpConnection() {
         return ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
                 new Callable<ChildProcessConnection>() {
                     @Override
                     public ChildProcessConnection call() {
-                        return ChildProcessLauncherHelperImpl.getWarmUpConnectionForTesting(
-                                sandboxed);
+                        return ChildProcessLauncherHelperImpl.getWarmUpConnectionForTesting();
                     }
                 });
     }

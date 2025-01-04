@@ -42,11 +42,11 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_receiver.h"
 #include "components/autofill/core/browser/logging/log_router.h"
-#include "components/autofill/core/browser/test_autofill_manager_waiter.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
@@ -494,6 +494,12 @@ TEST_F(ChromePasswordManagerClientTest, LogEntryNotifyRenderer) {
       password_manager::PasswordManagerLogRouterFactory::GetForBrowserContext(
           profile());
   log_router->RegisterReceiver(&log_receiver);
+
+  // Now that the log router has a receiver, create the log manager, which
+  // should notify upon construction that logging is now available.
+  autofill::LogManager* log_manager = GetClient()->GetCurrentLogManager();
+  EXPECT_TRUE(log_manager && log_manager->IsLoggingActive());
+
   EXPECT_TRUE(WasLoggingActivationMessageSent(&logging_active));
   EXPECT_TRUE(logging_active);
 
@@ -1128,7 +1134,9 @@ TEST_F(ChromePasswordManagerClientTest, WebUINoLogging) {
 
   // But then navigate to a WebUI, there the logging should not be active.
   NavigateAndCommit(GURL("chrome://password-manager-internals/"));
-  EXPECT_FALSE(GetClient()->GetLogManager()->IsLoggingActive());
+
+  autofill::LogManager* log_manager = GetClient()->GetCurrentLogManager();
+  EXPECT_FALSE(log_manager && log_manager->IsLoggingActive());
 
   log_router->UnregisterReceiver(&log_receiver);
 }

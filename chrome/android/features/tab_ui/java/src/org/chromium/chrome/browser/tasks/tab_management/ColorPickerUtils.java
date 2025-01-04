@@ -19,26 +19,8 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.util.ColorUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /** Helper class to handle color picker related utilities. */
 public class ColorPickerUtils {
-    /**
-     * This method returns the color id list attributed to tab groups specifically.
-     *
-     * @return An array list of ids from 0 to n representing all colors in the palette
-     */
-    public static List<Integer> getTabGroupColorIdList() {
-        // The color ids used here can be found in {@link TabGroupColorId}. Note that it is assumed
-        // the id list is contiguous from 0 to size-1.
-        List<Integer> colors = new ArrayList<>();
-        for (int i = 0; i < TabGroupColorId.NUM_ENTRIES; i++) {
-            colors.add(i);
-        }
-        return colors;
-    }
-
     /**
      * Get the color corresponding to the color id that is passed in. Adjust the color depending on
      * light/dark/incognito mode as well as dynamic color themes. This function should only be used

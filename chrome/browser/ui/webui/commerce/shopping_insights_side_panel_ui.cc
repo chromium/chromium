@@ -10,10 +10,10 @@
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/commerce/price_insights_handler.h"
 #include "chrome/browser/ui/webui/commerce/shopping_ui_handler_delegate.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/side_panel_commerce_resources.h"
 #include "chrome/grit/side_panel_commerce_resources_map.h"
@@ -28,6 +28,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 
 ShoppingInsightsSidePanelUI::ShoppingInsightsSidePanelUI(content::WebUI* web_ui)
     : TopChromeWebUIController(web_ui) {
@@ -103,6 +104,14 @@ void ShoppingInsightsSidePanelUI::BindInterface(
   price_tracking_factory_receiver_.Bind(std::move(receiver));
 }
 
+void ShoppingInsightsSidePanelUI::BindInterface(
+    mojo::PendingReceiver<
+        commerce::price_insights::mojom::PriceInsightsHandlerFactory>
+        receiver) {
+  price_insights_factory_receiver_.reset();
+  price_insights_factory_receiver_.Bind(std::move(receiver));
+}
+
 void ShoppingInsightsSidePanelUI::CreateShoppingServiceHandler(
     mojo::PendingReceiver<shopping_service::mojom::ShoppingServiceHandler>
         receiver) {
@@ -117,7 +126,7 @@ void ShoppingInsightsSidePanelUI::CreateShoppingServiceHandler(
       std::make_unique<commerce::ShoppingServiceHandler>(
           std::move(receiver), bookmark_model, shopping_service,
           profile->GetPrefs(), tracker,
-          std::make_unique<commerce::ShoppingUiHandlerDelegate>(this, profile),
+          std::make_unique<commerce::ShoppingUiHandlerDelegate>(profile),
           nullptr);
 }
 
@@ -135,6 +144,13 @@ void ShoppingInsightsSidePanelUI::CreatePriceTrackingHandler(
   price_tracking_handler_ = std::make_unique<commerce::PriceTrackingHandler>(
       std::move(page), std::move(receiver), web_ui(), shopping_service, tracker,
       bookmark_model);
+}
+
+void ShoppingInsightsSidePanelUI::CreatePriceInsightsHandler(
+    mojo::PendingReceiver<commerce::price_insights::mojom::PriceInsightsHandler>
+        receiver) {
+  price_insights_handler_ = std::make_unique<commerce::PriceInsightsHandler>(
+      std::move(receiver), *this, Profile::FromWebUI(web_ui()));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ShoppingInsightsSidePanelUI)

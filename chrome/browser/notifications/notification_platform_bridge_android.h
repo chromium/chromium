@@ -85,6 +85,14 @@ class NotificationPlatformBridgeAndroid : public NotificationPlatformBridge {
       std::string& profile_id,
       jboolean incognito);
 
+  // Called by Java tests for testing both suspicious and non-suspicious
+  // notification behaviour when showing warnings for suspicious notifications
+  // is enabled.
+  void SetIsSuspiciousParameterForTesting(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& java_object,
+      bool is_suspicious);
+
   // NotificationPlatformBridge implementation.
   void Display(NotificationHandler::Type notification_type,
                Profile* profile,
@@ -136,6 +144,12 @@ class NotificationPlatformBridgeAndroid : public NotificationPlatformBridge {
       regenerated_notification_infos_;
 
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
+
+  // When `should_use_test_is_suspicious_value_` is true, use the
+  // `test_is_suspicious_value_` value to tell the front end whether to display
+  // a warning notification or the original notification.
+  bool should_use_test_is_suspicious_value_ = false;
+  bool test_is_suspicious_value_ = false;
 
   base::WeakPtrFactory<NotificationPlatformBridgeAndroid> weak_factory_{this};
 };

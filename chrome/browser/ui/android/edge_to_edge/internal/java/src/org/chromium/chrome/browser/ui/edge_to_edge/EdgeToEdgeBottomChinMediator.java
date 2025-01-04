@@ -50,6 +50,9 @@ class EdgeToEdgeBottomChinMediator
     // by viz instead of the browser.
     private int mRendererOffset;
 
+    private int mNavigationBarColor;
+    private int mDividerColor;
+
     /**
      * Tracks the latest value for layer visibility to watch for any changes to communicate to the
      * {@link BottomControlsStacker}.
@@ -57,6 +60,7 @@ class EdgeToEdgeBottomChinMediator
     private @LayerVisibility int mLatestLayerVisibility;
 
     private boolean mIsKeyboardVisible;
+    private boolean mHasSafeAreaConstraint;
 
     private final @NonNull KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     private final @NonNull LayoutManager mLayoutManager;
@@ -189,7 +193,17 @@ class EdgeToEdgeBottomChinMediator
     }
 
     @Override
+    public void onSafeAreaConstraintChanged(boolean hasConstraint) {
+        if (mHasSafeAreaConstraint == hasConstraint) return;
+        // mHasSafeAreaConstraint impacts scroll behavior which changes the min height of browser
+        // controls layers. Request an update to refresh the calculated height in the stacker.
+        mHasSafeAreaConstraint = hasConstraint;
+        mBottomControlsStacker.requestLayerUpdate(false);
+    }
+
+    @Override
     public void onNavigationBarColorChanged(int color) {
+        mNavigationBarColor = color;
         if (!isVisible()) {
             return;
         }
@@ -200,6 +214,7 @@ class EdgeToEdgeBottomChinMediator
 
     @Override
     public void onNavigationBarDividerChanged(int dividerColor) {
+        mDividerColor = dividerColor;
         if (!isVisible()) {
             return;
         }
@@ -236,7 +251,9 @@ class EdgeToEdgeBottomChinMediator
 
     @Override
     public int getScrollBehavior() {
-        return LayerScrollBehavior.DEFAULT_SCROLL_OFF;
+        return mHasSafeAreaConstraint
+                ? LayerScrollBehavior.NEVER_SCROLL_OFF
+                : LayerScrollBehavior.DEFAULT_SCROLL_OFF;
     }
 
     @Override
@@ -252,20 +269,41 @@ class EdgeToEdgeBottomChinMediator
     }
 
     @Override
-    public void onBrowserControlsOffsetUpdate(int layerYOffset) {
+    public void onBrowserControlsOffsetUpdate(int layerYOffset, boolean didMinHeightChange) {
         assert BottomControlsStacker.isDispatchingYOffset();
 
         mRendererOffset = layerYOffset;
+
+        if (isVisible()) {
+            // If the chin isn't visible, cache the color and update it when the chin is visible.
+            // This is done to reduce the number of compositor frames submitted while scrolling.
+            // The color is unnecessarily set to null when the chin gets scrolled off screen, and
+            // gets set back to what it was before it was scrolled off.
+            onNavigationBarColorChanged(mNavigationBarColor);
+            onNavigationBarDividerChanged(mDividerColor);
+        }
 
         if (!mBottomControlsStacker.isMoveableByViz()) {
             mModel.set(Y_OFFSET, layerYOffset);
         }
     }
 
-    // TODO(peilinwang) implement bciv for chin.
     @Override
     public int updateOffsetTag(BrowserControlsOffsetTagsInfo offsetTagsInfo) {
         mModel.set(OFFSET_TAG, offsetTagsInfo.getBottomControlsOffsetTag());
         return 0;
+    }
+
+    @Override
+    public void clearOffsetTag() {
+        mModel.set(OFFSET_TAG, null);
+    }
+
+    public int getDividerColorForTesting() {
+        return mDividerColor;
+    }
+
+    public int getNavigationBarColorForTesting() {
+        return mNavigationBarColor;
     }
 }

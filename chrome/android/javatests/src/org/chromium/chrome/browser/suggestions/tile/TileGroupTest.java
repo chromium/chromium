@@ -28,8 +28,10 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.ntp.NewTabPage;
@@ -109,6 +111,8 @@ public class TileGroupTest {
     @MediumTest
     @Feature({"NewTabPage"})
     @Restriction({DeviceFormFactor.PHONE})
+    // Disable the feature due to lack of good list menu testing support.
+    @Features.DisableFeatures(ChromeFeatureList.TILE_CONTEXT_MENU_REFACTOR)
     public void testDismissTileWithContextMenu_Phones() throws Exception {
         testDismissTileWithContextMenuImpl();
     }
@@ -117,6 +121,8 @@ public class TileGroupTest {
     @MediumTest
     @Feature({"NewTabPage"})
     @Restriction({DeviceFormFactor.TABLET})
+    // Disable the feature due to lack of good list menu testing support.
+    @Features.DisableFeatures(ChromeFeatureList.TILE_CONTEXT_MENU_REFACTOR)
     public void testDismissTileWithContextMenu_Tablets() throws Exception {
         testDismissTileWithContextMenuImpl();
     }
@@ -145,6 +151,8 @@ public class TileGroupTest {
     @MediumTest
     @Feature({"NewTabPage"})
     @Restriction({DeviceFormFactor.PHONE})
+    // Disable the feature due to lack of good list menu testing support.
+    @Features.DisableFeatures(ChromeFeatureList.TILE_CONTEXT_MENU_REFACTOR)
     public void testDismissTileUndo_Phones() throws Exception {
         testDismissTileUndoImpl();
     }
@@ -153,6 +161,8 @@ public class TileGroupTest {
     @MediumTest
     @Feature({"NewTabPage"})
     @Restriction({DeviceFormFactor.TABLET})
+    // Disable the feature due to lack of good list menu testing support.
+    @Features.DisableFeatures(ChromeFeatureList.TILE_CONTEXT_MENU_REFACTOR)
     public void testDismissTileUndo_Tablets() throws Exception {
         testDismissTileUndoImpl();
     }

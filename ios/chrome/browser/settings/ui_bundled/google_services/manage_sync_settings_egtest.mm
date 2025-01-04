@@ -9,6 +9,11 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
 #import "components/sync/base/user_selectable_type.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_app_interface.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_matchers.h"
+#import "ios/chrome/browser/authentication/ui_bundled/views/views_constants.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
@@ -25,11 +30,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
-#import "ios/chrome/browser/ui/authentication/signin_matchers.h"
-#import "ios/chrome/browser/ui/authentication/views/views_constants.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -1569,7 +1569,13 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests the custom passphrase is remembered per account, kept across signout,
 // and cleared when account is removed from device.
-- (void)testRememberCustomPassphraseAfterSignout {
+// TODO(crbug.com/384646508): This test is flaky on the iPad simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testRememberCustomPassphraseAfterSignout FLAKY_testRememberCustomPassphraseAfterSignout
+#else
+#define MAYBE_testRememberCustomPassphraseAfterSignout testRememberCustomPassphraseAfterSignout
+#endif  // TARGET_IPHONE_SIMULATOR
+- (void)MAYBE_testRememberCustomPassphraseAfterSignout {
   // Enable custom passphrase.
   [ChromeEarlGrey addSyncPassphrase:kPassphrase];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];

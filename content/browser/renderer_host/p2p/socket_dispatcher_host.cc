@@ -75,7 +75,7 @@ void P2PSocketDispatcherHost::BindReceiver(
     mojo::PendingReceiver<network::mojom::P2PSocketManager> receiver,
     net::NetworkAnonymizationKey anonymization_key,
     const GlobalRenderFrameHostId& render_frame_host_id) {
-  DCHECK_EQ(process.GetID(), render_process_id_);
+  DCHECK_EQ(process.GetDeprecatedID(), render_process_id_);
 
   mojo::PendingRemote<network::mojom::P2PTrustedSocketManagerClient>
       trusted_socket_manager_client;

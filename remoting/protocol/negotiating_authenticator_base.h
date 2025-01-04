@@ -73,6 +73,7 @@ class NegotiatingAuthenticatorBase : public Authenticator {
   State state() const override;
   bool started() const override;
   RejectionReason rejection_reason() const override;
+  RejectionDetails rejection_details() const override;
   const std::string& GetAuthKey() const override;
   const SessionPolicies* GetSessionPolicies() const override;
   std::unique_ptr<ChannelAuthenticator> CreateChannelAuthenticator()
@@ -112,6 +113,7 @@ class NegotiatingAuthenticatorBase : public Authenticator {
   std::unique_ptr<Authenticator> current_authenticator_;
   State state_;
   RejectionReason rejection_reason_ = RejectionReason::INVALID_CREDENTIALS;
+  RejectionDetails rejection_details_;
 };
 
 }  // namespace remoting::protocol

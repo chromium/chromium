@@ -10,8 +10,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test_shell_delegate.h"
-#include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/version_info/channel.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
@@ -28,9 +26,7 @@ const char16_t* kTestButtonStr = u"Beta 123.45.6789.10";
 
 class ChannelIndicatorUtilsTest : public AshTestBase {
  public:
-  ChannelIndicatorUtilsTest() {
-    feature_list_.InitAndEnableFeature(chromeos::features::kJelly);
-  }
+  ChannelIndicatorUtilsTest() = default;
   ChannelIndicatorUtilsTest(const ChannelIndicatorUtilsTest&) = delete;
   ChannelIndicatorUtilsTest& operator=(const ChannelIndicatorUtilsTest&) =
       delete;
@@ -45,9 +41,6 @@ class ChannelIndicatorUtilsTest : public AshTestBase {
     shell_delegate->set_version_string(kTestOsVersion);
     AshTestBase::SetUp(std::move(shell_delegate));
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(ChannelIndicatorUtilsTest, IsDisplayableChannel) {

@@ -12,12 +12,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/gfx/range/range.h"
 
 class Browser;
 class BrowserWindowInterface;
+class ScopedTabStripModalUI;
 class Tab;
 class TabGroup;
 class TabStrip;
@@ -35,7 +37,7 @@ class TabGroupVisualData;
 namespace ui {
 class Event;
 class ListSelectionModel;
-}
+}  // namespace ui
 
 // Model/Controller for the TabStrip.
 // NOTE: All indices used by this class are in model coordinates.
@@ -48,6 +50,13 @@ class TabStripController {
 
   // Returns the number of tabs in the model.
   virtual int GetCount() const = 0;
+
+  // Features that want to show tabstrip-modal UI are mutually exclusive.
+  // Before showing a modal UI first check `CanShowModalUI`. Then call
+  // ShowModalUI() and keep `ScopedTabStripModal` alive to prevent other
+  // features from showing tabstrip-modal UI.
+  virtual bool CanShowModalUI() const = 0;
+  virtual std::unique_ptr<ScopedTabStripModalUI> ShowModalUI() = 0;
 
   // Returns true if |index| is a valid model index.
   virtual bool IsValidIndex(int index) const = 0;
@@ -113,9 +122,12 @@ class TabStripController {
   // touch/gesture control, etc). Tests will default to `kMenuAction` unless
   // specified otherwise.
   virtual void ToggleTabGroupCollapsedState(
-      const tab_groups::TabGroupId group,
-      ToggleTabGroupCollapsedStateOrigin origin =
-          ToggleTabGroupCollapsedStateOrigin::kMenuAction) = 0;
+      tab_groups::TabGroupId group,
+      ToggleTabGroupCollapsedStateOrigin origin) = 0;
+  void ToggleTabGroupCollapsedState(tab_groups::TabGroupId group) {
+    ToggleTabGroupCollapsedState(
+        group, ToggleTabGroupCollapsedStateOrigin::kMenuAction);
+  }
 
   // Shows a context menu for the tab at the specified point in screen coords.
   virtual void ShowContextMenuForTab(Tab* tab,

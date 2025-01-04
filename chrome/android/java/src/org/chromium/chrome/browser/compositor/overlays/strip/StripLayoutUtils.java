@@ -18,6 +18,10 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.ui.base.LocalizationUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class StripLayoutUtils {
     // Position Constants.
@@ -144,6 +148,17 @@ public class StripLayoutUtils {
         return groupTitle.getWidth() + totalTabWidth;
     }
 
+    static List<StripLayoutTab> getGroupedTabs(
+            TabModel tabModel, StripLayoutTab[] stripTabs, int rootId) {
+        ArrayList<StripLayoutTab> groupedTabs = new ArrayList<>();
+        for (int i = 0; i < stripTabs.length; ++i) {
+            final StripLayoutTab stripTab = stripTabs[i];
+            final Tab tab = tabModel.getTabById(stripTab.getTabId());
+            if (tab != null && tab.getRootId() == rootId) groupedTabs.add(stripTab);
+        }
+        return groupedTabs;
+    }
+
     // ============================================================================================
     // StripLayoutView/Tab array util methods
     // ============================================================================================
@@ -192,6 +207,39 @@ public class StripLayoutUtils {
         for (int i = 0; i < stripTabs.length; i++) {
             if (stripTabs[i].getTabId() == id) return stripTabs[i];
         }
+        return null;
+    }
+
+    /**
+     * @param views The list of {@link StripLayoutView}.
+     * @param x The x position to use to retrieve view.
+     * @param includeGroupTitles Whether to include group title when finding view.
+     * @return View at x position.{@code null} if no view at position or if input criteria not met.
+     */
+    public static StripLayoutView findViewAtPositionX(
+            StripLayoutView[] views, float x, boolean includeGroupTitles) {
+        for (StripLayoutView view : views) {
+            float leftEdge;
+            float rightEdge;
+            if (view instanceof StripLayoutTab tab) {
+                leftEdge = tab.getTouchTargetLeft();
+                rightEdge = tab.getTouchTargetRight();
+                if (LocalizationUtils.isLayoutRtl()) {
+                    leftEdge -= tab.getTrailingMargin();
+                } else {
+                    rightEdge += tab.getTrailingMargin();
+                }
+            } else {
+                if (!includeGroupTitles) continue;
+                leftEdge = view.getDrawX();
+                rightEdge = leftEdge + view.getWidth();
+            }
+
+            if (view.isVisible() && leftEdge <= x && x <= rightEdge) {
+                return view;
+            }
+        }
+
         return null;
     }
 

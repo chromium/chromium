@@ -12,14 +12,15 @@
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
-#include "components/autofill/core/browser/mock_autofill_optimization_guide.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/integrators/mock_autofill_optimization_guide.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -65,11 +66,10 @@ class MockSuggestionsReturnedCallback
 
 class IbanManagerTest : public testing::Test {
  protected:
-  IbanManagerTest() : iban_manager_(&personal_data_manager_) {}
+  IbanManagerTest() = default;
 
   void SetUp() override {
-    personal_data_manager_.test_payments_data_manager()
-        .SetAutofillPaymentMethodsEnabled(true);
+    payments_data_manager().SetAutofillPaymentMethodsEnabled(true);
     original_resource_bundle_ =
         ui::ResourceBundle::SwapSharedInstanceForTesting(nullptr);
     form_structure_ = std::make_unique<FormStructure>(
@@ -98,7 +98,7 @@ class IbanManagerTest : public testing::Test {
     Iban iban;
     iban.set_value(base::UTF8ToUTF16(std::string(value)));
     iban.set_nickname(base::UTF8ToUTF16(std::string(nickname)));
-    personal_data_manager_.payments_data_manager().AddAsLocalIban(iban);
+    payments_data_manager().AddAsLocalIban(iban);
     return iban;
   }
 
@@ -111,7 +111,7 @@ class IbanManagerTest : public testing::Test {
     iban.set_prefix(base::UTF8ToUTF16(std::string(prefix)));
     iban.set_suffix(base::UTF8ToUTF16(std::string(suffix)));
     iban.set_nickname(base::UTF8ToUTF16(std::string(nickname)));
-    personal_data_manager_.test_payments_data_manager().AddServerIban(iban);
+    payments_data_manager().AddServerIban(iban);
     return iban;
   }
 
@@ -161,14 +161,19 @@ class IbanManagerTest : public testing::Test {
     return footer_suggestion;
   }
 
+  TestPaymentsDataManager& payments_data_manager() {
+    return autofill_client_.GetPersonalDataManager()
+        .test_payments_data_manager();
+  }
+
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   TestAutofillClient autofill_client_;
-  TestPersonalDataManager personal_data_manager_;
   std::unique_ptr<FormStructure> form_structure_;
   // Owned by `form_structure_`.
   raw_ptr<AutofillField> autofill_field_;
-  IbanManager iban_manager_;
+  IbanManager iban_manager_{
+      &autofill_client_.GetPersonalDataManager().payments_data_manager()};
   testing::NiceMock<ui::MockResourceBundleDelegate> mock_resource_delegate_;
   raw_ptr<ui::ResourceBundle> original_resource_bundle_;
 };
@@ -178,8 +183,7 @@ MATCHER_P(MatchesTextAndSuggestionType, suggestion, "") {
 }
 
 TEST_F(IbanManagerTest, ShowsAllIbanSuggestions) {
-  personal_data_manager_.test_payments_data_manager()
-      .SetAutofillWalletImportEnabled(true);
+  payments_data_manager().SetAutofillWalletImportEnabled(true);
   Suggestion local_iban_suggestion_0 = GetSuggestionForIban(
       SetUpLocalIban("FR76 3000 6000 0112 3456 7890 189", kNickname_0));
   Suggestion local_iban_suggestion_1 = GetSuggestionForIban(
@@ -215,8 +219,7 @@ TEST_F(IbanManagerTest, ShowsAllIbanSuggestions) {
 }
 
 TEST_F(IbanManagerTest, PaymentsAutofillEnabledPrefOff_NoIbanSuggestionsShown) {
-  personal_data_manager_.test_payments_data_manager()
-      .SetAutofillPaymentMethodsEnabled(false);
+  payments_data_manager().SetAutofillPaymentMethodsEnabled(false);
   GetSuggestionForIban(SetUpLocalIban(test::kIbanValue, kNickname_0));
   GetSuggestionForIban(SetUpLocalIban(test::kIbanValue_1, kNickname_1));
 
@@ -346,8 +349,7 @@ TEST_F(IbanManagerTest,
 // with matching prefixes should be returned.
 TEST_F(IbanManagerTest,
        OnGetSingleFieldSuggestions_ServerIbansMatchingPrefix_Shows_All) {
-  personal_data_manager_.test_payments_data_manager()
-      .SetAutofillWalletImportEnabled(true);
+  payments_data_manager().SetAutofillWalletImportEnabled(true);
   // Set up two server IBANs with different prefixes except for the first two
   // characters, and with same suffixes and lengths.
   Suggestion server_iban_suggestion_0 = GetSuggestionForIban(SetUpServerIban(
@@ -385,8 +387,7 @@ TEST_F(IbanManagerTest,
 // with matching prefixes should be returned.
 TEST_F(IbanManagerTest,
        OnGetSingleFieldSuggestions_ServerIbansMatchingPrefix_Shows_Some) {
-  personal_data_manager_.test_payments_data_manager()
-      .SetAutofillWalletImportEnabled(true);
+  payments_data_manager().SetAutofillWalletImportEnabled(true);
   // Set up two server IBANs with different prefixes except for the first two
   // characters, and with same suffixes and lengths.
   Suggestion server_iban_suggestion_0 = GetSuggestionForIban(SetUpServerIban(
@@ -425,8 +426,7 @@ TEST_F(IbanManagerTest,
 TEST_F(
     IbanManagerTest,
     OnGetSingleFieldSuggestions_ServerIbansLackingPrefix_ShowsIfFewCharsInField) {
-  personal_data_manager_.test_payments_data_manager()
-      .SetAutofillWalletImportEnabled(true);
+  payments_data_manager().SetAutofillWalletImportEnabled(true);
   // Set up three server IBANs with empty `prefix`.
   Suggestion server_iban_suggestion_0 = GetSuggestionForIban(SetUpServerIban(
       /*instrument_id=*/12345, /*prefix=*/"", /*suffix=*/"8009",
@@ -485,8 +485,7 @@ TEST_F(
 TEST_F(
     IbanManagerTest,
     OnGetSingleFieldSuggestions_ServerIbansLackingPrefix_HidesIfManyCharsInField) {
-  personal_data_manager_.test_payments_data_manager()
-      .SetAutofillWalletImportEnabled(true);
+  payments_data_manager().SetAutofillWalletImportEnabled(true);
   // Set up three server IBANs with empty `prefix`.
   Suggestion server_iban_suggestion_0 = GetSuggestionForIban(SetUpServerIban(
       /*instrument_id=*/12345, /*prefix=*/"", /*suffix=*/"8009",
@@ -710,8 +709,7 @@ TEST_F(IbanManagerTest, Metrics_LocalIbanSuggestionSelected) {
 // count) is logged correctly.
 TEST_F(IbanManagerTest, Metrics_ServerIbanSuggestionSelected) {
   base::HistogramTester histogram_tester;
-  personal_data_manager_.test_payments_data_manager()
-      .SetAutofillWalletImportEnabled(true);
+  payments_data_manager().SetAutofillWalletImportEnabled(true);
   Suggestion suggestion = GetSuggestionForIban(SetUpServerIban(
       /*instrument_id=*/12345, /*prefix=*/"DE", /*suffix=*/"6789",
       kNickname_0));

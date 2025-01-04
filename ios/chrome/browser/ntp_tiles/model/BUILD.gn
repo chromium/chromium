@@ -16,7 +16,6 @@ source_set("model") {
     "//components/history/core/browser",
     "//components/image_fetcher/core",
     "//components/image_fetcher/ios",
-    "//components/keyed_service/core",
     "//components/ntp_tiles",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/history/model",

@@ -487,6 +487,30 @@
 			<string>PSToggleSwitchSpecifier</string>
 		</dict>
 		<dict>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>Key</key>
+			<string>AsyncStartupOverrideResponse</string>
+			<key>Title</key>
+			<string>Asynchronous startup</string>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<string></string>
+				<string>500ms</string>
+				<string>FirstPartyIncognitoNoDelay</string>
+				<string>FirstPartyIncognito500Delay</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Unset</string>
+				<string>500ms delay</string>
+				<string>With first party incognito</string>
+				<string>With 500ms delayed first party incognito</string>
+			</array>
+		</dict>
+		<dict>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>

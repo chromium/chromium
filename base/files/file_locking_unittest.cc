@@ -63,8 +63,9 @@ bool WaitForEventWithTimeout(const FilePath& signal_dir,
                              const base::TimeDelta& timeout) {
   const base::Time finish_by = base::Time::Now() + timeout;
   while (!CheckEvent(signal_dir, signal_file)) {
-    if (base::Time::Now() > finish_by)
+    if (base::Time::Now() > finish_by) {
       return false;
+    }
     base::PlatformThread::Sleep(base::Milliseconds(10));
   }
   return true;

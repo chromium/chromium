@@ -61,6 +61,8 @@ constexpr std::string_view kAadWebauthnCredentialSpecificsPrivateKey = "";
 // https://www.w3.org/TR/webauthn-2/#signature-counter
 constexpr uint8_t kSignatureCounter[4] = {0};
 
+constexpr size_t kEncryptionSecretSize = 32;
+
 struct PasskeyComparator {
   bool operator()(const sync_pb::WebauthnCredentialSpecifics& a,
                   const sync_pb::WebauthnCredentialSpecifics& b) const {
@@ -88,15 +90,14 @@ bool EncryptAes256Gcm(base::span<const uint8_t> key,
   return aead.Seal(plaintext, nonce, aad, ciphertext);
 }
 
-std::vector<uint8_t> DerivePasskeyEncryptionSecret(
+std::array<uint8_t, kEncryptionSecretSize> DerivePasskeyEncryptionSecret(
     base::span<const uint8_t> trusted_vault_key) {
   constexpr std::string_view kHkdfInfo =
       "KeychainApplicationKey:gmscore_module:com.google.android.gms.fido";
-  constexpr size_t kEncryptionSecretSize = 32u;
-  return crypto::HkdfSha256(trusted_vault_key,
-                            /*salt=*/base::span<const uint8_t>(),
-                            base::as_bytes(base::span(kHkdfInfo)),
-                            kEncryptionSecretSize);
+  return crypto::HkdfSha256<kEncryptionSecretSize>(
+      trusted_vault_key,
+      /*salt=*/base::span<const uint8_t>(),
+      base::as_bytes(base::span(kHkdfInfo)));
 }
 
 }  // namespace

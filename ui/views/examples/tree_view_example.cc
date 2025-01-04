@@ -32,8 +32,9 @@ class ExampleTreeViewDrawingProvider : public views::TreeViewDrawingProvider {
 
   std::u16string GetAuxiliaryTextForNode(views::TreeView* tree_view,
                                          ui::TreeModelNode* node) override {
-    if (tree_view->GetSelectedNode() == node)
+    if (tree_view->GetSelectedNode() == node) {
       return GetStringUTF16(IDS_TREE_VIEW_SELECTED_LABEL);
+    }
     return views::TreeViewDrawingProvider::GetAuxiliaryTextForNode(tree_view,
                                                                    node);
   }
@@ -132,15 +133,17 @@ void TreeViewExample::CreateExampleView(View* container) {
   remove_ = button_panel->AddChildView(std::move(remove));
   change_title_ = button_panel->AddChildView(std::move(change_title));
 
-  for (View* view : button_panel->children())
+  for (View* view : button_panel->children()) {
     view->SetProperty(views::kFlexBehaviorKey, full_flex);
+  }
 }
 
 void TreeViewExample::AddNewNode() {
   NodeType* selected_node =
       static_cast<NodeType*>(tree_view_->GetSelectedNode());
-  if (!selected_node)
+  if (!selected_node) {
     selected_node = model_.GetRoot();
+  }
   NodeType* new_node = model_.Add(
       selected_node, std::make_unique<NodeType>(selected_node->GetTitle(), 1));
   tree_view_->SetSelectedNode(new_node);

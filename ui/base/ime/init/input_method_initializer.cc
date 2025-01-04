@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 
 #if defined(USE_AURA) && BUILDFLAG(IS_LINUX)
@@ -19,6 +20,7 @@
 namespace ui {
 
 void InitializeInputMethod() {
+  TRACE_EVENT0("startup", "ui::InitializeInputMethod");
 #if BUILDFLAG(IS_WIN)
   TSFBridge::Initialize();
 #endif

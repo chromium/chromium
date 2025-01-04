@@ -4,6 +4,7 @@
 
 #include "components/translate/core/browser/translate_metrics_logger_impl.h"
 
+#include <array>
 #include <memory>
 #include <vector>
 
@@ -686,7 +687,7 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTriggerDecision) {
   // value to Translate.PageLoad.TriggerDecision. All of the values will be
   // captured by Translate.PageLoad.TriggerDecision.TotalCount and
   // Translate.PageLoad.TriggerDecision.AllTriggerDecisions.
-  const TriggerDecision kTriggerDecisions[] = {
+  const auto kTriggerDecisions = std::to_array<TriggerDecision>({
       TriggerDecision::kAutomaticTranslationByLink,
       TriggerDecision::kDisabledByRanker,
       TriggerDecision::kDisabledUnsupportedLanguage,
@@ -696,7 +697,8 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTriggerDecision) {
       TriggerDecision::kDisabledByRanker,
       TriggerDecision::kDisabledOffline,
       TriggerDecision::kDisabledNeverTranslateLanguage,
-      TriggerDecision::kDisabledMatchesPreviousLanguage};
+      TriggerDecision::kDisabledMatchesPreviousLanguage,
+  });
 
   for (const auto& trigger_decision : kTriggerDecisions)
     translate_metrics_logger()->LogTriggerDecision(trigger_decision);
@@ -716,7 +718,7 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTriggerDecision) {
 TEST_F(TranslateMetricsLoggerImplTest, LogHrefTriggerDecision) {
   // If we log multiple trigger decisions, we expect that only the first one is
   // recorded.
-  const TriggerDecision kTriggerDecisions[] = {
+  const auto kTriggerDecisions = std::to_array<TriggerDecision>({
       TriggerDecision::kAutomaticTranslationByLink,
       TriggerDecision::kDisabledByRanker,
       TriggerDecision::kDisabledUnsupportedLanguage,
@@ -725,7 +727,8 @@ TEST_F(TranslateMetricsLoggerImplTest, LogHrefTriggerDecision) {
       TriggerDecision::kShowUI,
       TriggerDecision::kDisabledByRanker,
       TriggerDecision::kDisabledOffline,
-      TriggerDecision::kDisabledNeverTranslateLanguage};
+      TriggerDecision::kDisabledNeverTranslateLanguage,
+  });
 
   for (const auto& trigger_decision : kTriggerDecisions)
     translate_metrics_logger()->LogTriggerDecision(trigger_decision);
@@ -1512,7 +1515,7 @@ TEST_F(TranslateMetricsLoggerImplTest, LogMaxTimeToTranslate) {
 }
 
 TEST_F(TranslateMetricsLoggerImplTest, LogUIInteraction) {
-  const UIInteraction kUIInteractions[] = {
+  const auto kUIInteractions = std::to_array<UIInteraction>({
       UIInteraction::kTranslate,
       UIInteraction::kRevert,
       UIInteraction::kChangeSourceLanguage,
@@ -1527,7 +1530,8 @@ TEST_F(TranslateMetricsLoggerImplTest, LogUIInteraction) {
       UIInteraction::kAddNeverTranslateLanguage,
       UIInteraction::kRemoveNeverTranslateLanguage,
       UIInteraction::kAddNeverTranslateSite,
-      UIInteraction::kRemoveNeverTranslateSite};
+      UIInteraction::kRemoveNeverTranslateSite,
+  });
   for (auto ui_interaction : kUIInteractions) {
     translate_metrics_logger()->LogUIInteraction(ui_interaction);
   }

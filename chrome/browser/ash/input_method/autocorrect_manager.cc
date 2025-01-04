@@ -16,12 +16,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/input_method/assistive_input_denylist.h"
 #include "chrome/browser/ash/input_method/assistive_prefs.h"
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
 #include "chrome/browser/ash/input_method/autocorrect_enums.h"
 #include "chrome/browser/ash/input_method/autocorrect_prefs.h"
-#include "chrome/browser/ash/input_method/field_trial.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -344,15 +342,7 @@ bool UserInAutocorrectByDefaultBucket(const PrefService& prefs,
 AutocorrectManager::AutocorrectManager(
     SuggestionHandlerInterface* suggestion_handler,
     Profile* profile)
-    : denylist_(DenylistAdditions{
-          .autocorrect_denylist_json =
-              GetFieldTrialParam(features::kAutocorrectByDefault,
-                                 ParamName::kDenylist),
-          .multi_word_denylist_json =
-              GetFieldTrialParam(features::kAssistMultiWord,
-                                 ParamName::kDenylist)}),
-      suggestion_handler_(suggestion_handler),
-      profile_(profile) {
+    : suggestion_handler_(suggestion_handler), profile_(profile) {
   undo_button_.id = ui::ime::ButtonId::kUndo;
   undo_button_.window_type = ash::ime::AssistiveWindowType::kUndoWindow;
   learn_more_button_.id = ui::ime::ButtonId::kLearnMore;
@@ -901,9 +891,7 @@ void AutocorrectManager::OnFocus(int context_id) {
   }
 
   if (base::FeatureList::IsEnabled(ash::features::kImeRuleConfig)) {
-    GetTextFieldContextualInfo(
-        base::BindOnce(&AutocorrectManager::OnTextFieldContextualInfoChanged,
-                       base::Unretained(this)));
+    OnTextFieldContextualInfoChanged(GetTextFieldContextualInfo());
   }
 
   num_handled_autocorrect_in_text_field_ = 0;

@@ -45,7 +45,7 @@ enum class KeyUsageCategory {
 void RecordKeyboardInfoMetrics(
     const KeyboardCapability::KeyboardInfo& keyboard_info,
     bool has_assistant_key,
-    bool has_right_alt_key);
+    bool has_quick_insert_key);
 
 }  // namespace ui
 

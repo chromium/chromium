@@ -11,11 +11,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -30,8 +32,11 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
  * As for when a list item contains an icon, it is expected that it either has a start icon
  * OR an end icon, not both.
  */
+@NullMarked
 public class ListMenuItemViewBinder {
-    public static void binder(PropertyModel model, View view, PropertyKey propertyKey) {
+    @NullUnmarked
+    public static void binder(
+            PropertyModel model, @Nullable View view, @Nullable PropertyKey propertyKey) {
         TextView textView = view.findViewById(R.id.menu_item_text);
         ImageView startIcon = view.findViewById(R.id.menu_item_icon);
         ImageView endIcon = view.findViewById(R.id.menu_item_end_icon);

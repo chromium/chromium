@@ -369,9 +369,11 @@ class PreloadManageAccountsDelegate : public ManageAccountsDelegate {
 
   // Ignore this request if there is already a scheduled request for the same
   // URL; or, if there is no scheduled request, but the currently prerendered
-  // page matches this URL.
+  // page matches this URL,
+  // or if the current webstate is null.
   if (url == self.scheduledURL ||
-      (self.scheduledURL.is_empty() && url == self.prerenderedURL)) {
+      (self.scheduledURL.is_empty() && url == self.prerenderedURL) ||
+      !currentWebState) {
     return;
   }
 

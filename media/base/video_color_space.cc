@@ -140,6 +140,7 @@ VideoColorSpace VideoColorSpace::FromGfxColorSpace(
   VideoColorSpace::TransferID transfer = VideoColorSpace::TransferID::INVALID;
   switch (color_space.GetTransferID()) {
     case gfx::ColorSpace::TransferID::BT709:
+    case gfx::ColorSpace::TransferID::BT709_APPLE:
       transfer = VideoColorSpace::TransferID::BT709;
       break;
     case gfx::ColorSpace::TransferID::GAMMA22:

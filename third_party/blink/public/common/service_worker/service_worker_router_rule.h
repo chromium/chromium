@@ -5,8 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_SERVICE_WORKER_SERVICE_WORKER_ROUTER_RULE_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_SERVICE_WORKER_SERVICE_WORKER_ROUTER_RULE_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
+#include <tuple>
 #include <vector>
 
 #include "third_party/blink/public/common/common_export.h"

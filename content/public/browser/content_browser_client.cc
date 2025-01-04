@@ -4,6 +4,7 @@
 
 #include "content/public/browser/content_browser_client.h"
 
+#include <memory>
 #include <optional>
 #include <string_view>
 #include <utility>
@@ -20,7 +21,9 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
+#include "components/language_detection/content/browser/content_language_detection_driver.h"
+#include "components/language_detection/content/common/language_detection.mojom.h"
+#include "components/language_detection/core/browser/language_detection_model_provider.h"
 #include "content/browser/ai/echo_ai_manager_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/anchor_element_preconnect_delegate.h"
@@ -76,6 +79,7 @@
 #include "services/video_effects/public/cpp/buildflags.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
@@ -244,12 +248,9 @@ ContentBrowserClient::DetermineAddressSpaceFromURL(const GURL& url) {
   return network::mojom::IPAddressSpace::kUnknown;
 }
 
-bool ContentBrowserClient::LogWebUICreated(const GURL& web_ui_url) {
-  return false;
-}
-
-bool ContentBrowserClient::LogWebUIShown(const GURL& web_ui_url) {
-  return false;
+void ContentBrowserClient::LogWebUIUsage(
+    std::variant<WebUI*, GURL> webui_variant) {
+  return;
 }
 
 bool ContentBrowserClient::IsWebUIAllowedToMakeNetworkRequests(
@@ -801,7 +802,7 @@ ContentBrowserClient::CreateSpeechRecognitionManagerDelegate() {
   return nullptr;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TtsControllerDelegate* ContentBrowserClient::GetTtsControllerDelegate() {
   return nullptr;
 }
@@ -1806,6 +1807,53 @@ void ContentBrowserClient::BindTranslationManager(
     const url::Origin& origin,
     mojo::PendingReceiver<blink::mojom::TranslationManager> receiver) {}
 
+namespace {
+// TODO(https://crbug.com/383035345): Use BASE_FEATURE_PARAM.
+const base::FeatureParam<std::string> kLanguageDetectionLocalFileModelPath{
+    &blink::features::kLanguageDetectionAPI,
+    "language_detection_local_file_model_path", ""};
+
+// We need to initialize the provider after it is created. This should not be
+// inside `GetContentLanguageDetectionDriver` or it will be performed on every
+// call.
+language_detection::LanguageDetectionModelProvider*
+CreateLanguageDetectionModelProvider() {
+  auto* provider = new language_detection::LanguageDetectionModelProvider(
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
+  const std::string model_file_path =
+      kLanguageDetectionLocalFileModelPath.Get();
+  if (model_file_path.length()) {
+    provider->ReplaceModelFile(base::FilePath::FromASCII(model_file_path));
+  } else {
+    // There is no model and there's not going to be one. If we don't call this
+    // the provider will queue requests, expecting that some time in the future
+    // a model will become available.
+    provider->UnloadModelFile();
+  }
+  return provider;
+}
+
+// Returns a singleton of `ContentLanguageDetectionDriver`. This will provide
+// the model from a flag-param path.
+language_detection::ContentLanguageDetectionDriver&
+GetContentLanguageDetectionDriver() {
+  static base::NoDestructor<language_detection::ContentLanguageDetectionDriver>
+      driver(CreateLanguageDetectionModelProvider());
+  return *driver.get();
+}
+}  // namespace
+
+void ContentBrowserClient::BindLanguageDetectionDriver(
+    content::BrowserContext* browser_context,
+    base::SupportsUserData* context_user_data,
+    mojo::PendingReceiver<
+        language_detection::mojom::ContentLanguageDetectionDriver> receiver) {
+  if (base::FeatureList::IsEnabled(blink::features::kLanguageDetectionAPI)) {
+    GetContentLanguageDetectionDriver().AddReceiver(std::move(receiver));
+  }
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 void ContentBrowserClient::QueryInstalledWebAppsByManifestId(
     const GURL& frame_url,
@@ -1834,6 +1882,12 @@ bool ContentBrowserClient::ShouldDispatchPagehideDuringCommit(
     BrowserContext* browser_context,
     const GURL& destination_url) {
   return true;
+}
+
+std::unique_ptr<WebUIController> ContentBrowserClient::OverrideForInternalWebUI(
+    WebUI* web_ui,
+    const GURL& url) {
+  return nullptr;
 }
 
 }  // namespace content

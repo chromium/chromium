@@ -106,7 +106,7 @@ public class TabSwitcherMessageManagerUnitTest {
 
     @Before
     public void setUp() {
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(true);
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
 
         TrackerFactory.setTrackerForTests(mTracker);

@@ -114,8 +114,9 @@ void PrivacySandboxDialogHandler::OnJavascriptAllowed() {
 }
 
 void PrivacySandboxDialogHandler::OnJavascriptDisallowed() {
-  if (did_user_make_decision_)
+  if (did_user_make_decision_) {
     return;
+  }
 
   // If user hasn't made a decision, notify the service.
   if (IsConsent(prompt_type_)) {
@@ -135,8 +136,9 @@ void PrivacySandboxDialogHandler::OnJavascriptDisallowed() {
 
 void PrivacySandboxDialogHandler::HandlePromptActionOccurred(
     const base::Value::List& args) {
-  if (!IsJavascriptAllowed())
+  if (!IsJavascriptAllowed()) {
     return;
+  }
 
   CHECK_EQ(1U, args.size());
   auto action =

@@ -93,8 +93,9 @@ bool ChromeViewsDelegate::WindowManagerProvidesTitleBar(bool maximized) {
   //
   // TODO(thomasanderson,crbug.com/784010): Consider using the
   // _UNITY_SHELL wm hint when support for Ubuntu Trusty is dropped.
-  if (!maximized)
+  if (!maximized) {
     return false;
+  }
   static bool is_desktop_environment_unity = IsDesktopEnvironmentUnity();
   return is_desktop_environment_unity;
 }

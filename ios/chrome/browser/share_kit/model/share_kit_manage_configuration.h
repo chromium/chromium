@@ -21,6 +21,9 @@
 // Application commands handler.
 @property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
 
+// Executed when the manage flow ended.
+@property(nonatomic, copy) void (^completionBlock)(BOOL succeeded);
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARE_KIT_MODEL_SHARE_KIT_MANAGE_CONFIGURATION_H_

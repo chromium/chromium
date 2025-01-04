@@ -62,8 +62,9 @@ ExtensionUninstallDialogViews::ExtensionUninstallDialogViews(
     : extensions::ExtensionUninstallDialog(profile, parent, delegate) {}
 
 ExtensionUninstallDialogViews::~ExtensionUninstallDialogViews() {
-  if (dialog_model_)
+  if (dialog_model_) {
     dialog_model_->host()->Close();
+  }
   DCHECK(!dialog_model_);
 }
 
@@ -143,8 +144,9 @@ void ExtensionUninstallDialogViews::DialogAccepted() {
 }
 
 void ExtensionUninstallDialogViews::DialogClosing() {
-  if (!dialog_model_)
+  if (!dialog_model_) {
     return;
+  }
   dialog_model_ = nullptr;
   OnDialogClosed(CLOSE_ACTION_CANCELED);
 }

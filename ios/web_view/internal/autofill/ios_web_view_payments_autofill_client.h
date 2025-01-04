@@ -64,8 +64,6 @@ class IOSWebViewPaymentsAutofillClient : public PaymentsAutofillClient {
   CreditCardCvcAuthenticator& GetCvcAuthenticator() override;
   void OpenPromoCodeOfferDetailsURL(const GURL& url) override;
 
-  void set_bridge(id<CWVAutofillClientIOSBridge> bridge);
-
  private:
   const raw_ref<autofill::WebViewAutofillClientIOS> client_;
 

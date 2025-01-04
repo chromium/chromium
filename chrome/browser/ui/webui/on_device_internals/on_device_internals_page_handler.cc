@@ -5,13 +5,16 @@
 #include "chrome/browser/ui/webui/on_device_internals/on_device_internals_page_handler.h"
 
 #include "base/files/file_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/prediction_manager.h"
 #include "content/public/browser/service_process_host.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "services/data_decoder/public/cpp/decode_image.h"
 #include "services/on_device_model/public/cpp/buildflags.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 
@@ -60,6 +63,7 @@ OnDeviceInternalsPageHandler::~OnDeviceInternalsPageHandler() {
 
 void OnDeviceInternalsPageHandler::LoadModel(
     const base::FilePath& model_path,
+    ml::ModelPerformanceHint performance_hint,
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
     LoadModelCallback callback) {
 #if BUILDFLAG(USE_CHROMEOS_MODEL_SERVICE)
@@ -80,7 +84,7 @@ void OnDeviceInternalsPageHandler::LoadModel(
       base::BindOnce(&LoadModelAssets, model_path),
       base::BindOnce(&OnDeviceInternalsPageHandler::OnModelAssetsLoaded,
                      weak_ptr_factory_.GetWeakPtr(), std::move(model),
-                     std::move(callback)));
+                     std::move(callback), performance_hint));
 #endif
 }
 
@@ -108,10 +112,12 @@ OnDeviceInternalsPageHandler::GetService() {
 void OnDeviceInternalsPageHandler::OnModelAssetsLoaded(
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
     LoadModelCallback callback,
+    ml::ModelPerformanceHint performance_hint,
     on_device_model::ModelAssets assets) {
   auto params = on_device_model::mojom::LoadModelParams::New();
   params->assets = std::move(assets);
   params->max_tokens = 4096;
+  params->performance_hint = performance_hint;
   GetService().LoadModel(std::move(params), std::move(model),
                          std::move(callback));
 }
@@ -182,21 +188,32 @@ void OnDeviceInternalsPageHandler::GetOnDeviceInternalsData(
   auto* criteria = component_manager->GetRegistrationCriteria();
   base::flat_map<std::string, std::string> mojom_criteria;
   if (criteria != nullptr) {
-    mojom_criteria["disk_space_available"] =
-        bool_strings[criteria->disk_space_available];
-    mojom_criteria["device_capable"] = bool_strings[criteria->device_capable];
-    mojom_criteria["on_device_feature_recently_used"] =
+    mojom_criteria["device capable"] = bool_strings[criteria->device_capable];
+    mojom_criteria["on device feature recently used"] =
         bool_strings[criteria->on_device_feature_recently_used];
-    mojom_criteria["enabled_by_feature"] =
+    mojom_criteria["enabled by feature"] =
         bool_strings[criteria->enabled_by_feature];
-    mojom_criteria["enabled_by_enterprise_policy"] =
+    mojom_criteria["enabled by enterprise policy"] =
         bool_strings[criteria->enabled_by_enterprise_policy];
-    mojom_criteria["running_out_of_disk_space"] =
-        bool_strings[criteria->running_out_of_disk_space];
-    mojom_criteria["out_of_retention"] =
+    mojom_criteria["out of retention"] =
         bool_strings[criteria->out_of_retention];
-    mojom_criteria["is_already_installing"] =
+    mojom_criteria["is already installing"] =
         bool_strings[criteria->is_already_installing];
+
+    // Disk criteria, needs to show what's available vs. required when not met.
+    std::string disk_space_string =
+        bool_strings[criteria->disk_space_available];
+    if (!criteria->disk_space_available) {
+      int disk_space_required_mb = optimization_guide::features::
+          GetDiskSpaceRequiredInMbForOnDeviceModelInstall();
+      int disk_space_available_mb =
+          component_manager->GetDiskBytesAvailableForModel() / (1024 * 1024);
+      disk_space_string +=
+          " (" + base::NumberToString(disk_space_available_mb) +
+          " MiB available, " + base::NumberToString(disk_space_required_mb) +
+          " MiB required)";
+    }
+    mojom_criteria["disk space available"] = disk_space_string;
   }
   data->registration_criteria = mojom_criteria;
 
@@ -212,4 +229,13 @@ void OnDeviceInternalsPageHandler::GetOnDeviceInternalsData(
   }
 
   std::move(callback).Run(std::move(data));
+}
+
+void OnDeviceInternalsPageHandler::DecodeBitmap(
+    mojo_base::BigBuffer image_buffer,
+    DecodeBitmapCallback callback) {
+  data_decoder::DecodeImageIsolated(
+      base::span(image_buffer), data_decoder::mojom::ImageCodec::kDefault,
+      /*shrink_to_fit=*/false, data_decoder::kDefaultMaxSizeInBytes,
+      /*desired_image_frame_size=*/gfx::Size(), std::move(callback));
 }

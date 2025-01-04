@@ -11,7 +11,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill {

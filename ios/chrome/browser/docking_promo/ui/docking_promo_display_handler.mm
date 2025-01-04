@@ -30,7 +30,7 @@
 #pragma mark - StandardPromoDisplayHandler
 
 - (void)handleDisplay {
-  [_handler showDockingPromo:NO];
+  [_handler showDockingPromoWithTrigger:DockingPromoTrigger::kPromosManager];
 }
 
 #pragma mark - PromoProtocol

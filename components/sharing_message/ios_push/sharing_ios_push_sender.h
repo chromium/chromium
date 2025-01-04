@@ -66,6 +66,7 @@ class SharingIOSPushSender : public SharingMessageSender::SendMessageDelegate {
       const SharingTargetDeviceInfo& device,
       sync_pb::UnencryptedSharingMessage message,
       SendMessageCallback callback) override;
+  void ClearPendingMessages() override;
 
   bool CanSendSendTabPushMessage(const syncer::DeviceInfo& target_device_info);
 

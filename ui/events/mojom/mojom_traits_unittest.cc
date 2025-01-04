@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
+#include <array>
 #include <utility>
 
 #include "build/build_config.h"
@@ -100,7 +96,7 @@ void ExpectEventsEqual(const Event& expected, const Event& actual) {
 TEST(StructTraitsTest, KeyEvent) {
   ui::ScopedKeyboardLayout keyboard_layout(ui::KEYBOARD_LAYOUT_ENGLISH_US);
 
-  const KeyEvent kTestData[] = {
+  const auto kTestData = std::to_array<KeyEvent>({
       {EventType::kKeyPressed, VKEY_RETURN, EF_CONTROL_DOWN},
       {EventType::kKeyPressed, VKEY_MENU, EF_ALT_DOWN},
       {EventType::kKeyReleased, VKEY_SHIFT, EF_SHIFT_DOWN},
@@ -116,7 +112,7 @@ TEST(StructTraitsTest, KeyEvent) {
        base::TimeTicks() + base::Microseconds(101)},
       ui::KeyEvent::FromCharacter('Z', VKEY_Z, DomCode::NONE, EF_NONE,
                                   base::TimeTicks() + base::Microseconds(102)),
-  };
+  });
 
   for (size_t i = 0; i < std::size(kTestData); i++) {
     std::unique_ptr<Event> expected_copy = kTestData[i].Clone();
@@ -131,7 +127,7 @@ TEST(StructTraitsTest, KeyEvent) {
 }
 
 TEST(StructTraitsTest, MouseEvent) {
-  const MouseEvent kTestData[] = {
+  const auto kTestData = std::to_array<MouseEvent>({
       {EventType::kMousePressed, gfx::Point(10, 10), gfx::Point(20, 30),
        base::TimeTicks() + base::Microseconds(201), EF_NONE, 0,
        PointerDetails(EventPointerType::kMouse, kPointerIdMouse)},
@@ -155,7 +151,7 @@ TEST(StructTraitsTest, MouseEvent) {
       {EventType::kMouseCaptureChanged, gfx::Point(99, 99), gfx::Point(99, 99),
        base::TimeTicks() + base::Microseconds(207), EF_CONTROL_DOWN, 0,
        PointerDetails(EventPointerType::kMouse, kPointerIdMouse)},
-  };
+  });
 
   for (size_t i = 0; i < std::size(kTestData); i++) {
     std::unique_ptr<Event> expected_copy = kTestData[i].Clone();
@@ -169,7 +165,7 @@ TEST(StructTraitsTest, MouseEvent) {
 }
 
 TEST(StructTraitsTest, MouseWheelEvent) {
-  const MouseWheelEvent kTestData[] = {
+  const auto kTestData = std::to_array<MouseWheelEvent>({
       {gfx::Vector2d(11, 15), gfx::PointF(3, 4), gfx::PointF(40, 30),
        base::TimeTicks() + base::Microseconds(301), EF_LEFT_MOUSE_BUTTON,
        EF_LEFT_MOUSE_BUTTON, gfx::Vector2d(1320, 1800)},
@@ -181,7 +177,7 @@ TEST(StructTraitsTest, MouseWheelEvent) {
       {gfx::Vector2d(1, 0), gfx::PointF(3, 4), gfx::PointF(40, 30),
        base::TimeTicks() + base::Microseconds(303), EF_NONE, EF_NONE,
        gfx::Vector2d(120, -15)},
-  };
+  });
 
   for (size_t i = 0; i < std::size(kTestData); i++) {
     std::unique_ptr<Event> expected_copy = kTestData[i].Clone();
@@ -256,7 +252,7 @@ TEST(StructTraitsTest, GestureEvent) {
   GestureEventDetails swipe_right_details(EventType::kGestureSwipe, 1, 0);
   swipe_right_details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHPAD);
 
-  const GestureEvent kTestData[] = {
+  const auto kTestData = std::to_array<GestureEvent>({
       {10, 20, EF_NONE, base::TimeTicks() + base::Microseconds(401),
        GestureEventDetails(EventType::kScrollFlingStart)},
       {10, 20, EF_NONE, base::TimeTicks() + base::Microseconds(401),
@@ -271,7 +267,7 @@ TEST(StructTraitsTest, GestureEvent) {
        swipe_top_left_details},
       {10, 20, EF_NONE, base::TimeTicks() + base::Microseconds(401),
        swipe_right_details},
-  };
+  });
 
   for (size_t i = 0; i < std::size(kTestData); i++) {
     std::unique_ptr<Event> expected_copy = kTestData[i].Clone();
@@ -289,7 +285,7 @@ TEST(StructTraitsTest, GestureEvent) {
 }
 
 TEST(StructTraitsTest, ScrollEvent) {
-  const ScrollEvent kTestData[] = {
+  const auto kTestData = std::to_array<ScrollEvent>({
       {EventType::kScroll, gfx::Point(10, 20),
        base::TimeTicks() + base::Microseconds(501), EF_NONE, 1, 2, 3, 4, 5,
        EventMomentumPhase::NONE, ScrollEventPhase::kNone},
@@ -317,7 +313,7 @@ TEST(StructTraitsTest, ScrollEvent) {
       {EventType::kScrollFlingCancel, gfx::Point(10, 20),
        base::TimeTicks() + base::Microseconds(502), EF_NONE, 1, 2, 3, 4, 5,
        EventMomentumPhase::END, ScrollEventPhase::kNone},
-  };
+  });
 
   for (size_t i = 0; i < std::size(kTestData); i++) {
     std::unique_ptr<Event> expected_copy = kTestData[i].Clone();
@@ -341,13 +337,13 @@ TEST(StructTraitsTest, ScrollEvent) {
 }
 
 TEST(StructTraitsTest, PointerDetails) {
-  const PointerDetails kTestData[] = {
+  const auto kTestData = std::to_array<PointerDetails>({
       {EventPointerType::kUnknown, 1, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f},
       {EventPointerType::kMouse, 1, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f},
       {EventPointerType::kPen, 11, 12.f, 13.f, 14.f, 15.f, 16.f, 17.f},
       {EventPointerType::kTouch, 1, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f},
       {EventPointerType::kEraser, 21, 22.f, 23.f, 24.f, 25.f, 26.f, 27.f},
-  };
+  });
   for (size_t i = 0; i < std::size(kTestData); i++) {
     // Set |offset| as the constructor used above does not modify it.
     PointerDetails input(kTestData[i]);
@@ -362,7 +358,7 @@ TEST(StructTraitsTest, PointerDetails) {
 }
 
 TEST(StructTraitsTest, TouchEvent) {
-  const TouchEvent kTestData[] = {
+  const auto kTestData = std::to_array<TouchEvent>({
       {EventType::kTouchReleased,
        {1, 2},
        base::TimeTicks::Now(),
@@ -375,7 +371,7 @@ TEST(StructTraitsTest, TouchEvent) {
        EF_CONTROL_DOWN},
       {EventType::kTouchMoved, {1, 2}, base::TimeTicks::Now(), {}, EF_NONE},
       {EventType::kTouchCancelled, {1, 2}, base::TimeTicks::Now(), {}, EF_NONE},
-  };
+  });
   for (size_t i = 0; i < std::size(kTestData); i++) {
     std::unique_ptr<Event> expected_copy = kTestData[i].Clone();
     std::unique_ptr<Event> output;

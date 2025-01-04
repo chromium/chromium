@@ -46,6 +46,14 @@ std::u16string GetEditorMenuLobsterTitle() {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
+std::u16string GetEditorMenuLobsterChipLabel() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return l10n_util::GetStringUTF16(IDS_EDITOR_MENU_CARD_LOBSTER_CHIP_LABEL);
+#else
+  return u"Lobster";
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
 std::u16string GetEditorMenuPromoCardTitle() {
   return ShouldUseL10nStrings()
              ? l10n_util::GetStringUTF16(IDS_EDITOR_MENU_PROMO_CARD_TITLE)
@@ -83,11 +91,25 @@ std::u16string GetEditorMenuRewriteCardTitle() {
              : u"Rewrite";
 }
 
-std::u16string GetEditorMenuFreeformPromptInputFieldPlaceholder() {
+std::u16string
+GetEditorMenuFreeformPromptInputFieldPlaceholderForHelpMeWrite() {
   return ShouldUseL10nStrings()
              ? l10n_util::GetStringUTF16(
                    IDS_EDITOR_MENU_FREEFORM_PROMPT_INPUT_FIELD_PLACEHOLDER)
              : u"Enter a prompt";
+}
+
+std::u16string GetEditorMenuFreeformPromptInputFieldPlaceholderForLobster() {
+  if (!ShouldUseL10nStrings()) {
+    return u"Enter a prompt";
+  }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return l10n_util::GetStringUTF16(
+      IDS_EDITOR_MENU_CARD_LOBSTER_FREEFORM_PLACEHOLDER);
+#else
+  return u"";
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 std::u16string GetEditorMenuSettingsTooltip() {

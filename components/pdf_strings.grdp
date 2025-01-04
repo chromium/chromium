@@ -355,6 +355,12 @@
       <message name="IDS_PDF_INK2_DRAW" desc="The button label for entering 'annotation mode' in the PDF viewer, which allows for drawing and erasing strokes.">
         Draw
       </message>
+      <message name="IDS_PDF_INK2_ANNOTATION_SIZE" desc="The button label for showing the dropdown to select brush sizes for drawing and erasing strokes in the PDF viewer.">
+        Size
+      </message>
+      <message name="IDS_PDF_INK2_ANNOTATION_COLOR" desc="The button label for showing the dropdown to select brush colors for drawing strokes in the PDF viewer.">
+        Color
+      </message>
       <message name="IDS_PDF_INK2_ANNOTATION_SIZE_EXTRA_THIN" desc="The button label for selecting the 'extra thin' brush size for drawing and erasing strokes in the PDF viewer.">
         Extra thin
       </message>

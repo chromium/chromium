@@ -21,20 +21,23 @@ namespace i18n {
 
 UTF8CharIterator::UTF8CharIterator(std::string_view str)
     : str_(str), array_pos_(0), next_pos_(0), char_pos_(0), char_(0) {
-  if (!str_.empty())
+  if (!str_.empty()) {
     CBU8_NEXT(str_.data(), next_pos_, str_.length(), char_);
+  }
 }
 
 UTF8CharIterator::~UTF8CharIterator() = default;
 
 bool UTF8CharIterator::Advance() {
-  if (array_pos_ >= str_.length())
+  if (array_pos_ >= str_.length()) {
     return false;
+  }
 
   array_pos_ = next_pos_;
   char_pos_++;
-  if (next_pos_ < str_.length())
+  if (next_pos_ < str_.length()) {
     CBU8_NEXT(str_.data(), next_pos_, str_.length(), char_);
+  }
 
   return true;
 }
@@ -68,8 +71,9 @@ UTF16CharIterator UTF16CharIterator::UpperBound(std::u16string_view str,
 }
 
 int32_t UTF16CharIterator::NextCodePoint() const {
-  if (next_pos_ >= str_.length())
+  if (next_pos_ >= str_.length()) {
     return 0;
+  }
 
   base_icu::UChar32 c;
   CBU16_GET(str_.data(), 0, next_pos_, str_.length(), c);
@@ -77,8 +81,9 @@ int32_t UTF16CharIterator::NextCodePoint() const {
 }
 
 int32_t UTF16CharIterator::PreviousCodePoint() const {
-  if (array_pos_ == 0)
+  if (array_pos_ == 0) {
     return 0;
+  }
 
   uint32_t pos = array_pos_;
   base_icu::UChar32 c;
@@ -87,20 +92,23 @@ int32_t UTF16CharIterator::PreviousCodePoint() const {
 }
 
 bool UTF16CharIterator::Advance() {
-  if (array_pos_ >= str_.length())
+  if (array_pos_ >= str_.length()) {
     return false;
+  }
 
   array_pos_ = next_pos_;
   char_offset_++;
-  if (next_pos_ < str_.length())
+  if (next_pos_ < str_.length()) {
     ReadChar();
+  }
 
   return true;
 }
 
 bool UTF16CharIterator::Rewind() {
-  if (array_pos_ == 0)
+  if (array_pos_ == 0) {
     return false;
+  }
 
   next_pos_ = array_pos_;
   char_offset_--;
@@ -116,8 +124,9 @@ UTF16CharIterator::UTF16CharIterator(std::u16string_view str,
       char_offset_(0),
       char_(0) {
   // This has the side-effect of advancing |next_pos_|.
-  if (array_pos_ < str_.length())
+  if (array_pos_ < str_.length()) {
     ReadChar();
+  }
 }
 
 void UTF16CharIterator::ReadChar() {

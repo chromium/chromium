@@ -25,6 +25,7 @@
 #include "chrome/browser/webauthn/gpm_enclave_transaction.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "content/public/browser/global_routing_id.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace base {
 class TickClock;
@@ -143,7 +144,7 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
 
   // Called when the account state has finished downloading.
   void OnAccountStateDownloaded(
-      std::string gaia_id,
+      GaiaId gaia_id,
       std::unique_ptr<trusted_vault::TrustedVaultConnection> unused,
       trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
           result);
@@ -331,7 +332,7 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
   bool gpm_pin_creation_confirmed_ = false;
 
   // The gaia id of the user at the time the account state was downloaded.
-  std::string user_gaia_id_;
+  GaiaId user_gaia_id_;
 
   raw_ptr<const base::TickClock> tick_clock_ = nullptr;
 

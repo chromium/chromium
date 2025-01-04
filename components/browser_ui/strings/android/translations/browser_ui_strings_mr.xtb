@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">डाउनलोडला विराम दिला</translation>
 <translation id="1396327438254055134">साइटला V8 ऑप्टिमायझर वापरण्याची अनुमती द्या.</translation>
 <translation id="1415402041810619267">URL कापली गेली</translation>
+<translation id="1415855080660575082">Chrome ला तुमचे अलीकडील टॅब तुमच्या डिव्हाइसच्या ॲप सूचीमध्ये आणि शोध परिणामांमध्ये पाहण्यासाठी ते तुमच्या डिव्हाइससह शेअर करू द्या. तुम्ही हे Chrome सेटिंग्जमध्ये सुरू किंवा बंद करू शकता.</translation>
 <translation id="1448064542941920355">झूम कमी करते</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> साइट}other{<ph name="SITE_COUNT" /> साइट}}</translation>
 <translation id="1500473259453106018">टॅब कार्डवरील किंमत कमी झाल्याची सूचना लपवा</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">तुम्ही या साइटला तृतीय पक्ष कुकी वापरण्याची तात्पुरती अनुमती दिली आहे, ज्यामुळे ब्राउझ करण्यासंबंधित संरक्षण कमी मिळते, पण साइटची वैशिष्‍ट्ये अपेक्षेनुसार काम करण्याची अधिक शक्यता आहे. <ph name="BEGIN_LINK" />फीडबॅक पाठवा<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">काही साइटवरील वैशिष्ट्ये कदाचित गुप्त मोडमध्ये काम करणार नाहीत</translation>
 <translation id="2442870161001914531">नेहमी डेस्कटॉप साइटची विनंती करा</translation>
+<translation id="2445311670906052406">Chrome आता तुमच्या डिव्हाइससह तुमचे अलीकडील टॅब शेअर करते. तुम्हाला ते आता तुमच्या डिव्हाइसच्या अ‍ॅप सूचीमध्ये आणि शोध परिणामांमध्ये दिसतील. तुम्ही हे Chrome सेटिंग्जमध्ये कधीही बंद करू शकता.</translation>
 <translation id="2469312991797799607">ही कृती <ph name="ORIGIN" /> आणि त्या अंतर्गत सर्व साइटसाठीचा सर्व डेटा आणि कुकी हटवेल</translation>
 <translation id="2482878487686419369">सूचना</translation>
 <translation id="2485422356828889247">अनइंस्टॉल करा</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">साइट ओळखीच्या सेवांकडून मिळणाऱ्या साइन इन सूचना दाखवू शकतात.</translation>
 <translation id="2787357173144933081">ओम्निबॉक्स जंप-स्टार्ट करा</translation>
 <translation id="2790501146643349491">सुरू असताना, अलीकडे बंद केलेल्या साइट डेटा पाठवण्याची आणि मिळवण्याची प्रक्रिया पूर्ण करू शकतात. बंद असताना, अलीकडे बंद केलेल्या साइट डेटा पाठवण्याची आणि मिळवण्याची प्रक्रिया पूर्ण करू शकत नाहीत.</translation>
+<translation id="2814830417943086299">Chrome आता तुमच्या डिव्हाइसच्या अ‍ॅप सूचीमध्ये आणि शोध परिणामांमध्ये तुमचे अलीकडील टॅब दाखवते. तुम्ही हे Chrome सेटिंग्जमध्ये कधीही बंद करू शकता.</translation>
 <translation id="2822354292072154809">तुम्हाला नक्की <ph name="CHOSEN_OBJECT_NAME" /> साठी सर्व साइट परवानग्या रीसेट करायच्या आहेत का?</translation>
 <translation id="2850913818900871965">मोबाइल दृश्याची विनंती करा</translation>
 <translation id="2870560284913253234">साइट</translation>
@@ -335,7 +338,6 @@
 <translation id="5968921426641056619">वेब अ‍ॅड्रेस एंटर करा</translation>
 <translation id="5975083100439434680">झूम कमी करा</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
-<translation id="6015145568571136419">तुम्ही आता तुमच्या डिव्हाइसच्या अ‍ॅप सूचीमधून आणि डिव्हाइस शोध परिणामांमध्ये सुचवलेले टॅब झटपट अ‍ॅक्सेस करू शकता. Chrome सेटिंग्जमध्ये हे कधीही बंद करा.</translation>
 <translation id="6015775454662021376">या साइटला तुमच्‍या डिव्हाइसचा असलेला अ‍ॅक्सेस नियंत्रित करा</translation>
 <translation id="6040143037577758943">बंद करा</translation>
 <translation id="6042308850641462728">अधिक</translation>
@@ -558,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> आणि आणखी <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> आणि आणखी <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android सेटिंग्ज<ph name="END_LINK" /> मध्‍ये <ph name="APP_NAME" /> साठी परवानग्या सुरू करा.</translation>
 <translation id="9138217887606523162">सध्याचे झूम <ph name="ZOOM_LEVEL" /> %% आहे</translation>
+<translation id="9156722768168878035">Chrome ला तुमच्या डिव्हाइसच्या अ‍ॅप सूचीमध्ये आणि शोध परिणामांमध्ये तुमचे अलीकडील टॅब दाखवू द्या. तुम्ही हे Chrome सेटिंग्जमध्ये कधीही बंद करू शकता.</translation>
 <translation id="9162462602695099906">हे पेज धोकादायक आहे</translation>
 <translation id="947156494302904893">तुम्ही खरी व्यक्ती आहात आणि बॉट नाही याची तुम्ही भेट देता त्या साइट पडताळणी करू शकतात</translation>
 <translation id="959682366969460160">व्यवस्‍थापित करा</translation>

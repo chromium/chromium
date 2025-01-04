@@ -14,8 +14,9 @@ WindowButtonOrderProvider* WindowButtonOrderProvider::instance_ = nullptr;
 
 // static
 WindowButtonOrderProvider* WindowButtonOrderProvider::GetInstance() {
-  if (!instance_)
+  if (!instance_) {
     instance_ = new WindowButtonOrderProvider;
+  }
   return instance_;
 }
 

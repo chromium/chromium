@@ -16,7 +16,7 @@ import org.chromium.base.MathUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.NumberRollView;
 import org.chromium.ui.listmenu.ListMenuButton;
-import org.chromium.ui.listmenu.ListMenuButtonDelegate;
+import org.chromium.ui.listmenu.ListMenuDelegate;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -74,7 +74,7 @@ public class TabListEditorActionViewLayout extends LinearLayout {
     /**
      * @param delegate for handling menu button presses.
      */
-    public void setListMenuButtonDelegate(ListMenuButtonDelegate delegate) {
+    public void setListMenuDelegate(ListMenuDelegate delegate) {
         mMenuButton.setDelegate(delegate);
     }
 

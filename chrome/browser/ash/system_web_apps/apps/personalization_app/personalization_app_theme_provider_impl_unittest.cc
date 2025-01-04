@@ -29,6 +29,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_web_ui.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -40,7 +41,7 @@ namespace {
 constexpr char kFakeTestEmail[] = "fakeemail@personalization";
 constexpr char kTestGaiaId[] = "1234567890";
 AccountId kAccountId =
-    AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId);
+    AccountId::FromUserEmailGaiaId(kFakeTestEmail, GaiaId(kTestGaiaId));
 
 void AddAndLoginUser() {
   ash::FakeChromeUserManager* user_manager =

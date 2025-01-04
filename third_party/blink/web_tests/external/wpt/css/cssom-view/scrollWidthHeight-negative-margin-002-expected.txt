@@ -1,12 +1,12 @@
 This is a testharness.js-based test.
 Found 104 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] scrollHeight with negative margins: display: block; overflow: visible; direction: rtl; writing-mode: vertical-lr; flex-direction: row;
+[FAIL] scrollHeight with negative margins: display: flow-root; overflow: visible; direction: rtl; writing-mode: vertical-lr; flex-direction: row;
   assert_equals: scrollHeight expected 208 but got 181
-[FAIL] scrollHeight with negative margins: display: block; overflow: clip; direction: rtl; writing-mode: vertical-lr; flex-direction: row;
+[FAIL] scrollHeight with negative margins: display: flow-root; overflow: clip; direction: rtl; writing-mode: vertical-lr; flex-direction: row;
   assert_equals: scrollHeight expected 208 but got 181
-[FAIL] scrollHeight with negative margins: display: block; overflow: visible; direction: rtl; writing-mode: vertical-rl; flex-direction: row;
+[FAIL] scrollHeight with negative margins: display: flow-root; overflow: visible; direction: rtl; writing-mode: vertical-rl; flex-direction: row;
   assert_equals: scrollHeight expected 208 but got 181
-[FAIL] scrollHeight with negative margins: display: block; overflow: clip; direction: rtl; writing-mode: vertical-rl; flex-direction: row;
+[FAIL] scrollHeight with negative margins: display: flow-root; overflow: clip; direction: rtl; writing-mode: vertical-rl; flex-direction: row;
   assert_equals: scrollHeight expected 208 but got 181
 [FAIL] scrollHeight with negative margins: display: flex; overflow: visible; direction: rtl; writing-mode: vertical-lr; flex-direction: row; scrollbar-width: none;
   assert_equals: scrollHeight expected 188 but got 181

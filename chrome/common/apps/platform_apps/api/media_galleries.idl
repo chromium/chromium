@@ -7,7 +7,7 @@
 // images, video) from the user's local disks (with the user's consent).
 namespace mediaGalleries {
 
-  [inline_doc] enum GalleryChangeType {
+  enum GalleryChangeType {
     // The contents of the gallery have changed.
     contents_changed,
     // The watch has been dropped because the device has been detached,
@@ -15,7 +15,7 @@ namespace mediaGalleries {
     watch_dropped
   };
 
-  [inline_doc] enum GetMediaFileSystemsInteractivity {
+  enum GetMediaFileSystemsInteractivity {
     // Do not act interactively.
     no,
     // Ask the user to manage permitted media galleries.
@@ -25,7 +25,7 @@ namespace mediaGalleries {
     if_needed
   };
 
-  [inline_doc] enum GetMetadataType {
+  enum GetMetadataType {
     // Retrieve the mime type, metadata tags, and attached images.
     all,
     // Retrieve only the mime type and the metadata tags.
@@ -34,7 +34,7 @@ namespace mediaGalleries {
     mimeTypeOnly
   };
 
-  [inline_doc] dictionary GalleryChangeDetails {
+  dictionary GalleryChangeDetails {
     // Type of change event.
     GalleryChangeType type;
 
@@ -42,7 +42,7 @@ namespace mediaGalleries {
     DOMString galleryId;
   };
 
-  [inline_doc] dictionary MediaFileSystemsDetails {
+  dictionary MediaFileSystemsDetails {
     // Whether to prompt the user for permission to additional media galleries
     // before returning the permitted set. Default is silent.  If the value
     // 'yes' is passed, or if the application has not been granted access to
@@ -51,7 +51,7 @@ namespace mediaGalleries {
     GetMediaFileSystemsInteractivity? interactive;
   };
 
-  [inline_doc] dictionary MediaMetadataOptions {
+  dictionary MediaMetadataOptions {
     // Specifies which subset of the metadata to retrieve. Defaults to 'all'
     // if the option is omitted.
     GetMetadataType? metadataType;
@@ -64,7 +64,7 @@ namespace mediaGalleries {
       void ([instanceOf=DOMFileSystem] object[] mediaFileSystems,
             DOMString selectedFileSystemName);
 
-  [inline_doc] dictionary MediaFileSystemMetadata {
+  dictionary MediaFileSystemMetadata {
     // The name of the file system.
     DOMString name;
 

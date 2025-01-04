@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/base/models/image_model.h"
 
 class Browser;
@@ -120,7 +121,7 @@ class AvatarToolbarButtonDelegate : public signin::IdentityManager::Observer {
   // Gaia Id of the account that was signed in from having it's choice
   // remembered following a web sign-in event but waiting for the available
   // account information to be fetched in order to show the sign in IPH.
-  std::string gaia_id_for_signin_choice_remembered_;
+  GaiaId gaia_id_for_signin_choice_remembered_;
 
   // Initialized in `InitializeStates()`.
   std::unique_ptr<internal::StateManager> state_manager_;

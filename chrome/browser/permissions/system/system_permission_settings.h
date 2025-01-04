@@ -49,6 +49,10 @@ bool CanPrompt(ContentSettingsType type);
 // permissions.
 base::AutoReset<bool> MockSystemPromptForTesting();
 
+// For testing purposes only. Mocks that Chrome doesn't have access to a system
+// level permission.
+base::AutoReset<bool> MockShowSystemSettingsForTesting();
+
 // Check whether the system blocks the access to the specified content type /
 // permission.
 bool IsDenied(ContentSettingsType type);

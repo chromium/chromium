@@ -955,43 +955,6 @@ TEST_F(SSLErrorHandlerNameMismatchTest, OSReportsCaptivePortal) {
                                SSLErrorHandler::OS_REPORTS_CAPTIVE_PORTAL, 1);
 }
 
-class SSLErrorHandlerNameMismatchCaptivePortalInterstitialDisabledTest
-    : public SSLErrorHandlerNameMismatchTest {
- public:
-  SSLErrorHandlerNameMismatchCaptivePortalInterstitialDisabledTest() {
-    scoped_feature_list_.InitAndDisableFeature(kCaptivePortalInterstitial);
-  }
-
- private:
-  // This should only be accessed from a test's constructor, to avoid tsan data
-  // races with threads kicked off by RenderViewHostTestHarness::SetUp().
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Test that a captive portal interstitial isn't shown if the OS reports a
-// portal but CaptivePortalInterstitial feature is disabled.
-TEST_F(SSLErrorHandlerNameMismatchCaptivePortalInterstitialDisabledTest,
-       OSReportsCaptivePortal_FeatureDisabled) {
-  base::HistogramTester histograms;
-  delegate()->set_os_reports_captive_portal();
-
-  EXPECT_FALSE(error_handler()->IsTimerRunningForTesting());
-  error_handler()->StartHandlingError();
-  EXPECT_FALSE(error_handler()->IsTimerRunningForTesting());
-  EXPECT_FALSE(delegate()->captive_portal_checked());
-  EXPECT_TRUE(delegate()->ssl_interstitial_shown());
-  EXPECT_FALSE(delegate()->captive_portal_interstitial_shown());
-
-  histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 2);
-  histograms.ExpectBucketCount(SSLErrorHandler::GetHistogramNameForTesting(),
-                               SSLErrorHandler::HANDLE_ALL, 1);
-  histograms.ExpectBucketCount(
-      SSLErrorHandler::GetHistogramNameForTesting(),
-      SSLErrorHandler::SHOW_SSL_INTERSTITIAL_OVERRIDABLE, 1);
-  histograms.ExpectBucketCount(SSLErrorHandler::GetHistogramNameForTesting(),
-                               SSLErrorHandler::OS_REPORTS_CAPTIVE_PORTAL, 0);
-}
-
 TEST_F(SSLErrorHandlerNameMismatchTest,
        ShouldShowSSLInterstitialOnTimerExpiredWhenSuggestedUrlExists) {
   base::HistogramTester histograms;

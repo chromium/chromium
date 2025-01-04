@@ -22,10 +22,17 @@
 #include "url/gurl.h"
 
 class SkBitmap;
-class PrefService;
+
+namespace favicon {
+class FaviconService;
+}
 
 namespace gfx {
 class Size;
+}
+
+namespace history {
+class HistoryService;
 }
 
 namespace network {
@@ -38,7 +45,7 @@ namespace ash {
 class ASH_EXPORT QuickInsertClient {
  public:
   using CrosSearchResultsCallback = base::RepeatingCallback<void(
-      ash::AppListSearchResultType result_type,
+      AppListSearchResultType result_type,
       std::vector<QuickInsertSearchResult> results)>;
   using ShowEditorCallback =
       base::OnceCallback<void(std::optional<std::string> preset_query_id,
@@ -49,8 +56,6 @@ class ASH_EXPORT QuickInsertClient {
       base::OnceCallback<void(std::vector<QuickInsertSearchResult>)>;
   using RecentFilesCallback =
       base::OnceCallback<void(std::vector<QuickInsertSearchResult>)>;
-  using SuggestedLinksCallback =
-      base::RepeatingCallback<void(std::vector<QuickInsertSearchResult>)>;
   using FetchFileThumbnailCallback =
       base::OnceCallback<void(const SkBitmap* bitmap, base::File::Error error)>;
 
@@ -89,20 +94,19 @@ class ASH_EXPORT QuickInsertClient {
   virtual void GetRecentDriveFileResults(size_t max_files,
                                          RecentFilesCallback callback) = 0;
 
-  virtual void GetSuggestedLinkResults(size_t max_results,
-                                       SuggestedLinksCallback callback) = 0;
-
   virtual void FetchFileThumbnail(const base::FilePath& path,
                                   const gfx::Size& size,
                                   FetchFileThumbnailCallback callback) = 0;
 
-  virtual PrefService* GetPrefs() = 0;
   // SAFETY: The returned `do_paste` MUST be called synchronously. Calling it
   // after a delay, such as in a different task, may result in use-after-frees.
   virtual std::optional<QuickInsertWebPasteTarget> GetWebPasteTarget() = 0;
 
   // Make an announcement via an offscreen live region.
   virtual void Announce(std::u16string_view message) = 0;
+
+  virtual history::HistoryService* GetHistoryService() = 0;
+  virtual favicon::FaviconService* GetFaviconService() = 0;
 
  protected:
   QuickInsertClient();

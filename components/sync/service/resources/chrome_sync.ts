@@ -94,14 +94,16 @@ export interface SyncNode {
   BASE_VERSION: string;
   ID: string;
   IS_DIR: boolean;
+  LOCAL_EXTERNAL_ID: number;
   METAHANDLE: number;
+  MTIME: string;
   NON_UNIQUE_NAME: string;
   PARENT_ID: string;
-  UNIQUE_SERVER_TAG: string;
+  SERVER_SPECIFICS: ServerSpecifics;
   SERVER_VERSION: string;
   SERVER_VERSION_TIME: string;
-  SERVER_SPECIFICS: ServerSpecifics;
   SPECIFICS: Specifics;
+  UNIQUE_SERVER_TAG: string;
   dataType: string;
   positionIndex?: number;
 }

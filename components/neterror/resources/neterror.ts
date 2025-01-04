@@ -33,7 +33,6 @@ interface TemplateData {
   // Properties that exist in both error pages and chrome://dino.
   errorCode: string;
   heading: {
-    hostName: string,
     msg: string,
   };
   iconClass: string;
@@ -47,8 +46,6 @@ interface TemplateData {
   suggestionsSummaryListHeader?: string;
 
   summary?: {
-    failedUrl: string,
-    hostName: string,
     msg: string,
   };
 

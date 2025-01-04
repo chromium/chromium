@@ -44,8 +44,10 @@ absl_cc_library(
   LINKOPTS
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
+    absl::base
     absl::config
     absl::core_headers
+    absl::leak_check
     absl::log_internal_nullguard
     absl::log_internal_nullstream
     absl::log_internal_strip

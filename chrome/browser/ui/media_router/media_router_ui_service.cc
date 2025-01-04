@@ -73,8 +73,9 @@ void MediaRouterUIService::ConfigureService() {
 }
 
 void MediaRouterUIService::DisableService() {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnServiceDisabled();
+  }
   action_controller_.reset();
 }
 

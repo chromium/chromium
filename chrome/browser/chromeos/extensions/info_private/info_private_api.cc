@@ -12,18 +12,10 @@
 #include "base/functional/callback.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-#include "extensions/browser/extension_function.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/extension_info_private_ash.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/extension_info_private.mojom.h"  // nogncheck
-#include "chromeos/lacros/lacros_service.h"
-#endif
+#include "extensions/browser/extension_function.h"
 
 namespace {
 
@@ -32,17 +24,6 @@ const char kPropertyTimezone[] = "timezone";
 
 // Property not found error message.
 const char kPropertyNotFound[] = "Property '*' does not exist.";
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-mojo::Remote<crosapi::mojom::ExtensionInfoPrivate>*
-GetExtensionInfoPrivateRemote() {
-  auto* lacros_service = chromeos::LacrosService::Get();
-  if (lacros_service->IsAvailable<crosapi::mojom::ExtensionInfoPrivate>()) {
-    return &(lacros_service->GetRemote<crosapi::mojom::ExtensionInfoPrivate>());
-  }
-  return nullptr;
-}
-#endif
 
 }  // namespace
 
@@ -64,19 +45,10 @@ ExtensionFunction::ResponseAction ChromeosInfoPrivateGetFunction::Run() {
   }
   auto callback =
       base::BindOnce(&ChromeosInfoPrivateGetFunction::RespondWithResult, this);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   crosapi::CrosapiManager::Get()
       ->crosapi_ash()
       ->extension_info_private_ash()
       ->GetSystemProperties(std::move(property_names), std::move(callback));
-#else
-  auto* remote = GetExtensionInfoPrivateRemote();
-  if (!remote) {
-    return RespondNow(Error("ExtensionInfoPrivate unavailable."));
-  }
-  (*remote)->GetSystemProperties(std::move(property_names),
-                                 std::move(callback));
-#endif
   return RespondLater();
 }
 
@@ -97,18 +69,10 @@ ExtensionFunction::ResponseAction ChromeosInfoPrivateSetFunction::Run() {
     EXTENSION_FUNCTION_VALIDATE(args().size() >= 2);
     EXTENSION_FUNCTION_VALIDATE(args()[1].is_string());
     const std::string& param_value = args()[1].GetString();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     crosapi::CrosapiManager::Get()
         ->crosapi_ash()
         ->extension_info_private_ash()
         ->SetTimezone(param_value);
-#else
-    auto* remote = GetExtensionInfoPrivateRemote();
-    if (!remote) {
-      return RespondNow(Error("ExtensionInfoPrivate unavailable."));
-    }
-    (*remote)->SetTimezone(param_value);
-#endif
     return RespondNow(NoArguments());
   }
 
@@ -118,18 +82,10 @@ ExtensionFunction::ResponseAction ChromeosInfoPrivateSetFunction::Run() {
 
   auto callback =
       base::BindOnce(&ChromeosInfoPrivateSetFunction::RespondWithResult, this);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   crosapi::CrosapiManager::Get()
       ->crosapi_ash()
       ->extension_info_private_ash()
       ->SetBool(param_name_, param_value, std::move(callback));
-#else
-  auto* remote = GetExtensionInfoPrivateRemote();
-  if (!remote) {
-    return RespondNow(Error("ExtensionInfoPrivate unavailable."));
-  }
-  (*remote)->SetBool(param_name_, param_value, std::move(callback));
-#endif
 
   return RespondLater();
 }
@@ -152,18 +108,10 @@ ExtensionFunction::ResponseAction
 ChromeosInfoPrivateIsTabletModeEnabledFunction::Run() {
   auto callback = base::BindOnce(
       &ChromeosInfoPrivateIsTabletModeEnabledFunction::RespondWithResult, this);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   crosapi::CrosapiManager::Get()
       ->crosapi_ash()
       ->extension_info_private_ash()
       ->IsTabletModeEnabled(std::move(callback));
-#else
-  auto* remote = GetExtensionInfoPrivateRemote();
-  if (!remote) {
-    return RespondNow(Error("ExtensionInfoPrivate unavailable."));
-  }
-  (*remote)->IsTabletModeEnabled(std::move(callback));
-#endif
   return RespondLater();
 }
 
@@ -180,11 +128,7 @@ ChromeosInfoPrivateIsRunningOnLacrosFunction::
 
 ExtensionFunction::ResponseAction
 ChromeosInfoPrivateIsRunningOnLacrosFunction::Run() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   return RespondNow(WithArguments(false));
-#else
-  return RespondNow(WithArguments(true));
-#endif
 }
 
 }  // namespace extensions

@@ -11,7 +11,10 @@
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "partition_alloc/buildflags.h"
-#include "partition_alloc/partition_alloc_constants.h"
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
+#include "partition_alloc/partition_alloc_constants.h"  // nogncheck
+#endif
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
@@ -102,6 +105,8 @@ constexpr bool ShouldUsePartitionAlloc(MemorySafetyCheck checks) {
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
+
 // Returns |partition_alloc::AllocFlags| corresponding to |checks|.
 constexpr partition_alloc::AllocFlags GetAllocFlags(MemorySafetyCheck checks) {
   return partition_alloc::AllocFlags::kReturnNull |
@@ -119,6 +124,8 @@ constexpr partition_alloc::FreeFlags GetFreeFlags(MemorySafetyCheck checks) {
   }
   return flags;
 }
+
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
 }  // namespace
 

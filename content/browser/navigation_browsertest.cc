@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>
@@ -520,7 +517,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
       EXPECT_EQ(current_frame_host(), initial_rfh);
       EXPECT_EQ(current_frame_host()->GetFrameToken(),
                 observer.last_initiator_frame_token().value());
-      EXPECT_EQ(current_frame_host()->GetProcess()->GetID(),
+      EXPECT_EQ(current_frame_host()->GetProcess()->GetDeprecatedID(),
                 observer.last_initiator_process_id());
     }
   }
@@ -784,7 +781,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, PostUploadIllegalFilePath) {
   // Ensure that the process is allowed to access to the chosen file and
   // does not have access to the other file name.
   EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->CanReadFile(
-      current_frame_host()->GetProcess()->GetID(), file_path));
+      current_frame_host()->GetProcess()->GetDeprecatedID(), file_path));
 
   // Revoke the access to the file and submit the form. The renderer process
   // should be terminated.
@@ -793,7 +790,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, PostUploadIllegalFilePath) {
   ChildProcessSecurityPolicyImpl* security_policy =
       ChildProcessSecurityPolicyImpl::GetInstance();
   security_policy->RevokeAllPermissionsForFile(
-      current_frame_host()->GetProcess()->GetID(), file_path);
+      current_frame_host()->GetProcess()->GetDeprecatedID(), file_path);
 
   // Use EvalJs and respond back to the browser process before doing the actual
   // submission. This will ensure that the process termination is guaranteed to
@@ -1632,7 +1629,13 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 // when history.pushState() and history.back() are called in a loop.
 // Failing to do so causes the browser to become unresponsive.
 // See https://crbug.com/882238
-IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, IPCFlood_GoToEntryAtOffset) {
+// TODO(crbug.com/379844650): Disabled on Linux sanitizer bots due to flakiness.
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_IPCFlood_GoToEntryAtOffset DISABLED_IPCFlood_GoToEntryAtOffset
+#else
+#define MAYBE_IPCFlood_GoToEntryAtOffset IPCFlood_GoToEntryAtOffset
+#endif
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, MAYBE_IPCFlood_GoToEntryAtOffset) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -2341,7 +2344,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   ASSERT_EQ(3, controller.GetEntryCount());
   ASSERT_EQ(2, controller.GetCurrentEntryIndex());
 
-  FrameNavigationEntry* entry[3];
+  std::array<FrameNavigationEntry*, 3> entry;
   for (int i = 0; i < 3; ++i) {
     entry[i] = controller.GetEntryAtIndex(i)
                    ->root_node()
@@ -2405,7 +2408,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   ASSERT_EQ(3, controller.GetEntryCount());
   ASSERT_EQ(2, controller.GetCurrentEntryIndex());
 
-  FrameNavigationEntry* entry[3];
+  std::array<FrameNavigationEntry*, 3> entry;
   for (int i = 0; i < 3; ++i) {
     entry[i] = controller.GetEntryAtIndex(i)
                    ->root_node()
@@ -3660,7 +3663,7 @@ class GetEffectiveUrlClient : public ContentBrowserTestContentBrowserClient {
                       const GURL& site_url) override {
     if (!disallowed_process_id_)
       return true;
-    return process_host->GetID() != disallowed_process_id_;
+    return process_host->GetDeprecatedID() != disallowed_process_id_;
   }
 
   void set_effective_url(const GURL& url) { effective_url_ = url; }
@@ -3699,7 +3702,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   GURL modified_url0 =
       embedded_test_server()->GetURL("c.com", "/title1.html#ref1");
   new_client.set_effective_url(modified_url0);
-  new_client.set_disallowed_process(main_frame_process_host->GetID());
+  new_client.set_disallowed_process(main_frame_process_host->GetDeprecatedID());
 
   NavigationHandleCommitObserver navigation_1(wc, url1);
   EXPECT_TRUE(NavigateToURL(shell(), url1));
@@ -3743,7 +3746,7 @@ IN_PROC_BROWSER_TEST_F(
   GURL modified_url0 =
       embedded_test_server()->GetURL("c.com", "/title1.html#ref1");
   new_client.set_effective_url(modified_url0);
-  new_client.set_disallowed_process(main_frame_process_host->GetID());
+  new_client.set_disallowed_process(main_frame_process_host->GetDeprecatedID());
 
   // Navigates to the same-document. Since the SiteInstance changed, we would
   // normally try isolate this navigation by using a different RenderProcessHost
@@ -5799,7 +5802,8 @@ IN_PROC_BROWSER_TEST_F(
   // frame.
   RenderFrameHost* main_frame = shell()->web_contents()->GetPrimaryMainFrame();
   RenderFrameHost* subframe = ChildFrameAt(main_frame, 0);
-  EXPECT_EQ(main_frame->GetProcess()->GetID(), subframe->GetProcess()->GetID());
+  EXPECT_EQ(main_frame->GetProcess()->GetDeprecatedID(),
+            subframe->GetProcess()->GetDeprecatedID());
 
   // Ask the parent to script the same-origin subframe and trigger some HTTP
   // subresource loads within the subframe.
@@ -5837,8 +5841,8 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHost* opener_frame =
       shell()->web_contents()->GetPrimaryMainFrame();
   RenderFrameHost* popup_frame = popup->GetPrimaryMainFrame();
-  EXPECT_EQ(opener_frame->GetProcess()->GetID(),
-            popup_frame->GetProcess()->GetID());
+  EXPECT_EQ(opener_frame->GetProcess()->GetDeprecatedID(),
+            popup_frame->GetProcess()->GetDeprecatedID());
 
   // Ask the opener to script the (same-origin) popup window and trigger some
   // HTTP subresource loads within the popup.
@@ -5890,8 +5894,8 @@ IN_PROC_BROWSER_TEST_F(
   RenderFrameHost* opener_frame =
       shell()->web_contents()->GetPrimaryMainFrame();
   RenderFrameHost* popup_frame = popup->GetPrimaryMainFrame();
-  EXPECT_EQ(opener_frame->GetProcess()->GetID(),
-            popup_frame->GetProcess()->GetID());
+  EXPECT_EQ(opener_frame->GetProcess()->GetDeprecatedID(),
+            popup_frame->GetProcess()->GetDeprecatedID());
 
   // Double-check that the popup didn't commit any navigation and that it has
   // an the same origin as the initial opener.
@@ -5960,8 +5964,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceLoadingTest,
   RenderFrameHost* opener_frame =
       shell()->web_contents()->GetPrimaryMainFrame();
   RenderFrameHost* popup_frame = popup->GetPrimaryMainFrame();
-  EXPECT_NE(opener_frame->GetProcess()->GetID(),
-            popup_frame->GetProcess()->GetID());
+  EXPECT_NE(opener_frame->GetProcess()->GetDeprecatedID(),
+            popup_frame->GetProcess()->GetDeprecatedID());
 
   // Inject Javascript that triggers some subresource loads over HTTP.
   //
@@ -9723,5 +9727,77 @@ IN_PROC_BROWSER_TEST_P(AndroidPrewarmSpareRendererTest, RendererTimeout) {
   }
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+class HstsUpgradeBrowserTest : public NavigationBrowserTest {
+ public:
+  HstsUpgradeBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        net::features::kHstsTopLevelNavigationsOnly);
+  }
+
+  void SetUpOnMainThread() override {
+    NavigationBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_https_test_server().Start());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that when HstsTopLevelNavigationsOnly is enabled only top-level
+// navigations will be upgraded by HSTS.
+IN_PROC_BROWSER_TEST_F(HstsUpgradeBrowserTest, UpgradeTopLevelOnly) {
+  // Url that loads a page with the HSTS url, http://b.com, as an iframe under
+  // an http://a.com main frame.
+  GURL hsts_url_in_iframe_http = embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)");
+  // The expected url of the HSTS url, http://b.com, iframe.
+  GURL url_of_hsts_frame_http = embedded_test_server()->GetURL(
+      "b.com", "/cross_site_iframe_factory.html?b()");
+
+  {
+    // Add hostname to the TransportSecurityState.
+    base::Time expiry = base::Time::Now() + base::Days(100);
+    bool include_subdomains = false;
+    auto* network_context = web_contents()
+                                ->GetBrowserContext()
+                                ->GetDefaultStoragePartition()
+                                ->GetNetworkContext();
+    base::RunLoop run_loop;
+    network_context->AddHSTS(url_of_hsts_frame_http.host(), expiry,
+                             include_subdomains, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // Navigate the main frame to the HSTS url, http://b.com.
+
+  // Note: Because the http and https embedded test servers run on different
+  // (non-default) ports the test will fail if we try to navigate to
+  // `url_of_hsts_frame_http` because HSTS will simply change the scheme to
+  // https, but the port will remain the http server's port. To work around this
+  // we can take an https url, `hsts_url_main_frame_https`, and change its
+  // scheme to http which will then be upgraded by HSTS back to https and will
+  // load correctly.
+
+  // Url of an https://b.com page.
+  GURL hsts_url_main_frame_https =
+      embedded_https_test_server().GetURL("b.com", "/title1.html");
+
+  GURL::Replacements scheme_replacement;
+  scheme_replacement.SetSchemeStr("http");
+
+  // The navigation should get upgraded to https://b.com.
+  EXPECT_TRUE(NavigateToURL(
+      web_contents(),
+      /*url=*/hsts_url_main_frame_https.ReplaceComponents(scheme_replacement),
+      /*expected_commit_url=*/hsts_url_main_frame_https));
+
+  // Now navigate to an http://a.com page that embeds an http://b.com iframe.
+  EXPECT_TRUE(NavigateToURL(web_contents(), hsts_url_in_iframe_http));
+  auto* sub_frame = main_frame()->child_at(0);
+  // The http://b.com iframe should not have been upgraded.
+  EXPECT_EQ(url_of_hsts_frame_http,
+            sub_frame->current_frame_host()->GetLastCommittedURL());
+}
 
 }  // namespace content

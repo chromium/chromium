@@ -146,8 +146,8 @@ String16Vector String16VectorFromString16(
     return words;
   while (iter.Advance()) {
     if (iter.IsWord()) {
-      String16VectorFromString16Internal(iter.GetString(), iter.prev(), &words,
-                                         word_starts);
+      String16VectorFromString16Internal(std::u16string(iter.GetString()),
+                                         iter.prev(), &words, word_starts);
     }
   }
   return words;

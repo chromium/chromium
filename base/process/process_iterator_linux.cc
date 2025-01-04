@@ -32,8 +32,9 @@ std::string GetProcStatsFieldAsString(
     NOTREACHED();
   }
 
-  if (proc_stats.size() > static_cast<size_t>(field_num))
+  if (proc_stats.size() > static_cast<size_t>(field_num)) {
     return proc_stats[field_num];
+  }
 
   NOTREACHED();
 }
@@ -49,12 +50,13 @@ bool GetProcCmdline(pid_t pid, std::vector<std::string>* proc_cmd_line_args) {
 
   FilePath cmd_line_file = internal::GetProcPidDir(pid).Append("cmdline");
   std::string cmd_line;
-  if (!ReadFileToString(cmd_line_file, &cmd_line))
+  if (!ReadFileToString(cmd_line_file, &cmd_line)) {
     return false;
+  }
   std::string delimiters;
   delimiters.push_back('\0');
-  *proc_cmd_line_args = SplitString(cmd_line, delimiters, KEEP_WHITESPACE,
-                                    SPLIT_WANT_NONEMPTY);
+  *proc_cmd_line_args =
+      SplitString(cmd_line, delimiters, KEEP_WHITESPACE, SPLIT_WANT_NONEMPTY);
   return true;
 }
 
@@ -87,8 +89,9 @@ bool ProcessIterator::CheckForNextProcess() {
   while (true) {
     dirent* const slot = readdir(procfs_dir_.get());
     // all done looking through /proc?
-    if (!slot)
+    if (!slot) {
       return false;
+    }
 
     // If not a process, keep looking for one.
     pid = internal::ProcDirSlotToPid(slot->d_name);
@@ -96,13 +99,16 @@ bool ProcessIterator::CheckForNextProcess() {
       continue;
     }
 
-    if (!GetProcCmdline(pid, &cmd_line_args))
+    if (!GetProcCmdline(pid, &cmd_line_args)) {
       continue;
+    }
 
-    if (!internal::ReadProcStats(pid, &stats_data))
+    if (!internal::ReadProcStats(pid, &stats_data)) {
       continue;
-    if (!internal::ParseProcStats(stats_data, &proc_stats))
+    }
+    if (!internal::ParseProcStats(stats_data, &proc_stats)) {
       continue;
+    }
 
     std::string runstate =
         GetProcStatsFieldAsString(proc_stats, internal::VM_STATE);
@@ -112,8 +118,9 @@ bool ProcessIterator::CheckForNextProcess() {
 
     // Is the process in 'Zombie' state, i.e. dead but waiting to be reaped?
     // Allowed values: D R S T Z
-    if (runstate[0] != 'Z')
+    if (runstate[0] != 'Z') {
       break;
+    }
 
     // Nope, it's a zombie; somebody isn't cleaning up after their children.
     // (e.g. WaitForProcessesToExit doesn't clean up after dead children yet.)
@@ -131,8 +138,9 @@ bool ProcessIterator::CheckForNextProcess() {
 }
 
 bool NamedProcessIterator::IncludeEntry() {
-  if (executable_name_ != entry().exe_file())
+  if (executable_name_ != entry().exe_file()) {
     return false;
+  }
   return ProcessIterator::IncludeEntry();
 }
 

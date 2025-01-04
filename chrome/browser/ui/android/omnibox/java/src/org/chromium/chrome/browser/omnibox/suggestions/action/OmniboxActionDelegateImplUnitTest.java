@@ -149,7 +149,7 @@ public class OmniboxActionDelegateImplUnitTest {
         Intent i = new Intent();
         i.setClass(mContext, TestActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        assertTrue(IntentUtils.intentTargetsSelf(mContext, i));
+        assertTrue(IntentUtils.intentTargetsSelf(i));
         assertTrue(mDelegate.startActivity(i));
         // Added during intent invocation.
         assertTrue(i.hasExtra(IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA));
@@ -161,7 +161,7 @@ public class OmniboxActionDelegateImplUnitTest {
         ShadowApplication.getInstance().checkActivities(false);
         Intent i = new Intent("some magic here");
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        assertFalse(IntentUtils.intentTargetsSelf(mContext, i));
+        assertFalse(IntentUtils.intentTargetsSelf(i));
         assertTrue(mDelegate.startActivity(i));
         // Might be added during intent invocation.
         assertFalse(i.hasExtra(IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA));

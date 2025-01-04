@@ -92,6 +92,11 @@ AutofillClientProvider::AutofillClientProvider(PrefService* prefs)
   // Ensure the pref is reset if platform autofill is restricted.
   prefs->SetBoolean(prefs::kAutofillUsingVirtualViewStructure,
                     uses_platform_autofill_);
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillThirdPartyModeContentProvider)) {
+    Java_AutofillClientProviderUtils_setThirdPartyModePref(
+        base::android::AttachCurrentThread(), uses_platform_autofill_);
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

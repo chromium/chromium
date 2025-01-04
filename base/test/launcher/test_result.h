@@ -94,10 +94,8 @@ struct TestResult {
   // normally, possibly with an exit code indicating failure, but didn't crash
   // or time out in the middle of the test).
   bool completed() const {
-    return status == TEST_SUCCESS ||
-        status == TEST_FAILURE ||
-        status == TEST_FAILURE_ON_EXIT ||
-        status == TEST_EXCESSIVE_OUTPUT;
+    return status == TEST_SUCCESS || status == TEST_FAILURE ||
+           status == TEST_FAILURE_ON_EXIT || status == TEST_EXCESSIVE_OUTPUT;
   }
 
   // Full name of the test (e.g. "A.B").

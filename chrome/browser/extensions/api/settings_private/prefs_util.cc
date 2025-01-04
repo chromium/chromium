@@ -18,6 +18,8 @@
 #include "chrome/browser/extensions/api/settings_private/generated_prefs.h"
 #include "chrome/browser/extensions/api/settings_private/generated_prefs_factory.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
+#include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/metrics/profile_pref_names.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/password_manager/generated_password_leak_detection_pref.h"
@@ -392,8 +394,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)
       [::unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled] =
           settings_api::PrefType::kBoolean;
-  (*s_allowlist)[unified_consent::prefs::kPageContentCollectionEnabled] =
-      settings_api::PrefType::kBoolean;
   (*s_allowlist)[::commerce::kPriceEmailNotificationsEnabled] =
       settings_api::PrefType::kBoolean;
 
@@ -781,6 +781,15 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kAccessibilityFaceGazePrecisionClickSpeedFactor] =
       settings_api::PrefType::kNumber;
+  (*s_allowlist)[ash::prefs::kAccessibilityFaceGazeEnabledSentinel] =
+      settings_api::PrefType::kBoolean;
+  (*s_allowlist)[ash::prefs::kAccessibilityFaceGazeEnabledSentinelShowDialog] =
+      settings_api::PrefType::kBoolean;
+  (*s_allowlist)
+      [ash::prefs::kAccessibilityFaceGazeCursorControlEnabledSentinel] =
+          settings_api::PrefType::kBoolean;
+  (*s_allowlist)[ash::prefs::kAccessibilityFaceGazeActionsEnabledSentinel] =
+      settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kAccessibilityCaretBlinkInterval] =
       settings_api::PrefType::kNumber;
   (*s_allowlist)[ash::prefs::kAccessibilityDisableTrackpadEnabled] =
@@ -998,6 +1007,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kString;
   (*s_allowlist)[::prefs::kLanguageAllowedInputMethods] =
       settings_api::PrefType::kList;
+  (*s_allowlist)[::prefs::kLanguageAllowedInputMethodsForceEnabled] =
+      settings_api::PrefType::kBoolean;
 
   // Device settings.
   (*s_allowlist)[ash::prefs::kTapToClickEnabled] =
@@ -1248,6 +1259,20 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[optimization_guide::prefs::
                      kProductSpecificationsEnterprisePolicyAllowed] =
       settings_api::PrefType::kNumber;
+
+  // Glic prefs
+#if BUILDFLAG(ENABLE_GLIC)
+  if (GlicEnabling::IsEnabledByFlags()) {
+    (*s_allowlist)[glic::prefs::kGlicLauncherEnabled] =
+        settings_api::PrefType::kBoolean;
+    (*s_allowlist)[glic::prefs::kGlicGeolocationEnabled] =
+        settings_api::PrefType::kBoolean;
+    (*s_allowlist)[glic::prefs::kGlicMicrophoneEnabled] =
+        settings_api::PrefType::kBoolean;
+    (*s_allowlist)[glic::prefs::kGlicTabContextEnabled] =
+        settings_api::PrefType::kBoolean;
+  }
+#endif
 
   return *s_allowlist;
 }

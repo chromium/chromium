@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.media;
 import android.app.Activity;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.content_public.browser.WebContents;
@@ -43,7 +44,7 @@ public class MediaCapturePickerDialogBridge {
      * @param appName Name of the app that wants to share content.
      */
     @CalledByNative
-    public void showDialog(WindowAndroid windowAndroid, String appName) {
+    public void showDialog(WindowAndroid windowAndroid, @JniType("std::u16string") String appName) {
         Activity activity = windowAndroid.getActivity().get();
         MediaCapturePickerDialog.showDialog(
                 activity,

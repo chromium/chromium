@@ -28,7 +28,6 @@
 #include "third_party/openscreen/src/platform/api/time.h"
 #include "third_party/openscreen/src/platform/base/trivial_clock_traits.h"
 
-using media::cast::RtpPayloadType;
 using media::mojom::RemotingSinkMetadata;
 using media::mojom::RemotingStopReason;
 using mirroring::mojom::SessionType;
@@ -220,10 +219,8 @@ class MediaRemoterTest : public mojom::CastMessageChannel,
     media_remoter_->StartRpcMessaging(
         cast_environment, std::move(openscreen_test_senders_->audio_sender),
         std::move(openscreen_test_senders_->video_sender),
-        MirrorSettings::GetDefaultAudioConfig(RtpPayloadType::REMOTE_AUDIO,
-                                              media::AudioCodec::kUnknown),
-        MirrorSettings::GetDefaultVideoConfig(RtpPayloadType::REMOTE_VIDEO,
-                                              media::VideoCodec::kUnknown));
+        MirrorSettings::GetDefaultAudioConfig(media::AudioCodec::kUnknown),
+        MirrorSettings::GetDefaultVideoConfig(media::VideoCodec::kUnknown));
     task_environment_.RunUntilIdle();
     Mock::VerifyAndClear(&remoting_source_);
   }

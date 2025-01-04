@@ -137,7 +137,7 @@ void ChromeContentBrowserClientPluginsPart::
         blink::AssociatedInterfaceRegistry& associated_registry) {
   associated_registry.AddInterface<chrome::mojom::PluginInfoHost>(
       base::BindRepeating(&BindPluginInfoHost,
-                          render_frame_host.GetProcess()->GetID()));
+                          render_frame_host.GetProcess()->GetDeprecatedID()));
 }
 
 bool ChromeContentBrowserClientPluginsPart::

@@ -4,12 +4,16 @@
 
 #include "components/data_sharing/internal/data_sharing_service_impl.h"
 
+#include <optional>
+
+#include "base/check_is_test.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
+#include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/version_info/channel.h"
 #include "components/data_sharing/internal/avatar_fetcher.h"
@@ -153,6 +157,11 @@ bool DataSharingServiceImpl::IsGroupDataModelLoaded() {
 
 std::optional<GroupData> DataSharingServiceImpl::ReadGroup(
     const GroupId& group_id) {
+  if (group_data_for_testing_.contains(group_id)) {
+    CHECK_IS_TEST();
+    return group_data_for_testing_[group_id];
+  }
+
   if (!group_data_model_) {
     return std::nullopt;
   }
@@ -170,11 +179,30 @@ std::optional<GroupMemberPartialData>
 DataSharingServiceImpl::GetPossiblyRemovedGroupMember(
     const GroupId& group_id,
     const GaiaId& member_gaia_id) {
+  if (group_data_for_testing_.contains(group_id)) {
+    CHECK_IS_TEST();
+    const auto& group = group_data_for_testing_[group_id];
+    for (const auto& member : group.members) {
+      if (member.gaia_id == member_gaia_id) {
+        return GroupMemberPartialData::FromGroupMember(member);
+      }
+    }
+  }
+
   if (!group_data_model_) {
     return std::nullopt;
   }
   return group_data_model_->GetPossiblyRemovedGroupMember(group_id,
                                                           member_gaia_id);
+}
+
+std::optional<GroupData> DataSharingServiceImpl::GetPossiblyRemovedGroup(
+    const GroupId& group_id) {
+  if (deleted_groups_this_session_.find(group_id) ==
+      deleted_groups_this_session_.end()) {
+    return std::nullopt;
+  }
+  return deleted_groups_this_session_.at(group_id);
 }
 
 void DataSharingServiceImpl::ReadGroupDeprecated(
@@ -373,8 +401,14 @@ void DataSharingServiceImpl::OnGroupUpdated(const GroupId& group_id,
   }
 }
 
-void DataSharingServiceImpl::OnGroupDeleted(const GroupId& group_id,
-                                            const base::Time& event_time) {
+void DataSharingServiceImpl::OnGroupDeleted(
+    const GroupId& group_id,
+    const std::optional<GroupData>& group_data,
+    const base::Time& event_time) {
+  if (group_data) {
+    CHECK(group_id == group_data->group_token.group_id);
+    deleted_groups_this_session_.emplace(group_id, *group_data);
+  }
   for (auto& observer : observers_) {
     observer.OnGroupRemoved(group_id, event_time);
   }
@@ -605,6 +639,10 @@ void DataSharingServiceImpl::SetUIDelegate(
 
 DataSharingUIDelegate* DataSharingServiceImpl::GetUiDelegate() {
   return ui_delegate_.get();
+}
+
+void DataSharingServiceImpl::AddGroupDataForTesting(GroupData group_data) {
+  group_data_for_testing_.emplace(group_data.group_token.group_id, group_data);
 }
 
 void DataSharingServiceImpl::OnAccessTokenAdded(

@@ -60,28 +60,11 @@ class TaskManagerCoordinator implements OnCreateContextMenuListener {
                         headerModel,
                         headerView,
                         (model, view, key) -> {
-                            view.findViewById(R.id.task_name)
-                                    .setOnClickListener(
-                                            (unused) ->
-                                                    mMediator.cycleSortOrder(
-                                                            TaskManagerProperties.TASK_NAME));
-                            view.findViewById(R.id.memory_footprint)
-                                    .setOnClickListener(
-                                            (unused) ->
-                                                    mMediator.cycleSortOrder(
-                                                            TaskManagerProperties
-                                                                    .MEMORY_FOOTPRINT));
-                            view.findViewById(R.id.cpu)
-                                    .setOnClickListener(
-                                            (unused) ->
-                                                    mMediator.cycleSortOrder(
-                                                            TaskManagerProperties.CPU));
-                            view.findViewById(R.id.process_id)
-                                    .setOnClickListener(
-                                            (unused) ->
-                                                    mMediator.cycleSortOrder(
-                                                            TaskManagerProperties.PROCESS_ID));
-
+                            for (PropertyKey columnKey : TaskManagerProperties.ALL_COLUMN_KEYS) {
+                                view.findViewById(getTaskItemViewId(columnKey))
+                                        .setOnClickListener(
+                                                (unused) -> mMediator.cycleSortOrder(columnKey));
+                            }
                             bindHeader(model, view, key);
                         }));
 
@@ -207,8 +190,16 @@ class TaskManagerCoordinator implements OnCreateContextMenuListener {
             textView.setText(
                     PropertyStringifier.getCpuUsageText(
                             view.getContext(), model.get(TaskManagerProperties.CPU)));
+        } else if (key == TaskManagerProperties.NETWORK_USAGE) {
+            textView.setText(
+                    PropertyStringifier.getNetworkUsageText(
+                            view.getContext(), model.get(TaskManagerProperties.NETWORK_USAGE)));
         } else if (key == TaskManagerProperties.PROCESS_ID) {
             textView.setText(String.valueOf(model.get(TaskManagerProperties.PROCESS_ID)));
+        } else if (key == TaskManagerProperties.GPU_MEMORY) {
+            textView.setText(
+                    PropertyStringifier.getMemoryUsageText(
+                            view.getContext(), model.get(TaskManagerProperties.GPU_MEMORY)));
         } else {
             throw new IllegalArgumentException("column key " + key + " not supported");
         }
@@ -237,8 +228,12 @@ class TaskManagerCoordinator implements OnCreateContextMenuListener {
             return R.string.task_manager_mem_footprint_column;
         } else if (columnKey == TaskManagerProperties.CPU) {
             return R.string.task_manager_cpu_column;
+        } else if (columnKey == TaskManagerProperties.NETWORK_USAGE) {
+            return R.string.task_manager_net_column;
         } else if (columnKey == TaskManagerProperties.PROCESS_ID) {
             return R.string.task_manager_process_id_column;
+        } else if (columnKey == TaskManagerProperties.GPU_MEMORY) {
+            return R.string.task_manager_video_memory_column;
         } else {
             throw new IllegalArgumentException("column key " + columnKey + " not supported");
         }
@@ -255,8 +250,12 @@ class TaskManagerCoordinator implements OnCreateContextMenuListener {
             return R.id.memory_footprint;
         } else if (columnKey == TaskManagerProperties.CPU) {
             return R.id.cpu;
+        } else if (columnKey == TaskManagerProperties.NETWORK_USAGE) {
+            return R.id.network_usage;
         } else if (columnKey == TaskManagerProperties.PROCESS_ID) {
             return R.id.process_id;
+        } else if (columnKey == TaskManagerProperties.GPU_MEMORY) {
+            return R.id.gpu_memory_id;
         } else {
             throw new IllegalArgumentException("column key " + columnKey + " not supported");
         }

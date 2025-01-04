@@ -8,11 +8,14 @@
 #include <variant>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
+#include "skia/ext/codec_utils.h"
 #include "skia/ext/font_utils.h"
 #include "third_party/skia/include/codec/SkPngDecoder.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -24,12 +27,12 @@
 #include "third_party/skia/include/core/SkString.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/docs/SkPDFDocument.h"
-#include "third_party/skia/include/encode/SkPngEncoder.h"
 #include "third_party/skia/include/private/chromium/SkImageChromium.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_update.h"
+#include "ui/gfx/skia_span_util.h"
 
 #if BUILDFLAG(IS_WIN)
 // XpsObjectModel.h indirectly includes <wincrypt.h> which is
@@ -284,10 +287,11 @@ sk_sp<SkData> SerializeOopPicture(SkPicture* pic, void* ctx) {
   const auto* context = reinterpret_cast<const ContentToProxyTokenMap*>(ctx);
   uint32_t pic_id = pic->uniqueID();
   auto iter = context->find(pic_id);
-  if (iter == context->end())
+  if (iter == context->end()) {
     return nullptr;
+  }
 
-  return SkData::MakeWithCopy(&pic_id, sizeof(pic_id));
+  return gfx::MakeSkDataFromSpanWithCopy(base::byte_span_from_ref(pic_id));
 }
 
 sk_sp<SkPicture> DeserializeOopPicture(const void* data,
@@ -372,13 +376,18 @@ sk_sp<SkData> SerializeRasterImage(SkImage* img, void*) {
   // *before* they get this far if possible.
   if (img->isTextureBacked()) {
     GrDirectContext* ctx = SkImages::GetContext(img);
-    return SkPngEncoder::Encode(ctx, img, SkPngEncoder::Options{});
+    return skia::EncodePngAsSkData(ctx, img);
   }
-  return SkPngEncoder::Encode(nullptr, img, SkPngEncoder::Options{});
+  return skia::EncodePngAsSkData(nullptr, img);
 }
 
 sk_sp<SkImage> DeserializeRasterImage(const void* bytes, size_t length, void*) {
-  auto data = SkData::MakeWithoutCopy(bytes, length);
+  // SAFETY: The caller must provide a valid pointer and length.
+  auto bytes_span =
+      UNSAFE_BUFFERS(base::span(static_cast<const uint8_t*>(bytes), length));
+  // Safe for `data` to be a span over `bytes_span` because `bytes_span` will
+  // outlive `data`.
+  auto data = gfx::MakeSkDataFromSpanWithoutCopy(bytes_span);
   //TODO(b/40045064): Explicitly decode other supported codecs
   auto codec = SkPngDecoder::Decode(data, nullptr);
   if (codec) {

@@ -138,14 +138,8 @@
     Save card to Google Account?
   </message>
   <if expr="not is_ios and not is_android">
-    <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY" desc="Title text for the credit card upload save prompt on Desktop, using security-focused messaging.">
+    <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY" desc="Title text for the credit card upload save prompt on Desktop, using security-focused messaging. Became the new default in Dec. 2024.">
       Save card securely?
-    </message>
-    <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_CONVENIENCE" desc="Title text for the credit card upload save prompt on Desktop, using convenience-focused messaging.">
-      Save card?
-    </message>
-    <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_EDUCATION" desc="Title text for the credit card upload save prompt on Desktop, using education-focused messaging.">
-      Autofill card next time?
     </message>
   </if>
   <message name="IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_TO_CLOUD" desc="Title text for the Autofill CVC upload prompt that offers to upload CVC to the Sync server for existing server cards. This prompt is shown if a CVC is detected for an existing server card on form submission.">
@@ -183,9 +177,6 @@
   <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3" desc="Explanation of the effect of the Autofill save card prompt when the card is to be saved by uploading it to Google Payments, according to April 2018 UI guidelines, and minorly updated again in September 2023. The prompt will be shown either in a bubble below the omnibox, or in a bottom sheet, or in an infobar.">
     To pay faster next time, save your card and billing address in your Google Account
   </message>
-  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3_WITH_NAME" desc="Explanation of the effect of the Autofill save card prompt when the card is to be saved by uploading it to Google Payments, according to April 2018 UI guidelines, and minorly updated again in September 2023. The prompt will be shown either in a bubble below the omnibox, or in a bottom sheet, or in an infobar.">
-    To pay faster next time, save your card, name, and billing address in your Google Account
-  </message>
   <message name="IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_UPLOAD" desc="Explanation text for the Autofill save CVC prompt that offers to upload CVC to the Sync server for existing server cards. This prompt is shown if a CVC is detected for an existing server card on form submission.">
     This card's CVC will be encrypted and saved in your Google Account for faster checkout
   </message>
@@ -193,14 +184,8 @@
     To pay faster next time, save your card, encrypted security code, and billing address in your Google Account
   </message>
   <if expr="not is_ios and not is_android">
-    <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY" desc="Explanation of the benefit of credit card upload save on Desktop, using security-focused messaging.">
+    <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY" desc="Explanation of the benefit of credit card upload save on Desktop, using security-focused messaging. Became the new default in Dec. 2024.">
       Pay faster when your card is saved. Card details are encrypted in your Google Account.
-    </message>
-    <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_CONVENIENCE" desc="Explanation of the benefit of credit card upload save on Desktop, using convenience-focused messaging.">
-      Save this card to use online with Google Pay for purchases across your devices
-    </message>
-    <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_EDUCATION" desc="Explanation of the benefit of credit card upload save on Desktop, using education-focused messaging.">
-      Autofill your card for future purchases when you save it to use with Google Pay
     </message>
   </if>
   <if expr="is_android">
@@ -351,6 +336,18 @@
   </message>
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_NOT_ELIGIBLE_ERROR_DESCRIPTION" desc="Text to be displayed as the description of the error dialog for virtual card permanent error">
     This card is not eligible for virtual card number.
+  </message>
+  <message name="IDS_AUTOFILL_CARD_INFO_RETRIEVAL_TEMPORARY_ERROR_TITLE" desc="Text to be displayed as the title of the error dialog for runtime card info retrieval temporary error.">
+    Something went wrong
+  </message>
+  <message name="IDS_AUTOFILL_CARD_INFO_RETRIEVAL_PERMANENT_ERROR_TITLE" desc="Text to be displayed as the title of the error dialog for runtime card info retrieval permanent error.">
+    Card not available
+  </message>
+  <message name="IDS_AUTOFILL_CARD_INFO_RETRIEVAL_TEMPORARY_ERROR_DESCRIPTION" desc="Text to be displayed as the description of the error dialog for runtime card info retrieval temporary error.">
+    This card is not available right now. Please try again later.
+  </message>
+  <message name="IDS_AUTOFILL_CARD_INFO_RETRIEVAL_PERMANENT_ERROR_DESCRIPTION" desc="Text to be displayed as the description of the error dialog for runtime card info retrieval permanent error.">
+    This card is not available. Please contact your card provider.
   </message>
   <message name="IDS_AUTOFILL_ERROR_DIALOG_NEGATIVE_BUTTON_LABEL" desc="Label for the negative button for the error dialog.">
     Close
@@ -773,6 +770,12 @@
       Card number:
     </message>
   </if>
+  <message name="IDS_AUTOFILL_CARD_INFO_RETRIEVAL_ENROLLED_CARD_UNMASK_PROGRESS_DIALOG_TITLE" desc="Title for the progress dialog that occurs during card info retrieval enrolled card unmasking flows. It is shown after the user selects a card, and will be dismissed once we receive a server response that denotes we can continue to the next step. The main purpose of the dialog is to inform the user that something is happening in the background, but that task is not done yet.">
+    Verifying...
+  </message>
+  <message name="IDS_AUTOFILL_CARD_INFO_RETRIEVAL_ENROLLED_CARD_UNMASK_PROGRESS_BAR_MESSAGE" desc="Message displayed after tapping a card info retrieval enrolled card, and before any other verification steps.">
+    Connecting to your card provider...
+  </message>
   <!-- card info retrieval enrolled card related strings - end -->
 
   <!-- virtual cards related strings - start -->

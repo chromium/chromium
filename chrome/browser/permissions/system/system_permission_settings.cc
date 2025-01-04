@@ -20,6 +20,7 @@ namespace {
 
 PlatformHandle* instance_for_testing_ = nullptr;
 bool g_mock_system_prompt_for_testing_ = false;
+bool g_mock_system_permission_denied_for_testing_ = false;
 
 std::map<ContentSettingsType, bool>& GlobalTestingBlockOverrides() {
   static std::map<ContentSettingsType, bool> g_testing_block_overrides;
@@ -51,9 +52,18 @@ bool CanPrompt(ContentSettingsType type) {
 base::AutoReset<bool> MockSystemPromptForTesting() {
   return base::AutoReset<bool>(&g_mock_system_prompt_for_testing_, true);
 }
+// static
+base::AutoReset<bool> MockShowSystemSettingsForTesting() {
+  return base::AutoReset<bool>(&g_mock_system_permission_denied_for_testing_,
+                               true);
+}
 
 // static
 bool IsDenied(ContentSettingsType type) {
+  if (g_mock_system_permission_denied_for_testing_) {
+    return true;
+  }
+
   if (GlobalTestingBlockOverrides().find(type) !=
       GlobalTestingBlockOverrides().end()) {
     return GlobalTestingBlockOverrides().at(type);

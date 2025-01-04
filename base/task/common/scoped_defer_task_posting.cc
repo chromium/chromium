@@ -47,8 +47,9 @@ ScopedDeferTaskPosting* ScopedDeferTaskPosting::Get() {
 bool ScopedDeferTaskPosting::Set(ScopedDeferTaskPosting* scope) {
   // We can post a task from within a ScheduleWork in some tests, so we can
   // get nested scopes. In this case ignore all except the top one.
-  if (Get() && scope)
+  if (Get() && scope) {
     return false;
+  }
   scoped_defer_task_posting = scope;
   return true;
 }

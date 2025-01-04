@@ -5,6 +5,8 @@
 #ifndef UI_VIEWS_LAYOUT_FLEX_LAYOUT_VIEW_H_
 #define UI_VIEWS_LAYOUT_FLEX_LAYOUT_VIEW_H_
 
+#include <utility>
+
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout.h"
@@ -55,17 +57,10 @@ class VIEWS_EXPORT FlexLayoutView : public View {
   // behavior.
   FlexRule GetDefaultFlexRule() const;
 
-  // Moves and uses |value| as the default value for layout property |key|.
-  template <class T, class U>
+  // Uses `value` as the default value for layout property `key`.
+  template <typename T, typename U>
   void SetDefault(const ui::ClassProperty<T>* key, U&& value) {
-    layout_->SetDefault(key, value);
-    InvalidateLayout();
-  }
-
-  // Copies and uses |value| as the default value for layout property |key|.
-  template <class T, class U>
-  void SetDefault(const ui::ClassProperty<T>* key, const U& value) {
-    layout_->SetDefault(key, value);
+    layout_->SetDefault(key, std::forward<U>(value));
     InvalidateLayout();
   }
 
@@ -92,6 +87,10 @@ VIEW_BUILDER_PROPERTY(bool, CollapseMargins)
 VIEW_BUILDER_PROPERTY(bool, IncludeHostInsetsInLayout)
 VIEW_BUILDER_PROPERTY(bool, IgnoreDefaultMainAxisMargins)
 VIEW_BUILDER_PROPERTY(FlexAllocationOrder, FlexAllocationOrder)
+VIEW_BUILDER_TEMPLATED_PROPERTY((<typename T, typename U>),
+                                Default,
+                                const ui::ClassProperty<T>*,
+                                U&&)
 END_VIEW_BUILDER
 
 }  // namespace views

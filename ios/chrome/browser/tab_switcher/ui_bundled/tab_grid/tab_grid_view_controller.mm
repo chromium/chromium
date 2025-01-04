@@ -1977,10 +1977,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // menu.
   return @[
     UIKeyCommand.cr_openNewRegularTab,
-    // TODO(crbug.com/40246790): Move it to the menu builder once we have the
-    // strings.
-    UIKeyCommand.cr_select2,
-    UIKeyCommand.cr_select3,
   ];
 }
 
@@ -1996,6 +1992,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     return [self
         canPerformOpenNewTabActionForDestinationPage:TabGridPageIncognitoTabs];
   }
+  if (sel_isEqual(action, @selector(keyCommand_select1)) ||
+      sel_isEqual(action, @selector(keyCommand_select2)) ||
+      sel_isEqual(action, @selector(keyCommand_select3))) {
+    return _viewVisible;
+  }
   return [super canPerformAction:action withSender:sender];
 }
 
@@ -2003,10 +2004,20 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (command.action == @selector(keyCommand_find)) {
     command.discoverabilityTitle =
         l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_SEARCH_TABS);
-  } else {
-    // TODO(crbug.com/40246790): Add string for change pane's functions.
-    return [super validateCommand:command];
   }
+  if (command.action == @selector(keyCommand_select1)) {
+    command.discoverabilityTitle = l10n_util::GetNSStringWithFixup(
+        IDS_IOS_KEYBOARD_GO_TO_INCOGNITO_TAB_GRID);
+  }
+  if (command.action == @selector(keyCommand_select2)) {
+    command.discoverabilityTitle = l10n_util::GetNSStringWithFixup(
+        IDS_IOS_KEYBOARD_GO_TO_REGULAR_TAB_GRID);
+  }
+  if (command.action == @selector(keyCommand_select3)) {
+    command.discoverabilityTitle =
+        l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_GO_TO_REMOTE_TAB_GRID);
+  }
+  [super validateCommand:command];
 }
 
 - (void)keyCommand_openNewTab {

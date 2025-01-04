@@ -267,6 +267,9 @@ base::Value::List MakeAdsValue(
                 AdAllowedReportingOriginsToList(
                     ad.allowed_reporting_origins.value()));
     }
+    if (ad.creative_scanning_metadata) {
+      entry.Set("creativeScanningMetadata", *ad.creative_scanning_metadata);
+    }
     list.Append(std::move(entry));
   }
   return list;
@@ -740,7 +743,6 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          {blink::features::kBiddingAndScoringDebugReportingAPI, {}},
          {blink::features::kFledgeDirectFromSellerSignalsHeaderAdSlot, {}},
          {features::kBackForwardCache, {}},
-         {features::kFledgeUseInterestGroupCache, {}},
          {blink::features::kFencedFramesLocalUnpartitionedDataAccess, {}},
          {blink::features::kFledgeSampleDebugReports, {}},
          // These are in field trial config, but we want this consistent among
@@ -752,7 +754,11 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          {blink::features::kFledgeAuctionDealSupport, {}},
          {blink::features::kFledgeDeprecatedRenderURLReplacements, {}},
          {blink::features::kFledgeSellerNonce, {}},
-         {blink::features::kFledgeTrustedSignalsKVv2Support,{}}},
+         // TODO(crrev.com/c/6096602): Remove once implementation is removed.
+         {blink::features::kFledgeDirectFromSellerSignalsWebBundles, {}},
+         {blink::features::kFledgeSellerNonce, {}},
+         {blink::features::kFledgeTrustedSignalsKVv2Support, {}},
+         {blink::features::kFledgeTrustedSignalsKVv1CreativeScanning, {}}},
         /*disabled_features=*/
         {blink::features::kFencedFrames,
          blink::features::kFledgeEnforceKAnonymity,
@@ -2216,14 +2222,8 @@ class InterestGroupPrivateNetworkBrowserTest : public InterestGroupBrowserTest {
  protected:
   InterestGroupPrivateNetworkBrowserTest()
       : remote_test_server_(net::test_server::EmbeddedTestServer::TYPE_HTTPS) {
-    feature_list_.InitWithFeatures(
-        /*`enabled_features`=*/
-        {features::kPrivateNetworkAccessRespectPreflightResults},
-        /*disabled_features=*/
-        // TODO(crbug.com/40261655): Enable same-origin exemption when
-        // the initiator is fixed.
-        {network::features::
-             kLocalNetworkAccessAllowPotentiallyTrustworthySameOrigin});
+    feature_list_.InitAndEnableFeature(
+        features::kPrivateNetworkAccessRespectPreflightResults);
 
     remote_test_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     remote_test_server_.AddDefaultHandlers(GetTestDataFilePath());
@@ -3696,6 +3696,45 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
             GURL("https://example.com/render2"));
   EXPECT_FALSE(group.ads.value()[1].buyer_reporting_id.has_value());
   EXPECT_EQ(group.ads.value()[1].buyer_and_seller_reporting_id, "sh2");
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       JoinInterestGroupValidCreativeScanningMetadata) {
+  GURL url = embedded_https_test_server().GetURL("a.test", "/echo");
+  auto origin = url::Origin::Create(url);
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  blink::InterestGroup ig =
+      blink::TestInterestGroupBuilder(origin, "cars")
+          .SetAds({{{GURL("https://example.com/render"),
+                     /*metadata=*/std::nullopt},
+                    {GURL("https://example.com/render2"),
+                     /*metadata=*/std::nullopt}}})
+          .SetAdComponents({{{GURL("https://example.com/component"),
+                              /*metadata=*/std::nullopt}}})
+          .Build();
+  ig.ads.value()[1].creative_scanning_metadata = "scan me";
+  ig.ad_components.value()[0].creative_scanning_metadata = "me too";
+
+  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(ig));
+
+  scoped_refptr<StorageInterestGroups> groups =
+      GetInterestGroupsForOwner(origin);
+  ASSERT_EQ(groups->size(), 1u);
+  const blink::InterestGroup& group =
+      groups->GetInterestGroups()[0]->interest_group;
+  ASSERT_TRUE(group.ads.has_value());
+  ASSERT_EQ(group.ads->size(), 2u);
+  EXPECT_FALSE(group.ads.value()[0].creative_scanning_metadata.has_value());
+  ASSERT_TRUE(group.ads.value()[1].creative_scanning_metadata.has_value());
+  EXPECT_EQ("scan me", *group.ads.value()[1].creative_scanning_metadata);
+
+  ASSERT_TRUE(group.ad_components.has_value());
+  ASSERT_EQ(group.ad_components->size(), 1u);
+  ASSERT_TRUE(
+      group.ad_components.value()[0].creative_scanning_metadata.has_value());
+  EXPECT_EQ("me too",
+            *group.ad_components.value()[0].creative_scanning_metadata);
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
@@ -9040,10 +9079,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {
   }
 
   // Check ResourceRequest structs of report requests.
-  const GURL kExpectedReportUrls[] = {
+  const auto kExpectedReportUrls = std::to_array<GURL>({
       embedded_https_test_server().GetURL("a.test", "/echoall?report_seller"),
       embedded_https_test_server().GetURL("a.test", "/echoall?report_bidder"),
-  };
+  });
   for (const auto& expected_report_url : kExpectedReportUrls) {
     SCOPED_TRACE(expected_report_url);
 
@@ -11448,10 +11487,10 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
   }
 
   // Check ResourceRequest structs of report requests.
-  const GURL kExpectedReportUrls[] = {
+  const auto kExpectedReportUrls = std::to_array<GURL>({
       embedded_https_test_server().GetURL("a.test", "/echoall?report_seller"),
       embedded_https_test_server().GetURL("a.test", "/echoall?report_bidder"),
-  };
+  });
   for (const auto& expected_report_url : kExpectedReportUrls) {
     SCOPED_TRACE(expected_report_url);
 
@@ -13485,19 +13524,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                  MakeAdsValue(
                      {{{ad_url, R"({"ad":"metadata","here":[1,2]})"}}}))));
 
-  std::string auction_config = JsReplace(
-      R"({
-    seller: $1,
-    decisionLogicURL: $2,
-    interestGroupBuyers: [$1],
-    auctionSignals: {x: 1},
-    sellerSignals: {yet: 'more', info: 1},
-    perBuyerSignals: {$1: {even: 'more', x: 4.5}}
-                })",
-      test_origin,
-      embedded_https_test_server().GetURL("a.test",
-                                          "/interest_group/decision_logic.js"));
-
   // All leaveAdInterestGroup wrapper calls wait for the returned promise to
   // complete. Inline the call to avoid waiting.
   EXPECT_EQ("done", EvalJs(shell(), JsReplace(R"(
@@ -14725,6 +14751,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupWorkletValidationBrowserTest,
   perBuyerPrioritySignals: {$4: {foo: 1}, '*': {BaR: -2}},
   perBuyerCurrencies: {$4: 'USD', $5: 'CAD', '*': 'EUR'},
   sellerCurrency: 'EUR',
+  sendCreativeScanningMetadata: true,
 })",
                    seller_origin, seller_script_url,
                    embedded_https_test_server().GetURL(
@@ -14876,7 +14903,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   perBuyerCumulativeTimeouts: {$4: 13000, $5: 14000, '*': 16000},
   perBuyerPrioritySignals: {$4: {foo: 1}, '*': {BaR: -2}},
   perBuyerCurrencies: {$4: 'USD', $5: 'CAD', '*': 'EUR'},
-  sellerCurrency: 'EUR'
+  sellerCurrency: 'EUR',
+  sendCreativeScanningMetadata: true,
 })",
                          seller_origin, seller_script_url,
                          embedded_https_test_server().GetURL(
@@ -17356,10 +17384,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
 
 // Make sure that the IPAddressSpace of the frame that triggers the update is
 // respected for the update request. Does this by adding an interest group,
-// trying to update it from a public page, and expecting the request to be
-// blocked, and then adding another interest group and updating it from a
-// private page, which should succeed. Have to use two interest groups to avoid
-// the delay between updates.
+// trying to update it from a public page. The update since updates are
+// considered same-origin requests and the private networking logic exempts
+// those from needing preflights. Checks the IPAddressSpace passed to the
+// network layer, though, to make sure the correct one is passed in. Have to use
+// two interest groups to avoid the delay between updates.
 IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
                        UpdatePublicVsPrivateNetwork) {
   const char kPubliclyUpdateGroupName[] = "Publicly updated group";
@@ -17431,51 +17460,45 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
     ASSERT_TRUE(request.trusted_params->isolation_info.network_isolation_key()
                     .IsTransient());
 
-    // The request should be blocked in the public address space case.
-    if (public_address_space) {
-      EXPECT_EQ(
-          net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
-          url_loader_monitor.WaitForRequestCompletion(update_url).error_code);
-    } else {
-      EXPECT_EQ(
-          net::OK,
-          url_loader_monitor.WaitForRequestCompletion(update_url).error_code);
-    }
+    // The request should succeed in both cases, due to being same-origin.
+    EXPECT_EQ(
+        net::OK,
+        url_loader_monitor.WaitForRequestCompletion(update_url).error_code);
 
     url_loader_monitor.ClearRequests();
   }
 
-  // Wait for the kLocallyUpdateGroupName interest group to have an updated
-  // bidding URL, while expecting the kPubliclyUpdateGroupName to continue to
-  // have the original bidding URL. Have to wait because just because
+  // Wait for both groups to be updated. Have to wait because just because
   // URLLoaderMonitor has seen the request completed successfully doesn't mean
   // that the InterestGroup has been updated yet.
   WaitForInterestGroupsSatisfying(
       url::Origin::Create(initial_bidding_url),
       base::BindLambdaForTesting(
           [&](scoped_refptr<StorageInterestGroups> storage_groups) {
-            bool found_updated_group = false;
+            bool publicly_updated_group_updated = false;
+            bool locally_updated_group_updated = false;
             for (const auto& storage_group :
                  storage_groups->GetInterestGroups()) {
               const blink::InterestGroup& group = storage_group->interest_group;
               if (group.name == kPubliclyUpdateGroupName) {
-                EXPECT_EQ(initial_bidding_url, group.bidding_url);
+                publicly_updated_group_updated =
+                    (new_bidding_url == group.bidding_url);
               } else {
                 EXPECT_EQ(group.name, kLocallyUpdateGroupName);
-                found_updated_group = (new_bidding_url == group.bidding_url);
+                locally_updated_group_updated =
+                    (new_bidding_url == group.bidding_url);
               }
             }
-            return found_updated_group;
+            return publicly_updated_group_updated &&
+                   locally_updated_group_updated;
           }));
 }
 
 // Create three interest groups, each belonging to different origins. Update one
 // on a private network, but delay its server response. Update the second on a
-// public network (thus expecting the request to be blocked). Update the final
-// interest group on a private interest group -- it should be updated after the
-// first two. After the server responds to the first update request, all updates
-// should proceed -- the first should succeed, and the second should be blocked
-// since the page is on a public network, and the third should succeed.
+// public network. Update the final interest group on a private interest group
+// -- it should be updated after the first two. After the server responds to the
+// first update request, all updates should proceed, and succeed.
 IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
                        PrivateNetProtectionsApplyToSubsequentUpdates) {
   constexpr char kLocallyUpdateGroupName[] = "Locally updated group";
@@ -17542,8 +17565,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
 
   // Now, create an interest group in b.test and start updating it from a
   // public site. The update will be delayed because the first interest group
-  // hasn't finished updating, and it should get blocked because we are on a
-  // public page.
+  // hasn't finished updating.
   ASSERT_TRUE(NavigateToURL(
       shell(),
       embedded_https_test_server().GetURL(
@@ -17563,8 +17585,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
 
   EXPECT_EQ("done", UpdateInterestGroupsInJS());
 
-  // Finally, create and update the last interest group on a private network --
-  // this update shouldn't be blocked.
+  // Finally, create and update the last interest group on a private network.
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_https_test_server().GetURL("c.test", "/echo")));
 
@@ -17586,8 +17607,23 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
   network_responder_->DoDeferredUpdateResponse(
       JsReplace(kUpdateContentTemplate, new_bidding_url_a));
 
-  // Wait for the c.test to update -- after it updates, all the other interest
-  // groups should have updated too.
+  // Wait for all the interest groups to update.
+  WaitForInterestGroupsSatisfying(
+      url::Origin::Create(initial_bidding_url_a),
+      base::BindLambdaForTesting(
+          [&](scoped_refptr<StorageInterestGroups> storage_groups) {
+            return storage_groups->size() == 1 &&
+                   storage_groups->GetInterestGroups()[0]
+                           ->interest_group.bidding_url == new_bidding_url_a;
+          }));
+  WaitForInterestGroupsSatisfying(
+      url::Origin::Create(initial_bidding_url_b),
+      base::BindLambdaForTesting(
+          [&](scoped_refptr<StorageInterestGroups> storage_groups) {
+            return storage_groups->size() == 1 &&
+                   storage_groups->GetInterestGroups()[0]
+                           ->interest_group.bidding_url == new_bidding_url_b;
+          }));
   WaitForInterestGroupsSatisfying(
       url::Origin::Create(initial_bidding_url_c),
       base::BindLambdaForTesting(
@@ -17596,30 +17632,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
                    storage_groups->GetInterestGroups()[0]
                            ->interest_group.bidding_url == new_bidding_url_c;
           }));
-
-  // By this point, all the interest group updates should have completed.
-  scoped_refptr<StorageInterestGroups> a_groups =
-      GetInterestGroupsForOwner(url::Origin::Create(initial_bidding_url_a));
-  ASSERT_EQ(a_groups->size(), 1u);
-  EXPECT_EQ(a_groups->GetInterestGroups()[0]->interest_group.bidding_url,
-            new_bidding_url_a);
-
-  scoped_refptr<StorageInterestGroups> b_groups =
-      GetInterestGroupsForOwner(url::Origin::Create(initial_bidding_url_b));
-  ASSERT_EQ(b_groups->size(), 1u);
-
-  // Because it was updated on a public address, the update for b.test didn't
-  // happen.
-  EXPECT_EQ(b_groups->GetInterestGroups()[0]->interest_group.bidding_url,
-            initial_bidding_url_b);
 }
 
 // Join interest groups with local (private) update URLs, and run auctions from
 // both a a main frame loaded with public address space, and with a private
-// address space. The auctions trigger updates the interest groups, but only the
-// frame using a private address space successfully updates the IG, since frames
-// from public address spaces are blocked from making requests to servers with
-// private addresses.
+// address space. Check that the address space of the main frame is always used
+// for the updated.
 //
 // Different interest groups (with different origins) are used for the public
 // and private auction, to avoid running into update rate limits.
@@ -17628,16 +17646,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
   // Fetches for the interest group-related scripts and updates are always
   // local, it's where they're updated from that matters. Interest group A will
   // be updated from an auction on a public origin, and B from a private one.
-  // Only the second update will succeed.
-  //
-  // It's important to do the successful update last, so that the first update
-  // would have most likely succeeded by that point in time, if it were going
-  // to, since there's no exposed API to wait for an interest group update to
-  // fail, though the test does wait for the update network request itself to
-  // succeed / fail. As of this writing, the current updating queuing should
-  // guarantee updates for one origin start only after previously requested
-  // updates for another origin have completed (successfully or unsuccessfully),
-  // but this test should be robust against changes in that logic.
   const url::Origin interest_group_a_origin =
       embedded_https_test_server().GetOrigin("a.test");
   const url::Origin interest_group_b_origin =
@@ -17713,7 +17721,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
         test_case.interest_group_origin));
     if (test_case.run_auction_from_public_address_space) {
       // The auction fails because the scripts get blocked; the update request
-      // should still happen, though it will also ultimately be blocked.
+      // should still happen.
       EXPECT_EQ(nullptr, auction_result);
     } else {
       TestFencedFrameURLMappingResultObserver observer;
@@ -17731,18 +17739,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
       EXPECT_EQ(
           network::mojom::IPAddressSpace::kPublic,
           request.trusted_params->client_security_state->ip_address_space);
-      // The request should be blocked in the public address space case.
-      EXPECT_EQ(
-          net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
-          url_loader_monitor.WaitForRequestCompletion(update_url).error_code);
     } else {
       EXPECT_EQ(
           network::mojom::IPAddressSpace::kLocal,
           request.trusted_params->client_security_state->ip_address_space);
-      EXPECT_EQ(
-          net::OK,
-          url_loader_monitor.WaitForRequestCompletion(update_url).error_code);
     }
+
+    // The update should succeed in both cases.
+    EXPECT_EQ(
+        net::OK,
+        url_loader_monitor.WaitForRequestCompletion(update_url).error_code);
 
     // Not the main purpose of this test, but it should be using a transient
     // NetworkIsolationKey as well.
@@ -17772,14 +17778,14 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
   WaitForInterestGroupsSatisfying(interest_group_b_origin,
                                   check_for_new_ad_url);
 
-  // Check that interest group A's ad URL was not updated.
+  // Check that interest group A's ad URL was also updated.
   auto storage_groups = GetInterestGroupsForOwner(interest_group_a_origin);
   ASSERT_EQ(storage_groups->size(), 1u);
   const blink::InterestGroup& group =
       storage_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
-  EXPECT_EQ(initial_ad_url, group.ads.value()[0].render_url());
+  EXPECT_EQ(new_ad_url, group.ads.value()[0].render_url());
 }
 
 // Interest group APIs succeeded (i.e., feature join-ad-interest-group is
@@ -18336,7 +18342,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, DeprecatedURNToURLInvalidURN) {
 // doesn't send reports, then run a case that does, and finally make sure that
 // reports were only sent for the first case.
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, DeprecatedURNToURLValidURN) {
-  const struct {
+  struct TestCases {
     bool send_reports;
     // Host for buyer, seller, and publisher. Use a different hostname for each
     // loop iteration so they can use different interest groups.
@@ -18344,7 +18350,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, DeprecatedURNToURLValidURN) {
     // Path for reports. Have to be different so can make reports are only send
     // when `send_reports` is true.
     GURL report_url;
-  } kTestCases[] = {
+  };
+  const auto kTestCases = std::to_array<TestCases>({
       {
           /*send_reports=*/false,
           /*host=*/"a.test",
@@ -18356,7 +18363,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, DeprecatedURNToURLValidURN) {
           /*host=*/"b.test",
           /*report_path=*/
           embedded_https_test_server().GetURL("c.test", "/report_for_b"),
-      }};
+      },
+  });
 
   for (const auto& test_case : kTestCases) {
     base::HistogramTester histogram_tester;
@@ -20956,7 +20964,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
       ->GetDefaultStoragePartition()
       ->SetNetworkContextForTesting(std::move(pending_remote));
 
-  std::string result = GetInterestGroupAdAuctionData(test_origin, std::nullopt);
+  std::ignore = GetInterestGroupAdAuctionData(test_origin, std::nullopt);
 
   static_cast<PreconnectCheckingNetworkContext*>(preconnect_check->impl())
       ->run_loop()
@@ -23925,8 +23933,6 @@ IN_PROC_BROWSER_TEST_F(UsesAnticipatoryProcessesTest,
   url::Origin joining_origin = url::Origin::Create(joining_url);
   ASSERT_TRUE(NavigateToURL(shell(), joining_url));
 
-  // Join an interest group. The owner, a.test, will be in the in-memory
-  // cache.
   GURL ad_url =
       embedded_https_test_server().GetURL("a.test", "/echo?render_winner");
   // Use a bidding script that does not bid to prevent the auction from having a
@@ -23946,8 +23952,6 @@ IN_PROC_BROWSER_TEST_F(UsesAnticipatoryProcessesTest,
   WaitForAccessObserved({{"global", TestInterestGroupObserver::kJoin,
                           interest_group.owner, "interest_group"}});
   std::optional<url::Origin> cached_signals_origin;
-  EXPECT_TRUE(manager_->GetCachedOwnerAndSignalsOrigins(interest_group.owner,
-                                                        cached_signals_origin));
 
   const char kConfigTemplate[] = R"({
         seller: $1,
@@ -23977,6 +23981,26 @@ IN_PROC_BROWSER_TEST_F(UsesAnticipatoryProcessesTest,
       component_seller_script, interest_group.owner,
       url::Origin::Create(embedded_https_test_server().GetURL("b.test", "/")));
 
+  // Run an auction so that a.test will be cached.
+  {
+    base::HistogramTester histogram_tester;
+    auto result = RunAuctionAndWait(auction_config);
+    histogram_tester.ExpectUniqueSample("Ads.InterestGroup.Auction.Result",
+                                        AuctionResult::kNoBids, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
+        AuctionProcessManager::RequestWorkletServiceOutcome::
+            kCreatedNewDedicatedProcess,
+        2);
+    histogram_tester.ExpectUniqueSample(
+        "Ads.InterestGroup.Auction.Buyer.RequestWorkletServiceOutcome",
+        AuctionProcessManager::RequestWorkletServiceOutcome::
+            kCreatedNewDedicatedProcess,
+        1);
+    EXPECT_TRUE(manager_->GetCachedOwnerAndSignalsOrigins(
+        interest_group.owner, cached_signals_origin));
+  }
+
   // Run the auction.
   //
   // 1. a.test, the first buyer, is cached. That means we should start an
@@ -23989,18 +24013,21 @@ IN_PROC_BROWSER_TEST_F(UsesAnticipatoryProcessesTest,
   //
   // Overall there will be 1 anticipatory process started and 3 worklets
   // requested.
-  base::HistogramTester histogram_tester;
-  auto result = RunAuctionAndWait(auction_config);
-  histogram_tester.ExpectUniqueSample("Ads.InterestGroup.Auction.Result",
-                                      AuctionResult::kNoBids, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
-      AuctionProcessManager::RequestWorkletServiceOutcome::
-          kCreatedNewDedicatedProcess,
-      2);
-  histogram_tester.ExpectUniqueSample(
-      "Ads.InterestGroup.Auction.Buyer.RequestWorkletServiceOutcome",
-      AuctionProcessManager::RequestWorkletServiceOutcome::kUsedIdleProcess, 1);
+  {
+    base::HistogramTester histogram_tester;
+    auto result = RunAuctionAndWait(auction_config);
+    histogram_tester.ExpectUniqueSample("Ads.InterestGroup.Auction.Result",
+                                        AuctionResult::kNoBids, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Ads.InterestGroup.Auction.Seller.RequestWorkletServiceOutcome",
+        AuctionProcessManager::RequestWorkletServiceOutcome::
+            kCreatedNewDedicatedProcess,
+        2);
+    histogram_tester.ExpectUniqueSample(
+        "Ads.InterestGroup.Auction.Buyer.RequestWorkletServiceOutcome",
+        AuctionProcessManager::RequestWorkletServiceOutcome::kUsedIdleProcess,
+        1);
+  }
 }
 
 class AuctionConfigReportingTimeoutEnabledTest
@@ -26615,13 +26642,16 @@ IN_PROC_BROWSER_TEST_P(InterestGroupPreconnectOwnerAndSignalsOriginsTest,
 
   // Join the interest group with no ads so that when we run an auction, it will
   // get filtered after it's loaded -- but we'll still preconnect to the server.
-  // This join will cache the bidding signals and owner origins.
+  // Loading the interest group and running UpdateCachedOriginsIfEnabled will
+  // cache the bidding signals and owner origins.
   blink::InterestGroup interest_group_without_ads = interest_group;
   interest_group_without_ads.ads = std::nullopt;
   AttachInterestGroupObserver();
   manager_->JoinInterestGroup(interest_group_without_ads, joining_url);
   WaitForAccessObserved({{"global", TestInterestGroupObserver::kJoin,
                           interest_group_without_ads.owner, "interest_group"}});
+  GetInterestGroupsForOwner(interest_group.owner);
+  manager_->UpdateCachedOriginsIfEnabled(interest_group.owner);
   std::optional<url::Origin> cached_signals_origin;
   EXPECT_TRUE(manager_->GetCachedOwnerAndSignalsOrigins(
       interest_group_without_ads.owner, cached_signals_origin));
@@ -26941,11 +26971,11 @@ class InterestGroupTrustedSignalsKVv2BrowserTest
           }
         ])";
 
-    const uint8_t kTestPrivateKey[] = {
+    const auto kTestPrivateKey = std::to_array<uint8_t>({
         0xff, 0x1f, 0x47, 0xb1, 0x68, 0xb6, 0xb9, 0xea, 0x65, 0xf7, 0x97,
         0x4f, 0xf2, 0x2e, 0xf2, 0x36, 0x94, 0xe2, 0xf6, 0xb6, 0x8d, 0x66,
         0xf3, 0xa7, 0x64, 0x14, 0x28, 0xd4, 0x45, 0x35, 0x01, 0x8f,
-    };
+    });
 
     base::AutoLock auto_lock(lock_);
 

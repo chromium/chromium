@@ -14,11 +14,10 @@
 
 ChromeWebContentsViewDelegateAndroid::ChromeWebContentsViewDelegateAndroid(
     content::WebContents* web_contents)
-    : web_contents_(web_contents) {
-}
+    : web_contents_(web_contents) {}
 
-ChromeWebContentsViewDelegateAndroid::~ChromeWebContentsViewDelegateAndroid() {
-}
+ChromeWebContentsViewDelegateAndroid::~ChromeWebContentsViewDelegateAndroid() =
+    default;
 
 content::WebDragDestDelegate*
 ChromeWebContentsViewDelegateAndroid::GetDragDestDelegate() {
@@ -32,18 +31,19 @@ void ChromeWebContentsViewDelegateAndroid::ShowContextMenu(
     const content::ContextMenuParams& params) {
   // TODO(dtrainor, kouhei): Give WebView a Populator/delegate so it can use
   // the same context menu code.
-  ContextMenuHelper* helper =
-      ContextMenuHelper::FromWebContents(web_contents_);
-  if (helper)
+  ContextMenuHelper* helper = ContextMenuHelper::FromWebContents(web_contents_);
+  if (helper) {
     helper->ShowContextMenu(render_frame_host, params);
+  }
 }
 
 void ChromeWebContentsViewDelegateAndroid::DismissContextMenu() {
   // ContextMenuHelper is a WebContentsUserData, so it will be the same obj used
   // in #ShowContextMenu().
   ContextMenuHelper* helper = ContextMenuHelper::FromWebContents(web_contents_);
-  if (helper)
+  if (helper) {
     helper->DismissContextMenu();
+  }
 }
 
 std::unique_ptr<content::WebContentsViewDelegate> CreateWebContentsViewDelegate(

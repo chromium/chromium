@@ -43,6 +43,9 @@ class LogRouter : public KeyedService {
   // Enables recording autofill-internals logs to LOG(INFO).
   void LogToTerminal();
 
+  // Returns whether this logger has receivers.
+  bool HasReceivers() const;
+
   // All four (Unr|R)egister* methods below are safe to call from the
   // constructor of the registered object, because they do not call that object,
   // and the router only runs on a single thread.

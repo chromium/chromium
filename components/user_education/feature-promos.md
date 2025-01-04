@@ -273,7 +273,7 @@ trigger your IPH. Verify it shows when it should, and then verify that it does
 not reshow when dismissed or after your feature is used.
 
 If you want to see or clear the data around your IPH feature (including whether
-it has been permanently dismissed) go to `chrome://internals/user-education`,
+it has been permanently dismissed) go to `chrome://user-education-internals`,
 find your feature, and expand the trays underneath to see and optionally clear
 the recorded data. Clearing the data can allow you to trigger your feature over
 and over on the same profile.
@@ -293,7 +293,7 @@ logic is getting called in the right place.
 ### Manual approach 3: Tester Page
 
 If you just want to preview what your help bubble will look like, you can go to
-the tester page at `chrome://internals/user-education`, find your promo, and
+the tester page at `chrome://user-education-internals`, find your promo, and
 click the "Launch" button. This will attempt to show your IPH in the current UI.
 Note that if your IPH anchors to an element that is not present, it will not be
 able to show.

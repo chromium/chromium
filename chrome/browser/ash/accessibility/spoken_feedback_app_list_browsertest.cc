@@ -29,6 +29,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "components/user_manager/user_names.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/test/browser_test.h"
@@ -191,12 +192,14 @@ class SpokenFeedbackAppListBaseTest : public LoggedInSpokenFeedbackTest {
 
     // Disable the app list nudge in the spoken feedback app list test.
     AppListTestApi().DisableAppListNudge(true);
+    AppListControllerImpl::SetSunfishNudgeDisabledForTest(true);
 
     scoped_feature_list_.InitWithFeatures(
         {features::kProductivityLauncherImageSearch,
          features::kLauncherSearchControl,
          features::kFeatureManagementLocalImageSearch},
-        {features::kScannerDogfood});
+        {features::kScannerDogfood, features::kSunfishFeature,
+         ash::assistant::features::kEnableNewEntryPoint});
 
     LoggedInSpokenFeedbackTest::SetUp();
   }

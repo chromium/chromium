@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_DECORATORS_FRAME_VISIBILITY_DECORATOR_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_DECORATORS_FRAME_VISIBILITY_DECORATOR_H_
 
-#include "components/performance_manager/graph/initializing_frame_node_observer.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -23,9 +22,9 @@ namespace performance_manager {
 // of FrameNode::Visibility::kUnknown. This can happen early in the lifetime of
 // a frame, where it hasn't been assigned its viewport intersection yet.
 class FrameVisibilityDecorator : public GraphOwnedDefaultImpl,
-                                 public PageNode::ObserverDefaultImpl,
+                                 public PageNodeObserver,
                                  public PageLiveStateObserver,
-                                 public InitializingFrameNodeObserver {
+                                 public FrameNodeObserver {
  public:
   FrameVisibilityDecorator();
   ~FrameVisibilityDecorator() override;
@@ -63,7 +62,12 @@ class FrameVisibilityDecorator : public GraphOwnedDefaultImpl,
   void OnAccessibilityModeChanged(const PageNode* page_node) override {}
 
   // FrameNodeObserver:
-  void OnFrameNodeInitializing(const FrameNode* frame_node) override;
+  void OnBeforeFrameNodeAdded(
+      const FrameNode* frame_node,
+      const FrameNode* pending_parent_frame_node,
+      const PageNode* pending_page_node,
+      const ProcessNode* pending_process_node,
+      const FrameNode* pending_parent_or_outer_document_or_embedder) override;
   void OnCurrentFrameChanged(const FrameNode* previous_frame_node,
                              const FrameNode* current_frame_node) override;
   void OnViewportIntersectionChanged(const FrameNode* frame_node) override;

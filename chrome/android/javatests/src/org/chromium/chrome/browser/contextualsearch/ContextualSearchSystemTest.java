@@ -25,6 +25,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -92,7 +93,7 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    // Previously flaky and disabled in 2018.  See https://crbug.com/832539.
+    @DisabledTest(message = "Please see crbug.com/832539 for all the details.")
     public void testContextualSearchDismissedOnForegroundTabCrash() throws Exception {
         triggerResolve(SEARCH_NODE);
         Assert.assertEquals(SEARCH_NODE_TERM, getSelectedText());

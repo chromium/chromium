@@ -886,8 +886,7 @@ WaitHistoryLoadedObserver::WaitHistoryLoadedObserver(
     : runner_(runner) {
 }
 
-WaitHistoryLoadedObserver::~WaitHistoryLoadedObserver() {
-}
+WaitHistoryLoadedObserver::~WaitHistoryLoadedObserver() = default;
 
 void WaitHistoryLoadedObserver::OnHistoryServiceLoaded(
     history::HistoryService* service) {

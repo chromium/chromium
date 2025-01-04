@@ -4,15 +4,26 @@
 
 #include "services/network/public/cpp/sri_message_signatures.h"
 
+#include <stdint.h>
+
 #include "base/base64.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/url_request.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
+#include "net/url_request/url_request_test_util.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/sri_message_signature.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace network {
 
@@ -26,6 +37,17 @@ namespace {
 // https://datatracker.ietf.org/doc/html/rfc9421#appendix-B.1.4
 const char* kPublicKey = "JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=";
 
+// Another base64 encoded Ed25519 key, randomly generated:
+//
+// {
+//   "crv": "Ed25519",
+//   "d": "MTodZiTA9CBsuIvSfO679TThkG3b7ce6R3sq_CdyVp4",
+//   "ext": true,
+//   "kty": "OKP",
+//   "x": "xDnP380zcL4rJ76rXYjeHlfMyPZEOqpJYjsjEppbuXE"
+// }
+const char* kPublicKey2 = "xDnP380zcL4rJ76rXYjeHlfMyPZEOqpJYjsjEppbuXE=";
+
 // The following constants are extracted from this known-good response that
 // matches the constraints described in
 // https://wicg.github.io/signature-based-sri/#verification-requirements-for-sri
@@ -36,29 +58,48 @@ const char* kPublicKey = "JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=";
 // Content-Type: application/json
 // Identity-Digest: sha-256=:X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=:
 // Content-Length: 18
-// Signature-Input:
-// signature=("identity-digest";sf);alg="ed25519";keyid="JrQLj5P/89iXES9+vFgrI \
-//           y29clF9CC/oPPsw3c5D0bs=";tag="sri"
-// Signature: signature=:H7AqWWgo1DJ7VdyF9DKotG/4hvatKDfRTq2mpuY/hvJupSn+EYzus \
-//            5p24qPK7DtVQcxJFhzSYDj4RBq9grZTAQ==:
+// Signature-Input: signature=("identity-digest";sf); \
+//                  keyid="JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs="; \
+//                  tag="sri"
+// Signature: signature=:eTKYITprfJYJmsOZlRTmu0szHbt0yLxHYBU0oXDdkx8najLl59IPO \
+//                       0zUofe5T23RGuquHLdZx177tBX45CUcAg==:
 //
 // {"hello": "world"}
 // ```
 const char* kSignature =
-    "H7AqWWgo1DJ7VdyF9DKotG/4hvatKDfRTq2mpuY/hvJupSn+EYzus"
-    "5p24qPK7DtVQcxJFhzSYDj4RBq9grZTAQ==";
+    "eTKYITprfJYJmsOZlRTmu0szHbt0yLxHYBU0oXDdkx8najLl59IPO0zUofe5T23RGuquHLdZx1"
+    "77tBX45CUcAg==";
 
-const char* kValidSignatureInputHeader =
-    "signature=(\"identity-digest\";sf);alg=\"ed25519\";keyid=\"JrQLj5P/"
-    "89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";tag=\"sri\"";
-const char* kValidSignatureHeader =
-    "signature=:H7AqWWgo1DJ7VdyF9DKotG/4hvatKDfRTq2mpuY/hvJupSn+EYzus5p24qPK7Dt"
-    "VQcxJFhzSYDj4RBq9grZTAQ==:";
 const char* kValidDigestHeader =
     "sha-256=:X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=:";
 const char* kValidDigestHeader512 =
     "sha-512=:WZDPaVn/7XgHaAy8pmojAkGWoRx2UFChF41A2svX+TaPm+AbwAgBWnrIiYllu7BNN"
     "yealdVLvRwEmTHWXvJwew==:";
+
+// A basic signature header set with no expiration.
+const char* kValidSignatureInputHeader =
+    "signature=(\"identity-digest\";sf);keyid=\"JrQLj5P/89iXES9+vFgrIy29clF9CC/"
+    "oPPsw3c5D0bs=\";tag=\"sri\"";
+const char* kValidSignatureHeader =
+    "signature=:eTKYITprfJYJmsOZlRTmu0szHbt0yLxHYBU0oXDdkx8najLl59IPO0zUofe5T23"
+    "RGuquHLdZx177tBX45CUcAg==:";
+
+// The following signature was generated using test-key-ed25519 from RFC 9421
+// (https://datatracker.ietf.org/doc/html/rfc9421#appendix-B.1.4),
+// the same key used for generating the constants above.
+//
+// A valid signature header set with expiration in the future (2142-12-30).
+const char* kValidExpiringSignatureInputHeader =
+    "signature=(\"identity-digest\";sf);expires=5459212800;"
+    "keyid=\"JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";tag=\"sri\"";
+const char* kValidExpiringSignatureHeader =
+    "signature=:a3oS5RVl6PYHwBa83M0OB1+sEBzRcmU4pLyWywTeBqWfwUQmasxYaJKJxM9hkEW"
+    "dFNjzkC5ako2YKEyTdRuFDg==:";
+const int64_t kValidExpiringSignatureExpiresAt = 5459212800;
+
+constexpr std::string_view kAcceptSignature = "accept-signature";
+
+const GURL kExampleURL = GURL("https://example.test/");
 
 }  // namespace
 
@@ -79,9 +120,10 @@ class SRIMessageSignatureParserTest : public testing::Test {
     return builder.Build();
   }
 
+  const GURL& url() { return kExampleURL; }
+
   void ValidateBasicTestHeader(const mojom::SRIMessageSignaturePtr& sig) {
     EXPECT_EQ("signature", sig->label);
-    EXPECT_EQ(mojom::SRIMessageSignature::Algorithm::kEd25519, sig->alg);
     EXPECT_EQ(std::nullopt, sig->created);
     EXPECT_EQ(std::nullopt, sig->expires);
     EXPECT_EQ(kPublicKey, sig->keyid);
@@ -274,6 +316,19 @@ TEST_F(SRIMessageSignatureParserTest, MalformedSignatureInputComponents) {
       "signature=(\"identity-digest\";sf=%\"display\")",
       "signature=(\"identity-digest\";sf=:badbeef:)",
       "signature=(\"identity-digest\";sf;not-sf)",
+
+      // One valid, one invalid component:
+      "signature=(\"identity-digest\";sf \"unknown\")",
+      "signature=(\"unknown\" \"identity-digest\";sf)",
+      "signature=(\"identity-digest\";sf \"@path\")",  // No `;req` on `@path`
+      "signature=(\"@path\" \"identity-digest\";sf)",
+      "signature=(\"identity-digest\";sf @path;req)",  // `@path` isn't a string
+      "signature=(@path;req \"identity-digest\";sf)",
+
+      // Valid component, without valid `identity-digest`:
+      "signature=(\"identity-digest\" @path;req)",  // No `;sf`
+      "signature=(@path;req \"identity-digest\")",
+      "signature=(@path;req \"not-identity-digest\";sf)",
   };
 
   for (const char* test : cases) {
@@ -281,8 +336,8 @@ TEST_F(SRIMessageSignatureParserTest, MalformedSignatureInputComponents) {
 
     // Tack valid parameters onto the test string so that we're actually
     // just testing the component parsing.
-    std::string test_with_params = base::StrCat(
-        {test, ";alg=\"ed25519\";keyid=\"", kPublicKey, "\";tag=\"sri\""});
+    std::string test_with_params =
+        base::StrCat({test, ";keyid=\"", kPublicKey, "\";tag=\"sri\""});
     auto headers = GetHeaders(kValidSignatureHeader, test_with_params.c_str());
     std::vector<mojom::SRIMessageSignaturePtr> result =
         ParseSRIMessageSignaturesFromHeaders(*headers);
@@ -295,24 +350,17 @@ TEST_F(SRIMessageSignatureParserTest, MalformedSignatureInputComponents) {
 TEST_F(SRIMessageSignatureParserTest, MalformedSignatureInputParameters) {
   const char* cases[] = {
       // Missing a required parameter:
-      "alg=\"ed25519\"",
-      "alg=\"ed25519\";keyid=\"[KEY]\"",
-      "alg=\"ed25519\";tag=\"sri\"",
       "keyid=\"[KEY]\"",
-      "keyid=\"[KEY]\";tag=\"sri\"",
       "tag=\"sri\"",
 
       // Duplication (insofar as the invalid value comes last):
-      "alg=\"ed25519\";alg=\"not-ed25519\";keyid=\"[KEY]\";tag=\"sri\"",
-      "alg=\"ed25519\";keyid=\"[KEY]\";keyid=\"not-[KEY]\";tag=\"sri\"",
-      "alg=\"ed25519\";keyid=\"[KEY]\";tag=\"sri\";tag=\"not-sri\"",
+      "keyid=\"[KEY]\";keyid=\"not-[KEY]\";tag=\"sri\"",
+      "keyid=\"[KEY]\";tag=\"sri\";tag=\"not-sri\"",
 
       // Unknown parameter:
-      "alg=\"ed25519\";keyid=\"[KEY]\";tag=\"sri\";unknown=1",
+      "keyid=\"[KEY]\";tag=\"sri\";unknown=1",
 
-      // Invalid alg:
-      //
-      // - Types:
+      // Alg is present:
       "alg=;keyid=\"[KEY]\";tag=\"sri\"",
       "alg=1;keyid=\"[KEY]\";tag=\"sri\"",
       "alg=1.1;keyid=\"[KEY]\";tag=\"sri\"",
@@ -321,76 +369,75 @@ TEST_F(SRIMessageSignatureParserTest, MalformedSignatureInputParameters) {
       "alg=@12345;keyid=\"[KEY]\";tag=\"sri\"",
       "alg=%\"display\";keyid=\"[KEY]\";tag=\"sri\"",
       "alg=:badbeef:;keyid=\"[KEY]\";tag=\"sri\"",
-      // - Values
-      "alg=\"not-ed25519\";keyid=\"[KEY]\";tag=\"sri\"",
+      "alg=\"ed25519\";keyid=\"[KEY]\";tag=\"sri\"",
 
       // Invalid `created`:
       //
       // - Types:
-      "alg=\"ed25519\";created=;keyid=\"[KEY]\";tag=\"sri\"",
-      "alg=\"ed25519\";created=1.1;keyid=\"[KEY]\";tag=\"sri\"",
-      "alg=\"ed25519\";created=\"string\";keyid=\"[KEY]\";tag=\"sri\"",
-      "alg=\"ed25519\";created=token;keyid=\"[KEY]\";tag=\"sri\"",
-      "alg=\"ed25519\";created=?0;keyid=\"[KEY]\";tag=\"sri\"",
-      "alg=\"ed25519\";created=@12345;keyid=\"[KEY]\";tag=\"sri\"",
-      "alg=\"ed25519\";created=%\"display\";keyid=\"[KEY]\";tag=\"sri\"",
-      "alg=\"ed25519\";created=:badbeef:;keyid=\"[KEY]\";tag=\"sri\"",
+      "created=;keyid=\"[KEY]\";tag=\"sri\"",
+      "created=1.1;keyid=\"[KEY]\";tag=\"sri\"",
+      "created=\"string\";keyid=\"[KEY]\";tag=\"sri\"",
+      "created=token;keyid=\"[KEY]\";tag=\"sri\"",
+      "created=?0;keyid=\"[KEY]\";tag=\"sri\"",
+      "created=@12345;keyid=\"[KEY]\";tag=\"sri\"",
+      "created=%\"display\";keyid=\"[KEY]\";tag=\"sri\"",
+      "created=:badbeef:;keyid=\"[KEY]\";tag=\"sri\"",
       // - Values
-      "alg=\"ed25519\";created=-1;keyid=\"[KEY]\";tag=\"sri\"",
+      "created=-1;keyid=\"[KEY]\";tag=\"sri\"",
 
       // Invalid `expires`:
       //
       // - Types:
-      "alg=\"ed25519\";expires=;keyid=\"[KEY]\";tag=\"sri\"",
-      "alg=\"ed25519\";expires=1.1;keyid=\"[KEY]\";tag=\"sri\"",
-      "alg=\"ed25519\";expires=\"string\";keyid=\"[KEY]\";tag=\"sri\"",
-      "alg=\"ed25519\";expires=token;keyid=\"[KEY]\";tag=\"sri\"",
-      "alg=\"ed25519\";expires=?0;keyid=\"[KEY]\";tag=\"sri\"",
-      "alg=\"ed25519\";expires=@12345;keyid=\"[KEY]\";tag=\"sri\"",
-      "alg=\"ed25519\";expires=%\"display\";keyid=\"[KEY]\";tag=\"sri\"",
-      "alg=\"ed25519\";expires=:badbeef:;keyid=\"[KEY]\";tag=\"sri\"",
+      "expires=;keyid=\"[KEY]\";tag=\"sri\"",
+      "expires=1.1;keyid=\"[KEY]\";tag=\"sri\"",
+      "expires=\"string\";keyid=\"[KEY]\";tag=\"sri\"",
+      "expires=token;keyid=\"[KEY]\";tag=\"sri\"",
+      "expires=?0;keyid=\"[KEY]\";tag=\"sri\"",
+      "expires=@12345;keyid=\"[KEY]\";tag=\"sri\"",
+      "expires=%\"display\";keyid=\"[KEY]\";tag=\"sri\"",
+      "expires=:badbeef:;keyid=\"[KEY]\";tag=\"sri\"",
       // - Values
-      "alg=\"ed25519\";expires=-1;keyid=\"[KEY]\";tag=\"sri\"",
+      "expires=-1;keyid=\"[KEY]\";tag=\"sri\"",
 
       // Invalid `keyid`:
       //
       // - Types
-      "alg=\"ed25519\";keyid=;tag=\"sri\"",
-      "alg=\"ed25519\";keyid=1;tag=\"sri\"",
-      "alg=\"ed25519\";keyid=1.1;tag=\"sri\"",
-      "alg=\"ed25519\";keyid=token;tag=\"sri\"",
-      "alg=\"ed25519\";keyid=?0;tag=\"sri\"",
-      "alg=\"ed25519\";keyid=@12345;tag=\"sri\"",
-      "alg=\"ed25519\";keyid=%\"display\";tag=\"sri\"",
-      "alg=\"ed25519\";keyid=:badbeef:;tag=\"sri\"",
+      "keyid=;tag=\"sri\"",
+      "keyid=1;tag=\"sri\"",
+      "keyid=1.1;tag=\"sri\"",
+      "keyid=token;tag=\"sri\"",
+      "keyid=?0;tag=\"sri\"",
+      "keyid=@12345;tag=\"sri\"",
+      "keyid=%\"display\";tag=\"sri\"",
+      "keyid=:badbeef:;tag=\"sri\"",
       // - Values
-      "alg=\"ed25519\";keyid=\"not a base64-encoded key\";tag=\"sri\"",
+      "keyid=\"not a base64-encoded key\";tag=\"sri\"",
 
       // Invalid `nonce`:
       //
       // - Types
-      "alg=\"ed25519\";keyid=\"[KEY]\";nonce=;tag=\"not-sri\"",
-      "alg=\"ed25519\";keyid=\"[KEY]\";nonce=1;tag=\"not-sri\"",
-      "alg=\"ed25519\";keyid=\"[KEY]\";nonce=1.1;tag=\"not-sri\"",
-      "alg=\"ed25519\";keyid=\"[KEY]\";nonce=token;tag=\"not-sri\"",
-      "alg=\"ed25519\";keyid=\"[KEY]\";nonce=?0;tag=\"not-sri\"",
-      "alg=\"ed25519\";keyid=\"[KEY]\";nonce=@12345;tag=\"not-sri\"",
-      "alg=\"ed25519\";keyid=\"[KEY]\";nonce=%\"display\";tag=\"not-sri\"",
-      "alg=\"ed25519\";keyid=\"[KEY]\";nonce=:badbeef:;tag=\"not-sri\"",
+      "keyid=\"[KEY]\";nonce=;tag=\"not-sri\"",
+      "keyid=\"[KEY]\";nonce=1;tag=\"not-sri\"",
+      "keyid=\"[KEY]\";nonce=1.1;tag=\"not-sri\"",
+      "keyid=\"[KEY]\";nonce=token;tag=\"not-sri\"",
+      "keyid=\"[KEY]\";nonce=?0;tag=\"not-sri\"",
+      "keyid=\"[KEY]\";nonce=@12345;tag=\"not-sri\"",
+      "keyid=\"[KEY]\";nonce=%\"display\";tag=\"not-sri\"",
+      "keyid=\"[KEY]\";nonce=:badbeef:;tag=\"not-sri\"",
 
       // Invalid `tag`:
       //
       // - Types
-      "alg=\"ed25519\";keyid=\"[KEY]\";tag=",
-      "alg=\"ed25519\";keyid=\"[KEY]\";tag=1",
-      "alg=\"ed25519\";keyid=\"[KEY]\";tag=1.1",
-      "alg=\"ed25519\";keyid=\"[KEY]\";tag=token",
-      "alg=\"ed25519\";keyid=\"[KEY]\";tag=?0",
-      "alg=\"ed25519\";keyid=\"[KEY]\";tag=@12345",
-      "alg=\"ed25519\";keyid=\"[KEY]\";tag=%\"display\"",
-      "alg=\"ed25519\";keyid=\"[KEY]\";tag=:badbeef:",
+      "keyid=\"[KEY]\";tag=",
+      "keyid=\"[KEY]\";tag=1",
+      "keyid=\"[KEY]\";tag=1.1",
+      "keyid=\"[KEY]\";tag=token",
+      "keyid=\"[KEY]\";tag=?0",
+      "keyid=\"[KEY]\";tag=@12345",
+      "keyid=\"[KEY]\";tag=%\"display\"",
+      "keyid=\"[KEY]\";tag=:badbeef:",
       // - Values
-      "alg=\"ed25519\";keyid=\"[KEY]\";tag=\"not-sri\"",
+      "keyid=\"[KEY]\";tag=\"not-sri\"",
   };
 
   for (const char* test : cases) {
@@ -410,6 +457,36 @@ TEST_F(SRIMessageSignatureParserTest, MalformedSignatureInputParameters) {
   }
 }
 
+TEST_F(SRIMessageSignatureParserTest, ValidComponents) {
+  struct {
+    std::string_view components;
+    std::vector<std::string_view> expected_names;
+  } cases[] = {
+      {"\"identity-digest\";sf", {"identity-digest"}},
+      {"\"identity-digest\";sf \"@path\";req", {"identity-digest", "@path"}},
+      {"\"@path\";req \"identity-digest\";sf", {"@path", "identity-digest"}}};
+
+  for (const auto& test : cases) {
+    SCOPED_TRACE(testing::Message()
+                 << "Component value: `" << test.components << "`");
+
+    // Tack valid parameters onto the test string so that we're actually
+    // just testing the component parsing.
+    std::string test_with_params =
+        base::StrCat({"signature=(", test.components, ");keyid=\"", kPublicKey,
+                      "\";tag=\"sri\""});
+    auto headers = GetHeaders(kValidSignatureHeader, test_with_params.c_str());
+    std::vector<mojom::SRIMessageSignaturePtr> result =
+        ParseSRIMessageSignaturesFromHeaders(*headers);
+
+    ASSERT_EQ(1u, result.size());
+    ASSERT_EQ(test.expected_names.size(), result[0]->components.size());
+    for (size_t i = 0; i < test.expected_names.size(); i++) {
+      EXPECT_EQ(test.expected_names[i], result[0]->components[i]->name);
+    }
+  }
+}
+
 TEST_F(SRIMessageSignatureParserTest, Created) {
   const char* cases[] = {
       "0",
@@ -421,9 +498,9 @@ TEST_F(SRIMessageSignatureParserTest, Created) {
     SCOPED_TRACE(testing::Message() << "Created value: `" << test << "`");
 
     // Build the header.
-    std::string processed_input = base::StrCat(
-        {"signature=(\"identity-digest\";sf);alg=\"ed25519\";created=", test,
-         ";keyid=\"[KEY]\";tag=\"sri\""});
+    std::string processed_input =
+        base::StrCat({"signature=(\"identity-digest\";sf);created=", test,
+                      ";keyid=\"[KEY]\";tag=\"sri\""});
     size_t key_pos = processed_input.find("[KEY]");
     if (key_pos != std::string::npos) {
       processed_input.replace(key_pos, 5, kPublicKey);
@@ -452,9 +529,9 @@ TEST_F(SRIMessageSignatureParserTest, Expires) {
     SCOPED_TRACE(testing::Message() << "Expires value: `" << test << "`");
 
     // Build the header.
-    std::string processed_input = base::StrCat(
-        {"signature=(\"identity-digest\";sf);alg=\"ed25519\";expires=", test,
-         ";keyid=\"[KEY]\";tag=\"sri\""});
+    std::string processed_input =
+        base::StrCat({"signature=(\"identity-digest\";sf);expires=", test,
+                      ";keyid=\"[KEY]\";tag=\"sri\""});
     size_t key_pos = processed_input.find("[KEY]");
     if (key_pos != std::string::npos) {
       processed_input.replace(key_pos, 5, kPublicKey);
@@ -483,9 +560,9 @@ TEST_F(SRIMessageSignatureParserTest, Nonce) {
     SCOPED_TRACE(testing::Message() << "Nonce value: `" << test << "`");
 
     // Build the header.
-    std::string processed_input = base::StrCat(
-        {"signature=(\"identity-digest\";sf);alg=\"ed25519\";keyid=\"[KEY]\";",
-         "nonce=\"", test, "\";tag=\"sri\""});
+    std::string processed_input =
+        base::StrCat({"signature=(\"identity-digest\";sf);keyid=\"[KEY]\";",
+                      "nonce=\"", test, "\";tag=\"sri\""});
     size_t key_pos = processed_input.find("[KEY]");
     if (key_pos != std::string::npos) {
       processed_input.replace(key_pos, 5, kPublicKey);
@@ -502,7 +579,6 @@ TEST_F(SRIMessageSignatureParserTest, Nonce) {
 
 TEST_F(SRIMessageSignatureParserTest, ParameterSorting) {
   std::vector<const char*> params = {
-      "alg=\"ed25519\"",
       "created=12345",
       "expires=12345",
       "keyid=\"JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\"",
@@ -529,6 +605,8 @@ class SRIMessageSignatureBaseTest : public testing::Test {
  protected:
   SRIMessageSignatureBaseTest() {}
 
+  const GURL& url() { return kExampleURL; }
+
   scoped_refptr<net::HttpResponseHeaders> ValidHeadersPlusInput(
       const char* input) {
     auto builder =
@@ -548,7 +626,7 @@ TEST_F(SRIMessageSignatureBaseTest, NoSignaturesNoBase) {
   mojom::SRIMessageSignaturePtr signature;
 
   std::optional<std::string> result =
-      ConstructSignatureBase(signature, *headers);
+      ConstructSignatureBase(signature, this->url(), *headers);
   EXPECT_FALSE(result.has_value());
 }
 
@@ -558,12 +636,12 @@ TEST_F(SRIMessageSignatureBaseTest, ValidHeadersValidBase) {
   ASSERT_EQ(1u, signatures.size());
 
   std::optional<std::string> result =
-      ConstructSignatureBase(signatures[0], *headers);
+      ConstructSignatureBase(signatures[0], this->url(), *headers);
   ASSERT_TRUE(result.has_value());
   std::string expected_base =
-      base::StrCat({"\"identity-digest\": ", kValidDigestHeader,
+      base::StrCat({"\"identity-digest\";sf: ", kValidDigestHeader,
                     "\n\"@signature-params\": "
-                    "(\"identity-digest\";sf);alg=\"ed25519\";keyid=\"",
+                    "(\"identity-digest\";sf);keyid=\"",
                     kPublicKey, "\";tag=\"sri\""});
   EXPECT_EQ(expected_base, result.value());
 }
@@ -573,25 +651,25 @@ TEST_F(SRIMessageSignatureBaseTest, ValidHeadersStrictlySerializedBase) {
   // serialized.
   const char* cases[] = {
       // Base
-      ("signature=(\"identity-digest\";sf);alg=\"ed25519\";keyid=\"JrQLj5P/"
+      ("signature=(\"identity-digest\";sf);keyid=\"JrQLj5P/"
        "89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";tag=\"sri\""),
       // Leading space.
-      (" signature=(\"identity-digest\";sf);alg=\"ed25519\";keyid=\"JrQLj5P/"
+      (" signature=(\"identity-digest\";sf);keyid=\"JrQLj5P/"
        "89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";tag=\"sri\""),
       // Space before inner-list item.
-      ("signature=( \"identity-digest\";sf);alg=\"ed25519\";keyid=\"JrQLj5P/"
+      ("signature=( \"identity-digest\";sf);keyid=\"JrQLj5P/"
        "89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";tag=\"sri\""),
       // Space after `;` in a param.
-      ("signature=(\"identity-digest\"; sf);alg=\"ed25519\";keyid=\"JrQLj5P/"
+      ("signature=(\"identity-digest\"; sf);keyid=\"JrQLj5P/"
        "89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";tag=\"sri\""),
       // Space after inner-list item.
-      ("signature=(\"identity-digest\";sf );alg=\"ed25519\";keyid=\"JrQLj5P/"
+      ("signature=(\"identity-digest\";sf );keyid=\"JrQLj5P/"
        "89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";tag=\"sri\""),
       // Trailing space.
-      ("signature=(\"identity-digest\";sf);alg=\"ed25519\";keyid=\"JrQLj5P/"
+      ("signature=(\"identity-digest\";sf);keyid=\"JrQLj5P/"
        "89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";tag=\"sri\" "),
       // All valid spaces.
-      (" signature=( \"identity-digest\"; sf ); alg=\"ed25519\"; keyid="
+      (" signature=( \"identity-digest\"; sf );  keyid="
        "\"JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\"; tag=\"sri\"  ")};
 
   for (auto* const test : cases) {
@@ -601,14 +679,57 @@ TEST_F(SRIMessageSignatureBaseTest, ValidHeadersStrictlySerializedBase) {
     ASSERT_EQ(1u, signatures.size());
 
     std::optional<std::string> result =
-        ConstructSignatureBase(signatures[0], *headers);
+        ConstructSignatureBase(signatures[0], this->url(), *headers);
     ASSERT_TRUE(result.has_value());
     std::string expected_base =
-        base::StrCat({"\"identity-digest\": ", kValidDigestHeader,
+        base::StrCat({"\"identity-digest\";sf: ", kValidDigestHeader,
                       "\n\"@signature-params\": "
-                      "(\"identity-digest\";sf);alg=\"ed25519\";keyid=\"",
+                      "(\"identity-digest\";sf);keyid=\"",
                       kPublicKey, "\";tag=\"sri\""});
     EXPECT_EQ(expected_base, result.value());
+  }
+}
+
+TEST_F(SRIMessageSignatureBaseTest, PathComponent) {
+  struct {
+    std::string_view url;
+    std::string_view path;
+  } cases[] = {
+      {"https://url.test/", "/"},
+      {"https://url.test:8080/", "/"},
+      {"https://user:pass@url.test/", "/"},
+      {"https://url.test/?a=b", "/"},
+      {"https://url.test/#anchor", "/"},
+      {"https://url.test/path", "/path"},
+      {"https://url.test/path/", "/path/"},
+      {"https://url.test/pAtH", "/pAtH"},
+      {"https://url.test/%0Apath", "/%0Apath"},
+      {"https://url.test/%0apath", "/%0apath"},
+      {"https://url.test/path/../", "/"},
+      {"https://url.test/ü", "/%C3%BC"},
+  };
+  for (const auto& test : cases) {
+    SCOPED_TRACE(test.url);
+
+    std::string input_header =
+        base::StrCat({"signature=(\"identity-digest\";sf \"@path\";req);",
+                      "keyid=\"", kPublicKey, "\";tag=\"sri\""});
+
+    std::stringstream expected_base;
+    expected_base
+        << "\"identity-digest\";sf: " << kValidDigestHeader << '\n'
+        << "\"@path\";req: " << test.path << '\n'
+        << "\"@signature-params\": (\"identity-digest\";sf \"@path\";req);"
+        << "keyid=\"" << kPublicKey << "\";tag=\"sri\"";
+
+    auto headers = ValidHeadersPlusInput(input_header.c_str());
+    auto signatures = ParseSRIMessageSignaturesFromHeaders(*headers);
+    ASSERT_EQ(1u, signatures.size());
+
+    std::optional<std::string> result =
+        ConstructSignatureBase(signatures[0], GURL(test.url), *headers);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(expected_base.str(), result.value());
   }
 }
 
@@ -635,12 +756,11 @@ TEST_F(SRIMessageSignatureBaseTest, ValidHeaderParams) {
 
     // Construct the header and the expectations based on the test case:
     std::stringstream input_header;
-    input_header << "signature=(\"identity-digest\";sf);alg=\"ed25519\"";
+    input_header << "signature=(\"identity-digest\";sf)";
 
     std::stringstream expected_base;
-    expected_base
-        << "\"identity-digest\": " << kValidDigestHeader << '\n'
-        << "\"@signature-params\": (\"identity-digest\";sf);alg=\"ed25519\"";
+    expected_base << "\"identity-digest\";sf: " << kValidDigestHeader << '\n'
+                  << "\"@signature-params\": (\"identity-digest\";sf)";
     if (test.created) {
       input_header << ";created=" << test.created;
       expected_base << ";created=" << test.created;
@@ -663,7 +783,7 @@ TEST_F(SRIMessageSignatureBaseTest, ValidHeaderParams) {
     ASSERT_EQ(1u, signatures.size());
 
     std::optional<std::string> result =
-        ConstructSignatureBase(signatures[0], *headers);
+        ConstructSignatureBase(signatures[0], this->url(), *headers);
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(expected_base.str(), result.value());
   }
@@ -671,7 +791,6 @@ TEST_F(SRIMessageSignatureBaseTest, ValidHeaderParams) {
 
 TEST_F(SRIMessageSignatureBaseTest, ParameterSorting) {
   std::vector<const char*> params = {
-      "alg=\"ed25519\"",
       "created=12345",
       "expires=12345",
       "keyid=\"JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\"",
@@ -683,7 +802,7 @@ TEST_F(SRIMessageSignatureBaseTest, ParameterSorting) {
     input_header << "signature=(\"identity-digest\";sf)";
 
     std::stringstream expected_base;
-    expected_base << "\"identity-digest\": " << kValidDigestHeader << '\n'
+    expected_base << "\"identity-digest\";sf: " << kValidDigestHeader << '\n'
                   << "\"@signature-params\": (\"identity-digest\";sf)";
     for (const char* param : params) {
       input_header << ';' << param;
@@ -696,7 +815,7 @@ TEST_F(SRIMessageSignatureBaseTest, ParameterSorting) {
     ASSERT_EQ(1u, signatures.size());
 
     std::optional<std::string> result =
-        ConstructSignatureBase(signatures[0], *headers);
+        ConstructSignatureBase(signatures[0], this->url(), *headers);
     EXPECT_THAT(result, testing::Optional(expected_base.str()));
   } while (std::next_permutation(params.begin(), params.end()));
 }
@@ -725,6 +844,8 @@ class SRIMessageSignatureValidationTest : public testing::Test {
     return builder.Build();
   }
 
+  const GURL& url() { return kExampleURL; }
+
   scoped_refptr<net::HttpResponseHeaders> ValidHeaders() {
     return Headers(kValidDigestHeader, kValidSignatureHeader,
                    kValidSignatureInputHeader);
@@ -733,7 +854,7 @@ class SRIMessageSignatureValidationTest : public testing::Test {
   std::string SignatureInputHeader(std::string_view name,
                                    std::string_view keyid) {
     return base::StrCat({name,
-                         "=(\"identity-digest\";sf);alg=\"ed25519\";"
+                         "=(\"identity-digest\";sf);"
                          "keyid=\"",
                          keyid, "\";tag=\"sri\""});
   }
@@ -741,6 +862,9 @@ class SRIMessageSignatureValidationTest : public testing::Test {
   std::string SignatureHeader(std::string name, std::string_view sig) {
     return base::StrCat({name, "=:", sig, ":"});
   }
+
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 TEST_F(SRIMessageSignatureValidationTest, NoSignatures) {
@@ -748,7 +872,8 @@ TEST_F(SRIMessageSignatureValidationTest, NoSignatures) {
       net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200").Build();
   std::vector<mojom::SRIMessageSignaturePtr> signatures;
 
-  EXPECT_TRUE(ValidateSRIMessageSignaturesOverHeaders(signatures, *headers));
+  EXPECT_TRUE(ValidateSRIMessageSignaturesOverHeaders(signatures, this->url(),
+                                                      *headers));
 }
 
 TEST_F(SRIMessageSignatureValidationTest, ValidSignature) {
@@ -756,7 +881,8 @@ TEST_F(SRIMessageSignatureValidationTest, ValidSignature) {
   auto signatures = ParseSRIMessageSignaturesFromHeaders(*headers);
   ASSERT_EQ(1u, signatures.size());
 
-  EXPECT_TRUE(ValidateSRIMessageSignaturesOverHeaders(signatures, *headers));
+  EXPECT_TRUE(ValidateSRIMessageSignaturesOverHeaders(signatures, this->url(),
+                                                      *headers));
 }
 
 TEST_F(SRIMessageSignatureValidationTest, ValidPlusInvalidSignature) {
@@ -776,7 +902,8 @@ TEST_F(SRIMessageSignatureValidationTest, ValidPlusInvalidSignature) {
   auto signatures = ParseSRIMessageSignaturesFromHeaders(*headers);
   ASSERT_EQ(2u, signatures.size());
 
-  EXPECT_FALSE(ValidateSRIMessageSignaturesOverHeaders(signatures, *headers));
+  EXPECT_FALSE(ValidateSRIMessageSignaturesOverHeaders(signatures, this->url(),
+                                                       *headers));
 }
 
 TEST_F(SRIMessageSignatureValidationTest, MultipleValidSignatures) {
@@ -791,7 +918,30 @@ TEST_F(SRIMessageSignatureValidationTest, MultipleValidSignatures) {
   auto signatures = ParseSRIMessageSignaturesFromHeaders(*headers);
   ASSERT_EQ(2u, signatures.size());
 
-  EXPECT_TRUE(ValidateSRIMessageSignaturesOverHeaders(signatures, *headers));
+  EXPECT_TRUE(ValidateSRIMessageSignaturesOverHeaders(signatures, this->url(),
+                                                      *headers));
+}
+
+TEST_F(SRIMessageSignatureValidationTest, ValidSignatureExpires) {
+  auto headers = Headers(kValidDigestHeader, kValidExpiringSignatureHeader,
+                         kValidExpiringSignatureInputHeader);
+  auto signatures = ParseSRIMessageSignaturesFromHeaders(*headers);
+  ASSERT_EQ(1u, signatures.size());
+
+  // Signature should validate at the moment before and of expiration.
+  auto diff = kValidExpiringSignatureExpiresAt -
+              base::Time::Now().InMillisecondsSinceUnixEpoch() / 1000 - 1;
+  task_environment_.AdvanceClock(base::Seconds(diff));
+  EXPECT_TRUE(ValidateSRIMessageSignaturesOverHeaders(signatures, this->url(),
+                                                      *headers));
+  task_environment_.AdvanceClock(base::Seconds(1));
+  EXPECT_TRUE(ValidateSRIMessageSignaturesOverHeaders(signatures, this->url(),
+                                                      *headers));
+
+  // ...but not after expiration.
+  task_environment_.AdvanceClock(base::Seconds(1));
+  EXPECT_FALSE(ValidateSRIMessageSignaturesOverHeaders(signatures, this->url(),
+                                                       *headers));
 }
 
 TEST_F(SRIMessageSignatureValidationTest, ValidSignatureDigestHeaderMismatch) {
@@ -809,7 +959,8 @@ TEST_F(SRIMessageSignatureValidationTest, ValidSignatureDigestHeaderMismatch) {
     auto signatures = ParseSRIMessageSignaturesFromHeaders(*headers);
     ASSERT_EQ(1u, signatures.size());
 
-    EXPECT_FALSE(ValidateSRIMessageSignaturesOverHeaders(signatures, *headers));
+    EXPECT_FALSE(ValidateSRIMessageSignaturesOverHeaders(
+        signatures, this->url(), *headers));
   }
 }
 
@@ -840,7 +991,7 @@ TEST_P(SRIMessageSignatureEnforcementTest, NoHeaders) {
       features::kSRIMessageSignatureEnforcement, feature_flag_enabled);
 
   auto head = ResponseHead("", "", "");
-  auto result = MaybeBlockResponseForSRIMessageSignature(*head);
+  auto result = MaybeBlockResponseForSRIMessageSignature(this->url(), *head);
   EXPECT_FALSE(result.has_value());
 }
 
@@ -853,7 +1004,7 @@ TEST_P(SRIMessageSignatureEnforcementTest, ValidHeaders) {
 
   auto head = ResponseHead(kValidDigestHeader, kValidSignatureHeader,
                            kValidSignatureInputHeader);
-  auto result = MaybeBlockResponseForSRIMessageSignature(*head);
+  auto result = MaybeBlockResponseForSRIMessageSignature(this->url(), *head);
   EXPECT_FALSE(result.has_value());
 }
 TEST_P(SRIMessageSignatureEnforcementTest, MismatchedHeaders) {
@@ -871,13 +1022,145 @@ TEST_P(SRIMessageSignatureEnforcementTest, MismatchedHeaders) {
   auto head = ResponseHead(kValidDigestHeader,
                            SignatureHeader("bad-signature", wrong_signature),
                            SignatureInputHeader("bad-signature", wrong_key));
-  auto result = MaybeBlockResponseForSRIMessageSignature(*head);
+  auto result = MaybeBlockResponseForSRIMessageSignature(this->url(), *head);
   if (feature_flag_enabled) {
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch,
               result.value());
   } else {
     EXPECT_FALSE(result.has_value());
+  }
+}
+
+class SRIMessageSignatureRequestHeaderTest
+    : public testing::Test,
+      public testing::WithParamInterface<bool> {
+ public:
+  SRIMessageSignatureRequestHeaderTest()
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
+        context_(net::CreateTestURLRequestContextBuilder()->Build()),
+        url_request_(context_->CreateRequest(kExampleURL,
+                                             net::DEFAULT_PRIORITY,
+                                             /*delegate=*/nullptr,
+                                             TRAFFIC_ANNOTATION_FOR_TESTS)) {}
+
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kSRIMessageSignatureEnforcement, GetParam());
+  }
+
+  net::URLRequest* url_request() const { return url_request_.get(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<net::URLRequestContext> context_;
+  std::unique_ptr<net::URLRequest> url_request_;
+};
+
+INSTANTIATE_TEST_SUITE_P(FeatureFlag,
+                         SRIMessageSignatureRequestHeaderTest,
+                         testing::Values(true, false));
+
+TEST_P(SRIMessageSignatureRequestHeaderTest, NoSignaturesNoHeader) {
+  MaybeSetAcceptSignatureHeader(url_request(), {});
+  EXPECT_FALSE(url_request()
+                   ->extra_request_headers()
+                   .GetHeader(kAcceptSignature)
+                   .has_value());
+}
+
+TEST_P(SRIMessageSignatureRequestHeaderTest, InvalidSignatures) {
+  const std::vector<std::string> cases[] = {
+      // Not base64:
+      {"invalid"},
+      {"also\rinvalid"},
+      {"also\ninvalid"},
+      {"also\r\ninvalid"},
+      {"also\"invalid"},
+      // Incorrect padding:
+      {"JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs"},
+      // base64url:
+      {"JrQLj5P_89iXES9-vFgrIy29clF9CC_oPPsw3c5D0bs="},
+      // Incorrect length:
+      {"YQ=="},
+      // Prefixed:
+      {"ed25519-JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs="},
+      // Multiple invalid:
+      {"invalid", "and also invalid"},
+      {"JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs",
+       "JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs"},
+  };
+
+  for (const auto& test : cases) {
+    SCOPED_TRACE(base::JoinString(test, ", "));
+    MaybeSetAcceptSignatureHeader(url_request(), test);
+    EXPECT_FALSE(url_request()
+                     ->extra_request_headers()
+                     .GetHeader(kAcceptSignature)
+                     .has_value());
+  }
+}
+
+TEST_P(SRIMessageSignatureRequestHeaderTest, ValidSignature) {
+  const std::vector<std::string> cases[] = {
+      {kPublicKey},
+      // Valid, invalid => valid
+      {kPublicKey, "invalid"},
+      // Invalid, valid => valid
+      {"invalid", kPublicKey},
+      // Invalid, valid, invalid => valid
+      {"invalid", kPublicKey, "invalid"},
+  };
+
+  for (const auto& test : cases) {
+    SCOPED_TRACE(base::JoinString(test, ", "));
+    MaybeSetAcceptSignatureHeader(url_request(), test);
+
+    auto result =
+        url_request()->extra_request_headers().GetHeader(kAcceptSignature);
+    if (GetParam()) {
+      std::string expected =
+          base::StrCat({"sig0=(\"identity-digest\";sf);keyid=\"", kPublicKey,
+                        "\";tag=\"sri\""});
+      EXPECT_THAT(result, testing::Optional(expected));
+    } else {
+      // Even with valid inputs, we're not writing the header if the flag is
+      // disabled.
+      EXPECT_FALSE(result.has_value());
+    }
+  }
+}
+
+TEST_P(SRIMessageSignatureRequestHeaderTest, ValidSignatures) {
+  const std::vector<std::string> cases[] = {
+      {kPublicKey, kPublicKey2},
+      // Valid, invalid => valid
+      {kPublicKey, kPublicKey2, "invalid"},
+      // Invalid, valid => valid
+      {"invalid", kPublicKey, kPublicKey2},
+      // Invalid, valid, invalid => valid
+      {"invalid", kPublicKey, kPublicKey2, "invalid"},
+  };
+
+  for (const auto& test : cases) {
+    SCOPED_TRACE(base::JoinString(test, ", "));
+    MaybeSetAcceptSignatureHeader(url_request(), test);
+
+    auto result =
+        url_request()->extra_request_headers().GetHeader(kAcceptSignature);
+    if (GetParam()) {
+      std::string expected = base::StrCat(
+          {"sig0=(\"identity-digest\";sf);keyid=\"", kPublicKey,
+           "\";tag=\"sri\", ",
+           "sig1=(\"identity-digest\";sf);keyid=\"", kPublicKey2,
+           "\";tag=\"sri\""});
+      EXPECT_THAT(result, testing::Optional(expected));
+    } else {
+      // Even with valid inputs, we're not writing the header if the flag is
+      // disabled.
+      EXPECT_FALSE(result.has_value());
+    }
   }
 }
 

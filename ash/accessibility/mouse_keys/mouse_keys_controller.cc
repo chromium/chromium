@@ -142,6 +142,15 @@ bool MouseKeysController::RewriteEvent(const ui::Event& event) {
   return false;
 }
 
+void MouseKeysController::set_enabled(bool enabled) {
+  if (enabled == enabled_) {
+    return;
+  }
+
+  enabled_ = enabled;
+  paused_ = false;
+}
+
 void MouseKeysController::OnMouseEvent(ui::MouseEvent* event) {
   bool is_synthesized = event->IsSynthesized() ||
                         event->source_device_id() == ui::ED_UNKNOWN_DEVICE;

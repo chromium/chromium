@@ -14,11 +14,11 @@
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
-#include "components/autofill/core/browser/autofill_data_util.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments_metadata.h"
+#include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
@@ -58,9 +58,9 @@ bool ListsMatch(int profile_a,
                 const std::vector<Item*>& list_a,
                 int profile_b,
                 const std::vector<Item*>& list_b) {
-  std::map<std::string, Item> list_a_map;
-  for (Item* item : list_a) {
-    list_a_map[item->server_id()] = *item;
+  std::map<std::string, const Item*> list_a_map;
+  for (const Item* item : list_a) {
+    list_a_map[item->server_id()] = item;
   }
 
   // This seems to be a transient state that will eventually be rectified by
@@ -72,13 +72,13 @@ bool ListsMatch(int profile_a,
     return false;
   }
 
-  for (Item* item : list_b) {
+  for (const Item* item : list_b) {
     if (!list_a_map.count(item->server_id())) {
       DVLOG(1) << "GUID " << item->server_id() << " not found in profile "
                << profile_b << ".";
       return false;
     }
-    Item* expected_item = &list_a_map[item->server_id()];
+    const Item* expected_item = list_a_map[item->server_id()];
     if (expected_item->Compare(*item) != 0 ||
         expected_item->use_count() != item->use_count() ||
         expected_item->use_date() != item->use_date()) {
@@ -169,9 +169,9 @@ bool ListsMatch(int profile_a,
 
 bool WalletDataAndMetadataMatch(
     int profile_a,
-    const std::vector<CreditCard*>& server_cards_a,
+    const std::vector<const CreditCard*>& server_cards_a,
     int profile_b,
-    const std::vector<CreditCard*>& server_cards_b) {
+    const std::vector<const CreditCard*>& server_cards_b) {
   if (!ListsMatch(profile_a, server_cards_a, profile_b, server_cards_b)) {
     LogLists(server_cards_a, server_cards_b);
     return false;
@@ -479,7 +479,7 @@ void ExpectDefaultWalletCredentialValues(const CreditCard& card) {
   EXPECT_EQ(kDefaultCardCvc, card.cvc());
 }
 
-std::vector<CreditCard*> GetServerCreditCards(int profile) {
+std::vector<const CreditCard*> GetServerCreditCards(int profile) {
   WaitForPDMToRefresh(profile);
   PersonalDataManager* pdm = GetPersonalDataManager(profile);
   return pdm->payments_data_manager().GetServerCreditCards();

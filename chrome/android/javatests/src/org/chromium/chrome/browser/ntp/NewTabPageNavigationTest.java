@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ntp;
 
+import android.os.Build;
+
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
@@ -17,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -108,6 +111,7 @@ public class NewTabPageNavigationTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage"})
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/41490087")
     public void testNavigateToTabSwitcherFromNtp() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         Tab tab = cta.getActivityTab();

@@ -34,6 +34,7 @@
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/snap_group/snap_group_test_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/app_constants/constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -47,10 +48,7 @@ namespace ash {
 
 class CoralControllerTest : public AshTestBase {
  public:
-  CoralControllerTest() {
-    feature_list_.InitWithFeatures(
-        {features::kCoralFeature, features::kCoralSavedDeskFeature}, {});
-  }
+  CoralControllerTest() = default;
 
   void ClickFirstCoralButton() {
     CoralChipButton* coral_button = GetFirstCoralButton();
@@ -86,7 +84,7 @@ class CoralControllerTest : public AshTestBase {
  private:
   std::unique_ptr<TestBirchClient> birch_client_;
 
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{features::kCoralFeature};
 };
 
 // Tests that clicking the in session coral button opens and activates a new
@@ -246,6 +244,16 @@ TEST_F(CoralControllerTest, RemoveInSessionChipAfterClicking) {
       0u);
 }
 
+// Tests that there is no crash when removing a coral chip by user.
+TEST_F(CoralControllerTest, NoCrashOnRemovingChipByUser) {
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+
+  // Remove the first coral chip and there should be no crash.
+  CoralChipButton* coral_chip = GetFirstCoralButton();
+  BirchBarController::Get()->OnItemHiddenByUser(coral_chip->GetItem());
+}
+
 class CoralSavedGroupTest : public CoralControllerTest {
  public:
   desks_storage::DeskModel* desk_model() {
@@ -387,6 +395,27 @@ TEST_F(CoralSavedGroupTest, SaveAppsInGroup) {
   EXPECT_FALSE(launch_list.contains("window3_app_id"));
 }
 
+// Tests that after saving a group, we show the saved desk library.
+TEST_F(CoralSavedGroupTest, ShowSavedDeskLibrary) {
+  // Prepare a coral response.
+  std::vector<coral::mojom::GroupPtr> test_groups;
+  test_groups.push_back(
+      CreateTestGroup({{"Google", GURL("https://google.com/")}}, "Coral desk"));
+  OverrideTestResponse(std::move(test_groups));
+
+  // Enter overview and click on the save as group menu item.
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+  views::MenuItemView* save_as_group_item = GetSaveAsGroupMenuItem();
+  LeftClickOn(save_as_group_item);
+
+  // Tests that the saved desk library is shown.
+  EXPECT_TRUE(base::test::RunUntil([]() {
+    OverviewSession* session = OverviewController::Get()->overview_session();
+    return session && session->IsShowingSavedDeskLibrary();
+  }));
+}
+
 TEST_F(CoralSavedGroupTest, MaxCoralSavedGroupLimit) {
   // Add enough entries to hit the max.
   for (int i = 0; i < 6; ++i) {
@@ -402,6 +431,33 @@ TEST_F(CoralSavedGroupTest, MaxCoralSavedGroupLimit) {
   LeftClickOn(save_as_group_item);
   EXPECT_TRUE(Shell::Get()->toast_manager()->IsToastShown(
       "coral_max_saved_groups_toast"));
+}
+
+// Tests that clicking a saved group item creates a coral desk.
+TEST_F(CoralSavedGroupTest, LaunchSavedGroup) {
+  AddCoralEntry("saved_group_1");
+
+  // Ensure we have one desk currently.
+  auto* desks_controller = DesksController::Get();
+  ASSERT_EQ(desks_controller->GetNumberOfDesks(), 1);
+
+  // Enter overview, ensure the library button is visible and click it.
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+  RunScheduledLayoutForAllOverviewDeskBars();
+  auto* button = GetLibraryButton();
+  ASSERT_TRUE(button);
+  ASSERT_TRUE(button->GetVisible());
+  LeftClickOn(button);
+
+  // Click on the only saved desk entry.
+  const views::Button* saved_group_launch_button =
+      GetSavedDeskItemButton(/*index=*/0);
+  LeftClickOn(saved_group_launch_button);
+
+  // Test that we create a new desk of type coral.
+  ASSERT_EQ(desks_controller->GetNumberOfDesks(), 2);
+  EXPECT_EQ(desks_controller->desks().back()->type(), Desk::Type::kCoral);
 }
 
 // Tests that the saved desk library has the expected amount of grid items.

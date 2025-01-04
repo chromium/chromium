@@ -24,7 +24,7 @@ namespace content {
 class RenderFrameHost;
 class WebContents;
 class WebUI;
-}
+}  // namespace content
 
 namespace extensions {
 class WebViewGuest;

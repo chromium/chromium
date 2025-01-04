@@ -1,7 +1,6 @@
 include_rules = [
   "+ash",
   "+cc",
-  "+chromeos/crosapi/cpp/crosapi_constants.h",
   "+chromeos/ui/base",
   "+chromeos/ui/frame",
   "+components/account_id",

@@ -59,9 +59,7 @@ class ShadowColorizer : public ui::ColorProviderSourceObserver {
 }  // namespace
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(ShadowColorizer*)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ShadowColorizer,
-                                   kShadowColorizerKey,
-                                   nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ShadowColorizer, kShadowColorizerKey)
 namespace ash {
 
 //------------------------------------------------------------------------------

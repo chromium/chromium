@@ -28,7 +28,7 @@ namespace {
 
 BASE_FEATURE(kSqlWALModeOnSegmentationDatabase,
              "SqlWALModeOnSegmentationDatabase",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Up to 10 updates are batched, because ~10 UKM metrics recorded in db per
 // page load and approximately a commit every page load. This might need update

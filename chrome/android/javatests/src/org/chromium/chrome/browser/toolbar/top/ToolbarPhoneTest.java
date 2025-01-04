@@ -12,7 +12,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
@@ -61,9 +63,11 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
@@ -648,6 +652,42 @@ public class ToolbarPhoneTest {
                     assertNotEquals(
                             0,
                             mToolbar.getLocationBarOffsetForFocusAnimation(/* hasFocus= */ true));
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testShortCircuitFocusAnimation() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BrowserControlsManager browserControlsManager =
+                            mActivityTestRule.getActivity().getBrowserControlsManager();
+                    browserControlsManager.setControlsPosition(
+                            ControlsPosition.BOTTOM,
+                            0,
+                            0,
+                            browserControlsManager.getTopControlsHeight(),
+                            0);
+                    mToolbar.onUrlFocusChange(true);
+                    assertFalse(mToolbar.isAnimationRunningForTesting());
+                    mToolbar.onUrlFocusChange(false);
+                    assertFalse(mToolbar.isAnimationRunningForTesting());
+                });
+
+        CriteriaHelper.pollUiThread(() -> !mToolbar.isAnimationRunningForTesting());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BrowserControlsManager browserControlsManager =
+                            mActivityTestRule.getActivity().getBrowserControlsManager();
+                    browserControlsManager.setControlsPosition(
+                            ControlsPosition.TOP,
+                            browserControlsManager.getBottomControlsHeight(),
+                            0,
+                            0,
+                            0);
+                    mToolbar.onUrlFocusChange(true);
+                    assertTrue(mToolbar.isAnimationRunningForTesting());
                 });
     }
 

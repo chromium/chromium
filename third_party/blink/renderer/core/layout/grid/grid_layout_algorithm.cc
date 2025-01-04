@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/grid/grid_layout_algorithm.h"
 
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
@@ -2650,7 +2645,8 @@ void GridLayoutAlgorithm::IncreaseTrackSizesToAccommodateGridItems(
   GridSetPtrVector sets_to_grow_beyond_limit;
 
   while (group_begin != group_end) {
-    GridItemData& grid_item = **(group_begin++);
+    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+    GridItemData& grid_item = **(UNSAFE_TODO(group_begin++));
     DCHECK(grid_item.IsSpanningIntrinsicTrack(track_direction));
 
     sets_to_grow.Shrink(0);
@@ -2816,7 +2812,8 @@ void GridLayoutAlgorithm::ResolveIntrinsicTrackSizes(
     auto current_group_end = current_group_begin;
     do {
       DCHECK(!(*current_group_end)->IsSpanningFlexibleTrack(track_direction));
-      ++current_group_end;
+      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+      UNSAFE_TODO(++current_group_end);
     } while (current_group_end != reordered_grid_items.end() &&
              !(*current_group_end)->IsSpanningFlexibleTrack(track_direction) &&
              (*current_group_end)->SpanSize(track_direction) ==
@@ -2854,7 +2851,9 @@ void GridLayoutAlgorithm::ResolveIntrinsicTrackSizes(
   //   sizing function...
 #if DCHECK_IS_ON()
   // Every grid item of the remaining group should span a flexible track.
-  for (auto it = current_group_begin; it != reordered_grid_items.end(); ++it) {
+  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+  for (auto it = current_group_begin; it != reordered_grid_items.end();
+       UNSAFE_TODO(++it)) {
     DCHECK((*it)->IsSpanningFlexibleTrack(track_direction));
   }
 #endif
@@ -3050,7 +3049,8 @@ void GridLayoutAlgorithm::ExpandFlexibleTracks(
       while (next_set != flexible_sets.end() &&
              (*next_set)->FlexFactor() * leftover_space.RawValue() <
                  (*next_set)->BaseSize().RawValue() * flex_factor_sum) {
-        ++next_set;
+        // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+        UNSAFE_TODO(++next_set);
       }
 
       // Any upcoming flexible set will receive a share of free space of at
@@ -3063,7 +3063,8 @@ void GridLayoutAlgorithm::ExpandFlexibleTracks(
       // Otherwise, treat all those sets that does not receive a share of free
       // space of at least their base size as inflexible, effectively excluding
       // them from the leftover space and flex factor sum computation.
-      for (auto it = current_set; it != next_set; ++it) {
+      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+      for (auto it = current_set; it != next_set; UNSAFE_TODO(++it)) {
         flex_factor_sum -= (*it)->FlexFactor();
         leftover_space -= (*it)->BaseSize();
       }
@@ -3838,7 +3839,8 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
 
     for (const auto& grid_item : grid_items) {
       // Grab the offsets and break-token (if present) for this child.
-      auto& item_placement_data = *(placement_data_it++);
+      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+      auto& item_placement_data = *(UNSAFE_TODO(placement_data_it++));
       const BlockBreakToken* break_token = nullptr;
       if (child_break_token_it != child_break_tokens.end()) {
         if ((*child_break_token_it)->InputNode() == grid_item.node)
@@ -4112,9 +4114,11 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     *intrinsic_block_size += row_offset_delta;
     AdjustItemOffsets(breakpoint_row_set_index, row_offset_delta);
 
-    auto it = row_offset_adjustments->begin() + breakpoint_row_set_index;
+    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+    auto it =
+        UNSAFE_TODO(row_offset_adjustments->begin() + breakpoint_row_set_index);
     while (it != row_offset_adjustments->end())
-      *(it++) += row_offset_delta;
+      *(UNSAFE_TODO(it++)) += row_offset_delta;
 
     return true;
   };

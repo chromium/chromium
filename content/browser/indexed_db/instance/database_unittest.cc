@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <optional>
 #include <set>
 #include <string>
@@ -1770,11 +1771,11 @@ TEST_F(DatabaseOperationTest,
 TEST_F(DatabaseOperationTest, IndexGetAllRecordsWithAutoIncrementingKeys) {
   const IndexedDBKeyPath object_store_key_path{u"id"};
 
-  const IndexedDBKey expected_generated_keys[] = {
+  const auto expected_generated_keys = std::to_array<IndexedDBKey>({
       IndexedDBKey(1.0, blink::mojom::IDBKeyType::Number),
       IndexedDBKey(2.0, blink::mojom::IDBKeyType::Number),
       IndexedDBKey(3.0, blink::mojom::IDBKeyType::Number),
-  };
+  });
 
   const blink::mojom::IDBRecordPtr expected_results[] = {
       blink::mojom::IDBRecord::New(

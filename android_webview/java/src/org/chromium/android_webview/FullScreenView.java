@@ -33,8 +33,8 @@ public class FullScreenView extends FrameLayout {
 
     private AwViewMethods mAwViewMethods;
     private final AwContents mAwContents;
-    private InternalAccessAdapter mInternalAccessAdapter;
-    private OnBackInvokedCallback mOnBackInvokedCallback;
+    private final InternalAccessAdapter mInternalAccessAdapter;
+    private final OnBackInvokedCallback mOnBackInvokedCallback;
 
     public FullScreenView(Context context, AwViewMethods awViewMethods, AwContents awContents) {
         super(context);
@@ -94,8 +94,8 @@ public class FullScreenView extends FrameLayout {
     @Override
     public boolean dispatchKeyEvent(final KeyEvent event) {
         // We didn't add the sdk check here as as the developer may not add the flag so we fallback
-        // to the old way it's confirmed that only one back mechanism will be triggered here or the
-        // dispatchCallback
+        // to the old way. It's confirmed that only one back mechanism will be triggered here or the
+        // dispatchCallback.
         if (event.getKeyCode() == KeyEvent.KEYCODE_BACK
                 && event.getAction() == KeyEvent.ACTION_UP
                 && mAwContents.isFullScreen()) {
@@ -147,7 +147,6 @@ public class FullScreenView extends FrameLayout {
                     .getOnBackInvokedDispatcher()
                     .unregisterOnBackInvokedCallback(mOnBackInvokedCallback);
         }
-        mOnBackInvokedCallback = null;
         mAwViewMethods.onDetachedFromWindow();
     }
 

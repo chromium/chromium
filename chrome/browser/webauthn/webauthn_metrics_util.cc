@@ -18,3 +18,17 @@ void ReportConditionalUiPasskeyCount(int passkey_count) {
   base::UmaHistogramExactLinear("WebAuthentication.ConditionalUiPasskeyCount",
                                 passkey_count, kPasskeyCountMax);
 }
+
+void RecordGPMMakeCredentialEvent(
+    webauthn::metrics::GPMMakeCredentialEvents event) {
+  base::UmaHistogramEnumeration("WebAuthentication.GPM.MakeCredential", event);
+}
+
+void RecordGPMGetAssertionEvent(
+    webauthn::metrics::GPMGetAssertionEvents event) {
+  base::UmaHistogramEnumeration("WebAuthentication.GPM.GetAssertion", event);
+}
+
+void RecordOnboardingEvent(webauthn::metrics::OnboardingEvents event) {
+  base::UmaHistogramEnumeration("WebAuthentication.OnboardingEvents", event);
+}

@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//services/device/public/cpp/compute_pressure/buildflags.gni")
 import("//services/device/public/cpp/geolocation/buildflags.gni")
@@ -36,7 +34,6 @@ source_set("lib") {
 
   deps = [
     ":binder_overrides",
-    "//build:chromeos_buildflags",
     "//services/device/fingerprint",
     "//services/device/generic_sensor",
     "//services/device/geolocation",
@@ -75,22 +72,12 @@ source_set("lib") {
     deps += [ "//services/device/compute_pressure" ]
   }
 
-  if (is_chromeos_ash && use_dbus) {
+  if (is_chromeos && use_dbus) {
     deps += [ "//services/device/media_transfer_protocol" ]
   }
 
   if (is_serial_enabled_platform) {
     deps += [ "//services/device/serial" ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-    ]
-  }
-
-  if (is_serial_enabled_platform) {
     defines = [ "IS_SERIAL_ENABLED_PLATFORM" ]
   }
 }
@@ -175,7 +162,6 @@ source_set("tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/system_cpu:test_support",
     "//components/variations",
     "//device/base/synchronization",
@@ -244,7 +230,7 @@ source_set("tests") {
     }
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "fingerprint/fingerprint_chromeos_unittest.cc",
       "geolocation/wifi_data_provider_chromeos_unittest.cc",
@@ -256,11 +242,6 @@ source_set("tests") {
       "//services/device/fingerprint",
       "//third_party/protobuf:protobuf_lite",
     ]
-  }
-
-  if (is_chromeos_lacros) {
-    sources += [ "geolocation/wifi_data_provider_lacros_unittest.cc" ]
-    deps += [ "//chromeos/lacros:test_support" ]
   }
 
   if (is_android) {

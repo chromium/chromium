@@ -296,7 +296,7 @@ TEST_F(OverviewButtonTrayTest, VisibilityChangesForLoginStatus) {
   ClearLogin();
   Shell::Get()->UpdateAfterLoginStatusChange(LoginStatus::NOT_LOGGED_IN);
   EXPECT_FALSE(GetTray()->GetVisible());
-  CreateUserSessions(1);
+  SimulateUserLogin(kDefaultUserEmail);
   Shell::Get()->UpdateAfterLoginStatusChange(LoginStatus::USER);
   EXPECT_TRUE(GetTray()->GetVisible());
   SetUserAddingScreenRunning(true);

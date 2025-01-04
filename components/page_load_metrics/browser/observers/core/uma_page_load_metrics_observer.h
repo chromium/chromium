@@ -50,6 +50,7 @@ extern const char
 extern const char kHistogramParseBlockedOnScriptLoad[];
 extern const char kHistogramParseBlockedOnScriptExecution[];
 
+extern const char kBackgroundHistogramFirstContentfulPaint[];
 extern const char kBackgroundHistogramFirstImagePaint[];
 extern const char kBackgroundHistogramDomContentLoaded[];
 extern const char kBackgroundHistogramLoad[];

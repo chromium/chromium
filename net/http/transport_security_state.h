@@ -38,7 +38,6 @@ namespace ct {
 enum class CTPolicyCompliance;
 }
 
-class HostPortPair;
 class X509Certificate;
 
 void NET_EXPORT_PRIVATE SetTransportSecurityStateSourceForTesting(
@@ -291,7 +290,8 @@ class NET_EXPORT TransportSecurityState {
   // As ShouldUpgradeToSSL(), but also returns whether the decision came from
   // static or dynamic state, for metrics.
   SSLUpgradeDecision GetSSLUpgradeDecision(
-      const std::string& host,
+      std::string_view host,
+      bool is_top_level_nav,
       const NetLogWithSource& net_log = NetLogWithSource());
 
   // These functions search for static and dynamic STS and PKP states, and
@@ -299,13 +299,13 @@ class NET_EXPORT TransportSecurityState {
   // primary public interface; direct access to STS and PKP states is best
   // left to tests. The caller needs to handle the optional pinning override
   // when is_issued_by_known_root is false.
-  bool ShouldSSLErrorsBeFatal(const std::string& host);
-  bool ShouldUpgradeToSSL(const std::string& host,
+  bool ShouldSSLErrorsBeFatal(std::string_view host);
+  bool ShouldUpgradeToSSL(std::string_view host,
                           const NetLogWithSource& net_log = NetLogWithSource());
-  PKPStatus CheckPublicKeyPins(const HostPortPair& host_port_pair,
+  PKPStatus CheckPublicKeyPins(std::string_view host,
                                bool is_issued_by_known_root,
                                const HashValueVector& hashes);
-  bool HasPublicKeyPins(const std::string& host);
+  bool HasPublicKeyPins(std::string_view host);
 
   // Returns CT_REQUIREMENTS_NOT_MET if a connection violates CT policy
   // requirements: that is, if a connection to |host|, using the validated
@@ -317,7 +317,7 @@ class NET_EXPORT TransportSecurityState {
   // The behavior may be further be altered by setting a RequireCTDelegate
   // via |SetRequireCTDelegate()|.
   CTRequirementsStatus CheckCTRequirements(
-      const HostPortPair& host_port_pair,
+      std::string_view host,
       bool is_issued_by_known_root,
       const HashValueVector& public_key_hashes,
       const X509Certificate* validated_certificate_chain,
@@ -389,7 +389,7 @@ class NET_EXPORT TransportSecurityState {
   //
   // If an entry is deleted, the new state will be persisted through
   // the Delegate (if any).
-  bool DeleteDynamicDataForHost(const std::string& host);
+  bool DeleteDynamicDataForHost(std::string_view host);
 
   // Returns true and updates |*result| if |host| has dynamic or static
   // HSTS/HPKP (respectively) state. If multiple entries match |host|, dynamic
@@ -399,14 +399,14 @@ class NET_EXPORT TransportSecurityState {
   //
   // Note that these methods are not const because they opportunistically remove
   // entries that have expired.
-  bool GetSTSState(const std::string& host, STSState* sts_result);
-  bool GetPKPState(const std::string& host, PKPState* pkp_result);
+  bool GetSTSState(std::string_view host, STSState* sts_result);
+  bool GetPKPState(std::string_view host, PKPState* pkp_result);
 
   // Returns true and updates |*result| iff |host| has static HSTS/HPKP
   // (respectively) state. If multiple entries match |host|, the most specific
   // match determines the return value.
-  bool GetStaticSTSState(const std::string& host, STSState* sts_result) const;
-  bool GetStaticPKPState(const std::string& host, PKPState* pkp_result) const;
+  bool GetStaticSTSState(std::string_view host, STSState* sts_result) const;
+  bool GetStaticPKPState(std::string_view host, PKPState* pkp_result) const;
 
   // Returns true and updates |*result| iff |host| has dynamic
   // HSTS/HPKP (respectively) state. If multiple entries match |host|,
@@ -414,8 +414,8 @@ class NET_EXPORT TransportSecurityState {
   //
   // Note that these methods are not const because they opportunistically remove
   // entries that have expired.
-  bool GetDynamicSTSState(const std::string& host, STSState* result);
-  bool GetDynamicPKPState(const std::string& host, PKPState* result);
+  bool GetDynamicSTSState(std::string_view host, STSState* result);
+  bool GetDynamicPKPState(std::string_view host, PKPState* result);
 
   // Processes an HSTS header value from the host, adding entries to
   // dynamic state if necessary.
@@ -471,7 +471,7 @@ class NET_EXPORT TransportSecurityState {
   typedef std::map<HashedHost, STSState> STSStateMap;
   typedef std::map<HashedHost, PKPState> PKPStateMap;
 
-  base::Value::Dict NetLogUpgradeToSSLParam(const std::string& host);
+  base::Value::Dict NetLogUpgradeToSSLParam(std::string_view host);
 
   // IsBuildTimely returns true if the current build is new enough ensure that
   // built in security information (i.e. HSTS preloading and pinning
@@ -479,7 +479,7 @@ class NET_EXPORT TransportSecurityState {
   static bool IsBuildTimely();
 
   // Helper method for actually checking pins.
-  PKPStatus CheckPublicKeyPinsImpl(const HostPortPair& host_port_pair,
+  PKPStatus CheckPublicKeyPinsImpl(std::string_view host,
                                    bool is_issued_by_known_root,
                                    const HashValueVector& hashes);
 
@@ -501,11 +501,9 @@ class NET_EXPORT TransportSecurityState {
                        bool include_subdomains,
                        const HashValueVector& hashes);
 
-  // Returns true if a request to |host_port_pair| with the given
-  // SubjectPublicKeyInfo |hashes| satisfies the pins in |pkp_state|,
-  // and false otherwise.
-  PKPStatus CheckPins(const HostPortPair& host_port_pair,
-                      bool is_issued_by_known_root,
+  // Returns true if a request with the given SubjectPublicKeyInfo |hashes|
+  // satisfies the pins in |pkp_state|, and false otherwise.
+  PKPStatus CheckPins(bool is_issued_by_known_root,
                       const TransportSecurityState::PKPState& pkp_state,
                       const HashValueVector& hashes);
 
@@ -530,7 +528,7 @@ class NET_EXPORT TransportSecurityState {
 
   raw_ptr<RequireCTDelegate> require_ct_delegate_ = nullptr;
 
-  std::set<std::string> hsts_host_bypass_list_;
+  std::set<std::string, std::less<>> hsts_host_bypass_list_;
 
   bool ct_emergency_disable_ = false;
 

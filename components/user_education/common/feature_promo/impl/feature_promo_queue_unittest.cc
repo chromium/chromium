@@ -565,8 +565,7 @@ class FeaturePromoQueueCachedDataTest : public FeaturePromoQueueTest {
       U data) {
     auto precond = std::make_unique<CachingFeaturePromoPrecondition>(
         kPrecond1, kPrecond1Name, FeaturePromoResult::Success());
-    precond->InitCache(key);
-    precond->GetCachedData(key) = std::forward<U>(data);
+    precond->InitCachedData(key, std::forward<U>(data));
     return precond;
   }
 };

@@ -221,6 +221,8 @@ int HostMain(int argc, char** argv) {
   // Initialize Breakpad as early as possible. On Mac the command-line needs to
   // be initialized first, so that the preference for crash-reporting can be
   // looked up in the config file.
+  // Note that we enable crash reporting only if the user has opted in to having
+  // the crash reports uploaded.
   if (IsUsageStatsAllowed()) {
 #if BUILDFLAG(IS_LINUX)
     InitializeCrashReporting();

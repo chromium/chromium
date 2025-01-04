@@ -363,12 +363,6 @@ SkBitmap CorrectColorOfBitMap(SkBitmap& originalBitmap) {
   return converted;
 }
 
-// Returns the dependency parser model for this renderer process.
-DependencyParserModel& GetDependencyParserModel() {
-  static base::NoDestructor<DependencyParserModel> instance;
-  return *instance;
-}
-
 }  // namespace
 
 // static
@@ -1451,8 +1445,7 @@ void ReadAnythingAppController::OnConnected() {
       std::move(page_handler_factory_receiver));
 
   // Get the dependency parser model used by phrase-based highlighting.
-  DependencyParserModel& dependency_parser_model = GetDependencyParserModel();
-  if (dependency_parser_model.IsAvailable()) {
+  if (read_aloud_model_.GetDependencyParserModel().IsAvailable()) {
     return;
   }
 
@@ -1673,10 +1666,6 @@ void ReadAnythingAppController::PreprocessTextForSpeech() {
                                                : &model_.selection_node_ids();
   read_aloud_model_.PreprocessTextForSpeech(model_.is_pdf(), model_.IsDocs(),
                                             node_ids);
-  if (features::IsReadAnythingReadAloudPhraseHighlightingEnabled()) {
-    DependencyParserModel& model = GetDependencyParserModel();
-    read_aloud_model_.PreprocessPhrasesForText(model);
-  }
 }
 
 void ReadAnythingAppController::MovePositionToNextGranularity() {
@@ -1854,13 +1843,13 @@ bool ReadAnythingAppController::IsDocsLoadMoreButtonVisible() const {
 
 void ReadAnythingAppController::UpdateDependencyParserModel(
     base::File model_file) {
-  DependencyParserModel& dependency_parser_model = GetDependencyParserModel();
-  dependency_parser_model.UpdateWithFile(std::move(model_file));
+  read_aloud_model_.GetDependencyParserModel().UpdateWithFile(
+      std::move(model_file));
 }
 
 DependencyParserModel&
 ReadAnythingAppController::GetDependencyParserModelForTesting() {
-  return GetDependencyParserModel();
+  return read_aloud_model_.GetDependencyParserModel();
 }
 
 void ReadAnythingAppController::OnTreeAdded(ui::AXTree* tree) {

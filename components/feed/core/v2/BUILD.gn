@@ -247,7 +247,6 @@ if (use_blink) {
       "public:common",
       "//base",
       "//base/test:test_support",
-      "//build:chromeos_buildflags",
       "//components/feed:feature_list",
       "//components/feed/core/common:feed_core_common",
       "//components/feed/core/shared_prefs:feed_shared_prefs",

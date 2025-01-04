@@ -114,6 +114,11 @@ class SegmentationPlatformService : public KeyedService,
   virtual SegmentSelectionResult GetCachedSegmentResult(
       const std::string& segmentation_key) = 0;
 
+  // Get the set of input keys required for the model execution for
+  // `segmentation_key`.
+  virtual void GetInputKeysForModel(const std::string& segmentation_key,
+                                    InputContextKeysCallback callback) = 0;
+
   // Called to trigger training data collection for a given request ID. Request
   // IDs are given when |GetClassificationResult| is called. `param` is used to
   // pass one additional output feature to be uploaded as training data. It is

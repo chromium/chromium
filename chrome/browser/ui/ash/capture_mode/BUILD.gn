@@ -10,6 +10,8 @@ static_library("capture_mode") {
   sources = [
     "chrome_capture_mode_delegate.cc",
     "chrome_capture_mode_delegate.h",
+    "lens_overlay_image_helper.cc",
+    "lens_overlay_image_helper.h",
     "lens_overlay_query_controller.cc",
     "lens_overlay_query_controller.h",
     "lens_overlay_request_id_generator.cc",

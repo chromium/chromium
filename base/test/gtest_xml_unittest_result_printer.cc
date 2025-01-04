@@ -142,8 +142,7 @@ void XmlUnitTestResultPrinter::OnTestSuiteStart(
   fflush(output_file_);
 }
 
-void XmlUnitTestResultPrinter::OnTestStart(
-    const testing::TestInfo& test_info) {
+void XmlUnitTestResultPrinter::OnTestStart(const testing::TestInfo& test_info) {
   DCHECK(!test_running_);
   // This is our custom extension - it helps to recognize which test was
   // running when the test binary crashed. Note that we cannot even open the
@@ -180,8 +179,9 @@ void XmlUnitTestResultPrinter::OnTestEnd(const testing::TestInfo& test_info) {
         CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
             switches::kTestLauncherTestPartResultsLimit);
     int test_part_results_limit = std::strtol(limit_str.c_str(), nullptr, 10);
-    if (test_part_results_limit >= 0)
+    if (test_part_results_limit >= 0) {
       limit = std::min(limit, test_part_results_limit);
+    }
   } else {
     limit = std::min(limit, kDefaultTestPartResultsLimit);
   }
@@ -194,9 +194,9 @@ void XmlUnitTestResultPrinter::OnTestEnd(const testing::TestInfo& test_info) {
   }
 
   if (test_info.result()->total_part_count() > limit) {
-    WriteTestPartResult(
-        "unknown", 0, testing::TestPartResult::kNonFatalFailure,
-        kTestPartLesultsLimitExceeded, kTestPartLesultsLimitExceeded);
+    WriteTestPartResult("unknown", 0, testing::TestPartResult::kNonFatalFailure,
+                        kTestPartLesultsLimitExceeded,
+                        kTestPartLesultsLimitExceeded);
   }
 
   fprintf(output_file_.get(), "    </testcase>\n");

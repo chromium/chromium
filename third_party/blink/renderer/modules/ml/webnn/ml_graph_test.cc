@@ -724,15 +724,6 @@ bool IsBufferDataEqual(DOMArrayBuffer* array_buffer,
   return array_buffer->ByteSpan() == expected_data;
 }
 
-MaybeShared<DOMArrayBufferView> CreateArrayBufferViewFromBytes(
-    DOMArrayBuffer* array_buffer,
-    base::span<const uint8_t> data) {
-  array_buffer->ByteSpan().copy_prefix_from(data);
-  return MaybeShared<DOMArrayBufferView>(
-      blink::DOMUint8Array::Create(array_buffer, /*byte_offset=*/0,
-                                   /*length=*/array_buffer->ByteLength()));
-}
-
 // Checks the contents of a MLTensor.
 // Returns false if unable to download or the tensor data did not match
 // expected.
@@ -772,10 +763,10 @@ MLTensor* CreateMLTensorForOperand(V8TestingScope& scope,
 
   MLTensor* ml_tensor = V8ToObject<MLTensor>(&scope, tester.Value());
 
-  ml_context->writeTensor(
-      scope.GetScriptState(), ml_tensor,
-      MaybeShared<DOMArrayBufferView>(array_buffer_view.Get()),
-      scope.GetExceptionState());
+  auto* src_data =
+      MakeGarbageCollected<AllowSharedBufferSource>(array_buffer_view);
+  ml_context->writeTensor(scope.GetScriptState(), ml_tensor, src_data,
+                          scope.GetExceptionState());
   return ml_tensor;
 }
 
@@ -994,20 +985,21 @@ TEST_F(MLGraphTest, WriteWebNNTensorTest) {
   ASSERT_THAT(array_buffer, testing::NotNull());
 
   // Write data to the tensor.
-  ml_context->writeTensor(
-      script_state, ml_tensor,
-      CreateArrayBufferViewFromBytes(array_buffer, input_data),
-      scope.GetExceptionState());
+  auto* src_data = MakeGarbageCollected<AllowSharedBufferSource>(array_buffer);
+  ml_context->writeTensor(script_state, ml_tensor, src_data,
+                          scope.GetExceptionState());
   ASSERT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_TRUE(
       DownloadMLTensorAndCheck(scope, ml_context, ml_tensor, input_data));
 
   // Write different data to the tensor.
   std::array<const uint8_t, kTensorSize> new_data = {0xAA, 0xCC, 0xBB, 0xBB};
-  ml_context->writeTensor(
-      script_state, ml_tensor,
-      CreateArrayBufferViewFromBytes(array_buffer, new_data),
-      scope.GetExceptionState());
+  DOMArrayBuffer* new_array_buffer = DOMArrayBuffer::Create(new_data);
+  ASSERT_THAT(new_array_buffer, testing::NotNull());
+  auto* new_src_data =
+      MakeGarbageCollected<AllowSharedBufferSource>(new_array_buffer);
+  ml_context->writeTensor(script_state, ml_tensor, new_src_data,
+                          scope.GetExceptionState());
   ASSERT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_TRUE(DownloadMLTensorAndCheck(scope, ml_context, ml_tensor, new_data));
 }
@@ -1041,12 +1033,11 @@ TEST_F(MLGraphTest, WriteWebNNTensorThenDestroyTest) {
 
   ml_tensor->destroy();
 
-  ml_context->writeTensor(
-      script_state, ml_tensor,
-      CreateDOMArrayBufferView(ml_tensor->PackedByteLength(),
-                               V8MLOperandDataType::Enum::kUint8)
-          ->BufferBase(),
-      scope.GetExceptionState());
+  auto* src_data =
+      MakeGarbageCollected<AllowSharedBufferSource>(CreateDOMArrayBufferView(
+          ml_tensor->PackedByteLength(), V8MLOperandDataType::Enum::kUint8));
+  ml_context->writeTensor(script_state, ml_tensor, src_data,
+                          scope.GetExceptionState());
 }
 
 // Reading data from an array buffer to a destroyed MLTensor should not crash.

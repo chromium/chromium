@@ -7,9 +7,28 @@
 #include "base/android/build_info.h"
 #include "base/android/jni_string.h"
 #include "base/no_destructor.h"
+#include "media/base/media_switches.h"
+#include "media/base/video_codecs.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "media/base/android/media_jni_headers/VideoAcceleratorUtil_jni.h"
+
+namespace {
+bool isEncoderSupportedProfile(media::VideoCodecProfile profile) {
+  media::VideoCodec codec = media::VideoCodecProfileToVideoCodec(profile);
+  if (codec == media::VideoCodec::kHEVC) {
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    // Currently only 8bit NV12 and I420 encoding is supported, so limit
+    // this to main profile only just like other platforms.
+    return base::FeatureList::IsEnabled(media::kPlatformHEVCEncoderSupport) &&
+           profile == media::VideoCodecProfile::HEVCPROFILE_MAIN;
+#else
+    return false;
+#endif
+  }
+  return true;
+}
+}  // namespace
 
 namespace media {
 
@@ -32,6 +51,9 @@ const std::vector<MediaCodecEncoderInfo>& GetEncoderInfoCache() {
       MediaCodecEncoderInfo info;
       info.profile.profile = static_cast<VideoCodecProfile>(
           Java_SupportedProfileAdapter_getProfile(env, java_profile));
+      if (!isEncoderSupportedProfile(info.profile.profile)) {
+        continue;
+      }
       info.profile.min_resolution = gfx::Size(
           Java_SupportedProfileAdapter_getMinWidth(env, java_profile),
           Java_SupportedProfileAdapter_getMinHeight(env, java_profile));

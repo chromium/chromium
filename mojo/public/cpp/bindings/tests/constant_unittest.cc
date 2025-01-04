@@ -5,7 +5,7 @@
 #include <cmath>
 #include <string_view>
 
-#include "mojo/public/interfaces/bindings/tests/test_constants.mojom.h"
+#include "mojo/public/interfaces/bindings/tests/test_constants.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo {

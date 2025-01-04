@@ -63,7 +63,3 @@ void LobsterClientImpl::QueueInsertion(const std::string& image_bytes,
                                        StatusCallback insert_status_callback) {
   service_->QueueInsertion(image_bytes, std::move(insert_status_callback));
 }
-
-bool LobsterClientImpl::UserHasAccess() {
-  return service_->UserHasAccess();
-}

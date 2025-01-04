@@ -637,7 +637,6 @@ class CONTENT_EXPORT RenderFrameImpl
                                  base::TimeTicks max_event_queued_main_thread,
                                  base::TimeTicks max_event_commit_finish,
                                  base::TimeTicks max_event_end,
-                                 blink::UserInteractionType interaction_type,
                                  uint64_t interaction_offset) override;
   void DidChangeCpuTiming(base::TimeDelta time) override;
   void DidObserveLoadingBehavior(blink::LoadingBehaviorFlag behavior) override;
@@ -927,7 +926,8 @@ class CONTENT_EXPORT RenderFrameImpl
       blink::mojom::FrameReplicationStatePtr replicated_frame_state,
       const blink::RemoteFrameToken& frame_token,
       blink::mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
-      blink::mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces)
+      blink::mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces,
+      const std::optional<base::UnguessableToken>& devtools_frame_token)
       override;
   void Delete(mojom::FrameDeleteIntention intent) override;
   void UndoCommitNavigation(
@@ -1223,7 +1223,8 @@ class CONTENT_EXPORT RenderFrameImpl
       blink::mojom::FrameReplicationStatePtr replicated_frame_state,
       const blink::RemoteFrameToken& frame_token,
       blink::mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
-      blink::mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces);
+      blink::mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces,
+      const std::optional<base::UnguessableToken>& devtools_frame_token);
 
   // Resets membmers that are needed for the duration of commit (time between
   // CommitNavigation() and DidCommitNavigation().

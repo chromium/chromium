@@ -15,6 +15,7 @@
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace policy {
 
@@ -39,8 +40,9 @@ AffiliationMixin::AffiliationMixin(
     DevicePolicyCrosTestHelper* device_policy_cros_test_helper)
     : InProcessBrowserTestMixin(host),
       policy_test_helper_(device_policy_cros_test_helper),
-      account_id_(AccountId::FromUserEmailGaiaId(kAffiliatedUserEmail,
-                                                 kAffiliatedUserGaiaId)),
+      account_id_(
+          AccountId::FromUserEmailGaiaId(kAffiliatedUserEmail,
+                                         GaiaId(kAffiliatedUserGaiaId))),
       user_policy_(std::make_unique<UserPolicyBuilder>()) {}
 
 AffiliationMixin::~AffiliationMixin() = default;

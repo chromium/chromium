@@ -268,7 +268,7 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
   DCHECK(!app_locale.empty());
   params.Set("hl", app_locale);
   params.Set("email", context.email);
-  params.Set("gaiaId", context.gaia_id);
+  params.Set("gaiaId", context.gaia_id.ToString());
   params.Set("extractSamlPasswordAttributes",
              login::ExtractSamlPasswordAttributesEnabled());
   params.Set("clientVersion", version_info::GetVersionNumber());
@@ -311,11 +311,10 @@ void LockScreenReauthHandler::HandleCompleteAuthentication(
   };
 
   CHECK_EQ(params.size(), 7u);
-  GaiaId gaia_id, email, password;
   bool using_saml;
-  gaia_id = params[0].GetString();
-  email = params[1].GetString();
-  password = params[2].GetString();
+  GaiaId gaia_id(params[0].GetString());
+  std::string email = params[1].GetString();
+  std::string password = params[2].GetString();
   auto scraped_saml_passwords =
       ::login::ConvertToStringList(params[3].GetList());
   using_saml = params[4].GetBool();

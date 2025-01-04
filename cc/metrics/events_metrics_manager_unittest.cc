@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/metrics/events_metrics_manager.h"
 
+#include <array>
 #include <utility>
 #include <vector>
 
@@ -82,7 +78,8 @@ TEST_F(EventsMetricsManagerTest, EventsMetricsSaved) {
     kSaveOutsideScope,
   };
 
-  std::pair<std::unique_ptr<EventMetrics>, Behavior> events[] = {
+  auto events = std::to_array<
+      std::pair<std::unique_ptr<EventMetrics>, Behavior>>({
       // An interesting event type for which SaveActiveEventMetrics() is not
       // called.
       {CreateEventMetrics(ui::EventType::kMousePressed), Behavior::kDoNotSave},
@@ -101,7 +98,7 @@ TEST_F(EventsMetricsManagerTest, EventsMetricsSaved) {
       // called inside its monitor scope.
       {CreateEventMetrics(ui::EventType::kMouseEntered),
        Behavior::kSaveInsideScope},
-  };
+  });
   EXPECT_NE(events[0].first, nullptr);
   EXPECT_NE(events[1].first, nullptr);
   EXPECT_NE(events[2].first, nullptr);
@@ -138,7 +135,7 @@ TEST_F(EventsMetricsManagerTest, EventsMetricsSaved) {
 // Tests that metrics for nested event loops are handled properly in a few
 // different configurations.
 TEST_F(EventsMetricsManagerTest, NestedEventsMetrics) {
-  struct {
+  struct Configs {
     // Type of event to use for the outer scope. `ui::EventType::kUnknown` if
     // no event should be used.
     ui::EventType outer_event_type;
@@ -155,7 +152,8 @@ TEST_F(EventsMetricsManagerTest, NestedEventsMetrics) {
 
     // Whether to save the outer scope metrics after the inner scope ended.
     bool save_outer_metrics_after_inner;
-  } configs[] = {
+  };
+  auto configs = std::to_array<Configs>({
       // Config #0.
       {
           /*outer_event_type=*/ui::EventType::kMousePressed,
@@ -200,7 +198,7 @@ TEST_F(EventsMetricsManagerTest, NestedEventsMetrics) {
           /*save_inner_metrics=*/true,
           /*save_outer_metrics_after_inner=*/false,
       },
-  };
+  });
 
   for (size_t i = 0; i < std::size(configs); i++) {
     auto& config = configs[i];

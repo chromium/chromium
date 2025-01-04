@@ -370,8 +370,7 @@ bool PPB_Graphics3D_Impl::InitRaw(
       std::move(channel), kGpuStreamIdDefault,
       base::SingleThreadTaskRunner::GetCurrentDefault());
   auto result = command_buffer_->Initialize(
-      gpu::kNullSurfaceHandle, share_buffer, kGpuStreamPriorityDefault,
-      attrib_helper, GURL());
+      share_buffer, kGpuStreamPriorityDefault, attrib_helper, GURL());
   if (result != gpu::ContextResult::kSuccess)
     return false;
 

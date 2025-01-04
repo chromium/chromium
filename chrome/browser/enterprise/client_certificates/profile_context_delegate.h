@@ -8,14 +8,14 @@
 #include "base/memory/raw_ptr.h"
 #include "components/enterprise/client_certificates/core/context_delegate.h"
 
-class ProfileNetworkContextService;
+class Profile;
 
 namespace client_certificates {
 
 class ProfileContextDelegate : public ContextDelegate {
  public:
   explicit ProfileContextDelegate(
-      ProfileNetworkContextService* profile_network_context_service);
+      Profile* profile);
   ~ProfileContextDelegate() override;
 
   // ContextDelegate:
@@ -23,7 +23,7 @@ class ProfileContextDelegate : public ContextDelegate {
       scoped_refptr<net::X509Certificate> certificate) override;
 
  private:
-  const raw_ptr<ProfileNetworkContextService> profile_network_context_service_;
+  const raw_ptr<Profile> profile_;
 };
 
 }  // namespace client_certificates

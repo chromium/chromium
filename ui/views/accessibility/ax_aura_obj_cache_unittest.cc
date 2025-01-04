@@ -33,11 +33,13 @@ namespace views::test {
 namespace {
 
 bool HasNodeWithName(ui::AXNode* node, const std::string& name) {
-  if (node->GetStringAttribute(ax::mojom::StringAttribute::kName) == name)
+  if (node->GetStringAttribute(ax::mojom::StringAttribute::kName) == name) {
     return true;
+  }
   for (ui::AXNode* child : node->children()) {
-    if (HasNodeWithName(child, name))
+    if (HasNodeWithName(child, name)) {
       return true;
+    }
   }
   return false;
 }

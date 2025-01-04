@@ -16,6 +16,7 @@ include_rules = [
   "+media",
   "+mojo/public",
   "+net/http/http_request_headers.h",
+  "+net/base/net_errors.h",
   "+services/data_decoder/public",
   "+services/network/public",
   "+testing/gmock",

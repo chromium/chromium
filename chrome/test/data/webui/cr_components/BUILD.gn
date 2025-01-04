@@ -12,10 +12,10 @@ build_webui_tests("build") {
     "customize_color_scheme_mode_test.ts",
     "localized_link_test.ts",
     "managed_dialog_test.ts",
+    "managed_footnote_test.ts",
     "most_visited_focus_test.ts",
     "most_visited_test.ts",
     "most_visited_test_support.ts",
-    "managed_footnote_test.ts",
   ]
 
   ts_definitions = [

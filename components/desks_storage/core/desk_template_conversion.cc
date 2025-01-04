@@ -31,10 +31,6 @@
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/cpp/lacros_startup_state.h"  // nogncheck
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace {
 
 using SyncWindowOpenDisposition =
@@ -94,7 +90,6 @@ constexpr char kDisplayId[] = "display_id";
 constexpr char kEventFlag[] = "event_flag";
 constexpr char kFirstNonPinnedTabIndex[] = "first_non_pinned_tab_index";
 constexpr char kIsAppTypeBrowser[] = "is_app";
-constexpr char kLacrosProfileId[] = "lacros_profile_id";
 constexpr char kLaunchContainer[] = "launch_container";
 constexpr char kLaunchContainerWindow[] = "LAUNCH_CONTAINER_WINDOW";
 constexpr char kLaunchContainerUnspecified[] = "LAUNCH_CONTAINER_UNSPECIFIED";
@@ -220,19 +215,7 @@ bool GetBool(const base::Value::Dict& dict, const char* key, bool* out) {
 std::string GetJsonAppId(const base::Value::Dict& app) {
   std::string app_type;
   if (GetString(app, kAppType, &app_type) && app_type == kAppTypeBrowser) {
-    // Return the primary browser's known app ID.
-    const bool is_lacros =
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-        true;
-#else
-        // Note that this will launch the browser as lacros if it is enabled,
-        // even if it was saved as a non-lacros window (and vice-versa).
-        crosapi::lacros_startup_state::IsLacrosEnabled();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-    // Browser app has a known app ID.
-    return std::string(is_lacros ? app_constants::kLacrosAppId
-                                 : app_constants::kChromeAppId);
+    return std::string(app_constants::kChromeAppId);
   }
 
   // Fall back on a stored app_id (which may or may not be present).
@@ -455,14 +438,6 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertJsonToAppLaunchInfo(
     app_launch_info->override_url = GURL(override_url);
   }
 
-  std::string lacros_profile_id_str;
-  if (GetString(app, kLacrosProfileId, &lacros_profile_id_str)) {
-    uint64_t lacros_profile_id = 0;
-    if (base::StringToUint64(lacros_profile_id_str, &lacros_profile_id)) {
-      app_launch_info->browser_extra_info.lacros_profile_id = lacros_profile_id;
-    }
-  }
-
   // TODO(crbug.com/1311801): Add support for actual event_flag values.
   app_launch_info->event_flag = 0;
 
@@ -471,8 +446,7 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertJsonToAppLaunchInfo(
     app_launch_info->browser_extra_info.app_type_browser = app_type_browser;
   }
 
-  if (app_id == app_constants::kLacrosAppId ||
-      app_id == app_constants::kChromeAppId) {
+  if (app_id == app_constants::kChromeAppId) {
     int active_tab_index;
     if (GetInt(app, kActiveTabIndex, &active_tab_index)) {
       app_launch_info->browser_extra_info.active_tab_index = active_tab_index;
@@ -971,12 +945,6 @@ base::Value ConvertWindowToDeskApp(const std::string& app_id,
     app_data.Set(kOverrideUrl, app->override_url->spec());
   }
 
-  if (app->browser_extra_info.lacros_profile_id.has_value()) {
-    app_data.Set(kLacrosProfileId,
-                 base::NumberToString(
-                     app->browser_extra_info.lacros_profile_id.value()));
-  }
-
   return base::Value(std::move(app_data));
 }
 
@@ -1197,18 +1165,8 @@ std::string GetAppId(const sync_pb::WorkspaceDeskSpecifics_App& app) {
       // Return an empty string to indicate this app is unsupported.
       return std::string();
     case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kBrowserAppWindow: {
-      const bool is_lacros =
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-          true;
-#else
-          // Note that this will launch the browser as lacros if it is enabled,
-          // even if it was saved as a non-lacros window (and vice-versa).
-          crosapi::lacros_startup_state::IsLacrosEnabled();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
       // Browser app has a known app ID.
-      return std::string(is_lacros ? app_constants::kLacrosAppId
-                                   : app_constants::kChromeAppId);
+      return std::string(app_constants::kChromeAppId);
     }
     case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kChromeApp:
       return app.app().chrome_app().app_id();
@@ -1684,9 +1642,10 @@ bool FillApp(const std::string& app_id,
     case apps::AppType::kWeb:
     case apps::AppType::kSystemWeb: {
       // System Web Apps.
-      // kSystemWeb is returned for System Web Apps in Lacros-primary
-      // configuration. These can be persisted and launched the same way as
-      // Chrome Apps.
+      // Even though, kSystemWeb was returned for System Web Apps in
+      // Lacros-primary configuration and while SWA's are mostly deprecated, a
+      // few internal apps like Settings are still implemented as SWA's. These
+      // can be persisted and launched the same way as Chrome Apps.
       ChromeApp* chrome_app_window =
           out_app->mutable_app()->mutable_chrome_app();
       chrome_app_window->set_app_id(app_id);
@@ -2169,16 +2128,6 @@ ParseSavedDeskResult ParseDeskTemplateFromBaseValue(
         std::move(uuid), source, name, created_time, desk_type);
   }
 
-  if (desk_type == ash::DeskTemplateType::kSaveAndRecall) {
-    std::string lacros_profile_id_str;
-    if (GetString(value_dict, kLacrosProfileId, &lacros_profile_id_str)) {
-      uint64_t lacros_profile_id = 0;
-      if (base::StringToUint64(lacros_profile_id_str, &lacros_profile_id)) {
-        desk_template->set_lacros_profile_id(lacros_profile_id);
-      }
-    }
-  }
-
   desk_template->set_updated_time(updated_time);
   desk_template->set_desk_restore_data(ConvertJsonToRestoreData(desk));
 
@@ -2196,11 +2145,6 @@ base::Value SerializeDeskTemplateAsBaseValue(
   desk_dict.Set(kUpdatedTime, base::TimeToValue(desk->GetLastUpdatedTime()));
   desk_dict.Set(kDeskType, SerializeDeskTypeAsString(desk->type()));
   desk_dict.Set(kAutoLaunchOnStartup, desk->should_launch_on_startup());
-  if (desk->type() == ash::DeskTemplateType::kSaveAndRecall &&
-      desk->lacros_profile_id()) {
-    desk_dict.Set(kLacrosProfileId,
-                  base::NumberToString(desk->lacros_profile_id()));
-  }
   desk_dict.Set(
       kDesk, ConvertRestoreDataToValue(desk->desk_restore_data(), app_cache));
 

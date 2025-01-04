@@ -36,6 +36,7 @@
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/types/strong_alias.h"
+#include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/canvas_rotation_in_vertical.h"
 #include "third_party/blink/renderer/platform/fonts/glyph.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_math_stretch_data.h"
@@ -52,6 +53,10 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+
+#if defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64)
+#define USE_SIMD_FOR_COMPUTING_GLYPH_BOUNDS 1
+#endif
 
 struct hb_buffer_t;
 
@@ -487,6 +492,17 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
                            float run_advance,
                            gfx::RectF* ink_bounds) const;
 
+  template <bool is_horizontal_run, bool has_non_zero_glyph_offsets>
+  void ComputeRunInkBoundsScalar(const ShapeResult::RunInfo&,
+                                 float run_advance,
+                                 gfx::RectF* ink_bounds) const;
+#if defined(USE_SIMD_FOR_COMPUTING_GLYPH_BOUNDS)
+  template <bool is_horizontal_run, bool has_non_zero_glyph_offsets>
+  void ComputeRunInkBoundsVectorized(const ShapeResult::RunInfo&,
+                                     float run_advance,
+                                     gfx::RectF* ink_bounds) const;
+#endif  // defined(USE_SIMD_FOR_COMPUTING_GLYPH_BOUNDS)
+
   // Common signatures with ShapeResultView, to templatize algorithms.
   const HeapVector<Member<RunInfo>>& RunsOrParts() const { return runs_; }
   unsigned StartIndexOffsetForRun() const { return 0; }
@@ -565,5 +581,7 @@ PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const ShapeResult&);
 
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::ShapeResult::ShapeRange)
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::ShapeResult::RunFontData)
+WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(
+    blink::ShapeResultCharacterData)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_H_

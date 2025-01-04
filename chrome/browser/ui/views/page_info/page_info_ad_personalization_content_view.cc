@@ -56,8 +56,7 @@ PageInfoAdPersonalizationContentView::PageInfoAdPersonalizationContentView(
           PageInfoViewFactory::GetSiteSettingsIcon(),
           l10n_util::GetStringUTF16(
               IDS_PAGE_INFO_AD_PRIVACY_SUBPAGE_MANAGE_BUTTON),
-          std::u16string(),
-          PageInfoViewFactory::GetLaunchIcon()));
+          std::u16string(), PageInfoViewFactory::GetLaunchIcon()));
   manage_ad_privacy_button->SetTitleTextStyleAndColor(
       views::style::STYLE_BODY_3_MEDIUM, kColorPageInfoForeground);
 

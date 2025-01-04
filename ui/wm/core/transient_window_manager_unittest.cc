@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/wm/core/transient_window_manager.h"
-#include "base/memory/raw_ptr.h"
 
+#include <array>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/test/test_windows.h"
@@ -377,7 +373,7 @@ TEST_F(TransientWindowManagerTest, CrashOnVisibilityChange) {
 // Tests that windows are restacked properly after a call to AddTransientChild()
 // or RemoveTransientChild().
 TEST_F(TransientWindowManagerTest, RestackUponAddOrRemoveTransientChild) {
-  std::unique_ptr<Window> windows[4];
+  std::array<std::unique_ptr<Window>, 4> windows;
   for (int i = 0; i < 4; i++)
     windows[i].reset(CreateTestWindowWithId(i, root_window()));
   EXPECT_EQ("0 1 2 3", ChildWindowIDsAsString(root_window()));

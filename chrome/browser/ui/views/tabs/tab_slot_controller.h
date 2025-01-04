@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
@@ -95,9 +96,12 @@ class TabSlotController {
   // Switches the collapsed state of a tab group. Returns false if the state was
   // not successfully switched.
   virtual void ToggleTabGroupCollapsedState(
-      const tab_groups::TabGroupId group,
-      ToggleTabGroupCollapsedStateOrigin origin =
-          ToggleTabGroupCollapsedStateOrigin::kMenuAction) = 0;
+      tab_groups::TabGroupId group,
+      ToggleTabGroupCollapsedStateOrigin origin) = 0;
+  void ToggleTabGroupCollapsedState(tab_groups::TabGroupId group) {
+    ToggleTabGroupCollapsedState(
+        group, ToggleTabGroupCollapsedStateOrigin::kMenuAction);
+  }
 
   // Notify this controller of a bubble opening/closing in the tabstrip.
   virtual void NotifyTabstripBubbleOpened() = 0;

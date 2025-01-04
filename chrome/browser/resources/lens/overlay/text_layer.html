@@ -68,6 +68,14 @@
     opacity: 60%;
     z-index: 1;
   }
+
+  /* Set styles for high contrast mode in Windows. */
+  @media (forced-colors: active) {
+    .highlighted-line {
+      /* Set the icon color to hcm (high contrast mode) value. */
+      background-color: Highlight;
+    }
+  }
 </style>
 <template id="wordsContainer" is="dom-repeat" items="[[renderedWords]]"
   index-as="wordIndex">

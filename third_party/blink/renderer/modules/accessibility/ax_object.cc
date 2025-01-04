@@ -978,6 +978,30 @@ Node* AXObject::GetParentNodeForComputeParent(AXObjectCacheImpl& cache,
     return node->OwnerShadowHost();
   }
 
+  Node* parent = nullptr;
+
+  // Select elements have a complex architecture with two different slot
+  // elements which `node` may be slotted into. `node` might also not be slotted
+  // into anything at all (which is why we are doing this before using
+  // LayoutTreeBuilderTraversal). Despite this, we always want to expose a
+  // consistent structure for the select element with a MenuList and
+  // MenuListPopup with all the children exposed in the MenuListPopup. For
+  // consistency, we will use the select's PopoverForAppearanceBase element as
+  // the MenuListPopup and make it the parent of all the nodes inside the
+  // select.
+  if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+    if (auto* select = DynamicTo<HTMLSelectElement>(node->parentNode())) {
+      if (select->UsesMenuList()) {
+        if (node == select->SlottedButton()) {
+          // <select>'s author provided <button> should not have any
+          // accessibility mappings.
+          return nullptr;
+        }
+        parent = select->PopoverForAppearanceBase();
+      }
+    }
+  }
+
   // Use LayoutTreeBuilderTraversal::Parent(), which handles pseudo content.
   // This can return nullptr for a node that is never visited by
   // LayoutTreeBuilderTraversal's child traversal. For example, while an element
@@ -988,35 +1012,8 @@ Node* AXObject::GetParentNodeForComputeParent(AXObjectCacheImpl& cache,
   // Whenever null is returned from this function, then a parent cannot be
   // computed, and when a parent is not provided or computed, the accessible
   // object will not be created.
-  Node* parent = LayoutTreeBuilderTraversal::Parent(*node);
-
-  // The parent of a customizable select's popup is the select.
-  if (IsA<HTMLDataListElement>(node)) {
-    if (auto* select = DynamicTo<HTMLSelectElement>(node->OwnerShadowHost())) {
-      if (node == select->PopoverForAppearanceBase()) {
-        return select;
-      }
-    }
-  }
-
-  // For the content of a customizable select, the parent must be the element
-  // assigned the role of kMenuListPopup. To accomplish this, it is necessary to
-  // adapt to unusual DOM structure. If no parent, or the parent has a <select>
-  // shadow host, then the actual parent should be the <select>.
-  // TODO(aleventhal, jarhar): try to simplify this code. @jarhar wrote in code
-  // review: "I don't think that a UA <slot> will ever get returned by
-  // LayoutTreeBuilderTraversal::Parent. In this case, I think
-  // LayoutTreeBuilderTraversal::Parent should just return the <select>."
-
-  HTMLSelectElement* owner_select = nullptr;
-  if (IsA<HTMLSlotElement>(parent) && parent->IsInUserAgentShadowRoot()) {
-    owner_select = DynamicTo<HTMLSelectElement>(parent->OwnerShadowHost());
-  } else if (!parent) {
-    owner_select = DynamicTo<HTMLSelectElement>(NodeTraversal::Parent(*node));
-  }
-  if (owner_select && owner_select->IsAppearanceBasePicker()) {
-    // Return the popup's <datalist> element.
-    return owner_select->PopoverForAppearanceBase();
+  if (!parent) {
+    parent = LayoutTreeBuilderTraversal::Parent(*node);
   }
 
   // No parent: this can occur when elements are not assigned a slot.
@@ -1119,9 +1116,17 @@ bool AXObject::CanHaveChildren(Element& element) {
   // For consistency with the past, options with a single text child are leaves.
   // However, options can now sometimes have interesting children, for
   // a <select> menulist that uses appearance:base-select.
+  // This code looks at IsAppearanceBaseButton instead of IsAppearanceBasePicker
+  // in order to have the same result whether the picker is open or closed.
+  // Ideally we would check to see if the picker is opted in to base appearance,
+  // but without a style update that would change based on whether the picker is
+  // open or not. When the button is opted in then the user will likely be able
+  // to see the child node structure of the option element in the button, so we
+  // can use that as a signal to allow options to have children.
   if (auto* option = DynamicTo<HTMLOptionElement>(element)) {
     return option->OwnerSelectElement() &&
-           option->OwnerSelectElement()->IsAppearanceBasePicker() &&
+           option->OwnerSelectElement()->IsAppearanceBaseButton(
+               HTMLSelectElement::StyleUpdateBehavior::kDontUpdateStyle) &&
            !option->HasOneTextChild();
   }
 
@@ -4273,10 +4278,10 @@ bool AXObject::ComputeIsIgnoredButIncludedInTree() {
   if (element && (element->GetPseudoElement(kPseudoIdBefore) ||
                   element->GetPseudoElement(kPseudoIdAfter) ||
                   element->GetPseudoElement(kPseudoIdMarker) ||
-                  element->GetPseudoElement(kPseudoIdScrollUpButton) ||
-                  element->GetPseudoElement(kPseudoIdScrollDownButton) ||
-                  element->GetPseudoElement(kPseudoIdScrollLeftButton) ||
-                  element->GetPseudoElement(kPseudoIdScrollRightButton) ||
+                  element->GetPseudoElement(kPseudoIdScrollButtonBlockStart) ||
+                  element->GetPseudoElement(kPseudoIdScrollButtonInlineStart) ||
+                  element->GetPseudoElement(kPseudoIdScrollButtonBlockEnd) ||
+                  element->GetPseudoElement(kPseudoIdScrollButtonInlineEnd) ||
                   element->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore) ||
                   element->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter) ||
                   element->GetPseudoElement(kPseudoIdScrollMarker))) {
@@ -5562,7 +5567,10 @@ bool AXObject::ComputeIsInMenuListSubtree() {
   if (IsRoot()) {
     return false;
   }
-  return IsMenuList() || ParentObject()->IsInMenuListSubtree();
+  if (IsMenuList()) {
+    return true;
+  }
+  return ParentObject() && ParentObject()->IsInMenuListSubtree();
 }
 
 bool AXObject::IsMenuList() const {
@@ -6476,44 +6484,6 @@ bool AXObject::NeedsToUpdateChildren() const {
   return children_dirty_;
 }
 
-#if DCHECK_IS_ON()
-void AXObject::CheckIncludedObjectConnectedToRoot() const {
-  if (!IsIncludedInTree() || IsRoot()) {
-    return;
-  }
-
-  const AXObject* included_child = this;
-  const AXObject* ancestor = nullptr;
-  const AXObject* included_parent = nullptr;
-  for (ancestor = ParentObject(); ancestor;
-       ancestor = ancestor->ParentObject()) {
-    if (ancestor->IsIncludedInTree()) {
-      included_parent = ancestor;
-      if (included_parent->CachedChildrenIncludingIgnored().Find(
-              included_child) == kNotFound) {
-        if (AXObject* parent_for_repair = ComputeParent()) {
-          parent_for_repair->CheckIncludedObjectConnectedToRoot();
-        }
-
-        NOTREACHED() << "Cannot find included child in parents children:\n"
-                     << "\n* Child: " << included_child
-                     << "\n* Parent:  " << included_parent
-                     << "\n--------------\n"
-                     << included_parent->GetAXTreeForThis();
-      }
-      if (included_parent->IsRoot()) {
-        return;
-      }
-      included_child = included_parent;
-    }
-  }
-
-  NOTREACHED() << "Did not find included parent path to root:"
-               << "\n* Last found included parent: " << included_parent
-               << "\n* Current object in tree: " << GetAXTreeForThis();
-}
-#endif
-
 void AXObject::SetNeedsToUpdateChildren(bool update) {
   CHECK(AXObjectCache().lifecycle().StateAllowsAXObjectsToBeDirtied())
       << AXObjectCache();
@@ -7372,7 +7342,8 @@ bool AXObject::OnNativeClickAction() {
 
   // Forward default action on custom select to its button.
   if (auto* select = DynamicTo<HTMLSelectElement>(GetNode())) {
-    if (select->IsAppearanceBaseButton()) {
+    if (select->IsAppearanceBaseButton(
+            HTMLSelectElement::StyleUpdateBehavior::kDontUpdateStyle)) {
       if (auto* button = select->SlottedButton()) {
         element = button;
       }
@@ -7792,6 +7763,7 @@ bool AXObject::SupportsNameFromContents(bool recursive,
     case ax::mojom::blink::Role::kStaticText:
     case ax::mojom::blink::Role::kSwitch:
     case ax::mojom::blink::Role::kTab:
+    case ax::mojom::blink::Role::kTerm:
     case ax::mojom::blink::Role::kToggleButton:
     case ax::mojom::blink::Role::kTreeItem:
     case ax::mojom::blink::Role::kTooltip:
@@ -7928,7 +7900,6 @@ bool AXObject::SupportsNameFromContents(bool recursive,
     case ax::mojom::blink::Role::kTable:
     case ax::mojom::blink::Role::kTabList:
     case ax::mojom::blink::Role::kTabPanel:
-    case ax::mojom::blink::Role::kTerm:
     case ax::mojom::blink::Role::kTextField:
     case ax::mojom::blink::Role::kTextFieldWithComboBox:
     case ax::mojom::blink::Role::kTimer:

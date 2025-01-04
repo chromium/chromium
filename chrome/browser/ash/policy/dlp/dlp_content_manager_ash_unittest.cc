@@ -45,6 +45,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -235,7 +236,8 @@ class DlpContentManagerAshTest : public testing::Test {
 
  private:
   void LoginFakeUser() {
-    AccountId account_id = AccountId::FromUserEmailGaiaId(kEmailId, kGaiaId);
+    AccountId account_id =
+        AccountId::FromUserEmailGaiaId(kEmailId, GaiaId(kGaiaId));
 
     profile_ = profile_manager_.CreateTestingProfile(account_id.GetUserEmail());
     profile_->SetIsNewProfile(true);
@@ -1180,7 +1182,7 @@ TEST_F(DlpContentManagerAshTest, ScreenShareRestricted) {
       content::DesktopMediaID::TYPE_WEB_CONTENTS,
       content::DesktopMediaID::kNullId,
       content::WebContentsMediaCaptureId(
-          web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
           web_contents->GetPrimaryMainFrame()->GetRoutingID()));
   GetManager()->CheckScreenShareRestriction(media_id, kApplicationName,
                                             cb.Get());
@@ -1239,7 +1241,7 @@ TEST_F(DlpContentManagerAshTest, ScreenShareWarnedContinued) {
       content::DesktopMediaID::TYPE_WEB_CONTENTS,
       content::DesktopMediaID::kNullId,
       content::WebContentsMediaCaptureId(
-          web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
           web_contents->GetPrimaryMainFrame()->GetRoutingID()));
 
   // Warn restriction is enforced: allow and remember that the user proceeded.
@@ -1293,7 +1295,7 @@ TEST_F(DlpContentManagerAshTest, ScreenShareWarnedCancelled) {
       content::DesktopMediaID::TYPE_WEB_CONTENTS,
       content::DesktopMediaID::kNullId,
       content::WebContentsMediaCaptureId(
-          web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
           web_contents->GetPrimaryMainFrame()->GetRoutingID()));
 
   // Warn restriction is enforced: reject since the user canceled.

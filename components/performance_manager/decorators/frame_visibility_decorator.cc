@@ -67,11 +67,11 @@ FrameVisibilityDecorator::~FrameVisibilityDecorator() = default;
 void FrameVisibilityDecorator::OnPassedToGraph(Graph* graph) {
   DCHECK(graph->HasOnlySystemNode());
   graph->AddPageNodeObserver(this);
-  graph->AddInitializingFrameNodeObserver(this);
+  graph->AddFrameNodeObserver(this);
 }
 
 void FrameVisibilityDecorator::OnTakenFromGraph(Graph* graph) {
-  graph->RemoveInitializingFrameNodeObserver(this);
+  graph->RemoveFrameNodeObserver(this);
   graph->RemovePageNodeObserver(this);
 }
 
@@ -107,11 +107,15 @@ void FrameVisibilityDecorator::OnIsBeingMirroredChanged(
   OnPageUserVisibilityChanged(page_node, IsBeingMirrored(page_node));
 }
 
-void FrameVisibilityDecorator::OnFrameNodeInitializing(
-    const FrameNode* frame_node) {
+void FrameVisibilityDecorator::OnBeforeFrameNodeAdded(
+    const FrameNode* frame_node,
+    const FrameNode* pending_parent_frame_node,
+    const PageNode* pending_page_node,
+    const ProcessNode* pending_process_node,
+    const FrameNode* pending_parent_or_outer_document_or_embedder) {
   FrameNodeImpl* frame_node_impl = FrameNodeImpl::FromNode(frame_node);
   frame_node_impl->SetInitialVisibility(GetFrameNodeVisibility(
-      frame_node_impl, IsPageUserVisible(frame_node_impl->page_node())));
+      frame_node_impl, IsPageUserVisible(pending_page_node)));
 }
 
 void FrameVisibilityDecorator::OnCurrentFrameChanged(

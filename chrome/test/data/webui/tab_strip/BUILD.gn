@@ -9,8 +9,8 @@ assert(enable_webui_tab_strip)
 
 build_webui_tests("build") {
   files = [
-    "alert_indicators_test.ts",
     "alert_indicator_test.ts",
+    "alert_indicators_test.ts",
     "drag_manager_test.ts",
     "tab_group_test.ts",
     "tab_list_test.ts",

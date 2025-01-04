@@ -30,7 +30,6 @@ if (ios_enable_screen_time) {
       ":feature_flags",
       "//base",
       "//components/history/core/browser",
-      "//components/keyed_service/core",
       "//ios/chrome/browser/history/model",
       "//ios/chrome/browser/shared/model/profile",
       "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",

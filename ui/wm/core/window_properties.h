@@ -52,9 +52,13 @@ extern const ui::ClassProperty<bool>* const kPersistableKey;
 
 }  // namespace wm
 
-// These need to be declared here for jumbo builds.
+// Declare template specializations introduced by WM here to make sure that the
+// compiler knows about them before the first template instance use. Using a
+// template instance before its specialization is declared in a translation unit
+// is an error.
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(UI_WM),
+                                        base::TimeDelta)
 DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(UI_WM),
                                         wm::WindowVisibilityAnimationTransition)
-DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(UI_WM), float)
 
 #endif  // UI_WM_CORE_WINDOW_PROPERTIES_H_

@@ -52,8 +52,8 @@ declare_args() {
   # the builtin cert verifier with the Chrome Root Store.
   chrome_root_store_only = is_win || is_mac || is_linux || is_chromeos
 
-  # DBSC is only supported on Windows and Linux for now.
-  enable_device_bound_sessions = is_win || is_linux
+  # DBSC is only supported on Windows, Linux and Mac for now.
+  enable_device_bound_sessions = is_win || is_linux || is_mac
 
   # Bracketed URIs parsing is only available for debug builds.
   # TODO(crbug.com/365771838): Ensure tests are updated if needed if this

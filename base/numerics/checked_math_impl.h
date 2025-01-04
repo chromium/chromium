@@ -50,8 +50,9 @@ struct CheckedAddOp<T, U> {
   using result_type = MaxExponentPromotion<T, U>;
   template <typename V>
   static constexpr bool Do(T x, U y, V* result) {
-    if constexpr (CheckedAddFastOp<T, U>::is_supported)
+    if constexpr (CheckedAddFastOp<T, U>::is_supported) {
       return CheckedAddFastOp<T, U>::Do(x, y, result);
+    }
 
     // Double the underlying type up to a full machine word.
     using FastPromotion = FastIntegerArithmeticPromotion<T, U>;
@@ -74,8 +75,9 @@ struct CheckedAddOp<T, U> {
       is_valid = CheckedAddImpl(static_cast<Promotion>(x),
                                 static_cast<Promotion>(y), &presult);
     }
-    if (!is_valid || !IsValueInRangeForNumericType<V>(presult))
+    if (!is_valid || !IsValueInRangeForNumericType<V>(presult)) {
       return false;
+    }
     *result = static_cast<V>(presult);
     return true;
   }
@@ -111,8 +113,9 @@ struct CheckedSubOp<T, U> {
   using result_type = MaxExponentPromotion<T, U>;
   template <typename V>
   static constexpr bool Do(T x, U y, V* result) {
-    if constexpr (CheckedSubFastOp<T, U>::is_supported)
+    if constexpr (CheckedSubFastOp<T, U>::is_supported) {
       return CheckedSubFastOp<T, U>::Do(x, y, result);
+    }
 
     // Double the underlying type up to a full machine word.
     using FastPromotion = FastIntegerArithmeticPromotion<T, U>;
@@ -135,8 +138,9 @@ struct CheckedSubOp<T, U> {
       is_valid = CheckedSubImpl(static_cast<Promotion>(x),
                                 static_cast<Promotion>(y), &presult);
     }
-    if (!is_valid || !IsValueInRangeForNumericType<V>(presult))
+    if (!is_valid || !IsValueInRangeForNumericType<V>(presult)) {
       return false;
+    }
     *result = static_cast<V>(presult);
     return true;
   }
@@ -174,8 +178,9 @@ struct CheckedMulOp<T, U> {
   using result_type = MaxExponentPromotion<T, U>;
   template <typename V>
   static constexpr bool Do(T x, U y, V* result) {
-    if constexpr (CheckedMulFastOp<T, U>::is_supported)
+    if constexpr (CheckedMulFastOp<T, U>::is_supported) {
       return CheckedMulFastOp<T, U>::Do(x, y, result);
+    }
 
     using Promotion = FastIntegerArithmeticPromotion<T, U>;
     // Verify the destination type can hold the result (always true for 0).
@@ -199,8 +204,9 @@ struct CheckedMulOp<T, U> {
       is_valid = CheckedMulImpl(static_cast<Promotion>(x),
                                 static_cast<Promotion>(y), &presult);
     }
-    if (!is_valid || !IsValueInRangeForNumericType<V>(presult))
+    if (!is_valid || !IsValueInRangeForNumericType<V>(presult)) {
       return false;
+    }
     *result = static_cast<V>(presult);
     return true;
   }
@@ -239,8 +245,9 @@ struct CheckedDivOp<T, U> {
     }
 
     const Promotion presult = Promotion(x) / Promotion(y);
-    if (!IsValueInRangeForNumericType<V>(presult))
+    if (!IsValueInRangeForNumericType<V>(presult)) {
       return false;
+    }
     *result = static_cast<V>(presult);
     return true;
   }
@@ -270,8 +277,9 @@ struct CheckedModOp<T, U> {
 
     const Promotion presult =
         static_cast<Promotion>(x) % static_cast<Promotion>(y);
-    if (!IsValueInRangeForNumericType<V>(presult))
+    if (!IsValueInRangeForNumericType<V>(presult)) {
       return false;
+    }
     *result = static_cast<Promotion>(presult);
     return true;
   }
@@ -327,8 +335,9 @@ struct CheckedRshOp<T, U> {
     }
 
     const T tmp = x >> shift;
-    if (!IsValueInRangeForNumericType<V>(tmp))
+    if (!IsValueInRangeForNumericType<V>(tmp)) {
       return false;
+    }
     *result = static_cast<V>(tmp);
     return true;
   }
@@ -346,8 +355,9 @@ struct CheckedAndOp<T, U> {
   static constexpr bool Do(T x, U y, V* result) {
     const result_type tmp =
         static_cast<result_type>(x) & static_cast<result_type>(y);
-    if (!IsValueInRangeForNumericType<V>(tmp))
+    if (!IsValueInRangeForNumericType<V>(tmp)) {
       return false;
+    }
     *result = static_cast<V>(tmp);
     return true;
   }
@@ -365,8 +375,9 @@ struct CheckedOrOp<T, U> {
   static constexpr bool Do(T x, U y, V* result) {
     const result_type tmp =
         static_cast<result_type>(x) | static_cast<result_type>(y);
-    if (!IsValueInRangeForNumericType<V>(tmp))
+    if (!IsValueInRangeForNumericType<V>(tmp)) {
       return false;
+    }
     *result = static_cast<V>(tmp);
     return true;
   }
@@ -384,8 +395,9 @@ struct CheckedXorOp<T, U> {
   static constexpr bool Do(T x, U y, V* result) {
     const result_type tmp =
         static_cast<result_type>(x) ^ static_cast<result_type>(y);
-    if (!IsValueInRangeForNumericType<V>(tmp))
+    if (!IsValueInRangeForNumericType<V>(tmp)) {
       return false;
+    }
     *result = static_cast<V>(tmp);
     return true;
   }
@@ -405,8 +417,9 @@ struct CheckedMaxOp<T, U> {
     const result_type tmp = IsGreater<T, U>::Test(x, y)
                                 ? static_cast<result_type>(x)
                                 : static_cast<result_type>(y);
-    if (!IsValueInRangeForNumericType<V>(tmp))
+    if (!IsValueInRangeForNumericType<V>(tmp)) {
       return false;
+    }
     *result = static_cast<V>(tmp);
     return true;
   }
@@ -426,8 +439,9 @@ struct CheckedMinOp<T, U> {
     const result_type tmp = IsLess<T, U>::Test(x, y)
                                 ? static_cast<result_type>(x)
                                 : static_cast<result_type>(y);
-    if (!IsValueInRangeForNumericType<V>(tmp))
+    if (!IsValueInRangeForNumericType<V>(tmp)) {
       return false;
+    }
     *result = static_cast<V>(tmp);
     return true;
   }

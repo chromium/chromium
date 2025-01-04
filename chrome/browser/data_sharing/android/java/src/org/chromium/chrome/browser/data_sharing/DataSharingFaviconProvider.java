@@ -10,12 +10,9 @@ import android.graphics.drawable.Drawable;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivityListCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
-import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
-import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
-import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
-import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.url.GURL;
+
+import java.util.Collections;
 
 /**
  * Favicon provider for data sharing UI. Wraps around the favicon backend and provides convenient
@@ -24,9 +21,7 @@ import org.chromium.url.GURL;
  */
 public class DataSharingFaviconProvider implements RecentActivityListCoordinator.FaviconProvider {
     private final Context mContext;
-    private final FaviconHelper mFaviconHelper;
-    private final DefaultFaviconHelper mDefaultFaviconHelper;
-    private final RoundedIconGenerator mRounedIconGenerator;
+    private final BulkFaviconUtil mBulkFaviconUtil;
     private final int mFaviconSize;
     private final Profile mProfile;
 
@@ -35,14 +30,12 @@ public class DataSharingFaviconProvider implements RecentActivityListCoordinator
      *
      * @param context The associated context.
      * @param profile The associated profile.
-     * @param faviconHelper The backend that provides favicons.
+     * @param bulkFaviconUtil Utility to fetch favicons.
      */
     public DataSharingFaviconProvider(
-            Context context, Profile profile, FaviconHelper faviconHelper) {
+            Context context, Profile profile, BulkFaviconUtil bulkFaviconUtil) {
         mContext = context;
-        mFaviconHelper = faviconHelper;
-        mDefaultFaviconHelper = new DefaultFaviconHelper();
-        mRounedIconGenerator = FaviconUtils.createCircularIconGenerator(mContext);
+        mBulkFaviconUtil = bulkFaviconUtil;
         mFaviconSize =
                 mContext.getResources().getDimensionPixelSize(R.dimen.tile_view_icon_size_modern);
         mProfile = profile;
@@ -50,24 +43,16 @@ public class DataSharingFaviconProvider implements RecentActivityListCoordinator
 
     @Override
     public void fetchFavicon(GURL tabUrl, Callback<Drawable> faviconDrawableCallback) {
-        FaviconImageCallback imageCallback =
-                (bitmap, iconUrl) -> {
-                    Drawable faviconDrawable =
-                            FaviconUtils.getIconDrawableWithFilter(
-                                    bitmap,
-                                    tabUrl,
-                                    mRounedIconGenerator,
-                                    mDefaultFaviconHelper,
-                                    mContext,
-                                    mFaviconSize);
-                    faviconDrawableCallback.onResult(faviconDrawable);
-                };
-
-        mFaviconHelper.getForeignFaviconImageForURL(mProfile, tabUrl, mFaviconSize, imageCallback);
+        mBulkFaviconUtil.fetchAsDrawable(
+                mContext,
+                mProfile,
+                Collections.singletonList(tabUrl),
+                mFaviconSize,
+                (results) -> {
+                    faviconDrawableCallback.onResult(results.get(0));
+                });
     }
 
     @Override
-    public void destroy() {
-        mFaviconHelper.destroy();
-    }
+    public void destroy() {}
 }

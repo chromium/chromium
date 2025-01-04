@@ -136,7 +136,14 @@ const int kDefaultCacheSize = 80 * 1024 * 1024;
 
 BASE_FEATURE(kChangeDiskCacheSizeExperiment,
              "ChangeDiskCacheSize",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// See go/change-disk-cache-size-results-2024 for an explanation of why the
+// state of this feature varies by platform.
+#if BUILDFLAG(IS_WIN)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 void DeleteCache(const base::FilePath& path, bool remove_folder) {
   if (remove_folder) {
@@ -187,7 +194,7 @@ int PreferredCacheSize(int64_t available, net::CacheType type) {
       type == net::DISK_CACHE) {
     percent_relative_size = base::GetFieldTrialParamByFeatureAsInt(
         disk_cache::kChangeDiskCacheSizeExperiment, "percent_relative_size",
-        100 /* default value */);
+        400 /* default value */);
   }
 
   // Cap scaling, as a safety check, to avoid overflow.

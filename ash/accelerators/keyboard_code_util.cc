@@ -141,8 +141,10 @@ const gfx::VectorIcon* GetVectorIconForKeyboardCode(ui::KeyboardCode key_code) {
       return &ash::kKsvPrivacyScreenToggleIcon;
     case ui::VKEY_SNAPSHOT:
       return &ash::kKsvSnapshotIcon;
-    case ui::VKEY_RIGHT_ALT:
+    case ui::VKEY_QUICK_INSERT:
       return &ash::kQuickInsertIcon;
+    case ui::VKEY_DO_NOT_DISTURB:
+      return &ash::kKsDoNotDisturbIcon;
     default:
       return nullptr;
   }

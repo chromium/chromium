@@ -686,7 +686,7 @@ class ChromeUsbTestHelper {
   raw_ptr<MockUsbConnectionTracker, DanglingUntriaged> usb_connection_tracker_ =
       nullptr;
   // This flag is expected to be set to true only for the scenario of extension
-  // origin and kEnableWebUsbOnExtensionServiceWorker enabled.
+  // origin.
   bool supports_usb_connection_tracker_ = false;
 
  private:
@@ -823,19 +823,6 @@ class ChromeUsbDelegateServiceWorkerTest
 };
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-class DisableWebUsbOnExtensionServiceWorkerHelper {
- public:
-  DisableWebUsbOnExtensionServiceWorkerHelper() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{
-            features::kEnableWebUsbOnExtensionServiceWorker});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 class ChromeUsbDelegateExtensionRenderFrameTest
     : public ChromeUsbDelegateRenderFrameTestBase {
  public:
@@ -867,35 +854,11 @@ class ChromeUsbDelegateSmartCardExtensionRenderFrameTest
   }
 };
 
-class ChromeUsbDelegateExtensionRenderFrameFeatureDisabledTest
-    : public ChromeUsbDelegateRenderFrameTestBase,
-      public DisableWebUsbOnExtensionServiceWorkerHelper {
- public:
-  ChromeUsbDelegateExtensionRenderFrameFeatureDisabledTest() {
-    // There is no usb connection tracker activity when
-    // features::kEnableWebUsbOnExtensionServiceWorker is disabled.
-    supports_usb_connection_tracker_ = false;
-  }
-  void SetUpOriginUrl() override { SetUpExtensionOriginUrl(kExtensionId); }
-};
-
 class ChromeUsbDelegateExtensionServiceWorkerTest
     : public ChromeUsbDelegateServiceWorkerTestBase {
  public:
   ChromeUsbDelegateExtensionServiceWorkerTest() {
     supports_usb_connection_tracker_ = true;
-  }
-  void SetUpOriginUrl() override { SetUpExtensionOriginUrl(kExtensionId); }
-};
-
-class ChromeUsbDelegateExtensionServiceWorkerFeatureDisabledTest
-    : public ChromeUsbDelegateServiceWorkerTestBase,
-      public DisableWebUsbOnExtensionServiceWorkerHelper {
- public:
-  ChromeUsbDelegateExtensionServiceWorkerFeatureDisabledTest() {
-    // There is no usb connection tracker activity when
-    // features::kEnableWebUsbOnExtensionServiceWorker is disabled.
-    supports_usb_connection_tracker_ = false;
   }
   void SetUpOriginUrl() override { SetUpExtensionOriginUrl(kExtensionId); }
 };
@@ -983,21 +946,6 @@ TEST_F(ChromeUsbDelegateImprivataExtensionRenderFrameTest,
 TEST_F(ChromeUsbDelegateSmartCardExtensionRenderFrameTest,
        AllowlistedSmartCardConnectorExtension) {
   TestAllowlistedSmartCardConnectorExtension(web_contents());
-}
-
-TEST_F(ChromeUsbDelegateExtensionRenderFrameFeatureDisabledTest,
-       OpenAndCloseDevice) {
-  TestOpenAndCloseDevice(web_contents());
-}
-
-TEST_F(ChromeUsbDelegateExtensionRenderFrameFeatureDisabledTest,
-       OpenAndDisconnectDevice) {
-  TestOpenAndDisconnectDevice(web_contents());
-}
-
-TEST_F(ChromeUsbDelegateExtensionServiceWorkerFeatureDisabledTest,
-       WebUsbServiceNotConnected) {
-  TestWebUsbServiceNotConnected();
 }
 
 TEST_F(ChromeUsbDelegateImprivataExtensionServiceWorkerTest,

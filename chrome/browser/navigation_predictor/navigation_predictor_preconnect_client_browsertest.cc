@@ -177,15 +177,14 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorPreconnectClientBrowserTest,
 class NavigationPredictorPreconnectClientBrowserTestWithUnusedIdleSocketTimeout
     : public NavigationPredictorPreconnectClientBrowserTest {
  public:
-  NavigationPredictorPreconnectClientBrowserTestWithUnusedIdleSocketTimeout()
-      : NavigationPredictorPreconnectClientBrowserTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        net::features::kNetUnusedIdleSocketTimeout,
-        {{"unused_idle_socket_timeout_seconds", "0"}});
-  }
+  NavigationPredictorPreconnectClientBrowserTestWithUnusedIdleSocketTimeout() =
+      default;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  void SetUpOnMainThread() override {
+    NavigationPredictorPreconnectClientBrowserTest::SetUpOnMainThread();
+    NavigationPredictorPreconnectClient::SetPreconnectIntervalForTesting(0);
+  }
 };
 
 // Test that we preconnect after the last preconnect timed out.

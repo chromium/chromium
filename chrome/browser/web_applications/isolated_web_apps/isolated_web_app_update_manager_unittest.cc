@@ -1220,8 +1220,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
 }
 
 // TODO(b/338380813): The test is flaky on asan ChromeOS builder.
-TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
-       DISABLED_StopsWaitingIfIwaIsUninstalled) {
+TEST_F(IsolatedWebAppUpdateManagerUpdateTest, StopsWaitingIfIwaIsUninstalled) {
   AddDummyIsolatedAppToRegistry(
       profile(), iwa_info1_->url_info.origin().GetURL(), "installed app",
       IsolationData::Builder(iwa_info1_->installed_location,
@@ -1260,7 +1259,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
 
 // TODO(b/326527744): This test is flaky on asan ChromeOS builder.
 TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
-       DISABLED_StopsNonStartedUpdateApplyTasksIfIwaIsUninstalled) {
+       StopsNonStartedUpdateApplyTasksIfIwaIsUninstalled) {
   AddDummyIsolatedAppToRegistry(
       profile(), iwa_info1_->url_info.origin().GetURL(), "installed app 1",
       IsolationData::Builder(iwa_info1_->installed_location,

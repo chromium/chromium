@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "content/browser/download/save_package.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -145,53 +142,54 @@ class SavePackageTest : public RenderViewHostImplTestHarness {
   scoped_refptr<SaveFileManager> save_file_manager_;
 };
 
-static const struct {
+struct GeneratedFiles {
   const char* disposition;
   const char* url;
   const base::FilePath::CharType* expected_name;
   bool need_htm_ext;
-} kGeneratedFiles[] = {
-  // We mainly focus on testing duplicated names here, since retrieving file
-  // name from disposition and url has been tested in DownloadManagerTest.
-
-  // No useful information in disposition or URL, use default.
-  {"1.html", "http://www.savepage.com/",
-    FPL("saved_resource") FPL_HTML_EXTENSION, true},
-
-  // No duplicate occurs.
-  {"filename=1.css", "http://www.savepage.com", FPL("1.css"), false},
-
-  // No duplicate occurs.
-  {"filename=1.js", "http://www.savepage.com", FPL("1.js"), false},
-
-  // Append numbers for duplicated names.
-  {"filename=1.css", "http://www.savepage.com", FPL("1(1).css"), false},
-
-  // No duplicate occurs.
-  {"filename=1(1).js", "http://www.savepage.com", FPL("1(1).js"), false},
-
-  // Append numbers for duplicated names.
-  {"filename=1.css", "http://www.savepage.com", FPL("1(2).css"), false},
-
-  // Change number for duplicated names.
-  {"filename=1(1).css", "http://www.savepage.com", FPL("1(3).css"), false},
-
-  // No duplicate occurs.
-  {"filename=1(11).css", "http://www.savepage.com", FPL("1(11).css"), false},
-
-  // Test for case-insensitive file names.
-  {"filename=readme.txt", "http://www.savepage.com",
-                          FPL("readme.txt"), false},
-
-  {"filename=readme.TXT", "http://www.savepage.com",
-                          FPL("readme(1).TXT"), false},
-
-  {"filename=READme.txt", "http://www.savepage.com",
-                          FPL("readme(2).txt"), false},
-
-  {"filename=Readme(1).txt", "http://www.savepage.com",
-                          FPL("readme(3).txt"), false},
 };
+const auto kGeneratedFiles = std::to_array<GeneratedFiles>({
+    // We mainly focus on testing duplicated names here, since retrieving file
+    // name from disposition and url has been tested in DownloadManagerTest.
+
+    // No useful information in disposition or URL, use default.
+    {"1.html", "http://www.savepage.com/",
+     FPL("saved_resource") FPL_HTML_EXTENSION, true},
+
+    // No duplicate occurs.
+    {"filename=1.css", "http://www.savepage.com", FPL("1.css"), false},
+
+    // No duplicate occurs.
+    {"filename=1.js", "http://www.savepage.com", FPL("1.js"), false},
+
+    // Append numbers for duplicated names.
+    {"filename=1.css", "http://www.savepage.com", FPL("1(1).css"), false},
+
+    // No duplicate occurs.
+    {"filename=1(1).js", "http://www.savepage.com", FPL("1(1).js"), false},
+
+    // Append numbers for duplicated names.
+    {"filename=1.css", "http://www.savepage.com", FPL("1(2).css"), false},
+
+    // Change number for duplicated names.
+    {"filename=1(1).css", "http://www.savepage.com", FPL("1(3).css"), false},
+
+    // No duplicate occurs.
+    {"filename=1(11).css", "http://www.savepage.com", FPL("1(11).css"), false},
+
+    // Test for case-insensitive file names.
+    {"filename=readme.txt", "http://www.savepage.com", FPL("readme.txt"),
+     false},
+
+    {"filename=readme.TXT", "http://www.savepage.com", FPL("readme(1).TXT"),
+     false},
+
+    {"filename=READme.txt", "http://www.savepage.com", FPL("readme(2).txt"),
+     false},
+
+    {"filename=Readme(1).txt", "http://www.savepage.com", FPL("readme(3).txt"),
+     false},
+});
 
 TEST_F(SavePackageTest, TestSuccessfullyGenerateSavePackageFilename) {
   for (size_t i = 0; i < std::size(kGeneratedFiles); ++i) {

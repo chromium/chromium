@@ -96,8 +96,9 @@ void ToolbarActionsModel::OnExtensionLoaded(
   // We don't want to add the same extension twice. It may have already been
   // added by EXTENSION_BROWSER_ACTION_VISIBILITY_CHANGED below, if the user
   // hides the browser action and then disables and enables the extension.
-  if (!HasAction(extension->id()) && ShouldAddExtension(extension))
+  if (!HasAction(extension->id()) && ShouldAddExtension(extension)) {
     AddAction(extension->id());
+  }
 }
 
 void ToolbarActionsModel::OnExtensionUnloaded(
@@ -169,16 +170,18 @@ void ToolbarActionsModel::OnReady() {
   extension_management_observation_.Observe(management);
 
   actions_initialized_ = true;
-  for (Observer& observer : observers_)
+  for (Observer& observer : observers_) {
     observer.OnToolbarModelInitialized();
+  }
 }
 
 bool ToolbarActionsModel::ShouldAddExtension(
     const extensions::Extension* extension) {
   // In incognito mode, don't add any extensions that aren't incognito-enabled.
   if (profile_->IsOffTheRecord() &&
-      !extensions::util::IsIncognitoEnabled(extension->id(), profile_))
+      !extensions::util::IsIncognitoEnabled(extension->id(), profile_)) {
     return false;
+  }
 
   // In this case, we don't care about the browser action visibility, because
   // we want to show each extension regardless.
@@ -191,8 +194,9 @@ void ToolbarActionsModel::AddAction(const ActionId& action_id) {
 
   action_ids_.insert(action_id);
 
-  for (Observer& observer : observers_)
+  for (Observer& observer : observers_) {
     observer.OnToolbarActionAdded(action_id);
+  }
 
   UpdatePinnedActionIds();
 }
@@ -200,13 +204,15 @@ void ToolbarActionsModel::AddAction(const ActionId& action_id) {
 void ToolbarActionsModel::RemoveAction(const ActionId& action_id) {
   const bool did_erase = action_ids_.erase(action_id) > 0;
   // TODO(devlin): Can we DCHECK did_erase?
-  if (!did_erase)
+  if (!did_erase) {
     return;
+  }
 
   UpdatePinnedActionIds();
 
-  for (Observer& observer : observers_)
+  for (Observer& observer : observers_) {
     observer.OnToolbarActionRemoved(action_id);
+  }
 }
 
 const std::u16string ToolbarActionsModel::GetExtensionName(
@@ -297,8 +303,9 @@ void ToolbarActionsModel::MovePinnedAction(const ActionId& action_id,
   // stored_pinned_actions, which force-pinned actions aren't; so, always keep
   // them 'to the right' of other actions. Remove this guard if we ever add
   // force-pinned actions to the pref.
-  if (IsActionForcePinned(action_id))
+  if (IsActionForcePinned(action_id)) {
     return;
+  }
 
   // If pinned actions are empty, we're going to have a real bad time (with
   // out Keep this a hard CHECK (not a DCHECK).
@@ -313,8 +320,9 @@ void ToolbarActionsModel::MovePinnedAction(const ActionId& action_id,
   size_t current_index_on_toolbar =
       current_position_on_toolbar - pinned_action_ids_.begin();
 
-  if (current_index_on_toolbar == target_index)
+  if (current_index_on_toolbar == target_index) {
     return;
+  }
 
   bool is_left_to_right_move = target_index > current_index_on_toolbar;
 
@@ -409,10 +417,11 @@ void ToolbarActionsModel::MovePinnedAction(const ActionId& action_id,
 void ToolbarActionsModel::InitializeActionList() {
   CHECK(action_ids_.empty());  // We shouldn't have any actions yet.
 
-  if (profile_->IsOffTheRecord())
+  if (profile_->IsOffTheRecord()) {
     IncognitoPopulate();
-  else
+  } else {
     Populate();
+  }
 
   // Set |pinned_action_ids_| directly to avoid notifying observers that they
   // have changed even though they haven't.
@@ -449,8 +458,9 @@ void ToolbarActionsModel::Populate() {
       extension_registry_->enabled_extensions();
   for (const scoped_refptr<const extensions::Extension>& extension :
        extensions) {
-    if (!ShouldAddExtension(extension.get()))
+    if (!ShouldAddExtension(extension.get())) {
       continue;
+    }
     action_ids_.insert(extension->id());
   }
 }
@@ -500,16 +510,19 @@ const extensions::Extension* ToolbarActionsModel::GetExtensionById(
 
 void ToolbarActionsModel::UpdatePinnedActionIds() {
   // If extensions are not ready, defer to later Populate() call.
-  if (!actions_initialized_)
+  if (!actions_initialized_) {
     return;
+  }
 
   std::vector<ActionId> pinned_extensions = GetFilteredPinnedActionIds();
-  if (pinned_extensions == pinned_action_ids_)
+  if (pinned_extensions == pinned_action_ids_) {
     return;
+  }
 
   pinned_action_ids_ = pinned_extensions;
-  for (Observer& observer : observers_)
+  for (Observer& observer : observers_) {
     observer.OnToolbarPinnedActionsChanged();
+  }
 }
 
 std::vector<ToolbarActionsModel::ActionId>
@@ -527,8 +540,9 @@ ToolbarActionsModel::GetFilteredPinnedActionIds() const {
   // startup so that we don't keep saving stale IDs.
   std::vector<ActionId> filtered_action_ids;
   for (auto& action_id : pinned) {
-    if (HasAction(action_id))
+    if (HasAction(action_id)) {
       filtered_action_ids.push_back(action_id);
+    }
   }
   return filtered_action_ids;
 }

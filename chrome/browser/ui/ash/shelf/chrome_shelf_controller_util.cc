@@ -58,8 +58,9 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
   const char* kNoPinAppIds[] = {
       ash::eche_app::kEcheAppId,
   };
-  if (base::Contains(kNoPinAppIds, app_id))
+  if (base::Contains(kNoPinAppIds, app_id)) {
     return AppListControllerDelegate::NO_PIN;
+  }
 
   const std::optional<std::vector<std::string>> policy_ids =
       apps_util::GetPolicyIdsFromAppId(profile, app_id);
@@ -79,13 +80,15 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
       profile->GetPrefs()->GetList(prefs::kPolicyPinnedLauncherApps);
 
   for (const base::Value& policy_dict_entry : policy_apps) {
-    if (!policy_dict_entry.is_dict())
+    if (!policy_dict_entry.is_dict()) {
       return AppListControllerDelegate::PIN_EDITABLE;
+    }
 
     const std::string* policy_entry = policy_dict_entry.GetDict().FindString(
         ChromeShelfPrefs::kPinnedAppsPrefAppIDKey);
-    if (!policy_entry)
+    if (!policy_entry) {
       return AppListControllerDelegate::PIN_EDITABLE;
+    }
 
     if (base::Contains(*policy_ids,
                        apps_util::TransformRawPolicyId(*policy_entry))) {
@@ -185,14 +188,17 @@ bool IsAppPinEditable(apps::AppType app_type,
 bool IsBrowserRepresentedInBrowserList(Browser* browser,
                                        const ash::ShelfModel* model) {
   // Only Ash desktop browser windows for the active user are represented.
-  if (!browser || !multi_user_util::IsProfileFromActiveUser(browser->profile()))
+  if (!browser ||
+      !multi_user_util::IsProfileFromActiveUser(browser->profile())) {
     return false;
+  }
 
   if (browser->is_type_app() || browser->is_type_app_popup()) {
     // V1 App popup windows may have their own item.
     ash::ShelfID id(web_app::GetAppIdFromApplicationName(browser->app_name()));
-    if (model->ItemByID(id))
+    if (model->ItemByID(id)) {
       return false;
+    }
   }
 
   return true;

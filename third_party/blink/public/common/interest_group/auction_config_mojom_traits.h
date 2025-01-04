@@ -512,6 +512,11 @@ struct BLINK_COMMON_EXPORT
     return config.aggregation_coordinator_origin;
   }
 
+  static std::optional<bool> send_creative_scanning_metadata(
+      const blink::AuctionConfig& config) {
+    return config.send_creative_scanning_metadata;
+  }
+
   static bool Read(blink::mojom::AuctionAdConfigDataView data,
                    blink::AuctionConfig* out);
 };

@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">Wedi seibio lawrlwytho</translation>
 <translation id="1396327438254055134">Caniatáu i wefan ddefnyddio optimieiddiwr V8.</translation>
 <translation id="1415402041810619267">Mae'r URL wedi'i gwtogi</translation>
+<translation id="1415855080660575082">Gadewch i Chrome rannu'ch tabiau diweddar gyda'ch dyfais i'w gweld yn rhestr apiau a chanlyniadau chwilio eich dyfais. Gallwch droi hwn ymlaen neu ei ddiffodd yng ngosodiadau Chrome.</translation>
 <translation id="1448064542941920355">Pellhau</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> wefan}zero{<ph name="SITE_COUNT" /> gwefannau}two{<ph name="SITE_COUNT" /> wefan}few{<ph name="SITE_COUNT" /> gwefan}many{<ph name="SITE_COUNT" /> gwefan}other{<ph name="SITE_COUNT" /> gwefan}}</translation>
 <translation id="1500473259453106018">Cuddio cerdyn gostyngiadau pris ar dabiau</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">Rydych wedi caniatáu i'r wefan hon ddefnyddio cwcis trydydd parti dros dro, sy'n golygu llai o amddiffyniad pori ond mae nodweddion y wefan yn fwy tebygol o weithio yn ôl y disgwyl. <ph name="BEGIN_LINK" />Anfon adborth<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Mae'n bosib na fydd nodweddion ar rai gwefannau yn gweithio yn y modd anhysbys</translation>
 <translation id="2442870161001914531">Gofyn am wefan bwrdd gwaith bob amser</translation>
+<translation id="2445311670906052406">Mae Chrome bellach yn rhannu'ch tabiau diweddar â'ch dyfais. Byddwch yn eu gweld yn rhestr apiau a chanlyniadau chwilio eich dyfais. Gallwch ddiffodd hwn unrhyw bryd yng ngosodiadau Chrome.</translation>
 <translation id="2469312991797799607">Bydd y weithred hon yn dileu'r holl ddata a chwcis ar gyfer <ph name="ORIGIN" /> a'r holl wefannau oddi tano</translation>
 <translation id="2482878487686419369">Hysbysiadau</translation>
 <translation id="2485422356828889247">Dadosod</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">Gall gwefannau ddangos anogwyr mewngofnodi o wasanaethau hunaniaeth.</translation>
 <translation id="2787357173144933081">Cychwyn Cyflym Omniflwch</translation>
 <translation id="2790501146643349491">Pan fydd wedi'i droi ymlaen, gall gwefannau a gaewyd yn ddiweddar orffen anfon a derbyn data. Pan fydd wedi'i ddiffodd, ni all gwefannau a gaewyd yn ddiweddar orffen anfon a derbyn data.</translation>
+<translation id="2814830417943086299">Mae Chrome bellach yn dangos eich tabiau diweddar yn rhestr apiau a chanlyniadau chwilio eich dyfais. Gallwch ddiffodd hwn unrhyw bryd yng ngosodiadau Chrome.</translation>
 <translation id="2822354292072154809">Ydych yn siŵr eich bod am ailosod yr holl ganiatadau gwefan ar gyfer <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Gofyn am wedd symudol</translation>
 <translation id="2870560284913253234">Gwefan</translation>
@@ -124,7 +127,6 @@
 <translation id="2903493209154104877">Cyfeiriadau</translation>
 <translation id="2910701580606108292">Gofyn cyn caniatáu i wefannau chwarae cynnwys gwarchodedig</translation>
 <translation id="2918484639460781603">Mynd i'r gosodiadau</translation>
-<translation id="2927133898344569563">Cyrchwch dabiau a awgrymir yn gyflym o restr apiau eich dyfais ac yng nghanlyniadau chwilio dyfais. Gallwch droi hwn ymlaen neu ei ddiffodd unrhyw bryd yng ngosodiadau Chrome.</translation>
 <translation id="2932883381142163287">Rhoi gwybod am gamddefnydd</translation>
 <translation id="2939338015096024043">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am olrhain lleoliad eich camera a dysgu am eich amgylchoedd. Pan fydd wedi'i ddiffodd, ni all gwefannau olrhain lleoliad eich camera na dysgu am eich amgylchoedd.</translation>
 <translation id="2968755619301702150">Gwyliwr tystysgrifau</translation>
@@ -336,7 +338,6 @@
 <translation id="5968921426641056619">Rhowch gyfeiriad gwe</translation>
 <translation id="5975083100439434680">Pellhau</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
-<translation id="6015145568571136419">Gallwch bellach gael mynediad cyflym at dabiau a awgrymir o restr apiau eich dyfais ac yng nghanlyniadau chwilio dyfais. Gallwch ddiffodd hyn unrhyw bryd yng ngosodiadau Chrome.</translation>
 <translation id="6015775454662021376">Rheoli mynediad y wefan hon at eich dyfais</translation>
 <translation id="6040143037577758943">Cau</translation>
 <translation id="6042308850641462728">Mwy</translation>
@@ -559,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ac <ph name="NUM_MORE" /> arall}zero{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall}two{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, a <ph name="NUM_MORE" /> arall}}</translation>
 <translation id="913657688200966289">Trowch ganiatadau ar gyfer <ph name="APP_NAME" /> ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Y lefel chwyddo yw <ph name="ZOOM_LEVEL" /> %% ar hyn o bryd</translation>
+<translation id="9156722768168878035">Gadewch i Chrome ddangos eich tabiau diweddar yn rhestr apiau a chanlyniadau chwilio eich dyfais. Gallwch ddiffodd hwn unrhyw bryd yng ngosodiadau Chrome.</translation>
 <translation id="9162462602695099906">Mae'r dudalen hon yn beryglus</translation>
 <translation id="947156494302904893">Gall gwefannau rydych yn ymweld â nhw gadarnhau eich bod yn berson go iawn ac nid bot</translation>
 <translation id="959682366969460160">Byddwch yn drefnus</translation>

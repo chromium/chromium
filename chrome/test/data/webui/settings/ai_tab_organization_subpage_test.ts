@@ -70,4 +70,15 @@ suite('TabOrganizationSubpage', function() {
         learnMoreLink.href,
         loadTimeData.getString('tabOrganizationLearnMoreManagedUrl'));
   });
+
+  test('tabOrganizationPolicyIndicatorPref', async () => {
+    await createPage();
+
+    const indicator =
+        subpage.shadowRoot!.querySelector('settings-ai-policy-indicator');
+    assertTrue(!!indicator);
+    assertTrue(!!indicator.pref);
+    assertEquals(
+        AiEnterpriseFeaturePrefName.TAB_ORGANIZATION, indicator.pref.key);
+  });
 });

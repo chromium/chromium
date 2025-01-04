@@ -42,6 +42,10 @@ StringToSharedStorageModifierMethodType(std::string_view method_str) {
   return method_it->second;
 }
 
+bool IsHeaderItemBatchOptions(std::string_view item_str) {
+  return base::ToLowerASCII(item_str) == "options";
+}
+
 std::optional<SharedStorageHeaderParamType>
 StringToSharedStorageHeaderParamType(std::string_view param_str) {
   auto param_it =

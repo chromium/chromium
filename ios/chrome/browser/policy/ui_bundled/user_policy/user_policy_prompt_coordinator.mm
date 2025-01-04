@@ -5,17 +5,16 @@
 #import "ios/chrome/browser/policy/ui_bundled/user_policy/user_policy_prompt_coordinator.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/ui/elements/activity_overlay_coordinator.h"
-#import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
 #import "ios/chrome/browser/policy/ui_bundled/user_policy/user_policy_prompt_coordinator_delegate.h"
 #import "ios/chrome/browser/policy/ui_bundled/user_policy/user_policy_prompt_mediator.h"
 #import "ios/chrome/browser/policy/ui_bundled/user_policy/user_policy_prompt_presenter.h"
 #import "ios/chrome/browser/policy/ui_bundled/user_policy/user_policy_prompt_view_controller.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/ui/elements/activity_overlay_coordinator.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
-
 
 namespace {
 constexpr CGFloat kHalfSheetCornerRadius = 20;

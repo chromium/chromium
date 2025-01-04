@@ -75,6 +75,7 @@ class AIManager : public base::SupportsUserData::Data,
   optimization_guide::SamplingParams GetLanguageModelDefaultSamplingParams();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(AIManagerTest, CanCreate);
   FRIEND_TEST_ALL_PREFIXES(AIManagerTest, NoUAFWithInvalidOnDeviceModelPath);
   FRIEND_TEST_ALL_PREFIXES(AISummarizerUnitTest,
                            CreateSummarizerWithoutService);
@@ -86,6 +87,8 @@ class AIManager : public base::SupportsUserData::Data,
           client,
       blink::mojom::AILanguageModelCreateOptionsPtr options) override;
   void GetModelInfo(GetModelInfoCallback callback) override;
+  void CanCreateWriter(blink::mojom::AIWriterCreateOptionsPtr options,
+                       CanCreateWriterCallback callback) override;
   void CreateWriter(
       mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client,
       blink::mojom::AIWriterCreateOptionsPtr options) override;
@@ -93,6 +96,8 @@ class AIManager : public base::SupportsUserData::Data,
   void CreateSummarizer(
       mojo::PendingRemote<blink::mojom::AIManagerCreateSummarizerClient> client,
       blink::mojom::AISummarizerCreateOptionsPtr options) override;
+  void CanCreateRewriter(blink::mojom::AIRewriterCreateOptionsPtr options,
+                         CanCreateRewriterCallback callback) override;
   void CreateRewriter(
       mojo::PendingRemote<blink::mojom::AIManagerCreateRewriterClient> client,
       blink::mojom::AIRewriterCreateOptionsPtr options) override;
@@ -124,15 +129,12 @@ class AIManager : public base::SupportsUserData::Data,
   void SendDownloadProgressUpdate(uint64_t downloaded_bytes,
                                   uint64_t total_bytes);
 
+  blink::mojom::AIModelInfoPtr GetLanguageModelInfo();
+
   mojo::ReceiverSet<blink::mojom::AIManager> receivers_;
   mojo::RemoteSet<blink::mojom::ModelDownloadProgressObserver>
       download_progress_observers_;
   std::unique_ptr<AIOnDeviceModelComponentObserver> component_observer_;
-
-  // Since it requires creating a default session to fetch the default sampling
-  // params, we keep a lazy-initialized instance here as a cache.
-  std::optional<optimization_guide::SamplingParams>
-      default_language_model_sampling_params_;
 
   AIContextBoundObjectSet context_bound_object_set_;
   raw_ptr<content::BrowserContext> browser_context_;

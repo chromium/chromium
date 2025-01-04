@@ -53,12 +53,6 @@ class DocumentSuggestionsServiceTest : public testing::Test {
         document_suggestions_service_(new DocumentSuggestionsService(
             identity_test_env_.identity_manager(),
             shared_url_loader_factory_)) {
-    // Set up identity manager.
-    identity_test_env_.SetPrimaryAccount("foo@gmail.com",
-                                         signin::ConsentLevel::kSignin);
-    identity_test_env_.SetRefreshTokenForPrimaryAccount();
-    identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
-
     // Set up a variation.
     variations::AssociateGoogleVariationID(
         variations::GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, "trial name",
@@ -71,6 +65,14 @@ class DocumentSuggestionsServiceTest : public testing::Test {
   DocumentSuggestionsServiceTest& operator=(
       const DocumentSuggestionsServiceTest&) = delete;
 
+  AccountInfo SetUpPrimaryAccount() {
+    auto account_info = identity_test_env_.MakePrimaryAccountAvailable(
+        "foo@gmail.com", signin::ConsentLevel::kSignin);
+    identity_test_env_.SetRefreshTokenForPrimaryAccount();
+    identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
+    return account_info;
+  }
+
   base::test::TaskEnvironment task_environment_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
@@ -82,6 +84,8 @@ class DocumentSuggestionsServiceTest : public testing::Test {
 };
 
 TEST_F(DocumentSuggestionsServiceTest, EnsureVariationHeaders) {
+  SetUpPrimaryAccount();
+
   network::ResourceRequest resource_request;
   test_url_loader_factory_.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
@@ -102,6 +106,8 @@ TEST_F(DocumentSuggestionsServiceTest, EnsureVariationHeaders) {
 }
 
 TEST_F(DocumentSuggestionsServiceTest, EnsureCookies) {
+  SetUpPrimaryAccount();
+
   network::ResourceRequest resource_request;
   test_url_loader_factory_.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
@@ -120,13 +126,28 @@ TEST_F(DocumentSuggestionsServiceTest, EnsureCookies) {
       << resource_request.site_for_cookies.ToDebugString();
 }
 
+TEST_F(DocumentSuggestionsServiceTest, EnsurePrimaryAccount) {
+  EXPECT_FALSE(document_suggestions_service_->HasPrimaryAccount());
+
+  // Make the primary account available.
+  SetUpPrimaryAccount();
+
+  EXPECT_TRUE(document_suggestions_service_->HasPrimaryAccount());
+}
+
 TEST_F(DocumentSuggestionsServiceTest, EnsureIsSubjectToEnterprisePolicies) {
+  EXPECT_EQ(signin::Tribool::kFalse,
+            document_suggestions_service_
+                ->account_is_subject_to_enterprise_policies());
+
+  // Make the primary account available.
+  auto account_info = SetUpPrimaryAccount();
+
   EXPECT_EQ(signin::Tribool::kUnknown,
             document_suggestions_service_
                 ->account_is_subject_to_enterprise_policies());
 
-  auto account_info = identity_test_env_.MakePrimaryAccountAvailable(
-      "bar@gmail.com", signin::ConsentLevel::kSignin);
+  // Make the the primary account subject to Enterprise policies.
   AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
   mutator.set_is_subject_to_enterprise_policies(true);
   identity_test_env_.UpdateAccountInfoForAccount(account_info);
@@ -135,8 +156,10 @@ TEST_F(DocumentSuggestionsServiceTest, EnsureIsSubjectToEnterprisePolicies) {
             document_suggestions_service_
                 ->account_is_subject_to_enterprise_policies());
 
+  // Make the the primary account NOT subject to Enterprise policies.
   mutator.set_is_subject_to_enterprise_policies(false);
   identity_test_env_.UpdateAccountInfoForAccount(account_info);
+
   EXPECT_EQ(signin::Tribool::kFalse,
             document_suggestions_service_
                 ->account_is_subject_to_enterprise_policies());

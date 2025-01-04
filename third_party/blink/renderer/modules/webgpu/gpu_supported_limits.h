@@ -69,6 +69,10 @@ class GPUSupportedLimits final : public ScriptWrappable {
   unsigned maxComputeWorkgroupsPerDimension() const;
   unsigned minSubgroupSize() const;
   unsigned maxSubgroupSize() const;
+  unsigned maxStorageBuffersInFragmentStage() const;
+  unsigned maxStorageTexturesInFragmentStage() const;
+  unsigned maxStorageBuffersInVertexStage() const;
+  unsigned maxStorageTexturesInVertexStage() const;
 
  private:
   wgpu::Limits limits_;

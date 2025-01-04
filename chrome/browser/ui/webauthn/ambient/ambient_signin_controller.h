@@ -30,7 +30,7 @@ class RenderFrameHost;
 namespace password_manager {
 class PasskeyCredential;
 struct PasswordForm;
-}
+}  // namespace password_manager
 
 namespace tabs {
 class TabInterface;

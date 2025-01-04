@@ -104,6 +104,14 @@ public class DataSharingServiceFactoryTest {
                                             PeopleGroupActionFailure.TRANSIENT_FAILURE);
                                     callbackReceived();
                                 });
+                        dataSharingService.leaveGroup(
+                                "bad_id",
+                                result -> {
+                                    Assert.assertEquals(
+                                            result.intValue(),
+                                            PeopleGroupActionOutcome.TRANSIENT_FAILURE);
+                                    callbackReceived();
+                                });
                         dataSharingService.deleteGroup(
                                 "bad_id",
                                 result -> {

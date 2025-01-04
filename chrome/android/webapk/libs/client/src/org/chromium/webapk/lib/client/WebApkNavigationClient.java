@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.webapk.lib.client;
+import org.chromium.build.annotations.NullMarked;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -10,6 +11,7 @@ import android.net.Uri;
 import org.chromium.webapk.lib.common.WebApkConstants;
 
 /** WebApkNavigationClient provides an API to get an intent to launch a WebAPK. */
+@NullMarked
 public class WebApkNavigationClient {
     /**
      * Creates intent to launch a WebAPK.

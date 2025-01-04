@@ -121,7 +121,7 @@ class ExamplesWindowContents : public WidgetDelegateView,
 
     status_label_ = AddChildView(std::make_unique<Label>());
     status_label_->SetVisible(false);
-    tabbed_pane_->set_listener(this);
+    tabbed_pane_->SetListener(this);
     instance_ = this;
   }
 
@@ -145,16 +145,17 @@ class ExamplesWindowContents : public WidgetDelegateView,
   std::u16string GetWindowTitle() const override { return u"Views Examples"; }
   void WindowClosing() override {
     instance_ = nullptr;
-    if (on_close_)
+    if (on_close_) {
       std::move(on_close_).Run();
+    }
   }
   gfx::Size CalculatePreferredSize(
       const SizeBounds& /*available_size*/) const override {
     gfx::Size size(800, 300);
     for (size_t i = 0; i < tabbed_pane_->GetTabCount(); ++i) {
-      size.set_height(std::max(
-          size.height(),
-          tabbed_pane_->GetTabAt(i)->contents()->GetHeightForWidth(800)));
+      size.set_height(
+          std::max(size.height(),
+                   tabbed_pane_->GetTabContents(i)->GetHeightForWidth(800)));
     }
     return size;
   }

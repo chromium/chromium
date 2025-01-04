@@ -7,7 +7,6 @@
 
 #include "base/functional/callback.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
 
 #if BUILDFLAG(IS_MAC)

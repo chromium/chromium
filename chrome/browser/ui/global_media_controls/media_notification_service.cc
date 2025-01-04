@@ -180,12 +180,12 @@ MediaNotificationService::MediaNotificationService(Profile* profile,
               base::Unretained(this)),
           content::MediaSession::GetSourceId(profile));
 #if !BUILDFLAG(IS_CHROMEOS)
-    supplemental_device_picker_producer_ =
-        std::make_unique<SupplementalDevicePickerProducer>(item_manager_.get());
-    item_manager_->AddItemProducer(supplemental_device_picker_producer_.get());
-    // On Chrome OS, SetDevicePickerProvider() gets called by Ash via the
-    // crosapi.
-    SetDevicePickerProvider(supplemental_device_picker_producer_->PassRemote());
+  supplemental_device_picker_producer_ =
+      std::make_unique<SupplementalDevicePickerProducer>(item_manager_.get());
+  item_manager_->AddItemProducer(supplemental_device_picker_producer_.get());
+  // On Chrome OS, SetDevicePickerProvider() gets called by Ash via the
+  // crosapi.
+  SetDevicePickerProvider(supplemental_device_picker_producer_->PassRemote());
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)

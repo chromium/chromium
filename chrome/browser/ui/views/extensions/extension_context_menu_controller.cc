@@ -38,8 +38,9 @@ void ExtensionContextMenuController::ShowContextMenuForViewImpl(
   ui::MenuModel* model = controller_->GetContextMenu(context_menu_source_);
 
   // It's possible the action doesn't have a context menu.
-  if (!model)
+  if (!model) {
     return;
+  }
 
   int run_types =
       views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU;

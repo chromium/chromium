@@ -5,6 +5,9 @@
 package org.chromium.base;
 
 import org.chromium.base.ThreadUtils.ThreadChecker;
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.HashMap;
 
@@ -48,18 +51,13 @@ import java.util.HashMap;
  *
  * </code>
  */
+@NullMarked
 public final class UserDataHost {
     private final ThreadChecker mThreadChecker = new ThreadChecker();
 
-    private HashMap<Class<? extends UserData>, UserData> mUserDataMap = new HashMap<>();
+    private @Nullable HashMap<Class<? extends UserData>, UserData> mUserDataMap = new HashMap<>();
 
-    private static void checkArgument(boolean condition) {
-        if (!condition) {
-            throw new IllegalArgumentException(
-                    "Neither key nor object of UserDataHost can be null.");
-        }
-    }
-
+    @EnsuresNonNull("mUserDataMap")
     private void checkThreadAndState() {
         mThreadChecker.assertOnValidThread();
         if (mUserDataMap == null) {
@@ -73,9 +71,11 @@ public final class UserDataHost {
      * @param object Object to be associated with the specified key.
      * @return the object just stored, or {@code null} if storing the object failed.
      */
-    public <T extends UserData> T setUserData(Class<T> key, T object) {
+    public <T extends UserData> @Nullable T setUserData(Class<T> key, T object) {
         checkThreadAndState();
-        checkArgument(key != null && object != null);
+        if (key == null || object == null) {
+            throw new IllegalArgumentException();
+        }
 
         mUserDataMap.put(key, object);
         return getUserData(key);
@@ -88,9 +88,11 @@ public final class UserDataHost {
      * @return the value to which the specified key is mapped, or null if this map
      *         contains no mapping for {@code key}.
      */
-    public <T extends UserData> T getUserData(Class<T> key) {
+    public <T extends UserData> @Nullable T getUserData(Class<T> key) {
         checkThreadAndState();
-        checkArgument(key != null);
+        if (key == null) {
+            throw new IllegalArgumentException();
+        }
 
         return key.cast(mUserDataMap.get(key));
     }
@@ -103,7 +105,9 @@ public final class UserDataHost {
      */
     public <T extends UserData> T removeUserData(Class<T> key) {
         checkThreadAndState();
-        checkArgument(key != null);
+        if (key == null) {
+            throw new IllegalArgumentException();
+        }
 
         if (!mUserDataMap.containsKey(key)) {
             throw new IllegalStateException("UserData for the key is not present.");

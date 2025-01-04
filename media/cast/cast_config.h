@@ -24,39 +24,6 @@ class VideoEncodeAccelerator;
 
 namespace cast {
 
-// Describes the content being transported over RTP streams.
-enum class RtpPayloadType {
-  UNKNOWN = -1,
-
-  // Cast Streaming will encode raw audio frames using one of its available
-  // codec implementations, and transport encoded data in the RTP stream.
-  FIRST = 96,
-  AUDIO_OPUS = 96,
-  AUDIO_AAC = 97,
-  AUDIO_PCM16 = 98,
-
-  // Audio frame data is not modified, and should be transported reliably and
-  // in-sequence. No assumptions about the data can be made.
-  REMOTE_AUDIO = 99,
-
-  AUDIO_LAST = REMOTE_AUDIO,
-
-  // Cast Streaming will encode raw video frames using one of its available
-  // codec implementations, and transport encoded data in the RTP stream.
-  VIDEO_VP8 = 100,
-  VIDEO_H264 = 101,
-
-  // Video frame data is not modified, and should be transported reliably and
-  // in-sequence. No assumptions about the data can be made.
-  REMOTE_VIDEO = 102,
-
-  VIDEO_VP9 = 103,
-
-  VIDEO_AV1 = 104,
-
-  LAST = VIDEO_AV1
-};
-
 // Desired end-to-end latency.
 constexpr base::TimeDelta kDefaultTargetPlayoutDelay = base::Milliseconds(400);
 
@@ -145,7 +112,6 @@ struct FrameSenderConfig {
                     uint32_t receiver_ssrc,
                     base::TimeDelta min_playout_delay,
                     base::TimeDelta max_playout_delay,
-                    RtpPayloadType rtp_payload_type,
                     bool use_hardware_encoder,
                     int rtp_timebase,
                     int channels,
@@ -182,20 +148,12 @@ struct FrameSenderConfig {
   base::TimeDelta min_playout_delay = kDefaultTargetPlayoutDelay;
   base::TimeDelta max_playout_delay = kDefaultTargetPlayoutDelay;
 
-  // RTP payload type enum: Specifies the type/encoding of frame data.
-  RtpPayloadType rtp_payload_type = RtpPayloadType::UNKNOWN;
-
-  bool is_audio() const {
-    return rtp_payload_type >= RtpPayloadType::FIRST &&
-           rtp_payload_type <= RtpPayloadType::AUDIO_LAST;
-  }
-  bool is_video() const {
-    return rtp_payload_type >= RtpPayloadType::VIDEO_VP8 &&
-           rtp_payload_type <= RtpPayloadType::LAST;
-  }
+  bool is_audio() const { return audio_codec_params.has_value(); }
+  bool is_video() const { return video_codec_params.has_value(); }
   bool is_remoting() const {
-    return rtp_payload_type == RtpPayloadType::REMOTE_AUDIO ||
-           rtp_payload_type == RtpPayloadType::REMOTE_VIDEO;
+    return (audio_codec_params &&
+            audio_codec() == media::AudioCodec::kUnknown) ||
+           (video_codec_params && video_codec() == media::VideoCodec::kUnknown);
   }
 
   // If true, use an external HW encoder rather than the built-in

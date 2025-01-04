@@ -11,6 +11,8 @@
 
 #include <sys/mman.h>
 
+#include <array>
+
 #include "base/posix/eintr_wrapper.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -18,6 +20,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/shared_image_pool_id.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "media/base/decoder.h"
 #include "media/base/media_util.h"
@@ -331,10 +334,11 @@ class MockStableVideoDecoderService : public stable::mojom::StableVideoDecoder {
 class MockSharedImageInterface : public gpu::SharedImageInterface {
  public:
   // gpu::SharedImageInterface implementation.
-  MOCK_METHOD2(
-      CreateSharedImage,
-      scoped_refptr<gpu::ClientSharedImage>(const gpu::SharedImageInfo& si_info,
-                                            gpu::SurfaceHandle surface_handle));
+  MOCK_METHOD3(CreateSharedImage,
+               scoped_refptr<gpu::ClientSharedImage>(
+                   const gpu::SharedImageInfo& si_info,
+                   gpu::SurfaceHandle surface_handle,
+                   std::optional<gpu::SharedImagePoolId> pool_id));
   MOCK_METHOD2(CreateSharedImage,
                scoped_refptr<gpu::ClientSharedImage>(
                    const gpu::SharedImageInfo& si_info,
@@ -351,6 +355,9 @@ class MockSharedImageInterface : public gpu::SharedImageInterface {
                    gfx::GpuMemoryBufferHandle buffer_handle));
   MOCK_METHOD1(CreateSharedImage,
                SharedImageMapping(const gpu::SharedImageInfo& si_info));
+  MOCK_METHOD1(CreateSharedImageForSoftwareCompositor,
+               scoped_refptr<gpu::ClientSharedImage>(
+                   const gpu::SharedImageInfo& si_info));
   MOCK_METHOD2(UpdateSharedImage,
                void(const gpu::SyncToken& sync_token,
                     const gpu::Mailbox& mailbox));
@@ -740,13 +747,14 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
       CreateAndInitializeMojoStableVideoDecoder(config);
   ASSERT_TRUE(endpoints);
 
-  constexpr base::TimeDelta kRealTimestamps[] = {
+  constexpr auto kRealTimestamps = std::to_array<base::TimeDelta>({
       base::Milliseconds(128u),
       base::Milliseconds(144u),
       base::Milliseconds(160u),
       base::Milliseconds(176u),
-  };
-  base::TimeDelta received_fake_timestamps[std::size(kRealTimestamps)] = {};
+  });
+  std::array<base::TimeDelta, std::size(kRealTimestamps)>
+      received_fake_timestamps = {};
 
   // First there's the Decode() portion of the test. This just sends a Decode()
   // request for each frame and waits for the decode callback for each request
@@ -847,7 +855,7 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
     EXPECT_EQ(decoder_buffer_to_send->is_key_frame(), kIsKeyFrame);
     ASSERT_EQ(decoder_buffer_to_send->size(), std::size(kEncodedData));
     EXPECT_EQ(base::span(*decoder_buffer_to_send), base::span(kEncodedData));
-    ASSERT_TRUE(decoder_buffer_to_send->has_side_data());
+    ASSERT_TRUE(decoder_buffer_to_send->side_data());
     EXPECT_EQ(decoder_buffer_to_send->side_data()->secure_handle,
               kSecureHandle);
   }

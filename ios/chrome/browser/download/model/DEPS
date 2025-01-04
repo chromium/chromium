@@ -3,6 +3,7 @@ include_rules = [
   "+ios/chrome/browser/overlays/model/public",
   "+ios/chrome/browser/optimization_guide/model",
   "+ios/chrome/browser/drive/model",
+  "+ios/chrome/browser/signin/model",
 ]
 
 specific_include_rules = {

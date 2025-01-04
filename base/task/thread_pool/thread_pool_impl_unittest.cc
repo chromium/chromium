@@ -120,10 +120,11 @@ void VerifyTaskEnvironment(const TaskTraits& traits,
                                           : ThreadType::kDefault,
             PlatformThread::GetCurrentThreadType());
 
-  if (traits.may_block())
+  if (traits.may_block()) {
     AssertBlockingAllowed();
-  else
+  } else {
     AssertBlockingDisallowedForTesting();
+  }
 
   // Verify that the thread the task is running on is named as expected.
   EXPECT_THAT(thread_name, ::testing::HasSubstr("ThreadPool"));
@@ -171,8 +172,9 @@ void VerifyOrderAndTaskEnvironmentAndSignalEvent(
     TestWaitableEvent* expected_previous_event,
     TestWaitableEvent* event) {
   DCHECK(event);
-  if (expected_previous_event)
+  if (expected_previous_event) {
     EXPECT_TRUE(expected_previous_event->IsSignaled());
+  }
   VerifyTaskEnvironment(traits, use_resource_efficient_group);
   event->Signal();
 }
@@ -316,8 +318,9 @@ class ThreadPoolImplTestBase : public testing::Test {
   }
 
   void TearDown() override {
-    if (did_tear_down_)
+    if (did_tear_down_) {
       return;
+    }
 
     if (thread_pool_) {
       thread_pool_->FlushForTesting();
@@ -728,8 +731,9 @@ TEST_P(ThreadPoolImplTest_CoverAllSchedulingOptions, BestEffortFence) {
   CreateTaskRunnerAndExecutionMode(thread_pool_.get(), GetTraits(),
                                    GetExecutionMode())
       ->PostTask(FROM_HERE, BindLambdaForTesting([&] {
-                   if (GetTraits().priority() == TaskPriority::BEST_EFFORT)
+                   if (GetTraits().priority() == TaskPriority::BEST_EFFORT) {
                      EXPECT_TRUE(can_run.IsSet());
+                   }
                    did_run.Signal();
                  }));
 
@@ -752,8 +756,9 @@ TEST_P(ThreadPoolImplTest_CoverAllSchedulingOptions, MultipleBestEffortFences) {
   CreateTaskRunnerAndExecutionMode(thread_pool_.get(), GetTraits(),
                                    GetExecutionMode())
       ->PostTask(FROM_HERE, BindLambdaForTesting([&] {
-                   if (GetTraits().priority() == TaskPriority::BEST_EFFORT)
+                   if (GetTraits().priority() == TaskPriority::BEST_EFFORT) {
                      EXPECT_TRUE(can_run.IsSet());
+                   }
                    did_run.Signal();
                  }));
 
@@ -781,8 +786,9 @@ TEST_P(ThreadPoolImplTest_CoverAllSchedulingOptions,
   CreateTaskRunnerAndExecutionMode(thread_pool_.get(), GetTraits(),
                                    GetExecutionMode())
       ->PostTask(FROM_HERE, BindLambdaForTesting([&] {
-                   if (GetTraits().priority() == TaskPriority::BEST_EFFORT)
+                   if (GetTraits().priority() == TaskPriority::BEST_EFFORT) {
                      EXPECT_TRUE(can_run.IsSet());
+                   }
                    did_run.Signal();
                  }));
 
@@ -1053,8 +1059,9 @@ void VerifyHasStringsOnStack(const std::string& pool_str,
   SCOPED_TRACE(stack);
   const bool stack_has_symbols =
       stack.find("WorkerThread") != std::string::npos;
-  if (!stack_has_symbols)
+  if (!stack_has_symbols) {
     return;
+  }
 
   EXPECT_THAT(stack, ::testing::HasSubstr(pool_str));
   EXPECT_THAT(stack, ::testing::HasSubstr(shutdown_behavior_str));
@@ -1289,8 +1296,9 @@ TEST_P(ThreadPoolImplTest, WorkerThreadObserver) {
       SingleThreadTaskRunnerThreadMode::DEDICATED));
 #endif
 
-  for (auto& task_runner : task_runners)
+  for (auto& task_runner : task_runners) {
     task_runner->PostTask(FROM_HERE, DoNothing());
+  }
 
   // Release single-threaded workers. This should cause dedicated workers to
   // invoke OnWorkerThreadMainExit().
@@ -1524,8 +1532,9 @@ void TestUpdatePrioritySequenceNotScheduled(ThreadPoolImplTest* test,
   // Allow tasks to run.
   test->thread_pool_->EndFence();
 
-  for (auto& task_runner_and_events : task_runners_and_events)
+  for (auto& task_runner_and_events : task_runners_and_events) {
     task_runner_and_events->task_ran.Wait();
+  }
 }
 
 // Update the priority of a sequence when it is scheduled, i.e. not currently

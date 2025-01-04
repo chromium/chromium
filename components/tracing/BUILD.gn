@@ -45,10 +45,18 @@ component("startup_tracing") {
 
   if (is_win) {
     sources += [
+      "common/active_processes_win.cc",
+      "common/active_processes_win.h",
+      "common/etw_consumer_win.cc",
+      "common/etw_consumer_win.h",
       "common/etw_export_win.cc",
       "common/etw_export_win.h",
       "common/etw_system_data_source_win.cc",
       "common/etw_system_data_source_win.h",
+      "common/inclusion_policy_win.cc",
+      "common/inclusion_policy_win.h",
+      "common/system_log_event_utils_win.cc",
+      "common/system_log_event_utils_win.h",
     ]
   }
 
@@ -119,7 +127,15 @@ source_set("unit_tests") {
   data = [ "$root_gen_dir/third_party/perfetto/protos/perfetto/config/chrome/scenario_config.descriptor" ]
 
   if (is_win) {
-    sources += [ "common/etw_system_data_source_win_unittest.cc" ]
+    sources += [
+      "common/active_processes_win_unittest.cc",
+      "common/etw_consumer_win_unittest.cc",
+      "common/system_log_event_utils_win_unittest.cc",
+    ]
+    deps += [
+      "//base/version_info:generate_version_info",
+      "//third_party/perfetto:libperfetto",
+    ]
   }
   deps += [
     ":background_tracing_utils",

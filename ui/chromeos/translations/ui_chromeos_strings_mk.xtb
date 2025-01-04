@@ -73,6 +73,7 @@
 <translation id="1577977504532381335">Прегледајте го администраторското правило</translation>
 <translation id="158849752021629804">Потребна е домашна мрежа</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1601786938618212857">Zip</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="162175252992296058">португалски со американска меѓународна тастатура</translation>
 <translation id="1629521517399325891">Не е достапен кориснички сертификат за мрежна проверка.</translation>
@@ -368,7 +369,7 @@
 <translation id="3906232975181435906">Се инсталира профилот на мобилниот уред, мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Залепи</translation>
-<translation id="3950820424414687140">Најави се</translation>
+<translation id="3950820424414687140">Најавете се</translation>
 <translation id="3952872973865944257">фонетски телугу</translation>
 <translation id="3958548648197196644">Киви</translation>
 <translation id="397105322502079400">Се пресметува…</translation>
@@ -394,7 +395,6 @@
 <translation id="4179621117429069925">Ставкава е во корпата</translation>
 <translation id="4186579485882418952">Овозможи офлајн</translation>
 <translation id="4193154014135846272">Документ на Google</translation>
-<translation id="4197674956721858839">Избор на пакување</translation>
 <translation id="4202378258276439759">шпански (Латинска Америка)</translation>
 <translation id="4202977638116331303">грузиски</translation>
 <translation id="421017592316736757">Мора да сте поврзани на интернет за да пристапите до оваа датотека.</translation>

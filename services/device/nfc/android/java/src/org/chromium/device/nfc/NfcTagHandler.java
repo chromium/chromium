@@ -12,14 +12,18 @@ import android.nfc.tech.Ndef;
 import android.nfc.tech.NdefFormatable;
 import android.nfc.tech.TagTechnology;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.io.IOException;
 
 /** Utility class that provides I/O operations for NFC tags. */
+@NullMarked
 public class NfcTagHandler {
     private final TagTechnology mTech;
     private final TagTechnologyHandler mTechHandler;
     private boolean mWasConnected;
-    private final String mSerialNumber;
+    private final @Nullable String mSerialNumber;
 
     /**
      * Factory method that creates NfcTagHandler for a given NFC Tag.
@@ -27,7 +31,7 @@ public class NfcTagHandler {
      * @see android.nfc.Tag
      * @return NfcTagHandler or null when unsupported Tag is provided.
      */
-    public static NfcTagHandler create(Tag tag) {
+    public static @Nullable NfcTagHandler create(Tag tag) {
         if (tag == null) return null;
 
         if (NfcBlocklist.getInstance().isTagBlocked(tag)) return null;
@@ -145,7 +149,7 @@ public class NfcTagHandler {
     }
 
     /** Convert byte array to serial number string (4-7 ASCII hex digits concatenated by ":"). */
-    private static String bytesToSerialNumber(byte[] octets) {
+    private static @Nullable String bytesToSerialNumber(byte[] octets) {
         if (octets.length < 0) return null;
 
         StringBuilder sb = new StringBuilder(octets.length * 3);
@@ -159,7 +163,7 @@ public class NfcTagHandler {
     }
 
     /** Get the serial number of this NFC tag. */
-    public String serialNumber() {
+    public @Nullable String serialNumber() {
         return mSerialNumber;
     }
 

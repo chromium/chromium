@@ -46,6 +46,7 @@
 
 #if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 #include <sanitizer/asan_interface.h>
+
 #include "base/debug/asan_service.h"
 #endif
 
@@ -166,12 +167,12 @@ static_assert([]() constexpr {
     Int* array = new Int[4]();
     {
       raw_ptr<Int, base::RawPtrTraits::kAllowPtrArithmetic> ra(array);
-      ++ra;      // operator++()
-      --ra;      // operator--()
-      ra++;      // operator++(int)
-      ra--;      // operator--(int)
-      ra += 1u;  // operator+=()
-      ra -= 1u;  // operator-=()
+      ++ra;                                    // operator++()
+      --ra;                                    // operator--()
+      ra++;                                    // operator++(int)
+      ra--;                                    // operator--(int)
+      ra += 1u;                                // operator+=()
+      ra -= 1u;                                // operator-=()
       ra = ra + 1;                             // operator+(raw_ptr,int)
       ra = 1 + ra;                             // operator+(int,raw_ptr)
       ra = ra - 2;                             // operator-(raw_ptr,int)
@@ -286,9 +287,7 @@ struct Derived : Base1, Base2 {
 
 class RawPtrTest : public Test {
  protected:
-  void SetUp() override {
-    RawPtrCountingImpl::ClearCounters();
-  }
+  void SetUp() override { RawPtrCountingImpl::ClearCounters(); }
 };
 
 // Use this instead of std::ignore, to prevent the instruction from getting
@@ -454,11 +453,11 @@ TEST_F(RawPtrTest, ClearAndDelete) {
   ptr.ClearAndDelete();
 
   EXPECT_THAT((CountingRawPtrExpectations{
-                .wrap_raw_ptr_cnt = 1,
-                .release_wrapped_ptr_cnt = 1,
-                .get_for_dereference_cnt = 0,
-                .get_for_extraction_cnt = 1,
-                .wrapped_ptr_swap_cnt = 0,
+                  .wrap_raw_ptr_cnt = 1,
+                  .release_wrapped_ptr_cnt = 1,
+                  .get_for_dereference_cnt = 0,
+                  .get_for_extraction_cnt = 1,
+                  .wrapped_ptr_swap_cnt = 0,
               }),
               CountersMatch());
   EXPECT_EQ(ptr.get(), nullptr);
@@ -469,11 +468,11 @@ TEST_F(RawPtrTest, ClearAndDeleteArray) {
   ptr.ClearAndDeleteArray();
 
   EXPECT_THAT((CountingRawPtrExpectations{
-                .wrap_raw_ptr_cnt = 1,
-                .release_wrapped_ptr_cnt = 1,
-                .get_for_dereference_cnt = 0,
-                .get_for_extraction_cnt = 1,
-                .wrapped_ptr_swap_cnt = 0,
+                  .wrap_raw_ptr_cnt = 1,
+                  .release_wrapped_ptr_cnt = 1,
+                  .get_for_dereference_cnt = 0,
+                  .get_for_extraction_cnt = 1,
+                  .wrapped_ptr_swap_cnt = 0,
               }),
               CountersMatch());
   EXPECT_EQ(ptr.get(), nullptr);

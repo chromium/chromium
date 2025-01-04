@@ -7,7 +7,6 @@
 #import "base/no_destructor.h"
 #import "components/gcm_driver/gcm_profile_service.h"
 #import "components/gcm_driver/instance_id/instance_id_profile_service.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/sync/invalidations/sync_invalidations_service_impl.h"
 #import "ios/chrome/browser/gcm/model/instance_id/ios_chrome_instance_id_profile_service_factory.h"
 #import "ios/chrome/browser/gcm/model/ios_chrome_gcm_profile_service_factory.h"
@@ -16,8 +15,9 @@
 // static
 syncer::SyncInvalidationsService*
 SyncInvalidationsServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return static_cast<syncer::SyncInvalidationsService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()
+      ->GetServiceForProfileAs<syncer::SyncInvalidationsService>(
+          profile, /*create=*/true);
 }
 
 // static
@@ -28,9 +28,7 @@ SyncInvalidationsServiceFactory::GetInstance() {
 }
 
 SyncInvalidationsServiceFactory::SyncInvalidationsServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "SyncInvalidationsService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("SyncInvalidationsService") {
   DependsOn(IOSChromeGCMProfileServiceFactory::GetInstance());
   DependsOn(IOSChromeInstanceIDProfileServiceFactory::GetInstance());
 }

@@ -25,9 +25,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/values.h"
-#import "components/autofill/core/browser/filling_product.h"
+#import "components/autofill/core/browser/filling/filling_product.h"
 #import "components/autofill/core/browser/form_structure.h"
-#import "components/autofill/core/browser/ui/suggestion_type.h"
+#import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/field_data_manager.h"
 #import "components/autofill/core/common/form_data.h"
@@ -36,6 +36,7 @@
 #import "components/autofill/core/common/password_generation_util.h"
 #import "components/autofill/core/common/signatures.h"
 #import "components/autofill/core/common/unique_ids.h"
+#import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_manager_observer_bridge.h"
@@ -87,7 +88,6 @@ using l10n_util::GetNSString;
 using l10n_util::GetNSStringF;
 using password_manager::AccountSelectFillData;
 using password_manager::FillData;
-using password_manager::JsonStringToFormData;
 using password_manager::PasswordFormManagerForUI;
 using password_manager::PasswordGenerationFrameHelper;
 using password_manager::PasswordManagerClient;
@@ -473,8 +473,11 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     // form when Autofill across frames is enabled.
 
     // Split the browser form into renderer forms.
+    // The cast is safe: every AutofillClient on iOS is an AutofillClientIOS.
     const autofill::AutofillDriverRouter& router =
-        autofill::AutofillDriverIOSFactory::FromWebState(_webState)->router();
+        static_cast<autofill::AutofillClientIOS&>(manager.client())
+            .GetAutofillDriverFactory()
+            .router();
     std::vector<FormData> renderer_forms = router.GetRendererForms(form_data);
 
     // Process predictions for each renderer form.
@@ -756,7 +759,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
             (const autofill::PasswordFormFillData&)formData
                          forFrameId:(const std::string&)frameId
                         isMainFrame:(BOOL)isMainFrame
-                  forSecurityOrigin:(const GURL&)origin {
+                  forSecurityOrigin:(const url::Origin&)origin {
   // Biometric auth is always enabled on iOS so wait_for_username is
   // specifically set to prevent filling without user confirmation.
   DCHECK(formData.wait_for_username);

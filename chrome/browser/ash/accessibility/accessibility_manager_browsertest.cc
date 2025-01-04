@@ -55,6 +55,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_host_test_helper.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
@@ -534,7 +535,7 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
   int default_autoclick_delay_ = 0;
 
   const AccountId test_account_id_ =
-      AccountId::FromUserEmailGaiaId(kTestUserName, kTestUserGaiaId);
+      AccountId::FromUserEmailGaiaId(kTestUserName, GaiaId(kTestUserGaiaId));
 
   bool ShouldShowNetworkDictationDialog(const std::string& locale) {
     return AccessibilityManager::Get()->ShouldShowNetworkDictationDialog(
@@ -1848,7 +1849,7 @@ class AccessibilityManagerLoginTest : public OobeBaseTest {
   MockBrailleController braille_controller_;
 
   const AccountId test_account_id_ =
-      AccountId::FromUserEmailGaiaId(kTestUserName, kTestUserGaiaId);
+      AccountId::FromUserEmailGaiaId(kTestUserName, GaiaId(kTestUserGaiaId));
 
  private:
   ui::ScopedAnimationDurationScaleMode disable_animations_;

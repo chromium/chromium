@@ -10,8 +10,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.net.Uri;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -21,15 +19,18 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 /** Simple proxy that provides C++ code with an access pathway to the Android clipboard. */
 @JNINamespace("ui")
+@NullMarked
 public class Clipboard {
     private static final String TAG = "Clipboard";
 
     @SuppressLint("StaticFieldLeak")
-    private static Clipboard sInstance;
+    private static @Nullable Clipboard sInstance;
 
     private long mNativeClipboard;
 
@@ -63,7 +64,7 @@ public class Clipboard {
          * On Android O and O_MR1, URI is stored for revoking permissions later.
          * @param clipboardFileMetadata The metadata needs to be stored.
          */
-        void storeLastCopiedImageMetadata(@NonNull ClipboardFileMetadata clipboardFileMetadata);
+        void storeLastCopiedImageMetadata(ClipboardFileMetadata clipboardFileMetadata);
 
         /** Get stored the last image uri and its timestamp. */
         @Nullable
@@ -129,7 +130,7 @@ public class Clipboard {
      */
     @SuppressWarnings("javadoc")
     @CalledByNative
-    protected String getCoercedText() {
+    protected @Nullable String getCoercedText() {
         return null;
     }
 
@@ -139,7 +140,7 @@ public class Clipboard {
         return false;
     }
 
-    public String clipDataToHtmlText(ClipData clipData) {
+    public @Nullable String clipDataToHtmlText(ClipData clipData) {
         return null;
     }
 
@@ -150,7 +151,7 @@ public class Clipboard {
      *         text or no entries on the primary clip.
      */
     @CalledByNative
-    protected String getHTMLText() {
+    protected @Nullable String getHTMLText() {
         return null;
     }
 
@@ -179,6 +180,7 @@ public class Clipboard {
      */
     @CalledByNative
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @Nullable
     String getUrl() {
         return null;
     }
@@ -200,7 +202,7 @@ public class Clipboard {
     }
 
     @CalledByNative
-    protected String getImageUriString() {
+    protected @Nullable String getImageUriString() {
         return null;
     }
 
@@ -212,7 +214,7 @@ public class Clipboard {
      * @return a byte array of PNG data if available, otherwise null.
      */
     @CalledByNative
-    public byte[] getPng() {
+    public byte @Nullable [] getPng() {
         return null;
     }
 
@@ -229,7 +231,7 @@ public class Clipboard {
      *     optional display name which will be an empty string when unknown.
      */
     @CalledByNative
-    protected String[][] getFilenames() {
+    protected String @Nullable [][] getFilenames() {
         return null;
     }
 

@@ -4,6 +4,8 @@
 
 package org.chromium.content.common;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Parcel;
@@ -17,14 +19,18 @@ import androidx.annotation.RequiresApi;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** A wrapper for marshalling a Surface without self-destruction. */
 @JNINamespace("content")
+@NullMarked
 public class SurfaceWrapper implements Parcelable {
     private final boolean mWrapsSurface;
-    private Surface mSurface;
+    private @Nullable Surface mSurface;
     private final boolean mCanBeUsedWithSurfaceControl;
-    private SurfaceControl mSurfaceControl;
-    private InputTransferToken mBrowserInputToken;
+    private @Nullable SurfaceControl mSurfaceControl;
+    private @Nullable InputTransferToken mBrowserInputToken;
 
     private SurfaceWrapper(Surface surface, boolean canBeUsedWithSurfaceControl) {
         mWrapsSurface = true;
@@ -53,7 +59,7 @@ public class SurfaceWrapper implements Parcelable {
     }
 
     @CalledByNative
-    public InputTransferToken getBrowserInputToken() {
+    public @Nullable InputTransferToken getBrowserInputToken() {
         return mBrowserInputToken;
     }
 
@@ -63,7 +69,7 @@ public class SurfaceWrapper implements Parcelable {
     }
 
     @CalledByNative
-    private Surface takeSurface() {
+    private @Nullable Surface takeSurface() {
         assert mWrapsSurface;
         Surface surface = mSurface;
         mSurface = null;
@@ -76,7 +82,7 @@ public class SurfaceWrapper implements Parcelable {
     }
 
     @CalledByNative
-    private SurfaceControl takeSurfaceControl() {
+    private @Nullable SurfaceControl takeSurfaceControl() {
         assert !mWrapsSurface;
         SurfaceControl sc = mSurfaceControl;
         mSurfaceControl = null;
@@ -99,6 +105,7 @@ public class SurfaceWrapper implements Parcelable {
     public void writeToParcel(Parcel out, int flags) {
         out.writeInt(mWrapsSurface ? 1 : 0);
         if (mWrapsSurface) {
+            assumeNonNull(mSurface);
             boolean hasBrowserInputToken = mBrowserInputToken != null;
             out.writeInt(hasBrowserInputToken ? 1 : 0);
             // Ignore flags so that the Surface won't call release()
@@ -109,6 +116,7 @@ public class SurfaceWrapper implements Parcelable {
             }
         } else {
             // Ignore flags so that SurfaceControl won't call release().
+            assumeNonNull(mSurfaceControl);
             mSurfaceControl.writeToParcel(out, 0);
         }
     }

@@ -731,7 +731,7 @@ TEST_P(DCompPresenterTest, DelegatedInkVisualAddedWithRootSurfaceVisualNull) {
   }
   layer_tree->SetDelegatedInkTrailStartPoint(std::move(metadata));
 
-  EXPECT_TRUE(layer_tree->CommitAndClearPendingOverlays({}));
+  EXPECT_TRUE(layer_tree->CommitAndClearPendingOverlays({}).has_value());
 
   // Despite no overlays, there should be one visual subtree for the delegated
   // ink trail.

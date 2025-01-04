@@ -7,9 +7,11 @@ package org.chromium.content_public.browser;
 import android.util.ArraySet;
 import android.view.InputDevice;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content.browser.DeviceUtilsImpl;
 
 /** A utility class that has helper methods for device configuration. */
+@NullMarked
 public final class DeviceUtils {
     private DeviceUtils() {}
 

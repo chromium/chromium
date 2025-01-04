@@ -103,33 +103,37 @@ const NSTimeInterval kTimeDeltaFuzzFactor = 1.0;
 
 @end
 
+typedef NS_ENUM(NSInteger, FadeWindowsOperation) { kHide, kShow };
+
 // Animation ///////////////////////////////////////////////////////////////////
 
-// This animation will run through all the windows of the passed-in
-// NSApplication and will fade their alpha value to 0.0.
+// This animation will run through all the windows of NSApp and will fade their
+// alpha value to 0.0 if `op` is `kHide` and 1.0 otherwise.
 @interface FadeAllWindowsAnimation : NSAnimation <NSAnimationDelegate>
-- (instancetype)initWithApplication:(NSApplication*)app
-                  animationDuration:(NSTimeInterval)duration;
+- (instancetype)initWithOperation:(FadeWindowsOperation)op
+                animationDuration:(NSTimeInterval)duration;
 @end
 
 @implementation FadeAllWindowsAnimation {
-  NSApplication* __strong _application;
+  FadeWindowsOperation _op;
 }
 
-- (instancetype)initWithApplication:(NSApplication*)app
-                  animationDuration:(NSTimeInterval)duration {
+- (instancetype)initWithOperation:(FadeWindowsOperation)op
+                animationDuration:(NSTimeInterval)duration {
   if ((self = [super initWithDuration:duration
                        animationCurve:NSAnimationLinear])) {
-    _application = app;
+    _op = op;
     self.delegate = self;
   }
   return self;
 }
 
 - (void)setCurrentProgress:(NSAnimationProgress)progress {
-  for (NSWindow* window in _application.windows) {
-    if (chrome::FindBrowserWithWindow(window))
-      window.alphaValue = 1.0 - progress;
+  CGFloat value = _op == kShow ? progress : 1.0 - progress;
+  for (NSWindow* window in NSApp.windows) {
+    if (chrome::FindBrowserWithWindow(window)) {
+      window.alphaValue = value;
+    }
   }
 }
 
@@ -156,12 +160,13 @@ ConfirmQuitPanelController* __strong g_confirmQuitPanelController = nil;
  @private
   // The content view of the window that this controller manages.
   ConfirmQuitFrameView* __weak _contentView;
+  // Whether we've hidden all windows and initiated the quitting process.
+  BOOL _didHideWindows;
 }
 
 + (ConfirmQuitPanelController*)sharedController {
   if (!g_confirmQuitPanelController) {
-    g_confirmQuitPanelController =
-        [[ConfirmQuitPanelController alloc] init];
+    g_confirmQuitPanelController = [[ConfirmQuitPanelController alloc] init];
   }
   return g_confirmQuitPanelController;
 }
@@ -267,7 +272,7 @@ ConfirmQuitPanelController* __strong g_confirmQuitPanelController = nil;
         // At this point, the quit has been confirmed and windows should all
         // fade out to convince the user to release the key combo to finalize
         // the quit.
-        [self hideAllWindowsWithDuration:confirm_quit::kWindowFadeOutDuration
+        [self hideAllWindowsWithDuration:confirm_quit::kWindowFadeDuration
                                              .InSecondsF()];
       }
     }
@@ -314,6 +319,25 @@ ConfirmQuitPanelController* __strong g_confirmQuitPanelController = nil;
              afterDelay:1.0];
 }
 
+- (void)cancel {
+  if (!_didHideWindows) {
+    return;
+  }
+  [self dismissPanel];
+  FadeAllWindowsAnimation* animation = [[FadeAllWindowsAnimation alloc]
+      initWithOperation:kShow
+      animationDuration:confirm_quit::kWindowFadeDuration.InSecondsF()];
+  [animation startAnimation];
+  _didHideWindows = NO;
+}
+
+- (void)simulateQuitForTesting {
+  _didHideWindows = YES;
+  for (NSWindow* window in NSApp.windows) {
+    window.alphaValue = 0.0;
+  }
+}
+
 - (void)animateFadeOut {
   NSWindow* window = self.window;
   CAAnimation* animation = [[window animationForKey:@"alphaValue"] copy];
@@ -347,9 +371,10 @@ ConfirmQuitPanelController* __strong g_confirmQuitPanelController = nil;
 
 // Iterates through the list of open windows and hides them all.
 - (void)hideAllWindowsWithDuration:(NSTimeInterval)duration {
+  _didHideWindows = YES;
   FadeAllWindowsAnimation* animation =
-      [[FadeAllWindowsAnimation alloc] initWithApplication:NSApp
-                                         animationDuration:duration];
+      [[FadeAllWindowsAnimation alloc] initWithOperation:kHide
+                                       animationDuration:duration];
 
   // -startAnimation holds a strong reference to the animation until it is
   // complete.

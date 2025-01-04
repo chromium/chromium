@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <limits>
 #include <memory>
 #include <optional>
@@ -1942,9 +1943,11 @@ TEST_P(ObfuscatedFileUtilTest, TestInconsistency) {
 }
 
 TEST_P(ObfuscatedFileUtilTest, TestIncompleteDirectoryReading) {
-  const FileSystemURL kPath[] = {CreateURLFromUTF8("foo"),
-                                 CreateURLFromUTF8("bar"),
-                                 CreateURLFromUTF8("baz")};
+  const auto kPath = std::to_array<FileSystemURL>({
+      CreateURLFromUTF8("foo"),
+      CreateURLFromUTF8("bar"),
+      CreateURLFromUTF8("baz"),
+  });
   const FileSystemURL empty_path = CreateURL(base::FilePath());
   std::unique_ptr<FileSystemOperationContext> context;
 

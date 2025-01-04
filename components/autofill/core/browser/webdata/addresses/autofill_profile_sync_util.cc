@@ -7,9 +7,9 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
-#include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
+#include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/proto/autofill_sync.pb.h"
@@ -604,7 +604,7 @@ std::optional<AutofillProfile> CreateAutofillProfileFromSpecifics(
   // When adding field types, ensure that they don't need to be added here and
   // update the last checked value.
   // TODO(crbug.com/359768803): Handle alternative names here.
-  static_assert(FieldType::MAX_VALID_FIELD_TYPE == 166,
+  static_assert(FieldType::MAX_VALID_FIELD_TYPE == 168,
                 "New field type needs to be reviewed for inclusion in sync");
 
   // The profile may be in a legacy state. By calling |FinalizeAfterImport()|

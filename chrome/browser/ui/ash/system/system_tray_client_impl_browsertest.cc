@@ -108,9 +108,7 @@ IN_PROC_BROWSER_TEST_F(ConsumerDeviceTest, WithNoLicense) {
 
 class EnterpriseManagedTest : public MixinBasedInProcessBrowserTest {
  public:
-  EnterpriseManagedTest() {
-    device_state_.set_skip_initial_policy_setup(true);
-  }
+  EnterpriseManagedTest() { device_state_.set_skip_initial_policy_setup(true); }
   ~EnterpriseManagedTest() override = default;
   EnterpriseManagedTest(const EnterpriseManagedTest&) = delete;
   void operator=(const EnterpriseManagedTest&) = delete;

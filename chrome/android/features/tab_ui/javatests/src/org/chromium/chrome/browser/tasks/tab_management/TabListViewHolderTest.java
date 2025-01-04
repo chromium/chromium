@@ -98,8 +98,8 @@ import org.chromium.components.commerce.PriceTracking.ProductPrice;
 import org.chromium.components.commerce.PriceTracking.ProductPriceUpdate;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
-import org.chromium.components.payments.CurrencyFormatter;
-import org.chromium.components.payments.CurrencyFormatterJni;
+import org.chromium.components.payments.ui.CurrencyFormatter;
+import org.chromium.components.payments.ui.CurrencyFormatterJni;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -356,7 +356,7 @@ public class TabListViewHolderTest {
         LevelDBPersistedDataStorage.setSkipNativeAssertionsForTesting(true);
 
         ProfileManager.setLastUsedProfileForTesting(mProfile);
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
 
         UrlUtilitiesJni.setInstanceForTesting(mUrlUtilitiesJniMock);
         CurrencyFormatterJni.setInstanceForTesting(mCurrencyFormatterJniMock);
@@ -742,6 +742,37 @@ public class TabListViewHolderTest {
     @MediumTest
     @UiThreadTest
     @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+    public void testTabCardLabel() {
+        TabCardLabelData data =
+                new TabCardLabelData(
+                        TabCardLabelType.ACTIVITY_UPDATE,
+                        context -> "Test label",
+                        /* asyncImageFactory= */ null,
+                        /* contentDescriptionResolver= */ null);
+        mGridModel.set(TabProperties.TAB_CARD_LABEL_DATA, data);
+
+        TabCardLabelView gridLabel = mTabGridView.findViewById(R.id.tab_card_label);
+        assertNotNull(gridLabel);
+        assertEquals(gridLabel.getVisibility(), View.VISIBLE);
+        FrameLayout listContainer = mTabListView.findViewById(R.id.before_description_container);
+        assertEquals(listContainer.getChildCount(), 1);
+        TabCardLabelView listLabel = (TabCardLabelView) listContainer.getChildAt(0);
+        assertNotNull(listLabel);
+        assertEquals(listLabel.getVisibility(), View.VISIBLE);
+
+        mGridModel.set(TabProperties.TAB_CARD_LABEL_DATA, null);
+
+        assertEquals(gridLabel.getVisibility(), View.GONE);
+        assertEquals(listLabel.getVisibility(), View.GONE);
+
+        TabListViewBinder.onViewRecycled(mGridModel, mTabListView);
+        assertNull(listLabel.getParent());
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
     public void testPriceStringPriceDrop_TabCardLabel() {
         Tab tab = MockTab.createAndInitialize(1, mProfile);
         MockShoppingPersistedTabDataFetcher fetcher = new MockShoppingPersistedTabDataFetcher(tab);
@@ -878,7 +909,7 @@ public class TabListViewHolderTest {
             int expectedVisibility,
             String expectedCurrentPrice,
             String expectedPreviousPrice) {
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(true);
         testGridSelected(mTabGridView, mGridModel);
 
         mGridModel.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER, fetcher);

@@ -62,8 +62,7 @@ AutofillBubbleSignInPromoView::AutofillBubbleSignInPromoView(
     content::WebContents* web_contents,
     signin_metrics::AccessPoint access_point,
     base::OnceCallback<void(content::WebContents*)> move_callback)
-    : controller_(*web_contents, access_point, std::move(move_callback)),
-      access_point_(access_point) {
+    : controller_(*web_contents, access_point, std::move(move_callback)) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   Profile* profile =
@@ -72,6 +71,8 @@ AutofillBubbleSignInPromoView::AutofillBubbleSignInPromoView(
   dice_sign_in_promo_delegate_ =
       std::make_unique<AutofillBubbleSignInPromoView::DiceSigninPromoDelegate>(
           &controller_);
+
+  signin::RecordSignInPromoShown(access_point, profile);
 
   AddChildView(new BubbleSignInPromoView(
       profile, dice_sign_in_promo_delegate_.get(), access_point));

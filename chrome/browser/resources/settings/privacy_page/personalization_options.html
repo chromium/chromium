@@ -96,16 +96,6 @@
         label="$i18n{urlKeyedAnonymizedDataCollection}"
         sub-label="$i18n{urlKeyedAnonymizedDataCollectionDesc}">
     </settings-toggle-button>
-    <template is="dom-if" if="[[enablePageContentSetting_]]">
-      <cr-link-row id="pageContentRow"
-          class="hr"
-          label="$i18n{pageContentToggleLabel}"
-          sub-label="[[computePageContentRowSublabel_(
-              prefs.page_content_collection.enabled.value)]]"
-          role-description="$i18n{subpageArrowRoleDescription}"
-          on-click="onPageContentRowClick_">
-      </cr-link-row>
-    </template>
     <template is="dom-if" if="[[shouldShowHistorySearchControl_(
         showHistorySearchControl_, enableAiSettingsPageRefresh_)]]" restamp>
       <cr-link-row id="historySearchRow"

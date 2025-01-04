@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">Stahování pozastaveno</translation>
 <translation id="1396327438254055134">Povolit webu používat optimalizátor V8.</translation>
 <translation id="1415402041810619267">Zkrácená adresa URL</translation>
+<translation id="1415855080660575082">Umožněte Chromu sdílet nedávno použité karty se zařízením, abyste je na něm viděli v seznamu aplikací a ve výsledcích vyhledávání. Tuto funkci můžete zapnout nebo vypnout v nastavení Chromu.</translation>
 <translation id="1448064542941920355">Snížit přiblížení</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> web}few{<ph name="SITE_COUNT" /> weby}many{<ph name="SITE_COUNT" /> webu}other{<ph name="SITE_COUNT" /> webů}}</translation>
 <translation id="1500473259453106018">Skrýt kartu Poklesy cen na kartách</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">Dočasně jste tomuto webu povolili používat soubory cookie třetích stran, což znamená, že při procházení budete méně chráněni, ale funkce webů budou s větší pravděpodobností fungovat správně. <ph name="BEGIN_LINK" />Odeslat zpětnou vazbu<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Některé weby nemusejí v anonymním režimu fungovat správně</translation>
 <translation id="2442870161001914531">Vždy požadovat zobrazení na počítači</translation>
+<translation id="2445311670906052406">Chrome teď nedávno použité karty sdílí se zařízením. Uvidíte je v seznamu aplikací v zařízení a ve výsledcích vyhledávání. Tuto funkci můžete v nastavení Chromu kdykoli vypnout.</translation>
 <translation id="2469312991797799607">Touto akcí vymažete veškerá data a soubory cookie webu <ph name="ORIGIN" /> a všech jeho podřízených webů</translation>
 <translation id="2482878487686419369">Oznámení</translation>
 <translation id="2485422356828889247">Odinstalovat</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">Weby mohou zobrazovat výzvy k přihlášení od služeb zjišťujících identitu</translation>
 <translation id="2787357173144933081">Spouštět v omniboxu</translation>
 <translation id="2790501146643349491">Když je tato možnost zapnutá, nedávno zavřené weby mohou dokončit odesílání a přijímání dat. Když je vypnutá, nedávno zavřené weby nemohou dokončit odesílání nebo přijímání dat.</translation>
+<translation id="2814830417943086299">Chrome teď zobrazuje vaše nedávné karty v seznamu aplikací v zařízení a ve výsledcích vyhledávání. Tuto funkci můžete v nastavení Chromu kdykoli vypnout.</translation>
 <translation id="2822354292072154809">Opravdu chcete resetovat všechna oprávnění webů pro objekt <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Požadovat mobilní zobrazení</translation>
 <translation id="2870560284913253234">Stránky</translation>
@@ -335,7 +338,6 @@
 <translation id="5968921426641056619">Zadejte webovou adresu</translation>
 <translation id="5975083100439434680">Oddálit</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
-<translation id="6015145568571136419">Navrhované karty jsou teď rychle přístupné ze seznamu aplikací v zařízení a z výsledků vyhledávání zařízení. Toto nastavení můžete v nastavení Chromu kdykoli vypnout.</translation>
 <translation id="6015775454662021376">Spravujte přístup tohoto webu k vašemu zařízení</translation>
 <translation id="6040143037577758943">Zavřít</translation>
 <translation id="6042308850641462728">Více</translation>
@@ -558,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}}</translation>
 <translation id="913657688200966289">Zapněte v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" /> oprávnění pro aplikaci <ph name="APP_NAME" />.</translation>
 <translation id="9138217887606523162">Aktuální přiblížení je <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="9156722768168878035">Umožněte Chromu zobrazovat nedávno použité karty v seznamu aplikací a ve výsledcích vyhledávání v zařízení. Tuto funkci můžete v nastavení Chromu kdykoli vypnout.</translation>
 <translation id="9162462602695099906">Tato stránka je nebezpečná</translation>
 <translation id="947156494302904893">Weby, které navštěvujete, mohou ověřit, že jste člověk, a ne robot</translation>
 <translation id="959682366969460160">Uspořádejte si položky</translation>

@@ -96,8 +96,7 @@ syncer::StringOrdinal GetAdjacentPosition(
     if (!sync_item->item_pin_ordinal.IsValid()) {
       continue;
     }
-    if (exclude_chrome && (item_id == app_constants::kChromeAppId ||
-                           item_id == app_constants::kAshDebugBrowserAppId)) {
+    if (exclude_chrome && item_id == app_constants::kChromeAppId) {
       continue;
     }
     if (position.IsValid() && !compare(position, sync_item->item_pin_ordinal)) {
@@ -208,8 +207,9 @@ struct PinInfo {
 // This is required because tablet form factor devices do not sync app
 // positions and pin preferences.
 std::string GetShelfDefaultPinLayoutPref() {
-  if (ash::switches::IsTabletFormFactor())
+  if (ash::switches::IsTabletFormFactor()) {
     return prefs::kShelfDefaultPinLayoutRollsForTabletFormFactor;
+  }
 
   return prefs::kShelfDefaultPinLayoutRolls;
 }
@@ -637,8 +637,9 @@ void ChromeShelfPrefs::SetPinPosition(
   auto* syncable_service =
       app_list::AppListSyncableServiceFactory::GetForProfile(profile_);
   // Some unit tests may not have this service.
-  if (!syncable_service)
+  if (!syncable_service) {
     return;
+  }
 
   syncer::StringOrdinal position_before =
       app_id_before.empty() ? syncer::StringOrdinal()

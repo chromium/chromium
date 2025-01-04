@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>
@@ -858,10 +859,18 @@ TEST_F(ClientSessionTest, ClampMouseEvents) {
       ->last_input_injector()
       ->set_mouse_events(&mouse_events_);
 
-  int input_x[3] = {-999, 100, 999};
-  int expected_x[3] = {0, 100, protocol::FakeDesktopCapturer::kWidth - 1};
-  int input_y[3] = {-999, 50, 999};
-  int expected_y[3] = {0, 50, protocol::FakeDesktopCapturer::kHeight - 1};
+  std::array<int, 3> input_x = {-999, 100, 999};
+  std::array<int, 3> expected_x = {
+      0,
+      100,
+      protocol::FakeDesktopCapturer::kWidth - 1,
+  };
+  std::array<int, 3> input_y = {-999, 50, 999};
+  std::array<int, 3> expected_y = {
+      0,
+      50,
+      protocol::FakeDesktopCapturer::kHeight - 1,
+  };
 
   protocol::MouseEvent expected_event;
   for (int j = 0; j < 3; j++) {

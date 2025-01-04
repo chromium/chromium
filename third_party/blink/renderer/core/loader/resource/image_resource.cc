@@ -92,16 +92,14 @@ scoped_refptr<SharedBuffer> GetDataForTransparentPlaceholderImageIndex(
   CHECK(IsMainThread());
   DEFINE_THREAD_SAFE_STATIC_LOCAL(
       Vector<scoped_refptr<SharedBuffer>>, known_transparent_encoded_gifs,
-      ({SharedBuffer::Create(
+      ({SharedBuffer::Create(base::span_from_cstring(
             "\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x00\x00\xff\xff\xff"
             "\xff\xff\xff\x21\xf9\x04\x01\x0a\x00\x01\x00\x2c\x00\x00\x00\x00"
-            "\x01\x00\x01\x00\x00\x02\x02\x4c\x01\x00\x3b",
-            static_cast<size_t>(43)),
-        SharedBuffer::Create(
+            "\x01\x00\x01\x00\x00\x02\x02\x4c\x01\x00\x3b")),
+        SharedBuffer::Create(base::span_from_cstring(
             "\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\xff\x00\xc0\xc0\xc0"
             "\x00\x00\x00\x21\xf9\x04\x01\x00\x00\x00\x00\x2c\x00\x00\x00\x00"
-            "\x01\x00\x01\x00\x00\x02\x02\x44\x01\x00\x3b",
-            static_cast<size_t>(43))}));
+            "\x01\x00\x01\x00\x00\x02\x02\x44\x01\x00\x3b"))}));
   return known_transparent_encoded_gifs[index];
 }
 
@@ -602,6 +600,15 @@ void ImageResource::ResponseReceived(const ResourceResponse& response) {
   Resource::ResponseReceived(response);
 }
 
+void ImageResource::UpdateResourceInfoFromObservers() {
+  GetContent()->UpdateResourceInfoFromObservers();
+}
+
+std::pair<ResourcePriority, ResourcePriority>
+ImageResource::PriorityFromObservers() const {
+  return GetContent()->PriorityFromObservers();
+}
+
 void ImageResource::OnePartInMultipartReceived(
     const ResourceResponse& response) {
   DCHECK(multipart_parser_);
@@ -655,11 +662,6 @@ ImageResourceContent* ImageResource::GetContent() {
 
 const ImageResourceContent* ImageResource::GetContent() const {
   return content_.Get();
-}
-
-std::pair<ResourcePriority, ResourcePriority>
-ImageResource::ComputePriorityFromObservers() {
-  return GetContent()->PriorityFromObservers();
 }
 
 void ImageResource::UpdateImage(

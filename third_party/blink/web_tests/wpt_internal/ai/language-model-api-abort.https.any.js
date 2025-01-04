@@ -1,5 +1,5 @@
-// META: script=resources/workaround-for-362676838.js
 // META: script=resources/utils.js
+// META: script=resources/workaround-for-382640509.js
 
 promise_test(async (t) => {
   testAbort(t, (signal) => {
@@ -21,9 +21,7 @@ promise_test(async (t) => {
 promise_test(async (t) => {
   const session = await ai.languageModel.create();
   testAbort(t, (signal) => {
-    return session.prompt(
-      "Write a poem", { signal: signal }
-    );
+    return session.prompt(kTestPrompt, { signal: signal });
   });
 }, "Aborting AILanguageModel.prompt().");
 

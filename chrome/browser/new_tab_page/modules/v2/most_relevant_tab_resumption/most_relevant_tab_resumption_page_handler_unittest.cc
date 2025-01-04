@@ -233,11 +233,11 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, GetURLVisits) {
             url_visit_aggregates.emplace_back(
                 visited_url_ranking::CreateSampleURLVisitAggregate(
                     GURL(visited_url_ranking::kSampleSearchUrl), 1.0f,
-                    base::Time::Now(), {Fetcher::kSession}));
+                    base::Time::Now() - base::Minutes(5), {Fetcher::kSession}));
             url_visit_aggregates.emplace_back(
                 visited_url_ranking::CreateSampleURLVisitAggregate(
                     GURL(visited_url_ranking::kSampleSearchUrl), 1.0f,
-                    base::Time::Now(), {Fetcher::kHistory}));
+                    base::Time::Now() - base::Minutes(5), {Fetcher::kHistory}));
             URLVisitsMetadata url_visits_metadata;
 
             std::move(callback).Run(ResultStatus::kSuccess, url_visits_metadata,
@@ -275,6 +275,7 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, GetURLVisits) {
     ASSERT_EQ("sample_title", url_visit_mojom->title);
     ASSERT_EQ(GURL(visited_url_ranking::kSampleSearchUrl),
               url_visit_mojom->url);
+    ASSERT_GT(url_visit_mojom->relative_time.InMilliseconds(), 0);
   }
 
   histogram_tester.ExpectBucketCount(

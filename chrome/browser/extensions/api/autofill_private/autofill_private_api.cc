@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -25,14 +26,17 @@
 #include "chrome/common/extensions/api/autofill_private.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/autofill_address_util.h"
-#include "components/autofill/core/browser/autofill_experiments.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_constants.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/metrics/address_save_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
@@ -41,11 +45,12 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/studies/autofill_experiments.h"
+#include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/autofill/core/common/autofill_regexes.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_branded_strings.h"
@@ -59,6 +64,7 @@
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_ui.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_ui_component.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/localization.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill_private = extensions::api::autofill_private;
@@ -100,6 +106,13 @@ base::Value::Dict AddressUiComponentAsValueMap(
                autofill::AutofillAddressUIComponent::HINT_LONG);
   info.Set(kFieldRequired, address_ui_component.is_required);
   return info;
+}
+
+bool HasNameSeparator(const std::string& name) {
+  if (name.empty()) {
+    return false;
+  }
+  return re2::RE2::PartialMatch(name, autofill::kCjkNameSeperatorsRe);
 }
 
 autofill::BrowserAutofillManager* GetBrowserAutofillManager(
@@ -219,28 +232,43 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
       existing_profile ? *existing_profile
                        : CreateNewAutofillProfile(personal_data, country_code);
 
-  // TODO(crbug.com/40266693): Fields not visible for the autofill profile's
-  // country must be reset.
   for (const api::autofill_private::AddressField& field : address->fields) {
-    if (field.type == autofill_private::FieldType::kNameFull) {
-      profile.SetInfoWithVerificationStatus(
-          autofill::NAME_FULL, base::UTF8ToUTF16(field.value),
-          ExtensionsBrowserClient::Get()->GetApplicationLocale(),
-          kUserVerified);
-    } else {
-      profile.SetRawInfoWithVerificationStatus(
-          autofill::TypeNameToFieldType(autofill_private::ToString(field.type)),
-          base::UTF8ToUTF16(field.value), kUserVerified);
-    }
+    std::u16string trimmed_value;
+    base::TrimWhitespace(base::UTF8ToUTF16(field.value), base::TRIM_ALL,
+                         &trimmed_value);
+    // TODO(crbug.com/385727960): Investigate why we can't use
+    // SetInfoWithVerificationStatus here.
+    profile.SetRawInfoWithVerificationStatus(
+        autofill::TypeNameToFieldType(autofill_private::ToString(field.type)),
+        trimmed_value, kUserVerified);
+  }
+  profile.FinalizeAfterImport();
+
+  const std::u16string existing_alternative_name =
+      existing_profile
+          ? existing_profile->GetInfo(
+                autofill::ALTERNATIVE_FULL_NAME,
+                ExtensionsBrowserClient::Get()->GetApplicationLocale())
+          : std::u16string();
+
+  const std::u16string saved_alternative_name =
+      profile.GetInfo(autofill::ALTERNATIVE_FULL_NAME,
+                      ExtensionsBrowserClient::Get()->GetApplicationLocale());
+
+  if (!saved_alternative_name.empty() &&
+      saved_alternative_name != existing_alternative_name) {
+    base::UmaHistogramBoolean(
+        "Autofill.Settings.EditedAlternativeNameContainsASeparator",
+        HasNameSeparator(base::UTF16ToUTF8(saved_alternative_name)));
   }
 
-  if (address->language_code)
+  if (address->language_code) {
     profile.set_language_code(*address->language_code);
+  }
 
   if (use_existing_profile) {
     personal_data.address_data_manager().UpdateProfile(profile);
   } else {
-    profile.FinalizeAfterImport();
     personal_data.address_data_manager().AddProfile(profile);
     autofill::autofill_metrics::LogManuallyAddedAddress(
         autofill::autofill_metrics::AutofillManuallyAddedAddressSurface::
@@ -1260,7 +1288,7 @@ AutofillPrivatePredictionImprovementsIphFeatureUsedFunction::Run() {
   }
 
   client->NotifyIphFeatureUsed(
-      autofill::AutofillClient::IphFeature::kPredictionImprovements);
+      autofill::AutofillClient::IphFeature::kAutofillAi);
   return RespondNow(NoArguments());
 }
 

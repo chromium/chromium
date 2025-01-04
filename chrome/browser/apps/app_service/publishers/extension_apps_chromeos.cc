@@ -37,6 +37,8 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/extension_app_utils.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/child_accounts/child_user_service.h"
+#include "chrome/browser/ash/child_accounts/child_user_service_factory.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_interface.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -489,7 +491,7 @@ void ExtensionAppsChromeOs::PauseApp(const std::string& app_id) {
   }
 
   ash::app_time::AppTimeLimitInterface* app_limit =
-      ash::app_time::AppTimeLimitInterface::Get(profile());
+      ash::ChildUserServiceFactory::GetForBrowserContext(profile());
   DCHECK(app_limit);
   app_limit->PauseWebActivity(app_id);
 }
@@ -503,7 +505,7 @@ void ExtensionAppsChromeOs::UnpauseApp(const std::string& app_id) {
       app_type(), app_id, /*paused=*/false));
 
   ash::app_time::AppTimeLimitInterface* app_time =
-      ash::app_time::AppTimeLimitInterface::Get(profile());
+      ash::ChildUserServiceFactory::GetForBrowserContext(profile());
   DCHECK(app_time);
   app_time->ResumeWebActivity(app_id);
 }

@@ -803,6 +803,9 @@ void RecordPromoStatsToUMAForActionString(PromoStatistics* promo_stats,
       base::StrCat({"IOS.DefaultBrowserPromo.", action_str});
 
   base::UmaHistogramCounts100(
+      base::StrCat({histogram_prefix, ".ActiveDayCount"}),
+      promo_stats.activeDayCount);
+  base::UmaHistogramCounts100(
       base::StrCat({histogram_prefix, ".PromoDisplayCount"}),
       promo_stats.promoDisplayCount);
   base::UmaHistogramCounts1000(

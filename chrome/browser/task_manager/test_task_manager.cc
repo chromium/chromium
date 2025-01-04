@@ -14,8 +14,7 @@ TestTaskManager::TestTaskManager()
   set_timer_for_testing(std::make_unique<base::MockRepeatingTimer>());
 }
 
-TestTaskManager::~TestTaskManager() {
-}
+TestTaskManager::~TestTaskManager() = default;
 
 void TestTaskManager::ActivateTask(TaskId task_id) {
 }

@@ -32,6 +32,7 @@ class MultipartUploadRequest : public ConnectorUploadRequest {
       const GURL& base_url,
       const std::string& metadata,
       const std::string& data,
+      const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       Callback callback);
 
@@ -44,6 +45,7 @@ class MultipartUploadRequest : public ConnectorUploadRequest {
       const base::FilePath& path,
       uint64_t file_size,
       bool is_obfuscated,
+      const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       Callback callback);
 
@@ -54,6 +56,7 @@ class MultipartUploadRequest : public ConnectorUploadRequest {
       const GURL& base_url,
       const std::string& metadata,
       base::ReadOnlySharedMemoryRegion page_region,
+      const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       Callback callback);
 
@@ -75,6 +78,7 @@ class MultipartUploadRequest : public ConnectorUploadRequest {
       const GURL& base_url,
       const std::string& metadata,
       const std::string& data,
+      const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       MultipartUploadRequest::Callback callback);
 
@@ -85,6 +89,7 @@ class MultipartUploadRequest : public ConnectorUploadRequest {
       const base::FilePath& file,
       uint64_t file_size,
       bool is_obfuscated,
+      const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       MultipartUploadRequest::Callback callback);
 
@@ -93,6 +98,7 @@ class MultipartUploadRequest : public ConnectorUploadRequest {
       const GURL& base_url,
       const std::string& metadata,
       base::ReadOnlySharedMemoryRegion page_region,
+      const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       MultipartUploadRequest::Callback callback);
 

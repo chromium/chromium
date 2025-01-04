@@ -846,6 +846,11 @@ Status ParseChromeOptions(
   parser_map["devToolsEventsToLog"] =
       base::BindRepeating(&ParseDevToolsEventsLoggingPrefs);
   parser_map["windowTypes"] = base::BindRepeating(&ParseWindowTypes);
+
+  // Enable Chrome extension related targets
+  parser_map["enableExtensionTargets"] = base::BindRepeating(
+      &ParseBoolean, &capabilities->enable_extension_targets);
+
   // Compliance is read when session is initialized and correct response is
   // sent if not parsed correctly.
   parser_map["w3c"] = base::BindRepeating(&IgnoreCapability);
@@ -1162,10 +1167,6 @@ Status Capabilities::Parse(const base::Value::Dict& desired_caps,
     parser_map[kChromeDriverOptionsKey] =
         base::BindRepeating(&ParseChromeOptions);
   }
-
-  // Enable Chrome extension related targets
-  parser_map["enableExtensionTargets"] =
-      base::BindRepeating(&ParseBoolean, &enable_extension_targets);
 
   // se:options.loggingPrefs and goog:loggingPrefs is spec-compliant name,
   // but loggingPrefs is still supported in legacy mode.

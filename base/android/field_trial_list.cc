@@ -34,8 +34,8 @@ class TrialLogger : public base::FieldTrialList::Observer {
     // Changes to format of the log message below must be accompanied by
     // changes to finch smoke tests since they look for this log message
     // in the logcat.
-    LOG(INFO) << "Active field trial \"" << trial_name
-              << "\" in group \"" << group_name<< '"';
+    LOG(INFO) << "Active field trial \"" << trial_name << "\" in group \""
+              << group_name << '"';
   }
 
  protected:
@@ -89,7 +89,7 @@ class AndroidFieldTrialListLogActiveTrialsFriendHelper {
 };
 
 static void JNI_FieldTrialList_LogActiveTrials(JNIEnv* env) {
-  DCHECK(!g_trial_logger.IsCreated()); // This need only be called once.
+  DCHECK(!g_trial_logger.IsCreated());  // This need only be called once.
 
   LOG(INFO) << "Logging active field trials...";
   AndroidFieldTrialListLogActiveTrialsFriendHelper::AddObserver(

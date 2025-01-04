@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
+import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
@@ -123,7 +124,7 @@ public class TabGroupVisualDataDialogManager {
         AppCompatEditText editTextView = mCustomView.findViewById(R.id.title_input_text);
         editTextView.setText(mDefaultGroupTitle);
 
-        List<Integer> colors = ColorPickerUtils.getTabGroupColorIdList();
+        List<Integer> colors = TabGroupColorUtils.getTabGroupColorIdList();
         // TODO(b/330597857): Allow a dynamic incognito setting for the color picker.
         // Force a false incognito value for the color picker as this modal dialog does not
         // support incognito color themes and should just follow the system theme.

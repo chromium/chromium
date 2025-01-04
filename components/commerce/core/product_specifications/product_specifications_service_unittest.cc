@@ -9,6 +9,7 @@
 
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
 
+#include <array>
 #include <optional>
 #include <vector>
 
@@ -79,19 +80,20 @@ void CheckSpecsAgainstSpecifics(
   EXPECT_EQ(urls, specifications.urls());
 }
 
-const sync_pb::ProductComparisonSpecifics kProductComparisonSpecifics[] = {
-    BuildProductComparisonSpecifics(
-        "abe18411-bd7e-4819-b9b5-11e66e0ad8b4",
-        1710953277,
-        1710953277 + base::Time::kMillisecondsPerDay,
-        "my first set",
-        {"https://foo.com", "https://bar.com"}),
-    BuildProductComparisonSpecifics(
-        "f448709c-fe1f-44ea-883e-f46267b97d29",
-        1711035900,
-        1711035900 + (2 * base::Time::kMillisecondsPerDay) / 3,
-        "my next set",
-        {"https://some-url.com", "https://another-url.com"})};
+const auto kProductComparisonSpecifics =
+    std::to_array<sync_pb::ProductComparisonSpecifics>(
+        {BuildProductComparisonSpecifics(
+             "abe18411-bd7e-4819-b9b5-11e66e0ad8b4",
+             1710953277,
+             1710953277 + base::Time::kMillisecondsPerDay,
+             "my first set",
+             {"https://foo.com", "https://bar.com"}),
+         BuildProductComparisonSpecifics(
+             "f448709c-fe1f-44ea-883e-f46267b97d29",
+             1711035900,
+             1711035900 + (2 * base::Time::kMillisecondsPerDay) / 3,
+             "my next set",
+             {"https://some-url.com", "https://another-url.com"})});
 
 syncer::EntityData MakeEntityData(
     const sync_pb::ProductComparisonSpecifics& specifics) {
@@ -398,16 +400,6 @@ class ProductSpecificationsServiceSyncDisabledTest
 
  private:
   std::unique_ptr<ProductSpecificationsSet> initial_set_;
-};
-
-class ProductSpecificationsServiceWithTitleTest
-    : public ProductSpecificationsServiceTest {
- public:
-  void SetUp() override {
-    ProductSpecificationsServiceTest::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(
-        commerce::kProductSpecificationsSyncTitle);
-  }
 };
 
 TEST_F(ProductSpecificationsServiceTest, TestGetProductSpecifications) {
@@ -746,7 +738,7 @@ TEST_F(ProductSpecificationsServiceTest,
   for (auto& specifics_map : {entries(), GetAllStoreData()}) {
     EXPECT_EQ(3u, specifics_map.size());
 
-    sync_pb::ProductComparisonItem item_specifics[2];
+    std::array<sync_pb::ProductComparisonItem, 2> item_specifics;
     sync_pb::ProductComparisonSpecifics top_level;
     std::vector<std::string> urls;
     std::string name = "";
@@ -1345,7 +1337,7 @@ TEST_F(ProductSpecificationsServiceTest,
   EXPECT_EQ("https://a.example.com/", iter->urls()[0].spec());
 }
 
-TEST_F(ProductSpecificationsServiceWithTitleTest, TestTitle) {
+TEST_F(ProductSpecificationsServiceTest, TestTitle) {
   const ProductSpecificationsSet added_set_with_titles =
       service()
           ->AddProductSpecificationsSet(
@@ -1367,7 +1359,7 @@ TEST_F(ProductSpecificationsServiceWithTitleTest, TestTitle) {
   }
 }
 
-TEST_F(ProductSpecificationsServiceWithTitleTest, SetUrlWithTitle) {
+TEST_F(ProductSpecificationsServiceTest, SetUrlWithTitle) {
   const ProductSpecificationsSet added_set =
       service()
           ->AddProductSpecificationsSet(

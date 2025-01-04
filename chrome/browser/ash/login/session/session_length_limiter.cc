@@ -47,11 +47,9 @@ class SessionLengthLimiterDelegateImpl : public SessionLengthLimiter::Delegate {
   void StopSession() override;
 };
 
-SessionLengthLimiterDelegateImpl::SessionLengthLimiterDelegateImpl() {
-}
+SessionLengthLimiterDelegateImpl::SessionLengthLimiterDelegateImpl() = default;
 
-SessionLengthLimiterDelegateImpl::~SessionLengthLimiterDelegateImpl() {
-}
+SessionLengthLimiterDelegateImpl::~SessionLengthLimiterDelegateImpl() = default;
 
 const base::Clock* SessionLengthLimiterDelegateImpl::GetClock() const {
   return base::DefaultClock::GetInstance();
@@ -63,8 +61,7 @@ void SessionLengthLimiterDelegateImpl::StopSession() {
 
 }  // namespace
 
-SessionLengthLimiter::Delegate::~Delegate() {
-}
+SessionLengthLimiter::Delegate::~Delegate() = default;
 
 // static
 void SessionLengthLimiter::RegisterPrefs(PrefRegistrySimple* registry) {

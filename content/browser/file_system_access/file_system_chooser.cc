@@ -4,15 +4,16 @@
 
 #include "content/browser/file_system_access/file_system_chooser.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include <set>
-#endif
+#include <utility>
+#include <vector>
 
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -23,6 +24,10 @@
 #include "ui/gfx/text_elider.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/shell_dialogs/selected_file_info.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include <set>
+#endif
 
 namespace content {
 
@@ -176,16 +181,32 @@ ui::SelectFileDialog::FileTypeInfo ConvertAcceptsToFileTypeInfo(
   return file_types;
 }
 
-ui::SelectFileDialog::Type ValidateType(ui::SelectFileDialog::Type type) {
+bool IsValidFileDialogType(ui::SelectFileDialog::Type type) {
   switch (type) {
     case ui::SelectFileDialog::SELECT_OPEN_FILE:
     case ui::SelectFileDialog::SELECT_OPEN_MULTI_FILE:
     case ui::SelectFileDialog::SELECT_SAVEAS_FILE:
     case ui::SelectFileDialog::SELECT_FOLDER:
-      return type;
+      return true;
     default:
-      NOTREACHED();
+      return false;
   }
+}
+
+PathInfo FileInfoToPathInfo(const ui::SelectedFileInfo& file) {
+  if (file.virtual_path.has_value()) {
+    base::FilePath display_name = !file.display_name.empty()
+                                      ? base::FilePath(file.display_name)
+                                      : file.virtual_path->BaseName();
+    return {PathType::kExternal, *file.virtual_path,
+            display_name.AsUTF8Unsafe()};
+  }
+  base::FilePath path =
+      !file.local_path.empty() ? file.local_path : file.file_path;
+  base::FilePath display_name = !file.display_name.empty()
+                                    ? base::FilePath(file.display_name)
+                                    : path.BaseName();
+  return {PathType::kLocal, std::move(path), display_name.AsUTF8Unsafe()};
 }
 
 }  // namespace
@@ -196,7 +217,7 @@ FileSystemChooser::Options::Options(
     std::u16string title,
     base::FilePath default_directory,
     base::FilePath suggested_name)
-    : type_(ValidateType(type)),
+    : type_(type),
       file_types_(ConvertAcceptsToFileTypeInfo(accepts_types_info)),
       // Set `default_file_type_index_` to a reasonable default value.
       // This value will be updated if the extension of `suggested_name`
@@ -209,6 +230,7 @@ FileSystemChooser::Options::Options(
       default_path_(default_directory.Append(
           ResolveSuggestedNameExtension(std::move(suggested_name),
                                         file_types_))) {
+  CHECK(IsValidFileDialogType(type_));
   // If suggested_name is empty, then ensure default path ends with a separator
   // so it can be parsed back into default_directory and suggested_name.
   if (!default_path_.empty() && default_path_ == default_directory) {
@@ -332,45 +354,35 @@ bool FileSystemChooser::IsShellIntegratedExtension(
 FileSystemChooser::FileSystemChooser(ui::SelectFileDialog::Type type,
                                      ResultCallback callback,
                                      base::ScopedClosureRunner fullscreen_block)
-    : callback_(std::move(callback)),
-      type_(ValidateType(type)),
-      fullscreen_block_(std::move(fullscreen_block)) {}
+    : type_(type),
+      callback_(std::move(callback)),
+      fullscreen_block_(std::move(fullscreen_block)) {
+  CHECK(IsValidFileDialogType(type_));
+}
 
 FileSystemChooser::~FileSystemChooser() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (dialog_)
+  if (dialog_) {
     dialog_->ListenerDestroyed();
+  }
 }
 
 void FileSystemChooser::FileSelected(const ui::SelectedFileInfo& file,
                                      int index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  MultiFilesSelected({file});
+  std::move(callback_).Run(file_system_access_error::Ok(),
+                           std::vector<PathInfo>{FileInfoToPathInfo(file)});
+  delete this;
 }
 
 void FileSystemChooser::MultiFilesSelected(
     const std::vector<ui::SelectedFileInfo>& files) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<PathInfo> result;
-
+  result.reserve(files.size());
   for (const ui::SelectedFileInfo& file : files) {
-    if (file.virtual_path.has_value()) {
-      base::FilePath display_name = !file.display_name.empty()
-                                        ? base::FilePath(file.display_name)
-                                        : file.virtual_path->BaseName();
-      result.emplace_back(PathType::kExternal, *file.virtual_path,
-                          display_name.AsUTF8Unsafe());
-    } else {
-      base::FilePath path =
-          !file.local_path.empty() ? file.local_path : file.file_path;
-      base::FilePath display_name = !file.display_name.empty()
-                                        ? base::FilePath(file.display_name)
-                                        : path.BaseName();
-      result.emplace_back(PathType::kLocal, std::move(path),
-                          display_name.AsUTF8Unsafe());
-    }
+    result.push_back(FileInfoToPathInfo(file));
   }
-
   std::move(callback_).Run(file_system_access_error::Ok(), std::move(result));
   delete this;
 }

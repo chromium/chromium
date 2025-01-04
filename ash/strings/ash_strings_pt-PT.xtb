@@ -361,6 +361,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2295777434187870477">O microfone está ativado. Se o desativar, irá desativar a entrada de som.</translation>
 <translation id="2302092602801625023">Esta conta é gerida pelo Family Link</translation>
 <translation id="2303600792989757991">Ativar/desativar vista geral das janelas</translation>
+<translation id="2304702218354340897">Quer mesmo desativar o controlo facial?</translation>
 <translation id="2305738328104302723">Lista do Google Tasks: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: capturas de ecrã, transferências e ficheiros fixados recentes</translation>
 <translation id="2318576281648121272">Hoje, <ph name="TODAY_DATE" /></translation>
@@ -387,6 +388,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2370971919968699910">Isto pode significar custos de dados.
 <ph name="DEVICECOUNT" /> dispositivos ligados.</translation>
 <translation id="2386292613071805067">Selecionar tudo na página</translation>
+<translation id="2389423187722941333">Ativar/desativar Gemini</translation>
 <translation id="2392659840443812875">Nenhuma zona Wi-Fi disponível. Confirme que o dispositivo está próximo e o Bluetooth está ativado.</translation>
 <translation id="2397416548179033562">Mostrar menu do Chrome</translation>
 <translation id="240006516586367791">Controlos de multimédia</translation>
@@ -394,6 +396,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2402411679569069051">Para desbloquear o Chromebook, utilize a sua impressão digital ou desbloqueie o telemóvel</translation>
 <translation id="240545663114741956">Prima <ph name="ACCELERATOR" /> duas vezes para terminar sessão.</translation>
 <translation id="2405664212338326887">Sem ligação</translation>
+<translation id="2406710117564540804">Ativar/desativar o modo Não incomodar</translation>
 <translation id="2408955596600435184">Introduza o PIN</translation>
 <translation id="2412593942846481727">Atualização disponível</translation>
 <translation id="2416438829169535743">Sair da vista?</translation>
@@ -899,6 +902,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="4119928251231465047">Demasiadas tentativas de introdução do PIN</translation>
 <translation id="412298498316631026">janela</translation>
 <translation id="4123259114412175274">Para desbloquear o Chromebook, certifique-se de que o Bluetooth do telemóvel está ativado</translation>
+<translation id="4123868835475902435">Estas foram as noções básicas! Continue em Explore, a nossa app integrada para receber dicas e ajuda. Vai encontrar dicas para começar, ofertas especiais e as funcionalidades mais recentes do <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4125970834901680537">Não é possível fazer stream de apps no modo de tablet. Tente novamente no modo de portátil.</translation>
 <translation id="4131973331381812765">Temperatura: <ph name="TEMPERATURE" /> °C – Velocidade atual: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="4136724716305260864">Ativada até ao nascer do sol</translation>
@@ -1019,7 +1023,6 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4481530544597605423">Dispositivos não sincronizados</translation>
 <translation id="4485506555414638855">Ignorar configuração da visualização das fotos, dos conteúdos multimédia, das notificações e das apps recentes do telemóvel</translation>
 <translation id="4491109536499578614">Imagem</translation>
-<translation id="4493452241184130939">Estas foram as noções básicas. Continue em Explore, a nossa app integrada para sugestões e ajuda. Encontra sugestões para começar, apps recomendadas, ofertas especiais e as funcionalidades mais recentes do <ph name="PRODUCT_NAME" />.</translation>
 <translation id="450584155212756404">Canal para programadores</translation>
 <translation id="4513946894732546136">Comentários</translation>
 <translation id="4518404433291145981">Para desbloquear o Chromebook, desbloqueie primeiro o seu telemóvel</translation>
@@ -1082,7 +1085,6 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4708065238214351979">Aumentar o brilho do teclado</translation>
 <translation id="4708185346211948049"><ph name="DAY_OF_WEEK" /> da próxima semana</translation>
 <translation id="4717575069099566988">O cabo USB-C não suporta USB4. O desempenho do dispositivo pode estar limitado.</translation>
-<translation id="4724328513667182700">6 sugestões para começar a usar o <ph name="PRODUCT_NAME" /></translation>
 <translation id="4730374152663651037">UTILIZADAS FREQUENTEMENTE</translation>
 <translation id="4731797938093519117">Acesso parental</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (esquerdo)</translation>
@@ -1309,7 +1311,6 @@ Nenhum dispositivo ligado.</translation>
 <translation id="5409208741270395213">Marcar tarefa como concluída</translation>
 <translation id="5413656666631274079">Página de definições</translation>
 <translation id="5414198321558177633">A atualizar a lista de perfis. Esta ação pode demorar alguns minutos.</translation>
-<translation id="5417965108047245734">Faça uma visita guiada rápida para saber como usar o <ph name="PRODUCT_NAME" /></translation>
 <translation id="5426063383988017631">Menu de definições fechado</translation>
 <translation id="5428899915242071344">Iniciar seleção</translation>
 <translation id="5429993543155113935">De momento, as janelas de navegação anónima não são suportadas</translation>
@@ -1647,6 +1648,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="6539852571005954999">A analisar a transferência <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">A transmitir para <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emojis, GIFs e muito mais</translation>
+<translation id="6543942526104794893">Quer mesmo desativar os gestos faciais?</translation>
 <translation id="6545382064335350438">Ainda não foi possível validar o PIN. Tente novamente.</translation>
 <translation id="6555373427270923730">Introduza um endereço Web na barra de endereço e, em seguida, prima <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -2313,6 +2315,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8855885154700222542">Tecla de ecrã inteiro</translation>
 <translation id="8858369206579825206">Controlos de privacidade</translation>
 <translation id="8860366331836346216">Adicionar eSIM</translation>
+<translation id="8869149849311827122">Quer mesmo desativar o controlo do cursor do rato?</translation>
 <translation id="8870509716567206129">A aplicação não é compatível com o ecrã dividido.</translation>
 <translation id="8873203135446552888">Confirme que quer desativar o touchpad incorporado</translation>
 <translation id="8874184842967597500">Sem ligação</translation>

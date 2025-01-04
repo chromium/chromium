@@ -259,6 +259,7 @@
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
+  id<UIBlockerTarget> currentUIBlocker = self.currentUIBlocker;
   switch (level) {
     case SceneActivationLevelUnattached:
       // Nothing to do.
@@ -276,6 +277,8 @@
 
     case SceneActivationLevelForegroundActive:
       [_observers profileState:self sceneDidBecomeActive:sceneState];
+      sceneState.presentingModalOverlay =
+          currentUIBlocker && currentUIBlocker != sceneState;
       break;
   }
 }

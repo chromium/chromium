@@ -164,8 +164,6 @@ class PLATFORM_EXPORT WebRtcVideoTrackSource
   scoped_refptr<CallbackProxy> callback_proxy_;
 
   int64_t next_frame_id_ = 0;
-
-  bool require_mapped_frame_for_testing_ = false;
 };
 
 }  // namespace blink

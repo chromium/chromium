@@ -210,7 +210,7 @@ std::optional<std::vector<uint8_t>> EncodeSkPixmap(
     options.fFilterFlags = SkPngEncoder::FilterFlag::kNone;
   }
 
-  if (!SkPngEncoder::Encode(&dst, src, options)) {
+  if (!skia::EncodePng(&dst, src, options)) {
     return std::nullopt;
   }
 

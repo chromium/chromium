@@ -15,7 +15,6 @@ import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '../controls/settings_toggle_button.js';
-import './page_content_page.js';
 // <if expr="not chromeos_ash">
 import './sync_account_control.js';
 // </if>

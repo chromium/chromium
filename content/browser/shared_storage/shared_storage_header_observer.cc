@@ -86,6 +86,7 @@ void SharedStorageHeaderObserver::HeaderReceived(
     ContextType context_type,
     NavigationOrDocumentHandle* navigation_or_document_handle,
     std::vector<MethodWithOptionsPtr> methods_with_options,
+    const std::optional<std::string>& with_lock,
     base::OnceClosure callback,
     mojo::ReportBadMessageCallback bad_message_callback,
     bool can_defer) {
@@ -179,19 +180,20 @@ void SharedStorageHeaderObserver::HeaderReceived(
                 [](base::WeakPtr<SharedStorageHeaderObserver> header_observer,
                    const url::Origin& request_origin, ContextType context_type,
                    std::vector<MethodWithOptionsPtr> methods_with_options,
+                   const std::optional<std::string>& with_lock,
                    mojo::ReportBadMessageCallback bad_message_callback,
                    NavigationOrDocumentHandle* navigation_or_document_handle) {
                   if (header_observer) {
                     header_observer->HeaderReceived(
                         request_origin, context_type,
                         navigation_or_document_handle,
-                        std::move(methods_with_options), base::DoNothing(),
-                        std::move(bad_message_callback),
+                        std::move(methods_with_options), with_lock,
+                        base::DoNothing(), std::move(bad_message_callback),
                         /*can_defer=*/false);
                   }
                 },
                 weak_ptr_factory_.GetWeakPtr(), request_origin, context_type,
-                std::move(methods_with_options),
+                std::move(methods_with_options), with_lock,
                 std::move(bad_message_callback));
         static_cast<RenderFrameHostImpl*>(rfh)
             ->AddDeferredSharedStorageHeaderCallback(std::move(defer_callback));
@@ -252,11 +254,11 @@ void SharedStorageHeaderObserver::HeaderReceived(
   storage_partition_->GetSharedStorageRuntimeManager()
       ->lock_manager()
       .SharedStorageBatchUpdate(
-          std::move(methods_with_options), /*with_lock=*/std::nullopt,
-          request_origin, AccessScope::kHeader, main_frame_id,
+          std::move(methods_with_options), with_lock, request_origin,
+          AccessScope::kHeader, main_frame_id,
           base::BindOnce(&SharedStorageHeaderObserver::OnBatchUpdateFinished,
                          weak_ptr_factory_.GetWeakPtr(), request_origin,
-                         std::move(cloned_methods_with_options)));
+                         std::move(cloned_methods_with_options), with_lock));
 
   OnHeaderProcessed(request_origin);
   std::move(callback).Run();

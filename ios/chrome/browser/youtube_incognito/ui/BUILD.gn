@@ -6,6 +6,14 @@ source_set("ui") {
   sources = [
     "youtube_incognito_sheet.h",
     "youtube_incognito_sheet.mm",
+    "youtube_incognito_sheet_delegate.h",
   ]
-  deps = [ "//ios/chrome/common/ui/confirmation_alert:confirmation_alert" ]
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ntp/ui_bundled/incognito",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/confirmation_alert:confirmation_alert",
+    "//ios/chrome/common/ui/util",
+  ]
 }

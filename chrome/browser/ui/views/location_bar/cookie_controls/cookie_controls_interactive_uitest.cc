@@ -238,6 +238,11 @@ class CookieControlsInteractiveTestBase : public InteractiveFeaturePromoTest {
         prefs::kBlockAll3pcToggleEnabled, enabled);
   }
 
+  void EnableFpProtection() {
+    browser()->profile()->GetPrefs()->SetBoolean(
+        prefs::kFingerprintingProtectionEnabled, true);
+  }
+
   void BlockThirdPartyCookies(bool use_3pcd = false) {
     if (use_3pcd) {
       browser()->profile()->GetPrefs()->SetBoolean(
@@ -753,7 +758,8 @@ class CookieControlsInteractiveUiTrackingProtectionTest
 
  protected:
   std::vector<base::test::FeatureRef> EnabledFeatures() override {
-    return {privacy_sandbox::kFingerprintingProtectionUserBypass};
+    return {privacy_sandbox::kActUserBypassUx,
+            privacy_sandbox::kFingerprintingProtectionUx};
   }
 
   std::vector<base::test::FeatureRef> DisabledFeatures() override { return {}; }
@@ -763,6 +769,7 @@ IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTrackingProtectionTest,
                        CreateException) {
   BlockThirdPartyCookies(/*use_3pcd=*/true);
   has_act_features_ = true;
+  EnableFpProtection();
   SetBlockAll3pcToggle(GetParam());
   RunTestSequence(
       InstrumentTab(kWebContentsElementId),
@@ -781,6 +788,7 @@ IN_PROC_BROWSER_TEST_P(CookieControlsInteractiveUiTrackingProtectionTest,
   // exception. Disable 3PC for the page, and confirm the exception is removed.
   BlockThirdPartyCookies(/*use_3pcd=*/true);
   has_act_features_ = true;
+  EnableFpProtection();
   SetBlockAll3pcToggle(GetParam());
   cookie_settings()->SetCookieSettingForUserBypass(
       third_party_cookie_page_url());

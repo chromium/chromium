@@ -4,17 +4,22 @@
 
 package org.chromium.chrome.browser.firstrun;
 
+import static androidx.annotation.VisibleForTesting.PRIVATE;
+
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -28,15 +33,15 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.fonts.FontPreloader;
 import org.chromium.chrome.browser.metrics.UmaUtils;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
 import org.chromium.chrome.browser.ui.signin.DialogWhenLargeContentLayout;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninMediator;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
@@ -173,6 +178,19 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     @Nullable private static FirstRunActivityObserver sObserver;
 
     private static boolean sIsAnimationDisabled;
+
+    /** Prevents Tapjacking on T-. See crbug.com/1430867 */
+    private static final boolean sPreventTouches =
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU;
+
+    /**
+     * The last MotionEvent object blocked due to the activity being in paused state. We're
+     * interested in MotionEvent#ACTION_DOWN which is likely the very first event received when
+     * multi-window mode is entered. We inject this one after the activity is resumed (or it regains
+     * the focus) in order to recover the corresponding user gesture which otherwise would have gone
+     * missing.
+     */
+    private MotionEvent mBlockedEvent;
 
     private boolean mPostNativeAndPolicyPagesCreated;
 
@@ -393,20 +411,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     }
 
     @Override
-    protected void performPostInflationStartup() {
-        super.performPostInflationStartup();
-
-        FontPreloader.getInstance().onPostInflationStartupFre();
-    }
-
-    @Override
-    protected void onFirstDrawComplete() {
-        super.onFirstDrawComplete();
-
-        FontPreloader.getInstance().onFirstDrawFre();
-    }
-
-    @Override
     public void finishNativeInitialization() {
         super.finishNativeInitialization();
 
@@ -427,10 +431,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
     private void onNativeDependenciesFullyInitialized() {
         mNativeInitializationPromise.fulfill(null);
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            mPager.setOffscreenPageLimit(ViewPager2.OFFSCREEN_PAGE_LIMIT_DEFAULT);
-        }
+        mPager.setOffscreenPageLimit(ViewPager2.OFFSCREEN_PAGE_LIMIT_DEFAULT);
 
         onInternalStateChanged();
     }
@@ -568,6 +569,38 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     }
 
     @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (sPreventTouches && shouldPreventTouch(ev)) {
+            // Discard the events which may be trickling down from an overlay activity above.
+            return true;
+        }
+        return super.dispatchTouchEvent(ev);
+    }
+
+    @VisibleForTesting(otherwise = PRIVATE)
+    boolean shouldPreventTouch(MotionEvent ev) {
+        if (ApplicationStatus.getStateForActivity(this) == ActivityState.RESUMED) return false;
+        mBlockedEvent = ev;
+        return true;
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        // No need to do the following from Q and onward where multi-resume state is supported
+        // in split screen mode.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) return;
+
+        if (hasFocus
+                && mBlockedEvent != null
+                && MultiWindowUtils.getInstance().isInMultiWindowMode(this)) {
+            mBlockedEvent.setAction(MotionEvent.ACTION_DOWN);
+            super.dispatchTouchEvent(mBlockedEvent); // Inject the blocked event
+            mBlockedEvent = null;
+        }
+    }
+
+    @Override
     public int getSecondaryActivity() {
         return SecondaryActivity.FIRST_RUN;
     }
@@ -617,7 +650,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     }
 
     private void launchPendingIntentAndFinish() {
-        if (!sendFirstRunCompletePendingIntent()) {
+        if (!sendFirstRunCompleteIntent()) {
             finish();
         } else {
             ApplicationStatus.registerStateListenerForAllActivities(
@@ -798,10 +831,15 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     }
 
     @Override
-    public void recordNativePolicyAndChildStatusLoadedHistogram() {
+    public void recordLoadCompletedHistograms(
+            @FullscreenSigninMediator.LoadPoint int slowestLoadPoint) {
         RecordHistogram.recordTimesHistogram(
                 "MobileFre.FromLaunch.NativePolicyAndChildStatusLoaded",
                 SystemClock.elapsedRealtime() - mIntentCreationElapsedRealtimeMs);
+        RecordHistogram.recordEnumeratedHistogram(
+                "MobileFre.SlowestLoadPoint",
+                slowestLoadPoint,
+                FullscreenSigninMediator.LoadPoint.MAX);
     }
 
     @Override

@@ -379,7 +379,8 @@ void SwapRemoteFrame(
                       std::move(frame_host)),
                   mojo::AssociatedRemote<mojom::blink::RemoteFrame>()
                       .BindNewEndpointAndPassDedicatedReceiver(),
-                  std::move(replicated_state));
+                  std::move(replicated_state),
+                  /*devtools_frame_token=*/std::nullopt);
 }
 
 WebViewHelper::WebViewHelper(
@@ -799,7 +800,8 @@ WebViewImpl* WebViewHelper::CreateWebView(WebViewClient* web_view_client,
 int TestWebFrameClient::loads_in_progress_ = 0;
 
 TestWebFrameClient::TestWebFrameClient()
-    : associated_interface_provider_(new AssociatedInterfaceProvider(nullptr)),
+    : associated_interface_provider_(new AssociatedInterfaceProvider(
+          base::SingleThreadTaskRunner::GetCurrentDefault())),
       effective_connection_type_(WebEffectiveConnectionType::kTypeUnknown) {}
 
 TestWebFrameClient::~TestWebFrameClient() = default;
@@ -1010,7 +1012,7 @@ void TestWebFrameWidget::DispatchThroughCcInputHandler(
 }
 
 void TestWebFrameWidget::RequestDecode(
-    const cc::PaintImage&,
+    const cc::DrawImage&,
     base::OnceCallback<void(bool)> callback) {
   // TODO(paint-dev): probably this should `std::move(callback).Run(true)`, but
   // that could cause deep recursion into

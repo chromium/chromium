@@ -29,7 +29,6 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/public/mojom/feature_observer/feature_observer.mojom-blink.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idb_object_store_parameters.h"
@@ -68,7 +67,6 @@ class MODULES_EXPORT IDBDatabase final
       ExecutionContext*,
       mojo::PendingAssociatedReceiver<mojom::blink::IDBDatabaseCallbacks>
           callbacks_receiver,
-      mojo::PendingRemote<mojom::blink::ObservedFeature> connection_lifetime,
       mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase> pending_database,
       int scheduling_priority);
 
@@ -293,9 +291,6 @@ class MODULES_EXPORT IDBDatabase final
   HeapMojoAssociatedRemote<mojom::blink::IDBDatabase> database_remote_;
   Member<IDBTransaction> version_change_transaction_;
   HeapHashMap<int64_t, Member<IDBTransaction>> transactions_;
-  // No interface here, so no need to bind it.  This is only for
-  // lifetime observation of the use of IndexedDB from the browser.
-  mojo::PendingRemote<mojom::blink::ObservedFeature> connection_lifetime_;
 
   bool close_pending_ = false;
 

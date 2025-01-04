@@ -55,9 +55,9 @@ class AwQuotaManagerBridge
   // for the specified eTLD+1 (site). The `domain` parameter can contain a
   // subdomain. Any subdomains will be ignored, and the actual site domain used
   // for deletion is returned.
-  base::android::ScopedJavaLocalRef<jstring> DeleteBrowsingDataForSite(
+  std::string DeleteBrowsingDataForSite(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& domain,
+      std::string& domain,
       const base::android::JavaParamRef<jobject>& callback);
 
   // http://crbug.com/373826557 does not actually delete all data, preserved for

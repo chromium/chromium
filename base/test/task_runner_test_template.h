@@ -26,7 +26,7 @@
 //
 //     // Stop the task runner and make sure all tasks posted before
 //     // this is called are run. Caveat: delayed tasks are not run,
-       // they're simply deleted.
+// they're simply deleted.
 //     void StopTaskRunner() {
 //       ...
 //     }
@@ -131,8 +131,7 @@ TYPED_TEST_P(TaskRunnerTest, Basic) {
   }
   this->delegate_.StopTaskRunner();
 
-  EXPECT_EQ(expected_task_run_counts,
-            this->task_tracker_->GetTaskRunCounts());
+  EXPECT_EQ(expected_task_run_counts, this->task_tracker_->GetTaskRunCounts());
 }
 
 // Post a bunch of delayed tasks to the task runner.  They should all
@@ -156,8 +155,7 @@ TYPED_TEST_P(TaskRunnerTest, Delayed) {
   this->task_tracker_->WaitForCompletedTasks(expected_total_tasks);
   this->delegate_.StopTaskRunner();
 
-  EXPECT_EQ(expected_task_run_counts,
-            this->task_tracker_->GetTaskRunCounts());
+  EXPECT_EQ(expected_task_run_counts, this->task_tracker_->GetTaskRunCounts());
 }
 
 // The TaskRunnerTest test case verifies behaviour that is expected from a

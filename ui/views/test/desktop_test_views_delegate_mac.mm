@@ -17,8 +17,9 @@ void DesktopTestViewsDelegate::OnBeforeWidgetInit(
     internal::NativeWidgetDelegate* delegate) {
   // If we already have a native_widget, we don't have to try to come
   // up with one.
-  if (params->native_widget)
+  if (params->native_widget) {
     return;
+  }
 
   if (params->parent && params->type != views::Widget::InitParams::TYPE_MENU) {
     params->native_widget = new NativeWidgetMac(delegate);

@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">ముదురు రంగు రూపాన్ని డిజేబుల్ చేయండి</translation>
 <translation id="1807246157184219062">లేత</translation>
 <translation id="1808803439260407870">క్లాసిక్ ఆర్ట్</translation>
+<translation id="181434555916624618">ప్రస్తుతానికి, వ్యక్తులకు సంబంధించిన ఫలితాలు చూపబడవు. మరొక ప్రాంప్ట్‌ను ట్రై చేయండి.</translation>
 <translation id="1815850098929213707"><ph name="KEYS" /> కీ ఎంపిక చేయబడింది. కంట్రోల్‌ను ఎడిట్ చేయడానికి బటన్‌పై ట్యాప్ చేయండి</translation>
 <translation id="1823120442877418684">పాత్రలు</translation>
 <translation id="1827738518074806965">చిత్రకళా గ్యాలరీ</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">పరికరంలో కుడి వైపు బడ్ బ్యాటరీ స్థాయి <ph name="BATTERY_PERCENTAGE" />% ఉంది.</translation>
 <translation id="3340978935015468852">సెట్టింగ్‌లు</translation>
 <translation id="3347558044552027859">ఆధునికంగా ఉంది</translation>
+<translation id="3353477144743332882">సారాంశం, పేరు క్రియేషన్ మోడల్‌ను డౌన్‌లోడ్ చేయండి</translation>
 <translation id="3359218928534347896">మైక్రోఫోన్‌ను మ్యూట్‌కు టోగుల్ చేస్తుంది</translation>
 <translation id="3360306038446926262">విండోలు</translation>
 <translation id="3361618936611118375">సూషి</translation>
@@ -689,6 +691,7 @@
 <translation id="4354430579665871434">కీ</translation>
 <translation id="4356100841225547054">వాల్యూమ్‌ను ఆఫ్ చేయండి</translation>
 <translation id="4361257691546579041">APN అనేది ఆటోమేటిక్ సెట్టింగ్ రకం.</translation>
+<translation id="4368101969572512692">సూచనలను షఫుల్ చేయండి</translation>
 <translation id="437294888293595148">అన్ని షార్ట్‌కట్‌లను రీసెట్ చేయండి</translation>
 <translation id="437477383107495720">కుందేలు పిల్లలు</translation>
 <translation id="4376423484621194274">మీ అడ్మినిస్ట్రేటర్ <ph name="APP_NAME" />‌ను మూసివేయడానికి అనుమతించలేదు</translation>
@@ -768,6 +771,7 @@
 <translation id="4731797938093519117">తల్లి/తండ్రి యాక్సెస్</translation>
 <translation id="473775607612524610">అప్‌డేట్‌</translation>
 <translation id="4744944742468440486">మీ ఎంపికకు సంబంధించిన సమాచారం</translation>
+<translation id="4750394297954878236">సూచనలు</translation>
 <translation id="4771607256327216405">కీబోర్డ్ బ్రైట్‌నెస్ పెంచండి</translation>
 <translation id="4771923071974529837">రేపు</translation>
 <translation id="4773299976671772492">ఆపివేయబడింది</translation>
@@ -853,6 +857,7 @@
 <translation id="5121677070210013200">మాటల టైపింగ్ మోడల్‌ను డౌన్‌లోడ్ చేయడం సాధ్యం కాదు. మళ్లీ ట్రై చేయండి లేదా మీ Chromebookను రీస్టార్ట్ చేయండి.</translation>
 <translation id="5130848777448318809">గుఱ్ఱం పిల్లలు</translation>
 <translation id="5137451382116112100">పూర్తిగా</translation>
+<translation id="5139813694804168398">అంతరాయం కలిగించవద్దు</translation>
 <translation id="5140788690559353412">మీ స్కూల్ ఖాతాకు యాక్సెస్‌ను కోల్పోయినప్పుడు, మీరు Gmail, Docs, Slides, ఇంకా మరిన్నింటితో అనుబంధించిన ఈమెయిల్‌ను, Google Drive ఫైల్స్‌ను ఇక యాక్సెస్ చేయలేరు.</translation>
 <translation id="5142961317498132443">ప్రమాణీకరణ</translation>
 <translation id="5144311987923128508">నిర్ధారించండి బటన్ ఇప్పుడు డిజేబుల్ చేయబడింది</translation>
@@ -897,6 +902,7 @@
 <translation id="5302048478445481009">భాష</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> ప్రత్యేక వాల్‌పేపర్</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="530883153651464140"><ph name="DEVICE_NAME" />ను <ph name="VERSION" />కు అప్‌డేట్ చేయండి</translation>
 <translation id="5315873049536339193">గుర్తింపు</translation>
 <translation id="5317780077021120954">సేవ్ చేయండి</translation>
 <translation id="5318310531701770497">పేర్లను క్రియేట్ చేయడం సాధ్యం కాదు. టైప్ చేసిన మాటలు గల పెద్ద ఫైల్‌ను ట్రై చేయండి.</translation>
@@ -973,7 +979,6 @@
 <translation id="5703716265115423771">వాల్యూమ్ తగ్గిస్తుంది</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />లో <ph name="CURRENT_PAGE" /></translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> కోసం ఎడిట్ బటన్.</translation>
-<translation id="5733298426544876109"><ph name="DEVICE_NAME" />‌ను అప్‌డేట్ చేయండి</translation>
 <translation id="5736820754189340309">డేటా వినియోగం రీసెట్ అయింది</translation>
 <translation id="574392208103952083">మధ్యస్థం</translation>
 <translation id="5744175046705638478">"<ph name="QUERY" />"ను అనువదించండి</translation>
@@ -998,6 +1003,7 @@
 <translation id="5859969039821714932">షార్ట్‌కట్ అందుబాటులో లేదు. <ph name="KEY" /> లేకుండా కొత్త షార్ట్‌కట్‌ను నొక్కండి.</translation>
 <translation id="5860033963881614850">ఆఫ్ అయ్యింది</translation>
 <translation id="5860491529813859533">ఆన్ చేయండి</translation>
+<translation id="5875913454160982848">మాటల టైపింగ్ మోడల్‌ను డౌన్‌లోడ్ చేయండి</translation>
 <translation id="5876385649737594562">ఆప్షన్‌లను ఎంచుకోవడానికి ఆన్ చేయండి</translation>
 <translation id="5877503382465267833"><ph name="RECORDING_NAME" />‌ను పాజ్ చేయండి</translation>
 <translation id="588258955323874662">పూర్తితెర</translation>
@@ -1037,7 +1043,6 @@
 <translation id="6040143037577758943">మూసివేయండి</translation>
 <translation id="6040852767465482106">అనామక ఐడెంటిటీ</translation>
 <translation id="604124094241169006">ఆటోమేటిక్‌గా</translation>
-<translation id="6042308850641462728">మరింత చూపించు</translation>
 <translation id="6048107060512778456">విఫలమైంది - కాగితం జామ్ అయింది</translation>
 <translation id="6050189528197190982">బూడిద రంగు ప్రమాణం</translation>
 <translation id="6054711098834486579">ఎక్స్‌ప్రెషనిస్ట్</translation>
@@ -1067,7 +1072,7 @@
 <translation id="6137767437444130246">యూజర్ సర్టిఫికెట్</translation>
 <translation id="6146993107019042706">దీనిని ముగించడానికి, మీ కొత్త పాస్‌వర్డ్‌ను నమోదు చేయండి</translation>
 <translation id="6147514244879357420">PNG</translation>
-<translation id="6149015141270619212">ఇంటర్నెట్‌కు కనెక్ట్ చేయడం సాధ్యపడదు</translation>
+<translation id="6149015141270619212">ఇంటర్నెట్‌కు కనెక్ట్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="6156030503438652198">ముదురు ఎరుపు రంగు, గులాబీ రంగు</translation>
 <translation id="6165508094623778733">మరింత తెలుసుకోండి</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1293,6 +1298,7 @@
 <translation id="7134436342991564651">{0,plural, =1{సర్వర్ పేరు}other{సర్వర్‌ల పేరు}}</translation>
 <translation id="7135814714616751706">షార్ట్‌కట్‌ల కోసం సెర్చ్ చేయండి</translation>
 <translation id="7138614237884624401">సరళీకరించిన టెక్స్ట్</translation>
+<translation id="7138668887584231801">సమ్మరైజ్ చేయడానికి సరిపడా పదాలు లేవు</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">కనెక్ట్ అవుతో.</translation>
 <translation id="7144878232160441200">మళ్లీ ట్రై చేయండి</translation>
@@ -1588,6 +1594,7 @@
 <translation id="8503836310948963452">మరికొన్ని నిమిషాలు మాత్రమే…</translation>
 <translation id="8505011850330200833">Gemini మోడల్‌కు ట్రాన్‌స్క్రిప్ట్‌లను ప్రాసెస్ చేయడానికి, అలాగే సారాంశాలను రూపొందించడానికి 2GB స్టోరేజ్ అవసరం</translation>
 <translation id="8508640263392900755">APN వివరాలు</translation>
+<translation id="8509574872955173831">సారాంశం, పేరు క్రియేషన్ గురించి మరింత తెలుసుకోండి</translation>
 <translation id="8522687886059337719">మీరు ఇప్పుడు కొత్త <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />వాల్‌పేపర్‌లు<ph name="END_LINK_WALLPAPER_SUBPAGE" />, <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />స్క్రీన్ సేవర్‌<ph name="END_LINK_SCREENSAVER_SUBPAGE" />కు యాక్సెస్ కలిగి ఉన్నారు</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">టీ హౌస్</translation>
@@ -1724,7 +1731,6 @@
 <translation id="9133772297793293778">మీ కీబోర్డ్‌లో 1-4 మోడిఫయర్‌లు, 1 ఇతర కీని నొక్కండి. ఎడిటింగ్ మోడ్ నుండి ఎగ్జిట్ అవ్వడానికి, alt + esc నొక్కండి.</translation>
 <translation id="9137526406337347448">Google సేవలు</translation>
 <translation id="9138630967333032450">ఎడమ వైపు షిఫ్ట్</translation>
-<translation id="9147928237330776930">సమ్మరైజ్ చేయడానికి చాలా తక్కువ పదాలను చేర్చండి</translation>
 <translation id="9149391708638971077">మెమరీ పరీక్షను రన్ చేయండి</translation>
 <translation id="9159524746324788320">హామ్‌బర్గర్‌లు</translation>
 <translation id="9161276708550942948">స్పేస్</translation>

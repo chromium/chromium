@@ -11,8 +11,7 @@ namespace test {
 MockLog* MockLog::g_instance_ = nullptr;
 Lock MockLog::g_lock;
 
-MockLog::MockLog() : is_capturing_logs_(false) {
-}
+MockLog::MockLog() : is_capturing_logs_(false) {}
 
 MockLog::~MockLog() {
   if (is_capturing_logs_) {

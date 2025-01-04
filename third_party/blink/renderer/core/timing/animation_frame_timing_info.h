@@ -137,6 +137,11 @@ class AnimationFrameTimingInfo
     total_blocking_duration_ = duration;
   }
 
+  void SetBeginFrameId(viz::BeginFrameId begin_frame_id) {
+    begin_frame_id_ = begin_frame_id;
+  }
+  viz::BeginFrameId BeginFrameId() const { return begin_frame_id_; }
+
   void SetDidPause() { did_pause_ = true; }
   bool DidPause() const { return did_pause_; }
 
@@ -169,6 +174,9 @@ class AnimationFrameTimingInfo
   base::TimeDelta total_blocking_duration_;
 
   HeapVector<Member<ScriptTimingInfo>> scripts_;
+
+  // Id for the BeginFrame, which triggered this animation frame.
+  viz::BeginFrameId begin_frame_id_;
 
   // Whether the LoAF included sync XHR or alerts (pause).
   bool did_pause_ = false;

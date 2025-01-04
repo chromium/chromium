@@ -675,6 +675,20 @@ void ReportBiometricAuthenticationBeforeFillingMetrics(PrefService* prefs) {
 #endif
 }
 
+void ReportPasswordReencryption(PrefService* prefs) {
+  constexpr std::string_view kName = ".ReencryptedWithAsyncOSCrypt";
+  base::UmaHistogramBoolean(
+      base::StrCat({kPasswordManager,
+                    GetMetricsSuffixForStore(/*is_account_store=*/false),
+                    kName}),
+      prefs->GetBoolean(prefs::kProfileStoreMigratedToOSCryptAsync));
+  base::UmaHistogramBoolean(
+      base::StrCat({kPasswordManager,
+                    GetMetricsSuffixForStore(/*is_account_store=*/true),
+                    kName}),
+      prefs->GetBoolean(prefs::kAccountStoreMigratedToOSCryptAsync));
+}
+
 }  // namespace
 
 StoreMetricsReporter::StoreMetricsReporter(
@@ -730,6 +744,7 @@ StoreMetricsReporter::StoreMetricsReporter(
       settings->IsSettingEnabled(PasswordManagerSetting::kAutoSignIn));
 
   ReportBiometricAuthenticationBeforeFillingMetrics(prefs_);
+  ReportPasswordReencryption(prefs_);
 
   // May be null in tests.
   if (profile_store) {

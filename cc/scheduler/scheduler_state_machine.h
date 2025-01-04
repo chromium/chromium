@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/time/time.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "cc/cc_export.h"
 #include "cc/scheduler/commit_earlyout_reason.h"
@@ -207,6 +208,13 @@ class CC_EXPORT SchedulerStateMachine {
   }
 
   bool IsDrawThrottled() const;
+
+  // Throttles main frame production to a given interval, but not compositor
+  // frames.
+  void SetThrottleMainFrames(base::TimeDelta interval);
+  base::TimeDelta main_frame_throttled_interval() const {
+    return main_frame_throttled_interval_;
+  }
 
   // Indicates whether the LayerTreeHostImpl is visible.
   void SetVisible(bool visible);
@@ -421,6 +429,9 @@ class CC_EXPORT SchedulerStateMachine {
   void WillPerformImplSideInvalidationInternal();
   void DidDrawInternal(DrawResult draw_result);
 
+  // Virtual for testing.
+  virtual base::TimeTicks Now() const;
+
   const SchedulerSettings settings_;
 
   LayerTreeFrameSinkState layer_tree_frame_sink_state_ =
@@ -443,6 +454,9 @@ class CC_EXPORT SchedulerStateMachine {
   int last_frame_number_draw_performed_ = -1;
   int last_frame_number_begin_main_frame_sent_ = -1;
   int last_frame_number_invalidate_layer_tree_frame_sink_performed_ = -1;
+
+  base::TimeTicks last_sent_begin_main_frame_time_;
+  base::TimeDelta main_frame_throttled_interval_;
 
   // Inputs from the last impl frame that are required for decisions made in
   // this impl frame. The values from the last frame are cached before being

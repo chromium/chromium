@@ -8,23 +8,26 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "ui/base/metadata/base_type_conversion.h"
 
 namespace views {
 
 // SizeBound -------------------------------------------------------------------
 
 void SizeBound::operator+=(const SizeBound& rhs) {
-  if (!rhs.is_bounded())
+  if (!rhs.is_bounded()) {
     bound_.reset();
-  else if (is_bounded())
+  } else if (is_bounded()) {
     *bound_ += rhs.value();
+  }
 }
 
 void SizeBound::operator-=(const SizeBound& rhs) {
-  if (!rhs.is_bounded())
+  if (!rhs.is_bounded()) {
     bound_ = 0;
-  else if (is_bounded())
+  } else if (is_bounded()) {
     *bound_ -= rhs.value();
+  }
 }
 
 std::string SizeBound::ToString() const {
@@ -65,3 +68,13 @@ bool CanFitInBounds(const gfx::Size& size, const SizeBounds& bounds) {
 }
 
 }  // namespace views
+
+DEFINE_ENUM_CONVERTERS(views::LayoutAlignment,
+                       {views::LayoutAlignment::kStart, u"kStart"},
+                       {views::LayoutAlignment::kCenter, u"kCenter"},
+                       {views::LayoutAlignment::kEnd, u"kEnd"},
+                       {views::LayoutAlignment::kStretch, u"kStretch"})
+
+DEFINE_ENUM_CONVERTERS(views::LayoutOrientation,
+                       {views::LayoutOrientation::kHorizontal, u"kHorizontal"},
+                       {views::LayoutOrientation::kVertical, u"kVertical"})

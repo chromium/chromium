@@ -292,7 +292,7 @@ public class CachedFlagsSafeMode {
         }
     }
 
-    Boolean getBooleanFieldTrialParam(String preferenceName, boolean defaultValue) {
+    Boolean getBooleanFeatureParam(String preferenceName, boolean defaultValue) {
         switch (mBehavior.get()) {
             case Behavior.NOT_ENGAGED_BELOW_THRESHOLD:
                 return null;
@@ -311,7 +311,7 @@ public class CachedFlagsSafeMode {
         }
     }
 
-    Integer getIntFieldTrialParam(String preferenceName, int defaultValue) {
+    Integer getIntFeatureParam(String preferenceName, int defaultValue) {
         switch (mBehavior.get()) {
             case Behavior.NOT_ENGAGED_BELOW_THRESHOLD:
                 return null;
@@ -330,7 +330,7 @@ public class CachedFlagsSafeMode {
         }
     }
 
-    Double getDoubleFieldTrialParam(String preferenceName, double defaultValue) {
+    Double getDoubleFeatureParam(String preferenceName, double defaultValue) {
         switch (mBehavior.get()) {
             case Behavior.NOT_ENGAGED_BELOW_THRESHOLD:
                 return null;
@@ -350,7 +350,7 @@ public class CachedFlagsSafeMode {
         }
     }
 
-    String getStringFieldTrialParam(String preferenceName, String defaultValue) {
+    String getStringFeatureParam(String preferenceName, String defaultValue) {
         switch (mBehavior.get()) {
             case Behavior.NOT_ENGAGED_BELOW_THRESHOLD:
                 return null;

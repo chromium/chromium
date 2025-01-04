@@ -154,4 +154,5 @@ source_set("features") {
     "features.mm",
   ]
   public_deps = [ "//base" ]
+  deps = [ "//ios/chrome/browser/shared/public/features" ]
 }

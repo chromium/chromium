@@ -78,7 +78,6 @@
 #include "chrome/browser/ui/webui/settings/settings_startup_pages_handler.h"
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/settings/site_settings_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -119,6 +118,7 @@
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/webui/webui_util.h"
 
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
 #include "chrome/grit/settings_shared_resources.h"
@@ -380,17 +380,15 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
 #if BUILDFLAG(ENABLE_COMPOSE)
   const bool compose_enabled = ComposeEnabling::IsEnabledForProfile(profile);
+  const bool compose_visible = ComposeEnabling::IsSettingVisible(profile);
 #else
   const bool compose_enabled = false;
+  const bool compose_visible = false;
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
   html_source->AddBoolean(
       "enableComposeProactiveNudge",
       compose_enabled && base::FeatureList::IsEnabled(
                              compose::features::kEnableComposeProactiveNudge));
-
-  html_source->AddBoolean(
-      "enablePageContentSetting",
-      base::FeatureList::IsEnabled(features::kPageContentOptIn));
 
   html_source->AddBoolean(
       "downloadBubblePartialViewControlledByPref",
@@ -497,11 +495,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                           is_restricted_notice_enabled);
 
   html_source->AddBoolean(
-      "privateStateTokensEnabled",
-      base::FeatureList::IsEnabled(network::features::kPrivateStateTokens) ||
-          base::FeatureList::IsEnabled(network::features::kFledgePst));
-
-  html_source->AddBoolean(
       "safetyHubAbusiveNotificationRevocationEnabled",
       base::FeatureList::IsEnabled(
           safe_browsing::kSafetyHubAbusiveNotificationRevocation));
@@ -570,6 +563,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "enableWebAppInstallation",
       base::FeatureList::IsEnabled(blink::features::kWebAppInstallation));
 
+  html_source->AddBoolean("showGlicSettings",
+                          base::FeatureList::IsEnabled(features::kGlic));
+
   // AI
   const bool ai_settings_refresh_enabled =
       optimization_guide::features::IsAiSettingsPageRefreshEnabled();
@@ -578,16 +574,32 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
     const bool show_ai_settings_for_testing =
         optimization_guide::features::kShowAiSettingsForTesting.Get();
 
+    html_source->AddBoolean("showAiSettingsForTesting",
+                            show_ai_settings_for_testing);
+
+    const bool use_is_setting_visible = base::FeatureList::IsEnabled(
+        optimization_guide::features::kAiSettingsPageEnterpriseDisabledUi);
+
     std::pair<const std::string_view, bool> optimization_guide_features[] = {
         {"showTabOrganizationControl",
-         TabOrganizationUtils::GetInstance()->IsEnabled(profile)},
-        {"showComposeControl", compose_enabled},
+         use_is_setting_visible
+             ? TabOrganizationUtils::GetInstance()->IsSettingVisible(profile)
+             : TabOrganizationUtils::GetInstance()->IsEnabled(profile)},
+        {"showComposeControl",
+         use_is_setting_visible ? compose_visible : compose_enabled},
         {"showWallpaperSearchControl",
-         customize_chrome::IsWallpaperSearchEnabledForProfile(profile)},
+         use_is_setting_visible
+             ? customize_chrome::IsWallpaperSearchSettingVisibleForProfile(
+                   profile)
+             : customize_chrome::IsWallpaperSearchEnabledForProfile(profile)},
         {"showHistorySearchControl",
          history_embeddings::IsHistoryEmbeddingsSettingVisible(profile)},
-        {"showCompareControl", commerce::CanFetchProductSpecificationsData(
-                                   shopping_service->GetAccountChecker())},
+        {"showCompareControl",
+         use_is_setting_visible
+             ? commerce::IsProductSpecificationsSettingVisible(
+                   shopping_service->GetAccountChecker())
+             : commerce::CanFetchProductSpecificationsData(
+                   shopping_service->GetAccountChecker())},
     };
 
     bool show_ai_page = show_ai_settings_for_testing;
@@ -722,8 +734,12 @@ void SettingsUI::TryShowHatsSurveyWithTimeout() {
       HatsServiceFactory::GetForProfile(Profile::FromWebUI(web_ui()),
                                         /* create_if_necessary = */ true);
   if (hats_service) {
+    int timeout_ms =
+        features::kHappinessTrackingSurveysForDesktopSettingsTime.Get()
+            .InMilliseconds();
     hats_service->LaunchDelayedSurveyForWebContents(
-        kHatsSurveyTriggerSettings, web_ui()->GetWebContents(), 20000);
+        kHatsSurveyTriggerSettings, web_ui()->GetWebContents(), timeout_ms, {},
+        {}, HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN);
   }
 }
 

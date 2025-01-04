@@ -99,12 +99,7 @@ void HTMLLinkElement::ParseAttribute(
     }
     if (rel_attribute_.IsPayment() && GetDocument().IsInOutermostMainFrame()) {
       UseCounter::Count(&GetDocument(), WebFeature::kLinkRelPayment);
-#if BUILDFLAG(IS_ANDROID)
-      if (RuntimeEnabledFeatures::PaymentLinkDetectionEnabled()) {
-        GetDocument().HandlePaymentLink(
-            GetNonEmptyURLAttribute(html_names::kHrefAttr));
-      }
-#endif
+      MaybeHandlePaymentLink();
     }
     rel_list_->DidUpdateAttributeValue(params.old_value, value);
     Process();
@@ -119,6 +114,7 @@ void HTMLLinkElement::ParseAttribute(
     // Log href attribute before logging resource fetching in process().
     LogUpdateAttributeIfIsolatedWorldAndInDocument("link", params);
     HandleExpectHrefChanges(params.old_value, value);
+    MaybeHandlePaymentLink();
     Process();
   } else if (name == html_names::kTypeAttr) {
     type_ = value;
@@ -260,6 +256,8 @@ Node::InsertionNotificationRequest HTMLLinkElement::InsertedInto(
   if (!insertion_point.isConnected())
     return kInsertionDone;
   DCHECK(isConnected());
+
+  MaybeHandlePaymentLink();
 
   GetDocument().GetStyleEngine().AddStyleSheetCandidateNode(*this);
 
@@ -520,6 +518,17 @@ void HTMLLinkElement::AddExpectRenderBlockingLinkIfNeeded(
     render_blocking_resource_manager->AddPendingParsingElementLink(
         ParseSameDocumentIdFromHref(href), this);
   }
+}
+
+void HTMLLinkElement::MaybeHandlePaymentLink() {
+#if BUILDFLAG(IS_ANDROID)
+  KURL payment_link = GetNonEmptyURLAttribute(html_names::kHrefAttr);
+  if (rel_attribute_.IsPayment() && !payment_link.IsEmpty() && isConnected() &&
+      GetDocument().IsInOutermostMainFrame() &&
+      RuntimeEnabledFeatures::PaymentLinkDetectionEnabled()) {
+    GetDocument().HandlePaymentLink(payment_link);
+  }
+#endif
 }
 
 }  // namespace blink

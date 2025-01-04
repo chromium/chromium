@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/threading/thread_local_storage.h"
+
 #include <stddef.h>
+
 #include <memory>
 #include <vector>
 
@@ -14,7 +17,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/threading/simple_thread.h"
-#include "base/threading/thread_local_storage.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -118,21 +120,24 @@ class ThreadLocalStoragePerfTest : public testing::Test {
 
     BenchmarkImpl(kMetricBaseRead, story_name, base::BindLambdaForTesting([&] {
                     volatile intptr_t total = 0;
-                    for (size_t i = 0; i < num_operation; ++i)
+                    for (size_t i = 0; i < num_operation; ++i) {
                       total = total + read();
+                    }
                   }),
                   num_operation, num_threads);
 
     BenchmarkImpl(kMetricBaseWrite, story_name, base::BindLambdaForTesting([&] {
-                    for (size_t i = 0; i < num_operation; ++i)
+                    for (size_t i = 0; i < num_operation; ++i) {
                       write(i);
+                    }
                   }),
                   num_operation, num_threads);
 
     BenchmarkImpl(kMetricBaseReadWrite, story_name,
                   base::BindLambdaForTesting([&] {
-                    for (size_t i = 0; i < num_operation; ++i)
+                    for (size_t i = 0; i < num_operation; ++i) {
                       write(read() + 1);
+                    }
                   }),
                   num_operation, num_threads);
   }
@@ -160,8 +165,9 @@ class ThreadLocalStoragePerfTest : public testing::Test {
     complete_thread.Wait();
     TimeDelta operation_duration = TimeTicks::Now() - operation_start;
 
-    for (auto& thread : threads)
+    for (auto& thread : threads) {
       thread->Join();
+    }
 
     auto reporter = SetUpReporter(story_name);
     reporter.AddResult(metric_base + kMetricSuffixThroughput,

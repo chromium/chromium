@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.ntp;
 
 import static org.mockito.Mockito.when;
 
+import android.os.Build;
+
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
@@ -24,6 +26,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -177,6 +180,9 @@ public class RecentlyClosedBridgeTest {
     /** Tests opening a specific closed {@link Tab} as a new background tab. */
     @Test
     @MediumTest
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
+            message = "crbug.com/355058571")
     public void testOpenRecentlyClosedTab_InCurrentTab() {
         final String[] urls = new String[] {getUrl(TEST_PAGE_A), getUrl(TEST_PAGE_B)};
         final Tab tabA = sActivityTestRule.loadUrlInNewTab(urls[0], /* incognito= */ false);
@@ -403,6 +409,9 @@ public class RecentlyClosedBridgeTest {
      */
     @Test
     @MediumTest
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
+            message = "crbug.com/355058571")
     public void testOpenRecentlyClosedTab_FromGroupClosure_InCurrentTab() {
         if (mTabGroupModelFilter == null) return;
 

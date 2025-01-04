@@ -70,10 +70,12 @@ class ASH_EXPORT NotificationCenterTray : public TrayBackgroundView,
   // otherwise.
   void UpdateVisibility();
 
+  // Update the accessible name of the tray in the ViewAccessibility cache.
+  void UpdateAccessibleName();
+
   // TrayBackgroundView:
   void Initialize() override;
   std::u16string GetAccessibleNameForBubble() override;
-  std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void HideBubble(const TrayBubbleView* bubble_view) override;
@@ -88,6 +90,12 @@ class ASH_EXPORT NotificationCenterTray : public TrayBackgroundView,
 
   // ash::TrayItemView::Observer:
   void OnTrayItemVisibilityAboutToChange(bool target_visibility) override;
+  void OnTrayItemChildViewChanged() override {}
+
+  // Add a TooltipTextChanged callback on the ImageView associated with the
+  // tray_item. This impacts the tray's accessible name.
+  void AddTooltipChangedCallbackToNotificationIcon(
+      NotificationIconTrayItemView* tray_item);
 
   PrivacyIndicatorsTrayItemView* privacy_indicators_view() {
     return privacy_indicators_view_;
@@ -111,6 +119,10 @@ class ASH_EXPORT NotificationCenterTray : public TrayBackgroundView,
   friend class NotificationCenterTestApi;
   friend class NotificationCounterViewTest;
   friend class NotificationIconsControllerTest;
+
+  // Registers callbacks for child View properties that impact the tray's
+  // accessible properties.
+  void AddCallbacksForAccessibility();
 
   // Manages notification grouping.
   const std::unique_ptr<NotificationGroupingController>
@@ -138,6 +150,17 @@ class ASH_EXPORT NotificationCenterTray : public TrayBackgroundView,
   bool system_tray_visible_ = true;
 
   base::ObserverList<Observer> observers_;
+
+  base::CallbackListSubscription
+      notification_counter_image_tooltip_changed_subscription_;
+
+  base::CallbackListSubscription quiet_mode_visibility_changed_subscription_;
+
+  base::CallbackListSubscription
+      notification_counter_visibility_changed_subscription_;
+
+  std::vector<base::CallbackListSubscription>
+      notification_icon_image_tooltip_changed_subscriptions_;
 };
 
 }  // namespace ash

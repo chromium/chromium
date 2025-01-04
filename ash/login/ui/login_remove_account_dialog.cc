@@ -14,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -168,12 +167,10 @@ LoginRemoveAccountDialog::LoginRemoveAccountDialog(
         views::BoxLayout::Orientation::kVertical, gfx::Insets(),
         kVerticalMarginUsernameMailDp));
     AddChildView(container);
-    const bool is_jelly = chromeos::features::IsJellyrollEnabled();
     username_label_ =
         container->AddChildView(login_views_utils::CreateThemedBubbleLabel(
             display_username, nullptr,
-            is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-                     : kColorAshTextColorPrimary,
+            static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface),
             gfx::FontList({login_views_utils::kGoogleSansFont},
                           gfx::Font::FontStyle::NORMAL, kFontSizeUsername,
                           gfx::Font::Weight::MEDIUM),
@@ -181,8 +178,7 @@ LoginRemoveAccountDialog::LoginRemoveAccountDialog(
     email_label_ =
         container->AddChildView(login_views_utils::CreateThemedBubbleLabel(
             email, nullptr,
-            is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSecondary)
-                     : kColorAshTextColorSecondary));
+            static_cast<ui::ColorId>(cros_tokens::kCrosSysSecondary)));
   }
 
   // Add a warning text if the user is managed.

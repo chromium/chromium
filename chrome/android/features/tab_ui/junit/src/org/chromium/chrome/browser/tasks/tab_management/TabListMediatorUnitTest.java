@@ -188,7 +188,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 /** Tests for {@link TabListMediator}. */
@@ -482,7 +481,7 @@ public class TabListMediatorUnitTest {
 
         mModelList = new TabListModel();
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
 
         setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
 
@@ -1675,7 +1674,7 @@ public class TabListMediatorUnitTest {
 
         createTabGroup(Arrays.asList(mTab2), TAB2_ID, TAB_GROUP_ID);
 
-        mMediator.getTabGroupTitleEditor().storeTabGroupTitle(TAB2_ID, CUSTOMIZED_DIALOG_TITLE1);
+        mTabGroupModelFilter.setTabGroupTitle(TAB2_ID, CUSTOMIZED_DIALOG_TITLE1);
         mTabModelObserverCaptor.getValue().willCloseTab(mTab2, true);
 
         assertThat(mModelList.size(), equalTo(1));
@@ -2668,7 +2667,7 @@ public class TabListMediatorUnitTest {
         // Mock that we have a stored title stored with reference to root ID of tab1.
         mTabGroupModelFilter.setTabGroupTitle(mTab1.getRootId(), CUSTOMIZED_DIALOG_TITLE1);
         assertThat(
-                mMediator.getTabGroupTitleEditor().getTabGroupTitle(mTab1.getRootId()),
+                mTabGroupModelFilter.getTabGroupTitle(mTab1.getRootId()),
                 equalTo(CUSTOMIZED_DIALOG_TITLE1));
 
         // Mock that tab1 and tab2 are in the same group and group root id is TAB1_ID.
@@ -2685,7 +2684,7 @@ public class TabListMediatorUnitTest {
         // Mock that we have a stored title stored with reference to root ID of tab1.
         mTabGroupModelFilter.setTabGroupTitle(mTab1.getRootId(), CUSTOMIZED_DIALOG_TITLE1);
         assertThat(
-                mMediator.getTabGroupTitleEditor().getTabGroupTitle(mTab1.getRootId()),
+                mTabGroupModelFilter.getTabGroupTitle(mTab1.getRootId()),
                 equalTo(CUSTOMIZED_DIALOG_TITLE1));
 
         // Mock that tab1 is a single tab.
@@ -2703,7 +2702,7 @@ public class TabListMediatorUnitTest {
         // Mock that we have a stored title stored with reference to root ID of tab1.
         mTabGroupModelFilter.setTabGroupTitle(mTab1.getRootId(), CUSTOMIZED_DIALOG_TITLE1);
         assertThat(
-                mMediator.getTabGroupTitleEditor().getTabGroupTitle(mTab1.getRootId()),
+                mTabGroupModelFilter.getTabGroupTitle(mTab1.getRootId()),
                 equalTo(CUSTOMIZED_DIALOG_TITLE1));
 
         // Mock that tab1 is a single tab.
@@ -2721,7 +2720,7 @@ public class TabListMediatorUnitTest {
         // Mock that we have a stored title stored with reference to root ID of tab1.
         mTabGroupModelFilter.setTabGroupTitle(mTab1.getRootId(), CUSTOMIZED_DIALOG_TITLE1);
         assertThat(
-                mMediator.getTabGroupTitleEditor().getTabGroupTitle(mTab1.getRootId()),
+                mTabGroupModelFilter.getTabGroupTitle(mTab1.getRootId()),
                 equalTo(CUSTOMIZED_DIALOG_TITLE1));
 
         // Mock that tab1 and tab2 are in the same group and group root id is TAB1_ID.
@@ -2755,7 +2754,7 @@ public class TabListMediatorUnitTest {
     @Test
     public void updateTabGroupTitle_Gts() {
         setUpTabGroupCardDescriptionString();
-        String targetString = "Expand tab group with 2 tabs, color Grey.";
+        String targetString = "Expand Cool Tabs tab group with 2 tabs, color Grey.";
         assertThat(mModelList.get(POSITION1).model.get(TabProperties.TITLE), equalTo(TAB1_TITLE));
 
         // Mock that tab1 and newTab are in the same group and group root id is TAB1_ID.
@@ -2765,7 +2764,10 @@ public class TabListMediatorUnitTest {
         doReturn(mTab1).when(mTabGroupModelFilter).getTabAt(POSITION1);
         doReturn(POSITION1).when(mTabGroupModelFilter).indexOf(mTab1);
 
-        mMediator.getTabGroupTitleEditor().updateTabGroupTitle(mTab1, CUSTOMIZED_DIALOG_TITLE1);
+        mTabGroupModelFilter.setTabGroupTitle(TAB1_ID, CUSTOMIZED_DIALOG_TITLE1);
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .didChangeTabGroupTitle(TAB1_ID, CUSTOMIZED_DIALOG_TITLE1);
 
         assertThat(
                 mModelList.get(POSITION1).model.get(TabProperties.TITLE),
@@ -2778,14 +2780,17 @@ public class TabListMediatorUnitTest {
     @Test
     public void updateTabGroupTitle_SingleTab_Gts() {
         setUpTabGroupCardDescriptionString();
-        String targetString = "Expand tab group with 1 tab, color Grey.";
+        String targetString = "Expand Cool Tabs tab group with 1 tab, color Grey.";
         assertThat(mModelList.get(POSITION1).model.get(TabProperties.TITLE), equalTo(TAB1_TITLE));
 
         createTabGroup(Arrays.asList(mTab1), TAB1_ID, TAB_GROUP_ID);
         doReturn(mTab1).when(mTabGroupModelFilter).getTabAt(POSITION1);
         doReturn(POSITION1).when(mTabGroupModelFilter).indexOf(mTab1);
 
-        mMediator.getTabGroupTitleEditor().updateTabGroupTitle(mTab1, CUSTOMIZED_DIALOG_TITLE1);
+        mTabGroupModelFilter.setTabGroupTitle(TAB1_ID, CUSTOMIZED_DIALOG_TITLE1);
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .didChangeTabGroupTitle(TAB1_ID, CUSTOMIZED_DIALOG_TITLE1);
 
         assertThat(
                 mModelList.get(POSITION1).model.get(TabProperties.TITLE),
@@ -2797,15 +2802,13 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void tabGroupTitleEditor_storeTitle() {
-        TabGroupTitleEditor tabGroupTitleEditor = mMediator.getTabGroupTitleEditor();
-        tabGroupTitleEditor.storeTabGroupTitle(mTab1.getRootId(), CUSTOMIZED_DIALOG_TITLE1);
+        mTabGroupModelFilter.setTabGroupTitle(mTab1.getRootId(), CUSTOMIZED_DIALOG_TITLE1);
         verify(mTabGroupModelFilter).setTabGroupTitle(mTab1.getRootId(), CUSTOMIZED_DIALOG_TITLE1);
     }
 
     @Test
     public void tabGroupTitleEditor_deleteTitle() {
-        TabGroupTitleEditor tabGroupTitleEditor = mMediator.getTabGroupTitleEditor();
-        tabGroupTitleEditor.deleteTabGroupTitle(mTab1.getRootId());
+        mTabGroupModelFilter.deleteTabGroupTitle(mTab1.getRootId());
         verify(mTabGroupModelFilter).deleteTabGroupTitle(mTab1.getRootId());
     }
 
@@ -2924,13 +2927,16 @@ public class TabListMediatorUnitTest {
 
         doReturn(new GURL(NEW_URL)).when(mTab1).getUrl();
 
-        var oldFetcher = mModelList.get(POSITION1).model.get(TabProperties.THUMBNAIL_FETCHER);
+        PropertyModel model1 = mModelList.get(POSITION1).model;
+        var oldThumbnailFetcher = model1.get(TabProperties.THUMBNAIL_FETCHER);
+        // Set to null to see if an update happens.
+        model1.set(TabProperties.FAVICON_FETCHER, null);
         mTabObserverCaptor.getValue().onUrlUpdated(mTab1);
 
-        assertEquals(mNewDomain, mModelList.get(POSITION1).model.get(TabProperties.URL_DOMAIN));
+        assertEquals(mNewDomain, model1.get(TabProperties.URL_DOMAIN));
         assertEquals(mTab2Domain, mModelList.get(POSITION2).model.get(TabProperties.URL_DOMAIN));
-        assertNotEquals(
-                oldFetcher, mModelList.get(POSITION1).model.get(TabProperties.THUMBNAIL_FETCHER));
+        assertNotEquals(oldThumbnailFetcher, model1.get(TabProperties.THUMBNAIL_FETCHER));
+        assertNotNull(model1.get(TabProperties.FAVICON_FETCHER));
     }
 
     @Test
@@ -3673,8 +3679,10 @@ public class TabListMediatorUnitTest {
         targetString =
                 String.format(
                         "Expand %s tab group with 2 tabs, color Grey.", CUSTOMIZED_DIALOG_TITLE1);
-        mMediator.getTabGroupTitleEditor().storeTabGroupTitle(TAB2_ID, CUSTOMIZED_DIALOG_TITLE1);
-        mMediator.getTabGroupTitleEditor().updateTabGroupTitle(mTab2, CUSTOMIZED_DIALOG_TITLE1);
+        mTabGroupModelFilter.setTabGroupTitle(TAB2_ID, CUSTOMIZED_DIALOG_TITLE1);
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .didChangeTabGroupTitle(TAB2_ID, CUSTOMIZED_DIALOG_TITLE1);
         assertThat(
                 mModelList.get(POSITION2).model.get(TabProperties.CONTENT_DESCRIPTION_STRING),
                 equalTo(targetString));
@@ -3721,8 +3729,10 @@ public class TabListMediatorUnitTest {
                         group1.size(),
                         mResources.getString(colorDesc));
         // Check that a customized title provides a different content description.
-        mMediator.getTabGroupTitleEditor().storeTabGroupTitle(TAB2_ID, CUSTOMIZED_DIALOG_TITLE1);
-        mMediator.getTabGroupTitleEditor().updateTabGroupTitle(mTab2, CUSTOMIZED_DIALOG_TITLE1);
+        mTabGroupModelFilter.setTabGroupTitle(TAB2_ID, CUSTOMIZED_DIALOG_TITLE1);
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .didChangeTabGroupTitle(TAB2_ID, CUSTOMIZED_DIALOG_TITLE1);
         assertThat(
                 mModelList.get(POSITION2).model.get(TabProperties.CONTENT_DESCRIPTION_STRING),
                 equalTo(nonEmptyTitleTargetString));
@@ -3759,8 +3769,10 @@ public class TabListMediatorUnitTest {
         // Set group name.
         targetString =
                 String.format("Close %s group with 2 tabs, color Grey.", CUSTOMIZED_DIALOG_TITLE1);
-        mMediator.getTabGroupTitleEditor().storeTabGroupTitle(TAB1_ID, CUSTOMIZED_DIALOG_TITLE1);
-        mMediator.getTabGroupTitleEditor().updateTabGroupTitle(mTab1, CUSTOMIZED_DIALOG_TITLE1);
+        mTabGroupModelFilter.setTabGroupTitle(TAB1_ID, CUSTOMIZED_DIALOG_TITLE1);
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .didChangeTabGroupTitle(TAB1_ID, CUSTOMIZED_DIALOG_TITLE1);
         assertThat(
                 mModelList.get(POSITION1).model.get(TabProperties.ACTION_BUTTON_DESCRIPTION_STRING),
                 equalTo(targetString));
@@ -3783,8 +3795,10 @@ public class TabListMediatorUnitTest {
         // Set group name.
         targetString =
                 String.format("Close %s group with 1 tab, color Grey.", CUSTOMIZED_DIALOG_TITLE1);
-        mMediator.getTabGroupTitleEditor().storeTabGroupTitle(TAB1_ID, CUSTOMIZED_DIALOG_TITLE1);
-        mMediator.getTabGroupTitleEditor().updateTabGroupTitle(mTab1, CUSTOMIZED_DIALOG_TITLE1);
+        mTabGroupModelFilter.setTabGroupTitle(TAB1_ID, CUSTOMIZED_DIALOG_TITLE1);
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .didChangeTabGroupTitle(TAB1_ID, CUSTOMIZED_DIALOG_TITLE1);
         assertThat(
                 mModelList.get(POSITION1).model.get(TabProperties.ACTION_BUTTON_DESCRIPTION_STRING),
                 equalTo(targetString));
@@ -3807,8 +3821,10 @@ public class TabListMediatorUnitTest {
         // Set group name.
         targetString =
                 String.format("Close %s group with 2 tabs, color Grey.", CUSTOMIZED_DIALOG_TITLE1);
-        mMediator.getTabGroupTitleEditor().storeTabGroupTitle(TAB1_ID, CUSTOMIZED_DIALOG_TITLE1);
-        mMediator.getTabGroupTitleEditor().updateTabGroupTitle(mTab1, CUSTOMIZED_DIALOG_TITLE1);
+        mTabGroupModelFilter.setTabGroupTitle(TAB1_ID, CUSTOMIZED_DIALOG_TITLE1);
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .didChangeTabGroupTitle(TAB1_ID, CUSTOMIZED_DIALOG_TITLE1);
         assertThat(
                 mModelList.get(POSITION1).model.get(TabProperties.ACTION_BUTTON_DESCRIPTION_STRING),
                 equalTo(targetString));
@@ -3841,8 +3857,10 @@ public class TabListMediatorUnitTest {
                 String.format(
                         "Open the tab group action menu for tab group %s, color %s.",
                         CUSTOMIZED_DIALOG_TITLE1, mResources.getString(colorDesc));
-        mMediator.getTabGroupTitleEditor().storeTabGroupTitle(TAB1_ID, CUSTOMIZED_DIALOG_TITLE1);
-        mMediator.getTabGroupTitleEditor().updateTabGroupTitle(mTab1, CUSTOMIZED_DIALOG_TITLE1);
+        mTabGroupModelFilter.setTabGroupTitle(TAB1_ID, CUSTOMIZED_DIALOG_TITLE1);
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .didChangeTabGroupTitle(TAB1_ID, CUSTOMIZED_DIALOG_TITLE1);
         assertThat(
                 mModelList.get(POSITION1).model.get(TabProperties.ACTION_BUTTON_DESCRIPTION_STRING),
                 equalTo(targetString));
@@ -3905,31 +3923,6 @@ public class TabListMediatorUnitTest {
                 preferencesManager.readLong(
                         ChromePreferenceKeys.PRICE_TRACKING_ANNOTATIONS_ENABLED_METRICS_TIMESTAMP,
                         -1));
-    }
-
-    @Test
-    public void testPriceDropSeen() throws TimeoutException {
-        setPriceTrackingEnabledForTesting(true);
-        PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
-        PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
-                PriceTrackingUtilities.TRACK_PRICES_ON_TABS, true);
-
-        doReturn(false).when(mTab1).isIncognito();
-        doReturn(false).when(mTab2).isIncognito();
-
-        List<Tab> tabs = new ArrayList<>();
-        tabs.add(mTabModel.getTabAt(0));
-        tabs.add(mTabModel.getTabAt(1));
-
-        mMediator.resetWithListOfTabs(tabs, /* quickMode= */ false);
-
-        prepareRecyclerViewForScroll();
-        mMediator.registerOnScrolledListener(mRecyclerView);
-        verify(mRecyclerView).addOnScrollListener(mOnScrollListenerCaptor.capture());
-        mOnScrollListenerCaptor
-                .getValue()
-                .onScrolled(mRecyclerView, /* dx= */ mTabModel.getCount(), /* dy= */ 0);
-        assertEquals(2, mMediator.getViewedTabIdsForTesting().size());
     }
 
     @Test
@@ -4959,16 +4952,6 @@ public class TabListMediatorUnitTest {
         doReturn(mPriceDrop).when(mShoppingPersistedTabData).getPriceDrop();
     }
 
-    private void prepareRecyclerViewForScroll() {
-        View seenView = mock(View.class);
-        for (int i = 0; i < mTabModel.getCount(); i++) {
-            when(mRecyclerView.getChildAt(i)).thenReturn(seenView);
-        }
-
-        doReturn(true).when(mGridLayoutManager).isViewPartiallyVisible(seenView, false, true);
-        doReturn(mTabModel.getCount()).when(mRecyclerView).getChildCount();
-    }
-
     private ThumbnailProvider getTabThumbnailCallback() {
         return new TabContentManagerThumbnailProvider(mTabContentManager);
     }
@@ -4976,13 +4959,9 @@ public class TabListMediatorUnitTest {
     private static void setPriceTrackingEnabledForTesting(boolean value) {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.addFeatureFlagOverride(ChromeFeatureList.PRICE_ANNOTATIONS, true);
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.PRICE_ANNOTATIONS,
-                PriceTrackingFeatures.PRICE_DROP_IPH_ENABLED_PARAM,
-                String.valueOf(value));
         FeatureList.mergeTestValues(testValues, /* replace= */ true);
 
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(value);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(value);
     }
 
     private void assertAllUnset(PropertyModel model, List<PropertyKey> keys) {

@@ -77,7 +77,6 @@
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> қойынды өзгертілді, <ph name="ANY_CLOSED" /> жабылды.}other{<ph name="MANY_CHANGED" /> қойынды өзгертілді, <ph name="ANY_CLOSED" /> жабылды.}}</translation>
 <translation id="4371591986692297148">Өшірілген</translation>
 <translation id="4460014764210899310">Топты тарату</translation>
-<translation id="4590027107044272416">Енді жаңа қойындыны осы жерден аша аласыз.</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{1 әрекетсіз қойындыны жабу керек пе?}other{<ph name="TAB_COUNT_MANY" /> әрекетсіз қойындыны жабу керек пе?}}</translation>
 <translation id="4686942373615810936">Жаңа ғана жасалды.</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{1 күннен кейін жабу}other{<ph name="DAY_COUNT_MANY" /> күннен кейін жабу}}</translation>
@@ -98,7 +97,9 @@
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> қойынды қосылды.}other{<ph name="MANY_ADDED" /> қойынды қосылды.}}</translation>
 <translation id="5161254044473106830">Тақырып қою қажет</translation>
 <translation id="5339733443032484186">Соңғы қойындыңыз</translation>
+<translation id="5380159289133845234">Қайталанатын қойындыларды мұрағаттау</translation>
 <translation id="5400836586163650660">Сұр</translation>
+<translation id="5446043142172831860">Қойындыны өшіру және топтан шығу</translation>
 <translation id="5490235265819901748">Қойындылар тобы жайылды</translation>
 <translation id="5494920125229734069">Барлығын таңдау</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> қойындысы бар <ph name="COLOR_NAME" /> түсті қойындылар тобын жабу.}other{<ph name="TABS_COUNT_MANY" /> қойындысы бар <ph name="COLOR_NAME" /> түсті қойындылар тобын жабу.}}</translation>
@@ -117,6 +118,7 @@
 <translation id="6051432659151380973">Қойындылар топтары автоматты түрде сақталады.</translation>
 <translation id="6054741997831917303">Бұл тауардың бағасы жақында түсті. Ескі бағасы: <ph name="PREVIOUS_PRICE" />, жаңа бағасы: <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Сіз <ph name="GROUP_NAME" /> қойындылар тобын пайдалану рұқсатынан бірден айырылып қаласыз.</translation>
+<translation id="6109251075362363230">Ең соңғы қолданылған көшірмені есепке алмағанда, барлық қайталанатын қойынды да мұрағатталады.</translation>
 <translation id="6193448654517602979">Қойындыларды таңдау</translation>
 <translation id="6228793724645064692">(дүкен рейтингісі)</translation>
 <translation id="6271513594716432922">Барлық әрекетсіз қойындыны жабу</translation>

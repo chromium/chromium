@@ -69,17 +69,16 @@ build_webui("build") {
   ]
 
   mojo_files = [
-    "$root_gen_dir/mojom-webui/ash/system/diagnostics/mojom/input.mojom-webui.js",
-    "$root_gen_dir/mojom-webui/ash/webui/diagnostics_ui/mojom/input_data_provider.mojom-webui.js",
-    "$root_gen_dir/mojom-webui/ash/webui/diagnostics_ui/mojom/network_health_provider.mojom-webui.js",
-    "$root_gen_dir/mojom-webui/ash/webui/diagnostics_ui/mojom/system_data_provider.mojom-webui.js",
-    "$root_gen_dir/mojom-webui/ash/webui/diagnostics_ui/mojom/system_routine_controller.mojom-webui.js",
+    "$root_gen_dir/ash/system/diagnostics/mojom/input.mojom-webui.ts",
+    "$root_gen_dir/ash/webui/diagnostics_ui/mojom/input_data_provider.mojom-webui.ts",
+    "$root_gen_dir/ash/webui/diagnostics_ui/mojom/network_health_provider.mojom-webui.ts",
+    "$root_gen_dir/ash/webui/diagnostics_ui/mojom/system_data_provider.mojom-webui.ts",
+    "$root_gen_dir/ash/webui/diagnostics_ui/mojom/system_routine_controller.mojom-webui.ts",
   ]
 
   mojo_files_deps = [
-    "../mojom:mojom_webui_js",
-    "//ash/system/diagnostics/mojom:mojom_webui_js",
-    "//ash/webui/diagnostics_ui/mojom:mojom_webui_js",
+    "//ash/system/diagnostics/mojom:mojom_ts__generator",
+    "//ash/webui/diagnostics_ui/mojom:mojom_ts__generator",
   ]
   ts_composite = true
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]

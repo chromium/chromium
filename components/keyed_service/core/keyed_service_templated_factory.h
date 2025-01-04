@@ -12,7 +12,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_scoped_refptr_mismatch_checker.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/keyed_service/core/features_buildflags.h"
 #include "components/keyed_service/core/keyed_service_base_factory.h"
@@ -34,14 +34,13 @@ class KEYED_SERVICE_EXPORT KeyedServiceTemplatedFactory
 
  protected:
   // Non-owning pointer to `ServiceType`.
-  using ServicePtr =
-      std::conditional_t<base::internal::IsRefCountedType<ServiceType>,
-                         scoped_refptr<ServiceType>,
-                         ServiceType*>;
+  using ServicePtr = std::conditional_t<base::IsRefCountedType<ServiceType>,
+                                        scoped_refptr<ServiceType>,
+                                        ServiceType*>;
 
   // Owning pointer to `ServiceType`.
   using OwnedServicePtr =
-      std::conditional_t<base::internal::IsRefCountedType<ServiceType>,
+      std::conditional_t<base::IsRefCountedType<ServiceType>,
                          scoped_refptr<ServiceType>,
                          std::unique_ptr<ServiceType>>;
 

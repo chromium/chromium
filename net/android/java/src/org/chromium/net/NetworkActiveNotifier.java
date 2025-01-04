@@ -13,6 +13,7 @@ import org.jni_zero.NativeClassQualifiedName;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Triggers updates to the underlying network state in Chrome alongside NetworkChangeNotifier.
@@ -30,6 +31,7 @@ import org.chromium.base.ContextUtils;
  * reason).
  */
 @JNINamespace("net")
+@NullMarked
 public class NetworkActiveNotifier implements ConnectivityManager.OnNetworkActiveListener {
     private final ConnectivityManager mConnectivityManager;
     // Native-side observer of the default network active events.

@@ -73,8 +73,9 @@ AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
   // Fall back to menu button.
   views::Button* app_menu_button =
       browser_view->toolbar_button_provider()->GetAppMenuButton();
-  if (!app_menu_button || !app_menu_button->IsDrawn())
+  if (!app_menu_button || !app_menu_button->IsDrawn()) {
     return {};
+  }
 
   // The app menu button is not visible when immersive mode is enabled and the
   // title bar is not revealed. So return null anchor configuration.

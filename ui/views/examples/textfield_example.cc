@@ -185,14 +185,16 @@ void TextfieldExample::SetButtonPressed() {
 }
 
 void TextfieldExample::SetStyleButtonPressed() {
-  if (name_->GetText().empty())
+  if (name_->GetText().empty()) {
     return;
+  }
   auto* const cp = name_->GetColorProvider();
   name_->SetColor(cp->GetColor(ExamplesColorIds::kColorTextfieldExampleName));
 
   const size_t fifth = name_->GetText().length() / 5;
-  if (!fifth)
+  if (!fifth) {
     return;
+  }
 
   const gfx::Range big_range(1 * fifth, 4 * fifth);
   name_->ApplyStyle(gfx::TEXT_STYLE_UNDERLINE, true, big_range);

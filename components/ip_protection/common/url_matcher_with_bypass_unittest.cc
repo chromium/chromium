@@ -4,7 +4,9 @@
 
 #include "components/ip_protection/common/url_matcher_with_bypass.h"
 
+#include <map>
 #include <optional>
+#include <set>
 #include <vector>
 
 #include "base/strings/strcat.h"
@@ -17,6 +19,7 @@ namespace ip_protection {
 
 namespace {
 using ::masked_domain_list::MaskedDomainList;
+using ::masked_domain_list::ResourceOwner;
 
 struct MatchTest {
   std::string name;
@@ -53,10 +56,54 @@ TEST_F(UrlMatcherWithBypassTest, BuildBypassMatcher_Dedupes) {
   EXPECT_EQ(bypass_matcher->rules().size(), 4u);
 }
 
+TEST_F(UrlMatcherWithBypassTest,
+       GetEligibleDomains_DoesNotRemoveDomainsIfExclusionSetIsEmpty) {
+  auto resource_owner = masked_domain_list::ResourceOwner();
+  const std::string expected_domain = "example.com";
+  const std::string another_domain = "example2.com";
+  resource_owner.set_owner_name("example");
+
+  auto* default_resource = resource_owner.add_owned_resources();
+  default_resource->set_domain(expected_domain);
+  auto* another_resource = resource_owner.add_owned_resources();
+  another_resource->set_domain(another_domain);
+
+  auto eligible_domains = UrlMatcherWithBypass::GetEligibleDomains(
+      resource_owner, /*excluded_domains=*/{});  // Empty exclusion set.
+
+  EXPECT_EQ(eligible_domains,
+            std::set<std::string>({expected_domain, another_domain}));
+}
+
+TEST_F(UrlMatcherWithBypassTest,
+       GetEligibleDomains_RemovesDomainsIfPresentInExclusionSet) {
+  auto resource_owner = masked_domain_list::ResourceOwner();
+  const std::string expected_domain = "example.com";
+  const std::string excluded_domain = "excluded.com";
+  resource_owner.set_owner_name("example");
+
+  auto* default_resource = resource_owner.add_owned_resources();
+  default_resource->set_domain(expected_domain);
+  auto* excluded_resource = resource_owner.add_owned_resources();
+  excluded_resource->set_domain(excluded_domain);
+
+  auto eligible_domains = UrlMatcherWithBypass::GetEligibleDomains(
+      resource_owner, /*excluded_domains=*/{excluded_domain});
+
+  EXPECT_EQ(eligible_domains, std::set<std::string>({expected_domain}));
+}
+
 TEST_F(UrlMatcherWithBypassTest, AddRulesWithoutBypass_BypassCheckIsSkipped) {
   UrlMatcherWithBypass matcher;
+  ResourceOwner resource_owner;
 
-  matcher.AddRulesWithoutBypass({"example.com"});
+  resource_owner.set_owner_name("example");
+  resource_owner.add_owned_resources()->set_domain("example.com");
+  resource_owner.add_owned_properties("example.com");
+
+  matcher.AddRules(resource_owner, /*excluded_domains=*/{},
+                   /*create_bypass_matcher=*/false);
+
   EXPECT_EQ(matcher.Matches(GURL("http://example.com"),
                             /*top_frame_site=*/std::nullopt,
                             /*skip_bypass_check=*/true),
@@ -66,8 +113,15 @@ TEST_F(UrlMatcherWithBypassTest, AddRulesWithoutBypass_BypassCheckIsSkipped) {
 TEST_F(UrlMatcherWithBypassTest,
        AddRulesWithoutBypass_BypassCheckIsNotSkipped) {
   UrlMatcherWithBypass matcher;
+  ResourceOwner resource_owner;
 
-  matcher.AddRulesWithoutBypass({"example.com"});
+  resource_owner.set_owner_name("example");
+  resource_owner.add_owned_resources()->set_domain("example.com");
+  resource_owner.add_owned_properties("example.com");
+
+  matcher.AddRules(resource_owner, /*excluded_domains=*/{},
+                   /*create_bypass_matcher=*/false);
+
   EXPECT_EQ(matcher.Matches(GURL("http://example.com"),
                             net::SchemefulSite(GURL("http://top.frame.com")),
                             /*skip_bypass_check=*/false),
@@ -96,11 +150,8 @@ TEST_P(UrlMatcherWithBypassMatchTest, Match) {
   resourceOwner->add_owned_properties("bbco-pb.co.uk");
 
   for (auto owner : mdl.resource_owners()) {
-    std::set<std::string> domains;
-    for (auto resource : owner.owned_resources()) {
-      domains.emplace(resource.domain());
-    }
-    matcher.AddMaskedDomainListRules(domains, owner);
+    matcher.AddRules(owner, /*excluded_domains=*/{},
+                     /*create_bypass_matcher=*/true);
   }
 
   const MatchTest& p = GetParam();

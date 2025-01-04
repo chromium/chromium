@@ -43,11 +43,13 @@ std::optional<span<uint8_t>> PlatformSharedMemoryRegion::MapAt(
     uint64_t offset,
     size_t size,
     SharedMemoryMapper* mapper) const {
-  if (!IsValid())
+  if (!IsValid()) {
     return std::nullopt;
+  }
 
-  if (size == 0)
+  if (size == 0) {
     return std::nullopt;
+  }
 
   size_t end_byte;
   if (!CheckAdd(offset, size).AssignIfValid(&end_byte) || end_byte > size_) {
@@ -61,8 +63,9 @@ std::optional<span<uint8_t>> PlatformSharedMemoryRegion::MapAt(
     return std::nullopt;
   }
 
-  if (!mapper)
+  if (!mapper) {
     mapper = SharedMemoryMapper::GetDefaultInstance();
+  }
 
   // The backing mapper expects offset to be aligned to
   // `SysInfo::VMAllocationGranularity()`.

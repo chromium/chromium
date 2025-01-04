@@ -1006,38 +1006,36 @@ TEST_F(ResultWatcherTest, PollCompletesSlowly) {
   bool done = false;
   EXPECT_CALL(result_watcher, WaitWithTimeout(_))
       .Times(10)
-      .WillRepeatedly(
-          DoAll(Invoke([&](TimeDelta timeout) {
-                  task_environment.AdvanceClock(timeout);
-                  // Append a result with "time" (duration) as 40.000s and
-                  // "timestamp" (test start) as `Now()` - 45s.
-                  AppendToFile(
-                      result_file,
-                      StrCat({"    <testcase name=\"B\" status=\"run\" "
-                              "time=\"40.000\" classname=\"A\" timestamp=\"",
-                              TimeFormatAsIso8601(Time::Now() - Seconds(45))
-                                  .c_str(),
-                              "\">\n", "    </testcase>\n"}));
-                  checks++;
-                  if (checks == 10) {
-                    AppendToFile(result_file,
-                                 "  </testsuite>\n"
-                                 "</testsuites>\n");
-                    done = true;
-                  } else {
-                    // Append a preliminary result for the next test that
-                    // started when the last test completed (i.e., `Now()` - 45s
-                    // + 40s).
-                    AppendToFile(
-                        result_file,
-                        StrCat({"    <x-teststart name=\"B\" classname=\"A\" "
-                                "timestamp=\"",
-                                TimeFormatAsIso8601(Time::Now() - Seconds(5))
-                                    .c_str(),
-                                "\" />\n"}));
-                  }
-                }),
-                ReturnPointee(&done)));
+      .WillRepeatedly(DoAll(
+          Invoke([&](TimeDelta timeout) {
+            task_environment.AdvanceClock(timeout);
+            // Append a result with "time" (duration) as 40.000s and
+            // "timestamp" (test start) as `Now()` - 45s.
+            AppendToFile(
+                result_file,
+                StrCat({"    <testcase name=\"B\" status=\"run\" "
+                        "time=\"40.000\" classname=\"A\" timestamp=\"",
+                        TimeFormatAsIso8601(Time::Now() - Seconds(45)).c_str(),
+                        "\">\n", "    </testcase>\n"}));
+            checks++;
+            if (checks == 10) {
+              AppendToFile(result_file,
+                           "  </testsuite>\n"
+                           "</testsuites>\n");
+              done = true;
+            } else {
+              // Append a preliminary result for the next test that
+              // started when the last test completed (i.e., `Now()` - 45s
+              // + 40s).
+              AppendToFile(
+                  result_file,
+                  StrCat({"    <x-teststart name=\"B\" classname=\"A\" "
+                          "timestamp=\"",
+                          TimeFormatAsIso8601(Time::Now() - Seconds(5)).c_str(),
+                          "\" />\n"}));
+            }
+          }),
+          ReturnPointee(&done)));
 
   ASSERT_TRUE(result_watcher.PollUntilDone(Seconds(45)));
   // The first check occurs 45s after the batch starts, so the sequence of
@@ -1360,8 +1358,9 @@ TEST(ProcessGTestOutputTest, FoundTestCaseNotEnforced) {
 // be launched explicitly by RunMockLeakProcessTest
 
 MULTIPROCESS_TEST_MAIN(LeakChildProcess) {
-  while (true)
+  while (true) {
     PlatformThread::Sleep(base::Seconds(1));
+  }
 }
 
 TEST(LeakedChildProcessTest, DISABLED_LeakChildProcess) {

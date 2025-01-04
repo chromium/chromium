@@ -5,6 +5,7 @@
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 
 #include "base/containers/contains.h"
+#include "base/containers/map_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -345,10 +346,16 @@ PermissionsPolicy::CombinePolicies(
        second_policy) {
     mojom::PermissionsPolicyFeature feature = parsed_declaration.feature;
     DCHECK(feature != mojom::PermissionsPolicyFeature::kNotFound);
+
     const auto& second_allowlist =
         PermissionsPolicy::Allowlist::FromDeclaration(parsed_declaration);
-    auto& base_allowlist =
-        allow_lists_and_reporting_endpoints.allowlists_.at(feature);
+    auto* base_allowlist = base::FindOrNull(
+        allow_lists_and_reporting_endpoints.allowlists_, feature);
+    // If the feature isn't specified in the base policy, we can continue as
+    // it shouldn't be in the combined policy either.
+    if (!base_allowlist) {
+      continue;
+    }
 
     // If the header does not specify further restrictions we do not need to
     // modify the policy.
@@ -359,18 +366,18 @@ PermissionsPolicy::CombinePolicies(
     const auto& second_allowed_origins = second_allowlist.AllowedOrigins();
     // If the manifest allows all origins access to this feature, use the more
     // restrictive header policy.
-    if (base_allowlist.MatchesAll()) {
+    if (base_allowlist->MatchesAll()) {
       // TODO(https://crbug.com/40847608): Refactor to use Allowlist::clone()
       // after clone() is implemented.
-      base_allowlist.SetAllowedOrigins(second_allowed_origins);
-      base_allowlist.RemoveMatchesAll();
-      base_allowlist.AddSelf(second_allowlist.SelfIfMatches());
+      base_allowlist->SetAllowedOrigins(second_allowed_origins);
+      base_allowlist->RemoveMatchesAll();
+      base_allowlist->AddSelf(second_allowlist.SelfIfMatches());
       continue;
     }
 
     // Otherwise, we use the intersection of origins in the manifest and the
     // header.
-    auto manifest_allowed_origins = base_allowlist.AllowedOrigins();
+    auto manifest_allowed_origins = base_allowlist->AllowedOrigins();
     std::vector<blink::OriginWithPossibleWildcards> final_allowed_origins;
     // TODO(https://crbug.com/339404063): consider rewriting this to not be
     // O(N^2).
@@ -379,7 +386,10 @@ PermissionsPolicy::CombinePolicies(
         final_allowed_origins.push_back(origin);
       }
     }
-    base_allowlist.SetAllowedOrigins(final_allowed_origins);
+    base_allowlist->SetAllowedOrigins(final_allowed_origins);
+    if (base_allowlist->SelfIfMatches() != second_allowlist.SelfIfMatches()) {
+      base_allowlist->AddSelf(std::nullopt);
+    }
   }
   return allow_lists_and_reporting_endpoints;
 }

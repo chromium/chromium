@@ -13,8 +13,6 @@ source_set("web_usage_enabler") {
   public_deps = [ "//ios/web/public" ]
   deps = [
     "//base",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
   ]

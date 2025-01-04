@@ -40,16 +40,14 @@ source_set("ui") {
     "new_password_ui_handler.h",
     "new_password_view_controller.h",
     "new_password_view_controller.mm",
+    "passkey_error_alert_view_controller.h",
+    "passkey_error_alert_view_controller.mm",
     "passkey_welcome_screen_view_controller.h",
     "passkey_welcome_screen_view_controller.mm",
     "password_note_cell.h",
     "password_note_cell.mm",
     "password_note_footer_view.h",
     "password_note_footer_view.mm",
-    "saving_enterprise_disabled_view_controller.h",
-    "saving_enterprise_disabled_view_controller.mm",
-    "signed_out_user_view_controller.h",
-    "signed_out_user_view_controller.mm",
     "stale_credentials_view_controller.h",
     "stale_credentials_view_controller.mm",
     "ui_util.h",
@@ -83,6 +81,7 @@ source_set("ui") {
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",
     "//ios/chrome/credential_provider_extension:metrics_util",
+    "//ios/chrome/credential_provider_extension:passkey_request_details",
     "//ios/chrome/credential_provider_extension:passkey_util",
     "//ios/chrome/credential_provider_extension:password_spec_fetcher_buildflags",
     "//ios/chrome/credential_provider_extension:password_util",
@@ -166,7 +165,7 @@ source_set("mock_credential_response_handler") {
   deps = [
     ":credential_response_handler",
     "//base",
-    "//ios/chrome/credential_provider_extension:passkey_util",
+    "//ios/chrome/credential_provider_extension:passkey_request_details",
   ]
 }
 
@@ -180,6 +179,7 @@ source_set("unit_tests") {
     "credential_list_mediator_unittest.mm",
     "new_password_coordinator_unittest.mm",
     "new_password_mediator_unittest.mm",
+    "passkey_error_alert_view_controller_unittest.mm",
     "passkey_welcome_screen_view_controller_unittest.mm",
   ]
   deps = [

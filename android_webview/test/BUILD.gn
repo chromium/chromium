@@ -317,6 +317,12 @@ generate_jni("webview_instrumentation_test_jni") {
   sources = [ "../javatests/src/org/chromium/android_webview/test/component_updater/EmbeddedComponentLoaderTest.java" ]
 }
 
+copy("copy_webview_js_test_script_to_blink") {
+  sources = [ "data/resources/js-test.js" ]
+  outputs =
+      [ "$root_build_dir/third_party/blink/web_tests/resources/js-test.js" ]
+}
+
 base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
   apk_name = "WebViewInstrumentationTest"
   apk_under_test = ":webview_instrumentation_apk"
@@ -332,6 +338,7 @@ base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
     "//android_webview/nonembedded:util_java",
     "//android_webview/proto:aw_variations_seed_proto_java",
     "//android_webview/proto:metrics_bridge_records_proto_java",
+    "//android_webview/test:copy_webview_js_test_script_to_blink",
     "//android_webview/test:crash_test_utils_java",
     "//android_webview/test:webview_instrumentation_test_mock_services_java",
     "//android_webview/test:webview_instrumentation_test_utils_java",
@@ -396,6 +403,7 @@ base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/metrics_proto:metrics_proto_java",
     "//ui/accessibility:ax_base_java",
+    "//ui/android:ui_android_features_java",
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",
     "//ui/base/mojom:ui_base_types_java",
@@ -525,6 +533,7 @@ base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
     "../javatests/src/org/chromium/android_webview/test/VariationsSeedLoaderTest.java",
     "../javatests/src/org/chromium/android_webview/test/VariationsTest.java",
     "../javatests/src/org/chromium/android_webview/test/VisualStateTest.java",
+    "../javatests/src/org/chromium/android_webview/test/WebExposedTest.java",
     "../javatests/src/org/chromium/android_webview/test/WebKitHitTestTest.java",
     "../javatests/src/org/chromium/android_webview/test/WebViewAsynchronousFindApisTest.java",
     "../javatests/src/org/chromium/android_webview/test/WebViewFindApisTestRule.java",
@@ -568,7 +577,12 @@ base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
 
   data = [
     "data/",
+    "//android_webview/test/data/web_tests/",
+    "//third_party/blink/web_tests/resources/global-interface-listing.js",
+    "//third_party/blink/web_tests/webexposed/global-interface-listing.html",
+    "//third_party/blink/web_tests/webexposed/global-interface-listing-expected.txt",
     "//third_party/chromium-variations/",
+    "$root_build_dir/third_party/blink/web_tests/resources/js-test.js",
   ]
   data_deps =
       [ "//testing/buildbot/filters:webview_instrumentation_test_apk_filters" ]
@@ -743,9 +757,9 @@ source_set("webview_instrumentation_test_native_jni_impl") {
 }
 
 repack("android_webview_unittests_pak") {
-  sources = [ "$root_gen_dir/components/metrics/metrics_url_constants.pak" ]
+  sources = [ "$root_gen_dir/components/metrics/metrics_server_urls.pak" ]
 
-  deps = [ "//components/metrics:url_constants" ]
+  deps = [ "//components/metrics:server_urls_grd" ]
 
   output = "$root_out_dir/android_webview_unittests_resources.pak"
 }

@@ -9,8 +9,8 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
 
 FastCheckoutPersonalDataHelperImpl::FastCheckoutPersonalDataHelperImpl(
     content::WebContents* web_contents)

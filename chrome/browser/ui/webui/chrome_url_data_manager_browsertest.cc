@@ -344,9 +344,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://identity-internals",
     "chrome://indexeddb-internals",
     "chrome://inspect",
-    "chrome://internals",
     "chrome://internals/session-service",
-    "chrome://internals/user-education",
     "chrome://interstitials/ssl",
     "chrome://local-state",
     "chrome://management",
@@ -397,6 +395,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://ukm",
     "chrome://usb-internals",
     "chrome://user-actions",
+    "chrome://user-education-internals",
     "chrome://version",
     "chrome://web-app-internals",
     "chrome://webrtc-internals",
@@ -415,7 +414,6 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://explore-sites-internals",
     "chrome://internals/notifications",
     "chrome://internals/query-tiles",
-    "chrome://offline-internals",
     "chrome://snippets-internals",
     "chrome://webapks",
 #endif
@@ -510,8 +508,8 @@ static constexpr const char* const kChromeUrls[] = {
 #endif
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     "chrome://signin-dice-web-intercept.top-chrome/?debug",
-    // Note: Disabled because a DCHECK fires when directly visiting the URL.
-    // "chrome://signin-reauth",
+// Note: Disabled because a DCHECK fires when directly visiting the URL.
+// "chrome://signin-reauth",
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // TODO(crbug.com/40250068): Uncomment when TrustedTypes are enabled.

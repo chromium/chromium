@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_page_handler.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_embedder.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_layout.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/tab_strip_resources.h"
@@ -34,6 +33,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 
 TabStripUI::TabStripUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /* enable_chrome_send */ true),

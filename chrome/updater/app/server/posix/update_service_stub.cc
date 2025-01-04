@@ -147,21 +147,23 @@ class UpdateServiceStubUntrusted : public mojom::UpdateService {
               UpdateService::Priority priority,
               UpdateService::PolicySameVersionUpdate policy_same_version_update,
               bool do_update_check_only,
+              const std::optional<std::string>& language,
               UpdateCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     impl_->Update(app_id, install_data_index, priority,
                   policy_same_version_update, do_update_check_only,
-                  std::move(callback));
+                  language.value_or(""), std::move(callback));
   }
 
   void CheckForUpdate(
       const std::string& app_id,
       UpdateService::Priority priority,
       UpdateService::PolicySameVersionUpdate policy_same_version_update,
+      const std::optional<std::string>& language,
       UpdateCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     impl_->CheckForUpdate(app_id, priority, policy_same_version_update,
-                          std::move(callback));
+                          language.value_or(""), std::move(callback));
   }
 
   void RunPeriodicTasks(RunPeriodicTasksCallback callback) override {
@@ -191,6 +193,7 @@ class UpdateServiceStubUntrusted : public mojom::UpdateService {
                const std::string& client_install_data,
                const std::string& install_data_index,
                UpdateService::Priority priority,
+               const std::optional<std::string>& language,
                InstallCallback callback) override {
     VLOG(1) << __func__ << " rejected (untrusted caller)";
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -209,6 +212,7 @@ class UpdateServiceStubUntrusted : public mojom::UpdateService {
                     const std::string& install_args,
                     const std::string& install_data,
                     const std::string& install_settings,
+                    const std::optional<std::string>& language,
                     RunInstallerCallback callback) override {
     VLOG(1) << __func__ << " rejected (untrusted caller)";
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -305,6 +309,7 @@ void UpdateServiceStub::Update(
     UpdateService::Priority priority,
     UpdateService::PolicySameVersionUpdate policy_same_version_update,
     bool do_update_check_only,
+    const std::optional<std::string>& language,
     UpdateCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_start_listener_.Run();
@@ -318,14 +323,14 @@ void UpdateServiceStub::Update(
         app_id, static_cast<updater::UpdateService::Priority>(priority),
         static_cast<updater::UpdateService::PolicySameVersionUpdate>(
             policy_same_version_update),
-        state_change_callback,
+        language.value_or(""), state_change_callback,
         std::move(on_complete_callback).Then(task_end_listener_));
   } else {
     impl_->Update(app_id, install_data_index,
                   static_cast<updater::UpdateService::Priority>(priority),
                   static_cast<updater::UpdateService::PolicySameVersionUpdate>(
                       policy_same_version_update),
-                  state_change_callback,
+                  language.value_or(""), state_change_callback,
                   std::move(on_complete_callback).Then(task_end_listener_));
   }
 }
@@ -334,6 +339,7 @@ void UpdateServiceStub::Install(mojom::RegistrationRequestPtr registration,
                                 const std::string& client_install_data,
                                 const std::string& install_data_index,
                                 UpdateService::Priority priority,
+                                const std::optional<std::string>& language,
                                 InstallCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_start_listener_.Run();
@@ -346,7 +352,7 @@ void UpdateServiceStub::Install(mojom::RegistrationRequestPtr registration,
   impl_->Install(MakeRegistrationRequest(registration), client_install_data,
                  install_data_index,
                  static_cast<updater::UpdateService::Priority>(priority),
-                 std::move(state_change_callback),
+                 language.value_or(""), std::move(state_change_callback),
                  std::move(on_complete_callback).Then(task_end_listener_));
 }
 
@@ -362,6 +368,7 @@ void UpdateServiceStub::RunInstaller(const std::string& app_id,
                                      const std::string& install_args,
                                      const std::string& install_data,
                                      const std::string& install_settings,
+                                     const std::optional<std::string>& language,
                                      RunInstallerCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_start_listener_.Run();
@@ -372,7 +379,8 @@ void UpdateServiceStub::RunInstaller(const std::string& app_id,
   auto [state_change_callback, on_complete_callback] =
       MakeStateChangeObserverCallbacks(std::move(observer));
   impl_->RunInstaller(app_id, installer_path, install_args, install_data,
-                      install_settings, std::move(state_change_callback),
+                      install_settings, language.value_or(""),
+                      std::move(state_change_callback),
                       std::move(on_complete_callback).Then(task_end_listener_));
 }
 
@@ -380,6 +388,7 @@ void UpdateServiceStub::CheckForUpdate(
     const std::string& app_id,
     UpdateService::Priority priority,
     UpdateService::PolicySameVersionUpdate policy_same_version_update,
+    const std::optional<std::string>& language,
     UpdateCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_start_listener_.Run();
@@ -391,7 +400,7 @@ void UpdateServiceStub::CheckForUpdate(
       app_id, static_cast<updater::UpdateService::Priority>(priority),
       static_cast<updater::UpdateService::PolicySameVersionUpdate>(
           policy_same_version_update),
-      state_change_callback,
+      language.value_or(""), state_change_callback,
       std::move(on_complete_callback).Then(task_end_listener_));
 }
 

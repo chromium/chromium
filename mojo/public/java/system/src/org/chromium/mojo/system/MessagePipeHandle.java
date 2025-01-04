@@ -4,6 +4,9 @@
 
 package org.chromium.mojo.system;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.nio.ByteBuffer;
 import java.util.List;
 
@@ -11,6 +14,7 @@ import java.util.List;
  * Message pipes are bidirectional communication channel for framed data (i.e., messages). Messages
  * can contain plain data and/or Mojo handles.
  */
+@NullMarked
 public interface MessagePipeHandle extends Handle {
 
     /** Flags for the message pipe creation operation. */
@@ -100,13 +104,13 @@ public interface MessagePipeHandle extends Handle {
     /** Result of the |readMessage| method. */
     public static class ReadMessageResult {
         /** If a message was read, this contains the bytes of its data. */
-        public byte[] mData;
+        public byte @Nullable [] mData;
 
         /** If a message was read, this contains the raw handle values. */
-        public long[] mRawHandles;
+        public long @Nullable [] mRawHandles;
 
         /** If a message was read, the handles contained in the message, undefined otherwise. */
-        public List<UntypedHandle> mHandles;
+        public @Nullable List<UntypedHandle> mHandles;
     }
 
     /**
@@ -125,7 +129,8 @@ public interface MessagePipeHandle extends Handle {
      * receive equivalent, but logically different, handles). Handles to be sent should not be in
      * simultaneous use (e.g., on another thread).
      */
-    void writeMessage(ByteBuffer bytes, List<? extends Handle> handles, WriteFlags flags);
+    void writeMessage(
+            @Nullable ByteBuffer bytes, @Nullable List<? extends Handle> handles, WriteFlags flags);
 
     /**
      * Reads a message from the message pipe endpoint; also usable to query the size of the next

@@ -361,6 +361,7 @@
 <translation id="2295777434187870477">माइक सक्रिय छ, टगल गर्नुले माइक म्युट गर्ने छ।</translation>
 <translation id="2302092602801625023">यो खाता Family Link मार्फत व्यवस्थित गरिन्छ</translation>
 <translation id="2303600792989757991">सञ्झ्याल सिंहावलोकन टगल गर्नुहोस्</translation>
+<translation id="2304702218354340897">तपाईंले फेस कन्ट्रोल अफ गर्न चाहनुभएकै हो?</translation>
 <translation id="2305738328104302723">Google Tasks मा भएका कार्यहरूको सूची: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: हालसालैका स्क्रिन क्याप्चर, डाउनलोड गरिएका कुराहरू तथा पिन गरिएका फाइल यहाँ देखा पर्छन्</translation>
 <translation id="2318576281648121272">आज <ph name="TODAY_DATE" /></translation>
@@ -387,6 +388,7 @@
 <translation id="2370971919968699910">यसो गर्दा प्रयोग हुने डेटाबापत शुल्क तिर्नु पर्ने हुन सक्छ।
 <ph name="DEVICECOUNT" /> वटा डिभाइस कनेक्ट गरिएका छन्।</translation>
 <translation id="2386292613071805067">पेजमा भएका सबै सामग्री चयन गर्नुहोस्</translation>
+<translation id="2389423187722941333">Gemini टगल गर्नुहोस्</translation>
 <translation id="2392659840443812875">कुनै पनि हटस्पट उपलब्ध छैन। तपाईंको डिभाइस नजिकै छ र त्यसमा ब्लुटुथ अन गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="2397416548179033562">Chrome मेनु देखाउनुहोस्</translation>
 <translation id="240006516586367791">मिडियासम्बन्धी नियन्त्रणहरू</translation>
@@ -394,6 +396,7 @@
 <translation id="2402411679569069051">तपाईं आफ्नो Chromebook अनलक गर्न चाहनुहुन्छ भने आफ्नो फिंगरप्रिन्ट प्रयोग गर्नुहोस् वा आफ्नो फोन अनलक गर्नुहोस्</translation>
 <translation id="240545663114741956">साइन आउट गर्न <ph name="ACCELERATOR" /> मा दुई पटक थिच्नुहोस्।</translation>
 <translation id="2405664212338326887">कनेक्ट गरिएको छैन</translation>
+<translation id="2406710117564540804">Do Not Disturb अन/अफ गर्नुहोस्</translation>
 <translation id="2408955596600435184">आफ्नो PIN हाल्नुहोस्</translation>
 <translation id="2412593942846481727">अद्यावधिक उपलब्ध छ</translation>
 <translation id="2416438829169535743">भ्यूबाट बाहिरिने हो?</translation>
@@ -575,7 +578,7 @@
 <translation id="3033545621352269033">अन</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> मा संयोजन गर्नुहोस्</translation>
 <translation id="3036649622769666520">खुल्ला फाइलहरू</translation>
-<translation id="3038571455154067151">साइन इन गर्न आफ्नो Family Link को अभिभावकको पहुँचसम्बन्धी कोड हाल्नुहोस्</translation>
+<translation id="3038571455154067151">साइन इन गर्न Family Link बाट प्राप्त अभिभावकको एक्सेस कोड हाल्नुहोस्</translation>
 <translation id="3039939407102840004">स्टाइलसको ब्याट्री <ph name="PERCENTAGE" /> प्रतिशत बाँकी छ।</translation>
 <translation id="304097922505898963">Key Shortcuts एप खोल्नुहोस्</translation>
 <translation id="304417730895741346">तपाईंका पिन गरिएका तथा खुला रहेका एपहरू सेल्फमा देखिन्छन्। सेल्फमा कुनै एप पिन गर्न सो एपमा राइट क्लिक गर्नुहोस् वा दुई वटा औँलाले टचप्याडमा ट्याप गर्नुहोस्।</translation>
@@ -899,6 +902,7 @@
 <translation id="4119928251231465047">धेरै पटक PIN हाल्ने प्रयास गरियो</translation>
 <translation id="412298498316631026">विन्डो</translation>
 <translation id="4123259114412175274">तपाईं आफ्नो Chromebook अनलक गर्न चाहनुहुन्छ भने आफ्नो फोनको ब्लुटुथ अन छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
+<translation id="4123868835475902435">यी आधारभूत कुराहरू थिए! सुझाव तथा मद्दत प्राप्त गर्न Explore नामक हाम्रो अन्तर्निर्मित एपमा गई जारी राख्नुहोस्। तपाईं सुरु गर्ने तरिकासम्बन्धी सुझाव, विशेष अफर र <ph name="PRODUCT_NAME" /> का नयाँ सुविधाहरू भेट्टाउनु हुने छ।</translation>
 <translation id="4125970834901680537">ट्याब्लेट मोडमा एपहरूमा भएको सामग्री स्ट्रिम गर्न सकिँदैन। ल्यापटप मोडमा गई फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="4131973331381812765">तापक्रम: <ph name="TEMPERATURE" />°C - हालको गति: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="4136724716305260864">सूर्योदय नहुँदासम्म अन रहने छ</translation>
@@ -1019,7 +1023,6 @@
 <translation id="4481530544597605423">जोडा हटाइएका यन्त्रहरू</translation>
 <translation id="4485506555414638855">आफ्नो फोनमा भएका हालसालैका फोटो, मिडिया, एप तथा सूचनाहरू हेर्ने सुविधा सेटअप गर्ने प्रक्रिया खारेज गर्नुहोस्</translation>
 <translation id="4491109536499578614">फोटो</translation>
-<translation id="4493452241184130939">यी आधारभूत कुराहरू थिए! सुझाव तथा मद्दत प्राप्त गर्न हाम्रो अन्तर्निर्मित एप, Explore मा गई जारी राख्नुहोस्। तपाईं सुरु गर्ने तरिकासम्बन्धी सुझाव, सिफारिस गरिएका एप, विशेष अफर र <ph name="PRODUCT_NAME" /> का नयाँ सुविधाहरू भेट्टाउनु हुने छ।</translation>
 <translation id="450584155212756404">डेभ च्यानल</translation>
 <translation id="4513946894732546136">पृष्ठपोषण</translation>
 <translation id="4518404433291145981">तपाईं आफ्नो Chromebook अनलक गर्न चाहनुहुन्छ भने सर्वप्रथम आफ्नो फोन अनलक गर्नुहोस्</translation>
@@ -1082,7 +1085,6 @@
 <translation id="4708065238214351979">किबोर्डको चमक बढाउनुहोस्</translation>
 <translation id="4708185346211948049">अर्को हप्ताको <ph name="DAY_OF_WEEK" /></translation>
 <translation id="4717575069099566988">तपाईंको USB-C केबल USB4 मा जोड्न मिल्दैन। डिभाइस राम्ररी नचल्न सक्छ।</translation>
-<translation id="4724328513667182700"><ph name="PRODUCT_NAME" /> प्रयोग गर्न थाल्ने तरिकासम्बन्धी ६ सुझावहरू</translation>
 <translation id="4730374152663651037">प्रायः जसो प्रयोग गरिने एपहरू</translation>
 <translation id="4731797938093519117">अभिभावकको पहुँच</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (बायाँ)</translation>
@@ -1309,7 +1311,6 @@
 <translation id="5409208741270395213">यो कार्यलाई सम्पन्न गरिएको कार्यका रूपमा चिन्ह लगाउनुहोस्</translation>
 <translation id="5413656666631274079">सेटिङको पेज</translation>
 <translation id="5414198321558177633">प्रोफाइलको सूची रिफ्रेस गरिँदै छ। यो कार्य पूरा हुन केही बेर लाग्न सक्छ।</translation>
-<translation id="5417965108047245734"><ph name="PRODUCT_NAME" /> प्रयोग गर्ने तरिका सिक्न केही समय खर्चेर यसका सुविधाहरू हेर्नुहोस्</translation>
 <translation id="5426063383988017631">सेटिङ मेनु बन्द गरियो</translation>
 <translation id="5428899915242071344">पाठ चयन गर्न थालियोस्</translation>
 <translation id="5429993543155113935">इन्कोग्निटो विन्डो हाल प्रयोग गर्न मिल्दैन</translation>
@@ -1647,6 +1648,7 @@
 <translation id="6539852571005954999"><ph name="FILENAME" /> स्क्यान गरेर डाउनलोड गर्नुहोस्</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> मा Cast गर्दै</translation>
 <translation id="6542891623636520977">इमोजी, GIF र थप कुराहरू</translation>
+<translation id="6543942526104794893">तपाईंले फेसियल जेस्चर अफ गर्न खोज्नुभएकै हो?</translation>
 <translation id="6545382064335350438">तपाईंको PIN अझै पनि पुष्टि गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6555373427270923730">एड्रेस बारमा वेब ठेगाना टाइप गर्नुहोस् अनि <ph name="MODIFIER" /><ph name="KEY" /> थिच्नुहोस्</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
@@ -1885,7 +1887,7 @@
 <translation id="7392563512730092880">तपाईं पछि जुनसुकै बेला सेटिङमा गई सेट अप गर्न सक्नुहुन्छ।</translation>
 <translation id="7401222354741467707">पूर्ण स्क्रिनसट लिनुहोस् वा स्क्रिन रेकर्डिङ गर्नुहोस्</translation>
 <translation id="7401788553834047908">फोकस मोड अन हुँदा Do Not Disturb अन गर्नुहोस्</translation>
-<translation id="7405710164030118432">डिभाइस अनलक गर्न आफ्नो Family Link को अभिभावकको पहुँचसम्बन्धी कोड हाल्नुहोस्‌</translation>
+<translation id="7405710164030118432">डिभाइस अनलक गर्न Family Link बाट प्राप्त अभिभावकको एक्सेस कोड हाल्नुहोस्</translation>
 <translation id="7406608787870898861">आफ्नो मोबाइल नेटवर्क सेटअप गर्ने कार्य पूरा गर्नुहोस्</translation>
 <translation id="7406854842098869085"><ph name="MODIFIER_1" /> थिचिराख्नुहोस्, आफूले खोल्न चाहेको विन्डोमा नपुगुन्जेल <ph name="KEY" /> मा ट्याप गर्नुहोस् अनि छाड्नुहोस्</translation>
 <translation id="740790383907119240">एपका सर्टकटहरू</translation>
@@ -2250,7 +2252,7 @@
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> बाँकी छ</translation>
 <translation id="8641510901370802679"><ph name="ANSWER_TYPE" /> सम्बन्धी जानकारी देखाइँदै छ</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> टाइमर</translation>
-<translation id="8647931990447795414">कुनै व्यक्ति थप्न आफ्नो Family Link को अभिभावकको पहुँचसम्बन्धी कोड हाल्नुहोस्</translation>
+<translation id="8647931990447795414">कुनै व्यक्ति थप्न Family Link बाट प्राप्त अभिभावकको एक्सेस कोड हाल्नुहोस्</translation>
 <translation id="8649597172973390955">सेल्फ सधैँ देखिने छ</translation>
 <translation id="8652175077544655965">सेटिङहरू बन्द गर्नुहोस्</translation>
 <translation id="8653151467777939995">सूचनासम्बन्धी सेटिङहरू देखाउनुहोस्। सूचनाहरू सक्रिय छन्</translation>
@@ -2313,6 +2315,7 @@
 <translation id="8855885154700222542">फुल स्क्रिन नामक कुञ्जी</translation>
 <translation id="8858369206579825206">गोपनीयतासम्बन्धी सेटिङ</translation>
 <translation id="8860366331836346216">eSIM हाल्नुहोस्</translation>
+<translation id="8869149849311827122">तपाईंले माउस कर्सर कन्ट्रोल अफ गर्न खोज्नुभएकै हो?</translation>
 <translation id="8870509716567206129">एपले विभाजित-स्क्रिनलाई समर्थन गर्दैन।</translation>
 <translation id="8873203135446552888">तपाईं यो अन्तर्निर्मित टचप्याड अफ गर्न चाहनुहुन्छ भन्ने कुरा पुष्टि गर्नुहोस्</translation>
 <translation id="8874184842967597500">जडित छैन</translation>
@@ -2356,7 +2359,7 @@
 <translation id="9000771174482730261">भण्डारण व्यवस्थापन गर्नुहोस्</translation>
 <translation id="9003374957546315126">इमोजी तथा थप सामग्री</translation>
 <translation id="9005984960510803406">Crosh विन्डो खोल्नुहोस्‌</translation>
-<translation id="9017320285115481645">Family Link को अभिभावकको पहुँचसम्बन्धी कोड हाल्नुहोस्।</translation>
+<translation id="9017320285115481645">Family Link बाट प्राप्त अभिभावकको एक्सेस कोड हाल्नुहोस्।</translation>
 <translation id="9024331582947483881">फुल स्क्रिन</translation>
 <translation id="9029736946581028033">डिभाइस चाँडै नै पावर डाउन हुने छ</translation>
 <translation id="9030319654231318877">सूर्यास्त नहुँदासम्म अफ</translation>

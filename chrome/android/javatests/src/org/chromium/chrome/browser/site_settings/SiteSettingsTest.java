@@ -1235,24 +1235,11 @@ public class SiteSettingsTest {
         settingsActivity.finish();
     }
 
-    /** Test that showing the Site Settings menu does not contain the "Anti-abuse" row. */
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @DisableFeatures(ChromeFeatureList.PRIVATE_STATE_TOKENS)
-    public void testSiteSettingsMenuWithPrivateStateTokensDisabled() {
-        final SettingsActivity settingsActivity = SiteSettingsTestUtils.startSiteSettingsMenu("");
-        SiteSettings websitePreferences = (SiteSettings) settingsActivity.getMainFragment();
-        assertNull(websitePreferences.findPreference("anti_abuse"));
-        settingsActivity.finish();
-    }
-
     /** Test that showing the Site Settings menu contains the "Anti-abuse" row. */
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.PRIVATE_STATE_TOKENS)
-    public void testSiteSettingsMenuWithPrivateStateTokensEnabled() {
+    public void testSiteSettingsMenuForAntiAbuse() {
         final SettingsActivity settingsActivity = SiteSettingsTestUtils.startSiteSettingsMenu("");
         SiteSettings websitePreferences = (SiteSettings) settingsActivity.getMainFragment();
         assertNotNull(websitePreferences.findPreference("anti_abuse"));
@@ -1296,7 +1283,6 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.PRIVATE_STATE_TOKENS)
     public void testOnlyExpectedPreferencesAntiAbuse() {
         testExpectedPreferences(
                 SiteSettingsCategory.Type.ANTI_ABUSE,
@@ -1928,6 +1914,7 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     @CommandLineFlags.Add(ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM)
+    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/41490094
     public void testCameraBlocked() throws Exception {
         new TwoStatePermissionTestCase(
                         "Camera",
@@ -1952,6 +1939,7 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
+    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/41490094
     public void testCameraNotBlocked() throws Exception {
         new TwoStatePermissionTestCase(
                         "Camera",
@@ -1999,6 +1987,7 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
+    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/41490094
     public void testMicNotBlocked() throws Exception {
         new TwoStatePermissionTestCase(
                         "Mic",

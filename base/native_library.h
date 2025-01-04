@@ -27,10 +27,7 @@ namespace base {
 #if BUILDFLAG(IS_WIN)
 using NativeLibrary = HMODULE;
 #elif BUILDFLAG(IS_APPLE)
-enum NativeLibraryType {
-  BUNDLE,
-  DYNAMIC_LIB
-};
+enum NativeLibraryType { BUNDLE, DYNAMIC_LIB };
 struct NativeLibraryStruct {
   NativeLibraryType type;
   union {
@@ -97,10 +94,10 @@ PinSystemLibrary(FilePath::StringPieceType name,
 // Loads a native library from disk.  Release it with UnloadNativeLibrary when
 // you're done.  Returns NULL on failure.
 // If |error| is not NULL, it may be filled in on load error.
-BASE_EXPORT NativeLibrary LoadNativeLibraryWithOptions(
-    const FilePath& library_path,
-    const NativeLibraryOptions& options,
-    NativeLibraryLoadError* error);
+BASE_EXPORT NativeLibrary
+LoadNativeLibraryWithOptions(const FilePath& library_path,
+                             const NativeLibraryOptions& options,
+                             NativeLibraryLoadError* error);
 
 // Unloads a native library.
 BASE_EXPORT void UnloadNativeLibrary(NativeLibrary library);

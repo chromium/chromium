@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "storage/browser/file_system/file_system_context.h"
 
 #include <stddef.h>
+
+#include <array>
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
@@ -283,7 +280,7 @@ TEST_F(FileSystemContextTest, CrackFileSystemURL) {
     std::string expect_filesystem_id;
   };
 
-  const TestCase kTestCases[] = {
+  const auto kTestCases = std::to_array<TestCase>({
       // Following should not be handled by the url crackers:
       {
           "pers_mount", "persistent", true /* is_valid */,
@@ -317,7 +314,7 @@ TEST_F(FileSystemContextTest, CrackFileSystemURL) {
       {"invalid", "external", false /* is_valid */,
        // The rest of values will be ignored.
        kFileSystemTypeUnknown, kFileSystemTypeUnknown, FPL(""), std::string()},
-  };
+  });
 
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
     const base::FilePath virtual_path =

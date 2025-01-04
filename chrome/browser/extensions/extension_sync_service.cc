@@ -128,24 +128,12 @@ ExtensionSyncService::ExtensionSyncService(Profile* profile)
   prefs_observation_.Observe(ExtensionPrefs::Get(profile_));
 }
 
-ExtensionSyncService::~ExtensionSyncService() {
-}
+ExtensionSyncService::~ExtensionSyncService() = default;
 
 // static
 ExtensionSyncService* ExtensionSyncService::Get(
     content::BrowserContext* context) {
   return ExtensionSyncServiceFactory::GetForBrowserContext(context);
-}
-
-// static
-bool ExtensionSyncService::IsSyncableExtension(
-    content::BrowserContext* browser_context,
-    const Extension& extension) {
-  // Themes are handled by the ThemeSyncableService.
-  return extensions::sync_util::ShouldSync(browser_context, &extension) &&
-         !extension.is_theme() &&
-         !extensions::blocklist_prefs::IsExtensionBlocklisted(
-             extension.id(), ExtensionPrefs::Get(browser_context));
 }
 
 void ExtensionSyncService::SyncExtensionChangeIfNeeded(
@@ -192,9 +180,18 @@ ExtensionSyncService::MergeDataAndStartSyncing(
         ExtensionSyncData::CreateFromSyncData(sync_data));
     // If the extension has local state that needs to be synced, ignore this
     // change (we assume the local state is more recent).
-    if (extension_sync_data &&
-        !ExtensionPrefs::Get(profile_)->NeedsSync(extension_sync_data->id())) {
-      ApplySyncData(*extension_sync_data);
+    if (extension_sync_data) {
+      if (!ExtensionPrefs::Get(profile_)->NeedsSync(
+              extension_sync_data->id())) {
+        ApplySyncData(*extension_sync_data);
+      } else if (ShouldPromoteToAccountExtension(*extension_sync_data)) {
+        // In this case, sync data is not applied as local state takes
+        // precedence. However, the incoming sync data indicates that the
+        // extension is part of the user's account and so it should be promoted
+        // to an account extension.
+        AccountExtensionTracker::Get(profile_)->OnExtensionSyncDataReceived(
+            extension_sync_data->id());
+      }
     }
   }
 
@@ -325,13 +322,13 @@ void ExtensionSyncService::ApplySyncData(
   // Note: |extension| may be null if it hasn't been installed yet.
   const Extension* extension =
       ExtensionRegistry::Get(profile_)->GetInstalledExtension(id);
-  // If there is an existing extension that shouldn't be sync'd, don't
+  // If there is an existing extension that shouldn't receive sync data, don't
   // apply this sync data. This can happen if the local version of an
   // extension is default-installed, but the sync server has data from another
   // (non-default-installed) installation. We can't apply the sync data because
   // it would always override the local state (which would never get sync'd).
   // See crbug.com/731824.
-  if (extension && !ShouldSync(*extension)) {
+  if (extension && !ShouldReceiveSyncData(*extension)) {
     return;
   }
 
@@ -505,7 +502,8 @@ void ExtensionSyncService::ApplySyncData(
 
   // Notify the AccountExtensionTracker of an incoming extension via sync.
   if (!extension_sync_data.is_app() && state != NOT_INSTALLED) {
-    AccountExtensionTracker::Get(profile_)->OnExtensionSyncDataApplied(id);
+    DCHECK(ShouldPromoteToAccountExtension(extension_sync_data));
+    AccountExtensionTracker::Get(profile_)->OnExtensionSyncDataReceived(id);
   }
 
   // Finally, trigger installation/update as required.
@@ -574,7 +572,7 @@ void ExtensionSyncService::OnExtensionInstalled(
 
   if (!is_update) {
     // Ignore updates since
-    // `AccountExtensionTracker::OnExtensionSyncDataApplied` should handle
+    // `AccountExtensionTracker::OnExtensionSyncDataReceived` should handle
     // incoming sync data, and these may not trigger updates based on the
     // extension's version vs the version in the sync data.
     AccountExtensionTracker::Get(browser_context)
@@ -686,6 +684,33 @@ void ExtensionSyncService::FillSyncDataList(
   }
 }
 
+bool ExtensionSyncService::ShouldPromoteToAccountExtension(
+    const extensions::ExtensionSyncData& extension_sync_data) const {
+  // The checks for `extension` and `extension_sync_data` mirror those inside
+  // ApplySyncData.
+  if (extension_sync_data.uninstalled() || extension_sync_data.is_app() ||
+      extension_sync_data.is_deprecated_bookmark_app()) {
+    return false;
+  }
+
+  const Extension* extension =
+      ExtensionRegistry::Get(profile_)->GetInstalledExtension(
+          extension_sync_data.id());
+  return extension && extension->is_extension() &&
+         ShouldReceiveSyncData(*extension);
+}
+
+bool ExtensionSyncService::ShouldReceiveSyncData(
+    const extensions::Extension& extension) const {
+  if (extension.is_theme()) {
+    // Themes are handled by the ThemeSyncableService.
+    return false;
+  }
+
+  // Otherwise, defer to the general extension sync calculation.
+  return extensions::sync_util::ShouldSync(profile_, &extension);
+}
+
 bool ExtensionSyncService::ShouldSync(const Extension& extension) const {
   // Only extensions associated with the signed in user's account should be
   // synced for transport mode.
@@ -694,5 +719,7 @@ bool ExtensionSyncService::ShouldSync(const Extension& extension) const {
     return false;
   }
 
-  return IsSyncableExtension(profile_, extension);
+  // Any otherwise syncable extension that can receive sync data can be synced
+  // or uploaded.
+  return ShouldReceiveSyncData(extension);
 }

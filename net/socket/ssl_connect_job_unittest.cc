@@ -558,7 +558,7 @@ TEST_F(SSLConnectJobTest, DirectWithNPN) {
   StaticSocketDataProvider data;
   socket_factory_.AddSocketDataProvider(&data);
   SSLSocketDataProvider ssl(ASYNC, OK);
-  ssl.next_proto = kProtoHTTP11;
+  ssl.next_proto = NextProto::kProtoHTTP11;
   socket_factory_.AddSSLSocketDataProvider(&ssl);
 
   TestConnectJobDelegate test_delegate;
@@ -574,7 +574,7 @@ TEST_F(SSLConnectJobTest, DirectGotHTTP2) {
   StaticSocketDataProvider data;
   socket_factory_.AddSocketDataProvider(&data);
   SSLSocketDataProvider ssl(ASYNC, OK);
-  ssl.next_proto = kProtoHTTP2;
+  ssl.next_proto = NextProto::kProtoHTTP2;
   socket_factory_.AddSSLSocketDataProvider(&ssl);
 
   TestConnectJobDelegate test_delegate;
@@ -583,7 +583,8 @@ TEST_F(SSLConnectJobTest, DirectGotHTTP2) {
 
   test_delegate.StartJobExpectingResult(ssl_connect_job.get(), OK,
                                         false /* expect_sync_result */);
-  EXPECT_EQ(kProtoHTTP2, test_delegate.socket()->GetNegotiatedProtocol());
+  EXPECT_EQ(NextProto::kProtoHTTP2,
+            test_delegate.socket()->GetNegotiatedProtocol());
   CheckConnectTimesSet(ssl_connect_job->connect_timing());
 }
 

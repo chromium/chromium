@@ -126,7 +126,6 @@ DEFINE_VARIATION_PARAM(kIPHPageInfoFeature, "IPH_PageInfo");
 DEFINE_VARIATION_PARAM(kIPHPageInfoStoreInfoFeature, "IPH_PageInfoStoreInfo");
 DEFINE_VARIATION_PARAM(kIPHPageZoomFeature, "IPH_PageZoom");
 DEFINE_VARIATION_PARAM(kIPHPreviewsOmniboxUIFeature, "IPH_PreviewsOmniboxUI");
-DEFINE_VARIATION_PARAM(kIPHPriceDropNTPFeature, "IPH_PriceDropNTP");
 DEFINE_VARIATION_PARAM(kIPHReadAloudAppMenuFeature,
                        "IPH_ReadAloudAppMenuFeature");
 DEFINE_VARIATION_PARAM(kIPHReadAloudExpandedPlayerFeature,
@@ -165,8 +164,6 @@ DEFINE_VARIATION_PARAM(kIPHTabGroupsSurfaceOnHideFeature,
 DEFINE_VARIATION_PARAM(kIPHTabSwitcherButtonFeature, "IPH_TabSwitcherButton");
 DEFINE_VARIATION_PARAM(kIPHTabSwitcherButtonSwitchIncognitoFeature,
                        "IPH_TabSwitcherButtonSwitchIncognito");
-DEFINE_VARIATION_PARAM(kIPHTabSwitcherFloatingActionButtonFeature,
-                       "IPH_TabSwitcherFloatingActionButton");
 DEFINE_VARIATION_PARAM(kIPHTranslateMenuButtonFeature,
                        "IPH_TranslateMenuButton");
 DEFINE_VARIATION_PARAM(kIPHVideoTutorialNTPChromeIntroFeature,
@@ -306,6 +303,7 @@ DEFINE_VARIATION_PARAM(kIPHExperimentalAIPromoFeature,
                        "IPH_ExperimentalAIPromo");
 DEFINE_VARIATION_PARAM(kIPHExplicitBrowserSigninPreferenceRememberedFeature,
                        "IPH_ExplicitBrowserSigninPreferenceRemembered");
+DEFINE_VARIATION_PARAM(kIPHGlicPromoFeature, "IPH_GlicPromo");
 DEFINE_VARIATION_PARAM(kIPHHistorySearchFeature, "IPH_HistorySearch");
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 DEFINE_VARIATION_PARAM(kIPHExtensionsMenuFeature, "IPH_ExtensionsMenu");
@@ -401,8 +399,6 @@ DEFINE_VARIATION_PARAM(kIPHAutofillDisabledVirtualCardSuggestionFeature,
                        "IPH_AutofillDisabledVirtualCardSuggestion");
 DEFINE_VARIATION_PARAM(kIPHAutofillExternalAccountProfileSuggestionFeature,
                        "IPH_AutofillExternalAccountProfileSuggestion");
-DEFINE_VARIATION_PARAM(kIPHAutofillManualFallbackFeature,
-                       "IPH_AutofillManualFallback");
 DEFINE_VARIATION_PARAM(kIPHAutofillPredictionImprovementsFeature,
                        "IPH_AutofillPredictionImprovements");
 DEFINE_VARIATION_PARAM(kIPHAutofillVirtualCardCVCSuggestionFeature,
@@ -562,7 +558,6 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHPageInfoStoreInfoFeature),
         VARIATION_ENTRY(kIPHPageZoomFeature),
         VARIATION_ENTRY(kIPHPreviewsOmniboxUIFeature),
-        VARIATION_ENTRY(kIPHPriceDropNTPFeature),
         VARIATION_ENTRY(kIPHReadAloudAppMenuFeature),
         VARIATION_ENTRY(kIPHReadAloudExpandedPlayerFeature),
         VARIATION_ENTRY(kIPHReadLaterContextMenuFeature),
@@ -581,7 +576,6 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHTabGroupsSurfaceOnHideFeature),
         VARIATION_ENTRY(kIPHTabSwitcherButtonFeature),
         VARIATION_ENTRY(kIPHTabSwitcherButtonSwitchIncognitoFeature),
-        VARIATION_ENTRY(kIPHTabSwitcherFloatingActionButtonFeature),
         VARIATION_ENTRY(kIPHTranslateMenuButtonFeature),
         VARIATION_ENTRY(kIPHVideoTutorialNTPChromeIntroFeature),
         VARIATION_ENTRY(kIPHVideoTutorialNTPDownloadFeature),
@@ -662,6 +656,7 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHDiscardRingFeature),
         VARIATION_ENTRY(kIPHExperimentalAIPromoFeature),
         VARIATION_ENTRY(kIPHExplicitBrowserSigninPreferenceRememberedFeature),
+        VARIATION_ENTRY(kIPHGlicPromoFeature),
         VARIATION_ENTRY(kIPHPwaQuietNotificationFeature),
         VARIATION_ENTRY(kIPHHistorySearchFeature),
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -713,7 +708,6 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHAutofillCardInfoRetrievalSuggestionFeature),
         VARIATION_ENTRY(kIPHAutofillDisabledVirtualCardSuggestionFeature),
         VARIATION_ENTRY(kIPHAutofillExternalAccountProfileSuggestionFeature),
-        VARIATION_ENTRY(kIPHAutofillManualFallbackFeature),
         VARIATION_ENTRY(kIPHAutofillPredictionImprovementsFeature),
         VARIATION_ENTRY(kIPHAutofillVirtualCardCVCSuggestionFeature),
         VARIATION_ENTRY(kIPHAutofillVirtualCardSuggestionFeature),

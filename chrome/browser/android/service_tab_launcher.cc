@@ -36,8 +36,7 @@ ServiceTabLauncher* ServiceTabLauncher::GetInstance() {
   return base::Singleton<ServiceTabLauncher>::get();
 }
 
-ServiceTabLauncher::ServiceTabLauncher() {
-}
+ServiceTabLauncher::ServiceTabLauncher() = default;
 
 ServiceTabLauncher::~ServiceTabLauncher() = default;
 

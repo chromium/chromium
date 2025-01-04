@@ -4,21 +4,143 @@
 
 #include "base/trace_event/etw_interceptor_win.h"
 
+#include <array>
 #include <optional>
 #include <type_traits>
+#include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/no_destructor.h"
+#include "base/strings/string_tokenizer.h"
 #include "base/time/time.h"
-#include "base/trace_event/trace_event_etw_export_win.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/perfetto/protos/perfetto/common/interceptor_descriptor.gen.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pbzero.h"
+#include "third_party/perfetto/protos/perfetto/trace/track_event/debug_annotation.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/track_event.pbzero.h"
 
 namespace base::trace_event {
 
 namespace {
+
+// |kFilteredEventGroupNames| contains the event categories that can be
+// exported individually. These categories can be enabled by passing the correct
+// keyword when starting the trace. A keyword is a 64-bit flag and we attribute
+// one bit per category. We can therefore enable a particular category by
+// setting its corresponding bit in the keyword. For events that are not present
+// in |kFilteredEventGroupNames|, we have two bits that control their
+// behaviour. When bit 46 is enabled, any event that is not disabled by default
+// (ie. doesn't start with disabled-by-default-) will be exported. Likewise,
+// when bit 47 is enabled, any event that is disabled by default will be
+// exported.
+//
+// Examples of passing keywords to the provider using xperf:
+// # This exports "benchmark" and "cc" events
+// xperf -start chrome -on Chrome:0x9
+//
+// # This exports "gpu", "netlog" and all other events that are not disabled by
+// # default
+// xperf -start chrome -on Chrome:0x4000000000A0
+//
+// More info about starting a trace and keyword can be obtained by using the
+// help section of xperf (xperf -help start). Note that xperf documentation
+// refers to keywords as flags and there are two ways to enable them, using
+// group names or the hex representation. We only support the latter. Also, we
+// ignore the level.
+//
+// To avoid continually having to bump MSEdge values to next higher bits, we
+// are putting MSEdge values at the high end of the bit range and will grow
+// 'down' to lower bits for future MSEdge entries.
+//
+// As the writing of this comment, we have 4 values:
+//    "navigation",                                       // 0x40000000000
+//    "ServiceWorker",                                    // 0x80000000000
+//    "edge_webview",                                     // 0x100000000000
+//    "diagnostic_event",                                 // 0x200000000000
+//
+// This means the next value added should be:
+//    "the_next_value",                                   // 0x20000000000
+//    "navigation",                                       // 0x40000000000
+//    "ServiceWorker",                                    // 0x80000000000
+//    "edge_webview",                                     // 0x100000000000
+//    "diagnostic_event",                                 // 0x200000000000
+//
+// The addition of the "unused_bit_nn" entries keeps the existing code execution
+// routines working (ex. TraceEventETWExport::UpdateEnabledCategories()) and
+// enables others to see which bits are available.
+//
+// Example: For some new category group...
+//   "latency",                                          // 0x8000
+//   "blink.user_timing",                                // 0x10000
+//   "unused_bit_18",                                    // 0x20000
+//   "unused_bit_19",                                    // 0x40000
+//   "unused_bit_20",                                    // 0x80000
+//    ...
+// becomes:
+//   "latency",                                          // 0x8000
+//   "blink.user_timing",                                // 0x10000
+//   "new_upstream_value",                               // 0x20000
+//   "unused_bit_19",                                    // 0x40000
+//   "unused_bit_20",                                    // 0x80000
+//
+// The high 16 bits of the keyword have special semantics and should not be
+// set for enabling individual categories as they are reserved by winmeta.xml.
+constexpr std::array<const char*, 64> kFilteredEventGroupNames = {
+    "benchmark",                             // 0x1
+    "blink",                                 // 0x2
+    "browser",                               // 0x4
+    "cc",                                    // 0x8
+    "evdev",                                 // 0x10
+    "gpu",                                   // 0x20
+    "input",                                 // 0x40
+    "netlog",                                // 0x80
+    "sequence_manager",                      // 0x100
+    "toplevel",                              // 0x200
+    "v8",                                    // 0x400
+    "disabled-by-default-cc.debug",          // 0x800
+    "disabled-by-default-cc.debug.picture",  // 0x1000
+    "disabled-by-default-toplevel.flow",     // 0x2000
+    "startup",                               // 0x4000
+    "latency",                               // 0x8000
+    "blink.user_timing",                     // 0x10000
+    "media",                                 // 0x20000
+    "loading",                               // 0x40000
+    "base",                                  // 0x80000
+    "devtools.timeline",                     // 0x100000
+    "mediastream",                           // 0x200000
+    "unused_bit_22",                         // 0x400000
+    "unused_bit_23",                         // 0x800000
+    "unused_bit_24",                         // 0x1000000
+    "unused_bit_25",                         // 0x2000000
+    "unused_bit_26",                         // 0x4000000
+    "unused_bit_27",                         // 0x8000000
+    "unused_bit_28",                         // 0x10000000
+    "unused_bit_29",                         // 0x20000000
+    "unused_bit_30",                         // 0x40000000
+    "unused_bit_31",                         // 0x80000000
+    "unused_bit_32",                         // 0x100000000
+    "unused_bit_33",                         // 0x200000000
+    "unused_bit_34",                         // 0x400000000
+    "unused_bit_35",                         // 0x800000000
+    "unused_bit_36",                         // 0x1000000000
+    "unused_bit_37",                         // 0x2000000000
+    "unused_bit_38",                         // 0x4000000000
+    "unused_bit_39",                         // 0x8000000000
+    "unused_bit_40",                         // 0x10000000000
+    "unused_bit_41",                         // 0x20000000000
+    "navigation",                            // 0x40000000000
+    "ServiceWorker",                         // 0x80000000000
+    "edge_webview",                          // 0x100000000000
+    "diagnostic_event",                      // 0x200000000000
+    "__OTHER_EVENTS",                        // 0x400000000000 See below
+    "__DISABLED_OTHER_EVENTS",               // 0x800000000000 See below
+};
+
+// These must be kept as the last two entries in the above array.
+constexpr uint8_t kOtherEventsGroupNameIndex = 46;
+constexpr uint8_t kDisabledOtherEventsGroupNameIndex = 47;
+
 template <typename T>
 concept EtwFieldWithDataDescType = EtwFieldBaseType<T> && requires(T t) {
   { t.GetDataDescCount() } -> std::same_as<uint8_t>;
@@ -146,6 +268,50 @@ std::string_view GetDebugAnnotationName(
   }
   return std::string_view(name.data, name.size);
 }
+
+uint64_t CategoryGroupToETWKeyword(std::string_view category_group_name) {
+  static NoDestructor<base::flat_map<std::string_view, uint64_t>>
+      categories_to_keyword([] {
+        std::vector<std::pair<std::string_view, uint64_t>> items;
+        for (size_t i = 0; i < kOtherEventsGroupNameIndex; i++) {
+          uint64_t keyword = 1ULL << i;
+          items.emplace_back(kFilteredEventGroupNames[i], keyword);
+        }
+        std::sort(items.begin(), items.end());
+        return base::flat_map<std::string_view, uint64_t>(base::sorted_unique,
+                                                          std::move(items));
+      }());
+
+  uint64_t keyword = 0;
+
+  // To enable multiple sessions with this provider enabled we need to log the
+  // level and keyword with the event so that if the sessions differ in the
+  // level or keywords enabled we log the right events and allow ETW to
+  // route the data to the appropriate session.
+  // TODO(joel@microsoft.com) Explore better methods in future integration
+  // with perfetto.
+
+  StringViewTokenizer category_group_tokens(category_group_name.begin(),
+                                            category_group_name.end(), ",");
+  while (category_group_tokens.GetNext()) {
+    std::string_view category_group_token = category_group_tokens.token_piece();
+
+    // Lookup the keyword for this part of the category_group_name
+    // and or in the keyword.
+    auto it = categories_to_keyword->find(category_group_token);
+    if (it != categories_to_keyword->end()) {
+      keyword |= it->second;
+    } else {
+      if (StartsWith(category_group_token, "disabled-by-default")) {
+        keyword |= (1ULL << kDisabledOtherEventsGroupNameIndex);
+      } else {
+        keyword |= (1ULL << kOtherEventsGroupNameIndex);
+      }
+    }
+  }
+  return keyword;
+}
+
 }  // namespace
 
 class MultiEtwPayloadHandler final {
@@ -353,5 +519,29 @@ ETWInterceptor::ThreadLocalState::~ThreadLocalState() = default;
 void ETWInterceptor::OnSetup(const SetupArgs&) {}
 void ETWInterceptor::OnStart(const StartArgs&) {}
 void ETWInterceptor::OnStop(const StopArgs&) {}
+
+perfetto::protos::gen::TrackEventConfig ETWKeywordToTrackEventConfig(
+    uint64_t keyword) {
+  perfetto::protos::gen::TrackEventConfig track_event_config;
+  for (size_t i = 0; i < kOtherEventsGroupNameIndex; ++i) {
+    if (keyword & (1ULL << i)) {
+      track_event_config.add_enabled_categories(kFilteredEventGroupNames[i]);
+    }
+  }
+  bool other_events_enabled = (keyword & (1ULL << kOtherEventsGroupNameIndex));
+  bool disabled_other_events_enables =
+      (keyword & (1ULL << kDisabledOtherEventsGroupNameIndex));
+  if (other_events_enabled) {
+    track_event_config.add_enabled_categories("*");
+  } else {
+    track_event_config.add_disabled_categories("*");
+  }
+  if (!disabled_other_events_enables) {
+    track_event_config.add_disabled_categories("disabled-by-default-*");
+  } else if (other_events_enabled) {
+    track_event_config.add_enabled_categories("disabled-by-default-*");
+  }
+  return track_event_config;
+}
 
 }  // namespace base::trace_event

@@ -19,7 +19,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/version.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/country_codes/country_codes.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/policy/core/common/mock_policy_service.h"
@@ -373,9 +372,9 @@ TEST_F(SearchEngineChoiceServiceTest,
   TemplateURLData data_from_policies;
   data_from_policies.SetURL("test");
   base::Value::Dict dict = TemplateURLDataToDictionary(data_from_policies);
-  dict.Set(DefaultSearchManager::kCreatedByPolicy,
-           static_cast<int>(
-               TemplateURLData::CreatedByPolicy::kDefaultSearchProvider));
+  dict.Set(
+      DefaultSearchManager::kPolicyOrigin,
+      static_cast<int>(TemplateURLData::PolicyOrigin::kDefaultSearchProvider));
   pref_service()->SetManagedPref(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName,
       std::move(dict));

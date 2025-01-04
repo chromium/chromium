@@ -10,7 +10,6 @@
 #include "base/test/run_until.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "content/browser/renderer_host/delegated_frame_host.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -44,7 +43,7 @@
 namespace content {
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kMinimalPageDataURL[] =
     "data:text/html,<html><head></head><body>Hello, world</body></html>";
 
@@ -56,7 +55,7 @@ void GiveItSomeTime() {
       FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(250));
   run_loop.Run();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class FakeWebContentsDelegate : public WebContentsDelegate {
  public:
@@ -123,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest, AuraWindowLookup) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
                        // TODO(crbug.com/40874148): Re-enable this test
                        // TODO(crbug.com/40873813): Re-enable this test
@@ -243,21 +242,10 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
   EXPECT_FALSE(
       GetDelegatedFrameHost()->stale_content_layer_->has_external_content());
 }
-#endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // #if BUILDFLAG(IS_CHROMEOS)
 
-// TODO(crbug.com/40148102): fix the way how exo creates accelerated widgets. At
-// the moment, they are created only after the client attaches a buffer to a
-// surface, which is incorrect and results in the "[destroyed object]: error 1:
-// popup parent not constructed" error.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_SetKeyboardFocusOnTapAfterDismissingPopup \
-  DISABLED_SetKeyboardFocusOnTapAfterDismissingPopup
-#else
-#define MAYBE_SetKeyboardFocusOnTapAfterDismissingPopup \
-  SetKeyboardFocusOnTapAfterDismissingPopup
-#endif
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
-                       MAYBE_SetKeyboardFocusOnTapAfterDismissingPopup) {
+                       SetKeyboardFocusOnTapAfterDismissingPopup) {
   GURL page(
       "data:text/html;charset=utf-8,"
       "<!DOCTYPE html>"
@@ -700,7 +688,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraActiveWidgetTest,
   EXPECT_FALSE(FrameIsFocused(iframe));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Verifies that getting active input control accounts for iframe positioning.
 // Flaky: crbug.com/1293700
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraActiveWidgetTest,

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/user_script_loader.h"
 
 #include <stddef.h>
@@ -77,11 +72,12 @@ bool GetDeclarationValue(std::string_view line,
     return false;
   }
 
-  std::string temp(line.data() + index + prefix.length(),
-                   line.length() - index - prefix.length());
+  std::string_view temp = line.substr(index + prefix.length(),
+                                      line.length() - index - prefix.length());
 
-  if (temp.empty() || !base::IsAsciiWhitespace(temp[0]))
+  if (temp.empty() || !base::IsAsciiWhitespace(temp[0])) {
     return false;
+  }
 
   base::TrimWhitespaceASCII(temp, base::TRIM_ALL, value);
   return true;
@@ -113,20 +109,21 @@ bool UserScriptLoader::ParseMetadataHeader(std::string_view script_text,
   size_t line_end = line_start;
   bool in_metadata = false;
 
-  static const std::string_view kUserScriptBegin("// ==UserScript==");
-  static const std::string_view kUserScriptEng("// ==/UserScript==");
-  static const std::string_view kNamespaceDeclaration("// @namespace");
-  static const std::string_view kNameDeclaration("// @name");
-  static const std::string_view kVersionDeclaration("// @version");
-  static const std::string_view kDescriptionDeclaration("// @description");
-  static const std::string_view kIncludeDeclaration("// @include");
-  static const std::string_view kExcludeDeclaration("// @exclude");
-  static const std::string_view kMatchDeclaration("// @match");
-  static const std::string_view kExcludeMatchDeclaration("// @exclude_match");
-  static const std::string_view kRunAtDeclaration("// @run-at");
-  static const std::string_view kRunAtDocumentStartValue("document-start");
-  static const std::string_view kRunAtDocumentEndValue("document-end");
-  static const std::string_view kRunAtDocumentIdleValue("document-idle");
+  static constexpr std::string_view kUserScriptBegin("// ==UserScript==");
+  static constexpr std::string_view kUserScriptEng("// ==/UserScript==");
+  static constexpr std::string_view kNamespaceDeclaration("// @namespace");
+  static constexpr std::string_view kNameDeclaration("// @name");
+  static constexpr std::string_view kVersionDeclaration("// @version");
+  static constexpr std::string_view kDescriptionDeclaration("// @description");
+  static constexpr std::string_view kIncludeDeclaration("// @include");
+  static constexpr std::string_view kExcludeDeclaration("// @exclude");
+  static constexpr std::string_view kMatchDeclaration("// @match");
+  static constexpr std::string_view kExcludeMatchDeclaration(
+      "// @exclude_match");
+  static constexpr std::string_view kRunAtDeclaration("// @run-at");
+  static constexpr std::string_view kRunAtDocumentStartValue("document-start");
+  static constexpr std::string_view kRunAtDocumentEndValue("document-end");
+  static constexpr std::string_view kRunAtDocumentIdleValue("document-idle");
 
   while (line_start < script_text.length()) {
     line_end = script_text.find('\n', line_start);
@@ -452,7 +449,7 @@ void UserScriptLoader::OnScriptsLoaded(
     content::RenderProcessHost* process = i.GetCurrentValue();
     SendUpdateResult update_result = SendUpdate(process, shared_memory_);
     if (update_result == SendUpdateResult::kRendererHasBeenNotified) {
-      ids_of_newly_notified_processes.push_back(process->GetID());
+      ids_of_newly_notified_processes.push_back(process->GetDeprecatedID());
     }
   }
 
@@ -512,11 +509,12 @@ UserScriptLoader::SendUpdateResult UserScriptLoader::SendUpdate(
   // other extensions are injected into webviews.
   if (process->IsForGuestsOnly() &&
       !CanExecuteScriptEverywhere(browser_context_, host_id())) {
-    DCHECK(WebViewRendererState::GetInstance()->IsGuest(process->GetID()));
+    DCHECK(WebViewRendererState::GetInstance()->IsGuest(
+        process->GetDeprecatedID()));
 
     std::string owner_host;
     bool found_owner = WebViewRendererState::GetInstance()->GetOwnerInfo(
-        process->GetID(), /*owner_process_id=*/nullptr, &owner_host);
+        process->GetDeprecatedID(), /*owner_process_id=*/nullptr, &owner_host);
     DCHECK(found_owner);
 
     // Keep this check in sync with the approach and formatting in:

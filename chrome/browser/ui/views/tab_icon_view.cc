@@ -76,8 +76,7 @@ TabIconView::TabIconView() {
   SetFocusBehavior(FocusBehavior::NEVER);
 }
 
-TabIconView::~TabIconView() {
-}
+TabIconView::~TabIconView() = default;
 
 void TabIconView::SetModel(TabIconViewModel* model) {
   model_ = model;
@@ -85,15 +84,17 @@ void TabIconView::SetModel(TabIconViewModel* model) {
 }
 
 void TabIconView::Update() {
-  if (!model_ || !model_->ShouldTabIconViewAnimate())
+  if (!model_ || !model_->ShouldTabIconViewAnimate()) {
     throbber_start_time_ = base::TimeTicks();
+  }
 
   SchedulePaint();
 }
 
 void TabIconView::PaintThrobber(gfx::Canvas* canvas) {
-  if (throbber_start_time_ == base::TimeTicks())
+  if (throbber_start_time_ == base::TimeTicks()) {
     throbber_start_time_ = base::TimeTicks::Now();
+  }
 
   gfx::PaintThrobberSpinning(canvas, GetLocalBounds(),
                              GetColorProvider()->GetColor(ui::kColorThrobber),

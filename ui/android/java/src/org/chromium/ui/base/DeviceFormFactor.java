@@ -11,15 +11,26 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.BuildConfig;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
 
 /** UI utilities for accessing form factor information. */
+@NullMarked
 public class DeviceFormFactor {
+    /**
+     * Desktop form factor.
+     *
+     * <p>Identified by <code>isDesktop() == true</code>.
+     */
+    public static final String DESKTOP = "Desktop";
+
     /**
      * Phone form factor.
      *
@@ -47,7 +58,16 @@ public class DeviceFormFactor {
     private static final int SCREEN_BUCKET_LARGET_TABLET = 3;
 
     /** See {@link #setIsTabletForTesting(boolean)}. */
-    private static Boolean sIsTabletForTesting;
+    private static @Nullable Boolean sIsTabletForTesting;
+
+    /**
+     * Only devices built with IS_DESKTOP_ANDROID will return true.
+     *
+     * @return Whether the device is a Desktop.
+     */
+    public static boolean isDesktop() {
+        return BuildConfig.IS_DESKTOP_ANDROID;
+    }
 
     /**
      * Each activity could be on a different display, and this will just tell you whether the

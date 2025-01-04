@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/check.h"
+#include "base/strings/stringprintf.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/quads/draw_quad.h"

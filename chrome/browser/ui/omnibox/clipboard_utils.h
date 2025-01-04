@@ -9,7 +9,6 @@
 
 #include <string>
 
-
 // Truncates the clipboard text returned in order to improve performance and
 // prevent unresponsiveness. For reference, a book is about ~500k characters and
 // data URLs served by google images are usually 30k characters or less.

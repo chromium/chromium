@@ -755,12 +755,6 @@ void WorkerGlobalScope::SetWorkerMainScriptLoadingParametersForModules(
       std::move(worker_main_script_load_params_for_modules);
 }
 
-void WorkerGlobalScope::queueMicrotask(V8VoidFunction* callback) {
-  GetAgent()->event_loop()->EnqueueMicrotask(
-      WTF::BindOnce(&V8VoidFunction::InvokeAndReportException,
-                    WrapPersistent(callback), nullptr));
-}
-
 void WorkerGlobalScope::SetWorkerSettings(
     std::unique_ptr<WorkerSettings> worker_settings) {
   worker_settings_ = std::move(worker_settings);
@@ -801,6 +795,7 @@ void WorkerGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(trusted_types_);
   visitor->Trace(worker_script_);
   visitor->Trace(browser_interface_broker_proxy_);
+  UniversalGlobalScope::Trace(visitor);
   WorkerOrWorkletGlobalScope::Trace(visitor);
   Supplementable<WorkerGlobalScope>::Trace(visitor);
 }

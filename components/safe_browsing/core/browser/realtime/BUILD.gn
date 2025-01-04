@@ -40,6 +40,7 @@ static_library("url_lookup_service") {
     "//components/prefs",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/browser:referrer_chain_provider",
+    "//components/safe_browsing/core/browser:referring_app_info",
     "//components/safe_browsing/core/browser:token_fetcher",
     "//components/safe_browsing/core/browser:verdict_cache_manager",
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
@@ -64,12 +65,12 @@ static_library("url_lookup_service_base") {
 
   deps = [
     "//base:base",
-    "//build:chromeos_buildflags",
     "//components/enterprise/common/proto:connectors_proto",
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/browser:referrer_chain_provider",
+    "//components/safe_browsing/core/browser:referring_app_info",
     "//components/safe_browsing/core/browser:verdict_cache_manager",
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
     "//components/safe_browsing/core/browser/utils",

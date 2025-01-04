@@ -188,6 +188,10 @@ BASE_DECLARE_FEATURE(kFreezingOnBatterySaver);
 // - Pretend that all tabs have high CPU usage in background.
 BASE_DECLARE_FEATURE(kFreezingOnBatterySaverForTesting);
 
+// When enabled, the freezing policy won't freeze pages that are opted out of
+// tab discarding.
+BASE_DECLARE_FEATURE(kFreezingFollowsDiscardOptOut);
+
 // When enabled, Resource Attribution measurements will include contexts for
 // individual origins.
 BASE_DECLARE_FEATURE(kResourceAttributionIncludeOrigins);

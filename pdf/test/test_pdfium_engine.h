@@ -109,7 +109,7 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   MOCK_METHOD(void, DiscardStroke, (int, InkStrokeId), (override));
 
-  MOCK_METHOD((std::map<InkModeledShapeId, ink::ModeledShape>),
+  MOCK_METHOD((std::map<InkModeledShapeId, ink::PartitionedMesh>),
               LoadV2InkPathsForPage,
               (int),
               (override));

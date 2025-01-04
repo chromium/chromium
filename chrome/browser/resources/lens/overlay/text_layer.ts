@@ -649,7 +649,7 @@ export class TextLayerElement extends PolymerElement {
 
     // Flatten Text structure to a list of arrays for easier rendering and
     // referencing.
-    for (const paragraph of text.textLayout.paragraphs) {
+    for (const paragraph of text.textLayout?.paragraphs ?? []) {
       const hasParagraphTranslation = paragraph.translation !== null;
       // We are looking for translated paragraphs first. If they do not exist,
       // we should default to the detected text. Just because we have

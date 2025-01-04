@@ -5,10 +5,10 @@
 #include "base/test/task_environment.h"
 
 #include <atomic>
+#include <cstdint>
 #include <memory>
 #include <string_view>
 
-#include "base/atomicops.h"
 #include "base/cancelable_callback.h"
 #include "base/check.h"
 #include "base/debug/debugger.h"
@@ -186,94 +186,50 @@ void DelayedTasksTest(TaskEnvironment::TimeSource time_source) {
   TaskEnvironment task_environment(
       time_source, TaskEnvironment::ThreadPoolExecutionMode::QUEUED);
 
-  subtle::Atomic32 counter = 0;
+  std::atomic<uint32_t> counter = 0;
+  auto post_on_single_thread_task_runner = [&counter](uint32_t increment,
+                                                      base::TimeDelta delay) {
+    SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, BindLambdaForTesting([increment, &counter]() {
+          counter.fetch_add(increment, std::memory_order_relaxed);
+        }),
+        delay);
+  };
+  auto post_on_thread_pool = [&counter](uint32_t increment,
+                                        base::TimeDelta delay) {
+    ThreadPool::PostDelayedTask(
+        FROM_HERE, BindLambdaForTesting([increment, &counter]() {
+          counter.fetch_add(increment, std::memory_order_relaxed);
+        }),
+        delay);
+  };
 
-  constexpr base::TimeDelta kShortTaskDelay = Days(1);
-  // Should run only in MOCK_TIME environment when time is fast-forwarded.
-  SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      BindOnce(
-          [](subtle::Atomic32* counter) {
-            subtle::NoBarrier_AtomicIncrement(counter, 4);
-          },
-          Unretained(&counter)),
-      kShortTaskDelay);
-  ThreadPool::PostDelayedTask(FROM_HERE,
-                              BindOnce(
-                                  [](subtle::Atomic32* counter) {
-                                    subtle::NoBarrier_AtomicIncrement(counter,
-                                                                      128);
-                                  },
-                                  Unretained(&counter)),
-                              kShortTaskDelay);
+  constexpr base::TimeDelta kShortTaskDelay = base::Days(1);
+  post_on_single_thread_task_runner(4, kShortTaskDelay);
+  post_on_thread_pool(128, kShortTaskDelay);
 
   constexpr base::TimeDelta kLongTaskDelay = Days(7);
   // Same as first task, longer delays to exercise
   // FastForwardUntilNoTasksRemain().
-  SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      BindOnce(
-          [](subtle::Atomic32* counter) {
-            subtle::NoBarrier_AtomicIncrement(counter, 8);
-          },
-          Unretained(&counter)),
-      Days(5));
-  SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      BindOnce(
-          [](subtle::Atomic32* counter) {
-            subtle::NoBarrier_AtomicIncrement(counter, 16);
-          },
-          Unretained(&counter)),
-      kLongTaskDelay);
-  ThreadPool::PostDelayedTask(FROM_HERE,
-                              BindOnce(
-                                  [](subtle::Atomic32* counter) {
-                                    subtle::NoBarrier_AtomicIncrement(counter,
-                                                                      256);
-                                  },
-                                  Unretained(&counter)),
-                              kLongTaskDelay * 2);
-  SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      BindOnce(
-          [](subtle::Atomic32* counter) {
-            subtle::NoBarrier_AtomicIncrement(counter, 512);
-          },
-          Unretained(&counter)),
-      kLongTaskDelay * 3);
-  ThreadPool::PostDelayedTask(FROM_HERE,
-                              BindOnce(
-                                  [](subtle::Atomic32* counter) {
-                                    subtle::NoBarrier_AtomicIncrement(counter,
-                                                                      1024);
-                                  },
-                                  Unretained(&counter)),
-                              kLongTaskDelay * 4);
+  post_on_single_thread_task_runner(8, Days(5));
+  post_on_single_thread_task_runner(16, kLongTaskDelay);
+  post_on_thread_pool(256, kLongTaskDelay * 2);
+  post_on_single_thread_task_runner(512, kLongTaskDelay * 3);
+  post_on_thread_pool(1024, kLongTaskDelay * 4);
 
-  SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, BindOnce(
-                     [](subtle::Atomic32* counter) {
-                       subtle::NoBarrier_AtomicIncrement(counter, 1);
-                     },
-                     Unretained(&counter)));
-  ThreadPool::PostTask(FROM_HERE, BindOnce(
-                                      [](subtle::Atomic32* counter) {
-                                        subtle::NoBarrier_AtomicIncrement(
-                                            counter, 2);
-                                      },
-                                      Unretained(&counter)));
+  post_on_single_thread_task_runner(1, TimeDelta());
+  post_on_thread_pool(2, TimeDelta());
 
   // This expectation will fail flakily if the preceding PostTask() is executed
   // asynchronously, indicating a problem with the QUEUED execution mode.
-  int expected_value = 0;
-  EXPECT_EQ(expected_value, counter);
+  uint32_t expected_value = 0;
+  EXPECT_EQ(expected_value, counter.load(std::memory_order_relaxed));
 
   // RunUntilIdle() should process non-delayed tasks only in all queues.
   task_environment.RunUntilIdle();
   expected_value += 1;
   expected_value += 2;
-  EXPECT_EQ(expected_value, counter);
+  EXPECT_EQ(expected_value, counter.load(std::memory_order_relaxed));
 
   if (time_source == TaskEnvironment::TimeSource::MOCK_TIME) {
     const TimeTicks start_time = task_environment.NowTicks();
@@ -285,7 +241,7 @@ void DelayedTasksTest(TaskEnvironment::TimeSource time_source) {
                   "|kInferiorTaskDelay| should be "
                   "set to a value inferior to the first posted task's delay.");
     task_environment.FastForwardBy(kInferiorTaskDelay);
-    EXPECT_EQ(expected_value, counter);
+    EXPECT_EQ(expected_value, counter.load(std::memory_order_relaxed));
     // Time advances to cap even if there was no task at cap and live ticks
     // advances by the same amount.
     EXPECT_EQ(task_environment.NowTicks() - start_time, kInferiorTaskDelay);
@@ -295,7 +251,7 @@ void DelayedTasksTest(TaskEnvironment::TimeSource time_source) {
     task_environment.FastForwardBy(kShortTaskDelay - kInferiorTaskDelay);
     expected_value += 4;
     expected_value += 128;
-    EXPECT_EQ(expected_value, counter);
+    EXPECT_EQ(expected_value, counter.load(std::memory_order_relaxed));
     EXPECT_EQ(task_environment.NowTicks() - start_time, kShortTaskDelay);
     EXPECT_EQ(task_environment.NowLiveTicks() - live_start_time,
               kShortTaskDelay);
@@ -306,7 +262,7 @@ void DelayedTasksTest(TaskEnvironment::TimeSource time_source) {
     expected_value += 256;
     expected_value += 512;
     expected_value += 1024;
-    EXPECT_EQ(expected_value, counter);
+    EXPECT_EQ(expected_value, counter.load(std::memory_order_relaxed));
     EXPECT_EQ(task_environment.NowTicks() - start_time, kLongTaskDelay * 4);
     EXPECT_EQ(task_environment.NowLiveTicks() - live_start_time,
               kLongTaskDelay * 4);

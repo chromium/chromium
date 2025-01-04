@@ -195,8 +195,7 @@ DevToolsToolboxDelegate::DevToolsToolboxDelegate(WebContents* toolbox_contents,
       inspected_web_contents_(web_contents ? web_contents->GetWeakPtr()
                                            : nullptr) {}
 
-DevToolsToolboxDelegate::~DevToolsToolboxDelegate() {
-}
+DevToolsToolboxDelegate::~DevToolsToolboxDelegate() = default;
 
 content::WebContents* DevToolsToolboxDelegate::OpenURLFromTab(
     content::WebContents* source,
@@ -1667,7 +1666,7 @@ void DevToolsWindow::OpenInNewTab(const GURL& url) {
     content::RenderViewHost* render_view_host =
         inspected_web_contents->GetPrimaryMainFrame()->GetRenderViewHost();
     if (render_view_host)
-      child_id = render_view_host->GetProcess()->GetID();
+      child_id = render_view_host->GetProcess()->GetDeprecatedID();
   }
   // Use about:blank instead of an empty GURL. The browser treats an empty GURL
   // as navigating to the home page, which may be privileged (chrome://newtab/).
@@ -1965,8 +1964,9 @@ void DevToolsWindow::MaybeShowSharedProcessInfobar() {
   }
 
   // Only show the infobar only if the RenderProcessHost id changes.
-  int rph_id =
-      inspected_web_contents->GetPrimaryMainFrame()->GetProcess()->GetID();
+  int rph_id = inspected_web_contents->GetPrimaryMainFrame()
+                   ->GetProcess()
+                   ->GetDeprecatedID();
   if (checked_sharing_process_id_ == rph_id) {
     return;
   }

@@ -19,8 +19,6 @@ source_set("model") {
     "//base",
     "//components/collaboration/internal:collaboration_finder",
     "//components/data_sharing/public",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/saved_tab_groups/delegate",
     "//components/saved_tab_groups/internal",
     "//components/saved_tab_groups/public",

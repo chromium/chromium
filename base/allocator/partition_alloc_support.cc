@@ -907,9 +907,16 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
       false;
 #endif
 
+  size_t extra_extras_size = 0;
+  if (enable_brp) {
+    extra_extras_size = static_cast<size_t>(
+        base::features::kBackupRefPtrExtraExtrasSizeParam.Get());
+  }
+
   return {
       enable_brp,
       process_affected_by_brp_flag,
+      extra_extras_size,
   };
 }
 
@@ -1154,6 +1161,7 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
 
   allocator_shim::ConfigurePartitions(
       allocator_shim::EnableBrp(brp_config.enable_brp),
+      brp_config.extra_extras_size,
       allocator_shim::EnableMemoryTagging(enable_memory_tagging),
       memory_tagging_reporting_mode, bucket_distribution,
       allocator_shim::SchedulerLoopQuarantine(scheduler_loop_quarantine),
@@ -1307,7 +1315,8 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
   if (ShouldEnableShadowMetadata(process_type)) {
     partition_alloc::PartitionRoot::EnableShadowMetadata(
         partition_alloc::internal::PoolHandleMask::kRegular |
-        partition_alloc::internal::PoolHandleMask::kBRP);
+        partition_alloc::internal::PoolHandleMask::kBRP |
+        partition_alloc::internal::PoolHandleMask::kConfigurable);
   }
 #endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 }

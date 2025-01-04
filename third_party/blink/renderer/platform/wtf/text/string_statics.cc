@@ -60,8 +60,7 @@ WTF_EXPORT DEFINE_GLOBAL(String, g_empty_string);
 WTF_EXPORT DEFINE_GLOBAL(String, g_empty_string16_bit);
 
 namespace {
-std::aligned_storage_t<sizeof(String) *
-                           NewlineThenWhitespaceStringsTable::kTableSize,
+std::aligned_storage_t<sizeof(NewlineThenWhitespaceStringsTable::TableType),
                        alignof(String)>
     g_canonical_whitespace_table_storage;
 }
@@ -83,10 +82,10 @@ WTF_EXPORT unsigned ComputeHashForWideString(const UChar* str,
   }
 }
 
-WTF_EXPORT const String (&NewlineThenWhitespaceStringsTable::g_table_)
-    [NewlineThenWhitespaceStringsTable::kTableSize] = *reinterpret_cast<
-        String (*)[NewlineThenWhitespaceStringsTable::kTableSize]>(
-        &g_canonical_whitespace_table_storage);
+WTF_EXPORT const NewlineThenWhitespaceStringsTable::TableType&
+    NewlineThenWhitespaceStringsTable::g_table_ =
+        *reinterpret_cast<NewlineThenWhitespaceStringsTable::TableType*>(
+            &g_canonical_whitespace_table_storage);
 
 NOINLINE unsigned StringImpl::HashSlowCase() const {
   if (Is8Bit()) {

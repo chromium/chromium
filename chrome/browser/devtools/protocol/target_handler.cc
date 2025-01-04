@@ -73,6 +73,8 @@ protocol::Response TargetHandler::SetRemoteLocations(
 
 protocol::Response TargetHandler::CreateTarget(
     const std::string& url,
+    std::optional<int> left,
+    std::optional<int> top,
     std::optional<int> width,
     std::optional<int> height,
     std::optional<std::string> browser_context_id,

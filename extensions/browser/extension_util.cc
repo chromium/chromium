@@ -409,14 +409,14 @@ bool CanRendererActOnBehalfOfExtension(
 
   // Can `render_process_id` host a chrome-extension:// origin (frame, worker,
   // etc.)?
-  if (CanRendererHostExtensionOrigin(render_process_host.GetID(), extension_id,
-                                     is_sandboxed)) {
+  if (CanRendererHostExtensionOrigin(render_process_host.GetDeprecatedID(),
+                                     extension_id, is_sandboxed)) {
     return true;
   }
 
   if (render_frame_host) {
-    DCHECK_EQ(render_process_host.GetID(),
-              render_frame_host->GetProcess()->GetID());
+    DCHECK_EQ(render_process_host.GetDeprecatedID(),
+              render_frame_host->GetProcess()->GetDeprecatedID());
     content::SiteInstance& site_instance =
         *render_frame_host->GetSiteInstance();
 

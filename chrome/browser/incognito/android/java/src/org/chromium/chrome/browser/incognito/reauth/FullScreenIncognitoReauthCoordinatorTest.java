@@ -28,7 +28,7 @@ import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.ui.listmenu.ListMenuButtonDelegate;
+import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -46,7 +46,7 @@ public class FullScreenIncognitoReauthCoordinatorTest {
     @Mock private Runnable mSeeOtherTabsRunnableMock;
     @Mock private ModalDialogManager mModalDialogManagerMock;
     @Mock private IncognitoReauthMenuDelegate mIncognitoReauthMenuDelegateMock;
-    @Mock private ListMenuButtonDelegate mIncognitoReauthListMenuButtonDelegateMock;
+    @Mock private ListMenuDelegate mIncognitoReauthListMenuDelegateMock;
 
     @Mock private View mIncognitoReauthViewMock;
     @Mock private PropertyModel mPropertyModelMock;
@@ -88,7 +88,7 @@ public class FullScreenIncognitoReauthCoordinatorTest {
     @Test(expected = AssertionError.class)
     @SmallTest
     public void testNullMenuButtonDelegate_ForFullScreen_ThrowsAssertionError() {
-        when(mIncognitoReauthMenuDelegateMock.getListMenuButtonDelegate()).thenReturn(null);
+        when(mIncognitoReauthMenuDelegateMock.getListMenuDelegate()).thenReturn(null);
         mFullScreenIncognitoReauthCoordinator.show();
     }
 
@@ -111,15 +111,15 @@ public class FullScreenIncognitoReauthCoordinatorTest {
     @Test
     @SmallTest
     public void testShow_Invoke_InternalDialogMethod() {
-        when(mIncognitoReauthMenuDelegateMock.getListMenuButtonDelegate())
-                .thenReturn(mIncognitoReauthListMenuButtonDelegateMock);
+        when(mIncognitoReauthMenuDelegateMock.getListMenuDelegate())
+                .thenReturn(mIncognitoReauthListMenuDelegateMock);
         mFullScreenIncognitoReauthCoordinator.setIncognitoReauthDialogForTesting(
                 mIncognitoReauthDialogMock);
         doNothing().when(mIncognitoReauthDialogMock).showIncognitoReauthDialog();
 
         mFullScreenIncognitoReauthCoordinator.show();
 
-        verify(mIncognitoReauthMenuDelegateMock, times(1)).getListMenuButtonDelegate();
+        verify(mIncognitoReauthMenuDelegateMock, times(1)).getListMenuDelegate();
         verify(mIncognitoReauthDialogMock, times(1)).showIncognitoReauthDialog();
     }
 

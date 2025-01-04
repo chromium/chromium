@@ -496,7 +496,7 @@ class Fakes {
     }
 
     /** Fakes android.bluetooth.le.ScanResult */
-    static class FakeScanResult extends ScanResultWrapper {
+    static class FakeScanResult implements ScanResultWrapper {
         private final FakeBluetoothDevice mDevice;
         private final String mLocalName;
         private final int mRssi;
@@ -515,7 +515,6 @@ class Fakes {
                 int txPower,
                 Map<ParcelUuid, byte[]> serviceData,
                 SparseArray<byte[]> manufacturerData) {
-            super(null);
             mDevice = device;
             mLocalName = localName;
             mRssi = rssi;

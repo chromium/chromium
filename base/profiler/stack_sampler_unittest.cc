@@ -255,8 +255,9 @@ class FakeTestUnwinder : public Unwinder {
     // NB: If CanUnwindFrom() returns false then TryUnwind() will not be
     // invoked, so current_unwind_ is guarantee to be incremented only once for
     // each result.
-    if (!can_unwind)
+    if (!can_unwind) {
       ++current_unwind_;
+    }
     return can_unwind;
   }
 
@@ -268,10 +269,11 @@ class FakeTestUnwinder : public Unwinder {
     const Result& current_result = results_[current_unwind_];
     ++current_unwind_;
     CHECK(current_result.can_unwind);
-    for (const auto instruction_pointer : current_result.instruction_pointers)
+    for (const auto instruction_pointer : current_result.instruction_pointers) {
       stack->emplace_back(
           instruction_pointer,
           module_cache()->GetModuleForAddress(instruction_pointer));
+    }
     return current_result.result;
   }
 
@@ -294,8 +296,9 @@ StackSampler::UnwindersFactory MakeUnwindersFactory(
 std::vector<UnwinderCapture> MakeUnwinderStateVector(Unwinder* native_unwinder,
                                                      Unwinder* aux_unwinder) {
   std::vector<UnwinderCapture> unwinders;
-  if (aux_unwinder)
+  if (aux_unwinder) {
     unwinders.emplace_back(aux_unwinder, nullptr);
+  }
   if (native_unwinder) {
     unwinders.emplace_back(native_unwinder, nullptr);
   }

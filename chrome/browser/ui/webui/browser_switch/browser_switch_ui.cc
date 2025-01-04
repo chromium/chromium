@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/browser_switch_resources.h"
@@ -34,6 +33,7 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/webui/webui_util.h"
 #include "url/gurl.h"
 
 namespace {
@@ -52,11 +52,13 @@ bool IsLastTab(const Profile* profile) {
   profile = profile->GetOriginalProfile();
   int tab_count = 0;
   for (const Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->profile()->GetOriginalProfile() != profile)
+    if (browser->profile()->GetOriginalProfile() != profile) {
       continue;
+    }
     tab_count += browser->tab_strip_model()->count();
-    if (tab_count > 1)
+    if (tab_count > 1) {
       return false;
+    }
   }
   return true;
 }
@@ -518,8 +520,9 @@ void BrowserSwitchHandler::HandleGetRulesetSources(
   base::Value::Dict retval;
   for (const auto& source : sources) {
     base::Value val;
-    if (source.url.is_valid())
+    if (source.url.is_valid()) {
       val = base::Value(source.url.spec());
+    }
     // |pref_name| is something like "browser_switcher.blah"; however path
     // expansion is not expected on it as the JavaScript expects to see
     // "browser_switcher.blah" as a key in the object, not a nested hierarchy.

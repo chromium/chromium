@@ -94,6 +94,7 @@ class CORE_EXPORT AnchorElementViewportPositionTracker
   // Called when a scroll completes. Triggers computation of position related
   // metrics for all observed anchors that are currently in the viewport.
   void OnScrollEnd();
+  void OnFirstContentfulPaint();
 
   IntersectionObserver* GetIntersectionObserverForTesting();
 
@@ -105,6 +106,8 @@ class CORE_EXPORT AnchorElementViewportPositionTracker
       const LocalFrameView& local_frame_view) override;
   void DispatchAnchorElementsPositionUpdates();
   void RegisterForLifecycleNotifications();
+  void InitializeIntersectionObserver();
+  void PostFCPDelayTimerFired(TimerBase*);
 
   Member<IntersectionObserver> intersection_observer_;
   // Maximum number of observations for `intersection_observer_`.
@@ -161,6 +164,12 @@ class CORE_EXPORT AnchorElementViewportPositionTracker
   // stopped when `UpdateVisibleAnchors` is called.
   HeapTaskRunnerTimer<AnchorElementViewportPositionTracker>
       position_update_timer_;
+
+  // Used to wait for a period of time after OnFirstContentfulPaint() is called,
+  // (to approximate waiting for LCP) before initializing
+  // |intersection_observer_|.
+  HeapTaskRunnerTimer<AnchorElementViewportPositionTracker>
+      post_fcp_delay_timer_;
 
   HeapHashSet<WeakMember<Observer>> observers_;
 };

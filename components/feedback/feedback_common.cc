@@ -11,7 +11,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "components/feedback/feedback_constants.h"
 #include "components/feedback/feedback_report.h"
 #include "components/feedback/feedback_util.h"
@@ -21,7 +20,7 @@
 #include "components/feedback/proto/math.pb.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #endif
 
@@ -42,7 +41,7 @@ constexpr char kZipExt[] = ".zip";
 constexpr char kPngMimeType[] = "image/png";
 constexpr char kArbitraryMimeType[] = "application/octet-stream";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Keep in sync with
 // google3/java/com/google/wireless/android/tools/betterbug/protos/uploadfeedbackreport.proto.
 constexpr char kIsCrossDeviceIssueKey[] = "is_cross_device_issue";
@@ -53,7 +52,7 @@ constexpr char kInitiatingDeviceName[] = "initiating_device_name";
 // Enum value for MAC_ADDRESS type.
 constexpr char kTargetDeviceIdTypeMacAddressValue[] = "1";
 constexpr char kInitiatingDeviceNameValue[] = "Chromebook";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 constexpr char kIsOffensiveOrUnsafeKey[] = "is_offensive_or_unsafe";
 
@@ -142,7 +141,7 @@ void FeedbackCommon::PrepareReport(
 
   // Set whether we're reporting from ChromeOS or Chrome on another platform.
   userfeedback::ChromeData chrome_data;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const userfeedback::ChromeData_ChromePlatform chrome_platform =
       userfeedback::ChromeData_ChromePlatform_CHROME_OS;
   const int default_product_id = feedback::kChromeOSProductId;
@@ -158,7 +157,7 @@ void FeedbackCommon::PrepareReport(
   chrome_browser_data.set_category(
       userfeedback::ChromeBrowserData_ChromeBrowserCategory_OTHER);
   *(chrome_data.mutable_chrome_browser_data()) = chrome_browser_data;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   chrome_data.set_chrome_platform(chrome_platform);
   // TODO(b/301518187): Investigate if this line is needed in order for custom
   // product IDs to work. Remove `include_chrome_platform_` if it's not needed.
@@ -202,7 +201,7 @@ void FeedbackCommon::PrepareReport(
 
   if (category_tag().size())
     feedback_data->set_bucket(category_tag());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (ash::features::IsLinkCrossDeviceDogfoodFeedbackEnabled() &&
       gaia::IsGoogleInternalAccountEmail(user_email()) &&
       mac_address_.has_value()) {
@@ -214,7 +213,7 @@ void FeedbackCommon::PrepareReport(
     AddFeedbackData(feedback_data, kInitiatingDeviceName,
                     kInitiatingDeviceNameValue);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (is_offensive_or_unsafe_.has_value()) {
     AddFeedbackData(feedback_data, kIsOffensiveOrUnsafeKey,
@@ -252,12 +251,12 @@ int FeedbackCommon::GetMahiProductId() {
   return feedback::kMahiFeedbackProductId;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // static
 int FeedbackCommon::GetChromeOSProductId() {
   return feedback::kChromeOSProductId;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 FeedbackCommon::~FeedbackCommon() = default;
 

@@ -607,7 +607,7 @@ TEST_F(HostResolverServiceEndpointRequestTest, Ipv6SlowResolutionDelayPassed) {
   EXPECT_THAT(requester.request()->GetEndpointResults(), IsEmpty());
 
   // The resolution delay timer fired, IPv4 endpoints should be available.
-  FastForwardBy(DnsTaskResultsManager::kResolutionDelay +
+  FastForwardBy(DnsTaskResultsManager::GetResolutionDelay() +
                 base::Milliseconds(1));
   RunUntilIdle();
   EXPECT_EQ(1u, resolver_->num_running_dispatcher_jobs_for_tests());

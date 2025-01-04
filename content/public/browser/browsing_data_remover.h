@@ -151,9 +151,13 @@ class BrowsingDataRemover {
   static constexpr DataType DATA_TYPE_RELATED_WEBSITE_SETS_PERMISSIONS = 1
                                                                          << 24;
 
+  // Device bound sessions
+  // (https://github.com/WICG/dbsc/blob/main/README.md)
+  static constexpr DataType DATA_TYPE_DEVICE_BOUND_SESSIONS = 1 << 25;
+
   // Embedders can add more datatypes beyond this point.
   static constexpr DataType DATA_TYPE_CONTENT_END =
-      DATA_TYPE_RELATED_WEBSITE_SETS_PERMISSIONS;
+      DATA_TYPE_DEVICE_BOUND_SESSIONS;
 
   // All data stored by the Attribution Reporting API.
   static constexpr DataType DATA_TYPE_ATTRIBUTION_REPORTING =
@@ -178,7 +182,8 @@ class BrowsingDataRemover {
   static constexpr DataType DATA_TYPE_ON_STORAGE_PARTITION =
       DATA_TYPE_DOM_STORAGE | DATA_TYPE_COOKIES |
       DATA_TYPE_AVOID_CLOSING_CONNECTIONS | DATA_TYPE_CACHE |
-      DATA_TYPE_APP_CACHE_DEPRECATED | DATA_TYPE_PRIVACY_SANDBOX;
+      DATA_TYPE_APP_CACHE_DEPRECATED | DATA_TYPE_PRIVACY_SANDBOX |
+      DATA_TYPE_DEVICE_BOUND_SESSIONS;
 
   using OriginType = uint64_t;
   // Web storage origins that StoragePartition recognizes as NOT protected

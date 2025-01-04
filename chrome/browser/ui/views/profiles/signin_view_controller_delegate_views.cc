@@ -87,8 +87,9 @@ void CloseModalSigninInBrowser(
     bool show_profile_switch_iph,
     bool show_supervised_user_iph,
     ProfileCustomizationHandler::CustomizationResult result) {
-  if (!browser)
+  if (!browser) {
     return;
+  }
 
   browser->signin_view_controller()->CloseModalSignin();
   if (show_supervised_user_iph) {
@@ -359,8 +360,9 @@ SigninViewControllerDelegateViews::SigninViewControllerDelegateViews(
       &SigninViewControllerDelegateViews::NotifyModalDialogClosed,
       base::Unretained(this)));
 
-  if (!wait_for_size)
+  if (!wait_for_size) {
     DisplayModal();
+  }
 }
 
 SigninViewControllerDelegateViews::~SigninViewControllerDelegateViews() =
@@ -396,8 +398,9 @@ void SigninViewControllerDelegateViews::DisplayModal() {
   // Avoid displaying the sign-in modal view if there are no active web
   // contents. This happens if the user closes the browser window before this
   // dialog has a chance to be displayed.
-  if (!host_web_contents)
+  if (!host_web_contents) {
     return;
+  }
 
   gfx::NativeWindow window = host_web_contents->GetTopLevelNativeWindow();
   switch (GetModalType()) {
@@ -561,6 +564,7 @@ SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
     }
   }
 
+  std::u16string email = base::UTF8ToUTF16(create_param->account_info.email);
   auto web_view = SigninViewControllerDelegateViews::
       CreateManagedUserNoticeConfirmationWebView(browser,
                                                  std::move(create_param));
@@ -579,7 +583,7 @@ SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
     CHECK(active_contents);
     on_closed_callback = ManagedProfileRequiredNavigationThrottle::
         BlockNavigationUntilEnterpriseActionTaken(
-            browser->profile(), active_contents, dialog_web_contents);
+            browser->profile(), active_contents, dialog_web_contents, email);
 
     content::OpenURLParams params(active_contents->GetVisibleURL(),
                                   content::Referrer(),

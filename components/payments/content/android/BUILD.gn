@@ -13,8 +13,6 @@ static_library("android") {
     "byte_buffer_helper.h",
     "csp_checker_android.cc",
     "csp_checker_android.h",
-    "currency_formatter_android.cc",
-    "currency_formatter_android.h",
     "error_message_util.cc",
     "has_enrolled_instrument_query_android.cc",
     "jni_payment_app.cc",
@@ -70,7 +68,6 @@ static_library("android") {
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/components/payments/CSPCheckerBridge.java",
-    "java/src/org/chromium/components/payments/CurrencyFormatter.java",
     "java/src/org/chromium/components/payments/ErrorMessageUtil.java",
     "java/src/org/chromium/components/payments/HasEnrolledInstrumentQuery.java",
     "java/src/org/chromium/components/payments/JniPaymentApp.java",
@@ -162,6 +159,16 @@ android_library("feature_list_java") {
   ]
 }
 
+android_library("spc_java") {
+  sources = [ "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationNoMatchingCredView.java" ]
+  deps = [
+    ":java_resources",
+    "//base:callback_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+  resources_package = "org.chromium.components.payments"
+}
+
 android_library("full_java") {
   sources = [
     "java/src/org/chromium/components/payments/AndroidPaymentApp.java",
@@ -169,10 +176,8 @@ android_library("full_java") {
     "java/src/org/chromium/components/payments/AndroidPaymentAppFinder.java",
     "java/src/org/chromium/components/payments/BrowserPaymentRequest.java",
     "java/src/org/chromium/components/payments/CSPCheckerBridge.java",
-    "java/src/org/chromium/components/payments/CurrencyFormatter.java",
     "java/src/org/chromium/components/payments/ErrorMessageUtil.java",
     "java/src/org/chromium/components/payments/HasEnrolledInstrumentQuery.java",
-    "java/src/org/chromium/components/payments/InputProtector.java",
     "java/src/org/chromium/components/payments/InvalidPaymentRequest.java",
     "java/src/org/chromium/components/payments/JniPaymentApp.java",
     "java/src/org/chromium/components/payments/JourneyLogger.java",
@@ -205,16 +210,21 @@ android_library("full_java") {
     "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnView.java",
     "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnViewBinder.java",
     "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationNoMatchingCredController.java",
-    "java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationNoMatchingCredView.java",
   ]
   resources_package = "org.chromium.components.payments"
   deps = [
     ":browser_binding_java",
     ":feature_list_java",
+
+    # TODO(crbug.com/382867337): Non-UI code should not depend on UI code.
     ":java_resources",
     ":minimal_java",
     ":pre_purchase_query_enum_java",
     ":service_java",
+
+    # TODO(crbug.com/383334934): Core PaymentRequest code should not depend on
+    # Secure Payment Confirmation (SPC) code.
+    ":spc_java",
     "//base:base_java",
     "//build/android:build_java",
     "//components/autofill/android:autofill_java",
@@ -222,6 +232,9 @@ android_library("full_java") {
     "//components/browser_ui/widget/android:java_resources",
     "//components/embedder_support/android:util_java",
     "//components/page_info/android:java",
+
+    # TODO(crbug.com/382867337): Non-UI code should not depend on UI code.
+    "//components/payments/content/android/ui:java",
     "//components/payments/mojom:mojom_java",
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_java",
@@ -274,6 +287,7 @@ robolectric_library("browser_binding_junit_test") {
     ":browser_binding_java",
     "//base:base_junit_test_support",
     "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
   ]
 }
 
@@ -287,6 +301,7 @@ android_library("browser_binding_unit_device_javatests") {
     "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",
   ]
 }
@@ -390,14 +405,6 @@ java_cpp_enum("pre_purchase_query_enum_javagen") {
   sources = [ "//components/payments/core/pre_purchase_query.h" ]
 }
 
-android_library("payments_java_test_support") {
-  testonly = true
-  sources = [
-    "junit/src/org/chromium/components/payments/test_support/FakeClock.java",
-  ]
-  deps = [ ":java" ]
-}
-
 robolectric_library("junit_test_support") {
   sources = [
     "junit/src/org/chromium/components/payments/test_support/DefaultPaymentFeatureConfig.java",
@@ -432,12 +439,15 @@ robolectric_library("junit") {
     ":browser_binding_junit_test",
     ":java",
     ":junit_test_support",
-    ":payments_java_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/payments/content/android:service_java",
+
+    # TODO(crbug.com/382867337): Non-UI code should not depend on UI code.
+    "//components/payments/content/android/ui:java",
+    "//components/payments/content/android/ui:payments_java_test_support",
     "//components/payments/mojom:mojom_java",
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_java",

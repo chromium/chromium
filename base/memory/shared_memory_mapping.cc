@@ -55,15 +55,17 @@ SharedMemoryMapping::SharedMemoryMapping(span<uint8_t> mapped_span,
 }
 
 void SharedMemoryMapping::Unmap() {
-  if (!IsValid())
+  if (!IsValid()) {
     return;
+  }
 
   SharedMemorySecurityPolicy::ReleaseReservationForMapping(size_);
   SharedMemoryTracker::GetInstance()->DecrementMemoryUsage(*this);
 
   SharedMemoryMapper* mapper = mapper_;
-  if (!mapper)
+  if (!mapper) {
     mapper = SharedMemoryMapper::GetDefaultInstance();
+  }
 
   // The backing mapper expects offset to be aligned to
   // `SysInfo::VMAllocationGranularity()`, so replicate the alignment that was

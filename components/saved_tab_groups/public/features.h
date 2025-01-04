@@ -17,8 +17,6 @@ BASE_DECLARE_FEATURE(kTabGroupSyncDisableNetworkLayer);
 
 BASE_DECLARE_FEATURE(kTabGroupsSaveV2);
 
-BASE_DECLARE_FEATURE(kTabGroupsSaveUIUpdate);
-
 BASE_DECLARE_FEATURE(kTabGroupSyncServiceDesktopMigration);
 
 BASE_DECLARE_FEATURE(kTabGroupsDeferRemoteNavigations);
@@ -38,8 +36,6 @@ BASE_DECLARE_FEATURE(kEnableTabTitleSanitization);
 BASE_DECLARE_FEATURE(kEnableUrlRestriction);
 
 extern bool IsTabGroupsSaveV2Enabled();
-
-extern bool IsTabGroupsSaveUIUpdateEnabled();
 
 extern bool IsTabGroupSyncServiceDesktopMigrationEnabled();
 

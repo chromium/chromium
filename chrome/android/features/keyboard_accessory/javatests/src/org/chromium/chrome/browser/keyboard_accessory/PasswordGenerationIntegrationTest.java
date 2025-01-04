@@ -41,17 +41,18 @@ import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.messages.MessagesTestHelper;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 import org.chromium.ui.widget.ChromeImageButton;
 
@@ -94,9 +95,8 @@ public class PasswordGenerationIntegrationTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        PasswordManagerTestHelper.setAccountForPasswordStore(SigninTestRule.TEST_ACCOUNT_EMAIL);
-
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        CoreAccountInfo account = mSyncTestRule.setUpAccountAndSignInForTesting();
+        PasswordManagerTestHelper.setAccountForPasswordStore(account.getEmail());
         ManualFillingTestHelper.disableServerPredictions();
 
         runOnUiThreadBlocking(
@@ -122,9 +122,13 @@ public class PasswordGenerationIntegrationTest {
         mHelper.clear();
     }
 
+    // TODO(crbug.com/386734610): enable for autos.
     @Test
     @IntegrationTest
-    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30)
+    @Restriction({
+        GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30,
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO
+    })
     public void testAutomaticGenerationCancel() throws InterruptedException, TimeoutException {
         waitForGenerationLabel();
         focusField(PASSWORD_NODE_ID);
@@ -146,9 +150,13 @@ public class PasswordGenerationIntegrationTest {
                 });
     }
 
+    // TODO(crbug.com/386734610): enable for autos.
     @Test
     @IntegrationTest
-    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30)
+    @Restriction({
+        GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30,
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO
+    })
     public void testManualGenerationCancel() throws InterruptedException, TimeoutException {
         waitForGenerationLabel();
         focusField(PASSWORD_NODE_ID_MANUAL);
@@ -168,9 +176,13 @@ public class PasswordGenerationIntegrationTest {
                 });
     }
 
+    // TODO(crbug.com/386734610): enable for autos.
     @Test
     @IntegrationTest
-    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30)
+    @Restriction({
+        GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30,
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO
+    })
     public void testAutomaticGenerationUsePassword() throws InterruptedException, TimeoutException {
         waitForGenerationLabel();
         focusField(PASSWORD_NODE_ID);
@@ -198,9 +210,13 @@ public class PasswordGenerationIntegrationTest {
                 });
     }
 
+    // TODO(crbug.com/386734610): enable for autos.
     @Test
     @IntegrationTest
-    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30)
+    @Restriction({
+        GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30,
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO
+    })
     @DisabledTest(message = "Flakey/Failing, see crbug.com/358643071")
     public void testManualGenerationUsePassword() throws InterruptedException, TimeoutException {
         waitForGenerationLabel();

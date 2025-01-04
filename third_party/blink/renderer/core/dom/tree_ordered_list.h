@@ -7,6 +7,7 @@
  * rights reserved.
  * Copyright (C) 2008, 2009 Torch Mobile Inc. All rights reserved.
  * (http://www.torchmobile.com/)
+ * Copyright (C) 2008, 2009, 2011, 2012 Google Inc. All rights reserved.
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies)
  * Copyright (C) 2013 Google Inc. All rights reserved.
  *
@@ -31,14 +32,17 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_TREE_ORDERED_LIST_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
-class Node;
-
+template <typename T>
 class CORE_EXPORT TreeOrderedList final {
+  static_assert(std::is_base_of_v<Node, T>,
+                "TreeOrderedList only works with Nodes.");
+
   DISALLOW_NEW();
 
  public:
@@ -46,16 +50,16 @@ class CORE_EXPORT TreeOrderedList final {
   TreeOrderedList(const TreeOrderedList&) = delete;
   TreeOrderedList& operator=(const TreeOrderedList&) = delete;
 
-  void Add(Node*);
-  void Remove(const Node*);
+  void Add(T*);
+  void Remove(const T*);
   bool IsEmpty() const { return nodes_.empty(); }
   void Clear() { nodes_.clear(); }
   wtf_size_t size() const { return nodes_.size(); }
 
-  using iterator = HeapLinkedHashSet<Member<Node>>::iterator;
-  using const_iterator = HeapLinkedHashSet<Member<Node>>::const_iterator;
+  using iterator = HeapLinkedHashSet<Member<T>>::iterator;
+  using const_iterator = HeapLinkedHashSet<Member<T>>::const_iterator;
   using const_reverse_iterator =
-      HeapLinkedHashSet<Member<Node>>::const_reverse_iterator;
+      HeapLinkedHashSet<Member<T>>::const_reverse_iterator;
 
   iterator begin() { return nodes_.begin(); }
   iterator end() { return nodes_.end(); }
@@ -68,8 +72,45 @@ class CORE_EXPORT TreeOrderedList final {
   void Trace(Visitor*) const;
 
  private:
-  HeapLinkedHashSet<Member<Node>> nodes_;
+  HeapLinkedHashSet<Member<T>> nodes_;
 };
+
+template <typename T>
+void TreeOrderedList<T>::Add(T* node) {
+  if (nodes_.empty()) {
+    nodes_.insert(node);
+    return;
+  }
+
+  // Determine an appropriate insertion point.
+  iterator begin = nodes_.begin();
+  iterator end = nodes_.end();
+  iterator it = end;
+  iterator following = end;
+  do {
+    --it;
+    T* n = *it;
+    uint16_t position =
+        n->compareDocumentPosition(node, Node::kTreatShadowTreesAsComposed);
+    if (position & Node::kDocumentPositionFollowing) {
+      nodes_.InsertBefore(following, node);
+      return;
+    }
+    following = it;
+  } while (it != begin);
+
+  nodes_.InsertBefore(following, node);
+}
+
+template <typename T>
+void TreeOrderedList<T>::Remove(const T* node) {
+  nodes_.erase(const_cast<T*>(node));
+}
+
+template <typename T>
+void TreeOrderedList<T>::Trace(Visitor* visitor) const {
+  visitor->Trace(nodes_);
+}
 
 }  // namespace blink
 

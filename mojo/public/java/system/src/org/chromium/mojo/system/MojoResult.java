@@ -4,7 +4,10 @@
 
 package org.chromium.mojo.system;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** The different mojo result codes. */
+@NullMarked
 public final class MojoResult {
     public static final int OK = 0;
     public static final int CANCELLED = 1;

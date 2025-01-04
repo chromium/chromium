@@ -11,6 +11,9 @@ import androidx.annotation.IntDef;
 import androidx.core.util.Preconditions;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.device.bluetooth.wrapper.BluetoothLeScannerWrapper;
 import org.chromium.device.bluetooth.wrapper.ScanCallbackWrapper;
 import org.chromium.device.bluetooth.wrapper.ScanResultWrapper;
@@ -30,6 +33,7 @@ import java.util.function.Supplier;
  * same filters with a call to {@link #resumeScan(long)}. When callers are done with this scan, they
  * should call {@link #stopScan()} to end it, unless the scan ends unexpectedly with an error.
  */
+@NullMarked
 class ChromeBluetoothLeScanner {
     private static final String TAG = "Bluetooth";
     static final long INDEFINITE_SCAN_DURATION = Long.MIN_VALUE;
@@ -52,8 +56,8 @@ class ChromeBluetoothLeScanner {
     private int mCurrentScanSequence;
 
     private @ScanState int mScanState = SCAN_STATE_STOPPED;
-    private List<ScanFilter> mScanFilters;
-    private ScanCallback mScanCallback;
+    private @Nullable List<ScanFilter> mScanFilters;
+    private @Nullable ScanCallback mScanCallback;
 
     ChromeBluetoothLeScanner(
             Supplier<BluetoothLeScannerWrapper> scannerSupplier,
@@ -93,6 +97,8 @@ class ChromeBluetoothLeScanner {
     boolean resumeScan(long durationMillis) {
         Preconditions.checkState(
                 mScanState == SCAN_STATE_PAUSED, "Scan isn't paused. Scan state: " + mScanState);
+        assert mScanCallback != null;
+        assert mScanFilters != null;
 
         if (startScanWindow(durationMillis)) {
             return true;
@@ -150,6 +156,7 @@ class ChromeBluetoothLeScanner {
         mChromeScanCallback.onScanFinished();
     }
 
+    @RequiresNonNull({"mScanCallback", "mScanFilters"})
     private boolean startScanWindow(long durationMillis) {
         BluetoothLeScannerWrapper scanner = mScannerSupplier.get();
         if (scanner == null) {

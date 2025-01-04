@@ -32,7 +32,7 @@ class GURL;
 namespace url {
 struct Component;
 struct Parsed;
-}
+}  // namespace url
 
 namespace url_formatter {
 

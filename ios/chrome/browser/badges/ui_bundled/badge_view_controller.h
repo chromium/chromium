@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/badges/ui_bundled/badge_consumer.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_element.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
 
 @class BadgeButtonFactory;
 @protocol BadgeViewVisibilityDelegate;

@@ -19,7 +19,12 @@ import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_prope
 import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+// <if expr="not is_chromeos">
 import type {Destination} from '../data/destination.js';
+// </if>
+// <if expr="is_chromeos">
+import type {Destination} from '../data/destination_cros.js';
+// </if>
 
 import {getTemplate} from './destination_list.html.js';
 

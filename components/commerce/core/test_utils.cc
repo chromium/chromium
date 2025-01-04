@@ -88,13 +88,6 @@ void SetShoppingListEnterprisePolicyPref(TestingPrefServiceSimple* prefs,
   prefs->SetManagedPref(kShoppingListEnabledPrefName, base::Value(enabled));
 }
 
-void RegisterCommercePrefs(PrefRegistrySimple* registry) {
-  RegisterPrefs(registry);
-  registry->RegisterIntegerPref(
-      optimization_guide::prefs::kProductSpecificationsEnterprisePolicyAllowed,
-      0);
-}
-
 void SetTabCompareEnterprisePolicyPref(TestingPrefServiceSimple* prefs,
                                        int enabled_state) {
   prefs->SetManagedPref(

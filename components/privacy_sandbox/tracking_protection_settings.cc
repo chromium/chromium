@@ -44,6 +44,11 @@ TrackingProtectionSettings::TrackingProtectionSettings(
           &TrackingProtectionSettings::OnIpProtectionPrefChanged,
           base::Unretained(this)));
   pref_change_registrar_.Add(
+      prefs::kFingerprintingProtectionEnabled,
+      base::BindRepeating(
+          &TrackingProtectionSettings::OnFpProtectionPrefChanged,
+          base::Unretained(this)));
+  pref_change_registrar_.Add(
       prefs::kBlockAll3pcToggleEnabled,
       base::BindRepeating(
           &TrackingProtectionSettings::OnBlockAllThirdPartyCookiesPrefChanged,
@@ -65,7 +70,6 @@ TrackingProtectionSettings::TrackingProtectionSettings(
           &TrackingProtectionSettings::OnEnterpriseControlForPrefsChanged,
           base::Unretained(this)));
 
-  MaybeInitializeIppPref();
   // It's possible enterprise status changed while profile was shut down.
   OnEnterpriseControlForPrefsChanged();
 
@@ -112,6 +116,11 @@ bool TrackingProtectionSettings::IsIpProtectionEnabled() const {
          base::FeatureList::IsEnabled(kIpProtectionV1);
 }
 
+bool TrackingProtectionSettings::IsFpProtectionEnabled() const {
+  return pref_service_->GetBoolean(prefs::kFingerprintingProtectionEnabled) &&
+         base::FeatureList::IsEnabled(kFingerprintingProtectionUx);
+}
+
 bool TrackingProtectionSettings::IsDoNotTrackEnabled() const {
   return pref_service_->GetBoolean(prefs::kEnableDoNotTrack);
 }
@@ -141,20 +150,12 @@ void TrackingProtectionSettings::RemoveTrackingProtectionException(
       ContentSettingsType::TRACKING_PROTECTION, CONTENT_SETTING_DEFAULT);
 }
 
-ContentSetting TrackingProtectionSettings::GetTrackingProtectionSetting(
+bool TrackingProtectionSettings::HasTrackingProtectionException(
     const GURL& first_party_url,
     content_settings::SettingInfo* info) const {
   return host_content_settings_map_->GetContentSetting(
-      GURL(), first_party_url, ContentSettingsType::TRACKING_PROTECTION, info);
-}
-
-void TrackingProtectionSettings::MaybeInitializeIppPref() {
-  if (pref_service_->GetBoolean(prefs::kIpProtectionInitializedByDogfood) ||
-      !base::FeatureList::IsEnabled(kIpProtectionDogfoodDefaultOn)) {
-    return;
-  }
-  pref_service_->SetBoolean(prefs::kIpProtectionEnabled, true);
-  pref_service_->SetBoolean(prefs::kIpProtectionInitializedByDogfood, true);
+             GURL(), first_party_url, ContentSettingsType::TRACKING_PROTECTION,
+             info) == CONTENT_SETTING_ALLOW;
 }
 
 // TODO(https://b/333527273): Delete with Mode B cleanup
@@ -209,6 +210,12 @@ void TrackingProtectionSettings::OnDoNotTrackEnabledPrefChanged() {
 void TrackingProtectionSettings::OnIpProtectionPrefChanged() {
   for (auto& observer : observers_) {
     observer.OnIpProtectionEnabledChanged();
+  }
+}
+
+void TrackingProtectionSettings::OnFpProtectionPrefChanged() {
+  for (auto& observer : observers_) {
+    observer.OnFpProtectionEnabledChanged();
   }
 }
 

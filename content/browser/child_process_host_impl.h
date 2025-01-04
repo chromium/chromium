@@ -81,7 +81,7 @@ class CONTENT_EXPORT ChildProcessHostImpl : public ChildProcessHost,
   void BindReceiver(mojo::GenericPendingReceiver receiver) override;
   void SetBatterySaverMode(bool battery_saver_mode_enabled) override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void ReinitializeLogging(uint32_t logging_dest,
                            base::ScopedFD log_file_descriptor) override;
 #endif

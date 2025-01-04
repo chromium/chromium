@@ -35,6 +35,16 @@ def use_siso_default(output_dir):
       os.path.join(os.path.dirname(__file__), "../config/siso/.sisoenv")):
     return False
 
+  # If it's not chromium project, use Ninja.
+  gclient_args_gni = os.path.join(os.path.dirname(__file__),
+                                  "../config/gclient_args.gni")
+  if not os.path.exists(gclient_args_gni):
+    return False
+
+  with open(gclient_args_gni) as f:
+    if "build_with_chromium = true" not in f.read():
+      return False
+
   # Use Siso by default for Googlers working on corp machine.
   if _is_google_corp_machine():
     return True

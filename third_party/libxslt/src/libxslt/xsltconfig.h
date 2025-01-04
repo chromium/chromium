@@ -20,21 +20,21 @@ extern "C" {
  *
  * the version string like "1.2.3"
  */
-#define LIBXSLT_DOTTED_VERSION "1.1.42"
+#define LIBXSLT_DOTTED_VERSION "1.1.43"
 
 /**
  * LIBXSLT_VERSION:
  *
  * the version number: 1.2.3 value is 10203
  */
-#define LIBXSLT_VERSION 10142
+#define LIBXSLT_VERSION 10143
 
 /**
  * LIBXSLT_VERSION_STRING:
  *
  * the version number string, 1.2.3 value is "10203"
  */
-#define LIBXSLT_VERSION_STRING "10142"
+#define LIBXSLT_VERSION_STRING "10143"
 
 /**
  * LIBXSLT_VERSION_EXTRA:
@@ -112,7 +112,7 @@ extern "C" {
 #ifndef WITH_MODULES
 #define WITH_MODULES
 #endif
-#define LIBXSLT_DEFAULT_PLUGINS_PATH() "/usr/local/lib/libxslt-plugins"
+#define LIBXSLT_DEFAULT_PLUGINS_PATH() ""
 #endif
 
 /**

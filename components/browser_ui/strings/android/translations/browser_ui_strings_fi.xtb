@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">Lataus keskeytettiin.</translation>
 <translation id="1396327438254055134">Salli sivuston käyttää V8-optimoijaa.</translation>
 <translation id="1415402041810619267">URL näkyy lyhennettynä</translation>
+<translation id="1415855080660575082">Salli Chromen jakaa viimeaikaiset välilehdet laitteelle, jotta näet ne laitteen sovelluslistalla ja hakutuloksissa. Voit laittaa tämän päälle tai pois päältä Chromen asetuksista.</translation>
 <translation id="1448064542941920355">Vähennä zoomausta</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sivusto}other{<ph name="SITE_COUNT" /> sivustoa}}</translation>
 <translation id="1500473259453106018">Piilota "Hinnanalennukset avoimilla välilehdillä" ‑kortti</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">Olet väliaikaisesti sallinut tämän sivuston käyttää kolmannen osapuolen evästeitä. Selauksen suojaus ei tällöin ole niin vahva, mutta sivuston ominaisuudet toimivat todennäköisemmin oikein. <ph name="BEGIN_LINK" />Lähetä palautetta<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Joidenkin sivustojen ominaisuudet eivät välttämättä toimi incognito-tilassa</translation>
 <translation id="2442870161001914531">Pyydä aina tietokonesivustoa</translation>
+<translation id="2445311670906052406">Chrome jakaa nyt viimeaikaiset välilehdet laitteelle. Näet ne laitteen sovelluslistasta ja hakutuloksista. Voit laittaa tämän pois päältä milloin tahansa Chromen asetuksista.</translation>
 <translation id="2469312991797799607">Tämä toiminto poistaa kaiken datan ja kaikki evästeet sivustolta <ph name="ORIGIN" /> ja sen alla olevilta sivustoilta</translation>
 <translation id="2482878487686419369">Ilmoitukset</translation>
 <translation id="2485422356828889247">Poista</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">Sivustot voivat näyttää henkilöllisyyspalveluiden sisäänkirjautumiskehotteita.</translation>
 <translation id="2787357173144933081">Omniboxin pikakäynnistys</translation>
 <translation id="2790501146643349491">Kun tämä on päällä, äskettäin suljetut sivustot voivat viimeistellä datan lähettämistä tai vastaanottamista. Kun tämä ei ole päällä, äskettäin suljetut sivustot eivät voi viimeistellä datan lähettämistä tai vastaanottamista.</translation>
+<translation id="2814830417943086299">Chrome näyttää nyt äskettäiset välilehdet laitteen sovelluslistalla ja hakutuloksissa. Voit laittaa tämän pois päältä milloin tahansa Chromen asetuksista.</translation>
 <translation id="2822354292072154809">Haluatko varmasti nollata kaikki sivuston käyttöoikeudet (<ph name="CHOSEN_OBJECT_NAME" />)?</translation>
 <translation id="2850913818900871965">Pyydä mobiilinäkymää</translation>
 <translation id="2870560284913253234">Sivusto</translation>
@@ -335,7 +338,6 @@
 <translation id="5968921426641056619">Lisää verkko-osoite</translation>
 <translation id="5975083100439434680">Loitonna</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
-<translation id="6015145568571136419">Voit nyt siirtyä nopeasti ehdotettuihin välilehtiin laitteen sovelluslistasta ja laitteen hakutuloksista. Voit poistaa ominaisuuden käytöstä milloin tahansa Chromen asetuksissa.</translation>
 <translation id="6015775454662021376">Valitse, mitä tämä sivusto saa tehdä laitteellasi</translation>
 <translation id="6040143037577758943">Sulje</translation>
 <translation id="6042308850641462728">Lisää</translation>
@@ -558,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="NUM_MORE" /> muuta}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="NUM_MORE" /> muuta}}</translation>
 <translation id="913657688200966289">Laita luvat (<ph name="APP_NAME" />) päälle <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Zoomaus on <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="9156722768168878035">Salli Chromen näyttää viimeaikaiset välilehdet laitteen sovelluslistalla ja hakutuloksissa. Voit laittaa tämän pois päältä milloin tahansa Chromen asetuksista.</translation>
 <translation id="9162462602695099906">Tämä sivu on vaarallinen</translation>
 <translation id="947156494302904893">Avaamasi sivustot voivat vahvistaa, että olet oikea ihminen etkä botti</translation>
 <translation id="959682366969460160">Järjestä</translation>

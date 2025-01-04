@@ -115,7 +115,7 @@ AccountInfo MakePrimaryAccountAvailable(IdentityManager* identity_manager,
                                         const std::string& email,
                                         ConsentLevel consent_level);
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Revokes sync consent from the primary account: the primary account is left
 // at ConsentLevel::kSignin.
 // NOTE: See disclaimer at top of file re: direct usage.
@@ -124,7 +124,7 @@ AccountInfo MakePrimaryAccountAvailable(IdentityManager* identity_manager,
 // TODO(crbug.com/40067058): remove this function once `ConsentLevel::kSync` is
 // removed.
 void RevokeSyncConsent(IdentityManager* identity_manager);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Clears the primary account, removes all accounts and revokes the sync
 // consent (if applicable). Blocks until the primary account is cleared.

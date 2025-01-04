@@ -21,6 +21,20 @@ struct EnumTraits<viz::mojom::BeginFrameArgsType,
 };
 
 template <>
+struct StructTraits<viz::mojom::BeginFrameIdDataView, viz::BeginFrameId> {
+  static uint64_t source_id(const viz::BeginFrameId& frame_id) {
+    return frame_id.source_id;
+  }
+
+  static uint64_t sequence_number(const viz::BeginFrameId& frame_id) {
+    return frame_id.sequence_number;
+  }
+
+  static bool Read(viz::mojom::BeginFrameIdDataView data,
+                   viz::BeginFrameId* out);
+};
+
+template <>
 struct StructTraits<viz::mojom::BeginFrameArgsDataView, viz::BeginFrameArgs> {
   static base::TimeTicks frame_time(const viz::BeginFrameArgs& args) {
     return args.frame_time;
@@ -34,12 +48,8 @@ struct StructTraits<viz::mojom::BeginFrameArgsDataView, viz::BeginFrameArgs> {
     return args.interval;
   }
 
-  static uint64_t sequence_number(const viz::BeginFrameArgs& args) {
-    return args.frame_id.sequence_number;
-  }
-
-  static uint64_t source_id(const viz::BeginFrameArgs& args) {
-    return args.frame_id.source_id;
+  static viz::BeginFrameId frame_id(const viz::BeginFrameArgs& args) {
+    return args.frame_id;
   }
 
   static uint64_t frames_throttled_since_last(const viz::BeginFrameArgs& args) {

@@ -35,11 +35,10 @@ class NativeContextualSearchContext final : public ContextualSearchContext {
       const base::android::JavaRef<jobject>& j_contextual_search_context);
 
   // Sets the properties needed to resolve a context.
-  void SetResolveProperties(
-      JNIEnv* env,
-      jobject obj,
-      const base::android::JavaParamRef<jstring>& j_home_country,
-      jboolean j_may_send_base_page_url);
+  void SetResolveProperties(JNIEnv* env,
+                            jobject obj,
+                            std::string& home_country,
+                            jboolean j_may_send_base_page_url);
 
   // Adjust the current selection offsets by the given signed amounts.
   void AdjustSelection(JNIEnv* env,
@@ -54,25 +53,23 @@ class NativeContextualSearchContext final : public ContextualSearchContext {
   // |j_related_searches_stamp| is a value to stamp onto search URLs to
   // identify related searches. If the string is empty then Related Searches
   // are not being requested.
-  void PrepareToResolve(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      jboolean j_is_exact_resolve,
-      const base::android::JavaParamRef<jstring>& j_related_searches_stamp);
+  void PrepareToResolve(JNIEnv* env,
+                        const base::android::JavaParamRef<jobject>& obj,
+                        jboolean j_is_exact_resolve,
+                        std::string& related_searches_stamp);
 
   // Detects the language of the context using CLD from the translate utility.
-  base::android::ScopedJavaLocalRef<jstring> DetectLanguage(
+  std::string DetectLanguage(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj) const;
 
   // Sets the languages to remember for use in translation.
   // See |GetTranslationLanguages|.
-  void SetTranslationLanguages(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jstring>& j_detected_language,
-      const base::android::JavaParamRef<jstring>& j_target_language,
-      const base::android::JavaParamRef<jstring>& j_fluent_languages);
+  void SetTranslationLanguages(JNIEnv* env,
+                               const base::android::JavaParamRef<jobject>& obj,
+                               std::string& detected_language,
+                               std::string& target_language,
+                               std::string& fluent_languages);
 
  private:
   // The linked Java object.

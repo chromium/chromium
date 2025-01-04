@@ -120,8 +120,9 @@ class Hierarchy::PerSectionHierarchyGenerator
     auto it = subpage_map.find(subpage);
 
     // Metadata already exists; return it.
-    if (it != subpage_map.end())
+    if (it != subpage_map.end()) {
       return it->second;
+    }
 
     // Metadata does not exist yet; insert then return it.
     auto pair = subpage_map.emplace(
@@ -139,8 +140,9 @@ class Hierarchy::PerSectionHierarchyGenerator
     auto it = settings_map.find(setting);
 
     // Metadata already exists; return it.
-    if (it != settings_map.end())
+    if (it != settings_map.end()) {
       return it->second;
+    }
 
     // Metadata does not exist yet; insert then return it.
     auto pair = settings_map.emplace(setting, section_);
@@ -252,8 +254,9 @@ std::vector<std::u16string> Hierarchy::GenerateAncestorHierarchyStrings(
   const SubpageMetadata& subpage_metadata = GetSubpageMetadata(subpage);
 
   // Top-level subpage; simply return section hierarchy.
-  if (!subpage_metadata.parent_subpage)
+  if (!subpage_metadata.parent_subpage) {
     return GenerateHierarchyStrings(subpage_metadata.section);
+  }
 
   // Nested subpage; use recursive call, then append parent subpage name itself.
   std::vector<std::u16string> hierarchy_strings =
@@ -270,8 +273,9 @@ std::vector<std::u16string> Hierarchy::GenerateAncestorHierarchyStrings(
   const SettingMetadata& setting_metadata = GetSettingMetadata(setting);
 
   // Top-level setting; simply return section hierarchy.
-  if (!setting_metadata.primary.subpage)
+  if (!setting_metadata.primary.subpage) {
     return GenerateHierarchyStrings(setting_metadata.primary.section);
+  }
 
   // Nested setting; use subpage ancestors, then append subpage name itself.
   std::vector<std::u16string> hierarchy_strings =

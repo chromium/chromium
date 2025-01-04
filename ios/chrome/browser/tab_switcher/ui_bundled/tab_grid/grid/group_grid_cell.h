@@ -30,7 +30,6 @@
 @property(nonatomic, copy) UIColor* groupColor;
 @property(nonatomic, copy) NSString* title;
 @property(nonatomic, assign) NSInteger tabsCount;
-@property(nonatomic, assign) BOOL titleHidden;
 // Sets to update and keep cell alpha in sync.
 @property(nonatomic, assign) CGFloat opacity;
 // The current state which the cell should display.
@@ -40,6 +39,11 @@
 // passes the total tabs count to the bottomTrailingView.
 - (void)configureWithGroupTabInfos:(NSArray<GroupTabInfo*>*)groupTabInfos
                     totalTabsCount:(NSInteger)totalTabsCount;
+
+// Configures the `facePileViewController`, adding it to `parentViewController`.
+// The parent must be non-nil if the face pile is non-nil.
+- (void)setFacePileViewController:(UIViewController*)facePileViewController
+             parentViewController:(UIViewController*)parentViewController;
 
 // Returns all tab views that compose this tab group view in the order they're
 // presented.

@@ -38,7 +38,7 @@ namespace printing {
 namespace {
 
 uint64_t GenerateFrameGuid(content::RenderFrameHost* render_frame_host) {
-  int process_id = render_frame_host->GetProcess()->GetID();
+  int process_id = render_frame_host->GetProcess()->GetDeprecatedID();
   int frame_id = render_frame_host->GetRoutingID();
   return static_cast<uint64_t>(process_id) << 32 | frame_id;
 }
@@ -53,7 +53,7 @@ ContentToFrameMap ConvertContentInfoMap(
     content::RenderFrameHost* render_frame_host,
     const ContentToProxyTokenMap& content_proxy_map) {
   ContentToFrameMap content_frame_map;
-  int process_id = render_frame_host->GetProcess()->GetID();
+  int process_id = render_frame_host->GetProcess()->GetDeprecatedID();
   for (const auto& entry : content_proxy_map) {
     auto content_id = entry.first;
     auto proxy_token = entry.second;

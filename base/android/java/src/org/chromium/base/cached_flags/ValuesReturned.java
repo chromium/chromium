@@ -9,11 +9,13 @@ import android.content.SharedPreferences;
 import androidx.annotation.GuardedBy;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /** Keeps track of values returned for cached flags and field trial parameters. */
+@NullMarked
 public abstract class ValuesReturned {
     @GuardedBy("sBoolValues")
     private static final Map<String, Boolean> sBoolValues = new HashMap<>();

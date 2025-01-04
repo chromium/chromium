@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -28,7 +29,6 @@
 
 namespace {
 
-constexpr char kPageWithAnchorURL[] = "chrome://internals/user-education";
 constexpr char kPageWithoutAnchorURL[] = "chrome://settings";
 constexpr char16_t kBubbleBodyText[] = u"bubble body";
 
@@ -56,7 +56,7 @@ IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest, ShowPromoInNewPage) {
   base::MockCallback<ShowPromoInPage::Callback> bubble_shown;
 
   auto params = GetDefaultParams();
-  params.target_url = GURL(kPageWithAnchorURL);
+  params.target_url = GURL(chrome::kChromeUIUserEducationInternalsURL);
   params.callback = bubble_shown.Get();
 
   base::WeakPtr<ShowPromoInPage> handle;
@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest, ShowPromoInSameTab) {
   base::MockCallback<ShowPromoInPage::Callback> bubble_shown;
 
   auto params = GetDefaultParams();
-  params.target_url = GURL(kPageWithAnchorURL);
+  params.target_url = GURL(chrome::kChromeUIUserEducationInternalsURL);
   params.callback = bubble_shown.Get();
   params.overwrite_active_tab = true;
 
@@ -126,8 +126,8 @@ IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest, ShowPromoInSameTab) {
 }
 
 IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest, ShowPromoInSamePage) {
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL(kPageWithAnchorURL)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIUserEducationInternalsURL)));
 
   base::MockCallback<ShowPromoInPage::Callback> bubble_shown;
 
@@ -229,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest,
 IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest,
                        HelpBubbleParamsCanConfigureCloseButtonAltText) {
   auto params = GetDefaultParams();
-  params.target_url = GURL(kPageWithAnchorURL);
+  params.target_url = GURL(chrome::kChromeUIUserEducationInternalsURL);
   params.overwrite_active_tab = true;
   // Set the alt text here and then check that aria-label matches.
   params.close_button_alt_text_id = IDS_CLOSE_PROMO;
@@ -247,11 +247,12 @@ IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest,
   bubble_is_visible.event = kBubbleIsVisible;
   bubble_is_visible.where = kPathToHelpBubbleCloseButton;
   bubble_is_visible.type = StateChange::Type::kExists;
-  RunTestSequence(
-      InstrumentTab(kTabId), Do(std::move(help_bubble_start_callback)),
-      WaitForWebContentsNavigation(kTabId, GURL(kPageWithAnchorURL)),
-      WaitForStateChange(kTabId, bubble_is_visible),
-      CheckJsResultAt(kTabId, kPathToHelpBubbleCloseButton,
-                      "(el) => el.getAttribute('aria-label')",
-                      l10n_util::GetStringUTF8(IDS_CLOSE_PROMO)));
+  RunTestSequence(InstrumentTab(kTabId),
+                  Do(std::move(help_bubble_start_callback)),
+                  WaitForWebContentsNavigation(
+                      kTabId, GURL(chrome::kChromeUIUserEducationInternalsURL)),
+                  WaitForStateChange(kTabId, bubble_is_visible),
+                  CheckJsResultAt(kTabId, kPathToHelpBubbleCloseButton,
+                                  "(el) => el.getAttribute('aria-label')",
+                                  l10n_util::GetStringUTF8(IDS_CLOSE_PROMO)));
 }

@@ -153,6 +153,8 @@ void ChannelIndicatorView::SetImageOrText() {
         channel_indicator_utils::GetVectorIcon(channel_),
         channel_indicator_utils::GetFgColorJelly(channel_), kVectorIconSize));
     PreferredSizeChanged();
+    image_view()->GetViewAccessibility().SetName(
+        GetViewAccessibility().GetCachedName());
     return;
   }
 

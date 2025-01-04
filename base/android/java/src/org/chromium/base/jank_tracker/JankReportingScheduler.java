@@ -7,12 +7,16 @@ package org.chromium.base.jank_tracker;
 import android.os.Handler;
 import android.os.HandlerThread;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This class receives requests to start and stop jank scenario tracking and runs them in a
  * HandlerThread it creates. In addition it handles the recording of periodic jank metrics.
  */
+@NullMarked
 public class JankReportingScheduler {
     private static final long PERIODIC_METRIC_DELAY_MS = 5_000;
     private final FrameMetricsStore mFrameMetricsStore;
@@ -77,7 +81,8 @@ public class JankReportingScheduler {
         finishTrackingScenario(scenario, JankEndScenarioTime.endAt(endScenarioTimeNs));
     }
 
-    public void finishTrackingScenario(JankScenario scenario, JankEndScenarioTime endScenarioTime) {
+    public void finishTrackingScenario(
+            JankScenario scenario, @Nullable JankEndScenarioTime endScenarioTime) {
         // We store the stop task in case the delay is greater than zero and we start this scenario
         // again.
         JankReportingRunnable runnable =

@@ -112,8 +112,9 @@ void CastSocketServiceImpl::OpenSocket(
     }
   }
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     socket->AddObserver(&observer);
+  }
 
   socket->Connect(std::move(open_cb));
 }
@@ -121,20 +122,23 @@ void CastSocketServiceImpl::OpenSocket(
 void CastSocketServiceImpl::AddObserver(CastSocket::Observer* observer) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(observer);
-  if (observers_.HasObserver(observer))
+  if (observers_.HasObserver(observer)) {
     return;
+  }
 
   observers_.AddObserver(observer);
-  for (auto& socket_it : sockets_)
+  for (auto& socket_it : sockets_) {
     socket_it.second->AddObserver(observer);
+  }
 }
 
 void CastSocketServiceImpl::RemoveObserver(CastSocket::Observer* observer) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(observer);
 
-  for (auto& socket_it : sockets_)
+  for (auto& socket_it : sockets_) {
     socket_it.second->RemoveObserver(observer);
+  }
   observers_.RemoveObserver(observer);
 }
 

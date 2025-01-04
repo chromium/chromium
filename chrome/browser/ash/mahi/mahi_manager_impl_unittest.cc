@@ -64,6 +64,7 @@ class FakeMahiProvider : public manta::MahiProvider {
 
   void Summarize(const std::string& input,
                  const std::string& title,
+                 const std::optional<std::string>& context,
                  const std::optional<std::string>& url,
                  manta::MantaGenericCallback callback) override {
     ++num_summarize_call_;
@@ -148,7 +149,7 @@ class MahiManagerImplTest : public NoSessionAshTestBase {
     mahi_manager_impl_ = std::make_unique<MahiManagerImpl>();
     mahi_manager_impl_->mahi_provider_ = CreateMahiProvider();
 
-    CreateUserSessions(1);
+    SimulateUserLogin(kDefaultUserEmail);
   }
 
   void TearDown() override {

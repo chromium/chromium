@@ -23,7 +23,8 @@ SystemHandler::~SystemHandler() = default;
 
 // static
 void SystemHandler::AddLoadTimeData(content::WebUIDataSource* data_source) {
-  data_source->AddBoolean("hardwareAccelerationEnabledAtStartup",
+  data_source->AddBoolean(
+      "hardwareAccelerationEnabledAtStartup",
       g_browser_process->gpu_mode_manager()->initial_gpu_mode_pref());
 }
 

@@ -99,8 +99,9 @@ LayoutExampleBase::ChildPanel::~ChildPanel() = default;
 
 bool LayoutExampleBase::ChildPanel::OnMousePressed(
     const ui::MouseEvent& event) {
-  if (event.IsOnlyLeftMouseButton())
+  if (event.IsOnlyLeftMouseButton()) {
     SetSelected(true);
+  }
   return true;
 }
 
@@ -157,8 +158,9 @@ void LayoutExampleBase::ChildPanel::SetSelected(bool value) {
     OnThemeChanged();
     if (selected_ && parent()) {
       for (View* child : parent()->children()) {
-        if (child != this && child->GetGroup() == GetGroup())
+        if (child != this && child->GetGroup() == GetGroup()) {
           static_cast<ChildPanel*>(child)->SetSelected(false);
+        }
       }
     }
     margin_.left->SetVisible(selected_);
@@ -188,10 +190,11 @@ void LayoutExampleBase::ChildPanel::ContentsChanged(
     Textfield* sender,
     const std::u16string& new_contents) {
   const gfx::Insets margins = LayoutExampleBase::TextfieldsToInsets(margin_);
-  if (!margins.IsEmpty())
+  if (!margins.IsEmpty()) {
     SetProperty(kMarginsKey, margins);
-  else
+  } else {
     ClearProperty(kMarginsKey);
+  }
   example_->RefreshLayoutPanel(sender == flex_);
 }
 
@@ -218,8 +221,9 @@ LayoutExampleBase::~LayoutExampleBase() {
 }
 
 void LayoutExampleBase::RefreshLayoutPanel(bool update_layout) {
-  if (update_layout)
+  if (update_layout) {
     UpdateLayoutManager();
+  }
   layout_panel_->InvalidateLayout();
   layout_panel_->SchedulePaint();
 }
@@ -228,14 +232,18 @@ gfx::Insets LayoutExampleBase::TextfieldsToInsets(
     const InsetTextfields& textfields,
     const gfx::Insets& default_insets) {
   int top, left, bottom, right;
-  if (!base::StringToInt(textfields.top->GetText(), &top))
+  if (!base::StringToInt(textfields.top->GetText(), &top)) {
     top = default_insets.top();
-  if (!base::StringToInt(textfields.left->GetText(), &left))
+  }
+  if (!base::StringToInt(textfields.left->GetText(), &left)) {
     left = default_insets.left();
-  if (!base::StringToInt(textfields.bottom->GetText(), &bottom))
+  }
+  if (!base::StringToInt(textfields.bottom->GetText(), &bottom)) {
     bottom = default_insets.bottom();
-  if (!base::StringToInt(textfields.right->GetText(), &right))
+  }
+  if (!base::StringToInt(textfields.right->GetText(), &right)) {
     right = default_insets.right();
+  }
   return gfx::Insets::TLBR(std::max(0, top), std::max(0, left),
                            std::max(0, bottom), std::max(0, right));
 }
@@ -353,12 +361,14 @@ void LayoutExampleBase::CreateExampleView(View* container) {
 
 gfx::Size LayoutExampleBase::GetNewChildPanelPreferredSize() {
   int width;
-  if (!base::StringToInt(preferred_width_view_->GetText(), &width))
+  if (!base::StringToInt(preferred_width_view_->GetText(), &width)) {
     width = kLayoutExampleDefaultChildSize.width();
+  }
 
   int height;
-  if (!base::StringToInt(preferred_height_view_->GetText(), &height))
+  if (!base::StringToInt(preferred_height_view_->GetText(), &height)) {
     height = kLayoutExampleDefaultChildSize.height();
+  }
 
   return gfx::Size(std::max(0, width), std::max(0, height));
 }

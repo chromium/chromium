@@ -204,8 +204,8 @@ void ConstructPairAndAppend(const Character& character,
                             const StringSet& existing_set,
                             PairVector* pairs) {
   Pair new_pair = {character, StringSet(1, new_range)};
-  new_pair.set.insert(
-      new_pair.set.end(), existing_set.begin(), existing_set.end());
+  new_pair.set.insert(new_pair.set.end(), existing_set.begin(),
+                      existing_set.end());
   pairs->push_back(new_pair);
 }
 
@@ -230,8 +230,7 @@ void MoveRightMostCharToSet(PairVector* pairs) {
   while (it != pairs->end()) {
     const Pair& current_pair = *it++;
     if (current_pair.character.size() == unconverted_bytes.size() + 1 &&
-        std::equal(unconverted_bytes.begin(),
-                   unconverted_bytes.end(),
+        std::equal(unconverted_bytes.begin(), unconverted_bytes.end(),
                    current_pair.character.begin()) &&
         converted == current_pair.set) {
       // The particular set of UTF-8 codepoints we are validating guarantees
@@ -405,8 +404,7 @@ void PrintStates(const std::vector<State>& states, FILE* stream) {
     const uint8_t shift = shifts[state_index];
     uint8_t next_range = 0;
     uint8_t target_state = 1;
-    fprintf(stream,
-            "    // State %d, offset 0x%02x\n",
+    fprintf(stream, "    // State %d, offset 0x%02x\n",
             static_cast<int>(state_index),
             static_cast<int>(state_offset[state_index]));
     table_printer.PrintValue(shift);
@@ -444,9 +442,10 @@ int main(int argc, char* argv[]) {
   FILE* output = stdout;
   if (!filename.empty()) {
     output = base::OpenFile(filename, "wb");
-    if (!output)
+    if (!output) {
       PLOG(FATAL) << "Couldn't open '" << filename.AsUTF8Unsafe()
                   << "' for writing";
+    }
   }
 
   // Step 1: Enumerate the characters
@@ -462,9 +461,10 @@ int main(int argc, char* argv[]) {
   PrintStates(states, output);
 
   if (!filename.empty()) {
-    if (!base::CloseFile(output))
+    if (!base::CloseFile(output)) {
       PLOG(FATAL) << "Couldn't finish writing '" << filename.AsUTF8Unsafe()
                   << "'";
+    }
   }
 
   return EXIT_SUCCESS;

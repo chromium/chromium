@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">Shkarkimi u ndërpre</translation>
 <translation id="1396327438254055134">Lejo që sajti të përdorë optimizuesin e V8.</translation>
 <translation id="1415402041810619267">URL e prerë</translation>
+<translation id="1415855080660575082">Lejo që Chrome të ndajë skedat e tua të fundit me pajisjen tënde për t'i shikuar në listën e aplikacioneve dhe rezultatet e kërkimit të pajisjes sate. Mund ta aktivizosh ose çaktivizosh këtë te cilësimet e Chrome.</translation>
 <translation id="1448064542941920355">Zvogëlo zmadhimin</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sajt}other{<ph name="SITE_COUNT" /> sajte}}</translation>
 <translation id="1500473259453106018">Fshih kartën "Uljet e çmimeve në skeda"</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">Ke lejuar përkohësisht këtë sajt që të përdorë kukit e palëve të treta, gjë që do të thotë më pak mbrojtje të shfletimit, por veçoritë e sajtit ka më shumë mundësi të funksionojnë siç pritet. <ph name="BEGIN_LINK" />Dërgo komente<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Veçoritë në disa sajte mund të mos funksionojnë në "Modalitetin 'e fshehtë'"</translation>
 <translation id="2442870161001914531">Kërko gjithmonë sajtin për desktop</translation>
+<translation id="2445311670906052406">Chrome tani i ndan skedat e tua të fundit me pajisjen tënde. Do t'i shohësh ato në listën e aplikacioneve dhe rezultatet e kërkimit të pajisjes. Mund ta çaktivizosh këtë në çdo kohë te cilësimet e Chrome.</translation>
 <translation id="2469312991797799607">Ky veprim do të fshijë të gjitha të dhënat dhe kukit për <ph name="ORIGIN" /> dhe të gjitha sajtet nën të</translation>
 <translation id="2482878487686419369">Njoftimet</translation>
 <translation id="2485422356828889247">Çinstalo</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">Sajtet mund të shfaqin kërkesat për identifikim nga shërbimet e identitetit.</translation>
 <translation id="2787357173144933081">Nis me shpejti omnibox-in</translation>
 <translation id="2790501146643349491">Kur cilësimi është aktiv, sajtet e mbyllura së fundi mund të përfundojnë dërgimin dhe marrjen e të dhënave. Kur cilësimi është joaktiv, sajtet e mbyllura së fundi nuk mund të përfundojnë dërgimin ose marrjen e të dhënave.</translation>
+<translation id="2814830417943086299">Chrome tani shfaq skedat e tua të fundit në listën e aplikacioneve dhe rezultatet e kërkimit të pajisjes sate. Mund ta çaktivizosh këtë në çdo kohë te cilësimet e Chrome.</translation>
 <translation id="2822354292072154809">Je i sigurt që dëshiron t'i rivendosësh të gjitha lejet e sajtit për <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Kërko pamjen për celular</translation>
 <translation id="2870560284913253234">Sajti</translation>
@@ -335,7 +338,6 @@
 <translation id="5968921426641056619">Fut adresën e uebit</translation>
 <translation id="5975083100439434680">Zvogëlo</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
-<translation id="6015145568571136419">Tani mund të qasesh me shpejtësi te skedat e sugjeruara nga lista e aplikacioneve e pajisjes sate dhe në rezultatet e kërkimit të pajisjes. Çaktivizoje këtë në çdo kohë te cilësimet e Chrome.</translation>
 <translation id="6015775454662021376">Kontrollo qasjen e këtij sajti te pajisja jote</translation>
 <translation id="6040143037577758943">Mbyll</translation>
 <translation id="6042308850641462728">Më shumë</translation>
@@ -558,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="NUM_MORE" /> tjetër}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="NUM_MORE" /> të tjera}}</translation>
 <translation id="913657688200966289">Aktivizo lejet për <ph name="APP_NAME" /> në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Zmadhimi aktual është në <ph name="ZOOM_LEVEL" />%%</translation>
+<translation id="9156722768168878035">Lejo që Chrome të shfaqë skedat e tua të fundit në listën e aplikacioneve dhe rezultatet e kërkimit të pajisjes sate. Mund ta çaktivizosh këtë në çdo kohë te cilësimet e Chrome.</translation>
 <translation id="9162462602695099906">Kjo faqe është e rrezikshme</translation>
 <translation id="947156494302904893">Sajtet që ti viziton mund të verifikojnë që je një person real dhe jo një robot</translation>
 <translation id="959682366969460160">Organizohu</translation>

@@ -24,8 +24,9 @@ gfx::Rect NativeFrameViewMac::GetWindowBoundsForClientBounds(
       frameRectForContentRect:gfx::ScreenRectToNSRect(client_bounds)]);
   // Enforce minimum size (1, 1) in case that |client_bounds| is passed with
   // empty size.
-  if (window_bounds.IsEmpty())
+  if (window_bounds.IsEmpty()) {
     window_bounds.set_size(gfx::Size(1, 1));
+  }
   return window_bounds;
 }
 

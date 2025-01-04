@@ -32,8 +32,9 @@ HatsHelper::HatsHelper(content::WebContents* web_contents)
 
 void HatsHelper::PrimaryPageChanged(content::Page& page) {
   // Ignore everything except NTP opens.
-  if (web_contents()->GetLastCommittedURL() != chrome::kChromeUINewTabURL)
+  if (web_contents()->GetLastCommittedURL() != chrome::kChromeUINewTabURL) {
     return;
+  }
 
   if (auto* sentiment_service =
           TrustSafetySentimentServiceFactory::GetForProfile(profile())) {

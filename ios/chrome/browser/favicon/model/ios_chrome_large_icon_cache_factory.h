@@ -5,26 +5,20 @@
 #ifndef IOS_CHROME_BROWSER_FAVICON_MODEL_IOS_CHROME_LARGE_ICON_CACHE_FACTORY_H_
 #define IOS_CHROME_BROWSER_FAVICON_MODEL_IOS_CHROME_LARGE_ICON_CACHE_FACTORY_H_
 
-#import <memory>
+#include <memory>
 
-#import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#include "base/no_destructor.h"
+#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class KeyedService;
 class LargeIconCache;
-class ProfileIOS;
 
 // Singleton that owns all LargeIconCaches and associates them with
 // ProfileIOS.
-class IOSChromeLargeIconCacheFactory : public BrowserStateKeyedServiceFactory {
+class IOSChromeLargeIconCacheFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static LargeIconCache* GetForProfile(ProfileIOS* profile);
   static IOSChromeLargeIconCacheFactory* GetInstance();
-
-  IOSChromeLargeIconCacheFactory(const IOSChromeLargeIconCacheFactory&) =
-      delete;
-  IOSChromeLargeIconCacheFactory& operator=(
-      const IOSChromeLargeIconCacheFactory&) = delete;
 
  private:
   friend class base::NoDestructor<IOSChromeLargeIconCacheFactory>;
@@ -34,8 +28,6 @@ class IOSChromeLargeIconCacheFactory : public BrowserStateKeyedServiceFactory {
 
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
 };
 

@@ -652,8 +652,6 @@ TEST_P(ColorProviderTest, OmniboxContrast) {
       {kColorOmniboxResultsUrl, kColorOmniboxResultsBackgroundHovered},
       {kColorOmniboxResultsUrlSelected, kColorOmniboxResultsBackgroundSelected},
       {kColorOmniboxBubbleOutline, kColorOmniboxResultsBackground},
-      {kColorOmniboxBubbleOutlineExperimentalKeywordMode,
-       kColorOmniboxResultsBackground},
       {kColorOmniboxSecurityChipDefault, kColorToolbarBackgroundSubtleEmphasis},
       {kColorOmniboxSecurityChipDefault,
        kColorToolbarBackgroundSubtleEmphasisHovered},

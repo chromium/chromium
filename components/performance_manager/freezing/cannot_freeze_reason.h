@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_FREEZING_CANNOT_FREEZE_REASON_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_FREEZING_CANNOT_FREEZE_REASON_H_
 
+#include "base/containers/enum_set.h"
+
 namespace performance_manager {
 
 // List of reasons not to freeze a browsing instance.
@@ -14,11 +16,14 @@ namespace performance_manager {
 // share logic.
 enum class CannotFreezeReason {
   kVisible = 0,
+  kMin = kVisible,  // Lower bound for EnumSet.
   kRecentlyVisible,
   kAudible,
   kRecentlyAudible,
+  kFreezingOriginTrialOptOut,
   kHoldingWebLock,
   kHoldingIndexedDBLock,
+  kHoldingBlockingIndexedDBLock,
   kConnectedToUsbDevice,
   kConnectedToBluetoothDevice,
   kConnectedToHidDevice,
@@ -30,7 +35,14 @@ enum class CannotFreezeReason {
   kCapturingDisplay,
   kWebRTC,
   kLoading,
+  kNotificationPermission,
+  kOptedOut,
+  kMax = kOptedOut,  // Upper bound for EnumSet.
 };
+
+using CannotFreezeReasonSet = base::EnumSet<CannotFreezeReason,
+                                            CannotFreezeReason::kMin,
+                                            CannotFreezeReason::kMax>;
 
 const char* CannotFreezeReasonToString(CannotFreezeReason reason);
 

@@ -245,9 +245,10 @@ TEST(MotionEventAndroidTest, NativeBackedConstructor) {
     native_event = AMotionEvent_fromJava(env, java_motion_event.obj());
   }
   CHECK(native_event != nullptr);
-  std::unique_ptr<MotionEventAndroid> event =
-      MotionEventAndroidNative::Create(native_event, kPixToDip,
-                                       /* y_offset_pix= */ 0);
+
+  std::unique_ptr<MotionEventAndroid> event = MotionEventAndroidNative::Create(
+      base::android::ScopedInputEvent(native_event), kPixToDip,
+      /* y_offset_pix= */ 0);
 
   EXPECT_EQ(event->GetX(0), x * kPixToDip);
   EXPECT_EQ(event->GetY(0), y * kPixToDip);

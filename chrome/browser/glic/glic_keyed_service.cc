@@ -4,11 +4,11 @@
 
 #include "chrome/browser/glic/glic_keyed_service.h"
 
+#include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/glic_page_context_fetcher.h"
-#include "chrome/browser/glic/glic_window_controller.h"
+#include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -21,18 +21,45 @@
 
 namespace glic {
 
-GlicKeyedService::GlicKeyedService(content::BrowserContext* browser_context)
+GlicKeyedService::GlicKeyedService(content::BrowserContext* browser_context,
+                                   GlicProfileManager* profile_manager)
     : browser_context_(browser_context),
-      focused_tab_manager_(Profile::FromBrowserContext(browser_context)) {}
+      window_controller_(Profile::FromBrowserContext(browser_context)),
+      focused_tab_manager_(Profile::FromBrowserContext(browser_context),
+                           window_controller_),
+      profile_manager_(profile_manager) {
+  focused_tab_changed_subscription_ =
+      focused_tab_manager_.AddFocusedTabChangedCallback(base::BindRepeating(
+          &GlicKeyedService::OnFocusedTabChanged, GetWeakPtr()));
+}
 
 GlicKeyedService::~GlicKeyedService() = default;
 
-void GlicKeyedService::LaunchUI() {
-  if (!window_controller_) {
-    window_controller_ = std::make_unique<GlicWindowController>(
-        Profile::FromBrowserContext(browser_context_));
+void GlicKeyedService::LaunchUI(views::View* glic_button_view) {
+  // Glic may be disabled for certain user profiles (the user is browsing in
+  // incognito or guest mode, policy, etc). In those cases, the entry points to
+  // this method should already have been removed.
+  CHECK(GlicEnabling::IsEnabledForProfile(
+      Profile::FromBrowserContext(browser_context_)));
+
+  profile_manager_->OnUILaunching(this);
+  window_controller_.Show(glic_button_view);
+
+  auto* web_contents = GetFocusedTab();
+  if (web_contents) {
+    if (BorderView* border =
+            BorderView::FindBorderForWebContents(web_contents)) {
+      border->StartAnimation();
+    }
+  } else {
+    // TODO(crbug.com/384740189): Find out if/how to start the border animation
+    // when web_contents is not available yet.
   }
-  window_controller_->Show();
+}
+
+base::CallbackListSubscription GlicKeyedService::AddFocusedTabChangedCallback(
+    FocusedTabChangedCallback callback) {
+  return focused_tab_manager_.AddFocusedTabChangedCallback(callback);
 }
 
 void GlicKeyedService::CreateTab(
@@ -58,30 +85,33 @@ void GlicKeyedService::CreateTab(
 }
 
 void GlicKeyedService::ClosePanel() {
-  if (window_controller_) {
-    window_controller_->Close();
-  }
+  window_controller_.Close();
   BorderView::CancelAllAnimationsForProfile(
       Profile::FromBrowserContext(browser_context_));
 }
 
 std::optional<gfx::Size> GlicKeyedService::ResizePanel(const gfx::Size& size) {
-  if (!window_controller_ || !window_controller_->Resize(size)) {
+  if (!window_controller_.Resize(size)) {
     return std::nullopt;
   }
-  return window_controller_->GetSize();
+  return window_controller_.GetSize();
+}
+
+void GlicKeyedService::SetPanelDraggableAreas(
+    const std::vector<gfx::Rect>& draggable_areas) {
+  window_controller_.SetDraggableAreas(draggable_areas);
 }
 
 void GlicKeyedService::GetContextFromFocusedTab(
     bool include_inner_text,
     bool include_viewport_screenshot,
-    glic::mojom::WebClientHandler::GetContextFromFocusedTabCallback callback) {
-  content::WebContents* web_contents =
-      focused_tab_manager_.GetWebContentsForFocusedTab();
+    mojom::WebClientHandler::GetContextFromFocusedTabCallback callback) {
+  content::WebContents* web_contents = GetFocusedTab();
   if (!web_contents) {
     // TODO(crbug.com/379773651): Clean up logspam when it's no longer useful.
     LOG(ERROR) << "GetContextFromFocusedTab: No web contents";
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(mojom::GetContextResult::NewErrorReason(
+        mojom::GetTabContextErrorReason::kWebContentsChanged));
     return;
   }
 
@@ -96,15 +126,35 @@ void GlicKeyedService::GetContextFromFocusedTab(
           // TODO(harringtond): Consider deleting the fetcher if the page
           // handler is unbound before the fetch completes.
           [](std::unique_ptr<glic::GlicPageContextFetcher> fetcher,
-             glic::mojom::WebClientHandler::GetContextFromFocusedTabCallback
-                 callback,
-             glic::mojom::TabContextResultPtr tab_context_result) {
-            std::move(callback).Run(std::move(tab_context_result));
+             mojom::WebClientHandler::GetContextFromFocusedTabCallback callback,
+             mojom::GetContextResultPtr result) {
+            std::move(callback).Run(std::move(result));
           },
           std::move(fetcher), std::move(callback)));
-  if (BorderView* border = BorderView::FindBorderForWebContents(web_contents)) {
-    border->StartAnimation();
+}
+
+void GlicKeyedService::OnFocusedTabChanged(
+    const content::WebContents* focused_tab) {
+  CHECK_EQ(focused_tab, GetFocusedTab());
+  // TODO(crbug.com/385382048): We shouldn't cancel and restart the animation.
+  // Instead we should transit the current animation state from the previous
+  // browser window to the currently focused browser window.
+  BorderView::CancelAllAnimationsForProfile(
+      Profile::FromBrowserContext(browser_context_));
+  if (focused_tab && window_controller_.HasWindow()) {
+    if (BorderView* border =
+            BorderView::FindBorderForWebContents(focused_tab)) {
+      border->StartAnimation();
+    }
   }
+}
+
+content::WebContents* GlicKeyedService::GetFocusedTab() {
+  return focused_tab_manager_.GetWebContentsForFocusedTab();
+}
+
+base::WeakPtr<GlicKeyedService> GlicKeyedService::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace glic

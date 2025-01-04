@@ -1,5 +1,5 @@
 <style include="settings-shared">
-  :host-context(body.revamp-wayfinding-enabled) settings-toggle-button {
+  settings-toggle-button {
     --cr-icon-button-margin-end: 16px;
     --iron-icon-fill-color: var(--cros-sys-primary);
   }
@@ -12,7 +12,7 @@
     <settings-card header-text="$i18n{a11yPageTitle}">
       <settings-toggle-button
           id="a11yImageLabelsToggle"
-          icon="[[rowIcons_.imageDescription]]"
+          icon="os-settings:a11y-image-description"
           hidden="[[!hasScreenReader_]]"
           pref="{{prefs.settings.a11y.enable_accessibility_image_labels}}"
           on-change="onToggleAccessibilityImageLabels_"
@@ -22,7 +22,7 @@
       </settings-toggle-button>
       <div class="hr" hidden="[[!hasScreenReader_]]"></div>
       <settings-toggle-button id="optionsInMenuToggle"
-          icon="[[rowIcons_.showInQuickSettings]]"
+          icon="os-settings:accessibility"
           label="$i18n{optionsInMenuLabel}"
           sub-label="$i18n{optionsInMenuDescription}"
           pref="{{prefs.settings.a11y.enable_menu}}"
@@ -30,7 +30,7 @@
       </settings-toggle-button>
       <div class="hr"></div>
       <cr-link-row id="textToSpeechSubpageTrigger"
-          start-icon="[[rowIcons_.textToSpeech]]"
+          start-icon="os-settings:text-to-speech"
           label="$i18n{textToSpeechLinkTitle}"
           on-click="onTextToSpeechClick_"
           sub-label="$i18n{textToSpeechLinkDescription}"
@@ -38,7 +38,7 @@
       </cr-link-row>
       <div class="hr"></div>
       <cr-link-row id="displayAndMagnificationPageTrigger"
-          start-icon="[[rowIcons_.displayAndMagnification]]"
+          start-icon="os-settings:zoom-in"
           label="$i18n{displayAndMagnificationLinkTitle}"
           on-click="onDisplayAndMagnificationClick_"
           sub-label="$i18n{displayAndMagnificationLinkDescription}"
@@ -46,7 +46,7 @@
       </cr-link-row>
       <div class="hr"></div>
       <cr-link-row id="keyboardAndTextInputPageTrigger"
-          start-icon="[[rowIcons_.keyboardAndTextInput]]"
+          start-icon="os-settings:a11y-keyboard-and-text-input"
           label="$i18n{keyboardAndTextInputLinkTitle}"
           on-click="onKeyboardAndTextInputClick_"
           sub-label="$i18n{keyboardAndTextInputLinkDescription}"
@@ -54,7 +54,7 @@
       </cr-link-row>
       <div class="hr"></div>
       <cr-link-row id="cursorAndTouchpadPageTrigger"
-          start-icon="[[rowIcons_.cursorAndTouchpad]]"
+          start-icon="os-settings:cursor-click"
           label="$i18n{cursorAndTouchpadLinkTitle}"
           on-click="onCursorAndTouchpadClick_"
           sub-label="$i18n{cursorAndTouchpadLinkDescription}"
@@ -62,7 +62,7 @@
       </cr-link-row>
       <div class="hr"></div>
       <cr-link-row id="audioAndCaptionsPageTrigger"
-          start-icon="[[rowIcons_.audioAndCaptions]]"
+          start-icon="os-settings:a11y-hearing"
           label="$i18n{audioAndCaptionsLinkTitle}"
           on-click="onAudioAndCaptionsClick_"
           sub-label="$i18n{audioAndCaptionsLinkDescription}"
@@ -71,7 +71,7 @@
       <template is="dom-if" if="[[!isGuest_]]">
         <cr-link-row
             id="additionalFeaturesLink" class="hr"
-            start-icon="[[rowIcons_.findMore]]"
+            start-icon="os-settings:a11y-find-more"
             label="$i18n{additionalFeaturesTitle}"
             on-click="onAdditionalFeaturesClick_"
             external>
@@ -199,6 +199,13 @@
         multi-card>
       <settings-facegaze-subpage prefs="{{prefs}}">
       </settings-facegaze-subpage>
+    </os-settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/manageAccessibility/mouseKeys">
+    <os-settings-subpage page-title="$i18n{mouseKeysLabel}"
+        multi-card>
+      <settings-mouse-keys-subpage prefs="{{prefs}}">
+      </settings-mouse-keys-subpage>
     </os-settings-subpage>
   </template>
 </os-settings-animated-pages>

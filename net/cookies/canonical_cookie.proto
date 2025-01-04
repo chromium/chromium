@@ -1,0 +1,44 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package canonical_cookie_proto;
+
+import "testing/libfuzzer/proto/url.proto";
+
+message CanonicalCookie {
+  required string name = 1;
+  required string value = 2;
+  required string domain = 3;
+  required string path = 4;
+  required int64 creation_time = 5;
+  required int64 expiration_time = 6;
+  required int64 last_access_time = 7;
+
+  enum CookieSameSite {
+    UNSPECIFIED = -1;
+    NO_RESTRICTION = 0;
+    LAX_MODE = 1;
+    STRICT_MODE = 2;
+  };
+  required CookieSameSite same_site = 8;
+
+  enum Priority {
+    LOW = 0;
+    MEDIUM = 1;
+    HIGH = 2;
+  };
+  required Priority priority = 9;
+  required bool secure = 10;
+  required bool http_only = 11;
+
+  required url_proto.Url url = 12;
+  optional CookiePartitionKey partition_key = 13;
+}
+
+message CookiePartitionKey {
+  required url_proto.Url schemeful_site = 1;
+  required bool has_cross_site_ancestor = 2;
+}

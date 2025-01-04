@@ -204,6 +204,31 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Set enroll mode failed"/>
 </enum>
 
+<enum name="UploadTemplateResStatus">
+  <int value="-1" label="Command failed"/>
+  <int value="0" label="Success"/>
+  <int value="1" label="Invalid command"/>
+  <int value="2" label="Error"/>
+  <int value="3" label="Invalid parameter"/>
+  <int value="4" label="Access denied"/>
+  <int value="5" label="Invalid response"/>
+  <int value="6" label="Invalid version"/>
+  <int value="7" label="Invalid checksum"/>
+  <int value="8" label="In progress"/>
+  <int value="9" label="Unavailable"/>
+  <int value="10" label="Timeout"/>
+  <int value="11" label="Overflow"/>
+  <int value="12" label="Invalid header"/>
+  <int value="13" label="Request truncated"/>
+  <int value="14" label="Response too big"/>
+  <int value="15" label="Bus error"/>
+  <int value="16" label="Busy"/>
+  <int value="17" label="Invalid header version"/>
+  <int value="18" label="Invalid header crc"/>
+  <int value="19" label="Invalid data crc"/>
+  <int value="20" label="DUP unavailable"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>

@@ -58,9 +58,7 @@ const char kOriginTrialResourceJavascriptPath[] = "/origin-trial-script.js";
 
 class OriginTrialsBrowserTest : public InProcessBrowserTest {
  public:
-  OriginTrialsBrowserTest() {
-    test_features_.InitAndEnableFeature(::features::kPersistentOriginTrials);
-  }
+  OriginTrialsBrowserTest() = default;
 
   OriginTrialsBrowserTest(const OriginTrialsBrowserTest&) = delete;
   OriginTrialsBrowserTest& operator=(const OriginTrialsBrowserTest&) = delete;

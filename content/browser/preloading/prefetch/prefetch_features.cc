@@ -32,10 +32,6 @@ BASE_FEATURE(kPrefetchClientHints,
              "PrefetchClientHints",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrefetchXClientDataHeader,
-             "PrefetchXClientDataHeader",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 constexpr base::FeatureParam<PrefetchClientHintsCrossSiteBehavior>::Option
     kPrefetchClientHintsCrossSiteBehaviorOptions[] = {
         {PrefetchClientHintsCrossSiteBehavior::kNone, "none"},

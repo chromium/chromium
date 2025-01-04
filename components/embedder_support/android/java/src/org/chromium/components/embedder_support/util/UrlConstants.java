@@ -121,11 +121,19 @@ public class UrlConstants {
     public static final String MY_ACTIVITY_URL_IN_QD =
             "https://myactivity.google.com/myactivity?utm_source=chrome_qd";
 
+    public static final String GOOGLE_PRIVACY_POLICY = "https://policies.google.com/privacy";
+
     public static final String GOOGLE_EMBEDDED_PRIVACY_POLICY =
             "https://policies.google.com/privacy/embedded";
 
     public static final String GOOGLE_EMBEDDED_PRIVACY_POLICY_DARK_MODE =
             "https://policies.google.com/privacy/embedded?color_scheme=dark";
+
+    public static final String GOOGLE_EMBEDDED_PRIVACY_POLICY_CHINA =
+            "https://policies.google.cn/privacy/embedded";
+
+    public static final String GOOGLE_EMBEDDED_PRIVACY_POLICY_DARK_MODE_CHINA =
+            "https://policies.google.cn/privacy/embedded?color_scheme=dark";
 
     public static final String GOOGLE_URL = "https://www.google.com/";
 

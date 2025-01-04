@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/signin/public/base/hybrid_encryption_key.h"
+
 #include "components/signin/public/base/hybrid_encryption_key.pb.h"
 #include "components/signin/public/base/tink_key.pb.h"
 

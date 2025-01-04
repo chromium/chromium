@@ -347,16 +347,6 @@ void BrowserProcessPlatformPart::StartTearDown() {
   browser_context_flusher_.reset();
 }
 
-void BrowserProcessPlatformPart::AttemptExit(bool try_to_quit_application) {
-  // Request Lacros terminate early during shutdown to give it the opportunity
-  // to shutdown gracefully. Check to make sure `browser_manager` is available
-  // as it may be null in tests.
-  if (auto* browser_manager = crosapi::BrowserManager::Get())
-    browser_manager->Shutdown();
-
-  BrowserProcessPlatformPartChromeOS::AttemptExit(try_to_quit_application);
-}
-
 ash::system::SystemClock* BrowserProcessPlatformPart::GetSystemClock() {
   if (!system_clock_.get())
     system_clock_ = std::make_unique<ash::system::SystemClock>();

@@ -53,7 +53,7 @@ interface DocumentCoordinationUnit {
   // to be created.
   OnNonPersistentNotificationCreated();
 
-  // Invoked when the frame associated with this document has had a first
+  // Called when the frame associated with this document has had a first
   // contentful paint, as defined here:
   // https://developers.google.com/web/tools/lighthouse/audits/first-contentful-paint
   // This may not fire for all frames, depending on if the load is interrupted
@@ -61,10 +61,13 @@ interface DocumentCoordinationUnit {
   // frame. It will only fire for main-frame nodes.
   OnFirstContentfulPaint(mojo_base.mojom.TimeDelta time_since_navigation_start);
 
-  // Invoked when JS in the renderer requests a memory measurement via
+  // Called when JS in the renderer requests a memory measurement via
   // the performance.measureUserAgentSpecificMemory API.
   OnWebMemoryMeasurementRequested(WebMemoryMeasurement.Mode mode) =>
       (WebMemoryMeasurement measurement);
+
+  // Called when the document is opted-out from freezing via origin trial.
+  OnFreezingOriginTrialOptOut();
 };
 
 // Interface used by the RendererResourceCoordinator singleton to send or

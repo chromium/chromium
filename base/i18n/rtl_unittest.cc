@@ -23,8 +23,7 @@
 namespace base {
 namespace i18n {
 
-class RTLTest : public PlatformTest {
-};
+class RTLTest : public PlatformTest {};
 
 TEST_F(RTLTest, GetFirstStrongCharacterDirection) {
   struct {
@@ -102,11 +101,11 @@ TEST_F(RTLTest, GetFirstStrongCharacterDirection) {
           LEFT_TO_RIGHT},
   };
 
-  for (auto& i : cases)
+  for (auto& i : cases) {
     EXPECT_EQ(i.direction,
               GetFirstStrongCharacterDirection(WideToUTF16(i.text)));
+  }
 }
-
 
 // Note that the cases with LRE, LRO, RLE and RLO are invalid for
 // GetLastStrongCharacterDirection because they should be followed by PDF
@@ -168,9 +167,10 @@ TEST_F(RTLTest, GetLastStrongCharacterDirection) {
           LEFT_TO_RIGHT},
   };
 
-  for (auto& i : cases)
+  for (auto& i : cases) {
     EXPECT_EQ(i.direction,
               GetLastStrongCharacterDirection(WideToUTF16(i.text)));
+  }
 }
 
 TEST_F(RTLTest, GetStringDirection) {
@@ -250,39 +250,40 @@ TEST_F(RTLTest, GetStringDirection) {
           LEFT_TO_RIGHT},
   };
 
-  for (auto& i : cases)
+  for (auto& i : cases) {
     EXPECT_EQ(i.direction, GetStringDirection(WideToUTF16(i.text)));
+  }
 }
 
 TEST_F(RTLTest, WrapPathWithLTRFormatting) {
   const wchar_t* cases[] = {
-    // Test common path, such as "c:\foo\bar".
-    L"c:/foo/bar",
-    // Test path with file name, such as "c:\foo\bar\test.jpg".
-    L"c:/foo/bar/test.jpg",
-    // Test path ending with punctuation, such as "c:\(foo)\bar.".
-    L"c:/(foo)/bar.",
-    // Test path ending with separator, such as "c:\foo\bar\".
-    L"c:/foo/bar/",
-    // Test path with RTL character.
-    L"c:/\x05d0",
-    // Test path with 2 level RTL directory names.
-    L"c:/\x05d0/\x0622",
-    // Test path with mixed RTL/LTR directory names and ending with punctuation.
-    L"c:/\x05d0/\x0622/(foo)/b.a.r.",
-    // Test path without driver name, such as "/foo/bar/test/jpg".
-    L"/foo/bar/test.jpg",
-    // Test path start with current directory, such as "./foo".
-    L"./foo",
-    // Test path start with parent directory, such as "../foo/bar.jpg".
-    L"../foo/bar.jpg",
-    // Test absolute path, such as "//foo/bar.jpg".
-    L"//foo/bar.jpg",
-    // Test path with mixed RTL/LTR directory names.
-    L"c:/foo/\x05d0/\x0622/\x05d1.jpg",
-    // Test empty path.
-    L""
-  };
+      // Test common path, such as "c:\foo\bar".
+      L"c:/foo/bar",
+      // Test path with file name, such as "c:\foo\bar\test.jpg".
+      L"c:/foo/bar/test.jpg",
+      // Test path ending with punctuation, such as "c:\(foo)\bar.".
+      L"c:/(foo)/bar.",
+      // Test path ending with separator, such as "c:\foo\bar\".
+      L"c:/foo/bar/",
+      // Test path with RTL character.
+      L"c:/\x05d0",
+      // Test path with 2 level RTL directory names.
+      L"c:/\x05d0/\x0622",
+      // Test path with mixed RTL/LTR directory names and ending with
+      // punctuation.
+      L"c:/\x05d0/\x0622/(foo)/b.a.r.",
+      // Test path without driver name, such as "/foo/bar/test/jpg".
+      L"/foo/bar/test.jpg",
+      // Test path start with current directory, such as "./foo".
+      L"./foo",
+      // Test path start with parent directory, such as "../foo/bar.jpg".
+      L"../foo/bar.jpg",
+      // Test absolute path, such as "//foo/bar.jpg".
+      L"//foo/bar.jpg",
+      // Test path with mixed RTL/LTR directory names.
+      L"c:/foo/\x05d0/\x0622/\x05d1.jpg",
+      // Test empty path.
+      L""};
 
   for (auto*& i : cases) {
     FilePath path;
@@ -306,13 +307,19 @@ TEST_F(RTLTest, WrapPathWithLTRFormatting) {
 
 TEST_F(RTLTest, WrapString) {
   const wchar_t* cases[] = {
-    L" . ",
-    L"abc",
-    L"a" L"\x5d0\x5d1",
-    L"a" L"\x5d1" L"b",
-    L"\x5d0\x5d1\x5d2",
-    L"\x5d0\x5d1" L"a",
-    L"\x5d0" L"a" L"\x5d1",
+      L" . ",
+      L"abc",
+      L"a"
+      L"\x5d0\x5d1",
+      L"a"
+      L"\x5d1"
+      L"b",
+      L"\x5d0\x5d1\x5d2",
+      L"\x5d0\x5d1"
+      L"a",
+      L"\x5d0"
+      L"a"
+      L"\x5d1",
   };
 
   const bool was_rtl = IsRTL();
@@ -334,13 +341,13 @@ TEST_F(RTLTest, WrapString) {
       WrapStringWithLTRFormatting(&ltr_wrap);
       EXPECT_EQ(ltr_wrap[0], kLeftToRightEmbeddingMark);
       EXPECT_EQ(ltr_wrap.substr(1, ltr_wrap.length() - 2), input);
-      EXPECT_EQ(ltr_wrap[ltr_wrap.length() -1], kPopDirectionalFormatting);
+      EXPECT_EQ(ltr_wrap[ltr_wrap.length() - 1], kPopDirectionalFormatting);
 
       std::u16string rtl_wrap = input;
       WrapStringWithRTLFormatting(&rtl_wrap);
       EXPECT_EQ(rtl_wrap[0], kRightToLeftEmbeddingMark);
       EXPECT_EQ(rtl_wrap.substr(1, rtl_wrap.length() - 2), input);
-      EXPECT_EQ(rtl_wrap[rtl_wrap.length() -1], kPopDirectionalFormatting);
+      EXPECT_EQ(rtl_wrap[rtl_wrap.length() - 1], kPopDirectionalFormatting);
     }
   }
 
@@ -353,14 +360,18 @@ TEST_F(RTLTest, GetDisplayStringInLTRDirectionality) {
     bool wrap_ltr;
     bool wrap_rtl;
   } cases[] = {
-    { L"test",                   false, true },
-    { L"test.html",              false, true },
-    { L"\x05d0\x05d1\x05d2",     true,  true },
-    { L"\x05d0\x05d1\x05d2.txt", true,  true },
-    { L"\x05d0" L"abc",          true,  true },
-    { L"\x05d0" L"abc.txt",      true,  true },
-    { L"abc\x05d0\x05d1",        false, true },
-    { L"abc\x05d0\x05d1.jpg",    false, true },
+      {L"test", false, true},
+      {L"test.html", false, true},
+      {L"\x05d0\x05d1\x05d2", true, true},
+      {L"\x05d0\x05d1\x05d2.txt", true, true},
+      {L"\x05d0"
+       L"abc",
+       true, true},
+      {L"\x05d0"
+       L"abc.txt",
+       true, true},
+      {L"abc\x05d0\x05d1", false, true},
+      {L"abc\x05d0\x05d1.jpg", false, true},
   };
 
   const bool was_rtl = IsRTL();
@@ -373,10 +384,11 @@ TEST_F(RTLTest, GetDisplayStringInLTRDirectionality) {
       std::u16string input = WideToUTF16(test_case.path);
       std::u16string output = GetDisplayStringInLTRDirectionality(input);
       // Test the expected wrapping behavior for the current UI directionality.
-      if (IsRTL() ? test_case.wrap_rtl : test_case.wrap_ltr)
+      if (IsRTL() ? test_case.wrap_rtl : test_case.wrap_ltr) {
         EXPECT_NE(output, input);
-      else
+      } else {
         EXPECT_EQ(output, input);
+      }
     }
   }
 
@@ -438,16 +450,16 @@ TEST_F(RTLTest, GetTextDirectionForLocaleInStartUp) {
 TEST_F(RTLTest, UnadjustStringForLocaleDirection) {
   // These test strings are borrowed from WrapPathWithLTRFormatting
   const wchar_t* cases[] = {
-    L"foo bar",
-    L"foo \x05d0 bar",
-    L"\x05d0 foo bar",
-    L"!foo \x05d0 bar",
-    L",\x05d0 foo bar",
-    L"\x202a \x05d0 foo  bar",
-    L"\x202d \x05d0 foo  bar",
-    L"\x202b foo \x05d0 bar",
-    L"\x202e foo \x05d0 bar",
-    L"\x0622 foo \x05d0 bar",
+      L"foo bar",
+      L"foo \x05d0 bar",
+      L"\x05d0 foo bar",
+      L"!foo \x05d0 bar",
+      L",\x05d0 foo bar",
+      L"\x202a \x05d0 foo  bar",
+      L"\x202d \x05d0 foo  bar",
+      L"\x202b foo \x05d0 bar",
+      L"\x202e foo \x05d0 bar",
+      L"\x0622 foo \x05d0 bar",
   };
 
   const bool was_rtl = IsRTL();
@@ -461,8 +473,9 @@ TEST_F(RTLTest, UnadjustStringForLocaleDirection) {
       std::u16string unadjusted_string = WideToUTF16(test_case);
       std::u16string adjusted_string = unadjusted_string;
 
-      if (!AdjustStringForLocaleDirection(&adjusted_string))
+      if (!AdjustStringForLocaleDirection(&adjusted_string)) {
         continue;
+      }
 
       EXPECT_NE(unadjusted_string, adjusted_string);
       EXPECT_TRUE(UnadjustStringForLocaleDirection(&adjusted_string));

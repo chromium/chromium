@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">La baixada s'ha posat en pausa</translation>
 <translation id="1396327438254055134">Permet que el lloc web utilitzi l'optimitzador de V8.</translation>
 <translation id="1415402041810619267">L'URL s'ha truncat</translation>
+<translation id="1415855080660575082">Permet que Chrome comparteixi les pestanyes recents amb el teu dispositiu per veure-les als resultats de la cerca i a la llista d'aplicacions del dispositiu. Pots activar o desactivar aquesta opció a la configuració de Chrome.</translation>
 <translation id="1448064542941920355">Redueix el zoom</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> lloc web}other{<ph name="SITE_COUNT" /> llocs web}}</translation>
 <translation id="1500473259453106018">Amaga la targeta Baixades de preu en pestanyes</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">Has permès temporalment que aquest lloc web utilitzi galetes de tercers. Això implica menys protecció de navegació, però és més probable que les funcions del lloc web funcionin de la manera prevista. <ph name="BEGIN_LINK" />Envia suggeriments<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">És possible que les funcions d'alguns llocs web no funcionin en mode d'incògnit</translation>
 <translation id="2442870161001914531">Sol·licita sempre el lloc web per a ordinadors</translation>
+<translation id="2445311670906052406">Ara Chrome comparteix les teves pestanyes recents amb el teu dispositiu. Les veuràs als resultats de la cerca i a la llista d'aplicacions del dispositiu. Pots desactivar aquesta opció en qualsevol moment des de la configuració de Chrome.</translation>
 <translation id="2469312991797799607">Aquesta acció suprimirà totes les dades i galetes de <ph name="ORIGIN" /> i de tots els llocs web que conté</translation>
 <translation id="2482878487686419369">Notificacions</translation>
 <translation id="2485422356828889247">Desinstal·la</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">Els llocs web poden mostrar sol·licituds d'inici de sessió procedents de serveis d'identitat.</translation>
 <translation id="2787357173144933081">Arrenca omnibox</translation>
 <translation id="2790501146643349491">Quan aquesta opció està activada, els llocs web tancats recentment poden acabar d'enviar i de rebre dades. Quan aquesta opció està desactivada, els llocs web tancats recentment no poden acabar d'enviar ni de rebre dades.</translation>
+<translation id="2814830417943086299">Ara Chrome mostra les teves pestanyes recents als resultats de la cerca i a la llista d'aplicacions del dispositiu. Pots desactivar aquesta opció en qualsevol moment des de la configuració de Chrome.</translation>
 <translation id="2822354292072154809">Confirmes que vols restablir tots els permisos del lloc web concedits a <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Sol·licita la visualització per a mòbils</translation>
 <translation id="2870560284913253234">Lloc web</translation>
@@ -335,7 +338,6 @@
 <translation id="5968921426641056619">Introdueix l'adreça web</translation>
 <translation id="5975083100439434680">Redueix</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
-<translation id="6015145568571136419">Ara pots accedir ràpidament a les pestanyes suggerides des de la llista d'aplicacions i des dels resultats de la cerca del dispositiu. Pots desactivar aquesta funció en qualsevol moment a la configuració de Chrome.</translation>
 <translation id="6015775454662021376">Controla l'accés al teu dispositiu d'aquest lloc web</translation>
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="6042308850641462728">Més</translation>
@@ -558,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="NUM_MORE" /> més}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="NUM_MORE" /> més}}</translation>
 <translation id="913657688200966289">Activa els permisos per a <ph name="APP_NAME" /> a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">El zoom actual és <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="9156722768168878035">Permet que Chrome mostri les pestanyes recents als resultats de la cerca i a la llista d'aplicacions del dispositiu. Pots desactivar aquesta opció en qualsevol moment des de la configuració de Chrome.</translation>
 <translation id="9162462602695099906">Aquesta pàgina és perillosa</translation>
 <translation id="947156494302904893">Els llocs web que visites poden verificar que ets una persona real i no un bot</translation>
 <translation id="959682366969460160">Organitza el contingut</translation>

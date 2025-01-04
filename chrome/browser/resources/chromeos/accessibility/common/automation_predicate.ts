@@ -845,6 +845,9 @@ export namespace AutomationPredicate {
   export const supportsImageData =
       AutomationPredicate.roles([Role.CANVAS, Role.IMAGE, Role.VIDEO]);
 
+  /** Matches against menu like nodes. */
+  export const menu = AutomationPredicate.roles([Role.MENU, Role.MENU_BAR]);
+
   /** Matches against menu item like nodes. */
   export const menuItem = AutomationPredicate.roles(
       [Role.MENU_ITEM, Role.MENU_ITEM_CHECK_BOX, Role.MENU_ITEM_RADIO]);

@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Адключыць цёмную тэму</translation>
 <translation id="1807246157184219062">Светлая</translation>
 <translation id="1808803439260407870">Класічнае мастацтва</translation>
+<translation id="181434555916624618">На гэты момант вынікі, на якіх прысутнічаюць людзі, не паказваюцца. Паспрабуйце выкарыстаць іншы запыт.</translation>
 <translation id="1815850098929213707">Выбрана клавіша <ph name="KEYS" />. Каб змяніць выбар, націсніце на кнопку.</translation>
 <translation id="1823120442877418684">Тэмы</translation>
 <translation id="1827738518074806965">Мастацкая галерэя</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">Узровень зараду акумулятара ў правым навушніку: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">налады</translation>
 <translation id="3347558044552027859">сучасны</translation>
+<translation id="3353477144743332882">Спампаваць мадэль стварэння зводкі і назвы</translation>
 <translation id="3359218928534347896">уключыць або выключыць мікрафон</translation>
 <translation id="3360306038446926262">Вокны</translation>
 <translation id="3361618936611118375">сушы</translation>
@@ -689,6 +691,7 @@
 <translation id="4354430579665871434">клавіша</translation>
 <translation id="4356100841225547054">Выключыць гук</translation>
 <translation id="4361257691546579041">Тып APN: "Стандартна".</translation>
+<translation id="4368101969572512692">Перамяшаць прапановы</translation>
 <translation id="437294888293595148">Скінуць усе спалучэнні клавіш</translation>
 <translation id="437477383107495720">зайцы</translation>
 <translation id="4376423484621194274">Ваш адміністратар не дазваляе закрываць праграму "<ph name="APP_NAME" />"</translation>
@@ -768,6 +771,7 @@
 <translation id="4731797938093519117">Бацькоўскі доступ</translation>
 <translation id="473775607612524610">Абнавіць</translation>
 <translation id="4744944742468440486">Інфармацыя, звязаная з вылучаным вамі фрагментам</translation>
+<translation id="4750394297954878236">Прапановы</translation>
 <translation id="4771607256327216405">клавіятура ярчэй</translation>
 <translation id="4771923071974529837">заўтра</translation>
 <translation id="4773299976671772492">Спынена</translation>
@@ -853,6 +857,7 @@
 <translation id="5121677070210013200">Не ўдаецца спампаваць мадэль расшыфроўкі. Паўтарыце спробу ці перазапусціце Chromebook.</translation>
 <translation id="5130848777448318809">поні</translation>
 <translation id="5137451382116112100">Поўны экран</translation>
+<translation id="5139813694804168398">Не турбаваць</translation>
 <translation id="5140788690559353412">Страціўшы доступ да вучэбнага ўліковага запісу, вы таксама страціце доступ да прывязанага да яго адраса электроннай пошты і файлаў на Google Дыску, напрыклад Gmail, Дакументаў, Прэзентацый і іншых.</translation>
 <translation id="5142961317498132443">Аўтэнтыфікацыя</translation>
 <translation id="5144311987923128508">Кнопка "Пацвердзіць" зараз неактыўная</translation>
@@ -973,7 +978,6 @@
 <translation id="5703716265115423771">паменшыць гучнасць</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> з <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Кнопка "Змяніць" для апісання "<ph name="SHORTCUT_DESCRIPTION" />".</translation>
-<translation id="5733298426544876109">Абнавіць убудаванае ПЗ прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="5736820754189340309">Даныя выкарыстання трафіка скінуты</translation>
 <translation id="574392208103952083">Сярэдні</translation>
 <translation id="5744175046705638478">Перакласці "<ph name="QUERY" />"</translation>
@@ -998,6 +1002,7 @@
 <translation id="5859969039821714932">Спалучэнне клавіш недаступнае. Націсніце новае спалучэнне без клавішы <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Выключана</translation>
 <translation id="5860491529813859533">Уключыць</translation>
+<translation id="5875913454160982848">Спампаваць мадэль расшыфроўкі</translation>
 <translation id="5876385649737594562">Уключыце, каб задаць параметры</translation>
 <translation id="5877503382465267833">Прыпыніць "<ph name="RECORDING_NAME" />"</translation>
 <translation id="588258955323874662">Поўнаэкранны рэжым</translation>
@@ -1037,7 +1042,6 @@
 <translation id="6040143037577758943">Закрыць</translation>
 <translation id="6040852767465482106">Ананімны ідэнтыфікатар</translation>
 <translation id="604124094241169006">Аўтаматычна</translation>
-<translation id="6042308850641462728">Яшчэ</translation>
 <translation id="6048107060512778456">Збой: захрасла папера</translation>
 <translation id="6050189528197190982">Адценні шэрага</translation>
 <translation id="6054711098834486579">экспрэсіянізм</translation>
@@ -1293,6 +1297,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Сервер даменных імён}one{Серверы даменных імён}few{Серверы даменных імён}many{Серверы даменных імён}other{Серверы даменных імён}}</translation>
 <translation id="7135814714616751706">Пошук ярлыкоў</translation>
 <translation id="7138614237884624401">Спрошчаны тэкст</translation>
+<translation id="7138668887584231801">Недастаткова слоў для падсумавання</translation>
 <translation id="7141470099673912333">Перанос змесціва</translation>
 <translation id="7143207342074048698">Падключэнне</translation>
 <translation id="7144878232160441200">Паўтарыць</translation>
@@ -1586,6 +1591,7 @@
 <translation id="8503836310948963452">Яшчэ пару хвілін…</translation>
 <translation id="8505011850330200833">Каб мадэль Gemini магла апрацоўваць расшыфроўкі і падсумоўваць іх, патрабуецца 2 ГБ у сховішчы</translation>
 <translation id="8508640263392900755">Падрабязныя звесткі пра APN</translation>
+<translation id="8509574872955173831">Даведацца больш пра стварэнне зводкі і назвы</translation>
 <translation id="8522687886059337719">Цяпер вам даступныя новыя <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />шпалеры<ph name="END_LINK_WALLPAPER_SUBPAGE" /> і <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />застаўка<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">чайная</translation>
@@ -1722,7 +1728,6 @@
 <translation id="9133772297793293778">Націсніце 1 з 4 клавіш-мадыфікатараў і 1 іншую клавішу на клавіятуры Каб выйсці з рэжыму рэдагавання, націсніце Alt + Esc.</translation>
 <translation id="9137526406337347448">Сэрвісы Google</translation>
 <translation id="9138630967333032450">Shift злева</translation>
-<translation id="9147928237330776930">Занадта мала слоў для падсумоўвання</translation>
 <translation id="9149391708638971077">Выканаць праверку памяці</translation>
 <translation id="9159524746324788320">гамбургеры</translation>
 <translation id="9161276708550942948">прабел</translation>

@@ -5,6 +5,7 @@
 #include "components/trusted_vault/securebox.h"
 
 #include <algorithm>
+#include <array>
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -115,7 +116,7 @@ bssl::UniquePtr<EC_KEY> GenerateECKey(
 // computes the EC-DH secret. Appends the |shared_secret|, and computes HKDF of
 // that. |public_key| and |private_key| might be null, but if either of them is
 // not null, other must be not null as well. |shared_secret| may be empty.
-std::vector<uint8_t> SecureBoxComputeSecret(
+std::array<uint8_t, kAES128KeyLength> SecureBoxComputeSecret(
     const EC_KEY* private_key,
     const EC_POINT* public_key,
     base::span<const uint8_t> shared_secret,
@@ -135,8 +136,8 @@ std::vector<uint8_t> SecureBoxComputeSecret(
   }
 
   std::vector<uint8_t> key_material = ConcatBytes({dh_secret, shared_secret});
-  return crypto::HkdfSha256(key_material, kHkdfSalt, StringToBytes(hkdf_info),
-                            kAES128KeyLength);
+  return crypto::HkdfSha256<kAES128KeyLength>(key_material, kHkdfSalt,
+                                              StringToBytes(hkdf_info));
 }
 
 // This function implements AES-GCM, using AES-128, a 96-bit nonce, and 128-bit
@@ -248,7 +249,7 @@ std::vector<uint8_t> SecureBoxEncryptImpl(
     base::span<const uint8_t> payload,
     const crypto::OpenSSLErrStackTracer& err_tracer) {
   DCHECK_EQ(!!our_key_pair, !!their_public_key);
-  std::vector<uint8_t> secret = SecureBoxComputeSecret(
+  std::array<uint8_t, kAES128KeyLength> secret = SecureBoxComputeSecret(
       our_key_pair, their_public_key, shared_secret, err_tracer);
 
   std::vector<uint8_t> nonce = crypto::RandBytesAsVector(kNonceLength);
@@ -298,7 +299,7 @@ std::optional<std::vector<uint8_t>> SecureBoxDecryptImpl(
     offset += kECPointLength;
   }
 
-  std::vector<uint8_t> secret_key = SecureBoxComputeSecret(
+  std::array<uint8_t, kAES128KeyLength> secret_key = SecureBoxComputeSecret(
       our_private_key, their_ec_public_key_point, shared_secret, err_tracer);
 
   base::span<const uint8_t> nonce =

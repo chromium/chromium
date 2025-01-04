@@ -24,6 +24,7 @@ data_sharing_pb::GroupMember ConvertGroupMember(
     const data_sharing::mojom::GroupMemberPtr& member) {
   data_sharing_pb::GroupMember result;
   result.set_gaia_id(member->gaia_id);
+  result.set_given_name(member->given_name);
   result.set_display_name(member->display_name);
   result.set_email(member->email);
   result.set_avatar_url(member->avatar_url.spec());

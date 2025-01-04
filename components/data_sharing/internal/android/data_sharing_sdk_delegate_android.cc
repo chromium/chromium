@@ -130,7 +130,19 @@ void DataSharingSDKDelegateAndroid::RemoveMember(
 void DataSharingSDKDelegateAndroid::LeaveGroup(
     const data_sharing_pb::LeaveGroupParams& params,
     GetStatusCallback callback) {
-  NOTIMPLEMENTED();
+  JNIEnv* env = AttachCurrentThread();
+  std::string leave_group_params;
+  params.SerializeToString(&leave_group_params);
+  std::unique_ptr<GetStatusCallback> wrapped_callback =
+      std::make_unique<GetStatusCallback>(std::move(callback));
+  CHECK(wrapped_callback.get());
+  jlong j_native_ptr = reinterpret_cast<jlong>(wrapped_callback.get());
+  Java_DataSharingSDKDelegateBridge_leaveGroup(
+      env, java_obj_, ConvertUTF8ToJavaString(env, leave_group_params),
+      j_native_ptr);
+  // We expect Java to always call us back through
+  // JNI_DataSharingSDKDelegateBridge_RunDeleteGroupCallback.
+  wrapped_callback.release();
 }
 
 void DataSharingSDKDelegateAndroid::DeleteGroup(

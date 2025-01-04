@@ -20,6 +20,8 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/token.h"
+#include "components/history/core/browser/history_backend.h"
+#include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/test/history_service_test_util.h"
@@ -37,10 +39,6 @@
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
 #include "components/page_content_annotations/core/test_page_content_annotator.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/constants/chromeos_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace history_embeddings {
 
@@ -97,14 +95,6 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
     feature_parameters.word_match_required_term_ratio = 0;
     feature_parameters.scroll_tags_enabled = true;
     SetFeatureParametersForTesting(feature_parameters);
-    feature_list_.InitWithFeaturesAndParameters(
-        {{kHistoryEmbeddings, {}},
-         {kHistoryEmbeddingsAnswers, {}},
-#if BUILDFLAG(IS_CHROMEOS)
-         {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-        },
-        /*disabled_features=*/{});
 
     CHECK(history_dir_.CreateUniqueTempDir());
 
@@ -214,8 +204,6 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
                               false);
   }
 
-  base::test::ScopedFeatureList feature_list_;
-
   base::test::TaskEnvironment task_environment_;
 
   base::ScopedTempDir history_dir_;
@@ -287,7 +275,8 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchSetsValidSessionId) {
 
   // Search results created by service search have new valid ID.
   base::test::TestFuture<SearchResult> future;
-  service_->Search(nullptr, "", {}, 1, future.GetRepeatingCallback());
+  service_->Search(nullptr, "", {}, 1, /*skip_answering=*/false,
+                   future.GetRepeatingCallback());
   EXPECT_FALSE(future.Take().session_id.empty());
 }
 
@@ -296,9 +285,11 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchCallsCallbackWithAnswer) {
       {"A passage with five words.", 1},
   });
 
-  auto create_scored_url_row = [&](history::VisitID visit_id, float score) {
+  auto create_scored_url_row = [&](history::VisitID visit_id, float score,
+                                   float word_match_score) {
     AddTestHistoryPage("http://answertest.com");
-    ScoredUrlRow scored_url_row(ScoredUrl(1, visit_id, {}, score));
+    ScoredUrlRow scored_url_row(
+        ScoredUrl(1, visit_id, {}, score, word_match_score));
     scored_url_row.passages_embeddings.passages.add_passages(
         "A passage with five words.");
     scored_url_row.passages_embeddings.embeddings.emplace_back(
@@ -307,11 +298,12 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchCallsCallbackWithAnswer) {
     return scored_url_row;
   };
   std::vector<ScoredUrlRow> scored_url_rows = {
-      create_scored_url_row(1, 1),
+      create_scored_url_row(1, 1, 0),
   };
 
   base::test::TestFuture<SearchResult> future;
   SearchResult initial_result;
+  initial_result.count = 3;
   initial_result.query = "this is a question!?";
   service_->OnSearchCompleted(future.GetRepeatingCallback(),
                               std::move(initial_result), scored_url_rows);
@@ -344,7 +336,8 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchReportsHistograms) {
   base::HistogramTester histogram_tester;
   base::test::TestFuture<SearchResult> future;
   OverrideVisibilityScoresForTesting({{"", 0.99}});
-  service_->Search(nullptr, "", {}, 1, future.GetRepeatingCallback());
+  service_->Search(nullptr, "", {}, 1, /*skip_answering=*/false,
+                   future.GetRepeatingCallback());
   EXPECT_TRUE(future.Take().scored_url_rows.empty());
 
   histogram_tester.ExpectUniqueSample("History.Embeddings.Search.Completed",
@@ -362,7 +355,7 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchIncrementsSessionIdSequenceNumber) {
 
   // Specifying null produces a new random session_id with sequence number 0.
   service_->Search(/*previous_search_result=*/nullptr, "", {}, 1,
-                   future.GetRepeatingCallback());
+                   /*skip_answering=*/false, future.GetRepeatingCallback());
   token = *base::Token::FromString(future.Take().session_id);
   EXPECT_NE(token.high(), 0u);
   EXPECT_EQ(token.low() & HistoryEmbeddingsService::kSessionIdSequenceBitMask,
@@ -370,7 +363,8 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchIncrementsSessionIdSequenceNumber) {
 
   // Likewise for first new result when previous result was empty.
   SearchResult result;
-  service_->Search(&result, "", {}, 1, future.GetRepeatingCallback());
+  service_->Search(&result, "", {}, 1, /*skip_answering=*/false,
+                   future.GetRepeatingCallback());
   result = future.Take();
   token = *base::Token::FromString(result.session_id);
   EXPECT_NE(token.high(), 0u);
@@ -381,7 +375,8 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchIncrementsSessionIdSequenceNumber) {
   for (size_t i = 1; i <= HistoryEmbeddingsService::kSessionIdSequenceBitMask;
        i++) {
     old_token = token;
-    service_->Search(&result, "", {}, 1, future.GetRepeatingCallback());
+    service_->Search(&result, "", {}, 1, /*skip_answering=*/false,
+                     future.GetRepeatingCallback());
     result = future.Take();
     token = *base::Token::FromString(result.session_id);
     EXPECT_EQ(token.high(), old_token.high());
@@ -406,13 +401,15 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchIncrementsSessionIdSequenceNumber) {
 
   // Additional increments simply overflow into the next higher bits.
   old_token = base::Token(old_token.high(), old_token.low() + 1);
-  service_->Search(&result, "", {}, 1, future.GetRepeatingCallback());
+  service_->Search(&result, "", {}, 1, /*skip_answering=*/false,
+                   future.GetRepeatingCallback());
   result = future.Take();
   token = *base::Token::FromString(result.session_id);
   EXPECT_EQ(old_token, token);
 
   old_token = base::Token(old_token.high(), old_token.low() + 1);
-  service_->Search(&result, "", {}, 1, future.GetRepeatingCallback());
+  service_->Search(&result, "", {}, 1, /*skip_answering=*/false,
+                   future.GetRepeatingCallback());
   result = future.Take();
   token = *base::Token::FromString(result.session_id);
   EXPECT_EQ(old_token, token);
@@ -423,9 +420,11 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchUsesCorrectThresholds) {
       {"passage", 1},
   });
 
-  auto create_scored_url_row = [&](history::VisitID visit_id, float score) {
+  auto create_scored_url_row = [&](history::VisitID visit_id, float score,
+                                   float word_match_score) {
     AddTestHistoryPage("http://test.com");
-    ScoredUrlRow scored_url_row(ScoredUrl(1, visit_id, {}, score));
+    ScoredUrlRow scored_url_row(
+        ScoredUrl(1, visit_id, {}, score, word_match_score));
     scored_url_row.passages_embeddings.passages.add_passages("passage");
     scored_url_row.passages_embeddings.embeddings.emplace_back(
         std::vector<float>(768, 1.0f));
@@ -433,11 +432,13 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchUsesCorrectThresholds) {
     return scored_url_row;
   };
   std::vector<ScoredUrlRow> scored_url_rows = {
-      create_scored_url_row(1, 1),
-      create_scored_url_row(2, .8),
-      create_scored_url_row(3, .6),
-      create_scored_url_row(4, .4),
+      create_scored_url_row(1, 1, 0),
+      create_scored_url_row(2, .8, 0),
+      create_scored_url_row(3, .6, 0),
+      create_scored_url_row(4, .4, 0),
   };
+  SearchResult input_result;
+  input_result.count = 3;
 
   // Note, the block scopes are to cleanly separate searches since answers
   // come in late with repeated callbacks.
@@ -445,8 +446,8 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchUsesCorrectThresholds) {
     // Should default to .9 when neither the feature param nor metadata
     // thresholds are set.
     base::test::TestFuture<SearchResult> future;
-    service_->OnSearchCompleted(future.GetRepeatingCallback(), {},
-                                scored_url_rows);
+    service_->OnSearchCompleted(future.GetRepeatingCallback(),
+                                input_result.Clone(), scored_url_rows);
     SearchResult result = future.Take();
     ASSERT_EQ(result.scored_url_rows.size(), 1u);
     EXPECT_EQ(result.scored_url_rows[0].scored_url.visit_id, 1);
@@ -456,8 +457,8 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchUsesCorrectThresholds) {
     // Should use the metadata threshold when it's set.
     base::test::TestFuture<SearchResult> future;
     SetMetadataScoreThreshold(0.7);
-    service_->OnSearchCompleted(future.GetRepeatingCallback(), {},
-                                scored_url_rows);
+    service_->OnSearchCompleted(future.GetRepeatingCallback(),
+                                input_result.Clone(), scored_url_rows);
     SearchResult result = future.Take();
     ASSERT_EQ(result.scored_url_rows.size(), 2u);
     EXPECT_EQ(result.scored_url_rows[0].scored_url.visit_id, 1);
@@ -473,8 +474,8 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchUsesCorrectThresholds) {
     feature_parameters.search_score_threshold = 0.5;
     SetFeatureParametersForTesting(feature_parameters);
     base::test::TestFuture<SearchResult> future;
-    service_->OnSearchCompleted(future.GetRepeatingCallback(), {},
-                                scored_url_rows);
+    service_->OnSearchCompleted(future.GetRepeatingCallback(),
+                                input_result.Clone(), scored_url_rows);
     SearchResult result = future.Take();
     ASSERT_EQ(result.scored_url_rows.size(), 3u);
     EXPECT_EQ(result.scored_url_rows[0].scored_url.visit_id, 1);
@@ -515,7 +516,8 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchFiltersLowScoringResults) {
       {"test passage 5", 0.99},
       {"test passage 6", 0.99},
   });
-  service_->Search(nullptr, "test query", {}, 3, future.GetRepeatingCallback());
+  service_->Search(nullptr, "test query", {}, 3, /*skip_answering=*/false,
+                   future.GetRepeatingCallback());
   SearchResult result = future.Take();
 
   EXPECT_EQ(result.query, "test query");
@@ -571,7 +573,7 @@ TEST_F(HistoryEmbeddingsServiceTest, FilterWordsHashes) {
   {
     base::test::TestFuture<SearchResult> future;
     service_->Search(nullptr, "query without terms", {}, 3,
-                     future.GetRepeatingCallback());
+                     /*skip_answering=*/false, future.GetRepeatingCallback());
     SearchResult result = future.Take();
     EXPECT_FALSE(result.session_id.empty());
     EXPECT_EQ(result.query, "query without terms");
@@ -580,7 +582,8 @@ TEST_F(HistoryEmbeddingsServiceTest, FilterWordsHashes) {
   {
     base::test::TestFuture<SearchResult> future;
     service_->Search(nullptr, "query with inexact spe'cial in the middle", {},
-                     3, future.GetRepeatingCallback());
+                     3, /*skip_answering=*/false,
+                     future.GetRepeatingCallback());
     SearchResult result = future.Take();
     EXPECT_FALSE(result.session_id.empty());
     EXPECT_EQ(result.query, "query with inexact spe'cial in the middle");
@@ -589,7 +592,8 @@ TEST_F(HistoryEmbeddingsServiceTest, FilterWordsHashes) {
   {
     base::test::TestFuture<SearchResult> future;
     service_->Search(nullptr, "query with non-ASCII ∅ character but no terms",
-                     {}, 3, future.GetRepeatingCallback());
+                     {}, 3, /*skip_answering=*/false,
+                     future.GetRepeatingCallback());
     SearchResult result = future.Take();
     EXPECT_FALSE(result.session_id.empty());
     EXPECT_EQ(result.query, "query with non-ASCII ∅ character but no terms");
@@ -598,7 +602,7 @@ TEST_F(HistoryEmbeddingsServiceTest, FilterWordsHashes) {
   {
     base::test::TestFuture<SearchResult> future;
     service_->Search(nullptr, "the word 'special' has its hash filtered", {}, 3,
-                     future.GetRepeatingCallback());
+                     /*skip_answering=*/false, future.GetRepeatingCallback());
     SearchResult result = future.Take();
     EXPECT_FALSE(result.session_id.empty());
     EXPECT_EQ(result.query, "the word 'special' has its hash filtered");
@@ -606,9 +610,9 @@ TEST_F(HistoryEmbeddingsServiceTest, FilterWordsHashes) {
   }
   {
     base::test::TestFuture<SearchResult> future;
-    service_->Search(nullptr,
-                     "the phrase 'something something' is also hash filtered",
-                     {}, 3, future.GetRepeatingCallback());
+    service_->Search(
+        nullptr, "the phrase 'something something' is also hash filtered", {},
+        3, /*skip_answering=*/false, future.GetRepeatingCallback());
     SearchResult result = future.Take();
     EXPECT_FALSE(result.session_id.empty());
     EXPECT_EQ(result.query,
@@ -618,7 +622,8 @@ TEST_F(HistoryEmbeddingsServiceTest, FilterWordsHashes) {
   {
     base::test::TestFuture<SearchResult> future;
     service_->Search(nullptr, "this    Hello,   World!   is also hash filtered",
-                     {}, 3, future.GetRepeatingCallback());
+                     {}, 3, /*skip_answering=*/false,
+                     future.GetRepeatingCallback());
     SearchResult result = future.Take();
     EXPECT_FALSE(result.session_id.empty());
     EXPECT_EQ(result.query, "this    Hello,   World!   is also hash filtered");
@@ -628,7 +633,7 @@ TEST_F(HistoryEmbeddingsServiceTest, FilterWordsHashes) {
     base::test::TestFuture<SearchResult> future;
     service_->Search(
         nullptr, "Hello | World is also filtered due to trimmed empty removal",
-        {}, 3, future.GetRepeatingCallback());
+        {}, 3, /*skip_answering=*/false, future.GetRepeatingCallback());
     SearchResult result = future.Take();
     EXPECT_FALSE(result.session_id.empty());
     EXPECT_EQ(result.query,
@@ -637,9 +642,9 @@ TEST_F(HistoryEmbeddingsServiceTest, FilterWordsHashes) {
   }
   {
     base::test::TestFuture<SearchResult> future;
-    service_->Search(nullptr,
-                     "hellow orld is not filtered since its hash differs", {},
-                     3, future.GetRepeatingCallback());
+    service_->Search(
+        nullptr, "hellow orld is not filtered since its hash differs", {}, 3,
+        /*skip_answering=*/false, future.GetRepeatingCallback());
     SearchResult result = future.Take();
     EXPECT_FALSE(result.session_id.empty());
     EXPECT_EQ(result.query,
@@ -710,7 +715,8 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchDoesNotWordMatchBoostLongQueries) {
   {
     base::test::TestFuture<SearchResult> future;
     service_->Search(/*previous_search_result=*/nullptr, "boosted test query",
-                     {}, 1, future.GetRepeatingCallback());
+                     {}, 1, /*skip_answering=*/false,
+                     future.GetRepeatingCallback());
     SearchResult result = future.Take();
     EXPECT_EQ(result.scored_url_rows.size(), 1u);
     const ScoredUrlRow& row = result.scored_url_rows[0];
@@ -718,10 +724,13 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchDoesNotWordMatchBoostLongQueries) {
     EXPECT_LT(std::ranges::max(row.scores), row.scored_url.score);
   }
   {
+    // Default configuration allows ten terms in query before switching off
+    // word match boosting.
     base::test::TestFuture<SearchResult> future;
-    service_->Search(/*previous_search_result=*/nullptr,
-                     "this very long test query isn't boosted", {}, 1,
-                     future.GetRepeatingCallback());
+    service_->Search(
+        /*previous_search_result=*/nullptr,
+        "this very very very very very long test query isn't boosted", {}, 1,
+        /*skip_answering=*/false, future.GetRepeatingCallback());
     SearchResult result = future.Take();
     EXPECT_EQ(result.scored_url_rows.size(), 1u);
     const ScoredUrlRow& row = result.scored_url_rows[0];
@@ -756,7 +765,8 @@ TEST_F(HistoryEmbeddingsServiceTest, NoWordMatchBoostForLowTermCountRatio) {
     set_ratio(0.3f);
     base::test::TestFuture<SearchResult> future;
     service_->Search(/*previous_search_result=*/nullptr, "boosted test query",
-                     {}, 1, future.GetRepeatingCallback());
+                     {}, 1, /*skip_answering=*/false,
+                     future.GetRepeatingCallback());
     SearchResult result = future.Take();
     EXPECT_EQ(result.scored_url_rows.size(), 1u);
     const ScoredUrlRow& row = result.scored_url_rows[0];
@@ -768,7 +778,8 @@ TEST_F(HistoryEmbeddingsServiceTest, NoWordMatchBoostForLowTermCountRatio) {
     set_ratio(0.5f);
     base::test::TestFuture<SearchResult> future;
     service_->Search(/*previous_search_result=*/nullptr, "boosted test query",
-                     {}, 1, future.GetRepeatingCallback());
+                     {}, 1, /*skip_answering=*/false,
+                     future.GetRepeatingCallback());
     SearchResult result = future.Take();
     EXPECT_EQ(result.scored_url_rows.size(), 1u);
     const ScoredUrlRow& row = result.scored_url_rows[0];
@@ -780,7 +791,7 @@ TEST_F(HistoryEmbeddingsServiceTest, NoWordMatchBoostForLowTermCountRatio) {
     set_ratio(1.0f);
     base::test::TestFuture<SearchResult> future;
     service_->Search(/*previous_search_result=*/nullptr,
-                     "test passage one more", {}, 1,
+                     "test passage one more", {}, 1, /*skip_answering=*/false,
                      future.GetRepeatingCallback());
     SearchResult result = future.Take();
     EXPECT_EQ(result.scored_url_rows.size(), 1u);
@@ -792,7 +803,8 @@ TEST_F(HistoryEmbeddingsServiceTest, NoWordMatchBoostForLowTermCountRatio) {
     set_ratio(1.0f);
     base::test::TestFuture<SearchResult> future;
     service_->Search(/*previous_search_result=*/nullptr, "test passage one", {},
-                     1, future.GetRepeatingCallback());
+                     1, /*skip_answering=*/false,
+                     future.GetRepeatingCallback());
     SearchResult result = future.Take();
     EXPECT_EQ(result.scored_url_rows.size(), 1u);
     const ScoredUrlRow& row = result.scored_url_rows[0];
@@ -803,7 +815,8 @@ TEST_F(HistoryEmbeddingsServiceTest, NoWordMatchBoostForLowTermCountRatio) {
     set_ratio(1.0f);
     base::test::TestFuture<SearchResult> future;
     service_->Search(/*previous_search_result=*/nullptr, "test passage one two",
-                     {}, 1, future.GetRepeatingCallback());
+                     {}, 1, /*skip_answering=*/false,
+                     future.GetRepeatingCallback());
     SearchResult result = future.Take();
     EXPECT_EQ(result.scored_url_rows.size(), 1u);
     const ScoredUrlRow& row = result.scored_url_rows[0];
@@ -811,6 +824,59 @@ TEST_F(HistoryEmbeddingsServiceTest, NoWordMatchBoostForLowTermCountRatio) {
     // is done across all passages.
     EXPECT_LT(std::ranges::max(row.scores), row.scored_url.score);
   }
+}
+
+TEST_F(HistoryEmbeddingsServiceTest, WordMatchBoostAddsLowScoredResultItems) {
+  // These parameter override values make it easy to have one embedding
+  // exceed the threshold and another to fall below the threshold. Due
+  // to how the mock embedder works, all 1's will score the square root of
+  // the output size, sqrt(768) ~= 27.7128, so setting the threshold
+  // just below this value and using a shorter embedding will differentiate.
+  ScopedFeatureParametersForTesting params;
+  params.Get().search_score_threshold = 27.7;
+  params.Get().search_word_match_score_threshold = 0.01f;
+
+  base::HistogramTester histogram_tester;
+  AddTestHistoryPage("http://test1.com");
+  AddTestHistoryPage("http://test2.com");
+  AddTestHistoryPage("http://test3.com");
+  OverrideVisibilityScoresForTesting({
+      {"boosted test query", 0.99},
+      {"test passage 1", 0.99},
+      {"test passage 2", 0.99},
+  });
+  OnPassagesEmbeddingsComputed(UrlData(1, 1, base::Time::Now()),
+                               {"test passage 1", "test passage 2"},
+                               {Embedding(std::vector<float>(768, 1.0f)),
+                                Embedding(std::vector<float>(768, 1.0f))},
+                               ComputeEmbeddingsStatus::KSuccess);
+  OnPassagesEmbeddingsComputed(UrlData(2, 2, base::Time::Now()),
+                               {"test passage 1", "test passage 2"},
+                               {Embedding(std::vector<float>(768, 0.9f)),
+                                Embedding(std::vector<float>(768, 0.9f))},
+                               ComputeEmbeddingsStatus::KSuccess);
+  OnPassagesEmbeddingsComputed(UrlData(3, 3, base::Time::Now()),
+                               {"test passage 1", "test passage 2"},
+                               {Embedding(std::vector<float>(768, 0.9f)),
+                                Embedding(std::vector<float>(768, 0.9f))},
+                               ComputeEmbeddingsStatus::KSuccess);
+
+  base::test::TestFuture<SearchResult> future;
+  service_->Search(/*previous_search_result=*/nullptr, "boosted test query", {},
+                   2, /*skip_answering=*/false, future.GetRepeatingCallback());
+  SearchResult result = future.Take();
+  EXPECT_EQ(result.scored_url_rows.size(), 2u);
+  EXPECT_GT(result.scored_url_rows[0].scored_url.score,
+            GetFeatureParameters().search_score_threshold);
+  EXPECT_LT(result.scored_url_rows[1].scored_url.score,
+            GetFeatureParameters().search_score_threshold);
+  EXPECT_GT(result.scored_url_rows[1].scored_url.word_match_score,
+            GetFeatureParameters().search_word_match_score_threshold);
+
+  histogram_tester.ExpectUniqueSample(
+      "History.Embeddings.NumUrlsAddedByWordMatch", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "History.Embeddings.NumUrlsKeptByWordMatch", 1, 1);
 }
 
 TEST_F(HistoryEmbeddingsServiceTest, GetUrlData) {
@@ -929,6 +995,89 @@ TEST_F(HistoryEmbeddingsServiceTest, GetUrlDataInTimeRange) {
     EXPECT_EQ(url_datas.front().url_id, 1);
     EXPECT_EQ(url_datas.back().url_id, 3);
   }
+}
+
+namespace {
+
+class AddSyncedVisitTask : public history::HistoryDBTask {
+ public:
+  AddSyncedVisitTask(base::RunLoop* run_loop,
+                     const GURL& url,
+                     const history::VisitRow& visit)
+      : run_loop_(run_loop), url_(url), visit_(visit) {}
+
+  AddSyncedVisitTask(const AddSyncedVisitTask&) = delete;
+  AddSyncedVisitTask& operator=(const AddSyncedVisitTask&) = delete;
+
+  ~AddSyncedVisitTask() override = default;
+
+  bool RunOnDBThread(history::HistoryBackend* backend,
+                     history::HistoryDatabase* db) override {
+    history::VisitID visit_id = backend->AddSyncedVisit(
+        url_, u"Title", /*hidden=*/false, visit_, std::nullopt, std::nullopt);
+    EXPECT_NE(visit_id, history::kInvalidVisitID);
+    LOG(ERROR) << "Added visit!";
+    return true;
+  }
+
+  void DoneRunOnMainThread() override { run_loop_->QuitWhenIdle(); }
+
+ private:
+  raw_ptr<base::RunLoop> run_loop_;
+
+  GURL url_;
+  history::VisitRow visit_;
+};
+
+}  // namespace
+
+TEST_F(HistoryEmbeddingsServiceTest, SearchGetsIfUrlIsKnownToSync) {
+  AddTestHistoryPage("http://not-synced.com");
+  AddTestHistoryPage("http://synced.com");
+
+  // Add a synced visit, as it would be created by HISTORY sync. The API to do
+  // this isn't exposed in HistoryService (only HistoryBackend).
+  {
+    history::VisitRow visit;
+    visit.visit_time = base::Time::Now() - base::Days(2);
+    visit.originator_cache_guid = "some_originator";
+    visit.transition = ui::PageTransitionFromInt(
+        ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_START |
+        ui::PAGE_TRANSITION_CHAIN_END);
+    visit.is_known_to_sync = true;
+
+    base::RunLoop run_loop;
+    base::CancelableTaskTracker tracker;
+    history_service_->ScheduleDBTask(
+        FROM_HERE,
+        std::make_unique<AddSyncedVisitTask>(&run_loop,
+                                             GURL("http://synced.com"), visit),
+        &tracker);
+    run_loop.Run();
+  }
+
+  OnPassagesEmbeddingsComputed(UrlData(1, 1, base::Time::Now()),
+                               {"test passage 1", "test passage 2"},
+                               {Embedding(std::vector<float>(768, 1.0f)),
+                                Embedding(std::vector<float>(768, 1.0f))},
+                               ComputeEmbeddingsStatus::KSuccess);
+  OnPassagesEmbeddingsComputed(UrlData(2, 2, base::Time::Now()),
+                               {"test passage 1", "test passage 2"},
+                               {Embedding(std::vector<float>(768, 0.9f)),
+                                Embedding(std::vector<float>(768, 0.9f))},
+                               ComputeEmbeddingsStatus::KSuccess);
+
+  base::test::TestFuture<SearchResult> future;
+  OverrideVisibilityScoresForTesting({{"my query", 0.99}});
+  service_->Search(nullptr, "my query", {}, 3, /*skip_answering=*/false,
+                   future.GetRepeatingCallback());
+  SearchResult result = future.Take();
+
+  EXPECT_EQ(result.scored_url_rows.size(), 2u);
+  EXPECT_EQ(result.scored_url_rows[0].scored_url.url_id, 1);
+  EXPECT_EQ(result.scored_url_rows[0].is_url_known_to_sync, false);
+  EXPECT_EQ(result.scored_url_rows[1].scored_url.url_id, 2);
+  EXPECT_EQ(result.scored_url_rows[1].is_url_known_to_sync, true);
 }
 
 }  // namespace history_embeddings

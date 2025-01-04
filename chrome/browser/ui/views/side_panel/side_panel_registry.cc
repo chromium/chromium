@@ -56,14 +56,16 @@ void SidePanelRegistry::ResetLastActiveEntry() {
 
 void SidePanelRegistry::ClearCachedEntryViews() {
   for (auto const& entry : entries_) {
-    if (!active_entry_.has_value() || entry.get() != active_entry_.value())
+    if (!active_entry_.has_value() || entry.get() != active_entry_.value()) {
       entry.get()->ClearCachedView();
+    }
   }
 }
 
 bool SidePanelRegistry::Register(std::unique_ptr<SidePanelEntry> entry) {
-  if (GetEntryForKey(entry->key()))
+  if (GetEntryForKey(entry->key())) {
     return false;
+  }
   // It's important to add `this` as an observer to `entry` before notifying
   // SidePanelRegistryObservers of the entry's registration because some
   // registry observers can call SidePanelEntryObserver methods for `entry`.

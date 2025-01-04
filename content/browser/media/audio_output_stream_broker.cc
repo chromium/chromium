@@ -67,7 +67,7 @@ StreamBrokerDisconnectReason GetDisconnectReason(DisconnectReason reason,
 AudioOutputStreamBroker::AudioOutputStreamBroker(
     int render_process_id,
     int render_frame_id,
-    GlobalRenderFrameHostId main_frame_id,
+    const GlobalRenderFrameHostToken& main_frame_token,
     int stream_id,
     const std::string& output_device_id,
     const media::AudioParameters& params,
@@ -75,7 +75,7 @@ AudioOutputStreamBroker::AudioOutputStreamBroker(
     DeleterCallback deleter,
     mojo::PendingRemote<media::mojom::AudioOutputStreamProviderClient> client)
     : AudioStreamBroker(render_process_id, render_frame_id),
-      main_frame_id_(main_frame_id),
+      main_frame_token_(main_frame_token),
       output_device_id_(output_device_id),
       params_(params),
       group_id_(group_id),
@@ -120,7 +120,7 @@ AudioOutputStreamBroker::~AudioOutputStreamBroker() {
 
   if (MediaStreamManager::GetPreferredOutputManagerInstance()) {
     MediaStreamManager::GetPreferredOutputManagerInstance()->RemoveSwitcher(
-        main_frame_id_, this);
+        main_frame_token_, this);
   }
 
   TRACE_EVENT_NESTABLE_ASYNC_END1("audio", "AudioOutputStreamBroker", this,
@@ -161,7 +161,7 @@ void AudioOutputStreamBroker::CreateStream(
     // which is called by the PreferredAudioOutputDeviceManager during
     // `AddSwitcher()`.
     MediaStreamManager::GetPreferredOutputManagerInstance()->AddSwitcher(
-        main_frame_id_, this);
+        main_frame_token_, this);
 
     factory->CreateSwitchableOutputStream(
         std::move(stream_receiver),

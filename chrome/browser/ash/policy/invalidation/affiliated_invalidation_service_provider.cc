@@ -6,17 +6,14 @@
 
 namespace policy {
 
-AffiliatedInvalidationServiceProvider::Consumer::Consumer() {
-}
+AffiliatedInvalidationServiceProvider::Consumer::Consumer() = default;
 
-AffiliatedInvalidationServiceProvider::Consumer::~Consumer() {
-}
+AffiliatedInvalidationServiceProvider::Consumer::~Consumer() = default;
 
-AffiliatedInvalidationServiceProvider::AffiliatedInvalidationServiceProvider() {
-}
+AffiliatedInvalidationServiceProvider::AffiliatedInvalidationServiceProvider() =
+    default;
 
 AffiliatedInvalidationServiceProvider::
-~AffiliatedInvalidationServiceProvider() {
-}
+    ~AffiliatedInvalidationServiceProvider() = default;
 
 }  // namespace policy

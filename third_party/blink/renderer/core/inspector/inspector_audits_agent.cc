@@ -38,14 +38,13 @@ static constexpr int kMaximumEncodeImageHeightInPixels = 10000;
 
 static constexpr double kDefaultEncodeQuality = 1;
 
-bool EncodeAsImage(char* body,
-                   size_t size,
+bool EncodeAsImage(base::span<const uint8_t> body,
                    const String& encoding,
                    const double quality,
                    Vector<unsigned char>* output) {
   const gfx::Size maximum_size = gfx::Size(kMaximumEncodeImageWidthInPixels,
                                            kMaximumEncodeImageHeightInPixels);
-  SkBitmap bitmap = WebImage::FromData(WebData(body, size), maximum_size);
+  SkBitmap bitmap = WebImage::FromData(WebData(body), maximum_size);
   if (bitmap.isNull())
     return false;
 
@@ -156,9 +155,8 @@ protocol::Response InspectorAuditsAgent::getEncodedResponse(
   }
 
   Vector<unsigned char> encoded_image;
-  if (!EncodeAsImage(base64_decoded_buffer.data(), base64_decoded_buffer.size(),
-                     encoding, quality.value_or(kDefaultEncodeQuality),
-                     &encoded_image)) {
+  if (!EncodeAsImage(base::as_byte_span(base64_decoded_buffer), encoding,
+                     quality.value_or(kDefaultEncodeQuality), &encoded_image)) {
     return protocol::Response::ServerError(
         "Could not encode image with given settings");
   }

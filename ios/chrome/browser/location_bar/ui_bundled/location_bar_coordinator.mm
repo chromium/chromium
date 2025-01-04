@@ -30,6 +30,8 @@
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/drag_and_drop/model/url_drag_drop_handler.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/infobars/model/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
@@ -67,8 +69,6 @@
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/url_loading/model/image_search_param_generator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -356,6 +356,11 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   return self.omniboxCoordinator.toolbarOmniboxConsumer;
 }
 
+- (void)setFakeboxButtonsSnapshotProvider:
+    (id<FakeboxButtonsSnapshotProvider>)provider {
+  self.viewController.fakeboxButtonsSnapshotProvider = provider;
+}
+
 #pragma mark - LoadQueryCommands
 
 - (void)loadQuery:(NSString*)query immediately:(BOOL)immediately {
@@ -413,7 +418,6 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 }
 
 - (void)focusOmnibox {
-
   // When the NTP and fakebox are visible, make the fakebox animates into place
   // before focusing the omnibox.
   if (IsVisibleURLNewTabPage([self webState]) &&
@@ -423,6 +427,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
                            BrowserCoordinatorCommands);
     [browserCoordinatorCommandsHandler focusFakebox];
   } else {
+    [self setFakeboxButtonsSnapshotProvider:nil];
     [self.omniboxCoordinator focusOmnibox];
   }
 }

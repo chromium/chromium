@@ -228,6 +228,11 @@ class PLATFORM_EXPORT TransformPaintPropertyNode final
            CompositingReason::kAffectedByOuterViewportBoundsDelta;
   }
 
+  bool IsAffectedBySafeAreaBottom() const {
+    return DirectCompositingReasons() &
+           CompositingReason::kAffectedBySafeAreaBottom;
+  }
+
   // If true, this node is a descendant of the page scale transform. This is
   // important for avoiding raster during pinch-zoom (see: crbug.com/951861).
   bool IsInSubtreeOfPageScale() const {

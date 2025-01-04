@@ -34,18 +34,21 @@ namespace {
 // Return the widget of any parent window of |widget|, first checking for
 // transient parent windows.
 Widget* GetWidgetOfParentWindowIncludingTransient(Widget* widget) {
-  if (!widget)
+  if (!widget) {
     return nullptr;
+  }
 
   aura::Window* window = widget->GetNativeWindow();
-  if (!window)
+  if (!window) {
     return nullptr;
+  }
 
   // Look for an ancestor window with a Widget, and if found, return
   // the NativeViewAccessible for its RootView.
   aura::Window* ancestor_window = GetWindowParentIncludingTransient(window);
-  if (!ancestor_window)
+  if (!ancestor_window) {
     return nullptr;
+  }
 
   return Widget::GetWidgetForNativeView(ancestor_window);
 }
@@ -54,8 +57,10 @@ Widget* GetWidgetOfParentWindowIncludingTransient(Widget* widget) {
 // parents of transient windows.
 Widget* GetToplevelWidgetIncludingTransientWindows(Widget* widget) {
   widget = widget->GetTopLevelWidget();
-  if (Widget* parent_widget = GetWidgetOfParentWindowIncludingTransient(widget))
+  if (Widget* parent_widget =
+          GetWidgetOfParentWindowIncludingTransient(widget)) {
     return GetToplevelWidgetIncludingTransientWindows(parent_widget);
+  }
   return widget;
 }
 
@@ -82,8 +87,9 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegate,
   // Add the top-level widget to our registry so that we can enumerate all
   // top-level widgets.
   void RegisterWidget(Widget* widget) {
-    if (!widget)
+    if (!widget) {
       return;
+    }
 
     widget = GetToplevelWidgetIncludingTransientWindows(widget);
     if (!widget || !widget->native_widget() ||
@@ -95,8 +101,9 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegate,
     widget_observations_.AddObservation(widget);
 
     aura::Window* window = widget->GetNativeWindow();
-    if (window)
+    if (window) {
       window_observations_.AddObservation(window);
+    }
   }
 
   gfx::NativeViewAccessible GetNativeViewAccessible() override {
@@ -111,22 +118,26 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegate,
     widget_observations_.RemoveObservation(widget);
 
     aura::Window* window = widget->GetNativeWindow();
-    if (window && window_observations_.IsObservingSource(window))
+    if (window && window_observations_.IsObservingSource(window)) {
       window_observations_.RemoveObservation(window);
+    }
 
     auto iter = base::ranges::find(widgets_, widget);
-    if (iter != widgets_.end())
+    if (iter != widgets_.end()) {
       widgets_.erase(iter);
+    }
   }
 
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override {
     for (Widget* widget : widgets_) {
-      if (widget->GetNativeWindow() != window)
+      if (widget->GetNativeWindow() != window) {
         continue;
+      }
 
       View* root_view = widget->GetRootView();
-      if (!root_view)
+      if (!root_view) {
         continue;
+      }
 
       root_view->NotifyAccessibilityEvent(
           ax::mojom::Event::kWindowVisibilityChanged, true);
@@ -153,8 +164,9 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegate,
   size_t GetChildCount() const override { return widgets_.size(); }
 
   gfx::NativeViewAccessible ChildAtIndex(size_t index) const override {
-    if (index >= GetChildCount())
+    if (index >= GetChildCount()) {
       return nullptr;
+    }
 
     Widget* widget = widgets_[index];
     CHECK(widget);
@@ -231,8 +243,9 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegateAuraLinux::GetParent()
 
   Widget* parent_widget =
       GetWidgetOfParentWindowIncludingTransient(view()->GetWidget());
-  if (parent_widget)
+  if (parent_widget) {
     return parent_widget->GetRootView()->GetNativeViewAccessible();
+  }
 
   return AuraLinuxApplication::GetInstance().GetNativeViewAccessible();
 }
@@ -246,8 +259,9 @@ bool ViewAXPlatformNodeDelegateAuraLinux::IsChildOfLeaf() const {
 void ViewAXPlatformNodeDelegateAuraLinux::OnViewHierarchyChanged(
     View* observed_view,
     const ViewHierarchyChangedDetails& details) {
-  if (view() != details.child || !details.is_add)
+  if (view() != details.child || !details.is_add) {
     return;
+  }
   static_cast<ui::AXPlatformNodeAuraLinux*>(ax_platform_node())
       ->OnParentChanged();
 }

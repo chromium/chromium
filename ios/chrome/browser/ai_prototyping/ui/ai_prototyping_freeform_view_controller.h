@@ -7,15 +7,16 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_consumer.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_view_controller_protocol.h"
 
 // Menu page representing the "Freeform" feature, allowing for flexible access
 // to model querying for prototyping. This maps to the "Bling Prototyping"
 // feature in MES.
 @interface AIPrototypingFreeformViewController
-    : UIViewController <AIPrototypingConsumer,
-                        AIPrototypingViewControllerProtocol>
+    : UIViewController <AIPrototypingViewControllerProtocol>
+
+// Use `initWithFeature` from AIPrototypingViewControllerProtocol instead.
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 

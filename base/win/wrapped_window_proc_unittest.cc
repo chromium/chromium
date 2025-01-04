@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/win/wrapped_window_proc.h"
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -15,8 +16,9 @@ LRESULT CALLBACK TestWindowProc(HWND hwnd,
                                 UINT message,
                                 WPARAM wparam,
                                 LPARAM lparam) {
-  if (message == kCrashMsg)
+  if (message == kCrashMsg) {
     RaiseException(kExceptionCode, 0, 0, nullptr);
+  }
   return DefWindowProc(hwnd, message, wparam, lparam);
 }
 
@@ -39,8 +41,9 @@ class TestWrappedExceptionFiter {
   // The actual exception filter just records the exception.
   static int Filter(EXCEPTION_POINTERS* info) {
     EXPECT_FALSE(s_filter_->called_);
-    if (info->ExceptionRecord->ExceptionCode == kExceptionCode)
+    if (info->ExceptionRecord->ExceptionCode == kExceptionCode) {
       s_filter_->called_ = true;
+    }
     return EXCEPTION_EXECUTE_HANDLER;
   }
 

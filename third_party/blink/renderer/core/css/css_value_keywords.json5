@@ -1236,6 +1236,16 @@
     // luminance
     "match-source",
 
+    // masonry-direction
+    // row
+    // row-reverse
+    // column
+    // column-reverse
+
+    // masonry-fill
+    // normal
+    // reverse
+
     // color-interpolation / color-interpolation-filters
     // auto
     "srgb",
@@ -1371,6 +1381,11 @@
 
     // shapes
     "polygon",
+    "shape",
+    // "from",
+    // "to",
+    "by",
+    "line",
 
     // @font-face src
     "format",
@@ -1796,6 +1811,9 @@
     // view-transition-capture-mode
     "layered",
     // flat
+
+    // view-transition-name
+    "match-element",
 
     // container-type
     // inline-size,

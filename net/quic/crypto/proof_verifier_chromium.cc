@@ -410,8 +410,7 @@ int ProofVerifierChromium::Job::DoVerifyCertComplete(int result) {
     int ct_result = CheckCTRequirements();
     TransportSecurityState::PKPStatus pin_validity =
         transport_security_state_->CheckPublicKeyPins(
-            HostPortPair(hostname_, port_),
-            cert_verify_result.is_issued_by_known_root,
+            hostname_, cert_verify_result.is_issued_by_known_root,
             cert_verify_result.public_key_hashes);
     switch (pin_validity) {
       case TransportSecurityState::PKPStatus::VIOLATED:
@@ -509,8 +508,7 @@ int ProofVerifierChromium::Job::CheckCTRequirements() {
 
   TransportSecurityState::CTRequirementsStatus ct_requirement_status =
       transport_security_state_->CheckCTRequirements(
-          HostPortPair(hostname_, port_),
-          cert_verify_result.is_issued_by_known_root,
+          hostname_, cert_verify_result.is_issued_by_known_root,
           cert_verify_result.public_key_hashes,
           cert_verify_result.verified_cert.get(),
           cert_verify_result.policy_compliance);

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/inline/inline_layout_algorithm.h"
 
 #include <memory>
@@ -1116,7 +1111,8 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
 
 #if DCHECK_IS_ON()
     // Make sure the last opportunity has the correct properties.
-    if (opportunities_it + 1 == opportunities.end()) {
+    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+    if (UNSAFE_TODO(opportunities_it + 1) == opportunities.end()) {
       // We shouldn't have any shapes affecting the last opportunity.
       DCHECK(!opportunity.HasShapeExclusions());
       DCHECK_EQ(line_block_size, LayoutUnit());
@@ -1141,10 +1137,11 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
         opportunity.ComputeLineLayoutOpportunity(constraint_space,
                                                  line_block_size, block_delta);
     if (line_break_strategy.NeedsToPrepare()) [[unlikely]] {
+      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
       line_break_strategy.Prepare(
           context_, Node(), constraint_space,
-          base::span(opportunities_it, opportunities.end()), line_opportunity,
-          leading_floats, break_token, &GetExclusionSpace());
+          UNSAFE_TODO(base::span(opportunities_it, opportunities.end())),
+          line_opportunity, leading_floats, break_token, &GetExclusionSpace());
     }
     bool is_line_info_cached = false;
     LineInfo& line_info =
@@ -1232,10 +1229,12 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
       }
       // We've either don't have any shapes, or run out of block-delta space
       // to test, proceed to the next layout opportunity.
-      if (opportunities_it + 1 != opportunities.end()) {
+      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+      if (UNSAFE_TODO(opportunities_it + 1) != opportunities.end()) {
         block_delta = LayoutUnit();
         line_block_size = LayoutUnit();
-        ++opportunities_it;
+        // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+        UNSAFE_TODO(++opportunities_it);
         continue;
       }
       // Normally the last opportunity should fit the line, but arithmetic
@@ -1315,7 +1314,8 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
     if (total_block_size + block_delta > opportunity.rect.BlockSize()) {
       block_delta = LayoutUnit();
       line_block_size = LayoutUnit();
-      ++opportunities_it;
+      // TODO(crbug.com/351564777): Resolve a buffer safety issue.
+      UNSAFE_TODO(++opportunities_it);
       continue;
     }
 

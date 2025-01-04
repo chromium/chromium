@@ -78,10 +78,10 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
 
     // Called when the group data model has been changed.
     virtual void OnGroupChanged(const GroupData& group_data,
-                               const base::Time& event_time) {}
+                                const base::Time& event_time) {}
     // User either created a new group or has been invited to the existing one.
     virtual void OnGroupAdded(const GroupData& group_data,
-                             const base::Time& event_time) {}
+                              const base::Time& event_time) {}
     // Either group has been deleted or user has been removed from the group.
     virtual void OnGroupRemoved(const GroupId& group_id,
                                 const base::Time& event_time) {}
@@ -155,6 +155,12 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
   virtual std::optional<GroupMemberPartialData> GetPossiblyRemovedGroupMember(
       const GroupId& group_id,
       const GaiaId& member_gaia_id) = 0;
+
+  // Provides lookup functionality for groups that were known at some point
+  // during the current session, but have been deleted. This does not look at
+  // currently available groups, for that you should use `ReadGroup`.
+  virtual std::optional<GroupData> GetPossiblyRemovedGroup(
+      const GroupId& group_id) = 0;
 
   // Refreshes data if necessary and passes the GroupData to `callback`.
   // Deprecated: use synchronous ReadGroup() above instead.
@@ -260,6 +266,12 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
 
   // Get the current DataSharingUIDelegate instance.
   virtual DataSharingUIDelegate* GetUiDelegate() = 0;
+
+  // Sets a group for testing. When ReadGroup is called, the GroupData that
+  // matches GroupId will be returned. This function does not notify observers
+  // of the group being added. Settings 2 groups with the same GroupId will
+  // replace the existing GroupData.
+  virtual void AddGroupDataForTesting(GroupData group_data) = 0;
 };
 
 }  // namespace data_sharing

@@ -126,16 +126,18 @@ WebContents* WebContentsFromId(GlobalRenderFrameHostId rfh_id) {
 
 url::Origin GetOriginFromId(GlobalRenderFrameHostId rfh_id) {
   auto* rfh = content::RenderFrameHost::FromID(rfh_id);
-  if (!rfh)
+  if (!rfh) {
     return {};
+  }
 
   return rfh->GetLastCommittedOrigin();
 }
 
 bool CapturerRestrictedToSameOrigin(GlobalRenderFrameHostId capturer_id) {
   WebContents* capturer = WebContentsFromId(capturer_id);
-  if (!capturer)
+  if (!capturer) {
     return false;
+  }
   return capture_policy::GetAllowedCaptureLevel(
              GetOriginFromId(capturer_id).GetURL(), capturer) ==
          AllowedScreenCaptureLevel::kSameOrigin;
@@ -264,8 +266,9 @@ void TabSharingUIViews::OnRegionCaptureRectChanged(
 
 void TabSharingUIViews::StartSharing(infobars::InfoBar* infobar) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (source_callback_.is_null())
+  if (source_callback_.is_null()) {
     return;
+  }
 
   WebContents* shared_tab =
       infobars::ContentInfoBarManager::WebContentsFromInfoBar(infobar);
@@ -275,18 +278,19 @@ void TabSharingUIViews::StartSharing(infobars::InfoBar* infobar) {
   RenderFrameHost* main_frame = shared_tab->GetPrimaryMainFrame();
   DCHECK(main_frame);
   source_callback_.Run(
-      content::DesktopMediaID(
-          content::DesktopMediaID::TYPE_WEB_CONTENTS,
-          content::DesktopMediaID::kNullId,
-          content::WebContentsMediaCaptureId(main_frame->GetProcess()->GetID(),
-                                             main_frame->GetRoutingID())),
+      content::DesktopMediaID(content::DesktopMediaID::TYPE_WEB_CONTENTS,
+                              content::DesktopMediaID::kNullId,
+                              content::WebContentsMediaCaptureId(
+                                  main_frame->GetProcess()->GetDeprecatedID(),
+                                  main_frame->GetRoutingID())),
       captured_surface_control_active_);
 }
 
 void TabSharingUIViews::StopSharing() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!stop_callback_.is_null())
+  if (!stop_callback_.is_null()) {
     std::move(stop_callback_).Run();
+  }
 #if BUILDFLAG(IS_CHROMEOS)
   policy::DlpContentManager::Get()->RemoveObserver(
       this, policy::DlpContentRestriction::kScreenShare);
@@ -309,8 +313,9 @@ void TabSharingUIViews::OnBrowserAdded(Browser* browser) {
 
 void TabSharingUIViews::OnBrowserRemoved(Browser* browser) {
   BrowserList* browser_list = BrowserList::GetInstance();
-  if (browser_list->empty())
+  if (browser_list->empty()) {
     browser_list->RemoveObserver(this);
+  }
   browser->tab_strip_model()->RemoveObserver(this);
 }
 
@@ -320,8 +325,9 @@ void TabSharingUIViews::OnTabStripModelChanged(
     const TabStripSelectionChange& selection) {
   if (change.type() == TabStripModelChange::kInserted) {
     for (const auto& contents : change.GetInsert()->contents) {
-      if (infobars_.find(contents.contents) == infobars_.end())
+      if (infobars_.find(contents.contents) == infobars_.end()) {
         CreateInfobarForWebContents(contents.contents);
+      }
     }
   }
 
@@ -344,8 +350,9 @@ void TabSharingUIViews::TabChangedAt(WebContents* contents,
                                      TabChangeType change_type) {
   // Sad tab cannot be shared so don't create an infobar for it.
   auto* sad_tab_helper = SadTabHelper::FromWebContents(contents);
-  if (sad_tab_helper && sad_tab_helper->sad_tab())
+  if (sad_tab_helper && sad_tab_helper->sad_tab()) {
     return;
+  }
 
   if (infobars_.find(contents) == infobars_.end()) {
     CreateInfobarForWebContents(contents);
@@ -356,24 +363,28 @@ void TabSharingUIViews::OnInfoBarRemoved(infobars::InfoBar* infobar,
                                          bool animate) {
   auto infobars_entry =
       base::ranges::find(infobars_, infobar, &InfoBars::value_type::second);
-  if (infobars_entry == infobars_.end())
+  if (infobars_entry == infobars_.end()) {
     return;
+  }
 
   infobar->owner()->RemoveObserver(this);
   infobars_.erase(infobars_entry);
   if (infobars::ContentInfoBarManager::WebContentsFromInfoBar(infobar) ==
-      shared_tab_)
+      shared_tab_) {
     StopSharing();
+  }
 }
 
 void TabSharingUIViews::PrimaryPageChanged(content::Page& page) {
-  if (!shared_tab_)
+  if (!shared_tab_) {
     return;
+  }
   shared_tab_name_ = GetTabName(shared_tab_);
   for (const auto& infobars_entry : infobars_) {
     // Recreate infobars to reflect the new shared tab's hostname.
-    if (infobars_entry.first != shared_tab_)
+    if (infobars_entry.first != shared_tab_) {
       CreateInfobarForWebContents(infobars_entry.first);
+    }
   }
 }
 
@@ -515,9 +526,9 @@ void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
   TabSharingInfoBarDelegate::ButtonState share_this_tab_instead_button_state =
       !is_share_instead_button_possible
           ? TabSharingInfoBarDelegate::ButtonState::NOT_SHOWN
-          : is_sharing_allowed_by_policy
-                ? TabSharingInfoBarDelegate::ButtonState::ENABLED
-                : TabSharingInfoBarDelegate::ButtonState::DISABLED;
+      : is_sharing_allowed_by_policy
+          ? TabSharingInfoBarDelegate::ButtonState::ENABLED
+          : TabSharingInfoBarDelegate::ButtonState::DISABLED;
 
   infobars_[contents] = TabSharingInfoBarDelegate::Create(
       infobar_manager, old_infobar, shared_tab_name_, capturer_name_, contents,
@@ -544,8 +555,9 @@ void TabSharingUIViews::CreateTabCaptureIndicator() {
   const blink::MediaStreamDevice device(
       blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE,
       shared_tab_media_id_.ToString(), std::string());
-  if (!shared_tab_)
+  if (!shared_tab_) {
     return;
+  }
 
   blink::mojom::StreamDevices devices;
   devices.video_device = device;
@@ -553,7 +565,7 @@ void TabSharingUIViews::CreateTabCaptureIndicator() {
                                   ->GetMediaStreamCaptureIndicator()
                                   ->RegisterMediaStream(shared_tab_, devices);
   tab_capture_indicator_ui_->OnStarted(
-      base::RepeatingClosure(), content::MediaStreamUI::SourceCallback(),
+      /*stop=*/base::DoNothing(), content::MediaStreamUI::SourceCallback(),
       /*label=*/std::string(), /*screen_capture_ids=*/{},
       content::MediaStreamUI::StateChangeCallback());
 }

@@ -45,8 +45,7 @@ class FakeTabSlotController : public TabSlotController {
   void MoveTabLast(Tab* tab) override {}
   void ToggleTabGroupCollapsedState(
       const tab_groups::TabGroupId group,
-      ToggleTabGroupCollapsedStateOrigin origin =
-          ToggleTabGroupCollapsedStateOrigin::kMenuAction) override;
+      ToggleTabGroupCollapsedStateOrigin origin) override;
   void NotifyTabstripBubbleOpened() override {}
   void NotifyTabstripBubbleClosed() override {}
 

@@ -47,9 +47,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
+#include "chrome/browser/ui/ash/capture_mode/lens_overlay_image_helper.h"
 #include "chrome/browser/ui/ash/capture_mode/search_results_view.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
@@ -145,8 +145,9 @@ ChromeCaptureModeDelegate* ChromeCaptureModeDelegate::Get() {
 
 void ChromeCaptureModeDelegate::SetIsScreenCaptureLocked(bool locked) {
   is_screen_capture_locked_ = locked;
-  if (is_screen_capture_locked_)
+  if (is_screen_capture_locked_) {
     InterruptVideoRecordingIfAny();
+  }
 }
 
 bool ChromeCaptureModeDelegate::InterruptVideoRecordingIfAny() {
@@ -195,8 +196,9 @@ void ChromeCaptureModeDelegate::OpenScreenCaptureItem(
 void ChromeCaptureModeDelegate::OpenScreenshotInImageEditor(
     const base::FilePath& file_path) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  if (!profile)
+  if (!profile) {
     return;
+  }
 
   ash::SystemAppLaunchParams params;
   params.launch_paths = {file_path};
@@ -208,8 +210,9 @@ bool ChromeCaptureModeDelegate::Uses24HourFormat() const {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   // TODO(afakhry): Consider moving |prefs::kUse24HourClock| to ash/public so
   // we can do this entirely in ash.
-  if (profile)
+  if (profile) {
     return profile->GetPrefs()->GetBoolean(prefs::kUse24HourClock);
+  }
   return base::GetHourClockType() == base::k24HourClock;
 }
 
@@ -285,14 +288,16 @@ void ChromeCaptureModeDelegate::OnServiceRemoteReset() {}
 
 bool ChromeCaptureModeDelegate::GetDriveFsMountPointPath(
     base::FilePath* result) const {
-  if (!ash::LoginState::Get()->IsUserLoggedIn())
+  if (!ash::LoginState::Get()->IsUserLoggedIn()) {
     return false;
+  }
 
   drive::DriveIntegrationService* integration_service =
       drive::DriveIntegrationServiceFactory::FindForProfile(
           ProfileManager::GetActiveUserProfile());
-  if (!integration_service || !integration_service->IsMounted())
+  if (!integration_service || !integration_service->IsMounted()) {
     return false;
+  }
 
   *result = integration_service->GetMountPointPath();
   return true;
@@ -517,7 +522,7 @@ void ChromeCaptureModeDelegate::SendRegionSearch(
   if (!profile || image.empty() || region.IsEmpty()) {
     return;
   }
-  DCHECK(ash::IsSunfishFeatureEnabledWithFeatureKey());
+  DCHECK(ash::features::IsSunfishFeatureEnabled());
   if (!lens_overlay_query_controller_) {
     lens_overlay_query_controller_ =
         std::make_unique<LensOverlayQueryController>(
@@ -542,12 +547,12 @@ void ChromeCaptureModeDelegate::SendRegionSearch(
       /*screenshot=*/image,
       /*page_url=*/GURL(),
       /*page_title=*/std::nullopt, /*significant_region_boxes=*/
-      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
+      std::vector<lens::CenterRotatedBox>(),
       /*underlying_content_bytes=*/base::span<const uint8_t>(),
       /*underlying_content_type=*/lens::MimeType(),
       /*ui_scale_factor=*/1.f, /*invocation_time=*/base::TimeTicks::Now());
   lens_overlay_query_controller_->SendRegionSearch(
-      lens::GetCenterRotatedBoxFromTabViewAndImageBounds(
+      GetCenterRotatedBoxFromTabViewAndImageBounds(
           /*tab_bounds=*/region, /*view_bounds=*/region,
           /*image_bounds=*/region),
       lens::LensOverlaySelectionType::REGION_SEARCH,
@@ -568,7 +573,7 @@ void ChromeCaptureModeDelegate::SendMultimodalSearch(
   }
   on_search_url_fetched_callback_ = std::move(callback);
   lens_overlay_query_controller_->SendMultimodalRequest(
-      lens::GetCenterRotatedBoxFromTabViewAndImageBounds(
+      GetCenterRotatedBoxFromTabViewAndImageBounds(
           /*tab_bounds=*/region, /*view_bounds=*/region,
           /*image_bounds=*/region),
       text,
@@ -587,8 +592,8 @@ void ChromeCaptureModeDelegate::DeleteRemoteFile(
 }
 
 void ChromeCaptureModeDelegate::HandleStartQueryResponse(
-    std::vector<lens::mojom::OverlayObjectPtr> objects,
-    lens::mojom::TextPtr text,
+    std::vector<lens::OverlayObject> objects,
+    lens::Text text,
     bool is_error) {}
 
 void ChromeCaptureModeDelegate::HandleInteractionURLResponse(

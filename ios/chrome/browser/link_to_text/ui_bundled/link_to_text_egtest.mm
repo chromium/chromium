@@ -208,7 +208,8 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
       performAction:grey_tap()];
 }
 
-- (void)testInputDisablesGenerateLink {
+// TODO(crbug.com/386205292): Test is flaky.
+- (void)FLAKY_testInputDisablesGenerateLink {
   // In order to make the menu show up later in the test, the pasteboard can't
   // be empty.
   UIPasteboard* pasteboard = [UIPasteboard generalPasteboard];

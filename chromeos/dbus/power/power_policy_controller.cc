@@ -577,6 +577,10 @@ void PowerPolicyController::ApplyPrefs(const PrefValues& values) {
     }
   }
 
+  if (values.charge_limit_enabled.has_value()) {
+    prefs_policy_.set_charge_limit_enabled(values.charge_limit_enabled.value());
+  }
+
   prefs_were_set_ = true;
   SendCurrentPolicy();
 }

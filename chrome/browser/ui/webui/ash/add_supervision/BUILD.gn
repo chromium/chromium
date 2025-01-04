@@ -55,7 +55,6 @@ static_library("add_supervision") {
     "//chrome/browser/resources/chromeos/add_supervision:resources_grit",
     "//chrome/browser/resources/chromeos/supervision:resources",
     "//chrome/browser/resources/chromeos/supervision:resources_grit",
-    "//chrome/browser/ui/webui:webui_util",
     "//components/constrained_window",
     "//components/google/core/common",
     "//components/services/app_service/public/cpp:app_types",
@@ -66,6 +65,7 @@ static_library("add_supervision") {
     "//ui/resources:ui_resources_grd",
     "//ui/resources:ui_resources_grd_grit",
     "//ui/web_dialogs",
+    "//ui/webui",
   ]
 }
 

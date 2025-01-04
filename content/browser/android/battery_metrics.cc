@@ -215,12 +215,6 @@ void AndroidBatteryMetrics::OnThermalStateChange(DeviceThermalState new_state) {
                 base::android::ApplicationStatusListener::GetState()));
         event->set_device_thermal_state(ToTraceEnum(new_state));
       });
-
-  if (!app_visible_)
-    return;
-
-  base::UmaHistogramEnumeration(
-      "Power.ForegroundThermalState.ChangeEvent.Android", new_state);
 }
 
 void AndroidBatteryMetrics::OnSpeedLimitChange(int speed_limit) {}

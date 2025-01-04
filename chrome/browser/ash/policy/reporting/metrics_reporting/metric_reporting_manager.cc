@@ -594,10 +594,12 @@ void MetricReportingManager::InitNetworkPeriodicCollector(
 
 void MetricReportingManager::InitAppCollectors(Profile* profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!base::Contains(telemetry_collectors_, kAppTelemetry));
-  CHECK(user_event_report_queue_);
-  CHECK(user_reporting_settings_);
-  CHECK(user_telemetry_report_queue_);
+  if (base::Contains(telemetry_collectors_, kAppTelemetry)
+      || !user_event_report_queue_
+      || !user_reporting_settings_
+      || !user_telemetry_report_queue_) {
+  return;
+ }
   // App events.
   auto app_events_observer = AppEventsObserver::CreateForProfile(
       profile, user_reporting_settings_.get());

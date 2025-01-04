@@ -27,8 +27,7 @@ class StorageAccessHeaderServiceFactoryTest : public testing::Test {
     // `kSafetyHubAbusiveNotificationRevocation` feature, find a stable
     // fix such that the tests still pass when the feature is enabled.
     features_.InitWithFeatures(
-        {::features::kPersistentOriginTrials,
-         network::features::kStorageAccessHeadersTrial},
+        {network::features::kStorageAccessHeadersTrial},
         {safe_browsing::kSafetyHubAbusiveNotificationRevocation});
     profile_ = std::make_unique<TestingProfile>();
   }

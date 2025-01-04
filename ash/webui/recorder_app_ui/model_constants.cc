@@ -16,6 +16,7 @@ constexpr char kTitleSuggestionXsModelUuid[] =
 constexpr char kTitleSuggestionXxsModelUuid[] =
     "1bdd5282-2d14-413c-bf43-9ea6d55c38a6";
 
-const uint32_t kInputTokenLimit = 3072;
+const uint32_t kInputTokenXsModelLimit = 11000;  // 11k
+const uint32_t kInputTokenXxsModelLimit = 3072;  // 3k
 
 }  // namespace ash

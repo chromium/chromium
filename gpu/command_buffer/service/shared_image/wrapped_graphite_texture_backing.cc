@@ -69,8 +69,7 @@ class WrappedGraphiteTextureBacking::SkiaGraphiteImageRepresentationImpl
     CHECK(write_surfaces_.empty());
     write_surfaces_.reserve(texture_holders.size());
     for (int plane = 0; plane < format().NumberOfPlanes(); ++plane) {
-      auto color_type =
-          viz::ToClosestSkColorType(/*gpu_compositing=*/true, format(), plane);
+      auto color_type = viz::ToClosestSkColorType(format(), plane);
       void* release_context =
           scoped_refptr<WrappedGraphiteTextureHolder>(texture_holders[plane])
               .release();
@@ -295,8 +294,7 @@ bool WrappedGraphiteTextureBacking::ReadbackToMemory(
 
   std::vector<ReadPixelsContext> contexts(format().NumberOfPlanes());
   for (int i = 0; i < format().NumberOfPlanes(); i++) {
-    const auto color_type =
-        viz::ToClosestSkColorType(/*gpu_compositing=*/true, format(), i);
+    const auto color_type = viz::ToClosestSkColorType(format(), i);
     sk_sp<SkImage> sk_image =
         SkImages::WrapTexture(context_state_->gpu_main_graphite_recorder(),
                               texture_holders_[i]->texture(), color_type,

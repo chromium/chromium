@@ -60,10 +60,11 @@ void DownloadShelfContextMenuView::Run(
 
   // The menu's alignment is determined based on the UI layout.
   Position position;
-  if (base::i18n::IsRTL())
+  if (base::i18n::IsRTL()) {
     position = Position::kTopRight;
-  else
+  } else {
     position = Position::kTopLeft;
+  }
 
   menu_runner_->RunMenuAt(parent_widget, nullptr, rect, position, source_type);
 }
@@ -78,15 +79,17 @@ void DownloadShelfContextMenuView::OnMenuClosed(
   close_time_ = base::TimeTicks::Now();
 
   // This must be run before clearing |menu_runner_| who owns the reference.
-  if (!on_menu_closed_callback.is_null())
+  if (!on_menu_closed_callback.is_null()) {
     on_menu_closed_callback.Run();
+  }
 
   menu_runner_.reset();
 }
 
 void DownloadShelfContextMenuView::OnMenuWillShow(ui::SimpleMenuModel* source) {
-  if (on_menu_will_show_callback_)
+  if (on_menu_will_show_callback_) {
     std::move(on_menu_will_show_callback_).Run();
+  }
 }
 
 void DownloadShelfContextMenuView::ExecuteCommand(int command_id,

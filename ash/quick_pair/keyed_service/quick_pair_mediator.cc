@@ -31,6 +31,7 @@
 #include "ash/quick_pair/scanning/scanner_broker_impl.h"
 #include "ash/quick_pair/ui/actions.h"
 #include "ash/quick_pair/ui/ui_broker_impl.h"
+#include "base/base64.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/services/bluetooth_config/fast_pair_delegate.h"
 #include "chromeos/ash/services/quick_pair/quick_pair_process.h"
@@ -47,6 +48,19 @@ constexpr base::TimeDelta kDismissedDiscoveryNotificationBanTime =
     base::Seconds(2);
 constexpr base::TimeDelta kShortBanDiscoveryNotificationBanTime =
     base::Minutes(5);
+
+std::pair<std::string, Protocol> GetDiscoveryBanListKey(
+    scoped_refptr<Device> device) {
+  switch (device->protocol()) {
+    case Protocol::kFastPairRetroactive:
+    case Protocol::kFastPairInitial:
+      return std::make_pair(device->metadata_id(), device->protocol());
+    case Protocol::kFastPairSubsequent:
+      CHECK(device->account_key().has_value());
+      std::string encoded = base::Base64Encode(device->account_key().value());
+      return std::make_pair(encoded, device->protocol());
+  }
+}
 
 }  // namespace
 
@@ -178,8 +192,8 @@ bool Mediator::IsDeviceCurrentlyShowingNotification(
 
 bool Mediator::IsDeviceBlockedForDiscoveryNotifications(
     scoped_refptr<Device> device) {
-  auto it = discovery_notification_block_list_.find(
-      std::make_pair(device->metadata_id(), device->protocol()));
+  auto it =
+      discovery_notification_block_list_.find(GetDiscoveryBanListKey(device));
   if (it == discovery_notification_block_list_.end()) {
     return false;
   }
@@ -399,48 +413,82 @@ void Mediator::OnDisplayPasskey(std::u16string device_name, uint32_t passkey) {
 }
 
 void Mediator::UpdateDiscoveryBlockList(scoped_refptr<Device> device) {
-  auto it = discovery_notification_block_list_.find(
-      std::make_pair(device->metadata_id(), device->protocol()));
+  auto discovery_block_list_key = GetDiscoveryBanListKey(device);
+  if (device->protocol() == Protocol::kFastPairSubsequent) {
+    // Subsequent pairing is discovered more frequently than initial pairing and
+    // the notification is more intrusive than it is on Android.
+    // Add the notification to the block list with the short ban (5 minute)
+    // time. The user can put the device into pairing mode to see the initial
+    // pair notification.
+    auto it = discovery_notification_block_list_.find(discovery_block_list_key);
+    if (it == discovery_notification_block_list_.end()) {
+      discovery_notification_block_list_[discovery_block_list_key] =
+          std::make_pair(
+              DiscoveryNotificationDismissalState::kShortBan,
+              std::make_optional(base::Time::Now() +
+                                 kShortBanDiscoveryNotificationBanTime));
+      return;
+    } else {
+      // If the device is already in the block-list, update the state and the
+      // expire timestamp.
+      DiscoveryNotificationDismissalState dismissal_state = it->second.first;
+      switch (dismissal_state) {
+        case DiscoveryNotificationDismissalState::kShortBan:
+          // Since `IsDeviceBlockedForDiscoveryNotifications` has an explicit
+          // check for `kLongBan`, the timestamp is std::nullopt. The `kLongBan`
+          // does not have an expiration timeout.
+          it->second = std::make_pair(
+              DiscoveryNotificationDismissalState::kLongBan, std::nullopt);
+          return;
+        case DiscoveryNotificationDismissalState::kDismissed:
+        case DiscoveryNotificationDismissalState::kLongBan:
+          // Subsequent pair notifications should only ever reoccur after a
+          // short ban.
+          NOTREACHED();
+      }
+    }
+  } else {
+    // We use the exponential back-off strategy for initial and retroactive
+    // pair. If this is the first time we are seeing this device, create a new
+    // value in the block-list.
+    auto it = discovery_notification_block_list_.find(discovery_block_list_key);
+    if (it == discovery_notification_block_list_.end()) {
+      discovery_notification_block_list_[discovery_block_list_key] =
+          std::make_pair(
+              DiscoveryNotificationDismissalState::kDismissed,
+              std::make_optional(base::Time::Now() +
+                                 kDismissedDiscoveryNotificationBanTime));
+      return;
+    }
 
-  // If this is the first time we are seeing this device, create a new value in
-  // the block-list.
-  if (it == discovery_notification_block_list_.end()) {
-    discovery_notification_block_list_[std::make_pair(device->metadata_id(),
-                                                      device->protocol())] =
-        std::make_pair(
-            DiscoveryNotificationDismissalState::kDismissed,
+    // If the device is already in the block-list, update the state and the
+    // expire timestamp.
+    DiscoveryNotificationDismissalState dismissal_state = it->second.first;
+    switch (dismissal_state) {
+      case DiscoveryNotificationDismissalState::kDismissed:
+        it->second = std::make_pair(
+            DiscoveryNotificationDismissalState::kShortBan,
             std::make_optional(base::Time::Now() +
-                               kDismissedDiscoveryNotificationBanTime));
-    return;
+                               kShortBanDiscoveryNotificationBanTime));
+        return;
+      case DiscoveryNotificationDismissalState::kShortBan:
+        // Since `IsDeviceBlockedForDiscoveryNotifications` has an explicit
+        // check for `kLongBan`, the timestamp is std::nullopt. The `kLongBan`
+        // does not have an expiration timeout.
+        it->second = std::make_pair(
+            DiscoveryNotificationDismissalState::kLongBan, std::nullopt);
+        return;
+      case DiscoveryNotificationDismissalState::kLongBan:
+        // If the device had the state `kLongBan`, it should have never been
+        // shown again, so we are expected to never get to this state when a
+        // `kLongBan` was shown, and then dismissed by user.
+        NOTREACHED();
+    }
   }
-
-  // If the device is already in the block-list, update the state and the
-  // expire timestamp.
-  DiscoveryNotificationDismissalState dismissal_state = it->second.first;
-  switch (dismissal_state) {
-    case DiscoveryNotificationDismissalState::kDismissed:
-      it->second = std::make_pair(
-          DiscoveryNotificationDismissalState::kShortBan,
-          std::make_optional(base::Time::Now() +
-                             kShortBanDiscoveryNotificationBanTime));
-      return;
-    case DiscoveryNotificationDismissalState::kShortBan:
-      // Since `IsDeviceBlockedForDiscoveryNotifications` has an explicit
-      // check for `kLongBan`, the timestamp is std::nullopt. The `kLongBan`
-      // does not have an expiration timeout.
-      it->second = std::make_pair(DiscoveryNotificationDismissalState::kLongBan,
-                                  std::nullopt);
-      return;
-    case DiscoveryNotificationDismissalState::kLongBan:
-      // If the device had the state `kLongBan`, it should have never been
-      // shown again, so we are expected to never get to this state when a
-      // `kLongBan` was shown, and then dismissed by user.
-      NOTREACHED();
   }
-}
 
 void Mediator::RemoveFromDiscoveryBlockList(scoped_refptr<Device> device) {
-  auto key = std::make_pair(device->metadata_id(), device->protocol());
+  auto key = GetDiscoveryBanListKey(device);
   discovery_notification_block_list_.erase(key);
 }
 
@@ -477,8 +525,6 @@ void Mediator::OnDiscoveryAction(scoped_refptr<Device> device,
       // When the user explicitly dismisses the discovery notification, update
       // the device's block-list value accordingly.
       UpdateDiscoveryBlockList(device);
-      [[fallthrough]];
-    case DiscoveryAction::kDismissedByTimeout:
       // When the notification is dismissed by timeout or dismissed by user,
       // there will be no more notifications for |device|. We reset
       // |device_currently_showing_notification_| to enforce the first come,
@@ -488,6 +534,20 @@ void Mediator::OnDiscoveryAction(scoped_refptr<Device> device,
       // connection notification to signify pairing is progress, and thus not
       // in a terminal state, and we do not want to permit other notifications
       // during this time.
+      device_currently_showing_notification_ = nullptr;
+      FastPairHandshakeLookup::GetInstance()->Erase(device);
+      break;
+    case DiscoveryAction::kDismissedByTimeout:
+      // When the device is not in pairing mode, it can change its
+      // service data frequently which results in lots of subsequent pair
+      // notifications. To prevent spam, we'll add these notifications to the
+      // block list even when the notification is dismissed by timeout. We
+      // additionally have stricter ban times for these notifications. Users can
+      // get around these strict ban times by entering pairing mode and going
+      // through the Initial Pair flow.
+      if (device->protocol() == Protocol::kFastPairSubsequent) {
+        UpdateDiscoveryBlockList(device);
+      }
       device_currently_showing_notification_ = nullptr;
       FastPairHandshakeLookup::GetInstance()->Erase(device);
       break;

@@ -1061,8 +1061,9 @@ TYPED_TEST_P(FlatTreeTest, ErasePosition) {
     T v(0);
 
     auto it = cont.find(v);
-    if (it != cont.end())
+    if (it != cont.end()) {
       cont.erase(it);
+    }
   }
 }
 

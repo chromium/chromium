@@ -20,7 +20,7 @@
 namespace {
 constexpr int kMinValidTabsForOrganizing = 2;
 int kNextOrganizationID = 1;
-}
+}  // namespace
 
 TabOrganization::TabOrganization(
     TabDatas tab_datas,
@@ -174,8 +174,7 @@ void TabOrganization::Accept() {
   // the tab strip and therefore causes |this| to be deleted. So we keep
   // a WeakPtr to |this| to detect this case and avoid accessing member
   // variables, just in case.
-  base::WeakPtr<TabOrganization> this_weak_ref =
-      weak_ptr_factory_.GetWeakPtr();
+  base::WeakPtr<TabOrganization> this_weak_ref = weak_ptr_factory_.GetWeakPtr();
 
   if (group_id_.has_value()) {
     CHECK(tab_strip_model->group_model()->ContainsTabGroup(group_id_.value()));

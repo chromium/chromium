@@ -206,4 +206,18 @@
   <message name="IDS_ARC_VM_DATA_MIGRATION_SCREEN_REPORT_BUTTON_LABEL" desc="Label of a button to send a feedback report after an update to improve the performance of Android apps on ChromeOS failed.">
     Send a report
   </message>
+
+ <!-- ARC VM preload notification -->
+  <message name="IDS_ARC_VM_PRELOAD_NOTIFICATION_TITLE" desc="Title of the notification to keep users informed about the download progress of ArcVm.">
+    ArcVm preload progress update
+  </message>
+  <message name="IDS_ARC_VM_PRELOAD_STARTED_MESSAGE" desc="Main message of the notification to keep users informed about the download progress of ArcVm.">
+    Installation of VPN background services has started, this may take a few minutes.
+  </message>
+  <message name="IDS_ARC_VM_PRELOAD_SUCCEEDED_MESSAGE" desc="Main message of the notification to keep users informed about the download progress of ArcVm.">
+    VPN Background Services installation complete. If you do not see VPN apps, please log out and log back in.
+  </message>
+  <message name="IDS_ARC_VM_PRELOAD_FAILED_MESSAGE" desc="Main message of the notification to keep users informed about the download progress of ArcVm.">
+    VPN background services installation failed.
+  </message>
 </grit-part>

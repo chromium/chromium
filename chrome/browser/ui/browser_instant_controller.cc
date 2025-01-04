@@ -49,8 +49,9 @@ void BrowserInstantController::OnSearchEngineBaseURLChanged(
   int count = tab_model->count();
   for (int index = 0; index < count; ++index) {
     content::WebContents* contents = tab_model->GetWebContentsAt(index);
-    if (!contents)
+    if (!contents) {
       continue;
+    }
 
     GURL site_url =
         contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL();
@@ -63,12 +64,13 @@ void BrowserInstantController::OnSearchEngineBaseURLChanged(
       if (instant_service) {
         content::RenderProcessHost* rph =
             contents->GetPrimaryMainFrame()->GetProcess();
-        is_ntp = instant_service->IsInstantProcess(rph->GetID());
+        is_ntp = instant_service->IsInstantProcess(rph->GetDeprecatedID());
       }
     }
 
-    if (!is_ntp)
+    if (!is_ntp) {
       continue;
+    }
 
     // When default search engine is changed navigate to chrome://newtab which
     // will redirect to the new tab page associated with the search engine.

@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "google_apis/common/base_requests.h"
 
@@ -43,6 +42,7 @@ class ViewScreenRequest : public google_apis::UrlFetchRequestBase {
   ViewScreenRequest(google_apis::RequestSender* sender,
                     std::string session_id,
                     ViewScreenParam view_screen_param,
+                    std::string url_base,
                     ViewScreenRequestCallback callback);
   ViewScreenRequest(const ViewScreenRequest&) = delete;
   ViewScreenRequest& operator=(const ViewScreenRequest&) = delete;

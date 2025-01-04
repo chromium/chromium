@@ -52,7 +52,8 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
 
   void Shutdown();
 
-  void BeginMainFrame(LocalDOMWindow& local_root_window);
+  void BeginMainFrame(LocalDOMWindow& local_root_window,
+                      viz::BeginFrameId frame_id);
   void WillPerformStyleAndLayoutCalculation();
   AnimationFrameTimingInfo* RecordRenderingUpdateEndTime(
       LocalDOMWindow& local_root_window,
@@ -74,7 +75,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
                          bool resolving,
                          const char* class_like,
                          std::variant<const char*, String> property_like,
-                         const String& script_url);
+                         SourceLocation* location);
   void Will(const probe::EvaluateScriptBlock&);
   void Did(const probe::EvaluateScriptBlock& probe_data) {
     PopScriptEntryPoint(&probe_data.script_state, &probe_data);
@@ -106,6 +107,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
  private:
   Member<AnimationFrameTimingInfo> current_frame_timing_info_;
   HeapVector<Member<ScriptTimingInfo>> current_scripts_;
+  viz::BeginFrameId current_begin_frame_id_;
   struct PendingScriptInfo {
     ScriptTimingInfo::InvokerType invoker_type;
     base::TimeTicks start_time;

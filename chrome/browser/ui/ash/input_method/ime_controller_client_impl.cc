@@ -31,8 +31,9 @@ ImeControllerClientImpl::ImeControllerClientImpl(InputMethodManager* manager)
   DCHECK(input_method_manager_);
   input_method_manager_->AddObserver(this);
   input_method_manager_->AddImeMenuObserver(this);
-  if (input_method_manager_->GetImeKeyboard())
+  if (input_method_manager_->GetImeKeyboard()) {
     observation_.Observe(input_method_manager_->GetImeKeyboard());
+  }
   InputMethodMenuManager::GetInstance()->AddObserver(this);
 
   // This does not need to send the initial state to ash because that happens
@@ -72,23 +73,26 @@ void ImeControllerClientImpl::SetImesManagedByPolicy(bool managed) {
 void ImeControllerClientImpl::SwitchToNextIme() {
   InputMethodManager::State* state =
       input_method_manager_->GetActiveIMEState().get();
-  if (state)
+  if (state) {
     state->SwitchToNextInputMethod();
+  }
 }
 
 void ImeControllerClientImpl::SwitchToLastUsedIme() {
   InputMethodManager::State* state =
       input_method_manager_->GetActiveIMEState().get();
-  if (state)
+  if (state) {
     state->SwitchToLastUsedInputMethod();
+  }
 }
 
 void ImeControllerClientImpl::SwitchImeById(const std::string& id,
                                             bool show_message) {
   InputMethodManager::State* state =
       input_method_manager_->GetActiveIMEState().get();
-  if (state)
+  if (state) {
     state->ChangeInputMethod(id, show_message);
+  }
 }
 
 void ImeControllerClientImpl::ActivateImeMenuItem(const std::string& key) {
@@ -98,8 +102,9 @@ void ImeControllerClientImpl::ActivateImeMenuItem(const std::string& key) {
 void ImeControllerClientImpl::SetCapsLockEnabled(bool caps_enabled) {
   ash::input_method::ImeKeyboard* keyboard =
       InputMethodManager::Get()->GetImeKeyboard();
-  if (keyboard)
+  if (keyboard) {
     keyboard->SetCapsLockEnabled(caps_enabled);
+  }
 }
 
 void ImeControllerClientImpl::OverrideKeyboardKeyset(
@@ -117,8 +122,9 @@ void ImeControllerClientImpl::ShowModeIndicator() {
 
   ash::IMECandidateWindowHandlerInterface* cw_handler =
       ash::IMEBridge::Get()->GetCandidateWindowHandler();
-  if (!cw_handler)
+  if (!cw_handler) {
     return;
+  }
 
   gfx::Rect anchor_bounds = cw_handler->GetCursorBounds();
   if (anchor_bounds == gfx::Rect()) {
@@ -140,8 +146,9 @@ void ImeControllerClientImpl::InputMethodChanged(InputMethodManager* manager,
                                                  Profile* profile,
                                                  bool show_message) {
   RefreshIme();
-  if (show_message)
+  if (show_message) {
     ShowModeIndicator();
+  }
 }
 
 // ash::input_method::InputMethodManager::ImeMenuObserver:

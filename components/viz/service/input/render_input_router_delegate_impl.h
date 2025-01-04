@@ -38,16 +38,17 @@ class VIZ_SERVICE_EXPORT RenderInputRouterDelegateImpl
     GetEmbeddedRenderInputRouters(const FrameSinkId& id) = 0;
     virtual void NotifyObserversOfInputEvent(
         const FrameSinkId& frame_sink_id,
-        uint32_t grouping_id,
+        const base::UnguessableToken& grouping_id,
         std::unique_ptr<blink::WebCoalescedInputEvent> event) = 0;
     virtual void NotifyObserversOfInputEventAcks(
         const FrameSinkId& frame_sink_id,
-        uint32_t grouping_id,
+        const base::UnguessableToken& grouping_id,
         blink::mojom::InputEventResultSource ack_source,
         blink::mojom::InputEventResultState ack_result,
         std::unique_ptr<blink::WebCoalescedInputEvent> event) = 0;
-    virtual void OnInvalidInputEventSource(const FrameSinkId& frame_sink_id,
-                                           uint32_t grouping_id) = 0;
+    virtual void OnInvalidInputEventSource(
+        const FrameSinkId& frame_sink_id,
+        const base::UnguessableToken& grouping_id) = 0;
     virtual std::optional<bool> IsDelegatedInkHovering(
         const FrameSinkId& frame_sink_id) = 0;
     virtual GpuServiceImpl* GetGpuService() = 0;
@@ -57,7 +58,7 @@ class VIZ_SERVICE_EXPORT RenderInputRouterDelegateImpl
       scoped_refptr<input::RenderWidgetHostInputEventRouter> rwhier,
       Delegate& delegate,
       const FrameSinkId& frame_sink_id,
-      uint32_t grouping_id);
+      const base::UnguessableToken& grouping_id);
 
   ~RenderInputRouterDelegateImpl() override;
 
@@ -97,7 +98,7 @@ class VIZ_SERVICE_EXPORT RenderInputRouterDelegateImpl
   scoped_refptr<input::RenderWidgetHostInputEventRouter> rwhier_;
   raw_ref<Delegate> delegate_;
   const FrameSinkId frame_sink_id_;
-  const uint32_t grouping_id_;
+  const base::UnguessableToken grouping_id_;
 };
 
 }  // namespace viz

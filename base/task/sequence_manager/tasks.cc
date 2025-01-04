@@ -58,21 +58,24 @@ TaskOrder Task::task_order() const {
 }
 
 void Task::SetHeapHandle(HeapHandle heap_handle) {
-  if (!delayed_task_handle_delegate_)
+  if (!delayed_task_handle_delegate_) {
     return;
+  }
 
   delayed_task_handle_delegate_->SetHeapHandle(heap_handle);
 }
 
 void Task::ClearHeapHandle() {
-  if (!delayed_task_handle_delegate_)
+  if (!delayed_task_handle_delegate_) {
     return;
+  }
   delayed_task_handle_delegate_->ClearHeapHandle();
 }
 
 HeapHandle Task::GetHeapHandle() const {
-  if (!delayed_task_handle_delegate_)
+  if (!delayed_task_handle_delegate_) {
     return HeapHandle::Invalid();
+  }
   return delayed_task_handle_delegate_->GetHeapHandle();
 }
 
@@ -96,14 +99,16 @@ bool Task::WillRunTask() {
 }
 
 TimeTicks WakeUp::earliest_time() const {
-  if (delay_policy == subtle::DelayPolicy::kFlexiblePreferEarly)
+  if (delay_policy == subtle::DelayPolicy::kFlexiblePreferEarly) {
     return time - leeway;
+  }
   return time;
 }
 
 TimeTicks WakeUp::latest_time() const {
-  if (delay_policy == subtle::DelayPolicy::kFlexibleNoSooner)
+  if (delay_policy == subtle::DelayPolicy::kFlexibleNoSooner) {
     return time + leeway;
+  }
   return time;
 }
 

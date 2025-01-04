@@ -16,6 +16,23 @@ const jingle_xmpp::StaticQName kAuthenticationQName = {kChromotingXmlNamespace,
                                                        "authentication"};
 }  // namespace
 
+Authenticator::RejectionDetails::RejectionDetails() = default;
+Authenticator::RejectionDetails::RejectionDetails(RejectionDetails&&) = default;
+Authenticator::RejectionDetails::RejectionDetails(const RejectionDetails&) =
+    default;
+
+Authenticator::RejectionDetails::RejectionDetails(
+    std::string_view message,
+    const base::Location& location)
+    : message(std::string(message)), location(location) {}
+
+Authenticator::RejectionDetails::~RejectionDetails() = default;
+
+Authenticator::RejectionDetails& Authenticator::RejectionDetails::operator=(
+    RejectionDetails&&) = default;
+Authenticator::RejectionDetails& Authenticator::RejectionDetails::operator=(
+    const RejectionDetails&) = default;
+
 Authenticator::Authenticator() = default;
 Authenticator::~Authenticator() = default;
 

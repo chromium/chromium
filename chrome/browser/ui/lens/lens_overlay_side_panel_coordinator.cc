@@ -24,6 +24,7 @@
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/lens/lens_overlay_invocation_source.h"
+#include "components/lens/lens_overlay_side_panel_result.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -232,7 +233,7 @@ void LensOverlaySidePanelCoordinator::DidStartNavigation(
   // page and any feature-specific request headers.
   navigation_handle->SetRequestHeader(kChromeSideSearchVersionHeaderName,
                                       kChromeSideSearchVersionHeaderValue);
-  lens_overlay_controller_->SetSidePanelShowErrorPage(
+  lens_overlay_controller_->SetSidePanelIsOffline(
       net::NetworkChangeNotifier::IsOffline());
   lens_overlay_controller_->SetSidePanelIsLoadingResults(true);
 }

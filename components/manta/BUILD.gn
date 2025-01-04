@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 
 component("manta") {
@@ -30,7 +29,6 @@ component("manta") {
   deps = [
     "proto",
     "//base",
-    "//build:chromeos_buildflags",
     "//components/account_id:account_id",
     "//components/endpoint_fetcher",
     "//components/keyed_service/core",
@@ -38,7 +36,7 @@ component("manta") {
     "//net",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "mahi_provider.cc",
       "mahi_provider.h",
@@ -73,7 +71,7 @@ source_set("unit_tests") {
     "base_provider_test_helper.h",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "orca_provider_unittest.cc",
       "scanner_provider_unittest.cc",

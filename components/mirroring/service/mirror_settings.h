@@ -43,10 +43,8 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MirrorSettings {
 
   // Get the audio/video config with given codec.
   static media::cast::FrameSenderConfig GetDefaultAudioConfig(
-      media::cast::RtpPayloadType payload_type,
       media::AudioCodec codec);
   static media::cast::FrameSenderConfig GetDefaultVideoConfig(
-      media::cast::RtpPayloadType payload_type,
       media::VideoCodec codec);
 
   // Call to override the default resolution settings.

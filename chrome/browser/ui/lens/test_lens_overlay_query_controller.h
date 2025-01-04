@@ -64,6 +64,14 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
         next_full_image_request_should_return_error;
   }
 
+  void set_disable_page_upload_response_callback(bool disable) {
+    disable_page_upload_response_callback = disable;
+  }
+
+  void RunUploadProgressCallback() {
+    std::move(last_upload_progress_callback_).Run(1, 1);
+  }
+
   // Accessors.
   const GURL& sent_fetch_url() const { return sent_fetch_url_; }
 
@@ -89,6 +97,11 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
     return sent_page_content_objects_request_;
   }
 
+  const lens::LensOverlayObjectsRequest&
+  sent_partial_page_content_objects_request() const {
+    return sent_partial_page_content_objects_request_;
+  }
+
   const lens::LensOverlayInteractionRequest& sent_interaction_request() const {
     return sent_interaction_request_;
   }
@@ -107,7 +120,7 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
     return last_queried_region_bytes_;
   }
 
-  const base::span<const uint8_t>& last_sent_underlying_content_bytes() const {
+  base::span<const uint8_t> last_sent_underlying_content_bytes() const {
     return last_sent_underlying_content_bytes_;
   }
 
@@ -115,7 +128,16 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
     return last_sent_underlying_content_type_;
   }
 
+  base::span<const std::u16string> last_sent_partial_content() const {
+    return last_sent_partial_content_;
+  }
+
   const GURL& last_sent_page_url() const { return last_sent_page_url_; }
+
+  const std::vector<lens::mojom::CenterRotatedBoxPtr>&
+  last_sent_significant_region_boxes() const {
+    return last_sent_significant_region_boxes_;
+  }
 
   const std::optional<lens::mojom::UserAction>& last_user_action() const {
     return last_user_action_;
@@ -131,6 +153,10 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
 
   const int& num_full_page_objects_gen204_pings_sent() const {
     return num_full_page_objects_gen204_pings_sent_;
+  }
+
+  const int& num_partial_page_content_requests_sent() const {
+    return num_partial_page_content_requests_sent_;
   }
 
   int latency_gen_204_counter(
@@ -180,6 +206,9 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
                                     lens::MimeType new_content_type,
                                     GURL new_page_url) override;
 
+  void SendPartialPageContentRequest(
+      base::span<const std::u16string> partial_content) override;
+
   // Resets the test state.
   void ResetTestingState();
 
@@ -190,7 +219,8 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
       const std::string& http_method,
       const base::TimeDelta& timeout,
       const std::vector<std::string>& request_headers,
-      const std::vector<std::string>& cors_exempt_headers) override;
+      const std::vector<std::string>& cors_exempt_headers,
+      const UploadProgressCallback upload_progress_callback) override;
 
   void SendLatencyGen204IfEnabled(
       lens::LensOverlayGen204Controller::LatencyType latency_type,
@@ -214,6 +244,10 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
   // If true, the next full image request will return an error.
   bool next_full_image_request_should_return_error_ = false;
 
+  // If true, the CreateEndpointFetcher will not automatically respond with a
+  // complete upload to the UploadProgressCallback.
+  bool disable_page_upload_response_callback = false;
+
   // The last url for which a fetch request was sent by the query controller.
   GURL sent_fetch_url_;
 
@@ -233,6 +267,9 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
   // The last page content objects request sent by the query controller.
   lens::LensOverlayObjectsRequest sent_page_content_objects_request_;
 
+  // The last partial page content objects request sent by the query controller.
+  lens::LensOverlayObjectsRequest sent_partial_page_content_objects_request_;
+
   // The last interaction request sent by the query controller.
   lens::LensOverlayInteractionRequest sent_interaction_request_;
 
@@ -248,15 +285,21 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
   // The last region bytes sent by the query controller.
   std::optional<SkBitmap> last_queried_region_bytes_;
 
-  // TODO(367764863) Rewrite to base::raw_span.
-  RAW_PTR_EXCLUSION base::span<const uint8_t>
-      last_sent_underlying_content_bytes_;
+  // The last underlying content bytes sent by the query controller.
+  base::raw_span<const uint8_t> last_sent_underlying_content_bytes_;
 
   // The last underlying content type sent by the query controller.
   lens::MimeType last_sent_underlying_content_type_;
 
+  // The last partial content sent by the query controller.
+  base::raw_span<const std::u16string> last_sent_partial_content_;
+
   // The last page url sent by the query controller.
   GURL last_sent_page_url_;
+
+  // The last significant region boxes sent to the query controller.
+  std::vector<lens::mojom::CenterRotatedBoxPtr>
+      last_sent_significant_region_boxes_;
 
   // The last user action sent by the query controller.
   std::optional<lens::mojom::UserAction> last_user_action_;
@@ -277,10 +320,16 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
   // The number of page content update requests sent by the query controller.
   int num_page_content_update_requests_sent_ = 0;
 
+  // The number of partial page content requests sent by the query controller.
+  int num_partial_page_content_requests_sent_ = 0;
+
   // Tracker for the number of latency request events sent by the query
   // controller.
   base::flat_map<lens::LensOverlayGen204Controller::LatencyType, int>
       latency_gen_204_counter_;
+
+  // The last upload progress callback sent by the query controller.
+  UploadProgressCallback last_upload_progress_callback_;
 };
 
 }  // namespace lens

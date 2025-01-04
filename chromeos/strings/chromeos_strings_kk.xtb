@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Қараңғы режимді өшіру</translation>
 <translation id="1807246157184219062">Ашық</translation>
 <translation id="1808803439260407870">Классикалық өнер</translation>
+<translation id="181434555916624618">Әзірше адамдар қамтылған нәтижелер көрсетілмейді. Басқа нұсқауды пайдаланып көріңіз.</translation>
 <translation id="1815850098929213707">Таңдалған перне — <ph name="KEYS" />. Басқару элементін өзгерту үшін түймені түртіңіз.</translation>
 <translation id="1823120442877418684">Кейіпкерлер</translation>
 <translation id="1827738518074806965">Өнер галереясы</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">Оң құлақаспаптың батарея деңгейі: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3340978935015468852">параметрлер</translation>
 <translation id="3347558044552027859">заманауи</translation>
+<translation id="3353477144743332882">Қорытынды жазу және ат беру үлгісін жүктеп алу</translation>
 <translation id="3359218928534347896">микрофон дыбысын қосу/өшіру</translation>
 <translation id="3360306038446926262">Терезелер</translation>
 <translation id="3361618936611118375">суши</translation>
@@ -689,6 +691,7 @@
 <translation id="4354430579665871434">перне</translation>
 <translation id="4356100841225547054">Дыбыс деңгейін өшіру</translation>
 <translation id="4361257691546579041">APN әдепкі.</translation>
+<translation id="4368101969572512692">Ұсыныстарды араластыру</translation>
 <translation id="437294888293595148">Барлық таңбашаны қайта орнату</translation>
 <translation id="437477383107495720">қояндар</translation>
 <translation id="4376423484621194274">Әкімшіңіз <ph name="APP_NAME" /> қолданбасын жабуға рұқсат бермейді</translation>
@@ -768,6 +771,7 @@
 <translation id="4731797938093519117">Ата-ананың кіру рұқсаты</translation>
 <translation id="473775607612524610">Жаңарту</translation>
 <translation id="4744944742468440486">Таңдауға қатысты ақпарат</translation>
+<translation id="4750394297954878236">Ұсыныстар</translation>
 <translation id="4771607256327216405">пернетақтаны жарық ету</translation>
 <translation id="4771923071974529837">ертең</translation>
 <translation id="4773299976671772492">Тоқтатылды</translation>
@@ -853,6 +857,7 @@
 <translation id="5121677070210013200">Транскрипция үлгісі жүктеп алынбады. Әрекетті қайталаңыз немесе Chromebook-ты өшіріп қосыңыз.</translation>
 <translation id="5130848777448318809">понилер</translation>
 <translation id="5137451382116112100">Толық</translation>
+<translation id="5139813694804168398">мазаламау</translation>
 <translation id="5140788690559353412">Оқу аккаунтына кіру мүмкіндігінен айырылып қалсаңыз, Gmail, Docs, Slides және т.б. сияқты байланысты электрондық пошта мен Google Drive файлдарына енді кіре алмайсыз.</translation>
 <translation id="5142961317498132443">Аутентификация</translation>
 <translation id="5144311987923128508">Растау түймесі өшірілді.</translation>
@@ -897,6 +902,7 @@
 <translation id="5302048478445481009">Тіл</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> эксклюзивті тұсқағазы</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="530883153651464140"><ph name="DEVICE_NAME" /> құрылғысын <ph name="VERSION" /> нұсқасына жаңарту</translation>
 <translation id="5315873049536339193">Идентификация мәліметі</translation>
 <translation id="5317780077021120954">Сақтау</translation>
 <translation id="5318310531701770497">Атаулар жасау мүмкін емес. Ұзақтау транскрипцияны қолданып көріңіз.</translation>
@@ -973,7 +979,6 @@
 <translation id="5703716265115423771">дыбыс деңгейін төмендету</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />/<ph name="CURRENT_PAGE" /></translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> бойынша өзгерту түймесі.</translation>
-<translation id="5733298426544876109"><ph name="DEVICE_NAME" /> жаңарту</translation>
 <translation id="5736820754189340309">Дерек трафигі бастапқы күйге қайтарылды.</translation>
 <translation id="574392208103952083">Орташа</translation>
 <translation id="5744175046705638478">"<ph name="QUERY" />" сұрауын аудару</translation>
@@ -998,6 +1003,7 @@
 <translation id="5859969039821714932">Пернелер тіркесімі қолжетімді емес. <ph name="KEY" /> пернесін қоспай, қайтадан басып көріңіз.</translation>
 <translation id="5860033963881614850">Өшірулі</translation>
 <translation id="5860491529813859533">Қосу</translation>
+<translation id="5875913454160982848">Транскрипция үлгісін жүктеп алу</translation>
 <translation id="5876385649737594562">Опцияларды таңдау үшін қосыңыз</translation>
 <translation id="5877503382465267833"><ph name="RECORDING_NAME" /> жазбасын кідірту</translation>
 <translation id="588258955323874662">Толық экран</translation>
@@ -1037,7 +1043,6 @@
 <translation id="6040143037577758943">Жабу</translation>
 <translation id="6040852767465482106">Анонимді сәйкестік</translation>
 <translation id="604124094241169006">Автоматты</translation>
-<translation id="6042308850641462728">Жаю</translation>
 <translation id="6048107060512778456">Сәтсіз: қағаз кептеліп қалды</translation>
 <translation id="6050189528197190982">Сұр шкаласы</translation>
 <translation id="6054711098834486579">экспрессионизм</translation>
@@ -1293,6 +1298,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Сервер атауы}other{Сервер атаулары}}</translation>
 <translation id="7135814714616751706">Таңбашаларды іздеу</translation>
 <translation id="7138614237884624401">Жеңілдетілген мәтін</translation>
+<translation id="7138668887584231801">Қорытындылау үшін сөздер жеткіліксіз.</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Қосылып жатыр</translation>
 <translation id="7144878232160441200">Қайталау</translation>
@@ -1588,6 +1594,7 @@
 <translation id="8503836310948963452">Бірнеше минут қана…</translation>
 <translation id="8505011850330200833">Gemini моделіне транскрипцияларды өңдеу және қорытындылар жасау үшін 2 ГБ жад қажет.</translation>
 <translation id="8508640263392900755">APN мәліметтері</translation>
+<translation id="8509574872955173831">Қорытынды жазу және ат беру туралы толық ақпарат</translation>
 <translation id="8522687886059337719">Енді жаңа <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />тұсқағаздар<ph name="END_LINK_WALLPAPER_SUBPAGE" /> мен <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />скринсейверді<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> пайдалана алатын боласыз</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">шайхана</translation>
@@ -1724,7 +1731,6 @@
 <translation id="9133772297793293778">Пернетақтада 1–4 өзгерткішті және 1 басқа пернені басыңыз. Өзгерту режимінен шығу үшін alt + esc тіркесімін басыңыз.</translation>
 <translation id="9137526406337347448">Google қызметтері</translation>
 <translation id="9138630967333032450">Сол жақтағы Shift пернесі</translation>
-<translation id="9147928237330776930">Қорытындылау үшін сөздер тым аз.</translation>
 <translation id="9149391708638971077">Жад тексерісін іске қосу</translation>
 <translation id="9159524746324788320">гамбургерлер</translation>
 <translation id="9161276708550942948">бос орын</translation>

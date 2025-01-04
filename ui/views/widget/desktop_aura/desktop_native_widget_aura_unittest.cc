@@ -163,6 +163,14 @@ TEST_F(DesktopNativeWidgetAuraTest, MAYBE_GlobalCursorState) {
   aura::client::CursorClient* cursor_client_b = aura::client::GetCursorClient(
       widget_b.GetNativeView()->GetHost()->window());
 
+#if BUILDFLAG(IS_WIN)
+  // The cursor might be considered invisible after initialization on some
+  // machines (e.g. mouse-less) as |CursorClient|s read the cursor visibility
+  // from OS info. So force the cursor to be visible here.
+  cursor_client_a->UpdateSystemCursorVisibilityForTest(true);
+  cursor_client_b->UpdateSystemCursorVisibilityForTest(true);
+#endif
+
   // Verify the cursor can be locked using one client and unlocked using
   // another.
   EXPECT_FALSE(cursor_client_a->IsCursorLocked());
@@ -747,8 +755,9 @@ void GenerateMouseEvents(Widget* widget, ui::EventType last_event_type) {
   ui::MouseEvent release_event(ui::EventType::kMouseReleased, end_point,
                                end_point, ui::EventTimeForNow(), 0, 0);
   details = sink->OnEventFromSource(&release_event);
-  if (details.dispatcher_destroyed)
+  if (details.dispatcher_destroyed) {
     return;
+  }
 }
 
 // Creates a widget and invokes GenerateMouseEvents() with |last_event_type|.

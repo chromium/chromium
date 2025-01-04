@@ -5,14 +5,13 @@
 #ifndef CHROME_CREDENTIAL_PROVIDER_GAIACP_GAIA_CREDENTIAL_BASE_H_
 #define CHROME_CREDENTIAL_PROVIDER_GAIACP_GAIA_CREDENTIAL_BASE_H_
 
-#include "chrome/credential_provider/gaiacp/stdafx.h"
-
 #include <wrl/client.h>
 
 #include <memory>
 #include <string>
 
 #include "base/values.h"
+#include "base/win/atl.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
 #include "chrome/credential_provider/gaiacp/associated_user_validator.h"

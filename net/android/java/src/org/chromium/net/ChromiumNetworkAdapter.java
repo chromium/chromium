@@ -4,6 +4,8 @@
 
 package org.chromium.net;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Proxy;
@@ -11,6 +13,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 /** Wrapper class for network requests. */
+@NullMarked
 public final class ChromiumNetworkAdapter {
     private ChromiumNetworkAdapter() {}
 

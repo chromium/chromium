@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/omnibox/browser/omnibox_view.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <string>
 #include <utility>
 
@@ -82,7 +78,7 @@ class OmniboxViewTest : public testing::Test {
 };
 
 TEST_F(OmniboxViewTest, TestStripSchemasUnsafeForPaste) {
-  constexpr const char* urls[] = {
+  constexpr const auto urls = std::to_array<const char*>({
       " \x01 ",                                       // Safe query.
       "http://www.google.com?q=javascript:alert(0)",  // Safe URL.
       "JavaScript",                                   // Safe query.
@@ -94,11 +90,11 @@ TEST_F(OmniboxViewTest, TestStripSchemasUnsafeForPaste) {
       "jaVascript:\njavaScript:\x01 alert(3) \x01",   // Single strip unsafe.
       ("\x01\x02\x03\x04\x05\x06\x07\x08\x09\x10\x11\x12\x13\x14\x15\x16\x17"
        "\x18\x19 JavaScript:alert(4)"),  // Leading control chars unsafe.
-      "\x01\x02javascript:\x03\x04JavaScript:alert(5)"  // Embedded control
-                                                        // characters unsafe.
-  };
+      "\x01\x02javascript:\x03\x04JavaScript:alert(5)",  // Embedded control
+                                                         // characters unsafe.
+  });
 
-  constexpr const char* expecteds[] = {
+  constexpr const auto expecteds = std::to_array<const char*>({
       " \x01 ",                                       // Safe query.
       "http://www.google.com?q=javascript:alert(0)",  // Safe URL.
       "JavaScript",                                   // Safe query.
@@ -109,8 +105,8 @@ TEST_F(OmniboxViewTest, TestStripSchemasUnsafeForPaste) {
       "alert(2)",                                     // Single strip unsafe.
       "alert(3) \x01",                                // Single strip unsafe.
       "alert(4)",  // Leading control chars unsafe.
-      "alert(5)"   // Embedded control characters unsafe.
-  };
+      "alert(5)",  // Embedded control characters unsafe.
+  });
 
   for (size_t i = 0; i < std::size(urls); i++) {
     EXPECT_EQ(ASCIIToUTF16(expecteds[i]),

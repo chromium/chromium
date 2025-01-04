@@ -123,8 +123,9 @@ ash::UpdateSeverity GetUpdateSeverity(UpgradeDetector* detector) {
 }
 
 const ash::NetworkState* GetNetworkState(const std::string& network_id) {
-  if (network_id.empty())
+  if (network_id.empty()) {
     return nullptr;
+  }
   return ash::NetworkHandler::Get()
       ->network_state_handler()
       ->GetNetworkStateFromGuid(network_id);
@@ -151,8 +152,9 @@ apps::AppServiceProxyAsh* GetActiveUserAppServiceProxyAsh() {
 
 apps::AppRegistryCache* GetActiveUserAppRegistryCache() {
   apps::AppServiceProxyAsh* proxy = GetActiveUserAppServiceProxyAsh();
-  if (!proxy)
+  if (!proxy) {
     return nullptr;
+  }
 
   return &proxy->AppRegistryCache();
 }
@@ -184,11 +186,13 @@ void OpenInBrowser(const GURL& event_url) {
 
 ash::ManagementDeviceMode GetManagementDeviceMode(
     policy::BrowserPolicyConnectorAsh* connector) {
-  if (!connector->IsDeviceEnterpriseManaged())
+  if (!connector->IsDeviceEnterpriseManaged()) {
     return ash::ManagementDeviceMode::kNone;
+  }
 
-  if (connector->IsKioskEnrolled())
+  if (connector->IsKioskEnrolled()) {
     return ash::ManagementDeviceMode::kKioskSku;
+  }
 
   switch (connector->GetEnterpriseMarketSegment()) {
     case policy::MarketSegment::UNKNOWN:
@@ -261,8 +265,9 @@ class SystemTrayClientImpl::EnterpriseAccountObserver
         user_manager::UserManager::Get()->GetActiveUser();
     Profile* profile =
         user ? ash::ProfileHelper::Get()->GetProfileByUser(user) : nullptr;
-    if (profile == profile_)
+    if (profile == profile_) {
       return;
+    }
 
     policy_observation_.Reset();
 
@@ -270,8 +275,9 @@ class SystemTrayClientImpl::EnterpriseAccountObserver
     if (profile_) {
       policy::UserCloudPolicyManagerAsh* manager =
           profile_->GetUserCloudPolicyManagerAsh();
-      if (manager)
+      if (manager) {
         policy_observation_.Observe(manager->core()->store());
+      }
     }
     owner_->UpdateEnterpriseAccountDomainInfo(profile_);
   }
@@ -289,16 +295,18 @@ SystemTrayClientImpl::SystemTrayClientImpl()
   system_tray_->SetUse24HourClock(clock->ShouldUse24HourClock());
 
   // If an upgrade is available at startup then tell ash about it.
-  if (UpgradeDetector::GetInstance()->notify_upgrade())
+  if (UpgradeDetector::GetInstance()->notify_upgrade()) {
     HandleUpdateAvailable();
+  }
 
   // If the device is enterprise managed then send ash the enterprise domain.
   policy::BrowserPolicyConnectorAsh* policy_connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   policy::DeviceCloudPolicyManagerAsh* policy_manager =
       policy_connector->GetDeviceCloudPolicyManager();
-  if (policy_manager)
+  if (policy_manager) {
     policy_manager->core()->store()->AddObserver(this);
+  }
   UpdateDeviceEnterpriseInfo();
 
   system_tray_->SetClient(this);
@@ -313,8 +321,9 @@ SystemTrayClientImpl::~SystemTrayClientImpl() {
   g_system_tray_client_instance = nullptr;
 
   // This can happen when mocking this class in tests.
-  if (!system_tray_)
+  if (!system_tray_) {
     return;
+  }
 
   system_tray_->SetClient(nullptr);
 
@@ -322,8 +331,9 @@ SystemTrayClientImpl::~SystemTrayClientImpl() {
       g_browser_process->platform_part()->browser_policy_connector_ash();
   policy::DeviceCloudPolicyManagerAsh* policy_manager =
       connector->GetDeviceCloudPolicyManager();
-  if (policy_manager)
+  if (policy_manager) {
     policy_manager->core()->store()->RemoveObserver(this);
+  }
 
   g_browser_process->platform_part()->GetSystemClock()->RemoveObserver(this);
   UpgradeDetector::GetInstance()->RemoveObserver(this);
@@ -536,8 +546,9 @@ void SystemTrayClientImpl::ShowColorCorrectionSettings() {
 void SystemTrayClientImpl::ShowGestureEducationHelp() {
   base::RecordAction(base::UserMetricsAction("ShowGestureEducationHelp"));
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  if (!profile)
+  if (!profile) {
     return;
+  }
 
   ash::SystemAppLaunchParams params;
   params.url = GURL(chrome::kChromeOSGestureEducationHelpURL);
@@ -572,8 +583,9 @@ void SystemTrayClientImpl::ShowEnterpriseInfo() {
 
 void SystemTrayClientImpl::ShowNetworkConfigure(const std::string& network_id) {
   // UI is not available at the lock screen.
-  if (SessionManager::Get()->IsScreenLocked())
+  if (SessionManager::Get()->IsScreenLocked()) {
     return;
+  }
 
   DCHECK(ash::NetworkHandler::IsInitialized());
   const ash::NetworkState* network_state = GetNetworkState(network_id);
@@ -602,8 +614,9 @@ void SystemTrayClientImpl::ShowSettingsCellularSetup(bool show_psim_flow) {
   // TODO(crbug.com/40134918) Add metrics action recorder
   std::string page = chromeos::settings::mojom::kCellularNetworksSubpagePath;
   page += "&showCellularSetup=true";
-  if (show_psim_flow)
+  if (show_psim_flow) {
     page += "&showPsimFlow=true";
+  }
   ShowSettingsSubPageForActiveUser(page);
 }
 
@@ -616,8 +629,9 @@ void SystemTrayClientImpl::ShowThirdPartyVpnCreate(
     const std::string& extension_id) {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
 
-  if (!profile)
+  if (!profile) {
     return;
+  }
 
   // Request that the third-party VPN provider show its "add network" dialog.
   chromeos::VpnServiceFactory::GetForBrowserContext(profile)
@@ -667,8 +681,9 @@ void SystemTrayClientImpl::ShowNetworkSettingsHelper(
     const std::string& network_id,
     bool show_configure) {
   SessionManager* const session_manager = SessionManager::Get();
-  if (session_manager->IsInSecondaryLoginScreen())
+  if (session_manager->IsInSecondaryLoginScreen()) {
     return;
+  }
   if (!session_manager->IsSessionStarted()) {
     ash::InternetDetailDialog::ShowDialog(network_id);
     return;
@@ -699,8 +714,9 @@ void SystemTrayClientImpl::ShowNetworkSettingsHelper(
     page += "&settingId=";
     page += base::NumberToString(static_cast<int32_t>(
         chromeos::settings::mojom::Setting::kDisconnectWifiNetwork));
-    if (show_configure)
+    if (show_configure) {
       page += "&showConfigure=true";
+    }
   }
   base::RecordAction(base::UserMetricsAction("OpenInternetOptionsDialog"));
   ShowSettingsSubPageForActiveUser(page);
@@ -1019,8 +1035,9 @@ void SystemTrayClientImpl::UpdateDeviceEnterpriseInfo() {
         std::make_unique<ash::DeviceEnterpriseInfo>();
   }
 
-  if (device_enterprise_info == *last_device_enterprise_info_)
+  if (device_enterprise_info == *last_device_enterprise_info_) {
     return;
+  }
 
   // Send to ash, which will add an item to the system tray.
   system_tray_->SetDeviceEnterpriseInfo(device_enterprise_info);
@@ -1032,8 +1049,9 @@ void SystemTrayClientImpl::UpdateEnterpriseAccountDomainInfo(Profile* profile) {
       profile
           ? chrome::GetAccountManagerIdentity(profile).value_or(std::string())
           : std::string();
-  if (account_manager == last_enterprise_account_domain_manager_)
+  if (account_manager == last_enterprise_account_domain_manager_) {
     return;
+  }
 
   // Send to ash, which will add an item to the system tray.
   system_tray_->SetEnterpriseAccountDomainInfo(account_manager);

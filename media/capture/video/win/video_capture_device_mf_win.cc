@@ -25,7 +25,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
@@ -250,15 +249,18 @@ class ScopedBufferLock {
     if (FAILED(buffer_.As(&buffer_2d_2)))
       return false;
     BYTE* data_start;
-    return SUCCEEDED(buffer_2d_2->Lock2DSize(MF2DBuffer_LockFlags_Read, &data_,
+    return SUCCEEDED(buffer_2d_2->Lock2DSize(MF2DBuffer_LockFlags_Read,
+                                             &data_.AsEphemeralRawAddr(),
                                              &pitch_, &data_start, &length_));
   }
 
-  bool Lock2D() { return SUCCEEDED(buffer_2d_->Lock2D(&data_, &pitch_)); }
+  bool Lock2D() {
+    return SUCCEEDED(buffer_2d_->Lock2D(&data_.AsEphemeralRawAddr(), &pitch_));
+  }
 
   void LockSlow() {
     DWORD max_length = 0;
-    buffer_->Lock(&data_, &max_length, &length_);
+    buffer_->Lock(&data_.AsEphemeralRawAddr(), &max_length, &length_);
   }
 
   ~ScopedBufferLock() {
@@ -277,9 +279,7 @@ class ScopedBufferLock {
  private:
   ComPtr<IMFMediaBuffer> buffer_;
   ComPtr<IMF2DBuffer> buffer_2d_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION BYTE* data_ = nullptr;
+  raw_ptr<BYTE> data_ = nullptr;
   DWORD length_ = 0;
   LONG pitch_ = 0;
 };

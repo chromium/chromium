@@ -20,15 +20,14 @@ namespace performance_manager::policies {
 // As for frame rate throttling, it signals the frame sink manager that the
 // specified frame sinks should start sending BeginFrames at a specific
 // interval.
-class FrameThrottlingPolicy : public GraphOwned,
-                              public FrameNode::ObserverDefaultImpl {
+class FrameThrottlingPolicy : public GraphOwned, public FrameNodeObserver {
  public:
   FrameThrottlingPolicy();
   ~FrameThrottlingPolicy() override;
   FrameThrottlingPolicy(const FrameThrottlingPolicy& other) = delete;
   FrameThrottlingPolicy& operator=(const FrameThrottlingPolicy&) = delete;
 
-  // FrameNode::ObserverDefaultImpl:
+  // FrameNodeObserver:
   void OnFrameNodeAdded(const FrameNode* frame_node) override;
   void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override;
   void OnIsImportantChanged(const FrameNode* frame_node) override;

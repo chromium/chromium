@@ -60,7 +60,7 @@ class AccountTrackerService {
   typedef base::RepeatingCallback<void(const AccountInfo& info)>
       AccountInfoCallback;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Possible values for the kAccountIdMigrationState preference.
   // Keep in sync with OAuth2LoginAccountRevokedMigrationState histogram enum.
   // These values are persisted to logs. Entries should not be renumbered and
@@ -117,9 +117,9 @@ class AccountTrackerService {
   // If after the update IsValid() is true, OnAccountUpdated will be fired.
   CoreAccountId SeedAccountInfo(AccountInfo info);
 
-  // Seeds the accounts with |core_account_infos|. The primary account id is
+  // Seeds the accounts with |accounts|. The primary account id is
   // passed to keep it from getting removed.
-  void SeedAccountsInfo(const std::vector<CoreAccountInfo>& core_account_infos,
+  void SeedAccountsInfo(const std::vector<AccountInfo>& accounts,
                         const std::optional<CoreAccountId>& primary_account_id,
                         bool should_remove_stale_accounts);
 
@@ -133,7 +133,7 @@ class AccountTrackerService {
 
   void RemoveAccount(const CoreAccountId& account_id);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   AccountIdMigrationState GetMigrationState() const;
   void SetMigrationDone();
 #endif
@@ -217,7 +217,7 @@ class AccountTrackerService {
   // be the case when the migration state is set to MIGRATION_DONE.
   bool AreAllAccountsMigrated() const;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Migrate accounts to be keyed by gaia id instead of normalized email.
   // Requires that the migration state is set to MIGRATION_IN_PROGRESS.
   void MigrateToGaiaId();
@@ -233,7 +233,7 @@ class AccountTrackerService {
   // Returns the saved migration state in the preferences.
   static AccountIdMigrationState GetMigrationState(
       const PrefService* pref_service);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Update the child status on the provided account.
   // This does not notify observers, or persist updates to disk - the caller

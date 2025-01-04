@@ -211,8 +211,9 @@ TEST_F(NativeWidgetAuraTest, MouseClickInterruptsGestureScroll) {
     }
 
     *step_count -= 1;
-    if (*step_count)
+    if (*step_count) {
       return;
+    }
 
     // Do not interrupt the gesture scroll until the last gesture update event
     // is handled.
@@ -313,8 +314,9 @@ class TestWindowObserver : public aura::WindowObserver {
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override {
-    if (key != aura::client::kShowStateKey)
+    if (key != aura::client::kShowStateKey) {
       return;
+    }
     count_++;
     state_ = window_observation_.GetSource()->GetProperty(
         aura::client::kShowStateKey);
@@ -418,10 +420,11 @@ class TestWidget : public Widget {
   }
 
   void OnNativeWidgetSizeChanged(const gfx::Size& new_size) override {
-    if (last_size_.IsEmpty())
+    if (last_size_.IsEmpty()) {
       last_size_ = new_size;
-    else if (!did_size_change_more_than_once_ && new_size != last_size_)
+    } else if (!did_size_change_more_than_once_ && new_size != last_size_) {
       did_size_change_more_than_once_ = true;
+    }
     Widget::OnNativeWidgetSizeChanged(new_size);
   }
 
@@ -530,8 +533,9 @@ class GestureTrackingView : public View {
   // View overrides:
   void OnGestureEvent(ui::GestureEvent* event) override {
     got_gesture_event_ = true;
-    if (consume_gesture_event_)
+    if (consume_gesture_event_) {
       event->StopPropagation();
+    }
   }
 
  private:

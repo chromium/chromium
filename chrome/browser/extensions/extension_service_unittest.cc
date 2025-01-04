@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/extensions/extension_service.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <optional>
@@ -2343,24 +2339,24 @@ TEST_F(ExtensionServiceTest, PackPunctuatedExtension) {
 
   // Extension names containing punctuation, and the expected names for the
   // packed extensions.
-  const base::FilePath punctuated_names[] = {
-    base::FilePath(FILE_PATH_LITERAL("this.extensions.name.has.periods")),
-    base::FilePath(FILE_PATH_LITERAL(".thisextensionsnamestartswithaperiod")),
-    base::FilePath(FILE_PATH_LITERAL("thisextensionhasaslashinitsname/")).
-        NormalizePathSeparators(),
-  };
-  const base::FilePath expected_crx_names[] = {
-    base::FilePath(FILE_PATH_LITERAL("this.extensions.name.has.periods.crx")),
-    base::FilePath(
-        FILE_PATH_LITERAL(".thisextensionsnamestartswithaperiod.crx")),
-    base::FilePath(FILE_PATH_LITERAL("thisextensionhasaslashinitsname.crx")),
-  };
-  const base::FilePath expected_private_key_names[] = {
-    base::FilePath(FILE_PATH_LITERAL("this.extensions.name.has.periods.pem")),
-    base::FilePath(
-        FILE_PATH_LITERAL(".thisextensionsnamestartswithaperiod.pem")),
-    base::FilePath(FILE_PATH_LITERAL("thisextensionhasaslashinitsname.pem")),
-  };
+  const auto punctuated_names = std::to_array<base::FilePath>({
+      base::FilePath(FILE_PATH_LITERAL("this.extensions.name.has.periods")),
+      base::FilePath(FILE_PATH_LITERAL(".thisextensionsnamestartswithaperiod")),
+      base::FilePath(FILE_PATH_LITERAL("thisextensionhasaslashinitsname/"))
+          .NormalizePathSeparators(),
+  });
+  const auto expected_crx_names = std::to_array<base::FilePath>({
+      base::FilePath(FILE_PATH_LITERAL("this.extensions.name.has.periods.crx")),
+      base::FilePath(
+          FILE_PATH_LITERAL(".thisextensionsnamestartswithaperiod.crx")),
+      base::FilePath(FILE_PATH_LITERAL("thisextensionhasaslashinitsname.crx")),
+  });
+  const auto expected_private_key_names = std::to_array<base::FilePath>({
+      base::FilePath(FILE_PATH_LITERAL("this.extensions.name.has.periods.pem")),
+      base::FilePath(
+          FILE_PATH_LITERAL(".thisextensionsnamestartswithaperiod.pem")),
+      base::FilePath(FILE_PATH_LITERAL("thisextensionhasaslashinitsname.pem")),
+  });
 
   for (size_t i = 0; i < std::size(punctuated_names); ++i) {
     SCOPED_TRACE(punctuated_names[i].value().c_str());
@@ -7569,11 +7565,12 @@ TEST_F(ExtensionServiceTest, MultipleExternalInstallErrors) {
   MockExternalProvider* reg_provider =
       AddMockExternalProvider(ManifestLocation::kExternalRegistry);
 
-  std::string extension_info[][3] = {
+  auto extension_info = std::to_array<std::array<std::string, 3>>({
       // {id, path, version}
       {good_crx, "1.0.0.0", "good.crx"},
       {page_action, "1.0.0.0", "page_action.crx"},
-      {minimal_platform_app_crx, "0.1", "minimal_platform_app.crx"}};
+      {minimal_platform_app_crx, "0.1", "minimal_platform_app.crx"},
+  });
 
   for (size_t i = 0; i < std::size(extension_info); ++i) {
     reg_provider->UpdateOrAddExtension(
@@ -7587,9 +7584,11 @@ TEST_F(ExtensionServiceTest, MultipleExternalInstallErrors) {
     EXPECT_FALSE(service()->IsExtensionEnabled(extension_info[i][0]));
   }
 
-  std::string extension_ids[] = {
-    extension_info[0][0], extension_info[1][0], extension_info[2][0]
-  };
+  auto extension_ids = std::to_array<std::string>({
+      extension_info[0][0],
+      extension_info[1][0],
+      extension_info[2][0],
+  });
 
   // Each extension should end up in error.
   ASSERT_TRUE(GetError(extension_ids[0]));

@@ -17,7 +17,7 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
-#include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/content/browser/content_credential_manager.h"
@@ -51,7 +51,6 @@
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller.h"
 #include "chrome/browser/password_manager/android/password_access_loss_warning_startup_launcher.h"
 #include "chrome/browser/password_manager/android/password_manager_error_message_delegate.h"
-#include "chrome/browser/password_manager/android/password_migration_warning_startup_launcher.h"
 #include "chrome/browser/password_manager/android/save_update_password_message_delegate.h"
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "components/password_manager/core/browser/first_cct_page_load_passwords_ukm_recorder.h"
@@ -78,6 +77,7 @@ class Profile;
 
 namespace autofill {
 class LogManager;
+class LogRouter;
 class RoutingLogManager;
 
 namespace password_generation {
@@ -249,7 +249,7 @@ class ChromePasswordManagerClient
   url::Origin GetLastCommittedOrigin() const override;
   const password_manager::CredentialsFilter* GetStoreResultFilter()
       const override;
-  autofill::LogManager* GetLogManager() override;
+  autofill::LogManager* GetCurrentLogManager() override;
   void AnnotateNavigationEntry(bool has_password_field) override;
   autofill::LanguageCode GetPageLanguage() const override;
   safe_browsing::PasswordProtectionService* GetPasswordProtectionService()
@@ -522,6 +522,7 @@ class ChromePasswordManagerClient
   AccountStorageAuthHelper account_storage_auth_helper_;
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
+  const raw_ptr<autofill::LogRouter> log_router_;
   std::unique_ptr<autofill::RoutingLogManager> log_manager_;
 
   // Recorder of metrics that is associated with the last committed navigation
@@ -543,11 +544,6 @@ class ChromePasswordManagerClient
   // metrics. TODO(crbug.com/40215916): Remove after the launch.
   std::optional<std::pair<std::u16string, base::Time>>
       username_filled_by_touch_to_fill_ = std::nullopt;
-
-  // Launcher used to trigger the password migration warning once passwords
-  // have been fetched. Only invoked once on startup.
-  std::unique_ptr<PasswordMigrationWarningStartupLauncher>
-      password_migration_warning_startup_launcher_;
 
   // Launcher used to trigger the password access loss warning once passwords
   // have been fetched. Only invoked once on startup.

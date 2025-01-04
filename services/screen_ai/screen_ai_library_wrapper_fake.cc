@@ -10,7 +10,7 @@ bool ScreenAILibraryWrapperFake::Load(const base::FilePath& library_path) {
   return true;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void ScreenAILibraryWrapperFake::ScreenAILibraryWrapperFake::SetLogger() {}
 #endif
 

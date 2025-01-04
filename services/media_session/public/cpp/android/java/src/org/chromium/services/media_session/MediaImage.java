@@ -7,11 +7,10 @@ package org.chromium.services.media_session;
 import android.graphics.Rect;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -23,15 +22,16 @@ import java.util.List;
  * counterpart of media_session::MediaImage.
  */
 @JNINamespace("media_session")
+@NullMarked
 public final class MediaImage {
-    @NonNull private GURL mSrc;
+    private GURL mSrc;
 
     private String mType;
 
-    @NonNull private List<Rect> mSizes = new ArrayList<Rect>();
+    private List<Rect> mSizes = new ArrayList<Rect>();
 
     /** Creates a new MediaImage. */
-    public MediaImage(@NonNull GURL src, @NonNull String type, @NonNull List<Rect> sizes) {
+    public MediaImage(GURL src, String type, List<Rect> sizes) {
         mSrc = src;
         mType = type;
         mSizes = sizes;
@@ -40,7 +40,6 @@ public final class MediaImage {
     /**
      * @return The URL of this MediaImage.
      */
-    @NonNull
     public GURL getSrc() {
         return mSrc;
     }
@@ -60,17 +59,17 @@ public final class MediaImage {
     }
 
     /** Sets the URL of this MediaImage. */
-    public void setSrc(@NonNull GURL src) {
+    public void setSrc(GURL src) {
         mSrc = src;
     }
 
     /** Sets the MIME type of this MediaImage. */
-    public void setType(@NonNull String type) {
+    public void setType(String type) {
         mType = type;
     }
 
     /** Sets the sizes of this MediaImage. */
-    public void setSizes(@NonNull List<Rect> sizes) {
+    public void setSizes(List<Rect> sizes) {
         mSizes = sizes;
     }
 

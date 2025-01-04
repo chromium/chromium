@@ -98,6 +98,10 @@ class ChromiumDepGraph {
             licenseName: 'Apache 2.0',
             // Both -jre and -android versions are listed. Filter to only the -android ones.
             versionFilter: '-android'),
+        com_google_testparameterinjector_test_parameter_injector: new PropertyOverride(
+        url: 'https://github.com/google/TestParameterInjector',
+            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
+            licenseName: 'Apache 2.0'),
         com_squareup_wire_wire_runtime_jvm: new PropertyOverride(
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
             licenseName: 'Apache 2.0'),
@@ -148,10 +152,10 @@ class ChromiumDepGraph {
             licenseName: 'Apache 2.0'),
         org_checkerframework_checker_compat_qual: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/typetools/checker-framework/master/LICENSE.txt',
-            licenseName: 'GPL v2 with the classpath exception'),
+            licenseName: 'GPL-2.0-with-classpath-exception'),
         org_checkerframework_checker_qual: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/typetools/checker-framework/master/LICENSE.txt',
-            licenseName: 'GPL v2 with the classpath exception'),
+            licenseName: 'GPL-2.0-with-classpath-exception'),
         org_checkerframework_checker_util: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/typetools/checker-framework/master/checker-util/LICENSE.txt',
             licenseName: 'MIT'),
@@ -244,6 +248,8 @@ class ChromiumDepGraph {
             resolveVersion: '1.8.1'),
         org_jetbrains_kotlinx_kotlinx_serialization_core_jvm: new PropertyOverride(
             resolveVersion: '1.7.2'),
+        org_jetbrains_kotlinx_kotlinx_coroutines_test_jvm: new PropertyOverride(
+            resolveVersion: '1.7.3'),
         io_grpc_grpc_binder: new PropertyOverride(
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
             licenseName: 'Apache 2.0'),
@@ -379,6 +385,17 @@ class ChromiumDepGraph {
             dep.supportsAndroid = true
             dep.testOnly = false
             dep.isShipped = true
+        }
+
+        // We only add testOnly after constructing the dependencies map, so now go through and see
+        // if we need to add testOnly to anything which depends on testOnly. In theory, this may
+        // need some recursion or looping to deal with multiple levels of unmarked targets, but I
+        // think in practice the only things getting annotated here will be a single level of
+        // synthetic groups which depend on testOnly targets.
+        dependencies.each { _, dep ->
+            dep.testOnly = dep.children.any { id ->
+                dependencies.get(id).testOnly
+            }
         }
 
         PROPERTY_OVERRIDES.each { id, overrides ->

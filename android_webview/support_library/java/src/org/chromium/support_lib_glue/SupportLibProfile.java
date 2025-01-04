@@ -6,12 +6,14 @@ package org.chromium.support_lib_glue;
 
 import static org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.recordApiCall;
 
+import android.os.CancellationSignal;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
 import android.webkit.ServiceWorkerController;
 import android.webkit.WebStorage;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.android.webview.chromium.PrefetchException;
 import com.android.webview.chromium.PrefetchNetworkException;
@@ -26,6 +28,7 @@ import org.chromium.support_lib_boundary.util.BoundaryInterfaceReflectionUtil;
 import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
 import java.lang.reflect.InvocationHandler;
+import java.util.concurrent.Executor;
 
 /** The support-lib glue implementation for Profile, delegates all the calls to {@link Profile}. */
 @Lifetime.Profile
@@ -73,14 +76,20 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
 
     @Override
     public void prefetchUrl(
-            String url, /* PrefetchOperationCallback */ InvocationHandler callback) {
+            String url,
+            CancellationSignal cancellationSignal,
+            Executor callbackExecutor,
+            /* PrefetchOperationCallback */ InvocationHandler callback) {
         recordApiCall(ApiCall.PREFETCH_URL);
-        mProfileImpl.prefetchUrl(url, null, createOperationCallback(callback));
+        setCancelListener(cancellationSignal, url);
+        mProfileImpl.prefetchUrl(url, null, callbackExecutor, createOperationCallback(callback));
     }
 
     @Override
     public void prefetchUrl(
             String url,
+            @Nullable CancellationSignal cancellationSignal,
+            Executor callbackExecutor,
             /* SpeculativeLoadingParameters */ InvocationHandler speculativeLoadingParams,
             /* PrefetchOperationCallback */ InvocationHandler callback) {
         recordApiCall(ApiCall.PREFETCH_URL_WITH_PARAMS);
@@ -89,24 +98,32 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
                         SpeculativeLoadingParametersBoundaryInterface.class,
                         speculativeLoadingParams);
 
+        setCancelListener(cancellationSignal, url);
+
         mProfileImpl.prefetchUrl(
                 url,
                 SupportLibSpeculativeLoadingParametersAdapter
                         .fromSpeculativeLoadingParametersBoundaryInterface(
                                 speculativeLoadingParameters),
+                callbackExecutor,
                 createOperationCallback(callback));
     }
 
-    @Override
-    public void cancelPrefetch(
-            String url, /* PrefetchOperationCallback */ InvocationHandler callback) {
-        recordApiCall(ApiCall.CANCEL_PREFETCH);
-        mProfileImpl.cancelPrefetch(url);
+    public void setCancelListener(CancellationSignal cancellationSignal, String url) {
+        if (cancellationSignal != null) {
+            cancellationSignal.setOnCancelListener(
+                    () -> {
+                        recordApiCall(ApiCall.CANCEL_PREFETCH);
+                        mProfileImpl.cancelPrefetch(url);
+                    });
+        }
     }
 
     @Override
     public void clearPrefetch(
-            String url, /* PrefetchOperationCallback */ InvocationHandler callback) {
+            String url,
+            Executor callbackExecutor,
+            /* PrefetchOperationCallback */ InvocationHandler callback) {
         recordApiCall(ApiCall.CLEAR_PREFETCH);
         mProfileImpl.clearPrefetch(url, createOperationCallback(callback));
     }

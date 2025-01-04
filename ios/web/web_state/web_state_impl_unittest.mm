@@ -1139,7 +1139,8 @@ TEST_F(WebStateImplTest, LastActiveTimeCanBeForcedToEpochViaCreateParams) {
 }
 
 // Tests that WebState sessionState data can be read and writen.
-TEST_F(WebStateImplTest, ReadAndWriteSessionStateData) {
+// TODO(crbug.com/385130509): Test is flaky.
+TEST_F(WebStateImplTest, DISABLED_ReadAndWriteSessionStateData) {
   // Create a WebState, navigate and capture the session state data.
   WebStateImpl web_state =
       WebStateImpl(web::WebState::CreateParams(GetBrowserState()));

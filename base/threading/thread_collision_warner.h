@@ -5,12 +5,14 @@
 #ifndef BASE_THREADING_THREAD_COLLISION_WARNER_H_
 #define BASE_THREADING_THREAD_COLLISION_WARNER_H_
 
-#include "base/atomicops.h"
+#include <atomic>
+
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/macros/uniquify.h"
 #include "base/memory/raw_ptr.h"
+#include "base/threading/platform_thread.h"
 
 // A helper class alongside macros to be used to verify assumptions about thread
 // safety of a class.
@@ -102,8 +104,7 @@
 
 // Defines a class member that acts like a mutex. It is used only as a
 // verification tool.
-#define DFAKE_MUTEX(obj) \
-     mutable base::ThreadCollisionWarner obj
+#define DFAKE_MUTEX(obj) mutable base::ThreadCollisionWarner obj
 // Asserts the call is never called simultaneously in two threads. Used at
 // member function scope.
 #define DFAKE_SCOPED_LOCK(obj) \
@@ -146,9 +147,7 @@ class BASE_EXPORT ThreadCollisionWarner {
  public:
   // The parameter asserter is there only for test purpose
   explicit ThreadCollisionWarner(AsserterBase* asserter = new DCheckAsserter())
-      : valid_thread_id_(0),
-        counter_(0),
-        asserter_(asserter) {}
+      : valid_thread_id_(0), counter_(0), asserter_(asserter) {}
 
   ThreadCollisionWarner(const ThreadCollisionWarner&) = delete;
   ThreadCollisionWarner& operator=(const ThreadCollisionWarner&) = delete;
@@ -162,8 +161,7 @@ class BASE_EXPORT ThreadCollisionWarner {
   // from one thread
   class BASE_EXPORT Check {
    public:
-    explicit Check(ThreadCollisionWarner* warner)
-        : warner_(warner) {
+    explicit Check(ThreadCollisionWarner* warner) : warner_(warner) {
       warner_->EnterSelf();
     }
 
@@ -180,17 +178,14 @@ class BASE_EXPORT ThreadCollisionWarner {
   // DFAKE_SCOPED_LOCK
   class BASE_EXPORT ScopedCheck {
    public:
-    explicit ScopedCheck(ThreadCollisionWarner* warner)
-        : warner_(warner) {
+    explicit ScopedCheck(ThreadCollisionWarner* warner) : warner_(warner) {
       warner_->Enter();
     }
 
     ScopedCheck(const ScopedCheck&) = delete;
     ScopedCheck& operator=(const ScopedCheck&) = delete;
 
-    ~ScopedCheck() {
-      warner_->Leave();
-    }
+    ~ScopedCheck() { warner_->Leave(); }
 
    private:
     raw_ptr<ThreadCollisionWarner> warner_;
@@ -208,9 +203,7 @@ class BASE_EXPORT ThreadCollisionWarner {
     ScopedRecursiveCheck(const ScopedRecursiveCheck&) = delete;
     ScopedRecursiveCheck& operator=(const ScopedRecursiveCheck&) = delete;
 
-    ~ScopedRecursiveCheck() {
-      warner_->Leave();
-    }
+    ~ScopedRecursiveCheck() { warner_->Leave(); }
 
    private:
     raw_ptr<ThreadCollisionWarner> warner_;
@@ -231,11 +224,12 @@ class BASE_EXPORT ThreadCollisionWarner {
 
   // This stores the thread id that is inside the critical section, if the
   // value is 0 then no thread is inside.
-  volatile subtle::Atomic32 valid_thread_id_;
+  std::atomic<PlatformThreadId> valid_thread_id_;
+  static_assert(std::atomic<PlatformThreadId>::is_always_lock_free, "");
 
   // Counter to trace how many time a critical section was "pinned"
   // (when allowed) in order to unpin it when counter_ reaches 0.
-  volatile subtle::Atomic32 counter_;
+  std::atomic<uint32_t> counter_;
 
   // Here only for class unit tests purpose, during the test I need to not
   // DCHECK but notify the collision with something else.

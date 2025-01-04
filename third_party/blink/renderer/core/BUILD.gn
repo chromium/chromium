@@ -579,6 +579,7 @@ source_set("testing") {
     "testing/mock_hyphenation.h",
     "testing/mock_policy_container_host.cc",
     "testing/mock_policy_container_host.h",
+    "testing/nadc_attribute_test.h",
     "testing/null_execution_context.cc",
     "testing/null_execution_context.h",
     "testing/origin_trials_test.cc",
@@ -1759,6 +1760,18 @@ test("css_parser_fuzzer") {
     "//third_party/fuzztest:fuzztest_gtest_main",
   ]
   fuzztests = [ "CssParser.ParseSheetFuzzer" ]
+}
+
+test("inspector_ghost_rules_fuzzer") {
+  sources = [ "inspector/inspector_ghost_rules_fuzzer.cc" ]
+  deps = [
+    ":core",
+    ":testing",
+    ":unit_test_support",
+    "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
+  fuzztests = [ "InspectorGhostRules.PopulateFuzzer" ]
 }
 
 proto_library("css_proto") {

@@ -94,67 +94,67 @@ class LocaleWinTest : public testing::Test {
 
   String FormatDate(LCID lcid, int year, int month, int day) {
     std::unique_ptr<LocaleWin> locale =
-        LocaleWin::Create(lcid, true /* defaultsForLocale */);
+        LocaleWin::CreateForTesting(lcid, true /* defaultsForLocale */);
     return locale->FormatDateTime(GetDateComponents(year, month, day));
   }
 
   unsigned FirstDayOfWeek(LCID lcid) {
     std::unique_ptr<LocaleWin> locale =
-        LocaleWin::Create(lcid, true /* defaultsForLocale */);
+        LocaleWin::CreateForTesting(lcid, true /* defaultsForLocale */);
     return locale->FirstDayOfWeek();
   }
 
   String MonthLabel(LCID lcid, unsigned index) {
     std::unique_ptr<LocaleWin> locale =
-        LocaleWin::Create(lcid, true /* defaultsForLocale */);
+        LocaleWin::CreateForTesting(lcid, true /* defaultsForLocale */);
     return locale->MonthLabels()[index];
   }
 
   String WeekDayShortLabel(LCID lcid, unsigned index) {
     std::unique_ptr<LocaleWin> locale =
-        LocaleWin::Create(lcid, true /* defaultsForLocale */);
+        LocaleWin::CreateForTesting(lcid, true /* defaultsForLocale */);
     return locale->WeekDayShortLabels()[index];
   }
 
   bool IsRTL(LCID lcid) {
     std::unique_ptr<LocaleWin> locale =
-        LocaleWin::Create(lcid, true /* defaultsForLocale */);
+        LocaleWin::CreateForTesting(lcid, true /* defaultsForLocale */);
     return locale->IsRTL();
   }
 
   String MonthFormat(LCID lcid) {
     std::unique_ptr<LocaleWin> locale =
-        LocaleWin::Create(lcid, true /* defaultsForLocale */);
+        LocaleWin::CreateForTesting(lcid, true /* defaultsForLocale */);
     return locale->MonthFormat();
   }
 
   String TimeFormat(LCID lcid) {
     std::unique_ptr<LocaleWin> locale =
-        LocaleWin::Create(lcid, true /* defaultsForLocale */);
+        LocaleWin::CreateForTesting(lcid, true /* defaultsForLocale */);
     return locale->TimeFormat();
   }
 
   String ShortTimeFormat(LCID lcid) {
     std::unique_ptr<LocaleWin> locale =
-        LocaleWin::Create(lcid, true /* defaultsForLocale */);
+        LocaleWin::CreateForTesting(lcid, true /* defaultsForLocale */);
     return locale->ShortTimeFormat();
   }
 
   String ShortMonthLabel(LCID lcid, unsigned index) {
     std::unique_ptr<LocaleWin> locale =
-        LocaleWin::Create(lcid, true /* defaultsForLocale */);
+        LocaleWin::CreateForTesting(lcid, true /* defaultsForLocale */);
     return locale->ShortMonthLabels()[index];
   }
 
   String TimeAMPMLabel(LCID lcid, unsigned index) {
     std::unique_ptr<LocaleWin> locale =
-        LocaleWin::Create(lcid, true /* defaultsForLocale */);
+        LocaleWin::CreateForTesting(lcid, true /* defaultsForLocale */);
     return locale->TimeAMPMLabels()[index];
   }
 
   String DecimalSeparator(LCID lcid) {
     std::unique_ptr<LocaleWin> locale =
-        LocaleWin::Create(lcid, true /* defaultsForLocale */);
+        LocaleWin::CreateForTesting(lcid, true /* defaultsForLocale */);
     return locale->LocalizedDecimalSeparator();
   }
 };
@@ -207,11 +207,13 @@ TEST_F(LocaleWinTest, isRTL) {
 }
 
 TEST_F(LocaleWinTest, dateFormat) {
-  EXPECT_EQ("y-M-d", LocaleWin::DateFormat("y-M-d"));
-  EXPECT_EQ("''yy'-'''MM'''-'dd", LocaleWin::DateFormat("''yy-''MM''-dd"));
+  EXPECT_EQ("y-M-d", LocaleWin::DateFormatForTesting("y-M-d"));
+  EXPECT_EQ("''yy'-'''MM'''-'dd",
+            LocaleWin::DateFormatForTesting("''yy-''MM''-dd"));
   EXPECT_EQ("yyyy'-''''-'MMM'''''-'dd",
-            LocaleWin::DateFormat("yyyy-''''-MMM''''-dd"));
-  EXPECT_EQ("yyyy'-'''''MMMM-dd", LocaleWin::DateFormat("yyyy-''''MMMM-dd"));
+            LocaleWin::DateFormatForTesting("yyyy-''''-MMM''''-dd"));
+  EXPECT_EQ("yyyy'-'''''MMMM-dd",
+            LocaleWin::DateFormatForTesting("yyyy-''''MMMM-dd"));
 }
 
 TEST_F(LocaleWinTest, monthFormat) {
@@ -267,7 +269,7 @@ static void TestNumberIsReversible(LCID lcid,
                                    const char* original,
                                    const char* should_have = 0) {
   std::unique_ptr<LocaleWin> locale =
-      LocaleWin::Create(lcid, true /* defaultsForLocale */);
+      LocaleWin::CreateForTesting(lcid, true /* defaultsForLocale */);
   String localized = locale->ConvertToLocalizedNumber(original);
   if (should_have)
     EXPECT_TRUE(localized.Contains(should_have));

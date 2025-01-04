@@ -29,18 +29,15 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
 
-using DismissReason = content::IdentityRequestDialogController::DismissReason;
-using SheetType = AccountSelectionView::SheetType;
-
 // static
 int AccountSelectionView::GetBrandIconMinimumSize(
     blink::mojom::RpMode rp_mode) {
   // TODO(crbug.com/348673144): Decide whether to keep circle cropping IDP
   // icons.
   return (rp_mode == blink::mojom::RpMode::kActive
-              ? fedcm::kModalIdpIconSize
-              : fedcm::kBubbleIdpIconSize) /
-         FedCmAccountSelectionView::kMaskableWebIconSafeZoneRatio;
+              ? webid::kModalIdpIconSize
+              : webid::kBubbleIdpIconSize) /
+         webid::FedCmAccountSelectionView::kMaskableWebIconSafeZoneRatio;
 }
 
 // static
@@ -53,16 +50,21 @@ int AccountSelectionView::GetBrandIconIdealSize(blink::mojom::RpMode rp_mode) {
   return round(GetBrandIconMinimumSize(rp_mode) * max_supported_scale);
 }
 
+namespace webid {
+
+using DismissReason = content::IdentityRequestDialogController::DismissReason;
+using SheetType = AccountSelectionView::SheetType;
+
 FedCmAccountSelectionView::FedCmAccountSelectionView(
     AccountSelectionView::Delegate* delegate,
     tabs::TabInterface* tab)
     : AccountSelectionView(delegate),
       content::WebContentsObserver(delegate->GetWebContents()),
       tab_(tab) {
-  tab_subscriptions_.push_back(tab_->RegisterDidEnterForeground(
+  tab_subscriptions_.push_back(tab_->RegisterDidActivate(
       base::BindRepeating(&FedCmAccountSelectionView::TabForegrounded,
                           weak_ptr_factory_.GetWeakPtr())));
-  tab_subscriptions_.push_back(tab_->RegisterWillEnterBackground(
+  tab_subscriptions_.push_back(tab_->RegisterWillDeactivate(
       base::BindRepeating(&FedCmAccountSelectionView::TabWillEnterBackground,
                           weak_ptr_factory_.GetWeakPtr())));
   tab_subscriptions_.push_back(tab_->RegisterWillDiscardContents(
@@ -70,6 +72,9 @@ FedCmAccountSelectionView::FedCmAccountSelectionView(
                           weak_ptr_factory_.GetWeakPtr())));
   tab_subscriptions_.push_back(tab_->RegisterWillDetach(base::BindRepeating(
       &FedCmAccountSelectionView::WillDetach, weak_ptr_factory_.GetWeakPtr())));
+  tab_subscriptions_.push_back(tab_->RegisterModalUIChanged(
+      base::BindRepeating(&FedCmAccountSelectionView::ModalUIChanged,
+                          weak_ptr_factory_.GetWeakPtr())));
 }
 
 FedCmAccountSelectionView::~FedCmAccountSelectionView() {
@@ -94,33 +99,15 @@ void FedCmAccountSelectionView::ShowDialogWidget() {
   }
 
   input_protector_->VisibilityChanged(true);
+  GetDialogWidget()->widget_delegate()->SetCanActivate(true);
   GetDialogWidget()->Show();
   if (dialog_type_ == DialogType::MODAL) {
     scoped_ignore_input_events_ =
         tab_->GetContents()->IgnoreInputEvents(std::nullopt);
+  } else {
+    tab_accept_mouse_events_ = tab_->AcceptMouseEventsWhileWindowInactive();
   }
-  // An active widget would steal the focus when displayed, this would lead
-  // to some unexpected consequences. e.g.
-  //   1. links/buttons from the web contents area would require two clicks,
-  //   one to focus on the content area and one to focus on the clickable
-  //   2. user typing will be interrupted because the widget that's not
-  //   gated by user gesture would take the focus
-  // TODO(crbug.com/41482141): figure out how to address this issue without
-  // causing additional problems such as obscuring other browser UIs.
-  // This temporarily resolves the Mac-only two-clicks issue by giving the focus
-  // back. For users who have turned on screen readers, until we figure out how
-  // to handle the FedCM stealing focus issue, it's better to keep it focused
-  // because otherwise it's hard for them to understand or interact with the
-  // FedCM UI.
-#if BUILDFLAG(IS_MAC)
-  // `parent()` may return nullptr in tests.
-  if (!accessibility_state_utils::IsScreenReaderEnabled() &&
-      GetDialogWidget()->parent()) {
-    GetDialogWidget()->parent()->Activate();
-  }
-#endif  // IS_MAC
 
-  GetDialogWidget()->widget_delegate()->SetCanActivate(true);
   if (accounts_widget_shown_callback_) {
     std::move(accounts_widget_shown_callback_).Run();
   }
@@ -443,8 +430,8 @@ bool FedCmAccountSelectionView::ShowErrorDialog(
                         rp_context, rp_mode, has_modal_support);
   }
 
-  account_selection_view_->ShowErrorDialog(
-      base::UTF8ToUTF16(idp_etld_plus_one), idp_metadata, error);
+  account_selection_view_->ShowErrorDialog(base::UTF8ToUTF16(idp_etld_plus_one),
+                                           idp_metadata, error);
   UpdateDialogVisibilityAndPosition();
   return true;
 }
@@ -819,9 +806,9 @@ bool FedCmAccountSelectionView::CanFitInWebContents() {
   // cannot fit in web contents. The offsets kRightMargin and kTopMargin pertain
   // to the bubble widget.
   return preferred_bubble_size.width() <
-             (web_contents_size.width() - fedcm::kRightMargin) &&
+             (web_contents_size.width() - kRightMargin) &&
          preferred_bubble_size.height() <
-             (web_contents_size.height() - fedcm::kTopMargin);
+             (web_contents_size.height() - kTopMargin);
 }
 
 void FedCmAccountSelectionView::UpdateDialogPosition() {
@@ -830,19 +817,12 @@ void FedCmAccountSelectionView::UpdateDialogPosition() {
         static_cast<AccountSelectionBubbleView*>(account_selection_view_);
     GetDialogWidget()->SetBounds(bubble->GetBubbleBounds());
   } else {
-    auto* modal =
-        static_cast<AccountSelectionModalView*>(account_selection_view_);
-
     constrained_window::UpdateWebContentsModalDialogPosition(
         GetDialogWidget(),
         web_modal::WebContentsModalDialogManager::FromWebContents(
             account_selection_view_->web_contents())
             ->delegate()
             ->GetWebContentsModalDialogHost());
-
-    if (accessibility_state_utils::IsScreenReaderEnabled()) {
-      modal->GetInitiallyFocusedView()->RequestFocus();
-    }
   }
 }
 
@@ -863,6 +843,10 @@ void FedCmAccountSelectionView::WillDiscardContents(
   tab_ = nullptr;
   tab_subscriptions_.clear();
   Close(/*notify_delegate=*/true);
+}
+
+void FedCmAccountSelectionView::ModalUIChanged(tabs::TabInterface* tab) {
+  UpdateDialogVisibilityAndPosition();
 }
 
 void FedCmAccountSelectionView::WillDetach(
@@ -1053,6 +1037,7 @@ void FedCmAccountSelectionView::HideDialogWidget() {
   // TODO(crbug.com/40239995): fix the issue on Mac.
   GetDialogWidget()->Hide();
   scoped_ignore_input_events_.reset();
+  tab_accept_mouse_events_.reset();
   GetDialogWidget()->widget_delegate()->SetCanActivate(false);
   // TODO(crbug.com/331166928): This is only null in one test. Fix the test to
   // match production.
@@ -1072,6 +1057,10 @@ void FedCmAccountSelectionView::TabForegrounded(tabs::TabInterface* tab) {
 
 void FedCmAccountSelectionView::TabWillEnterBackground(
     tabs::TabInterface* tab) {
+  // The reason this does not use UpdateDialogVisibilityAndPosition() is because
+  // the tab has not yet entered the background, and so tab->IsInForeground()
+  // returns true. If it's important to simplify this then we should add
+  // TabInterface::RegisterDidEnterBackground().
   if (GetDialogWidget()) {
     HideDialogWidget();
   }
@@ -1204,7 +1193,7 @@ void FedCmAccountSelectionView::UpdateDialogVisibilityAndPosition() {
     return;
   }
 
-  bool should_show_dialog = tab_->IsInForeground();
+  bool should_show_dialog = tab_->IsActivated();
 
   if (dialog_type_ == DialogType::BUBBLE) {
     // Hide the bubble dialog if it can't fit.
@@ -1219,6 +1208,11 @@ void FedCmAccountSelectionView::UpdateDialogVisibilityAndPosition() {
 
     // Or if we want to hide until Show*() is called.
     if (hide_dialog_widget_after_idp_login_popup_) {
+      should_show_dialog = false;
+    }
+
+    // Or if a tab modal UI is showing (which means we can't show a new modal).
+    if (!tab_->CanShowModalUI()) {
       should_show_dialog = false;
     }
   }
@@ -1238,3 +1232,5 @@ void FedCmAccountSelectionView::ResetDialogWidgetStateOnAnyShow() {
   accounts_widget_shown_callback_.Reset();
   hide_dialog_widget_after_idp_login_popup_ = false;
 }
+
+}  // namespace webid

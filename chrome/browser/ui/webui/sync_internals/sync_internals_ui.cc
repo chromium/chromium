@@ -12,7 +12,6 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
 #include "chrome/browser/ui/webui/sync_internals/chrome_sync_internals_message_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
 #include "components/grit/sync_service_sync_internals_resources.h"
@@ -21,6 +20,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "ui/webui/webui_util.h"
 
 namespace {
 
@@ -29,11 +29,10 @@ void CreateAndAddSyncInternalsHTMLSource(Profile* profile) {
       profile, chrome::kChromeUISyncInternalsHost);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources chrome://webui-test 'self' "
-      "'unsafe-eval';");
+      "script-src chrome://resources chrome://webui-test 'self';");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types jstemplate static-types;");
+      "trusted-types lit-html-desktop static-types;");
 
   source->UseStringsJs();
   source->AddResourcePaths(kSyncServiceSyncInternalsResources);

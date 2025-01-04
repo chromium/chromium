@@ -79,48 +79,6 @@ private_aggregation_promise_test(async test => {
   const uuid = generateUuid();
 
   const privateAggregationConfig = {
-    aggregationCoordinatorOrigin: 'https://valid-but-not-allowed-origin.example'
-  };
-
-  promise_rejects_dom(
-      test, 'DataError',
-      runReportTest(
-          test, uuid, /*codeToInsert=*/ {
-            generateBid: `privateAggregation.enableDebugMode();
-            privateAggregation.contributeToHistogram({ bucket: 1n, value: 2 });`
-          },
-          /*expectedNumReports=*/ 0,
-          /*overrides=*/ {joinAdInterestGroup: {privateAggregationConfig}}));
-
-  await reportPoller.pollReportsAndAssert(
-      /*expectedNumReports=*/ 0, /*expectedNumDebugReports=*/ 0);
-}, 'using Private Aggregation in generateBid with an aggregationCoordinatorOrigin that is a valid origin but not on the allowlist');
-
-private_aggregation_promise_test(async test => {
-  const uuid = generateUuid();
-
-  const privateAggregationConfig = {
-    aggregationCoordinatorOrigin: 'not-a-origin'
-  };
-
-  promise_rejects_dom(
-      test, 'SyntaxError',
-      runReportTest(
-          test, uuid, /*codeToInsert=*/ {
-            generateBid: `privateAggregation.enableDebugMode();
-            privateAggregation.contributeToHistogram({ bucket: 1n, value: 2 });`
-          },
-          /*expectedNumReports=*/ 0,
-          /*overrides=*/ {joinAdInterestGroup: {privateAggregationConfig}}));
-
-  await reportPoller.pollReportsAndAssert(
-      /*expectedNumReports=*/ 0, /*expectedNumDebugReports=*/ 0);
-}, 'using Private Aggregation in generateBid with with an aggregationCoordinatorOrigin that is not a valid origin');
-
-private_aggregation_promise_test(async test => {
-  const uuid = generateUuid();
-
-  const privateAggregationConfig = {
     aggregationCoordinatorOrigin: get_host_info().HTTPS_REMOTE_ORIGIN
   };
 
@@ -178,48 +136,6 @@ private_aggregation_promise_test(async test => {
 
   verifyReportsIdenticalExceptPayload(report, debug_report);
 }, 'using Private Aggregation in scoreAd with the default coordinator');
-
-private_aggregation_promise_test(async test => {
-  const uuid = generateUuid();
-
-  const privateAggregationConfig = {
-    aggregationCoordinatorOrigin: 'https://valid-but-not-allowed-origin.example'
-  };
-
-  promise_rejects_dom(
-      test, 'DataError',
-      runReportTest(
-          test, uuid, /*codeToInsert=*/ {
-            scoreAd: `privateAggregation.enableDebugMode();
-            privateAggregation.contributeToHistogram({ bucket: 1n, value: 2 });`
-          },
-          /*expectedNumReports=*/ 0,
-          /*overrides=*/ {runAdAuction: {privateAggregationConfig}}));
-
-  await reportPoller.pollReportsAndAssert(
-      /*expectedNumReports=*/ 0, /*expectedNumDebugReports=*/ 0);
-}, 'using Private Aggregation in scoreAd with an aggregationCoordinatorOrigin that is a valid origin but not on the allowlist');
-
-private_aggregation_promise_test(async test => {
-  const uuid = generateUuid();
-
-  const privateAggregationConfig = {
-    aggregationCoordinatorOrigin: 'not-a-origin'
-  };
-
-  promise_rejects_dom(
-      test, 'SyntaxError',
-      runReportTest(
-          test, uuid, /*codeToInsert=*/ {
-            scoreAd: `privateAggregation.enableDebugMode();
-            privateAggregation.contributeToHistogram({ bucket: 1n, value: 2 });`
-          },
-          /*expectedNumReports=*/ 0,
-          /*overrides=*/ {runAdAuction: {privateAggregationConfig}}));
-
-  await reportPoller.pollReportsAndAssert(
-      /*expectedNumReports=*/ 0, /*expectedNumDebugReports=*/ 0);
-}, 'using Private Aggregation in scoreAd with with an aggregationCoordinatorOrigin that is not a valid origin');
 
 private_aggregation_promise_test(async test => {
   const uuid = generateUuid();

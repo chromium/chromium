@@ -21,7 +21,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
@@ -974,7 +973,7 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
       (!net::IsCertStatusError(visible_security_state.cert_status))) {
     // HTTPS with no or minor errors.
     if (security_level == security_state::SECURE_WITH_POLICY_INSTALLED_CERT) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       site_identity_status_ = SITE_IDENTITY_STATUS_ADMIN_PROVIDED_CERT;
 #else
       DCHECK(false) << "Policy certificates exist only on ChromeOS";

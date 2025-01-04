@@ -750,8 +750,7 @@ UDIFBlockChunkReadStream::UDIFBlockChunkReadStream(ReadStream* stream,
   CHECK(length_in_bytes_ == 0 || length_in_bytes_ >= block_size);
 }
 
-UDIFBlockChunkReadStream::~UDIFBlockChunkReadStream() {
-}
+UDIFBlockChunkReadStream::~UDIFBlockChunkReadStream() = default;
 
 bool UDIFBlockChunkReadStream::Read(base::span<uint8_t> buf,
                                     size_t* bytes_read) {

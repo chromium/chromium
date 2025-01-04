@@ -341,7 +341,7 @@ try_.builder(
     coverage_test_types = ["unit", "overall"],
     main_list_view = "try",
     # The size of the testing pool is limited.
-    max_concurrent_builds = 3,
+    max_concurrent_builds = 2,
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     #use_orchestrator_pool = True,
@@ -401,6 +401,8 @@ try_.builder(
     os = os.WINDOWS_10,
     ssd = True,
     contact_team_email = "chrome-desktop-engprod@google.com",
+    # The size of the testing pool is limited.
+    max_concurrent_builds = 2,
     # Enable when stable.
     # main_list_view = "try",
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
@@ -473,11 +475,29 @@ try_.gpu.optional_tests_builder(
             "win_optional_gpu_tests_rel_isolated_scripts",
         ],
         per_test_modifications = {
+            "pixel_skia_gold_passthrough_graphite_test 10de:2184": targets.per_test_modification(
+                mixins = targets.mixin(
+                    args = [
+                        # TODO(crbug.com/382422293): Remove when fixed
+                        "--jobs=1",
+                    ],
+                ),
+                replacements = targets.replacements(
+                    args = {
+                        # Magic substitution happens after regular replacement, so remove it
+                        # now since we are manually applying the number of jobs above.
+                        targets.magic_args.GPU_PARALLEL_JOBS: None,
+                    },
+                ),
+            ),
             "trace_test 8086:9bc5": targets.remove(
                 reason = "TODO(crbug.com/41483572): Re-add this when capacity issues are resolved.",
             ),
             "webgl2_conformance_d3d11_passthrough_tests 8086:9bc5": targets.remove(
                 reason = "TODO(crbug.com/41483572): Re-add this when capacity issues are resolved.",
+            ),
+            "webgl_conformance_vulkan_passthrough_tests 10de:2184": targets.remove(
+                reason = "TODO(crbug.com/380431384): flaky crashes in random tests.",
             ),
             "xr_browser_tests 8086:9bc5": targets.mixin(
                 # TODO(crbug.com/40937024): Remove this once the flakes on Intel are

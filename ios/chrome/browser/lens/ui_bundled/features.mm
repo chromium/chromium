@@ -39,3 +39,15 @@ BASE_FEATURE(kLensUnaryApisWithHttpTransportEnabled,
 BASE_FEATURE(kLensUnaryHttpTransportEnabled,
              "LensUnaryHttpTransportEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLensClearcutBackgroundUploadEnabled,
+             "LensClearcutBackgroundUploadEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLensClearcutLoggerFastQosEnabled,
+             "LensClearcutLoggerFastQosEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLensSingleTapTextSelectionDisabled,
+             "LensSingleTapTextSelectionDisabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);

@@ -120,7 +120,7 @@ Oturumunuzu kapatmadan önce birkaç dakika bekleyin. Oturumu şimdi kapatırsan
 <translation id="4064699917955374540">Chrome verilerini kullanmak ve Google Hesabınıza kaydetmek için kimliğinizi doğrulayın.</translation>
 <translation id="417201473131094001">Chrome Canary'de desteklenmiyor</translation>
 <translation id="424864128008805179">Chrome oturumu kapatılsın mı?</translation>
-<translation id="447252321002412580">Chrome'un özelliklerini ve performansını iyileştirmeye yardımcı olun</translation>
+<translation id="447252321002412580">Chrome'un özelliklerini ve performansını iyileştirmeye yardımcı ol</translation>
 <translation id="4523886039239821078">Bazı eklentiler Chrome'un kilitlenmesine neden oluyor. Lütfen şunların yüklemelerini kaldırın:</translation>
 <translation id="4633328489441962921">Chrome, güncellemeleri denetleyemiyor</translation>
 <translation id="4636900170638246267">Bu sitede ve Chrome'da oturum açın.</translation>
@@ -221,6 +221,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 Veri kullanarak Chrome deneyiminizi iyileştiren daha fazla ayar görmek için <ph name="BEGIN_LINK" />Google Hizmetleri<ph name="END_LINK" />'ne gidin.</translation>
 <translation id="6922332667202044570">Chrome'daki tarama verilerini silme</translation>
 <translation id="6924922227983877439">Bağlantıları varsayılan olarak Chrome'da açın</translation>
+<translation id="6931601805528922498">Oturum açtığınızda, işle ilgili kullanım için hesabınız Chrome'a eklenir.</translation>
 <translation id="6975725306479268850">Otomatik doldurma için Chrome'u seçin</translation>
 <translation id="7056826488869329999">Chrome'da Güvenlik Kontrolü'nü açar ve yürütür.</translation>
 <translation id="7061455974939528301">Chrome simgesini basılı tutup "Ana ekranı düzenle"yi tıklayın</translation>

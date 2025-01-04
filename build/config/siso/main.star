@@ -8,6 +8,7 @@ load("@builtin//encoding.star", "json")
 load("@builtin//lib/gn.star", "gn")
 load("@builtin//runtime.star", "runtime")
 load("@builtin//struct.star", "module")
+load("./backend_config/backend.star", "backend")
 load("./blink_all.star", "blink_all")
 load("./clang_exception.star", "clang_exception")
 load("./gn_logs.star", "gn_logs")
@@ -42,26 +43,10 @@ def init(ctx):
         properties["gn_args:" + k] = v
     for k, v in gn_logs.read(ctx).items():
         properties["gn_logs:" + k] = v
+
     step_config = {
         "properties": properties,
-        "platforms": {
-            "default": {
-                "OSFamily": "Linux",
-                "container-image": "docker://gcr.io/chops-public-images-prod/rbe/siso-chromium/linux@sha256:912808c295e578ccde53b0685bcd0d56c15d7a03e819dcce70694bfe3fdab35e",
-                "label:action_default": "1",
-            },
-            # Large workers are usually used for Python actions like generate bindings, mojo generators etc
-            # They can run on Linux workers.
-            "large": {
-                "OSFamily": "Linux",
-                "container-image": "docker://gcr.io/chops-public-images-prod/rbe/siso-chromium/linux@sha256:912808c295e578ccde53b0685bcd0d56c15d7a03e819dcce70694bfe3fdab35e",
-                # As of Jul 2023, the action_large pool uses n2-highmem-8 with 200GB of pd-ssd.
-                # The pool is intended for the following actions.
-                #  - slow actions that can benefit from multi-cores and/or faster disk I/O. e.g. link, mojo, generate bindings etc.
-                #  - actions that fail for OOM.
-                "label:action_large": "1",
-            },
-        },
+        "platforms": backend.platform_properties(ctx),
         "input_deps": {},
         "rules": [],
     }

@@ -362,6 +362,7 @@
       "chrome://help-app/*",
       "chrome://history/*",
       "chrome://new-tab-page/*",
+      "chrome://oobe/*",
       "chrome://os-settings/*",
       "chrome://password-manager/*",
       "chrome://personalization/*",
@@ -806,6 +807,12 @@
     "contexts": [ "privileged_extension" ],
     "developer_mode_only": true,
     "feature_flag": "ApiUserScriptsMultipleWorlds"
+  },
+  "userScripts.execute": {
+    "dependencies": [ "permission:userScripts" ],
+    "contexts": [ "privileged_extension" ],
+    "developer_mode_only": true,
+    "feature_flag": "ApiUserScriptsExecute"
   },
   "virtualKeyboard": {
     "dependencies": ["permission:virtualKeyboard"],

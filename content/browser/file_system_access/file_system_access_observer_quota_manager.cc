@@ -4,36 +4,83 @@
 
 #include "content/browser/file_system_access/file_system_access_observer_quota_manager.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "content/browser/file_system_access/file_system_access_watcher_manager.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace content {
+FileSystemAccessObserverQuotaManager::Handle::Handle(
+    scoped_refptr<FileSystemAccessObserverQuotaManager> quota_manager)
+    : quota_manager_(std::move(quota_manager)) {}
+
+FileSystemAccessObserverQuotaManager::Handle::~Handle() = default;
+
+FileSystemAccessObserverQuotaManager::Handle::Handle(Handle&&) = default;
+FileSystemAccessObserverQuotaManager::Handle&
+FileSystemAccessObserverQuotaManager::Handle::operator=(Handle&&) = default;
+
+FileSystemAccessObserverQuotaManager::UsageChangeResult
+FileSystemAccessObserverQuotaManager::Handle::OnUsageChange(size_t usage) {
+  if (errored_) {
+    return UsageChangeResult::kQuotaUnavailable;
+  }
+
+  UsageChangeResult result = quota_manager_->OnUsageChange(old_usage_, usage);
+
+  old_usage_ = usage;
+  errored_ = result == UsageChangeResult::kQuotaUnavailable;
+
+  return result;
+}
 
 FileSystemAccessObserverQuotaManager::FileSystemAccessObserverQuotaManager(
     const blink::StorageKey& storage_key,
-    FileSystemAccessWatcherManager* watcher_manager)
+    ukm::SourceId ukm_source_id,
+    FileSystemAccessWatcherManager& watcher_manager)
     : base::RefCountedDeleteOnSequence<FileSystemAccessObserverQuotaManager>(
           base::SequencedTaskRunner::GetCurrentDefault()),
       storage_key_(storage_key),
+      ukm_source_id_(ukm_source_id),
       watcher_manager_(watcher_manager) {}
 
-// TODO(crbug.com/338457523): Inform the watcher manager to remove this
-// from the quota manager map entry for this storage key.
 FileSystemAccessObserverQuotaManager::~FileSystemAccessObserverQuotaManager() {
-  CHECK(quota_limit_ > 0);
-  base::UmaHistogramCounts100000("Storage.FileSystemAccess.ObserverUsage",
-                                 high_water_mark_usage_);
-  base::UmaHistogramPercentage("Storage.FileSystemAccess.ObserverUsageRate",
-                               100 * high_water_mark_usage_ / quota_limit_);
+  CHECK(FileSystemAccessChangeSource::quota_limit() > 0);
+  // The percentile value, rounded down to the nearest integer.
+  size_t usage_rate = 100 * high_water_mark_usage_ /
+                      FileSystemAccessChangeSource::quota_limit();
+
+  // UMA logging.
+  if (high_water_mark_usage_ > 0) {
+    base::UmaHistogramCounts100000("Storage.FileSystemAccess.ObserverUsage",
+                                   high_water_mark_usage_);
+    base::UmaHistogramPercentage("Storage.FileSystemAccess.ObserverUsageRate",
+                                 usage_rate);
+  }
   base::UmaHistogramBoolean(
       "Storage.FileSystemAccess.ObserverUsageQuotaExceeded",
       reached_quota_limit_);
 
-  // TODO(crbug.com/338457523): Make this unconditional once `watcher_manager_`
-  // is raw_ref.
-  if (watcher_manager_) {
-    watcher_manager_->RemoveQuotaManager(storage_key_);
+  // UKM logging.
+  if (ukm_source_id_ != ukm::kInvalidSourceId) {
+    auto ukm_builder = ukm::builders::FileSystemObserver_Usage(ukm_source_id_);
+    if (high_water_mark_usage_ > 0) {
+      ukm_builder
+          .SetHighWaterMark(ukm::GetExponentialBucketMin(
+              high_water_mark_usage_, kHighWaterMarkBucketSpacing))
+          .SetHighWaterMarkPercentage(usage_rate);
+    }
+    ukm_builder.SetQuotaExceeded(reached_quota_limit_)
+        .Record(ukm::UkmRecorder::Get());
   }
+
+  watcher_manager_->RemoveQuotaManager(storage_key_);
+}
+
+FileSystemAccessObserverQuotaManager::Handle
+FileSystemAccessObserverQuotaManager::CreateHandle() {
+  return Handle(base::WrapRefCounted(this));
 }
 
 FileSystemAccessObserverQuotaManager::UsageChangeResult
@@ -45,7 +92,7 @@ FileSystemAccessObserverQuotaManager::OnUsageChange(size_t old_usage,
   CHECK_GE(total_usage_, old_usage);
 
   size_t updated_total_usage = total_usage_ + new_usage - old_usage;
-  if (updated_total_usage > quota_limit_) {
+  if (updated_total_usage > FileSystemAccessChangeSource::quota_limit()) {
     total_usage_ -= old_usage;
     reached_quota_limit_ = true;
     return UsageChangeResult::kQuotaUnavailable;

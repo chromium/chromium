@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.common.Lifetime;
@@ -200,8 +201,11 @@ public class AwQuotaManagerBridge {
         void deleteBrowsingData(long nativeAwQuotaManagerBridge, Callback<Boolean> callback);
 
         @NonNull
+        @JniType("std::string")
         String deleteBrowsingDataForSite(
-                long nativeAwQuotaManagerBridge, String domain, Callback<Boolean> callback);
+                long nativeAwQuotaManagerBridge,
+                @JniType("std::string") String domain,
+                Callback<Boolean> callback);
 
         void getOrigins(
                 long nativeAwQuotaManagerBridge,

@@ -31,7 +31,9 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
+#include "third_party/blink/renderer/core/dom/tree_ordered_list.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element_with_state.h"
+#include "third_party/blink/renderer/core/html/forms/html_selected_content_element.h"
 #include "third_party/blink/renderer/core/html/forms/option_list.h"
 #include "third_party/blink/renderer/core/html/forms/type_ahead.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
@@ -136,6 +138,12 @@ class CORE_EXPORT HTMLSelectElement final
 
   // Returns the first selected OPTION, or nullptr.
   HTMLOptionElement* SelectedOption() const;
+
+  // Returns true if any of the <select>'s descendants are disallowed
+  // interactive elements.
+  bool IsInDialogMode() const;
+  void IncreaseContentModelViolationCount();
+  void DecreaseContentModelViolationCount();
 
   // This is similar to |options| HTMLCollection.  But this is safe in
   // HTMLOptionElement::removedFrom() and insertedInto().
@@ -245,6 +253,7 @@ class CORE_EXPORT HTMLSelectElement final
 
   // Returns true if the provided element is some select element's
   // PopoverForAppearanceBase.
+  static bool IsPopoverForAppearanceBase(const Node*);
   static bool IsPopoverForAppearanceBase(const Element*);
 
   // <select> supports appearance:base-select on both the main element and
@@ -255,7 +264,14 @@ class CORE_EXPORT HTMLSelectElement final
   // has appearance:base-select, IsAppearanceBasePicker will return true and the
   // popup will be a popover element. The SelectType must also support base
   // appearance, which is currently only MenuListSelectType.
-  bool IsAppearanceBaseButton() const;
+  // IsAppearanceBaseButton should be used for code which is concerned with the
+  // in-page rendering of the button, and IsAppearanceBasePicker should be used
+  // for code which is concerned with the popup/popover and the other elements
+  // which are rendered in it.
+  // |no_update| prevents these methods from running an UpdateStyleAndLayoutTree
+  // which is needed in some cases to prevent nested style/layout recalc.
+  enum class StyleUpdateBehavior { kUpdateStyle, kDontUpdateStyle };
+  bool IsAppearanceBaseButton(StyleUpdateBehavior) const;
   bool IsAppearanceBasePicker() const;
 
   void SelectedContentElementInserted(
@@ -274,7 +290,7 @@ class CORE_EXPORT HTMLSelectElement final
 
   void DefaultEventHandler(Event&) override;
 
-  void UpdateAllSelectedcontents();
+  void UpdateAllSelectedcontents(HTMLOptionElement* selected_option);
 
  private:
   mojom::blink::FormControlType FormControlType() const override;
@@ -379,7 +395,7 @@ class CORE_EXPORT HTMLSelectElement final
   Member<HTMLSlotElement> option_slot_;
   Member<HTMLOptionElement> last_on_change_option_;
   Member<HTMLOptionElement> suggested_option_;
-  HeapHashSet<Member<HTMLSelectedContentElement>> descendant_selectedcontents_;
+  TreeOrderedList<HTMLSelectedContentElement> descendant_selectedcontents_;
   bool uses_menu_list_ = true;
   bool is_multiple_;
   mutable bool should_recalc_list_items_;
@@ -388,6 +404,7 @@ class CORE_EXPORT HTMLSelectElement final
   int index_to_select_on_cancel_;
 
   Member<SelectDescendantsObserver> descendants_observer_;
+  unsigned content_model_violations_count_ = 0U;
 
   friend class ListBoxSelectType;
   friend class MenuListSelectType;

@@ -29,7 +29,6 @@
 #include "base/token.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/metrics/histogram_controller.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "content/browser/browser_main_loop.h"
@@ -59,8 +58,8 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "content/browser/sandbox_support_mac_impl.h"
-#include "content/common/sandbox_support_mac.mojom.h"
+#include "content/browser/sandbox_support_impl.h"
+#include "content/common/sandbox_support.mojom.h"
 #endif
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
@@ -184,11 +183,9 @@ BrowserChildProcessHostImpl::BrowserChildProcessHostImpl(
     content::ProcessType process_type,
     BrowserChildProcessHostDelegate* delegate,
     ChildProcessHost::IpcMode ipc_mode)
-    : data_(process_type), delegate_(delegate) {
+    : data_(process_type, ChildProcessHostImpl::GenerateChildProcessUniqueId()),
+      delegate_(delegate) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  data_.id =
-      ChildProcessHostImpl::GenerateChildProcessUniqueId().GetUnsafeValue();
 
   // Create a persistent memory segment for subprocess histograms.
   CreateMetricsAllocator();
@@ -680,7 +677,7 @@ void BrowserChildProcessHostImpl::OnProcessLaunched() {
     NotifyProcessLaunchedAndConnected(data_);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // In ChromeOS, there are still child processes of NaCl modules, and they
   // don't contribute to tracing actually. So do not register those clients
   // to the tracing service. See https://crbug.com/1101468.

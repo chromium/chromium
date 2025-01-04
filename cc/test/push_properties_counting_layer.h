@@ -23,10 +23,6 @@ class PushPropertiesCountingLayer : public Layer {
   PushPropertiesCountingLayer& operator=(const PushPropertiesCountingLayer&) =
       delete;
 
-  // Layer implementation.
-  void PushPropertiesTo(LayerImpl* layer,
-                        const CommitState& commit_state,
-                        const ThreadUnsafeCommitState& unsafe_state) override;
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
 
@@ -35,6 +31,14 @@ class PushPropertiesCountingLayer : public Layer {
 
   size_t push_properties_count() const { return push_properties_count_; }
   void reset_push_properties_count() { push_properties_count_ = 0; }
+
+ protected:
+  // Layer implementation.
+  void PushDirtyPropertiesTo(
+      LayerImpl* layer,
+      uint8_t dirty_flag,
+      const CommitState& commit_state,
+      const ThreadUnsafeCommitState& unsafe_state) override;
 
  private:
   PushPropertiesCountingLayer();

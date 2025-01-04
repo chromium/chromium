@@ -6,6 +6,7 @@
 
 #include <cinttypes>
 
+#include "base/strings/stringprintf.h"
 #include "chrome/common/read_anything/read_anything_constants.h"
 #include "services/strings/grit/services_strings.h"
 #include "ui/accessibility/ax_enum_util.h"

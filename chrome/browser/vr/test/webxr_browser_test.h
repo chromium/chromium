@@ -37,6 +37,9 @@ class WebXrBrowserTestBase : public XrBrowserTestBase {
   // EnterSessionWithUserGesture, failing if it is unable to.
   virtual void EndSessionOrFail(content::WebContents* web_contents) = 0;
 
+  // Waits for a session to be ended.
+  virtual void WaitForSessionEndOrFail(content::WebContents* web_contents) = 0;
+
   // Convenience function for calling XrDeviceFound with the return value of
   // GetCurrentWebContents.
   bool XrDeviceFound();
@@ -60,6 +63,10 @@ class WebXrBrowserTestBase : public XrBrowserTestBase {
   // Convenience function for calling EndSessionOrFail with the return value of
   // GetCurrentWebContents.
   void EndSessionOrFail();
+
+  // Convenience function for calling `WaitForSessionEndOrFail` with the return
+  // value of GetCurrentWebContents.
+  void WaitForSessionEndOrFail();
 };
 
 }  // namespace vr

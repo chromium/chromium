@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/views/frame/dbus_appmenu.h"
 
 #include <dlfcn.h>
 #include <stddef.h>
 
+#include <array>
 #include <limits>
 #include <memory>
 #include <utility>
@@ -19,6 +15,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -77,7 +74,6 @@ const size_t kMaximumMenuWidthInChars = 50;
 // IDC_FIRST_UNBOUNDED_MENU.
 enum ReservedCommandId {
   kLastChromeCommand = IDC_FIRST_UNBOUNDED_MENU - 1,
-  kMenuEnd,
   kSeparator,
   kSubmenu,
   kTagRecentlyClosed,
@@ -87,89 +83,84 @@ enum ReservedCommandId {
   kFirstUnreservedCommandId
 };
 
-constexpr DbusAppmenuCommand kFileMenu[] = {
-    {IDC_NEW_TAB, IDS_NEW_TAB},
-    {IDC_NEW_WINDOW, IDS_NEW_WINDOW},
-    {IDC_NEW_INCOGNITO_WINDOW, IDS_NEW_INCOGNITO_WINDOW},
-    {IDC_RESTORE_TAB, IDS_REOPEN_CLOSED_TABS_LINUX},
-    {IDC_OPEN_FILE, IDS_OPEN_FILE_LINUX},
-    {IDC_FOCUS_LOCATION, IDS_OPEN_LOCATION_LINUX},
-    {kSeparator},
-    {IDC_CLOSE_WINDOW, IDS_CLOSE_WINDOW_LINUX},
-    {IDC_CLOSE_TAB, IDS_CLOSE_TAB_LINUX},
-    {IDC_SAVE_PAGE, IDS_SAVE_PAGE},
-    {kSeparator},
-    {IDC_PRINT, IDS_PRINT},
-    {kMenuEnd}};
+constexpr auto kFileMenu = std::to_array<DbusAppmenuCommand>(
+    {{IDC_NEW_TAB, IDS_NEW_TAB},
+     {IDC_NEW_WINDOW, IDS_NEW_WINDOW},
+     {IDC_NEW_INCOGNITO_WINDOW, IDS_NEW_INCOGNITO_WINDOW},
+     {IDC_RESTORE_TAB, IDS_REOPEN_CLOSED_TABS_LINUX},
+     {IDC_OPEN_FILE, IDS_OPEN_FILE_LINUX},
+     {IDC_FOCUS_LOCATION, IDS_OPEN_LOCATION_LINUX},
+     {kSeparator},
+     {IDC_CLOSE_WINDOW, IDS_CLOSE_WINDOW_LINUX},
+     {IDC_CLOSE_TAB, IDS_CLOSE_TAB_LINUX},
+     {IDC_SAVE_PAGE, IDS_SAVE_PAGE},
+     {kSeparator},
+     {IDC_PRINT, IDS_PRINT}});
 
-constexpr DbusAppmenuCommand kEditMenu[] = {{IDC_CUT, IDS_CUT},
-                                            {IDC_COPY, IDS_COPY},
-                                            {IDC_PASTE, IDS_PASTE},
-                                            {kSeparator},
-                                            {IDC_FIND, IDS_FIND},
-                                            {kSeparator},
-                                            {IDC_OPTIONS, IDS_PREFERENCES},
-                                            {kMenuEnd}};
+constexpr auto kEditMenu =
+    std::to_array<DbusAppmenuCommand>({{IDC_CUT, IDS_CUT},
+                                       {IDC_COPY, IDS_COPY},
+                                       {IDC_PASTE, IDS_PASTE},
+                                       {kSeparator},
+                                       {IDC_FIND, IDS_FIND},
+                                       {kSeparator},
+                                       {IDC_OPTIONS, IDS_PREFERENCES}});
 
-constexpr DbusAppmenuCommand kViewMenu[] = {
-    {IDC_SHOW_BOOKMARK_BAR, IDS_SHOW_BOOKMARK_BAR},
-    {kSeparator},
-    {IDC_STOP, IDS_STOP_MENU_LINUX},
-    {IDC_RELOAD, IDS_RELOAD_MENU_LINUX},
-    {kSeparator},
-    {IDC_FULLSCREEN, IDS_FULLSCREEN},
-    {IDC_ZOOM_NORMAL, IDS_TEXT_DEFAULT_LINUX},
-    {IDC_ZOOM_PLUS, IDS_TEXT_BIGGER_LINUX},
-    {IDC_ZOOM_MINUS, IDS_TEXT_SMALLER_LINUX},
-    {kMenuEnd}};
+constexpr auto kViewMenu = std::to_array<DbusAppmenuCommand>(
+    {{IDC_SHOW_BOOKMARK_BAR, IDS_SHOW_BOOKMARK_BAR},
+     {kSeparator},
+     {IDC_STOP, IDS_STOP_MENU_LINUX},
+     {IDC_RELOAD, IDS_RELOAD_MENU_LINUX},
+     {kSeparator},
+     {IDC_FULLSCREEN, IDS_FULLSCREEN},
+     {IDC_ZOOM_NORMAL, IDS_TEXT_DEFAULT_LINUX},
+     {IDC_ZOOM_PLUS, IDS_TEXT_BIGGER_LINUX},
+     {IDC_ZOOM_MINUS, IDS_TEXT_SMALLER_LINUX}});
 
-constexpr DbusAppmenuCommand kHistoryMenu[] = {
-    {IDC_HOME, IDS_HISTORY_HOME_LINUX},
-    {IDC_BACK, IDS_HISTORY_BACK_LINUX},
-    {IDC_FORWARD, IDS_HISTORY_FORWARD_LINUX},
-    {kSeparator},
-    {kTagRecentlyClosed, IDS_HISTORY_CLOSED_LINUX},
-    {kSeparator},
-    {kTagMostVisited, IDS_HISTORY_VISITED_LINUX},
-    {kSeparator},
-    {IDC_SHOW_HISTORY, IDS_HISTORY_SHOWFULLHISTORY_LINK},
-    {kMenuEnd}};
+constexpr auto kHistoryMenu = std::to_array<DbusAppmenuCommand>(
+    {{IDC_HOME, IDS_HISTORY_HOME_LINUX},
+     {IDC_BACK, IDS_HISTORY_BACK_LINUX},
+     {IDC_FORWARD, IDS_HISTORY_FORWARD_LINUX},
+     {kSeparator},
+     {kTagRecentlyClosed, IDS_HISTORY_CLOSED_LINUX},
+     {kSeparator},
+     {kTagMostVisited, IDS_HISTORY_VISITED_LINUX},
+     {kSeparator},
+     {IDC_SHOW_HISTORY, IDS_HISTORY_SHOWFULLHISTORY_LINK}});
 
-constexpr DbusAppmenuCommand kToolsMenu[] = {
-    {IDC_SHOW_DOWNLOADS, IDS_SHOW_DOWNLOADS},
-    {IDC_SHOW_HISTORY, IDS_HISTORY_SHOW_HISTORY},
-    {IDC_MANAGE_EXTENSIONS, IDS_SHOW_EXTENSIONS},
-    {kSeparator},
-    {IDC_TASK_MANAGER_MAIN_MENU, IDS_TASK_MANAGER},
-    {IDC_CLEAR_BROWSING_DATA, IDS_CLEAR_BROWSING_DATA},
-    {kSeparator},
-    {IDC_VIEW_SOURCE, IDS_VIEW_SOURCE},
-    {IDC_DEV_TOOLS, IDS_DEV_TOOLS},
-    {IDC_DEV_TOOLS_INSPECT, IDS_DEV_TOOLS_ELEMENTS},
-    {IDC_DEV_TOOLS_CONSOLE, IDS_DEV_TOOLS_CONSOLE},
-    {IDC_DEV_TOOLS_DEVICES, IDS_DEV_TOOLS_DEVICES},
-    {kMenuEnd}};
+constexpr auto kToolsMenu = std::to_array<DbusAppmenuCommand>(
+    {{IDC_SHOW_DOWNLOADS, IDS_SHOW_DOWNLOADS},
+     {IDC_SHOW_HISTORY, IDS_HISTORY_SHOW_HISTORY},
+     {IDC_MANAGE_EXTENSIONS, IDS_SHOW_EXTENSIONS},
+     {kSeparator},
+     {IDC_TASK_MANAGER_MAIN_MENU, IDS_TASK_MANAGER},
+     {IDC_CLEAR_BROWSING_DATA, IDS_CLEAR_BROWSING_DATA},
+     {kSeparator},
+     {IDC_VIEW_SOURCE, IDS_VIEW_SOURCE},
+     {IDC_DEV_TOOLS, IDS_DEV_TOOLS},
+     {IDC_DEV_TOOLS_INSPECT, IDS_DEV_TOOLS_ELEMENTS},
+     {IDC_DEV_TOOLS_CONSOLE, IDS_DEV_TOOLS_CONSOLE},
+     {IDC_DEV_TOOLS_DEVICES, IDS_DEV_TOOLS_DEVICES}});
 
-constexpr DbusAppmenuCommand kProfilesMenu[] = {
-    {kSeparator},
-    {kTagProfileEdit, IDS_PROFILES_MANAGE_BUTTON_LABEL},
-    {kTagProfileCreate, IDS_PROFILES_ADD_PROFILE_LABEL},
-    {kMenuEnd}};
+constexpr auto kProfilesMenu = std::to_array<DbusAppmenuCommand>(
+    {{kSeparator},
+     {kTagProfileEdit, IDS_PROFILES_MANAGE_BUTTON_LABEL},
+     {kTagProfileCreate, IDS_PROFILES_ADD_PROFILE_LABEL}});
 
-constexpr DbusAppmenuCommand kHelpMenu[] = {
+constexpr auto kHelpMenu = std::to_array<DbusAppmenuCommand>({
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     {IDC_FEEDBACK, IDS_FEEDBACK},
 #endif
-    {IDC_HELP_PAGE_VIA_MENU, IDS_HELP_PAGE},
-    {kMenuEnd}};
+    {IDC_HELP_PAGE_VIA_MENU, IDS_HELP_PAGE}});
 
 void FindMenuItemsForCommandAux(
     ui::MenuModel* menu,
     int command,
     std::vector<std::pair<ui::MenuModel*, size_t>>* menu_items) {
   for (size_t i = 0; i < menu->GetItemCount(); ++i) {
-    if (menu->GetCommandIdAt(i) == command)
-      menu_items->push_back({menu, i});
+    if (menu->GetCommandIdAt(i) == command) {
+      menu_items->emplace_back(menu, i);
+    }
     if (menu->GetTypeAt(i) == ui::SimpleMenuModel::ItemType::TYPE_SUBMENU) {
       FindMenuItemsForCommandAux(menu->GetSubmenuModelAt(i), command,
                                  menu_items);
@@ -226,18 +217,21 @@ DbusAppmenu::~DbusAppmenu() {
   auto* registrar = DbusAppmenuRegistrar::GetInstance();
   registrar->OnMenuBarDestroyed(this);
 
-  if (!initialized_)
+  if (!initialized_) {
     return;
+  }
 
   registrar->bus()->UnregisterExportedObject(dbus::ObjectPath(GetPath()));
 
-  for (int command : observed_commands_)
+  for (int command : observed_commands_) {
     chrome::RemoveCommandObserver(browser_, command, this);
+  }
 
   pref_change_registrar_.RemoveAll();
 
-  if (tab_restore_service_)
+  if (tab_restore_service_) {
     tab_restore_service_->RemoveObserver(this);
+  }
 
   BrowserList::RemoveObserver(this);
 }
@@ -295,11 +289,11 @@ std::string DbusAppmenu::GetPath() const {
 
 ui::SimpleMenuModel* DbusAppmenu::BuildStaticMenu(
     int string_id,
-    const DbusAppmenuCommand* commands) {
+    base::span<const DbusAppmenuCommand> commands) {
   toplevel_menus_.push_back(std::make_unique<ui::SimpleMenuModel>(this));
   ui::SimpleMenuModel* menu = toplevel_menus_.back().get();
-  for (; commands->command != kMenuEnd; commands++) {
-    int command_id = commands->command;
+  for (const DbusAppmenuCommand& command : commands) {
+    int command_id = command.command;
     if (command_id == kSeparator) {
       // Use InsertSeparatorAt() instead of AddSeparator() because the latter
       // refuses to add a separator to an empty menu.
@@ -313,13 +307,14 @@ ui::SimpleMenuModel* DbusAppmenu::BuildStaticMenu(
       continue;
     }
 
-    int command_str_id = commands->str_id;
-    if (command_id == IDC_SHOW_BOOKMARK_BAR)
-      menu->AddCheckItemWithStringId(command_id, command_str_id);
-    else
-      menu->AddItemWithStringId(command_id, command_str_id);
-    if (command_id < kLastChromeCommand)
+    if (command_id == IDC_SHOW_BOOKMARK_BAR) {
+      menu->AddCheckItemWithStringId(command_id, command.str_id);
+    } else {
+      menu->AddItemWithStringId(command_id, command.str_id);
+    }
+    if (command_id < kLastChromeCommand) {
       RegisterCommandObserver(command_id);
+    }
   }
   root_menu_->AddSubMenu(kSubmenu, l10n_util::GetStringUTF16(string_id), menu);
   return menu;
@@ -342,8 +337,9 @@ void DbusAppmenu::AddHistoryItemToMenu(std::unique_ptr<HistoryItem> item,
   std::u16string title = item->title;
   std::string url_string = item->url.possibly_invalid_spec();
 
-  if (title.empty())
+  if (title.empty()) {
     title = base::UTF8ToUTF16(url_string);
+  }
   gfx::ElideString(title, kMaximumMenuWidthInChars, &title);
 
   int command_id = NextCommandId();
@@ -392,8 +388,9 @@ void DbusAppmenu::OnTopSitesReceived(
 
   for (size_t i = 0; i < visited_list.size() && i < kMostVisitedCount; ++i) {
     const history::MostVisitedURL& visited = visited_list[i];
-    if (visited.url.spec().empty())
+    if (visited.url.spec().empty()) {
       break;  // This is the signal that there are no more real visited sites.
+    }
 
     auto item = std::make_unique<HistoryItem>();
     item->title = visited.title;
@@ -402,8 +399,9 @@ void DbusAppmenu::OnTopSitesReceived(
     AddHistoryItemToMenu(std::move(item), history_menu_, index++);
   }
 
-  if (menu_service_)
+  if (menu_service_) {
     menu_service_->MenuLayoutUpdated(history_menu_);
+  }
 }
 
 void DbusAppmenu::OnBookmarkBarVisibilityChanged() {
@@ -412,8 +410,9 @@ void DbusAppmenu::OnBookmarkBarVisibilityChanged() {
 }
 
 void DbusAppmenu::RebuildProfilesMenu() {
-  while (profiles_menu_->GetTypeAt(0) != ui::MenuModel::TYPE_SEPARATOR)
+  while (profiles_menu_->GetTypeAt(0) != ui::MenuModel::TYPE_SEPARATOR) {
     profiles_menu_->RemoveItemAt(0);
+  }
   profile_commands_.clear();
 
   // Don't call avatar_menu_->GetActiveProfileIndex() as the as the index might
@@ -425,16 +424,18 @@ void DbusAppmenu::RebuildProfilesMenu() {
     std::u16string title = item.name;
     gfx::ElideString(title, kMaximumMenuWidthInChars, &title);
 
-    if (item.active)
+    if (item.active) {
       active_profile_index_ = i;
+    }
 
     int command = NextCommandId();
     profile_commands_[command] = i;
     profiles_menu_->InsertCheckItemAt(i, command, title);
   }
 
-  if (menu_service_)
+  if (menu_service_) {
     menu_service_->MenuLayoutUpdated(profiles_menu_);
+  }
 }
 
 int DbusAppmenu::ClearHistoryMenuSection(int header_command_id) {
@@ -449,24 +450,27 @@ int DbusAppmenu::ClearHistoryMenuSection(int header_command_id) {
 }
 
 void DbusAppmenu::RegisterCommandObserver(int command) {
-  if (command > kLastChromeCommand)
+  if (command > kLastChromeCommand) {
     return;
+  }
 
   // Keep track of which commands are already registered to avoid
   // registering them twice.
   const bool inserted = observed_commands_.insert(command).second;
-  if (!inserted)
+  if (!inserted) {
     return;
+  }
 
   chrome::AddCommandObserver(browser_, command, this);
 }
 
 int DbusAppmenu::NextCommandId() {
   do {
-    if (last_command_id_ == std::numeric_limits<int>::max())
+    if (last_command_id_ == std::numeric_limits<int>::max()) {
       last_command_id_ = kFirstUnreservedCommandId;
-    else
+    } else {
       last_command_id_++;
+    }
   } while (base::Contains(history_items_, last_command_id_) ||
            base::Contains(profile_commands_, last_command_id_));
   return last_command_id_;
@@ -513,8 +517,9 @@ void DbusAppmenu::TabRestoreServiceChanged(
           static_cast<sessions::tab_restore::Window*>(entry);
 
       auto& tabs = window->tabs;
-      if (tabs.empty())
+      if (tabs.empty()) {
         continue;
+      }
 
       std::u16string title = l10n_util::GetPluralStringFUTF16(
           IDS_RECENTLY_CLOSED_WINDOW, tabs.size());
@@ -531,8 +536,9 @@ void DbusAppmenu::TabRestoreServiceChanged(
           static_cast<sessions::tab_restore::Group*>(entry);
 
       auto& tabs = group->tabs;
-      if (tabs.empty())
+      if (tabs.empty()) {
         continue;
+      }
 
       std::u16string title;
       if (group->visual_data.title().empty()) {
@@ -569,12 +575,14 @@ bool DbusAppmenu::IsCommandIdChecked(int command_id) const {
 }
 
 bool DbusAppmenu::IsCommandIdEnabled(int command_id) const {
-  if (command_id <= kLastChromeCommand)
+  if (command_id <= kLastChromeCommand) {
     return chrome::IsCommandEnabled(browser_, command_id);
+  }
   // There is no active profile in Guest mode, in which case the action
   // buttons should be disabled.
-  if (command_id == kTagProfileEdit || command_id == kTagProfileCreate)
+  if (command_id == kTagProfileEdit || command_id == kTagProfileCreate) {
     return active_profile_index_ >= 0;
+  }
   return command_id != kTagRecentlyClosed && command_id != kTagMostVisited;
 }
 
@@ -609,12 +617,14 @@ void DbusAppmenu::ExecuteCommand(int command_id, int event_flags) {
 }
 
 void DbusAppmenu::OnMenuWillShow(ui::SimpleMenuModel* source) {
-  if (source != history_menu_ || tab_restore_service_)
+  if (source != history_menu_ || tab_restore_service_) {
     return;
+  }
 
   tab_restore_service_ = TabRestoreServiceFactory::GetForProfile(profile_);
-  if (!tab_restore_service_)
+  if (!tab_restore_service_) {
     return;
+  }
 
   tab_restore_service_->LoadTabsFromLastSession();
   tab_restore_service_->AddObserver(this);

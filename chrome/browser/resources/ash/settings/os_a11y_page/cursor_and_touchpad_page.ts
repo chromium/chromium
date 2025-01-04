@@ -21,7 +21,7 @@ import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrLinkRowElement} from 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
-import type {SliderTick} from 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
+import type {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -29,7 +29,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
-import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import type {DevicePageBrowserProxy} from '../device_page/device_page_browser_proxy.js';
 import {DevicePageBrowserProxyImpl} from '../device_page/device_page_browser_proxy.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
@@ -45,19 +44,6 @@ const DEFAULT_BLACK_CURSOR_COLOR = 0;
 interface Option {
   name: string;
   value: number;
-}
-
-interface SliderData {
-  min: number;
-  max: number;
-  step: number;
-  defaultValue: number;
-}
-
-interface TickData {
-  tick: number;
-  percent: number;
-  defaultValue: number;
 }
 
 export interface SettingsCursorAndTouchpadPageElement {
@@ -201,20 +187,6 @@ export class SettingsCursorAndTouchpadPageElement extends
               value: 2,
               name: loadTimeData.getString('disableTouchpadMouseConnected'),
             },
-          ];
-        },
-      },
-
-      mouseKeysDominantHandOptions_: {
-        readOnly: true,
-        type: Array,
-        value() {
-          // These values correspond to the values of MouseKeysDominantHand in
-          // ash/public/cpp/accessibility_controller_enums.h
-          // If these values get changed then this needs to be updated as well.
-          return [
-            {value: 1, name: loadTimeData.getString('mouseKeysLeftHand')},
-            {value: 0, name: loadTimeData.getString('mouseKeysRightHand')},
           ];
         },
       },
@@ -417,63 +389,6 @@ export class SettingsCursorAndTouchpadPageElement extends
     this.attemptDeepLink();
   }
 
-  /**
-   * Ticks for the Mouse Keys accelerations slider. Valid rates are
-   * between 0 and 1.
-   */
-  private mouseKeysAccelerationTicks_(): SliderTick[] {
-    return this.buildLinearTicks_({
-      min: 0,
-      max: 1,
-      step: 0.1,
-      defaultValue: 0.2,
-    });
-  }
-
-  /**
-   * Ticks for the Mouse Keys max speed slider. Valid rates are
-   * between 1 and 10.
-   */
-  private mouseKeysMaxSpeedTicks_(): SliderTick[] {
-    return this.buildLinearTicks_({
-      min: 1,
-      max: 10,
-      step: 1,
-      defaultValue: 5,
-    });
-  }
-
-  /**
-   * A helper to build a set of ticks between |min| and |max| (inclusive) spaced
-   * evenly by |step|.
-   */
-  private buildLinearTicks_(data: SliderData): SliderTick[] {
-    const ticks: SliderTick[] = [];
-
-    const count = (data.max - data.min) / data.step;
-    for (let i = 0; i <= count; i++) {
-      const tickValue = data.step * i + data.min;
-      ticks.push(this.initTick_({
-        tick: tickValue,
-        percent: tickValue / data.max,
-        defaultValue: data.defaultValue,
-      }));
-    }
-    return ticks;
-  }
-
-  /**
-   * Initializes i18n labels for ticks arrays.
-   */
-  private initTick_(data: TickData): SliderTick {
-    const value = Math.round(100 * data.percent);
-    const strValue = value.toFixed(0);
-    const label = data.tick.toFixed(1) === data.defaultValue.toFixed(1) ?
-        this.i18n('defaultPercentage', strValue) :
-        this.i18n('percentage', strValue);
-    return {label: label, value: data.tick, ariaValue: value};
-  }
-
   private onFaceGazeSettingsClick_(): void {
     Router.getInstance().navigateTo(routes.MANAGE_FACEGAZE_SETTINGS);
   }
@@ -590,7 +505,7 @@ export class SettingsCursorAndTouchpadPageElement extends
     }
 
     const enabled = this.shadowRoot!
-                        .querySelector<SettingsToggleButtonElement>(
+                        .querySelector<CrToggleElement>(
                             '#shelfNavigationButtonsEnabledControl')!.checked;
     this.setPrefValue(
         'settings.a11y.tablet_mode_shelf_nav_buttons_enabled', enabled);
@@ -609,6 +524,17 @@ export class SettingsCursorAndTouchpadPageElement extends
 
   private showTouchpadEnableMessage_(trackpadMode: number): boolean {
     return trackpadMode !== DisableTouchpadMode.NEVER;
+  }
+
+  private onMouseKeysRowClicked_() {
+    Router.getInstance().navigateTo(routes.MANAGE_MOUSE_KEYS_SETTINGS);
+  }
+
+  private onMouseKeysToggleClicked_() {
+    const enabled =
+        this.shadowRoot!.querySelector<CrToggleElement>(
+                            '#mouseKeysToggle')!.checked;
+    this.setPrefValue('settings.a11y.mouse_keys.enabled', enabled);
   }
 }
 

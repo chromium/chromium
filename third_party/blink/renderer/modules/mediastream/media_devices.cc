@@ -476,6 +476,19 @@ ScriptPromise<MediaStream> MediaDevices::getUserMedia(
     return promise;
   }
 
+  LocalDOMWindow* window = GetSupplementable()->DomWindow();
+  LocalFrame* local_frame = window ? window->GetFrame() : nullptr;
+  if (local_frame && local_frame->IsAdScriptInStack()) {
+    if (constraints->hasAudio()) {
+      UseCounter::Count(GetExecutionContext(),
+                        WebFeature::kAdScriptInStackOnMicrophoneRead);
+    }
+    if (constraints->hasVideo()) {
+      UseCounter::Count(GetExecutionContext(),
+                        WebFeature::kAdScriptInStackOnCameraRead);
+    }
+  }
+
   return SendUserMediaRequest(UserMediaRequestType::kUserMedia, resolver,
                               constraints, exception_state, std::move(tracer));
 }

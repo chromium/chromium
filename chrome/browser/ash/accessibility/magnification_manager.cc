@@ -143,9 +143,6 @@ void MagnificationManager::OnViewEvent(views::View* view,
       event_type != ax::mojom::Event::kSelection) {
     return;
   }
-
-  ui::AXNodeData data;
-  view->GetViewAccessibility().GetAccessibleNodeData(&data);
 }
 
 void MagnificationManager::SetProfileForTest(Profile* profile) {

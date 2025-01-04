@@ -9,10 +9,12 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <string_view>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/performance_manager/freezing/cannot_freeze_reason.h"
@@ -45,30 +47,22 @@ namespace performance_manager {
 // - Page D hosts frames from browsing instance 3
 // The sets of connected pages are {A, B, C} and {D}.
 //
-// A page is opted-out from freezing when it is:
-//   - Visible;
-//   - Audible;
-//   - Recently audible;
-//   - Holding at least one WebLock;
-//   - Holding at least one IndexedDB lock;
-//   - Connected to a USB device;
-//   - Connected to a bluetooth device;
-//   - Capturing video;
-//   - Capturing audio;
-//   - Mirrored;
-//   - Capturing window;
-//   - Capturing display;
-class FreezingPolicy : public PageNode::ObserverDefaultImpl,
-                       public FrameNode::ObserverDefaultImpl,
+// The `CannotFreezeReason` enum lists conditions that opt-out a page from
+// freezing.
+class FreezingPolicy : public PageNodeObserver,
+                       public FrameNodeObserver,
                        public PageLiveStateObserverDefaultImpl,
                        public resource_attribution::QueryResultObserver,
                        public GraphOwnedAndRegistered<FreezingPolicy>,
                        public NodeDataDescriberDefaultImpl {
  public:
-  explicit FreezingPolicy(std::unique_ptr<freezing::Discarder> discarder);
+  explicit FreezingPolicy(
+      std::unique_ptr<freezing::Discarder> discarder,
+      std::unique_ptr<freezing::OptOutChecker> opt_out_checker = nullptr);
+  ~FreezingPolicy() override;
+
   FreezingPolicy(const FreezingPolicy&) = delete;
   FreezingPolicy& operator=(const FreezingPolicy&) = delete;
-  ~FreezingPolicy() override;
 
   void SetFreezerForTesting(std::unique_ptr<Freezer> freezer) {
     freezer_ = std::move(freezer);
@@ -112,30 +106,19 @@ class FreezingPolicy : public PageNode::ObserverDefaultImpl,
     base::flat_map<url::Origin, uint64_t> per_origin_pmf_after_freezing_kb;
   };
 
-  // Returns pages connected to `page`, including `page` itself. If
-  // `frame_being_removed` is non-null, it's ignored when calculating the
-  // browsing instances of a page, because this is being called from
-  // OnBeforeFrameNodeRemoved(). See meta-comment above this class for a
-  // definition of "connected".
+  // Returns pages connected to `page`, including `page` itself. See
+  // meta-comment above this class for a definition of "connected".
   base::flat_set<raw_ptr<const PageNode>> GetConnectedPages(
-      const PageNode* page,
-      const FrameNode* frame_being_removed = nullptr);
+      const PageNode* page);
 
-  // Returns browsing instance id(s) for `page`. If`frame_being_removed` is
-  // non-null, it's ignored when calculating the browsing instances, because
-  // this is being called from OnBeforeFrameNodeRemoved().
+  // Returns browsing instance id(s) for `page`.
   base::flat_set<content::BrowsingInstanceId> GetBrowsingInstances(
-      const PageNode* page,
-      const FrameNode* frame_being_removed = nullptr) const;
+      const PageNode* page) const;
 
   // Update frozen state for all pages connected to `page`. Connected pages
   // (including `page_node`) are added to `connected_pages_out` if not nullptr.
-  // If `frame_being_removed` is non-null, it's ignored when calculating the
-  // browsing instances of a page, because this is being called from
-  // OnBeforeFrameNodeRemoved().
   void UpdateFrozenState(
       const PageNode* page_node,
-      const FrameNode* frame_being_removed = nullptr,
       base::flat_set<raw_ptr<const PageNode>>* connected_pages_out = nullptr);
 
   // Helper to add or remove a `CannotFreezeReason` for `page_node`.
@@ -158,15 +141,27 @@ class FreezingPolicy : public PageNode::ObserverDefaultImpl,
   void OnIsVisibleChanged(const PageNode* page_node) override;
   void OnIsAudibleChanged(const PageNode* page_node) override;
   void OnPageLifecycleStateChanged(const PageNode* page_node) override;
+  void OnPageHasFreezingOriginTrialOptOutChanged(
+      const PageNode* page_node) override;
   void OnPageIsHoldingWebLockChanged(const PageNode* page_node) override;
-  void OnPageIsHoldingIndexedDBLockChanged(const PageNode* page_node) override;
+  void OnPageIsHoldingBlockingIndexedDBLockChanged(
+      const PageNode* page_node) override;
   void OnPageUsesWebRTCChanged(const PageNode* page_node) override;
+  void OnPageNotificationPermissionStatusChange(
+      const PageNode* page_node,
+      std::optional<blink::mojom::PermissionStatus> previous_status) override;
+  void OnMainFrameUrlChanged(const PageNode* page_node) override;
   void OnLoadingStateChanged(const PageNode* page_node,
                              PageNode::LoadingState previous_state) override;
 
   // FrameNodeObserver implementation:
   void OnFrameNodeAdded(const FrameNode* frame_node) override;
-  void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override;
+  void OnFrameNodeRemoved(
+      const FrameNode* frame_node,
+      const FrameNode* previous_parent_frame_node,
+      const PageNode* previous_page_node,
+      const ProcessNode* previous_process_node,
+      const FrameNode* previous_parent_or_outer_document_or_embedder) override;
   void OnIsAudibleChanged(const FrameNode* frame_node) override;
 
   // PageLiveStateObserverDefaultImpl:
@@ -198,11 +193,18 @@ class FreezingPolicy : public PageNode::ObserverDefaultImpl,
   void UpdateFrozenStateOnCPUMeasurement(
       const resource_attribution::QueryResultMap& results);
 
+  // Invoked by the OptOutChecker when the opt-out policy for
+  // `browser_context_id` changes.
+  void OnOptOutPolicyChanged(std::string_view browser_context_id);
+
   // Used to freeze pages.
   std::unique_ptr<Freezer> freezer_;
 
   // Used to discard pages.
   std::unique_ptr<freezing::Discarder> discarder_;
+
+  // Used to check whether pages are opted out of freezing by the embedder.
+  std::unique_ptr<freezing::OptOutChecker> opt_out_checker_;
 
   // State of each browsing instance.
   std::map<content::BrowsingInstanceId, BrowsingInstanceState>
@@ -225,6 +227,8 @@ class FreezingPolicy : public PageNode::ObserverDefaultImpl,
   // belong to the same [browsing instance, origin] over an interval, based on
   // cumulative measurements from `resource_usage_query_`.
   resource_attribution::CPUProportionTracker cpu_proportion_tracker_;
+
+  base::WeakPtrFactory<FreezingPolicy> weak_factory_{this};
 };
 
 }  // namespace performance_manager

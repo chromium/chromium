@@ -4,10 +4,10 @@
 
 #include "base/profiler/libunwindstack_unwinder_android.h"
 
-#include <sys/mman.h>
-
 #include <inttypes.h>
 #include <string.h>
+#include <sys/mman.h>
+
 #include <vector>
 
 #include "base/android/build_info.h"
@@ -97,8 +97,9 @@ TEST(LibunwindstackUnwinderAndroidTest, PlainFunction) {
       }));
 
   // Check that all the modules are valid.
-  for (const auto& frame : sample)
+  for (const auto& frame : sample) {
     EXPECT_NE(nullptr, frame.module);
+  }
 
   // The stack should contain a full unwind.
   ExpectStackContains(sample, {scenario.GetWaitForSampleAddressRange(),
@@ -128,8 +129,9 @@ TEST(LibunwindstackUnwinderAndroidTest, Alloca) {
       }));
 
   // Check that all the modules are valid.
-  for (const auto& frame : sample)
+  for (const auto& frame : sample) {
     EXPECT_NE(nullptr, frame.module);
+  }
 
   // The stack should contain a full unwind.
   ExpectStackContains(sample, {scenario.GetWaitForSampleAddressRange(),

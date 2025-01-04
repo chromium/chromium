@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+[FAIL] Backspace when <p>abc d[]<br></p>
+  assert_in_array: value "<p>abc&nbsp;<br></p>" not in array ["<p>abc <br></p>", "<p>abc&nbsp;</p>"]
+[FAIL] Backspace when <p>abc d[]<br></p> after extending selection backward
+  assert_in_array: value "<p>abc&nbsp;<br></p>" not in array ["<p>abc <br></p>", "<p>abc&nbsp;</p>"]
+[FAIL] Backspace when <p>abc</p>def g[]<p>hij</p>
+  assert_in_array: value "<p>abc</p>def&nbsp;<p>hij</p>" not in array ["<p>abc</p>def <br><p>hij</p>", "<p>abc</p>def&nbsp;<br><p>hij</p>"]
+[FAIL] Backspace when <p>abc</p>def g[]<p>hij</p> after extending selection backward
+  assert_in_array: value "<p>abc</p>def&nbsp;<p>hij</p>" not in array ["<p>abc</p>def <br><p>hij</p>", "<p>abc</p>def&nbsp;<br><p>hij</p>"]
+[FAIL] Alt+Backspace when "<p>abc def[]<br></p>"
+  assert_in_array: value "<p>abc&nbsp;<br></p>" not in array ["<p>abc <br></p>", "<p>abc&nbsp;</p>"]
+[FAIL] Alt+Backspace when "<p>abc</p>def ghi[]<p>jkl</p>"
+  assert_in_array: value "<p>abc</p>def&nbsp;<p>jkl</p>" not in array ["<p>abc</p>def <br><p>jkl</p>", "<p>abc</p>def&nbsp;<br><p>jkl</p>"]
+Harness: the test ran to completion.

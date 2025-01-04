@@ -45,6 +45,10 @@ class COMPONENT_EXPORT(UI_BASE) ComboboxModel {
   // item.
   virtual bool IsItemSeparatorAt(size_t index) const;
 
+  // TODO(pbos): Consider replacing this (and IsItemSeparatorAt) with something
+  // that either returns or maps well to MenuModel::ItemType.
+  virtual bool IsItemTitleAt(size_t index) const;
+
   // The index of the item that is selected by default (before user
   // interaction).
   virtual std::optional<size_t> GetDefaultIndex() const;

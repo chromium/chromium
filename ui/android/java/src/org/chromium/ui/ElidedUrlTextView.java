@@ -4,24 +4,31 @@
 
 package org.chromium.ui;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.text.Layout;
 import android.util.AttributeSet;
 
 import androidx.appcompat.widget.AppCompatTextView;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * A TextView which truncates and displays a URL such that the origin is always visible.
  * The URL can be expanded by clicking on the it.
  */
+@NullMarked
 public class ElidedUrlTextView extends AppCompatTextView {
     // The number of lines to display when the URL is truncated. This number
     // should still allow the origin to be displayed. NULL before
     // setUrlAfterLayout() is called.
+    @SuppressWarnings("NullAway.Init")
     private Integer mTruncatedUrlLinesToDisplay;
 
     // The number of lines to display when the URL is expanded. This should be enough to display
     // at most two lines of the fragment if there is one in the URL.
+    @SuppressWarnings("NullAway.Init")
     private Integer mFullLinesToDisplay;
 
     // If true, the text view will show the truncated text. If false, it
@@ -50,7 +57,7 @@ public class ElidedUrlTextView extends AppCompatTextView {
      * a given index.
      */
     private int getLineForIndex(int index) {
-        Layout layout = getLayout();
+        Layout layout = assumeNonNull(getLayout());
         int endLine = 0;
         while (endLine < layout.getLineCount() && layout.getLineEnd(endLine) < index) {
             endLine++;

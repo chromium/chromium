@@ -149,6 +149,7 @@ class CONTENT_EXPORT InterestGroupLazyFiller : public PersistedLazyFiller {
   raw_ptr<const GURL> trusted_bidding_signals_url_ = nullptr;
   raw_ptr<const mojom::BidderWorkletNonSharedParams>
       bidder_worklet_non_shared_params_ = nullptr;
+  const bool creative_scanning_enabled_;
   const raw_ptr<AuctionV8Logger> v8_logger_;
 };
 

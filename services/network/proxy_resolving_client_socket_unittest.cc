@@ -217,7 +217,7 @@ TEST_P(ProxyResolvingClientSocketTest, NetworkIsolationKeyWithH2Proxy) {
   net::SequencedSocketData socket_data(spdy_reads, spdy_writes);
   session_deps.socket_factory->AddSocketDataProvider(&socket_data);
   net::SSLSocketDataProvider ssl_data(net::ASYNC, net::OK);
-  ssl_data.next_proto = net::kProtoHTTP2;
+  ssl_data.next_proto = net::NextProto::kProtoHTTP2;
   session_deps.socket_factory->AddSSLSocketDataProvider(&ssl_data);
 
   net::SpdyTestUtil spdy_util2;
@@ -239,7 +239,7 @@ TEST_P(ProxyResolvingClientSocketTest, NetworkIsolationKeyWithH2Proxy) {
   net::SequencedSocketData socket_data2(spdy_reads2, spdy_writes2);
   session_deps.socket_factory->AddSocketDataProvider(&socket_data2);
   net::SSLSocketDataProvider ssl_data2(net::ASYNC, net::OK);
-  ssl_data2.next_proto = net::kProtoHTTP2;
+  ssl_data2.next_proto = net::NextProto::kProtoHTTP2;
   session_deps.socket_factory->AddSSLSocketDataProvider(&ssl_data2);
 
   net::ConnectJobFactory connect_job_factory;
@@ -401,7 +401,7 @@ TEST_P(ProxyResolvingClientSocketTest, ConnectToProxy) {
     //
     // TODO(crbug.com/40946183): Investigate changing that.
     proxy_ssl_data.next_protos_expected_in_ssl_config =
-        net::NextProtoVector{net::kProtoHTTP11};
+        net::NextProtoVector{net::NextProto::kProtoHTTP11};
 
     if (!is_direct) {
       mock_client_socket_factory_.AddSSLSocketDataProvider(&proxy_ssl_data);

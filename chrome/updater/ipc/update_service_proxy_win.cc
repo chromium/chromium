@@ -16,9 +16,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/check.h"
-#include "base/debug/alias.h"
-#include "base/debug/dump_without_crashing.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -201,13 +199,8 @@ class UpdaterObserver : public DYNAMICIIDSIMPL(IUpdaterObserver) {
           base::WideToUTF8(installer_cmd_line.Get());
     }
 
-    // TODO(crbug.com/345250525) - understand why the check fails.
-    base::debug::Alias(&update_service_state);
-    if (update_service_state.state ==
-        UpdateService::UpdateState::State::kUnknown) {
-      VLOG(2) << update_service_state;
-      base::debug::DumpWithoutCrashing();
-    }
+    CHECK_NE(update_service_state.state,
+             UpdateService::UpdateState::State::kUnknown);
     return update_service_state;
   }
 
@@ -478,6 +471,7 @@ class UpdateServiceProxyImplImpl
       const std::string& app_id,
       UpdateService::Priority priority,
       UpdateService::PolicySameVersionUpdate policy_same_version_update,
+      const std::string& language,
       base::RepeatingCallback<void(const UpdateService::UpdateState&)>
           state_update,
       base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
@@ -485,7 +479,7 @@ class UpdateServiceProxyImplImpl
     PostRPCTask(
         base::BindOnce(&UpdateServiceProxyImplImpl::CheckForUpdateOnTaskRunner,
                        this, app_id, priority, policy_same_version_update,
-                       state_update, std::move(callback)));
+                       language, state_update, std::move(callback)));
   }
 
   void Update(
@@ -493,14 +487,15 @@ class UpdateServiceProxyImplImpl
       const std::string& install_data_index,
       UpdateService::Priority priority,
       UpdateService::PolicySameVersionUpdate policy_same_version_update,
+      const std::string& language,
       base::RepeatingCallback<void(const UpdateService::UpdateState&)>
           state_update,
       base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
           callback) {
     PostRPCTask(base::BindOnce(&UpdateServiceProxyImplImpl::UpdateOnTaskRunner,
                                this, app_id, install_data_index, priority,
-                               policy_same_version_update, state_update,
-                               std::move(callback)));
+                               policy_same_version_update, language,
+                               state_update, std::move(callback)));
   }
 
   void UpdateAll(
@@ -518,14 +513,15 @@ class UpdateServiceProxyImplImpl
       const std::string& client_install_data,
       const std::string& install_data_index,
       UpdateService::Priority priority,
+      const std::string& language,
       base::RepeatingCallback<void(const UpdateService::UpdateState&)>
           state_update,
       base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
           callback) {
     PostRPCTask(base::BindOnce(&UpdateServiceProxyImplImpl::InstallOnTaskRunner,
                                this, registration, client_install_data,
-                               install_data_index, priority, state_update,
-                               std::move(callback)));
+                               install_data_index, priority, language,
+                               state_update, std::move(callback)));
   }
 
   void CancelInstalls(const std::string& app_id) {
@@ -539,19 +535,36 @@ class UpdateServiceProxyImplImpl
       const std::string& install_args,
       const std::string& install_data,
       const std::string& install_settings,
+      const std::string& language,
       base::RepeatingCallback<void(const UpdateService::UpdateState&)>
           state_update,
       base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
           callback) {
-    PostRPCTask(
-        base::BindOnce(&UpdateServiceProxyImplImpl::RunInstallerOnTaskRunner,
-                       this, app_id, installer_path, install_args, install_data,
-                       install_settings, state_update, std::move(callback)));
+    PostRPCTask(base::BindOnce(
+        &UpdateServiceProxyImplImpl::RunInstallerOnTaskRunner, this, app_id,
+        installer_path, install_args, install_data, install_settings, language,
+        state_update, std::move(callback)));
   }
 
  private:
   friend class base::RefCountedThreadSafe<UpdateServiceProxyImplImpl>;
   virtual ~UpdateServiceProxyImplImpl() = default;
+  Microsoft::WRL::ComPtr<IUpdater2> interface2_;
+
+  HRESULT ConnectToServer() {
+    HRESULT hr = ProxyImplBase::ConnectToServer();
+    if (FAILED(hr)) {
+      return hr;
+    }
+    hr = get_interface().CopyTo(IsSystemInstall(scope_)
+                                    ? __uuidof(IUpdater2System)
+                                    : __uuidof(IUpdater2User),
+                                IID_PPV_ARGS_Helper(&interface2_));
+    VLOG_IF(1, FAILED(hr)) << "Failed to query IUpdater2: " << std::hex << hr;
+    // If CopyTo fails, interface2_ will be unset and but we can still use
+    // IUpdater from get_interface().
+    return S_OK;
+  }
 
   void GetVersionOnTaskRunner(
       base::OnceCallback<void(base::expected<base::Version, RpcError>)>
@@ -602,6 +615,7 @@ class UpdateServiceProxyImplImpl
     std::wstring ap_w;
     std::wstring version_w;
     std::wstring existence_checker_path_w;
+    std::wstring install_id_w;
     if (![&] {
           if (!base::UTF8ToWide(request.app_id.c_str(), request.app_id.size(),
                                 &app_id_w)) {
@@ -621,6 +635,10 @@ class UpdateServiceProxyImplImpl
             return false;
           }
           existence_checker_path_w = request.existence_checker_path.value();
+          if (!base::UTF8ToWide(request.install_id.c_str(),
+                                request.install_id.size(), &install_id_w)) {
+            return false;
+          }
           return true;
         }()) {
       std::move(callback).Run(base::ok(E_INVALIDARG));
@@ -629,14 +647,26 @@ class UpdateServiceProxyImplImpl
 
     auto callback_wrapper =
         MakeComObjectOrCrash<UpdaterCallback>(std::move(callback));
-    if (HRESULT hr = get_interface()->RegisterApp(
-            app_id_w.c_str(), brand_code_w.c_str(), brand_path_w.c_str(),
-            ap_w.c_str(), version_w.c_str(), existence_checker_path_w.c_str(),
-            callback_wrapper.Get());
-        FAILED(hr)) {
-      VLOG(2) << "Failed to call IUpdater::RegisterApp: " << std::hex << hr;
-      callback_wrapper->Disconnect().Run(base::unexpected(hr));
-      return;
+    if (interface2_) {
+      if (HRESULT hr = interface2_->RegisterApp2(
+              app_id_w.c_str(), brand_code_w.c_str(), brand_path_w.c_str(),
+              ap_w.c_str(), version_w.c_str(), existence_checker_path_w.c_str(),
+              install_id_w.c_str(), callback_wrapper.Get());
+          FAILED(hr)) {
+        VLOG(2) << "Failed to call IUpdater2::RegisterApp2: " << std::hex << hr;
+        callback_wrapper->Disconnect().Run(base::unexpected(hr));
+        return;
+      }
+    } else {
+      if (HRESULT hr = get_interface()->RegisterApp(
+              app_id_w.c_str(), brand_code_w.c_str(), brand_path_w.c_str(),
+              ap_w.c_str(), version_w.c_str(), existence_checker_path_w.c_str(),
+              callback_wrapper.Get());
+          FAILED(hr)) {
+        VLOG(2) << "Failed to call IUpdater::RegisterApp: " << std::hex << hr;
+        callback_wrapper->Disconnect().Run(base::unexpected(hr));
+        return;
+      }
     }
   }
 
@@ -680,6 +710,7 @@ class UpdateServiceProxyImplImpl
       const std::string& app_id,
       UpdateService::Priority priority,
       UpdateService::PolicySameVersionUpdate policy_same_version_update,
+      const std::string& language,
       base::RepeatingCallback<void(const UpdateService::UpdateState&)>
           state_update,
       base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
@@ -695,17 +726,38 @@ class UpdateServiceProxyImplImpl
       return;
     }
 
+    std::wstring language_w;
+    if (!base::UTF8ToWide(language.c_str(), language.size(), &language_w)) {
+      std::move(callback).Run(UpdateService::Result::kServiceFailed);
+      return;
+    }
+
     auto observer = MakeComObjectOrCrash<UpdaterObserver>(state_update,
                                                           std::move(callback));
-    HRESULT hr = get_interface()->CheckForUpdate(
-        app_id_w.c_str(), static_cast<int>(priority),
-        policy_same_version_update ==
-            UpdateService::PolicySameVersionUpdate::kAllowed,
-        observer.Get());
-    if (FAILED(hr)) {
-      VLOG(2) << "Failed to call IUpdater::CheckForUpdate: " << std::hex << hr;
-      observer->Disconnect().Run(base::unexpected(hr));
-      return;
+    if (interface2_) {
+      HRESULT hr = interface2_->CheckForUpdate2(
+          app_id_w.c_str(), static_cast<int>(priority),
+          policy_same_version_update ==
+              UpdateService::PolicySameVersionUpdate::kAllowed,
+          language_w.c_str(), observer.Get());
+      if (FAILED(hr)) {
+        VLOG(2) << "Failed to call IUpdater2::CheckForUpdate2: " << std::hex
+                << hr;
+        observer->Disconnect().Run(base::unexpected(hr));
+        return;
+      }
+    } else {
+      HRESULT hr = get_interface()->CheckForUpdate(
+          app_id_w.c_str(), static_cast<int>(priority),
+          policy_same_version_update ==
+              UpdateService::PolicySameVersionUpdate::kAllowed,
+          observer.Get());
+      if (FAILED(hr)) {
+        VLOG(2) << "Failed to call IUpdater::CheckForUpdate: " << std::hex
+                << hr;
+        observer->Disconnect().Run(base::unexpected(hr));
+        return;
+      }
     }
   }
 
@@ -714,6 +766,7 @@ class UpdateServiceProxyImplImpl
       const std::string& install_data_index,
       UpdateService::Priority priority,
       UpdateService::PolicySameVersionUpdate policy_same_version_update,
+      const std::string& language,
       base::RepeatingCallback<void(const UpdateService::UpdateState&)>
           state_update,
       base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
@@ -725,6 +778,7 @@ class UpdateServiceProxyImplImpl
     }
     std::wstring app_id_w;
     std::wstring install_data_index_w;
+    std::wstring language_w;
     if (![&] {
           if (!base::UTF8ToWide(app_id.c_str(), app_id.size(), &app_id_w)) {
             return false;
@@ -734,6 +788,11 @@ class UpdateServiceProxyImplImpl
                                 &install_data_index_w)) {
             return false;
           }
+          if (!base::UTF8ToWide(language.c_str(), language.size(),
+                                &language_w)) {
+            return false;
+          }
+
           return true;
         }()) {
       std::move(callback).Run(UpdateService::Result::kServiceFailed);
@@ -742,16 +801,30 @@ class UpdateServiceProxyImplImpl
 
     auto observer = MakeComObjectOrCrash<UpdaterObserver>(state_update,
                                                           std::move(callback));
-    HRESULT hr = get_interface()->Update(
-        app_id_w.c_str(), install_data_index_w.c_str(),
-        static_cast<int>(priority),
-        policy_same_version_update ==
-            UpdateService::PolicySameVersionUpdate::kAllowed,
-        observer.Get());
-    if (FAILED(hr)) {
-      VLOG(2) << "Failed to call IUpdater::Update: " << std::hex << hr;
-      observer->Disconnect().Run(base::unexpected(hr));
-      return;
+    if (interface2_) {
+      HRESULT hr = interface2_->Update2(
+          app_id_w.c_str(), install_data_index_w.c_str(),
+          static_cast<int>(priority),
+          policy_same_version_update ==
+              UpdateService::PolicySameVersionUpdate::kAllowed,
+          language_w.c_str(), observer.Get());
+      if (FAILED(hr)) {
+        VLOG(2) << "Failed to call IUpdater2::Update2: " << std::hex << hr;
+        observer->Disconnect().Run(base::unexpected(hr));
+        return;
+      }
+    } else {
+      HRESULT hr = get_interface()->Update(
+          app_id_w.c_str(), install_data_index_w.c_str(),
+          static_cast<int>(priority),
+          policy_same_version_update ==
+              UpdateService::PolicySameVersionUpdate::kAllowed,
+          observer.Get());
+      if (FAILED(hr)) {
+        VLOG(2) << "Failed to call IUpdater::Update: " << std::hex << hr;
+        observer->Disconnect().Run(base::unexpected(hr));
+        return;
+      }
     }
   }
 
@@ -779,6 +852,7 @@ class UpdateServiceProxyImplImpl
       const std::string& client_install_data,
       const std::string& install_data_index,
       UpdateService::Priority priority,
+      const std::string& language,
       base::RepeatingCallback<void(const UpdateService::UpdateState&)>
           state_update,
       base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
@@ -796,6 +870,8 @@ class UpdateServiceProxyImplImpl
     std::wstring existence_checker_path_w;
     std::wstring client_install_data_w;
     std::wstring install_data_index_w;
+    std::wstring install_id_w;
+    std::wstring language_w;
     if (![&] {
           if (!base::UTF8ToWide(request.app_id.c_str(), request.app_id.size(),
                                 &app_id_w)) {
@@ -825,6 +901,14 @@ class UpdateServiceProxyImplImpl
                                 &install_data_index_w)) {
             return false;
           }
+          if (!base::UTF8ToWide(request.install_id.c_str(),
+                                request.install_id.size(), &install_id_w)) {
+            return false;
+          }
+          if (!base::UTF8ToWide(language.c_str(), language.size(),
+                                &language_w)) {
+            return false;
+          }
           return true;
         }()) {
       std::move(callback).Run(UpdateService::Result::kServiceFailed);
@@ -832,15 +916,29 @@ class UpdateServiceProxyImplImpl
     }
     auto observer = MakeComObjectOrCrash<UpdaterObserver>(state_update,
                                                           std::move(callback));
-    HRESULT hr = get_interface()->Install(
-        app_id_w.c_str(), brand_code_w.c_str(), brand_path_w.c_str(),
-        ap_w.c_str(), version_w.c_str(), existence_checker_path_w.c_str(),
-        client_install_data_w.c_str(), install_data_index_w.c_str(),
-        static_cast<int>(priority), observer.Get());
-    if (FAILED(hr)) {
-      VLOG(2) << "Failed to call IUpdater::Install: " << std::hex << hr;
-      observer->Disconnect().Run(base::unexpected(hr));
-      return;
+    if (interface2_) {
+      HRESULT hr = interface2_->Install2(
+          app_id_w.c_str(), brand_code_w.c_str(), brand_path_w.c_str(),
+          ap_w.c_str(), version_w.c_str(), existence_checker_path_w.c_str(),
+          client_install_data_w.c_str(), install_data_index_w.c_str(),
+          install_id_w.c_str(), static_cast<int>(priority), language_w.c_str(),
+          observer.Get());
+      if (FAILED(hr)) {
+        VLOG(2) << "Failed to call IUpdater2::Install2: " << std::hex << hr;
+        observer->Disconnect().Run(base::unexpected(hr));
+        return;
+      }
+    } else {
+      HRESULT hr = get_interface()->Install(
+          app_id_w.c_str(), brand_code_w.c_str(), brand_path_w.c_str(),
+          ap_w.c_str(), version_w.c_str(), existence_checker_path_w.c_str(),
+          client_install_data_w.c_str(), install_data_index_w.c_str(),
+          static_cast<int>(priority), observer.Get());
+      if (FAILED(hr)) {
+        VLOG(2) << "Failed to call IUpdater::Install: " << std::hex << hr;
+        observer->Disconnect().Run(base::unexpected(hr));
+        return;
+      }
     }
   }
 
@@ -862,6 +960,7 @@ class UpdateServiceProxyImplImpl
       const std::string& install_args,
       const std::string& install_data,
       const std::string& install_settings,
+      const std::string& language,
       base::RepeatingCallback<void(const UpdateService::UpdateState&)>
           state_update,
       base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
@@ -876,6 +975,7 @@ class UpdateServiceProxyImplImpl
     std::wstring install_args_w;
     std::wstring install_data_w;
     std::wstring install_settings_w;
+    std::wstring language_w;
     if (![&] {
           if (!base::UTF8ToWide(app_id.c_str(), app_id.size(), &app_id_w)) {
             return false;
@@ -892,6 +992,10 @@ class UpdateServiceProxyImplImpl
                                 install_settings.size(), &install_settings_w)) {
             return false;
           }
+          if (!base::UTF8ToWide(language.c_str(), language.size(),
+                                &language_w)) {
+            return false;
+          }
           return true;
         }()) {
       std::move(callback).Run(UpdateService::Result::kServiceFailed);
@@ -900,15 +1004,29 @@ class UpdateServiceProxyImplImpl
 
     auto observer = MakeComObjectOrCrash<UpdaterObserver>(state_update,
                                                           std::move(callback));
-    HRESULT hr = get_interface()->RunInstaller(
-        app_id_w.c_str(), installer_path.value().c_str(),
-        install_args_w.c_str(), install_data_w.c_str(),
-        install_settings_w.c_str(), observer.Get());
-    if (SUCCEEDED(hr)) {
-      VLOG(2) << "IUpdater::OfflineInstall completed successfully.";
+    if (interface2_) {
+      HRESULT hr = interface2_->RunInstaller2(
+          app_id_w.c_str(), installer_path.value().c_str(),
+          install_args_w.c_str(), install_data_w.c_str(),
+          install_settings_w.c_str(), language_w.c_str(), observer.Get());
+      if (SUCCEEDED(hr)) {
+        VLOG(2) << "IUpdater2 offline install completed successfully.";
+      } else {
+        VLOG(2) << "Failed to call IUpdater2::RunInstaller2: " << std::hex
+                << hr;
+        observer->Disconnect().Run(base::unexpected(hr));
+      }
     } else {
-      VLOG(2) << "Failed to call IUpdater::OfflineInstall: " << std::hex << hr;
-      observer->Disconnect().Run(base::unexpected(hr));
+      HRESULT hr = get_interface()->RunInstaller(
+          app_id_w.c_str(), installer_path.value().c_str(),
+          install_args_w.c_str(), install_data_w.c_str(),
+          install_settings_w.c_str(), observer.Get());
+      if (SUCCEEDED(hr)) {
+        VLOG(2) << "IUpdater offline install completed successfully.";
+      } else {
+        VLOG(2) << "Failed to call IUpdater::RunInstaller: " << std::hex << hr;
+        observer->Disconnect().Run(base::unexpected(hr));
+      }
     }
   }
 };
@@ -966,6 +1084,7 @@ void UpdateServiceProxyImpl::CheckForUpdate(
     const std::string& app_id,
     UpdateService::Priority priority,
     UpdateService::PolicySameVersionUpdate policy_same_version_update,
+    const std::string& language,
     base::RepeatingCallback<void(const UpdateService::UpdateState&)>
         state_update,
     base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
@@ -973,7 +1092,7 @@ void UpdateServiceProxyImpl::CheckForUpdate(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
   impl_->CheckForUpdate(
-      app_id, priority, policy_same_version_update,
+      app_id, priority, policy_same_version_update, language,
       base::BindPostTaskToCurrentDefault(state_update),
       base::BindPostTaskToCurrentDefault(std::move(callback)));
 }
@@ -983,6 +1102,7 @@ void UpdateServiceProxyImpl::Update(
     const std::string& install_data_index,
     UpdateService::Priority priority,
     UpdateService::PolicySameVersionUpdate policy_same_version_update,
+    const std::string& language,
     base::RepeatingCallback<void(const UpdateService::UpdateState&)>
         state_update,
     base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
@@ -990,7 +1110,7 @@ void UpdateServiceProxyImpl::Update(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
   impl_->Update(app_id, install_data_index, priority,
-                policy_same_version_update,
+                policy_same_version_update, language,
                 base::BindPostTaskToCurrentDefault(state_update),
                 base::BindPostTaskToCurrentDefault(std::move(callback)));
 }
@@ -1011,6 +1131,7 @@ void UpdateServiceProxyImpl::Install(
     const std::string& client_install_data,
     const std::string& install_data_index,
     UpdateService::Priority priority,
+    const std::string& language,
     base::RepeatingCallback<void(const UpdateService::UpdateState&)>
         state_update,
     base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
@@ -1018,7 +1139,8 @@ void UpdateServiceProxyImpl::Install(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
   impl_->Install(registration, client_install_data, install_data_index,
-                 priority, base::BindPostTaskToCurrentDefault(state_update),
+                 priority, language,
+                 base::BindPostTaskToCurrentDefault(state_update),
                  base::BindPostTaskToCurrentDefault(std::move(callback)));
 }
 
@@ -1034,6 +1156,7 @@ void UpdateServiceProxyImpl::RunInstaller(
     const std::string& install_args,
     const std::string& install_data,
     const std::string& install_settings,
+    const std::string& language,
     base::RepeatingCallback<void(const UpdateService::UpdateState&)>
         state_update,
     base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
@@ -1041,7 +1164,7 @@ void UpdateServiceProxyImpl::RunInstaller(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
   impl_->RunInstaller(app_id, installer_path, install_args, install_data,
-                      install_settings,
+                      install_settings, language,
                       base::BindPostTaskToCurrentDefault(state_update),
                       base::BindPostTaskToCurrentDefault(std::move(callback)));
 }

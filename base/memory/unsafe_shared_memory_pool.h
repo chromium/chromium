@@ -42,6 +42,11 @@ class BASE_EXPORT UnsafeSharedMemoryPool
     Handle& operator=(const Handle&) = delete;
 
     const UnsafeSharedMemoryRegion& GetRegion() const LIFETIME_BOUND;
+
+    WritableSharedMemoryMapping& GetMapping() LIFETIME_BOUND {
+      return const_cast<WritableSharedMemoryMapping&>(
+          std::as_const(*this).GetMapping());
+    }
     const WritableSharedMemoryMapping& GetMapping() const LIFETIME_BOUND;
 
    private:

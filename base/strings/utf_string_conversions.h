@@ -22,10 +22,12 @@ namespace base {
 // do the best it can and put the result in the output buffer. The versions that
 // return strings ignore this error and just return the best conversion
 // possible.
-BASE_EXPORT bool WideToUTF8(const wchar_t* src, size_t src_len,
+BASE_EXPORT bool WideToUTF8(const wchar_t* src,
+                            size_t src_len,
                             std::string* output);
 [[nodiscard]] BASE_EXPORT std::string WideToUTF8(std::wstring_view wide);
-BASE_EXPORT bool UTF8ToWide(const char* src, size_t src_len,
+BASE_EXPORT bool UTF8ToWide(const char* src,
+                            size_t src_len,
                             std::wstring* output);
 [[nodiscard]] BASE_EXPORT std::wstring UTF8ToWide(std::string_view utf8);
 

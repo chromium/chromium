@@ -40,7 +40,7 @@ class MenuModel;
 namespace views {
 class MenuModelAdapter;
 class MenuRunner;
-}
+}  // namespace views
 
 // This class provides basic drawing and mouse-over behavior for buttons
 // appearing in the toolbar.
@@ -130,7 +130,6 @@ class ToolbarButton : public views::LabelButton,
   void OnMouseCaptureLost() override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
-  std::u16string GetTooltipText(const gfx::Point& p) const override;
   std::unique_ptr<views::ActionViewInterface> GetActionViewInterface() override;
 
   // When IPH is showing we suppress the tooltip text. This means that we must

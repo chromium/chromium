@@ -3,11 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/views/media_router/app_menu_test_api.h"
-
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/media_router/app_menu_test_api.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"

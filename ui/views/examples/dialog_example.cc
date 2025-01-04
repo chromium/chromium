@@ -228,15 +228,17 @@ void DialogExample::StartTextfieldRow(View* parent,
                                       Label** created_label,
                                       bool pad_last_col) {
   Label* row_label = parent->AddChildView(std::make_unique<Label>(label));
-  if (created_label)
+  if (created_label) {
     *created_label = row_label;
+  }
   auto textfield = std::make_unique<Textfield>();
   textfield->set_controller(this);
   textfield->SetText(value);
   textfield->GetViewAccessibility().SetName(*row_label);
   *member = parent->AddChildView(std::move(textfield));
-  if (pad_last_col)
+  if (pad_last_col) {
     parent->AddChildView(std::make_unique<View>());
+  }
 }
 
 void DialogExample::AddCheckbox(View* parent,
@@ -247,8 +249,9 @@ void DialogExample::AddCheckbox(View* parent,
   auto checkbox = std::make_unique<Checkbox>(
       std::u16string(), base::BindRepeating(callback, base::Unretained(this)));
   checkbox->SetChecked(true);
-  if (label)
+  if (label) {
     checkbox->GetViewAccessibility().SetName(*label);
+  }
   *member = parent->AddChildView(std::move(checkbox));
 }
 
@@ -259,18 +262,21 @@ ui::mojom::ModalType DialogExample::GetModalType() const {
   // other than changing modality on the fly like this. In fact, it should be
   // impossible to change modality in a live dialog at all, and this example
   // should stop doing it.
-  if (mode_->GetSelectedIndex() == kFakeModeless)
+  if (mode_->GetSelectedIndex() == kFakeModeless) {
     return ui::mojom::ModalType::kWindow;
+  }
 
   return static_cast<ui::mojom::ModalType>(mode_->GetSelectedIndex().value());
 }
 
 int DialogExample::GetDialogButtons() const {
   int buttons = 0;
-  if (has_ok_button_->GetChecked())
+  if (has_ok_button_->GetChecked()) {
     buttons |= static_cast<int>(ui::mojom::DialogButton::kOk);
-  if (has_cancel_button_->GetChecked())
+  }
+  if (has_cancel_button_->GetChecked()) {
     buttons |= static_cast<int>(ui::mojom::DialogButton::kCancel);
+  }
   return buttons;
 }
 
@@ -316,8 +322,9 @@ void DialogExample::ShowButtonPressed() {
     // constrained_window::CreateBrowserModalDialogViews() allows dialogs to
     // be created as MODAL_TYPE_WINDOW without specifying a parent.
     gfx::NativeView parent = gfx::NativeView();
-    if (mode_->GetSelectedIndex() != kFakeModeless)
+    if (mode_->GetSelectedIndex() != kFakeModeless) {
       parent = example_view()->GetWidget()->GetNativeView();
+    }
 
     DialogDelegate::CreateDialogWidget(
         dialog, example_view()->GetWidget()->GetNativeWindow(), parent);
@@ -353,11 +360,13 @@ void DialogExample::OtherCheckboxPressed() {
 
 void DialogExample::ContentsChanged(Textfield* sender,
                                     const std::u16string& new_contents) {
-  if (!last_dialog_)
+  if (!last_dialog_) {
     return;
+  }
 
-  if (sender == extra_button_label_)
+  if (sender == extra_button_label_) {
     PrintStatus("DialogDelegate can never refresh the extra view.");
+  }
 
   if (sender == title_) {
     last_dialog_->GetWidget()->UpdateWindowTitle();

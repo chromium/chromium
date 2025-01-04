@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/core/dependency_manager.h"
@@ -232,7 +233,7 @@ void KeyedServiceTemplatedFactory<ServiceType>::ContextShutdown(void* context) {
 
   iterator->second.stage = MappingStage::kServiceShutdown;
   if (iterator->second.service) {
-    if constexpr (base::internal::IsRefCountedType<ServiceType>) {
+    if constexpr (base::IsRefCountedType<ServiceType>) {
       iterator->second.service->ShutdownOnUIThread();
     } else {
       iterator->second.service->Shutdown();

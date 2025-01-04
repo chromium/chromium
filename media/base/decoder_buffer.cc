@@ -8,6 +8,7 @@
 
 #include "base/containers/heap_array.h"
 #include "base/debug/alias.h"
+#include "base/strings/stringprintf.h"
 #include "media/base/subsample_entry.h"
 
 namespace media {
@@ -157,7 +158,7 @@ void DecoderBuffer::set_discard_padding(const DiscardPadding& discard_padding) {
 
 DecoderBufferSideData& DecoderBuffer::WritableSideData() {
   DCHECK(!end_of_stream());
-  if (!has_side_data()) {
+  if (!side_data()) {
     side_data_ = std::make_unique<DecoderBufferSideData>();
   }
   return *side_data_;
@@ -175,12 +176,8 @@ bool DecoderBuffer::MatchesMetadataForTesting(
     return false;
   }
 
-  if (has_side_data() != buffer.has_side_data()) {
-    return false;
-  }
-
   // Note: We use `side_data_` directly to avoid DCHECKs for EOS buffers.
-  if (has_side_data() && !side_data_->Matches(*buffer.side_data_)) {
+  if (side_data_ && !side_data_->Matches(*buffer.side_data_)) {
     return false;
   }
 
@@ -238,8 +235,8 @@ std::string DecoderBuffer::AsHumanReadableString(bool verbose) const {
     << " encrypted=" << (decrypt_config_ != nullptr);
 
   if (verbose) {
-    s << " has_side_data=" << has_side_data();
-    if (has_side_data()) {
+    s << " side_data=" << !!side_data();
+    if (side_data()) {
       s << " discard_padding (us)=("
         << side_data_->discard_padding.first.InMicroseconds() << ", "
         << side_data_->discard_padding.second.InMicroseconds() << ")";
@@ -269,7 +266,7 @@ size_t DecoderBuffer::GetMemoryUsage() const {
   memory_usage += size();
 
   // Side data and decrypt config would not change after construction.
-  if (has_side_data()) {
+  if (side_data()) {
     memory_usage += sizeof(decltype(side_data_->spatial_layers)::value_type) *
                     side_data_->spatial_layers.capacity();
     memory_usage += side_data_->alpha_data.size();

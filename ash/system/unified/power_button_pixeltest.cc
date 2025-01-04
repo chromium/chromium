@@ -65,7 +65,7 @@ TEST_F(PowerButtonPixelTest, DISABLED_NoSession) {
 
 // TODO(crbug.com/1451244): Re-enable this test.
 TEST_F(PowerButtonPixelTest, DISABLED_LoginSession) {
-  CreateUserSessions(1);
+  SimulateUserLogin(kDefaultUserEmail);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_button",
@@ -79,7 +79,7 @@ TEST_F(PowerButtonPixelTest, DISABLED_LoginSession) {
 
 // TODO(crbug.com/1451244): Re-enable this test.
 TEST_F(PowerButtonPixelTest, DISABLED_LockScreenSession) {
-  CreateUserSessions(1);
+  SimulateUserLogin(kDefaultUserEmail);
   BlockUserSession(BLOCKED_BY_LOCK_SCREEN);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(

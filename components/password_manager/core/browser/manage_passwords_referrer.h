@@ -114,10 +114,14 @@ enum class ManagePasswordsReferrer {
   // in GPM to upgrade an existing, matching password credential.
   kPasskeyUpgradeBubble = 28,
 
+  // The bubble informing user about the password change flow state (shown when
+  // clicking on the omnibox icon while the password change is running).
+  kPasswordChangeInfoBubble = 29,
+
   // NOTE: When adding a new value to this enum that applies or could apply to
   // Android, make sure it is correctly handled by the internal credential
   // manager launcher java implementation.
-  kMaxValue = kPasskeyUpgradeBubble,
+  kMaxValue = kPasswordChangeInfoBubble,
 };
 
 }  // namespace password_manager

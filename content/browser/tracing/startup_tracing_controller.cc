@@ -64,9 +64,6 @@ class EmergencyTraceFinalisationCoordinator {
     if (!tracing_started_.IsSet())
       return;
 
-    base::trace_event::TraceLog::GetInstance()
-        ->SetCurrentThreadBlocksMessageLoop();
-
     base::OnceClosure stop_tracing;
     scoped_refptr<base::SequencedTaskRunner> task_runner;
     {

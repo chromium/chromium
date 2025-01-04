@@ -29,6 +29,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/components/arc/test/fake_app_instance.h"
+#include "ash/components/arc/test/fake_intent_helper_instance.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
@@ -37,7 +38,6 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler_chromeos.h"
-#include "components/arc/test/fake_intent_helper_instance.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #else
 #include "chrome/browser/ui/webui/app_management/web_app_settings_page_handler.h"

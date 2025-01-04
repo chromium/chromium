@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/ash/global_media_controls/media_notification_provider_impl.h"
+
 #include <memory>
 
 #include "ash/system/media/media_notification_provider_observer.h"

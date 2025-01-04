@@ -123,8 +123,11 @@ class RecentTabsPagePrefs {
         boolean getSyncPromoCollapsed(long nativeRecentTabsPagePrefs);
 
         void setForeignSessionCollapsed(
-                long nativeRecentTabsPagePrefs, String sessionTag, boolean isCollapsed);
+                long nativeRecentTabsPagePrefs,
+                @JniType("std::string") String sessionTag,
+                boolean isCollapsed);
 
-        boolean getForeignSessionCollapsed(long nativeRecentTabsPagePrefs, String sessionTag);
+        boolean getForeignSessionCollapsed(
+                long nativeRecentTabsPagePrefs, @JniType("std::string") String sessionTag);
     }
 }

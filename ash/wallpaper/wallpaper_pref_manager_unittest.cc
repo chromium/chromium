@@ -24,6 +24,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/user_type.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,7 +36,8 @@ using testing::Gt;
 using testing::Lt;
 
 constexpr char kUser1[] = "user1@test.com";
-const AccountId account_id_1 = AccountId::FromUserEmailGaiaId(kUser1, kUser1);
+const AccountId account_id_1 =
+    AccountId::FromUserEmailGaiaId(kUser1, GaiaId(kUser1));
 
 constexpr char kDummyUrl[] = "https://best_wallpaper/1";
 constexpr char kDummyUrl2[] = "https://best_wallpaper/2";

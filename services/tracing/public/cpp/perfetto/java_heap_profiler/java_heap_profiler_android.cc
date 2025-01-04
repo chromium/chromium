@@ -22,7 +22,6 @@ JavaHeapProfiler* JavaHeapProfiler::GetInstance() {
 }
 
 void JavaHeapProfiler::StartTracingImpl(
-    PerfettoProducer* producer,
     const perfetto::DataSourceConfig& data_source_config) {
   base::ScopedTempDir temp_dir;
   if (!temp_dir.CreateUniqueTempDir()) {

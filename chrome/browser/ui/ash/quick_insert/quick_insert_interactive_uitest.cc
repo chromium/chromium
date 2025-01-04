@@ -475,6 +475,44 @@ IN_PROC_BROWSER_TEST_F(QuickInsertWithGifsInteractiveUiTest, FeatureGifs) {
       WaitForHide(ash::kQuickInsertElementId));
 }
 
+IN_PROC_BROWSER_TEST_F(QuickInsertWithGifsInteractiveUiTest, ToggleGifs) {
+  AddUrlToHistory(GetActiveUserProfile(), GURL("https://foo.com/history"));
+  FakeTenorServer fake_tenor_server;
+  // TODO: b/360229206 - Use a contenteditable input field so the file can be
+  // inserted.
+  ASSERT_TRUE(CreateBrowserWindow(
+      GURL("data:text/html,<input type=\"text\" autofocus/>")));
+  const ui::ElementContext browser_context =
+      chrome::FindLastActive()->window()->GetElementContext();
+  views::Textfield* quick_insert_search_field = nullptr;
+
+  RunTestSequence(
+      InContext(browser_context, Steps(InstrumentTab(kWebContentsElementId),
+                                       WaitForWebInputFieldFocus())),
+      Do([]() { TogglePickerByAccelerator(); }),
+      AfterShow(ash::kQuickInsertSearchFieldTextfieldElementId,
+                [&quick_insert_search_field](ui::TrackedElement* el) {
+                  quick_insert_search_field = AsView<views::Textfield>(el);
+                }),
+      ObserveState(kSearchFieldFocusedState,
+                   std::ref(quick_insert_search_field)),
+      WaitForState(kSearchFieldFocusedState, true),
+      // Turn on GIFs
+      WaitForShow(ash::kQuickInsertGifElementId),
+      PressButton(ash::kQuickInsertGifElementId),
+      EnterText(ash::kQuickInsertSearchFieldTextfieldElementId, u"foo.com"),
+      WaitForShow(ash::kQuickInsertSearchResultsPageElementId),
+      WaitForShow(ash::kQuickInsertSearchResultsImageItemElementId),
+      // Turn off GIFs
+      WaitForShow(ash::kQuickInsertGifElementId),
+      PressButton(ash::kQuickInsertGifElementId),
+      WaitForShow(ash::kQuickInsertSearchResultsListItemElementId),
+      NameDescendantViewByProperty(
+          ash::kQuickInsertSearchResultsPageElementId, "HistoryResult",
+          &ash::QuickInsertListItemView::GetPrimaryTextForTesting,
+          u"foo.com/history"));
+}
+
 IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchBrowsingHistory) {
   AddUrlToHistory(GetActiveUserProfile(), GURL("https://foo.com/history"));
   ASSERT_TRUE(CreateBrowserWindow(

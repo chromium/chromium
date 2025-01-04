@@ -141,7 +141,10 @@ public class AwPacProcessor {
 
         long createNativePacProcessor();
 
-        boolean setProxyScript(long nativeAwPacProcessor, AwPacProcessor caller, String script);
+        boolean setProxyScript(
+                long nativeAwPacProcessor,
+                AwPacProcessor caller,
+                @JniType("std::string") String script);
 
         String makeProxyRequest(long nativeAwPacProcessor, AwPacProcessor caller, String url);
 

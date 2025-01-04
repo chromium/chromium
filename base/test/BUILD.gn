@@ -727,6 +727,7 @@ if (is_android) {
       "android/javatests/src/org/chromium/base/test/transit/UiThreadCondition.java",
       "android/javatests/src/org/chromium/base/test/transit/ViewConditions.java",
       "android/javatests/src/org/chromium/base/test/transit/ViewElement.java",
+      "android/javatests/src/org/chromium/base/test/transit/ViewElementMatchesCondition.java",
       "android/javatests/src/org/chromium/base/test/transit/ViewSpec.java",
     ]
   }

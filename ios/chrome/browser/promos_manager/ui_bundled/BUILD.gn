@@ -83,7 +83,6 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/promos_manager/model:features",
     "//ios/chrome/browser/promos_manager/model:types",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
-    "//ios/chrome/browser/sync/model",
     "//ios/public/provider/chrome/browser/signin:choice_api",
   ]
   deps = [
@@ -106,6 +105,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/ui/whats_new:util",
     "//ios/chrome/browser/ui/whats_new/promo",
     "//ios/chrome/common/ui/confirmation_alert",

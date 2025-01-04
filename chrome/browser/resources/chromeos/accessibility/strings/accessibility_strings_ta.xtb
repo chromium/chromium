@@ -845,6 +845,7 @@
 <translation id="6385591741672306837">நெடுவரிசை</translation>
 <translation id="6387719785439924554">aside</translation>
 <translation id="6393014464788431702">நிகழ்வு வடிப்பான்கள் அனைத்தையும் முடக்கு</translation>
+<translation id="6406989068857078334">மவுஸ் வேகம் குறைக்கப்பட்டது, கிளிக் செய்ய இதை மீண்டும் செய்யவும்: <ph name="GESTURE" /></translation>
 <translation id="6411569524720229058">இலையுதிர் காலம்</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{முக்காற்புள்ளி}other{# முக்காற்புள்ளிகள்}}</translation>
@@ -1099,6 +1100,7 @@
 <translation id="8205922869661890178">டெவெலப்பர் பதிவுப் பக்கம் திறக்க</translation>
 <translation id="8212109599554677485">தற்போதைய காட்சி நடையை 'அருகருகே' என்பதற்கு மாற்று</translation>
 <translation id="8215202828671303819">பலவற்றைத் தேர்ந்தெடுத்தல்</translation>
+<translation id="822316432305106615">துல்லியமாகக் கிளிக் செய்தல் பயன்முறையைத் தொடங்குங்கள்</translation>
 <translation id="8249864170673238087"><ph name="OPACITY_PERCENTAGE" />% ஒளிபுகாத்தன்மை, <ph name="COLOR" />.</translation>
 <translation id="8261506727792406068">நீக்கு</translation>
 <translation id="826825447994856889">அறிமுகம்</translation>

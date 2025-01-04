@@ -164,7 +164,7 @@ class AddRemoveThread : public Foo {
                   // in_list_ is only used on |this| thread.
   Time start_;    // The time we started the test.
 
-  bool do_notifies_;    // Whether these threads should do notifications.
+  bool do_notifies_;  // Whether these threads should do notifications.
 
   base::WeakPtrFactory<Self> weak_factory_{this};
 };
@@ -324,8 +324,9 @@ static void ThreadSafeObserverHarness(int num_threads,
 
   Time start = Time::Now();
   while (true) {
-    if ((Time::Now() - start).InMilliseconds() > kThreadRunTime)
+    if ((Time::Now() - start).InMilliseconds() > kThreadRunTime) {
       break;
+    }
 
     observer_list->Notify(FROM_HERE, &Foo::Observe, 10);
 

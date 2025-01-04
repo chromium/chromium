@@ -40,6 +40,8 @@ class PasswordChangeDelegateImpl
   PasswordChangeDelegateImpl& operator=(const PasswordChangeDelegateImpl&) =
       delete;
 
+  base::WeakPtr<PasswordChangeDelegate> AsWeakPtr() override;
+
  private:
   // password_manager::PasswordFormManagerObserver Impl
   void OnPasswordFormParsed(
@@ -53,6 +55,7 @@ class PasswordChangeDelegateImpl
       content::WebContents* web_contents) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
+  const GURL& GetChangePasswordUrl() const override;
 
   // content::WebContentsObserver Impl
   void WebContentsDestroyed() override;

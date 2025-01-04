@@ -77,7 +77,6 @@ Si vous le supprimez, tout le monde perdra immédiatement l'accès au groupe d'o
 <translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> onglet modifié, <ph name="ANY_CLOSED" /> fermés}one{<ph name="MANY_CHANGED" /> onglet modifié, <ph name="ANY_CLOSED" /> fermés}other{<ph name="MANY_CHANGED" /> onglets modifiés, <ph name="ANY_CLOSED" /> fermés}}</translation>
 <translation id="4371591986692297148">Inactif</translation>
 <translation id="4460014764210899310">Dégrouper</translation>
-<translation id="4590027107044272416">Vous pouvez désormais ouvrir un nouvel onglet ici</translation>
 <translation id="4632233446660511480">{TAB_COUNT,plural, =1{Fermer 1 onglet inactif?}one{Fermer <ph name="TAB_COUNT_MANY" /> onglet inactif?}other{Fermer <ph name="TAB_COUNT_MANY" /> onglets inactifs?}}</translation>
 <translation id="4686942373615810936">Créé à l'instant</translation>
 <translation id="47070857600201406">{DAY_COUNT,plural, =1{Fermer après 1 jour}one{Fermer après <ph name="DAY_COUNT_MANY" /> jour}other{Fermer après <ph name="DAY_COUNT_MANY" /> jours}}</translation>
@@ -98,7 +97,9 @@ Si vous le supprimez, tout le monde perdra immédiatement l'accès au groupe d'o
 <translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> onglet ajouté}one{<ph name="MANY_ADDED" /> onglet ajouté}other{<ph name="MANY_ADDED" /> onglets ajoutés}}</translation>
 <translation id="5161254044473106830">Titre requis</translation>
 <translation id="5339733443032484186">Votre dernier onglet</translation>
+<translation id="5380159289133845234">Archiver les onglets en doubles</translation>
 <translation id="5400836586163650660">Gris</translation>
+<translation id="5446043142172831860">Retirer l'onglet et quitter le groupe</translation>
 <translation id="5490235265819901748">Groupe d'onglets développé</translation>
 <translation id="5494920125229734069">Tout sélectionner</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Fermer le groupe d'onglets de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_ONE" /> onglet.}one{Fermer le groupe d'onglets de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Fermer le groupe d'onglets de couleur <ph name="COLOR_NAME" /> qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
@@ -117,6 +118,7 @@ Si vous le quittez, vous perdrez immédiatement l'accès au groupe d'onglets «�
 <translation id="6051432659151380973">Vos groupes d'onglets sont automatiquement enregistrés</translation>
 <translation id="6054741997831917303">Le prix de cet article est récemment passé de <ph name="PREVIOUS_PRICE" /> à <ph name="NEW_PRICE" /></translation>
 <translation id="6082313992897617440">Vous perdrez immédiatement l'accès au groupe d'onglets <ph name="GROUP_NAME" /></translation>
+<translation id="6109251075362363230">Tous les onglets en double seront désormais également archivés, à l'exception de la copie la plus récemment utilisée.</translation>
 <translation id="6193448654517602979">Sélectionnez des onglets</translation>
 <translation id="6228793724645064692">(note du magasin)</translation>
 <translation id="6271513594716432922">Fermer tous les onglets inactifs</translation>

@@ -97,10 +97,11 @@ void StyleMenuButton(views::LabelButton* button, const gfx::VectorIcon& icon) {
   button->SetTextColorId(views::LabelButton::ButtonState::STATE_NORMAL,
                          ui::kColorSysOnSurface);
   button->SetImageLabelSpacing(kButtonImageLabelSpacing);
+  auto color_id = button->GetEnabled() ? ui::kColorSysTonalOutline
+                                       : ui::kColorButtonBorderDisabled;
   button->SetBorder(views::CreatePaddedBorder(
       views::CreateThemedRoundedRectBorder(kButtonBorderThickness,
-                                           kButtonCornerRadius,
-                                           ui::kColorSysTonalOutline),
+                                           kButtonCornerRadius, color_id),
       kButtonPadding));
 }
 
@@ -324,8 +325,7 @@ MahiMenuView::MahiMenuView(ButtonStatus button_status, Surface surface)
       button_status.summary_of_selection_eligibility));
 
   StyleMenuButton(summary_button_, chromeos::kMahiSummarizeIcon);
-  // TODO(b:374172642): update the icon
-  StyleMenuButton(elucidation_button_, chromeos::kMahiOutlinesIcon);
+  StyleMenuButton(elucidation_button_, chromeos::kMahiSimplifyIcon);
 
   textfield_controller_ =
       std::make_unique<MenuTextfieldController>(weak_ptr_factory_.GetWeakPtr());

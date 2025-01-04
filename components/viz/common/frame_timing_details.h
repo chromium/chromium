@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_COMMON_FRAME_TIMING_DETAILS_H_
 
 #include "base/time/time.h"
+#include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
 
@@ -23,6 +24,7 @@ struct FrameTimingDetails {
   base::TimeTicks draw_start_timestamp;
   gfx::SwapTimings swap_timings;
   gfx::PresentationFeedback presentation_feedback;
+  BeginFrameId frame_id;
 };
 
 }  // namespace viz

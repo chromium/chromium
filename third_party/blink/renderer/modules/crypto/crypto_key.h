@@ -53,7 +53,7 @@ class MODULES_EXPORT CryptoKey final : public ScriptWrappable {
   String type() const;
   bool extractable() const;
   ScriptObject algorithm(ScriptState*);
-  ScriptValue usages(ScriptState*);
+  ScriptObject usages(ScriptState*);
 
   const WebCryptoKey& Key() const { return key_; }
 

@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
@@ -19,6 +20,7 @@
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
@@ -45,8 +47,6 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "net/base/network_change_notifier.h"
-#include "services/tracing/public/cpp/perfetto/trace_event_data_source.h"
-#include "services/tracing/public/cpp/trace_event_agent.h"
 #include "services/tracing/public/cpp/trace_startup_config.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "third_party/zlib/google/compression_utils.h"
@@ -105,7 +105,7 @@ void AddTraceOnDatabaseTaskRunner(
     BaseTraceReport base_report,
     bool should_save_trace,
     bool force_upload,
-    base::OnceCallback<void(std::optional<NewTraceReport>, bool)>
+    base::OnceCallback<void(std::optional<BaseTraceReport>, bool)>
         on_trace_saved) {
   if (!database->is_initialized()) {
     return;
@@ -138,30 +138,41 @@ void AddTraceOnDatabaseTaskRunner(
                                 std::move(report_to_upload), success));
 }
 
+void OnUploadCompleteOnDatabaseTaskRunner(
+    TraceReportDatabase* database,
+    BaseTraceReport base_report,
+    base::OnceCallback<void(std::optional<BaseTraceReport>, bool)>
+        on_finalize_complete) {
+  base::Token uuid = base_report.uuid;
+  base::UmaHistogramSparse("Tracing.Background.Scenario.Upload",
+                           variations::HashName(base_report.scenario_name));
+  std::optional<ClientTraceReport> next_report;
+  if (database->UploadComplete(uuid, base::Time::Now())) {
+    next_report = database->GetNextReportPendingUpload();
+  }
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(on_finalize_complete),
+                                std::move(next_report), true));
+}
+
 void GetProtoValueOnDatabaseTaskRunner(
     TraceReportDatabase* database,
     BaseTraceReport base_report,
     base::OnceCallback<void(std::optional<std::string>,
-                            std::optional<std::string>)> receive_callback,
-    base::OnceCallback<void(std::optional<BaseTraceReport>, bool)>
-        on_finalize_complete) {
+                            std::optional<std::string>,
+                            base::OnceClosure)> receive_callback,
+    base::OnceClosure upload_complete) {
   base::Token uuid = base_report.uuid;
-  auto trace_content = database->GetTraceContent(uuid);
-  auto serialized_system_profile = database->GetSystemProfile(uuid);
-  std::optional<ClientTraceReport> next_report;
-  if (trace_content) {
-    base::UmaHistogramSparse("Tracing.Background.Scenario.Upload",
-                             variations::HashName(base_report.scenario_name));
-    if (database->UploadComplete(uuid, base::Time::Now())) {
-      next_report = database->GetNextReportPendingUpload();
-    }
+  auto compressed_trace_content = database->GetTraceContent(uuid);
+  if (!compressed_trace_content) {
+    std::move(receive_callback)
+        .Run(std::nullopt, std::nullopt, base::NullCallback());
+  } else {
+    auto serialized_system_profile = database->GetSystemProfile(uuid);
+    std::move(receive_callback)
+        .Run(std::move(compressed_trace_content),
+             std::move(serialized_system_profile), std::move(upload_complete));
   }
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(on_finalize_complete), std::move(next_report),
-                     trace_content.has_value()));
-  std::move(receive_callback)
-      .Run(std::move(trace_content), std::move(serialized_system_profile));
 }
 
 class PreferenceManagerImpl
@@ -402,7 +413,7 @@ void BackgroundTracingManagerImpl::OnTraceDatabaseUpdated(
 
 void BackgroundTracingManagerImpl::OnTraceSaved(
     const std::string& scenario_name,
-    std::optional<NewTraceReport> trace_to_upload,
+    std::optional<BaseTraceReport> trace_to_upload,
     bool success) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   RecordMetric(success ? Metrics::SAVE_TRACE_SUCCEEDED
@@ -748,23 +759,30 @@ bool BackgroundTracingManagerImpl::HasTraceToUpload() {
 
 void BackgroundTracingManagerImpl::GetTraceToUpload(
     base::OnceCallback<void(std::optional<std::string>,
-                            std::optional<std::string>)> receive_callback) {
+                            std::optional<std::string>,
+                            base::OnceClosure)> receive_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!trace_report_to_upload_) {
-    std::move(receive_callback).Run(std::nullopt, std::nullopt);
+    std::move(receive_callback)
+        .Run(std::nullopt, std::nullopt, base::NullCallback());
     return;
   }
 
   DCHECK(trace_database_);
   BaseTraceReport trace_report = *std::move(trace_report_to_upload_);
-  database_task_runner_->PostTask(
-      FROM_HERE,
+  trace_report_to_upload_.reset();
+  auto upload_complete_callback = base::BindPostTask(
+      database_task_runner_,
       base::BindOnce(
-          GetProtoValueOnDatabaseTaskRunner,
+          OnUploadCompleteOnDatabaseTaskRunner,
           base::Unretained(trace_database_.get()), trace_report,
-          std::move(receive_callback),
           base::BindOnce(&BackgroundTracingManagerImpl::OnFinalizeComplete,
                          weak_factory_.GetWeakPtr())));
+  database_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(GetProtoValueOnDatabaseTaskRunner,
+                                base::Unretained(trace_database_.get()),
+                                trace_report, std::move(receive_callback),
+                                std::move(upload_complete_callback)));
 }
 
 void BackgroundTracingManagerImpl::OnFinalizeComplete(

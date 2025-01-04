@@ -24,7 +24,7 @@ class ViewHandle : public mojom::ViewHandle {
  public:
   ViewHandle(int view_instance_id,
              base::WeakPtr<GuestViewManager> guest_view_manager,
-             int render_process_id)
+             content::ChildProcessId render_process_id)
       : view_instance_id_(view_instance_id),
         guest_view_manager_(guest_view_manager),
         render_process_id_(render_process_id) {}
@@ -39,7 +39,7 @@ class ViewHandle : public mojom::ViewHandle {
  private:
   const int view_instance_id_;
   base::WeakPtr<GuestViewManager> guest_view_manager_;
-  const int render_process_id_;
+  const content::ChildProcessId render_process_id_;
 };
 
 GuestViewMessageHandler::GuestViewMessageHandler(

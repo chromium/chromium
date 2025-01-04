@@ -262,8 +262,9 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
 
   auto* tracker =
       feature_engagement::TrackerFactory::GetForBrowserContext(profile_);
-  if (tracker)
+  if (tracker) {
     tracker->NotifyEvent(feature_engagement::events::kTabSearchOpened);
+  }
 
   if (triggered_by_keyboard_shortcut) {
     base::UmaHistogramEnumeration("Tabs.TabSearch.OpenAction",

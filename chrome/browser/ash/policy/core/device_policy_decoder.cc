@@ -1890,6 +1890,16 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     }
   }
 
+  if (policy.has_deviceflexarcpreloadenabled()) {
+    const em::BooleanPolicyProto& container(
+        policy.deviceflexarcpreloadenabled());
+    if (container.has_value()) {
+      policies->Set(key::kDeviceFlexArcPreloadEnabled, POLICY_LEVEL_MANDATORY,
+                    POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+                    base::Value(container.value()), nullptr);
+    }
+  }
+
   if (policy.has_virtual_machines_allowed()) {
     const em::VirtualMachinesAllowedProto& container(
         policy.virtual_machines_allowed());
@@ -2007,6 +2017,18 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
                     POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
                     POLICY_SOURCE_CLOUD,
                     base::Value(container.custom_charge_stop()), nullptr);
+    }
+  }
+
+  if (policy.has_devicepowerbatterychargingoptimization()) {
+    const em::IntegerPolicyProto& container(
+        policy.devicepowerbatterychargingoptimization());
+    if (container.has_value()) {
+      if (auto value = DecodeIntegerValue(container.value())) {
+        policies->Set(key::kDevicePowerBatteryChargingOptimization,
+                      POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                      POLICY_SOURCE_CLOUD, std::move(*value), nullptr);
+      }
     }
   }
 

@@ -20,10 +20,9 @@
 // Controller for the Cast toolbar icon that determines when to show and hide
 // icon. There should be one instance of this class per profile, and it should
 // only be used on the UI thread.
-class CastToolbarButtonController
-    : public media_router::IssuesObserver,
-      public media_router::MediaRoutesObserver,
-      public CastContextualMenu::Observer{
+class CastToolbarButtonController : public media_router::IssuesObserver,
+                                    public media_router::MediaRoutesObserver,
+                                    public CastContextualMenu::Observer {
  public:
   // TODO(takumif): CastToolbarIcon is the only Observer implementation.
   // Observer should be renamed to make it clear that it is responsible for

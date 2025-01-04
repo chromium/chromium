@@ -111,21 +111,22 @@ void RecordAttributionSrcRequestStatus(const ResourceRequestHead& request,
 void LogAuditIssue(ExecutionContext* execution_context,
                    AttributionReportingIssueType issue_type,
                    HTMLElement* element,
+                   const String& request_url,
                    std::optional<uint64_t> request_id,
                    const String& invalid_parameter) {
-  String id_string;
-  if (request_id) {
-    id_string = IdentifiersFactory::SubresourceRequestId(*request_id);
-  }
-
+  String devtools_request_id =
+      request_id ? IdentifiersFactory::SubresourceRequestId(*request_id)
+                 : String();
   AuditsIssue::ReportAttributionIssue(execution_context, issue_type, element,
-                                      id_string, invalid_parameter);
+                                      request_url, devtools_request_id,
+                                      invalid_parameter);
 }
 
 base::expected<attribution_reporting::RegistrationInfo,
                attribution_reporting::RegistrationInfoError>
 GetRegistrationInfo(const HTTPHeaderMap& map,
                     ExecutionContext* execution_context,
+                    const String& request_url,
                     uint64_t request_id,
                     bool cross_app_web_enabled) {
   AtomicString info_header = map.Get(http_names::kAttributionReportingInfo);
@@ -138,7 +139,7 @@ GetRegistrationInfo(const HTTPHeaderMap& map,
   if (!parsed_registration_info.has_value()) {
     LogAuditIssue(execution_context,
                   AttributionReportingIssueType::kInvalidInfoHeader,
-                  /*element=*/nullptr, request_id,
+                  /*element=*/nullptr, request_url, request_id,
                   /*invalid_parameter=*/info_header);
   }
   return parsed_registration_info;
@@ -154,6 +155,7 @@ Vector<KURL> ParseAttributionSrcUrls(AttributionSrcLoader& loader,
   if (!network::HasAttributionSupport(loader.GetSupport())) {
     LogAuditIssue(window, AttributionReportingIssueType::kNoWebOrOsSupport,
                   element,
+                  /*url=*/String(),
                   /*request_id=*/std::nullopt,
                   /*invalid_parameter=*/String());
     return {};
@@ -166,7 +168,7 @@ Vector<KURL> ParseAttributionSrcUrls(AttributionSrcLoader& loader,
   // operations and DevTools issues.
   for (wtf_size_t i = 0; i < strings.size(); i++) {
     KURL url = window->CompleteURL(strings[i]);
-    if (loader.CanRegister(url, element, /*request_id=*/std::nullopt)) {
+    if (loader.CanRegister(url, element)) {
       urls.emplace_back(std::move(url));
     }
   }
@@ -200,13 +202,16 @@ struct AttributionSrcLoader::AttributionHeaders {
   AtomicString web_trigger;
   AtomicString os_source;
   AtomicString os_trigger;
+  String request_url;
   uint64_t request_id;
 
   AttributionHeaders(const HTTPHeaderMap& map,
+                     const String& request_url,
                      uint64_t request_id,
                      bool cross_app_web_enabled)
       : web_source(map.Get(http_names::kAttributionReportingRegisterSource)),
         web_trigger(map.Get(http_names::kAttributionReportingRegisterTrigger)),
+        request_url(request_url),
         request_id(request_id) {
     if (cross_app_web_enabled) {
       os_source = map.Get(http_names::kAttributionReportingRegisterOSSource);
@@ -228,7 +233,7 @@ struct AttributionSrcLoader::AttributionHeaders {
     DCHECK(!os_source.IsNull());
     LogAuditIssue(execution_context,
                   AttributionReportingIssueType::kOsSourceIgnored,
-                  /*element=*/nullptr, request_id,
+                  /*element=*/nullptr, request_url, request_id,
                   /*invalid_parameter=*/os_source);
   }
 
@@ -236,7 +241,7 @@ struct AttributionSrcLoader::AttributionHeaders {
     DCHECK(!os_trigger.IsNull());
     LogAuditIssue(execution_context,
                   AttributionReportingIssueType::kOsTriggerIgnored,
-                  /*element=*/nullptr, request_id,
+                  /*element=*/nullptr, request_url, request_id,
                   /*invalid_parameter=*/os_trigger);
   }
 
@@ -244,7 +249,7 @@ struct AttributionSrcLoader::AttributionHeaders {
     DCHECK(!web_source.IsNull());
     LogAuditIssue(execution_context,
                   AttributionReportingIssueType::kSourceIgnored,
-                  /*element=*/nullptr, request_id,
+                  /*element=*/nullptr, request_url, request_id,
                   /*invalid_parameter=*/web_source);
   }
 
@@ -252,7 +257,7 @@ struct AttributionSrcLoader::AttributionHeaders {
     DCHECK(!web_trigger.IsNull());
     LogAuditIssue(execution_context,
                   AttributionReportingIssueType::kTriggerIgnored,
-                  /*element=*/nullptr, request_id,
+                  /*element=*/nullptr, request_url, request_id,
                   /*invalid_parameter=*/web_trigger);
   }
 
@@ -288,7 +293,7 @@ struct AttributionSrcLoader::AttributionHeaders {
         case IssueType::kWebAndOsHeaders:
           LogAuditIssue(execution_context,
                         AttributionReportingIssueType::kWebAndOsHeaders,
-                        /*element=*/nullptr, request_id,
+                        /*element=*/nullptr, request_url, request_id,
                         /*invalid_parameter=*/String());
           break;
         case IssueType::kWebIgnored:
@@ -311,7 +316,7 @@ struct AttributionSrcLoader::AttributionHeaders {
               is_source
                   ? AttributionReportingIssueType::kNoRegisterSourceHeader
                   : AttributionReportingIssueType::kNoRegisterTriggerHeader,
-              /*element=*/nullptr, request_id,
+              /*element=*/nullptr, request_url, request_id,
               /*invalid_parameter=*/String());
           break;
         case IssueType::kNoOsHeader:
@@ -320,7 +325,7 @@ struct AttributionSrcLoader::AttributionHeaders {
               is_source
                   ? AttributionReportingIssueType::kNoRegisterOsSourceHeader
                   : AttributionReportingIssueType::kNoRegisterOsTriggerHeader,
-              /*element=*/nullptr, request_id,
+              /*element=*/nullptr, request_url, request_id,
               /*invalid_parameter=*/String());
           break;
       }
@@ -374,8 +379,7 @@ class AttributionSrcLoader::ResourceClient
 
  private:
   void HandleResponseHeaders(Resource* resource,
-                             const ResourceResponse& response,
-                             uint64_t request_id);
+                             const ResourceResponse& response);
 
   void HandleSourceRegistration(
       const AttributionHeaders&,
@@ -471,6 +475,7 @@ std::optional<Impression> AttributionSrcLoader::RegisterNavigationInternal(
                   AttributionReportingIssueType::
                       kNavigationRegistrationWithoutTransientUserActivation,
                   element,
+                  /*request_url=*/String(),
                   /*request_id=*/std::nullopt,
                   /*invalid_parameter=*/String());
     return std::nullopt;
@@ -490,7 +495,7 @@ std::optional<Impression> AttributionSrcLoader::RegisterNavigationInternal(
     return impression;
   }
 
-  if (CanRegister(navigation_url, element, /*request_id=*/std::nullopt)) {
+  if (CanRegister(navigation_url, element)) {
     return impression;
   }
 
@@ -540,8 +545,7 @@ std::optional<Impression> AttributionSrcLoader::PrepareContextMenuNavigation(
 
   Vector<KURL> urls = ParseAttributionSrc(attribution_src, anchor);
 
-  if (urls.empty() &&
-      !CanRegister(navigation_url, anchor, /*request_id=*/std::nullopt)) {
+  if (urls.empty() && !CanRegister(navigation_url, anchor)) {
     return std::nullopt;
   }
 
@@ -722,6 +726,7 @@ std::optional<attribution_reporting::SuitableOrigin>
 AttributionSrcLoader::ReportingOriginForUrlIfValid(
     const KURL& url,
     HTMLElement* element,
+    const String& request_url,
     std::optional<uint64_t> request_id,
     bool log_issues) {
   LocalDOMWindow* window = local_frame_->DomWindow();
@@ -734,7 +739,7 @@ AttributionSrcLoader::ReportingOriginForUrlIfValid(
       return;
     }
 
-    LogAuditIssue(window, issue_type, element, request_id,
+    LogAuditIssue(window, issue_type, element, request_url, request_id,
                   /*invalid_parameter=*/
                   invalid_origin ? invalid_origin->ToString() : String());
   };
@@ -796,9 +801,10 @@ AttributionSrcLoader::ReportingOriginForUrlIfValid(
 
 bool AttributionSrcLoader::CanRegister(const KURL& url,
                                        HTMLElement* element,
-                                       std::optional<uint64_t> request_id,
                                        bool log_issues) {
-  return !!ReportingOriginForUrlIfValid(url, element, request_id, log_issues);
+  return !!ReportingOriginForUrlIfValid(url, element, /*request_url=*/String(),
+                                        /*request_id=*/std::nullopt,
+                                        log_issues);
 }
 
 network::mojom::AttributionSupport AttributionSrcLoader::GetSupport() const {
@@ -826,14 +832,15 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
   }
 
   const uint64_t request_id = request.InspectorId();
+  const KURL& request_url = request.Url();
   const bool cross_app_web_enabled =
       RuntimeEnabledFeatures::AttributionReportingCrossAppWebEnabled(
           local_frame_->DomWindow()) &&
       base::FeatureList::IsEnabled(
           network::features::kAttributionReportingCrossAppWeb);
 
-  AttributionHeaders headers(response.HttpHeaderFields(), request_id,
-                             cross_app_web_enabled);
+  AttributionHeaders headers(response.HttpHeaderFields(), request_url,
+                             request_id, cross_app_web_enabled);
 
   // Only handle requests which are attempting to invoke the API.
   if (headers.count() == 0) {
@@ -842,7 +849,8 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
 
   std::optional<attribution_reporting::SuitableOrigin> reporting_origin =
       ReportingOriginForUrlIfValid(response.ResponseUrl(),
-                                   /*element=*/nullptr, request_id);
+                                   /*element=*/nullptr, request_url,
+                                   request_id);
   if (!reporting_origin) {
     return false;
   }
@@ -886,8 +894,8 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
   }
 
   auto registration_info = GetRegistrationInfo(
-      response.HttpHeaderFields(), local_frame_->DomWindow(), request_id,
-      cross_app_web_enabled);
+      response.HttpHeaderFields(), local_frame_->DomWindow(), request.Url(),
+      request_id, cross_app_web_enabled);
   if (!registration_info.has_value()) {
     return false;
   }
@@ -944,7 +952,7 @@ String AttributionSrcLoader::ResourceClient::DebugName() const {
 void AttributionSrcLoader::ResourceClient::ResponseReceived(
     Resource* resource,
     const ResourceResponse& response) {
-  HandleResponseHeaders(resource, response, resource->InspectorId());
+  HandleResponseHeaders(resource, response);
 }
 
 bool AttributionSrcLoader::ResourceClient::RedirectReceived(
@@ -956,7 +964,7 @@ bool AttributionSrcLoader::ResourceClient::RedirectReceived(
     RecordAttributionSrcRequestStatus(request,
                                       AttributionSrcRequestStatus::kRedirected);
   }
-  HandleResponseHeaders(resource, response, request.InspectorId());
+  HandleResponseHeaders(resource, response);
   return true;
 }
 
@@ -998,15 +1006,16 @@ void AttributionSrcLoader::ResourceClient::Finish() {
 
 void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
     Resource* resource,
-    const ResourceResponse& response,
-    uint64_t request_id) {
+    const ResourceResponse& response) {
   const bool cross_app_web_enabled =
       RuntimeEnabledFeatures::AttributionReportingCrossAppWebEnabled(
           loader_->local_frame_->DomWindow()) &&
       base::FeatureList::IsEnabled(
           network::features::kAttributionReportingCrossAppWeb);
-  AttributionHeaders headers(response.HttpHeaderFields(), request_id,
-                             cross_app_web_enabled);
+  const KURL& request_url = resource->Url();
+  const uint64_t request_id = resource->InspectorId();
+  AttributionHeaders headers(response.HttpHeaderFields(), request_url,
+                             request_id, cross_app_web_enabled);
   const bool has_header = headers.count() > 0;
   base::UmaHistogramBoolean(
       "Conversions.HasAttributionHeaderInAttributionSrcResponse", has_header);
@@ -1021,14 +1030,15 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
 
   std::optional<attribution_reporting::SuitableOrigin> reporting_origin =
       loader_->ReportingOriginForUrlIfValid(response.ResponseUrl(),
-                                            /*element=*/nullptr, request_id);
+                                            /*element=*/nullptr, request_url,
+                                            request_id);
   if (!reporting_origin) {
     return;
   }
 
   auto registration_info = GetRegistrationInfo(
       response.HttpHeaderFields(), loader_->local_frame_->DomWindow(),
-      request_id, cross_app_web_enabled);
+      request_url, request_id, cross_app_web_enabled);
   if (!registration_info.has_value()) {
     return;
   }
@@ -1063,7 +1073,8 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
       if (has_source && has_trigger) {
         LogAuditIssue(loader_->local_frame_->DomWindow(),
                       AttributionReportingIssueType::kSourceAndTriggerHeaders,
-                      /*element=*/nullptr, headers.request_id,
+                      /*element=*/nullptr, headers.request_url,
+                      headers.request_id,
                       /*invalid_parameter=*/String());
         return;
       }
@@ -1285,7 +1296,7 @@ void AttributionSrcLoader::ResourceClient::
 
   CHECK(!header.IsNull());
   LogAuditIssue(loader_->local_frame_->DomWindow(), issue_type,
-                /*element=*/nullptr, headers.request_id,
+                /*element=*/nullptr, headers.request_url, headers.request_id,
                 /*invalid_parameter=*/header);
   if (report_header_errors) {
     data_host_->ReportRegistrationHeaderError(

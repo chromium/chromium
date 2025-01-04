@@ -16,7 +16,6 @@
 namespace blink {
 
 class KURL;
-class ScriptObject;
 
 namespace bindings {
 
@@ -80,20 +79,55 @@ template <typename IDLType, typename ReturnType>
                IDLType>
 inline constexpr bool IsReturnTypeCompatible<IDLType, ReturnType> = true;
 
-// Pointers can be used to represent nullables, as long as types are compatible.
+// Types that have null values must be used directly to represent nullables.
+// This includes pointer types.
 template <typename IDLType, typename ReturnType>
-  requires IsReturnTypeCompatible<
-               IDLType,
-               std::remove_pointer_t<std::remove_const_t<ReturnType>>>
+  requires(NativeValueTraits<IDLType>::has_null_value &&
+           IsReturnTypeCompatible<IDLType, ReturnType>)
 inline constexpr bool IsReturnTypeCompatible<IDLNullable<IDLType>, ReturnType> =
     true;
 
-// std::optional<> is the way to implement nullable as long as inner types are
-// compatible.
+// std::optional<> is the way to implement nullable for types without null
+// values.
 template <typename IDLType, typename ReturnType>
+  requires(!NativeValueTraits<IDLType>::has_null_value &&
+           IsReturnTypeCompatible<IDLType, ReturnType>)
 inline constexpr bool
     IsReturnTypeCompatible<IDLNullable<IDLType>, std::optional<ReturnType>> =
-        IsReturnTypeCompatible<IDLType, ReturnType>;
+        true;
+
+// Nullable sequence and array types can also be represented as pointers
+// or with std::optional<> if their has_null_value is true.  (The case above
+// accepts std::optional<> when has_null_value is false.)
+// TODO(dbaron): We might consider removing the std::optional<> option here,
+// since std::optional<HeapVector<>> is somewhat suspicious, and disallowed on
+// the heap.
+template <typename IDLType, typename ReturnType>
+  requires(NativeValueTraits<IDLSequence<IDLType>>::has_null_value &&
+           IsReturnTypeCompatible<IDLSequence<IDLType>,
+                                  std::remove_cv_t<ReturnType>>)
+inline constexpr bool
+    IsReturnTypeCompatible<IDLNullable<IDLSequence<IDLType>>, ReturnType*> =
+        true;
+
+template <typename IDLType, typename ReturnType>
+  requires(NativeValueTraits<IDLArray<IDLType>>::has_null_value &&
+           IsReturnTypeCompatible<IDLArray<IDLType>,
+                                  std::remove_cv_t<ReturnType>>)
+inline constexpr bool
+    IsReturnTypeCompatible<IDLNullable<IDLArray<IDLType>>, ReturnType*> = true;
+
+template <typename IDLType, typename ReturnType>
+  requires(NativeValueTraits<IDLSequence<IDLType>>::has_null_value &&
+           IsReturnTypeCompatible<IDLSequence<IDLType>, ReturnType>)
+inline constexpr bool IsReturnTypeCompatible<IDLNullable<IDLSequence<IDLType>>,
+                                             std::optional<ReturnType>> = true;
+
+template <typename IDLType, typename ReturnType>
+  requires(NativeValueTraits<IDLArray<IDLType>>::has_null_value &&
+           IsReturnTypeCompatible<IDLArray<IDLType>, ReturnType>)
+inline constexpr bool IsReturnTypeCompatible<IDLNullable<IDLArray<IDLType>>,
+                                             std::optional<ReturnType>> = true;
 
 namespace internal {
 
@@ -177,16 +211,6 @@ inline constexpr bool IsReturnTypeCompatible<
 template <>
 inline constexpr bool IsReturnTypeCompatible<IDLObject, v8::Local<v8::Object>> =
     true;
-
-// TODO(japhet): This will be unnecessary once IDLObject's ImplType switches to
-// ScriptObject.
-template <>
-inline constexpr bool IsReturnTypeCompatible<IDLObject, ScriptObject> = true;
-
-// TODO(caseq): this shouldn't really be allowed, as ScriptValue may carry
-// values that are not objects, but keep it for now.
-template <>
-inline constexpr bool IsReturnTypeCompatible<IDLObject, ScriptValue> = true;
 
 // TODO(caseq): this shouldn't really be allowed, as v8::Value may carry
 // values that are not objects, but keep it for now.

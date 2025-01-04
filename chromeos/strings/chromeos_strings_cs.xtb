@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Deaktivovat tmavý motiv</translation>
 <translation id="1807246157184219062">Světlé</translation>
 <translation id="1808803439260407870">Klasické umění</translation>
+<translation id="181434555916624618">Výsledky s lidmi se zatím nezobrazují. Zkuste jiný pokyn.</translation>
 <translation id="1815850098929213707">Vybraná klávesa je <ph name="KEYS" />. Klepnutím na tlačítko ovládací prvek upravíte</translation>
 <translation id="1823120442877418684">Objekty</translation>
 <translation id="1827738518074806965">Galerie umění</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">Stav baterie pravého sluchátka je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">nastavení</translation>
 <translation id="3347558044552027859">moderní</translation>
+<translation id="3353477144743332882">Stáhnout model k vytváření souhrnů a názvů</translation>
 <translation id="3359218928534347896">přepnout ztlumení mikrofonu</translation>
 <translation id="3360306038446926262">Okna</translation>
 <translation id="3361618936611118375">suši</translation>
@@ -689,6 +691,7 @@
 <translation id="4354430579665871434">klávesa</translation>
 <translation id="4356100841225547054">Vypnout zvuk</translation>
 <translation id="4361257691546579041">APN je typu výchozí.</translation>
+<translation id="4368101969572512692">Zamíchat návrhy</translation>
 <translation id="437294888293595148">Resetovat všechny zkratky</translation>
 <translation id="437477383107495720">králíčci</translation>
 <translation id="4376423484621194274">Váš administrátor aplikaci <ph name="APP_NAME" /> nedovoluje zavřít</translation>
@@ -768,6 +771,7 @@
 <translation id="4731797938093519117">Rodičovský přístup</translation>
 <translation id="473775607612524610">Aktualizovat</translation>
 <translation id="4744944742468440486">Informace související s vaším výběrem</translation>
+<translation id="4750394297954878236">Návrhy</translation>
 <translation id="4771607256327216405">zvýšení jasu klávesnice</translation>
 <translation id="4771923071974529837">zítra</translation>
 <translation id="4773299976671772492">Zastaveno</translation>
@@ -853,6 +857,7 @@
 <translation id="5121677070210013200">Model přepisu nelze stáhnout. Zkuste to znovu nebo Chromebook restartujte.</translation>
 <translation id="5130848777448318809">poníci</translation>
 <translation id="5137451382116112100">Maximalizovat</translation>
+<translation id="5139813694804168398">nerušit</translation>
 <translation id="5140788690559353412">Když ztratíte přístup ke školnímu účtu, nebudete už mít přístup k přidruženým e‑mailům a souborům na Disku Google, jako jsou Gmail, Dokumenty, Prezentace a další.</translation>
 <translation id="5142961317498132443">Ověření</translation>
 <translation id="5144311987923128508">Tlačítko Potvrdit teď není aktivní</translation>
@@ -897,6 +902,7 @@
 <translation id="5302048478445481009">Jazyk</translation>
 <translation id="5303837385540978511">Exkluzivní tapeta pro <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="530883153651464140">Aktualizovat zařízení <ph name="DEVICE_NAME" /> na verzi <ph name="VERSION" /></translation>
 <translation id="5315873049536339193">Identita</translation>
 <translation id="5317780077021120954">Uložit</translation>
 <translation id="5318310531701770497">Nelze vytvořit názvy. Zkuste delší přepis.</translation>
@@ -973,7 +979,6 @@
 <translation id="5703716265115423771">snížit hlasitost</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> z <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Tlačítko Upravit pro <ph name="SHORTCUT_DESCRIPTION" />.</translation>
-<translation id="5733298426544876109">Aktualizovat <ph name="DEVICE_NAME" /></translation>
 <translation id="5736820754189340309">Využití dat bylo resetováno</translation>
 <translation id="574392208103952083">Střední</translation>
 <translation id="5744175046705638478">Přeložit „<ph name="QUERY" />“</translation>
@@ -998,6 +1003,7 @@
 <translation id="5859969039821714932">Zkratka není k dispozici. Stiskněte novou zkratku bez klávesy <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Vypnuto</translation>
 <translation id="5860491529813859533">Zapnout</translation>
+<translation id="5875913454160982848">Stáhnout model přepisu</translation>
 <translation id="5876385649737594562">Pokud chcete vybrat možnosti, zapněte tuto funkci</translation>
 <translation id="5877503382465267833">Pozastavit nahrávku <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Celá obrazovka</translation>
@@ -1037,7 +1043,6 @@
 <translation id="6040143037577758943">Zavřít</translation>
 <translation id="6040852767465482106">Anonymní identita</translation>
 <translation id="604124094241169006">Automaticky</translation>
-<translation id="6042308850641462728">Více</translation>
 <translation id="6048107060512778456">Tisk selhal – zasekl se papír</translation>
 <translation id="6050189528197190982">Stupně šedé</translation>
 <translation id="6054711098834486579">expresionismus</translation>
@@ -1293,6 +1298,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Názvový server}few{Názvové servery}many{Názvové servery}other{Názvové servery}}</translation>
 <translation id="7135814714616751706">Vyhledat zkratky</translation>
 <translation id="7138614237884624401">Zjednodušený text</translation>
+<translation id="7138668887584231801">Text je na shrnutí moc krátký</translation>
 <translation id="7141470099673912333">Přenesení obsahu</translation>
 <translation id="7143207342074048698">Připojování</translation>
 <translation id="7144878232160441200">Opakovat</translation>
@@ -1588,6 +1594,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="8503836310948963452">Ještě pár minut…</translation>
 <translation id="8505011850330200833">Model Gemini vyžaduje ke zpracování přepisů a vytváření souhrnů 2 GB úložiště</translation>
 <translation id="8508640263392900755">Podrobnosti o APN</translation>
+<translation id="8509574872955173831">Další informace o vytváření souhrnů a názvů</translation>
 <translation id="8522687886059337719">Nyní máte přístup k novým <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />tapetám<ph name="END_LINK_WALLPAPER_SUBPAGE" /> a <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />spořiči obrazovky<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">čajovna</translation>
@@ -1724,7 +1731,6 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="9133772297793293778">Stiskněte 1–4 modifikátory a 1 další klávesu. Režim úprav ukončíte stisknutím kláves Alt + Esc.</translation>
 <translation id="9137526406337347448">Služby Google</translation>
 <translation id="9138630967333032450">Levý Shift</translation>
-<translation id="9147928237330776930">Příliš málo slov na shrnutí</translation>
 <translation id="9149391708638971077">Spustit test paměti</translation>
 <translation id="9159524746324788320">hamburgery</translation>
 <translation id="9161276708550942948">mezera</translation>

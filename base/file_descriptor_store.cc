@@ -38,8 +38,9 @@ base::ScopedFD FileDescriptorStore::TakeFD(
     const std::string& key,
     base::MemoryMappedFile::Region* region) {
   base::ScopedFD fd = MaybeTakeFD(key, region);
-  if (!fd.is_valid())
+  if (!fd.is_valid()) {
     DLOG(FATAL) << "Unknown global descriptor: " << key;
+  }
   return fd;
 }
 
@@ -47,8 +48,9 @@ base::ScopedFD FileDescriptorStore::MaybeTakeFD(
     const std::string& key,
     base::MemoryMappedFile::Region* region) {
   auto iter = descriptors_.find(key);
-  if (iter == descriptors_.end())
+  if (iter == descriptors_.end()) {
     return base::ScopedFD();
+  }
   *region = iter->second.region;
   base::ScopedFD result = std::move(iter->second.fd);
   descriptors_.erase(iter);

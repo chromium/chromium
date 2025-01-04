@@ -78,8 +78,9 @@ ui::ImageModel IntentChipButton::GetAppIconForTesting() const {
 }
 
 bool IntentChipButton::GetShowChip() const {
-  if (delegate_->ShouldHidePageActionIcons())
+  if (delegate_->ShouldHidePageActionIcons()) {
     return false;
+  }
 
   auto* tab_helper = GetTabHelper();
   return tab_helper && tab_helper->should_show_icon();
@@ -105,13 +106,15 @@ void IntentChipButton::HandlePressed() {
 }
 
 IntentPickerTabHelper* IntentChipButton::GetTabHelper() const {
-  if (browser_->profile()->IsOffTheRecord())
+  if (browser_->profile()->IsOffTheRecord()) {
     return nullptr;
+  }
 
   content::WebContents* web_contents =
       delegate_->GetWebContentsForPageActionIconView();
-  if (!web_contents)
+  if (!web_contents) {
     return nullptr;
+  }
 
   return IntentPickerTabHelper::FromWebContents(web_contents);
 }

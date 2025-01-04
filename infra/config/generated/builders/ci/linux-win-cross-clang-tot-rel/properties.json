@@ -22,6 +22,7 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium_win_clang_tot",
+                "host_platform": "linux",
                 "target_bits": 64,
                 "target_platform": "win"
               },

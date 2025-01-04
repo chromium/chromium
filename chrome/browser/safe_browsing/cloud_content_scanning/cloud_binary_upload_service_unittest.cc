@@ -81,6 +81,7 @@ class FakeConnectorUploadRequest : public ConnectorUploadRequest {
                                GURL(),
                                /*metadata=*/"",
                                /*data=*/"",
+                               /*histogram_suffix=*/"",
                                TRAFFIC_ANNOTATION_FOR_TESTS,
                                base::DoNothing()),
         should_succeed_(should_succeed),
@@ -119,6 +120,7 @@ class FakeConnectorUploadRequestFactory : public ConnectorUploadRequestFactory {
       const GURL& base_url,
       const std::string& metadata,
       const std::string& data,
+      const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       ConnectorUploadRequest::Callback callback) override {
     return std::make_unique<FakeConnectorUploadRequest>(
@@ -133,6 +135,7 @@ class FakeConnectorUploadRequestFactory : public ConnectorUploadRequestFactory {
       const base::FilePath& path,
       uint64_t file_size,
       bool is_obfuscated,
+      const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       ConnectorUploadRequest::Callback callback) override {
     return std::make_unique<FakeConnectorUploadRequest>(
@@ -145,6 +148,7 @@ class FakeConnectorUploadRequestFactory : public ConnectorUploadRequestFactory {
       const std::string& metadata,
       BinaryUploadService::Result get_data_result,
       base::ReadOnlySharedMemoryRegion page_region,
+      const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       ConnectorUploadRequest::Callback callback) override {
     return std::make_unique<FakeConnectorUploadRequest>(

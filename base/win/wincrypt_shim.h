@@ -5,15 +5,14 @@
 #ifndef BASE_WIN_WINCRYPT_SHIM_H_
 #define BASE_WIN_WINCRYPT_SHIM_H_
 
-// wincrypt.h defines macros which conflict with OpenSSL's types. This header
-// includes wincrypt and undefines the OpenSSL macros which conflict. Any
-// Chromium headers which include wincrypt should instead include this header.
+// Any Chromium headers which want to `#include <wincrypt.h>` should instead
+// #include this header.
 
 #include <windows.h>
 
 #include <wincrypt.h>
 
-// Undefine the macros which conflict with OpenSSL and define replacements. See
+// wincrypt.h defines macros which conflict with OpenSSL's types. See
 // http://msdn.microsoft.com/en-us/library/windows/desktop/aa378145(v=vs.85).aspx
 #undef PKCS7_SIGNER_INFO
 #undef X509_CERT_PAIR

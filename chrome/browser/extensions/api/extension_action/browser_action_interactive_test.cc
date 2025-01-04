@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
+#include <array>
 #include <memory>
 
 #include "base/files/file_util.h"
@@ -679,7 +675,11 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, MAYBE_BrowserActionPopup) {
   // wait for the popup.js code to run in the minSize case, which can prevent it
   // from setting and storing the size for the next iteration, resulting in test
   // flakiness.
-  const gfx::Size kExpectedSizes[] = {maxSize, middleSize, minSize};
+  const auto kExpectedSizes = std::to_array<gfx::Size>({
+      maxSize,
+      middleSize,
+      minSize,
+  });
   for (size_t i = 0; i < std::size(kExpectedSizes); i++) {
     content::WebContentsAddedObserver popup_observer;
     actions_bar->Press(extension->id());

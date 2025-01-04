@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "ash/components/arc/mojom/app.mojom-shared.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
@@ -16,6 +17,8 @@
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/components/arc/test/fake_compatibility_mode_instance.h"
+#include "ash/components/arc/test/fake_intent_helper_host.h"
+#include "ash/components/arc/test/fake_intent_helper_instance.h"
 #include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -37,10 +40,8 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
-#include "components/arc/test/fake_intent_helper_host.h"
-#include "components/arc/test/fake_intent_helper_instance.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -382,7 +383,7 @@ void ArcAppTest::SetUpIntentHelper() {
 
 const user_manager::User* ArcAppTest::CreateUserAndLogin() {
   const AccountId account_id(AccountId::FromUserEmailGaiaId(
-      profile_->GetProfileUserName(), "1234567890"));
+      profile_->GetProfileUserName(), GaiaId("1234567890")));
   const user_manager::User* user = fake_user_manager_->AddUser(account_id);
   fake_user_manager_->LoginUser(account_id);
   return user;

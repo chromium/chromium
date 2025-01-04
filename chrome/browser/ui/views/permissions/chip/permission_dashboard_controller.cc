@@ -232,7 +232,6 @@ bool PermissionDashboardController::Update(
     indicator_chip->SetTheme(PermissionChipTheme::kInUseActivityIndicator);
   }
 
-
   if (request_chip_controller_->is_confirmation_showing()) {
     request_chip_controller_->ResetPermissionPromptChip();
   }

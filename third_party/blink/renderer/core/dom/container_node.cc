@@ -26,6 +26,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_get_html_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_get_inner_html_options.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/css/selector_filter.h"
 #include "third_party/blink/renderer/core/css/selector_query.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -1623,9 +1625,15 @@ void ContainerNode::SetRestyleFlag(DynamicRestyleFlags mask) {
 
 void ContainerNode::RecalcDescendantStyles(
     const StyleRecalcChange change,
-    const StyleRecalcContext& style_recalc_context) {
+    const StyleRecalcContext& style_recalc_context,
+    Element& host_or_element) {
   DCHECK(GetDocument().InStyleRecalc());
   DCHECK(!NeedsStyleRecalc());
+
+  bool seen_any_child_elements = false;
+  SelectorFilter& selector_filter =
+      GetDocument().GetStyleResolver().GetSelectorFilter();
+  SelectorFilter::Mark mark;
 
   for (Node* child = firstChild(); child; child = child->nextSibling()) {
     if (!change.TraverseChild(*child)) {
@@ -1635,8 +1643,18 @@ void ContainerNode::RecalcDescendantStyles(
       child_text_node->RecalcTextStyle(change);
 
     if (auto* child_element = DynamicTo<Element>(child)) {
+      if (!seen_any_child_elements) {
+        // Push the parent, lazily. (We don't want to spend time
+        // on this if we only have text nodes as children.)
+        mark = selector_filter.SetMark();
+        selector_filter.PushParent(host_or_element);
+        seen_any_child_elements = true;
+      }
       child_element->RecalcStyle(change, style_recalc_context);
     }
+  }
+  if (seen_any_child_elements) {
+    selector_filter.PopTo(mark);
   }
 }
 

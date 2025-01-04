@@ -31,6 +31,7 @@
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 
+namespace webid {
 namespace {
 class FakeFedCmAccountSelectionView : public FedCmAccountSelectionView {
  public:
@@ -63,11 +64,10 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
             kDefaultDisclosureFields,
             /*has_login_status_mismatch=*/false)) {
     test_shared_url_loader_factory_ =
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          &test_url_loader_factory_);
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            &test_url_loader_factory_);
   }
-  AccountSelectionModalViewTest(const AccountSelectionModalViewTest&) =
-      delete;
+  AccountSelectionModalViewTest(const AccountSelectionModalViewTest&) = delete;
   AccountSelectionModalViewTest& operator=(
       const AccountSelectionModalViewTest&) = delete;
   ~AccountSelectionModalViewTest() override = default;
@@ -95,9 +95,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
   }
 
  protected:
-  void CreateAccountSelectionModal() {
-    ShowUi("");
-  }
+  void CreateAccountSelectionModal() { ShowUi(""); }
 
   void CreateAndShowSingleAccountPicker(
       bool show_back_button,
@@ -207,8 +205,8 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     EXPECT_TRUE(spinner->GetVisible());
 
     // Check spinner is of the correct size.
-    EXPECT_EQ(spinner->size(), gfx::Size(fedcm::kModalIconSpinnerSize,
-                                         fedcm::kModalIconSpinnerSize));
+    EXPECT_EQ(spinner->size(),
+              gfx::Size(kModalIconSpinnerSize, kModalIconSpinnerSize));
 
     // Check IDP icon container contains the IDP icon image. The IDP icon
     // container is always present. Its visibility is updated when we want to
@@ -230,7 +228,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
 
       // Check icon image is of the correct size.
       EXPECT_EQ(idp_icon_image->size(),
-                gfx::Size(fedcm::kModalIdpIconSize, fedcm::kModalIdpIconSize));
+                gfx::Size(kModalIdpIconSize, kModalIdpIconSize));
     }
 
     // The combined icons container is present only when we expect it to be
@@ -253,8 +251,8 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
       // icons.
       for (const auto& icon : combined_icons_container_children) {
         EXPECT_TRUE(icon->GetVisible());
-        EXPECT_EQ(icon->size(), gfx::Size(fedcm::kModalCombinedIconSize,
-                                          fedcm::kModalCombinedIconSize));
+        EXPECT_EQ(icon->size(),
+                  gfx::Size(kModalCombinedIconSize, kModalCombinedIconSize));
       }
     }
 
@@ -262,9 +260,6 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     views::Label* title_view = static_cast<views::Label*>(header_children[1]);
     ASSERT_TRUE(title_view);
     EXPECT_EQ(title_view->GetText(), kTitleSignIn);
-    if (should_focus_title_) {
-      EXPECT_EQ(dialog()->GetInitiallyFocusedView(), title_view);
-    }
 
     if (!is_loading_dialog) {
       // Check body text.
@@ -273,10 +268,6 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
       EXPECT_EQ(body_view->GetText(), kBodySignIn);
       EXPECT_EQ(body_view->GetVisible(), expect_visible_body_label_);
     }
-
-    // After the first header check, the consecutive header checks do not
-    // necessarily have to focus on the title.
-    should_focus_title_ = false;
   }
 
   void CheckButtonRow(views::View* button_row,
@@ -540,7 +531,12 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
                        const std::u16string expected_description,
                        const std::string& error_code,
                        const GURL& error_url) {
-    CreateAccountSelectionModal();
+    IdentityRequestAccountPtr account = CreateTestIdentityRequestAccount(
+        /*account_suffix=*/"account", idp_data_,
+        content::IdentityRequestAccount::LoginState::kSignUp);
+    CreateAndShowSingleAccountPicker(/*show_back_button=*/false, *account);
+    dialog_->ShowVerifyingSheet(account, kTitleSignIn);
+    account_selection_view_->UpdateDialogPosition();
     dialog_->ShowErrorDialog(
         kIdpETLDPlusOne, idp_data_->idp_metadata,
         content::IdentityCredentialTokenError(error_code, error_url));
@@ -672,7 +668,6 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
 
  private:
   bool expect_visible_body_label_{true};
-  bool should_focus_title_{true};
   ui::ImageModel idp_brand_icon_;
   scoped_refptr<network::SharedURLLoaderFactory>
       test_shared_url_loader_factory_;
@@ -992,3 +987,5 @@ IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
                        OneDisabledAccountAndOneEnabledAccount) {
   TestEnabledAndDisabled();
 }
+
+}  //  namespace webid

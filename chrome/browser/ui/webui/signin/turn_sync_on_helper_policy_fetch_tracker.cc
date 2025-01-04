@@ -66,8 +66,9 @@ class PolicyFetchTracker
   // policy::PolicyService::ProviderUpdateObserver
   void OnProviderUpdatePropagated(
       policy::ConfigurationPolicyProvider* provider) override {
-    if (provider != profile_->GetUserCloudPolicyManager())
+    if (provider != profile_->GetUserCloudPolicyManager()) {
       return;
+    }
     VLOG(2) << "Policies after sign in:";
     VLOG(2) << policy::PolicyConversions(
                    std::make_unique<policy::ChromePolicyConversionsClient>(
@@ -75,15 +76,17 @@ class PolicyFetchTracker
                    .ToJSON();
     scoped_policy_update_observer_.Reset();
     policy_update_timeout_timer_.Reset();
-    if (on_policy_updated_callback_)
+    if (on_policy_updated_callback_) {
       std::move(on_policy_updated_callback_).Run();
+    }
   }
 
   void OnProviderUpdateTimedOut() {
     DVLOG(1) << "Waiting for policies update propagated timed out";
     scoped_policy_update_observer_.Reset();
-    if (on_policy_updated_callback_)
+    if (on_policy_updated_callback_) {
       std::move(on_policy_updated_callback_).Run();
+    }
   }
 
  private:

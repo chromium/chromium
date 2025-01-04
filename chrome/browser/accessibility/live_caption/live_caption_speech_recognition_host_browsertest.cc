@@ -18,6 +18,7 @@
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/live_translate_controller.h"
 #include "components/live_caption/pref_names.h"
+#include "components/live_caption/translation_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/browser/render_frame_host.h"
@@ -58,9 +59,9 @@ void MockLiveTranslateController::GetTranslation(
     const std::string& result,
     std::string source_language,
     std::string target_language,
-    OnTranslateEventCallback callback) {
+    TranslateEventCallback callback) {
   translation_requests_.push_back(result);
-  std::move(callback).Run(result);
+  std::move(callback).Run(TranslateEvent(result));
 }
 
 std::vector<std::string> MockLiveTranslateController::GetTranslationRequests() {

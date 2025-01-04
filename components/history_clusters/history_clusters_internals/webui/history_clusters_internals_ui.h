@@ -32,8 +32,7 @@ class HistoryClustersInternalsUI
   explicit HistoryClustersInternalsUI(
       content::WebUI* web_ui,
       history_clusters::HistoryClustersService* history_clusters_service,
-      history::HistoryService* history_service,
-      SetupWebUIDataSourceCallback set_up_data_source_callback);
+      history::HistoryService* history_service);
   ~HistoryClustersInternalsUI() override;
 
   HistoryClustersInternalsUI(const HistoryClustersInternalsUI&) = delete;

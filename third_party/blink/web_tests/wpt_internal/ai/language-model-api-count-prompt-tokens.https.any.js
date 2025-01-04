@@ -1,4 +1,4 @@
-// META: script=resources/workaround-for-362676838.js
+// META: script=resources/workaround-for-382640509.js
 
 promise_test(async t => {
   // Make sure the prompt api is enabled.

@@ -16,14 +16,15 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
-#include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_quality/autofill_data_util.h"
+#include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
@@ -32,7 +33,6 @@
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/ui/popup_interaction.h"
-#include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/form_data.h"
@@ -287,6 +287,9 @@ std::string_view AutofillMetrics::GetDialogTypeStringForLogging(
       return "ServerCardUnmask";
     case AutofillProgressDialogType::kServerIbanUnmaskProgressDialog:
       return "ServerIbanUnmask";
+    case AutofillProgressDialogType::
+        kCardInfoRetrievalEnrolledUnmaskProgressDialog:
+      return "CardInfoRetrievalEnrolledUnmask";
     case AutofillProgressDialogType::k3dsFetchVcnProgressDialog:
       return "3dsFetchVirtualCard";
     case AutofillProgressDialogType::kUnspecified:
@@ -557,7 +560,7 @@ void AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
                                        editing_metric));
 
   // Record the metric for FormsAI specific fields.
-  if (field.filling_product() == FillingProduct::kPredictionImprovements) {
+  if (field.filling_product() == FillingProduct::kAutofillAi) {
     base::UmaHistogramEnumeration(
         "Autofill.FormsAI.EditedAutofilledFieldAtSubmission", editing_metric);
   }
@@ -1180,7 +1183,7 @@ void AutofillMetrics::OnAutocompleteSuggestionDeleted(
 // static
 void AutofillMetrics::LogAutocompleteEvent(AutocompleteEvent event) {
   DCHECK_LT(event, AutocompleteEvent::NUM_AUTOCOMPLETE_EVENTS);
-  base::UmaHistogramEnumeration("Autocomplete.Events2", event,
+  base::UmaHistogramEnumeration("Autocomplete.Events3", event,
                                 NUM_AUTOCOMPLETE_EVENTS);
 }
 

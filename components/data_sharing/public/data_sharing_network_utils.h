@@ -59,10 +59,8 @@ inline constexpr net::NetworkTrafficAnnotationTag
     destination: GOOGLE_OWNED_SERVICE
     internal {
       contacts{email : "chrome-tab-group-eng@google.com"}
-      contacts{email : "ritikagup@google.com"} contacts {
-      email:
-        "nyquist@chromium.org"
-      }
+      contacts{email : "ritikagup@google.com"}
+      contacts{email : "nyquist@chromium.org"}
     }
     user_data {
       type: HW_OS_INFO
@@ -181,6 +179,148 @@ inline constexpr net::NetworkTrafficAnnotationTag
     user_data {
       type: HW_OS_INFO
       type: GAID_ID
+      type: OTHER
+      type: ACCESS_TOKEN
+    }
+    last_reviewed: "2024-05-23"
+  }
+  policy {
+    cookies_allowed: NO
+    setting:
+      "This feature cannot be disabled by settings as it is part of the Data "
+      "Sharing."
+    policy_exception_justification: "Not implemented."
+  })");
+
+inline constexpr net::NetworkTrafficAnnotationTag kLookupTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("data_sharing_service_lookup",
+                                        R"(
+  semantics {
+    sender: "Data Sharing Service Lookup."
+    description:
+      "All lookup calls to Google DataSharing SDK APIs will use ChromeNetworkStack."
+      "This lookup person details about a group member or self based on the ID."
+    trigger: "Lookup is called."
+    data:
+      "Info related to lookup info for the group."
+      "GAID_ID : Unique identifier for user. Used as profile id for lookup."
+      "EMAIL : Info about client email."
+      "PHONE : Info about client phone."
+      "OTHER : Chat Space ID for lookup."
+    destination: GOOGLE_OWNED_SERVICE
+    internal {
+      contacts{email : "chrome-tab-group-eng@google.com"}
+      contacts{email : "ritikagup@google.com"}
+      contacts{email : "nyquist@chromium.org"}
+    }
+    user_data {
+      type: GAID_ID
+      type: EMAIL
+      type: PHONE
+      type: OTHER
+    }
+    last_reviewed: "2024-05-23"
+  }
+  policy {
+    cookies_allowed: NO
+    setting:
+      "This feature cannot be disabled by settings as it is part of the Data "
+      "Sharing."
+    policy_exception_justification: "Not implemented."
+  })");
+
+inline constexpr net::NetworkTrafficAnnotationTag
+    kBlockPersonTrafficAnnotation =
+        net::DefineNetworkTrafficAnnotation("data_sharing_service_block_person",
+                                            R"(
+  semantics {
+    sender: "Data Sharing Service Block Person."
+    description:
+      "All block person calls to Google DataSharing SDK APIs will use ChromeNetworkStack."
+    trigger: "Block person is called."
+    data:
+      "Info related to blocking a person from the group."
+      "HW_OS_INFO : Info about client device."
+      "GAID_ID : Unique identifier for user. Used as profile id."
+      "NAME : This is to identify the user name."
+    destination: GOOGLE_OWNED_SERVICE
+    internal {
+      contacts{email : "chrome-tab-group-eng@google.com"}
+      contacts{email : "ritikagup@google.com"}
+      contacts{email : "nyquist@chromium.org"}
+    }
+    user_data {
+      type: HW_OS_INFO
+      type: GAID_ID
+      type: NAME
+    }
+    last_reviewed: "2024-05-23"
+  }
+  policy {
+    cookies_allowed: NO
+    setting:
+      "This feature cannot be disabled by settings as it is part of the Data "
+      "Sharing."
+    policy_exception_justification: "Not implemented."
+  })");
+
+inline constexpr net::NetworkTrafficAnnotationTag kLeaveGroupTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("data_sharing_service_leave_group",
+                                        R"(
+  semantics {
+    sender: "Data Sharing Service Leave Group (Android)\"
+    description:
+      "All leave group calls to Google DataSharing SDK APIs will use ChromeNetworkStack."
+    trigger: "Leave group is called."
+    data:
+      "Info related to leaving a group."
+      "HW_OS_INFO : Info about client device."
+      "OTHER : GroupID is a unique identifier for a collaboration. This is used to identify the group information that is being fetched."
+      "TokenSecret from the link is optionally used to get access before your GAIA_ID provides access."
+      "ACCESS_TOKEN : This is to identify if the user calling has access to the group."
+    destination: GOOGLE_OWNED_SERVICE
+    internal {
+      contacts{email : "chrome-tab-group-eng@google.com"}
+      contacts{email : "ritikagup@google.com"}
+      contacts{email : "nyquist@chromium.org"}
+    }
+    user_data {
+      type: HW_OS_INFO
+      type: OTHER
+      type: ACCESS_TOKEN
+    }
+    last_reviewed: "2024-05-23"
+  }
+  policy {
+    cookies_allowed: NO
+    setting:
+      "This feature cannot be disabled by settings as it is part of the Data "
+      "Sharing."
+    policy_exception_justification: "Not implemented."
+  })");
+
+inline constexpr net::NetworkTrafficAnnotationTag kJoinGroupTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("data_sharing_service_join_group",
+                                        R"(
+  semantics {
+    sender: "Data Sharing Service Join Group (Android)\"
+    description:
+      "All join group calls to Google DataSharing SDK APIs will use ChromeNetworkStack."
+    trigger: "Join group is called."
+    data:
+      "Info related to joining a group."
+      "HW_OS_INFO : Info about client device."
+      "OTHER : GroupID is a unique identifier for a collaboration. This is used to identify the group information that is being fetched."
+      "TokenSecret from the link is optionally used to get access before your GAIA_ID provides access."
+      "ACCESS_TOKEN : This is to identify if the user calling has access to the group."
+    destination: GOOGLE_OWNED_SERVICE
+    internal {
+      contacts{email : "chrome-tab-group-eng@google.com"}
+      contacts{email : "ritikagup@google.com"}
+      contacts{email : "nyquist@chromium.org"}
+    }
+    user_data {
+      type: HW_OS_INFO
       type: OTHER
       type: ACCESS_TOKEN
     }

@@ -14,7 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/device_reauth/device_reauth_metrics_util.h"
@@ -60,6 +60,7 @@ enum UIDisplayDisposition {
   MANUAL_PASSKEY_NOT_ACCEPTED_BUBBLE = 27,
   AUTOMATIC_PASSKEY_UPGRADE_BUBBLE = 28,
   MANUAL_PASSKEY_UPGRADE_BUBBLE = 29,
+  PASSWORD_CHANGE_BUBBLE = 30,
   NUM_DISPLAY_DISPOSITIONS,
 };
 

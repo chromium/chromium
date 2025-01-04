@@ -26,15 +26,18 @@
 namespace controlled_frame {
 
 namespace {
+
 const auto kTestFiles = testing::Values("add_content_scripts.window.js",
                                         "camera.window.js",
                                         "client_hints_user_agent.window.js",
-                                        "event_handlers.window.js",
+                                        "frame_event_handlers_part_1.window.js",
+                                        "frame_event_handlers_part_2.window.js",
                                         "geolocation.window.js",
                                         "new_window.window.js",
                                         "no_callback.window.js",
                                         "scheme.window.js",
-                                        "user_agent_override.window.js");
+                                        "user_agent_override.window.js",
+                                        "webrequest_event_handlers.window.js");
 
 constexpr char kTestDirectory[] = "chrome/test/data/controlled_frame";
 constexpr char kTestHarnessPath[] =

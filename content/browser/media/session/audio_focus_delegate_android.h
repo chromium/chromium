@@ -59,11 +59,6 @@ class AudioFocusDelegateAndroid : public AudioFocusDelegate,
   // Called by Java through JNI.
   void OnStopDucking(JNIEnv* env, jobject obj);
 
-  // Record when the Android system requests the MediaSession to duck.
-  // Called by Java through JNI.
-  void RecordSessionDuck(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& obj);
-
   // This is not used by this delegate.
   void MediaSessionInfoChanged(
       const media_session::mojom::MediaSessionInfoPtr&) override {}

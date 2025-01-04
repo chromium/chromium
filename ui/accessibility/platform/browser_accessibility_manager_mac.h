@@ -75,6 +75,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerMac
   void OnAtomicUpdateFinished(AXTree* tree,
                               bool root_changed,
                               const std::vector<Change>& changes) override;
+  void OnNodeDataChanged(AXTree* tree,
+                         const AXNodeData& old_node_data,
+                         const AXNodeData& new_node_data) override;
 
   NSDictionary* GetUserInfoForSelectedTextChangedNotification();
 

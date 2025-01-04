@@ -5,7 +5,6 @@
 #include "content/browser/gpu/chromeos/video_capture_dependencies.h"
 
 #include "base/functional/bind.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -33,7 +32,7 @@ void VideoCaptureDependencies::CreateJpegDecodeAccelerator(
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // static
 void VideoCaptureDependencies::CreateJpegEncodeAccelerator(
     mojo::PendingReceiver<chromeos_camera::mojom::JpegEncodeAccelerator>
@@ -54,6 +53,6 @@ void VideoCaptureDependencies::CreateJpegEncodeAccelerator(
     LOG(ERROR) << "No GpuProcessHost";
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace content

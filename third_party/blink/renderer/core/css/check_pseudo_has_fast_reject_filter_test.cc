@@ -49,6 +49,7 @@ class CheckPseudoHasFastRejectFilterTest : public PageTestBase {
 
     CheckPseudoHasArgumentContext context(
         selector_list->First()->SelectorList()->First(),
+        /*scope=*/nullptr,
         /* match_in_shadow_tree */ false);
 
     return filter.FastReject(context.GetPseudoHasArgumentHashes());

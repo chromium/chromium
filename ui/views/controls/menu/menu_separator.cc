@@ -34,8 +34,9 @@ void MenuSeparator::OnPaint(gfx::Canvas* canvas) {
 
   int y = 0;
   int separator_thickness = menu_config.separator_thickness;
-  if (type_ == ui::DOUBLE_SEPARATOR)
+  if (type_ == ui::DOUBLE_SEPARATOR) {
     separator_thickness = menu_config.double_separator_thickness;
+  }
   switch (type_) {
     case ui::LOWER_SEPARATOR:
       y = height() - separator_thickness;
@@ -104,8 +105,9 @@ ui::MenuSeparatorType MenuSeparator::GetType() const {
 }
 
 void MenuSeparator::SetType(ui::MenuSeparatorType type) {
-  if (type_ == type)
+  if (type_ == type) {
     return;
+  }
 
   type_ = type;
   OnPropertyChanged(&type_, kPropertyEffectsPreferredSizeChanged);

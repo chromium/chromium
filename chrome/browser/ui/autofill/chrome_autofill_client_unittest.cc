@@ -27,20 +27,21 @@
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_driver.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
-#include "components/autofill/core/browser/password_form_classification.h"
+#include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
+#include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
+#include "components/autofill/core/browser/integrators/mock_fast_checkout_client.h"
+#include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_manager_waiter.h"
-#include "components/autofill/core/browser/test_browser_autofill_manager.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/mock_autofill_suggestion_delegate.h"
-#include "components/autofill/core/browser/ui/mock_fast_checkout_client.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/plus_addresses/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -143,7 +144,8 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
 
     auto save_card_bubble_controller =
         std::make_unique<MockSaveCardBubbleController>(web_contents());
-    web_contents()->SetUserData(save_card_bubble_controller->UserDataKey(),
+    const auto* user_data_key = save_card_bubble_controller->UserDataKey();
+    web_contents()->SetUserData(user_data_key,
                                 std::move(save_card_bubble_controller));
 #endif
   }
@@ -230,7 +232,7 @@ TEST_F(ChromeAutofillClientTest, ClassifiesLoginFormOnMainFrame) {
                                      {AutofillManagerEvent::kFormsSeen});
     autofill_driver->renderer_events().FormsSeen(/*updated_forms=*/{form},
                                                  /*removed_forms=*/{});
-    ASSERT_TRUE(waiter.Wait(/*num_awaiting_calls=*/1));
+    ASSERT_TRUE(waiter.Wait(/*num_expected_relevant_events=*/1));
   }
 
   const auto expected = PasswordFormClassification{
@@ -287,7 +289,7 @@ TEST_F(ChromeAutofillClientTest, ClassifiesLoginFormOnChildFrame) {
                                              /*removed_forms=*/{});
     child_driver->renderer_events().FormsSeen(/*updated_forms=*/{child_form},
                                               /*removed_forms=*/{});
-    ASSERT_TRUE(waiter.Wait(/*num_awaiting_calls=*/2));
+    ASSERT_TRUE(waiter.Wait(/*num_expected_relevant_events=*/2));
   }
 
   // The form fields in the main frame do not form a valid password form.
@@ -435,19 +437,20 @@ TEST_F(ChromeAutofillClientTest,
       /*on_confirmation_closed_callback=*/std::nullopt);
 }
 
-TEST_F(ChromeAutofillClientTest,
-       AutofillManualFallbackIPH_NotShownByPromoController) {
-  SetUpIphForTesting(feature_engagement::kIPHAutofillManualFallbackFeature);
+TEST_F(ChromeAutofillClientTest, AutofillFieldIPH_NotShownByPromoController) {
+  SetUpIphForTesting(
+      feature_engagement::kIPHAutofillPredictionImprovementsFeature);
 
   EXPECT_CALL(*autofill_field_promo_controller(), IsMaybeShowing)
       .WillRepeatedly(Return(false));
 
   EXPECT_FALSE(client()->ShowAutofillFieldIphForFeature(
-      FormFieldData{}, AutofillClient::IphFeature::kManualFallback));
+      FormFieldData{}, AutofillClient::IphFeature::kAutofillAi));
 }
 
-TEST_F(ChromeAutofillClientTest, AutofillManualFallbackIPH_IsShown) {
-  SetUpIphForTesting(feature_engagement::kIPHAutofillManualFallbackFeature);
+TEST_F(ChromeAutofillClientTest, AutofillFieldIPH_IsShown) {
+  SetUpIphForTesting(
+      feature_engagement::kIPHAutofillPredictionImprovementsFeature);
 
   InSequence sequence;
   EXPECT_CALL(*autofill_field_promo_controller(), IsMaybeShowing)
@@ -457,7 +460,7 @@ TEST_F(ChromeAutofillClientTest, AutofillManualFallbackIPH_IsShown) {
       .WillOnce(Return(true));
 
   EXPECT_TRUE(client()->ShowAutofillFieldIphForFeature(
-      FormFieldData{}, AutofillClient::IphFeature::kManualFallback));
+      FormFieldData{}, AutofillClient::IphFeature::kAutofillAi));
 }
 
 TEST_F(ChromeAutofillClientTest, AutofillImprovedPredictionsIPH_IsShown) {
@@ -472,11 +475,11 @@ TEST_F(ChromeAutofillClientTest, AutofillImprovedPredictionsIPH_IsShown) {
       .WillOnce(Return(true));
 
   EXPECT_TRUE(client()->ShowAutofillFieldIphForFeature(
-      FormFieldData{}, AutofillClient::IphFeature::kPredictionImprovements));
+      FormFieldData{}, AutofillClient::IphFeature::kAutofillAi));
 }
 
 TEST_F(ChromeAutofillClientTest,
-       AutofillManualFallbackIPH_HideOnShowAutofillSuggestions) {
+       AutofillFieldIPH_HideOnShowAutofillSuggestions) {
   SetUpIphForTesting(
       feature_engagement::kIPHAutofillPredictionImprovementsFeature);
   auto delegate = std::make_unique<MockAutofillSuggestionDelegate>();
@@ -521,13 +524,13 @@ class ChromeAutofillClientTestWithWindow : public BrowserWithTestWindowTest {
       test_autofill_client_injector_;
 };
 
-TEST_F(ChromeAutofillClientTestWithWindow,
-       AutofillManualFallbackIPH_NotifyFeatureUsed) {
+TEST_F(ChromeAutofillClientTestWithWindow, AutofillFieldIPH_NotifyFeatureUsed) {
   EXPECT_CALL(
       *feature_promo_controller(),
-      EndPromo(Ref(feature_engagement::kIPHAutofillManualFallbackFeature),
-               user_education::EndFeaturePromoReason::kFeatureEngaged));
-  client()->NotifyIphFeatureUsed(AutofillClient::IphFeature::kManualFallback);
+      EndPromo(
+          Ref(feature_engagement::kIPHAutofillPredictionImprovementsFeature),
+          user_education::EndFeaturePromoReason::kFeatureEngaged));
+  client()->NotifyIphFeatureUsed(AutofillClient::IphFeature::kAutofillAi);
 }
 #endif
 }  // namespace

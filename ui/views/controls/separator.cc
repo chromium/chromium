@@ -11,6 +11,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/views/metadata/type_conversion.h"
 
 namespace views {
 
@@ -25,8 +26,9 @@ ui::ColorId Separator::GetColorId() const {
 }
 
 void Separator::SetColorId(ui::ColorId color_id) {
-  if (color_id_ == color_id)
+  if (color_id_ == color_id) {
     return;
+  }
 
   color_id_ = color_id;
   OnPropertyChanged(&color_id_, kPropertyEffectsPaint);
@@ -37,8 +39,9 @@ int Separator::GetPreferredLength() const {
 }
 
 void Separator::SetPreferredLength(int length) {
-  if (preferred_length_ == length)
+  if (preferred_length_ == length) {
     return;
+  }
 
   preferred_length_ = length;
   OnPropertyChanged(&preferred_length_, kPropertyEffectsPreferredSizeChanged);
@@ -66,8 +69,9 @@ void Separator::SetBorderRadius(int radius) {
 gfx::Size Separator::CalculatePreferredSize(
     const SizeBounds& /*available_size*/) const {
   gfx::Size size(kThickness, preferred_length_);
-  if (orientation_ == Orientation::kHorizontal)
+  if (orientation_ == Orientation::kHorizontal) {
     size.Transpose();
+  }
 
   gfx::Insets insets = GetInsets();
   size.Enlarge(insets.width(), insets.height());
@@ -128,3 +132,8 @@ ADD_PROPERTY_METADATA(int, BorderRadius)
 END_METADATA
 
 }  // namespace views
+
+DEFINE_ENUM_CONVERTERS(views::Separator::Orientation,
+                       {views::Separator::Orientation::kHorizontal,
+                        u"kHorizontal"},
+                       {views::Separator::Orientation::kVertical, u"kVertical"})

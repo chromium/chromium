@@ -32,6 +32,7 @@ namespace blink {
 
 template <typename IDLResolvedType>
 class ScriptPromiseResolver;
+class SourceLocation;
 
 // This class wraps v8::Promise::Resolver for easier use in blink.
 //
@@ -219,7 +220,7 @@ class CORE_EXPORT ScriptPromiseResolverBase
   Member<ScriptState> script_state_;
   TraceWrapperV8Reference<v8::Value> value_;
   const ExceptionContext exception_context_;
-  String script_url_;
+  std::unique_ptr<SourceLocation> source_location_;
 
 #if DCHECK_IS_ON()
   bool suppress_detach_check_ = false;

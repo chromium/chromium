@@ -142,8 +142,6 @@ void GraphImpl::SetUp() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CreateSystemNode();
 
-  AddFrameNodeObserver(&initializing_frame_node_observer_manager_);
-
   execution_context_registry_impl_.SetUp(this);
 
   CHECK_EQ(lifecycle_state_, LifecycleState::kBeforeSetUp);
@@ -158,8 +156,6 @@ void GraphImpl::TearDown() {
   graph_owned_.ReleaseObjects(this);
 
   execution_context_registry_impl_.TearDown(this);
-
-  RemoveFrameNodeObserver(&initializing_frame_node_observer_manager_);
 
   // At this point, all typed observers should be empty.
   DCHECK(frame_node_observers_.empty());
@@ -313,16 +309,6 @@ bool GraphImpl::IsOnGraphSequence() const {
 }
 #endif
 
-void GraphImpl::AddInitializingFrameNodeObserver(
-    InitializingFrameNodeObserver* frame_node_observer) {
-  initializing_frame_node_observer_manager_.AddObserver(frame_node_observer);
-}
-
-void GraphImpl::RemoveInitializingFrameNodeObserver(
-    InitializingFrameNodeObserver* frame_node_observer) {
-  initializing_frame_node_observer_manager_.RemoveObserver(frame_node_observer);
-}
-
 GraphRegistered* GraphImpl::GetRegisteredObject(uintptr_t type_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return registered_objects_.GetRegisteredObject(type_id);
@@ -338,6 +324,29 @@ bool GraphImpl::NodeInGraph(const NodeBase* node) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const NodeSet& nodes = GetNodesOfType(node->GetNodeType());
   return base::Contains(nodes, node->ToNode());
+}
+
+bool GraphImpl::NodeEdgesArePublic(const NodeBase* node) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  switch (GetNodeState(node)) {
+    case NodeState::kNotInGraph:
+    case NodeState::kInitializingNotInGraph:
+      // Hide node connections until edges are initialized.
+      return false;
+    case NodeState::kInitializingEdges:
+    case NodeState::kUninitializingEdges:
+      // InitializingFrameNodeObservers are called during this state, and must
+      // see the edges.
+      return true;
+    case NodeState::kJoiningGraph:
+    case NodeState::kActiveInGraph:
+    case NodeState::kLeavingGraph:
+      return true;
+    case NodeState::kLeftGraph:
+      // Hide node connections during teardown.
+      return false;
+  }
+  NOTREACHED();
 }
 
 ProcessNodeImpl* GraphImpl::GetProcessNodeByPid(base::ProcessId pid) {
@@ -382,13 +391,17 @@ void GraphImpl::AddNewNode(NodeBase* new_node) {
   // NodeBase and NodeState for full details of the lifecycle.
   node_in_transition_ = new_node;
   node_in_transition_state_ = NodeState::kNotInGraph;
-  new_node->JoinGraph(this);
-  node_in_transition_state_ = NodeState::kInitializing;
-  new_node->OnJoiningGraph();
+  new_node->SetGraphPointer(this);
+  node_in_transition_state_ = NodeState::kInitializingNotInGraph;
+  new_node->OnInitializingProperties();
+  DispatchBeforeNodeAddedNotifications(new_node);
+  node_in_transition_state_ = NodeState::kInitializingEdges;
+  new_node->OnInitializingEdges();
   node_in_transition_state_ = NodeState::kJoiningGraph;
   DispatchNodeAddedNotifications(new_node);
   node_in_transition_ = nullptr;
   node_in_transition_state_ = NodeState::kNotInGraph;
+  new_node->OnAfterJoiningGraph();
 }
 
 void GraphImpl::RemoveNode(NodeBase* node) {
@@ -402,11 +415,13 @@ void GraphImpl::RemoveNode(NodeBase* node) {
   node->OnBeforeLeavingGraph();
   node_in_transition_ = node;
   node_in_transition_state_ = NodeState::kLeavingGraph;
+  DispatchBeforeNodeRemovedNotifications(node);
+  node_in_transition_state_ = NodeState::kUninitializingEdges;
+  node->OnUninitializingEdges();
+  node_in_transition_state_ = NodeState::kLeftGraph;
   DispatchNodeRemovedNotifications(node);
-  node_in_transition_state_ = NodeState::kUninitializing;
-  node->OnUninitializing();
-  node->RemoveNodeAttachedData();
-  node->LeaveGraph();
+  node->CleanUpNodeState();
+  node->ClearGraphPointer();
   node_in_transition_ = nullptr;
   node_in_transition_state_ = NodeState::kNotInGraph;
 
@@ -414,16 +429,6 @@ void GraphImpl::RemoveNode(NodeBase* node) {
   NodeSet& nodes = GetNodesOfType(node->GetNodeType());
   size_t erased = nodes.erase(node->ToNode());
   DCHECK_EQ(1u, erased);
-}
-
-void GraphImpl::NotifyFrameNodeInitializing(const FrameNode* frame_node) {
-  initializing_frame_node_observer_manager_.NotifyFrameNodeInitializing(
-      frame_node);
-}
-
-void GraphImpl::NotifyFrameNodeTearingDown(const FrameNode* frame_node) {
-  initializing_frame_node_observer_manager_.NotifyFrameNodeTearingDown(
-      frame_node);
 }
 
 size_t GraphImpl::NodeDataDescriberCountForTesting() const {
@@ -506,8 +511,54 @@ GraphImpl::ProcessAndFrameId::ProcessAndFrameId(
 GraphImpl::ProcessAndFrameId& GraphImpl::ProcessAndFrameId::operator=(
     const GraphImpl::ProcessAndFrameId& other) = default;
 
+void GraphImpl::DispatchBeforeNodeAddedNotifications(NodeBase* node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(node->GetNodeState(), NodeState::kInitializingNotInGraph);
+
+  // This handles the strongly typed observer notifications.
+  switch (node->GetNodeType()) {
+    case NodeTypeEnum::kFrame: {
+      auto* frame_node = FrameNodeImpl::FromNodeBase(node);
+      for (auto& observer : frame_node_observers_) {
+        observer.OnBeforeFrameNodeAdded(
+            frame_node, frame_node->parent_frame_node(),
+            frame_node->page_node(), frame_node->process_node(),
+            frame_node->parent_or_outer_document_or_embedder());
+      }
+      return;
+    }
+    case NodeTypeEnum::kPage: {
+      auto* page_node = PageNodeImpl::FromNodeBase(node);
+      for (auto& observer : page_node_observers_) {
+        observer.OnBeforePageNodeAdded(page_node);
+      }
+      return;
+    }
+    case NodeTypeEnum::kProcess: {
+      auto* process_node = ProcessNodeImpl::FromNodeBase(node);
+      for (auto& observer : process_node_observers_) {
+        observer.OnBeforeProcessNodeAdded(process_node);
+      }
+      return;
+    }
+    case NodeTypeEnum::kSystem:
+      // Do nothing.
+      return;
+    case NodeTypeEnum::kWorker: {
+      auto* worker_node = WorkerNodeImpl::FromNodeBase(node);
+      for (auto& observer : worker_node_observers_) {
+        observer.OnBeforeWorkerNodeAdded(worker_node,
+                                         worker_node->process_node());
+      }
+      return;
+    }
+  }
+  NOTREACHED();
+}
+
 void GraphImpl::DispatchNodeAddedNotifications(NodeBase* node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(node->GetNodeState(), NodeState::kJoiningGraph);
 
   // This handles the strongly typed observer notifications.
   switch (node->GetNodeType()) {
@@ -516,32 +567,39 @@ void GraphImpl::DispatchNodeAddedNotifications(NodeBase* node) {
       for (auto& observer : frame_node_observers_) {
         observer.OnFrameNodeAdded(frame_node);
       }
-    } break;
+      return;
+    }
     case NodeTypeEnum::kPage: {
       auto* page_node = PageNodeImpl::FromNodeBase(node);
       for (auto& observer : page_node_observers_) {
         observer.OnPageNodeAdded(page_node);
       }
-    } break;
+      return;
+    }
     case NodeTypeEnum::kProcess: {
       auto* process_node = ProcessNodeImpl::FromNodeBase(node);
       for (auto& observer : process_node_observers_) {
         observer.OnProcessNodeAdded(process_node);
       }
-    } break;
+      return;
+    }
     case NodeTypeEnum::kSystem:
-      break;
+      // Do nothing.
+      return;
     case NodeTypeEnum::kWorker: {
       auto* worker_node = WorkerNodeImpl::FromNodeBase(node);
       for (auto& observer : worker_node_observers_) {
         observer.OnWorkerNodeAdded(worker_node);
       }
-    } break;
+      return;
+    }
   }
+  NOTREACHED();
 }
 
-void GraphImpl::DispatchNodeRemovedNotifications(NodeBase* node) {
+void GraphImpl::DispatchBeforeNodeRemovedNotifications(NodeBase* node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(node->GetNodeState(), NodeState::kLeavingGraph);
 
   switch (node->GetNodeType()) {
     case NodeTypeEnum::kFrame: {
@@ -549,28 +607,78 @@ void GraphImpl::DispatchNodeRemovedNotifications(NodeBase* node) {
       for (auto& observer : frame_node_observers_) {
         observer.OnBeforeFrameNodeRemoved(frame_node);
       }
-    } break;
+      return;
+    }
     case NodeTypeEnum::kPage: {
       auto* page_node = PageNodeImpl::FromNodeBase(node);
       for (auto& observer : page_node_observers_) {
         observer.OnBeforePageNodeRemoved(page_node);
       }
-    } break;
+      return;
+    }
     case NodeTypeEnum::kProcess: {
       auto* process_node = ProcessNodeImpl::FromNodeBase(node);
       for (auto& observer : process_node_observers_) {
         observer.OnBeforeProcessNodeRemoved(process_node);
       }
-    } break;
+      return;
+    }
     case NodeTypeEnum::kSystem:
-      break;
+      // Do nothing.
+      return;
     case NodeTypeEnum::kWorker: {
       auto* worker_node = WorkerNodeImpl::FromNodeBase(node);
       for (auto& observer : worker_node_observers_) {
         observer.OnBeforeWorkerNodeRemoved(worker_node);
       }
-    } break;
+      return;
+    }
   }
+  NOTREACHED();
+}
+
+void GraphImpl::DispatchNodeRemovedNotifications(NodeBase* node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(node->GetNodeState(), NodeState::kLeftGraph);
+
+  // This handles the strongly typed observer notifications.
+  switch (node->GetNodeType()) {
+    case NodeTypeEnum::kFrame: {
+      auto* frame_node = FrameNodeImpl::FromNodeBase(node);
+      for (auto& observer : frame_node_observers_) {
+        observer.OnFrameNodeRemoved(
+            frame_node, frame_node->parent_frame_node(),
+            frame_node->page_node(), frame_node->process_node(),
+            frame_node->parent_or_outer_document_or_embedder());
+      }
+      return;
+    }
+    case NodeTypeEnum::kPage: {
+      auto* page_node = PageNodeImpl::FromNodeBase(node);
+      for (auto& observer : page_node_observers_) {
+        observer.OnPageNodeRemoved(page_node);
+      }
+      return;
+    }
+    case NodeTypeEnum::kProcess: {
+      auto* process_node = ProcessNodeImpl::FromNodeBase(node);
+      for (auto& observer : process_node_observers_) {
+        observer.OnProcessNodeRemoved(process_node);
+      }
+      return;
+    }
+    case NodeTypeEnum::kSystem:
+      // Do nothing.
+      return;
+    case NodeTypeEnum::kWorker: {
+      auto* worker_node = WorkerNodeImpl::FromNodeBase(node);
+      for (auto& observer : worker_node_observers_) {
+        observer.OnWorkerNodeRemoved(worker_node, worker_node->process_node());
+      }
+      return;
+    }
+  }
+  NOTREACHED();
 }
 
 int64_t GraphImpl::GetNextNodeSerializationId() {

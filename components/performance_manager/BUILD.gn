@@ -96,8 +96,6 @@ static_library("performance_manager") {
     "graph/graph_impl_util.h",
     "graph/graph_operations.cc",
     "graph/graph_registered.cc",
-    "graph/initializing_frame_node_observer.cc",
-    "graph/initializing_frame_node_observer.h",
     "graph/node.cc",
     "graph/node_attached_data.cc",
     "graph/node_attached_data_storage.cc",
@@ -178,10 +176,7 @@ static_library("performance_manager") {
     "public/metrics/metrics_collector.h",
     "public/metrics/page_resource_monitor.h",
     "public/performance_manager.h",
-    "public/performance_manager_main_thread_mechanism.h",
-    "public/performance_manager_main_thread_observer.h",
-    "public/performance_manager_owned.h",
-    "public/performance_manager_registered.h",
+    "public/performance_manager_observer.h",
     "public/power/battery_level_provider_creator.h",
     "public/render_frame_host_proxy.h",
     "public/render_process_host_id.h",
@@ -200,7 +195,6 @@ static_library("performance_manager") {
     "public/resource_attribution/resource_types.h",
     "public/resource_attribution/type_helpers.h",
     "public/resource_attribution/worker_context.h",
-    "public/scenarios/performance_scenario_observer.h",
     "public/scenarios/performance_scenarios.h",
     "public/tracing_support.h",
     "public/user_tuning/prefs.h",
@@ -251,7 +245,6 @@ static_library("performance_manager") {
     "scenarios/loading_scenario_observer.h",
     "scenarios/performance_scenario_data.cc",
     "scenarios/performance_scenario_data.h",
-    "scenarios/performance_scenario_oberver.cc",
     "scenarios/performance_scenarios.cc",
     "service_worker_context_adapter.cc",
     "service_worker_context_adapter.h",
@@ -280,7 +273,6 @@ static_library("performance_manager") {
   ]
 
   deps = [
-    "//build:chromeos_buildflags",
     "//components/content_settings/core/common",
     "//components/guest_view/buildflags",
     "//components/metrics",
@@ -346,7 +338,7 @@ static_library("performance_manager") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//chromeos/dbus/power",
       "//chromeos/dbus/power:power_manager_proto",
@@ -490,7 +482,7 @@ source_set("unit_tests") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//chromeos/dbus/power",
       "//chromeos/dbus/power:power_manager_proto",

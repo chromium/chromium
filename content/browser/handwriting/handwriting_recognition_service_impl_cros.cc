@@ -9,18 +9,13 @@
 
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/handwriting/handwriting_recognizer_impl_cros.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/mojom/handwriting/handwriting.mojom.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/services/machine_learning/public/cpp/ml_switches.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 namespace content {
@@ -31,16 +26,13 @@ namespace {
 // supported by the CrOS Downloadable Content (DLC) service other than on
 // rootfs.
 bool IsCrOSLibHandwritingRootfsEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // TODO(https://crbug.com/1168978): mlservice should provide an interface to
   // query this.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   return command_line->HasSwitch(::switches::kOndeviceHandwritingSwitch) &&
          command_line->GetSwitchValueASCII(
              ::switches::kOndeviceHandwritingSwitch) == "use_rootfs";
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()->OndeviceHandwritingSupport() ==
-         crosapi::mojom::OndeviceHandwritingSupport::kUseRootfs;
 #else
   return false;
 #endif

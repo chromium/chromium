@@ -461,8 +461,9 @@ TEST_F(TableLayoutTest, FixedSize) {
   layout().AddRows(kRowCount, TableLayout::kFixedSize);
 
   for (size_t row = 0; row < kRowCount; ++row) {
-    for (size_t column = 0; column < kColumnCount; ++column)
+    for (size_t column = 0; column < kColumnCount; ++column) {
       host()->AddChildView(CreateSizedView(gfx::Size(kPrefWidth, kPrefHeight)));
+    }
   }
 
   layout().Layout(host());

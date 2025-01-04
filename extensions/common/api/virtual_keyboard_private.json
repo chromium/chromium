@@ -225,7 +225,7 @@
       {
         "name": "openSettings",
         "type": "function",
-        "description": "Opens chrome://os-settings/osLanguages page.",
+        "description": "Opens chrome://os-settings/osLanguages/input page.",
         "parameters": []
       },
       {

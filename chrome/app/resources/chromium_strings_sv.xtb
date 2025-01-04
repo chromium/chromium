@@ -19,7 +19,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1185134272377778587">Om Chromium</translation>
 <translation id="1188705220418984327">För att dela fönstret tillåter du skärminspelning för Chromium i systeminställningarna.</translation>
 <translation id="1203500561924088507">Tack för att du installerat programmet. Du måste starta om webbläsaren innan du använder <ph name="BUNDLE_NAME" />.</translation>
-<translation id="1235768345431527125">Du kan logga in för att få tillgång till dina saker eller använda Chromium utan konto</translation>
 <translation id="1262876892872089030">När den här fliken var inaktiv frigjordes minne för att hålla Chromium snabbt. Du kan välja att aldrig inaktivera den här webbplatsen.</translation>
 <translation id="1265577313130862557">Den här nedladdningen blockerades av Chromium eftersom filen är farlig</translation>
 <translation id="126567311906253476">När du loggar in på Googles tjänster, som Gmail eller YouTube, med <ph name="USER_EMAIL" /> kan du logga in automatiskt i Chromium med samma konto</translation>
@@ -60,6 +59,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="1779356040007214683">Vi har gjort Chromium säkrare genom att inaktivera vissa tillägg som inte finns i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> och som kan ha lagts till utan att du vet om det.</translation>
 <translation id="1808667845054772817">Installera om Chromium</translation>
 <translation id="1820835682567584003">Chromium försöker att <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1838374766361614909">Rensa sökning</translation>
 <translation id="18552579716432081"><ph name="BEGIN_LINK" />Logga ut från Chromium<ph name="END_LINK" /> om du vill radera webbinformation från enheten utan att ta bort den från Google-kontot.</translation>
 <translation id="185970820835152459">Du kan hantera dina inloggade Google-konton. Dina Google-konton används för webbläsaren Chromium, Play Butik, Gmail med mera. Om du vill lägga till ett konto åt någon annan, till exempel en familjemedlem, lägger du till en ny person på <ph name="DEVICE_TYPE" /> i stället. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Sök med bildsökning</translation>
@@ -69,6 +69,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="1896836275755235458">Chromium sparar batteri genom att begränsa aktivitet i bakgrunden och visuella effekter, till exempel jämnare scrollning och bildfrekvenser för video. <ph name="BEGIN_LINK" />Läs mer om strömsparläget<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium-uppdateringstjänst</translation>
 <translation id="1911763535808217981">Om du inaktiverar detta kan du logga in på Googles webbplatser, till exempel Gmail, utan att logga in i Chromium</translation>
+<translation id="1916451563296275579">Ta bort datan för den här appen från Chromium</translation>
 <translation id="1929939181775079593">Chromium svarar inte. Vill du starta om?</translation>
 <translation id="1933341829955786215">Din organisation, <ph name="MANAGER" />, kräver att du loggar in i Chromium</translation>
 <translation id="193439633299369377">Chromium OS måste startas om för att uppdateringen ska börja gälla.</translation>
@@ -95,6 +96,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="2199210295479376551">Ta bort kontot från Chromium</translation>
 <translation id="2210682093923538346">Farlig webbplats. Chromium har tagit bort aviseringar.</translation>
 <translation id="2236949375853147973">Min aktivitet</translation>
+<translation id="2238130810669087193">Logga in i Chromium om du vill få tillgång till dina adresser med mera på alla dina enheter. Adressen sparas i ditt Google-konto när du har loggat in.</translation>
 <translation id="2240214816234246077">Du har inte besökt webbplatsen nyligen. Chromium har tagit bort <ph name="PERMISSION_1" /> och <ph name="PERMISSION_2" /></translation>
 <translation id="2241627712206172106">Om du delar en dator med vänner och familj kan de konfigurera Chromium precis som de vill och surfa separat.</translation>
 <translation id="2313870531055795960">Kontrollera webbadresser mot en lista över osäkra webbplatser i Chromium. Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chromium till Säker webbsökning tillsammans med delar av sidinnehållet.</translation>
@@ -112,6 +114,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="2483889755041906834">I Chromium</translation>
 <translation id="2485422356828889247">Avinstallera</translation>
 <translation id="2513154137948333830">Omstart krävs: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="2522009821193247726">Du måste logga in i Chromium med <ph name="EMAIL" /> om du vill fortsätta. Detta säkerställer att organisationens policyer följs.</translation>
 <translation id="2542968102051442371">Välj text med Bildsökning</translation>
 <translation id="2554739539410784893">Skriv ditt Windows-lösenord om du vill tillåta att de befintliga lösenorden i Chromium ersätts.</translation>
 <translation id="2560420686485554789">Du behöver ge Chromium åtkomst till lagringsutrymmet om det ska gå att ladda ned filer</translation>
@@ -121,6 +124,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="2583187216237139145">All data i Chromium som uppstår när den här profilen används (t.ex. bokmärken, historik, lösenord och andra inställningar) kan tas bort av jobbprofilens administratör. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Fortsätt att använda Chromium</translation>
 <translation id="259935314519650377">Det gick inte att cachelagra det nedladdade installationsprogrammet. Fel: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2635452620547538388">Verifiera din identitet för att använda och spara Chromium-data i ditt konto, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="264613044588233783">Chromium körs snabbare och funktioner som använder JavaScript bör fungera som de ska (rekommenderas)</translation>
 <translation id="2648074677641340862">Ett operativsystemsfel inträffade under installationen. Ladda ned Chromium igen.</translation>
 <translation id="2661879430930417727">Om du delar en enhet med vänner och familj kan de konfigurera Chromium precis som de vill och surfa separat.</translation>
@@ -206,7 +210,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="3802055581630249637">Sidor som du troligen kommer att besöka läses in i förväg i Chromium så att de läses in snabbare när du besöker dem</translation>
 <translation id="3830894615770080216">Chromium OS-system</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
-<translation id="386822487697155367">Få hjälp med Chromium OS</translation>
 <translation id="3871664619793219264">Få saker i webbläsaren Chromium från <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3885770153807205175">Språkväljare</translation>
 <translation id="388648406173476553">Anpassa och kontrollera Chromium. Någonting behöver ses över. Klicka här för mer information.</translation>
@@ -254,7 +257,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="4438870983368648614"><ph name="MANAGER" /> hanterar Chromium</translation>
 <translation id="444069871276811466">Lägg till Chromium-profil</translation>
 <translation id="4447409407328223819">Om Chrome for Testing</translation>
-<translation id="4470974262661801543">Ange lösenfrasen om du vill använda och spara Chromium-data i ditt Google-konto</translation>
 <translation id="4493028449971051158">Startfel: Kör installationsprogrammet som administratör.</translation>
 <translation id="4501471624619070934">Installationen misslyckades eftersom åtkomsten är begränsad i det här landet.</translation>
 <translation id="4510853178268397146">Tillägget har ingen publicerad integritetspraxis, till exempel hur det samlar in och använder data. Vi rekommenderar att du tar bort det.</translation>
@@ -406,6 +408,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6455857529632101747">Välkommen till Chromium-profiler</translation>
 <translation id="6466344609055215035">Ta bort kontot från Chromium</translation>
 <translation id="6475912303565314141">Det styr också vilken sida som visas när du startar Chromium.</translation>
+<translation id="648062525172759633">Dessa sidor är avsedda för Chromium-utvecklare och kanske inte underhålls eller testas aktivt. Om du vill aktivera dem navigerar du till <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klickar på knappen för att aktivera felsökningssidor och navigerar sedan till den här sidan igen.</translation>
 <translation id="648319183876919572">Förbättrad säker webbsökning gör mer för att skydda dig mot farliga webbplatser och nedladdningar</translation>
 <translation id="6510925080656968729">Avinstallera Chromium</translation>
 <translation id="651535675648445253">Genvägar öppnas i Chromium</translation>
@@ -449,6 +452,7 @@ Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog elle
 <translation id="6980074797973263542">Organisationen kan se och hantera webbinformation, till exempel bokmärken, historik och lösenord. Den kan inte se webbinformation i personliga Chromium-profiler.</translation>
 <translation id="6985329841647292029">Villkor för Chromium OS</translation>
 <translation id="6990124437352146030">Du behöver ge Chromium behörighet att använda mikrofonen på webbplatsen</translation>
+<translation id="7003299027384820442">Ange lösenfrasen om du vill använda och spara Chromium-data i ditt konto, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">Installationen misslyckades eftersom den här versionen av operativsystemet inte stöds.</translation>
 <translation id="7024536598735240744">Uppackningsfel: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Installationen avbröts.</translation>
@@ -514,6 +518,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Så här kan du hantera dina uppgifter:<ph name="END_BOLD" /> För att skydda din integritet raderar vi automatiskt intressen som är äldre än fyra veckor. Medan du surfar kan ett intresse dyka upp på listan igen. Du kan också ta bort intressen som du inte vill att Chromium ska inkludera.</translation>
 <translation id="7888981273428720788">Ställ in Chromium som standardwebbläsare</translation>
 <translation id="7934340546140346950">Chromium uppgraderar automatiskt osäkra anslutningar till HTTPS när det är möjligt</translation>
+<translation id="7935734571048689933">Chromium hanteras</translation>
 <translation id="7937630085815544518">Du var inloggad i Chromium som <ph name="USER_EMAIL_ADDRESS" />. Använd samma konto när du loggar in igen.</translation>
 <translation id="7975919845073681630">Det här är en sekundär installation av Chromium. Det går inte att göra den till standardwebbläsare.</translation>
 <translation id="7997934263947464652">Tillägg, appar och teman från okända källor kan skada enheten. Vi rekommenderar att du bara installerar dem från <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
@@ -543,6 +548,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="8330519371938183845">Genom att logga in kan du synkronisera och anpassa Chromium på alla enheter du använder</translation>
 <translation id="8340674089072921962">Chromium användes tidigare av <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8357820681460164151">Logga in och aktivera synkronisering om du vill få tillgång till saker i webbläsaren Chromium på olika enheter.</translation>
+<translation id="8359544530202147897">Uppdatera Chromium om du vill fortsätta använda Chromium-data i Google-kontot, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">Du behöver Windows 10 eller senare för att få kommande uppdateringar av Chromium. På den här datorn används Windows 8.</translation>
 <translation id="8362914115861174987">Översätt till</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Med ensamrätt.</translation>

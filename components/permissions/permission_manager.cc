@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/permissions/features.h"
@@ -70,7 +69,7 @@ class PermissionManager::PendingRequest {
       content::RenderFrameHost* render_frame_host,
       const std::vector<ContentSettingsType>& permissions,
       base::OnceCallback<void(const std::vector<ContentSetting>&)> callback)
-      : render_process_id_(render_frame_host->GetProcess()->GetID()),
+      : render_process_id_(render_frame_host->GetProcess()->GetDeprecatedID()),
         render_frame_id_(render_frame_host->GetRoutingID()),
         callback_(std::move(callback)),
         permissions_(permissions),

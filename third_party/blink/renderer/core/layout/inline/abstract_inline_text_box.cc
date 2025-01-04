@@ -523,7 +523,9 @@ AbstractInlineTextBox* AbstractInlineTextBox::NextOnLine() const {
   InlineCursor cursor = GetCursorOnLine();
   if (!cursor)
     return nullptr;
-  for (cursor.MoveToNext(); cursor; cursor.MoveToNext()) {
+  for (cursor.MoveToNext();
+       cursor && cursor.Current().Item()->Type() != FragmentItem::kLine;
+       cursor.MoveToNext()) {
     if (cursor.Current().GetLayoutObject()->IsText())
       return GetOrCreate(cursor);
   }
@@ -534,7 +536,9 @@ AbstractInlineTextBox* AbstractInlineTextBox::PreviousOnLine() const {
   InlineCursor cursor = GetCursorOnLine();
   if (!cursor)
     return nullptr;
-  for (cursor.MoveToPrevious(); cursor; cursor.MoveToPrevious()) {
+  for (cursor.MoveToPrevious();
+       cursor && cursor.Current().Item()->Type() != FragmentItem::kLine;
+       cursor.MoveToPrevious()) {
     if (cursor.Current().GetLayoutObject()->IsText())
       return GetOrCreate(cursor);
   }

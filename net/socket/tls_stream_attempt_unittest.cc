@@ -417,7 +417,7 @@ TEST_F(TlsStreamAttemptTest, NegotiatedHttp2) {
   StaticSocketDataProvider data;
   socket_factory().AddSocketDataProvider(&data);
   SSLSocketDataProvider ssl(ASYNC, OK);
-  ssl.next_proto = kProtoHTTP2;
+  ssl.next_proto = NextProto::kProtoHTTP2;
   socket_factory().AddSSLSocketDataProvider(&ssl);
 
   TlsStreamAttemptHelper helper(params());
@@ -430,7 +430,7 @@ TEST_F(TlsStreamAttemptTest, NegotiatedHttp2) {
   std::unique_ptr<StreamSocket> stream_socket =
       helper.attempt()->ReleaseStreamSocket();
   ASSERT_TRUE(stream_socket);
-  EXPECT_EQ(stream_socket->GetNegotiatedProtocol(), kProtoHTTP2);
+  EXPECT_EQ(stream_socket->GetNegotiatedProtocol(), NextProto::kProtoHTTP2);
 }
 
 TEST_F(TlsStreamAttemptTest, ClientAuthCertNeeded) {

@@ -61,6 +61,11 @@ Graph* FrameExecutionContext::GetGraph() const {
   return frame_node_->graph();
 }
 
+NodeState FrameExecutionContext::GetNodeState() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return frame_node_->GetNodeState();
+}
+
 const GURL& FrameExecutionContext::GetUrl() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return frame_node_->GetURL();
@@ -111,6 +116,11 @@ blink::ExecutionContextToken WorkerExecutionContext::GetToken() const {
 Graph* WorkerExecutionContext::GetGraph() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return worker_node_->graph();
+}
+
+NodeState WorkerExecutionContext::GetNodeState() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return worker_node_->GetNodeState();
 }
 
 const GURL& WorkerExecutionContext::GetUrl() const {

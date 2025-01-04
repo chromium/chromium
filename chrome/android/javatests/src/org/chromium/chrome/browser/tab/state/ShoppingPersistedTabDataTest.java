@@ -78,7 +78,7 @@ public class ShoppingPersistedTabDataTest {
                 .when(mProfileMock)
                 .isOffTheRecord();
         ProfileManager.setLastUsedProfileForTesting(mProfileMock);
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
         doReturn(true).when(mNavigationHandle).isInPrimaryMainFrame();
         ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
         ShoppingPersistedTabDataService.setServiceForTesting(mShoppingPersistedTabDataService);

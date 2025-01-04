@@ -370,12 +370,12 @@ Resource* PopHighestPriorityVisibleResource(
     HeapHashSet<WeakMember<Resource>>& resources) {
   Resource* result = nullptr;
   for (Resource* resource : resources) {
-    const ResourcePriority& priority = resource->LastComputedPriority();
+    const ResourcePriority& priority = resource->PriorityFromObservers().first;
     if (priority.visibility != ResourcePriority::kVisible) {
       continue;
     }
     if (!result || CompareResourcePriorities(
-                       priority, result->LastComputedPriority()) > 0) {
+                       priority, result->PriorityFromObservers().first) > 0) {
       result = resource;
     }
   }
@@ -946,13 +946,12 @@ void ResourceFetcher::DidLoadResourceFromMemoryCache(
                                   resource->GetResponse());
   }
 
-  // Only call ResourceLoadObserver callbacks for placeholder images when
-  // devtools is opened to get maximum performance.
-  // TODO(crbug.com/41496436): Explore optimizing this in general for
-  // `is_static_data`.
-  if (!IsSimplifyLoadingTransparentPlaceholderImageEnabled() ||
-      (request.GetKnownTransparentPlaceholderImageIndex() == kNotFound) ||
-      (resource_load_observer_->InterestedInAllRequests())) {
+  // Only call ResourceLoadObserver callbacks when devtools is opened to get
+  // maximum performance.
+  if (!(RuntimeEnabledFeatures::SkipCallbacksWhenDevToolsNotOpenEnabled() ||
+        (IsSimplifyLoadingTransparentPlaceholderImageEnabled() &&
+         request.GetKnownTransparentPlaceholderImageIndex() != kNotFound)) ||
+      resource_load_observer_->InterestedInAllRequests()) {
     resource_load_observer_->WillSendRequest(
         request, ResourceResponse() /* redirects */, resource->GetType(),
         resource->Options(), render_blocking_behavior, resource);
@@ -2777,18 +2776,18 @@ void ResourceFetcher::SetDefersLoading(LoaderFreezeMode mode) {
   }
 }
 
-void ResourceFetcher::UpdateAllImageResourcePriorities() {
-  TRACE_EVENT0(
-      "blink",
-      "ResourceLoadPriorityOptimizer::updateAllImageResourcePriorities");
+void ResourceFetcher::UpdateImagePrioritiesAndSpeculativeDecodes() {
+  TRACE_EVENT0("blink",
+               "ResourceLoadPriorityOptimizer::"
+               "UpdateImagePrioritiesAndSpeculativeDecodes");
 
-  // Force all images to update their LastComputedPriority.
+  // Update ResourcePriority for all resources.
   for (Resource* resource : speculative_decode_candidate_images_) {
-    resource->PriorityFromObservers();
+    resource->UpdateResourceInfoFromObservers();
   }
   speculative_decode_candidate_images_.erase_if(
       [](const WeakMember<Resource>& resource) -> bool {
-        return resource->LastComputedPriority().visibility ==
+        return resource->PriorityFromObservers().first.visibility ==
                ResourcePriority::kNotVisible;
       });
   MaybeStartSpeculativeImageDecode();
@@ -2804,6 +2803,7 @@ void ResourceFetcher::UpdateAllImageResourcePriorities() {
       continue;
     }
 
+    resource->UpdateResourceInfoFromObservers();
     auto priorities = resource->PriorityFromObservers();
     ResourcePriority resource_priority = priorities.first;
     ResourceLoadPriority computed_load_priority = ComputeLoadPriority(

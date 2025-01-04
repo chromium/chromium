@@ -15,22 +15,22 @@ android_library("java") {
   ]
 
   sources = [
-    "android/java/src/org/chromium/components/cached_flags/BooleanCachedFieldTrialParameter.java",
-    "android/java/src/org/chromium/components/cached_flags/CachedFieldTrialParameter.java",
+    "android/java/src/org/chromium/components/cached_flags/BooleanCachedFeatureParam.java",
+    "android/java/src/org/chromium/components/cached_flags/CachedFeatureParam.java",
     "android/java/src/org/chromium/components/cached_flags/CachedFlag.java",
     "android/java/src/org/chromium/components/cached_flags/CachedFlagUtils.java",
     "android/java/src/org/chromium/components/cached_flags/CachedFlagsSafeMode.java",
     "android/java/src/org/chromium/components/cached_flags/CachedFlagsSharedPreferences.java",
-    "android/java/src/org/chromium/components/cached_flags/DoubleCachedFieldTrialParameter.java",
-    "android/java/src/org/chromium/components/cached_flags/IntCachedFieldTrialParameter.java",
-    "android/java/src/org/chromium/components/cached_flags/StringCachedFieldTrialParameter.java",
+    "android/java/src/org/chromium/components/cached_flags/DoubleCachedFeatureParam.java",
+    "android/java/src/org/chromium/components/cached_flags/IntCachedFeatureParam.java",
+    "android/java/src/org/chromium/components/cached_flags/StringCachedFeatureParam.java",
   ]
 }
 
 robolectric_library("junit") {
   sources = [
     "android/java/src/org/chromium/components/cached_flags/CachedFeatureFlagsSafeModeUnitTest.java",
-    "android/java/src/org/chromium/components/cached_flags/CachedFieldTrialParameterUnitTest.java",
+    "android/java/src/org/chromium/components/cached_flags/CachedFeatureParamUnitTest.java",
     "android/java/src/org/chromium/components/cached_flags/CachedFlagUnitTest.java",
   ]
   deps = [

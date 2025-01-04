@@ -18,12 +18,9 @@ namespace variations {
 namespace {
 
 // Path where we put variations in cryptohome.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr char kCrashVariationsFileName[] = ".variations-list.txt";
-#endif  // IS_CHROMEOS_ASH
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-constexpr char kCrashVariationsFileName[] = ".variations-list-lacros.txt";
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // IS_CHROMEOS
 
 void WriteVariationsToFile(ExperimentListInfo info) {
   std::string combined_string = base::StrCat(

@@ -24,6 +24,7 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
   encryptionPassphraseSuccess: boolean = false;
   decryptionPassphraseSuccess: boolean = false;
   storedAccounts: StoredAccount[] = [];
+  profileAvatarURL: string = '';
   chromeSigninUserChoiceInfo: ChromeSigninUserChoiceInfo = {
     shouldShowSettings: false,
     choice: ChromeSigninUserChoice.NO_CHOICE,
@@ -37,6 +38,7 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
       'didNavigateToSyncPage',
       'getPromoImpressionCount',
       'getStoredAccounts',
+      'getProfileAvatar',
       'getSyncStatus',
       'incrementPromoImpressionCount',
       'setSyncDatatypes',
@@ -88,6 +90,11 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
   getStoredAccounts() {
     this.methodCalled('getStoredAccounts');
     return Promise.resolve(this.storedAccounts);
+  }
+
+  getProfileAvatar() {
+    this.methodCalled('getProfileAvatar');
+    return Promise.resolve(this.profileAvatarURL);
   }
 
   // <if expr="not chromeos_ash">

@@ -5,9 +5,9 @@
 #include "base/win/com_init_util.h"
 
 #include <windows.h>
+#include <winternl.h>
 
 #include <stdint.h>
-#include <winternl.h>
 
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -47,11 +47,13 @@ OleTlsData* GetOleTlsData() {
 
 ComApartmentType GetComApartmentTypeForThread() {
   OleTlsData* ole_tls_data = GetOleTlsData();
-  if (!ole_tls_data)
+  if (!ole_tls_data) {
     return ComApartmentType::NONE;
+  }
 
-  if (ole_tls_data->apartment_flags & OleTlsData::ApartmentFlags::STA)
+  if (ole_tls_data->apartment_flags & OleTlsData::ApartmentFlags::STA) {
     return ComApartmentType::STA;
+  }
 
   if ((ole_tls_data->apartment_flags & OleTlsData::ApartmentFlags::MTA) ==
       OleTlsData::ApartmentFlags::MTA) {
@@ -64,8 +66,9 @@ ComApartmentType GetComApartmentTypeForThread() {
 #if DCHECK_IS_ON()
 
 void AssertComInitialized(const char* message) {
-  if (GetComApartmentTypeForThread() != ComApartmentType::NONE)
+  if (GetComApartmentTypeForThread() != ComApartmentType::NONE) {
     return;
+  }
 
   // COM worker threads don't always set up the apartment, but they do perform
   // some thread registration, so we allow those.

@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "cc/test/fake_layer_context.h"
 #include "cc/tiles/image_decode_cache_utils.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
 #include "cc/trees/raster_context_provider_wrapper.h"
@@ -94,6 +95,11 @@ void FakeLayerTreeFrameSink::SubmitCompositorFrame(viz::CompositorFrame frame,
 
 void FakeLayerTreeFrameSink::DidNotProduceFrame(const viz::BeginFrameAck& ack,
                                                 FrameSkippedReason reason) {}
+
+std::unique_ptr<LayerContext> FakeLayerTreeFrameSink::CreateLayerContext(
+    LayerTreeHostImpl& host_impl) {
+  return std::make_unique<FakeLayerContext>();
+}
 
 void FakeLayerTreeFrameSink::DidAllocateSharedBitmap(
     base::ReadOnlySharedMemoryRegion region,

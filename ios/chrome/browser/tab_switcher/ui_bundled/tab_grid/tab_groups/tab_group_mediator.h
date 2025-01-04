@@ -13,6 +13,9 @@
 
 namespace collaboration {
 class CollaborationService;
+namespace messaging {
+class MessagingBackendService;
+}  // namespace messaging
 }  // namespace collaboration
 
 namespace tab_groups {
@@ -30,16 +33,18 @@ class WebStateList;
 // Tab group mediator in charge to handle model update for one group.
 @interface TabGroupMediator : BaseGridMediator <TabGroupMutator>
 
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                 tabGroupSyncService:
-                     (tab_groups::TabGroupSyncService*)tabGroupSyncService
-                     shareKitService:(ShareKitService*)shareKitService
-                collaborationService:
-                    (collaboration::CollaborationService*)collaborationService
-                            tabGroup:(base::WeakPtr<const TabGroup>)tabGroup
-                            consumer:(id<TabGroupConsumer>)consumer
-                        gridConsumer:(id<TabCollectionConsumer>)gridConsumer
-                          modeHolder:(TabGridModeHolder*)modeHolder;
+- (instancetype)
+    initWithWebStateList:(WebStateList*)webStateList
+     tabGroupSyncService:(tab_groups::TabGroupSyncService*)tabGroupSyncService
+         shareKitService:(ShareKitService*)shareKitService
+    collaborationService:
+        (collaboration::CollaborationService*)collaborationService
+                tabGroup:(base::WeakPtr<const TabGroup>)tabGroup
+                consumer:(id<TabGroupConsumer>)consumer
+            gridConsumer:(id<TabCollectionConsumer>)gridConsumer
+              modeHolder:(TabGridModeHolder*)modeHolder
+        messagingService:(collaboration::messaging::MessagingBackendService*)
+                             messagingService;
 
 @end
 

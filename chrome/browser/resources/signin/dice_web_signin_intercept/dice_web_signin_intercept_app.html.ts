@@ -45,11 +45,11 @@ export function getHtml(this: DiceWebSigninInterceptAppElement) {
     <div id="header">
       <div id="headerText">${this.interceptionParameters_.headerText}</div>
       <div id="avatarContainer">
-        <img class="avatar" alt=""
+        <img class="avatar" alt="${this.interceptionParameters_.interceptedAccount.userBadgeAltText}"
             src="${this.interceptionParameters_.interceptedAccount.pictureUrl}">
         <div class="work-badge" id="badge"
             ?hidden="${!this.interceptionParameters_.interceptedAccount.avatarBadge.length}">
-          <cr-icon class="icon"
+          <cr-icon class="icon" aria-hidden="true"
               icon="${this.interceptionParameters_.interceptedAccount.avatarBadge}">
           </cr-icon>
         </div>

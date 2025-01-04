@@ -87,7 +87,7 @@ void OobeTestAPIHandler::DeclareJSCallbacks() {
 void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   login::NetworkStateHelper helper_;
   dict->Set("testapi_shouldSkipNetworkFirstShow",
-                !switches::IsOOBENetworkScreenSkippingDisabledForTesting() &&
+            !switches::IsOOBENetworkScreenSkippingDisabledForTesting() &&
                 helper_.IsConnectedToEthernet());
 
   dict->Set(
@@ -190,7 +190,7 @@ void OobeTestAPIHandler::HandleCompleteLogin(const std::string& gaia_id,
   const std::string sanitized_email = gaia::SanitizeEmail(typed_email);
   LoginDisplayHost::default_host()->SetDisplayEmail(sanitized_email);
   const AccountId account_id =
-      login::GetAccountId(typed_email, GaiaId(gaia_id), AccountType::GOOGLE);
+      login::GetAccountId(typed_email, gaia_id, AccountType::GOOGLE);
   const user_manager::User* const user =
       user_manager::UserManager::Get()->FindUser(account_id);
 

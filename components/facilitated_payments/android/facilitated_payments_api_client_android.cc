@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"

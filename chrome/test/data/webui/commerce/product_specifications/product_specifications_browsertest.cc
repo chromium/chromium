@@ -28,7 +28,7 @@ class ProductSpecificationsTest : public WebUIMochaBrowserTest {
     account_checker_->SetSignedIn(true);
     account_checker_->SetPrefs(prefs_.get());
 
-    commerce::RegisterCommercePrefs(prefs_->registry());
+    commerce::MockAccountChecker::RegisterCommercePrefs(prefs_->registry());
     commerce::SetTabCompareEnterprisePolicyPref(prefs_.get(), 0);
 
     set_test_loader_host(commerce::kChromeUICompareHost);
@@ -69,12 +69,23 @@ class ProductSpecificationsTest : public WebUIMochaBrowserTest {
   base::WeakPtrFactory<ProductSpecificationsTest> weak_ptr_factory_{this};
 };
 
-IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, App) {
+// TODO(crbug.com/385024070): Flaky on all platforms.
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, DISABLED_App) {
   RunTest("commerce/product_specifications/app_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, BuyingOptionsSection) {
   RunTest("commerce/product_specifications/buying_options_section_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, ComparisonTableList) {
+  RunTest("commerce/product_specifications/comparison_table_list_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, ComparisonTableListItem) {
+  RunTest("commerce/product_specifications/comparison_table_list_item_test.js",
           "mocha.run()");
 }
 

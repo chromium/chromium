@@ -93,12 +93,7 @@ TemplateURLServiceUnitTestBase::CreateService() {
   return std::make_unique<TemplateURLService>(
       pref_service_, *search_engine_choice_service_,
       std::make_unique<SearchTermsData>(), nullptr /* KeywordWebDataService */,
-      nullptr /* TemplateURLServiceClient */, base::RepeatingClosure()
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-                                                  ,
-      false
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  );
+      nullptr /* TemplateURLServiceClient */, base::RepeatingClosure());
 }
 
 // -- LoadedTemplateURLServiceUnitTestBase ------------------------------------
@@ -129,12 +124,7 @@ LoadedTemplateURLServiceUnitTestBase::CreateService() {
   auto template_url_service = std::make_unique<TemplateURLService>(
       pref_service(), search_engine_choice_service(),
       std::make_unique<SearchTermsData>(), keyword_data_service_,
-      nullptr /* TemplateURLServiceClient */, base::RepeatingClosure()
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-                                                  ,
-      false
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  );
+      nullptr /* TemplateURLServiceClient */, base::RepeatingClosure());
 
   return template_url_service;
 }

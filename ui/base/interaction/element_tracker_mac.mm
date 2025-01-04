@@ -71,6 +71,7 @@ class ElementTrackerMac::MenuData {
     const auto it = elements_.find(identifier);
     if (it == elements_.end()) {
       LOG(ERROR) << "Element " << identifier << " activated after being hidden";
+      return;
     }
     ui::ElementTracker::GetFrameworkDelegate()->NotifyElementActivated(
         it->second.get());

@@ -141,7 +141,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.NumDetectedScanners" units="scanners"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -151,7 +151,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.NumDetectedScannersAtLogin" units="scanners"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>gavinwill@chromium.org</owner>
   <owner>masonwilde@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -283,7 +283,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.ScanJobSuccessful" enum="Boolean"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>

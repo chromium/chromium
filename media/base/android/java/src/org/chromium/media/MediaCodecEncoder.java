@@ -10,24 +10,27 @@ import android.util.SparseArray;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.nio.ByteBuffer;
 
 /**
- * This class extends MediaCodecBridge for encoding processing.
- * As to H264, WebRTC requires that each IDR/keyframe should have SPS/PPS at the beginning.
- * Unlike other HW/SW H264 codec implementations, MediaCodec will generate a separate config
- * frame with SPS/PPS as the first frame and won't include them in the following keyframes.
- * So here we append the SPS/PPS NALs at the start of each keyframe.
+ * This class extends MediaCodecBridge for encoding processing. As to H264, WebRTC requires that
+ * each IDR/keyframe should have SPS/PPS at the beginning. Unlike other HW/SW H264 codec
+ * implementations, MediaCodec will generate a separate config frame with SPS/PPS as the first frame
+ * and won't include them in the following keyframes. So here we append the SPS/PPS NALs at the
+ * start of each keyframe.
  */
 @JNINamespace("media")
+@NullMarked
 class MediaCodecEncoder extends MediaCodecBridge {
     private static final String TAG = "MediaCodecEncoder";
 
     // Output buffers mapping with MediaCodec output buffers for the possible frame-merging.
     private SparseArray<ByteBuffer> mOutputBuffers = new SparseArray<>();
     // SPS and PPS NALs (Config frame).
-    private ByteBuffer mConfigData;
+    private @Nullable ByteBuffer mConfigData;
 
     protected MediaCodecEncoder(MediaCodec mediaCodec, @BitrateAdjuster.Type int bitrateAdjuster) {
         super(mediaCodec, bitrateAdjuster, false);

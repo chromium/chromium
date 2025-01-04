@@ -83,9 +83,9 @@
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/autofill/core/browser/autofill_experiments.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
-#include "components/autofill/core/browser/browser_autofill_manager_test_delegate.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager_test_delegate.h"
+#include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
@@ -2057,7 +2057,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   content::WebContents* offscreen_contents =
       offscreen_document->host_contents();
   EXPECT_EQ(offscreen_url.spec(), view.url);
-  EXPECT_EQ(offscreen_document->render_process_host()->GetID(),
+  EXPECT_EQ(offscreen_document->render_process_host()->GetDeprecatedID(),
             view.render_process_id);
   EXPECT_EQ(offscreen_contents->GetPrimaryMainFrame()->GetRoutingID(),
             view.render_view_id);

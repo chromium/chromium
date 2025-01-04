@@ -22,8 +22,8 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/webui/resource_path.h"
-#include "ui/resources/grit/webui_resources.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+#include "ui/webui/resources/grit/webui_resources.h"
 
 namespace ash {
 

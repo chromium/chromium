@@ -51,6 +51,7 @@
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/gpm_enclave_controller.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
+#include "chrome/browser/webauthn/webauthn_metrics_util.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/common/chrome_version.h"
 #include "chrome/common/pref_names.h"
@@ -487,12 +488,10 @@ void ChromeAuthenticatorRequestDelegate::OnTransactionSuccessful(
   }
 #if BUILDFLAG(IS_MAC)
   if (authenticator_type == device::AuthenticatorType::kTouchID) {
-    Profile::FromBrowserContext(GetBrowserContext())
-        ->GetPrefs()
-        ->SetString(
-            kWebAuthnTouchIdLastUsed,
-            base::UnlocalizedTimeFormatWithPattern(
-                base::Time::Now(), "yyyy-MM-dd", icu::TimeZone::getGMT()));
+    profile()->GetPrefs()->SetString(
+        kWebAuthnTouchIdLastUsed,
+        base::UnlocalizedTimeFormatWithPattern(base::Time::Now(), "yyyy-MM-dd",
+                                               icu::TimeZone::getGMT()));
     webauthn::user_actions::RecordChromeProfileSuccess();
   }
   if (authenticator_type == device::AuthenticatorType::kICloudKeychain) {
@@ -507,6 +506,19 @@ void ChromeAuthenticatorRequestDelegate::OnTransactionSuccessful(
   }
 #endif  // BUILDFLAG(IS_MAC)
   if (authenticator_type == device::AuthenticatorType::kEnclave) {
+    if (dialog_model_->in_onboarding_flow) {
+      RecordOnboardingEvent(webauthn::metrics::OnboardingEvents::kSucceeded);
+    }
+    switch (request_type) {
+      case device::FidoRequestType::kGetAssertion:
+        RecordGPMGetAssertionEvent(
+            webauthn::metrics::GPMGetAssertionEvents::kSuccess);
+        break;
+      case device::FidoRequestType::kMakeCredential:
+        RecordGPMMakeCredentialEvent(
+            webauthn::metrics::GPMMakeCredentialEvents::kSuccess);
+        break;
+    }
     webauthn::user_actions::RecordGpmSuccess();
   }
 }
@@ -549,7 +561,6 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
          resident_key_requirement.has_value());
   request_type_ = request_type;
   user_verification_requirement_ = user_verification_requirement;
-  Profile* const profile = Profile::FromBrowserContext(GetBrowserContext());
 
   // Without the UI enabled, discoveries like caBLE, Android AOA, iCloud
   // keychain, and the enclave, don't make sense.
@@ -557,19 +568,33 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
     return;
   }
 
+  // Configure the enclave authenticator.
   if (browser_provided_passkeys_available && !IsVirtualEnvironmentEnabled() &&
-      request_source == RequestSource::kWebAuthentication &&
-      dialog_controller_->ui_presentation() !=
-          UIPresentation::kPasskeyUpgrade) {
+      request_source == RequestSource::kWebAuthentication) {
     // Creating credentials in GPM can be disabled by policy, but get() is
     // always allowed.
-    if (request_type == device::FidoRequestType::kGetAssertion ||
-        (profile->GetPrefs()->GetBoolean(
-             password_manager::prefs::kCredentialsEnableService) &&
-         profile->GetPrefs()->GetBoolean(
-             password_manager::prefs::kCredentialsEnablePasskeys))) {
-      auto* const identity_manager =
-          IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile());
+    const bool enclave_create_enabled =
+        profile()->GetPrefs()->GetBoolean(
+            password_manager::prefs::kCredentialsEnableService) &&
+        profile()->GetPrefs()->GetBoolean(
+            password_manager::prefs::kCredentialsEnablePasskeys);
+    if (dialog_controller_->ui_presentation() ==
+            UIPresentation::kPasskeyUpgrade &&
+        enclave_create_enabled) {
+      // Set up the upgrade request controller. This handles enclave
+      // transactions in place of the "regular" GPMEnclaveController.
+      CHECK(!enclave_controller_);
+      PasskeyUpgradeRequestController::GetOrCreateForCurrentDocument(
+          GetRenderFrameHost())
+          ->InitializeEnclaveRequestCallback(discovery_factory);
+      discovery_factory->set_network_context_factory(base::BindRepeating([]() {
+        return SystemNetworkContextManager::GetInstance()->GetContext();
+      }));
+    } else if (request_type == device::FidoRequestType::kGetAssertion ||
+               enclave_create_enabled) {
+      // Set up the "regular" enclave controller.
+      auto* const identity_manager = IdentityManagerFactory::GetForProfile(
+          profile()->GetOriginalProfile());
       const auto consent = signin::ConsentLevel::kSignin;
       if (identity_manager->HasPrimaryAccount(consent)) {
         CoreAccountInfo account_info =
@@ -632,7 +657,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
       (!cable_extension_provided ||
        base::FeatureList::IsEnabled(device::kWebAuthCableExtensionAnywhere))) {
     std::unique_ptr<cablev2::KnownDevices> known_devices =
-        cablev2::KnownDevices::FromProfile(profile);
+        cablev2::KnownDevices::FromProfile(profile());
     if (g_observer) {
       known_devices->synced_devices =
           g_observer->GetCablePairingsFromSyncedDevices();
@@ -674,7 +699,8 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
     crypto::RandBytes(*qr_generator_key);
     qr_string = device::cablev2::qr::Encode(*qr_generator_key, request_type);
 
-    auto linking_handler = std::make_unique<CableLinkingEventHandler>(profile);
+    auto linking_handler =
+        std::make_unique<CableLinkingEventHandler>(profile());
     discovery_factory->set_cable_pairing_callback(
         base::BindRepeating(&CableLinkingEventHandler::OnNewCablePairing,
                             std::move(linking_handler)));
@@ -687,15 +713,13 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
                             weak_ptr_factory_.GetWeakPtr()));
   }
 
-  if (non_extension_cablev2_enabled || cablev2_extension_provided ||
-      enclave_controller_) {
-    if (SystemNetworkContextManager::GetInstance()) {
-      // TODO(nsatragno): this should probably use a storage partition network
-      // context instead. See the SystemNetworkContextManager class comments.
-      discovery_factory->set_network_context_factory(base::BindRepeating([]() {
-        return SystemNetworkContextManager::GetInstance()->GetContext();
-      }));
-    }
+  if (SystemNetworkContextManager::GetInstance()) {
+    // caBLE and the enclave depend on the network context factory.
+    // TODO(nsatragno): this should probably use a storage partition network
+    // context instead. See the SystemNetworkContextManager class comments.
+    discovery_factory->set_network_context_factory(base::BindRepeating([]() {
+      return SystemNetworkContextManager::GetInstance()->GetContext();
+    }));
   }
 
   if (cable_extension_accepted || non_extension_cablev2_enabled) {
@@ -716,19 +740,6 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
 
   if (enclave_controller_) {
     enclave_controller_->ConfigureDiscoveries(discovery_factory);
-  }
-
-  if (dialog_controller_->ui_presentation() ==
-      UIPresentation::kPasskeyUpgrade) {
-    // PasskeyUpgradeController drives enclave interaction during upgrade
-    // requests (conditional create). GPMEnclaveController must not be
-    // instantiated.
-    // TODO(crbug.com/377758786): Ensure all non-GPM discoveries are disabled
-    // for passkey upgrade requests.
-    CHECK(!enclave_controller_);
-    PasskeyUpgradeRequestController::GetOrCreateForCurrentDocument(
-        GetRenderFrameHost())
-        ->InitializeEnclaveRequestCallback(discovery_factory);
   }
 
   dialog_controller_->set_is_non_webauthn_request(
@@ -793,12 +804,12 @@ void ChromeAuthenticatorRequestDelegate::SetUserEntityForMakeCredentialRequest(
 
 void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
     device::FidoRequestHandlerBase::TransportAvailabilityInfo data) {
-  if (!webauthn_ui_enabled()) {
-    return;
-  }
-
   if (g_observer) {
     g_observer->OnPreTransportAvailabilityEnumerated(this);
+  }
+
+  if (!webauthn_ui_enabled()) {
+    return;
   }
 
   const bool delay_ui_for_gpm =
@@ -900,6 +911,9 @@ void ChromeAuthenticatorRequestDelegate::OnRetryUserVerification(int attempts) {
 void ChromeAuthenticatorRequestDelegate::OnStartOver() {
   DCHECK(start_over_callback_);
   dialog_model_->generation++;
+  if (g_observer) {
+    g_observer->PreStartOver();
+  }
   start_over_callback_.Run();
 }
 
@@ -954,6 +968,10 @@ content::BrowserContext* ChromeAuthenticatorRequestDelegate::GetBrowserContext()
   return GetRenderFrameHost()->GetBrowserContext();
 }
 
+Profile* ChromeAuthenticatorRequestDelegate::profile() const {
+  return Profile::FromBrowserContext(GetRenderFrameHost()->GetBrowserContext());
+}
+
 void ChromeAuthenticatorRequestDelegate::ShowUI(
     device::FidoRequestHandlerBase::TransportAvailabilityInfo tai) {
   if (can_use_synced_phone_passkeys_ ||
@@ -975,7 +993,7 @@ void ChromeAuthenticatorRequestDelegate::ShowUI(
   // avoid defaulting to GPM for macOS users who likely have an iPhone. But on
   // all other platforms, GPM should be the default.
   dialog_controller_->set_enclave_can_be_default(
-      EnclaveCanBeDefault(Profile::FromBrowserContext(GetBrowserContext())));
+      EnclaveCanBeDefault(profile()));
 
   dialog_controller_->set_ambient_credential_types(ambient_credential_types_);
 
@@ -1019,12 +1037,9 @@ bool ChromeAuthenticatorRequestDelegate::ShouldPermitCableExtension(
 
 void ChromeAuthenticatorRequestDelegate::OnInvalidatedCablePairing(
     std::unique_ptr<device::cablev2::Pairing> failed_pairing) {
-  PrefService* const prefs =
-      Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
-
   // A pairing was reported to be invalid. Delete it unless it came from Sync,
   // in which case there's nothing to be done.
-  cablev2::DeletePairingByPublicKey(prefs,
+  cablev2::DeletePairingByPublicKey(profile()->GetPrefs(),
                                     failed_pairing->peer_public_key_x962);
 
   // Contact the next phone with the same name, if any, given that no
@@ -1051,8 +1066,7 @@ void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
     type = device::AuthenticatorType::kEnclave;
   } else {
     webauthn::PasskeyModel* passkey_model =
-        PasskeyModelFactory::GetInstance()->GetForProfile(
-            Profile::FromBrowserContext(GetBrowserContext()));
+        PasskeyModelFactory::GetInstance()->GetForProfile(profile());
     CHECK(passkey_model);
     credentials = passkey_model->GetPasskeysForRelyingPartyId(
         dialog_model_->relying_party_id);
@@ -1219,8 +1233,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureNSWindow(
 void ChromeAuthenticatorRequestDelegate::ConfigureICloudKeychain(
     RequestSource request_source,
     const std::string& rp_id) {
-  const PrefService* prefs =
-      Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
+  const PrefService* prefs = profile()->GetPrefs();
   const bool is_icloud_drive_enabled = IsICloudDriveEnabled();
   const bool is_active_profile_authenticator_user =
       IsActiveProfileAuthenticatorUser(prefs);

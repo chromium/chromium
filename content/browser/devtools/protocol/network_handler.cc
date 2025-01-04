@@ -36,6 +36,7 @@
 #include "content/browser/devtools/protocol/handler_helpers.h"
 #include "content/browser/devtools/protocol/network.h"
 #include "content/browser/devtools/protocol/page.h"
+#include "content/browser/devtools/protocol/protocol.h"
 #include "content/browser/devtools/protocol/security.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/devtools/service_worker_devtools_agent_host.h"
@@ -1445,6 +1446,9 @@ Response NetworkHandler::Disable() {
   SetNetworkConditions(nullptr);
   extra_headers_.clear();
   ClearAcceptedEncodingsOverride();
+  enable_third_party_cookie_restriction_ = false;
+  disable_third_party_cookie_metadata_ = false;
+  disable_third_party_cookie_heuristics_ = false;
   return Response::FallThrough();
 }
 
@@ -3515,7 +3519,7 @@ CreateNetworkFactoryForDevTools(
     GetContentClient()
         ->browser()
         ->RegisterNonNetworkSubresourceURLLoaderFactories(
-            host->GetID(), routing_id, origin, &factories);
+            host->GetDeprecatedID(), routing_id, origin, &factories);
     auto i = factories.find(std::string(scheme));
     if (i == factories.end()) {
       return {};
@@ -3623,6 +3627,19 @@ void NetworkHandler::LoadNetworkResource(
     }
   }
   callback->sendFailure(Response::ServerError("Target not supported"));
+}
+
+DispatchResponse NetworkHandler::SetCookieControls(
+    bool enable_third_party_cookie_restriction,
+    bool disable_third_party_cookie_metadata,
+    bool disable_third_party_cookie_heuristics) {
+  enable_third_party_cookie_restriction_ =
+      enable_third_party_cookie_restriction;
+  disable_third_party_cookie_metadata_ = disable_third_party_cookie_metadata;
+  disable_third_party_cookie_heuristics_ =
+      disable_third_party_cookie_heuristics;
+
+  return Response::Success();
 }
 
 namespace {

@@ -28,13 +28,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kCodeCacheDeletionWithoutFilter);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kCommittedOriginEnforcements);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kCommittedOriginTracking);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kCriticalClientHint);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kDesktopCaptureChangeSource);
-#if BUILDFLAG(IS_MAC)
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kDeviceMonitorMac);
-#endif
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDocumentPolicyNegotiation);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(
-    kEnableBackForwardCacheForOngoingSubframeNavigation);
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnableDevToolsJsErrorReporting);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -49,7 +43,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kFilterInstalledAppsWinMatching);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeLimitNumAuctions);
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kFledgeLimitNumAuctionsParam;
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeUseInterestGroupCache);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeDelayPostAuctionInterestGroupUpdate);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeSellerWorkletThreadPool);
 CONTENT_EXPORT extern const base::FeatureParam<int>
@@ -62,42 +55,24 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeAndroidWorkletOffMainThread);
 #endif
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFontSrcLocalMatching);
-#if !BUILDFLAG(IS_ANDROID)
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kForwardMemoryPressureEventsToGpuProcess);
-#endif
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFrameRoutingCache);
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kFrameRoutingCacheResponseSize;
-#if BUILDFLAG(IS_WIN)
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kGpuInfoCollectionSeparatePrefetch);
-#endif
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kGroupNIKByJoiningOrigin);
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kHandleChildThreadTypeChangesInBrowser);
-#endif
 #if BUILDFLAG(IS_ANDROID)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kHidePastePopupOnGSB);
 #endif
 
-BASE_DECLARE_FEATURE(kHistoryInterventionSameDocumentFix);
-
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kInMemoryCodeCache);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kInnerFrameCompositorSurfaceEviction);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kInterestGroupUpdateIfOlderThan);
 #if BUILDFLAG(IS_MAC)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kIOSurfaceCapturer);
-#endif
-#if BUILDFLAG(IS_MAC)
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kMacWebContentsOcclusion);
 #endif
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kMediaDevicesSystemMonitorCache);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kMediaStreamTrackTransfer);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kMojoDedicatedThread);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kMultipleSpareRPHs);
 CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t, kMultipleSpareRPHsCount);
-#if BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kOptimizeImmHideCalls);
-#endif
 #if !BUILDFLAG(IS_ANDROID)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPermissionsPolicyVerificationInContent);
 #endif
@@ -105,18 +80,12 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPreloadingConfig);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPriorityOverridePendingViews);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrivacySandboxAdsAPIsM1Override);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kProcessReuseOnPrerenderCOOPSwap);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kProcessSharingWithDefaultSiteInstances);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kProcessSharingWithStrictSiteInstances);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kReloadHiddenTabsWithCrashedSubframes);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(
-    kRunStableVideoDecoderFactoryProcessServiceOnIOThread);
 #if BUILDFLAG(IS_ANDROID)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kContinueGestureOnLosingFocus);
 #endif
-CONTENT_EXPORT BASE_DECLARE_FEATURE(
-    kResourceTimingForCancelledNavigationInFrame);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kRemoveRendererProcessLimit);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kReuseInitialRenderFrameHostForWebUI);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSendBeaconThrowForBlobWithNonSimpleType);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kServiceWorkerAvoidMainThreadForInitialization);
@@ -143,7 +112,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kWarmUpNetworkProcess);
 #endif
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyDynamicTiering);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebOTPAssertionFeaturePolicy);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebRtcUseGpuMemoryBufferVideoFrames);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kLimitCrossOriginNonActivatedPaintHolding);
 
 // Please keep features in alphabetical order.

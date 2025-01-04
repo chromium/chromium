@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://github.com/whatwg/html/pull/10126">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<input type="file">
+<script type="module">
+import {mockFileChooserFactory} from '../resources/mock-file-chooser.js';
+
+promise_test(async () => {
+  const file = document.querySelector('input');
+  const promise = new Promise(resolve => {
+    mockFileChooserFactory.addEventListener('open', resolve);
+  });
+  assert_false(file.matches(':open'),
+    ':open should not match at the start of the test.');
+
+  await test_driver.bless('show picker');
+  file.showPicker();
+  assert_true(file.matches(':open'),
+    ':open should match after opening the picker.');
+
+  const changePromise = new Promise(resolve => {
+    file.addEventListener('change', resolve);
+  });
+  mockFileChooserFactory.setPathsToBeChosen(
+    ['/hello/world'], '');
+  await changePromise;
+  await new Promise(requestAnimationFrame);
+  assert_false(file.matches(':open'),
+    ':open should not match after closing the picker.');
+}, "<input type=file> should match :open when picker is showing.");
+</script>

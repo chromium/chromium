@@ -53,21 +53,23 @@ GURL AddLensOverlaySuggestInputsDataToEndpointUrl(
   }
   GURL modified_url = GURL(url_to_modify);
   bool send_request_and_session_ids = false;
+  bool send_vit = false;
 
   if (search_terms_args.page_classification ==
       metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX) {
     send_request_and_session_ids =
         lens_overlay_suggest_inputs
             ->send_gsession_vsrid_for_contextual_suggest();
-    if (lens_overlay_suggest_inputs->has_contextual_visual_input_type()) {
-      modified_url = net::AppendOrReplaceQueryParameter(
-          modified_url, "vit",
-          lens_overlay_suggest_inputs->contextual_visual_input_type());
-    }
+    send_vit = true;
+    modified_url =
+        net::AppendOrReplaceQueryParameter(modified_url, "gs_ps", "1");
   } else if (search_terms_args.page_classification ==
              metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX) {
-    send_request_and_session_ids =
-        lens_overlay_suggest_inputs->send_gsession_vsrid_for_lens_suggest();
+    if (lens_overlay_suggest_inputs
+            ->send_gsession_vsrid_vit_for_lens_suggest()) {
+      send_request_and_session_ids = true;
+      send_vit = true;
+    }
     if (lens_overlay_suggest_inputs->has_encoded_image_signals()) {
       modified_url = net::AppendOrReplaceQueryParameter(
           modified_url, "iil",
@@ -81,6 +83,13 @@ GURL AddLensOverlaySuggestInputsDataToEndpointUrl(
           lens_overlay_suggest_inputs
               ->encoded_visual_search_interaction_log_data());
     }
+  }
+
+  if (send_vit &&
+      lens_overlay_suggest_inputs->has_contextual_visual_input_type()) {
+    modified_url = net::AppendOrReplaceQueryParameter(
+        modified_url, "vit",
+        lens_overlay_suggest_inputs->contextual_visual_input_type());
   }
 
   if (send_request_and_session_ids) {

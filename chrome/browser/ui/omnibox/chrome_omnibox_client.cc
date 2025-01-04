@@ -234,8 +234,9 @@ gfx::Image ChromeOmniboxClient::GetSizedIcon(
 }
 
 gfx::Image ChromeOmniboxClient::GetSizedIcon(const gfx::Image& icon) const {
-  if (icon.IsEmpty())
+  if (icon.IsEmpty()) {
     return icon;
+  }
 
   const int icon_size = GetLayoutConstant(LOCATION_BAR_ICON_SIZE);
   // In touch mode, icons are 20x20. FaviconCache and ExtensionIconManager both
@@ -287,8 +288,9 @@ bool ChromeOmniboxClient::ProcessExtensionKeyword(
     const TemplateURL* template_url,
     const AutocompleteMatch& match,
     WindowOpenDisposition disposition) {
-  if (template_url->type() != TemplateURL::OMNIBOX_API_EXTENSION)
+  if (template_url->type() != TemplateURL::OMNIBOX_API_EXTENSION) {
     return false;
+  }
 
   // Strip the keyword + leading space off the input, but don't exceed
   // fill_into_edit.  An obvious case is that the user may not have entered
@@ -373,8 +375,9 @@ gfx::Image ChromeOmniboxClient::GetFaviconForDefaultSearchProvider(
     FaviconFetchedCallback on_favicon_fetched) {
   const TemplateURL* const default_provider =
       GetTemplateURLService()->GetDefaultSearchProvider();
-  if (!default_provider)
+  if (!default_provider) {
     return gfx::Image();
+  }
 
   return favicon_cache_.GetFaviconForIconUrl(default_provider->favicon_url(),
                                              std::move(on_favicon_fetched));
@@ -383,8 +386,9 @@ gfx::Image ChromeOmniboxClient::GetFaviconForDefaultSearchProvider(
 gfx::Image ChromeOmniboxClient::GetFaviconForKeywordSearchProvider(
     const TemplateURL* template_url,
     FaviconFetchedCallback on_favicon_fetched) {
-  if (!template_url)
+  if (!template_url) {
     return gfx::Image();
+  }
 
   return favicon_cache_.GetFaviconForIconUrl(template_url->favicon_url(),
                                              std::move(on_favicon_fetched));
@@ -417,12 +421,14 @@ void ChromeOmniboxClient::OnTextChanged(const AutocompleteMatch& current_match,
       // It's possible that there is no current page, for instance if the tab
       // has been closed or on return from a sleep state.
       // (http://crbug.com/105689)
-      if (!CurrentPageExists())
+      if (!CurrentPageExists()) {
         break;
+      }
       // Ask for prerendering if the destination URL is different than the
       // current URL.
-      if (current_match.destination_url != GetURL())
+      if (current_match.destination_url != GetURL()) {
         DoPrerender(current_match);
+      }
       break;
     case AutocompleteActionPredictor::ACTION_PRECONNECT:
       DoPreconnect(current_match);
@@ -581,8 +587,9 @@ void ChromeOmniboxClient::DoPrerender(const AutocompleteMatch& match) {
   content::WebContents* web_contents = location_bar_->GetWebContents();
 
   // Don't prerender when DevTools is open in this tab.
-  if (content::DevToolsAgentHost::IsDebuggerAttached(web_contents))
+  if (content::DevToolsAgentHost::IsDebuggerAttached(web_contents)) {
     return;
+  }
 
   // TODO(crbug.com/40208255): Refactor relevant code to reuse common
   // code, and ensure metrics are correctly recorded.
@@ -594,8 +601,9 @@ void ChromeOmniboxClient::DoPrerender(const AutocompleteMatch& match) {
 }
 
 void ChromeOmniboxClient::DoPreconnect(const AutocompleteMatch& match) {
-  if (match.destination_url.SchemeIs(extensions::kExtensionScheme))
+  if (match.destination_url.SchemeIs(extensions::kExtensionScheme)) {
     return;
+  }
 
   auto* loading_predictor =
       predictors::LoadingPredictorFactory::GetForProfile(profile_);
@@ -623,8 +631,9 @@ void ChromeOmniboxClient::OnSuccessfulNavigation(
     const AutocompleteMatch& match) {
   auto shortcuts_backend = ShortcutsBackendFactory::GetForProfile(profile);
   // Can be null in incognito.
-  if (!shortcuts_backend)
+  if (!shortcuts_backend) {
     return;
+  }
 
   shortcuts_backend->AddOrUpdateShortcut(text, match);
 }

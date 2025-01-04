@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Onemogočanje temne teme</translation>
 <translation id="1807246157184219062">Svetlo</translation>
 <translation id="1808803439260407870">Klasična umetnost</translation>
+<translation id="181434555916624618">Rezultati z osebami za zdaj ne bodo prikazani. Poskusite uporabiti drug poziv.</translation>
 <translation id="1815850098929213707">Izbrani ključ je <ph name="KEYS" />. Dotaknite se gumba, če želite urediti kontrolnik.</translation>
 <translation id="1823120442877418684">Znaki</translation>
 <translation id="1827738518074806965">Umetnostna galerija</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">Raven napolnjenosti baterije desne slušalke: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">nastavitve</translation>
 <translation id="3347558044552027859">sodobno</translation>
+<translation id="3353477144743332882">Prenos modela za ustvarjanje povzetka in imen</translation>
 <translation id="3359218928534347896">preklop izklopa zvoka</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">suši</translation>
@@ -689,6 +691,7 @@
 <translation id="4354430579665871434">tipka</translation>
 <translation id="4356100841225547054">Izklop glasnosti zvoka</translation>
 <translation id="4361257691546579041">APN je privzete vrste.</translation>
+<translation id="4368101969572512692">Naključno predvajanje predlogov</translation>
 <translation id="437294888293595148">Ponastavi vse bližnjice</translation>
 <translation id="437477383107495720">zajčki</translation>
 <translation id="4376423484621194274">Skrbnik ne dovoli zapiranja aplikacije <ph name="APP_NAME" /></translation>
@@ -768,6 +771,7 @@
 <translation id="4731797938093519117">Starševski dostop</translation>
 <translation id="473775607612524610">Posodobi</translation>
 <translation id="4744944742468440486">Podatki, povezani z vašim izborom</translation>
+<translation id="4750394297954878236">Predlogi</translation>
 <translation id="4771607256327216405">posvetlitev osvetlitve tipkovnice</translation>
 <translation id="4771923071974529837">jutri</translation>
 <translation id="4773299976671772492">Ustavljeno</translation>
@@ -853,6 +857,7 @@
 <translation id="5121677070210013200">Modela prepisa ni mogoče prenesti. Poskusite znova ali znova zaženite Chromebook.</translation>
 <translation id="5130848777448318809">poniji</translation>
 <translation id="5137451382116112100">Cel zaslon</translation>
+<translation id="5139813694804168398">Ne moti</translation>
 <translation id="5140788690559353412">Ko izgubite dostop do šolskega računa, ne boste več imeli dostopa do povezanih e-poštnih sporočil in datotek v Googlu Drive, kot so datoteke za Gmail, Dokumente, Predstavitve in drugo.</translation>
 <translation id="5142961317498132443">Preverjanje pristnosti</translation>
 <translation id="5144311987923128508">Gumb za potrditev je zdaj onemogočen</translation>
@@ -897,6 +902,7 @@
 <translation id="5302048478445481009">Jezik</translation>
 <translation id="5303837385540978511">Ekskluzivno zaslonsko ozadje za <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="530883153651464140">Posodobitev naprave <ph name="DEVICE_NAME" /> na različico <ph name="VERSION" /></translation>
 <translation id="5315873049536339193">Identiteta</translation>
 <translation id="5317780077021120954">Shrani</translation>
 <translation id="5318310531701770497">Imen ni mogoče ustvariti. Poskusite daljši prepis.</translation>
@@ -973,7 +979,6 @@
 <translation id="5703716265115423771">zmanjšanje glasnosti</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> od <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Gumb za urejanje za <ph name="SHORTCUT_DESCRIPTION" />.</translation>
-<translation id="5733298426544876109">Posodobi napravo <ph name="DEVICE_NAME" /></translation>
 <translation id="5736820754189340309">Prenesena količina podatkov je bila ponastavljena</translation>
 <translation id="574392208103952083">Srednji</translation>
 <translation id="5744175046705638478">Prevedi »<ph name="QUERY" />«</translation>
@@ -998,6 +1003,7 @@
 <translation id="5859969039821714932">Bližnjica ni na voljo. Pritisnite novo bližnjico brez tipke <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Izklopljeno</translation>
 <translation id="5860491529813859533">Vklopi</translation>
+<translation id="5875913454160982848">Prenos modela za prepisovanje</translation>
 <translation id="5876385649737594562">Vklopite, če želite izbrati možnosti.</translation>
 <translation id="5877503382465267833">Začasno zaustavi »<ph name="RECORDING_NAME" />«</translation>
 <translation id="588258955323874662">Celozaslonsko</translation>
@@ -1037,7 +1043,6 @@
 <translation id="6040143037577758943">Zapri</translation>
 <translation id="6040852767465482106">Anonimna identiteta</translation>
 <translation id="604124094241169006">Samodejno</translation>
-<translation id="6042308850641462728">Več</translation>
 <translation id="6048107060512778456">Napaka – zastoj papirja</translation>
 <translation id="6050189528197190982">Sivine</translation>
 <translation id="6054711098834486579">ekspresionizem</translation>
@@ -1293,6 +1298,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Imenski strežnik}one{Imenski strežniki}two{Imenski strežniki}few{Imenski strežniki}other{Imenski strežniki}}</translation>
 <translation id="7135814714616751706">Iskanje bližnjic</translation>
 <translation id="7138614237884624401">Poenostavljeno besedilo</translation>
+<translation id="7138668887584231801">Premalo besed za povzetek</translation>
 <translation id="7141470099673912333">Prenos vsebine</translation>
 <translation id="7143207342074048698">Povezovanje</translation>
 <translation id="7144878232160441200">Poskusi ponovno</translation>
@@ -1588,6 +1594,7 @@
 <translation id="8503836310948963452">Samo še nekaj minut …</translation>
 <translation id="8505011850330200833">Model Gemini za shranjevanje za obdelavo prepisov in ustvarjanje povzetkov potrebuje 2 GB prostora</translation>
 <translation id="8508640263392900755">Podrobnosti o APN-ju</translation>
+<translation id="8509574872955173831">Preberite več o ustvarjanju povzetka in imen</translation>
 <translation id="8522687886059337719">Zdaj imate dostop do novih <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />zaslonskih ozadij<ph name="END_LINK_WALLPAPER_SUBPAGE" /> in <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ohranjevalnika zaslona<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">čajnica</translation>
@@ -1724,7 +1731,6 @@
 <translation id="9133772297793293778">Pritisnite 1–4 modifikatorje in še 1 drugo tipko na tipkovnici. Če želite zapreti način za urejanje, pritisnite alt + esc.</translation>
 <translation id="9137526406337347448">Googlove storitve</translation>
 <translation id="9138630967333032450">Leva tipka Shift</translation>
-<translation id="9147928237330776930">Premalo besed za povzetek</translation>
 <translation id="9149391708638971077">Zaženi preizkus pomnilnika</translation>
 <translation id="9159524746324788320">hamburgerji</translation>
 <translation id="9161276708550942948">preslednica</translation>

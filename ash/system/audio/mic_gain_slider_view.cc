@@ -92,8 +92,14 @@ MicGainSliderView::~MicGainSliderView() {
 
 void MicGainSliderView::Update(bool by_user) {
   auto* audio_handler = CrasAudioHandler::Get();
+  if (!audio_handler) {
+    return;
+  }
   uint64_t active_device_id = audio_handler->GetPrimaryActiveInputNode();
   auto* active_device = audio_handler->GetDeviceFromId(active_device_id);
+  if (!active_device) {
+    return;
+  }
 
   // For device that has dual internal mics, a new device will be created to
   // show only one slider for both the internal mics, and the new device has a
@@ -151,6 +157,9 @@ void MicGainSliderView::Update(bool by_user) {
   // For active internal mic stub, `show_internal_stub` indicates whether it's
   // showing and `device_id_` doesn't match with `active_device_id`.
   const bool is_active = show_internal_stub || active_device_id == device_id_;
+  if (!slider()) {
+    return;
+  }
   auto* qs_slider = static_cast<QuickSettingsSlider*>(slider());
   const Style slider_style = qs_slider->slider_style();
   // The default style is for the slider in the toast, and the radio style is
@@ -165,6 +174,9 @@ void MicGainSliderView::Update(bool by_user) {
     qs_slider->SetSliderStyle(
         is_active ? (is_muted ? Style::kRadioActiveMuted : Style::kRadioActive)
                   : Style::kRadioInactive);
+  }
+  if (!slider_button()) {
+    return;
   }
   slider_button()->SetVectorIcon(is_muted ? kMutedMicrophoneIcon
                                           : kImeMenuMicrophoneIcon);

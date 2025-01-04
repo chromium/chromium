@@ -136,10 +136,11 @@ bool ExclusiveAccessTest::RequestKeyboardLock(bool esc_key_locked) {
   // chose the 'a' key) which means the user/test can just press escape to exit
   // fullscreen.
   std::optional<base::flat_set<ui::DomCode>> codes;
-  if (esc_key_locked)
+  if (esc_key_locked) {
     codes = base::flat_set<ui::DomCode>({ui::DomCode::ESCAPE});
-  else
+  } else {
     codes = base::flat_set<ui::DomCode>({ui::DomCode::US_A});
+  }
 
   bool success = false;
   base::RunLoop run_loop;

@@ -27,7 +27,7 @@ import org.chromium.components.browser_ui.widget.dragreorder.DragStateDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListUtils;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.listmenu.ListMenuButton;
-import org.chromium.ui.listmenu.ListMenuButtonDelegate;
+import org.chromium.ui.listmenu.ListMenuDelegate;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -97,9 +97,10 @@ public class LanguageListBaseAdapter extends DragReorderableListAdapter<Language
 
         /**
          * Sets up the menu button at the end of this row with a given delegate.
-         * @param delegate A {@link ListMenuButtonDelegate}.
+         *
+         * @param delegate A {@link ListMenuDelegate}.
          */
-        void setMenuButtonDelegate(@NonNull ListMenuButtonDelegate delegate) {
+        void setMenuButtonDelegate(@NonNull ListMenuDelegate delegate) {
             mMoreButton.setVisibility(View.VISIBLE);
             mMoreButton.setDelegate(delegate);
             // Set item row end padding 0 when MenuButton is visible.

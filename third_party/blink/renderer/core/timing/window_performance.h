@@ -114,11 +114,12 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   void SetRenderStartTimeForPendingEvents(base::TimeTicks render_start_time);
 
   void OnPaintFinished();
+  void OnBeginMainFrame(viz::BeginFrameId frame_id);
 
   void AddElementTiming(const AtomicString& name,
                         const String& url,
                         const gfx::RectF& rect,
-                        base::TimeTicks start_time,
+                        const DOMPaintTimingInfo&,
                         base::TimeTicks load_time,
                         const AtomicString& identifier,
                         const gfx::Size& intrinsic_size,
@@ -153,11 +154,9 @@ class CORE_EXPORT WindowPerformance final : public Performance,
       base::TimeTicks visibility_change_timestamp);
 
   void OnLargestContentfulPaintUpdated(
-      base::TimeTicks start_time,
-      base::TimeTicks render_time,
+      std::optional<DOMPaintTimingInfo> paint_timing_info,
       uint64_t paint_size,
       base::TimeTicks load_time,
-      base::TimeTicks first_animated_frame_time,
       const AtomicString& id,
       const String& url,
       Element*,
@@ -169,8 +168,6 @@ class CORE_EXPORT WindowPerformance final : public Performance,
     return *responsiveness_metrics_;
   }
 
-  void NotifyPotentialDrag(PointerId pointer_id);
-
   const Event* GetCurrentEventTimingEvent() { return current_event_.Get(); }
 
   void CreateNavigationTimingInstance(
@@ -179,10 +176,6 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   void OnPageScroll();
   bool IsAutoscrollActive();
   void ResetAutoscroll() { autoscroll_active_ = false; }
-  void QueueEntryWithPaintTiming(
-      base::OnceCallback<void(WindowPerformance*, const DOMPaintTimingInfo&)>
-          callback,
-      const DOMPaintTimingInfo&);
 
  private:
   static std::pair<AtomicString, DOMWindow*> SanitizedAttribution(
@@ -199,6 +192,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
 
   void OnPresentationPromiseResolved(
       uint64_t presentation_index,
+      uint64_t expected_frame_source_id,
       const viz::FrameTimingDetails& presentation_details);
   // Report buffered events with presentation time following their registered
   // order; stop as soon as seeing an event with pending presentation promise.
@@ -231,6 +225,10 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // timestamps right before start showing each dialog.
   Deque<base::TimeTicks> show_modal_dialog_timestamps_;
 
+  // Frame source id from BeginMainFrame args. Event Timing compares it with
+  // frame source id from presentation feedback to identify GPU crashes.
+  // crbug.com/324877581
+  uint64_t begin_main_frame_source_id_ = 0;
   // Controls if we register a new presentation promise upon events arrival.
   bool need_new_promise_for_event_presentation_time_ = true;
   // Counts the total number of presentation promises we've registered for
@@ -270,9 +268,6 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   Member<ResponsivenessMetrics> responsiveness_metrics_;
   // The event we are currently processing.
   WeakMember<const Event> current_event_;
-
-  Vector<std::pair<base::OnceClosure, base::TimeTicks>>
-      pending_entry_operations_with_render_coarsening_;
 };
 
 }  // namespace blink

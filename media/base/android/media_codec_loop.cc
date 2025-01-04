@@ -21,19 +21,6 @@ constexpr base::TimeDelta kIdleTimerTimeout = base::Seconds(1);
 
 }  // namespace
 
-MediaCodecLoop::InputData::InputData() {}
-
-MediaCodecLoop::InputData::InputData(const InputData& other)
-    : memory(other.memory),
-      key_id(other.key_id),
-      iv(other.iv),
-      subsamples(other.subsamples),
-      presentation_time(other.presentation_time),
-      is_eos(other.is_eos),
-      encryption_scheme(other.encryption_scheme) {}
-
-MediaCodecLoop::InputData::~InputData() {}
-
 MediaCodecLoop::MediaCodecLoop(
     int sdk_int,
     Client* client,
@@ -177,15 +164,17 @@ MediaCodecLoop::InputBuffer MediaCodecLoop::DequeueInputBuffer() {
 void MediaCodecLoop::EnqueueInputBuffer(const InputBuffer& input_buffer) {
   DCHECK_NE(input_buffer.index, kInvalidBufferIndex);
 
-  InputData input_data;
+  bool already_filled = false;
+  scoped_refptr<DecoderBuffer> input_data;
   if (input_buffer.is_pending) {
     // A pending buffer is already filled with data, no need to copy it again.
-    input_data = pending_input_buf_data_;
+    input_data = std::move(pending_input_buf_data_);
+    already_filled = true;
   } else {
     input_data = client_->ProvideInputData();
   }
 
-  if (input_data.is_eos) {
+  if (input_data->end_of_stream()) {
     media_codec_->QueueEOS(input_buffer.index);
     SetState(STATE_DRAINING);
     client_->OnInputDataQueued(true);
@@ -194,18 +183,15 @@ void MediaCodecLoop::EnqueueInputBuffer(const InputBuffer& input_buffer) {
 
   MediaCodecResult result = OkStatus();
 
-  if (input_data.encryption_scheme != EncryptionScheme::kUnencrypted) {
-    // Note that input_data might not have a valid memory ptr if this is a
-    // re-send of a buffer that was sent before decryption keys arrived.
-
+  if (input_data->decrypt_config()) {
     result = media_codec_->QueueSecureInputBuffer(
-        input_buffer.index, input_data.memory, input_data.key_id, input_data.iv,
-        input_data.subsamples, input_data.encryption_scheme,
-        input_data.encryption_pattern, input_data.presentation_time);
+        input_buffer.index,
+        already_filled ? base::span<const uint8_t>() : *input_data,
+        input_data->timestamp(), *input_data->decrypt_config());
 
   } else {
-    result = media_codec_->QueueInputBuffer(
-        input_buffer.index, input_data.memory, input_data.presentation_time);
+    result = media_codec_->QueueInputBuffer(input_buffer.index, *input_data,
+                                            input_data->timestamp());
   }
 
   switch (result.code()) {
@@ -224,11 +210,7 @@ void MediaCodecLoop::EnqueueInputBuffer(const InputBuffer& input_buffer) {
       // Do not call the completion cb here.  It will be called when we retry
       // after getting the key.
       pending_input_buf_index_ = input_buffer.index;
-      pending_input_buf_data_ = input_data;
-      // MediaCodec has a copy of the data already.  When we call again, be sure
-      // to send in nullptr for the source.  Note that the client doesn't
-      // guarantee that the pointer will remain valid after we return anyway.
-      pending_input_buf_data_.memory = {};
+      pending_input_buf_data_ = std::move(input_data);
       client_->OnWaiting(WaitingReason::kNoDecryptionKey);
       SetState(STATE_WAITING_FOR_KEY);
       // Do not call OnInputDataQueued yet.

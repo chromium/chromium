@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/debug/alias.h"
+
 #include <algorithm>
 #include <memory>
 #include <string>
 
-#include "base/debug/alias.h"
 #include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -259,6 +259,8 @@ All changes to this list should go through Blink's feature review process: http:
     mask-repeat
     mask-size
     mask-type
+    masonry-direction
+    masonry-fill
     masonry-slack
     masonry-template-tracks
     masonry-track-end
@@ -337,6 +339,7 @@ All changes to this list should go through Blink's feature review process: http:
     ry
     scale
     scroll-behavior
+    scroll-initial-target
     scroll-margin-block-end
     scroll-margin-block-start
     scroll-margin-bottom
@@ -359,7 +362,6 @@ All changes to this list should go through Blink's feature review process: http:
     scroll-snap-type
     scroll-start-block
     scroll-start-inline
-    scroll-start-target
     scroll-start-x
     scroll-start-y
     scroll-timeline-axis

@@ -189,8 +189,9 @@ class ViewAXPlatformNodeDelegateTest : public ViewsTestBase {
     View* parent_view =
         widget_->GetRootView()->AddChildView(std::make_unique<View>());
     View::Views views{parent_view};
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 4; i++) {
       views.push_back(parent_view->AddChildView(std::make_unique<View>()));
+    }
     return views;
   }
 
@@ -319,8 +320,9 @@ class ViewAXPlatformNodeDelegateMenuTest
   }
 
   void TearDown() override {
-    if (owner_)
+    if (owner_) {
       owner_->CloseNow();
+    }
     ViewAXPlatformNodeDelegateTest::TearDown();
   }
 

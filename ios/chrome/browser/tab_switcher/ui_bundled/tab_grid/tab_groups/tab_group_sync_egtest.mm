@@ -4,8 +4,11 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_sync_earl_grey.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_eg_utils.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -45,9 +48,9 @@ NSString* const kGroup1Name = @"1group";
 NSString* const kGroup2Name = @"2group";
 
 // The groups added by FakeTabGroupSyncService::PrepareFakeSavedTabGroups().
-NSString* const kSavedGroup1Name = @"1RemoteGroup";
-NSString* const kSavedGroup2Name = @"2RemoteGroup";
-NSString* const kSavedGroup3Name = @"3RemoteGroup";
+NSString* const kSavedGroup1Name = @"0RemoteGroup";
+NSString* const kSavedGroup2Name = @"1RemoteGroup";
+NSString* const kSavedGroup3Name = @"2RemoteGroup";
 
 // Displays the group cell context menu by long pressing at the group cell at
 // `group_cell_index`.
@@ -144,7 +147,13 @@ void CloseGroupAtIndex(int group_cell_index) {
 - (void)testPreparedSavedTabGroups {
   GREYAssertEqual(0, [TabGroupSyncEarlGrey countOfSavedTabGroups],
                   @"The number of saved tab groups should be 0.");
-  [TabGroupSyncEarlGrey prepareFakeSavedTabGroups];
+  [TabGroupSyncEarlGrey prepareFakeSavedTabGroups:3];
+
+  // Sign in to trigger group download.
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                         enableHistorySync:YES];
+  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
+
   GREYAssertEqual(3, [TabGroupSyncEarlGrey countOfSavedTabGroups],
                   @"The number of saved tab groups should be 3.");
 
@@ -167,8 +176,15 @@ void CloseGroupAtIndex(int group_cell_index) {
       assertWithMatcher:grey_notNil()];
 
   [TabGroupSyncEarlGrey cleanup];
-  GREYAssertEqual(0, [TabGroupSyncEarlGrey countOfSavedTabGroups],
-                  @"The number of saved tab groups should be 0.");
+
+  GREYCondition* groupsDeletedCheck = [GREYCondition
+      conditionWithName:@"Wait for tab groups to be deleted"
+                  block:^{
+                    return [TabGroupSyncEarlGrey countOfSavedTabGroups] == 0;
+                  }];
+  bool groupsDeleted = [groupsDeletedCheck waitWithTimeout:10];
+
+  GREYAssertTrue(groupsDeleted, @"Failed to clean up groups");
 }
 
 // Tests that a group is deleted in the Tab Groups panel.
@@ -349,32 +365,42 @@ void CloseGroupAtIndex(int group_cell_index) {
 // Tests deleting a saved group from one device while the same group is
 // being viewed in the tab group view on a different device.
 - (void)testDeleteGroupOnAnotherDevice {
+  [TabGroupSyncEarlGrey prepareFakeSavedTabGroups:1];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                         enableHistorySync:YES];
+  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
+
   [ChromeEarlGreyUI openTabGrid];
 
-  // Create a tab group with an item at 0.
-  CreateTabGroupAtIndex(0, kGroup1Name);
-
-  // Open the tab group view.
-  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(1)]
       performAction:grey_tap()];
 
   // Verify that the tab group view is displayed.
-  [[EarlGrey selectElementWithMatcher:TabGroupViewTitle(kGroup1Name)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kTabGroupViewIdentifier)]
       assertWithMatcher:grey_notNil()];
 
   // Delete the group on another device by modifying directly
   // TabGroupSyncService.
   [TabGroupSyncEarlGrey removeAtIndex:0];
-  GREYAssertEqual(0, [TabGroupSyncEarlGrey countOfSavedTabGroups],
-                  @"The number of saved tab groups should be 0.");
+  GREYCondition* groupsDeletedCheck = [GREYCondition
+      conditionWithName:@"Wait for tab group to be deleted"
+                  block:^{
+                    return [TabGroupSyncEarlGrey countOfSavedTabGroups] == 0;
+                  }];
+  bool groupsDeleted = [groupsDeletedCheck waitWithTimeout:10];
 
-  // Go back to the tab grid.
-  [[EarlGrey selectElementWithMatcher:TabGroupBackButton()]
-      performAction:grey_tap()];
+  GREYAssertTrue(groupsDeleted, @"Failed to delete group");
+
+  // The tab group should have been closed automatically.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kTabGroupViewIdentifier)]
+      assertWithMatcher:grey_nil()];
 
   // Verify that the tab group view is not displayed.
-  [[EarlGrey selectElementWithMatcher:TabGroupViewTitle(kGroup1Name)]
-      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(1)]
+      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 }
 
 // Tests the tab group snackbar CTA.

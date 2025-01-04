@@ -119,7 +119,7 @@ NativeThemeAura::NativeThemeAura(bool use_overlay_scrollbars,
   }
 }
 
-NativeThemeAura::~NativeThemeAura() {}
+NativeThemeAura::~NativeThemeAura() = default;
 
 // static
 NativeThemeAura* NativeThemeAura::web_instance() {
@@ -307,8 +307,9 @@ void NativeThemeAura::PaintScrollbarThumb(
     const ScrollbarThumbExtraParams& extra_params,
     ColorScheme color_scheme) const {
   // Do not paint if state is disabled.
-  if (state == kDisabled)
+  if (state == kDisabled) {
     return;
+  }
 
   TRACE_EVENT0("blink", "NativeThemeAura::PaintScrollbarThumb");
 
@@ -316,8 +317,9 @@ void NativeThemeAura::PaintScrollbarThumb(
   cc::PaintFlags fill_flags;
 
   if (use_overlay_scrollbar()) {
-    if (state == NativeTheme::kDisabled)
+    if (state == NativeTheme::kDisabled) {
       return;
+    }
 
     const bool hovered = state != kNormal;
 
@@ -340,10 +342,11 @@ void NativeThemeAura::PaintScrollbarThumb(
     gfx::InsetsF stroke_insets(kStrokeWidth / 2.f);
     // The edge to which the scrollbar is attached shouldn't have a border.
     gfx::Insets edge_adjust_insets;
-    if (part == NativeTheme::kScrollbarHorizontalThumb)
+    if (part == NativeTheme::kScrollbarHorizontalThumb) {
       edge_adjust_insets.set_bottom(-kStrokeWidth);
-    else
+    } else {
       edge_adjust_insets.set_right(-kStrokeWidth);
+    }
     stroke_rect.Inset(stroke_insets + gfx::InsetsF(edge_adjust_insets));
     canvas->drawRect(gfx::RectFToSkRect(stroke_rect), stroke_flags);
 

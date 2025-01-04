@@ -134,7 +134,6 @@ static_library("main_parts") {
     "//chromeos/ash/components/power",
     "//chromeos/ash/components/report",
     "//chromeos/ash/components/settings",
-    "//chromeos/ash/components/standalone_browser",
     "//chromeos/ash/components/system",
     "//chromeos/ash/components/tpm",
     "//chromeos/ash/components/wifi_p2p",

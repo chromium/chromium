@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">ההורדה הושהתה</translation>
 <translation id="1396327438254055134">‏מתן הרשאה לאתר להשתמש בכלי האופטימיזציה של V8.</translation>
 <translation id="1415402041810619267">‏כתובת ה-URL קוצרה</translation>
+<translation id="1415855080660575082">‏‫Chrome יכול לשתף את הכרטיסיות האחרונות עם המכשיר שלך כדי שתהיה לך אפשרות לראות אותן ברשימת האפליקציות במכשיר ובתוצאות החיפוש. ניתן להפעיל או להשבית את האפשרות הזו בהגדרות Chrome.</translation>
 <translation id="1448064542941920355">הקטנת הזום</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{באתר אחד (<ph name="SITE_COUNT" />)}one{ב-<ph name="SITE_COUNT" /> אתרים}two{ב-<ph name="SITE_COUNT" /> אתרים}other{ב-<ph name="SITE_COUNT" /> אתרים}}</translation>
 <translation id="1500473259453106018">הסתרת הכרטיס 'הנחות בכרטיסיות'</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">‏אישרת לאתר הזה להשתמש בקובצי Cookie של צד שלישי באופן זמני. במצב כזה יש פחות הגנה במהלך הגלישה, אבל סביר יותר שהתכונות באתר יפעלו בלי בעיות. <ph name="BEGIN_LINK" />שליחת משוב<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">יכול להיות שתכונות באתרים מסוימים לא יפעלו במצב פרטי</translation>
 <translation id="2442870161001914531">תמיד תוצג בקשה לגרסת האתר למחשב</translation>
+<translation id="2445311670906052406">‏עכשיו, Chrome משתף את הכרטיסיות האחרונות עם המכשיר שלך. אפשר לראות אותן ברשימת האפליקציות במכשיר ובתוצאות החיפוש. אפשר להשבית את האפשרות הזו בכל שלב בהגדרות Chrome.</translation>
 <translation id="2469312991797799607">‏הפעולה הזו תמחק את כל הנתונים וקובצי ה-Cookie של <ph name="ORIGIN" /> ושל כל אתרי המשנה שלו</translation>
 <translation id="2482878487686419369">התראות</translation>
 <translation id="2485422356828889247">הסרה</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">אתרים יכולים להציג בקשות כניסה משירותי זיהוי</translation>
 <translation id="2787357173144933081">הפעלה מהירה של סרגל הכתובות</translation>
 <translation id="2790501146643349491">כשהאפשרות מופעלת, אתרים שנסגרו לאחרונה יכולים לסיים שליחה וקבלה של נתונים. כשהאפשרות מושבתת, אתרים שנסגרו לאחרונה לא יכולים לסיים שליחה או קבלה של נתונים.</translation>
+<translation id="2814830417943086299">‏‫Chrome מציג עכשיו את הכרטיסיות האחרונות ברשימת האפליקציות במכשיר ובתוצאות החיפוש. אפשר להשבית את האפשרות הזו בכל שלב בהגדרות Chrome.</translation>
 <translation id="2822354292072154809">לאפס את כל הרשאות האתר בשביל <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">בקשה לתצוגה לנייד</translation>
 <translation id="2870560284913253234">אתר</translation>
@@ -124,7 +127,6 @@
 <translation id="2903493209154104877">כתובות</translation>
 <translation id="2910701580606108292">הצגת שאלה לפני מתן הרשאה לאתרים להפעיל תוכן מוגן</translation>
 <translation id="2918484639460781603">המשך להגדרות</translation>
-<translation id="2927133898344569563">‏אפשר לגשת במהירות לכרטיסיות המוצעות מרשימת האפליקציות במכשיר ומתוצאות החיפוש במכשיר. ניתן להפעיל או להשבית את האפשרות הזו בכל שלב בהגדרות Chrome.</translation>
 <translation id="2932883381142163287">דיווח על שימוש לרעה</translation>
 <translation id="2939338015096024043">כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה לעקוב אחר מיקום המצלמה ולקבל מידע על הסביבה שלך. כשהאפשרות מושבתת, אתרים לא יכולים לעקוב אחר מיקום המצלמה או לקבל מידע על הסביבה שלך.</translation>
 <translation id="2968755619301702150">מציג האישורים</translation>
@@ -158,7 +160,7 @@
 <translation id="3362437373201486687">‏מתבצע חיפוש של מכשירי Bluetooth</translation>
 <translation id="3386292677130313581">יש לשאול לפני שמאפשרים לאתרים לדעת מה המיקום שלך (מומלץ)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
-<translation id="344449859752187052">‏קובצי cookie של צד שלישי חסומים</translation>
+<translation id="344449859752187052">‏קובצי Cookie של צד שלישי נחסמו</translation>
 <translation id="3448554387819310837">כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה להשתמש במצלמה. כשהאפשרות מושבתת, אתרים לא יכולים להשתמש במצלמה.</translation>
 <translation id="3521663503435878242">אתרים ב-<ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">אין הרשאה לאתרים לעקוב אחר תנועות הידיים</translation>
@@ -337,7 +339,6 @@
 <translation id="5968921426641056619">צריך להזין כתובת אינטרנט</translation>
 <translation id="5975083100439434680">התרחקות</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
-<translation id="6015145568571136419">‏עכשיו אפשר לגשת במהירות לכרטיסיות המוצעות מרשימת האפליקציות במכשיר ומתוצאות החיפוש במכשיר. אפשר להשבית את האפשרות הזו בכל שלב בהגדרות של Chrome.</translation>
 <translation id="6015775454662021376">שליטה על הגישה של האתר הזה למכשיר שלך</translation>
 <translation id="6040143037577758943">סגירה</translation>
 <translation id="6042308850641462728">עוד</translation>
@@ -560,6 +561,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד הרשאה אחת (<ph name="NUM_MORE" />)}one{<ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}two{<ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">‏יש להעניק הרשאות עבור <ph name="APP_NAME" /> ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">הזום הנוכחי: <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="9156722768168878035">‏‫Chrome יכול להציג את הכרטיסיות האחרונות ברשימת האפליקציות במכשיר ובתוצאות החיפוש. אפשר להשבית את האפשרות הזו בכל שלב בהגדרות Chrome.</translation>
 <translation id="9162462602695099906">הדף הזה מסוכן</translation>
 <translation id="947156494302904893">אתרים שמבקרים בהם יכולים לאמת שמדובר באדם אמיתי ולא בבוט</translation>
 <translation id="959682366969460160">ארגון הפריטים</translation>

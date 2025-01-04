@@ -18,7 +18,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
@@ -31,7 +30,11 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowLooper.class})
-@EnableFeatures(ChromeFeatureList.BOTTOM_BROWSER_CONTROLS_REFACTOR)
+@EnableFeatures({
+    ChromeFeatureList.BOTTOM_BROWSER_CONTROLS_REFACTOR
+            + ":disable_bottom_controls_stacker_y_offset/false",
+    ChromeFeatureList.BCIV_BOTTOM_CONTROLS
+})
 public class BottomControlsStackerUnitTest {
     private static final @LayerType int ZERO_HEIGHT_TOP_LAYER = LayerType.PROGRESS_BAR;
     private static final @LayerType int TOP_LAYER = LayerType.TABSTRIP_TOOLBAR;
@@ -46,12 +49,6 @@ public class BottomControlsStackerUnitTest {
     public void setup() {
         MockitoAnnotations.openMocks(this);
         mBottomControlsStacker = new BottomControlsStacker(mBrowserControlsSizer);
-
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.sDisableBottomControlsStackerYOffsetDispatching, "false");
-        testValues.addFeatureFlagOverride(ChromeFeatureList.BOTTOM_BROWSER_CONTROLS_REFACTOR, true);
-        FeatureList.setTestValues(testValues);
     }
 
     @Test
@@ -1469,17 +1466,114 @@ public class BottomControlsStackerUnitTest {
         assertLayerYOffset(bottom, 0);
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.BCIV_BOTTOM_CONTROLS)
+    public void testOffsetClampingMinHeightIncreased() {
+        // Final state of the animation
+        TestLayer top =
+                new TestLayer(
+                        TOP_LAYER,
+                        150,
+                        LayerScrollBehavior.ALWAYS_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        TestLayer bottom =
+                new TestLayer(
+                        BOTTOM_LAYER,
+                        50,
+                        LayerScrollBehavior.NEVER_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        mBottomControlsStacker.addLayer(top);
+        mBottomControlsStacker.addLayer(bottom);
+        mBottomControlsStacker.requestLayerUpdate(false);
+        verify(mBrowserControlsSizer).setBottomControlsHeight(200, 50);
+
+        // First frame of the animation
+        onBottomControlsOffsetChanged(50, 0, true, false);
+        assertLayerYOffset(top, -50);
+
+        // Some intermediate frame of the animation
+        onBottomControlsOffsetChanged(45, 5, true, false);
+        assertLayerYOffset(top, -50);
+
+        // Final frame of the animation
+        onBottomControlsOffsetChanged(0, 50, true, false);
+        assertLayerYOffset(top, -50);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.BCIV_BOTTOM_CONTROLS)
+    public void testOffsetClampingMinHeightDecreased() {
+        // Final state of the animation
+        TestLayer top =
+                new TestLayer(
+                        TOP_LAYER,
+                        150,
+                        LayerScrollBehavior.ALWAYS_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        mBottomControlsStacker.addLayer(top);
+        mBottomControlsStacker.requestLayerUpdate(false);
+        verify(mBrowserControlsSizer).setBottomControlsHeight(150, 0);
+
+        // First frame of the animation (removing a view with min height of 50)
+        onBottomControlsOffsetChanged(-50, 50, true, false);
+        assertLayerYOffset(top, -50);
+
+        // Some intermediate frame of the animation
+        onBottomControlsOffsetChanged(-45, 45, true, false);
+        assertLayerYOffset(top, -45);
+
+        // Final frame of the animation
+        onBottomControlsOffsetChanged(0, 0, true, false);
+        assertLayerYOffset(top, 0);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.BCIV_BOTTOM_CONTROLS)
+    public void testOffsetClampingMinHeightDecreasedControlsInitiallyHidden() {
+        // Final state of the animation
+        TestLayer top =
+                new TestLayer(
+                        TOP_LAYER,
+                        150,
+                        LayerScrollBehavior.ALWAYS_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        mBottomControlsStacker.addLayer(top);
+        mBottomControlsStacker.requestLayerUpdate(false);
+        verify(mBrowserControlsSizer).setBottomControlsHeight(150, 0);
+
+        // First frame of the animation (removing a view with min height of 50)
+        onBottomControlsOffsetChanged(100, 50, true, false);
+        assertLayerYOffset(top, 0);
+
+        // Some intermediate frame of the animation
+        onBottomControlsOffsetChanged(105, 45, true, false);
+        assertLayerYOffset(top, 0);
+
+        // Final frame of the animation
+        onBottomControlsOffsetChanged(150, 0, true, false);
+        assertLayerYOffset(top, 0);
+    }
+
     // Test helpers
 
     private void onBottomControlsOffsetChanged(
             int bottomControlsOffset, int bottomControlsMinHeightOffset, boolean requestNewFrame) {
+        onBottomControlsOffsetChanged(
+                bottomControlsOffset, bottomControlsMinHeightOffset, false, requestNewFrame);
+    }
+
+    private void onBottomControlsOffsetChanged(
+            int bottomControlsOffset,
+            int bottomControlsMinHeightOffset,
+            boolean bottomControlsMinHeightChanged,
+            boolean requestNewFrame) {
         mBottomControlsStacker.onControlsOffsetChanged(
                 0,
                 0,
                 false,
                 bottomControlsOffset,
                 bottomControlsMinHeightOffset,
-                false,
+                bottomControlsMinHeightChanged,
                 requestNewFrame,
                 false);
     }
@@ -1535,7 +1629,7 @@ public class BottomControlsStackerUnitTest {
         }
 
         @Override
-        public void onBrowserControlsOffsetUpdate(int layerYOffset) {
+        public void onBrowserControlsOffsetUpdate(int layerYOffset, boolean didMinHeightChange) {
             mYOffset = layerYOffset;
         }
     }

@@ -99,7 +99,7 @@ class PaintPreviewTabService : public PaintPreviewBaseService {
       JNIEnv* env,
       const base::android::JavaParamRef<jintArray>& j_tab_ids);
   jboolean IsCacheInitializedAndroid(JNIEnv* env);
-  base::android::ScopedJavaLocalRef<jstring> GetPathAndroid(JNIEnv* env);
+  std::string GetPathAndroid(JNIEnv* env);
 
   base::android::ScopedJavaGlobalRef<jobject> GetJavaRef() { return java_ref_; }
 #endif  // BUILDFLAG(IS_ANDROID)

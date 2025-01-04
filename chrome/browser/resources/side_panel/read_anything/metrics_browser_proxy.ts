@@ -38,11 +38,12 @@ export enum ReadAnythingVoiceType {
   NATURAL = 0,
   ESPEAK = 1,
   CHROMEOS = 2,
+  SYSTEM,
 
   // Must be last.
-  COUNT = 3,
+  COUNT = 4,
 }
-// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingReadAloudVoice)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingReadAloudVoice2)
 
 // Enum for logging when a text style setting is changed.
 // These values are persisted to logs. Entries should not be renumbered and

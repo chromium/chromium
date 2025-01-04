@@ -4,7 +4,7 @@
 
 // https://streams.spec.whatwg.org/#ts-class
 [
-    Exposed=(Window,Worker,Worklet)
+    Exposed=*
 ] interface TransformStream {
     [CallWith=ScriptState, RaisesException] constructor(optional any transformer,
                 optional any writableStrategy,

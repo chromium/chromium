@@ -28,6 +28,7 @@
    "generated_icon_fix": null,
    "install_state": "2",
    "is_diy_app": false,
+   "was_shortcut_app": false,
    "is_from_sync_and_pending_installation": false,
    "is_generated_icon": false,
    "is_uninstalling": false,

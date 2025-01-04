@@ -32,7 +32,6 @@
 
 #endif
 
-
 namespace {
 
 // This is the asserter used with ThreadCollisionWarner instead of the default
@@ -40,8 +39,7 @@ namespace {
 // place.
 class AssertReporter : public base::AsserterBase {
  public:
-  AssertReporter()
-      : failed_(false) {}
+  AssertReporter() : failed_(false) {}
 
   void warn() override { failed_ = true; }
 
@@ -85,7 +83,7 @@ TEST(ThreadCollisionTest, ScopedRecursiveBookCriticalSection) {
       DFAKE_SCOPED_RECURSIVE_LOCK(warner);
       EXPECT_FALSE(local_reporter->fail_state());
     }  // Unpin section.
-  }  // Unpin section.
+  }    // Unpin section.
 
   // Check that section is not pinned
   {  // Pin section.
@@ -115,7 +113,7 @@ TEST(ThreadCollisionTest, ScopedBookCriticalSection) {
       // Reset the status of warner for further tests.
       local_reporter->reset();
     }  // Unpin section.
-  }  // Unpin section.
+  }    // Unpin section.
 
   {
     // Pin section.
@@ -128,15 +126,12 @@ TEST(ThreadCollisionTest, MTBookCriticalSectionTest) {
   class NonThreadSafeQueue {
    public:
     explicit NonThreadSafeQueue(base::AsserterBase* asserter)
-        : push_pop_(asserter) {
-    }
+        : push_pop_(asserter) {}
 
     NonThreadSafeQueue(const NonThreadSafeQueue&) = delete;
     NonThreadSafeQueue& operator=(const NonThreadSafeQueue&) = delete;
 
-    void push(int value) {
-      DFAKE_SCOPED_LOCK_THREAD_LOCKED(push_pop_);
-    }
+    void push(int value) { DFAKE_SCOPED_LOCK_THREAD_LOCKED(push_pop_); }
 
     int pop() {
       DFAKE_SCOPED_LOCK_THREAD_LOCKED(push_pop_);
@@ -191,8 +186,7 @@ TEST(ThreadCollisionTest, MTScopedBookCriticalSectionTest) {
   class NonThreadSafeQueue {
    public:
     explicit NonThreadSafeQueue(base::AsserterBase* asserter)
-        : push_pop_(asserter) {
-    }
+        : push_pop_(asserter) {}
 
     NonThreadSafeQueue(const NonThreadSafeQueue&) = delete;
     NonThreadSafeQueue& operator=(const NonThreadSafeQueue&) = delete;
@@ -250,8 +244,7 @@ TEST(ThreadCollisionTest, MTSynchedScopedBookCriticalSectionTest) {
   class NonThreadSafeQueue {
    public:
     explicit NonThreadSafeQueue(base::AsserterBase* asserter)
-        : push_pop_(asserter) {
-    }
+        : push_pop_(asserter) {}
 
     NonThreadSafeQueue(const NonThreadSafeQueue&) = delete;
     NonThreadSafeQueue& operator=(const NonThreadSafeQueue&) = delete;
@@ -287,6 +280,7 @@ TEST(ThreadCollisionTest, MTSynchedScopedBookCriticalSectionTest) {
         queue_->pop();
       }
     }
+
    private:
     raw_ptr<NonThreadSafeQueue> queue_;
     raw_ptr<base::Lock> lock_;
@@ -319,8 +313,7 @@ TEST(ThreadCollisionTest, MTSynchedScopedRecursiveBookCriticalSectionTest) {
   class NonThreadSafeQueue {
    public:
     explicit NonThreadSafeQueue(base::AsserterBase* asserter)
-        : push_pop_(asserter) {
-    }
+        : push_pop_(asserter) {}
 
     NonThreadSafeQueue(const NonThreadSafeQueue&) = delete;
     NonThreadSafeQueue& operator=(const NonThreadSafeQueue&) = delete;
@@ -336,9 +329,7 @@ TEST(ThreadCollisionTest, MTSynchedScopedRecursiveBookCriticalSectionTest) {
       return 0;
     }
 
-    void bar() {
-      DFAKE_SCOPED_RECURSIVE_LOCK(push_pop_);
-    }
+    void bar() { DFAKE_SCOPED_RECURSIVE_LOCK(push_pop_); }
 
    private:
     DFAKE_MUTEX(push_pop_);
@@ -365,6 +356,7 @@ TEST(ThreadCollisionTest, MTSynchedScopedRecursiveBookCriticalSectionTest) {
         queue_->pop();
       }
     }
+
    private:
     raw_ptr<NonThreadSafeQueue> queue_;
     raw_ptr<base::Lock> lock_;

@@ -113,7 +113,7 @@ class CaptureHandleManagerTest : public RenderViewHostImplTestHarness {
     CHECK_LT(device_count_, kMaxDevices);
     auto& device = devices_[++device_count_];
 
-    const WebContentsMediaCaptureId id(frame->GetProcess()->GetID(),
+    const WebContentsMediaCaptureId id(frame->GetProcess()->GetDeprecatedID(),
                                        frame->GetRoutingID());
     device.id = id.ToString();
     device.display_media_info = media::mojom::DisplayMediaInformation::New();

@@ -31,4 +31,4 @@ class DefaultBrowserPromptTrial {
   static void RegisterSyntheticFieldTrial(const std::string& group_name);
 };
 
-#endif // CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_PROMPT_DEFAULT_BROWSER_PROMPT_TRIAL_H_
+#endif  // CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_PROMPT_DEFAULT_BROWSER_PROMPT_TRIAL_H_

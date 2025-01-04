@@ -24,8 +24,9 @@ void ViewModelBase::Move(size_t index, size_t target_index) {
   check_index(index);
   check_index(target_index);
 
-  if (index == target_index)
+  if (index == target_index) {
     return;
+  }
   Entry entry(entries_[index]);
   entries_.erase(entries_.begin() + static_cast<ptrdiff_t>(index));
   entries_.insert(entries_.begin() + static_cast<ptrdiff_t>(target_index),
@@ -35,13 +36,15 @@ void ViewModelBase::Move(size_t index, size_t target_index) {
 void ViewModelBase::MoveViewOnly(size_t index, size_t target_index) {
   if (target_index < index) {
     View* view = entries_[index].view;
-    for (size_t i = index; i > target_index; --i)
+    for (size_t i = index; i > target_index; --i) {
       entries_[i].view = entries_[i - 1].view;
+    }
     entries_[target_index].view = view;
   } else if (target_index > index) {
     View* view = entries_[index].view;
-    for (size_t i = index; i < target_index; ++i)
+    for (size_t i = index; i < target_index; ++i) {
       entries_[i].view = entries_[i + 1].view;
+    }
     entries_[target_index].view = view;
   }
 }
@@ -49,8 +52,9 @@ void ViewModelBase::MoveViewOnly(size_t index, size_t target_index) {
 void ViewModelBase::Clear() {
   Entries entries;
   entries.swap(entries_);
-  for (const auto& entry : entries)
+  for (const auto& entry : entries) {
     delete entry.view;
+  }
 }
 
 std::optional<size_t> ViewModelBase::GetIndexOfView(const View* view) const {

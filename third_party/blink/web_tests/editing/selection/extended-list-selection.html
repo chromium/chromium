@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<script src="../../resources/dump-as-markup.js"></script>
+<body>
+  <div contenteditable id="ol"><p><br></p><ol><li>Ordered</li><li>List</li></ol></div>
+  <div contenteditable id="ul"><p><br></p><ul><li>Unordered</li><li>List</li></ul></div>
+  <div contenteditable id="dl"><p><br></p><dl><dt>Term 1</dt><dd>Description 1</dd><dt>Term 2</dt><dd>Description 2</dd></dl></div>
+  <div contenteditable id="ol_ul"><p><br></p><ol><li>Ordered</li><li>List<ul><li>Unordered</li><li>List</li></ul></li></ol></div>
+  <div contenteditable id="ul_ol"><p><br></p><ul><li>Unordered</li><li>List<ol><li>Ordered</li><li>List</li></ol></li></ul></div>
+
+  <script>
+    if (window.testRunner)
+      testRunner.dumpAsText();
+
+    Markup.description("This test ensures list element tag is not lost while copying with extended selection");
+    /**
+    * Performs copy-paste operation on the specified element.
+    * @param {string} elementId - The ID of the element to perform the operation on.
+    */
+    function performCopyPasteOperation(elementId) {
+      const element = document.getElementById(elementId);
+      element.focus();
+      document.execCommand("SelectAll");
+      document.execCommand("Copy");
+      document.execCommand("Paste");
+      Markup.dump(elementId);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      performCopyPasteOperation("ol");
+      performCopyPasteOperation("ul");
+      performCopyPasteOperation("dl");
+      performCopyPasteOperation("ol_ul");
+      performCopyPasteOperation("ul_ol");
+    });
+  </script>
+</body>
+</html>

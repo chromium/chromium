@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">إيقاف المظهر الداكن</translation>
 <translation id="1807246157184219062">فاتح</translation>
 <translation id="1808803439260407870">الفن الكلاسيكي</translation>
+<translation id="181434555916624618">لن يتم عرض النتائج التي تتضمّن أشخاصًا في الوقت الحالي. يُرجى تجربة طلب آخر.</translation>
 <translation id="1815850098929213707">المفتاح الذي تم اختياره: <ph name="KEYS" />. انقر على الزر لتعديل عنصر التحكّم.</translation>
 <translation id="1823120442877418684">أصناف</translation>
 <translation id="1827738518074806965">معرض الفنون</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">مستوى شحن بطارية السماعة اليمنى هو %<ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="3340978935015468852">الإعدادات</translation>
 <translation id="3347558044552027859">عصري</translation>
+<translation id="3353477144743332882">تنزيل نموذج إنشاء الملخّص والاسم</translation>
 <translation id="3359218928534347896">إيقاف/تفعيل كتم صوت الميكروفون</translation>
 <translation id="3360306038446926262">‏نظام التشغيل Windows</translation>
 <translation id="3361618936611118375">سوشي</translation>
@@ -689,6 +691,7 @@
 <translation id="4354430579665871434">مفتاح</translation>
 <translation id="4356100841225547054">إيقاف الصوت</translation>
 <translation id="4361257691546579041">إنّ اسم نقطة الوصول من النوع التلقائي.</translation>
+<translation id="4368101969572512692">الترتيب العشوائي للاقتراحات</translation>
 <translation id="437294888293595148">إعادة ضبط جميع الاختصارات</translation>
 <translation id="437477383107495720">أرانب</translation>
 <translation id="4376423484621194274">لا يسمح المشرف بإغلاق "<ph name="APP_NAME" />".</translation>
@@ -768,6 +771,7 @@
 <translation id="4731797938093519117">وصول أحد الوالدين</translation>
 <translation id="473775607612524610">تحديث</translation>
 <translation id="4744944742468440486">معلومات ذات صلة باختيارك</translation>
+<translation id="4750394297954878236">الاقتراحات</translation>
 <translation id="4771607256327216405">زيادة سطوع لوحة المفاتيح</translation>
 <translation id="4771923071974529837">غدًا</translation>
 <translation id="4773299976671772492">متوقفة</translation>
@@ -853,6 +857,7 @@
 <translation id="5121677070210013200">‏تعذَّر تنزيل نموذج تحويل الصوت إلى نص. يُرجى إعادة المحاولة أو إعادة تشغيل جهاز Chromebook.</translation>
 <translation id="5130848777448318809">مهور</translation>
 <translation id="5137451382116112100">ملء الشاشة</translation>
+<translation id="5139813694804168398">عدم الإزعاج</translation>
 <translation id="5140788690559353412">‏عند فقدان إمكانية الوصول إلى حسابك الذي تديره المؤسسة التعليمية، لن يعود بإمكانك الوصول إلى عنوان بريدك الإلكتروني وملفات Google Drive المرتبطة، مثل Gmail و"مستندات Google" و"العروض التقديمية من Google" وغير ذلك.</translation>
 <translation id="5142961317498132443">المصادقة</translation>
 <translation id="5144311987923128508">تم إيقاف زر "تأكيد" الآن</translation>
@@ -897,6 +902,7 @@
 <translation id="5302048478445481009">اللغة</translation>
 <translation id="5303837385540978511">خلفية حصرية على <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="530883153651464140">‏تحديث <ph name="DEVICE_NAME" /> إلى الإصدار ‎<ph name="VERSION" /></translation>
 <translation id="5315873049536339193">الهوية</translation>
 <translation id="5317780077021120954">حفظ</translation>
 <translation id="5318310531701770497">يتعذّر إنشاء الأسماء. يُرجى تجربة استخدام نص أطول.</translation>
@@ -973,7 +979,6 @@
 <translation id="5703716265115423771">صوت منخفض</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> من <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">زر تعديل الاختصار <ph name="SHORTCUT_DESCRIPTION" /></translation>
-<translation id="5733298426544876109">تحديث <ph name="DEVICE_NAME" /></translation>
 <translation id="5736820754189340309">تمت إعادة ضبط استخدام البيانات</translation>
 <translation id="574392208103952083">متوسط</translation>
 <translation id="5744175046705638478">ترجمة "<ph name="QUERY" />"</translation>
@@ -998,6 +1003,7 @@
 <translation id="5859969039821714932">هذا الاختصار غير متاح. اضغط على اختصار جديد بدون "<ph name="KEY" />".</translation>
 <translation id="5860033963881614850">غير مفعّلة</translation>
 <translation id="5860491529813859533">تفعيل</translation>
+<translation id="5875913454160982848">تنزيل نموذج تحويل الصوت إلى نص</translation>
 <translation id="5876385649737594562">يُرجى تفعيل "وضع الاستراحة" لتحديد الخيارات.</translation>
 <translation id="5877503382465267833">إيقاف تنزيل "<ph name="RECORDING_NAME" />" مؤقتًا</translation>
 <translation id="588258955323874662">ملء الشاشة</translation>
@@ -1037,7 +1043,6 @@
 <translation id="6040143037577758943">إغلاق</translation>
 <translation id="6040852767465482106">هوية مجهولة</translation>
 <translation id="604124094241169006">تلقائي</translation>
-<translation id="6042308850641462728">عرض المزيد</translation>
 <translation id="6048107060512778456">تعذَّرت الطباعة - الورق مكدّس</translation>
 <translation id="6050189528197190982">تدرج الرمادي</translation>
 <translation id="6054711098834486579">الفن التعبيري</translation>
@@ -1293,6 +1298,7 @@
 <translation id="7134436342991564651">{0,plural, =1{خادم أسماء واحد}zero{خوادم الأسماء}two{خادما أسماء}few{خوادم الأسماء}many{خوادم الأسماء}other{خوادم الأسماء}}</translation>
 <translation id="7135814714616751706">البحث في الاختصارات</translation>
 <translation id="7138614237884624401">نص مُبسّط</translation>
+<translation id="7138668887584231801">عدد الكلمات غير كافٍ لتلخيص النص</translation>
 <translation id="7141470099673912333">نقل المحتوى</translation>
 <translation id="7143207342074048698">اتصال</translation>
 <translation id="7144878232160441200">إعادة المحاولة</translation>
@@ -1588,6 +1594,7 @@
 <translation id="8503836310948963452">يُرجى الانتظار بضع دقائق فقط…</translation>
 <translation id="8505011850330200833">‏يتطلّب نموذج Gemini مساحة تخزين تبلغ 2 غيغابايت لمعالجة النصوص وإنشاء الملخّصات</translation>
 <translation id="8508640263392900755">‏تفاصيل APN</translation>
+<translation id="8509574872955173831">مزيد من المعلومات حول نموذج إنشاء الملخّص والاسم</translation>
 <translation id="8522687886059337719">يمكنك الآن الوصول إلى <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />خلفيات<ph name="END_LINK_WALLPAPER_SUBPAGE" /> و<ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />شاشة استراحة<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> جديدة.</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">لتقديم الشاي</translation>
@@ -1724,7 +1731,6 @@
 <translation id="9133772297793293778">‏اضغط على ما بين 1 إلى 4 مفاتيح تعديل ومفتاح آخر على لوحة المفاتيح. للخروج من وضع التعديل، اضغط على Alt + مفتاح الخروج (Esc).</translation>
 <translation id="9137526406337347448">‏خدمات Google</translation>
 <translation id="9138630967333032450">‏المفتاح Shift الأيسر</translation>
-<translation id="9147928237330776930">عدد الكلمات قليل جدًا ولا يمكن تلخيص النص المحدَّد</translation>
 <translation id="9149391708638971077">تشغيل اختبار الذاكرة</translation>
 <translation id="9159524746324788320">هامبورغر</translation>
 <translation id="9161276708550942948">مفتاح المسافة</translation>

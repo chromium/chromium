@@ -185,6 +185,11 @@ class VideoCaptureImplTest : public ::testing::Test {
     video_capture_impl_->SetGpuMemoryBufferSupportForTesting(
         std::make_unique<FakeGpuMemoryBufferSupport>());
   }
+
+#if DCHECK_IS_ON()
+  ~VideoCaptureImplTest() override { WTF::SetIsBeforeThreadCreatedForTest(); }
+#endif
+
   VideoCaptureImplTest(const VideoCaptureImplTest&) = delete;
   VideoCaptureImplTest& operator=(const VideoCaptureImplTest&) = delete;
 

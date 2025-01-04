@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/api/messaging/message_service.h"
 
 #include <stdint.h>
@@ -165,7 +160,7 @@ std::vector<url::Origin> GetServiceWorkerExtendedLifetimeOrigins(
                   extended_lifetime_urls.size());
 
   // Add default values.
-  for (const std::string& default_value : kDefaultSWExtendedLifetimeList) {
+  for (const char* default_value : kDefaultSWExtendedLifetimeList) {
     url::Origin origin = url::Origin::Create(GURL(default_value));
     origins.push_back(std::move(origin));
   }
@@ -357,7 +352,7 @@ class MessageServiceFactory
             },
             [&](const content::RenderFrameHost* render_frame_host) {
               return ChannelEndpoint(
-                  context, render_frame_host->GetProcess()->GetID(),
+                  context, render_frame_host->GetProcess()->GetDeprecatedID(),
                   PortContext::ForFrame(render_frame_host->GetRoutingID()));
             }},
         source);
@@ -412,15 +407,27 @@ void MessageService::OpenChannelToExtension(
             source_endpoint.type == MessagingEndpoint::Type::kNativeApp);
   content::RenderFrameHost* source_render_frame_host =
       source.is_for_render_frame() ? source.GetRenderFrameHost() : nullptr;
-  if (!source.IsValid())
+  if (!source.IsValid()) {
+    for (const auto& tracking_id : open_channel_tracking_ids) {
+      message_tracker->StopTrackingMessagingStage(
+          tracking_id, MessageTracker::OpenChannelMessagePipelineResult::
+                           kOpenChannelSourceEndpointInvalid);
+    }
     return;
+  }
   DCHECK(ExtensionsBrowserClient::Get()->IsSameContext(context, context_));
 
   MaybeDisableBackForwardCacheForMessaging(source_render_frame_host);
 
   CHECK(opener_port);
-  if (!opener_port->IsValidPort())
+  if (!opener_port->IsValidPort()) {
+    for (const auto& tracking_id : open_channel_tracking_ids) {
+      message_tracker->StopTrackingMessagingStage(
+          tracking_id, MessageTracker::OpenChannelMessagePipelineResult::
+                           kOpenChannelOpenerPortInvalid);
+    }
     return;
+  }
 
   const Extension* target_extension =
       registry->enabled_extensions().GetByID(target_extension_id);
@@ -1184,18 +1191,31 @@ void MessageService::OnOpenChannelAllowed(
   pending_messages.swap(pending_for_incognito->second);
   pending_incognito_channels_.erase(pending_for_incognito);
 
+  auto* message_tracker = MessageTracker::Get(context_);
+
   // Check whether the source got closed while in flight.
   const ChannelEndpoint& source = params->source;
   // Re-lookup the source process since it may no longer be valid.
-  if (!source.IsValid())
+  if (!source.IsValid()) {
+    for (const auto& tracking_id : params->open_channel_tracking_ids) {
+      message_tracker->StopTrackingMessagingStage(
+          tracking_id, MessageTracker::OpenChannelMessagePipelineResult::
+                           kOnOpenChannelSourceInvalid);
+    }
     return;
+  }
 
-  if (!params->opener_port->IsValidPort())
+  if (!params->opener_port->IsValidPort()) {
+    for (const auto& tracking_id : params->open_channel_tracking_ids) {
+      message_tracker->StopTrackingMessagingStage(
+          tracking_id, MessageTracker::OpenChannelMessagePipelineResult::
+                           kOnOpenChannelOpenerPortInvalid);
+    }
     return;
+  }
 
   if (!allowed) {
     params->opener_port->DispatchOnDisconnect(kReceivingEndDoesntExistError);
-    auto* message_tracker = MessageTracker::Get(context_);
     for (const auto& tracking_id : params->open_channel_tracking_ids) {
       message_tracker->StopTrackingMessagingStage(
           tracking_id,
@@ -1212,6 +1232,11 @@ void MessageService::OnOpenChannelAllowed(
       registry->enabled_extensions().GetByID(params->target_extension_id);
   if (!target_extension) {
     params->opener_port->DispatchOnDisconnect(kReceivingEndDoesntExistError);
+    for (const auto& tracking_id : params->open_channel_tracking_ids) {
+      message_tracker->StopTrackingMessagingStage(
+          tracking_id, MessageTracker::OpenChannelMessagePipelineResult::
+                           kOnOpenChannelExtensionNotEnabled);
+    }
     return;
   }
 

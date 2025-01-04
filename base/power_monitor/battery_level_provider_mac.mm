@@ -24,8 +24,9 @@ std::optional<SInt64> GetValueAsSInt64(CFDictionaryRef description,
       base::apple::GetValueFromDictionary<CFNumberRef>(description, key);
 
   SInt64 value;
-  if (number_ref && CFNumberGetValue(number_ref, kCFNumberSInt64Type, &value))
+  if (number_ref && CFNumberGetValue(number_ref, kCFNumberSInt64Type, &value)) {
     return value;
+  }
 
   return std::nullopt;
 }
@@ -34,8 +35,9 @@ std::optional<bool> GetValueAsBoolean(CFDictionaryRef description,
                                       CFStringRef key) {
   CFBooleanRef boolean =
       base::apple::GetValueFromDictionary<CFBooleanRef>(description, key);
-  if (!boolean)
+  if (!boolean) {
     return std::nullopt;
+  }
   return CFBooleanGetValue(boolean);
 }
 

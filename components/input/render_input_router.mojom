@@ -4,6 +4,8 @@
 
 module input.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "third_party/blink/public/mojom/input/input_event_result.mojom";
 import "third_party/blink/public/mojom/input/input_handler.mojom";
@@ -21,7 +23,35 @@ struct RenderInputRouterConfig {
   // non-root layer tree frame sinks under the same WebContents in browser to
   // mirror 1:1 relationship between RenderWidgetHostInputEventRouter and
   // WebContentsImpl.
-  uint32 grouping_id;
+  mojo_base.mojom.UnguessableToken grouping_id;
+};
+
+struct TouchTransferState {
+  // Timestamp of the touch down event on which touch transfer was requested.
+  // The value is obtained from |MotionEvent.getDownTime| Android API which
+  // gives the timestamp in milliseconds.
+  mojo_base.mojom.TimeTicks down_time_ms;
+
+  // FrameSinkId of root widget which was being touched at the time of transfer.
+  viz.mojom.FrameSinkId root_widget_frame_sink_id;
+
+  // Raw y offset added to raw screen coordinates to get coordinates relative to
+  // root widget. This will be used to account for top controls height when
+  // creating MotionEventAndroid on Viz side.
+  int32 raw_y_offset;
+};
+
+// Implemented by Viz, an interface between Browser and Viz. It defines methods
+// used to communicate input event handling related state from Browser to Viz.
+interface RenderInputRouterDelegate {
+  // Send |TouchTransferState| from Browser upon a successful touch transfer.
+  // Viz needs this to do input handling on it's side.
+  StateOnTouchTransfer(TouchTransferState state);
+
+  // Notifies RenderInputRouter on the VizCompositor thread (corresponding to
+  // |frame_sink_id|), of changes to a page being mobile site optimized.
+  NotifySiteIsMobileOptimized(bool is_mobile_optimized,
+                              viz.mojom.FrameSinkId frame_sink_id);
 };
 
 // Implemented by the browser, this interface defines methods that will be

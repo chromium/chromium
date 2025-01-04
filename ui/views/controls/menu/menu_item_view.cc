@@ -120,8 +120,9 @@ void MenuItemView::ChildPreferredSizeChanged(View* child) {
 void MenuItemView::OnThemeChanged() {
   View::OnThemeChanged();
   // Force updating as the colors may have changed.
-  if (!IsScheduledForDeletion())
+  if (!IsScheduledForDeletion()) {
     UpdateSelectionBasedState(ShouldPaintAsSelected(PaintMode::kNormal));
+  }
 
   // Update the name when the theme changes, as the name depends on few
   // attributes like title, minor_text, which are likely to change with the
@@ -239,13 +240,15 @@ View::FocusBehavior MenuItemView::GetFocusBehavior() const {
   // If the creator/owner of the MenuItemView has explicitly set the focus
   // behavior to something other than the default NEVER, don't override it.
   View::FocusBehavior focus_behavior = View::GetFocusBehavior();
-  if (focus_behavior != FocusBehavior::NEVER)
+  if (focus_behavior != FocusBehavior::NEVER) {
     return focus_behavior;
+  }
 
   // Some MenuItemView types are presumably never focusable, even by assistive
   // technologies.
-  if (type_ == Type::kEmpty || type_ == Type::kSeparator)
+  if (type_ == Type::kEmpty || type_ == Type::kSeparator) {
     return FocusBehavior::NEVER;
+  }
 
   // The rest of the MenuItemView types are presumably focusable, at least by
   // assistive technologies. But if they lack presentable information, then
@@ -290,8 +293,9 @@ std::u16string MenuItemView::GetAccessibleNameForMenuItem(
                             accessible_name.substr(index + 1));
 
     // Special case for "&&" (escaped for "&").
-    if (accessible_name[index] == '&')
+    if (accessible_name[index] == '&') {
       ++index;
+    }
   }
 
   // Append subtext.
@@ -361,8 +365,9 @@ MenuItemView* MenuItemView::AddMenuItemAt(
   if (type == Type::kHighlighted) {
     item->set_vertical_margin(MenuConfig::instance().footnote_vertical_margin);
   }
-  if (GetDelegate() && !GetDelegate()->IsCommandVisible(item_id))
+  if (GetDelegate() && !GetDelegate()->IsCommandVisible(item_id)) {
     item->SetVisible(false);
+  }
   auto* added_item = submenu_->AddChildViewAt(item, index);
 
   added_item->UpdateTooltipText();
@@ -398,6 +403,13 @@ MenuItemView* MenuItemView::AppendTitle(const std::u16string& label) {
                             Type::kTitle);
 }
 
+MenuItemView* MenuItemView::AddTitleAt(const std::u16string& label,
+                                       size_t index) {
+  return AddMenuItemAt(index, ui::MenuModel::kTitleId, label, std::u16string(),
+                       std::u16string(), ui::ImageModel(), ui::ImageModel(),
+                       Type::kTitle, ui::NORMAL_SEPARATOR);
+}
+
 MenuItemView* MenuItemView::AppendSubMenu(int item_id,
                                           const std::u16string& label,
                                           const ui::ImageModel& icon) {
@@ -429,8 +441,9 @@ MenuItemView* MenuItemView::AppendMenuItemImpl(int item_id,
 }
 
 SubmenuView* MenuItemView::CreateSubmenu() {
-  if (submenu_)
+  if (submenu_) {
     return submenu_.get();
+  }
 
   submenu_ = std::make_unique<SubmenuView>(/*parent=*/this);
   submenu_->SetProperty(kElementIdentifierKey, submenu_id_);
@@ -454,8 +467,9 @@ SubmenuView* MenuItemView::CreateSubmenu() {
   // Force an update as `submenu_arrow_image_view_` needs to be updated. The
   // state is also updated when the theme changes (which is also called when
   // added to a widget).
-  if (GetWidget())
+  if (GetWidget()) {
     UpdateSelectionBasedState(ShouldPaintAsSelected(PaintMode::kNormal));
+  }
 
   SchedulePaint();
 
@@ -506,8 +520,9 @@ void MenuItemView::SetMinorIcon(const ui::ImageModel& minor_icon) {
 }
 
 void MenuItemView::SetSelected(bool selected) {
-  if (selected_ == selected)
+  if (selected_ == selected) {
     return;
+  }
 
   selected_ = selected;
   UpdateAccessibleSelection();
@@ -565,8 +580,9 @@ void MenuItemView::SetIconView(std::unique_ptr<ImageView> icon_view) {
       RemoveChildViewT(icon_view_.ExtractAsDangling());
     }
 
-    if (icon_view)
+    if (icon_view) {
       icon_view_ = AddChildView(std::move(icon_view));
+    }
   }
 
   UpdateSelectionBasedStateIfChanged(PaintMode::kNormal);
@@ -612,8 +628,9 @@ gfx::Rect MenuItemView::GetSubmenuAreaOfActionableSubmenu() const {
 }
 
 const MenuItemView::MenuItemDimensions& MenuItemView::GetDimensions() const {
-  if (!is_dimensions_valid())
+  if (!is_dimensions_valid()) {
     dimensions_ = CalculateDimensions();
+  }
   DCHECK(is_dimensions_valid());
   return dimensions_;
 }
@@ -681,14 +698,17 @@ char16_t MenuItemView::GetMnemonic() {
 }
 
 MenuItemView* MenuItemView::GetMenuItemByID(int id) {
-  if (GetCommand() == id)
+  if (GetCommand() == id) {
     return this;
-  if (!HasSubmenu())
+  }
+  if (!HasSubmenu()) {
     return nullptr;
+  }
   for (MenuItemView* item : GetSubmenu()->GetMenuItems()) {
     MenuItemView* result = item->GetMenuItemByID(id);
-    if (result)
+    if (result) {
       return result;
+    }
   }
   return nullptr;
 }
@@ -819,8 +839,9 @@ ProposedLayout MenuItemView::CalculateProposedLayout(
 }
 
 void MenuItemView::SetForcedVisualSelection(bool selected) {
-  if (selected == forced_visual_selection_)
+  if (selected == forced_visual_selection_) {
     return;
+  }
 
   forced_visual_selection_ = selected;
   UpdateSelectionBasedStateIfChanged(PaintMode::kNormal);
@@ -886,14 +907,16 @@ MenuItemView::MenuItemView(MenuItemView* parent,
     UpdateAccessibleCheckedState();
   }
 
-  if (type_ == Type::kActionableSubMenu)
+  if (type_ == Type::kActionableSubMenu) {
     vertical_separator_ = AddChildView(std::make_unique<VerticalSeparator>());
+  }
 
   // Don't request enabled status from the root menu item as it is just
   // a container for real items. kEmpty items will be disabled.
   MenuDelegate* root_delegate = GetDelegate();
-  if (parent && type != Type::kEmpty && root_delegate)
+  if (parent && type != Type::kEmpty && root_delegate) {
     SetEnabled(root_delegate->IsCommandEnabled(command));
+  }
   SetLayoutManager(std::make_unique<DelegatingLayoutManager>(this));
 
   visible_changed_callback_ = AddVisibleChangedCallback(base::BindRepeating(
@@ -961,8 +984,9 @@ const gfx::FontList MenuItemView::GetFontList() const {
 
 const std::optional<SkColor> MenuItemView::GetMenuLabelColor() const {
   if (const MenuDelegate* delegate = GetDelegate()) {
-    if (const auto& label_color = delegate->GetLabelColor(GetCommand()))
+    if (const auto& label_color = delegate->GetLabelColor(GetCommand())) {
       return label_color;
+    }
   }
   return std::nullopt;
 }
@@ -1043,8 +1067,9 @@ void MenuItemView::OnPaintImpl(gfx::Canvas* canvas, PaintMode mode) {
   gfx::Rect text_bounds(label_start, top_margin, width, text_height);
   text_bounds.set_x(GetMirroredXForRect(text_bounds));
   int flags = GetDrawStringFlags();
-  if (mode == PaintMode::kForDrag)
+  if (mode == PaintMode::kForDrag) {
     flags |= gfx::Canvas::NO_SUBPIXEL_RENDERING;
+  }
   canvas->DrawStringRectWithFlags(title(), font_list, colors.fg_color,
                                   text_bounds, flags);
 
@@ -1231,18 +1256,16 @@ MenuItemView::Colors MenuItemView::CalculateColors(
 
 std::u16string MenuItemView::CalculateAccessibleName() const {
   std::u16string item_text = View::GetViewAccessibility().GetCachedName();
-  if (!item_text.empty())
+  if (!item_text.empty()) {
     return item_text;
+  }
 
   // Use the default accessible name if none is provided.
   if (IsContainer()) {
     // The first child is taking over, just use its accessible name instead of
     // |title_|.
     View* child = children().front();
-    ui::AXNodeData child_node_data;
-    child->GetViewAccessibility().GetAccessibleNodeData(&child_node_data);
-    item_text =
-        child_node_data.GetString16Attribute(ax::mojom::StringAttribute::kName);
+    item_text = child->GetViewAccessibility().GetCachedName();
   } else {
     item_text = title_;
   }
@@ -1251,27 +1274,33 @@ std::u16string MenuItemView::CalculateAccessibleName() const {
 }
 
 void MenuItemView::DestroyAllMenuHosts() {
-  if (!HasSubmenu())
+  if (!HasSubmenu()) {
     return;
+  }
 
   submenu_->Close();
-  for (MenuItemView* item : submenu_->GetMenuItems())
+  for (MenuItemView* item : submenu_->GetMenuItems()) {
     item->DestroyAllMenuHosts();
+  }
 }
 
 gfx::Size MenuItemView::GetChildPreferredSize() const {
-  if (children().empty())
+  if (children().empty()) {
     return gfx::Size();
+  }
 
-  if (IsContainer())
+  if (IsContainer()) {
     return children().front()->GetPreferredSize({});
+  }
 
   const auto add_width = [this](int width, const View* child) {
     if (child == icon_view_ || child == radio_check_image_view_ ||
-        child == submenu_arrow_image_view_ || child == vertical_separator_)
+        child == submenu_arrow_image_view_ || child == vertical_separator_) {
       return width;
-    if (width)
+    }
+    if (width) {
       width += kChildHorizontalPadding;
+    }
     return width + child->GetPreferredSize({}).width();
   };
   const int width =
@@ -1467,12 +1496,14 @@ void MenuItemView::UpdateSelectionBasedStateIfChanged(PaintMode mode) {
   // Selection state depends upon NativeTheme. Selection based state could also
   // depend on the menu model so avoid the update if the item is scheduled to be
   // deleted.
-  if (!GetWidget() || IsScheduledForDeletion())
+  if (!GetWidget() || IsScheduledForDeletion()) {
     return;
+  }
 
   const bool paint_as_selected = ShouldPaintAsSelected(mode);
-  if (paint_as_selected != last_paint_as_selected_)
+  if (paint_as_selected != last_paint_as_selected_) {
     UpdateSelectionBasedState(paint_as_selected);
+  }
 }
 
 void MenuItemView::UpdateSelectionBasedState(bool paint_as_selected) {

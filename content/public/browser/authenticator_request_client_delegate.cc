@@ -10,7 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/webauth/authenticator_environment.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_request_handler_base.h"

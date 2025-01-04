@@ -32,8 +32,8 @@ build_webui_tests("build_webui_tests") {
     "shortcut_customization_test.ts",
     "shortcut_customization_test_util.ts",
     "shortcut_search_handler_test.ts",
-    "shortcuts_page_test.ts",
     "shortcut_utils_test.ts",
+    "shortcuts_page_test.ts",
     "text_accelerator_test.ts",
   ]
   ts_deps = [

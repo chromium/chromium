@@ -82,7 +82,7 @@ public class BookmarkPromoHeader
                         mProfile,
                         bottomSheetStrings,
                         SigninAccessPoint.BOOKMARK_MANAGER,
-                        SyncConsentActivityLauncherImpl.get(),
+                        SyncConsentActivityLauncherImpl.getForProfile(mProfile),
                         SigninAndHistorySyncActivityLauncherImpl.get());
         if (syncPromoController.canShowSyncPromo()) {
             mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext);

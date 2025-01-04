@@ -8,7 +8,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_interface_binders.h"
 #include "chrome/browser/chrome_content_browser_client.h"
@@ -59,15 +58,13 @@
 #elif BUILDFLAG(IS_WIN)
 #include "chrome/browser/win/conflicts/module_database.h"
 #include "chrome/browser/win/conflicts/module_event_sink_impl.h"
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/mojo_service_manager/utility_process_bridge.h"
 #include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy_ash.h"
 #include "components/performance_manager/public/performance_manager.h"
 #if defined(ARCH_CPU_X86_64)
 #include "chrome/browser/performance_manager/mechanisms/userspace_swap_chromeos.h"
 #endif  // defined(ARCH_CPU_X86_64)
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy_lacros.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -87,6 +84,7 @@
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 #include "chrome/browser/media/output_protection_impl.h"
+#include "services/metrics/ukm_recorder_factory_impl.h"
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 #if BUILDFLAG(ENABLE_MOJO_CDM) && BUILDFLAG(IS_ANDROID)
@@ -227,7 +225,7 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
         base::BindRepeating(
             &NetBenchmarking::Create,
             loading_predictor ? loading_predictor->GetWeakPtr() : nullptr,
-            render_process_host->GetID()),
+            render_process_host->GetDeprecatedID()),
         ui_task_runner);
   }
 
@@ -235,7 +233,8 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
   if (safe_browsing_service_) {
     registry->AddInterface<safe_browsing::mojom::SafeBrowsing>(
         base::BindRepeating(
-            &MaybeCreateSafeBrowsingForRenderer, render_process_host->GetID(),
+            &MaybeCreateSafeBrowsingForRenderer,
+            render_process_host->GetDeprecatedID(),
             base::BindRepeating(
                 &ChromeContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate,
                 base::Unretained(this))),
@@ -243,7 +242,7 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     registry->AddInterface<safe_browsing::mojom::ExtensionWebRequestReporter>(
         base::BindRepeating(&MaybeCreateExtensionWebRequestReporterForRenderer,
-                            render_process_host->GetID()),
+                            render_process_host->GetDeprecatedID()),
         ui_task_runner);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   }
@@ -262,7 +261,7 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
           return host->GetProcess().Duplicate();
         return base::Process();
       },
-      render_process_host->GetID());
+      render_process_host->GetDeprecatedID());
   registry->AddInterface<mojom::ModuleEventSink>(
       base::BindRepeating(
           &ModuleEventSinkImpl::Create, std::move(get_process),
@@ -271,8 +270,7 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
       ui_task_runner);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#if defined(ARCH_CPU_X86_64)
+#if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64)
   if (performance_manager::mechanism::userspace_swap::
           UserspaceSwapInitializationImpl::UserspaceSwapSupportedAndEnabled()) {
     registry
@@ -280,11 +278,10 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
             base::BindRepeating(
                 &performance_manager::mechanism::userspace_swap::
                     UserspaceSwapInitializationImpl::Create,
-                render_process_host->GetID()),
+                render_process_host->GetDeprecatedID()),
             performance_manager::PerformanceManager::GetTaskRunner());
   }
-#endif  // defined(ARCH_CPU_X86_64)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64)
 
   for (auto& ep : extra_parts_) {
     ep->ExposeInterfacesToRenderer(registry, associated_registry,
@@ -305,6 +302,12 @@ void ChromeContentBrowserClient::BindMediaServiceReceiver(
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   if (auto r = receiver.As<media::mojom::OutputProtection>()) {
     OutputProtectionImpl::Create(render_frame_host, std::move(r));
+    return;
+  }
+
+  if (auto r = receiver.As<ukm::mojom::UkmRecorderFactory>()) {
+    metrics::UkmRecorderFactoryImpl::Create(ukm::UkmRecorder::Get(),
+                                            std::move(r));
     return;
   }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -334,8 +337,8 @@ void ChromeContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
   map->Add<spellcheck::mojom::SpellCheckHost>(base::BindRepeating(
       [](content::RenderFrameHost* frame_host,
          mojo::PendingReceiver<spellcheck::mojom::SpellCheckHost> receiver) {
-        SpellCheckHostChromeImpl::Create(frame_host->GetProcess()->GetID(),
-                                         std::move(receiver));
+        SpellCheckHostChromeImpl::Create(
+            frame_host->GetProcess()->GetDeprecatedID(), std::move(receiver));
       }));
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
 
@@ -637,12 +640,9 @@ void ChromeContentBrowserClient::BindGpuHostReceiver(
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (auto r = receiver.As<chromeos::cdm::mojom::BrowserCdmFactory>())
     chromeos::CdmFactoryDaemonProxyAsh::Create(std::move(r));
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (auto r = receiver.As<chromeos::cdm::mojom::BrowserCdmFactory>())
-    chromeos::CdmFactoryDaemonProxyLacros::Create(std::move(r));
 #endif
 }
 
@@ -652,7 +652,7 @@ void ChromeContentBrowserClient::BindUtilityHostReceiver(
     metrics::CallStackProfileCollector::Create(std::move(r));
     return;
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (auto service_manager_receiver =
           receiver
               .As<chromeos::mojo_service_manager::mojom::ServiceManager>()) {
@@ -677,15 +677,15 @@ void ChromeContentBrowserClient::BindHostReceiverForRenderer(
 #if BUILDFLAG(ENABLE_SPELLCHECK)
   if (auto host_receiver =
           receiver.As<spellcheck::mojom::SpellCheckInitializationHost>()) {
-    SpellCheckInitializationHostImpl::Create(render_process_host->GetID(),
-                                             std::move(host_receiver));
+    SpellCheckInitializationHostImpl::Create(
+        render_process_host->GetDeprecatedID(), std::move(host_receiver));
     return;
   }
 
 #if BUILDFLAG(HAS_SPELLCHECK_PANEL)
   if (auto host_receiver =
           receiver.As<spellcheck::mojom::SpellCheckPanelHost>()) {
-    SpellCheckPanelHostImpl::Create(render_process_host->GetID(),
+    SpellCheckPanelHostImpl::Create(render_process_host->GetDeprecatedID(),
                                     std::move(host_receiver));
     return;
   }

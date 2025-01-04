@@ -517,6 +517,55 @@ public class AndroidShareSheetControllerUnitTest {
     }
 
     @Test
+    public void shareUrlWithPreviewImage() {
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher("Sharing.PreparePreviewFaviconDuration");
+
+        Bitmap testBitmap = Bitmap.createBitmap(80, 80, Bitmap.Config.ARGB_8888);
+        ShadowShareImageFileUtils.sExpectedWebBitmap = testBitmap;
+
+        ShareParams params =
+                new ShareParams.Builder(mWindow, "title", JUnitTestGURLs.EXAMPLE_URL.getSpec())
+                        .setBypassFixingDomDistillerUrl(true)
+                        .setPreviewImageBitmap(testBitmap)
+                        .build();
+        ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder().build();
+        mController.showShareSheet(params, chromeShareExtras, 1L);
+
+        Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
+        Assert.assertNotNull("Preview clip data should not be null.", intent.getClipData());
+        Assert.assertEquals(
+                "Image preview Uri is null.",
+                TEST_WEB_FAVICON_PREVIEW_URI,
+                intent.getClipData().getItemAt(0).getUri());
+        watcher.assertExpected();
+
+        ShadowShareImageFileUtils.sExpectedWebBitmap = null;
+    }
+
+    @Test
+    public void shareUrlWithPreviewImageUri() {
+        Bitmap testBitmap = Bitmap.createBitmap(80, 80, Bitmap.Config.ARGB_8888);
+        // This testBitmap is unused since preview URI was set.
+        ShadowShareImageFileUtils.sExpectedWebBitmap = null;
+        Uri testUri = Uri.parse("content://test.web.favicon.preview.shareUrlWithPreviewImageUri");
+
+        ShareParams params =
+                new ShareParams.Builder(mWindow, "title", JUnitTestGURLs.EXAMPLE_URL.getSpec())
+                        .setBypassFixingDomDistillerUrl(true)
+                        .setPreviewImageBitmap(testBitmap)
+                        .setPreviewImageUri(testUri)
+                        .build();
+        ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder().build();
+        mController.showShareSheet(params, chromeShareExtras, 1L);
+
+        Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
+        Assert.assertNotNull("Preview clip data should not be null.", intent.getClipData());
+        Assert.assertEquals(
+                "Image preview Uri is null.", testUri, intent.getClipData().getItemAt(0).getUri());
+    }
+
+    @Test
     public void shareTextWithPreviewFavicon() {
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher("Sharing.PreparePreviewFaviconDuration");

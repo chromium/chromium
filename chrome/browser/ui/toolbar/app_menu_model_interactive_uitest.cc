@@ -364,16 +364,16 @@ class UniversalInstallAppMenuModelInteractiveTest
   // a corresponding menu item entry for installation, as well as the default
   // install icon next to them.
   auto VerifyDiyAppMenuItemViews() {
-      const ui::ImageModel icon_image = ui::ImageModel::FromVectorIcon(
-          kInstallDesktopChromeRefreshIcon, ui::kColorMenuIcon,
-          ui::SimpleMenuModel::kDefaultIconSize);
-      return Steps(
-          EnsurePresent(AppMenuModel::kInstallAppItem),
-          CheckViewProperty(
-              AppMenuModel::kInstallAppItem, &views::MenuItemView::title,
-              l10n_util::GetStringUTF16(IDS_INSTALL_DIY_TO_OS_LAUNCH_SURFACE)),
-          CheckViewProperty(AppMenuModel::kInstallAppItem,
-                            &views::MenuItemView::GetIcon, icon_image));
+    const ui::ImageModel icon_image = ui::ImageModel::FromVectorIcon(
+        kInstallDesktopChromeRefreshIcon, ui::kColorMenuIcon,
+        ui::SimpleMenuModel::kDefaultIconSize);
+    return Steps(
+        EnsurePresent(AppMenuModel::kInstallAppItem),
+        CheckViewProperty(
+            AppMenuModel::kInstallAppItem, &views::MenuItemView::title,
+            l10n_util::GetStringUTF16(IDS_INSTALL_DIY_TO_OS_LAUNCH_SURFACE)),
+        CheckViewProperty(AppMenuModel::kInstallAppItem,
+                          &views::MenuItemView::GetIcon, icon_image));
   }
 
   AppBannerManager* GetManager() {
@@ -388,10 +388,10 @@ class UniversalInstallAppMenuModelInteractiveTest
   // so we do a 1:1 comparison.
   auto CompareIcons() {
     return base::BindLambdaForTesting([&](views::MenuItemView* item_view) {
-        EXPECT_TRUE(item_view->GetIcon().IsImage());
-        EXPECT_EQ(
-            GetMidColorFromBitmap(item_view->GetIcon().GetImage().AsBitmap()),
-            GetAppIconColorBasedOnBannerData());
+      EXPECT_TRUE(item_view->GetIcon().IsImage());
+      EXPECT_EQ(
+          GetMidColorFromBitmap(item_view->GetIcon().GetImage().AsBitmap()),
+          GetAppIconColorBasedOnBannerData());
     });
   }
 

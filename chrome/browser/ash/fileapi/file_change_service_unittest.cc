@@ -239,7 +239,7 @@ class FileChangeServiceTest : public BrowserWithTestWindowTest {
 
  private:
   // BrowserWithTestWindowTest:
-  std::string GetDefaultProfileName() override {
+  std::optional<std::string> GetDefaultProfileName() override {
     return "promary_profile@test";
   }
 };

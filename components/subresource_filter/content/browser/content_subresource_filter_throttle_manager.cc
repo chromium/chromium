@@ -896,7 +896,7 @@ void ContentSubresourceFilterThrottleManager::AdScriptDidCreateFencedFrame(
   CHECK(owner_frame, base::NotFatalUntil::M129);
 
   auto* fenced_frame_root = content::RenderFrameHost::FromPlaceholderToken(
-      owner_frame->GetProcess()->GetID(), placeholder_token);
+      owner_frame->GetProcess()->GetDeprecatedID(), placeholder_token);
 
   if (!fenced_frame_root)
     return;

@@ -104,8 +104,9 @@ class BookmarkBrowsertest : public InProcessBrowserTest {
   }
 
   static void CheckAnimation(Browser* browser, base::RunLoop* loop) {
-    if (!browser->window()->IsBookmarkBarAnimating())
+    if (!browser->window()->IsBookmarkBarAnimating()) {
       loop->Quit();
+    }
   }
 
   base::TimeDelta WaitForBookmarkBarAnimationToFinish() {
@@ -317,8 +318,9 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, OpenAllBookmarks) {
       Browser* regular_browser2 = nullptr;
       for (Browser* browser_instance : *BrowserList::GetInstance()) {
         if (browser_instance != incognito_browser &&
-            browser_instance != regular_browser)
+            browser_instance != regular_browser) {
           regular_browser2 = browser_instance;
+        }
       }
       // new browser needs to be opened
       EXPECT_NE(regular_browser2, nullptr);
@@ -369,8 +371,9 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, OpenAllBookmarks) {
       Browser* incognito_browser2 = nullptr;
       for (Browser* browser_instance : *BrowserList::GetInstance()) {
         if (browser_instance != incognito_browser &&
-            browser_instance != regular_browser)
+            browser_instance != regular_browser) {
           incognito_browser2 = browser_instance;
+        }
       }
       // new browser needs to be opened
       EXPECT_NE(incognito_browser2, nullptr);

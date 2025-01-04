@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_RTP_SENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_RTP_SENT_H_
 
+#include <optional>
+
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
@@ -18,7 +20,7 @@ class RTCRtpSent : public ScriptWrappable {
 
   // Implements rtc_rtp_sent.idl
   double time();
-  uint64_t ackId();
+  std::optional<uint64_t> ackId();
   uint64_t size();
 
  private:

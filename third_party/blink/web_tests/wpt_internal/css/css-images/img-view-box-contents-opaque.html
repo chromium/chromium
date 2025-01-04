@@ -1,7 +1,9 @@
 <!DOCTYPE html>
+<html class="reftest-wait">
 <title>Image opaqueness with CSS object-view-box and object-position</title>
 <link rel="author" href="mailto:szager@chromium.org">
 <link rel="match" href="img-view-box-contents-opaque-ref.html">
+<script src="/common/reftest-wait.js"></script>
 
 <body>
 <style>
@@ -53,5 +55,6 @@ decoder.decode().then(() => {
   for (let i = 0; i < images.length; i++) {
     images[i].src = url;
   }
+  takeScreenshot();
 });
 </script>

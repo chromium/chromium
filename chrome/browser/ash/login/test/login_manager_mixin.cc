@@ -300,8 +300,9 @@ void LoginManagerMixin::LoginAsNewRegularUser(
   test::WaitForOobeJSReady();
   ASSERT_FALSE(session_manager::SessionManager::Get()->IsSessionStarted());
   if (!user_context.has_value()) {
-    user_context = CreateDefaultUserContext(TestUserInfo(
-        AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId)));
+    user_context =
+        CreateDefaultUserContext(TestUserInfo(AccountId::FromUserEmailGaiaId(
+            test::kTestEmail, GaiaId(test::kTestGaiaId))));
   }
 
   test::ProfilePreparedWaiter profile_prepared(user_context->GetAccountId());
@@ -316,9 +317,10 @@ void LoginManagerMixin::LoginAsNewEnterpriseUser() {
   test::WaitForOobeJSReady();
 
   ASSERT_FALSE(session_manager::SessionManager::Get()->IsSessionStarted());
-  UserContext user_context = CreateDefaultUserContext(TestUserInfo(
-      AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kEnterpriseUser1,
-                                     FakeGaiaMixin::kEnterpriseUser1GaiaId)));
+  UserContext user_context =
+      CreateDefaultUserContext(TestUserInfo(AccountId::FromUserEmailGaiaId(
+          FakeGaiaMixin::kEnterpriseUser1,
+          GaiaId(FakeGaiaMixin::kEnterpriseUser1GaiaId))));
   user_context.SetRefreshToken(FakeGaiaMixin::kFakeRefreshToken);
 
   test::ProfilePreparedWaiter profile_prepared(user_context.GetAccountId());
@@ -333,7 +335,8 @@ void LoginManagerMixin::LoginAsNewChildUser() {
   test::WaitForOobeJSReady();
   ASSERT_FALSE(session_manager::SessionManager::Get()->IsSessionStarted());
   TestUserInfo test_child_user_(
-      AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId),
+      AccountId::FromUserEmailGaiaId(test::kTestEmail,
+                                     GaiaId(test::kTestGaiaId)),
       test::kDefaultAuthSetup, user_manager::UserType::kChild);
   UserContext user_context = CreateDefaultUserContext(test_child_user_);
   user_context.SetRefreshToken(FakeGaiaMixin::kFakeRefreshToken);

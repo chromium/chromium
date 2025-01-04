@@ -233,6 +233,7 @@ void XrBrowserTestBase::OpenNewTab(const std::string& url, bool incognito) {
 
 void XrBrowserTestBase::LoadFileAndAwaitInitialization(
     const std::string& test_name) {
+  OnBeforeLoadFile();
   GURL url = GetUrlForFile(test_name);
   ASSERT_TRUE(content::NavigateToURL(GetCurrentWebContents(), url));
   ASSERT_TRUE(PollJavaScriptBoolean("isInitializationComplete()",

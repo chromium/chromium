@@ -46,6 +46,7 @@ interface AILanguageModelFactory
     method create
 interface AIRewriter
     attribute @@toStringTag
+    getter format
     getter length
     getter sharedContext
     getter tone
@@ -55,6 +56,7 @@ interface AIRewriter
     method rewriteStreaming
 interface AIRewriterFactory
     attribute @@toStringTag
+    method availability
     method constructor
     method create
 interface AISummarizer
@@ -71,10 +73,8 @@ interface AISummarizerCapabilities
     attribute @@toStringTag
     getter available
     method constructor
+    method createOptionsAvailable
     method languageAvailable
-    method supportsFormat
-    method supportsLength
-    method supportsType
 interface AISummarizerFactory
     attribute @@toStringTag
     method capabilities
@@ -97,13 +97,17 @@ interface AITranslatorFactory
     method create
 interface AIWriter
     attribute @@toStringTag
+    getter format
+    getter length
     getter sharedContext
+    getter tone
     method constructor
     method destroy
     method write
     method writeStreaming
 interface AIWriterFactory
     attribute @@toStringTag
+    method availability
     method constructor
     method create
 interface AbortController
@@ -2184,6 +2188,7 @@ interface Document : Node
     method hasStorageAccess
     method hasUnpartitionedCookieAccess
     method importNode
+    method moveBefore
     method open
     method prepend
     method queryCommandEnabled
@@ -2351,6 +2356,7 @@ interface DocumentFragment : Node
     method constructor
     method getElementById
     method getPartRoot
+    method moveBefore
     method prepend
     method querySelector
     method querySelectorAll
@@ -2550,6 +2556,7 @@ interface Element : Node
     method insertAdjacentHTML
     method insertAdjacentText
     method matches
+    method moveBefore
     method prepend
     method querySelector
     method querySelectorAll
@@ -2934,14 +2941,6 @@ interface FileReader : EventTarget
     setter onloadend
     setter onloadstart
     setter onprogress
-interface FileSystemChangeRecord
-    attribute @@toStringTag
-    getter changedHandle
-    getter relativePathComponents
-    getter relativePathMovedFrom
-    getter root
-    getter type
-    method constructor
 interface FileSystemDirectoryHandle : FileSystemHandle
     attribute @@toStringTag
     method @@asyncIterator
@@ -3060,6 +3059,7 @@ interface GPU
     method requestAdapter
 interface GPUAdapter
     attribute @@toStringTag
+    getter featureLevel
     getter features
     getter info
     getter isCompatibilityMode
@@ -3334,7 +3334,11 @@ interface GPUSupportedLimits
     getter maxSampledTexturesPerShaderStage
     getter maxSamplersPerShaderStage
     getter maxStorageBufferBindingSize
+    getter maxStorageBuffersInFragmentStage
+    getter maxStorageBuffersInVertexStage
     getter maxStorageBuffersPerShaderStage
+    getter maxStorageTexturesInFragmentStage
+    getter maxStorageTexturesInVertexStage
     getter maxStorageTexturesPerShaderStage
     getter maxSubgroupSize
     getter maxTextureArrayLayers
@@ -5693,6 +5697,8 @@ interface LargestContentfulPaint : PerformanceEntry
     getter element
     getter id
     getter loadTime
+    getter paintTime
+    getter presentationTime
     getter renderTime
     getter size
     getter url
@@ -6762,7 +6768,6 @@ interface Node : EventTarget
     method isSameNode
     method lookupNamespaceURI
     method lookupPrefix
-    method moveBefore
     method normalize
     method removeChild
     method replaceChild
@@ -7199,6 +7204,8 @@ interface PerformanceElementTiming : PerformanceEntry
     getter loadTime
     getter naturalHeight
     getter naturalWidth
+    getter paintTime
+    getter presentationTime
     getter renderTime
     getter url
     method constructor
@@ -7209,7 +7216,6 @@ interface PerformanceEntry
     getter entryType
     getter name
     getter navigationId
-    getter source
     getter startTime
     method constructor
     method toJSON
@@ -9830,8 +9836,6 @@ interface TextCluster
     getter x
     getter y
     method constructor
-    setter x
-    setter y
 interface TextDecoder
     attribute @@toStringTag
     getter encoding
@@ -9900,9 +9904,9 @@ interface TextMetrics
     getter hangingBaseline
     getter ideographicBaseline
     getter width
-    method caretPositionFromPoint
     method constructor
     method getActualBoundingBox
+    method getIndexFromOffset
     method getSelectionRects
     method getTextClusters
 interface TextTrack : EventTarget

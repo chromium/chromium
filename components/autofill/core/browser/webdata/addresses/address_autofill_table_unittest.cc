@@ -16,12 +16,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
+#include "components/autofill/core/browser/data_quality/addresses/profile_token_quality_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/profile_token_quality.h"
-#include "components/autofill/core/browser/profile_token_quality_test_api.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
@@ -96,6 +96,15 @@ TEST_P(AddressAutofillTableProfileTest, AutofillProfile) {
   home_profile.SetRawInfoWithVerificationStatus(
       NAME_FULL, u"John Q. Agent 007 Smith", VerificationStatus::kObserved);
 
+  // Phonetic names in Hiragana. They should be saved and later returned without
+  // any changes.
+  home_profile.SetRawInfoWithVerificationStatus(
+      ALTERNATIVE_GIVEN_NAME, u"あおい", VerificationStatus::kParsed);
+  home_profile.SetRawInfoWithVerificationStatus(
+      ALTERNATIVE_FAMILY_NAME, u"やまもと", VerificationStatus::kParsed);
+  home_profile.SetRawInfoWithVerificationStatus(
+      ALTERNATIVE_FULL_NAME, u"やまもと あおい", VerificationStatus::kParsed);
+
   home_profile.SetRawInfo(EMAIL_ADDRESS, u"js@smith.xyz");
   home_profile.SetRawInfo(COMPANY_NAME, u"Google");
 
@@ -126,7 +135,7 @@ TEST_P(AddressAutofillTableProfileTest, AutofillProfile) {
   home_profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ZIP, u"ZIP",
                                                 VerificationStatus::kObserved);
 
-  home_profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_COUNTRY, u"DE",
+  home_profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_COUNTRY, u"ZA",
                                                 VerificationStatus::kObserved);
   home_profile.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_HOUSE_NUMBER, u"House Number",
@@ -328,6 +337,31 @@ TEST_P(AddressAutofillTableProfileTest, UpdateAutofillProfile) {
   db_profile = table_.GetAutofillProfile(profile.guid());
   ASSERT_TRUE(db_profile);
   EXPECT_EQ(profile, *db_profile);
+}
+
+TEST_P(AddressAutofillTableProfileTest,
+       AutofillJpProfileWithAlternativeNameConversion) {
+  base::test::ScopedFeatureList features{
+      features::kAutofillSupportPhoneticNameForJP};
+  AutofillProfile profile = CreateAutofillProfile();
+
+  // Phonetic names in Katakana. They should be saved and later returned in
+  // Hiragana.
+  profile.SetRawInfo(ALTERNATIVE_GIVEN_NAME, u"アオイ");
+  profile.SetRawInfo(ALTERNATIVE_FAMILY_NAME, u"ヤマモト");
+  profile.SetRawInfo(ALTERNATIVE_FULL_NAME, u"ヤマモト アオイ");
+
+  // Add the profile to the table.
+  EXPECT_TRUE(table_.AddAutofillProfile(profile));
+
+  std::optional<AutofillProfile> db_profile =
+      table_.GetAutofillProfile(profile.guid());
+  ASSERT_TRUE(db_profile);
+
+  // Verify that alternative names were converted to Hiragana.
+  EXPECT_EQ(db_profile->GetRawInfo(ALTERNATIVE_GIVEN_NAME), u"あおい");
+  EXPECT_EQ(db_profile->GetRawInfo(ALTERNATIVE_FAMILY_NAME), u"やまもと");
+  EXPECT_EQ(db_profile->GetRawInfo(ALTERNATIVE_FULL_NAME), u"やまもと あおい");
 }
 
 }  // namespace autofill

@@ -131,6 +131,8 @@ export class SettingsSetupFingerprintDialogElement extends
     this.addWebUiListener(
         'on-fingerprint-scan-received', this.onScanReceived_.bind(this));
     this.addWebUiListener('on-screen-locked', this.onScreenLocked_.bind(this));
+    window.addEventListener('beforeunload', () => this.cancelCurrentEnroll());
+
     this.$.arc.reset();
     this.browserProxy_.startEnroll(this.authToken);
     this.$.dialog.showModal();
@@ -138,6 +140,7 @@ export class SettingsSetupFingerprintDialogElement extends
 
   override disconnectedCallback(): void {
     this.cancelCurrentEnroll();
+    this.closeDialog();
   }
 
   private cancelCurrentEnroll(): void {

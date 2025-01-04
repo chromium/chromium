@@ -137,6 +137,10 @@ BASE_FEATURE(kCloseSignTabsFromReauthenticationInterstitial,
 BASE_FEATURE(kAllowSupervisedUserReauthenticationForSubframes,
              "EnableSupervisedUserReauthenticationForSubframes",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kExemptYouTubeInfrastructureFromBlocking,
+             "ExemptYouTubeInfrastructureFromBlocking",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // TODO: crbug.com/378636321 - Clean up the
@@ -182,12 +186,17 @@ BASE_FEATURE(kUseFamilyMemberRolePrefsForFeedback,
 
 BASE_FEATURE(kClassifyUrlOnProcessResponseEvent,
              "ClassifyUrlOnProcessResponseEvent",
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
+
+BASE_FEATURE(kExemptGuardianApprovalOnGwsRedirector,
+             "ExemptGuardianApprovalOnGwsRedirector",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsKidFriendlyContentFeedAvailable() {
   return base::FeatureList::IsEnabled(kKidFriendlyContentFeed);

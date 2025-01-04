@@ -2244,4 +2244,42 @@ TEST_F(ComputedStyleTest, BottomRelativeToSafeAreaInset) {
   EXPECT_TRUE(StyleForElement("t6").IsBottomRelativeToSafeAreaInset());
 }
 
+TEST_F(ComputedStyleTest, ReferencesSafeAreaInsetBottom) {
+  Document& document = GetDocument();
+  document.body()->setInnerHTML(R"HTML(
+    <div id="f1" style="bottom: 5px"></div>
+    <div id="f2" style="bottom: calc(5px + 5px)"></div>
+    <div id="f3" style="bottom: env(safe-area-inset-top)"></div>
+    <div id="f4" style="bottom: calc(env(safe-area-inset-top))"></div>
+    <div id="f5" style="padding: env(safe-area-inset-left)"></div>
+    <div id="f6" style="padding-bottom: env(safe-area-inset-top)"></div>
+    <div id="f7" style="margin-bottom: env(safe-area-inset-top)"></div>
+    <div id="f8" style="height: calc(env(safe-area-inset-top) + 30px)"></div>
+
+    <div id="t1" style="bottom: env(safe-area-inset-bottom)"></div>
+    <div id="t2" style="bottom: calc(env(safe-area-inset-bottom))"></div>
+    <div id="t3" style="padding: env(safe-area-inset-bottom)"></div>
+    <div id="t4" style="padding-bottom: env(safe-area-inset-bottom)"></div>
+    <div id="t5" style="margin-bottom: env(safe-area-inset-bottom)"></div>
+    <div id="t6" style="height: calc(env(safe-area-inset-bottom) + 30px)"></div>
+  )HTML");
+  document.View()->UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(StyleForElement("f1").ReferencesSafeAreaInsetBottom());
+  EXPECT_FALSE(StyleForElement("f2").ReferencesSafeAreaInsetBottom());
+  EXPECT_FALSE(StyleForElement("f3").ReferencesSafeAreaInsetBottom());
+  EXPECT_FALSE(StyleForElement("f4").ReferencesSafeAreaInsetBottom());
+  EXPECT_FALSE(StyleForElement("f5").ReferencesSafeAreaInsetBottom());
+  EXPECT_FALSE(StyleForElement("f6").ReferencesSafeAreaInsetBottom());
+  EXPECT_FALSE(StyleForElement("f7").ReferencesSafeAreaInsetBottom());
+  EXPECT_FALSE(StyleForElement("f8").ReferencesSafeAreaInsetBottom());
+
+  EXPECT_TRUE(StyleForElement("t1").ReferencesSafeAreaInsetBottom());
+  EXPECT_TRUE(StyleForElement("t2").ReferencesSafeAreaInsetBottom());
+  EXPECT_TRUE(StyleForElement("t3").ReferencesSafeAreaInsetBottom());
+  EXPECT_TRUE(StyleForElement("t4").ReferencesSafeAreaInsetBottom());
+  EXPECT_TRUE(StyleForElement("t5").ReferencesSafeAreaInsetBottom());
+  EXPECT_TRUE(StyleForElement("t6").ReferencesSafeAreaInsetBottom());
+}
+
 }  // namespace blink

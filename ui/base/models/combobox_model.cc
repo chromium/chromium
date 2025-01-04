@@ -32,6 +32,10 @@ bool ComboboxModel::IsItemSeparatorAt(size_t index) const {
   return false;
 }
 
+bool ComboboxModel::IsItemTitleAt(size_t index) const {
+  return false;
+}
+
 std::optional<size_t> ComboboxModel::GetDefaultIndex() const {
   return size_t{0};
 }

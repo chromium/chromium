@@ -38,8 +38,9 @@ static void PopulateScopedSafearrayOfInts(ScopedSafearray& scoped_safe_array) {
   int* int_array;
   ASSERT_HRESULT_SUCCEEDED(SafeArrayAccessData(
       scoped_safe_array.Get(), reinterpret_cast<void**>(&int_array)));
-  for (size_t i = 0; i < kInputValues.size(); ++i)
+  for (size_t i = 0; i < kInputValues.size(); ++i) {
     int_array[i] = kInputValues[i];
+  }
   ASSERT_HRESULT_SUCCEEDED(SafeArrayUnaccessData(scoped_safe_array.Get()));
 }
 
@@ -260,8 +261,9 @@ TEST(ScopedSafearrayTest, ScopedSafearrayLockScopeIterator) {
 
   std::vector<int> unpacked_vector(lock_scope->begin(), lock_scope->end());
   ASSERT_EQ(unpacked_vector.size(), kInputValues.size());
-  for (size_t i = 0; i < kInputValues.size(); ++i)
+  for (size_t i = 0; i < kInputValues.size(); ++i) {
     EXPECT_EQ(unpacked_vector[i], kInputValues[i]);
+  }
 }
 
 }  // namespace win

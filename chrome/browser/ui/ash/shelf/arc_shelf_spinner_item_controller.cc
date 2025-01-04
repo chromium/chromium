@@ -29,17 +29,20 @@ ArcShelfSpinnerItemController::ArcShelfSpinnerItemController(
       window_info_(std::move(window_info)) {
   arc::ArcSessionManager* arc_session_manager = arc::ArcSessionManager::Get();
   // arc::ArcSessionManager might not be set in tests.
-  if (arc_session_manager)
+  if (arc_session_manager) {
     arc_session_manager->AddObserver(this);
+  }
 }
 
 ArcShelfSpinnerItemController::~ArcShelfSpinnerItemController() {
-  if (observed_profile_)
+  if (observed_profile_) {
     ArcAppListPrefs::Get(observed_profile_)->RemoveObserver(this);
+  }
   arc::ArcSessionManager* arc_session_manager = arc::ArcSessionManager::Get();
   // arc::ArcSessionManager may be released first.
-  if (arc_session_manager)
+  if (arc_session_manager) {
     arc_session_manager->RemoveObserver(this);
+  }
 }
 
 void ArcShelfSpinnerItemController::SetHost(
@@ -74,8 +77,9 @@ void ArcShelfSpinnerItemController::ItemSelected(
 void ArcShelfSpinnerItemController::OnAppStatesChanged(
     const std::string& arc_app_id,
     const ArcAppListPrefs::AppInfo& app_info) {
-  if (app_id() != arc_app_id)
+  if (app_id() != arc_app_id) {
     return;
+  }
 
   // App was suspended. Launch is no longer available, close controller.
   if (app_info.suspended) {
@@ -83,14 +87,16 @@ void ArcShelfSpinnerItemController::OnAppStatesChanged(
     return;
   }
 
-  if (!app_info.ready)
+  if (!app_info.ready) {
     return;
+  }
 
   // If this item is created by full restore, we don't need to launch the app,
   // because the full restore component will launch the app when the app is
   // ready.
-  if (IsCreatedByFullRestore())
+  if (IsCreatedByFullRestore()) {
     return;
+  }
 
   // Close() destroys this object, so start launching the app first.
 
@@ -132,8 +138,9 @@ void ArcShelfSpinnerItemController::OnAppConnectionReady() {
 }
 
 void ArcShelfSpinnerItemController::OnArcPlayStoreEnabledChanged(bool enabled) {
-  if (enabled)
+  if (enabled) {
     return;
+  }
   // If ARC was disabled, remove the deferred launch request.
   Close();
 }

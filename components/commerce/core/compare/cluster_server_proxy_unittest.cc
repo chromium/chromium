@@ -102,7 +102,7 @@ class ClusterServerProxyTest : public testing::Test {
     scoped_feature_list_.InitAndEnableFeature(commerce::kProductSpecifications);
     account_checker_ = std::make_unique<commerce::MockAccountChecker>();
     prefs_ = std::make_unique<TestingPrefServiceSimple>();
-    commerce::RegisterCommercePrefs(prefs_->registry());
+    commerce::MockAccountChecker::RegisterCommercePrefs(prefs_->registry());
     account_checker_->SetPrefs(prefs_.get());
     commerce::EnableProductSpecificationsDataFetch(account_checker_.get(),
                                                    prefs_.get());

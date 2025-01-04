@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_LIVE_CAPTION_CONTROLLER_WRAPPER_H_
 #define CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_LIVE_CAPTION_CONTROLLER_WRAPPER_H_
 
+#include "media/mojo/mojom/speech_recognition.mojom.h"
+
 namespace media {
 struct SpeechRecognitionResult;
 }  // namespace media
@@ -24,6 +26,9 @@ class LiveCaptionControllerWrapper {
       const media::SpeechRecognitionResult& result) = 0;
 
   virtual void ToggleLiveCaptionForBabelOrca(bool enabled) = 0;
+
+  virtual void OnLanguageIdentificationEvent(
+      const media::mojom::LanguageIdentificationEventPtr& event) = 0;
 
   virtual void OnAudioStreamEnd() = 0;
 

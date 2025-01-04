@@ -19,8 +19,8 @@ ChromeExtensionOptionsGuestDelegate::ChromeExtensionOptionsGuestDelegate(
     : ExtensionOptionsGuestDelegate(guest) {
 }
 
-ChromeExtensionOptionsGuestDelegate::~ChromeExtensionOptionsGuestDelegate() {
-}
+ChromeExtensionOptionsGuestDelegate::~ChromeExtensionOptionsGuestDelegate() =
+    default;
 
 bool ChromeExtensionOptionsGuestDelegate::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,

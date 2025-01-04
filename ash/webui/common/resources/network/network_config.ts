@@ -2484,6 +2484,10 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
     return this.managedProperties_;
   }
 
+  getPropertiesToSetForTesting(): ConfigProperties {
+    return this.getPropertiesToSet_();
+  }
+
   setManagedPropertiesForTesting(managedProperties: ManagedProperties): void {
     this.managedProperties_ = managedProperties;
   }
@@ -2496,6 +2500,10 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
   setSerializedDomainSuffixMatchForTesting(serializedDomainSuffixMatch: string):
       void {
     this.serializedDomainSuffixMatch_ = serializedDomainSuffixMatch;
+  }
+
+  getVpnIsConfiguredForTesting(): boolean {
+    return this.vpnIsConfigured_();
   }
 }
 

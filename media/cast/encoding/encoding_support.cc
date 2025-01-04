@@ -90,7 +90,7 @@ bool IsHardwareH264EncodingEnabled(
     const std::vector<VideoEncodeAccelerator::SupportedProfile>& profiles) {
   // Force disabling takes precedent over other flags.
   const base::CommandLine& command_line =
-    *base::CommandLine::ForCurrentProcess();
+      *base::CommandLine::ForCurrentProcess();
   if (command_line.HasSwitch(
           switches::kCastStreamingForceDisableHardwareH264)) {
     return false;

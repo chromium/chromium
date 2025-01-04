@@ -11,7 +11,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/user_selectable_type.h"

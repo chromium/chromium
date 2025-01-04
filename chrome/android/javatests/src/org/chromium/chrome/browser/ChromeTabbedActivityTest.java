@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
@@ -63,6 +64,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.JUnitTestGURLs;
@@ -148,6 +150,50 @@ public class ChromeTabbedActivityTest {
         // Verify that the front tab is in the 'visible' state.
         Assert.assertFalse(tabs[0].isHidden());
         Assert.assertTrue(tabs[1].isHidden());
+    }
+
+    /** Verifies that the focused tab is IMPORTANT and unfocused tabs are MODERATE. */
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.CHANGE_UNFOCUSED_PRIORITY)
+    @MinAndroidSdkLevel(VERSION_CODES.S)
+    public void testTabImportance() {
+        sActivityTestRule.getTestServer(); // Triggers the lazy initialization of the test server.
+        final Tab tab =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            ChromeTabCreator tabCreator = mActivity.getCurrentTabCreator();
+                            return tabCreator.createNewTab(
+                                    new LoadUrlParams(
+                                            sActivityTestRule.getTestServer().getURL(FILE_PATH)),
+                                    TabLaunchType.FROM_CHROME_UI,
+                                    null);
+                        });
+        // Fake sending the activity to unfocused.
+        @ChildProcessImportance
+        int importance =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            mActivity.onTopResumedActivityChanged(false);
+                            return TabTestUtils.getImportance(tab);
+                        });
+        // Verify that tab has importance MODERATE.
+        Assert.assertEquals(
+                "Tab process does not have importance MODERATE",
+                importance,
+                ChildProcessImportance.MODERATE);
+        // Fake sending the activity to focused.
+        importance =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            mActivity.onTopResumedActivityChanged(true);
+                            return TabTestUtils.getImportance(tab);
+                        });
+        // Verify that tab has importance IMPORTANT.
+        Assert.assertEquals(
+                "Tab process does not have importance IMPORTANT",
+                importance,
+                ChildProcessImportance.IMPORTANT);
     }
 
     @Test

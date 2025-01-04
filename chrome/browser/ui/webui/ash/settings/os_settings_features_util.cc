@@ -56,12 +56,14 @@ bool IsSanitizeAllowed(const user_manager::User* user) {
 
 bool ShouldShowParentalControlSettings(const Profile* profile) {
   // Not shown for secondary users.
-  if (profile != ProfileManager::GetPrimaryUserProfile())
+  if (profile != ProfileManager::GetPrimaryUserProfile()) {
     return false;
+  }
 
   // Also not shown for guest sessions.
-  if (profile->IsGuestSession())
+  if (profile->IsGuestSession()) {
     return false;
+  }
 
   return profile->IsChild() ||
          !profile->GetProfilePolicyConnector()->IsManaged();
@@ -83,14 +85,6 @@ bool IsPerAppLanguageEnabled(const Profile* profile) {
   return base::FeatureList::IsEnabled(arc::kPerAppLanguage) &&
          (arc::ShouldArcAlwaysStart() ||
           arc::IsArcPlayStoreEnabledForProfile(profile));
-}
-
-bool ShouldShowMultitasking() {
-  return ash::features::IsOsSettingsRevampWayfindingEnabled();
-}
-
-bool ShouldShowMultitaskingInPersonalization() {
-  return !ash::features::IsOsSettingsRevampWayfindingEnabled();
 }
 
 bool ShouldShowGraduationAppSetting(Profile* profile) {

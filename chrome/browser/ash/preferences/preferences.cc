@@ -15,6 +15,7 @@
 #include "ash/constants/geolocation_access_level.h"
 #include "ash/public/ash_interfaces.h"
 #include "ash/public/cpp/ash_prefs.h"
+#include "ash/public/cpp/ime_controller.h"
 #include "ash/shell.h"
 #include "ash/system/geolocation/geolocation_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
@@ -33,7 +34,6 @@
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
@@ -60,8 +60,6 @@
 #include "chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
-#include "chromeos/ash/components/standalone_browser/lacros_availability.h"
-#include "chromeos/ash/components/standalone_browser/lacros_selection.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/ash/components/timezone/timezone_resolver.h"
 #include "chromeos/components/disks/disks_prefs.h"
@@ -155,14 +153,6 @@ void Preferences::RegisterPrefs(PrefRegistrySimple* registry) {
       ::prefs::kSystemTimezoneAutomaticDetectionPolicy,
       enterprise_management::SystemTimezoneProto::USERS_DECIDE);
   registry->RegisterStringPref(::prefs::kMinimumAllowedChromeVersion, "");
-  registry->RegisterIntegerPref(
-      ::prefs::kLacrosLaunchSwitch,
-      static_cast<int>(
-          ash::standalone_browser::LacrosAvailability::kUserChoice));
-  registry->RegisterIntegerPref(
-      ::prefs::kLacrosSelection,
-      static_cast<int>(
-          ash::standalone_browser::LacrosSelectionPolicy::kUserChoice));
   registry->RegisterBooleanPref(prefs::kDeviceSystemWideTracingEnabled, true);
   registry->RegisterBooleanPref(
       prefs::kLocalStateDevicePeripheralDataAccessEnabled, false);
@@ -189,7 +179,6 @@ void Preferences::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   // Some classes register their own prefs.
   input_method::InputMethodSyncer::RegisterProfilePrefs(registry);
-  crosapi::browser_util::RegisterProfilePrefs(registry);
   ::drive::DriveIntegrationService::RegisterProfilePrefs(registry);
 
   std::string hardware_keyboard_id;
@@ -282,6 +271,8 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterStringPref(::prefs::kLanguageCurrentInputMethod, "");
   registry->RegisterStringPref(::prefs::kLanguagePreviousInputMethod, "");
   registry->RegisterListPref(::prefs::kLanguageAllowedInputMethods);
+  registry->RegisterBooleanPref(
+      ::prefs::kLanguageAllowedInputMethodsForceEnabled, false);
   registry->RegisterListPref(::prefs::kAllowedLanguages);
   registry->RegisterStringPref(::prefs::kLanguagePreloadEngines,
                                hardware_keyboard_id);
@@ -606,6 +597,8 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterIntegerPref(prefs::kHMRConsentWindowDismissCount, 0);
 
+  registry->RegisterIntegerPref(prefs::kGenAIPhotoEditingSettings, 0);
+
   registry->RegisterBooleanPref(
       prefs::kLauncherResultEverLaunched, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
@@ -730,6 +723,8 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
                               callback);
   allowed_input_methods_.Init(::prefs::kLanguageAllowedInputMethods, prefs,
                               callback);
+  allowed_input_methods_force_enabled_.Init(
+      ::prefs::kLanguageAllowedInputMethodsForceEnabled, prefs, callback);
   allowed_languages_.Init(::prefs::kAllowedLanguages, prefs, callback);
   preferred_languages_.Init(language::prefs::kPreferredLanguages, prefs,
                             callback);
@@ -1190,23 +1185,35 @@ void Preferences::ApplyPreferences(ApplyReason reason,
   }
 
   if (reason != REASON_PREF_CHANGED ||
-      pref_name == ::prefs::kLanguageAllowedInputMethods) {
+      pref_name == ::prefs::kLanguageAllowedInputMethods ||
+      pref_name == ::prefs::kLanguageAllowedInputMethodsForceEnabled) {
     const std::vector<std::string> allowed_input_methods =
         allowed_input_methods_.GetValue();
+    const bool allowed_input_methods_force_enabled =
+        allowed_input_methods_force_enabled_.GetValue();
 
-    bool managed_by_policy =
+    const bool allowed_by_policy =
         ime_state_->SetAllowedInputMethods(allowed_input_methods);
-    bool success = ime_state_->ReplaceEnabledInputMethods(
-        ime_state_->GetEnabledInputMethodIds());
+    const std::vector<std::string>& method_ids =
+        (allowed_by_policy && allowed_input_methods_force_enabled)
+            ? ime_state_->GetAllowedInputMethodIds()
+            : ime_state_->GetEnabledInputMethodIds();
+    const bool success = ime_state_->ReplaceEnabledInputMethods(method_ids);
     if (!success) {
       const std::vector<std::string> fallback = {
           ime_state_->GetAllowedFallBackKeyboardLayout()};
       ime_state_->ReplaceEnabledInputMethods(fallback);
     }
 
-    if (managed_by_policy) {
+    if (allowed_by_policy) {
       preload_engines_.SetValue(
           base::JoinString(ime_state_->GetEnabledInputMethodIds(), ","));
+    }
+    if (ImeController::Get()) {  // Can be null in tests.
+      ImeController::Get()->SetImesManagedByPolicy(
+          success && allowed_input_methods_force_enabled);
+    } else {
+      CHECK_IS_TEST();
     }
   }
   if (reason != REASON_PREF_CHANGED ||

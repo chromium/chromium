@@ -14,11 +14,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/password_manager/chrome_password_change_service.h"
+#include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/passwords/credential_leak_dialog_controller.h"
@@ -29,6 +32,7 @@
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
@@ -1160,7 +1164,7 @@ TEST_F(ManagePasswordsUIControllerTest, AutofillDuringAutoSignin) {
   ExpectIconAndControllerStateIs(password_manager::ui::AUTO_SIGNIN_STATE);
 }
 
-TEST_F(ManagePasswordsUIControllerTest, InactiveOnPSLMatched) {
+TEST_F(ManagePasswordsUIControllerTest, ActiveOnPSLMatched) {
   std::u16string kTestUsername = u"test_username";
   std::vector<PasswordForm> forms;
   PasswordForm psl_matched_test_form(test_local_form());
@@ -1170,7 +1174,7 @@ TEST_F(ManagePasswordsUIControllerTest, InactiveOnPSLMatched) {
   controller()->OnPasswordAutofilled(
       forms, url::Origin::Create(forms.front().url), {});
 
-  EXPECT_EQ(password_manager::ui::INACTIVE_STATE, controller()->GetState());
+  ExpectIconAndControllerStateIs(password_manager::ui::MANAGE_STATE);
 }
 
 TEST_F(ManagePasswordsUIControllerTest, UpdatePasswordSubmitted) {
@@ -1215,23 +1219,28 @@ TEST_F(ManagePasswordsUIControllerTest, ConfirmationStatePasswordAutofilled) {
 }
 
 TEST_F(ManagePasswordsUIControllerTest, OpenBubbleTwice) {
-  // Open the autosignin bubble.
-  std::vector<std::unique_ptr<PasswordForm>> local_credentials;
-  local_credentials.emplace_back(new PasswordForm(test_local_form()));
-  controller()->OnAutoSignin(std::move(local_credentials),
-                             url::Origin::Create(test_local_form().url));
+  {
+    // Open the autosignin bubble.
+    std::vector<std::unique_ptr<PasswordForm>> local_credentials;
+    local_credentials.emplace_back(new PasswordForm(test_local_form()));
+    controller()->OnAutoSignin(std::move(local_credentials),
+                               url::Origin::Create(test_local_form().url));
+  }
   EXPECT_EQ(password_manager::ui::AUTO_SIGNIN_STATE, controller()->GetState());
   // The delegate used by the bubble for communicating with the controller.
   base::WeakPtr<PasswordsModelDelegate> proxy_delegate =
       controller()->GetModelDelegateProxy();
 
-  // Open the bubble again.
-  local_credentials.emplace_back(new PasswordForm(test_local_form()));
-  controller()->OnAutoSignin(std::move(local_credentials),
-                             url::Origin::Create(test_local_form().url));
+  {
+    // Open the bubble again.
+    std::vector<std::unique_ptr<PasswordForm>> local_credentials;
+    local_credentials.emplace_back(new PasswordForm(test_local_form()));
+    controller()->OnAutoSignin(std::move(local_credentials),
+                               url::Origin::Create(test_local_form().url));
+  }
   EXPECT_EQ(password_manager::ui::AUTO_SIGNIN_STATE, controller()->GetState());
-  // Check the delegate is destroyed. Thus, the first bubble has no way to mess
-  // up with the controller's state.
+  // Check the delegate is destroyed. Thus, the first bubble has no way to
+  // mess up with the controller's state.
   EXPECT_FALSE(proxy_delegate);
 }
 
@@ -2096,6 +2105,30 @@ TEST_F(ManagePasswordsUIControllerTest, OpenPasskeyNotAcceptedBubble) {
   EXPECT_TRUE(controller()->opened_automatic_bubble());
   ExpectIconAndControllerStateIs(
       password_manager::ui::PASSKEY_NOT_ACCEPTED_STATE);
+}
+
+TEST_F(ManagePasswordsUIControllerTest, PasswordChangeOngoing) {
+  testing::StrictMock<affiliations::MockAffiliationService>
+      mock_affiliation_service;
+  PasswordChangeServiceFactory::GetInstance()->SetTestingFactory(
+      profile(),
+      base::BindLambdaForTesting(
+          [&mock_affiliation_service](content::BrowserContext* context)
+              -> std::unique_ptr<KeyedService> {
+            return std::make_unique<ChromePasswordChangeService>(
+                &mock_affiliation_service);
+          }));
+
+  const GURL kUrl = GURL("https://example.com/");
+  EXPECT_CALL(mock_affiliation_service, GetChangePasswordURL(kUrl))
+      .WillOnce(testing::Return(GURL("https://example.com/password/")));
+  auto* password_change_service =
+      PasswordChangeServiceFactory::GetForProfile(profile());
+  password_change_service->StartPasswordChange(kUrl, u"new_username",
+                                               u"new_password", web_contents());
+
+  ASSERT_EQ(password_manager::ui::PASSWORD_CHANGE_STATE,
+            controller()->GetState());
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)

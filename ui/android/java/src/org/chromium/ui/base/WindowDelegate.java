@@ -7,7 +7,10 @@ package org.chromium.ui.base;
 import android.graphics.Rect;
 import android.view.Window;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** This is a delegate that handles communication about a window's current state and properties. */
+@NullMarked
 public class WindowDelegate {
     private final Window mWindow;
 

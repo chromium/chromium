@@ -237,8 +237,9 @@ void PrintPreviewHandlerChromeOS::SendPrinterSetup(
   base::Value::Dict* printer = destination_info.FindDict(kPrinter);
   if (printer) {
     base::Value::Dict* policies_value = printer->FindDict(kSettingPolicies);
-    if (policies_value)
+    if (policies_value) {
       response.Set("policies", std::move(*policies_value));
+    }
   }
   ResolveJavascriptCallback(base::Value(callback_id), response);
 }
@@ -290,10 +291,11 @@ void PrintPreviewHandlerChromeOS::HandleRequestPrinterStatusUpdate(
 void PrintPreviewHandlerChromeOS::HandleRequestPrinterStatusUpdateCompletion(
     base::Value callback_id,
     std::optional<base::Value::Dict> result) {
-  if (result)
+  if (result) {
     ResolveJavascriptCallback(callback_id, *result);
-  else
+  } else {
     ResolveJavascriptCallback(callback_id, base::Value());
+  }
 }
 
 void PrintPreviewHandlerChromeOS::HandleChoosePrintServers(

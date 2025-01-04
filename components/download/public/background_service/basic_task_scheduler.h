@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/cancelable_callback.h"
+#include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/download/public/task/task_scheduler.h"
@@ -18,7 +19,8 @@ class BackgroundDownloadService;
 
 // A TaskScheduler implementation that doesn't do anything but posts the task
 // after the specified delay.
-class BasicTaskScheduler : public download::TaskScheduler {
+class COMPONENT_EXPORT(COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE)
+    BasicTaskScheduler : public download::TaskScheduler {
  public:
   explicit BasicTaskScheduler(
       const base::RepeatingCallback<BackgroundDownloadService*()>&

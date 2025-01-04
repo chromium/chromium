@@ -166,7 +166,7 @@ WebData BlinkPlatformImpl::GetDataResource(
     ui::ResourceScaleFactor scale_factor) {
   std::string_view resource =
       GetContentClient()->GetDataResource(resource_id, scale_factor);
-  return WebData(resource.data(), resource.size());
+  return WebData(base::as_byte_span(resource));
 }
 
 std::string BlinkPlatformImpl::GetDataResourceString(int resource_id) {

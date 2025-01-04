@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">A letöltés szünetel</translation>
 <translation id="1396327438254055134">A V8-optimalizáló használatának engedélyezése az alábbi webhely számára.</translation>
 <translation id="1415402041810619267">URL csonkolva</translation>
+<translation id="1415855080660575082">Engedélyezze a Chrome-nak, hogy megossza eszközével a nemrég megnyitott lapokat, hogy azok megjelenjenek az eszköz alkalmazáslistáján és a keresési találatok között is. Ezt a Chrome beállításai között kapcsolhatja be vagy ki.</translation>
 <translation id="1448064542941920355">Nagyítás csökkentése</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> webhely}other{<ph name="SITE_COUNT" /> webhely}}</translation>
 <translation id="1500473259453106018">A Price drops on tabs (Árcsökkenések a lapokon) kártya elrejtése</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">Átmenetileg engedélyezte a webhely számára a harmadik féltől származó cookie-k használatát, ami azt jelenti, hogy kisebb védelemben van része böngészés közben, de a webhelyfunkciók nagyobb valószínűséggel működnek majd a várt módon. <ph name="BEGIN_LINK" />Visszajelzés küldése<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Előfordulhat, hogy bizonyos webhelyek funkciói nem működnek inkognitó módban</translation>
 <translation id="2442870161001914531">Mindig az asztali webhely kérése</translation>
+<translation id="2445311670906052406">A Chrome mostantól megosztja az eszközével a nemrég megnyitott lapokat. Ezeket az eszköz alkalmazáslistájában és a keresési találatok között láthatja. Ezt bármikor kikapcsolhatja a Chrome beállításai között.</translation>
 <translation id="2469312991797799607">A művelet minden adatot és cookie-t töröl a(z) <ph name="ORIGIN" /> domainről és az alatta lévő összes webhelyről.</translation>
 <translation id="2482878487686419369">Értesítések</translation>
 <translation id="2485422356828889247">Eltávolítás</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">A webhelyek megjeleníthetnek identitásszolgáltatásoktól származó bejelentkezési értesítéseket.</translation>
 <translation id="2787357173144933081">Gyorsindítás a cím- és keresősávval</translation>
 <translation id="2790501146643349491">Ha be van kapcsolva, a nemrégiben bezárt webhelyek befejezhetik az adatok küldését és fogadását. Ha ki van kapcsolva, a nemrégiben bezárt webhelyek nem tudják befejezni az adatok küldését és fogadását.</translation>
+<translation id="2814830417943086299">A Chrome mostantól megjeleníti a legutóbbi lapokat az eszköz alkalmazáslistáján és a keresési találatok között is. Ezt bármikor kikapcsolhatja a Chrome beállításai között.</translation>
 <translation id="2822354292072154809">Biztosan visszaállítja a(z) <ph name="CHOSEN_OBJECT_NAME" /> minden webhelyengedélyét?</translation>
 <translation id="2850913818900871965">Mobilnézet kérelmezése</translation>
 <translation id="2870560284913253234">Webhely</translation>
@@ -335,7 +338,6 @@
 <translation id="5968921426641056619">Adja meg a kívánt internetcímet</translation>
 <translation id="5975083100439434680">Kicsinyítés</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
-<translation id="6015145568571136419">Mostantól gyorsan férhet hozzá a javasolt lapokhoz az eszköz alkalmazáslistájából és az eszköz keresési találatai között. Ezt bármikor kikapcsolhatja a Chrome beállításai között.</translation>
 <translation id="6015775454662021376">A webhelynek az eszközhöz való hozzáférésének vezérlése</translation>
 <translation id="6040143037577758943">Bezárás</translation>
 <translation id="6042308850641462728">Továbbiak</translation>
@@ -558,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">A(z) <ph name="APP_NAME" /> alkalmazásra vonatkozó engedélyeket az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között lehet aktiválni.</translation>
 <translation id="9138217887606523162">Jelenlegi nagyítási szint: <ph name="ZOOM_LEVEL" />%%</translation>
+<translation id="9156722768168878035">Engedélyezze a Chrome-nak, hogy megjeleníthesse a legutóbbi lapokat az eszköz alkalmazáslistáján és a keresési találatok között. Ezt bármikor kikapcsolhatja a Chrome beállításai között.</translation>
 <translation id="9162462602695099906">Ez az oldal veszélyes</translation>
 <translation id="947156494302904893">A felkeresett webhelyek ellenőrizni tudják, hogy Ön valódi személy, nem pedig robot</translation>
 <translation id="959682366969460160">Könnyebb rendszerezés</translation>

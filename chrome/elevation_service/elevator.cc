@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -32,6 +33,20 @@
 
 namespace elevation_service {
 
+namespace {
+
+ProtectionLevel RemoveFlags(ProtectionLevel protection_level,
+                            EncryptFlags& flags) {
+  const uint32_t flag_value = internal::ExtractFlags(protection_level);
+  if (flag_value & internal::kFlagUseLatestKey) {
+    flags.use_latest_key = true;
+  }
+  return static_cast<ProtectionLevel>(
+      internal::ExtractProtectionLevel(protection_level));
+}
+
+}  // namespace
+
 HRESULT Elevator::RunRecoveryCRXElevated(const wchar_t* crx_path,
                                          const wchar_t* browser_appid,
                                          const wchar_t* browser_version,
@@ -50,6 +65,9 @@ HRESULT Elevator::EncryptData(ProtectionLevel protection_level,
                               const BSTR plaintext,
                               BSTR* ciphertext,
                               DWORD* last_error) {
+  EncryptFlags flags;
+  protection_level = RemoveFlags(protection_level, flags);
+
   if (protection_level >= ProtectionLevel::PROTECTION_MAX) {
     return kErrorUnsupportedProtectionLevel;
   }
@@ -187,12 +205,17 @@ HRESULT Elevator::DecryptData(const BSTR ciphertext,
   } else {
     return impersonate.result();
   }
+  bool should_reencrypt = false;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  auto post_process_result = PostProcessData(plaintext_str);
+  InternalFlags flags;
+  auto post_process_result = PostProcessData(plaintext_str, &flags);
   if (!post_process_result.has_value()) {
     return post_process_result.error();
   }
   plaintext_str.swap(*post_process_result);
+  if (flags.post_process_should_reencrypt) {
+    should_reencrypt = true;
+  }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   *plaintext =
@@ -201,7 +224,11 @@ HRESULT Elevator::DecryptData(const BSTR ciphertext,
   if (!*plaintext)
     return E_OUTOFMEMORY;
 
-  return S_OK;
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kFakeReencryptForTestingSwitch)) {
+    should_reencrypt = true;
+  }
+  return should_reencrypt ? kSuccessShouldReencrypt : S_OK;
 }
 
 // static

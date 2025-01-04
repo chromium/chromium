@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/webui/ash/audio/audio_handler.h"
+
 #include <string>
 #include <tuple>
 #include <utility>
@@ -9,7 +11,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/webui/ash/audio/audio_handler.h"
 
 namespace ash {
 

@@ -38,13 +38,13 @@
 #import "ios/web/security/crw_cert_verification_controller.h"
 #import "ios/web/security/wk_web_view_security_util.h"
 #import "ios/web/session/session_certificate_policy_cache_impl.h"
+#import "ios/web/util/content_type_util.h"
+#import "ios/web/util/error_translation_util.h"
+#import "ios/web/util/wk_security_origin_util.h"
+#import "ios/web/util/wk_web_view_util.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
 #import "ios/web/web_state/user_interaction_state.h"
 #import "ios/web/web_state/web_state_impl.h"
-#import "ios/web/web_view/content_type_util.h"
-#import "ios/web/web_view/error_translation_util.h"
-#import "ios/web/web_view/wk_security_origin_util.h"
-#import "ios/web/web_view/wk_web_view_util.h"
 #import "net/base/apple/http_response_headers_util.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/net_errors.h"
@@ -439,20 +439,20 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   if (action.sourceFrame && action.targetFrame &&
       action.sourceFrame.webView == action.targetFrame.webView &&
       action.sourceFrame != action.targetFrame) {
-    isCrossOriginTargetFrame = !url::IsSameOriginWith(
-        web::GURLOriginWithWKSecurityOrigin(action.sourceFrame.securityOrigin),
-        web::GURLOriginWithWKSecurityOrigin(action.targetFrame.securityOrigin));
+    isCrossOriginTargetFrame =
+        !web::OriginWithWKSecurityOrigin(action.sourceFrame.securityOrigin)
+             .IsSameOriginWith(web::OriginWithWKSecurityOrigin(
+                 action.targetFrame.securityOrigin));
   }
 
   BOOL isCrossOriginCrossWindow = NO;
   if (action.sourceFrame && action.targetFrame &&
       action.sourceFrame.webView != action.targetFrame.webView) {
-    GURL sourceOrigin =
-        web::GURLOriginWithWKSecurityOrigin(action.sourceFrame.securityOrigin);
-    GURL targetOrigin =
-        web::GURLOriginWithWKSecurityOrigin(action.targetFrame.securityOrigin);
-    isCrossOriginCrossWindow =
-        !url::IsSameOriginWith(sourceOrigin, targetOrigin);
+    url::Origin sourceOrigin =
+        web::OriginWithWKSecurityOrigin(action.sourceFrame.securityOrigin);
+    url::Origin targetOrigin =
+        web::OriginWithWKSecurityOrigin(action.targetFrame.securityOrigin);
+    isCrossOriginCrossWindow = !sourceOrigin.IsSameOriginWith(targetOrigin);
   }
 
   // Ref: crbug.com/1408799
@@ -1556,11 +1556,11 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
           self.webStateImpl->GetBrowserState()) &&
       action.navigationType == WKNavigationTypeFormSubmitted) {
     if (action.sourceFrame) {
-      GURL source_url = web::GURLOriginWithWKSecurityOrigin(
-          action.sourceFrame.securityOrigin);
+      url::Origin source_origin =
+          web::OriginWithWKSecurityOrigin(action.sourceFrame.securityOrigin);
       GURL form_action_url = net::GURLWithNSURL(action.request.URL);
       if (security_interstitials::IsInsecureFormActionOnSecureSource(
-              source_url, form_action_url)) {
+              source_origin, form_action_url)) {
         return web::FormWarningType::kInsecureForm;
       }
     }

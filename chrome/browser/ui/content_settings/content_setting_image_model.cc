@@ -276,8 +276,9 @@ constexpr ContentSettingsImageDetails kImageDetails[] = {
 
 const ContentSettingsImageDetails* GetImageDetails(ContentSettingsType type) {
   for (const ContentSettingsImageDetails& image_details : kImageDetails) {
-    if (image_details.content_type == type)
+    if (image_details.content_type == type) {
       return &image_details;
+    }
   }
   return nullptr;
 }
@@ -533,13 +534,15 @@ bool ContentSettingBlockedImageModel::UpdateAndGetVisibility(
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(
           web_contents->GetPrimaryMainFrame());
-  if (!content_settings)
+  if (!content_settings) {
     return false;
+  }
 
   bool is_blocked = content_settings->IsContentBlocked(type);
   bool is_allowed = content_settings->IsContentAllowed(type);
-  if (!is_blocked && !is_allowed)
+  if (!is_blocked && !is_allowed) {
     return false;
+  }
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -673,10 +676,12 @@ bool ContentSettingRPHImageModel::UpdateAndGetVisibility(
     WebContents* web_contents) {
   auto* content_settings_delegate =
       PageSpecificContentSettingsDelegate::FromWebContents(web_contents);
-  if (!content_settings_delegate)
+  if (!content_settings_delegate) {
     return false;
-  if (content_settings_delegate->pending_protocol_handler().IsEmpty())
+  }
+  if (content_settings_delegate->pending_protocol_handler().IsEmpty()) {
     return false;
+  }
 
   return true;
 }
@@ -692,8 +697,9 @@ bool ContentSettingMIDISysExImageModel::UpdateAndGetVisibility(
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(
           web_contents->GetPrimaryMainFrame());
-  if (!content_settings)
+  if (!content_settings) {
     return false;
+  }
 
   const bool is_allowed =
       content_settings->IsContentAllowed(ContentSettingsType::MIDI_SYSEX);
@@ -724,8 +730,9 @@ bool ContentSettingDownloadsImageModel::UpdateAndGetVisibility(
       g_browser_process->download_request_limiter();
 
   // DownloadRequestLimiter can be absent in unit_tests.
-  if (!download_request_limiter)
+  if (!download_request_limiter) {
     return false;
+  }
 
   switch (download_request_limiter->GetDownloadUiStatus(web_contents)) {
     case DownloadRequestLimiter::DOWNLOAD_UI_ALLOWED:
@@ -757,13 +764,15 @@ bool ContentSettingClipboardReadWriteImageModel::UpdateAndGetVisibility(
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(
           web_contents->GetPrimaryMainFrame());
-  if (!content_settings)
+  if (!content_settings) {
     return false;
+  }
   ContentSettingsType content_type = ContentSettingsType::CLIPBOARD_READ_WRITE;
   bool blocked = content_settings->IsContentBlocked(content_type);
   bool allowed = content_settings->IsContentAllowed(content_type);
-  if (!blocked && !allowed)
+  if (!blocked && !allowed) {
     return false;
+  }
 
   SetIcon(ContentSettingsType::CLIPBOARD_READ_WRITE, /*blocked=*/!allowed);
   set_tooltip(l10n_util::GetStringUTF16(
@@ -786,8 +795,9 @@ bool ContentSettingMediaImageModel::UpdateAndGetVisibility(
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(
           web_contents->GetPrimaryMainFrame());
-  if (!content_settings)
+  if (!content_settings) {
     return false;
+  }
   state_ = content_settings->GetMicrophoneCameraState();
 
   // If neither the microphone nor the camera stream was accessed then no icon
@@ -886,9 +896,10 @@ bool ContentSettingMediaImageModel::UpdateAndGetVisibility(
 
   int id = IDS_CAMERA_BLOCKED;
   if (IsMicBlockedOnSiteLevel() || IsCameraBlockedOnSiteLevel()) {
-    if (IsMicAccessed())
+    if (IsMicAccessed()) {
       id = IsCamAccessed() ? IDS_MICROPHONE_CAMERA_BLOCKED
                            : IDS_MICROPHONE_BLOCKED;
+    }
 
     if (IsCamAccessed()) {
       SetIcon(ContentSettingsType::MEDIASTREAM_CAMERA, /*blocked=*/true);
@@ -899,9 +910,10 @@ bool ContentSettingMediaImageModel::UpdateAndGetVisibility(
   } else {
     SetIcon(ContentSettingsType::MEDIASTREAM_CAMERA, /*blocked=*/false);
     id = IDS_CAMERA_ACCESSED;
-    if (IsMicAccessed())
+    if (IsMicAccessed()) {
       id = IsCamAccessed() ? IDS_MICROPHONE_CAMERA_ALLOWED
                            : IDS_MICROPHONE_ACCESSED;
+    }
 
     if (IsCamAccessed()) {
       SetIcon(ContentSettingsType::MEDIASTREAM_CAMERA, /*blocked=*/false);
@@ -975,8 +987,10 @@ ContentSettingFramebustBlockImageModel::ContentSettingFramebustBlockImageModel()
 bool ContentSettingFramebustBlockImageModel::UpdateAndGetVisibility(
     WebContents* web_contents) {
   // Early exit if no blocked Framebust.
-  if (!FramebustBlockTabHelper::FromWebContents(web_contents)->HasBlockedUrls())
+  if (!FramebustBlockTabHelper::FromWebContents(web_contents)
+           ->HasBlockedUrls()) {
     return false;
+  }
 
   SetFramebustBlockedIcon();
   set_explanatory_string_id(IDS_REDIRECT_BLOCKED_TITLE);
@@ -1002,14 +1016,16 @@ bool ContentSettingSensorsImageModel::UpdateAndGetVisibility(
     WebContents* web_contents) {
   auto* content_settings = PageSpecificContentSettings::GetForFrame(
       web_contents->GetPrimaryMainFrame());
-  if (!content_settings)
+  if (!content_settings) {
     return false;
+  }
 
   bool blocked = content_settings->IsContentBlocked(content_type());
   bool allowed = content_settings->IsContentAllowed(content_type());
 
-  if (!blocked && !allowed)
+  if (!blocked && !allowed) {
     return false;
+  }
 
   HostContentSettingsMap* map = HostContentSettingsMapFactory::GetForProfile(
       Profile::FromBrowserContext(web_contents->GetBrowserContext()));
@@ -1044,8 +1060,10 @@ bool ContentSettingPopupImageModel::UpdateAndGetVisibility(
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(
           web_contents->GetPrimaryMainFrame());
-  if (!content_settings || !content_settings->IsContentBlocked(content_type()))
+  if (!content_settings ||
+      !content_settings->IsContentBlocked(content_type())) {
     return false;
+  }
   SetIcon(ContentSettingsType::POPUPS, /*blocked=*/true);
   set_explanatory_string_id(IDS_BLOCKED_POPUPS_EXPLANATORY_TEXT);
   set_tooltip(l10n_util::GetStringUTF16(IDS_BLOCKED_POPUPS_TOOLTIP));
@@ -1257,8 +1275,9 @@ size_t ContentSettingImageModel::GetContentSettingImageModelIndexForTesting(
   std::vector<std::unique_ptr<ContentSettingImageModel>> models =
       GenerateContentSettingImageModels();
   for (size_t i = 0; i < models.size(); ++i) {
-    if (image_type == models[i]->image_type())
+    if (image_type == models[i]->image_type()) {
       return i;
+    }
   }
   NOTREACHED();
 }

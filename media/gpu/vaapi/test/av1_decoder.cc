@@ -12,6 +12,8 @@
 #include <va/va.h>
 #include <va/va_dec_av1.h>
 
+#include <bitset>
+
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"

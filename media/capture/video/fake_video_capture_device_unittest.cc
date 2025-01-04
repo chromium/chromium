@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/capture/video/fake_video_capture_device.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -220,9 +216,12 @@ TEST_F(FakeVideoCaptureDeviceTest, GetDeviceSupportedFormats) {
   video_capture_device_factory_->SetToDefaultDevicesConfig(4);
   GetDevicesInfo();
   ASSERT_EQ(4u, devices_info_.size());
-  const VideoPixelFormat expected_format_by_device_index[] = {
-      PIXEL_FORMAT_I420, PIXEL_FORMAT_Y16, PIXEL_FORMAT_MJPEG,
-      PIXEL_FORMAT_I420};
+  const auto expected_format_by_device_index = std::to_array<VideoPixelFormat>({
+      PIXEL_FORMAT_I420,
+      PIXEL_FORMAT_Y16,
+      PIXEL_FORMAT_MJPEG,
+      PIXEL_FORMAT_I420,
+  });
 
   int device_index = 0;
   for (const auto& device : devices_info_) {

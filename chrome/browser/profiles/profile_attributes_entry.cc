@@ -30,6 +30,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
@@ -417,8 +418,8 @@ std::u16string ProfileAttributesEntry::GetGAIAGivenName() const {
   return GetString16(kGAIAGivenNameKey);
 }
 
-std::string ProfileAttributesEntry::GetGAIAId() const {
-  return GetString(ProfileAttributesEntry::kGAIAIdKey);
+GaiaId ProfileAttributesEntry::GetGAIAId() const {
+  return GaiaId(GetString(ProfileAttributesEntry::kGAIAIdKey));
 }
 
 const gfx::Image* ProfileAttributesEntry::GetGAIAPicture() const {
@@ -835,7 +836,7 @@ void ProfileAttributesEntry::SetProfileManagementId(const std::string& id) {
   }
 }
 
-void ProfileAttributesEntry::SetAuthInfo(const std::string& gaia_id,
+void ProfileAttributesEntry::SetAuthInfo(const GaiaId& gaia_id,
                                          const std::u16string& user_name,
                                          bool is_consented_primary_account) {
   // If gaia_id, username and consent state are unchanged, abort early.
@@ -849,7 +850,7 @@ void ProfileAttributesEntry::SetAuthInfo(const std::string& gaia_id,
     ScopedDictPrefUpdate update(prefs_, prefs::kProfileAttributes);
     base::Value::Dict& attributes_dict = update.Get();
     base::Value::Dict* entry = attributes_dict.EnsureDict(storage_key_);
-    entry->Set(kGAIAIdKey, gaia_id);
+    entry->Set(kGAIAIdKey, gaia_id.ToString());
     entry->Set(kUserNameKey, user_name);
     DCHECK(!is_consented_primary_account || !gaia_id.empty() ||
            !user_name.empty());

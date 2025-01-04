@@ -32,6 +32,7 @@
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "components/sync/test/mock_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -167,7 +168,7 @@ TEST_F(ChildAccountServiceTest,
        GetGoogleAuthStateNotAuthenticatedWithInvalidAccount) {
   // An invalid (but signed-in) account means not authenticated.
   signin::SetListAccountsResponseOneAccountWithParams(
-      {"me@example.com", /*gaia_id=*/"abcdef",
+      {"me@example.com", GaiaId("abcdef"),
        /*valid=*/false,
        /*signed_out=*/false,
        /*verified=*/true},
@@ -182,7 +183,7 @@ TEST_F(ChildAccountServiceTest,
 TEST_F(ChildAccountServiceTest, GetGoogleAuthStateNotAuthenticatedNotSignedIn) {
   // A valid but not signed-in account means not authenticated.
   signin::SetListAccountsResponseOneAccountWithParams(
-      {"me@example.com", /*gaia_id=*/"abcdef",
+      {"me@example.com", GaiaId("abcdef"),
        /*valid=*/true,
        /*signed_out=*/true,
        /*verified=*/true},

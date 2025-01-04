@@ -41,7 +41,7 @@ void ResponseHolder::Clear() {
   final_status_future_.Clear();
   log_entry_received_.reset();
   model_execution_info_received_.reset();
-  streamed_responses_.clear();
+  partial_responses_.clear();
   response_error_ = std::nullopt;
   provided_by_on_device_ = std::nullopt;
   response_received_ = std::nullopt;
@@ -69,7 +69,7 @@ void ResponseHolder::OnStreamingResponse(
   if (result.response.has_value() && !result.response->is_complete) {
     EXPECT_FALSE(result.log_entry);
     EXPECT_TRUE(result.provided_by_on_device);
-    streamed_responses_.push_back(GetOutput(*result.response));
+    partial_responses_.push_back(GetOutput(*result.response));
     return;
   }
   provided_by_on_device_ = result.provided_by_on_device;

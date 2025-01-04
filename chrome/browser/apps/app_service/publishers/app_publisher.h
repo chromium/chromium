@@ -141,10 +141,6 @@ class AppPublisher
   virtual void LaunchAppWithParams(AppLaunchParams&& params,
                                    LaunchCallback callback) = 0;
 
-  virtual void LaunchShortcut(const std::string& app_id,
-                              const std::string& shortcut_id,
-                              int64_t display_id) {}
-
   // Sets `permission` for an app identified with `app_id`. Implemented if the
   // publisher supports per-app permissions that are exposed in App Management.
   virtual void SetPermission(const std::string& app_id,

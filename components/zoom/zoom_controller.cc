@@ -5,6 +5,7 @@
 #include "components/zoom/zoom_controller.h"
 
 #include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/observer_list.h"
 #include "components/zoom/zoom_event_manager.h"
 #include "components/zoom/zoom_observer.h"
@@ -36,12 +37,79 @@ double ZoomController::GetZoomLevelForWebContents(
   return content::HostZoomMap::GetZoomLevel(web_contents);
 }
 
-ZoomController::ZoomController(content::WebContents* web_contents)
+// static
+ZoomController* ZoomController::CreateForWebContents(
+    content::WebContents* web_contents) {
+  return CreateForWebContentsAndRenderFrameHost(
+      web_contents, web_contents->GetPrimaryMainFrame()->GetGlobalId());
+}
+
+// static
+ZoomController* ZoomController::CreateForWebContentsAndRenderFrameHost(
+    content::WebContents* web_contents,
+    const content::GlobalRenderFrameHostId rfh_id) {
+  if (auto* manager = Manager::FromWebContents(web_contents)) {
+    if (rfh_id == web_contents->GetPrimaryMainFrame()->GetGlobalId()) {
+      // It's possible that CreateForWebContents() is called multiple times with
+      // the same values. If so, just return the existing ZoomController.
+      return manager->GetZoomController(rfh_id);
+    }
+    // If we get here, we must be creating a ZoomController for a subframe.
+    // TODO(https://crbug.com/376084060): implement creating ZoomControllers for
+    // subframes.
+    return nullptr;
+  }
+
+  Manager::CreateForWebContents(web_contents);
+  return Manager::FromWebContents(web_contents)->GetZoomController(rfh_id);
+}
+
+// static
+ZoomController* ZoomController::FromWebContents(
+    const content::WebContents* web_contents) {
+  auto* manager = ZoomController::Manager::FromWebContents(web_contents);
+  return manager ? manager->GetZoomController(
+                       web_contents->GetPrimaryMainFrame()->GetGlobalId())
+                 : nullptr;
+}
+
+ZoomController::Manager::Manager(content::WebContents* web_contents)
+    : content::WebContentsUserData<ZoomController::Manager>(*web_contents) {
+  // Note: can't use make_unique<> below since ZoomController's constructor is
+  // protected.
+  auto* rfh = web_contents->GetPrimaryMainFrame();
+  const content::FrameTreeNodeId ftn_id = rfh->GetFrameTreeNodeId();
+  // A simple insertion is safe here as the map has just been created and is
+  // thus empty.
+  zoom_controller_map_[ftn_id] =
+      base::WrapUnique(new ZoomController(web_contents, rfh));
+}
+
+ZoomController::Manager::~Manager() = default;
+
+ZoomController* ZoomController::Manager::GetZoomController(
+    const content::GlobalRenderFrameHostId& rfh_id) const {
+  auto ftn_id = content::RenderFrameHost::FromID(rfh_id)->GetFrameTreeNodeId();
+  auto it = zoom_controller_map_.find(ftn_id);
+  if (it == zoom_controller_map_.end()) {
+    return nullptr;
+  }
+  return it->second.get();
+}
+
+void ZoomController::Manager::FrameDeleted(content::FrameTreeNodeId ftn_id) {
+  zoom_controller_map_.erase(ftn_id);
+}
+
+ZoomController::ZoomController(content::WebContents* web_contents,
+                               content::RenderFrameHost* rfh)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<ZoomController>(*web_contents),
+      frame_tree_node_id_(rfh->GetFrameTreeNodeId()),
       browser_context_(web_contents->GetBrowserContext()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  host_zoom_map_ = content::HostZoomMap::GetForWebContents(web_contents);
+  // TODO(https://crbug.com/376084060):  convert this to be able to use a
+  // RenderFrameHost other than that of the mainframe.
+  host_zoom_map_ = content::HostZoomMap::Get(rfh->GetSiteInstance());
   zoom_level_ = host_zoom_map_->GetDefaultZoomLevel();
 
   zoom_subscription_ =
@@ -56,6 +124,10 @@ ZoomController::~ZoomController() {
   for (auto& observer : observers_) {
     observer.OnZoomControllerDestroyed(this);
   }
+}
+
+content::RenderFrameHost* ZoomController::GetRenderFrameHost() const {
+  return web_contents()->UnsafeFindFrameByFrameTreeNodeId(frame_tree_node_id_);
 }
 
 bool ZoomController::IsAtDefaultZoom() const {
@@ -114,8 +186,9 @@ bool ZoomController::SetZoomLevelByClient(
   // Cannot zoom in disabled mode. Also, don't allow changing zoom level on
   // a crashed tab, an error page or an interstitial page.
   if (zoom_mode_ == ZOOM_MODE_DISABLED ||
-      !web_contents()->GetPrimaryMainFrame()->IsRenderFrameLive())
+      !GetRenderFrameHost()->IsRenderFrameLive()) {
     return false;
+  }
 
   // Store client data so the |client| can be attributed when the zoom
   // change completes. We expect that by the time this function returns that
@@ -153,18 +226,18 @@ bool ZoomController::SetZoomLevelByClient(
     return true;
   }
 
+  auto* rfh = GetRenderFrameHost();
   content::HostZoomMap* zoom_map =
-      content::HostZoomMap::GetForWebContents(web_contents());
+      content::HostZoomMap::Get(rfh->GetSiteInstance());
   DCHECK(zoom_map);
   DCHECK(!event_data_);
   event_data_ = std::make_unique<ZoomChangedEventData>(
       web_contents(), GetZoomLevel(), zoom_level, zoom_mode_,
       false /* can_show_bubble */);
-  content::GlobalRenderFrameHostId rfh_id =
-      web_contents()->GetPrimaryMainFrame()->GetGlobalId();
+
   if (zoom_mode_ == ZOOM_MODE_ISOLATED ||
-      zoom_map->UsesTemporaryZoomLevel(rfh_id)) {
-    zoom_map->SetTemporaryZoomLevel(rfh_id, zoom_level);
+      zoom_map->UsesTemporaryZoomLevel(rfh->GetGlobalId())) {
+    zoom_map->SetTemporaryZoomLevel(rfh->GetGlobalId(), zoom_level);
   } else {
     if (!entry) {
       last_client_ = nullptr;
@@ -188,11 +261,11 @@ void ZoomController::SetZoomMode(ZoomMode new_mode) {
   if (new_mode == zoom_mode_)
     return;
 
+  auto* rfh = GetRenderFrameHost();
+  auto rfh_id = rfh->GetGlobalId();
   content::HostZoomMap* zoom_map =
-      content::HostZoomMap::GetForWebContents(web_contents());
+      content::HostZoomMap::Get(rfh->GetSiteInstance());
   DCHECK(zoom_map);
-  content::GlobalRenderFrameHostId rfh_id =
-      web_contents()->GetPrimaryMainFrame()->GetGlobalId();
   double original_zoom_level = GetZoomLevel();
 
   DCHECK(!event_data_);
@@ -279,9 +352,13 @@ void ZoomController::ResetZoomModeOnNavigationIfNeeded(const GURL& url) {
   if (zoom_mode_ != ZOOM_MODE_ISOLATED && zoom_mode_ != ZOOM_MODE_MANUAL)
     return;
 
+  auto* rfh = GetRenderFrameHost();
   content::HostZoomMap* zoom_map =
-      content::HostZoomMap::GetForWebContents(web_contents());
+      content::HostZoomMap::Get(rfh->GetSiteInstance());
   zoom_level_ = zoom_map->GetDefaultZoomLevel();
+  // TODO(https://crbug.com/376084060): Once we allow subframes to have their
+  // own ZoomControllers, we'll need to modify the following call to indicate
+  // which RenderFrameHost we want the ZoomLevel for.
   double old_zoom_level = zoom_map->GetZoomLevel(web_contents());
   double new_zoom_level = zoom_map->GetZoomLevelForHostAndScheme(
       url.scheme(), net::GetHostOrSpecFromURL(url));
@@ -294,8 +371,7 @@ void ZoomController::ResetZoomModeOnNavigationIfNeeded(const GURL& url) {
   // Note: it's possible the render_process/frame ids have disappeared (e.g.
   // if we navigated to a new origin), but this won't cause a problem in the
   // call below.
-  zoom_map->ClearTemporaryZoomLevel(
-      web_contents()->GetPrimaryMainFrame()->GetGlobalId());
+  zoom_map->ClearTemporaryZoomLevel(rfh->GetGlobalId());
   zoom_mode_ = ZOOM_MODE_DEFAULT;
 }
 
@@ -335,14 +411,24 @@ void ZoomController::RenderFrameHostChanged(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // If our associated HostZoomMap changes, update our subscription.
   content::HostZoomMap* new_host_zoom_map =
-      content::HostZoomMap::GetForWebContents(web_contents());
-  if (new_host_zoom_map == host_zoom_map_)
+      content::HostZoomMap::Get(new_host->GetSiteInstance());
+  if (new_host_zoom_map == host_zoom_map_) {
     return;
+  }
 
   host_zoom_map_ = new_host_zoom_map;
   zoom_subscription_ =
       host_zoom_map_->AddZoomLevelChangedCallback(base::BindRepeating(
           &ZoomController::OnZoomLevelChanged, base::Unretained(this)));
+}
+
+void ZoomController::FrameDeleted(content::FrameTreeNodeId ftn_id) {
+  if (ftn_id != frame_tree_node_id_) {
+    // This doesn't concern us.
+    return;
+  }
+  Manager::FromWebContents(web_contents())->FrameDeleted(ftn_id);
+  // Do not add code past this point, as we have been deleted.
 }
 
 void ZoomController::OnPageScaleFactorChanged(float page_scale_factor) {
@@ -421,6 +507,6 @@ bool ZoomController::PageScaleFactorIsOne() const {
   return web_contents()->GetPrimaryPage().IsPageScaleFactorOne();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ZoomController);
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ZoomController::Manager);
 
 }  // namespace zoom

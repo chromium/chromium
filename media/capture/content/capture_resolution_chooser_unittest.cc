@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/capture/content/capture_resolution_chooser.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <numeric>
 
 #include "base/location.h"
@@ -53,7 +49,7 @@ void ExpectIsWithinBoundsAndSameAspectRatio(const Location& location,
 // correctly found when searched.
 void TestSnappedFrameSizes(CaptureResolutionChooser* chooser,
                            const gfx::Size& smallest_size) {
-  const int kSizes[17][2] = {
+  const std::array<std::array<const int, 2>, 17> kSizes = {{
       {kMaxFrameWidth, kMaxFrameHeight},
       {3520, 1980},
       {3200, 1800},
@@ -71,7 +67,7 @@ void TestSnappedFrameSizes(CaptureResolutionChooser* chooser,
       {640, 360},
       {480, 270},
       {320, 180},
-  };
+  }};
 
   const gfx::Size largest_size(kMaxFrameWidth, kMaxFrameHeight);
   chooser->SetSourceSize(largest_size);

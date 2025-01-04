@@ -33,6 +33,7 @@ enum class UserRemovalReason : int32_t {
   GAIA_REMOVED = 5,
   MISCONFIGURED_USER = 6,
   DEVICE_LOCAL_ACCOUNT_UPDATED = 7,
+  DEMO_ACCOUNT_CLEAN_UP = 8,
 };
 
 // Interface for UserManagerImpl - that provides base implementation for

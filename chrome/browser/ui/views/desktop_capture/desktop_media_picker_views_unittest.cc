@@ -179,8 +179,9 @@ class DesktopMediaPickerViewsTestBase : public testing::Test {
   }
 
   void TearDown() override {
-    if (GetPickerDialogView())
+    if (GetPickerDialogView()) {
       GetPickerDialogView()->GetWidget()->CloseNow();
+    }
     widget_destroyed_waiter_->Wait();
     DesktopMediaPickerManager::Get()->RemoveObserver(&observer_);
   }
@@ -679,7 +680,8 @@ class DesktopMediaPickerViewsSystemAudioTest
  public:
   DesktopMediaPickerViewsSystemAudioTest()
       : DesktopMediaPickerViewsTestBase(
-            GetSourceTypes(/*PreferCurrentTab=*/false, /*NewOrder=*/false)) {}
+            GetSourceTypes(/*prefer_current_tab=*/false, /*new_order=*/false)) {
+  }
   ~DesktopMediaPickerViewsSystemAudioTest() override = default;
 
   void MaybeCreatePickerViews() override {
@@ -763,8 +765,9 @@ TEST_F(DesktopMediaPickerViewsSingleTabPaneTest, TabListHasFixedHeight) {
 
   // The dialog's height should not change when going from zero sources to nine
   // sources.
-  for (int i = 0; i < 9; i++)
+  for (int i = 0; i < 9; i++) {
     AddTabSource();
+  }
   EXPECT_EQ(GetDialogHeight(), initial_size);
 
   // The dialog's height should be fixed and equal to the equivalent of ten
@@ -775,15 +778,17 @@ TEST_F(DesktopMediaPickerViewsSingleTabPaneTest, TabListHasFixedHeight) {
   EXPECT_EQ(GetDialogHeight(), initial_size);
 
   // And then it shouldn't change when going to a larger number of sources.
-  for (int i = 0; i < 50; i++)
+  for (int i = 0; i < 50; i++) {
     AddTabSource();
+  }
   EXPECT_EQ(GetDialogHeight(), initial_size);
 
   // And then it shouldn't change when going from a large number of sources (in
   // this case 61) to a larger number, because the ScrollView should scroll
   // large numbers of sources.
-  for (int i = 0; i < 50; i++)
+  for (int i = 0; i < 50; i++) {
     AddTabSource();
+  }
   EXPECT_EQ(GetDialogHeight(), initial_size);
 }
 
@@ -938,7 +943,7 @@ class DesktopMediaPickerDoubleClickTest
  public:
   DesktopMediaPickerDoubleClickTest()
       : DesktopMediaPickerViewsTestBase(
-            GetSourceTypes(/*PreferCurrentTab=*/false, /*NewOrder=*/true)) {}
+            GetSourceTypes(/*prefer_current_tab=*/false, /*new_order=*/true)) {}
 };
 
 INSTANTIATE_TEST_SUITE_P(

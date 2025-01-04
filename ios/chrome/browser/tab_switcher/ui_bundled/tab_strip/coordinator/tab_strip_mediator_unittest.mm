@@ -152,7 +152,9 @@ class TabStripMediatorTest : public PlatformTest {
     mediator_ =
         [[TabStripMediator alloc] initWithConsumer:consumer_
                                tabGroupSyncService:tab_group_sync_service_.get()
-                                       browserList:browser_list];
+                                       browserList:browser_list
+                                  messagingService:nil];
+
     mediator_.profile = profile_.get();
     mediator_.webStateList = web_state_list_;
     mediator_.browser = browser_.get();

@@ -301,19 +301,23 @@ void RecorderAppUI::GetModelInfo(on_device_model::mojom::FormatFeature feature,
         feature == on_device_model::mojom::FormatFeature::kAudioTitle);
   recorder_app::mojom::ModelInfoPtr model_info =
       recorder_app::mojom::ModelInfo::New();
-  model_info->input_token_limit = kInputTokenLimit;
-  if (feature == on_device_model::mojom::FormatFeature::kAudioSummary) {
-    if (base::FeatureList::IsEnabled(ash::features::kConchLargeModel)) {
+
+  if (base::FeatureList::IsEnabled(ash::features::kConchLargeModel)) {
+    model_info->input_token_limit = kInputTokenXsModelLimit;
+
+    if (feature == on_device_model::mojom::FormatFeature::kAudioSummary) {
       model_info->model_id =
           base::Uuid::ParseCaseInsensitive(kSummaryXsModelUuid);
     } else {
       model_info->model_id =
-          base::Uuid::ParseCaseInsensitive(kSummaryXxsModelUuid);
+          base::Uuid::ParseCaseInsensitive(kTitleSuggestionXsModelUuid);
     }
   } else {
-    if (base::FeatureList::IsEnabled(ash::features::kConchLargeModel)) {
+    model_info->input_token_limit = kInputTokenXxsModelLimit;
+
+    if (feature == on_device_model::mojom::FormatFeature::kAudioSummary) {
       model_info->model_id =
-          base::Uuid::ParseCaseInsensitive(kTitleSuggestionXsModelUuid);
+          base::Uuid::ParseCaseInsensitive(kSummaryXxsModelUuid);
     } else {
       model_info->model_id =
           base::Uuid::ParseCaseInsensitive(kTitleSuggestionXxsModelUuid);

@@ -72,14 +72,30 @@ wgpu::PowerPreference AsDawnType(V8GPUPowerPreference power_preference) {
   }
 }
 
+wgpu::FeatureLevel AsDawnFeatureLevel(const String& feature_level) {
+  CHECK(feature_level == "core" || feature_level == "compatibility");
+
+  if (feature_level == "compatibility") {
+    return wgpu::FeatureLevel::Compatibility;
+  }
+
+  return wgpu::FeatureLevel::Core;
+}
+
 wgpu::RequestAdapterOptions AsDawnType(
     const GPURequestAdapterOptions* webgpu_options) {
   DCHECK(webgpu_options);
 
-  wgpu::RequestAdapterOptions dawn_options = {
-      .forceFallbackAdapter = webgpu_options->forceFallbackAdapter(),
-      .compatibilityMode = webgpu_options->compatibilityMode(),
-  };
+  wgpu::RequestAdapterOptions dawn_options;
+  dawn_options.forceFallbackAdapter = webgpu_options->forceFallbackAdapter();
+
+  if (webgpu_options->compatibilityMode()) {
+    dawn_options.featureLevel = wgpu::FeatureLevel::Compatibility;
+  } else if (RuntimeEnabledFeatures::WebGPUFeatureLevelEnabled()) {
+    dawn_options.featureLevel =
+        AsDawnFeatureLevel(webgpu_options->featureLevel());
+  }
+
   if (webgpu_options->hasPowerPreference()) {
     dawn_options.powerPreference =
         AsDawnType(webgpu_options->powerPreference());
@@ -283,26 +299,13 @@ void GPU::RequestAdapterImpl(
   // Validate that the featureLevel is an allowed feature level string value. If
   // not return a null adapter. This logic will evolve as feature levels are
   // added in the future.
-  if (options->hasFeatureLevel() && options->featureLevel() != "core" &&
+  if (options->featureLevel() != "core" &&
       options->featureLevel() != "compatibility") {
     OnRequestAdapterCallback(script_state, options, resolver,
                              wgpu::RequestAdapterStatus::Error, nullptr,
                              "Unknown feature level");
     return;
   }
-
-#if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/369219127): Chrome always uses the same GPU adapter that's
-  // been allocated for other Chrome workloads on Windows, which for laptops is
-  // generally the integrated graphics card, due to the power usage aspect (ie:
-  // power saving).
-  if (options->hasPowerPreference()) {
-    AddConsoleWarning(
-        execution_context,
-        "The powerPreference option is currently ignored when calling "
-        "requestAdapter() on Windows. See https://crbug.com/369219127");
-  }
-#endif
 
   if (!dawn_control_client_ || dawn_control_client_->IsContextLost()) {
     dawn_control_client_initialized_callbacks_.push_back(WTF::BindOnce(
@@ -375,6 +378,39 @@ void GPU::RequestAdapterImpl(
   }
 
   DCHECK_NE(dawn_control_client_, nullptr);
+
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/369219127): Chrome always uses the same GPU adapter that's
+  // been allocated for other Chrome workloads on Windows, which for laptops is
+  // generally the integrated graphics card, due to the power usage aspect (ie:
+  // power saving).
+  if (options->hasPowerPreference()) {
+    AddConsoleWarning(
+        execution_context,
+        "The powerPreference option is currently ignored when calling "
+        "requestAdapter() on Windows. See https://crbug.com/369219127");
+  }
+#endif
+
+  if (options->featureLevel() == "compatibility" &&
+      !RuntimeEnabledFeatures::WebGPUExperimentalFeaturesEnabled()) {
+    AddConsoleWarning(
+        execution_context,
+        "Beware! featureLevel was set to \"compatibility\", but this request "
+        "is being ignored. Compatibility restrictions will start being "
+        "enforced as soon as Chromium ships Compatibility Mode, potentially "
+        "breaking this webpage. See "
+        "https://github.com/gpuweb/gpuweb/issues/4266");
+  }
+
+  if (options->compatibilityMode() &&
+      options->featureLevel() != "compatibility") {
+    AddConsoleWarning(execution_context,
+                      "The \"compatibilityMode\" option is deprecated. Use "
+                      "\"featureLevel\": \"compatibility\" instead. See "
+                      "https://gpuweb.github.io/gpuweb/"
+                      "#dom-gpurequestadapteroptions-featurelevel");
+  }
 
   wgpu::RequestAdapterOptions dawn_options = AsDawnType(options);
   auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(

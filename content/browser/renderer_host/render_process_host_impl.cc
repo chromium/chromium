@@ -69,7 +69,6 @@
 #include "base/trace_event/typed_macros.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
 #include "components/metrics/histogram_controller.h"
 #include "components/metrics/single_sample_metrics.h"
@@ -333,8 +332,9 @@ const char kExtensionProcess[] = "extension-process";
 #endif
 
 // the global list of all renderer processes
-base::IDMap<RenderProcessHost*>& GetAllHosts() {
-  static base::NoDestructor<base::IDMap<RenderProcessHost*>> s_all_hosts;
+base::IDMap<RenderProcessHost*, ChildProcessId>& GetAllHosts() {
+  static base::NoDestructor<base::IDMap<RenderProcessHost*, ChildProcessId>>
+      s_all_hosts;
   return *s_all_hosts;
 }
 
@@ -675,8 +675,8 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
   }
 
   void IncrementSiteProcessCount(const SiteInfo& site_info,
-                                 int render_process_host_id) {
-    std::map<ProcessID, Count>& counts_per_process = map_[site_info];
+                                 ChildProcessId render_process_host_id) {
+    ChildProcessIdCountMap& counts_per_process = map_[site_info];
     ++counts_per_process[render_process_host_id];
 
 #ifndef NDEBUG
@@ -689,10 +689,10 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
   }
 
   void DecrementSiteProcessCount(const SiteInfo& site_info,
-                                 int render_process_host_id) {
+                                 ChildProcessId render_process_host_id) {
     auto result = map_.find(site_info);
     CHECK(result != map_.end(), base::NotFatalUntil::M130);
-    std::map<ProcessID, Count>& counts_per_process = result->second;
+    ChildProcessIdCountMap& counts_per_process = result->second;
 
     --counts_per_process[render_process_host_id];
     DCHECK_GE(counts_per_process[render_process_host_id], 0);
@@ -713,7 +713,7 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
     if (result == map_.end())
       return;
 
-    std::map<ProcessID, Count>& counts_per_process = result->second;
+    ChildProcessIdCountMap& counts_per_process = result->second;
     for (auto iter : counts_per_process) {
       auto* host = RenderProcessHost::FromID(iter.first);
       if (!host) {
@@ -776,9 +776,9 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
   }
 
   // Removes |render_process_host_id| from all sites in |map_|.
-  void ClearProcessForAllSites(int render_process_host_id) {
+  void ClearProcessForAllSites(ChildProcessId render_process_host_id) {
     for (auto iter = map_.begin(); iter != map_.end();) {
-      std::map<ProcessID, Count>& counts_per_process = iter->second;
+      ChildProcessIdCountMap& counts_per_process = iter->second;
       counts_per_process.erase(render_process_host_id);
       // If the site is mapped to no more processes, remove it.
       iter = counts_per_process.empty() ? map_.erase(iter) : ++iter;
@@ -797,7 +797,7 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
 
       bool is_locked_to_site = host->GetProcessLock().is_locked_to_site();
       output += base::StringPrintf("\tProcess Host ID %d (PID %s, %s):\n",
-                                   host_info.first,
+                                   host_info.first.GetUnsafeValue(),
                                    GetRendererPidAsString(host).c_str(),
                                    is_locked_to_site ? "locked" : "not locked");
 
@@ -811,7 +811,8 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
 
   // Returns true if |site_info| is present in |map_| and has
   // |render_process_host_id| in its map of processes that it is hosted by.
-  bool Contains(const SiteInfo& site_info, int render_process_host_id) {
+  bool Contains(const SiteInfo& site_info,
+                ChildProcessId render_process_host_id) {
     auto site_info_found = map_.find(site_info);
     if (site_info_found == map_.end())
       return false;
@@ -821,7 +822,7 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
   }
 
   // Returns true if |render_process_host_id| is present for any site in |map_|.
-  bool ContainsHost(int render_process_host_id) {
+  bool ContainsHost(ChildProcessId render_process_host_id) {
     for (auto iter : map_) {
       const auto& counts_per_process = iter.second;
       if (counts_per_process.find(render_process_host_id) !=
@@ -833,9 +834,10 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
   }
 
  private:
-  using ProcessID = int;
   using Count = int;
-  using HostIdToSiteMap = base::flat_map<ProcessID, std::vector<std::string>>;
+  using HostIdToSiteMap =
+      base::flat_map<ChildProcessId, std::vector<std::string>>;
+  using ChildProcessIdCountMap = std::map<ChildProcessId, Count>;
 
   // Creates a new mapping of the ProcessID to sites and their count based on
   // the current map_.
@@ -852,9 +854,9 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
 
     for (auto iter : map_) {
       std::string site = iter.first.GetDebugString();
-      std::map<ProcessID, Count>& counts_per_process = iter.second;
+      ChildProcessIdCountMap& counts_per_process = iter.second;
       for (auto iter_process : counts_per_process) {
-        ProcessID id = iter_process.first;
+        ChildProcessId id = iter_process.first;
         Count count = iter_process.second;
 
         rph_to_sites_map[id].push_back(
@@ -877,18 +879,18 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
   // map after they've been destroyed.
   bool HasProcess(RenderProcessHost* process) {
     for (auto iter : map_) {
-      std::map<ProcessID, Count>& counts_per_process = iter.second;
+      ChildProcessIdCountMap& counts_per_process = iter.second;
       for (auto iter_process : counts_per_process) {
-        if (iter_process.first == process->GetID())
+        if (iter_process.first == process->GetID()) {
           return true;
+        }
       }
     }
     return false;
   }
 #endif
 
-  using CountPerProcessPerSiteMap =
-      std::map<SiteInfo, std::map<ProcessID, Count>>;
+  using CountPerProcessPerSiteMap = std::map<SiteInfo, ChildProcessIdCountMap>;
   CountPerProcessPerSiteMap map_;
 };
 
@@ -975,7 +977,7 @@ class UnmatchedServiceWorkerProcessTracker
   // Implementation of RenderProcessHostObserver.
   void RenderProcessHostDestroyed(RenderProcessHost* host) override {
     DCHECK(HasProcess(host));
-    int process_id = host->GetID();
+    ChildProcessId process_id = host->GetID();
     for (auto it = site_process_set_.begin(); it != site_process_set_.end();) {
       if (it->second == process_id) {
         it = site_process_set_.erase(it);
@@ -987,14 +989,14 @@ class UnmatchedServiceWorkerProcessTracker
   }
 
  private:
-  using ProcessID = int;
-  using SiteProcessIDPair = std::pair<SiteInfo, ProcessID>;
+  using SiteProcessIDPair = std::pair<SiteInfo, ChildProcessId>;
   using SiteProcessIDPairSet = std::set<SiteProcessIDPair>;
 
   void RegisterProcessForSite(RenderProcessHost* host,
                               SiteInstanceImpl* site_instance) {
     if (!HasProcess(host))
       host->AddObserver(this);
+
     site_process_set_.insert(
         SiteProcessIDPair(site_instance->GetSiteInfo(), host->GetID()));
   }
@@ -1049,7 +1051,7 @@ class UnmatchedServiceWorkerProcessTracker
 
   // Returns true if this tracker contains the process ID |host->GetID()|.
   bool HasProcess(RenderProcessHost* host) const {
-    int process_id = host->GetID();
+    ChildProcessId process_id = host->GetID();
     for (const auto& site_process_id : site_process_set_) {
       if (site_process_id.second == process_id)
         return true;
@@ -1107,8 +1109,9 @@ GetBadMojoMessageCallbackForTesting() {
   return *s_callback;
 }
 
-void InvokeBadMojoMessageCallbackForTesting(int render_process_id,
-                                            const std::string& error) {
+void InvokeBadMojoMessageCallbackForTesting(  // IN-TEST
+    ChildProcessId render_process_id,
+    const std::string& error) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&InvokeBadMojoMessageCallbackForTesting,
@@ -1164,11 +1167,6 @@ void InvokeStableVideoDecoderEventCB(
 }
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
-// Kill-switch for the new CHECKs from https://crrev.com/c/4134809.
-BASE_FEATURE(kCheckNoNewRefCountsWhenRphDeletingSoon,
-             "CheckNoNewRefCountsWhenRphDeletingSoon",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if !BUILDFLAG(IS_ANDROID)
 // Enables kUserVisible process priority. Otherwise when feature is disabled,
 // Priority::kUserVisible has same behavior as Priority::kUserBlocking.
@@ -1194,11 +1192,6 @@ enum class BlockedURLReason {
 bool IsUnusedAndTiedToBrowsingInstance(
     RenderProcessHost* host,
     const IsolationContext& isolation_context) {
-  if (!base::FeatureList::IsEnabled(
-          features::kReuseInitialRenderFrameHostForWebUI)) {
-    return false;
-  }
-
   if (!host->IsUnused()) {
     return false;
   }
@@ -1247,7 +1240,7 @@ bool IsKeepAliveRefCountAllowed() {
 }  // namespace
 
 RenderProcessHostImpl::IOThreadHostImpl::IOThreadHostImpl(
-    int render_process_id,
+    ChildProcessId render_process_id,
     base::WeakPtr<RenderProcessHostImpl> weak_host,
     std::unique_ptr<service_manager::BinderRegistry> binders,
     mojo::PendingReceiver<mojom::ChildProcessHost> host_receiver)
@@ -1493,7 +1486,8 @@ RenderProcessHostImpl::RenderProcessHostImpl(
 
   widget_helper_ = new RenderWidgetHelper();
 
-  ChildProcessSecurityPolicyImpl::GetInstance()->Add(GetID(), browser_context);
+  ChildProcessSecurityPolicyImpl::GetInstance()->Add(GetDeprecatedID(),
+                                                     browser_context);
 
   CHECK(!BrowserMainRunner::ExitedMainMessageLoop());
   RegisterHost(GetID(), this);
@@ -1512,7 +1506,7 @@ RenderProcessHostImpl::RenderProcessHostImpl(
 
   InitializeChannelProxy();
 
-  const int id = GetID();
+  const int id = GetDeprecatedID();
   const uint64_t tracing_id =
       ChildProcessHostImpl::ChildProcessUniqueIdToTracingProcessId(id);
   gpu_client_.reset(
@@ -1596,7 +1590,7 @@ RenderProcessHostImpl::~RenderProcessHostImpl() {
   in_process_renderer_.reset();
   g_in_process_thread = nullptr;
 
-  ChildProcessSecurityPolicyImpl::GetInstance()->Remove(GetID());
+  ChildProcessSecurityPolicyImpl::GetInstance()->Remove(GetDeprecatedID());
 
   is_dead_ = true;
 
@@ -1727,7 +1721,7 @@ bool RenderProcessHostImpl::Init() {
     in_process_renderer_.reset(g_renderer_main_thread_factory(
         InProcessChildThreadParams(GetIOThreadTaskRunner({}),
                                    &mojo_invitation_),
-        base::checked_cast<int32_t>(id_)));
+        base::checked_cast<int32_t>(id_.GetUnsafeValue())));
 
     base::Thread::Options options;
 #if BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
@@ -1781,8 +1775,8 @@ bool RenderProcessHostImpl::Init() {
     // As long as there's no renderer prefix, we can use the zygote process
     // at this stage.
     child_process_launcher_ = std::make_unique<ChildProcessLauncher>(
-        std::move(sandbox_delegate), std::move(cmd_line), GetID(), this,
-        std::move(mojo_invitation_),
+        std::move(sandbox_delegate), std::move(cmd_line), GetDeprecatedID(),
+        this, std::move(mojo_invitation_),
         base::BindRepeating(&RenderProcessHostImpl::OnMojoError, id_),
         std::move(file_data), metrics_memory_region_.Duplicate(),
         std::move(tracing_config_memory_region));
@@ -1790,7 +1784,7 @@ bool RenderProcessHostImpl::Init() {
 
     // In single process mode, browser-side tracing and memory will cover the
     // whole process including renderers.
-    BackgroundTracingManagerImpl::ActivateForProcess(GetID(),
+    BackgroundTracingManagerImpl::ActivateForProcess(GetDeprecatedID(),
                                                      child_process_.get());
 
     fast_shutdown_started_ = false;
@@ -1899,7 +1893,7 @@ void RenderProcessHostImpl::CreateMessageFilters() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 #if BUILDFLAG(ENABLE_PPAPI)
   pepper_renderer_connection_ = base::MakeRefCounted<PepperRendererConnection>(
-      GetID(), PluginServiceImpl::GetInstance(), GetBrowserContext(),
+      GetDeprecatedID(), PluginServiceImpl::GetInstance(), GetBrowserContext(),
       GetStoragePartition());
   AddFilter(pepper_renderer_connection_.get());
 #endif
@@ -1907,7 +1901,7 @@ void RenderProcessHostImpl::CreateMessageFilters() {
   // TODO(crbug.com/40169214): Move this initialization out of
   // CreateMessageFilters().
   p2p_socket_dispatcher_host_ =
-      std::make_unique<P2PSocketDispatcherHost>(GetID());
+      std::make_unique<P2PSocketDispatcherHost>(GetDeprecatedID());
 }
 
 void RenderProcessHostImpl::BindCacheStorage(
@@ -1991,7 +1985,7 @@ void RenderProcessHostImpl::BindFileSystemAccessManager(
                             // URL for workers instead of the origin as source
                             // url. This URL will be used for SafeBrowsing
                             // checks and for the Quarantine Service.
-                            storage_key.origin().GetURL(), GetID()),
+                            storage_key.origin().GetURL(), GetDeprecatedID()),
                         std::move(receiver));
 }
 
@@ -2001,7 +1995,7 @@ void RenderProcessHostImpl::BindFileBackedBlobFactory(
   if (!file_backed_blob_factory_) {
     file_backed_blob_factory_ =
         std::make_unique<FileBackedBlobFactoryWorkerImpl>(browser_context_,
-                                                          GetID());
+                                                          GetDeprecatedID());
   }
   file_backed_blob_factory_->BindReceiver(std::move(receiver), origin.GetURL());
 }
@@ -2019,7 +2013,7 @@ void RenderProcessHostImpl::GetSandboxedFileSystemForBucket(
           // URL for workers instead of the origin as source url.
           // This URL will be used for SafeBrowsing checks and for
           // the Quarantine Service.
-          bucket.storage_key.origin().GetURL(), GetID()),
+          bucket.storage_key.origin().GetURL(), GetDeprecatedID()),
       bucket, directory_path_components, std::move(callback));
 }
 
@@ -2033,7 +2027,7 @@ void RenderProcessHostImpl::BindRestrictedCookieManagerForServiceWorker(
   storage_partition_impl_->CreateRestrictedCookieManager(
       network::mojom::RestrictedCookieManagerRole::SCRIPT, storage_key.origin(),
       storage_key.ToPartialNetIsolationInfo(),
-      /*is_service_worker=*/true, GetID(), MSG_ROUTING_NONE,
+      /*is_service_worker=*/true, GetDeprecatedID(), MSG_ROUTING_NONE,
       net::CookieSettingOverrides(), std::move(receiver),
       storage_partition_impl_->CreateCookieAccessObserverForServiceWorker());
 }
@@ -2138,12 +2132,12 @@ void RenderProcessHostImpl::CreateWebSocketConnector(
   // shared and service workers?
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WebSocketConnectorImpl>(
-          GetID(), MSG_ROUTING_NONE, storage_key.origin(),
+          GetDeprecatedID(), MSG_ROUTING_NONE, storage_key.origin(),
           storage_key.ToPartialNetIsolationInfo()),
       std::move(receiver));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void RenderProcessHostImpl::ReinitializeLogging(
     uint32_t logging_dest,
     base::ScopedFD log_file_descriptor) {
@@ -2153,7 +2147,7 @@ void RenderProcessHostImpl::ReinitializeLogging(
       mojo::PlatformHandle(std::move(log_file_descriptor));
   child_process_->ReinitializeLogging(std::move(logging_settings));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void RenderProcessHostImpl::SetBatterySaverMode(
     bool battery_saver_mode_enabled) {
@@ -2278,6 +2272,7 @@ void RenderProcessHostImpl::DelayProcessShutdown(
         SiteProcessCountTracker::GetInstance(
             GetBrowserContext(),
             content::kDelayedShutdownSiteProcessCountTrackerKey);
+
     delayed_shutdown_tracker->IncrementSiteProcessCount(site_info, GetID());
   }
 
@@ -2298,6 +2293,7 @@ bool RenderProcessHostImpl::IsProcessShutdownDelayedForTesting() {
       SiteProcessCountTracker::GetInstance(
           GetBrowserContext(),
           content::kDelayedShutdownSiteProcessCountTrackerKey);
+
   return delayed_shutdown_tracker->ContainsHost(GetID());
 }
 
@@ -2354,7 +2350,7 @@ void RenderProcessHostImpl::DumpProfilingData(base::OnceClosure callback) {
 void RenderProcessHostImpl::WriteIntoTrace(
     perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost> proto)
     const {
-  proto->set_id(GetID());
+  proto->set_id(GetDeprecatedID());
   proto->set_process_lock(GetProcessLock().ToString());
   proto.Set(TraceProto::kBrowserContext, browser_context_);
 
@@ -2379,7 +2375,8 @@ void RenderProcessHostImpl::CreateEmbeddedFrameSinkProvider(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!embedded_frame_sink_provider_) {
     // The client id gets converted to a uint32_t in FrameSinkId.
-    uint32_t renderer_client_id = base::checked_cast<uint32_t>(id_);
+    uint32_t renderer_client_id =
+        base::checked_cast<uint32_t>(id_.GetUnsafeValue());
     embedded_frame_sink_provider_ =
         std::make_unique<EmbeddedFrameSinkProviderImpl>(
             GetHostFrameSinkManager(), renderer_client_id);
@@ -2422,7 +2419,7 @@ void RenderProcessHostImpl::BindWebDatabaseHostImpl(
   DCHECK(db_tracker);
   db_tracker->task_runner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&WebDatabaseHostImpl::Create, GetID(),
+      base::BindOnce(&WebDatabaseHostImpl::Create, GetDeprecatedID(),
                      base::WrapRefCounted(db_tracker), std::move(receiver)));
 }
 #endif  // BULDFLAG(IS_ANDROID)
@@ -2466,7 +2463,8 @@ void RenderProcessHostImpl::BindP2PSocketManager(
 
 void RenderProcessHostImpl::CreateMediaLogRecordHost(
     mojo::PendingReceiver<content::mojom::MediaInternalLogRecords> receiver) {
-  content::MediaInternals::CreateMediaLogRecords(GetID(), std::move(receiver));
+  content::MediaInternals::CreateMediaLogRecords(GetDeprecatedID(),
+                                                 std::move(receiver));
 }
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -2496,7 +2494,7 @@ void RenderProcessHostImpl::BindDomStorage(
   }
 
   dom_storage_receiver_ids_.insert(storage_partition_impl_->BindDomStorage(
-      id_, std::move(receiver), std::move(client)));
+      id_.GetUnsafeValue(), std::move(receiver), std::move(client)));
 
   // Renderers only use this interface to send a single BindDomStorage message,
   // so we can tear down the receiver now.
@@ -2568,9 +2566,7 @@ base::Process::Priority RenderProcessHostImpl::GetPriority() const {
 void RenderProcessHostImpl::IncrementKeepAliveRefCount(uint64_t handle_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(!are_ref_counts_disabled_);
-  if (base::FeatureList::IsEnabled(kCheckNoNewRefCountsWhenRphDeletingSoon)) {
-    CHECK(!deleting_soon_);
-  }
+  CHECK(!deleting_soon_);
   CHECK(IsKeepAliveRefCountAllowed());
   ++keep_alive_ref_count_;
   DCHECK(!keep_alive_start_times_.contains(handle_id));
@@ -2601,9 +2597,7 @@ void RenderProcessHostImpl::DecrementKeepAliveRefCount(uint64_t handle_id) {
 void RenderProcessHostImpl::IncrementPendingReuseRefCount() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(!are_ref_counts_disabled_);
-  if (base::FeatureList::IsEnabled(kCheckNoNewRefCountsWhenRphDeletingSoon)) {
-    CHECK(!deleting_soon_);
-  }
+  CHECK(!deleting_soon_);
   ++pending_reuse_ref_count_;
 }
 
@@ -2702,9 +2696,7 @@ void RenderProcessHostImpl::UnregisterRenderFrameHost(
 void RenderProcessHostImpl::IncrementWorkerRefCount() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(!are_ref_counts_disabled_);
-  if (base::FeatureList::IsEnabled(kCheckNoNewRefCountsWhenRphDeletingSoon)) {
-    CHECK(!deleting_soon_);
-  }
+  CHECK(!deleting_soon_);
   ++worker_ref_count_;
 }
 
@@ -2758,7 +2750,8 @@ RenderProcessHostImpl::GetJavaScriptCallStackGeneratorInterface() {
 }
 
 ProcessLock RenderProcessHostImpl::GetProcessLock() const {
-  return ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(GetID());
+  return ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
+      GetDeprecatedID());
 }
 
 bool RenderProcessHostImpl::MayReuseHost() {
@@ -2782,9 +2775,7 @@ void RenderProcessHostImpl::AddRoute(int32_t routing_id,
                                   ->set_render_process_host_listener_changed();
                 proto->set_routing_id(routing_id);
               });
-  if (base::FeatureList::IsEnabled(kCheckNoNewRefCountsWhenRphDeletingSoon)) {
-    CHECK(!deleting_soon_);
-  }
+  CHECK(!deleting_soon_);
   CHECK(!listeners_.Lookup(routing_id))
       << "Found Routing ID Conflict: " << routing_id;
   listeners_.AddWithID(listener, routing_id);
@@ -2851,7 +2842,7 @@ void RenderProcessHostImpl::ShutdownForBadMessage(
   if (crash_report_mode == CrashReportMode::GENERATE_CRASH_DUMP) {
     // Set crash keys to understand renderer kills related to site isolation.
     ChildProcessSecurityPolicyImpl::GetInstance()->LogKilledProcessOriginLock(
-        GetID());
+        GetDeprecatedID());
 
     std::string site_isolation_mode;
     if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites())
@@ -2867,7 +2858,7 @@ void RenderProcessHostImpl::ShutdownForBadMessage(
                               site_isolation_mode);
 
     ChildProcessSecurityPolicyImpl::GetInstance()->LogKilledProcessOriginLock(
-        GetID());
+        GetDeprecatedID());
 
     // Report a crash, since none will be generated by the killed renderer.
     base::debug::DumpWithoutCrashing();
@@ -3096,7 +3087,7 @@ void RenderProcessHostImpl::SetProcessLock(
     const IsolationContext& isolation_context,
     const ProcessLock& process_lock) {
   ChildProcessSecurityPolicyImpl::GetInstance()->LockProcess(
-      isolation_context, GetID(), !IsUnused(), process_lock);
+      isolation_context, GetDeprecatedID(), !IsUnused(), process_lock);
 
   // Note that SetProcessLock is only called on ProcessLock state transitions.
   // (e.g. invalid -> allows_any_site and allows_any_site -> locked_to_site).
@@ -3201,8 +3192,8 @@ void RenderProcessHostImpl::AppendRendererCommandLine(
 
   // Call this as early as possible so that --extension-process will show early
   // in process listings. See https://crbug.com/1211558 for details.
-  GetContentClient()->browser()->AppendExtraCommandLineSwitches(command_line,
-                                                                GetID());
+  GetContentClient()->browser()->AppendExtraCommandLineSwitches(
+      command_line, GetDeprecatedID());
 
   if (IsPdf())
     command_line->AppendSwitch(switches::kPdfRenderer);
@@ -3261,7 +3252,7 @@ void RenderProcessHostImpl::AppendRendererCommandLine(
   AppendCompositorCommandLineFlags(command_line);
 
   command_line->AppendSwitchASCII(switches::kRendererClientId,
-                                  base::NumberToString(GetID()));
+                                  base::NumberToString(GetDeprecatedID()));
 
   // Synchronize unix/monotonic clocks across consistent processes.
   if (base::TimeTicks::IsConsistentAcrossProcesses()) {
@@ -3291,8 +3282,7 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
       switches::kDisableInProcessStackTraces,
       sandbox::policy::switches::kDisableSeccompFilterSandbox,
       sandbox::policy::switches::kNoSandbox,
-#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
-    !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
       switches::kDisableDevShmUsage,
 #endif
 #if BUILDFLAG(IS_MAC)
@@ -3474,11 +3464,6 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
 #if BUILDFLAG(IS_CHROMEOS)
       switches::kSchedulerBoostUrgent,
 #endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      switches::kLacrosEnablePlatformHevc,
-      switches::kLacrosUseChromeosProtectedMedia,
-      switches::kLacrosUseChromeosProtectedAv1,
-#endif
   };
   renderer_cmd->CopySwitchesFrom(browser_cmd, kSwitchNames);
 
@@ -3503,7 +3488,7 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
   if (browser_cmd.HasSwitch(switches::kDisableGpuCompositing)) {
     renderer_cmd->AppendSwitch(switches::kDisableGpuCompositing);
   }
-#elif !BUILDFLAG(IS_CHROMEOS_ASH)
+#elif !BUILDFLAG(IS_CHROMEOS)
   // If gpu compositing is not being used, tell the renderer at startup. This
   // is inherently racey, as it may change while the renderer is being
   // launched, but the renderer will hear about the correct state eventually.
@@ -3584,6 +3569,11 @@ void RenderProcessHostImpl::SetUnresponsiveDocumentJSCallStackAndToken(
   unresponsive_document_javascript_call_stack_ =
       untrusted_javascript_call_stack;
   unresponsive_document_token_ = frame_token.value();
+  TRACE_EVENT1(
+      "browser",
+      "RenderProcessHostImpl::SetUnresponsiveDocumentJSCallStackAndToken",
+      "UnresponsiveJavaScriptCallStack",
+      unresponsive_document_javascript_call_stack_);
 }
 
 void RenderProcessHostImpl::InterruptJavaScriptIsolateAndCollectCallStack() {
@@ -3611,7 +3601,8 @@ bool RenderProcessHostImpl::ShutdownRequested() {
 
 bool RenderProcessHostImpl::FastShutdownIfPossible(size_t page_count,
                                                    bool skip_unload_handlers,
-                                                   bool ignore_workers) {
+                                                   bool ignore_workers,
+                                                   bool ignore_keep_alive) {
   base::UmaHistogramBoolean(
       "BrowserRenderProcessHost.FastShutdownIfPossible.Total", true);
   // Do not shut down the process if there are active or pending views other
@@ -3643,7 +3634,7 @@ bool RenderProcessHostImpl::FastShutdownIfPossible(size_t page_count,
   }
 
   // TODO(crbug.com/40236167): Remove this block once the migration is launched.
-  if (keep_alive_ref_count_ != 0) {
+  if (!ignore_keep_alive && keep_alive_ref_count_ != 0) {
     CHECK(IsKeepAliveRefCountAllowed());
     LogDelayReasonForFastShutdown(DelayShutdownReason::kFetchKeepAlive);
     return false;
@@ -3799,7 +3790,11 @@ bool RenderProcessHostImpl::InSameStoragePartition(
   return GetStoragePartition() == partition;
 }
 
-int RenderProcessHostImpl::GetID() const {
+int RenderProcessHostImpl::GetDeprecatedID() const {
+  return id_.GetUnsafeValue();
+}
+
+ChildProcessId RenderProcessHostImpl::GetID() const {
   return id_;
 }
 
@@ -4043,7 +4038,7 @@ void RenderProcessHostImpl::Cleanup() {
   if (is_initialized_) {
     GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(&WebRtcLog::ClearLogMessageCallback, GetID()));
+        base::BindOnce(&WebRtcLog::ClearLogMessageCallback, GetDeprecatedID()));
   }
 
   DCHECK_EQ(0, pending_views_);
@@ -4204,25 +4199,38 @@ bool RenderProcessHostImpl::FastShutdownStarted() {
 
 // static
 void RenderProcessHostImpl::RegisterHost(int host_id, RenderProcessHost* host) {
+  RenderProcessHostImpl::RegisterHost(ChildProcessId(host_id), host);
+}
+
+// static
+void RenderProcessHostImpl::RegisterHost(ChildProcessId host_id,
+                                         RenderProcessHost* host) {
   TRACE_EVENT(
       "shutdown", "RenderProcessHostImpl::RegisterHost",
       [&](perfetto::EventContext ctx) {
+        // TODO(crbug.com/379869738): Refactor to remove GetUnsafeValue.
         ctx.event<ChromeTrackEvent>()->set_render_process_host()->set_id(
-            host_id);
+            host_id.GetUnsafeValue());
       });
   GetAllHosts().AddWithID(host, host_id);
 }
 
 // static
 void RenderProcessHostImpl::UnregisterHost(int host_id) {
+  return UnregisterHost(ChildProcessId(host_id));
+}
+
+// static
+void RenderProcessHostImpl::UnregisterHost(ChildProcessId host_id) {
   RenderProcessHost* host = GetAllHosts().Lookup(host_id);
   if (!host)
     return;
   TRACE_EVENT(
       "shutdown", "RenderProcessHostImpl::UnregisterHost",
       [&](perfetto::EventContext ctx) {
+        // TODO(crbug.com/379869738): Refactor to remove GetUnsafeValue.
         ctx.event<ChromeTrackEvent>()->set_render_process_host()->set_id(
-            host_id);
+            host_id.GetUnsafeValue());
       });
 
   GetAllHosts().Remove(host_id);
@@ -4278,7 +4286,7 @@ RenderProcessHost::FilterURLResult RenderProcessHostImpl::FilterURL(
     // navigation to the home page. This is often a privileged page
     // (chrome://newtab/) which is exactly what we don't want.
     TRACE_EVENT1("navigation", "RenderProcessHost::FilterURL - invalid URL",
-                 "process_id", rph->GetID());
+                 "process_id", rph->GetDeprecatedID());
     VLOG(1) << "Blocked invalid URL";
     base::UmaHistogramEnumeration("BrowserRenderProcessHost.BlockedByFilterURL",
                                   BlockedURLReason::kInvalidURL);
@@ -4289,13 +4297,13 @@ RenderProcessHost::FilterURLResult RenderProcessHostImpl::FilterURL(
 
   ChildProcessSecurityPolicyImpl* policy =
       ChildProcessSecurityPolicyImpl::GetInstance();
-  if (!policy->CanRequestURL(rph->GetID(), *url)) {
+  if (!policy->CanRequestURL(rph->GetDeprecatedID(), *url)) {
     // If this renderer is not permitted to request this URL, we invalidate
     // the URL.  This prevents us from storing the blocked URL and becoming
     // confused later.
     TRACE_EVENT2("navigation",
                  "RenderProcessHost::FilterURL - failed CanRequestURL",
-                 "process_id", rph->GetID(), "url", url->spec());
+                 "process_id", rph->GetDeprecatedID(), "url", url->spec());
     VLOG(1) << "Blocked URL " << url->spec();
     base::UmaHistogramEnumeration("BrowserRenderProcessHost.BlockedByFilterURL",
                                   BlockedURLReason::kFailedCanRequestURLCheck);
@@ -4357,7 +4365,7 @@ bool RenderProcessHostImpl::IsSuitableHost(
   // from |site_url| if an effective URL is used.
   bool host_has_web_ui_bindings =
       ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
-          host->GetID());
+          host->GetDeprecatedID());
   ProcessLock process_lock = host->GetProcessLock();
   if (host->HostHasNotBeenUsed()) {
     // If the host hasn't been used, it won't have the expected WebUI bindings
@@ -4522,6 +4530,11 @@ RenderProcessHost::iterator RenderProcessHost::AllHostsIterator() {
 // static
 RenderProcessHost* RenderProcessHost::FromID(int render_process_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return GetAllHosts().Lookup(ChildProcessId(render_process_id));
+}
+
+RenderProcessHost* RenderProcessHost::FromID(ChildProcessId render_process_id) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
   return GetAllHosts().Lookup(render_process_id);
 }
 
@@ -4788,7 +4801,7 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
     base::debug::SetCrashKeyString(bad_message::GetRequestedSiteInfoKey(),
                                    site_info.GetDebugString());
     ChildProcessSecurityPolicyImpl::GetInstance()->LogKilledProcessOriginLock(
-        render_process_host->GetID());
+        render_process_host->GetDeprecatedID());
     NOTREACHED() << "Unsuitable process reused for site " << site_info;
   }
 
@@ -4833,7 +4846,8 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
                                            false /* can_create */)));
 
   MAYBEVLOG(2) << __func__ << "(" << site_info << ") selected process host "
-               << render_process_host->GetID() << " using assignment \""
+               << render_process_host->GetDeprecatedID()
+               << " using assignment \""
                << site_instance->GetLastProcessAssignmentOutcome() << "\""
                << std::endl
                << GetCurrentHostMapDebugString(
@@ -4858,7 +4872,7 @@ void RenderProcessHostImpl::CreateMetricsAllocator() {
 
   // Create the shared memory region and allocator.
   auto shared_memory = base::HistogramSharedMemory::Create(
-      GetID(), shared_memory_config.value());
+      GetDeprecatedID(), shared_memory_config.value());
   if (shared_memory.has_value()) {
     metrics_memory_region_ = std::move(shared_memory->region);
     metrics_allocator_ = std::move(shared_memory->allocator);
@@ -5023,8 +5037,9 @@ size_t RenderProcessHost::GetActiveViewCount() {
       RenderWidgetHost::GetRenderWidgetHosts());
   while (RenderWidgetHost* widget = widgets->GetNextHost()) {
     // Count only RenderWidgetHosts in this process.
-    if (widget->GetProcess()->GetID() == GetID())
+    if (widget->GetProcess()->GetDeprecatedID() == GetDeprecatedID()) {
       num_active_views++;
+    }
   }
   return num_active_views;
 }
@@ -5282,7 +5297,7 @@ void RenderProcessHostImpl::UpdateControllerServiceWorkerProcessPriority() {
     // TODO(crbug.com/40805534): It appears that some times `version` is
     // nullptr here, but we don't know why.  Once that is solved revert this
     // runtime check back to a DCHECK.
-    if (version && version->IsControlleeProcessID(GetID())) {
+    if (version && version->IsControlleeProcessID(GetDeprecatedID())) {
       version->UpdateForegroundPriority();
       break;
     }
@@ -5505,7 +5520,7 @@ RenderProcessHostImpl::FindReusableProcessHostForSiteInstance(
 }
 
 // static
-void RenderProcessHostImpl::OnMojoError(int render_process_id,
+void RenderProcessHostImpl::OnMojoError(ChildProcessId render_process_id,
                                         const std::string& error) {
   LOG(ERROR) << "Terminating render process for bad Mojo message: " << error;
 
@@ -5554,8 +5569,9 @@ void RenderProcessHostImpl::CancelProcessShutdownDelay(
         SiteProcessCountTracker::GetInstance(
             GetBrowserContext(),
             content::kDelayedShutdownSiteProcessCountTrackerKey);
-    if (delayed_shutdown_tracker->Contains(site_info, GetID()))
+    if (delayed_shutdown_tracker->Contains(site_info, GetID())) {
       delayed_shutdown_tracker->DecrementSiteProcessCount(site_info, GetID());
+    }
   }
 
   // Decrement shutdown delay ref count.
@@ -5574,6 +5590,7 @@ void RenderProcessHostImpl::StopTrackingProcessForShutdownDelay() {
       SiteProcessCountTracker::GetInstance(
           GetBrowserContext(),
           content::kDelayedShutdownSiteProcessCountTrackerKey);
+
   delayed_shutdown_tracker->ClearProcessForAllSites(GetID());
 }
 

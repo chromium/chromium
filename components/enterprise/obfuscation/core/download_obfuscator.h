@@ -90,7 +90,7 @@ class COMPONENT_EXPORT(ENTERPRISE_OBFUSCATION) DownloadObfuscator {
  private:
   // Shared members.
   std::vector<uint8_t> nonce_prefix_;
-  std::vector<uint8_t> derived_key_;
+  std::array<uint8_t, kKeySize> derived_key_;
   uint32_t chunk_counter_ = 0;
   int64_t total_overhead_ = 0;
   std::unique_ptr<crypto::SecureHash> unobfuscated_hash_;

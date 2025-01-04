@@ -60,7 +60,6 @@ ContextProviderCommandBuffer::ContextProviderCommandBuffer(
     scoped_refptr<gpu::GpuChannelHost> channel,
     int32_t stream_id,
     gpu::SchedulingPriority stream_priority,
-    gpu::SurfaceHandle surface_handle,
     const GURL& active_url,
     bool automatic_flushes,
     bool support_locking,
@@ -72,7 +71,6 @@ ContextProviderCommandBuffer::ContextProviderCommandBuffer(
           base::subtle::GetRefCountPreference<ContextProviderCommandBuffer>()),
       stream_id_(stream_id),
       stream_priority_(stream_priority),
-      surface_handle_(surface_handle),
       active_url_(active_url),
       automatic_flushes_(automatic_flushes),
       support_locking_(support_locking),
@@ -150,9 +148,9 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
   // GPU process.
   command_buffer_ = std::make_unique<gpu::CommandBufferProxyImpl>(
       channel_, stream_id_, default_task_runner_, buffer_mapper_);
-  bind_result_ = command_buffer_->Initialize(
-      surface_handle_, /*shared_command_buffer=*/nullptr, stream_priority_,
-      attributes_, active_url_);
+  bind_result_ =
+      command_buffer_->Initialize(/*shared_command_buffer=*/nullptr,
+                                  stream_priority_, attributes_, active_url_);
   if (bind_result_ != gpu::ContextResult::kSuccess) {
     DLOG(ERROR) << "GpuChannelHost failed to create command buffer.";
     command_buffer_metrics::UmaRecordContextInitFailed(context_type_);

@@ -690,6 +690,14 @@ ci.thin_tester(
         mixins = [
             "win10_nvidia_gtx_1660_stable",
         ],
+        per_test_modifications = {
+            # TODO(crbug.com/380431384): Re-enable when fixed
+            "webgl_conformance_vulkan_passthrough_tests": targets.remove(
+                reason = [
+                    "crbug.com/380431384 flaky crashes in random tests",
+                ],
+            ),
+        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE_X64,

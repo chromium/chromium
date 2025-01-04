@@ -94,25 +94,27 @@ class CheckForServiceAndStartTest : public testing::Test {
                                 uint32_t reply_code) {
     EXPECT_CALL(
         *mock_dbus_proxy_,
-        DoCallMethod(MatchMethod(DBUS_INTERFACE_DBUS, "StartServiceByName"), _,
-                     _))
-        .WillOnce(Invoke([this, service_name, reply_code](
-                             dbus::MethodCall* method_call, int timeout_ms,
-                             dbus::ObjectProxy::ResponseCallback* callback) {
-          dbus::MessageReader reader(method_call);
-          std::string received_service_name;
-          uint32_t flags;
-          EXPECT_TRUE(reader.PopString(&received_service_name));
-          EXPECT_TRUE(reader.PopUint32(&flags));
-          EXPECT_EQ(received_service_name, service_name);
-          EXPECT_EQ(flags, 0U);
+        DoCallMethodWithErrorResponse(
+            MatchMethod(DBUS_INTERFACE_DBUS, "StartServiceByName"), _, _))
+        .WillOnce(
+            Invoke([this, service_name, reply_code](
+                       dbus::MethodCall* method_call, int timeout_ms,
+                       dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
+              dbus::MessageReader reader(method_call);
+              std::string received_service_name;
+              uint32_t flags;
+              EXPECT_TRUE(reader.PopString(&received_service_name));
+              EXPECT_TRUE(reader.PopUint32(&flags));
+              EXPECT_EQ(received_service_name, service_name);
+              EXPECT_EQ(flags, 0U);
 
-          response_ = dbus::Response::CreateEmpty();
-          dbus::MessageWriter writer(response_.get());
-          writer.AppendUint32(reply_code);
-          task_environment_.GetMainThreadTaskRunner()->PostTask(
-              FROM_HERE, base::BindOnce(std::move(*callback), response_.get()));
-        }));
+              response_ = dbus::Response::CreateEmpty();
+              dbus::MessageWriter writer(response_.get());
+              writer.AppendUint32(reply_code);
+              task_environment_.GetMainThreadTaskRunner()->PostTask(
+                  FROM_HERE, base::BindOnce(std::move(*callback),
+                                            response_.get(), nullptr));
+            }));
   }
 
   void RunCheckForServiceAndStart(const std::string& service_name,

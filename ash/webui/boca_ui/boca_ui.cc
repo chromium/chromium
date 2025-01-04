@@ -60,6 +60,11 @@ BocaUI::BocaUI(content::WebUI* web_ui,
       network::mojom::CSPDirectiveName::StyleSrc,
       "style-src 'self' 'unsafe-inline' chrome-untrusted://theme;");
 
+  // Need to explicitly set |worker-src| because CSP falls back to |child-src|
+  // which is none.
+  host_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::WorkerSrc, "worker-src 'self';");
+
   host_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types polymer_resin lit-html goog#html polymer-html-literal "

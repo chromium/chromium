@@ -58,6 +58,11 @@ AccessibilityHighlightController::~AccessibilityHighlightController() {
   controller->HideCaretRing();
   controller->HideCursorRing();
 
+  if (native_focus_watcher_) {
+    native_focus_watcher_->RemoveObserver(this);
+    native_focus_watcher_.reset();
+  }
+
   GetSharedInputMethod()->RemoveObserver(this);
   Shell::Get()->cursor_manager()->RemoveObserver(this);
   Shell::Get()->RemovePreTargetHandler(this);
@@ -65,6 +70,15 @@ AccessibilityHighlightController::~AccessibilityHighlightController() {
 
 void AccessibilityHighlightController::HighlightFocus(bool focus) {
   focus_ = focus;
+  if (focus_) {
+    if (!native_focus_watcher_) {
+      native_focus_watcher_ = std::make_unique<NativeFocusWatcher>();
+      native_focus_watcher_->AddObserver(this);
+    }
+    native_focus_watcher_->SetEnabled(true);
+  } else if (native_focus_watcher_) {
+    native_focus_watcher_->SetEnabled(false);
+  }
   UpdateFocusAndCaretHighlights();
 }
 
@@ -134,6 +148,15 @@ void AccessibilityHighlightController::OnCaretBoundsChanged(
 void AccessibilityHighlightController::OnCursorVisibilityChanged(
     bool is_visible) {
   UpdateCursorHighlight();
+}
+
+void AccessibilityHighlightController::OnNativeFocusChanged(
+    const gfx::Rect& bounds_in_screen) {
+  SetFocusHighlightRect(bounds_in_screen);
+}
+
+void AccessibilityHighlightController::OnNativeFocusCleared() {
+  SetFocusHighlightRect(gfx::Rect());
 }
 
 bool AccessibilityHighlightController::IsCursorVisible() {

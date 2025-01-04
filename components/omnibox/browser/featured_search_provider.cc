@@ -44,6 +44,10 @@
 
 namespace {
 
+// Max number of featured enterprise suggestions to show when the user types '@'
+// or '@...'.
+constexpr int kMaxEnterpriseSuggestions = 4;
+
 std::string GetIphDismissedPrefNameFor(IphType iph_type) {
   switch (iph_type) {
     case IphType::kNone:
@@ -154,7 +158,7 @@ void FeaturedSearchProvider::Start(const AutocompleteInput& input,
     AddHistoryEmbeddingsScopePromoIphMatch();
   }
 
-  if (input.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT ||
+  if (input.IsZeroSuggest() ||
       (input.type() == metrics::OmniboxInputType::EMPTY)) {
     return;
   }
@@ -182,12 +186,9 @@ FeaturedSearchProvider::~FeaturedSearchProvider() = default;
 
 void FeaturedSearchProvider::AddFeaturedKeywordMatches(
     const AutocompleteInput& input) {
-  // When the user's input begins with '@', we want to prioritize providing
-  // suggestions for all active starter pack search engines.
-  bool starts_with_starter_pack_symbol = base::StartsWith(
-      input.text(), u"@", base::CompareCase::INSENSITIVE_ASCII);
-
-  if (starts_with_starter_pack_symbol) {
+  size_t enterprise_count = 0;
+  if (input.GetFeaturedKeywordMode() !=
+      AutocompleteInput::FeaturedKeywordMode::kFalse) {
     TemplateURLService::TemplateURLVector matches;
     template_url_service_->AddMatchingKeywords(input.text(), false, &matches);
     for (TemplateURL* match : matches) {
@@ -199,10 +200,11 @@ void FeaturedSearchProvider::AddFeaturedKeywordMatches(
             match->starter_pack_id() > TemplateURLStarterPackData::kTabs) {
           continue;
         }
-
         AddStarterPackMatch(*match, input);
-      } else if (match->featured_by_policy()) {
+      } else if (match->featured_by_policy() &&
+                 enterprise_count < kMaxEnterpriseSuggestions) {
         AddFeaturedEnterpriseSearchMatch(*match, input);
+        enterprise_count++;
       }
     }
   }
@@ -246,7 +248,7 @@ void FeaturedSearchProvider::AddStarterPackMatch(
     if (OmniboxFieldTrial::IsStarterPackExpansionEnabled() &&
         template_url.starter_pack_id() == TemplateURLStarterPackData::kGemini) {
       match.description = l10n_util::GetStringFUTF16(
-          IDS_OMNIBOX_INSTANT_KEYWORD_CHAT_TEXT, template_url.keyword(),
+          IDS_OMNIBOX_INSTANT_KEYWORD_ASK_TEXT, template_url.keyword(),
           template_url.short_name());
       match.relevance = kGeminiRelevance;
     } else {

@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_content_view_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_favicon_consumer_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_consumer_source.h"
@@ -159,6 +160,8 @@
     (PriceTrackingPromoItem*)priceTrackingPromoItem {
   PriceTrackingPromoModuleView* view =
       [[PriceTrackingPromoModuleView alloc] initWithFrame:CGRectZero];
+  [priceTrackingPromoItem.priceTrackingPromoFaviconConsumerSource
+      addConsumer:view];
   view.commandHandler = priceTrackingPromoItem.commandHandler;
   [view configureView:priceTrackingPromoItem];
   return view;

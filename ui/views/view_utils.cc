@@ -9,21 +9,21 @@
 #include "base/command_line.h"
 #include "base/debug/stack_trace.h"
 #include "base/logging.h"
+#include "ui/views/view.h"
 #include "ui/views/views_switches.h"
 
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, base::debug::StackTrace*)
 
 namespace views {
 
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(base::debug::StackTrace,
-                                   kViewStackTraceKey,
-                                   nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(base::debug::StackTrace, kViewStackTraceKey)
 
 namespace {
 
 std::string GetViewTreeAsString(View* view) {
-  if (!view->parent())
+  if (!view->parent()) {
     return view->GetClassName();
+  }
   return GetViewTreeAsString(view->parent()) + " -> " + view->GetClassName();
 }
 
@@ -65,8 +65,9 @@ std::vector<debug::ViewDebugWrapper*> ViewDebugWrapperImpl::GetChildren() {
   }
 
   std::vector<debug::ViewDebugWrapper*> child_ptrs;
-  for (auto& child : children_)
+  for (auto& child : children_) {
     child_ptrs.push_back(child.get());
+  }
   return child_ptrs;
 }
 
@@ -81,11 +82,9 @@ void ViewDebugWrapperImpl::ForAllProperties(PropCallback callback) {
   }
 }
 
-void PrintViewHierarchy(View* view, bool verbose, int depth) {
+std::string PrintViewHierarchy(View* view, bool verbose) {
   ViewDebugWrapperImpl debug_view(view);
-  std::ostringstream out;
-  debug::PrintViewHierarchy(&out, &debug_view, verbose, depth);
-  LOG(ERROR) << '\n' << out.str();
+  return debug::PrintViewHierarchy(&debug_view, verbose);
 }
 
 std::string GetViewDebugInfo(View* view) {

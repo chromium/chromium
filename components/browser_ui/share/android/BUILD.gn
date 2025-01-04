@@ -56,7 +56,10 @@ android_library("java") {
 }
 
 android_resources("java_resources") {
-  sources = [ "java/res/layout/share_dialog_item.xml" ]
+  sources = [
+    "java/res/layout/share_dialog_item.xml",
+    "java/res/values/dimens.xml",
+  ]
   deps = [
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",

@@ -26,6 +26,7 @@
 <translation id="1384959399684842514">Preuzimanje je pauzirano</translation>
 <translation id="1396327438254055134">Dozvolite web lokaciji da koristi optimizator V8.</translation>
 <translation id="1415402041810619267">URL je odsječen</translation>
+<translation id="1415855080660575082">Dozvolite Chromeu da dijeli nedavne kartice s uređajem da ih vidite na listi aplikacija i u rezultatima pretraživanja na uređaju. Možete uključiti ili isključiti u postavkama Chromea.</translation>
 <translation id="1448064542941920355">Smanjenje zumiranja</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> web lokacija}one{<ph name="SITE_COUNT" /> web lokacija}few{<ph name="SITE_COUNT" /> web lokacije}other{<ph name="SITE_COUNT" /> web lokacija}}</translation>
 <translation id="1500473259453106018">Sakrij karticu Padovi cijena na karticama</translation>
@@ -91,6 +92,7 @@
 <translation id="2438120137003069591">Ovoj web lokaciji ste privremeno dozvolili da koristi kolačiće trećih strana, što podrazumijeva manju zaštitu prilikom pregledanja, ali veću vjerovatnost da će funkcije web lokacije funkcionirati u skladu s očekivanjima. <ph name="BEGIN_LINK" />Pošaljite povratne informacije<ph name="END_LINK" /></translation>
 <translation id="244264527810019436">Funkcije na nekim web lokacijama možda neće funkcionirati u anonimnom načinu rada</translation>
 <translation id="2442870161001914531">Uvijek zatraži verziju web lokacije za računar</translation>
+<translation id="2445311670906052406">Chrome sada dijeli nedavne kartice s uređajem. Vidjet ćete ih na listi aplikacija i u rezultatima pretraživanja na uređaju. Možete isključiti ovo bilo kada u postavkama Chromea.</translation>
 <translation id="2469312991797799607">Ova radnja će izbrisati sve podatke i kolačiće za domenu <ph name="ORIGIN" /> i sve njene web lokacije</translation>
 <translation id="2482878487686419369">Obavještenja</translation>
 <translation id="2485422356828889247">Deinstaliraj</translation>
@@ -116,6 +118,7 @@
 <translation id="2750481671343847896">Web lokacije vam mogu prikazati upite za prijavu koji potiču od usluga identiteta.</translation>
 <translation id="2787357173144933081">Odmah pokreni višenamjenski okvir</translation>
 <translation id="2790501146643349491">Kada je postavka uključena, nedavno zatvorene web lokacije mogu završiti slanje i primanje podataka. Kada je postavka isključena, nedavno zatvorene web lokacije ne mogu završiti slanje ni primanje podataka.</translation>
+<translation id="2814830417943086299">Chrome sada prikazuje nedavne kartice na listi aplikacija i u rezultatima pretraživanja na uređaju. Možete isključiti ovo bilo kada u postavkama Chromea.</translation>
 <translation id="2822354292072154809">Jeste li sigurni da želite poništiti sva odobrenja web lokacije za <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Zahtijevaj prikaz na mobilnom uređaju</translation>
 <translation id="2870560284913253234">Web lokacija</translation>
@@ -124,7 +127,6 @@
 <translation id="2903493209154104877">Adrese</translation>
 <translation id="2910701580606108292">Web lokacije moraju tražiti dozvolu za reprodukciju zaštićenog sadržaja</translation>
 <translation id="2918484639460781603">Idi u postavke</translation>
-<translation id="2927133898344569563">Brzo pristupite predloženim karticama s liste aplikacija na uređaju i u rezultatima pretraživanja na uređaju. Možete uključiti ili isključiti ovo bilo kada u postavkama Chromea.</translation>
 <translation id="2932883381142163287">Prijavite zloupotrebu</translation>
 <translation id="2939338015096024043">Kada je postavka uključena, web lokacije mogu zatražiti da prate položaj vaše kamere i saznaju više o vašem okruženju. Kada je postavka isključena, web lokacije ne mogu pratiti položaj vaše kamere niti saznati više o vašem okruženju.</translation>
 <translation id="2968755619301702150">Preglednik certifikata</translation>
@@ -336,7 +338,6 @@
 <translation id="5968921426641056619">Unesite web adresu</translation>
 <translation id="5975083100439434680">Umanjivanje</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
-<translation id="6015145568571136419">Sada možete brzo pristupati predloženim karticama s liste aplikacija na uređaju ili u rezultatima pretraživanja na uređaju. Isključite ovo bilo kada u postavkama Chromea.</translation>
 <translation id="6015775454662021376">Upravljanje pristupom ove web lokacije vašem uređaju</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6042308850641462728">Više</translation>
@@ -559,6 +560,7 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Uključite odobrenja za aplikaciju <ph name="APP_NAME" /> u <ph name="BEGIN_LINK" />Postavkama Androida<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Trenutno zumiranje je <ph name="ZOOM_LEVEL" /> %%</translation>
+<translation id="9156722768168878035">Dozvolite Chromeu da vam prikazuje nedavne kartice na listi aplikacija i u rezultatima pretraživanja na uređaju. Možete isključiti ovo bilo kada u postavkama Chromea.</translation>
 <translation id="9162462602695099906">Ova stranica je opasna</translation>
 <translation id="947156494302904893">Web lokacije koje posjećujete mogu potvrditi da ste stvarna osoba, a ne bot</translation>
 <translation id="959682366969460160">Postanite organizirani</translation>

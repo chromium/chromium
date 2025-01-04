@@ -872,8 +872,8 @@ targets.mixin(
     swarming = targets.swarming(
         dimensions = {
             "os": "Android",
-            "device_type": "a13",
-            "device_os": "S",
+            "device_type": "a13ve",
+            "device_os": "TP1A.220624.014",
             "device_os_type": "user",
             "pool": "chromium.tests.gpu",
         },
@@ -1240,10 +1240,6 @@ targets.mixin(
     # We always need this entry to be generated since it is used by
     # //content/test/gpu/find_bad_machines.py.
     generate_pyl_entry = targets.IGNORE_UNUSED,
-    # TODO(crbug.com/40888390): The swarming dimensions for
-    # webgpu_blink_web_tests and webgpu_cts_tests on linux-code-coverage
-    # must be kept manually in sync with the appropriate mixin; currently,
-    # this one, which is used by Dawn Linux x64 Release (NVIDIA).
     swarming = targets.swarming(
         dimensions = {
             "gpu": "10de:2184-440.100",
@@ -1292,10 +1288,25 @@ targets.mixin(
     generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
-            "cpu": "arm64",
-            "mac_model": "VirtualMac2,1",
+            "cpu": "Apple_(Virtual)",
             "os": "Mac-14",
             "pool": "chromium.tests.macvm",
+        },
+    ),
+)
+
+targets.mixin(
+    name = "mac_14_vm_optional",
+    generate_pyl_entry = False,
+    swarming = targets.swarming(
+        dimensions = {
+            "cpu": "arm64",  # fallback on bare metal if no VMs are available
+            "os": "Mac-14",
+        },
+        optional_dimensions = {
+            30: {
+                "cpu": "Apple_(Virtual)",
+            },
         },
     ),
 )
@@ -1575,10 +1586,6 @@ targets.mixin(
     # We always need this entry to be generated since it is used by
     # //content/test/gpu/find_bad_machines.py.
     generate_pyl_entry = targets.IGNORE_UNUSED,
-    # TODO(crbug.com/40888390): The swarming dimensions for
-    # webgpu_blink_web_tests and webgpu_cts_tests on mac-code-coverage
-    # must be kept manually in sync with the appropriate mixin; currently,
-    # this one, which is used by Dawn Mac x64 Release (Intel).
     swarming = targets.swarming(
         dimensions = {
             "cpu": "x86-64",
@@ -2173,15 +2180,11 @@ targets.mixin(
     # We always need this entry to be generated since it is used by
     # //content/test/gpu/find_bad_machines.py.
     generate_pyl_entry = targets.IGNORE_UNUSED,
-    # TODO(crbug.com/40888390): The swarming dimensions for
-    # webgpu_blink_web_tests and webgpu_cts_tests on win10-code-coverage
-    # must be kept manually in sync with the appropriate mixin; currently,
-    # this one, which is used by Dawn Win10 x64 Release (NVIDIA).
     swarming = targets.swarming(
         dimensions = {
             "display_attached": "1",
-            "gpu": "10de:2184-27.21.14.5638",
-            "os": "Windows-10-18363",
+            "gpu": "10de:2184-31.0.15.4601",
+            "os": "Windows-10-19045",
             "pool": "chromium.tests.gpu",
         },
     ),
@@ -2252,6 +2255,10 @@ targets.mixin(
             "cpu": "arm64",
             "os": "Windows-11",
         },
+        # win-arm64 is a limited pool with ~100 bots that can be easily
+        # overloaded by few builds. Increase the expiration_sec to 2h to prevent
+        # shards from timing out.
+        expiration_sec = 7200,
     ),
 )
 
@@ -2303,12 +2310,12 @@ targets.mixin(
     generate_pyl_entry = False,
     args = [
         "--xcode-build-version",
-        "16c5023f",
+        "16c5032a",
     ],
     swarming = targets.swarming(
         named_caches = [
             swarming.cache(
-                name = "xcode_ios_16c5023f",
+                name = "xcode_ios_16c5032a",
                 path = "Xcode.app",
             ),
         ],

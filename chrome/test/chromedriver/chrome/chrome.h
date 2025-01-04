@@ -10,10 +10,11 @@
 
 #include "base/values.h"
 
-struct BrowserInfo;
 class ChromeDesktopImpl;
+class DevToolsClient;
 class Status;
 class WebView;
+struct BrowserInfo;
 
 class Chrome {
  public:
@@ -46,8 +47,7 @@ class Chrome {
   // Return number of opened tabs without updating the internal maps
   // it's needed for BiDi to prevent trying to attach to sessions when
   // classic commands are not used.
-  virtual Status GetWebViewCount(size_t* web_view_count,
-                                 bool w3c_compliant) = 0;
+  virtual int GetWebViewCount() const = 0;
 
   // Return the id of the first WebView that is a page.
   virtual Status GetWebViewIdForFirstTab(std::string* web_view_id,
@@ -120,6 +120,9 @@ class Chrome {
 
   // Quits Chrome.
   virtual Status Quit() = 0;
+
+  // Get the browser wide client.
+  virtual DevToolsClient* Client() const = 0;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_CHROME_H_

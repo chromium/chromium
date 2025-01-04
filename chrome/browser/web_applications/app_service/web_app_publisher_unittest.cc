@@ -53,11 +53,6 @@ class WebAppPublisherTest : public testing::Test {
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
-  webapps::AppId CreateShortcut(const GURL& shortcut_url,
-                                const std::string& shortcut_name) {
-    return test::InstallShortcut(profile(), shortcut_name, shortcut_url);
-  }
-
   std::string CreateWebApp(const GURL& app_url, const std::string& app_name) {
     // Create a web app entry with scope, which would be recognised
     // as normal web app in the web app system.
@@ -68,9 +63,6 @@ class WebAppPublisherTest : public testing::Test {
 
     std::string app_id =
         test::InstallWebApp(profile(), std::move(web_app_info));
-    CHECK(!WebAppProvider::GetForTest(profile())
-               ->registrar_unsafe()
-               .IsShortcutApp(app_id));
     return app_id;
   }
 

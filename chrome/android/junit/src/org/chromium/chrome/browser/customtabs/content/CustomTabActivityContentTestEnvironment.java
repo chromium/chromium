@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.CustomTabsTabModelOrchestrator;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
@@ -87,7 +88,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     @Mock public CustomTabObserver customTabObserver;
     @Mock public ActivityTabProvider activityTabProvider;
     @Mock public ActivityLifecycleDispatcher lifecycleDispatcher;
-    @Mock public CustomTabsSessionToken session;
+    @Mock public SessionHolder<CustomTabsSessionToken> session;
     @Mock public TabModelSelectorImpl tabModelSelector;
     @Mock public TabModel tabModel;
     @Mock public ReparentingTask reparentingTask;

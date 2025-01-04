@@ -57,13 +57,12 @@ bool IsSeedValid(AwVariationsSeed* seed) {
 
 static jboolean JNI_VariationsSeedLoader_ParseAndSaveSeedProto(
     JNIEnv* env,
-    const JavaParamRef<jstring>& seed_path) {
+    std::string& seed_path) {
   // Parse the proto.
   std::unique_ptr<AwVariationsSeed> seed =
       std::make_unique<AwVariationsSeed>(AwVariationsSeed::default_instance());
-  std::string native_seed_path = ConvertJavaStringToUTF8(seed_path);
 
-  int native_fd = open(native_seed_path.c_str(), O_RDONLY);
+  int native_fd = open(seed_path.c_str(), O_RDONLY);
   if (native_fd == -1) {
     PLOG(INFO) << "Failed to open file for reading.";
     return false;

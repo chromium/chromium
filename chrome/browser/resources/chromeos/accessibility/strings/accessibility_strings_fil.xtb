@@ -845,6 +845,7 @@
 <translation id="6385591741672306837">col</translation>
 <translation id="6387719785439924554">aside</translation>
 <translation id="6393014464788431702">I-disable ang lahat ng filter ng event</translation>
+<translation id="6406989068857078334">Binawasan ang bilis ng mouse, <ph name="GESTURE" /> ulit para mag-click</translation>
 <translation id="6411569524720229058">Taglagas</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{tutuldok}one{# tutuldok}other{# na tutuldok}}</translation>
@@ -1099,6 +1100,7 @@
 <translation id="8205922869661890178">Buksan ang page ng log ng developer</translation>
 <translation id="8212109599554677485">Gawing tabi-tabi ang istilo ng display</translation>
 <translation id="8215202828671303819">Maramihang pagpili</translation>
+<translation id="822316432305106615">Simulan ang pag-precision click</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />% opacity.</translation>
 <translation id="8261506727792406068">I-delete</translation>
 <translation id="826825447994856889">Panimula</translation>

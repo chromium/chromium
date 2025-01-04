@@ -53,8 +53,12 @@ AXObject* AccessibilityTest::GetAXFocusedObject() const {
   return GetAXObjectCache().FocusedObject();
 }
 
-AXObject* AccessibilityTest::GetAXObjectByElementId(const char* id) const {
+AXObject* AccessibilityTest::GetAXObjectByElementId(const char* id,
+                                                    PseudoId pseudo_id) const {
   const auto* element = GetElementById(id);
+  if (element && pseudo_id != kPseudoIdNone) {
+    return GetAXObjectCache().Get(element->GetPseudoElement(pseudo_id));
+  }
   return GetAXObjectCache().Get(element);
 }
 

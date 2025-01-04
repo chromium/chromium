@@ -845,6 +845,7 @@
 <translation id="6385591741672306837">কলাম</translation>
 <translation id="6387719785439924554">একপাশে</translation>
 <translation id="6393014464788431702">সমস্ত ইভেন্ট ফিল্টার বন্ধ করুন</translation>
+<translation id="6406989068857078334">মাউসের স্পিড কম হয়ে গেছে, ক্লিক করতে আবার <ph name="GESTURE" /></translation>
 <translation id="6411569524720229058">শরৎকাল</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="641759969622533235">{COUNT,plural, =1{কোলন}one{#টি কোলন}other{#টি কোলন}}</translation>
@@ -1099,6 +1100,7 @@
 <translation id="8205922869661890178">ডেভেলপার লগ পৃষ্ঠা খুলুন</translation>
 <translation id="8212109599554677485">ডিসপ্লে স্টাইল পাশাপাশি হিসেবে পরিবর্তন করুন।</translation>
 <translation id="8215202828671303819">একাধিক নির্বাচন</translation>
+<translation id="822316432305106615">নির্ভুল ক্লিক শুরু করুন</translation>
 <translation id="8249864170673238087"><ph name="COLOR" />, <ph name="OPACITY_PERCENTAGE" />% অস্পষ্টতা।</translation>
 <translation id="8261506727792406068">মুছুন</translation>
 <translation id="826825447994856889">পরিচয়</translation>

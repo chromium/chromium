@@ -220,7 +220,7 @@ gfx::Rect WebAppFrameToolbarView::GetFindBarBoundingBox(int contents_bottom) {
   // If LTR find bar will be right aligned so align to right edge of app menu
   // button. Otherwise it will be left aligned so align to the left edge of the
   // app menu button.
-  views::View* anchor_view = GetAnchorView(PageActionIconType::kFind);
+  views::View* anchor_view = GetAnchorView(std::nullopt);
   gfx::Rect anchor_bounds =
       anchor_view->ConvertRectToWidget(anchor_view->GetLocalBounds());
   int x_pos = 0;
@@ -242,7 +242,7 @@ views::AccessiblePaneView* WebAppFrameToolbarView::GetAsAccessiblePaneView() {
 }
 
 views::View* WebAppFrameToolbarView::GetAnchorView(
-    std::optional<PageActionIconType> type) {
+    std::optional<actions::ActionId> action_id) {
   views::View* anchor = GetAppMenuButton();
   return anchor ? anchor : this;
 }

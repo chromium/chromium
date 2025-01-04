@@ -6,7 +6,7 @@ module blink.mojom;
 
 enum ObservedFeatureType {
   kWebLock = 0,
-  kIndexedDBConnection,
+  kBlockingIndexedDBLock,
 };
 
 // An interface tied to the lifetime of a feature's usage.

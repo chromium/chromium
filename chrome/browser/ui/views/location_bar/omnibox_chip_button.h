@@ -7,12 +7,15 @@
 
 #include "base/check_is_test.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_theme.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/button/md_text_button.h"
+
+DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kOmniboxChipButtonExpanded);
 
 // UI component for chip button located in the omnibox. A button with an icon
 // and text, with rounded corners.

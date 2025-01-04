@@ -81,6 +81,12 @@ void BrowserWithTestWindowTest::SetUp() {
     ash::AshTestHelper::InitParams ash_init;
     ash_init.local_state = g_browser_process->local_state();
     ash_test_helper_.SetUp(std::move(ash_init));
+
+    // Do not auto create user pref service because it will be provided
+    // in `CreateProfile`.
+    ash_test_helper()
+        ->test_session_controller_client()
+        ->set_default_provide_pref_service(false);
   }
 #endif
 
@@ -108,20 +114,22 @@ void BrowserWithTestWindowTest::SetUp() {
   kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>();
 #endif
 
-  // Subclasses can provide their own Profile.
-  std::string profile_name = GetDefaultProfileName();
+  // Subclasses can provide their own Profile name.
+  std::optional<std::string> profile_name = GetDefaultProfileName();
+  if (profile_name) {
 #if BUILDFLAG(IS_CHROMEOS)
-  LogIn(profile_name);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  SwitchActiveUser(profile_name);
+    LogIn(*profile_name);
 #endif
+    profile_ = CreateProfile(*profile_name);
+#if BUILDFLAG(IS_CHROMEOS)
+    SwitchActiveUser(*profile_name);
 #endif
-  profile_ = CreateProfile(profile_name);
 
-  window_ = CreateBrowserWindow();
+    window_ = CreateBrowserWindow();
 
-  browser_ =
-      CreateBrowser(profile(), browser_type_, hosted_app_, window_.get());
+    browser_ =
+        CreateBrowser(profile(), browser_type_, hosted_app_, window_.get());
+  }
 }
 
 void BrowserWithTestWindowTest::TearDown() {
@@ -248,7 +256,7 @@ void BrowserWithTestWindowTest::FocusMainFrameOfActiveWebContents() {
   content::FocusWebContentsOnFrame(contents, contents->GetPrimaryMainFrame());
 }
 
-std::string BrowserWithTestWindowTest::GetDefaultProfileName() {
+std::optional<std::string> BrowserWithTestWindowTest::GetDefaultProfileName() {
   return TestingProfile::kDefaultProfileUserName;
 }
 
@@ -305,7 +313,6 @@ std::unique_ptr<Browser> BrowserWithTestWindowTest::CreateBrowser(
 
 #if BUILDFLAG(IS_CHROMEOS)
 void BrowserWithTestWindowTest::LogIn(const std::string& email) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   const AccountId account_id = AccountId::FromUserEmail(email);
   user_manager_->AddUser(account_id);
   ash_test_helper()->test_session_controller_client()->AddUserSession(email);
@@ -314,7 +321,6 @@ void BrowserWithTestWindowTest::LogIn(const std::string& email) {
       user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
       /*browser_restart=*/false,
       /*is_child=*/false);
-#endif
 }
 #endif
 
@@ -330,6 +336,9 @@ void BrowserWithTestWindowTest::OnUserProfileCreated(const std::string& email,
   // may be injected.
   auto* user_manager = user_manager::UserManager::Get();
   user_manager->OnUserProfileCreated(account_id, profile->GetPrefs());
+  ash_test_helper()
+      ->test_session_controller_client()
+      ->SetUnownedUserPrefService(account_id, profile->GetPrefs());
   auto observation =
       std::make_unique<base::ScopedObservation<Profile, ProfileObserver>>(this);
   observation->Observe(profile);

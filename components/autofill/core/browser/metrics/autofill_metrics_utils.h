@@ -87,6 +87,26 @@ DenseSet<FormTypeNameForLogging> GetAddressFormTypesForLogging(
 DenseSet<FormTypeNameForLogging> GetCreditCardFormTypesForLogging(
     const FormStructure& form);
 
+// Returns whether the caller should log autofill suggestions shown metrics.
+// Some suggestions can be "displayed" without a direct user action (i.e. typing
+// into a field or unfocusing a text area with a previous
+// `FillingProduct::kCompose` suggestion). We do not want to log suggestion
+// shown logs for them since they defeat the purpose of the metric.
+bool ShouldLogAutofillSuggestionShown(
+    AutofillSuggestionTriggerSource trigger_source);
+
+// This function encodes the integer value of a `FieldType` and the
+// boolean value of `suggestion_accepted` into a 14 bit integer.
+// The lower 2 bits are used to encode the filling acceptance and the higher 12
+// bits are used to encode the field type. This integer is used to determine
+// which bucket of metrics such as
+// "Autofill.KeyMetrics.FillingAcceptance.GroupedByFocusedFieldType"
+// should be emitted.
+// Even though `suggestion_accepted` could be encoded in only 1 bit, 2 bits are
+// used to leave room for possible other future values.
+int GetBucketForAcceptanceMetricsGroupedByFieldType(FieldType field_type,
+                                                    bool suggestion_accepted);
+
 }  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_AUTOFILL_METRICS_UTILS_H_

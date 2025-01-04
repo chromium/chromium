@@ -1241,18 +1241,34 @@ TEST_F(ElementTest, ColumnPseudoElements) {
 TEST_F(ElementTest, TheCheckMarkPseudoElement) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
-      #a-div::checkmark {
+      .checked::checkmark {
         content: "*";
       }
 
-      #target::checkmark {
-        content: "*";
+      .base-button {
+        appearance: base-select;
+      }
+
+      .base-picker::picker(select) {
+        appearance: base-select;
       }
     </style>
 
-    <div id="a-div"></div>
+    <div class="checked" id="a-div"></div>
 
-    <select id="target">
+    <select class="checked">
+      <option id="not-base-option" value="the only option"></option>
+    </select>
+
+    <select class="checked base-button">
+      <option id="base-button-option" value="the only option"></option>
+    </select>
+
+    <select class="checked base-picker">
+      <option id="base-picker-option" value="the only option"></option>
+    </select>
+
+    <select class="checked base-picker base-button" id="target">
       <option id="target-option" value="the only option"></option>
     </select>
     )HTML");
@@ -1260,16 +1276,19 @@ TEST_F(ElementTest, TheCheckMarkPseudoElement) {
   // GetPseudoElement() relies on style recalc.
   GetDocument().UpdateStyleAndLayoutTree();
 
-  Element* div = GetElementById("a-div");
-  EXPECT_EQ(nullptr, div->GetPseudoElement(kPseudoIdCheckMark));
-
-  Element* target = GetElementById("target");
-  EXPECT_EQ(nullptr, target->GetPseudoElement(kPseudoIdCheckMark));
+  auto checkmark_pseudo_for = [this](const char* id) -> PseudoElement* {
+    Element* e = GetElementById(id);
+    return e->GetPseudoElement(kPseudoIdCheckMark);
+  };
 
   // The `::checkmark` pseudo element should only be created for option
-  // elements.
-  Element* target_option = GetElementById("target-option");
-  EXPECT_NE(nullptr, target_option->GetPseudoElement(kPseudoIdCheckMark));
+  // elements in an appearance:base-select.
+  EXPECT_EQ(nullptr, checkmark_pseudo_for("a-div"));
+  EXPECT_EQ(nullptr, checkmark_pseudo_for("not-base-option"));
+  EXPECT_NE(nullptr, checkmark_pseudo_for("base-button-option"));
+  EXPECT_EQ(nullptr, checkmark_pseudo_for("base-picker-option"));
+  EXPECT_EQ(nullptr, checkmark_pseudo_for("target"));
+  EXPECT_NE(nullptr, checkmark_pseudo_for("target-option"));
 }
 
 TEST_F(ElementTest, ThePickerIconPseudoElement) {

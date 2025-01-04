@@ -29,14 +29,14 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/manage_cards_prompt_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
@@ -583,8 +583,7 @@ class SaveCardBubbleSingletonTest
 
 INSTANTIATE_TEST_SUITE_P(,
                          SaveCardBubbleSingletonTest,
-                         testing::Combine(testing::Bool(),
-                                          testing::Bool()));
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 TEST_P(SaveCardBubbleSingletonTest, OnlyOneActiveBubble) {
   base::HistogramTester histogram_tester;
@@ -1504,93 +1503,6 @@ TEST_F(SaveCardBubbleControllerImplTestWithCvCStorageAndFilling,
   EXPECT_EQ(controller()->GetExplanatoryMessage(),
             u"To pay faster next time, save your card and encrypted security "
             u"code to your device");
-}
-
-using UploadCardUpdatedDesktopUiTestData =
-    std::tuple<UpdatedDesktopUiTreatmentArm, int, int>;
-
-// Ensures that the AutofillUpstreamUpdatedUi feature displays the correct UI
-// based on which treatment arm the user is in.
-// Param of the UploadCardUpdatedDesktopUiTest:
-// -- UploadCardUpdatedDesktopUiTestData: A trio of 1) which arm of the
-//    experiment is active, 2) the expected bubble title text message ID for
-//    that arm, and 3) the expected bubble explanatory message ID for that arm.
-class UploadCardUpdatedDesktopUiTest
-    : public SaveCardBubbleControllerImplTest,
-      public testing::WithParamInterface<UploadCardUpdatedDesktopUiTestData> {
- public:
-  UploadCardUpdatedDesktopUiTest()
-      : treatment_arm_(std::get<0>(GetParam())),
-        expected_title_id_(std::get<1>(GetParam())),
-        expected_explanatory_message_id_(std::get<2>(GetParam())) {
-    std::string treatment_arm_number;
-    switch (treatment_arm_) {
-      case UpdatedDesktopUiTreatmentArm::kSecurityFocus:
-        treatment_arm_number = "1";
-        break;
-      case UpdatedDesktopUiTreatmentArm::kConvenienceFocus:
-        treatment_arm_number = "2";
-        break;
-      case UpdatedDesktopUiTreatmentArm::kEducationFocus:
-        treatment_arm_number = "3";
-        break;
-      case UpdatedDesktopUiTreatmentArm::kDefault:
-        // For the default arm, disable the experiment flag.
-        scoped_feature_list_.InitAndDisableFeature(
-            features::kAutofillUpstreamUpdatedUi);
-        return;
-    }
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kAutofillUpstreamUpdatedUi,
-        {{"autofill_upstream_updated_ui_treatment", treatment_arm_number}});
-  }
-
-  ~UploadCardUpdatedDesktopUiTest() override = default;
-
- protected:
-  const UpdatedDesktopUiTreatmentArm treatment_arm_;
-  const int expected_title_id_;
-  const int expected_explanatory_message_id_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    UploadCardUpdatedDesktopUiTest,
-    testing::Values(
-        UploadCardUpdatedDesktopUiTestData(
-            UpdatedDesktopUiTreatmentArm::kDefault,
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-            IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V4,
-#else
-            IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V3,
-#endif
-            IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3),
-        UploadCardUpdatedDesktopUiTestData(
-            UpdatedDesktopUiTreatmentArm::kSecurityFocus,
-            IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY,
-            IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY),
-        UploadCardUpdatedDesktopUiTestData(
-            UpdatedDesktopUiTreatmentArm::kConvenienceFocus,
-            IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_CONVENIENCE,
-            IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_CONVENIENCE),
-        UploadCardUpdatedDesktopUiTestData(
-            UpdatedDesktopUiTreatmentArm::kEducationFocus,
-            IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_EDUCATION,
-            IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_EDUCATION)));
-
-TEST_P(UploadCardUpdatedDesktopUiTest, ReturnsApplicableWindowTitle) {
-  ShowUploadBubble();
-  EXPECT_EQ(l10n_util::GetStringUTF16(expected_title_id_),
-            controller()->GetWindowTitle());
-}
-
-TEST_P(UploadCardUpdatedDesktopUiTest, ReturnsApplicableExplanatoryMessage) {
-  ShowUploadBubble();
-  EXPECT_EQ(l10n_util::GetStringUTF16(expected_explanatory_message_id_),
-            controller()->GetExplanatoryMessage());
 }
 
 }  // namespace

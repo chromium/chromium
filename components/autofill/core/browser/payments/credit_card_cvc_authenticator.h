@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
@@ -94,7 +94,6 @@ class CreditCardCvcAuthenticator
   // Authentication
   void Authenticate(const CreditCard& card,
                     base::WeakPtr<Requester> requester,
-                    PersonalDataManager* personal_data_manager,
                     std::optional<std::string> vcn_context_token = std::nullopt,
                     std::optional<CardUnmaskChallengeOption>
                         selected_challenge_option = std::nullopt);
@@ -139,8 +138,8 @@ class CreditCardCvcAuthenticator
   friend class CreditCardCvcAuthenticatorTest;
   friend class FormFillerTest;
 
-  // The associated autofill client. Weak reference.
-  const raw_ptr<AutofillClient> client_;
+  // The associated autofill client.
+  const raw_ref<AutofillClient> client_;
 
   // Responsible for getting the full card details, including the PAN and the
   // CVC.

@@ -40,8 +40,7 @@ SubframeTask::SubframeTask(content::RenderFrameHost* render_frame_host,
   // different processes than that of their main frame.
 }
 
-SubframeTask::~SubframeTask() {
-}
+SubframeTask::~SubframeTask() = default;
 
 void SubframeTask::UpdateTitle() {
   set_title(GetTitle());

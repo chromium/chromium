@@ -140,8 +140,7 @@ void UsbDeviceProvider::ReleaseDevice(const std::string& serial) {
   device_map_.erase(serial);
 }
 
-UsbDeviceProvider::~UsbDeviceProvider() {
-}
+UsbDeviceProvider::~UsbDeviceProvider() = default;
 
 void UsbDeviceProvider::EnumeratedDevices(SerialsCallback callback,
                                           const AndroidUsbDevices& devices) {

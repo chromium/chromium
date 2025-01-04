@@ -116,6 +116,7 @@ class PartitionAllocThreadCacheTest
       ThreadCache::RemoveTombstoneForTesting();
     }
   }
+
  protected:
   void SetUp() override {
     PartitionRoot* root = allocator_->root();

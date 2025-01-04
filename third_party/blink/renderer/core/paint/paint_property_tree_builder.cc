@@ -814,6 +814,11 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
                     CompositorElementIdNamespace::kStickyTranslation);
           }
           state.sticky_constraint = std::move(constraint);
+
+          if (object_.StyleRef().IsBottomRelativeToSafeAreaInset()) {
+            state.direct_compositing_reasons |=
+                CompositingReason::kAffectedBySafeAreaBottom;
+          }
         }
       }
 
@@ -843,8 +848,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorPositionScrollTranslation() {
       // TODO(crbug.com/1309178): We should disable composited scrolling if the
       // snapshot's scrollers do not match the current scrollers.
 
-      DCHECK(full_context_.direct_compositing_reasons &
-             CompositingReason::kAnchorPosition);
+      DCHECK(object_.GetDocument().Printing() ||
+             (full_context_.direct_compositing_reasons &
+              CompositingReason::kAnchorPosition));
       state.direct_compositing_reasons = CompositingReason::kAnchorPosition;
 
       // TODO(crbug.com/1309178): Not using GetCompositorElementId() here
@@ -3456,16 +3462,16 @@ void PaintPropertyTreeBuilder::InitPaintProperties() {
     fragment.EnsureId();
     fragment.EnsurePaintProperties();
   } else if (auto* properties = fragment.PaintProperties()) {
-    if (properties->HasTransformNode()) {
+    if (properties->HasNode<TransformPaintPropertyNodeOrAlias>()) {
       UpdatePropertyChange(properties_changed_.transform_changed,
                            PaintPropertyChangeType::kNodeAddedOrRemoved);
       properties_changed_.transform_change_is_scroll_translation_only = false;
     }
-    if (properties->HasClipNode()) {
+    if (properties->HasNode<ClipPaintPropertyNodeOrAlias>()) {
       UpdatePropertyChange(properties_changed_.clip_changed,
                            PaintPropertyChangeType::kNodeAddedOrRemoved);
     }
-    if (properties->HasEffectNode()) {
+    if (properties->HasNode<EffectPaintPropertyNodeOrAlias>()) {
       UpdatePropertyChange(properties_changed_.effect_changed,
                            PaintPropertyChangeType::kNodeAddedOrRemoved);
     }

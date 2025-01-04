@@ -321,8 +321,9 @@ class ArcAppShelfBrowserTest : public extensions::ExtensionBrowserTest {
   }
 
   void StopInstance() {
-    if (app_instance_)
+    if (app_instance_) {
       arc_brige_service()->app()->CloseInstance(app_instance_.get());
+    }
     arc_session_manager()->Shutdown();
   }
 

@@ -11,6 +11,7 @@ package lens;
 import "lens_overlay_client_context.proto";
 import "lens_overlay_cluster_info.proto";
 import "lens_overlay_deep_gleam_data.proto";
+import "lens_overlay_document.proto";
 import "lens_overlay_image_crop.proto";
 import "lens_overlay_image_data.proto";
 import "lens_overlay_interaction_request_metadata.proto";
@@ -77,7 +78,7 @@ message LensOverlayInteractionResponse {
   reserved 1, 2;
 }
 
-// Next ID: 7
+// Next ID: 8
 message Payload {
   // The type of the request the payload is sent in.
   enum RequestType {
@@ -85,6 +86,8 @@ message Payload {
     REQUEST_TYPE_DEFAULT = 0;
     // Request is for PDF.
     REQUEST_TYPE_PDF = 1;
+    // Request is for partial PDF upload.
+    REQUEST_TYPE_EARLY_PARTIAL_PDF = 3;
     // Request is for webpage.
     REQUEST_TYPE_WEBPAGE = 2;
   }
@@ -106,6 +109,10 @@ message Payload {
 
   // The page url this request was made on.
   string page_url = 5;
+
+  // The partially parsed PDF document. Used to get early suggest signals. This
+  // is only set for REQUEST_TYPE_EARLY_PARTIAL_PDF.
+  LensOverlayDocument partial_pdf_document = 7;
 
   reserved 1;
 }

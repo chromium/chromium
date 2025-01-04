@@ -138,6 +138,14 @@ def GenerateAutofillDataUtilizationByFieldType(field_types):
   return result
 
 
+def GenerateFillingAcceptanceByFieldType(server_field_types):
+  result = {}
+  for enum_id, enum_name in server_field_types.items():
+    result[4 * enum_id + 0] = f'{enum_name}: Ignored'
+    result[4 * enum_id + 1] = f'{enum_name}: Accepted'
+  return result
+
+
 if __name__ == '__main__':
   server_field_types = ReadFieldTypes(FIELD_TYPES_PATH)
 
@@ -174,4 +182,10 @@ if __name__ == '__main__':
       'tools/metrics/histograms/metadata/autofill/enums.xml',
       'AutofillDataUtilizationByFieldType',
       GenerateAutofillDataUtilizationByFieldType(server_field_types),
+      FIELD_TYPES_PATH, os.path.basename(__file__))
+
+  update_histogram_enum.UpdateHistogramFromDict(
+      'tools/metrics/histograms/metadata/autofill/enums.xml',
+      'FillingAcceptanceByFieldType',
+      GenerateFillingAcceptanceByFieldType(server_field_types),
       FIELD_TYPES_PATH, os.path.basename(__file__))

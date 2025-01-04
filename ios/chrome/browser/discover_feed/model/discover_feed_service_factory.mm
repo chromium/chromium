@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 
-#import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_configuration.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
@@ -20,15 +18,15 @@
 // static
 DiscoverFeedService* DiscoverFeedServiceFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<DiscoverFeedService*>(
-      GetInstance()->GetServiceForBrowserState(profile, /*create=*/true));
+  return GetInstance()->GetServiceForProfileAs<DiscoverFeedService>(
+      profile, /*create=*/true);
 }
 
 // static
 DiscoverFeedService* DiscoverFeedServiceFactory::GetForProfileIfExists(
     ProfileIOS* profile) {
-  return static_cast<DiscoverFeedService*>(
-      GetInstance()->GetServiceForBrowserState(profile, /*create=*/false));
+  return GetInstance()->GetServiceForProfileAs<DiscoverFeedService>(
+      profile, /*create=*/false);
 }
 
 // static
@@ -38,9 +36,7 @@ DiscoverFeedServiceFactory* DiscoverFeedServiceFactory::GetInstance() {
 }
 
 DiscoverFeedServiceFactory::DiscoverFeedServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "DiscoverFeedService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("DiscoverFeedService") {
   DependsOn(AuthenticationServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(ios::TemplateURLServiceFactory::GetInstance());

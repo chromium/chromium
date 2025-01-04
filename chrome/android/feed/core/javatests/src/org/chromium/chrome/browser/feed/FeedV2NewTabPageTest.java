@@ -25,7 +25,10 @@ import static org.mockito.Mockito.when;
 import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
 import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.pm.ActivityInfo;
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -60,9 +63,11 @@ import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
@@ -96,7 +101,11 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
+import org.chromium.content_public.browser.test.util.TouchCommon;
+import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -105,6 +114,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Tests for {@link NewTabPage}. Other tests can be found in {@link
@@ -256,6 +266,97 @@ public class FeedV2NewTabPageTest {
                             Matchers.hasEntry("kLoadedFromNetwork", 1));
                 });
         FeedV2TestHelper.waitForRecyclerItems(MIN_ITEMS_AFTER_LOAD, getRecyclerView());
+    }
+
+    /**
+     * Test that the feed has been scrolled to target position at the moment NTP finishes fading in
+     * when navigating back from webpage.
+     */
+    @Test
+    @MediumTest
+    @Feature({"FeedNewTabPage"})
+    @CommandLineFlags.Add({
+        "enable-features=BackForwardTransitions",
+        "force-prefers-no-reduced-motion",
+        // Resampling can make scroll offsets non-deterministic so turn it off.
+        "disable-features=ResamplingScrollEvents",
+        "hide-scrollbars"
+    })
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.Q,
+            message = "crbug.com/1276402 crbug.com/345352689")
+    public void testNavigateBackToNTPWithFeeds() throws TimeoutException, InterruptedException {
+        openNewTabPage();
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            FeedV2TestHelper.getFeedUserActionsHistogramValues(),
+                            Matchers.hasEntry("kOpenedFeedSurface", 1));
+                    Criteria.checkThat(
+                            FeedV2TestHelper.getLoadStreamStatusInitialValues(),
+                            Matchers.hasEntry("kLoadedFromNetwork", 1));
+                });
+        FeedV2TestHelper.waitForRecyclerItems(MIN_ITEMS_AFTER_LOAD, getRecyclerView());
+        WebContents webContents = mActivityTestRule.getWebContents();
+
+        onView(withId(R.id.feed_stream_recycler_view))
+                .perform(RecyclerViewActions.scrollToPosition(MIN_ITEMS_AFTER_LOAD));
+
+        mActivityTestRule.loadUrl(mTestServer.getURL("/chrome/test/data/android/blue.html"));
+
+        WebContentsUtils.waitForCopyableViewInWebContents(webContents);
+
+        float width_px =
+                webContents.getWidth() * Coordinates.createFor(webContents).getDeviceScaleFactor();
+
+        // Drag far enough to cause the back gesture to invoke.
+        float fromEdgeStart = 5.0f;
+        float dragDistance = width_px - 10.0f;
+
+        // from left edge EDGE_LEFT
+        float fromX = fromEdgeStart;
+        float toX = fromEdgeStart + dragDistance;
+
+        TouchCommon.performWallClockDrag(
+                mActivityTestRule.getActivity(),
+                fromX,
+                toX,
+                /* fromY= */ 400.0f,
+                /* toY= */ 400.0f,
+                /* duration= */ 2000,
+                /* dispatchIntervalMs= */ 60,
+                /* preventFling= */ true);
+
+        CriteriaHelper.pollInstrumentationThread(() -> mTab.getNativePage() != null);
+        NewTabPage ntp = (NewTabPage) mTab.getNativePage();
+
+        CriteriaHelper.pollInstrumentationThread(
+                () -> ntp.getSmoothTransitionDelegateForTesting() != null);
+        CallbackHelper callbackHelper = new CallbackHelper();
+        ((NewTabPage.NtpSmoothTransitionDelegate) ntp.getSmoothTransitionDelegateForTesting())
+                .getAnimatorForTesting()
+                .addListener(
+                        new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                Assert.assertEquals(
+                                        "Feed has been scrolled to target position when NTP"
+                                                + " finished faded out",
+                                        getRecyclerView().getScrollState(),
+                                        RecyclerView.SCROLL_STATE_IDLE);
+                                Assert.assertEquals(
+                                        "Feed has been scrolled to target position when NTP"
+                                                + " finished faded out",
+                                        Integer.valueOf(
+                                                FeedSurfaceProvider.RestoringState.RESTORED),
+                                        ntp.getCoordinatorForTesting()
+                                                .getRestoringStateSupplier()
+                                                .get());
+                                callbackHelper.notifyCalled();
+                            }
+                        });
+        callbackHelper.waitForNext();
     }
 
     @Test

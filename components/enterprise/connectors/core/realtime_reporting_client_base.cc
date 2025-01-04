@@ -5,7 +5,6 @@
 #include "components/enterprise/connectors/core/realtime_reporting_client_base.h"
 
 #include "base/i18n/time_formatting.h"
-#include "base/metrics/histogram_functions_internal_overloads.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"

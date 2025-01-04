@@ -4,7 +4,10 @@
 
 package org.chromium.components.feature_engagement;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** EventConstants contains the String name of all in-product help events. */
+@NullMarked
 public final class EventConstants {
     /** The page load has failed and user has landed on an offline dino page. */
     public static final String USER_HAS_SEEN_DINO = "user_has_seen_dino";

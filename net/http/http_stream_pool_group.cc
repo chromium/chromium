@@ -16,8 +16,10 @@
 #include "net/http/http_stream_pool_attempt_manager.h"
 #include "net/http/http_stream_pool_handle.h"
 #include "net/log/net_log_event_type.h"
+#include "net/log/net_log_with_source.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/stream_socket.h"
+#include "net/socket/stream_socket_close_reason.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 
 namespace net {
@@ -25,7 +27,8 @@ namespace net {
 namespace {
 
 bool IsNegotiatedProtocolTextBased(NextProto next_proto) {
-  return next_proto == kProtoUnknown || next_proto == kProtoHTTP11;
+  return next_proto == NextProto::kProtoUnknown ||
+         next_proto == NextProto::kProtoHTTP11;
 }
 
 void RecordNetLogClosingSocket(const StreamSocket& stream_socket,
@@ -75,7 +78,6 @@ HttpStreamPool::Group::IdleStreamSocket::~IdleStreamSocket() = default;
 bool HttpStreamPool::Group::PausedJobComparator::operator()(Job* a,
                                                             Job* b) const {
   if (a->create_time() == b->create_time()) {
-    // TODO(crbug.com/381742472): Add a test to cover this case.
     return a < b;
   }
   return a->create_time() < b->create_time();
@@ -116,9 +118,9 @@ std::unique_ptr<HttpStreamPool::Job> HttpStreamPool::Group::CreateJob(
     Job::Delegate* delegate,
     quic::ParsedQuicVersion quic_version,
     NextProto expected_protocol,
-    const NetLogWithSource& net_log) {
+    const NetLogWithSource& request_net_log) {
   return std::make_unique<Job>(delegate, this, quic_version, expected_protocol,
-                               net_log);
+                               request_net_log);
 }
 
 bool HttpStreamPool::Group::CanStartJob(Job* job) {
@@ -135,6 +137,7 @@ bool HttpStreamPool::Group::CanStartJob(Job* job) {
 }
 
 void HttpStreamPool::Group::OnJobComplete(Job* job) {
+  paused_jobs_.erase(job);
   notified_paused_jobs_.erase(job);
 
   if (attempt_manager_) {
@@ -145,9 +148,11 @@ void HttpStreamPool::Group::OnJobComplete(Job* job) {
   }
 }
 
-int HttpStreamPool::Group::Preconnect(size_t num_streams,
-                                      quic::ParsedQuicVersion quic_version,
-                                      CompletionOnceCallback callback) {
+int HttpStreamPool::Group::Preconnect(
+    size_t num_streams,
+    quic::ParsedQuicVersion quic_version,
+    const NetLogWithSource& job_controller_net_log,
+    CompletionOnceCallback callback) {
   if (ActiveStreamSocketCount() >= num_streams) {
     return OK;
   }
@@ -156,12 +161,12 @@ int HttpStreamPool::Group::Preconnect(size_t num_streams,
   // TODO(crbug.com/381742472): Consider resuming this preconnect after the
   // current failing attempt manager completes.
   if (IsFailing()) {
-    return attempt_manager_->error_to_notify();
+    return attempt_manager_->final_error_to_notify_jobs();
   }
 
   EnsureAttemptManager();
-  return attempt_manager_->Preconnect(num_streams, quic_version,
-                                      std::move(callback));
+  return attempt_manager_->Preconnect(
+      num_streams, quic_version, job_controller_net_log, std::move(callback));
 }
 
 std::unique_ptr<HttpStreamPoolHandle> HttpStreamPool::Group::CreateHandle(
@@ -171,10 +176,19 @@ std::unique_ptr<HttpStreamPoolHandle> HttpStreamPool::Group::CreateHandle(
   ++handed_out_stream_count_;
   pool_->IncrementTotalHandedOutStreamCount();
 
+  net_log_.AddEvent(NetLogEventType::HTTP_STREAM_POOL_GROUP_HANDLE_CREATED,
+                    [&] {
+                      base::Value::Dict dict;
+                      socket->NetLog().source().AddToEventParameters(dict);
+                      dict.Set("reuse_type", static_cast<int>(reuse_type));
+                      return dict;
+                    });
+
   auto handle = std::make_unique<HttpStreamPoolHandle>(
       weak_ptr_factory_.GetWeakPtr(), std::move(socket), generation_);
   handle->set_connect_timing(connect_timing);
   handle->set_reuse_type(reuse_type);
+
   return handle;
 }
 
@@ -322,7 +336,7 @@ HttpStreamPool::Group::GetPriorityIfStalledByPoolLimit() const {
 
 void HttpStreamPool::Group::FlushWithError(
     int error,
-    StreamCloseReason attempt_cancel_reason,
+    StreamSocketCloseReason attempt_cancel_reason,
     std::string_view net_log_close_reason_utf8) {
   // Refresh() may delete this. Get a weak pointer to this and call CancelJobs()
   // only when this is still alive.
@@ -334,7 +348,7 @@ void HttpStreamPool::Group::FlushWithError(
 }
 
 void HttpStreamPool::Group::Refresh(std::string_view net_log_close_reason_utf8,
-                                    StreamCloseReason cancel_reason) {
+                                    StreamSocketCloseReason cancel_reason) {
   // TODO(crbug.com/381742472): Should we do anything for paused
   // jobs/preconnects?
   ++generation_;

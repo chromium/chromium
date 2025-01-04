@@ -13,14 +13,14 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/optional_ref.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
 
 namespace autofill {
@@ -42,6 +42,8 @@ struct CreditCardSuggestionSummary {
   bool with_offer = false;
   // True if any card has a saved CVC.
   bool with_cvc = false;
+  // True if any card is card info retrieval enrolled.
+  bool with_card_info_retrieval_enrolled = false;
   // Contains card metadata related information used for metrics logging.
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
   // Contains information regarding the ranking of suggestions and is used for

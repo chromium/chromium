@@ -34,8 +34,6 @@ class PolicyRecommendationRestorerTest : public NoSessionAshTestBase {
             /*managed_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
             /*supervised_user_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
             /*extension_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
-            /*standalone_browser_prefs=*/
-            base::MakeRefCounted<TestingPrefStore>(),
             /*user_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
             recommended_prefs_,
             base::MakeRefCounted<user_prefs::PrefRegistrySyncable>(),

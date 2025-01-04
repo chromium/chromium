@@ -44,7 +44,7 @@ BackgroundContents::BackgroundContents(
 
   WebContents::CreateParams create_params(profile_, std::move(site_instance));
   create_params.opener_render_process_id =
-      opener ? opener->GetProcess()->GetID() : MSG_ROUTING_NONE;
+      opener ? opener->GetProcess()->GetDeprecatedID() : MSG_ROUTING_NONE;
   create_params.opener_render_frame_id =
       opener ? opener->GetRoutingID() : MSG_ROUTING_NONE;
 

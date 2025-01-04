@@ -9,6 +9,7 @@ import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasData;
 import static androidx.test.espresso.intent.matcher.UriMatchers.hasHost;
+import static androidx.test.espresso.intent.matcher.UriMatchers.hasParamWithValue;
 import static androidx.test.espresso.intent.matcher.UriMatchers.hasPath;
 
 import static org.hamcrest.CoreMatchers.allOf;
@@ -84,6 +85,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
     private static final String LEARN_MORE_LINK = "learn-more-link";
     private static final String SUPPORT_CENTER_HOST = "support.google.com";
     private static final String SUPPORT_CENTER_PATH = "/families";
+    private static final String SUPPORT_CENTER_PLINK = "content_blocked_webview";
 
     private static String makeTestPage(String title, @Nullable String iFrameUrl) {
         StringBuilder sb = new StringBuilder();
@@ -215,11 +217,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add(
-            "disable-features="
-                    + AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK
-                    + ","
-                    + AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_DETECTION)
+    @CommandLineFlags.Add("disable-features=" + AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK)
     public void testDisallowedSiteIsLoadedFeatureOff() throws Throwable {
         String embeddedUrl = setUpWebPage(MATURE_SITE_IFRAME_PATH, MATURE_SITE_IFRAME_TITLE, null);
         String requestUrl = setUpWebPage(MATURE_SITE_PATH, MATURE_SITE_TITLE, embeddedUrl);
@@ -285,7 +283,8 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
                     allOf(
                             hasAction(Intent.ACTION_VIEW),
                             hasData(hasHost(SUPPORT_CENTER_HOST)),
-                            hasData(hasPath(SUPPORT_CENTER_PATH))));
+                            hasData(hasPath(SUPPORT_CENTER_PATH)),
+                            hasData(hasParamWithValue("p", SUPPORT_CENTER_PLINK))));
         } finally {
             Intents.release();
         }
@@ -416,8 +415,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
     }
 
     private void resetNeedsRestriction(boolean value) throws Exception {
-        if (!AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_DETECTION)
-                && !AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK)) {
+        if (!AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK)) {
             // Nothing we need to do if the feature is disabled.
             return;
         }

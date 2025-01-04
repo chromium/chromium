@@ -599,7 +599,7 @@ void ThreatDetails::OnReceivedThreatDOMDetails(
   }
 
   // Lookup the FrameTreeNode ID of any child frames in the list of DOM nodes.
-  const int sender_process_id = sender_rfh->GetProcess()->GetID();
+  const int sender_process_id = sender_rfh->GetProcess()->GetDeprecatedID();
   const content::FrameTreeNodeId sender_frame_tree_node_id =
       sender_rfh->GetFrameTreeNodeId();
   KeyToFrameTreeIdMap child_frame_tree_map;

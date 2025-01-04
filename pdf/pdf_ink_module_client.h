@@ -10,7 +10,7 @@
 #include "pdf/buildflags.h"
 #include "pdf/page_orientation.h"
 #include "pdf/pdf_ink_ids.h"
-#include "third_party/ink/src/ink/geometry/modeled_shape.h"
+#include "third_party/ink/src/ink/geometry/partitioned_mesh.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -31,7 +31,8 @@ class PdfInkModuleClient {
  public:
   // Key: ID to identify a shape.
   // Value: The Ink shape.
-  using PageV2InkPathShapesMap = std::map<InkModeledShapeId, ink::ModeledShape>;
+  using PageV2InkPathShapesMap =
+      std::map<InkModeledShapeId, ink::PartitionedMesh>;
 
   // Key: 0-based page index.
   // Value: Map of shapes on the page.

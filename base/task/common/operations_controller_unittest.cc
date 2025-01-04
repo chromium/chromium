@@ -124,8 +124,9 @@ class TestThread : public SimpleThread {
       for (int i = 0; i < 100; ++i) {
         tokens.push_back(controller_->TryBeginOperation());
       }
-      if (!was_started)
+      if (!was_started) {
         continue;
+      }
       if (ranges::any_of(tokens, [](const auto& token) { return !token; })) {
         break;
       }

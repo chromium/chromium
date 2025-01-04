@@ -17,7 +17,6 @@
 #import "base/task/single_thread_task_runner.h"
 #import "base/task/thread_pool.h"
 #import "base/test/test_file_util.h"
-#import "components/keyed_service/core/service_access_type.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #import "components/profile_metrics/browser_profile_type.h"

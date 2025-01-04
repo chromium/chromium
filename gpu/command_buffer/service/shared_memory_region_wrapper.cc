@@ -122,9 +122,9 @@ bool SharedMemoryRegionWrapper::IsValid() const {
   return mapping_.IsValid();
 }
 
-uint8_t* SharedMemoryRegionWrapper::GetMemory(int plane_index) const {
+const uint8_t* SharedMemoryRegionWrapper::GetMemory(int plane_index) const {
   DCHECK(IsValid());
-  return mapping_.GetMemoryAs<uint8_t>() + planes_[plane_index].offset;
+  return mapping_.GetMemoryAs<const uint8_t>() + planes_[plane_index].offset;
 }
 
 size_t SharedMemoryRegionWrapper::GetStride(int plane_index) const {

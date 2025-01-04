@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -44,6 +45,7 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
@@ -61,6 +63,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "services/device/public/mojom/mtp_storage_info.mojom.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace file_manager {
@@ -268,22 +271,21 @@ class VolumeManagerTest : public testing::Test {
   // Helper class that contains per-profile objects.
   class ProfileEnvironment {
    public:
-    ProfileEnvironment(std::unique_ptr<TestingProfile> profile,
-                       DiskMountManager* disk_manager)
-        : profile_(std::move(profile)),
+    ProfileEnvironment(TestingProfile* profile, DiskMountManager* disk_manager)
+        : profile_(profile),
           extension_registry_(
-              std::make_unique<extensions::ExtensionRegistry>(profile_.get())),
+              std::make_unique<extensions::ExtensionRegistry>(profile_)),
           file_system_provider_service_(
               std::make_unique<ash::file_system_provider::Service>(
-                  profile_.get(),
+                  profile_,
                   extension_registry_.get())),
           drive_integration_service_(
               std::make_unique<drive::DriveIntegrationService>(
-                  profile_.get(),
+                  profile_,
                   std::string(),
                   base::FilePath())),
           volume_manager_(std::make_unique<VolumeManager>(
-              profile_.get(),
+              profile_,
               drive_integration_service_.get(),  // DriveIntegrationService
               chromeos::PowerManagerClient::Get(),
               disk_manager,
@@ -299,7 +301,7 @@ class VolumeManagerTest : public testing::Test {
       extension_registry_->Shutdown();
     }
 
-    Profile* profile() const { return profile_.get(); }
+    TestingProfile* profile() const { return profile_; }
     VolumeManager* volume_manager() const { return volume_manager_.get(); }
 
    private:
@@ -309,7 +311,7 @@ class VolumeManagerTest : public testing::Test {
       std::move(callback).Run(device::mojom::MtpStorageInfo::New());
     }
 
-    std::unique_ptr<TestingProfile> profile_;
+    const raw_ptr<TestingProfile> profile_;
     std::unique_ptr<extensions::ExtensionRegistry> extension_registry_;
     std::unique_ptr<ash::file_system_provider::Service>
         file_system_provider_service_;
@@ -326,6 +328,10 @@ class VolumeManagerTest : public testing::Test {
     disk_mount_manager_ = std::make_unique<FakeDiskMountManager>();
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
 
+    testing_profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(testing_profile_manager_->SetUp());
+
     primary_profile_ = std::make_unique<ProfileEnvironment>(
         AddLoggedInUser(AccountId::FromUserEmail("primary@test")),
         disk_mount_manager_.get());
@@ -334,6 +340,7 @@ class VolumeManagerTest : public testing::Test {
   void TearDown() override {
     task_environment_.RunUntilIdle();
     primary_profile_.reset();
+    testing_profile_manager_->DeleteAllTestingProfiles();
 
     disk_mount_manager_.reset();
     chromeos::PowerManagerClient::Shutdown();
@@ -344,19 +351,18 @@ class VolumeManagerTest : public testing::Test {
     storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
   }
 
-  virtual std::unique_ptr<TestingProfile> AddLoggedInUser(
-      const AccountId& account_id) {
+  virtual TestingProfile* AddLoggedInUser(const AccountId& account_id) {
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
-    std::unique_ptr<TestingProfile> profile =
-        std::make_unique<TestingProfile>();
+    TestingProfile* profile = testing_profile_manager_->CreateTestingProfile(
+        account_id.GetUserEmail());
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-        fake_user_manager_->FindUserAndModify(account_id), profile.get());
+        fake_user_manager_->FindUserAndModify(account_id), profile);
     return profile;
   }
 
   // Accessors to the primary profile.
-  Profile* profile() const { return primary_profile_->profile(); }
+  TestingProfile* profile() const { return primary_profile_->profile(); }
   VolumeManager* volume_manager() const {
     return primary_profile_->volume_manager();
   }
@@ -367,6 +373,7 @@ class VolumeManagerTest : public testing::Test {
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
   std::unique_ptr<ProfileEnvironment> primary_profile_;
+  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
 };
 
 TEST(VolumeTest, CreateForRemovable) {
@@ -1331,9 +1338,38 @@ TEST_F(VolumeManagerTest, OnRenameEvent_CompletedFailed) {
   volume_manager()->RemoveObserver(&observer);
 }
 
+TEST_F(VolumeManagerTest, VolumeManagerInitializeForMultiProfiles) {
+  auto secondary_profile = std::make_unique<ProfileEnvironment>(
+      AddLoggedInUser(AccountId::FromUserEmail("secondary@test")),
+      disk_mount_manager_.get());
+
+  volume_manager()->Initialize();
+  secondary_profile->volume_manager()->Initialize();
+
+  // Different profiles' shared cache and download volumes
+  // should have different `mount_name`, see crbug.com/365173555.
+  std::vector<storage::MountPoints::MountPointInfo> mount_point_infos;
+  storage::ExternalMountPoints::GetSystemInstance()->AddMountPointInfosTo(
+      &mount_point_infos);
+
+  std::unordered_set<std::string> mount_point_names;
+  for (const auto& mount_point_info : mount_point_infos) {
+    mount_point_names.insert(mount_point_info.name);
+  }
+
+  ASSERT_THAT(mount_point_names, testing::SizeIs(4));
+  EXPECT_THAT(
+      mount_point_names,
+      testing::UnorderedElementsAre(
+          util::GetDownloadsMountPointName(profile()),
+          util::GetDownloadsMountPointName(secondary_profile->profile()),
+          util::GetShareCacheMountPointName(profile()),
+          util::GetShareCacheMountPointName(secondary_profile->profile())));
+}
+
 // Test fixture for VolumeManager tests with ARC enabled.
 class VolumeManagerArcTest : public VolumeManagerTest {
- public:
+ protected:
   void SetUp() override {
     scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
         ash::switches::kArcAvailability, "officially-supported");
@@ -1347,18 +1383,17 @@ class VolumeManagerArcTest : public VolumeManagerTest {
     VolumeManagerTest::TearDown();
   }
 
-  std::unique_ptr<TestingProfile> AddLoggedInUser(
-      const AccountId& account_id) override {
-    auto profile = VolumeManagerTest::AddLoggedInUser(account_id);
+  TestingProfile* AddLoggedInUser(const AccountId& account_id) override {
+    TestingProfile* profile = VolumeManagerTest::AddLoggedInUser(account_id);
 
     // Set up an Arc service manager with a fake file system. This must be done
     // before initializing VolumeManager() to make its dependency
     // DocumentsProviderRootManager work.
     CHECK(!arc_service_manager_);
     arc_service_manager_ = std::make_unique<arc::ArcServiceManager>();
-    arc_service_manager_->set_browser_context(profile.get());
+    arc_service_manager_->set_browser_context(profile);
     arc::ArcFileSystemOperationRunner::GetFactory()->SetTestingFactoryAndUse(
-        profile.get(),
+        profile,
         base::BindRepeating(&CreateFileSystemOperationRunnerForTesting));
     arc_service_manager_->arc_bridge_service()->file_system()->SetInstance(
         &file_system_instance_);
@@ -1463,9 +1498,6 @@ TEST_F(VolumeManagerArcTest, ShouldAlwaysMountAndroidVolumesInFilesForTesting) {
 // Tests VolumeManager with the LocalUserFilesAllowed policy.
 class VolumeManagerLocalUserFilesTest : public VolumeManagerArcTest {
  public:
-  VolumeManagerLocalUserFilesTest()
-      : scoped_testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
-
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {features::kSkyVault, features::kSkyVaultV2}, {});
@@ -1475,12 +1507,12 @@ class VolumeManagerLocalUserFilesTest : public VolumeManagerArcTest {
   void TearDown() override { VolumeManagerArcTest::TearDown(); }
 
   void SetLocalUserFilesPolicy(bool allowed) {
-    scoped_testing_local_state_.Get()->SetBoolean(prefs::kLocalUserFilesAllowed,
-                                                  allowed);
+    testing_profile_manager_->local_state()->Get()->SetBoolean(
+        prefs::kLocalUserFilesAllowed, allowed);
   }
 
   void SetLocalUserFilesMigrationPolicy(const std::string& destination) {
-    scoped_testing_local_state_.Get()->SetString(
+    testing_profile_manager_->local_state()->Get()->SetString(
         prefs::kLocalUserFilesMigrationDestination, destination);
     volume_manager()->OnMigrationSucceededForTesting();
   }
@@ -1510,7 +1542,6 @@ class VolumeManagerLocalUserFilesTest : public VolumeManagerArcTest {
   }
 
  private:
-  ScopedTestingLocalState scoped_testing_local_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

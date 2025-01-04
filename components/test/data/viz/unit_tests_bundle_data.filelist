@@ -267,7 +267,7 @@
 //components/test/data/viz/translucent_rectangles.png
 //components/test/data/viz/trilinear_filtering.png
 //components/test/data/viz/trilinear_filtering_angle_metal.png
-//components/test/data/viz/trilinear_filtering_skia_vk.png
+//components/test/data/viz/trilinear_filtering_skia_graphite.png
 //components/test/data/viz/video_capture/overlay_clips_ll.png
 //components/test/data/viz/video_capture/overlay_clips_ll_contentscaled.png
 //components/test/data/viz/video_capture/overlay_clips_ll_subregion.png

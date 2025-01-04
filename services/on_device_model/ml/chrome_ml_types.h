@@ -28,6 +28,21 @@ enum class Token {
 // current library version.
 using InputPiece = std::variant<Token, std::string, SkBitmap, bool>;
 
+// Options for specifying the performance characteristics of the model to load.
+enum class ModelPerformanceHint {
+  kHighestQuality,
+  kFastestInference,
+};
+
+// Type of the backend to run the model.
+enum ModelBackendType {
+  // The default WebGPU backend.
+  kGpuBackend = 0,
+  // The APU accelerator backend. Only available on devices with APU, and need
+  // special APU model files.
+  kApuBackend = 1,
+};
+
 }  // namespace ml
 
 #endif  // SERVICES_ON_DEVICE_MODEL_ML_CHROME_ML_TYPES_H_

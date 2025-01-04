@@ -15,7 +15,6 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_features.h"
@@ -385,7 +384,7 @@ TEST_F(WebContentsViewAuraTest, MAYBE_DragDropFilesOriginateFromRenderer) {
 
   // Simulate the drag originating in the renderer process, in which case
   // any file data should be filtered out (anchor drag scenario) except in
-  // CHROMEOS_ASH.
+  // CHROMEOS.
   data->MarkRendererTaintedFromOrigin(url::Origin());
 
   ui::DropTargetEvent event(*data.get(), kClientPt, kScreenPt,
@@ -405,7 +404,7 @@ TEST_F(WebContentsViewAuraTest, MAYBE_DragDropFilesOriginateFromRenderer) {
   EXPECT_EQ(string_data, view->current_drag_data_->text);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ASSERT_FALSE(view->current_drag_data_->filenames.empty());
 #else
   ASSERT_TRUE(view->current_drag_data_->filenames.empty());
@@ -437,8 +436,8 @@ TEST_F(WebContentsViewAuraTest, MAYBE_DragDropFilesOriginateFromRenderer) {
   EXPECT_EQ(string_data, drop_complete_data_->drop_data.text);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // CHROMEOS_ASH never filters out files from a drop, even if the drag
+#if BUILDFLAG(IS_CHROMEOS)
+  // CHROMEOS never filters out files from a drop, even if the drag
   // originated from a renderer, because otherwise, it breaks the Files app.
   ASSERT_FALSE(drop_complete_data_->drop_data.filenames.empty());
 #else
@@ -768,7 +767,7 @@ TEST_F(WebContentsViewAuraTest, DragDropUrlData) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(WebContentsViewAuraTest, StartDragging) {
   const char kGmailUrl[] = "http://mail.google.com/";
@@ -799,7 +798,7 @@ TEST_F(WebContentsViewAuraTest, StartDragging) {
   EXPECT_EQ(*(exchange_data->GetSource()->GetURL()), GURL(kGmailUrl));
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(WebContentsViewAuraTest,
        RejectDragFromPrivilegedWebContentsToNonPrivilegedWebContents) {

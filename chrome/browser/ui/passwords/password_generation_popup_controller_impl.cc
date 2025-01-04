@@ -20,13 +20,14 @@
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/passwords/password_generation_popup_controller.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_observer.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_view.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -209,7 +210,7 @@ bool PasswordGenerationPopupControllerImpl::PossiblyAcceptSelectedElement() {
       PasswordAccepted();
       return true;
     case PasswordGenerationPopupElement::kNudgePasswordCancelButton:
-      HideImpl();
+      PasswordRejected();
       return true;
     default:
       return false;
@@ -255,6 +256,14 @@ void PasswordGenerationPopupControllerImpl::PasswordAccepted() {
     driver_->FocusNextFieldAfterPasswords();
     weak_this->HideImpl();
   }
+}
+
+void PasswordGenerationPopupControllerImpl::PasswordRejected() {
+  CHECK_EQ(state_, kOfferGeneration);
+  if (driver_) {
+    driver_->GeneratedPasswordRejected();
+  }
+  HideImpl();
 }
 
 void PasswordGenerationPopupControllerImpl::GeneratePasswordValue(

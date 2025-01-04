@@ -4,8 +4,11 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/regular/regular_grid_coordinator.h"
 
+#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -138,10 +141,15 @@
   self.gridViewController = gridViewController;
 
   _mediator = [[RegularGridMediator alloc]
-      initWithModeHolder:self.modeHolder
-        messagingService:collaboration::messaging::
-                             MessagingBackendServiceFactory::GetForProfile(
-                                 profile)];
+        initWithModeHolder:self.modeHolder
+       tabGroupSyncService:tab_groups::TabGroupSyncServiceFactory::
+                               GetForProfile(profile)
+           shareKitService:ShareKitServiceFactory::GetForProfile(profile)
+      collaborationService:collaboration::CollaborationServiceFactory::
+                               GetForProfile(profile)
+          messagingService:collaboration::messaging::
+                               MessagingBackendServiceFactory::GetForProfile(
+                                   profile)];
   _mediator.consumer = gridViewController;
 
   gridViewController.dragDropHandler = _mediator;

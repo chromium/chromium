@@ -62,4 +62,9 @@ found in the LICENSE file.
 
     </PreferenceCategory>
 
+    <org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference
+        android:key="ad_measurement_page_disclaimer"
+        android:summary="@string/settings_ad_measurement_page_disclaimer_clank"
+        android:visibility="gone"/>
+
 </PreferenceScreen>

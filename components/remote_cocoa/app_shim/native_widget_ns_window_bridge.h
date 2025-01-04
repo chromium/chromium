@@ -31,6 +31,7 @@
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -294,6 +295,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
                           mojo::PendingRemote<mojom::MenuHost> host,
                           mojo::PendingReceiver<mojom::Menu> receiver) override;
   void SetAllowScreenshots(bool allow) override;
+  void SetColorMode(ui::ColorProviderKey::ColorMode color_mode) override;
 
   // Return true if [NSApp updateWindows] needs to be called after updating the
   // TextInputClient.

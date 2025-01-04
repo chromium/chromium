@@ -170,6 +170,8 @@ void AddPdfViewerStrings(base::Value::Dict* dict) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(ENABLE_PDF_INK2)
 #if BUILDFLAG(ENABLE_PDF_INK2)
       {"ink2Draw", IDS_PDF_INK2_DRAW},
+      {"ink2Size", IDS_PDF_INK2_ANNOTATION_SIZE},
+      {"ink2Color", IDS_PDF_INK2_ANNOTATION_COLOR},
       {"ink2BrushSizeExtraThin", IDS_PDF_INK2_ANNOTATION_SIZE_EXTRA_THIN},
       {"ink2BrushSizeThin", IDS_PDF_INK2_ANNOTATION_SIZE_THIN},
       {"ink2BrushSizeMedium", IDS_PDF_INK2_ANNOTATION_SIZE_MEDIUM},

@@ -51,13 +51,45 @@ abstract class OnDeviceModel<T> implements Model<T> {
     // TODO(pihsun): Handle disconnection error
   }
 
-  abstract execute(content: string): Promise<ModelResponse<T>>;
-
-  private async executeRaw(text: string): Promise<ModelResponse<string>> {
+  async execute(content: string, language: LanguageCode):
+    Promise<ModelResponse<T>> {
     const session = new SessionRemote();
     this.remote.startSession(session.$.bindNewPipeAndPassReceiver());
+    const result =
+      await this.executeInRemoteSession(content, language, session);
+    session.$.close();
+    return result;
+  }
+
+  /**
+   * Execute in one remote session for performance concern.
+   * Each model should override this function and share the session for all
+   * model actions.
+   */
+  abstract executeInRemoteSession(
+    content: string, language: LanguageCode, session: SessionRemote
+  ): Promise<ModelResponse<T>>;
+
+  /**
+   * Get input token size through the model.
+   * Share the session from params without creating new session.
+   */
+  protected async getInputTokenSize(text: string, session: SessionRemote):
+    Promise<number> {
     const inputPieces = {pieces: [{text}]};
     const {size} = await session.getSizeInTokens(inputPieces);
+    return size;
+  }
+
+  /**
+   * Conduct the model execute.
+   * Check input token size first and then execute.
+   * Share the session from params without creating new session.
+   */
+  private async executeRaw(text: string, session: SessionRemote):
+    Promise<ModelResponse<string>> {
+    const inputPieces = {pieces: [{text}]};
+    const size = await this.getInputTokenSize(text, session);
 
     if (size < MIN_TOKEN_LENGTH) {
       return {
@@ -86,7 +118,6 @@ abstract class OnDeviceModel<T> implements Model<T> {
         responseRouter.removeListener(onResponseId);
         responseRouter.removeListener(onCompleteId);
         responseRouter.$.close();
-        session.$.close();
         resolve(response.join('').trimStart());
       },
     );
@@ -151,6 +182,7 @@ abstract class OnDeviceModel<T> implements Model<T> {
     requestSafetyFeature: SafetyFeature,
     responseSafetyFeature: SafetyFeature,
     fields: Record<string, string>,
+    session: SessionRemote,
   ): Promise<ModelResponse<string>> {
     const prompt = await this.formatInput(formatFeature, fields);
     if (prompt === null) {
@@ -160,7 +192,7 @@ abstract class OnDeviceModel<T> implements Model<T> {
     if (await this.contentIsUnsafe(prompt, requestSafetyFeature)) {
       return {kind: 'error', error: ModelResponseError.UNSAFE};
     }
-    const response = await this.executeRaw(prompt);
+    const response = await this.executeRaw(prompt, session);
     if (response.kind === 'error') {
       return response;
     }
@@ -172,14 +204,29 @@ abstract class OnDeviceModel<T> implements Model<T> {
 }
 
 export class SummaryModel extends OnDeviceModel<string> {
-  override async execute(content: string): Promise<ModelResponse<string>> {
+  override async executeInRemoteSession(
+    content: string,
+    language: LanguageCode,
+    session: SessionRemote,
+  ): Promise<ModelResponse<string>> {
+    const inputTokenSize = await this.getInputTokenSize(content, session);
+    const bulletPointsRequest = this.getBulletPointsRequest(inputTokenSize);
     const resp = await this.formatAndExecute(
       FormatFeature.kAudioSummary,
       SafetyFeature.kAudioSummaryRequest,
       SafetyFeature.kAudioSummaryResponse,
       {
         transcription: content,
+        language: language,
+        /**
+         * Param format is requested by model.
+         * See
+         * http://google3/chromeos/odml_foundations/lib/inference/features/models/audio_summary_v2.cc.
+         */
+        /* eslint-disable @typescript-eslint/naming-convention */
+        bullet_points_request: bulletPointsRequest,
       },
+      session,
     );
     // TODO(pihsun): `Result` monadic helper class?
     if (resp.kind === 'error') {
@@ -188,17 +235,40 @@ export class SummaryModel extends OnDeviceModel<string> {
     const summary = parseResponse(resp.result);
     return {kind: 'success', result: summary};
   }
+
+  /**
+   * Map inputTokenSize to bullet points.
+   */
+  private getBulletPointsRequest(inputTokenSize: number): string {
+    if (inputTokenSize < 250) {
+      return '1 bullet point';
+    } else if (inputTokenSize < 600) {
+      return '2 bullet points';
+    } else if (inputTokenSize < 4000) {
+      return '3 bullet points';
+    } else if (inputTokenSize < 6600) {
+      return '4 bullet points';
+    } else if (inputTokenSize < 9300) {
+      return '5 bullet points';
+    } else {
+      return '6 bullet points';
+    }
+  }
 }
 
 export class TitleSuggestionModel extends OnDeviceModel<string[]> {
-  override async execute(content: string): Promise<ModelResponse<string[]>> {
+  // For title suggestion, model input only needs transcription.
+  override async executeInRemoteSession(
+    content: string,
+    _: LanguageCode,
+    session: SessionRemote,
+  ): Promise<ModelResponse<string[]>> {
     const resp = await this.formatAndExecute(
       FormatFeature.kAudioTitle,
       SafetyFeature.kAudioTitleRequest,
       SafetyFeature.kAudioTitleResponse,
-      {
-        transcription: content,
-      },
+      {transcription: content},
+      session,
     );
     if (resp.kind === 'error') {
       return resp;
@@ -309,7 +379,7 @@ abstract class ModelLoader<T> extends ModelLoaderBase<T> {
       };
     }
     try {
-      return await model.execute(content);
+      return await model.execute(content, language);
     } finally {
       model.close();
     }

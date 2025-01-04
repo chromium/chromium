@@ -87,7 +87,7 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
     void CreateOutputStream(
         int render_process_id,
         int render_frame_id,
-        GlobalRenderFrameHostId main_frame_id,
+        const GlobalRenderFrameHostToken& main_frame_token,
         const std::string& device_id,
         const media::AudioParameters& params,
         mojo::PendingRemote<media::mojom::AudioOutputStreamProviderClient>

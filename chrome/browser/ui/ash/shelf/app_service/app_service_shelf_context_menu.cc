@@ -93,8 +93,9 @@ std::string GetAppId(const ash::ShelfID& shelf_id) {
   // Remove the ARC shelf group prefix.
   const arc::ArcAppShelfId arc_shelf_id =
       arc::ArcAppShelfId::FromString(shelf_id.app_id);
-  if (arc_shelf_id.valid())
+  if (arc_shelf_id.valid()) {
     return arc_shelf_id.app_id();
+  }
 
   return shelf_id.app_id;
 }
@@ -171,8 +172,9 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
                                                 int event_flags) {
   // Place new windows on the same display as the context menu.
   display::ScopedDisplayForNewWindows scoped_display(display_id());
-  if (ExecuteCommonCommand(command_id, event_flags))
+  if (ExecuteCommonCommand(command_id, event_flags)) {
     return;
+  }
 
   switch (command_id) {
     case ash::SHOW_APP_INFO:
@@ -244,8 +246,9 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
               controller()->profile());
       const bool scaled = command_id == ash::CROSTINI_USE_LOW_DENSITY;
       registry_service->SetAppScaled(item().id.app_id, scaled);
-      if (controller()->IsOpen(item().id))
+      if (controller()->IsOpen(item().id)) {
         crostini::ShowAppRestartDialog(display_id());
+      }
       return;
     }
 
@@ -318,8 +321,9 @@ bool AppServiceShelfContextMenu::IsCommandIdChecked(int command_id) const {
 }
 
 bool AppServiceShelfContextMenu::IsCommandIdEnabled(int command_id) const {
-  if (command_id < ash::COMMAND_ID_COUNT)
+  if (command_id < ash::COMMAND_ID_COUNT) {
     return ShelfContextMenu::IsCommandIdEnabled(command_id);
+  }
   if (extensions::ContextMenuMatcher::IsExtensionsCustomCommandId(command_id) &&
       extension_menu_items_) {
     return extension_menu_items_->IsCommandIdEnabled(command_id);
@@ -354,8 +358,9 @@ void AppServiceShelfContextMenu::OnGetMenuModel(GetMenuModelCallback callback,
       (app_type_ == apps::AppType::kChromeApp &&
        item().id.app_id == extension_misc::kFilesManagerAppId);
 
-  if (build_extension_menu_before_pin)
+  if (build_extension_menu_before_pin) {
     BuildExtensionAppShortcutsMenu(menu_model.get());
+  }
 
   // "New Window" should go above "Pin".
   if (menu_items.items.size() > index &&
@@ -410,8 +415,9 @@ void AppServiceShelfContextMenu::OnGetMenuModel(GetMenuModelCallback callback,
     return;
   }
 
-  if (!build_extension_menu_before_pin)
+  if (!build_extension_menu_before_pin) {
     BuildExtensionAppShortcutsMenu(menu_model.get());
+  }
 
   // When Crostini generates shelf id with the prefix "crostini:", AppService
   // can't generate the menu items, because the app_id doesn't match, so add the
@@ -588,8 +594,9 @@ extensions::LaunchType AppServiceShelfContextMenu::GetExtensionLaunchType()
       extensions::ExtensionRegistry::Get(controller()->profile())
           ->GetExtensionById(item().id.app_id,
                              extensions::ExtensionRegistry::EVERYTHING);
-  if (!extension)
+  if (!extension) {
     return extensions::LAUNCH_TYPE_DEFAULT;
+  }
 
   return extensions::GetLaunchType(
       extensions::ExtensionPrefs::Get(controller()->profile()), extension);

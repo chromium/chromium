@@ -10,6 +10,8 @@
 #ifndef UI_ACCESSIBILITY_AX_BIT_MAP_H_
 #define UI_ACCESSIBILITY_AX_BIT_MAP_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <string>

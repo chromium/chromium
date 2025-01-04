@@ -42,7 +42,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/version.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
 #include "components/viz/common/features.h"
 #include "content/browser/gpu/gpu_memory_buffer_manager_singleton.h"
@@ -513,7 +512,7 @@ void GpuDataManagerImplPrivate::InitializeGpuModes() {
   // Android and Chrome OS can't switch to software compositing. If the GPU
   // process initialization fails or GPU process is too unstable then crash the
   // browser process to reset everything.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   fallback_modes_.push_back(gpu::GpuMode::DISPLAY_COMPOSITOR);
   if (SwiftShaderAllowed())
     fallback_modes_.push_back(gpu::GpuMode::SWIFTSHADER);
@@ -531,7 +530,7 @@ void GpuDataManagerImplPrivate::InitializeGpuModes() {
 #endif  // BUILDFLAG(IS_CASTOS)
 
 #if (BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CAST_ANDROID)) || \
-    BUILDFLAG(IS_CHROMEOS_ASH)
+    BUILDFLAG(IS_CHROMEOS)
     NOTREACHED() << "GPU acceleration is required on certain platforms!";
 #endif
   } else if (features::IsSkiaGraphiteEnabled(command_line)) {

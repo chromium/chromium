@@ -28,6 +28,15 @@ bool ContentNotificationClient::HandleNotificationInteraction(
           isEqualToString:kContentNotificationFeedbackCategoryIdentifier]) {
     return false;
   }
+
+  // If the app is not foreground active, store this interaction and process it
+  // later.
+  if (GetSceneLevelForegroundActiveBrowser() == nullptr) {
+    stored_interaction_ = response;
+    return true;
+  }
+  stored_interaction_ = nil;
+
   // In order to send delivered NAUs, the payload has been modified for it to be
   // processed on `HandleNotificationReception()`. Before reusing the payload,
   // remove the NAU body paramater from the payload to return it to its normal
@@ -41,8 +50,11 @@ bool ContentNotificationClient::HandleNotificationInteraction(
   // Regenerate the regular payload as NSDictionary after removing the extra
   // object.
   NSDictionary<NSString*, id>* payload = [unprocessedPayload copy];
+  ProfileIOS* profile = GetAnyProfile();
+  CHECK(profile);
   ContentNotificationService* contentNotificationService =
-      ContentNotificationServiceFactory::GetForProfile(GetAnyProfile());
+      ContentNotificationServiceFactory::GetForProfile(profile);
+  CHECK(contentNotificationService);
   ContentNotificationNAUConfiguration* config =
       [[ContentNotificationNAUConfiguration alloc] init];
   config.notification = response.notification;
@@ -107,4 +119,11 @@ ContentNotificationClient::RegisterActionableNotifications() {
            intentIdentifiers:@[]
                      options:UNNotificationCategoryOptionCustomDismissAction];
   return @[ contentNotificationCategory ];
+}
+
+void ContentNotificationClient::OnSceneActiveForegroundBrowserReady() {
+  if (stored_interaction_) {
+    HandleNotificationInteraction(stored_interaction_);
+  }
+  PushNotificationClient::OnSceneActiveForegroundBrowserReady();
 }

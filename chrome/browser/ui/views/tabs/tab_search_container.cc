@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/metrics/histogram_functions_internal_overloads.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
@@ -231,11 +230,15 @@ TabSearchContainer::TabSearchContainer(
 
   std::unique_ptr<TabSearchButton> tab_search_button;
   if (features::IsTabstripComboButtonEnabled()) {
-    // With combo button, edge adjacent to new tab button should be flat and
-    // opposite edge should be rounded with no change on chip animation.
+    // With backgrounded combo button, edge adjacent to new tab button should
+    // be flat and opposite edge should be rounded with no change on chip
+    // animation.
+    Edge flat_edge = Edge::kNone;
+    if (features::HasTabstripComboButtonWithBackground()) {
+      flat_edge = base::i18n::IsRTL() ? Edge::kRight : Edge::kLeft;
+    }
     tab_search_button = std::make_unique<TabSearchButton>(
-        tab_strip_controller, browser_window_interface,
-        base::i18n::IsRTL() ? Edge::kRight : Edge::kLeft, Edge::kNone,
+        tab_strip_controller, browser_window_interface, flat_edge, Edge::kNone,
         anchor_view ? anchor_view : this, tab_strip);
     tab_search_button->SetFlatEdgeFactor(1);
   } else {
@@ -335,8 +338,8 @@ TabSearchContainer::CreateTabDeclutterButton(
       base::BindRepeating(&TabSearchContainer::OnTabDeclutterButtonDismissed,
                           base::Unretained(this)),
       features::IsTabstripDedupeEnabled()
-          ? l10n_util::GetStringUTF16(IDS_TAB_DECLUTTER_WITH_DEDUPE)
-          : l10n_util::GetStringUTF16(IDS_TAB_DECLUTTER),
+          ? l10n_util::GetStringUTF16(IDS_TAB_DECLUTTER)
+          : l10n_util::GetStringUTF16(IDS_TAB_DECLUTTER_NO_DEDUPE),
       kTabDeclutterButtonElementId,
       features::IsTabstripComboButtonEnabled()
           ? Edge::kNone
@@ -344,12 +347,12 @@ TabSearchContainer::CreateTabDeclutterButton(
 
   button->SetTooltipText(
       features::IsTabstripDedupeEnabled()
-          ? l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_DECLUTTER_WITH_DEDUPE)
-          : l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_DECLUTTER));
+          ? l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_DECLUTTER)
+          : l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_DECLUTTER_NO_DEDUPE));
   button->GetViewAccessibility().SetName(
       features::IsTabstripDedupeEnabled()
-          ? l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_DECLUTTER_WITH_DEDUPE)
-          : l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_DECLUTTER));
+          ? l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_DECLUTTER)
+          : l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_DECLUTTER_NO_DEDUPE));
 
   button->SetProperty(views::kCrossAxisAlignmentKey,
                       views::LayoutAlignment::kCenter);

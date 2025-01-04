@@ -10,6 +10,10 @@
 import os
 import unittest
 
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
+    '../../..')))
+
 from pylib.gtest import gtest_test_instance
 from pylib.local.device import local_device_environment
 from pylib.local.device import local_device_gtest_run
@@ -58,26 +62,26 @@ class LocalDeviceGtestRunTest(unittest.TestCase):
 
   def testGroupTests(self):
     test = [
-        "TestClass1.testcase1",
-        "TestClass1.otherTestCase",
-        "TestClass1.PRE_testcase1",
-        "TestClass1.abc_testcase2",
-        "TestClass1.PRE_PRE_testcase1",
-        "TestClass1.PRE_abc_testcase2",
-        "TestClass1.PRE_PRE_abc_testcase2",
+        'TestClass1.testcase1',
+        'TestClass1.otherTestCase',
+        'TestClass1.PRE_testcase1',
+        'TestClass1.abc_testcase2',
+        'TestClass1.PRE_PRE_testcase1',
+        'TestClass1.PRE_abc_testcase2',
+        'TestClass1.PRE_PRE_abc_testcase2',
     ]
     expectedTestcase1 = [
-        "TestClass1.PRE_PRE_testcase1",
-        "TestClass1.PRE_testcase1",
-        "TestClass1.testcase1",
+        'TestClass1.PRE_PRE_testcase1',
+        'TestClass1.PRE_testcase1',
+        'TestClass1.testcase1',
     ]
     expectedTestcase2 = [
-        "TestClass1.PRE_PRE_abc_testcase2",
-        "TestClass1.PRE_abc_testcase2",
-        "TestClass1.abc_testcase2",
+        'TestClass1.PRE_PRE_abc_testcase2',
+        'TestClass1.PRE_abc_testcase2',
+        'TestClass1.abc_testcase2',
     ]
     expectedOtherTestcase = [
-        "TestClass1.otherTestCase",
+        'TestClass1.otherTestCase',
     ]
     actualTestCase = self._obj._GroupTests(test)
     self.assertTrue(isSliceInList(expectedTestcase1, actualTestCase))
@@ -86,44 +90,98 @@ class LocalDeviceGtestRunTest(unittest.TestCase):
 
   def testAppendPreTests(self):
     failed_tests = [
-        "TestClass1.PRE_PRE_testcase1",
-        "TestClass1.abc_testcase2",
-        "TestClass1.PRE_def_testcase3",
-        "TestClass1.otherTestCase",
+        'TestClass1.PRE_PRE_testcase1',
+        'TestClass1.abc_testcase2',
+        'TestClass1.PRE_def_testcase3',
+        'TestClass1.otherTestCase',
     ]
     tests = [
-        "TestClass1.testcase1",
-        "TestClass1.otherTestCase",
-        "TestClass1.def_testcase3",
-        "TestClass1.PRE_testcase1",
-        "TestClass1.abc_testcase2",
-        "TestClass1.PRE_PRE_testcase1",
-        "TestClass1.PRE_abc_testcase2",
-        "TestClass1.PRE_def_testcase3",
-        "TestClass1.PRE_PRE_abc_testcase2",
+        'TestClass1.testcase1',
+        'TestClass1.otherTestCase',
+        'TestClass1.def_testcase3',
+        'TestClass1.PRE_testcase1',
+        'TestClass1.abc_testcase2',
+        'TestClass1.PRE_PRE_testcase1',
+        'TestClass1.PRE_abc_testcase2',
+        'TestClass1.PRE_def_testcase3',
+        'TestClass1.PRE_PRE_abc_testcase2',
     ]
     expectedTestcase1 = [
-        "TestClass1.PRE_PRE_testcase1",
-        "TestClass1.PRE_testcase1",
-        "TestClass1.testcase1",
+        'TestClass1.PRE_PRE_testcase1',
+        'TestClass1.PRE_testcase1',
+        'TestClass1.testcase1',
     ]
     expectedTestcase2 = [
-        "TestClass1.PRE_PRE_abc_testcase2",
-        "TestClass1.PRE_abc_testcase2",
-        "TestClass1.abc_testcase2",
+        'TestClass1.PRE_PRE_abc_testcase2',
+        'TestClass1.PRE_abc_testcase2',
+        'TestClass1.abc_testcase2',
     ]
     expectedTestcase3 = [
-        "TestClass1.PRE_def_testcase3",
-        "TestClass1.def_testcase3",
+        'TestClass1.PRE_def_testcase3',
+        'TestClass1.def_testcase3',
     ]
     expectedOtherTestcase = [
-        "TestClass1.otherTestCase",
+        'TestClass1.otherTestCase',
     ]
     actualTestCase = self._obj._AppendPreTestsForRetry(failed_tests, tests)
     self.assertTrue(isSliceInList(expectedTestcase1, actualTestCase))
     self.assertTrue(isSliceInList(expectedTestcase2, actualTestCase))
     self.assertTrue(isSliceInList(expectedTestcase3, actualTestCase))
     self.assertTrue(isSliceInList(expectedOtherTestcase, actualTestCase))
+
+
+class LocalDeviceGtestTestRunShardingTest(unittest.TestCase):
+  def setUp(self):
+    self._obj = local_device_gtest_run.LocalDeviceGtestRun(
+        mock.MagicMock(spec=local_device_environment.LocalDeviceEnvironment),
+        mock.MagicMock(spec=gtest_test_instance.GtestTestInstance))
+
+  def test_CreateShardsForDevices(self):
+    self._obj._env.devices = [1]
+    self._obj._test_instance.test_launcher_batch_limit = 2
+    tests = [
+        'TestClass1.testcase1',
+        'TestClass2.testcase1',
+        'TestClass1.def_testcase3',
+        'TestClass1.abc_testcase2',
+        'TestClass3.testcase1'
+    ]
+    expected_shards = [
+        ['TestClass1.testcase1', 'TestClass2.testcase1'],
+        ['TestClass1.def_testcase3', 'TestClass1.abc_testcase2'],
+        ['TestClass3.testcase1']
+    ]
+    actual_shards = self._obj._CreateShardsForDevices(tests)
+    self.assertEqual(expected_shards, actual_shards)
+
+  def test_ApplyExternalSharding_1_shard(self):
+    tests = [
+        'TestClass1.testcase1', 'TestClass1.testcase2', 'TestClass2.testcase1',
+        'TestClass3.testcase1'
+    ]
+    expected_tests = [
+        'TestClass1.testcase2', 'TestClass1.testcase1', 'TestClass3.testcase1',
+        'TestClass2.testcase1'
+    ]
+    actual_tests = self._obj._ApplyExternalSharding(
+        tests, 0, 1)
+    self.assertEqual(expected_tests, actual_tests)
+
+  def test_ApplyExternalSharding_2_shards(self):
+    tests = [
+        'TestClass1.testcase1', 'TestClass1.testcase2', 'TestClass2.testcase1',
+        'TestClass3.testcase1'
+    ]
+    expected_shard0 = ['TestClass1.testcase2', 'TestClass1.testcase1']
+    expected_shard1 = ['TestClass3.testcase1', 'TestClass2.testcase1']
+    actual_shard0 = self._obj._ApplyExternalSharding(
+        tests, 0, 2)
+    actual_shard1 = self._obj._ApplyExternalSharding(
+        tests, 1, 2)
+    self.assertEqual(expected_shard0, expected_shard0)
+    self.assertEqual(expected_shard1, expected_shard1)
+    self.assertSetEqual(set(actual_shard0 + actual_shard1), set(tests))
+
 
 if __name__ == '__main__':
   unittest.main(verbosity=2)

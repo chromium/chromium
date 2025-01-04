@@ -13,10 +13,11 @@
 
 namespace content {
 
-constexpr const char kARIA[]{"aria"};
+constexpr const char kAccName[]{"accname"};
+constexpr const char kAria[]{"aria"};
 constexpr const char kCSS[]{"css"};
 constexpr const char kFormControls[]{"form-controls"};
-constexpr const char kHTML[]{"html"};
+constexpr const char kHtml[]{"html"};
 constexpr const char kMathML[]{"mathml"};
 constexpr const char kDisplayLocking[]{"display-locking"};
 constexpr const char kRelations[]{"relations"};
@@ -44,37 +45,30 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
 
   std::vector<std::string> Dump(ui::AXMode mode) override;
 
-  void RunAccNameTest(const base::FilePath::CharType* file_path) {
-    base::FilePath test_path = GetTestFilePath("accessibility", "accname");
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
-    }
-    base::FilePath accname_file = test_path.Append(base::FilePath(file_path));
-    RunTest(ui::kAXModeComplete, accname_file, "accessibility/accname",
-            FILE_PATH_LITERAL("tree"));
+// Convenience macro to define test types without special treatment.
+#define TEST_TYPE(type)                                             \
+  void Run##type##Test(const base::FilePath::CharType* file_path) { \
+    RunTypedTest<k##type>(file_path);                               \
   }
-
-  void RunAriaTest(const base::FilePath::CharType* file_path) {
-    RunTypedTest<kARIA>(file_path);
-  }
-
-  void RunCSSTest(const base::FilePath::CharType* file_path) {
-    RunTypedTest<kCSS>(file_path);
-  }
+  TEST_TYPE(AccName)
+  TEST_TYPE(Aria)
+  TEST_TYPE(CSS)
+  TEST_TYPE(Html)
+  TEST_TYPE(MathML)
+  TEST_TYPE(DisplayLocking)
+  TEST_TYPE(Relations)
+  TEST_TYPE(Regression)
+  TEST_TYPE(TestHarness)
 
   void RunFormControlsTest(const base::FilePath::CharType* file_path) {
     RunTypedTest<kFormControls>(file_path, ui::kAXModeFormControls);
   }
 
   void RunAriaTestMinusHtmlMode(const base::FilePath::CharType* file_path) {
-    RunTypedTest<kARIA>(file_path,
+    RunTypedTest<kAria>(file_path,
                         ui::kAXModeComplete);  // & ~ui::AXMode::kHTML);
   }
 
-  void RunHtmlTest(const base::FilePath::CharType* file_path) {
-    RunTypedTest<kHTML>(file_path);
-  }
 
   // TODO(accessibility): Replace all tests using RunPopoverHintTest to just
   // RunHtmlTest when Popover hints and interest targets are enabled by default.
@@ -85,28 +79,7 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
         switches::kEnableBlinkFeatures, "HTMLInvokeTargetAttribute");
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kEnableBlinkFeatures, "HTMLInterestTargetAttribute");
-    RunTypedTest<kHTML>(file_path);
-  }
-
-  void RunMathMLTest(const base::FilePath::CharType* file_path) {
-    RunTypedTest<kMathML>(file_path);
-  }
-
-  void RunDisplayLockingTest(const base::FilePath::CharType* file_path) {
-    RunTypedTest<kDisplayLocking>(file_path);
-  }
-
-  void RunRelationsTest(const base::FilePath::CharType* file_path) {
-    RunTypedTest<kRelations>(file_path);
-  }
-
-  void RunRegressionTest(const base::FilePath::CharType* file_path) {
-    RunTypedTest<kRegression>(file_path);
-  }
-
-  // Testing of the Test Harness itself.
-  void RunTestHarnessTest(const base::FilePath::CharType* file_path) {
-    RunTypedTest<kTestHarness>(file_path);
+    RunTypedTest<kHtml>(file_path);
   }
 
  protected:

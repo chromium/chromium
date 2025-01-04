@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Session.Android.TabbedSessionContainedGoogleSearch"
-    enum="Boolean" expires_after="2025-04-13">
+    enum="Boolean" expires_after="2025-06-22">
   <owner>nafisabedin@google.com</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -35,7 +35,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.Background.TotalDuration" units="ms"
-    expires_after="2025-04-13">
+    expires_after="2025-06-15">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -79,7 +79,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.IsActive" enum="BooleanActive"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>rogerm@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -98,7 +98,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.OpenedTabCounts" units="operations"
-    expires_after="2025-04-13">
+    expires_after="2025-06-22">
   <owner>rohitrao@chromium.org</owner>
   <owner>marq@chromium.org</owner>
   <summary>
@@ -985,7 +985,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.NativeRestoreHasFetchers"
-    enum="BooleanHasFetchers" expires_after="2025-04-13">
+    enum="BooleanHasFetchers" expires_after="2025-06-22">
   <owner>justincohen@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <summary>
@@ -995,7 +995,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.NativeRestoreSession" enum="BooleanSuccess"
-    expires_after="2025-04-13">
+    expires_after="2025-06-15">
   <owner>justincohen@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <summary>
@@ -1006,7 +1006,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.NativeRestoreSessionFromCache"
-    enum="BooleanSuccess" expires_after="2025-04-13">
+    enum="BooleanSuccess" expires_after="2025-06-15">
   <owner>justincohen@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <summary>
@@ -1017,7 +1017,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.NativeRestoreSessionFromCacheHasData"
-    enum="BooleanHasData" expires_after="2025-04-13">
+    enum="BooleanHasData" expires_after="2025-06-15">
   <owner>justincohen@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <summary>
@@ -1028,7 +1028,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.NativeRestoreSessionHasData"
-    enum="BooleanHasData" expires_after="2025-04-13">
+    enum="BooleanHasData" expires_after="2025-06-22">
   <owner>justincohen@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <summary>
@@ -1132,7 +1132,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SessionRestore.ForegroundTabFirstPaint4" units="ms"
-    expires_after="2025-03-30">
+    expires_after="2025-06-08">
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -1149,7 +1149,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SessionRestore.ForegroundTabFirstPaint4.FinishReason"
-    enum="SessionRestoreFinishReason" expires_after="2025-03-30">
+    enum="SessionRestoreFinishReason" expires_after="2025-06-08">
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -1162,8 +1162,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SessionRestore.PageStateOldVersions" units="version"
+    expires_after="2025-12-16">
+  <owner>creis@chromium.org</owner>
+  <owner>chrome-security-architecture@google.com</owner>
+  <summary>
+    The number of times a PageState with the given non-current PageState version
+    number was decoded during session restore. Old PageState versions with
+    sufficiently low usage may be considered for deprecation. See
+    page_state_serialization.cc's kCurrentVersion for documentation of each
+    version.
+  </summary>
+</histogram>
+
 <histogram name="SessionRestore.TabCount{TabType}" units="tabs"
-    expires_after="2025-03-30">
+    expires_after="2025-06-22">
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>

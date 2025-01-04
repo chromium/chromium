@@ -24,6 +24,8 @@ import org.chromium.base.Log;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -31,10 +33,10 @@ import java.util.Arrays;
 import java.util.Queue;
 
 /**
- * This class is responsible for allocating and managing connections to child
- * process services. These connections are in a pool (the services are defined
- * in the AndroidManifest.xml).
+ * This class is responsible for allocating and managing connections to child process services.
+ * These connections are in a pool (the services are defined in the AndroidManifest.xml).
  */
+@NullMarked
 public abstract class ChildConnectionAllocator {
     private static final String TAG = "ChildConnAllocator";
     private static final String ZYGOTE_SUFFIX = "0";
@@ -46,11 +48,11 @@ public abstract class ChildConnectionAllocator {
         ChildProcessConnection createConnection(
                 Context context,
                 ComponentName serviceName,
-                ComponentName fallbackServiceName,
+                @Nullable ComponentName fallbackServiceName,
                 boolean bindToCaller,
                 boolean bindAsExternalService,
                 Bundle serviceBundle,
-                String instanceName);
+                @Nullable String instanceName);
     }
 
     /** Default implementation of the ConnectionFactory that creates actual connections. */
@@ -59,11 +61,11 @@ public abstract class ChildConnectionAllocator {
         public ChildProcessConnection createConnection(
                 Context context,
                 ComponentName serviceName,
-                ComponentName fallbackServiceName,
+                @Nullable ComponentName fallbackServiceName,
                 boolean bindToCaller,
                 boolean bindAsExternalService,
                 Bundle serviceBundle,
-                String instanceName) {
+                @Nullable String instanceName) {
             return new ChildProcessConnection(
                     context,
                     serviceName,
@@ -94,7 +96,7 @@ public abstract class ChildConnectionAllocator {
 
     /* package */ final String mPackageName;
     /* package */ final String mServiceClassName;
-    /* package */ final String mFallbackServiceClassName;
+    /* package */ final @Nullable String mFallbackServiceClassName;
     /* package */ final boolean mBindToCaller;
     /* package */ final boolean mBindAsExternalService;
     /* package */ final boolean mUseStrongBinding;
@@ -286,7 +288,7 @@ public abstract class ChildConnectionAllocator {
             Runnable freeSlotCallback,
             String packageName,
             String serviceClassName,
-            String fallbackServiceClassName,
+            @Nullable String fallbackServiceClassName,
             boolean bindToCaller,
             boolean bindAsExternalService,
             boolean useStrongBinding) {
@@ -304,7 +306,7 @@ public abstract class ChildConnectionAllocator {
     /**
      * @return a bound connection, or null if there are no free slots.
      */
-    public ChildProcessConnection allocate(
+    public @Nullable ChildProcessConnection allocate(
             Context context,
             Bundle serviceBundle,
             final ChildProcessConnection.ServiceCallback serviceCallback) {
@@ -420,7 +422,7 @@ public abstract class ChildConnectionAllocator {
         return mLauncherHandler.getLooper() == Looper.myLooper();
     }
 
-    /* package */ abstract ChildProcessConnection doAllocate(
+    /* package */ abstract @Nullable ChildProcessConnection doAllocate(
             Context context,
             Bundle serviceBundle,
             ChildProcessConnection.ServiceCallback serviceCallback);
@@ -431,7 +433,7 @@ public abstract class ChildConnectionAllocator {
     @VisibleForTesting
     public static class FixedSizeAllocatorImpl extends ChildConnectionAllocator {
         // Connections to services. Indices of the array correspond to the service numbers.
-        private final ChildProcessConnection[] mChildProcessConnections;
+        private final @Nullable ChildProcessConnection[] mChildProcessConnections;
 
         // The list of free (not bound) service indices.
         private final ArrayList<Integer> mFreeConnectionIndices;
@@ -464,7 +466,8 @@ public abstract class ChildConnectionAllocator {
         }
 
         @Override
-        /* package */ ChildProcessConnection doAllocate(
+        /* package */ @Nullable
+        ChildProcessConnection doAllocate(
                 Context context,
                 Bundle serviceBundle,
                 ChildProcessConnection.ServiceCallback serviceCallback) {
@@ -531,7 +534,8 @@ public abstract class ChildConnectionAllocator {
             return mChildProcessConnections.length - mFreeConnectionIndices.size();
         }
 
-        public ChildProcessConnection getChildProcessConnectionAtSlotForTesting(int slotNumber) {
+        public @Nullable ChildProcessConnection getChildProcessConnectionAtSlotForTesting(
+                int slotNumber) {
             return mChildProcessConnections[slotNumber];
         }
 
@@ -553,7 +557,7 @@ public abstract class ChildConnectionAllocator {
                 Runnable freeSlotCallback,
                 String packageName,
                 String serviceClassName,
-                String fallbackServiceClassName,
+                @Nullable String fallbackServiceClassName,
                 boolean bindToCaller,
                 boolean bindAsExternalService,
                 boolean useStrongBinding,
@@ -572,7 +576,8 @@ public abstract class ChildConnectionAllocator {
         }
 
         @Override
-        /* package */ ChildProcessConnection doAllocate(
+        /* package */ @Nullable
+        ChildProcessConnection doAllocate(
                 Context context,
                 Bundle serviceBundle,
                 ChildProcessConnection.ServiceCallback serviceCallback) {
@@ -583,7 +588,8 @@ public abstract class ChildConnectionAllocator {
             return connection;
         }
 
-        /* package */ ChildProcessConnection tryAllocate(
+        /* package */ @Nullable
+        ChildProcessConnection tryAllocate(
                 Context context,
                 Bundle serviceBundle,
                 ChildProcessConnection.ServiceCallback serviceCallback) {
@@ -595,7 +601,7 @@ public abstract class ChildConnectionAllocator {
             return connection;
         }
 
-        private ChildProcessConnection allocate(Context context, Bundle serviceBundle) {
+        private @Nullable ChildProcessConnection allocate(Context context, Bundle serviceBundle) {
             if (mAllocatedConnections.size() >= mMaxAllocated) {
                 Log.w(TAG, "Ran out of UIDs to allocate.");
                 return null;
@@ -703,7 +709,8 @@ public abstract class ChildConnectionAllocator {
         }
 
         @Override
-        /* package */ ChildProcessConnection doAllocate(
+        /* package */ @Nullable
+        ChildProcessConnection doAllocate(
                 Context context,
                 Bundle serviceBundle,
                 ChildProcessConnection.ServiceCallback serviceCallback) {

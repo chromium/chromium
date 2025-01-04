@@ -59,7 +59,7 @@ class WelcomeTourChangedExperimentalArmMetricTest
     scoped_feature_list.InitWithFeatureStates(
         {{features::kWelcomeTourCounterfactualArm, IsV1Enabled()},
          {features::kWelcomeTourHoldbackArm, IsHoldbackEnabled()},
-         {features::kWelcomeTourV2, IsV2Enabled()},
+         {features::kWelcomeTourV3, IsV3Enabled()},
          {features::kWelcomeTourForceUserEligibility, true}});
   }
 
@@ -77,7 +77,7 @@ class WelcomeTourChangedExperimentalArmMetricTest
 
   bool IsPrefValueV1() const { return GetPrefValue() == ExperimentalArm::kV1; }
 
-  bool IsPrefValueV2() const { return GetPrefValue() == ExperimentalArm::kV2; }
+  bool IsPrefValueV3() const { return GetPrefValue() == ExperimentalArm::kV3; }
 
   bool IsHoldbackEnabled() const {
     return GetEnabledArm() == ExperimentalArm::kHoldback;
@@ -85,7 +85,7 @@ class WelcomeTourChangedExperimentalArmMetricTest
 
   bool IsV1Enabled() const { return GetEnabledArm() == ExperimentalArm::kV1; }
 
-  bool IsV2Enabled() const { return GetEnabledArm() == ExperimentalArm::kV2; }
+  bool IsV3Enabled() const { return GetEnabledArm() == ExperimentalArm::kV3; }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list;
@@ -99,12 +99,12 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Values(std::nullopt,
                           std::make_optional(ExperimentalArm::kHoldback),
                           std::make_optional(ExperimentalArm::kV1),
-                          std::make_optional(ExperimentalArm::kV2)),
+                          std::make_optional(ExperimentalArm::kV3)),
         /*enabled_arm=*/
         ::testing::Values(std::nullopt,
                           std::make_optional(ExperimentalArm::kHoldback),
                           std::make_optional(ExperimentalArm::kV1),
-                          std::make_optional(ExperimentalArm::kV2))));
+                          std::make_optional(ExperimentalArm::kV3))));
 
 // Tests -----------------------------------------------------------------------
 
@@ -126,7 +126,7 @@ TEST_P(WelcomeTourChangedExperimentalArmMetricTest,
     Shell::Get()
         ->session_controller()
         ->GetLastActiveUserPrefService()
-        ->SetInteger("ash.welcome_tour.v2.experimental_arm.first",
+        ->SetInteger("ash.welcome_tour.v3.experimental_arm.first",
                      static_cast<int>(pref_value.value()));
   }
 
@@ -161,7 +161,7 @@ class WelcomeTourExperimentalArmMetricTest
     scoped_feature_list.InitWithFeatureStates(
         {{features::kWelcomeTourCounterfactualArm, IsV1Enabled()},
          {features::kWelcomeTourHoldbackArm, IsHoldbackEnabled()},
-         {features::kWelcomeTourV2, IsV2Enabled()},
+         {features::kWelcomeTourV3, IsV3Enabled()},
          {features::kWelcomeTourForceUserEligibility, true}});
   }
 
@@ -173,7 +173,7 @@ class WelcomeTourExperimentalArmMetricTest
 
   bool IsV1Enabled() const { return GetEnabledArm() == ExperimentalArm::kV1; }
 
-  bool IsV2Enabled() const { return GetEnabledArm() == ExperimentalArm::kV2; }
+  bool IsV3Enabled() const { return GetEnabledArm() == ExperimentalArm::kV3; }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list;
@@ -186,7 +186,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(std::nullopt,
                       std::make_optional(ExperimentalArm::kHoldback),
                       std::make_optional(ExperimentalArm::kV1),
-                      std::make_optional(ExperimentalArm::kV2)));
+                      std::make_optional(ExperimentalArm::kV3)));
 
 // Tests -----------------------------------------------------------------------
 
@@ -225,7 +225,7 @@ class WelcomeTourInteractionMetricsTest
     // Only one of those features can be enabled at a time.
     scoped_feature_list.InitWithFeatureStates(
         {{features::kWelcomeTourHoldbackArm, IsHoldback()},
-         {features::kWelcomeTourV2, false},
+         {features::kWelcomeTourV3, false},
          {features::kWelcomeTourCounterfactualArm, false}});
   }
 
@@ -280,8 +280,8 @@ INSTANTIATE_TEST_SUITE_P(
 // appropriate histogram is submitted.
 TEST_P(WelcomeTourInteractionMetricsTest, RecordInteraction) {
   SimulateNewUserFirstLogin("user@test");
-  ClearPref("ash.welcome_tour.v2.prevented.first_reason");
-  ClearPref("ash.welcome_tour.v2.prevented.first_time");
+  ClearPref("ash.welcome_tour.v3.prevented.first_reason");
+  ClearPref("ash.welcome_tour.v3.prevented.first_time");
 
   base::HistogramTester histogram_tester;
   PrefService* prefs = user_education_util::GetLastActiveUserPrefService();
@@ -377,7 +377,7 @@ TEST_F(WelcomeTourMetricsEnumTest, AllExperimentalArms) {
     switch (arm) {
       case ExperimentalArm::kHoldback:
       case ExperimentalArm::kV1:
-      case ExperimentalArm::kV2:
+      case ExperimentalArm::kV3:
         should_exist_in_all_set = true;
     }
 

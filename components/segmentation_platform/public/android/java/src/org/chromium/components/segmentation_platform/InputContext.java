@@ -181,6 +181,16 @@ public class InputContext {
                         urlValues);
     }
 
+    /** Merge all inputs from another InputContext object. */
+    public void mergeFrom(InputContext other) {
+        if (other == null) return;
+
+        for (Entry<String, ProcessedValue> entry : other.mMetadata.entrySet()) {
+            assert !mMetadata.containsKey(entry.getKey());
+            mMetadata.put(entry.getKey(), entry.getValue());
+        }
+    }
+
     public ProcessedValue getEntryForTesting(String key) {
         return mMetadata.get(key);
     }

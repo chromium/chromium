@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/native_browser_frame.h"
+#include "ui/aura/window.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
@@ -45,6 +46,9 @@ class DesktopBrowserFrameAura : public views::DesktopNativeWidgetAura,
   // Overridden from views::DesktopNativeWidgetAura:
   void OnHostClosed() override;
   void InitNativeWidget(views::Widget::InitParams params) override;
+  void OnOcclusionStateChanged(aura::WindowTreeHost* host,
+                               aura::Window::OcclusionState new_state,
+                               const SkRegion& occluded_region) override;
 
   // Overridden from NativeBrowserFrame:
   views::Widget::InitParams GetWidgetParams() override;

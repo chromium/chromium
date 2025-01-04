@@ -84,6 +84,7 @@ class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
 
   void RegisterMediaStream(MediaStream*) override;
   void UnregisterMediaStream(MediaStream*) override;
+  void RegisterSink(SpeechRecognitionMediaStreamAudioSink*) override;
 
   // EventTarget
   const AtomicString& InterfaceName() const override;

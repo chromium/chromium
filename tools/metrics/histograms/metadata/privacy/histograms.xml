@@ -83,8 +83,9 @@ reviewer.
 </variants>
 
 <!-- Each profile on a client is assigned a unique bucket, see go/profile-metrics.
-The guest profile has a profile bucket 0, regular profiles start at bucket 1.
-Incognito profiles count towards the original profile. -->
+Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
+
+<!-- LINT.IfChange(Profile) -->
 
 <variants name="Profile">
   <variant name="Profile_1" summary="Profile bucket 1 for a client."/>
@@ -97,20 +98,12 @@ Incognito profiles count towards the original profile. -->
   <variant name="Profile_8" summary="Profile bucket 8 for a client."/>
   <variant name="Profile_9" summary="Profile bucket 9 for a client."/>
   <variant name="Profile_10" summary="Profile bucket 10 for a client."/>
-  <variant name="Profile_11" summary="Profile bucket 11 for a client."/>
-  <variant name="Profile_12" summary="Profile bucket 12 for a client."/>
-  <variant name="Profile_13" summary="Profile bucket 13 for a client."/>
-  <variant name="Profile_14" summary="Profile bucket 14 for a client."/>
-  <variant name="Profile_15" summary="Profile bucket 15 for a client."/>
-  <variant name="Profile_16" summary="Profile bucket 16 for a client."/>
-  <variant name="Profile_17" summary="Profile bucket 17 for a client."/>
-  <variant name="Profile_18" summary="Profile bucket 18 for a client."/>
-  <variant name="Profile_19" summary="Profile bucket 19 for a client."/>
-  <variant name="Profile_20" summary="Profile bucket 20 for a client."/>
-  <variant name="Profile_21+"
-      summary="All profiles with a bucket of 21+ will be bucketed here, 21
-               inclusive."/>
+  <variant name="Profile_11+"
+      summary="All profiles with a bucket greater than 10 will be bucketed
+               here."/>
 </variants>
+
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/settings/histograms.xml:Profile) -->
 
 <variants name="PSNotice">
   <variant name="MeasurementNoticeModal"
@@ -284,7 +277,7 @@ Incognito profiles count towards the original profile. -->
 </histogram>
 
 <histogram name="Privacy.CookieControlsActivated.PageRefreshCount"
-    units="count" expires_after="2025-04-06">
+    units="count" expires_after="2025-06-08">
   <owner>olesiamarukhno@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>kmg@google.com</owner>
@@ -295,7 +288,7 @@ Incognito profiles count towards the original profile. -->
 </histogram>
 
 <histogram name="Privacy.CookieControlsActivated.SaaRequested"
-    enum="BooleanEnabled" expires_after="2025-04-06">
+    enum="BooleanEnabled" expires_after="2025-06-08">
   <owner>olesiamarukhno@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>kmg@google.com</owner>
@@ -306,7 +299,7 @@ Incognito profiles count towards the original profile. -->
 </histogram>
 
 <histogram name="Privacy.CookieControlsActivated.SiteDataAccessType"
-    enum="ThirdPartySiteDataAccessType" expires_after="2025-03-30">
+    enum="ThirdPartySiteDataAccessType" expires_after="2025-06-08">
   <owner>olesiamarukhno@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>kmg@google.com</owner>
@@ -318,7 +311,7 @@ Incognito profiles count towards the original profile. -->
 </histogram>
 
 <histogram name="Privacy.CookieControlsActivated.SiteEngagementScore"
-    units="units" expires_after="2025-03-30">
+    units="units" expires_after="2025-06-08">
   <owner>olesiamarukhno@google.com</owner>
   <owner>sauski@google.com</owner>
   <owner>kmg@google.com</owner>
@@ -376,7 +369,7 @@ Incognito profiles count towards the original profile. -->
 
 <histogram
     name="Privacy.DeleteBrowsingData.Duration.TabsClosureAnimationDuration"
-    units="microseconds" expires_after="2025-03-09">
+    units="microseconds" expires_after="2025-06-08">
   <owner>fsenra@chromium.org</owner>
   <owner>alimariam@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
@@ -391,7 +384,7 @@ Incognito profiles count towards the original profile. -->
 
 <histogram
     name="Privacy.DeleteBrowsingData.Duration.TabsClosureAnimationStartDelay"
-    units="microseconds" expires_after="2025-03-09">
+    units="microseconds" expires_after="2025-06-08">
   <owner>fsenra@chromium.org</owner>
   <owner>alimariam@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
@@ -423,7 +416,7 @@ Incognito profiles count towards the original profile. -->
 </histogram>
 
 <histogram name="Privacy.DIPS.BounceCategory{DIPSRedirectType}{DIPSCookieMode}"
-    enum="DIPSRedirectCategory" expires_after="2025-03-23">
+    enum="DIPSRedirectCategory" expires_after="2025-06-08">
   <owner>rtarpine@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
@@ -440,7 +433,7 @@ Incognito profiles count towards the original profile. -->
 </histogram>
 
 <histogram name="Privacy.DIPS.BounceStatusCode.{DIPSCachedResponseStatus}"
-    enum="HttpResponseCode" expires_after="2025-03-31">
+    enum="HttpResponseCode" expires_after="2025-06-08">
   <owner>liu@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
@@ -552,7 +545,7 @@ Incognito profiles count towards the original profile. -->
 </histogram>
 
 <histogram name="Privacy.DIPS.DeletionLatency2" units="ms"
-    expires_after="2025-03-30">
+    expires_after="2025-06-08">
   <owner>wanderview@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
@@ -597,7 +590,7 @@ Incognito profiles count towards the original profile. -->
 </histogram>
 
 <histogram name="Privacy.DIPS.ServerBounceChainDelay" units="ms"
-    expires_after="2025-03-31">
+    expires_after="2025-06-08">
   <owner>liu@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
@@ -608,7 +601,7 @@ Incognito profiles count towards the original profile. -->
 </histogram>
 
 <histogram name="Privacy.DIPS.ServerBounceDelay" units="ms"
-    expires_after="2025-03-31">
+    expires_after="2025-06-08">
   <owner>liu@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
@@ -622,7 +615,7 @@ Incognito profiles count towards the original profile. -->
 </histogram>
 
 <histogram name="Privacy.DIPS.TimeFromNavigationCommitToClientBounce"
-    units="ms" expires_after="2025-04-27">
+    units="ms" expires_after="2025-06-29">
   <owner>rtarpine@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
@@ -650,7 +643,7 @@ Incognito profiles count towards the original profile. -->
 </histogram>
 
 <histogram name="Privacy.PageInfo.SiteExceptionsScopeType"
-    enum="ContentSettingPatternScope" expires_after="M136">
+    enum="ContentSettingPatternScope" expires_after="2025-06-22">
   <owner>olesiamarukhno@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
@@ -685,7 +678,7 @@ Incognito profiles count towards the original profile. -->
 </histogram>
 
 <histogram name="Privacy.SiteExceptionsAdded.ContentSettingType"
-    enum="ContentType" expires_after="M136">
+    enum="ContentType" expires_after="2025-06-22">
   <owner>olesiamarukhno@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
@@ -695,7 +688,7 @@ Incognito profiles count towards the original profile. -->
 </histogram>
 
 <histogram name="Privacy.SiteExceptionsAdded.ScopeType"
-    enum="ContentSettingPatternScope" expires_after="M136">
+    enum="ContentSettingPatternScope" expires_after="2025-06-22">
   <owner>olesiamarukhno@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
@@ -746,7 +739,7 @@ Incognito profiles count towards the original profile. -->
 <histogram
     name="PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2"
     enum="PrivacySandboxStorageUserSegmentByRecentActivity"
-    expires_after="2025-03-30">
+    expires_after="2025-06-08">
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -758,7 +751,7 @@ Incognito profiles count towards the original profile. -->
 <histogram
     name="PrivacySandbox.ActivityTypeStorage.20MostRecentRecordsUserSegment2"
     enum="PrivacySandboxStorageUserSegmentByRecentActivity"
-    expires_after="2025-03-30">
+    expires_after="2025-06-08">
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -768,7 +761,7 @@ Incognito profiles count towards the original profile. -->
 </histogram>
 
 <histogram name="PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord"
-    units="days" expires_after="2025-03-30">
+    units="days" expires_after="2025-06-08">
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -779,7 +772,7 @@ Incognito profiles count towards the original profile. -->
 
 <histogram
     name="PrivacySandbox.ActivityTypeStorage.Percentage.{ActivityTypeStoragePercentage}2"
-    units="%" expires_after="2025-03-30">
+    units="%" expires_after="2025-06-08">
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -791,7 +784,7 @@ Incognito profiles count towards the original profile. -->
 </histogram>
 
 <histogram name="PrivacySandbox.ActivityTypeStorage.RecordsLength"
-    units="count" expires_after="2025-04-27">
+    units="count" expires_after="2025-06-29">
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -853,7 +846,7 @@ Incognito profiles count towards the original profile. -->
 
 <histogram
     name="PrivacySandbox.AggregationService.ReportSender{DelayType}.HttpResponseOrNetErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-04-13">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-06-22">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -908,7 +901,7 @@ Incognito profiles count towards the original profile. -->
 
 <histogram
     name="PrivacySandbox.AggregationService.ScheduledRequests.AssemblyTime"
-    units="ms" expires_after="2025-04-13">
+    units="ms" expires_after="2025-06-22">
   <owner>dmcardle@chromium.org</owner>
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
@@ -922,7 +915,7 @@ Incognito profiles count towards the original profile. -->
 
 <histogram
     name="PrivacySandbox.AggregationService.ScheduledRequests.DelayFromOriginalReportTime"
-    units="ms" expires_after="2025-04-13">
+    units="ms" expires_after="2025-06-22">
   <owner>dmcardle@chromium.org</owner>
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
@@ -951,7 +944,7 @@ Incognito profiles count towards the original profile. -->
 
 <histogram
     name="PrivacySandbox.AggregationService.ScheduledRequests.SendAttemptTime"
-    units="ms" expires_after="2025-04-13">
+    units="ms" expires_after="2025-06-22">
   <owner>dmcardle@chromium.org</owner>
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
@@ -964,7 +957,7 @@ Incognito profiles count towards the original profile. -->
 </histogram>
 
 <histogram name="PrivacySandbox.AggregationService.ScheduledRequests.Status"
-    enum="AggregationServiceObserverReportStatus" expires_after="2025-03-30">
+    enum="AggregationServiceObserverReportStatus" expires_after="2025-06-08">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -975,7 +968,7 @@ Incognito profiles count towards the original profile. -->
 </histogram>
 
 <histogram name="PrivacySandbox.AggregationService.Scheduler.TimerFireDelay"
-    units="ms" expires_after="2025-04-13">
+    units="ms" expires_after="2025-06-22">
   <owner>dmcardle@chromium.org</owner>
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
@@ -991,7 +984,7 @@ Incognito profiles count towards the original profile. -->
 
 <histogram
     name="PrivacySandbox.AggregationService.Storage.RequestsRetrievalTime"
-    units="ms" expires_after="2025-04-13">
+    units="ms" expires_after="2025-06-22">
   <owner>dmcardle@chromium.org</owner>
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
@@ -1003,7 +996,7 @@ Incognito profiles count towards the original profile. -->
 </histogram>
 
 <histogram name="PrivacySandbox.AggregationService.Storage.Sql.CreationTime2"
-    units="ms" expires_after="2025-04-20">
+    units="ms" expires_after="2025-06-22">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -1015,7 +1008,7 @@ Incognito profiles count towards the original profile. -->
 </histogram>
 
 <histogram name="PrivacySandbox.AggregationService.Storage.Sql.Error"
-    enum="SqliteLoggedResultCode" expires_after="2025-04-20">
+    enum="SqliteLoggedResultCode" expires_after="2025-06-22">
   <owner>dmcardle@chromium.org</owner>
   <owner>apaseltiner@chromium.org</owner>
   <summary>
@@ -1039,7 +1032,7 @@ Incognito profiles count towards the original profile. -->
 
 <histogram
     name="PrivacySandbox.AggregationService.Storage.Sql.RequestDelayFromUpdatedReportTime2"
-    units="ms" expires_after="2025-04-13">
+    units="ms" expires_after="2025-06-22">
   <owner>dmcardle@chromium.org</owner>
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
@@ -1058,7 +1051,7 @@ Incognito profiles count towards the original profile. -->
 
 <histogram
     name="PrivacySandbox.AggregationService.Storage.Sql.StoredRequestsPerReportingOrigin"
-    units="requests" expires_after="2025-04-13">
+    units="requests" expires_after="2025-06-22">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -1070,7 +1063,7 @@ Incognito profiles count towards the original profile. -->
 
 <histogram
     name="PrivacySandbox.AggregationService.Storage.Sql.StoreRequestHasCapacity"
-    enum="Boolean" expires_after="2025-04-13">
+    enum="Boolean" expires_after="2025-06-22">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -1082,7 +1075,7 @@ Incognito profiles count towards the original profile. -->
 
 <histogram
     name="PrivacySandbox.AggregationService.UnscheduledRequests.AssemblyTime"
-    units="ms" expires_after="2025-04-13">
+    units="ms" expires_after="2025-06-22">
   <owner>dmcardle@chromium.org</owner>
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
@@ -1115,7 +1108,7 @@ Incognito profiles count towards the original profile. -->
 
 <histogram
     name="PrivacySandbox.AggregationService.UnscheduledRequests.SendAttemptTime"
-    units="ms" expires_after="2025-04-13">
+    units="ms" expires_after="2025-06-22">
   <owner>dmcardle@chromium.org</owner>
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
@@ -1132,7 +1125,7 @@ Incognito profiles count towards the original profile. -->
 </histogram>
 
 <histogram name="PrivacySandbox.AggregationService.UnscheduledRequests.Status"
-    enum="AggregationServiceObserverReportStatus" expires_after="2025-03-30">
+    enum="AggregationServiceObserverReportStatus" expires_after="2025-06-08">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -1251,7 +1244,7 @@ Incognito profiles count towards the original profile. -->
 </histogram>
 
 <histogram name="PrivacySandbox.Attestations.IsSiteAttestedStatus"
-    enum="PrivacySandboxApiAllowed" expires_after="2025-04-13">
+    enum="PrivacySandboxApiAllowed" expires_after="2025-06-15">
   <owner>shivanisha@chromium.org</owner>
   <owner>xiaochenzh@chromium.org</owner>
   <summary>
@@ -1307,7 +1300,7 @@ Incognito profiles count towards the original profile. -->
 <histogram
     name="PrivacySandbox.CookieDeprecationFacilitatedTesting.ReasonForEligibilityStoredInPrefs"
     enum="CookieDeprecationFacilitatedTestingProfileEligibility"
-    expires_after="2025-04-27">
+    expires_after="2025-06-29">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -1329,6 +1322,51 @@ Incognito profiles count towards the original profile. -->
     Records whether the Identity Manager is ready to be observed as part of the
     PS notice.
   </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.DarkLaunch.{Profile}.NonSyncedPref.PromptShown"
+    enum="Boolean" expires_after="2025-06-11">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records if the {Profile} has seen the prompt and whether they are eligible.
+  </summary>
+  <token key="Profile" variants="Profile"/>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.DarkLaunch.{Profile}.NonSyncedPref.PromptShownSince"
+    units="days" expires_after="2025-06-11">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the duration of how long it's been since the {Profile} has seen the
+    prompt.
+  </summary>
+  <token key="Profile" variants="Profile"/>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.DarkLaunch.{Profile}.NonSyncedPref.PromptSuppressionReason"
+    enum="PrivacySandboxPromptSuppressionReason" expires_after="2025-06-11">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the reason why the fake prompt was suppressed on a {Profile}.
+  </summary>
+  <token key="Profile" variants="Profile"/>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.DarkLaunch.{Profile}.NonSyncedPref.PromptSuppressionReasonsCombined"
+    units="count" expires_after="2025-06-11">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the reasons why the fake prompt was suppressed on a {Profile} if
+    there are multiple, stored as an integer.
+  </summary>
+  <token key="Profile" variants="Profile"/>
 </histogram>
 
 <histogram name="PrivacySandbox.DarkLaunch.{Profile}.PrimaryAccountOnStartup"
@@ -1371,6 +1409,62 @@ Incognito profiles count towards the original profile. -->
   <token key="Profile" variants="Profile"/>
 </histogram>
 
+<histogram name="PrivacySandbox.DarkLaunch.{Profile}.SyncedPref.PromptShown"
+    enum="Boolean" expires_after="2025-06-11">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records if the {Profile} has seen the prompt and whether they are eligible.
+  </summary>
+  <token key="Profile" variants="Profile"/>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.DarkLaunch.{Profile}.SyncedPref.PromptShownSince"
+    units="days" expires_after="2025-06-11">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the duration of how long it's been since the {Profile} has seen the
+    prompt.
+  </summary>
+  <token key="Profile" variants="Profile"/>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.DarkLaunch.{Profile}.SyncedPref.PromptSuppressionReason"
+    enum="PrivacySandboxPromptSuppressionReason" expires_after="2025-06-11">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the reason why the fake prompt was suppressed on a {Profile}.
+  </summary>
+  <token key="Profile" variants="Profile"/>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.DarkLaunch.{Profile}.SyncedPref.PromptSuppressionReasonsCombined"
+    units="count" expires_after="2025-06-11">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the reasons why the fake prompt was suppressed on a {Profile},
+    stored as an integer.
+  </summary>
+  <token key="Profile" variants="Profile"/>
+</histogram>
+
+<histogram name="PrivacySandbox.DarkLaunch.{Profile}.UserGroups"
+    enum="PrivacySandboxPrimaryAccountUserGroups" expires_after="2025-06-11">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the sign in status of the a {Profile} at the point of when the
+    notice is shown.
+  </summary>
+  <token key="Profile" variants="Profile"/>
+</histogram>
+
 <histogram
     name="PrivacySandbox.Notice.FirstShownToInteractedDuration.{PSNotice}_{PSNoticeAction}"
     units="ms" expires_after="2025-06-11">
@@ -1401,7 +1495,6 @@ Incognito profiles count towards the original profile. -->
     enum="PrivacySandboxNoticeAction" expires_after="2025-06-11">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
-  <owner>koilos-team@google.com</owner>
   <summary>
     Records the action performed on a notice {PSNotice} for a profile.
   </summary>
@@ -1431,21 +1524,10 @@ Incognito profiles count towards the original profile. -->
     enum="PrivacySandboxNoticeStartupState" expires_after="2025-06-11">
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
-  <owner>koilos-team@google.com</owner>
   <summary>
     Records startup state of a notice {PSNotice} during the profile start up.
   </summary>
   <token key="PSNotice" variants="PSNotice"/>
-</histogram>
-
-<histogram name="PrivacySandbox.NoticeQueueState" enum="NoticeQueueState"
-    expires_after="2025-10-13">
-  <owner>aashnas@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records queueing related states for a notice. Logged for every notice
-    required for the active profile.
-  </summary>
 </histogram>
 
 <histogram name="PrivacySandbox.NoticeRequirement.IsVariationCountryEmpty"
@@ -1507,7 +1589,7 @@ Incognito profiles count towards the original profile. -->
 
 <histogram
     name="PrivacySandbox.PrivateAggregation.Budgeter.EnoughBudgetForAnyValueIfNotEnoughOverall"
-    enum="Boolean" expires_after="2025-03-30">
+    enum="Boolean" expires_after="2025-06-08">
   <owner>alexmt@chromium.org</owner>
   <owner>dmcardle@chromium.org</owner>
   <summary>
@@ -1524,7 +1606,7 @@ Incognito profiles count towards the original profile. -->
 
 <histogram
     name="PrivacySandbox.PrivateAggregation.Budgeter.NumReportingOriginsStoredPerSite"
-    units="counts" expires_after="2025-03-30">
+    units="counts" expires_after="2025-06-08">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -1592,7 +1674,7 @@ Incognito profiles count towards the original profile. -->
 </histogram>
 
 <histogram name="PrivacySandbox.PrivateAggregation.BudgetStorage.InitTime"
-    units="ms" expires_after="2025-04-13">
+    units="ms" expires_after="2025-06-22">
   <owner>dmcardle@chromium.org</owner>
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
@@ -1704,7 +1786,7 @@ Incognito profiles count towards the original profile. -->
 
 <histogram
     name="PrivacySandbox.PrivateAggregation.Host.TimeToGenerateReportRequestWithContextId"
-    units="ms" expires_after="2025-04-13">
+    units="ms" expires_after="2025-06-22">
   <owner>dmcardle@chromium.org</owner>
   <owner>alexmt@chromium.org</owner>
   <summary>
@@ -1786,7 +1868,7 @@ Incognito profiles count towards the original profile. -->
 </histogram>
 
 <histogram name="PrivacySandbox.TrackingProtection.OnboardingStartup.State"
-    enum="OnboardingStartupState" expires_after="2025-04-13">
+    enum="OnboardingStartupState" expires_after="2025-06-22">
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -1797,7 +1879,7 @@ Incognito profiles count towards the original profile. -->
 
 <histogram
     name="PrivacySandbox.TrackingProtection.OnboardingStartup.WaitingToAckSince"
-    units="ms" expires_after="2025-04-13">
+    units="ms" expires_after="2025-06-22">
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -1808,7 +1890,7 @@ Incognito profiles count towards the original profile. -->
 
 <histogram
     name="PrivacySandbox.TrackingProtection.OnboardingStartup.WaitingToOnboardSince"
-    units="ms" expires_after="2025-04-13">
+    units="ms" expires_after="2025-06-22">
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -1831,7 +1913,7 @@ Incognito profiles count towards the original profile. -->
 
 <histogram
     name="PrivacySandbox.TrackingProtection.SilentOnboardingStartup.State"
-    enum="SilentOnboardingStartupState" expires_after="2025-04-13">
+    enum="SilentOnboardingStartupState" expires_after="2025-06-22">
   <owner>linnan@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>

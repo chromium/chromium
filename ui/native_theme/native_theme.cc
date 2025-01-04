@@ -203,8 +203,7 @@ NativeTheme::NativeTheme(bool should_use_dark_colors,
     : should_use_dark_colors_(should_use_dark_colors || IsForcedDarkMode()),
       system_theme_(system_theme),
       forced_colors_(IsForcedHighContrast()),
-      prefers_reduced_transparency_(false),
-      inverted_colors_(false),
+
       preferred_color_scheme_(CalculatePreferredColorScheme()),
       preferred_contrast_(CalculatePreferredContrast()) {}
 
@@ -225,8 +224,9 @@ bool NativeTheme::InForcedColorsMode() const {
 
 NativeTheme::PlatformHighContrastColorScheme
 NativeTheme::GetPlatformHighContrastColorScheme() const {
-  if (GetDefaultSystemColorScheme() != ColorScheme::kPlatformHighContrast)
+  if (GetDefaultSystemColorScheme() != ColorScheme::kPlatformHighContrast) {
     return PlatformHighContrastColorScheme::kNone;
+  }
   return (GetPreferredColorScheme() == PreferredColorScheme::kDark)
              ? PlatformHighContrastColorScheme::kDark
              : PlatformHighContrastColorScheme::kLight;
@@ -275,8 +275,9 @@ NativeTheme::PreferredContrast NativeTheme::GetPreferredContrast() const {
 
 void NativeTheme::SetPreferredContrast(
     NativeTheme::PreferredContrast preferred_contrast) {
-  if (preferred_contrast_ == preferred_contrast)
+  if (preferred_contrast_ == preferred_contrast) {
     return;
+  }
   preferred_contrast_ = preferred_contrast;
   NotifyOnPreferredContrastUpdated();
 }

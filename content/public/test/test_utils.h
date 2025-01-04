@@ -467,6 +467,15 @@ class ScopedContentBrowserClientSetting final {
   const raw_ptr<ContentBrowserClient> old_client_;
 };
 
+// Blocks the current execution until the frame submitted via the browser's
+// compositor is presented on the screen.
+void WaitForBrowserCompositorFramePresented(WebContents* web_contents);
+
+// Forces the browser to submit a compositor frame, even if nothing has changed
+// in the viewport. Use `WaitForBrowserCompositorFramePresented()` to wait for
+// the frame's presentation.
+void ForceNewCompositorFrameFromBrowser(WebContents* web_contents);
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_TEST_TEST_UTILS_H_

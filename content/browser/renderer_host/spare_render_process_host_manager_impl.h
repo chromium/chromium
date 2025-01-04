@@ -80,7 +80,7 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
   void RemoveObserver(Observer* observer) override;
   void WarmupSpare(BrowserContext* browser_context) override;
   const std::vector<RenderProcessHost*>& GetSpares() override;
-  std::vector<int> GetSpareIds() override;
+  std::vector<ChildProcessId> GetSpareIds() override;
   void CleanupSparesForTesting() override;
 
   // Start a spare renderer immediately, only if there is none.

@@ -82,10 +82,11 @@ void ChromeLabsButton::UpdateDotIndicator() {
   bool should_show_dot_indicator = AreNewChromeLabsExperimentsAvailable(
       model_, browser_view_->browser()->profile());
 
-  if (should_show_dot_indicator)
+  if (should_show_dot_indicator) {
     new_experiments_indicator_->Show();
-  else
+  } else {
     new_experiments_indicator_->Hide();
+  }
 }
 
 BEGIN_METADATA(ChromeLabsButton)

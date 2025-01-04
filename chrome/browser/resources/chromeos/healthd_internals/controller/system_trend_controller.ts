@@ -67,7 +67,7 @@ export class SystemTrendController {
       memory: {
         dataList: [],
         selectedIndices: [],
-        unitLabel: new UnitLabel(['KiB', 'MiB', 'GiB'], 1024),
+        unitLabel: new UnitLabel(['KB', 'MB', 'GB'], 1024),
       },
       thermal: {
         dataList: [],
@@ -77,7 +77,7 @@ export class SystemTrendController {
       zram: {
         dataList: [],
         selectedIndices: [],
-        unitLabel: new UnitLabel(['B', 'KiB', 'MiB', 'GiB'], 1024),
+        unitLabel: new UnitLabel(['B', 'KB', 'MB', 'GB'], 1024),
       },
     };
   }
@@ -90,7 +90,7 @@ export class SystemTrendController {
 
   setBatteryData(dataSeriesList: DataSeries[]) {
     this.dataCollection.battery.dataList = dataSeriesList;
-    this.element.setupDataSeriesList();
+    this.element.refreshData(CategoryTypeEnum.BATTERY);
   }
 
   setCpuFrequencyData(dataSeriesList: DataSeries[]) {
@@ -100,33 +100,59 @@ export class SystemTrendController {
       this.dataCollection.cpuFrequency.selectedIndices =
           [0, dataSeriesList.length - 1];
     }
-    this.element.setupDataSeriesList();
+    this.element.refreshData(CategoryTypeEnum.CPU_FREQUENCY);
   }
 
   setCpuUsageData(dataSeriesList: DataSeries[]) {
     this.dataCollection.cpuUsage.dataList = dataSeriesList;
     // The first one is overall usage.
     this.dataCollection.cpuUsage.selectedIndices = [0];
-    this.element.setupDataSeriesList();
+    this.element.refreshData(CategoryTypeEnum.CPU_USAGE);
   }
 
   setMemoryData(dataSeriesList: DataSeries[]) {
     this.dataCollection.memory.dataList = dataSeriesList;
     // The first one is available memory.
     this.dataCollection.memory.selectedIndices = [0];
-    this.element.setupDataSeriesList();
+    this.element.refreshData(CategoryTypeEnum.MEMORY);
   }
 
   setThermalData(dataSeriesList: DataSeries[]) {
     this.dataCollection.thermal.dataList = dataSeriesList;
-    this.element.setupDataSeriesList();
+    this.element.refreshData(CategoryTypeEnum.THERMAL);
   }
 
   setZramData(dataSeriesList: DataSeries[]) {
     this.dataCollection.zram.dataList = dataSeriesList;
     // The first one is total used zram.
     this.dataCollection.zram.selectedIndices = [0];
-    this.element.setupDataSeriesList();
+    this.element.refreshData(CategoryTypeEnum.ZRAM);
+  }
+
+  setSelectedIndices(type: CategoryTypeEnum, selectedIndices: number[]) {
+    switch (type) {
+      case CategoryTypeEnum.BATTERY:
+        this.dataCollection.battery.selectedIndices = selectedIndices;
+        break;
+      case CategoryTypeEnum.CPU_FREQUENCY:
+        this.dataCollection.cpuFrequency.selectedIndices = selectedIndices;
+        break;
+      case CategoryTypeEnum.CPU_USAGE:
+        this.dataCollection.cpuUsage.selectedIndices = selectedIndices;
+        break;
+      case CategoryTypeEnum.MEMORY:
+        this.dataCollection.memory.selectedIndices = selectedIndices;
+        break;
+      case CategoryTypeEnum.THERMAL:
+        this.dataCollection.thermal.selectedIndices = selectedIndices;
+        break;
+      case CategoryTypeEnum.ZRAM:
+        this.dataCollection.zram.selectedIndices = selectedIndices;
+        break;
+      case CategoryTypeEnum.CUSTOM:
+        console.error('SystemTrendController: Got unexpected type.');
+        break;
+    }
   }
 
   /**

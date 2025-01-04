@@ -34,6 +34,7 @@
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/clipboard_metrics.h"
+#include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_util.h"
 #include "ui/base/clipboard_jni_headers/Clipboard_jni.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -127,7 +128,8 @@ class ClipboardMap {
   void Set(const ClipboardFormatType& format, std::string_view data);
   const std::vector<ui::FileInfo>& GetFilenames();
   void SetFilenames(std::vector<ui::FileInfo> filenames);
-  void CommitToAndroidClipboard();
+  void CommitToAndroidClipboard(GURL data_source);
+  std::optional<DataTransferEndpoint> GetSource();
   void Clear();
   void MarkPasswordData();
 
@@ -309,9 +311,10 @@ void ClipboardMap::SetFilenames(std::vector<ui::FileInfo> filenames) {
   filenames_ = std::move(filenames);
 }
 
-void ClipboardMap::CommitToAndroidClipboard() {
+void ClipboardMap::CommitToAndroidClipboard(GURL data_source) {
   JNIEnv* env = AttachCurrentThread();
   base::AutoLock lock(lock_);
+  bool add_data_source = data_source.is_valid();
   if (mark_password_data_ &&
       base::Contains(map_, ClipboardFormatType::PlainTextType())) {
     ScopedJavaLocalRef<jstring> str = ConvertUTF8ToJavaString(
@@ -365,11 +368,32 @@ void ClipboardMap::CommitToAndroidClipboard() {
     Java_Clipboard_setFilenames(env, clipboard_manager_, arr);
   } else {
     Java_Clipboard_clear(env, clipboard_manager_);
+    add_data_source = false;
     NOTIMPLEMENTED();
   }
+
+  if (add_data_source) {
+    map_[ClipboardFormatType::InternalSourceUrlType()] = data_source.spec();
+  } else {
+    map_.erase(ClipboardFormatType::InternalSourceUrlType());
+  }
+
   map_state_ = MapState::kUpToDate;
   sequence_number_ = ClipboardSequenceNumberToken();
   UpdateLastModifiedTime(base::Time::Now());
+
+  ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+}
+
+std::optional<DataTransferEndpoint> ClipboardMap::GetSource() {
+  base::AutoLock lock(lock_);
+
+  auto iter = map_.find(ClipboardFormatType::InternalSourceUrlType());
+  if (iter == map_.end()) {
+    return {};
+  }
+
+  return DataTransferEndpoint(GURL(iter->second));
 }
 
 void ClipboardMap::Clear() {
@@ -381,6 +405,8 @@ void ClipboardMap::Clear() {
   map_state_ = MapState::kUpToDate;
   sequence_number_ = ClipboardSequenceNumberToken();
   UpdateLastModifiedTime(base::Time::Now());
+
+  ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
 }
 
 void ClipboardMap::MarkPasswordData() {
@@ -489,12 +515,12 @@ ClipboardAndroid::~ClipboardAndroid() {
 
 void ClipboardAndroid::OnPreShutdown() {}
 
-// DataTransferEndpoint is not used on this platform.
 std::optional<DataTransferEndpoint> ClipboardAndroid::GetSource(
     ClipboardBuffer buffer) const {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-  return std::nullopt;
+
+  return g_map.Get().GetSource();
 }
 
 const ClipboardSequenceNumberToken& ClipboardAndroid::GetSequenceNumber(
@@ -692,8 +718,6 @@ void ClipboardAndroid::ClearLastModifiedTime() {
 }
 
 // Main entry point used to write several values in the clipboard.
-// |data_src| is not used. It's only passed to be consistent with other
-// platforms.
 void ClipboardAndroid::WritePortableAndPlatformRepresentations(
     ClipboardBuffer buffer,
     const ObjectMap& objects,
@@ -712,7 +736,12 @@ void ClipboardAndroid::WritePortableAndPlatformRepresentations(
     WriteConfidentialDataForPassword();
   }
 
-  g_map.Get().CommitToAndroidClipboard();
+  GURL data_source;
+  if (data_src && data_src->IsUrlType()) {
+    data_source = *data_src->GetURL();
+  }
+
+  g_map.Get().CommitToAndroidClipboard(std::move(data_source));
 }
 
 void ClipboardAndroid::WriteText(std::string_view text) {

@@ -120,7 +120,7 @@ Patientez quelques minutes avant de vous déconnecter. Si vous vous déconnectez
 <translation id="4064699917955374540">Pour utiliser et enregistrer des données Chrome dans votre compte Google, confirmez votre identité.</translation>
 <translation id="417201473131094001">Non disponible dans Chrome Canary</translation>
 <translation id="424864128008805179">Se déconnecter de Chrome ?</translation>
-<translation id="447252321002412580">Contribuer à l'amélioration des fonctionnalités et des performances de Chrome</translation>
+<translation id="447252321002412580">Contribuer à améliorer les fonctionnalités et performances de Chrome</translation>
 <translation id="4523886039239821078">Certains modules complémentaires entraînent le plantage de Chrome. Veuillez les désinstaller.</translation>
 <translation id="4633328489441962921">Chrome ne parvient pas à rechercher les mises à jour</translation>
 <translation id="4636900170638246267">Connectez-vous à ce site et à Chrome.</translation>
@@ -221,13 +221,14 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 Pour voir d'autres paramètres qui utilisent les données pour améliorer votre expérience Chrome, accédez aux <ph name="BEGIN_LINK" />services Google<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Supprimez les données de navigation dans Chrome.</translation>
 <translation id="6924922227983877439">Ouvrez les liens dans Chrome par défaut</translation>
+<translation id="6931601805528922498">En vous connectant, vous ajoutez votre compte à Chrome pour vos activités de navigation dans le cadre professionnel.</translation>
 <translation id="6975725306479268850">Choisissez Chrome pour la saisie automatique</translation>
 <translation id="7056826488869329999">Lance le contrôle de sécurité dans Chrome.</translation>
 <translation id="7061455974939528301">Appuyez de manière prolongée sur l'icône Chrome, puis cliquez sur "Modifier l'écran d'accueil"</translation>
 <translation id="7065813315247345131">Déplacer Chrome vers le Dock</translation>
 <translation id="7124339256045485976">Pour garder Chrome à jour</translation>
 <translation id="7161390184744336561">La version de Google Chrome est obsolète</translation>
-<translation id="7165736900384873061">Commencer à utiliser le lecteur de code QR Google Chrome</translation>
+<translation id="7165736900384873061">Commencer à utiliser le lecteur de QR code Google Chrome</translation>
 <translation id="7175129790242719365">Astuce Chromium : connectez-vous à Chrome</translation>
 <translation id="7187993566681480880">Ce mode vous protège dans Chrome et peut servir à renforcer votre sécurité dans d'autres applications Google lorsque vous êtes connecté.</translation>
 <translation id="7200524487407690471">Chrome effectue automatiquement un contrôle de sécurité tous les jours pour vous protéger, entre autres, contre les violations de données et les sites Web dangereux. Vous trouverez plus d'informations sur ce contrôle dans les paramètres.</translation>
@@ -290,7 +291,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="8387459386171870978">Continuer à utiliser Chrome</translation>
 <translation id="840168496893712993">Certains modules complémentaires entraînent le plantage de Chrome. Veuillez essayer de les désinstaller.</translation>
 <translation id="8413500425974960807">Astuce Chrome : déplacez Chrome vers le dock</translation>
-<translation id="8413795581997394485">Protège contre les sites, les téléchargements et les extensions connus pour être dangereux. Lorsque vous consultez un site, Chrome envoie une partie obscurcie de l'URL à Google via un serveur de confidentialité qui masque votre adresse IP. Si un site a un comportement suspect, les URL complètes et des extraits du contenu des pages sont également envoyés.</translation>
+<translation id="8413795581997394485">Protection contre les extensions, sites et téléchargements connus pour être dangereux. Lorsque vous consultez un site, Chrome envoie une partie obscurcie de l'URL à Google via un serveur de confidentialité qui masque votre adresse IP. Si un site a un comportement suspect, les URL complètes et des extraits du contenu des pages sont également envoyés.</translation>
 <translation id="84594714173170813">Continuez d'utiliser les données Chrome de votre compte Google</translation>
 <translation id="8459495907675268833">Les données sélectionnées ont été supprimées de Chrome et des appareils synchronisés. Votre compte Google conserve peut-être d'autres formes d'historique de navigation sur la page history.google.com concernant, par exemple, vos recherches ou vos activités via d'autres services Google.</translation>
 <translation id="8491300088149538575">Connecté en tant que <ph name="EMAIL" />.

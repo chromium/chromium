@@ -62,13 +62,7 @@ constexpr net::NetworkTrafficAnnotationTag
 
 }  // namespace
 
-// This is initialized here rather than in the class definition due to an
-// "extension" in MSVC that defies the standard.
-// static
-const int IncidentReportUploaderImpl::kTestUrlFetcherId = 47;
-
-IncidentReportUploaderImpl::~IncidentReportUploaderImpl() {
-}
+IncidentReportUploaderImpl::~IncidentReportUploaderImpl() = default;
 
 // static
 std::unique_ptr<IncidentReportUploader>

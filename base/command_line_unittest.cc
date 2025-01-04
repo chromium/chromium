@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 
+#include <array>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -104,8 +105,8 @@ TEST(CommandLineTest, CommandLineConstructor) {
   EXPECT_EQ("", cl.GetSwitchValueASCII("foo"));
   EXPECT_EQ("", cl.GetSwitchValueASCII("bar"));
   EXPECT_EQ("", cl.GetSwitchValueASCII("cruller"));
-  EXPECT_EQ("--dog=canine --cat=feline", cl.GetSwitchValueASCII(
-      "other-switches"));
+  EXPECT_EQ("--dog=canine --cat=feline",
+            cl.GetSwitchValueASCII("other-switches"));
   EXPECT_EQ("45--output-rotation", cl.GetSwitchValueASCII("input-translation"));
 
   const CommandLine::StringVector& args = cl.GetArgs();
@@ -178,8 +179,8 @@ TEST(CommandLineTest, CommandLineFromString) {
   EXPECT_EQ("", cl.GetSwitchValueASCII("foo"));
   EXPECT_EQ("", cl.GetSwitchValueASCII("bar"));
   EXPECT_EQ("", cl.GetSwitchValueASCII("cruller"));
-  EXPECT_EQ("--dog=canine --cat=feline", cl.GetSwitchValueASCII(
-      "other-switches"));
+  EXPECT_EQ("--dog=canine --cat=feline",
+            cl.GetSwitchValueASCII("other-switches"));
   EXPECT_EQ("45--output-rotation", cl.GetSwitchValueASCII("input-translation"));
   EXPECT_EQ(kTricky, cl.GetSwitchValueNative("quotes"));
 
@@ -528,10 +529,12 @@ TEST(CommandLineTest, Copy) {
   CommandLine assigned = *initial;
   CommandLine::SwitchMap switch_map = initial->GetSwitches();
   initial.reset();
-  for (const auto& pair : switch_map)
+  for (const auto& pair : switch_map) {
     EXPECT_TRUE(copy_constructed.HasSwitch(pair.first));
-  for (const auto& pair : switch_map)
+  }
+  for (const auto& pair : switch_map) {
     EXPECT_TRUE(assigned.HasSwitch(pair.first));
+  }
 }
 
 TEST(CommandLineTest, CopySwitches) {
@@ -563,10 +566,11 @@ TEST(CommandLineTest, Move) {
       "bbbbbbbbb",
       "c",
   };
-  static constexpr CommandLine::StringViewType kArgs[] = {
-      FILE_PATH_LITERAL("beebop"),
-      FILE_PATH_LITERAL("alouie"),
-  };
+  constexpr static const auto kArgs =
+      std::to_array<CommandLine::StringViewType>({
+          FILE_PATH_LITERAL("beebop"),
+          FILE_PATH_LITERAL("alouie"),
+      });
   CommandLine initial(CommandLine::NO_PROGRAM);
   for (auto a_switch : kSwitches) {
     initial.AppendSwitch(a_switch);

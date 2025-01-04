@@ -61,6 +61,7 @@ public class ShrinkExpandAnimatorRenderTest {
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE_HUB)
+                    .setRevision(2)
                     .build();
 
     private FrameLayout mRootView;

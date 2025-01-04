@@ -181,8 +181,9 @@ class CollapsibleListView : public views::View {
     button->SetToggledTooltipText(
         l10n_util::GetStringUTF16(IDS_FILE_SYSTEM_ACCESS_USAGE_COLLAPSE));
     expand_collapse_button_ = label_container->AddChildView(std::move(button));
-    if (model->RowCount() < 3)
+    if (model->RowCount() < 3) {
       expand_collapse_button_->SetVisible(false);
+    }
     int preferred_width = label_container->GetPreferredSize().width();
     AddChildView(std::move(label_container));
 
@@ -286,8 +287,9 @@ ui::ImageModel FileSystemAccessUsageBubbleView::FilePathListModel::GetIcon(
 
 std::u16string FileSystemAccessUsageBubbleView::FilePathListModel::GetTooltip(
     size_t row) {
-  if (row < files_.size())
+  if (row < files_.size()) {
     return files_[row].LossyDisplayName();
+  }
   return directories_[row - files_.size()].LossyDisplayName();
 }
 
@@ -307,8 +309,9 @@ void FileSystemAccessUsageBubbleView::ShowBubble(
       base::UserMetricsAction("NativeFileSystemAPI.OpenedBubble"));
 
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  if (!browser)
+  if (!browser) {
     return;
+  }
 
   ToolbarButtonProvider* button_provider =
       BrowserView::GetBrowserViewForBrowser(browser)->toolbar_button_provider();
@@ -327,9 +330,11 @@ void FileSystemAccessUsageBubbleView::ShowBubble(
     return base::Contains(writable_files, path);
   });
 
+  // TODO(crbug.com/376282751): An action ID should be created and used here
+  // when File System Access is migrated to the new page actions framework.
   bubble_ = new FileSystemAccessUsageBubbleView(
-      button_provider->GetAnchorView(PageActionIconType::kFileSystemAccess),
-      web_contents, origin, std::move(usage));
+      button_provider->GetAnchorView(std::nullopt), web_contents, origin,
+      std::move(usage));
 
   bubble_->SetHighlightedButton(button_provider->GetPageActionIconView(
       PageActionIconType::kFileSystemAccess));
@@ -341,8 +346,9 @@ void FileSystemAccessUsageBubbleView::ShowBubble(
 
 // static
 void FileSystemAccessUsageBubbleView::CloseCurrentBubble() {
-  if (bubble_)
+  if (bubble_) {
     bubble_->CloseBubble();
+  }
 }
 
 // static
@@ -391,8 +397,9 @@ std::u16string FileSystemAccessUsageBubbleView::GetAccessibleWindowTitle()
     const {
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
   // Don't crash if the web_contents is destroyed/unloaded.
-  if (!browser)
+  if (!browser) {
     return {};
+  }
 
   return BrowserView::GetBrowserViewForBrowser(browser)
       ->toolbar_button_provider()
@@ -470,14 +477,16 @@ void FileSystemAccessUsageBubbleView::OnDialogCancelled() {
   base::RecordAction(
       base::UserMetricsAction("NativeFileSystemAPI.RevokePermissions"));
 
-  if (!web_contents())
+  if (!web_contents()) {
     return;
+  }
 
   content::BrowserContext* profile = web_contents()->GetBrowserContext();
   auto* context =
       FileSystemAccessPermissionContextFactory::GetForProfileIfExists(profile);
-  if (!context)
+  if (!context) {
     return;
+  }
 
   context->RevokeGrants(origin_);
 }
@@ -485,8 +494,9 @@ void FileSystemAccessUsageBubbleView::OnDialogCancelled() {
 void FileSystemAccessUsageBubbleView::WindowClosing() {
   // |bubble_| can be a new bubble by this point (as Close(); doesn't
   // call this right away). Only set to nullptr when it's this bubble.
-  if (bubble_ == this)
+  if (bubble_ == this) {
     bubble_ = nullptr;
+  }
 }
 
 void FileSystemAccessUsageBubbleView::CloseBubble() {

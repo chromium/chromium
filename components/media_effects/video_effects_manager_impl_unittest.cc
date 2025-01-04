@@ -108,5 +108,5 @@ TEST_F(VideoEffectsManagerImplTest, AddObserver) {
                                  ->framing->padding_ratios.top());
   }
 
-  EXPECT_EQ(4u, configuration_observer.received_configurations().size());
+  EXPECT_EQ(5u, configuration_observer.received_configurations().size());
 }

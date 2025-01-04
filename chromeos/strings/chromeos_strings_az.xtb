@@ -196,6 +196,7 @@
 <translation id="1801418420130173017">Qaranlıq temanı deaktiv edin</translation>
 <translation id="1807246157184219062">Yüngül</translation>
 <translation id="1808803439260407870">Klassik incəsənət</translation>
+<translation id="181434555916624618">Hələlik insanlarla bağlı nəticələr göstərilməyəcək. Başqa sorğu ilə cəhd edin.</translation>
 <translation id="1815850098929213707">Seçilmiş düymə: <ph name="KEYS" />. Nizamlayıcını redaktə etmək üçün düyməyə toxunun</translation>
 <translation id="1823120442877418684">Simvollar</translation>
 <translation id="1827738518074806965">İncəsənət qalereyası</translation>
@@ -483,6 +484,7 @@
 <translation id="3340011300870565703">Sağ qulaqlığın batareya səviyyəsi: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">ayarlar</translation>
 <translation id="3347558044552027859">müasir</translation>
+<translation id="3353477144743332882">Xülasə və ad yaratma modelini endirin</translation>
 <translation id="3359218928534347896">mikrofonu səssiz edin</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">suşi</translation>
@@ -689,6 +691,7 @@
 <translation id="4354430579665871434">düymə</translation>
 <translation id="4356100841225547054">Səs səviyyəsini deaktiv edin</translation>
 <translation id="4361257691546579041">APN növü: defolt.</translation>
+<translation id="4368101969572512692">Təklifləri qarışdırın</translation>
 <translation id="437294888293595148">Qısayolları sıfırlayın</translation>
 <translation id="437477383107495720">kiçik dovşanlar</translation>
 <translation id="4376423484621194274">Administrator <ph name="APP_NAME" /> tətbiqini bağlamağa icazə vermir</translation>
@@ -768,6 +771,7 @@
 <translation id="4731797938093519117">Valideyn girişi</translation>
 <translation id="473775607612524610">Güncəlləşdirin</translation>
 <translation id="4744944742468440486">Seçiminizlə əlaqəli məlumat</translation>
+<translation id="4750394297954878236">Təkliflər</translation>
 <translation id="4771607256327216405">klaviaturanın parlaqlaşdırılması</translation>
 <translation id="4771923071974529837">sabah</translation>
 <translation id="4773299976671772492">Durmuş</translation>
@@ -853,6 +857,7 @@
 <translation id="5121677070210013200">Transkripsiya modelini endirmək mümkün deyil. Yenidən cəhd edin və ya Chromebook-u yenidən başladın.</translation>
 <translation id="5130848777448318809">ponilər</translation>
 <translation id="5137451382116112100">Tam</translation>
+<translation id="5139813694804168398">narahat etməyin</translation>
 <translation id="5140788690559353412">Məktəb hesabınıza girişi itirdiyiniz zaman artıq əlaqəli e-məktublara və Gmail, Sənədlər, Slaydlar və s. kimi Google Disk fayllarına girişiniz olmayacaq.</translation>
 <translation id="5142961317498132443">İdentifikasiya</translation>
 <translation id="5144311987923128508">Təsdiq düyməsi deaktiv edilib</translation>
@@ -897,6 +902,7 @@
 <translation id="5302048478445481009">Dil</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> üçün eksklüziv divar kağızı</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="530883153651464140"><ph name="DEVICE_NAME" /> cihazını <ph name="VERSION" /> versiyasına güncəlləyin</translation>
 <translation id="5315873049536339193">İdentiklik</translation>
 <translation id="5317780077021120954">Yadda saxlayın</translation>
 <translation id="5318310531701770497">Ad yaratmaq mümkün deyil. Daha uzun transkript yoxlayın.</translation>
@@ -973,7 +979,6 @@
 <translation id="5703716265115423771">həcmi azaldın</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> üçün redaktə düyməsi.</translation>
-<translation id="5733298426544876109"><ph name="DEVICE_NAME" /> cihazını güncəlləyin</translation>
 <translation id="5736820754189340309">Data istifadəsi sıfırlanıb</translation>
 <translation id="574392208103952083">Orta</translation>
 <translation id="5744175046705638478">Tərcümə edin: "<ph name="QUERY" />"</translation>
@@ -998,6 +1003,7 @@
 <translation id="5859969039821714932">Qısayol əlçatan deyil. <ph name="KEY" /> olmadan yeni qısayol üzərinə basın.</translation>
 <translation id="5860033963881614850">Deaktiv</translation>
 <translation id="5860491529813859533">Aktiv edin</translation>
+<translation id="5875913454160982848">Transkripsiya modelini endirin</translation>
 <translation id="5876385649737594562">Seçim etmək üçün aktiv edin</translation>
 <translation id="5877503382465267833">Durdurun: <ph name="RECORDING_NAME" /></translation>
 <translation id="588258955323874662">Tam ekran</translation>
@@ -1037,7 +1043,6 @@
 <translation id="6040143037577758943">Qapat</translation>
 <translation id="6040852767465482106">Anonim Kimlik</translation>
 <translation id="604124094241169006">Avtomatik</translation>
-<translation id="6042308850641462728">Daha çox</translation>
 <translation id="6048107060512778456">Alınmadı - Kağız ilişib</translation>
 <translation id="6050189528197190982">Boz çalar</translation>
 <translation id="6054711098834486579">ekspressionist</translation>
@@ -1293,6 +1298,7 @@
 <translation id="7134436342991564651">{0,plural, =1{Ad serveri}other{Ad serverləri}}</translation>
 <translation id="7135814714616751706">Qısayol axtarın</translation>
 <translation id="7138614237884624401">Sadələşdirilmiş mətn</translation>
+<translation id="7138668887584231801">Xülasə etmək üçün kifayət qədər söz yoxdur</translation>
 <translation id="7141470099673912333">Kontent Köçürülməsi</translation>
 <translation id="7143207342074048698">Qoşulur</translation>
 <translation id="7144878232160441200">Yenidən cəhd edin</translation>
@@ -1588,6 +1594,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="8503836310948963452">Bir neçə dəqiqə daha...</translation>
 <translation id="8505011850330200833">Gemini modeli transkriptləri emal etmək və xülasə yaratmaq üçün 2 GB yaddaş tələb edir</translation>
 <translation id="8508640263392900755">APN detalları</translation>
+<translation id="8509574872955173831">Xülasə və ad yaratma haqqında ətraflı məlumat əldə edin</translation>
 <translation id="8522687886059337719">Artıq yeni <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />divar kağızlarına<ph name="END_LINK_WALLPAPER_SUBPAGE" /> və <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ekran qoruyucusuna<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> giriş imkanınız var</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">çay evi</translation>
@@ -1724,7 +1731,6 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="9133772297793293778">Klaviaturada 1-4 dəyişdiricilərini və 1 digər düyməni basın. Redaktə rejimindən çıxmaq üçün alt + esc üzərinə basın.</translation>
 <translation id="9137526406337347448">Google Xidmətləri</translation>
 <translation id="9138630967333032450">Sol shift</translation>
-<translation id="9147928237330776930">Ümumiləşdirmək üçün çox az söz var</translation>
 <translation id="9149391708638971077">Yaddaş Testi icra edin</translation>
 <translation id="9159524746324788320">hamburgerlər</translation>
 <translation id="9161276708550942948">boşluq</translation>

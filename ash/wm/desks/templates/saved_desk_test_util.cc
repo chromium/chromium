@@ -111,7 +111,7 @@ SavedDeskLibraryViewTestApi::SavedDeskLibraryViewTestApi(
     : library_view_(library_view) {}
 
 void SavedDeskLibraryViewTestApi::WaitForAnimationDone() {
-  for (ash::SavedDeskGridView* grid_view : library_view_->grid_views()) {
+  for (SavedDeskGridView* grid_view : library_view_->grid_views()) {
     SavedDeskGridViewTestApi(grid_view).WaitForItemMoveAnimationDone();
   }
 }
@@ -192,8 +192,7 @@ std::vector<SavedDeskItemView*> GetItemViewsFromDeskLibrary(
     SavedDeskLibraryView* saved_desk_library_view) {
   DCHECK(saved_desk_library_view);
   std::vector<SavedDeskItemView*> grid_items;
-  for (ash::SavedDeskGridView* grid_view :
-       saved_desk_library_view->grid_views()) {
+  for (SavedDeskGridView* grid_view : saved_desk_library_view->grid_views()) {
     auto& items = grid_view->grid_items();
     grid_items.insert(grid_items.end(), items.begin(), items.end());
   }
@@ -311,7 +310,7 @@ void AddSavedDeskEntry(desks_storage::DeskModel* desk_model,
       std::move(saved_desk),
       base::BindLambdaForTesting(
           [&](desks_storage::DeskModel::AddOrUpdateEntryStatus status,
-              std::unique_ptr<ash::DeskTemplate> new_entry) {
+              std::unique_ptr<DeskTemplate> new_entry) {
             CHECK_EQ(desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk,
                      status);
             loop.Quit();
